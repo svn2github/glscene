@@ -586,6 +586,23 @@ end;
 
 // ApplyFriction
 //
+{ TODO: Improve the friction calculations
+
+  Friction = - NormalForce * FrictionConstant
+
+  To compute the NormalForce, which is the force acting on the normal of the
+  collider, we can use the fact that F = m*a.
+
+  m is the weight of the node, a is the acceleration (retardation) caused by the
+  collission.
+
+  Acceleration := - PenetrationDepth / Owner.FCurrentDeltaTime;
+
+  The force with which the node has been "stopped" from penetration
+  NormalForce := Weight * Acceleration;
+
+  This force should be applied to stopping the movement.
+}
 procedure TVerletNode.ApplyFriction(const friction, penetrationDepth : Single;
                                     const surfaceNormal : TAffineVector);
 var
@@ -1321,7 +1338,7 @@ begin
          //aNode.FLocation[1]:=floorLevel+aNode.Radius;
 
          if FrictionRatio>0 then
-            aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
+            aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
 
          // aNode.FOldLocation[1]:=aNode.FLocation[1]+d*BounceRatio;
 
@@ -1330,7 +1347,7 @@ begin
          //aNode.FLocation[1]:=floorLevel+aNode.Radius;
          AddVector(aNode.FLocation, Move);
          if FrictionRatio>0 then
-            aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
+            aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
       end;
    end;
 end;
@@ -1421,7 +1438,7 @@ end;
 procedure TVCSphere.SatisfyConstraintForNode(aNode : TVerletNode;
                                     const iteration, maxIterations : Integer);
 var
-   delta, move : TAffineVector;
+   delta, move, contactNormal : TAffineVector;
    deltaLength, diff : Single;
 begin
    // Find the distance between the two
@@ -1430,8 +1447,13 @@ begin
    // Is it inside the sphere?
    deltaLength:=VectorLength(delta)-aNode.Radius;
    if Abs(deltaLength)<Radius then begin
-      // Slow it down!
-      aNode.OldApplyFriction(0.05, Radius-Abs(DeltaLength));
+      if deltaLength>0 then begin
+         contactNormal := VectorScale(delta, 1/deltaLength);
+         aNode.ApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength), contactNormal);
+      end
+      else
+        // Slow it down - this part should not be fired
+        aNode.OldApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength));
 
       // Move it outside the sphere!
       diff:=(Radius-deltaLength)/deltaLength;
