@@ -11,7 +11,8 @@ unit GLFileSMD;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLTexture, Geometry, GLMisc;
+  Classes, SysUtils, GLVectorFileObjects, GLTexture, ApplicationFileIO,
+  Geometry;
 
 type
    // TGLSMDVectorFile
@@ -38,6 +39,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+uses GLMisc;
 
 // ------------------
 // ------------------ TGLSMDVectorFile ------------------

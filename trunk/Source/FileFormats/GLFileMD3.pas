@@ -10,8 +10,8 @@ unit GLFileMD3;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMisc, GLTexture, Geometry,
-  FileMD3;
+  Classes, SysUtils, GLVectorFileObjects, GLMisc, GLTexture, ApplicationFileIO,
+  Geometry, FileMD3;
 
 type
 

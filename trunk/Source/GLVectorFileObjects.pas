@@ -100,7 +100,8 @@ unit GLVectorFileObjects;
 interface
 
 uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
-   GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB;
+   GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
+   ApplicationFileIO;
 
 type
 
@@ -1525,8 +1526,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO,
-     MeshUtils;
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils;
 
 var
    vVectorFileFormats : TVectorFileFormatsList;

@@ -11,8 +11,8 @@ unit GLFile3DS;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLTexture, GLMisc, Geometry,
-  File3DS, Types3DS;
+  Classes, SysUtils, GLVectorFileObjects, GLTexture, ApplicationFileIO,
+  Geometry, File3DS, Types3DS;
 
 type
    // TGL3DSVectorFile

@@ -11,7 +11,7 @@ unit GLFilePLY;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMisc, FileMD2, TypesMD2;
+  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, FileMD2, TypesMD2;
 
 type
    // TGLPLYVectorFile
@@ -35,6 +35,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+uses GLMisc;
 
 // ------------------
 // ------------------ TGLPLYVectorFile ------------------

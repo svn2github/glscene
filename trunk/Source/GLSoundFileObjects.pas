@@ -15,7 +15,7 @@ unit GLSoundFileObjects;
 
 interface
 
-uses Classes, MMSystem, GLMisc;
+uses Classes, MMSystem, GLMisc, ApplicationFileIO;
 
 type
 

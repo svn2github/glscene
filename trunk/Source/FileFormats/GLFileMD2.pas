@@ -11,7 +11,7 @@ unit GLFileMD2;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMisc, FileMD2, TypesMD2;
+  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, FileMD2, TypesMD2;
 
 type
    // TGLMD2VectorFile

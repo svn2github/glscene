@@ -11,7 +11,7 @@ unit GLFileGTS;
 interface
 
 uses
-  Classes, GLVectorFileObjects, GLMisc;
+  Classes, GLVectorFileObjects, ApplicationFileIO, GLMisc;
 
 type
    // TGLGTSVectorFile

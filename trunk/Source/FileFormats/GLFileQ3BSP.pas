@@ -13,7 +13,7 @@ unit GLFileQ3BSP;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLMisc;
+uses Classes, GLVectorFileObjects, ApplicationFileIO, GLMisc;
 
 type
 
@@ -42,7 +42,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP, GLTexture, GLGraphics,
-   ApplicationFileIO, Graphics;
+   Graphics;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------

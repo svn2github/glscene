@@ -3,7 +3,9 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>13/03/03 - Dave - Added TGLCoorinates.SetToZero
+      <li>05/06/03 - EG - TDataFile moved out to ApplicationFileIO,
+                          added Silhouette classes
+      <li>13/03/03 - Dave - Added TGLCoordinates.SetToZero
       <li>23/10/02 - EG - Added ParseFloat
       <li>22/10/02 - EG - Added ParseInteger
       <li>03/07/02 - EG - Added TGLNodes.Normal
@@ -56,7 +58,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, Geometry, SysUtils, OpenGL12, Spline;
+uses Classes, Geometry, SysUtils, OpenGL12, Spline, VectorLists;
 
 {$i GLScene.inc}
 
@@ -403,56 +405,92 @@ type
 
    TGLNodesClass = class of TGLNodes;
 
-   // TDataFileCapabilities
+   // TGLBaseSilhouette
    //
-   TDataFileCapability = (dfcRead, dfcWrite);
-   TDataFileCapabilities = set of TDataFileCapability;
-
-   // TDataFile
-   //
-   {: Abstract base class for data file formats interfaces.<p>
-      This class declares base file-related behaviours, ie. ability to load/save
-      from a file or a stream.<p>
-      It is highly recommended to overload ONLY the stream based methods, as the
-      file-based one just call these, and stream-based behaviours allow for more
-      enhancement (such as other I/O abilities, compression, cacheing, etc.)
-      to this class, without the need to rewrite subclasses. }
-   TDataFile = class (TPersistent)
+   {: Base class storing a volume silhouette.<p>
+      Made of a set of indexed vertices defining an outline, and another set
+      of indexed vertices defining a capping volume.<br>
+      This is the base class, you can use the TGLSilhouette subclass if you
+      need some helper methods for generating the indexed sets. }
+   TGLBaseSilhouette = class
       private
          { Private Declarations }
-         FOwner : TPersistent;
-         FResourceName : String;
+         FVertices : TAffineVectorList;
+         FIndices : TIntegerList;
+         FCapIndices : TIntegerList;
 
       protected
          { Protected Declarations }
-         function GetOwner : TPersistent; override;
+         procedure SetIndices(const value : TIntegerList);
+         procedure SetCapIndices(const value : TIntegerList);
+         procedure SetVertices(const value : TAffineVectorList);
 
       public
          { Public Declarations }
-	      constructor Create(AOwner: TPersistent);
+         constructor Create; virtual;
          destructor Destroy; override;
 
-         {: Describes what the TDataFile is capable of.<p>
-            Default value is [dfcRead]. }
-         class function Capabilities : TDataFileCapabilities; virtual;
+         property Vertices : TAffineVectorList read FVertices write SetVertices;
+         property Indices : TIntegerList read FIndices write SetIndices;
+         property CapIndices : TIntegerList read FCapIndices write SetCapIndices;
 
-         {: Duplicates Self and returns a copy.<p>
-            Subclasses should override this method to duplicate their data. }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; dynamic;
-
-         procedure LoadFromFile(const fileName : String); dynamic;
-         procedure SaveToFile(const fileName : String); dynamic;
-         procedure LoadFromStream(stream : TStream); dynamic; abstract;
-         procedure SaveToStream(stream : TStream); dynamic;
-
-         {: Optionnal resource name.<p>
-            When using LoadFromFile/SaveToFile, the filename is placed in it,
-            when using the Stream variants, the caller may place the resource
-            name in it for parser use. }
-         property ResourceName : String read FResourceName write FResourceName;
+         procedure Flush;
+         procedure Clear;
    end;
+(*
+   // TGLSilhouette
+   //
+   {: Standard silhouette class.<p>
+      This class introduces helper methods for constructing the indexed
+      vertices sets for the silhouette and the cap. }
+   TGLSilhouette = class (TGLBaseSilhouette)
+      private
+         { Private Declarations }
+         FVertices: TAffineVectorList;
+         FEndVertices: TAffineVectorList;
+         FVertexIndices: TIntegerList;
+         FCapVertexIndices : TIntegerList;
+         FSilhouetteStyle: TSilhouetteStyle;
+         FMisc : TIntegerList;
+         procedure SetVertexIndices(const Value: TIntegerList);
+         procedure SetVertices(const Value: TAffineVectorList);
 
-   TDataFileClass = class of TDataFile;
+      protected
+         { Protected Declarations }
+         FSeenFrom : TAffineVector;
+         FLightDirection : TAffineVector;
+         FEndVertexStart: integer;
+      public
+         constructor Create;
+         destructor Destroy; override;
+         property Vertices : TAffineVectorList read FVertices write SetVertices;
+         property VertexIndices : TIntegerList read FVertexIndices write SetVertexIndices;
+         property SilhouetteStyle : TSilhouetteStyle read FSilhouetteStyle;
+
+         {: If FreeAllMemory is false, only a flush is performed - this saves
+         performance down the line.}
+         procedure Clear(FreeAllMemory : boolean);
+
+         {: Should be called when the Silhouette is finished, removes excess storage
+         left by previous flush (=Clear(False))}
+         procedure LimitListSizes;
+
+         function Count : integer;
+         function CapCount : integer;
+
+         {: Adds an edge (two vertices) to the silhouette. If TightButSlow is true,
+         no vertices will be doubled in the silhoette list. This should only be used
+         when creating re-usable silhoettes, because it's much slower }
+         procedure AddEdgeToSilhouette(Vertex0, Vertex1 : TAffineVector; TightButSlow : boolean);
+         procedure GetEdge(EdgeIndex : integer; var Vertex0, Vertex1, Vertex0End, Vertex1End : TAffineVector); overload;
+
+         procedure AddCapToSilhouette(Vertex0, Vertex1, Vertex2 : TAffineVector; TightButSlow : boolean);
+         procedure GetCap(CapIndex : integer; var Vertex0, Vertex1, Vertex2, Vertex0end, Vertex1end, Vertex2end : TAffineVector);
+
+         procedure RenderLines;
+         procedure RenderVolume(OldMethod : boolean);
+
+   end;*)
 
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
@@ -1978,82 +2016,66 @@ begin
 end;
 
 // ------------------
-// ------------------ TDataFile ------------------
+// ------------------ TGLBaseSilhouette ------------------
 // ------------------
 
 // Create
 //
-constructor TDataFile.Create(AOwner: TPersistent);
+constructor TGLBaseSilhouette.Create;
 begin
-   inherited Create;
-   FOwner:=AOwner;
+   inherited;
+   FVertices:=TAffineVectorList.Create;
+   FIndices:=TIntegerList.Create;
+   FCapIndices:=TIntegerList.Create;
 end;
 
 // Destroy
 //
-destructor TDataFile.Destroy;
+destructor TGLBaseSilhouette.Destroy;
 begin
+   FCapIndices.Free;
+   FIndices.Free;
+   FVertices.Free;
    inherited;
 end;
 
-// Capabilities
+// SetIndices
 //
-class function TDataFile.Capabilities : TDataFileCapabilities;
+procedure TGLBaseSilhouette.SetIndices(const value : TIntegerList);
 begin
-   Result:=[dfcRead];
+   FIndices.Assign(value);
 end;
 
-// GetOwner
+// SetCapIndices
 //
-function TDataFile.GetOwner : TPersistent;
+procedure TGLBaseSilhouette.SetCapIndices(const value : TIntegerList);
 begin
-   Result:=FOwner;
+   FCapIndices.Assign(value);
 end;
 
-// CreateCopy
+// SetVertices
 //
-function TDataFile.CreateCopy(AOwner: TPersistent) : TDataFile;
+procedure TGLBaseSilhouette.SetVertices(const value : TAffineVectorList);
 begin
-   if Self<>nil then
-      Result:=TDataFileClass(Self.ClassType).Create(AOwner)
-   else Result:=nil;
+   FVertices.Assign(value);
 end;
 
-// LoadFromFile
+// Flush
 //
-procedure TDataFile.LoadFromFile(const fileName : String);
-var
-   fs : TStream;
+procedure TGLBaseSilhouette.Flush;
 begin
-   ResourceName:=ExtractFileName(fileName);
-   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
-   try
-      LoadFromStream(fs);
-   finally
-      fs.Free;
-   end;
+   FVertices.Flush;
+   FIndices.Flush;
+   FCapIndices.Flush;
 end;
 
-// SaveToFile
+// Clear
 //
-procedure TDataFile.SaveToFile(const fileName : String);
-var
-   fs : TStream;
+procedure TGLBaseSilhouette.Clear;
 begin
-   ResourceName:=ExtractFileName(fileName);
-   fs:=CreateFileStream(fileName, fmCreate);
-   try
-      SaveToStream(fs);
-   finally
-      fs.Free;
-   end;
-end;
-
-// SaveToStream
-//
-procedure TDataFile.SaveToStream(stream : TStream);
-begin
-   Assert(False, 'Export for '+ClassName+' not available.');
+   FVertices.Clear;
+   FIndices.Clear;
+   FCapIndices.Clear;
 end;
 
 //------------------------------------------------------------------------------

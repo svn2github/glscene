@@ -13,7 +13,8 @@ unit GLFileNMF;
 interface
 
 uses
-  Classes, GLVectorFileObjects, GLMisc, Geometry, VectorLists, FileNMF;
+  Classes, GLVectorFileObjects, GLMisc, Geometry, VectorLists, ApplicationFileIO,
+  FileNMF;
 
 type
   TGLNMFVectorFile = class (TVectorFile)

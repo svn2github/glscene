@@ -14,7 +14,7 @@ unit GLFileSTL;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLMisc;
+uses Classes, GLVectorFileObjects, GLMisc, ApplicationFileIO;
 
 type
 
