@@ -107,8 +107,10 @@ procedure TGLNurbsVectorFile.LoadFromStream(stream : TStream);
 var
    sl, buf : TStringList;
    ss : TStringStream;
-   i : Integer;
+   i,j : Integer;
    surface : TMOParametricSurface;
+   invert : Boolean;
+   invControlPoints : TAffineVectorList;
 begin
    ss:=TStringStream.Create('');
    sl:=TStringList.Create;
@@ -121,6 +123,8 @@ begin
       Renderer:=psrOpenGL;
       AutoKnots:=False;
    end;
+   
+   invert:=False;
 
    try
       ss.CopyFrom(stream, stream.Size-stream.Position);
@@ -143,10 +147,21 @@ begin
                surface.CountV:=StrToIntDef(buf[1], 0)
             else if buf[0]='controlpoint' then
                i:=ReadVectorArray(sl, i+1, Surface.ControlPoints)
+            else if buf[0]='ccw' then
+               invert:=(buf[1]='false');
          end;
          Inc(i);
       end;
-
+      
+      if invert then begin
+         invControlPoints:=TAffineVectorList.Create;
+         for i:=surface.CountV-1 downto 0 do
+           for j:=0 to surface.CountU-1 do
+             invControlPoints.Add(surface.ControlPoints[i*surface.CountU+j]);
+         surface.ControlPoints.Assign(invControlPoints);
+         invControlPoints.Free;
+      end;
+      
    finally
       buf.Free;
       sl.Free;
