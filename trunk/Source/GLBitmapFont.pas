@@ -13,7 +13,8 @@ unit GLBitmapFont;
 
 interface
 
-uses Classes, GLScene, Geometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform;
+uses Classes, GLScene, Geometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform,
+   VectorTypes, GLTexture;
 
 type
 
@@ -76,9 +77,9 @@ type
    {: Provides access to individual characters in a BitmapFont.<p>
       Only fixed-width bitmap fonts are supported, the characters are enumerated
       in a raster fashion (line then column).<br>
-      Transparency is all or nothing, the transparent color being that of the
-      top left pixel of the Glyphs bitmap.<p>
-      Performance note: as usual, for best performance, you base font bitmap
+      The transparency (alpha channel) is controled via the GlyphsAlpha property
+      and the 'color' parameter of the RenderString method.<p>
+      Performance note: as usual, for best performance, your base font bitmap
       dimensions should be close to a power of two, and have at least 1 pixel
       spacing between characters (horizontally and vertically) to avoid artefacts
       when rendering with linear filtering. }
@@ -96,6 +97,7 @@ type
 			FMinFilter : TGLMinFilter;
 			FMagFilter : TGLMagFilter;
          FTextureWidth, FTextureHeight : Integer;
+         FGlyphsAlpha : TGLTextureImageAlpha;
 
 	   protected
 	      { Protected Declarations }
@@ -110,6 +112,7 @@ type
          procedure SetVSpace(const val : Integer);
 			procedure SetMagFilter(AValue: TGLMagFilter);
 			procedure SetMinFilter(AValue: TGLMinFilter);
+         procedure SetGlyphsAlpha(val : TGLTextureImageAlpha);
 
 	      procedure InvalidateUsers;
 	      function CharactersPerRow : Integer;
@@ -129,7 +132,7 @@ type
             The current matrix is blindly used, meaning you can render all kinds
             of rotated and linear distorted text with this method. }
 	      procedure RenderString(const aString : String; alignment : TAlignment;
-                                layout : TTextLayout);
+                                layout : TTextLayout; const color : TColorVector);
 
 	   published
 	      { Published Declarations }
@@ -143,6 +146,9 @@ type
          {: Ranges allow converting between ASCII and tile indexes.<p>
             See TBitmapFontRange. }
          property Ranges : TBitmapFontRanges read FRanges write SetRanges;
+         {: Detremines how Glyphs alpha-transparency is determined.<p>
+            This controls per-pixel transparency. }
+         property GlyphsAlpha : TGLTextureImageAlpha read FGlyphsAlpha write SetGlyphsAlpha default tiaTopLeftPointColorTransparent;
 
          {: Width of a single character. }
          property CharWidth : Integer read FCharWidth write SetCharWidth default 16;
@@ -305,6 +311,7 @@ begin
    FRanges:=TBitmapFontRanges.Create(Self);
    FGlyphs:=TGLPicture.Create;
    FGlyphs.OnChange:=OnGlyphsChanged;
+   FGlyphsAlpha:=tiaTopLeftPointColorTransparent;
    FCharWidth:=16;
    FCharHeight:=16;
    FHSpace:=1;
@@ -424,6 +431,17 @@ begin
 	end;
 end;
 
+// SetGlyphsAlpha
+//
+procedure TBitmapFont.SetGlyphsAlpha(val : TGLTextureImageAlpha);
+begin
+	if val<>FGlyphsAlpha then begin
+		FGlyphsAlpha:=val;
+      FHandleIsDirty:=True;
+      InvalidateUsers;
+	end;
+end;
+
 // OnGlyphsChanged
 //
 procedure TBitmapFont.OnGlyphsChanged(Sender : TObject);
@@ -464,7 +482,24 @@ begin
    bitmap32.Assign(bitmap);
    bitmap.Free;
    with bitmap32 do begin
-      SetAlphaTransparentForColor(Data[Width*(Height-1)]);
+      case FGlyphsAlpha of
+         tiaAlphaFromIntensity :
+            SetAlphaFromIntensity;
+         tiaSuperBlackTransparent :
+            SetAlphaTransparentForColor($000000);
+         tiaLuminance :
+            SetAlphaFromIntensity;
+         tiaLuminanceSqrt : begin
+            SetAlphaFromIntensity;
+            SqrtAlpha;
+         end;
+         tiaOpaque :
+            SetAlphaToValue(255);
+         tiaTopLeftPointColorTransparent :
+            SetAlphaTransparentForColor(Data[Width*(Height-1)]);
+      else
+         Assert(False);
+      end;
       RegisterAsOpenGLTexture(GL_TEXTURE_2D, MinFilter, GL_RGBA);
       FTextureWidth:=Width;
       FTextureHeight:=Height;
@@ -499,7 +534,7 @@ end;
 // RenderString
 //
 procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment;
-                                   layout : TTextLayout);
+                                   layout : TTextLayout; const color : TColorVector);
 
    function AlignmentAdjustement(p : Integer) : Single;
    var
@@ -565,8 +600,9 @@ begin
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    // start rendering
+   glColor4fv(@color);
    glBegin(GL_QUADS);
    for i:=1 to Length(aString) do begin
       case aString[i] of

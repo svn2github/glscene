@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
       <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>20/06/01 - EG - Default hud sprite size is now 16x16
@@ -61,6 +62,7 @@ type
          FRotation : Single;
          FAlignment : TAlignment;
          FLayout : TTextLayout;
+         FModulateColor : TGLColor;
 
 	   protected
 	      { Protected Declarations }
@@ -69,6 +71,7 @@ type
          procedure SetRotation(const val : Single);
          procedure SetAlignment(const val : TAlignment);
          procedure SetLayout(const val : TTextLayout);
+         procedure SetModulateColor(const val : TGLColor);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -98,6 +101,8 @@ type
          {: Controls the text layout (vertical).<p>
             Possible values : tlTop, tlCenter, tlBottom }
          property Layout : TTextLayout read FLayout write SetLayout;
+         {: Color modulation, can be used for fade in/out too.}
+         property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
    end;
 
 // ------------------------------------------------------------------
@@ -185,12 +190,14 @@ constructor THUDText.Create(AOwner : TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
+   FModulateColor:=TGLColor.CreateInitialized(Self, clrWhite);
 end;
 
 // Destroy
 //
 destructor THUDText.Destroy;
 begin
+   FModulateColor.Free;
    BitmapFont:=nil;
    inherited;
 end;
@@ -251,6 +258,13 @@ begin
    StructureChanged;
 end;
 
+// SetModulateColor
+//
+procedure THUDText.SetModulateColor(const val: TGLColor);
+begin
+   FModulateColor.Assign(val);
+end;
+
 // DoRender
 //
 procedure THUDText.DoRender(var rci : TRenderContextInfo;
@@ -274,7 +288,7 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_DEPTH_TEST);
    // render text
-   FBitmapFont.RenderString(Text, FAlignment, FLayout);
+   FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
    // restore state
    glPopAttrib;
    glPopMatrix;
