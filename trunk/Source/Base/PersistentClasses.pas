@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/01/04 - EG - Fixed ReadString & ReadWideString for empty strings (thx Kenguru)
       <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>08/12/03 - EG - TBinaryReader/Writer no longer rely on VCL TReader/TWriter 
       <li>26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
@@ -1459,7 +1460,8 @@ begin
       ReadTypeError;
    end;
    SetLength(Result, n);
-   Read(Result[1], n);
+   if n>0 then
+      Read(Result[1], n);
 end;
 
 // ReadWideString
@@ -1473,12 +1475,15 @@ begin
    case Cardinal(vType) of
       Cardinal(vaWString) : begin
          SetLength(Result, n);
-         Read(Result[1], n*2);
+         if n>0 then
+            Read(Result[1], n*2);
       end;
       Cardinal(vaInt64)+1 : begin // vaUTF8String
          SetLength(utf8buf, n);
-         Read(utf8buf[1], n);
-         Result:=UTF8ToWideString(utf8buf);
+         if n>0 then begin
+            Read(utf8buf[1], n);
+            Result:=UTF8ToWideString(utf8buf);
+         end;
       end;
    else
       ReadTypeError;
