@@ -51,6 +51,7 @@ type
     { Déclarations publiques }
     mx, my : Integer;
     fullScreen : Boolean;
+    FCamHeight : Single;
   end;
 
 var
@@ -78,6 +79,8 @@ begin
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
    // Could've been done at design time, but it the, it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
+   // Initial camera height offset (controled with pageUp/pageDown)
+   FCamHeight:=0;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -98,11 +101,15 @@ begin
          DummyCube1.Translate(-Z*speed, 0, X*speed);
       if IsKeyDown(VK_RIGHT) then
          DummyCube1.Translate(Z*speed, 0, -X*speed);
+      if IsKeyDown(VK_PRIOR) then
+         FCamHeight:=FCamHeight+10*speed;
+      if IsKeyDown(VK_NEXT) then
+         FCamHeight:=FCamHeight-10*speed;
       if IsKeyDown(VK_ESCAPE) then Close;
    end;
    // don't drop through terrain!
    with DummyCube1.Position do
-      Y:=TerrainRenderer1.InterpolatedHeight(AsVector);
+      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)+FCamHeight;
 end;
 
 // Standard mouse rotation & FPS code below
