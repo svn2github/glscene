@@ -18,7 +18,7 @@ unit GLWaterPlane;
 
 interface
 
-uses Classes, Types, VectorTypes, VectorGeometry, GLScene, GLTexture,
+uses Classes, VectorTypes, VectorGeometry, GLScene, GLTexture,
    GLMisc, OpenGL1x, VectorLists, GLCrossPlatform, PersistentClasses;
 
 type
