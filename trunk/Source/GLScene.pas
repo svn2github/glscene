@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/11/01 - Egg - MoveAroundTarget fix (Phil Scadden)
       <li>30/11/01 - Egg - Hardware acceleration detection support,
                            Added Camera.SceneScale (based on code by Chris S)
       <li>24/09/01 - Egg - TGLProxyObject loop rendering protection
@@ -3846,7 +3847,9 @@ begin
       // normalRight points to the camera's right
       // the camera is pitching around this axis.
       normalCameraRight:=VectorCrossProduct(Up.AsVector, normalT2C);
-      NormalizeVector(normalCameraRight);
+      if VectorLength(normalCameraRight)<0.05 then
+         SetVector(normalCameraRight, XVector) // arbitrary vector
+      else NormalizeVector(normalCameraRight);
       // calculate the current pitch.
       // 0 is looking down and PI is looking up
       pitchNow:=ArcCos(VectorDotProduct(Up.AsVector, normalT2C));
