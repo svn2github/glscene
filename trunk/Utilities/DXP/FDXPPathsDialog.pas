@@ -51,7 +51,7 @@ implementation
 
 {$R *.dfm}
 
-uses FDXPDirectoryDialog;
+uses FDXPDirectoryDialog, DXPUtils;
 
 // DXPPathsDialog
 //
@@ -70,12 +70,11 @@ end;
 //
 function TDXPPathsDialog.Execute(var paths : String) : Boolean;
 begin
-   LBPaths.Items.Delimiter:=';';
-   LBPaths.Items.CommaText:=paths;
+   StringToPaths(paths, LBPaths.Items);
    LBPathsClick(Self);
    Result:=(ShowModal=mrOk);
    if Result then
-      paths:=LBPaths.Items.CommaText;
+      paths:=PathsToString(LBPaths.Items);
 end;
 
 procedure TDXPPathsDialog.LBPathsClick(Sender: TObject);
@@ -135,9 +134,16 @@ begin
 end;
 
 procedure TDXPPathsDialog.BBRemoveClick(Sender: TObject);
+var
+   i : Integer;
 begin
-   with LBPaths do
-      Items.Delete(ItemIndex);
+   with LBPaths do begin
+      i:=ItemIndex;
+      Items.Delete(i);
+      if i<Items.Count then
+         ItemIndex:=i
+      else ItemIndex:=Items.Count-1;
+   end;
    LBPathsClick(Self);
 end;
 

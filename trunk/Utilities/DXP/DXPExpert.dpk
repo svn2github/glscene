@@ -43,6 +43,7 @@ contains
   FDXPPathsDialog in 'FDXPPathsDialog.pas' {DXPPathsDialog},
   DXPFPCConfig in 'DXPFPCConfig.pas',
   DXPConfig in 'DXPConfig.pas',
-  FDXPFPCOptions in 'FDXPFPCOptions.pas' {DXPFPCOptions};
+  FDXPFPCOptions in 'FDXPFPCOptions.pas' {DXPFPCOptions},
+  FDXPProgress in 'FDXPProgress.pas' {DXPProgress};
 
 end.

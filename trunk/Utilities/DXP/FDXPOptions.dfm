@@ -64,7 +64,7 @@ object DXPOptions: TDXPOptions
         249)
       object Label1: TLabel
         Left = 8
-        Top = 8
+        Top = 56
         Width = 103
         Height = 13
         Caption = 'Compiler binaries path'
@@ -72,15 +72,31 @@ object DXPOptions: TDXPOptions
       end
       object Label2: TLabel
         Left = 8
-        Top = 56
-        Width = 63
+        Top = 152
+        Width = 145
         Height = 13
-        Caption = 'Source paths'
+        Caption = 'Source paths (.pas, .pp, .inc...)'
+        FocusControl = EDFPCBinary
+      end
+      object Label3: TLabel
+        Left = 8
+        Top = 8
+        Width = 48
+        Height = 13
+        Caption = 'Install root'
+        FocusControl = EDFPCRoot
+      end
+      object Label4: TLabel
+        Left = 8
+        Top = 104
+        Width = 114
+        Height = 13
+        Caption = 'Library paths (.ppu, .o...)'
         FocusControl = EDFPCBinary
       end
       object EDFPCBinary: TEdit
         Left = 8
-        Top = 24
+        Top = 72
         Width = 337
         Height = 21
         Anchors = [akLeft, akTop, akRight]
@@ -89,7 +105,7 @@ object DXPOptions: TDXPOptions
       end
       object BUFPCBinary: TButton
         Left = 352
-        Top = 24
+        Top = 72
         Width = 27
         Height = 21
         Anchors = [akTop, akRight]
@@ -99,7 +115,7 @@ object DXPOptions: TDXPOptions
       end
       object EDFPCSourcePaths: TEdit
         Left = 8
-        Top = 72
+        Top = 168
         Width = 337
         Height = 21
         Anchors = [akLeft, akTop, akRight]
@@ -108,7 +124,7 @@ object DXPOptions: TDXPOptions
       end
       object BUFPCSource: TButton
         Left = 352
-        Top = 72
+        Top = 168
         Width = 27
         Height = 21
         Anchors = [akTop, akRight]
@@ -118,11 +134,49 @@ object DXPOptions: TDXPOptions
       end
       object CBShowCompileLog: TCheckBox
         Left = 8
-        Top = 104
+        Top = 200
         Width = 113
         Height = 17
         Caption = 'Show Compile Log'
         TabOrder = 4
+      end
+      object EDFPCRoot: TEdit
+        Left = 8
+        Top = 24
+        Width = 337
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 5
+        Text = 'EDFPCRoot'
+      end
+      object BUFPCRoot: TButton
+        Left = 352
+        Top = 24
+        Width = 27
+        Height = 21
+        Anchors = [akTop, akRight]
+        Caption = '...'
+        TabOrder = 6
+        OnClick = BUFPCRootClick
+      end
+      object EDFPCLibraryPaths: TEdit
+        Left = 8
+        Top = 120
+        Width = 337
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 7
+        Text = 'EDFPCLibraryPaths'
+      end
+      object BUFPCLibrary: TButton
+        Left = 352
+        Top = 120
+        Width = 27
+        Height = 21
+        Anchors = [akTop, akRight]
+        Caption = '...'
+        TabOrder = 8
+        OnClick = BUFPCLibraryClick
       end
     end
   end

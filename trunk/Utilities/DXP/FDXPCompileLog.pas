@@ -4,28 +4,24 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, DXPExpertModule;
+  Dialogs, StdCtrls, DXPExpertModule, ComCtrls, FDXPProgress;
 
 type
   TDXPCompileLog = class(TForm)
     PageControl: TPageControl;
-    TSCooked: TTabSheet;
     TSRaw: TTabSheet;
     MERaw: TMemo;
-    LVMessages: TListView;
     TSConfigFile: TTabSheet;
     MECfgFile: TMemo;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure LVMessagesDblClick(Sender: TObject);
   private
     { Déclarations privées }
-    procedure AddMessage(const module, msg : String;
-                         lineNumber : Integer);
   public
     { Déclarations publiques }
     DXPExpertModule : TDMDXPExpertModule;
-    procedure ExecuteOnFPC(const prjFileName, logFileName : String;
-                           expertModule : TDMDXPExpertModule);
+    procedure ExecuteOnFPC(const prjFileName, logFileName, linkLogFileName : String;
+                           expertModule : TDMDXPExpertModule;
+                           progress : TDXPProgress);
   end;
 
 function DXPCompileLog : TDXPCompileLog;
@@ -79,39 +75,32 @@ begin
    Action:=caFree;   
 end;
 
-// AddMessage
-//
-procedure TDXPCompileLog.AddMessage(const module, msg : String;
-                                    lineNumber : Integer);
-begin
-   with LVMessages.Items.Add do begin
-      Caption:=module;
-      SubItems.Add(IntToStr(lineNumber));
-      SubItems.Add(msg);
-   end;
-end;
-
 // ExecuteOnFPC
 //
-procedure TDXPCompileLog.ExecuteOnFPC(const prjFileName, logFileName : String;
-                                      expertModule : TDMDXPExpertModule);
+procedure TDXPCompileLog.ExecuteOnFPC(const prjFileName, logFileName, linkLogFileName : String;
+                                      expertModule : TDMDXPExpertModule;
+                                      progress : TDXPProgress);
 var
    i, pOpen, pClose, pComma, pDots, colNb, lineNb : Integer;
    line, fName, msgText, location, msgType : String;
-   msgKind : TOTAMessageKind;
    msgServices : IOTAMessageServices;
+   msgGroup : IOTAMessageGroup;
    lineRef : Pointer;
+   linkerErrors : TStrings;
+   nbErrors, nbWarnings, nbHints, nbNotes : Integer;
 begin
    DXPExpertModule:=expertModule;
    msgServices:=(BorlandIDEServices as IOTAMessageServices);
    msgServices.ClearToolMessages;
    msgServices.ClearCompilerMessages;
-   LVMessages.Clear;
+   msgGroup:=msgServices.GetGroup('FreePascal');
+   if msgGroup=nil then
+      msgGroup:=msgServices.AddMessageGroup('FreePascal')
+   else msgServices.ClearToolMessages(msgGroup);
    if FileExists(logFileName) then begin
       MERaw.Lines.LoadFromFile(logFileName);
    end else begin
       MERaw.Lines.Text:='No compiler error output.';
-      AddMessage('', MERaw.Lines.Text, 0);
       msgServices.AddCompilerMessage(prjFileName, 'No compiler output', 'FPC',
                                      otamkFatal, 0, 0, nil, lineRef);
    end;
@@ -119,6 +108,10 @@ begin
       MECfgFile.Lines.LoadFromFile(vFPC_BinaryPath+'\fpc.cfg')
    else MECfgFile.Clear;
    MERaw.Lines.Insert(0, DateTimeToStr(Now));
+   nbErrors:=0;
+   nbWarnings:=0;
+   nbHints:=0;
+   nbNotes:=0;
    // parse
    for i:=0 to MERaw.Lines.Count-1 do begin
       line:=MERaw.Lines[i];
@@ -132,48 +125,48 @@ begin
 
          pDots:=Pos(':', msgText);
          msgType:=LowerCase(Copy(msgText, 1, pDots-1));
-
-         if msgType='hint' then msgKind:=otamkHint
-         else if msgType='warn' then msgKind:=otamkWarn
-         else if msgType='error' then msgKind:=otamkError
-         else if msgType='fatal' then msgKind:=otamkFatal
-         else msgKind:=otamkInfo;
+         if CompareText(msgType, 'warning')=0 then
+            Inc(nbWarnings)
+         else if CompareText(msgType, 'hint')=0 then
+            Inc(nbHints)
+         else if CompareText(msgType, 'note')=0 then
+            Inc(nbNotes)
+         else Inc(nbErrors);
 
          pComma:=Pos(',', location);
          lineNb:=StrToIntDef(Copy(location, 1, pComma-1), 1);
          colNb:=StrToIntDef(Copy(location, pComma+1, MaxInt), 1);
 
-         with LVMessages.Items.Add do begin
-            Caption:=fName;
-            SubItems.Add(location);
-            SubItems.Add(msgText);
-         end;
-         msgServices.AddCompilerMessage(DMDXPExpertModule.FPCLocateFile(fName),
-                                        msgText, 'FPC',
-                                        msgKind, lineNb, colNb, nil, lineRef);
+         msgServices.AddToolMessage(DMDXPExpertModule.FPCLocateFile(fName),
+                                    msgText, 'FPC', lineNb, colNb, nil,
+                                    lineRef, msgGroup);
       end else if CompareText(Copy(line, 1, 6), 'Fatal:')=0 then begin
-         msgServices.AddCompilerMessage(prjFileName, line, 'FPC',
-                                        otamkFatal, 0, 0, nil, lineRef);
+         msgServices.AddToolMessage(prjFileName, line, 'FPC',
+                                    0, 0, nil, lineRef, msgGroup);
+         Inc(nbErrors);
       end;
    end;
-   msgServices.ShowMessageView(nil);
+   // Linker errors
+   if FileExists(linkLogFileName) then begin
+      linkerErrors:=TStringList.Create;
+      try
+         linkerErrors.LoadFromFile(linkLogFileName);
+         for i:=0 to linkerErrors.Count-1 do begin
+            line:=linkerErrors[i];
+            if line<>'' then begin
+               msgServices.AddToolMessage(prjFileName, line, 'LD',
+                                          0, 0, nil, lineRef, msgGroup);
+            end;
+            Inc(nbErrors);
+         end;
+      finally
+         linkerErrors.Free;
+      end;
+   end;
+   progress.SetStat(nbErrors, nbWarnings, nbHints, nbNotes);
+   msgServices.ShowMessageView(msgGroup);
    if vFPC_ShowCompileLog then
       Show;
-end;
-
-procedure TDXPCompileLog.LVMessagesDblClick(Sender: TObject);
-var
-   fName, buf : String;
-   p, col, line : Integer;
-begin
-   if LVMessages.Selected<>nil then begin
-      fName:=LVMessages.Selected.Caption;
-      buf:=LVMessages.Selected.SubItems[0];
-      p:=Pos(',', buf);
-      line:=StrToIntDef(Copy(buf, 1, p-1), 1);
-      col:=StrToIntDef(Copy(buf, p+1, MaxInt), 1);
-      DXPExpertModule.WarpTo(fName, col, line);
-   end;
 end;
 
 end.

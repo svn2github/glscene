@@ -28,8 +28,16 @@ type
     EDFPCSourcePaths: TEdit;
     BUFPCSource: TButton;
     CBShowCompileLog: TCheckBox;
+    Label3: TLabel;
+    EDFPCRoot: TEdit;
+    BUFPCRoot: TButton;
+    Label4: TLabel;
+    EDFPCLibraryPaths: TEdit;
+    BUFPCLibrary: TButton;
     procedure BUFPCBinaryClick(Sender: TObject);
     procedure BUFPCSourceClick(Sender: TObject);
+    procedure BUFPCRootClick(Sender: TObject);
+    procedure BUFPCLibraryClick(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -50,7 +58,9 @@ begin
    // prepare the dialog
 
    // FPC
+   EDFPCRoot.Text:=vFPC_RootPath;
    EDFPCBinary.Text:=vFPC_BinaryPath;
+   EDFPCLibraryPaths.Text:=vFPC_LibraryPaths;
    EDFPCSourcePaths.Text:=vFPC_SourcePaths;
    CBShowCompileLog.Checked:=vFPC_ShowCompileLog;
 
@@ -60,15 +70,33 @@ begin
       // store values
 
       // FPC
+      vFPC_RootPath:=EDFPCRoot.Text;
       vFPC_BinaryPath:=EDFPCBinary.Text;
+      vFPC_LibraryPaths:=EDFPCLibraryPaths.Text;
       vFPC_SourcePaths:=EDFPCSourcePaths.Text;
       vFPC_ShowCompileLog:=CBShowCompileLog.Checked;
    end;
 end;
 
+procedure TDXPOptions.BUFPCRootClick(Sender: TObject);
+begin
+   DXPDirectoryDialog(EDFPCRoot);
+   if EDFPCBinary.Text='' then
+      EDFPCBinary.Text:=EDFPCRoot.Text+'\bin\win32';
+end;
+
 procedure TDXPOptions.BUFPCBinaryClick(Sender: TObject);
 begin
    DXPDirectoryDialog(EDFPCBinary);
+end;
+
+procedure TDXPOptions.BUFPCLibraryClick(Sender: TObject);
+var
+   buf : String;
+begin
+   buf:=EDFPCLibraryPaths.Text;
+   if DXPPathsDialog(buf) then
+      EDFPCLibraryPaths.Text:=buf;
 end;
 
 procedure TDXPOptions.BUFPCSourceClick(Sender: TObject);

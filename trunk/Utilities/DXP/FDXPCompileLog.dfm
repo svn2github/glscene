@@ -22,37 +22,6 @@ object DXPCompileLog: TDXPCompileLog
     ActivePage = TSRaw
     Align = alClient
     TabOrder = 0
-    object TSCooked: TTabSheet
-      Caption = 'Compiler Messages'
-      object LVMessages: TListView
-        Left = 0
-        Top = 0
-        Width = 552
-        Height = 280
-        Align = alClient
-        BorderStyle = bsNone
-        Columns = <
-          item
-            Caption = 'Module'
-            Width = 100
-          end
-          item
-            Caption = 'Line, Col'
-            Width = 70
-          end
-          item
-            AutoSize = True
-            Caption = 'Message'
-          end>
-        ColumnClick = False
-        HideSelection = False
-        ReadOnly = True
-        RowSelect = True
-        TabOrder = 0
-        ViewStyle = vsReport
-        OnDblClick = LVMessagesDblClick
-      end
-    end
     object TSRaw: TTabSheet
       Caption = 'Raw Output'
       ImageIndex = 1

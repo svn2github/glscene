@@ -62,8 +62,9 @@ type
     procedure BackupFPCConfigFile;
     procedure RestoreFPCConfigFile;
     function FPCErrorFile : String;
+    function FPCLinkerErrorFile : String;
     //: Returns True if compilation succeeded
-    function FPCCompile(const extraOptions : String = '') : Boolean;
+    function FPCCompile(const compileType : String; const extraOptions : String = '') : Boolean;
 
   public
     { Déclarations publiques }
@@ -82,7 +83,8 @@ implementation
 
 {$R *.dfm}
 
-uses DXPGlobals, FDXPOptions, DXPUtils, FDXPCompileLog, FDXPFPCOptions;
+uses DXPGlobals, FDXPOptions, DXPUtils, FDXPCompileLog, FDXPFPCOptions,
+   FDXPProgress;
 
 procedure TDMDXPExpertModule.DataModuleCreate(Sender: TObject);
 begin
@@ -245,10 +247,9 @@ begin
    end;
    paths:=TStringList.Create;
    try
-      paths.Delimiter:=';';
-      paths.CommaText:=vFPC_SourcePaths;
+      StringToPaths(vFPC_SourcePaths, paths);
       for i:=0 to paths.Count-1 do begin
-         Result:=LocateInDirectory(fileName, paths[i]);
+         Result:=LocateInDirectory(fileName, MacroExpandPath(paths[i]));
          if Result<>'' then Exit;
       end;
    finally
@@ -314,6 +315,7 @@ var
    i : Integer;
    prj : IOTAProject;
    paths : TStringList;
+   pathName : String;
    cfgFile : TStringList;
    configOptions : String;
    config : TDXPFPCConfig;
@@ -332,21 +334,24 @@ begin
       cfgFile.Insert(1, '-Sd');
 //      cfgFile.Insert(1, '-Mobjfpc');
       cfgFile.Insert(2, '-l');
+      cfgFile.Insert(2, '-k -Map d:\map.txt');
       cfgFile.Insert(2, '-CX');
       Result:= vFPC_BinaryPath+'\fpc.exe '+extraOptions
-              +' -Fe'+FPCErrorFile;
-      cfgFile.Add('-Fud:\FreePascal/units/$TARGET');
-      cfgFile.Add('-Fud:\FreePascal/units/$TARGET/*');
-      cfgFile.Add('-Fud:\FreePascal/units/$TARGET/rtl');
+              +' -Fe'+FPCErrorFile+' 2> '+FPCLinkerErrorFile;
       paths:=TStringList.Create;
       try
-         paths.Delimiter:=';';
-         paths.CommaText:=vFPC_SourcePaths;
+         StringToPaths(vFPC_LibraryPaths, paths);
          for i:=0 to paths.Count-1 do begin
-            cfgFile.Add('-Fu'+paths[i]);
-            cfgFile.Add('-Fi'+paths[i]);
-            cfgFile.Add('-Fo'+paths[i]);
-            cfgFile.Add('-Fl'+paths[i]);
+            pathName:=MacroExpandPath(paths[i]);
+//            cfgFile.Add('-Fu'+pathName);
+            cfgFile.Add('-Fo'+pathName);
+            cfgFile.Add('-Fl'+pathName);
+         end;
+         StringToPaths(vFPC_SourcePaths, paths);
+         for i:=0 to paths.Count-1 do begin
+            pathName:=MacroExpandPath(paths[i]);
+            cfgFile.Add('-Fu'+pathName);
+            cfgFile.Add('-Fi'+pathName);
          end;
       finally
          paths.Free;
@@ -363,66 +368,90 @@ begin
    Result:='c:\dxp.tmp';
 end;
 
-function TDMDXPExpertModule.FPCCompile(const extraOptions : String = '') : Boolean;
+function TDMDXPExpertModule.FPCLinkerErrorFile : String;
+begin
+   Result:='c:\dxp-link.tmp';
+end;
+
+function TDMDXPExpertModule.FPCCompile(const compileType : String;
+                                       const extraOptions : String = '') : Boolean;
 var
    res : Integer;
-   cmdLine, verbose : String;
+   cmdLine, verbose, verboseLink : String;
    prj : IOTAProject;
+   progress : TDXPProgress;
 begin
    Result:=False;
    prj:=GetProject;
    if prj=nil then Exit;
    LoadDXPGlobals;
    BackupFPCConfigFile;
+   progress:=TDXPProgress.Create(nil);
    try
+      progress.SetProject(ProjectBinaryName);
+      progress.SetStatus('Compiling');
+      progress.SetStat(0, 0, 0, 0);
+      progress.Show;
+      Application.ProcessMessages;
       cmdLine:=FPCCommandLine(extraOptions);
       if cmdLine='' then Exit;
-      Screen.Cursor:=crHourGlass;
       try
          verbose:=FPCErrorFile;
+         verboseLink:=FPCLinkerErrorFile;
          DeleteFile(verbose);
-         res:=ExecuteAndWait(cmdLine, SW_SHOW, vFPC_TimeOut, True);
+         Screen.Cursor:=crHourGlass;
+         try
+            res:=ExecuteAndWait(cmdLine, SW_SHOWMINNOACTIVE, vFPC_TimeOut, True);
+         finally
+            Screen.Cursor:=crDefault;
+         end;
          if res=-1 then
-            ShowMessage('Failed to start compiler'#13#10+cmdLine)
+            progress.SetStatus('Failed to start compiler')
          else begin
             if res=0 then
                Result:=True;
-            DXPCompileLog.ExecuteOnFPC(prj.FileName, verbose, Self);
+            DXPCompileLog.ExecuteOnFPC(prj.FileName, verbose, verboseLink, Self,
+                                       progress);
             with DXPCompileLog.MERaw.Lines do begin
                Insert(0, cmdLine);
                Insert(1, '');
             end;
          end;
+         if Result then
+            progress.SetStatus(compileType+' successful')
+         else progress.SetStatus(compileType+' failed');
+         progress.Timer.Enabled:=False;
+         progress.BUOk.Enabled:=True;
+         while progress.Visible do begin
+            Sleep(100);
+            Application.ProcessMessages;
+         end;
       finally
          DeleteFile(verbose);
-         Screen.Cursor:=crDefault;
+         DeleteFile(verboseLink);
       end;
    finally
+      progress.Release;
       RestoreFPCConfigFile;
    end;
 end;
 
 procedure TDMDXPExpertModule.ACFPCExecuteExecute(Sender: TObject);
 begin
-   if FPCCompile then
-      WinExec(PChar(ProjectBinaryName), SW_SHOW)
-   else ShowMessage('Compilation failed!');
+   if FPCCompile('Compile & Execute') then
+      WinExec(PChar(ProjectBinaryName), SW_SHOW);
 end;
 
 procedure TDMDXPExpertModule.ACFPCCompileExecute(Sender: TObject);
 begin
    (BorlandIDEServices as IOTAModuleServices).SaveAll;
-   if FPCCompile then
-      ShowMessage('Compilation successful!')
-   else ShowMessage('Compilation failed!');
+   FPCCompile('Compilation');
 end;
 
 procedure TDMDXPExpertModule.ACFPCBuildExecute(Sender: TObject);
 begin
    (BorlandIDEServices as IOTAModuleServices).SaveAll;
-   if FPCCompile('-B') then
-      ShowMessage('Build successful!')
-   else ShowMessage('Build failed!');
+   FPCCompile('Build', '-B');
 end;
 
 procedure TDMDXPExpertModule.ACDXPOptionsExecute(Sender: TObject);

@@ -10,7 +10,7 @@ unit DXPUtils;
 
 interface
 
-uses Classes, Windows;
+uses Forms, Classes, Windows;
 
 function ExecuteAndWait(cmdLine : String; visibility : Word;
                         timeout : Cardinal = MaxInt;
@@ -21,6 +21,10 @@ function GetTemporaryFileName : String;
 
 function FindFileInPaths(const fileName, paths : String) : String;
 
+function PathsToString(const paths : TStrings) : String;
+procedure StringToPaths(const pathsString : String; paths : TStrings);
+function MacroExpandPath(const aPath : String) : String;
+
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
@@ -29,7 +33,7 @@ implementation
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 
-uses Dialogs, SysUtils;
+uses Dialogs, SysUtils, DXPGlobals;
 
 // ExecuteAndWait
 //
@@ -53,7 +57,12 @@ begin
    if CreateProcess(PChar(app), PChar(cmdLine), nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
               		  startupInfo, processInfo) then begin
       try
-         waitResult:=WaitForSingleObject(ProcessInfo.hProcess, timeout);
+         repeat
+            waitResult:=WaitForSingleObject(ProcessInfo.hProcess, 500);
+            if waitResult<>WAIT_TIMEOUT then Break;
+            Application.ProcessMessages;
+            Dec(timeOut, 500);
+         until timeOut<=0;
          if waitResult<>WAIT_OBJECT_0 then begin
             Result:=GetLastError;
             if killAppOnTimeOut then begin
@@ -112,6 +121,51 @@ begin
       sl.Free;
    end;
    Result:='';
+end;
+
+// PathsToString
+//
+function PathsToString(const paths : TStrings) : String;
+var
+   i : Integer;
+begin
+   Result:='';
+   for i:=0 to paths.Count-1 do if paths[i]<>'' then
+      Result:=Result+paths[i]+';';
+   if Result<>'' then
+      SetLength(Result, Length(Result)-1);
+end;
+
+// StringToPaths
+//
+procedure StringToPaths(const pathsString : String; paths : TStrings);
+var
+   i, p, n : Integer;
+begin
+   paths.BeginUpdate;
+   paths.Clear;
+   p:=1;
+   for i:=1 to Length(pathsString) do begin
+      if pathsString[i]=';' then begin
+         n:=i-p;
+         if n>0 then
+            paths.Add(Copy(pathsString, p, n));
+         p:=i+1;
+      end;
+   end;
+   n:=Length(pathsString)-p+1;
+   if n>0 then
+      paths.Add(Copy(pathsString, p, n));
+   paths.EndUpdate;
+end;
+
+// MacroExpandPath
+//
+function MacroExpandPath(const aPath : String) : String;
+begin
+   Result:=aPath;
+   Result:=StringReplace(aPath, '$FreePascal', vFPC_RootPath, [rfReplaceAll, rfIgnoreCase]);
+   Result:=StringReplace(aPath, '$FPC', vFPC_RootPath, [rfReplaceAll, rfIgnoreCase]);
 end;
 
 end.
