@@ -488,7 +488,8 @@ begin
    pcmOffset:=dwDataOffset;
    SetLength(data, totalSize);
    stream.Position:=startPosition;
-   stream.Read(data[1], totalSize);
+   if totalSize>0 then
+      stream.Read(data[1], totalSize);
    // update Sampling data
    with waveFormat do begin
       Sampling.Frequency:=nSamplesPerSec;
@@ -501,7 +502,8 @@ end;
 //
 procedure TGLWAVFile.SaveToStream(stream: TStream);
 begin
-   stream.Write(data[1], Length(data));
+   if Length(data)>0 then
+      stream.Write(data[1], Length(data));
 end;
 
 // PlayOnWaveOut
@@ -572,14 +574,16 @@ begin
    // MP3 isn't actually, just loaded directly...
    Assert(Assigned(stream));
    SetLength(data, stream.Size);
-   stream.Read(data[1], Length(data));
+   if Length(data)>0 then
+      stream.Read(data[1], Length(data));
 end;
 
 // SaveToStream
 //
 procedure TGLMP3File.SaveToStream(stream: TStream);
 begin
-   stream.Write(data[1], Length(data));
+   if Length(data)>0 then
+      stream.Write(data[1], Length(data));
 end;
 
 // PlayOnWaveOut

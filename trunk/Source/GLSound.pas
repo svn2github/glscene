@@ -640,7 +640,8 @@ begin
    with Stream do begin
       Read(n, SizeOf(Integer));
       SetLength(clName, n);
-      Read(clName[1], n);
+      if n>0 then
+         Read(clName[1], n);
       FData:=TGLSoundFileClass(FindClass(clName)).Create(Self);
       FData.LoadFromStream(Stream);
    end;
@@ -657,7 +658,8 @@ begin
       n:=Length(FData.ClassName);
       Write(n, SizeOf(Integer));
       buf:=FData.ClassName;
-      Write(buf[1], n);
+      if n>0 then
+         Write(buf[1], n);
       FData.SaveToStream(Stream);
    end;
 end;
