@@ -74,8 +74,8 @@ type
       private
          { Private Declarations }
          FSize        : Integer;
-         FDeltaTime   : Double;
-         FCurrSize    : Double;
+         FDeltaTime   : Single;
+         FCurrSize    : Single;
          FSeed        : Integer;
          FSqueeze     : Single;
          FNumStreaks  : Integer;
@@ -137,11 +137,11 @@ type
             thus you can invoke it systematically in a Viewer.BeforeRender
             event f.i. }
          procedure PreRender(activeBuffer : TGLSceneBuffer);
-
-         {: Is the LensFlare not occluded?.<p>
-            If false the flare will fade away, if true, it will fade in and stay.
-            This value is automatically updated if AutoZTest is set. }
-         property FlareIsNotOccluded : Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
+         {: Access to the Flare's current size.<p>
+            Flares decay or grow back over several frames, depending on their
+            occlusion status, and this property allows to track or manually
+            alter this instantaneous size. }
+         property FlareInstantaneousSize  : Single read FCurrSize write FCurrSize;
 
       published
          { Public Declarations }
@@ -171,6 +171,10 @@ type
             Not that the automated test may use test result from the previous
             frame into the next (to avoid a rendering stall). }
          property AutoZTest : Boolean read FAutoZTest write SetAutoZTest default True;
+         {: Is the LensFlare not occluded?.<p>
+            If false the flare will fade away, if true, it will fade in and stay.
+            This value is automatically updated if AutoZTest is set. }
+         property FlareIsNotOccluded : Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
          //: Which elements should be rendered?
          property Elements : TFlareElements read FElements write SetElements default cDefaultFlareElements;
 
