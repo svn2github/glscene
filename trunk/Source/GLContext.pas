@@ -548,8 +548,8 @@ var
 begin
    Activate;
    try
-      for i:=FSharedContexts.Count-1 downto 0 do
-         TGLContextHandle(FSharedContexts[i]).DestroyHandle;
+      for i:=FOwnedHandles.Count-1 downto 0 do
+         TGLContextHandle(FOwnedHandles[i]).DestroyHandle;
    finally
       Deactivate;
    end;
