@@ -1,9 +1,9 @@
 // GLImposter
 {: Imposter building and rendering implementation for GLScene.<p>
 
-	<b>History : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>24/03/04 - SG - Initial.
-	</ul></font><p>
+   </ul></font><p>
 }
 unit GLImposter;
 
@@ -107,7 +107,7 @@ destructor TGLImposterBuilder.Destroy;
 var
   i : Integer;
 begin
-  for i:=0 to FImposterRegister.Count-1 do
+  for i:=FImposterRegister.Count-1 downto 0 do
     TGLImposter(FImposterRegister[i]).Builder:=nil;
   FImposterRegister.Free;
   inherited;
