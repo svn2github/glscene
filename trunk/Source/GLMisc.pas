@@ -1352,8 +1352,8 @@ begin
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
       v2:=v[2];
-      v[2]:=c*v[1]+s*v2;
-      v[1]:=c*v2-s*v[1];
+      v[1]:=c*v[1]+s*v2;
+      v[2]:=c*v2-s*v[1];
    end;
    NotifyChange;
 end;
