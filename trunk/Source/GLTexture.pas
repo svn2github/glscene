@@ -2,9 +2,10 @@
 
 	Handles all the color and texture stuff.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
       <li>04/07/03 - EG - Material.Texture now autocreating,
-                          added per-texture brightness and gamma correction 
+                          added per-texture brightness and gamma correction
       <li>13/06/03 - EG - cubemap images can now be saved/restored as a whole
       <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
       <li>23/05/03 - EG - More generic libmaterial registration
@@ -442,7 +443,7 @@ type
 			{: Request to edit the textureImage.<p>
 				Returns True if changes have been made.<br>
 				This method may be invoked from the IDE or at run-time. }
-			function Edit : Boolean; dynamic; abstract;
+			function Edit : Boolean;
 			{: Save textureImage to file.<p>
 				This may not save a picture, but for instance, parameters, if the
 				textureImage is a procedural texture. }
@@ -487,6 +488,19 @@ type
 
 	TGLTextureImageClass = class of TGLTextureImage;
 
+   // TGLTextureImageEditor
+   //
+   TGLTextureImageEditor = class(TObject)
+		public
+         { Public Properties }
+			{: Request to edit a textureImage.<p>
+				Returns True if changes have been made.<br>
+				This method may be invoked from the IDE or at run-time. }
+			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual; abstract;
+   end;
+
+   TGLTextureImageEditorClass = class of TGLTextureImageEditor;
+
 	// TGLBlankImage
 	//
 	{: A texture image with no specified content, only a size.<p>
@@ -515,7 +529,6 @@ type
 			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
 			procedure ReleaseBitmap32; override;
 
-			function Edit : Boolean; override;
 			procedure SaveToFile(const fileName : String); override;
 			procedure LoadFromFile(const fileName : String); override;
 			class function FriendlyName : String; override;
@@ -582,7 +595,6 @@ type
 			constructor Create(AOwner: TPersistent); override;
 			destructor Destroy; override;
 
-			function Edit : Boolean; override;
 			procedure SaveToFile(const fileName : String); override;
 			procedure LoadFromFile(const fileName : String); override;
 			class function FriendlyName : String; override;
@@ -611,7 +623,6 @@ type
 
   			procedure Assign(Source: TPersistent); override;
 
-			function Edit : Boolean; override;
 			//: Only picture file name is saved
 			procedure SaveToFile(const fileName : String); override;
          {: Load picture file name or use fileName as picture filename.<p>
@@ -667,7 +678,6 @@ type
 			procedure BeginUpdate;
 			procedure EndUpdate;
 
-			function Edit : Boolean; override;
 			procedure SaveToFile(const fileName : String); override;
 			procedure LoadFromFile(const fileName : String); override;
 			class function FriendlyName : String; override;
@@ -1408,6 +1418,12 @@ var
    vDefaultTextureFormat : TGLTextureFormat = tfRGBA;
    vDefaultTextureCompression : TGLTextureCompression = tcNone;
 
+//: Invokes the editor for the given TGLTextureImage
+function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
+procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
+                                       texImageEditor : TGLTextureImageEditorClass);
+procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1424,11 +1440,59 @@ uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
 
 var
 	vGLTextureImageClasses : TList;
-	vColorManager: TGLColorManager;
+	vColorManager : TGLColorManager;
+   vTIEClass, vTIEEditor : TList;
 
 const
 	cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
 							( GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE );
+
+// EditGLTextureImage
+//
+function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
+var
+   i : Integer;
+   editor : TGLTextureImageEditorClass;
+begin
+   if Assigned(vTIEClass) then begin
+      i:=vTIEClass.IndexOf(Pointer(aTexImage.ClassType));
+      if i>=0 then begin
+         editor:=TGLTextureImageEditorClass(vTIEEditor[i]);
+         Result:=editor.Edit(aTexImage);
+         Exit;
+      end;
+   end;
+   InformationDlg(aTexImage.ClassName+': editing not supported.');
+   Result:=False;
+end;
+
+// RegisterGLTextureImageEditor
+//
+procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
+                                       texImageEditor : TGLTextureImageEditorClass);
+begin
+   if not Assigned(vTIEClass) then begin
+      vTIEClass:=TList.Create;
+      vTIEEditor:=TList.Create;
+   end;
+   vTIEClass.Add(Pointer(aTexImageClass));
+   vTIEEditor.Add(texImageEditor);
+end;
+
+// UnRegisterGLTextureImageEditor
+//
+procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
+var
+   i : Integer;
+begin
+   if Assigned(vTIEClass) then begin
+      i:=vTIEEditor.IndexOf(texImageEditor);
+      if i>=0 then begin
+         vTIEClass.Delete(i);
+         vTIEEditor.Delete(i);
+      end;
+   end;
+end;
 
 // ColorManager
 //
@@ -1808,6 +1872,13 @@ begin
 	FOwnerTexture.NotifyChange(Self);
 end;
 
+// Edit
+//
+function TGLTextureImage.Edit : Boolean;
+begin
+   Result:=EditGLTextureImage(Self);
+end;
+
 // LoadFromFile
 //
 procedure TGLTextureImage.LoadFromFile(const fileName : String);
@@ -1910,25 +1981,6 @@ begin
    	FBitmap.Free;
 		FBitmap:=nil;
 	end;
-end;
-
-// Edit
-//
-function TGLBlankImage.Edit : Boolean;
-var
-   p : Integer;
-   buf : String;
-begin
-	buf:=InputDlg('Blank Image', 'Enter size', Format('%d x %d', [FWidth, FHeight]));
-   p:=Pos('x', buf);
-   if p>0 then begin
-      Width:=StrToIntDef(Trim(Copy(buf, 1, p-1)), 256);
-      Height:=StrToIntDef(Trim(Copy(buf, p+1, MaxInt)), 256);
-      Result:=True;
-   end else begin
-      InformationDlg('Invalid size');
-      Result:=False;
-   end;
 end;
 
 // SaveToFile
@@ -2124,20 +2176,6 @@ begin
 	inherited Destroy;
 end;
 
-// Edit
-//
-function TGLPersistentImage.Edit : Boolean;
-var
-   fName : String;
-begin
-   fName:='';
-   Result:=OpenPictureDialog(fName);
-   if Result then begin
-   	LoadFromFile(fName);
-		NotifyChange(Self);
-	end;
-end;
-
 // SaveToFile
 //
 procedure TGLPersistentImage.SaveToFile(const fileName : String);
@@ -2253,19 +2291,6 @@ begin
 			Picture.OnChange:=PictureChanged;
 		end;
 	end else	Result:=inherited GetBitmap32(target);
-end;
-
-// Edit
-//
-function TGLPicFileImage.Edit : Boolean;
-var
-	newName : String;
-begin
-   { TODO : A better TGLPicFileImage.Edit is needed... }
-	newName:=InputDlg('PicFile Image', 'Enter filename', PictureFileName);
-	Result:=(PictureFileName<>newName);
-	if Result then
-		PictureFileName:=newName
 end;
 
 // SaveToFile
@@ -2425,14 +2450,6 @@ begin
       FPicture[i].OnChange:=PictureChanged;
 	if FUpdateCounter=0 then
 		PictureChanged(FPicture[cmtPX]);
-end;
-
-// Edit
-//
-function TGLCubeMapImage.Edit : Boolean;
-begin
-   InformationDlg('Not supported... yet');
-   Result:=False;
 end;
 
 // SaveToFile
@@ -5086,5 +5103,7 @@ finalization
 	vColorManager.Free;
 	vGLTextureImageClasses.Free;
    vGLTextureImageClasses:=nil;
+   FreeAndNil(vTIEClass);
+   FreeAndNil(vTIEEditor);
 
 end.

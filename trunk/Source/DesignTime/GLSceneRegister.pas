@@ -136,7 +136,7 @@ uses
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
-   GLTeapot, GLPolyhedron, GLGeomObjects,
+   GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
