@@ -146,6 +146,30 @@ type
 
    TGLContextClass = class of TGLContext;
 
+   // TGLScreenControlingContext
+   //
+   {: A TGLContext with screen control property and methods.<p>
+      This variety of contexts is for drivers that access windows and OpenGL
+      through an intermediate opaque cross-platform API.<p>
+      TGLSceneViewer won't use them, TGLMemoryViewer may be able to use them,
+      but most of the time they will be accessed through a specific viewer
+      class/subclass. } 
+   TGLScreenControlingContext = class (TGLContext)
+      private
+         { Private Declarations }
+         FWidth, FHeight : Integer;
+         FFullScreen : Boolean;
+
+      protected
+         { Protected Declarations }
+
+      public
+         { Public Declarations }
+         property Width : Integer read FWidth write FWidth;
+         property Height : Integer read FHeight write FHeight;
+         property FullScreen : Boolean read FFullScreen write FFullScreen;
+   end;
+
    // TGLContextHandle
    //
    {: Wrapper around an OpenGL context handle.<p>
@@ -268,7 +292,7 @@ type
    EGLContext = class (Exception)
    end;
 
-  EOpenGLError = class(Exception);
+   EOpenGLError = class(Exception);
 
 {: Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);

@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Forms, StdCtrls, GLScene, GLObjects, Classes, Controls, GLTexture,
-  GLMisc;
+  GLMisc, GLWin32Viewer;
 
 type
   TRMaterialPreview = class(TFrame)

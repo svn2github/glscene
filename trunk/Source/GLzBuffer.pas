@@ -44,7 +44,7 @@ unit GLzBuffer;
 interface
 
 uses Windows, Classes, Graphics, GLMisc, OpenGL12, GLScene, Geometry, GLGraphics,
-     Dialogs, SysUtils, GLObjects, GLBitmapFont, xopengl, GLTexture;
+     Dialogs, SysUtils, GLObjects, GLBitmapFont, xopengl, GLTexture, GLWin32Viewer;
 
 type
   TZArray = array [0..MaxInt shr 3] of Single;
@@ -76,8 +76,8 @@ type
     procedure SetHeight(const val : Integer);
 
   public
-    SceneViewer :TGLSceneViewer;
-    MemoryViewer :TGLMemoryViewer;
+    SceneViewer : TGLSceneViewer;
+    MemoryViewer : TGLMemoryViewer;
     Buffer :TGLSceneBuffer;
 
 

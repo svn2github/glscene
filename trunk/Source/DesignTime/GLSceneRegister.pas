@@ -122,6 +122,9 @@ uses
   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror,
+{$ifdef WIN32}
+  GLWin32Viewer,
+{$endif}
 {$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
 
 var

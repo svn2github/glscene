@@ -1,8 +1,8 @@
 {: GLWin32Context<p>
 
-   Win32 specific Context and Viewer.<p>
+   Win32 specific Context.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>30/11/01 - EG - Hardware acceleration support now detected
       <li>20/11/01 - EG - New temp HWnd code for memory contexts (improved compat.)
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer

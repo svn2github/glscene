@@ -11,7 +11,8 @@ unit AVIRecorder;
 
 interface
 
-uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene;
+uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
+   GLWin32Viewer;
 
 type
    TAVICompressor = (acDefault, acShowDialog);

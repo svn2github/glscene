@@ -12,7 +12,8 @@ unit FLibMaterialPicker;
 interface
 
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture;
+  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture,
+  GLWin32Viewer;
 
 type
   TLibMaterialPicker = class(TForm)
