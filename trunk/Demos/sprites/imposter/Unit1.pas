@@ -86,7 +86,7 @@ begin
    for x:=-30 to 30 do for y:=-30 to 30 do begin
       MakePoint(pos, x*5, 0, y*4);
       camPos:=VectorSubtract(rci.cameraPosition, pos);
-      imp.Render(rci, pos, camPos, 1.5);
+      imp.Render(rci, pos, camPos, 1);
    end;
    imp.EndRender(rci);
 end;
