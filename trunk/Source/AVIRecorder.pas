@@ -2,9 +2,11 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
+                            and minor updates
       <li>11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
       <li<02/03/01 - EG - Added TAVIImageRetrievalMode
-      <li>24/02/01 - Creation and initial code by Nelson Chu
+      <li>24/02/01 - NelC - Creation and initial code
 	</ul></font>
 }
 unit AVIRecorder;
@@ -19,6 +21,8 @@ uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
 
 type
    TAVICompressor = (acDefault, acShowDialog);
+
+   PAVIStream = ^IAVIStream;
 
    TAVISizeRestriction = ( srNoRestriction, srForceBlock2x2,
                            srForceBlock4x4, srForceBlock8x8);
@@ -41,7 +45,7 @@ type
        pfile : IAVIFile;
        asi   : TAVIStreamInfoA;
 
-       ps, ps_c : IAVIStream; // AVI stream and stream to be compressed
+       Stream, Stream_c : IAVIStream; // AVI stream and stream to be compressed
 
        BitmapInfo : PBitmapInfoHeader;
        BitmapBits : Pointer;
@@ -73,7 +77,7 @@ type
        // Restricted() is for rounding off the width and height.
        // Currently I can't find a simple way to know which compressor imposes
        // what resiction, so the SizeRestiction property is there for the user to set.
-       // The source code of VirtualDub (http://www.geocities.com/virtualdub/index.html)
+       // The source code of VirtualDub (http://www.virtualdub.org/)
        // may give us some cues on this.
        // ( BTW, VirtualDub is an excellent freeware for editing your AVI. For
        //   converting AVI into MPG, try AVI2MPG1 - http://www.mnsi.net/~jschlic1 )
@@ -252,7 +256,7 @@ begin
 
    with AVIBitmap do begin
       InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
-      if AVIStreamWrite( ps_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
+      if AVIStreamWrite( Stream_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
                          AVIIF_KEYFRAME, nil, nil)<> AVIERR_OK then
          raise Exception.Create('Add Frame Error');
       Inc(AVIFrameIndex);
@@ -306,7 +310,7 @@ begin
 
   if not SaveAllowed then exit;
 
-  AVIFileInit; // init. the AVI lib.
+  AVIFileInit; // initialize the AVI lib.
 
   AVIBitmap:=TBitmap.Create;
   AVIFrameIndex:=0;
@@ -343,7 +347,7 @@ begin
       rcFrame.Bottom := BitmapInfo^.biHeight;
     end;
 
-    if AVIFileCreateStream(pfile, ps, asi)<>AVIERR_OK then
+    if AVIFileCreateStream(pfile, Stream, asi)<>AVIERR_OK then
        raise Exception.Create('Cannot create AVI stream.');
 
     with AVIBitmap do
@@ -355,7 +359,7 @@ begin
     if (FCompressor=acShowDialog) and
       // the following line will call a dialog box for the user to choose the compressor options
       AVISaveOptions( FGLSceneViewer.parent.Handle,
-                      ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, ps, galpAVIOptions ) then
+                      ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions ) then
     else
       with gaAVIOptions do // or, you may want to fill the compression options yourself
       begin
@@ -366,7 +370,7 @@ begin
         dwFlags:=0;          // setting dwFlags to 0 would lead to some default settings
       end;
 
-    AVIResult:=AVIMakeCompressedStream(ps_c, ps, galpAVIOptions, nil);
+    AVIResult:=AVIMakeCompressedStream(Stream_c, Stream, galpAVIOptions, nil);
 
     if AVIResult <> AVIERR_OK then
     begin
@@ -376,7 +380,7 @@ begin
       raise Exception.Create('Cannot make compressed stream. ' + ResultString);
     end;
 
-    if AVIStreamSetFormat(ps_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
+    if AVIStreamSetFormat(Stream_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
          raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
 
     AVI_DPI:=DPI;
@@ -398,9 +402,12 @@ begin
   FreeMem(BitmapInfo);
   FreeMem(BitmapBits);
 
-  AVIStreamRelease(ps);
-  AVIStreamRelease(ps_c);
-  AVIFileRelease(pfile);
+// The following calls are commented out to avoid AV on exit, which is caused
+// by Delphi cleaning up the interafaces automatically.
+//  AVIStreamRelease(Stream);
+//  AVIStreamRelease(Stream_c);
+//  AVIFileRelease(pfile);
+
   AVIFileExit; // finalize the AVI lib.
 
   if UserAbort then deleteFile(TempName);
