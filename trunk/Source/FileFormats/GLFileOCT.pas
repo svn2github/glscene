@@ -4,7 +4,8 @@
     (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>02/02/03 - EG - Creation
+      <li>06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
+      <li>02/02/03 - EG     - Creation
    </ul><p>
 }
 unit GLFileOCT;
@@ -27,7 +28,9 @@ type
    end;
 
 var
-   vGLFileOCTAllocateMaterials : boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
+   vGLFileOCTLightmapBrightness : Single = 3;      // Mrqzzz : scaling factor, 1.0 = unchanged
+   vGLFileOCTLightmapGammaCorrection : Single = 1; // Mrqzzz : scaling factor, 1.0 = unchanged
+   vGLFileOCTAllocateMaterials : boolean = True;   // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
 
 
 // ------------------------------------------------------------------
@@ -38,7 +41,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLTexture, Graphics;
+uses SysUtils, GLTexture, Graphics,GLGraphics;
 
 // ------------------
 // ------------------ TGLOCTVectorFile ------------------
@@ -81,6 +84,10 @@ begin
             lightmapBmp.Height:=128;
             for i:=0 to n-1 do begin
                octLightmap:=@oct.Lightmaps[i];
+               // Brightness correction
+               BrightenRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,vGLFileOCTLightmapBrightness);
+               // Gamma correction
+               GammaCorrectRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,vGLFileOCTLightmapGammaCorrection);
                // convert RAW RGB to BMP
                for y:=0 to 127 do
                   Move(octLightmap.map[y*128*3], lightmapBmp.ScanLine[127-y]^, 128*3);
