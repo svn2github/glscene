@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/02 - EG - No longer invalidates while rendering
       <li>11/02/02 - EG - Fixed BeforeRender
       <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
       <li>22/01/02 - EG - Added TGLFullScreenViewer
@@ -488,7 +489,8 @@ end;
 //
 procedure TGLSceneViewer.DoBufferChange(Sender : TObject);
 begin
-   Invalidate;
+   if not Buffer.Rendering then
+      Invalidate;
 end;
 
 // DoBufferStructuralChange
@@ -548,7 +550,7 @@ end;
 //
 procedure TGLFullScreenViewer.DoBufferChange(Sender : TObject);
 begin
-   if Assigned(FForm) then
+   if Assigned(FForm) and (not Buffer.Rendering) then
       FForm.Invalidate;
 end;
 
