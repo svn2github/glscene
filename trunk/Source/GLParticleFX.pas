@@ -1836,13 +1836,10 @@ end;
 // MaxLifeTime
 //
 function TPFXLifeColors.MaxLifeTime : Double;
-var
-   i : Integer;
 begin
-   Result:=1e30;
-   for i:=0 to Count-1 do
-      if Items[i].LifeTime>Result then
-         Result:=Items[i].LifeTime;
+   if Count>0 then
+      Result:=Items[Count-1].LifeTime
+   else Result:=1e30;
 end;
 
 // ------------------
@@ -1876,7 +1873,7 @@ var
    accelVector : TAffineVector;
    dt : Single;
    list : PGLParticleArray;
-   doFriction : Boolean;
+   doFriction, doPack : Boolean;
    frictionScale : Single;
 begin
    maxAge:=MaxParticleAge;
@@ -1888,6 +1885,7 @@ begin
    end else frictionScale:=1;
    FCurrentTime:=progressTime.newTime;
 
+   doPack:=False;
    list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
       curParticle:=list[i];
@@ -1903,9 +1901,11 @@ begin
          // kill particle
          curParticle.Free;
          list[i]:=nil;
+         doPack:=True;
       end;
    end;
-   Particles.Pack;
+   if doPack then
+      Particles.Pack;
 end;
 
 // SetAcceleration
@@ -2169,7 +2169,7 @@ var
    i : Integer;
    list : PGLParticleArray;
    curParticle : TGLParticle;
-   defaultProgress, killParticle : Boolean;
+   defaultProgress, killParticle, doPack : Boolean;
 begin
    if Assigned(FOnProgress) then begin
       defaultProgress:=False;
@@ -2178,6 +2178,7 @@ begin
          inherited;
    end else inherited;
    if Assigned(FOnParticleProgress) then begin
+      doPack:=False;
       list:=Particles.List;
       for i:=0 to Particles.ItemCount-1 do begin
          killParticle:=True;
@@ -2186,9 +2187,11 @@ begin
          if killParticle then begin
             curParticle.Free;
             list[i]:=nil;
+            doPack:=True;
          end;
       end;
-      Particles.Pack;
+      if doPack then
+         Particles.Pack;
    end;
 end;
 
