@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>25/02/04 - EG - Children no longer owned 
+      <li>25/02/04 - Mrqzzz - Added TGLSCene.RenderedObject 
+      <li>25/02/04 - EG - Children no longer owned
       <li>13/02/04 - NelC - Added option Modal for ShowInfo
       <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
       <li>09/01/04 - EG - Added TGLCameraInvariantObject
@@ -1390,6 +1391,7 @@ type
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
          FOnProgress : TGLProgressEvent;
+         FRenderedObject: TGLCustomSceneObject;
 
       protected
          { Protected Declarations }
@@ -1407,6 +1409,7 @@ type
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
 
          procedure ReadState(Reader: TReader); override;
+         function  GetRenderedObject: TGLCustomSceneObject;
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -1465,7 +1468,9 @@ type
          property Lights : TPersistentObjectList read FLights;
          property Objects : TGLSceneRootObject read FObjects;
          property CurrentBuffer : TGLSceneBuffer read FCurrentBuffer;
-
+         {: Stores the current rendered object.<p>
+            Useful when using shaders, to know what object we are applying the material to. }
+         property RenderedObject : TGLCustomSceneObject read GetRenderedObject;
       published
          { Published Declarations }
          {: Defines default ObjectSorting option for scene objects. }
@@ -4500,6 +4505,8 @@ procedure TGLCustomSceneObject.DoRender(var rci : TRenderContextInfo;
 begin
    // start rendering self
    if renderSelf then begin
+      if self.FScene<>nil then
+         self.FScene.FRenderedObject := self;
       if not rci.ignoreMaterials then begin
          FMaterial.Apply(rci);
          repeat
@@ -5818,6 +5825,7 @@ var
    i : Integer;
    rci : TRenderContextInfo;
 begin
+   FRenderedObject := nil;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
    FillChar(rci, SizeOf(rci), 0);
@@ -6112,6 +6120,12 @@ begin
    for i:=nbLights to maxLights-1 do
       glDisable(GL_LIGHT0+i);
 end;
+
+function TGLScene.GetRenderedObject:TGLCustomSceneObject;
+begin
+   Result := FRenderedObject;
+end;
+
 
 //------------------------------------------------------------------------------
 
@@ -7926,6 +7940,7 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
