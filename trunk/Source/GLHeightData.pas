@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/02/03 - EG - Added Hash index to HeightDataSource
       <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
       <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
       <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
@@ -80,6 +81,7 @@ type
 	   private
 	      { Private Declarations }
          FData : TThreadList; // stores all THeightData, whatever their state/type
+         FDataHash : array [0..255] of TList; // X/Y hash references for HeightDatas
          FThread : TThread;   // queue manager
          FMaxThreads : Integer;
          FMaxPoolSize : Integer;
@@ -90,6 +92,8 @@ type
 	   protected
 	      { Protected Declarations }
          procedure SetMaxThreads(const val : Integer);
+
+         function HashKey(xLeft, yTop : Integer) : Integer;
 
          {: Adjust this property in you subclasses. }
          property HeightDataClass : THeightDataClass read FHeightDataClass write FHeightDataClass;
@@ -566,10 +570,14 @@ end;
 // Create
 //
 constructor THeightDataSource.Create(AOwner: TComponent);
+var
+   i : Integer;
 begin
 	inherited Create(AOwner);
    FHeightDataClass:=THeightData;
    FData:=TThreadList.Create;
+   for i:=0 to High(FDataHash) do
+      FDataHash[i]:=TList.Create;
    FReleaseLatency:=15/(3600*24);
    FThread:=THeightDataSourceThread.Create(True);
    FThread.FreeOnTerminate:=False;
@@ -580,6 +588,8 @@ end;
 // Destroy
 //
 destructor THeightDataSource.Destroy;
+var
+   i : Integer;
 begin
 	inherited Destroy;
    FThread.Terminate;
@@ -587,6 +597,8 @@ begin
    FThread.Free;
    Clear;
    FData.Free;
+   for i:=0 to High(FDataHash) do
+      FDataHash[i].Free;
 end;
 
 {$ifndef GLS_DELPHI_5_UP}
@@ -614,11 +626,20 @@ begin
             THeightData(Items[i]).FOwner:=nil;
             THeightData(Items[i]).Free;
          end;
+         for i:=0 to High(FDataHash) do
+            FDataHash[i].Clear;
          Clear;
       finally
          FData.UnlockList;
       end;
    end;
+end;
+
+// HashKey
+//
+function THeightDataSource.HashKey(xLeft, yTop : Integer) : Integer;
+begin
+   Result:=(xLeft+(xLeft shr 8)+(yTop shl 1)+(yTop shr 7)) and High(FDataHash);
 end;
 
 // FindMatchInList
@@ -630,18 +651,17 @@ var
    hd : THeightData;
 begin
    Result:=nil;
-   with FData.LockList do begin
-      try
-         for i:=0 to Count-1 do begin
-            hd:=THeightData(Items[i]);
-            if (not hd.Dirty) and (hd.XLeft=xLeft) and (hd.YTop=yTop) and (hd.Size=size) and (hd.DataType=dataType) then begin
-               Result:=hd;
-               Break;
-            end;
+   FData.LockList;
+   try
+      with FDataHash[HashKey(xLeft, yTop)] do for i:=0 to Count-1 do begin
+         hd:=THeightData(Items[i]);
+         if (not hd.Dirty) and (hd.XLeft=xLeft) and (hd.YTop=yTop) and (hd.Size=size) and (hd.DataType=dataType) then begin
+            Result:=hd;
+            Break;
          end;
-      finally
-         FData.UnlockList;
       end;
+   finally
+      FData.UnlockList;
    end;
 end;
 
@@ -670,8 +690,12 @@ function THeightDataSource.PreLoad(xLeft, yTop, size : Integer;
                                    dataType : THeightDataType) : THeightData;
 begin
    Result:=HeightDataClass.Create(Self, xLeft, yTop, size, dataType);
-   FData.LockList.Add(Result);
-   FData.UnlockList;
+   with FData.LockList do try
+      Add(Result);
+      FDataHash[HashKey(xLeft, yTop)].Add(Result);
+   finally
+      FData.UnlockList;
+   end;
    if MaxThreads=0 then
       StartPreparingData(Result);
 end;
@@ -743,6 +767,7 @@ begin
             hd:=THeightData(List[i]);
             if hd<>nil then with hd do begin
                if Dirty then begin
+                  FDataHash[HashKey(hd.XLeft, hd.YTop)].Remove(hd);
                   FOwner:=nil;
                   Free;
                   List[i]:=nil;
@@ -757,6 +782,7 @@ begin
                hd:=THeightData(List[i]);
                if hd<>nil then with hd do begin
                   if (DataState=hdsReady) and (UseCounter=0) then begin
+                     FDataHash[HashKey(hd.XLeft, hd.YTop)].Remove(hd);
                      FOwner:=nil;
                      Free;
                   end else begin
