@@ -162,6 +162,7 @@ contains
   GLUserShader in '..\Source\Shaders\GLUserShader.pas',
   CurvesAndSurfaces in '..\Source\Base\CurvesAndSurfaces.pas',
   GLParametricSurfaces in '..\Source\GLParametricSurfaces.pas',
-  GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas';
+  GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas',
+  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas';
 
 end.

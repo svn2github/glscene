@@ -164,6 +164,7 @@ contains
   GLParametricSurfaces in '..\Source\GLParametricSurfaces.pas',
   GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas',
   VerletClasses in '..\Source\Base\VerletClasses.pas',
-  SpatialPartitioning in '..\Source\Base\SpatialPartitioning.pas';
+  SpatialPartitioning in '..\Source\Base\SpatialPartitioning.pas',
+  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas';
 
 end.
