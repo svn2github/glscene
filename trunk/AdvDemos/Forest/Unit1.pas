@@ -206,7 +206,7 @@ begin
       aParticle.PosX:=(0.5-u)*Terrain.Scale.X*cMapWidth;
       aParticle.PosY:=0;
       aParticle.PosZ:=(0.5-(1-v))*Terrain.Scale.Y*cMapHeight;
-      aParticle.PosY:=Terrain.InterpolatedHeight(aParticle.Position);
+      aParticle.PosY:=Terrain.Position.Y+Terrain.InterpolatedHeight(aParticle.Position);
    until aParticle.PosY>=0;
    aParticle.Tag:=Random(360);
 
@@ -326,7 +326,7 @@ begin
    else if IsKeyDown(VK_RIGHT) or IsKeyDown('D') then
       Camera.Slide(speed);
 
-   z:=Terrain.InterpolatedHeight(Camera.Position.AsVector);
+   z:=Terrain.Position.Y+Terrain.InterpolatedHeight(Camera.Position.AsVector);
    if z<0 then z:=0;
    z:=z+10;
    if Camera.Position.Y<z then
