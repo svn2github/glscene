@@ -83,7 +83,9 @@ begin
                // spawn lightmap
                libMat:=lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
                with libMat.Material.Texture do begin
+                  MinFilter:=miLinear;
                   TextureWrap:=twNone;
+                  TextureFormat:=tfRGB;
                end;
             end;
          finally
