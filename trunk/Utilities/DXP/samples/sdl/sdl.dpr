@@ -2,7 +2,7 @@ program sdl_test;
 
 {$APPTYPE gui}
 
-uses Forms, GLScene, GLSDLContext, SDL, GLTeapot, SysUtils, GLWin32Viewer
+uses Forms, GLScene, GLSDLContext, SDL, GLTeapot, SysUtils
      {$IFDEF FPC}, Interfaces{$ENDIF};
 
 type
