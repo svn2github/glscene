@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap
       <li>08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
                             and minor updates
       <li>11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
@@ -83,14 +84,18 @@ type
        //   converting AVI into MPG, try AVI2MPG1 - http://www.mnsi.net/~jschlic1 )
        function Restricted(s:integer):integer;
 
+       procedure InternalAddAVIFrame;
+
      public
        { Public Declarations }
        constructor Create(AOwner : TComponent); override;
        destructor Destroy; override;
 
        function CreateAVIFile(DPI : integer = 0) : boolean;
-       procedure AddAVIFrame;
+       procedure AddAVIFrame; overload;
+       procedure AddAVIFrame(bmp : TBitmap); overload;
        procedure CloseAVIFile(UserAbort : boolean = false);
+       function Recording : Boolean;
 
      published
        { Published Declarations }
@@ -229,6 +234,8 @@ begin
    end;
 end;
 
+// AddAVIFrame (from sceneviewer)
+//
 procedure TAVIRecorder.AddAVIFrame;
 var
    bmp32 : TGLBitmap32;
@@ -254,10 +261,28 @@ begin
       Assert(False);
    end;
 
+   InternalAddAVIFrame;
+end;
+
+// AddAVIFrame (from custom bitmap)
+//
+procedure TAVIRecorder.AddAVIFrame(bmp : TBitmap);
+begin
+   if RecorderState<>rsRecording then
+      raise Exception.create('Cannot add frame to AVI. AVI file not created.');
+   AVIBitmap.Canvas.Draw(0, 0, bmp);
+
+   InternalAddAVIFrame;
+end;
+
+// InternalAddAVIFrame
+//
+procedure TAVIRecorder.InternalAddAVIFrame;
+begin
    with AVIBitmap do begin
       InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
-      if AVIStreamWrite( Stream_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
-                         AVIIF_KEYFRAME, nil, nil)<> AVIERR_OK then
+      if AVIStreamWrite(Stream_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
+                        AVIIF_KEYFRAME, nil, nil)<>AVIERR_OK then
          raise Exception.Create('Add Frame Error');
       Inc(AVIFrameIndex);
    end;
@@ -265,13 +290,13 @@ end;
 
 function TAVIRecorder.CreateAVIFile(DPI : integer = 0) : boolean;
 var
-  SaveDialog: TSaveDialog;
-  SaveAllowed: Boolean;
-  gaAVIOptions   : TAVICOMPRESSOPTIONS;
-  galpAVIOptions : PAVICOMPRESSOPTIONS;
-  BitmapInfoSize : Integer;
-  AVIResult      : Cardinal;
-  ResultString   : string;
+   SaveDialog     : TSaveDialog;
+   SaveAllowed    : Boolean;
+   gaAVIOptions   : TAVICOMPRESSOPTIONS;
+   galpAVIOptions : PAVICOMPRESSOPTIONS;
+   BitmapInfoSize : Integer;
+   AVIResult      : Cardinal;
+   ResultString   : string;
 begin
   SaveDialog := nil;
   Assert(FGLSceneViewer<>nil);
@@ -280,11 +305,9 @@ begin
     TempName := FAVIFilename;
     SaveAllowed := True;
 
-    if TempName = '' then // if user didn't supply a filename, then ask for it
-    begin
+    if TempName = '' then begin // if user didn't supply a filename, then ask for it
       SaveDialog := TSaveDialog.Create(Application);
-      with SaveDialog do
-      begin
+      with SaveDialog do begin
         Options := [ofHideReadOnly, ofNoReadOnlyReturn];
         DefaultExt:='.avi';
         Filter := 'AVI Files (*.avi)|*.avi';
@@ -292,21 +315,20 @@ begin
       end;
     end;
 
-    if SaveAllowed then
-    begin
-      if TempName = '' then
-      begin
+    if SaveAllowed then begin
+      if TempName = '' then begin
         TempName := SaveDialog.FileName;
         if (FileExists(SaveDialog.FileName)) then
           SaveAllowed := MessageDlg(Format('Overwrite file %s?', [SaveDialog.FileName]),
-                            mtConfirmation, [mbYes, mbNo], 0) = mrYes;
+                                    mtConfirmation, [mbYes, mbNo], 0) = mrYes;
       end;
     end;
   finally
-    if SaveDialog<>nil then SaveDialog.Free;
+    if SaveDialog<>nil then
+      SaveDialog.Free;
   end;
 
-  result:=SaveAllowed;
+  Result:=SaveAllowed;
 
   if not SaveAllowed then exit;
 
@@ -326,8 +348,7 @@ begin
     if AVIFileOpen(pfile, PChar(TempName), OF_WRITE or OF_CREATE, nil)<>AVIERR_OK then
        raise Exception.Create('Cannot create AVI file. Disk full or file in use?');
 
-    with AVIBitmap do
-    begin
+    with AVIBitmap do begin
       InternalGetDIBSizes( Handle, BitmapInfoSize, BitmapSize);
       BitmapInfo:=AllocMem(BitmapInfoSize);
       BitmapBits:=AllocMem(BitmapSize);
@@ -336,8 +357,7 @@ begin
 
     FillChar(asi,sizeof(asi),0);
 
-    with asi do
-    begin
+    with asi do begin
       fccType   := streamtypeVIDEO; //  Now prepare the stream
       fccHandler:= 0;
       dwScale   := 1;         // dwRate / dwScale = frames/second
@@ -360,28 +380,27 @@ begin
       // the following line will call a dialog box for the user to choose the compressor options
       AVISaveOptions( FGLSceneViewer.parent.Handle,
                       ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions ) then
-    else
-      with gaAVIOptions do // or, you may want to fill the compression options yourself
-      begin
+    else begin
+      with gaAVIOptions do begin // or, you may want to fill the compression options yourself
         fccType:=streamtypeVIDEO;
         fccHandler:=mmioFOURCC('M','S','V','C'); // User MS video 1 as default.
                                                  // I guess it is installed on every Win95 or later.
         dwQuality:=7500;     // compress quality 0-10,000
         dwFlags:=0;          // setting dwFlags to 0 would lead to some default settings
       end;
+    end;
 
     AVIResult:=AVIMakeCompressedStream(Stream_c, Stream, galpAVIOptions, nil);
 
-    if AVIResult <> AVIERR_OK then
-    begin
+    if AVIResult <> AVIERR_OK then begin
       if AVIResult = AVIERR_NOCOMPRESSOR then
-          ResultString:='No such compressor found' else
-          ResultString:='';
+          ResultString:='No such compressor found'
+      else ResultString:='';
       raise Exception.Create('Cannot make compressed stream. ' + ResultString);
     end;
 
     if AVIStreamSetFormat(Stream_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
-         raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
+      raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
 
     AVI_DPI:=DPI;
 
@@ -413,6 +432,13 @@ begin
       DeleteFile(TempName);
 
    RecorderState:=rsNone;
+end;
+
+// Recording
+//
+function TAVIRecorder.Recording : Boolean;
+begin
+   Result:=(RecorderState=rsRecording);
 end;
 
 end.
