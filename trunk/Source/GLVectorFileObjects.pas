@@ -5437,7 +5437,9 @@ begin
          if Assigned(LightmapLibrary) then
             rci.lightmapLibrary:=LightmapLibrary
          else rci.lightmapLibrary:=nil;
-         PrepareBuildList(rci);
+         if    rci.amalgamating
+            or not (ListHandleAllocated or (osDirectDraw in ObjectStyle)) then
+            PrepareBuildList(rci);
          Material.Apply(rci);
          repeat
             if (osDirectDraw in ObjectStyle) or rci.amalgamating then
