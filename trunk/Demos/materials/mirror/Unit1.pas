@@ -1,6 +1,6 @@
 {: GLMirror demo and sample.<p>
 
-   Depistes its simplistic look, this sample showcases all the dos and don'ts
+   Depiste its simplistic look, this sample showcases all the dos and don'ts
    of reflections with TGLMirror, this is a powerfull mirroring component,
    but it must be handled with care and knowingly.<p>
    The object that must be mirrored is specified through the "MirrorObject"
@@ -39,13 +39,19 @@
 
    In addition to being opaque, transparent or semi-transparent, the mirror
    can also be textured as usual.<p>
+
+   Final note: T&L boards like the GeForce will be the one taking the most
+      performance hit from the PlaneClip because it basicly turns-off hardware T&L.
+      The glEval-based teapot also performs (relatively) poorly on those boards,
+      while on an old-fashioned TNT2 f.i., plane clipping has a negligible
+      performance impact.  
 }
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLObjects, GLMisc, GLExtrusion, GLMirror, GLMultiPolygon,
   ExtCtrls, GLCadencer, StdCtrls;
 
@@ -83,7 +89,6 @@ type
     procedure CBOpaqueClick(Sender: TObject);
     procedure CBStencilClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure CBClearZClick(Sender: TObject);
     procedure CBPlaneClipClick(Sender: TObject);
   private
@@ -100,10 +105,10 @@ implementation
 
 {$R *.DFM}
 
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-   GLMirror.MirrorOptions:=GLMirror.MirrorOptions+[moClearZBuffer, moMirrorPlaneClip];
-end;
+//
+// Those events simply add/remove one of the mirror options
+// when the related checkbox is clicked
+//
 
 procedure TForm1.CBOpaqueClick(Sender: TObject);
 begin
@@ -133,6 +138,10 @@ begin
    else GLMirror.MirrorOptions:=GLMirror.MirrorOptions-[moMirrorPlaneClip];
 end;
 
+//
+// Standard-issue move around target code
+//
+
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
@@ -147,6 +156,10 @@ begin
       mx:=x; my:=y;
    end;
 end;
+
+//
+// Standard issue resize/zoom, timer and viewr invalidation (to force redraws)
+//
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
