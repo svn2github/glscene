@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/06/03 - MF - Added TVCCube collider
       <li>16/06/03 - MF - Fixed TVFSpring.SetRestlengthToCurrent
       <li>24/07/02 - EG - Added TVCCylinder
       <li>18/07/02 - EG - Improved forces & constraints
@@ -296,8 +297,9 @@ type
          function CreateOwnedNode(const location : TAffineVector;
                                   const aRadius : Single = 0;
                                   const aWeight : Single=1) : TVerletNode;
-         function CreateStick(aNodeA, aNodeB : TVerletNode) : TVCStick;
-         function CreateSpring(aNodeA, aNodeB : TVerletNode; Strength, Dampening : single) : TVFSpring;
+         function CreateStick(aNodeA, aNodeB : TVerletNode; Slack : single = 0) : TVCStick;
+         function CreateSpring(aNodeA, aNodeB : TVerletNode; Strength,
+          Dampening : single; Slack : single=0) : TVFSpring;
 
          procedure Initialize; dynamic;
          function Progress(const deltaTime, newTime : Double) : Integer; virtual;
@@ -338,6 +340,7 @@ type
          RestLength : Single;
          Strength : Single;
          Damping : Single;
+         Slack : Single;
 
       public
 			{ Public Declarations }
@@ -455,8 +458,10 @@ type
 			{ Private Declarations }
          FLocation : TAffineVector;
          FRadius  : Single;
-    FSides: TAffineVector;
-    FFrictionRatio: Single;
+         FHalfSides : TAffineVector;
+         FSides: TAffineVector;
+         FFrictionRatio: Single;
+         procedure SetSides(const Value: TAffineVector);
 
       public
 			{ Public Declarations }
@@ -464,7 +469,7 @@ type
                            const iteration, maxIterations : Integer); override;
 
          property Location : TAffineVector read FLocation write FLocation;
-         property Sides : TAffineVector read FSides write FSides;
+         property Sides : TAffineVector read FSides write SetSides;
          property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
 
          constructor Create(aOwner : TVerletAssembly); override;
@@ -985,18 +990,19 @@ end;
 
 // CreateStick
 //
-function TVerletAssembly.CreateStick(aNodeA, aNodeB : TVerletNode) : TVCStick;
+function TVerletAssembly.CreateStick(aNodeA, aNodeB : TVerletNode; Slack : single = 0) : TVCStick;
 begin
    Result:=TVCStick.Create(Self);
    Result.NodeA:=aNodeA;
    Result.NodeB:=aNodeB;
    Result.SetRestLengthToCurrent;
+   Result.Slack := Slack;
 end;
 
 // CreateSpring
 //
 function TVerletAssembly.CreateSpring(aNodeA, aNodeB: TVerletNode;
-  Strength, Dampening: single): TVFSpring;
+  Strength, Dampening: single; Slack : single=0): TVFSpring;
 begin
    Result:=TVFSpring.Create(Self);
    Result.NodeA:=aNodeA;
@@ -1004,6 +1010,7 @@ begin
    Result.Strength := Strength;
    Result.Damping := Dampening;
    Result.SetRestLengthToCurrent;
+   Result.Slack := Slack;
 end;
 
 
@@ -1122,15 +1129,18 @@ begin
    VectorSubtract(NodeA.Location, NodeB.Location, deltaP);
    deltaLength:=VectorLength(deltaP);
 
-   hTerm:=(deltaLength - RestLength) * Strength;
-   VectorSubtract(NodeA.GetMovement, NodeB.GetMovement, deltaV);
+   if deltaLength>Slack then
+   begin
+     hTerm:=(deltaLength - RestLength) * Strength;
+     VectorSubtract(NodeA.GetMovement, NodeB.GetMovement, deltaV);
 
-   dTerm:=VectorDotProduct(deltaV, deltaP) * Damping / deltaLength;
-   force:=VectorScale(deltaP, 1/deltaLength);
-   ScaleVector(force, -(hTerm+dTerm));
+     dTerm:=VectorDotProduct(deltaV, deltaP) * Damping / deltaLength;
+     force:=VectorScale(deltaP, 1/deltaLength);
+     ScaleVector(force, -(hTerm+dTerm));
 
-   AddVector(NodeA.FForce, force);
-   SubtractVector(NodeB.FForce, force);
+     AddVector(NodeA.FForce, force);
+     SubtractVector(NodeB.FForce, force);
+   end;
 end;
 
 // SetRestLengthToCurrent
@@ -1314,92 +1324,72 @@ end;
 procedure TVCCube.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
 var
-  p, dp, q, absq : TAffineVector;
-begin
-  // p[0] = x - b->pos[0];
-  // p[1] = y - b->pos[1];
-  // p[2] = z - b->pos[2];
-  p := VectorSubtract(FLocation, aNode.FLocation);
-
-  // dMULTIPLY1_331 (q,b->R,p);
-  // SKIP FOR NOW
-  q := p;
-
-  // dReal dx = b->side[0]*0.5 - dFabs(q[0]);
-  // dReal dy = b->side[1]*0.5 - dFabs(q[1]);
-  // dReal dz = b->side[2]*0.5 - dFabs(q[2]);
-  AbsVector(q);
-  dp := VectorSubtract(VectorScale(Sides, 0.5), q);
-
-  if (dp[0] < dp[1]) then
+  P, AbsP, dp : TAffineVector;
+  SmallestSide : integer;
+  procedure TestSide(Side : integer);
   begin
-    if (dp[0] < dp[2]) then
+    if (p[Side])<0 then
+      p[Side]:=-FHalfSides[Side]-p[Side]
+    else
+      p[Side]:=FHalfSides[Side]-p[Side];
+  end;
+begin
+  P := VectorSubtract(FLocation, aNode.FLocation);
+
+  if (abs(p[0])>FHalfSides[0]) or (abs(p[1])>FHalfSides[1]) or (abs(p[2])>FHalfSides[2]) then
+  begin
+    exit;
+  end;
+
+  TestSide(0);
+  TestSide(1);
+  TestSide(2);
+
+  AbsP := p;
+  AbsVector(AbsP);
+
+  if AbsP[0]<AbsP[1] then
+  begin
+    if AbsP[0]<AbsP[2] then
     begin
-      // dp[0] is shortest!
-      if dp[0]>0 then
-      begin
-        
-      end;
+      // 0 is smallest
+      SmallestSide := 0;
     end else
     begin
-      // dp[2] is shortest!
+      // 2 is smallest
+      SmallestSide := 2;
     end;
   end else
   begin
-    if (dp[1] < dp[2]) then
+    if AbsP[1]<AbsP[2] then
     begin
-      // dp[1] is shortest!
+      // 1 is smallest
+      SmallestSide := 1;
     end else
     begin
-      // dp[2] is shortest!
+      // 2 is smallest
+      SmallestSide := 2;
     end;
   end;
 
-{var
-  penetrationDepth : Single;
-  currentPenetrationDepth, d : Single;
+  // Clear dp
+  dp[0] := 0;
+  dp[1] := 0;
+  dp[2] := 0;
+
+  // Only move along the "shortest" axis
+  dp[SmallestSide] := P[SmallestSide];
+
+  // Slow it down!
+  aNode.OldApplyFriction(0.05, abs(P[SmallestSide]));
+
+  SubtractVector(aNode.FLocation, dp);
+end;
+
+procedure TVCCube.SetSides(const Value: TAffineVector);
 begin
-
-
-   currentPenetrationDepth:=FLocation[1]-(aNode.Location[1]-aNode.Radius);
-
-   // Record how far down the node goes
-   penetrationDepth:=currentPenetrationDepth;
-   // Correct the node location
-   if currentPenetrationDepth>0 then
-   begin
-     aNode.FLocation[1]:=FLocation[1]+aNode.Radius;
-     if FrictionRatio>0 then
-        aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
-   end;
-
-
-  {
-
-var
-  p, move, dp : TAffineVector;
-begin
-  p := VectorSubtract(Location, aNode.Location);
-  if (abs(p[0])<Sides[0]/2) and (abs(p[1])<Sides[1]/2) and (abs(p[2])<Sides[2]/2) then
-  begin
-    dp := VectorSubtract(p, VectorScale(Sides, 0.5));
-
-    //if (abs(p[1])<Sides[1]/2) then
-    if dp[1]<0 then
-    begin
-      aNode.OldApplyFriction(0.05, p[1]);
-
-      Move[0] := 0;
-      Move[1] := - p[1];
-      Move[2] := 0;
-
-      AddVector(aNode.FLocation, move);
-    end;
-  end;//}
-{  dp := VectorSubtract(VectorScale(Sides, 0.5), p);
-  absdp[0] := abs(dp[0]);
-  absdp[1] := abs(dp[1]);
-  absdp[2] := abs(dp[2]);//}
+  FSides := Value;
+  FHalfSides := VectorScale(Sides, 0.5);
 end;
 
 end.
