@@ -2,7 +2,7 @@
 
 	Simple Quake III BSP file loader.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
 	   <li>30/01/03 - Egg - Creation, based on Philip Stefou's document and
                            bits from Jan Horn's loader 
 	</ul></font>
