@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/03 - MF - Updated TVCFloor to use a normal and a point
       <li>18/06/03 - MF - Added TVCCapsule
       <li>17/06/03 - MF - Added TVFAirResistance
       <li>17/06/03 - MF - Added TVCCube collider
@@ -380,16 +381,22 @@ type
    TVCFloor = class (TVerletGlobalConstraint)
       private
 			{ Private Declarations }
-         FFloorLevel, FBounceRatio, FFrictionRatio : Single;
+         FBounceRatio, FFrictionRatio : Single;
+         FLocation, FNormal : TAffineVector;
+    procedure SetNormal(const Value: TAffineVector);
 
       public
 			{ Public Declarations }
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); override;
 
-         property FloorLevel : Single read FFloorLevel write FFloorLevel;
          property BounceRatio : Single read FBounceRatio write FBounceRatio;
          property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
+
+         property Location : TAffineVector read FLocation write FLocation;
+         property Normal : TAffineVector read FNormal write SetNormal;
+
+         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
    // TVCStickBase
@@ -1209,29 +1216,57 @@ end;
 
 // SatisfyConstraintForNode
 //
+
+constructor TVCFloor.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+  MakeVector(FNormal, 0, 1, 0);
+  MakeVector(FLocation, 0, 0, 0);
+end;
+
 procedure TVCFloor.SatisfyConstraintForNode(aNode : TVerletNode;
                                        const iteration, maxIterations : Integer);
 var
    penetrationDepth : Single;
-   currentPenetrationDepth, d : Single;
+   currentPenetrationDepth : single;
+   d : TAffineVector;
+   move : TAffineVector;
 begin
-   currentPenetrationDepth:=floorLevel-(aNode.Location[1]-aNode.Radius);
+   //currentPenetrationDepth:=floorLevel-(aNode.Location[1]-aNode.Radius);
+   currentPenetrationDepth := -PointPlaneDistance(aNode.Location, FLocation, FNormal)-aNode.Radius;
+
    // Record how far down the node goes
    penetrationDepth:=currentPenetrationDepth;
    // Correct the node location
-   if currentPenetrationDepth>0 then begin
-      if BounceRatio>0 then begin
-         d:=aNode.FLocation[1]-aNode.FOldLocation[1];
-         aNode.FLocation[1]:=floorLevel+aNode.Radius;
+   if currentPenetrationDepth>0 then
+   begin
+      Move := VectorScale(FNormal, currentPenetrationDepth);
+
+      if BounceRatio>0 then
+      begin
+         d:= VectorSubtract(aNode.FLocation, aNode.FOldLocation);
+
+         //aNode.FLocation[1]:=floorLevel+aNode.Radius;
+
          if FrictionRatio>0 then
             aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
-         aNode.FOldLocation[1]:=aNode.FLocation[1]+d*BounceRatio;
+
+         // aNode.FOldLocation[1]:=aNode.FLocation[1]+d*BounceRatio;
+
+         aNode.FOldLocation := VectorAdd(aNode.FLocation, VectorScale(d, BounceRatio));
       end else begin
-         aNode.FLocation[1]:=floorLevel+aNode.Radius;
+         //aNode.FLocation[1]:=floorLevel+aNode.Radius;
+         AddVector(aNode.FLocation, Move);
          if FrictionRatio>0 then
             aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
       end;
    end;
+end;
+
+procedure TVCFloor.SetNormal(const Value: TAffineVector);
+begin
+  FNormal := Value;
+  NormalizeVector(FNormal);
 end;
 
 // ------------------
@@ -1366,6 +1401,7 @@ begin
       VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), aNode.FLocation);
    end;
 end;
+
 { TVCCube }
 
 constructor TVCCube.Create(aOwner: TVerletAssembly);
@@ -1536,5 +1572,4 @@ begin
       AddVector(aNode.FLocation, move);
    end;
 end;
-
 end.
