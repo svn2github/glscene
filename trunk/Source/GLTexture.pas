@@ -1063,6 +1063,11 @@ type
 			procedure NotifyTexMapChange(Sender : TObject);
          procedure DestroyHandles;
 
+         {: Returns True if the material is blended.<p>
+            Will return the libmaterial's blending if it is linked to a material
+            library. }
+         function Blended : Boolean;
+
          //: True if the material has a secondary texture
          function HasSecondaryTexture : Boolean;
 
@@ -3522,6 +3527,15 @@ end;
 procedure TGLMaterial.DestroyHandles;
 begin
    Texture.DestroyHandles;
+end;
+
+// Blended
+//
+function TGLMaterial.Blended : Boolean;
+begin
+   if Assigned(currentLibMaterial) then
+      Result:=currentLibMaterial.Material.Blended
+   else Result:=(BlendingMode<>bmOpaque)
 end;
 
 // HasSecondaryTexture

@@ -4093,7 +4093,7 @@ end;
 //
 function TGLCustomSceneObject.Blended : Boolean;
 begin
-   Result:=(Material.BlendingMode<>bmOpaque);
+   Result:=Material.Blended;
 end;
 
 // SetGLMaterial
