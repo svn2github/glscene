@@ -4842,13 +4842,27 @@ begin
       if not FTextureMatrixIsIdentity then
          rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
-      if Assigned(Material.FTextureEx) and not Material.TextureEx.IsTextureEnabled(1) then begin
+
+      libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
+      if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
+         if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+            xglMapTexCoordToDual
+         else xglMapTexCoordToMain
+      else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+         xglMapTexCoordToSecond
+      else xglMapTexCoordToMain;
+
+      // EG: TextureEx stuff below doesn't seem to work for libmaterials,
+      //     and interferes with Texture2, not sure what should be done to get
+      //     it operational with shaders and a 2nd material active, so I just
+      //     restored classic behaviour
+{      if Assigned(Material.FTextureEx) and not Material.TextureEx.IsTextureEnabled(1) then begin
          libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
          // calculate and apply appropriate xgl mode
          if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
             xglMapTexCoordToArbitraryAdd(1);
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
-           xglMapTexCoordToArbitraryAdd(2);
+           xglMapTexCoordToArbitraryAdd(2); }
 
          // OLD TEXCOORD MAPPING
          //if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
@@ -4858,7 +4872,7 @@ begin
          //else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
          //   xglMapTexCoordToSecond
          //else xglMapTexCoordToMain;
-      end;
+//      end;
    end;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
