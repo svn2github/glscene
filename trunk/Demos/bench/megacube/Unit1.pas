@@ -111,15 +111,8 @@ begin
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
-var
-   i : Integer;
-   t : Int64;
 begin
-   t:=StartPrecisionTimer;
-   for i:=0 to DummyCube1.Count-1 do
-      DummyCube1.Children[i].InvAbsoluteMatrixAsAddress;
-   Caption:=FloatToStr(StopPrecisionTimer(t)*1000);
-//	Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
+	Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
 	GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
