@@ -32,7 +32,7 @@ var
    // Q3 lightmaps are quite dark, we brighten them a lot by default
    vQ3BSPLightmapGammaCorrection : Single = 2.5;
    vQ3BSPLightmapBrightness : Single = 2;   // scaling factor, 1.0 = unchanged
-
+   vGLFileQ3BSPLoadMaterials : boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -113,13 +113,16 @@ begin
       mo:=TBSPMeshObject.CreateOwned(Owner.MeshObjects);
 
       // import all materials
-      for i:=0 to High(bsp.Textures) do begin
-         GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
+      if vGLFileQ3BSPLoadMaterials then
+      begin
+        for i:=0 to High(bsp.Textures) do begin
+           GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
+        end;
       end;
 
       // import all lightmaps
       lightmapLib:=Owner.LightmapLibrary;
-      if Assigned(lightmapLib) then begin
+      if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then begin
          // import lightmaps
          n:=bsp.NumOfLightmaps;
          lightmapBmp:=TBitmap.Create;
@@ -162,7 +165,7 @@ begin
          mo.Vertices.Add(bsp.Vertices[i].Position);
          mo.Normals.Add(bsp.Vertices[i].Normal);
          mo.TexCoords.Add(bsp.Vertices[i].TextureCoord);
-         if Assigned(lightMapLib) then
+         if Assigned(lightMapLib) and vGLFileQ3BSPLoadMaterials then
             mo.LighmapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
       end;
       mo.TexCoords.Scale(AffineVectorMake(1, -1, 0));
@@ -206,7 +209,7 @@ begin
                // check for BSP corruption
                if Cardinal(facePtr.textureID)<=Cardinal(bsp.NumOfTextures) then
                   fg.MaterialName:=Trim(StrPas(bsp.Textures[facePtr.textureID].TextureName));
-               if Assigned(lightmapLib) then
+               if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then
                   fg.LightMapIndex:=facePtr.lightmapID;
                lastfg:=fg;
                // Q3 Polygon Faces are actually fans, but winded the other way around!
@@ -241,5 +244,4 @@ initialization
 
    // registering this extension too might be a little abusive right now...
    RegisterVectorFileFormat('bsp', 'BSP files', TGLQ3BSPVectorFile);
-
 end.
