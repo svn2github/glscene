@@ -42,6 +42,7 @@ type
          FTexture : TGLTextureHandle;
          FImpostoredObject : TGLBaseSceneObject;
          FAspectRatio : Single;
+         FModulated : Boolean;
 
 		protected
 			{ Protected Declarations }
@@ -72,6 +73,7 @@ type
          property Builder : TGLImposterBuilder read FBuilder;
          property Texture : TGLTextureHandle read FTexture;
          property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write FImpostoredObject;
+         property Modulated : Boolean read FModulated write FModulated;
    end;
 
    // TImposterReference
@@ -238,6 +240,9 @@ type
          procedure SetSamplingRatioBias(val : Single);
          procedure SetLighting(val : TSIBLigthing);
 
+         function GetTextureSizeInfo : String;
+         procedure SetTextureSizeInfo(const texSize : String);
+
          {: Computes the optimal texture size that would be able to hold all samples. }
          function ComputeOptimalTextureSize : TGLPoint;
 
@@ -269,6 +274,7 @@ type
          property SampleSize : Integer read FSampleSize write SetSampleSize default 32;
          property SamplingRatioBias : Single read FSamplingRatioBias write SetSamplingRatioBias;
          property Lighting : TSIBLigthing read FLighting write FLighting default siblStaticLighting;
+         property TextureSizeInfo : String read GetTextureSizeInfo write SetTextureSizeInfo;
    end;
 
    // TGLDynamicImposterBuilder
@@ -421,7 +427,10 @@ begin
    else filter:=GL_LINEAR;
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
- 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+   if FModulated then begin
+      glColor4fv(@XYZWHmgVector);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   end else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
    glGetFloatv(GL_MODELVIEW_MATRIX, @mat[0][0]);
    FVx[0]:=mat[0][0];   FVy[0]:=mat[0][1];
@@ -430,9 +439,11 @@ begin
    NormalizeVector(FVx);
    NormalizeVector(FVy);
 
-   fx:=FStaticScale*Sqrt(FAspectRatio);
-   fy:=Sqr(FStaticScale)/fx;
-   yOffset:=cReferenceToPos[Builder.ImposterReference]*FStaticScale;
+   fx:=Sqrt(FAspectRatio);
+   fy:=1/fx;
+   yOffset:=cReferenceToPos[Builder.ImposterReference]*FStaticScale*fy;
+   fx:=fx*FStaticScale;
+   fy:=fy*FStaticScale;
 
    FQuad[0]:=VectorSubtract(VectorCombine(FVx, FVy,  fx,  fy+yOffset), FStaticOffset);
    FQuad[1]:=VectorSubtract(VectorCombine(FVx, FVy, -fx,  fy+yOffset), FStaticOffset);
@@ -989,6 +1000,23 @@ begin
    end;
 end;
 
+// GetTextureSizeInfo
+//
+function TGLStaticImposterBuilder.GetTextureSizeInfo : String;
+var
+   t : TGLPoint;
+begin
+   t:=ComputeOptimalTextureSize;
+   Result:=Format('%d x %d', [t.X, t.Y]);
+end;
+
+// SetTextureSizeInfo
+//
+procedure TGLStaticImposterBuilder.SetTextureSizeInfo(const texSize : String);
+begin
+   // do nothing, this is a dummy property!
+end;
+
 // Render
 //
 procedure TGLStaticImposterBuilder.Render(var rci : TRenderContextInfo;
@@ -1107,7 +1135,9 @@ var
    requiredSurface, currentSurface, bestSurface : Integer;
 begin
    nbSamples:=Coronas.SampleCount;
-   glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
+   if CurrentGLContext=nil then
+      maxTexSize:=16*1024
+   else glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
    maxSamples:=Sqr(maxTexSize div SampleSize);
    if nbSamples<maxSamples then begin
       Result.X:=-1;
