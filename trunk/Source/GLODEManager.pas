@@ -12,6 +12,9 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
+                        Fix for Hinge2 and Universal joints,
+                        Fix for TGLODEDynamic.Enabled property persistence.
     <li>10/12/04 - SG - Added TODEElementPlane,
                         Fixed TODEElementCone.Render function.
     <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
@@ -369,7 +372,7 @@ type
       procedure Finalize; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
-      procedure AlignElementsToMatrix(Mat:TMatrix);
+      procedure AlignElements;
 
     public
       { Public Declarations }
@@ -1538,6 +1541,12 @@ begin
   // Reset the contact joint counter
   FNumContactJoints:=0;
 
+  // Align static elements to their GLScene parent objects
+  for i:=0 to FODEBehaviours.Count-1 do
+    if ODEBehaviours[i] is TGLODEStatic then
+      if ODEBehaviours[i].Initialized then
+        TGLODEStatic(ODEBehaviours[i]).AlignElements;
+
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
   case FSolver of
@@ -1548,11 +1557,10 @@ begin
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
-  for i:=0 to FODEBehaviours.Count-1 do begin
-    if ODEBehaviours[i].Initialized then
-      if ODEBehaviours[i] is TGLODEDynamic then
+  for i:=0 to FODEBehaviours.Count-1 do
+    if ODEBehaviours[i] is TGLODEDynamic then
+      if ODEBehaviours[i].Initialized then
         TGLODEDynamic(ODEBehaviours[i]).AlignObject;
-  end;
 
   // Process rolling friction
   Coeff:=0;
@@ -2511,9 +2519,9 @@ begin
   Result.Initialize;
 end;
 
-// AlignElementsToMatrix
+// AlignElements
 //
-procedure TGLODEStatic.AlignElementsToMatrix(Mat:TMatrix);
+procedure TGLODEStatic.AlignElements;
 var
   i : Integer;
 begin
