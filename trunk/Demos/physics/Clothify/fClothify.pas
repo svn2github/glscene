@@ -97,9 +97,10 @@ type
 
     VCSphere : TVCSphere;
 
-    procedure RecalcMeshNormals(BaseMesh : TGLBaseMesh);
-    procedure PrepareMeshForNormalsRecalc(BaseMesh : TGLBaseMesh);
   end;
+
+  procedure RecalcMeshNormals(BaseMesh : TGLBaseMesh);
+  procedure PrepareMeshForNormalsRecalc(BaseMesh : TGLBaseMesh);
 
 var
   frmClothify: TfrmClothify;
@@ -363,7 +364,7 @@ begin
    end;
 end;
 
-procedure TfrmClothify.PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
+procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
    mo : TMeshObject;
@@ -372,8 +373,8 @@ var
 begin
   // update normals
   // (not very efficient, could use some work...)
-  for i:=0 to GLActor1.MeshObjects.Count-1 do begin
-     mo:=GLActor1.MeshObjects[i];
+  for i:=0 to BaseMesh.MeshObjects.Count-1 do begin
+     mo:=BaseMesh.MeshObjects[i];
 
      for j:=0 to mo.FaceGroups.Count-1 do begin
         if mo.FaceGroups[j] is TFGVertexNormalTexIndexList then begin
@@ -386,7 +387,7 @@ begin
   end;
 end;
 
-procedure TfrmClothify.RecalcMeshNormals(BaseMesh: TGLBaseMesh);
+procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
    mo : TMeshObject;
@@ -395,8 +396,8 @@ var
 begin
   // update normals
   // (not very efficient, could use some work...)
-  for i:=0 to GLActor1.MeshObjects.Count-1 do begin
-     mo:=GLActor1.MeshObjects[i];
+  for i:=0 to BaseMesh.MeshObjects.Count-1 do begin
+     mo:=BaseMesh.MeshObjects[i];
 
      FillChar(mo.Normals.List[0], SizeOf(TAffineVector)*mo.Normals.Count, 0);
 
