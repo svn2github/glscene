@@ -1309,6 +1309,7 @@ initialization
       RegisterSceneObject(TCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TCylinder, 'Cylinder', glsOCBasicGeometry);
       RegisterSceneObject(TDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
+      RegisterSceneObject(TArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TAnnulus, 'Annulus', glsOCAdvancedGeometry);
       RegisterSceneObject(TExtrusionSolid, 'ExtrusionSolid', glsOCAdvancedGeometry);
       RegisterSceneObject(TMultiPolygon, 'MultiPolygon', glsOCAdvancedGeometry);
@@ -1321,7 +1322,6 @@ initialization
       RegisterSceneObject(TPortal, 'Portal', glsOCMeshObjects);
       RegisterSceneObject(THeightField, 'HeightField', glsOCProceduralObjects);
       RegisterSceneObject(TGLParticles, 'Particles', glsOCProceduralObjects);
-      RegisterSceneObject(TArrowLine, 'ArrowLine', glsOCSpecialObjects);
       RegisterSceneObject(TEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
@@ -1330,12 +1330,11 @@ initialization
       RegisterSceneObject(TTeapot, 'Teapot', glsOCSpecialObjects);
       RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TXYZGrid, 'XYZGrid', glsOCSpecialObjects);
+      RegisterSceneObject(TZShadows, 'ZShadows', glsOCSpecialObjects);
       RegisterSceneObject(THUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(THUDText, 'HUDText', glsOCHUDObjects);
       RegisterSceneObject(TDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
-
-      RegisterSceneObject(TZShadows, 'Shadows', '');
    end;
 
 finalization

@@ -308,6 +308,7 @@ procedure ClearGLError;
 
 var
    GLContextManager : TGLContextManager;
+   vIgnoreOpenGLErrors : Boolean = False;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -357,7 +358,8 @@ begin
       except
          // Egg : ignore exceptions here, will perhaps avoid problem expressed before
 		end;
-		raise EOpenGLError.Create(gluErrorString(GLError));
+      if not vIgnoreOpenGLErrors then
+   		raise EOpenGLError.Create(gluErrorString(GLError));
 	end;
 end;
 
@@ -560,44 +562,42 @@ var
    i : Integer;
    oldContext, compatContext : TGLContext;
 begin
-   if IsValid then begin
-      if vCurrentGLContext<>Self then begin
-         oldContext:=vCurrentGLContext;
-         if Assigned(oldContext) then
-            oldContext.Deactivate;
-      end else oldContext:=nil;
-      Activate;
-      try
-         compatContext:=FindCompatibleContext;
-         if Assigned(compatContext) then begin
-            // transfer handle ownerships to the compat context
-            for i:=FOwnedHandles.Count-1 downto 0 do begin
-               compatContext.FOwnedHandles.Add(FOwnedHandles[i]);
-               TGLContextHandle(FOwnedHandles[i]).FRenderingContext:=compatContext;
-            end;
-         end else begin
-            // no compat context, release handles
-            for i:=FOwnedHandles.Count-1 downto 0 do begin
-               with TGLContextHandle(FOwnedHandles[i]) do begin
-                  DoDestroyHandle;
-                  FHandle:=0;
-                  FRenderingContext:=nil;
-               end;
+   if vCurrentGLContext<>Self then begin
+      oldContext:=vCurrentGLContext;
+      if Assigned(oldContext) then
+         oldContext.Deactivate;
+   end else oldContext:=nil;
+   Activate;
+   try
+      compatContext:=FindCompatibleContext;
+      if Assigned(compatContext) then begin
+         // transfer handle ownerships to the compat context
+         for i:=FOwnedHandles.Count-1 downto 0 do begin
+            compatContext.FOwnedHandles.Add(FOwnedHandles[i]);
+            TGLContextHandle(FOwnedHandles[i]).FRenderingContext:=compatContext;
+         end;
+      end else begin
+         // no compat context, release handles
+         for i:=FOwnedHandles.Count-1 downto 0 do begin
+            with TGLContextHandle(FOwnedHandles[i]) do begin
+               DoDestroyHandle;
+               FHandle:=0;
+               FRenderingContext:=nil;
             end;
          end;
-         FOwnedHandles.Clear;
-         Manager.DestroyingContextBy(Self);
-         FSharedContexts.Remove(Self);
-         PropagateSharedContext;
-         FSharedContexts.Clear;
-         Active:=False;
-         DoDestroyContext;
-      finally
-         if Assigned(oldContext) then
-            oldContext.Activate;
       end;
-      FAcceleration:=chaUnknown;
-   end else raise EGLContext.Create(cContextNotCreated);
+      FOwnedHandles.Clear;
+      Manager.DestroyingContextBy(Self);
+      FSharedContexts.Remove(Self);
+      PropagateSharedContext;
+      FSharedContexts.Clear;
+      Active:=False;
+      DoDestroyContext;
+   finally
+      if Assigned(oldContext) then
+         oldContext.Activate;
+   end;
+   FAcceleration:=chaUnknown;
 end;
 
 // Activate
@@ -737,7 +737,7 @@ end;
 procedure TGLListHandle.DoDestroyHandle;
 begin
    // reset error status
-   glGetError;
+   ClearGLError;
    // delete
    glDeleteLists(FHandle, 1);
    // check for error

@@ -2,6 +2,12 @@
 
    SDL specific Context and Viewer.<p>
 
+   NOTA: SDL notifies use of context destruction *after* it happened, this prevents
+         clean release of allocated stuff and requires a temporary switch to
+         "ignore OpenGL errors" mode during destruction, thus potentially
+         leaking memory (depending on hardware drivers willingness to perform
+         automatic releases)<p>
+
    <b>History : </b><font size=-1><ul>
       <li>12/12/01 - EG - Creation
    </ul></font>
@@ -22,17 +28,22 @@ type
    TGLSDLViewer = class (TGLNonVisualViewer)
       private
          { Private Declarations }
+         FCaption : String;
          FOnSDLEvent : TSDLEvent;
          FOnEventPollDone : TNotifyEvent;
+         FOnResize : TNotifyEvent;
 
       protected
          { Protected Declarations }
+         procedure SetCaption(const val : String);
+
          procedure DoOnOpen(sender : TObject);
          procedure DoOnClose(sender : TObject);
          procedure DoOnResize(sender : TObject);
          procedure DoOnSDLEvent(sender : TObject; const event : TSDL_Event);
          procedure DoOnEventPollDone(sender : TObject);
 
+         procedure DoBufferStructuralChange(Sender : TObject); override;
          procedure PrepareGLContext; override;
 
       public
@@ -42,8 +53,14 @@ type
 
          procedure Render; override;
 
+         function Active : Boolean;
+
       published
          { Public Declarations }
+         property Caption : String read FCaption write SetCaption;
+
+         property OnResize : TNotifyEvent read FOnResize write FOnResize;
+
          {: Fired whenever an SDL Event is polled.<p>
             SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
             they are passed via OnClose and OnResize respectively. }
@@ -64,6 +81,7 @@ type
       private
          { Private Declarations }
          FSDLWin : TSDLWindow;
+         FSimulatedValidity : Boolean; // Hack around SDL's post-notified destruction of context
 
       protected
          { Protected Declarations }
@@ -83,6 +101,8 @@ type
          procedure SwapBuffers; override;
    end;
 
+procedure Register;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -91,7 +111,12 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL12, GLCrossPlatform;
+uses OpenGL12, GLCrossPlatform, XOpenGL;
+
+procedure Register;
+begin
+	RegisterComponents('GLScene', [TGLSDLViewer]);
+end;
 
 // ------------------
 // ------------------ TGLSDLViewer ------------------
@@ -113,6 +138,13 @@ begin
    inherited Destroy;
 end;
 
+// DoBufferStructuralChange
+//
+procedure TGLSDLViewer.DoBufferStructuralChange(Sender : TObject);
+begin
+   // ignore that, supporting it with SDL is not very praticable as of now...
+end;
+
 // PrepareGLContext
 //
 procedure TGLSDLViewer.PrepareGLContext;
@@ -121,6 +153,7 @@ begin
       Width:=Self.Width;
       Height:=Self.Height;
       with FSDLWin do begin
+         Caption:=Self.Caption;
          OnOpen:=DoOnOpen;
          OnClose:=DoOnClose;
          OnResize:=DoOnResize;
@@ -134,10 +167,31 @@ end;
 //
 procedure TGLSDLViewer.Render;
 begin
+   LoadOpenGL;
    if Buffer.RenderingContext=nil then begin
       Buffer.CreateRC(0, False);
    end;
    Buffer.Render;
+end;
+
+// Active
+//
+function TGLSDLViewer.Active : Boolean;
+begin
+   Result:=Assigned(Buffer.RenderingContext) and Buffer.RenderingContext.IsValid;
+end;
+
+// SetCaption
+//
+procedure TGLSDLViewer.SetCaption(const val : String);
+begin
+   if val<>FCaption then begin
+      FCaption:=val;
+      if Buffer.RenderingContext<>nil then
+         with Buffer.RenderingContext as TGLSDLContext do
+            if Assigned(FSDLWin) then
+               FSDLWin.Caption:=FCaption;
+   end;
 end;
 
 // DoOnOpen
@@ -158,7 +212,13 @@ end;
 //
 procedure TGLSDLViewer.DoOnResize(sender : TObject);
 begin
-   // nothing yet
+   with Buffer.RenderingContext as TGLSDLContext do begin
+      Self.Width:=FSDLWin.Width;
+      Self.Height:=FSDLWin.Height;
+      Buffer.Resize(FSDLWin.Width, FSDLWin.Height);
+   end;
+   if Assigned(FOnResize) then
+      FOnResize(Self);
 end;
 
 // DoOnSDLEvent
@@ -192,9 +252,19 @@ end;
 // Destroy
 //
 destructor TGLSDLContext.Destroy;
+var
+   oldIgnore : Boolean;
 begin
-   FSDLWin.Free;
-   inherited Destroy;
+   oldIgnore:=vIgnoreOpenGLErrors;
+   FSimulatedValidity:=True;
+   vIgnoreOpenGLErrors:=True;
+   try
+      inherited Destroy;
+   finally
+      vIgnoreOpenGLErrors:=oldIgnore;
+      FSimulatedValidity:=False;
+   end;
+   FreeAndNil(FSDLWin);
 end;
 
 // DoCreateContext
@@ -226,6 +296,11 @@ begin
    FSDLWin.Open;
    if not FSDLWin.Active then
       raise Exception.Create('SDLWindow open failed.');
+
+   xglMapTexCoordToNull;
+   ReadExtensions;
+   ReadImplementationProperties;
+   xglMapTexCoordToMain;
 end;
 
 // DoCreateMemoryContext
@@ -254,21 +329,21 @@ end;
 //
 procedure TGLSDLContext.DoActivate;
 begin
-   // nothing (only one context, always active)
+   // nothing particular (only one context, always active)
 end;
 
 // Deactivate
 //
 procedure TGLSDLContext.DoDeactivate;
 begin
-   // ignore (only one context, always active)
+   // nothing particular (only one context, always active)
 end;
 
 // IsValid
 //
 function TGLSDLContext.IsValid : Boolean;
 begin
-   Result:=FSDLWin.Active;
+   Result:=(Assigned(FSDLWin) and (FSDLWin.Active)) or FSimulatedValidity;
 end;
 
 // SwapBuffers
@@ -286,6 +361,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   RegisterClass(TGLSDLViewer);
    RegisterGLContextClass(TGLSDLContext);
 
 end.

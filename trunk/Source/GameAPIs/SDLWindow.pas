@@ -11,6 +11,7 @@
    which is a Delphi header conversion for SDL (http://libsdl.org)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
       <li>12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
                            Added doc tags, Stencil buffer and others.
 	   <li>11/12/01 - Egg - Creation
@@ -584,9 +585,13 @@ begin
             SDL_VIDEORESIZE : begin
                FWidth:=event.resize.w;
                FHeight:=event.resize.h;
-               CreateOrRecreateSDLSurface;
-               if not Assigned(FSDLSurface) then
-                  RaiseSDLError('Could not get a surface after resize.');
+               if voOpenGL in Options then
+                  ReSizeGLWindow
+               else begin
+                  CreateOrRecreateSDLSurface;
+                  if not Assigned(FSDLSurface) then
+                     RaiseSDLError('Could not get a surface after resize.');
+               end;
                if Assigned(FOnResize) then
                   FOnResize(Self);
             end;
