@@ -6,9 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>24/06/03 - MF - Added force kickbacks for integration with external
-                          physics.
-                          Removed several embarrassing warnings
+      <li>24/06/03 - MF - Removed several embarrassing warnings
       <li>17/06/03 - MF - Creation
    </ul>
 }

@@ -7,6 +7,8 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/06/03 - MF - Added force kickbacks for integration with external
+                          physics. Needs to be split into force+torque!
       <li>19/06/03 - MF - Added TVerletGlobalConstraint.SatisfyConstraintForEdge
                           and implemented for TVCSphere and TVCCapsule 
       <li>19/06/03 - MF - Added friction to TVCCylinder
@@ -208,7 +210,11 @@ type
                         const iteration, maxIterations : Integer); virtual; abstract;
          procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
                         const iteration, maxIterations : Integer); virtual;
+
          property KickbackForce : TAffineVector read FKickbackForce write FKickbackForce;
+
+         procedure AddForce(Force : TAffineVector);
+         procedure AddForceAt(Force : TAffineVector);
    end;
 
    // TVerletGlobalFrictionConstraint
@@ -851,6 +857,17 @@ end;
 
 // RemoveNode
 //
+procedure TVerletGlobalConstraint.AddForce(Force: TAffineVector);
+begin
+  AddVector(FKickbackForce, Force);
+end;
+
+procedure TVerletGlobalConstraint.AddForceAt(Force: TAffineVector);
+begin
+  // BAD BAD!
+  AddVector(FKickbackForce, Force);
+end;
+
 procedure TVerletGlobalConstraint.BeforeIterations;
 begin
   inherited;
@@ -1570,7 +1587,7 @@ begin
       // Add the force to the kickback
       // F = a * m
       // a = move / deltatime
-      AddVector(FKickbackForce, VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
+      AddForce(VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 end;
 
@@ -1605,7 +1622,7 @@ begin
       // Add the force to the kickback
       // F = a * m
       // a = move / deltatime
-      AddVector(FKickbackForce, VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
+      AddForce(VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1917,7 +1934,7 @@ begin
 
       aNode.FLocation:=newLocation;
 
-      AddVector(FKickbackForce, VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
+      AddForce(VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1964,7 +1981,7 @@ begin
       AddVector(aEdge.NodeA.FLocation, move);
       AddVector(aEdge.NodeB.FLocation, move);
 
-      AddVector(FKickbackForce, VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
+      AddForce(VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 
 end;
