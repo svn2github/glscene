@@ -45,6 +45,7 @@ type
     Plane1: TGLPlane;
     Cylinder1: TGLCylinder;
     GLCube1: TGLCube;
+    GLAnnulus1: TGLAnnulus;
     procedure BUCastClick(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

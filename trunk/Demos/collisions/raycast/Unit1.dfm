@@ -134,6 +134,14 @@ object Form1: TForm1
         BottomRadius = 0.100000001490116
         Height = 0.600000023841858
         TopRadius = 0.100000001490116
+        object GLAnnulus1: TGLAnnulus
+          Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
+          BottomRadius = 0.230000004172325
+          Height = 0.200000002980232
+          BottomInnerRadius = 0.180000007152557
+          TopInnerRadius = 0.180000007152557
+          TopRadius = 0.230000004172325
+        end
       end
       object GLCube1: TGLCube
         Direction.Coordinates = {00000000B28F70BF431DAF3E00000000}
