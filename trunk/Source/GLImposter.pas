@@ -17,12 +17,16 @@ uses
   GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform;
 
 type
-   TGLImposterBuilder = class;
-
-   // TImposter
+   // TImposterOptions
    //
    TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering);
    TImposterOptions = set of TImposterOption;
+
+const
+   cDefaultImposterOptions = [impoBlended, impoAlphaTest];
+
+type
+   TGLImposterBuilder = class;
 
    // TImposter
    //
@@ -33,14 +37,15 @@ type
    TImposter = class (TObject)
       private
 	      { Private Declarations }
+         FRequestCount : Integer;
          FBuilder : TGLImposterBuilder;
          FTexture : TGLTextureHandle;
-         FOptions : TImposterOptions;
          FImpostoredObject : TGLBaseSceneObject;
 
 		protected
 			{ Protected Declarations }
          FVx, FVy : TAffineVector;
+         FStaticOffset : TVector;
          FQuad : array [0..3] of TAffineVector;
 
          procedure PrepareTexture; dynamic;
@@ -58,7 +63,6 @@ type
 
          property Builder : TGLImposterBuilder read FBuilder;
          property Texture : TGLTextureHandle read FTexture;
-         property Options : TImposterOptions read FOptions write FOptions;
          property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write FImpostoredObject;
    end;
 
@@ -68,19 +72,26 @@ type
    TGLImposterBuilder = class (TGLUpdateAbleComponent)
       private
 	      { Private Declarations }
+         FBackColor : TGLColor;
+         FBuildOffset : TGLCoordinates;
          FImposterRegister : TPersistentObjectList;
          FRenderPoint : TGLRenderPoint;
+         FImposterOptions : TImposterOptions;
+         FAlphaTreshold : Single;
 
       protected
 			{ Protected Declarations }
          procedure SetRenderPoint(val : TGLRenderPoint);
          procedure RenderPointFreed(Sender : TObject);
+         procedure SetBackColor(val : TGLColor);
+         procedure SetBuildOffset(val : TGLCoordinates);
 
          procedure InitializeImpostorTexture(const textureSize : TGLPoint);
 
          property ImposterRegister : TPersistentObjectList read FImposterRegister;
          procedure UnregisterImposter(imposter : TImposter);
 
+         function CreateNewImposter : TImposter; virtual;
          procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); virtual; abstract;
 
       public
@@ -90,11 +101,22 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure NotifyChange(Sender : TObject); override;
 
-         function CreateNewImposter : TImposter; virtual;
+         {: Returns a valid imposter for the specified object.<p>
+            Imposter must have been requested first, and the builder given
+            an opportunity to prepare it before it can be available. } 
+         function ImposterFor(impostoredObject : TGLBaseSceneObject) : TImposter;
+         {: Request an imposter to be prepared for the specified object. }
+         procedure RequestImposterFor(impostoredObject : TGLBaseSceneObject);
+         {: Tells the imposter for the specified object is no longer needed. }
+         procedure UnRequestImposterFor(impostoredObject : TGLBaseSceneObject);
 
       published
 	      { Published Declarations }
          property RenderPoint : TGLRenderPoint read FRenderPoint write SetRenderPoint;
+         property BackColor : TGLColor read FBackColor write SetBackColor;
+         property BuildOffset : TGLCoordinates read FBuildOffset write SetBuildOffset;
+         property ImposterOptions : TImposterOptions read FImposterOptions write FImposterOptions default cDefaultImposterOptions;
+         property AlphaTreshold : Single read FAlphaTreshold write FAlphaTreshold;
    end;
 
 	// TGLStaticImposterBuilderCorona
@@ -104,6 +126,7 @@ type
 	      { Private Declarations }
          FSamples : Integer;
          FElevation : Single;
+         FSampleBaseIndex : Integer;
 
 	   protected
 	      { Protected Declarations }
@@ -116,7 +139,6 @@ type
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
-         function SampleBaseIndex : Integer;
 
 	   published
 	      { Published Declarations }
@@ -124,17 +146,27 @@ type
          property Elevation : Single read FElevation write SetElevation;
 	end;
 
+   TCoronaTangentLookup = record
+      minTan, maxTan : Single;
+      corona : TGLStaticImposterBuilderCorona;
+   end;
+
 	// TGLStaticImposterBuilderCoronas
 	//
 	TGLStaticImposterBuilderCoronas = class (TOwnedCollection)
 	   private
 	      { Private Declarations }
+         FCoronaTangentLookup : array of TCoronaTangentLookup;
 
 	   protected
 	      { Protected Declarations }
          procedure SetItems(index : Integer; const val : TGLStaticImposterBuilderCorona);
 	      function GetItems(index : Integer) : TGLStaticImposterBuilderCorona;
          procedure Update(Item: TCollectionItem); override;
+
+         procedure PrepareSampleBaseIndices;
+         procedure PrepareCoronaTangentLookup;
+         function CoronaForElevationTangent(aTangent : Single) : TGLStaticImposterBuilderCorona;
 
       public
 	      { Public Declarations }
@@ -180,6 +212,7 @@ type
          FSampleSize : Integer;
          FTextureSize : TGLPoint;
          FSamplesPerAxis : TGLPoint;
+         FInvSamplesPerAxis : TVector2f;
          FSamplingRatioBias : Single;
          FLighting : TSIBLigthing;
 
@@ -193,14 +226,14 @@ type
          {: Computes the optimal texture size that would be able to hold all samples. }
          function ComputeOptimalTextureSize : TGLPoint;
 
+         function CreateNewImposter : TImposter; override;
          procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); override;
 
       public
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-         function CreateNewImposter : TImposter; override;
-         
+
          {: Render imposter texture.<p>
             Buffer and object must be compatible, RC must have been activated. }
          procedure Render(var rci : TRenderContextInfo;
@@ -258,7 +291,6 @@ type
    TGLImposter = class(TGLImmaterialSceneObject)
       private
 	      { Private Declarations }
-         FImposter : TImposter;
          FBuilder : TGLImposterBuilder;
          FImpostoredObject : TGLBaseSceneObject;
 
@@ -267,8 +299,6 @@ type
          procedure SetBuilder(const val : TGLImposterBuilder);
          procedure SetImpostoredObject(const val : TGLBaseSceneObject);
 
-         procedure SetupImposter;
-         
 {         function CalcError(NewMatrix : TMatrix) : Single;
          function GetTextureHandle : Cardinal;}
 
@@ -281,8 +311,6 @@ type
                             renderSelf, renderChildren : Boolean); override;
 {         procedure Invalidate;
          function AxisAlignedDimensionsUnscaled : TVector; override; }
-
-         property Imposter : TImposter read FImposter;
 
       published
 	      { Published Declarations }
@@ -353,20 +381,21 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_CULL_FACE);
+   glEnable(GL_TEXTURE_2D);
 
-   if impoAlphaTest in Options then
-      glEnable(GL_ALPHA_TEST)
-   else glDisable(GL_ALPHA_TEST);
+   if impoAlphaTest in Builder.ImposterOptions then begin
+      glEnable(GL_ALPHA_TEST);
+      glAlphaFunc(GL_GEQUAL, Builder.AlphaTreshold);
+   end else glDisable(GL_ALPHA_TEST);
 
-   if impoBlended in Options then begin
+   if impoBlended in Builder.ImposterOptions then begin
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    end else glDisable(GL_BLEND);
 
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D, Texture.Handle);
+   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Texture.Handle);
 
-   if impoNearestFiltering in Options then
+   if impoNearestFiltering in Builder.ImposterOptions then
       filter:=GL_NEAREST
    else filter:=GL_LINEAR;
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
@@ -379,6 +408,8 @@ begin
    FVx[2]:=mat[2][0];   FVy[2]:=mat[2][1];
    NormalizeVector(FVx);
    NormalizeVector(FVy);
+
+   FStaticOffset:=Builder.BuildOffset.DirectVector;
 
    FQuad[0]:=VectorCombine(FVx, FVy,  1,  1);
    FQuad[1]:=VectorCombine(FVx, FVy, -1,  1);
@@ -417,6 +448,10 @@ constructor TGLImposterBuilder.Create(AOwner : TComponent);
 begin
    inherited;
    FImposterRegister:=TPersistentObjectList.Create;
+   FBackColor:=TGLColor.CreateInitialized(Self, clrTransparent);
+   FBuildOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint);
+   FImposterOptions:=cDefaultImposterOptions;
+   FAlphaTreshold:=0.5;
 end;
 
 // Destroy
@@ -425,18 +460,32 @@ destructor TGLImposterBuilder.Destroy;
 var
    i : Integer;
 begin
+   FBuildOffset.Free;
+   FBackColor.Free;
    for i:=0 to FImposterRegister.Count-1 do
       TImposter(FImposterRegister[i]).FBuilder:=nil;
-   FImposterRegister.Free;
+   FImposterRegister.CleanFree;
    inherited;
 end;
 
 // Notification
 //
 procedure TGLImposterBuilder.Notification(AComponent: TComponent; Operation: TOperation);
+var
+   i : Integer;
+   imposter : TImposter;
 begin
-   if (Operation=opRemove) and (AComponent=FRenderPoint) then
-      FRenderPoint:=nil;
+   if Operation=opRemove then begin
+      if AComponent=FRenderPoint then
+         FRenderPoint:=nil;
+      for i:=FImposterRegister.Count-1 downto 0 do begin
+         imposter:=TImposter(FImposterRegister[i]);
+         if imposter.ImpostoredObject=AComponent then begin
+            imposter.Free;
+            Break;
+         end;
+      end;
+   end;
    inherited;
 end;
 
@@ -456,6 +505,48 @@ begin
    for i:=0 to FImposterRegister.Count-1 do
       TImposter(FImposterRegister[i]).Texture.DestroyHandle;
    inherited;
+end;
+
+// ImposterFor
+//
+function TGLImposterBuilder.ImposterFor(impostoredObject : TGLBaseSceneObject) : TImposter;
+var
+   i : Integer;
+begin
+   for i:=0 to FImposterRegister.Count-1 do begin
+      Result:=TImposter(FImposterRegister[i]);
+      if Result.ImpostoredObject=impostoredObject then
+         Exit;
+   end;
+   Result:=nil;
+end;
+
+// RequestImposterFor
+//
+procedure TGLImposterBuilder.RequestImposterFor(impostoredObject : TGLBaseSceneObject);
+var
+   imposter : TImposter;
+begin
+   if impostoredObject=nil then Exit;
+   imposter:=ImposterFor(impostoredObject);
+   if imposter=nil then begin
+      imposter:=CreateNewImposter;
+      imposter.ImpostoredObject:=impostoredObject;
+   end;
+   Inc(imposter.FRequestCount);
+end;
+
+procedure TGLImposterBuilder.UnRequestImposterFor(impostoredObject : TGLBaseSceneObject);
+var
+   imposter : TImposter;
+begin
+   if impostoredObject=nil then Exit;
+   imposter:=ImposterFor(impostoredObject);
+   if imposter<>nil then begin
+      Dec(imposter.FRequestCount);
+      if imposter.FRequestCount=0 then
+         imposter.Free;
+   end;
 end;
 
 // SetRenderPoint
@@ -480,6 +571,20 @@ end;
 procedure TGLImposterBuilder.RenderPointFreed(Sender : TObject);
 begin
    FRenderPoint:=nil;
+end;
+
+// SetBackColor
+//
+procedure TGLImposterBuilder.SetBackColor(val : TGLColor);
+begin
+   FBackColor.Assign(val);
+end;
+
+// SetBuildOffset
+//
+procedure TGLImposterBuilder.SetBuildOffset(val : TGLCoordinates);
+begin
+   FBuildOffset.Assign(val);
 end;
 
 // InitializeImpostorTexture
@@ -537,19 +642,6 @@ begin
    inherited;
 end;
 
-// SampleBaseIndex
-//
-function TGLStaticImposterBuilderCorona.SampleBaseIndex : Integer;
-var
-   i : Integer;
-begin
-   Result:=0;
-   with Collection as TGLStaticImposterBuilderCoronas do begin
-      for i:=0 to Self.Index-1 do
-         Result:=Result+Items[i].Samples;
-   end;
-end;
-
 // GetDisplayName
 //
 function TGLStaticImposterBuilderCorona.GetDisplayName : String;
@@ -573,7 +665,7 @@ end;
 procedure TGLStaticImposterBuilderCorona.SetElevation(val : Single);
 begin
    if val<>FElevation then begin
-      FElevation:=ClampValue(val, -90, 90);
+      FElevation:=ClampValue(val, -89, 89);
       (Collection as TGLStaticImposterBuilderCoronas).NotifyChange;
    end;
 end;
@@ -655,6 +747,68 @@ begin
       Result:=Result+Items[i].Samples;
 end;
 
+// PrepareSampleBaseIndices
+//
+procedure TGLStaticImposterBuilderCoronas.PrepareSampleBaseIndices;
+var
+   p, i : Integer;
+begin
+   p:=0;
+   for i:=0 to Count-1 do begin
+      Items[i].FSampleBaseIndex:=p;
+      Inc(p, Items[i].Samples);
+   end;
+end;
+
+// PrepareCoronaTangentLookup
+//
+procedure TGLStaticImposterBuilderCoronas.PrepareCoronaTangentLookup;
+var
+   i, j : Integer;
+   corona : TGLStaticImposterBuilderCorona;
+   boundary : Single;
+begin
+   SetLength(FCoronaTangentLookup, Count);
+   // place them in the array and sort by ascending elevation
+   for i:=0 to Count-1 do
+      FCoronaTangentLookup[i].corona:=Items[i];
+   for i:=0 to Count-2 do for j:=i+1 to Count-1 do
+      if FCoronaTangentLookup[j].corona.Elevation<FCoronaTangentLookup[i].corona.Elevation then begin
+         corona:=FCoronaTangentLookup[j].corona;
+         FCoronaTangentLookup[j].corona:=FCoronaTangentLookup[i].corona;
+         FCoronaTangentLookup[i].corona:=corona;
+      end;
+   // adjust min max then intermediate boundaries
+   FCoronaTangentLookup[0].minTan:=-1e30;
+   FCoronaTangentLookup[Count-1].minTan:=1e30;
+   for i:=0 to Count-2 do begin
+      boundary:=Tan((0.5*cPIdiv180)*( FCoronaTangentLookup[i].corona.Elevation
+                                     +FCoronaTangentLookup[i+1].corona.Elevation));
+      FCoronaTangentLookup[i].maxTan:=boundary;
+      FCoronaTangentLookup[i+1].minTan:=boundary;
+   end;
+end;
+
+// CoronaForElevationTangent
+//
+function TGLStaticImposterBuilderCoronas.CoronaForElevationTangent(aTangent : Single) : TGLStaticImposterBuilderCorona;
+var
+   i, n : Integer;
+begin
+   n:=High(FCoronaTangentLookup);
+   if (n=0) or (aTangent<=FCoronaTangentLookup[0].maxTan) then
+      Result:=FCoronaTangentLookup[0].corona
+   else if aTangent>FCoronaTangentLookup[n].minTan then
+      Result:=FCoronaTangentLookup[n].corona
+   else begin
+      Result:=FCoronaTangentLookup[1].corona;
+      for i:=2 to n-2 do begin
+         if aTangent<=FCoronaTangentLookup[i].minTan then Break;
+         Result:=FCoronaTangentLookup[i].corona;
+      end;
+   end;
+end;
+
 // ----------
 // ---------- TStaticImposter ----------
 // ----------
@@ -665,47 +819,46 @@ procedure TStaticImposter.Render(var rci : TRenderContextInfo;
                                  const objPos, localCameraPos : TVector;
                                  size : Single);
 var
-   elevationAngle, bestAngleDelta, angleDelta, azimuthAngle : Single;
+   azimuthAngle : Single;
    i : Integer;
    bestCorona : TGLStaticImposterBuilderCorona;
    tx, ty, tdx, tdy, s : Single;
    siBuilder : TGLStaticImposterBuilder;
-begin
+   locQuad : array [0..3] of TAffineVector;
+begin                  // inherited; exit;
+   siBuilder:=TGLStaticImposterBuilder(Builder);
+
    // determine closest corona
-   elevationAngle:=c180divPI*ArcTan2(localCameraPos[1], VectorLength(localCameraPos[0], localCameraPos[2]));
-   bestAngleDelta:=1e20;
-   bestCorona:=nil;
-   siBuilder:=Builder as TGLStaticImposterBuilder;
-   with siBuilder.Coronas do begin
-      for i:=0 to Count-1 do begin
-         angleDelta:=Abs(Items[i].Elevation-elevationAngle);
-         if angleDelta<bestAngleDelta then begin
-            bestAngleDelta:=angleDelta;
-            bestCorona:=Items[i];
-         end;
-      end;
-   end;
-   Assert(Assigned(bestCorona));
+   bestCorona:=siBuilder.Coronas.CoronaForElevationTangent(
+                     localCameraPos[1]/VectorLength(localCameraPos[0], localCameraPos[2]));
 
    // determine closest sample in corona
-   azimuthAngle:=ArcTan2(localCameraPos[2], localCameraPos[0])+PI;
+   azimuthAngle:=FastArcTan2(localCameraPos[2], localCameraPos[0])+PI;
    i:=Round(azimuthAngle*bestCorona.Samples*cInv2PI);
-   if i<0 then i:=0;
-   if i>=bestCorona.Samples then i:=bestCorona.Samples-1;
-   i:=bestCorona.SampleBaseIndex+i;
+   if i<0 then
+      i:=0
+   else if i>=bestCorona.Samples then
+      i:=bestCorona.Samples-1;
+   i:=bestCorona.FSampleBaseIndex+i;
 
-   tdx:=1/siBuilder.SamplesPerAxis.X;
-   tdy:=1/siBuilder.SamplesPerAxis.Y;
+   tdx:=siBuilder.FInvSamplesPerAxis[0];
+   tdy:=siBuilder.FInvSamplesPerAxis[1];
    tx:=tdx*(i mod siBuilder.SamplesPerAxis.X);
    ty:=tdy*(i div siBuilder.SamplesPerAxis.X);
    s:=Size/siBuilder.SamplingRatioBias;
 
+   for i:=0 to 3 do begin
+      locQuad[i][0]:=FQuad[i][0]*s+objPos[0]-FStaticOffset[0];
+      locQuad[i][1]:=FQuad[i][1]*s+objPos[1]-FStaticOffset[1];
+      locQuad[i][2]:=FQuad[i][2]*s+objPos[2]-FStaticOffset[2];
+   end;
+
    // then render it
    glBegin(GL_QUADS);
-      glTexCoord2f(tx+tdx, ty+tdy); glVertex3f(FQuad[0][0]*s+objPos[0], FQuad[0][1]*s+objPos[1], FQuad[0][2]*s+objPos[2]);
-      glTexCoord2f(tx, ty+tdy);     glVertex3f(FQuad[1][0]*s+objPos[0], FQuad[1][1]*s+objPos[1], FQuad[1][2]*s+objPos[2]);
-      glTexCoord2f(tx, ty);         glVertex3f(FQuad[2][0]*s+objPos[0], FQuad[2][1]*s+objPos[1], FQuad[2][2]*s+objPos[2]);
-      glTexCoord2f(tx+tdx, ty);     glVertex3f(FQuad[3][0]*s+objPos[0], FQuad[3][1]*s+objPos[1], FQuad[3][2]*s+objPos[2]);
+      glTexCoord2f(tx+tdx, ty+tdy); glVertex3fv(@locQuad[0]);
+      glTexCoord2f(tx,     ty+tdy); glVertex3fv(@locQuad[1]);
+      glTexCoord2f(tx,     ty);     glVertex3fv(@locQuad[2]);
+      glTexCoord2f(tx+tdx, ty);     glVertex3fv(@locQuad[3]);
    glEnd;
 end;
 
@@ -738,7 +891,6 @@ end;
 function TGLStaticImposterBuilder.CreateNewImposter : TImposter;
 begin
    Result:=TStaticImposter.Create(Self);
-   Result.Options:=[impoBlended, impoAlphaTest];
 end;
 
 // SetCoronas
@@ -755,7 +907,7 @@ procedure TGLStaticImposterBuilder.SetSampleSize(val : Integer);
 begin
    val:=RoundUpToPowerOf2(val);
    if val<8 then val:=8;
-   if val>512 then val:=512;
+   if val>1024 then val:=1024;
    if val<>FSampleSize then begin
       FSampleSize:=val;
       NotifyChange(Self);
@@ -796,23 +948,31 @@ var
    fx, fy : Single;
    viewPort : TVector4i;
 begin
+   Coronas.PrepareCoronaTangentLookup;
+   Coronas.PrepareSampleBaseIndices;
+
    FTextureSize:=ComputeOptimalTextureSize;
-   Assert((FTextureSize.X>=0) and (FTextureSize.Y>=0),
-          'Too many samples, can''t fit in a texture!');
+   if (FTextureSize.X<=0) and (FTextureSize.Y<=0) then begin
+      SampleSize:=SampleSize shr 1;
+      Assert(False, 'Too many samples, can''t fit in a texture!');
+   end;
 
    FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
    FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
+   FInvSamplesPerAxis[0]:=1/FSamplesPerAxis.X;
+   FInvSamplesPerAxis[1]:=1/FSamplesPerAxis.Y;
 
    radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
    glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
    glGetIntegerv(GL_VIEWPORT, @viewPort);
 
    Assert((viewPort[2]>=SampleSize) and (viewPort[3]>=SampleSize),
-          'ViewPort too small to render imposter samples!'); 
+          'ViewPort too small to render imposter samples!');
 
    // Setup the buffer in a suitable fashion for our needs
    glPushAttrib(GL_ENABLE_BIT+GL_COLOR_BUFFER_BIT);
-   glClearColor(1, 1, 1, 0);
+   with FBackColor do
+      glClearColor(Red, Green, Blue, Alpha);
    if Lighting=siblNoLighting then
       glDisable(GL_LIGHTING);
 
@@ -832,7 +992,8 @@ begin
    if destImposter.Texture.Handle=0 then begin
       destImposter.PrepareTexture;
       InitializeImpostorTexture(FTextureSize);
-   end else glBindTexture(GL_TEXTURE_2D, destImposter.Texture.Handle);
+      rci.GLStates.ResetGLCurrentTexture;
+   end;
 
    // Now render each sample
    curSample:=0;
@@ -850,13 +1011,16 @@ begin
          gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2], 0, 0, 0, 0, 1, 0);
          if Lighting=siblStaticLighting then
             (rci.scene as TGLScene).SetupLights(maxLight);
-
+         glTranslatef(FBuildOffset.X, FBuildOffset.Y, FBuildOffset.Z);
          impostoredObject.Render(rci);
 
          xDest:=(curSample mod FSamplesPerAxis.X)*SampleSize;
          yDest:=(curSample div FSamplesPerAxis.X)*SampleSize;
+
+         glBindTexture(GL_TEXTURE_2D, destImposter.Texture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
                              SampleSize, SampleSize);
+         rci.GLStates.ResetGLCurrentTexture;
 
          Inc(curSample);
       end;
@@ -1107,8 +1271,8 @@ end;
 //
 destructor TGLImposter.Destroy;
 begin
-   FImposter.Free;
    Builder:=nil;
+   ImpostoredObject:=nil;
    inherited;
 end;
 
@@ -1129,28 +1293,19 @@ procedure TGLImposter.DoRender(var rci : TRenderContextInfo;
   renderSelf, renderChildren : Boolean);
 var
    camPos : TVector;
+   imposter : TImposter;
 begin
-   if renderSelf and Assigned(Imposter) and (Imposter.Texture.Handle<>0) then begin
-      camPos:=AbsoluteToLocal(rci.cameraPosition);
-      Imposter.BeginRender(rci);
-      Imposter.Render(rci, NullHmgPoint, camPos, 2*0.75);
-      Imposter.EndRender(rci);
+   if renderSelf and Assigned(Builder) and Assigned(ImpostoredObject) then begin
+      imposter:=Builder.ImposterFor(ImpostoredObject);
+      if Assigned(imposter) and (imposter.Texture.Handle<>0) then begin
+         camPos:=AbsoluteToLocal(rci.cameraPosition);
+         imposter.BeginRender(rci);
+         imposter.Render(rci, NullHmgPoint, camPos, Scale.MaxXYZ);
+         imposter.EndRender(rci);
+      end;
    end;
    if renderChildren then
        Self.RenderChildren(0, Count-1,rci);
-end;
-
-// SetupImposter
-//
-procedure TGLImposter.SetupImposter;
-begin
-   if Assigned(FBuilder) and Assigned(FImpostoredObject) then begin
-      if not Assigned(FImposter) then
-         FImposter:=FBuilder.CreateNewImposter;
-      FImposter.ImpostoredObject:=ImpostoredObject;
-      FImposter.Texture.DestroyHandle;
-   end else FreeAndNil(FImposter);
-   NotifyChange(Self);
 end;
 
 // SetBuilder
@@ -1158,13 +1313,15 @@ end;
 procedure TGLImposter.SetBuilder(const val : TGLImposterBuilder);
 begin
    if val<>FBuilder then begin
-      if Assigned(FBuilder) then
+      if Assigned(FBuilder) then begin
          FBuilder.RemoveFreeNotification(Self);
-      FreeAndNil(FImposter);
+         FBuilder.UnRequestImposterFor(ImpostoredObject);
+      end;
       FBuilder:=val;
-      if Assigned(FBuilder) then
+      if Assigned(FBuilder) then begin
          FBuilder.FreeNotification(Self);
-      SetupImposter;
+         FBuilder.RequestImposterFor(ImpostoredObject);
+      end;
    end;
 end;
 
@@ -1173,8 +1330,11 @@ end;
 procedure TGLImposter.SetImpostoredObject(const val : TGLBaseSceneObject);
 begin
    if val<>FImpostoredObject then begin
+      if Assigned(Builder) then
+         FBuilder.UnRequestImposterFor(ImpostoredObject);
       FImpostoredObject:=val;
-      SetupImposter;
+      if Assigned(Builder) then
+         FBuilder.RequestImposterFor(ImpostoredObject);
    end;
 end;
 
