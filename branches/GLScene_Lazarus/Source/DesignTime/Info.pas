@@ -262,9 +262,9 @@ var I         : Integer;
 	 NewG,
     NewB      : Integer;
     r,g,b     : Byte;
-    {$IFDEF MSWINDOWS}
+    {$IFDEF MSWINDOWS}{$IFNDEF FPC}
     X, Y      : Integer;
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
     BM        : TBitmap;
 	 OldColors,
     NewColors  : array[Byte] of TColor;
