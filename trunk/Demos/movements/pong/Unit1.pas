@@ -38,7 +38,6 @@ type
   private
 	 { Déclarations privées }
 	 ballVector : TAffineVector;
-	 lastRenderTime : TDateTime;
 	 score : Integer;
 	 gameOver : Boolean;
 	 procedure ResetGame;
@@ -60,7 +59,6 @@ begin
 	Randomize;
 	GLSceneViewer1.Cursor:=crNone;
 	ResetGame;
-	lastRenderTime:=0;
 end;
 
 procedure TForm1.ResetGame;
@@ -89,6 +87,7 @@ begin
 	else if px>cPadMinMax then
 		px:=cPadMinMax;
 	Pad.Position.X:=px;
+   GLCadencer1.Reset;
    // update the whole stuff now!
    GLCadencer1.Progress;
 end;
@@ -122,9 +121,11 @@ begin
 				// ...and of course a point is scored !
 				Inc(score);
 				SpaceText1.Text:=Format('%.3d', [score]);
-			end else
+			end else begin
 				// ball missed !
 				gameOver:=True;
+            Exit;
+         end
 		end;
 	end;
 	// move the ball
