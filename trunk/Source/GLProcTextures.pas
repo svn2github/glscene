@@ -2,6 +2,7 @@
 {: Procedural textures.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/03/03 - EG - Delphi 5 compatibility
       <li>11/12/02 - EG - Initial, procedural perlin noise texture
                           code by Tobias Peirick
 	</ul></font><p>
@@ -73,7 +74,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Geometry;
+uses Geometry, GLMisc;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
 var
@@ -220,8 +221,8 @@ begin
       FMinCut := StrToIntDef(buf, 0);
       buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Noise Sharpness', FloatToStr(FNoiseSharpness));
       FNoiseSharpness := StrToFloatDef(buf, 0.9);
-      buf := InputDlg(TGLProcTextureNoise.FriendlyName, 'Generate Seamless Texture ( 0,1)', IntToStr(Ord(FSeamless)));
-      FSeamless := StrToBoolDef(buf, False);
+      buf := InputDlg(TGLProcTextureNoise.FriendlyName, 'Generate Seamless Texture (0,1)', IntToStr(Ord(FSeamless)));
+      FSeamless := (buf<>'0');
       Result:=True;
       Invalidate;
    end else begin

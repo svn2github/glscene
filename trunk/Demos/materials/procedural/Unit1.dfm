@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 258
-  Top = 136
+  Left = 210
+  Top = 116
   Width = 532
   Height = 381
   Caption = 'Form1'
@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 316
-    Height = 354
+    Height = 352
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Align = alClient
@@ -27,7 +27,7 @@ object Form1: TForm1
     Left = 316
     Top = 0
     Width = 208
-    Height = 354
+    Height = 352
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -112,9 +112,7 @@ object Form1: TForm1
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 0
       TabOrder = 0
-      Text = 'RGB    (24 bits)'
       OnChange = CBFormatChange
       Items.Strings = (
         'RGB    (24 bits)'
@@ -129,9 +127,7 @@ object Form1: TForm1
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 0
       TabOrder = 1
-      Text = 'None'
       OnChange = CBFormatChange
       Items.Strings = (
         'None'
@@ -184,7 +180,7 @@ object Form1: TForm1
       MaxValue = 255
       MinValue = 120
       TabOrder = 6
-      Value = 0
+      Value = 120
       OnChange = CBFormatChange
     end
     object SpinEdit2: TSpinEdit
@@ -195,7 +191,7 @@ object Form1: TForm1
       MaxValue = 90
       MinValue = 0
       TabOrder = 7
-      Value = 99
+      Value = 90
       OnChange = CBFormatChange
     end
     object CheckBox2: TCheckBox
@@ -215,9 +211,7 @@ object Form1: TForm1
     Top = 16
     object GLPlane1: TGLPlane
       Material.Texture.ImageClassName = 'TGLProcTextureNoise'
-      Material.Texture.Image.Width = 64
-      Material.Texture.Image.Height = 64
-      Material.Texture.Image.MinCut = 120
+      Material.Texture.Image.MinCut = 0
       Material.Texture.Image.NoiseSharpness = 0.990000009536743
       Material.Texture.Image.Seamless = False
       Material.Texture.Disabled = False
