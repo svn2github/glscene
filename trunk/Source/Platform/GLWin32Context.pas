@@ -74,6 +74,11 @@ type
 
          function IsValid : Boolean; override;
          procedure SwapBuffers; override;
+
+         function RenderOutputDevice : Integer; override;
+
+         property DC : Cardinal read FDC;
+         property RC : Cardinal read FRC;
    end;
 
 var
@@ -747,6 +752,13 @@ procedure TGLWin32Context.SwapBuffers;
 begin
    if (FHPBUFFER=0) and (FDC<>0) and (rcoDoubleBuffered in Options) then
       Windows.SwapBuffers(Cardinal(FDC));
+end;
+
+// RenderOutputDevice
+//
+function TGLWin32Context.RenderOutputDevice : Integer;
+begin
+   Result:=FDC;
 end;
 
 // ------------------------------------------------------------------

@@ -99,6 +99,8 @@ type
 
          function IsValid : Boolean; override;
          procedure SwapBuffers; override;
+
+         function RenderOutputDevice : Integer; override;
    end;
 
 procedure Register;
@@ -351,6 +353,14 @@ end;
 procedure TGLSDLContext.SwapBuffers;
 begin
    FSDLWin.SwapBuffers;
+end;
+
+// RenderOutputDevice
+//
+function TGLSDLContext.RenderOutputDevice : Integer;
+begin
+   // unsupported
+   Result:=0;
 end;
 
 // ------------------------------------------------------------------

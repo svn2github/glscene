@@ -164,6 +164,8 @@ type
          {: Returns the first compatible context that isn't self in the shares. }
          function FindCompatibleContext : TGLContext;
          procedure DestroyAllHandles;
+
+         function RenderOutputDevice : Integer; virtual; abstract;
    end;
 
    TGLContextClass = class of TGLContext;

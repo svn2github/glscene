@@ -21,8 +21,8 @@ type
          FOutputDevice: QWidgetH;
       protected
          { Protected Declarations }
-         procedure DoCreateContext(AoutputDevice : Integer); override;
-         procedure DoCreateMemoryContext(AoutputDevice, width, height : Integer); override;
+         procedure DoCreateContext(outputDevice : Integer); override;
+         procedure DoCreateMemoryContext(outputDevice, width, height : Integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
          procedure DoDestroyContext; override;
          procedure DoActivate; override;
