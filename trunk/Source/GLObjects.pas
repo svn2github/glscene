@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/07/02 - Egg - Added TPlane.Style
       <li>03/07/02 - Egg - TPolygon now properly setups normals (filippo)
       <li>17/03/02 - Egg - Support for transparent lines
       <li>02/02/02 - Egg - Fixed TSprite change notification
@@ -137,6 +138,11 @@ type
 
 	end;
 
+   // TPlaneStyle
+   //
+   TPlaneStyle = (psSingleQuad, psTileTexture);
+   TPlaneStyles = set of TPlaneStyle;
+
    // Plane
    //
    {: A simple plane object.<p>
@@ -147,7 +153,8 @@ type
 			{ Private Declarations }
 	      FXOffset, FYOffset : TGLFloat;
 			FWidth, FHeight : TGLFloat;
-		   FXTiles, FYTiles: Cardinal;
+		   FXTiles, FYTiles : Cardinal;
+         FStyle : TPlaneStyles;
 
 		protected
 			{ Protected Declarations }
@@ -157,6 +164,7 @@ type
 		   procedure SetXTiles(const Value: Cardinal);
 		   procedure SetYOffset(const Value: TGLFloat);
 		   procedure SetYTiles(const Value: Cardinal);
+         procedure SetStyle(const val : TPlaneStyles);
 
 		public
 			{ Public Declarations }
@@ -169,12 +177,13 @@ type
 
 		published
 			{ Public Declarations }
-			property Height: TGLFloat read FHeight write SetHeight;
-         property Width: TGLFloat read FWidth write SetWidth;
-         property XOffset: TGLFloat read FXOffset write SetXOffset;
-         property XTiles: Cardinal read FXTiles write SetXTiles default 1;
-         property YOffset: TGLFloat read FYOffset write SetYOffset;
-         property YTiles: Cardinal read FYTiles write SetYTiles default 1;
+			property Height : TGLFloat read FHeight write SetHeight;
+         property Width : TGLFloat read FWidth write SetWidth;
+         property XOffset : TGLFloat read FXOffset write SetXOffset;
+         property XTiles : Cardinal read FXTiles write SetXTiles default 1;
+         property YOffset : TGLFloat read FYOffset write SetYOffset;
+         property YTiles : Cardinal read FYTiles write SetYTiles default 1;
+         property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
    end;
 
 	// Sprite
@@ -1141,7 +1150,9 @@ begin
 	end;
 end;
 
-//----------------- TPlane -----------------------------------------------------
+// ------------------
+// ------------------ TPlane ------------------
+// ------------------
 
 // Create
 //
@@ -1153,27 +1164,89 @@ begin
    FXTiles:=1;
    FYTiles:=1;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
+   FStyle:=[psSingleQuad, psTileTexture];
+end;
+
+// Assign
+//
+procedure TPlane.Assign(Source: TPersistent);
+begin
+   if Assigned(Source) and (Source is TPlane) then begin
+      FWidth:=TPlane(Source).FWidth;
+      FHeight:=TPlane(Source).FHeight;
+   end;
+   inherited Assign(Source);
+end;
+
+// AxisAlignedDimensions
+//
+function TPlane.AxisAlignedDimensions: TVector;
+begin
+   Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
+                      0.5*Abs(FHeight)*Scale.DirectY, 0);
 end;
 
 // BuildList
 //
 procedure TPlane.BuildList(var rci : TRenderContextInfo);
 var
-   hw, hh : TGLFloat;
+   hw, hh, posXFact, posYFact, pX, pY0, pY1 : TGLFloat;
+   tx0, tx1, ty0, ty1, texSFact, texTFact : TGLFloat;
+   texS, texT0, texT1 : TGLFloat;
+   x, y : Integer;
 begin
    hw:=FWidth*0.5;
    hh:=FHeight*0.5;
    glNormal3fv(@ZVector);
-   glBegin(GL_QUADS);
-      xglTexCoord2f(FXTiles+FXOffset, FYTiles+FYOffset);
-      glVertex2f( hw, hh);
-      xglTexCoord2f(0, FYTiles+FYOffset);
-      glVertex2f(-hw, hh);
-      xglTexCoord2f(0, 0);
-      glVertex2f(-hw, -hh);
-      xglTexCoord2f(FXTiles+FXOffset, 0);
-      glVertex2f( hw, -hh);
-   glEnd;
+   // determine tex coords extents
+   if psTileTexture in FStyle then begin
+      tx0:=FXOffset;
+      tx1:=FXTiles+FXOffset;
+      ty0:=FYOffset;
+      ty1:=FYTiles+FYOffset;
+   end else begin
+      tx0:=0;
+      ty0:=tx0;
+      tx1:=1;
+      ty1:=tx1;
+   end;
+   if psSingleQuad in FStyle then begin
+      // single quad plane
+      glBegin(GL_QUADS);
+         xglTexCoord2f(tx1, ty1);
+         glVertex2f( hw, hh);
+         xglTexCoord2f(tx0, ty1);
+         glVertex2f(-hw, hh);
+         xglTexCoord2f(tx0, ty0);
+         glVertex2f(-hw, -hh);
+         xglTexCoord2f(tx1, ty0);
+         glVertex2f( hw, -hh);
+      glEnd;
+   end else begin
+      // multi-quad plane (actually built from tri-strips)
+      texSFact:=(tx1-tx0)/FXTiles;
+      texTFact:=(ty1-ty0)/FYTiles;
+      posXFact:=FWidth/FXTiles;
+      posYFact:=FHeight/FYTiles;
+      texT0:=0;
+      pY0:=-hh;
+      for y:=0 to FYTiles-1 do begin
+         texT1:=(y+1)*texTFact;
+         pY1:=(y+1)*posYFact-hh;
+         glBegin(GL_TRIANGLE_STRIP);
+         for x:=0 to FXTiles do begin
+            texS:=tx0+x*texSFact;
+            pX:=x*posXFact-hw;
+            xglTexCoord2f(texS, texT1);
+            glVertex2f(pX, pY1);
+            xglTexCoord2f(texS, texT0);
+            glVertex2f(pX, pY0);
+         end;
+         glEnd;
+         texT0:=texT1;
+         pY0:=pY1;
+      end;
+   end;
 end;
 
 // SetWidth
@@ -1206,59 +1279,44 @@ begin
    end;
 end;
 
-//------------------------------------------------------------------------------
-
+// SetXTiles
+//
 procedure TPlane.SetXTiles(const Value: Cardinal);
-
 begin
-  if Value<>FXTiles then
-  begin
-    FXTiles:=Value;
-    StructureChanged;
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TPlane.SetYOffset(const Value: TGLFloat);
-
-begin
-  if Value<>FYOffset then
-  begin
-    FYOffset:=Value;
-    StructureChanged;
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TPlane.SetYTiles(const Value: Cardinal);
-
-begin
-  if Value<>FYTiles then
-  begin
-    FYTiles:=Value;
-    StructureChanged;
-  end;
-end;
-
-// Assign
-//
-procedure TPlane.Assign(Source: TPersistent);
-begin
-   if Assigned(Source) and (Source is TPlane) then begin
-      FWidth:=TPlane(Source).FWidth;
-      FHeight:=TPlane(Source).FHeight;
+   if Value<>FXTiles then begin
+      FXTiles:=Value;
+      StructureChanged;
    end;
-   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
+// SetYOffset
 //
-function TPlane.AxisAlignedDimensions: TVector;
+procedure TPlane.SetYOffset(const Value: TGLFloat);
 begin
-   Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
-                      0.5*Abs(FHeight)*Scale.DirectY, 0);
+   if Value<>FYOffset then begin
+      FYOffset:=Value;
+      StructureChanged;
+   end;
+end;
+
+// SetYTiles
+//
+procedure TPlane.SetYTiles(const Value: Cardinal);
+begin
+   if Value<>FYTiles then begin
+      FYTiles:=Value;
+      StructureChanged;
+   end;
+end;
+
+// SetStyle
+//
+procedure TPlane.SetStyle(const val : TPlaneStyles);
+begin
+   if val<>FStyle then begin
+      FStyle:=val;
+      StructureChanged;
+   end;
 end;
 
 // ------------------
