@@ -315,7 +315,7 @@ begin
       glCullFace(GL_FRONT);
       glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glDepthFunc(GL_LESS);
+      glDepthFunc(GL_LEQUAL);
       glColor4f(0,0,0,1);
       glLineWidth(FOutlineWidth);
 
