@@ -17,6 +17,10 @@ PROJECTS = FPSMovement.exe CgSimple.exe boxedin.exe octreedemo.exe fxy.exe \
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
+FPSMovement.exe: advdemos\Archipelago\Archipelago.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
 FPSMovement.exe: behaviours\FPSMovement\FPSMovement.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
