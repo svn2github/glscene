@@ -157,6 +157,23 @@ type
          procedure Progress(const progressTime : TProgressTimes); override;
    end;
 
+   // TTBSteam
+	//
+	TTBSteam = class (TTBCubeArea)
+	   private
+	      { Private Declarations }
+         FPlane : TGLPlane;
+         FTimeOffset, FTimeOn, FTimeOff : Single;
+         FStrength : Single;
+
+	   public
+	      { Public Declarations }
+         procedure Parse(const vals : TStringList); override;
+         procedure Instantiate; override;
+         procedure Release; override;
+         procedure Progress(const progressTime : TProgressTimes); override;
+   end;
+
    // TTBTrigger
 	//
 	TTBTrigger = class (TTBCubeArea)
@@ -609,6 +626,70 @@ begin
 end;
 
 // ------------------
+// ------------------ TTBSteam ------------------
+// ------------------
+
+// Parse
+//
+procedure TTBSteam.Parse(const vals : TStringList);
+begin
+   inherited;
+   FTimeOffset:=StrToFloatDef(vals.Values['TimeOffset'], 0);
+   FTimeOn:=StrToFloatDef(vals.Values['TimeOn'], 3);
+   FTimeOff:=StrToFloatDef(vals.Values['TimeOff'], 3);
+   FStrength:=StrToFloatDef(vals.Values['Strength'], 20);
+end;
+
+// Instantiate
+//
+procedure TTBSteam.Instantiate;
+var
+   src : TGLSourcePFXEffect;
+begin
+   FPlane:=TGLPlane(ParentObject.AddNewChild(TGLPlane));
+   FPlane.Direction.AsVector:=YHmgVector;
+   FPlane.Position.AsAffineVector:=Position;
+   FPlane.Width:=FSize[0];
+   FPlane.Height:=FSize[2];
+   FPlane.Material.MaterialLibrary:=Main.MaterialLibrary;
+   FPlane.Material.LibMaterialName:='chrome';
+
+   src:=GetOrCreateSourcePFX(FPlane);
+   src.Manager:=Main.PFXSteam;
+   src.ParticleInterval:=0.03;
+   src.PositionDispersion:=VectorLength(FSize)*0.2;
+   src.VelocityDispersion:=VectorLength(FSize)*0.7;
+   src.InitialVelocity.Y:=Sqrt(FStrength);
+end;
+
+// Release
+//
+procedure TTBSteam.Release;
+begin
+   FreeAndNil(FPlane);
+end;
+
+// Progress
+//
+procedure TTBSteam.Progress(const progressTime : TProgressTimes);
+var
+   t : Single;
+   src : TGLSourcePFXEffect;
+   v : TVector;
+begin
+   src:=GetOrCreateSourcePFX(FPlane);
+   t:=Frac((progressTime.newTime+FTimeOffset)/(FTimeOn+FTimeOff))*(FTimeOn+FTimeOff);
+   if t<=FTimeOn then begin
+      src.ParticleInterval:=0.03;
+      v:=FPlane.AbsoluteToLocal(Main.DCBallAbsolute.Position.AsVector);
+      if (Abs(v[0])<FSize[0]) and (Abs(v[1])<FSize[2]) and (v[2]>=0) then begin
+         if v[2]<FStrength*0.3 then
+            Main.verticalForce:=Main.verticalForce+FStrength*(1-(v[2]/(FStrength*0.3)))*0.7;
+      end;
+   end else src.ParticleInterval:=0.5;
+end;
+
+// ------------------
 // ------------------ TTBTrigger ------------------
 // ------------------
 
@@ -810,7 +891,7 @@ initialization
 
 	// class registrations
    RegisterClasses([TTBMarbleBlock, TTBSpawnPoint, TTBBallExit, TTBSpikes,
-                    TTBFire, TTBGlassBlock, TTBTableText, TTBTrigger]);
+                    TTBFire, TTBGlassBlock, TTBTableText, TTBTrigger, TTBSteam]);
 
 end.
 
