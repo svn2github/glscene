@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/02 - Egg - Added MoveObjectAround
       <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
       <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
                            ResetAndPitchTurnRoll, ShadeModel (Chris Strahm)
@@ -536,6 +537,8 @@ type
          procedure Move(ADistance: Single);
          //: Translates the object
          procedure Translate(tx, ty, tz : Single);
+         procedure MoveObjectAround(anObject : TGLBaseSceneObject;
+                                    pitchDelta, turnDelta : Single);
          procedure Pitch(Angle: Single);
          procedure Roll(Angle: Single);
          procedure Turn(Angle: Single);
@@ -1145,6 +1148,7 @@ type
             <li>csOrthogonal, for orthogonal (or isometric) projection.
             <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
                (in x or y) represents 1 pixel.
+            <li>csCustom, setup is deferred to the OnCustomPerspective event.
             </ul> }
          property CameraStyle : TGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
 
@@ -3283,6 +3287,44 @@ begin
       parent.MoveChildDown(parent.IndexOfChild(Self));
 end;
 
+// MoveObjectAroundTarget
+//
+procedure TGLBaseSceneObject.MoveObjectAround(anObject : TGLBaseSceneObject;
+                                              pitchDelta, turnDelta : Single);
+var
+   originalT2C, normalT2C, normalCameraRight, newPos : TVector;
+   pitchNow, dist: Single;
+begin
+   if Assigned(anObject) then begin
+      // normalT2C points away from the direction the camera is looking
+      originalT2C:=VectorSubtract(AbsolutePosition,
+                                  anObject.AbsolutePosition);
+      SetVector(normalT2C, originalT2C);
+      dist:=VectorLength(normalT2C);
+      NormalizeVector(normalT2C);
+      // normalRight points to the camera's right
+      // the camera is pitching around this axis.
+      normalCameraRight:=VectorCrossProduct(AbsoluteUp, normalT2C);
+      if VectorLength(normalCameraRight)<0.001 then
+         SetVector(normalCameraRight, XVector) // arbitrary vector
+      else NormalizeVector(normalCameraRight);
+      // calculate the current pitch.
+      // 0 is looking down and PI is looking up
+      pitchNow:=ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.025, PI-0.025);
+      // create a new vector pointing up and then rotate it down
+      // into the new position
+      SetVector(normalT2C, AbsoluteUp);
+      RotateVector(normalT2C, normalCameraRight, -pitchNow);
+      RotateVector(normalT2C, AbsoluteUp, -DegToRad(turnDelta));
+      ScaleVector(normalT2C, dist);
+      newPos:=VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
+      if Assigned(Parent) then
+         newPos:=Parent.AbsoluteToLocal(newPos);
+      Position.AsVector:=newPos;
+   end;
+end;
+
 // EndUpdate
 //
 procedure TGLBaseSceneObject.EndUpdate;
@@ -4316,38 +4358,8 @@ end;
 // MoveAroundTarget
 //
 procedure TGLCamera.MoveAroundTarget(pitchDelta, turnDelta : Single);
-var
-   originalT2C, normalT2C, normalCameraRight, newPos : TVector;
-   pitchNow, dist: Single;
 begin
-   if Assigned(FTargetObject) then begin
-      // normalT2C points away from the direction the camera is looking
-      originalT2C:=VectorSubtract(AbsolutePosition,
-                                  TargetObject.AbsolutePosition);
-      SetVector(normalT2C, originalT2C);
-      dist:=VectorLength(normalT2C);
-      NormalizeVector(normalT2C);
-      // normalRight points to the camera's right
-      // the camera is pitching around this axis.
-      normalCameraRight:=VectorCrossProduct(AbsoluteUp, normalT2C);
-      if VectorLength(normalCameraRight)<0.001 then
-         SetVector(normalCameraRight, XVector) // arbitrary vector
-      else NormalizeVector(normalCameraRight);
-      // calculate the current pitch.
-      // 0 is looking down and PI is looking up
-      pitchNow:=ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.025, PI-0.025);
-      // create a new vector pointing up and then rotate it down
-      // into the new position
-      SetVector(normalT2C, AbsoluteUp);
-      RotateVector(normalT2C, normalCameraRight, -pitchNow);
-      RotateVector(normalT2C, AbsoluteUp, -DegToRad(turnDelta));
-      ScaleVector(normalT2C, dist);
-      newPos:=VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
-      if Assigned(Parent) then
-         newPos:=Parent.AbsoluteToLocal(newPos);
-      Position.AsVector:=newPos;
-   end;
+   MoveObjectAround(FTargetObject, pitchDelta, turnDelta);
 end;
 
 // AdjustDistanceToTarget
