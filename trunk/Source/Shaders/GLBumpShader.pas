@@ -15,8 +15,13 @@
    GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/10/04 - SG - Changed render order a little, minimum texture units
+                          is now 2 for dot3 texcombiner bump method,
+                          Changed vertex programs to accept local program
+                          params, now only 1 vertex and 1 fragment program is
+                          required for all lights.
       <li>30/09/04 - SG - Added fragment program logic,
-                          Added bmBasicARBFP bump method, bsTangentExternal 
+                          Added bmBasicARBFP bump method, bsTangentExternal
                           bump space and associated ARB programs,
                           Various name changes and fixes
       <li>28/09/04 - SG - Vertex programs now use ARB_position_invariant option.
@@ -56,6 +61,10 @@ type
          FBumpSpace : TBumpSpace;
          FBumpOptions : TBumpOptions;
          FDesignTimeEnabled : Boolean;
+         FAmbientPass : Boolean;
+         FDiffusePass : Boolean;
+
+         procedure DoLightPass(lightID : Cardinal);
 
       protected
          procedure SetBumpMethod(const Value : TBumpMethod);
@@ -96,7 +105,7 @@ const
       '!!ARBvp1.0'+#13#10+
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM lightPos = state.light[%d].position;'+
+      'PARAM lightPos = program.local[0];'+
       'TEMP temp, light, eye;'+
 
       // Get light vector in object space
@@ -127,7 +136,7 @@ const
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
-      'PARAM lightPos = state.light[%d].position;'+
+      'PARAM lightPos = program.local[0];'+
       'TEMP temp, light, eye;'+
 
       // Get light vector in object space
@@ -157,7 +166,7 @@ const
       'ATTRIB v24 = vertex.texcoord[0];'+
       'ATTRIB v18 = vertex.normal;'+
       'ATTRIB v16 = vertex.position;'+
-      'PARAM s18 = state.light[%d].position;'+
+      'PARAM lightPos = program.local[0];'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
       '   MOV result.texcoord[0], v24;'+
       '   MOV result.texcoord[1], v24;'+
@@ -190,7 +199,7 @@ const
       '!!ARBvp1.0'+#13#10+
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM lightPos = state.light[%d].position;'+
+      'PARAM lightPos = program.local[0];'+
       'ATTRIB tangent = vertex.texcoord[1];'+
       'ATTRIB binormal = vertex.texcoord[2];'+
       'ATTRIB normal = vertex.normal;'+
@@ -231,7 +240,7 @@ const
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
-      'PARAM lightPos = state.light[%d].position;'+
+      'PARAM lightPos = program.local[0];'+
       'ATTRIB tangent = vertex.texcoord[1];'+
       'ATTRIB binormal = vertex.texcoord[2];'+
       'ATTRIB normal = vertex.normal;'+
@@ -269,8 +278,8 @@ const
 
    cBasicARBFP =
       '!!ARBfp1.0'+#13#10+
-      'PARAM lightDiffuse = state.light[%d].diffuse;'+
-      'PARAM lightSpecular = state.light[%d].specular;'+
+      'PARAM lightDiffuse = program.local[0];'+
+      'PARAM lightSpecular = program.local[1];'+
       'PARAM materialDiffuse = state.material.diffuse;'+
       'PARAM materialSpecular = state.material.specular;'+
       'PARAM shininess = state.material.shininess;'+
@@ -316,8 +325,8 @@ const
 
    cTexturedARBFP =
       '!!ARBfp1.0'+#13#10+
-      'PARAM lightDiffuse = state.light[%d].diffuse;'+
-      'PARAM lightSpecular = state.light[%d].specular;'+
+      'PARAM lightDiffuse = program.local[0];'+
+      'PARAM lightSpecular = program.local[1];'+
       'PARAM materialDiffuse = state.material.diffuse;'+
       'PARAM materialSpecular = state.material.specular;'+
       'PARAM shininess = state.material.shininess;'+
@@ -405,6 +414,62 @@ begin
    inherited;
 end;
 
+// DoLightPass
+//
+procedure TGLBumpShader.DoLightPass(lightID : Cardinal);
+var
+   lightDiffuse, materialDiffuse : TColorVector;
+   dummyHandle, tempHandle : Integer;
+   light : TVector;
+begin
+   glEnable(GL_VERTEX_PROGRAM_ARB);
+   glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVertexProgramHandles[0]);
+   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_POSITION, @light[0]);
+   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light[0]);
+
+   case FBumpMethod of
+      bmDot3TexCombiner : begin
+         glActiveTextureARB(GL_TEXTURE0_ARB);
+         glGetIntegerv(GL_TEXTURE_BINDING_2D, @dummyHandle);
+         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
+         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
+         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+
+         glActiveTextureARB(GL_TEXTURE1_ARB);
+         glEnable(GL_TEXTURE_2D);
+         glGetIntegerv(GL_TEXTURE_BINDING_2D, @tempHandle);
+         if tempHandle = 0 then
+            glBindTexture(GL_TEXTURE_2D, dummyHandle);
+         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_DIFFUSE, @lightDiffuse);
+         glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
+         lightDiffuse[0]:=lightDiffuse[0]*materialDiffuse[0];
+         lightDiffuse[1]:=lightDiffuse[1]*materialDiffuse[1];
+         lightDiffuse[2]:=lightDiffuse[2]*materialDiffuse[2];
+         lightDiffuse[3]:=lightDiffuse[3]*materialDiffuse[3];
+         glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
+         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
+         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
+
+         glActiveTextureARB(GL_TEXTURE0_ARB);
+      end;
+
+      bmBasicARBFP : begin
+         glEnable(GL_FRAGMENT_PROGRAM_ARB);
+         glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFragmentProgramHandles[0]);
+         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_DIFFUSE, @light[0]);
+         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @light[0]);
+         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_SPECULAR, @light[0]);
+         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @light[0]);
+      end;
+
+  else
+     Assert(False, 'Invalid bump method!');
+  end;
+end;
+
 // DoApply
 //
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
@@ -444,42 +509,42 @@ begin
 
    success:=False;
    try
-      if maxTextures<3 then
-         raise Exception.Create('Not enough texture units!');
+      if not GL_ARB_multitexture then
+         raise Exception.Create('This shader requires GL_ARB_multitexture.');
+      if  (maxTextures<3) and ((BumpMethod<>bmDot3TexCombiner) or (BumpSpace=bsTangentExternal)) then
+         raise Exception.Create('The current shader settings require 3 or more texture units.');
 
       if Length(FVertexProgramHandles) = 0 then begin
-         SetLength(FVertexProgramHandles, maxLights);
-         for i:=0 to maxLights-1 do
-            case FBumpSpace of
-               bsObject : begin
-                  case FBumpMethod of
-                     bmDot3TexCombiner :
-                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToDot3,[i]), FVertexProgramHandles[i]);
-                     bmBasicARBFP :
-                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToBasicARBFP,[i]), FVertexProgramHandles[i]);
-                  end;
-               end;
-               bsTangentQuaternion :
-                  LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentQuaternionToDot3,[i]), FVertexProgramHandles[i]);
-               bsTangentExternal : begin
-                  case FBumpMethod of
-                     bmDot3TexCombiner :
-                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToDot3,[i]), FVertexProgramHandles[i]);
-                     bmBasicARBFP :
-                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToBasicARBFP,[i]), FVertexProgramHandles[i]);
-                  end;
+         SetLength(FVertexProgramHandles, 1);
+         case FBumpSpace of
+            bsObject : begin
+               case FBumpMethod of
+                  bmDot3TexCombiner :
+                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cObjectToDot3, FVertexProgramHandles[0]);
+                  bmBasicARBFP :
+                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cObjectToBasicARBFP, FVertexProgramHandles[0]);
                end;
             end;
+            bsTangentQuaternion :
+               LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentQuaternionToDot3, FVertexProgramHandles[0]);
+            bsTangentExternal : begin
+               case FBumpMethod of
+                  bmDot3TexCombiner :
+                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentExternalToDot3, FVertexProgramHandles[0]);
+                  bmBasicARBFP :
+                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentExternalToBasicARBFP, FVertexProgramHandles[0]);
+               end;
+            end;
+         end;
       end;
 
       if Length(FFragmentProgramHandles) = 0 then
          if FBumpMethod = bmBasicARBFP then begin
-            SetLength(FFragmentProgramHandles, maxLights);
-            for i:=0 to maxLights-1 do
-               if boDiffuseTexture2 in FBumpOptions then
-                  LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cTexturedARBFP, [i,i]), FFragmentProgramHandles[i])
-               else
-                  LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cBasicARBFP, [i,i]), FFragmentProgramHandles[i]);
+            SetLength(FFragmentProgramHandles, 1);
+            if boDiffuseTexture2 in FBumpOptions then
+               LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, cTexturedARBFP, FFragmentProgramHandles[0])
+            else
+               LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, cBasicARBFP, FFragmentProgramHandles[0]);
          end;
 
       success:=True;
@@ -497,110 +562,111 @@ begin
                 GL_COLOR_BUFFER_BIT);
 
    FLightIDs.Clear;
-   for i:=0 to maxLights-1 do begin
-      glGetBooleanv(GL_LIGHT0+i, @lightEnabled);
-      if lightEnabled then
-         FLightIDs.Add(i);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+   if glIsEnabled(GL_TEXTURE_2D) then
+      for i:=0 to maxLights-1 do begin
+         glGetBooleanv(GL_LIGHT0+i, @lightEnabled);
+         if lightEnabled then
+            FLightIDs.Add(i);
    end;
    FLightsEnabled:=FLightIDs.Count;
 
-   glDisable(GL_LIGHTING);
-   glActiveTextureARB(GL_TEXTURE0_ARB);
-   glDisable(GL_TEXTURE_2D);
-   glActiveTextureARB(GL_TEXTURE1_ARB);
-   glDisable(GL_TEXTURE_2D);
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   FAmbientPass:=False;
+   FDiffusePass:=False;
 
-   glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-   glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
-   ambient[0]:=ambient[0]*materialAmbient[0];
-   ambient[1]:=ambient[1]*materialAmbient[1];
-   ambient[2]:=ambient[2]*materialAmbient[2];
-   glColor3fv(@ambient);
+   if FLightIDs.Count>0 then begin
+
+      glDepthFunc(GL_LEQUAL);
+      glDisable(GL_BLEND);
+      DoLightPass(FLightIDs[0]);
+      FLightIDs.Delete(0);
+
+   end else begin
+
+      glDisable(GL_LIGHTING);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+
+      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
+      ambient[0]:=ambient[0]*materialAmbient[0];
+      ambient[1]:=ambient[1]*materialAmbient[1];
+      ambient[2]:=ambient[2]*materialAmbient[2];
+      glColor3fv(@ambient);
+
+      FAmbientPass:=True;
+
+   end;
 end;
 
 // DoUnApply
 //
 function TGLBumpShader.DoUnApply(var rci: TRenderContextInfo) : Boolean;
 var
-   lightDiffuse, materialDiffuse : TColorVector;
-   dummyHandle, tempHandle : Integer;
+   ambient, materialAmbient : TVector;
 begin
    Result:=False;
    if (csDesigning in ComponentState) and not DesignTimeEnabled then exit;
    if not Enabled then exit;
 
    if FLightIDs.Count>0 then begin
-      glDepthFunc(GL_EQUAL);
+
+      glDepthFunc(GL_LEQUAL);
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE);
 
-      glEnable(GL_VERTEX_PROGRAM_ARB);
-      glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVertexProgramHandles[FLightIDs[0]]);
-
-      case FBumpMethod of
-         bmDot3TexCombiner : begin
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-            glEnable(GL_TEXTURE_2D);
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, @dummyHandle);
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
-
-            glActiveTextureARB(GL_TEXTURE1_ARB);
-            glEnable(GL_TEXTURE_2D);
-            if boDiffuseTexture2 in BumpOptions then begin
-               glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-               glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-               glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-               glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_TEXTURE1_ARB);
-            end else begin
-               glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-               glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE);
-               glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-            end;
-
-            glActiveTextureARB(GL_TEXTURE2_ARB);
-            glEnable(GL_TEXTURE_2D);
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, @tempHandle);
-            if tempHandle = 0 then
-               glBindTexture(GL_TEXTURE_2D, dummyHandle);
-            glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_DIFFUSE, @lightDiffuse);
-            glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
-            lightDiffuse[0]:=lightDiffuse[0]*materialDiffuse[0];
-            lightDiffuse[1]:=lightDiffuse[1]*materialDiffuse[1];
-            lightDiffuse[2]:=lightDiffuse[2]*materialDiffuse[2];
-            lightDiffuse[3]:=lightDiffuse[3]*materialDiffuse[3];
-            glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
-
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-         end;
-
-         bmBasicARBFP : begin
-            glEnable(GL_FRAGMENT_PROGRAM_ARB);
-            glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFragmentProgramHandles[FLightIDs[0]]);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-            glEnable(GL_TEXTURE_2D);
-            if boDiffuseTexture2 in FBumpOptions then begin
-               glActiveTextureARB(GL_TEXTURE1_ARB);
-               glEnable(GL_TEXTURE_2D);
-            end;
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-         end;
-
-      else
-         Assert(False, 'Invalid bump method!');
-      end;
-
+      DoLightPass(FLightIDs[0]);
       FLightIDs.Delete(0);
-
       Result:=True;
       Exit;
+
+   end else if not FDiffusePass and (FLightsEnabled <> 0)
+   and (boDiffuseTexture2 in BumpOptions)
+   and (BumpMethod = bmDot3TexCombiner) then begin
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_DST_COLOR, GL_ZERO);
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glEnable(GL_TEXTURE_2D);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glDisable(GL_TEXTURE_2D);
+
+      FDiffusePass:=True;
+      Result:=True;
+      Exit;
+
+   end else if not FAmbientPass then begin
+
+      glDisable(GL_VERTEX_PROGRAM_ARB);
+      if BumpMethod = bmBasicARBFP then
+         glDisable(GL_FRAGMENT_PROGRAM_ARB);
+
+      glDisable(GL_LIGHTING);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+
+      glDepthFunc(GL_LEQUAL);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_ONE, GL_ONE);
+
+      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
+      ambient[0]:=ambient[0]*materialAmbient[0];
+      ambient[1]:=ambient[1]*materialAmbient[1];
+      ambient[2]:=ambient[2]*materialAmbient[2];
+      glColor3fv(@ambient);
+
+      FAmbientPass:=True;
+      Result:=True;
+      Exit;
+
    end;
 
    glDisable(GL_VERTEX_PROGRAM_ARB);
