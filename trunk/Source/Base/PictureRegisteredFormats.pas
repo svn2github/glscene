@@ -13,10 +13,15 @@ interface
 
 uses Classes, Graphics;
 
+{$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 5
 {$ifdef VER140} {$define PRF_HACK_PASSES} {$endif} // Delphi 6
 {$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 7
 
 {$ifndef PRF_HACK_PASSES} Error: hack not tested for this Delphi version! {$endif}
+
+{: Returns the TGraphicClass associated to the extension, if any.<p>
+   Accepts anExtension with or without the '.' }
+function GraphicClassForExtension(const anExtension : String) : TGraphicClass;
 
 {: Adds to the passed TStrings the list of registered formats.<p>
    Convention is "extension=description" for the string, the Objects hold
@@ -30,6 +35,30 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+// GraphicClassForExtension
+//
+function GraphicClassForExtension(const anExtension : String) : TGraphicClass;
+var
+   i : Integer;
+   sl : TStringList;
+   buf : String;
+begin
+   Result:=nil;
+   if anExtension='' then Exit;
+   if anExtension[1]='.' then
+      buf:=anExtension
+   else buf:='.'+anExtension;
+   sl:=TStringList.Create;
+   try
+      HackTPictureRegisteredFormats(sl);
+      i:=sl.IndexOfName(buf);
+      if i>=0 then
+         Result:=TGraphicClass(sl.Objects[i]);
+   finally
+      sl.Free;
+   end;
+end;
 
 type
    PFileFormat = ^TFileFormat;
