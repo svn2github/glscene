@@ -2398,8 +2398,6 @@ begin
                      fs.Free;
                   end;
                   Picture.Graphic:=gr;
-                  if (Picture.Bitmap.PixelFormat=pf32bit) and (Assigned(Self.OwnerTexture.Owner)) then
-                     TGLMaterial(Self.OwnerTexture.Owner).BlendingMode:=bmTransparency;
                finally
                   gr.Free;
                end;
@@ -2409,8 +2407,6 @@ begin
       end;
    end else if FileExists(buf) then begin
       Picture.LoadFromFile(buf);
-      if (Picture.Bitmap.PixelFormat=pf32bit) and (Assigned(Self.OwnerTexture.Owner)) then
-         TGLMaterial(Self.OwnerTexture.Owner).BlendingMode:=bmTransparency;
       Exit;
    end;
    Picture.Graphic:=nil;
