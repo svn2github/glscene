@@ -75,6 +75,9 @@ type
          procedure ConnectToTheNorth(northPatch : TGLROAMPatch);
          procedure Tesselate;
 
+         {: Render the patch.<p>
+            The lists are assumed to have enough capacity to allow AddNC calls
+            (additions without capacity check). }
          procedure Render(vertices : TAffineVectorList;
                           vertexIndices : TIntegerList;
                           texCoords : TTexPointList);
@@ -201,9 +204,9 @@ begin
       if Assigned(base) then begin
          if Assigned(base.leftChild) then begin
             base.leftChild.right:=rightChild;
+            rightChild.left:=base.leftChild;
             base.rightChild.left:=leftChild;
             leftChild.right:=base.rightChild;
-            rightChild.left:=base.leftChild;
          end else Split(base);
       end else begin
 		   // An edge triangle, trivial case.
@@ -312,9 +315,9 @@ var
 
    procedure ScaleVariance(n, d : Integer);
    begin
-      if d>0 then
+      if d>=0 then
          currentVariance[n]:=(currentVariance[n] shl (d shr 1))
-      else if d<0 then currentVariance[n]:=(currentVariance[n] shr (-d shr 1));
+      else currentVariance[n]:=(currentVariance[n] shr (-d shr 1));
       n:=n shl 1;
     	if n<FMaxVariance then begin
          Dec(d);
@@ -396,9 +399,11 @@ procedure TGLROAMPatch.Tesselate;
    function VertexDist(x, y : Integer) : Cardinal;
    var
       f : Single;
+   const
+      c1Div100 : Single = 0.01;
    begin
-      f:=Sqrt(Sqr(x-FObserverPosition[0])+Sqr(y-FObserverPosition[1])+tessFrameVarianceDelta);
-      Result:=Round(f*(1+f*0.01));
+      f:=Sqr(x-FObserverPosition[0])+Sqr(y-FObserverPosition[1])+tessFrameVarianceDelta;
+      Result:=Round(Sqrt(f)+f*c1Div100);
    end;
 
    procedure FullBaseTess(tri : PROAMTriangleNode; n : Cardinal); forward;
@@ -491,7 +496,13 @@ begin
       vertices.Translate(VertexOffset);
       texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
                                   PTexPoint(@TextureOffset)^);
-      glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+      if GL_EXT_compiled_vertex_array then begin
+         glLockArraysEXT(0, vertices.Count-1);
+         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+         glUnLockArraysEXT;
+      end else begin
+         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+      end;
       FTriangleCount:=vertexIndices.Count div 3;
    end;
    if FNoDetails then begin
@@ -519,8 +530,8 @@ begin
       with half do begin
          X:=(left.X+right.X) shr 1;
          Y:=(left.Y+right.Y) shr 1;
-         Idx:=renderVertices.Add(X, Y, renderRaster[Y][X]);
-         renderTexCoords.Add(X, Y);
+         renderTexCoords.AddNC(@X);
+         Idx:=renderVertices.AddNC(@X, renderRaster[Y][X]);
       end;
       RecursRender(tri.leftChild , apex , left, half);
       RecursRender(tri.rightChild, right, apex, half);
