@@ -33,10 +33,6 @@ uses Math;
 const
    cOwnTriangleEpsilon = 1e-5;
 
-var
-  DebugPlace : Integer;
-  DebugPlace1 : Integer;
-
 function IntersectPointToPointLinePlane(const point1, point2 : TAffineVector; const plane : THmgPlane; intersectPoint : PAffineVector = nil) : Boolean;
 var
    a, b : Extended;
@@ -146,7 +142,6 @@ Begin
   b3 := False;
 // This have no effect, however it removes a warning...
 
-  //inc(libmatid);
 // normally we use the Node.SplitPlane, however on the last branch this is a NullPlane, so we have to calculate it.
   If VectorEquals(Node.SplitPlane,NullHmgVector) then
     plane := PlaneMake(BSP.Vertices[Node.VertexIndices[0]],BSP.Vertices[Node.VertexIndices[1]],BSP.Vertices[Node.VertexIndices[2]])
@@ -250,7 +245,6 @@ Begin
           Begin
             If B1 then
             Begin
-              //inc(libmatid);
               i := intersect_lines[0];
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
@@ -273,7 +267,6 @@ Begin
             End else
             If B2 then
             Begin
-              //inc(libmatid);
               i := (intersect_lines[0]+1) mod 3;
               i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
@@ -375,7 +368,6 @@ Begin
           Begin
             If B1 then
             Begin
-              //inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(Vec[i]^,intersect_points[p0],Vec[i1]^);
@@ -396,7 +388,6 @@ Begin
             End;
             If B2 then
             Begin
-              //inc(libmatid);
               i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],Vec[i1]^,intersect_points[p1]);
@@ -418,7 +409,6 @@ Begin
             End;
             If B3 then
             Begin
-              //inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],intersect_points[p1],Vec[i1]^);
@@ -548,8 +538,6 @@ Begin
 
 //  should be obj1.FaceGroups iteration for perfection and multiple materials!
 
-  DebugPlace := 0;      DebugPlace1 := -1;
-
 //  First iterate all triangles of object 1, one at a time,  down through the BSP tree of Object 2, the last booleans are the key to what actuelly happends.
   i := 0;
   while i < v1.Count-2 do
@@ -571,14 +559,12 @@ Begin
     inc(i,3);
   End;
 
-  DebugPlace := 1;
 //  Then iterate all triangles of object 2, one at a time, down through the BSP tree of Object 1, the last booleans are the key to what actuelly happends.
   FGR := TFGVertexNormalTexIndexList.CreateOwned(Res.FaceGroups);
   FGR.MaterialName := MaterialName2;
   i := 0;
   while i < v2.Count-2 do
   Begin
-    DebugPlace1 := i;
     Case Operation of
       CSG_Union :
       Begin
