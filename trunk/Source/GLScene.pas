@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>26/12/03 - EG - Removed last TList dependencies
       <li>05/12/03 - Dave - Added GLCamera.PointInFront
                    - Dave - Remade Data property to use Tag
       <li>05/11/03 - EG - Data pointer made optional (GLS_WANT_DATA define),
@@ -1327,7 +1328,7 @@ type
          FObjects : TGLSceneRootObject;
          FCameras : TGLSceneRootObject;
          FBaseContext : TGLContext; //reference, not owned!
-         FLights, FBuffers : TList;
+         FLights, FBuffers : TPersistentObjectList;
          FCurrentGLCamera : TGLCamera;
          FCurrentBuffer : TGLSceneBuffer;
          FObjectsSorting : TGLObjectsSorting;
@@ -1404,7 +1405,7 @@ type
 
          property Cameras : TGLSceneRootObject read FCameras;
          property CurrentGLCamera : TGLCamera read FCurrentGLCamera;
-         property Lights : TList read FLights;
+         property Lights : TPersistentObjectList read FLights;
          property Objects : TGLSceneRootObject read FObjects;
          property CurrentBuffer : TGLSceneBuffer read FCurrentBuffer;
 
@@ -1420,11 +1421,11 @@ type
 
    TPickSubObjects = array of LongInt;
 
-   PPickRecord = ^TPickRecord;
-   TPickRecord = record
-      AObject    : TGLBaseSceneObject;
-      SubObjects : TPickSubObjects;
-      ZMin, ZMax : Single;
+   TPickRecord = class
+      public
+         AObject    : TGLBaseSceneObject;
+         SubObjects : TPickSubObjects;
+         ZMin, ZMax : Single;
    end;
 
    TPickSortType = (psDefault, psName, psMinDepth, psMaxDepth);
@@ -1433,7 +1434,7 @@ type
    //
    {: List class for object picking.<p>
       This list is used to store the results of a PickObjects call. }
-   TGLPickList =  class(TList)
+   TGLPickList = class(TPersistentObjectList)
       private
          { Private Declarations }
          function GetFar(aValue : Integer) : Single;
@@ -1446,8 +1447,8 @@ type
 
       public
          { Public Declarations }
-         constructor Create(aSortType : TPickSortType);
-         destructor Destroy; override;
+         constructor Create(aSortType : TPickSortType); overload;
+         
          procedure AddHit(obj : TGLBaseSceneObject; const subObj : TPickSubObjects;
                           zMin, zMax : Single);
          procedure Clear; override;
@@ -1552,7 +1553,7 @@ type
          FCurrentStates : TGLStates;
          FRendering : Boolean;
          FRenderingContext : TGLContext;
-         FAfterRenderEffects : TList;
+         FAfterRenderEffects : TPersistentObjectList;
          FProjectionMatrix, FModelViewMatrix : TMatrix;
          FModelViewMatrixStack : array of TMatrix;
          FBaseProjectionMatrix : TMatrix;
@@ -2123,27 +2124,19 @@ begin
    inherited Create;
 end;
 
-// Destroy
+// CompareFunction (for picklist sorting)
 //
-destructor TGLPickList.Destroy;
-begin
-   Clear;
-   inherited Destroy;
-end;
-
-// CompareFunction
-//
-function CompareFunction(Item1, Item2: Pointer): Integer;
+function CompareFunction(item1, item2 : TObject): Integer;
 var
    diff: Single;
 begin
    Result:=0;
    case vPickListSortFlag of
       psName :
-         Result:=CompareText(PPickRecord(Item1).AObject.Name,
-                             PPickRecord(Item2).AObject.Name);
+         Result:=CompareText(TPickRecord(Item1).AObject.Name,
+                             TPickRecord(Item2).AObject.Name);
       psMinDepth : begin
-         Diff:=PPickRecord(Item1).ZMin - PPickRecord(Item2).ZMin;
+         Diff:=TPickRecord(Item1).ZMin-TPickRecord(Item2).ZMin;
          if Diff < 0 then
             Result:=-1
          else if Diff > 0 then
@@ -2151,7 +2144,7 @@ begin
          else Result:=0;
       end;
       psMaxDepth : begin
-         Diff:=Round(PPickRecord(Item1).ZMax - PPickRecord(Item2).ZMax);
+         Diff:=Round(TPickRecord(Item1).ZMax-TPickRecord(Item2).ZMax);
          if Diff < 0 then
             Result:=-1
          else if Diff > 0 then
@@ -2166,35 +2159,24 @@ end;
 procedure TGLPickList.AddHit(obj : TGLBaseSceneObject; const subObj : TPickSubObjects;
                              zMin, zMax : Single);
 var
-   newRecord : PPickRecord;
+   newRecord : TPickRecord;
 begin
-   New(newRecord);
-   try
-      newRecord.AObject:=obj;
-      newRecord.SubObjects:=subObj;
-      newRecord.zMin:=zMin;
-      newRecord.zMax:=zMax;
-      Add(newRecord);
-      if vPickListSortFlag<>psDefault then
-         Sort(CompareFunction);
-   except
-      newRecord.SubObjects:=nil;
-      Dispose(newRecord);
-      raise;
-   end;
+   newRecord:=TPickRecord.Create;
+   newRecord.AObject:=obj;
+   newRecord.SubObjects:=subObj;
+   newRecord.zMin:=zMin;
+   newRecord.zMax:=zMax;
+   Add(newRecord);
+   if vPickListSortFlag<>psDefault then
+      Sort(CompareFunction);
 end;
 
 // Clear
 //
 procedure TGLPickList.Clear;
-var
-   i : Integer;
 begin
-   for i:=0 to Count-1 do begin
-      PPickRecord(Items[i]).SubObjects:=nil;
-      Dispose(PPickRecord(Items[i]));
-   end;
-   inherited Clear;
+   DoClean;
+   inherited;
 end;
 
 // FindObject
@@ -2216,28 +2198,28 @@ end;
 //
 function TGLPickList.GetFar(aValue : Integer): Single;
 begin
-   Result:=PPickRecord(Items[AValue]).ZMax;
+   Result:=TPickRecord(Items[AValue]).ZMax;
 end;
 
 // GetHit
 //
 function TGLPickList.GetHit(aValue : Integer) : TGLBaseSceneObject;
 begin
-  Result:=PPickRecord(Items[AValue]).AObject;
+  Result:=TPickRecord(Items[AValue]).AObject;
 end;
 
 // GetNear
 //
 function TGLPickList.GetNear(aValue : Integer): Single;
 begin
-   Result:=PPickRecord(Items[AValue]).ZMin;
+   Result:=TPickRecord(Items[AValue]).ZMin;
 end;
 
 // GetSubObjects
 //
 function TGLPickList.GetSubObjects(aValue : Integer) : TPickSubobjects;
 begin
-   Result:=PPickRecord(Items[AValue]).SubObjects;
+   Result:=TPickRecord(Items[AValue]).SubObjects;
 end;
 
 // ------------------
@@ -5139,7 +5121,6 @@ function TGLProxyObject.AxisAlignedDimensionsUnscaled : TVector;
 begin
    if Assigned(FMasterObject) then begin
       Result:=FMasterObject.AxisAlignedDimensionsUnscaled;
-//      ScaleVector(Result, Scale.AsVector);
    end else Result:=inherited AxisAlignedDimensionsUnscaled;
 end;
 
@@ -5423,7 +5404,7 @@ begin
    FObjects.Name:='ObjectRoot';
    FCameras:=TGLSceneRootObject.Create(Self);
    FCameras.Name:='CameraRoot';
-   FLights:=TList.Create;
+   FLights:=TPersistentObjectList.Create;
    FObjectsSorting:=osRenderBlendedLast;
    FVisibilityCulling:=vcNone;
    // actual maximum number of lights is stored in TGLSceneViewer
@@ -5524,7 +5505,7 @@ end;
 procedure TGLScene.AddBuffer(aBuffer : TGLSceneBuffer);
 begin
    if not Assigned(FBuffers) then
-      FBuffers:=TList.Create;
+      FBuffers:=TPersistentObjectList.Create;
    if FBuffers.IndexOf(aBuffer)<0 then begin
       FBuffers.Add(aBuffer);
       if FBaseContext=nil then
@@ -6128,7 +6109,7 @@ begin
    FColorDepth:=cdDefault;
    FShadeModel:=smDefault;
    FFogEnable:=False;
-   FAfterRenderEffects:=TList.Create;
+   FAfterRenderEffects:=TPersistentObjectList.Create;
 
    FContextOptions:=[roDoubleBuffer, roRenderToWindow];
 
