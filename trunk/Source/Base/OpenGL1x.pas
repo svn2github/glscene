@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/09/03 - EG - Added GL_ARB_vertex_buffer_object, dropped some oldies
       <li>04/09/03 - EG - Added GL_ARB_vertex_program
       <li>23/07/03 - EG - Creation from OpenGL12.pas "morph": classic OpenGL
                           calls made static, obsolete/rare extensions support
@@ -131,6 +132,7 @@ type
    GL_ARB_texture_env_crossbar,
    GL_ARB_texture_env_dot3,
    GL_ARB_vertex_program,
+   GL_ARB_vertex_buffer_object,
 
    GL_EXT_abgr,
    GL_EXT_bgra,
@@ -181,8 +183,6 @@ type
    GL_IBM_rasterpos_clip,
    GL_IBM_vertex_array_lists,
 
-   GL_INGR_color_clamp,
-
    GL_KTX_buffer_region,
 
    GL_MESA_resize_buffers,
@@ -212,19 +212,9 @@ type
 
    GL_SGIX_convolution_accuracy,
    GL_SGIX_depth_texture,
-   GL_SGIX_fog_offset,
-   GL_SGIX_fog_scale,
-   GL_SGIX_resample,
    GL_SGIX_shadow,
    GL_SGIX_shadow_ambient,
    GL_SGIX_subsample,
-   GL_SGIX_texture_add_env,
-   GL_SGIX_texture_lod_bias,
-   GL_SGIX_texture_multi_buffer,
-   GL_SGIX_texture_scale_bias,
-   GL_SGIX_vertex_preclip,
-   GL_SGIX_ycrcb,
-   GL_SGIX_ycrcba,
 
    GL_WIN_swap_hint,
 
@@ -1332,7 +1322,7 @@ type
    GL_OPERAND1_ALPHA_EXT                             = $8599;
    GL_OPERAND2_ALPHA_EXT                             = $859A;
 
-   // GL_ARB_texture_env_combine
+   // ARB_texture_env_combine
    GL_COMBINE_ARB                                    = $8570;
    GL_COMBINE_RGB_ARB                                = $8571;
    GL_COMBINE_ALPHA_ARB                              = $8572;
@@ -1361,7 +1351,7 @@ type
    GL_DOT3_RGB_ARB                                   = $86AE;
    GL_DOT3_RGBA_ARB                                  = $86AF;
 
-    // ARB_vertex_program
+   // ARB_vertex_program
    GL_VERTEX_PROGRAM_ARB                             = $8620;
    GL_VERTEX_PROGRAM_POINT_SIZE_ARB                  = $8642;
    GL_VERTEX_PROGRAM_TWO_SIDE_ARB                    = $8643;
@@ -1441,6 +1431,39 @@ type
    GL_MATRIX29_ARB                                   = $88DD;
    GL_MATRIX30_ARB                                   = $88DE;
    GL_MATRIX31_ARB                                   = $88DF;
+
+   // ARB_vertex_buffer_object
+   GL_ARRAY_BUFFER_ARB                               = $8892;
+   GL_ELEMENT_ARRAY_BUFFER_ARB                       = $8893;
+   GL_ARRAY_BUFFER_BINDING_ARB                       = $8894;
+   GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB               = $8895;
+   GL_VERTEX_ARRAY_BUFFER_BINDING_ARB                = $8896;
+   GL_NORMAL_ARRAY_BUFFER_BINDING_ARB                = $8897;
+   GL_COLOR_ARRAY_BUFFER_BINDING_ARB                 = $8898;
+   GL_INDEX_ARRAY_BUFFER_BINDING_ARB                 = $8899;
+   GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING_ARB         = $889A;
+   GL_EDGE_FLAG_ARRAY_BUFFER_BINDING_ARB             = $889B;
+   GL_SECONDARY_COLOR_ARRAY_BUFFER_BINDING_ARB       = $889C;
+   GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING_ARB        = $889D;
+   GL_WEIGHT_ARRAY_BUFFER_BINDING_ARB                = $889E;
+   GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING_ARB         = $889F;
+   GL_STREAM_DRAW_ARB                                = $88E0;
+   GL_STREAM_READ_ARB                                = $88E1;
+   GL_STREAM_COPY_ARB                                = $88E2;
+   GL_STATIC_DRAW_ARB                                = $88E4;
+   GL_STATIC_READ_ARB                                = $88E5;
+   GL_STATIC_COPY_ARB                                = $88E6;
+   GL_DYNAMIC_DRAW_ARB                               = $88E8;
+   GL_DYNAMIC_READ_ARB                               = $88E9;
+   GL_DYNAMIC_COPY_ARB                               = $88EA;
+   GL_READ_ONLY_ARB                                  = $88B8;
+   GL_WRITE_ONLY_ARB                                 = $88B9;
+   GL_READ_WRITE_ARB                                 = $88BA;
+   GL_BUFFER_SIZE_ARB                                = $8764;
+   GL_BUFFER_USAGE_ARB                               = $8765;
+   GL_BUFFER_ACCESS_ARB                              = $88BB;
+   GL_BUFFER_MAPPED_ARB                              = $88BC;
+   GL_BUFFER_MAP_POINTER_ARB                         = $88BD;
 
    // NV_texture_env_combine4
    GL_COMBINE4_NV                                    = $8503;
@@ -1599,41 +1622,11 @@ type
    // GL_SGIS_texture_border_clamp
    GL_CLAMP_TO_BORDER_SGIS                          = $812D;
 
-   // GL_SGIX_texture_multi_buffer
-   GL_TEXTURE_MULTI_BUFFER_HINT_SGIX                = $812E;
-
-   // GL_SGIX_texture_scale_bias
-   GL_POST_TEXTURE_FILTER_BIAS_SGIX                 = $8179;
-   GL_POST_TEXTURE_FILTER_SCALE_SGIX                = $817A;
-   GL_POST_TEXTURE_FILTER_BIAS_RANGE_SGIX           = $817B;
-   GL_POST_TEXTURE_FILTER_SCALE_RANGE_SGIX          = $817C;
-
-   // GL_SGIX_depth_texture
-   GL_DEPTH_COMPONENT16_SGIX                        = $81A5;
-   GL_DEPTH_COMPONENT24_SGIX                        = $81A6;
-   GL_DEPTH_COMPONENT32_SGIX                        = $81A7;
-
-   // GL_SGIX_fog_offset
-   GL_FOG_OFFSET_SGIX                               = $8198;
-   GL_FOG_OFFSET_VALUE_SGIX                         = $8199;
-
-   // GL_SGIX_texture_add_env
-   GL_TEXTURE_ENV_BIAS_SGIX                         = $80BE;
-
    // GL_EXT_paletted_texture
    GL_TEXTURE_INDEX_SIZE_EXT                        = $80ED;
 
-   // GL_SGIX_texture_lod_bias
-   GL_TEXTURE_LOD_BIAS_S_SGIX                       = $818E;
-   GL_TEXTURE_LOD_BIAS_T_SGIX                       = $818F;
-   GL_TEXTURE_LOD_BIAS_R_SGIX                       = $8190;
-
    // GL_SGIX_shadow_ambient
    GL_SHADOW_AMBIENT_SGIX                           = $80BF;
-
-   // GL_SGIX_ycrcb
-   GL_YCRCB_422_SGIX                                = $81BB;
-   GL_YCRCB_444_SGIX                                = $81BC;
 
    // GL_IBM_rasterpos_clip
    GL_RASTER_POSITION_UNCLIPPED_IBM                 = $19262;
@@ -1696,25 +1689,11 @@ type
    GL_OPERAND6_ALPHA_EXT                            = $859E;
    GL_OPERAND7_ALPHA_EXT                            = $859F;
 
-   // GL_SGIX_fog_scale
-   GL_FOG_SCALE_SGIX                                = $81FC;
-   GL_FOG_SCALE_VALUE_SGIX                          = $81FD;
-
    // GL_EXT_blend_func_separate
    GL_BLEND_DST_RGB_EXT                             = $80C8;
    GL_BLEND_SRC_RGB_EXT                             = $80C9;
    GL_BLEND_DST_ALPHA_EXT                           = $80CA;
    GL_BLEND_SRC_ALPHA_EXT                           = $80CB;
-
-   // GL_INGR_color_clamp
-   GL_RED_MIN_CLAMP_INGR                            = $8560;
-   GL_GREEN_MIN_CLAMP_INGR                          = $8561;
-   GL_BLUE_MIN_CLAMP_INGR                           = $8562;
-   GL_ALPHA_MIN_CLAMP_INGR                          = $8563;
-   GL_RED_MAX_CLAMP_INGR                            = $8564;
-   GL_GREEN_MAX_CLAMP_INGR                          = $8565;
-   GL_BLUE_MAX_CLAMP_INGR                           = $8566;
-   GL_ALPHA_MAX_CLAMP_INGR                          = $8567;
 
    // GL_EXT_texture_cube_map
    GL_NORMAL_MAP_EXT                                = $8511;
@@ -1865,10 +1844,6 @@ type
    GL_PIXEL_SUBSAMPLE_2424_SGIX                     = $85A3;
    GL_PIXEL_SUBSAMPLE_4242_SGIX                     = $85A4;
 
-   // GL_SGIX_ycrcba
-   GL_YCRCB_SGIX                                    = $8318;
-   GL_YCRCBA_SGIX                                   = $8319;
-
    // GL_3DFX_texture_compression_FXT1
    GL_COMPRESSED_RGB_FXT1_3DFX                      = $86B0;
    GL_COMPRESSED_RGBA_FXT1_3DFX                     = $86B1;
@@ -1897,19 +1872,8 @@ type
    GL_SAMPLE_MASK_INVERT_EXT                        = $80AB;
    GL_SAMPLE_PATTERN_EXT                            = $80AC;
 
-   // GL_SGIX_vertex_preclip
-   GL_VERTEX_PRECLIP_SGIX                           = $83EE;
-   GL_VERTEX_PRECLIP_HINT_SGIX                      = $83EF;
-
    // GL_SGIX_convolution_accuracy
    GL_CONVOLUTION_HINT_SGIX                         = $8316;
-
-   // GL_SGIX_resample
-   GL_PACK_RESAMPLE_SGIX                            = $842C;
-   GL_UNPACK_RESAMPLE_SGIX                          = $842D;
-   GL_RESAMPLE_REPLICATE_SGIX                       = $842E;
-   GL_RESAMPLE_ZERO_FILL_SGIX                       = $842F;
-   GL_RESAMPLE_DECIMATE_SGIX                        = $8430;
 
    // GL_SGIS_texture_color_mask
    GL_TEXTURE_COLOR_WRITEMASK_SGIS                  = $81EF;
@@ -3080,6 +3044,19 @@ var
    glGetVertexAttribPointervARB: procedure(index: GLuint; pname: GLenum; _pointer: pointer); stdcall;
    glIsProgramARB: function(_program: GLuint): GLboolean; stdcall;
 
+   // GL_ARB_vertex_buffer_object
+   glBindBufferARB: procedure(target: GLenum; buffer: GLuint); stdcall;
+   glDeleteBuffersARB: procedure(n: GLsizei; const buffers: PGLuint); stdcall;
+   glGenBuffersARB: procedure(n: GLsizei; buffers: PGLuint); stdcall;
+   glIsBufferARB: function(buffer: GLuint): GLboolean; stdcall;
+   glBufferDataARB: procedure(target: GLenum; size: GLsizei; const data: Pointer; usage: GLenum); stdcall;
+   glBufferSubDataARB: procedure(target: GLenum; offset: GLuint; size: GLsizei; const data: Pointer); stdcall;
+   glGetBufferSubDataARB: procedure(target: GLenum; offset: GLuint; size: GLsizei; data: Pointer); stdcall;
+   glMapBufferARB: function(target: GLenum; access: GLenum): Pointer; stdcall;
+   glUnmapBufferARB: function(target: GLenum): GLboolean; stdcall;
+   glGetBufferParameterivARB: procedure(target: GLenum; pname: GLenum; params: PGLint); stdcall;
+   glGetBufferPointervARB: procedure(target: GLenum; pname: GLenum; params: Pointer); stdcall;
+
    // GL_EXT_blend_color
    glBlendColorEXT: procedure(red, green, blue: TGLclampf; alpha: TGLclampf); stdcall;
 
@@ -3754,6 +3731,19 @@ begin
    glGetVertexAttribPointervARB := wglGetProcAddress('glGetVertexAttribPointervARB');
    glIsProgramARB := wglGetProcAddress('glIsProgramARB');
 
+   // GL_ARB_vertex_buffer_object
+   glBindBufferARB := wglGetProcAddress('glBindBufferARB');
+   glDeleteBuffersARB := wglGetProcAddress('glDeleteBuffersARB');
+   glGenBuffersARB := wglGetProcAddress('glGenBuffersARB');
+   glIsBufferARB := wglGetProcAddress('glIsBufferARB');
+   glBufferDataARB := wglGetProcAddress('glBufferDataARB');
+   glBufferSubDataARB := wglGetProcAddress('glBufferSubDataARB');
+   glGetBufferSubDataARB := wglGetProcAddress('glGetBufferSubDataARB');
+   glMapBufferARB := wglGetProcAddress('glMapBufferARB');
+   glUnmapBufferARB := wglGetProcAddress('glUnmapBufferARB');
+   glGetBufferParameterivARB := wglGetProcAddress('glGetBufferParameterivARB');
+   glGetBufferPointervARB := wglGetProcAddress('glGetBufferPointervARB');
+
    // GL_EXT_blend_color
    glBlendColorEXT := wglGetProcAddress('glBlendColorEXT');
 
@@ -4090,135 +4080,122 @@ begin
    GLU_VERSION_1_2:=(minorVersion>1);
    GLU_VERSION_1_3:=(minorVersion>2);
 
-  // check supported extensions
-  // GL
-  Buffer := StrPas(glGetString(GL_EXTENSIONS));
+   // check supported extensions
+   // GL
+   Buffer := StrPas(glGetString(GL_EXTENSIONS));
 
-  GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
-  GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
-  GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
+   GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
+   GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
+   GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
 
-  GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
-  GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
-  GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
-  GL_ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
-  GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression');
-  GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
-  GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix');
-  GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend');
-  GL_ARB_point_parameters := CheckExtension('GL_ARB_point_parameters');
-  GL_ARB_texture_env_combine := CheckExtension('GL_ARB_texture_env_combine');
-  GL_ARB_texture_env_crossbar := CheckExtension('GL_ARB_texture_env_crossbar');
-  GL_ARB_texture_env_dot3 := CheckExtension('GL_ARB_texture_env_dot3');
-  GL_ARB_vertex_program := CheckExtension('GL_ARB_vertex_program');
+   GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
+   GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
+   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
+   GL_ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
+   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression');
+   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
+   GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix');
+   GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend');
+   GL_ARB_point_parameters := CheckExtension('GL_ARB_point_parameters');
+   GL_ARB_texture_env_combine := CheckExtension('GL_ARB_texture_env_combine');
+   GL_ARB_texture_env_crossbar := CheckExtension('GL_ARB_texture_env_crossbar');
+   GL_ARB_texture_env_dot3 := CheckExtension('GL_ARB_texture_env_dot3');
+   GL_ARB_vertex_program := CheckExtension('GL_ARB_vertex_program');
+   GL_ARB_vertex_buffer_object := CheckExtension('GL_ARB_vertex_buffer_object');
 
-  GL_EXT_abgr := CheckExtension('GL_EXT_abgr');
-  GL_EXT_bgra := CheckExtension('GL_EXT_bgra');
-  GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color');
-  GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate');
-  GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op');
-  GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
-  GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
-  GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
-  GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka');
-  GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
-  GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture');
-  GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
-  GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord');
-  GL_EXT_light_max_exponent := CheckExtension('GL_EXT_light_max_exponent');
-  GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute');
-  GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays');
-  GL_EXT_multisample := CheckExtension('GL_EXT_multisample');
-  GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels');
-  GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
-  GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
-  GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal');
-  GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker');
-  GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
-  GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color');
-  GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
-  GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
-  GL_EXT_stencil_two_side := CheckExtension('EXT_stencil_two_side');
-  GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture');
-  GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table');
-  GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc');
-  GL_EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map');
-  GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp');
-  GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add');
-  GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine');
-  GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
-  GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
-  GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
-  GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
-  GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
-  GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
-  GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
+   GL_EXT_abgr := CheckExtension('GL_EXT_abgr');
+   GL_EXT_bgra := CheckExtension('GL_EXT_bgra');
+   GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color');
+   GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate');
+   GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op');
+   GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
+   GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
+   GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
+   GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka');
+   GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
+   GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture');
+   GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
+   GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord');
+   GL_EXT_light_max_exponent := CheckExtension('GL_EXT_light_max_exponent');
+   GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute');
+   GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays');
+   GL_EXT_multisample := CheckExtension('GL_EXT_multisample');
+   GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels');
+   GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
+   GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
+   GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal');
+   GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker');
+   GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
+   GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color');
+   GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
+   GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
+   GL_EXT_stencil_two_side := CheckExtension('EXT_stencil_two_side');
+   GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture');
+   GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table');
+   GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc');
+   GL_EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map');
+   GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp');
+   GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add');
+   GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine');
+   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
+   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
+   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
+   GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
+   GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
+   GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
+   GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
 
-  GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
+   GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
 
-  GL_IBM_cull_vertex := CheckExtension('GL_IBM_cull_vertex');
-  GL_IBM_multimode_draw_arrays := CheckExtension('GL_IBM_multimode_draw_arrays'); 
-  GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip'); 
-  GL_IBM_vertex_array_lists := CheckExtension('GL_IBM_vertex_array_lists'); 
+   GL_IBM_cull_vertex := CheckExtension('GL_IBM_cull_vertex');
+   GL_IBM_multimode_draw_arrays := CheckExtension('GL_IBM_multimode_draw_arrays'); 
+   GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip'); 
+   GL_IBM_vertex_array_lists := CheckExtension('GL_IBM_vertex_array_lists'); 
 
-  GL_INGR_color_clamp := CheckExtension('GL_INGR_color_clamp'); 
+   GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
 
-  GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
+   GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
+   GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos');
 
-  GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
-  GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos');
+   GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
+   GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
+   GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent'); 
+   GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners'); 
+   GL_NV_texgen_emboss := CheckExtension('GL_NV_texgen_emboss'); 
+   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
+   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
+   GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
+   GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
+   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
+   GL_NV_fence := CheckExtension('GL_NV_fence');
 
-  GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
-  GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
-  GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent'); 
-  GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners'); 
-  GL_NV_texgen_emboss := CheckExtension('GL_NV_texgen_emboss'); 
-  GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
-  GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
-  GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
-  GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
-  GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
-  GL_NV_fence := CheckExtension('GL_NV_fence');
+   GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix'); 
 
-  GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix'); 
+   GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
+   GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
+   GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture');
+   GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
+   GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
+   GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
+   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
 
-  GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
-  GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
-  GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture');
-  GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
-  GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
-  GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
-  GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
+   GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy');
+   GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
+   GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
+   GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
+   GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample');
 
-  GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy');
-  GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
-  GL_SGIX_fog_offset := CheckExtension('GL_SGIX_fog_offset'); 
-  GL_SGIX_fog_scale := CheckExtension('GL_SGIX_fog_scale'); 
-  GL_SGIX_resample := CheckExtension('GL_SGIX_resample'); 
-  GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
-  GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
-  GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample');
-  GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env');
-  GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias');
-  GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer'); 
-  GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias');
-  GL_SGIX_vertex_preclip := CheckExtension('GL_SGIX_vertex_preclip'); 
-  GL_SGIX_ycrcb := CheckExtension('GL_SGIX_ycrcb'); 
-  GL_SGIX_ycrcba := CheckExtension('GL_SGIX_ycrcba'); 
+   GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint'); 
 
-  GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint'); 
+   WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
 
-  // -EGG- --------------------------
+   // GLU
+   Buffer := gluGetString(GLU_EXTENSIONS);
+   GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE');
+   GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess');
+   GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator');
 
-  WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
-
-  // GLU
-  Buffer := gluGetString(GLU_EXTENSIONS);
-  GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE');
-  GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess');
-  GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator');
-
-  ReadWGLImplementationProperties;
+   ReadWGLImplementationProperties;
 end;
 
 // ReadWGLImplementationProperties
