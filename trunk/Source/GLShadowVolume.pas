@@ -450,6 +450,7 @@ begin
 
          glDisable(GL_LIGHTING);
          glEnableClientState(GL_VERTEX_ARRAY);
+         glPolygonOffset(1, 1);
 
          // for all opaque shadow casters
          for k:=0 to opaques.Count-1 do begin
@@ -477,7 +478,9 @@ begin
 
                   with sil do begin
                      glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT, Indices.List);
+                     glEnable(GL_POLYGON_OFFSET_FILL);
                      glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT, CapIndices.List);
+                     glDisable(GL_POLYGON_OFFSET_FILL);
                   end;
 
                   glCullFace(GL_BACK);
@@ -485,7 +488,9 @@ begin
 
                   with sil do begin
                      glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT, Indices.List);
+                     glEnable(GL_POLYGON_OFFSET_FILL);
                      glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT, CapIndices.List);
+                     glDisable(GL_POLYGON_OFFSET_FILL);
                   end;
                end else begin
                   // z-pass
@@ -497,9 +502,9 @@ begin
                   glCullFace(GL_FRONT);
                   glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
 
-                  glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT, sil.Indices.List); 
+                  glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT, sil.Indices.List);
                end;
-               
+
                glPopMatrix;
             finally
                sil.Free;
