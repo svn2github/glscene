@@ -402,8 +402,8 @@ end;
 //
 function TCubicSpline.SplineIntersecYZ(X: Single; var Y, Z: Single): Boolean;
 var
-   Sup, Inf, Mid: Double;
-   SSup, Sinf, Smid: Single;
+   Sup, Inf, Mid : Single;
+   SSup, Sinf, Smid : Single;
 begin
    Result:=False;
 
@@ -450,8 +450,8 @@ end;
 //
 function TCubicSpline.SplineIntersecXZ(Y: Single; var X, Z: Single): Boolean;
 var
-   Sup, Inf, Mid: Double;
-   SSup, Sinf, Smid: Single;
+   Sup, Inf, Mid : Single;
+   SSup, Sinf, Smid : Single;
 begin
    Result:=False;
 
@@ -498,8 +498,8 @@ end;
 //
 function TCubicSpline.SplineIntersecXY(Z: Single; var X, Y: Single): Boolean;
 var
-   Sup, Inf, Mid: Double;
-   SSup, Sinf, Smid: Single;
+   Sup, Inf, Mid : Single;
+   SSup, Sinf, Smid : Single;
 begin
    Result:=False;
 

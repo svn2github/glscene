@@ -96,26 +96,24 @@ end;
 function RoundUpToPowerOf2(value : Integer) : Integer;
 begin
    Result:=1;
-   while (Result<value) do Result:=Result*2;
+   while (Result<value) do Result:=Result shl 1;
 end;
 
 // RoundDownToPowerOf2
 //
 function RoundDownToPowerOf2(value : Integer) : Integer;
-var
-   LogTwo : Extended;
 begin
-   LogTwo:=log2(Value);
-   if Trunc(LogTwo) < LogTwo then
-      Result:=Trunc(Power(2,Trunc(LogTwo)))
-   else Result:=Value;
+   if value>0 then begin
+      Result:=1 shl 31;
+      while Result>value do Result:=Result shr 1;
+   end else Result:=1;
 end;
 
 // IsPowerOf2
 //
 function IsPowerOf2(value : Integer) : Boolean;
 begin
-   Result:=(Trunc(log2(Value))=log2(Value));
+   Result:=(RoundUpToPowerOf2(value)=value);
 end;
 
 // ReadCRLFString

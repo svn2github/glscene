@@ -390,11 +390,19 @@ type
 
          property DefaultColor : TColorVector read FColor;
 
+{$ifndef FPC}
 		published
+         { Published Properties }
 			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
 			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
 			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
 			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
+{$else}
+			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent;
+			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent;
+			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent;
+			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent;
+{$endif}
 	end;
 
    // TTextureNeededEvent
@@ -1306,7 +1314,7 @@ type
       thus reducing memory needs and rendering time.<p>
       Materials in a material library also feature advanced control properties
       like texture coordinates transforms. }  
-   TGLMaterialLibrary = class (TGLCadenceAbleComponent, IPersistentObject)
+   TGLMaterialLibrary = class (TGLCadenceAbleComponent)
 	   private
 	      { Private Declarations }
          FMaterials : TGLLibMaterials;
@@ -1458,7 +1466,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, GLUtils
-   {$ifdef WIN32}, Graphics{$endif} // for standard application colors
+   {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
    ;
 
 {$Q-} // no range checking
@@ -1607,7 +1615,7 @@ end;
 //
 function IncludeTrailingBackslash(const s : string): string;
 begin
-   if IsDelimiter('\', Result, Length(Result)-1) then
+   if IsDelimiter('\', s, Length(s)-1) then
       Result:=s+'\'
    else Result:=s;
 end;
@@ -5175,7 +5183,7 @@ var
    winColor : Integer;
 begin
 	// Delphi color to Windows color
-   winColor:=ColorToRGB(AColor);
+   winColor:=GLCrossPlatform.ColorToRGB(aColor);
    // convert 0..255 range into 0..1 range
    Result[0]:=(winColor and $FF)*(1/255);
    Result[1]:=((winColor shr 8) and $FF)*(1/255);
@@ -5226,7 +5234,7 @@ end;
 //
 procedure InitWinColors;
 begin
-   {$ifdef WIN32}
+   {$ifdef MSWINDOWS} 
    clrScrollBar:=ConvertWinColor(clScrollBar);
    clrBackground:=ConvertWinColor(clBackground);
    clrActiveCaption:=ConvertWinColor(clActiveCaption);

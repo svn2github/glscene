@@ -476,7 +476,7 @@ var
    vContextClasses : TList = nil;
    vIgnoreContextActivationFailures : Boolean = False;
 
-threadvar
+var
    vCurrentGLContext : TGLContext;
 
 // CurrentGLContext

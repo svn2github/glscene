@@ -276,7 +276,7 @@ end;
 //
 procedure TDataFile.SaveToStream(stream : TStream);
 begin
-   Assert(False, 'Export for '+ClassName+' not available.');
+   Assert(False, 'Export for '+ClassName+' to '+stream.ClassName+' not available.');
 end;
 
 end.

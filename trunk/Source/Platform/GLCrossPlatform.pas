@@ -185,8 +185,10 @@ end;
 //
 function ColorToRGB(color : TColor) : TColor;
 begin
-   {$ifdef Win32}
-   Result:=Graphics.ColorToRGB(color);
+   {$ifdef MSWINDOWS}
+   if color<0 then
+      Result:=GetSysColor(color and $FF)
+   else Result:=color;
    {$else}
    Result:=QGraphics.ColorToRGB(color);
    {$endif}

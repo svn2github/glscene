@@ -418,17 +418,16 @@ const
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
       1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
       2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5);
-  offsetsFromUTF8 : array[0..5] of Cardinal = (
+   offsetsFromUTF8 : array[0..5] of Cardinal = (
       $00000000, $00003080, $000E2080, $03C82080, $FA082080, $82082080);
-  MaximumUCS2 : Cardinal = $0000FFFF;
-  MaximumUCS4 : Cardinal = $7FFFFFFF;
-  ReplacementCharacter : Cardinal = $0000FFFD;
-  halfShift : Integer = 10;
-  halfBase  : Cardinal = $0010000;
-  halfMask  : Cardinal = $3FF;
-  SurrogateHighStart : Cardinal = $D800;
-  SurrogateHighEnd   : Cardinal = $DBFF;
-  SurrogateLowStart  : Cardinal = $DC00;
+   MaximumUCS2 : Cardinal = $0000FFFF;
+   MaximumUCS4 : Cardinal = $7FFFFFFF;
+   ReplacementCharacter : Cardinal = $0000FFFD;
+   halfShift : Integer = 10;
+   halfBase  : Cardinal = $0010000;
+   halfMask  : Cardinal = $3FF;
+   SurrogateHighStart : Cardinal = $D800;
+   SurrogateLowStart  : Cardinal = $DC00;
 var
    sLength, L, J, T : Cardinal;
    ch : Cardinal;
@@ -618,6 +617,7 @@ end;
 procedure TPersistentObject.WriteToFiler(writer : TVirtualWriter);
 begin
    // nothing
+   Assert(Assigned(writer));
 end;
 
 // ReadFromFiler
@@ -625,6 +625,7 @@ end;
 procedure TPersistentObject.ReadFromFiler(reader : TVirtualReader);
 begin
    // nothing
+   Assert(Assigned(reader));
 end;
 
 // RaiseFilerException
