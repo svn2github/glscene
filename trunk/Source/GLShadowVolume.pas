@@ -51,12 +51,13 @@ type
          FCaster : TGLBaseSceneObject;
          FEffectiveRadius : Single;
          FCapping : TGLShadowVolumeCapping;
-    FCastingMode: TGLShadowCastingMode;
-    function GetGLShadowVolume: TGLShadowVolume;
+         FCastingMode : TGLShadowCastingMode;
 
 		protected
 			{ Protected Declarations }
          procedure SetCaster(const val : TGLBaseSceneObject);
+         function GetGLShadowVolume : TGLShadowVolume;
+         
          procedure RemoveNotification(aComponent : TComponent);
          function GetDisplayName : String; override;
 
@@ -270,16 +271,16 @@ end;
 //
 function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
 begin
-  Result:=TGLShadowVolume(TGLShadowVolumeCasters(Collection).GetOwner);
+   Result:=TGLShadowVolume(TGLShadowVolumeCasters(Collection).GetOwner);
 end;
 
 // Destroy
 //
 destructor TGLShadowVolumeCaster.Destroy;
 begin
-  if Assigned(FCaster) then
-    FCaster.RemoveFreeNotification(GLShadowVolume);
-  inherited;
+   if Assigned(FCaster) then
+      FCaster.RemoveFreeNotification(GLShadowVolume);
+   inherited;
 end;
 
 // Assign
@@ -313,8 +314,7 @@ end;
 //
 procedure TGLShadowVolumeCaster.RemoveNotification(aComponent : TComponent);
 begin
-   if aComponent=FCaster then
-   begin
+   if aComponent=FCaster then begin
       // No point in keeping the TGLShadowVolumeCaster once the FCaster has been
       // destroyed.
       FCaster:=nil;
