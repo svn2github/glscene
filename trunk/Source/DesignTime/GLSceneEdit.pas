@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/12/03 - EG - Paste fix (Mrqzzz)
       <li>31/06/03 - EG - Cosmetic changes, form position/state now saved to the
                           registry 
       <li>21/06/03 - DanB - Added behaviours/effects listviews
@@ -41,7 +42,7 @@ uses
    Controls, Windows, Forms, ComCtrls, ImgList, Dialogs, Menus, ActnList, ToolWin,
    {$ENDIF}
    GLScene, Classes, sysutils, ExtCtrls, StdCtrls,
-   {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
+   {$ifdef GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$else} DsgnIntf {$endif};
 
 const
   SCENE_SELECTED=0;
@@ -159,6 +160,12 @@ type
     FObjectNode, FCameraNode: TTreeNode;
     FCurrentDesigner: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif};
     FLastMouseDownPos : TPoint;
+
+{$ifdef GLS_DELPHI_6_UP}
+    FPasteOwner : TComponent;
+    FPasteSelection : IDesignerSelections;
+{$endif}
+
     procedure ReadScene;
     procedure ResetTree;
     function AddNodes(ANode: TTreeNode; AObject: TGLBaseSceneObject): TTreeNode;
@@ -172,13 +179,20 @@ type
     procedure OnBaseSceneObjectNameChanged(Sender : TObject);
     function IsValidClipBoardNode : Boolean;
     function IsPastePossible : Boolean;
-    function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
-    function GetComponentFromClipBoard : TComponent;
-    procedure RenameObjectToBeUnique(anObject:TGLBaseSceneObject);
     procedure ShowBehaviours(BaseSceneObject:TGLBaseSceneObject);
     procedure ShowEffects(BaseSceneObject:TGLBaseSceneObject);
     procedure ShowBehavioursAndEffects(BaseSceneObject:TGLBaseSceneObject);
     procedure EnableAndDisableActions();
+
+{$ifdef GLS_DELPHI_6_UP}
+    function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
+    procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
+    procedure PasteComponents(AOwner, AParent: TComponent;const Components: IDesignerSelections);
+    procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
+    procedure ComponentRead(Component: TComponent);
+    function UniqueName(Component: TComponent): string;
+{$endif}
+
   protected
 	 procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -354,6 +368,11 @@ begin
    SetObjectsSubItems(MIAddObject);
 {$ifdef GLS_DELPHI_5_UP}
 	MIAddObject.SubMenuImages:=ObjectManager.ObjectIcons;
+{$endif}
+{$ifndef GLS_DELPHI_6_UP}
+   ACCut.Visible:=False;
+   ACCopy.Visible:=False;
+   ACPaste.Visible:=False;
 {$endif}
    SetObjectsSubItems(PMToolBar.Items);
    PMToolBar.Images:=ObjectManager.ObjectIcons;
@@ -1016,76 +1035,72 @@ end;
 // IsPastePossible
 //
 function TGLSceneEditorForm.IsPastePossible : Boolean;
+{$ifdef GLS_DELPHI_6_UP}
+
+   function PossibleStream(const S: string): Boolean;
+   var
+     I: Integer;
+   begin
+     Result := True;
+     for I := 1 to Length(S) - 6 do begin
+       if (S[I] in ['O','o']) and (CompareText(Copy(S, I, 6), 'OBJECT') = 0) then Exit;
+       if not (S[I] in [' ',#9, #13, #10]) then Break;
+     end;
+     Result := False;
+   end;
+
 var
    selNode : TTreeNode;
 	anObject, destination : TGLBaseSceneObject;
+   ComponentList: IDesignerSelections;
+   TmpContainer : TComponent;
 begin
    selNode:=Tree.Selected;
-   if (selNode<>nil) and (selNode.Parent<>nil) and ClipBoard.HasFormat(CF_COMPONENT) then begin
-      anObject:=TGLBaseSceneObject(GetComponentFromClipBoard);
-      destination:=TGLBaseSceneObject(selNode.Data);
-      Result:=CanPaste(anObject, destination);
-      anObject.Free;
+
+   if (selNode<>nil) and (selNode.Parent<>nil) and (ClipBoard.HasFormat(CF_COMPONENT) or (Clipboard.HasFormat(CF_TEXT) and PossibleStream(Clipboard.AsText))) then begin
+      TmpContainer := TComponent.Create(self);
+      try
+         ComponentList := TDesignerSelections.Create;
+         PasteComponents(TmpContainer, TmpContainer, ComponentList);
+         if (ComponentList.Count>0) and (ComponentList[0] is TGLBaseSceneObject) then begin
+            anObject:=TGLBaseSceneObject(ComponentList[0]);
+            destination:=TGLBaseSceneObject(selNode.Data);
+            Result:=CanPaste(anObject, destination);
+         end else Result:=False;
+      finally
+         TmpContainer.Free;
+      end;
    end else Result:=False;
+{$else}
+begin
+   Result:=False;
+{$endif}
 end;
 
 // CanPaste
 //
+{$ifdef GLS_DELPHI_6_UP}
 function TGLSceneEditorForm.CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
 begin
    Result:=((obj is TGLCamera) or (destination<>FScene.Cameras))
            and (obj is TGLBaseSceneObject);
 end;
-
-// GetComponentFromClipBoard
-//
-function TGLSceneEditorForm.GetComponentFromClipBoard : TComponent;
-var
-  Data: THandle;
-  DataPtr: Pointer;
-  MemStream: TMemoryStream;
-  Reader: TReader;
-begin
-   // a bug in the VCL prevents use of the standard function...
-   // here is a simplified fixed one
-   Result := nil;
-   with ClipBoard do begin
-      Open;
-      try
-         Data := GetClipboardData(CF_COMPONENT);
-         if Data = 0 then Exit;
-         DataPtr := GlobalLock(Data);
-         if DataPtr = nil then Exit;
-         try
-            MemStream:=TMemoryStream.Create;
-            try
-               MemStream.WriteBuffer(DataPtr^, GlobalSize(Data));
-               MemStream.Position:=0;
-               Reader:=TReader.Create(MemStream, 256);
-               try
-                  Result:=Reader.ReadRootComponent(nil);
-               finally
-                  Reader.Free;
-               end;
-            finally
-               MemStream.Free;
-            end;
-         finally
-            GlobalUnlock(Data);
-         end;
-      finally
-        Close;
-      end;
-   end;
-end;
+{$endif}
 
 // ACCopyExecute
 //
 procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
+{$ifdef GLS_DELPHI_6_UP}
+var
+   ComponentList: IDesignerSelections;
 begin
-   if IsValidClipBoardNode then
-      ClipBoard.SetComponent(TGLBaseSceneObject(Tree.Selected.Data));
+   ComponentList := TDesignerSelections.Create;
+   ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
+   CopyComponents(FScene.Owner, ComponentList);
    ACPaste.Enabled:=IsPastePossible;
+{$else}
+begin
+{$endif}
 end;
 
 // ACCutExecute
@@ -1105,51 +1120,102 @@ begin
    end;
 end;
 
-procedure TGLSceneEditorForm.RenameObjectToBeUnique(anObject:TGLBaseSceneObject);
-var
-  i:integer;
-  OriginalName,NewName:String;
-begin
-   OriginalName:=anObject.Name;
-   NewName:=OriginalName;
-   i:=1;
-   while FScene.FindSceneObject(NewName)<>nil do
-   begin
-     NewName:=OriginalName+IntToStr(i);
-     i:=i+1;
-   end;
 
-   anObject.Name:=NewName;
 
-   FCurrentDesigner.Modified;
-   for i:=0 to anObject.Count-1 do
-     RenameObjectToBeUnique(anObject.Children[i]);
-
-//         if Assigned(FCurrentDesigner) then
-//           anObject.Name:=FCurrentDesigner.UniqueName(anObject.Name);
-end;
 
 // ACPasteExecute
 //
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
+{$ifdef GLS_DELPHI_6_UP}
 var
    selNode : TTreeNode;
-	anObject, destination : TGLBaseSceneObject;
+	destination : TGLBaseSceneObject;
+   ComponentList: IDesignerSelections;
+   t: integer;
 begin
    selNode:=Tree.Selected;
    if (selNode<>nil) and (selNode.Parent<>nil) then begin
-      anObject:=TGLBaseSceneObject(GetComponentFromClipBoard);
       destination:=TGLBaseSceneObject(selNode.Data);
-      if CanPaste(anObject, destination) then begin
-         RenameObjectToBeUnique(anObject);
-         destination.AddChild(anObject);
-         AddNodes(selNode, anObject);
+      ComponentList := TDesignerSelections.Create;
+      PasteComponents(FScene.Owner, destination, ComponentList);
+      if (ComponentList.count>0) and (CanPaste(TGLBaseSCeneObject(ComponentList[0]), destination)) then begin
+         for t :=0 to ComponentList.Count-1 do
+            AddNodes(selNode, TGLBaseSCeneObject(ComponentList[t]) );
          selNode.Expand(False);
-      end else anObject.Free;
+      end;
       FCurrentDesigner.Modified;
    end;
+{$else}
+begin
+{$endif}
 end;
 
+{$ifdef GLS_DELPHI_6_UP}
+// CopyComponents
+//
+procedure TGLSceneEditorForm.CopyComponents(Root: TComponent; const Components: IDesignerSelections);
+var
+  S: TMemoryStream;
+  W: TWriter;
+  I: Integer;
+begin
+  S := TMemoryStream.Create;
+  try
+    W := TWriter.Create(S, 1024);
+    try
+      W.Root := Root;
+      for I := 0 to Components.Count - 1 do
+      begin
+        W.WriteSignature;
+        W.WriteComponent(TComponent(Components[I]));
+      end;
+      W.WriteListEnd;
+    finally
+      W.Free;
+    end;
+    CopyStreamToClipboard(S);
+  finally
+    S.Free;
+  end;
+end;
+
+procedure TGLSceneEditorForm.PasteComponents(AOwner, AParent: TComponent;const Components: IDesignerSelections);
+var
+  S: TStream;
+  R: TReader;
+begin
+  S := GetClipboardStream;
+  try
+    R := TReader.Create(S, 1024);
+    try
+      R.OnSetName := ReaderSetName;
+      FPasteOwner := AOwner;
+      FPasteSelection := Components;
+      R.ReadComponents(AOwner, AParent, ComponentRead);
+    finally
+      R.Free;
+    end;
+  finally
+    S.Free;
+  end;
+end;
+
+procedure TGLSceneEditorForm.ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
+begin
+  if (Reader.Root = FPasteOwner) and (FPasteOwner.FindComponent(Name) <> nil) then
+    Name := UniqueName(Component);
+end;
+
+function TGLSceneEditorForm.UniqueName(Component: TComponent): string;
+begin
+  Result := FCurrentDesigner.UniqueName(Component.ClassName);
+end;
+
+procedure TGLSceneEditorForm.ComponentRead(Component: TComponent);
+begin
+   FPasteSelection.Add(Component);
+end;
+{$endif}
 
 procedure TGLSceneEditorForm.BehavioursListViewEnter(Sender: TObject);
 begin
