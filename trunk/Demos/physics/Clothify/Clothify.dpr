@@ -2,8 +2,7 @@ program Clothify;
 
 uses
   Forms,
-  fClothify in 'fClothify.pas' {frmClothify},
-  GLBaseMeshSilhouette in '..\..\..\Source\GLBaseMeshSilhouette.pas';
+  fClothify in 'fClothify.pas' {frmClothify};
 
 {$R *.res}
 

@@ -14,9 +14,6 @@ object frmOctreeDemo: TfrmOctreeDemo
   Position = poScreenCenter
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  DesignSize = (
-    792
-    606)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel

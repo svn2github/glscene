@@ -3,7 +3,7 @@ unit fOctreeDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, GLMisc, Geometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL12, GLCadencer, SpatialPartitioning,
   ComCtrls;

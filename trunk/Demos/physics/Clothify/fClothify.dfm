@@ -14,9 +14,6 @@ object frmClothify: TfrmClothify
   Position = poScreenCenter
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  DesignSize = (
-    824
-    566)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
