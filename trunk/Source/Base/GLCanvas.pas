@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/12/02 - EG - Now properly disables fog
       <li>20/11/02 - EG - Now uses Types/Windows TPoint (D5 & D6 tested only) 
       <li>01/10/02 - EG - Added Polygon & Polyline
       <li>04/03/02 - EG - Added FrameRect and FillRect
@@ -215,6 +216,7 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
 
    glDisable(GL_LIGHTING);
+   glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDisable(GL_COLOR_MATERIAL);
    glDisable(GL_DEPTH_TEST);
