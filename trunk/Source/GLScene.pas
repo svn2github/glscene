@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/03 - Egg - Added CopyToTexture for buffer
       <li>10/06/03 - Egg - Fixed issue with SetXxxxAngle (Domin)
       <li>07/06/03 - Egg - Added Buffer.AmbientColor
       <li>06/06/03 - Egg - Added roNoColorBufferClear
@@ -1532,6 +1533,7 @@ type
          FOnPrepareGLContext : TNotifyEvent;
 
          FBeforeRender : TNotifyEvent;
+         FViewerBeforeRender : TNotifyEvent;
          FPostRender   : TNotifyEvent;
          FAfterRender  : TNotifyEvent;
 
@@ -1630,7 +1632,11 @@ type
             request a redraw and will be significantly faster.<p>
             The returned TGLBitmap32 should be freed by calling code. }
          function CreateSnapShot : TGLBitmap32;
+         procedure CopyToTexture(aTexture : TGLTexture); overload;
+         procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer; xDest, yDest : Integer); overload;
 
+         {: Event reserved for viewer-specific uses.<br> }
+         property ViewerBeforeRender : TNotifyEvent read FViewerBeforeRender write FViewerBeforeRender;
          procedure SetViewPort(X, Y, W, H: Integer);
          function Width : Integer;
          function Height : Integer;
@@ -2888,7 +2894,7 @@ const
    cNbSegments = 21;
 var
    i, j : Integer;
-   ir, tr, d, r, r2, vr, s, c, angleFactor : Single;
+   ir, tr, d, r, vr, s, c, angleFactor : Single;
    sVec, tVec : TAffineVector;
 begin
    r:=BoundingSphereRadiusUnscaled;
@@ -6399,6 +6405,65 @@ begin
    end;
 end;
 
+// CopyToTexture
+//
+procedure TGLSceneBuffer.CopyToTexture(aTexture : TGLTexture);
+begin
+   CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
+end;
+
+// CopyToTexture
+//
+procedure TGLSceneBuffer.CopyToTexture(aTexture : TGLTexture;
+                                       xSrc, ySrc, width, height : Integer;
+                                       xDest, yDest : Integer);
+var
+   target, handle : Integer;
+   buf : PChar;
+   createTexture : Boolean;
+begin
+   if RenderingContext<>nil then begin
+      RenderingContext.Activate;
+      try
+         target:=aTexture.Image.NativeTextureTarget;
+         createTexture:=not aTexture.IsHandleAllocated;
+         if createTexture then
+            handle:=aTexture.AllocateHandle
+         else handle:=aTexture.Handle;
+         SetGLCurrentTexture(0, target, handle);
+         if createTexture then begin
+            GetMem(buf, Width*Height*4);
+            try
+               glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+               case aTexture.MinFilter of
+                  miNearest, miLinear :
+              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+               else
+                  if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
+                     // hardware-accelerated when supported
+                     glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+                  end else begin
+                     // slower (software mode)
+                     gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
+                                       GL_RGBA, GL_UNSIGNED_BYTE, buf);
+                  end;
+               end;
+            finally
+               FreeMem(buf);
+            end;
+         end else begin
+            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
+         end;
+         ClearGLError;
+      finally
+         RenderingContext.Deactivate;
+      end;
+   end;
+end;
+
 // SetViewPort
 //
 procedure TGLSceneBuffer.SetViewPort(X, Y, W, H: Integer);
@@ -7033,6 +7098,8 @@ begin
    PrepareRenderingMatrices(aViewPort, resolution);
    xglMapTexCoordToNull; // force XGL rebind
    xglMapTexCoordToMain;
+   if Assigned(FViewerBeforeRender) then
+      FViewerBeforeRender(Self);
    if Assigned(FBeforeRender) then
       if Owner is TComponent then
          if not (csDesigning in TComponent(Owner).ComponentState) then
