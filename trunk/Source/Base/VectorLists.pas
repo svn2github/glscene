@@ -82,7 +82,9 @@ type
             if copied to the location, if the capacity is later changed, regular
             memory will be allocated, and the specified range no longer used. }
          procedure UseMemory(rangeStart : Pointer; rangeCapacity : Integer);
+         {: Empties the list without altering capacity. }
          procedure Flush;
+         {: Empties the list and release. }
          procedure Clear;
 
          procedure Delete(index : Integer);
@@ -619,7 +621,7 @@ end;
 procedure TBaseList.Flush;
 begin
 	if Assigned(Self) then begin
-      FCount := 0;
+      SetCount(0);
 	end;
 end;
 
