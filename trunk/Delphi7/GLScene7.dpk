@@ -173,6 +173,7 @@ contains
   GLTree in '..\Source\GLTree.pas',
   GLMeshCSG in '..\Source\GLMeshCSG.pas',
   GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
-  GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas';
+  GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas',
+  GLProxyObjects in '..\Source\GLProxyObjects.pas';
 
 end.
