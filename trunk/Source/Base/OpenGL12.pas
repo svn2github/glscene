@@ -1,3 +1,4 @@
+// 13/09/03 - EG - Added GL_ARB_texture_env_dot3 constants
 // 27/09/02 - EG - Added EXT_point_parameter promoted to ARB_point_parameter,
 //                 Dropped GL_SGIS_point_parameters
 // 23/02/02 - EG - Added GL_NV_fence
@@ -340,6 +341,7 @@ var
   GL_ARB_transpose_matrix,
   GL_ARB_vertex_blend,
   GL_ARB_point_parameters,
+  GL_ARB_texture_env_dot3,
 
   GL_EXT_422_pixels,
   GL_EXT_abgr,
@@ -2556,6 +2558,10 @@ const
   {$EXTERNALSYM GL_OPERAND1_ALPHA_EXT}
   GL_OPERAND2_ALPHA_EXT                             = $859A;
   {$EXTERNALSYM GL_OPERAND2_ALPHA_EXT}
+
+  // ARB_texture_env_dot3,
+  GL_DOT3_RGB_ARB                                   = $86AE;
+  GL_DOT3_RGBA_ARB                                  = $86AF;
 
   // NV_texture_env_combine4
   GL_COMBINE4_NV                                    = $8503;
@@ -8016,7 +8022,7 @@ begin
 
   // GL_SUN_vertex
   glColor4ubVertex2fSUN := wglGetProcAddress('glColor4ubVertex2fSUN'); 
-  glColor4ubVertex2fvSUN := wglGetProcAddress('glColor4ubVertex2fvSUN'); 
+  glColor4ubVertex2fvSUN := wglGetProcAddress('glColor4ubVertex2fvSUN');
   glColor4ubVertex3fSUN := wglGetProcAddress('glColor4ubVertex3fSUN'); 
   glColor4ubVertex3fvSUN := wglGetProcAddress('glColor4ubVertex3fvSUN'); 
   glColor3fVertex3fSUN := wglGetProcAddress('glColor3fVertex3fSUN'); 
@@ -8034,7 +8040,7 @@ begin
   glTexCoord2fColor3fVertex3fSUN := wglGetProcAddress('glTexCoord2fColor3fVertex3fSUN'); 
   glTexCoord2fColor3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fColor3fVertex3fvSUN'); 
   glTexCoord2fNormal3fVertex3fSUN := wglGetProcAddress('glTexCoord2fNormal3fVertex3fSUN'); 
-  glTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fNormal3fVertex3fvSUN'); 
+  glTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fNormal3fVertex3fvSUN');
   glTexCoord2fColor4fNormal3fVertex3fSUN := wglGetProcAddress('glTexCoord2fColor4fNormal3fVertex3fSUN'); 
   glTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fColor4fNormal3fVertex3fvSUN'); 
   glTexCoord4fColor4fNormal3fVertex4fSUN := wglGetProcAddress('glTexCoord4fColor4fNormal3fVertex4fSUN'); 
@@ -8052,7 +8058,7 @@ begin
   glReplacementCodeuiTexCoord2fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fVertex3fSUN'); 
   glReplacementCodeuiTexCoord2fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fVertex3fvSUN'); 
   glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN'); 
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN'); 
+  glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN');
   glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN');
   glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN');
 
@@ -8106,7 +8112,7 @@ begin
   glWindowPos2ivMESA := wglGetProcAddress('glWindowPos2ivMESA'); 
   glWindowPos2sMESA := wglGetProcAddress('glWindowPos2sMESA'); 
   glWindowPos2svMESA := wglGetProcAddress('glWindowPos2svMESA'); 
-  glWindowPos3dMESA := wglGetProcAddress('glWindowPos3dMESA'); 
+  glWindowPos3dMESA := wglGetProcAddress('glWindowPos3dMESA');
   glWindowPos3dvMESA := wglGetProcAddress('glWindowPos3dvMESA'); 
   glWindowPos3fMESA := wglGetProcAddress('glWindowPos3fMESA');
   glWindowPos3fvMESA := wglGetProcAddress('glWindowPos3fvMESA'); 
@@ -8124,7 +8130,7 @@ begin
   glWindowPos4svMESA := wglGetProcAddress('glWindowPos4svMESA'); 
 
   // GL_IBM_multimode_draw_arrays
-  glMultiModeDrawArraysIBM := wglGetProcAddress('glMultiModeDrawArraysIBM'); 
+  glMultiModeDrawArraysIBM := wglGetProcAddress('glMultiModeDrawArraysIBM');
   glMultiModeDrawElementsIBM := wglGetProcAddress('glMultiModeDrawElementsIBM'); 
 
   // GL_IBM_vertex_array_lists
@@ -8142,7 +8148,7 @@ begin
 
   // GL_EXT_multisample
   glSampleMaskEXT := wglGetProcAddress('glSampleMaskEXT'); 
-  glSamplePatternEXT := wglGetProcAddress('glSamplePatternEXT'); 
+  glSamplePatternEXT := wglGetProcAddress('glSamplePatternEXT');
 
   // GL_SGIS_texture_color_mask
   glTextureColorMaskSGIS := wglGetProcAddress('glTextureColorMaskSGIS'); 
@@ -8178,7 +8184,7 @@ begin
   glProgramParameter4fvNV := wglGetProcAddress('glProgramParameter4fvNV'); 
   glProgramParameters4dvNV := wglGetProcAddress ('glProgramParameters4dvNV'); 
   glProgramParameters4fvNV := wglGetProcAddress ('glProgramParameters4fvNV'); 
-  glRequestResidentProgramsNV := wglGetProcAddress ('glRequestResidentProgramsNV'); 
+  glRequestResidentProgramsNV := wglGetProcAddress ('glRequestResidentProgramsNV');
   glTrackMatrixNV := wglGetProcAddress('glTrackMatrixNV'); 
   glVertexAttribPointerNV := wglGetProcAddress('glVertexAttribPointerNV'); 
   glVertexAttrib1dNV := wglGetProcAddress('glVertexAttrib1dNV'); 
@@ -8196,7 +8202,7 @@ begin
   glVertexAttrib3dNV := wglGetProcAddress('glVertexAttrib3dNV'); 
   glVertexAttrib3dvNV := wglGetProcAddress('glVertexAttrib3dvNV'); 
   glVertexAttrib3fNV := wglGetProcAddress('glVertexAttrib3fNV'); 
-  glVertexAttrib3fvNV := wglGetProcAddress('glVertexAttrib3fvNV'); 
+  glVertexAttrib3fvNV := wglGetProcAddress('glVertexAttrib3fvNV');
   glVertexAttrib3sNV := wglGetProcAddress('glVertexAttrib3sNV'); 
   glVertexAttrib3svNV := wglGetProcAddress('glVertexAttrib3svNV');
   glVertexAttrib4dNV := wglGetProcAddress('glVertexAttrib4dNV'); 
@@ -8373,56 +8379,57 @@ begin
   GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
   GL_ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
-  GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
+  GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression');
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
   GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix');
   GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend');
   GL_ARB_point_parameters := CheckExtension('GL_ARB_point_parameters');
+  GL_ARB_texture_env_dot3 := CheckExtension('GL_ARB_texture_env_dot3');
 
-  GL_EXT_422_pixels := CheckExtension('GL_EXT_422_pixels'); 
-  GL_EXT_abgr := CheckExtension('GL_EXT_abgr'); 
-  GL_EXT_bgra := CheckExtension('GL_EXT_bgra'); 
+  GL_EXT_422_pixels := CheckExtension('GL_EXT_422_pixels');
+  GL_EXT_abgr := CheckExtension('GL_EXT_abgr');
+  GL_EXT_bgra := CheckExtension('GL_EXT_bgra');
   GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color');
-  GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate'); 
-  GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op'); 
-  GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax'); 
+  GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate');
+  GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op');
+  GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
   GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
   GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
-  GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka'); 
+  GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka');
   GL_EXT_color_subtable := CheckExtension('GL_EXT_color_subtable');
   GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
-  GL_EXT_convolution := CheckExtension('GL_EXT_convolution'); 
-  GL_EXT_coordinate_frame := CheckExtension('GL_EXT_coordinate_frame'); 
+  GL_EXT_convolution := CheckExtension('GL_EXT_convolution');
+  GL_EXT_coordinate_frame := CheckExtension('GL_EXT_coordinate_frame');
   GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture');
-  GL_EXT_cull_vertex := CheckExtension('GL_EXT_cull_vertex'); 
-  GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements'); 
-  GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord'); 
-  GL_EXT_histogram := CheckExtension('GL_EXT_histogram'); 
-  GL_EXT_index_array_formats := CheckExtension('GL_EXT_index_array_formats'); 
-  GL_EXT_index_func := CheckExtension('GL_EXT_index_func'); 
-  GL_EXT_index_material := CheckExtension('GL_EXT_index_material'); 
+  GL_EXT_cull_vertex := CheckExtension('GL_EXT_cull_vertex');
+  GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
+  GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord');
+  GL_EXT_histogram := CheckExtension('GL_EXT_histogram');
+  GL_EXT_index_array_formats := CheckExtension('GL_EXT_index_array_formats');
+  GL_EXT_index_func := CheckExtension('GL_EXT_index_func');
+  GL_EXT_index_material := CheckExtension('GL_EXT_index_material');
   GL_EXT_index_texture := CheckExtension('GL_EXT_index_texture');
-  GL_EXT_light_max_exponent := CheckExtension('GL_EXT_light_max_exponent'); 
+  GL_EXT_light_max_exponent := CheckExtension('GL_EXT_light_max_exponent');
   GL_EXT_light_texture := CheckExtension('GL_EXT_light_texture');
-  GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute'); 
-  GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays'); 
-  GL_EXT_multisample := CheckExtension('GL_EXT_multisample'); 
-  GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels'); 
+  GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute');
+  GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays');
+  GL_EXT_multisample := CheckExtension('GL_EXT_multisample');
+  GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels');
   GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
-  GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform'); 
+  GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform');
   GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
-  GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal'); 
-  GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker'); 
+  GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal');
+  GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker');
   GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
-  GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color'); 
+  GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color');
   GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
-  GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap'); 
-  GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture'); 
-  GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table'); 
-  GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc'); 
-  GL_EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map'); 
-  GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp'); 
-  GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add'); 
+  GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
+  GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture');
+  GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table');
+  GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc');
+  GL_EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map');
+  GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp');
+  GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add');
   GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine');
   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
