@@ -142,6 +142,9 @@ contains
   GLHeightTileFileHDS in '..\Source\GLHeightTileFileHDS.pas',
   GLProcTextures in '..\Source\GLProcTextures.pas',
   TypesMS3D in '..\Source\FileFormats\TypesMS3D.pas',
-  GLFileMS3D in '..\Source\FileFormats\GLFileMS3D.pas';
+  GLFileMS3D in '..\Source\FileFormats\GLFileMS3D.pas',
+  GLShadowVolume in '..\Source\GLShadowVolume.pas',
+  GLSilhouette in '..\Source\GLSilhouette.pas',
+  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas';
 
 end.
