@@ -4,40 +4,39 @@ interface
 
 uses
    Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-   GLWin32Viewer, GLCadencer, GLTexture, GLMisc, GLScene, GLNavigator,
-   GLTerrainRenderer, GLHeightData, GLObjects, VectorGeometry, GLTree,
-   GLL3DTHDS, L3DTFileIO, JPEG, TGA, Keyboard, VectorLists, GLBitmapFont,
+   GLWin32Viewer, GLCadencer, GLTexture, GLMisc, GLScene, GLTerrainRenderer,
+   GLHeightData, GLObjects, VectorGeometry, GLTree, GLL3DTHDS, L3DTFileIO,
+   JPEG, TGA, Keyboard, VectorLists, GLBitmapFont,
    GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX, GLGraphics,
-   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils;
+   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLUserShader,
+   GLTextureCombiners, XOpenGL;
 
 type
    TForm1 = class(TForm)
       GLSceneViewer1: TGLSceneViewer;
-      GLScene1: TGLScene;
+    GLScene: TGLScene;
       MLTrees: TGLMaterialLibrary;
       MLTerrain: TGLMaterialLibrary;
-      GLCadencer1: TGLCadencer;
+    GLCadencer: TGLCadencer;
       Terrain: TGLTerrainRenderer;
       Camera: TGLCamera;
       Light: TGLLightSource;
-      GLNavigator1: TGLNavigator;
       GLHUDText1: TGLHUDText;
       GLWindowsBitmapFont1: TGLWindowsBitmapFont;
-      GLUserInterface1: TGLUserInterface;
       GLEarthSkyDome1: TGLEarthSkyDome;
     GLRenderPoint: TGLRenderPoint;
-      GLStaticImposterBuilder1: TGLStaticImposterBuilder;
+    SIBTree: TGLStaticImposterBuilder;
       DOTrees: TGLDirectOpenGL;
       PFXTrees: TGLCustomPFXManager;
       RenderTrees: TGLParticleFXRenderer;
       Timer1: TTimer;
       WaterPlane: TGLPlane;
       MLWater: TGLMaterialLibrary;
-    Blended: TGLDummyCube;
+    WaterShader: TGLUserShader;
       procedure FormCreate(Sender: TObject);
       procedure FormDestroy(Sender: TObject);
       procedure TerrainGetTerrainBounds(var l, t, r, b: Single);
-      procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      procedure GLCadencerProgress(Sender: TObject; const deltaTime,
         newTime: Double);
       procedure FormKeyDown(Sender: TObject; var Key: Word;
         Shift: TShiftState);
@@ -50,20 +49,24 @@ type
         var rci: TRenderContextInfo);
       procedure PFXTreesRenderParticle(Sender: TObject;
         aParticle: TGLParticle; var rci: TRenderContextInfo);
-      procedure GLStaticImposterBuilder1ImposterLoaded(Sender: TObject;
+      procedure SIBTreeImposterLoaded(Sender: TObject;
         impostoredObject: TGLBaseSceneObject; destImposter: TImposter);
-      function GLStaticImposterBuilder1LoadingImposter(Sender: TObject;
+      function SIBTreeLoadingImposter(Sender: TObject;
         impostoredObject: TGLBaseSceneObject;
         destImposter: TImposter): TGLBitmap32;
       procedure Timer1Timer(Sender: TObject);
       procedure PFXTreesProgress(Sender: TObject;
         const progressTime: TProgressTimes; var defaultProgress: Boolean);
       function PFXTreesGetParticleCountEvent(Sender: TObject): Integer;
-    procedure BlendedProgress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure WaterShaderDoApply(Sender: TObject;
+      var rci: TRenderContextInfo);
+    procedure WaterShaderDoUnApply(Sender: TObject; Pass: Integer;
+      var rci: TRenderContextInfo; var Continue: Boolean);
    private
       { Private declarations }
       hscale, vscale, mapwidth, mapheight : Single;
+      lmp : TPoint;
+      camPitch, camTurn : Single;
    public
       { Public declarations }
       L3DTHeightDataSource : TGLL3DTHDS;
@@ -109,9 +112,9 @@ begin
          Terrain.Position.SetPoint(hscale*mapwidth/2,0,-hscale*mapheight/2);
       end;
    end;
-   L3DTHeightDataSource.PreLoad(0,0,Round(mapwidth),hdtSmallInt);
-   WaterPlane.Width:=hscale*mapwidth;
-   WaterPlane.Height:=hscale*mapwidth;
+   L3DTHeightDataSource.PreLoad(0, 0, Round(mapwidth), hdtSmallInt);
+   WaterPlane.Width:=hscale*mapwidth*5;
+   WaterPlane.Height:=hscale*mapwidth*5;
 
    with MLTerrain.AddTextureMaterial('Detail','media\detailmap.jpg') do begin
       Material.Texture.TextureMode:=tmModulate;
@@ -134,53 +137,59 @@ begin
 
    // Create test tree
    Randomize;
-   TestTree:=TGLTree(GLScene1.Objects.AddNewChild(TGLTree));
+   TestTree:=TGLTree(GLScene.Objects.AddNewChild(TGLTree));
    with TestTree do begin
       Visible:=False;
       MaterialLibrary:=MLTrees;
       LeafMaterialName:='Leaf';
       LeafBackMaterialName:='Leaf';
       BranchMaterialName:='Bark';
-      Up.SetVector(0,0,1);
-      Direction.SetVector(0,1,0);
+      Up.SetVector(ZHmgVector);
+      Direction.SetVector(YHmgVector);
       Depth:=9;
-      BranchFacets:=5;
-      LeafSize:=0.55;
+      BranchFacets:=6;
+      LeafSize:=0.50;
       BranchAngle:=0.65;
       BranchTwist:=135;
       ForceTotalRebuild;
    end;
 
-   GLStaticImposterBuilder1.RequestImposterFor(TestTree);
+   SIBTree.RequestImposterFor(TestTree);
 
-   Density:=TPicture.Create;
+   densityBitmap:=TBitmap.Create;
    try
-      Density.LoadFromFile('media\treemap.jpg');
-      densityBitmap:=TBitmap.Create;
       densityBitmap.PixelFormat:=pf24bit;
-      densityBitmap.Width:=Density.Width;
-      densityBitmap.Height:=Density.Height;
-      densityBitmap.Canvas.Draw(0, 0, Density.Graphic);
+      Density:=TPicture.Create;
+      try
+         Density.LoadFromFile('media\treemap.jpg');
+         densityBitmap.Width:=Density.Width;
+         densityBitmap.Height:=Density.Height;
+         densityBitmap.Canvas.Draw(0, 0, Density.Graphic);
+      finally
+         Density.Free;
+      end;
+      PFXTrees.CreateParticles(10000);
    finally
-      Density.Free;
+      densityBitmap.Free;
    end;
-
-   PFXTrees.CreateParticles(10000);
    TreesShown:=2000;
-
-   densityBitmap.Free;
 
    Light.Pitch(30);
    Camera.Position.Y:=Terrain.InterpolatedHeight(Camera.Position.AsVector)+10;
-   GLUserInterface1.MouseLookActive:=True;
+
+   lmp:=ClientToScreen(Point(Width div 2, Height div 2));
+   SetCursorPos(lmp.X, lmp.Y);
+   ShowCursor(False);
 
    nearTrees:=TPersistentObjectList.Create;
+
+   camTurn:=-60;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+   ShowCursor(True);
    nearTrees.Free;
-   GLUserInterface1.MouseLookActive:=False;
    L3DTHeightDataSource.Free;
 end;
 
@@ -206,7 +215,7 @@ end;
 procedure TForm1.PFXTreesBeginParticles(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
-   imposter:=GLStaticImposterBuilder1.ImposterFor(TestTree);
+   imposter:=SIBTree.ImposterFor(TestTree);
    imposter.BeginRender(rci);
 end;
 
@@ -216,10 +225,10 @@ var
    d : Single;
    camPos : TVector;
 begin
-   if not IsVolumeClipped(aParticle.Position, 50, rci.rcci) then begin;
+   if not IsVolumeClipped(aParticle.Position, 25, rci.rcci) then begin;
       VectorSubtract(rci.cameraPosition, aParticle.Position, camPos);
       d:=VectorNorm(camPos);
-      if d>Sqr(200) then begin
+      if d>Sqr(180) then begin
          RotateVectorAroundY(PAffineVector(@camPos)^, aParticle.Tag*cPIdiv180);
          imposter.Render(rci, VectorMake(aParticle.Position), camPos, 10);
       end else begin
@@ -230,7 +239,19 @@ end;
 
 procedure TForm1.PFXTreesEndParticles(Sender: TObject;
   var rci: TRenderContextInfo);
+var
+   aParticle : TGLParticle;
+   camPos : TVector;
 begin
+   // Only 20 trees max rendered at full res, force imposter'ing the others
+   while nearTrees.Count>20 do begin
+      aParticle:=TGLParticle(nearTrees.First);
+      VectorSubtract(rci.cameraPosition, aParticle.Position, camPos);
+      RotateVectorAroundY(PAffineVector(@camPos)^, aParticle.Tag*cPIdiv180);
+      imposter.Render(rci, VectorMake(aParticle.Position), camPos, 10);
+      nearTrees.Delete(0);
+   end;
+
    imposter.EndRender(rci);
 end;
 
@@ -260,37 +281,38 @@ begin
     L3DTHeightDataSource.L3DTMapGroup.GetMapBounds(l,t,r,b);
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
    speed, z : Single;
+   nmp : TPoint;
 begin
    // Camera movement
-   speed:=25;
-   if IsKeyDown(VK_SHIFT) then begin
-      speed:=speed*10;
-   end;
-   if IsKeyDown(VK_UP) or IsKeyDown('W') or IsKeyDown('Z') then
-      GLNavigator1.MoveForward(deltaTime*speed)
-   else if IsKeyDown(VK_DOWN) or IsKeyDown('S') then
-      GLNavigator1.MoveForward(-deltaTime*speed);
-   if IsKeyDown(VK_LEFT) or IsKeyDown('A') or IsKeyDown('Q') then
-      GLNavigator1.StrafeHorizontal(-deltaTime*speed)
-   else if IsKeyDown(VK_RIGHT) or IsKeyDown('D') then
-      GLNavigator1.StrafeHorizontal(deltaTime*speed);
-   if IsKeyDown(VK_NEXT) then
-      GLNavigator1.StrafeVertical(-deltaTime*speed)
-   else if IsKeyDown(VK_PRIOR) then
-      GLNavigator1.StrafeVertical(deltaTime*speed);
+   if IsKeyDown(VK_SHIFT) then
+      speed:=deltaTime*150
+   else speed:=deltaTime*15;
 
-//   if Camera.Position.Y<Terrain.InterpolatedHeight(Camera.Position.AsVector)+3 then
+   if IsKeyDown(VK_UP) or IsKeyDown('W') or IsKeyDown('Z') then
+      Camera.Move(speed)
+   else if IsKeyDown(VK_DOWN) or IsKeyDown('S') then
+      Camera.Move(-speed);
+      
+   if IsKeyDown(VK_LEFT) or IsKeyDown('A') or IsKeyDown('Q') then
+      Camera.Slide(-speed)
+   else if IsKeyDown(VK_RIGHT) or IsKeyDown('D') then
+      Camera.Slide(speed);
+
    z:=Terrain.InterpolatedHeight(Camera.Position.AsVector);
    if z<0 then z:=0;
-   Camera.Position.Y:=z+3;
+   Camera.Position.Y:=Lerp(Camera.Position.Y, z+3, Power(0.1, deltaTime));
 
-   // Mouse update
-   GLUserInterface1.MouseUpdate;
-   GLUserInterface1.MouseLook;
+   GetCursorPos(nmp);
+   camTurn:=camTurn-(lmp.X-nmp.X)*0.2;
+   camPitch:=camPitch+(lmp.Y-nmp.Y)*0.2;
+   Camera.ResetRotations;
+   Camera.Turn(camTurn);
+   Camera.Pitch(camPitch);
+   SetCursorPos(lmp.X, lmp.Y);
 
    GLSceneViewer1.Invalidate;
 end;
@@ -315,7 +337,7 @@ begin
    Caption:=Format('%.2f', [RenderTrees.LastSortTime]);
 end;
 
-function TForm1.GLStaticImposterBuilder1LoadingImposter(Sender: TObject;
+function TForm1.SIBTreeLoadingImposter(Sender: TObject;
   impostoredObject: TGLBaseSceneObject;
   destImposter: TImposter): TGLBitmap32;
 var
@@ -337,7 +359,7 @@ begin
    bmp.Free;
 end;
 
-procedure TForm1.GLStaticImposterBuilder1ImposterLoaded(Sender: TObject;
+procedure TForm1.SIBTreeImposterLoaded(Sender: TObject;
   impostoredObject: TGLBaseSceneObject; destImposter: TImposter);
 var
    bmp32 : TGLBitmap32;
@@ -345,7 +367,7 @@ var
 begin
    if Tag=1 then begin
       bmp32:=TGLBitmap32.Create;
-      bmp32.AssignFromTexture2D(GLStaticImposterBuilder1.ImposterFor(TestTree).Texture);
+      bmp32.AssignFromTexture2D(SIBTree.ImposterFor(TestTree).Texture);
       bmp:=bmp32.Create32BitsBitmap;
       bmp.SaveToFile(cImposterCacheFile);
       bmp.Free;
@@ -364,13 +386,64 @@ begin
    defaultProgress:=False;
 end;
 
-procedure TForm1.BlendedProgress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.WaterShaderDoApply(Sender: TObject;
+  var rci: TRenderContextInfo);
+const
+   cWaveScale = 7;
+   cWaveSpeed = 0.02;
+   cSinScale = 0.02;
+var
+   tex0Matrix, tex1Matrix : TMatrix;
+   tWave : Single;
 begin
-   if (Camera.Position.Y<0) and not (Blended.Children[Blended.Count-1] = WaterPlane) then
-      repeat WaterPlane.MoveDown until WaterPlane.Index = Blended.Count-1;
-   if (Camera.Position.Y>0) and not (Blended.Children[0] = WaterPlane) then
-      repeat WaterPlane.MoveUp until WaterPlane.Index = 0;
+   tWave:=GLCadencer.CurrentTime*cWaveSpeed;
+
+   glMatrixMode(GL_TEXTURE);
+
+   tex0Matrix:=IdentityHmgMatrix;
+   tex0Matrix[0][0]:=3*cWaveScale;
+   tex0Matrix[1][1]:=4*cWaveScale;
+   tex0Matrix[3][0]:=tWave*1.1;
+   tex0Matrix[3][1]:=tWave*1.06;
+   glLoadMatrixf(@tex0Matrix);
+
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+
+   tex1Matrix:=IdentityHmgMatrix;
+   tex1Matrix[0][0]:=cWaveScale;
+   tex1Matrix[1][1]:=cWaveScale;
+   tex1Matrix[3][0]:=tWave*0.83;
+   tex1Matrix[3][1]:=tWave*0.79;
+   glLoadMatrixf(@tex1Matrix);
+   glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
+   glEnable(GL_TEXTURE_2D);
+
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+
+   glMatrixMode(GL_MODELVIEW);
+
+   SetupTextureCombiners( 'Tex0:=Tex1*Tex0;'#13#10
+                         +'Tex1:=Tex0+Col;');
+   xglMapTexCoordToDual;
+end;
+
+procedure TForm1.WaterShaderDoUnApply(Sender: TObject; Pass: Integer;
+  var rci: TRenderContextInfo; var Continue: Boolean);
+begin
+   xglMapTexCoordToMain;
+
+   glMatrixMode(GL_TEXTURE);
+
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glDisable(GL_TEXTURE_2D);
+   glLoadIdentity;
+
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+   glLoadIdentity;
+
+   glMatrixMode(GL_MODELVIEW);
+
+   Continue:=False;
 end;
 
 end.

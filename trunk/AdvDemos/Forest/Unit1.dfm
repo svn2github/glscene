@@ -34,7 +34,7 @@ object Form1: TForm1
     Buffer.AntiAliasing = aaNone
     Align = alClient
   end
-  object GLScene1: TGLScene
+  object GLScene: TGLScene
     ObjectsSorting = osNone
     Left = 8
     Top = 8
@@ -67,27 +67,25 @@ object Form1: TForm1
       CLODPrecision = 30
       OnGetTerrainBounds = TerrainGetTerrainBounds
     end
-    object Blended: TGLDummyCube
-      ObjectsSorting = osNone
-      OnProgress = BlendedProgress
-      CubeSize = 1
-      object WaterPlane: TGLPlane
-        Material.MaterialLibrary = MLWater
-        Material.LibMaterialName = 'Water'
-        Direction.Coordinates = {000000000000803F0000000000000000}
-        Up.Coordinates = {00000000000000000000803F00000000}
-        Hint = 'Please make me look nicer'
-        Height = 1
-        Width = 1
-        NoZWrite = False
-      end
-      object RenderTrees: TGLParticleFXRenderer
-        BlendingMode = bmTransparency
-      end
-      object DOTrees: TGLDirectOpenGL
-        UseBuildList = False
-        OnRender = DOTreesRender
-      end
+    object WaterPlane: TGLPlane
+      Material.MaterialLibrary = MLWater
+      Material.LibMaterialName = 'Water'
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
+      Height = 1
+      Width = 1
+      XTiles = 20
+      YTiles = 20
+      Style = [psTileTexture]
+      NoZWrite = False
+    end
+    object RenderTrees: TGLParticleFXRenderer
+      ZCull = False
+      BlendingMode = bmTransparency
+    end
+    object DOTrees: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = DOTreesRender
     end
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000A0410000A041000000000000803F}
@@ -104,28 +102,17 @@ object Form1: TForm1
     end
   end
   object MLTrees: TGLMaterialLibrary
-    Left = 40
+    Left = 104
     Top = 8
   end
   object MLTerrain: TGLMaterialLibrary
-    Left = 72
+    Left = 40
     Top = 8
   end
-  object GLCadencer1: TGLCadencer
-    Scene = GLScene1
-    OnProgress = GLCadencer1Progress
+  object GLCadencer: TGLCadencer
+    Scene = GLScene
+    OnProgress = GLCadencerProgress
     Left = 8
-    Top = 40
-  end
-  object GLNavigator1: TGLNavigator
-    MoveUpWhenMovingForward = False
-    InvertHorizontalSteeringWhenUpsideDown = False
-    VirtualUp.Coordinates = {000000000000803F000000000000803F}
-    MovingObject = Camera
-    UseVirtualUp = True
-    AutoUpdateObject = True
-    AngleLock = False
-    Left = 40
     Top = 40
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
@@ -134,26 +121,18 @@ object Form1: TForm1
     Font.Height = -13
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
-    Left = 72
+    Left = 40
     Top = 40
   end
-  object GLUserInterface1: TGLUserInterface
-    InvertMouse = False
-    MouseSpeed = 40
-    GLNavigator = GLNavigator1
-    GLVertNavigator = GLNavigator1
-    Left = 40
-    Top = 72
-  end
-  object GLStaticImposterBuilder1: TGLStaticImposterBuilder
+  object SIBTree: TGLStaticImposterBuilder
     RenderPoint = GLRenderPoint
     BackColor.Color = {0000803E0000003F0000000000000000}
-    BuildOffset.Coordinates = {000000000000403F000000000000803F}
+    BuildOffset.Coordinates = {000000009A99193F000000000000803F}
     ImposterOptions = [impoBlended, impoAlphaTest, impoPerspectiveCorrection]
     ImposterReference = irBottom
     AlphaTreshold = 0.5
-    OnLoadingImposter = GLStaticImposterBuilder1LoadingImposter
-    OnImposterLoaded = GLStaticImposterBuilder1ImposterLoaded
+    OnLoadingImposter = SIBTreeLoadingImposter
+    OnImposterLoaded = SIBTreeImposterLoaded
     Coronas = <
       item
         Samples = 13
@@ -175,13 +154,13 @@ object Form1: TForm1
         Elevation = 40
       end>
     SampleSize = 128
-    SamplingRatioBias = 1.20000004768372
+    SamplingRatioBias = 1.14999997615814
     SamplesAlphaScale = 5
     Left = 104
     Top = 40
   end
   object PFXTrees: TGLCustomPFXManager
-    Cadencer = GLCadencer1
+    Cadencer = GLCadencer
     Renderer = RenderTrees
     OnCreateParticle = PFXTreesCreateParticle
     Friction = 1
@@ -210,12 +189,26 @@ object Form1: TForm1
       item
         Name = 'Water'
         Material.BackProperties.Diffuse.Color = {CDCC4C3ECDCCCC3ECDCC4C3FCDCCCC3E}
-        Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCCCC3ECDCC4C3FCDCCCC3E}
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCCCC3E0000803F0000003F}
         Material.BlendingMode = bmTransparency
+        Material.MaterialOptions = [moNoLighting]
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'media\caustics.bmp'
+        Material.Texture.TextureMode = tmReplace
+        Material.Texture.TextureFormat = tfLuminance
+        Material.Texture.Disabled = False
         Material.FaceCulling = fcNoCull
         Tag = 0
+        Shader = WaterShader
       end>
-    Left = 104
+    Left = 168
+    Top = 8
+  end
+  object WaterShader: TGLUserShader
+    OnDoApply = WaterShaderDoApply
+    OnDoUnApply = WaterShaderDoUnApply
+    ShaderStyle = ssLowLevel
+    Left = 200
     Top = 8
   end
 end
