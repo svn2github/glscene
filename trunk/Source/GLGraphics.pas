@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>06/10/04 - NC - Now uses GL_TEXTURE_RECTANGLE_NV for all float texture types 
       <li>04/10/04 - NC - Added support for float texture
       <li>05/09/03 - EG - Added TGLBitmap32.DownSampleByFactor2
       <li>04/07/03 - EG - Added RGBA brightness/gamma correction support
@@ -1021,9 +1022,10 @@ begin
 
       try
         if IsFloat(texFormat) then begin // float_type
-            if GL_ATI_texture_float then
-              assert(target=GL_TEXTURE_2D, 'ATI Float-type texture must use GL_TEXTURE_2D')
-            else
+         // Note: see note in TGLFloatDataImage.NativeTextureTarget
+//            if GL_ATI_texture_float then
+//              assert(target=GL_TEXTURE_2D, 'ATI Float-type texture must use GL_TEXTURE_2D')
+//            else
               assert(target=GL_TEXTURE_RECTANGLE_NV, 'NV Float-type texture must use GL_TEXTURE_RECTANGLE_NV');
             // currently doesn't support
         		glTexImage2d( target, 0, texFormat, w2, h2, 0, GL_RGBA, GL_FLOAT, nil)
