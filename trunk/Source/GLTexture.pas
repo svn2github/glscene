@@ -3404,7 +3404,7 @@ begin
    if MappingMode<>tmmUser then begin
       glDisable(GL_TEXTURE_GEN_S);
       glDisable(GL_TEXTURE_GEN_T);
-      glEnable(GL_TEXTURE_GEN_R);
+      glDisable(GL_TEXTURE_GEN_R);
    end;
 end;
 
