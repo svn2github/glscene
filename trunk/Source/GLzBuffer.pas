@@ -134,7 +134,6 @@ type
 
    // TZShadows
    //
-//   TZShadows = class (TGLCustomSceneObject)
    TZShadows = class (TGLBaseSceneObject)
         private
          FViewer      :TGLSceneViewer;
@@ -173,7 +172,6 @@ type
          procedure SetCaster(const val :TGLMemoryViewer);
          procedure CalcShadowTexture(var rci : TRenderContextInfo);
          function  HardSet(const x,y :integer):Byte;
-//         function  OrthHardSet(const x,y :integer):Byte;
          function  Trnc(v : Single) : Integer; register;
          function  SoftTest(const x,y:integer):Byte;
          procedure SetWidth(const val :integer);
