@@ -6429,6 +6429,8 @@ end;
 // OctreePointInMesh
 //
 function TGLFreeForm.OctreePointInMesh(const Point: TVector): boolean;
+const
+  cPointRadiusStep = 10000;
 var
   rayStart, rayVector, hitPoint, hitNormal : TVector;
   BRad : double;
@@ -6467,13 +6469,15 @@ begin
     else if hitDot>0 then
       dec(HitCount);
 
-    // ditDot = 0 is a tricky special case where the ray is just gracing the
+    // ditDot = 0 is a tricky special case where the ray is just grazing the
     // side of a face - this case means that it doesn't necessarily actually
     // enter the mesh - but it _could_ enter the mesh. If this situation occurs,
-    // we should restart the run using a new rayVector.
+    // we should restart the run using a new rayVector - but this implementation
+    // currently doesn't.
 
-
-    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad/1000));
+    // Restart the ray slightly beyond the point it hit the previous face. Note
+    // that this step introduces a possible issue with faces that are very close
+    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad/cPointRadiusStep));
   end;
 end;
 
