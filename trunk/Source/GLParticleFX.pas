@@ -501,7 +501,6 @@ type
             will triple speed over 1 second, and a friction of 1 (default
             value) will have no effect. }
          property Friction : Single read FFriction write FFriction;
-         {: Rotation applied to the particle's velocity. }
    end;
 
 	// TPFXLifeColor
@@ -569,6 +568,7 @@ type
 	      property Items[index : Integer] : TPFXLifeColor read GetItems write SetItems; default;
 
          function MaxLifeTime : Double;
+         function RotationsDefined : Boolean;
    end;
 
    // TGLLifeColoredPFXManager
@@ -581,6 +581,7 @@ type
          FLifeColors : TPFXLifeColors;
          FLifeColorsLookup : TList;
          FLifeColorsInvTimeDiff : TSingleList;
+         FLifeRotations : Boolean;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
          FParticleSize : Single;
@@ -603,6 +604,8 @@ type
          function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
          
          function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
+         procedure RotateVertexBuf(buf : TAffineVectorList; lifeTime : Single;
+                                   const pos : TAffineVector);
 
       public
          { Public Declarations }
@@ -1478,14 +1481,14 @@ var
    end;
 
    procedure DistToRegionIdx; register;
-   begin
-//   asm
+   asm
+//   begin
       // fast version of
-      regionIdx := Trunc((dist - distDelta) * invRegionSize);
-{      FLD     dist
+      //regionIdx := Trunc((dist - distDelta) * invRegionSize);
+      FLD     dist
       FSUB    distDelta
       FMUL    invRegionSize
-      FISTP   regionIdx}
+      FISTP   regionIdx
    end;
 
 var
@@ -1516,8 +1519,7 @@ begin
    try
       // Collect particles
       // only depth-clipping performed as of now.
-      for managerIdx:=0 to FManagerList.Count-1 do
-      begin
+      for managerIdx:=0 to FManagerList.Count-1 do begin
          curManager:=TGLParticleFXManager(FManagerList[managerIdx]);
          curList:=curManager.FParticles.List;
          for particleIdx:=0 to curManager.ParticleCount-1 do begin
@@ -1527,8 +1529,7 @@ begin
                if PInteger(@dist)^<minDist then
                   PInteger(@dist)^:=minDist;
             end;
-            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then
-            begin
+            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                DistToRegionIdx;
                curRegion:=@FRegions[regionIdx];
                // add particle to region
@@ -1553,8 +1554,8 @@ begin
             with curRegion^ do for particleIdx:=0 to count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
-//            if FBlendingMode<>bmAdditive then
-//               QuickSortRegion(0, curRegion.count-1, curRegion);
+            if FBlendingMode<>bmAdditive then
+               QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
             curRegion.particleOrder[0]:=@curRegion.particleRef[0];
@@ -1613,7 +1614,7 @@ begin
                            if currentTexturingMode<>0 then
                               glDisable(currentTexturingMode);
                            currentTexturingMode:=curManager.TexturingMode;
-                           if currentTexturingMode<>0 then   // GRAHAM KENNEDY
+                           if currentTexturingMode<>0 then
                               glEnable(currentTexturingMode);
                         end;
                         curManager.BeginParticles;
@@ -2046,6 +2047,21 @@ begin
    else Result:=1e30;
 end;
 
+// RotationsDefined
+//
+function TPFXLifeColors.RotationsDefined : Boolean;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do begin
+      if Items[Count-1].RotateAngle<>0 then begin
+         Result:=True;
+         Exit;
+      end;
+   end;
+   Result:=False;
+end;
+
 // ------------------
 // ------------------ TGLDynamicPFXManager ------------------
 // ------------------
@@ -2223,6 +2239,7 @@ begin
       FLifeColorsInvTimeDiff.Add(1/(ct-lt));
       lt:=ct;
    end;
+   FLifeRotations:=LifeColors.RotationsDefined;
 end;
 
 // FinalizeRendering
@@ -2433,6 +2450,30 @@ begin
    end;
 end;
 
+// RotateVertexBuf
+//
+procedure TGLLifeColoredPFXManager.RotateVertexBuf(buf : TAffineVectorList;
+               lifeTime : Single; const pos : TAffineVector);
+var
+   rotateAngle : Single;
+   axis, p : TAffineVector;
+   rotMatrix : TMatrix;
+begin
+   if ComputeRotateAngle(lifeTime, rotateAngle) then begin
+      MakeVector(axis, 0, 0, 1);
+      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
+      NormalizeVector(axis);
+
+      // code below probably does it in the slowest fashion possible
+      rotMatrix := CreateRotationMatrix(axis, rotateAngle*c180divPI);
+      p[0] := -pos[0];
+      p[1] := -pos[1];
+      p[2] := -pos[2];
+      buf.Translate(p);
+      buf.TransformAsVectors(rotMatrix);
+      buf.Translate(pos);
+   end;
+end;
 
 // ------------------
 // ------------------ TGLCustomPFXManager ------------------
@@ -2602,13 +2643,10 @@ end;
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
    i : Integer;
-   lifeTime, sizeScale, rotateAngle : Single;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
-   axis, p : TAffineVector;
-   rotMatrix : TMatrix;
-   diff : Single;
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
    ComputeColors(lifeTime, inner, outer);
@@ -2622,33 +2660,18 @@ begin
          VectorAdd(VectorScale(FVertices.List[i], aParticle.FEffectScale), pos, vertexList[i])
    end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
 
-   if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then begin
-      MakeVector(axis, 0, 0, 1);
-      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
-      NormalizeVector(axis);
+   if FLifeRotations then
+      RotateVertexBuf(FVertBuf, lifeTime, pos);
 
-      diff := DegToRad(rotateAngle);
-      rotMatrix := CreateRotationMatrix(axis, diff);
-      p[0] := -pos[0];
-      p[1] := -pos[1];
-      p[2] := -pos[2];
-      FVertBuf.Translate(p);
-      FVertBuf.TransformAsVectors(rotMatrix);
-      FVertBuf.Translate(pos);
-   end;
-   
    if ComputeSizeScale(lifeTime, sizeScale) then
       FVertBuf.Scale(sizeScale);
-
 
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
-      for i:=0 to FVertBuf.Count-1 do begin
-         //ScaleVector(vertexList[i],aParticle.EffectScale);
+      for i:=0 to FVertBuf.Count-1 do
          glVertex3fv(@vertexList[i]);
-      end;
 
       glVertex3fv(@vertexList[0]);
    glEnd;                 
@@ -2862,16 +2885,13 @@ const
                        ((S: 1.0; T: 0.5), (S: 0.5; T: 0.5), (S: 0.5; T: 0.0), (S: 1.0; T: 0.0)),
                        ((S: 0.5; T: 0.5), (S: 0.0; T: 0.5), (S: 0.0; T: 0.0), (S: 0.5; T: 0.0)));
 var
-   lifeTime, sizeScale, rotateAngle : Single;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
    spt : TSpritesPerTexture;
-   axis, p : TAffineVector;
-   rotMatrix : TMatrix;
-   diff : Single;
 
    procedure IssueVertices;
    begin
@@ -2899,30 +2919,22 @@ begin
 
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
-   sizeScale :=1;
-   if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.FEffectScale<>1) then begin
-      sizeScale := sizeScale*aParticle.FEffectScale;
+   if aParticle.FEffectScale<>1 then begin
+      if ComputeSizeScale(lifeTime, sizeScale) then
+         sizeScale:=sizeScale*aParticle.FEffectScale
+      else sizeScale:=aParticle.FEffectScale;
       for i:=0 to FVertBuf.Count-1 do
          vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
    end else begin
+      if ComputeSizeScale(lifeTime, sizeScale) then begin
+         for i:=0 to FVertBuf.Count-1 do
+            vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+      end;
       VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
-      {for i:=0 to FVertBuf.Count-1 do
-          ScaleVector(vertexList[i],aParticle.EffectScale);}
    end;
 
-   if ComputeRotateAngle(lifeTime, rotateAngle) then begin
-      SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
-      SetVector(axis, VectorSubtract(axis, pos));
-      NormalizeVector(axis);
-      diff := DegToRad(rotateAngle);
-      rotMatrix := CreateRotationMatrix(axis, diff);
-      p[0] := -pos[0];
-      p[1] := -pos[1];
-      p[2] := -pos[2];
-      FVertBuf.Translate(p);
-      FVertBuf.TransformAsVectors(rotMatrix);
-      FVertBuf.Translate(pos);
-   end;
+   if FLifeRotations then
+      RotateVertexBuf(FVertBuf, lifeTime, pos);
 
    case ColorMode of
       scmFade : begin
@@ -2952,7 +2964,7 @@ begin
       end;
    else
       Assert(False);
-   end;
+   end;            
 end;
 
 // EndParticles
