@@ -33,6 +33,9 @@ type
     Label1: TLabel;
     TBSubSampling: TTrackBar;
     LASubFactor: TLabel;
+    Label2: TLabel;
+    TBIntensity: TTrackBar;
+    LABumpIntensity: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -47,6 +50,7 @@ type
       heightData: THeightData; normalMapMaterial: TGLLibMaterial);
     procedure TBSubSamplingChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure TBIntensityChange(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -77,8 +81,7 @@ begin
    GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
 
    // load the texture maps
-   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('detailmap.jpg');
-   GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
+   GLMaterialLibrary1.LibMaterialByName('details').Material.Texture.Image.LoadFromFile('detailmap.jpg');
    SPSun.Material.Texture.Image.LoadFromFile('flare1.bmp');
 
    // apply texture map scale (our heightmap size is 256)
@@ -89,6 +92,9 @@ begin
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Initial camera height offset (controled with pageUp/pageDown)
    FCamHeight:=10;
+
+   // initialize intensity texture
+   TBIntensityChange(Self);
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -102,7 +108,7 @@ var
    n : TVector;
 begin
    heightData.MaterialName:=normalMapMaterial.Name;
-   normalMapMaterial.Texture2Name:='details';
+   normalMapMaterial.Texture2Name:='contrast';
    normalMapMaterial.Shader:=GLTexCombineShader1;
    normalMapMaterial.Material.MaterialOptions:=[moNoLighting];
    n:=VectorNormalize(SPSun.AbsolutePosition);
@@ -214,4 +220,29 @@ begin
    SetFocus;
 end;
 
+procedure TForm1.TBIntensityChange(Sender: TObject);
+var
+   i : Integer;
+   bmp : TBitmap;
+begin
+   with GLMaterialLibrary1.LibMaterialByName('contrast').Material do begin
+      bmp:=TBitmap.Create;
+      try
+         bmp.PixelFormat:=pf24bit;
+         bmp.Width:=1;
+         bmp.Height:=1;
+         i:=255;
+         bmp.Canvas.Pixels[0, 0]:=RGB(i, i, i);
+         Texture.Image.Assign(bmp);
+      finally
+         bmp.Free;
+      end;
+      i:=(TBIntensity.Position*255) div 100;
+      Texture.EnvColor.AsWinColor:=RGB(i, i, i);
+   end;
+   LABumpIntensity.Caption:=IntToStr(TBIntensity.Position)+' %';
+end;
+
+
 end.
+
