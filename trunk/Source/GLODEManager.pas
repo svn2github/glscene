@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>17/11/04 - SG - Changed Deinitialize to Finalize,
+                        Changed TGLODEDummy to TGLODEDynamicDummy.
     <li>09/11/04 - SG - Fixed problems with contact geom generation (k00m).
     <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
     <li>23/04/04 - SG - Fixes for object registration,
@@ -245,10 +247,10 @@ type
       procedure SetManager(Value:TGLODEManager);
     protected
       procedure SetVisibleAtRunTime(Value:Boolean);
-      {: The initialize and deinitialize procedures are used to create and
+      {: The initialize and Finalize procedures are used to create and
          destroy the ODE components. }
       procedure Initialize; virtual;
-      procedure Deinitialize; virtual;
+      procedure Finalize; virtual;
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
@@ -319,19 +321,19 @@ type
       property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
-  // TGLODEDummy
+  // TGLODEDynamicDummy
   //
   {: The main object of GLODEManager. It is basically a composite object
      built from it's child elements. To add elements at run-time use the 
      AddNewElement function. }
-  TGLODEDummy = class (TGLODEDynamicObject)
+  TGLODEDynamicDummy = class (TGLODEDynamicObject)
     private
       FElements : TODEElements;
       FColor : TGLColor;
       procedure SetColor(const Value: TGLColor);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       procedure DefineProperties(Filer: TFiler); override;
       procedure WriteElements(stream : TStream);
       procedure ReadElements(stream : TStream);
@@ -366,7 +368,7 @@ type
       function GetAbsoluteMatrix : TMatrix;
     protected
       procedure Initialize; virtual;
-      procedure Deinitialize; virtual;
+      procedure Finalize; virtual;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       procedure Loaded; override;
@@ -399,7 +401,7 @@ type
       function GetEnabled : Boolean;
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
     public
@@ -436,7 +438,7 @@ type
       FElements : TODEElements;
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       procedure AlignElementsToMatrix(Mat:TMatrix);
@@ -461,7 +463,7 @@ type
       destructor Destroy; override;
       class function ItemsClass : TXCollectionItemClass; override;
       procedure Initialize;
-      procedure Deinitialize;
+      procedure Finalize;
       property Element[index : integer] : TODEBaseElement read GetElement;
   end;
 
@@ -494,7 +496,7 @@ type
       procedure RebuildMatrix;
       procedure RebuildVectors;
       procedure Initialize; virtual;
-      procedure Deinitialize; virtual;
+      procedure Finalize; virtual;
       function CalculateMass : TdMass; virtual;
       procedure ODERebuild; virtual;
       procedure WriteToFiler(writer : TWriter); override;
@@ -667,7 +669,7 @@ type
       FIndices : TIntegerList;
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       function CalculateMass : TdMass; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -694,7 +696,7 @@ type
       FGeom : PdxGeom;
 
     protected
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       procedure SetGeom(const Value : PdxGeom);
 
     public
@@ -753,7 +755,7 @@ type
 
   // TGLODEStaticDummy
   //
-  //: A static version of the TGLODEDummy.
+  //: A static version of the TGLODEDynamicDummy.
   TGLODEStaticDummy = class (TGLODEBaseObject)
     private
       FElements : TODEElements;
@@ -761,7 +763,7 @@ type
       procedure SetColor(const Value: TGLColor);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
+      procedure Finalize; override;
       procedure DefineProperties(Filer: TFiler); override;
       procedure WriteElements(stream : TStream);
       procedure ReadElements(stream : TStream);
@@ -788,7 +790,7 @@ type
     public
       class function ItemsClass : TXCollectionItemClass; override;
       procedure Initialize;
-      procedure Deinitialize;
+      procedure Finalize;
       property Joint[index:integer] : TODEBaseJoint read GetJoint; default;
   end;
 
@@ -834,7 +836,7 @@ type
       procedure SetObject2(const Value : TGLBaseSceneObject);
     protected
       procedure Initialize; virtual;
-      procedure Deinitialize; virtual;
+      procedure Finalize; virtual;
       procedure SetAnchor(Value : TAffineVector); virtual;
       procedure SetAxis(Value : TAffineVector); virtual;
       procedure SetAxis2(Value : TAffineVector); virtual;
@@ -1335,8 +1337,8 @@ begin
 
   // Align dynamic objects to their ODE bodies
   for i:=0 to FDynamicObjectRegister.Count-1 do begin
-    if FDynamicObjectRegister[i] is TGLODEDummy then
-      TGLODEDummy(FDynamicObjectRegister[i]).AlignObject;
+    if FDynamicObjectRegister[i] is TGLODEDynamicDummy then
+      TGLODEDynamicDummy(FDynamicObjectRegister[i]).AlignObject;
     if FDynamicObjectRegister[i] is TGLODEDynamicBehaviour then
       TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).AlignObject;
   end;
@@ -1345,10 +1347,10 @@ begin
   Coeff:=0;
   body:=nil;
   while FRFContactList.Count>0 do begin
-    if TObject(FRFContactList[0]) is TGLODEDummy then begin
-      Body:=TGLODEDummy(FRFContactList[0]).Body;
-      Coeff:=1-(TGLODEDummy(FRFContactList[0]).Surface.RollingFrictionCoeff/
-                TGLODEDummy(FRFContactList[0]).Mass.Mass);
+    if TObject(FRFContactList[0]) is TGLODEDynamicDummy then begin
+      Body:=TGLODEDynamicDummy(FRFContactList[0]).Body;
+      Coeff:=1-(TGLODEDynamicDummy(FRFContactList[0]).Surface.RollingFrictionCoeff/
+                TGLODEDynamicDummy(FRFContactList[0]).Mass.Mass);
     end else
     if TObject(FRFContactList[0]) is TGLODEDynamicBehaviour then begin
       Body:=TGLODEDynamicBehaviour(FRFContactList[0]).Body;
@@ -1574,7 +1576,7 @@ end;
 //
 destructor TGLODEBaseObject.Destroy;
 begin
-  Deinitialize;
+  Finalize;
   UnregisterGLODEObject(Self);
   FCollisionSurface.Free;
   inherited;
@@ -1588,9 +1590,9 @@ begin
   FInitialized:=True;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEBaseObject.Deinitialize;
+procedure TGLODEBaseObject.Finalize;
 begin
   if Assigned(FManager) then
     FManager.UnregisterObject(self);
@@ -1602,7 +1604,7 @@ end;
 procedure TGLODEBaseObject.Reinitialize;
 begin
   if Initialized then
-    Deinitialize;
+    Finalize;
   Initialize;
 end;
 
@@ -1627,7 +1629,7 @@ procedure TGLODEBaseObject.SetManager(Value: TGLODEManager);
 begin
   if FManager<>Value then begin
     if Assigned(FManager) and not (csDesigning in ComponentState) then
-      Deinitialize;
+      Finalize;
     FManager:=Value;
     if Assigned(FManager) and not (csDesigning in ComponentState) then
       Initialize;
@@ -1797,12 +1799,12 @@ end;
 
 
 // ------------------------------------------------------------------
-// TGLODEDummy
+// TGLODEDynamicDummy
 // ------------------------------------------------------------------
 
 // AddNewElement
 //
-function TGLODEDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
+function TGLODEDynamicDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
 var
   calcmass : TdMass;
 begin
@@ -1817,7 +1819,7 @@ end;
 
 // AlignObject
 //
-procedure TGLODEDummy.AlignObject;
+procedure TGLODEDynamicDummy.AlignObject;
 var
   pos : PdVector3;
   R : PdMatrix3;
@@ -1831,7 +1833,7 @@ end;
 
 // BuildList
 //
-procedure TGLODEDummy.BuildList(var rci: TRenderContextInfo);
+procedure TGLODEDynamicDummy.BuildList(var rci: TRenderContextInfo);
 var
   i : integer;
 begin
@@ -1865,7 +1867,7 @@ end;
 
 // Create
 //
-constructor TGLODEDummy.Create(AOwner: TComponent);
+constructor TGLODEDynamicDummy.Create(AOwner: TComponent);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -1874,7 +1876,7 @@ end;
 
 // Destroy
 //
-destructor TGLODEDummy.Destroy;
+destructor TGLODEDynamicDummy.Destroy;
 begin
   inherited;
   FElements.Free;
@@ -1883,7 +1885,7 @@ end;
 
 // Initialize
 //
-procedure TGLODEDummy.Initialize;
+procedure TGLODEDynamicDummy.Initialize;
 var
   calcmass : TdMass;
 begin
@@ -1900,12 +1902,12 @@ begin
   inherited;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEDummy.Deinitialize;
+procedure TGLODEDynamicDummy.Finalize;
 begin
   if not FInitialized then exit;
-  FElements.Deinitialize;
+  FElements.Finalize;
   if Assigned(FBody) then begin
     dBodyDestroy(FBody);
     FBody:=nil;
@@ -1917,7 +1919,7 @@ end;
 
 // DefineProperties
 //
-procedure TGLODEDummy.DefineProperties(Filer: TFiler);
+procedure TGLODEDynamicDummy.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('ODEElementsData',
@@ -1927,7 +1929,7 @@ end;
 
 // WriteElements
 //
-procedure TGLODEDummy.WriteElements(stream : TStream);
+procedure TGLODEDynamicDummy.WriteElements(stream : TStream);
 var
   writer : TWriter;
 begin
@@ -1941,7 +1943,7 @@ end;
 
 // ReadElements
 //
-procedure TGLODEDummy.ReadElements(stream : TStream);
+procedure TGLODEDynamicDummy.ReadElements(stream : TStream);
 var
   reader : TReader;
 begin
@@ -1955,7 +1957,7 @@ end;
 
 // CalculateMass
 //
-function TGLODEDummy.CalculateMass: TdMass;
+function TGLODEDynamicDummy.CalculateMass: TdMass;
 var
   i : integer;
   m : TdMass;
@@ -1970,7 +1972,7 @@ end;
 
 // SetColor
 //
-procedure TGLODEDummy.SetColor(const Value: TGLColor);
+procedure TGLODEDynamicDummy.SetColor(const Value: TGLColor);
 begin
   FColor.Assign(Value);
   StructureChanged;
@@ -1978,7 +1980,7 @@ end;
 
 // StructureChanged
 //
-procedure TGLODEDummy.StructureChanged;
+procedure TGLODEDynamicDummy.StructureChanged;
 var
   calcmass : TdMass;
 begin
@@ -1991,7 +1993,7 @@ end;
 
 // CalibrateCenterOfMass
 //
-procedure TGLODEDummy.CalibrateCenterOfMass;
+procedure TGLODEDynamicDummy.CalibrateCenterOfMass;
 var
   pos : TAffineVector;
   i : integer;
@@ -2023,7 +2025,7 @@ end;
 //
 destructor TGLODEBaseBehaviour.Destroy;
 begin
-  Deinitialize;
+  Finalize;
   FSurface.Free;
   // This is a dodgy way to do it but at least
   // it doesn't crash ;)
@@ -2039,9 +2041,9 @@ begin
   FInitialized:=True;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEBaseBehaviour.Deinitialize;
+procedure TGLODEBaseBehaviour.Finalize;
 begin
   FInitialized:=False;
 end;
@@ -2051,7 +2053,7 @@ end;
 procedure TGLODEBaseBehaviour.Reinitialize;
 begin
   if Initialized then
-    Deinitialize;
+    Finalize;
   Initialize;
 end;
 
@@ -2100,7 +2102,7 @@ procedure TGLODEBaseBehaviour.SetManager(Value : TGLODEManager);
 begin
   if FManager<>Value then begin
     if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
-      Deinitialize;
+      Finalize;
     FManager:=Value;
     if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Initialize;
@@ -2173,12 +2175,12 @@ begin
   inherited;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEDynamicBehaviour.Deinitialize;
+procedure TGLODEDynamicBehaviour.Finalize;
 begin
   if not FInitialized then exit;
-  FElements.Deinitialize;
+  FElements.Finalize;
   if Assigned(FBody) then begin
     dBodyDestroy(FBody);
     FBody:=nil;
@@ -2443,12 +2445,12 @@ begin
   inherited;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEStaticBehaviour.Deinitialize;
+procedure TGLODEStaticBehaviour.Finalize;
 begin
   if not FInitialized then exit;
-  FElements.Deinitialize;
+  FElements.Finalize;
   if Assigned(FManager) then
     FManager.UnregisterObject(self);
 
@@ -2509,7 +2511,7 @@ end;
 //
 destructor TODEElements.Destroy;
 begin
-  Deinitialize;
+  Finalize;
   inherited;
 end;
 
@@ -2539,12 +2541,12 @@ end;
 
 // Deintialize
 //
-procedure TODEElements.Deinitialize;
+procedure TODEElements.Finalize;
 var
   i : integer;
 begin
   for i:=0 to Count-1 do
-    TODEBaseElement(Items[i]).Deinitialize;
+    TODEBaseElement(Items[i]).Finalize;
 end;
 
 
@@ -2614,7 +2616,7 @@ end;
 //
 destructor TODEBaseElement.Destroy;
 begin
-  if FInitialized then Deinitialize;
+  if FInitialized then Finalize;
   FPosition.Free;
   FDirection.Free;
   FUp.Free;
@@ -2638,8 +2640,8 @@ begin
   if not Assigned(Manager) then exit;
 
   if FDynamic then begin
-    if (Owner.Owner is TGLODEDummy) then
-      Body:=TGLODEDummy(Owner.Owner).Body;
+    if (Owner.Owner is TGLODEDynamicDummy) then
+      Body:=TGLODEDynamicDummy(Owner.Owner).Body;
     if Owner.Owner is TGLODEDynamicBehaviour then
       Body:=TGLODEDynamicBehaviour(Owner.Owner).Body;
     if not Assigned(Body) then exit;
@@ -2663,9 +2665,9 @@ begin
   FInitialized:=True;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TODEBaseElement.Deinitialize;
+procedure TODEBaseElement.Finalize;
 begin
   if not FInitialized then exit;
   if Assigned(FGeomTransform) then begin
@@ -3758,9 +3760,9 @@ begin
   inherited;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TODEElementTriMesh.Deinitialize;
+procedure TODEElementTriMesh.Finalize;
 begin
   if not FInitialized then exit;
   if Assigned(FTriMeshData) then
@@ -3846,7 +3848,7 @@ end;
 procedure TODEElementTriMesh.RefreshTriMeshData;
 begin
   if FInitialized then
-    Deinitialize;
+    Finalize;
   Initialize;
 end;
 
@@ -3855,9 +3857,9 @@ end;
 // TGLODEStaticObject
 // ------------------------------------------------------------------
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEStaticObject.Deinitialize;
+procedure TGLODEStaticObject.Finalize;
 begin
   if not FInitialized then exit;
   dGeomDestroy(FGeom);
@@ -4096,12 +4098,12 @@ begin
   inherited;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TGLODEStaticDummy.Deinitialize;
+procedure TGLODEStaticDummy.Finalize;
 begin
   if not FInitialized then exit;
-  FElements.Deinitialize;
+  FElements.Finalize;
   if Assigned(FManager) then
     FManager.UnregisterObject(self);
 
@@ -4194,12 +4196,12 @@ end;
 
 // Deintialize
 //
-procedure TODEJoints.Deinitialize;
+procedure TODEJoints.Finalize;
 var
   i : integer;
 begin
   for i:=0 to Count-1 do
-    Joint[i].Deinitialize;
+    Joint[i].Finalize;
 end;
 
 // GetJoint
@@ -4302,7 +4304,7 @@ end;
 // Destroy
 destructor TODEBaseJoint.Destroy;
 begin
-  Deinitialize;
+  Finalize;
   FAnchor.Free;
   FAxis.Free;
   FAxis2.Free;
@@ -4319,9 +4321,9 @@ begin
   FInitialized:=True;
 end;
 
-// Deinitialize
+// Finalize
 //
-procedure TODEBaseJoint.Deinitialize;
+procedure TODEBaseJoint.Finalize;
 begin
   if not Initialized then exit;
   if FJointID<>0 then
@@ -4477,7 +4479,7 @@ begin
   if FManager<>Value then begin
     if Assigned(FManager) then
       if not (csDesigning in FManager.ComponentState) then
-        Deinitialize;
+        Finalize;
     FManager:=Value;
     if Assigned(FManager) then
       if not (csDesigning in FManager.ComponentState) then
