@@ -89,6 +89,7 @@ begin
                Picture[cmtNZ].LoadFromFile('cm_front.jpg');
             end;
             MappingMode:=tmmCubeMapReflection;
+            Disabled:=False;
          end;
       end;
    end;
