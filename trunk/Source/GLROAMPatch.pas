@@ -51,7 +51,7 @@ type
          FTag : Integer;
          FVertexScale, FVertexOffset : TAffineVector;
          FTextureScale, FTextureOffset : TAffineVector;
-         FObserverPosition : TAffineIntVector;
+         FObserverPosition : TAffineVector;
          FNorth, FSouth, FWest, FEast : TGLROAMPatch; // neighbours
          FHighRes, FNoDetails : Boolean;
 
@@ -89,7 +89,7 @@ type
          property VertexScale : TAffineVector read FVertexScale write FVertexScale;
          property VertexOffset : TAffineVector read FVertexOffset write FVertexOffset;
 
-         property ObserverPosition : TAffineIntVector read FObserverPosition write FObserverPosition;
+         property ObserverPosition : TAffineVector read FObserverPosition write FObserverPosition;
 
          property TextureScale : TAffineVector read FTextureScale write FTextureScale;
          property TextureOffset : TAffineVector read FTextureOffset write FTextureOffset;
@@ -396,6 +396,7 @@ var
    tessMaxVariance : Cardinal;
    tessMaxDepth : Cardinal;
    tessCurrentVariance : PIntegerArray;
+   tessObserverPosX, tessObserverPosY : Integer;
 
 procedure RecursTessellate(tri : PROAMTriangleNode;
                            n : Cardinal;
@@ -423,7 +424,7 @@ procedure TGLROAMPatch.Tesselate;
    const
       c1Div100 : Single = 0.01;
    begin
-      f:=Sqr(x-FObserverPosition[0])+Sqr(y-FObserverPosition[1])+tessFrameVarianceDelta;
+      f:=Sqr(x-tessObserverPosX)+Sqr(y-tessObserverPosY)+tessFrameVarianceDelta;
       Result:=Round(Sqrt(f)+f*c1Div100);
    end;
 
@@ -464,6 +465,8 @@ begin
    if HighRes then Exit;
 
    tessMaxDepth:=FMaxDepth;
+   tessObserverPosX:=Round(FObserverPosition[0]);
+   tessObserverPosY:=Round(FObserverPosition[1]);
 
    if Assigned(FNorth) and FNorth.HighRes then
       FullRightTess(FTLNode, 1);
@@ -474,7 +477,7 @@ begin
    if Assigned(FWest) and FWest.HighRes then
       FullLeftTess(FTLNode, 1);
    if FObserverPosition[2]>0 then
-      tessFrameVarianceDelta:=Sqr(FObserverPosition[2] shr 1)
+      tessFrameVarianceDelta:=Round(Sqr(FObserverPosition[2]*(1/16)))
    else tessFrameVarianceDelta:=0;
    s:=FPatchSize;
    tessCurrentVariance:=@FTLVariance[0];
