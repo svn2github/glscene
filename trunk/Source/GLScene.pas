@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/06/03 - Egg - Added Buffer.AmbientColor
       <li>06/06/03 - Egg - Added roNoColorBufferClear
       <li>21/05/03 - Egg - RenderToBitmap RC setup fixes (Yurik)
       <li>07/05/03 - Egg - TGLSceneBuffer now invokes BeforeRender and PostRender
@@ -1500,6 +1501,7 @@ type
          FFaceCulling, FFogEnable, FLighting : Boolean;
          FDepthTest : Boolean;
          FBackgroundColor: TColor;
+         FAmbientColor: TGLColor;
          FAntiAliasing : TGLAntiAliasing;
          FDepthPrecision : TGLDepthPrecision;
          FColorDepth : TGLColorDepth;
@@ -1533,6 +1535,7 @@ type
       protected
          { Protected Declarations }
          procedure SetBackgroundColor(AColor: TColor);
+         procedure SetAmbientColor(AColor: TGLColor);
          function  GetLimit(Which: TLimitType): Integer;
          procedure SetCamera(ACamera: TGLCamera);
          procedure SetContextOptions(Options: TContextOptions);
@@ -1751,6 +1754,10 @@ type
          property FogEnvironment: TGLFogEnvironment read FFogEnvironment write SetGLFogEnvironment stored StoreFog;
          {: Color used for filling the background prior to any rendering. }
          property BackgroundColor: TColor read FBackgroundColor write SetBackgroundColor default clBtnFace;
+         {: Scene ambient color vector.<p>
+            This ambient color is defined independantly from all lightsources,
+            which can have their own ambient components. }
+         property AmbientColor : TGLColor read FAmbientColor write SetAmbientColor;
 
          {: Context options allows to setup specifics of the rendering context.<p>
             Not all contexts support all options. }
@@ -5538,6 +5545,7 @@ begin
    rci.visibilityCulling:=FVisibilityCulling;
    rci.bufferFaceCull:=aBuffer.FaceCulling;
    rci.drawState:=drawState;
+   rci.sceneAmbientColor:=FCurrentBuffer.AmbientColor.Color;
    with aBuffer.Camera do begin
       rci.cameraPosition:=aBuffer.FCameraAbsolutePosition;
       rci.cameraDirection:=FLastDirection;
@@ -6001,6 +6009,7 @@ begin
    // initialize private state variables
    FFogEnvironment:=TGLFogEnvironment.Create(Self);
    FBackgroundColor:=clBtnFace;
+   FAmbientColor:=TGLColor.CreateInitialized(Self, clrGray20);
    FDepthTest:=True;
    FFaceCulling:=True;
    FLighting:=True;
@@ -6026,6 +6035,7 @@ begin
       FCamera:=nil;
    end;
    DestroyRC;
+   FAmbientColor.Free;
    FAfterRenderEffects.Free;
    FFogEnvironment.Free;
    inherited Destroy;
@@ -6180,10 +6190,11 @@ procedure TGLSceneBuffer.SetupRenderingContext;
 var
    colorDepth : Cardinal;
 begin
+   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
    if roTwoSideLighting in FContextOptions then
       glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
    else glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-   
+
    glEnable(GL_NORMALIZE);
    Include(FCurrentStates, stNormalize);
    
@@ -7092,6 +7103,13 @@ begin
       FBackgroundColor:=AColor;
       NotifyChange(Self);
    end;
+end;
+
+// SetAmbientColor
+//
+procedure TGLSceneBuffer.SetAmbientColor(AColor: TGLColor);
+begin
+   FAmbientColor.Assign(AColor);
 end;
 
 // SetCamera
