@@ -885,7 +885,8 @@ procedure CalcPlaneNormal(const p1, p2, p3 : TVector; var vr : TAffineVector); o
 
 {: Returns true if point is in the half-space defined by a plane with normal.<p>
    The plane itself is not considered to be in the tested halfspace. }
-function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;
+function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;overload;
+function PointIsInHalfSpace(const point, planePoint, planeNormal : TAffineVector) : Boolean; overload;
 
 {: Computes algebraic distance between point and plane.<p>
    Value will be positive if the point is in the halfspace pointed by the normal,
@@ -5787,6 +5788,14 @@ begin
    Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0); // 44
 {$endif}
 end;
+
+// PointIsInHalfSpace
+//
+function PointIsInHalfSpace(const point, planePoint, planeNormal : TAffineVector) : Boolean;
+begin
+   Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0);
+end;
+
 
 // PointPlaneDistance
 //
