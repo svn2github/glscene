@@ -339,14 +339,14 @@ begin
             FP.Add('   DP3 temp, eye, eye;');
             FP.Add('   RSQ temp, temp.x;');
             FP.Add('   MUL eye, eye, temp.x;');
-            FP.Add('   DP3 spec, normal, eye;');
+            FP.Add('   DP3_SAT spec, normal, eye;');
          end;
          smPhong : begin
             FP.Add('   DP3 reflect, normal, light;');
             FP.Add('   MUL reflect, reflect.x, normal;');
             FP.Add('   MUL reflect, 2.0, reflect;');
             FP.Add('   ADD reflect, reflect, -light;');
-            FP.Add('   DP3 spec, reflect, eye;');
+            FP.Add('   DP3_SAT spec, reflect, eye;');
          end;
       else
          Assert(False, 'Invalid specular mode!');
