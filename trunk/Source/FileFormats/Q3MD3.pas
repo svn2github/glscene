@@ -1,7 +1,8 @@
-{ 
+{
   Q3MD3 - Helper classes and methods for Quake3 MD3 actors
-  
+
   History :
+    04/04/03 - SG - Changes made to LoadQ3Skin procedure (as suggested by Mrqzzz)
     03/04/03 - SG - Added LoadQ3Skin procedure
     01/04/03 - Mrqzzz - "LEGS_" animations read from .CFG fixed
     17/02/03 - SG - Creation
@@ -44,8 +45,10 @@ procedure LoadQ3Anims(Animations:TActorAnimations;
             Strings:TStrings; NamePrefix:string); overload;
 
 // Quake3 Skin loading procedure. Use this procedure to apply textures
-// to preloaded materials through the Quake3 skin files
-procedure LoadQ3Skin(FileName:string; MaterialLibrary:TGLMaterialLibrary);
+// to a GLActor. This doens't use the actors original preloaded materials so
+// it may be a good idea to clear the actors material library before
+// running this to keep everything nice and clean.
+procedure LoadQ3Skin(FileName:string; Actor:TGLActor);
 
 implementation
 
@@ -147,39 +150,77 @@ end;
 
 // LoadQ3Skin
 //
-procedure LoadQ3Skin(FileName:string; MaterialLibrary:TGLMaterialLibrary);
+procedure LoadQ3Skin(FileName:string; Actor:TGLActor);
+const
+  // This list can be expanded if necessary
+  ExtList : array[0..3] of string = ('.jpg','.jpeg','.tga','.bmp');
 var
-  SkinStrings,temp : TStrings;
-  i                : integer;
-  libmat           : TGLLibMaterial;
-  textureNoDir     : string;
-begin
-  if (not FileExists(FileName)) or (not Assigned(MaterialLibrary)) then exit;
+  SkinStrings,
+  temp         : TStrings;
+  i,j          : integer;
+  libmat       : TGLLibMaterial;
+  mesh         : TMeshObject;
+  texture,
+  textureNoDir : string;
+  textureFound,
+  meshFound    : Boolean;
 
-  // Load the skin file into a temp stringlist
+  function GetMeshObjectByName(MeshObjects:TMeshObjectList; Name:string; var mesh:TMeshObject):Boolean;
+  var
+    i : integer;
+  begin
+    Result:=False;
+    if (trim(Name)='') or not Assigned(MeshObjects) then
+      exit;
+    for i:=0 to MeshObjects.Count-1 do begin
+      if MeshObjects[i].Name=Name then begin
+        mesh:=MeshObjects[i];
+        Result:=True;
+        break;
+      end;
+    end;
+  end;
+
+begin
+  if (not FileExists(FileName)) or (not Assigned(Actor)) then exit;
+  if (not Assigned(Actor.MaterialLibrary)) then exit;
+
   SkinStrings:=TStringList.Create;
   temp:=TStringList.Create;
   temp.LoadFromFile(FileName);
 
-  // Step through each line in the file
   for i:=0 to temp.Count-1 do begin
-    // Apply the line to SkinStrings through the CommaText property for parsing
     SkinStrings.CommaText:=temp.Strings[i];
     if SkinStrings.Count>1 then begin
-      libmat:=MaterialLibrary.Materials.GetLibMaterialByName(SkinStrings.Strings[0]);
-      if Assigned(libmat) then begin
-        if FileExists(SkinStrings.Strings[1]) then begin
-          // If the file with the full path exists use it for the texture
-          libmat.Material.Texture.Image.LoadFromFile(SkinStrings.Strings[1]);
-        end else begin
-          // Else look for the file in the current directory
-          textureNoDir:=SkinStrings.Strings[1];
-          if Pos('/',textureNoDir)>0 then
-            textureNoDir:=StringReplace(textureNoDir,'/','\',[rfReplaceAll]);
-          textureNoDir:=ExtractFileName(textureNoDir);
-          if FileExists(textureNoDir) then
-            libmat.Material.Texture.Image.LoadFromFile(textureNoDir);
+      libmat:=Actor.MaterialLibrary.Materials.GetLibMaterialByName(SkinStrings.Strings[1]);
+      meshFound:=GetMeshObjectByName(Actor.MeshObjects,SkinStrings.Strings[0],mesh);
+      if meshFound then begin
+        if not Assigned(libmat) then begin
+          libmat:=Actor.MaterialLibrary.Materials.Add;
+          libmat.Name:=SkinStrings.Strings[1];
+
+          // Search for the texture file
+          textureFound:=False;
+          for j:=0 to Length(ExtList)-1 do begin
+            texture:=StringReplace(SkinStrings.Strings[1],'/','\',[rfReplaceAll]);
+            texture:=ChangeFileExt(texture,ExtList[j]);
+            if FileExists(texture) then begin
+              libmat.Material.Texture.Image.LoadFromFile(texture);
+              libmat.Material.Texture.Disabled:=False;
+              textureFound:=True;
+            end else begin
+              textureNoDir:=ExtractFileName(texture);
+              if FileExists(textureNoDir) then begin
+                libmat.Material.Texture.Image.LoadFromFile(textureNoDir);
+                libmat.Material.Texture.Disabled:=False;
+                textureFound:=True;
+              end;
+            end;
+            if textureFound then break;
+          end;
         end;
+        for j:=0 to mesh.FaceGroups.Count-1 do
+          mesh.FaceGroups[j].MaterialName:=libmat.Name;
       end;
     end;
   end;
