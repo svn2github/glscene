@@ -206,6 +206,7 @@ type
          procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); override;
 
          procedure Scale(factor : Single); overload;
+         procedure Scale(const factors : TAffineVector); overload;
 	end;
 
   	// TVectorList
@@ -1170,12 +1171,22 @@ begin
    end else inherited;
 end;
 
-// Scale
+// Scale (scalar)
 //
 procedure TAffineVectorList.Scale(factor : Single);
 begin
    if (Count>0) and (factor<>1) then
       ScaleFloatArray(@FList[0][0], Count*3, factor);
+end;
+
+// Scale (affine)
+//
+procedure TAffineVectorList.Scale(const factors : TAffineVector);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      ScaleVector(FList[i], factors);
 end;
 
 // ------------------
