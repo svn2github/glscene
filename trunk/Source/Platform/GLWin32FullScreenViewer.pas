@@ -308,8 +308,8 @@ begin
    FForm:=TForm.Create(nil);
    with FForm do begin
       WindowState:=wsMaximized;
-      Width:=Self.Width;
-      Height:=Self.Height;
+      ClientWidth:=Self.Width;
+      ClientHeight:=Self.Height;
 
       if StayOnTop then
          FormStyle:=fsStayOnTop
@@ -320,7 +320,6 @@ begin
       //  BorderStyle:=bsNone;
       BorderStyle:=bsSizeable;
       SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION);
-//      ClientHeight := Height - 41;
 
       Cursor:=Self.Cursor;
       PopupMenu:=Self.PopupMenu;
@@ -333,7 +332,7 @@ begin
    // Hides Taskbar
    ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_HIDE);
 
-   // Switch videom mode
+   // Switch video mode
    if (Screen.Width<>Width) or (Screen.Height<>Height)
          or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then begin
       SetFullscreenMode(res, FRefreshRate);
