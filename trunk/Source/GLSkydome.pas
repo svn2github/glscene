@@ -2,7 +2,8 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>26/02/02 - EG - Enhanced star support (generation and twinkle)
+      <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
+                          Skydome now 'exports' its coordinate system to children 
       <li>21/01/02 - EG - Skydome position now properly ignored
       <li>23/09/01 - EG - Fixed and improved TEarthSkyDome
       <li>26/08/01 - EG - Added SkyDomeStars
@@ -156,7 +157,8 @@ type
 	//
    {: Renders a sky dome always centered on the camera.<p>
       If you use this object make sure it is rendered *first*, as it ignores
-      depth buffering and overwrites everything.<p>
+      depth buffering and overwrites everything. All children of a skydome
+      are rendered in the skydome's coordinate system.<p>
       The skydome is described by "bands", each "band" is an horizontal cut
       of a sphere, and you can have as many bands as you wish.<p>
       Estimated CPU cost (K7-500, GeForce SDR, default bands):<ul>
@@ -674,7 +676,7 @@ begin
       // calculate RA and Dec
       star.RA:=ArcSin(coord[2]);
       star.Dec:=Random*c2PI-PI;
-      SinCos(star.Dec, coord[0], coord[1]);
+      SinCos(star.Dec, Sqrt(1-Sqr(coord[2])), coord[0], coord[1]);
       // pick a color
       star.Color:=color;
    end;
@@ -781,7 +783,6 @@ begin
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
-   glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
    // compensate camera
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
@@ -796,12 +797,14 @@ begin
       BuildList(rci)
    else glCallList(GetHandle(rci));
    // restore
-   glPopMatrix;
    glDepthMask(True);
    glPopAttrib;
    // process childs
-   if Count>0 then
+   if Count>0 then begin
+      f:=1/f;
+      glScalef(f, f, f);
       Self.RenderChildren(0, Count-1, rci);
+   end;
 end;
 
 // ------------------
