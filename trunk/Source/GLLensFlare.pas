@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/09/03 - EG - Misc. cleanup, added PreRender
       <li>18/08/03 - SG - Added TGLTextureLensFlare (Tobias Peirick)
       <li>26/03/03 - EG - Framerate independant glow transitions (Tobias Peirick)
       <li>08/12/02 - EG - Added AutoZTest
@@ -19,7 +20,7 @@ unit GLLensFlare;
 interface
 
 uses
-   Classes, GLScene, Geometry, GLObjects, GLTexture, OpenGL1x, GLMisc;
+   Classes, GLScene, Geometry, GLObjects, GLTexture, OpenGL1x, GLMisc, GLContext;
 
 type
 
@@ -55,6 +56,9 @@ type
          FResolution  : Integer;
          FAutoZTest   : Boolean;
          FElements    : TFlareElements;
+         FSin20Res, FCos20Res : array of Single;
+         FSinRes, FCosRes : array of Single;
+         FTexRays : TGLTextureHandle;
 
       protected
          { Protected Declarations }
@@ -70,13 +74,26 @@ type
          procedure SetAutoZTest(aValue : Boolean);
          procedure SetElements(aValue : TFlareElements);
 
+         procedure SetupRenderingOptions;
+         procedure RestoreRenderingOptions;
+
+         procedure RenderRays(const size : Single);
+
       public
          { Public Declarations }
          Gradients: array [TFlareElement] of TGradient;  // And what color should they have?
          constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
          procedure DoProgress(const progressTime: TProgressTimes); override;
+
+         {: Prepares pre-rendered texture to speed up actual rendering.<p>
+            Will use the currently active context as scratch space, and will
+            automatically do nothing if things have already been prepared,
+            thus you can invoke it systematically in a Viewer.BeforeRender
+            event f.i. }
+         procedure PreRender(activeBuffer : TGLSceneBuffer);
 
       published
          { Public Declarations }
@@ -94,6 +111,7 @@ type
          property NumSecs : Integer read FNumSecs write SetNumSecs default 8;
          //: Number of segments used when rendering circles.
          property Resolution : Integer read FResolution write SetResolution default 64;
+         //: Automatically turns the flare on/off depending on ZTest occlusion test
          property AutoZTest : Boolean read FAutoZTest write SetAutoZTest default True;
          //: Which elements should be rendered?
          property Elements : TFlareElements read FElements write SetElements default cDefaultFlareElements;
@@ -197,7 +215,7 @@ begin
   FNumStreaks := 4;
   FStreakWidth := 2;
   FNumSecs := 8;
-  FResolution := 64;
+  SetResolution(64);
   FAutoZTest := True;
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
@@ -208,7 +226,18 @@ begin
   Gradients[feRays] := lfGradient(VectorMake(1, 0.8, 0.5, 0.05), VectorMake(0.5, 0.2, 0, 0));
   Gradients[feSecondaries] := lfGradient(VectorMake(0.5, 0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5, 0.5));
   Gradients[feSecondaries] := lfGradient(VectorMake(0, 0.2, 1, 0), VectorMake(0, 0.8, 0.2, 0.15));
+
+  FTexRays:=TGLTextureHandle.Create;
 end;
+
+// Destroy
+//
+destructor TGLLensFlare.Destroy;
+begin
+   FTexRays.Free;
+   inherited;
+end;
+
 
 procedure TGLLensFlare.SetSize( aValue : Integer);
 begin
@@ -260,10 +289,20 @@ begin
   StructureChanged;
 end;
 
+// SetResolution
+//
 procedure TGLLensFlare.SetResolution(aValue : Integer);
 begin
-  FResolution := aValue;
-  StructureChanged;
+   if FResolution<>aValue then begin
+      FResolution:=aValue;
+      StructureChanged;
+      SetLength(FSin20Res, 20*FResolution);
+      SetLength(FCos20Res, 20*FResolution);
+      PrepareSinCosCache(FSin20Res, FCos20Res, 0, 360);
+      SetLength(FSinRes, FResolution);
+      SetLength(FCosRes, FResolution);
+      PrepareSinCosCache(FSinRes, FCosRes, 0, 360);
+   end;
 end;
 
 // SetAutoZTest
@@ -286,18 +325,59 @@ begin
    end;
 end;
 
+// SetupRenderingOptions
+//
+procedure TGLLensFlare.SetupRenderingOptions;
+begin
+   glPushAttrib(GL_ENABLE_BIT);
+   glDisable(GL_LIGHTING);
+   glDisable(GL_DEPTH_TEST);
+   glDisable(GL_FOG);
+   glDisable(GL_COLOR_MATERIAL);
+   glDisable(GL_CULL_FACE);
+   glDepthMask(False);
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+end;
+
+// RestoreRenderingOptions
+//
+procedure TGLLensFlare.RestoreRenderingOptions;
+begin
+   glDepthMask(True);
+   glPopAttrib;
+end;
+
+// RenderRays
+//
+procedure TGLLensFlare.RenderRays(const size : Single);
+var
+   i : Integer;
+   rnd : Single;
+begin
+   glLineWidth(1);
+   glBegin(GL_LINES);
+   for i:=0 to Resolution*20-1 do begin
+      if (i and 1)<>0 then
+         rnd:=1.5*Random*size
+      else rnd:=Random*size;
+      glColor4fv(@Gradients[feRays].CFrom);
+      glVertex2f(0, 0);
+      glColor4fv(@Gradients[feRays].CTo);
+      glVertex2f(rnd*FCos20Res[i], rnd*FSin20Res[i]*Squeeze);
+   end;
+   glEnd;
+end;
+
 // BuildList
 //
 procedure TGLLensFlare.BuildList(var rci : TRenderContextInfo);
 var
    i, j : Integer;
-   rW   : Single;
-   a, s, c, f : Single;
-   rnd  : Single;
+   a, s, c, s1, c1, f, rW, rnd, depth : Single;
    posVector, v, rv : TAffineVector;
    screenPos : TAffineVector;
-   depth     : Single;
-   flag      : Boolean;
+   flag : Boolean;
    oldSeed : LongInt;
 begin
    SetVector(v, AbsolutePosition);
@@ -326,11 +406,17 @@ begin
 
    // make the glow appear/disappear progressively
    if Flag then begin
-      if FCurrSize<Size then
+      if FCurrSize<Size then begin
          FCurrSize:=FCurrSize+FDeltaTime*500;
+         if FCurrSize>Size then
+            FCurrSize:=Size;
+      end;
    end else begin
-      if FCurrSize>0 then
+      if FCurrSize>0 then begin
          FCurrSize:=FCurrSize-FDeltaTime*500;
+         if FCurrSize<0 then
+            FCurrSize:=0;
+      end;
    end;
    if FCurrSize>0 then begin
 
@@ -347,143 +433,130 @@ begin
       glMatrixMode(GL_PROJECTION);
       glPushMatrix;
       glLoadIdentity;
-      glPushAttrib(GL_ENABLE_BIT);
-      glDisable(GL_LIGHTING);
-      glDisable(GL_DEPTH_TEST);
-      glDepthMask(False);
-      glEnable(GL_BLEND);
       glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
 
-      glPushMatrix;
-      glTranslatef(posVector[0], posVector[1], posVector[2]);
+      SetupRenderingOptions;
 
-      // Glow (a circle with transparent edges):
-      if feGlow in Elements then begin
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         glBegin(GL_TRIANGLE_FAN);
-         glColor4fv(@Gradients[feGlow].CFrom);
-         glVertex2f(0, 0);
-         glColor4fv(@Gradients[feGlow].CTo);
-         f:=2*pi/Resolution;
-         for i:=0 to Resolution do begin
-            SinCos(i*f, s, c);
-            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
-         end;
-         glEnd;
-      end;
-
-      // Use additive blending from now on.
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      // Streaks (randomly oriented, but evenly spaced, antialiased lines from the origin):
-      if feStreaks in Elements then begin
-         glEnable(GL_LINE_SMOOTH);
-         glLineWidth(StreakWidth);
-         a:=2*pi/NumStreaks;
-         rnd:=Random*(pi/NumStreaks);
-         f:=1.5*FCurrSize;
-         glBegin(GL_LINES);
-         for i:=0 to NumStreaks-1 do begin
-            SinCos(rnd+a*i, f, s, c);
-            glColor4fv(@Gradients[feStreaks].CFrom);
-            glVertex2f(0, 0);
-            glColor4fv(@Gradients[feStreaks].CTo);
-            glVertex2f(c, Squeeze*s);
-         end;
-         glEnd;
-         glDisable(GL_LINE_SMOOTH);
-      end;
-
-      // Rays (random-length lines from the origin):
-      if feRays in Elements then begin
-         glLineWidth(1);
-         glBegin(GL_LINES);
-         f:=2*pi/(Resolution*20);
-         for i:=1 to Resolution*20 do begin
-            if Odd(i) then
-               rnd:=1.5*Random
-            else rnd:=Random;
-            SinCos(i*f, FCurrSize*rnd, s, c);
-            glColor4fv(@Gradients[feRays].CFrom);
-            glVertex2f(0, 0);
-            glColor4fv(@Gradients[feRays].CTo);
-            glVertex2f(c, s*Squeeze);
-         end;
-         glEnd;
-      end;
-      glPopMatrix;
-
-      // Ring (Three circles, the outer two are transparent):
-      if feRing in Elements then begin
-         rW := FCurrSize / 15;  // Ring width
+      if [feGlow, feStreaks, feRays, feRing]*Elements<>[] then begin
          glPushMatrix;
-         glTranslatef(PosVector[0],PosVector[1],PosVector[2]);
-         glScalef(0.6, 0.6, 1);
-         glBegin(GL_QUADS);
-         for i:=0 to Resolution - 1 do begin
-            SinCos(2*i*pi/Resolution, s, c);
-            glColor4fv(@Gradients[feGlow].CTo);
-            glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
-            glColor4fv(@Gradients[feRing].CFrom);
-            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+         glTranslatef(posVector[0], posVector[1], posVector[2]);
 
-            SinCos(2*(i+1)*pi/Resolution, s, c);
-            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+         // Glow (a circle with transparent edges):
+         if feGlow in Elements then begin
+            glBegin(GL_TRIANGLE_FAN);
+            glColor4fv(@Gradients[feGlow].CFrom);
+            glVertex2f(0, 0);
             glColor4fv(@Gradients[feGlow].CTo);
-            glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
-
-            glColor4fv(@Gradients[feRing].CFrom);
-            glVertex2f(FCurrSize * cos(2*i*pi/Resolution),
-                       Squeeze * FCurrSize * sin(2*i*pi/Resolution));
-            glVertex2f(FCurrSize * cos(2*(i+1)*pi/Resolution),
-                       Squeeze * FCurrSize * sin(2*(i+1)*pi/Resolution));
-            glColor4fv(@Gradients[feGlow].CTo);
-            glVertex2f((FCurrSize+rW) * cos(2*(i+1)*pi/Resolution),
-                       Squeeze * (FCurrSize+rW) * sin(2*(i+1)*pi/Resolution));
-            glVertex2f((FCurrSize+rW) * cos(2*i*pi/Resolution),
-                       Squeeze * (FCurrSize+rW) * sin(2*i*pi/Resolution));
+            for i:=0 to Resolution-1 do
+               glVertex2f(FCurrSize*FCosRes[i],
+                          Squeeze*FCurrSize*FSinRes[i]);
+            glEnd;
          end;
-         glEnd;
+
+         // Streaks (randomly oriented, but evenly spaced, antialiased lines from the origin):
+         if feStreaks in Elements then begin
+            glEnable(GL_LINE_SMOOTH);
+            glLineWidth(StreakWidth);
+            a:=2*pi/NumStreaks;
+            rnd:=Random*(pi/NumStreaks);
+            f:=1.5*FCurrSize;
+            glBegin(GL_LINES);
+            for i:=0 to NumStreaks-1 do begin
+               SinCos(rnd+a*i, f, s, c);
+               glColor4fv(@Gradients[feStreaks].CFrom);
+               glVertex2f(0, 0);
+               glColor4fv(@Gradients[feStreaks].CTo);
+               glVertex2f(c, Squeeze*s);
+            end;
+            glEnd;
+            glDisable(GL_LINE_SMOOTH);
+         end;
+
+         // Rays (random-length lines from the origin):
+         if feRays in Elements then begin
+            if FTexRays.Handle<>0 then begin
+               glBindTexture(GL_TEXTURE_2D, FTexRays.Handle);
+               glEnable(GL_TEXTURE_2D);
+            	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+               glBegin(GL_QUADS);
+                 glTexCoord2f(0, 0); glVertex2f(-FCurrSize,-FCurrSize);
+                 glTexCoord2f(1, 0); glVertex2f( FCurrSize,-FCurrSize);
+                 glTexCoord2f(1, 1); glVertex2f( FCurrSize, FCurrSize);
+                 glTexCoord2f(0, 1); glVertex2f(-FCurrSize, FCurrSize);
+               glEnd;
+
+               glDisable(GL_TEXTURE_2D);
+            end else RenderRays(FCurrSize);
+         end;
+
+         // Ring (Three circles, the outer two are transparent):
+         if feRing in Elements then begin
+            rW:=FCurrSize*(1/15);  // Ring width
+            glBegin(GL_QUADS);
+            s1:=0;
+            c1:=0.6;
+            for i:=0 to Resolution-1 do begin
+               s:=s1;
+               c:=c1;
+               s1:=FSinRes[i]*0.6*Squeeze;
+               c1:=FCosRes[i]*0.6;
+
+               glColor4fv(@Gradients[feGlow].CTo);
+               glVertex2f((FCurrSize-rW)*c, (FCurrSize-rW)*s);
+               glColor4fv(@Gradients[feRing].CFrom);
+               glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+
+               glVertex2f(FCurrSize*c1, FCurrSize*s1);
+               glColor4fv(@Gradients[feGlow].CTo);
+               glVertex2f((FCurrSize-rW)*c1, (FCurrSize-rW)*s1);
+
+               glColor4fv(@Gradients[feRing].CFrom);
+               glVertex2f(FCurrSize*c, FCurrSize*s);
+               glVertex2f(FCurrSize*c1, FCurrSize*s1);
+               
+               glColor4fv(@Gradients[feGlow].CTo);
+               glVertex2f((FCurrSize+rW)*c1, (FCurrSize+rW)*s1);
+               glVertex2f((FCurrSize+rW)*c, (FCurrSize+rW)*s);
+            end;
+            glEnd;
+         end;
+
          glPopMatrix;
       end;
 
       if feSecondaries in Elements then begin
          // Other secondaries (plain gradiented circles, like the glow):
          for j:=1 to NumSecs do begin
-            rnd := 2 * Random - 1;
-            { If rnd < 0 then the secondary glow will end up on the other side of the
-              origin. In this case, we can push it really far away from the flare. If
-              the secondary is on the flare's side, we pull it slightly towards the
-              origin to avoid it winding up in the middle of the flare. }
-            v:=PosVector;
+            rnd:=2*Random-1;
+            // If rnd < 0 then the secondary glow will end up on the other side
+            // of the origin. In this case, we can push it really far away from
+            // the flare. If  the secondary is on the flare's side, we pull it
+            // slightly towards the origin to avoid it winding up in the middle
+            // of the flare.
             if rnd<0 then
-               ScaleVector(V, rnd)
-            else ScaleVector(V, 0.8*rnd);
-            glPushMatrix;
-            glTranslatef(v[0], v[1],v[2]);
+               v:=VectorScale(posVector, rnd)
+            else v:=VectorScale(posVector, 0.8*rnd);
             glBegin(GL_TRIANGLE_FAN);
-            if j mod 3 = 0 then begin
+            if j mod 3=0 then begin
                glColor4fv(@Gradients[feGlow].CFrom);
-               glVertex2f(0, 0);
+               glVertex2f(v[0], v[1]);
                glColor4fv(@Gradients[feGlow].CTo);
             end else begin
                glColor4fv(@Gradients[feSecondaries].CFrom);
-               glVertex2f(0, 0);
+               glVertex2f(v[0], v[1]);
                glColor4fv(@Gradients[feSecondaries].CTo);
             end;
             rnd:=(Random+0.1)*FCurrSize*0.25;
-            f:=2*pi/Resolution;
-            for i:=0 to Resolution do begin
-               SinCos(i*f, rnd, s, c);
-               glVertex2f(c, s);
-            end;
+            for i:=0 to Resolution-1 do
+               glVertex2f(FCosRes[i]*rnd+v[0], FSinRes[i]*rnd+v[1]);
             glEnd;
-            glPopMatrix;
          end;
       end;
 
       // restore state
-      glDepthMask(True);
-      glPopAttrib;
+      RestoreRenderingOptions;
+
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix;
@@ -505,6 +578,70 @@ begin
      FDeltaTime := progressTime.deltaTime;
 end;
 
+// PreRender
+//
+procedure TGLLensFlare.PreRender(activeBuffer : TGLSceneBuffer);
+var
+   texSize, maxSize : Integer;
+   buf : Pointer;
+begin
+   if FTexRays.Handle<>0 then Exit;
+
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix;
+   glLoadIdentity;
+   gluOrtho2D(0, activeBuffer.Width, 0, activeBuffer.Height);
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix;
+   glLoadIdentity;
+
+   SetupRenderingOptions;
+
+   texSize:=RoundUpToPowerOf2(Size);
+   glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+   if texSize>maxSize then texSize:=maxSize;
+
+   glDisable(GL_BLEND);
+   glColor3f(0, 0, 0);
+   glBegin(GL_QUADS);
+   glVertex2f(0, 0); glVertex2f(texSize, 0);
+   glVertex2f(texSize, texSize); glVertex2f(0, texSize);
+   glEnd;
+   glEnable(GL_BLEND);
+
+   glTranslatef(texSize*0.5, texSize*0.5, 0);
+   RenderRays(texSize*0.5);
+
+   FTexRays.AllocateHandle;
+   glBindTexture(GL_TEXTURE_2D, FTexRays.Handle);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+   if GL_SGIS_generate_mipmap then begin
+      glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+   end else begin
+   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   end;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+   GetMem(buf, texSize*texSize*4);
+   try
+      glReadPixels(0, 0, texSize, texSize, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+   	glTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA8, texSize, texSize,
+                   0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+   finally
+      FreeMem(buf);
+   end;
+
+   RestoreRenderingOptions;
+
+   glPopMatrix;
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix;
+   glMatrixMode(GL_MODELVIEW);
+
+   CheckOpenGLError;
+end;
 
 // ------------------
 // ------------------ TGLTextureLensFlare ------------------
