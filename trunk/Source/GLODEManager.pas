@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>10/12/04 - SG - Added TODEElementPlane,
+                        Fixed TODEElementCone.Render function.
     <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
     <li>19/11/04 - SG - Major structural changes/improvements,
                         Dropped TGLBaseSceneObject style object in favour of
@@ -440,7 +442,7 @@ type
       procedure ReadFromFiler(reader : TReader); override;
 
       function IsODEInitialized : Boolean;
-      procedure AlignGeomElementToMatrix(Mat:TMatrix);
+      procedure AlignGeomElementToMatrix(Mat:TMatrix); virtual;
       procedure SetGeomElement(aGeom : PdxGeom);
 
       procedure RebuildMatrix;
@@ -710,6 +712,28 @@ type
 
       property Vertices : TAffineVectorList read FVertices write SetVertices;
       property Indices : TIntegerList read FIndices write SetIndices;
+
+  end;
+
+  // TODEElementPlane
+  //
+  {: ODE plane implementation. }
+  TODEElementPlane = class (TODEElementBase)
+    protected
+      { Protected Declarations }
+      procedure Initialize; override;
+
+      procedure WriteToFiler(writer : TWriter); override;
+      procedure ReadFromFiler(reader : TReader); override;
+
+      procedure AlignGeomElementToMatrix(Mat:TMatrix); override;
+
+    public
+      { Public Declarations }
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
+      class function CanAddTo(collection : TXCollection) : Boolean; override;
 
   end;
 
@@ -1163,10 +1187,10 @@ procedure UnregisterGLSceneObject(anObject : TGLBaseSceneObject);
 function GetGLSceneObject(anObjectName : String) : TGLBaseSceneObject;
 
 // Get and GetOrCreate functions for ode behaviours
-function getOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
-function getOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
-function getOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
-function getOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+function GetOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function GetOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function GetOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+function GetOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
 
 var
   vGLODEObjectRegister : TList;
@@ -1262,30 +1286,30 @@ begin
     end;
 end;
 
-// GetOdeStaticBehaviour
+// GetOdeStatic
 //
-function getOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function GetOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
 begin
      result:= TGLODEStatic(obj.Behaviours.GetByClass(TGLODEStatic));
 end;
 
-// GetOrCreateOdeStaticBehaviour
+// GetOrCreateOdeStatic
 //
-function getOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function GetOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
 begin
      result:= TGLODEStatic(obj.GetOrCreateBehaviour(TGLODEStatic));
 end;
 
-// GetOdeDynBehaviour
+// GetOdeDynamic
 //
-function getOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+function GetOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
 begin
      result:= TGLODEDynamic(obj.Behaviours.GetByClass(TGLODEDynamic));
 end;
 
-// GetOrCreateOdeDynBehaviour
+// GetOrCreateOdeDynamic
 //
-function getOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+function GetOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
 begin
      result:= TGLODEDynamic(obj.GetOrCreateBehaviour(TGLODEDynamic));
 end;
@@ -3063,7 +3087,7 @@ end;
 // --------------- TODEElementSphere ---------------
 // ---------------
 
-// BuildList
+// Render
 //
 procedure TODEElementSphere.Render(var rci : TRenderContextInfo);
 var
@@ -3232,7 +3256,7 @@ end;
 // --------------- TODEElementCapsule ---------------
 // ---------------
 
-// BuildList
+// Render
 //
 procedure TODEElementCapsule.Render(var rci : TRenderContextInfo);
 var
@@ -3383,7 +3407,7 @@ begin
   result:=FLength;
 end;
 
-// Rebuild
+// ODERebuild
 //
 procedure TODEElementCapsule.ODERebuild;
 begin
@@ -3413,7 +3437,7 @@ end;
 // --------------- TODEElementCylinder ---------------
 // ---------------
 
-// BuildList
+// Render
 //
 procedure TODEElementCylinder.Render(var rci : TRenderContextInfo);
 var
@@ -3560,7 +3584,7 @@ begin
   result:=FLength;
 end;
 
-// Rebuild
+// ODERebuild
 //
 procedure TODEElementCylinder.ODERebuild;
 begin
@@ -3590,36 +3614,36 @@ end;
 // --------------- TODEElementCone ---------------
 // ---------------
 
-// BuildList
+// Render
 //
 procedure TODEElementCone.Render(var rci : TRenderContextInfo);
 var
   i,j,
-  //Stacks,
+  Stacks,
   Slices : integer;
 begin
   glPushMatrix;
 
   glMultMatrixf(@FLocalMatrix);
 
-  //Stacks:=8;
+  Stacks:=8;
   Slices:=16;
 
   // Middle horizontal circles
-  {for j:=0 to Stacks-1 do begin
+  for j:=1 to Stacks do begin
     glBegin(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+        glVertex3f(FRadius*sin(2*i*PI/Slices)*j/Stacks,FRadius*cos(2*i*PI/Slices)*j/Stacks,FLength*(1-j/Stacks));
     glEnd;
-  end;//}
+  end;
 
   // Middle vertical lines
   glBegin(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(0,0,FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(0,0,FLength/2);
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),0);
+      glVertex3f(0,0,FLength);
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),0);
+      glVertex3f(0,0,FLength);
     end;
   glEnd;
 
@@ -3627,8 +3651,8 @@ begin
   glPushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
     glBegin(GL_LINES);
-      glVertex3f(-FRadius,0,-FLength/2);
-      glVertex3f(FRadius,0,-FLength/2);
+      glVertex3f(-FRadius,0,0);
+      glVertex3f(FRadius,0,0);
     glEnd;
     glRotatef(360/Slices,0,0,1);
   end;
@@ -3762,7 +3786,7 @@ begin
   result:=FLength;
 end;
 
-// Rebuild
+// ODERebuild
 //
 procedure TODEElementCone.ODERebuild;
 begin
@@ -3919,83 +3943,80 @@ begin
   Initialize;
 end;
 
-{
+
 // ---------------
-// --------------- TODEElementTerrain ---------------
+// --------------- TODEElementPlane ---------------
 // ---------------
-
-// AssignData
-//
-procedure TODEElementTerrain.AssignData(aSource : PdRealHugeArray; aNumNodesPerSide : Integer);
-begin
-  NumNodesPerSide:=aNumNodesPerSide;
-  System.Move(aSource^,FData^,NumNodesPerSide*NumNodesPerSide*SizeOf(TdReal));
-end;
-
-// GetData
-//
-function TODEElementTerrain.GetData(index: Integer): TdReal;
-begin
-  Assert((index>NumNodesPerSide*NumNodesPerSide-1) and (index<0),'Invalid data request.');
-  Result:=FData[index];
-end;
-
-// GetRaster
-//
-function TODEElementTerrain.GetRaster(x, y: Integer): TdReal;
-begin
-  Result:=GetData(x+y*NumNodesPerSide);
-end;
 
 // Initialize
 //
-procedure TODEElementTerrain.Initialize;
+procedure TODEElementPlane.Initialize;
 begin
-  if FInitialized or (not Assigned(Manager)) then exit;
+  if FInitialized then exit;
   if not IsODEInitialized then exit;
-  if NumNodesPerSide<=0 then exit;
 
-  FGeom:=dCreateTerrainY(Manager.Space, FData, Length, NumNodesPerSide, 1, 1);
-
+  FGeomElement:=dCreatePlane(nil,0,0,1,0);
   inherited;
 end;
 
-// SetData
+// WriteToFiler
 //
-procedure TODEElementTerrain.SetData(index: Integer; const Value: TdReal);
+procedure TODEElementPlane.WriteToFiler(writer : TWriter);
 begin
-  Assert((index>=0) and (index<NumNodesPerSide*NumNodesPerSide),'Invalid data request.');
-  FData[index]:=Value;
+  writer.WriteInteger(0);
 end;
 
-// SetLength
+// ReadFromFiler
 //
-procedure TODEElementTerrain.SetLength(const Value: TdReal);
+procedure TODEElementPlane.ReadFromFiler(reader : TReader);
+var
+  archiveVersion : Integer;
 begin
-  if Value<>FLength then begin
-    FLength:=Value;
-    Reinitialize;
-  end;
+  archiveVersion:=reader.ReadInteger;
+  Assert(archiveVersion = 0);
 end;
 
-// SetNumNodesPerSide
+// FriendlyName
 //
-procedure TODEElementTerrain.SetNumNodesPerSide(const Value: Integer);
+class function TODEElementPlane.FriendlyName : String;
 begin
-  if Value<>FNumNodesPerSide then begin
-    FNumNodesPerSide:=Value;
-    if Assigned(FData) then FreeMem(FData);
-    GetMem(FData, FNumNodesPerSide*FNumNodesPerSide*SizeOf(TdReal));
-  end;
+  Result:='Plane';
 end;
 
-// SetRaster
+// FriendlyDescription
 //
-procedure TODEElementTerrain.SetRaster(x, y: Integer; const Value: TdReal);
+class function TODEElementPlane.FriendlyDescription : String;
 begin
-  SetData(x+y*NumNodesPerSide, Value);
+  Result:='The ODE plane element implementation';
 end;
-}
+
+// ItemCategory
+//
+class function TODEElementPlane.ItemCategory : String;
+begin
+  Result:='Primitives';
+end;
+
+// CanAddTo
+//
+class function TODEElementPlane.CanAddTo(collection : TXCollection) : Boolean;
+begin
+  Result:=False;
+  if Assigned(TODEElements(collection).Owner) then
+    if TODEElements(collection).Owner is TGLODEStatic then
+      Result:=True;
+end;
+
+// AlignGeomElementToMatrix
+//
+procedure TODEElementPlane.AlignGeomElementToMatrix(Mat:TMatrix);
+var
+  d : Single;
+begin
+  if not Assigned(FGeomElement) then exit;
+  d:=VectorDotProduct(Mat[2], Mat[3]);
+  dynode.dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
+end;
 
 
 // ---------------
@@ -5587,6 +5608,7 @@ initialization
   RegisterXCollectionItemClass(TODEElementCylinder);
   RegisterXCollectionItemClass(TODEElementCone);
   RegisterXCollectionItemClass(TODEElementTriMesh);
+  RegisterXCollectionItemClass(TODEElementPlane);
 
   RegisterXCollectionItemClass(TODEJointHinge);
   RegisterXCollectionItemClass(TODEJointBall);
@@ -5614,6 +5636,7 @@ finalization
   UnregisterXCollectionItemClass(TODEElementCylinder);
   UnregisterXCollectionItemClass(TODEElementCone);
   UnregisterXCollectionItemClass(TODEElementTriMesh);
+  UnregisterXCollectionItemClass(TODEElementPlane);
 
   UnregisterXCollectionItemClass(TODEJointHinge);
   UnregisterXCollectionItemClass(TODEJointBall);
