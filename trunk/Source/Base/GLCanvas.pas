@@ -48,7 +48,7 @@ type
 	TGLCanvas = class
 	   private
 	      { Private Declarations }
-         FBufferSizeY : Integer;
+         FBufferSizeX, FBufferSizeY : Integer;
          FColorBackup : TVector;
          FPointSizeBackup, FLineWidthBackup : Single;
 
@@ -87,6 +87,9 @@ type
             If (0, 0) was in the top left corner, it will move to the bottom
             left corner or vice-versa. }
          procedure InvertYAxis;
+
+         property CanvasSizeX : Integer read FBufferSizeX;
+         property CanvasSizeY : Integer read FBufferSizeY;
 
          {: Current Pen Color. }
          property PenColor : TColor read FPenColor write SetPenColor;
@@ -186,6 +189,7 @@ end;
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY : Integer;
                              const baseTransform : TMatrix);
 begin
+   FBufferSizeX:=bufferSizeX;
    FBufferSizeY:=bufferSizeY;
    
    glMatrixMode(GL_PROJECTION);
