@@ -167,7 +167,7 @@ begin
   inherited ReadFromFiler(reader);
   archiveVersion:=reader.ReadInteger;
   if archiveVersion=0 then with reader do
-    FRadius:=ReadFloat
+    Radius:=ReadFloat
   else RaiseFilerException(archiveVersion);
 end;
 
@@ -177,7 +177,6 @@ procedure TSCVerletSphere.AlignCollider;
 begin
   inherited;
   TVCSphere(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix[3]);
-  TVCSphere(FVerletConstraint).Radius:=Radius;
 end;
 
 // SetRadius
@@ -227,8 +226,8 @@ begin
   inherited ReadFromFiler(reader);
   archiveVersion:=reader.ReadInteger;
   if archiveVersion=0 then with reader do begin
-    FRadius:=ReadFloat;
-    FLength:=ReadFloat;
+    Radius:=ReadFloat;
+    Length:=ReadFloat;
   end else RaiseFilerException(archiveVersion);
 end;
 
@@ -239,8 +238,6 @@ begin
   inherited;
   TVCCapsule(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix[3]);
   TVCCapsule(FVerletConstraint).Axis:=AffineVectorMake(GlobalMatrix[1]);
-  TVCCapsule(FVerletConstraint).Radius:=Radius;
-  TVCCapsule(FVerletConstraint).Length:=Length;
 end;
 
 // SetRadius
