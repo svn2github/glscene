@@ -166,6 +166,8 @@ contains
   PerlinNoise in '..\Source\Base\PerlinNoise.pas',
   TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
   GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
-  GLFPSMovement in '..\Source\GLFPSMovement.pas';
+  GLFPSMovement in '..\Source\GLFPSMovement.pas',
+  GLCelShader in '..\Source\GLCelShader.pas',
+  GLBumpShader in '..\Source\GLBumpShader.pas';
 
 end.
