@@ -343,7 +343,6 @@ var
       end;
    end;
 
-//   trackDetails : Boolean;
 begin
    if csDesigning in ComponentState then Exit;
    if HeightDataSource=nil then Exit;
@@ -370,12 +369,14 @@ begin
    if QualityDistance>0 then
       qDist:=QualityDistance+tileRadius*0.5
    else qDist:=-1;
-//   trackDetails:=Material.HasSecondaryTexture;
 
    SetROAMTrianglesCapacity(MaxCLODTriangles);
    n:=Sqr(TileSize+1)*2;
    FBufferVertices.Capacity:=n;
    FBufferTexPoints.Capacity:=n;
+
+   xglPushState;
+   xglMapTexCoordToDual;
 
    glPushMatrix;
    glScalef(1, 1, 1/128);
@@ -387,6 +388,9 @@ begin
 
    glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.List);
    xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.List);
+
+   xglPopState;
+
    FLastTriangleCount:=0;
 
    patchList:=TList.Create;
@@ -490,9 +494,14 @@ begin
       end;
    end;
 
+   xglPushState;
+   xglMapTexCoordToDual;
+
    glDisableClientState(GL_VERTEX_ARRAY);
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
+   xglPopState;
+   
    glPopMatrix;
 
    ReleaseAllUnusedTiles;
@@ -616,7 +625,16 @@ begin
          patch.VertexScale:=XYZVector;
          patch.VertexOffset:=tilePos;
          patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
-         patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
+         case tile.TextureCoordinatesMode of
+            tcmWorld : begin
+               patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
+            end;
+            tcmLocal : begin
+               patch.TextureOffset:=AffineVectorMake(0, 1, 0);
+            end;
+         else
+            Assert(False);
+         end;
          patch.ComputeVariance(FCLODPrecision);
       end;
       PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-tilePos[0]);
