@@ -785,8 +785,8 @@ begin
           if Anim.Dimensions = sfdManual then begin
             x0:=Frame.OffsetX;
             y0:=Frame.OffsetY;
-            x1:=x0+Frame.Width;
-            y1:=y0+Frame.Height;
+            x1:=x0+Frame.Width-1;
+            y1:=y0+Frame.Height-1;
           end else begin
             if (TexWidth>0) and (Anim.FrameWidth>0)
             and (TexHeight>0) and (Anim.FrameHeight>0) then begin
@@ -796,8 +796,8 @@ begin
               x0:=0;
               y0:=0;
             end;
-            x1:=x0+Anim.FrameWidth;
-            y1:=y0+Anim.FrameHeight;
+            x1:=x0+Anim.FrameWidth-1;
+            y1:=y0+Anim.FrameHeight-1;
 
             x0:=x0+Anim.Margins.Left;
             y0:=y0+Anim.Margins.Top;
