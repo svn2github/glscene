@@ -1,11 +1,22 @@
-// GLCgShader
+ // GLCgShader
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>04/07/03 - NelC - TCustomCgShader.OnInitialize. Moved properties
+                            VertexProgram & FragmentProgram of TCustomCgShader
+                            to published so that we can acccess them easily from
+                            OnInitialize.
+      <li>02/07/03 - NelC - More value-setting functions for TCgParameter.
+                            OnUnApply for shader programs.
+      <li>01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks.
+      <li>27/06/03 - NelC - Value-setting functions for TCgParameter,
+                            TCgProgram.DirectParamByName & DirectProfile,
+                            Profile property for TCgVertexProgram &
+                            TCgFragmentProgram, and some minor adjustments.
       <li>24/06/03 - NelC - Initial adoptation to Cg 1.1 Final. Now automatically
-                            uses latest hardware-supported profile. Use Callback
+                            uses latest hardware-supported profile and use callback
                             to show error message.
-      <li>29/05/03 - RC - Cg 1.1 Depreciated_api compatible
+      <li>29/05/03 - RoC - Cg 1.1 Depreciated_api compatible
       <li>25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
       <li>19/06/02 - EG - Improved OO wrapper
       <li>18/06/02 - EG - Creation
@@ -16,7 +27,7 @@ unit GLCgShader;
 interface
 
 uses
-  Classes, Geometry, GLTexture, GLMisc, Cg, CgGL;
+  Classes, Geometry, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
 
 type
   TCustomCgShader = class;
@@ -24,8 +35,17 @@ type
   TCgParameter = class;
 
   TCgApplyEvent = procedure (Sender : TCgProgram) of object;
+  TCgShaderEvent = procedure (Sender : TCustomCgShader) of object;
 
   TcgProgramType = (ptVertex, ptFragment);
+
+  TCGtypes = array of TCGtype;
+
+  // Available vertex program profile
+  TCgVPProfile = ( vpDetectLatest, vp20, vp30, arbvp1);
+
+  // Available fragment program profile
+  TCgFPProfile = ( fpDetectLatest, fp20, fp30, arbfp1);
 
   // TCgProgram
   //
@@ -40,11 +60,11 @@ type
     FParams : TList;
 
     FOnApply : TCgApplyEvent;
+    FOnUnApply : TCgApplyEvent;
     FOnProgramChanged : TNotifyEvent;
 
     FEnabled : boolean;
-
-//    procedure Compile;
+    FDetectProfile : boolean;
 
   protected
     { Protected Declarations }
@@ -56,7 +76,10 @@ type
     function GetParam(index : String) : TCgParameter;
 
     procedure AddParamsItem(const Param : PCGParameter);
-
+    {: Build a list of parameters used in the shader code.<p>
+       Iteratively queries all parameters so that we can manage and access them
+       easily. Currently only collects leaf parameters i.e. data structure is
+       not retrieved. }
     procedure BuildParamsList;
     procedure ClearParamsList;
 
@@ -74,25 +97,30 @@ type
     property Params : TList read FParams;
 
     function ParamByName(const name : String) : TCgParameter;
-    function ParamCount : Integer;
+    function DirectParamByName(const name : String) : PCGparameter;
 
+    function ParamCount : Integer;
     function GetProfileString : string;
 
     procedure LoadFromFile(const fileName : String);
-    procedure Load(const CodeString : TStrings);
 
-    procedure ShowCompilation(Output : TStrings);
-    procedure ListParameter(Output : TStrings);
+    procedure ListCompilation(Output : TStrings);
+    procedure ListParameters(Output : TStrings);
+
+    {: Direct access to the profile. <p>
+       Set Profile of the sub-classes to any but DetectLatest if you want to
+       specify the profile directly. }
+    property DirectProfile : TcgProfile read FProfile write FProfile;
 
     property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
+
   published
     { Published Declarations }
     property Code : TStrings read FCode write SetCode;
     property ProgramName : String read FProgramName write SetProgramName;
-    property OnApply : TCgApplyEvent read FOnApply write FOnApply;
-
-    property cgProfile : TcgProfile read FProfile write FProfile;
     property Enabled : boolean read FEnabled write FEnabled default True;
+    property OnApply : TCgApplyEvent read FOnApply write FOnApply;
+    property OnUnApply : TCgApplyEvent read FOnUnApply write FOnUnApply;
   end;
 
   // TCgParameter
@@ -103,24 +131,39 @@ type
     { Private Declarations }
     FOwner : TCgProgram;
     FName : String;
-    FValueType   : TCGtype;
     FHandle      : PCGparameter;
-    FDirection   : TCGenum;
-    FVariability : TCGenum;
+    FValueType   : TCGtype; // e.g. CG_FLOAT
+    FDirection   : TCGenum; // e.g. CG_INOUT
+    FVariability : TCGenum; // e.g. CG_UNIFORM
   protected
     { Protected Declarations }
+    procedure CheckValueType(aType : TCGtype); overload;
+    procedure CheckValueType(const types : TCGtypes); overload;
 
-// I'm not sure if we should use plain API or to set the parameters...
-
-//    procedure CheckValueType(aType : TcgValueType); overload;
-//    procedure CheckValueType(const types : TcgValueTypes); overload;
-//    procedure BindAsVector(const val : TVector);
-//
-//    procedure Bind;
+    procedure SetAsVector2f(const val : TVector2f);
+    procedure SetAsVector3f(const val : TVector3f);
+    procedure SetAsVector4f(const val : TVector4f);
   public
     { Public Declarations }
     constructor Create; virtual;
     destructor Destroy; override;
+
+    // These value-setting methods implicitly check for data type.
+    procedure SetAsScalar(const val : Single);
+    procedure SetAsVector(const val : TVector2f); overload;
+    procedure SetAsVector(const val : TVector3f); overload;
+    procedure SetAsVector(const val : TVector4f); overload;
+
+    procedure SetAsStateMatrix(matrix, Transform: Cardinal);
+
+    procedure SetAsTexture1D(TextureID : Cardinal);
+    procedure SetAsTexture2D(TextureID : Cardinal);
+    procedure SetAsTexture3D(TextureID : Cardinal);
+    procedure SetAsTextureCUBE(TextureID : Cardinal);
+    procedure SetAsTextureRECT(TextureID : Cardinal);
+
+    procedure EnableTexture;
+    procedure DisableTexture;
 
     property Owner : TCgProgram read FOwner;
     property Name : String read FName;
@@ -129,24 +172,36 @@ type
     property Direction : TCGenum read FDirection write FDirection;
     property Variability : TCGenum read FVariability write FVariability;
 
-//    procedure BindStateMatrix(matrixType : TCgGLMatrixType; format : Integer);
-//    property AsVector : TVector write BindAsVector;
+    // GLScene-friendly properties
+    property AsVector : TVector write SetAsVector4f; // position f.i.
+    property AsAffineVector : TAffineVector write SetAsVector3f; // normal f.i.
+    property AsVector2f : TVector2f write SetAsVector2f; // texCoord f.i.
   end;
 
   // TCgVertexProgram
   //
   TCgVertexProgram = class (TCgProgram)
+  private
+    FVPProfile : TCgVPProfile;
+    procedure SetVPProfile(v : TCgVPProfile);
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
+  published
+    property Profile : TCgVPProfile read FVPProfile write SetVPProfile default vpDetectLatest;
   end;
 
   // TCgFragmentProgram
   //
   TCgFragmentProgram = class (TCgProgram)
+  private
+    FFPProfile : TCgFPProfile;
+    procedure SetFPProfile(v : TCgFPProfile);
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
+  published
+    property Profile : TCgFPProfile read FFPProfile write SetFPProfile default fpDetectLatest;
   end;
 
   // TCustomCgShader
@@ -156,23 +211,36 @@ type
     { Private Declarations }
     FVertexProgram : TCgVertexProgram;
     FFragmentProgram : TCgFragmentProgram;
+
+    FOnInitialize : TCgShaderEvent;
+
     FDesignEnable : Boolean;
+
   protected
     { Protected Declarations }
+    // Vertex Program
     procedure SetVertexProgram(const val : TCgVertexProgram);
-    procedure SetFragmentProgram(const val : TCgFragmentProgram);
     procedure SetOnApplyVertexProgram(const val : TCgApplyEvent);
     function GetOnApplyVertexProgram : TCgApplyEvent;
+    procedure SetOnUnApplyVertexProgram(const val : TCgApplyEvent);
+    function GetOnUnApplyVertexProgram : TCgApplyEvent;
+
+    // Fragment Program
+    procedure SetFragmentProgram(const val : TCgFragmentProgram);
     procedure SetOnApplyFragmentProgram(const val : TCgApplyEvent);
     function GetOnApplyFragmentProgram : TCgApplyEvent;
+    procedure SetOnUnApplyFragmentProgram(const val : TCgApplyEvent);
+    function GetOnUnApplyFragmentProgram : TCgApplyEvent;
+
+    // OnInitialize
+    function GetOnInitialize : TCgShaderEvent;
+    procedure SetOnInitialize(const val : TCgShaderEvent);
 
     procedure DoInitialize; override;
+    procedure DoFinalize; override;
     procedure DoApply(var rci : TRenderContextInfo); override;
     function  DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
-    procedure DoFinalize; override;
 
-    property VertexProgram : TCgVertexProgram read FVertexProgram write SetVertexProgram;
-    property FragmentProgram : TCgFragmentProgram read FFragmentProgram write SetFragmentProgram;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -181,9 +249,17 @@ type
     property OnApplyVertexProgram : TCgApplyEvent read GetOnApplyVertexProgram write SetOnApplyVertexProgram;
     property OnApplyFragmentProgram : TCgApplyEvent read GetOnApplyFragmentProgram write SetOnApplyFragmentProgram;
 
+    property OnUnApplyVertexProgram : TCgApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
+    property OnUnApplyFragmentProgram : TCgApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
+
+    {: OnInitialize can be use to set parameters that need to be set once. See demo "Cg Texture" for example.}
+    property OnInitialize : TCgShaderEvent read GetOnInitialize write SetOnInitialize;
+
   published
     { Published Declarations }
     property DesignEnable : Boolean read FDesignEnable write FDesignEnable default False;
+    property VertexProgram : TCgVertexProgram read FVertexProgram write SetVertexProgram;
+    property FragmentProgram : TCgFragmentProgram read FFragmentProgram write SetFragmentProgram;
   end;
 
   // TCgShader
@@ -196,6 +272,11 @@ type
 
     property OnApplyVertexProgram;
     property OnApplyFragmentProgram;
+
+    property OnUnApplyVertexProgram;
+    property OnUnApplyFragmentProgram;
+
+    property OnInitialize;
   end;
 
 procedure Register;
@@ -211,7 +292,7 @@ implementation
 uses SysUtils, OpenGL12, Dialogs;
 
 var
-//  vCgContextCount : Integer;
+  vCgContextCount : Integer;
   CurCgContent : PcgContext; // for reporting error line number
 
 procedure Register;
@@ -226,33 +307,6 @@ begin
   raise Exception.Create(Msg);
 end;
 
-// GetCgContext
-//
-{function _GetCgContext : PCgContext;
-begin
-   Inc(vCgContextUseCount);
-   if vCgContextUseCount=1 then begin
-      vCgContext:=cgCreateContext;
-      Assert(Assigned(vCgContext), 'Unable to create CgContext.');
-   end;
-   Result:=vCgContext;
-end;
-
-// ReleaseCgContext
-//
-procedure _ReleaseCgContext(aContext : PCgContext);
-begin
-   Assert(aContext=vCgContext, 'Invalid CgContext.');
-   Assert(vCgContextUseCount>0, 'Unbalanced CgContext allocations.');
-   Dec(vCgContextUseCount);
-   if vCgContextUseCount=0 then begin
-      cgFreeContext(vCgContext);
-      vCgContext:=nil;
-      cgCleanup;
-   end;
-end;
-}
-
 // ------------------
 // ------------------ TCgProgram ------------------
 // ------------------
@@ -266,6 +320,7 @@ begin
   TStringList(FCode).OnChange := NotifyChange;
   FParams := TList.Create;
   FEnabled := true;
+  FDetectProfile := true;
 end;
 
 // Destroy
@@ -292,14 +347,6 @@ begin
   Code.LoadFromFile(fileName);
 end;
 
-
-procedure TCgProgram.Load(const CodeString: TStrings);
-begin
-  Finalize;
-  Code.Assign(CodeString);
-  // Initialize will be called later when shader is first applied
-end;
-
 // SetProgramName
 //
 procedure TCgProgram.SetProgramName(const val : String);
@@ -322,9 +369,9 @@ begin
     FOwner := Self;
     FName  := StrPas(cgGetParameterName(Param));
     FHandle := Param;
-    FValueType := cgGetParameterType(Param); // e.g. CG_FLOAT
-    FDirection := cgGetParameterDirection(Param); // e.g. CG_INOUT
-    FVariability := cgGetParameterVariability(Param); // e.g. CG_UNIFORM
+    FValueType := cgGetParameterType(Param); 
+    FDirection := cgGetParameterDirection(Param); 
+    FVariability := cgGetParameterVariability(Param);
   end;
   FParams.Add(newParamObj);
 end;
@@ -332,9 +379,6 @@ end;
 // BuildParamsList
 //
 procedure TCgProgram.BuildParamsList;
-// Iteratively queries all parameters defined in a Cg program so that we can
-// manage and access them easily.
-// Currently only collects leaf parameters i.e. data structure is not retrieved.
 var
   CurParam : PCGParameter;
 begin
@@ -382,12 +426,14 @@ begin
       Exit;
     end;
   end;
+end;
 
-  if Result=nil then begin // can't get it from our list?
-    AddParamsItem(cgGetNamedParameter(FHandle, PChar(name))); // get it from Cg API
-    // insert error-check here
-    Result:=TCgParameter(list[FParams.Count-1]);
-  end;
+// DirectParamByName
+//
+function TCgProgram.DirectParamByName(const name: String): PCGparameter;
+// Returns a handle to a Cg parameter
+begin
+  result:=cgGetNamedParameter(FHandle, PChar(name));
 end;
 
 // ParamCount
@@ -402,41 +448,40 @@ end;
 procedure TCgProgram.Initialize;
 var
   buf : String;
-//  ret : TcgError;
-//  PProgName : PChar;
 begin
   Assert(FCgContext=nil);
 
   buf := Trim(Code.Text);
-  if buf<>'' then
-  begin
-    // get a new context
-    FCgContext := cgCreateContext;
-    CurCgContent := FCgContext;
-//    Inc(vCgContextCount);
-    try
-      // automatically set the profile to the latest supported by the hardware
+
+  if buf='' then exit;
+
+  // get a new context
+  FCgContext := cgCreateContext;
+  CurCgContent := FCgContext;
+  Inc(vCgContextCount);
+
+  try
+    if FDetectProfile then // set profile to latest supported by the hardware
       case FProgramType of
         ptVertex   : FProfile := cgGLGetLatestProfile(CG_GL_VERTEX);
         ptFragment : FProfile := cgGLGetLatestProfile(CG_GL_FRAGMENT);
       end;
 
-      cgGLSetOptimalOptions(FProfile);
+    cgGLSetOptimalOptions(FProfile);
 
-      if FProgramName='' then FProgramName:='main';
+    if FProgramName='' then FProgramName:='main';
 
-      FHandle := cgCreateProgram( FCgContext, CG_SOURCE, PChar(buf), FProfile,
-                                  PChar(FProgramName), nil);
-      cgGLLoadProgram(FHandle);
+    FHandle := cgCreateProgram( FCgContext, CG_SOURCE, PChar(buf), FProfile,
+                                PChar(FProgramName), nil);
+    cgGLLoadProgram(FHandle);
 
-      // build parameter list for the selected program
-      BuildParamsList;
-    except
-      cgDestroyContext(FCgContext);
-      FCgContext := nil;
-//      Dec(vCgContextCount);
-    raise;
-    end;
+    // build parameter list for the selected program
+    BuildParamsList;
+  except
+    cgDestroyContext(FCgContext);
+    FCgContext := nil;
+    Dec(vCgContextCount);
+  raise;
   end;
 end;
 
@@ -450,7 +495,7 @@ begin
   ClearParamsList;
   cgDestroyContext(FCgContext);
   FCgContext := nil;
-//  Dec(vCgContextCount);
+  Dec(vCgContextCount);
 end;
 
 // Apply
@@ -475,22 +520,17 @@ begin
   if not Assigned(FHandle) then exit;
   if not FEnabled then exit;
 
+  if Assigned(FOnUnApply) then FOnUnApply(Self);
+
   cgGLDisableProfile(FProfile);
 end;
-
-// Compile
-//
-{procedure TCgProgram.Compile;
-begin
-  cgCompileProgram(FHandle);
-end; }
 
 function TCgProgram.GetProfileString: string;
 begin
   result:=StrPas(cgGetProfileString(FProfile));
 end;
 
-procedure TCgProgram.ListParameter(Output: TStrings);
+procedure TCgProgram.ListParameters(Output: TStrings);
 var i : integer;
 begin
   Output.clear;
@@ -498,10 +538,24 @@ begin
     output.add(TCgParameter(FParams[i]).Name);
 end;
 
-procedure TCgProgram.ShowCompilation(Output: TStrings);
+procedure TCgProgram.ListCompilation(Output: TStrings);
+
+  procedure OutputAsTStrings(s : String);
+  var i : integer;
+  begin
+    while Length(s) > 0 do begin
+      I:=Pos(#10, s);
+      if I = 0 then I:=255;
+      Output.Add(Copy(s, 1, I-1));
+      Delete(s, 1, I);
+    end;
+  end;
+
 begin
+  Output.BeginUpdate;
   Output.Clear;
-  Output.add(cgGetProgramString(FHandle, CG_COMPILED_PROGRAM));
+  OutputAsTStrings(cgGetProgramString(FHandle, CG_COMPILED_PROGRAM));
+  Output.EndUpdate;
 end;
 
 // ------------------
@@ -524,64 +578,152 @@ end;
 
 // CheckValueType
 //
-//procedure TCgParameter.CheckValueType(aType : TcgValueType);
-//begin
-//  Assert(aType=FValueType, ClassName+': Parameter type mismatch.');
-//end;
+procedure TCgParameter.CheckValueType(aType : TCGtype);
+begin
+  Assert(aType=FValueType, ClassName+': Parameter type mismatch.');
+end;
 
 // CheckValueType
 //
-//procedure TCgParameter.CheckValueType(const types : TcgValueTypes);
-//  function DoCheck : Boolean;
-//  var
-//    i : Integer;
-//  begin
-//    Result := False;
-//    for i:=Low(types) to High(types) do
-//      if FValueType=types[i] then
-//      begin
-//        Result := True;
-//        Break;
-//      end;
-//  end;
-//begin
-//  Assert(DoCheck, ClassName+': Parameter type mismatch.');
-//end;
+procedure TCgParameter.CheckValueType(const types : TCGtypes);
+  function DoCheck : Boolean;
+  var
+    i : Integer;
+  begin
+    Result := False;
+    for i:=Low(types) to High(types) do
+      if FValueType=types[i] then
+      begin
+        Result := True;
+        Break;
+      end;
+  end;                     
+begin
+  Assert(DoCheck, ClassName+': Parameter type mismatch.');
+end;
 
-// Bind
-//
-//procedure TCgParameter.Bind;
-//begin
-//  if not Assigned(FBindIter) then
-//  begin
-//    FBindIter := cgGetBindByName(Owner.ProgramIter, PChar(Name));
-//    Assert(Assigned(FBindIter), ClassName+': Failed to bind "'+Name+'"');
-//  end;
-//end;
+procedure TCgParameter.SetAsScalar(const val : Single);
+begin
+  CheckValueType(CG_FLOAT);
+  cgGLSetParameter1f(FHandle, val);
+end;
 
-// BindAsVector
+// SetAsVector*
 //
-//procedure TCgParameter.BindAsVector(const val : TVector);
-//begin
-//  CheckValueType(cgFloat4ValueType);
-//  Bind;
-//  cgGLBindUniform4fv(Owner.ProgramIter, BindIter, @val);
-//end;
+procedure TCgParameter.SetAsVector2f(const val: TVector2f);
+begin
+  CheckValueType(CG_FLOAT2);
+  cgGLSetParameter2fv(FHandle, @val);
+end;
 
-// BindStateMatrix
+procedure TCgParameter.SetAsVector3f(const val: TVector3f);
+begin
+  CheckValueType(CG_FLOAT3);
+  cgGLSetParameter3fv(FHandle, @val);
+end;
+
+procedure TCgParameter.SetAsVector4f(const val: TVector4f);
+begin
+  CheckValueType(CG_FLOAT4);
+  cgGLSetParameter4fv(FHandle, @val);
+end;
+
+procedure TCgParameter.SetAsVector(const val: TVector2f);
+begin
+  SetAsVector2f(val);
+end;
+
+procedure TCgParameter.SetAsVector(const val: TVector3f);
+begin
+  SetAsVector3f(val);
+end;
+
+procedure TCgParameter.SetAsVector(const val: TVector4f);
+begin
+  SetAsVector4f(val);
+end;
+
+// SetAsTexture*
 //
-//procedure TCgParameter.BindStateMatrix(matrixType : TCgGLMatrixType; format : Integer);
-//var
-//  ValueTypes: array[0..3] of TcgValueType;
-//begin
-//  ValueTypes[0] := cgFloat4x4ValueType;
-//  ValueTypes[1] := cgFloat4x3ValueType;
-//  ValueTypes[2] := cgFloat3x4ValueType;
-//  ValueTypes[3] := cgFloat3x3ValueType;
-//  CheckValueType(@ValueTypes);
-//  Bind;
-//  cgGLBindUniformStateMatrix(Owner.ProgramIter, BindIter, matrixType, format);
-//end;
+procedure TCgParameter.SetAsTexture1D(TextureID: Cardinal);
+begin
+  CheckValueType(CG_SAMPLER1D);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
+procedure TCgParameter.SetAsTexture2D(TextureID: Cardinal);
+begin
+  CheckValueType(CG_SAMPLER2D);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
+procedure TCgParameter.SetAsTexture3D(TextureID: Cardinal);
+begin
+  CheckValueType(CG_SAMPLER3D);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
+procedure TCgParameter.SetAsTextureRECT(TextureID: Cardinal);
+begin
+  CheckValueType(CG_SAMPLERRECT);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
+procedure TCgParameter.SetAsTextureCUBE(TextureID: Cardinal);
+begin
+  CheckValueType(CG_SAMPLERCUBE);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
+// DisableTexture
+//
+procedure TCgParameter.DisableTexture;
+var
+  ValueTypes: array[0..4] of TCGtype;
+begin
+  ValueTypes[0] := CG_SAMPLER1D;
+  ValueTypes[1] := CG_SAMPLER2D;
+  ValueTypes[2] := CG_SAMPLER3D;
+  ValueTypes[3] := CG_SAMPLERRECT;
+  ValueTypes[4] := CG_SAMPLERCUBE;
+  CheckValueType(@ValueTypes);
+
+  cgGLDisableTextureParameter(FHandle);
+end;
+
+// EnableTexture
+//
+procedure TCgParameter.EnableTexture;
+var
+  ValueTypes: array[0..4] of TCGtype;
+begin
+  ValueTypes[0] := CG_SAMPLER1D;
+  ValueTypes[1] := CG_SAMPLER2D;
+  ValueTypes[2] := CG_SAMPLER3D;
+  ValueTypes[3] := CG_SAMPLERRECT;
+  ValueTypes[4] := CG_SAMPLERCUBE;
+  CheckValueType(@ValueTypes);
+  
+  cgGLEnableTextureParameter(FHandle);
+end;
+
+// SetAsStateMatrix
+//
+procedure TCgParameter.SetAsStateMatrix(matrix, Transform : Cardinal);
+var
+  ValueTypes: array[0..3] of TCGtype;
+begin
+  // Currently, I only include these most common ones. There're more types of
+  // smaller dimensions. Can we assume the types range is contigous and use do a
+  // range check of [CG_FLOAT1x1..CG_FLOAT4x4] instead?
+  ValueTypes[0] := CG_FLOAT4x4;
+  ValueTypes[1] := CG_FLOAT4x3;
+  ValueTypes[2] := CG_FLOAT3x4;
+  ValueTypes[3] := CG_FLOAT3x3;
+  CheckValueType(@ValueTypes);
+  
+  cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
+end;
 
 // ------------------
 // ------------------ TCgVertexProgram ------------------
@@ -591,8 +733,22 @@ end;
 //
 constructor TCgVertexProgram.Create;
 begin
-  FProgramType := ptVertex;
   inherited;
+  FProgramType := ptVertex;
+  FVPProfile:=vpDetectLatest;
+end;
+
+procedure TCgVertexProgram.SetVPProfile(v: TCgVPProfile);
+begin
+  if FVPProfile=v then exit;
+  FVPProfile:=v;
+  case v of
+    vp20   : FProfile := CG_PROFILE_VP20;
+    vp30   : FProfile := CG_PROFILE_VP30;
+    arbvp1 : FProfile := CG_PROFILE_ARBVP1;
+  end;
+
+  FDetectProfile:=v=vpDetectLatest;
 end;
 
 // ------------------
@@ -603,8 +759,22 @@ end;
 //
 constructor TCgFragmentProgram.Create;
 begin
-  FProgramType := ptFragment;
   inherited;
+  FProgramType := ptFragment;
+  FFPProfile:=fpDetectLatest;
+end;
+
+procedure TCgFragmentProgram.SetFPProfile(v: TCgFPProfile);
+begin
+  if FFPProfile=v then exit;
+  FFPProfile:=v;
+  case v of
+    fp20   : FProfile := CG_PROFILE_FP20;
+    fp30   : FProfile := CG_PROFILE_fP30;
+    arbfp1 : FProfile := CG_PROFILE_ARBFP1;
+  end;
+
+  FDetectProfile:=v=fpDetectLatest;
 end;
 
 // ------------------
@@ -671,6 +841,48 @@ begin
   Result:=FFragmentProgram.OnApply;
 end;
 
+// SetOnUnApplyVertexProgram
+//
+procedure TCustomCgShader.SetOnUnApplyVertexProgram(const val : TCgApplyEvent);
+begin
+  FVertexProgram.OnUnApply := val;
+end;
+
+// GetOnUnApplyVertexProgram
+//
+function TCustomCgShader.GetOnUnApplyVertexProgram : TCgApplyEvent;
+begin
+  Result:=FVertexProgram.OnUnApply;
+end;
+
+// SetOnUnApplyFragmentProgram
+//
+procedure TCustomCgShader.SetOnUnApplyFragmentProgram(const val : TCgApplyEvent);
+begin
+  FFragmentProgram.OnUnApply:=val;
+end;
+
+// GetOnUnApplyFragmentProgram
+//
+function TCustomCgShader.GetOnUnApplyFragmentProgram : TCgApplyEvent;
+begin
+  Result:=FFragmentProgram.OnUnApply;
+end;
+
+// GetOnInitialize
+//
+function TCustomCgShader.GetOnInitialize: TCgShaderEvent;
+begin
+  Result:=FOnInitialize;
+end;
+
+// SetOnInitialize
+//
+procedure TCustomCgShader.SetOnInitialize(const val: TCgShaderEvent);
+begin
+  FOnInitialize:=val;
+end;
+
 // DoInitialize
 //
 procedure TCustomCgShader.DoInitialize;
@@ -679,6 +891,8 @@ begin
     Exit;
   FVertexProgram.Initialize;
   FFragmentProgram.Initialize;
+
+  if assigned(FOnInitialize) then FOnInitialize(self);
 end;
 
 // DoApply
@@ -714,7 +928,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
