@@ -2,6 +2,7 @@
   Q3MD3 - Helper classes and methods for Quake3 MD3 actors
 
   History :
+    14/04/03 - SG - Streamlined the TMD3TagList.LoadFromStream a little
     04/04/03 - SG - Changes made to LoadQ3Skin procedure (as suggested by Mrqzzz)
     03/04/03 - SG - Added LoadQ3Skin procedure
     01/04/03 - Mrqzzz - "LEGS_" animations read from .CFG fixed
@@ -253,18 +254,21 @@ end;
 //
 procedure TMD3TagList.LoadFromStream(aStream:TStream);
 var
-  MD3File     : TFileMD3;
+  MD3Header : TMD3Header;
 begin
-  MD3File:=TFileMD3.Create;
-  try
-    MD3File.LoadFromStream(aStream);
-    FNumTags:=MD3File.ModelHeader.numTags;
-    FNumFrames:=MD3File.ModelHeader.numFrames;
-    SetLength(FTags,FNumTags*FNumFrames);
-    System.Move(MD3File.Tags[0],FTags[0],FNumTags*FNumFrames*SizeOf(TMD3Tag));
-  finally
-    MD3File.Free;
-  end;
+  // Load the MD3 header
+  aStream.Read(MD3Header,SizeOf(MD3Header));
+
+  // Test for correct file ID and version
+  Assert(MD3Header.fileID='IDP3','Incorrect MD3 file ID');
+  Assert(MD3Header.version=15,'Incorrect MD3 version number');
+
+  // Get the tags from the file
+  FNumTags:=MD3Header.numTags;
+  FNumFrames:=MD3Header.numFrames;
+  SetLength(FTags,FNumTags*FNumFrames);
+  aStream.Position:=MD3Header.tagStart;
+  aStream.Read(FTags[0],FNumTags*FNumFrames*SizeOf(TMD3Tag));
 end;
 
 // GetTag
