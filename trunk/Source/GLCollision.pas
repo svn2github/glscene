@@ -135,6 +135,13 @@ function FastCheckFaceVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
    Also true when the one cube does contain the other completely. }
 function IntersectCubes(obj1, obj2 : TGLBaseSceneObject) : Boolean; overload;
 
+{: Returns or creates the TGLBCollision within the given behaviours.<p>
+	This helper function is convenient way to access a TGLBCollision. }
+function GetOrCreateCollision(behaviours : TGLBehaviours) : TGLBCollision; overload;
+{: Returns or creates the TGLBCollision within the given object's behaviours.<p>
+	This helper function is convenient way to access a TGLBCollision. }
+function GetOrCreateCollision(obj : TGLBaseSceneObject) : TGLBCollision; overload;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1209,6 +1216,24 @@ end;
 
 
 
+// GetOrCreateCollision (TGLBehaviours)
+//
+function GetOrCreateCollision(behaviours : TGLBehaviours) : TGLBCollision;
+var
+	i : Integer;
+begin
+	i:=behaviours.IndexOfClass(TGLBCollision);
+	if i>=0 then
+		Result:=TGLBCollision(behaviours[i])
+	else Result:=TGLBCollision.Create(behaviours);
+end;
+
+// GetOrCreateCollision (TGLBaseSceneObject)
+//
+function GetOrCreateCollision(obj : TGLBaseSceneObject) : TGLBCollision;
+begin
+	Result:=GetOrCreateCollision(obj.Behaviours);
+end;
 
 
 
