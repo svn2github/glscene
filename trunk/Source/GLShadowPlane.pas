@@ -219,9 +219,9 @@ begin
                if FShadowingObject.Parent<>nil then
                   glMultMatrixf(PGLFloat(FShadowingObject.Parent.AbsoluteMatrixAsAddress));
                glMultMatrixf(PGLFloat(FShadowingObject.LocalMatrix));
-               FShadowingObject.DoRender(rci, renderSelf, renderChildren);
+               FShadowingObject.DoRender(rci, True, (FShadowingObject.Count>0));
             end else begin
-               Scene.Objects.DoRender(rci, renderSelf, renderChildren);
+               Scene.Objects.DoRender(rci, True, True);
             end;
             if Assigned(FOnEndRenderingShadows) then
                FOnEndRenderingShadows(Self);
