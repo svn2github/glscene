@@ -647,43 +647,35 @@ end;
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
                                    renderSelf, renderChildren : Boolean);
 
-  // Function that determines if an object is "recursively visible". It halts when
-  // * it finds an invisible ancestor (=> invisible)
-  // * it finds the root (=> visible)
-  // * it finds the shadow volume as an ancestor (=> visible)
-  //
-  // This does _not_ mean that the object is actually visible on the screen
-  function DirectHierarchicalVisibility(Obj : TGLBaseSceneObject): boolean;
-  var
-    p : TGLBaseSceneObject;
-  begin
-    if not Assigned(Obj) then
-    begin
-      result := true; 
-      exit;
-    end;
-
-    if not Obj.Visible then
-    begin
-      result := False;
-      exit;
-    end;
-
-    p := Obj.Parent;
-
-    while Assigned(p) and (p<>obj) and (p<>self) do
-    begin
-      if not p.Visible then
-      begin
-        result := False;
+   // Function that determines if an object is "recursively visible". It halts when
+   // * it finds an invisible ancestor (=> invisible)
+   // * it finds the root (=> visible)
+   // * it finds the shadow volume as an ancestor (=> visible)
+   //
+   // This does _not_ mean that the object is actually visible on the screen
+   function DirectHierarchicalVisibility(obj : TGLBaseSceneObject): boolean;
+   var
+      p : TGLBaseSceneObject;
+   begin
+      if not Assigned(obj) then begin
+        Result:=True;
         exit;
       end;
+      if not obj.Visible then begin
+         Result:=False;
+         Exit;
+      end;
+      p:=obj.Parent;
+      while Assigned(p) and (p<>obj) and (p<>Self) do begin
+         if not p.Visible then begin
+            Result:=False;
+            Exit;
+         end;
+         p:=p.Parent;
+      end;
+      Result := True;
+   end;
 
-      p := p.Parent;
-    end;
-
-    result := True;
-  end;
 var
    i, k, n     : Integer;
    lightSource : TGLLightSource;
