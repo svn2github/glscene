@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/05/03 - EG - 3DNow! optimization for ClampValue
       <li>30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
       <li>14/02/03 - EG - Added ScaleAndRound
       <li>28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
@@ -6906,6 +6907,27 @@ end;
 //
 function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
 begin
+{$ifndef GEOMETRY_NO_ASM}
+   asm
+      test vSIMD, 1
+      jz @@FPU
+
+      db $0F,$6E,$45,$10       /// movd  mm0, [EBP+$10]
+      db $0F,$6E,$4D,$0C       /// movd  mm1, [EBP+$C]
+      db $0F,$6E,$55,$08       /// movd  mm2, [EBP+$8]
+      db $0F,$0F,$C1,$A4       /// pfmax mm0, mm1
+      db $0F,$0F,$C2,$94       /// pfmin mm0, mm2
+      db $0F,$7E,$45,$10       /// movd  [EBP+$10], mm0
+      db $0F,$0E               /// femms
+      pop ecx
+      fld   dword ptr [EBP+$10]
+
+      pop ebp
+      ret $C
+
+@@FPU:
+   end;
+{$endif}
    if aValue<aMin then
       Result:=aMin
    else if aValue>aMax then
