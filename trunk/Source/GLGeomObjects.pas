@@ -703,13 +703,13 @@ begin
     a1 := a1 + PiDivSlices;
   end;
 
-   sil := nil;
-   Connectivity.CreateSilhouette(
-      silhouetteParameters, sil, false);
+  sil := nil;
+  Connectivity.CreateSilhouette(
+    silhouetteParameters, sil, false);
 
-   result := sil;
+  result := sil;
 
-   Connectivity.Free;
+  Connectivity.Free;
 end;
 
 // ------------------
