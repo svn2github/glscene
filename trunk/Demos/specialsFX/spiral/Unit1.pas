@@ -25,7 +25,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLParticleFX, GLCadencer, GLScene, GLObjects, GLWin32Viewer,
-  GLMisc, GLBehaviours, ExtCtrls, Geometry, GLCrossPlatform;
+  GLMisc, GLBehaviours, ExtCtrls, Geometry, GLCrossPlatform, Buttons;
 
 type
   TForm1 = class(TForm)
@@ -40,6 +40,8 @@ type
     Timer: TTimer;
     PFXRing: TGLPolygonPFXManager;
     GLFullScreenViewer: TGLFullScreenViewer;
+    Panel1: TPanel;
+    SpeedButton1: TSpeedButton;
     procedure TimerTimer(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure GLSceneViewerDblClick(Sender: TObject);
@@ -47,8 +49,6 @@ type
     procedure GLFullScreenViewerKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure GLFullScreenViewerMouseMove(Sender: TObject;
-      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
   public
@@ -128,20 +128,9 @@ end;
 procedure TForm1.GLSceneViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-   // Mouse moved in the Viewer (windowed mode)
+   // Mouse moved in the Viewer (windowed or fullscreen mode)
    if ssRight in Shift then
-      GLCamera.Position.Y:=(GLSceneViewer.Height div 2-Y)*0.1/GLCamera.SceneScale;
-   // Ensures we don't flood the event system with mouse moves (high priority events)
-   // and then prevent the cadencer from progressing (low priority events)
-   GLCadencer.Progress;
-end;
-
-procedure TForm1.GLFullScreenViewerMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-   // Mouse moved in the FullScreen Viewer
-   if ssRight in Shift then
-      GLCamera.Position.Y:=(Screen.Height div 2-Y)*0.1/GLCamera.SceneScale;
+      GLCamera.Position.Y:=(GLScene.CurrentBuffer.Height div 2-Y)*0.1/GLCamera.SceneScale;
    // Ensures we don't flood the event system with mouse moves (high priority events)
    // and then prevent the cadencer from progressing (low priority events)
    GLCadencer.Progress;
