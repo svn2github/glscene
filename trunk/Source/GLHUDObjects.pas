@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
       <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
       <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
@@ -148,7 +149,7 @@ begin
       if rci.renderDPI=96 then
          f:=1
       else f:=rci.renderDPI/96;
-      glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
+      glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
       glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
                    rci.viewPortSize.cy*0.5-f*Position.Y, Position.Z);
       if Rotation<>0 then
@@ -160,8 +161,8 @@ begin
       glDisable(GL_DEPTH_TEST);
       glDepthMask(False);
       // precalc coordinates
-      vx:=-Width*0.5;    vx1:=vx+Width;
-      vy:=+Height*0.5;   vy1:=vy-Height;
+      vx:=-Width*0.5*f;    vx1:=vx+Width*f;
+      vy:=+Height*0.5*f;   vy1:=vy-Height*f;
       // issue quad
       glBegin(GL_QUADS);
          glNormal3fv(@YVector);
@@ -270,6 +271,8 @@ end;
 //
 procedure TGLHUDText.DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean);
+var
+   f : Single;
 begin
    if Assigned(FBitmapFont) and (Text<>'') then begin
       SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -277,12 +280,15 @@ begin
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
       glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+      if rci.renderDPI=96 then
+         f:=1
+      else f:=rci.renderDPI/96;
       glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-      glTranslatef(Position.X-rci.viewPortSize.cx/2,
-                   rci.viewPortSize.cy/2-Position.Y, Position.Z);
+      glTranslatef(Position.X*f-rci.viewPortSize.cx/2,
+                   rci.viewPortSize.cy/2-Position.Y*f, Position.Z);
       if FRotation<>0 then
          glRotatef(FRotation, 0, 0, 1);
-      glScalef(Scale.DirectX, Scale.DirectY, 1);
+      glScalef(Scale.DirectX*f, Scale.DirectY*f, 1);
       glMatrixMode(GL_PROJECTION);
       glPushMatrix;
       glLoadIdentity;
