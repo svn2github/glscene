@@ -2,6 +2,8 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/04/04 - SG - Fixed texture clamping for old cards and 
+                          switched to GL_NEAREST texture sampling.
       <li>24/03/04 - SG - Initial.
    </ul></font><p>
 }
@@ -324,10 +326,17 @@ begin
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, FTextureHandle);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    end else begin
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    end;
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
     glBegin(GL_QUADS);
       s:=FSize*0.5;
