@@ -40,7 +40,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+//  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
 
   with ObjectManager do begin
     RegisterSceneObject(TGLODEDummy,'GLODEDummy','ODE Objects');
@@ -55,7 +55,7 @@ finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
+//  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
 
   with ObjectManager do begin
     UnregisterSceneObject(TGLODEDummy);
