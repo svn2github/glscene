@@ -3603,8 +3603,34 @@ end;
 // CalculateMass
 //
 function TODEElementCone.CalculateMass: TdMass;
+
+  procedure dMassSetCone(var m : TdMass; const density, radius, length : Single);
+  var
+    ms, Rsqr, Lsqr,
+    Ixx, Iyy, Izz : Single;
+  begin
+    // Calculate Mass
+    Rsqr:=radius*radius;
+    Lsqr:=length*length;
+    ms:=Pi*Rsqr*length*density/3;
+
+    // Calculate Mass Moments of Inertia about the Centroid
+    Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+    Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+    Izz:=0.3*ms*Rsqr;
+
+    // Set the ODE Mass parameters
+    with m do begin
+      mass:=ms;
+      c[0]:=0; c[1]:=0; c[2]:=0.25*length;
+      I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
+      I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
+      I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
+    end;
+  end;
+
 begin
-  dMassSetCylinder(FMass,FDensity,3,FRadius,FLength);
+  dMassSetCone(FMass,FDensity,FRadius,FLength);
   result:=inherited CalculateMass;
 end;
 
