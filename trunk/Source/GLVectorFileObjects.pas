@@ -4043,11 +4043,19 @@ begin
          else glBegin(GL_TRIANGLE_STRIP);
          for i:=0 to Vertices.Count-1 do begin
             if gotNormals   then glNormal3fv(@Normals.List[i]);
-            if gotTexCoords then xglTexCoord2fv(@TexCoords.List[i]);
             if gotColor     then glColor4fv(@Colors.List[i]);
-            for j:=0 to FTexCoordsEx.Count-1 do
-               if gotTexCoordsEx[j] then 
-                  glMultiTexCoord4fvARB(GL_TEXTURE0_ARB+j, @TexCoordsEx[j].List[i]);
+            if FTexCoordsEx.Count>0 then begin
+               if gotTexCoordsEx[0] then 
+                  glMultiTexCoord4fvARB(GL_TEXTURE0_ARB, @TexCoordsEx[0].List[i])
+               else if gotTexCoords then
+                  xglTexCoord2fv(@TexCoords.List[i]);
+               for j:=1 to FTexCoordsEx.Count-1 do
+                  if gotTexCoordsEx[j] then
+                     glMultiTexCoord4fvARB(GL_TEXTURE0_ARB+j, @TexCoordsEx[j].List[i]);
+            end else begin
+               if gotTexCoords then
+                  xglTexCoord2fv(@TexCoords.List[i]);
+            end;
             glVertex3fv(@Vertices.List[i]);
          end;
          glEnd;
