@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>25/02/04 - Mrqzzz - Added TGLSCene.RenderedObject 
+      <li>07/07/04 - Mrqzzz - TGLbaseSceneObject.Remove checks if removed object is actually a child (Uffe Hammer)
+      <li>25/02/04 - Mrqzzz - Added TGLSCene.RenderedObject
       <li>25/02/04 - EG - Children no longer owned
       <li>13/02/04 - NelC - Added option Modal for ShowInfo
       <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
@@ -3863,18 +3864,20 @@ end;
 procedure TGLBaseSceneObject.Remove(aChild : TGLBaseSceneObject; keepChildren : Boolean);
 begin
    if not Assigned(FChildren) then Exit;
-   if Assigned(FScene) then
-      FScene.RemoveLights(aChild);
-   if aChild.Owner=Self then
-      RemoveComponent(aChild);
-   FChildren.Remove(aChild);
-   aChild.FParent:=nil;
-   if keepChildren then begin
-      BeginUpdate;
-      with aChild do while Count>0 do
-         Children[0].MoveTo(Self);
-      EndUpdate;
-   end else NotifyChange(Self);
+   if aChild.Parent=Self then begin
+      if Assigned(FScene) then
+         FScene.RemoveLights(aChild);
+      if aChild.Owner=Self then
+         RemoveComponent(aChild);
+      FChildren.Remove(aChild);
+      aChild.FParent:=nil;
+      if keepChildren then begin
+         BeginUpdate;
+         with aChild do while Count>0 do
+            Children[0].MoveTo(Self);
+         EndUpdate;
+      end else NotifyChange(Self);
+   end;
 end;
 
 // IndexOfChild
