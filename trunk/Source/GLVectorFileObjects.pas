@@ -5206,7 +5206,6 @@ end;
 constructor TActorAnimation.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
-
 end;
 
 // Destroy
@@ -5217,132 +5216,6 @@ begin
       if FTargetSmoothAnimation=Self then
          FTargetSmoothAnimation:=nil;
 	inherited Destroy;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
 
 // Assign
@@ -5355,7 +5228,6 @@ begin
       FEndFrame:=TActorAnimation(Source).FEndFrame;
       FReference:=TActorAnimation(Source).FReference;
 	end else inherited;
-
 end;
 
 // GetDisplayName
@@ -5363,9 +5235,6 @@ end;
 function TActorAnimation.GetDisplayName : String;
 begin
 	Result:=Format('%d - %s [%d - %d]', [Index, Name, StartFrame, EndFrame]);
-
-
-
 end;
 
 // FrameCount
@@ -5428,13 +5297,6 @@ begin
       StartFrame:=StartFrame;
       EndFrame:=EndFrame;
    end;
-
-
-
-
-
-
-
 end;
 
 // SetAsString
@@ -5470,7 +5332,6 @@ const
 begin
    Result:=Format('"%s",%d,%d,%s',
                   [FName, FStartFrame, FEndFrame, cAARToString[Reference]]);
-
 end;
 
 // OwnerActor
@@ -5478,24 +5339,6 @@ end;
 function TActorAnimation.OwnerActor : TGLActor;
 begin
    Result:=((Collection as TActorAnimations).GetOwner as TGLActor);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
 
 // MakeSkeletalTranslationStatic
@@ -5503,9 +5346,6 @@ end;
 procedure TActorAnimation.MakeSkeletalTranslationStatic;
 begin
    OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
-
-
-
 end;
 
 // MakeSkeletalRotationDelta
@@ -5539,11 +5379,6 @@ end;
 procedure TActorAnimations.SetItems(index : Integer; const val : TActorAnimation);
 begin
 	inherited Items[index]:=val;
-
-
-
-
-
 end;
 
 // GetItems
@@ -5584,12 +5419,6 @@ end;
 //
 function TActorAnimations.FindFrame(aFrame : Integer;
                         aReference : TActorAnimationReference) : TActorAnimation;
-
-
-
-
-
-
 var
    i : Integer;
 begin
@@ -5628,9 +5457,6 @@ begin
    WriteCRLFString(aStream, IntToStr(Count));
    for i:=0 to Count-1 do
       WriteCRLFString(aStream, Items[i].AsString);
-
-
-
 end;
 
 // LoadFromStream
@@ -5683,9 +5509,6 @@ end;
 constructor TGLAnimationControler.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
-
-
-
 end;
 
 // Destroy
@@ -5694,9 +5517,6 @@ destructor TGLAnimationControler.Destroy;
 begin
    SetActor(nil);
 	inherited Destroy;
-
-
-
 end;
 
 // Notification
@@ -5704,7 +5524,7 @@ end;
 procedure TGLAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (AComponent=FActor) and (Operation=opRemove) then
-      SetActor(nil); 
+      SetActor(nil);
 end;
 
 // DoChange
@@ -5714,14 +5534,6 @@ begin
    if Assigned(FActor) and (AnimationName<>'') then
       FActor.NotifyChange(Self);
 end;
-
-
-
-
-
-
-
-
 
 // SetActor
 //
