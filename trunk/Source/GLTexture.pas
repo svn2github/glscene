@@ -2545,7 +2545,7 @@ begin
    buf:=fileName;
    if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Self, buf);
-   if Assigned(vAFIOCreateFileStream) then begin
+   if ApplicationFileIODefined then begin
       if FileStreamExists(buf) then begin
          ext:=LowerCase(ExtractFileExt(buf));
          for i:=0 to High(vTGraphicFileExtension) do begin
