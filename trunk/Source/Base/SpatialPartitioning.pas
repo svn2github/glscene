@@ -313,6 +313,10 @@ type
     current leaves +-gravy}
     procedure UpdateStructureSize(Gravy : single);
 
+    {: Rebuild tree will change the tree to the newAABB size, and completely
+    rebuild it }
+    procedure RebuildTree(const NewAABB : TAABB);
+
     {: Returns the _total_ AABB in structure }
     function GetAABB : TAABB;
 
@@ -320,7 +324,7 @@ type
     structure requires }
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; virtual;
 
-    constructor Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
+    constructor Create; override;
     destructor Destroy; override;
   published
     {: Root TSectorNode that all others stem from }
@@ -364,6 +368,9 @@ type
   {: Implements octrees}
   TOctreeSpacePartition = class(TSectoredSpacePartition)
   public
+    {: Set size updates the size of the Octree }
+    procedure SetSize(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
+
     {: CreateNewNode creates a new TSPOctreeNode }
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
   end;
@@ -905,7 +912,7 @@ begin
   end;
 end;
 
-constructor TSectoredSpacePartition.Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
+constructor TSectoredSpacePartition.Create;
 begin
   FLeafThreshold := cOctree_LEAF_TRHESHOLD;
   FMaxTreeDepth := cOctree_MAX_TREE_DEPTH;
@@ -913,8 +920,8 @@ begin
   FRootNode := CreateNewNode(nil);
   FAutoGrow := true;
 
-  MakeVector(FRootNode.FAABB.min, XMin, YMin, ZMin);
-  MakeVector(FRootNode.FAABB.max, XMax, YMax, ZMax);
+  {MakeVector(FRootNode.FAABB.min, XMin, YMin, ZMin);
+  MakeVector(FRootNode.FAABB.max, XMax, YMax, ZMax);//}
 
   FGrowGravy := cOctree_GROW_GRAVY;
 
@@ -1049,16 +1056,37 @@ begin
   FMaxTreeDepth := Value;
 end;
 
-procedure TSectoredSpacePartition.UpdateStructureSize(Gravy: single);
+procedure TSectoredSpacePartition.RebuildTree(const NewAABB : TAABB);
 var
   i : integer;
   OldLeaves : TSpacePartitionLeafList;
-  MaxAABB, NewAABB : TAABB;
   AABBSize : TAffineVector;
 begin
   // Delete ALL nodes in the tree
   FRootNode.Free;
 
+  FRootNode := CreateNewNode(nil);
+  FRootNode.FAABB := NewAABB;
+
+  // Insert all nodes again
+  OldLeaves := FLeaves;
+  FLeaves := TSpacePartitionLeafList.Create;
+
+  // This will cause an except if the build goes badly, which is better than
+  // an infinite loop
+  FAutoGrow := false;
+
+  for i := 0 to OldLeaves.Count-1 do
+    AddLeaf(OldLeaves[i]);
+
+  FAutoGrow := true;
+end;
+
+procedure TSectoredSpacePartition.UpdateStructureSize(Gravy: single);
+var
+  MaxAABB, NewAABB : TAABB;
+  AABBSize : TAffineVector;
+begin
   // Create the new extents for the Octree
   MaxAABB := GetAABB;
   AABBSize := VectorSubtract(MaxAABB.max, MaxAABB.min);
@@ -1066,19 +1094,7 @@ begin
   NewAABB.min := VectorSubtract(MaxAABB.min, VectorScale(AABBSize, Gravy));
   NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
 
-  FRootNode := TSectorNode.Create(self, nil);
-  FRootNode.FAABB := NewAABB;
-
-  // Insert all nodes again
-  OldLeaves := FLeaves;
-  FLeaves := TSpacePartitionLeafList.Create;
-
-  FAutoGrow := false;
-
-  for i := 0 to OldLeaves.Count-1 do
-    AddLeaf(OldLeaves[i]);
-
-  FAutoGrow := true;
+  RebuildTree(NewAABB);
 end;
 
 { TSPOctreeNode }
@@ -1144,6 +1160,17 @@ function TOctreeSpacePartition.CreateNewNode(
   aParent: TSectorNode): TSectorNode;
 begin
   result := TSPOctreeNode.Create(self, aParent);
+end;
+
+procedure TOctreeSpacePartition.SetSize(const XMin, YMin, ZMin, XMax, YMax,
+  ZMax: single);
+var
+  AABB : TAABB;
+begin
+  MakeVector(AABB.Min, XMin, YMin, ZMin);
+  MakeVector(AABB.Max, XMax, YMax, ZMax);
+
+  RebuildTree(AABB);
 end;
 
 end.
