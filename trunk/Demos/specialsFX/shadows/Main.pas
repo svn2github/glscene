@@ -9,9 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLMisc, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls,jpeg, glgraphics, VectorTypes, geometry, GLHUDObjects,
-  GLzBuffer, OpenGL12,
-  //GLBehaviours,
-  GLCadencer, AsyncTimer, GLWin32Viewer;
+  GLzBuffer, OpenGL12, GLCadencer, AsyncTimer, GLWin32Viewer;
 
 type
   TMainFm = class(TForm)
@@ -57,7 +55,6 @@ type
     Memo1: TMemo;
     AlphaBar: TTrackBar;
     Label9: TLabel;
-    GLCamera3: TGLCamera;
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -129,9 +126,6 @@ end;
 
 procedure TMainFm.CasterMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
-var  vec : TAffineVector;
-     px,py,pz:single;
-     dpt :single;
 begin
    if Shift<>[] then GLCamera2.MoveAroundTarget(my2-y, mx2-x);
    mx2:=x; my2:=y;

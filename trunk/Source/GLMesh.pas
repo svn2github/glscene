@@ -5,6 +5,7 @@
    implements more efficient (though more complex) mesh tools.<p> 
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
       <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
       <li>21/02/01 - EG - Now XOpenGL based (multitexture)
       <li>30/01/01 - EG - Added VertexList locking
@@ -597,7 +598,7 @@ begin
    inherited;
    if osDirectDraw in ObjectStyle then
       FVertices.EnterLockSection;
-   glPushAttrib(GL_POLYGON_BIT+GL_ENABLE_BIT);
+   glPushAttrib(GL_POLYGON_BIT or GL_ENABLE_BIT or GL_CURRENT_BIT);
    case FVertexMode of
       vmV    : glInterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
       vmVN   : glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData), FVertices.FirstNormal);

@@ -2,13 +2,12 @@
 
    Unit for navigating TGLBaseObjects.<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>18/03/02 - EG - Added MouseLookActive property
+	<b>History : </b><font size=-1><ul>
+      <li>18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
       <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
       <li>15/03/02 - RMCH - Added Mouselook capability.
       <li>09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
 	</ul></font>
-
 }
 unit GLNavigator;
 
@@ -113,7 +112,7 @@ type
      destructor  Destroy; override;
      
      procedure   MouseUpdate;
-     function    MouseLook(deltaTime: double) : Boolean;
+     function    MouseLook : Boolean;
      procedure   MouseLookActiveToggle(q: Boolean);
      procedure   MouseLookActivate;
      procedure   MouseLookDeactivate;
@@ -409,31 +408,31 @@ begin
       else MouseLookDeactivate;
 end;
 
-procedure TGLUserInterface.Mouseupdate;
+procedure TGLUserInterface.MouseUpdate;
 begin
    if FMouseActive then GetCursorPos(point1);
 end;
 
-Function  TGLUserInterface.Mouselook(deltaTime: double) : Boolean;
-var deltaX: single;
-    deltaY: single;
+// Mouselook
+//
+function  TGLUserInterface.Mouselook : Boolean;
+var
+   deltaX, deltaY : Single;
 begin
-   result := False;
+   Result := False;
    if not FMouseActive then exit;
 
    deltax:=(point1.x-midscreenX)*mousespeed;
    deltay:=-(point1.y-midscreenY)*mousespeed;
 
-   if deltax <> 0 then
-   Begin
-     TurnHorizontal(deltax*deltaTime);
+   if deltax <> 0 then begin
+     TurnHorizontal(deltax*0.01);
      result := True;
-   End;
-   if deltay <> 0 then
-   Begin
-     TurnVertical(deltay*deltaTime);
+   end;
+   if deltay <> 0 then begin
+     TurnVertical(deltay*0.01);
      result := True;
-   End;
+   end;
 
    if (point1.x <> midScreenX) or (point1.y <> midScreenY) then
       SetCursorPos(midScreenX, midScreenY);

@@ -5082,7 +5082,7 @@ begin
       FBuffers.Add(aBuffer);
       if FBaseContext=nil then
          FBaseContext:=TGLSceneBuffer(FBuffers[0]).RenderingContext;
-      if FBuffers.Count>1 then
+      if (FBuffers.Count>1) and Assigned(FBaseContext) then
          FBaseContext.ShareLists(aBuffer.RenderingContext);
    end;
 end;
@@ -6659,7 +6659,6 @@ begin
       end;
       if Assigned(ACamera) and Assigned(ACamera.FScene) then begin
          FCamera:=ACamera;
-         FCamera.FScene.AddBuffer(Self);
          FCamera.TransformationChanged;
       end;
       NotifyChange(Self);

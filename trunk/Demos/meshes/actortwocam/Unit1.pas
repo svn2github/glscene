@@ -201,7 +201,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    HandleKeys(deltaTime);
-   GLUserInterface1.Mouselook(deltaTime);
+   GLUserInterface1.Mouselook;
 
    GLSceneViewer1.Invalidate;
    GLUserInterface1.MouseUpdate;

@@ -174,7 +174,11 @@ begin
       if Assigned(FDesigner) then
          if sel then
             FDesigner.SelectComponent(ListView.Selected.Data)
+{$ifndef GLS_DELPHI_4}
          else FDesigner.NoSelection;
+{$else}
+         else FDesigner.SelectComponent(nil);
+{$endif}
 	end;
 end;
 
@@ -283,7 +287,11 @@ procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
 	if ListView.Selected<>nil then begin
       FDesigner.Modified;
+{$ifndef GLS_DELPHI_4}
       FDesigner.NoSelection;
+{$else}
+      FDesigner.SelectComponent(nil);
+{$endif}
 		TXCollectionItem(ListView.Selected.Data).Free;
       ListView.Selected.Free;
       ListViewChange(Self, nil, ctState);
