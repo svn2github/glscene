@@ -5340,6 +5340,7 @@ begin
    ResetGLFrontFace;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
+   rci.scene:=Self;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
    rci.bufferFaceCull:=aBuffer.FaceCulling;
@@ -5573,17 +5574,17 @@ end;
 //
 procedure TGLScene.SetupLights(Maximum: Integer);
 var
-   I: Integer;
+   i : Integer;
    LS: TGLLightSource;
    Max: Integer;
 begin
    glPushMatrix;
    // start searching through all light sources
-   if Maximum < FLights.Count then
+   if Maximum<FLights.Count then
       Max:=Maximum
    else Max:=FLights.Count;
-   for I:=0 to Max - 1 do begin
-      LS:=TGLLightSource(FLights[I]);
+   for i:=0 to Max-1 do begin
+      LS:=TGLLightSource(FLights[i]);
       if Assigned(LS) then with LS do begin
          if Shining then begin
             glEnable(FLightID);
