@@ -97,7 +97,7 @@ type
          procedure Assign(Source: TPersistent); override;
          procedure Clear;
 
-         property Vertices[index : Integer] : TVertexData read GetVertices write SetVertices;
+         property Vertices[index : Integer] : TVertexData read GetVertices write SetVertices; default;
          property VertexCoord[index : Integer] : TAffineVector read GetVertexCoord write SetVertexCoord;
          property VertexNormal[index : Integer] : TAffineVector read GetVertexNormal write SetVertexNormal;
          property VertexTexCoord[index : Integer] : TTexPoint read GetVertexTexCoord write SetVertexTexCoord;
