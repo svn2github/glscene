@@ -537,9 +537,11 @@ type
       private
          { Private Declarations }
          FTexHandle : TGLTextureHandle;
-         Fvx, Fvy : TAffineVector;        // NOT persistent
+         Fvx, Fvy, Fvz : TAffineVector;   // NOT persistent
          FVertices : TAffineVectorList;   // NOT persistent
          FVertBuf : TAffineVectorList;    // NOT persistent
+         FAspectRatio : Single;
+         FRotation : Single;
 
          FColorMode : TSpriteColorMode;
 
@@ -550,6 +552,9 @@ type
 
          procedure BindTexture;
          procedure SetColorMode(const val : TSpriteColorMode);
+         procedure SetAspectRatio(const val : Single);
+         function StoreAspectRatio : Boolean;
+         procedure SetRotation(const val : Single);
 
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
@@ -563,9 +568,17 @@ type
          destructor Destroy; override;
 
          property ColorMode : TSpriteColorMode read FColorMode write SetColorMode;
-         
+
 	   published
 	      { Published Declarations }
+         {: Ratio between width and height.<p>
+            An AspectRatio of 1 (default) will result in square sprite particles,
+            values higher than one will result in horizontally stretched sprites,
+            values below one will stretch vertically (assuming no rotation is applied). }
+         property AspectRatio : Single read FAspectRatio write SetAspectRatio stored StoreAspectRatio;
+         {: Particle sprites rotation (in degrees).<p>
+            All particles of the PFX manager share this rotation. }
+         property Rotation : Single read FRotation write SetRotation; 
    end;
 
    // TGLPointLightPFXManager
@@ -601,7 +614,7 @@ type
             Min value is 3 (size=8), max value is 9 (size=512). }
          property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 5;
 
-         property ColorMode default scmNone;
+         property ColorMode default scmInner;
          property ParticleSize;
          property ColorInner;
          property ColorOuter;
@@ -619,7 +632,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLCrossPlatform, GLState, GLUtils;
+uses SysUtils, OpenGL1x, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
 
 // GetOrCreateSourcePFX
 //
@@ -1999,6 +2012,7 @@ constructor TGLBaseSpritePFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FTexHandle:=TGLTextureHandle.Create;
+   FAspectRatio:=1;
 end;
 
 // Destroy
@@ -2015,6 +2029,33 @@ procedure TGLBaseSpritePFXManager.SetColorMode(const val : TSpriteColorMode);
 begin
    if val<>FColorMode then begin
       FColorMode:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetAspectRatio
+//
+procedure TGLBaseSpritePFXManager.SetAspectRatio(const val : Single);
+begin
+   if FAspectRatio<>val then begin
+      FAspectRatio:=ClampValue(val, 1e-3, 1e3);
+      NotifyChange(Self);
+   end;
+end;
+
+// StoreAspectRatio
+//
+function TGLBaseSpritePFXManager.StoreAspectRatio : Boolean;
+begin
+   Result:=(FAspectRatio<>1);
+end;
+
+// SetRotation
+//
+procedure TGLBaseSpritePFXManager.SetRotation(const val : Single);
+begin
+   if FRotation<>val then begin
+      FRotation:=val;
       NotifyChange(Self);
    end;
 end;
@@ -2059,19 +2100,30 @@ procedure TGLBaseSpritePFXManager.InitializeRendering;
 var
    i : Integer;
    matrix : TMatrix;
-   s, c : Single;
+   s, c, w, h : Single;
 begin
    inherited;
    glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+
+   w:=FParticleSize*Sqrt(FAspectRatio);
+   h:=Sqr(FParticleSize)/w;
+
    for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0]*FParticleSize;
-      Fvy[i]:=matrix[i][1]*FParticleSize;
+      Fvx[i]:=matrix[i][0]*w;
+      Fvy[i]:=matrix[i][1]*h;
+      Fvz[i]:=matrix[i][2];
    end;
+
    FVertices:=TAffineVectorList.Create;
    for i:=0 to 3 do begin
       SinCos(i*cPIdiv2+cPIdiv4, s, c);
-      FVertices.Add(VectorCombine(FVx, Fvy, c, s));
+      FVertices.Add(VectorCombine(Fvx, Fvy, c, s));
    end;
+   if FRotation<>0 then begin
+      matrix:=CreateRotationMatrix(Fvz, -FRotation);
+      FVertices.TransformAsPoints(matrix);
+   end;
+
    FVertBuf:=TAffineVectorList.Create;
    FVertBuf.Count:=FVertices.Count;
 end;
@@ -2085,9 +2137,9 @@ begin
    if ColorMode=scmNone then
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
    else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   ApplyBlendingMode;
    if ColorMode<>scmFade then
       glBegin(GL_QUADS);
-   ApplyBlendingMode;
 end;
 
 // RenderParticle
@@ -2153,9 +2205,9 @@ end;
 //
 procedure TGLBaseSpritePFXManager.EndParticles;
 begin
-   UnapplyBlendingMode;
    if ColorMode<>scmFade then
       glEnd;
+   UnapplyBlendingMode;
    glDisable(GL_TEXTURE_2D);
 end;
 
@@ -2178,7 +2230,7 @@ constructor TGLPointLightPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FTexMapSize:=5;
-   FColorMode:=scmNone;
+   FColorMode:=scmInner;
 end;
 
 // Destroy
