@@ -28,7 +28,6 @@ object Form1: TForm1
     Buffer.FogEnvironment.FogEnd = 650
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
-    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roNoColorBufferClear]
     Buffer.FogEnable = True
     Buffer.Lighting = False
     Align = alClient

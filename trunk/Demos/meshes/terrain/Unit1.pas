@@ -119,7 +119,7 @@ begin
       Add.LoadFromFile('ChillyWind.mp3');
       Add.LoadFromFile('howl.mp3');
    end;
-   // Could've been done at design time, but it the, it hurts the eyes ;)
+   // Could've been done at design time, but then it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Move camera starting point to an interesting hand-picked location
    DummyCube1.Position.X:=570;
