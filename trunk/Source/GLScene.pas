@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/01/02 - Egg - Fixed init of stCullFace in SetupRenderingContext
       <li>07/01/02 - Egg - Added some doc, reduced dependencies, RenderToBitmap fixes
       <li>28/12/01 - Egg - Event persistence change (GliGli / Dephi bug),
                            LoadFromStream fix (noeska)
@@ -730,7 +731,7 @@ type
       the class type is used in parenting optimizations.<p>
       Shall never implement or add any functionality, the "Create" override
       only take cares of disabling the build list. }
-   TGLSceneRootObject = class (TGLCustomSceneObject)
+   TGLSceneRootObject = class (TGLBaseSceneObject)
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -4773,6 +4774,7 @@ begin
    FCurrentBuffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
+   rci.bufferFaceCull:=aBuffer.FaceCulling;
    rci.drawState:=drawState;
    with aBuffer.Camera do begin
       rci.cameraPosition:=aBuffer.FCameraAbsolutePosition;
@@ -5398,7 +5400,7 @@ begin
       glEnable(GL_DEPTH_TEST)
    end else glDisable(GL_DEPTH_TEST);
    if FaceCulling then begin
-      Include(FCurrentStates, stDepthTest);
+      Include(FCurrentStates, stCullFace);
       glEnable(GL_CULL_FACE)
    end else glDisable(GL_CULL_FACE);
    if Lighting then begin
@@ -6132,6 +6134,7 @@ begin
    try
       FRenderDPI:=96; // default value for screen
       ClearGLError;
+      SetupRenderingContext;
       // clear the buffers
       BackColor:=ConvertWinColor(FBackgroundColor);
       glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);

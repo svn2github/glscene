@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
+                          are now Linear/MipMap 
       <li>07/01/02 - EG - Added renderDPI to rci
       <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
       <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
@@ -307,6 +309,7 @@ type
       drawState: TDrawState;
       objectsSorting : TGLObjectsSorting;
       visibilityCulling : TGLVisibilityCulling;
+      bufferFaceCull : Boolean;
       cameraPosition : TVector;
       cameraDirection : TVector;
       modelViewMatrix : PMatrix;
@@ -792,8 +795,8 @@ type
 
 			property ImageAlpha : TGLTextureImageAlpha read FImageAlpha write SetImageAlpha default tiaDefault;
 
-			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maNearest;
-			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miNearest;
+			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
+			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinearMipMapLinear;
 
 			property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
 
@@ -876,6 +879,10 @@ type
       bmAdditive : activates additive blending (with saturation) }
    TBlendingMode = (bmOpaque, bmTransparency, bmAdditive);
 
+   // TFaceCulling
+   //
+   TFaceCulling = (fcBufferDefault, fcCull, fcNoCull);
+
    // TMaterialOptions
    //
    {: Control special rendering options for a material.<p>
@@ -903,6 +910,7 @@ type
          FMaterialLibrary : TGLMaterialLibrary;
          FLibMaterialName : TGLLibMaterialName;
          FMaterialOptions : TMaterialOptions;
+         FFaceCulling : TFaceCulling;
          currentLibMaterial : TGLLibMaterial;
 
 	   protected
@@ -914,6 +922,7 @@ type
          procedure SetTexture(ATexture: TGLTexture);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetLibMaterialName(const val : TGLLibMaterialName);
+         procedure SetFaceCulling(const val : TFaceCulling);
 
 			procedure NotifyLibMaterialDestruction;
 			//: Back, Front, Texture and blending not stored if linked to a LibMaterial
@@ -938,8 +947,9 @@ type
 			property BackProperties: TGLFaceProperties read FBackProperties write SetBackProperties stored StoreMaterialProps;
 			property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
 			property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
-         property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions;
+         property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
 			property Texture: TGLTexture read FTexture write SetTexture stored StoreMaterialProps;
+         property FaceCulling : TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
 
 			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 			property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
@@ -2221,8 +2231,8 @@ begin
 	FImage:=TGLPersistentImage.Create(Self);
    FImage.FOnTextureNeeded:=DoOnTextureNeeded;
 	FImageAlpha:=tiaDefault;
-	FMagFilter:=maNearest;
-	FMinFilter:=miNearest;
+	FMagFilter:=maLinear;
+	FMinFilter:=miLinearMipMapLinear;
    FFilteringQuality:=tfIsotropic;
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
@@ -2826,6 +2836,7 @@ begin
   FBackProperties:=TGLFaceProperties.Create(Self);
   FFrontProperties:=TGLFaceProperties.Create(Self);
   FTexture:=TGLTexture.Create(Self);
+  FFaceCulling:=fcBufferDefault;
 end;
 
 // Destroy
@@ -2870,8 +2881,8 @@ end;
 //
 procedure TGLMaterial.SetMaterialOptions(const val : TMaterialOptions);
 begin
-   if val <> FMaterialOptions then begin
-      FMaterialOptions := val;
+   if val<>FMaterialOptions then begin
+      FMaterialOptions:=val;
    	NotifyChange(Self);
    end;
 end;
@@ -2881,6 +2892,16 @@ end;
 procedure TGLMaterial.SetTexture(ATexture: TGLTexture);
 begin
 	FTexture.Assign(ATexture);
+end;
+
+// SetFaceCulling
+//
+procedure TGLMaterial.SetFaceCulling(const val : TFaceCulling);
+begin
+   if val<>FFaceCulling then begin
+      FFaceCulling:=val;
+   	NotifyChange(Self);
+   end;
 end;
 
 // SetMaterialLibrary
@@ -2941,13 +2962,44 @@ end;
 // Apply
 //
 procedure TGLMaterial.Apply(var rci : TRenderContextInfo);
+
 begin
 	if Assigned(currentLibMaterial) then
 		currentLibMaterial.Apply(rci)
 	else begin
+      // Apply FrontProperties (always)
 		FFrontProperties.Apply(GL_FRONT);
-		if not (stCullFace in rci.currentStates) then
-			FBackProperties.Apply(GL_BACK);
+      // Apply FaceCulling and BackProperties (if needs be)
+      if (stCullFace in rci.currentStates) then begin
+         // currently culling
+         case FFaceCulling of
+            fcBufferDefault : if not rci.bufferFaceCull then begin
+               UnSetGLState(rci.currentStates, stCullFace);
+               FBackProperties.Apply(GL_BACK);
+            end;
+            fcCull : ; // nothing to do
+            fcNoCull : begin
+               UnSetGLState(rci.currentStates, stCullFace);
+               FBackProperties.Apply(GL_BACK);
+            end;
+         else
+            Assert(False);
+         end;
+      end else begin
+         // currently NOT culling
+         case FFaceCulling of
+            fcBufferDefault : begin
+               if rci.bufferFaceCull then
+                  SetGLState(rci.currentStates, stCullFace)
+               else FBackProperties.Apply(GL_BACK);
+            end;
+            fcCull : SetGLState(rci.currentStates, stCullFace);
+            fcNoCull : FBackProperties.Apply(GL_BACK);
+         else
+            Assert(False);
+         end;
+      end;
+      // Apply Blending mode
 		case FBlendingMode of
 			bmOpaque : UnSetGLState(rci.currentStates, stBlend);
 			bmTransparency : begin
@@ -2961,6 +3013,7 @@ begin
       else
          Assert(False);
 		end;
+      // Fog switch
       if moIgnoreFog in MaterialOptions then begin
          if stFog in rci.currentStates then begin
             UnSetGLState(rci.currentStates, stFog);
@@ -2978,7 +3031,7 @@ begin
 	if Assigned(currentLibMaterial) then
 		currentLibMaterial.UnApply(rci)
    else begin
-      if (moIgnoreFog in MaterialOptions) then begin
+      if moIgnoreFog in MaterialOptions then begin
          if rci.fogDisabledCounter>0 then begin
             Dec(rci.fogDisabledCounter);
             if rci.fogDisabledCounter=0 then
