@@ -4470,7 +4470,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      Items[i].AddToTriangles(aList, aTexCoords);
+      Items[i].AddToTriangles(aList, aTexCoords, aNormals);
 end;
 
 // MaterialLibrary
