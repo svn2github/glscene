@@ -31,6 +31,9 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/10/04 - EG - Added ALLOW_DELAYED_CHUNK_RELEASE, dropped
+                          ASSUME_MULTI_THREADED (now always assumed, benefits
+                          weren't high enough)
       <li>13/10/04 - EG - Added ALLOW_BENCHMARKING and cReallocUpSizing,
                           + bug fix when ReallocMem can't GetMem (David Christensen)
       <li>30/08/04 - EG - 3GB support contributed by David Christensen
@@ -107,11 +110,13 @@ uses Windows;
 // only be used for testing or if memory integrity is of primary importance
 {.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
 
-// If set RecyclerMM will assume that the application is multithreaded and won't
-// check the value of System.IsMultiThread. This may improve performance in
-// purely multi-threaded situations, but will degrade performance in
-// single-threaded applications
-{.$define ASSUME_MULTI_THREADED}
+// If set empty chunk batches will be released in a cleanup thread,
+// this can improve performance as blocks will linger a bit before being
+// returned to the OS, but will temporarily increase memory consumption
+// (should be harmless most of the time, as the memory is still usable
+// by your application, just not usable for other applications until the
+// cleanup delay of 50 ms has expired)
+{$define ALLOW_DELAYED_CHUNK_RELEASE}
 
 // If set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
@@ -121,7 +126,7 @@ uses Windows;
 
 // If set RMMUsageSnapShot functions will be available.
 // These functions allow generating a diagnostic and memory map report
-{.$define ALLOW_USAGE_SNAPSHOT}
+{$define ALLOW_USAGE_SNAPSHOT}
 
 // If set benchmarking will happen and track number of call and their duration
 // This has a performance penalty though, and may inflate memory management
@@ -231,7 +236,7 @@ const
    // If you really need the extra 64 kB and now that your code will never be
    // run in /3GB mode then you can reduce this to 32767.
    // The actual limit of the memmap is in vMemMapUpper.
-   cMemMapUpperMax = 49151 ;
+   cMemMapUpperMax = 49151;
    // Now the two we chose between to use as the actual limit within the array
    cMemMapUpper2GB = 32767;
    cMemMapUpper3GB = 49151;
@@ -264,7 +269,7 @@ type
       // Usage
       BenchRGetMem : TRMMUsageBench;
       BenchRReallocMem : TRMMUsageBench;
-      BenchRFreeMem : TRMMUsageBench;
+      BenchRFreeMem : TRMMUsageBench; 
    end;
    PRMMUsageSnapShot = ^TRMMUsageSnapShot;
 
@@ -374,7 +379,8 @@ type
       Lock : TRTLCriticalSection;
       Index, Size : Cardinal;
       First, Last : PSMBManager;
-      padding : array [1..24] of Byte; // pad to 64 bytes size
+      DelayedCleanup : LongBool;
+      padding : array [1..20] of Byte; // pad to 64 bytes size
    end;
    PSMBInfo = ^TSMBInfo;
 
@@ -567,8 +573,6 @@ end;
 //
 procedure ReleaseRMMChunkBatch(batch : PRMMChunkBatch);
 begin
-   if batch.ChunkAllocated<>0 then
-      RaiseRMMException('SMBChunk release detected incoherency');
    Dec(vTotalVirtualAllocated, cRMMChunkBatchSize);
    VirtualFree(batch.Chunks[0], 0, MEM_RELEASE);
    HeapFree(GetProcessHeap, 0, batch);
@@ -581,13 +585,13 @@ var
    i, n : Integer;
    iter, next : PRMMChunkBatch;
 label
-   lblExitOnError;
+   lblExit;
 begin
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
+   if chunkSize<=(64*1024) then begin
+   
       EnterCriticalSection(vRMMBatchesLock);
 
-   if chunkSize<=(64*1024) then begin
-      // this will be 64kB chunk, coming from chunk batches
+      // this will be a 64kB chunk, coming from chunk batches
       // locate a batch with capacity
       iter:=vRMMChunkBatches;
       while iter.ChunkAllocated=cRMMChunkBatchFullMask do begin
@@ -595,32 +599,34 @@ begin
          if next=nil then begin
             // allocate a new batch
             next:=AllocateRMMChunkBatch;
-            if next=nil then begin
-               Result:=nil;
-               goto lblExitOnError;
+            if next<>nil then begin
+               next.Prev:=iter;
+               iter.Next:=next;
             end;
-            next.Prev:=iter;
-            iter.Next:=next;
             iter:=next;
             Break;
          end else iter:=next;
       end;
       // locate a free chunk in the batch
-      i:=1;
-      n:=0;
-      while n<cRMMChunkBatchAllocSize do begin
-         if (iter.ChunkAllocated and i)=0 then begin
-            batch:=iter;
-            Result:=iter.Chunks[n];
-            iter.ChunkAllocated:=iter.ChunkAllocated+i;
-            goto lblExitOnError;
-         end else begin
-            i:=i shl 1;
-            Inc(n);
+      Result:=nil;
+      if iter<>nil then begin
+         i:=1;
+         n:=0;
+         while n<cRMMChunkBatchAllocSize do begin
+            if (iter.ChunkAllocated and i)=0 then begin
+               batch:=iter;
+               Result:=iter.Chunks[n];
+               iter.ChunkAllocated:=iter.ChunkAllocated+i;
+               Break;
+            end else begin
+               i:=i shl 1;
+               Inc(n);
+            end;
          end;
       end;
-      RaiseRMMException('SMBChunk allocation failure');
-      Result:=nil;
+      
+      LeaveCriticalSection(vRMMBatchesLock);
+
    end else begin
       // larger chunk, allocated directly from the WinAPI (for the time being)
       batch:=nil;
@@ -629,9 +635,6 @@ begin
       if Result<>nil then
          Inc(vTotalVirtualAllocated, chunkSize);
    end;
-lblExitOnError:
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      LeaveCriticalSection(vRMMBatchesLock);
 end;
 
 // ReleaseRMMChunk
@@ -640,26 +643,28 @@ procedure ReleaseRMMChunk(chunk : Pointer; batch : PRMMChunkBatch; chunkSize : C
 var
    n : Integer;
 begin
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
+   if batch<>nil then begin
+
       EnterCriticalSection(vRMMBatchesLock);
 
-   if batch<>nil then begin
       // locate the batch containing the chunk
       n:=(Cardinal(chunk)-Cardinal(batch.Chunks[0])) div cSMBChunkSize;
       batch.ChunkAllocated:=batch.ChunkAllocated-(1 shl n);
+      {$ifndef ALLOW_DELAYED_CHUNK_RELEASE}
       if (batch.ChunkAllocated=0) and (batch.Prev<>nil) then begin
          batch.Prev.Next:=batch.Next;
          if batch.Next<>nil then
             batch.Next.Prev:=batch.Prev;
          ReleaseRMMChunkBatch(batch);
       end;
+      {$endif}
+
+      LeaveCriticalSection(vRMMBatchesLock);
+      
    end else begin
       Dec(vTotalVirtualAllocated, chunkSize);
       VirtualFree(chunk, 0, MEM_RELEASE);
    end;
-
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      LeaveCriticalSection(vRMMBatchesLock);
 end;
 
 // AllocateLGB
@@ -673,6 +678,7 @@ begin
    // Spawn manager, allocate block
    Result:=RGetMem(SizeOf(TLGBManager));
    if Result=nil then Exit;
+   
    Result.Signature:=cLGBSignature;
    blkSize:=(Size and $FFFF0000);
    if (Size and $FFFF)<>0 then
@@ -694,10 +700,11 @@ begin
       Result.ReallocDownSizingSize:=cSMBMaxSize;
    Inc(vTotalVirtualAllocated, blkSize);
    Result.DataSize:=Size;
+   
    // Add in hash table
    hash:=((Cardinal(Result) shr 2) xor (Cardinal(Result) shr 19)) and $FF;
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      EnterCriticalSection(vLGBLock);
+   
+   EnterCriticalSection(vLGBLock);
 
    head:=vLGBManagers[hash];
    if head<>nil then
@@ -706,8 +713,7 @@ begin
    Result.Prev:=nil;
    vLGBManagers[hash]:=Result;
 
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      LeaveCriticalSection(vLGBLock);
+   LeaveCriticalSection(vLGBLock);
       
    UpdateMemoryMap(Result.BlockStart, Result.BlockSize, Result);
 end;
@@ -719,6 +725,7 @@ var
    hash : Integer;
 begin
    UpdateMemoryMap(manager.BlockStart, manager.BlockSize, nil);
+
    // Free block
    Dec(vTotalVirtualAllocated, manager.BlockSize);
    if manager.ChunkBatch=nil then
@@ -726,8 +733,8 @@ begin
    else ReleaseRMMChunk(manager.BlockStart, manager.ChunkBatch, manager.BlockSize);
    // Remove from hash table
    hash:=((Cardinal(manager) shr 2) xor (Cardinal(manager) shr 19)) and $FF;
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      EnterCriticalSection(vLGBLock);
+
+   EnterCriticalSection(vLGBLock);
 
    if manager.Prev=nil then
       vLGBManagers[hash]:=manager.Next
@@ -735,8 +742,7 @@ begin
    if manager.Next<>nil then
       manager.Next.Prev:=manager.Prev;
 
-   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-      LeaveCriticalSection(vLGBLock);
+   LeaveCriticalSection(vLGBLock);
       
    RFreeMem(manager);
 end;
@@ -1077,17 +1083,12 @@ end;
 //
 procedure ReleaseSMB(manager : PSMBManager);
 begin
-   if manager.Next<>nil then begin
-      manager.Next.Prev:=manager.Prev;
-      if manager.Prev<>nil then
-         manager.Prev.Next:=manager.Next
-      else manager.SMBInfo.First:=manager.Next;
-   end else begin
-      manager.SMBInfo.Last:=manager.Prev;
-      if manager.Prev<>nil then
-         manager.Prev.Next:=manager.Next
-      else manager.SMBInfo.First:=nil;
-   end;
+   if manager.Next<>nil then
+      manager.Next.Prev:=manager.Prev
+   else manager.SMBInfo.Last:=manager.Prev;
+   if manager.Prev<>nil then
+      manager.Prev.Next:=manager.Next
+   else manager.SMBInfo.First:=manager.Next;
 
    UpdateMemoryMap(manager.BlockStart, manager.ChunkSize, nil);
 
@@ -1211,8 +1212,7 @@ begin
       smbIndex:=SMBSizeToIndex(Size);
       smbInfo:=@vSMBs[smbIndex];
       
-      {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-         EnterCriticalSection(smbInfo.Lock);
+      EnterCriticalSection(smbInfo.Lock);
 
       manager:=smbInfo.First;
       if manager=nil then begin
@@ -1242,8 +1242,7 @@ begin
       Result:=Pointer(Cardinal(manager.BlockStart)+blkID*manager.BlockSize);
 
 lblExitWhenOutOfMemory:
-      {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-         LeaveCriticalSection(smbInfo.Lock);
+      LeaveCriticalSection(smbInfo.Lock);
    end else begin
       // Large blocks
       lgbManager:=AllocateLGB(Size);
@@ -1284,8 +1283,7 @@ begin
          // Small block release logic
          smbInfo:=manager.SMBInfo;
 
-         {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-            EnterCriticalSection(smbInfo.Lock);
+         EnterCriticalSection(smbInfo.Lock);
 
          BlockOffsetToBlockIndex(P, manager, blkID);
          locBlkID:=blkID;  // hints compiler it can place blkID in a register!
@@ -1294,8 +1292,7 @@ begin
             {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
             if n>0 then for i:=n-1 downto 0 do begin
                if manager.BlockOffsets[i]=locBlkID then begin
-                  {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-                     LeaveCriticalSection(smbInfo.Lock);
+                  LeaveCriticalSection(smbInfo.Lock);
                   Result:=-1;
                   goto lblRFreeMemExit;
                end;
@@ -1312,14 +1309,20 @@ begin
                      MakeSMBTopMost(manager);
             end else begin
                // topmost manager can't die
+               {$ifndef ALLOW_DELAYED_CHUNK_RELEASE}
                if (manager.Prev<>nil) or (smbInfo.Index>cSMBRange1Offset) then
                   ReleaseSMB(manager);
+               {$else}
+               smbInfo.DelayedCleanup:=True;
+               if n>smbInfo.First.NbFreeBlockOffset then
+                  MakeSMBTopMost(manager);
+               {$endif}
             end;
-
-            {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
-               LeaveCriticalSection(smbInfo.Lock);
             Result:=0;
          end else Result:=-1;
+
+         LeaveCriticalSection(smbInfo.Lock);
+
       end else if manager.Signature=cLGBSignature then begin
          // Large block
          lgbManager:=PLGBManager(manager);
@@ -1563,6 +1566,8 @@ begin
    for i:=Low(vSMBs) to High(vSMBs) do
       while vSMBs[i].First<>nil do
          ReleaseSMB(vSMBs[i].First);
+   if vRMMChunkBatches.ChunkAllocated<>0 then
+      RaiseRMMException('SMBChunk release detected incoherency');
    ReleaseRMMChunkBatch(vRMMChunkBatches);
    {$ifdef SECURE_MEMORYMAP}
    VirtualFree(vMemoryMap, 0, MEM_RELEASE);
@@ -1757,7 +1762,7 @@ begin
    try
       Result.BenchRGetMem:=vBenchRGetMem;
       Result.BenchRReallocMem:=vBenchRReallocMem;
-      Result.BenchRFreeMem:=vBenchRFreeMem;
+      Result.BenchRFreeMem:=vBenchRFreeMem; 
 
       Result.NbMapItems:=vMemMapUpper +1;
       Result.TotalVirtualAllocated:=vTotalVirtualAllocated;
@@ -1892,6 +1897,74 @@ begin
 end;
 {$endif} // ALLOW_USAGE_SNAPSHOT
 
+//
+// Cleanup thread
+//
+var
+   vCleanupThreadID : Cardinal;
+
+{$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
+function CleanupThreadProc(parameter : Pointer): Integer;
+var
+   i : Integer;
+   chunkBatch, nextBatch : PRMMChunkBatch;
+   smbInfo : PSMBInfo;
+   manager, nextManager : PSMBManager;
+begin
+   while vCleanupThreadID<>0 do begin
+
+      // cleanup empty
+      for i:=Low(vSMBs) to High(vSMBs) do begin
+         smbInfo:=@vSMBs[i];
+         if smbInfo.DelayedCleanup then begin
+            EnterCriticalSection(smbInfo.Lock);
+
+            smbInfo.DelayedCleanup:=False;
+            manager:=smbInfo.First;
+            while Assigned(manager) do begin
+               nextManager:=manager.Next;
+               if manager.NbFreeBlockOffset=manager.MaxFreeBlockOffset then
+                  ReleaseSMB(manager);
+               manager:=nextManager;
+            end;
+
+            LeaveCriticalSection(smbInfo.Lock);
+         end;
+      end;
+
+      // Cleanup unused chunk batches
+      EnterCriticalSection(vRMMBatchesLock);
+      chunkBatch:=vRMMChunkBatches.Next;
+      while Assigned(chunkBatch) do begin
+         nextBatch:=chunkBatch.Next;
+         if chunkBatch.ChunkAllocated=0 then begin
+            chunkBatch.Prev.Next:=nextBatch;
+            if nextBatch<>nil then
+               nextBatch.Prev:=chunkBatch.Prev;
+            ReleaseRMMChunkBatch(chunkBatch);
+         end;
+         chunkBatch:=nextBatch;
+      end;
+      LeaveCriticalSection(vRMMBatchesLock);
+
+      Sleep(50);
+   end;
+   Result:=0;
+   EndThread(Result);
+end;
+
+procedure StartCleanupThread;
+begin
+   Assert(vCleanupThreadID=0);
+   BeginThread(nil, 0, @CleanupThreadProc, nil, 0, vCleanupThreadID);
+end;
+{$endif}
+
+procedure StopCleanupThread;
+begin
+   vCleanupThreadID:=0;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1907,7 +1980,7 @@ initialization
    // detect if in 3GB mode
    MemStatus.dwLength := 32;
    GlobalMemoryStatus(MemStatus);
-   vRunningIn3GBMode:= (MemStatus.dwTotalVirtual>$80000000 );
+   vRunningIn3GBMode:= (MemStatus.dwTotalVirtual>$80000000);
    if vRunningIn3GBMode then
       vMemMapUpper := cMemMapUpper3GB
    else vMemMapUpper := cMemMapUpper2GB;
@@ -1956,9 +2029,13 @@ initialization
 
 {$ifdef AUTO_BIND}
    BindRMM;
+   {$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
+   StartCleanupThread;
+   {$endif}
 
 finalization
 
+   StopCleanupThread;
    UnBindRMM;
 {$endif}
 
