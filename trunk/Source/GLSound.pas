@@ -3,6 +3,7 @@
 	Base classes and interface for GLScene Sound System<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/03/02 - EG - TGLBSoundEmitter.Loaded
       <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
       <li>13/01/01 - EG - Added CPUUsagePercent
       <li>09/06/00 - EG - Various enhancements
@@ -450,6 +451,7 @@ type
 			{ Protected Declarations }
 			procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
+         procedure Loaded; override;
 
          procedure SetSource(const val : TGLBaseSoundSource);
          procedure SetPlaying(const val : Boolean);
@@ -1622,9 +1624,16 @@ begin
       ReadInteger; // ignore archiveVersion
       FSource.ReadFromFiler(reader);
       FPlaying:=ReadBoolean;
-      if not (csDesigning in OwnerBaseSceneObject.ComponentState) then
-         SetPlaying(FPlaying);
    end;
+end;
+
+// Loaded
+//
+procedure TGLBSoundEmitter.Loaded;
+begin
+   inherited;
+   if not (csDesigning in OwnerBaseSceneObject.ComponentState) then
+      SetPlaying(FPlaying);
 end;
 
 // FriendlyName
