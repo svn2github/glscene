@@ -487,13 +487,11 @@ end;
 //
 
 function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-var
+//var
 //   triList : TAffineVectorList;
 //   m1to2, m2to1 : TMatrix;
 //   i:integer;
-   v:TVector;
 begin
-   result:= false;
    if (obj2 is TGLFreeForm) then begin
       //check if we are initialized correctly
       if not Assigned(TGLFreeForm(obj2).Octree) then
