@@ -61,6 +61,8 @@
 
   Change history
 
+  2003.09.01 - EG - TriCollider bindings now dynamic to allow use of unit in Delphi5
+                    (compatibility with other platforms unknow)
   2003.07.23 - CH - New single dll, now handles Plane2D
   2003.07.18 - CH - Added set and get UniversalParam, new dll deployed
   2003.07.07 - MF - DelphiODE now defaults to Single precision, because TriMesh
@@ -145,9 +147,9 @@ type
 
   {$ifdef cSINGLE}
     {$define cTRILIST} // Use TriList (currently only exists in single dll)
-    TdReal = single;
+    TdReal = Single;
   {$else}
-    TdReal = double;
+    TdReal = Double;
   {$endif}
 
   PdReal = ^TdReal;
@@ -814,8 +816,6 @@ enum {
     // dParamGroup * 2 + dParamBounce = dParamBounce2
     dParamGroup: TJointParams = $100;
 
-
-  {$ifdef cTRILIST}
   type
     // Tri-list collider
     TdIntegerArray = array[0..65535] of Integer;
@@ -823,7 +823,6 @@ enum {
 
     TdVector3Array = array[0..65535] of TdVector3;
     PdVector3Array = ^TdVector3Array;
-  {$endif}
 
 { TODO :
 // How does one import integers?
@@ -1174,19 +1173,18 @@ dWtoDQ}
   procedure dMassSetCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
 
   //----- dTrilistCollider -----
-  {$ifdef cTRILIST}
   function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
-  function EXT_dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriMesh';
+var
+   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;// external ODEDLL name 'dCreateTriMesh';
 
-  procedure dGeomTriMeshDataBuild(g: PdxTriMeshData; Vertices: pointer; VertexStride : integer; VertexCount : integer; Indices: pointer; IndexCount, TriStride : integer) cdecl; external ODEDLL;
-  procedure dGeomTriMeshDataBuildSimple(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external ODEDLL;
+   dGeomTriMeshDataBuild : procedure(g: PdxTriMeshData; Vertices: pointer; VertexStride : integer; VertexCount : integer; Indices: pointer; IndexCount, TriStride : integer) cdecl;
+   dGeomTriMeshDataBuildSimple : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
 
-  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external ODEDLL;
-  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external ODEDLL;
+   dGeomTriMeshDataCreate: function : PdxTriMeshData; cdecl;
+   dGeomTriMeshDataDestroy : procedure(g: PdxTriMeshData); cdecl;
 
-  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external ODEDLL;
-  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external ODEDLL;
-  {$endif}
+   dGeomTriMeshGetTriangle : procedure(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl;
+   dGeomTriMeshGetPoint : procedure(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl;
 
   //----- Rotation.h -----
   procedure dQFromAxisAndAngle (var q : TdQuaternion; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
@@ -1561,17 +1559,13 @@ begin
 {$ENDIF}
 end;
 
-{$ifdef cTRILIST}
 function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
-
 begin
   result := EXT_dCreateTriMesh(Space, Data, Callback, ArrayCallback, RayCallback);
 
   if dTriMeshClass=-1 then
     dTriMeshClass := dGeomGetClass(result);
 end;
-{$endif}
-
 
 {function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
 begin
@@ -1641,4 +1635,43 @@ begin
   Assert(dGeomGetBody(Geom)=Geom.Body, 'Geom test 2 fails');
   Assert(Geom.Data=pointer(-1), 'Geom test 3 fails');
 end;
+
+var
+   vODEHandle : Integer;
+
+procedure InitODE;
+begin
+  {$ifdef Win32}
+   vODEHandle:=LoadLibrary(ODEDLL);
+  {$endif}
+
+  {$ifdef LINUX}
+   vODEHandle:=dlopen(ODEDLL, RTLD_GLOBAL or RTLD_LAZY); // UNTESTED
+  {$endif}
+
+   EXT_dCreateTriMesh:=GetProcAddress(vODEHandle, 'dCreateTriMesh');
+
+   dGeomTriMeshDataBuild:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataBuild');
+   dGeomTriMeshDataBuildSimple:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataBuildSimple');
+
+   dGeomTriMeshDataCreate:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataCreate');
+   dGeomTriMeshDataDestroy:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataDestroy');
+
+   dGeomTriMeshGetTriangle:=GetProcAddress(vODEHandle, 'dGeomTriMeshGetTriangle');
+   dGeomTriMeshGetPoint:=GetProcAddress(vODEHandle, 'dGeomTriMeshGetPoint');
+end;
+
+procedure CloseODE;
+begin
+   FreeLibrary(vODEHandle);
+end;
+
+initialization
+
+   InitODE;
+
+finalization
+
+   CloseODE;
+
 end.
