@@ -8,7 +8,7 @@
    recompiled.<p>
    
    There are a couple of procedures that the active script will
-   recognize and execute while active. The OnBegineProgram and
+   recognize and execute while active. The OnBeginProgram and
    OnProgress procedures. If these procedures are found in the
    compiled program it will call them from the behaviour. The
    OnBeginProgram is called when the program starts, just after
