@@ -214,7 +214,7 @@ begin
   else
     EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
 
-  EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
+  //EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
 
   // VerletWorld.Nodes[0].NailedDown := true;
 

@@ -268,6 +268,9 @@ type
 
       public
 			{ Public Declarations }
+         constructor Create(const aOwner : TVerletWorld); override;
+         destructor Destroy; override;
+
          procedure RemoveNode(const aNode : TVerletNode); override;
          procedure BeforeIterations; override;
 
@@ -470,6 +473,7 @@ type
          FCurrentStepCount: integer;
          FUpdateSpacePartion: TUpdateSpacePartion;
          FCollisionConstraintTypes: TCollisionConstraintTypesSet;
+    FConstraintsWithBeforeIterations: TVerletConstraintList;
 
 		protected
 			{ Protected Declarations }
@@ -513,6 +517,7 @@ type
          property Iterations : Integer read FIterations write FIterations;
          property Nodes : TVerletNodeList read FNodes;
          property Constraints : TVerletConstraintList read FConstraints;
+         property ConstraintsWithBeforeIterations : TVerletConstraintList read FConstraintsWithBeforeIterations;
 
          property SimTime : Single read FSimTime write FSimTime;
          property MaxDeltaTime : Single read FMaxDeltaTime write FMaxDeltaTime;
@@ -1202,6 +1207,7 @@ begin
    FDrag:=0.01;
    FNodes:=TVerletNodeList.Create;
    FConstraints:=TVerletConstraintList.Create;
+   FConstraintsWithBeforeIterations:=TVerletConstraintList.Create;
    FForces:=TVerletForceList.Create;
    FMaxDeltaTime:=0.02;
    FIterations:=3;
@@ -1236,6 +1242,7 @@ begin
       Free;
    end;
    FreeAndNil(FForces);
+   FreeAndNil(FConstraintsWithBeforeIterations);
 
    for i := 0 to FSolidEdges.Count-1 do
     FSolidEdges[i].Free;
@@ -1457,12 +1464,10 @@ var
    i, j : Integer;
    Constraint : TVerletConstraint;
 begin
-   for i:=0 to FConstraints.Count-1 do
+   for i:=0 to FConstraintsWithBeforeIterations.Count-1 do
    begin
-     Constraint := FConstraints[i];
-     if not (Constraint is TVCStick) and
-        Constraint.Enabled then//}
-      Constraint.BeforeIterations;
+     Constraint := FConstraintsWithBeforeIterations[i];
+     Constraint.BeforeIterations;
    end;
 
    if UpdateSpacePartion=uspEveryFrame then
@@ -2354,6 +2359,20 @@ end;
 procedure TVerletGlobalFrictionConstraintSphere.UpdateCachedBSphere;
 begin
   FCachedBSphere := GetBSphere;
+end;
+
+constructor TVerletGlobalConstraint.Create(const aOwner: TVerletWorld);
+begin
+  inherited;
+  aOwner.ConstraintsWithBeforeIterations.Add(self);
+end;
+
+destructor TVerletGlobalConstraint.Destroy;
+begin
+  if Assigned(Owner) then
+    Owner.ConstraintsWithBeforeIterations.Remove(self);
+
+  inherited;
 end;
 
 end.
