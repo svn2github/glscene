@@ -3,6 +3,7 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/02/02 - EG - Added TBaseList.UseMemory
       <li>20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
       <li>06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
       <li>04/12/01 - EG - Added TIntegerList.IndexOf
@@ -33,8 +34,9 @@ type
          { Private Declarations }
 			FCount : Integer;
 			FCapacity : Integer;
-			FGrowthDelta : integer;
+			FGrowthDelta : Integer;
          FBufferItem : PByteArray;
+         FExternalMemory : Boolean;
 
 		protected
          { Protected Declarations }
@@ -60,6 +62,12 @@ type
 
          procedure AddNulls(nbVals : Integer);
          procedure AdjustCapacityToAtLeast(const size : Integer);
+         {: Tell the list to use the specified range instead of its own.<p>
+            rangeCapacity should be expressed in bytes.<p>
+            The allocated memory is NOT managed by the list, current content
+            if copied to the location, if the capacity is later changed, regular
+            memory will be allocated, and the specified range no longer used. }
+         procedure UseMemory(rangeStart : Pointer; rangeCapacity : Integer);
          procedure Clear;
 
          procedure Delete(Index : Integer);
@@ -139,6 +147,7 @@ type
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
 			function  Add(const item : TTexPoint) : Integer; overload;
 			function  Add(const x, y, z : Single) : Integer; overload;
+			function  Add(const x, y, z : Integer) : Integer; overload;
          procedure Add(const list : TAffineVectorList); overload;
 			procedure Push(const val : TAffineVector);
 			function  Pop : TAffineVector;
@@ -221,12 +230,16 @@ type
 
 			function Add(const item : TTexPoint) : Integer; overload;
 			function Add(const texS, texT : Single) : Integer; overload;
+			function Add(const texS, texT : Integer) : Integer; overload;
 			procedure Push(const val : TTexPoint);
 			function  Pop : TTexPoint;
 			procedure Insert(Index: Integer; const item : TTexPoint);
 
 			property Items[Index: Integer] : TTexPoint read Get write Put; default;
 			property List: PTexPointArray read FList;
+
+         procedure Translate(const delta : TTexPoint);
+         procedure ScaleAndTranslate(const scale, delta : TTexPoint);
 	end;
 
   	// TIntegerList
@@ -265,7 +278,7 @@ type
 
          {: Adds count items in an arithmetic serie.<p>
             Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
-         procedure AddSerie(const aBase, aDelta, aCount : Integer);
+         procedure AddSerie(aBase, aDelta, aCount : Integer);
          {: Returns the maximum integer item, zero if list is empty. }
          function MaxInteger : Integer;
          {: Sort items in ascending order. }
@@ -469,11 +482,15 @@ end;
 
 // SetCapacity
 //
-procedure TBaseList.SetCapacity(NewCapacity: Integer);
+procedure TBaseList.SetCapacity(newCapacity: Integer);
 begin
-	if NewCapacity <> FCapacity then	begin
-		ReallocMem(FBaseList, NewCapacity * FItemSize);
-		FCapacity:=NewCapacity;
+	if newCapacity<>FCapacity then	begin
+      if FExternalMemory then begin
+         FExternalMemory:=True;
+         FBaseList:=nil;
+      end;
+		ReallocMem(FBaseList, newCapacity*FItemSize);
+		FCapacity:=newCapacity;
 	end;
 end;
 
@@ -502,6 +519,23 @@ begin
    if not Assigned(FBufferItem) then
       GetMem(FBufferItem, FItemSize);
    Result:=FBufferItem;
+end;
+
+// UseMemory
+//
+procedure TBaseList.UseMemory(rangeStart : Pointer; rangeCapacity : Integer);
+begin
+   rangeCapacity:=rangeCapacity div FItemSize;
+   if rangeCapacity<FCount then Exit;
+   // transfer data
+   Move(FBaseList^, rangeStart^, FCount*FItemSize);
+   if not FExternalMemory then begin
+      FreeMem(FBaseList);
+      FExternalMemory:=True;
+   end;
+   FBaseList:=rangeStart;
+   FCapacity:=rangeCapacity;
+   SetCapacity(FCapacity); // notify subclasses
 end;
 
 // Clear
@@ -780,6 +814,21 @@ begin
 	v[2]:=z;
 end;
 
+// Add (3 ints)
+//
+function TAffineVectorList.Add(const x, y, z : Integer) : Integer;
+var
+   v : PAffineVector;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   v:=@List[Result];
+   v[0]:=x;
+	v[1]:=y;
+	v[2]:=z;
+  	Inc(FCount);
+end;
+
 // Add
 //
 procedure TAffineVectorList.Add(const list : TAffineVectorList);
@@ -901,7 +950,7 @@ begin
    if nb>FCount then
       nb:=FCount;
 {$ENDIF}
-   VectorArrayAdd(@FList[index], delta, nb-index-1, @FList[index]);
+   VectorArrayAdd(@FList[index], delta, nb-index, @FList[index]);
 end;
 
 // Normalize
@@ -1111,6 +1160,19 @@ begin
   	Inc(FCount);
 end;
 
+// Add
+//
+function TTexPointList.Add(const texS, texT : Integer) : Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   with FList^[Result] do begin
+      s:=texS;
+      t:=texT;
+   end;
+  	Inc(FCount);
+end;
+
 // Get
 //
 function TTexPointList.Get(Index: Integer): TTexPoint;
@@ -1171,6 +1233,20 @@ begin
 	end else Result:=NullTexPoint;
 end;
 
+// Translate
+//
+procedure TTexPointList.Translate(const delta : TTexPoint);
+begin
+   TexPointArrayAdd(List, delta, FCount, FList);
+end;
+
+// ScaleAndTranslate
+//
+procedure TTexPointList.ScaleAndTranslate(const scale, delta : TTexPoint);
+begin
+   TexPointArrayScaleAndAdd(FList, delta, FCount, scale, FList);
+end;
+
 // ------------------
 // ------------------ TIntegerList ------------------
 // ------------------
@@ -1208,22 +1284,28 @@ end;
 // Add (two at once)
 //
 procedure TIntegerList.Add(const i1, i2 : Integer);
+var
+   list : PIntegerArray;
 begin
   	Inc(FCount, 2);
    while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
-	FList[FCount-2]:=i1;
-	FList[FCount-1]:=i2;
+   list:=@FList[FCount-3];
+	list[0]:=i1;
+	list[1]:=i2;
 end;
 
 // Add (three at once)
 //
 procedure TIntegerList.Add(const i1, i2, i3 : Integer);
+var
+   list : PIntegerArray;
 begin
   	Inc(FCount, 3);
    while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
-	FList[FCount-3]:=i1;
-	FList[FCount-2]:=i2;
-	FList[FCount-1]:=i3;
+   list:=@FList[FCount-3];
+	list[0]:=i1;
+	list[1]:=i2;
+	list[2]:=i3;
 end;
 
 // Add (list)
@@ -1315,16 +1397,19 @@ end;
 
 // AddSerie
 //
-procedure TIntegerList.AddSerie(const aBase, aDelta, aCount : Integer);
+procedure TIntegerList.AddSerie(aBase, aDelta, aCount : Integer);
 var
-   i, v : Integer;
+   list : PIntegerArray;
+   i, dList : Integer;
 begin
    if aCount<=0 then Exit;
    AdjustCapacityToAtLeast(Count+aCount);
-   v:=aBase;
+   dList:=aDelta*SizeOf(Integer);
+   list:=FList;
    for i:=Count to Count+aCount-1 do begin
-      FList^[i]:=v;
-      Inc(v, aDelta);
+      list[0]:=aBase;
+      list:=PIntegerArray(Integer(list)+dList);
+      aBase:=aBase+aDelta;
    end;
    FCount:=Count+aCount;
 end;
