@@ -81,7 +81,7 @@ end;
 
 procedure TForm1.TBXYPositionChange(Sender: TObject);
 begin
-   XYGrid.ZSamplingScale.Origin:=(TBXYPosition.Position/10);
+   XYGrid.ZSamplingScale.Origin:=-(TBXYPosition.Position/10);
 end;
 
 // following code takes care of camera movement, see camera & movement demos
