@@ -195,6 +195,8 @@ type
 			FWidth, FHeight : TGLFloat;
 		   FXTiles, FYTiles : Cardinal;
          FStyle : TPlaneStyles;
+    FNoZWrite: boolean;
+    procedure SetNoZWrite(const Value: boolean);
 
 		protected
 			{ Protected Declarations }
@@ -242,6 +244,7 @@ type
          property YScope : TGLFloat read FYScope write SetYScope stored StoreYScope;
          property YTiles : Cardinal read FYTiles write SetYTiles default 1;
          property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
+         property NoZWrite : boolean read FNoZWrite write SetNoZWrite;
    end;
 
 	// TGLSprite
@@ -1198,6 +1201,10 @@ begin
       tx1:=FXScope;
       ty1:=FYScope;
    end;
+
+   if NoZWrite then
+      glDepthMask(False);
+
    if psSingleQuad in FStyle then begin
       // single quad plane
       glBegin(GL_QUADS);
@@ -1235,6 +1242,10 @@ begin
          pY0:=pY1;
       end;
    end;
+
+   if NoZWrite then
+      glDepthMask(True);
+
 end;
 
 // SetWidth
@@ -1376,6 +1387,12 @@ begin
       StructureChanged;
    end;
 end;
+
+procedure TGLPlane.SetNoZWrite(const Value: boolean);
+begin
+  FNoZWrite := Value;
+end;
+
 
 // ------------------
 // ------------------ TGLSprite ------------------
@@ -3231,6 +3248,7 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
