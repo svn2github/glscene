@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/01/02 - EG - Added PenAlpha
       <li>19/01/02 - EG - Creation
 	</ul></font>
 }
@@ -51,6 +52,7 @@ type
          procedure StopPrimitive;
 
          procedure SetPenColor(const val : TColor);
+         procedure SetPenAlpha(const val : Single);
          procedure SetPenWidth(const val : Integer);
 
 
@@ -63,6 +65,8 @@ type
 
          {: Current Pen Color. }
          property PenColor : TColor read FPenColor write SetPenColor;
+         {: Current Pen Alpha channel (from 0.0 to 1.0) }
+         property PenAlpha : Single read FCurrentPenColorVector[3] write SetPenAlpha;
          {: Current Pen Width. }
          property PenWidth : Integer read FPenWidth write SetPenWidth;
 
@@ -141,7 +145,7 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   gluOrtho2D(0, bufferSizeX, bufferSizeY, 0);
+   gluOrtho2D(0, bufferSizeX-1, bufferSizeY-1, 0);
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -189,6 +193,8 @@ begin
    glDisable(GL_TEXTURE_3D);
    glDisable(GL_LINE_SMOOTH);
    glDisable(GL_POINT_SMOOTH);
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    // Setup and backup pen stuff
    glGetFloatv(GL_CURRENT_COLOR, @FColorBackup);
@@ -240,6 +246,16 @@ begin
    if val<>FPenColor then begin
       SetVector(FCurrentPenColorVector, ConvertWinColor(val, FCurrentPenColorVector[3]));
       FPenColor:=val;
+      glColor4fv(@FCurrentPenColorVector);
+   end;
+end;
+
+// SetPenAlpha
+//
+procedure TGLCanvas.SetPenAlpha(const val : Single);
+begin
+   if val<>FCurrentPenColorVector[3] then begin
+      FCurrentPenColorVector[3]:=val;
       glColor4fv(@FCurrentPenColorVector);
    end;
 end;
