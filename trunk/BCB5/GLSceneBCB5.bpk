@@ -98,7 +98,9 @@
       ..\Source\DesignTime\FRMaterialPreview.obj 
       ..\Source\DesignTime\FMaterialEditorForm.obj 
       ..\Source\DesignTime\FLibMaterialPicker.obj 
-      ..\Source\DesignTime\GuiSkinEditorFormUnit.obj GLSceneBCB5.obj"/>
+      ..\Source\DesignTime\GuiSkinEditorFormUnit.obj ..\Source\GLLinePFX.obj 
+      ..\Source\FileFormats\GLFileVRML.obj ..\Source\FileFormats\VRMLParser.obj 
+      GLSceneBCB5.obj"/>
     <RESFILES value="GLSceneBCB5.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <DEFFILE value=""/>

@@ -186,6 +186,9 @@ USEFORMNS("..\Source\DesignTime\FRMaterialPreview.pas", Frmaterialpreview, RMate
 USEFORMNS("..\Source\DesignTime\FMaterialEditorForm.pas", Fmaterialeditorform, MaterialEditorForm);
 USEFORMNS("..\Source\DesignTime\FLibMaterialPicker.pas", Flibmaterialpicker, LibMaterialPicker);
 USEFORMNS("..\Source\DesignTime\GuiSkinEditorFormUnit.pas", Guiskineditorformunit, GUISkinEditor);
+USEUNIT("..\Source\GLLinePFX.pas");
+USEUNIT("..\Source\FileFormats\GLFileVRML.pas");
+USEUNIT("..\Source\FileFormats\VRMLParser.pas");
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
