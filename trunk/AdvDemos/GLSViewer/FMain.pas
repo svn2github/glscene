@@ -284,6 +284,7 @@ begin
       ApplyFSAA;
       ApplyFaceCull;
       ApplyBgColor;
+      ApplyFPS;
 
       if ParamCount>0 then
          DoOpen(ParamStr(1));
@@ -767,7 +768,8 @@ end;
 procedure TMain.GLCadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   GLSceneViewer.Invalidate;
+   if Self.Focused then
+      GLSceneViewer.Invalidate;
 end;
 
 procedure TMain.ACFPSExecute(Sender: TObject);
