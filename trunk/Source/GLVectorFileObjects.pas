@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
       <li>01/09/03 - SG - Added skeleton frame conversion methods to convert between
                           Rotations and Quaternions.
       <li>27/08/03 - SG - Fixed AddWeightedBone for multiple bones per vertex
@@ -483,7 +484,7 @@ type
          { Private Declarations }
          FOwner : TMeshObjectList;
          FTexCoords : TAffineVectorList; // provision for 3D textures
-         FLighmapTexCoords : TTexPointList; // reserved for 2D surface needs
+         FLightMapTexCoords : TTexPointList; // reserved for 2D surface needs
          FColors : TVectorList;
          FFaceGroups: TFaceGroups;
          FMode : TMeshObjectMode;
@@ -541,7 +542,7 @@ type
          property Owner : TMeshObjectList read FOwner;
          property Mode : TMeshObjectMode read FMode write FMode;
          property TexCoords : TAffineVectorList read FTexCoords write SetTexCoords;
-         property LighmapTexCoords : TTexPointList read FLighmapTexCoords write SetLightmapTexCoords;
+         property LightMapTexCoords : TTexPointList read FLightMapTexCoords write SetLightMapTexCoords;
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
          property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
@@ -2820,7 +2821,7 @@ constructor TMeshObject.Create;
 begin
    FMode:=momTriangles;
    FTexCoords:=TAffineVectorList.Create;
-   FLighmapTexCoords:=TTexPointList.Create;
+   FLightMapTexCoords:=TTexPointList.Create;
    FColors:=TVectorList.Create;
    FFaceGroups:=TFaceGroups.CreateOwned(Self);
    inherited;
@@ -2833,7 +2834,7 @@ begin
    FFaceGroups.Free;
    FColors.Free;
    FTexCoords.Free;
-   FLighmapTexCoords.Free;
+   FLightMapTexCoords.Free;
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
@@ -2845,10 +2846,10 @@ procedure TMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      if LighmapTexCoords.Count>0 then begin
+      if LightMapTexCoords.Count>0 then begin
          WriteInteger(1);        // Archive Version 1, added FLighmapTexCoords
          FTexCoords.WriteToFiler(writer);
-         FLighmapTexCoords.WriteToFiler(writer);
+         FLightMapTexCoords.WriteToFiler(writer);
       end else begin
          WriteInteger(0);        // Archive Version 0
          FTexCoords.WriteToFiler(writer);
@@ -2872,8 +2873,8 @@ begin
    if archiveVersion in [0..1] then with reader do begin
       FTexCoords.ReadFromFiler(reader);
       if archiveVersion>=1 then
-         FLighmapTexCoords.ReadFromFiler(reader)
-      else FLighmapTexCoords.Clear;
+         FLightMapTexCoords.ReadFromFiler(reader)
+      else FLightMapTexCoords.Clear;
       FColors.ReadFromFiler(reader);
       FFaceGroups.ReadFromFiler(reader);
       FMode:=TMeshObjectMode(ReadInteger);
@@ -2890,7 +2891,7 @@ begin
    FFaceGroups.Clear;
    FColors.Clear;
    FTexCoords.Clear;
-   FLighmapTexCoords.Clear;
+   FLightMapTexCoords.Clear;
 end;
 
 // ExtractTriangles
@@ -3001,7 +3002,7 @@ end;
 //
 procedure TMeshObject.SetLightmapTexCoords(const val : TTexPointList);
 begin
-   FLighmapTexCoords.Assign(val);
+   FLightMapTexCoords.Assign(val);
 end;
 
 // SetColors
@@ -3033,9 +3034,9 @@ begin
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if GL_ARB_multitexture and (LighmapTexCoords.Count>0) then begin
+         if GL_ARB_multitexture and (LightMapTexCoords.Count>0) then begin
             glClientActiveTextureARB(GL_TEXTURE1_ARB);
-            glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LighmapTexCoords.List);
+            glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
@@ -3045,7 +3046,7 @@ begin
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
       // with lightmap texcoords units active, wee seem to actually lose performance...
-      if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
          glLockArraysEXT(0, vertices.Count); 
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
@@ -3058,7 +3059,7 @@ procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
-      if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
@@ -3069,7 +3070,7 @@ begin
             glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if GL_ARB_multitexture and (LighmapTexCoords.Count>0) then begin
+         if GL_ARB_multitexture and (LightMapTexCoords.Count>0) then begin
             glClientActiveTextureARB(GL_TEXTURE1_ARB);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
