@@ -320,6 +320,8 @@ type
 
          {: Returns a bone by its BoneID, nil if not found. }
          function BoneByID(anID : Integer) : TSkeletonBone; virtual;
+         {: Returns a bone by its Name, nil if not found. }
+         function BoneByName(const aName : String) : TSkeletonBone; virtual;
          {: Number of bones (including all children and self). }
          function BoneCount : Integer;
 
@@ -391,6 +393,7 @@ type
 
          {: Returns a bone by its BoneID, nil if not found. }
          function BoneByID(anID : Integer) : TSkeletonBone; override;
+         function BoneByName(const aName : String) : TSkeletonBone; override;
 
          {: Calculates the global matrix for the bone and its sub-bone.<p>
             Call this function directly only the RootBone. }
@@ -529,6 +532,7 @@ type
 
          procedure FlushBoneByIDCache;
          function BoneByID(anID : Integer) : TSkeletonBone;
+         function BoneByName(const aName : String) : TSkeletonBone;
 
          procedure MorphTo(frameIndex : Integer);
          procedure Lerp(frameIndex1, frameIndex2 : Integer;
@@ -2450,6 +2454,19 @@ begin
    end;
 end;
 
+// BoneByName
+//
+function TSkeletonBoneList.BoneByName(const aName : String) : TSkeletonBone;
+var
+   i : Integer;
+begin
+   Result:=nil;
+   for i:=0 to Count-1 do begin
+      Result:=Items[i].BoneByName(aName);
+      if Assigned(Result) then Break;
+   end;
+end;
+
 // BoneCount
 //
 function TSkeletonBoneList.BoneCount : Integer;
@@ -2644,6 +2661,15 @@ begin
    if BoneID=anID then
       Result:=Self
    else Result:=inherited BoneByID(anID);
+end;
+
+// BoneByName
+//
+function TSkeletonBone.BoneByName(const aName : String) : TSkeletonBone;
+begin
+   if Name=aName then
+      Result:=Self
+   else Result:=inherited BoneByName(aName);
 end;
 
 // Clean
@@ -2945,6 +2971,13 @@ begin
          CollectBones(RootBones[i]);
    end;
    Result:=TSkeletonBone(FBonesByIDCache[anID])
+end;
+
+// BoneByName
+//
+function TSkeleton.BoneByName(const aName : String) : TSkeletonBone;
+begin
+   Result:=RootBones.BoneByName(aName);
 end;
 
 // MorphTo
