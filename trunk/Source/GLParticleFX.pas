@@ -250,6 +250,10 @@ type
    //
    TGLSourcePFXVelocityMode = (svmAbsolute, svmRelative);
 
+   // TGLSourcePFXDispersionMode
+   //
+   TGLSourcePFXDispersionMode = (sdmFast, sdmIsotropic);
+
    // TGLSourcePFXEffect
    //
    {: Simple Particles Source.<p> }
@@ -262,6 +266,7 @@ type
          FPositionDispersion : Single;
          FParticleInterval : Single;
          FVelocityMode : TGLSourcePFXVelocityMode;
+         FDispersionMode : TGLSourcePFXDispersionMode;
          FTimeRemainder : Double;      // NOT persistent
 
       protected
@@ -271,7 +276,6 @@ type
          procedure SetVelocityDispersion(const val : Single);
          procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
-         procedure SetVelocityMode(const val : TGLSourcePFXVelocityMode);
 
 			procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
@@ -286,6 +290,9 @@ type
 
          procedure DoProgress(const deltaTime, newTime : Double); override;
 
+         //: Instantaneously creates nb particles
+         procedure Burst(time : Double; nb : Integer);
+
 		published
 			{ Published Declarations }
          property InitialVelocity : TGLCoordinates read FInitialVelocity write SetInitialVelocity;
@@ -293,7 +300,8 @@ type
          property InitialPosition : TGLCoordinates read FInitialPosition write SetInitialPosition;
          property PositionDispersion : Single read FPositionDispersion write SetPositionDispersion;
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
-         property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write SetVelocityMode default svmAbsolute;
+         property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
+         property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
    end;
 
 	// TPFXLifeColor
@@ -428,7 +436,7 @@ type
    end;
 
 {: Returns or creates the TGLBInertia within the given object's behaviours.<p> }
-function GetOrCreateSourcePFX(obj : TGLBaseSceneObject) : TGLSourcePFXEffect;
+function GetOrCreateSourcePFX(obj : TGLBaseSceneObject; const name : String = '') : TGLSourcePFXEffect;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -445,15 +453,25 @@ var
 
 // GetOrCreateSourcePFX
 //
-function GetOrCreateSourcePFX(obj : TGLBaseSceneObject) : TGLSourcePFXEffect;
+function GetOrCreateSourcePFX(obj : TGLBaseSceneObject; const name : String = '') : TGLSourcePFXEffect;
 var
 	i : Integer;
 begin
    with obj.Effects do begin
-   	i:=IndexOfClass(TGLSourcePFXEffect);
-   	if i>=0 then
-	   	Result:=TGLSourcePFXEffect(Items[i])
-   	else Result:=TGLSourcePFXEffect.Create(obj.Effects);
+      if name='' then begin
+      	i:=IndexOfClass(TGLSourcePFXEffect);
+      	if i>=0 then
+	      	Result:=TGLSourcePFXEffect(Items[i])
+      	else Result:=TGLSourcePFXEffect.Create(obj.Effects);
+      end else begin
+         i:=IndexOfName(name);
+         if i>=0 then
+            Result:=(Items[i] as TGLSourcePFXEffect)
+         else begin
+            Result:=TGLSourcePFXEffect.Create(obj.Effects);
+            Result.Name:=name;
+         end;
+      end;
    end;
 end;
 
@@ -1012,6 +1030,7 @@ begin
    FPositionDispersion:=0;
    FParticleInterval:=0.1;
    FVelocityMode:=svmAbsolute;
+   FDispersionMode:=sdmFast;
 end;
 
 // Destroy
@@ -1069,14 +1088,6 @@ begin
    end;
 end;
 
-// SetVelocityMode
-//
-procedure TGLSourcePFXEffect.SetVelocityMode(const val : TGLSourcePFXVelocityMode);
-begin
-   FVelocityMode:=val;
-   OwnerBaseSceneObject.NotifyChange(Self);
-end;
-
 // SetInitialVelocity
 //
 procedure TGLSourcePFXEffect.SetInitialVelocity(const val : TGLCoordinates);
@@ -1120,37 +1131,52 @@ end;
 // DoProgress
 //
 procedure TGLSourcePFXEffect.DoProgress(const deltaTime, newTime : Double);
+begin
+   if not Assigned(Manager) then Exit;
+   FTimeRemainder:=FTimeRemainder+deltaTime;
+   while FTimeRemainder>FParticleInterval do begin
+      Burst(newTime, 1);
+      FTimeRemainder:=FTimeRemainder-FParticleInterval;
+   end;
+end;
+
+// Burst
+//
+procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
 
    function RndHalf(var f : Single) : Single;
    begin
       RndHalf:=(Random-0.5)*(2*f);
    end;
 
+   procedure RndVector(var v : TAffineVector; var f : Single);
+   begin
+      repeat
+         SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
+      until (DispersionMode=sdmFast) or (VectorNorm(v)<1);
+   end;
+
 var
    particle : TGLParticle;
    v : TVector;
-   pos : TAffineVector; 
+   av, pos : TAffineVector;
 begin
-   FTimeRemainder:=FTimeRemainder+deltaTime;
+   if Manager=nil then Exit;
    SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
    AddVector(pos, InitialPosition.AsAffineVector);
-   while FTimeRemainder>FParticleInterval do begin
+   while nb>0 do begin
       particle:=Manager.CreateParticle;
-      particle.Position:=VectorAdd(pos,
-                                   AffineVectorMake(RndHalf(FPositionDispersion),
-                                                    RndHalf(FPositionDispersion),
-                                                    RndHalf(FPositionDispersion)));
-      particle.Velocity:=VectorAdd(InitialVelocity.AsAffineVector,
-                                   AffineVectorMake(RndHalf(FVelocityDispersion),
-                                                    RndHalf(FVelocityDispersion),
-                                                    RndHalf(FVelocityDispersion)));
+      RndVector(av, FPositionDispersion);
+      particle.Position:=VectorAdd(pos, av);
+      RndVector(av, FVelocityDispersion);
+      particle.Velocity:=VectorAdd(InitialVelocity.AsAffineVector, av);
       if VelocityMode=svmRelative then begin
          SetVector(v, particle.Velocity);
-         OwnerBaseSceneObject.LocalToAbsolute(v);
+         v:=OwnerBaseSceneObject.LocalToAbsolute(v);
          SetVector(particle.FVelocity, v);
       end;
-      particle.CreationTime:=newTime;
-      FTimeRemainder:=FTimeRemainder-FParticleInterval;
+      particle.CreationTime:=time;
+      Dec(nb);
    end;
 end;
 

@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/09/01 - Egg - Added TGLTerrainBaseHDS
       <li>04/03/01 - Egg - Added InterpolatedHeight
 	   <li>11/02/01 - Egg - Creation
 	</ul></font>
@@ -357,6 +358,34 @@ type
             feed it this format! }
          property Picture : TPicture read FPicture write SetPicture;
 
+         property MaxPoolSize;
+	end;
+
+	// TGLTerrainBaseHDS
+	//
+   {: TerrainBase-based Height Data Source.<p>
+      This component takes its data from the TerrainBase Gobal Terrain Model.<br>
+      Though it can be used directly, the resolution of the TerrainBase dataset
+      isn't high enough for accurate short-range representation and the data
+      should rather be used as basis for further (fractal) refinement.<p>
+      TerrainBase is freely available from the National Geophysical Data Center
+      and World Data Center web site (http://ngdc.noaa.com).<p>
+      (this component expects to find "tbase.bin" in the current directory). }
+	TGLTerrainBaseHDS = class (THeightDataSource)
+	   private
+	      { Private Declarations }
+
+	   protected
+	      { Protected Declarations }
+         procedure StartPreparingData(heightData : THeightData); override;
+
+	   public
+	      { Public Declarations }
+	      constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+
+	   published
+	      { Published Declarations }
          property MaxPoolSize;
 	end;
 
@@ -828,7 +857,7 @@ begin
    FWordRaster:=nil;
    FByteData:=Pointer(FWordData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=FWordData[i];
+      FByteData[i]:=FWordData[i] shr 5;
    ReallocMem(FByteData, Size*Size*SizeOf(Byte));
    FWordData:=nil;
    BuildByteRaster;
@@ -1099,6 +1128,63 @@ begin
    inherited;
 end;
 
+// ------------------
+// ------------------ TGLTerrainBaseHDS ------------------
+// ------------------
+
+// Create
+//
+constructor TGLTerrainBaseHDS.Create(AOwner: TComponent);
+begin
+	inherited Create(AOwner);
+end;
+
+// Destroy
+//
+destructor TGLTerrainBaseHDS.Destroy;
+begin
+	inherited Destroy;
+end;
+
+// StartPreparingData
+//
+procedure TGLTerrainBaseHDS.StartPreparingData(heightData : THeightData);
+const
+   cTBWidth : Integer = 4320;
+   cTBHeight : Integer = 2160;
+var
+   y, x, offset : Integer;
+   rasterLine : PWordArray;
+   oldType : THeightDataType;
+   b : SmallInt;
+   fs : TFileStream;
+begin
+   if not FileExists('tbase.bin') then Exit;
+   fs:=TFileStream.Create('tbase.bin', fmOpenRead+fmShareDenyNone);
+   try
+      // retrieve data
+      with heightData do begin
+         oldType:=DataType;
+         DataType:=hdtWord;
+         for y:=YTop to YTop+Size-1 do begin
+            offset:=(y mod cTBHeight)*(cTBWidth*2);
+            rasterLine:=WordRaster[y-YTop];
+            for x:=XLeft to XLeft+Size-1 do begin
+               fs.Seek(offset+(x mod cTBWidth)*2, soFromBeginning);
+               fs.Read(b, 2);
+               if b<0 the b:=0;
+               rasterLine[x-XLeft]:=Word(b);
+            end;
+         end;
+         if oldType<>hdtWord then
+            DataType:=oldType;
+      end;
+      inherited;
+   finally
+      fs.Free;
+   end;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1108,6 +1194,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClass(TGLBitmapHDS);
+   Classes.RegisterClasses([TGLBitmapHDS, TGLTerrainBaseHDS]);
 
 end.

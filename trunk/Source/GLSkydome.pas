@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/09/01 - EG - Fixed and improved TEarthSkyDome
       <li>26/08/01 - EG - Added SkyDomeStars
       <li>12/08/01 - EG - DepthMask no set to False during rendering
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
@@ -737,14 +738,18 @@ begin
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
+   glDisable(GL_CULL_FACE);
    glDepthMask(False);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
    with Scene.CurrentGLCamera do
-      f:=(NearPlane+DepthOfView)*0.9;
+      f:=(NearPlane+DepthOfView)*0.95;
    glScalef(f, f, f);
    glMultMatrixf(@LocalMatrix);
+
+//   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
    // render
    glCallList(GetHandle(rci));
    // restore
@@ -999,8 +1004,8 @@ var
    end;
 
 var
-   n, i : Integer;
-   t, t2, p : Single;
+   n, i, sdiv2 : Integer;
+   t, t2, p, fs : Single;
 begin
    ts:=DegToRad(90-SunElevation);
    SetVector(sunPos, sin(ts), 0, cos(ts));
@@ -1010,6 +1015,7 @@ begin
    GetMem(sinTable, steps*SizeOf(Single));
    GetMem(cosTable, steps*SizeOf(Single));
    for i:=1 to n do begin
+//      p:=i*2*PI/n;
       p:=(1-sqrt(cos(i/n*PI/2)))*PI;
       SinCos(p, sinTable[n+i], cosTable[n+i]);
       sinTable[n-i]:=-sinTable[n+i];
@@ -1017,11 +1023,18 @@ begin
    end;
    sinTable[n]:=0;
    cosTable[n]:=1;
+   fs:=SunElevation/90;
    // start render
+   t:=0;
+   sdiv2:=Stacks div 2;
    for n:=0 to Stacks-1 do begin
-      t:=n/Stacks;
-      t2:=(n+1)/Stacks;
+      if fs>0 then begin
+         if n<sdiv2 then
+            t2:=fs-fs*Sqr((sdiv2-n)/sdiv2)
+         else t2:=fs+Sqr((n-sdiv2)/(sdiv2-1))*(1-fs);
+      end else t2:=(n+1)/Stacks;
       RenderBand(Lerp(1, 90, t), Lerp(1, 90, t2));
+      t:=t2;
    end;
    FreeMem(sinTable);
    FreeMem(cosTable);
