@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
       <li>24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
       <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
                           Terrain bounds limiting event (Erazem Polutnik)
@@ -209,7 +210,7 @@ function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector
                                            intersectPoint : PVector = nil;
                                            intersectNormal : PVector = nil) : Boolean;
 var
-   p1, d : TVector;
+   p1, d, p2, p3 : TVector;
    step, i, h : Single;
    startedAbove : Boolean;
    failSafe : Integer;
@@ -244,7 +245,23 @@ begin
          Inc(failSafe);
          if failSafe>100 then Break;
       end;
-      intersectPoint^:=p1;
+
+      if Result then begin
+         if Assigned(intersectPoint) then
+            intersectPoint^:=p1;
+
+         // Calc Normal
+         if Assigned(intersectNormal) then begin
+            // Get 2 nearby points for cross-product
+            p2:=VectorMake(p1[0]-0.1, 0, p1[2]);
+            p2[1]:=InterpolatedHeight(p2);
+            p3:=VectorMake(p1[0], 0, p1[2]-0.1);
+            p3[1]:=InterpolatedHeight(p3);
+
+            intersectNormal^:=VectorNormalize(VectorCrossProduct(VectorSubtract(p1, p2),
+                                                                 VectorSubtract(p3, p1)));
+         end;
+      end;
    end;
 end;
 
