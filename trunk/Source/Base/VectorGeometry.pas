@@ -172,6 +172,7 @@ type
    PByte = ^Byte;
    PWord = ^Word;
    PInteger = ^Integer;
+   PCardinal = ^Cardinal;
    PSingle = ^Single;
    PDouble = ^Double;
    PExtended = ^Extended;
