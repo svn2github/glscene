@@ -169,6 +169,45 @@ type
 
 implementation
 
+function CreateVRMLTokenList(Text : String) : TStringList;
+const
+  cSymbols : array[0..3] of char = ( '{','}','[',']' );
+var
+  i,j,p : Integer;
+  str, token : String;
+begin
+  Result:=TStringList.Create;
+
+  Result.Text:=Text;
+  for i:=0 to Result.Count-1 do begin
+    p:=Pos('#', Result[i]);
+    if p>0 then
+      Result[i]:=Copy(Result[i], 1, p-1);
+  end;
+
+  Result.CommaText:=Result.Text;
+  for j:=0 to Length(cSymbols)-1 do begin
+    i:=0;
+    repeat
+      token:=Result[i];
+      p:=Pos(cSymbols[j], token);
+      if (p>0) and (token<>cSymbols[j]) then begin
+        str:=Copy(token, p+1, Length(token));
+        if (p = 1) then
+          Result.Insert(i, trim(str))
+        else begin
+          Result.Delete(i);
+          if Length(str)>0 then
+            Result.Insert(i, trim(str));
+          Result.Insert(i, cSymbols[j]);
+          Result.Insert(i, trim(Copy(token, 1, p-1)));
+        end;
+      end;
+      Inc(i);
+    until i >= Result.Count-1;
+  end;
+end;
+
 // ---------------
 // --------------- TVRMLNode ---------------
 // ---------------
@@ -898,8 +937,7 @@ procedure TVRMLParser.Parse(Text : String);
 var
   token : String;
 begin
-  FTokens:=TStringList.Create;
-  FTokens.CommaText:=Text;
+  FTokens:=CreateVRMLTokenList(Text);
   FCursor:=0;
   FCurrentNode:=FRootNode;
   try
