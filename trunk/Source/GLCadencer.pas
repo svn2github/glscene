@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/10/03 - EG - Fixed issues about cadencer destruction
       <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
       <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
       <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
@@ -268,16 +269,14 @@ end;
 // UnRegisterASAPCadencer
 //
 procedure UnRegisterASAPCadencer(aCadencer : TGLCadencer);
+var
+   i : Integer;
 begin
    if aCadencer.Mode=cmASAP then begin
       if Assigned(vASAPCadencerList) then begin
-         vASAPCadencerList.Remove(aCadencer);
-         if vASAPCadencerList.Count=0 then begin
-            vASAPCadencerList.Free;
-            vASAPCadencerList:=nil;
-            vHandler.Free;
-            vHandler:=nil;
-         end;
+         i:=vASAPCadencerList.IndexOf(aCadencer);
+         if i>=0 then
+            vASAPCadencerList[i]:=nil;
       end;
    end else if aCadencer.Mode=cmApplicationIdle then
       Application.OnIdle:=nil;
@@ -349,7 +348,8 @@ begin
                // Progress
                for i:=vASAPCadencerList.Count-1 downto 0 do begin
                   cad:=TGLCadencer(vASAPCadencerList[i]);
-                  if (cad.Mode=cmASAP) and cad.Enabled and (cad.FProgressing=0) then begin
+                  if     Assigned(cad) and (cad.Mode=cmASAP)
+                     and cad.Enabled and (cad.FProgressing=0) then begin
                      if Application.Terminated then begin
                         // force stop
                         cad.Enabled:=False
@@ -364,6 +364,14 @@ begin
                         end
                      end;
                   end;
+               end;
+               // care for nils
+               vASAPCadencerList.Pack;
+               if vASAPCadencerList.Count=0 then begin
+                  vASAPCadencerList.Free;
+                  vASAPCadencerList:=nil;
+                  vHandler.Free;
+                  vHandler:=nil;
                end;
                // Prepare the return of the infernal loop...
                PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
@@ -399,6 +407,7 @@ end;
 //
 destructor TGLCadencer.Destroy;
 begin
+   Assert(FProgressing=0);
    {$ifdef WIN32}
    UnRegisterASAPCadencer(Self);
    {$endif}
@@ -570,16 +579,21 @@ begin
 	// basic protection against infinite loops,
    // shall never happen, unless there is a bug in user code
    if FProgressing<0 then Exit;
+   if Enabled then begin
+   	// avoid stalling everything else...
+		if SleepLength>=0 then
+			Sleep(SleepLength);
+      // in manual mode, the user is supposed to make sure messages are handled
+      // in Idle mode, this processing is implicit
+      if Mode=cmASAP then begin
+         Application.ProcessMessages;
+         if    (not Assigned(vASAPCadencerList))
+            or (vASAPCadencerList.IndexOf(Self)<0) then Exit;
+      end;
+   end;
 	Inc(FProgressing);
 	try
 		if Enabled then begin
-			// avoid stalling everything else...
-			if SleepLength>=0 then
-				Sleep(SleepLength);
-			// in manual mode, the user is supposed to make sure messages are handled
-         // in Idle mode, this processing is implicit
-         if (FProgressing=1) and (Mode=cmASAP) then
-   			Application.ProcessMessages;
          // One of the processed messages might have disabled us
          if Enabled then begin
             // ...and progress !
