@@ -875,7 +875,7 @@ function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector
 {: Computes closest point on a segment (a segment is a limited line).}
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
 {: Computes algebraic distance between segment and line (a segment is a limited line).}
-function PointSegmentDistance(point, segmentStart, segmentStop : TAffineVector) : single;
+function PointSegmentDistance(const point, segmentStart, segmentStop : TAffineVector) : single;
 {: Computes closest point on a line.}
 function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
 {: Computes algebraic distance between point and line.}
