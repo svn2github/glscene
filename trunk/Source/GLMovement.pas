@@ -93,7 +93,6 @@ type
     function Add: TGLPathNode;
     function FindItemID(ID: integer): TGLPathNode;
     property Items[index: integer]: TGLPathNode Read GetItems Write SetItems; default;
-    procedure Delete(index: integer);
     procedure NotifyChange; virtual;
   end;
 
@@ -474,15 +473,6 @@ end;
 function TGLPathNodes.FindItemID(ID: integer): TGLPathNode;
 begin
   Result := (inherited FindItemID(ID)) as TGLPathNode;
-end;
-
-procedure TGLPathNodes.Delete(index: integer);
-var
-  item: TCollectionItem;
-begin
-  item := inherited Items[index];
-  item.Collection := nil;
-  item.Free;
 end;
 
 procedure TGLPathNodes.NotifyChange;
