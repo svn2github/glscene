@@ -7,7 +7,7 @@
    and a virtual heap (large blocks).<br>
    Supports Shared Memory (like ShareMem, but no DLL required).<p>
 
-   Copyright 2003-2004 / Creative IT / Eric Grange<br>
+   Copyright 2003 - Creative IT / Eric Grange<br>
    Default licensing is GPL, use under MPL can be granted (on request, for free)
    for users/companies "supporting" Open Source (purely subjective decision by us)<p>
 
@@ -31,9 +31,11 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/10/04 - EG - Added ALLOW_DELAYED_CHUNK_RELEASE, dropped
-                          ASSUME_MULTI_THREADED (now always assumed, benefits
-                          weren't high enough)
+      <li>10/11/04 - EG - Fixed for 3GB mode and SECURE_MEMMAP (David Christensen),
+                          CleanUpThread fixes (Roger Gaylord) 
+      <li>19/10/04 - EG - Added ALLOW_DELAYED_CHUNK_RELEASE,
+                          dropped ASSUME_MULTI_THREADED (now always assumed,
+                          benefits weren't high enough for the extra code)
       <li>13/10/04 - EG - Added ALLOW_BENCHMARKING and cReallocUpSizing,
                           + bug fix when ReallocMem can't GetMem (David Christensen)
       <li>30/08/04 - EG - 3GB support contributed by David Christensen
@@ -67,6 +69,9 @@ interface
    {$WARN UNSAFE_CODE OFF}
    {$WARN UNSAFE_TYPE OFF}
 {$endif}
+
+// No debug info, so the debugger won't step through memory management code
+{$D-}
 
 uses Windows;
 
@@ -148,10 +153,12 @@ uses Windows;
 {$endif}
 
 // compile error when incompatible options have been selected
-
-{$ifdef PATCH_ALLOCMEM}
 {$ifdef SHARE_MEM}
+{$ifdef PATCH_ALLOCMEM}
    Error : you cannot combine PATCH_ALLOCMEM and SHARE_MEM
+{$endif}
+{$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
+   Error : you cannot combine ALLOW_DELAYED_CHUNK_RELEASE and SHARE_MEM (yet)
 {$endif}
 {$endif}
 
@@ -319,6 +326,8 @@ var
    vTotalVirtualAllocated : Cardinal;
    // Number of entries in memmap array
    vMemMapUpper : Cardinal;
+   // Virtual memory limit (used for SECURE_MEMMAP)
+   vVirtualLimit : Cardinal;
 
 resourcestring
    // Unused, this is just to have it in clear in the DCU 
@@ -534,10 +543,10 @@ begin
    p:=@vMemoryMap[Cardinal(baseAddr) shr 16];
    n:=(size shr 16);
    {$ifdef SECURE_MEMORYMAP}
-   VirtualProtect(vMemoryMap, SizeOf(TPointerArray32k), PAGE_READWRITE, oldProtect);
+   VirtualProtect(vMemoryMap, SizeOf(TPointerArrayMap), PAGE_READWRITE, oldProtect);
    for i:=0 to n-1 do
       p[i]:=manager;
-   VirtualProtect(vMemoryMap, SizeOf(TPointerArray32k), PAGE_READONLY, oldProtect);
+   VirtualProtect(vMemoryMap, SizeOf(TPointerArrayMap), PAGE_READONLY, oldProtect);
    {$else}
    for i:=0 to n-1 do
       p[i]:=manager;
@@ -1271,7 +1280,7 @@ begin
    {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRFreeMem); {$endif}
    
    {$ifdef SECURE_MEMORYMAP}
-   if Integer(P)>0 then
+   if Cardinal(P)<vVirtualLimit then
       manager:=vMemoryMap[Cardinal(P) shr 16]
    else manager:=nil;
    {$else}
@@ -1358,7 +1367,7 @@ begin
    {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRReallocMem); {$endif}
 
    {$ifdef SECURE_MEMORYMAP}
-   if Integer(P)>0 then
+   if Cardinal(P)<vVirtualLimit then
       manager:=vMemoryMap[Cardinal(P) shr 16]
    else manager:=nil;
    {$else}
@@ -1458,7 +1467,7 @@ begin
       Result:=False
    else begin
       {$ifdef SECURE_MEMORYMAP}
-      if Integer(locP)>0 then
+      if Cardinal(locP)<vVirtualLimit then
          manager:=vMemoryMap[Cardinal(locP) shr 16]
       else manager:=nil;
       {$else}
@@ -1540,7 +1549,7 @@ var
 begin
    InitializeCriticalSection(vLGBLock);
    {$ifdef SECURE_MEMORYMAP}
-   vMemoryMap:=VirtualAlloc(nil, SizeOf(TPointerArray32k), MEM_COMMIT,
+   vMemoryMap:=VirtualAlloc(nil, SizeOf(TPointerArrayMap), MEM_COMMIT,
                             PAGE_READWRITE);
    {$endif}
    for i:=Low(vSMBs) to High(vSMBs) do begin
@@ -1602,6 +1611,79 @@ begin
       LeaveCriticalSection(vSMBs[i].Lock);
 end;
 
+//
+// Cleanup thread
+//
+var
+   vCleanupThreadID : Cardinal;
+   vCleanupThreadHnd : Cardinal;
+
+{$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
+function CleanupThreadProc(parameter : Pointer): Integer;
+var
+   i : Integer;
+   chunkBatch, nextBatch : PRMMChunkBatch;
+   smbInfo : PSMBInfo;
+   manager, nextManager : PSMBManager;
+begin
+   while vCleanupThreadID<>0 do begin
+
+      // cleanup empty
+      for i:=Low(vSMBs) to High(vSMBs) do begin
+         smbInfo:=@vSMBs[i];
+         if smbInfo.DelayedCleanup then begin
+            EnterCriticalSection(smbInfo.Lock);
+
+            smbInfo.DelayedCleanup:=False;
+            manager:=smbInfo.First;
+            while Assigned(manager) do begin
+               nextManager:=manager.Next;
+               if manager.NbFreeBlockOffset=manager.MaxFreeBlockOffset then
+                  ReleaseSMB(manager);
+               manager:=nextManager;
+            end;
+
+            LeaveCriticalSection(smbInfo.Lock);
+         end;
+      end;
+
+      // Cleanup unused chunk batches
+      EnterCriticalSection(vRMMBatchesLock);
+      chunkBatch:=vRMMChunkBatches.Next;
+      while Assigned(chunkBatch) do begin
+         nextBatch:=chunkBatch.Next;
+         if chunkBatch.ChunkAllocated=0 then begin
+            chunkBatch.Prev.Next:=nextBatch;
+            if nextBatch<>nil then
+               nextBatch.Prev:=chunkBatch.Prev;
+            ReleaseRMMChunkBatch(chunkBatch);
+         end;
+         chunkBatch:=nextBatch;
+      end;
+      LeaveCriticalSection(vRMMBatchesLock);
+
+      Sleep(50);
+   end;
+   Result:=0;
+   EndThread(Result);
+end;
+
+procedure StartCleanupThread;
+begin
+   Assert(vCleanupThreadID=0);
+   vCleanupThreadHnd:=BeginThread(nil, 0, @CleanupThreadProc, nil, 0, vCleanupThreadID);
+end;
+
+procedure StopCleanupThread;
+begin
+   vCleanupThreadID:=0;
+   if vCleanupThreadHnd<>0 then begin
+      WaitForSingleObject(vCleanupThreadHnd, INFINITE);
+      CloseHandle(vCleanupThreadHnd);
+   end;
+end;
+{$endif}
+
 // BindRMM
 //
 procedure BindRMM;
@@ -1656,6 +1738,9 @@ begin
          vSharedMemory_InUse:=False;
          {$endif}
          InitializeRMM;
+         {$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
+         StartCleanupThread;
+         {$endif}
       end else begin
          {$ifdef SHARE_MEM}
          // we're in a DLL and a RMM has been setup by the application
@@ -1708,7 +1793,7 @@ end;
 
 // RMMActive
 //
-function  RMMActive : Boolean;
+function RMMActive : Boolean;
 begin
    Result:=(vRMMBound>0);
 end;
@@ -1764,7 +1849,7 @@ begin
       Result.BenchRReallocMem:=vBenchRReallocMem;
       Result.BenchRFreeMem:=vBenchRFreeMem; 
 
-      Result.NbMapItems:=vMemMapUpper +1;
+      Result.NbMapItems:=vMemMapUpper+1;
       Result.TotalVirtualAllocated:=vTotalVirtualAllocated;
       nbBlocks:=0;
       totalUserSize:=0;
@@ -1897,80 +1982,11 @@ begin
 end;
 {$endif} // ALLOW_USAGE_SNAPSHOT
 
-//
-// Cleanup thread
-//
-var
-   vCleanupThreadID : Cardinal;
-
-{$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
-function CleanupThreadProc(parameter : Pointer): Integer;
-var
-   i : Integer;
-   chunkBatch, nextBatch : PRMMChunkBatch;
-   smbInfo : PSMBInfo;
-   manager, nextManager : PSMBManager;
-begin
-   while vCleanupThreadID<>0 do begin
-
-      // cleanup empty
-      for i:=Low(vSMBs) to High(vSMBs) do begin
-         smbInfo:=@vSMBs[i];
-         if smbInfo.DelayedCleanup then begin
-            EnterCriticalSection(smbInfo.Lock);
-
-            smbInfo.DelayedCleanup:=False;
-            manager:=smbInfo.First;
-            while Assigned(manager) do begin
-               nextManager:=manager.Next;
-               if manager.NbFreeBlockOffset=manager.MaxFreeBlockOffset then
-                  ReleaseSMB(manager);
-               manager:=nextManager;
-            end;
-
-            LeaveCriticalSection(smbInfo.Lock);
-         end;
-      end;
-
-      // Cleanup unused chunk batches
-      EnterCriticalSection(vRMMBatchesLock);
-      chunkBatch:=vRMMChunkBatches.Next;
-      while Assigned(chunkBatch) do begin
-         nextBatch:=chunkBatch.Next;
-         if chunkBatch.ChunkAllocated=0 then begin
-            chunkBatch.Prev.Next:=nextBatch;
-            if nextBatch<>nil then
-               nextBatch.Prev:=chunkBatch.Prev;
-            ReleaseRMMChunkBatch(chunkBatch);
-         end;
-         chunkBatch:=nextBatch;
-      end;
-      LeaveCriticalSection(vRMMBatchesLock);
-
-      Sleep(50);
-   end;
-   Result:=0;
-   EndThread(Result);
-end;
-
-procedure StartCleanupThread;
-begin
-   Assert(vCleanupThreadID=0);
-   BeginThread(nil, 0, @CleanupThreadProc, nil, 0, vCleanupThreadID);
-end;
-{$endif}
-
-procedure StopCleanupThread;
-begin
-   vCleanupThreadID:=0;
-end;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 var
-  MemStatus : TMEMORYSTATUS;
+  vMemStatus : TMEMORYSTATUS;
 
 initialization
 // ------------------------------------------------------------------
@@ -1978,12 +1994,13 @@ initialization
 // ------------------------------------------------------------------
 
    // detect if in 3GB mode
-   MemStatus.dwLength := 32;
-   GlobalMemoryStatus(MemStatus);
-   vRunningIn3GBMode:= (MemStatus.dwTotalVirtual>$80000000);
+   vMemStatus.dwLength:=32;
+   GlobalMemoryStatus(vMemStatus);
+   vRunningIn3GBMode:=(vMemStatus.dwTotalVirtual>$80000000);
    if vRunningIn3GBMode then
-      vMemMapUpper := cMemMapUpper3GB
-   else vMemMapUpper := cMemMapUpper2GB;
+      vMemMapUpper:=cMemMapUpper3GB
+   else vMemMapUpper:=cMemMapUpper2GB;
+   vVirtualLimit:=vMemStatus.dwTotalVirtual;
 
    {$ifdef ALLOW_SSE}
    try
@@ -2027,16 +2044,17 @@ initialization
    Move16:=@Move16FPU;
    {$endif}
 
-{$ifdef AUTO_BIND}
+   {$ifdef AUTO_BIND}
    BindRMM;
-   {$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
-   StartCleanupThread;
    {$endif}
 
 finalization
 
+   {$ifdef ALLOW_DELAYED_CHUNK_RELEASE}
    StopCleanupThread;
+   {$endif}
+   {$ifdef AUTO_BIND}
    UnBindRMM;
-{$endif}
+   {$endif}
 
 end.
