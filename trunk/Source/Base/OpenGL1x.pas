@@ -3378,10 +3378,7 @@ begin
    raise EOpenGLException.Create(Message);
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
 {$ifndef GLS_DELPHI_6_UP}
-
 procedure RaiseLastOSError;
 begin
    {$ifndef FPC}
@@ -3390,137 +3387,114 @@ begin
    raise Exception.Create('OSError : '+IntToStr(GetLastError));
    {$endif}
 end;
-
 {$endif}
 
-// LoadProcAddresses
+// ClearExtensions
 //
-procedure LoadProcAddresses;
-var
-  Handle: Cardinal;
-begin
-  if GLHandle <> INVALID_MODULEHANDLE then
-  begin
-    Handle := Cardinal(GLHandle); // Kylix compatiblilty trick
-
-    // GL 1.2
-    glDrawRangeElements := GetProcAddress(Handle, 'glDrawRangeElements');
-    glTexImage3D := GetProcAddress(Handle, 'glTexImage3D');
-
-    // GL 1.2 ARB imaging
-    glBlendColor := GetProcAddress(Handle, 'glBlendColor');
-    glBlendEquation := GetProcAddress(Handle, 'glBlendEquation'); 
-    glColorSubTable := GetProcAddress(Handle, 'glColorSubTable'); 
-    glCopyColorSubTable := GetProcAddress(Handle, 'glCopyColorSubTable');
-    glColorTable := GetProcAddress(Handle, 'glCopyColorSubTable');
-    glCopyColorTable := GetProcAddress(Handle, 'glCopyColorTable'); 
-    glColorTableParameteriv := GetProcAddress(Handle, 'glColorTableParameteriv'); 
-    glColorTableParameterfv := GetProcAddress(Handle, 'glColorTableParameterfv');
-    glGetColorTable := GetProcAddress(Handle, 'glGetColorTable'); 
-    glGetColorTableParameteriv := GetProcAddress(Handle, 'glGetColorTableParameteriv');
-    glGetColorTableParameterfv := GetProcAddress(Handle, 'glGetColorTableParameterfv'); 
-    glConvolutionFilter1D := GetProcAddress(Handle, 'glConvolutionFilter1D'); 
-    glConvolutionFilter2D := GetProcAddress(Handle, 'glConvolutionFilter2D'); 
-    glCopyConvolutionFilter1D := GetProcAddress(Handle, 'glCopyConvolutionFilter1D');
-    glCopyConvolutionFilter2D := GetProcAddress(Handle, 'glCopyConvolutionFilter2D'); 
-    glGetConvolutionFilter := GetProcAddress(Handle, 'glGetConvolutionFilter'); 
-    glSeparableFilter2D := GetProcAddress(Handle, 'glSeparableFilter2D'); 
-    glGetSeparableFilter := GetProcAddress(Handle, 'glGetSeparableFilter'); 
-    glConvolutionParameteri := GetProcAddress(Handle, 'glConvolutionParameteri'); 
-    glConvolutionParameteriv := GetProcAddress(Handle, 'glConvolutionParameteriv'); 
-    glConvolutionParameterf := GetProcAddress(Handle, 'glConvolutionParameterf'); 
-    glConvolutionParameterfv := GetProcAddress(Handle, 'glConvolutionParameterfv'); 
-    glGetConvolutionParameteriv := GetProcAddress(Handle, 'glGetConvolutionParameteriv'); 
-    glGetConvolutionParameterfv := GetProcAddress(Handle, 'glGetConvolutionParameterfv'); 
-    glHistogram := GetProcAddress(Handle, 'glHistogram');
-    glResetHistogram := GetProcAddress(Handle, 'glResetHistogram');
-    glGetHistogram := GetProcAddress(Handle, 'glGetHistogram');
-    glGetHistogramParameteriv := GetProcAddress(Handle, 'glGetHistogramParameteriv'); 
-    glGetHistogramParameterfv := GetProcAddress(Handle, 'glGetHistogramParameterfv'); 
-    glMinmax := GetProcAddress(Handle, 'glMinmax'); 
-    glResetMinmax := GetProcAddress(Handle, 'glResetMinmax'); 
-    glGetMinmax := GetProcAddress(Handle, 'glGetMinmax'); 
-    glGetMinmaxParameteriv := GetProcAddress(Handle, 'glGetMinmaxParameteriv');
-    glGetMinmaxParameterfv := GetProcAddress(Handle, 'glGetMinmaxParameterfv'); 
-
-    {$ifdef LINUX}
-    glXChooseVisual := GetProcAddress(Handle, 'glXChooseVisual');
-    glXCreateContext := GetProcAddress(Handle, 'glXCreateContext'); 
-    glXDestroyContext := GetProcAddress(Handle, 'glXDestroyContext'); 
-    glXMakeCurrent := GetProcAddress(Handle, 'glXMakeCurrent'); 
-    glXCopyContext := GetProcAddress(Handle, 'glXCopyContext'); 
-    glXSwapBuffers := GetProcAddress(Handle, 'glXSwapBuffers'); 
-    glXCreateGLXPixmap := GetProcAddress(Handle, 'glXCreateGLXPixmap'); 
-    glXDestroyGLXPixmap := GetProcAddress(Handle, 'glXDestroyGLXPixmap'); 
-    glXQueryExtension := GetProcAddress(Handle, 'glXQueryExtension'); 
-    glXQueryVersion := GetProcAddress(Handle, 'glXQueryVersion');
-    glXIsDirect := GetProcAddress(Handle, 'glXIsDirect'); 
-    glXGetConfig := GetProcAddress(Handle, 'glXGetConfig'); 
-    glXGetCurrentContext := GetProcAddress(Handle, 'glXGetCurrentContext');
-    glXGetCurrentDrawable := GetProcAddress(Handle, 'glXGetCurrentDrawable'); 
-    glXWaitGL := GetProcAddress(Handle, 'glXWaitGL'); 
-    glXWaitX := GetProcAddress(Handle, 'glXWaitX'); 
-    glXUseXFont := GetProcAddress(Handle, 'glXUseXFont'); 
-    glXQueryExtensionsString := GetProcAddress(Handle, 'glXQueryExtensionsString'); 
-    glXQueryServerString := GetProcAddress(Handle, 'glXQueryServerString'); 
-    glXGetClientString := GetProcAddress(Handle, 'glXGetClientString');
-    glXGetCurrentDisplay := GetProcAddress(Handle, 'glXGetCurrentDisplay'); 
-    glXChooseFBConfig := GetProcAddress(Handle, 'glXChooseFBConfig');
-    glXGetFBConfigAttrib := GetProcAddress(Handle, 'glXGetFBConfigAttrib'); 
-    glXGetFBConfigs := GetProcAddress(Handle, 'glXGetFBConfigs');
-    glXGetVisualFromFBConfig := GetProcAddress(Handle, 'glXGetVisualFromFBConfig'); 
-    glXCreateWindow := GetProcAddress(Handle, 'glXCreateWindow'); 
-    glXDestroyWindow := GetProcAddress(Handle, 'glXDestroyWindow'); 
-    glXCreatePixmap := GetProcAddress(Handle, 'glXCreatePixmap'); 
-    glXDestroyPixmap := GetProcAddress(Handle, 'glXDestroyPixmap'); 
-    glXCreatePbuffer := GetProcAddress(Handle, 'glXCreatePbuffer'); 
-    glXDestroyPbuffer := GetProcAddress(Handle, 'glXDestroyPbuffer');
-    glXQueryDrawable := GetProcAddress(Handle, 'glXQueryDrawable'); 
-    glXCreateNewContext := GetProcAddress(Handle, 'glXCreateNewContext'); 
-    glXMakeContextCurrent := GetProcAddress(Handle, 'glXMakeContextCurrent'); 
-    glXGetCurrentReadDrawable := GetProcAddress(Handle, 'glXGetCurrentReadDrawable');
-    glXQueryContext := GetProcAddress(Handle, 'glXQueryContext'); 
-    glXSelectEvent := GetProcAddress(Handle, 'glXSelectEvent'); 
-    glXGetSelectedEvent := GetProcAddress(Handle, 'glXGetSelectedEvent'); 
-    glXGetVideoSyncSGI := GetProcAddress(Handle, 'glXGetVideoSyncSGI'); 
-    glXWaitVideoSyncSGI := GetProcAddress(Handle, 'glXWaitVideoSyncSGI'); 
-    glXFreeContextEXT := GetProcAddress(Handle, 'glXFreeContextEXT'); 
-    glXGetContextIDEXT := GetProcAddress(Handle, 'glXGetContextIDEXT'); 
-    glXGetCurrentDisplayEXT := GetProcAddress(Handle, 'glXGetCurrentDisplayEXT');
-    glXImportContextEXT := GetProcAddress(Handle, 'glXImportContextEXT'); 
-    glXQueryContextInfoEXT := GetProcAddress(Handle, 'glXQueryContextInfoEXT'); 
-    glXCopySubBufferMESA := GetProcAddress(Handle, 'glXCopySubBufferMESA'); 
-    glXCreateGLXPixmapMESA := GetProcAddress(Handle, 'glXCreateGLXPixmapMESA');
-    glXReleaseBuffersMESA := GetProcAddress(Handle, 'glXReleaseBuffersMESA'); 
-    glXSet3DfxModeMESA := GetProcAddress(Handle, 'glXSet3DfxModeMESA'); 
-    {$endif}
-  end;
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 procedure ClearExtensions;
 begin
-
-  LastPixelFormat := 0; // to get synchronized again, if this proc was called from outside
+   LastPixelFormat := 0; // to get synchronized again, if this proc was called from outside
 end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-{$ifdef Win32}
-function HasActiveContext: Boolean; 
-// Returns True if the caller thread has an active (current) rendering context.
-begin
-  Result := ActivationRefCount > 0; 
-end; 
-
-//----------------------------------------------------------------------------------------------------------------------
 
 // ReadExtensions
 //
 procedure ReadExtensions;
    // To be used in an active rendering context only!
 begin
+   // Extensions integrated into 1.2 core
+
+   // GL 1.2
+   glDrawRangeElements := wglGetProcAddress('glDrawRangeElements');
+   glTexImage3D := wglGetProcAddress('glTexImage3D');
+
+   // GL 1.2 ARB imaging
+   glBlendColor := wglGetProcAddress('glBlendColor');
+   glBlendEquation := wglGetProcAddress('glBlendEquation');
+   glColorSubTable := wglGetProcAddress('glColorSubTable'); 
+   glCopyColorSubTable := wglGetProcAddress('glCopyColorSubTable');
+   glColorTable := wglGetProcAddress('glCopyColorSubTable');
+   glCopyColorTable := wglGetProcAddress('glCopyColorTable'); 
+   glColorTableParameteriv := wglGetProcAddress('glColorTableParameteriv'); 
+   glColorTableParameterfv := wglGetProcAddress('glColorTableParameterfv');
+   glGetColorTable := wglGetProcAddress('glGetColorTable'); 
+   glGetColorTableParameteriv := wglGetProcAddress('glGetColorTableParameteriv');
+   glGetColorTableParameterfv := wglGetProcAddress('glGetColorTableParameterfv');
+   glConvolutionFilter1D := wglGetProcAddress('glConvolutionFilter1D'); 
+   glConvolutionFilter2D := wglGetProcAddress('glConvolutionFilter2D'); 
+   glCopyConvolutionFilter1D := wglGetProcAddress('glCopyConvolutionFilter1D');
+   glCopyConvolutionFilter2D := wglGetProcAddress('glCopyConvolutionFilter2D');
+   glGetConvolutionFilter := wglGetProcAddress('glGetConvolutionFilter'); 
+   glSeparableFilter2D := wglGetProcAddress('glSeparableFilter2D'); 
+   glGetSeparableFilter := wglGetProcAddress('glGetSeparableFilter'); 
+   glConvolutionParameteri := wglGetProcAddress('glConvolutionParameteri'); 
+   glConvolutionParameteriv := wglGetProcAddress('glConvolutionParameteriv');
+   glConvolutionParameterf := wglGetProcAddress('glConvolutionParameterf'); 
+   glConvolutionParameterfv := wglGetProcAddress('glConvolutionParameterfv');
+   glGetConvolutionParameteriv := wglGetProcAddress('glGetConvolutionParameteriv'); 
+   glGetConvolutionParameterfv := wglGetProcAddress('glGetConvolutionParameterfv'); 
+   glHistogram := wglGetProcAddress('glHistogram');
+   glResetHistogram := wglGetProcAddress('glResetHistogram');
+   glGetHistogram := wglGetProcAddress('glGetHistogram');
+   glGetHistogramParameteriv := wglGetProcAddress('glGetHistogramParameteriv'); 
+   glGetHistogramParameterfv := wglGetProcAddress('glGetHistogramParameterfv'); 
+   glMinmax := wglGetProcAddress('glMinmax'); 
+   glResetMinmax := wglGetProcAddress('glResetMinmax'); 
+   glGetMinmax := wglGetProcAddress('glGetMinmax');
+   glGetMinmaxParameteriv := wglGetProcAddress('glGetMinmaxParameteriv');
+   glGetMinmaxParameterfv := wglGetProcAddress('glGetMinmaxParameterfv');
+
+   {$ifdef LINUX}
+   glXChooseVisual := GetProcAddress(GLHandle, 'glXChooseVisual');
+   glXCreateContext := GetProcAddress(GLHandle, 'glXCreateContext');
+   glXDestroyContext := GetProcAddress(GLHandle, 'glXDestroyContext'); 
+   glXMakeCurrent := GetProcAddress(GLHandle, 'glXMakeCurrent'); 
+   glXCopyContext := GetProcAddress(GLHandle, 'glXCopyContext'); 
+   glXSwapBuffers := GetProcAddress(GLHandle, 'glXSwapBuffers'); 
+   glXCreateGLXPixmap := GetProcAddress(GLHandle, 'glXCreateGLXPixmap');
+   glXDestroyGLXPixmap := GetProcAddress(GLHandle, 'glXDestroyGLXPixmap'); 
+   glXQueryExtension := GetProcAddress(GLHandle, 'glXQueryExtension'); 
+   glXQueryVersion := GetProcAddress(GLHandle, 'glXQueryVersion');
+   glXIsDirect := GetProcAddress(GLHandle, 'glXIsDirect'); 
+   glXGetConfig := GetProcAddress(GLHandle, 'glXGetConfig'); 
+   glXGetCurrentContext := GetProcAddress(GLHandle, 'glXGetCurrentContext');
+   glXGetCurrentDrawable := GetProcAddress(GLHandle, 'glXGetCurrentDrawable'); 
+   glXWaitGL := GetProcAddress(GLHandle, 'glXWaitGL'); 
+   glXWaitX := GetProcAddress(GLHandle, 'glXWaitX'); 
+   glXUseXFont := GetProcAddress(GLHandle, 'glXUseXFont');
+   glXQueryExtensionsString := GetProcAddress(GLHandle, 'glXQueryExtensionsString'); 
+   glXQueryServerString := GetProcAddress(GLHandle, 'glXQueryServerString'); 
+   glXGetClientString := GetProcAddress(GLHandle, 'glXGetClientString');
+   glXGetCurrentDisplay := GetProcAddress(GLHandle, 'glXGetCurrentDisplay'); 
+   glXChooseFBConfig := GetProcAddress(GLHandle, 'glXChooseFBConfig');
+   glXGetFBConfigAttrib := GetProcAddress(GLHandle, 'glXGetFBConfigAttrib');
+   glXGetFBConfigs := GetProcAddress(GLHandle, 'glXGetFBConfigs');
+   glXGetVisualFromFBConfig := GetProcAddress(GLHandle, 'glXGetVisualFromFBConfig'); 
+   glXCreateWindow := GetProcAddress(GLHandle, 'glXCreateWindow'); 
+   glXDestroyWindow := GetProcAddress(GLHandle, 'glXDestroyWindow'); 
+   glXCreatePixmap := GetProcAddress(GLHandle, 'glXCreatePixmap');
+   glXDestroyPixmap := GetProcAddress(GLHandle, 'glXDestroyPixmap'); 
+   glXCreatePbuffer := GetProcAddress(GLHandle, 'glXCreatePbuffer'); 
+   glXDestroyPbuffer := GetProcAddress(GLHandle, 'glXDestroyPbuffer');
+   glXQueryDrawable := GetProcAddress(GLHandle, 'glXQueryDrawable'); 
+   glXCreateNewContext := GetProcAddress(GLHandle, 'glXCreateNewContext'); 
+   glXMakeContextCurrent := GetProcAddress(GLHandle, 'glXMakeContextCurrent'); 
+   glXGetCurrentReadDrawable := GetProcAddress(GLHandle, 'glXGetCurrentReadDrawable');
+   glXQueryContext := GetProcAddress(GLHandle, 'glXQueryContext'); 
+   glXSelectEvent := GetProcAddress(GLHandle, 'glXSelectEvent'); 
+   glXGetSelectedEvent := GetProcAddress(GLHandle, 'glXGetSelectedEvent');
+   glXGetVideoSyncSGI := GetProcAddress(GLHandle, 'glXGetVideoSyncSGI'); 
+   glXWaitVideoSyncSGI := GetProcAddress(GLHandle, 'glXWaitVideoSyncSGI'); 
+   glXFreeContextEXT := GetProcAddress(GLHandle, 'glXFreeContextEXT'); 
+   glXGetContextIDEXT := GetProcAddress(GLHandle, 'glXGetContextIDEXT'); 
+   glXGetCurrentDisplayEXT := GetProcAddress(GLHandle, 'glXGetCurrentDisplayEXT');
+   glXImportContextEXT := GetProcAddress(GLHandle, 'glXImportContextEXT');
+   glXQueryContextInfoEXT := GetProcAddress(GLHandle, 'glXQueryContextInfoEXT');
+   glXCopySubBufferMESA := GetProcAddress(GLHandle, 'glXCopySubBufferMESA');
+   glXCreateGLXPixmapMESA := GetProcAddress(GLHandle, 'glXCreateGLXPixmapMESA');
+   glXReleaseBuffersMESA := GetProcAddress(GLHandle, 'glXReleaseBuffersMESA');
+   glXSet3DfxModeMESA := GetProcAddress(GLHandle, 'glXSet3DfxModeMESA');
+   {$endif}
+
    // GL extensions
    glArrayElementArrayEXT := wglGetProcAddress('glArrayElementArrayEXT');
    glColorTableEXT := wglGetProcAddress('glColorTableEXT');
@@ -3549,7 +3523,7 @@ begin
    // EXT_compiled_vertex_array
    glLockArraysEXT := wglGetProcAddress('glLockArraysEXT');
    glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT');
-  
+
    // EXT_vertex_array
    glArrayElementEXT := wglGetProcAddress('glArrayElementEXT');
    glColorPointerEXT := wglGetProcAddress('glColorPointerEXT');
@@ -3570,7 +3544,7 @@ begin
    glMultiTexCoord1iVARB := wglGetProcAddress('glMultiTexCoord1iVARB'); 
    glMultiTexCoord1sARBP := wglGetProcAddress('glMultiTexCoord1sARBP'); 
    glMultiTexCoord1sVARB := wglGetProcAddress('glMultiTexCoord1sVARB'); 
-   glMultiTexCoord2dARB := wglGetProcAddress('glMultiTexCoord2dARB'); 
+   glMultiTexCoord2dARB := wglGetProcAddress('glMultiTexCoord2dARB');
    glMultiTexCoord2dvARB := wglGetProcAddress('glMultiTexCoord2dvARB'); 
    glMultiTexCoord2fARB := wglGetProcAddress('glMultiTexCoord2fARB');
    glMultiTexCoord2fvARB := wglGetProcAddress('glMultiTexCoord2fvARB');
@@ -3717,7 +3691,7 @@ begin
 
    // GL_EXT_paletted_texture
    glGetColorTableParameterivEXT := wglGetProcAddress('glGetColorTableParameterivEXT'); 
-   glGetColorTableParameterfvEXT := wglGetProcAddress('glGetColorTableParameterfvEXT'); 
+   glGetColorTableParameterfvEXT := wglGetProcAddress('glGetColorTableParameterfvEXT');
 
    // GL_EXT_draw_range_elements
    glDrawRangeElementsEXT := wglGetProcAddress('glDrawRangeElementsEXT');
@@ -3738,7 +3712,7 @@ begin
    glSecondaryColor3uiEXT := wglGetProcAddress('glSecondaryColor3uiEXT'); 
    glSecondaryColor3uivEXT := wglGetProcAddress('glSecondaryColor3uivEXT'); 
    glSecondaryColor3usEXT := wglGetProcAddress('glSecondaryColor3usEXT');
-   glSecondaryColor3usvEXT := wglGetProcAddress('glSecondaryColor3usvEXT'); 
+   glSecondaryColor3usvEXT := wglGetProcAddress('glSecondaryColor3usvEXT');
    glSecondaryColorPointerEXT := wglGetProcAddress('glSecondaryColorPointerEXT'); 
 
    // GL_EXT_texture_perturb_normal
@@ -3759,7 +3733,7 @@ begin
    glBlendFuncSeparateEXT := wglGetProcAddress('glBlendFuncSeparateEXT');
 
    // GL_EXT_vertex_weighting
-   glVertexWeightfEXT := wglGetProcAddress('glVertexWeightfEXT'); 
+   glVertexWeightfEXT := wglGetProcAddress('glVertexWeightfEXT');
    glVertexWeightfvEXT := wglGetProcAddress('glVertexWeightfvEXT'); 
    glVertexWeightPointerEXT := wglGetProcAddress('glVertexWeightPointerEXT'); 
 
@@ -3780,7 +3754,7 @@ begin
    glGetCombinerInputParameterfvNV := wglGetProcAddress('glGetCombinerInputParameterfvNV');
    glGetCombinerInputParameterivNV := wglGetProcAddress('glGetCombinerInputParameterivNV'); 
    glGetCombinerOutputParameterfvNV := wglGetProcAddress('glGetCombinerOutputParameterfvNV');
-   glGetCombinerOutputParameterivNV := wglGetProcAddress('glGetCombinerOutputParameterivNV'); 
+   glGetCombinerOutputParameterivNV := wglGetProcAddress('glGetCombinerOutputParameterivNV');
    glGetFinalCombinerInputParameterfvNV := wglGetProcAddress('glGetFinalCombinerInputParameterfvNV'); 
    glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV');
 
@@ -3822,7 +3796,7 @@ begin
 
    // GL_NV_vertex_program
    glAreProgramsResidentNV := wglGetProcAddress('glAreProgramsResidentNV'); 
-   glBindProgramNV := wglGetProcAddress('glBindProgramNV'); 
+   glBindProgramNV := wglGetProcAddress('glBindProgramNV');
    glDeleteProgramsNV := wglGetProcAddress('glDeleteProgramsNV'); 
    glExecuteProgramNV := wglGetProcAddress('glExecuteProgramNV'); 
    glGenProgramsNV := wglGetProcAddress('glGenProgramsNV');
@@ -3864,7 +3838,7 @@ begin
    glVertexAttrib3fvNV := wglGetProcAddress('glVertexAttrib3fvNV');
    glVertexAttrib3sNV := wglGetProcAddress('glVertexAttrib3sNV');
    glVertexAttrib3svNV := wglGetProcAddress('glVertexAttrib3svNV');
-   glVertexAttrib4dNV := wglGetProcAddress('glVertexAttrib4dNV'); 
+   glVertexAttrib4dNV := wglGetProcAddress('glVertexAttrib4dNV');
    glVertexAttrib4dvNV := wglGetProcAddress('glVertexAttrib4dvNV'); 
    glVertexAttrib4fNV := wglGetProcAddress('glVertexAttrib4fNV'); 
    glVertexAttrib4fvNV := wglGetProcAddress('glVertexAttrib4fvNV'); 
@@ -4082,7 +4056,7 @@ begin
 
    GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
    GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
-   GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent'); 
+   GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners'); 
    GL_NV_texgen_emboss := CheckExtension('GL_NV_texgen_emboss'); 
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
@@ -4103,11 +4077,11 @@ begin
    GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
    GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
 
-   GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
+   GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture');
    GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
    GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
 
-   GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint'); 
+   GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
 
    WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
 
@@ -4119,6 +4093,8 @@ begin
 
    ReadWGLImplementationProperties;
 end;
+
+{$ifdef Win32}
 
 // ReadWGLImplementationProperties
 //
@@ -4147,6 +4123,14 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+function HasActiveContext: Boolean;
+// Returns True if the caller thread has an active (current) rendering context.
+begin
+   Result:=(ActivationRefCount>0);
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function SetupPalette(DC: HDC; PFD: TPixelFormatDescriptor): HPalette;
 
 var
@@ -4156,9 +4140,9 @@ var
   RedMask,
   GreenMask,
   BlueMask: Byte;
-   
+
 begin
-  nColors := 1 shl Pfd.cColorBits; 
+  nColors := 1 shl Pfd.cColorBits;
   LogPalette.palVersion := $300; 
   LogPalette.palNumEntries := nColors; 
   RedMask := (1 shl Pfd.cRedBits  ) - 1; 
@@ -4386,7 +4370,6 @@ begin
    {$endif}
 
    if (GLHandle<>INVALID_MODULEHANDLE) and (GLUHandle<>INVALID_MODULEHANDLE) then begin
-      LoadProcAddresses;
       Result:=True;
    end else begin
       if GLHandle<>INVALID_MODULEHANDLE then
