@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/07/02 - Egg - Added TCylinder.Align methods
       <li>07/07/02 - Egg - Added TPlane.Style
       <li>03/07/02 - Egg - TPolygon now properly setups normals (filippo)
       <li>17/03/02 - Egg - Support for transparent lines
@@ -745,6 +746,10 @@ type
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
          function AxisAlignedDimensions : TVector; override;
+
+         procedure Align(const startPoint, endPoint : TVector); overload;
+         procedure Align(const startObj, endObj : TGLBaseSceneObject); overload;
+         procedure Align(const startPoint, endPoint : TAffineVector); overload;
 
 		published
 			{ Published Declarations }
@@ -3052,6 +3057,35 @@ begin
   if r1>r then r:=r1;
   Result:=VectorMake(r, 0.5*FHeight, r);
   ScaleVector(Result, Scale.AsVector);
+end;
+
+// Align
+//
+procedure TCylinder.Align(const startPoint, endPoint : TVector);
+var
+   dir : TAffineVector;
+begin
+   AbsolutePosition:=startPoint;
+   VectorSubtract(endPoint, startPoint, dir);
+   if Parent<>nil then
+      dir:=Parent.AbsoluteToLocal(dir);
+   Up.AsAffineVector:=dir;
+   Height:=VectorLength(dir);
+   Lift(Height*0.5);
+end;
+
+// Align
+//
+procedure TCylinder.Align(const startObj, endObj : TGLBaseSceneObject);
+begin
+   Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
+end;
+
+// Align
+//
+procedure TCylinder.Align(const startPoint, endPoint : TAffineVector);
+begin
+   Align(PointMake(startPoint), PointMake(endPoint));
 end;
 
 //----------------- TAnnulus ---------------------------------------------------
