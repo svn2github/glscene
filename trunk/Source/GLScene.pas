@@ -559,7 +559,7 @@ type
             <i>with</i> scale accounted for, in the object's coordinates
             (not in absolute coordinates).<p>
             Default value is half the object's Scale.<br> }
-         function AxisAlignedDimensions : TVector; //virtual;
+         function AxisAlignedDimensions : TVector;
          function AxisAlignedDimensionsUnscaled : TVector; virtual;
 
          {: Calculates and return the AABB for the object.<p>
@@ -574,7 +574,7 @@ type
          function BoundingBoxUnscaled : THmgBoundingBox;
          {: Max distance of corners of the BoundingBox. }
          function BoundingSphereRadius : Single;
-         function BoundingSphereRadiusUnscaled : Single;         
+         function BoundingSphereRadiusUnscaled : Single;
          {: Indicates if a point is within an object.<p>
             Given coordinate is an absolute coordinate.<br>
             Linear or surfacic objects shall always return False.<p>
@@ -1053,6 +1053,38 @@ type
             entering, or exclusively use the GLMisc utility functions to alter
             the states.<br> }
          property OnRender : TDirectRenderEvent read FOnRender write FOnRender;
+   end;
+
+   // TGLRenderPoint
+   //
+   {: Scene object that allows other objects to issue rendering at some point.<p>
+      This object is used to specify a render point for which other components
+      have (rendering) tasks to perform. It doesn't render anything itself
+      and is invisible, but other components can register and be notified
+      when the point is reached in the rendering phase.<br>
+      Callbacks must be explicitly unregistered. }
+   TGLRenderPoint = class (TGLImmaterialSceneObject)
+      private
+         { Private Declarations }
+         FCallBacks : array of TDirectRenderEvent;
+         FFreeCallBacks : array of TNotifyEvent;
+
+      protected
+         { Protected Declarations }
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+         procedure BuildList(var rci : TRenderContextInfo); override;
+
+         procedure RegisterCallBack(renderEvent : TDirectRenderEvent;
+                                    renderPointFreed : TNotifyEvent);
+         procedure UnRegisterCallBack(renderEvent : TDirectRenderEvent);
+         procedure Clear;
+
+      published
+         { Published Declarations }
    end;
 
    // TGLProxyObject
@@ -5250,6 +5282,79 @@ begin
       if val then
          ObjectStyle:=ObjectStyle-[osDirectDraw]
       else ObjectStyle:=ObjectStyle+[osDirectDraw];
+   end;
+end;
+
+// ------------------
+// ------------------ TGLRenderPoint ------------------
+// ------------------
+
+// Create
+//
+constructor TGLRenderPoint.Create(AOwner: TComponent);
+begin
+   inherited;
+   ObjectStyle:=ObjectStyle+[osDirectDraw, osDoesTemperWithColorsOrFaceWinding];
+end;
+
+// Destroy
+//
+destructor TGLRenderPoint.Destroy;
+begin
+   Clear;
+   inherited;
+end;
+
+// BuildList
+//
+procedure TGLRenderPoint.BuildList(var rci : TRenderContextInfo);
+var
+   i : Integer;
+begin
+   for i:=0 to High(FCallBacks) do
+      FCallBacks[i](Self, rci);
+end;
+
+// RegisterCallBack
+//
+procedure TGLRenderPoint.RegisterCallBack(renderEvent : TDirectRenderEvent;
+                                          renderPointFreed : TNotifyEvent);
+var
+   n : Integer;
+begin
+   n:=Length(FCallBacks);
+   SetLength(FCallBacks, n+1);
+   SetLength(FFreeCallBacks, n+1);
+   FCallBacks[n]:=renderEvent;
+   FFreeCallBacks[n]:=renderPointFreed;
+end;
+
+// UnRegisterCallBack
+//
+procedure TGLRenderPoint.UnRegisterCallBack(renderEvent : TDirectRenderEvent);
+var
+   i, j, n : Integer;
+begin
+   n:=Length(FCallBacks);
+   for i:=0 to n do begin
+      if CompareMem(@FCallBacks[i], @renderEvent, SizeOf(TDirectRenderEvent)) then begin
+         for j:=i+1 to n-1 do begin
+            FCallBacks[j-1]:=FCallBacks[j];
+            FFreeCallBacks[j-1]:=FFreeCallBacks[j];
+         end;
+         SetLength(FCallBacks, n-1);
+         SetLength(FFreeCallBacks, n-1);
+      end;
+   end;
+end;
+
+// BuildList
+//
+procedure TGLRenderPoint.Clear;
+begin
+   while Length(FCallBacks)>0 do begin
+      FFreeCallBacks[High(FCallBacks)](Self);
+      SetLength(FCallBacks, Length(FCallBacks)-1);
    end;
 end;
 
