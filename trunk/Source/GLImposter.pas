@@ -678,7 +678,7 @@ procedure TGLImposterBuilder.DoUserSpecifiedImposter(destImposter : TImposter;
                                                      bmp32 : TGLBitmap32);
 begin
    destImposter.PrepareTexture;
-   bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA);
+   bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA8);
 end;
 
 // NotifyChange
