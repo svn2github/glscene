@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/09/03 - EG - Improved some TPersistentObjectList methods
       <li>12/02/03 - EG - Added IPersistentObject
       <li>09/09/01 - EG - Optimized Pack (x2.5)
       <li>14/08/01 - EG - Added AfterObjectCreatedByReader
@@ -28,6 +29,8 @@ interface
 uses Classes, SysUtils;
 
 type
+
+   PObject = ^TObject;
 
    // TVirtualReader
    //
@@ -173,7 +176,7 @@ type
 			procedure Error; virtual;
 			function  Get(Index: Integer): TObject;
 			procedure Put(Index: Integer; Item: TObject);
-			procedure SetCapacity(NewCapacity: Integer);
+			procedure SetCapacity(newCapacity : Integer);
 			procedure SetCount(NewCount: Integer);
 			function GetFirst : TObject;
 			procedure SetFirst(item : TObject);
@@ -746,29 +749,31 @@ end;
 
 // Delete
 //
-procedure TPersistentObjectList.Delete(Index: Integer);
+procedure TPersistentObjectList.Delete(index : Integer);
 begin
 {$IFOPT R+}
-	if (Cardinal(Index)>=Cardinal(FCount)) then Error;
+	if Cardinal(Index)>=Cardinal(FCount) then Error;
 {$ENDIF}
 	Dec(FCount);
-	if Index < FCount then
-		System.Move(FList^[Index+1], FList^[Index], (FCount-Index)*SizeOf(TObject));
+	if index<FCount then
+		System.Move(FList[index+1], FList[index], (FCount-index)*SizeOf(TObject));
 end;
 
 // Exchange
 //
-procedure TPersistentObjectList.Exchange(Index1, Index2: Integer);
+procedure TPersistentObjectList.Exchange(index1, index2 : Integer);
 var
-	Item: TObject;
+	item : TObject;
+   locList : PPointerObjectList;
 begin
 {$IFOPT R+}
 	if (Cardinal(Index1)>=Cardinal(FCount))
 		or	(Cardinal(Index2)>=Cardinal(FCount)) then Error;
 {$ENDIF}
-	Item:=FList^[Index1];
-	FList^[Index1]:=FList^[Index2];
-	FList^[Index2]:=Item;
+   locList:=FList;
+	item:=locList[index1];
+	locList[index1]:=locList[index2];
+	locList[index2]:=item;
 end;
 
 // Expand
@@ -776,7 +781,7 @@ end;
 function TPersistentObjectList.Expand: TPersistentObjectList;
 begin
 	if FCount=FCapacity then
-		SetCapacity(FCapacity + FGrowthDelta);
+		SetCapacity(FCapacity+FGrowthDelta);
 	Result:=Self;
 end;
 
@@ -784,14 +789,20 @@ end;
 //
 function TPersistentObjectList.GetFirst: TObject;
 begin
-	Result:=Get(0);
+{$IFOPT R+}
+	if Cardinal(FCount)=0 then Error;
+{$ENDIF}
+	Result:=FList[0];
 end;
 
 // SetFirst
 //
 procedure TPersistentObjectList.SetFirst(item : TObject);
 begin
-	Put(0, item);
+{$IFOPT R+}
+	if Cardinal(FCount)=0 then Error;
+{$ENDIF}
+   FList[0]:=item;
 end;
 
 // Error
@@ -845,17 +856,17 @@ end;
 
 // Insert
 //
-procedure TPersistentObjectList.Insert(Index: Integer; Item: TObject);
+procedure TPersistentObjectList.Insert(index : Integer; item: TObject);
 begin
 {$IFOPT R+}
-	if Cardinal(Index)>Cardinal(FCount) then Error;
+	if Cardinal(index)>Cardinal(FCount) then Error;
 {$ENDIF}
-	if FCount = FCapacity then
-		SetCapacity(FCapacity + FGrowthDelta);
-	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
-						(FCount - Index) * SizeOf(TObject));
-	FList^[Index] := Item;
+	if FCount=FCapacity then
+		SetCapacity(FCapacity+FGrowthDelta);
+	if Index<FCount then
+		System.Move(FList[index], FList[index+1],
+						(FCount-index)*SizeOf(TObject));
+	FList[index]:=item;
 	Inc(FCount);
 end;
 
@@ -863,30 +874,43 @@ end;
 //
 function TPersistentObjectList.GetLast: TObject;
 begin
-	Result:=Get(FCount-1)
+{$IFOPT R+}
+	if Cardinal(FCount)=0 then Error;
+{$ENDIF}
+	Result:=FList[FCount-1];
 end;
 
 // SetLast
 //
 procedure TPersistentObjectList.SetLast(item : TObject);
 begin
-	Put(FCount-1, item);
+{$IFOPT R+}
+	if Cardinal(FCount)=0 then Error;
+{$ENDIF}
+	FList[FCount-1]:=item;
 end;
 
 // Move
 //
 procedure TPersistentObjectList.Move(CurIndex, NewIndex: Integer);
 var
-	Item: TObject;
+   item : Pointer;
 begin
-	if CurIndex <> NewIndex then begin
+   if curIndex<>newIndex then begin
 {$IFOPT R+}
-		if (NewIndex < 0) or (NewIndex >= FCount) then Error;
+      if Cardinal(newIndex)>=Cardinal(Count) then Error;
+      if Cardinal(curIndex)>=Cardinal(Count) then Error;
 {$ENDIF}
-		Item := Get(CurIndex);
-		Delete(CurIndex);
-		Insert(NewIndex, Item);
-	end;
+      item:=List[curIndex];
+      if curIndex<newIndex then begin
+         // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
+         System.Move(List[curIndex+1], List[curIndex], (newIndex-curIndex-1)*SizeOf(TObject));
+      end else begin
+         // newIndex+1 necessarily exists since newIndex<curIndex and curIndex<Count
+         System.Move(List[newIndex], List[newIndex+1], (curIndex-newIndex-1)*SizeOf(TObject));
+      end;
+      List[newIndex]:=item;
+   end;
 end;
 
 // Put
@@ -896,46 +920,54 @@ begin
 {$IFOPT R+}
 	if Cardinal(Index)>=Cardinal(FCount) then Error;
 {$ENDIF}
-//   if not Shared then FList^[Index].Free;
 	FList^[Index] := Item;
 end;
 
 // Remove
 //
-function TPersistentObjectList.Remove(Item: TObject): Integer;
+function TPersistentObjectList.Remove(item : TObject) : Integer;
 begin
-	Result:=IndexOf(Item);
-	if Result>=0 then Delete(Result);
+	Result:=IndexOf(item);
+	if Result>=0 then
+      Delete(Result);
 end;
 
 // Pack
 //
 procedure TPersistentObjectList.Pack;
 var
-	i : Integer;
-   srcList, destList : PPointerObjectList;
-   obj : TObject;
+   i, j, n : Integer;
+   p : PPointerObjectList;
+   pk : PObject;
 begin
-   srcList:=FList;
-   destList:=FList;
-   for i:=0 to FCount-1 do begin
-      obj:=srcList[0];
-      if obj<>nil then begin
-         destList[0]:=obj;
-         destList:=Pointer(Integer(destList)+SizeOf(TObject));
+   p:=List;
+   n:=Count-1;
+   while (n>=0) and (p[n]=nil) do Dec(n);
+   for i:=0 to n do begin
+      if p[i]=nil then begin
+         pk:=@p[i];
+         for j:=i+1 to n do begin
+            if p[j]<>nil then begin
+               pk^:=p[j];
+               Inc(pk);
+            end;
+         end;
+         SetCount((Integer(pk)-Integer(p)) div SizeOf(TObject));
+         Exit;
       end;
-      srcList:=Pointer(Integer(srcList)+SizeOf(TObject));
    end;
-	SetCount((Integer(destList)-Integer(FList)) div 4);
+   SetCount(n+1);
 end;
 
 // SetCapacity
 //
-procedure TPersistentObjectList.SetCapacity(NewCapacity: Integer);
+procedure TPersistentObjectList.SetCapacity(newCapacity: Integer);
 begin
-	if NewCapacity <> FCapacity then	begin
-		ReallocMem(FList, NewCapacity * SizeOf(TObject));
-		FCapacity := NewCapacity;
+	if newCapacity<>FCapacity then begin
+      if newCapacity<FCount then
+         FCount:=newCapacity;
+		ReallocMem(FList, newCapacity*SizeOf(TObject));
+		FCapacity:=newCapacity;
 	end;
 end;
 
@@ -943,17 +975,18 @@ end;
 //
 procedure TPersistentObjectList.RequiredCapacity(aCapacity : Integer);
 begin
-   if FCapacity<aCapacity then SetCapacity(aCapacity);
+   if FCapacity<aCapacity then
+      SetCapacity(aCapacity);
 end;
 
 // SetCount
 //
-procedure TPersistentObjectList.SetCount(NewCount : Integer);
+procedure TPersistentObjectList.SetCount(newCount : Integer);
 begin
-	if NewCount>FCapacity then
-		SetCapacity(NewCount);
-	if NewCount>FCount then
-		FillChar(FList^[FCount], (NewCount-FCount)*SizeOf(TObject), 0);
+	if newCount>FCapacity then
+		SetCapacity(newCount);
+	if newCount>FCount then
+		FillChar(FList[FCount], (newCount-FCount)*SizeOf(TObject), 0);
 	FCount:=NewCount;
 end;
 
@@ -973,9 +1006,9 @@ end;
 function TPersistentObjectList.RemoveAndFree(item : TObject) : Integer;
 begin
    Result:=IndexOf(item);
-	if Result<>-1 then begin
+	if Result>=0 then begin
       Delete(Result);
-      Item.Free;
+      item.Free;
    end;
 end;
 
@@ -987,7 +1020,7 @@ var
 begin
 	// a 'for' loop could crash if freeing an item removes other items form the list
 	i:=FCount-1; while i>=0 do begin
-		if i<FCount then FList^[i].Free;
+		if i<FCount then FList[i].Free;
 		Dec(i);
 	end;
 	Clear;
@@ -1030,13 +1063,13 @@ begin
          WriteInteger(0); // Archive Version 0 (uh... not exactly... but...)
          WriteListBegin;
          for i:=0 to FCount-1 do begin
-            if FList^[i]=nil then begin
+            if FList[i]=nil then begin
                // store nil as... nil
                WriteBoolean(False);
                WriteInteger(0);
             end else if (FList^[i] is TPersistentObject) then begin
                // yeah, a TPersistentObject
-               aType:=FList^[i].ClassType;
+               aType:=FList[i].ClassType;
                objId:=objTypes.IndexOf(aType);
                if objId<0 then begin
                   // class is unknown
@@ -1046,11 +1079,11 @@ begin
                   // class already registered
                   WriteInteger(objId);
                end;
-               TPersistentObject(FList^[i]).WriteToFiler(writer);
+               TPersistentObject(FList[i]).WriteToFiler(writer);
             end else begin
                // Dunno that stuff here, store as is
                WriteBoolean(False);
-               WriteInteger(Integer(FList^[i]));
+               WriteInteger(Integer(FList[i]));
             end;
          end;
          WriteListEnd;
@@ -1138,8 +1171,8 @@ end;
 function TPersistentObjectList.Pop : TObject;
 begin
 	if FCount>0 then begin
-		Result:=GetLast;
-		Delete(FCount-1);
+		Result:=FList[FCount-1];
+      Dec(FCount);
 	end else Result:=nil;
 end;
 
