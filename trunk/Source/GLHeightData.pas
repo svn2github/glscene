@@ -857,7 +857,7 @@ begin
    FWordRaster:=nil;
    FByteData:=Pointer(FWordData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=FWordData[i] shr 5;
+      FByteData[i]:=FWordData[i] shr 8;
    ReallocMem(FByteData, Size*Size*SizeOf(Byte));
    FWordData:=nil;
    BuildByteRaster;
