@@ -826,7 +826,6 @@ var
    allowed, keepChildren : Boolean;
    confirmMsg : String;
    buttons : TMsgDlgButtons;
-   i:integer;
 begin
   if FSelectedItems=BEHAVIOURS_SELECTED then
   begin
