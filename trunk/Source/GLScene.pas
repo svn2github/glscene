@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>30/11/01 - Egg - Hardware acceleration detection support
+      <li>30/11/01 - Egg - Hardware acceleration detection support,
+                           Added Camera.SceneScale (based on code by Chris S)
       <li>24/09/01 - Egg - TGLProxyObject loop rendering protection
       <li>14/09/01 - Egg - Use of vFileStreamClass
       <li>04/09/01 - Egg - Texture binding cache
@@ -911,6 +912,7 @@ type
          FTargetObject : TGLBaseSceneObject;
          FLastDirection : TVector; // Not persistent
          FCameraStyle : TGLCameraStyle;
+         FSceneScale : Single;
 
       protected
          { Protected Declarations }
@@ -919,6 +921,8 @@ type
          procedure SetDepthOfView(AValue: Single);
          procedure SetFocalLength(AValue: Single);
          procedure SetCameraStyle(const val : TGLCameraStyle);
+         procedure SetSceneScale(value : Single);
+         function StoreSceneScale : Boolean;
 
       public
          { Public Declarations }
@@ -984,10 +988,15 @@ type
             and the Z-Buffer precision cannot account for all that depth
             accurately : objects farther overlap closer objects and vice-versa.<p>
             Note that this value is ignored in cSOrtho2D mode. }
-         property DepthOfView: Single read FDepthOfView write SetDepthOfView;
+         property DepthOfView : Single read FDepthOfView write SetDepthOfView;
          {: Focal Length of the camera.<p>
-            Adjusting this value allows for zooming effects. }
-         property FocalLength: Single read FFocalLength write SetFocalLength;
+            Adjusting this value allows for lens zooming effects (use SceneScale
+            for linear zooming). This property affects near/far planes clipping. }
+         property FocalLength : Single read FFocalLength write SetFocalLength;
+         {: Scene scaling for camera point.<p>
+            This is a linear 2D scaling of the camera's output, allows for
+            linear zooming (use FocalLength for lens zooming). }
+         property SceneScale : Single read FSceneScale write SetSceneScale stored StoreSceneScale;
          {: If set, camera will point to this object.<p>
             When camera is pointing an object, the Direction vector is ignored
             and the Up vector is used as an absolute vector to the up. }
@@ -3631,6 +3640,7 @@ begin
    FDepthOfView:=100;
    FDirection.Initialize(VectorMake(0, 0, -1, 0));
    FCameraStyle:=csPerspective;
+   FSceneScale:=1;
 end;
 
 // destroy
@@ -3640,6 +3650,8 @@ begin
    inherited;
 end;
 
+// Apply
+//
 procedure TGLCamera.Apply;
 var
    v, d : TVector;
@@ -3675,6 +3687,7 @@ procedure TGLCamera.ApplyPerspective(Viewport: TRectangle; Width, Height: Intege
 var
    Left, Right, Top, Bottom, zFar, MaxDim, Ratio, f: Double;
 begin
+   if (Width<=0) or (Height<=0) then Exit;
    if CameraStyle=csOrtho2D then begin
       gluOrtho2D (0, Width, 0, Height);
       FNearPlane:=-1;
@@ -3694,8 +3707,8 @@ begin
       // in OGL is the lower left corner
 
       if CameraStyle=csPerspective then
-         f:=1/Width
-      else f:=100/(focalLength*Width);
+         f:=1/(Width*FSceneScale)
+      else f:=100/(focalLength*Width*FSceneScale);
 
       // calculate window/viewport ratio for right extent
       Ratio:=(2 * Viewport.Width + 2 * Viewport.Left - Width) * f;
@@ -3709,8 +3722,8 @@ begin
       Left:=-Ratio * Width / (2 * MaxDim);
 
       if CameraStyle=csPerspective then
-         f:=1/Height
-      else f:=100/(focalLength*Height);
+         f:=1/(Height*FSceneScale)
+      else f:=100/(focalLength*Height*FSceneScale);
 
       // top extent (keep in mind the origin is left lower corner):
       Ratio:=(2 * Viewport.Height + 2 * Viewport.Top - Height) * f;
@@ -3990,6 +4003,24 @@ begin
       FCameraStyle:=val;
       NotifyChange(Self);
    end;
+end;
+
+// SetSceneScale
+//
+procedure TGLCamera.SetSceneScale(value : Single);
+begin
+   if value=0 then value:=1;
+   if FSceneScale<>value then begin
+      FSceneScale:=value;
+      NotifyChange(Self);
+   end;
+end;
+
+// StoreSceneScale
+//
+function TGLCamera.StoreSceneScale : Boolean;
+begin
+   Result:=(FSceneScale<>1);
 end;
 
 // DoRender
