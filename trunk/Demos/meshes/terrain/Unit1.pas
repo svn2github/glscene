@@ -44,6 +44,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     { Déclarations privées }
   public
@@ -128,6 +129,18 @@ begin
    HUDText1.Text:=Format('%.1f FPS - %d',
                          [GLSceneViewer1.FramesPerSecond, TerrainRenderer1.LastTriangleCount]);
    GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+   case Key of
+      'w', 'W' : with GLMaterialLibrary1.Materials[0].Material.FrontProperties do begin
+         if PolygonMode=pmLines then
+            PolygonMode:=pmFill
+         else PolygonMode:=pmLines;
+      end;
+   end;
+   Key:=#0;
 end;
 
 end.
