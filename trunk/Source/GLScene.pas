@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/12/03 - Dave - Added ProxyObject.OctreeRayCastIntersect
       <li>26/12/03 - EG - Removed last TList dependencies
       <li>05/12/03 - Dave - Added GLCamera.PointInFront
                    - Dave - Remade Data property to use Tag
@@ -1013,6 +1014,11 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
+         {:If the MasterObject is a FreeForm, you can raycast against the Octree,
+           which is alot faster.  You must build the octree before using. :}
+         function OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
       published
@@ -2026,7 +2032,8 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO;
+   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO,
+   GLVectorFileObjects;
 
 var
    vCounterFrequency : Int64;
@@ -5178,6 +5185,38 @@ begin
       NormalizeVector(localRayVector);
 
       Result:=MasterObject.RayCastIntersect(localRayStart, localRayVector,
+                                            intersectPoint, intersectNormal);
+      if Result then begin
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
+            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
+            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         end;
+      end;
+   end else Result:=False;
+end;
+
+// OctreeRayCastIntersect
+//
+function TGLProxyObject.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
+var
+   localRayStart, localRayVector : TVector;
+begin
+   if Assigned(MasterObject)
+    and (MasterObject is TGLFreeForm)
+    then begin
+      SetVector(localRayStart, AbsoluteToLocal(rayStart));
+      SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
+      SetVector(localRayVector, AbsoluteToLocal(rayVector));
+      SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
+      NormalizeVector(localRayVector);
+
+      Result:=TGLFreeForm(MasterObject).OctreeRayCastIntersect(localRayStart, localRayVector,
                                             intersectPoint, intersectNormal);
       if Result then begin
          if Assigned(intersectPoint) then begin
