@@ -190,7 +190,7 @@ implementation
 uses KeyBoard, GraphicEx, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
-   GLFilePLY, GLFileGTS, GLMeshOptimizer, GLState;
+   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer, GLState;
 
 type
 
