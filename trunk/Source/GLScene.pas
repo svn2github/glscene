@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>15/12/01 - EG - Added support for AlphaBits
+      <li>16/12/01 - Egg - Cube maps support (textures and dynamic rendering)
+      <li>15/12/01 - Egg - Added support for AlphaBits
       <li>12/12/01 - Egg - Introduced TGLNonVisualViewer,
                            TGLSceneViewer moved to GLWin32Viewer
       <li>07/12/01 - Egg - Added TGLBaseSceneObject.PointTo
@@ -925,6 +926,7 @@ type
          FLastDirection : TVector; // Not persistent
          FCameraStyle : TGLCameraStyle;
          FSceneScale : Single;
+         FDeferredApply : TNotifyEvent;
 
       protected
          { Protected Declarations }
@@ -1516,6 +1518,10 @@ type
          { Private Declarations }
          FBuffer : TGLSceneBuffer;
          FWidth, FHeight : Integer;
+         FCubeMapRotIdx : Integer;
+         FCubeMapZNear, FCubeMapZFar : Single;
+         FCubeMapTranslation : TAffineVector;
+         FCreateTexture : Boolean;
 
       protected
          { Protected Declarations }
@@ -1531,7 +1537,8 @@ type
          procedure SetWidth(const val : Integer);
          procedure SetHeight(const val : Integer);
 
-         procedure DoOnPrepareGLContext(sender : TObject);
+         procedure SetupCubeMapCamera(Sender : TObject);
+         procedure DoOnPrepareGLContext(Sender : TObject);
          procedure PrepareGLContext; dynamic;
          procedure DoBufferChange(Sender : TObject); virtual;
          procedure DoBufferStructuralChange(Sender : TObject); virtual;
@@ -1547,6 +1554,15 @@ type
          procedure CopyToTexture(aTexture : TGLTexture); overload; virtual;
          procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
                                  xDest, yDest : Integer); overload;
+         {: Renders the 6 texture maps from a scene.<p>
+            The viewer is used to render the 6 images, one for each face
+            of the cube, from the absolute position of the camera.<p>
+            This does NOT alter the content of the Pictures in the image,
+            and will only change or define the content of textures as
+            registered by OpenGL. }
+         procedure RenderCubeMapTextures(cubeMapTexture : TGLTexture;
+                                         zNear : Single = 0;
+                                         zFar : Single = 0);
 
       published
          { Public Declarations }
@@ -3631,29 +3647,33 @@ var
    absPos : TVector;
    mat : TMatrix;
 begin
-   if Assigned(FTargetObject) then begin
-      // get our target's absolute coordinates
-      v:=TargetObject.AbsolutePosition;
-      absPos:=AbsolutePosition;
-      VectorSubtract(v, absPos, d);
-      NormalizeVector(d);
-      FLastDirection:=d;
-      gluLookAt(absPos[0], absPos[1], absPos[2],
-                v[0], v[1], v[2],
-                Up.X, Up.Y, Up.Z);
-   end else begin
-      mat:=Parent.AbsoluteMatrix;
-      absPos:=AbsolutePosition;
-      v:=VectorTransform(Direction.AsVector, mat);
-      FLastDirection:=v;
-      d:=VectorTransform(Up.AsVector, mat);
-      gluLookAt(absPos[0], absPos[1], absPos[2],
-                absPos[0]+v[0],
-                absPos[1]+v[1],
-                absPos[2]+v[2],
-                d[0], d[1], d[2]);
+   if Assigned(FDeferredApply) then
+      FDeferredApply(Self)
+   else begin
+      if Assigned(FTargetObject) then begin
+         // get our target's absolute coordinates
+         v:=TargetObject.AbsolutePosition;
+         absPos:=AbsolutePosition;
+         VectorSubtract(v, absPos, d);
+         NormalizeVector(d);
+         FLastDirection:=d;
+         gluLookAt(absPos[0], absPos[1], absPos[2],
+                   v[0], v[1], v[2],
+                   Up.X, Up.Y, Up.Z);
+      end else begin
+         mat:=Parent.AbsoluteMatrix;
+         absPos:=AbsolutePosition;
+         v:=VectorTransform(Direction.AsVector, mat);
+         FLastDirection:=v;
+         d:=VectorTransform(Up.AsVector, mat);
+         gluLookAt(absPos[0], absPos[1], absPos[2],
+                   absPos[0]+v[0],
+                   absPos[1]+v[1],
+                   absPos[2]+v[2],
+                   d[0], d[1], d[2]);
+      end;
+      Exclude(FChanges, ocStructure);
    end;
-   Exclude(FChanges, ocStructure);
 end;
 
 procedure TGLCamera.ApplyPerspective(Viewport: TRectangle; Width, Height: Integer; DPI: Integer);
@@ -4695,6 +4715,7 @@ begin
    end;
    rci.viewPortSize.cx:=viewPortSizeX;
    rci.viewPortSize.cy:=viewPortSizeY;
+   rci.modelViewMatrix:=@aBuffer.FModelViewMatrix;
    rci.currentStates:=aBuffer.FCurrentStates;
    rci.materialLibrary:=nil;
    rci.fogDisabledCounter:=0;
@@ -6244,18 +6265,102 @@ end;
 
 // CopyToTexture
 //
-procedure TGLNonVisualViewer.CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
-                                        xDest, yDest : Integer);
+procedure TGLNonVisualViewer.CopyToTexture(aTexture : TGLTexture;
+                                           xSrc, ySrc, width, height : Integer;
+                                           xDest, yDest : Integer);
+var
+   target, handle : Integer;
+   buf : PChar;
 begin
    if Buffer.RenderingContext<>nil then begin
       Buffer.RenderingContext.Activate;
       try
-         SetGLCurrentTexture(0, GL_TEXTURE_2D, aTexture.Handle);
-         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc, width, height);
-         CheckOpenGLError;
+         target:=aTexture.Image.NativeTextureTarget;
+         if (target<>GL_TEXTURE_CUBE_MAP_ARB) or (FCubeMapRotIdx=0) then begin
+            FCreateTexture:=not aTexture.IsHandleAllocated;
+            if FCreateTexture then
+               handle:=aTexture.AllocateHandle
+            else handle:=aTexture.Handle;
+         end else handle:=aTexture.Handle;
+         SetGLCurrentTexture(0, target, handle);
+         if target=GL_TEXTURE_CUBE_MAP_ARB then
+            target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
+         if FCreateTexture then begin
+            GetMem(buf, Width*Height*4);
+            try
+               if GL_SGIS_generate_mipmap then
+                  glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+               glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                            0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+            finally
+               FreeMem(buf);
+            end;
+         end else begin
+            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
+         end;
+CheckOpenGLError;
+         ClearGLError;
       finally
          Buffer.RenderingContext.Deactivate;
       end;
+   end;
+end;
+
+// SetupCubeMapCamera
+//
+procedure TGLNonVisualViewer.SetupCubeMapCamera(Sender : TObject);
+const
+   cRot : array [0..5, 0..1] of Single = (
+         (   0,   0), (   0, 180),   // PX, NX
+         ( -90,   0), (  90,   0),   // PY, NY
+         (   0,  90), (   0, -90));  // PZ, NZ
+begin
+   // Setup appropriate FOV
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity;
+   gluPerspective(90, 1, FCubeMapZNear, FCubeMapZFar);
+   // Setup appropriate orientation
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity;
+   gluLookAt(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 0.0); // Dir = X, Up = Y
+   glRotatef(cRot[FCubeMapRotIdx][0], 0.0, 0.0, 1.0); // Rotate around Z
+   glRotatef(cRot[FCubeMapRotIdx][1], 0.0, 1.0, 0.0); // then rotate around Y
+   glTranslatef(FCubeMapTranslation[0], FCubeMapTranslation[1], FCubeMapTranslation[2]);
+end;
+
+// RenderTextures
+//
+procedure TGLNonVisualViewer.RenderCubeMapTextures(cubeMapTexture : TGLTexture;
+                                                   zNear : Single = 0;
+                                                   zFar : Single = 0);
+var
+   oldEvent : TNotifyEvent;
+begin
+   Assert((Width=Height), 'Memory Viewer must render to a square!');
+   Assert(Assigned(FBuffer.FCamera), 'Camera not specified');
+   Assert(Assigned(cubeMapTexture), 'Texture not specified');
+   Assert((cubeMapTexture.Image is TGLCubeMapImage), 'Texture is not CubeMap');
+
+   if zFar<=0 then
+      zFar:=FBuffer.FCamera.DepthOfView;
+   if zNear<=0 then
+      zNear:=zFar*0.001;
+
+   oldEvent:=FBuffer.FCamera.FDeferredApply;
+   FBuffer.FCamera.FDeferredApply:=SetupCubeMapCamera;
+   FCubeMapZNear:=zNear;
+   FCubeMapZFar:=zFar;
+   VectorScale(FBuffer.FCamera.AbsolutePosition, -1, FCubeMapTranslation);
+   try
+      FCubeMapRotIdx:=0;
+      while FCubeMapRotIdx<6 do begin
+         Render;
+         CopyToTexture(cubeMapTexture);
+         Inc(FCubeMapRotIdx);
+      end;
+   finally
+      FBuffer.FCamera.FDeferredApply:=oldEvent;
    end;
 end;
 

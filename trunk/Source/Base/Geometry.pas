@@ -705,6 +705,10 @@ procedure ScaleMatrix(var M : TAffineMatrix; const factor : Single); overload;
 //: Multiplies all elements of a 4x4 matrix with a factor
 procedure ScaleMatrix(var M : TMatrix; const factor : Single); overload;
 
+{: Normalize the matrix and remove the translation component.<p>
+   The resulting matrix is an orthonormal matrix (Y direction preserved, then Z) }
+procedure NormalizeMatrix(var M : TMatrix);
+
 //: Computes transpose of 3x3 matrix
 procedure TransposeMatrix(var M: TAffineMatrix); overload;
 //: Computes transpose of 4x4 matrix
@@ -3687,6 +3691,17 @@ begin
       M[I, 2]:=M[I, 2] * Factor;
       M[I, 3]:=M[I, 3] * Factor;
    end;
+end;
+
+// NormalizeMatrix
+//
+procedure NormalizeMatrix(var M : TMatrix);
+begin
+   M[0][3]:=0; NormalizeVector(M[0]);
+   M[1][3]:=0; NormalizeVector(M[1]);
+   M[2]:=VectorCrossProduct(M[0], M[1]);
+   M[0]:=VectorCrossProduct(M[1], M[2]);
+   M[3]:=WHmgVector;
 end;
 
 // TransposeMatrix

@@ -747,10 +747,8 @@ begin
       f:=(NearPlane+DepthOfView)*0.95;
    glScalef(f, f, f);
    glMultMatrixf(@LocalMatrix);
-
-//   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
    // render
+//   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glCallList(GetHandle(rci));
    // restore
    glPopMatrix;

@@ -3,7 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>15/12/01 - EG - Added support for cube maps (texture and mappings)
+      <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
       <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>06/09/01 - EG - No longers depends on 'Windows'
@@ -308,6 +308,7 @@ type
       visibilityCulling : TGLVisibilityCulling;
       cameraPosition : TVector;
       cameraDirection : TVector;
+      modelViewMatrix : PMatrix;
       rcci : TRenderContextClippingInfo;
       viewPortSize : TGLSize;
       currentStates : TGLStates;
@@ -741,8 +742,8 @@ type
          procedure PrepareBuildList;
          procedure ApplyMappingMode;
          procedure UnApplyMappingMode;
-			procedure Apply(var currentStates : TGLStates);
-         procedure UnApply;
+			procedure Apply(var rci : TRenderContextInfo);
+         procedure UnApply(var rci : TRenderContextInfo);
          procedure ApplyAsTexture2(libMaterial : TGLLibMaterial);
          procedure UnApplyAsTexture2(libMaterial : TGLLibMaterial);
 
@@ -759,6 +760,13 @@ type
             is defined), otherwise the estimated size (from TextureFormat
             specification) is returned. }
          function TextureImageRequiredMemory : Integer;
+         {: Allocates the texture handle if not already allocated.<p>
+            The texture is binded and parameters are setup, but no image data
+            is initialized by this call - for expert use only. }
+         function AllocateHandle : TGLuint;
+         function IsHandleAllocated : Boolean;
+         {: Returns OpenGL texture format corresponding to current options. }
+         function OpenGLTextureFormat : Integer;
 
          property Enabled : Boolean read GetEnabled write SetEnabled;
 			property Handle : TGLuint read GetHandle;
@@ -2528,33 +2536,48 @@ begin
    if MappingMode<>tmmUser then begin
       glDisable(GL_TEXTURE_GEN_S);
       glDisable(GL_TEXTURE_GEN_T);
+      glEnable(GL_TEXTURE_GEN_R);
    end;
 end;
 
 // Apply
 //
-procedure TGLTexture.Apply(var currentStates : TGLStates);
+procedure TGLTexture.Apply(var rci : TRenderContextInfo);
+var
+   m : TMatrix;
 begin
 	if not Disabled then begin
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
-   		SetGLState(currentStates, stTexture2D);
+   		SetGLState(rci.currentStates, stTexture2D);
    	   SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
       end else begin
-         SetGLState(currentStates, stTextureCubeMap);
+         SetGLState(rci.currentStates, stTextureCubeMap);
    	   SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
+         // compute model view matrix for proper viewing
+         glMatrixMode(GL_TEXTURE);
+         m:=rci.modelViewMatrix^;
+         NormalizeMatrix(m);
+         TransposeMatrix(m);  // = Matrix inversion (matrix is now orthonormal)
+         glLoadMatrixf(@m);
+         glMatrixMode(GL_MODELVIEW);
       end;
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ApplyMappingMode;
 	end else begin
-      UnSetGLState(currentStates, stTexture2D);
-      UnSetGLState(currentStates, stTextureCubeMap);
+      UnSetGLState(rci.currentStates, stTexture2D);
+      UnSetGLState(rci.currentStates, stTextureCubeMap);
    end;
 end;
 
 // UnApply
 //
-procedure TGLTexture.UnApply;
+procedure TGLTexture.UnApply(var rci : TRenderContextInfo);
 begin
+   if stTextureCubeMap in rci.currentStates then begin
+      glMatrixMode(GL_TEXTURE);
+      glLoadIdentity;
+      glMatrixMode(GL_MODELVIEW);
+   end;
    UnApplyMappingMode;
 end;
 
@@ -2592,32 +2615,65 @@ begin
    glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
+// AllocateHandle
+//
+function TGLTexture.AllocateHandle : TGLuint;
+var
+   target : TGLUInt;
+begin
+   if FTextureHandle.Handle=0 then begin
+      FTextureHandle.AllocateHandle;
+      Assert(FTextureHandle.Handle<>0);
+   end;
+   // bind texture
+   target:=Image.NativeTextureTarget;
+   if (target<>GL_TEXTURE_CUBE_MAP_ARB) or GL_ARB_texture_cube_map then begin
+      glBindTexture(target, FTextureHandle.Handle);
+      PrepareParams(target);
+   end;
+	Result:=FTextureHandle.Handle;
+   FChanges:=[];
+end;
+
+// IsHandleAllocated
+//
+function TGLTexture.IsHandleAllocated : Boolean;
+begin
+   Result:=(FTextureHandle.Handle<>0);
+end;
+
 // GetHandle
 //
 function TGLTexture.GetHandle : TGLuint;
 var
    i, target : TGLUInt;
+   cubeMapSize : Integer;
+   cmt : TGLCubeMapTarget;
+   cubeMapOk : Boolean;
+   cubeMapImage : TGLCubeMapImage;
 begin
 	if (FTextureHandle.Handle=0) or (FChanges<>[]) then begin
-		if FTextureHandle.Handle=0 then begin
-         FTextureHandle.AllocateHandle;
-			Assert(FTextureHandle.Handle<>0);
-		end;
-      // bind texture
+      AllocateHandle;
+      // Load images
       target:=Image.NativeTextureTarget;
       if (target<>GL_TEXTURE_CUBE_MAP_ARB) or GL_ARB_texture_cube_map then begin
-         glBindTexture(target, FTextureHandle.Handle);
-         if Image.NativeTextureTarget=GL_TEXTURE_CUBE_MAP_ARB then begin
-            PrepareParams(target);
-            for i:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB to GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB do begin
-               PrepareImage(i);
+         if target=GL_TEXTURE_CUBE_MAP_ARB then begin
+            // first check if everything is coherent, otherwise, bail out
+            cubeMapImage:=(Image as TGLCubeMapImage);
+            cubeMapSize:=cubeMapImage.Picture[cmtPX].Width;
+            cubeMapOk:=(cubeMapSize>0);
+            if cubeMapOk then begin
+               for cmt:=cmtPX to cmtNZ do with cubeMapImage.Picture[cmt] do begin
+                  cubeMapOk:=(Width=cubeMapSize) and (Height=cubeMapSize);
+                  if not cubeMapOk then Break;
+               end;
             end;
-         end else begin
-            PrepareParams(target);
-            PrepareImage(target);
-         end;
+            if cubeMapOk then begin
+               for i:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB to GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB do
+                  PrepareImage(i);
+            end;
+         end else PrepareImage(target);
       end;
-		FChanges:=[];
 	end;
 	Result:=FTextureHandle.Handle;
 end;
@@ -2631,9 +2687,9 @@ begin
    FRequiredMemorySize:=-1;
 end;
 
-// PrepareImage
+// OpenGLTextureFormat
 //
-procedure TGLTexture.PrepareImage(target : TGLUInt);
+function TGLTexture.OpenGLTextureFormat : Integer;
 const
    cTextureFormatToOpenGL : array [tfRGB..tfIntensity] of Integer =
       (GL_RGB, GL_RGBA, GL_RGB5, GL_RGBA4, GL_ALPHA, GL_LUMINANCE,
@@ -2643,15 +2699,9 @@ const
        GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_ALPHA_ARB, GL_COMPRESSED_LUMINANCE_ARB,
        GL_COMPRESSED_LUMINANCE_ALPHA_ARB, GL_COMPRESSED_INTENSITY_ARB);
 var
-	alphaChannelRequired : Boolean;
-   bitmap32 : TGLBitmap32;
-   targetFormat : Integer;
    texForm : TGLTextureFormat;
    texComp : TGLTextureCompression;
 begin
-   bitmap32:=Image.GetBitmap32(target);
-   if (bitmap32=nil) or bitmap32.IsEmpty then Exit;
-   // select targetFormat from texture format & compression options
    if TextureFormat=tfDefault then
       if vDefaultTextureFormat=tfDefault then
          texForm:=tfRGBA
@@ -2672,8 +2722,22 @@ begin
       else
          Assert(False);
       end;
-      targetFormat:=cCompressedTextureFormatToOpenGL[texForm];
-   end else targetFormat:=cTextureFormatToOpenGL[texForm];
+      Result:=cCompressedTextureFormatToOpenGL[texForm];
+   end else Result:=cTextureFormatToOpenGL[texForm];
+end;
+
+// PrepareImage
+//
+procedure TGLTexture.PrepareImage(target : TGLUInt);
+var
+	alphaChannelRequired : Boolean;
+   bitmap32 : TGLBitmap32;
+   targetFormat : Integer;
+begin
+   bitmap32:=Image.GetBitmap32(target);
+   if (bitmap32=nil) or bitmap32.IsEmpty then Exit;
+   // select targetFormat from texture format & compression options
+   targetFormat:=OpenGLTextureFormat;
    // prepare AlphaChannel
 	alphaChannelRequired:=(ImageAlpha<>tiaDefault);
    if alphaChannelRequired then begin
@@ -2696,13 +2760,11 @@ begin
          Assert(False);
       end;
    end;
+   CheckOpenGLError;
    bitmap32.RegisterAsOpenGLTexture(target, MinFilter, targetFormat, FTexWidth, FTexHeight);
-   if texComp<>tcNone then begin
-      CheckOpenGLError; // ignore compression-related errors
-      glGetTexLevelParameteriv(target, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
-                               @FRequiredMemorySize);
-      ClearGLError;
-   end else FRequiredMemorySize:=-1;
+   glGetTexLevelParameteriv(target, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
+                            @FRequiredMemorySize);
+   ClearGLError; // ignore texture-size errors
    image.ReleaseBitmap32;
 end;
 
@@ -2898,7 +2960,7 @@ begin
             Inc(rci.fogDisabledCounter);
          end;
       end; 
-   	FTexture.Apply(rci.currentStates);
+   	FTexture.Apply(rci);
 	end;
 end;
 
@@ -2916,7 +2978,7 @@ begin
                SetGLState(rci.currentStates, stFog);
          end;
       end;
-      FTexture.UnApply;
+      FTexture.UnApply(rci);
    end;
 end;
 

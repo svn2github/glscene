@@ -8313,7 +8313,8 @@ begin
 
   // check supported extensions
   // GL
-  Buffer := ' '+glGetString(GL_EXTENSIONS)+' '; 
+  Buffer := ' '+glGetString(GL_EXTENSIONS)+' ';
+
   GL_3DFX_multisample :=CheckExtension('GL_3DFX_multisample');
   GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
   GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
