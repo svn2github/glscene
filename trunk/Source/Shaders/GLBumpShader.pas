@@ -238,7 +238,7 @@ begin
    end;
 
    if DoSpecular then
-      VP.Add('   ADD temp, mvit[3], -vertex.position;');
+      VP.Add('   ADD eye, mvit[3], -vertex.position;');
 
    if DoTangent then begin
       if BumpSpace = bsTangentExternal then begin
