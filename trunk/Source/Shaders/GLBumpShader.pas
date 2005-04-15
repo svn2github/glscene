@@ -23,6 +23,7 @@
 
    <b>History : </b><font size=-1><ul>
       <li>15/04/05 - SG - Added parallax offset mapping for the BasicARBfp bump method (experimental)
+                          Height data is expected in the normal map alpha channel.
       <li>21/12/04 - SG - Added light attenutation support through the 
                           boLightAttenutation option in the BumpOptions property.
       <li>27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
