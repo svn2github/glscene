@@ -186,11 +186,12 @@ end;
 function TGLBumpShader.GenerateVertexProgram : String;
 var
    VP : TStringList;
-   DoTangent, DoSpecular : Boolean;
+   DoTangent, DoSpecular, DoParallaxOffset : Boolean;
    texcoord : Integer;
 begin
    DoSpecular:=(BumpMethod = bmBasicARBFP) and not (SpecularMode = smOff);
    DoTangent:=(BumpSpace = bsTangentExternal) or (BumpSpace = bsTangentQuaternion);
+   DoParallaxOffset:=(BumpMethod = bmBasicARBFP) and (boParallaxMapping in BumpOptions) and DoTangent;
 
    VP:=TStringList.Create;
 
@@ -244,7 +245,7 @@ begin
       VP.Add('   ADD light, light, -vertex.position;');
    end;
 
-   if DoSpecular then
+   if DoSpecular or DoParallaxOffset then
       VP.Add('   ADD eye, mvit[3], -vertex.position;');
 
    if DoTangent then begin
@@ -254,7 +255,7 @@ begin
          VP.Add('   DP3 temp.y, light, binormal;');
          VP.Add('   DP3 temp.z, light, normal;');
          VP.Add('   MOV light, temp;');
-         if DoSpecular then begin
+         if DoSpecular or DoParallaxOffset then begin
             VP.Add('   DP3 temp.x, eye, tangent;');
             VP.Add('   DP3 temp.y, eye, binormal;');
             VP.Add('   DP3 temp.z, eye, normal;');
@@ -281,7 +282,7 @@ begin
          VP.Add('   MAD temp.w, -temp2.y, light.x, temp.x;');
          VP.Add('   MOV light, temp.yzwy;');
 
-         if DoSpecular then begin
+         if DoSpecular or DoParallaxOffset then begin
             VP.Add('   DP3 temp.x, temp2, eye;');
             VP.Add('   MUL temp.x, temp2.y, eye.z;');
             VP.Add('   MAD temp.y, vertex.normal.z, eye.x, temp.x;');
@@ -316,7 +317,7 @@ begin
          VP.Add('   MOV light.w, atten.x;')
       else
          VP.Add('   MOV light.w, 0.0;');
-      if DoSpecular then
+      if DoSpecular or DoParallaxOffset then
          VP.Add('   MOV eye.w, 0.0;');
 
    end;
@@ -363,6 +364,7 @@ function TGLBumpShader.GenerateFragmentProgram : String;
 var
    FP : TStringList;
    DoSpecular,
+   DoTangent,
    DoParallaxOffset : Boolean;
    texcoord,
    normalTexCoords,
@@ -372,8 +374,8 @@ var
    eyeTexCoords : Integer;
 begin
    DoSpecular:=not (SpecularMode = smOff);
-
-   DoParallaxOffset:=(boParallaxMapping in BumpOptions);
+   DoTangent:=(BumpSpace = bsTangentExternal) or (BumpSpace = bsTangentQuaternion);
+   DoParallaxOffset:=(boParallaxMapping in BumpOptions) and DoTangent;
 
    texcoord:=0;
    normalTexCoords:=texcoord;
