@@ -22,6 +22,7 @@
    texture lookups.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/04/05 - SG - Added parallax offset mapping for the BasicARBfp bump method (experimental)
       <li>21/12/04 - SG - Added light attenutation support through the 
                           boLightAttenutation option in the BumpOptions property.
       <li>27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
@@ -63,7 +64,8 @@ type
    TBumpOption = ( boDiffuseTexture2,       // Use secondary texture as diffuse
                    boSpecularTexture3,      // Use tertiary texture as specular
                    boUseSecondaryTexCoords, // Pass through secondary texcoords
-                   boLightAttenuation       // Use light attenuation
+                   boLightAttenuation,      // Use light attenuation
+                   boParallaxMapping        // Enable parallax offset mapping
                   );
    TBumpOptions = set of TBumpOption;
 
@@ -87,6 +89,7 @@ type
          FDiffusePass : Boolean;
          FVertexProgram : TStringList;
          FFragmentProgram : TStringList;
+         FParallaxOffset : Single;
 
          function GenerateVertexProgram : String;
          function GenerateFragmentProgram : String;
@@ -98,6 +101,7 @@ type
          procedure SetBumpOptions(const Value : TBumpOptions);
          procedure SetSpecularMode(const Value : TSpecularMode);
          procedure SetDesignTimeEnabled(const Value : Boolean);
+         procedure SetParallaxOffset(const Value : Single);
          procedure Loaded; override;
          procedure DeleteVertexPrograms;
          procedure DeleteFragmentPrograms;
@@ -115,6 +119,7 @@ type
          property BumpOptions : TBumpOptions read FBumpOptions write SetBumpOptions;
          property SpecularMode : TSpecularMode read FSpecularMode write SetSpecularMode;
          property DesignTimeEnabled : Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
+         property ParallaxOffset : Single read FParallaxOffset write SetParallaxOffset;
 
    end;
 
@@ -150,7 +155,8 @@ begin
    FBumpOptions:=[];
    FSpecularMode:=smOff;
    ShaderStyle:=ssLowLevel;
-   
+   FParallaxOffset:=0.04;
+
    FVertexProgram:=TStringList.Create;
    FFragmentProgram:=TStringList.Create;
 end;
@@ -355,7 +361,8 @@ end;
 function TGLBumpShader.GenerateFragmentProgram : String;
 var
    FP : TStringList;
-   DoSpecular : Boolean;
+   DoSpecular,
+   DoParallaxOffset : Boolean;
    texcoord,
    normalTexCoords,
    diffTexCoords,
@@ -364,6 +371,8 @@ var
    eyeTexCoords : Integer;
 begin
    DoSpecular:=not (SpecularMode = smOff);
+
+   DoParallaxOffset:=(boParallaxMapping in BumpOptions);
 
    texcoord:=0;
    normalTexCoords:=texcoord;
@@ -386,15 +395,32 @@ begin
    FP.Add('PARAM materialDiffuse = state.material.diffuse;');
    FP.Add('PARAM materialSpecular = state.material.specular;');
    FP.Add('PARAM shininess = state.material.shininess;');
-   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor, reflect, atten;');
+   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec;');
+   FP.Add('TEMP textureColor, reflect, atten, offset, texcoord;');
+
+   if DoSpecular or DoParallaxOffset then begin
+      // Get the eye vector
+      FP.Add('   DP3 eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], fragment.texcoord['+IntToStr(eyeTexCoords)+'];');
+      FP.Add('   RSQ eye, eye.x;');
+      FP.Add('   MUL eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], eye.x;');
+   end;
+
+   if DoParallaxOffset then begin
+      // Get the parallax offset
+      FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(normalTexCoords)+'], texture[0], 2D;');
+      FP.Add(Format('   MAD offset.x, textureColor.a, %f, %f;',[FParallaxOffset, -0.5*FParallaxOffset]));
+      FP.Add('   MUL offset, eye, offset.x;');
+      FP.Add('   ADD texcoord, fragment.texcoord['+IntToStr(normalTexCoords)+'], offset;');
+   end else
+      FP.Add('   MOV texcoord, fragment.texcoord['+IntToStr(normalTexCoords)+'];');
 
    // Get the normalized normal vector
-   FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(normalTexCoords)+'], texture[0], 2D;');
-   FP.Add('   MAD normal, textureColor, 2.0, -1.0;');
+   FP.Add('   TEX textureColor, texcoord, texture[0], 2D;');
+   FP.Add('   ADD normal, textureColor, -0.5;');
    FP.Add('   DP3 temp, normal, normal;');
    FP.Add('   RSQ temp, temp.x;');
    FP.Add('   MUL normal, normal, temp.x;');
-
+   
    // Get the normalized light vector
    FP.Add('   MOV light, fragment.texcoord['+IntToStr(lightTexCoords)+'];');
    if boLightAttenuation in BumpOptions then
@@ -408,15 +434,15 @@ begin
    FP.Add('   MUL diff, diff, lightDiffuse;');
    FP.Add('   MUL diff, diff, materialDiffuse;');
    if boDiffuseTexture2 in BumpOptions then begin
-      FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(diffTexCoords)+'], texture[1], 2D;');
+      if DoParallaxOffset then begin
+         FP.Add('   ADD temp, fragment.texcoord['+IntToStr(diffTexCoords)+'], offset;');
+         FP.Add('   TEX textureColor, temp, texture[1], 2D;');
+      end else
+         FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(diffTexCoords)+'], texture[1], 2D;');
       FP.Add('   MUL diff, diff, textureColor;');
    end;
 
    if DoSpecular then begin
-      // Get the eye vector
-      FP.Add('   DP3 eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], fragment.texcoord['+IntToStr(eyeTexCoords)+'];');
-      FP.Add('   RSQ eye, eye.x;');
-      FP.Add('   MUL eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], eye.x;');
       case SpecularMode of
          smBlinn : begin
             FP.Add('   ADD eye, eye, light;');
@@ -440,7 +466,11 @@ begin
       FP.Add('   MUL spec, spec, materialSpecular;');
       FP.Add('   MUL spec, spec, lightSpecular;');
       if boSpecularTexture3 in BumpOptions then begin
-         FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(specTexCoords)+'], texture[2], 2D;');
+         if DoParallaxOffset then begin
+            FP.Add('   ADD temp, fragment.texcoord['+IntToStr(specTexCoords)+'], offset;');
+            FP.Add('   TEX textureColor, temp, texture[2], 2D;');
+         end else
+            FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(specTexCoords)+'], texture[2], 2D;');
          FP.Add('   MUL spec, spec, textureColor;');
       end;
    end;
@@ -794,6 +824,18 @@ procedure TGLBumpShader.SetDesignTimeEnabled(const Value: Boolean);
 begin
    if Value<>FDesignTimeEnabled then begin
       FDesignTimeEnabled:=Value;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetParallaxOffset
+//
+procedure TGLBumpShader.SetParallaxOffset(const Value: Single);
+begin
+   if Value<>FParallaxOffset then begin
+      FParallaxOffset:=Value;
+      DeleteVertexPrograms;
+      DeleteFragmentPrograms;
       NotifyChange(Self);
    end;
 end;
