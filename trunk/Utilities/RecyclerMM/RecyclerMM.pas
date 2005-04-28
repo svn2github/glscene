@@ -55,7 +55,6 @@ uses Windows;
 // If set, RecyclerMM will automatically locate and share memory with other
 // RecyclerMMs in DLL modules (same functionality as Borland's ShareMem unit).
 // Sharing will only happen with compatible RMMs.
-// This option is NOT compatible with PATCH_ALLOCMEM
 {.$define SHARE_MEM}
 
 // If set the (possible) BPLs won't be patched, only the jump table will
@@ -391,7 +390,6 @@ type
       This structure is what RMMs cross-refer when sharing memory. }
    TSharedMemoryManager = record
       MemoryManager : TMemoryManager;
-      AllocMem : function(Size : Cardinal) : Pointer;
       Allocated : function(const P : Pointer) : Boolean;
       {$ifdef ALLOW_USAGE_SNAPSHOT}
       RMMUsageSnapShot : function : TRMMUsageSnapShot;
@@ -1057,17 +1055,6 @@ begin
    UpdateMemoryMap(aManager, aManager.BlockSize, nil);
    manager:=aManager^;
 
-   // Free block
-   {$ifdef ALLOW_MEMORYMAPPED_LARGE_BLOCKS}
-   if aManager.hFile<>0 then begin
-      UnmapViewOfFile(aManager);
-      CloseHandle(manager.hMapping);
-      CloseHandle(manager.hFile);
-   end;
-   {$endif}
-   if manager.hFile=0 then
-      RMMVirtualFree(aManager, manager.BlockSize);
-
    // Remove from LGB linked list
    CSLockEnter(vLGBLock);
 
@@ -1078,6 +1065,17 @@ begin
       manager.Next.Prev:=manager.Prev;
 
    CSLockLeave(vLGBLock);
+   
+   // Free block
+   {$ifdef ALLOW_MEMORYMAPPED_LARGE_BLOCKS}
+   if aManager.hFile<>0 then begin
+      UnmapViewOfFile(aManager);
+      CloseHandle(manager.hMapping);
+      CloseHandle(manager.hFile);
+   end;
+   {$endif}
+   if manager.hFile=0 then
+      RMMVirtualFree(aManager, manager.BlockSize);
 end;
 
 // ReallocateLGB
@@ -1128,6 +1126,8 @@ begin
       {$endif}
       if newManager=nil then
          newManager:=RMMVirtualAlloc(blkSize);
+      newManager.Next:=oldManager.Next;
+      newManager.Prev:=oldManager.Prev;
    end;
 
    if newManager<>nil then begin
@@ -1980,25 +1980,26 @@ var
    cleanupChunkChain : POSChunk;
 begin
    repeat
-
       cleanupChunkChain:=nil;
 
       // Clean up one empty chunk
-      CSLockEnter(vOSChunksLock);
-      chunk:=vOSChunksFirst;
-      if chunk<>nil then chunk:=chunk.Next;
-      while chunk<>nil do begin
-         chunkNext:=chunk.Next;
-         if (chunk.FreeSpace=chunk.TotalSpace) then begin
-            CutOutChunk(chunk);
-            chunk.Next:=cleanupChunkChain;
-            cleanupChunkChain:=chunk;
-            Dec(vOSChunkNbEntirelyFree);
-            if vOSChunkNbEntirelyFree<cOSDelayedAllowedChunksLatency then Break;
+      if vOSChunkNbEntirelyFree>1 then begin
+         CSLockEnter(vOSChunksLock);
+         chunk:=vOSChunksFirst;
+         if chunk<>nil then chunk:=chunk.Next;
+         while chunk<>nil do begin
+            chunkNext:=chunk.Next;
+            if (chunk.FreeSpace=chunk.TotalSpace) then begin
+               CutOutChunk(chunk);
+               chunk.Next:=cleanupChunkChain;
+               cleanupChunkChain:=chunk;
+               Dec(vOSChunkNbEntirelyFree);
+               if vOSChunkNbEntirelyFree<cOSDelayedAllowedChunksLatency then Break;
+            end;
+            chunk:=chunkNext;
          end;
-         chunk:=chunkNext;
+         CSLockLeave(vOSChunksLock);
       end;
-      CSLockLeave(vOSChunksLock);
 
       // Destroy them out of the lock
       while cleanupChunkChain<>nil do begin
@@ -2072,7 +2073,6 @@ begin
          smm.MemoryManager.GetMem:=@RGetMem;
          smm.MemoryManager.FreeMem:=@RFreeMem;
          smm.MemoryManager.ReallocMem:=@RReallocMem;
-         smm.AllocMem:=@RAllocMem;
          smm.Allocated:=@Allocated;
          {$ifdef ALLOW_USAGE_SNAPSHOT}
          smm.RMMUsageSnapShot:=@RMMUsageSnapShot;
