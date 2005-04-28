@@ -26,7 +26,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/04/05 - EG - Version 2.0
+      <li>19/04/05 - EG - Work on version 2.0 started
 	   <li>28/10/03 - EG - Creation of Version 1.0
 	</ul></font>
 }
@@ -64,7 +64,7 @@ uses Windows;
 // Mileage on the efficiency of SSE over the FPU-based transfer may vary,
 // you may want to test it and figure out which is best in your case. Typically,
 // the FPU approach will be good for lots of small or scattered blocks on AMD
-// CPUs, while SSE shines on large blocks with a P4 
+// CPUs, while SSE shines on large blocks with a P4
 {$define ALLOW_SSE}
 
 // If set and exception will be explicitly raised if your code attempts
@@ -103,13 +103,9 @@ uses Windows;
 // These functions allow generating a diagnostic and memory map report
 {.$define ALLOW_USAGE_SNAPSHOT}
 
-// If set benchmarking will happen and track number of call and their duration
-// This has a performance penalty though, and may inflate memory management
-// costs (especially for short and simple calls), and to minimize impact
-// the methods relies on CPU ticks, and thus can be incorrect for CPUs with
-// varying frequency (mobile CPUs typically, A64 with Cool'n Quiet enabled...).
-// CURRENT BENCHMARKING ONLY WORKS IN SINGLE-THREADED APPS!
-{.$define ALLOW_BENCHMARK}
+// Selection of the locking mechanim
+// If set, Windows CriticalSections will be used, otherwise it will be SpinLocks
+{.$define USE_CRITICAL_SECTIONS}
 
 // compile error when incompatible options have been selected
 {$ifdef SHARE_MEM}
@@ -125,14 +121,16 @@ const
 
    // Ratio for upsizing (1 = allocate only what's needed, 2 = allocate twice the
    //                     needed space, etc. Must be >= 1.0 or things will go banana )
-   cReallocUpSizing        = 1.25;
+   cReallocUpSizing        = 1.1;
    cReallocUpSizing256     = Word(Round(cReallocUpSizing*256)); // what's actualy used internally
    cReallocUpSizingLimit   = Cardinal(1 shl 31) div cReallocUpSizing256;
    cReallocUpSizingLGBLimit= Round((1 shl 30)/cReallocUpSizing);
+   cReallocUpSizingSMBPad  = 48;
+   cReallocMinSize         = 64;
 
    // Size and Index limits for SMBs
    cSMBMaxSizeIndex        = 53;
-   cSMBSizes               : packed array [0..cSMBMaxSizeIndex] of Integer = (
+   cSMBSizes               : packed array [0..cSMBMaxSizeIndex] of Word = (
          // 52 values from an exponential curve manually adjusted to "look nice" :)
          16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224,
          240, 256, 288, 320, 384, 432, 496, 576, 656, 752, 864, 976, 1120,
@@ -188,7 +186,7 @@ type
 
 const
    // As a constant, we make our mem map big enough to support 3GB addressing
-   // If you really need the extra 64 kB and now that your code will never be
+   // If you really need the extra 64 kB and know that your code will never be
    // run in /3GB mode then you can reduce this to 32767.
    // The actual limit of the memmap is in vMemMapUpper.
    cMemMapUpperMax = 49151;
@@ -230,11 +228,6 @@ type
    PRMMUsageSnapShot = ^TRMMUsageSnapShot;
 {$endif}
 
-var // this will be filled up only if ALLOW_BENCHMARK
-   vBenchRGetMem : TRMMUsageBench;
-   vBenchRReallocMem : TRMMUsageBench; // may include RGetMem/RFreeMem time
-   vBenchRFreeMem : TRMMUsageBench;     
-
 {: Fast 16 bytes-based move.<p>
    Copies blocks of 16 bytes only, ie. Count is rounded up to the nearest
    multiple of 16. Overlapping source/destination are not handled. }
@@ -249,9 +242,10 @@ function RGetMem(Size : Integer) : Pointer;
 function RAllocMem(Size : Cardinal) : Pointer;
 function RFreeMem(P : Pointer) : Integer;
 function RReallocMem(P : Pointer; Size : Cardinal) : Pointer;
+function RAllocated(const P : Pointer) : Boolean;
 
 {: True if P points to the beginning of an allocated block.<p> }
-function Allocated(const P : Pointer) : Boolean;
+var Allocated : function (const P : Pointer) : Boolean;
 
 {: Generates a memory map of RMM memory usage.<p>
    While the map is generated, all RMM activity is freezed. }
@@ -277,7 +271,7 @@ var
 
 const
    // Unused, this is just to have it in clear in the DCU
-   cRecyclerMMCopyright = 'RecyclerMM - ©2004 Creative IT';
+   cRecyclerMMCopyright = 'RecyclerMM - ©2005 Creative IT';
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -293,29 +287,24 @@ const
 type
    PPointer = ^Pointer;
    TPointerArrayMap = packed array [0..cMemMapUpperMax] of Pointer;
-   PPointerArrayMap = ^TPointerArrayMap;
 
    TWordArray = packed array [0..MaxInt shr 2] of Word;
    PWordArray = ^TWordArray;
 
-   TPatchJumpBuffer = packed array [0..5] of Byte;
-   PPatchJumpBuffer = ^TPatchJumpBuffer;
-
-   // TRedirectPatch
-   //
-   TRedirectPatch = record
-      jumpAddr : Pointer;
-      jumpBuffer : TPatchJumpBuffer;
-      bplAddr : Pointer;
-      bplBuffer : TPatchJumpBuffer;
-   end;
-
    PSMBManager = ^TSMBManager;
    POSChunk = ^TOSChunk;
 
-   //TCSLock = LongBool;
+   {$ifdef USE_CRITICAL_SECTIONS}
    TCSLock = TRTLCriticalSection;
+   {$else}
+   TCSLock = LongBool;
+   {$endif}
    PCSLock = ^TCSLock;
+
+   TMemoryRange = packed record
+      Start : Pointer;
+      Length : Cardinal;
+   end;
 
    // TOSChunk
    //
@@ -327,12 +316,10 @@ type
       FreeSpace : Cardinal;
       Full : LongBool;
       NbItems : Integer;
-      ItemStart : array [0..cOSChunkMaxItemCount-1] of Pointer;
-      ItemLength  : array [0..cOSChunkMaxItemCount-1] of Cardinal;
+      Items : array [0..cOSChunkMaxItemCount-1] of TMemoryRange;
       NbFreeSpaces : Integer;
       LargestFreeSpace : Cardinal;
-      FreeSpaceStart : array [0..cOSChunkMaxItemCount] of Pointer;
-      FreeSpaceLength : array [0..cOSChunkMaxItemCount] of Cardinal;
+      FreeSpaces : array [0..cOSChunkMaxItemCount] of TMemoryRange;
    end;
 
    // TSMBInfo
@@ -342,10 +329,10 @@ type
       CSLock : TCSLock;
       First, Last : PSMBManager;
       FirstFull, LastFull : PSMBManager;
-      Index, Size : Cardinal;
+      Size : Cardinal;
       BlocksPerSMB : Cardinal;
-      SMBManagerSize : Cardinal;
-      DownSizingSize : Cardinal;
+      DownSizingSize : Word;
+      SMBManagerSize : Word;
    end;
    PSMBInfo = ^TSMBInfo;
 
@@ -355,14 +342,13 @@ type
       Small blocks manage many user blocks of constant (BlockSize) size,
       which are allocated/freed in a stack-like fashion. }
    TSMBManager = packed record
-      CSLock : PCSLock;
-      Next, Prev : PSMBManager;  // pointer to the next/prev managers
+      Next, Prev : PSMBManager;     // pointer to the next/prev managers
       NbFreeBlocks : Cardinal;
       MaxNbFreeBlocks : Cardinal;
-      BlockSize : Cardinal;          // Size of blocks in SMB
-      ReallocDownSizingSize : Cardinal;
-      BlockStart : Pointer;      // base address for SMB blocks
-      SMBInfo : PSMBInfo;        // pointer to the SMBInfo (size related)
+      BlockSize : Cardinal;         // Size of blocks in SMB
+      BlockStart : Pointer;         // base address for SMB blocks
+      SMBInfo : PSMBInfo;           // pointer to the SMBInfo (size related)
+      DownSizingSize : Cardinal;
       {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
       AllocatedBlocks : packed array [0..511] of Byte; // 64*1024/16/8
       {$endif}
@@ -375,7 +361,6 @@ type
       reserve address space (to improve the chances of in-place growth). }
    PLGBManager = ^TLGBManager;
    TLGBManager = record
-      SignatureZero : Integer;   // Value is Zero
       BlockSize : Cardinal;      // Total allocated size for the block
       DataStart : Pointer;       // Start of user data
       DataSize : Cardinal;       // Size requested by the user
@@ -413,10 +398,6 @@ var
 
    // Binding variables
    vOldMemoryManager : TMemoryManager;
-   vAllocatedPatch : TRedirectPatch;
-   {$ifdef ALLOW_USAGE_SNAPSHOT}
-   vRMMUsageSnapShotPatch : TRedirectPatch;
-   {$endif}
    vRMMBound : Integer;
    {$ifdef ALLOW_SSE}
    vSSESupported : Integer;
@@ -475,6 +456,33 @@ begin
       vSwitchToThread:=@Win9xSwitchToThread;
 end;
 
+// RaiseInvalidPtrError
+//
+procedure RaiseInvalidPtrError;
+begin
+   RunError(204); // Invalid pointer operation
+end;
+
+// InitializeCSLock
+//
+procedure InitializeCSLock(var csLock : TCSLock);
+begin
+   {$ifdef USE_CRITICAL_SECTIONS}
+   InitializeCriticalSection(csLock);
+   {$else}
+   csLock:=False;
+   {$endif}
+end;
+
+// DeleteCSLock
+//
+procedure DeleteCSLock(var csLock : TCSLock);
+begin
+   {$ifdef USE_CRITICAL_SECTIONS}
+   DeleteCriticalSection(csLock);
+   {$endif}
+end;
+
 // LockCmpxchg
 //
 function LockCmpXchg(compareVal, newVal : Byte; anAddress : PByte) : Byte;
@@ -483,25 +491,15 @@ asm
    lock cmpxchg [ecx], dl
 end;
 
-// InitializeCSLock
-//
-procedure InitializeCSLock(var csLock : TCSLock);
-begin
-//   csLock:=False;
-   InitializeCriticalSection(csLock);
-end;
-
-// DeleteCSLock
-//
-procedure DeleteCSLock(var csLock : TCSLock);
-begin
-   DeleteCriticalSection(csLock);
-end;
-
 // CSLockEnter
 //
 procedure CSLockEnter(var csLock : TCSLock);
-{begin
+{$ifdef USE_CRITICAL_SECTIONS}
+begin
+   if IsMultiThread then
+      EnterCriticalSection(csLock); //}
+{$else}
+begin
    if IsMultiThread then begin
       while LockCmpxchg(0, 1, @csLock)<>0 do begin
          vSwitchToThread;
@@ -533,31 +531,35 @@ procedure CSLockEnter(var csLock : TCSLock);
       push  10
       call  Windows.Sleep
       jmp   @@LockLoop
-      
+
 @@LockEntered:
       pop   ebx
 
 @@LockDone: //}
-begin
-   if IsMultiThread then
-      EnterCriticalSection(csLock); //}
+{$endif}
 end;
 
 // CSLockTryEnter
 //
 function CSLockTryEnter(var csLock : TCSLock) : Boolean;
 begin
-//   Result:=(not IsMultiThread) or (LockCmpxchg(0, 1, @csLock)=0);
+   {$ifdef USE_CRITICAL_SECTIONS}
    Result:=(not IsMultiThread) or (TryEnterCriticalSection(csLock));
+   {$else}
+   Result:=(not IsMultiThread) or (LockCmpxchg(0, 1, @csLock)=0);
+   {$endif}
 end;
 
 // CSLockLeave
 //
 procedure CSLockLeave(var csLock : TCSLock);
 begin
-//   csLock:=False;
+   {$ifdef USE_CRITICAL_SECTIONS}
    if IsMultiThread then
-      LeaveCriticalSection(csLock); //}
+      LeaveCriticalSection(csLock);
+   {$else}
+   csLock:=False;
+   {$endif}
 end;
 
 // MMRandom
@@ -594,29 +596,6 @@ asm
    setc  al
 end;
 {$endif}
-
-{$ifdef ALLOW_BENCHMARK}
-// EnterBench
-//
-procedure EnterBench(var bench : TRMMUsageBench);
-asm
-   mov   ecx, eax
-   rdtsc
-   sub   [ecx], eax
-   sbb   [ecx+4], edx
-end;
-
-// LeaveBench
-//
-procedure LeaveBench(var bench : TRMMUsageBench);
-asm
-   mov   ecx, eax
-   rdtsc
-   add   [ecx], eax
-   adc   [ecx+4], edx
-   inc   dword ptr [ecx+8]
-end;
-{$endif ALLOW_BENCHMARK}
 
 // UpdateMemoryMap
 //
@@ -667,8 +646,8 @@ var
 begin
    chunk.LargestFreeSpace:=0;
    for i:=0 to chunk.NbFreeSpaces-1 do
-      if chunk.FreeSpaceLength[i]>chunk.LargestFreeSpace then
-         chunk.LargestFreeSpace:=chunk.FreeSpaceLength[i];
+      if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
+         chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
 end;
 
 // ChunkDeleteFreeSpace
@@ -679,12 +658,12 @@ var
 begin
    i:=freeSpaceIndex+1;
    while i<chunk.NbFreeSpaces do begin
-      chunk.FreeSpaceStart[i-1]:=chunk.FreeSpaceStart[i];
-      chunk.FreeSpaceLength[i-1]:=chunk.FreeSpaceLength[i];
+      chunk.FreeSpaces[i-1]:=chunk.FreeSpaces[i];
       Inc(i);
    end;
    Dec(chunk.NbFreeSpaces);
-   if chunk.NbFreeSpaces<0 then RunError(101);
+   if chunk.NbFreeSpaces<0 then
+      RunError(101);
 end;
 
 // ChunkInsertFreeSpace
@@ -695,8 +674,7 @@ var
 begin
    i:=chunk.NbFreeSpaces-1;
    while i>=freeSpaceIndex do begin
-      chunk.FreeSpaceStart[i+1]:=chunk.FreeSpaceStart[i];
-      chunk.FreeSpaceLength[i+1]:=chunk.FreeSpaceLength[i];
+      chunk.FreeSpaces[i+1]:=chunk.FreeSpaces[i];
       Dec(i);
    end;
    Inc(chunk.NbFreeSpaces);
@@ -713,24 +691,24 @@ begin
    size:=(size+64) and $FFFFFFE0;
    i:=0;
    while i<chunk.NbFreeSpaces do begin
-      if chunk.FreeSpaceLength[i]>=size then Break;
+      if chunk.FreeSpaces[i].Length>=size then Break;
       Inc(i);
    end;
    if i=chunk.NbFreeSpaces then begin
       Result:=nil;
       Exit;
    end;
-   Result:=chunk.FreeSpaceStart[i];
-   if chunk.FreeSpaceLength[i]=size then begin
+   Result:=chunk.FreeSpaces[i].Start;
+   if chunk.FreeSpaces[i].Length=size then begin
       // perfect fit, delete it
       ChunkDeleteFreeSpace(chunk, i);
       if size=chunk.LargestFreeSpace then
          ChunkUpdateLargestFreeSpace(chunk);
    end else begin
       // imperfect fit, adjust remaining free space
-      chunk.FreeSpaceStart[i]:=Pointer(Cardinal(Result)+size);
-      oldSize:=chunk.FreeSpaceLength[i];
-      chunk.FreeSpaceLength[i]:=oldSize-size;
+      chunk.FreeSpaces[i].Start:=Pointer(Cardinal(Result)+size);
+      oldSize:=chunk.FreeSpaces[i].Length;
+      chunk.FreeSpaces[i].Length:=oldSize-size;
       if oldSize=chunk.LargestFreeSpace then
          ChunkUpdateLargestFreeSpace(chunk);
    end;
@@ -747,36 +725,36 @@ begin
    pEnd:=Pointer(Cardinal(p)+size);
    // coalesce with nearby freespace if any
    for i:=0 to chunk.NbFreeSpaces-1 do begin
-      if Cardinal(chunk.FreeSpaceStart[i])+chunk.FreeSpaceLength[i]=Cardinal(p) then begin
-         chunk.FreeSpaceLength[i]:=chunk.FreeSpaceLength[i]+size;
-         if (i<chunk.NbFreeSpaces-1) and (pEnd=chunk.FreeSpaceStart[i+1]) then begin
+      if Cardinal(chunk.FreeSpaces[i].Start)+chunk.FreeSpaces[i].Length=Cardinal(p) then begin
+         Inc(chunk.FreeSpaces[i].Length, size);
+         if (i<chunk.NbFreeSpaces-1) and (pEnd=chunk.FreeSpaces[i+1].Start) then begin
             // coalesce with next block
-            chunk.FreeSpaceLength[i]:=chunk.FreeSpaceLength[i]+chunk.FreeSpaceLength[i+1];
+            Inc(chunk.FreeSpaces[i].Length, chunk.FreeSpaces[i+1].Length);
             ChunkDeleteFreeSpace(chunk, i+1);
          end;
-         if chunk.FreeSpaceLength[i]>chunk.LargestFreeSpace then
-            chunk.LargestFreeSpace:=chunk.FreeSpaceLength[i];
+         if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
+            chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
          Exit;
       end;
-      if chunk.FreeSpaceStart[i]=pEnd then begin
-         chunk.FreeSpaceStart[i]:=p;
-         chunk.FreeSpaceLength[i]:=chunk.FreeSpaceLength[i]+size;
-         if chunk.FreeSpaceLength[i]>chunk.LargestFreeSpace then
-            chunk.LargestFreeSpace:=chunk.FreeSpaceLength[i];
+      if chunk.FreeSpaces[i].Start=pEnd then begin
+         chunk.FreeSpaces[i].Start:=p;
+         Inc(chunk.FreeSpaces[i].Length, size);
+         if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
+            chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
          Exit;
       end;
    end;
    // must spawn a new freespace
    j:=chunk.NbFreeSpaces;
    for i:=0 to chunk.NbFreeSpaces-1 do begin
-      if Cardinal(chunk.FreeSpaceStart[i])<Cardinal(p) then begin
+      if Cardinal(chunk.FreeSpaces[i].Start)<Cardinal(p) then begin
          j:=i;
          Break;
       end;
    end;
    ChunkInsertFreeSpace(chunk, j);
-   chunk.FreeSpaceStart[j]:=p;
-   chunk.FreeSpaceLength[j]:=size;
+   chunk.FreeSpaces[j].Start:=p;
+   chunk.FreeSpaces[j].Length:=size;
    if size>chunk.LargestFreeSpace then
       chunk.LargestFreeSpace:=size;
 end;
@@ -845,15 +823,15 @@ begin
       if chunk=nil then Exit;
       // randomize chunk location by up to 4 kB
       chunkRandomOffset:=(((Cardinal(chunk) shr 16) or (Cardinal(chunk) shr 20)) and $7F)*32;
-      UpdateMemoryMap(chunk, cOSChunkSize, Pointer(Cardinal(chunk)+chunkRandomOffset));
+      UpdateMemoryMap(chunk, cOSChunkSize, Pointer(Cardinal(chunk)+chunkRandomOffset+1));
       Inc(Cardinal(chunk), chunkRandomOffset);
       chunk.ChunkMarker:=$BEEFB00F;
       chunk.NbFreeSpaces:=1;
       i:=((SizeOf(TOSChunk)+16) and $FFF0);
       chunk.TotalSpace:=cOSChunkSize-i-Integer(chunkRandomOffset);
       chunk.FreeSpace:=chunk.TotalSpace;
-      chunk.FreeSpaceStart[0]:=Pointer(Cardinal(chunk)+Cardinal(i));
-      chunk.FreeSpaceLength[0]:=chunk.FreeSpace;
+      chunk.FreeSpaces[0].Start:=Pointer(Cardinal(chunk)+Cardinal(i));
+      chunk.FreeSpaces[0].Length:=chunk.FreeSpace;
       chunk.LargestFreeSpace:=chunk.FreeSpace;
       chunk.Prev:=nil;
       chunk.Next:=vOSChunksFirst;
@@ -868,16 +846,15 @@ begin
 
    // register the ChunkItem
    i:=0;
-   while     (Cardinal(chunk.ItemStart[i])<Cardinal(Result))
+   while     (Cardinal(chunk.Items[i].Start)<Cardinal(Result))
          and (i<chunk.NbItems) do begin
       Inc(i);
    end;
    for j:=chunk.NbItems downto i+1 do begin
-      chunk.ItemStart[j]:=chunk.ItemStart[j-1];
-      chunk.ItemLength[j]:=chunk.ItemLength[j-1];
+      chunk.Items[j]:=chunk.Items[j-1];
    end;
-   chunk.ItemStart[i]:=Result;
-   chunk.ItemLength[i]:=size;
+   chunk.Items[i].Start:=Result;
+   chunk.Items[i].Length:=size;
    Dec(chunk.FreeSpace, size);
    Inc(chunk.NbItems);
 
@@ -921,21 +898,20 @@ begin
 
    // next identify it in the item list
    i:=0;
-   while chunk.ItemStart[i]<>trueStart do Inc(i);
+   while chunk.Items[i].Start<>trueStart do Inc(i);
 
    if i>=chunk.NbItems then RunError(105);
 
    // release
-   n:=chunk.ItemLength[i];
+   n:=chunk.Items[i].Length;
    ChunkItemSubFree(chunk, trueStart, n);
    Inc(chunk.FreeSpace, n);
    while i<cOSChunkMaxItemCount-1 do begin
-      chunk.ItemStart[i]:=chunk.ItemStart[i+1];
-      chunk.ItemLength[i]:=chunk.ItemLength[i+1];
+      chunk.Items[i]:=chunk.Items[i+1];
       Inc(i);
    end;
-   chunk.ItemStart[i]:=nil;
-   chunk.ItemLength[i]:=0;
+   chunk.Items[i].Start:=nil;
+   chunk.Items[i].Length:=0;
    Dec(chunk.NbItems);
 
    if chunk.Full then begin
@@ -1015,35 +991,40 @@ end;
 
 // AllocateLGB
 //
-function AllocateLGB(Size : Cardinal) : PLGBManager;
+function AllocateLGB(Size : Cardinal) : Pointer;
 var
    blkSize : Cardinal;
+   lgbManager : PLGBManager;
 begin
    blkSize:=ComputeLGBBlockSize(Size);
 
    // Spawn manager, allocate block
-   Result:=RMMVirtualAlloc(blkSize);
-   if Result=nil then Exit;
+   lgbManager:=RMMVirtualAlloc(blkSize);
+   if lgbManager=nil then begin
+      Result:=nil;
+      Exit;
+   end;
 
-   Result.SignatureZero:=0;
-   Result.hFile:=0;
-   Result.DataSize:=Size;
-   Result.BlockSize:=blkSize;
-   Result.DataStart:=ComputeLGBDataStart(Result, blkSize, Size);
-   Result.MaxDataSize:=blkSize-(Cardinal(Result.DataStart)-Cardinal(Result));
+   lgbManager.hFile:=0;
+   lgbManager.DataSize:=Size;
+   lgbManager.BlockSize:=blkSize;
+   lgbManager.DataStart:=ComputeLGBDataStart(lgbManager, blkSize, Size);
+   lgbManager.MaxDataSize:=blkSize-(Cardinal(lgbManager.DataStart)-Cardinal(lgbManager));
 
    // Add in the LGB linked list
    CSLockEnter(vLGBLock);
 
    if vLGBManagers<>nil then
-      vLGBManagers.Prev:=Result;
-   Result.Next:=vLGBManagers;
-   Result.Prev:=nil;
-   vLGBManagers:=Result;
+      vLGBManagers.Prev:=lgbManager;
+   lgbManager.Next:=vLGBManagers;
+   lgbManager.Prev:=nil;
+   vLGBManagers:=lgbManager;
 
    CSLockLeave(vLGBLock);
 
-   UpdateMemoryMap(Result, Result.BlockSize, Result);
+   UpdateMemoryMap(lgbManager, lgbManager.BlockSize, lgbManager);
+
+   Result:=lgbManager.DataStart;
 end;
 
 // ReleaseLGB
@@ -1161,12 +1142,7 @@ begin
 
       Result:=newManager;
 
-   end else begin
-
-//      RunError(203); // out of memory
-      Result:=nil;
-
-   end;
+   end else Result:=nil;
 end;
 
 // Move16SSE
@@ -1385,8 +1361,7 @@ begin
    Result.NbFreeBlocks:=n;
    Result.SMBInfo:=smbInfo;
    Result.BlockSize:=smbInfo.Size;
-   Result.ReallocDownSizingSize:=smbInfo.DownSizingSize;
-   Result.CSLock:=@smbInfo.CSLock;
+   Result.DownSizingSize:=smbInfo.DownSizingSize;
 
    // prepare block offsets stack (and allocated bitset)
    FillOffsetArray(PWordArray(Cardinal(Result)+SizeOf(TSMBManager)), n, smbInfo.Size);
@@ -1498,7 +1473,7 @@ begin
       smbInfo.Last:=manager;
       manager.Next:=nil;
    end;
-   CSLockLeave(manager.CSLock^);
+   CSLockLeave(smbInfo.CSLock);
 end;
 
 // FreeSMBBlockAndLeaveLock
@@ -1538,49 +1513,41 @@ function RGetMem(Size: Integer): Pointer;
 var
    blkID : Cardinal;
    manager : PSMBManager;
-   lgbManager : PLGBManager;
    smbInfo : PSMBInfo;
-label
-   lblExitWhenOutOfMemory;    // t'was that or a try..finally (can't afford here)
 begin
-   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRGetMem); {$endif}
-
    if Size<=cSMBMaxSize then begin
       // Small Blocks logic
       smbInfo:=vSMBSizeToPSMBInfo[(Size-1) shr 4];
-      
+
       CSLockEnter(smbInfo.CSLock);
 
       manager:=smbInfo.First;
       if manager=nil then begin
          manager:=AllocateSMB(smbInfo);
          if manager=nil then begin
+            CSLockLeave(smbInfo.CSLock);
             Result:=nil;
-            goto lblExitWhenOutOfMemory;
+            Exit;
          end;
       end;
+
       blkID:=PWordArray(manager)[manager.NbFreeBlocks+((SizeOf(TSMBManager) div 2)-1)];
-      if manager.NbFreeBlocks=1 then begin
-         manager.NbFreeBlocks:=0;
-         MoveToFullSMBs(manager);
-      end else Dec(manager.NbFreeBlocks);
       {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
       BitTestAndSet(manager.AllocatedBlocks[0], blkID div manager.BlockSize);
       {$endif}
       Result:=Pointer(Cardinal(manager.BlockStart)+blkID);
+      
+      if manager.NbFreeBlocks=1 then begin
+         manager.NbFreeBlocks:=0;
+         MoveToFullSMBs(manager);
+      end else Dec(manager.NbFreeBlocks);
 
-lblExitWhenOutOfMemory:
       CSLockLeave(smbInfo.CSLock);
 
    end else begin
       // Large blocks
-      lgbManager:=AllocateLGB(Size);
-      if Assigned(lgbManager) then
-         Result:=lgbManager.DataStart
-      else Result:=nil;
+      Result:=AllocateLGB(Size);
    end;
-   
-   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRGetMem); {$endif}
 end;
 
 // SMBManagerFromChunkAndPointer
@@ -1591,6 +1558,7 @@ function SMBManagerFromChunkAndPointer(chunk : POSChunk; P : Cardinal) : PSMBMan
    iStart : Cardinal;
 begin
    // identify chunk item in the chunk, this will be our manager
+   chunk:=POSChunk(Cardinal(chunk) and -$10);
    for i:=0 to cOSChunkMaxItemCount-1 do begin
       iStart:=Cardinal(P)-Cardinal(chunk.ItemStart[i]);
       if iStart<chunk.ItemLength[i] then begin
@@ -1603,12 +1571,13 @@ begin
 asm
    push  ebx
 
+   and   eax, -$10
    mov   ecx, cOSChunkMaxItemCount
 
 @@Loop:
    mov   ebx, edx
-   sub   ebx, [eax + offset TOSChunk.ItemStart]
-   cmp   ebx, [eax + offset TOSChunk.ItemLength]
+   sub   ebx, [eax + offset TOSChunk.Items]
+   cmp   ebx, [eax + offset TOSChunk.Items + 4]
    jnb   @@NoMatch
 
    sub   edx, ebx
@@ -1617,14 +1586,12 @@ asm
    ret
 
 @@NoMatch:
-   lea   eax, [eax+4]
+   lea   eax, [eax+8]
    dec   ecx
    jnz   @@Loop
 
    xor   eax, eax
-   pop   ebx
-   ret
-   //}
+   pop   ebx        
 end;
 
 // RFreeMem
@@ -1636,49 +1603,36 @@ var
    {$endif}
    manager : PSMBManager;
    lgm : PLGBManager;
-label
-   lblRFreeMemExit;
 begin
-   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRFreeMem); {$endif}
-
    lgm:=vMemoryMap[Cardinal(P) shr 16];
 
-   if lgm<>nil then begin
-      if lgm.SignatureZero<>0 then begin
-         // Small block release logic, this is a chunk
-         manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
-         if manager<>nil then begin
-            CSLockEnter(manager.CSLock^);
-            {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-            blkID:=Cardinal(P)-manager.BlockStart;
-            if not BitTestAndReset(manager.AllocatedBlocks, blkID div manager.BlockSize) then begin
-               Result:=-1;
-               Exit;
-            end;
-            FreeSMBBlockAndLeaveLock(manager, blkID);
-            {$else}
-            FreeSMBBlockAndLeaveLock(manager, P);
-            {$endif}
-         end else begin
-            // not found = invalid free
+   if (Cardinal(lgm) and 1)<>0 then begin
+      // Small block release logic, this is a chunk
+      manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
+      if manager<>nil then begin
+         CSLockEnter(manager.SMBInfo.CSLock);
+         {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+         blkID:=Cardinal(P)-manager.BlockStart;
+         if not BitTestAndReset(manager.AllocatedBlocks, blkID div manager.BlockSize) then begin
             Result:=-1;
             Exit;
          end;
+         FreeSMBBlockAndLeaveLock(manager, blkID);
+         {$else}
+         FreeSMBBlockAndLeaveLock(manager, P);
+         {$endif}
       end else begin
-         if (P=lgm.DataStart) then begin
-            // Large block
-            ReleaseLGB(lgm);
-         end else begin
-            Result:=-1;
-            Exit;
-         end;
+         // not found = invalid free
+         Result:=-1;
+         Exit;
       end;
+   end else if (lgm<>nil) and (P=lgm.DataStart) then begin
+      // Large block
+      ReleaseLGB(lgm);
    end else begin
       Result:=-1;
       Exit;
    end;
-
-   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRFreeMem); {$endif}
 
    Result:=0;
 end;
@@ -1690,13 +1644,13 @@ var
    copySize : Cardinal;
 begin
    if Size<cReallocUpSizingLimit then
-      Result:=RGetMem((Size*cReallocUpSizing256) shr 8)
+      Result:=RGetMem(cReallocUpSizingSMBPad+((Size*cReallocUpSizing256) shr 8))
    else Result:=RGetMem(Size);
    if Result<>nil then begin
       copySize:=manager.BlockSize;
       if copySize>Size then copySize:=Size;
       Move16(P^, Result^, copySize);
-      CSLockEnter(manager.CSLock^);
+      CSLockEnter(manager.SMBInfo.CSLock);
       FreeSMBBlockAndLeaveLock(manager, P);
    end;
 end;
@@ -1730,46 +1684,35 @@ var
    manager : PSMBManager;
    lgm : PLGBManager;
 begin
-   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRReallocMem); {$endif}
-
    lgm:=vMemoryMap[Cardinal(P) shr 16];
-   
-   if lgm<>nil then begin
-      if lgm.SignatureZero<>0 then begin
-         // Reallocating a SMB
-         manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
-         if manager<>nil then begin
-            {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-            if not BitTest(manager.AllocatedBlocks, (Cardinal(P) and $FFFF) div manager.BlockSize) then begin
-               Result:=nil;
-               Exit;
-            end;
-            {$endif}
-            if (Size<=manager.BlockSize) and (Size>=manager.ReallocDownSizingSize) then
-               Result:=P
-            else Result:=ReallocTransferSMB(P, Size, manager);
-         end else begin
+
+   if (Cardinal(lgm) and 1)<>0 then begin
+      // Reallocating a SMB
+      manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
+      if manager<>nil then begin
+         {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+         if not BitTest(manager.AllocatedBlocks, (Cardinal(P) and $FFFF) div manager.BlockSize) then begin
             Result:=nil;
             Exit;
          end;
+         {$endif}
+         if (Size<=manager.BlockSize) and (Size>=manager.DownSizingSize) then
+            Result:=P
+         else Result:=ReallocTransferSMB(P, Size, manager);
       end else begin
-         // Reallocating a LGB
-         if P=lgm.DataStart then begin
-            if (Size<=lgm.MaxDataSize) and (Size>=lgm.MaxDataSize div cLGBReallocDownSizing) then begin
-               lgm.DataSize:=Size;
-               Result:=P;
-            end else Result:=ReallocTransferLGB(P, Size, lgm);
-         end else begin
-            RunError(204); // Invalid pointer operation
-            Result:=nil;
-         end;
+         RaiseInvalidPtrError;
+         Result:=nil;
       end;
+   end else if (lgm<>nil) and (P=lgm.DataStart) then begin
+      // Reallocating a LGB
+      if (Size<=lgm.MaxDataSize) and (Size>=lgm.MaxDataSize div cLGBReallocDownSizing) then begin
+         lgm.DataSize:=Size;
+         Result:=P;
+      end else Result:=ReallocTransferLGB(P, Size, lgm);
    end else begin
-      RunError(205);
+      RaiseInvalidPtrError;
       Result:=nil;
    end;
-
-   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRReallocMem); {$endif}
 end;
 
 // RAllocMem
@@ -1794,86 +1737,26 @@ asm
    pop   ebx
 end;
 
-// Allocated
+// RAllocated
 //
-function Allocated(const P : Pointer) : Boolean;
-var
+function RAllocated(const P : Pointer) : Boolean;
+{var
    blkID : Cardinal;
    manager : PSMBManager;
-   locP : Pointer;
+   locP : Pointer;}
 begin
-   locP:=P;
-   if locP=nil then
+{   locP:=P;
+   if locP=nil then }
       Result:=False
-   else begin
+{   else begin
       manager:=vMemoryMap[Cardinal(locP) shr 16];
       if Assigned(manager) then begin
-         if manager.CSLock<>nil then begin
+         if manager.SMBInfo.CSLock<>nil then begin
             blkID:=Cardinal(P)-Cardinal(manager.BlockStart);
             Result:=(blkID mod manager.blockSize=0);
          end else Result:=(PLGBManager(manager).DataStart=locP);
       end else Result:=False;
-   end;
-end;
-
-// RedirectPatch
-//
-function RedirectPatch(oldRoutine, newRoutine : Pointer) : TRedirectPatch;
-var
-   oldProtect, protect : Cardinal;
-   bplAddr : Pointer;
-begin
-   if oldRoutine=newRoutine then begin
-      Result.jumpAddr:=nil;
-      Result.bplAddr:=nil;
-   end else begin
-      // backup jump data
-      Result.jumpAddr:=oldRoutine;
-      Result.jumpBuffer:=PPatchJumpBuffer(oldRoutine)^;
-      // patch jump
-      VirtualProtect(oldRoutine, 256, PAGE_READWRITE, @oldProtect);
-      PByte(oldRoutine)^:=$E9;
-      PCardinal(Cardinal(oldRoutine)+1)^:=Cardinal(newRoutine)-Cardinal(oldRoutine)-5;
-      VirtualProtect(oldRoutine, 256, oldProtect, @protect);
-      // did we patch a BPL jump table?
-      Result.bplAddr:=nil;
-      {$ifndef NO_BPL_PATCHING}
-      if Result.jumpBuffer[0]=$FF then begin
-         // yep, find address of the routine in the BPL
-         bplAddr:=PPointer(PPointer(@Result.jumpBuffer[2])^)^;
-         // back it up
-         Result.bplAddr:=bplAddr;
-         Result.bplBuffer:=PPatchJumpBuffer(bplAddr)^;
-         // and patch it too
-         VirtualProtect(bplAddr, 256, PAGE_READWRITE, @oldProtect);
-         PByte(bplAddr)^:=$E9;
-         PCardinal(Cardinal(bplAddr)+1)^:=Cardinal(newRoutine)-Cardinal(bplAddr)-5;
-         VirtualProtect(bplAddr, 256, oldProtect, @protect);
-      end;
-      {$endif}
-   end;
-end;
-
-// RestorePatch
-//
-procedure RestorePatch(var redirectBackup : TRedirectPatch);
-var
-   oldProtect, protect : Cardinal;
-begin
-   with redirectBackup do begin
-      if jumpAddr<>nil then begin
-         VirtualProtect(jumpAddr, 256, PAGE_READWRITE, @oldProtect);
-         PPatchJumpBuffer(jumpAddr)^:=jumpBuffer;
-         VirtualProtect(jumpAddr, 256, oldProtect, @protect);
-         jumpAddr:=nil;
-      end;
-      if bplAddr<>nil then begin
-         VirtualProtect(bplAddr, 256, PAGE_READWRITE, @oldProtect);
-         PPatchJumpBuffer(bplAddr)^:=bplBuffer;
-         VirtualProtect(bplAddr, 256, oldProtect, @protect);
-         bplAddr:=nil
-      end;
-   end;
+   end;                         }
 end;
 
 // InitializeRMM
@@ -1890,12 +1773,13 @@ begin
    for i:=Low(vSMBs) to High(vSMBs) do begin
       smbInfo:=@vSMBs[i];
       InitializeCSLock(smbInfo.CSLock);
-      smbInfo.Index:=i;
       smbInfo.Size:=cSMBSizes[i];
       smbInfo.BlocksPerSMB:=(cOSChunkItemMinSize+smbInfo.Size-1) div smbInfo.Size;
       if smbInfo.BlocksPerSMB<2 then smbInfo.BlocksPerSMB:=2;
       smbInfo.SMBManagerSize:=(SizeOf(TSMBManager)+smbInfo.BlocksPerSMB*SizeOf(Word)+16) and $FFFFFFF0;
-      smbInfo.DownSizingSize:=(smbInfo.Size div cSMBReallocDownSizing);
+      if smbInfo.Size>cReallocMinSize then
+         smbInfo.DownSizingSize:=smbInfo.Size div cSMBReallocDownSizing
+      else smbInfo.DownSizingSize:=0;
 
       ciSize:=smbInfo.SMBManagerSize+smbInfo.BlocksPerSMB*smbInfo.Size;
       if ciSize<vSMBSmallestChunkItemSize then
@@ -2103,7 +1987,7 @@ begin
       GetMemoryManager(vOldMemoryManager);
       SetMemoryManager(smm.MemoryManager);
       // Redirect SysUtils's AllocMem
-      vAllocatedPatch:=RedirectPatch(@Allocated, @smm.Allocated);
+      Allocated:=@smm.Allocated;
       {$ifdef ALLOW_USAGE_SNAPSHOT}
       vRMMUsageSnapShotPatch:=RedirectPatch(@RMMUsageSnapShot, @smm.RMMUsageSnapShot);
       {$endif}
@@ -2116,10 +2000,6 @@ procedure UnBindRMM;
 begin
    Dec(vRMMBound);
    if vRMMBound=0 then begin
-      RestorePatch(vAllocatedPatch);
-      {$ifdef ALLOW_USAGE_SNAPSHOT}
-         RestorePatch(vRMMUsageSnapShotPatch);
-      {$endif}
       SetMemoryManager(vOldMemoryManager);
       {$ifdef SHARE_MEM}
          if not vSharedMemory_InUse then
