@@ -142,8 +142,8 @@ const
    cSMBMaxSize             = 62880;
 
    // Size of chunks to retrieve from the OS
-   cOSChunkSize = 768*1024;      // 768 kB
-   cOSChunkItemMinSize = 63*1024;
+   cOSChunkSize = 640*1024;      // 640 kB should be enough for everyboy, no?
+   cOSChunkItemMinSize = 64800;
    cOSChunkMaxItemCount = cOSChunkSize div cOSChunkItemMinSize;
 
    // Amount of memory who's delayed release of the next seconds is tolerated
@@ -316,10 +316,16 @@ type
       FreeSpace : Cardinal;
       Full : LongBool;
       NbItems : Integer;
-      Items : array [0..cOSChunkMaxItemCount-1] of TMemoryRange;
       NbFreeSpaces : Integer;
       LargestFreeSpace : Cardinal;
+      Items : array [0..cOSChunkMaxItemCount-1] of TMemoryRange;
       FreeSpaces : array [0..cOSChunkMaxItemCount] of TMemoryRange;
+   end;
+
+   // TSMBLinkedList
+   //
+   TSMBLinkedList = packed record
+      First, Last : PSMBManager;
    end;
 
    // TSMBInfo
@@ -327,8 +333,8 @@ type
    {: SmallBlock management info for a given size.<p> }
    TSMBInfo = packed record
       CSLock : TCSLock;
-      First, Last : PSMBManager;
-      FirstFull, LastFull : PSMBManager;
+      FreeSMBs : TSMBLinkedList;
+      FullSMBs : TSMBLinkedList;
       Size : Cardinal;
       BlocksPerSMB : Cardinal;
       DownSizingSize : Word;
@@ -349,9 +355,8 @@ type
       BlockStart : Pointer;         // base address for SMB blocks
       SMBInfo : PSMBInfo;           // pointer to the SMBInfo (size related)
       DownSizingSize : Cardinal;
-      {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-      AllocatedBlocks : packed array [0..511] of Byte; // 64*1024/16/8
-      {$endif}
+      FirstFreedBlock : Pointer;
+      NextNonAllocatedBlkID : Pointer;
    end;
 
    // TLGBManager
@@ -422,7 +427,7 @@ var
    // SMB information array by size class (index)
    vSMBs : array [0..cSMBMaxSizeIndex] of TSMBInfo;
    vSMBSmallestChunkItemSize : Cardinal;
-   vSMBSizeToPSMBInfo : packed array [0..(cSMBMaxSize-1) shr 4] of PSMBInfo;
+   vSMBSizeToPSMBInfo : packed array [0..(cSMBMaxSize-1) shr 4] of Byte;
 
    // Large blocks are just chained
    vLGBManagers : PLGBManager;
@@ -564,38 +569,12 @@ end;
 
 // MMRandom
 //
+var vRandomLast : Cardinal;
 function MMRandom : Integer;
-asm
-   rdtsc
-   shr   eax, 3
-   xor   eax, edx
+begin
+   vRandomLast:=(3877*vRandomLast+29573) mod 139968;
+   Result:=vRandomLast xor (vRandomLast shr 8);
 end;
-
-{$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-// BitTest
-//
-function BitTest(var byteData; bitIndex : Integer) : Boolean;
-asm
-   bt    [eax], edx
-   setc  al
-end;
-
-// BitTestAndSet
-//
-function BitTestAndSet(var byteData; bitIndex : Integer) : Boolean;
-asm
-   bts   [eax], edx
-   setc  al
-end;
-
-// BitTestAndReset
-//
-function BitTestAndReset(var byteData; bitIndex : Integer) : Boolean;
-asm
-   btr   [eax], edx
-   setc  al
-end;
-{$endif}
 
 // UpdateMemoryMap
 //
@@ -656,14 +635,16 @@ procedure ChunkDeleteFreeSpace(chunk : POSChunk; freeSpaceIndex : Integer);
 var
    i : Integer;
 begin
-   i:=freeSpaceIndex+1;
-   while i<chunk.NbFreeSpaces do begin
-      chunk.FreeSpaces[i-1]:=chunk.FreeSpaces[i];
-      Inc(i);
+   if chunk.NbFreeSpaces=0 then
+      RaiseInvalidPtrError
+   else begin
+      i:=freeSpaceIndex+1;
+      while i<chunk.NbFreeSpaces do begin
+         chunk.FreeSpaces[i-1]:=chunk.FreeSpaces[i];
+         Inc(i);
+      end;
+      Dec(chunk.NbFreeSpaces);
    end;
-   Dec(chunk.NbFreeSpaces);
-   if chunk.NbFreeSpaces<0 then
-      RunError(101);
 end;
 
 // ChunkInsertFreeSpace
@@ -672,13 +653,13 @@ procedure ChunkInsertFreeSpace(chunk : POSChunk; freeSpaceIndex : Integer);
 var
    i : Integer;
 begin
-   i:=chunk.NbFreeSpaces-1;
-   while i>=freeSpaceIndex do begin
-      chunk.FreeSpaces[i+1]:=chunk.FreeSpaces[i];
-      Dec(i);
+   if chunk.NbFreeSpaces>cOSChunkMaxItemCount then
+      RaiseInvalidPtrError
+   else begin
+      for i:=chunk.NbFreeSpaces-1 downto freeSpaceIndex do
+         chunk.FreeSpaces[i+1]:=chunk.FreeSpaces[i];
+      Inc(chunk.NbFreeSpaces);
    end;
-   Inc(chunk.NbFreeSpaces);
-   if chunk.NbFreeSpaces>cOSChunkMaxItemCount+1 then RunError(102);
 end;
 
 // ChunkItemSubAlloc
@@ -688,7 +669,7 @@ var
    i : Integer;
    oldSize : Cardinal;
 begin
-   size:=(size+64) and $FFFFFFE0;
+   size:=(size+63) and $FFFFFFE0;
    i:=0;
    while i<chunk.NbFreeSpaces do begin
       if chunk.FreeSpaces[i].Length>=size then Break;
@@ -721,7 +702,7 @@ var
    i, j : Integer;
    pEnd : Pointer;
 begin
-   size:=(size+64) and $FFFFFFE0;
+   size:=(size+63) and $FFFFFFE0;
    pEnd:=Pointer(Cardinal(p)+size);
    // coalesce with nearby freespace if any
    for i:=0 to chunk.NbFreeSpaces-1 do begin
@@ -1000,31 +981,30 @@ begin
 
    // Spawn manager, allocate block
    lgbManager:=RMMVirtualAlloc(blkSize);
-   if lgbManager=nil then begin
-      Result:=nil;
-      Exit;
+   if lgbManager=nil then
+      Result:=nil
+   else begin
+      lgbManager.hFile:=0;
+      lgbManager.DataSize:=Size;
+      lgbManager.BlockSize:=blkSize;
+      lgbManager.DataStart:=ComputeLGBDataStart(lgbManager, blkSize, Size);
+      lgbManager.MaxDataSize:=blkSize-(Cardinal(lgbManager.DataStart)-Cardinal(lgbManager));
+
+      // Add in the LGB linked list
+      CSLockEnter(vLGBLock);
+
+      if vLGBManagers<>nil then
+         vLGBManagers.Prev:=lgbManager;
+      lgbManager.Next:=vLGBManagers;
+      lgbManager.Prev:=nil;
+      vLGBManagers:=lgbManager;
+
+      CSLockLeave(vLGBLock);
+
+      UpdateMemoryMap(lgbManager, lgbManager.BlockSize, lgbManager);
+
+      Result:=lgbManager.DataStart;
    end;
-
-   lgbManager.hFile:=0;
-   lgbManager.DataSize:=Size;
-   lgbManager.BlockSize:=blkSize;
-   lgbManager.DataStart:=ComputeLGBDataStart(lgbManager, blkSize, Size);
-   lgbManager.MaxDataSize:=blkSize-(Cardinal(lgbManager.DataStart)-Cardinal(lgbManager));
-
-   // Add in the LGB linked list
-   CSLockEnter(vLGBLock);
-
-   if vLGBManagers<>nil then
-      vLGBManagers.Prev:=lgbManager;
-   lgbManager.Next:=vLGBManagers;
-   lgbManager.Prev:=nil;
-   vLGBManagers:=lgbManager;
-
-   CSLockLeave(vLGBLock);
-
-   UpdateMemoryMap(lgbManager, lgbManager.BlockSize, lgbManager);
-
-   Result:=lgbManager.DataStart;
 end;
 
 // ReleaseLGB
@@ -1053,17 +1033,17 @@ begin
       UnmapViewOfFile(aManager);
       CloseHandle(manager.hMapping);
       CloseHandle(manager.hFile);
-   end;
+   end else RMMVirtualFree(aManager, manager.BlockSize);
+   {$else}
+   RMMVirtualFree(aManager, manager.BlockSize);
    {$endif}
-   if manager.hFile=0 then
-      RMMVirtualFree(aManager, manager.BlockSize);
 end;
 
 // ReallocateLGB
 //
 function ReallocateLGB(oldManager : PLGBManager; newSize : Cardinal) : PLGBManager;
 var
-   blkSize, oldDataOffset : Cardinal;
+   blkSize, oldDataOffset, copySize : Cardinal;
    newManager : PLGBManager;
    hFile, hMapping : Cardinal;
    needDataTransfer : Boolean;
@@ -1125,9 +1105,10 @@ begin
 
       if needDataTransfer then begin
          newManager.DataStart:=ComputeLGBDataStart(newManager, blkSize, newSize);
-         if oldManager.DataSize<newSize then
-            Move16(oldManager.DataStart^, newManager.DataStart^, oldManager.DataSize)
-         else Move16(oldManager.DataStart^, newManager.DataStart^, newSize);
+         copySize:=oldManager.DataSize;
+         if copySize>newSize then
+            copySize:=newSize;
+         Move16(oldManager.DataStart^, newManager.DataStart^, copySize);
          UpdateMemoryMap(oldManager, oldManager.BlockSize, nil);
          RMMVirtualFree(oldManager, oldManager.BlockSize);
       end;
@@ -1149,7 +1130,7 @@ end;
 //
 procedure Move16SSE(const Source; var Dest; Count: Integer); register;
 // eax : Source
-// edx : Dest
+// edx : Dest      
 // ecx : Count
 asm
    or       ecx, ecx
@@ -1213,51 +1194,9 @@ asm
 @@End:
 end;
 
-// Move16FPU
-//
-procedure Move16FPU(const Source; var Dest; Count: Integer); register;
-asm
-   or       ecx, ecx
-   jz       @@End
-
-@@Copy:
-   // round to 16
-   add      ecx, 15
-   and      cl, $F0
-
-   lea      eax, [eax+ecx]
-   lea      edx, [edx+ecx]
-
-   neg      ecx
-
-   test     ecx, 16
-   jz       @@Loop
-
-   fild     qword ptr [eax+ecx]
-   fild     qword ptr [eax+ecx+8]
-   fistp    qword ptr [edx+ecx+8]
-   fistp    qword ptr [edx+ecx]
-   add      ecx, 16
-   jz       @@End
-
-@@Loop:
-   fild     qword ptr [eax+ecx]
-   fild     qword ptr [eax+ecx+8]
-   fistp    qword ptr [edx+ecx+8]
-   fistp    qword ptr [edx+ecx]
-   fild     qword ptr [eax+ecx+16]
-   fild     qword ptr [eax+ecx+24]
-   fistp    qword ptr [edx+ecx+24]
-   fistp    qword ptr [edx+ecx+16]
-   add      ecx, 32
-   jnz      @@Loop
-
-@@End:
-end; //}
-
 // MemClear16SSE
 //
-procedure MemClear16SSE(const Buffer; Count: Integer); register;
+procedure MemClear16SSE(var Buffer; Count: Integer); register;
 asm
    or       edx, edx
    jz       @@End
@@ -1292,59 +1231,60 @@ asm
    db $0F,$77               /// emms
 end;
 
-// MemClear16FPU
+// MemClear16RTL
 //
-procedure MemClear16FPU(const Buffer; Count: Integer); register;
-asm
-   or       edx, edx
-   jz       @@TrueEnd
+procedure MemClear16RTL(var Buffer; Count: Integer);
+begin
+   FillChar(Buffer, Count, 0);
+end;
 
-@@Copy:
-   // round to 16
-   add      edx, 15
-   and      dl, $F0
+// SMBLinkedListInsertFirst
+//
+procedure SMBLinkedListInsertFirst(var linkedList : TSMBLinkedList; item : PSMBManager);
+begin
+   if linkedList.First=nil then begin
+      linkedList.First:=item;
+      linkedList.Last:=item;
+      item.Next:=nil;
+   end else begin
+      item.Next:=linkedList.First;
+      linkedList.First.Prev:=item;
+      linkedList.First:=item;
+   end;
+   item.Prev:=nil;
+end;
 
-   lea      eax, [eax+edx]
-   fldz
+// SMBLinkedListInsertLast
+//
+procedure SMBLinkedListInsertLast(var linkedList : TSMBLinkedList; item : PSMBManager);
+begin
+   if linkedList.First=nil then begin
+      linkedList.First:=item;
+      linkedList.Last:=item;
+      item.Prev:=nil;
+   end else begin
+      item.Prev:=linkedList.Last;
+      linkedList.Last.Next:=item;
+      linkedList.Last:=item;
+   end;
+   item.Next:=nil;
+end;
 
-   neg      edx
-
-   test     edx, 16
-   jz       @@Loop
-
-   fst      qword ptr [eax+edx]
-   fst      qword ptr [eax+edx+8]
-   add      edx, 16
-   jz       @@End
-
-@@Loop:
-   fst      qword ptr [eax+edx]
-   fst      qword ptr [eax+edx+8]
-   fst      qword ptr [eax+edx+16]
-   fst      qword ptr [eax+edx+24]
-   add      edx, 32
-   jnz      @@Loop
-
-@@End:
-   ffree    st(0)
-@@TrueEnd:
-end; //}
+// SMBLinkedListCut
+//
+procedure SMBLinkedListCut(var linkedList : TSMBLinkedList; item : PSMBManager);
+begin
+   if item.Prev=nil then
+      linkedList.First:=item.Next
+   else item.Prev.Next:=item.Next;
+   if item.Next=nil then
+      linkedList.Last:=item.Prev
+   else item.Next.Prev:=item.Prev;
+end;
 
 // AllocateSMB
 //
 function AllocateSMB(smbInfo : PSMBInfo) : PSMBManager;
-
-   procedure FillOffsetArray(wa : PWordArray; n, s : Integer);
-   var
-      i, k : Integer;
-   begin
-      k:=0;
-      for i:=n-1 downto 0 do begin
-         wa[i]:=k;
-         Inc(k, s);
-      end;
-   end;
-
 var
    n : Cardinal;
    managerSize : Cardinal;
@@ -1363,165 +1303,38 @@ begin
    Result.BlockSize:=smbInfo.Size;
    Result.DownSizingSize:=smbInfo.DownSizingSize;
 
-   // prepare block offsets stack (and allocated bitset)
-   FillOffsetArray(PWordArray(Cardinal(Result)+SizeOf(TSMBManager)), n, smbInfo.Size);
-   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-   MemClear16(Result.AllocatedBlocks, SizeOf(Result.AllocatedBlocks));
-   {$endif}
+   // prepare block offsets stack
+   Result.NextNonAllocatedBlkID:=Result.BlockStart;
+   Result.FirstFreedBlock:=nil;
 
-   Result.Next:=nil;
-   Result.Prev:=nil;
-   smbInfo.First:=Result;
-   smbInfo.Last:=Result;
+   SMBLinkedListInsertFirst(smbInfo.FreeSMBs, Result);
 end;
 
 // ReleaseSMB
 //
 procedure ReleaseSMB(manager : PSMBManager);
 begin
-   if manager.NbFreeBlocks>0 then begin
-      // it's a non-full SMB
-      if manager.Prev<>nil then
-         manager.Prev.Next:=manager.Next
-      else manager.SMBInfo.First:=manager.Next;
-      if manager.Next<>nil then
-         manager.Next.Prev:=manager.Prev
-      else manager.SMBInfo.Last:=manager.Prev;
-   end else begin
-      // it's a full SMB
-      if manager.Prev<>nil then
-         manager.Prev.Next:=manager.Next
-      else manager.SMBInfo.FirstFull:=manager.Next;
-      if manager.Next<>nil then
-         manager.Next.Prev:=manager.Prev
-      else manager.SMBInfo.LastFull:=manager.Prev;
-   end;
+   if manager.NbFreeBlocks>0 then
+      SMBLinkedListCut(manager.SMBInfo.FreeSMBs, manager)
+   else SMBLinkedListCut(manager.SMBInfo.FullSMBs, manager);
 
    RMMVirtualFreeChunkItem(manager);
-end;
-
-// MakeSMBTopMost
-//
-procedure MakeSMBTopMost(manager : PSMBManager);
-var
-   smbInfo : PSMBInfo;
-begin
-   if manager.Prev<>nil then begin
-      smbInfo:=manager.SMBInfo;
-      manager.Prev.Next:=manager.Next;
-      if manager.Next<>nil then
-         manager.Next.Prev:=manager.Prev
-      else smbInfo.Last:=manager.Prev;
-      smbInfo.First.Prev:=manager;
-      manager.Next:=smbInfo.First;
-      manager.Prev:=nil;
-      smbInfo.First:=manager;
-   end;
-end;
-
-// MoveToFullSMBs
-//
-procedure MoveToFullSMBs(manager : PSMBManager);
-var
-   smbInfo : PSMBInfo;
-begin
-   smbInfo:=manager.SMBInfo;
-   // cut from non-full
-   if manager.Prev<>nil then
-      manager.Prev.Next:=manager.Next
-   else smbInfo.First:=manager.Next;
-   if manager.Next<>nil then
-      manager.Next.Prev:=manager.Prev
-   else smbInfo.Last:=manager.Prev;
-   // paste to full (as first)
-   if smbInfo.FirstFull=nil then begin
-      smbInfo.FirstFull:=manager;
-      smbInfo.LastFull:=manager;
-      manager.Next:=nil;
-      manager.Prev:=nil;
-   end else begin
-      smbInfo.FirstFull.Prev:=manager;
-      manager.Next:=smbInfo.FirstFull;
-      smbInfo.FirstFull:=manager;
-      manager.Prev:=nil;
-   end;
-end;
-
-// MoveToNonFullSMBs
-//
-procedure MoveToNonFullSMBsAndLeaveLock(manager : PSMBManager);
-var
-   smbInfo : PSMBInfo;
-begin
-   smbInfo:=manager.SMBInfo;
-   // cut from full
-   if manager.Prev<>nil then
-      manager.Prev.Next:=manager.Next
-   else smbInfo.FirstFull:=manager.Next;
-   if manager.Next<>nil then
-      manager.Next.Prev:=manager.Prev
-   else smbInfo.LastFull:=manager.Prev;
-   // paste to non-full (as last)
-   if smbInfo.Last=nil then begin
-      smbInfo.First:=manager;
-      smbInfo.Last:=manager;
-      manager.Next:=nil;
-      manager.Prev:=nil;
-   end else begin
-      smbInfo.Last.Next:=manager;
-      manager.Prev:=smbInfo.Last;
-      smbInfo.Last:=manager;
-      manager.Next:=nil;
-   end;
-   CSLockLeave(smbInfo.CSLock);
-end;
-
-// FreeSMBBlockAndLeaveLock
-//
-procedure FreeSMBBlockAndLeaveLock(manager : PSMBManager; p : Pointer);
-var
-   n : Cardinal;
-   firstManager : PSMBManager;
-   smbInfo : PSMBInfo;
-   blockID : Cardinal;
-begin
-   blockID:=Cardinal(p)-Cardinal(manager.BlockStart);
-   n:=manager.NbFreeBlocks;
-   PWordArray(manager)[n+(SizeOf(TSMBManager) div 2)]:=blockID;
-   Inc(manager.NbFreeBlocks);
-   if n=0 then begin
-      MoveToNonFullSMBsAndLeaveLock(manager);
-   end else begin
-      smbInfo:=manager.SMBInfo;
-      firstManager:=smbInfo.First;
-      if n+1<manager.MaxNbFreeBlocks then begin
-         if (n>firstManager.NbFreeBlocks) then
-            MakeSMBTopMost(manager);
-      end else begin
-         // topmost manager can't die
-         if (smbInfo.Size>128) or (manager.Prev<>nil) then begin
-            ReleaseSMB(manager);
-         end;
-      end;
-      CSLockLeave(smbInfo.CSLock);
-   end;
 end;
 
 // RGetMem
 //
 function RGetMem(Size: Integer): Pointer;
 var
-   blkID : Cardinal;
    manager : PSMBManager;
    smbInfo : PSMBInfo;
 begin
    if Size<=cSMBMaxSize then begin
       // Small Blocks logic
-      smbInfo:=vSMBSizeToPSMBInfo[(Size-1) shr 4];
+      smbInfo:=@vSMBs[vSMBSizeToPSMBInfo[(Size-1) shr 4]];
 
       CSLockEnter(smbInfo.CSLock);
 
-      manager:=smbInfo.First;
+      manager:=smbInfo.FreeSMBs.First;
       if manager=nil then begin
          manager:=AllocateSMB(smbInfo);
          if manager=nil then begin
@@ -1531,16 +1344,18 @@ begin
          end;
       end;
 
-      blkID:=PWordArray(manager)[manager.NbFreeBlocks+((SizeOf(TSMBManager) div 2)-1)];
-      {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-      BitTestAndSet(manager.AllocatedBlocks[0], blkID div manager.BlockSize);
-      {$endif}
-      Result:=Pointer(Cardinal(manager.BlockStart)+blkID);
-      
-      if manager.NbFreeBlocks=1 then begin
-         manager.NbFreeBlocks:=0;
-         MoveToFullSMBs(manager);
-      end else Dec(manager.NbFreeBlocks);
+      Dec(manager.NbFreeBlocks);
+      Result:=manager.FirstFreedBlock;
+      if Result<>nil then
+         manager.FirstFreedBlock:=PPointer(Result)^
+      else begin
+         Result:=manager.NextNonAllocatedBlkID;
+         manager.NextNonAllocatedBlkID:=Pointer(Cardinal(Result)+manager.BlockSize);
+      end;
+      if manager.NbFreeBlocks=0 then begin
+         SMBLinkedListCut(manager.SMBInfo.FreeSMBs, manager);
+         SMBLinkedListInsertFirst(manager.SMBInfo.FullSMBs, manager);
+      end;
 
       CSLockLeave(smbInfo.CSLock);
 
@@ -1548,6 +1363,40 @@ begin
       // Large blocks
       Result:=AllocateLGB(Size);
    end;
+end;
+
+// FreeSMBBlockAndLeaveLock
+//
+procedure FreeSMBBlockAndLeaveLock(manager : PSMBManager; p : Pointer);
+var
+   n : Cardinal;
+   firstManager : PSMBManager;
+   smbInfo : PSMBInfo;
+begin
+   PPointer(P)^:=manager.FirstFreedBlock;
+   manager.FirstFreedBlock:=P;
+
+   smbInfo:=manager.SMBInfo;
+   n:=manager.NbFreeBlocks;
+   Inc(manager.NbFreeBlocks);
+   if n=0 then begin
+      SMBLinkedListCut(smbInfo.FullSMBs, manager);
+      SMBLinkedListInsertFirst(smbInfo.FreeSMBs, manager);
+   end else begin
+      firstManager:=smbInfo.FreeSMBs.First;
+      if n+1<manager.MaxNbFreeBlocks then begin
+         if (n>firstManager.NbFreeBlocks) then begin
+            SMBLinkedListCut(smbInfo.FreeSMBs, manager);
+            SMBLinkedListInsertFirst(smbInfo.FreeSMBs, manager);
+         end;
+      end else begin
+         // topmost manager can't die
+         if (smbInfo.Size>256) or (manager.Prev<>nil) or (manager.Next<>nil) then begin
+            ReleaseSMB(manager);
+         end;
+      end;
+   end;
+   CSLockLeave(smbInfo.CSLock);
 end;
 
 // SMBManagerFromChunkAndPointer
@@ -1598,9 +1447,6 @@ end;
 //
 function RFreeMem(P : Pointer) : Integer;
 var
-   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-   blkID : Cardinal;
-   {$endif}
    manager : PSMBManager;
    lgm : PLGBManager;
 begin
@@ -1611,16 +1457,7 @@ begin
       manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
       if manager<>nil then begin
          CSLockEnter(manager.SMBInfo.CSLock);
-         {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-         blkID:=Cardinal(P)-manager.BlockStart;
-         if not BitTestAndReset(manager.AllocatedBlocks, blkID div manager.BlockSize) then begin
-            Result:=-1;
-            Exit;
-         end;
-         FreeSMBBlockAndLeaveLock(manager, blkID);
-         {$else}
          FreeSMBBlockAndLeaveLock(manager, P);
-         {$endif}
       end else begin
          // not found = invalid free
          Result:=-1;
@@ -1690,12 +1527,6 @@ begin
       // Reallocating a SMB
       manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
       if manager<>nil then begin
-         {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-         if not BitTest(manager.AllocatedBlocks, (Cardinal(P) and $FFFF) div manager.BlockSize) then begin
-            Result:=nil;
-            Exit;
-         end;
-         {$endif}
          if (Size<=manager.BlockSize) and (Size>=manager.DownSizingSize) then
             Result:=P
          else Result:=ReallocTransferSMB(P, Size, manager);
@@ -1776,7 +1607,7 @@ begin
       smbInfo.Size:=cSMBSizes[i];
       smbInfo.BlocksPerSMB:=(cOSChunkItemMinSize+smbInfo.Size-1) div smbInfo.Size;
       if smbInfo.BlocksPerSMB<2 then smbInfo.BlocksPerSMB:=2;
-      smbInfo.SMBManagerSize:=(SizeOf(TSMBManager)+smbInfo.BlocksPerSMB*SizeOf(Word)+16) and $FFFFFFF0;
+      smbInfo.SMBManagerSize:=(SizeOf(TSMBManager)+16) and $FFFFFFF0;
       if smbInfo.Size>cReallocMinSize then
          smbInfo.DownSizingSize:=smbInfo.Size div cSMBReallocDownSizing
       else smbInfo.DownSizingSize:=0;
@@ -1790,7 +1621,7 @@ begin
    for i:=0 to cSMBMaxSizeIndex do begin
       k:=cSMBSizes[i];
       while j<k do begin
-         vSMBSizeToPSMBInfo[j shr 4]:=@vSMBs[i];
+         vSMBSizeToPSMBInfo[j shr 4]:=i;
          Inc(j, 16);
       end;
    end;
@@ -1811,10 +1642,10 @@ begin
       ReleaseLGB(vLGBManagers);
    // release SMBs
    for i:=Low(vSMBs) to High(vSMBs) do begin
-      while vSMBs[i].First<>nil do
-         ReleaseSMB(vSMBs[i].First);
-      while vSMBs[i].FirstFull<>nil do
-         ReleaseSMB(vSMBs[i].FirstFull);
+      while vSMBs[i].FreeSMBs.First<>nil do
+         ReleaseSMB(vSMBs[i].FreeSMBs.First);
+      while vSMBs[i].FullSMBs.First<>nil do
+         ReleaseSMB(vSMBs[i].FullSMBs.First);
       DeleteCSLock(vSMBs[i].CSLock);
    end;
 
@@ -2226,8 +2057,8 @@ initialization
       MemClear16:=@MemClear16SSE;
       Move16:=@Move16SSE;
    end else begin
-      MemClear16:=@MemClear16FPU;
-      Move16:=@Move16FPU;
+      MemClear16:=@MemClear16RTL;
+      Move16:=@System.Move;
    end;
    {$else}
    MemClear16:=@MemClear16FPU;
