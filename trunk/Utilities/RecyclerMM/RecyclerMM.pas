@@ -129,22 +129,22 @@ const
    cReallocMinSize         = 64;
 
    // Size and Index limits for SMBs
-   cSMBMaxSizeIndex        = 53;
+   cSMBMaxSizeIndex        = 47;
    cSMBSizes               : packed array [0..cSMBMaxSizeIndex] of Word = (
          // 52 values from an exponential curve manually adjusted to "look nice" :)
          16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224,
          240, 256, 288, 320, 384, 432, 496, 576, 656, 752, 864, 976, 1120,
-         1280, 1472, 1680, 1920, 2192, 2512, 2864, 3280, 3744, 4272, 4880,
-         5584, 6368, 7264, 8304, 9472, 10816, 12352, 14096, 16400, 18368,
-         20976, 23936, 27328, 32800, 43520, 62880 );
+         1280, 1472, 1680, 1936, 2208, 2560, 2784, 3216, 3776, 4288, 4944,
+         5856, 6448, 7168, 8064, 9216, 10752, 12912, 16144, 21536, 32320 );
 
    // Maximum Size (bytes) of blocks managed by SMBs (max 64kB)
-   cSMBMaxSize             = 62880;
+   cSMBMaxSize             = 32320;
 
    // Size of chunks to retrieve from the OS
    cOSChunkSize = 640*1024;      // 640 kB should be enough for everyboy, no?
-   cOSChunkItemMinSize = 64800;
-   cOSChunkMaxItemCount = cOSChunkSize div cOSChunkItemMinSize;
+   cOSChunkRandomOffset = 4096;  // max size of random offset
+   cOSChunkItemSize = 64800;
+   cOSChunkBlockCount = (cOSChunkSize-cOSChunkRandomOffset) div cOSChunkItemSize;
 
    // Amount of memory who's delayed release of the next seconds is tolerated
    cOSDelayedAllowedMemoryLatency = 8*1024*1024;   // 8 MB
@@ -310,16 +310,11 @@ type
    //
    {: A range of heap-managed SMB or small LGB space }
    TOSChunk = packed record
-      ChunkMarker : Cardinal;
       Prev, Next : POSChunk;
-      TotalSpace : Cardinal;
-      FreeSpace : Cardinal;
+      FreeBlocks : Integer;
       Full : LongBool;
-      NbItems : Integer;
-      NbFreeSpaces : Integer;
-      LargestFreeSpace : Cardinal;
-      Items : array [0..cOSChunkMaxItemCount-1] of TMemoryRange;
-      FreeSpaces : array [0..cOSChunkMaxItemCount] of TMemoryRange;
+      FirstBlock : Cardinal;
+      AvailableBlocks : array [0..cOSChunkBlockCount-1] of Pointer;
    end;
 
    // TSMBLinkedList
@@ -457,7 +452,7 @@ begin
    hLib:=LoadLibrary('Kernel32.dll');
    vSwitchToThread:=GetProcAddress(hLib, 'SwitchToThread');
    FreeLibrary(hLib);
-   if not Assigned(vSwitchToThread) then 
+   if not Assigned(vSwitchToThread) then
       vSwitchToThread:=@Win9xSwitchToThread;
 end;
 
@@ -617,129 +612,6 @@ begin
    end;
 end;
 
-// ChunkUpdateLargestFreeSpace
-//
-procedure ChunkUpdateLargestFreeSpace(chunk : POSChunk);
-var
-   i : Integer;
-begin
-   chunk.LargestFreeSpace:=0;
-   for i:=0 to chunk.NbFreeSpaces-1 do
-      if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
-         chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
-end;
-
-// ChunkDeleteFreeSpace
-//
-procedure ChunkDeleteFreeSpace(chunk : POSChunk; freeSpaceIndex : Integer);
-var
-   i : Integer;
-begin
-   if chunk.NbFreeSpaces=0 then
-      RaiseInvalidPtrError
-   else begin
-      i:=freeSpaceIndex+1;
-      while i<chunk.NbFreeSpaces do begin
-         chunk.FreeSpaces[i-1]:=chunk.FreeSpaces[i];
-         Inc(i);
-      end;
-      Dec(chunk.NbFreeSpaces);
-   end;
-end;
-
-// ChunkInsertFreeSpace
-//
-procedure ChunkInsertFreeSpace(chunk : POSChunk; freeSpaceIndex : Integer);
-var
-   i : Integer;
-begin
-   if chunk.NbFreeSpaces>cOSChunkMaxItemCount then
-      RaiseInvalidPtrError
-   else begin
-      for i:=chunk.NbFreeSpaces-1 downto freeSpaceIndex do
-         chunk.FreeSpaces[i+1]:=chunk.FreeSpaces[i];
-      Inc(chunk.NbFreeSpaces);
-   end;
-end;
-
-// ChunkItemSubAlloc
-//
-function ChunkItemSubAlloc(chunk : POSChunk; size : Cardinal) : Pointer;
-var
-   i : Integer;
-   oldSize : Cardinal;
-begin
-   size:=(size+63) and $FFFFFFE0;
-   i:=0;
-   while i<chunk.NbFreeSpaces do begin
-      if chunk.FreeSpaces[i].Length>=size then Break;
-      Inc(i);
-   end;
-   if i=chunk.NbFreeSpaces then begin
-      Result:=nil;
-      Exit;
-   end;
-   Result:=chunk.FreeSpaces[i].Start;
-   if chunk.FreeSpaces[i].Length=size then begin
-      // perfect fit, delete it
-      ChunkDeleteFreeSpace(chunk, i);
-      if size=chunk.LargestFreeSpace then
-         ChunkUpdateLargestFreeSpace(chunk);
-   end else begin
-      // imperfect fit, adjust remaining free space
-      chunk.FreeSpaces[i].Start:=Pointer(Cardinal(Result)+size);
-      oldSize:=chunk.FreeSpaces[i].Length;
-      chunk.FreeSpaces[i].Length:=oldSize-size;
-      if oldSize=chunk.LargestFreeSpace then
-         ChunkUpdateLargestFreeSpace(chunk);
-   end;
-end;
-
-// ChunkItemSubFree
-//
-procedure ChunkItemSubFree(chunk : POSChunk; p : Pointer; size : Cardinal);
-var
-   i, j : Integer;
-   pEnd : Pointer;
-begin
-   size:=(size+63) and $FFFFFFE0;
-   pEnd:=Pointer(Cardinal(p)+size);
-   // coalesce with nearby freespace if any
-   for i:=0 to chunk.NbFreeSpaces-1 do begin
-      if Cardinal(chunk.FreeSpaces[i].Start)+chunk.FreeSpaces[i].Length=Cardinal(p) then begin
-         Inc(chunk.FreeSpaces[i].Length, size);
-         if (i<chunk.NbFreeSpaces-1) and (pEnd=chunk.FreeSpaces[i+1].Start) then begin
-            // coalesce with next block
-            Inc(chunk.FreeSpaces[i].Length, chunk.FreeSpaces[i+1].Length);
-            ChunkDeleteFreeSpace(chunk, i+1);
-         end;
-         if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
-            chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
-         Exit;
-      end;
-      if chunk.FreeSpaces[i].Start=pEnd then begin
-         chunk.FreeSpaces[i].Start:=p;
-         Inc(chunk.FreeSpaces[i].Length, size);
-         if chunk.FreeSpaces[i].Length>chunk.LargestFreeSpace then
-            chunk.LargestFreeSpace:=chunk.FreeSpaces[i].Length;
-         Exit;
-      end;
-   end;
-   // must spawn a new freespace
-   j:=chunk.NbFreeSpaces;
-   for i:=0 to chunk.NbFreeSpaces-1 do begin
-      if Cardinal(chunk.FreeSpaces[i].Start)<Cardinal(p) then begin
-         j:=i;
-         Break;
-      end;
-   end;
-   ChunkInsertFreeSpace(chunk, j);
-   chunk.FreeSpaces[j].Start:=p;
-   chunk.FreeSpaces[j].Length:=size;
-   if size>chunk.LargestFreeSpace then
-      chunk.LargestFreeSpace:=size;
-end;
-
 // CutOutChunk
 //
 procedure CutOutChunk(chunk : POSChunk);
@@ -766,7 +638,7 @@ end;
 procedure DestroyChunk(chunk : POSChunk);
 begin
    if chunk.Full then RunError(103);
-   if chunk.FreeSpace<>chunk.TotalSpace then RunError(104);
+   if chunk.FreeBlocks<>cOSChunkBlockCount then RunError(104);
    chunk:=Pointer(Cardinal(chunk) and $FFFF0000);
    UpdateMemoryMap(chunk, cOSChunkSize, nil);
    VirtualFree(chunk, 0, MEM_RELEASE);
@@ -774,73 +646,51 @@ end;
 
 // RMMAllocChunkItem
 //
-function RMMAllocChunkItem(size : Cardinal) : Pointer;
-const
-   HEAP_NO_SERIALIZE = $00000001;
+function RMMAllocChunkItem : Pointer;
 var
    chunk : POSChunk;
    chunkRandomOffset : Cardinal;
-   i, j : Integer;
-   alignedAddress : Pointer;
+   i : Integer;
+   alignedAddress : Cardinal;
 begin
    CSLockEnter(vOSChunksLock);
 
-   Inc(size, 16+8);
-
-   Result:=nil;
    chunk:=vOSChunksFirst;
-   while chunk<>nil do begin
-      if chunk.LargestFreeSpace>=size then begin
-         // attempt allocation
-         Result:=ChunkItemSubAlloc(chunk, size);
-         if Result<>nil then
-            Break;
-      end;
-      chunk:=chunk.Next;
-   end;
-   if Result=nil then begin
-      // couldn't allocate from any existing chunk, allocate a new one
+   if chunk=nil then begin
+      // all chunks full, allocate a new one
       chunk:=VirtualAlloc(nil, cOSChunkSize, MEM_COMMIT, PAGE_READWRITE);
-      if chunk=nil then Exit;
+      if chunk=nil then begin
+         Result:=nil;
+         Exit;
+      end;
       // randomize chunk location by up to 4 kB
-      chunkRandomOffset:=(((Cardinal(chunk) shr 16) or (Cardinal(chunk) shr 20)) and $7F)*32;
-      UpdateMemoryMap(chunk, cOSChunkSize, Pointer(Cardinal(chunk)+chunkRandomOffset+1));
+      chunkRandomOffset:=(((cOSChunkRandomOffset div 16)-1) and MMRandom)*16;
+      while chunkRandomOffset+SizeOf(TOSChunk)>4096 do
+         Dec(chunkRandomOffset, 16);
+      // update MM and initialize chunk structure
+      UpdateMemoryMap(chunk, cOSChunkSize, Pointer(Cardinal(chunk)+chunkRandomOffset));
       Inc(Cardinal(chunk), chunkRandomOffset);
-      chunk.ChunkMarker:=$BEEFB00F;
-      chunk.NbFreeSpaces:=1;
-      i:=((SizeOf(TOSChunk)+16) and $FFF0);
-      chunk.TotalSpace:=cOSChunkSize-i-Integer(chunkRandomOffset);
-      chunk.FreeSpace:=chunk.TotalSpace;
-      chunk.FreeSpaces[0].Start:=Pointer(Cardinal(chunk)+Cardinal(i));
-      chunk.FreeSpaces[0].Length:=chunk.FreeSpace;
-      chunk.LargestFreeSpace:=chunk.FreeSpace;
+      chunk.FreeBlocks:=cOSChunkBlockCount;
+      alignedAddress:=(Cardinal(chunk)+SizeOf(TOSChunk)+15) and $FFFFFFF0;
+      chunk.FirstBlock:=alignedAddress;
+      for i:=0 to cOSChunkBlockCount-1 do
+         chunk.AvailableBlocks[i]:=Pointer(alignedAddress+Cardinal(i)*cOSChunkItemSize);
+      // place in linked list
       chunk.Prev:=nil;
       chunk.Next:=vOSChunksFirst;
       if vOSChunksFirst<>nil then
          vOSChunksFirst.Prev:=chunk;
       vOSChunksFirst:=chunk;
-      Result:=ChunkItemSubAlloc(chunk, size);
-   end else begin
-      if chunk.FreeSpace=chunk.TotalSpace then
-         Dec(vOSChunkNbEntirelyFree);
    end;
 
-   // register the ChunkItem
-   i:=0;
-   while     (Cardinal(chunk.Items[i].Start)<Cardinal(Result))
-         and (i<chunk.NbItems) do begin
-      Inc(i);
-   end;
-   for j:=chunk.NbItems downto i+1 do begin
-      chunk.Items[j]:=chunk.Items[j-1];
-   end;
-   chunk.Items[i].Start:=Result;
-   chunk.Items[i].Length:=size;
-   Dec(chunk.FreeSpace, size);
-   Inc(chunk.NbItems);
+   i:=cOSChunkBlockCount-1;
+   while (chunk.AvailableBlocks[i]=nil) do Dec(i);
+   Result:=chunk.AvailableBlocks[i];
+   chunk.AvailableBlocks[i]:=nil;
+   Dec(chunk.FreeBlocks);
 
    // if we filled this one up, move it to the full chunks
-   if chunk.LargestFreeSpace<vSMBSmallestChunkItemSize then begin
+   if chunk.FreeBlocks=0 then begin
       // cut from non-full
       CutOutChunk(chunk);
       // paste to full
@@ -852,14 +702,6 @@ begin
       chunk.Prev:=nil;
    end;
 
-   // 16-byte aligned pointer (HeapAlloc's is already 8-byte aligned)
-   alignedAddress:=Pointer(Cardinal(Result)+16+(Cardinal(Result) and 8));
-   // store the chunk reference and true pointer just before the allocated space
-   PInteger(Cardinal(alignedAddress)-16)^:=Integer(alignedAddress);
-   PInteger(Cardinal(alignedAddress)-8)^:=Integer(chunk);
-   PInteger(Cardinal(alignedAddress)-4)^:=Integer(Result);
-   Result:=alignedAddress;
-
    CSLockLeave(vOSChunksLock);
 end;
 
@@ -867,33 +709,22 @@ end;
 //
 procedure RMMVirtualFreeChunkItem(p : Pointer);
 var
-   i, n : Integer;
+   i : Integer;
    chunk : POSChunk;
-   trueStart : Pointer;
 begin
    CSLockEnter(vOSChunksLock);
 
    // identify the chunk for the pointer
-   chunk:=POSChunk(PInteger(Cardinal(p)-8)^);
-   trueStart:=Pointer(PInteger(Cardinal(p)-4)^);
-
-   // next identify it in the item list
-   i:=0;
-   while chunk.Items[i].Start<>trueStart do Inc(i);
-
-   if i>=chunk.NbItems then RunError(105);
+   chunk:=POSChunk(vMemoryMap[Cardinal(p) shr 16]);
+   if (Cardinal(chunk) and 1)<>0 then
+      RaiseInvalidPtrError;
+   chunk:=POSChunk(Cardinal(Chunk) and $FFFFFFF0);
 
    // release
-   n:=chunk.Items[i].Length;
-   ChunkItemSubFree(chunk, trueStart, n);
-   Inc(chunk.FreeSpace, n);
-   while i<cOSChunkMaxItemCount-1 do begin
-      chunk.Items[i]:=chunk.Items[i+1];
-      Inc(i);
-   end;
-   chunk.Items[i].Start:=nil;
-   chunk.Items[i].Length:=0;
-   Dec(chunk.NbItems);
+   i:=0;
+   while chunk.AvailableBlocks[i]<>nil do Inc(i);
+   chunk.AvailableBlocks[i]:=p;
+   Inc(chunk.FreeBlocks);
 
    if chunk.Full then begin
       // we're no longer full, cut from full
@@ -908,7 +739,7 @@ begin
    end;
 
    // if completely freed and not the only chunk, cleanup
-   if (chunk.FreeSpace=chunk.TotalSpace) then begin
+   if (chunk.FreeBlocks=cOSChunkBlockCount) then begin
       {$ifndef ALLOW_DELAYED_RELEASE}
       if (chunk.Prev<>nil) or (chunk.Next<>nil) then begin
          CutOutChunk(chunk);
@@ -1001,7 +832,7 @@ begin
 
       CSLockLeave(vLGBLock);
 
-      UpdateMemoryMap(lgbManager, lgbManager.BlockSize, lgbManager);
+      UpdateMemoryMap(lgbManager, lgbManager.BlockSize, Pointer(Cardinal(lgbManager)+1));
 
       Result:=lgbManager.DataStart;
    end;
@@ -1119,7 +950,7 @@ begin
       newManager.DataSize:=newSize;
       newManager.MaxDataSize:=blkSize-(Cardinal(newManager.DataStart)-Cardinal(newManager));
 
-      UpdateMemoryMap(newManager, blkSize, newManager);
+      UpdateMemoryMap(newManager, blkSize, Pointer(Cardinal(newManager)+1));
 
       Result:=newManager;
 
@@ -1293,7 +1124,7 @@ begin
    n:=smbInfo.BlocksPerSMB;
    managerSize:=smbInfo.SMBManagerSize;
 
-   Result:=RMMAllocChunkItem(managerSize+n*smbInfo.Size);
+   Result:=RMMAllocChunkItem;
    if Result=nil then Exit;
 
    Result.BlockStart:=Pointer(Cardinal(Result)+managerSize);
@@ -1402,45 +1233,12 @@ end;
 // SMBManagerFromChunkAndPointer
 //
 function SMBManagerFromChunkAndPointer(chunk : POSChunk; P : Cardinal) : PSMBManager;
-{var
-   i : Integer;
-   iStart : Cardinal;
+var
+   i : Cardinal;
 begin
    // identify chunk item in the chunk, this will be our manager
-   chunk:=POSChunk(Cardinal(chunk) and -$10);
-   for i:=0 to cOSChunkMaxItemCount-1 do begin
-      iStart:=Cardinal(P)-Cardinal(chunk.ItemStart[i]);
-      if iStart<chunk.ItemLength[i] then begin
-         // gotcha
-         Result:=Pointer(PInteger(Cardinal(P)-iStart)^);
-         Exit;
-      end;
-   end;
-   Result:=nil; //}
-asm
-   push  ebx
-
-   and   eax, -$10
-   mov   ecx, cOSChunkMaxItemCount
-
-@@Loop:
-   mov   ebx, edx
-   sub   ebx, [eax + offset TOSChunk.Items]
-   cmp   ebx, [eax + offset TOSChunk.Items + 4]
-   jnb   @@NoMatch
-
-   sub   edx, ebx
-   mov   eax, [edx]
-   pop   ebx
-   ret
-
-@@NoMatch:
-   lea   eax, [eax+8]
-   dec   ecx
-   jnz   @@Loop
-
-   xor   eax, eax
-   pop   ebx        
+   i:=(P-chunk.FirstBlock) mod cOSChunkItemSize;
+   Result:=PSMBManager(P-i);
 end;
 
 // RFreeMem
@@ -1452,7 +1250,7 @@ var
 begin
    lgm:=vMemoryMap[Cardinal(P) shr 16];
 
-   if (Cardinal(lgm) and 1)<>0 then begin
+   if (Cardinal(lgm) and 1)=0 then begin
       // Small block release logic, this is a chunk
       manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
       if manager<>nil then begin
@@ -1463,12 +1261,15 @@ begin
          Result:=-1;
          Exit;
       end;
-   end else if (lgm<>nil) and (P=lgm.DataStart) then begin
-      // Large block
-      ReleaseLGB(lgm);
    end else begin
-      Result:=-1;
-      Exit;
+      lgm:=PLGBManager(Cardinal(lgm) and $FFFFFFF0);
+      if (lgm<>nil) and (P=lgm.DataStart) then begin
+         // Large block
+         ReleaseLGB(lgm);
+      end else begin
+         Result:=-1;
+         Exit;
+      end;
    end;
 
    Result:=0;
@@ -1523,7 +1324,7 @@ var
 begin
    lgm:=vMemoryMap[Cardinal(P) shr 16];
 
-   if (Cardinal(lgm) and 1)<>0 then begin
+   if (Cardinal(lgm) and 1)=0 then begin
       // Reallocating a SMB
       manager:=SMBManagerFromChunkAndPointer(POSChunk(lgm), Cardinal(P));
       if manager<>nil then begin
@@ -1534,15 +1335,18 @@ begin
          RaiseInvalidPtrError;
          Result:=nil;
       end;
-   end else if (lgm<>nil) and (P=lgm.DataStart) then begin
-      // Reallocating a LGB
-      if (Size<=lgm.MaxDataSize) and (Size>=lgm.MaxDataSize div cLGBReallocDownSizing) then begin
-         lgm.DataSize:=Size;
-         Result:=P;
-      end else Result:=ReallocTransferLGB(P, Size, lgm);
    end else begin
-      RaiseInvalidPtrError;
-      Result:=nil;
+      lgm:=PLGBManager(Cardinal(lgm) and $FFFFFFF0);
+      if (lgm<>nil) and (P=lgm.DataStart) then begin
+         // Reallocating a LGB
+         if (Size<=lgm.MaxDataSize) and (Size>=lgm.MaxDataSize div cLGBReallocDownSizing) then begin
+            lgm.DataSize:=Size;
+            Result:=P;
+         end else Result:=ReallocTransferLGB(P, Size, lgm);
+      end else begin
+         RaiseInvalidPtrError;
+         Result:=nil;
+      end;
    end;
 end;
 
@@ -1605,8 +1409,7 @@ begin
       smbInfo:=@vSMBs[i];
       InitializeCSLock(smbInfo.CSLock);
       smbInfo.Size:=cSMBSizes[i];
-      smbInfo.BlocksPerSMB:=(cOSChunkItemMinSize+smbInfo.Size-1) div smbInfo.Size;
-      if smbInfo.BlocksPerSMB<2 then smbInfo.BlocksPerSMB:=2;
+      smbInfo.BlocksPerSMB:=(cOSChunkItemSize-(SizeOf(TSMBManager)+16)) div smbInfo.Size;
       smbInfo.SMBManagerSize:=(SizeOf(TSMBManager)+16) and $FFFFFFF0;
       if smbInfo.Size>cReallocMinSize then
          smbInfo.DownSizingSize:=smbInfo.Size div cSMBReallocDownSizing
@@ -1704,7 +1507,7 @@ begin
          if chunk<>nil then chunk:=chunk.Next;
          while chunk<>nil do begin
             chunkNext:=chunk.Next;
-            if (chunk.FreeSpace=chunk.TotalSpace) then begin
+            if (chunk.FreeBlocks=cOSChunkBlockCount) then begin
                CutOutChunk(chunk);
                chunk.Next:=cleanupChunkChain;
                cleanupChunkChain:=chunk;
