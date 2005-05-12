@@ -75,7 +75,7 @@ uses Windows;
 // this issue all the time, and trigger an exception itself.
 // Doing so incurs a performance penalty on block release, and should preferably
 // only be used for testing or if memory integrity is of primary importance
-{.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
+{$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
 
 // Delayed release affects the management of the pool of free memory retained
 // by the manager. In delayed mode, 1/4th of the freed blocks are returned
@@ -314,7 +314,7 @@ type
       FreeBlocks : Integer;
       Full : LongBool;
       FirstBlock : Cardinal;
-      AvailableBlocks : array [0..cOSChunkBlockCount-1] of Pointer;
+      AvailableBlocks : packed array [0..cOSChunkBlockCount-1] of Boolean;
    end;
 
    // TSMBLinkedList
@@ -674,7 +674,7 @@ begin
       alignedAddress:=(Cardinal(chunk)+SizeOf(TOSChunk)+15) and $FFFFFFF0;
       chunk.FirstBlock:=alignedAddress;
       for i:=0 to cOSChunkBlockCount-1 do
-         chunk.AvailableBlocks[i]:=Pointer(alignedAddress+Cardinal(i)*cOSChunkItemSize);
+         chunk.AvailableBlocks[i]:=True;
       // place in linked list
       chunk.Prev:=nil;
       chunk.Next:=vOSChunksFirst;
@@ -683,10 +683,10 @@ begin
       vOSChunksFirst:=chunk;
    end;
 
-   i:=cOSChunkBlockCount-1;
-   while (chunk.AvailableBlocks[i]=nil) do Dec(i);
-   Result:=chunk.AvailableBlocks[i];
-   chunk.AvailableBlocks[i]:=nil;
+   i:=0;
+   while not chunk.AvailableBlocks[i] do Inc(i);
+   Result:=Pointer(chunk.FirstBlock+Cardinal(i)*cOSChunkItemSize);
+   chunk.AvailableBlocks[i]:=False;
    Dec(chunk.FreeBlocks);
 
    // if we filled this one up, move it to the full chunks
@@ -721,9 +721,8 @@ begin
    chunk:=POSChunk(Cardinal(Chunk) and $FFFFFFF0);
 
    // release
-   i:=0;
-   while chunk.AvailableBlocks[i]<>nil do Inc(i);
-   chunk.AvailableBlocks[i]:=p;
+   i:=(Cardinal(p)-chunk.FirstBlock) div cOSChunkItemSize;
+   chunk.AvailableBlocks[i]:=True;
    Inc(chunk.FreeBlocks);
 
    if chunk.Full then begin
@@ -1148,6 +1147,7 @@ begin
    if manager.NbFreeBlocks>0 then
       SMBLinkedListCut(manager.SMBInfo.FreeSMBs, manager)
    else SMBLinkedListCut(manager.SMBInfo.FullSMBs, manager);
+   manager.BlockStart:=nil;
 
    RMMVirtualFreeChunkItem(manager);
 end;
@@ -1187,6 +1187,9 @@ begin
          SMBLinkedListCut(manager.SMBInfo.FreeSMBs, manager);
          SMBLinkedListInsertFirst(manager.SMBInfo.FullSMBs, manager);
       end;
+      {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+      PDouble(Result)^:=0;
+      {$endif}
 
       CSLockLeave(smbInfo.CSLock);
 
@@ -1199,6 +1202,8 @@ end;
 // FreeSMBBlockAndLeaveLock
 //
 procedure FreeSMBBlockAndLeaveLock(manager : PSMBManager; p : Pointer);
+const
+   cBAADFOOD : Int64 = $BAADF00DFEEDBAAC;
 var
    n : Cardinal;
    firstManager : PSMBManager;
@@ -1206,6 +1211,10 @@ var
 begin
    PPointer(P)^:=manager.FirstFreedBlock;
    manager.FirstFreedBlock:=P;
+   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+   if (PInt64(@PChar(P)[4])^=cBAADFOOD) then
+   PInt64(@PChar(P)[4])^:=cBAADFOOD;
+   {$endif}
 
    smbInfo:=manager.SMBInfo;
    n:=manager.NbFreeBlocks;
@@ -1239,6 +1248,10 @@ begin
    // identify chunk item in the chunk, this will be our manager
    i:=(P-chunk.FirstBlock) mod cOSChunkItemSize;
    Result:=PSMBManager(P-i);
+   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+   if Result.BlockStart=nil then
+      Result:=nil;
+   {$endif}
 end;
 
 // RFreeMem
