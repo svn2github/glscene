@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/06/05 - NelC - Replaced property GLFullScreenViewer with GLNonVisualViewer
       <li>26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
       <li>22/10/04 - EG - Can now operate without a SceneViewer
       <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
@@ -83,20 +84,22 @@ type
        FImageRetrievalMode : TAVIImageRetrievalMode;
        RecorderState : TAVIRecorderState;
        FOnPostProcessEvent : TAVIRecorderPostProcessEvent;
-       FGLFullScreenViewer : TGLFullScreenViewer;
+
        FBuffer : TGLSceneBuffer;
 
        procedure SetHeight(const val : integer);
        procedure SetWidth(const val : integer);
        procedure SetSizeRestriction(const val : TAVISizeRestriction);
-    procedure SetGLFullScreenViewer(const Value: TGLFullScreenViewer);
-    procedure SetGLSceneViewer(const Value: TGLSceneViewer);
+       procedure SetGLSceneViewer(const Value: TGLSceneViewer);
+       procedure SetGLNonVisualViewer(const Value: TGLNonVisualViewer);
 
      protected
        { Protected Declarations }
        // Now, TAVIRecorder is tailored for GLScene. Maybe we should make a generic
-       // TAVIRecorder, and then sub-class it to use a GLSceneViewer
+       // TAVIRecorder, and then sub-class it to use with GLScene
        FGLSceneViewer : TGLSceneViewer;
+       // FGLNonVisualViewer accepts GLNonVisualViewer and GLFullScreenViewer
+       FGLNonVisualViewer: TGLNonVisualViewer;
        // FCompressor determines if the user is to choose a compressor via a dialog box, or
        // just use a default compressor without showing a dialog box.
        FCompressor : TAVICompressor;
@@ -127,7 +130,7 @@ type
        { Published Declarations }
        property FPS : byte read FFPS write FFPS default 25;
        property GLSceneViewer : TGLSceneViewer read FGLSceneViewer write SetGLSceneViewer;
-       property GLFullScreenViewer : TGLFullScreenViewer read FGLFullScreenViewer write SetGLFullScreenViewer;
+       property GLNonVisualViewer : TGLNonVisualViewer read FGLNonVisualViewer write SetGLNonVisualViewer;
        property Width : integer read FWidth write SetWidth;
        property Height : integer read FHeight write SetHeight;
        property Filename : String read FAVIFilename write FAVIFilename;
@@ -305,7 +308,7 @@ begin
             BitBlt(AVIBitmap.Canvas.Handle, 0, 0, AVIBitmap.Width, AVIBitmap.Height,
                    wglGetCurrentDC, 0, 0, SRCCOPY);
          finally
-            GLSceneViewer.Buffer.RenderingContext.Deactivate;
+            FBuffer.RenderingContext.Deactivate;
          end;
       end;
       irmRenderToBitmap : begin
@@ -501,20 +504,20 @@ begin
    Result:=(RecorderState=rsRecording);
 end;
 
-procedure TAVIRecorder.SetGLFullScreenViewer(const Value: TGLFullScreenViewer);
-begin
-  FGLFullScreenViewer := Value;
-  if Assigned(FGLFullScreenViewer) then
-    FBuffer := FGLFullScreenViewer.Buffer
-  else
-    FBuffer := nil;
-end;
-
 procedure TAVIRecorder.SetGLSceneViewer(const Value: TGLSceneViewer);
 begin
   FGLSceneViewer := Value;
   if Assigned(FGLSceneViewer) then
     FBuffer := FGLSceneViewer.Buffer
+  else
+    FBuffer := nil;
+end;
+
+procedure TAVIRecorder.SetGLNonVisualViewer(const Value: TGLNonVisualViewer);
+begin
+  FGLNonVisualViewer := Value;
+  if Assigned(FGLNonVisualViewer) then
+    FBuffer := FGLNonVisualViewer.Buffer
   else
     FBuffer := nil;
 end;
