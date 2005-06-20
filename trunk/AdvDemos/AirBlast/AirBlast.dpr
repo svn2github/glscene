@@ -16,7 +16,6 @@ uses
   UABUtils in 'UABUtils.pas',
   UABEquipments in 'UABEquipments.pas',
   UABVoice in 'UABVoice.pas',
-  GLLinePFX in '..\GLScene\Source\GLLinePFX.pas',
   DToolBox in 'DToolBox.pas' {DMToolBox: TDataModule},
   UABEvents in 'UABEvents.pas',
   UABConditions in 'UABConditions.pas',
