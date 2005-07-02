@@ -3,6 +3,8 @@
    Implements projected textures through a GLScene object.
 
    <b>History : </b><font size=-1><ul>
+      <li>15/06/05 - Mathx - Added the Style property and inverse rendering
+      <li>07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
       <li>01/10/04 - SG - Initial (by Matheus Degiovani)
    </ul></font>
 }
@@ -11,9 +13,22 @@ unit GLProjectedTextures;
 interface
 
 uses
-   Classes, GLScene, GLTexture, OpenGL1x, VectorGeometry;
+   Classes, GLScene, GLTexture, OpenGL1x, VectorGeometry, xopengl;
 
 type
+   {: Possible styles of texture projection. Possible values:<ul>
+      <li>ptsOriginal: Original projection method (first pass,
+          is default scene render, second pass is texture
+          projection).
+      <li>ptsInverse: Inverse projection method (first pass
+          is texture projection, sencond pass is regular scene
+          render). This method is useful if you want to simulate
+          lighting only through projected textures (the textures
+          of the scene are "masked" into the white areas of
+          the projection textures).
+      </ul> }
+   TGLProjectedTexturesStyle = (ptsOriginal, ptsInverse);
+
    TGLProjectedTextures = class;
 
    // TGLTextureEmmiter
@@ -103,6 +118,7 @@ type
       private
          { Private Declarations }
          FEmitters: TGLTextureEmitters;
+         FStyle: TGLProjectedTexturesStyle;
 
          procedure LoseTexMatrix;
 
@@ -115,9 +131,13 @@ type
 
       published
          { Published Declarations }
+
+         {: List of texture emitters. }
          property Emitters: TGLTextureEmitters read FEmitters write FEmitters;
 
-   end;
+         {: Indicates the style of the projected textures. }
+         property Style: TGLProjectedTexturesStyle read FStyle write FStyle;
+     end;
 
 
 //-------------------------------------------------------------
@@ -305,8 +325,11 @@ begin
       Exit;
    end;
 
-   //first pass: render everything the regular way
-   Self.RenderChildren(0, Count-1, rci);
+   //First pass of original style: render regular scene
+   if Style = ptsOriginal then
+      self.RenderChildren(0, Count-1, rci);
+
+   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
    //generate planes
    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
@@ -327,13 +350,29 @@ begin
    glEnable(GL_TEXTURE_GEN_T);
    glEnable(GL_TEXTURE_GEN_R);
    glEnable(GL_TEXTURE_GEN_Q);
-   glBlendFunc(GL_DST_COLOR, GL_ONE);
 
-   //second pass: for each emiter, render again projecting the texture
+   //second pass (original) first pass (inverse): for each emiter,
+   //render projecting the texture summing all emitters
    for i:= 0 to Emitters.Count -1 do begin
        emitter:= Emitters[i].Emitter;
        if not assigned(emitter) then continue;
        if not emitter.Visible then continue;
+
+       if Style = ptsOriginal then begin
+          //on the original style, render blending the textures
+          If emitter.Material.Texture.TextureMode <> tmBlend then
+             glBlendFunc(GL_DST_COLOR,  GL_ONE)
+          Else
+             glBlendFunc(GL_DST_COLOR,  GL_ZERO);
+       end else begin
+          //on inverse style: the first texture projector should
+          //be a regular rendering (i.e. no blending). All others
+          //are "added" together creating an "illumination mask"
+          if i = 0 then
+             glBlendFunc(GL_ONE,  GL_ZERO)
+          else
+             glBlendFunc(GL_ONE,  GL_ONE);
+       end;
 
        emitter.Material.Apply(rci);
 
@@ -348,6 +387,26 @@ begin
    end;
 
    LoseTexMatrix;
+   glPopAttrib;
+
+   //second pass (inverse): render regular scene, blending it
+   //with the "mask"
+   if Style = ptsInverse then begin
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+      glEnable(GL_BLEND);
+      glDepthFunc(GL_LEQUAL);
+
+      glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+
+      //second pass: render everything, blending with what is
+      //already there
+      rci.ignoreBlendingRequests:= true;
+      self.RenderChildren(0, Count-1, rci);
+      rci.ignoreBlendingRequests:= false;
+
+      glPopAttrib;
+   end;
 end;
 
 initialization

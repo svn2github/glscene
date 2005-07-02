@@ -18,6 +18,7 @@
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
   <b>History : </b><font size=-1><ul>
+    <li>01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
     <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
     <li>19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
     <li>17/11/04 - LucasG - Added support for static box colliders
@@ -400,6 +401,7 @@ begin
   TotalFriction := Body.Friction;
   ContactList := TIntegerList.Create;
 
+  try
   for i := 0 to High(MP.Contacts) do
   with MP do
   begin
@@ -481,6 +483,9 @@ begin
     //If the collided object is static trigger its event
     if (oi >= 0) and Assigned(TGLDCEStatic(FStatics[oi]).FOnCollision) then
       TGLDCEStatic(FStatics[oi]).FOnCollision(Self,Body.OwnerBaseSceneObject,ColInfo);
+    end;
+  finally
+    ContactList.Free;
   end;
   result := TotalFriction;
 end;

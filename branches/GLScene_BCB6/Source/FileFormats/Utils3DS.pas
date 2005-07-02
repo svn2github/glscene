@@ -2496,8 +2496,11 @@ begin
         FreeMem(Chunk.Data.PointFlagArray.FlagList);
       FACE_ARRAY:
         Freemem(Chunk.Data.FaceArray.FaceList);
-      MSH_MAT_GROUP:
-        FreeMem(Chunk.Data.MshMatGroup.FaceList);
+      MSH_MAT_GROUP: 
+         begin
+            Chunk.Data.MshMatGroup^.MatNameStr:='';
+            FreeMem(Chunk.Data.MshMatGroup.FaceList);
+         end;
       SMOOTH_GROUP:
         FreeMem(Chunk.Data.SmoothGroup.GroupList);
       TEX_VERTS:
@@ -3759,6 +3762,7 @@ begin
       begin
         FreeMem(Mesh.MatArray[I].FaceIndex);
         Mesh.MatArray[I].FaceIndex := nil;
+        Mesh.MatArray[I].NameStr:='';
       end;
     FreeMem(Mesh.MatArray);
     Mesh.MatArray := nil;
