@@ -14,7 +14,7 @@ PROJECTS = Archipelago.exe FPSMovement.exe CgSimple.exe boxedin.exe \
   shadedterrain.exe terrain.exe tree.exe pointto.exe FurBall.exe machine.exe \
   simple.exe celshading.exe Project1.exe shadowvolumes.exe spiral.exe \
   waterplane.exe particles.exe Recorder.exe PanoViewer.exe fontgen.exe \
-  ProjTextures.exe
+  ProjTextures.exe warping.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -124,6 +124,10 @@ fontgen.exe: utilities\fontgen\fontgen.bpr
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
 ProjTextures.exe: specialsFX\projtextures\ProjTextures.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+warping.exe: specialsFX\warping\warping.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
