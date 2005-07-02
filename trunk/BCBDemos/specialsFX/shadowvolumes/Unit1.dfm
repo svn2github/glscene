@@ -300,7 +300,6 @@ object Form1: TForm1
         Up.Coordinates = {0000000000000000000080BF00000000}
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
         MaterialLibrary = GLMaterialLibrary1
-        Rendered = True
       end
       object GLCube1: TGLCube
         Position.Coordinates = {00004040000000C0000000000000803F}

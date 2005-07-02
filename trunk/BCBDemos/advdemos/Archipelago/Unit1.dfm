@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 155
-  Top = 126
+  Left = 167
+  Top = 128
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
@@ -118,7 +118,6 @@ object Form1: TForm1
     object FFSailBoat: TGLFreeForm
       Scale.Coordinates = {9A99193E9A99193E9A99193E00000000}
       MaterialLibrary = MLSailBoat
-      Rendered = True
     end
     object LSSun: TGLLightSource
       Ambient.Color = {9A99993E9A99993E9A99993E0000803F}

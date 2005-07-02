@@ -73,7 +73,6 @@ object Form1: TForm1
         Visible = False
         AutoCentering = [macCenterX, macCenterY, macCenterZ, macUseBarycenter]
         UseMeshMaterials = False
-        Rendered = True
       end
     end
     object DummyLight: TGLDummyCube

@@ -13,7 +13,8 @@ PROJECTS = Archipelago.exe FPSMovement.exe CgSimple.exe boxedin.exe \
   octreedemo.exe SimpleGLSL.exe fxy.exe splines.exe mirror.exe ducky.exe \
   shadedterrain.exe terrain.exe tree.exe pointto.exe FurBall.exe machine.exe \
   simple.exe celshading.exe Project1.exe shadowvolumes.exe spiral.exe \
-  waterplane.exe particles.exe Recorder.exe PanoViewer.exe fontgen.exe
+  waterplane.exe particles.exe Recorder.exe PanoViewer.exe fontgen.exe \
+  ProjTextures.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -122,4 +123,7 @@ fontgen.exe: utilities\fontgen\fontgen.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
+ProjTextures.exe: specialsFX\projtextures\ProjTextures.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 

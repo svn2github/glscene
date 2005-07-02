@@ -295,7 +295,6 @@ object Form1: TForm1
       Scale.Coordinates = {8FC2F53C8FC2F53C8FC2F53C00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       AutoCentering = [macCenterX, macCenterY]
-      Rendered = True
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -2
