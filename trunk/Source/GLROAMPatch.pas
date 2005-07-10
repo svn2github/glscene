@@ -2,6 +2,8 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
+                             but not GL_EXT_draw_range_elements
       <li>25/04/04 - EG - Occlusion testing support
       <li>06/02/03 - EG - Adaptative variance computation
       <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
@@ -692,7 +694,7 @@ begin
 
       glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
       glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-   end else if GL_EXT_compiled_vertex_array then begin
+   end else if GL_EXT_compiled_vertex_array and GL_EXT_draw_range_elements then begin
       glLockArraysEXT(0, vertices.Count);
       glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
                           GL_UNSIGNED_INT, vertexIndices.List);
