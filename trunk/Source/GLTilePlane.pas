@@ -2,6 +2,7 @@
 {: Implements a tiled texture plane.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
       <li>23/03/04 - EG - Added NoZWrite
       <li>09/01/04 - EG - Creation
    </ul></font>
@@ -605,7 +606,7 @@ begin
       glDepthMask(False);
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
-      for i:=1 to High(quadInfos) do begin
+      for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
          quadInfos[i].x:=TIntegerList.Create;
          quadInfos[i].y:=TIntegerList.Create;
       end;
@@ -615,7 +616,7 @@ begin
          if Assigned(r) then begin
             for col:=r.ColMin to r.ColMax do begin
                t:=r.Cell[col] and $FFFF;
-               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+               if (t>-1) and (t<MaterialLibrary.Materials.Count) then begin //correction in (t>-1) from (t>0)
                   quadInfos[t].x.Add(col);
                   quadInfos[t].y.Add(row);
                end;
@@ -623,7 +624,7 @@ begin
          end;
       end;
       // render and cleanup
-      for i:=1 to High(quadInfos) do begin
+      for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
          if quadInfos[i].x.Count>0 then begin
             libMat:=MaterialLibrary.Materials[i];
             libMat.Apply(rci);
@@ -644,7 +645,7 @@ begin
          if Assigned(r) then begin
             for col:=r.ColMin to r.ColMax do begin
                t:=r.Cell[col] and $FFFF;
-               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+               if (t>-1) and (t<MaterialLibrary.Materials.Count) then begin //correction in (t>-1) from (t>0)
                   libMat:=MaterialLibrary.Materials[t];
                   libMat.Apply(rci);
                   repeat
