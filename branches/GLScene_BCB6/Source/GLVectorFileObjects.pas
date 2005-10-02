@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>05/09/05 - Mathx - Fixed TSkeletonMeshObject read/write filer (thanks to Zapology)
+      <li>04/07/05 - Mathx - Protection against picking mode texture mapping errors
       <li>27/01/05 - Mathx - BuildOctree can now specify an (optional) TreeDepth.
       <li>11/01/05 - SG - Another fix for TGLBaseMesh.Assign (dikoe Kenguru)
       <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
@@ -3964,9 +3966,10 @@ begin
       FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
-      FLastXOpenGLTexMapping:=xglGetBitWiseMapping;
+      if mrci.drawState <> dsPicking then
+      	 FLastXOpenGLTexMapping:=xglGetBitWiseMapping;
    end else begin
-      if not mrci.ignoreMaterials then
+      if not mrci.ignoreMaterials and not (mrci.drawState = dsPicking) then
          if TexCoords.Count>0 then begin
          currentMapping:=xglGetBitWiseMapping;
             if FLastXOpenGLTexMapping<>currentMapping then begin
@@ -4650,6 +4653,7 @@ begin
       WriteInteger(0); // Archive Version 0
       WriteInteger(FVerticeBoneWeightCount);
       WriteInteger(FBonesPerVertex);
+      WriteInteger(FVerticeBoneWeightCapacity);
       for i:=0 to FVerticeBoneWeightCount-1 do
          Write(FVerticesBonesWeights[i][0], FBonesPerVertex*SizeOf(TVertexBoneWeight));
    end;
@@ -4666,6 +4670,7 @@ begin
 	if archiveVersion=0 then with reader do begin
       FVerticeBoneWeightCount:=ReadInteger;
       FBonesPerVertex:=ReadInteger;
+      FVerticeBoneWeightCapacity := ReadInteger;
       ResizeVerticesBonesWeights;
       for i:=0 to FVerticeBoneWeightCount-1 do
          Read(FVerticesBonesWeights[i][0], FBonesPerVertex*SizeOf(TVertexBoneWeight));

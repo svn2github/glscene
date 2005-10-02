@@ -46,6 +46,19 @@ uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObj
 type
   {Only csEllipsoid can have dynamic behaviour}
   TDCEShape = (csEllipsoid, csBox, csFreeform, csTerrain);
+  
+  {: Indicates which type of layer comparison is made when trying to detect
+     collisions between 2 bodies (A and B). Possible values are: <ul>
+	 <li>ccsDCEStandard: Collides bodies if A.layer <= B.layer
+	 <li>ccsCollisionStandard: Collides bodies if either A or B have
+		 layer equal to zero or if their layers are different.
+     <li>ccsHybrid: Collides bodies if either one of the previous
+	     checks would pass (i.e. if the layer of either body  is
+		 equal to 0 or if A.layer <= B.layer) *and* if both
+		 layers are positive (that is, turns off collision
+		 for bodies whose layer is < 0)
+	 </ul>
+  }
   TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 
   TDCECollision = record
