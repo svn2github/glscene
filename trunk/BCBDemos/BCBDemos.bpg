@@ -14,7 +14,7 @@ PROJECTS = Archipelago.exe FPSMovement.exe CgSimple.exe boxedin.exe \
   shadedterrain.exe terrain.exe tree.exe pointto.exe FurBall.exe machine.exe \
   simple.exe celshading.exe Project1.exe shadowvolumes.exe spiral.exe \
   waterplane.exe particles.exe Recorder.exe PanoViewer.exe fontgen.exe \
-  ProjTextures.exe warping.exe
+  ProjTextures.exe warping.exe multipass.exe Transparency.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -131,3 +131,10 @@ warping.exe: specialsFX\warping\warping.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
+multipass.exe: materials\multipass\multipass.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+Transparency.exe: materials\transparency\Transparency.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
