@@ -3,6 +3,7 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/10/05 - adirex - XP styles and panels problem<br>
       <li>24/01/05 - adirex - Focus rect for selection<br>
                      Huge editor enchancements. Too many to write them all :)
       <li>03/07/04 - LR - Make change for Linux
@@ -199,6 +200,24 @@ begin
   UpdateRegionEdits;
   DoubleBuffered := True;
   FullMousePoint := Point(-1, -1);
+
+  //this Delphi bug shows all panels transparent
+  //the code below is to avoid this bug in XP
+  panElements.ParentBackground := False;
+  panElements.ParentBackground := True;
+  panElements.ParentBackground := False;
+  
+  panImageProperties.ParentBackground := False;
+  panImageProperties.ParentBackground := True;
+  panImageProperties.ParentBackground := False;
+
+  panBottom.ParentBackground := False;
+  panBottom.ParentBackground := True;
+  panBottom.ParentBackground := False;
+
+  panZoomImage.ParentBackground := False;
+  panZoomImage.ParentBackground := True;
+  panZoomImage.ParentBackground := False;
 end;
 
 procedure TGUISkinEditor.FormDestroy(Sender: TObject);
