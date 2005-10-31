@@ -6,6 +6,8 @@
   Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
+                             the TGLUserInterface component.
       <li>18/12/04 - PhP - Added FlyForward
       <li>03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
                           GLGetScreenWidth, GLGetScreenHeight for Linux compatibility       
@@ -132,6 +134,8 @@ type
     FInvertMouse: boolean;
     procedure MouseInitialize;
     procedure SetMouseLookActive(const val: boolean);
+    procedure setNavigator(val: TGLNavigator);
+    procedure setVertNavigator(val: TGLNavigator);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -144,11 +148,12 @@ type
     procedure TurnHorizontal(Angle : Double);
     procedure TurnVertical(Angle : Double);
     property MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
+    procedure notification(sender: TComponent; operation: TOperation); override;
   published
     property InvertMouse: boolean read FInvertMouse write FInvertMouse;
     property MouseSpeed: single read FMouseSpeed write FMouseSpeed;
-    property GLNavigator: TGLNavigator read FGLNavigator write FGLNavigator;
-    property GLVertNavigator: TGLNavigator read FGLVertNavigator write FGLVertNavigator;
+    property GLNavigator: TGLNavigator read FGLNavigator write setNavigator;
+    property GLVertNavigator: TGLNavigator read FGLVertNavigator write setVertNavigator;
   end;
 
 procedure Register;
@@ -531,5 +536,31 @@ Begin
   if FMouseActive then MouseLookDeactivate; // added by JAJ
   inherited;
 End;
+
+procedure TGLUserInterface.notification(sender: TComponent;
+  operation: TOperation);
+begin
+     if operation = opRemove then begin
+          if sender = FGLNavigator then
+               setNavigator(nil);
+          if sender = FGLVertNavigator then
+               setVertNavigator(nil);
+     end;
+     inherited;
+end;
+
+procedure TGLUserInterface.setNavigator(val: TGLNavigator);
+begin
+     if assigned(FGLNavigator) then FGLNavigator.RemoveFreeNotification(self);
+     FGLNavigator:= val;
+     if assigned(val) then val.FreeNotification(self);
+end;
+
+procedure TGLUserInterface.setVertNavigator(val: TGLNavigator);
+begin
+     if assigned(FGLVertNavigator) then FGLVertNavigator.RemoveFreeNotification(self);
+     FGLVertNavigator:= val;
+     if assigned(val) then val.FreeNotification(self);
+end;
 
 end.
