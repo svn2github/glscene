@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>09/11/05 - Mathx - Added isSwitchingAnimation to TGLActor.
       <li>05/09/05 - Mathx - Fixed TSkeletonMeshObject read/write filer (thanks to Zapology)
       <li>04/07/05 - Mathx - Protection against picking mode texture mapping errors
       <li>27/01/05 - Mathx - BuildOctree can now specify an (optional) TreeDepth.
@@ -1673,6 +1674,10 @@ type
          procedure PrevFrame(nbSteps : Integer = 1);
 
          function FrameCount : Integer;
+
+         {: Indicates whether the actor is currently swithing animations (with
+            smooth interpolation).}
+         function isSwitchingAnimation: boolean;
 
       published
          { Published Declarations }
@@ -7461,6 +7466,12 @@ begin
          Skeleton.Synchronize(referenceActor.Skeleton);
    end;
 end;
+
+function TGLActor.isSwitchingAnimation: boolean;
+begin
+   result:= FTargetSmoothAnimation <> nil;
+end;
+
 
 
 // ------------------------------------------------------------------
