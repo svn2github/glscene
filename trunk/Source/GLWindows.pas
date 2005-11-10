@@ -2,6 +2,8 @@
 {: In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/11/05 - Mathx - Fixed TGLPopupMenu stack overflow on method internalRender.
+                             Related to bug 1193909.
       <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at http://www.sulaco.co.za (http://www.sulaco.co.za/opengl/windows.zip)
       <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the system have been revised all parts have been rewritten.
       <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
@@ -1848,6 +1850,7 @@ Var
   YPos       : Single;
   XPos       : Single;
   XC         : Integer;
+  changedHeight: single;
 Begin
   If Assigned(FGuiComponent) then
   Begin
@@ -1869,8 +1872,11 @@ Begin
     TextHeight   := BitmapFont.CharHeight*FMenuItems.Count;
     If CenterHeight <> TextHeight then // allways round up!
     Begin
-      NewHeight := Height + TextHeight-CenterHeight;
-      InternalRender(rci,RenderSelf,RenderChildren);
+      changedHeight := Height + TextHeight-CenterHeight;
+      if changedHeight <> newHeight then begin
+        newHeight:= changedHeight;
+        InternalRender(rci,RenderSelf,RenderChildren);
+      end;
     End else
     Begin
       YPos := -Y1;
