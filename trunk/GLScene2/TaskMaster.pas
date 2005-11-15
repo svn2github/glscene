@@ -24,9 +24,10 @@ type
          FOnExecute : TNotifyEvent;
          FSender : TObject;
          FMasterTask : TTaskInfo;
+         FLastRunTime : Int64;
          FSubTasks : array of TTaskInfo;
          FSubTaskCount : Integer;
-         FLastRunTime : Int64;
+         FSubTasksLock : TRTLCriticalSection;
 
       protected
          { Protected Declarations }
@@ -179,6 +180,7 @@ constructor TTaskInfo.Create(eventOnExecute : TNotifyEvent; aSender : TObject);
 begin
    FOnExecute:=eventOnExecute;
    FSender:=aSender;
+   InitializeCriticalSection(FSubTasksLock);
 end;
 
 // Destroy
@@ -187,6 +189,7 @@ destructor TTaskInfo.Destroy;
 begin
    if vTaskMaster.InSession then
       RaiseTaskMasterException('Destroying a Task during an Execution is not allowed');
+   DeleteCriticalSection(FSubTasksLock);
 end;
 
 // Scheduled
@@ -263,17 +266,23 @@ procedure TTaskInfo.RegisterSubTask(subTask : TTaskInfo);
 var
    n : Integer;
 begin
+   EnterCriticalSection(FSubTasksLock);
+
    n:=Length(FSubTasks);
    if FSubTaskCount<=n then
       SetLength(FSubTasks, 2*n+1);
    FSubTasks[FSubTaskCount]:=subTask;
    Inc(FSubTaskCount);
+
+   LeaveCriticalSection(FSubTasksLock);
 end;
 
 // ClearSubTasks
 //
 procedure TTaskInfo.ClearSubTasks;
 begin
+   // shouldn't require a lock here, it's invoked from main thread only via Schedule
+   // and scheduling hasn't been completed yet, so no new subtask can be attached
    FSubTaskCount:=0;
 end;
 
