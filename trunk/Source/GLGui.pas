@@ -6,6 +6,7 @@
   In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/12/05 - DK - Removed GuiSkinEditorFormUnit dependancy
       <li>30/11/04 - DB - Fixed memory leaks (thanks dikoe Kenguru)
       <li>16/07/03 - EG - TGLBaseGuiObject moved in along with RecursiveVisible mechanism
       <li>25/11/02 - EG - TGLGuiLayout.Clear fix (Sternas Stefanos)
@@ -186,11 +187,7 @@ Const
 
 Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
 
-Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
-
 implementation
-
-uses GuiSkinEditorFormUnit;
 
 Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
 
@@ -341,17 +338,6 @@ begin
       end;
    end;
 end;
-
-
-Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
-
-Var
-  Editor : TGUISkinEditor;
-Begin
-  Editor := GuiSkinEditorFormUnit.TGUISkinEditor.Create(Nil);
-  Result := Editor.Edit(GuiComponent);
-  Editor.Free;
-End;
 
 Constructor TGLGuiLayout.Create(AOwner : TComponent);
 
