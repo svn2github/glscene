@@ -1539,6 +1539,8 @@ var
       end;
    end;
 
+   // !! WARNING !! This may cause incorrect behaviour if optimization is turned
+   // off for the project.
    procedure DistToRegionIdx; register;
    asm
 //   begin
