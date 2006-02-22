@@ -3,6 +3,7 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>22/02/05 - Mathx - FIxed Delphi 5 support.
       <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
       <li>03/10/05 - adirex - XP styles and panels problem<br>
       <li>24/01/05 - adirex - Focus rect for selection<br>
@@ -214,6 +215,7 @@ begin
 
   //this Delphi bug shows all panels transparent
   //the code below is to avoid this bug in XP
+  {$IFDEF GLS_DELPHI_6_UP}
   panElements.ParentBackground := False;
   panElements.ParentBackground := True;
   panElements.ParentBackground := False;
@@ -229,6 +231,7 @@ begin
   panZoomImage.ParentBackground := False;
   panZoomImage.ParentBackground := True;
   panZoomImage.ParentBackground := False;
+  {$ENDIF}
 end;
 
 procedure TGUISkinEditor.FormDestroy(Sender: TObject);
