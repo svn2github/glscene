@@ -6,7 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/12/10 - MF - Changed FieldOfView to work with degrees (not radians)
+      <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
+      <li>04/12/04 - MF - Changed FieldOfView to work with degrees (not radians)
       <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
                           formula by Ivan Sivak Jr.
       <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
@@ -1836,9 +1837,11 @@ type
 
          {: Experimental frame freezing code, not operationnal yet. }
          property Freezed : Boolean read FFreezed;
-         {: Experimental frame freezing code, not operationnal yet. }
+         {: Freezes rendering leaving the last rendered scene on the buffer. This
+            is usefull in windowed applications for temporarily stoping rendering
+            (when moving the window, for example). }
          procedure Freeze;
-         {: Experimental frame freezing code, not operationnal yet. }
+         {: Restarts rendering after it was freezed. }
          procedure Melt;
 
          {: Displays a window with info on current OpenGL ICD and context. }
@@ -1977,7 +1980,7 @@ type
          {: Context options allows to setup specifics of the rendering context.<p>
             Not all contexts support all options. }
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
-         {: Number of precision bits for the accumulation buffer. }         
+         {: Number of precision bits for the accumulation buffer. }
          property AccumBufferBits : Integer read FAccumBufferBits write SetAccumBufferBits default 0;
 
          {: DepthTest enabling.<p>
@@ -7032,9 +7035,9 @@ end;
 procedure TGLSceneBuffer.Freeze;
 begin
    if Freezed then Exit;
-   FFreezed:=True;
    if RenderingContext=nil then Exit;
    Render;
+   FFreezed:=True;
    RenderingContext.Activate;
    try
       FFreezeBuffer:=AllocMem(FViewPort.Width*FViewPort.Height*4);
@@ -7052,6 +7055,7 @@ procedure TGLSceneBuffer.Melt;
 begin
    if not Freezed then Exit;
    FreeMem(FFreezeBuffer);
+   FFreezeBuffer:=nil;
    FFreezed:=False;
 end;
 
