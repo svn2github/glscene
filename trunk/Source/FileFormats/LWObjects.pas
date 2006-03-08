@@ -1,6 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+// 08/03/06 - ur - Fixed warnings for Delphi 2006
 // 14/11/02 - EG - Fixed warnings
 // 16/11/02 - BJ - Replaced TLWChunkList.FindChunk search mechanism
 //          - BJ - Added v. method  TLWChunk.Loaded. Called on Loading complete.
@@ -462,7 +463,7 @@ type
             override;
   public
     destructor Destroy; override;
-    class function GetId: TID4; override;
+    class function GetID: TID4; override;
     function TagToName(Tag: TU2): string;
     property Tags: TStrings read GetTags;
   end;
@@ -478,7 +479,7 @@ type
             override;
   public
     destructor Destroy; override;
-    class function GetId: TID4; override;
+    class function GetID: TID4; override;
     property SurfId: Integer read GetSurfId;
     property Name: string read FName;
     property Source: string read FSource;
@@ -496,7 +497,7 @@ type
             override;
   public
     destructor Destroy; override;
-    class function GetId: TID4; override;
+    class function GetID: TID4; override;
     property Flags: TU2 read FFlags;
     property Name: string read FName;
     property Number: TU2 read FNumber;
@@ -522,7 +523,7 @@ type
   public
     constructor Create;
     function GetPolsByTag(Tag: TU2; var PolyIndices: TU2DynArray): Integer;
-    class function GetId: TID4; override;
+    class function GetID: TID4; override;
     property MapType: TID4 read FMapType;
     property TagCount: Integer read GetTagCount;
     property TagMapCount: Integer read GetTagMapCount;
@@ -558,7 +559,7 @@ type
     procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
-    class function GetId: TID4; override;
+    class function GetID: TID4; override;
     property ClipIndex: TU4 read FClipIndex;
   end;
 
@@ -1710,7 +1711,7 @@ begin
   FreeAndNil(FTags);
 end;
 
-class function TLWTags.GetId: TID4;
+class function TLWTags.GetID: TID4;
 begin
   result := ID_TAGS;
 end;
@@ -1778,7 +1779,7 @@ begin
   inherited;
 end;
 
-class function TLWLayr.GetId: TID4;
+class function TLWLayr.GetID: TID4;
 begin
   result := ID_LAYR;
 end;
@@ -1805,7 +1806,7 @@ begin
   inherited;
 end;
 
-class function TLWSurf.GetId: TID4;
+class function TLWSurf.GetID: TID4;
 begin
   result := ID_SURF;
 end;
@@ -1938,7 +1939,7 @@ begin
 
 end;
 
-class function TLWPTag.GetId: TID4;
+class function TLWPTag.GetID: TID4;
 begin
   result := ID_PTAG;
 end;
@@ -2302,7 +2303,7 @@ end;
 
 { TLWClip }
 
-class function TLWClip.GetId: TID4;
+class function TLWClip.GetID: TID4;
 begin
   result := ID_CLIP;
 end;

@@ -6,6 +6,7 @@
   Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
                              the TGLUserInterface component.
       <li>18/12/04 - PhP - Added FlyForward
@@ -148,7 +149,7 @@ type
     procedure TurnHorizontal(Angle : Double);
     procedure TurnVertical(Angle : Double);
     property MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
-    procedure notification(sender: TComponent; operation: TOperation); override;
+    procedure Notification(sender: TComponent; operation: TOperation); override;
   published
     property InvertMouse: boolean read FInvertMouse write FInvertMouse;
     property MouseSpeed: single read FMouseSpeed write FMouseSpeed;
@@ -537,8 +538,8 @@ Begin
   inherited;
 End;
 
-procedure TGLUserInterface.notification(sender: TComponent;
-  operation: TOperation);
+procedure TGLUserInterface.Notification(sender: TComponent; operation:
+    TOperation);
 begin
      if operation = opRemove then begin
           if sender = FGLNavigator then
