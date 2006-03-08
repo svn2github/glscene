@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
+                          deep scene trees
       <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
       <li>04/12/04 - MF - Changed FieldOfView to work with degrees (not radians)
       <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
@@ -2178,6 +2180,12 @@ procedure AxesBuildList(var rci : TRenderContextInfo; pattern: Word; AxisLen: Si
 procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 
+var
+{: If OptSaveGLStack is true, the scene tree can be any levels deep without
+   overflowing the drives matrix stack. Of course this will slow down
+   performance, so it is switched of by default. }
+  OptSaveGLStack: Boolean = false;
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -3984,6 +3992,8 @@ procedure TGLBaseSceneObject.Render(var rci : TRenderContextInfo);
 var
    shouldRenderSelf, shouldRenderChildren : Boolean;
    aabb : TAABB;
+   saveMatrixParent,
+   saveMatrixSelf: TMatrix;
 begin
    // visibility culling determination
    if rci.visibilityCulling in [vcObjectBased, vcHierarchical] then begin
@@ -4007,7 +4017,10 @@ begin
       shouldRenderChildren:=Assigned(FChildren);
    end;
    // Prepare Matrix and PickList stuff
-   glPushMatrix;
+   if OptSaveGLStack then
+      glGetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixParent[0])
+   else
+      glPushMatrix;
    if ocTransformation in FChanges then
       RebuildMatrix;
    glMultMatrixf(PGLfloat(FLocalMatrix));
@@ -4020,10 +4033,17 @@ begin
       if FShowAxes then
          DrawAxes(rci, $CCCC);
       if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
-         glPushMatrix;
+         if OptSaveGLStack then
+            glGetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixSelf[0])
+         else
+            glPushMatrix;
          FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
-         glPopMatrix;
-         glPushMatrix;
+         if OptSaveGLStack then
+            glLoadMatrixf(@saveMatrixSelf[0])
+         else begin
+            glPopMatrix;
+            glPushMatrix;
+         end;
          if osIgnoreDepthBuffer in ObjectStyle then begin
             rci.GLStates.UnSetGLState(stDepthTest);
             DoRender(rci, True, shouldRenderChildren);
@@ -4032,7 +4052,10 @@ begin
          if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
             rci.GLStates.ResetAll;
          FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
-         glPopMatrix;
+         if OptSaveGLStack then
+            glLoadMatrixf(@saveMatrixSelf[0])
+         else
+            glPopMatrix;
       end else begin
          if osIgnoreDepthBuffer in ObjectStyle then begin
             rci.GLStates.UnSetGLState(stDepthTest);
@@ -4053,7 +4076,10 @@ begin
    if rci.drawState=dsPicking then
       if rci.proxySubObject then
          glPopName;
-   glPopMatrix;
+   if OptSaveGLStack then
+      glLoadMatrixf(@saveMatrixParent[0])
+   else
+      glPopMatrix;
 end;
 
 // DoRender
