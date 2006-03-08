@@ -4,6 +4,7 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/03/06 - ur - added Delphi 2006 support
       <li>28/02/05 - EG - Added BPL support
       <li>24/02/05 - EG - Creation
    </ul></font>
@@ -18,6 +19,7 @@ uses Classes, Graphics;
 {$ifdef VER140} {$define PRF_HACK_PASSES} {$endif} // Delphi 6
 {$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 7
 {$ifdef VER170} {$define PRF_HACK_PASSES} {$endif} // Delphi 2005
+{$ifdef VER180} {$define PRF_HACK_PASSES} {$endif} // Delphi 2006
 
 {$ifndef PRF_HACK_PASSES} Error: hack not tested for this Delphi version! {$endif}
 
