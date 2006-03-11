@@ -215,7 +215,7 @@ begin
 
   //this Delphi bug shows all panels transparent
   //the code below is to avoid this bug in XP
-  {$IFDEF GLS_DELPHI_6_UP}
+  {$IFDEF GLS_DELPHI_7_UP}
   panElements.ParentBackground := False;
   panElements.ParentBackground := True;
   panElements.ParentBackground := False;
