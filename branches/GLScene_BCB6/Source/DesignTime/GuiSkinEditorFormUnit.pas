@@ -3,6 +3,9 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>22/02/05 - Mathx - FIxed Delphi 5 support.
+      <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
+      <li>03/10/05 - adirex - XP styles and panels problem<br>
       <li>24/01/05 - adirex - Focus rect for selection<br>
                      Huge editor enchancements. Too many to write them all :)
       <li>03/07/04 - LR - Make change for Linux
@@ -171,6 +174,8 @@ type
 var
   GUISkinEditor: TGUISkinEditor;
 
+Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
+
 implementation
 
 {$IFDEF MSWINDOWS}
@@ -182,6 +187,14 @@ implementation
 
 uses GLCrossPlatform;
 
+Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
+var
+  Editor : TGUISkinEditor;
+Begin
+  Editor := TGUISkinEditor.Create(Nil);
+  Result := Editor.Edit(GuiComponent);
+  Editor.Free;
+End;
 
 procedure TGUISkinEditor.FormCreate(Sender: TObject);
 begin
@@ -199,6 +212,26 @@ begin
   UpdateRegionEdits;
   DoubleBuffered := True;
   FullMousePoint := Point(-1, -1);
+
+  //this Delphi bug shows all panels transparent
+  //the code below is to avoid this bug in XP
+  {$IFDEF GLS_DELPHI_7_UP}
+  panElements.ParentBackground := False;
+  panElements.ParentBackground := True;
+  panElements.ParentBackground := False;
+  
+  panImageProperties.ParentBackground := False;
+  panImageProperties.ParentBackground := True;
+  panImageProperties.ParentBackground := False;
+
+  panBottom.ParentBackground := False;
+  panBottom.ParentBackground := True;
+  panBottom.ParentBackground := False;
+
+  panZoomImage.ParentBackground := False;
+  panZoomImage.ParentBackground := True;
+  panZoomImage.ParentBackground := False;
+  {$ENDIF}
 end;
 
 procedure TGUISkinEditor.FormDestroy(Sender: TObject);

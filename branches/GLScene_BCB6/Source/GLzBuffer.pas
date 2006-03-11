@@ -5,7 +5,8 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
+      <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array 
       <li>03/07/04 - LR - Added ifdef for Linux
       <li>07/03/02 - Lin - Removed XRes/YRes properties - Shadow-res now always matches viewer-res. 
       <li>21/02/02 - Lin - Now uses 1 Byte per pixel, instead of 4. Faster, and uses less Video Ram.
@@ -193,7 +194,7 @@ type
           ViewerZBuf :TGLzBuffer;
           CasterZBuf :TGLzBuffer;
     	  constructor Create(AOwner: TComponent); override;
-          destructor  destroy; override;
+          destructor Destroy; override;
           procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
         published
           property Viewer      :TGLSceneViewer  read GetViewer write SetViewer;

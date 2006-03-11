@@ -1317,14 +1317,14 @@ type
          procedure SetTextureEx(const value : TGLTextureEx);
          function  StoreTextureEx : Boolean;
 
-   procedure NotifyLibMaterialDestruction;
-   //: Back, Front, Texture and blending not stored if linked to a LibMaterial
-   function StoreMaterialProps : Boolean;
+			procedure NotifyLibMaterialDestruction;
+			//: Back, Front, Texture and blending not stored if linked to a LibMaterial
+			function StoreMaterialProps : Boolean;
 
-  public
-   { Public Declarations }
-   constructor Create(AOwner: TPersistent); override;
-   destructor Destroy; override;
+		public
+			{ Public Declarations }
+			constructor Create(AOwner: TPersistent); override;
+			destructor Destroy; override;
 
          procedure PrepareBuildList;
    procedure Apply(var rci : TRenderContextInfo);

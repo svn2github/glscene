@@ -10,6 +10,9 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
+                             form but a particleFX still had a reference to it (added
+                             the FUsers property). Butracker ID=783625. 
       <li>17/02/05 - EG - Restored correct PFXSource.Burst relative/absolute behaviour,
                           EffectsScale support not added back (no clue what it does... Mrqz?)
       <li>23/11/04 - SG - Fixed memory leak in TGLLifeColoredPFXManager (kenguru)
@@ -58,6 +61,7 @@ type
    
    TGLParticleList = class;
    TGLParticleFXManager = class;
+   TGLParticleFXEffect = class;
 
    // TGLParticle
    //
@@ -191,6 +195,8 @@ type
          FOnCreateParticle : TPFXCreateParticleEvent;
          FAutoFreeWhenEmpty : Boolean;
 
+         FUsers: TList; //list of objects that use this manager
+
       protected
          { Protected Declarations }
          procedure SetRenderer(const val : TGLParticleFXRenderer);
@@ -238,6 +244,9 @@ type
          procedure ApplyBlendingMode;
          {: Unapply BlendingMode relatively by restoring the renderer's blending mode. }
          procedure UnapplyBlendingMode;
+
+         procedure registerUser(obj: TGLParticleFXEffect);
+         procedure unregisterUser(obj: TGLParticleFXEffect);
 
       public
          { Public Declarations }
@@ -299,7 +308,9 @@ type
          procedure ReadFromFiler(reader : TReader); override;
 
          procedure Loaded; override;
-         
+
+         procedure managerNotification(aManager: TGLParticleFXManager; Operation: TOperation);
+
       public
          { Public Declarations }
          constructor Create(aOwner : TXCollection); override;
@@ -1195,6 +1206,7 @@ end;
 constructor TGLParticleFXManager.Create(aOwner : TComponent);
 begin
    inherited;
+   FUsers:= TList.create;
    FParticles:=TGLParticleList.Create;
    FParticles.Owner:=Self;
    FBlendingMode:=bmAdditive;
@@ -1204,8 +1216,12 @@ end;
 // Destroy
 //
 destructor TGLParticleFXManager.Destroy;
+var
+i: integer;
 begin
    inherited Destroy;
+   for i:= FUsers.Count -1 downto 0 do
+      TGLParticleFXEffect(FUsers[i]).managerNotification(self, opRemove);
    DeRegisterManager(Self);
    Renderer:=nil;
    FParticles.Free;
@@ -1350,6 +1366,21 @@ begin
    end;
 end;
 
+// registerUser
+//
+procedure TGLParticleFXManager.registerUser(obj: TGLParticleFXEffect);
+begin
+     if FUsers.IndexOf(obj) = -1 then
+          FUsers.Add(obj);
+end;
+
+// unregisterUser
+//
+procedure TGLParticleFXManager.unregisterUser(obj: TGLParticleFXEffect);
+begin
+     FUsers.Remove(obj);
+end;
+
 // ------------------
 // ------------------ TGLParticleFXEffect ------------------
 // ------------------
@@ -1431,13 +1462,25 @@ end;
 //
 procedure TGLParticleFXEffect.SetManager(val : TGLParticleFXManager);
 begin
+   if assigned(FManager) then
+      FManager.unregisterUser(self);
    FManager:=val;
-   // nothing more, yet...
+   if assigned(FManager) then
+      FManager.registerUser(self);
 end;
 
 procedure TGLParticleFXEffect.SetEffectScale(const Value: single);
 begin
   FEffectScale := Value;
+end;
+
+// managerNotification
+//
+procedure TGLParticleFXEffect.managerNotification(
+  aManager: TGLParticleFXManager; Operation: TOperation);
+begin
+   if (Operation = opRemove) and (aManager = manager) then
+      manager:= nil;
 end;
 
 
@@ -1558,6 +1601,8 @@ var
       end;
    end;
 
+   // !! WARNING !! This may cause incorrect behaviour if optimization is turned
+   // off for the project.
    procedure DistToRegionIdx; register;
    asm
 //   begin

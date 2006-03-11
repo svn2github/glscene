@@ -6,7 +6,10 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/12/10 - MF - Changed FieldOfView to work with degrees (not radians)
+      <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
+                          deep scene trees
+      <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
+      <li>04/12/04 - MF - Changed FieldOfView to work with degrees (not radians)
       <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
                           formula by Ivan Sivak Jr.
       <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
@@ -1837,9 +1840,11 @@ type
 
          {: Experimental frame freezing code, not operationnal yet. }
          property Freezed : Boolean read FFreezed;
-         {: Experimental frame freezing code, not operationnal yet. }
+         {: Freezes rendering leaving the last rendered scene on the buffer. This
+            is usefull in windowed applications for temporarily stoping rendering
+            (when moving the window, for example). }
          procedure Freeze;
-         {: Experimental frame freezing code, not operationnal yet. }
+         {: Restarts rendering after it was freezed. }
          procedure Melt;
 
          {: Displays a window with info on current OpenGL ICD and context. }
@@ -1978,7 +1983,7 @@ type
          {: Context options allows to setup specifics of the rendering context.<p>
             Not all contexts support all options. }
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
-         {: Number of precision bits for the accumulation buffer. }         
+         {: Number of precision bits for the accumulation buffer. }
          property AccumBufferBits : Integer read FAccumBufferBits write SetAccumBufferBits default 0;
 
          {: DepthTest enabling.<p>
@@ -2175,6 +2180,12 @@ procedure AxesBuildList(var rci : TRenderContextInfo; pattern: Word; AxisLen: Si
 {: Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer; Modal : boolean);
+
+var
+{: If OptSaveGLStack is true, the scene tree can be any levels deep without
+   overflowing the drives matrix stack. Of course this will slow down
+   performance, so it is switched of by default. }
+  OptSaveGLStack: Boolean = false;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -3982,6 +3993,8 @@ procedure TGLBaseSceneObject.Render(var rci : TRenderContextInfo);
 var
    shouldRenderSelf, shouldRenderChildren : Boolean;
    aabb : TAABB;
+   saveMatrixParent,
+   saveMatrixSelf: TMatrix;
 begin
    // visibility culling determination
    if rci.visibilityCulling in [vcObjectBased, vcHierarchical] then begin
@@ -4005,7 +4018,10 @@ begin
       shouldRenderChildren:=Assigned(FChildren);
    end;
    // Prepare Matrix and PickList stuff
-   glPushMatrix;
+   if OptSaveGLStack then
+      glGetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixParent.Coord[0])
+   else
+      glPushMatrix;
    if ocTransformation in FChanges then
       RebuildMatrix;
    glMultMatrixf(PGLfloat(FLocalMatrix));
@@ -4018,10 +4034,17 @@ begin
       if FShowAxes then
          DrawAxes(rci, $CCCC);
       if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
-         glPushMatrix;
+         if OptSaveGLStack then
+            glGetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixSelf.Coord[0])
+         else
+            glPushMatrix;
          FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
-         glPopMatrix;
-         glPushMatrix;
+         if OptSaveGLStack then
+            glLoadMatrixf(@saveMatrixSelf.Coord[0])
+         else begin
+            glPopMatrix;
+            glPushMatrix;
+         end;
          if osIgnoreDepthBuffer in ObjectStyle then begin
             rci.GLStates.UnSetGLState(stDepthTest);
             DoRender(rci, True, shouldRenderChildren);
@@ -4030,7 +4053,10 @@ begin
          if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
             rci.GLStates.ResetAll;
          FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
-         glPopMatrix;
+         if OptSaveGLStack then
+            glLoadMatrixf(@saveMatrixSelf.Coord[0])
+         else
+            glPopMatrix;
       end else begin
          if osIgnoreDepthBuffer in ObjectStyle then begin
             rci.GLStates.UnSetGLState(stDepthTest);
@@ -4051,7 +4077,10 @@ begin
    if rci.drawState=dsPicking then
       if rci.proxySubObject then
          glPopName;
-   glPopMatrix;
+   if OptSaveGLStack then
+      glLoadMatrixf(@saveMatrixParent.Coord[0])
+   else
+      glPopMatrix;
 end;
 
 // DoRender
@@ -7033,9 +7062,9 @@ end;
 procedure TGLSceneBuffer.Freeze;
 begin
    if Freezed then Exit;
-   FFreezed:=True;
    if RenderingContext=nil then Exit;
    Render;
+   FFreezed:=True;
    RenderingContext.Activate;
    try
       FFreezeBuffer:=AllocMem(FViewPort.Width*FViewPort.Height*4);
@@ -7053,6 +7082,7 @@ procedure TGLSceneBuffer.Melt;
 begin
    if not Freezed then Exit;
    FreeMem(FFreezeBuffer);
+   FFreezeBuffer:=nil;
    FFreezed:=False;
 end;
 

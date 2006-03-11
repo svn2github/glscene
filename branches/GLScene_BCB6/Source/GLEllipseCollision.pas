@@ -3,6 +3,7 @@
   Ellipsoid collision functions (mainly used by DCE).
 
   <b>History : </b><font size=-1><ul>
+    <li>09/05/05 - Mathx - Protection agains float error on getLowestRoot
     <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
     <li>11/10/04 - LR - Restore the GLScene.inc with the good case
     <li>08/10/04 - LR, YHC - BCB corrections: use record instead array   
@@ -177,6 +178,7 @@ begin
   // calculate the two roots: (if determinant == 0 then
   // x1==x2 but let’s disregard that slight optimization)
   sqrtD := sqrt(determinant);
+  if a = 0 then a:= -0.01; //is this really needed?
   r1 := (-b - sqrtD) / (2*a);
   r2 := (-b + sqrtD) / (2*a);
   // Sort so x1 <= x2

@@ -3,6 +3,9 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+	    <li>05/12/05 - PhP - fixed TFGIndexTexCoordList.BuildList (thanks fig) 
+      <li>10/11/05 - Mathx - Added LastLoadedFilename to TGLBaseMesh (RFE 955083).
+      <li>09/11/05 - Mathx - Added isSwitchingAnimation to TGLActor.
       <li>05/09/05 - Mathx - Fixed TSkeletonMeshObject read/write filer (thanks to Zapology)
       <li>04/07/05 - Mathx - Protection against picking mode texture mapping errors
       <li>27/01/05 - Mathx - BuildOctree can now specify an (optional) TreeDepth.
@@ -1212,6 +1215,7 @@ type
          FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
+         FLastLoadedFilename: string;
 
       protected
          { Protected Declarations }
@@ -1319,6 +1323,12 @@ type
          {: Loads additionnal data from stream.<p>
             See AddDataFromFile. }
          procedure AddDataFromStream(const filename : String; aStream : TStream); dynamic;
+
+         {: Returns the filename of the last loaded file, or a blank string if not
+            file was loaded (or if the mesh was dinamically built). This does not
+            take into account the data added to the mesh (through AddDataFromFile)
+            or saved files.}
+         function LastLoadedFilename: string;
 
          {: Determines if a mesh should be centered and how.<p>
             AutoCentering is performed <b>only</b> after loading a mesh, it has
@@ -1676,6 +1686,10 @@ type
          procedure PrevFrame(nbSteps : Integer = 1);
 
          function FrameCount : Integer;
+
+         {: Indicates whether the actor is currently swithing animations (with
+            smooth interpolation).}
+         function isSwitchingAnimation: boolean;
 
       published
          { Published Declarations }
@@ -5513,47 +5527,50 @@ end;
 //
 procedure TFGIndexTexCoordList.BuildList(var mrci : TRenderContextInfo);
 var
-   i, k : Integer;
-   texCoordPool : PAffineVectorArray;
-   vertexPool : PAffineVectorArray;
-   normalPool : PAffineVectorArray;
-   indicesPool : PIntegerArray;
-   colorPool : PVectorArray;
-   gotColor : Boolean;
+  i, k: integer;
+  texCoordPool: PAffineVectorArray;
+  vertexPool: PAffineVectorArray;
+  normalPool: PAffineVectorArray;
+  indicesPool: PIntegerArray;
+  colorPool: PVectorArray;
+  gotColor: boolean;
+   
 begin
-   Assert(VertexIndices.Count=TexCoords.Count);
-   texCoordPool:=TexCoords.List;
-   vertexPool:=Owner.Owner.Vertices.List;
-   indicesPool:=@VertexIndices.List[0];
-   colorPool:=@Owner.Owner.Colors.List[0];
-   gotColor:=(Owner.Owner.Vertices.Count=Owner.Owner.Colors.Count);
-   case Mode of
-      fgmmTriangles, fgmmFlatTriangles :
-         glBegin(GL_TRIANGLES);
-      fgmmTriangleStrip :
-         glBegin(GL_TRIANGLE_STRIP);
-      fgmmTriangleFan :
-         glBegin(GL_TRIANGLE_FAN);
-   else
-      Assert(False);
-   end;
-   if Owner.Owner.Normals.Count=Owner.Owner.Vertices.Count then begin
-      normalPool:=Owner.Owner.Normals.List;
-      for i:=0 to VertexIndices.Count-1 do begin
-         xglTexCoord2fv(@texCoordPool[i]);
-         k:=indicesPool[i];
-         if gotColor then glColor4fv(@colorPool[k]);
-         glNormal3fv(@normalPool[k]);
-         glVertex3fv(@vertexPool[k]);
-      end;
-   end else begin
-      for i:=0 to VertexIndices.Count-1 do begin
-         xglTexCoord2fv(@texCoordPool[i]);
-         if gotColor then glColor4fv(@colorPool[indicesPool[i]]);
-         glVertex3fv(@vertexPool[indicesPool[i]]);
-      end;
-   end;
-   glEnd;
+  Assert(VertexIndices.Count = TexCoords.Count);
+  texCoordPool := TexCoords.List;
+  vertexPool := Owner.Owner.Vertices.List;
+  indicesPool := @VertexIndices.List[0];
+  colorPool := @Owner.Owner.Colors.List[0];
+  gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
+  case Mode of
+    fgmmTriangles: glBegin(GL_TRIANGLES);
+    fgmmFlatTriangles: glBegin(GL_TRIANGLES);
+    fgmmTriangleStrip: glBegin(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: glBegin(GL_TRIANGLE_FAN);
+    fgmmQuads: glBegin(GL_QUADS);
+  else
+    Assert(False);
+  end;
+  if Owner.Owner.Normals.Count = Owner.Owner.Vertices.Count then begin
+    normalPool := Owner.Owner.Normals.List;
+    for i := 0 to VertexIndices.Count - 1 do begin
+       xglTexCoord2fv(@texCoordPool[i]);
+       k := indicesPool[i];
+       if gotColor then 
+         glColor4fv(@colorPool[k]);
+       glNormal3fv(@normalPool[k]);
+       glVertex3fv(@vertexPool[k]);
+    end;
+  end 
+  else begin
+    for i := 0 to VertexIndices.Count - 1 do begin
+      xglTexCoord2fv(@texCoordPool[i]);
+      if gotColor then 
+        glColor4fv(@colorPool[indicesPool[i]]);
+      glVertex3fv(@vertexPool[indicesPool[i]]);
+    end;
+  end;
+  glEnd;
 end;
 
 // AddToTriangles
@@ -5866,10 +5883,12 @@ procedure TGLBaseMesh.LoadFromFile(const filename : String);
 var
    fs : TStream;
 begin
+   FLastLoadedFilename:= '';
    if fileName<>'' then begin
       fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyWrite);
       try
          LoadFromStream(fileName, fs);
+         FLastLoadedFilename:= filename;
       finally
          fs.Free;
       end;
@@ -5883,6 +5902,7 @@ var
    newVectorFile : TVectorFile;
    vectorFileClass : TVectorFileClass;
 begin
+   FLastLoadedFilename:= '';
    if fileName<>'' then begin
       MeshObjects.Clear;
       Skeleton.Clear;
@@ -5894,6 +5914,7 @@ begin
          if Assigned(Scene) then Scene.BeginUpdate;
          try
             newVectorFile.LoadFromStream(aStream);
+            FLastLoadedFilename:= filename;
          finally
             if Assigned(Scene) then Scene.EndUpdate;
          end;
@@ -6015,6 +6036,14 @@ begin
    if nb>0 then
       ScaleVector(Result, 1/nb);
 end;
+
+// LastLoadedFilename
+//
+function TGLBaseMesh.LastLoadedFilename: string;
+begin
+   result:= FLastLoadedFilename;
+end;
+
 
 // SetMaterialLibrary
 //
@@ -7464,6 +7493,12 @@ begin
          Skeleton.Synchronize(referenceActor.Skeleton);
    end;
 end;
+
+function TGLActor.isSwitchingAnimation: boolean;
+begin
+   result:= FTargetSmoothAnimation <> nil;
+end;
+
 
 
 // ------------------------------------------------------------------

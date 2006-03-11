@@ -13,6 +13,10 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
+                             Also fixed a TGLLineBase.assign problem (object being assigned to
+                             was refering the base lists, not copying them). 
+                             Bugtracker ID=830846
       <li>17/01/05 - SG - Added color support for bezier style TGLLines
       <li>08/12/04 - LR - BCB corrections: use record instead array  
       <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
@@ -2084,10 +2088,10 @@ end;
 procedure TGLLineBase.Assign(Source: TPersistent);
 begin
    if Source is TGLLineBase then begin
-      FLineColor:=TGLLineBase(Source).FLineColor;
-      FLinePattern:=TGLLineBase(Source).FLinePattern;
-      FLineWidth:=TGLLineBase(Source).FLineWidth;
-      FAntiAliased:=TGLLineBase(Source).FAntiAliased;
+      LineColor:=TGLLineBase(Source).FLineColor;
+      LinePattern:=TGLLineBase(Source).FLinePattern;
+      LineWidth:=TGLLineBase(Source).FLineWidth;
+      AntiAliased:=TGLLineBase(Source).FAntiAliased;
    end else inherited Assign(Source);
 end;
 
@@ -2151,9 +2155,9 @@ end;
 //
 procedure TGLLinesNode.Assign(Source: TPersistent);
 begin
-	if Source is TGLNode then begin
+	if Source is TGLLinesNode then 
       FColor.Assign(TGLLinesNode(Source).FColor);
-	end else inherited;
+	inherited;
 end;
 
 // SetColor
@@ -2288,6 +2292,7 @@ begin
       SetNodes(TGLNodedLines(Source).FNodes);
       FNodesAspect:=TGLNodedLines(Source).FNodesAspect;
       FNodeColor.Color:=TGLNodedLines(Source).FNodeColor.Color;
+      FNodeSize:= TGLNodedLines(source).FNodeSize;
    end;
    inherited Assign(Source);
 end;
@@ -2461,6 +2466,7 @@ begin
    if Source is TGLLines then begin
       FDivision:=TGLLines(Source).FDivision;
       FSplineMode:=TGLLines(Source).FSplineMode;
+      FOptions:= TGLLines(source).FOptions;
    end;
    inherited Assign(Source);
 end;

@@ -2473,7 +2473,7 @@ begin
   Result:=True;
 end;
 
-// Initialize
+// GetEnabled
 //
 procedure TGLODEStatic.Initialize;
 begin
@@ -2495,7 +2495,7 @@ begin
   inherited;
 end;
 
-// WriteToFiler
+// AddForceAtRelPos
 //
 procedure TGLODEStatic.WriteToFiler(writer : TWriter);
 begin
@@ -2506,7 +2506,7 @@ begin
   end;
 end;
 
-// ReadFromFiler
+// AddRelForce
 //
 procedure TGLODEStatic.ReadFromFiler(reader : TReader);
 begin
@@ -3226,6 +3226,7 @@ begin
     Assert(ReadInteger = 0); // Archive version
     Radius:=ReadFloat;
   end;
+  NotifyChange(Self);
 end;
 
 // FriendlyName
