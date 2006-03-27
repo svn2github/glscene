@@ -6,6 +6,7 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/27/06 - DaveK - added mouse selection support
       <li>03/03/05 - EG - Creation
    </ul></font>
 }
@@ -38,6 +39,8 @@ type
          FTitleMaterialName : String;
          FTitleWidth, FTitleHeight : Integer;
          FOnSelectedChanged : TNotifyEvent;
+         FBoxTop, FBoxBottom, FBoxLeft, FBoxRight: Integer;
+         FMenuTop: integer;
 
 		protected
          { Protected Properties }
@@ -75,7 +78,9 @@ type
 
          procedure SelectNext;
          procedure SelectPrev;
-         
+
+         procedure MouseMenuSelect(const X, Y: integer);
+
 		published
          { Published Properties }
          property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
@@ -98,6 +103,14 @@ type
          property Items : TStrings read FItems write SetItems;
          property Selected : Integer read FSelected write SetSelected default -1;
          property OnSelectedChanged : TNotifyEvent read FOnSelectedChanged write FOnSelectedChanged;
+
+         // these are the extents of the menu
+         property BoxTop: integer read FBoxTop;
+         property BoxBottom: integer read FBoxBottom;
+         property BoxLeft: integer read FBoxLeft;
+         property BoxRight: integer read FBoxRight;
+         // this is the top of the first menu item
+         property MenuTop: integer read FMenuTop;
    end;
 
 // ------------------------------------------------------------------
@@ -189,12 +202,17 @@ begin
       end;
       w:=w+2*MarginHorz;
 
+      // calculate boundaries for user
+      FBoxLeft   := Variant(Position.X)-w div 2;
+      FBoxTop    := Variant(Position.Y)-h div 2;
+      FBoxRight  := Variant(Position.X)+w div 2;
+      FBoxBottom := Variant(Position.Y)+h div 2;
+
       // paint back
       if BackColor.Alpha>0 then begin
          canvas.PenColor:=BackColor.AsWinColor;
          canvas.PenAlpha:=BackColor.Alpha;
-         canvas.FillRect(Position.X-w div 2, Position.Y-h div 2,
-                         Position.X+w div 2, Position.Y+h div 2);
+         canvas.FillRect(FBoxLeft, FBoxTop, FBoxRight, FBoxBottom);
       end;
 
       canvas.StopPrimitive;
@@ -216,6 +234,7 @@ begin
             end;
          end;
          y:=y+TitleHeight+Spacing;
+         FMenuTop := y;
       end;
       for i:=0 to FItems.Count-1 do begin
          tw:=Font.TextWidth(FItems[i]);
@@ -435,6 +454,21 @@ procedure TGLGameMenu.ItemsChanged(Sender : TObject);
 begin
    SetSelected(FSelected);
    StructureChanged;
+end;
+
+// MouseMenuSelect
+//
+procedure TGLGameMenu.MouseMenuSelect(const X, Y: integer);
+var
+  myIndex: integer;
+begin
+  myIndex := -1;
+  if (X >= BoxLeft)  and (Y >= MenuTop) and
+     (X <= BoxRight) and (Y <= BoxBottom) then
+  begin
+    myIndex := (Y-MenuTop) div (Font.CharHeight + Spacing);
+  end;
+  Selected := myIndex;
 end;
 
 // ------------------------------------------------------------------
