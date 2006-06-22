@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="GLSceneBCB5.bpl"/>
+    <OBJFILES value="..\Source\Base\PersistentClasses.obj ..\Source\Base\ApplicationFileIO.obj 
+      ..\Source\Base\SpatialPartitioning.obj ..\Source\Base\AsyncTimer.obj 
+      ..\Source\Platform\GLCrossPlatform.obj 
+      ..\Source\Base\CurvesAndSurfaces.obj ..\Source\Base\GeometryBB.obj 
+      ..\Source\Base\GLTextureCombiners.obj ..\Source\Base\OpenGL1x.obj 
+      ..\Source\GLContext.obj ..\Source\Base\HeightTileFile.obj 
+      ..\Source\Base\MeshUtils.obj ..\Source\Base\Joystick.obj 
+      ..\Source\Base\Keyboard.obj ..\Source\Base\Octree.obj 
+      ..\Source\Base\Polynomials.obj ..\Source\Base\ScreenSaver.obj 
+      ..\Source\Base\VectorTypes.obj ..\Source\Base\Spline.obj 
+      ..\Source\Base\VectorGeometry.obj ..\Source\Base\VectorLists.obj 
+      ..\Source\Base\VerletClasses.obj ..\Source\Base\XCollection.obj 
+      ..\Source\Base\XOpenGL.obj ..\Source\GLState.obj ..\Source\GLMisc.obj 
+      ..\Source\GLScreen.obj ..\Source\GLTexture.obj ..\Source\GLScene.obj 
+      ..\Source\GLMirror.obj ..\Source\GLGraphics.obj 
+      ..\Source\VideoAPIs\vfw.obj ..\Source\Platform\GLWin32Context.obj 
+      ..\Source\Platform\GLWin32Viewer.obj 
+      ..\Source\Platform\GLWin32FullScreenViewer.obj ..\Source\GLAVIRecorder.obj 
+      ..\Source\GLBaseMeshSilhouette.obj ..\Source\GLBehaviours.obj 
+      ..\Source\GLBitmapFont.obj ..\Source\GLBSP.obj ..\Source\GLExplosionFx.obj 
+      ..\Source\GLExtrusion.obj ..\Source\GLFireFX.obj 
+      ..\Source\GLGeomObjects.obj ..\Source\GLGraph.obj 
+      ..\Source\GLHeightData.obj ..\Source\GLHeightTileFileHDS.obj 
+      ..\Source\GLHUDObjects.obj ..\Source\GLLensFlare.obj 
+      ..\Source\GLMeshCSG.obj ..\Source\GLMovement.obj 
+      ..\Source\GLMultiProxy.obj ..\Source\GLNavigator.obj 
+      ..\Source\GLParametricSurfaces.obj ..\Source\GLParticleFX.obj 
+      ..\Source\GLParticles.obj ..\Source\GLPolyhedron.obj 
+      ..\Source\GLPortal.obj ..\Source\GLProcTextures.obj 
+      ..\Source\GLProxyObjects.obj ..\Source\GLROAMPatch.obj 
+      ..\Source\GLShadowPlane.obj ..\Source\GLShadowVolume.obj 
+      ..\Source\GLSkyBox.obj ..\Source\GLSkydome.obj 
+      ..\Source\FileFormats\GLStarRecord.obj ..\Source\GLSound.obj 
+      ..\Source\GLSoundFileObjects.obj ..\Source\GLSpaceText.obj 
+      ..\Source\GLTeapot.obj ..\Source\GLTerrainRenderer.obj 
+      ..\Source\GLThorFX.obj ..\Source\GLTimeEventsMgr.obj ..\Source\GLTree.obj 
+      ..\Source\GLVerletClothify.obj ..\Source\GLVerletSkeletonColliders.obj 
+      ..\Source\GLWindowsFont.obj ..\Source\GLzBuffer.obj ..\Source\GLGui.obj 
+      ..\Source\GLCollision.obj ..\Source\GLWindows.obj 
+      ..\Source\FileFormats\Const3DS.obj ..\Source\FileFormats\File3DS.obj 
+      ..\Source\FileFormats\FileMD2.obj ..\Source\FileFormats\FileMD3.obj 
+      ..\Source\FileFormats\FileNMF.obj ..\Source\FileFormats\FileOCT.obj 
+      ..\Source\FileFormats\GLFile3DS.obj ..\Source\FileFormats\GLFileGTS.obj 
+      ..\Source\FileFormats\GLFileMD2.obj ..\Source\FileFormats\GLFileMD3.obj 
+      ..\Source\FileFormats\GLFileMS3D.obj ..\Source\FileFormats\GLFileTIN.obj 
+      ..\Source\FileFormats\GLFileOBJ.obj ..\Source\FileFormats\GLFileOCT.obj 
+      ..\Source\FileFormats\GLFilePLY.obj ..\Source\FileFormats\GLFileQ3BSP.obj 
+      ..\Source\FileFormats\GLFileSMD.obj ..\Source\FileFormats\GLFileSTL.obj 
+      ..\Source\FileFormats\TGA.obj ..\Source\FileFormats\Q3MD3.obj 
+      ..\Source\GLUtils.obj ..\Source\GLStrings.obj ..\Source\GLCadencer.obj 
+      ..\Source\GLMesh.obj ..\Source\GLMultiPolygon.obj ..\Source\GLObjects.obj 
+      ..\Source\GLSilhouette.obj ..\Source\GLVectorFileObjects.obj 
+      ..\Source\Base\GLCanvas.obj ..\Source\Base\RegisterXCollection.obj 
+      ..\Source\FileFormats\GLFileNMF.obj ..\Source\FileFormats\GLFileNurbs.obj 
+      ..\Source\FileFormats\Q3BSP.obj ..\Source\FileFormats\Utils3DS.obj 
+      ..\Source\FileFormats\Types3DS.obj ..\Source\FileFormats\TypesMD2.obj 
+      ..\Source\FileFormats\TypesMS3D.obj ..\Source\FileFormats\TypesSTL.obj 
+      ..\Source\DesignTime\GLTextureImageEditors.obj 
+      ..\Source\DesignTime\GLSceneRegister.obj 
+      ..\Source\Shaders\GLHiddenLineShader.obj 
+      ..\Source\Shaders\GLMultiMaterialShader.obj 
+      ..\Source\Shaders\GLOutlineShader.obj 
+      ..\Source\Shaders\GLTexCombineShader.obj 
+      ..\Source\Shaders\GLUserShader.obj ..\Source\PlugIn\PlugInIntf.obj 
+      ..\Source\PlugIn\PlugInManager.obj ..\Source\GLTilePlane.obj 
+      ..\Source\GLBumpmapHDS.obj ..\Source\GLWaterPlane.obj 
+      ..\Source\Base\BumpMapping.obj ..\Source\FileFormats\GLVfsPAK.obj 
+      ..\Source\GLMeshOptimizer.obj ..\Source\FileFormats\TypesMDC.obj 
+      ..\Source\FileFormats\GLFileMDC.obj ..\Source\Shaders\GLCelShader.obj 
+      ..\Source\GLFPSMovement.obj ..\Source\Shaders\GLBumpShader.obj 
+      ..\Source\Base\PerlinNoise.obj ..\Source\GLTexLensFlare.obj 
+      ..\Source\GLPerlinPFX.obj ..\Source\GLImposter.obj 
+      ..\Source\GLFeedback.obj ..\Source\GLAnimatedSprite.obj 
+      ..\Source\Base\VerletHairClasses.obj ..\Source\GLVerletClasses.obj 
+      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj 
+      ..\Source\FileFormats\DDS.obj ..\Source\FileFormats\DXTC.obj 
+      ..\Source\GLMaterialScript.obj ..\Source\GLDCEMisc.obj 
+      ..\Source\GLEllipseCollision.obj ..\Source\GLDCE.obj 
+      ..\Source\GLProjectedTextures.obj ..\Source\GLBlur.obj 
+      ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj 
+      ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj 
+      ..\Source\GLTrail.obj ..\Source\GLScriptBase.obj 
+      ..\Source\FileFormats\GLFileMD5.obj ..\Source\GLGameMenu.obj 
+      ..\Source\Base\PictureRegisteredFormats.obj  
+      ..\Source\GLSpatialPartitioning.obj 
+      ..\Source\DesignTime\FRColorEditor.obj 
+      ..\Source\DesignTime\FRTrackBarEdit.obj 
+      ..\Source\DesignTime\FRFaceEditor.obj 
+      ..\Source\DesignTime\FRTextureEdit.obj 
+      ..\Source\DesignTime\FVectorEditor.obj 
+      ..\Source\DesignTime\GLSceneEdit.obj ..\Source\DesignTime\Info.obj 
+      ..\Source\PlugIn\PlugInManagerPropEditor.obj 
+      ..\Source\DesignTime\FXCollectionEditor.obj 
+      ..\Source\DesignTime\FRMaterialPreview.obj 
+      ..\Source\DesignTime\FMaterialEditorForm.obj 
+      ..\Source\DesignTime\FLibMaterialPicker.obj 
+      ..\Source\DesignTime\GuiSkinEditorFormUnit.obj ..\Source\GLLinePFX.obj 
+      ..\Source\FileFormats\GLFileVRML.obj ..\Source\FileFormats\VRMLParser.obj 
+      GLSceneBCB5.obj"/>
+    <RESFILES value="GLSceneBCB5.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
+      ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) ..\Source\DesignTime\FRColorEditor.dfm 
+      ..\Source\DesignTime\FRTrackBarEdit.dfm 
+      ..\Source\DesignTime\FRFaceEditor.dfm 
+      ..\Source\DesignTime\FRTextureEdit.dfm 
+      ..\Source\DesignTime\FVectorEditor.dfm 
+      ..\Source\DesignTime\GLSceneEdit.dfm ..\Source\DesignTime\Info.dfm 
+      ..\Source\PlugIn\PlugInManagerPropEditor.dfm 
+      ..\Source\DesignTime\FXCollectionEditor.dfm 
+      ..\Source\DesignTime\FRMaterialPreview.dfm 
+      ..\Source\DesignTime\FMaterialEditorForm.dfm 
+      ..\Source\DesignTime\FLibMaterialPicker.dfm 
+      ..\Source\DesignTime\GuiSkinEditorFormUnit.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="Vcl50.lib"/>
+    <PACKAGES value="vcl50.bpi dsnide50.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;..\Source\Base;..\Source\Platform;..\Source;..\Source\VideoAPIs;..\Source\FileFormats;..\Source\DesignTime;..\Source\Shaders;..\Source\PlugIn"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="GLSceneBCB5.cpp"/>
+    <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -ff -X- -r- -a8 -6 -b- -k -y -v 
+      -vi- -c -tWM"/>
+    <PFLAGS value="-$YD -$W -v -JPHNE -M -LUdsnide50"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;GLScene RunTime and DesignTime&quot; -aa -Tpp -x -Gn -Gl -Gi -v"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1036
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

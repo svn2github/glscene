@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <PathDelim Value="\"/>
+    <Name Value="GLSceneLazarus"/>
+    <CompilerOptions>
+      <Version Value="3"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\Source\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\Base\;..\Source\Platform\;..\Source\DesignTime\"/>
+        <UnitOutputDirectory Value=".\lib\"/>
+        <LCLWidgetType Value="win32"/>
+        <SrcPath Value="..\Source\;..\Source\Base\;..\Source\Platform\;..\Source\DesignTime\"/>
+      </SearchPaths>
+      <Parsing>
+        <SymantecChecking>
+          <DelphiCompat Value="True"/>
+        </SymantecChecking>
+      </Parsing>
+      <CodeGeneration>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <Verbosity>
+          <ShowHints Value="False"/>
+        </Verbosity>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="GLScene - OpenGL 3D library"/>
+    <Version Major="1"/>
+    <Files Count="38">
+      <Item1>
+        <Filename Value="..\Source\GLMisc.pas"/>
+        <UnitName Value="GLMisc"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\Base\VectorGeometry.pas"/>
+        <UnitName Value="VectorGeometry"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\Base\OpenGL1x.pas"/>
+        <UnitName Value="OpenGL1x"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\Base\VectorTypes.pas"/>
+        <UnitName Value="VectorTypes"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\Source\Base\Spline.pas"/>
+        <UnitName Value="Spline"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\Source\Base\VectorLists.pas"/>
+        <UnitName Value="VectorLists"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\Source\Base\PersistentClasses.pas"/>
+        <UnitName Value="PersistentClasses"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\Source\Base\XOpenGL.pas"/>
+        <UnitName Value="XOpenGL"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Source\Base\XCollection.pas"/>
+        <UnitName Value="XCollection"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\Source\Base\GeometryBB.pas"/>
+        <UnitName Value="GeometryBB"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\Source\Base\Polynomials.pas"/>
+        <UnitName Value="Polynomials"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\Source\GLContext.pas"/>
+        <UnitName Value="GLContext"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\Source\GLState.pas"/>
+        <UnitName Value="GLState"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\Source\GLUtils.pas"/>
+        <UnitName Value="GLUtils"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\Source\GLScanlinedGraphics.pas"/>
+        <UnitName Value="GLScanlinedGraphics"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\Source\GLGraphics.pas"/>
+        <UnitName Value="GLGraphics"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\Source\GLTexture.pas"/>
+        <UnitName Value="GLTexture"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\Source\GLStrings.pas"/>
+        <UnitName Value="GLStrings"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\Source\GLScene.pas"/>
+        <UnitName Value="GLScene"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\Source\GLSilhouette.pas"/>
+        <UnitName Value="GLSilhouette"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\Source\GLObjects.pas"/>
+        <UnitName Value="GLObjects"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\Source\GLTeapot.pas"/>
+        <UnitName Value="GLTeapot"/>
+      </Item22>
+      <Item23>
+        <Filename Value="..\Source\GLGeomObjects.pas"/>
+        <UnitName Value="GLGeomObjects"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\Source\GLBehaviours.pas"/>
+        <UnitName Value="GLBehaviours"/>
+      </Item24>
+      <Item25>
+        <Filename Value="..\Source\Platform\GLCrossPlatform.pas"/>
+        <UnitName Value="GLCrossPlatform"/>
+      </Item25>
+      <Item26>
+        <Filename Value="..\Source\Platform\GLWin32Context.pas"/>
+        <UnitName Value="GLWin32Context"/>
+      </Item26>
+      <Item27>
+        <Filename Value="..\Source\Platform\GLWin32Viewer.pas"/>
+        <UnitName Value="GLWin32Viewer"/>
+      </Item27>
+      <Item28>
+        <Filename Value="..\Source\DesignTime\GLLazarusRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLLazarusRegister"/>
+      </Item28>
+      <Item29>
+        <Filename Value="..\Source\Base\ApplicationFileIO.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="ApplicationFileIO"/>
+      </Item29>
+      <Item30>
+        <Filename Value="..\Source\DesignTime\Info.lfm"/>
+        <Type Value="LFM"/>
+      </Item30>
+      <Item31>
+        <Filename Value="..\Source\DesignTime\Info.lrs"/>
+        <Type Value="LRS"/>
+      </Item31>
+      <Item32>
+        <Filename Value="..\Source\DesignTime\Info.pas"/>
+        <UnitName Value="Info"/>
+      </Item32>
+      <Item33>
+        <Filename Value="..\Source\DesignTime\FVectorEditor.lfm"/>
+        <Type Value="LFM"/>
+      </Item33>
+      <Item34>
+        <Filename Value="..\Source\DesignTime\FVectorEditor.lrs"/>
+        <Type Value="LRS"/>
+      </Item34>
+      <Item35>
+        <Filename Value="..\Source\DesignTime\FVectorEditor.pas"/>
+        <UnitName Value="FVectorEditor"/>
+      </Item35>
+      <Item36>
+        <Filename Value="..\Source\DesignTime\GLLazarusSceneEdit.lfm"/>
+        <Type Value="LFM"/>
+      </Item36>
+      <Item37>
+        <Filename Value="..\Source\DesignTime\GLLazarusSceneEdit.lrs"/>
+        <Type Value="LRS"/>
+      </Item37>
+      <Item38>
+        <Filename Value="..\Source\DesignTime\GLLazarusSceneEdit.pas"/>
+        <UnitName Value="GLLazarusSceneEdit"/>
+      </Item38>
+    </Files>
+    <Type Value="DesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="LCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="IDEIntf"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

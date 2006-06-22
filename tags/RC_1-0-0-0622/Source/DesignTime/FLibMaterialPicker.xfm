@@ -1,0 +1,104 @@
+object LibMaterialPicker: TLibMaterialPicker
+  Left = 333
+  Top = 133
+  Width = 458
+  Height = 234
+  HorzScrollBar.Range = 451
+  HorzScrollBar.Visible = False
+  VertScrollBar.Range = 225
+  VertScrollBar.Visible = False
+  ActiveControl = LBMaterials
+  BorderStyle = fbsDialog
+  Caption = 'LibMaterial Picker'
+  Color = clButton
+  Font.Color = clBlack
+  Font.Height = 11
+  Font.Name = 'adobe-helvetica'
+  Font.Pitch = fpVariable
+  Font.Style = []
+  Font.Weight = 0
+  ParentFont = False
+  PixelsPerInch = 75
+  TextHeight = 13
+  TextWidth = 5
+  object Label1: TLabel
+    Left = 152
+    Top = 8
+    Width = 76
+    Height = 13
+    Caption = 'Material Preview'
+  end
+  object Label2: TLabel
+    Left = 8
+    Top = 8
+    Width = 84
+    Height = 13
+    Caption = 'Available Materials'
+  end
+  object LBMaterials: TListBox
+    Left = 8
+    Top = 24
+    Width = 137
+    Height = 201
+    ItemHeight = 13
+    TabOrder = 0
+    OnClick = LBMaterialsClick
+    OnKeyPress = LBMaterialsKeyPress
+  end
+  object BBOk: TBitBtn
+    Left = 376
+    Top = 24
+    Width = 75
+    Height = 25
+    TabOrder = 2
+    Kind = bkOK
+  end
+  object BBCancel: TBitBtn
+    Left = 376
+    Top = 56
+    Width = 75
+    Height = 25
+    TabOrder = 1
+    Kind = bkCancel
+  end
+  inline MPPreview: TRMaterialPreview
+    Left = 152
+    Top = 22
+    Width = 202
+    Height = 203
+    HorzScrollBar.Range = 202
+    HorzScrollBar.Visible = False
+    VertScrollBar.Range = 203
+    VertScrollBar.Visible = False
+    TabOrder = 3
+    inherited CBObject: TComboBox
+      Height = 21
+      ItemHeight = 15
+    end
+    inherited CBBackground: TComboBox
+      Height = 21
+      ItemHeight = 15
+    end
+    inherited GLScene1: TGLScene
+      inherited Cube: TGLCube
+        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
+        Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
+      end
+      inherited Sphere: TGLSphere
+        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+      end
+      inherited LightSource: TGLLightSource
+        Position.Coordinates = {0000000000004040000020410000803F}
+        Specular.Color = {0000803F0000803F0000803F0000803F}
+      end
+      inherited PlanePattern: TGLPlane
+        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000000000000000000040C00000803F}
+      end
+      inherited Camera: TGLCamera
+        Position.Coordinates = {0000000000000000000020410000803F}
+      end
+    end
+  end
+end
