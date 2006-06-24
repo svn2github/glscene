@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
   <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
   <li>03/07/04 - LR - Make change for Linux
@@ -1471,7 +1472,7 @@ end;
 
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = glKey_DELETE then begin
+  if (Key = glKey_DELETE) and not Tree.IsEditing then begin
     Key := 0;
     ACDeleteObject.Execute;
   end;
