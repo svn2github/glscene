@@ -1,0 +1,18 @@
+20 Jun 2006 - PvD
+
+Modified GLScene.pas, info.pas 
+Added new tab to info form to show GLScene version number as defined by the GLSCENE_VERSION constant in GLScene.pas. Also modernised the look and feel of the form.
+
+24 Jun 2006 - PvD
+
+Modified GLSceneVCL.rc, GLSceneVCL.dcr
+Added glscene_icon_TGLPhongShader.bmp, glscene_icon_TGLLinePFXManager.bmp
+compiled missing bitmap dcr icon resources for TGLPhongshader and TGLLinePFXManager
+
+Modified GLSceneEdit.pas
+Fixed bug with DELETE key when editing name in Treeview. The "Delete object" dialog was shown every time the DELETE key was pressed while editing an object name in the Treeview. Now this dialog is now shown while editing an object name in the treeview
+
+
+
+
+
