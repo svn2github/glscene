@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/06/06 - PvD - Changed CoordinateChanged to deal with Rotation vector changes
       <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
                           deep scene trees
       <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
@@ -276,7 +277,7 @@ type
 
 const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-   GLSCENE_VERSION = '0.9.1.0707';
+   GLSCENE_VERSION = 'RC 1.0.0.0629';
 
 type
   TNormalDirection = (ndInside, ndOutside);
@@ -3864,12 +3865,16 @@ begin
          end;
          FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
          FDirection.Normalize;
+      end
+      else if Sender = FRotation then begin
+        ResetAndPitchTurnRoll(FRotation.X, FRotation.Y, FRotation.Z);
       end;
       TransformationChanged;
    finally
       FIsCalculating:=False;
    end;
 end;
+
 
 // DoProgress
 //
