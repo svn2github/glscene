@@ -277,7 +277,7 @@ type
 
 const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-   GLSCENE_VERSION = 'RC 1.0.0.0629';
+   GLSCENE_VERSION = 'RC 1.0.0.0630';
 
 type
   TNormalDirection = (ndInside, ndOutside);
@@ -3865,9 +3865,6 @@ begin
          end;
          FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
          FDirection.Normalize;
-      end
-      else if Sender = FRotation then begin
-        ResetAndPitchTurnRoll(FRotation.X, FRotation.Y, FRotation.Z);
       end;
       TransformationChanged;
    finally
