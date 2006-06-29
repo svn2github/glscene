@@ -6,7 +6,6 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>29/06/06 - PvD - Changed CoordinateChanged to deal with Rotation vector changes
       <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
                           deep scene trees
       <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
