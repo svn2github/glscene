@@ -840,7 +840,7 @@ var
 begin
    // setup states
    glPushMatrix;
-   glPushAttrib(GL_ENABLE_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_POLYGON_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
@@ -1021,7 +1021,7 @@ var
 begin
    // setup states
    glPushMatrix;
-   glPushAttrib(GL_ENABLE_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_POLYGON_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
