@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/06/06 - PvD - Fixed small bug to properly deal with polygon fill
       <li>20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
       <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
       <li>04/08/03 - SG - Fixed small bug with random star creation
@@ -845,6 +846,7 @@ begin
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
+   glPolygonMode(GL_FRONT, GL_FILL);
 
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.90;
@@ -1026,6 +1028,7 @@ begin
    glDisable(GL_CULL_FACE);
    glDisable(GL_ALPHA_TEST);
    glDepthMask(False);
+   glPolygonMode(GL_FRONT, GL_FILL);
 
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.95;
