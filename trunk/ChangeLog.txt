@@ -1,7 +1,20 @@
-20 Jun 2006 - PvD
 
-Modified GLScene.pas, info.pas 
-Added new tab to info form to show GLScene version number as defined by the GLSCENE_VERSION constant in GLScene.pas. Also modernised the look and feel of the form.
+10 Jul 2006 - PvD
+
+Modified MeshUtils.pas
+
+Both RemapReferences used a TByteArray for lists than can be longer than the max number of 32768 items supported by the TByteArray. By default the GLScene package has Range checking turned off and thus hides the problem. 
+Fixed bug in RemapReferences limiting lists to 32768 items. Carsten Pohl submitted the bug and a solution that is implemented here.
+
+
+29 Jun 2006 - PvD
+
+Modified GLScene.pas
+Changed CoordinateChanged to deal with Rotation vector changes as recommended by "fig". Changes to the rotation vector had no effect on the object. The modification now allows values to be assigned to the Ratiation vector that will affect the objects orientation.
+
+Modified GLSkyDome.pas
+The EarthSkyDome also showed as pmLines, When polygon mode of other objects in a scene were set to pmLines. Fixed a small bug to properly deal with polygon fill as suggested by "fig"
+
 
 24 Jun 2006 - PvD
 
@@ -12,10 +25,13 @@ compiled missing bitmap dcr icon resources for TGLPhongshader and TGLLinePFXMana
 Modified GLSceneEdit.pas
 Fixed bug with DELETE key when editing name in Treeview. The "Delete object" dialog was shown every time the DELETE key was pressed while editing an object name in the Treeview. Now this dialog is now shown while editing an object name in the treeview
 
-29 Jun 2006 - PvD
 
-Modified GLSkyDome.pas
-The EarthSkyDome also showed as pmLines, When polygon mode of other objects in a scene were set to pmLines. Fixed a small bug to properly deal with polygon fill as suggested by "fig"
+20 Jun 2006 - PvD
+
+Modified GLScene.pas, info.pas 
+Added new tab to info form to show GLScene version number as defined by the GLSCENE_VERSION constant in GLScene.pas. Also modernised the look and feel of the form.
+
+
 
 
 
