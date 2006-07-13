@@ -276,7 +276,7 @@ type
 
 const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-   GLSCENE_VERSION = 'RC 1.0.0.0630';
+   GLSCENE_VERSION = 'RC 1.0.0.0714';
 
 type
   TNormalDirection = (ndInside, ndOutside);
