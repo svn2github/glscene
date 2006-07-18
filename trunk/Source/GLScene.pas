@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/07/06 - PvD - Fixed TGLSceneBuffer.OrthoScreenToWorld sometimes translates screen coordinates incorrectly
       <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
                           deep scene trees
       <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
@@ -7221,7 +7222,7 @@ begin
          SetVector(camUp, Camera.AbsoluteUp);
          SetVector(camRight, Camera.AbsoluteRight);
       end;
-      f:=FCamera.FocalLength*FCamera.SceneScale;
+      f:=100 / (FCamera.FocalLength*FCamera.SceneScale);
       if FViewPort.Width>FViewPort.Height then
          f:=f/FViewPort.Width
       else f:=f/FViewPort.Height;
