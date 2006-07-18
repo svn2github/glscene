@@ -1,5 +1,15 @@
+17 Jul 2006 - PvD
 
-Preliminary testing however has shown that the latest versions
+Modified GLScene.pas
+
+TGLSceneBuffer.OrthoScreenToWorld translates screen coordinates
+incorrectly when camera focal length has certain values. EG.
+change GLCamera1 focallength to 20 in demos\collisions\meshhit
+to demonstrate. Changed code as suggested by Roger Cao
+
+
+14 Jul 2006 - Release 1.0.0714
+
 10 Jul 2006 - PvD
 
 Modified MeshUtils.pas
