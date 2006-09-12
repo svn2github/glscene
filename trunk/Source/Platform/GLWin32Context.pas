@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/09/06 - NC - Added support for Multiple-Render-Target
       <li>03/10/04 - NC - Added float texture support
       <li>03/07/02 - EG - ChooseWGLFormat Kyro fix (Patrick Chevalley)
       <li>13/03/02 - EG - aaDefault now prefers non-AA when possible
@@ -29,7 +30,7 @@ unit GLWin32Context;
 
 interface
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 uses Windows, Classes, SysUtils, GLContext;
 
@@ -61,9 +62,9 @@ type
          procedure DestructionEarlyWarning(sender : TObject);
 
          procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger;
-                                   var nNumFormats: Integer);
+                                   var nNumFormats: Integer; BufferCount : integer = 1);
          procedure DoCreateContext(outputDevice : Integer); override;
-         procedure DoCreateMemoryContext(outputDevice, width, height : Integer); override;
+         procedure DoCreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
          procedure DoDestroyContext; override;
          procedure DoActivate; override;
@@ -347,7 +348,7 @@ end;
 // ChooseWGLFormat
 //
 procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger;
-                                          var nNumFormats: Integer);
+                                          var nNumFormats: Integer; BufferCount : integer);
 const
    cAAToSamples : array [aaNone..aa4xHQ] of Integer = (1, 2, 2, 4, 4);
 
@@ -358,7 +359,7 @@ const
          nNumFormats:=0;
    end;
 
-var
+var                       
    float : boolean;
 
 begin
@@ -377,7 +378,9 @@ begin
      end;
    end;
 
-//   if Multi_buffer>0 then AddIAttrib(WGL_AUX_BUFFERS_ARB, Multi_buffer);
+   if BufferCount > 1 then
+     // 1 front buffer + (BufferCount-1) aux buffers
+     AddIAttrib(WGL_AUX_BUFFERS_ARB, BufferCount-1);
 
    AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
    if AlphaBits>0 then
@@ -620,7 +623,7 @@ end;
 
 // DoCreateMemoryContext
 //
-procedure TGLWin32Context.DoCreateMemoryContext(outputDevice, width, height : Integer);
+procedure TGLWin32Context.DoCreateMemoryContext(outputDevice, width, height : integer; BufferCount : integer);
 var
    nbFormats : Integer;
    iFormats : array [0..31] of Integer;
@@ -646,7 +649,7 @@ begin
             if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
                ClearIAttribs;
                AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
-               ChooseWGLFormat(Cardinal(tempDC), 32, @iFormats, nbFormats);
+               ChooseWGLFormat(Cardinal(tempDC), 32, @iFormats, nbFormats, BufferCount);
                if nbFormats=0 then
                   raise Exception.Create('Format not supported for pbuffer operation.');
                iPBufferAttribs[0]:=0;
@@ -687,6 +690,13 @@ begin
       FRC:=localRC;
    end;
    FAcceleration:=chaHardware;
+
+   // Specific which color buffers are to be drawn into
+   DoActivate;
+   if BufferCount > 1 then
+//     if GL_ATI_draw_buffers then
+       glDrawBuffersATI(BufferCount, @MRT_BUFFERS);
+   DoDeactivate;
 end;
 
 // DoShareLists
