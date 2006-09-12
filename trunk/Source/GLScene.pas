@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/07/06 - NelC Added roNoDepthBufferClear, support for Multiple-Render-Target
       <li>17/07/06 - PvD - Fixed TGLSceneBuffer.OrthoScreenToWorld sometimes translates screen coordinates incorrectly
       <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
                           deep scene trees
@@ -305,11 +306,13 @@ type
      roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
      roNoColorBufferClear: do not clear the color buffer automatically, if the
          whole viewer is fully repainted each frame, this can improve framerate<br>
-     roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering }
+     roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
+     roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
+         early-z culling.<br> }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
                     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
-                    roNoSwapBuffers);
+                    roNoSwapBuffers, roNoDepthBufferClear);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -1768,7 +1771,7 @@ type
 
          procedure NotifyChange(Sender : TObject); override;
 
-         procedure CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
+         procedure CreateRC(deviceHandle : Cardinal; memoryContext : Boolean; BufferCount : integer = 1);
          procedure ClearBuffers;
          procedure DestroyRC;
          function  RCInstantiated : Boolean;
@@ -2100,6 +2103,10 @@ type
          procedure CopyToTexture(aTexture : TGLTexture); overload; virtual;
          procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
                                  xDest, yDest : Integer); overload;
+         {: CopyToTexture for Multiple-Render-Target }
+         procedure CopyToTextureMRT(aTexture : TGLTexture; BufferIndex : integer); overload; virtual;
+         procedure CopyToTextureMRT(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
+                                    xDest, yDest : Integer; BufferIndex : integer); overload;
          {: Renders the 6 texture maps from a scene.<p>
             The viewer is used to render the 6 images, one for each face
             of the cube, from the absolute position of the camera.<p>
@@ -2142,6 +2149,8 @@ type
    TGLMemoryViewer = class (TGLNonVisualViewer)
       private
          { Private Declarations }
+         FBufferCount: integer;
+         procedure SetBufferCount(const Value: integer);
 
       protected
          { Protected Declarations }
@@ -2156,6 +2165,10 @@ type
 
       published
          { Public Declarations }
+         {: Set BufferCount > 1 for multiple render targets. <p>
+            Users should check if the corresponding extension (GL_ATI_draw_buffers)
+            is supported. Current hardware limit is BufferCount = 4. }
+         property BufferCount : integer read FBufferCount write SetBufferCount default 1;
    end;
 
    TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer; Modal : boolean);
@@ -6668,7 +6681,7 @@ end;
 
 // CreateRC
 //
-procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
+procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean; BufferCount : integer);
 var
    backColor: TColorVector;
 begin
@@ -6683,7 +6696,7 @@ begin
       with FRenderingContext do begin
          try
             if memoryContext then
-               CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height)
+              CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height, BufferCount)
             else CreateContext(deviceHandle);
          except
             FreeAndNil(FRenderingContext);
@@ -6994,6 +7007,10 @@ begin
             else bindTarget:=target;
          end;
          createTexture:=not aTexture.IsHandleAllocated;
+
+         if aTexture.IsFloatType then // float_type special treatment
+            CreateTexture:=false;
+
          if createTexture then
             handle:=aTexture.AllocateHandle
          else handle:=aTexture.Handle;
@@ -7442,7 +7459,10 @@ procedure TGLSceneBuffer.ClearBuffers;
 var
    bufferBits : TGLBitfield;
 begin
-   bufferBits:=GL_DEPTH_BUFFER_BIT;
+   if roNoDepthBufferClear in ContextOptions then
+     bufferBits:=0
+   else
+     bufferBits:=GL_DEPTH_BUFFER_BIT;
    if ContextOptions*[roNoColorBuffer, roNoColorBufferClear]=[] then
       bufferBits:=bufferBits or GL_COLOR_BUFFER_BIT;
    if roStencilBuffer in ContextOptions then
@@ -8010,6 +8030,90 @@ begin
    Buffer.CopyToTexture(aTexture, xSrc, ySrc, width, height, xDest, yDest);
 end;
 
+// CopyToTextureMRT
+//
+procedure TGLNonVisualViewer.CopyToTextureMRT(aTexture: TGLTexture;
+  BufferIndex: integer);
+begin
+  CopyToTextureMRT(aTexture, 0, 0, Width, Height, 0, 0, BufferIndex);
+end;
+
+// CopyToTextureMRT
+//
+procedure TGLNonVisualViewer.CopyToTextureMRT(aTexture: TGLTexture; xSrc,
+  ySrc, width, height, xDest, yDest, BufferIndex: integer);
+var
+   target, handle : Integer;
+   buf : PChar;
+   createTexture : Boolean;
+
+   procedure CreateNewTexture;
+   begin
+      GetMem(buf, Width*Height*4);
+      try // float_type
+         glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+         case aTexture.MinFilter of
+            miNearest, miLinear :
+        	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+               else
+                  if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
+                     // hardware-accelerated when supported
+                     glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+                  end else begin
+                     // slower (software mode)
+                     gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, buf);
+            end;
+         end;
+      finally
+         FreeMem(buf);
+      end;
+   end;
+
+begin
+   if Buffer.RenderingContext<>nil then begin
+      Buffer.RenderingContext.Activate;
+      try
+         target:=aTexture.Image.NativeTextureTarget;
+
+         CreateTexture:=true;
+
+         if aTexture.IsFloatType then begin // float_type special treatment
+             CreateTexture:=false;
+             handle:=aTexture.Handle;
+           end
+         else
+           if (target<>GL_TEXTURE_CUBE_MAP_ARB) or (FCubeMapRotIdx=0) then begin
+                CreateTexture:=not aTexture.IsHandleAllocated;
+                if CreateTexture then
+                   handle:=aTexture.AllocateHandle
+                else handle:=aTexture.Handle;
+              end
+           else handle:=aTexture.Handle;
+
+         // For MRT
+         glReadBuffer(MRT_BUFFERS[BufferIndex]);
+
+         Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
+
+         if target=GL_TEXTURE_CUBE_MAP_ARB then
+            target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
+
+         if CreateTexture then
+            CreateNewTexture
+         else
+            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
+
+         ClearGLError;
+      finally
+         Buffer.RenderingContext.Deactivate;
+      end;
+   end;
+end;
+
 // SetupCubeMapCamera
 //
 procedure TGLNonVisualViewer.SetupCubeMapCamera(Sender : TObject);
@@ -8195,6 +8299,7 @@ begin
    inherited Create(AOwner);
    Width:=256;
    Height:=256;
+   FBufferCount:=1;
 end;
 
 // InstantiateRenderingContext
@@ -8203,7 +8308,7 @@ procedure TGLMemoryViewer.InstantiateRenderingContext;
 begin
    if FBuffer.RenderingContext=nil then begin
       FBuffer.SetViewPort(0, 0, Width, Height);
-      FBuffer.CreateRC(0, True);
+      FBuffer.CreateRC(0, True, FBufferCount);
    end;
 end;
 
@@ -8215,6 +8320,24 @@ begin
    FBuffer.Render(baseObject);
 end;
 
+// SetBufferCount
+//
+procedure TGLMemoryViewer.SetBufferCount(const Value: integer);
+//var
+//   MaxAxuBufCount : integer;
+const MaxAxuBufCount = 4; // Current hardware limit = 4
+begin
+   if FBufferCount=Value then exit;
+   FBufferCount:=Value;
+
+   if FBufferCount < 1 then FBufferCount:=1;
+//   glGetIntegerv(GL_AUX_BUFFERS, @MaxAxuBufCount);
+//   MaxAxuBufCount:=MaxAxuBufCount + 1; // + 1 front buffer
+   if FBufferCount > MaxAxuBufCount then FBufferCount:=MaxAxuBufCount;
+
+   // Request a new Instantiation of RC on next render
+   FBuffer.DestroyRC;
+end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
