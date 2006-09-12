@@ -4,7 +4,9 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active 
+      <li>11/09/06 - NC - Added TGLProgramHandle.Name, TGLProgramHandle.Uniform2f,
+                          SetUniform*, support for Multiple-Render-Target
+      <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active
       <li>25/09/03 - EG - Added TGLVBOHandle
       <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
       <li>30/01/02 - EG - Added TGLVirtualHandle
@@ -26,7 +28,7 @@ unit GLContext;
 
 interface
 
-uses Classes, SysUtils, OpenGL1x, VectorGeometry;
+uses Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes;
 
 {$i GLScene.inc}
 
@@ -90,7 +92,7 @@ type
          procedure PropagateSharedContext;
 
          procedure DoCreateContext(outputDevice : Integer); dynamic; abstract;
-         procedure DoCreateMemoryContext(outputDevice, width, height : Integer); dynamic; abstract;
+         procedure DoCreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer = 1); dynamic; abstract;
          procedure DoShareLists(aContext : TGLContext); dynamic; abstract;
          procedure DoDestroyContext; dynamic; abstract;
          procedure DoActivate; virtual; abstract;
@@ -140,7 +142,7 @@ type
             The function should fail if no hardware-accelerated memory context
             can be created (the CreateContext method can handle software OpenGL
             contexts). }
-         procedure CreateMemoryContext(outputDevice, width, height : Integer);
+         procedure CreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer = 1);
          {: Setup display list sharing between two rendering contexts.<p>
             Both contexts must have the same pixel format. }
          procedure ShareLists(aContext : TGLContext);
@@ -469,6 +471,8 @@ type
          procedure SetUniform1i(const index : String; val : Integer);
          function GetUniform1f(const index : String) : Single;
          procedure SetUniform1f(const index : String; val : Single);
+         function GetUniform2f(const index : String) : TVector2f;
+         procedure SetUniform2f(const index : String; const val : TVector2f);
          function GetUniform3f(const index : String) : TAffineVector;
          procedure SetUniform3f(const index : String; const val : TAffineVector);
          function GetUniform4f(const index : String) : TVector;
@@ -480,6 +484,10 @@ type
          { Public Declarations }
          {: Compile and attach a new shader.<p>
             Raises an EGLShader exception in case of failure. }
+         Name : string;
+
+         constructor Create; override;
+
          procedure AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String;
                              treatWarningsAsErrors : Boolean = False);
 
@@ -492,8 +500,15 @@ type
          procedure UseProgramObject;
          procedure EndUseProgramObject;
 
+         procedure SetUniformi(const index : String; const val: integer);   overload;
+         procedure SetUniformf(const index : String; const val: single);    overload;
+         procedure SetUniformf(const index : String; const val: TVector2f); overload;
+         procedure SetUniformf(const index : String; const val: TVector3f); overload;
+         procedure SetUniformf(const index : String; const val: TVector4f); overload;
+
          property Uniform1i[const index : String] : Integer read GetUniform1i write SetUniform1i;
          property Uniform1f[const index : String] : Single read GetUniform1f write SetUniform1f;
+         property Uniform2f[const index : String] : TVector2f read GetUniform2f write SetUniform2f;
          property Uniform3f[const index : String] : TAffineVector read GetUniform3f write SetUniform3f;
          property Uniform4f[const index : String] : TVector read GetUniform4f write SetUniform4f;
          property UniformMatrix4fv[const index : String] : TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
@@ -794,12 +809,12 @@ end;
 
 // CreateMemoryContext
 //
-procedure TGLContext.CreateMemoryContext(outputDevice, width, height : Integer);
+procedure TGLContext.CreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer);
 begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
    FAcceleration:=chaUnknown;
-   DoCreateMemoryContext(outputDevice, width, height);
+   DoCreateMemoryContext(outputDevice, width, height, BufferCount);
    FSharedContexts.Add(Self);
    Manager.ContextCreatedBy(Self);
 end;
@@ -1425,7 +1440,7 @@ begin
       shader.ShaderSource(shaderSource);
       if    (not shader.CompileShader)
          or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog))>0)) then
-         raise EGLShader.Create(shader.ClassName+': '+shader.InfoLog);
+         raise EGLShader.Create(Name + ' (' + shader.ClassName+'): '#13#10 + shader.InfoLog);
       AttachObject(shader);
    finally
       shader.Free;
@@ -1529,6 +1544,20 @@ begin
    glUniform1iARB(GetUniformLocation(index), val);
 end;
 
+// GetUniform2f
+//
+function TGLProgramHandle.GetUniform2f(const index : String) : TVector2f;
+begin
+   glGetUniformfvARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
+// SetUniform2f
+//
+procedure TGLProgramHandle.SetUniform2f(const index : String; const val : TVector2f);
+begin
+   glUniform2fARB(GetUniformLocation(index), val[0], val[1]);
+end;
+
 // GetUniform3f
 //
 function TGLProgramHandle.GetUniform3f(const index : String) : TAffineVector;
@@ -1569,6 +1598,43 @@ end;
 procedure TGLProgramHandle.SetUniformMatrix4fv(const index : String; const val : TMatrix);
 begin
    glUniformMatrix4fvARB(GetUniformLocation(index), 1, False, @val);
+end;
+
+// SetUniformf
+//
+procedure TGLProgramHandle.SetUniformf(const index: String; const val: TVector2f);
+begin
+  Uniform2f[index]:=val;
+end;
+
+procedure TGLProgramHandle.SetUniformf(const index: String;
+  const val: TVector3f);
+begin
+  Uniform3f[index]:=val;
+end;
+
+procedure TGLProgramHandle.SetUniformf(const index: String;
+  const val: single);
+begin
+  Uniform1f[index]:=val;
+end;
+
+procedure TGLProgramHandle.SetUniformf(const index: String;
+  const val: TVector4f);
+begin
+  Uniform4f[index]:=val;
+end;
+
+procedure TGLProgramHandle.SetUniformi(const index: String;
+  const val: integer);
+begin
+  Uniform1i[index]:=val;
+end;
+
+constructor TGLProgramHandle.Create;
+begin
+  inherited Create;
+  Name := 'DefaultShaderName';
 end;
 
 // ------------------
