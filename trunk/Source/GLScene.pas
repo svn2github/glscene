@@ -6,7 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>17/07/06 - NelC Added roNoDepthBufferClear, support for Multiple-Render-Target
+      <li>13/09/06 - NelC Added TGLSceneBuffer.SaveAsFloatToFile
+      <li>12/09/06 - NelC Added roNoDepthBufferClear, support for Multiple-Render-Target
       <li>17/07/06 - PvD - Fixed TGLSceneBuffer.OrthoScreenToWorld sometimes translates screen coordinates incorrectly
       <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
                           deep scene trees
@@ -1835,7 +1836,8 @@ type
          procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
                                  xDest, yDest : Integer; target : Integer = 0;
                                  forceCreateTexture : Boolean = False); overload;
-
+         {: Save as raw float data to a file }
+         procedure SaveAsFloatToFile(const aFilename: String);
          {: Event reserved for viewer-specific uses.<br> }
          property ViewerBeforeRender : TNotifyEvent read FViewerBeforeRender write FViewerBeforeRender;
          procedure SetViewPort(X, Y, W, H: Integer);
@@ -2116,7 +2118,6 @@ type
          procedure RenderCubeMapTextures(cubeMapTexture : TGLTexture;
                                          zNear : Single = 0;
                                          zFar : Single = 0);
-
       published
          { Public Declarations }
          {: Camera from which the scene is rendered. }
@@ -7049,6 +7050,37 @@ begin
    end;
 end;
 
+procedure TGLSceneBuffer.SaveAsFloatToFile(const aFilename: String);
+var
+   Data : pointer;
+   DataSize : integer;
+   Stream : TMemoryStream;
+const
+   FloatSize = 4;
+begin
+   if Assigned(Camera) and Assigned(Camera.Scene) then begin
+      DataSize := Width * Height * FloatSize * FloatSize;
+      Data:=nil;
+      GetMem(Data, DataSize);
+      FRenderingContext.Activate;
+      try
+        glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, Data);
+        CheckOpenGLError;
+
+        Stream:=TMemoryStream.Create;
+        try
+          Stream.Write(Data, DataSize);
+          Stream.SaveToFile(aFilename);
+        finally
+          Stream.Free;
+        end;
+      finally
+        FRenderingContext.DeActivate;
+        FreeMem(Data);
+      end;
+   end;
+end;
+
 // SetViewPort
 //
 procedure TGLSceneBuffer.SetViewPort(X, Y, W, H: Integer);
@@ -8325,7 +8357,8 @@ end;
 procedure TGLMemoryViewer.SetBufferCount(const Value: integer);
 //var
 //   MaxAxuBufCount : integer;
-const MaxAxuBufCount = 4; // Current hardware limit = 4
+const
+  MaxAxuBufCount = 4; // Current hardware limit = 4
 begin
    if FBufferCount=Value then exit;
    FBufferCount:=Value;
@@ -8341,7 +8374,6 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
