@@ -7069,7 +7069,7 @@ begin
 
         Stream:=TMemoryStream.Create;
         try
-          Stream.Write(Data, DataSize);
+          Stream.Write(Data^, DataSize);
           Stream.SaveToFile(aFilename);
         finally
           Stream.Free;
