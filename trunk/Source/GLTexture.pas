@@ -3,7 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage  
+      <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
+      <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
       <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
       <li>30/11/04 - EG - No longer stores TextureEx if empty
       <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
@@ -828,8 +829,8 @@ type
          function GetShaderInitialized : Boolean;
          procedure InitializeShader;
          procedure FinalizeShader;
-         procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
-         procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+         procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Cardinal);
+         procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
          procedure SetEnabled(val : Boolean);
 
          property ShaderInitialized : Boolean read GetShaderInitialized;
@@ -3097,7 +3098,7 @@ end;
 
 // OnVirtualHandleDestroy
 //
-procedure TGLShader.OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+procedure TGLShader.OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    FinalizeShader;
    handle:=0;
@@ -3105,7 +3106,7 @@ end;
 
 // OnVirtualHandleAllocate
 //
-procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
+procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    handle:=1;
 end;
