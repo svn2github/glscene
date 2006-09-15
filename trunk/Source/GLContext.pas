@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/09/06 - NC - TGLContextHandle.handle as Integer -> Cardinal
       <li>11/09/06 - NC - Added TGLProgramHandle.Name, TGLProgramHandle.Uniform2f,
                           SetUniform*, support for Multiple-Render-Target
       <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active
@@ -211,7 +212,7 @@ type
       private
          { Private Declarations }
          FRenderingContext : TGLContext;
-         FHandle : Integer;
+         FHandle : Cardinal;
 
       protected
          { Protected Declarations }
@@ -221,7 +222,7 @@ type
          //: Specifies if the handle can be transfered across shared contexts
          class function Transferable : Boolean; virtual;
 
-         function DoAllocateHandle : Integer; virtual; abstract;
+         function DoAllocateHandle : Cardinal; virtual; abstract;
          procedure DoDestroyHandle; virtual; abstract;
 
       public
@@ -230,7 +231,7 @@ type
          constructor CreateAndAllocate(failIfAllocationFailed : Boolean = True);
          destructor Destroy; override;
 
-         property Handle : Integer read FHandle;
+         property Handle : Cardinal read FHandle;
          property RenderingContext : TGLContext read FRenderingContext;
 
          procedure AllocateHandle;
@@ -238,7 +239,7 @@ type
    end;
 
    TGLVirtualHandle = class;
-   TGLVirtualHandleEvent = procedure (sender : TGLVirtualHandle; var handle : Integer) of object;
+   TGLVirtualHandleEvent = procedure (sender : TGLVirtualHandle; var handle : Cardinal) of object;
 
    // TGLVirtualHandle
    //
@@ -251,7 +252,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
       public
@@ -271,7 +272,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
       public
@@ -290,7 +291,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
       public
@@ -310,7 +311,7 @@ type
       protected
          { Protected Declarations }
          class function Transferable : Boolean; override;
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
       public
@@ -336,7 +337,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
       public
@@ -423,7 +424,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : Cardinal; override;
 
       public
          { Public Declarations }
@@ -465,7 +466,7 @@ type
 
       protected
          { Protected Declarations }
-         function DoAllocateHandle : Integer; override;
+         function DoAllocateHandle : cardinal; override;
 
          function GetUniform1i(const index : String) : Integer;
          procedure SetUniform1i(const index : String; val : Integer);
@@ -1061,7 +1062,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLVirtualHandle.DoAllocateHandle : Integer;
+function TGLVirtualHandle.DoAllocateHandle : Cardinal;
 begin
    Result:=0;
    if Assigned(FOnAllocate) then
@@ -1089,7 +1090,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLListHandle.DoAllocateHandle : Integer;
+function TGLListHandle.DoAllocateHandle : Cardinal;
 begin
    Result:=glGenLists(1);
 end;
@@ -1135,7 +1136,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLTextureHandle.DoAllocateHandle : Integer;
+function TGLTextureHandle.DoAllocateHandle : Cardinal;
 begin
    glGenTextures(1, @Result);
 end;
@@ -1168,7 +1169,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLOcclusionQueryHandle.DoAllocateHandle : Integer;
+function TGLOcclusionQueryHandle.DoAllocateHandle : Cardinal;
 begin
    glGenOcclusionQueriesNV(1, @Result);
 end;
@@ -1231,7 +1232,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLVBOHandle.DoAllocateHandle : Integer;
+function TGLVBOHandle.DoAllocateHandle : Cardinal;
 begin
    Assert((FVBOTarget=GL_ARRAY_BUFFER_ARB) or (FVBOTarget=GL_ELEMENT_ARRAY_BUFFER_ARB));
    glGenBuffersARB(1, @Result);
@@ -1364,7 +1365,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLShaderHandle.DoAllocateHandle : Integer;
+function TGLShaderHandle.DoAllocateHandle : Cardinal;
 begin
    Result:=glCreateShaderObjectARB(FShaderType);
 end;
@@ -1421,7 +1422,7 @@ end;
 
 // DoAllocateHandle
 //
-function TGLProgramHandle.DoAllocateHandle : Integer;
+function TGLProgramHandle.DoAllocateHandle : cardinal;
 begin
    Result:=glCreateProgramObjectARB();
 end;
