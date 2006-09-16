@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/09/06 - NC - TGLVirtualHandle update (thx Lionel Reynaud)
       <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
       <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)
       <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
@@ -151,8 +152,8 @@ type
 	   protected
 			{ Protected Declarations }
          procedure NotifyClients(Clients:TList);
-         procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
-         procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+         procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Cardinal);
+         procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 
 	   public
 			{ Public Declarations }
@@ -376,7 +377,7 @@ begin
       glPushAttrib(GL_POLYGON_BIT);
       case FCharacterRange of
         stcrAlphaNum : glListBase(FTextFontEntry.FVirtualHandle.Handle - 32);
-        stcrNumbers :  glListBase(FTextFontEntry.FVirtualHandle.Handle - Integer('0'));
+        stcrNumbers :  glListBase(FTextFontEntry.FVirtualHandle.Handle - Cardinal('0'));
       else
         glListBase(FTextFontEntry.FVirtualHandle.Handle);
       end;
@@ -561,14 +562,14 @@ end;
 
 // VirtualHandleAlloc
 //
-procedure TFontManager.VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
+procedure TFontManager.VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    handle:=FCurrentBase;
 end;
 
 // VirtualHandleDestroy
 //
-procedure TFontManager.VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+procedure TFontManager.VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    if handle<>0 then
       glDeleteLists(handle, sender.Tag);
