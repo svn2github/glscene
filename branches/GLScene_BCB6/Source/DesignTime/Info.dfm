@@ -1,17 +1,17 @@
 object InfoForm: TInfoForm
-  Left = 337
-  Top = 107
+  Left = 355
+  Top = 251
   BorderIcons = [biSystemMenu, biHelp]
   BorderStyle = bsToolWindow
   BorderWidth = 3
   Caption = 'OpenGL Driver Info'
-  ClientHeight = 256
-  ClientWidth = 405
+  ClientHeight = 265
+  ClientWidth = 453
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -9
-  Font.Name = 'Verdana'
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = True
@@ -20,116 +20,148 @@ object InfoForm: TInfoForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
+  DesignSize = (
+    453
+    265)
   PixelsPerInch = 96
-  TextHeight = 12
-  object CloseButton: TSpeedButton
-    Left = 0
-    Top = 232
-    Width = 404
-    Height = 23
-    Caption = '&Close'
-    Flat = True
-    Glyph.Data = {
-      76010000424D7601000000000000760000002800000020000000100000000100
-      0400000000000001000000000000000000001000000010000000000000000000
-      800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
-      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00555555555555
-      555555555555555555555555555555555555555555FF55555555555559055555
-      55555555577FF5555555555599905555555555557777F5555555555599905555
-      555555557777FF5555555559999905555555555777777F555555559999990555
-      5555557777777FF5555557990599905555555777757777F55555790555599055
-      55557775555777FF5555555555599905555555555557777F5555555555559905
-      555555555555777FF5555555555559905555555555555777FF55555555555579
-      05555555555555777FF5555555555557905555555555555777FF555555555555
-      5990555555555555577755555555555555555555555555555555}
-    NumGlyphs = 2
-    OnClick = CloseButtonClick
-  end
+  TextHeight = 13
   object PageControl: TPageControl
     Left = 0
     Top = 0
-    Width = 404
-    Height = 225
-    ActivePage = Sheet1
+    Width = 450
+    Height = 230
+    ActivePage = TabSheet1
+    Anchors = [akLeft, akTop, akRight, akBottom]
     HotTrack = True
+    TabIndex = 4
     TabOrder = 0
+    object TabSheet2: TTabSheet
+      Caption = 'GLScene'
+      ImageIndex = 4
+      object Label19: TLabel
+        Left = 120
+        Top = 16
+        Width = 208
+        Height = 56
+        Caption = 'GLScene'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clSilver
+        Font.Height = -48
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label21: TLabel
+        Left = 126
+        Top = 67
+        Width = 197
+        Height = 18
+        Caption = 'OpenGL Solution for Delphi'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clSilver
+        Font.Height = -15
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label22: TLabel
+        Left = 118
+        Top = 14
+        Width = 208
+        Height = 56
+        Caption = 'GLScene'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = 4227327
+        Font.Height = -48
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object Label24: TLabel
+        Left = 124
+        Top = 65
+        Width = 197
+        Height = 18
+        Caption = 'OpenGL Solution for Delphi'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = 4227327
+        Font.Height = -15
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object Label30: TLabel
+        Left = 167
+        Top = 96
+        Width = 38
+        Height = 13
+        Caption = 'Version:'
+      end
+      object VersionLbl: TLabel
+        Left = 224
+        Top = 96
+        Width = 48
+        Height = 13
+        Caption = 'versionNo'
+      end
+      object WebsiteLbl: TLabel
+        Left = 167
+        Top = 120
+        Width = 113
+        Height = 13
+        Cursor = crHandPoint
+        Caption = 'http://www.glscene.org'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        OnClick = WebsiteLblClick
+      end
+    end
     object Sheet1: TTabSheet
       Caption = 'Common'
-      object Image1: TImage
-        Left = 0
-        Top = 0
-        Width = 396
-        Height = 198
-        Align = alClient
-      end
       object Label1: TLabel
         Left = 10
         Top = 10
-        Width = 107
+        Width = 82
         Height = 13
         Caption = 'OpenGL vendor :'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label2: TLabel
         Left = 10
         Top = 54
-        Width = 90
+        Width = 65
         Height = 13
         Caption = 'Acceleration :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label3: TLabel
         Left = 10
         Top = 77
-        Width = 88
+        Width = 62
         Height = 13
         Caption = 'Version Info :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label5: TLabel
         Left = 10
         Top = 99
-        Width = 113
+        Width = 82
         Height = 13
         Caption = 'Double buffered :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label6: TLabel
         Left = 10
         Top = 144
-        Width = 133
+        Width = 96
         Height = 13
         Caption = 'Buffer switch mode :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object VendorLabel: TLabel
@@ -205,15 +237,9 @@ object InfoForm: TInfoForm
       object Label7: TLabel
         Left = 10
         Top = 121
-        Width = 107
+        Width = 78
         Height = 13
         Caption = 'Stereo enabled :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object StereoLabel: TLabel
@@ -233,15 +259,9 @@ object InfoForm: TInfoForm
       object Label13: TLabel
         Left = 10
         Top = 32
-        Width = 68
+        Width = 50
         Height = 13
         Caption = 'Renderer :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object RendererLabel: TLabel
@@ -261,81 +281,44 @@ object InfoForm: TInfoForm
     end
     object Sheet2: TTabSheet
       Caption = 'Buffer and pixel depths'
-      object Image2: TImage
-        Left = 0
-        Top = 0
-        Width = 396
-        Height = 198
-        Align = alClient
-      end
       object Label8: TLabel
         Left = 10
         Top = 10
-        Width = 86
+        Width = 60
         Height = 13
         Caption = 'Color buffer :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label9: TLabel
         Left = 10
         Top = 33
-        Width = 90
+        Width = 65
         Height = 13
         Caption = 'Depth buffer :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label10: TLabel
         Left = 10
         Top = 55
-        Width = 96
+        Width = 68
         Height = 13
         Caption = 'Stencil buffer :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label11: TLabel
         Left = 10
         Top = 78
-        Width = 140
+        Width = 100
         Height = 13
         Caption = 'Accumulation buffer :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label12: TLabel
         Left = 10
         Top = 101
-        Width = 122
+        Width = 81
         Height = 13
         Caption = 'Auxilliary buffers :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object ColorLabel: TLabel
@@ -425,29 +408,17 @@ object InfoForm: TInfoForm
       object Label37: TLabel
         Left = 10
         Top = 124
-        Width = 71
+        Width = 51
         Height = 13
         Caption = 'Subpixels :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label18: TLabel
         Left = 10
         Top = 146
-        Width = 135
+        Width = 95
         Height = 13
         Caption = 'supported overlays :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object OverlayLabel: TLabel
@@ -481,81 +452,44 @@ object InfoForm: TInfoForm
       object Label20: TLabel
         Left = 10
         Top = 170
-        Width = 143
+        Width = 101
         Height = 13
         Caption = 'supported underlays :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
     end
     object Sheet3: TTabSheet
       Caption = 'Maximum values'
-      object Image3: TImage
-        Left = 0
-        Top = 0
-        Width = 396
-        Height = 198
-        Align = alClient
-      end
       object Label14: TLabel
         Left = 10
         Top = 10
-        Width = 79
+        Width = 57
         Height = 13
         Caption = 'Clip planes :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label15: TLabel
         Left = 10
         Top = 33
-        Width = 117
+        Width = 83
         Height = 13
         Caption = 'Evaluation order :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label16: TLabel
         Left = 10
         Top = 55
-        Width = 95
+        Width = 69
         Height = 13
         Caption = 'Light sources :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label17: TLabel
         Left = 10
         Top = 78
-        Width = 83
+        Width = 59
         Height = 13
         Caption = 'List nesting :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object ClipLabel: TLabel
@@ -617,15 +551,9 @@ object InfoForm: TInfoForm
       object Label23: TLabel
         Left = 10
         Top = 101
-        Width = 115
+        Width = 86
         Height = 13
         Caption = 'Modelview stack :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object ModelLabel: TLabel
@@ -645,71 +573,41 @@ object InfoForm: TInfoForm
       object Label25: TLabel
         Left = 195
         Top = 10
-        Width = 84
+        Width = 63
         Height = 13
         Caption = 'Name stack :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label26: TLabel
         Left = 195
         Top = 33
-        Width = 105
+        Width = 74
         Height = 13
         Caption = 'Pixel map table:'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label27: TLabel
         Left = 195
         Top = 55
-        Width = 114
+        Width = 82
         Height = 13
         Caption = 'Projection stack :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label28: TLabel
         Left = 195
         Top = 78
-        Width = 85
+        Width = 60
         Height = 13
         Caption = 'Texture size:'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object Label29: TLabel
         Left = 195
         Top = 101
-        Width = 98
+        Width = 71
         Height = 13
         Caption = 'Texture stack :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object NameLabel: TLabel
@@ -785,15 +683,9 @@ object InfoForm: TInfoForm
       object Label35: TLabel
         Left = 10
         Top = 124
-        Width = 144
+        Width = 104
         Height = 13
         Caption = 'Viewport Dimensions :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object ViewLabel: TLabel
@@ -813,15 +705,9 @@ object InfoForm: TInfoForm
       object Label4: TLabel
         Left = 195
         Top = 124
-        Width = 95
+        Width = 67
         Height = 13
         Caption = 'Texture units :'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Verdana'
-        Font.Style = [fsBold]
-        ParentFont = False
         Transparent = True
       end
       object TexUnitsLabel: TLabel
@@ -845,8 +731,8 @@ object InfoForm: TInfoForm
       object Extensions: TListBox
         Left = 0
         Top = 0
-        Width = 396
-        Height = 198
+        Width = 442
+        Height = 202
         Hint = 
           'Double-click and extension to go to its OpenGL Extension registr' +
           'y page'
@@ -866,6 +752,16 @@ object InfoForm: TInfoForm
         OnKeyPress = ExtensionsKeyPress
       end
     end
+  end
+  object CloseButton: TButton
+    Left = 376
+    Top = 237
+    Width = 75
+    Height = 25
+    Anchors = [akRight, akBottom]
+    Caption = '&Close'
+    TabOrder = 1
+    OnClick = CloseButtonClick
   end
   object PMWebLink: TPopupMenu
     Left = 24

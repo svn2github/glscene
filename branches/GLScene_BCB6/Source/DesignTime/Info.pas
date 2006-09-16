@@ -39,7 +39,6 @@ uses
 type
 
   TInfoForm = class(TForm)
-    CloseButton: TSpeedButton;
     PageControl: TPageControl;
     Sheet1: TTabSheet;
     Label1: TLabel;
@@ -90,9 +89,6 @@ type
     ViewLabel: TLabel;
     SubLabel: TLabel;
     Label37: TLabel;
-    Image1: TImage;
-    Image2: TImage;
-    Image3: TImage;
     Label18: TLabel;
     OverlayLabel: TLabel;
     UnderlayLabel: TLabel;
@@ -106,6 +102,15 @@ type
     PMWebLink: TPopupMenu;
     MIRegistryLink: TMenuItem;
     MIDelphi3D: TMenuItem;
+    TabSheet2: TTabSheet;
+    Label19: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label24: TLabel;
+    Label30: TLabel;
+    VersionLbl: TLabel;
+    WebsiteLbl: TLabel;
+    CloseButton: TButton;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -114,6 +119,7 @@ type
     procedure ExtensionsClick(Sender: TObject);
     procedure ExtensionsKeyPress(Sender: TObject; var Key: Char);
     procedure MIDelphi3DClick(Sender: TObject);
+    procedure WebsiteLblClick(Sender: TObject);
   public
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
@@ -245,54 +251,14 @@ begin
       IntLimitToLabel(TexStackLabel, limTextureStack);
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
    end;
+   VersionLbl.Caption := GLSCENE_VERSION;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TInfoForm.FormCreate(Sender: TObject);
-
-// quite much code just to display a background image in the
-// page control with correct windows colors
-
-var I         : Integer;
-	 NewR,
-	 NewG,
-    NewB      : Integer;
-    r,g,b     : Byte;
-    {$IFDEF MSWINDOWS}
-    X, Y      : Integer;
-    {$ENDIF}
-    BM        : TBitmap;
-	 OldColors,
-    NewColors  : array[Byte] of TColor;
-
 begin
-  PageControl.ActivePage:=Sheet1;
-  r:=GetRValue(ColorToRGB(clBtnFace));
-  g:=GetGValue(ColorToRGB(clBtnFace));
-  b:=GetBValue(ColorToRGB(clBtnFace));
-  BM:=TBitmap.Create;
-  // translate bitmap colors from gray-ramp to a clBtnFace-ramp 
-  try
-    for I:=0 to 255 do
-    begin
-      OldColors[I]:=RGB(I,I,I);
-      // 175 instead of 255 to make the image a bit lighter
-      NewR:=Round(I*r/175); if NewR > r then NewR:=r;
-      NewG:=Round(I*g/175); if NewG > g then NewG:=g;
-      NewB:=Round(I*b/175); if NewB > b then NewB:=b;
-      NewColors[I]:=RGB(NewR,NewG,NewB);
-    end;
-    {$IFDEF MSWINDOWS}
-    BM.Handle:=CreateMappedRes(HInstance,'INFO_BACK',OldColors,NewColors);
-	 for Y:=0 to Image1.Height div BM.Height do
-      for X:=0 to Image1.Width div BM.Width do Image1.Canvas.Draw(X*BM.Width,Y*BM.Height,BM);
-    {$ENDIF}
-    Image2.Picture:=Image1.Picture;
-    Image3.Picture:=Image1.Picture;
-  finally
-    BM.Free;
-  end;
+  PageControl.ActivePageIndex := 0;
 end;
 
 //------------------------------------------------------------------------------
@@ -361,6 +327,11 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+procedure TInfoForm.WebsiteLblClick(Sender: TObject);
+begin
+  ShowHTMLUrl(WebsiteLbl.Caption);
+end;
+
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

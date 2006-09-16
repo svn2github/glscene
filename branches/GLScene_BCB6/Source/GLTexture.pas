@@ -3,6 +3,8 @@
  Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
+      <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
       <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
       <li>30/11/04 - EG - No longer stores TextureEx if empty
       <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
@@ -844,8 +846,8 @@ type
          function GetShaderInitialized : Boolean;
          procedure InitializeShader;
          procedure FinalizeShader;
-         procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
-         procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+         procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Cardinal);
+         procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
          procedure SetEnabled(val : Boolean);
 
          property ShaderInitialized : Boolean read GetShaderInitialized;
@@ -1043,6 +1045,14 @@ type
          function OpenGLTextureFormat : Integer;
          {: Returns if of float data type}
          function IsFloatType: boolean;
+
+         {: Copy texture image from texture memory to main memory.<p>
+            Useful for retriving texture data generated with GPU.
+            RenderingContext is needed because we need an activated rendering context
+            to call OpenGL functions for accessing texture data.
+            }
+         procedure GetFloatTexImage(RenderingContext : TGLContext; data : pointer);
+         procedure SetFloatTexImage(RenderingContext : TGLContext; data : pointer);
 
          {: Is the texture enabled?.<p>
             Always equals to 'not Disabled'. }
@@ -3154,7 +3164,7 @@ end;
 
 // OnVirtualHandleDestroy
 //
-procedure TGLShader.OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+procedure TGLShader.OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    FinalizeShader;
    handle:=0;
@@ -3162,7 +3172,7 @@ end;
 
 // OnVirtualHandleAllocate
 //
-procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
+procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    handle:=1;
 end;
@@ -6261,6 +6271,7 @@ function TGLFloatDataImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
 begin
 	if not Assigned(FBitmap) then begin
       FBitmap:=TGLBitmap32.Create;
+      FBitmap.Blank:=true;
       FBitmap.Width:=FWidth;
       FBitmap.Height:=FHeight;
 	end;
@@ -6324,16 +6335,27 @@ begin
 end;
 
 class function TGLFloatDataImage.NativeTextureTarget: TGLUInt;
-{ Note: We still use GL_TEXTURE_RECTANGLE_NV for GL_ATI_texture_float, so that
-        the same Cg shaders (that use SampleRECT) would run with nv30 and nv40. }
+{ Note: It's faster to use GL_TEXTURE_2D instead of GL_TEXTURE_RECTANGLE_NV for
+        nvidia cards (tested on SM3.0) }
 begin
-//   if GL_ATI_texture_float then
-//     Result:=GL_TEXTURE_2D
-//   else
-     Result:=GL_TEXTURE_RECTANGLE_NV;
+     Result:=GL_TEXTURE_2D
 end;
 
+procedure TGLTexture.GetFloatTexImage(RenderingContext : TGLContext; data : pointer);
+begin
+  RenderingContext.Activate;
+  glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, data);
+  RenderingContext.Deactivate;
+end;
 
+procedure TGLTexture.SetFloatTexImage(RenderingContext : TGLContext; data : pointer);
+begin
+  RenderingContext.Activate;
+  glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
+	glTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA_FLOAT16_ATI, TexWidth, TexHeight, 0, GL_RGBA, GL_FLOAT, data);
+  RenderingContext.Deactivate;
+end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

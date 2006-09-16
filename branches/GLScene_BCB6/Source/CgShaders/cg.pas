@@ -12,7 +12,7 @@
 {*  Modified: 14-Mar-2004                                                     *}
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
-{*     http://clootie.narod.ru                                                *}
+{*     http://www.clootie.ru/                                                 *}
 {*                                                                            *}
 {******************************************************************************}
 {                                                                              }

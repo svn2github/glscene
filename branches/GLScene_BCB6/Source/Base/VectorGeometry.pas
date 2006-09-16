@@ -32,8 +32,9 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
       <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
-                          of rcci 
+                          of rcci
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                move PAffineVectorArray, PVectorArray and PMatrixArray to VectorTypes Unit                          
       <li>08/07/04 - LR - Removed ../ from the GLScene.inc
@@ -3323,6 +3324,10 @@ begin
       mov   eax, src1
       mov   edx, src2
       mov   ecx, n
+
+      cmp   ecx, 1
+      jbe   @@End
+
       shr   ecx, 1
       mov   ebx, dest
       mov   edi, pt
@@ -3364,6 +3369,7 @@ begin
 
       db $0F,$0E               /// femms
 
+@@End:
       pop edi
       pop ebx
    end;

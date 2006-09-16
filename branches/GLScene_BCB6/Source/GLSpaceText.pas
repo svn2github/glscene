@@ -151,8 +151,8 @@ type
 	   protected
 			{ Protected Declarations }
          procedure NotifyClients(Clients:TList);
-         procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
-         procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+         procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Cardinal);
+         procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 
 	   public
 			{ Public Declarations }
@@ -561,14 +561,14 @@ end;
 
 // VirtualHandleAlloc
 //
-procedure TFontManager.VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
+procedure TFontManager.VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    handle:=FCurrentBase;
 end;
 
 // VirtualHandleDestroy
 //
-procedure TFontManager.VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+procedure TFontManager.VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Cardinal);
 begin
    if handle<>0 then
       glDeleteLists(handle, sender.Tag);

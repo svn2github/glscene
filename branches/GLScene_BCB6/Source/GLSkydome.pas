@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/06/06 - PvD - Fixed small bug to properly deal with polygon fill
       <li>20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
@@ -840,12 +841,13 @@ var
 begin
    // setup states
    glPushMatrix;
-   glPushAttrib(GL_ENABLE_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_POLYGON_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
+   glPolygonMode(GL_FRONT, GL_FILL);
 
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.90;
@@ -1020,13 +1022,14 @@ var
 begin
    // setup states
    glPushMatrix;
-   glPushAttrib(GL_ENABLE_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_POLYGON_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDisable(GL_ALPHA_TEST);
    glDepthMask(False);
+   glPolygonMode(GL_FRONT, GL_FILL);
 
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.95;

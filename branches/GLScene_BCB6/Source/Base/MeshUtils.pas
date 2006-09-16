@@ -7,6 +7,7 @@
 
 	<b>History : </b><font size=-1><ul>
 
+      <li>29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
       <li>02/08/04 - LR, YHC - Added VectorTypes Unit
       <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
       <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
@@ -410,7 +411,6 @@ procedure RemapReferences(reference : TAffineVectorList;
 var
    i : Integer;
    tag : array of Byte;
-   pTag : PByteArray;
    refListI, refListN : PAffineVector;
    indicesList : PIntegerArray;
 begin
@@ -418,9 +418,8 @@ begin
    SetLength(tag, reference.Count);
    indicesList:=indices.List;
    // 1st step, tag all used references
-   pTag:=@tag[0];
    for i:=0 to indices.Count-1 do
-      pTag[indicesList[i]]:=1;
+      Tag[indicesList[i]]:=1;
    // 2nd step, build remap indices and cleanup references
    refListI:=@reference.List[0];
    refListN:=refListI;
@@ -442,7 +441,6 @@ procedure RemapReferences(reference : TIntegerList;
 var
    i, n : Integer;
    tag : array of Byte;
-   pTag : PByteArray;
    refList : PIntegerArray;
    indicesList : PIntegerArray;
 begin
@@ -450,9 +448,8 @@ begin
    SetLength(tag, reference.Count);
    indicesList:=indices.List;
    // 1st step, tag all used references
-   pTag:=@tag[0];
    for i:=0 to indices.Count-1 do
-      pTag[indicesList[i]]:=1;
+      Tag[indicesList[i]]:=1;
    // 2nd step, build remap indices and cleanup references
    n:=0;
    refList:=reference.List;
