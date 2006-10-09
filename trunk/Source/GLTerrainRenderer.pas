@@ -6,6 +6,7 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
@@ -41,8 +42,10 @@ const
 type
 
    TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
-   TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
-   THeightDataPostRenderEvent = procedure (var rci : TRenderContextInfo; const heightDatas : TList) of object;
+   TPatchPostRenderEvent = procedure(var rci : TRenderContextInfo; const patches : TList) of object;
+   THeightDataPostRenderEvent = procedure(var rci : TRenderContextInfo; const heightDatas : TList) of object;
+   TMaxCLODTrianglesReachedEvent = procedure(var rci:TRenderContextInfo) of object;
+
    TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
    TTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
 
@@ -71,6 +74,8 @@ type
          FOnGetTerrainBounds : TGetTerrainBoundsEvent;
          FOnPatchPostRender : TPatchPostRenderEvent;
          FOnHeightDataPostRender : THeightDataPostRenderEvent;
+         FOnMaxCLODTrianglesReached : TMaxCLODTrianglesReachedEvent;
+
          FQualityStyle : TTerrainHighResStyle;
          FOcclusionFrameSkip : Integer;
          FOcclusionTesselate : TTerrainOcclusionTesselate;
@@ -198,6 +203,12 @@ type
             post-processings, like waters, trees... It is invoked *after*
             OnPatchPostRender. }
          property OnHeightDataPostRender : THeightDataPostRenderEvent read FOnHeightDataPostRender write FOnHeightDataPostRender;
+         {: Invoked whenever the MaxCLODTriangles limit was reached.<p>
+            Unfortunately any changes to MaxCLODTriangles, or CLODPrecision will only affect the next frame.
+         }
+         property OnMaxCLODTrianglesReached : TMaxCLODTrianglesReachedEvent read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
+
+
 	end;
 
 // ------------------------------------------------------------------
@@ -427,6 +438,7 @@ var
    maxTilePosX, maxTilePosY, minTilePosX, minTilePosY : Single;
    t_l, t_t, t_r, t_b : Single;
    hd : THeightData;
+   TessDone:boolean;
 
    procedure ApplyMaterial(const materialName : String);
    begin
@@ -635,7 +647,7 @@ begin
             if    (patch.LastOcclusionTestPassed)
                or (patch.OcclusionCounter<=0)
                or (OcclusionTesselate=totTesselateAlways) then
-               patch.Tesselate;
+                 TessDone:=patch.Tesselate;
          end;
       end;
       if n>=rpIdxDelta then begin
@@ -647,7 +659,13 @@ begin
             Inc(FLastTriangleCount, patch.TriangleCount);
          end;
       end;
+
    end;
+
+   if not TessDone and Assigned(FOnMaxCLODTrianglesReached) then begin
+     FOnMaxCLODTrianglesReached(rci);           //Fire an event if the MaxCLODTriangles limit was reached
+   end;
+
    TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
    xglPushState;
