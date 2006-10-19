@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784
       <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354
       <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
                              Also fixed a TGLLineBase.assign problem (object being assigned to
@@ -969,7 +970,7 @@ const
    B = 0.30901699437; // 1/(1+Sqrt(5))
 const
    vertices : packed array [0..11] of TAffineVector =
-      (( 0,-A,-A), ( 0,-B, A), ( 0, B,-A), ( 0, B, A),
+      (( 0,-B,-A), ( 0,-B, A), ( 0, B,-A), ( 0, B, A),
        (-A, 0,-B), (-A, 0, B), ( A, 0,-B), ( A, 0, B),
        (-B,-A, 0), (-B, A, 0), ( B,-A, 0), ( B, A, 0));
 
