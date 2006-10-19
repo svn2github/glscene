@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>19/10/06 - LC - Fixed bug in TGLActor.SetCurrentFrame. Bugtracker ID=1580511
 	  <li>04/10/06 - PhP - fixed TGLActor.SetCurrentFrame (thanks dikoe)
 	  <li>05/12/05 - PhP - fixed TFGIndexTexCoordList.BuildList (thanks fig) 
       <li>10/11/05 - Mathx - Added LastLoadedFilename to TGLBaseMesh (RFE 955083).
@@ -7133,7 +7134,7 @@ begin
       FCurrentFrame:=val;
     FCurrentFrameDelta:=0;
     case AnimationMode of
-      aamPlayOnce: if CurrentFrame=EndFrame and (FTargetSmoothAnimation = nil) then FAnimationMode:=aamNone;
+      aamPlayOnce: if (CurrentFrame=EndFrame) and (FTargetSmoothAnimation = nil) then FAnimationMode:=aamNone;
       aamBounceForward: if CurrentFrame=EndFrame then FAnimationMode:=aamBounceBackward;
       aamBounceBackward: if CurrentFrame=StartFrame then FAnimationMode:=aamBounceForward;
     end;
