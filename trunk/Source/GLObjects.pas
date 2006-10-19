@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354
       <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
                              Also fixed a TGLLineBase.assign problem (object being assigned to
                              was refering the base lists, not copying them). 
@@ -2089,7 +2090,8 @@ begin
       LinePattern:=TGLLineBase(Source).FLinePattern;
       LineWidth:=TGLLineBase(Source).FLineWidth;
       AntiAliased:=TGLLineBase(Source).FAntiAliased;
-   end else inherited Assign(Source);
+   end;
+   inherited Assign(Source);
 end;
 
 // SetupLineStyle
