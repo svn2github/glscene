@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843
       <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
       <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
       <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
@@ -4803,6 +4804,7 @@ begin
       FTextureOffset.Assign(TGLLibMaterial(Source).TextureOffset);
       FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
       FTexture2Name:=TGLLibMaterial(Source).Texture2Name;
+      FShader := TGLLibMaterial(Source).Shader;
       CalculateTextureMatrix;
 	end else inherited;
 end;
