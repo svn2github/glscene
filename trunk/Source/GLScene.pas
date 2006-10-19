@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Removed unused assignment in TGLSceneBuffer.SaveAsFloatToFile
       <li>13/09/06 - NelC Added TGLSceneBuffer.SaveAsFloatToFile
       <li>12/09/06 - NelC Added roNoDepthBufferClear, support for Multiple-Render-Target
       <li>17/07/06 - PvD - Fixed TGLSceneBuffer.OrthoScreenToWorld sometimes translates screen coordinates incorrectly
@@ -7060,7 +7061,6 @@ const
 begin
    if Assigned(Camera) and Assigned(Camera.Scene) then begin
       DataSize := Width * Height * FloatSize * FloatSize;
-      Data:=nil;
       GetMem(Data, DataSize);
       FRenderingContext.Activate;
       try
