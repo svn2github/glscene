@@ -6,6 +6,7 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
       <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
       <li>25/04/04 - EG - Occlusion testing support
@@ -203,8 +204,9 @@ type
             post-processings, like waters, trees... It is invoked *after*
             OnPatchPostRender. }
          property OnHeightDataPostRender : THeightDataPostRenderEvent read FOnHeightDataPostRender write FOnHeightDataPostRender;
-         {: Invoked whenever the MaxCLODTriangles limit was reached.<p>
-            Unfortunately any changes to MaxCLODTriangles, or CLODPrecision will only affect the next frame.
+         {: Invoked whenever the MaxCLODTriangles limit was reached during last rendering.<p>
+            This forced the terrain renderer to resize the buffer, which affects performance.
+            If this event is fired frequently, one should increase MaxCLODTriangles. 
          }
          property OnMaxCLODTrianglesReached : TMaxCLODTrianglesReachedEvent read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
 
@@ -662,7 +664,7 @@ begin
 
    end;
 
-   if not TessDone and Assigned(FOnMaxCLODTrianglesReached) then begin
+   if (GetROAMTrianglesCapacity > MaxCLODTriangles) and Assigned(FOnMaxCLODTrianglesReached) then begin
      FOnMaxCLODTrianglesReached(rci);           //Fire an event if the MaxCLODTriangles limit was reached
    end;
 
