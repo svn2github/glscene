@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
+                          texture that was never applied. Bugtracker ID=1234085
       <li>19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843
       <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
       <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
@@ -4912,7 +4914,7 @@ begin
       // if multipassing, this will occur upon last pass only
 {      if Assigned(Material.FTextureEx) then begin
          if not Material.TextureEx.IsTextureEnabled(1) then begin}
-            if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
+            if Assigned(libMatTexture2) and GL_ARB_multitexture and (not vSecondTextureUnitForbidden) then begin
                libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
                xglMapTexCoordToMain;
             end;
