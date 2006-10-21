@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/10/06 - LC - Fixed TGLSceneBuffer.OrthoScreenToWorld. Bugtracker ID=1537765
       <li>19/10/06 - LC - Removed unused assignment in TGLSceneBuffer.SaveAsFloatToFile
       <li>13/09/06 - NelC Added TGLSceneBuffer.SaveAsFloatToFile
       <li>12/09/06 - NelC Added roNoDepthBufferClear, support for Multiple-Render-Target
@@ -7271,7 +7272,7 @@ begin
          SetVector(camUp, Camera.AbsoluteUp);
          SetVector(camRight, Camera.AbsoluteRight);
       end;
-      f:=100 / (FCamera.FocalLength*FCamera.SceneScale);
+      f:=100 * FCamera.NearPlaneBias / (FCamera.FocalLength*FCamera.SceneScale);
       if FViewPort.Width>FViewPort.Height then
          f:=f/FViewPort.Width
       else f:=f/FViewPort.Height;
