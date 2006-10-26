@@ -13,8 +13,8 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784
-      <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354
+      <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
+      <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
       <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
                              Also fixed a TGLLineBase.assign problem (object being assigned to
                              was refering the base lists, not copying them). 

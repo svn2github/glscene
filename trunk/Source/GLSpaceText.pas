@@ -2,7 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/10/06 - LC - Added TGLSpaceText.Assign. Bugtracker ID=1576445
+      <li>19/10/06 - LC - Added TGLSpaceText.Assign. Bugtracker ID=1576445 (thanks Zapology)
       <li>16/09/06 - NC - TGLVirtualHandle update (thx Lionel Reynaud)
       <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
       <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)

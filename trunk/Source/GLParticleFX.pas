@@ -10,7 +10,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>19/10/06 - LC - Fixed memory leak in TGLParticleFXManager. Bugtracker ID=1551866
+      <li>19/10/06 - LC - Fixed memory leak in TGLParticleFXManager. Bugtracker ID=1551866 (thanks Dave Gravel)
       <li>08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
                              form but a particleFX still had a reference to it (added
                              the FUsers property). Butracker ID=783625. 
