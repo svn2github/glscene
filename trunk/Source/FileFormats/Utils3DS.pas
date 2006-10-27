@@ -1,6 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+// 27/10/06 - LC - Fixed memory leak in RelMeshObjField. Bugtracker ID=1585639
 // 12/08/02 - EG - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
 unit Utils3DS;
 
@@ -3757,13 +3758,15 @@ begin
   if ((Field and RelMatArray3DS) <> 0) and
      Assigned(Mesh.MatArray)           then
   begin
-    for I := 0 to Mesh.NMats - 1 do
+    for I := 0 to Mesh.NMats - 1 do begin
+      // name is always assigned
+      Mesh.MatArray[I].NameStr:='';
       if Assigned(Mesh.MatArray[I].FaceIndex) then
       begin
         FreeMem(Mesh.MatArray[I].FaceIndex);
         Mesh.MatArray[I].FaceIndex := nil;
-        Mesh.MatArray[I].NameStr:='';
       end;
+    end;
     FreeMem(Mesh.MatArray);
     Mesh.MatArray := nil;
   end;
