@@ -3,6 +3,8 @@
   <p>Spatial partitioning related code that also uses GLScene objects
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/12/06 - DaStranger - Old version of ExtendedFrustumMakeFromSceneViewer function
+                                  restored as an overloaded version of the new one
       <li>04/11/05 - Mathx - Corrections related to bug 1335349
                              (ExtendedFrustumMakeFromSceneViewer supporting more
                              than just regular TGLSceneViewer).  
@@ -35,7 +37,10 @@ type
   {: Create an extended frustum from a GLSceneViewer - this makes the unit
   specific to the windows platform!}
   function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
-        const vWidth, vHeight : integer; AGLCamera : TGLCamera) : TExtendedFrustum; //Changes here!
+        const vWidth, vHeight : integer; AGLCamera : TGLCamera) : TExtendedFrustum; overload;
+
+  function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
+       const AGLSceneViewer : TGLSceneViewer) : TExtendedFrustum; overload;
 
   {: Renders an AABB as a line }
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single); overload;
@@ -109,7 +114,7 @@ begin
   glPopAttrib;
 end;
 
-{function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
+function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
   const AGLSceneViewer : TGLSceneViewer) : TExtendedFrustum; //old version
 begin
   Assert(Assigned(AGLSceneViewer.Camera),'GLSceneViewer must have camera specified!');
@@ -119,7 +124,7 @@ begin
     AGLSceneViewer.FieldOfView,
     AGLSceneViewer.Camera.Position.AsAffineVector,
     AGLSceneViewer.Camera.Direction.AsAffineVector);
-end;}
+end;
 
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
   const vWidth, vHeight : integer; AGLCamera : TGLCamera) : TExtendedFrustum; //changed version
