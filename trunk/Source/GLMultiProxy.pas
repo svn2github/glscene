@@ -2,6 +2,7 @@
 {: Implements a multi-proxy objects, useful for discreet LOD.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
       <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
       <li>25/11/03 - EG - Added per-master visibility boolean
       <li>24/11/03 - EG - Creation
@@ -354,8 +355,8 @@ end;
 //
 destructor TGLMultiProxy.Destroy;
 begin
-   FMasterObjects.Free;
-	inherited Destroy;
+  inherited Destroy;
+  FMasterObjects.Free;
 end;
 
 // Notification
