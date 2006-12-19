@@ -3,7 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>04/10/04 - DaS - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
+      <li>19/12/06 - DaS - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
       <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
       <li>07/01/04 - EG - Introduced TGLStateCache
       <li>05/09/03 - EG - Creation from GLMisc split
