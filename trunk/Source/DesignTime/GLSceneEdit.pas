@@ -2,7 +2,9 @@
 
    Handles all the color and texture stuff.<p>
 
-	<b>History : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul> TGLSceneEditorForm.AddNodes
+  <li>19/12/06 - DaS - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
+                        no longer displayed in the Editor (BugTraker ID = 1585913)
   <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
   <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
@@ -526,6 +528,7 @@ var
   CurrentNode: TTreeNode;
 
 begin
+  if csSubComponent in AObject.ComponentStyle then Exit;
   Result:=Tree.Items.AddChildObject(ANode, AObject.Name, AObject);
   Result.ImageIndex:=ObjectManager.GetImageIndex(TGLSceneObjectClass(AObject.ClassType));
   Result.SelectedIndex:=Result.ImageIndex;
