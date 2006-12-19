@@ -3,7 +3,9 @@
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>03/07/04 - LR - Make change for Linux
+      <li>19/12/06 - DaS - Fixed bug in SetValue, SetValueMin, SetValueMax when
+                           changing these values didn't change the Edit's Text
+      <li>03/07/04 - LR  - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -80,6 +82,7 @@ end;
 procedure TRTrackBarEdit.SetValue(const val : Integer);
 begin
    TrackBar.Position:=val;
+   TrackBarChange(Self);
 end;
 
 // GetValue
@@ -94,6 +97,7 @@ end;
 procedure TRTrackBarEdit.SetValueMax(const val : Integer);
 begin
    TrackBar.Max:=val;
+   TrackBarChange(Self);
 end;
 
 // GetValueMax
@@ -108,6 +112,7 @@ end;
 procedure TRTrackBarEdit.SetValueMin(const val : Integer);
 begin
    TrackBar.Min:=val;
+   TrackBarChange(Self);
 end;
 
 // GetValueMin
