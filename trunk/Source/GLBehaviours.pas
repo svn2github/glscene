@@ -4,7 +4,7 @@
 
 	<b>History : </b><font size=-1><ul>
     <li>19/12/06 - DaS - TGLBAcceleration.Create - creates Inertia right away,
-                        thus displaying it in the XCollection Editor
+                         thus displaying it in the XCollection Editor
                          TGLBAcceleration.DoProgress - raises an exception
                          when required Inertia component is deleted by user
     <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
@@ -12,8 +12,8 @@
     <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
     <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
     <li>10/04/00 - Egg - Improved persistence logic
-		<li>06/04/00 - Egg - Added Damping stuff to inertia
-		<li>05/04/00 - Egg - Creation
+    <li>06/04/00 - Egg - Added Damping stuff to inertia
+    <li>05/04/00 - Egg - Creation
 	</ul></font>
 }
 unit GLBehaviours;
@@ -575,8 +575,9 @@ end;
 constructor TGLBAcceleration.Create(aOwner : TXCollection);
 begin
    inherited;
-   if aOwner <> nil then
-     GetOrCreateInertia(TGLBehaviours(aOwner));
+     if aOwner <> nil then
+       if not (csReading in TComponent(aOwner.Owner).ComponentState) then
+         GetOrCreateInertia(TGLBehaviours(aOwner));
    FAcceleration:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
 end;
 
