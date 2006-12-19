@@ -1,6 +1,6 @@
 object LibMaterialPicker: TLibMaterialPicker
-  Left = 325
-  Top = 93
+  Left = 332
+  Top = 147
   BorderStyle = bsDialog
   Caption = 'LibMaterial Picker'
   ClientHeight = 234
@@ -36,6 +36,7 @@ object LibMaterialPicker: TLibMaterialPicker
     ItemHeight = 13
     TabOrder = 0
     OnClick = LBMaterialsClick
+    OnDblClick = LBMaterialsDblClick
     OnKeyPress = LBMaterialsKeyPress
   end
   object BBOk: TBitBtn
@@ -57,23 +58,30 @@ object LibMaterialPicker: TLibMaterialPicker
   inline MPPreview: TRMaterialPreview
     Left = 152
     Top = 22
+    Width = 202
+    Height = 203
+    AutoSize = True
     TabOrder = 3
     inherited GLScene1: TGLScene
-      inherited Cube: TGLCube
-        Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
-        Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+      inherited World: TGLDummyCube
+        inherited Cube: TGLCube
+          Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
+          Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
+        end
+        inherited Teapot: TGLTeapot
+          Scale.Coordinates = {00000040000000400000004000000000}
+        end
       end
-      inherited Sphere: TGLSphere
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      end
-      inherited LightSource: TGLLightSource
+      inherited Light: TGLDummyCube
         Position.Coordinates = {0000000000004040000020410000803F}
-        Specular.Color = {0000803F0000803F0000803F0000803F}
-      end
-      inherited PlanePattern: TGLPlane
-        Position.Coordinates = {0000000000000000000040C00000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        inherited LightSource: TGLLightSource
+          Position.Coordinates = {0000000000004040000020410000803F}
+          Specular.Color = {0000803F0000803F0000803F0000803F}
+        end
+        inherited FireSphere: TGLSphere
+          Material.FrontProperties.Ambient.Color = {A3A2223FCDCC4C3ECDCC4C3E0000803F}
+          Material.FrontProperties.Emission.Color = {D3D2523FA1A0203F000000000000803F}
+        end
       end
       inherited Camera: TGLCamera
         Position.Coordinates = {0000000000000000000020410000803F}
