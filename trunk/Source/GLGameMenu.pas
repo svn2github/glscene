@@ -6,6 +6,8 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/27/06 - DaStr - TGLGameMenu.MouseMenuSelect bugfixed (thanks to Predator)
+                               http://www.glscene.ru/forum_viewtopic.php?7.12454
       <li>03/27/06 - DaveK - added mouse selection support
       <li>03/03/05 - EG - Creation
    </ul></font>
@@ -460,13 +462,13 @@ end;
 //
 procedure TGLGameMenu.MouseMenuSelect(const X, Y: integer);
 var
-  myIndex: integer;
+  myIndex: Integer;
 begin
   myIndex := -1;
   if (X >= BoxLeft)  and (Y >= MenuTop) and
      (X <= BoxRight) and (Y <= BoxBottom) then
   begin
-    myIndex := (Y-MenuTop) div (Font.CharHeight + Spacing);
+    myIndex := Round((Y - BoxTop) / (Font.CharHeight + Spacing) - 1.0 + Spacing / 100);
   end;
   Selected := myIndex;
 end;
