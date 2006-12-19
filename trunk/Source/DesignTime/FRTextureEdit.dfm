@@ -6,6 +6,9 @@ object RTextureEdit: TRTextureEdit
   ParentShowHint = False
   ShowHint = True
   TabOrder = 0
+  DesignSize = (
+    227
+    162)
   object Label2: TLabel
     Left = 0
     Top = 1
@@ -67,9 +70,6 @@ object RTextureEdit: TRTextureEdit
     ItemHeight = 13
     TabOrder = 0
     OnChange = CBMagFilterChange
-    Items.Strings = (
-      'maNearest'
-      'maLinear')
   end
   object CBMinFilter: TComboBox
     Left = 72
@@ -80,13 +80,6 @@ object RTextureEdit: TRTextureEdit
     ItemHeight = 13
     TabOrder = 1
     OnChange = CBMinFilterChange
-    Items.Strings = (
-      'miNearest'
-      'miLinear'
-      'miNearestMipmapNearest'
-      'miLinearMipmapNearest'
-      'miNearestMipmapLinear'
-      'miLinearMipmapLinear')
   end
   object CBTextureMode: TComboBox
     Left = 72
@@ -97,11 +90,6 @@ object RTextureEdit: TRTextureEdit
     ItemHeight = 13
     TabOrder = 2
     OnChange = CBTextureModeChange
-    Items.Strings = (
-      'tmDecal'
-      'tmModulate'
-      'tmBlend'
-      'tmReplace')
   end
   object CBTextureWrap: TComboBox
     Left = 72
@@ -112,11 +100,6 @@ object RTextureEdit: TRTextureEdit
     ItemHeight = 13
     TabOrder = 3
     OnChange = CBTextureWrapChange
-    Items.Strings = (
-      'twBoth'
-      'twNone'
-      'twVertical'
-      'twHorizontal')
   end
   object CBDisabled: TCheckBox
     Left = 0
@@ -147,10 +130,5 @@ object RTextureEdit: TRTextureEdit
     ItemHeight = 13
     TabOrder = 6
     OnChange = CBImageAlphaChange
-    Items.Strings = (
-      'tiaDefault'
-      'tiaAlphaFromIntensity'
-      'tiaSuperBlackTransparent'
-      'tiaLuminance')
   end
 end
