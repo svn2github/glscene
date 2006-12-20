@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
+                             TGLShader.Apply bugfixed, TGLShader.Assign added
       <li>19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
                           texture that was never applied. Bugtracker ID=1234085
       <li>19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843 (thanks Zapology)
@@ -140,6 +142,7 @@ interface
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses, GLUtils, GLState;
+
 
 type
 	PColorVector = ^TColorVector;
@@ -863,6 +866,7 @@ type
          {: Shader application style (default is ssLowLevel). }
          property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
 
+         procedure Assign(Source: TPersistent); override;
       published
 	      { Published Declarations }
          {: Turns on/off shader application.<p>
@@ -1348,6 +1352,7 @@ type
          //: Gets the primary texture either from material library or the texture property
          function GetActualPrimaryTexture: TGLTexture;
 
+         procedure QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary; const Material: TGLLibMaterial);
 		published
 			{ Published Declarations }
 			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
@@ -1588,7 +1593,9 @@ type
          destructor Destroy; override;
          
          procedure AddColor(const aName: String; const aColor: TColorVector);
-         procedure EnumColors(Proc: TGetStrProc);
+         procedure EnumColors(Proc: TGetStrProc); overload;
+         procedure EnumColors(AValues: TStrings); overload;
+
          function  FindColor(const aName: String): TColorVector;
          {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
          function  GetColor(const aName: String): TColorVector;
@@ -3076,11 +3083,16 @@ end;
 procedure TGLShader.Apply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    Assert(not FShaderActive, 'Unbalanced shader application.');
-   if Enabled then begin
+
+   //Need to check it twice, because shader may refuse to initialize
+   // and choose to disable itself during initialization
+   if FEnabled then
       if FVirtualHandle.Handle=0 then
          InitializeShader;
+
+   if FEnabled then
       DoApply(rci, Sender);
-   end;
+
    FShaderActive:=True;
 end;
 
@@ -3142,6 +3154,19 @@ procedure TGLShader.UnRegisterUser(libMat : TGLLibMaterial);
 begin
    if Assigned(FLibMatUsers) then
       FLibMatUsers.Remove(libMat);
+end;
+
+// Assign
+//
+procedure TGLShader.Assign(Source: TPersistent);
+begin
+  if Source is TGLShader then
+  begin
+    FShaderStyle := TGLShader(Source).FShaderStyle;
+    Enabled := TGLShader(Source).FEnabled;
+  end
+  else
+    inherited Assign(Source);  //to the pit of doom ;)
 end;
 
 // ------------------
@@ -4749,6 +4774,27 @@ begin
    else Result:=Texture;
 end;
 
+// QuickAssignMaterial
+//
+procedure TGLMaterial.QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary; const Material: TGLLibMaterial);
+begin
+  FMaterialLibrary := MaterialLibrary;
+  FLibMaterialName := Material.FName;
+
+  if Material <> CurrentLibMaterial then
+    begin
+    // unregister from old
+    if Assigned(CurrentLibMaterial) then
+      currentLibMaterial.UnregisterUser(Self);
+    CurrentLibMaterial := Material;
+    // register with new
+    if Assigned(CurrentLibMaterial) then
+      CurrentLibMaterial.RegisterUser(Self);
+
+    NotifyTexMapChange(Self);
+    end;
+end;
+
 // ------------------
 // ------------------ TGLLibMaterial ------------------
 // ------------------
@@ -5889,6 +5935,17 @@ begin
       Proc(TColorEntry(Items[i]^).Name);
 end;
 
+// EnumColors
+//
+procedure TGLColorManager.EnumColors(AValues: TStrings);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      AValues.Add(TColorEntry(Items[i]^).Name);
+end;
+
+
 // RegisterDefaultColors
 //
 procedure TGLColorManager.RegisterDefaultColors;
@@ -6294,6 +6351,7 @@ begin
 	glTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA_FLOAT16_ATI, TexWidth, TexHeight, 0, GL_RGBA, GL_FLOAT, data);
   RenderingContext.Deactivate;
 end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
