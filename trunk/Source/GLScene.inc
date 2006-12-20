@@ -3,6 +3,7 @@
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
+// 20/12/06 - DaStr - Added GLS_OPTIMIZATIONS option
 // 08/03/06 - ur - added Delphi 2006 detection
 // 08/07/04 - LR - BCB5 and BCB6 detection
 // 30/08/02 - EG - Delphi 7 detection
@@ -20,6 +21,10 @@
 
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
+
+//Activate support for some optimizations by disabling checks that occur very often
+//Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
+{.$DEFINE GLS_OPTIMIZATIONS}
 
 // De-Activate assembly routine
 {.$DEFINE GEOMETRY_NO_ASM}
