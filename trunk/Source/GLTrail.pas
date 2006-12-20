@@ -21,7 +21,7 @@ uses
   Classes, SysUtils,
   //GLScene
   GLScene, VectorTypes, MeshUtils, VectorGeometry, GLVectorFileObjects,
-  GLMesh, GLObjects, GLMisc,  OpenGL1x, GLTexture
+  GLMesh, GLObjects, GLMisc,  OpenGL1x, GLTexture;
 
 
     const cMaxVerts = 2000;
