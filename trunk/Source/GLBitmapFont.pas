@@ -6,6 +6,8 @@
   Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/12/06 - LC - Fixed TGLCustomBitmapFont.RenderString, it now unbinds the texture.
+                          Bugtracker ID=1619243 (thanks Da Stranger)
       <li>09/03/05 - EG - Fixed space width during rendering
       <li>12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
       <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
@@ -904,6 +906,8 @@ begin
    end;
    glEnd;
    glPopAttrib;
+   // unbind texture
+   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, 0);
    rci.GLStates.ResetGLCurrentTexture;
 end;
 
