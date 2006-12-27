@@ -1,40 +1,37 @@
 object Form1: TForm1
   Left = 217
   Top = 94
-  Width = 469
-  Height = 356
+  Width = 765
+  Height = 496
   Caption = 'Hierarchy and AVI recorder Demo'
   Color = clBtnFace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 320
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Scaled = False
   OnKeyPress = FormKeyPress
   OnResize = FormResize
-  DesignSize = (
-    461
-    327)
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 445
-    Height = 286
+    Left = 6
+    Top = 6
+    Width = 591
+    Height = 406
     Camera = GLCamera1
     Buffer.BackgroundColor = clBtnShadow
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 127.549285888672
   end
   object TrackBar: TTrackBar
-    Left = 8
-    Top = 301
-    Width = 325
-    Height = 25
-    Anchors = [akLeft, akRight, akBottom]
+    Left = 2
+    Top = 418
+    Width = 594
+    Height = 31
     Max = 360
     Orientation = trHorizontal
     PageSize = 10
@@ -49,20 +46,19 @@ object Form1: TForm1
     OnChange = TrackBarChange
   end
   object StaticText1: TStaticText
-    Left = 16
-    Top = 16
-    Width = 45
-    Height = 17
+    Left = 20
+    Top = 20
+    Width = 54
+    Height = 20
     BorderStyle = sbsSingle
     Caption = '??? FPS'
     TabOrder = 2
   end
   object Button1: TButton
-    Left = 346
-    Top = 300
-    Width = 107
-    Height = 25
-    Anchors = [akRight, akBottom]
+    Left = 615
+    Top = 4
+    Width = 132
+    Height = 31
     Caption = 'Record to AVI...'
     TabOrder = 3
     OnClick = Button1Click
@@ -117,7 +113,6 @@ object Form1: TForm1
     Width = 320
     Height = 200
     Compressor = acShowDialog
-    ImageRetrievalMode = irmBitBlt
     OnPostProcessEvent = AVIRecorder1PostProcessEvent
     Left = 16
     Top = 128
