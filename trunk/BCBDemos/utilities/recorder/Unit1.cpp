@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "Unit1.h"
+#include "Keyboard.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLWin32Viewer"
@@ -14,6 +15,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLAVIRecorder"
+#pragma link "Keyboard"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 bool UserAbort;
@@ -114,5 +116,10 @@ void __fastcall TForm1::AVIRecorder1PostProcessEvent(TObject * Sender,
   c->TextOut(20, 20, s);
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormKeyPress(TObject *Sender, char &Key)
+{
+  UserAbort = IsKeyDown(VK_ESCAPE);
+}
 //---------------------------------------------------------------------------
 

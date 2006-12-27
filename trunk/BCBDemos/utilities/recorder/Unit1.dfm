@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 217
   Top = 94
-  Width = 469
-  Height = 356
+  Width = 765
+  Height = 496
   Caption = 'Hierarchy and AVI recorder Demo'
   Color = clBtnFace
   Constraints.MinHeight = 200
@@ -13,26 +13,25 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Scaled = False
+  OnKeyPress = FormKeyPress
   OnResize = FormResize
   PixelsPerInch = 110
   TextHeight = 16
   object GLSceneViewer1: TGLSceneViewer
-    Left = 10
-    Top = 10
-    Width = 548
-    Height = 352
+    Left = 6
+    Top = 6
+    Width = 591
+    Height = 406
     Camera = GLCamera1
     Buffer.BackgroundColor = clBtnShadow
-    Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 120.79109954834
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 127.549285888672
   end
   object TrackBar: TTrackBar
-    Left = 10
-    Top = 370
-    Width = 400
+    Left = 2
+    Top = 418
+    Width = 594
     Height = 31
-    Anchors = [akLeft, akRight, akBottom]
     Max = 360
     Orientation = trHorizontal
     PageSize = 10
@@ -56,11 +55,10 @@ object Form1: TForm1
     TabOrder = 2
   end
   object Button1: TButton
-    Left = 426
-    Top = 369
+    Left = 615
+    Top = 4
     Width = 132
     Height = 31
-    Anchors = [akRight, akBottom]
     Caption = 'Record to AVI...'
     TabOrder = 3
     OnClick = Button1Click
