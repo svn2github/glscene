@@ -5,6 +5,7 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/01/06 - LC - Fixed TGLExtrusionSolid texuring. Bugtracker ID=1619318
       <li>02/11/01 - Egg - TGLPipe.BuildList now has a "persistent" cache
       <li>25/11/01 - Egg - TGLPipe nodes can now be colored
       <li>19/07/01 - Egg - Fix in TGLRevolutionSolid due to RotateAround change
@@ -1135,6 +1136,7 @@ var
       topTPBase, topTPNext, bottomTPBase, bottomTPNext : TTexPoint;
       ptBuffer : TAffineVector;
       angle: Double;
+      dir: TAffineVector;
    begin
       // to invert normals, we just need to flip top & bottom
       if invertNormals then begin
@@ -1144,12 +1146,10 @@ var
       end;
       // generate triangle strip for a level
       // TODO : support for triangle fans (when ptTop or ptBottom is on the Y Axis)
-      topTPBase.S:=0;         bottomTPBase.S:=0;
+//      topTPBase.S:=0;         bottomTPBase.S:=0;
       topTPBase.T:=topT;      bottomTPBase.T:=bottomT;
       topBase:=ptTop;
       bottomBase:=ptBottom;
-      //topBase[2]:=FHeight;
-      //bottomBase[2]:=FHeight;
       CalcNormal(topBase,bottomBase,normal);
       if (FNormals=nsFlat) then
          lastNormal:=normal
@@ -1166,6 +1166,14 @@ var
          normTop:=lastNormal;
          normBottom:=normal;
       end;
+
+      dir:= VectorNormalize(VectorSubtract(bottomBase, topBase));
+
+      topTPBase.S:= VectorDotProduct(topBase, dir);
+      topTPBase.T:= topBase[2];
+      bottomTPBase.S:= VectorDotProduct(bottomBase, dir);
+      bottomTPBase.T:= bottomBase[2];
+
       lastNormal:=normal;
       topNext:=topBase;
       bottomNext:=bottomBase;
@@ -1179,10 +1187,10 @@ var
          glNormal3fv(@normBottom);
          xglTexCoord2fv(@bottomTPBase);
          glVertex3fv(@bottomBase);
-         topTPNext.S:=step*deltaS;
-         bottomTPNext.S:=step*deltaS;
          topNext[2]:=step*DeltaZ;
          bottomNext[2]:=topNext[2];
+         topTPNext.T:=topNext[2];
+         bottomTPNext.T:=bottomNext[2];
          xglTexCoord2fv(@topTPNext);
          glNormal3fv(@normTop);
          glVertex3fv(@topNext);
