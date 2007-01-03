@@ -4,6 +4,9 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
+                            missing texture exception handling, normals are built on load,
+                            support for more facegroup types added.
       <li>02/01/07 - fig - Added SavetoStream() and Capabilities function.
       <li>02/01/07 - PvD - Dealing with non empty material libraries.
       <li>02/01/07 - PvD - Mirrored mesh in X to original orientation.
@@ -20,9 +23,9 @@ uses Windows,
     Classes,
     SysUtils,
     GLVectorFileObjects,
-    TGA,
-    JPEG,
-    ApplicationFileIO;
+    ApplicationFileIO,
+    vectorlists,
+    vectorgeometry;
 
 const
     C_LMTS_ID = $53544D4C;
@@ -118,10 +121,15 @@ var
     NBT: Integer;
     LLI: Integer;
     MLI: Integer;
+    fname: string;
+    vi: Tintegerlist;
+    i, j: integer;
 begin
 
     MO := TMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
+
+    vi := TIntegerlist.create;
 
     LLI := 0;
     MLI := 0;
@@ -162,22 +170,60 @@ begin
             begin
                 if Assigned(ML) then
                 begin
-                    with ML.AddTextureMaterial(T.FName, T.FName) do
-                    begin
-                        Material.Texture.TextureMode := tmModulate;
+                    try
+                        fname := changefileext(T.Fname, '.tga');
+                        if not fileexists(fname) then
+                        begin
+                            fname := changefileext(fname, '.jpg');
+                            if not fileexists(fname) then
+                            begin
+                                fname := changefileext(fname, '.png');
+                                if not fileexists(fname) then
+                                    fname := changefileext(fname, '.bmp');
+                            end;
+                        end;
+
+                        with ML.AddTextureMaterial(fname, fname) do
+                            Material.Texture.TextureMode := tmModulate;
+                    except
+                        on E: ETexture do
+                        begin
+                            if not Owner.IgnoreMissingTextures then
+                                raise;
+                        end;
                     end;
+                    Inc(NBT);
                 end;
-                Inc(NBT);
             end
             else
                 if Assigned(LL) then
                 begin
-                    with LL.AddTextureMaterial(T.FName, T.FName).Material.Texture do
-                    begin
-                        MinFilter := miLinear;
-                        TextureWrap := twNone;
-                        TextureFormat := tfRGB;
-                        TextureMode := tmModulate;
+                    try
+                        fname := changefileext(T.Fname, '.tga');
+                        if not fileexists(fname) then
+                        begin
+                            fname := changefileext(fname, '.jpg');
+                            if not fileexists(fname) then
+                            begin
+                                fname := changefileext(fname, '.png');
+                                if not fileexists(fname) then
+                                    fname := changefileext(fname, '.bmp');
+                            end;
+                        end;
+
+                        with LL.AddTextureMaterial(fname, fname).Material.Texture do
+                        begin
+                            MinFilter := miLinear;
+                            TextureWrap := twNone;
+                            TextureFormat := tfRGB;
+                            TextureMode := tmModulate;
+                        end;
+                    except
+                        on E: ETexture do
+                        begin
+                            if not Owner.IgnoreMissingTextures then
+                                raise;
+                        end;
                     end;
                 end;
         end;
@@ -191,7 +237,9 @@ begin
             aStream.Read(S, LMTS.header.subSize);
             FG := TFGVertexIndexList.CreateOwned(MO.FaceGroups);
             FG.Mode := fgmmTriangles;
-            FG.VertexIndices.AddSerie(S.Offset * 3, 1, S.Count * 3);
+            fg.vertexindices.AddSerie(s.Offset * 3, 1, s.Count * 3);
+            vi.AddSerie(s.Offset * 3, 1, s.Count * 3);
+
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
                 FG.MaterialName := ML.Materials[S.TextID1 + MLI].Name;
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
@@ -206,7 +254,6 @@ begin
             raise Exception.Create('Vertex data not found');
         for c := 0 to Integer(LMTS.header.nTris) - 1 do
         begin
-
             aStream.Read(V[0], LMTS.header.vtxSize);
             aStream.Read(V[1], LMTS.header.vtxSize);
             aStream.Read(V[2], LMTS.header.vtxSize);
@@ -223,6 +270,8 @@ begin
             MO.TexCoords.Add(V[1].u1, -V[1].v1);
             MO.LightmapTexCoords.Add(V[1].u2, 1 - V[1].v2);
         end;
+        mo.BuildNormals(vi, momtriangles);
+        vi.free;
     except
         MO.Free;
     end;
@@ -243,7 +292,7 @@ var
     tris: array of TLMTS_Vertex;
     _4cc: cardinal;
     matname: string;
-    ss:integer;
+    ss: integer;
 begin
     c := 0;
     lmstartindex := maxint;
@@ -293,7 +342,7 @@ begin
 
     if lmstartindex = maxint then
         lmstartindex := 0; //cool, lightmaps start from the first index
-    ss:=0;
+    ss := 0;
     for i := 0 to Owner.MeshObjects.count - 1 do
     begin
         mo := owner.meshobjects[i];
@@ -322,30 +371,42 @@ begin
                 begin
                     with v[l] do
                     begin
+                        //vertex
                         x := -mo.Vertices[fg.VertexIndices[k + l]][0];
                         y := mo.Vertices[fg.VertexIndices[k + l]][1];
                         z := mo.Vertices[fg.VertexIndices[k + l]][2];
 
-                        if mo.texcoords.count > fg.VertexIndices[k + l] then
+                        //texcoords
+                        u1 := 0;
+                        v1 := 0;
+                        if fg is TFGVertexNormalTexIndexList then
                         begin
-                            u1 := mo.Texcoords[fg.VertexIndices[k + l]][0];
-                            v1 := -mo.Texcoords[fg.VertexIndices[k + l]][1];
+                            if mo.texcoords.count > TFGVertexNormalTexIndexList(fg).texcoordIndices[k + l] then
+                            begin
+                                u1 := mo.Texcoords[TFGVertexNormalTexIndexList(fg).texcoordIndices[k + l]][0];
+                                v1 := -mo.Texcoords[TFGVertexNormalTexIndexList(fg).texcoordIndices[k + l]][1];
+                            end;
                         end
                         else
-                        begin
-                            u1 := 0;
-                            v1 := 0;
-                        end;
+                            if fg is TFGIndexTexCoordList then
+                            begin
+                                u1 := TFGIndexTexCoordList(fg).Texcoords[k + l][0];
+                                v1 := -TFGIndexTexCoordList(fg).Texcoords[k + l][1];
+                            end
+                            else
+                                if mo.texcoords.count > fg.VertexIndices[k + l] then
+                                begin
+                                    u1 := mo.Texcoords[fg.VertexIndices[k + l]][0];
+                                    v1 := -mo.Texcoords[fg.VertexIndices[k + l]][1];
+                                end;
 
+                        //lightmap texcoords
+                        u2 := 0;
+                        v2 := 0;
                         if mo.LightmapTexcoords.count > fg.VertexIndices[k + l] then
                         begin
                             u2 := mo.LightmapTexcoords[fg.VertexIndices[k + l]].s;
                             v2 := 1 - mo.LightmapTexcoords[fg.VertexIndices[k + l]].t;
-                        end
-                        else
-                        begin
-                            u2 := 0;
-                            v2 := 0;
                         end;
                     end;
                 end;
