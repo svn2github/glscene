@@ -4,7 +4,8 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
-        <li>06/01/07 - fig -  Strip all facegroup.materialname file extentions on load/save
+        <li>07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
+        <li>06/01/07 - fig -  Strip all texture file extentions on load/save
         <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
                             missing texture exception handling, normals are built on load,
                             support for more facegroup types added.
@@ -170,6 +171,10 @@ begin
                 if Assigned(ML) then
                 begin
                     try
+                        fname:=T.Fname;
+                        if lastdelimiter('.',FName)<>length(FName)-3 then
+                            FName:=FName+'.aaa';
+
                         fname := changefileext(T.Fname, '.tga');
                         if not fileexists(fname) then
                         begin
@@ -198,7 +203,11 @@ begin
                 if Assigned(LL) then
                 begin
                     try
-                        fname := changefileext(T.Fname, '.tga');
+                        fname:=T.Fname;
+                        if lastdelimiter('.',Fname)<>length(FName)-3 then
+                            FName:=FName+'.aaa';
+
+                        fname := changefileext(FName, '.tga');
                         if not fileexists(fname) then
                         begin
                             fname := changefileext(fname, '.jpg');
@@ -240,7 +249,12 @@ begin
             vi.AddSerie(s.Offset * 3, 1, s.Count * 3);
 
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
-                FG.MaterialName := changefileext(ML.Materials[S.TextID1 + MLI].Name, '');
+            begin
+                FG.MaterialName := ML.Materials[S.TextID1 + MLI].Name;
+                if lastdelimiter('.',FG.MaterialName)=length(FG.MaterialName)-3 then
+                    FG.MaterialName:=changefileext(FG.MaterialName, '');
+            end;
+
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
                 if LL = ML then
                     FG.LightMapIndex := LL.Materials[S.TextID2].ID + LLI
@@ -302,10 +316,14 @@ begin
         begin
             fg := TfgVertexIndexList(mo.facegroups[j]);
 
+            matname:=fg.materialname;
+            if lastdelimiter('.',matname)=length(matname)-3 then
+                matname:=changefileext(matname, '');
+
             //no duplicate textures please
             matindex := -1;
             for k := 0 to high(texdata) do
-                if texdata[k].FName = fg.materialname then
+                if texdata[k].FName = matname then
                 begin
                     matindex := k;
                     break;
@@ -317,7 +335,8 @@ begin
                 with texdata[high(texdata)] do
                 begin
                     matindex := high(texdata);
-                    strpcopy(pchar(@FName), changefileext(fg.materialname, ''));
+
+                    strpcopy(pchar(@FName), matname);
                     Flags := 0;
                 end;
 
@@ -328,7 +347,7 @@ begin
             setlength(subsets, length(subsets) + 1);
             with subsets[high(subsets)] do
             begin
-                if (fg.MaterialName <> '') then
+                if (matname <> '') then
                     TextID1 := matindex
                 else
                     TextID1 := $FFFF;
@@ -432,7 +451,9 @@ begin
                 fg := TfgVertexIndexList(mo.facegroups[j]);
                 if fg.lightmapindex > -1 then
                 begin
-                    matname := changefileext(owner.LightmapLibrary.materials[fg.lightmapindex].name, '');
+                    matname := owner.LightmapLibrary.materials[fg.lightmapindex].name;
+                    if lastdelimiter('.',matname)=length(matname)-3 then
+                      matname:=changefileext(matname, '');
                     //no duplicate textures please
                     matindex := -1;
                     for k := c to high(texdata) do
