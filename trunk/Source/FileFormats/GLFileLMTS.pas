@@ -4,14 +4,15 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
+        <li>06/01/07 - fig -  Strip all facegroup.materialname file extentions on load/save
+        <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
                             missing texture exception handling, normals are built on load,
                             support for more facegroup types added.
-      <li>02/01/07 - fig - Added SavetoStream() and Capabilities function.
-      <li>02/01/07 - PvD - Dealing with non empty material libraries.
-      <li>02/01/07 - PvD - Mirrored mesh in X to original orientation.
-      <li>01/01/07 - Dave Gravel - Modification to make it work.
-      <li>10/09/03 - Domin - Creation
+        <li>02/01/07 - fig - Added SavetoStream() and Capabilities function.
+        <li>02/01/07 - PvD - Dealing with non empty material libraries.
+        <li>02/01/07 - PvD - Mirrored mesh in X to original orientation.
+        <li>01/01/07 - Dave Gravel - Modification to make it work.
+        <li>10/09/03 - Domin - Creation
    </ul><p>
 }
 unit GLFileLMTS;
@@ -123,9 +124,7 @@ var
     MLI: Integer;
     fname: string;
     vi: Tintegerlist;
-    i, j: integer;
 begin
-
     MO := TMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
 
@@ -183,7 +182,7 @@ begin
                             end;
                         end;
 
-                        with ML.AddTextureMaterial(fname, fname) do
+                        with ML.AddTextureMaterial(changefileext(Fname, ''), fname) do
                             Material.Texture.TextureMode := tmModulate;
                     except
                         on E: ETexture do
@@ -211,7 +210,7 @@ begin
                             end;
                         end;
 
-                        with LL.AddTextureMaterial(fname, fname).Material.Texture do
+                        with LL.AddTextureMaterial(changefileext(Fname, ''), fname).Material.Texture do
                         begin
                             MinFilter := miLinear;
                             TextureWrap := twNone;
@@ -241,7 +240,7 @@ begin
             vi.AddSerie(s.Offset * 3, 1, s.Count * 3);
 
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
-                FG.MaterialName := ML.Materials[S.TextID1 + MLI].Name;
+                FG.MaterialName := changefileext(ML.Materials[S.TextID1 + MLI].Name, '');
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
                 if LL = ML then
                     FG.LightMapIndex := LL.Materials[S.TextID2].ID + LLI
@@ -318,7 +317,7 @@ begin
                 with texdata[high(texdata)] do
                 begin
                     matindex := high(texdata);
-                    strpcopy(pchar(@FName), fg.materialname);
+                    strpcopy(pchar(@FName), changefileext(fg.materialname, ''));
                     Flags := 0;
                 end;
 
@@ -433,7 +432,7 @@ begin
                 fg := TfgVertexIndexList(mo.facegroups[j]);
                 if fg.lightmapindex > -1 then
                 begin
-                    matname := owner.LightmapLibrary.materials[fg.lightmapindex].name;
+                    matname := changefileext(owner.LightmapLibrary.materials[fg.lightmapindex].name, '');
                     //no duplicate textures please
                     matindex := -1;
                     for k := c to high(texdata) do
