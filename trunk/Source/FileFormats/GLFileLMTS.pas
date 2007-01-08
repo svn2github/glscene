@@ -172,7 +172,7 @@ begin
                 begin
                     try
                         fname:=T.Fname;
-                        if lastdelimiter('.',FName)<>length(FName)-4 then
+                        if lastdelimiter('.',FName)<>length(FName)-3 then
                             FName:=FName+'.aaa';
 
                         fname := changefileext(T.Fname, '.tga');
@@ -204,7 +204,7 @@ begin
                 begin
                     try
                         fname:=T.Fname;
-                        if lastdelimiter('.',Fname)<>length(FName)-4 then
+                        if lastdelimiter('.',Fname)<>length(FName)-3 then
                             FName:=FName+'.aaa';
 
                         fname := changefileext(FName, '.tga');
@@ -251,7 +251,7 @@ begin
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
             begin
                 FG.MaterialName := ML.Materials[S.TextID1 + MLI].Name;
-                if lastdelimiter('.',FG.MaterialName)=length(FG.MaterialName)-4 then
+                if lastdelimiter('.',FG.MaterialName)=length(FG.MaterialName)-3 then
                     FG.MaterialName:=changefileext(FG.MaterialName, '');
             end;
 
@@ -317,7 +317,7 @@ begin
             fg := TfgVertexIndexList(mo.facegroups[j]);
 
             matname:=fg.materialname;
-            if lastdelimiter('.',matname)=length(matname)-4 then
+            if lastdelimiter('.',matname)=length(matname)-3 then
                 matname:=changefileext(matname, '');
 
             //no duplicate textures please
@@ -452,7 +452,7 @@ begin
                 if fg.lightmapindex > -1 then
                 begin
                     matname := owner.LightmapLibrary.materials[fg.lightmapindex].name;
-                    if lastdelimiter('.',matname)=length(matname)-4 then
+                    if lastdelimiter('.',matname)=length(matname)-3 then
                       matname:=changefileext(matname, '');
                     //no duplicate textures please
                     matindex := -1;
