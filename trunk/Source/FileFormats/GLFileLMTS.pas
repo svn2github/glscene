@@ -4,6 +4,7 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
         <li>07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
         <li>06/01/07 - fig -  Strip all texture file extentions on load/save
         <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
@@ -120,26 +121,23 @@ var
     S: TLMTS_Subset;
     _4cc: cardinal;
     C: integer;
-    NBT: Integer;
-    LLI: Integer;
-    MLI: Integer;
     fname: string;
     vi: Tintegerlist;
+    libmat: TGLLibmaterial;
+    lmnames, matnames: TStringlist;
 begin
+    owner.MeshObjects.Clear;
+
     MO := TMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
 
     vi := TIntegerlist.create;
 
-    LLI := 0;
-    MLI := 0;
-
     LL := Owner.LightmapLibrary;
-    if assigned(LL) then
-        LLI := LL.Materials.Count;
     ML := Owner.MaterialLibrary;
-    if assigned(ML) then
-        MLI := ML.Materials.Count;
+
+    lmnames := TStringlist.create;
+    matnames := TStringlist.create;
 
     try
         // read header...
@@ -162,78 +160,85 @@ begin
         if (_4cc <> C_LMTS_TEXT) then
             raise Exception.Create('Texture data not found');
 
-        NBT := 0;
         for C := 0 to LMTS.header.nTexts - 1 do
         begin
             aStream.Read(T, SizeOf(TLMTS_TexData));
             if T.Flags = 0 then
             begin
-                if Assigned(ML) then
+                fname := T.Fname;
+                if lastdelimiter('.', FName) <> length(FName) - 3 then
+                    FName := FName + '.aaa';
+                matnames.add(changefileext(Fname, ''));
+                if Assigned(ML) and (trim(T.Fname) <> '') then
                 begin
                     try
-                        fname:=T.Fname;
-                        if lastdelimiter('.',FName)<>length(FName)-3 then
-                            FName:=FName+'.aaa';
-
-                        fname := changefileext(T.Fname, '.tga');
-                        if not fileexists(fname) then
+                        libmat := ML.Materials.GetLibMaterialByName(changefileext(Fname, ''));
+                        if not assigned(libmat) then
                         begin
-                            fname := changefileext(fname, '.jpg');
+                            fname := changefileext(FName, '.tga');
                             if not fileexists(fname) then
                             begin
-                                fname := changefileext(fname, '.png');
+                                fname := changefileext(fname, '.jpg');
                                 if not fileexists(fname) then
-                                    fname := changefileext(fname, '.bmp');
+                                begin
+                                    fname := changefileext(fname, '.png');
+                                    if not fileexists(fname) then
+                                        fname := changefileext(fname, '.bmp');
+                                end;
                             end;
+                            with ML.AddTextureMaterial(changefileext(Fname, ''), fname) do
+                                Material.Texture.TextureMode := tmModulate;
                         end;
-
-                        with ML.AddTextureMaterial(changefileext(Fname, ''), fname) do
-                            Material.Texture.TextureMode := tmModulate;
                     except
-                    {    on E: ETexture do
-                        begin
-                            if not Owner.IgnoreMissingTextures then
-                                raise;
-                        end; }
+                        {    on E: ETexture do
+                            begin
+                                if not Owner.IgnoreMissingTextures then
+                                    raise;
+                            end; }
                     end;
-                    Inc(NBT);
                 end;
             end
             else
-                if Assigned(LL) then
+            begin
+                fname := T.Fname;
+                if lastdelimiter('.', Fname) <> length(FName) - 3 then
+                    FName := FName + '.aaa';
+                lmnames.add(changefileext(Fname, ''));
+                if Assigned(LL) and (trim(T.Fname) <> '') then
                 begin
                     try
-                        fname:=T.Fname;
-                        if lastdelimiter('.',Fname)<>length(FName)-3 then
-                            FName:=FName+'.aaa';
-
-                        fname := changefileext(FName, '.tga');
-                        if not fileexists(fname) then
+                        libmat := ML.Materials.GetLibMaterialByName(changefileext(Fname, ''));
+                        if not assigned(libmat) then
                         begin
-                            fname := changefileext(fname, '.jpg');
+                            fname := changefileext(FName, '.tga');
                             if not fileexists(fname) then
                             begin
-                                fname := changefileext(fname, '.png');
+                                fname := changefileext(fname, '.jpg');
                                 if not fileexists(fname) then
-                                    fname := changefileext(fname, '.bmp');
+                                begin
+                                    fname := changefileext(fname, '.png');
+                                    if not fileexists(fname) then
+                                        fname := changefileext(fname, '.bmp');
+                                end;
+                            end;
+
+                            with LL.AddTextureMaterial(changefileext(Fname, ''), fname).Material.Texture do
+                            begin
+                                MinFilter := miLinear;
+                                TextureWrap := twNone;
+                                TextureFormat := tfRGB;
+                                TextureMode := tmModulate;
                             end;
                         end;
-
-                        with LL.AddTextureMaterial(changefileext(Fname, ''), fname).Material.Texture do
-                        begin
-                            MinFilter := miLinear;
-                            TextureWrap := twNone;
-                            TextureFormat := tfRGB;
-                            TextureMode := tmModulate;
-                        end;
                     except
-                      {  on E: ETexture do
-                        begin
-                            if not Owner.IgnoreMissingTextures then
-                                raise;
-                        end;  }
+                        {  on E: ETexture do
+                          begin
+                              if not Owner.IgnoreMissingTextures then
+                                  raise;
+                          end;  }
                     end;
                 end;
+            end;
         end;
 
         // read subset data...
@@ -250,16 +255,17 @@ begin
 
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
             begin
-                FG.MaterialName := ML.Materials[S.TextID1 + MLI].Name;
-                if lastdelimiter('.',FG.MaterialName)=length(FG.MaterialName)-3 then
-                    FG.MaterialName:=changefileext(FG.MaterialName, '');
+                libmat := ml.Materials.GetLibMaterialByName(matnames[S.TextID1]);
+                if assigned(libmat) then
+                    fg.MaterialName := libmat.Name;
             end;
 
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
-                if LL = ML then
-                    FG.LightMapIndex := LL.Materials[S.TextID2].ID + LLI
-                else
-                    FG.LightMapIndex := LL.Materials[S.TextID2 - NBT + LLI].ID;
+            begin
+                libmat := ll.Materials.GetLibMaterialByName(lmnames[S.TextID2 - matnames.count]);
+                if assigned(libmat) then
+                    fg.lightmapindex := libmat.Index;
+            end;
         end;
         // read vertex data...
         aStream.Read(_4cc, SizeOf(_4cc));
@@ -285,7 +291,11 @@ begin
         end;
         mo.BuildNormals(vi, momtriangles);
         vi.free;
+        matnames.free;
+        lmnames.free;
     except
+        matnames.free;
+        lmnames.free;
         MO.Free;
     end;
 end;
@@ -316,9 +326,9 @@ begin
         begin
             fg := TfgVertexIndexList(mo.facegroups[j]);
 
-            matname:=fg.materialname;
-            if lastdelimiter('.',matname)=length(matname)-3 then
-                matname:=changefileext(matname, '');
+            matname := fg.materialname;
+            if lastdelimiter('.', matname) = length(matname) - 3 then
+                matname := changefileext(matname, '');
 
             //no duplicate textures please
             matindex := -1;
@@ -452,8 +462,8 @@ begin
                 if fg.lightmapindex > -1 then
                 begin
                     matname := owner.LightmapLibrary.materials[fg.lightmapindex].name;
-                    if lastdelimiter('.',matname)=length(matname)-3 then
-                      matname:=changefileext(matname, '');
+                    if lastdelimiter('.', matname) = length(matname) - 3 then
+                        matname := changefileext(matname, '');
                     //no duplicate textures please
                     matindex := -1;
                     for k := c to high(texdata) do
