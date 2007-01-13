@@ -1,11 +1,20 @@
 unit Unit1;
 
+{:
+  History:
+  13/01/07 - Da Stranger - Added a FPS counter
+  30/11/06 - Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
+                         -  Added the CenterBranchConstant TrackBar to
+                            use the new functions of TGLTree.
+}
+
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLTree, GLTexture,
-  ExtCtrls, ComCtrls, StdCtrls, GLVectorFileObjects, Menus, ExtDlgs;
+  ExtCtrls, ComCtrls, StdCtrls, GLVectorFileObjects, Menus, ExtDlgs,
+  AsyncTimer, GLCadencer;
 
 type
   TForm1 = class(TForm)
@@ -63,6 +72,10 @@ type
     SaveDialog3: TSaveDialog;
     ExportMaterialLibrary1: TMenuItem;
     OpenPictureDialog1: TOpenPictureDialog;
+    Label13: TLabel;
+    TrackBar12: TTrackBar;
+    AsyncTimer1: TAsyncTimer;
+    GLCadencer1: TGLCadencer;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -90,6 +103,10 @@ type
     procedure CheckBox1Click(Sender: TObject);
     procedure TrackBar11Change(Sender: TObject);
     procedure ExportMaterialLibrary1Click(Sender: TObject);
+    procedure TrackBar12Change(Sender: TObject);
+    procedure AsyncTimer1Timer(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Private declarations }
   public
@@ -125,18 +142,21 @@ begin
   Edit1.Text:=IntToStr(GLTree1.Seed);
   CheckBox1.Checked:=GLTree1.CentralLeader;
   TrackBar11.Position:=Round(GLTree1.CentralLeaderBias*100);
+  GLTree1.AutoRebuild:=True;
+  GLTree1.RebuildTree;
 end;
 
 procedure TForm1.NewTree;
 begin
   GLTree1.Free;
   GLTree1:=TGLTree(GLScene1.Objects.AddNewChild(TGLTree));
+  GLTree1.AutoRebuild := False;
   with GLTree1 do begin
     MaterialLibrary:=GLMaterialLibrary1;
     LeafMaterialName:='LeafFront';
     LeafBackMaterialName:='LeafBack';
     BranchMaterialName:='Branch';
-    Depth:=8;
+    Depth:=6;
     LeafSize:=0.2;
     BranchRadius:=0.08;
     BranchNoise:=0.5;
@@ -169,7 +189,6 @@ begin
 
   // Set a up a tree
   NewTree;
-
 end;
 
 // Camera controls
@@ -333,6 +352,22 @@ begin
   with GLMaterialLibrary1.Materials.GetLibMaterialByName('Branch') do
     Material.Texture.Image.LoadFromFile(OpenPictureDialog1.FileName);
   GLTree1.StructureChanged;
+end;
+
+procedure TForm1.TrackBar12Change(Sender: TObject);
+begin
+  GLTree1.CenterBranchConstant:=TrackBar12.Position/100;
+end;
+
+procedure TForm1.AsyncTimer1Timer(Sender: TObject);
+begin
+  Caption := 'GLTree Editor - ' + GLSceneViewer1.FramesPerSecondText;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+  GLSceneViewer1.Invalidate;
 end;
 
 end.

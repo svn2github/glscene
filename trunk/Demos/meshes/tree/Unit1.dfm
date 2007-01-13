@@ -22,6 +22,7 @@ object Form1: TForm1
     Width = 575
     Height = 523
     Camera = GLCamera1
+    FieldOfView = 158.350875854492200000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -35,42 +36,42 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 8
-      Top = 112
+      Top = 100
       Width = 62
       Height = 13
       Caption = 'Branch Twist'
     end
     object Label2: TLabel
       Left = 8
-      Top = 32
+      Top = 24
       Width = 29
       Height = 13
       Caption = 'Depth'
     end
     object Label3: TLabel
       Left = 8
-      Top = 152
+      Top = 138
       Width = 64
       Height = 13
       Caption = 'Branch Angle'
     end
     object Label4: TLabel
       Left = 8
-      Top = 192
+      Top = 176
       Width = 87
       Height = 13
       Caption = 'Branch Angle Bias'
     end
     object Label5: TLabel
       Left = 8
-      Top = 232
+      Top = 214
       Width = 57
       Height = 13
       Caption = 'Branch Size'
     end
     object Label6: TLabel
       Left = 8
-      Top = 272
+      Top = 250
       Width = 70
       Height = 13
       Caption = 'Branch Radius'
@@ -98,15 +99,15 @@ object Form1: TForm1
     end
     object Label10: TLabel
       Left = 8
-      Top = 72
+      Top = 62
       Width = 69
       Height = 13
       Caption = 'Branch Facets'
       FocusControl = GLSceneViewer1
     end
     object Label11: TLabel
-      Left = 8
-      Top = 8
+      Left = 14
+      Top = 2
       Width = 111
       Height = 16
       Caption = 'Tree properties'
@@ -119,25 +120,32 @@ object Form1: TForm1
     end
     object Label12: TLabel
       Left = 8
-      Top = 312
+      Top = 320
       Width = 68
       Height = 13
       Caption = 'Random Seed'
     end
+    object Label13: TLabel
+      Left = 8
+      Top = 284
+      Width = 113
+      Height = 13
+      Caption = 'Center Branch Constant'
+    end
     object TrackBar1: TTrackBar
       Left = 8
-      Top = 48
+      Top = 38
       Width = 137
       Height = 17
-      Max = 15
-      Position = 10
+      Max = 11
+      Position = 5
       TabOrder = 0
       ThumbLength = 10
       OnChange = TrackBar1Change
     end
     object TrackBar2: TTrackBar
       Left = 8
-      Top = 128
+      Top = 114
       Width = 137
       Height = 17
       Max = 180
@@ -149,7 +157,7 @@ object Form1: TForm1
     end
     object TrackBar3: TTrackBar
       Left = 8
-      Top = 168
+      Top = 152
       Width = 137
       Height = 17
       Max = 100
@@ -161,7 +169,7 @@ object Form1: TForm1
     end
     object TrackBar4: TTrackBar
       Left = 8
-      Top = 208
+      Top = 190
       Width = 137
       Height = 17
       Max = 100
@@ -173,7 +181,7 @@ object Form1: TForm1
     end
     object TrackBar5: TTrackBar
       Left = 8
-      Top = 248
+      Top = 228
       Width = 137
       Height = 17
       Max = 100
@@ -185,7 +193,7 @@ object Form1: TForm1
     end
     object TrackBar6: TTrackBar
       Left = 8
-      Top = 288
+      Top = 264
       Width = 137
       Height = 17
       Max = 25
@@ -233,7 +241,7 @@ object Form1: TForm1
     end
     object TrackBar10: TTrackBar
       Left = 8
-      Top = 88
+      Top = 76
       Width = 137
       Height = 17
       Min = 3
@@ -244,14 +252,14 @@ object Form1: TForm1
     end
     object Edit1: TEdit
       Left = 8
-      Top = 328
+      Top = 336
       Width = 105
       Height = 21
       TabOrder = 10
     end
     object Button1: TButton
       Left = 117
-      Top = 328
+      Top = 336
       Width = 21
       Height = 21
       Caption = 'S'
@@ -279,6 +287,18 @@ object Form1: TForm1
       ThumbLength = 10
       TickStyle = tsManual
       OnChange = TrackBar11Change
+    end
+    object TrackBar12: TTrackBar
+      Left = 8
+      Top = 298
+      Width = 137
+      Height = 17
+      Max = 100
+      Position = 50
+      TabOrder = 14
+      ThumbLength = 10
+      TickStyle = tsManual
+      OnChange = TrackBar12Change
     end
   end
   object GLScene1: TGLScene
@@ -399,6 +419,20 @@ object Form1: TForm1
   end
   object OpenPictureDialog1: TOpenPictureDialog
     Left = 192
+    Top = 40
+  end
+  object AsyncTimer1: TAsyncTimer
+    Enabled = True
+    OnTimer = AsyncTimer1Timer
+    ThreadPriority = tpNormal
+    Left = 224
+    Top = 40
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    Mode = cmApplicationIdle
+    OnProgress = GLCadencer1Progress
+    Left = 256
     Top = 40
   end
 end
