@@ -33,6 +33,8 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
+                             Deleted types that were duplicated  (BugTrackerID = 1586318),
+                             some other types moved to VectorTypes unit
       <li>07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
       <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
                           of rcci
@@ -235,12 +237,10 @@ type
    //                          w -> 3
 
    PHomogeneousByteVector = ^THomogeneousByteVector;
-   THomogeneousByteVector = array[0..3] of Byte;
-   TVector4b = THomogeneousByteVector;
+   THomogeneousByteVector = TVector4b;
 
    PHomogeneousWordVector = ^THomogeneousWordVector;
-   THomogeneousWordVector = array[0..3] of Word;
-   TVector4w = THomogeneousWordVector;
+   THomogeneousWordVector = TVector4w;
 
    PHomogeneousIntVector = ^THomogeneousIntVector;
    THomogeneousIntVector = TVector4i;
@@ -252,20 +252,16 @@ type
    THomogeneousDblVector = TVector4d;
 
    PHomogeneousExtVector = ^THomogeneousExtVector;
-   THomogeneousExtVector = array[0..3] of Extended;
-   TVector4e = THomogeneousExtVector;
+   THomogeneousExtVector = TVector4e;
 
    PHomogeneousPtrVector = ^THomogeneousPtrVector;
-   THomogeneousPtrVector = array[0..3] of Pointer;
-   TVector4p = THomogeneousPtrVector;
+   THomogeneousPtrVector = TVector4p;
 
    PAffineByteVector = ^TAffineByteVector;
-   TAffineByteVector = array[0..2] of Byte;
-   TVector3b = TAffineByteVector;
+   TAffineByteVector = TVector3b;
 
    PAffineWordVector = ^TAffineWordVector;
-   TAffineWordVector = array[0..2] of Word;
-   TVector3w = TAffineWordVector;
+   TAffineWordVector = TVector3w;
 
    PAffineIntVector = ^TAffineIntVector;
    TAffineIntVector = TVector3i;
@@ -277,12 +273,10 @@ type
    TAffineDblVector = TVector3d;
 
    PAffineExtVector = ^TAffineExtVector;
-   TAffineExtVector = array[0..2] of Extended;
-   TVector3e = TAffineExtVector;
+   TAffineExtVector = TVector3e;
 
    PAffinePtrVector = ^TAffinePtrVector;
-   TAffinePtrVector = array[0..2] of Pointer;
-   TVector3p = TAffinePtrVector;
+   TAffinePtrVector = TVector3p;
 
    // some simplified names
    PVector = ^TVector;
@@ -295,7 +289,7 @@ type
    TAffineVector = TVector3f;
 
    PVertex    = ^TVertex;
-	TVertex    = TAffineVector;
+   TVertex    = TAffineVector;
 
    // arrays of vectors
    PAffineVectorArray = ^TAffineVectorArray;
@@ -304,12 +298,11 @@ type
    PVectorArray = ^TVectorArray;
    TVectorArray = array[0..MAXINT shr 5] of TVector;
 
-	PTexPointArray = ^TTexPointArray;
-	TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
+   PTexPointArray = ^TTexPointArray;
+   TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
 
    // matrices
-   THomogeneousByteMatrix = array[0..3] of THomogeneousByteVector;
-   TMatrix4b = THomogeneousByteMatrix;
+   THomogeneousByteMatrix = TMatrix4b;
 
    THomogeneousWordMatrix = array[0..3] of THomogeneousWordVector;
    TMatrix4w = THomogeneousWordMatrix;
@@ -323,8 +316,7 @@ type
    THomogeneousExtMatrix = array[0..3] of THomogeneousExtVector;
    TMatrix4e = THomogeneousExtMatrix;
 
-   TAffineByteMatrix = array[0..2] of TAffineByteVector;
-   TMatrix3b = TAffineByteMatrix;
+   TAffineByteMatrix = TMatrix3b;
 
    TAffineWordMatrix = array[0..2] of TAffineWordVector;
    TMatrix3w = TAffineWordMatrix;
