@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
       <li>07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
       <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
                           of rcci
@@ -1279,6 +1280,11 @@ function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
                             intersectPoint : PVector = nil) : Integer; overload;
 
+{: Compute intersection between a triangle and a box.<p>
+   Returns True if an intersection was found. }
+function IntersectTriangleBox(
+  const p1, p2, p3, aMinExtent, aMaxExtent : TAffineVector): Boolean;
+
 {: Compute intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
    in intersectPoint is the reference is not nil. }
@@ -1309,6 +1315,13 @@ function RayCastSphereIntersect(const rayStart, rayVector : TVector;
                                 const sphereCenter : TVector;
                                 const sphereRadius : Single;
                                 var i1, i2 : TVector) : Integer; overload;
+{: Compute intersection between a ray and a box.<p>
+  Returns True if an intersection was found, the intersection point is
+  placed in intersectPoint if the reference is not nil.}
+function RayCastBoxIntersect(
+  const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
+  intersectPoint : PAffineVector = nil) : Boolean;
+
 {: Computes the visible radius of a sphere in a perspective projection.<p>
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
@@ -8846,6 +8859,67 @@ begin
    Result:=0;
 end;
 
+// RayCastBoxIntersect
+//
+function RayCastBoxIntersect(
+  const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
+  intersectPoint : PAffineVector = nil) : Boolean;
+var
+  i, planeInd            : Integer;
+  ResAFV, MaxDist, Plane : TAffineVector;
+  isMiddle               : array [0..2] of Boolean;
+begin
+    // Find plane.
+  Result := True;
+  for i := 0 to 2 do
+    if          rayStart[i] < aMinExtent[i] then begin
+      Plane[i]    := aMinExtent[i];
+      isMiddle[i] := False;
+      Result      := False;
+    end else if rayStart[i] > aMaxExtent[i] then begin
+      Plane[i]    := aMaxExtent[i];
+      isMiddle[i] := False;
+      Result      := False;
+    end else begin
+      isMiddle[i] := True;
+    end;
+  if Result then begin
+      // rayStart inside box.
+    if intersectPoint <> nil
+      then intersectPoint^ := rayStart;
+	end else begin
+      // Distance to plane.
+    planeInd := 0;
+    for i := 0 to 2 do
+      if    isMiddle[i]
+         or (rayVector[i] = 0)
+      then MaxDist[i] := -1
+      else begin
+         MaxDist[i] := (Plane[i] -rayStart[i]) / rayVector[i];
+         if MaxDist[i] > 0 then begin
+           if MaxDist[planeInd] < MaxDist[i]
+             then planeInd := i;
+           Result := True;
+         end;
+      end;
+      // Inside box ?
+    if Result then begin
+      for i := 0 to 2 do
+        if planeInd = i
+        then ResAFV[i] := Plane[i]
+        else begin
+          ResAFV[i] := rayStart[i] +MaxDist[planeInd] *rayVector[i];
+          Result :=     (ResAFV[i] >= aMinExtent[i])
+                    and (ResAFV[i] <= aMaxExtent[i]);
+          if not Result then exit;
+        end;
+      if intersectPoint <> nil
+        then intersectPoint^ := ResAFV;
+    end;
+  end;
+end;
+
+
 // SphereVisibleRadius
 //
 function SphereVisibleRadius(distance, radius : Single) : Single;
@@ -8891,6 +8965,79 @@ begin
       end;
       Result:=1;
    end;
+end;
+
+// TriangleBoxIntersect
+//
+function IntersectTriangleBox(
+  const p1, p2, p3, aMinExtent, aMaxExtent : TAffineVector): Boolean;
+var
+  RayDir, iPoint         : TAffineVector;
+  BoxDiagPt, BoxDiagPt2,
+  BoxDiagDir, iPnt       : TVector;
+begin
+    // Triangle edge (p2, p1) - Box intersection
+  VectorSubtract(p2, p1, RayDir);
+  Result := RayCastBoxIntersect(p1, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p1, iPoint))
+              < VectorNorm(VectorSubtract(p1, p2    ));
+  if Result then exit;
+
+    // Triangle edge (p3, p1) - Box intersection
+  VectorSubtract(p3, p1, RayDir);
+  Result := RayCastBoxIntersect(p1, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p1, iPoint))
+              < VectorNorm(VectorSubtract(p1, p3    ));
+  if Result then exit;
+
+    // Triangle edge (p2, p3) - Box intersection
+  VectorSubtract(p2, p3, RayDir);
+  Result := RayCastBoxIntersect(p3, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p3, iPoint))
+              < VectorNorm(VectorSubtract(p3, p2    ));
+  if Result then exit;
+
+
+    // Triangle - Box diagonal 1 intersection
+  BoxDiagPt := VectorMake(aMinExtent);
+  VectorSubtract(aMaxExtent, aMinExtent, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(BoxDiagPt , iPnt      ))
+              < VectorNorm(VectorSubtract(aMaxExtent, aMinExtent));
+  if Result then exit;
+
+    // Triangle - Box diagonal 2 intersection
+  BoxDiagPt  := VectorMake(aMinExtent[0], aMinExtent[1], aMaxExtent[2]);
+  BoxDiagPt2 := VectorMake(aMaxExtent[0], aMaxExtent[1], aMinExtent[2]);
+  VectorSubtract(BoxDiagPt2, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(BoxDiagPt, iPnt      ))
+              < VectorNorm(VectorSubtract(BoxDiagPt, BoxDiagPt2));
+  if Result then exit;
+
+    // Triangle - Box diagonal 3 intersection
+  BoxDiagPt  := VectorMake(aMinExtent[0], aMaxExtent[1], aMinExtent[2]);
+  BoxDiagPt2 := VectorMake(aMaxExtent[0], aMinExtent[1], aMaxExtent[2]);
+  VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorLength(VectorSubtract(BoxDiagPt, iPnt     ))
+              < VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
+  if Result then exit;
+
+    // Triangle - Box diagonal 4 intersection
+  BoxDiagPt  := VectorMake(aMaxExtent[0], aMinExtent[1], aMinExtent[2]);
+  BoxDiagPt2 := VectorMake(aMinExtent[0], aMaxExtent[1], aMaxExtent[2]);
+  VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=  VectorLength(VectorSubtract(BoxDiagPt, iPnt     ))
+              < VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
 end;
 
 // ExtractFrustumFromModelViewProjection
