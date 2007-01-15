@@ -4,6 +4,7 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>15/01/07 - fig -  Added checks in the loader for invalid material indices.  LMTools can return meshes like this for some reason.
         <li>14/01/07 - fig -  Material/facegroup name is now changed to the available filename instead of stripping the extention.
         <li>12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
         <li>07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
@@ -166,44 +167,41 @@ begin
             aStream.Read(T, SizeOf(TLMTS_TexData));
             if T.Flags = 0 then
             begin
-
                 if Assigned(ML) and (trim(T.fName) <> '') then
                 begin
+                    fName := T.fName;
                     try
-                        libmat := ML.Materials.GetLibMaterialByName(T.fName);
-                        if not assigned(libmat) then
+                        if lastdelimiter('.', fName) <> length(fName) - 3 then
+                            fName := fName + '.tga'
+                        else
+                            fName := changefileext(fName, '.tga');
+                        if not fileexists(fName) then
                         begin
-                            fName := T.fName;
-                            if lastdelimiter('.', fName) <> length(fName) - 3 then
-                                fName := fName + '.tga'
-                            else
-                                fName := changefileext(fName, '.tga');
+                            fName := changefileext(fName, '.jpg');
                             if not fileexists(fName) then
                             begin
-                                fName := changefileext(fName, '.jpg');
+                                fName := changefileext(fName, '.png');
                                 if not fileexists(fName) then
                                 begin
-                                    fName := changefileext(fName, '.png');
+                                    fName := changefileext(fName, '.bmp');
                                     if not fileexists(fName) then
                                     begin
-                                        fName := changefileext(fName, '.bmp');
-                                        if not fileexists(fName) then
-                                        begin
-                                           fName := T.fName;
-                                         //  fName:=fName+' (missing)';
-                                        end;
-
+                                        fName := T.fName;
+                                        //  fName:=fName+' (missing)';
                                     end;
+
                                 end;
                             end;
+                        end;
+                        libmat := ML.Materials.GetLibMaterialByName(fName);
+                        if not assigned(libmat) then
+                        begin
                             with ML.AddTextureMaterial(fName, fName) do
                                 Material.Texture.TextureMode := tmModulate;
-                            matnames.add(fName);
-                        end
-                        else
-                            matnames.add(T.fName);
+                        end;
+                        matnames.add(fName);
                     except
-                        matnames.add(T.fName);
+                        matnames.add(fName);
                         {    on E: ETexture do
                             begin
                                 if not Owner.IgnoreMissingTextures then
@@ -218,34 +216,33 @@ begin
             begin
                 if Assigned(LL) and (trim(T.fName) <> '') then
                 begin
+                    fName := T.fName;
                     try
-                        libmat := LL.Materials.GetLibMaterialByName(T.fName);
-                        if not assigned(libmat) then
+                        if lastdelimiter('.', fName) <> length(fName) - 3 then
+                            fName := fName + '.tga'
+                        else
+                            fName := changefileext(fName, '.tga');
+                        if not fileexists(fName) then
                         begin
-                            fName := T.fName;
-                            if lastdelimiter('.', fName) <> length(fName) - 3 then
-                                fName := fName + '.tga'
-                            else
-                                fName := changefileext(fName, '.tga');
+                            fName := changefileext(fName, '.jpg');
                             if not fileexists(fName) then
                             begin
-                                fName := changefileext(fName, '.jpg');
+                                fName := changefileext(fName, '.png');
                                 if not fileexists(fName) then
                                 begin
-                                    fName := changefileext(fName, '.png');
+                                    fName := changefileext(fName, '.bmp');
                                     if not fileexists(fName) then
                                     begin
-                                        fName := changefileext(fName, '.bmp');
-                                        if not fileexists(fName) then
-                                        begin
-                                           fName := T.fName;
-                                           //fName:=fName+' (missing)';
-                                        end;
+                                        fName := T.fName;
+                                        //fName:=fName+' (missing)';
                                     end;
-
                                 end;
-                            end;
 
+                            end;
+                        end;
+                        libmat := LL.Materials.GetLibMaterialByName(fName);
+                        if not assigned(libmat) then
+                        begin
                             with LL.AddTextureMaterial(fName, fName).Material.Texture do
                             begin
                                 MinFilter := miLinear;
@@ -253,12 +250,10 @@ begin
                                 TextureFormat := tfRGB;
                                 TextureMode := tmModulate;
                             end;
-                            lmnames.add(fName);
-                        end
-                        else
-                            lmnames.add(T.fName);
+                        end;
+                        lmnames.add(fName);
                     except
-                        lmnames.add(T.fName);
+                        lmnames.add(fName);
                         {  on E: ETexture do
                           begin
                               if not Owner.IgnoreMissingTextures then
@@ -285,16 +280,22 @@ begin
 
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
             begin
+                if (S.TextID1<matnames.count) and (S.TextID1>-1) then
+                begin
                 libmat := ml.Materials.GetLibMaterialByName(matnames[S.TextID1]);
                 if assigned(libmat) then
                     fg.MaterialName := libmat.Name;
+                end;
             end;
 
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
             begin
+                if (S.TextID2 - matnames.count<lmnames.count) and (S.TextID2 - matnames.count>-1) then
+                begin
                 libmat := ll.Materials.GetLibMaterialByName(lmnames[S.TextID2 - matnames.count]);
                 if assigned(libmat) then
                     fg.lightmapindex := libmat.Index;
+                end;
             end;
         end;
         // read vertex data...
