@@ -6,6 +6,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/01/07 - DaStr - Added TDoubleList 
       <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
       <li>22/08/03 - EG - Faster FastQuickSortLists
@@ -437,6 +438,56 @@ type
          {: Computes the sum of all elements. }
          function  Sum : Single;
 	end;
+
+   TDoubleArrayList = array [0..MaxInt shr 4] of Double;
+   PDoubleArrayList = ^TDoubleArrayList;
+
+	{: A list of Double.<p>
+		Similar to TList, but using Double as items.<p>
+      The list has stack-like push/pop methods. }
+	TDoubleList = class (TBaseList)
+		private
+         { Private Declarations }
+			FList : PDoubleArrayList;
+
+		protected
+         { Protected Declarations }
+			function  Get(Index: Integer) : Double;
+			procedure Put(Index: Integer; const item : Double);
+			procedure SetCapacity(NewCapacity: Integer); override;
+
+		public
+         { Public Declarations }
+			constructor Create; override;
+			procedure Assign(Src : TPersistent); override;
+
+			function Add(const item : Double) : Integer;
+			procedure Push(const val : Double);
+			function Pop : Double;
+			procedure Insert(Index : Integer; const item : Double);
+
+			property Items[Index: Integer] : Double read Get write Put; default;
+			property List : PDoubleArrayList read FList;
+
+         procedure AddSerie(aBase, aDelta : Double; aCount : Integer);
+         
+         {: Adds delta to all items in the list. }
+	      procedure Offset(delta : Double); overload;
+         {: Adds to each item the corresponding item in the delta list.<p>
+            Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+            If both lists don't have the same item count, an exception is raised. }
+         procedure Offset(const delta : TDoubleList); overload;
+         {: Multiplies all items by factor. }
+	      procedure Scale(factor : Double);
+         {: Square all items. }
+         procedure Sqr;
+         {: SquareRoot all items. }
+         procedure Sqrt;
+
+         {: Computes the sum of all elements. }
+         function  Sum : Double;
+	end;
+
 
   	// TByteList
 	//
@@ -2553,6 +2604,195 @@ begin
    inherited;
    FList:=PByteArray(FBaseList);
 end;
+
+// ------------------
+// ------------------ TDoubleList ------------------
+// ------------------
+
+// Create
+//
+constructor TDoubleList.Create;
+begin
+   FItemSize:=SizeOf(Double);
+	inherited Create;
+	FGrowthDelta:=cDefaultListGrowthDelta;
+end;
+
+// Assign
+//
+procedure TDoubleList.Assign(Src : TPersistent);
+begin
+	if Assigned(Src) then begin
+      inherited;
+		if (Src is TDoubleList) then
+			System.Move(TDoubleList(Src).FList^, FList^, FCount*SizeOf(Double));
+	end else Clear;
+end;
+
+// Add
+//
+function TDoubleList.Add(const item : Double): Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then
+      SetCapacity(FCapacity+FGrowthDelta);
+	FList[Result]:=Item;
+  	Inc(FCount);
+end;
+
+// Get
+//
+function TDoubleList.Get(Index : Integer) : Double;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$endif}
+	Result := FList[Index];
+end;
+
+// Insert
+//
+procedure TDoubleList.Insert(Index : Integer; const Item : Double);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+	if FCount=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
+	if Index<FCount then
+		System.Move(FList[Index], FList[Index + 1],
+						(FCount-Index)*SizeOf(Double));
+	FList[Index]:=Item;
+	Inc(FCount);
+end;
+
+// Put
+//
+procedure TDoubleList.Put(Index : Integer; const Item : Double);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+	FList[Index] := Item;
+end;
+
+// SetCapacity
+//
+procedure TDoubleList.SetCapacity(NewCapacity : Integer);
+begin
+   inherited;
+   FList:=PDoubleArrayList(FBaseList);
+end;
+
+// Push
+//
+procedure TDoubleList.Push(const val : Double);
+begin
+	Add(val);
+end;
+
+// Pop
+//
+function TDoubleList.Pop : Double;
+begin
+	if FCount>0 then begin
+		Result:=Get(FCount-1);
+		Delete(FCount-1);
+	end else Result:=0;
+end;
+
+// AddSerie
+//
+procedure TDoubleList.AddSerie(aBase, aDelta : Double; aCount : Integer);
+var
+   list : PDouble;
+   i : Integer;
+begin
+   if aCount<=0 then Exit;
+   AdjustCapacityToAtLeast(Count+aCount);
+   list:=@FList[Count];
+   for i:=Count to Count+aCount-1 do begin
+      list^:=aBase;
+      Inc(list);
+      aBase:=aBase+aDelta;
+   end;
+   FCount:=Count+aCount;
+end;
+
+// Offset (Double)
+//
+procedure TDoubleList.Offset(delta : Double);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      FList[I]:=FList[I]+delta;
+end;
+
+// Offset (list)
+//
+procedure TDoubleList.Offset(const delta : TDoubleList);
+var
+   i : Integer;
+begin
+   if FCount=delta.FCount then
+     for i:=0 to Count-1 do
+       FList[I]:=FList[I]+delta[I]
+   else raise Exception.Create('DoubleList count do not match');
+end;
+
+// Scale
+//
+procedure TDoubleList.Scale(factor : Double);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      FList[I]:=FList[I]*factor;
+end;
+
+// Sqr
+//
+procedure TDoubleList.Sqr;
+var
+   i : Integer;
+   locList : PDoubleArrayList;
+begin
+   locList:=FList;
+   for i:=0 to Count-1 do
+      locList[i]:=locList[i]*locList[i];
+end;
+
+// Sqrt
+//
+procedure TDoubleList.Sqrt;
+var
+   i : Integer;
+   locList : PDoubleArrayList;
+begin
+   locList:=FList;
+   for i:=0 to Count-1 do
+      locList[i]:=System.Sqrt(locList[i]);
+end;
+
+// Sum
+//
+function TDoubleList.Sum : Double;
+
+   function ComputeSum(list : PDoubleArrayList; nb : Integer) : Double; register;
+   asm
+         fld   dword ptr [eax]
+   @@Loop:
+         dec   edx
+         fadd  dword ptr [eax+edx*4]
+         jnz   @@Loop
+   end;
+
+begin
+   if FCount>0 then
+      Result:=ComputeSum(FList, FCount)
+   else Result:=0;
+end;
+
 
 // ------------------
 // ------------------ TQuaternionList ------------------
