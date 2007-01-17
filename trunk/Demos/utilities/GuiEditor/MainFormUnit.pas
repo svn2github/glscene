@@ -9,6 +9,7 @@
    result might become blurred by the mipmap... Reason unknown.<br>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/01/07 - DaStr - Fixed calls to GUIComponentDialog function (thanks Andreas)
       <li>19/09/02 - JAJ - Submitted to GLScene. Open/Save/Import + Edit/Preview.
 	</ul></font>
 }
@@ -20,7 +21,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, GLMisc, GLGui, StdCtrls, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont, ExtDlgs,
-  GLTexture;
+  GLTexture, GuiSkinEditorFormUnit;
 
 type
   TForm1 = class(TForm)
@@ -156,7 +157,7 @@ begin
   GLScene1.BeginUpdate;
   try
     If ListBox.ItemIndex >= 0 then
-    GLGui.GUIComponentDialog((ListBox.Items.Objects[ListBox.ItemIndex] as TGLGuiComponent).Elements)
+    GUIComponentDialog((ListBox.Items.Objects[ListBox.ItemIndex] as TGLGuiComponent).Elements)
   finally
     GLScene1.EndUpdate;
     Show;
@@ -210,7 +211,7 @@ end;
 procedure TForm1.Edit2Click(Sender: TObject);
 begin
   If ListBox.ItemIndex >= 0 then
-  GLGui.GUIComponentDialog((ListBox.Items.Objects[ListBox.ItemIndex] as TGLGuiComponent).Elements)
+  GUIComponentDialog((ListBox.Items.Objects[ListBox.ItemIndex] as TGLGuiComponent).Elements)
 end;
 
 procedure TForm1.ListBoxClick(Sender: TObject);
