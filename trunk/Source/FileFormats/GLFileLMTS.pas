@@ -4,6 +4,7 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>15/01/07 - fig -  If available, material data is now imported/exported.
         <li>15/01/07 - fig -  Added checks in the loader for invalid material indices.  LMTools can return meshes like this for some reason.
         <li>14/01/07 - fig -  Material/facegroup name is now changed to the available filename instead of stripping the extention.
         <li>12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
@@ -30,7 +31,9 @@ uses Windows,
     GLVectorFileObjects,
     ApplicationFileIO,
     vectorlists,
-    vectorgeometry;
+    vectorgeometry,
+    gltexture,
+    glutils;
 
 const
     C_LMTS_ID = $53544D4C;
@@ -85,6 +88,20 @@ type
         ok: boolean;
     end;
 
+    TMaterialInfo = record
+        FShininess, BShininess: TShininess;
+        FAmbient, FDiffuse, FEmission, FSpecular,
+            BAmbient, BDiffuse, BEmission, BSpecular: TVector;
+        ImageAlpha: TGLTextureImageAlpha;
+        magFilter: TGLMagFilter;
+        minFilter: TGLMinFilter;
+        TextureMode: TGLTextureMode;
+        TextureWrap: TGLTextureWrap;
+        Blendingmode: TBlendingMode;
+        FaceCulling: TFaceCulling;
+        mathash: integer;
+    end;
+
     TGLLMTSVectorFile = class(TVectorFile)
     public
         class function Capabilities: TDataFileCapabilities; override;
@@ -96,9 +113,7 @@ type
 
 implementation
 
-uses GLUtils,
-    GLTexture,
-    GLMisc;
+uses GLMisc;
 
 // Capabilities
 //
@@ -127,6 +142,10 @@ var
     vi: Tintegerlist;
     libmat: TGLLibmaterial;
     lmnames, matnames: TStringlist;
+    MatInfoHeader:array[0..3] of char;
+    MatInfoCount:integer;
+    Matinfo:array of TMaterialInfo;
+    i,j:integer;
 begin
     owner.MeshObjects.Clear;
 
@@ -140,7 +159,7 @@ begin
 
     lmnames := TStringlist.create;
     matnames := TStringlist.create;
-
+    MatInfoCount:=0;
     try
         // read header...
         aStream.Read(LMTS.header, SizeOf(TLMTS_Header));
@@ -154,11 +173,35 @@ begin
 
         // read "user" data - actually skip this data...
         LMTS.usrSize := LMTS.header.headerSize - SizeOf(TLMTS_Header);
-        if (LMTS.usrSize > 0) then
-            aStream.Seek(LMTS.usrSize, soFromCurrent);
+        if (LMTS.usrSize > 7) then
+        begin
+            aStream.Read(MatInfoHeader,4);
+            if MatInfoheader='MATI' then
+            begin
+                astream.read(MatInfoCount,4);
+                if MatInfoCount>0 then
+                begin
+                    setlength(matinfo,MatInfoCount);
+                    for i := 0 to MatInfoCount - 1 do
+                    begin
+                        astream.Read(matinfo[i],sizeof(matinfo[i]));
+                    end;
+                end;
+                if LMTS.usrSize>((MatInfoCount*sizeof(TMaterialInfo))+8) then
+                begin
+                    LMTS.usrSize:=LMTS.usrSize-((MatInfoCount*sizeof(TMaterialInfo))+8);
+                    aStream.Seek(LMTS.usrSize, soFromCurrent);
+                end;
+            end
+            else
+                aStream.Seek(LMTS.usrSize-4, soFromCurrent);
+        end
+        else
+            if (LMTS.usrSize > 0) then
+                aStream.Seek(LMTS.usrSize, soFromCurrent);
 
-        // read texture filenames data...
-        aStream.Read(_4cc, SizeOf(_4cc));
+                // read texture filenames data...
+                aStream.Read(_4cc, SizeOf(_4cc));
         if (_4cc <> C_LMTS_TEXT) then
             raise Exception.Create('Texture data not found');
 
@@ -266,6 +309,44 @@ begin
             end;
         end;
 
+        for i := 0 to MatInfoCount - 1 do
+        begin
+            libmat:=nil;
+            for j := 0 to owner.MaterialLibrary.Materials.count - 1 do
+                if owner.MaterialLibrary.Materials[j].NameHashKey=matinfo[i].mathash then
+                begin
+                    libmat:= owner.MaterialLibrary.Materials[j];
+                    break;
+                end;
+
+            if assigned(libmat) then
+            begin
+                with matinfo[i] do
+                begin
+                    libmat.Material.FrontProperties.Shininess:=FShininess;
+                    libmat.Material.BackProperties.Shininess:=BShininess;
+                    libmat.Material.FrontProperties.Ambient.Color:=FAmbient;
+                    libmat.Material.FrontProperties.Diffuse.Color:=FDiffuse;
+                    libmat.Material.FrontProperties.Emission.Color:=FEmission;
+                    libmat.Material.FrontProperties.Specular.Color:=FSpecular;
+
+                    libmat.Material.BackProperties.Ambient.Color:=BAmbient;
+                    libmat.Material.BackProperties.Diffuse.Color:=BDiffuse;
+                    libmat.Material.BackProperties.Emission.Color:=BEmission ;
+                    libmat.Material.BackProperties.Specular.Color:=BSpecular;
+
+                    libmat.Material.Texture.ImageAlpha:=ImageAlpha;
+                    libmat.Material.Texture.MagFilter:=magFilter;
+                    libmat.Material.Texture.MinFilter:=minFilter;
+                    libmat.Material.Texture.TextureMode:=TextureMode;
+                    libmat.Material.Texture.TextureWrap:=TextureWrap;
+                    libmat.Material.BlendingMode:=Blendingmode;
+                    libmat.Material.FaceCulling:=faceculling;
+                end;
+            end;
+        end;
+            
+
         // read subset data...
         aStream.Read(_4cc, SizeOf(_4cc));
         if (_4cc <> C_LMTS_SUBS) then
@@ -280,21 +361,21 @@ begin
 
             if Assigned(ML) and (S.TextID1 <> $FFFF) then
             begin
-                if (S.TextID1<matnames.count) and (S.TextID1>-1) then
+                if (S.TextID1 < matnames.count) and (S.TextID1 > -1) then
                 begin
-                libmat := ml.Materials.GetLibMaterialByName(matnames[S.TextID1]);
-                if assigned(libmat) then
-                    fg.MaterialName := libmat.Name;
+                    libmat := ml.Materials.GetLibMaterialByName(matnames[S.TextID1]);
+                    if assigned(libmat) then
+                        fg.MaterialName := libmat.Name;
                 end;
             end;
 
             if Assigned(LL) and (S.TextID2 <> $FFFF) then
             begin
-                if (S.TextID2 - matnames.count<lmnames.count) and (S.TextID2 - matnames.count>-1) then
+                if (S.TextID2 - matnames.count < lmnames.count) and (S.TextID2 - matnames.count > -1) then
                 begin
-                libmat := ll.Materials.GetLibMaterialByName(lmnames[S.TextID2 - matnames.count]);
-                if assigned(libmat) then
-                    fg.lightmapindex := libmat.Index;
+                    libmat := ll.Materials.GetLibMaterialByName(lmnames[S.TextID2 - matnames.count]);
+                    if assigned(libmat) then
+                        fg.lightmapindex := libmat.Index;
                 end;
             end;
         end;
@@ -324,6 +405,7 @@ begin
         vi.free;
         matnames.free;
         lmnames.free;
+        setlength(Matinfo,0);
     except
         matnames.free;
         lmnames.free;
@@ -347,6 +429,9 @@ var
     _4cc: cardinal;
     matname: string;
     ss: integer;
+    matinfo: array of TMaterialInfo;
+    MatInfoCount:integer;
+    libmat: TGLLibMaterial;
 begin
     c := 0;
     lmstartindex := maxint;
@@ -479,6 +564,42 @@ begin
         end;
     end;
 
+    //store the material properties..
+    if assigned(owner.MaterialLibrary) then
+    begin
+        for i := 0 to high(texdata) do
+        begin
+            libmat := owner.MaterialLibrary.Materials.GetLibMaterialByName(texdata[i].fName);
+            if assigned(libmat) then
+            begin
+                setlength(matinfo, length(matinfo) + 1);
+                with matinfo[high(matinfo)] do
+                begin
+                    FShininess := libmat.Material.FrontProperties.Shininess;
+                    BShininess := libmat.Material.BackProperties.Shininess;
+                    FAmbient := libmat.Material.FrontProperties.Ambient.Color;
+                    FDiffuse := libmat.Material.FrontProperties.Diffuse.Color;
+                    FEmission := libmat.Material.FrontProperties.Emission.Color;
+                    FSpecular := libmat.Material.FrontProperties.Specular.Color;
+
+                    BAmbient := libmat.Material.BackProperties.Ambient.Color;
+                    BDiffuse := libmat.Material.BackProperties.Diffuse.Color;
+                    BEmission := libmat.Material.BackProperties.Emission.Color;
+                    BSpecular := libmat.Material.BackProperties.Specular.Color;
+
+                    ImageAlpha := libmat.Material.Texture.ImageAlpha;
+                    magFilter := libmat.Material.Texture.MagFilter;
+                    minFilter := libmat.Material.Texture.MinFilter;
+                    TextureMode := libmat.Material.Texture.TextureMode;
+                    TextureWrap := libmat.Material.Texture.TextureWrap;
+                    Blendingmode := libmat.Material.BlendingMode;
+                    faceculling := libmat.Material.FaceCulling;
+                    mathash := libmat.NameHashKey;
+                end;
+            end;
+        end;
+    end;
+
     //add the lightmap texture names to the texdata list
     c := length(texdata);
     if assigned(owner.LightmapLibrary) then
@@ -517,7 +638,7 @@ begin
     begin
         ID := C_LMTS_ID;
         Ver := C_LMTS_VER;
-        headerSize := 24;
+        headerSize := 24 + 8 + (length(matinfo) * sizeof(TMaterialinfo));
         nTexts := length(texdata);
         nSubsets := length(subsets);
         nTris := length(tris) div 3;
@@ -525,6 +646,13 @@ begin
         vtxSize := sizeof(TLMTS_Vertex);
     end;
     astream.Write(h, sizeof(h));
+
+    astream.Write('MATI', 4);
+    MatInfoCount:=length(matinfo);
+    astream.Write(MatInfoCount, sizeof(MatInfoCount));
+    //write the materials info
+    for i := 0 to high(matinfo) do
+        astream.Write(matinfo[i], sizeof(matinfo[i]));
 
     //write the texture names
     _4cc := C_LMTS_TEXT;
@@ -548,6 +676,7 @@ begin
     setlength(tris, 0);
     setlength(subsets, 0);
     setlength(texdata, 0);
+    setlength(Matinfo,0);
 end;
 
 initialization
