@@ -154,6 +154,7 @@ uses
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
+   GLWideBitmapFont, 
    Graphics, Dialogs, ExtDlgs, Forms,
    GLWin32Viewer, GLWin32FullScreenViewer
 {$endif}
@@ -1756,6 +1757,7 @@ begin
                        TGLCadencer,
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
+                       TGLWideBitmapFont,
                        TGLScriptLibrary
                        {$ifdef WIN32}
                        ,
