@@ -148,9 +148,9 @@ uses
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
-   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLLinePFX,
-   GLScriptBase, GLGameMenu,
+   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLTexturedHDS,
+   GLAnimatedSprite, GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
+   GLLinePFX, GLScriptBase, GLGameMenu,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1778,7 +1778,7 @@ begin
                       [TAsyncTimer,
                        TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TGLBumpmapHDS, TGLPerlinHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
                        TCollisionManager, TGLAnimationControler
                       ]);
 
