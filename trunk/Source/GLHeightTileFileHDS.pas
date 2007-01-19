@@ -2,7 +2,7 @@
 {: HeightDataSource for the HTF (HeightTileFile) format.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/01/04 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
+      <li>19/01/07 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
                           Set Inverted to false, if you DONT want your rendered
                           terrain to be a mirror image of your height data.
                           (Defaults to true, so it doesnt affect existing apps);
@@ -144,14 +144,8 @@ var
    htfTileInfo : PHeightTileInfo;
    x, y : Integer;
    YPos:integer;
-   //YInx,XInx:integer;
-   //Yinx,Yinv:integer;
    inY,outY:integer;
-   Yinx:integer;
-
-
    PLineIn, PLineOut : ^PSmallIntArray;
-
    LineDataSize:integer;
 begin
    // access htf data
@@ -168,7 +162,7 @@ begin
    // retrieve data and place it in the heightData
    with heightData do begin
       if Inverted then YPos:=YTop
-                  else YPos:=-YTop;
+                  else YPos:=1-size-YTop;
       if InfiniteWrap then begin
          x:=XLeft mod FHTF.SizeX;
          if x<0 then x:=x+FHTF.SizeX;
@@ -178,6 +172,7 @@ begin
       end else begin
          htfTile:=FHTF.GetTile(XLeft, YPos, @htfTileInfo);
       end;
+
       if (htfTile=nil) or (htfTileInfo.max<=FMinElevation) then begin
          // non-aligned tiles aren't handled (would be slow anyway)
          DataState:=hdsNone;
