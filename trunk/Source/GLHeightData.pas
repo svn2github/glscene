@@ -12,7 +12,8 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-	  <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
+      <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
+      <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           CreateMonochromeBitmap NOT implemented for Linux
       <li>12/07/03 - EG - Further InterpolatedHeight fixes
@@ -426,12 +427,14 @@ type
          FBitmap : TGLBitmap;
          FPicture : TGLPicture;
          FInfiniteWrap : Boolean;
+         FInverted : Boolean;
 
 	   protected
 	      { Protected Declarations }
          procedure SetPicture(const val : TGLPicture);
          procedure OnPictureChanged(Sender : TObject);
          procedure SetInfiniteWrap(val : Boolean);
+         procedure SetInverted(val : Boolean);
 
          procedure CreateMonochromeBitmap(size : Integer);
          procedure FreeMonochromeBitmap;
@@ -455,6 +458,8 @@ type
          property Picture : TGLPicture read FPicture write SetPicture;
          {: If true the height field is wrapped indefinetely. }
          property InfiniteWrap : Boolean read FInfiniteWrap write SetInfiniteWrap default True;
+         {: If true, the rendered terrain is a mirror image of the input data. }
+         property Inverted     : Boolean read FInverted     write SetInverted     default True;
 
          property MaxPoolSize;
 	end;
@@ -1365,6 +1370,7 @@ begin
    FPicture:=TGLPicture.Create;
    FPicture.OnChange:=OnPictureChanged;
    FInfiniteWrap:=True;
+   FInverted:=True;
 end;
 
 // Destroy
@@ -1413,6 +1419,19 @@ begin
       MarkDirty;
 {$endif}
    end;
+end;
+
+// SetInverted
+//
+procedure TGLBitmapHDS.SetInverted(val : Boolean);
+begin
+  if FInfiniteWrap=val then exit;
+  FInfiniteWrap:=val;
+{$ifdef GLS_DELPHI_4}
+  inherited MarkDirty;
+{$else}
+  MarkDirty;
+{$endif}
 end;
 
 // MarkDirty
@@ -1507,6 +1526,7 @@ var
    bitmapLine, rasterLine : PByteArray;
    oldType : THeightDataType;
    b : Byte;
+   YBtm:integer;
 begin
    if FBitmap=nil then Exit;
    heightData.FDataState:=hdsPreparing;
@@ -1522,9 +1542,11 @@ begin
       end;
       oldType:=DataType;
       Allocate(hdtByte);
+      YBtm:=YTop+Size-1;
       for y:=YTop to YTop+Size-1 do begin
          bitmapLine:=GetScanLine(y and wrapMask);
-         rasterLine:=ByteRaster[y-YTop];
+         if Inverted then rasterLine:=ByteRaster[y-YTop]
+                     else rasterLine:=ByteRaster[YBtm-y];
          // *BIG CAUTION HERE* : Don't remove the intermediate variable here!!!
          // or Delphi compiler will "optimize" to 32 bits access with clamping
          // resulting in possible reads of stuff beyon bitmapLine length!!!! 
