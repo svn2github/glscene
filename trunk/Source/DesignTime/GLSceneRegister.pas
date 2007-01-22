@@ -3,6 +3,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
+                                   (to support IGLMaterialLibrarySupported)
       <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
       <li>13/10/04 - MRQZZZ - Added GLTrail
       <li>03/07/04 - LR - Completly review to take account designtime for Linux
@@ -1362,22 +1364,20 @@ end;
 //
 procedure TGLLibMaterialNameProperty.Edit;
 var
-   buf : String;
-   ml : TGLMaterialLibrary;
-   obj : TPersistent;
+  buf: string;
+  ml: TGLMaterialLibrary;
+  obj: TPersistent;
+  Int: IGLMaterialLibrarySupported;
 begin
-	buf:=GetStrValue;
-   obj:=GetComponent(0);
-   if obj is TGLMaterial then
-   	ml:=TGLMaterial(obj).MaterialLibrary
-   else if obj is TGLLibMaterial then
-      ml:=(TGLLibMaterials(TGLLibMaterial(obj).Collection).Owner as TGLMaterialLibrary)
-   else if obj is TGLSkyBox then
-      ml:=TGLSkyBox(obj).MaterialLibrary
-   else begin
-      ml:=nil;
-      Assert(False, 'oops, unsupported...');
-   end;
+	buf := GetStrValue;
+  obj := GetComponent(0);
+  if Supports(Obj, IGLMaterialLibrarySupported, Int) then
+    ml := Int.GetMaterialLibrary
+  else
+  begin
+    ml := nil;
+    Assert(False, 'oops, unsupported...');
+  end;
 	if not Assigned(ml) then
 		ShowMessage('Select the material library first.')
 	else if LibMaterialPicker.Execute(buf, ml) then
