@@ -115,7 +115,7 @@ begin
   MarkDirty;
 end;
 
-// SetInfiniteWrap
+// SetInverted
 //
 procedure TGLHeightTileFileHDS.SetInverted(val : Boolean);
 begin
@@ -162,7 +162,7 @@ begin
    // retrieve data and place it in the heightData
    with heightData do begin
       if Inverted then YPos:=YTop
-                  else YPos:=1-size-YTop;
+                  else YPos:=FHTF.SizeY-YTop-size+1;
       if InfiniteWrap then begin
          x:=XLeft mod FHTF.SizeX;
          if x<0 then x:=x+FHTF.SizeX;
