@@ -15,6 +15,9 @@
    (Of course you can still multitexture in a detail texture too.)
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/02/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
+                           Removed 'Active' property
+                           Now works with both TGLHeightTileFileHDS AND TGLBitmapHDS
       <li>19/01/07 - LIN - Creation 
 	</ul></font>
 }
@@ -23,7 +26,7 @@ unit GLTexturedHDS;
 interface
 {$i GLScene.inc}
 uses Classes, VectorGeometry, GLCrossPlatform, GLHeightData, GLTexture,
-     GLHeightTileFileHDS, HeightTileFile, SysUtils;
+     GLHeightTileFileHDS, HeightTileFile, SysUtils, Dialogs;
 
 type
 	TGLTexturedHDS = class (THeightDataSource)
@@ -31,23 +34,17 @@ type
 	      { Private Declarations }
          FOnStartPreparingData : TStartPreparingDataEvent;
          FOnMarkDirty : TMarkDirtyEvent;
-         FActive :boolean;
-         //FInvert :boolean;
          FHeightDataSource : THeightDataSource;
          FMaterialLibrary  : TGLMaterialLibrary;
          FWholeTilesOnly   : Boolean;
+         FTileSize         : integer;
+         FTilesPerTexture  : integer;
 	   protected
 	      { Protected Declarations }
          procedure StartPreparingData(heightData : THeightData); override;      ///
-         procedure SetActive(val:boolean);
          procedure SetHeightDataSource(val:THeightDataSource);
-         function  GetSourceHTFSize:boolean;
 	   public
 	      { Public Declarations }
-         HTFSizeX:integer;
-         HTFSizeY:integer;
-         //HTFTileSize:integer;
-
   	     constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure MarkDirty(const area : TGLRect); override;
@@ -57,13 +54,13 @@ type
          property MaxPoolSize;
          property OnStartPreparingData : TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
          property OnMarkDirtyEvent : TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;
-         property Active : Boolean read FActive write SetActive;
-         //property Invert : Boolean read FInvert write SetInvert;
          property HeightDataSource : THeightDataSource  read FHeightDataSource write SetHeightDataSource;
-         //property MaterialLibrary  : TGLMaterialLibrary read FMaterialLibrary  write SetMaterialLibrary;
          property MaterialLibrary  : TGLMaterialLibrary read FMaterialLibrary  write FMaterialLibrary;
          property WholeTilesOnly   : Boolean read FWholeTilesOnly write FWholeTilesOnly;
-
+                  {This should match TileSize in TGLTerrainRenderer}
+         property TileSize         : integer read FTileSize write FTileSize;
+                  {This should match TilesPerTexture in TGLTerrainRenderer}
+         property TilesPerTexture  : Integer read FTilesPerTexture write FTilesPerTexture;
 	end;
 
 implementation
@@ -77,6 +74,9 @@ implementation
 constructor TGLTexturedHDS.Create(AOwner: TComponent);
 begin
   FHeightDataSource:=nil;
+  FMaterialLibrary:=nil;
+  FTileSize:=16;
+  FTilesPerTexture:=1;
 	inherited Create(AOwner);
 end;
 
@@ -108,48 +108,43 @@ var HDS:THeightDataSource;
     tileL,tileR,tileT,tileB:single;
     found:boolean;
     texL,texR,texT,texB,swp:single;
+    texSize:integer;
 begin
-  if self.FActive=false then begin
+  if not Assigned(FHeightDataSource) then begin
     heightData.DataState:=hdsNone;
     exit;
   end;
 
-   //---Height Data--
+  //---Height Data--
   HD:=HeightData;
   HD.DataType:=hdtSmallInt;
   HD.Allocate(hdtSmallInt);
   HDS:=self.FHeightDataSource;
   //HD.FTextureCoordinatesMode:=tcmWorld;
-  if HTFSizeX=0 then GetSourceHTFSize;   //Get the source tile size
-  if HTFSizeX=0 then FActive:=false;
-
-  if Assigned(self.FHeightDataSource) then begin
-    htfHD:=HDS.GetData(HD.XLeft,HD.YTop,HD.Size,HD.DataType);
-    HDState:=htfHD.DataState;
-
-    if HDState=hdsNone then begin
-      HD.DataState:=hdsNone;
-      exit;
-    end else HD.DataState:=hdsPreparing;
-
-    Move(htfHD.SmallIntData^, heightData.SmallIntData^, htfHD.DataSize); //NOT inverted
-  end;
+  htfHD:=HDS.GetData(HD.XLeft,HD.YTop,HD.Size,HD.DataType);
+  HDState:=htfHD.DataState;
+  if HDState=hdsNone then begin
+    HD.DataState:=hdsNone;
+    exit;
+  end else HD.DataState:=hdsPreparing;
+  Move(htfHD.SmallIntData^, heightData.SmallIntData^, htfHD.DataSize); //NOT inverted
   //----------------
 
   //---Select the best texture from the attached material library--
   MatLib:=self.FMaterialLibrary;
   if Assigned(MatLib) then begin
     //--Get the world coordinates of the current terrain height tile--
+    texSize:=FTileSize*FTilesPerTexture;
     if FWholeTilesOnly then begin   //picks top texture that covers the WHOLE tile.
-      tileL:=(HD.XLeft            )/HTFSizeX;
-      tileT:=(HD.YTop +(HD.Size-1))/HTFSizeY-1;
-      tileR:=(HD.XLeft+(HD.Size-1))/HTFSizeX;
-      tileB:=(HD.YTop             )/HTFSizeY-1;
+      tileL:=(HD.XLeft            )/texSize;
+      tileT:=(HD.YTop +(HD.Size-1))/texSize-1;
+      tileR:=(HD.XLeft+(HD.Size-1))/texSize;
+      tileB:=(HD.YTop             )/texSize-1;
     end else begin                 //picks top texture that covers any part of the tile. If the texture si not wrapped, the rest of the tile is left blank.
-      tileL:=(HD.XLeft+(HD.Size-2))/HTFSizeX;
-      tileT:=(HD.YTop +1          )/HTFSizeY-1;
-      tileR:=(HD.XLeft+1          )/HTFSizeX;
-      tileB:=(HD.YTop +(HD.Size-2))/HTFSizeY-1;
+      tileL:=(HD.XLeft+(HD.Size-2))/texSize;
+      tileT:=(HD.YTop +1          )/texSize-1;
+      tileR:=(HD.XLeft+1          )/texSize;
+      tileB:=(HD.YTop +(HD.Size-2))/texSize-1;
     end;
       //--picks top texture that covers tile center--
       //tileL:=(HD.XLeft+(HD.Size/2))/HTFSizeX;
@@ -174,71 +169,16 @@ begin
     if found then HD.MaterialName:=Mat.Name;
   end;
   //---------------------------------------------------------------
+  //HD.MaterialName:=Mat.Name;
 
   heightData.DataState:=hdsReady;
 end;
 
-function TGLTexturedHDS.GetSourceHTFSize:boolean;
-var //HDS:THeightDataSource;
-    HTFHDS:TGLHeightTileFileHDS;
-    htf:THeightTileFile;
-begin
-  result:=false;
-  if FHeightDataSource.ClassType=TGLHeightTileFileHDS then begin
-    HTFHDS:=FHeightDataSource as TGLHeightTileFileHDS;
-    if FileExists(HTFHDS.HTFFileName) then begin
-      htf:=THeightTileFile.Create(HTFHDS.HTFFileName);
-      self.HTFSizeX   :=htf.SizeX;
-      self.HTFSizeY   :=htf.SizeY;
-      //self.HTFTileSize:=htf.TileSize;
-      htf.Free;
-      result:=true;
-    end else FActive:=false;
-  end;
-  if result=false then begin
-    HTFSizeX:=1;
-    HTFSizeY:=1;
-  end;
-end;
-
-procedure TGLTexturedHDS.SetActive(val:boolean);
-begin
-  FActive:=val;
-
-
-{
-  self.HTFSizeX   :=0;
-  self.HTFSizeY   :=0;
-  self.HTFTileSize:=0;
-  if ((val=false) or (FHeightDataSource=nil)) then begin
-    FActive:=false;
-    exit;
-  end;
-
-  if FHeightDataSource.ClassType=TGLHeightTileFileHDS
-    then FActive:=GetSourceHTFSize
-    else FActive:=val;
-}
-end;
-
-
 procedure TGLTexturedHDS.SetHeightDataSource(val:THeightDataSource);
 begin
-  //FActive:=false;
-  FHeightDataSource:=nil;
-  if val=self then exit;
-  FHeightDataSource:=val;
-  GetSourceHTFSize;
+  if val=self then FHeightDataSource:=nil
+              else FHeightDataSource:=val;
 end;
-
-
-
-
-
-
-
-
-
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
