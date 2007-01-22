@@ -1526,7 +1526,7 @@ var
    bitmapLine, rasterLine : PByteArray;
    oldType : THeightDataType;
    b : Byte;
-   YBtm:integer;
+   YPos:integer;
 begin
    if FBitmap=nil then Exit;
    heightData.FDataState:=hdsPreparing;
@@ -1542,11 +1542,12 @@ begin
       end;
       oldType:=DataType;
       Allocate(hdtByte);
-      YBtm:=YTop+Size-1;
-      for y:=YTop to YTop+Size-1 do begin
-         bitmapLine:=GetScanLine(y and wrapMask);
-         if Inverted then rasterLine:=ByteRaster[y-YTop]
-                     else rasterLine:=ByteRaster[YBtm-y];
+      if Inverted then YPos:=YTop
+                  else YPos:=1-size-YTop;
+      for y:=0 to Size-1 do begin
+        bitmapLine:=GetScanLine((y+YPos) and wrapMask);
+        if inverted then rasterLine:=ByteRaster[y]
+                    else rasterLine:=ByteRaster[Size-1-y];
          // *BIG CAUTION HERE* : Don't remove the intermediate variable here!!!
          // or Delphi compiler will "optimize" to 32 bits access with clamping
          // resulting in possible reads of stuff beyon bitmapLine length!!!! 
@@ -1560,6 +1561,7 @@ begin
    end;
    inherited;
 end;
+
 
 // ------------------
 // ------------------ TGLCustomHDS ------------------
