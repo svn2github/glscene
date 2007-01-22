@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul> TGLSceneEditorForm.AddNodes
+  <li>20/01/07 - DaS - TGLSceneEditorForm.ACCutExecute bugfixed
   <li>19/12/06 - DaS - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
                         no longer displayed in the Editor (BugTraker ID = 1585913)
   <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
@@ -1166,21 +1167,27 @@ end;
 // ACCutExecute
 //
 procedure TGLSceneEditorForm.ACCutExecute(Sender: TObject);
+{$IFDEF GLS_DELPHI_6_UP}
 var
-	AObject : TGLBaseSceneObject;
-   selNode : TTreeNode;
+  AObject: TGLBaseSceneObject;
+  ComponentList: IDesignerSelections;
 begin
-   selNode:=Tree.Selected;
-   if IsValidClipBoardNode then begin
-      AObject:=TGLBaseSceneObject(selNode.Data);
-      ClipBoard.SetComponent(AObject);
-      AObject.Parent.Remove(AObject, False);
-      AObject.Free;
-      Tree.Selected.Free;
-   end;
+  if IsValidClipBoardNode then
+  begin
+    AObject := TGLBaseSceneObject(Tree.Selected.Data);
+    ComponentList := TDesignerSelections.Create;
+    ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
+
+    CopyComponents(FScene.Owner, ComponentList);
+    AObject.Parent.Remove(AObject, False);
+    AObject.Free;
+    Tree.Selected.Free;
+    ACPaste.Enabled:=IsPastePossible;
+  end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
-
-
 
 
 // ACPasteExecute
