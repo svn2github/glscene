@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
+                             TGLLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
       <li>20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
                              TGLShader.Apply bugfixed, TGLShader.Assign added
       <li>19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
@@ -330,10 +332,16 @@ type
 	TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
 	TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
 
-	TGLFaceProperties  = class;
-	TGLTexture         = class;
-	TGLMaterial        = class;
-   TGLMaterialLibrary = class;
+  TGLFaceProperties  = class;
+  TGLTexture         = class;
+  TGLMaterial        = class;
+  TGLMaterialLibrary = class;
+
+  //an interface for proper TGLLibMaterialNameProperty support
+  IGLMaterialLibrarySupported = interface(IInterface)
+  ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
+    function GetMaterialLibrary: TGLMaterialLibrary;
+  end;
 
    TDrawState = (dsRendering, dsPicking, dsPrinting);
 
@@ -1288,11 +1296,11 @@ type
       TGLLibMaterial (taken for a material library).<p>
       The TGLLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
-	TGLMaterial = class (TGLUpdateAbleObject)
+	TGLMaterial = class (TGLUpdateAbleObject, IGLMaterialLibrarySupported)
       private
 	      { Private Declarations }
          FFrontProperties, FGLBackProperties : TGLFaceProperties;
-			FBlendingMode : TBlendingMode;
+         FBlendingMode : TBlendingMode;
          FTexture : TGLTexture;
          FTextureEx : TGLTextureEx;
          FMaterialLibrary : TGLMaterialLibrary;
@@ -1300,7 +1308,12 @@ type
          FMaterialOptions : TMaterialOptions;
          FFaceCulling : TFaceCulling;
          currentLibMaterial : TGLLibMaterial;
-
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
+         //implementing IInterface
+         function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+         function _AddRef: Integer; stdcall;
+         function _Release: Integer; stdcall;
 	   protected
 	      { Protected Declarations }
          function GetBackProperties : TGLFaceProperties;
@@ -1373,7 +1386,7 @@ type
       Introduces Texture transformations (offset and scale). Those transformations
       are available only for lib materials to minimize the memory cost of basic
       materials (which are used in almost all objects). }
-	TGLLibMaterial = class (TCollectionItem)
+	TGLLibMaterial = class (TCollectionItem, IGLMaterialLibrarySupported)
 	   private
 	      { Private Declarations }
          userList : TList;
@@ -1388,7 +1401,12 @@ type
          notifying : Boolean; // used for recursivity protection
          libMatTexture2 : TGLLibMaterial; // internal cache
          FTag : Integer;
-
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
+         //implementing IInterface
+         function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+         function _AddRef: Integer; stdcall;
+         function _Release: Integer; stdcall;
 	   protected
 	      { Protected Declarations }
          function GetDisplayName : String; override;
@@ -4377,6 +4395,34 @@ begin
    inherited Destroy;
 end;
 
+// GetMaterialLibrary
+//
+function TGLMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
+end;
+
+// QueryInterface
+//
+function TGLMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TGLMaterial._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLMaterial._Release: Integer;
+begin
+  Result := -1; //ignore
+end;
+
 // SetBackProperties
 //
 procedure TGLMaterial.SetBackProperties(Values: TGLFaceProperties);
@@ -4809,9 +4855,9 @@ begin
    FNameHashKey:=ComputeNameHashKey(FName);
    FMaterial:=TGLMaterial.Create(Self);
    FMaterial.Texture.OnTextureNeeded:=DoOnTextureNeeded;
-   FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgVector);
+   FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
    FTextureOffset.OnNotifyChange:=OnNotifyChange;
-   FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector);
+   FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
    FTextureScale.OnNotifyChange:=OnNotifyChange;
    FTextureMatrixIsIdentity:=True;
 end;
@@ -4839,6 +4885,37 @@ begin
    FTextureOffset.Free;
    FTextureScale.Free;
 	inherited Destroy;
+end;
+
+// GetMaterialLibrary
+//
+function TGLLibMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  if Collection = nil then
+    Result := nil
+  else
+    Result := TGLMaterialLibrary(TGLLibMaterials(Collection).Owner);
+end;
+
+// QueryInterface
+//
+function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TGLLibMaterial._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLLibMaterial._Release: Integer;
+begin
+  Result := -1; //ignore
 end;
 
 // Assign
