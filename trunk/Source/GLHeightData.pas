@@ -1425,8 +1425,8 @@ end;
 //
 procedure TGLBitmapHDS.SetInverted(val : Boolean);
 begin
-  if FInfiniteWrap=val then exit;
-  FInfiniteWrap:=val;
+  if FInverted=val then exit;
+  FInverted:=val;
 {$ifdef GLS_DELPHI_4}
   inherited MarkDirty;
 {$else}
