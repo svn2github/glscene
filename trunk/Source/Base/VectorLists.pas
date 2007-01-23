@@ -1968,7 +1968,7 @@ var
 begin
     Result := -1;
     for i := 0 to Count - 1 do
-        if (FList[i].S = item.S) and (FList[i].T = item.T) then
+        if TexpointEquals(FList[i],item) then
         begin
             Result := i;
             Break;
