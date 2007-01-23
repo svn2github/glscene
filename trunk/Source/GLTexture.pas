@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
       <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
       <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
                              TGLLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
@@ -532,7 +533,8 @@ type
 				no particular memory cost. }
 			procedure ReleaseBitmap32; virtual;
      //{: AsBitmap : Returns the TextureImage as a TBitmap }
-      function AsBitmap : TGLBitmap;
+      function  AsBitmap : TGLBitmap;
+      procedure AssignToBitmap(aBitmap:TGLBitmap);
 
 			property Width : Integer read GetWidth;
 			property Height : Integer read GetHeight;
@@ -2296,10 +2298,19 @@ begin
 end;
 
 // AsBitmap : Returns the TextureImage as a TBitmap
+// WARNING: This Creates a new bitmap. Remember to free it, to prevent leaks.
+// If possible, rather use AssignToBitmap.
 //
 function TGLTextureImage.AsBitmap : TGLBitmap;
 begin
   result:=self.GetBitmap32(GL_TEXTURE_2D).Create32BitsBitmap;
+end;
+
+// AssignToBitmap
+//
+procedure TGLTextureImage.AssignToBitmap(aBitmap:TGLBitmap);
+begin
+  self.GetBitmap32(GL_TEXTURE_2D).AssignToBitmap(aBitmap);
 end;
 
 // NotifyChange
