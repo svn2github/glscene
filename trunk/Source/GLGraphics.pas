@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/01/07 - LIN- Added TGLBitmap32.AssignToBitmap : Converts a TGLBitmap32 back into a TBitmap
       <li>12/09/06 - NC - Added TGLBitmap32.Blank
       <li>18/10/05 - NC - GL_ARB_texture_non_power_of_two, GL_TEXTURE_2D for float
                           texture
@@ -219,7 +220,8 @@ type
                                         wrapX : Boolean = True; wrapY : Boolean = True);
          {: Assumes the bitmap content is a normal map and normalizes all pixels.<p> }
          procedure NormalizeNormalMap;
-	end;
+         procedure AssignToBitmap(aBitmap : TGLBitmap);
+end;
 
 procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer);
 procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
@@ -1238,6 +1240,23 @@ end;
 procedure TGLBitmap32.SetBlank(const Value: boolean);
 begin
   FBlank := Value;
+end;
+
+
+//Converts a TGLBitmap32 back into a TBitmap
+//
+procedure TGLBitmap32.AssignToBitmap(aBitmap : TGLBitmap); //TGLBitmap = TBitmap
+var y :integer;
+    pSrc, pDest : PChar;
+begin
+  aBitmap.Width:=FWidth;
+  aBitmap.Height:=FHeight;
+  aBitmap.PixelFormat:=glpf32bit;
+  for y:=0 to FHeight-1 do begin
+    pSrc:=@PChar(FData)[y*(FWidth*4)];
+    pDest:=aBitmap.ScanLine[FHeight-1-y];
+    BGRA32ToRGBA32(pSrc, pDest, FWidth);
+  end;
 end;
 
 end.
