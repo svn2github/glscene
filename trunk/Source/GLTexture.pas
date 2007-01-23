@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
       <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
                              TGLLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
       <li>20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
@@ -530,6 +531,8 @@ type
 				Subclasses may ignore this call if the HBitmap was obtained at
 				no particular memory cost. }
 			procedure ReleaseBitmap32; virtual;
+     //{: AsBitmap : Returns the TextureImage as a TBitmap }
+      function AsBitmap : TGLBitmap;
 
 			property Width : Integer read GetWidth;
 			property Height : Integer read GetHeight;
@@ -2290,6 +2293,13 @@ end;
 procedure TGLTextureImage.ReleaseBitmap32;
 begin
 	// nothing here.
+end;
+
+// AsBitmap : Returns the TextureImage as a TBitmap
+//
+function TGLTextureImage.AsBitmap : TGLBitmap;
+begin
+  result:=self.GetBitmap32(GL_TEXTURE_2D).Create32BitsBitmap;
 end;
 
 // NotifyChange
