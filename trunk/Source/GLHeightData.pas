@@ -185,8 +185,8 @@ type
          {: Interpolates height for the given point. }
          function InterpolatedHeight(x, y : Single; tileSize : Integer) : Single; virtual;
 
-         function Width :integer;  virtual;
-         function Height:integer;  virtual;
+         function Width :integer;  virtual; abstract;
+         function Height:integer;  virtual; abstract;
 	end;
 
    // THDTextureCoordinatesMode
@@ -892,20 +892,6 @@ begin
       Result:=DefaultHeight
    else Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
 end;
-
-
-function THeightDataSource.Width:integer;
-begin
-  inherited;
-  //result:=0;
-end;
-
-function THeightDataSource.Height:integer;
-begin
-  inherited;
-  //result:=0;
-end;
-
 
 // ------------------
 // ------------------ THeightData ------------------
