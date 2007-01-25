@@ -2,6 +2,7 @@
 {: HeightDataSource for the HTF (HeightTileFile) format.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/01/07 - LIN -Added Width and Height properties to GLHeightTileFieHDS
       <li>19/01/07 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
                           Set Inverted to false, if you DONT want your rendered
                           terrain to be a mirror image of your height data.
@@ -60,7 +61,8 @@ type
 
          property MaxPoolSize;
          property DefaultHeight;
-         //property HeightTileFile :THeightTileFile read FHTF;   //Used for inverting the terrain
+         function Width :integer;    override;
+         function Height:integer;    override;
 	end;
 
 // ------------------------------------------------------------------
@@ -191,7 +193,7 @@ begin
              Move(PLineIn^,PLineOut^,LineDataSize);
            end;
          end;
-         //Move(htfTile.data[0], SmallIntData^, DataSize);
+         //---Move(htfTile.data[0], SmallIntData^, DataSize);---
 
          if oldType<>hdtSmallInt then
             DataType:=oldType;
@@ -200,14 +202,30 @@ begin
          HeightMax:=htfTileInfo.max;
       end;
    end;
-
-
-
-
-
-
-
 end;
+
+function TGLHeightTileFileHDS.Width :integer;
+begin
+  result:=0;
+  if not Assigned(FHTF) then begin
+    if FHTFFileName<>'' then begin
+      FHTF:=THeightTileFile.Create(FHTFFileName);
+    end;
+  end;
+  if Assigned(FHTF) then result:=FHTF.SizeX;
+end;
+
+function TGLHeightTileFileHDS.Height:integer;
+begin
+  result:=0;
+  if not Assigned(FHTF) then begin
+    if FHTFFileName<>'' then begin
+      FHTF:=THeightTileFile.Create(FHTFFileName);
+    end;
+  end;
+  if Assigned(FHTF) then result:=FHTF.SizeY;
+end;
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
