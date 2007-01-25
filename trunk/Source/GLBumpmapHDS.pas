@@ -5,6 +5,18 @@
    lighting.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/04/07 - LIN- Replaced 'StartPreparingData' and 'GenerateBumpmap' functions.
+                          Now supports a TGLBitmap with multiple tiles.
+                          Now works with HeightTileFileHDS.
+                          World texture coordinates for individual textures are now calculated,
+                          (TGLLibMaterial.TextureOffset and TGLLibMaterial.TextureScale)
+                          Bugfix: Terrain position no longer jumps when InfiniteWrap is turned off.
+
+                          BUG: It seems Released textures are sometimes still used by the TerrainRenderer.
+                          So, to prevent Access Violations, the Release method has been disabled.
+                          Textures will have to be released MANUALLY for now.
+                          NOT releasing the textures will cause the  TextureLibrary to become overrun.
+
       <li>15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
       <li>20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
       <li>20/02/04 - EG - Creation
@@ -14,10 +26,9 @@ unit GLBumpmapHDS;
 
 interface
 
-uses Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture;
+uses Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture, Dialogs, Forms;
 
 type
-
    TGLBumpmapHDS = class;
 
    // TNewTilePreparedEvent
@@ -29,7 +40,7 @@ type
 	//
    {: An Height Data Source that generates elevation bumpmaps automatically.<p>
       The HDS must be connected to another HDS, which will provide the elevation
-      datat, and to a MaterialLibrary where bumpmaps will be placed. }
+      data, and to a MaterialLibrary where bumpmaps will be placed. }
 	TGLBumpmapHDS = class (THeightDataSource)
 	   private
 	      { Private Declarations }
@@ -44,21 +55,16 @@ type
          procedure SetElevationHDS(const val : THeightDataSource);
          procedure SetBumpmapLibrary(const val : TGLMaterialLibrary);
          procedure SetBumpScale(const val : Single);
-         function StoreBumpScale : Boolean;
+         function  StoreBumpScale : Boolean;
          procedure SetSubSampling(const val : Integer);
-
          procedure StartPreparingData(heightData : THeightData); override;
-
-         procedure GenerateNormalMap(heightData : THeightData;
-                                     normalMap : TGLBitmap32; scale : Single);
-
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-
-         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure Release(aHeightData : THeightData); override;
+         procedure  GenerateNormalMap(heightData : THeightData; normalMap : TGLBitmap32; scale : Single);
+         procedure  Notification(AComponent: TComponent; Operation: TOperation); override;
+         procedure  Release(aHeightData : THeightData); override;
 
 	   published
 	      { Published Declarations }
@@ -117,80 +123,108 @@ end;
 procedure TGLBumpmapHDS.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then begin
-      if AComponent=FElevationHDS then
-         ElevationHDS:=nil
-      else if AComponent=FBumpmapLibrary then
-         BumpmapLibrary:=nil;
+      if      AComponent=FElevationHDS   then ElevationHDS:=nil
+      else if AComponent=FBumpmapLibrary then BumpmapLibrary:=nil;
    end;
    inherited;
-end;
-
-// StartPreparingData
-//
-procedure TGLBumpmapHDS.StartPreparingData(heightData : THeightData);
-var
-   i : Integer;
-   htfHD : THeightData;
-   libMat : TGLLibMaterial;
-   bmp32 : TGLBitmap32;
-begin
-   if not Assigned(FElevationHDS) then Exit;
-   with heightData do
-      htfHD:=FElevationHDS.GetData(XLeft-1, YTop-1, Size+3, DataType);
-   if (htfHD.DataState=hdsNone) then
-      heightData.DataState:=hdsNone
-   else begin
-      heightData.MaterialName:=htfHD.MaterialName;
-      heightData.TextureCoordinatesMode:=tcmLocal;
-      heightData.TextureCoordinatesOffset:=NullTexPoint;
-      heightData.TextureCoordinatesScale:=XYTexPoint;
-      heightData.DataType:=hdtSmallInt;
-      htfHD.DataType:=hdtSmallInt;
-      heightData.Allocate(hdtSmallInt);
-      for i:=1 to heightData.Size do
-         Move(htfHD.SmallIntRaster[i][1], heightData.SmallIntRaster[i-1][0],
-              heightData.Size*2);
-      heightData.DataState:=hdsReady;
-      heightData.HeightMin:=htfHD.HeightMin;
-      heightData.HeightMax:=htfHD.HeightMax;
-   end;
-   if Assigned(FBumpmapLibrary) and (heightData.DataState<>hdsNone) then begin
-      libMat:=FBumpmapLibrary.Materials.Add;
-      libMat.Name:='BumpHDS_'+IntToHex(Int64(heightData), 16);
-      with libMat.Material.Texture do begin
-         ImageClassName:=TGLBlankImage.ClassName;
-         Enabled:=True;
-         MagFilter:=maLinear;
-         MinFilter:=miLinearMipmapNearest;
-         TextureMode:=tmReplace;
-         TextureWrap:=twNone;
-         TextureFormat:=tfRGBA16;
-         bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
-         GenerateNormalMap(htfHD, bmp32, FBumpScale);
-      end;
-      // scale and translate the bumpmap to reduce seams
-      libMat.TextureOffset.SetVector(0.5/bmp32.Width, 0.5/bmp32.Width, 1);
-      libMat.TextureScale.SetVector((bmp32.Width-1)/bmp32.Width, (bmp32.Width-1)/bmp32.Width, 1);
-   end else libMat:=nil;
-   FElevationHDS.Release(htfHD);
-   if Assigned(libMat) then begin
-      if Assigned(FOnNewTilePrepared) then
-         FOnNewTilePrepared(Self, heightData, libMat)
-      else heightData.MaterialName:=libMat.Name;
-   end;
 end;
 
 // Release
 //
 procedure TGLBumpmapHDS.Release(aHeightData : THeightData);
-var
-   libMat : TGLLibMaterial;
+var libMat : TGLLibMaterial;
 begin
+   // Releasing materials causes access violations later on
+   {
    if Assigned(FBumpmapLibrary) then begin
       libMat:=FBumpmapLibrary.LibMaterialByName('BumpHDS_'+IntToHex(Int64(aHeightData), 16));
-      libMat.Free;      
+      if assigned(libMat) then FBumpmapLibrary.Materials.Delete(libMat.Index);
+      //libMat.Free;
    end;
+   }
    inherited;
+end;
+
+// GenerateNormalMap
+//
+procedure TGLBumpmapHDS.StartPreparingData(heightData : THeightData);
+var HDS   : THeightDataSource;
+    htfHD : THeightData;
+    HD    : THeightData;
+    //MatLib: TGLMaterialLibrary;
+    libMat: TGLLibMaterial;
+    bmp32 : TGLBitmap32;
+    TexScale:TTexPoint;
+    TexOffset:TTexPoint;
+    MatName:string;
+begin
+  if not Assigned(FElevationHDS) then begin
+    heightData.DataState:=hdsNone;
+    exit;
+  end;
+
+  //---Height Data--
+  HD:=HeightData;
+  HD.DataType:=hdtSmallInt;
+  HD.Allocate(hdtSmallInt);
+  HDS:=self.FElevationHDS;
+  //HD.FTextureCoordinatesMode:=tcmWorld;
+  HD.TextureCoordinatesMode:=tcmWorld;
+  htfHD:=HDS.GetData(HD.XLeft,HD.YTop,HD.Size,HD.DataType);
+  if htfHD.DataState=hdsNone then HD.DataState:=hdsNone
+  else begin HD.DataState:=hdsPreparing;
+    Move(htfHD.SmallIntData^, HD.SmallIntData^, htfHD.DataSize);
+
+    if Assigned(FBumpmapLibrary) then begin
+
+      //---If a Material with the same name exists then replace---
+      //MatName:='BumpHDS_x'+IntToStr(HD.XLeft)+'y'+IntToStr(HD.YTop)+'.'; //name contains xy coordinates of the current tile
+      MatName:='BumpHDS_'+IntToHex(Int64(heightData), 16);
+      libMat:=FBumpmapLibrary.Materials.GetLibMaterialByName(MatName);
+      if assigned(libMat) then FBumpmapLibrary.Materials.Delete(libmat.Index);
+      //----------------------------------------------------------
+
+      libMat:=FBumpmapLibrary.Materials.Add;
+      libMat.Name:='BumpHDS_'+IntToHex(Int64(heightData), 16);
+
+      //--Calculate World Texture coordinates for tiled terrain--
+      libMat.TextureScale.X :=HDS.Width/(HD.Size-1);
+      libMat.TextureScale.Y :=HDS.Height/(HD.Size-1);
+      libMat.TextureOffset.X:=-((HD.XLeft/HDS.Width )*libMat.TextureScale.X);
+      libMat.TextureOffset.Y:=-(HDS.Height-(HD.YTop+HD.Size-1))/(HD.Size-1);
+      //---------------------------------------------------------
+
+      with libMat.Material.Texture do begin
+        ImageClassName:=TGLBlankImage.ClassName;
+        Enabled:=True;
+        //MagFilter:=maNearest;
+        //MinFilter:=miNearestMipmapNearest;
+        MagFilter:=maLinear;
+        MinFilter:=miLinearMipmapNearest;
+        TextureMode:=tmReplace;
+        TextureWrap:=twNone;
+        TextureFormat:=tfRGBA16;
+        bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
+        GenerateNormalMap(htfHD, bmp32, FBumpScale);
+      end;
+
+      // scale and translate the bumpmap to reduce seams
+      // libMat.TextureOffset.SetVector(0.5/bmp32.Width, 0.5/bmp32.Width, 1);
+      // libMat.TextureScale.SetVector((bmp32.Width-1)/bmp32.Width, (bmp32.Width-1)/bmp32.Width, 1);
+    end else libMat:=nil;
+
+    if Assigned(libMat) then begin
+      if Assigned(FOnNewTilePrepared)
+        then FOnNewTilePrepared(Self, HD, libMat)
+        else HD.MaterialName:=libMat.Name;
+    end;
+
+    FElevationHDS.Release(htfHD);
+    HD.HeightMin:=htfHD.HeightMin;
+    HD.HeightMax:=htfHD.HeightMax;
+    HD.DataState:=hdsReady;
+  end;
+  //----------------
 end;
 
 // GenerateNormalMap
@@ -198,50 +232,35 @@ end;
 procedure TGLBumpmapHDS.GenerateNormalMap(heightData : THeightData;
                                           normalMap : TGLBitmap32;
                                           scale : Single);
-var
-   x, y, hdY, hdX, half, mapSize, hdStep : Integer;
-   dcx, dcy : Single;
-   invLen, scaleDiv255 : Single;
-   prevRow, curRow, nextRow : PSmallIntArray;
-   nmRow : PGLPixel32Array;
+var mapSize:integer;
+    HD : THeightData;
+    x,y:integer;
+    scaleVec:TAffineVector;
+    vec   : TAffineVector;
+    nmRow : PGLPixel32Array;
+    px,py:integer;
+    nmH,nmW:integer;
 begin
-   heightData.DataType:=hdtSmallInt;
-
-   hdStep:=0;
-   mapSize:=(heightData.Size-4);
-   if (mapSize>8) and (SubSampling>1) then begin
-      mapSize:=mapSize div SubSampling;
-      if mapSize<8 then mapSize:=8;
-      while (mapSize shl hdStep)<(heightData.Size-4) do Inc(hdStep);
-   end;
-   normalMap.Height:=mapSize;
-   normalMap.Width:=mapSize;
-   half:=(mapSize shr 1);
-
-   scaleDiv255:=scale*(1/255);
-   hdY:=0;
-   for y:=0 to normalMap.Height-1 do begin
-      prevRow:=heightData.SmallIntRaster[hdY];
-      curRow:=heightData.SmallIntRaster[hdY+1];
-      nextRow:=heightData.SmallIntRaster[hdY+2];
-      nmRow:=normalMap.ScanLine[normalMap.Height-1-y];
-      hdX:=0;
-      for x:=0 to normalMap.Width-1 do begin
-         dcx:=scaleDiv255*(curRow[hdX+2]-curRow[hdX]);
-         dcy:=scaleDiv255*(prevRow[hdX+1]-nextRow[hdX+1]);
-
-         invLen:=RSqrt(Sqr(dcx)+Sqr(dcy)+1);
-
-         with nmRow[x] do begin
-            r:=Round(128+127*ClampValue(dcx*invLen, -1, 1));
-            g:=Round(128+127*ClampValue(dcy*invLen, -1, 1));
-            b:=Round(128+127*invLen);
-            a:=255;
-         end;
-         Inc(hdX, (1+Integer(hdX=half)) shl hdStep);
-      end;
-      Inc(hdY, (1+Integer(hdY=half)) shl hdStep);
-   end;
+  HD:=HeightData;
+  MapSize:=(HD.Size-1);
+  mapSize:=mapSize div SubSampling;
+  normalMap.Height:=mapSize;
+  normalMap.Width :=mapSize;
+  SetVector(ScaleVec,-1,1,-FBumpScale);
+  for y:=0 to mapSize-1 do begin
+    nmRow:=normalMap.ScanLine[mapSize-1-y];
+    for x:=0 to mapSize-1 do begin
+      px:=x*subsampling;
+      py:=y*subsampling;
+      if x<=0 then px:=1;  // clamp x, to hide seams
+      if y<=0 then py:=1;  // clamp x, to hide seams
+      vec:=HD.Normal(px,py,ScaleVec);
+      nmRow[x].r:=round(128+127*vec[0]);
+      nmRow[x].g:=round(128+127*vec[1]);
+      nmRow[x].b:=round(128+127*vec[2]);
+      nmRow[x].a:=255;
+    end;
+  end;
 end;
 
 // SetElevationHDS
