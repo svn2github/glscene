@@ -43,7 +43,6 @@ interface
 uses Classes, VectorGeometry, GLCrossPlatform;
 
 type
-
    TByteArray = array [0..MaxInt shr 1] of Byte;
    PByteArray = ^TByteArray;
    TByteRaster = array [0..MaxInt shr 3] of PByteArray;
@@ -185,6 +184,9 @@ type
 
          {: Interpolates height for the given point. }
          function InterpolatedHeight(x, y : Single; tileSize : Integer) : Single; virtual;
+
+         function Width :integer;  virtual;
+         function Height:integer;  virtual;
 	end;
 
    // THDTextureCoordinatesMode
@@ -243,7 +245,7 @@ type
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
          FTextureCoordinatesMode : THDTextureCoordinatesMode;
-         FTCOffset, FTCScale : TTexPoint;
+         FTCOffset, FTCScale : TTexPoint;  //(TTexPoint seems to be read-only)
          FMaterialName : String;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
@@ -350,8 +352,7 @@ type
             Default is tcmWorld coordinates. }
          property TextureCoordinatesMode : THDTextureCoordinatesMode read FTextureCoordinatesMode write FTextureCoordinatesMode;
          property TextureCoordinatesOffset : TTexPoint read FTCOffset write FTCOffset;
-         property TextureCoordinatesScale : TTexPoint read FTCScale write FTCScale;
-
+         property TextureCoordinatesScale  : TTexPoint read FTCScale  write FTCScale;
          {: Height of point x, y as a Byte.<p> }
 	      function ByteHeight(x, y : Integer) : Byte;
          {: Height of point x, y as a SmallInt.<p> }
@@ -441,6 +442,9 @@ type
          function GetScanLine(y : Integer) : PByteArray;
 
          procedure StartPreparingData(heightData : THeightData); override;
+
+         function Width :integer;    override;
+         function Height:integer;    override;
 
 	   public
 	      { Public Declarations }
@@ -888,6 +892,20 @@ begin
       Result:=DefaultHeight
    else Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
 end;
+
+
+function THeightDataSource.Width:integer;
+begin
+  inherited;
+  //result:=0;
+end;
+
+function THeightDataSource.Height:integer;
+begin
+  inherited;
+  //result:=0;
+end;
+
 
 // ------------------
 // ------------------ THeightData ------------------
@@ -1342,7 +1360,7 @@ end;
 function THeightData.OverlapsArea(const area : TGLRect) : Boolean;
 begin
    Result:=(XLeft<=area.Right) and (YTop<=area.Bottom)
-           and (XLeft+Size>area.Left) and (YTop+Size>area.Top); 
+           and (XLeft+Size>area.Left) and (YTop+Size>area.Top);
 end;
 
 // ------------------
@@ -1560,6 +1578,20 @@ begin
          DataType:=oldType;
    end;
    inherited;
+end;
+
+function TGLBitmapHDS.Width:integer;
+begin
+  if assigned(self.FBitmap)
+    then result:=self.FBitmap.Width
+    else result:=0;
+end;
+
+function TGLBitmapHDS.Height:integer;
+begin
+  if assigned(self.FBitmap)
+    then result:=self.FBitmap.Height
+    else result:=0;
 end;
 
 
