@@ -6,29 +6,8 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
-
-
-      <li>26/01/07 - LIN- Many many changes from Lord CRC
-			               I certaintly find it to be faster and more stable
-                     than the version that is currently in CVS. (Thanks Lord CRC)
-
-			              - Increased cTilesHashSize constant
-
-              			- Modified HashKey function for better
-			                hashing performance over a wide range of
-                		  tile and table sizes.
-
-              			- New property GenerateHighRes. If false, tiles which needs
-            			    PrepareHighRes in order to be rendered as high-res, will
-            			    be rendered as normal (ie tesselated). This allows for
-            		  	  smother animations across surface.
-
-              			- Modified BuildList
-            			    Changed conditions for a patch to aquire high-res status.
-            		  	  All patches are interleaved, high-res too.
-            	  		  Patch list is sorted before interleaving tesselation/generation
-              			  and rendering, to maximize throughput.
-
+      <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
+      <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
@@ -55,17 +34,19 @@ unit GLTerrainRenderer;
 
 interface
 
-uses Classes, GLScene, GLHeightData, GLTexture, VectorTypes, VectorGeometry, GLContext,
+uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext,
    GLROAMPatch, VectorLists;
 
 const
-   cTilesHashSize = 2047;
+   cTilesHashSize = 511;
 
 type
 
    TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
-   TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
-   THeightDataPostRenderEvent = procedure (var rci : TRenderContextInfo; const heightDatas : TList) of object;
+   TPatchPostRenderEvent = procedure(var rci : TRenderContextInfo; const patches : TList) of object;
+   THeightDataPostRenderEvent = procedure(var rci : TRenderContextInfo; const heightDatas : TList) of object;
+   TMaxCLODTrianglesReachedEvent = procedure(var rci:TRenderContextInfo) of object;
+
    TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
    TTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
 
@@ -94,10 +75,11 @@ type
          FOnGetTerrainBounds : TGetTerrainBoundsEvent;
          FOnPatchPostRender : TPatchPostRenderEvent;
          FOnHeightDataPostRender : THeightDataPostRenderEvent;
+         FOnMaxCLODTrianglesReached : TMaxCLODTrianglesReachedEvent;
+
          FQualityStyle : TTerrainHighResStyle;
          FOcclusionFrameSkip : Integer;
          FOcclusionTesselate : TTerrainOcclusionTesselate;
-         FGenerateHighRes: boolean;
 
 	   protected
 	      { Protected Declarations }
@@ -118,7 +100,7 @@ type
          procedure SetOcclusionFrameSkip(val : Integer);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DestroyHandle; override;
+			procedure DestroyHandle; override;
 
          procedure ReleaseAllTiles; dynamic;
          procedure OnTileDestroyed(sender : TObject); virtual;
@@ -132,7 +114,7 @@ type
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-			  procedure BuildList(var rci : TRenderContextInfo); override;
+			procedure BuildList(var rci : TRenderContextInfo); override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -196,7 +178,6 @@ type
             rendering (ie. leave value to its default of zero).<br>
             This optimization requires the hardware to support GL_NV_occlusion_query. }
          property OcclusionFrameSkip : Integer read FOcclusionFrameSkip write SetOcclusionFrameSkip default 0;
-
          {: Determines if and how occlusion testing affects tesselation.<p>
             Turning off tesselation of tiles determined invisible can improve
             performance, however, it may result in glitches since the tesselation
@@ -208,20 +189,10 @@ type
             trade CPU power against T&L power). }
          property OcclusionTesselate : TTerrainOcclusionTesselate read FOcclusionTesselate write FOcclusionTesselate default totTesselateIfVisible;
 
-         {: Set to true to allow generation of new high resolution tiles <p>
-            Since generating high resolution tiles require some processing,
-            this can lead to a noticeable "jerk" in the animation. By disabling
-            this flag during rapid transitions, this jerk is minimized.<p>
-            Note: This flag only prevents generation of high-res data for tiles
-            that doesn't already have high-res data. It does not turn off the
-            rendring of high-res tiles completely. }
-         property GenerateHighRes: boolean read FGenerateHighRes write FGenerateHighRes;
-
          {: Allows to specify terrain bounds.<p>
             Default rendering bounds will reach depth of view in all direction,
             with this event you can chose to specify a smaller rendered
             terrain area. }
-
          property OnGetTerrainBounds : TGetTerrainBoundsEvent read FOnGetTerrainBounds write FOnGetTerrainBounds;
          {: Invoked for each rendered patch after terrain render has completed.<p>
             The list holds TGLROAMPatch objects and allows per-patch
@@ -233,6 +204,13 @@ type
             post-processings, like waters, trees... It is invoked *after*
             OnPatchPostRender. }
          property OnHeightDataPostRender : THeightDataPostRenderEvent read FOnHeightDataPostRender write FOnHeightDataPostRender;
+         {: Invoked whenever the MaxCLODTriangles limit was reached during last rendering.<p>
+            This forced the terrain renderer to resize the buffer, which affects performance.
+            If this event is fired frequently, one should increase MaxCLODTriangles. 
+         }
+         property OnMaxCLODTrianglesReached : TMaxCLODTrianglesReachedEvent read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
+
+
 	end;
 
 // ------------------------------------------------------------------
@@ -245,28 +223,14 @@ implementation
 
 uses SysUtils, OpenGL1x, GLMisc, XOpenGL, GLUtils;
 
-const
-  // Minimum tile variance for allowing high-res tiles
-  MIN_HIGHRES_VARIANCE = 10000;
-
 // HashKey
 //
-//function HashKey(const xLeft, yTop : Integer) : Integer; inline;
-//begin
-//   Result:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
-//            +(yTop shl 1)+(yTop shr 9)+(yTop shr 17)) and cTilesHashSize;
-//end;
-
-function HashKey(const xLeft, yTop : Integer) : Integer; //inline;
-var
-  x, y: integer;
+function HashKey(const xLeft, yTop : Integer) : Integer;
 begin
-  x:= xLeft * 11;
-  y:= yTop * 7;
-
-  Result:=( x+(x shr 7)+(x shr 13)+(x shr 23)
-            -(y shl 2)-(y shl 5)-(y shr 11)) and cTilesHashSize;
+   Result:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
+            +(yTop shl 1)+(yTop shr 9)+(yTop shr 17)) and cTilesHashSize;
 end;
+
 
 // ------------------
 // ------------------ TGLTerrainRenderer ------------------
@@ -291,8 +255,6 @@ begin
    FBufferVertices:=TAffineVectorList.Create;
    FBufferTexPoints:=TTexPointList.Create;
    FBufferVertexIndices:=TIntegerList.Create;
-
-   FGenerateHighRes:= true;
 end;
 
 // Destroy
@@ -478,6 +440,7 @@ var
    maxTilePosX, maxTilePosY, minTilePosX, minTilePosY : Single;
    t_l, t_t, t_r, t_b : Single;
    hd : THeightData;
+   TessDone:boolean;
 
    procedure ApplyMaterial(const materialName : String);
    begin
@@ -624,12 +587,7 @@ begin
             if patch<>nil then begin
 
                tileDist:=VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
-
-               // enable high res rendering of tile only if the tile is within
-               // QualityDistance, the patch is not nearly flat, and high-res
-               // data is available or can be generated
-               patch.HighRes:=(tileDist<qDist) and (patch.MaxVariance > MIN_HIGHRES_VARIANCE) and
-                (patch.HighResAvailable or GenerateHighRes);
+               patch.HighRes:=(tileDist<qDist);
 
                if not patch.HighRes then
                   patch.ResetTessellation;
@@ -644,8 +602,16 @@ begin
                   else TGLROAMPatch(prevRow.List[n]).ConnectToTheNorth(patch);
                end;
 
-              // issue all patches later
-               patchList.Add(patch);
+               if patch.HighRes then begin
+                  // high-res patches are issued immediately
+                  ApplyMaterial(patch.HeightData.MaterialName);
+                  patch.RenderHighRes(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
+                                      (QualityStyle=hrsTesselated));
+                  FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+               end else begin
+                  // CLOD patches are issued after tesselation
+                  patchList.Add(patch);
+               end;
 
                prevPatch:=patch;
                rowList.Add(patch);
@@ -673,72 +639,35 @@ begin
 
    accumCount:=FBufferVertexIndices.Capacity shr 3;
 
-   // Sort patch list so that high-res patches
-   // come at the end, and patches needing tesselation
-   // comes first. This is because tesselation is usually
-   // quicker than generating a high-res patch, and so
-   // there is less delay before the interleaved
-   // rendering can start
-
-   iX:= 0;
-   iY:= patchList.Count-1;
-
-   while (iX < iY) do
-   begin
-      while (iX < iY) and assigned(TGLROAMPatch(patchList[iX])) and (not TGLROAMPatch(patchList[iX]).HighRes) do
-        inc(iX);
-      while (iY > iX) and assigned(TGLROAMPatch(patchList[iY])) and (TGLROAMPatch(patchList[iY]).HighRes) do
-        dec(iY);
-
-      if (iX < iY) then
-      begin
-        patch:= patchList[iX];
-        patchList[iX]:= patchList[iY];
-        patchList[iY]:= patch;
-      end;
-   end;
-
-   // Interleave Tesselate/generate and Render so we can send some work to the hardware
+   // Interleave Tesselate and Render so we can send some work to the hardware
    // while the CPU keeps working
    rpIdxDelta:=Round(2*f/TileSize)+2;
    for n:=0 to patchList.Count-1+rpIdxDelta do begin
       if n<patchList.Count then begin
          patch:=TGLROAMPatch(patchList[n]);
          if Assigned(patch) then begin
-            // determine if we need to tesselate or generate high-res data
-            if patch.HighRes then
-            begin
-              ApplyMaterial(patch.HeightData.MaterialName);
-              patch.PrepareHighRes(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
-                (QualityStyle=hrsTesselated))
-            end
-            else if (   (patch.LastOcclusionTestPassed)
+            if    (patch.LastOcclusionTestPassed)
                or (patch.OcclusionCounter<=0)
-               or (OcclusionTesselate=totTesselateAlways)) then
-               patch.Tesselate;
+               or (OcclusionTesselate=totTesselateAlways) then
+                 TessDone:=patch.Tesselate;
          end;
       end;
       if n>=rpIdxDelta then begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
          if Assigned(patch) then begin
             ApplyMaterial(patch.HeightData.MaterialName);
-
-            // render tesselated or high res accordingly
-            if patch.HighRes then
-            begin
-              patch.RenderHighRes(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
-                                  (QualityStyle=hrsTesselated));
-            end
-            else
-            begin
-              patch.RenderAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
-                                accumCount);
-            end;
-
+            patch.RenderAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
+                              accumCount);
             Inc(FLastTriangleCount, patch.TriangleCount);
          end;
       end;
+
    end;
+
+   if (GetROAMTrianglesCapacity > MaxCLODTriangles) and Assigned(FOnMaxCLODTrianglesReached) then begin
+     FOnMaxCLODTrianglesReached(rci);           //Fire an event if the MaxCLODTriangles limit was reached
+   end;
+
    TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
    xglPushState;
