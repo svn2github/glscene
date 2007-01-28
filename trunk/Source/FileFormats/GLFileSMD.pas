@@ -6,6 +6,7 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>28/01/07 - DaStr - Optimized bone weights loading a bit
       <li>14/01/07 - DaStr - Fixed bone weights for HL2 models (thanks DIVON)
       <li>24/01/05 - SG - Fix for comma decimal separator in save function (dikoe Kenguru)
       <li>30/03/04 - EG - Basic Half-Life2/XSI support
@@ -87,7 +88,7 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
    end;
 
 var
-   i, k, nVert, nTex, firstFrame : Integer;
+   i, j, k, nVert, nTex, firstFrame : Integer;
    nbBones, boneID : Integer;
    mesh : TSkeletonMeshObject;
    sl, tl : TStringList;
@@ -97,9 +98,7 @@ var
    v : TAffineVector;
 
    boneIDs : TVertexBoneWeightDynArray;
-   klmn,KolVesKost,KostID:integer;
-   ves:Single;
-   ComplexSMDmodel:boolean;
+   weightCount: Integer;
 begin
    sl:=TStringList.Create;
    tl:=TStringList.Create;
@@ -182,7 +181,7 @@ begin
          if mesh.BonesPerVertex<1 then
             mesh.BonesPerVertex:=1;
          faceGroup:=nil;
-         ComplexSMDmodel := False;
+
          while sl[i]<>'end' do begin
             if (faceGroup=nil) or (faceGroup.MaterialName<>sl[i]) then begin
                faceGroup:=TFGVertexNormalTexIndexList.CreateOwned(mesh.FaceGroups);
@@ -195,35 +194,30 @@ begin
             for k:=1 to 3 do with mesh do begin
                  tl.CommaText:=sl[i];
 
-                 //We check number of bones
-                 ComplexSMDmodel := ComplexSMDmodel or (tl.Count > 9);
-
-                 //complex model with many bones
-                 if ComplexSMDmodel then begin
-                     // Half-Life 2 SMD, specifies bones and weights
-                     KolVesKost:=StrToInt(tl[9]);
-                     SetLength(boneIDs,KolVesKost);
-                      for klmn:=0 to KolVesKost-1 do begin
-                        KostId:=StrToInt(tl[10+(klmn)*2]);
-                        ves:=StrToFloatDef(tl[11+(klmn)*2]);
-                        BoneIDs[klmn].BoneID:=KostId;
-                        BoneIDs[klmn].Weight:=ves;
-                      end;
-
-                     nVert:=FindOrAdd(boneIDs, AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
-                     nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
-                     faceGroup.Add(nVert, nVert, nTex);
-                     Inc(i);
-                  end else
-
-                  //simple model
-                   begin
-                     boneID:=StrToInt(tl[0]);
-                     nVert:=FindOrAdd(boneID,AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
-                     nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
-                     faceGroup.Add(nVert, nVert, nTex);
-                     Inc(i);
+                 if tl.Count>9
+                 then begin
+                   // Half-Life 2 SMD, specifies bones and weights
+                   weightCount := StrToInt(tl[9]);
+                   SetLength(boneIDs,weightCount);
+                   for j := 0 to weightCount - 1 do begin
+                     BoneIDs[j].BoneID := StrToInt(tl[10+j*2]);
+                     BoneIDs[j].Weight := StrToFloatDef(tl[11+j*2]);
                    end;
+
+                   nVert:=FindOrAdd(boneIDs, AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
+                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
+                   faceGroup.Add(nVert, nVert, nTex);
+                   Inc(i);
+                 end
+                 else
+                 begin
+                   // Half-Life 1 simple format
+                   boneID:=StrToInt(tl[0]);
+                   nVert:=FindOrAdd(boneID,AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
+                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
+                   faceGroup.Add(nVert, nVert, nTex);
+                   Inc(i);
+                 end;
             end;
          end;
          Owner.Skeleton.RootBones.PrepareGlobalMatrices;
