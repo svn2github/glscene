@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Added IntersectSphereBox (Thanks to dikoe Kenguru)
       <li>23/01/07 - fig - Added TexpointEquals() function
       <li>13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
                              Deleted types that were duplicated  (BugTrackerID = 1586318),
@@ -1279,6 +1280,19 @@ function IntersectLinePlane(const point, direction: TVector;
    Returns True if an intersection was found. }
 function IntersectTriangleBox(
     const p1, p2, p3, aMinExtent, aMaxExtent: TAffineVector): Boolean;
+
+{: Compute intersection between a Sphere and a box.<p>
+  Up, Direction and Right must be normalized!
+  Use CubDepht, CubeHeight and CubeWidth to scale TGLCube.}
+function IntersectSphereBox(
+    const SpherePos     : TVector;
+    const SphereRadius  : Single;
+    const BoxMatrix     : TMatrix;
+    const BoxScale      : TAffineVector
+    ; intersectPoint    : PAffineVector = nil
+    ; normal            : PAffineVector = nil
+    ; depth             : PSingle = nil
+  ) : Boolean;
 
 {: Compute intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
@@ -9628,7 +9642,7 @@ begin
     end;
 end;
 
-// TriangleBoxIntersect
+// IntersectTriangleBox
 //
 
 function IntersectTriangleBox(
@@ -9699,6 +9713,129 @@ begin
     if Result then
         Result := VectorLength(VectorSubtract(BoxDiagPt, iPnt))
             < VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
+end;
+
+// IntersectSphereBox
+//
+
+function IntersectSphereBox(
+    const SpherePos     : TVector;
+    const SphereRadius  : Single;
+    const BoxMatrix     : TMatrix; // Up Direction and Right must be normalized!
+                                   // Use CubDepht, CubeHeight and CubeWidth
+                                   // for scale TGLCube.
+    const BoxScale      : TAffineVector
+    ; intersectPoint    : PAffineVector = nil
+    ; normal            : PAffineVector = nil
+    ; depth             : PSingle = nil
+  ) : Boolean;
+
+  function dDOTByColumn(const v : TAffineVector; const m : TMatrix;
+    const aColumn : Integer): Single;
+  begin
+    Result :=  v[0] *m[0, aColumn]
+              +v[1] *m[1, aColumn]
+              +v[2] *m[2, aColumn];
+  end;
+
+  function dDotByRow(const v : TAffineVector;
+    const m : TMatrix; const aRow : Integer) : Single;
+  begin
+    // Equal with: Result := VectorDotProduct(v, AffineVectorMake(m[aRow]));
+    Result :=  v[0] *m[aRow, 0]
+              +v[1] *m[aRow, 1]
+              +v[2] *m[aRow, 2];
+  end;
+
+  function dDotMatrByColumn(const V: TAffineVector;
+    const m: TMatrix): TAffineVector;
+  begin
+    Result[0] := dDOTByColumn(v, m, 0);
+    Result[1] := dDOTByColumn(v, m, 1);
+    Result[2] := dDOTByColumn(v, m, 2);
+  end;
+
+  function dDotMatrByRow(const v : TAffineVector;
+    const m : TMatrix) : TAffineVector;
+  begin
+    Result[0] := dDotByRow(v, m, 0);
+    Result[1] := dDotByRow(v, m, 1);
+    Result[2] := dDotByRow(v, m, 2);
+  end;
+
+var
+  tmp, l, t, p, q, r      : TAffineVector;
+  FaceDistance,
+  MinDistance, Depth1     : Single;
+  mini, i                 : Integer;
+  isSphereCenterInsideBox : Boolean;
+begin
+  // this is easy. get the sphere center `p' relative to the box, and then clip
+  // that to the boundary of the box (call that point `q'). if q is on the
+  // boundary of the box and |p-q| is <= sphere radius, they touch.
+  // if q is inside the box, the sphere is inside the box, so set a contact
+  // normal to push the sphere to the closest box face.
+
+  p[0] := SpherePos[0] -BoxMatrix[3, 0];
+  p[1] := SpherePos[1] -BoxMatrix[3, 1];
+  p[2] := SpherePos[2] -BoxMatrix[3, 2];
+
+  isSphereCenterInsideBox := True;
+  for i := 0 to 2 do begin
+    l[i] := 0.5 *BoxScale[i];
+    t[i] := dDOTByRow(p, BoxMatrix, i);
+    if          t[i] < -l[i] then begin
+      t[i]       := -l[i];
+      isSphereCenterInsideBox := False;
+    end else if t[i] >  l[i] then begin
+      t[i]       :=  l[i];
+      isSphereCenterInsideBox := False;
+    end;
+  end;
+
+  if isSphereCenterInsideBox then begin
+
+    MinDistance := l[0] -Abs(t[0]);
+    mini := 0;
+    for i := 1 to 2 do begin
+      FaceDistance := l[i] -Abs(t[i]);
+      if FaceDistance < MinDistance then begin
+        MinDistance := FaceDistance;
+        mini        := i;
+      end;
+    end;
+
+    if intersectPoint <> nil then
+      intersectPoint^ := AffineVectorMake(SpherePos);
+
+    if normal <> nil then begin
+      Tmp := NullVector;
+      if t[mini] > 0 then Tmp[mini] :=  1
+                     else Tmp[mini] := -1;
+      normal^ := dDotMatrByRow(tmp, BoxMatrix);
+    end;
+
+    if Depth <> nil then
+      Depth^ := MinDistance +SphereRadius;
+
+    Result := True;
+  end else begin
+    q      := dDotMatrByColumn(t, BoxMatrix);
+    r      := VectorSubtract(p, q);
+    Depth1 := SphereRadius -VectorLength(r);
+    if Depth1 < 0 then begin
+      Result := False;
+    end else begin
+      if intersectPoint <> nil then
+        intersectPoint^ := VectorAdd(q, AffineVectorMake(BoxMatrix[3]));
+      if normal <> nil then begin
+        normal^ := VectorNormalize(r);
+      end;
+      if Depth <> nil then
+        Depth^ := Depth1;
+      Result   := True;
+    end;
+  end;
 end;
 
 // ExtractFrustumFromModelViewProjection
