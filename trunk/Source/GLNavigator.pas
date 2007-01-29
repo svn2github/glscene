@@ -6,6 +6,7 @@
   Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
                              the TGLUserInterface component.
@@ -157,14 +158,7 @@ type
     property GLVertNavigator: TGLNavigator read FGLVertNavigator write setVertNavigator;
   end;
 
-procedure Register;
-
 implementation
-
-procedure Register;
-begin
-  RegisterComponents('GLScene Utils', [TGLNavigator, TGLUserInterface]);
-end;
 
 Constructor TGLNavigator.Create(AOwner : TComponent);
 Begin

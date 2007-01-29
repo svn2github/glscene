@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>01/06/05 - NelC - Replaced property GLFullScreenViewer with GLNonVisualViewer
       <li>26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
       <li>22/10/04 - EG - Can now operate without a SceneViewer
@@ -142,8 +143,6 @@ type
 
      end;
 
-procedure Register;
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -153,11 +152,6 @@ implementation
 // ---------------------------------------------------------------------
 
 uses SysUtils, Dialogs, Messages, GLGraphics;
-
-procedure Register;
-begin
-	RegisterComponents('GLScene Utils', [TAVIRecorder]);
-end;
 
 // DIB support rountines for AVI output
 

@@ -9,6 +9,7 @@
    You can change current PAK file by ActivePak variable.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
       <li>26/10/2006 - LC - Fixed memory leak in TGLVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
       <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
       <li>14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
@@ -124,8 +125,6 @@ type
 function PAKCreateFileStream(const fileName: string; mode: word): TStream;
 function PAKFileStreamExists(const fileName: string): boolean;
 
-procedure Register;
-
 var
    ActiveVfsPAK: TGLVfsPak;
 
@@ -133,11 +132,6 @@ implementation
 
 var
    Dir: TFileSection;
-
-procedure Register;
-begin
-	RegisterComponents('GLScene Utils', [TGLVfsPAK]);
-end;
 
 function BackToSlash(s: string): string;
 var

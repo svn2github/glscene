@@ -18,6 +18,7 @@
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
   <b>History : </b><font size=-1><ul>
+    <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
     <li>01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
     <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
     <li>19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
@@ -246,16 +247,10 @@ function GetOrCreateDCEStatic(obj : TGLBaseSceneObject) : TGLDCEStatic; overload
 function GetOrCreateDCEDynamic(behaviours : TGLBehaviours) : TGLDCEDynamic; overload;
 function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overload;
 
-procedure Register;
-
 implementation
 
 uses SysUtils;
 
-procedure register;
-begin
-  RegisterComponents('GLScene Utils', [TGLDCEManager]);
-end;
 
 function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;
 var v2: TVector;

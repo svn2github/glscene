@@ -6,6 +6,7 @@
    FPS-like movement behaviour and manager.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
       <li>03/07/04 - LR - Corrections for Linux compatibility
@@ -190,16 +191,9 @@ function GetFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overload;
 function GetOrCreateFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overload;
 
-procedure Register;
-
 implementation
 
 uses GLCrossPlatform;
-
-procedure register;
-begin
-     RegisterComponents('GLScene Utils', [TGLFPSMovementManager]);
-end;
 
 function GetFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 var
