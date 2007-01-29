@@ -3,13 +3,16 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - TGLCustomCoordinates.SetVector - Added default value
+                             to one of the procedure's parameters
+                             Added TGLCustomCoordinates.AsPoint2D property
       <li>14/01/07 - DaStr - Added IGLCoordinatesUpdateAble
                               (abstracted from TGLCoordinatesUpdateAbleComponent)
-                          TGLCoordinates.SetVector/SetPoint - fixed assertions
-                          and added descriptions for them (BugTrackerID=1588388)
-                          TGLCustomCoordinates abstracted
-                          TGLCoordinates2 added
-                          Added csPoint2D to TGLCoordinatesStyle
+                             TGLCoordinates.SetVector/SetPoint - fixed assertions
+                             and added descriptions for them (BugTrackerID=1588388)
+                             TGLCustomCoordinates abstracted
+                             TGLCoordinates2 added
+                             Added csPoint2D to TGLCoordinatesStyle
       <li>05/09/03 - EG - Some GLScene types and helper functions moved
                           to new GLState and GLUtils units
       <li>10/25/03 - Dave - Added TGLCoordinates.SetVector (TAffineVector)
@@ -55,9 +58,9 @@
       <li>07/06/00 - EG - Added RemoveFreeNotification for Delphi 4
       <li>29/05/00 - EG - Added TGLNode/TGLNodes
       <li>26/05/00 - EG - TMeshMode & TVertexMode moved in
-		<li>22/03/00 - EG - Added SetGLState/UnSetGLState
-		<li>21/03/00 - EG - Added SaveStringToFile/LoadStringFromFile
-		<li>18/03/00 - EG - Added GetSqrt255Array
+      <li>22/03/00 - EG - Added SetGLState/UnSetGLState
+      <li>21/03/00 - EG - Added SaveStringToFile/LoadStringFromFile
+      <li>18/03/00 - EG - Added GetSqrt255Array
       <li>06/02/00 - EG - Javadocisation, RoundUpToPowerOf2,
                           RoundDownToPowerOf2 and IsPowerOf2 moved in
    </ul></font>
@@ -197,19 +200,20 @@ type
 		This class is basicly a container for a TVector, allowing proper use of
 		delphi property editors and editing in the IDE. Vector/Coordinates
 		manipulation methods are only minimal.<br>
-		Handles dynamic default values to save resource file space.<p>
-		Note : only affine components are published. }
+		Handles dynamic default values to save resource file space.<p> }
 	TGLCustomCoordinates = class (TGLUpdateAbleObject)
 		private
 			{ Private Declarations }
 			FCoords : TVector;
          FStyle : TGLCoordinatesStyle; // NOT Persistent
          FPDefaultCoords : PVector;
+			procedure SetAsPoint2D(const Value : TVector2f);
 			procedure SetAsVector(const value : TVector);
 			procedure SetAsAffineVector(const value : TAffineVector);
-         function GetAsAffineVector : TAffineVector;
+      function GetAsAffineVector : TAffineVector;
+      function GetAsPoint2D : TVector2f;
 			procedure SetCoordinate(index : Integer; const aValue : TGLFloat);
-         function GetAsString : String;
+      function GetAsString : String;
 
 		protected
 			{ Protected Declarations }
@@ -253,7 +257,7 @@ type
          function  MaxXYZ : Single;
          function  Equals(const aVector : TVector) : Boolean;
 
-         procedure SetVector(const x, y, z : Single); overload;
+         procedure SetVector(const x, y: Single; z : Single = 0); overload;
          procedure SetVector(const x, y, z, w: Single); overload;
          procedure SetVector(const v : TAffineVector); overload;
          procedure SetVector(const v : TVector); overload;
@@ -274,11 +278,17 @@ type
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead. }
 			property AsVector : TVector read FCoords write SetAsVector;
+
          {: The coordinates viewed as an affine vector.<p>
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead.<br>
             The W component is automatically adjustes depending on style. }
 			property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
+
+         {: The coordinates viewed as a 2D point.<p>
+            Assigning a value to this property will trigger notification events,
+            if you don't want so, use DirectVector instead. }
+			property AsPoint2D : TVector2f read GetAsPoint2D write SetAsPoint2D;
 
       property X: TGLFloat index 0 read FCoords[0] write SetCoordinate;
       property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate;
@@ -287,7 +297,7 @@ type
 
          {: The coordinates, in-between brackets, separated by semi-colons. }
          property AsString : String read GetAsString;
-         
+
          //: Similar to AsVector but does not trigger notification events
          property DirectVector : TVector read FCoords write SetDirectVector;
          property DirectX : TGLFloat read FCoords[0] write FCoords[0];
@@ -882,7 +892,7 @@ end;
 
 // SetVector (affine)
 //
-procedure TGLCustomCoordinates.SetVector(const x, y, z : Single);
+procedure TGLCustomCoordinates.SetVector(const x, y: Single; z : Single = 0);
 begin
   Assert(FStyle = csVector, csVectorHelp);
   VectorGeometry.SetVector(FCoords, x, y, z);
@@ -1042,11 +1052,37 @@ begin
 	NotifyChange(Self);
 end;
 
+// SetAsPoint2D
+//
+procedure TGLCustomCoordinates.SetAsPoint2D(const Value : TVector2f);
+begin
+   case FStyle of
+      csPoint2D, csPoint,  csVector:
+      begin
+        FCoords[0] := Value[0];
+        FCoords[1] := Value[1];
+        FCoords[2] := 0;
+        FCoords[3] := 0;
+      end;
+   else
+      Assert(False);
+   end;
+	NotifyChange(Self);
+end;
+
 // GetAsAffineVector
 //
 function TGLCustomCoordinates.GetAsAffineVector : TAffineVector;
 begin
    VectorGeometry.SetVector(Result, FCoords);
+end;
+
+// GetAsPoint2D
+//
+function TGLCustomCoordinates.GetAsPoint2D : TVector2f;
+begin
+   Result[0] := FCoords[0];
+   Result[1] := FCoords[1];
 end;
 
 // SetCoordinate
