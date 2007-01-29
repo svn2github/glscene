@@ -3,6 +3,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
+                               procedures from other units to this one
       <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
                                    (to support IGLMaterialLibrarySupported)
       <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
@@ -27,11 +29,11 @@
                           enhanced GetRegisteredSceneObjects
       <li>16/04/00 - EG - Objects icons are now loaded from ressources using
                           ClassName (more VCL-like)
-		<li>11/04/00 - EG - Components now install under 'GLScene',
-								  Fixed DestroySceneObjectList (thanks Uwe Raabe)
-		<li>06/04/00 - EG - Added TGLBehavioursProperty
-		<li>18/03/00 - EG - Added TGLImageClassProperty
-		<li>13/03/00 - EG - Updated TGLTextureImageProperty
+      <li>11/04/00 - EG - Components now install under 'GLScene',
+                          Fixed DestroySceneObjectList (thanks Uwe Raabe)
+      <li>06/04/00 - EG - Added TGLBehavioursProperty
+      <li>18/03/00 - EG - Added TGLImageClassProperty
+      <li>13/03/00 - EG - Updated TGLTextureImageProperty
       <li>14/02/00 - EG - Added MaterialLibrary editor and picker
       <li>09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
                           object-oriented and encapsulated
@@ -142,7 +144,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-   TypInfo, VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
+   TypInfo, VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
@@ -152,7 +154,9 @@ uses
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLTexturedHDS,
    GLAnimatedSprite, GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
-   GLLinePFX, GLScriptBase, GLGameMenu,
+   GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
+   GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
+   ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1771,7 +1775,8 @@ begin
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLCustomSpritePFXManager,
                        TGLPerlinPFXManager, TGLLinePFXManager,
-                       TGLFireFXManager, TGLThorFXManager
+                       TGLFireFXManager, TGLThorFXManager,
+                       TGLEParticleMasksManager
                       ]);
 
    RegisterComponents('GLScene Utils',
@@ -1779,7 +1784,10 @@ begin
                        TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
                        TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
-                       TCollisionManager, TGLAnimationControler
+                       TCollisionManager, TGLAnimationControler,
+                       TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
+                       TGLMaterialScripter, TGLUserInterface, TGLNavigator,
+                       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
