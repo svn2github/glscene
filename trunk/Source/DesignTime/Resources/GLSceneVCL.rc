@@ -43,3 +43,5 @@ TGLDCEManager BITMAP vcl\glscene_icon_TGLDCEManager.bmp
 TGLPerlinHDS BITMAP vcl\glscene_icon_TGLPerlinHDS.bmp
 TGLScriptLibrary BITMAP vcl\glscene_icon_TGLScriptLibrary.bmp
 TGLTexturedHDS BITMAP vcl\glscene_icon_TGLTexturedHDS.bmp
+TGLEParticleMasksManager BITMAP vcl\glscene_icon_TGLEParticleMasksManager.bmp
+TGLWideBitmapFont BITMAP vcl\glscene_icon_TGLWideBitmapFont.bmp
