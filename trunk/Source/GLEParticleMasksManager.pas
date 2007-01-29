@@ -55,7 +55,7 @@ type
   TGLEParticleMask = class;
   TGLEParticleMasks = class;
 
-  TGLEParticleMask = class(TCollectionItem)
+  TGLEParticleMask = class(TCollectionItem, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FName: string;
@@ -84,6 +84,12 @@ type
     function XCan: TBitMap;
     function YCan: TBitMap;
     function ZCan: TBitMap;
+    //implementing IGLMaterialLibrarySupported
+    function GetMaterialLibrary: TGLMaterialLibrary;
+    //implementing IInterface
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -349,7 +355,6 @@ begin
     end;
 
   UpdateExtents;
-
 end;
 
 function TGLEParticleMask.GetDisplayName: string;
@@ -361,9 +366,20 @@ begin
     Result := 'TGLEParticleMask';
 end;
 
+function TGLEParticleMask.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
+end;
+
 procedure TGLEParticleMask.Pitch(Angle: Single);
 begin
   FPitchAngle := FPitchAngle + Angle;
+end;
+
+function TGLEParticleMask.QueryInterface(const IID: TGUID;
+  out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
 end;
 
 procedure TGLEParticleMask.Roll(Angle: Single);
@@ -631,6 +647,16 @@ begin
 
 end;
 
+function TGLEParticleMask._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+function TGLEParticleMask._Release: Integer;
+begin
+  Result := -1; //ignore
+end;
+
 { TGLEParticleMasksManager }
 
 procedure TGLEParticleMasksManager.ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
@@ -696,7 +722,6 @@ begin
   ApplyRotation(Result, Mask);
   // this applies the scales and positioning
   ApplyScaleAndPosition(Result, Mask);
-
 end;
 
 destructor TGLEParticleMasksManager.Destroy;
@@ -773,7 +798,6 @@ begin
   ApplyRotationTarget(Result, Mask, TargetObject);
   // this applies the scales and positioning
   ApplyScaleAndPositionTarget(Result, Mask, TargetObject);
-
 end;
 
 end.
