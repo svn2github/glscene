@@ -12,6 +12,10 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
+                          GLHeightData is now derived from TGLUpdateAbleObject
+                          GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
+      <li>26/01/07 - LIN- Some threading changes (Lord CRC)
       <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
       <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
       <li>03/07/04 - LR - Corrections for Linux compatibility
@@ -40,7 +44,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform;
+uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc;
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;
@@ -227,7 +231,8 @@ type
       from the THeightDataSource with the appropriate format.<p>
       Though this class can be instantiated, you will usually prefer to subclass
       it in real-world cases, f.i. to add texturing data. }
-	THeightData = class (TObject)
+	//THeightData = class (TObject)
+  THeightData = class (TGLUpdateAbleObject)
 	   private
 	      { Private Declarations }
          FUsers : array of THeightDataUser;
@@ -245,8 +250,9 @@ type
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
          FTextureCoordinatesMode : THDTextureCoordinatesMode;
-         FTCOffset, FTCScale : TTexPoint;  //(TTexPoint seems to be read-only)
-         FMaterialName : String;
+         FTCOffset, FTCScale : TTexPoint;
+         FMaterialName : String;       //Unsafe. Use FLibMaterial instead
+         FLibMaterial :TGLLibMaterial;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
          FOnDestroy : TNotifyEvent;
@@ -270,6 +276,8 @@ type
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
 
          procedure SetDataType(const val : THeightDataType);
+         procedure SetMaterialName(const MaterialName:string);
+         procedure SetLibMaterial(LibMaterial:TGLLibMaterial);
 
          function  GetHeightMin : Single;
          function  GetHeightMax : Single;
@@ -347,7 +355,16 @@ type
          property SingleRaster : PSingleRaster read FSingleRaster;
 
          {: Name of material for the tile (if terrain uses multiple materials). }
-         property MaterialName : String read FMaterialName write FMaterialName;
+         // property MaterialName : String read FMaterialName write FMaterialName;
+         // (WARNING: Unsafe when deleting textures! If possible, rather use LibMaterial.)
+         property MaterialName : String read FMaterialName write SetMaterialName;
+         // property LibMaterial : Links directly to the tile's TGLLibMaterial.
+         //   Unlike 'MaterialName', this property also registers the tile as
+         //   a user of the texture.
+         //   This prevents TGLLibMaterials.DeleteUnusedTextures from deleting the
+         //   used texture by mistake and causing Access Violations.
+         //   Use this instead of the old MaterialName property, to prevent AV's.
+         property LibMaterial : TGLLibMaterial read FLibMaterial write SetLibMaterial;
          {: Texture coordinates generation mode.<p>
             Default is tcmWorld coordinates. }
          property TextureCoordinatesMode : THDTextureCoordinatesMode read FTextureCoordinatesMode write FTextureCoordinatesMode;
@@ -471,6 +488,8 @@ type
    TStartPreparingDataEvent = procedure (heightData : THeightData) of object;
    TMarkDirtyEvent = procedure (const area : TGLRect) of object;
 
+   //TTexturedHeightDataSource = class (TGLTexturedHeightDataSource)
+
 	// TGLCustomHDS
 	//
    {: An Height Data Source for custom use.<p>
@@ -537,7 +556,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLMisc, ApplicationFileIO, GLUtils
+uses SysUtils, ApplicationFileIO, GLUtils   //, GMisc
   {$IFDEF MSWINDOWS}
   , Windows  // for CreateMonochromeBitmap
   {$ENDIF}
@@ -561,8 +580,13 @@ var
    i, n : Integer;
    isIdle : Boolean;
 begin
-   while not Terminated do begin
+   while (not Terminated) do begin
       isIdle:=True;
+      // If we're not doing threading, suspend
+      if (FOwner.MaxThreads = 0) then
+      begin
+        Suspend;
+      end;
       if FOwner.MaxThreads>0 then begin
          // current estimated nb threads running
          n:=0;
@@ -622,6 +646,7 @@ var
    i : Integer;
 begin
 	inherited Destroy;
+   FThread.Resume;
    FThread.Terminate;
    FThread.WaitFor;
    FThread.Free;
@@ -840,9 +865,17 @@ end;
 //
 procedure THeightDataSource.SetMaxThreads(const val : Integer);
 begin
-   if val<0 then
+   if (val<=0) then
       FMaxThreads:=0
-   else FMaxThreads:=val;
+   else
+   begin
+    // If we didn't do threading, but will now
+    // resume our thread
+    if (FMaxThreads <= 0) then
+      FThread.Resume;
+
+    FMaxThreads:= val;
+   end;
 end;
 
 // StartPreparingData
@@ -903,7 +936,7 @@ constructor THeightData.Create(aOwner : THeightDataSource;
                                aXLeft, aYTop, aSize : Integer;
                                aDataType : THeightDataType);
 begin
-	inherited Create;
+	inherited Create(aOwner);
    SetLength(FUsers, 0);
    FOwner:=aOwner;
    FXLeft:=aXLeft;
@@ -946,6 +979,9 @@ begin
    else
       Assert(False);
    end;
+   if Assigned(FLibMaterial) then begin
+     FLibMaterial.UnregisterUser(self);
+   end;
 	inherited Destroy;
 end;
 
@@ -964,7 +1000,7 @@ begin
       Dec(FUseCounter);
    if FUseCounter=0 then begin
       FReleaseTimeStamp:=Now;
-      Owner.Release(Self);
+      Owner.Release(Self);          // ???
    end;
 end;
 
@@ -1006,6 +1042,25 @@ begin
    FDataType:=val;
 end;
 
+//WARNING: SetMaterialName does NOT register as a user of this texture.
+//         So, TGLLibMaterials.DeleteUnusedMaterials may see this material as unused, and delete it.
+//         This may lead to AV's the next time this tile is rendered.
+//         To be safe, rather assign the new THeightData.LibMaterial property
+procedure THeightData.SetMaterialName(const MaterialName:string);
+begin
+  FLibMaterial:=nil;
+  FMaterialName:=MaterialName;
+end;
+
+procedure THeightData.SetLibMaterial(LibMaterial:TGLLibMaterial);
+begin
+  if assigned(FLibMaterial) then FLibMaterial.UnregisterUser(self);  //detach from old texture
+  FLibMaterial:=LibMaterial;                                         //Attach new Material
+  if assigned(FLibMaterial) then LibMaterial.RegisterUser(self);     //Mark new Material as 'used'
+  FMaterialName:=LibMaterial.Name;                                   //sync up old MaterialName property
+end;
+
+
 // SetDataType
 //
 procedure THeightData.SetDataType(const val : THeightDataType);
@@ -1039,6 +1094,7 @@ begin
       FDataType:=val;
    end;
 end;
+
 
 // BuildByteRaster
 //
