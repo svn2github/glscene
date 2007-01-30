@@ -6,6 +6,7 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/01/07 - Lin- Added HashedTileCount - Counts the tiles in the buffer
       <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
       <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
@@ -125,6 +126,7 @@ type
          function InterpolatedHeight(const p : TAffineVector) : Single; overload;
          {: Triangle count for the last render. }
          property LastTriangleCount : Integer read FLastTriangleCount;
+         function HashedTileCount:integer;
 
 	   published
 	      { Published Declarations }
@@ -442,27 +444,19 @@ var
    hd : THeightData;
    TessDone:boolean;
 
+
    procedure ApplyMaterial(const materialName : String);
    begin
-      if (MaterialLibrary<>nil) and (currentMaterialName<>materialName) then begin
-         // flush whatever is in progress
-         TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
-         // unapply current
-         if currentMaterialName='' then begin
-            repeat
-               // ... proper multipass support will be implemented later
-            until not Material.UnApply(rci)
-         end else begin
-            repeat
-               // ... proper multipass support will be implemented later
-            until not MaterialLibrary.UnApplyMaterial(rci);
-         end;
-         // apply new
-         if materialName='' then
-            Material.Apply(rci)
-         else MaterialLibrary.ApplyMaterial(materialName, rci);
-         currentMaterialName:=materialName;
-      end;
+     if (MaterialLibrary=nil)or(currentMaterialName=materialName) then exit;
+     // flush whatever is in progress
+     TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+     // unapply current
+     if currentMaterialName='' then repeat until not Material.UnApply(rci)     // ... proper multipass support will be implemented later
+                               else repeat until not MaterialLibrary.UnApplyMaterial(rci);
+     // apply new
+     if materialName='' then Material.Apply(rci)
+                        else MaterialLibrary.ApplyMaterial(materialName, rci);
+     currentMaterialName:=materialName;
    end;
 
 begin
@@ -738,6 +732,26 @@ begin
       end;
    end;
 end;
+
+//HashedTileCount
+//
+function TGLTerrainRenderer.HashedTileCount:integer;
+var i, j : Integer;
+    hashList : TList;
+    hd : THeightData;
+    cnt:integer;
+begin
+   cnt:=0;
+   for i:=0 to cTilesHashSize do begin
+      hashList:=FTilesHash[i];
+      //for j:=hashList.Count-1 downto 0 do begin
+      //   hd:=THeightData(hashList.List[j]);
+      //end;
+      cnt:=cnt+hashList.count;
+   end;
+   result:=cnt;
+end;
+
 
 // MarkHashedTileAsUsed
 //
