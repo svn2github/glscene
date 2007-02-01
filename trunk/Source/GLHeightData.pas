@@ -1055,9 +1055,11 @@ end;
 procedure THeightData.SetLibMaterial(LibMaterial:TGLLibMaterial);
 begin
   if assigned(FLibMaterial) then FLibMaterial.UnregisterUser(self);  //detach from old texture
-  FLibMaterial:=LibMaterial;                                         //Attach new Material
-  if assigned(FLibMaterial) then LibMaterial.RegisterUser(self);     //Mark new Material as 'used'
-  FMaterialName:=LibMaterial.Name;                                   //sync up old MaterialName property
+  FLibMaterial:=LibMaterial;              //Attach new Material
+  if assigned(LibMaterial)  then begin
+    LibMaterial.RegisterUser(self);      //Mark new Material as 'used'
+    FMaterialName:=LibMaterial.Name;     //sync up MaterialName property
+  end else FMaterialName:='';
 end;
 
 
