@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users 
       <li>23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
       <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
       <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
@@ -1451,7 +1452,7 @@ type
 			procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
          procedure NotifyUsersOfTexMapChange;
-
+         function  IsUsed :boolean;   //returns true if the texture has registed users
          property NameHashKey : Integer read FNameHashKey;
 
 	   published
@@ -1508,7 +1509,8 @@ type
          procedure PrepareBuildList;
          procedure SetNamesToTStrings(aStrings : TStrings);
          {: Deletes all the unused materials in the collection.<p>
-            A material is considered unused if no other material references it. }
+            A material is considered unused if no other material or updateable object references it.
+            WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture.}
          procedure DeleteUnusedMaterials;
    end;
 
@@ -5173,6 +5175,12 @@ begin
    end;
 end;
 
+// IsUsed
+//
+function TGLLibMaterial.IsUsed:boolean;
+begin
+  result:=Assigned(self) and (self.userlist.count>0);
+end;
 // GetDisplayName
 //
 function TGLLibMaterial.GetDisplayName : String;
