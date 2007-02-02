@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/02/02 - LIN- Added TGLHeightDataSourceFilter
       <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
                           GLHeightData is now derived from TGLUpdateAbleObject
                           GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
@@ -285,9 +286,11 @@ type
 	   public
 
 	      { Public Declarations }
+
+	      //constructor Create(AOwner : TComponent); override;
 	      constructor Create(aOwner : THeightDataSource;
                             aXLeft, aYTop, aSize : Integer;
-                            aDataType : THeightDataType); virtual;
+                            aDataType : THeightDataType); reintroduce; virtual;
          destructor Destroy; override;
 
          {: The component who created and maintains this data. }
@@ -459,16 +462,14 @@ type
          function GetScanLine(y : Integer) : PByteArray;
 
          procedure StartPreparingData(heightData : THeightData); override;
-
-         function Width :integer;    override;
-         function Height:integer;    override;
-
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
          procedure MarkDirty(const area : TGLRect); override;
+         function Width :integer;    override;
+         function Height:integer;    override;
 
 	   published
 	      { Published Declarations }
@@ -547,6 +548,49 @@ type
 	      { Published Declarations }
          property MaxPoolSize;
 	end;
+
+  THeightDataSourceFilter = Class;
+  TSourceDataFetchedEvent = procedure(Sender:THeightDataSourceFilter;heightData:THeightData) of object;
+
+	// THeightDataSourceFilter
+	//
+   {: TerrainBase-based Height Data Source.<p>
+   This component sits between the TGLTerrainRenderer, and a real THeightDataSource.
+   i.e. TGLTerrainRenderer links to this. This links to the real THeightDataSource.
+   Use the 'HeightDataSource' property, to link to a source HDS.
+   The 'OnSourceDataFetched' event then gives you the opportunity to make any changes,
+   or link in a texture to the THeightData object, BEFORE it is cached.
+   It bypasses the cache of the source HDS, by calling the source's StartPreparingData procedure directly.
+   The THeightData objects are then cached by THIS component, AFTER you have made your changes.
+   This eliminates the need to copy and release the THeightData object from the Source HDS's cache,
+   before linking your texture.  See the new version of TGLBumpmapHDS for an example. (LIN)
+   }
+  THeightDataSourceFilter = Class(THeightDataSource)
+	   private
+	      { Private Declarations }
+        FHDS : THeightDataSource;
+        FOnSourceDataFetched : TSourceDataFetchedEvent;
+	   protected
+	      { Protected Declarations }
+         procedure StartPreparingData(heightData : THeightData); override;
+         procedure SetHDS(const val : THeightDataSource);
+	   public
+	      { Public Declarations }
+	        //constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+         function  Width:integer;  override;
+         function  Height:integer; override;
+	   published
+	      { Published Declarations }
+         property MaxPoolSize;
+         property HeightDataSource : THeightDataSource read FHDS write SetHDS;
+         property OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
+    end;
+
+
+
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -936,7 +980,7 @@ constructor THeightData.Create(aOwner : THeightDataSource;
                                aXLeft, aYTop, aSize : Integer;
                                aDataType : THeightDataType);
 begin
-	inherited Create(aOwner);
+  	inherited Create(aOwner);
    SetLength(FUsers, 0);
    FOwner:=aOwner;
    FXLeft:=aXLeft;
@@ -1048,7 +1092,7 @@ end;
 //         To be safe, rather assign the new THeightData.LibMaterial property
 procedure THeightData.SetMaterialName(const MaterialName:string);
 begin
-  FLibMaterial:=nil;
+  SetLibMaterial(nil);
   FMaterialName:=MaterialName;
 end;
 
@@ -1733,6 +1777,67 @@ begin
    end;
 end;
 
+
+// ------------------
+// ------------------ THeightDataSourceFilter ------------------
+// ------------------
+{
+constructor THeightDataSourceFilter.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+}
+// Destroy
+//
+destructor THeightDataSourceFilter.Destroy;
+begin
+  HeightDataSource:=nil;
+ 	inherited Destroy;
+end;
+ 
+// Notification
+//
+procedure THeightDataSourceFilter.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if Operation=opRemove then begin
+      if AComponent=FHDS then HeightDataSource:=nil
+   end;
+   inherited;
+end;
+
+//SetHDS  - Set HeightDataSource property
+//
+procedure THeightDataSourceFilter.SetHDS(const val : THeightDataSource);
+begin
+   if val<>FHDS then begin
+      if Assigned(FHDS) then FHDS.RemoveFreeNotification(Self);
+      FHDS:=val;
+      if Assigned(FHDS) then FHDS.FreeNotification(Self);
+      MarkDirty;
+   end;
+end;
+
+function THeightDataSourceFilter.Width:integer;
+begin
+  if assigned(FHDS) then result:=FHDS.Width
+                    else result:=0;
+end;
+
+function THeightDataSourceFilter.Height:integer;
+begin
+  if assigned(FHDS) then result:=FHDS.Height
+                    else result:=0;
+end;
+
+procedure THeightDataSourceFilter.StartPreparingData(heightData : THeightData);
+begin
+  //---Use linked HeightDataSource to prepare height data--
+  if Assigned(FHDS) then begin
+    FHDS.StartPreparingData(heightData); //HeightData is now prepared.
+    if Assigned(FOnSourceDataFetched) then FOnSourceDataFetched(Self,heightData)
+  end else heightData.DataState:=hdsNone;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1742,7 +1847,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, TGLTerrainBaseHDS]);
+   Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, TGLTerrainBaseHDS, THeightDataSourceFilter]);
 
 end.
 
