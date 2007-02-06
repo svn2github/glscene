@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/02/07 - DaStr - Added GLSimpleNavigation
       <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
                                procedures from other units to this one
       <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
@@ -156,7 +157,7 @@ uses
    GLAnimatedSprite, GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
    GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
    GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
-   ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK,
+   ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1780,14 +1781,14 @@ begin
                       ]);
 
    RegisterComponents('GLScene Utils',
-                      [TAsyncTimer,
-                       TGLStaticImposterBuilder,
+                      [TAsyncTimer, TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
                        TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
                        TCollisionManager, TGLAnimationControler,
                        TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
-                       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK
+                       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
+                       TGLSimpleNavigation
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
