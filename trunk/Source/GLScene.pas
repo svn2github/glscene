@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/02/07 - DaStr - TGLBaseSceneObject.Remove bugfixed (subcomponent support)
+                             TGLBaseSceneObject.HasSubChildren added
       <li>20/12/06 - DaStr - TGLBaseSceneObject:
                                 AbsoluteAffine[Position/Direction/up] added
                                 Affine[Right/LeftVector] added
@@ -665,6 +667,7 @@ type
          function GetOrCreateEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
          function AddNewEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
 
+         function HasSubChildren: Boolean;
          procedure DeleteChildren; dynamic;
          procedure Insert(AIndex: Integer; AChild: TGLBaseSceneObject); dynamic;
          {: Takes a scene object out of the child list, but doesn't destroy it.<p>
@@ -2770,6 +2773,23 @@ begin
    else Result:=0;
 end;
 
+// GetCount
+//
+
+function TGLBaseSceneObject.HasSubChildren: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if csSubComponent in Children[i].ComponentStyle then
+      begin
+        Result := True;
+        Exit;
+      end;
+end;
+
 // AddChild
 //
 procedure TGLBaseSceneObject.AddChild(aChild : TGLBaseSceneObject);
@@ -3963,6 +3983,8 @@ end;
 // Remove
 //
 procedure TGLBaseSceneObject.Remove(aChild : TGLBaseSceneObject; keepChildren : Boolean);
+var
+  I: Integer;
 begin
    if not Assigned(FChildren) then Exit;
    if aChild.Parent=Self then begin
@@ -3974,8 +3996,10 @@ begin
       aChild.FParent:=nil;
       if keepChildren then begin
          BeginUpdate;
-         with aChild do while Count>0 do
-            Children[0].MoveTo(Self);
+         if Count <> 0 then
+         for I := Count - 1 downto 0 do
+          if not (csSubComponent in Children[I].ComponentStyle) then
+            Children[I].MoveTo(Self);
          EndUpdate;
       end else NotifyChange(Self);
    end;
