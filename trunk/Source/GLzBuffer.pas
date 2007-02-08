@@ -5,6 +5,7 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/02/07 - Lin - LONG overdue bugfix: Now sets GL_BLEND to prevent black screen.(thanks Jurgen Linker)
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>03/07/04 - LR - Added ifdef for Linux
       <li>07/03/02 - Lin - Removed XRes/YRes properties - Shadow-res now always matches viewer-res. 
@@ -770,6 +771,8 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    glEnable(GL_TEXTURE_2D);
 
+   glEnable( GL_BLEND ); //by Juergen Linker
+
    if FWidth >rci.viewPortSize.cx then Fwidth :=rci.viewPortSize.cx;
    if FHeight>rci.viewPortSize.cy then FHeight:=rci.viewPortSize.cy;
 
@@ -825,6 +828,7 @@ begin
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
 
+   glDisable( GL_BLEND ); //by Juergen Linker
    glPopAttrib;
 
    if Count>0 then Self.RenderChildren(0, Count-1, rci);
