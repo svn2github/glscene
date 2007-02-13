@@ -6,9 +6,10 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/02/08 - Lin- Ignore tiles that are not hdsReady (Prevents crashes when threading)
       <li>30/01/07 - Lin- Added HashedTileCount - Counts the tiles in the buffer
       <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
-      <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
+      <li>09/10/06 - Lin- Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
@@ -818,11 +819,11 @@ begin
    tile:=HashedTile(xLeft, yTop);
    if Assigned(hdList) then
       hdList.Add(tile);
-   if tile.DataState=hdsNone then begin
-      tile.Tag:=1;
+   tile.Tag:=1; //mark tile as used
+   //if tile.DataState=hdsNone then begin
+   if tile.DataState<>hdsReady then begin
       Result:=nil;
    end else begin
-      tile.Tag:=1;
       patch:=TGLROAMPatch(tile.ObjectTag);
       if not Assigned(patch) then begin
          // spawn ROAM patch
