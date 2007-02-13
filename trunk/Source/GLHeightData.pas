@@ -604,8 +604,6 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          function  Width:integer;  override;
          function  Height:integer; override;
-//         function TileTextureOffset :TAffineVector;
-//         function TileTextureScale :TAffineVector;
          function TileTextureOffset(HeightData:THeightData) :TTexPoint;
          function TileTextureScale(HeightData:THeightData) :TTexPoint;
          property OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
@@ -1921,32 +1919,6 @@ begin
   if assigned(FHDS) then result:=FHDS.Height
                     else result:=0;
 end;
-
-//function THeightDataSourceFilter.TileTextureOffset :TAffineVector;
-function THeightDataSourceFilter.TileTextureOffset(heightData:THeightData) :TTexPoint;
-var vec :TAffineVector;
-    size:integer;
-begin
-  heightData.FTCOffset.S:=0;
-
-//  size:=heightData.Size;
-//  result.S:=heightdata.FTCOffset//  width/(size-1);
-//  result.T:=height/(size-1);
-end;
-
-//function THeightDataSourceFilter.TileTextureScale :TAffineVector;
-function THeightDataSourceFilter.TileTextureScale(HeightData:THeightData) :TTexPoint;
-begin
-
-end;
-
-{
-        libMat.TextureScale.X :=Width/(HD.Size-1);
-        libMat.TextureScale.Y :=Height/(HD.Size-1);
-        libMat.TextureOffset.X:=-((HD.XLeft/Width )*libMat.TextureScale.X);
-        libMat.TextureOffset.Y:=-(Height-(HD.YTop+HD.Size-1))/(HD.Size-1);
-
-}
 
 procedure THeightDataSourceFilter.StartPreparingData(heightData : THeightData);
 begin
