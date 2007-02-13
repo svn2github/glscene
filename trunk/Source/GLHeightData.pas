@@ -604,9 +604,7 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          function  Width:integer;  override;
          function  Height:integer; override;
-         function TileTextureOffset(HeightData:THeightData) :TTexPoint;
-         function TileTextureScale(HeightData:THeightData) :TTexPoint;
-         property OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
+         property  OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
 
 	   published
 	      { Published Declarations }
