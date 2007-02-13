@@ -41,12 +41,12 @@ type
          FTilesPerTexture  : integer;
 	   protected
 	      { Protected Declarations }
-         procedure StartPreparingData(heightData : THeightData); override;      ///
          procedure SetHeightDataSource(val:THeightDataSource);
 	   public
 	      { Public Declarations }
   	     constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure StartPreparingData(heightData : THeightData); override;
          procedure MarkDirty(const area : TGLRect); override;
 
 	   published
