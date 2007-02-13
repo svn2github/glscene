@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
       <li>06/02/07 - DaStr - Added GLSimpleNavigation
       <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
                                procedures from other units to this one
@@ -158,6 +159,7 @@ uses
    GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
    GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
+   GLAsyncHDS,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1783,7 +1785,7 @@ begin
    RegisterComponents('GLScene Utils',
                       [TAsyncTimer, TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS,
                        TCollisionManager, TGLAnimationControler,
                        TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
