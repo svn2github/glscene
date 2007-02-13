@@ -12,11 +12,12 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>02/02/02 - LIN- Added TGLHeightDataSourceFilter
+      <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates - Called from TGLBitmapHDS and TGLHeightTileFileHDS
+                          Many tweaks and changes to threading. (I hope I havent broken anything)
+      <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
       <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
                           GLHeightData is now derived from TGLUpdateAbleObject
                           GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
-      <li>26/01/07 - LIN- Some threading changes (Lord CRC)
       <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
       <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
       <li>03/07/04 - LR - Corrections for Linux compatibility
@@ -45,7 +46,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc;
+uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc, Dialogs;
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;
@@ -86,6 +87,7 @@ type
       <li>Multi-threaded preload/queueing : specified list can be loaded in
          a background task.
       </p> }
+
 	THeightDataSource = class (TComponent)
 	   private
 	      { Private Declarations }
@@ -96,8 +98,7 @@ type
          FMaxPoolSize : Integer;
          FHeightDataClass : THeightDataClass;
          FReleaseLatency : TDateTime;
-         FDefaultHeight : Single; 
-
+         FDefaultHeight : Single;
 	   protected
 	      { Protected Declarations }
          procedure SetMaxThreads(const val : Integer);
@@ -113,18 +114,15 @@ type
          {: Looks up the list and returns the matching THeightData, if any. }
          function FindMatchInList(xLeft, yTop, size : Integer;
                                   dataType : THeightDataType) : THeightData;
-
-         {: Request to start preparing data.<p>
-            If your subclass is thread-enabled, this is here that you'll create
-            your thread and fire it (don't forget the requirements), if not,
-            that'll be here you'll be doing your work.<br>
-            Either way, you are responsible for adjusting the DataState to
-            hdsReady when you're done (DataState will be hdsPreparing when this
-            method will be invoked). }
-         procedure StartPreparingData(heightData : THeightData); virtual;
-
 	   public
 	      { Public Declarations }
+         {: When true, the tile is ready for use by the TerrainRenderer as soon as this
+            component's StartPreparingData procedure completes. This flag is automatically
+            set to false by a calling THeightDataSourceFilter, to allow the caller to make
+            its own changes, before the tile is marked ready for use.
+            Defaults to TRUE.}
+         ReadyWhenDone : boolean;
+
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
@@ -192,6 +190,23 @@ type
 
          function Width :integer;  virtual; abstract;
          function Height:integer;  virtual; abstract;
+         procedure ThreadIsIdle;   virtual;
+
+
+         {: Request to start preparing data.<p>
+            If your subclass is thread-enabled, this is here that you'll create
+            your thread and fire it (don't forget the requirements), if not,
+            that'll be here you'll be doing your work.<br>
+            Either way, you are responsible for adjusting the DataState to
+            hdsReady when you're done (DataState will be hdsPreparing when this
+            method will be invoked). }
+         procedure StartPreparingData(heightData : THeightData); virtual;
+         {: Called by GLAsyncHDS, when using threading.<p>
+            This is called after StartPreparingData, but always from the main thread.
+            Place any non-threadsafe maintenance/cleanup code here.}
+         //procedure AfterPreparingData(heightData : THeightData); virtual;
+         //procedure ThreadMaintenance(heightData : THeightData); virtual; //abstract;
+         procedure TextureCoordinates(heightData:THeightData);
 	end;
 
    // THDTextureCoordinatesMode
@@ -541,7 +556,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create(AOwner: TComponent); override;
+	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
 	   published
@@ -554,7 +569,7 @@ type
 
 	// THeightDataSourceFilter
 	//
-   {: TerrainBase-based Height Data Source.<p>
+   {: Height Data Source Filter.<p>
    This component sits between the TGLTerrainRenderer, and a real THeightDataSource.
    i.e. TGLTerrainRenderer links to this. This links to the real THeightDataSource.
    Use the 'HeightDataSource' property, to link to a source HDS.
@@ -564,28 +579,42 @@ type
    The THeightData objects are then cached by THIS component, AFTER you have made your changes.
    This eliminates the need to copy and release the THeightData object from the Source HDS's cache,
    before linking your texture.  See the new version of TGLBumpmapHDS for an example. (LIN)
+   To create your own HDSFilters, Derive from this component, and override the UpdateData procedure.
    }
   THeightDataSourceFilter = Class(THeightDataSource)
 	   private
 	      { Private Declarations }
         FHDS : THeightDataSource;
         FOnSourceDataFetched : TSourceDataFetchedEvent;
+        FActive:Boolean;
 	   protected
 	      { Protected Declarations }
+        {: UpdateData:  <p>
+           Override this function in your filter subclasses, to make any
+           updates/changes to HeightData, before it goes into the cache.
+           Make sure any code in this function is thread-safe, in case TAsyncHDS was used.}
+         procedure UpdateData(heightData : THeightData); virtual; abstract;
          procedure StartPreparingData(heightData : THeightData); override;
+         //procedure AfterPreparingData(heightData : THeightData); override;
          procedure SetHDS(const val : THeightDataSource);
 	   public
 	      { Public Declarations }
-	        //constructor Create(AOwner: TComponent); override;
+	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          function  Width:integer;  override;
          function  Height:integer; override;
+//         function TileTextureOffset :TAffineVector;
+//         function TileTextureScale :TAffineVector;
+         function TileTextureOffset(HeightData:THeightData) :TTexPoint;
+         function TileTextureScale(HeightData:THeightData) :TTexPoint;
+         property OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
+
 	   published
 	      { Published Declarations }
          property MaxPoolSize;
          property HeightDataSource : THeightDataSource read FHDS write SetHDS;
-         property OnSourceDataFetched : TSourceDataFetchedEvent read FOnSourceDataFetched write FOnSourceDataFetched;
+         property Active : Boolean read FActive write FActive;  //If Active=False, height data passes through unchanged
     end;
 
 
@@ -600,7 +629,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, GLUtils   //, GMisc
+uses SysUtils, ApplicationFileIO, GLUtils, OpenGL1x   //, GMisc
   {$IFDEF MSWINDOWS}
   , Windows  // for CreateMonochromeBitmap
   {$ENDIF}
@@ -613,52 +642,58 @@ uses SysUtils, ApplicationFileIO, GLUtils   //, GMisc
 type
    THeightDataSourceThread = class (TThread)
       FOwner : THeightDataSource;
-      FIdleLoops : Integer;
       procedure Execute; override;
+      procedure HDSIdle;
    end;
 
 // Execute
 //
 procedure THeightDataSourceThread.Execute;
-var
-   i, n : Integer;
-   isIdle : Boolean;
+var i:integer;
+    lst:TList;
+    found:boolean;
+    HD:THeightData;
+    max:integer;
+    TdCtr:integer;
 begin
-   while (not Terminated) do begin
-      isIdle:=True;
-      // If we're not doing threading, suspend
-      if (FOwner.MaxThreads = 0) then
-      begin
-        Suspend;
+  while not Terminated do begin
+    max:=FOwner.MaxThreads;
+    lst:=FOwner.FData.LockList;
+    //--count active threads--
+    i:=0;TdCtr:=0;
+    while(i<lst.Count)and(TdCtr<max) do begin
+      if THeightData(lst.Items[i]).FThread<>nil then Inc(TdCtr);
+      inc(i);
+    end;
+    //------------------------
+    //--Find the first queued tile, and Start preparing it--
+    i:=lst.Count;
+    if TdCtr<max then begin
+      while(i>0)and(TdCtr<max) do begin
+        dec(i);
+        HD:=THeightData(lst.Items[i]);
+        if HD.DataState=hdsQueued then begin
+          FOwner.StartPreparingData(HD);
+          inc(TdCtr);
+        end;
       end;
-      if FOwner.MaxThreads>0 then begin
-         // current estimated nb threads running
-         n:=0;
-         with FOwner.FData.LockList do begin
-            try
-               for i:=0 to Count-1 do
-                  if THeightData(Items[i]).FThread<>nil then Inc(n);
-               i:=0;
-               while (n<FOwner.MaxThreads) and (i<Count) do begin
-                  if THeightData(Items[i]).DataState=hdsQueued then begin
-                     FOwner.StartPreparingData(THeightData(Items[i]));
-                     isIdle:=False;
-                     Inc(n);
-                  end;
-                  Inc(i);
-               end;
-            finally
-               FOwner.FData.UnlockList;
-            end;
-         end;
-      end;
-      if isIdle then
-         Inc(FIdleLoops)
-      else FIdleLoops:=0;
-      if FIdleLoops<10 then
-         Sleep(0) // "fast" mode
-      else Sleep(10); // "doze" mode
-   end;
+    end;
+    //------------------------------------------------------
+    FOwner.FData.UnlockList;
+    if i=0 then sleep(10) //if no queued tiles were found then sleep longer
+           else sleep(0);
+    if(i=0)and(TdCtr=0) then synchronize(HDSIdle);
+  end;
+end;
+
+//HDSIdle
+//
+//  When using threads, HDSIdle is called in the main thread,
+//  whenever all HDS threads have finished, AND no queued tiles were found.
+//  (GLAsyncHDS uses this for the OnIdle event.)
+procedure THeightDataSourceThread.HDSIdle;
+begin
+  self.FOwner.ThreadIsIdle;
 end;
 
 // ------------------
@@ -672,6 +707,7 @@ var
    i : Integer;
 begin
 	inherited Create(AOwner);
+   ReadyWhenDone:=true;
    FHeightDataClass:=THeightData;
    FData:=TThreadList.Create;
    for i:=0 to High(FDataHash) do
@@ -680,7 +716,7 @@ begin
    FThread:=THeightDataSourceThread.Create(True);
    FThread.FreeOnTerminate:=False;
    THeightDataSourceThread(FThread).FOwner:=Self;
-   FThread.Resume;
+   if self.MaxThreads>0 then FThread.Resume;
 end;
 
 // Destroy
@@ -690,7 +726,7 @@ var
    i : Integer;
 begin
 	inherited Destroy;
-   FThread.Resume;
+   FThread.Resume;            //
    FThread.Terminate;
    FThread.WaitFor;
    FThread.Free;
@@ -780,7 +816,7 @@ begin
       end;
    end;
    // got one... can be used ?
-   while not (Result.DataState in [hdsReady, hdsNone]) do Sleep(0);
+   //while not (Result.DataState in [hdsReady, hdsNone]) do Sleep(0);
 end;
 
 // PreLoad
@@ -795,8 +831,10 @@ begin
    finally
       FData.UnlockList;
    end;
-   if MaxThreads=0 then
+   if MaxThreads=0 then begin
       StartPreparingData(Result);
+      //AfterPreparingData(Result);
+   end;
 end;
 
 // Release
@@ -923,11 +961,64 @@ begin
 end;
 
 // StartPreparingData
+// (Must be thread-safe.)
 //
 procedure THeightDataSource.StartPreparingData(heightData : THeightData);
 begin
-   heightData.FDataState:=hdsReady;
+  if ReadyWhenDone then heightData.FDataState:=hdsReady
+                   else ReadyWhenDone:=true;  //reset
 end;
+
+//  AfterPreparingData
+//  (Called after StartPreparingData, but runs in the main thread.)
+//
+{
+procedure THeightDataSource.AfterPreparingData(heightData : THeightData);
+begin
+  //ShowMessage(self.ClassName);
+end;
+}
+
+//ThreadIsIdle
+//
+procedure THeightDataSource.ThreadIsIdle;
+begin
+// TGLAsyncHDS overrides this
+end;
+
+//TextureCoordinates
+// Calculates texture World texture coordinates for the current tile.
+procedure THeightDataSource.TextureCoordinates(heightData:THeightData);
+var w,h,size:integer;
+    scaleS,scaleT:single;
+    offsetS,offsetT:single;
+    HD:THeightData;
+    halfpixel:single;
+begin
+   HD:=heightData;
+   w:=self.Width;
+   h:=self.Height;
+   size:=HD.FSize;
+
+   if GL_VERSION_1_2 then begin //OpenGL1.2 supports texture clamping, so seams dont show.
+     ScaleS:=w/(size-1);
+     ScaleT:=h/(size-1);
+     offsetS:=-((HD.XLeft/w)*scaleS);
+     offsetT:=-(h-(HD.YTop+size-1))/(size-1);
+   end else begin    //--Texture coordinates: Stretched by 1 pixel, to hide seams on OpenGL-1.1(no Clamping)--
+     ScaleS:=w/size;
+     ScaleT:=h/size;
+     halfPixel:=1/(size shr 1);
+     offsetS:=-((HD.XLeft/w)*scaleS)+halfPixel;
+     offsetT:=-(h-(HD.YTop+size))/size-halfPixel;
+   end;
+
+   HD.FTCScale.S :=ScaleS;
+   HD.FTCScale.T :=ScaleT;
+   HD.FTCOffset.S:=offsetS;
+   HD.FTCOffset.T:=offsetT;
+end;
+
 
 // InterpolatedHeight
 //
@@ -1665,6 +1756,7 @@ begin
       if (oldType<>hdtByte) and (oldType<>hdtDefault) then
          DataType:=oldType;
    end;
+   TextureCoordinates(heightData);
    inherited;
 end;
 
@@ -1781,12 +1873,13 @@ end;
 // ------------------
 // ------------------ THeightDataSourceFilter ------------------
 // ------------------
-{
+
 constructor THeightDataSourceFilter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FActive:=True;
 end;
-}
+
 // Destroy
 //
 destructor THeightDataSourceFilter.Destroy;
@@ -1829,15 +1922,55 @@ begin
                     else result:=0;
 end;
 
-procedure THeightDataSourceFilter.StartPreparingData(heightData : THeightData);
+//function THeightDataSourceFilter.TileTextureOffset :TAffineVector;
+function THeightDataSourceFilter.TileTextureOffset(heightData:THeightData) :TTexPoint;
+var vec :TAffineVector;
+    size:integer;
 begin
-  //---Use linked HeightDataSource to prepare height data--
-  if Assigned(FHDS) then begin
-    FHDS.StartPreparingData(heightData); //HeightData is now prepared.
-    if Assigned(FOnSourceDataFetched) then FOnSourceDataFetched(Self,heightData)
-  end else heightData.DataState:=hdsNone;
+  heightData.FTCOffset.S:=0;
+
+//  size:=heightData.Size;
+//  result.S:=heightdata.FTCOffset//  width/(size-1);
+//  result.T:=height/(size-1);
 end;
 
+//function THeightDataSourceFilter.TileTextureScale :TAffineVector;
+function THeightDataSourceFilter.TileTextureScale(HeightData:THeightData) :TTexPoint;
+begin
+
+end;
+
+{
+        libMat.TextureScale.X :=Width/(HD.Size-1);
+        libMat.TextureScale.Y :=Height/(HD.Size-1);
+        libMat.TextureOffset.X:=-((HD.XLeft/Width )*libMat.TextureScale.X);
+        libMat.TextureOffset.Y:=-(Height-(HD.YTop+HD.Size-1))/(HD.Size-1);
+
+}
+
+procedure THeightDataSourceFilter.StartPreparingData(heightData : THeightData);
+begin
+  //---if there is no linked HDS then return an empty tile--
+  if not Assigned(FHDS) then begin
+    heightData.DataState:=hdsNone;
+    exit;
+  end;
+  //---Use linked HeightDataSource to prepare height data--
+  FHDS.ReadyWhenDone:=false; //tell source HDS NOT to mark the tile as hdsReady
+  heightData.DataState:=hdsPreparing;
+  FHDS.StartPreparingData(heightData);
+  if Assigned(FOnSourceDataFetched) then FOnSourceDataFetched(Self,heightData);
+  if heightData.DataState=hdsNone then exit;
+  if FActive then UpdateData(heightData);
+  inherited;  //heightData.DataState:=hdsReady;
+end;
+{
+procedure THeightDataSourceFilter.AfterPreparingData(heightData : THeightData);
+begin
+  //--trigger the source HDS AfterPreparingData--
+  if assigned(FHDS) then FHDS.AfterPreparingData(heightData);
+end;
+}
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1847,7 +1980,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, TGLTerrainBaseHDS, THeightDataSourceFilter]);
+   Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, THeightDataSourceFilter]);
 
 end.
 
