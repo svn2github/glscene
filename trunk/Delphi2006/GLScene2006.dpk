@@ -2,8 +2,8 @@ package GLScene2006;
 
 {$R *.res}
 {$R '..\Source\DesignTime\GLSceneObjects.dcr'}
-{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
 {$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
+{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -34,7 +34,8 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg;
+  vcljpg,
+  GR32_BDS2006;
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
@@ -217,6 +218,8 @@ contains
   GLLinePFX in '..\Source\GLLinePFX.pas',
   GLGameMenu in '..\Source\GLGameMenu.pas',
   GLCanvas in '..\Source\Base\GLCanvas.pas',
-  GLMeshBuilder in '..\Source\GLMeshBuilder.pas';
+  GLMeshBuilder in '..\Source\GLMeshBuilder.pas',
+  GLTexturedHDS in '..\Source\GLTexturedHDS.pas',
+  GLAsyncHDS in '..\Source\GLAsyncHDS.pas';
 
 end.
