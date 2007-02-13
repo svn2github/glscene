@@ -33,7 +33,8 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg;
+  vcljpg,
+  GR32_D7;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -97,7 +98,6 @@ contains
   GLSkydome in '..\Source\GLSkydome.pas',
   GLHUDObjects in '..\Source\GLHUDObjects.pas',
   XOpenGL in '..\Source\Base\XOpenGL.pas',
-  GLHeightData in '..\Source\GLHeightData.pas',
   GLBitmapFont in '..\Source\GLBitmapFont.pas',
   GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
   GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
@@ -217,6 +217,9 @@ contains
   PictureRegisteredFormats in '..\Source\Base\PictureRegisteredFormats.pas',
   GLLinePFX in '..\Source\GLLinePFX.pas',
   GLGameMenu in '..\Source\GLGameMenu.pas',
-  GLCanvas in '..\Source\Base\GLCanvas.pas';
+  GLCanvas in '..\Source\Base\GLCanvas.pas',
+  GLTexturedHDS in '..\Source\GLTexturedHDS.pas',
+  GLHeightData in '..\Source\GLHeightData.pas',
+  GLAsyncHDS in '..\Source\GLAsyncHDS.pas';
 
 end.
