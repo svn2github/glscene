@@ -149,7 +149,7 @@ end;
 // Release
 //
 procedure TGLBumpmapHDS.Release(aHeightData : THeightData);
-var libMat : TGLLibMaterial;
+//var libMat : TGLLibMaterial;
 begin
 //  if Assigned(FBumpmapLibrary)and(FMaxTextures>0) then begin
 //    libMat:=aHeightData.LibMaterial;
@@ -167,10 +167,6 @@ end;
 // Either use THeightData.MaterialName, or manually delete unused Normal-Map textures.
 //
 procedure TGLBumpmapHDS.TrimTextureCache(MaxTextureCount:integer);  //Thread-safe Version
-var matLib: TGLMaterialLibrary;
-    libMat: TGLLibMaterial;
-    i:integer;
-    cnt:integer;
 begin
   uno.Acquire;
     Trim(MaxTextureCount);

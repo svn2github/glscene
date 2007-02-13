@@ -34,12 +34,11 @@ type
        FOnNewTilePrepared : TNewTilePreparedEvent;
 	   protected
 	      { Protected Declarations }
-      procedure StartPreparingData(heightData : THeightData); override;
     public
 	      { Public Declarations }
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
-      //procedure HDThreadTerminated;
+      procedure StartPreparingData(heightData : THeightData); override;
       procedure ThreadIsIdle; override;
       procedure NewTilePrepared(heightData:THeightData);
 
@@ -94,7 +93,6 @@ end;
 procedure TGLAsyncHDS.StartPreparingData(heightData : THeightData);
 var HDThread : TGLAsyncHDThread;
     HDS:THeightDataSource;
-    Threads:TThreadList;
 begin
   HDS:=self.HeightDataSource;
   //---if there is no linked HDS then return an empty tile--

@@ -37,12 +37,11 @@ type
          procedure SetInverted(val : Boolean);
          procedure SetMinElevation(val : Integer);
 
-         procedure StartPreparingData(heightData : THeightData); override;
-
 	   public
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure StartPreparingData(heightData : THeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
 

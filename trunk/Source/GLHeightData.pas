@@ -475,13 +475,12 @@ type
          procedure CreateMonochromeBitmap(size : Integer);
          procedure FreeMonochromeBitmap;
          function GetScanLine(y : Integer) : PByteArray;
-
-         procedure StartPreparingData(heightData : THeightData); override;
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
+         procedure StartPreparingData(heightData : THeightData); override;
          procedure MarkDirty(const area : TGLRect); override;
          function Width :integer;    override;
          function Height:integer;    override;
@@ -519,12 +518,12 @@ type
 
 	   protected
 	      { Protected Declarations }
-         procedure StartPreparingData(heightData : THeightData); override;
 
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure StartPreparingData(heightData : THeightData); override;
 
          procedure MarkDirty(const area : TGLRect); override;
 
@@ -552,12 +551,12 @@ type
 
 	   protected
 	      { Protected Declarations }
-         procedure StartPreparingData(heightData : THeightData); override;
 
 	   public
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure StartPreparingData(heightData : THeightData); override;
 
 	   published
 	      { Published Declarations }
@@ -594,13 +593,13 @@ type
            updates/changes to HeightData, before it goes into the cache.
            Make sure any code in this function is thread-safe, in case TAsyncHDS was used.}
          procedure UpdateData(heightData : THeightData); virtual; abstract;
-         procedure StartPreparingData(heightData : THeightData); override;
          //procedure AfterPreparingData(heightData : THeightData); override;
          procedure SetHDS(const val : THeightDataSource);
 	   public
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure StartPreparingData(heightData : THeightData); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          function  Width:integer;  override;
          function  Height:integer; override;
@@ -647,7 +646,6 @@ type
 procedure THeightDataSourceThread.Execute;
 var i:integer;
     lst:TList;
-    found:boolean;
     HD:THeightData;
     max:integer;
     TdCtr:integer;
