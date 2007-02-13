@@ -41,8 +41,10 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create(AOwner: TComponent); override;
+	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         function Width :integer;    override;
+         function Height:integer;    override;
 
 	   published
 	      { Published Declarations }
@@ -61,8 +63,6 @@ type
 
          property MaxPoolSize;
          property DefaultHeight;
-         function Width :integer;    override;
-         function Height:integer;    override;
 	end;
 
 // ------------------------------------------------------------------
@@ -194,10 +194,10 @@ begin
            end;
          end;
          //---Move(htfTile.data[0], SmallIntData^, DataSize);---
+         if oldType<>hdtSmallInt then DataType:=oldType;
 
-         if oldType<>hdtSmallInt then
-            DataType:=oldType;
-         DataState:=hdsReady;
+         TextureCoordinates(heightData);
+         inherited;
          HeightMin:=htfTileInfo.min;
          HeightMax:=htfTileInfo.max;
       end;

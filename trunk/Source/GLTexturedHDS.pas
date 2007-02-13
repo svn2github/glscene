@@ -15,7 +15,7 @@
    (Of course you can still multitexture in a detail texture too.)
 
 	<b>History : </b><font size=-1><ul>
-      <li>22/02/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
+      <li>22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
                            Removed 'Active' property
                            Now works with both TGLHeightTileFileHDS AND TGLBitmapHDS
       <li>19/01/07 - LIN - Creation 
@@ -103,7 +103,6 @@ var HDS:THeightDataSource;
     MatLib:TGLMaterialLibrary;
     Mat:TGLLibMaterial;
     HD:THeightData;
-    HDState:THeightDataState;
     MatInx:integer;
     tileL,tileR,tileT,tileB:single;
     found:boolean;
@@ -122,8 +121,7 @@ begin
   HDS:=self.FHeightDataSource;
   //HD.FTextureCoordinatesMode:=tcmWorld;
   htfHD:=HDS.GetData(HD.XLeft,HD.YTop,HD.Size,HD.DataType);
-  HDState:=htfHD.DataState;
-  if HDState=hdsNone then begin
+  if htfHD.DataState=hdsNone then begin
     HD.DataState:=hdsNone;
     exit;
   end else HD.DataState:=hdsPreparing;
@@ -169,9 +167,11 @@ begin
     if found then HD.MaterialName:=Mat.Name;
   end;
   //---------------------------------------------------------------
-  //HD.MaterialName:=Mat.Name;
+  //HD.MaterialName:=self.FMaterialLibrary.Materials[15].Name;
 
-  heightData.DataState:=hdsReady;
+  HDS.Release(htfHD);
+  //heightData.DataState:=hdsReady;
+  inherited;
 end;
 
 procedure TGLTexturedHDS.SetHeightDataSource(val:THeightDataSource);
