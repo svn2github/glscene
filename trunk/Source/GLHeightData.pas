@@ -1506,6 +1506,7 @@ begin
    Result:=FHeightMax;
 end;
 
+{
 // Normal
 //
 function THeightData.Normal(x, y : Integer; const scale : TAffineVector) : TAffineVector;
@@ -1527,6 +1528,22 @@ begin
    Result[2]:=1;
    NormalizeVector(Result);
 end;
+}
+
+function THeightData.Normal(x,y:Integer;const scale:TAffineVector):TAffineVector;
+var dx,dy,Hxy:single;
+begin
+  if(x<0)then x:=0; if(x>size-2)then x:=size-2;
+  if(y<0)then y:=0; if(y>size-2)then y:=size-2;
+  Hxy:=Height(x,y);
+  dx:=Height(x+1,y)-Hxy;
+  dy:=Height(x,y+1)-Hxy;
+  result[0]:=dx/scale[0];
+  result[1]:=dy/scale[1];
+  result[2]:=1 /scale[2];
+  NormalizeVector(Result);
+end;
+
 
 // OverlapsArea
 //
