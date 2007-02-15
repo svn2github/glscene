@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - TGLBaseSceneObject.GetChildren bugfixed (subcomponent support)
       <li>09/02/07 - DaStr - TGLBaseSceneObject.ExchangeChildren(Safe) added (thanks apo_pq)
                              Global $R- removed
       <li>07/02/07 - DaStr - TGLBaseSceneObject.Remove bugfixed (subcomponent support)
@@ -2760,6 +2761,7 @@ var
 begin
    if Assigned(FChildren) then
       for i:=0 to FChildren.Count-1 do
+      if not (csSubComponent in TComponent(FChildren.List[i]).ComponentStyle) then
          AProc(TComponent(FChildren.List[i]));
 end;
 
