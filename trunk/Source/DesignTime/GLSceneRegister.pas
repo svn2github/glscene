@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
       <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
       <li>06/02/07 - DaStr - Added GLSimpleNavigation
       <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
@@ -159,7 +160,7 @@ uses
    GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
    GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
-   GLAsyncHDS,
+   GLAsyncHDS, GLConsole, GLAtmosphere,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1814,10 +1815,12 @@ begin
 {$ifdef GLS_DELPHI_5_UP}
 	RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
+
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSkyBox, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLEParticleMask, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLGameMenu, '', TGLLibMaterialNameProperty);
 
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
@@ -1883,10 +1886,12 @@ initialization
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects);
+      RegisterSceneObject(TGLAtmosphere, 'Atmosphere', glsOCEnvironmentObjects);
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects);
+      RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects);
 
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
