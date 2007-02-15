@@ -5,6 +5,7 @@
    This unit imitates an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled added
       <li>07/02/07 - DaStr - Initial version (donated to GLScene)
 
 
@@ -111,6 +112,8 @@ type
 
     //Main rendering procedure
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    //used to detrrmine extents
+    function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
 
   TGLAtmosphere = class(TGLCustomAtmosphere)
@@ -391,6 +394,14 @@ begin
   if FSun <> nil then FSun.RemoveFreeNotification(Self);
   FSun := Value;
   if FSun <> nil then FSun.FreeNotification(Self);
+end;
+
+function TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled : TVector;
+begin
+  Result[0] := FAtmosphereRadius;
+  Result[1] := Result[0];
+  Result[2] := Result[0];
+  Result[3] := 0;
 end;
 
 procedure TGLCustomAtmosphere.Notification(AComponent: TComponent;
