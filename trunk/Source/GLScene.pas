@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/02/07 - DaStr - TGLBaseSceneObject.ExchangeChildren(Safe) added (thanks apo_pq)
+                             Global $R- removed
       <li>07/02/07 - DaStr - TGLBaseSceneObject.Remove bugfixed (subcomponent support)
                              TGLBaseSceneObject.HasSubChildren added
       <li>20/12/06 - DaStr - TGLBaseSceneObject:
@@ -265,8 +267,6 @@
 unit GLScene;
 
 interface
-
-{$R-}
 
 {$i GLScene.inc}
 
@@ -676,6 +676,14 @@ type
          procedure Remove(aChild : TGLBaseSceneObject; keepChildren: Boolean); dynamic;
          function IndexOfChild(aChild : TGLBaseSceneObject) : Integer;
          function FindChild(const aName : String; ownChildrenOnly : Boolean) : TGLBaseSceneObject;
+         {: The "safe" version of this procedure ckecks if indexes are inside
+            the list. If not, no exception if raised. }
+         procedure ExchangeChildrenSafe(anIndex1, anIndex2 : Integer);
+         {: The "regular" version of this procedure does not perform any ckecks
+            and calls FChildren.Exchange directly. User should/can perform range
+            checks manualy. }
+         procedure ExchangeChildren(anIndex1, anIndex2 : Integer);
+         {: These procedures are safe. }
          procedure MoveChildUp(anIndex : Integer);
          procedure MoveChildDown(anIndex : Integer);
 
@@ -4041,11 +4049,33 @@ begin
      Result:=res;
 end;
 
+// ExchangeChildren
+//
+procedure TGLBaseSceneObject.ExchangeChildren(anIndex1, anIndex2 : Integer);
+begin
+  Assert(Assigned(FChildren), 'No children found!');
+  FChildren.Exchange(anIndex1, anIndex2);
+  NotifyChange(Self);
+end;
+
+// ExchangeChildrenSafe
+//
+procedure TGLBaseSceneObject.ExchangeChildrenSafe(anIndex1, anIndex2 : Integer);
+begin
+  Assert(Assigned(FChildren), 'No children found!');
+  if (anIndex1 < FChildren.Count) and (anIndex2 < FChildren.Count) and
+     (anIndex1 > -1) and (anIndex2 > -1) and (anIndex1 <> anIndex2) then
+  begin
+    FChildren.Exchange(anIndex1, anIndex2);
+    NotifyChange(Self);
+  end;
+end;
+
 // MoveChildUp
 //
 procedure TGLBaseSceneObject.MoveChildUp(anIndex : Integer);
 begin
-   Assert(Assigned(FChildren));
+   Assert(Assigned(FChildren), 'No children found!');
    if anIndex>0 then begin
       FChildren.Exchange(anIndex, anIndex-1);
       NotifyChange(Self);
@@ -4056,7 +4086,7 @@ end;
 //
 procedure TGLBaseSceneObject.MoveChildDown(anIndex : Integer);
 begin
-   Assert(Assigned(FChildren));
+   Assert(Assigned(FChildren), 'No children found!');
    if anIndex<FChildren.Count-1 then begin
       FChildren.Exchange(anIndex, anIndex+1);
       NotifyChange(Self);
