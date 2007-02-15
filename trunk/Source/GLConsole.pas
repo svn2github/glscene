@@ -5,6 +5,8 @@
    The console is a popdown window that appears on a game for text output/input.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Some properties are not stored now, because they are
+                               read directly from HUDSprite and HUDText
       <li>07/02/07 - DaStr - Initial version (donated to GLScene)
 
 
@@ -319,8 +321,8 @@ type
     destructor Destroy; override;
     //properties
     //changes the console font color
-    property FontColor: TColor read GetFontColor write SetFontColor default clBlue;
-    property HUDSpriteColor: TColor read GetHUDSpriteColor write SetHUDSpriteColor default clWhite;
+    property FontColor: TColor read GetFontColor write SetFontColor stored False;
+    property HUDSpriteColor: TColor read GetHUDSpriteColor write SetHUDSpriteColor stored False;
 
     //where user enters his commands
     property InputLine: string read FInputLine write FInputLine;
@@ -344,7 +346,7 @@ type
     property SceneViewer: TGLSceneViewer read FSceneViewer write SetSceneViewer;
     property HudSprite: TGLHudSprite read FHudSprite;
     property HudText: TGLHudText read FHudText;
-    property Font: TGLCustomBitmapFont read GetFont write SetFont; 
+    property Font: TGLCustomBitmapFont read GetFont write SetFont stored False;
 
     property Options: TGLConsoleOptions read FOptions write FOptions;
 
