@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Added default values to TGLHUDText.Alignment & Layout
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
       <li>23/11/02 - EG - Added X/YTiles to HUDSprite
@@ -10,7 +11,7 @@
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>20/06/01 - EG - Default hud sprite size is now 16x16
       <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-	   <li>15/01/01 - EG - Creation
+      <li>15/01/01 - EG - Creation
 	</ul></font>
 }
 unit GLHUDObjects;
@@ -114,10 +115,10 @@ type
          property Rotation : Single read FRotation write SetRotation;
          {: Controls the text alignment (horizontal).<p>
             Possible values : taLeftJustify, taRightJustify, taCenter }
-         property Alignment : TAlignment read FAlignment write SetAlignment;
+         property Alignment : TAlignment read FAlignment write SetAlignment default taLeftJustify;
          {: Controls the text layout (vertical).<p>
             Possible values : tlTop, tlCenter, tlBottom }
-         property Layout : TGLTextLayout read FLayout write SetLayout;
+         property Layout : TGLTextLayout read FLayout write SetLayout default tlTop;
          {: Color modulation, can be used for fade in/out too.}
          property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
    end;
