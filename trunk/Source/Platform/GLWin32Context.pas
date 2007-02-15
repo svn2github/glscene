@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
       <li>11/09/06 - NC - Added support for Multiple-Render-Target
       <li>03/10/04 - NC - Added float texture support
       <li>03/07/02 - EG - ChooseWGLFormat Kyro fix (Patrick Chevalley)
@@ -63,8 +64,8 @@ type
 
          procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger;
                                    var nNumFormats: Integer; BufferCount : integer = 1);
-         procedure DoCreateContext(outputDevice : Integer); override;
-         procedure DoCreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer); override;
+         procedure DoCreateContext(outputDevice : Cardinal); override;
+         procedure DoCreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
          procedure DoDestroyContext; override;
          procedure DoActivate; override;
@@ -435,7 +436,7 @@ end;
 
 // DoCreateContext
 //
-procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
+procedure TGLWin32Context.DoCreateContext(outputDevice : Cardinal);
 const
    cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
@@ -609,7 +610,7 @@ begin
    try
       FLegacyContextsOnly:=True;
       try
-         DoCreateContext(Integer(aDC));
+         DoCreateContext(aDC);
       finally
          FLegacyContextsOnly:=False;
       end;
@@ -623,7 +624,7 @@ end;
 
 // DoCreateMemoryContext
 //
-procedure TGLWin32Context.DoCreateMemoryContext(outputDevice, width, height : integer; BufferCount : integer);
+procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer);
 var
    nbFormats : Integer;
    iFormats : array [0..31] of Integer;
