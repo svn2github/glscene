@@ -2,6 +2,7 @@
 {: HeightDataSource for the HTF (HeightTileFile) format.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/02/07 - LIN -Added OpenHTF function, for direct access to the HeightTileFile object.
       <li>25/01/07 - LIN -Added Width and Height properties to GLHeightTileFieHDS
       <li>19/01/07 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
                           Set Inverted to false, if you DONT want your rendered
@@ -44,6 +45,7 @@ type
          procedure StartPreparingData(heightData : THeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
+         function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
 
 	   published
 	      { Published Declarations }
@@ -136,6 +138,18 @@ begin
    end;
 end;
 
+// OpenHTF
+// Tries to open the assigned HeightTileFile.
+//
+function TGLHeightTileFileHDS.OpenHTF:THeightTileFile;
+begin
+  if not Assigned(FHTF) then begin
+    if FHTFFileName='' then FHTF:=nil
+      else FHTF:=THeightTileFile.Create(FHTFFileName);
+  end;
+  result:=FHTF;
+end;
+
 // StartPreparingData
 //
 procedure TGLHeightTileFileHDS.StartPreparingData(heightData : THeightData);
@@ -150,15 +164,11 @@ var
    LineDataSize:integer;
 begin
    // access htf data
-   if not Assigned(FHTF) then begin
-      if FHTFFileName='' then begin
-         heightData.DataState:=hdsNone;
-         Exit;
-      end;
-      FHTF:=THeightTileFile.Create(FHTFFileName);
-      Assert(FHTF.TileSize=heightData.Size,
-             'HTF TileSize and HeightData size don''t match.('+IntToStr(FHTF.TileSize)+' , '+Inttostr(heightData.Size)+')');
-   end;
+   if OpenHTF=nil then begin
+     heightData.DataState:=hdsNone;
+     Exit;
+   end else Assert(FHTF.TileSize=heightData.Size,
+                   'HTF TileSize and HeightData size don''t match.('+IntToStr(FHTF.TileSize)+' and '+Inttostr(heightData.Size)+')');
 
    // retrieve data and place it in the heightData
    with heightData do begin
@@ -205,26 +215,15 @@ end;
 
 function TGLHeightTileFileHDS.Width :integer;
 begin
-  result:=0;
-  if not Assigned(FHTF) then begin
-    if FHTFFileName<>'' then begin
-      FHTF:=THeightTileFile.Create(FHTFFileName);
-    end;
-  end;
-  if Assigned(FHTF) then result:=FHTF.SizeX;
+  if OpenHTF=nil then result:=0
+                 else result:=FHTF.SizeX;
 end;
 
 function TGLHeightTileFileHDS.Height:integer;
 begin
-  result:=0;
-  if not Assigned(FHTF) then begin
-    if FHTFFileName<>'' then begin
-      FHTF:=THeightTileFile.Create(FHTFFileName);
-    end;
-  end;
-  if Assigned(FHTF) then result:=FHTF.SizeY;
+  if OpenHTF=nil then result:=0
+                 else result:=FHTF.SizeY;
 end;
-
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
