@@ -102,7 +102,7 @@ end;
 
 // DoCreateMemoryContext
 //
-procedure TGLLinuxContext.DoCreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer); override;
+procedure TGLLinuxContext.DoCreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer);
 begin
   {$MESSAGE Warn 'DoCreateMemoryContext: Needs to be implemented'}
 end;
