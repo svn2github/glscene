@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
       <li>15/09/06 - NC - TGLContextHandle.handle as Integer -> Cardinal
       <li>11/09/06 - NC - Added TGLProgramHandle.Name, TGLProgramHandle.Uniform2f,
                           SetUniform*, support for Multiple-Render-Target
@@ -92,8 +93,8 @@ type
          procedure SetActive(const aActive : Boolean);
          procedure PropagateSharedContext;
 
-         procedure DoCreateContext(outputDevice : Integer); dynamic; abstract;
-         procedure DoCreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer = 1); dynamic; abstract;
+         procedure DoCreateContext(outputDevice : Cardinal); dynamic; abstract;
+         procedure DoCreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer = 1); dynamic; abstract;
          procedure DoShareLists(aContext : TGLContext); dynamic; abstract;
          procedure DoDestroyContext; dynamic; abstract;
          procedure DoActivate; virtual; abstract;
@@ -138,12 +139,12 @@ type
 
          {: Creates the context.<p>
             This method must be invoked before the context can be used. }
-         procedure CreateContext(outputDevice : Integer);
+         procedure CreateContext(outputDevice : Cardinal);
          {: Creates an in-memory context.<p>
             The function should fail if no hardware-accelerated memory context
             can be created (the CreateContext method can handle software OpenGL
             contexts). }
-         procedure CreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer = 1);
+         procedure CreateMemoryContext(outputDevice: Cardinal; width, height : Integer; BufferCount : integer = 1);
          {: Setup display list sharing between two rendering contexts.<p>
             Both contexts must have the same pixel format. }
          procedure ShareLists(aContext : TGLContext);
@@ -798,7 +799,7 @@ end;
 
 // CreateContext
 //
-procedure TGLContext.CreateContext(outputDevice : Integer);
+procedure TGLContext.CreateContext(outputDevice : Cardinal);
 begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
@@ -810,7 +811,8 @@ end;
 
 // CreateMemoryContext
 //
-procedure TGLContext.CreateMemoryContext(outputDevice, width, height : Integer; BufferCount : integer);
+procedure TGLContext.CreateMemoryContext(outputDevice: Cardinal;
+  width, height : Integer; BufferCount : integer);
 begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
