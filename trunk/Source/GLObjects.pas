@@ -13,7 +13,8 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>15/02/07 - DaStr - Global $R- removed
+      <li>15/02/07 - DaStr - Global $R- removed, added default values to
+                               TGLSprite.NoZWrite, MirrorU, MirrorV
       <li>14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
       <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
       <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
@@ -330,11 +331,11 @@ type
          property AlphaChannel : Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
          {: If True, sprite will not write to Z-Buffer.<p>
             Sprite will STILL be maskable by ZBuffer test. }
-         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite default False;
          {: Reverses the texture coordinates in the U and V direction to mirror 
             the texture. }
-         property MirrorU : Boolean read FMirrorU write SetMirrorU;
-         property MirrorV : Boolean read FMirrorV write SetMirrorV;
+         property MirrorU : Boolean read FMirrorU write SetMirrorU default False;
+         property MirrorV : Boolean read FMirrorV write SetMirrorV default False;
 	end;
 
    // TGLPointStyle
