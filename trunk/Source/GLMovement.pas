@@ -3,6 +3,7 @@
    Movement path behaviour by Roger Cao<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
       <li>27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
       <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)  
       <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
@@ -593,7 +594,6 @@ end;
 procedure TGLMovementPath.SetShowPath(Value: Boolean);
 var
   OwnerObj: TGLBaseSceneObject;
-  LineObj: TGLLines;
 begin
   if FShowPath<>Value then
   begin
@@ -602,19 +602,14 @@ begin
     OwnerObj := (Collection as TGLMovementPaths).Owner{TGLMovement}.Owner{TGLBehavours}.Owner as TGLBaseSceneObject;
     if FShowPath then
     begin
-      //allways add the line object to the root
-      LineObj := OwnerObj.Scene.Objects.AddNewChild(TGLLines) as TGLLines;
-      //set the link
-      FPathLine := LineObj;
+      FPathLine := TGLLines.Create(OwnerObj);
+      FPathLine.SetSubComponent(True);
+      OwnerObj.Scene.Objects.AddChild(FPathLine);
       FPathLine.SplineMode := FPathSplineMode;
-
       UpdatePathLine;
-    end else
-    begin
-      OwnerObj.Scene.Objects.Remove(FPathLine, False);
-      FPathLine.free;
-      FPathLine := nil;
-    end;
+    end
+    else
+      FreeAndNil(FPathLine);
   end;
 end;
 
