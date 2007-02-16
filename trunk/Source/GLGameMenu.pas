@@ -6,8 +6,10 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>03/27/06 - DaStr - TGLGameMenu.MouseMenuSelect bugfixed (thanks to Predator)
-                               http://www.glscene.ru/forum_viewtopic.php?7.12454
+      <li>16/02/07 - DaStr & DaveK - TGLGameMenu.MouseMenuSelect bugfixed (again)
+                             Component made descendant of TGLBaseSceneObject
+                             IGLMaterialLibrarySupported added
+      <li>20/12/06 - DaStr - TGLGameMenu.MouseMenuSelect bugfixed (thanks to Predator)
       <li>03/27/06 - DaveK - added mouse selection support
       <li>03/03/05 - EG - Creation
    </ul></font>
@@ -27,7 +29,7 @@ type
    // TGLGameMenu
    //
    {: Classic game menu interface made of several lines.<p> }
-   TGLGameMenu = class(TGLSceneObject)
+   TGLGameMenu = class(TGLBaseSceneObject, IGLMaterialLibrarySupported)
       private
          { Private Properties }
          FItems : TStrings;
@@ -38,12 +40,13 @@ type
          FBackColor : TGLColor;
          FInactiveColor, FActiveColor, FDisabledColor : TGLColor;
          FMaterialLibrary : TGLMaterialLibrary;
-         FTitleMaterialName : String;
+         FTitleMaterialName : TGLLibMaterialName;
          FTitleWidth, FTitleHeight : Integer;
          FOnSelectedChanged : TNotifyEvent;
          FBoxTop, FBoxBottom, FBoxLeft, FBoxRight: Integer;
          FMenuTop: integer;
-
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
 		protected
          { Protected Properties }
          procedure SetMenuScale(val : TGLGameMenuScale);
@@ -113,6 +116,15 @@ type
          property BoxRight: integer read FBoxRight;
          // this is the top of the first menu item
          property MenuTop: integer read FMenuTop;
+
+        //publish other stuff from TGLBaseSceneObject
+         property ObjectsSorting;
+         property VisibilityCulling;
+         property Position;
+         property Visible;
+         property OnProgress;
+         property Behaviours;
+         property Effects;
    end;
 
 // ------------------------------------------------------------------
@@ -205,10 +217,10 @@ begin
       w:=w+2*MarginHorz;
 
       // calculate boundaries for user
-      FBoxLeft   := Variant(Position.X)-w div 2;
-      FBoxTop    := Variant(Position.Y)-h div 2;
-      FBoxRight  := Variant(Position.X)+w div 2;
-      FBoxBottom := Variant(Position.Y)+h div 2;
+      FBoxLeft   := Round(Position.X - w / 2);
+      FBoxTop    := Round(Position.Y - h / 2);
+      FBoxRight  := Round(Position.X + w / 2);
+      FBoxBottom := Round(Position.Y + h / 2);
 
       // paint back
       if BackColor.Alpha>0 then begin
@@ -218,9 +230,9 @@ begin
       end;
 
       canvas.StopPrimitive;
-      
+
       // paint items
-      y:=Round(Position.Y-h div 2+MarginVert);
+      y:=Round(Position.Y-h / 2+MarginVert);
       if TitleHeight>0 then begin
          if (TitleMaterialName<>'') and (MaterialLibrary<>nil) and (TitleWidth>0) then begin
             libMat:=MaterialLibrary.LibMaterialByName(TitleMaterialName);
@@ -237,7 +249,10 @@ begin
          end;
          y:=y+TitleHeight+Spacing;
          FMenuTop := y;
-      end;
+      end
+      else
+        FMenuTop := y + Spacing;
+
       for i:=0 to FItems.Count-1 do begin
          tw:=Font.TextWidth(FItems[i]);
          if not Enabled[i] then
@@ -461,16 +476,21 @@ end;
 // MouseMenuSelect
 //
 procedure TGLGameMenu.MouseMenuSelect(const X, Y: integer);
-var
-  myIndex: Integer;
 begin
-  myIndex := -1;
   if (X >= BoxLeft)  and (Y >= MenuTop) and
      (X <= BoxRight) and (Y <= BoxBottom) then
   begin
-    myIndex := Round((Y - BoxTop) / (Font.CharHeight + Spacing) - 1.0 + Spacing / 100);
-  end;
-  Selected := myIndex;
+    Selected := (Y - FMenuTop) div (Font.CharHeight + FSpacing);
+  end
+  else
+    Selected := -1;
+end;
+
+// GetMaterialLibrary
+//
+function TGLGameMenu.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
 end;
 
 // ------------------------------------------------------------------
