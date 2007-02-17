@@ -1,9 +1,17 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLTexture<p>
 
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users 
+      <li>16/02/07 - DaStr - Global $Q- removed
+                           Added TGLLibMaterials.GetTextureIndex, GetMaterialIndex,
+                             GetNameOfTexture, GetNameOfLibMaterial
+                           Added TGLMaterialLibrary.TextureByName,
+                             GetNameOfTexture, GetNameOfLibMaterial
+      <li>01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users
       <li>23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
       <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
       <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
@@ -48,7 +56,7 @@
       <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
       <li>20/01/02 - EG - Fixed texture memory use report error
       <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
-                          are now Linear/MipMap 
+                          are now Linear/MipMap
       <li>07/01/02 - EG - Added renderDPI to rci
       <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
       <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
@@ -1501,11 +1509,25 @@ type
 
          function Owner : TPersistent;
 
+         function IndexOf(const Item: TGLLibMaterial): Integer;
          function Add: TGLLibMaterial;
 	      function FindItemID(ID: Integer): TGLLibMaterial;
 	      property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
          function MakeUniqueName(const nameRoot : TGLLibMaterialName) : TGLLibMaterialName;
          function GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+
+         {: Returns index of this Texture if it exists. }
+         function GetTextureIndex(const Texture: TGLTexture): Integer;
+
+         {: Returns index of this Material if it exists. }
+         function GetMaterialIndex(const Material: TGLMaterial): Integer;
+
+         {: Returns name of this Texture if it exists. }
+         function GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+
+         {: Returns name of this Material if it exists. }
+         function GetNameOfLibMaterial(const Material: TGLLibMaterial): TGLLibMaterialName;
+
          procedure PrepareBuildList;
          procedure SetNamesToTStrings(aStrings : TStrings);
          {: Deletes all the unused materials in the collection.<p>
@@ -1562,7 +1584,7 @@ type
          {: Add a "standard" texture material.<p>
             "standard" means linear texturing mode with mipmaps and texture
             modulation mode with default-strength color components.<br>
-            If persistent is True, the image will be loaded oersistently in memory
+            If persistent is True, the image will be loaded persistently in memory
             (via a TGLPersistentImage), if false, it will be unloaded after upload
             to OpenGL (via TGLPicFileImage). }
          function AddTextureMaterial(const materialName, fileName : String;
@@ -1573,6 +1595,15 @@ type
 
          {: Returns libMaterial of given name if any exists. }
          function LibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+
+         {: Returns Texture of given material's name if any exists. }
+         function TextureByName(const LibMatName : TGLLibMaterialName): TGLTexture;
+
+         {: Returns name of texture if any exists. }
+         function GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+
+         {: Returns name of Material if any exists. }
+         function GetNameOfLibMaterial(const LibMat: TGLLibMaterial): TGLLibMaterialName;
 
          {: Applies the material of given name.<p>
             Returns False if the material could not be found. ake sure this
@@ -1684,8 +1715,6 @@ implementation
 //------------------------------------------------------------------------------
 
 uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats;
-
-{$Q-} // no range checking
 
 var
 	vGLTextureImageClasses : TList;
@@ -5432,6 +5461,80 @@ begin
    Result:=nil;
 end;
 
+// GetTextureIndex
+//
+function TGLLibMaterials.GetTextureIndex(const Texture: TGLTexture): Integer;
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I).Material.Texture = Texture then
+      begin
+        Result := I;
+        Exit;
+      end;
+  Result := -1;
+end;
+
+// GetMaterialIndex
+//
+function TGLLibMaterials.GetMaterialIndex(const Material: TGLMaterial): Integer;
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I).Material = Material then
+      begin
+        Result := I;
+        Exit;
+      end;
+  Result := -1;
+end;
+
+// GetMaterialIndex
+//
+function TGLLibMaterials.GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+var
+  MatIndex: Integer;
+begin
+  MatIndex := GetTextureIndex(Texture);
+  if MatIndex <> -1 then
+    Result := GetItems(MatIndex).Name
+  else
+    Result := '';
+end;
+
+// GetNameOfMaterial
+//
+function TGLLibMaterials.GetNameOfLibMaterial(const Material: TGLLibMaterial): TGLLibMaterialName;
+var
+  MatIndex: Integer;
+begin
+  MatIndex := IndexOf(Material);
+  if MatIndex <> -1 then
+    Result := GetItems(MatIndex).Name
+  else
+    Result := '';
+end;
+
+// IndexOf
+//
+function TGLLibMaterials.IndexOf(const Item: TGLLibMaterial): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I) = Item then
+      begin
+        Result := I;
+        Exit;
+      end;
+end;
+
 // PrepareBuildList
 //
 procedure TGLLibMaterials.PrepareBuildList;
@@ -5898,6 +6001,46 @@ begin
    if Assigned(Self) then
       Result:=Materials.GetLibMaterialByName(name)
    else Result:=nil;
+end;
+
+// TextureByName
+//
+function TGLMaterialLibrary.TextureByName(const LibMatName : TGLLibMaterialName): TGLTexture;
+var
+  LibMat: TGLLibMaterial;
+begin
+  if Self = nil then
+    raise ETexture.Create(glsMatLibNotDefined)
+  else if LibMatName = '' then
+    Result := nil
+  else
+  begin
+    LibMat := LibMaterialByName(LibMatName);
+    if LibMat = nil then
+      raise ETexture.CreateFmt(glsMaterialNotFoundInMatlibEx, [LibMatName])
+    else
+      Result := LibMat.Material.Texture;
+  end;
+end;
+
+// GetNameOfTexture
+//
+function TGLMaterialLibrary.GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+begin
+  if (Self = nil) or (Texture = nil) then
+    Result := ''
+  else
+    Result := FMaterials.GetNameOfTexture(Texture);
+end;
+
+// GetNameOfMaterial
+//
+function TGLMaterialLibrary.GetNameOfLibMaterial(const LibMat: TGLLibMaterial): TGLLibMaterialName;
+begin
+  if (Self = nil) or (LibMat = nil) then
+    Result := ''
+  else
+    Result := FMaterials.GetNameOfLibMaterial(LibMat);
 end;
 
 // ApplyMaterial
