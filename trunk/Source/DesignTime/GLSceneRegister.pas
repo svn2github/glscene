@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/02/07 - DaStr - GLMaterialMultiProxy added
       <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
       <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
       <li>06/02/07 - DaStr - Added GLSimpleNavigation
@@ -160,7 +161,7 @@ uses
    GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
    GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
-   GLAsyncHDS, GLConsole, GLAtmosphere,
+   GLAsyncHDS, GLConsole, GLAtmosphere, GLProxyObjects, GLMaterialMultiProxy,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1821,6 +1822,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSkyBox, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLEParticleMask, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLGameMenu, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
 
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
@@ -1844,6 +1846,7 @@ initialization
       RegisterSceneObject(TGLLightSource, 'LightSource', '');
       RegisterSceneObject(TGLDummyCube, 'DummyCube', '');
 
+      //Basic geometry
       RegisterSceneObject(TGLSprite, 'Sprite', glsOCBasicGeometry);
       RegisterSceneObject(TGLPoints, 'Points', glsOCBasicGeometry);
       RegisterSceneObject(TGLLines, 'Lines', glsOCBasicGeometry);
@@ -1860,6 +1863,7 @@ initialization
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
       {$endif}
 
+      //Advanced geometry
       RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
@@ -1869,6 +1873,7 @@ initialization
       RegisterSceneObject(TGLRevolutionSolid, 'RevolutionSolid', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLTorus, 'Torus', glsOCAdvancedGeometry);
 
+      //Mesh objects
       RegisterSceneObject(TGLActor, 'Actor', glsOCMeshObjects);
       RegisterSceneObject(TGLFreeForm, 'FreeForm', glsOCMeshObjects);
       RegisterSceneObject(TGLMesh, 'Mesh', glsOCMeshObjects);
@@ -1876,23 +1881,28 @@ initialization
       RegisterSceneObject(TGLPortal, 'Portal', glsOCMeshObjects);
       RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', glsOCMeshObjects);
 
+      //Graph-plotting objects
       RegisterSceneObject(TGLFlatText, 'FlatText', glsOCGraphPlottingObjects);
       RegisterSceneObject(TGLHeightField, 'HeightField', glsOCGraphPlottingObjects);
       RegisterSceneObject(TGLXYZGrid, 'XYZGrid', glsOCGraphPlottingObjects);
 
+      //Particle systems
       RegisterSceneObject(TGLParticles, 'Particles', glsOCParticleSystems);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCParticleSystems);
 
+      //Environment objects
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLAtmosphere, 'Atmosphere', glsOCEnvironmentObjects);
 
+      //HUD objects
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects);
       RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects);
 
+      //GUI objects
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
       RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
@@ -1906,6 +1916,7 @@ initialization
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
       RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
 
+      //Special objects
       RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
       {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', glsOCSpecialObjects);
@@ -1925,9 +1936,15 @@ initialization
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
       RegisterSceneObject(TGLWaterPlane, 'WaterPlane', glsOCDoodad);
 
+      //Proxy objects
+      RegisterSceneObject(TGLProxyObject, 'ProxyObject', glsOCProxyObjects);
+      RegisterSceneObject(TGLColorProxy, 'ColorProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLMultiProxy, 'MultiProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy', glsOCProxyObjects);
+
+      //Other objects
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
-      RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
-      RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '');
