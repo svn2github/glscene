@@ -1,8 +1,13 @@
-{: GLVectorFileObjects<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLStrings<p>
 
-	Vector File related objects for GLScene<p>
+	String constants that are used in many GLScene units<p>
 
 	<b>History :</b><font size=-1><ul>
+      16/02/07 - DaStr - Added glsOCProxyObjects, glsError, glsErrorEx,
+                         glsMatLibNotDefined, glsMaterialNotFoundInMatlib(Ex)
       26/08/02 - EG - Added missing header, added glsUnknownExtension
 	</ul></font>
 }
@@ -10,8 +15,12 @@ unit GLStrings;
 
 interface
 
-resourcestring
+const
+  // General
+  glsError   = 'Error!';
+  glsErrorEx = 'Error: ';
 
+resourcestring
   // SceneViewer
   glsNoRenderingContext = 'Could not create a rendering context';
   glsWrongVersion       = 'Need at least OpenGL version 1.1';
@@ -30,6 +39,11 @@ resourcestring
   // GLTexture
   glsImageInvalid = 'Could not load texture, image is invalid';
   glsNoNewTexture = 'Could not get new texture name';
+
+  // GLMaterials
+  glsMatLibNotDefined = glsErrorEx + 'Material Library not defined!';
+  glsMaterialNotFoundInMatlib = glsErrorEx + 'Material not found in current Material Library!';
+  glsMaterialNotFoundInMatlibEx = glsErrorEx + 'Material "%s" not found in current Material Library!';
 
   // GLObjects
   glsSphereTopBottom = 'The top angle must be higher than the bottom angle';
@@ -56,6 +70,7 @@ resourcestring
   glsOCDoodad = 'Doodad objects';
   glsOCHUDObjects = 'HUD objects';
   glsOCGuiObjects = 'GUI objects';
+  glsOCProxyObjects = 'Proxy objects';
 
 implementation
 
