@@ -7,7 +7,7 @@
    Allows assign a unique material for each proxy master.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>20/12/06 - DaStr - Initial version (contributed to GLScene)
+      <li>17/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
   What changed compared to GLMultiProxy:
