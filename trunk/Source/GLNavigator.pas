@@ -6,6 +6,7 @@
   Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/02/07 - DaStr - TGLNavigator.Create - FVirtualUp creation fixed
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
@@ -27,7 +28,11 @@ unit GLNavigator;
 
 interface
 
-uses SysUtils, Classes, VectorGeometry, GLScene, GLMisc, GLCrossPlatform;
+uses
+  //VCL
+  SysUtils, Classes,
+  //GLScene
+  VectorGeometry, GLScene, GLMisc, GLCrossPlatform;
 
 type
 
@@ -163,7 +168,7 @@ implementation
 Constructor TGLNavigator.Create(AOwner : TComponent);
 Begin
   inherited;
-  FVirtualUp    := TGLCoordinates.Create(Self);
+  FVirtualUp := TGLCoordinates.CreateInitialized(Self, ZHmgVector, csPoint);
   FCurrentVAngle := 0;
   FCurrentHAngle := 0;
 End;
