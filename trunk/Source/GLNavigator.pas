@@ -6,7 +6,13 @@
   Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>17/02/07 - DaStr - TGLNavigator.Create - FVirtualUp creation fixed
+      <li>20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),
+                             SetVirtualUp(), CalcRight() to the "protected" section
+                             Private "point1" renamed to FPrevPoint
+                             Updated comments
+                             TGLNavigator.SetObject made virtual
+      <li>19/02/07 - DaStr - TGLNavigator.Create - FVirtualUp creation fixed
+                             Added default values to TGLNavigator and TGLUserInterface
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
@@ -76,16 +82,16 @@ type
     FAngleLock: boolean;
     FMoveUpWhenMovingForward: boolean;
     FInvertHorizontalSteeringWhenUpsideDown: boolean;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure SetObject(NewObject: TGLBaseSceneObject);
+  protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure SetObject(NewObject: TGLBaseSceneObject); virtual;
     procedure SetUseVirtualUp(UseIt: boolean);
     procedure SetVirtualUp(Up: TGLCoordinates);
     function CalcRight: TVector;
-  protected
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
     procedure TurnHorizontal(Angle: single);
     procedure TurnVertical(Angle: single);
     procedure MoveForward(Distance: single);
@@ -100,15 +106,15 @@ type
     property CurrentVAngle: single read FCurrentVAngle;
     property CurrentHAngle: single read FCurrentHAngle;
   published
-    property MoveUpWhenMovingForward: boolean read FMoveUpWhenMovingForward write FMoveUpWhenMovingForward;
-    property InvertHorizontalSteeringWhenUpsideDown: boolean read FInvertHorizontalSteeringWhenUpsideDown write FInvertHorizontalSteeringWhenUpsideDown;
+    property MoveUpWhenMovingForward: boolean read FMoveUpWhenMovingForward write FMoveUpWhenMovingForward default False;
+    property InvertHorizontalSteeringWhenUpsideDown: boolean read FInvertHorizontalSteeringWhenUpsideDown write FInvertHorizontalSteeringWhenUpsideDown default False;
     property VirtualUp: TGLCoordinates read FVirtualUp write SetVirtualUp;
     property MovingObject: TGLBaseSceneObject read FObject write SetObject;
-    property UseVirtualUp: boolean read FUseVirtualUp write SetUseVirtualUp;
-    property AutoUpdateObject: boolean read FAutoUpdateObject write FAutoUpdateObject;
+    property UseVirtualUp: boolean read FUseVirtualUp write SetUseVirtualUp default False;
+    property AutoUpdateObject: boolean read FAutoUpdateObject write FAutoUpdateObject default False;
     property MaxAngle: single read FMaxAngle write FMaxAngle;
     property MinAngle: single read FMinAngle write FMinAngle;
-    property AngleLock: boolean read FAngleLock write FAngleLock;
+    property AngleLock: boolean read FAngleLock write FAngleLock default False;
   end;
 
 	// TGLUserInterface
@@ -117,13 +123,14 @@ type
 
 	   The four calls to get you started is
       <ul>
-  	   <li>MouseLookActivate : set us up the bomb.
-  	   <li>MouseLookDeActivate : defuses it.
+ 	   <li>MouseLookActivate : set us up the bomb.
+ 	   <li>MouseLookDeActivate : defuses it.
 	   <li>Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
 	   <li>MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
       </ul>
-	   The two properties to get you started is
+	   The four properties to get you started are:
       <ul>
+	   <li>InvertMouse     : Inverts the mouse Y axis.
 	   <li>MouseSpeed      : Also known as mouse sensitivity.
 	   <li>GLNavigator     : The Navigator which receives the user movement.
 	   <li>GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
@@ -132,7 +139,7 @@ type
 
   TGLUserInterface = class(TComponent)
   private
-    point1: TGLPoint;
+    FPrevPoint: TGLPoint;
     midScreenX, midScreenY: integer;
     FMouseActive: boolean;
     FMouseSpeed: single;
@@ -143,6 +150,8 @@ type
     procedure SetMouseLookActive(const val: boolean);
     procedure setNavigator(val: TGLNavigator);
     procedure setVertNavigator(val: TGLNavigator);
+  protected
+    procedure Notification(AComponent: TComponent; operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -155,9 +164,8 @@ type
     procedure TurnHorizontal(Angle : Double);
     procedure TurnVertical(Angle : Double);
     property MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
-    procedure Notification(sender: TComponent; operation: TOperation); override;
   published
-    property InvertMouse: boolean read FInvertMouse write FInvertMouse;
+    property InvertMouse: boolean read FInvertMouse write FInvertMouse default False;
     property MouseSpeed: single read FMouseSpeed write FMouseSpeed;
     property GLNavigator: TGLNavigator read FGLNavigator write setNavigator;
     property GLVertNavigator: TGLNavigator read FGLVertNavigator write setVertNavigator;
@@ -474,7 +482,7 @@ begin
    midScreenX:=GLGetScreenWidth div 2;
    midScreenY:=GLGetScreenHeight div 2;
 
-   point1.x:=midScreenX; point1.Y:=midScreenY;
+   FPrevPoint.x:=midScreenX; FPrevPoint.Y:=midScreenY;
    GLSetCursorPos(midScreenX, midScreenY);
 end;
 
@@ -491,7 +499,7 @@ end;
 procedure TGLUserInterface.MouseUpdate;
 begin
    if FMouseActive then
-     GLGetCursorPos(point1);
+     GLGetCursorPos(FPrevPoint);
 end;
 
 // Mouselook
@@ -503,8 +511,8 @@ begin
    Result := False;
    if not FMouseActive then exit;
 
-   deltax:=(point1.x-midscreenX)*mousespeed;
-   deltay:=-(point1.y-midscreenY)*mousespeed;
+   deltax:=(FPrevPoint.x-midscreenX)*mousespeed;
+   deltay:=-(FPrevPoint.y-midscreenY)*mousespeed;
    If InvertMouse then deltay:=-deltay;
 
    if deltax <> 0 then begin
@@ -516,7 +524,7 @@ begin
      result := True;
    end;
 
-   if (point1.x <> midScreenX) or (point1.y <> midScreenY) then
+   if (FPrevPoint.x <> midScreenX) or (FPrevPoint.y <> midScreenY) then
       GLSetCursorPos(midScreenX, midScreenY);
 end;
 
@@ -527,7 +535,7 @@ Begin
   FMouseActive:=False;
   midScreenX:=GLGetScreenWidth div 2;
   midScreenY:=GLGetScreenHeight div 2;
-  point1.x:=midScreenX; point1.Y:=midScreenY;
+  FPrevPoint.x:=midScreenX; FPrevPoint.Y:=midScreenY;
 End;
 
 Destructor  TGLUserInterface.Destroy;
@@ -537,13 +545,13 @@ Begin
   inherited;
 End;
 
-procedure TGLUserInterface.Notification(sender: TComponent; operation:
+procedure TGLUserInterface.Notification(AComponent: TComponent; operation:
     TOperation);
 begin
      if operation = opRemove then begin
-          if sender = FGLNavigator then
+          if AComponent = FGLNavigator then
                setNavigator(nil);
-          if sender = FGLVertNavigator then
+          if AComponent = FGLVertNavigator then
                setVertNavigator(nil);
      end;
      inherited;
