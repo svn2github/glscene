@@ -677,10 +677,10 @@ type
          procedure Remove(aChild : TGLBaseSceneObject; keepChildren: Boolean); dynamic;
          function IndexOfChild(aChild : TGLBaseSceneObject) : Integer;
          function FindChild(const aName : String; ownChildrenOnly : Boolean) : TGLBaseSceneObject;
-         {: The "safe" version of this procedure ckecks if indexes are inside
+         {: The "safe" version of this procedure checks if indexes are inside
             the list. If not, no exception if raised. }
          procedure ExchangeChildrenSafe(anIndex1, anIndex2 : Integer);
-         {: The "regular" version of this procedure does not perform any ckecks
+         {: The "regular" version of this procedure does not perform any checks
             and calls FChildren.Exchange directly. User should/can perform range
             checks manualy. }
          procedure ExchangeChildren(anIndex1, anIndex2 : Integer);
@@ -2783,9 +2783,8 @@ begin
    else Result:=0;
 end;
 
-// GetCount
+// HasSubChildren
 //
-
 function TGLBaseSceneObject.HasSubChildren: Boolean;
 var
   I: Integer;
