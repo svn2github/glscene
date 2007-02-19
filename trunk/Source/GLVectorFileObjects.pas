@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>19/02/07 - LC - Added some VBO support
     <li>19/10/06 - LC - Fixed bug in TGLActor.SetCurrentFrame. Bugtracker ID=1580511
 	  <li>04/10/06 - PhP - fixed TGLActor.SetCurrentFrame (thanks dikoe)
 	  <li>05/12/05 - PhP - fixed TFGIndexTexCoordList.BuildList (thanks fig) 
@@ -140,7 +141,7 @@ interface
 
 uses Classes, GLScene, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLTexture,
    GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
-   ApplicationFileIO, GLSilhouette;
+   ApplicationFileIO, GLSilhouette, GLContext;
 
 type
 
@@ -595,6 +596,9 @@ type
    TMeshObjectRenderingOption = (moroGroupByMaterial);
    TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
 
+   TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords, vbLightMapTexCoords);
+   TVBOBuffers = set of TVBOBuffer;
+
    // TMeshObject
    //
    {: Base mesh class.<p>
@@ -617,12 +621,22 @@ type
          FBinormalsTexCoordIndex : Integer;
          FTangentsTexCoordIndex : Integer;
          FLastXOpenGLTexMapping : Cardinal;
+         FUseVBO: boolean;
+         FVerticesVBO: TGLVBOHandle;
+         FNormalsVBO: TGLVBOHandle;
+         FColorsVBO: TGLVBOHandle;
+         FTexCoordsVBO: TGLVBOHandle;
+         FLightmapTexCoordsVBO: TGLVBOHandle;
+         FValidBuffers: TVBOBuffers;
 
+         procedure SetUseVBO(const Value: boolean);
       protected
          { Protected Declarations }
          procedure SetTexCoords(const val : TAffineVectorList);
          procedure SetLightmapTexCoords(const val : TTexPointList);
          procedure SetColors(const val : TVectorList);
+
+         procedure BufferArrays;
 
          procedure DeclareArraysToOpenGL(var mrci : TRenderContextInfo;
                                          evenIfAlreadyDeclared : Boolean = False);
@@ -641,9 +655,10 @@ type
          function GetTangents : TVectorList;
          procedure SetTangentsTexCoordIndex(const val : Integer);
 
+         property ValidBuffers: TVBOBuffers read FValidBuffers write FValidBuffers;
       public
          { Public Declarations }
-         {: Creates, assigns Owner and adds to list. } 
+         {: Creates, assigns Owner and adds to list. }
          constructor CreateOwned(AOwner : TMeshObjectList);
          constructor Create; override;
          destructor Destroy; override;
@@ -701,6 +716,10 @@ type
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
          property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
+
+         {: If set, rendering will use VBO's instead of vertex arrays. }
+         property UseVBO: boolean read FUseVBO write SetUseVBO;
+
 
          {: The TexCoords Extension is a list of vector lists that are used 
             to extend the vertex data applied during rendering.<p>
@@ -3302,6 +3321,9 @@ begin
    FTexCoordsEx:=TList.Create;
    FTangentsTexCoordIndex:=1;
    FBinormalsTexCoordIndex:=2;
+
+   FUseVBO:= true;
+
    inherited;
 end;
 
@@ -3311,6 +3333,12 @@ destructor TMeshObject.Destroy;
 var
    i : Integer;
 begin
+   FVerticesVBO.Free;
+   FNormalsVBO.Free;
+   FColorsVBO.Free;
+   FTexCoordsVBO.Free;
+   FLightmapTexCoordsVBO.Free;
+
    FFaceGroups.Free;
    FColors.Free;
    FTexCoords.Free;
@@ -3843,6 +3871,25 @@ begin
    end;
 end;
 
+procedure TMeshObject.SetUseVBO(const Value: boolean);
+begin
+  if Value = FUseVBO then
+    exit;
+
+  if FUseVBO then
+  begin
+    FreeAndNil(FVerticesVBO);
+    FreeAndNil(FNormalsVBO);
+    FreeAndNil(FColorsVBO);
+    FreeAndNil(FTexCoordsVBO);
+    FreeAndNil(FLightmapTexCoordsVBO);
+  end;
+
+  FValidBuffers:= [];
+
+  FUseVBO := Value;
+end;
+
 // BuildTangentSpace
 //
 procedure TMeshObject.BuildTangentSpace(
@@ -3935,29 +3982,58 @@ procedure TMeshObject.DeclareArraysToOpenGL(var mrci : TRenderContextInfo; evenI
 var
    i : Integer;
    currentMapping : Cardinal;
+   lists: array[0..4] of pointer;
 begin
    if evenIfAlreadyDeclared or (not FArraysDeclared) then begin
+      FillChar(lists, sizeof(lists), 0);
+
+      FUseVBO:= FUseVBO and GL_ARB_vertex_buffer_object;
+
+      if not FUseVBO then
+      begin
+        lists[0]:= Vertices.List;
+        lists[1]:= Normals.List;
+        lists[2]:= Colors.List;
+        lists[3]:= TexCoords.List;
+        lists[4]:= LightMapTexCoords.List;
+      end
+      else
+      begin
+        BufferArrays;
+      end;
+
       if Vertices.Count>0 then begin
+         if FUseVBO then
+            FVerticesVBO.Bind;
          glEnableClientState(GL_VERTEX_ARRAY);
-         glVertexPointer(3, GL_FLOAT, 0, Vertices.List);
+         glVertexPointer(3, GL_FLOAT, 0, lists[0]);
       end else glDisableClientState(GL_VERTEX_ARRAY);
+
       if not mrci.ignoreMaterials then begin
          if Normals.Count>0 then begin
+            if FUseVBO then
+               FNormalsVBO.Bind;
             glEnableClientState(GL_NORMAL_ARRAY);
-            glNormalPointer(GL_FLOAT, 0, Normals.List);
+            glNormalPointer(GL_FLOAT, 0, lists[1]);
          end else glDisableClientState(GL_NORMAL_ARRAY);
          if (Colors.Count>0) and (not mrci.ignoreMaterials) then begin
+            if FUseVBO then
+               FColorsVBO.Bind;
             glEnableClientState(GL_COLOR_ARRAY);
-            glColorPointer(4, GL_FLOAT, 0, Colors.List);
+            glColorPointer(4, GL_FLOAT, 0, lists[2]);
          end else glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then begin
+            if FUseVBO then
+               FTexCoordsVBO.Bind;
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
+            xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[3]);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
          if GL_ARB_multitexture then begin
             if LightMapTexCoords.Count>0 then begin
+               if FUseVBO then
+                  FLightmapTexCoordsVBO.Bind;
                glClientActiveTextureARB(GL_TEXTURE1_ARB);
-               glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
+               glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), lists[4]);
                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             end;
             for i:=0 to FTexCoordsEx.Count-1 do begin
@@ -3974,13 +4050,13 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) and not FUseVBO then
          glLockArraysEXT(0, vertices.Count);
       FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
       if mrci.drawState <> dsPicking then
-      	 FLastXOpenGLTexMapping:=xglGetBitWiseMapping;
+         FLastXOpenGLTexMapping:=xglGetBitWiseMapping;
    end else begin
       if not mrci.ignoreMaterials and not (mrci.drawState = dsPicking) then
          if TexCoords.Count>0 then begin
@@ -4002,7 +4078,7 @@ var
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
-      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) and not FUseVBO then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
@@ -4026,6 +4102,20 @@ begin
             end;
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
+      end;
+
+      if FUseVBO then
+      begin
+        if Vertices.Count > 0 then
+          FVerticesVBO.UnBind;
+        if Normals.Count > 0 then
+          FNormalsVBO.UnBind;
+        if Colors.Count > 0 then
+          FColorsVBO.UnBind;
+        if TexCoords.Count > 0 then
+          FTexCoordsVBO.UnBind;
+        if LightMapTexCoords.Count > 0 then
+          FLightmapTexCoordsVBO.UnBind;
       end;
       FArraysDeclared:=False;
    end;
@@ -4074,6 +4164,63 @@ end;
 
 // BuildList
 //
+procedure TMeshObject.BufferArrays;
+const
+  BufferUsage = GL_DYNAMIC_DRAW_ARB;
+begin
+  if (Vertices.Count > 0) and not (vbVertices in ValidBuffers) then
+  begin
+    if not assigned(FVerticesVBO) then
+      FVerticesVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
+
+    FVerticesVBO.BindBufferData(Vertices.List, sizeof(TAffineVector) * Vertices.Count, BufferUsage);
+    FVerticesVBO.UnBind;
+    ValidBuffers:= ValidBuffers + [vbVertices];
+  end;
+
+  if (Normals.Count > 0) and not (vbNormals in ValidBuffers) then
+  begin
+    if not assigned(FNormalsVBO) then
+      FNormalsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
+
+    FNormalsVBO.BindBufferData(Normals.List, sizeof(TAffineVector) * Normals.Count, BufferUsage);
+    FNormalsVBO.UnBind;
+    ValidBuffers:= ValidBuffers + [vbNormals];
+  end;
+
+  if (Colors.Count > 0) and not (vbColors in ValidBuffers) then
+  begin
+    if not assigned(FColorsVBO) then
+      FColorsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
+
+    FColorsVBO.BindBufferData(Colors.List, sizeof(TVector) * Colors.Count, BufferUsage);
+    FColorsVBO.UnBind;
+    ValidBuffers:= ValidBuffers + [vbColors];
+  end;
+
+  if (TexCoords.Count > 0) and not (vbTexCoords in ValidBuffers) then
+  begin
+    if not assigned(FTexCoordsVBO) then
+      FTexCoordsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
+
+    FTexCoordsVBO.BindBufferData(TexCoords.List, sizeof(TAffineVector) * TexCoords.Count, BufferUsage);
+    FTexCoordsVBO.UnBind;
+    ValidBuffers:= ValidBuffers + [vbTexCoords];
+  end;
+
+  if (LightMapTexCoords.Count > 0) and not (vbLightMapTexCoords in ValidBuffers) then
+  begin
+    if not assigned(FLightmapTexCoordsVBO) then
+      FLightmapTexCoordsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
+
+    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List, sizeof(TAffineVector) * LightMapTexCoords.Count, BufferUsage);
+    FLightmapTexCoordsVBO.UnBind;
+    ValidBuffers:= ValidBuffers + [vbLightMapTexCoords];
+  end;
+
+  CheckOpenGLError;
+end;
+
 procedure TMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
    i, j, groupID, nbGroups : Integer;
@@ -4593,6 +4740,7 @@ procedure TMorphableMeshObject.Translate(const delta : TAffineVector);
 begin
    inherited;
    MorphTargets.Translate(delta);
+   ValidBuffers:= ValidBuffers - [vbVertices];
 end;
 
 // MorphTo
@@ -4602,10 +4750,14 @@ begin
    if (morphTargetIndex=0) and (MorphTargets.Count=0) then Exit;
    Assert(Cardinal(morphTargetIndex)<Cardinal(MorphTargets.Count));
    with MorphTargets[morphTargetIndex] do begin
-      if Vertices.Count>0 then
+      if Vertices.Count>0 then begin
          Self.Vertices.Assign(Vertices);
-      if Normals.Count>0 then
+         ValidBuffers:= ValidBuffers - [vbVertices];
+      end;
+      if Normals.Count>0 then begin
          Self.Normals.Assign(Normals);
+         ValidBuffers:= ValidBuffers - [vbNormals];
+      end;
    end;
 end;
 
@@ -4625,11 +4777,14 @@ begin
    else begin
       mt1:=MorphTargets[morphTargetIndex1];
       mt2:=MorphTargets[morphTargetIndex2];
-      if mt1.Vertices.Count>0 then
+      if mt1.Vertices.Count>0 then begin
          Vertices.Lerp(mt1.Vertices, mt2.Vertices, lerpFactor);
+         ValidBuffers:= ValidBuffers - [vbVertices];
+      end;
       if mt1.Normals.Count>0 then begin
          Normals.Lerp(mt1.Normals, mt2.Normals, lerpFactor);
          Normals.Normalize;
+         ValidBuffers:= ValidBuffers - [vbNormals];
       end;
    end;
 end;
@@ -5165,10 +5320,9 @@ procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
 const
    cFaceGroupMeshModeToOpenGL : array [TFaceGroupMeshMode] of Integer =
          (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_QUADS);
-
 begin
    if VertexIndices.Count=0 then Exit;
-   Owner.Owner.DeclareArraysToOpenGL(mrci, False);
+   Owner.Owner.DeclareArraysToOpenGL(mrci,  False);
    AttachOrDetachLightmap(mrci);
    glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
                   GL_UNSIGNED_INT, VertexIndices.List);
@@ -5541,6 +5695,7 @@ begin
   indicesPool := @VertexIndices.List[0];
   colorPool := @Owner.Owner.Colors.List[0];
   gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
+
   case Mode of
     fgmmTriangles: glBegin(GL_TRIANGLES);
     fgmmFlatTriangles: glBegin(GL_TRIANGLES);
@@ -5555,21 +5710,22 @@ begin
     for i := 0 to VertexIndices.Count - 1 do begin
        xglTexCoord2fv(@texCoordPool[i]);
        k := indicesPool[i];
-       if gotColor then 
+       if gotColor then
          glColor4fv(@colorPool[k]);
        glNormal3fv(@normalPool[k]);
        glVertex3fv(@vertexPool[k]);
     end;
-  end 
+  end
   else begin
     for i := 0 to VertexIndices.Count - 1 do begin
       xglTexCoord2fv(@texCoordPool[i]);
-      if gotColor then 
+      if gotColor then
         glColor4fv(@colorPool[indicesPool[i]]);
       glVertex3fv(@vertexPool[indicesPool[i]]);
     end;
   end;
   glEnd;
+  CheckOpenGLError;
 end;
 
 // AddToTriangles
