@@ -1,12 +1,18 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLVectorFileObjects<p>
 
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-    <li>19/02/07 - LC - Added some VBO support
-    <li>19/10/06 - LC - Fixed bug in TGLActor.SetCurrentFrame. Bugtracker ID=1580511
-	  <li>04/10/06 - PhP - fixed TGLActor.SetCurrentFrame (thanks dikoe)
-	  <li>05/12/05 - PhP - fixed TFGIndexTexCoordList.BuildList (thanks fig) 
+
+      <li>21/02/07 - DaStr - Added TMeshObjectList.BuildTangentSpace, UseVBO
+                             Added TGLActor.SetCurrentFrameDirect
+      <li>19/02/07 - LC - Added some VBO support
+      <li>19/10/06 - LC - Fixed bug in TGLActor.SetCurrentFrame. Bugtracker ID=1580511
+      <li>04/10/06 - PhP - fixed TGLActor.SetCurrentFrame (thanks dikoe)
+      <li>05/12/05 - PhP - fixed TFGIndexTexCoordList.BuildList (thanks fig)
       <li>10/11/05 - Mathx - Added LastLoadedFilename to TGLBaseMesh (RFE 955083).
       <li>09/11/05 - Mathx - Added isSwitchingAnimation to TGLActor.
       <li>05/09/05 - Mathx - Fixed TSkeletonMeshObject read/write filer (thanks to Zapology)
@@ -130,8 +136,8 @@
                           IndexedArrays (better BuildList compatibility)
       <li>22/04/00 - EG - Fixed Material handlings in TGLFreeForm, inverted CCW/CW
                           convention for 3DS Release3
-		 <li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
-	   <li>09/02/00 - EG - Creation from split of GLObjects,
+      <li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
+      <li>09/02/00 - EG - Creation from split of GLObjects,
                           fixed class registrations and formats unregistration
 	</ul></font>
 }
@@ -699,14 +705,14 @@ type
          //: Sets the triangle data of a given triangle
          procedure SetTriangleData(tri : Integer; list : TAffineVectorList; 
             const v0, v1, v2 : TAffineVector); overload;
-         procedure SetTriangleData(tri : Integer; list : TVectorList; 
+         procedure SetTriangleData(tri : Integer; list : TVectorList;
             const v0, v1, v2 : TVector); overload;
 
-         {: Build the tangent space from the mesh object's vertex, normal 
+         {: Build the tangent space from the mesh object's vertex, normal
             and texcoord data, filling the binormals and tangents where
             specified. }
          procedure BuildTangentSpace(
-            buildBinormals : Boolean = True; 
+            buildBinormals : Boolean = True;
             buildTangents : Boolean = True);
 
          property Owner : TMeshObjectList read FOwner;
@@ -753,6 +759,9 @@ type
       private
          { Private Declarations }
          FOwner : TGLBaseMesh;
+         {: Resturns True if all its MeshObjects use VBOs. }
+         function GetUseVBO: Boolean;
+         procedure SetUseVBO(const Value: Boolean);
 
       protected
          { Protected Declarations }
@@ -763,7 +772,7 @@ type
          constructor CreateOwned(aOwner : TGLBaseMesh);
          destructor Destroy; override;
 
-			procedure ReadFromFiler(reader : TVirtualReader); override;
+         procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
          procedure DropMaterialLibraryCache;
@@ -786,9 +795,20 @@ type
          {: Returns number of triangles in the meshes of the list. }
          function TriangleCount : Integer;
 
+         {: Build the tangent space from the mesh object's vertex, normal
+            and texcoord data, filling the binormals and tangents where
+            specified. }
+         procedure BuildTangentSpace(
+            buildBinormals : Boolean = True;
+            buildTangents : Boolean = True);
+
+         {: If set, rendering will use VBO's instead of vertex arrays.
+            Resturns True if all its MeshObjects use VBOs. }
+         property UseVBO: Boolean read GetUseVBO write SetUseVBO;
+
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
-         
+
          function FindMeshByName(MeshName : String) : TMeshObject;
 
          property Owner : TGLBaseMesh read FOwner;
@@ -1697,6 +1717,10 @@ type
             Copies Start/Current/End Frame values, CurrentFrameDelta,
             AnimationMode and FrameInterpolation. }
          procedure Synchronize(referenceActor : TGLActor);
+
+         {: Provides a direct access to FCurrentFrame without any checks.
+            Used in TGLActorProxy. }
+         procedure SetCurrentFrameDirect(const Value: Integer);
 
          function  NextFrameIndex : Integer;
 
@@ -4574,6 +4598,40 @@ begin
       end;
 end;
 
+// BuildTangentSpace
+//
+procedure TMeshObjectList.BuildTangentSpace(buildBinormals,
+  buildTangents: Boolean);
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      GetMeshObject(I).BuildTangentSpace(buildBinormals, buildTangents);
+end;
+
+// GetUseVBO
+//
+function TMeshObjectList.GetUseVBO: Boolean;
+var
+  I: Integer;
+begin
+  Result := True;
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      Result := Result and GetMeshObject(I).FUseVBO;
+end;
+
+// SetUseVBO
+//
+procedure TMeshObjectList.SetUseVBO(const Value: Boolean);
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      GetMeshObject(I).SetUseVBO(Value);
+end;
 
 // ------------------
 // ------------------ TMeshMorphTarget ------------------
@@ -7286,7 +7344,7 @@ begin
       FCurrentFrame:=FrameCount-1
     else if val<0 then
       FCurrentFrame:=0
-    else 
+    else
       FCurrentFrame:=val;
     FCurrentFrameDelta:=0;
     case AnimationMode of
@@ -7295,9 +7353,16 @@ begin
       aamBounceBackward: if CurrentFrame=StartFrame then FAnimationMode:=aamBounceForward;
     end;
     StructureChanged;
-    if Assigned(FOnFrameChanged) then 
+    if Assigned(FOnFrameChanged) then
       FOnFrameChanged(Self);
   end;
+end;
+
+// SetCurrentFrame
+//
+procedure TGLActor.SetCurrentFrameDirect(const Value: Integer);
+begin
+  FCurrentFrame := Value;
 end;
 
 // SetStartFrame
