@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/02/07 - DaStr - TGLActorProxy and TGLMotionBlur added
       <li>16/02/07 - DaStr - GLMaterialMultiProxy added
       <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
       <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
@@ -1929,6 +1930,7 @@ initialization
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
+      RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects);
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects);
       {$endif}
@@ -1940,6 +1942,7 @@ initialization
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', glsOCProxyObjects);
       RegisterSceneObject(TGLColorProxy, 'ColorProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLActorProxy, 'ActorProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy', glsOCProxyObjects);
 
