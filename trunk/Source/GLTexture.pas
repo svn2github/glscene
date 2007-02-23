@@ -6,6 +6,12 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
+                              EGLShaderException
+                             Added TGLShader.HandleFailedInitialization, ShaderSupported,
+                              GetStardardNotSupportedMessage, FailedInitAction
+                             Added default value for TGLShader.ShaderStyle
+                             Fixed TGLShader.InitializeShader
       <li>16/02/07 - DaStr - Global $Q- removed
                            Added TGLLibMaterials.GetTextureIndex, GetMaterialIndex,
                              GetNameOfTexture, GetNameOfLibMaterial
@@ -820,6 +826,32 @@ type
       </ul> }
    TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
+
+   // TGLShaderFailedInitAction
+   //
+   {: Defines what to do if for some reason shader failed to initialize.<ul>
+      <li>fiaSilentdisable:          just disable it
+      <li>fiaRaiseHandledException:  raise an exception, and handle it right away
+                                     (usefull, when debigging within Delphi)
+      <li>fiaRaiseStardardException: raises the exception with a string from this
+                                       function GetStardardNotSupportedMessage
+      <li>fiaReRaiseException:       Re-raises the exception
+      <li>fiaGenerateEvent:          Handles the exception, but generates an event
+                                     that user can respond to. For example, he can
+                                     try to compile a substitude shader, or replace
+                                     it by a material.
+                                     Note: HandleFailedInitialization does *not*
+                                     create this event, it is left to user shaders
+                                     which may chose to override this procedure.
+                                     Commented out, because not sure if this
+                                     option should exist, let other generations of
+                                     developers decide ;)
+      </ul> }
+   TGLShaderFailedInitAction = (
+                    fiaSilentDisable, fiaRaiseStandardException,
+                    fiaRaiseHandledException, fiaReRaiseException
+                    {,fiaGenerateEvent});
+
    // TGLShader
    //
    {: Generic, abstract shader class.<p>
@@ -837,6 +869,7 @@ type
          FShaderStyle : TGLShaderStyle;
          FUpdateCount : Integer;
          FShaderActive, FShaderInitialized : Boolean;
+         FFailedInitAction: TGLShaderFailedInitAction;
 
 	   protected
 			{ Protected Declarations }
@@ -867,13 +900,20 @@ type
          procedure RegisterUser(libMat : TGLLibMaterial);
          procedure UnRegisterUser(libMat : TGLLibMaterial);
 
+         {: Used by the DoInitialize procedure of descendant classes to raise errors. }
+         procedure HandleFailedInitialization(const LastErrorMessage: string = ''); virtual;
+
+         {: May be this should be a function inside HandleFailedInitialization... }
+         class function GetStardardNotSupportedMessage: string; virtual;
+
       public
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
-         {: Subclasses should invoke this function when shader properties are altered. }
-			procedure NotifyChange(Sender : TObject); override;
+         {: Subclasses should invoke this function when shader properties are altered.
+             This procedure can also be used to reset/recompile the shader. }
+         procedure NotifyChange(Sender : TObject); override;
          procedure BeginUpdate;
          procedure EndUpdate;
 
@@ -886,9 +926,22 @@ type
          function UnApply(var rci : TRenderContextInfo) : Boolean;
 
          {: Shader application style (default is ssLowLevel). }
-         property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
+         property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle default ssLowLevel;
 
          procedure Assign(Source: TPersistent); override;
+
+         {: Defines if shader is supported by hardware/drivers.
+            Default - always supported. Descendants are encouraged to override
+            this function. }
+         function  ShaderSupported: Boolean; virtual;
+
+         {: Defines what to do if for some reason shader failed to initialize.
+            Note, that in some cases it cannon be determined by just checking the
+            required OpenGL extentions. You need to try to compile and link the
+            shader - only at that stage you might catch an error }
+         property FailedInitAction: TGLShaderFailedInitAction
+                  read FFailedInitAction write FFailedInitAction default fiaRaiseStandardException;
+
       published
 	      { Published Declarations }
          {: Turns on/off shader application.<p>
@@ -897,6 +950,8 @@ type
             the shader is disabled. }
          property Enabled : Boolean read FEnabled write SetEnabled default True;
    end;
+
+   TGLShaderClass = class of TGLShader;
 
    // TGLTextureFormat
    //
@@ -1661,7 +1716,7 @@ type
    end;
 
    ETexture = class (Exception);
-
+   EGLShaderException = class(Exception);
    
 function ColorManager: TGLColorManager;
 
@@ -3041,6 +3096,7 @@ begin
    FVirtualHandle:=TGLVirtualHandle.Create;
    FShaderStyle:=ssLowLevel;
    FEnabled:=True;
+   FFailedInitAction := fiaRaiseStandardException;
 	inherited;
 end;
 
@@ -3120,8 +3176,8 @@ begin
       FVirtualHandle.OnAllocate:=OnVirtualHandleAllocate;
       FVirtualHandle.OnDestroy:=OnVirtualHandleDestroy;
       FVirtualHandle.AllocateHandle;
-      DoInitialize;
       FShaderInitialized:=True;
+      DoInitialize;
    end;
 end;
 
@@ -3154,8 +3210,8 @@ procedure TGLShader.Apply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    Assert(not FShaderActive, 'Unbalanced shader application.');
 
-   //Need to check it twice, because shader may refuse to initialize
-   // and choose to disable itself during initialization
+   // Need to check it twice, because shader may refuse to initialize
+   // and choose to disable itself during initialization.
    if FEnabled then
       if FVirtualHandle.Handle=0 then
          InitializeShader;
@@ -3233,10 +3289,51 @@ begin
   if Source is TGLShader then
   begin
     FShaderStyle := TGLShader(Source).FShaderStyle;
+    FFailedInitAction := TGLShader(Source).FFailedInitAction;
     Enabled := TGLShader(Source).FEnabled;
   end
   else
     inherited Assign(Source);  //to the pit of doom ;)
+end;
+
+// Assign
+//
+function  TGLShader.ShaderSupported: Boolean;
+begin
+  Result := True;
+end;
+
+// HandleFailedInitialization
+//
+procedure TGLShader.HandleFailedInitialization(const LastErrorMessage: string = '');
+begin
+  case FailedInitAction of
+    fiaSilentdisable:; // Do nothing ;)
+    fiaRaiseHandledException:
+      try
+        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+      except end;
+    fiaRaiseStandardException:
+        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+    fiaReRaiseException:
+      begin
+        if LastErrorMessage <> '' then
+          raise EGLShaderException.Create(LastErrorMessage)
+        else
+          raise EGLShaderException.Create(GetStardardNotSupportedMessage)
+      end;
+//    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
+//                       // which may choose to override this procedure.
+  else
+    Assert(False, glsUnknownType);
+  end;
+end;
+
+// GetStardardNotSupportedMessage
+//
+class function TGLShader.GetStardardNotSupportedMessage: string;
+begin
+  Result := 'Your hardware/driver doesn''t support shader ' + ClassName + '!';
 end;
 
 // ------------------
