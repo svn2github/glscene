@@ -6,6 +6,9 @@
 	Applies a blur effect over the viewport.<p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
+                                TGLBlur - default values added to all properties,
+                                Made some cosmetic and alignment changes
         <li>20/02/07 - DaStr  - TGLMotionBlur added (based on ToxBlur by Dave Gravel)
                                 Added some default values to TGLBlur
         <li>11/06/04 - Mrqzzz - Creation
@@ -16,9 +19,10 @@ unit GLBlur;
 interface
 
 uses
-  //VCL
+  // VCL
   Classes, StdCtrls,
-  //GLScene
+
+  // GLScene
   GLScene, VectorGeometry, GLMisc,  GLObjects, GLBitmapFont, GLTexture,
   GLHudObjects;
 
@@ -26,46 +30,47 @@ type
     TGLBlurPreset = (pNone,pGlossy,pBeastView,pOceanDepth,pDream,pOverBlur);
 
 type
-    TGLBlur = class (TGLHUDSprite)
-      private
-       FViewer : TGLMemoryViewer;
-       OldTime :  Double;
-       FDoingMemView : boolean;
+  TGLBlur = class (TGLHUDSprite)
+  private
+    FViewer : TGLMemoryViewer;
+    OldTime :  Double;
+    FDoingMemView : boolean;
     FBlurDeltaTime: Double;
-    FBlurTop: single;
-    FBlurBottom: single;
-    FBlurLeft: single;
-    FBlurRight: single;
-    FRenderHeight: integer;
-    FRenderWidth: integer;
+    FBlurTop: Single;
+    FBlurBottom: Single;
+    FBlurLeft: Single;
+    FBlurRight: Single;
+    FRenderHeight: Integer;
+    FRenderWidth: Integer;
     FPreset: TGLBlurPreset;
     procedure DoMemView(baseObject: TGLBaseSceneObject);
-    procedure SetBlurDeltaTime(const Value: Double);
-    procedure SetBlurBottom(const Value: single);
-    procedure SetBlurLeft(const Value: single);
-    procedure SetBlurRight(const Value: single);
-    procedure SetBlurTop(const Value: single);
-    procedure SetRenderHeight(const Value: integer);
-    procedure SetRenderWidth(const Value: integer);
+    procedure SetRenderHeight(const Value: Integer);
+    procedure SetRenderWidth(const Value: Integer);
     procedure UpdateImageSettings;
     procedure SetPreset(const Value: TGLBlurPreset);
-      public
-         constructor Create(AOwner: TComponent); override;
-         destructor Destroy; override;
 
-         procedure DoProgress(const progressTime : TProgressTimes); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
-      published
-         property BlurDeltaTime : Double read FBlurDeltaTime write SetBlurDeltaTime;
-         property BlurLeft:single read FBlurLeft write SetBlurLeft;
-         property BlurTop:single read FBlurTop write SetBlurTop;
-         property BlurRight:single read FBlurRight write SetBlurRight;
-         property BlurBottom:single read FBlurBottom write SetBlurBottom;
-         property RenderWidth:integer read FRenderWidth write SetRenderWidth default 256;
-         property RenderHeight:integer read FRenderHeight write SetRenderHeight default 256;
-         property Preset : TGLBlurPreset read FPreset write SetPreset stored false;
-    end;
+    function StoreBlurBottom: Boolean;
+    function StoreBlurDeltaTime: Boolean;
+    function StoreBlurRight: Boolean;
+    function StoreBlurTop: Boolean;
+    function StoreBlurLeft: Boolean;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure DoProgress(const progressTime : TProgressTimes); override;
+    procedure DoRender(var rci : TRenderContextInfo;
+                       renderSelf, renderChildren : Boolean); override;
+  published
+    property BlurDeltaTime: Double read FBlurDeltaTime write FBlurDeltaTime stored StoreBlurDeltaTime;
+    property BlurLeft: Single read FBlurLeft write FBlurLeft stored StoreBlurLeft;
+    property BlurTop: Single read FBlurTop write FBlurTop stored StoreBlurTop;
+    property BlurRight: Single read FBlurRight write FBlurRight stored StoreBlurRight;
+    property BlurBottom: Single read FBlurBottom write FBlurBottom stored StoreBlurBottom;
+    property RenderWidth: Integer read FRenderWidth write SetRenderWidth default 256;
+    property RenderHeight: Integer read FRenderHeight write SetRenderHeight default 256;
+    property Preset: TGLBlurPreset read FPreset write SetPreset stored false;
+  end;
 
 {:
   This component blurs everything thatis rendered BEFORE it. So if you want part
@@ -98,7 +103,6 @@ type
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
 
     // From TGLBaseSceneObject.
-    property Scale;
     property Visible;
     property OnProgress;
     property Behaviours;
@@ -109,6 +113,9 @@ type
 implementation
 
 uses SysUtils, OpenGL1x, GLGraphics, XOpenGL, GLState;
+
+const
+  EPS = 0.001;
 
 constructor TGLBlur.Create(AOwner: TComponent);
 begin
@@ -179,7 +186,7 @@ begin
      begin
           FDoingMemView := true;
 
-          //SCene.RenderScene(FViewer.Buffer,FViewer.Width,FViewer.Height,dsRendering,baseObject);
+          //Scene.RenderScene(FViewer.Buffer,FViewer.Width,FViewer.Height,dsRendering,baseObject);
           FViewer.Camera.BeginUpdate;
 
           OldFocalLength := FViewer.Camera.FocalLength;
@@ -206,8 +213,7 @@ begin
      end;
 end;
 
-
-
+{$Warnings Off} //Suppress "unsafe" warning
 procedure TGLBlur.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var
@@ -290,32 +296,7 @@ begin
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
 end;
-
-
-procedure TGLBlur.SetBlurDeltaTime(const Value: Double);
-begin
-  FBlurDeltaTime := Value;
-end;
-
-procedure TGLBlur.SetBlurBottom(const Value: single);
-begin
-  FBlurBottom := Value;
-end;
-
-procedure TGLBlur.SetBlurLeft(const Value: single);
-begin
-  FBlurLeft := Value;
-end;
-
-procedure TGLBlur.SetBlurRight(const Value: single);
-begin
-  FBlurRight := Value;
-end;
-
-procedure TGLBlur.SetBlurTop(const Value: single);
-begin
-  FBlurTop := Value;
-end;
+{$Warnings On}
 
 procedure TGLBlur.SetRenderHeight(const Value: integer);
 begin
@@ -388,6 +369,31 @@ begin
 
 end;
 
+function TGLBlur.StoreBlurBottom: Boolean;
+begin
+  Result := Abs(FBlurBottom - 0.01) > EPS;
+end;
+
+function TGLBlur.StoreBlurDeltaTime: Boolean;
+begin
+  Result := Abs(FBlurDeltaTime - 0.02) > EPS;
+end;
+
+function TGLBlur.StoreBlurLeft: Boolean;
+begin
+  Result := Abs(FBlurLeft - 0.01) > EPS;
+end;
+
+function TGLBlur.StoreBlurRight: Boolean;
+begin
+  Result := Abs(FBlurRight - 0.01) > EPS;
+end;
+
+function TGLBlur.StoreBlurTop: Boolean;
+begin
+  Result := Abs(FBlurTop - 0.01) > EPS;
+end;
+
 { TGLMotionBlur }
 
 procedure TGLMotionBlur.Assign(Source: TPersistent);
@@ -450,7 +456,7 @@ end;
 
 function TGLMotionBlur.StoreIntensity: Boolean;
 begin
-  Result := Abs(FIntensity - 1) < 0.001;
+  Result := Abs(FIntensity - 0.975) > EPS;
 end;
 
 // ------------------------------------------------------------------
