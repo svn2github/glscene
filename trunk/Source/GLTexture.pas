@@ -12,6 +12,7 @@
                               GetStardardNotSupportedMessage, FailedInitAction
                              Added default value for TGLShader.ShaderStyle
                              Fixed TGLShader.InitializeShader
+                             Fixed TGLTextureExItem.Create (TGLCoordinatesStyle stuff)
       <li>16/02/07 - DaStr - Global $Q- removed
                            Added TGLLibMaterials.GetTextureIndex, GetMaterialIndex,
                              GetNameOfTexture, GetNameOfLibMaterial
@@ -4246,9 +4247,9 @@ begin
   inherited;
 
   FTexture:=TGLTexture.Create(Self);
-  FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHMGVector);
+  FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHMGVector, csPoint);
   FTextureOffset.OnNotifyChange:=OnNotifyChange;
-  FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector);
+  FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
   FTextureScale.OnNotifyChange:=OnNotifyChange;
 
   FTextureIndex:=ID;
