@@ -1,8 +1,11 @@
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFireFX<p>
 
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
       <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
       <li>09/12/01 - EG - Added NoZWrite property
       <li>12/08/01 - EG - Fixed leak (color objects)
@@ -242,8 +245,8 @@ begin
    inherited Create(AOwner);
    FClients:=TList.Create;
    RegisterManager(Self);
-   FFireDir:=TGLCoordinates.CreateInitialized(Self, VectorMake(0, 0.5, 0));
-   FInitialDir:=TGLCoordinates.CreateInitialized(Self, YHmgVector);
+   FFireDir:=TGLCoordinates.CreateInitialized(Self, VectorMake(0, 0.5, 0), csPoint);
+   FInitialDir:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csPoint);
    FMaxParticles:=256;
    FParticleSize:=1.0;
    FInnerColor:=TGLColor.Create(Self);
