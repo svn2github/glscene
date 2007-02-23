@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Added default values to TGLHUDSprite.Width & Height
       <li>15/02/07 - DaStr - Added default values to TGLHUDText.Alignment & Layout
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
@@ -47,7 +48,8 @@ type
 	   private
 			{ Private Declarations }
          FXTiles, FYTiles : Integer;
-
+         function StoreWidth: Boolean;
+         function StoreHeight: Boolean;
 		protected
 			{ Protected Declarations }
          procedure SetXTiles(const val : Integer);
@@ -64,6 +66,9 @@ type
 	      { Published Declarations }
          property XTiles : Integer read FXTiles write SetXTiles default 1;
          property YTiles : Integer read FYTiles write SetYTiles default 1;
+         // Redeclare them with new default values.
+         property Width stored StoreWidth;
+         property Height stored StoreHeight;
    end;
 
    // TGLHUDText
@@ -223,6 +228,20 @@ begin
    until not Material.UnApply(rci);
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
+end;
+
+// StoreHeight
+//
+function TGLHUDSprite.StoreHeight: Boolean;
+begin
+  Result := Abs(Height - 16) > 0.001;
+end;
+
+// StoreWidth
+//
+function TGLHUDSprite.StoreWidth: Boolean;
+begin
+  Result := Abs(Height - 16) > 0.001;
 end;
 
 // ------------------
