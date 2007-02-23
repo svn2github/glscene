@@ -2,6 +2,7 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
       <li>07/05/04 - EG - Perspective distortion properly applied
       <li>06/05/04 - EG - Fixes, improvements, clean ups
       <li>04/05/04 - EG - Reworked architecture
@@ -601,7 +602,7 @@ begin
    inherited;
    FImposterRegister:=TPersistentObjectList.Create;
    FBackColor:=TGLColor.CreateInitialized(Self, clrTransparent);
-   FBuildOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint);
+   FBuildOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, CsPoint);
    FImposterOptions:=cDefaultImposterOptions;
    FAlphaTreshold:=0.5;
 end;
