@@ -48,3 +48,10 @@ TGLShadowHDS BITMAP vcl\glscene_icon_TGLShadowHDS.bmp
 TGLEParticleMasksManager BITMAP vcl\glscene_icon_TGLEParticleMasksManager.bmp
 TGLWideBitmapFont BITMAP vcl\glscene_icon_TGLWideBitmapFont.bmp
 TGLSimpleNavigation BITMAP vcl\glscene_icon_TGLSimpleNavigation.bmp
+TGLSmoothNavigator BITMAP vcl\glscene_icon_TGLSmoothNavigator.bmp
+TGLSmoothUserInterface BITMAP vcl\glscene_icon_TGLSmoothUserInterface.bmp
+TGLSLShader BITMAP vcl\glscene_icon_TGLSLShader.bmp
+TGLSLDiffuseSpecularShader BITMAP vcl\glscene_icon_TGLSLDiffuseSpecularShader.bmp
+TGLSLBumpShader BITMAP vcl\glscene_icon_TGLSLBumpShader.bmp
+TGLAsmShader BITMAP vcl\glscene_icon_TGLAsmShader.bmp
+TGLShaderCombiner BITMAP vcl\glscene_icon_TGLShaderCombiner.bmp
