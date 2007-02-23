@@ -33,6 +33,8 @@ requires
 contains
   cgGL in '..\Source\CgShaders\cgGL.pas',
   cg in '..\Source\CgShaders\cg.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas';
+  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
+  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas',
+  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas';
 
 end.

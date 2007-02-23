@@ -11,6 +11,8 @@ USELIB("..\Source\CgShaders\cgGL.lib");
 USEUNIT("..\Source\CgShaders\cg.pas");
 USEUNIT("..\Source\CgShaders\cgGL.pas");
 USEUNIT("..\Source\CgShaders\GLCgShader.pas");
+USEUNIT("..\Source\CgShaders\GLCgRegister.pas");
+USEUNIT("..\Source\CgShaders\GLCgBombShader.pas");
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
