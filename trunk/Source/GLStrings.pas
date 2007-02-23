@@ -6,6 +6,9 @@
 	String constants that are used in many GLScene units<p>
 
 	<b>History :</b><font size=-1><ul>
+      23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
+                         glsUnknownType, glsShaderNeedsAtLeastOneLightSource(Ex),
+                         glsCadencerNotDefined(Ex), glsSceneViewerNotDefined
       16/02/07 - DaStr - Added glsOCProxyObjects, glsError, glsErrorEx,
                          glsMatLibNotDefined, glsMaterialNotFoundInMatlib(Ex)
       26/08/02 - EG - Added missing header, added glsUnknownExtension
@@ -17,6 +20,7 @@ interface
 
 const
   // General
+  glsDot = '.';
   glsError   = 'Error!';
   glsErrorEx = 'Error: ';
 
@@ -29,6 +33,15 @@ resourcestring
   glsWrongBitmapCanvas  = 'Couldn''t create a rendering context for the given bitmap';
   glsWrongPrinter       = 'Couldn''t render to printer';
   glsAlreadyRendering   = 'Already rendering';
+  glsSceneViewerNotDefined = glsErrorEx + 'SceneViewer not defined!';
+
+  // GLCadencer
+  glsCadencerNotDefined   = glsErrorEx + 'Cadencer not defined!';
+  glsCadencerNotDefinedEx = glsErrorEx + 'Cadencer not defined for  the ''%s'' component';
+
+  // Shaders
+  glsShaderNeedsAtLeastOneLightSource   = glsErrorEx + 'This shader needs at least one LightSource!';
+  glsShaderNeedsAtLeastOneLightSourceEx = glsErrorEx + 'Shader ''%s'' needs at least one LightSource!';
 
   // GLTree
   glsSceneRoot  = 'Scene root';
@@ -58,6 +71,10 @@ resourcestring
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
   glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
+
+  glsUncompatibleTypes = glsErrorEx + 'uncompatible types!';
+  glsUnknownType       = glsErrorEx + 'unknown type!';
+  glsUnsupportedType   = glsErrorEx + 'unsupported type!';
 
   // object categories
   glsOCBasicGeometry = 'Basic geometry';
