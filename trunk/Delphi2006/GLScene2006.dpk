@@ -34,8 +34,7 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg,
-  GR32_BDS2006;
+  vcljpg;
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
@@ -220,6 +219,14 @@ contains
   GLCanvas in '..\Source\Base\GLCanvas.pas',
   GLMeshBuilder in '..\Source\GLMeshBuilder.pas',
   GLTexturedHDS in '..\Source\GLTexturedHDS.pas',
-  GLAsyncHDS in '..\Source\GLAsyncHDS.pas';
+  GLAsyncHDS in '..\Source\GLAsyncHDS.pas',
+  GLEParticleMasksManager in '..\Source\GLEParticleMasksManager.pas',
+  GLConsole in '..\Source\GLConsole.pas',
+  GLSmoothNavigator in '..\Source\GLSmoothNavigator.pas',
+  GLSimpleNavigation in '..\Source\GLSimpleNavigation.pas',
+  GLAtmosphere in '..\Source\GLAtmosphere.pas',
+  GLMaterialMultiProxy in '..\Source\GLMaterialMultiProxy.pas',
+  GLWideBitmapFont in '..\Source\GLWideBitmapFont.pas',
+  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas';
 
 end.
