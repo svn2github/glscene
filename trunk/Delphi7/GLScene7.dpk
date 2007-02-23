@@ -33,8 +33,7 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg,
-  GR32_D7;
+  vcljpg;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -220,6 +219,14 @@ contains
   GLCanvas in '..\Source\Base\GLCanvas.pas',
   GLTexturedHDS in '..\Source\GLTexturedHDS.pas',
   GLHeightData in '..\Source\GLHeightData.pas',
-  GLAsyncHDS in '..\Source\GLAsyncHDS.pas';
+  GLAsyncHDS in '..\Source\GLAsyncHDS.pas',
+  GLEParticleMasksManager in '..\Source\GLEParticleMasksManager.pas',
+  GLConsole in '..\Source\GLConsole.pas',
+  GLSmoothNavigator in '..\Source\GLSmoothNavigator.pas',
+  GLSimpleNavigation in '..\Source\GLSimpleNavigation.pas',
+  GLAtmosphere in '..\Source\GLAtmosphere.pas',
+  GLMaterialMultiProxy in '..\Source\GLMaterialMultiProxy.pas',
+  GLWideBitmapFont in '..\Source\GLWideBitmapFont.pas',
+  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas';
 
 end.
