@@ -4,6 +4,7 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>28/09/04 - SG - Vertex program now uses ARB_position_invariant option.
       <li>09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
       <li>28/05/04 - SG - Creation.
@@ -72,8 +73,6 @@ type
          property OnGetIntensity : TGLCelShaderGetIntensity read FOnGetIntensity write FOnGetIntensity;
    end;
 
-procedure Register;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -81,14 +80,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-// Register
-//
-procedure Register;
-begin
-  RegisterComponents('GLScene Shaders', [TGLCelShader]);
-end;
-
 
 // ------------------
 // ------------------ TGLCelShader ------------------

@@ -4,6 +4,7 @@
    its assigned MaterialLibrary.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>24/05/04 - Mrqzzz - Re-added design-time rendering option
                           (seems stable now)
       <li>29/07/03 - SG - Removed design-time rendering option
@@ -37,8 +38,6 @@ type
          property VisibleAtDesignTime : boolean read FVisibleAtDesignTime write SetVisibleAtDesignTime;
    end;
 
-procedure Register;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -46,11 +45,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-procedure Register;
-begin
-   RegisterComponents('GLScene Shaders', [TGLMultiMaterialShader]);
-end;
 
 // ------------------
 // ------------------ TGLMultiMaterialShader ------------------
