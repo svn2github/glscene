@@ -6,6 +6,7 @@
 	Applies a blur effect over the viewport.<p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
         <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
                                 TGLBlur - default values added to all properties,
                                 Made some cosmetic and alignment changes
@@ -419,6 +420,7 @@ end;
 procedure TGLMotionBlur.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
 begin
   if rci.ignoreMaterials then Exit;
+  if csDesigning in ComponentState then Exit;
 
   glPushMatrix;
     glEnable( GL_TEXTURE_RECTANGLE_NV );
