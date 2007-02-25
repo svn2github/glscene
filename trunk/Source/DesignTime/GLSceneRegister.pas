@@ -1,10 +1,19 @@
-// GLSceneRegister
-{: Registration unit for GLScene library components, property editors and
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLSceneRegister<p>
+
+   Registration unit for GLScene library components, property editors and
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>21/02/07 - DaStr - TGLActorProxy and TGLMotionBlur added
-      <li>16/02/07 - DaStr - GLMaterialMultiProxy added
+      <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
+                             TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
+                             TGLSmoothNavigator, TGLSmoothUserInterface
+                             Moved TGLLibMaterialNameProperty to the interface
+                                                                        section
+      <li>21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
+      <li>16/02/07 - DaStr - Added GLMaterialMultiProxy
       <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
       <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
       <li>06/02/07 - DaStr - Added GLSimpleNavigation
@@ -135,6 +144,15 @@ type
 
       end;
 
+	// TGLLibMaterialNameProperty
+	//
+	TGLLibMaterialNameProperty = class(TStringProperty)
+		public
+			{ Protected Declarations }
+         function GetAttributes: TPropertyAttributes; override;
+			procedure Edit; override;
+	end;
+
 procedure Register;
 
 //: Auto-create for object manager
@@ -163,6 +181,8 @@ uses
    GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
    GLAsyncHDS, GLConsole, GLAtmosphere, GLProxyObjects, GLMaterialMultiProxy,
+   GLSLShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLAsmShader,
+   GLShaderCombiner, GLSmoothNavigator,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -415,15 +435,6 @@ type
 {$else}
          procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
 {$endif}
-	end;
-
-	// TGLLibMaterialNameProperty
-	//
-	TGLLibMaterialNameProperty = class(TStringProperty)
-		protected
-			{ Protected Declarations }
-         function GetAttributes: TPropertyAttributes; override;
-			procedure Edit; override;
 	end;
 
 	// TGLAnimationNameProperty
@@ -1792,8 +1803,14 @@ begin
                        TCollisionManager, TGLAnimationControler,
                        TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
+                       TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-                       TGLSimpleNavigation
+                       TGLSimpleNavigation 
+                      ]);
+
+   RegisterComponents('GLScene Shaders',
+                      [TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
+                       TGLAsmShader, TGLShaderCombiner
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
@@ -1824,6 +1841,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLEParticleMask, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLGameMenu, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '', TGLLibMaterialNameProperty);
 
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
