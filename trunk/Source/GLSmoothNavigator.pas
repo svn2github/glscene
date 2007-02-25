@@ -3,31 +3,40 @@
 //
 {: GLSmoothNavigator<p>
 
-   An extention of TGLNavigator, which allows to move objects with inertia<p>
+     An extention of TGLNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
-   MoveAroundTarget, Turn[Vertical/Horizontal] is not. Don't know why, but when
-   I make their code identical, these function stop wirking completely. So
-   you probably have to call the AutoScaleParameters procedure once in a while
-   for it to adjust to the current framerate. If someone knows a better way
-   to solve this issue, please contact me via glscene newsgroups.
+   MoveAroundTarget, Turn[Vertical/Horizontal] and AdjustDistanceTo[..] is not.
+
+     Don't know why, but when I make their code identical, these function stop
+   working completely. So you probably have to call the AutoScaleParameters
+   procedure once in a while for it to adjust to the current framerate.
+   If someone knows a better way to solve this issue, please contact me via
+   glscene newsgroups.<p>
 
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
       <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
+    TODO:
+      1) Scale "Old values" too, when callin the Scale parameter procedure to
+         avoid the temporary "freeze" of controls.
+      2) AddImpulse procedures.
 
-Previous version history:
-          v1.0    10 December  '2005  Creation
-          v1.0.2  11 December  '2005  MaxTurnAngle added
-          v1.1    04 March     '2006  Inertia became FPS-independant
-                                      TGLSmoothNavigatorParameters added
-          v1.1.6  18 February  '2007  Merged with GLInertedUserInterface.pas
-                                      All parameters moved into separate classes
-                                      Added MoveAroudTargetWithInertia
-          v1.2    23 February  '2007  Finally made it trully FPS-independant
-                                      Added default values to every property
-                                      Contributed to GLScene
+
+
+    Previous version history:
+        v1.0    10 December  '2005  Creation
+        v1.0.2  11 December  '2005  TurnMaxAngle added
+        v1.1    04 March     '2006  Inertia became FPS-independant
+                                    TGLSmoothNavigatorParameters added
+        v1.1.6  18 February  '2007  Merged with GLInertedUserInterface.pas
+                                    All parameters moved into separate classes
+                                    Added MoveAroudTargetWithInertia
+        v1.2    23 February  '2007  Finally made it trully FPS-independant
+                                    Added default values to every property
+                                    Contributed to GLScene
 }
 
 unit GLSmoothNavigator;
@@ -44,6 +53,34 @@ uses
   GLNavigator, VectorGeometry, GLCrossPlatform, GLMisc, GLScene;
 
 type
+	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
+       affect how the AdjustDisanceTo[...] methods work<p>
+  }
+  TGLNavigatorAdjustDistanceParameters = class(TPersistent)
+  private
+    FOwner: TPersistent;
+    OldDistanceRatio: Single;
+    FInertia: Single;
+    FSpeed: Single;
+    FImpulseSpeed: Single;
+    function StoreInertia: Boolean;
+    function StoreSpeed: Boolean;
+    function StoreImpulseSpeed: Boolean;
+  protected
+    function GetOwner: TPersistent; override;
+  public
+    constructor Create(AOwner: TPersistent); virtual;
+    procedure Assign(Source: TPersistent); override;
+    procedure ScaleParameters(const Value: Single); virtual;
+
+    procedure AddImpulse(const Impulse: Single); virtual;
+  published
+    property Inertia: Single read FInertia write FInertia stored StoreInertia;
+    property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
+    property ImpulseSpeed: Single read FImpulseSpeed write FImpulseSpeed stored StoreImpulseSpeed;
+  end;
+
+
 	{: TGLNavigatorInertiaParameters is wrapper for all parameters that affect the
        smoothness of movement<p>
   }
@@ -60,12 +97,12 @@ type
 
     FTurnInertia: Single;
     FTurnSpeed: Single;
-    FMaxTurnAngle: Single;
+    FTurnMaxAngle: Single;
     FMovementAcceleration: Single;
     FMovementInertia: Single;
     FMovementSpeed: Single;
 
-    function StoreMaxTurnAngle: Boolean;
+    function StoreTurnMaxAngle: Boolean;
     function StoreMovementAcceleration: Boolean;
     function StoreMovementInertia: Boolean;
     function StoreMovementSpeed: Boolean;
@@ -82,7 +119,7 @@ type
     property MovementInertia: Single read FMovementInertia write FMovementInertia stored StoreMovementInertia;
     property MovementSpeed: Single read FMovementSpeed write FMovementSpeed stored StoreMovementSpeed;
 
-    property MaxTurnAngle: Single read FMaxTurnAngle write FMaxTurnAngle stored StoreMaxTurnAngle;
+    property TurnMaxAngle: Single read FTurnMaxAngle write FTurnMaxAngle stored StoreTurnMaxAngle;
     property TurnInertia: Single read FTurnInertia write FTurnInertia stored StoreTurnInertia;
     property TurnSpeed: Single read FTurnSpeed write FTurnSpeed stored StoreTurnSpeed;
   end;
@@ -128,15 +165,15 @@ type
     FOldPitchInertiaAngle : Single;
     FOldTurnInertiaAngle  : Single;
 
-    FPitchSensitivity : Single;
-    FTurnSensitivity  : Single;
+    FPitchSpeed : Single;
+    FTurnSpeed  : Single;
     FInertia          : Single;
     FMaxAngle         : Single;
 
     function StoreInertia: Boolean;
     function StoreMaxAngle: Boolean;
-    function StorePitchSensitivity: Boolean;
-    function StoreTurnSensitivity: Boolean;
+    function StorePitchSpeed: Boolean;
+    function StoreTurnSpeed: Boolean;
     procedure SetTargetObject(const Value: TGLBaseSceneObject);
   protected
     function GetOwner: TPersistent; override;
@@ -147,8 +184,8 @@ type
   published
     property Inertia: Single read FInertia write FInertia stored StoreInertia;
     property MaxAngle: Single read FMaxAngle write FMaxAngle stored StoreMaxAngle;
-    property PitchSensitivity: Single read FPitchSensitivity write FPitchSensitivity stored StorePitchSensitivity;
-    property TurnSensitivity: Single read FTurnSensitivity write FTurnSensitivity stored StoreTurnSensitivity;
+    property PitchSpeed: Single read FPitchSpeed write FPitchSpeed stored StorePitchSpeed;
+    property TurnSpeed: Single read FTurnSpeed write FTurnSpeed stored StoreTurnSpeed;
     property TargetObject: TGLBaseSceneObject read FTargetObject write SetTargetObject;
   end;
 
@@ -185,21 +222,23 @@ type
     FInertiaParams: TGLNavigatorInertiaParameters;
     FGeneralParams: TGLNavigatorGeneralParameters;
     FMoveAroundParams: TGLNavigatorMoveAroundParameters;
-    procedure SetInertiaParams(const Value: TGLNavigatorInertiaParameters); virtual;
-    function StoreMaxExpectedDeltaTime: Boolean; virtual;
-    procedure SetGeneralParams(const Value: TGLNavigatorGeneralParameters); virtual;
-    procedure SetMoveAroundParams(const Value: TGLNavigatorMoveAroundParameters); virtual;
+    FAdjustDistanceParams: TGLNavigatorAdjustDistanceParameters;
+    procedure SetInertiaParams(const Value: TGLNavigatorInertiaParameters);
+    function StoreMaxExpectedDeltaTime: Boolean;
+    procedure SetGeneralParams(const Value: TGLNavigatorGeneralParameters);
+    procedure SetMoveAroundParams(const Value: TGLNavigatorMoveAroundParameters);
+    procedure SetAdjustDistanceParams(const Value: TGLNavigatorAdjustDistanceParameters);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    // Constructors-destructors
+    //: Constructors-destructors
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    // From TGLNavigator
+    //: From TGLNavigator
     procedure SetObject(Value: TGLBaseSceneObject); override;
 
-    // InertiaParams
+    //: InertiaParams
     procedure TurnHorizontal(Angle: Single; DeltaTime: Single); virtual;
     procedure TurnVertical(Angle: Single; DeltaTime: Single); virtual;
     procedure FlyForward(const Plus, Minus: Boolean; DeltaTime: Single; const Accelerate: Boolean = False); virtual;
@@ -207,11 +246,16 @@ type
     procedure StrafeHorizontal(const Plus, Minus: Boolean; DeltaTime: Single; const Accelerate: Boolean = False); virtual;
     procedure StrafeVertical(const Plus, Minus: Boolean; DeltaTime: Single; const Accelerate: Boolean = False); virtual;
 
-    // MoveAroundParams
+    //: MoveAroundParams
     procedure MoveAroundTarget(const PitchDelta, TurnDelta : Single; const DeltaTime: Single); virtual;
     procedure MoveObjectAround(const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta : Single; DeltaTime: Single); virtual;
 
-    // GeneralParams
+    //: AdjustDistanceParams
+    procedure AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; DeltaTime: Single); virtual;
+    procedure AdjustDistanceToTarget(const DistanceRatio : Single; const DeltaTime: Single); virtual;
+
+    //: GeneralParams
+      {: In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
     procedure AutoScaleParameters(const FPS: Single); virtual;
     procedure AutoScaleParametersUp(const FPS: Single); virtual;
@@ -220,6 +264,7 @@ type
     property InertiaParams: TGLNavigatorInertiaParameters read FInertiaParams write SetInertiaParams;
     property GeneralParams: TGLNavigatorGeneralParameters read FGeneralParams write SetGeneralParams;
     property MoveAroundParams: TGLNavigatorMoveAroundParameters read FMoveAroundParams write SetMoveAroundParams;
+    property AdjustDistanceParams: TGLNavigatorAdjustDistanceParameters read FAdjustDistanceParams write SetAdjustDistanceParams;
   end;
 
 
@@ -276,7 +321,8 @@ type
 implementation
 
 const
-  EPS = 0.001;
+  EPS =  0.001;
+  EPS2 = 0.0001;
 
 { TGLSmoothNavigator }
 
@@ -287,13 +333,15 @@ begin
   FInertiaParams := TGLNavigatorInertiaParameters.Create(Self);
   FGeneralParams := TGLNavigatorGeneralParameters.Create(Self);
   FMoveAroundParams := TGLNavigatorMoveAroundParameters.Create(Self);
+  FAdjustDistanceParams := TGLNavigatorAdjustDistanceParameters.Create(Self);
 end;
 
 destructor TGLSmoothNavigator.Destroy;
 begin
-  FInertiaParams.Destroy;
-  FGeneralParams.Destroy;
-  FMoveAroundParams.Destroy;
+  FInertiaParams.Free;
+  FGeneralParams.Free;
+  FMoveAroundParams.Free;
+  FAdjustDistanceParams.Free;
   inherited;
 end;
 
@@ -313,7 +361,7 @@ begin
     Angle := Angle * FTurnSpeed;
     while DeltaTime > FMaxExpectedDeltaTime do
     begin
-      Angle := ClampValue((Angle * FMaxExpectedDeltaTime + OldTurnHorizontalAngle * FTurnInertia) / (FTurnInertia + 1), -FMaxTurnAngle, FMaxTurnAngle);
+      Angle := ClampValue((Angle * FMaxExpectedDeltaTime + OldTurnHorizontalAngle * FTurnInertia) / (FTurnInertia + 1), -FTurnMaxAngle, FTurnMaxAngle);
       OldTurnHorizontalAngle := Angle;
       DeltaTime := DeltaTime - FMaxExpectedDeltaTime;
       FinalAngle := FinalAngle + Angle;
@@ -334,7 +382,7 @@ begin
     Angle := Angle * FTurnSpeed;
     while DeltaTime > FMaxExpectedDeltaTime do
     begin
-      Angle := ClampValue((Angle * FMaxExpectedDeltaTime + OldTurnVerticalAngle * FTurnInertia) / (FTurnInertia + 1), -FMaxTurnAngle, FMaxTurnAngle);
+      Angle := ClampValue((Angle * FMaxExpectedDeltaTime + OldTurnVerticalAngle * FTurnInertia) / (FTurnInertia + 1), -FTurnMaxAngle, FTurnMaxAngle);
       OldTurnVerticalAngle := Angle;
       DeltaTime := DeltaTime - FMaxExpectedDeltaTime;
       FinalAngle := FinalAngle + Angle;
@@ -497,11 +545,12 @@ begin
   FMaxExpectedDeltatime := FMaxExpectedDeltatime / Value;
   FInertiaParams.ScaleParameters(Value);
   FMoveAroundParams.ScaleParameters(Value);
+  FAdjustDistanceParams.ScaleParameters(Value);
 end;
 
 function TGLSmoothNavigator.StoreMaxExpectedDeltaTime: Boolean;
 begin
-  Result := Abs(FMaxExpectedDeltaTime - 0.001) > 0.00001;
+  Result := Abs(FMaxExpectedDeltaTime - 0.001) > EPS2;
 end;
 
 procedure TGLSmoothNavigator.SetGeneralParams(
@@ -570,8 +619,8 @@ begin
   FinalTurn := 0;
   with FMoveAroundParams do
   begin
-    PitchDelta := PitchDelta * FPitchSensitivity;
-    TurnDelta := TurnDelta * FTurnSensitivity;
+    PitchDelta := PitchDelta * FPitchSpeed;
+    TurnDelta := TurnDelta * FTurnSpeed;
 
     while DeltaTime > FMaxExpectedDeltatime do
     begin
@@ -590,6 +639,62 @@ begin
   end;
 end;
 
+
+procedure TGLSmoothNavigator.AdjustDistanceToPoint(const APoint: TVector;
+  const DistanceRatio: Single; DeltaTime: Single);
+
+  // Based on TGLCamera.AdjustDistanceToTarget
+  procedure DoAdjustDistanceToPoint(const DistanceRatio: Single);
+  var
+    vect: TVector;
+  begin
+    vect := VectorSubtract(MovingObject.AbsolutePosition, APoint);
+    ScaleVector(vect, (distanceRatio - 1));
+    AddVector(vect, MovingObject.AbsolutePosition);
+    if Assigned(MovingObject.Parent) then
+       vect := MovingObject.Parent.AbsoluteToLocal(vect);
+    MovingObject.Position.AsVector := vect;
+  end;
+
+var
+  FinalDistanceRatio: Single;
+  TempDistanceRatio:  Single;
+begin
+  with FAdjustDistanceParams do
+  begin
+    TempDistanceRatio := DistanceRatio * FSpeed;
+    FinalDistanceRatio := 0;
+    while DeltaTime > FMaxExpectedDeltaTime do
+    begin
+      TempDistanceRatio := (TempDistanceRatio * FMaxExpectedDeltaTime + OldDistanceRatio * FInertia) / (FInertia + 1);
+      OldDistanceRatio := TempDistanceRatio;
+      DeltaTime := DeltaTime - FMaxExpectedDeltaTime;
+      FinalDistanceRatio := FinalDistanceRatio + OldDistanceRatio / FMaxExpectedDeltaTime;
+    end;
+
+    if Abs(FinalDistanceRatio) > EPS2 then
+    begin
+      if FinalDistanceRatio > 0 then
+        DoAdjustDistanceToPoint(1 / (1 + FinalDistanceRatio))
+      else
+        DoAdjustDistanceToPoint(1 * (1 - FinalDistanceRatio))
+    end;
+  end;
+end;
+
+procedure TGLSmoothNavigator.AdjustDistanceToTarget(const DistanceRatio,
+  DeltaTime: Single);
+begin
+  Assert(FMoveAroundParams.FTargetObject <> nil);
+  AdjustDistanceToPoint(FMoveAroundParams.FTargetObject.AbsolutePosition,
+                        DistanceRatio, DeltaTime);
+end;
+
+procedure TGLSmoothNavigator.SetAdjustDistanceParams(
+  const Value: TGLNavigatorAdjustDistanceParameters);
+begin
+  FAdjustDistanceParams.Assign(Value);
+end;
 
 { TGLSmoothUserInterface }
 
@@ -748,7 +853,7 @@ begin
     FMovementAcceleration := TGLNavigatorInertiaParameters(Source).FMovementAcceleration;
     FMovementInertia := TGLNavigatorInertiaParameters(Source).FMovementInertia;
     FMovementSpeed := TGLNavigatorInertiaParameters(Source).FMovementSpeed;
-    FMaxTurnAngle := TGLNavigatorInertiaParameters(Source).FMaxTurnAngle;
+    FTurnMaxAngle := TGLNavigatorInertiaParameters(Source).FTurnMaxAngle;
     FTurnInertia := TGLNavigatorInertiaParameters(Source).FTurnInertia;
     FTurnSpeed := TGLNavigatorInertiaParameters(Source).FTurnSpeed;
   end
@@ -762,7 +867,7 @@ begin
 
   FTurnInertia := 150;
   FTurnSpeed := 50;
-  FMaxTurnAngle := 0.5;
+  FTurnMaxAngle := 0.5;
 
   FMovementAcceleration := 7;
   FMovementInertia := 200;
@@ -789,13 +894,13 @@ begin
     FMovementInertia := FMovementInertia / VectorGeometry.Power(2, Value);
     FTurnInertia := FTurnInertia / VectorGeometry.Power(2, Value);
   end;
-  FMaxTurnAngle := FMaxTurnAngle / Value;
+  FTurnMaxAngle := FTurnMaxAngle / Value;
   FTurnSpeed := FTurnSpeed * Value;
 end;
 
-function TGLNavigatorInertiaParameters.StoreMaxTurnAngle: Boolean;
+function TGLNavigatorInertiaParameters.StoreTurnMaxAngle: Boolean;
 begin
-  Result := Abs(FMaxTurnAngle - 0.5) > EPS;
+  Result := Abs(FTurnMaxAngle - 0.5) > EPS;
 end;
 
 function TGLNavigatorInertiaParameters.StoreMovementAcceleration: Boolean;
@@ -873,8 +978,8 @@ begin
   begin
     FMaxAngle := TGLNavigatorMoveAroundParameters(Source).FMaxAngle;
     FInertia :=  TGLNavigatorMoveAroundParameters(Source).FInertia;
-    FPitchSensitivity :=  TGLNavigatorMoveAroundParameters(Source).FPitchSensitivity;
-    FTurnSensitivity :=  TGLNavigatorMoveAroundParameters(Source).FTurnSensitivity;
+    FPitchSpeed :=  TGLNavigatorMoveAroundParameters(Source).FPitchSpeed;
+    FTurnSpeed :=  TGLNavigatorMoveAroundParameters(Source).FTurnSpeed;
   end
   else
     inherited; //die
@@ -883,8 +988,8 @@ end;
 constructor TGLNavigatorMoveAroundParameters.Create(AOwner: TPersistent);
 begin
   FOwner := AOwner;
-  FPitchSensitivity := 500;
-  FTurnSensitivity  := 500;
+  FPitchSpeed := 500;
+  FTurnSpeed  := 500;
   FInertia          := 65;
   FMaxAngle         := 1.5;
 end;
@@ -905,8 +1010,8 @@ begin
     FInertia := FInertia * VectorGeometry.Power(2, 1 / Value);
 
   FMaxAngle := FMaxAngle / Value;
-  FPitchSensitivity := FPitchSensitivity * Value;
-  FTurnSensitivity := FTurnSensitivity * Value;
+  FPitchSpeed := FPitchSpeed * Value;
+  FTurnSpeed := FTurnSpeed * Value;
 end;
 
 procedure TGLNavigatorMoveAroundParameters.SetTargetObject(
@@ -933,20 +1038,85 @@ begin
   Result := Abs(FMaxAngle - 1.5) > EPS;
 end;
 
-function TGLNavigatorMoveAroundParameters.StorePitchSensitivity: Boolean;
+function TGLNavigatorMoveAroundParameters.StorePitchSpeed: Boolean;
 begin
-  Result := Abs(FPitchSensitivity - 500) > EPS;
+  Result := Abs(FPitchSpeed - 500) > EPS;
 end;
 
-function TGLNavigatorMoveAroundParameters.StoreTurnSensitivity: Boolean;
+function TGLNavigatorMoveAroundParameters.StoreTurnSpeed: Boolean;
 begin
-  Result := Abs(FTurnSensitivity - 500) > EPS;
+  Result := Abs(FTurnSpeed - 500) > EPS;
+end;
+
+{ TGLNavigatorAdjustDistanceParameters }
+
+procedure TGLNavigatorAdjustDistanceParameters.AddImpulse(
+  const Impulse: Single);
+begin
+  OldDistanceRatio := OldDistanceRatio + Impulse * FSpeed / FInertia * FImpulseSpeed;
+end;
+
+procedure TGLNavigatorAdjustDistanceParameters.Assign(Source: TPersistent);
+begin
+  if Source is TGLNavigatorAdjustDistanceParameters then
+  begin
+    FInertia :=      TGLNavigatorAdjustDistanceParameters(Source).FInertia;
+    FSpeed :=        TGLNavigatorAdjustDistanceParameters(Source).FSpeed;
+    FImpulseSpeed := TGLNavigatorAdjustDistanceParameters(Source).FImpulseSpeed;
+  end
+  else
+    inherited; //to the pit of doom ;)
+end;
+
+constructor TGLNavigatorAdjustDistanceParameters.Create(
+  AOwner: TPersistent);
+begin
+  FOwner := AOwner;
+  FInertia := 100;
+  FSpeed := 0.005;
+  FImpulseSpeed := 0.02;
+end;
+
+function TGLNavigatorAdjustDistanceParameters.GetOwner: TPersistent;
+begin
+  Result := FOwner;
+end;
+
+
+procedure TGLNavigatorAdjustDistanceParameters.ScaleParameters(
+  const Value: Single);
+begin
+  Assert(Value > 0);
+
+  if Value < 1 then
+    FInertia := FInertia / VectorGeometry.Power(2, Value)
+  else
+    FInertia := FInertia * VectorGeometry.Power(2, 1 / Value);
+
+  FImpulseSpeed := FImpulseSpeed / Value;
+end;
+
+function TGLNavigatorAdjustDistanceParameters.StoreImpulseSpeed: Boolean;
+begin
+  Result := Abs(FImpulseSpeed - 0.02) > EPS;
+end;
+
+function TGLNavigatorAdjustDistanceParameters.StoreInertia: Boolean;
+begin
+  Result := Abs(FInertia - 100) > EPS;
+end;
+
+function TGLNavigatorAdjustDistanceParameters.StoreSpeed: Boolean;
+begin
+  Result := Abs(FSpeed - 0.005) > EPS2;
 end;
 
 initialization
-  RegisterClasses([TGLSmoothNavigator, TGLSmoothUserInterface,
-                   TGLNavigatorInertiaParameters, TGLNavigatorGeneralParameters,
-                   TGLNavigatorMoveAroundParameters]);
+  RegisterClasses([
+      TGLSmoothNavigator, TGLSmoothUserInterface,
+      TGLNavigatorInertiaParameters, TGLNavigatorGeneralParameters,
+      TGLNavigatorMoveAroundParameters, TGLNavigatorAdjustDistanceParameters
+                   ]);
 
 end.
 
