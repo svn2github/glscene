@@ -7,7 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>23/02/07 - DaStr - Added TGLPostEffect
+      <li>25/02/07 - DaStr - Added TGLPostEffect
       <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
                              TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
                              TGLSmoothNavigator, TGLSmoothUserInterface
