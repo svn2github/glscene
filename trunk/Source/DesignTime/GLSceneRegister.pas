@@ -8,6 +8,8 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>25/02/07 - DaStr - Added TGLPostEffect
+                             Moved all terrain components to a separate tab
+                             Moved all shader components registration here
       <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
                              TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
                              TGLSmoothNavigator, TGLSmoothUserInterface
@@ -183,7 +185,10 @@ uses
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
    GLAsyncHDS, GLConsole, GLAtmosphere, GLProxyObjects, GLMaterialMultiProxy,
    GLSLShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLAsmShader,
-   GLShaderCombiner, GLSmoothNavigator, GLPostEffects,
+   GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
+   GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
+   GLBumpShader, GLHiddenLineShader, GLUserShader,
+
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1799,8 +1804,6 @@ begin
 
    RegisterComponents('GLScene Utils',
                       [TAsyncTimer, TGLStaticImposterBuilder,
-                       TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS,
                        TCollisionManager, TGLAnimationControler,
                        TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
@@ -1809,9 +1812,17 @@ begin
                        TGLSimpleNavigation 
                       ]);
 
+   RegisterComponents('GLScene Terrain',
+                      [TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS
+                      ]);
+
    RegisterComponents('GLScene Shaders',
-                      [TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
-                       TGLAsmShader, TGLShaderCombiner
+                      [ TGLTexCombineShader, TGLPhongShader, TGLUserShader,
+                        TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
+                        TGLMultiMaterialShader, TGLBumpShader,
+                        TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
+                        TGLAsmShader, TGLShaderCombiner
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
