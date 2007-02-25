@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Added TGLPostEffect
       <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
                              TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
                              TGLSmoothNavigator, TGLSmoothUserInterface
@@ -15,7 +16,7 @@
       <li>21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
       <li>16/02/07 - DaStr - Added GLMaterialMultiProxy
       <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
-      <li>13/02/07 - LIN - Added GLAsyncHDS and GLTexturedHDS
+      <li>13/02/07 - LIN   - Added GLAsyncHDS and GLTexturedHDS
       <li>06/02/07 - DaStr - Added GLSimpleNavigation
       <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
                                procedures from other units to this one
@@ -182,7 +183,7 @@ uses
    ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
    GLAsyncHDS, GLConsole, GLAtmosphere, GLProxyObjects, GLMaterialMultiProxy,
    GLSLShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLAsmShader,
-   GLShaderCombiner, GLSmoothNavigator,
+   GLShaderCombiner, GLSmoothNavigator, GLPostEffects,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1944,14 +1945,18 @@ initialization
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
-      {$ifdef WIN32}      
+      {$ifdef WIN32}
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
-      RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
+      RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects);
       RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects);
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects);
       {$endif}
+      RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects);
+
+
+      // Doodad objects
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
       RegisterSceneObject(TGLWaterPlane, 'WaterPlane', glsOCDoodad);
