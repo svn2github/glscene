@@ -5,6 +5,7 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/02/07 - Made TGLActorProxy.SetAnimation a bit safer
       <li>20/02/07 - DaStr - Redeclared MasterObject of TGLColorProxy and TGLFreeFormProxy
                              Added TGLActorProxy (based on a demo published
                              on the newsgroup by don't know who...)
@@ -20,12 +21,14 @@ interface
 
 uses
   // VCL
-  Classes,
+  Classes, SysUtils,
 
   //GLScene
-  GLScene, VectorGeometry, GLMisc, GLTexture, GLSilhouette, GLVectorFileObjects;
+  GLScene, VectorGeometry, GLMisc, GLTexture, GLSilhouette, GLVectorFileObjects,
+  GLStrings;
 
 type
+  EGLProxyException = class(Exception);
 
    // TGLColorProxy
    //
@@ -95,8 +98,8 @@ type
     FCurrentFrameDelta: Single;
     FCurrentTime: TProgressTimes;
     FInterval: Integer;
-    FAnimation: string;
-    procedure SetAnimation(const Value: string);
+    FAnimation: TActorAnimationName;
+    procedure SetAnimation(const Value: TActorAnimationName);
     procedure SetMasterActorObject(const Value: TGLActor);
     function GetMasterActorObject: TGLActor;
   protected
@@ -110,7 +113,7 @@ type
   published
     { Published Declarations }
     property Interval: Integer read FInterval write FInterval default 0;
-    property Animation: string read FAnimation write SetAnimation;
+    property Animation: TActorAnimationName read FAnimation write SetAnimation;
     // Redeclare as TGLActor.
     property MasterObject: TGLActor read GetMasterActorObject write SetMasterActorObject;
     // Redeclare without pooTransformation
@@ -126,7 +129,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils,OpenGL1x;
+uses OpenGL1x;
 
 // ------------------
 // ------------------ TGLColorProxy ------------------
@@ -378,10 +381,16 @@ end;
 
 // SetAnimation
 //
-procedure TGLActorProxy.SetAnimation(const Value: string);
+procedure TGLActorProxy.SetAnimation(const Value: TActorAnimationName);
 var
   anAnimation : TActorAnimation;
 begin
+  // We first assign the value (for persistency support), then check it.
+  FAnimation := Value;
+
+  if not Assigned(MasterObject) then
+    raise EGLProxyException.Create(glsErrorEx + 'No MasterObject defined!');
+
   anAnimation := GetMasterActorObject.Animations.FindName(Value);
   if Assigned(anAnimation) then
   begin
@@ -389,7 +398,6 @@ begin
     FEndFrame := anAnimation.EndFrame;
     FCurrentFrame := FStartFrame;
   end;
-  FAnimation := Value;
 end;
 
 // SetMasterObject
