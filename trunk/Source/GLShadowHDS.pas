@@ -237,13 +237,13 @@ begin
       ImageClassName:=TGLBlankImage.ClassName;
       Enabled:=True;
       MinFilter:=miNearestMipmapNearest;
-      MagFilter:=maNearest;
-      //MagFilter:=maLinear;
+      //MagFilter:=maNearest;
+      MagFilter:=maLinear;
       TextureMode:=tmReplace;
       TextureWrap:=twNone;
       //TextureFormat:=tfRGB16;
       //TextureFormat:=tfRGBA16;
-      //TextureFormat:=tfLuminanceAlpha;
+      TextureFormat:=tfLuminanceAlpha;
       bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
       GenerateShadowMap(HD , bmp32, 1);
     end;
