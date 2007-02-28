@@ -1,5 +1,5 @@
 // GLBumpmapHDS
-{: Implements and HDS that automatically generates an elevation bumpmap.<p>
+{: Implements a HDS that automatically generates an elevation bumpmap.<p>
 
    The object-space elevation bumpmap can be used for dynamic terrain lighting.<p>
    A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.
@@ -8,6 +8,7 @@
       <li>13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
                           Also takes advantage of texture-coodrinates, calculated by HeightDataSource
       <li>02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
+                          HeightDataSource replaces ElevationHDS.
                           (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
       <li>01/02/07 - LIN- Added 'MaxTextures' property.
                          if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
@@ -67,10 +68,10 @@ type
          procedure Trim(MaxTextureCount:integer);
 	   public
 	      { Public Declarations }
-	      constructor Create(AOwner: TComponent); override;
+	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure  Notification(AComponent: TComponent; Operation: TOperation); override;         
          procedure  GenerateNormalMap(heightData : THeightData; normalMap : TGLBitmap32; scale : Single);
-         procedure  Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure  Release(aHeightData : THeightData); override;
          procedure  TrimTextureCache(MaxTextureCount:integer);
          //procedure  TileTextureCoordinates(heightData : THeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
@@ -164,13 +165,15 @@ end;
 // This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
 // until the texture count drops to MaxTextureCount.
 // DONT use this if you used THeightData.MaterialName to link your terrain textures.
-// Either use THeightData.MaterialName, or manually delete unused Normal-Map textures.
+// Either use with THeightData.LibMaterial, or manually delete unused Normal-Map textures.
 //
 procedure TGLBumpmapHDS.TrimTextureCache(MaxTextureCount:integer);  //Thread-safe Version
 begin
-  uno.Acquire;
-    Trim(MaxTextureCount);
-  uno.Release;
+  if assigned(self) then begin
+    uno.Acquire;
+      Trim(MaxTextureCount);
+    uno.Release;
+  end;
 end;
 
 procedure TGLBumpmapHDS.Trim(MaxTextureCount:integer); //internal use only
@@ -200,48 +203,46 @@ var HD    : THeightData;
     bmp32 : TGLBitmap32;
     MatName:string;
 begin
-  //---Height Data--
-  HD:=HeightData;
+  if not assigned (FBumpmapLibrary) then exit;
   //--Generate Normal Map for tile--
-  if Assigned(FBumpmapLibrary) then begin
-    MatName:='BumpHDS_x'+IntToStr(HD.XLeft)+'y'+IntToStr(HD.YTop)+'.'; //name contains xy coordinates of the current tile
-    Uno.Acquire;
-    LibMat:=FBumpmapLibrary.Materials.GetLibMaterialByName(MatName);   //Check if Tile Texture already exists
-    if LibMat=nil then begin
-      if (FMaxTextures>0) then begin
-        if HD.Thread=nil                      //Dont trim the cache from a sub-thread;
-          then TrimTextureCache(FMaxTextures) //Trim unused textures from the material library
-      end;
-      //Generate new NormalMap texture for this tile
-      libMat:=FBumpmapLibrary.Materials.Add;
-      libMat.Name:=MatName;
-      //Transfer tile texture coordinates to generated texture
-      libMat.TextureScale.X :=HD.TextureCoordinatesScale.S;
-      libMat.TextureScale.Y :=HD.TextureCoordinatesScale.T;
-      libMat.TextureOffset.X:=HD.TextureCoordinatesOffset.S;
-      libMat.TextureOffset.Y:=HD.TextureCoordinatesOffset.T;
-      //------------------------------------------------------
-      //--Set up new Normalmap texture for the current tile--
-      libMat.Material.MaterialOptions:=[moNoLighting];
-      with libMat.Material.Texture do begin
-        ImageClassName:=TGLBlankImage.ClassName;
-        Enabled:=True;
-        MinFilter:=miNearestMipmapNearest;
-        MagFilter:=maLinear;   //MagFilter:=maNearest;
-        TextureMode:=tmReplace;
-        TextureWrap:=twNone;
-        TextureFormat:=tfRGB16;
-        //TextureFormat:=tfRGBA16;
-        bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
-        GenerateNormalMap(HD , bmp32, FBumpScale);
-      end;
-      //----------------------------------------------------
+  HD:=HeightData;
+  MatName:='BumpHDS_x'+IntToStr(HD.XLeft)+'y'+IntToStr(HD.YTop)+'.'; //name contains xy coordinates of the current tile
+  Uno.Acquire;
+  LibMat:=FBumpmapLibrary.Materials.GetLibMaterialByName(MatName);   //Check if Tile Texture already exists
+  if LibMat=nil then begin
+    if (FMaxTextures>0) then begin
+      if HD.Thread=nil                      //Dont trim the cache from a sub-thread;
+        then TrimTextureCache(FMaxTextures) //Trim unused textures from the material library
     end;
-    //HD.MaterialName:=LibMat.Name;
-    HD.LibMaterial:=LibMat;  //attach texture to current tile
-    if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,HD,libMat);
-    Uno.Release;
+    //Generate new NormalMap texture for this tile
+    libMat:=FBumpmapLibrary.Materials.Add;
+    libMat.Name:=MatName;
+    //Transfer tile texture coordinates to generated texture
+    libMat.TextureScale.X :=HD.TextureCoordinatesScale.S;
+    libMat.TextureScale.Y :=HD.TextureCoordinatesScale.T;
+    libMat.TextureOffset.X:=HD.TextureCoordinatesOffset.S;
+    libMat.TextureOffset.Y:=HD.TextureCoordinatesOffset.T;
+    //------------------------------------------------------
+    //--Set up new Normalmap texture for the current tile--
+    libMat.Material.MaterialOptions:=[moNoLighting];
+    with libMat.Material.Texture do begin
+      ImageClassName:=TGLBlankImage.ClassName;
+      Enabled:=True;
+      MinFilter:=miNearestMipmapNearest;
+      MagFilter:=maLinear;   //MagFilter:=maNearest;
+      TextureMode:=tmReplace;
+      TextureWrap:=twNone;
+      TextureFormat:=tfRGB16;
+      //TextureFormat:=tfRGBA16;
+      bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
+      GenerateNormalMap(HD , bmp32, FBumpScale);
+    end;
+    //----------------------------------------------------
   end;
+  //HD.MaterialName:=LibMat.Name;
+  HD.LibMaterial:=LibMat;  //attach texture to current tile
+  if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,HD,libMat);
+  Uno.Release;
 end;
 
 // GenerateNormalMap
@@ -262,15 +263,13 @@ begin
   mapSize:=mapSize div SubSampling;
   normalMap.Height:=mapSize;
   normalMap.Width :=mapSize;
-  SetVector(ScaleVec,-1,1,-FBumpScale);
+  SetVector(ScaleVec,1,1,FBumpScale);
   for y:=0 to mapSize-1 do begin
     nmRow:=normalMap.ScanLine[mapSize-1-y];
     for x:=0 to mapSize-1 do begin
       px:=x*subsampling;
       py:=y*subsampling;
-      if x<=0 then px:=1;  // clamp x, to hide seams
-      if y<=0 then py:=1;  // clamp x, to hide seams
-      vec:=HD.Normal(px,py,ScaleVec);
+      vec:=HD.NormalNode(px,py,ScaleVec);
       nmRow[x].r:=round(128+127*vec[0]);      //nmRow[x].r:=0;         //Red
       nmRow[x].g:=round(128+127*vec[1]);      //nmRow[x].g:=0;         //Green
       nmRow[x].b:=round(128+127*vec[2]);      //nmRow[x].b:=0;         //Blue
