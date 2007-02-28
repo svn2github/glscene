@@ -201,12 +201,7 @@ type
             hdsReady when you're done (DataState will be hdsPreparing when this
             method will be invoked). }
          procedure StartPreparingData(heightData : THeightData); virtual;
-         {: Called by GLAsyncHDS, when using threading.<p>
-            This is called after StartPreparingData, but always from the main thread.
-            Place any non-threadsafe maintenance/cleanup code here.}
-         //procedure AfterPreparingData(heightData : THeightData); virtual;
-         //procedure ThreadMaintenance(heightData : THeightData); virtual; //abstract;
-         procedure TextureCoordinates(heightData:THeightData);
+         procedure TextureCoordinates(heightData:THeightData;Stretch:boolean=false);
 	end;
 
    // THDTextureCoordinatesMode
@@ -409,10 +404,13 @@ type
          {: Returns the height as a single, whatever the DataType (slow). }
 	      function Height(x, y : Integer) : Single;
 
-         {: Calculates and returns the normal for point x, y.<p>
+         {: Calculates and returns the normal for vertex point x, y.<p>
             Sub classes may provide normal cacheing, the default implementation
             being rather blunt. }
          function Normal(x, y : Integer; const scale : TAffineVector) : TAffineVector; virtual;
+
+         {: Calculates and returns the normal for cell x, y.(between vertexes) <p>}
+         function NormalNode(x, y : Integer; const scale : TAffineVector) : TAffineVector; virtual;
 
          {: Returns True if the data tile overlaps the area. }
          function OverlapsArea(const area : TGLRect) : Boolean;
@@ -982,7 +980,8 @@ end;
 
 //TextureCoordinates
 // Calculates texture World texture coordinates for the current tile.
-procedure THeightDataSource.TextureCoordinates(heightData:THeightData);
+// Use Stretch for OpenGL1.1, to hide the seams when using linear filtering.
+procedure THeightDataSource.TextureCoordinates(heightData:THeightData;Stretch:boolean=false);
 var w,h,size:integer;
     scaleS,scaleT:single;
     offsetS,offsetT:single;
@@ -993,8 +992,8 @@ begin
    w:=self.Width;
    h:=self.Height;
    size:=HD.FSize;
-
-   if GL_VERSION_1_2 then begin //OpenGL1.2 supports texture clamping, so seams dont show.
+   //if GL_VERSION_1_2 then begin //OpenGL1.2 supports texture clamping, so seams dont show.
+   if Stretch=false then begin //These are the real Texture coordinates
      ScaleS:=w/(size-1);
      ScaleT:=h/(size-1);
      offsetS:=-((HD.XLeft/w)*scaleS);
@@ -1006,7 +1005,6 @@ begin
      offsetS:=-((HD.XLeft/w)*scaleS)+halfPixel;
      offsetT:=-(h-(HD.YTop+size))/size-halfPixel;
    end;
-
    HD.FTCScale.S :=ScaleS;
    HD.FTCScale.T :=ScaleT;
    HD.FTCOffset.S:=offsetS;
@@ -1374,9 +1372,11 @@ end;
 //
 function THeightData.SmallIntHeight(x, y : Integer) : SmallInt;
 begin
+  //if(Cardinal(x)>=Cardinal(Size))or(Cardinal(y)>=Cardinal(Size)) then
+  //  ShowMessage('x: 0<'+IntToStr(x)+'<'+IntToStr(size)+'  y: 0<'+IntToStr(y)+'<'+IntToStr(size)+' ?');
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
 	Result:=SmallIntRaster[y][x];
-end;
+end;                                         
 
 // SingleHeight
 //
@@ -1506,44 +1506,45 @@ begin
    Result:=FHeightMax;
 end;
 
-{
+
 // Normal
 //
+//Calculates the normal at a vertex
 function THeightData.Normal(x, y : Integer; const scale : TAffineVector) : TAffineVector;
-var
-   dx, dy : Single;
+var dx,dy : Single;
 begin
    if x>0 then
       if x<Size-1 then
-         dx:=(Height(x+1, y)-Height(x-1, y))*scale[0]*scale[2]
-      else dx:=(Height(x, y)-Height(x-1, y))*scale[0]*scale[2]
-   else dx:=(Height(x+1, y)-Height(x, y))*scale[0]*scale[2];
+         dx:=(Height(x+1, y)-Height(x-1, y))
+      else dx:=(Height(x, y)-Height(x-1, y))
+   else dx:=(Height(x+1, y)-Height(x, y));
    if y>0 then
       if y<Size-1 then
-         dy:=(Height(x, y+1)-Height(x, y-1))*scale[1]*scale[2]
-      else dy:=(Height(x, y)-Height(x, y-1))*scale[1]*scale[2]
-   else dy:=(Height(x, y+1)-Height(x, y))*scale[1]*scale[2];
-   Result[0]:=dx;
-   Result[1]:=dy;
-   Result[2]:=1;
+         dy:=(Height(x, y+1)-Height(x, y-1))
+      else dy:=(Height(x, y)-Height(x, y-1))
+   else dy:=(Height(x, y+1)-Height(x, y));
+   Result[0]:=dx*scale[1]*scale[2];
+   Result[1]:=dy*scale[0]*scale[2];
+   Result[2]:=   scale[0]*scale[1];
    NormalizeVector(Result);
 end;
-}
 
-function THeightData.Normal(x,y:Integer;const scale:TAffineVector):TAffineVector;
+//NormalNode
+//
+//Calculates the normal at a surface cell (Between vertexes)
+function THeightData.NormalNode(x,y:Integer;const scale:TAffineVector):TAffineVector;
 var dx,dy,Hxy:single;
 begin
-  if(x<0)then x:=0; if(x>size-2)then x:=size-2;
-  if(y<0)then y:=0; if(y>size-2)then y:=size-2;
+  MinInteger(MaxInteger(x,0),size-2);   //clamp x to 0 -> size-2
+  MinInteger(MaxInteger(y,0),size-2);   //clamp x to 0 -> size-2
   Hxy:=Height(x,y);
   dx:=Height(x+1,y)-Hxy;
   dy:=Height(x,y+1)-Hxy;
-  result[0]:=dx/scale[0];
-  result[1]:=dy/scale[1];
-  result[2]:=1 /scale[2];
+  result[0]:=dx*scale[1]*scale[2];  //result[0]:=dx/scale[0];
+  result[1]:=dy*scale[0]*scale[2];  //result[1]:=dy/scale[1];
+  result[2]:= 1*scale[0]*scale[1];  //result[2]:=1 /scale[2];
   NormalizeVector(Result);
 end;
-
 
 // OverlapsArea
 //
