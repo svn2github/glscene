@@ -18,7 +18,7 @@ unit GLShadowHDS;
 interface
 
 uses Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture, Dialogs, Forms,
-     SyncObjs, GLMisc, GLHeightTileFileHDS, VectorTypes;
+     SyncObjs, GLMisc, VectorTypes;
 
 type
    TGLShadowHDS = class;
@@ -70,6 +70,7 @@ type
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
+         procedure   Release(aHeightData : THeightData); override;
          procedure   TrimTextureCache(MaxTextureCount:integer);
          procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure   UpdateData(heightData : THeightData); override;
@@ -87,6 +88,8 @@ type
          property SoftRange   : cardinal read FSoftRange write SetSoftRange; //Shadow height above sufrace for max diffuse light
          property Diffuse     : single read FDiffuse write SetDiffuse;
          property Ambient     : single read FAmbient write SetAmbient;
+         property MaxTextures : integer read FMaxTextures write FMaxTextures;
+         property OnSourceDataFetched;
   end;
 
 // ------------------------------------------------------------------
@@ -113,15 +116,20 @@ begin
   FAmbient:=0.25;
   FDiffuse:=0.75;
   FSoftRange:=1;
+  //FSubSampling:=1;
 end;
 
 // Destroy
 //
 destructor TGLShadowHDS.Destroy;
 begin
+  self.Active:=false;
   FreeAndNil(FLightVector);
   FreeAndNil(FScale);
-  FShadowmapLibrary:=nil;
+  //self.MarkDirty;
+  //self.CleanUp;
+//  self.Trim(0); //delete all lightmaps
+  ShadowmapLibrary:=nil;
  	inherited Destroy;
 end;
 
@@ -133,6 +141,18 @@ begin
       if AComponent=FShadowmapLibrary then ShadowmapLibrary:=nil;
    end;
    inherited;
+end;
+
+// Release
+//
+procedure TGLShadowHDS.Release(aHeightData : THeightData);
+var libMat : TGLLibMaterial;
+begin
+  libMat:=aHeightData.LibMaterial;
+  aHeightData.MaterialName:='';
+  if (FMaxTextures>0)and(assigned(LibMat))and(libMat.IsUsed=false)
+    then LibMat.free;
+  inherited;
 end;
 
 // TrimTextureCache
@@ -221,7 +241,6 @@ begin
   //if LibMat=nil then begin
     if (FMaxTextures>0)and(HD.Thread=nil)  //Dont trim the cache from a sub-thread;
       then TrimTextureCache(FMaxTextures); //Trim unused textures from the material library
-
     //Generate new ShadowMap texture for this tile
     libMat:=FShadowmapLibrary.Materials.Add;
     libMat.Name:=MatName;
