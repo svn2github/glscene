@@ -2,10 +2,13 @@
 //
 {: GLAtmosphere <p>
 
-   This unit imitates an atmosphere around a planet.<p>
+   This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>15/02/07 - DaStr - TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled added
+      <li>01/03/07 - DaStr - Fixed TGLAtmosphereBlendingMode
+                                             (old version did not generate RTTI)
+                             Added default values to all properties                
+      <li>15/02/07 - DaStr - Added TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled 
       <li>07/02/07 - DaStr - Initial version (donated to GLScene)
 
 
@@ -53,23 +56,24 @@ interface
 {$I GLScene.inc}
 
 uses
-  //VCL
+  // VCL
   Windows, Messages, SysUtils, Classes, Graphics, Controls,
-  //GLScene
+
+  // GLScene
   GLScene, GLObjects, GLMisc, GLTexture, GLCadencer, OpenGL1x, VectorGeometry,
-  GLContext;
+  GLContext, GLStrings;
 
 type
-   {
+   {:
    With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
    but has problems, which are best seen when the Atmosphere radius is big.
 
    With bmOneMinusDstColor atmosphere doesn't have these problems, but offers
    limited transparency (when you look closely on the side).
   }
-  TGLAtmosphereBlendingMode = (abmOneMinusDstColor = GL_ONE_MINUS_DST_COLOR,
-                               abmOneMinusSrcAlpha = GL_ONE_MINUS_SRC_ALPHA);
+  TGLAtmosphereBlendingMode = (abmOneMinusDstColor, abmOneMinusSrcAlpha);
 
+  {: This class imitates an atmosphere around a planet. }
   TGLCustomAtmosphere = class(TGLBaseSceneObject)
   private
     FSlices: Integer;
@@ -83,19 +87,23 @@ type
     procedure SetSun(const Value: TglBaseSceneObject);
     procedure SetAtmosphereRadius(const Value: Single);
     procedure SetPlanetRadius(const Value: Single);
+    procedure EnableGLBlendingMode;
+    function StoreAtmosphereRadius: Boolean;
+    function StoreOpacity: Boolean;
+    function StorePlanetRadius: Boolean;
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     property Sun: TglBaseSceneObject read FSun write SetSun;
 
     property Slices: Integer read FSlices write FSlices default 60;
-    property Opacity: Single read FOpacity write FOpacity;
+    property Opacity: Single read FOpacity write FOpacity stored StoreOpacity;
 
-    // AtmosphereRadius > PlanetRadius!!!
-    property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius;
-    property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius;
+    //: AtmosphereRadius > PlanetRadius!!!
+    property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius stored StoreAtmosphereRadius;
+    property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
 
-    // use value slightly lower than actual radius, for antialiasing effect
+    //: Use value slightly lower than actual radius, for antialiasing effect.
     property LowAtmColor: TGLColor read FLowAtmColor;
     property HighAtmColor: TGLColor read FHighAtmColor;
     property BlendingMode: TGLAtmosphereBlendingMode read FBlendingMode
@@ -105,14 +113,14 @@ type
     procedure SetOptimalAtmosphere2(const R: Single); //relative
     procedure TogleBlendingMode; //changes between 2 blending modes
 
-    //standard component stuff
+    //: Standard component stuff.
     procedure Assign(Source: TPersistent); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    //Main rendering procedure
+    //: Main rendering procedure.
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
-    //used to detrrmine extents
+    //: Used to determine extents.
     function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
 
@@ -139,10 +147,10 @@ type
 implementation
 
 const
+  EPS = 0.0001;
   cIntDivTable: array [2..20] of Single =
     (1 / 2, 1 / 3, 1 / 4, 1 / 5, 1 / 6, 1 / 7, 1 / 8, 1 / 9, 1 / 10,
     1 / 11, 1 / 12, 1 / 13, 1 / 14, 1 / 15, 1 / 16, 1 / 17, 1 / 18, 1 / 19, 1 / 20);
-
 
 procedure TGLCustomAtmosphere.SetOptimalAtmosphere(const R: Single);
 begin
@@ -292,7 +300,7 @@ begin
     glDepthMask(False);
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_DST_ALPHA, Cardinal(FBlendingMode));
+    EnableGLBlendingMode;
     for I := 0 to 13 do
     begin
       if I < 5 then
@@ -423,6 +431,31 @@ procedure TGLCustomAtmosphere.SetPlanetRadius(const Value: Single);
 begin
   if Value < FAtmosphereRadius then
     FPlanetRadius := Value;
+end;
+
+procedure TGLCustomAtmosphere.EnableGLBlendingMode;
+begin
+  case FBlendingMode of
+    abmOneMinusDstColor: glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_DST_COLOR);
+    abmOneMinusSrcAlpha: glBlendFunc(GL_DST_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  else
+    Assert(False, glsUnknownType);
+  end;
+end;
+
+function TGLCustomAtmosphere.StoreAtmosphereRadius: Boolean;
+begin
+  Result := Abs(FAtmosphereRadius - 3.55) > EPS;
+end;
+
+function TGLCustomAtmosphere.StoreOpacity: Boolean;
+begin
+  Result := Abs(FOpacity - 2.1) > EPS;
+end;
+
+function TGLCustomAtmosphere.StorePlanetRadius: Boolean;
+begin
+  Result := Abs(FPlanetRadius - 3.395) > EPS;
 end;
 
 initialization
