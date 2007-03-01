@@ -718,10 +718,12 @@ var
    i : Integer;
 begin
 	inherited Destroy;
-   FThread.Resume;            //
-   FThread.Terminate;
-   FThread.WaitFor;
-   FThread.Free;
+   if assigned(FThread) then begin
+     FThread.Resume;            //
+     FThread.Terminate;
+     FThread.WaitFor;
+     FThread.Free;
+   end;
    Clear;
    FData.Free;
    for i:=0 to High(FDataHash) do
@@ -740,8 +742,7 @@ end;
 // Clear
 //
 procedure THeightDataSource.Clear;
-var
-   i : Integer;
+var i : Integer;
 begin
    with FData.LockList do begin
       try
@@ -1105,9 +1106,6 @@ begin
       hdtDefault : ; // nothing
    else
       Assert(False);
-   end;
-   if Assigned(FLibMaterial) then begin
-     FLibMaterial.UnregisterUser(self);
    end;
 	inherited Destroy;
 end;
