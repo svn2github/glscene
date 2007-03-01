@@ -70,9 +70,9 @@ type
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure  Notification(AComponent: TComponent; Operation: TOperation); override;         
-         procedure  GenerateNormalMap(heightData : THeightData; normalMap : TGLBitmap32; scale : Single);
          procedure  Release(aHeightData : THeightData); override;
+         procedure  Notification(AComponent: TComponent; Operation: TOperation); override;
+         procedure  GenerateNormalMap(heightData : THeightData; normalMap : TGLBitmap32; scale : Single);
          procedure  TrimTextureCache(MaxTextureCount:integer);
          //procedure  TileTextureCoordinates(heightData : THeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
          procedure UpdateData(heightData : THeightData); override;
@@ -150,13 +150,12 @@ end;
 // Release
 //
 procedure TGLBumpmapHDS.Release(aHeightData : THeightData);
-//var libMat : TGLLibMaterial;
+var libMat : TGLLibMaterial;
 begin
-//  if Assigned(FBumpmapLibrary)and(FMaxTextures>0) then begin
-//    libMat:=aHeightData.LibMaterial;
-//    if assigned(LibMat)and(libMat.IsUsed=false)
-//    then LibMat.free;
-//  end;
+  libMat:=aHeightData.LibMaterial;
+  aHeightData.MaterialName:='';
+  if (FMaxTextures>0)and(assigned(LibMat))and(libMat.IsUsed=false)
+    then LibMat.free;
   inherited;
 end;
 
