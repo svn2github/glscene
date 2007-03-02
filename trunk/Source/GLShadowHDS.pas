@@ -1,7 +1,8 @@
 // GLShadowHDS
 {: Implements an HDS that automatically generates a terrain lightmap texture.<p>
 	<b>History : </b><font size=-1><ul>
-      <li>14/02/07 - RL - Creation
+      <li>02/03/07 - LIN - Now works with InfiniteWrap terrain
+      <li>14/02/07 - LIN - Creation
 	</ul></font>
 
  Issues:1:Ambient and Diffuse light properties can not be set to 0, to avoid what
@@ -11,6 +12,11 @@
         2:Subsampling is not currently supported.
         3:If the light vector's y component is not 0 then the shadow edges may be
           a bit jagged, due to the crude Bresenham line algorythm that was used.
+          You can hide this by increasing SoftRange though.
+        5:Bug If light angle is 0,0, only the edge of the texture is generated.
+
+PS. The RayCastShadowHeight function returns the height of the shadow at a point
+on the terrain. This, and the LightVector may come in handy for implementing shadow volumes?
 }
 
 unit GLShadowHDS;
@@ -126,9 +132,6 @@ begin
   self.Active:=false;
   FreeAndNil(FLightVector);
   FreeAndNil(FScale);
-  //self.MarkDirty;
-  //self.CleanUp;
-//  self.Trim(0); //delete all lightmaps
   ShadowmapLibrary:=nil;
  	inherited Destroy;
 end;
@@ -213,6 +216,8 @@ begin
   result:=step;
 end;
 
+// CalcScale
+//
 function TGLShadowHDS.CalcScale:TAffineVector;
 begin
   FScaleVec[0]:=FScale.X;
@@ -236,9 +241,9 @@ begin
   MatName:='ShadowHDS_x'+IntToStr(HD.XLeft)+'y'+IntToStr(HD.YTop)+'.'; //name contains xy coordinates of the current tile
   Uno.Acquire;
   LibMat:=FShadowmapLibrary.Materials.GetLibMaterialByName(MatName);   //Check if Tile Texture already exists
-  LibMat:=nil;
-  HD.MaterialName:='';
-  //if LibMat=nil then begin
+  //LibMat:=nil;
+  //HD.MaterialName:='';
+  if LibMat=nil then begin
     if (FMaxTextures>0)and(HD.Thread=nil)  //Dont trim the cache from a sub-thread;
       then TrimTextureCache(FMaxTextures); //Trim unused textures from the material library
     //Generate new ShadowMap texture for this tile
@@ -259,6 +264,7 @@ begin
       //MagFilter:=maNearest;
       MagFilter:=maLinear;
       TextureMode:=tmReplace;
+      //TextureWrap:=twBoth;
       TextureWrap:=twNone;
       //TextureFormat:=tfRGB16;
       //TextureFormat:=tfRGBA16;
@@ -267,7 +273,7 @@ begin
       GenerateShadowMap(HD , bmp32, 1);
     end;
     //----------------------------------------------------
-  //end;
+  end;
   //HD.MaterialName:=LibMat.Name;
   HD.LibMaterial:=LibMat;  //attach texture to current tile
   if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,HD,libMat);
@@ -359,6 +365,12 @@ begin
   HDS:=self.HeightDataSource;
   wx:=Lx+HD.XLeft;
   wy:=HDS.Height-HD.YTop-Ly;
+
+  //wrap terrain
+  if wx>=HDS.Width then wx:=wx-HDS.Width;
+  if wx<0 then wx:=wx+HDS.Width;
+  if wy>=HDS.Height then wy:=wy-HDS.Height;
+  if wy<0 then wy:=wy+HDS.Height;
 end;
 
 //WorldToLocal
@@ -369,6 +381,12 @@ var HDS:THeightDataSource;
     xleft,ytop:integer;
     size:integer;
 begin
+  //wrap terrain
+  if wx>=HDS.Width then wx:=wx-HDS.Width;
+  if wx<0 then wx:=wx+HDS.Width;
+  if wy>=HDS.Height then wy:=wy-HDS.Height;
+  if wy<0 then wy:=wy+HDS.Height;
+
   HDS:=self.HeightDataSource;
   size:=FTileSize;
   xleft:=floor(wx/size)*size;
@@ -444,7 +462,8 @@ end;
 
 //WrapDist
 //
-//Get the number of steps, before the tile edge is reached.
+//Get the number of steps, before the current tile's edge is reached,
+//in the direction of the step vector;
 function TGLShadowHDS.WrapDist(Lx,Ly:single):integer;
 var x,y:single;
     size:integer;
