@@ -1,7 +1,11 @@
 {
-  GLAtmosphere Demo
+  GLAtmosphere Demo.
+
+  Note: object "Not_a_planet" is used to test atmosphere transparency issues.
 
   Version history:
+    02/03/07 - DaStr - Fixed LensFlare object sorting issue
+                       Updated GLSimpleNavigation component
     07/02/07 - DaStr - Initial version
 
 }
@@ -12,14 +16,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  //VCL
+  // VCL
   Windows, Forms, StdCtrls, Classes, Controls, GLMisc, ExtCtrls, Graphics,
   SysUtils, Dialogs, ComCtrls,
-  //GLScene
+
+  // GLScene
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer, GLBehaviours,
   GLTexture, GLTexCombineShader, GLSkydome, OpenGL1x, VectorGeometry, GLContext,
   GLAtmosphere, GLSimpleNavigation,
-  //File formats
+
+  // File formats
   Jpeg;
 
 type
@@ -50,6 +56,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     GLSimpleNavigation1: TGLSimpleNavigation;
+    World: TGLDummyCube;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
