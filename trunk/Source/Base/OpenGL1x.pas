@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/03/07 - DaStr - Added GL_[ARB/EXT]_texture_rectangle
+                             Added GetTextureRectangle
       <li>10/01/07 - LC - Added GL_EXT_framebuffer_object
       <li>11/09/06 - NC - Added GL_ARB_texture_float, GL_ARB_texture_non_power_of_two
       <li>13/10/04 - NC - Added GL_ATI_draw_buffers
@@ -195,6 +197,7 @@ var
    GL_ARB_vertex_shader,
    GL_ARB_fragment_shader,
    GL_ARB_fragment_program,
+   GL_ARB_texture_rectangle,
 
    GL_EXT_abgr,
    GL_EXT_bgra,
@@ -230,6 +233,7 @@ var
    GL_EXT_texture3D,
    GL_EXT_clip_volume_hint,
    GL_EXT_framebuffer_object,
+   GL_EXT_texture_rectangle,
 
    GL_HP_occlusion_test,
 
@@ -1281,6 +1285,18 @@ const
    GL_TEXTURE_BINDING_RECTANGLE_NV                   = $84F6;
    GL_PROXY_TEXTURE_RECTANGLE_NV                     = $84F7;
    GL_MAX_RECTANGLE_TEXTURE_SIZE_NV                  = $84F8;
+
+   // ARB_texture_rectangle
+   GL_TEXTURE_RECTANGLE_ARB                          = $84F5;
+   GL_TEXTURE_BINDING_RECTANGLE_ARB                  = $84F6;
+   GL_PROXY_TEXTURE_RECTANGLE_ARB                    = $84F7;
+   GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB                 = $84F8;
+
+   // EXT_texture_rectangle
+   GL_TEXTURE_RECTANGLE_EXT                          = $84F5;
+   GL_TEXTURE_BINDING_RECTANGLE_EXT                  = $84F6;
+   GL_PROXY_TEXTURE_RECTANGLE_EXT                    = $84F7;
+   GL_MAX_RECTANGLE_TEXTURE_SIZE_EXT                 = $84F8;
 
    // EXT_texture_env_combine
    GL_COMBINE_EXT                                    = $8570;
@@ -3492,6 +3508,9 @@ procedure ReadWGLExtensions;
 procedure ReadWGLImplementationProperties;
 {$endif}
 
+{: Returns False if none of the tree existing extentions are supported. }
+function GetTextureRectangle(var Extension: Cardinal): Boolean;
+
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
   MRT_BUFFERS: array [0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
@@ -3545,6 +3564,30 @@ begin
 end;
 {$endif}
 
+
+function GetTextureRectangle(var Extension: Cardinal): Boolean;
+begin
+  if GL_ARB_texture_rectangle then
+  begin
+    Extension := GL_TEXTURE_RECTANGLE_ARB;
+    Result := True;
+  end
+  else if GL_EXT_texture_rectangle then
+  begin
+    Extension := GL_TEXTURE_RECTANGLE_EXT;
+    Result := True;
+  end
+  else if GL_NV_texture_rectangle then
+  begin
+    Extension := GL_TEXTURE_RECTANGLE_NV;
+    Result := True;
+  end
+  else
+  begin
+    Extension := 0;
+    Result := False;
+  end;
+end;
 
 // ************** Extensions ********************
 
@@ -4153,6 +4196,7 @@ begin
    GL_ARB_fragment_shader := CheckExtension('GL_ARB_fragment_shader');
    GL_ARB_fragment_program := CheckExtension('GL_ARB_fragment_program');
    GL_ARB_texture_float := CheckExtension('GL_ARB_texture_float');
+   GL_ARB_texture_rectangle := CheckExtension('GL_ARB_texture_rectangle');
    // NPOT
    GL_ARB_texture_non_power_of_two := CheckExtension('GL_ARB_texture_non_power_of_two');
 
@@ -4190,6 +4234,7 @@ begin
    GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
    GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
    GL_EXT_framebuffer_object := CheckExtension('GL_EXT_framebuffer_object');
+   GL_EXT_texture_rectangle := CheckExtension('GL_EXT_texture_rectangle');
 
    GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
 
