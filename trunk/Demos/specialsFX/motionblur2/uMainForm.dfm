@@ -112,9 +112,19 @@ object Form1: TForm1
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    ZoomParam = 1.500000000000000000
-    MoveAroundTargetParam = 1.000000000000000000
-    CaptionString = '%FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
     Left = 32
     Top = 16
   end

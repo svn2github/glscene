@@ -1,6 +1,7 @@
-{: A Demo of the TGLMotioBlur component
+{: A Demo of the TGLMotionBlur component
 
   Version history
+    02/03/07 - DaStr - Updated GLSimpleNavigation component
     25/02/07 - DaStr - Initial version (based on demo by Dave Gravel)
 
 }
@@ -28,8 +29,8 @@ type
     GLTeapot1: TGLTeapot;
     GLCube2: TGLCube;
     GLCube3: TGLCube;
-    GLSimpleNavigation1: TGLSimpleNavigation;
     GLMotionBlur1: TGLMotionBlur;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
