@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
+                             Added Vector[More/Less](Equal)Then
       <li>15/02/07 - DaStr - Returned to old code formating style
       <li>29/01/07 - DaStr - Added IntersectSphereBox (Thanks to dikoe Kenguru)
       <li>23/01/07 - fig - Added TexpointEquals() function
@@ -166,7 +168,7 @@ unit VectorGeometry;
 
 interface
 
-uses VectorTypes;
+uses Types, VectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
@@ -490,6 +492,178 @@ procedure MakeVector(var v : TVector; const av : TVector); overload;
 procedure RstVector(var v : TAffineVector); overload;
 procedure RstVector(var v : TVector); overload;
 
+//2
+function VectorEquals(const V1, V2: TVector2f): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2b): Boolean; overload;
+
+//3
+//function VectorEquals(const V1, V2: TVector3f): Boolean; overload; //declared further
+function VectorEquals(const V1, V2: TVector3i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3b): Boolean; overload;
+
+//4
+//function VectorEquals(const V1, V2: TVector4f): Boolean; overload; //declared further
+function VectorEquals(const V1, V2: TVector4i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4b): Boolean; overload;
+
+//3x3
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3i): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3d): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3s): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3b): Boolean; overload;
+
+//4x4
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4f): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4i): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4d): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4s): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean; overload;
+
+
+  //2x
+function Vector2fMake(const X, Y: Single): TVector2f; overload;
+function Vector2iMake(const X, Y: Longint): TVector2i; overload;
+function Vector2sMake(const X, Y: Smallint): TVector2s; overload;
+function Vector2dMake(const X, Y: Double): TVector2d; overload;
+function Vector2bMake(const X, Y: Byte): TVector2b; overload;
+
+function Vector2fMake(const Vector: TVector3f): TVector2f; overload;
+function Vector2iMake(const Vector: TVector3i): TVector2i; overload;
+function Vector2sMake(const Vector: TVector3s): TVector2s; overload;
+function Vector2dMake(const Vector: TVector3d): TVector2d; overload;
+function Vector2bMake(const Vector: TVector3b): TVector2b; overload;
+
+function Vector2fMake(const Vector: TVector4f): TVector2f; overload;
+function Vector2iMake(const Vector: TVector4i): TVector2i; overload;
+function Vector2sMake(const Vector: TVector4s): TVector2s; overload;
+function Vector2dMake(const Vector: TVector4d): TVector2d; overload;
+function Vector2bMake(const Vector: TVector4b): TVector2b; overload;
+
+  //3x
+function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;
+function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;
+function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;
+function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;
+function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;
+
+function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;
+function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;
+function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;
+function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;
+
+function Vector3fMake(const Vector: TVector4f): TVector3f; overload;
+function Vector3iMake(const Vector: TVector4i): TVector3i; overload;
+function Vector3sMake(const Vector: TVector4s): TVector3s; overload;
+function Vector3dMake(const Vector: TVector4d): TVector3d; overload;
+function Vector3bMake(const Vector: TVector4b): TVector3b; overload;
+
+  //4x
+function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+
+function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;
+
+function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+
+//: Vector comparison functions:
+      //ComparedVector
+  //3f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+  //4f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+  //3i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+  //4i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+
+  //3s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+  //4s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+
+      //ComparedNumber
+  //3f
+function VectorMoreThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+  //4f
+function VectorMoreThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+  //3i
+function VectorMoreThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+  //4i
+function VectorMoreThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+  //3s
+function VectorMoreThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+  //4s
+function VectorMoreThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+
+
 //: Returns the sum of two affine vectors
 function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; overload;
 //: Adds two vectors and places result in vr
@@ -713,6 +887,8 @@ procedure DivideVector(var v : TVector; const divider : TVector); overload;
 
 //: True if all components are equal.
 function TexpointEquals(const p1, p2: TTexpoint): Boolean;
+//: True if all components are equal.
+function RectEquals(const Rect1, Rect2: TRect): Boolean;
 //: True if all components are equal.
 function VectorEquals(const V1, V2: TVector) : Boolean; overload;
 //: True if all components are equal.
@@ -4329,6 +4505,16 @@ end;
 function TexpointEquals(const p1, p2: TTexpoint): Boolean;
 begin
    Result := (p1.S = p2.S) and (p1.T = p2.T);
+end;
+
+// RectEquals
+//
+function RectEquals(const Rect1, Rect2: TRect): Boolean;
+begin
+  Result := (Rect1.Left = Rect2.Left) and
+            (Rect1.Right = Rect2.Right) and
+            (Rect1.Top = Rect2.Top) and
+            (Rect1.Bottom = Rect2.Left);
 end;
 
 // VectorEquals (hmg vector)
@@ -9418,6 +9604,878 @@ begin
       q.RealPart:=0
    else q.RealPart:=Sqrt(q.RealPart);
    Result:=QuaternionToMatrix(q);
+end;
+
+{*****************************************************************************}
+
+//VectorMake functions
+  //2x
+function Vector2fMake(const X, Y: Single): TVector2f;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+function Vector2iMake(const X, Y: Longint): TVector2i;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+function Vector2sMake(const X, Y: Smallint): TVector2s;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+function Vector2dMake(const X, Y: Double): TVector2d;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+function Vector2bMake(const X, Y: Byte): TVector2b;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+//**************
+
+function Vector2fMake(const Vector: TVector3f): TVector2f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2iMake(const Vector: TVector3i): TVector2i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2sMake(const Vector: TVector3s): TVector2s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2dMake(const Vector: TVector3d): TVector2d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2bMake(const Vector: TVector3b): TVector2b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+//**********
+
+function Vector2fMake(const Vector: TVector4f): TVector2f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2iMake(const Vector: TVector4i): TVector2i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2sMake(const Vector: TVector4s): TVector2s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2dMake(const Vector: TVector4d): TVector2d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+function Vector2bMake(const Vector: TVector4b): TVector2b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+end;
+
+{*****************************************************************************}
+
+  //3x
+function Vector3fMake(const X, Y, Z: Single): TVector3f;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+end;
+
+function Vector3iMake(const X, Y, Z: Longint): TVector3i;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+end;
+
+function Vector3sMake(const X, Y, Z: Smallint): TVector3s;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+end;
+
+function Vector3dMake(const X, Y, Z: Double): TVector3d;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+end;
+
+function Vector3bMake(const X, Y, Z: Byte): TVector3b;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+end;
+
+//*******
+
+function Vector3fMake(const Vector: TVector2f; const Z: Single): TVector3f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+end;
+
+function Vector3iMake(const Vector: TVector2i; const Z: Longint): TVector3i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+end;
+
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint): TVector3s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+end;
+
+function Vector3dMake(const Vector: TVector2d; const Z: Double): TVector3d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+end;
+
+function Vector3bMake(const Vector: TVector2b; const Z: Byte): TVector3b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+end;
+
+//*******
+
+function Vector3fMake(const Vector: TVector4f): TVector3f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+end;
+
+function Vector3iMake(const Vector: TVector4i): TVector3i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+end;
+
+function Vector3sMake(const Vector: TVector4s): TVector3s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+end;
+
+function Vector3dMake(const Vector: TVector4d): TVector3d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+end;
+
+function Vector3bMake(const Vector: TVector4b): TVector3b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+end;
+
+{*****************************************************************************}
+
+  //4x
+function Vector4fMake(const X, Y, Z, W: Single): TVector4f;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4iMake(const X, Y, Z, W: Longint): TVector4i;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4sMake(const X, Y, Z, W: Smallint): TVector4s;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4dMake(const X, Y, Z, W: Double): TVector4d;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4bMake(const X, Y, Z, W: Byte): TVector4b;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+//********
+
+function Vector4fMake(const Vector: TVector3f; const W: Single): TVector4f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+  Result[3] := W;
+end;
+
+function Vector4iMake(const Vector: TVector3i; const W: Longint): TVector4i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+  Result[3] := W;
+end;
+
+function Vector4sMake(const Vector: TVector3s; const W: Smallint): TVector4s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+  Result[3] := W;
+end;
+
+function Vector4dMake(const Vector: TVector3d; const W: Double): TVector4d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+  Result[3] := W;
+end;
+
+function Vector4bMake(const Vector: TVector3b; const W: Byte): TVector4b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Vector[2];
+  Result[3] := W;
+end;
+
+//*******
+
+function Vector4fMake(const Vector: TVector2f; const Z: Single; const W: Single): TVector4f;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4iMake(const Vector: TVector2i; const Z: Longint; const W: Longint): TVector4i;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint; const W: Smallint): TVector4s;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4dMake(const Vector: TVector2d; const Z: Double; const W: Double): TVector4d;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+function Vector4bMake(const Vector: TVector2b; const Z: Byte; const W: Byte): TVector4b;
+begin
+  Result[0] := Vector[0];
+  Result[1] := Vector[1];
+  Result[2] := Z;
+  Result[3] := W;
+end;
+
+{*****************************************************************************}
+
+//2
+function VectorEquals(const V1, V2: TVector2f): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2i): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2d): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2s): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2b): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]);
+end;
+
+{*****************************************************************************}
+
+//3
+function VectorEquals(const V1, V2: TVector3i): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3d): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3s): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3b): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]);
+end;
+
+{*****************************************************************************}
+
+//4
+function VectorEquals(const V1, V2: TVector4i): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]) and (V1[3] = V2[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4d): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]) and (V1[3] = V2[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4s): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]) and (V1[3] = V2[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4b): Boolean;
+begin
+  Result := (V1[0] = V2[0]) and (V1[1] = V2[1]) and (V1[2] = V2[2]) and (V1[3] = V2[3]);
+end;
+
+{*****************************************************************************}
+
+//3x3f
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]);
+end;
+
+//3x3i
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3i): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]);
+end;
+
+//3x3d
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3d): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]);
+end;
+
+//3x3s
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3s): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]);
+end;
+
+//3x3b
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3b): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]);
+end;
+
+{*****************************************************************************}
+
+//4x4f
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4f): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]) and
+            VectorEquals(Matrix1[3], Matrix2[3]);
+end;
+
+//4x4i
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4i): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]) and
+            VectorEquals(Matrix1[3], Matrix2[3]);
+end;
+
+//4x4d
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4d): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]) and
+            VectorEquals(Matrix1[3], Matrix2[3]);
+end;
+
+//4x4s
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4s): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]) and
+            VectorEquals(Matrix1[3], Matrix2[3]);
+end;
+
+//4x4b
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean;
+begin
+  Result := VectorEquals(Matrix1[0], Matrix2[0]) and
+            VectorEquals(Matrix1[1], Matrix2[1]) and
+            VectorEquals(Matrix1[2], Matrix2[2]) and
+            VectorEquals(Matrix1[3], Matrix2[3]);
+end;
+
+{*****************************************************************************}
+
+//Vector comparison functions:
+  //3f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]);
+end;
+  //4f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]) and
+            (SourceVector[3] > ComparedVector[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]) and
+            (SourceVector[3] >= ComparedVector[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]) and
+            (SourceVector[3] < ComparedVector[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]) and
+            (SourceVector[3] <= ComparedVector[3]);
+end;
+
+   //3i
+//Vector comparison functions:
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]);
+end;
+  //4i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]) and
+            (SourceVector[3] > ComparedVector[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]) and
+            (SourceVector[3] >= ComparedVector[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]) and
+            (SourceVector[3] < ComparedVector[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]) and
+            (SourceVector[3] <= ComparedVector[3]);
+end;
+
+   //3s
+//Vector comparison functions:
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]);
+end;
+  //4s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedVector[0]) and
+            (SourceVector[1] > ComparedVector[1]) and
+            (SourceVector[2] > ComparedVector[2]) and
+            (SourceVector[3] > ComparedVector[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedVector[0]) and
+            (SourceVector[1] >= ComparedVector[1]) and
+            (SourceVector[2] >= ComparedVector[2]) and
+            (SourceVector[3] >= ComparedVector[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedVector[0]) and
+            (SourceVector[1] < ComparedVector[1]) and
+            (SourceVector[2] < ComparedVector[2]) and
+            (SourceVector[3] < ComparedVector[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedVector[0]) and
+            (SourceVector[1] <= ComparedVector[1]) and
+            (SourceVector[2] <= ComparedVector[2]) and
+            (SourceVector[3] <= ComparedVector[3]);
+end;
+
+        //ComparedNumber
+    //3f
+function VectorMoreThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber);
+end;
+  //4f
+function VectorMoreThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber) and
+            (SourceVector[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber) and
+            (SourceVector[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber) and
+            (SourceVector[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber) and
+            (SourceVector[3] <= ComparedNumber);
+end;
+
+
+    //3i
+function VectorMoreThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber);
+end;
+  //4i
+function VectorMoreThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber) and
+            (SourceVector[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber) and
+            (SourceVector[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber) and
+            (SourceVector[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber) and
+            (SourceVector[3] <= ComparedNumber);
+end;
+    //3s
+function VectorMoreThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber);
+end;
+  //4s
+function VectorMoreThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] > ComparedNumber) and
+            (SourceVector[1] > ComparedNumber) and
+            (SourceVector[2] > ComparedNumber) and
+            (SourceVector[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] >= ComparedNumber) and
+            (SourceVector[1] >= ComparedNumber) and
+            (SourceVector[2] >= ComparedNumber) and
+            (SourceVector[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] < ComparedNumber) and
+            (SourceVector[1] < ComparedNumber) and
+            (SourceVector[2] < ComparedNumber) and
+            (SourceVector[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector[0] <= ComparedNumber) and
+            (SourceVector[1] <= ComparedNumber) and
+            (SourceVector[2] <= ComparedNumber) and
+            (SourceVector[3] <= ComparedNumber);
 end;
 
 //--------------------------------------------------------------
