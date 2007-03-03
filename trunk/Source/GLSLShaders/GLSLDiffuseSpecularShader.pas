@@ -6,10 +6,13 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/03/07 - DaStr - Made compatible with Delphi6
+                             Added more stuff to RegisterClasses()
       <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
-    This is a collection of GLSL Diffuse Specular shaders, comes in these variaties:
+    This is a collection of GLSL Diffuse Specular shaders, comes in these variaties
+              (to know what these suffixes and prefixes mean see GLCustomShader.pas):
       - TGLSLDiffuseSpecularShader
       - TGLSLDiffuseSpecularShaderMT
       - TGLSLDiffuseSpecularShaderAM
@@ -40,16 +43,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  //VCL
+  // VCL
   Classes, SysUtils,
-  //GLScene
+
+  // GLScene
   GLTexture, GLScene, VectorGeometry, OpenGL1x, GLStrings, GLCustomShader,
   GLSLShader;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
 
-  // Abstract class.
+  //: Abstract class.
   TGLBaseCustomGLSLDiffuseSpecular = class(TGLCustomGLSLShader)
   private
     FSpecularPower: Single;
@@ -66,7 +70,7 @@ type
     property RealisticSpecular: Boolean read FRealisticSpecular write SetRealisticSpecular;
   end;
 
-  // Abstract class.
+  //: Abstract class.
   TGLBaseGLSLDiffuseSpecularShaderMT = class(TGLBaseCustomGLSLDiffuseSpecular, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLMaterialLibrary;
@@ -74,7 +78,7 @@ type
     FMainTextureName: TGLLibMaterialName;
     function GetMainTextureName: TGLLibMaterialName;
     procedure SetMainTextureName(const Value: TGLLibMaterialName);
-    // Implementing IGLMaterialLibrarySupported.
+    //: Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLMaterialLibrary;
   protected
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;
@@ -361,11 +365,8 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single; const FRealisticSpecular: Boolean);
 var
-  FormatSettings: TFormatSettings;
+  PrevDecimalSeparator: Char;
 begin
-  GetLocaleFormatSettings(0, FormatSettings);
-  FormatSettings.DecimalSeparator := glsDot;
-
   with Code do
   begin
     if (FLightCount = 1) or (FLightCompensation = 1) then
@@ -377,10 +378,13 @@ begin
     end
     else
     begin
+      PrevDecimalSeparator := DecimalSeparator;
+      DecimalSeparator := glsDot;
       if FRealisticSpecular then
-        Add('  gl_FragColor = LightIntensity * (TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001, FormatSettings) + '; ')
+        Add('  gl_FragColor = LightIntensity * (TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ')
       else
-        Add('  gl_FragColor = TextureContrib * LightIntensity * (AmbientContrib + DiffuseContrib + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001, FormatSettings) + '; ');
+        Add('  gl_FragColor = TextureContrib * LightIntensity * (AmbientContrib + DiffuseContrib + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ');
+      DecimalSeparator := PrevDecimalSeparator;
     end;
     Add('} ');
   end;
@@ -659,7 +663,19 @@ begin
 end;
 
 initialization
-  RegisterClasses([TGLCustomGLSLMLDiffuseSpecularShaderMT]);
+  RegisterClasses([
+                  TGLCustomGLSLDiffuseSpecularShader,
+                  TGLCustomGLSLDiffuseSpecularShaderAM,
+                  TGLCustomGLSLDiffuseSpecularShaderMT,
+                  TGLCustomGLSLMLDiffuseSpecularShader,
+                  TGLCustomGLSLMLDiffuseSpecularShaderMT,
+
+                  TGLSLDiffuseSpecularShader,
+                  TGLSLDiffuseSpecularShaderAM,
+                  TGLSLDiffuseSpecularShaderMT,
+                  TGLSLMLDiffuseSpecularShader,
+                  TGLSLMLDiffuseSpecularShaderMT
+                  ]);
 
 end.
 
