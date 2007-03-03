@@ -6,6 +6,7 @@
    A GLSL shader that applies bump mapping.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/03/07 - DaStr - Made compatible with Delphi6
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
@@ -24,6 +25,10 @@
       color's Alpha individualy
      2) TGLSLMLBumpShader takes all Light parameters directly
       from OpenGL (that includes TGLLightSource's)
+
+
+    TODO:
+      1) Implement IGLShaderDescription in all shaders.
 
 
     Previous version history:
@@ -52,7 +57,7 @@
                                   MultiLight shaders optimized a bit
       v1.4.8  06 February  '2007  IGLMaterialLibrarySupported renamed to
                                     IGLMaterialLibrarySupported
-      v1.5    16 February  '2007  Updated to the latest CVS version
+      v1.5    16 February  '2007  Updated to the latest CVS version of GLscene
       v1.5.2  18 February  '2007  Removed the StrangeTextureUtilities dependancy
 
 
@@ -574,18 +579,18 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single);
 var
-  FormatSettings: TFormatSettings;
+  PrevDecimalSeparator: Char;
 begin
-  GetLocaleFormatSettings(0, FormatSettings);
-  FormatSettings.DecimalSeparator := glsDot;
-
   with Code do
   begin
+    PrevDecimalSeparator := DecimalSeparator;
+    DecimalSeparator := glsDot;
     if (FLightCount = 1) or (FLightCompensation = 1) then
       Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular); ')
     else
-      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001, FormatSettings) + '; ');
+      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ');
     Add('} ');
+    DecimalSeparator := PrevDecimalSeparator;
   end;
 end;
 
@@ -883,10 +888,7 @@ procedure TGLCustomGLSLMLBumpShaderMT.DoInitialize;
 var
   I: Integer;
   FLightCount: Integer;
-  FormatSettings: TFormatSettings;
 begin
-  GetLocaleFormatSettings(0, FormatSettings);
-  FormatSettings.DecimalSeparator := glsDot;
   GetMLVertexProgramCode(VertexProgram.Code);
   
   with FragmentProgram.Code do
@@ -1036,10 +1038,7 @@ procedure TGLCustomGLSLMLBumpShader.DoInitialize;
 var
   I: Integer;
   FLightCount: Integer;
-  FormatSettings: TFormatSettings;
 begin
-  GetLocaleFormatSettings(0, FormatSettings);
-  FormatSettings.DecimalSeparator := glsDot;
   GetMLVertexProgramCode(VertexProgram.Code);
   
   with FragmentProgram.Code do
