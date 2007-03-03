@@ -19,7 +19,8 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
-    <li>19/12/04 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
+    <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
+    <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
     <li>19/12/04 - PhP - Added byte vectors
     <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
     <li>24/08/03 - PhP - Added smallint vectors
@@ -59,6 +60,15 @@ type
   TVector4e = array[0..3] of Extended;
   TVector4w = array[0..3] of Word;
   TVector4p = array[0..3] of Pointer;
+
+  TMatrix2d = array[0..1] of TVector2d;
+  TMatrix2f = array[0..1] of TVector2f;
+  TMatrix2i = array[0..1] of TVector2i;
+  TMatrix2s = array[0..1] of TVector2s;
+  TMatrix2b = array[0..1] of TVector2b;
+  TMatrix2e = array[0..1] of TVector2e;
+  TMatrix2w = array[0..1] of TVector2w;
+  TMatrix2p = array[0..1] of TVector2p;
 
   TMatrix3d = array[0..2] of TVector3d;
   TMatrix3f = array[0..2] of TVector3f;
