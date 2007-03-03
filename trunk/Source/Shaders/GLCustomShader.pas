@@ -9,6 +9,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
@@ -243,9 +244,101 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default False;
   end;
 
+
+
+  {: Wrapper around a parameter of the main program. }
+  TGLCustomShaderParameter = class(TObject)
+  private
+    { Private Declarations }
+  protected
+    { Protected Declarations }
+    function GetAsVector1f: Single; virtual; abstract;
+    function GetAsVector1i: Integer; virtual; abstract;
+    function GetAsVector2f: TVector2f; virtual; abstract;
+    function GetAsVector2i: TVector2i; virtual; abstract;
+    function GetAsVector3f: TVector3f; virtual; abstract;
+    function GetAsVector3i: TVector3i; virtual; abstract;
+    function GetAsVector4f: TVector; virtual; abstract;
+    function GetAsVector4i: TVector4i; virtual; abstract;
+
+    procedure SetAsVector1f(const Value: Single); virtual; abstract;
+    procedure SetAsVector1i(const Value: Integer); virtual; abstract;
+    procedure SetAsVector2i(const Value: TVector2i); virtual; abstract;
+    procedure SetAsVector3i(const Value: TVector3i); virtual; abstract;
+    procedure SetAsVector4i(const Value: TVector4i); virtual; abstract;
+    procedure SetAsVector2f(const Value: TVector2f); virtual; abstract;
+    procedure SetAsVector3f(const Value: TVector3f); virtual; abstract;
+    procedure SetAsVector4f(const Value: TVector4f); virtual; abstract;
+
+    function GetAsMatrix2f: TMatrix2f; virtual; abstract;
+    function GetAsMatrix3f: TMatrix3f; virtual; abstract;
+    function GetAsMatrix4f: TMatrix4f; virtual; abstract;
+    procedure SetAsMatrix2f(const Value: TMatrix2f); virtual; abstract;
+    procedure SetAsMatrix3f(const Value: TMatrix3f); virtual; abstract;
+    procedure SetAsMatrix4f(const Value: TMatrix4f); virtual; abstract;
+
+    procedure SetAsTexture1D(const TextureIndex: Integer;
+      const Value: TGLTexture); virtual; abstract;
+    procedure SetAsTexture2D(const TextureIndex: Integer;
+      const Value: TGLTexture); virtual; abstract;
+    procedure SetAsTexture3D(const TextureIndex: Integer;
+      const Value: TGLTexture); virtual; abstract;
+    procedure SetAsTextureCube(const TextureIndex: Integer;
+      const Value: TGLTexture); virtual; abstract;
+    procedure SetAsTextureRect(const TextureIndex: Integer;
+      const Value: TGLTexture); virtual; abstract;
+
+    function GetAsCustomTexture(const TextureIndex: Integer;
+      const TextureType: Word): Cardinal; virtual; abstract;
+    procedure SetAsCustomTexture(const TextureIndex: Integer;
+      const TextureType: Word; const Value: Cardinal); virtual; abstract;
+  public
+    { Public Declarations }
+
+    {: This overloaded SetAsVector accepts open array as input. e.g.
+       SetAsVectorF([0.1, 0.2]). Array length must between 1-4. }
+    procedure SetAsVectorF(const Values: array of Single); overload;
+    procedure SetAsVectorI(const Values: array of Integer); overload;
+
+    {: SetToTextureOf determines texture type on-the-fly.}
+    procedure SetToTextureOf(const LibMaterial: TGLLibMaterial); overload;
+    procedure SetToTextureOf(const Texture: TGLTexture); overload; virtual; abstract;
+
+    //: GLScene-friendly properties.
+    property AsVector: TVector read GetAsVector4f write SetAsVector4f;
+    property AsAffineVector: TAffineVector read GetAsVector3f write SetAsVector3f;
+
+    //: Float types.
+    property AsVector1f: Single    read GetAsVector1f write SetAsVector1f;
+    property AsVector2f: TVector2f read GetAsVector2f write SetAsVector2f;
+    property AsVector3f: TVector3f read GetAsVector3f write SetAsVector3f;
+    property AsVector4f: TVector4f read GetAsVector4f write SetAsVector4f;
+
+    //: Integer Types.
+    property AsVector1i: Integer   read GetAsVector1i write SetAsVector1i;
+    property AsVector2i: TVector2i read GetAsVector2i write SetAsVector2i;
+    property AsVector3i: TVector3i read GetAsVector3i write SetAsVector3i;
+    property AsVector4i: TVector4i read GetAsVector4i write SetAsVector4i;
+
+    //: Matrix Types.
+    property AsMatrix2f: TMatrix2f read GetAsMatrix2f write SetAsMatrix2f;
+    property AsMatrix3f: TMatrix3f read GetAsMatrix3f write SetAsMatrix3f;
+    property AsMatrix4f: TMatrix4f read GetAsMatrix4f write SetAsMatrix4f;
+
+    //: Texture Types.
+    property AsTexture1D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture1D;
+    property AsTexture2D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture2D;
+    property AsTexture3D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture3D;
+    property AsTextureRect[const TextureIndex: Integer]: TGLTexture write SetAsTextureRect;
+    property AsTextureCube[const TextureIndex: Integer]: TGLTexture write SetAsTextureCube;
+
+    property AsCustomTexture[const TextureIndex: Integer; const TextureType: Word]: Cardinal read GetAsCustomTexture write SetAsCustomTexture;
+  end;
+
+
   {: Adds two more blending modes to standard ones.
-    Not surehow to name them or if they should be included in TBlending mode,
-    so I just create a new type here. }
+    Not sure how to name them or if they should be included in TBlending mode,
+    so I created a new type here. }
   TGLBlendingModeEx = (bmxOpaque, bmxTransparency, bmxAdditive,
     bmxAlphaTest50, bmxAlphaTest100, bmxModulate,
     bmxDestColorOne, bmxDestAlphaOne);
@@ -260,7 +353,7 @@ procedure DrawTexturedScreenQuad3;
 procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureType: Word = GL_TEXTURE_2D);
 procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureType: Word = GL_TEXTURE_2D);
 
-{ May be should be added to TGLScene class }
+{ May be should be added to TGLScene class. Or deleted. }
 //function GetActualLightNumber(const Scene: TGLScene): Byte;
 
 implementation
@@ -492,6 +585,36 @@ begin
   FragmentProgram.LoadFromFile(FPFilename);
 end;
 
+{ TGLCustomShaderParameter }
+
+procedure TGLCustomShaderParameter.SetAsVectorF(const Values: array of Single);
+begin
+  case Length(Values) of
+    1: SetAsVector1f(Values[0]);
+    2: SetAsVector2f(Vector2fMake(Values[0], Values[1]));
+    3: SetAsVector3f(Vector3fMake(Values[0], Values[1], Values[2]));
+    4: SetAsVector4f(Vector4fMake(Values[0], Values[1], Values[2], Values[3]));
+  else
+    Assert(False, 'Vector length must be between 1 to 4');
+  end;
+end;
+
+procedure TGLCustomShaderParameter.SetAsVectorI(const Values: array of Integer);
+begin
+  case Length(Values) of
+    1: SetAsVector1i(Values[0]);
+    2: SetAsVector2i(Vector2iMake(Values[0], Values[1]));
+    3: SetAsVector3i(Vector3iMake(Values[0], Values[1], Values[2]));
+    4: SetAsVector4i(Vector4iMake(Values[0], Values[1], Values[2], Values[3]));
+  else
+    Assert(False, 'Vector length must be between 1 to 4');
+  end;
+end;
+
+procedure TGLCustomShaderParameter.SetToTextureOf(const LibMaterial: TGLLibMaterial);
+begin
+  SetToTextureOf(LibMaterial.Material.Texture);
+end;
 
 initialization
   RegisterClasses([TGLCustomShader, TGLShaderProgram]);
