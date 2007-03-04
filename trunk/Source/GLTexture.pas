@@ -6,6 +6,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
       <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
                               EGLShaderException
                              Added TGLShader.HandleFailedInitialization, ShaderSupported,
@@ -349,6 +350,8 @@ type
 
 	TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
 	TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
+  TGLTextureTarget = (ttTexture1d, ttTexture2d, ttTexture3d,
+                      ttTextureRect, ttTextureCube);
 
   TGLFaceProperties  = class;
   TGLTexture         = class;
@@ -1746,6 +1749,9 @@ procedure SetGLTextureImageClassesToStrings(aStrings : TStrings);
 	To be freed by caller. }
 function GetGLTextureImageClassesAsStrings : TStrings;
 
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
+
 // Global texturing defaults
 //
 var
@@ -1784,6 +1790,42 @@ const
 var
    vTGraphicFileExtension : array of String;
    vTGraphicClass : array of TGraphicClass;
+
+// DecodeGLTextureTarget
+//
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+begin
+  case TextureTarget of
+    ttTexture1d: Result := GL_TEXTURE_1D;
+    ttTexture2d: Result := GL_TEXTURE_2D;
+    ttTexture3d: Result := GL_TEXTURE_3D;
+    ttTextureRect: Result := GL_TEXTURE_RECTANGLE_ARB;
+    ttTextureCube: Result := GL_TEXTURE_CUBE_MAP_ARB;
+  else
+    begin
+      Result := 0;
+      Assert(False, glsUnknownType);
+    end;
+  end;
+end;
+
+// EncodeGLTextureTarget
+//
+function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
+begin
+  case TextureTarget of
+    GL_TEXTURE_1D: Result := ttTexture1d;
+    GL_TEXTURE_2D: Result := ttTexture2d;
+    GL_TEXTURE_3D: Result := ttTexture3d;
+    GL_TEXTURE_RECTANGLE_ARB: Result := ttTextureRect;
+    GL_TEXTURE_CUBE_MAP_ARB:  Result := ttTextureCube;
+  else
+    begin
+      Result := ttTexture2d;
+      Assert(False, glsUnknownType);
+    end;
+  end;
+end;
 
 // RegisterTGraphicClassFileExtension
 //
