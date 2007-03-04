@@ -37,6 +37,7 @@ type
     procedure SetShader(const Value: TGLShader);
   protected
     function GetRealOwner: TGLPostShaderHolder;
+    function GetDisplayName: string; override;
   public
     procedure Assign(Source: TPersistent); override;  
   published
@@ -256,6 +257,19 @@ begin
   end
   else
     inherited; // Die!!!
+end;
+
+function TGLPostShaderCollectionItem.GetDisplayName: string;
+begin
+  if FShader = nil then
+    Result := ''
+  else
+  begin
+    if FShader.Name <> '' then
+      Result := FShader.Name
+    else
+      Result := FShader.ClassName;
+  end;
 end;
 
 function TGLPostShaderCollectionItem.GetRealOwner: TGLPostShaderHolder;
