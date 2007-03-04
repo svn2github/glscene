@@ -9,6 +9,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/03/07 - DaStr - Added IGLPostShader
       <li>03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
@@ -91,7 +92,7 @@ uses
   Classes, SysUtils,
   //GLScene
   VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGL1x, GLScene,
-  GLStrings, GLCrossPlatform;
+  GLStrings, GLCrossPlatform, GLContext;
 
 const
   glsShaderMaxLightSources = 8;
@@ -129,6 +130,14 @@ type
     function GetShaderDescription: string;
   end;
 
+  {: Used in the TGLPostShaderHolder component }
+  IGLPostShader = interface
+  ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
+    {: Called to determine if it is compatible }
+    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+    {: Called on every pass }
+    function GetTextureTarget: TGLTextureTarget;
+  end;
 
   {: A pure abstract class, must be overriden }
   TGLCustomShader = class(TGLShader)
