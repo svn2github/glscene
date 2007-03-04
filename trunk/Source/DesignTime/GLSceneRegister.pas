@@ -7,7 +7,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>25/02/07 - LIN - Added GLShadowHDS
+      <li>04/03/07 - DaStr - Added TGLPostShaderHolder
+      <li>28/02/07 - LIN - Added GLShadowHDS
       <li>25/02/07 - DaStr - Added TGLPostEffect
                              Moved all terrain components to a separate tab
                              Moved all shader components registration here
@@ -1855,7 +1856,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLEParticleMask, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLGameMenu, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
-	//RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '', TGLLibMaterialNameProperty);
 
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
@@ -1967,7 +1968,7 @@ initialization
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects);
       {$endif}
       RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects);
-
+      RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', glsOCSpecialObjects);
 
       // Doodad objects
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
