@@ -10,13 +10,14 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/03/07 - DaStr - Added GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
       <li>02/03/07 - DaStr - Added GL_[ARB/EXT]_texture_rectangle
                              Added GetTextureRectangle
       <li>10/01/07 - LC - Added GL_EXT_framebuffer_object
       <li>11/09/06 - NC - Added GL_ARB_texture_float, GL_ARB_texture_non_power_of_two
       <li>13/10/04 - NC - Added GL_ATI_draw_buffers
       <li>08/10/04 - LR - Added const in the prototype of the following function for compatibility :
-      TGLUTessCombineProc, TGLUTessCombineDataProc, gluPickMatrix
+                              TGLUTessCombineProc, TGLUTessCombineDataProc, gluPickMatrix
       gluProject, gluUnProject, gluTessVertex, gluLoadSamplingMatrices
       <li>04/10/04 - NC - Added GL_ATI_texture_float, WGL_ATI_pixel_format_float,
                           WGL_NV_float_buffer, GL_NV_float_buffer
@@ -2150,6 +2151,7 @@ const
    GL_FRAMEBUFFER_COMPLETE_EXT                      = $8CD5;
    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT         = $8CD6;
    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT = $8CD7;
+   GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT = $8CD8;
    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT         = $8CD9;
    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT            = $8CDA;
    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT        = $8CDB;
