@@ -7,11 +7,12 @@
 
    This allows the GUI to remain responsive, and prevents freezes when new tiles are
    being prepared.  Although this keeps the framerate up, it may cause holes in the
-   terrain to show, if the HeightDataThread's cant keep up with the TerrainRenderer's
+   terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
    <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/03/07 - LIN - Added ThreadCount and WaitFor
       <li>12/02/07 - LIN - Creation
 	</ul></font>
 }
@@ -41,6 +42,8 @@ type
       procedure StartPreparingData(heightData : THeightData); override;
       procedure ThreadIsIdle; override;
       procedure NewTilePrepared(heightData:THeightData);
+      function  ThreadCount:integer;
+      procedure WaitFor;
 
 	   published
 	      { Published Declarations }
@@ -117,14 +120,45 @@ begin
   end;
 end;
 
+//OnIdle event
+//
 procedure TGLAsyncHDS.ThreadIsIdle;
 begin
   if Assigned(FOnIdleEvent) then FOnIdleEvent(Self);
 end;
 
+//OnNewTilePrepared event
+//
 procedure TGLAsyncHDS.NewTilePrepared(heightData:THeightData);
 begin
   if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,HeightData);
+end;
+
+//ThreadCount
+//  Count the active threads
+//
+function TGLAsyncHDS.ThreadCount:integer;
+var lst: Tlist;
+    i,TdCtr:integer;
+    HD:THeightData;
+begin
+  lst:=self.Data.LockList;
+  i:=0;TdCtr:=0;
+  while(i<lst.Count)and(TdCtr<self.MaxThreads) do begin
+    HD:=THeightData(lst.Items[i]);
+    if HD.Thread<>nil then Inc(TdCtr);
+    inc(i);
+  end;
+  self.Data.UnlockList;
+  result:=TdCtr;
+end;
+
+//WaitFor
+//  Wait for all running threads to finish.
+//  Should only be called after setting Active to false.
+procedure TGLAsyncHDS.WaitFor;
+begin
+  While ThreadCount>0 do sleep(0);
 end;
 
 //-------------------HD Thread----------------
@@ -139,7 +173,6 @@ end;
 Procedure TGLAsyncHDThread.Sync;
 begin
   Owner.NewTilePrepared(heightData);
-  //Owner.AfterPreparingData(heightData);
 end;
 
 //--------------------------------------------
