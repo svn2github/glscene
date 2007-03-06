@@ -6,6 +6,8 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
+                              a single Str procedure (thanks Uwe Raabe)
       <li>03/03/07 - DaStr - Made compatible with Delphi6
                              Added more stuff to RegisterClasses()
       <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
@@ -33,7 +35,7 @@
                                   5 different versions of this shader added
       v1.1.2  06 February  '2007  IGLMaterialLibrarySupported renamed to
                                    IGLMaterialLibrarySupported
-      v1.2    16 February  '2007  Updated to the latest CVS version
+      v1.2    16 February  '2007  Updated to the latest CVS version of GLScene
 
 }
 unit GLSLDiffuseSpecularShader;
@@ -143,6 +145,8 @@ type
     constructor Create(AOwner : TComponent); override;
 
     property LightCount: Integer read FLightCount write SetLightCount default 1;
+    {: Setting LightCompensation to a value less than 1 decreeses individual
+       light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
 
@@ -158,6 +162,8 @@ type
     constructor Create(AOwner : TComponent); override;
 
     property LightCount: Integer read FLightCount write SetLightCount default 1;
+    {: Setting LightCompensation to a value less than 1 decreeses individual
+       light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
 
@@ -365,7 +371,7 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single; const FRealisticSpecular: Boolean);
 var
-  PrevDecimalSeparator: Char;
+  Temp: string;
 begin
   with Code do
   begin
@@ -374,17 +380,15 @@ begin
       if FRealisticSpecular then
         Add('  gl_FragColor = LightIntensity * (TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib); ')
       else
-        Add('  gl_FragColor = TextureContrib * LightIntensity * (AmbientContrib + DiffuseContrib + SpecContrib); ');
+        Add('  gl_FragColor = LightIntensity * TextureContrib  * (AmbientContrib + DiffuseContrib  + SpecContrib); ');
     end
     else
     begin
-      PrevDecimalSeparator := DecimalSeparator;
-      DecimalSeparator := glsDot;
+      Str((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount: 1: 1, Temp);
       if FRealisticSpecular then
-        Add('  gl_FragColor = LightIntensity * (TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ')
+        Add('  gl_FragColor = (LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib) * ' + Temp + '; ')
       else
-        Add('  gl_FragColor = TextureContrib * LightIntensity * (AmbientContrib + DiffuseContrib + SpecContrib * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ');
-      DecimalSeparator := PrevDecimalSeparator;
+        Add('  gl_FragColor =  LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib  + SpecContrib) * ' + Temp + '; ');
     end;
     Add('} ');
   end;

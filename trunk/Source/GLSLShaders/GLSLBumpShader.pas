@@ -6,6 +6,8 @@
    A GLSL shader that applies bump mapping.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
+                              a single Str procedure (thanks Uwe Raabe)
       <li>03/03/07 - DaStr - Made compatible with Delphi6
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
@@ -222,6 +224,8 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
+    {: Setting LightCompensation to a value less than 1 decreeses individual
+       light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
 
@@ -237,6 +241,8 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
+    {: Setting LightCompensation to a value less than 1 decreeses individual
+       light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
 
@@ -579,18 +585,16 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single);
 var
-  PrevDecimalSeparator: Char;
+  Temp: string;
 begin
   with Code do
   begin
-    PrevDecimalSeparator := DecimalSeparator;
-    DecimalSeparator := glsDot;
+    Str((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount :1 :1, Temp);
     if (FLightCount = 1) or (FLightCompensation = 1) then
       Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular); ')
     else
-      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + FloatToStr((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount * 1.0001) + '; ');
+      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + Temp + '; ');
     Add('} ');
-    DecimalSeparator := PrevDecimalSeparator;
   end;
 end;
 
