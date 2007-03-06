@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
       <li>03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
                              Added Vector[More/Less](Equal)Then
       <li>15/02/07 - DaStr - Returned to old code formating style
@@ -784,6 +785,9 @@ procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVecto
 function Lerp(const start, stop, t : Single) : Single;
 //: Calculates angular interpolation between start and stop at point t
 function AngleLerp(start, stop, t : Single) : Single;
+{: This is used for interpolating between 2 matrices. The result
+   is used to reposition the model parts each frame. }
+function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
 
 {: Calculates the angular distance between two angles in radians.<p>
    Result is in the [0; PI] range. }
@@ -806,6 +810,26 @@ function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineV
 //: Calculates linear interpolation between vector arrays
 procedure VectorArrayLerp(const src1, src2 : PVectorArray; t : Single; n : Integer; dest : PVectorArray); overload;
 procedure VectorArrayLerp(const src1, src2 : PAffineVectorArray; t : Single; n : Integer; dest : PAffineVectorArray); overload;
+
+type
+  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn);
+
+{: There functions that do the same as "Lerp", but add some distortions. }
+function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+
+{: Only valid where Delta belongs to [0..1] }
+function InterpolateSin(const Start, Stop, Delta: Single): Single;
+function InterpolateTan(const Start, Stop, Delta: Single): Single;
+
+{: "Alt" functions are valid everywhere }
+function InterpolateSinAlt(const Start, Stop, Delta: Single): Single;
+
+function InterpolateCombinedFastPower(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single): Single;
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+
 
 {: Calculates the length of a vector following the equation sqrt(x*x+y*y). }
 function VectorLength(const x, y : Single) : Single; overload;
@@ -3602,6 +3626,104 @@ begin
       end;
    end;
 end;
+
+// InterpolateCombined
+//
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+begin
+  case InterpolationType of
+    itLinear: Result := Lerp(Start, Stop, Delta);
+    itPower: Result := InterpolatePower(Start, Stop, Delta, DistortionDegree);
+    itSin: Result := InterpolateSin(Start, Stop, Delta);
+    itSinAlt: Result := InterpolateSinAlt(Start, Stop, Delta);
+    itTan: Result := InterpolateTan(Start, Stop, Delta);
+    itLn: Result := InterpolateLn(Start, Stop, Delta, DistortionDegree);
+    else
+    begin
+      Result := -1;
+      Assert(False);
+    end;
+  end;
+end;
+
+// InterpolateCombinedFastPower
+//
+function InterpolateCombinedFastPower(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single): Single;
+begin
+  Result := InterpolatePower(TargetStart, TargetStop, (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart), DistortionDegree);
+end;
+
+// InterpolateCombinedSafe
+//
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+var
+  ChangeDelta: Single;
+begin
+  if OriginalStop = OriginalStart then
+    Result := TargetStart
+  else
+  begin
+    ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
+    Result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+  end;
+end;
+
+// InterpolateCombinedFast
+//
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+var
+  ChangeDelta: Single;
+begin
+  ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
+  Result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+end;
+
+// InterpolateLn
+//
+function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+begin
+  Result := (Stop - Start) * Ln(1 + Delta * DistortionDegree) / Ln(1 + DistortionDegree) + Start;
+end;
+
+// InterpolateSinAlt
+//
+function InterpolateSinAlt(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * Delta * Sin(Delta * Pi / 2) + Start;
+end;
+
+// InterpolateSin
+//
+function InterpolateSin(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * Sin(Delta * Pi / 2) + Start;
+end;
+
+// InterpolateTan
+//
+function InterpolateTan(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * VectorGeometry.Tan(Delta * Pi / 4) + Start;
+end;
+
+// InterpolatePower
+//
+function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+begin
+  Result := (Stop - Start) * VectorGeometry.Power(Delta, DistortionDegree) + Start;
+end;
+
+// MatrixLerp
+//
+function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
+var
+  I, J: Integer;
+begin
+  for J := 0 to 3 do
+    for I := 0 to 3 do
+      Result[I][J] := m1[I][J] + (m2[I][J] - m1[I][J]) * Delta;
+end;
+
 
 // VectorLength (array)
 //
