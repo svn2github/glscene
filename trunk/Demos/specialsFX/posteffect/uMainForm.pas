@@ -2,6 +2,7 @@
   A Demo that shows how the new TGLPostEffect component works.
 
   Version history:
+    07/03/07 - DaStr - Updated according to changes in the GLPostEffects unit.
     02/03/07 - DaStr - Initial version (based on demo by Grim).
 
 }
@@ -36,6 +37,8 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure GLPostEffect1CustomEffect(Sender: TObject;
+      var rci: TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
   private
     { Private declarations }
   public
@@ -77,10 +80,25 @@ begin
     0: GLPostEffect1.Preset := pepNone;
     1: GLPostEffect1.Preset := pepGray;
     2: GLPostEffect1.Preset := pepNegative;
-    3: GLPostEffect1.Preset := pepWeird;
-    4: GLPostEffect1.Preset := pepRedNoise;
+    3: GLPostEffect1.Preset := pepDistort;
+    4: GLPostEffect1.Preset := pepNoise;
+    5: GLPostEffect1.Preset := pepCustom;
   end;
 end;
 
+{$R-} // Turn off range checking.
+procedure TMainForm.GLPostEffect1CustomEffect(Sender: TObject;
+  var rci: TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
+var
+  I: Longword;
+begin
+  for I := 0 to High(Buffer) do
+  begin
+    Buffer[I].r := Round(Buffer[I + 5].r * 2);
+    Buffer[I].g := Round(Buffer[I].g * 1.5);
+    Buffer[I].b := Round(Buffer[I + 5].b * 1.5);
+  end;
+end;
+{$R+}
 end.
 

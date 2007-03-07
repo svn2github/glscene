@@ -47,14 +47,15 @@ object MainForm: TMainForm
       ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
-      Text = 'pepNone'
+      Text = 'None'
       OnChange = ComboBox1Change
       Items.Strings = (
-        'pepNone'
-        'pepGray'
-        'pepNegative'
-        'pepWeird'
-        'pepRedNoise')
+        'None'
+        'Gray'
+        'Negative'
+        'Distort'
+        'Noise'
+        'Custom')
     end
   end
   object GLSceneViewer1: TGLSceneViewer
@@ -79,6 +80,7 @@ object MainForm: TMainForm
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object GLPostEffect1: TGLPostEffect
+      OnCustomEffect = GLPostEffect1CustomEffect
     end
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
