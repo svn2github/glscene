@@ -56,7 +56,7 @@
       ..\Source\GLUtils.obj ..\Source\GLStrings.obj ..\Source\GLCadencer.obj 
       ..\Source\GLMesh.obj ..\Source\GLMultiPolygon.obj ..\Source\GLObjects.obj 
       ..\Source\GLSilhouette.obj ..\Source\GLVectorFileObjects.obj 
-      ..\Source\Base\GLCanvas.obj ..\Source\Base\RegisterXCollection.obj 
+      ..\Source\Base\GLCanvas.obj ..\Source\DesignTime\RegisterXCollection.obj 
       ..\Source\FileFormats\GLFileNMF.obj ..\Source\FileFormats\GLFileNurbs.obj 
       ..\Source\FileFormats\Q3BSP.obj ..\Source\FileFormats\Utils3DS.obj 
       ..\Source\FileFormats\Types3DS.obj ..\Source\FileFormats\TypesMD2.obj 

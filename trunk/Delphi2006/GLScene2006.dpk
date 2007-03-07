@@ -70,7 +70,7 @@ contains
   GLBehaviours in '..\Source\GLBehaviours.pas',
   ScreenSaver in '..\Source\Base\ScreenSaver.pas',
   GLCadencer in '..\Source\GLCadencer.pas',
-  RegisterXCollection in '..\Source\Base\RegisterXCollection.pas',
+  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
   FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
   XCollection in '..\Source\Base\XCollection.pas',
   GLParticles in '..\Source\GLParticles.pas',

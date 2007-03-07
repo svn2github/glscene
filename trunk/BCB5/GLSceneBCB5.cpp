@@ -118,7 +118,7 @@ USEUNIT("..\Source\GLObjects.pas");
 USEUNIT("..\Source\GLSilhouette.pas");
 USEUNIT("..\Source\GLVectorFileObjects.pas");
 USEUNIT("..\Source\Base\GLCanvas.pas");
-USEUNIT("..\Source\Base\RegisterXCollection.pas");
+USEUNIT("..\Source\DesignTime\RegisterXCollection.pas");
 USEUNIT("..\Source\FileFormats\GLFileNMF.pas");
 USEUNIT("..\Source\FileFormats\GLFileNurbs.pas");
 USEUNIT("..\Source\FileFormats\Q3BSP.pas");

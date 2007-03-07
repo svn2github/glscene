@@ -60,7 +60,7 @@
       ..\Source\GLStrings.obj ..\Source\GLCadencer.obj ..\Source\GLMesh.obj 
       ..\Source\GLMultiPolygon.obj ..\Source\GLObjects.obj 
       ..\Source\GLSilhouette.obj ..\Source\GLVectorFileObjects.obj 
-      ..\Source\Base\GLCanvas.obj ..\Source\Base\RegisterXCollection.obj 
+      ..\Source\Base\GLCanvas.obj ..\Source\DesignTime\RegisterXCollection.obj 
       ..\Source\FileFormats\GLFileNMF.obj ..\Source\FileFormats\GLFileNurbs.obj 
       ..\Source\FileFormats\Q3BSP.obj ..\Source\FileFormats\Utils3DS.obj 
       ..\Source\FileFormats\Types3DS.obj ..\Source\FileFormats\TypesMD2.obj 
@@ -278,7 +278,7 @@
       <FILE FILENAME="..\Source\GLSilhouette.pas" FORMNAME="" UNITNAME="GLSilhouette" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLVectorFileObjects.pas" FORMNAME="" UNITNAME="GLVectorFileObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\GLCanvas.pas" FORMNAME="" UNITNAME="GLCanvas" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\Base\RegisterXCollection.pas" FORMNAME="" UNITNAME="RegisterXCollection" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\RegisterXCollection.pas" FORMNAME="" UNITNAME="RegisterXCollection" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\GLFileNMF.pas" FORMNAME="" UNITNAME="GLFileNMF" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\GLFileNurbs.pas" FORMNAME="" UNITNAME="GLFileNurbs" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\Q3BSP.pas" FORMNAME="" UNITNAME="Q3BSP" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
