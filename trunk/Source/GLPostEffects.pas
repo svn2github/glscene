@@ -6,6 +6,17 @@
   A collection of components that generate post effects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/03/07 - DaStr - Moved "Weird" effect to the demo.
+                             Added "Distort" effect.
+                             Modified "RedNoise" to simple monochrome noise
+                                                   (preset renamed to "Noise")
+                             Made "Negative" effect really negative,
+                                             instead swapping R and B channels
+                             Changed all Round() calls to Trunc()
+                             Removed all TGLPostEffectColor typecasts
+                             (All above changes were made by Michail Glukhov)
+                             TGLPostEffect  and TGLPostShaderHolder are not
+                              rendered when DrawState=dsPicking (suggested by Riz)
       <li>04/03/07 - DaStr - Added TGLPostShaderHolder
       <li>02/03/07 - DaStr - TGLOnCustomPostEffectEvent now passes rci
                              pepNone preset does not call gl[Read/Draw]Pixels
@@ -93,8 +104,15 @@ type
 
   TGLOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer) of object;
 
-  {: Some presets. None - does nothing, Custom - calls the OnCustomEffect event. }
-  TGLPostEffectPreset = (pepNone, pepGray, pepNegative, pepWeird, pepRedNoise, pepCustom);
+  {: Some presets for TGLPostEffect:
+       pepNone - does nothing.
+       pepGray - makes picture gray.
+       pepNegative - inverts all colors.
+       pepDistort - simulates shaky TV image.
+       pepNoise - just adds random niose.
+       pepCustom - calls the OnCustomEffect event.
+  }
+  TGLPostEffectPreset = (pepNone, pepGray, pepNegative, pepDistort, pepNoise, pepCustom);
 
   {: Provides a simple way to producing post-effects without shaders.<p>
      It is slow as hell, but it's worth it in some cases.}
@@ -107,11 +125,10 @@ type
     //: May be should be private...
     procedure MakeGrayEffect; virtual;
     procedure MakeNegativeEffect; virtual;
-    procedure MakeWeirdEffect; virtual;
-    procedure MakeWeirdEffect2; virtual;
+    procedure MakeDistortEffect; virtual;
+    procedure MakeNoiseEffect; virtual;
     procedure DoOnCustomEffect(var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer); virtual;
   public
-    destructor Destroy; override;
     procedure DoRender(var rci : TRenderContextInfo;
                        renderSelf, renderChildren : Boolean); override;
     procedure Assign(Source: TPersistent); override;
@@ -137,11 +154,6 @@ begin
   end;
 end;
 
-destructor TGLPostEffect.Destroy;
-begin
-  inherited;
-end;
-
 procedure TGLPostEffect.DoOnCustomEffect(
   var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
 begin
@@ -154,7 +166,7 @@ procedure TGLPostEffect.DoRender(var rci : TRenderContextInfo;
 var
   NewScreenSize: Integer;
 begin
-  if (not rci.ignoreMaterials) and (FPreset <> pepNone) then
+  if (not rci.ignoreMaterials) and (FPreset <> pepNone) and (rci.drawState <> dsPicking) then
   begin
     NewScreenSize := rci.viewPortSize.cx * rci.viewPortSize.cy;
     if NewScreenSize <> Length(FRenderBuffer) then
@@ -165,8 +177,8 @@ begin
        // pepNone is handled in the first line.
        pepGray:     MakeGrayEffect;
        pepNegative: MakeNegativeEffect;
-       pepWeird:    MakeWeirdEffect;
-       pepRedNoise:    MakeWeirdEffect2;
+       pepDistort:  MakeDistortEffect;
+       pepNoise:    MakeNoiseEffect;
        pepCustom:   DoOnCustomEffect(rci, FRenderBuffer);
      else
        Assert(False, glsUnknownType);
@@ -174,7 +186,7 @@ begin
     glDrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
 
-   // start rendering children (if any)
+   // Start rendering children (if any).
    if renderChildren then
       Self.RenderChildren(0, Count - 1, rci);
 end;
@@ -183,6 +195,7 @@ end;
   {$R-}
   {$DEFINE NEED_TO_RESTORE_RANGE_CHECK}
 {$ENDIF}
+
 procedure TGLPostEffect.MakeGrayEffect;
 var
   I:    Longword;
@@ -190,62 +203,63 @@ var
 begin
   for I := 0 to High(FRenderBuffer) do
   begin
-    gray := Round((0.30 * TGLPostEffectColor(FRenderBuffer[I]).r) +
-      (0.59 * TGLPostEffectColor(FRenderBuffer[I]).g) +
-      (0.11 * TGLPostEffectColor(FRenderBuffer[I]).b));
-    TGLPostEffectColor(FRenderBuffer[I]).r := gray;
-    TGLPostEffectColor(FRenderBuffer[I]).g := gray;
-    TGLPostEffectColor(FRenderBuffer[I]).b := gray;
+    gray := Round((0.30 * FRenderBuffer[I].r) +
+                  (0.59 * FRenderBuffer[I].g) +
+                  (0.11 * FRenderBuffer[I].b));
+    FRenderBuffer[I].r := gray;
+    FRenderBuffer[I].g := gray;
+    FRenderBuffer[I].b := gray;
   end;
 end;
 
 procedure TGLPostEffect.MakeNegativeEffect;
 var
-  I:   Longword;
-  red: TGLubyte;
-begin
-  for I := 0 to High(FRenderBuffer) do
-  begin
-    red := TGLPostEffectColor(FRenderBuffer[I]).r;
-    TGLPostEffectColor(FRenderBuffer[I]).r := TGLPostEffectColor(FRenderBuffer[I]).b;
-    TGLPostEffectColor(FRenderBuffer[I]).b := red;
-  end;
-end;
-
-procedure TGLPostEffect.MakeWeirdEffect;
-var
   I: Longword;
 begin
   for I := 0 to High(FRenderBuffer) do
   begin
-    TGLPostEffectColor(FRenderBuffer[I]).r := round(TGLPostEffectColor(FRenderBuffer[I + 5]).r * 2);
-    TGLPostEffectColor(FRenderBuffer[I]).g := round(TGLPostEffectColor(FRenderBuffer[I]).g * 1.5);
-    TGLPostEffectColor(FRenderBuffer[I]).b := round(TGLPostEffectColor(FRenderBuffer[I + 5]).b * 1.5);
+    FRenderBuffer[I].r := 255 - FRenderBuffer[I].r;
+    FRenderBuffer[I].g := 255 - FRenderBuffer[I].g;
+    FRenderBuffer[I].b := 255 - FRenderBuffer[I].b;
   end;
 end;
 
-procedure TGLPostEffect.MakeWeirdEffect2;
+{$Warnings Off}
+procedure TGLPostEffect.MakeDistortEffect;
 var
-  I:      Longword;
-  r, rnd: Single;
+  I: Longword;
+  rnd: Integer;
 begin
   for I := 0 to High(FRenderBuffer) do
   begin
-    rnd := random + 1;
-    r := TGLPostEffectColor(FRenderBuffer[I]).r * 1.5 * rnd;
-    if r > 255 then
-      r := 255;
-    TGLPostEffectColor(FRenderBuffer[I]).r := round(r);
-
-    TGLPostEffectColor(FRenderBuffer[I]).g := round(TGLPostEffectColor(FRenderBuffer[I]).g * rnd);
-
-    TGLPostEffectColor(FRenderBuffer[I]).b := round(TGLPostEffectColor(FRenderBuffer[I]).b * rnd);
+    rnd := Random(10) - 5;
+    FRenderBuffer[I].r := FRenderBuffer[I + rnd].r;
+    FRenderBuffer[I].g := FRenderBuffer[I + rnd].g;
+    FRenderBuffer[I].b := FRenderBuffer[I + rnd].b;
   end;
 end;
+{$Warnings On}
+
+procedure TGLPostEffect.MakeNoiseEffect;
+var
+  I:      Longword;
+  rnd: Single;
+begin
+  for I := 0 to High(FRenderBuffer) do
+  begin
+    rnd := 0.25 + Random(75)/100;
+
+    FRenderBuffer[I].r := trunc(FRenderBuffer[I].r * rnd);
+    FRenderBuffer[I].g := trunc(FRenderBuffer[I].g * rnd);
+    FRenderBuffer[I].b := trunc(FRenderBuffer[I].b * rnd);
+  end;
+end;
+
 {$IFDEF NEED_TO_RESTORE_RANGE_CHECK}
   {$R+}
   {$UNDEF NEED_TO_RESTORE_RANGE_CHECK}
 {$ENDIF}
+
 
 { TGLPostShaderCollectionItem }
 
@@ -328,9 +342,9 @@ var
   I: Integer;
   NeedToContinue: Boolean;
 begin
-  if not rci.ignoreMaterials and not (csDesigning in ComponentState) then
+  if not (rci.ignoreMaterials) and not (csDesigning in ComponentState) and
+         (rci.drawState <> dsPicking) then
   begin
-
     if (FPreviousViewportSize.cx <> rci.viewPortSize.cx) or
        (FPreviousViewportSize.cy <> rci.viewPortSize.cy) then
     begin
