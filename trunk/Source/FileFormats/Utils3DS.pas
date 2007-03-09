@@ -1,6 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+// 09/03/07 - DaStr - Fixed a potential AV in two InitMeshObj procedures (thanks Burkhard Carstens)
 // 27/10/06 - LC - Fixed memory leak in RelMeshObjField. Bugtracker ID=1585639
 // 12/08/02 - EG - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
 unit Utils3DS;
@@ -3795,19 +3796,19 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function InitMeshObjField(Field: Integer): TMesh3DS;
+procedure InitMeshObjField(var aMesh : TMesh3DS;Field: Integer);
 
 var I: Integer;
 
 begin
-  with Result do
+  with aMesh do
   begin
     // test to see if Vertices are being allocated
     if (Field and InitVertexArray3DS) <> 0 then
     begin
       // if the vertex count is 0 then free the array
-      if NVertices = 0 then RelMeshObjField(Result, RelVertexArray3DS)
-                       else
+      if NVertices= 0 then RelMeshObjField(aMesh, RelVertexArray3DS)
+      else
       begin
         // if this is the very first allocation
         if VertexArray = nil then
@@ -3831,8 +3832,8 @@ begin
 
     if (Field and InitTextArray3DS) <> 0 then
     begin
-      if NTextVerts = 0 then RelMeshObjField(Result, RelTextArray3DS)
-                        else
+      if NTextVerts = 0 then RelMeshObjField(aMesh, RelTextArray3DS)
+      else
       begin
         if TextArray = nil then
         begin
@@ -3851,8 +3852,8 @@ begin
 
     if (Field and InitFaceArray3DS) <> 0 then
     begin
-      if NFaces = 0 then RelMeshObjField(Result, RelFaceArray3DS)
-                    else
+      if NFaces = 0 then RelMeshObjField(aMesh, RelFaceArray3DS)
+      else
       begin
         if FaceArray = nil then
         begin
@@ -3871,8 +3872,8 @@ begin
 
     if (Field and InitMatArray3DS) <> 0 then
     begin
-      if NMats = 0 then RelMeshObjField(Result, RelMatArray3DS)
-                   else
+      if NMats = 0 then RelMeshObjField(aMesh, RelMatArray3DS)
+      else
       begin
         if Matarray = nil then
         begin
@@ -3891,8 +3892,8 @@ begin
 
     if (Field and InitSmoothArray3DS) <> 0 then
     begin
-      if NFaces = 0 then RelMeshObjField(Result, RelSmoothArray3DS)
-                    else
+      if NFaces = 0 then RelMeshObjField(aMesh, RelSmoothArray3DS)
+      else
       begin
         if SmoothArray = nil then
         begin
@@ -3912,8 +3913,8 @@ begin
 
     if (Field and InitProcData3DS) <> 0 then
     begin
-      if ProcSize = 0 then RelMeshObjField(Result, RelProcData3DS)
-                      else
+      if ProcSize = 0 then RelMeshObjField(aMesh, RelProcData3DS)
+      else
       begin
         if ProcData = nil then
         begin
@@ -3930,8 +3931,8 @@ begin
 
     if (Field and InitVFlagArray3DS) <> 0 then
     begin
-      if NVertices = 0 then RelMeshObjField(Result, RelVFlagArray3DS)
-                       else
+      if NVertices = 0 then RelMeshObjField(aMesh, RelVFlagArray3DS)
+      else
       begin
         if VFlagArray = nil then
         begin
@@ -3968,21 +3969,21 @@ begin
 
     NFaces := FaceCount;
 
-    Result := InitMeshObjField(InitVertexArray3DS or InitFaceArray3DS);
+    InitMeshObjField(Result, InitVertexArray3DS or InitFaceArray3DS);
 
     if (InitFlags and InitTextArray3DS) <> 0 then
     begin
       NTextVerts := VertexCount;
-      Result := InitMeshObjField(InitTextArray3DS);
+      InitMeshObjField(Result, InitTextArray3DS);
     end;
 
     if (InitFlags and InitVFlagArray3DS) <> 0 then
     begin
       NVFlags := VertexCount;
-      Result := InitMeshObjField(InitVFlagArray3DS);
+      InitMeshObjField(Result, InitVFlagArray3DS);
     end;
 
-    if (InitFlags and InitSmoothArray3DS) <> 0 then Result := InitMeshObjField(InitSmoothArray3DS);
+    if (InitFlags and InitSmoothArray3DS) <> 0 then InitMeshObjField(Result, InitSmoothArray3DS);
   end;
 end;
 
