@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/03/07 - DaStr - Added GL_ARB_draw_buffers (thanks riz)
       <li>03/03/07 - DaStr - Added GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
       <li>02/03/07 - DaStr - Added GL_[ARB/EXT]_texture_rectangle
                              Added GetTextureRectangle
@@ -259,6 +260,7 @@ var
 
    GL_ATI_texture_float,
    GL_ATI_draw_buffers,
+   GL_ARB_draw_buffers,
 
    GL_SGI_color_matrix,
 
@@ -2109,6 +2111,25 @@ const
    GL_DRAW_BUFFER14_ATI                             = $8833;
    GL_DRAW_BUFFER15_ATI                             = $8834;
 
+   // GL_ATI_draw_buffers became obsolete with OpenGL 2.0
+   GL_MAX_DRAW_BUFFERS                          = $8824;
+   GL_DRAW_BUFFER0                              = $8825;
+   GL_DRAW_BUFFER1                              = $8826;
+   GL_DRAW_BUFFER2                              = $8827;
+   GL_DRAW_BUFFER3                              = $8828;
+   GL_DRAW_BUFFER4                              = $8829;
+   GL_DRAW_BUFFER5                              = $882A;
+   GL_DRAW_BUFFER6                              = $882B;
+   GL_DRAW_BUFFER7                              = $882C;
+   GL_DRAW_BUFFER8                              = $882D;
+   GL_DRAW_BUFFER9                              = $882E;
+   GL_DRAW_BUFFER10                             = $882F;
+   GL_DRAW_BUFFER11                             = $8830;
+   GL_DRAW_BUFFER12                             = $8831;
+   GL_DRAW_BUFFER13                             = $8832;
+   GL_DRAW_BUFFER14                             = $8833;
+   GL_DRAW_BUFFER15                             = $8834;
+
    // GL_EXT_framebuffer_object
    GL_FRAMEBUFFER_EXT                               = $8D40;
    GL_RENDERBUFFER_EXT                              = $8D41;
@@ -3510,7 +3531,7 @@ procedure ReadWGLExtensions;
 procedure ReadWGLImplementationProperties;
 {$endif}
 
-{: Returns False if none of the tree existing extentions are supported. }
+{: Returns False if none of the three existing extentions are supported. }
 function GetTextureRectangle(var Extension: Cardinal): Boolean;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
@@ -4261,6 +4282,7 @@ begin
 
    GL_ATI_texture_float := CheckExtension('GL_ATI_texture_float');
    GL_ATI_draw_buffers := CheckExtension('GL_ATI_draw_buffers');
+   GL_ARB_draw_buffers := CheckExtension('GL_ARB_draw_buffers');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
