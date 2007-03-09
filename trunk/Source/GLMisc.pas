@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/03/07 - DaStr - Removed obsolete FPC IFDEF's (thanks Burkhard Carstens)
       <li>29/01/07 - DaStr - TGLCustomCoordinates.SetVector - Added default value
                              to one of the procedure's parameters
                              Added TGLCustomCoordinates.AsPoint2D property
@@ -308,22 +309,14 @@ type
 
    {: A TGLCustomCoordinates that publishes X, Y properties. }
     TGLCoordinates2 = class(TGLCustomCoordinates)
-{$ifndef FPC}
     published
-{$ELSE}
-    public
-{$endif}
       property X stored False;
       property Y stored False;
   	end;
 
    {: A TGLCustomCoordinates that publishes X, Y, Z properties. }
     TGLCoordinates3 = class(TGLCustomCoordinates)
-{$ifndef FPC}
     published
-{$ELSE}
-    public
-{$endif}
       property X stored False;
       property Y stored False;
       property Z stored False;
@@ -333,11 +326,7 @@ type
    //
    {: A TGLCustomCoordinates that publishes X, Y, Z, W properties. }
 	  TGLCoordinates4 = class (TGLCustomCoordinates)
-{$ifndef FPC}
     published
-{$ELSE}
-    public
-{$endif}
       property X stored False;
       property Y stored False;
       property Z stored False;
@@ -400,7 +389,6 @@ type
             The W component is automatically adjustes depending on style. }
 			property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
 
-{$ifndef FPC}
 			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate stored StoreCoordinate;
 
 	   published
@@ -408,34 +396,8 @@ type
 			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored StoreCoordinate;
 			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate stored StoreCoordinate;
 			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate stored StoreCoordinate;
-{$else}
-			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate;
-			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate;
-			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate;
-			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
-{$endif}
 	end;
 
-{$ifdef FPC}
-   TOwnedCollection = class(TCollection)
-      private
-	      { Private Declarations }
-         FOwner : TPersistent;
-         FUpdateCount : Integer;
-
-      protected
-	      { Protected Declarations }
-         function GetOwner : TPersistent; override;
-         property UpdateCount : Integer read FUpdateCount;
-
-      public
-	      { Public Declarations }
-         constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
-
-         procedure BeginUpdate; virtual;
-         procedure EndUpdate; virtual;
-   end;
-{$endif}
 
 	// TGLNodes
 	//
@@ -1187,40 +1149,6 @@ begin
    Result:=(FCoords[Index]<>0);
 end;
 
-// ------------------
-// ------------------ TOwnedCollection ------------------
-// ------------------
-{$ifdef FPC}
-// Create
-//
-constructor TOwnedCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
-begin
-   inherited Create(ItemClass);
-   FOwner:=AOwner;
-end;
-
-// GetOwner
-//
-function TOwnedCollection.GetOwner : TPersistent;
-begin
-   Result:=FOwner;
-end;
-
-// BeginUpdate
-//
-procedure TOwnedCollection.BeginUpdate;
-begin
-   Inc(FUpdateCount);
-end;
-
-// EndUpdate
-//
-procedure TOwnedCollection.EndUpdate;
-begin
-   Dec(FUpdateCount);
-   Assert(FUpdateCount>=0, 'Unabalanced Begin/EndUpdate');
-end;
-{$endif}
 // ------------------
 // ------------------ TGLNodes ------------------
 // ------------------
