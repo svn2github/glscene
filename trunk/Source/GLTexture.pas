@@ -6,6 +6,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
       <li>04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
       <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
                               EGLShaderException
@@ -1437,6 +1438,12 @@ type
 
          //: Gets the primary texture either from material library or the texture property
          function GetActualPrimaryTexture: TGLTexture;
+
+         //: Gets the primary Material either from material library or the texture property
+         function GetActualPrimaryMaterial: TGLMaterial;
+
+         //: Return the LibMaterial (see LibMaterialName)
+         function GetLibMaterial: TGLLibMaterial;
 
          procedure QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary; const Material: TGLLibMaterial);
 		published
@@ -5010,6 +5017,22 @@ begin
    if Assigned(currentLibMaterial) then
       Result:=currentLibMaterial.Material.Texture
    else Result:=Texture;
+end;
+
+// GetActualPrimaryTexture
+//
+function TGLMaterial.GetActualPrimaryMaterial: TGLMaterial;
+begin
+   if Assigned(currentLibMaterial) then
+      Result:=currentLibMaterial.Material
+   else Result:=Self;
+end;
+
+// QuickAssignMaterial
+//
+function TGLMaterial.GetLibMaterial: TGLLibMaterial;
+begin
+  Result := currentLibMaterial;
 end;
 
 // QuickAssignMaterial
