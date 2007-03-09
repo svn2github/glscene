@@ -7,6 +7,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
+                             Bugfixed TGLColor.Initialize and TGLColor.Destroy (thanks Burkhard Carstens)
       <li>04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
       <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
                               EGLShaderException
@@ -2052,7 +2053,7 @@ end;
 //
 destructor TGLColor.Destroy;
 begin
-   Dispose(FPDefaultColor);
+   if assigned(FPDefaultColor) then Dispose(FPDefaultColor);
    inherited;
 end;
 
@@ -2060,10 +2061,12 @@ end;
 //
 procedure TGLColor.Initialize(const color : TColorVector);
 begin
-	SetVector(FColor, color);
-   if vUseDefaultSets then begin
-      New(FPDefaultColor);
-   	SetVector(FPDefaultColor^, color);
+   SetVector(FColor, color);
+   if vUseDefaultSets then
+   begin
+      if not assigned(FPDefaultColor) then
+         New(FPDefaultColor);
+      SetVector(FPDefaultColor^, color);
    end;
 end;
 
