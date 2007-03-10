@@ -6,6 +6,7 @@
    Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>23/02/07 - DaStr- Added TCgProgram.ManualNotification
       <li>23/02/07 - DaStr- Added TCadencableCustomCgShader
                             Added EGLCGShaderException
                             with TCustomCgShader:
@@ -117,6 +118,8 @@ type
     FDetectProfile : boolean;
     FPrecision: TPrecisionSetting;
     procedure SetPrecision(const Value: TPrecisionSetting);
+    function GetManualNotification: Boolean;
+    procedure SetManualNotification(const Value: Boolean);
 
   protected
     { Protected Declarations }
@@ -181,8 +184,11 @@ type
        specify the profile directly. }
     property DirectProfile : TcgProfile read FProfile write FProfile;
 
+    { DaStr: Seams, that this event is never called. Probably should be deleted... }
     property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
 
+    {: If True, that shader is not reset when TCgProgram' parameters change. }
+    property ManualNotification: Boolean read GetManualNotification write SetManualNotification default False;
   published
     { Published Declarations }
     property Code : TStrings read FCode write SetCode;
@@ -355,8 +361,8 @@ type
     function IsProfileSupported(Profile: TcgProfile): boolean;
 
     { DaStr: Everything is moved here from the public and protected sections
-             because I would like to shield shaders end-users of descendant
-             shader classes from all this stuff. Those who want direct access
+             because I would like to shield end-users of descendant shader 
+             classes from all this stuff. Those who want direct access
              to shader events and parameters should use the TCgShader class,
              where everything is published. }
 
@@ -383,7 +389,7 @@ type
 
   end;
 
-  {: Allows to use a Cadencer, which is used for noise generation in many shaders }
+  {: Allows to use a Cadencer, which is used for noise generation in many shaders. }
   TCadencableCustomCgShader = class(TCustomCgShader)
   private
     FCadencer: TGLCadencer;
@@ -522,7 +528,8 @@ begin
   if val<>FProgramName then
   begin
     FProgramName:=val;
-    NotifyChange(Self);
+    if not GetManualNotification then
+       NotifyChange(Self);
   end;
 end;
 
@@ -797,8 +804,27 @@ procedure TCgProgram.SetPrecision(const Value: TPrecisionSetting);
 begin
   if FPrecision<>Value then begin
     FPrecision := Value;
-    NotifyChange(Self);
+    if not GetManualNotification then
+       NotifyChange(Self);
   end;
+end;
+
+// GetManualNotification
+//
+function TCgProgram.GetManualNotification: Boolean;
+begin
+  Result := not Assigned(TStringList(FCode).OnChange);
+end;
+
+// SetManualNotification
+//
+procedure TCgProgram.SetManualNotification(const Value: Boolean);
+begin
+  if Value = GetManualNotification then Exit;
+  if Value then
+    TStringList(FCode).OnChange := nil
+  else
+    TStringList(FCode).OnChange := NotifyChange;
 end;
 
 // ------------------
