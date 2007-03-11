@@ -227,6 +227,13 @@ contains
   GLAtmosphere in '..\Source\GLAtmosphere.pas',
   GLMaterialMultiProxy in '..\Source\GLMaterialMultiProxy.pas',
   GLWideBitmapFont in '..\Source\GLWideBitmapFont.pas',
-  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas';
+  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas',
+  GLCustomShader in '..\Source\Shaders\GLCustomShader.pas',
+  GLSLShader in '..\Source\GLSLShaders\GLSLShader.pas',
+  GLSLDiffuseSpecularShader in '..\Source\GLSLShaders\GLSLDiffuseSpecularShader.pas',
+  GLSLBumpShader in '..\Source\GLSLShaders\GLSLBumpShader.pas',
+  GLAsmShader in '..\Source\Shaders\GLAsmShader.pas',
+  GLPostEffects in '..\Source\GLPostEffects.pas',
+  GLShadowHDS in '..\Source\GLShadowHDS.pas';
 
 end.
