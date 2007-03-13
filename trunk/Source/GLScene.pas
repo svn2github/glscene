@@ -6,7 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>10/03/07 - DaStr - TGLSceneBuffer's Events are not stored now (thanks Burkhard Carstens)
+      <li>10/03/07 - DaStr - TGLSceneBuffer's Events are not stored now
+                              (thanks Burkhard Carstens) (BugtrackerID = 1678654)
       <li>15/02/07 - DaStr - TGLBaseSceneObject.GetChildren bugfixed (subcomponent support)
       <li>09/02/07 - DaStr - TGLBaseSceneObject.ExchangeChildren(Safe) added (thanks apo_pq)
                              Global $R- removed
