@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLGraphics<p>
 
 	Utility class and functions to manipulate a bitmap in OpenGL's default
@@ -8,6 +11,8 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>23/01/07 - LIN- Added TGLBitmap32.AssignToBitmap : Converts a TGLBitmap32 back into a TBitmap
       <li>12/09/06 - NC - Added TGLBitmap32.Blank
       <li>18/10/05 - NC - GL_ARB_texture_non_power_of_two, GL_TEXTURE_2D for float
@@ -292,9 +297,9 @@ begin
    i:=Integer(base);
    pLUT:=@vGammaLUT[0];
    while i<n do begin
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i, 2);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i, 2);
    end;
 end;
 
@@ -345,9 +350,9 @@ begin
    i:=Integer(base);
    pLUT:=@vBrightnessLUT[0];
    while i<n do begin
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
-      PByte(i)^:=pLUT[PByte(i)^]; Inc(i, 2);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT^[PByte(i)^]; Inc(i, 2);
    end;
 end;
 
@@ -810,7 +815,7 @@ procedure TGLBitmap32.SetAlphaFromIntensity;
 var
    i : Integer;
 begin
-   for i:=0 to (FDataSize div 4)-1 do with FData[i] do
+   for i:=0 to (FDataSize div 4)-1 do with FData^[i] do
       a:=(Integer(r)+Integer(g)+Integer(b)) div 3;
 end;
 
@@ -848,8 +853,8 @@ begin
    intCol:=(PInteger(@aColor)^) and $FFFFFF;
    for i:=0 to (FDataSize div 4)-1 do
       if PInteger(@FData[i])^ and $FFFFFF=intCol then
-         FData[i].a:=0
-      else FData[i].a:=255;
+         FData^[i].a:=0
+      else FData^[i].a:=255;
 end;
 
 // SetAlphaToValue
@@ -859,7 +864,7 @@ var
    i : Integer;
 begin
    for i:=0 to (FDataSize div 4)-1 do
-      FData[i].a:=aValue
+      FData^[i].a:=aValue
 end;
 
 // SetAlphaToFloatValue
@@ -876,7 +881,7 @@ var
    i : Integer;
 begin
    for i:=0 to (FDataSize div 4)-1 do
-      FData[i].a:=255-FData[i].a;
+      FData^[i].a:=255-FData^[i].a;
 end;
 
 // SqrtAlpha
@@ -887,8 +892,8 @@ var
 	sqrt255Array : PSqrt255Array;
 begin
    sqrt255Array:=GetSqrt255Array;
-   for i:=0 to (FDataSize div 4)-1 do with FData[i] do
-      a:=sqrt255Array[(Integer(r)+Integer(g)+Integer(b)) div 3];
+   for i:=0 to (FDataSize div 4)-1 do with FData^[i] do
+      a:=sqrt255Array^[(Integer(r)+Integer(g)+Integer(b)) div 3];
 end;
 
 // BrightnessCorrection
@@ -956,10 +961,10 @@ type
       i : Integer;
    begin
       for i:=0 to n-1 do begin
-         pDest.r:=(pLineA[0].r+pLineA[1].r+pLineB[0].r+pLineB[1].r) shr 2;
-         pDest.g:=(pLineA[0].g+pLineA[1].g+pLineB[0].g+pLineB[1].g) shr 2;
-         pDest.b:=(pLineA[0].b+pLineA[1].b+pLineB[0].b+pLineB[1].b) shr 2;
-         pDest.a:=(pLineA[0].a+pLineA[1].a+pLineB[0].a+pLineB[1].a) shr 2;
+         pDest^.r:=(pLineA^[0].r+pLineA^[1].r+pLineB^[0].r+pLineB^[1].r) shr 2;
+         pDest^.g:=(pLineA^[0].g+pLineA^[1].g+pLineB^[0].g+pLineB^[1].g) shr 2;
+         pDest^.b:=(pLineA^[0].b+pLineA^[1].b+pLineB^[0].b+pLineB^[1].b) shr 2;
+         pDest^.a:=(pLineA^[0].a+pLineA^[1].a+pLineB^[0].a+pLineB^[1].a) shr 2;
          Inc(pLineA);
          Inc(pLineB);
          Inc(pDest);
@@ -1138,15 +1143,15 @@ begin
             end;
             for x:=0 to Width-1 do begin
                if wrapX then
-                  dcx:=scale*(curRow[(x-1) and maskX].g-curRow[(x+1) and maskX].g)
+                  dcx:=scale*(curRow^[(x-1) and maskX].g-curRow^[(x+1) and maskX].g)
                else begin
                   if x=0 then
-                     dcx:=scale*(curRow[x].g-curRow[x+1].g)
+                     dcx:=scale*(curRow^[x].g-curRow^[x+1].g)
                   else if x<Width-1 then
-                     dcx:=scale*(curRow[x-1].g-curRow[x].g)
-                  else dcx:=scale*(curRow[x-1].g-curRow[x+1].g);
+                     dcx:=scale*(curRow^[x-1].g-curRow^[x].g)
+                  else dcx:=scale*(curRow^[x-1].g-curRow^[x+1].g);
                end;
-               dcy:=scale*(prevRow[x].g-nextRow[x].g);
+               dcy:=scale*(prevRow^[x].g-nextRow^[x].g);
                invLen:=127*RSqrt(dcx*dcx+dcy*dcy+1);
                with p^ do begin
                   r:=Integer(Round(128+ClampValue(dcx*invLen, -128, 127)));
@@ -1225,13 +1230,13 @@ begin
          curRow:=@FData[y*Width];
          for x:=0 to Width-1 do begin
             p:=@curRow[x];
-            sr:=(p.r-128)*cInv128;
-            sg:=(p.g-128)*cInv128;
-            sb:=(p.b-128)*cInv128;
+            sr:=(p^.r-128)*cInv128;
+            sg:=(p^.g-128)*cInv128;
+            sb:=(p^.b-128)*cInv128;
             invLen:=RSqrt(sr*sr+sg*sg+sb*sb);
-            p.r:=Round(128+127*ClampValue(sr*invLen, -1, 1));
-            p.g:=Round(128+127*ClampValue(sg*invLen, -1, 1));
-            p.b:=Round(128+127*ClampValue(sb*invLen, -1, 1));
+            p^.r:=Round(128+127*ClampValue(sr*invLen, -1, 1));
+            p^.g:=Round(128+127*ClampValue(sg*invLen, -1, 1));
+            p^.b:=Round(128+127*ClampValue(sb*invLen, -1, 1));
          end;
       end;
    end;

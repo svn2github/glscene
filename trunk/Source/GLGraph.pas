@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLGraph<p>
 
 	Graph plotting objects for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>12/09/03 - EG - DefaultHeightField now defines color
       <li>16/07/02 - EG - Fixed TGLHeightField backface polygon mode
       <li>29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
@@ -421,14 +426,14 @@ var
    begin
       glBegin(GL_TRIANGLE_STRIP);
       x:=xBase;
-      IssuePoint(x, y1, pLowRow[0]);
+      IssuePoint(x, y1, pLowRow^[0]);
       for k:=0 to m-2 do begin
          x1:=x+xStep;
-         IssuePoint(x, y2, pHighRow[k]);
-         IssuePoint(x1, y1, pLowRow[k+1]);
+         IssuePoint(x, y2, pHighRow^[k]);
+         IssuePoint(x1, y1, pLowRow^[k+1]);
          x:=x1;
       end;
-      IssuePoint(x, y2, pHighRow[m-1]);
+      IssuePoint(x, y2, pHighRow^[m-1]);
       glEnd;
    end;
 
@@ -476,7 +481,7 @@ begin
          x:=xBase;
          m:=0;
          while x<=XSamplingScale.Max do begin
-            with rowBottom[m] do begin
+            with rowBottom^[m] do begin
                with texPoint do begin
                   S:=x;
                   T:=y;
@@ -488,11 +493,11 @@ begin
          end;
          if Assigned(rowMid) then begin
             for k:=0 to m-1 do begin
-               if k>0 then dx:=(rowMid[k-1].z-rowMid[k].z)*invXStep else dx:=0;
-               if k<m-1 then dx:=dx+(rowMid[k].z-rowMid[k+1].z)*invXStep;
-               if Assigned(rowTop) then dy:=(rowTop[k].z-rowMid[k].z)*invYStep else dy:=0;
-               if Assigned(rowBottom) then dy:=dy+(rowMid[k].z-rowBottom[k].z)*invYStep;
-               rowMid[k].normal:=VectorNormalize(AffineVectorMake(dx, dy, 1));
+               if k>0 then dx:=(rowMid^[k-1].z-rowMid^[k].z)*invXStep else dx:=0;
+               if k<m-1 then dx:=dx+(rowMid^[k].z-rowMid^[k+1].z)*invXStep;
+               if Assigned(rowTop) then dy:=(rowTop^[k].z-rowMid^[k].z)*invYStep else dy:=0;
+               if Assigned(rowBottom) then dy:=dy+(rowMid^[k].z-rowBottom^[k].z)*invYStep;
+               rowMid^[k].normal:=VectorNormalize(AffineVectorMake(dx, dy, 1));
             end;
          end;
          if nx>1 then begin
@@ -504,10 +509,10 @@ begin
          y:=y+yStep;
       end;
       for k:=0 to m-1 do begin
-         if k>0 then dx:=(rowBottom[k-1].z-rowBottom[k].z)*invXStep else dx:=0;
-         if k<m-1 then dx:=dx+(rowBottom[k].z-rowBottom[k+1].z)*invXStep;
-         if Assigned(rowMid) then dy:=(rowMid[k].z-rowBottom[k].z)*invYStep else dy:=0;
-         rowBottom[k].normal:=VectorNormalize(AffineVectorMake(dx, dy, 1));
+         if k>0 then dx:=(rowBottom^[k-1].z-rowBottom^[k].z)*invXStep else dx:=0;
+         if k<m-1 then dx:=dx+(rowBottom^[k].z-rowBottom^[k+1].z)*invXStep;
+         if Assigned(rowMid) then dy:=(rowMid^[k].z-rowBottom^[k].z)*invYStep else dy:=0;
+         rowBottom^[k].normal:=VectorNormalize(AffineVectorMake(dx, dy, 1));
       end;
       if Assigned(rowMid) and Assigned(rowBottom) then
          RenderRow(rowMid, rowBottom);

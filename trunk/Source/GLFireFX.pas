@@ -1,3 +1,4 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLFireFX<p>
@@ -5,6 +6,8 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
       <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
       <li>09/12/01 - EG - Added NoZWrite property
@@ -446,7 +449,7 @@ begin
       SetVector(tmp, Random-0.5, Random-0.5, Random-0.5, 0);
       NormalizeVector(tmp);
       ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));
-      with FFireParticles[NP] do begin
+      with FFireParticles^[NP] do begin
          Position:=VectorAdd(refPos, VectorMake((2*Random-1)*FireRadius, (2*Random-1)*FireRadius, (2*Random-1)*FireRadius));
          Speed:=tmp;
          TimeToLive:=ParticleLife*(Random*0.5+0.5)*lifeBoostFactor;
@@ -480,7 +483,7 @@ begin
       PAffineVector(@tmp)^:=VectorCombine(ringVectorX, ringVectorY, fx*d, fy*d);
       tmp[3]:=1;
       ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));
-      with FFireParticles[NP] do begin
+      with FFireParticles^[NP] do begin
          Position:=VectorAdd(refPos, VectorMake((2*Random-1)*FireRadius, (2*Random-1)*FireRadius, (2*Random-1)*FireRadius));
          Speed:=tmp;
          TimeToLive:=ParticleLife*(Random*0.5+0.5)*lifeBoostFactor;
@@ -505,14 +508,14 @@ begin
    N:=0;
    I:=0;
    while N<NP do begin
-      FFireParticles[I].TimeToLive := FFireParticles[I].TimeToLive - deltaTime;
-      if (FFireParticles[I].TimeToLive<=0) then begin
+      FFireParticles^[I].TimeToLive := FFireParticles^[I].TimeToLive - deltaTime;
+      if (FFireParticles^[I].TimeToLive<=0) then begin
          //Get the prev element
          Dec(NP);
-         FFireParticles[I]:=FFireParticles[NP];
+         FFireParticles^[I]:=FFireParticles^[NP];
       end else begin
          //animate it
-         with FFireParticles[I] do begin
+         with FFireParticles^[I] do begin
             Speed:=VectorCombine(Speed, FireDir.AsVector, 1, deltaTime);
             Position:=VectorCombine(Position, Speed, 1, deltaTime);
          end;
@@ -533,7 +536,7 @@ begin
                         FireCrown+(2*Random-1)*FireRadius);
          RotateVectorAroundY(PAffineVector(@tmp)^, Random*2*PI);
          AddVector(tmp, refPos);
-         with FFireParticles[NP] do begin
+         with FFireParticles^[NP] do begin
             Position:=tmp;
             Speed:=InitialDir.AsVector;
             TimeToLive:=ParticleLife*(Random*0.5+0.5);
@@ -713,7 +716,7 @@ begin
       objList:=TList.Create;
       for i:=0 to n-1 do begin
          fp:=@(Manager.FFireParticles[i]);
-         distList.Add(VectorDotProduct(rci.cameraDirection, fp.Position));
+         distList.Add(VectorDotProduct(rci.cameraDirection, fp^.Position));
          objList.Add(fp);
       end;
       QuickSortLists(0, N-1, distList, objList);
@@ -730,9 +733,9 @@ begin
          SetVector(innerColor, Manager.FInnerColor.Color);
          for i:=n-1 downto 0 do begin
             fp:=PFireParticle(objList[i]);
-            glTranslatef(fp.Position[0]-lastTr[0], fp.Position[1]-lastTr[1], fp.Position[2]-lastTr[2]);
-            SetVector(lastTr, fp.Position);
-            innerColor[3]:=fp.Alpha*fp.TimeToLive/Sqr(fp.LifeLength);
+            glTranslatef(fp^.Position[0]-lastTr[0], fp^.Position[1]-lastTr[1], fp^.Position[2]-lastTr[2]);
+            SetVector(lastTr, fp^.Position);
+            innerColor[3]:=fp^.Alpha*fp^.TimeToLive/Sqr(fp^.LifeLength);
             glColor4fv(@innerColor);
             glCallList(FHandle);
          end;

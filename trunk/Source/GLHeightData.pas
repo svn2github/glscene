@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // GLHeightData
 {: Classes for height data access.<p>
 
@@ -12,7 +15,10 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates - Called from TGLBitmapHDS and TGLHeightTileFileHDS
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
+                               Called from TGLBitmapHDS and TGLHeightTileFileHDS
                           Many tweaks and changes to threading. (I hope I havent broken anything)
       <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
       <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
@@ -894,13 +900,13 @@ begin
          packList:=False;
          // Cleanup dirty tiles and compute used memory
          for i:=Count-1 downto 0 do begin
-            hd:=THeightData(List[i]);
+            hd:=THeightData(List^[i]);
             if hd<>nil then with hd do begin
                if Dirty then begin
                   FDataHash[HashKey(hd.XLeft, hd.YTop)].Remove(hd);
                   FOwner:=nil;
                   Free;
-                  List[i]:=nil;
+                  List^[i]:=nil;
                   packList:=True;
                end else usedMemory:=usedMemory+hd.DataSize;
             end;
@@ -909,14 +915,14 @@ begin
          k:=0;
          if usedMemory>MaxPoolSize then begin
             for i:=0 to Count-1 do begin
-               hd:=THeightData(List[i]);
+               hd:=THeightData(List^[i]);
                if hd<>nil then with hd do begin
                   if (DataState=hdsReady) and (UseCounter=0) then begin
                      FDataHash[HashKey(hd.XLeft, hd.YTop)].Remove(hd);
                      FOwner:=nil;
                      Free;
                   end else begin
-                     List[k]:=hd;
+                     List^[k]:=hd;
                      Inc(k);
                   end;
                end;
@@ -924,8 +930,8 @@ begin
             Count:=k;
          end else if packList then begin
             for i:=0 to Count-1 do
-               if List[i]<>nil then begin
-                  List[k]:=List[i];
+               if List^[i]<>nil then begin
+                  List^[k]:=List^[i];
                   Inc(k);
                end;
             Count:=k;
@@ -1025,7 +1031,7 @@ begin
          // first, lookup data list to find if aHeightData contains our point
          foundHd:=nil;
          for i:=0 to Count-1 do begin
-            hd:=THeightData(List[i]);
+            hd:=THeightData(List^[i]);
             if (hd.XLeft<=x) and (hd.YTop<=y)
                   and (hd.XLeft+hd.Size-1>x) and (hd.YTop+hd.Size-1>y) then begin
                foundHd:=hd;
@@ -1231,7 +1237,7 @@ var
 begin
    GetMem(FByteRaster, Size*SizeOf(PByteArray));
    for i:=0 to Size-1 do
-      FByteRaster[i]:=@FByteData[i*Size]
+      FByteRaster^[i]:=@FByteData[i*Size]
 end;
 
 // BuildSmallIntRaster
@@ -1242,7 +1248,7 @@ var
 begin
    GetMem(FSmallIntRaster, Size*SizeOf(PSmallIntArray));
    for i:=0 to Size-1 do
-      FSmallIntRaster[i]:=@FSmallIntData[i*Size]
+      FSmallIntRaster^[i]:=@FSmallIntData[i*Size]
 end;
 
 // BuildSingleRaster
@@ -1253,7 +1259,7 @@ var
 begin
    GetMem(FSingleRaster, Size*SizeOf(PSingleArray));
    for i:=0 to Size-1 do
-      FSingleRaster[i]:=@FSingleData[i*Size]
+      FSingleRaster^[i]:=@FSingleData[i*Size]
 end;
 
 // ConvertByteToSmallInt
@@ -1267,7 +1273,7 @@ begin
    FDataSize:=Size*Size*SizeOf(SmallInt);
    GetMem(FSmallIntData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FSmallIntData[i]:=(FByteData[i]-128) shl 7;
+      FSmallIntData^[i]:=(FByteData^[i]-128) shl 7;
    FreeMem(FByteData);
    FByteData:=nil;
    BuildSmallIntRaster;
@@ -1284,7 +1290,7 @@ begin
    FDataSize:=Size*Size*SizeOf(Single);
    GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FSingleData[i]:=(FByteData[i]-128) shl 7;
+      FSingleData^[i]:=(FByteData^[i]-128) shl 7;
    FreeMem(FByteData);
    FByteData:=nil;
    BuildSingleRaster;
@@ -1300,7 +1306,7 @@ begin
    FSmallIntRaster:=nil;
    FByteData:=Pointer(FSmallIntData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=(FSmallIntData[i] div 128)+128;
+      FByteData^[i]:=(FSmallIntData^[i] div 128)+128;
    FDataSize:=Size*Size*SizeOf(Byte);
    ReallocMem(FByteData, FDataSize);
    FSmallIntData:=nil;
@@ -1318,7 +1324,7 @@ begin
    FDataSize:=Size*Size*SizeOf(Single);
    GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FSingleData[i]:=FSmallIntData[i];
+      FSingleData^[i]:=FSmallIntData^[i];
    FreeMem(FSmallIntData);
    FSmallIntData:=nil;
    BuildSingleRaster;
@@ -1334,7 +1340,7 @@ begin
    FSingleRaster:=nil;
    FByteData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=(Round(FSingleData[i]) div 128)+128;
+      FByteData^[i]:=(Round(FSingleData^[i]) div 128)+128;
    FDataSize:=Size*Size*SizeOf(Byte);
    ReallocMem(FByteData, FDataSize);
    FSingleData:=nil;
@@ -1351,7 +1357,7 @@ begin
    FSingleRaster:=nil;
    FSmallIntData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
-      FSmallIntData[i]:=Round(FSingleData[i]);
+      FSmallIntData^[i]:=Round(FSingleData^[i]);
    FDataSize:=Size*Size*SizeOf(SmallInt);
    ReallocMem(FSmallIntData, FDataSize);
    FSingleData:=nil;
@@ -1363,7 +1369,7 @@ end;
 function THeightData.ByteHeight(x, y : Integer) : Byte;
 begin
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=ByteRaster[y][x];
+	Result:=ByteRaster^[y]^[x];
 end;
 
 // SmallIntHeight
@@ -1373,7 +1379,7 @@ begin
   //if(Cardinal(x)>=Cardinal(Size))or(Cardinal(y)>=Cardinal(Size)) then
   //  ShowMessage('x: 0<'+IntToStr(x)+'<'+IntToStr(size)+'  y: 0<'+IntToStr(y)+'<'+IntToStr(size)+' ?');
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=SmallIntRaster[y][x];
+	Result:=SmallIntRaster^[y]^[x];
 end;                                         
 
 // SingleHeight
@@ -1381,7 +1387,7 @@ end;
 function THeightData.SingleHeight(x, y : Integer) : Single;
 begin
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=SingleRaster[y][x];
+	Result:=SingleRaster^[y]^[x];
 end;
 
 // InterpolatedHeight
@@ -1441,21 +1447,21 @@ begin
       if DataState=hdsReady then begin
          case DataType of
             hdtByte : begin
-               b:=FByteData[0];
+               b:=FByteData^[0];
                for i:=1 to Size*Size-1 do
-                  if FByteData[i]<b then b:=FByteData[i];
+                  if FByteData^[i]<b then b:=FByteData^[i];
                FHeightMin:=((Integer(b)-128) shl 7);
             end;
             hdtSmallInt : begin
-               sm:=FSmallIntData[0];
+               sm:=FSmallIntData^[0];
                for i:=1 to Size*Size-1 do
-                  if FSmallIntData[i]<sm then sm:=FSmallIntData[i];
+                  if FSmallIntData^[i]<sm then sm:=FSmallIntData^[i];
                FHeightMin:=sm;
             end;
             hdtSingle : begin
-               si:=FSingleData[0];
+               si:=FSingleData^[0];
                for i:=1 to Size*Size-1 do
-                  if FSingleData[i]<si then si:=FSingleData[i];
+                  if FSingleData^[i]<si then si:=FSingleData^[i];
                FHeightMin:=si;
             end;
          else
@@ -1479,21 +1485,21 @@ begin
       if DataState=hdsReady then begin
          case DataType of
             hdtByte : begin
-               b:=FByteData[0];
+               b:=FByteData^[0];
                for i:=1 to Size*Size-1 do
-                  if FByteData[i]>b then b:=FByteData[i];
+                  if FByteData^[i]>b then b:=FByteData^[i];
                FHeightMax:=((Integer(b)-128) shl 7);
             end;
             hdtSmallInt : begin
-               sm:=FSmallIntData[0];
+               sm:=FSmallIntData^[0];
                for i:=1 to Size*Size-1 do
-                  if FSmallIntData[i]>sm then sm:=FSmallIntData[i];
+                  if FSmallIntData^[i]>sm then sm:=FSmallIntData^[i];
                FHeightMax:=sm;
             end;
             hdtSingle : begin
-               si:=FSingleData[0];
+               si:=FSingleData^[0];
                for i:=1 to Size*Size-1 do
-                  if FSingleData[i]>si then si:=FSingleData[i];
+                  if FSingleData^[i]>si then si:=FSingleData^[i];
                FHeightMax:=si;
             end;
          else
@@ -1753,14 +1759,14 @@ begin
                   else YPos:=1-size-YTop;
       for y:=0 to Size-1 do begin
         bitmapLine:=GetScanLine((y+YPos) and wrapMask);
-        if inverted then rasterLine:=ByteRaster[y]
-                    else rasterLine:=ByteRaster[Size-1-y];
+        if inverted then rasterLine:=ByteRaster^[y]
+                    else rasterLine:=ByteRaster^[Size-1-y];
          // *BIG CAUTION HERE* : Don't remove the intermediate variable here!!!
          // or Delphi compiler will "optimize" to 32 bits access with clamping
          // resulting in possible reads of stuff beyon bitmapLine length!!!! 
          for x:=XLeft to XLeft+Size-1 do begin
-            b:=bitmapLine[x and wrapMask];
-            rasterLine[x-XLeft]:=b;
+            b:=bitmapLine^[x and wrapMask];
+            rasterLine^[x-XLeft]:=b;
          end;
       end;
       if (oldType<>hdtByte) and (oldType<>hdtDefault) then
@@ -1862,12 +1868,12 @@ begin
          Allocate(hdtSmallInt);
          for y:=YTop to YTop+Size-1 do begin
             offset:=(y mod cTBHeight)*(cTBWidth*2);
-            rasterLine:=SmallIntRaster[y-YTop];
+            rasterLine:=SmallIntRaster^[y-YTop];
             for x:=XLeft to XLeft+Size-1 do begin
                fs.Seek(offset+(x mod cTBWidth)*2, soFromBeginning);
                fs.Read(b, 2);
                if b<0 then b:=0;
-               rasterLine[x-XLeft]:=SmallInt(b);
+               rasterLine^[x-XLeft]:=SmallInt(b);
             end;
          end;
          if oldType<>hdtSmallInt then
