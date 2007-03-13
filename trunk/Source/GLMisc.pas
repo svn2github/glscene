@@ -3,7 +3,10 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>09/03/07 - DaStr - Removed obsolete FPC IFDEF's (thanks Burkhard Carstens)
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>09/03/07 - DaStr - Removed obsolete FPC IFDEF's
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678642)
       <li>29/01/07 - DaStr - TGLCustomCoordinates.SetVector - Added default value
                              to one of the procedure's parameters
                              Added TGLCustomCoordinates.AsPoint2D property
@@ -1370,7 +1373,7 @@ begin
    SetVector(max, cSmallValue, cSmallValue, cSmallValue);
    for i:=0 to Count-1 do begin
       for k:=0 to 2 do begin
-         f:=PAffineVector(Items[i].AsAddress)[k];
+         f:=PAffineVector(Items[i].AsAddress)^[k];
          if f<min[k] then min[k]:=f;
          if f>max[k] then max[k]:=f;
       end;
@@ -1421,9 +1424,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v2:=v[2];
-      v[1]:=c*v[1]+s*v2;
-      v[2]:=c*v2-s*v[1];
+      v2:=v^[2];
+      v^[1]:=c*v^[1]+s*v2;
+      v^[2]:=c*v2-s*v^[1];
    end;
    NotifyChange;
 end;
@@ -1439,9 +1442,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v0:=v[0];
-      v[0]:=c*v0+s*v[2];
-      v[2]:=c*v[2]-s*v0;
+      v0:=v^[0];
+      v^[0]:=c*v0+s*v^[2];
+      v^[2]:=c*v^[2]-s*v0;
    end;
    NotifyChange;
 end;
@@ -1457,9 +1460,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v1:=v[1];
-      v[1]:=c*v1+s*v[0];
-      v[0]:=c*v[0]-s*v1;
+      v1:=v^[1];
+      v^[1]:=c*v1+s*v^[0];
+      v^[0]:=c*v^[0]-s*v1;
    end;
    NotifyChange;
 end;
@@ -1475,9 +1478,9 @@ begin
    GetMem(ya, SizeOf(TGLFloat)*Count);
    GetMem(za, SizeOf(TGLFloat)*Count);
    for i:=0 to Count-1 do with Items[i] do begin
-      xa[i]:=X;
-      ya[i]:=Y;
-      za[i]:=Z;
+      xa^[i]:=X;
+      ya^[i]:=Y;
+      za^[i]:=Z;
    end;
    Result:=TCubicSpline.Create(xa, ya, za, nil, Count);
    FreeMem(xa);
@@ -1523,7 +1526,7 @@ var
                          weight : PGLFloat; var outData : Pointer); stdcall;
    begin
       outData:=AllocNewVertex;
-      SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
+      SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
    end;
 
 begin
@@ -1541,7 +1544,7 @@ begin
       // Issue normal
       if Assigned(normal) then begin
          glNormal3fv(PGLFloat(normal));
-         gluTessNormal(tess, normal[0], normal[1], normal[2]);
+         gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
       end;
       // Issue polygon
       gluTessBeginPolygon(tess, nil);
