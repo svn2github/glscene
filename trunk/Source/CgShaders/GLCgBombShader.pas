@@ -6,6 +6,9 @@
    Just a good looking shader. And my first one;) <p>
 
    <b>History :</b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.SetMaterialLibrary
+                             Alpha is not stored now
+                             Added design-time checks
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
@@ -69,9 +72,6 @@ type
 {$IFNDEF GLS_OPTIMIZATIONS}
     FMainTextureSource: TGLCgBombShaderTextureSource;
 {$ENDIF}
-    procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject);
-    procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject);
-    procedure OnUnApplyFP(CgProgram: TCgProgram);
     procedure SetGradientTexture(const Value: TGLTexture);
     procedure SetMainTexture(const Value: TGLTexture);
 
@@ -95,6 +95,10 @@ type
   protected
     procedure DoInitialize; override;
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); virtual;
+    procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); virtual;
+    procedure OnUnApplyFP(CgProgram: TCgProgram); virtual;
+
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -109,7 +113,7 @@ type
     property GradientTextureShare: Single read FGradientTextureShare write FGradientTextureShare stored StoreGradientTextureShare;
     property MainTextureShare: Single read FMainTextureShare write FMainTextureShare stored StoreMainTextureShare;
 
-    property Alpha: Single read FAlpha write FAlpha stored False;
+    property Alpha: Single read FAlpha write FAlpha;
     property Displacement: Single read FDisplacement write FDisplacement stored StoreDisplacement;
     property Sharpness: Single read FSharpness write FSharpness stored StoreSharpness;
     property ColorSharpness: Single read FColorSharpness write FColorSharpness stored StoreColorSharpness;
@@ -123,6 +127,12 @@ type
   end;
 
   TGLCgBombShader = class(TGLCustomCGBombShader)
+  protected
+    procedure DoInitialize; override;
+    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); override;
+    procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); override;
+    procedure OnUnApplyFP(CgProgram: TCgProgram); override;
   published
     property MainTextureShare;
     property MainTextureName;
@@ -139,6 +149,7 @@ type
     property TurbDensity;
     property ColorRange;
     property MaterialLibrary;
+    property DesignEnable;
   end;
 
 implementation
@@ -151,8 +162,61 @@ const
 constructor TGLCustomCGBombShader.Create(AOwner: TComponent);
 begin
   inherited;
+  VertexProgram.OnApply := OnApplyVP;
+  VertexProgram.ManualNotification := True;
+  FragmentProgram.OnApply := OnApplyFP;
+  FragmentProgram.OnUnApply := OnUnApplyFP;
+  FragmentProgram.ManualNotification := True;
+
+  FAlpha := 0.7;
+  FDisplacement := 0.3;
+  FSharpness := 3;
+  FColorSharpness := 1;
+  FSpeed := 0.3;
+  FTurbDensity := 1;
+  FColorRange := 0.24;
+  FGradientTextureShare := 0.7;
+  FMainTextureShare := 0.7;
+{$IFNDEF GLS_OPTIMIZATIONS}
+  FMainTextureSource := stsUserSelectedTexture;
+{$ENDIF}
+end;
+
+
+procedure TGLCustomCGBombShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+begin
+  VertexProgram.Apply(rci, Sender);
+  FragmentProgram.Apply(rci, Sender);
+{$IFDEF GLS_OPTIMIZATIONS}
+  if FMainTexture <> nil then
+    FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
+{$ELSE}
+  case FMainTextureSource of
+    stsPrimaryTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(0));
+    stsSecondadyTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(1));
+    stsThirdTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(2));
+    stsUserSelectedTexture:
+      begin
+        if FMainTexture <> nil then
+          FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
+      end;
+  end;
+{$ENDIF}
+end;
+
+
+procedure TGLCustomCGBombShader.DoInitialize;
+begin
+  if FGradientTexture = nil then
+    FGradientTexture := FMaterialLibrary.TextureByName(FGradientTextureName);
+  if FMainTexture = nil then
+  try
+    FMainTexture := FMaterialLibrary.TextureByName(FMainTextureName);
+  except end;
+
   with VertexProgram.Code do
   begin
+    Clear;
     Add(' ');
     Add('//in ');
     Add('struct appData ');
@@ -204,6 +268,7 @@ begin
 
   with FragmentProgram.Code do
   begin
+    Clear;
     Add('struct vertexOutData ');
     Add('{ ');
     Add('    float4 Color0	: COLOR0; ');
@@ -213,62 +278,34 @@ begin
     Add('float4 main( ');
     Add('            vertexOutData IN, ');
     Add('            uniform sampler2D GradeSampler, ');
-    Add('            uniform sampler2D MainTextureSampler, ');
     Add('            uniform float GradientTextureShare, ');
-    Add('            uniform float MainTextureShare, ');
+    if FMainTexture <> nil then
+    begin
+      Add('            uniform sampler2D MainTextureSampler, ');
+      Add('            uniform float MainTextureShare, ');
+    end;
     Add('            uniform float Alpha ');
     Add('            ): COLOR ');
     Add('{ ');
     Add('	   float4 GradeColor = tex2D(GradeSampler, float2(IN.Color0.x, IN.Color0.y)); ');
-    Add('    float4 TextureColor = tex2D(MainTextureSampler, IN.TexCoord0.xy); ');
+    if FMainTexture <> nil then
+      Add('    float4 TextureColor = tex2D(MainTextureSampler, IN.TexCoord0.xy); ');
     Add('    ');
-    Add('    TextureColor = TextureColor * MainTextureShare + GradeColor * GradientTextureShare; ');
+    if FMainTexture <> nil then
+      Add('    TextureColor = TextureColor * MainTextureShare + GradeColor * GradientTextureShare; ')
+    else
+      Add('    float4 TextureColor = GradeColor * GradientTextureShare; ');
     Add('    TextureColor.w = Alpha; ');
     Add('	   return TextureColor;');
     Add('} ');
   end;
 
-  VertexProgram.OnApply := OnApplyVP;
-  FragmentProgram.OnApply := OnApplyFP;
-  FragmentProgram.OnUnApply := OnUnApplyFP;
-
-  FAlpha := 0.7;
-  FDisplacement := 0.3;
-  FSharpness := 3;
-  FColorSharpness := 1;
-  FSpeed := 0.3;
-  FTurbDensity := 1;
-  FColorRange := 0.24;
-  FGradientTextureShare := 0.7;
-  FMainTextureShare := 0.7;
-{$IFNDEF GLS_OPTIMIZATIONS}
-  FMainTextureSource := stsUserSelectedTexture;
-{$ENDIF}
-end;
-
-
-procedure TGLCustomCGBombShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
-begin
-  inherited;
-{$IFDEF GLS_OPTIMIZATIONS}
-  FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
-{$ELSE}
-  case FMainTextureSource of
-    stsPrimaryTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(0));
-    stsSecondadyTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(1));
-    stsThirdTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(2));
-    stsUserSelectedTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
-  end;
-{$ENDIF}
-end;
-
-
-procedure TGLCustomCGBombShader.DoInitialize;
-begin
   inherited DoInitialize;
+
   // May be there was an error and shader disabled itself.
   if Enabled then
   begin
+    Assert(FGradientTexture <> nil);
     VertexProgram.ParamByName('NoiseMatrix').SetAsStateMatrix(CG_GL_TEXTURE_MATRIX, CG_GL_MATRIX_IDENTITY);
     FragmentProgram.ParamByName('GradeSampler').SetAsTexture2D(FGradientTexture.Handle);
   end;
@@ -302,7 +339,7 @@ begin
     if AComponent = FMaterialLibrary then
       if FMaterialLibrary <> nil then
       begin
-        //need to nil the textures that were ownned by it
+        // Need to nil the textures that were owned by it
         if FMainTexture <> nil then
         begin
           Index := FMaterialLibrary.Materials.GetTextureIndex(FMainTexture);
@@ -325,10 +362,12 @@ procedure TGLCustomCGBombShader.OnApplyFP(CgProgram: TCgProgram; Sender: TObject
 begin
   CgProgram.ParamByName('Alpha').SetAsScalar(FAlpha);
   CgProgram.ParamByName('GradientTextureShare').SetAsScalar(FGradientTextureShare);
-  CgProgram.ParamByName('MainTextureShare').SetAsScalar(FMainTextureShare);
-
   CgProgram.ParamByName('GradeSampler').EnableTexture;
-  CgProgram.ParamByName('MainTextureSampler').EnableTexture;
+  if FMainTexture <> nil then
+  begin
+    CgProgram.ParamByName('MainTextureShare').SetAsScalar(FMainTextureShare);
+    CgProgram.ParamByName('MainTextureSampler').EnableTexture;
+  end;
 end;
 
 
@@ -348,7 +387,8 @@ end;
 procedure TGLCustomCGBombShader.OnUnApplyFP(CgProgram: TCgProgram);
 begin
   CgProgram.ParamByName('GradeSampler').DisableTexture;
-  CgProgram.ParamByName('MainTextureSampler').DisableTexture;
+  if FMainTexture <> nil then
+    CgProgram.ParamByName('MainTextureSampler').DisableTexture;
 end;
 
 procedure TGLCustomCGBombShader.SetGradientTexture(const Value: TGLTexture);
@@ -361,17 +401,9 @@ end;
 procedure TGLCustomCGBombShader.SetGradientTextureName(
   const Value: TGLLibMaterialName);
 begin
-  if FMaterialLibrary = nil then
-  begin
-    FGradientTextureName := Value;
-    if not (csLoading in ComponentState) then
-      raise EGLCgBombShaderException.Create(glsMatLibNotDefined);
-  end
-  else
-  begin
-    SetGradientTexture(FMaterialLibrary.TextureByName(Value));
-    FGradientTextureName := '';
-  end;
+  FGradientTextureName := Value;
+  if ShaderInitialized then
+    NotifyChange(Self);
 end;
 
 procedure TGLCustomCGBombShader.SetMainTexture(
@@ -385,41 +417,17 @@ end;
 procedure TGLCustomCGBombShader.SetMainTextureName(
   const Value: TGLLibMaterialName);
 begin
-  if FMaterialLibrary = nil then
-  begin
-    FMainTextureName := Value;
-    if not (csLoading in ComponentState) then
-      raise EGLCgBombShaderException.Create(glsMatLibNotDefined);
-  end
-  else
-  begin
-    SetMainTexture(FMaterialLibrary.TextureByName(Value));
-    FMainTextureName := '';
-  end;
+  FMainTextureName := Value;
+  if ShaderInitialized then
+    NotifyChange(Self);
 end;
 
 procedure TGLCustomCGBombShader.SetMaterialLibrary(
   const Value: TGLMaterialLibrary);
 begin
-  if FMaterialLibrary <> nil then
-    FMaterialLibrary.RemoveFreeNotification(Self);
+  if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
   FMaterialLibrary := Value;
-
-  if FMaterialLibrary <> nil then
-  begin
-    FMaterialLibrary.FreeNotification(Self);
-
-    if FMainTextureName <> '' then
-      SetMainTextureName(FMainTextureName);
-
-    if FGradientTextureName <> '' then
-      SetGradientTextureName(FMainTextureName);
-  end
-  else
-  begin
-    FMainTextureName := '';
-    FGradientTextureName := '';
-  end;
+  if FMaterialLibrary <> nil then FMaterialLibrary.FreeNotification(Self);
 end;
 
 function TGLCustomCGBombShader.StoreColorRange: Boolean;
@@ -454,12 +462,57 @@ end;
 
 function TGLCustomCGBombShader.StoreSpeed: Boolean;
 begin
-  Result := Abs(Speed - 0.3) > EPS;
+  Result := Abs(FSpeed - 0.3) > EPS;
 end;
 
 function TGLCustomCGBombShader.StoreTurbDensity: Boolean;
 begin
-  Result := Abs(TurbDensity - 1) > EPS;
+  Result := Abs(FTurbDensity - 1) > EPS;
+end;
+
+{ TGLCgBombShader }
+
+procedure TGLCgBombShader.DoApply(var rci: TRenderContextInfo;
+  Sender: TObject);
+begin
+{$IFNDEF GLS_OPTIMIZATIONS}
+  if (not (csDesigning in ComponentState)) or DesignEnable then
+    inherited;
+{$ENDIF}
+end;
+
+procedure TGLCgBombShader.DoInitialize;
+begin
+{$IFNDEF GLS_OPTIMIZATIONS}
+  if (not (csDesigning in ComponentState)) or DesignEnable then
+    inherited;
+{$ENDIF}
+end;
+
+procedure TGLCgBombShader.OnApplyFP(CgProgram: TCgProgram;
+  Sender: TObject);
+begin
+{$IFNDEF GLS_OPTIMIZATIONS}
+  if (not (csDesigning in ComponentState)) or DesignEnable then
+    inherited;
+{$ENDIF}
+end;
+
+procedure TGLCgBombShader.OnApplyVP(CgProgram: TCgProgram;
+  Sender: TObject);
+begin
+{$IFNDEF GLS_OPTIMIZATIONS}
+  if (not (csDesigning in ComponentState)) or DesignEnable then
+    inherited;
+{$ENDIF}
+end;
+
+procedure TGLCgBombShader.OnUnApplyFP(CgProgram: TCgProgram);
+begin
+{$IFNDEF GLS_OPTIMIZATIONS}
+  if (not (csDesigning in ComponentState)) or DesignEnable then
+    inherited;
+{$ENDIF}
 end;
 
 initialization
