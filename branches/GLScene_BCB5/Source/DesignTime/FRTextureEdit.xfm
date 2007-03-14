@@ -1,0 +1,160 @@
+object RTextureEdit: TRTextureEdit
+  Left = 0
+  Top = 0
+  Width = 227
+  Height = 162
+  HorzScrollBar.Range = 226
+  HorzScrollBar.Visible = False
+  VertScrollBar.Range = 161
+  VertScrollBar.Visible = False
+  ParentShowHint = False
+  ShowHint = True
+  TabOrder = 0
+  object SBEditImage: TSpeedButton
+    Left = 209
+    Top = 0
+    Width = 17
+    Height = 21
+    Hint = 'Edit image'
+    Anchors = [akTop, akRight]
+    Caption = '...'
+    OnClick = SBEditImageClick
+  end
+  object Label2: TLabel
+    Left = 0
+    Top = 1
+    Width = 33
+    Height = 15
+    Caption = 'Image'
+  end
+  object Label3: TLabel
+    Left = 0
+    Top = 52
+    Width = 53
+    Height = 15
+    Caption = 'MagFilter'
+  end
+  object Label4: TLabel
+    Left = 0
+    Top = 76
+    Width = 49
+    Height = 15
+    Caption = 'MinFilter'
+  end
+  object Label1: TLabel
+    Left = 0
+    Top = 100
+    Width = 77
+    Height = 15
+    Caption = 'Texture Mode'
+  end
+  object Label5: TLabel
+    Left = 0
+    Top = 124
+    Width = 74
+    Height = 15
+    Caption = 'Texture Wrap'
+  end
+  object Label6: TLabel
+    Left = 0
+    Top = 28
+    Width = 66
+    Height = 15
+    Caption = 'ImageAlpha'
+  end
+  object CBMagFilter: TComboBox
+    Left = 72
+    Top = 48
+    Width = 154
+    Height = 23
+    Style = csDropDownList
+    ItemHeight = 17
+    Items.Strings = (
+      'maNearest'
+      'maLinear')
+    TabOrder = 0
+    OnChange = CBMagFilterChange
+  end
+  object CBMinFilter: TComboBox
+    Left = 72
+    Top = 72
+    Width = 154
+    Height = 23
+    Style = csDropDownList
+    ItemHeight = 17
+    Items.Strings = (
+      'miNearest'
+      'miLinear'
+      'miNearestMipmapNearest'
+      'miLinearMipmapNearest'
+      'miNearestMipmapLinear'
+      'miLinearMipmapLinear')
+    TabOrder = 1
+    OnChange = CBMinFilterChange
+  end
+  object CBTextureMode: TComboBox
+    Left = 72
+    Top = 96
+    Width = 154
+    Height = 23
+    Style = csDropDownList
+    ItemHeight = 17
+    Items.Strings = (
+      'tmDecal'
+      'tmModulate'
+      'tmBlend'
+      'tmReplace')
+    TabOrder = 2
+    OnChange = CBTextureModeChange
+  end
+  object CBTextureWrap: TComboBox
+    Left = 72
+    Top = 120
+    Width = 154
+    Height = 23
+    Style = csDropDownList
+    ItemHeight = 17
+    Items.Strings = (
+      'twBoth'
+      'twNone'
+      'twVertical'
+      'twHorizontal')
+    TabOrder = 3
+    OnChange = CBTextureWrapChange
+  end
+  object CBDisabled: TCheckBox
+    Left = 0
+    Top = 144
+    Width = 73
+    Height = 17
+    Caption = 'Disabled'
+    TabOrder = 4
+    OnClick = CBDisabledClick
+  end
+  object CBImageClass: TComboBox
+    Left = 72
+    Top = 0
+    Width = 135
+    Height = 23
+    Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    ItemHeight = 17
+    TabOrder = 5
+    OnChange = CBImageClassChange
+  end
+  object CBImageAlpha: TComboBox
+    Left = 72
+    Top = 24
+    Width = 154
+    Height = 23
+    Style = csDropDownList
+    ItemHeight = 17
+    Items.Strings = (
+      'tiaDefault'
+      'tiaAlphaFromIntensity'
+      'tiaSuperBlackTransparent'
+      'tiaLuminance')
+    TabOrder = 6
+    OnChange = CBImageAlphaChange
+  end
+end
