@@ -1,9 +1,15 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLAnimatedSprite<p>
 
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
     <li>14/03/07 - DaStr - Added IGLMaterialLibrarySupported to TSpriteAnimation
+                           Published TGLAnimatedSprite.Visible
+                           Fixed TGLAnimatedSprite.SetMaterialLibrary
+                                                    (subcribed for notification) 
     <li>21/07/04 - SG - Added Margins to Animations, Added comments.
     <li>20/07/04 - SG - Added FrameRate (alternative for Interval),
                         Added Interval to Animations, will override
@@ -244,7 +250,6 @@ type
       procedure SetMirrorV(const val : Boolean);
       procedure SetFrameRate(const Value : Single);
       function GetFrameRate : Single;
-
     public
       constructor Create(AOwner : TComponent); override;
       destructor Destroy; override;
@@ -288,6 +293,7 @@ type
 
       property Position;
       property Scale;
+      property Visible;
 
       //: An event fired when the animation changes to it's next frame.
       property OnFrameChanged : TNotifyEvent read FOnFrameChanged write FOnFrameChanged;
@@ -927,7 +933,7 @@ end;
 procedure TGLAnimatedSprite.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation=opRemove) and (AComponent=FMaterialLibrary) then
-    MaterialLibrary:=nil;
+    FMaterialLibrary:=nil;
   inherited;
 end;
 
@@ -1105,7 +1111,9 @@ var
   i : Integer;
 begin
   if val<>FMaterialLibrary then begin
+    if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
     FMaterialLibrary:=val;
+    if FMaterialLibrary <> nil then FMaterialLibrary.FreeNotification(Self);
     for i:=0 to Animations.Count-1 do
       TSpriteAnimation(Animations[i]).FLibMaterialCached:=nil;
     NotifyChange(Self);
