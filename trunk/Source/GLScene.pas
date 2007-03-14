@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>10/03/07 - DaStr - TGLSceneBuffer's Events are not stored now
                               (thanks Burkhard Carstens) (BugtrackerID = 1678654)
       <li>15/02/07 - DaStr - TGLBaseSceneObject.GetChildren bugfixed (subcomponent support)
@@ -2399,7 +2401,7 @@ begin
    newRecord.zMax:=zMax;
    Add(newRecord);
    if vPickListSortFlag<>psDefault then
-      Sort(CompareFunction);
+      Sort(@CompareFunction);
 end;
 
 // Clear
@@ -2607,7 +2609,7 @@ var
 begin
    i:=0;
    if Assigned(FChildren) then while i<FChildren.Count do begin
-      child:=TGLBaseSceneObject(FChildren.List[i]);
+      child:=TGLBaseSceneObject(FChildren.List^[i]);
       child.DeleteChildCameras;
       if child is TGLCamera then begin
          Remove(child, True);
@@ -2763,8 +2765,8 @@ var
 begin
    if Assigned(FChildren) then
       for i:=0 to FChildren.Count-1 do
-      if not (csSubComponent in TComponent(FChildren.List[i]).ComponentStyle) then
-         AProc(TComponent(FChildren.List[i]));
+      if not (csSubComponent in TComponent(FChildren.List^[i]).ComponentStyle) then
+         AProc(TComponent(FChildren.List^[i]));
 end;
 
 // Get
@@ -3153,7 +3155,7 @@ begin
    // not tested for child objects
    if Assigned(FChildren) then begin
       for i:=0 to FChildren.Count-1 do begin
-         child:=TGLBaseSceneObject(FChildren.List[i]);
+         child:=TGLBaseSceneObject(FChildren.List^[i]);
          aabb:=child.AxisAlignedBoundingBoxUnscaled;
          AABBTransform(aabb, child.Matrix);
          AddAABB(Result, aabb);
@@ -3173,8 +3175,8 @@ begin
    //not tested for child objects
    if Assigned(FChildren) then begin
       for i:=0 to FChildren.Count-1 do begin
-         aabb:=TGLBaseSceneObject(FChildren.List[i]).AxisAlignedBoundingBoxUnscaled;
-         AABBTransform(aabb, TGLBaseSceneObject(FChildren.List[i]).Matrix);
+         aabb:=TGLBaseSceneObject(FChildren.List^[i]).AxisAlignedBoundingBoxUnscaled;
+         AABBTransform(aabb, TGLBaseSceneObject(FChildren.List^[i]).Matrix);
          AddAABB(Result, aabb);
       end;
    end;
@@ -3390,10 +3392,10 @@ end;
 procedure TGLBaseSceneObject.ResetRotations;
 begin
    FillChar(FLocalMatrix^, SizeOf(TMatrix), 0);
-   FLocalMatrix[0][0]:=Scale.DirectX;
-   FLocalMatrix[1][1]:=Scale.DirectY;
-   FLocalMatrix[2][2]:=Scale.DirectZ;
-   SetVector(FLocalMatrix[3], Position.DirectVector);
+   FLocalMatrix^[0][0]:=Scale.DirectX;
+   FLocalMatrix^[1][1]:=Scale.DirectY;
+   FLocalMatrix^[2][2]:=Scale.DirectZ;
+   SetVector(FLocalMatrix^[3], Position.DirectVector);
    FRotation.DirectVector:=NullHmgPoint;
    FDirection.DirectVector:=ZHmgVector;
    FUp.DirectVector:=YHmgVector;
@@ -3821,7 +3823,7 @@ begin
       if Assigned(FChildren) then begin
          list:=FChildren.List;
          for i:=0 to FChildren.Count-1 do
-            TGLBaseSceneObject(list[i]).RecTransformationChanged;
+            TGLBaseSceneObject(list^[i]).RecTransformationChanged;
       end;
    end;
 end;
@@ -3960,7 +3962,7 @@ var
 begin
    if Assigned(FChildren) then
       for i:=FChildren.Count-1 downto 0 do
-         TGLBaseSceneObject(FChildren.List[i]).DoProgress(progressTime);
+         TGLBaseSceneObject(FChildren.List^[i]).DoProgress(progressTime);
    if Assigned(FGLBehaviours) then
       FGLBehaviours.DoProgress(progressTime);
    if Assigned(FGLObjectEffects) then
@@ -4243,7 +4245,7 @@ begin
    if Self.VisibilityCulling<>vcInherited then
       rci.visibilityCulling:=Self.VisibilityCulling;
    if lastChildIndex=firstChildIndex then begin
-      obj:=TGLBaseSceneObject(FChildren.List[firstChildIndex]);
+      obj:=TGLBaseSceneObject(FChildren.List^[firstChildIndex]);
       if obj.Visible then
          obj.Render(rci)
    end else if lastChildIndex>firstChildIndex then begin
@@ -4254,7 +4256,7 @@ begin
          osNone : begin
             plist:=FChildren.List;
             for i:=firstChildIndex to lastChildIndex do begin
-               obj:=TGLBaseSceneObject(plist[i]);
+               obj:=TGLBaseSceneObject(plist^[i]);
                if obj.Visible then
                   obj.Render(rci);
             end;
@@ -4269,7 +4271,7 @@ begin
                   osRenderBlendedLast :
                      // render opaque stuff
                      for i:=firstChildIndex to lastChildIndex do begin
-                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        obj:=TGLBaseSceneObject(FChildren.List^[i]);
                         if obj.Visible then begin
                            if not obj.Blended then
                               obj.Render(rci)
@@ -4281,7 +4283,7 @@ begin
                      end;
                   osRenderFarthestFirst :
                      for i:=firstChildIndex to lastChildIndex do begin
-                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        obj:=TGLBaseSceneObject(FChildren.List^[i]);
                         if obj.Visible then begin
                            objList.Add(obj);
                            distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
@@ -4289,7 +4291,7 @@ begin
                      end;
                   osRenderNearestFirst :
                      for i:=firstChildIndex to lastChildIndex do begin
-                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        obj:=TGLBaseSceneObject(FChildren.List^[i]);
                         if obj.Visible then begin
                            objList.Add(obj);
                            distList.Add(-1-obj.BarycenterSqrDistanceTo(rci.cameraPosition));
@@ -4303,7 +4305,7 @@ begin
                      FastQuickSortLists(0, distList.Count-1, distList, objList);
                   plist:=objList.List;
                   for i:=objList.Count-1 downto 0 do
-                     TGLBaseSceneObject(plist[i]).Render(rci);
+                     TGLBaseSceneObject(plist^[i]).Render(rci);
                end;
             finally
                objList.Free;
@@ -4347,12 +4349,12 @@ end;
 procedure TGLBaseSceneObject.SetMatrix(const aValue : TMatrix);
 begin
    FLocalMatrix^:=aValue;
-   FDirection.DirectVector:=VectorNormalize(FLocalMatrix[2]);
-   FUp.DirectVector:=VectorNormalize(FLocalMatrix[1]);
-   Scale.SetVector(VectorLength(FLocalMatrix[0]),
-                   VectorLength(FLocalMatrix[1]),
-                   VectorLength(FLocalMatrix[2]), 0);
-   FPosition.DirectVector:=FLocalMatrix[3];
+   FDirection.DirectVector:=VectorNormalize(FLocalMatrix^[2]);
+   FUp.DirectVector:=VectorNormalize(FLocalMatrix^[1]);
+   Scale.SetVector(VectorLength(FLocalMatrix^[0]),
+                   VectorLength(FLocalMatrix^[1]),
+                   VectorLength(FLocalMatrix^[2]), 0);
+   FPosition.DirectVector:=FLocalMatrix^[3];
    TransformationChanged;
 end;
 
@@ -6108,8 +6110,8 @@ var
    i : Integer;
 begin
    for i:=0 to FLights.Count-1 do
-      if FLights.List[i]=nil then begin
-         FLights.List[i]:=ALight;
+      if FLights.List^[i]=nil then begin
+         FLights.List^[i]:=ALight;
          ALight.FLightID:=GL_LIGHT0+i;
          Break;
       end;
@@ -7546,13 +7548,13 @@ begin
       SetMatrix(proj, ProjectionMatrix);
       SetMatrix(mv, ModelViewMatrix);
       for i:=0 to nbPoints-1 do begin
-         gluProject(points[0], points[1], points[2],
+         gluProject(points^[0], points^[1], points^[2],
                     mv, proj, PHomogeneousIntVector(@FViewPort)^,
                     @x, @y, @z);
-         points[0]:=x;
-         points[1]:=y;
-         points[2]:=z;
-         points[3]:=1;
+         points^[0]:=x;
+         points^[1]:=y;
+         points^[2]:=z;
+         points^[3]:=1;
          Inc(points);
       end;
    end;
@@ -7763,9 +7765,9 @@ begin
          PickList.Capacity:=Hits;
          for I:=0 to Hits-1 do begin
             current:=next;
-            next:=current + buffer[current] + 3;
-            szmin:=(buffer[current + 1] shr 1) * (1/MaxInt);
-            szmax:=(buffer[current + 2] shr 1) * (1/MaxInt);
+            next:=current + buffer^[current] + 3;
+            szmin:=(buffer^[current + 1] shr 1) * (1/MaxInt);
+            szmax:=(buffer^[current + 2] shr 1) * (1/MaxInt);
             subObj:=nil;
             subObjIndex:=current+4;
             if subObjIndex<next then begin
@@ -7893,10 +7895,10 @@ begin
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity;
    if Assigned(pickingRect) then
-      gluPickMatrix((pickingRect.Left+pickingRect.Right) div 2,
-                    FViewPort.Height-((pickingRect.Top+pickingRect.Bottom) div 2),
-                    Abs(pickingRect.Right - pickingRect.Left),
-                    Abs(pickingRect.Bottom - pickingRect.Top),
+      gluPickMatrix((pickingRect^.Left+pickingRect^.Right) div 2,
+                    FViewPort.Height-((pickingRect^.Top+pickingRect^.Bottom) div 2),
+                    Abs(pickingRect^.Right - pickingRect^.Left),
+                    Abs(pickingRect^.Bottom - pickingRect^.Top),
                     TVector4i(FViewport));
    glGetFloatv(GL_PROJECTION_MATRIX, @FBaseProjectionMatrix);
    if Assigned(FCamera) then begin
