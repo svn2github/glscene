@@ -13,6 +13,8 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>15/02/07 - DaStr - Global $R- removed, added default values to
                                TGLSprite.NoZWrite, MirrorU, MirrorV
       <li>14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
@@ -951,14 +953,14 @@ begin
    for i:=0 to 11 do begin
       faceIndices:=@polygons[i, 0];
 
-      n:=CalcPlaneNormal(vertices[faceIndices[0]],
-                         vertices[faceIndices[1]],
-                         vertices[faceIndices[2]]);
+      n:=CalcPlaneNormal(vertices[faceIndices^[0]],
+                         vertices[faceIndices^[1]],
+                         vertices[faceIndices^[2]]);
       glNormal3fv(@N);
 
       glBegin(GL_TRIANGLE_FAN);
       for j:=0 to 4 do
-         glVertex3fv(@vertices[faceIndices[j]]);
+         glVertex3fv(@vertices[faceIndices^[j]]);
       glEnd;
    end;
 end;
@@ -991,14 +993,14 @@ begin
    for i:=0 to 19 do begin
       faceIndices:=@triangles[i, 0];
 
-      n:=CalcPlaneNormal(vertices[faceIndices[0]],
-                         vertices[faceIndices[1]],
-                         vertices[faceIndices[2]]);
+      n:=CalcPlaneNormal(vertices[faceIndices^[0]],
+                         vertices[faceIndices^[1]],
+                         vertices[faceIndices^[2]]);
       glNormal3fv(@N);
 
       glBegin(GL_TRIANGLES);
       for j:=0 to 2 do
-         glVertex3fv(@vertices[faceIndices[j]]);
+         glVertex3fv(@vertices[faceIndices^[j]]);
       glEnd;
    end;
 end;

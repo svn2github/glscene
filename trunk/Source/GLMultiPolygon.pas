@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLMultiPolygon<p>
 
    Object with support for complex polygons.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
       <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
       <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
@@ -516,7 +521,7 @@ procedure tessCombine(coords : PDoubleVector; vertex_data : Pointer;
                       weight : PGLFloat; var outData : Pointer); stdcall;
 begin
    vVertexPool.GetNewVector(outData);
-   SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
+   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
 procedure tessBeginList(typ : TGLEnum; polygonData : Pointer); stdcall;
@@ -668,7 +673,7 @@ begin
     // Issue normal
     if Assigned(normal) then begin
       glNormal3fv(PGLFloat(normal));
-      gluTessNormal(tess, normal[0], normal[1], normal[2]);
+      gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
     end;
     gluTessProperty(Tess,GLU_TESS_WINDING_RULE,GLU_TESS_WINDING_POSITIVE);
     // Issue polygon
