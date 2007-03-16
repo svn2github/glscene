@@ -6,6 +6,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/07 - DaStr - Removed obsolete FPC IFDEF's
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678642)
       <li>14/03/07 - DaStr - TGLPicFileImage now provides correct Width and Height
                                                         (BugtrackerID = 1680742)
       <li>09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
@@ -447,19 +449,12 @@ type
 
          property DefaultColor : TColorVector read FColor;
 
-{$ifndef FPC}
 		published
          { Published Properties }
 			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
 			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
 			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
 			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
-{$else}
-			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent;
-			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent;
-			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent;
-			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent;
-{$endif}
 	end;
 
    // TTextureNeededEvent
@@ -769,14 +764,12 @@ type
 
 		published
          { Public Declarations }
-         {$ifndef FPC}
          property PicturePX : TGLPicture index cmtPX read GetPicture write SetPicture;
          property PictureNX : TGLPicture index cmtNX read GetPicture write SetPicture;
          property PicturePY : TGLPicture index cmtPY read GetPicture write SetPicture;
          property PictureNY : TGLPicture index cmtNY read GetPicture write SetPicture;
          property PicturePZ : TGLPicture index cmtPZ read GetPicture write SetPicture;
          property PictureNZ : TGLPicture index cmtNZ read GetPicture write SetPicture;
-         {$endif}
 	end;
 
 	// TGLFloatDataImage
