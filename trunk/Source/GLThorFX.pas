@@ -4,7 +4,9 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
-    <li>13/02/07 - aidave - Updated Target.Style to csPoint 
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+    <li>13/02/07 - aidave - Updated Target.Style to csPoint
     <li>23/12/04 - PhP - GLScenestyled Header
     <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
     <li>04/15/03 - Added initialization to CalcThor, to fix an error
@@ -327,11 +329,11 @@ var
 begin
  // initialise all points with valid data
  for N := 0 to Maxpoints-1 do
-   SetVector(FThorpoints[N].Position,0,0,0);
+   SetVector(FThorpoints^[N].Position,0,0,0);
 
  //------------------Calculate fractal (wildness)---------------
 //  SetVector(FThorpoints[0].Position,0,0,0);
-  SetVector(FThorpoints[Maxpoints-1].Position,0,0,0);
+  SetVector(FThorpoints^[Maxpoints-1].Position,0,0,0);
 
   CalcFrac(0,maxpoints-1,0,0,0);
   CalcFrac(0,maxpoints-1,0,0,1);
@@ -347,7 +349,7 @@ begin
  N:=0;
  While (N<Maxpoints) do begin
     dist:=N/Maxpoints*len;
-    vec:=FThorpoints[N].Position;
+    vec:=FThorpoints^[N].Position;
     vec[2]:=dist;
 
     if Assigned(OnCalcPoint) then OnCalcPoint(self,N,Vec[0],vec[1],vec[2]); //Let user mess around with point position
@@ -356,7 +358,7 @@ begin
     RotateVector(vec,axs,a);
     SetVector(axs,0,0,1);            //Rotate to the sides
     RotateVector(vec,axs,b);
-    FThorpoints[N].Position:=vec;
+    FThorpoints^[N].Position:=vec;
     inc(N);
  end;
  //----------------------------------------------------
@@ -373,10 +375,10 @@ begin
  res:=(left+right) mod 2;
  fracScale:=(right-left)/maxpoints;
  midh:= (lh+rh)/2 + (fracScale*FWildness*random)-(fracScale*FWildness)/2     ;
- FThorpoints[mid].Position[xyz]:=midh+(FVibrate*Random-(FVibrate/2));
+ FThorpoints^[mid].Position[xyz]:=midh+(FVibrate*Random-(FVibrate/2));
 // if res=1 then FThorpoints[right-1].Position[xyz]:=
 //    (FThorpoints[right].Position[xyz]+midh)/(right-mid)*(right-mid-1);
- if res=1 then FThorpoints[right-1].Position[xyz]:=FThorpoints[right].Position[xyz];
+ if res=1 then FThorpoints^[right-1].Position[xyz]:=FThorpoints^[right].Position[xyz];
 
  if (mid-left)>1  then CalcFrac(left,mid,lh,midh,xyz);
  if (right-mid)>1 then CalcFrac(mid,right,midh,rh,xyz);
@@ -529,7 +531,7 @@ begin
       objList:=TList.Create;
       for i:=0 to n-1 do begin
          fp:=@(Manager.FThorpoints[i]);
-         distList.Add(VectorDotProduct(rci.cameraDirection, fp.Position));
+         distList.Add(VectorDotProduct(rci.cameraDirection, fp^.Position));
          objList.Add(fp);
       end;
       QuickSortLists(0, N-1, distList, objList);
@@ -563,7 +565,7 @@ begin
       glBegin(GL_LINE_STRIP);
       for i:=0 to n-1 do begin
           fp:=@(Manager.FThorpoints[i]);
-          SetVector(Ppos, fp.position);
+          SetVector(Ppos, fp^.position);
           glVertex3f(Ppos[0],Ppos[1],Ppos[2]);
       end;
       glEnd;
@@ -574,9 +576,9 @@ begin
        glEnable(GL_BLEND);
         for i:=n-1 downto 0 do begin
           fp:=PThorpoint(objList[i]);
-          SetVector(Ppos, fp.position);
+          SetVector(Ppos, fp^.position);
           fp:=@(Manager.FThorpoints[i]);
-          SetVector(Ppos2, fp.position);
+          SetVector(Ppos2, fp^.position);
           glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@Icol);
             glVertex3f(ppos[0],ppos[1],ppos[2]);//middle1

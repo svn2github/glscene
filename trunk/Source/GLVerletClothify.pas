@@ -1,3 +1,4 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLVerletClothify<p>
@@ -5,6 +6,8 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>27/05/04 - MF - Added some length information to edges
       <li>24/06/03 - MF - Removed several embarrassing warnings
       <li>17/06/03 - MF - Creation
@@ -203,7 +206,7 @@ begin
       for iFace := 0 to FaceGroup.TriangleCount - 1 do
       begin
         List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
-        AddFace(List[0], List[1], List[2], MeshObject);
+        AddFace(List^[0], List^[1], List^[2], MeshObject);
       end;
     end;
 
@@ -213,9 +216,9 @@ begin
       begin
         List := @FaceGroup.VertexIndices.List[iFace];
         if (iFace and 1)=0 then
-           AddFace(List[0], List[1], List[2], MeshObject)
+           AddFace(List^[0], List^[1], List^[2], MeshObject)
         else
-           AddFace(List[2], List[1], List[0], MeshObject);
+           AddFace(List^[2], List^[1], List^[0], MeshObject);
       end;
     end;
 
@@ -224,7 +227,7 @@ begin
       List := @FaceGroup.VertexIndices.List;
 
       for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
-        AddFace(List[0], List[iVertex-1], List[iVertex], MeshObject)
+        AddFace(List^[0], List^[iVertex-1], List^[iVertex], MeshObject)
     end;
     else
       Assert(false,'Not supported');

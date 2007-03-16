@@ -1,7 +1,13 @@
-// GLProcTextures
-{: Procedural textures.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLProcTextures<p>
+
+  Procedural textures.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>01/10/04 - ilh - Added SetPermFromData and SetPermToDefault
                             moved PERM array to protected from inside Noise procedure
                             so it can be changed by SetPermFromData and SetPermToDefault
@@ -192,10 +198,10 @@ begin
       end;
       //if n < 13 then n:=13;
       // Write the result to the texture image.
-      Line[x].r := n;
-      Line[x].g := n;
-      Line[x].b := n;
-      Line[x].a := n;
+      Line^[x].r := n;
+      Line^[x].g := n;
+      Line^[x].b := n;
+      Line^[x].a := n;
     end;
   end;
 end;

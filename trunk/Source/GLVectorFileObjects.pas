@@ -6,7 +6,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>21/02/07 - DaStr - Added TMeshObjectList.BuildTangentSpace, UseVBO
                              Added TGLActor.SetCurrentFrameDirect
       <li>19/02/07 - LC - Added some VBO support
@@ -2202,7 +2203,7 @@ begin
          Assert(False);
       end;
       for i:=base to Normals.Count-1 do
-         NormalizeVector(Normals.List[i]);
+         NormalizeVector(Normals.List^[i]);
       newNormals.Free;
    end;
 end;
@@ -2357,7 +2358,7 @@ begin
                mat[3][0]:=Position[i][0];
                mat[3][1]:=Position[i][1];
                mat[3][2]:=Position[i][2];
-               FLocalMatrixList[i]:=mat;
+               FLocalMatrixList^[i]:=mat;
             end;
          end;
          sftQuaternion : begin
@@ -2369,7 +2370,7 @@ begin
                mat[3][1]:=Position[i][1];
                mat[3][2]:=Position[i][2];
                mat[3][3]:=1;
-               FLocalMatrixList[i]:=mat;
+               FLocalMatrixList^[i]:=mat;
             end;
          end;
       end;
@@ -2809,7 +2810,7 @@ end;
 //
 procedure TSkeletonBone.PrepareGlobalMatrices;
 begin
-   FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList[BoneID],
+   FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList^[BoneID],
                                  TSkeletonBoneList(Owner).FGlobalMatrix);
    inherited;
 end;
@@ -4179,7 +4180,7 @@ var
    i : Integer;
 begin
    if (Mode=momFaceGroups) and Assigned(mrci.materialLibrary) then begin
-      for i:=0 to FaceGroups.Count-1 do with TFaceGroup(FaceGroups.List[i]) do begin
+      for i:=0 to FaceGroups.Count-1 do with TFaceGroup(FaceGroups.List^[i]) do begin
          if MaterialCache<>nil then
             MaterialCache.PrepareBuildList;
       end;
@@ -4400,7 +4401,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TMeshObject(List[i]).PrepareMaterialLibraryCache(matLib);
+      TMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 // DropMaterialLibraryCache
@@ -4410,7 +4411,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TMeshObject(List[i]).DropMaterialLibraryCache;
+      TMeshObject(List^[i]).DropMaterialLibraryCache;
 end;
 
 // PrepareBuildList
@@ -4996,7 +4997,7 @@ procedure TSkeletonMeshObject.AddWeightedBone(aBoneID : Integer; aWeight : Singl
 begin
    if BonesPerVertex<1 then BonesPerVertex:=1;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
-   with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do begin
+   with VerticesBonesWeights^[VerticeBoneWeightCount-1]^[0] do begin
       BoneID:=aBoneID;
       Weight:=aWeight;
    end;
@@ -5013,7 +5014,7 @@ begin
    if BonesPerVertex<n then BonesPerVertex:=n;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
    for i:=0 to n-1 do begin
-      with VerticesBonesWeights[VerticeBoneWeightCount-1][i] do begin
+      with VerticesBonesWeights^[VerticeBoneWeightCount-1]^[i] do begin
          BoneID:=boneIDs[i].BoneID;
          Weight:=boneIDs[i].Weight;
       end;
@@ -5037,9 +5038,9 @@ begin
    end;
    Result:=-1;
    for i:=0 to Vertices.Count-1 do
-      if (VerticesBonesWeights[i][0].BoneID=boneID)
-            and VectorEquals(Vertices.List[i], vertex)
-            and VectorEquals(Normals.List[i], normal) then begin
+      if (VerticesBonesWeights^[i]^[0].BoneID=boneID)
+            and VectorEquals(Vertices.List^[i], vertex)
+            and VectorEquals(Normals.List^[i], normal) then begin
          Result:=i;
          Break;
       end;
@@ -5062,8 +5063,8 @@ begin
    for i:=0 to Vertices.Count-1 do begin
       bonesMatch:=True;
       for j:=0 to High(boneIDs) do begin
-         if    (boneIDs[j].BoneID<>VerticesBonesWeights[i][j].BoneID)
-            or (boneIDs[j].Weight<>VerticesBonesWeights[i][j].Weight) then begin
+         if    (boneIDs[j].BoneID<>VerticesBonesWeights^[i]^[j].BoneID)
+            or (boneIDs[j].Weight<>VerticesBonesWeights^[i]^[j].Weight) then begin
             bonesMatch:=False;
             Break;
          end;
@@ -5102,7 +5103,7 @@ begin
       invMesh.Vertices:=Vertices;
       invMesh.Normals:=Normals;
       for i:=0 to Vertices.Count-1 do begin
-         boneIndex:=VerticesBonesWeights[i][k].BoneID;
+         boneIndex:=VerticesBonesWeights^[i]^[k].BoneID;
          bone:=Owner.Owner.Skeleton.RootBones.BoneByID(boneIndex);
          // transform point
          MakePoint(p, Vertices[i]);
@@ -5142,18 +5143,18 @@ begin
    if BonesPerVertex=1 then begin
       // simple case, one bone per vertex
       for i:=0 to refVertices.Count-1 do begin
-         boneID:=VerticesBonesWeights[i][0].BoneID;
+         boneID:=VerticesBonesWeights^[i]^[0].BoneID;
          bone:=skeleton.BoneByID(boneID);
-         Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
-         PAffineVector(@n)^:=refNormals.List[i];
+         Vertices.List^[i]:=VectorTransform(refVertices.List^[i], bone.GlobalMatrix);
+         PAffineVector(@n)^:=refNormals.List^[i];
          nt:=VectorTransform(n, bone.GlobalMatrix);
-         Normals.List[i]:=PAffineVector(@nt)^;
+         Normals.List^[i]:=PAffineVector(@nt)^;
       end;
    end else begin
       // multiple bones per vertex
       for i:=0 to refVertices.Count-1 do begin
-         Vertices.List[i]:=NullVector;
-         Normals.List[i]:=NullVector;
+         Vertices.List^[i]:=NullVector;
+         Normals.List^[i]:=NullVector;
          for j:=0 to BonesPerVertex-1 do begin
             with TBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do begin
                refVertices:=Vertices;
@@ -5161,20 +5162,20 @@ begin
             end;
             tempvert:=NullVector;
             tempnorm:=NullVector;
-            if VerticesBonesWeights[i][j].Weight<>0 then begin
-               boneID:=VerticesBonesWeights[i][j].BoneID;
+            if VerticesBonesWeights^[i]^[j].Weight<>0 then begin
+               boneID:=VerticesBonesWeights^[i]^[j].BoneID;
                bone:=skeleton.BoneByID(boneID);
                CombineVector(tempvert,
-                             VectorTransform(refVertices.List[i], bone.GlobalMatrix),
-                             VerticesBonesWeights[i][j].Weight);
-               PAffineVector(@n)^:=refNormals.List[i];
+                             VectorTransform(refVertices.List^[i], bone.GlobalMatrix),
+                             VerticesBonesWeights^[i]^[j].Weight);
+               PAffineVector(@n)^:=refNormals.List^[i];
                n:=VectorTransform(n, bone.GlobalMatrix);
                CombineVector(tempnorm,
                              PAffineVector(@n)^,
-                             VerticesBonesWeights[i][j].Weight);
+                             VerticesBonesWeights^[i]^[j].Weight);
             end;
-            AddVector(Vertices.List[i],tempvert);
-            AddVector(Normals.List[i],tempnorm);
+            AddVector(Vertices.List^[i],tempvert);
+            AddVector(Normals.List^[i],tempnorm);
          end;
       end;
    end;
@@ -5401,7 +5402,7 @@ begin
          if source.Count>0 then begin
             destination.AdjustCapacityToAtLeast(destination.Count+n);
             for i:=0 to n-1 do
-               destination.Add(source[indices.List[i]]);
+               destination.Add(source[indices.List^[i]]);
          end else destination.AddNulls(destination.Count+n);
       end;
       fgmmTriangleStrip : begin
@@ -5414,9 +5415,9 @@ begin
          if source.Count>0 then begin
             destination.AdjustCapacityToAtLeast(destination.Count+n);
             for i:=2 to VertexIndices.Count-1 do begin
-               destination.Add(source[indices.List[0]],
-                               source[indices.List[i-1]],
-                               source[indices.List[i]]);
+               destination.Add(source[indices.List^[0]],
+                               source[indices.List^[i-1]],
+                               source[indices.List^[i]]);
             end;
          end else destination.AddNulls(destination.Count+n);
       end;
@@ -5426,12 +5427,12 @@ begin
             destination.AdjustCapacityToAtLeast(destination.Count+n*6);
             i:=0;
             while n>0 do begin
-               destination.Add(source[indices.List[i]],
-                               source[indices.List[i+1]],
-                               source[indices.List[i+2]]);
-               destination.Add(source[indices.List[i]],
-                               source[indices.List[i+2]],
-                               source[indices.List[i+3]]);
+               destination.Add(source[indices.List^[i]],
+                               source[indices.List^[i+1]],
+                               source[indices.List^[i+2]]);
+               destination.Add(source[indices.List^[i]],
+                               source[indices.List^[i+2]],
+                               source[indices.List^[i+3]]);
                Inc(i, 4);
                Dec(n);
             end;
@@ -5505,7 +5506,7 @@ begin
    for i:=0 to VertexIndices.Count-1 do begin
       ref:=Owner.Owner.Vertices.ItemAddress[VertexIndices[i]];
       for k:=0 to 2 do begin
-         f:=ref[k];
+         f:=ref^[k];
          if f<min[k] then min[k]:=f;
          if f>max[k] then max[k]:=f;
       end;
@@ -5650,14 +5651,14 @@ begin
    else texCoordIdxList:=vertexIdxList;
    if Assigned(texCoordPool) then begin
       for i:=0 to VertexIndices.Count-1 do begin
-         glNormal3fv(@normalPool[normalIdxList[i]]);
-         xglTexCoord2fv(@texCoordPool[texCoordIdxList[i]]);
-         glVertex3fv(@vertexPool[vertexIdxList[i]]);
+         glNormal3fv(@normalPool[normalIdxList^[i]]);
+         xglTexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
+         glVertex3fv(@vertexPool[vertexIdxList^[i]]);
       end;
    end else begin
       for i:=0 to VertexIndices.Count-1 do begin
-         glNormal3fv(@normalPool[normalIdxList[i]]);
-         glVertex3fv(@vertexPool[vertexIdxList[i]]);
+         glNormal3fv(@normalPool[normalIdxList^[i]]);
+         glVertex3fv(@vertexPool[vertexIdxList^[i]]);
       end;
    end;
    glEnd;
@@ -5903,7 +5904,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TFaceGroup(List[i]).PrepareMaterialLibraryCache(matLib);
+      TFaceGroup(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 // DropMaterialLibraryCache
@@ -5913,7 +5914,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TFaceGroup(List[i]).DropMaterialLibraryCache;
+      TFaceGroup(List^[i]).DropMaterialLibraryCache;
 end;
 
 // AddToTriangles
@@ -6562,7 +6563,7 @@ begin
       minD:=-1;
       i:=0; while i<tris.Count do begin
          if RayCastTriangleIntersect(locRayStart, locRayVector,
-                                     tris.List[i], tris.List[i+1], tris.List[i+2],
+                                     tris.List^[i], tris.List^[i+1], tris.List^[i+2],
                                      @iPoint, @iNormal) then begin
             d:=VectorDistance2(locRayStart, iPoint);
             if (d<minD) or (minD<0) then begin

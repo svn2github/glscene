@@ -6,6 +6,8 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>08/02/08 - Lin- Ignore tiles that are not hdsReady (Prevents crashes when threading)
       <li>30/01/07 - Lin- Added HashedTileCount - Counts the tiles in the buffer
       <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
@@ -380,7 +382,7 @@ var
 begin
    for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
-         hd:=THeightData(List[k]);
+         hd:=THeightData(List^[k]);
          OnTileDestroyed(hd);
          hd.OnDestroy:=nil;
          hd.Release;
@@ -591,10 +593,10 @@ begin
                      patch.ConnectToTheWest(prevPatch)
                   else prevPatch.ConnectToTheWest(patch);
                end;
-               if (prevRow.Count>n) and (prevRow.List[n]<>nil) then begin
+               if (prevRow.Count>n) and (prevRow.List^[n]<>nil) then begin
                   if deltaY>0 then
-                     patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]))
-                  else TGLROAMPatch(prevRow.List[n]).ConnectToTheNorth(patch);
+                     patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List^[n]))
+                  else TGLROAMPatch(prevRow.List^[n]).ConnectToTheNorth(patch);
                end;
 
                if patch.HighRes then begin
@@ -708,7 +710,7 @@ begin
       pList:=List;
       zero:=0;
       for j:=Count-1 downto 0 do
-         THeightData(pList[j]).Tag:=zero;
+         THeightData(pList^[j]).Tag:=zero;
    end;
 end;
 
@@ -723,7 +725,7 @@ begin
    for i:=0 to cTilesHashSize do begin
       hashList:=FTilesHash[i];
       for j:=hashList.Count-1 downto 0 do begin
-         hd:=THeightData(hashList.List[j]);
+         hd:=THeightData(hashList.List^[j]);
          if hd.Tag=0 then begin
             hashList.Delete(j);
             OnTileDestroyed(hd);
@@ -788,7 +790,7 @@ begin
    hashList:=FTilesHash[HashKey(xLeft, yTop)];
    pList:=hashList.List;
    for i:=hashList.Count-1 downto 0 do begin
-      hd:=THeightData(pList[i]);
+      hd:=THeightData(pList^[i]);
       if (hd.XLeft=xLeft) and (hd.YTop=yTop) then begin
          Result:=hd;
          Exit;
@@ -908,7 +910,7 @@ begin
       // drop all ROAM data (CLOD has changed, rebuild required)
       for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
-            hd:=THeightData(List[k]);
+            hd:=THeightData(List^[k]);
             if Assigned(hd.ObjectTag) then begin
                (hd.ObjectTag as TGLROAMPatch).Free;
                hd.ObjectTag:=nil;
@@ -951,7 +953,7 @@ begin
       FOcclusionFrameSkip:=val;
       for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
-            hd:=THeightData(List[k]);
+            hd:=THeightData(List^[k]);
             if hd.ObjectTag<>nil then
                TGLROAMPatch(hd.ObjectTag).OcclusionSkip:=OcclusionFrameSkip;
          end;

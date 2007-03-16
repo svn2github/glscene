@@ -1,7 +1,13 @@
-// GLSpaceText
-{: Win32 specific Context.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLSpaceText<p>
+
+   Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>19/10/06 - LC - Added TGLSpaceText.Assign. Bugtracker ID=1576445 (thanks Zapology)
       <li>16/09/06 - NC - TGLVirtualHandle update (thx Lionel Reynaud)
       <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
@@ -306,7 +312,7 @@ begin
          buf:=FText
       else buf:=str;
       for i:=1 to Length(buf) do begin
-         gmf:=FTextFontEntry.GlyphMetrics[Integer(buf[i])-firstChar];
+         gmf:=FTextFontEntry^.GlyphMetrics[Integer(buf[i])-firstChar];
          width:=width+gmf.gmfCellIncX;
          if gmf.gmfptGlyphOrigin.y>maxHeight then
             maxHeight:=gmf.gmfptGlyphOrigin.y;
@@ -343,8 +349,7 @@ begin
    TextMetrics(str, w, mh, Result);
 end;
 
-// BuildList
-//
+// Assign
 procedure TGLSpaceText.Assign(Source: TPersistent);
 begin
    inherited Assign(Source);
@@ -363,6 +368,8 @@ begin
    end;
 end;
 
+// BuildList
+//
 procedure TGLSpaceText.BuildList(var rci : TRenderContextInfo);
 var
    textL, maxUnder, maxHeight : Single;
@@ -397,10 +404,10 @@ begin
 
       glPushAttrib(GL_POLYGON_BIT);
       case FCharacterRange of
-        stcrAlphaNum : glListBase(FTextFontEntry.FVirtualHandle.Handle - 32);
-        stcrNumbers :  glListBase(FTextFontEntry.FVirtualHandle.Handle - Cardinal('0'));
+        stcrAlphaNum : glListBase(FTextFontEntry^.FVirtualHandle.Handle - 32);
+        stcrNumbers :  glListBase(FTextFontEntry^.FVirtualHandle.Handle - Cardinal('0'));
       else
-        glListBase(FTextFontEntry.FVirtualHandle.Handle);
+        glListBase(FTextFontEntry^.FVirtualHandle.Handle);
       end;
       glCallLists(Length(FText), GL_UNSIGNED_BYTE, PChar(FText));
       glPopAttrib;
@@ -446,7 +453,7 @@ var
 begin
    if FText<>'' then begin
    	if FontChanged or (Assigned(FTextFontEntry)
-                         and (FTextFontEntry.FVirtualHandle.Handle=0)) then with FFont do begin
+                         and (FTextFontEntry^.FVirtualHandle.Handle=0)) then with FFont do begin
 	   	FontManager.Release(FTextFontEntry, Self);
          GetFirstAndLastChar(firstChar, lastChar);
    		FTextFontEntry:=FontManager.GetFontBase(Name, Style, FExtrusion,
@@ -630,11 +637,11 @@ begin
    NewEntry:=FindFont(AName, FStyles, FExtrusion, allowedDeviation, firstChar, lastChar);
    if Assigned(NewEntry) then begin
 	   Inc(NewEntry^.RefCount);
-      if NewEntry.FClients.IndexOf(Client)<0 then
-         NewEntry.FClients.Add(Client);
+      if NewEntry^.FClients.IndexOf(Client)<0 then
+         NewEntry^.FClients.Add(Client);
       Result:=NewEntry;
    end else Result:=nil;
-   if (Result=nil) or (Assigned(Result) and (Result.FVirtualHandle.Handle=0)) then begin
+   if (Result=nil) or (Assigned(Result) and (Result^.FVirtualHandle.Handle=0)) then begin
       // no entry found, or entry was purged
       nbLists:=lastChar-firstChar+1;
       if not Assigned(newEntry) then begin
@@ -665,7 +672,7 @@ begin
          FCurrentBase:=glGenLists(nbLists);
 		   if FCurrentBase = 0 then
 			   raise Exception.Create('FontManager: no more display lists available');
-         NewEntry.FVirtualHandle.AllocateHandle;
+         NewEntry^.FVirtualHandle.AllocateHandle;
 		   if not OpenGL1x.wglUseFontOutlines(MemDC, firstChar, nbLists,
                                             FCurrentBase, allowedDeviation,
                                             FExtrusion, WGL_FONT_POLYGONS,
@@ -693,9 +700,9 @@ begin
       end;
       entry^.FClients.Remove(Client);
       if entry^.RefCount=0 then begin
-         entry.FVirtualHandle.Free;
-         NotifyClients(entry.FClients);
-         entry.FClients.Free;
+         entry^.FVirtualHandle.Free;
+         NotifyClients(entry^.FClients);
+         entry^.FClients.Free;
          Remove(entry);
          Dispose(entry)
       end;

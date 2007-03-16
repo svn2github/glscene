@@ -1,10 +1,16 @@
-// GLzBuffer
-{: ZBuffer retrieval and computations.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLzBuffer<p>
+
+   ZBuffer retrieval and computations.<p>
 
    See readme.txt in the Demos/SpecialsFX/Shadows directory.<br>
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>08/02/07 - Lin - LONG overdue bugfix: Now sets GL_BLEND to prevent black screen.(thanks Jurgen Linker)
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
       <li>03/07/04 - LR - Added ifdef for Linux
@@ -325,7 +331,7 @@ end;
 function TGLzBuffer.GetPixelzDepth(x,y:integer) :Single;
 begin
    if (Cardinal(x)<Cardinal(FWidth)) and (Cardinal(y)<Cardinal(FHeight)) then
-      Result:=FDataInvIdx[y][x]
+      Result:=FDataInvIdx[y]^[x]
    else Result:=0;
 end;
 
@@ -335,7 +341,7 @@ function TGLzBuffer.PixelToDistance_OLD(x,y:integer) :Single;
 begin
  if ((x<0)or(x>FWidth)or(y<0)or(y>FWidth)) then result:=0
  else begin
-   z:=FData[x+(FHeight-y)*FWidth];     //fetch pixel z-depth
+   z:=FData^[x+(FHeight-y)*FWidth];     //fetch pixel z-depth
    dst:=(NpFp)/(fp-z*dov);             //calc from z-buffer value to frustrum depth
    vec:=FastScreenToVector(x,y);
    camAng:=VectorAngleCosine(normal,vec);
@@ -352,7 +358,7 @@ begin
  if ((x<0)or(x>=FWidth)or(y<0)or(y>=FHeight)) then result:=0
  else begin
    fy:=FHeight-y;
-   z:=FData[x+fy*FWidth];     //fetch pixel z-depth
+   z:=FData^[x+fy*FWidth];     //fetch pixel z-depth
    if z<1 then begin
     dst:=(NpFp)/(fp-z*dov);             //calc from z-buffer value to frustrum depth
     xx:=(lbW[0] + riVecW[0]*x + UpVecW[0]*fy) ;
@@ -520,7 +526,7 @@ var
 begin
 // if (Cardinal(x)<Cardinal(FWidth)) and (Cardinal(y)<Cardinal(FWidth)) then begin       //xres,yres?
  if (x<FWidth) and (y<FHeight) then begin
-  z:=FDataInvIdx[y][x];
+  z:=FDataInvIdx[y]^[x];
   dst:=(NpFp)/(fp-z*dov);  //calc from z-buffer value to frustrum depth
   camvec:=cam.AbsolutePosition;
   fy:=FHeight-y;
@@ -877,15 +883,15 @@ begin
     While x<fXres do begin
       pix:=HardSet(x,y);
       if (pix=p1)and(pix=p0) then begin
-           FDataInvIdx[y][x-1]:=pix;
-           FDataInvIdx[y-1][x-1]:=pix;
+           FDataInvIdx[y]^[x-1]:=pix;
+           FDataInvIdx[y-1]^[x-1]:=pix;
       end else begin
          HardSet(x-1,y);
          HardSet(x-1,y-1);
       end;
       p2:=SoftTest(x+1,y-2);
 
-      if (pix=p2) then FDataInvIdx[y-1][x]:=pix
+      if (pix=p2) then FDataInvIdx[y-1]^[x]:=pix
                       else HardSet(x,y-1);
       p1:=p2;
       p0:=pix;
@@ -913,16 +919,16 @@ begin
       p4:=HardSet(x,y);
       if ((p1=p2)and(p3=p4)and(p2=p4)) then begin
          xy:=x+(fYres-(y-3)-1)*fXres;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
          xy:=xy-w; //xy:=x+(fYres-(y-2)-1)*fXres;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
          xy:=xy-w; //xy:=x+(fYres-(y-1)-1)*fXres;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
       end else begin
           HardSet(x-2,y-3);
           HardSet(x-1,y-3);
@@ -974,24 +980,24 @@ begin
       //p4.r:=255;
       if ((p1=p2)and(p3=p4)and(p2=p4)) then begin
          xy:=x+(h-(y-4)-1)*w;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
          xy:=xy-w;
-          pixa[xy-4]:=p4;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-4]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
          xy:=xy-w;
-          pixa[xy-4]:=p4;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-4]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
          xy:=xy-w;
-          pixa[xy-4]:=p4;
-          pixa[xy-3]:=p4;
-          pixa[xy-2]:=p4;
-          pixa[xy-1]:=p4;
+          pixa^[xy-4]:=p4;
+          pixa^[xy-3]:=p4;
+          pixa^[xy-2]:=p4;
+          pixa^[xy-1]:=p4;
       end else begin
 //--------------------------------------------
           pM:=HardSet(x-2,y-2);
@@ -999,22 +1005,22 @@ begin
           pT:=HardSet(x-2,y-4);
 
           xy:=x+(h-(y-4)-1)*w;
-          if (p1=pT) then pixa[xy-3]:=pT else HardSet(x-3,y-4);
-          if (p2=pT) then pixa[xy-1]:=pT else HardSet(x-1,y-4);
+          if (p1=pT) then pixa^[xy-3]:=pT else HardSet(x-3,y-4);
+          if (p2=pT) then pixa^[xy-1]:=pT else HardSet(x-1,y-4);
           xy:=xy-w;        //down
-          if (pL=p1) then pixa[xy-4]:=pL else HardSet(x-4,y-3);
-          if (p1=pM) then pixa[xy-3]:=pM else HardSet(x-3,y-3);
-          if (p2=pM) then pixa[xy-1]:=pM else HardSet(x-1,y-3); //p2m
-          if (pT=pM) then pixa[xy-2]:=pM else HardSet(x-2,y-3);
+          if (pL=p1) then pixa^[xy-4]:=pL else HardSet(x-4,y-3);
+          if (p1=pM) then pixa^[xy-3]:=pM else HardSet(x-3,y-3);
+          if (p2=pM) then pixa^[xy-1]:=pM else HardSet(x-1,y-3); //p2m
+          if (pT=pM) then pixa^[xy-2]:=pM else HardSet(x-2,y-3);
           xy:=xy-w;        //down
-          if (pL=pM) then pixa[xy-3]:=pM else HardSet(x-3,y-2);
+          if (pL=pM) then pixa^[xy-3]:=pM else HardSet(x-3,y-2);
           xy:=xy-w;        //down
-          if (p3=pL) then pixa[xy-4]:=pL else HardSet(x-4,y-1);
-          if (p3=pM) then pixa[xy-3]:=pM else HardSet(x-3,y-1); //p3m
+          if (p3=pL) then pixa^[xy-4]:=pL else HardSet(x-4,y-1);
+          if (p3=pM) then pixa^[xy-3]:=pM else HardSet(x-3,y-1); //p3m
           if (p4=pM) then begin
-             pixa[xy-1]:=pM;
-             if (pM=p2) then pixa[xy+w-1]:=pM else HardSet(x-1,y-2);
-             if (pM=p3) then pixa[xy-2]:=pM   else HardSet(x-2,y-1);
+             pixa^[xy-1]:=pM;
+             if (pM=p2) then pixa^[xy+w-1]:=pM else HardSet(x-1,y-2);
+             if (pM=p3) then pixa^[xy-2]:=pM   else HardSet(x-2,y-1);
           end else begin
                 HardSet(x-1,y-1); //p4m
                 HardSet(x-1,y-2);
@@ -1123,12 +1129,12 @@ begin
              pix:=Round(shad/12);
 }
 
-             d4:=CasterZBuf.DataIdx[ipixY][ipixX-1];
-             d5:=CasterZBuf.DataIdx[ipixY][ipixX];
-             d6:=CasterZBuf.DataIdx[ipixY][ipixX+1];
-             d8:=CasterZBuf.DataIdx[ipixY+1][ipixX];
+             d4:=CasterZBuf.DataIdx[ipixY]^[ipixX-1];
+             d5:=CasterZBuf.DataIdx[ipixY]^[ipixX];
+             d6:=CasterZBuf.DataIdx[ipixY]^[ipixX+1];
+             d8:=CasterZBuf.DataIdx[ipixY+1]^[ipixX];
 //             if ipixY<1 then d2:=d5 else
-                d2:=CasterZBuf.DataIdx[ipixY-1][ipixX];
+                d2:=CasterZBuf.DataIdx[ipixY-1]^[ipixX];
               ilum:=ComputeIlum;
 
              if ((pixZ-d2)>Tol) then Shad2:= SCol.a else Shad2:= ilum;
@@ -1141,7 +1147,7 @@ begin
              pix:=Round(Shad/3);
 
            end else begin //---hard shadows---
-             if pixZ-Tol>CasterZBuf.DataIdx[ipixY][ipixX] then pix:=SCol.a          //dark
+             if pixZ-Tol>CasterZBuf.DataIdx[ipixY]^[ipixX] then pix:=SCol.a          //dark
                                                           else pix:=ComputeIlum;    //light
           end;
        end;
@@ -1149,7 +1155,7 @@ begin
        if FSkyShadow then pix:=SCol.a                  // dark
                      else pix:=0; //ComputeIlum;            // light
     end;
-    FDataInvIdx[y][x]:=pix; //Write pixel
+    FDataInvIdx[y]^[x]:=pix; //Write pixel
     result:=pix;
 end;
 
@@ -1216,7 +1222,7 @@ end;
 
 function TGLZShadows.SoftTest(const x,y:integer):Byte;
 begin
-   result:=FDataInvIdx[y][x];
+   result:=FDataInvIdx[y]^[x];
 end;
 
 
