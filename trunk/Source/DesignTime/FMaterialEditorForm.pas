@@ -3,8 +3,9 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>19/12/06 - DaS - All comboboxes get their Items using RTTI
-                            (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
+                             (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
       <li>03/07/04 - LR  - Make change for Linux
       <li>24/03/00 - Egg - Added Blending
       <li>06/02/00 - Egg - Creation
@@ -21,7 +22,7 @@ uses
   Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls, 
   Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLWin32Viewer;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, FRMaterialPreview, FRColorEditor, QComCtrls, FRFaceEditor, QStdCtrls, QControls, 
   Classes, GLTexture, QButtons, FRTextureEdit, GLLinuxViewer;
@@ -61,7 +62,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

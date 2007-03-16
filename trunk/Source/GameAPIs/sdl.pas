@@ -1,3 +1,9 @@
+{
+    History:<p>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC
+                                                         (BugTracekrID=1681585)
+
+}
 unit SDL;
 {******************************************************************************}
 {                                                                              }
@@ -153,7 +159,7 @@ uses
   Windows;
 {$ENDIF}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 Types,
 Libc;
 {$ENDIF}
@@ -162,7 +168,7 @@ const
 {$IFDEF WIN32}
   LibName = 'SDL.dll';
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   LibName = 'libSDL-1.2.so.0';
 {$ENDIF}
 {$IFDEF MACOS}
@@ -250,7 +256,7 @@ const
   {$DEFINE IA32}
 {$ENDIF}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   {$DEFINE IA32}
 {$ENDIF}
 
@@ -1776,7 +1782,7 @@ typedef struct {
   end;
 {$ENDIF}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   PSDL_Mutex = ^TSDL_Mutex;
   TSDL_mutex = record
     id: pthread_mutex_t;
@@ -1795,7 +1801,7 @@ typedef struct {
   end;
 {$ENDIF}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   PSDL_semaphore = ^TSDL_semaphore;
   TSDL_semaphore = record
     sem: Pointer; //PSem_t;
@@ -1816,7 +1822,7 @@ typedef struct {
 
   PSDL_Cond = ^TSDL_Cond;
   TSDL_Cond = record
-{$IFDEF LINUX}
+{$IFDEF UNIX}
     cond: pthread_cond_t;
 {$ELSE}
     // Generic Cond structure
@@ -1833,7 +1839,7 @@ typedef struct {
   TSYS_ThreadHandle = THandle;
 {$ENDIF}
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   TSYS_ThreadHandle = pthread_t;
 {$ENDIF}
 
@@ -3620,7 +3626,7 @@ begin
   Result := _putenv(variable);
   {$ENDIF}
 
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   Result := libc.putenv(variable);
   {$ENDIF}
 end;
@@ -3635,7 +3641,7 @@ begin
   Result := getenv(name);
   {$ENDIF}
 
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   Result := libc.getenv(name);
   {$ENDIF}
 end;

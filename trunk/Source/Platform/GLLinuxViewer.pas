@@ -2,6 +2,7 @@
 {: Linux specific.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Rename TGLLinuxSceneViewer to TGLSceneViewer as for Win32 platform
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)           
       <li>12/12/01 - EG - Creation (split from GLScene.pas)
@@ -13,7 +14,7 @@ interface
 
 {$i GLScene.inc}
 
-{$IFNDEF LINUX} {$MESSAGE Error 'Unit is Linux specific'} {$ENDIF}
+{$IFNDEF UNIX} {$MESSAGE Error 'Unit is Linux specific'} {$ENDIF}
 
 uses
   Classes, GLScene, QControls, Qt;

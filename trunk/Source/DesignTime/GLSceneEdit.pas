@@ -3,12 +3,13 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-  <li>07/02/07 - DaS - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
-                       TGLSceneEditorForm.AddNodes - removed warning
+  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+  <li>07/02/07 - DaStr - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
+                         TGLSceneEditorForm.AddNodes - removed warning
                           (all for proper Subcomponent support)
-  <li>20/01/07 - DaS - TGLSceneEditorForm.ACCutExecute bugfixed
-  <li>19/12/06 - DaS - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
-                        no longer displayed in the Editor (BugTraker ID = 1585913)
+  <li>20/01/07 - DaStr - TGLSceneEditorForm.ACCutExecute bugfixed
+  <li>19/12/06 - DaStr - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
+                          no longer displayed in the Editor (BugTraker ID = 1585913)
   <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
   <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
@@ -49,7 +50,7 @@ uses
   Dialogs, Menus, ActnList, ToolWin, ExtCtrls, StdCtrls,
   {$IFDEF GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$ELSE} DsgnIntf {$ENDIF}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   , QDialogs, QImgList, QActnList, QForms, QMenus, QTypes,
   QComCtrls, QControls, Types, QExtCtrls, QStdCtrls, DesignIntf, VCLEditors
 {$ENDIF}
@@ -213,7 +214,7 @@ type
     {$IFDEF MSWINDOWS}
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
     {$ENDIF}
-    {$IFDEF LINUX}
+    {$IFDEF UNIX}
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
     {$ENDIF}
 
@@ -239,7 +240,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 
@@ -249,7 +250,7 @@ uses
   GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer,
   GLCrossPlatform;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer,
   GLCrossPlatform;
 {$ENDIF}
@@ -821,7 +822,7 @@ end;
 {$IFDEF MSWINDOWS}
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
 {$ENDIF}
 var
@@ -925,7 +926,7 @@ begin
             buttons:=[mbAll]+Buttons;
          end else confirmMsg:=confirmMsg+'?';
          {$ENDIF}
-         {$IFDEF LINUX}
+         {$IFDEF UNIX}
          confirmMsg:=confirmMsg+'?';
          {$ENDIF}
          case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of

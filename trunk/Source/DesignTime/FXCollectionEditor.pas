@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>12/07/03 - DanB - Fixed crash when owner deleted        
       <li>27/02/02 - Egg - Fixed crash after item deletion
@@ -23,7 +24,7 @@ uses
   Menus, ComCtrls, ToolWin, 
   {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, XCollection, QImgList, QControls, Classes, QActnList, 
   QMenus, QComCtrls, DesignEditors, DesignIntf; 
@@ -96,7 +97,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 
@@ -105,7 +106,7 @@ uses
 {$IFDEF MSWINDOWS}
   GLMisc, SysUtils, GLBehaviours, GLScene, Dialogs; 
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   GLMisc, SysUtils, GLBehaviours, GLScene, QDialogs; 
 {$ENDIF}
 

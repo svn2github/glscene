@@ -2,7 +2,8 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux		
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux
       <li>06/07/04 - LR - Display some infos for Linux	
       <li>03/07/04 - LR - Make change for Linux
       <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
@@ -27,9 +28,9 @@ interface
 {$IFDEF MSWINDOWS}
 uses
   Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls, 
-     CommCtrl, ExtCtrls, Graphics, Menus;
+  CommCtrl, ExtCtrls, Graphics, Menus;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   XLib, QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls,
   QExtCtrls, QGraphics, QMenus; 
@@ -132,7 +133,7 @@ uses
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

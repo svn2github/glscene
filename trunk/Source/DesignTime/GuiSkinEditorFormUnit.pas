@@ -3,6 +3,7 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>18/02/07 - DaStr - Fixed range check error.
       <li>22/02/05 - Mathx - Fixed Delphi 5 support.
       <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
@@ -25,7 +26,7 @@ uses
   StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
   GLMisc, GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
   QStdCtrls, QComCtrls, QExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
@@ -182,7 +183,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

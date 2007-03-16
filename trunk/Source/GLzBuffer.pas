@@ -9,6 +9,7 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>08/02/07 - Lin - LONG overdue bugfix: Now sets GL_BLEND to prevent black screen.(thanks Jurgen Linker)
@@ -68,7 +69,7 @@ uses  Classes, GLMisc, OpenGL1x, GLScene, VectorGeometry, GLGraphics,
      {$IFDEF MSWINDOWS}
      Dialogs, GLWin32Viewer
      {$ENDIF}
-     {$IFDEF LINUX}
+     {$IFDEF UNIX}
      QDialogs, GLLinuxViewer
      {$ENDIF}
      ;

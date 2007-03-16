@@ -3,6 +3,7 @@
    Editor for a vector.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>?/?/? -  - Creation
    </ul></font>
@@ -18,7 +19,7 @@ uses
   Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls, 
   Classes;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, QComCtrls, QStdCtrls, QExtCtrls, QButtons, QGraphics, QControls, 
   Classes; 
@@ -85,7 +86,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

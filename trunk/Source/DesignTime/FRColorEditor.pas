@@ -3,6 +3,7 @@
    RGB+Alpha color editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
@@ -18,7 +19,7 @@ uses
   Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
   Classes, VectorGeometry, Graphics, SysUtils;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, QStdCtrls, QComCtrls, QExtCtrls, FRTrackBarEdit, QDialogs, QControls, 
   Classes, VectorGeometry, QGraphics, SysUtils; 
@@ -83,7 +84,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

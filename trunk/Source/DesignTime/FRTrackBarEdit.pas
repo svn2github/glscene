@@ -3,8 +3,9 @@
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>19/12/06 - DaS - Fixed bug in SetValue, SetValueMin, SetValueMax when
-                           changing these values didn't change the Edit's Text
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>19/12/06 - DaStr - Fixed bug in SetValue, SetValueMin, SetValueMax when
+                             changing these values didn't change the Edit's Text
       <li>03/07/04 - LR  - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
@@ -19,7 +20,7 @@ interface
 uses 
   Forms, StdCtrls, ComCtrls, Classes, Controls;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, QStdCtrls, QComCtrls, Classes, QControls; 
 {$ENDIF}
@@ -51,7 +52,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

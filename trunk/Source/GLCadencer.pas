@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Added some ifdef Win32 for Linux
       <li>20/10/03 - EG - Fixed issues about cadencer destruction
       <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
@@ -36,7 +37,7 @@ uses GLScene, Classes, GLMisc, GLCrossPlatform,
    {$ifdef WIN32}
    Windows, Controls, Messages, StdCtrls, Forms
    {$endif}
-   {$ifdef LINUX}
+   {$IFDEF UNIX}
    QForms
    {$endif}
    ;

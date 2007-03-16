@@ -11,6 +11,7 @@
    which is a Delphi header conversion for SDL (http://libsdl.org)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
       <li>12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
                            Added doc tags, Stencil buffer and others.
@@ -414,7 +415,7 @@ begin
          SDL_putenv('SDL_VIDEODRIVER=windib');
          envVal:='SDL_WINDOWID='+IntToStr(Integer(FWindowHandle));
       {$ELSE}
-         {$IFDEF Linux}
+         {$IFDEF UNIX}
             EnvVal:='SDL_WINDOWID='+IntToStr(QWidget_WinId(FWindowHandle));
          {$ELSE}
             ...Unsupported target. implement your target code here!...

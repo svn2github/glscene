@@ -12,6 +12,7 @@
    key code constants (VK_* constants are declared in the "Windows" unit).<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>19/12/06 - DaS - Added additional string constants and made all
                              existing 'Mixed Case', not 'UPPERCASE'
                            KeyNameToVirtualKeyCode optimized,
@@ -27,7 +28,7 @@ interface
 
 {$I GLScene.inc}
 
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses
   Windows;

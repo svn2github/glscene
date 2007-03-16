@@ -4,15 +4,16 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
-          <li>19/12/06 - DaS - SBEditImageClick() now calls DoOnChange
-                               TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
-                                 now gets the correct variable as its owner (BugTracker ID = 1603743)
-                               All comboboxes get their Items using RTTI
-                                (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-          <li>03/07/04 - LR  - Make change for Linux
-          <li>17/03/00 - Egg - Added ImageAlpha combo
-          <li>13/03/00 - Egg - Creation
-	</ul></font>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
+                             TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
+                               now gets the correct variable as its owner (BugTracker ID = 1603743)
+                             All comboboxes get their Items using RTTI
+                               (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
+      <li>03/07/04 - LR  - Make change for Linux
+      <li>17/03/00 - Egg - Added ImageAlpha combo
+      <li>13/03/00 - Egg - Creation
+    </ul></font>
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
 unit FRTextureEdit;
@@ -25,7 +26,7 @@ interface
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils, TypInfo;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils;
 {$ENDIF}
@@ -81,7 +82,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

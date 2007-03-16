@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>01/06/05 - NelC - Replaced property GLFullScreenViewer with GLNonVisualViewer
       <li>26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
@@ -21,7 +22,7 @@ unit GLAVIRecorder;
 interface
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
    GLWin32Viewer, GLWin32FullScreenViewer;

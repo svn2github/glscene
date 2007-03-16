@@ -3,11 +3,12 @@
 
 	Allows choosing a material in a material library<p>
 
-	<b>Historique : </b><font size=-1><ul>
-	   <li>19/12/06 - DaS - LBMaterials.OnDblClick now handled
-	   <li>03/07/04 - LR  - Make change for Linux
-	   <li>14/02/00 - Egg - Creation
-	</ul></font>
+    <b>Historique : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>19/12/06 - DaStr - LBMaterials.OnDblClick now handled
+      <li>03/07/04 - LR  - Make change for Linux
+      <li>14/02/00 - Egg - Creation
+    </ul></font>
 }
 unit FLibMaterialPicker;
 
@@ -19,7 +20,7 @@ interface
 uses
   Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture, GLWin32Viewer;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   QForms, QStdCtrls, QButtons, FRMaterialPreview, QControls, Classes, GLTexture, GLLinuxViewer; 
 {$ENDIF}
@@ -52,7 +53,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 {$R *.xfm}
 {$ENDIF}
 

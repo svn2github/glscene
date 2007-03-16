@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>19/10/06 - LC - Added TGLSpaceText.Assign. Bugtracker ID=1576445 (thanks Zapology)
@@ -23,7 +24,7 @@ unit GLSpaceText;
 interface
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses Windows, Messages, Classes, GLScene, Graphics, OpenGL1x, GLTexture, GLContext;
 

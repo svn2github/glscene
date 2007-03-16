@@ -1,3 +1,9 @@
+{
+    History:<p>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC
+                                                         (BugTracekrID=1681585)
+
+}
 unit moduleloader;
 {******************************************************************}
 {                                                                  }
@@ -161,7 +167,7 @@ end;
 
 {$IFDEF Unix}
 uses
-{$ifdef Linux}
+{$IFDEF UNIX}
   Types,
   Libc;
 {$else}

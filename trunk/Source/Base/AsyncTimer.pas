@@ -6,6 +6,7 @@
    This component is based on ThreadedTimer by Carlos Barbosa.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Added TThreadPriority for Linux
       <li>24/09/02 - EG - Fixed ThreadPriority default value (Nelson Chu)
       <li>20/01/02 - EG - Simplifications, dropped Win32 dependencies
@@ -24,7 +25,7 @@ uses Classes;
 const
   cDEFAULT_TIMER_INTERVAL = 1000;
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 type
   TThreadPriority = integer;
 {$ENDIF}

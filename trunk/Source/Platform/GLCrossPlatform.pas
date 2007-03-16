@@ -6,7 +6,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>08/07/04 - LR - Added clBlack  
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>08/07/04 - LR - Added clBlack
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Added other abstraction calls
@@ -35,7 +36,7 @@ uses
   Windows, Classes, SysUtils, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtDlgs, Consts;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 uses
   libc, Classes, SysUtils, Qt, QGraphics, QControls, QForms,
   QDialogs, QStdCtrls, Types, QConsts;
@@ -84,7 +85,7 @@ const
    glpf32Bit = pf32bit;
    glpfDevice = pfDevice;
 {$endif}
-{$ifdef LINUX}
+{$IFDEF UNIX}
    glpf8Bit = pf8bit;
    glpf24bit = pf32bit;
    glpf32Bit = pf32bit;
@@ -100,7 +101,7 @@ const
    clSilver = Graphics.clSilver;
    clBlack = Graphics.clBlack;
 {$endif}
-{$ifdef LINUX}
+{$IFDEF UNIX}
    clBtnFace = QGraphics.clBtnFace;
    clRed = QGraphics.clRed;
    clGreen = QGraphics.clGreen;
@@ -123,7 +124,7 @@ const
   glKey_UP = VK_UP;
   glKey_DOWN = VK_DOWN;
 {$endif}
-{$ifdef LINUX}
+{$IFDEF UNIX}
   glKey_TAB = Key_Tab;
   glKey_SPACE = Key_Space;
   glKey_RETURN = Key_Return;
@@ -248,7 +249,7 @@ implementation
 uses
   ShellApi, GLTexture;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 
 {$ENDIF}
 
@@ -261,7 +262,7 @@ begin
 {$IFDEF MSWINDOWS}
   ABitmap.Handle := LoadBitmap(HInstance, PChar(AName));
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   ABitmap.LoadFromResourceName(HInstance, PChar(AName));
 {$ENDIF}
 end;
@@ -271,7 +272,7 @@ begin
 {$IFDEF MSWINDOWS}
   result := Application.MessageBox(PChar(Text),PChar(Caption),MB_OK);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   result := integer(Application.MessageBox(Text,Caption));
 {$ENDIF}
 end;
@@ -281,7 +282,7 @@ begin
 {$IFDEF MSWINDOWS}
   ShowCursor(AShow);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   {$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
 {$ENDIF}
 end;
@@ -291,7 +292,7 @@ begin
 {$IFDEF MSWINDOWS}
   SetCursorPos(AScreenX, AScreenY);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   {$MESSAGE Warn 'SetCursorPos: Needs to be implemented'}
 {$ENDIF}
 end;
@@ -301,7 +302,7 @@ begin
 {$IFDEF MSWINDOWS}
   GetCursorPos(point);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   {$MESSAGE Warn 'GetCursorPos: Needs to be implemented'}
 {$ENDIF}
 end;
@@ -321,12 +322,12 @@ begin
 {$IFDEF MSWINDOWS}
   result := GetTickCount;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   QueryPerformanceCounter(result);
 {$ENDIF}
 end;
 
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 function QueryCombo(const ACaption, APrompt: string; Alist:TStringList;
                           var Index: integer; var Value: string): Boolean;
 var
@@ -473,7 +474,7 @@ end;
 {$ENDIF}
 
 procedure ShowHTMLUrl(Url: String);
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 var
   TheBrowser: String;
 {$ENDIF}
@@ -481,7 +482,7 @@ begin
 {$IFDEF MSWINDOWS}
   ShellExecute(0, 'open', PChar(Url), Nil, Nil, SW_SHOW);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
   TheBrowser := GetBrowser;
 {the ' &' means immediately continue:}
   if (Length(TheBrowser) > 0) then
@@ -751,7 +752,7 @@ begin
   end;
 end;
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 var
   metrics: QPAintDeviceMetricsH;
   paintDevice: QPaintDeviceH;

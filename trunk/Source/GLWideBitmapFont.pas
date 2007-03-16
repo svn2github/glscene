@@ -5,6 +5,7 @@
   JAJ: Credits to the UniCode Version of SynEdit! I located the needed API calls from them. GPL/MPL as GLScene
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>18/01/07 - JAJ - Made into a standalone unit...
 	</ul></font>
 }
@@ -21,7 +22,7 @@ uses
   Types,
   Graphics
   {$ENDIF}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   QGraphics
   {$ENDIF}
   ;
