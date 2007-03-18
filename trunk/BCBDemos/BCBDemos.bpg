@@ -9,18 +9,21 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Archipelago.exe FPSMovement.exe CgSimple.exe boxedin.exe \
-  octreedemo.exe SimpleGLSL.exe fxy.exe splines.exe mirror.exe ducky.exe \
-  shadedterrain.exe terrain.exe tree.exe pointto.exe FurBall.exe machine.exe \
-  simple.exe celshading.exe culling.exe fog.exe phong.exe \ 
-  Project1.exe shadowvolumes.exe spiral.exe \
-  waterplane.exe particles.exe Recorder.exe PanoViewer.exe fontgen.exe \
-  ProjTextures.exe warping.exe multipass.exe Transparency.exe
+PROJECTS = Archipelago.exe PanoViewer.exe FPSMovement.exe CgSimple.exe \
+  boxedin.exe octreedemo.exe SimpleGLSL.exe fxy.exe splines.exe mirror.exe \
+  multipass.exe Transparency.exe ducky.exe shadedterrain.exe terrain.exe tree.exe \
+  pointto.exe FurBall.exe machine.exe simple.exe celshading.exe culling.exe \
+  fog.exe phong.exe Project1.exe ProjTextures.exe shadowvolumes.exe spiral.exe \
+  warping.exe waterplane.exe particles.exe fontgen.exe Recorder.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
 Archipelago.exe: advdemos\Archipelago\Archipelago.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+PanoViewer.exe: advdemos\PanoViewer\PanoViewer.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
@@ -56,6 +59,14 @@ mirror.exe: materials\mirror\mirror.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
+multipass.exe: materials\multipass\multipass.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+Transparency.exe: materials\transparency\Transparency.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
 ducky.exe: meshes\ducky\ducky.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
@@ -86,7 +97,7 @@ machine.exe: physics\machine\machine.bpr
 
 simple.exe: physics\simple\simple.bpr
   $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak  
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
 celshading.exe: rendering\celshading\celshading.bpr
   $(ROOT)\bin\bpr2mak $**
@@ -102,9 +113,13 @@ fog.exe: rendering\fog\fog.bpr
 
 phong.exe: rendering\phong\phong.bpr
   $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak      
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
 Project1.exe: sound\3Dsound\Project1.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
+ProjTextures.exe: specialsFX\projtextures\ProjTextures.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
@@ -116,6 +131,10 @@ spiral.exe: specialsFX\spiral\spiral.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
+warping.exe: specialsFX\warping\warping.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
 waterplane.exe: specialsFX\waterplane\waterplane.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
@@ -124,30 +143,12 @@ particles.exe: sprites\particles\particles.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
-Recorder.exe: utilities\recorder\Recorder.bpr
-  $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
-
-PanoViewer.exe: advdemos\PanoViewer\PanoViewer.bpr
-  $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
-
 fontgen.exe: utilities\fontgen\fontgen.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
-ProjTextures.exe: specialsFX\projtextures\ProjTextures.bpr
+Recorder.exe: utilities\recorder\Recorder.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
-warping.exe: specialsFX\warping\warping.bpr
-  $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
-multipass.exe: materials\multipass\multipass.bpr
-  $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
-
-Transparency.exe: materials\transparency\Transparency.bpr
-  $(ROOT)\bin\bpr2mak $**
-  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak

@@ -1,26 +1,26 @@
 object Form1: TForm1
-  Left = 125
-  Top = 65
+  Left = 235
+  Top = 117
   Width = 611
   Height = 483
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
   OnKeyPress = FormKeyPress
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 65
+    Top = 80
     Width = 603
-    Height = 388
+    Height = 366
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -30,6 +30,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
+    FieldOfView = 149.436782836914
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -38,43 +39,43 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 603
-    Height = 65
+    Height = 80
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
     object Label1: TLabel
-      Left = 8
-      Top = 8
-      Width = 113
-      Height = 13
+      Left = 10
+      Top = 10
+      Width = 148
+      Height = 16
       Caption = 'Bumpmap Sub-sampling'
     end
     object LASubFactor: TLabel
-      Left = 320
-      Top = 8
-      Width = 19
-      Height = 13
+      Left = 394
+      Top = 10
+      Width = 24
+      Height = 16
       Caption = 'Sub'
     end
     object Label2: TLabel
-      Left = 8
-      Top = 40
-      Width = 109
-      Height = 13
+      Left = 10
+      Top = 49
+      Width = 139
+      Height = 16
       Caption = 'Bumpmapping Intensity'
     end
     object LABumpIntensity: TLabel
-      Left = 320
-      Top = 40
-      Width = 79
-      Height = 13
+      Left = 394
+      Top = 49
+      Width = 99
+      Height = 16
       Caption = 'LABumpIntensity'
     end
     object TBSubSampling: TTrackBar
-      Left = 136
+      Left = 167
       Top = 1
-      Width = 177
-      Height = 29
+      Width = 218
+      Height = 36
       Max = 3
       Orientation = trHorizontal
       PageSize = 1
@@ -90,10 +91,10 @@ object Form1: TForm1
       OnChange = TBSubSamplingChange
     end
     object TBIntensity: TTrackBar
-      Left = 136
-      Top = 33
-      Width = 177
-      Height = 29
+      Left = 167
+      Top = 41
+      Width = 218
+      Height = 35
       Max = 100
       Orientation = trHorizontal
       PageSize = 1
@@ -150,8 +151,6 @@ object Form1: TForm1
         Width = 60
         Height = 60
         NoZWrite = True
-        MirrorU = False
-        MirrorV = False
       end
     end
     object DummyCube1: TGLDummyCube
@@ -459,11 +458,12 @@ object Form1: TForm1
     Top = 136
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
-    ElevationHDS = GLBitmapHDS1
+    MaxPoolSize = 0
+    Active = True
     BumpmapLibrary = GLMaterialLibrary1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
     BumpScale = 0.100000001490116
-    MaxPoolSize = 0
+    MaxTextures = 0
     Left = 96
     Top = 96
   end

@@ -43,9 +43,9 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 void __fastcall TForm1::CgShader1Initialize(TCustomCgShader * CgShader)
 {
   VPName->Caption =
-    "Using profile: " + CgShader->VertexProgram->GetProfileString();
+    "Using profile: " + ((TCgShader *)CgShader)->VertexProgram->GetProfileString();
   FPName->Caption =
-    "Using profile: " + CgShader->FragmentProgram->GetProfileString();
+    "Using profile: " + ((TCgShader *)CgShader)->FragmentProgram->GetProfileString();
 }
 
 //---------------------------------------------------------------------------
