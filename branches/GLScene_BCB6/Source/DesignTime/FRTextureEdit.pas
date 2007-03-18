@@ -4,9 +4,14 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
-	        <li>03/07/04 - LR - Make change for Linux
-		<li>17/03/00 - Egg - Added ImageAlpha combo
-		<li>13/03/00 - Egg - Creation
+          <li>19/12/06 - DaS - SBEditImageClick() now calls DoOnChange
+                               TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
+                                 now gets the correct variable as its owner (BugTracker ID = 1603743)
+                               All comboboxes get their Items using RTTI
+                                (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
+          <li>03/07/04 - LR  - Make change for Linux
+          <li>17/03/00 - Egg - Added ImageAlpha combo
+          <li>13/03/00 - Egg - Creation
 	</ul></font>
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
@@ -18,13 +23,12 @@ interface
 
 {$IFDEF MSWINDOWS}
 uses
-  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils;
+  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils, TypInfo;
 {$ENDIF}
 {$IFDEF LINUX}
 uses
-  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils; 
+  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils;
 {$ENDIF}
-
 
 type
   TRTextureEdit = class(TFrame)
@@ -89,11 +93,24 @@ uses
 // Create
 //
 constructor TRTextureEdit.Create(AOwner: TComponent);
+var
+  I: Integer;
 begin
 	inherited;
 	FTexture:=TGLTexture.Create(Self);
 	SetTexture(FTexture);
 	SetGLTextureImageClassesToStrings(CBImageClass.Items);
+
+	for i := 0 to Integer(High(TGLTextureImageAlpha)) do
+	  CBImageAlpha.Items.Add(GetEnumName(TypeInfo(TGLTextureImageAlpha), i));
+	for i := 0 to Integer(High(TGLMagFilter)) do
+	  CBMagFilter.Items.Add(GetEnumName(TypeInfo(TGLMagFilter), i));
+	for i := 0 to Integer(High(TGLMinFilter)) do
+	  CBMinFilter.Items.Add(GetEnumName(TypeInfo(TGLMinFilter), i));
+	for i := 0 to Integer(High(TGLTextureMode)) do
+	  CBTextureMode.Items.Add(GetEnumName(TypeInfo(TGLTextureMode), i));
+	for i := 0 to Integer(High(TGLTextureWrap)) do
+	  CBTextureWrap.Items.Add(GetEnumName(TypeInfo(TGLTextureWrap), i));
 end;
 
 // Destroy
@@ -142,7 +159,7 @@ begin
 	if not changeing then begin
 		with CBImageClass do	tic:=TGLTextureImageClass(Items.Objects[ItemIndex]);
 		if FTexture.Image.ClassType<>tic then begin
-			ti:=TGLTextureImageClass(tic).Create(Self);
+			ti:=TGLTextureImageClass(tic).Create(FTexture);
 			FTexture.Image:=ti;
 			ti.Free;
 		end;
@@ -203,6 +220,7 @@ end;
 procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
 	FTexture.Image.Edit;
+  DoOnChange;
 end;
 
 end.

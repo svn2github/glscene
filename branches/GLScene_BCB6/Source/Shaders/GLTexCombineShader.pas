@@ -3,6 +3,7 @@
    A shader that allows texture combiner setup.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>23/05/03 - EG - Added support for binding two extra texture units
       <li>16/05/03 - EG - Creation
    </ul></font>
@@ -66,7 +67,6 @@ type
 			property LibMaterial4Name : TGLLibMaterialName read FLibMaterial4Name write SetLibMaterial4Name;
    end;
 
-procedure Register;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -77,11 +77,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, GLTextureCombiners, OpenGL1x, XOpenGL, GLMisc, GLCrossPlatform;
-
-procedure Register;
-begin
-	RegisterComponents('GLScene Shaders', [TGLTexCombineShader]);
-end;
 
 // ------------------
 // ------------------ TGLTexCombineShader ------------------

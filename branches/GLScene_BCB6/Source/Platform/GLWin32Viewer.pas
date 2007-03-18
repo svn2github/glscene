@@ -2,6 +2,8 @@
 {: Win32 specific.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/12/04 - DaS - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
+                           published in TGLSceneViewer
       <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
       <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
       <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
@@ -14,7 +16,7 @@
       <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
       <li>22/01/02 - EG - Added TGLFullScreenViewer
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
-	   <li>12/12/01 - EG - Creation (split from GLScene.pas)
+	    <li>12/12/01 - EG - Creation (split from GLScene.pas)
 	</ul></font>
 }
 unit GLWin32Viewer;
@@ -171,6 +173,10 @@ type
          property OnMouseDown;
          property OnMouseMove;
          property OnMouseUp;
+
+         property OnMouseWheel;
+         property OnMouseWheelDown;
+         property OnMouseWheelUp;
 {$ifdef GLS_COMPILER_5_UP}
          property OnContextPopup;
 {$endif}
@@ -239,7 +245,7 @@ end;
 //
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation = opRemove) and (AComponent = Camera) then
+   if (Operation=opRemove) and (FBuffer<>nil) and (AComponent=Camera) then
       Camera:=nil;
    inherited;
 end;

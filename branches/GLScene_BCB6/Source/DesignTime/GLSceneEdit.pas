@@ -3,6 +3,12 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>07/02/07 - DaS - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
+                       TGLSceneEditorForm.AddNodes - removed warning
+                          (all for proper Subcomponent support)
+  <li>20/01/07 - DaS - TGLSceneEditorForm.ACCutExecute bugfixed
+  <li>19/12/06 - DaS - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
+                        no longer displayed in the Editor (BugTraker ID = 1585913)
   <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
   <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
@@ -174,6 +180,8 @@ type
 
     procedure ReadScene;
     procedure ResetTree;
+    // adds the given scene object as well as its children to the tree structure and returns
+    // the last add node (e.g. for selection)
     function AddNodes(ANode: TTreeNode; AObject: TGLBaseSceneObject): TTreeNode;
     procedure AddObjectClick(Sender: TObject);
     procedure AddBehaviourClick(Sender: TObject);
@@ -517,20 +525,24 @@ end;
 //----------------------------------------------------------------------------------------------------------------------
 
 function TGLSceneEditorForm.AddNodes(ANode: TTreeNode; AObject: TGLBaseSceneObject): TTreeNode;
-
-// adds the given scene object as well as its children to the tree structure and returns
-// the last add node (e.g. for selection)
-
 var
   I: Integer;
   CurrentNode: TTreeNode;
-
 begin
-  Result:=Tree.Items.AddChildObject(ANode, AObject.Name, AObject);
-  Result.ImageIndex:=ObjectManager.GetImageIndex(TGLSceneObjectClass(AObject.ClassType));
-  Result.SelectedIndex:=Result.ImageIndex;
-  CurrentNode:=Result;
-  for I:=0 to AObject.Count - 1 do Result:=AddNodes(CurrentNode, AObject[I]);
+  if csSubComponent in AObject.ComponentStyle then
+  begin
+    Result := Tree.Selected;
+    Exit;
+  end
+  else
+  begin
+    Result := Tree.Items.AddChildObject(ANode, AObject.Name, AObject);
+    Result.ImageIndex := ObjectManager.GetImageIndex(TGLSceneObjectClass(AObject.ClassType));
+    Result.SelectedIndex := Result.ImageIndex;
+    CurrentNode := Result;
+    for I := 0 to AObject.Count - 1 do
+      Result := AddNodes(CurrentNode, AObject[I]);
+  end;
 end;
 
 procedure TGLSceneEditorForm.SetObjectsSubItems(parent : TMenuItem);
@@ -907,7 +919,8 @@ begin
          // are there children to care for?
          // mbAll exist only on Windows ...
          {$IFDEF MSWINDOWS}
-         if anObject.Count>0 then begin
+         if (anObject.Count > 0)  and (not anObject.HasSubChildren) then
+         begin
             confirmMsg:=ConfirmMsg+' only or with ALL its children?';
             buttons:=[mbAll]+Buttons;
          end else confirmMsg:=confirmMsg+'?';
@@ -1163,21 +1176,27 @@ end;
 // ACCutExecute
 //
 procedure TGLSceneEditorForm.ACCutExecute(Sender: TObject);
+{$IFDEF GLS_DELPHI_6_UP}
 var
-	AObject : TGLBaseSceneObject;
-   selNode : TTreeNode;
+  AObject: TGLBaseSceneObject;
+  ComponentList: IDesignerSelections;
 begin
-   selNode:=Tree.Selected;
-   if IsValidClipBoardNode then begin
-      AObject:=TGLBaseSceneObject(selNode.Data);
-      ClipBoard.SetComponent(AObject);
-      AObject.Parent.Remove(AObject, False);
-      AObject.Free;
-      Tree.Selected.Free;
-   end;
+  if IsValidClipBoardNode then
+  begin
+    AObject := TGLBaseSceneObject(Tree.Selected.Data);
+    ComponentList := TDesignerSelections.Create;
+    ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
+
+    CopyComponents(FScene.Owner, ComponentList);
+    AObject.Parent.Remove(AObject, False);
+    AObject.Free;
+    Tree.Selected.Free;
+    ACPaste.Enabled:=IsPastePossible;
+  end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
-
-
 
 
 // ACPasteExecute

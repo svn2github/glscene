@@ -11,6 +11,10 @@ object RMaterialPreview: TRMaterialPreview
     Width = 201
     Height = 177
     Camera = Camera
+    FieldOfView = 64.597473144531250000
+    OnMouseDown = SceneViewerMouseDown
+    OnMouseMove = SceneViewerMouseMove
+    OnMouseWheel = SceneViewerMouseWheel
   end
   object CBObject: TComboBox
     Left = 0
@@ -23,7 +27,9 @@ object RMaterialPreview: TRMaterialPreview
     OnChange = CBObjectChange
     Items.Strings = (
       'Cube'
-      'Sphere')
+      'Sphere'
+      'Cone'
+      'Teapot')
   end
   object CBBackground: TComboBox
     Left = 60
@@ -43,25 +49,11 @@ object RMaterialPreview: TRMaterialPreview
       'on a green background')
   end
   object GLScene1: TGLScene
+    ObjectsSorting = osNone
     Left = 160
     Top = 32
-    object Cube: TGLCube
-      Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
-      Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-    end
-    object Sphere: TGLSphere
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Radius = 0.800000011920929
-    end
-    object LightSource: TGLLightSource
-      ConstAttenuation = 1
-      Position.Coordinates = {0000000000004040000020410000803F}
-      Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180
-    end
-    object PlanePattern: TGLPlane
-      Position.Coordinates = {0000000000000000000040C00000803F}
+    object BackGroundSprite: TGLHUDSprite
+      Material.MaterialOptions = [moNoLighting]
       Material.Texture.Image.Picture.Data = {
         07544269746D617076080000424D760800000000000076000000280000004000
         0000400000000100040000000000000800000000000000000000100000000000
@@ -132,14 +124,67 @@ object RMaterialPreview: TRMaterialPreview
         FFFF000000000000000088888888888888887777777777777777FFFFFFFFFFFF
         FFFF000000000000000088888888888888887777777777777777FFFFFFFFFFFF
         FFFF}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Height = 3
-      Width = 3
+      Material.Texture.Disabled = False
+      Width = 16.000000000000000000
+      Height = 16.000000000000000000
+      NoZWrite = False
+      MirrorU = False
+      MirrorV = False
+    end
+    object World: TGLDummyCube
+      CubeSize = 1.000000000000000000
+      object Cube: TGLCube
+        Material.MaterialLibrary = GLMaterialLibrary
+        Material.LibMaterialName = 'LibMaterial'
+        Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
+        Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
+      end
+      object Sphere: TGLSphere
+        Material.MaterialLibrary = GLMaterialLibrary
+        Material.LibMaterialName = 'LibMaterial'
+        Radius = 0.800000011920929000
+      end
+      object Cone: TGLCone
+        Material.MaterialLibrary = GLMaterialLibrary
+        Material.LibMaterialName = 'LibMaterial'
+        BottomRadius = 0.500000000000000000
+        Height = 1.000000000000000000
+      end
+      object Teapot: TGLTeapot
+        Material.MaterialLibrary = GLMaterialLibrary
+        Material.LibMaterialName = 'LibMaterial'
+        Scale.Coordinates = {00000040000000400000004000000000}
+      end
+    end
+    object Light: TGLDummyCube
+      Position.Coordinates = {0000000000004040000020410000803F}
+      CubeSize = 1.000000000000000000
+      object LightSource: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        Specular.Color = {0000803F0000803F0000803F0000803F}
+        SpotCutOff = 180.000000000000000000
+      end
+      object FireSphere: TGLSphere
+        Material.BackProperties.Shininess = 47
+        Material.FrontProperties.Ambient.Color = {A3A2223FCDCC4C3ECDCC4C3E0000803F}
+        Material.FrontProperties.Emission.Color = {D3D2523FA1A0203F000000000000803F}
+        Radius = 0.300000011920929000
+      end
     end
     object Camera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 140
+      DepthOfView = 100.000000000000000000
+      FocalLength = 140.000000000000000000
+      TargetObject = Cube
       Position.Coordinates = {0000000000000000000020410000803F}
     end
+  end
+  object GLMaterialLibrary: TGLMaterialLibrary
+    Materials = <
+      item
+        Name = 'LibMaterial'
+        Tag = 0
+      end>
+    Left = 128
+    Top = 32
   end
 end

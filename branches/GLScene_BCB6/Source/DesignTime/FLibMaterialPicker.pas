@@ -4,7 +4,8 @@
 	Allows choosing a material in a material library<p>
 
 	<b>Historique : </b><font size=-1><ul>
-	   <li>03/07/04 - LR - Make change for Linux
+	   <li>19/12/06 - DaS - LBMaterials.OnDblClick now handled
+	   <li>03/07/04 - LR  - Make change for Linux
 	   <li>14/02/00 - Egg - Creation
 	</ul></font>
 }
@@ -34,6 +35,7 @@ type
     MPPreview: TRMaterialPreview;
     procedure LBMaterialsClick(Sender: TObject);
     procedure LBMaterialsKeyPress(Sender: TObject; var Key: Char);
+    procedure LBMaterialsDblClick(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -105,10 +107,14 @@ begin
    LBMaterialsClick(Sender);
 end;
 
+procedure TLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
+begin
+  BBOk.Click;
+end;
+
 initialization
 
 finalization
-
    ReleaseLibMaterialPicker;
 
 end.

@@ -3,7 +3,8 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>22/02/05 - Mathx - FIxed Delphi 5 support.
+      <li>18/02/07 - DaStr - Fixed range check error.
+      <li>22/02/05 - Mathx - Fixed Delphi 5 support.
       <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
       <li>03/10/05 - adirex - XP styles and panels problem<br>
       <li>24/01/05 - adirex - Focus rect for selection<br>
@@ -304,7 +305,8 @@ end;
 
 procedure TGUISkinEditor.Button4Click(Sender: TObject);
 begin
-  Zoom := Zoom - 0.5;
+  if Abs(Zoom - 0.5) > 0.001 then
+    Zoom := Zoom - 0.5;
   Label2.Caption := FormatFloat('####0.0',Zoom);
 //  panel3.Invalidate;
 
@@ -372,7 +374,14 @@ begin
 
     //rectangle the part that is visible in the preview
     imgPreview.Canvas.DrawFocusRect(VisibleRect);
-
+    if (PreviewWidth = 0) or (PreviewHeight = 0) then
+    begin
+      PreviewWidth := 2;
+      PreviewHeight := 2;
+    end;
+    if Zoom = 0 then
+      Zoom := 0.5;
+//    {$R-}
     VisibleRect := Rect(
         Round(sbarHorizontal.Position / PreviewWidth * imgPreview.Width),
         Round(sbarVertical.Position / PreviewHeight * imgPreview.Height),

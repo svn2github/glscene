@@ -1,7 +1,21 @@
- // GLCgShader
-{: Base Cg shader classes.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLCgShader<p>
+
+   Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>23/02/07 - DaStr- Added TCgProgram.ManualNotification
+      <li>23/02/07 - DaStr- Added TCadencableCustomCgShader
+                            Added EGLCGShaderException
+                            with TCustomCgShader:
+                              Added ShaderSupported,
+                              Moved all properties from "public" and "published"
+                              to the "protected" section.
+                              DoInitialize fixed to catch compilation errors
+                            Moved registration to GLCgRegister.pas
+                            Added more stuff to RegisterClasses()
       <li>29/04/06 - PhP  - Fixed TCgProgram.Finalize (Achim Hannes)
       <li>24/10/04 - NelC - Added SetAsScalar for boolean input, IncludeFilePath
       <li>10/09/04 - NelC - Added global function IsCgProfileSupported
@@ -47,7 +61,15 @@ unit GLCgShader;
 interface
 
 uses
-  Classes, VectorGeometry, VectorLists, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
+  //VCL
+  Classes,
+
+  //GLScene
+  VectorGeometry, VectorLists, VectorTypes, GLTexture, GLMisc, GLStrings,
+  GLCadencer,
+
+  //CG
+  Cg, CgGL;
 
 {$HPPEMIT '#ifdef GetProfileString   // defined in winbase.h'}
 {$HPPEMIT '  #undef GetProfileString'}
@@ -59,6 +81,8 @@ uses
   for detecting bugs caused by using uninitialized value, implicit type cast, etc. }
 
 type
+  EGLCGShaderException = class(EGLShaderException);
+
   TCustomCgShader = class;
   TCgProgram = class;
   TCgParameter = class;
@@ -97,6 +121,8 @@ type
     FDetectProfile : boolean;
     FPrecision: TPrecisionSetting;
     procedure SetPrecision(const Value: TPrecisionSetting);
+    function GetManualNotification: Boolean;
+    procedure SetManualNotification(const Value: Boolean);
 
   protected
     { Protected Declarations }
@@ -161,8 +187,11 @@ type
        specify the profile directly. }
     property DirectProfile : TcgProfile read FProfile write FProfile;
 
+    { DaStr: Seams, that this event is never called. Probably should be deleted... }
     property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
 
+    {: If True, that shader is not reset when TCgProgram' parameters change. }
+    property ManualNotification: Boolean read GetManualNotification write SetManualNotification default False;
   published
     { Published Declarations }
     property Code : TStrings read FCode write SetCode;
@@ -333,12 +362,12 @@ type
 
     // IsProfileSupported to be obsoleted by global function IsCgProfileSupported
     function IsProfileSupported(Profile: TcgProfile): boolean;
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
 
-    procedure LoadShaderPrograms(VPFilename, FPFilename : string);
+    { DaStr: Everything is moved here from the public and protected sections
+             because I would like to shield end-users of descendant shader 
+             classes from all this stuff. Those who want direct access
+             to shader events and parameters should use the TCgShader class,
+             where everything is published. }
 
     property OnApplyVP : TCgApplyEvent read GetOnApplyVertexProgram write SetOnApplyVertexProgram;
     property OnApplyFP : TCgApplyEvent read GetOnApplyFragmentProgram write SetOnApplyFragmentProgram;
@@ -346,14 +375,33 @@ type
     property OnUnApplyVP : TCgUnApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
     property OnUnApplyFP : TCgUnApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
 
-    {: OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example.}
+    {: OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example. }
     property OnInitialize : TCgShaderEvent read GetOnInitialize write SetOnInitialize;
 
-  published
-    { Published Declarations }
     property DesignEnable : Boolean read FDesignEnable write FDesignEnable default False;
     property VertexProgram : TCgVertexProgram read FVertexProgram write SetVertexProgram;
     property FragmentProgram : TCgFragmentProgram read FFragmentProgram write SetFragmentProgram;
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure LoadShaderPrograms(const VPFilename, FPFilename : string);
+    function ShaderSupported: Boolean; override;
+
+  end;
+
+  {: Allows to use a Cadencer, which is used for noise generation in many shaders. }
+  TCadencableCustomCgShader = class(TCustomCgShader)
+  private
+    FCadencer: TGLCadencer;
+    procedure SetCadencer(const Value: TGLCadencer);
+  protected
+    procedure DoInitialize; override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+  public
+    property Cadencer: TGLCadencer read FCadencer write SetCadencer;
   end;
 
   // TCgShader
@@ -361,6 +409,10 @@ type
   TCgShader = class (TCustomCgShader)
   published
     { Published Declarations }
+    property DesignEnable;
+    property ShaderStyle;
+    property FailedInitAction;
+    
     property VertexProgram;
     property FragmentProgram;
 
@@ -388,8 +440,6 @@ var
 // Misc. global functions
   function IsCgProfileSupported(Profile: TcgProfile): boolean;
 
-procedure Register;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -410,10 +460,6 @@ var
   CompilerMsg     : TStringList; // useful for seeing compiler warnings
 {$ENDIF}
 
-procedure Register;
-begin
-  RegisterComponents('GLScene Shaders', [TCgShader]);
-end;
 
 // IsCgProfileSupported
 //
@@ -435,7 +481,7 @@ var  Msg : string;
 begin
   with CurCgProgram do
     Msg:='[' + LongName + '] ' + cgGetErrorString(cgGetError) + #10 + cgGetLastListing(FCgContext);
-  raise Exception.Create(Msg);
+  raise EGLCGShaderException.Create(Msg);
 end;
 
 // ------------------
@@ -485,7 +531,8 @@ begin
   if val<>FProgramName then
   begin
     FProgramName:=val;
-    NotifyChange(Self);
+    if not GetManualNotification then
+       NotifyChange(Self);
   end;
 end;
 
@@ -760,8 +807,27 @@ procedure TCgProgram.SetPrecision(const Value: TPrecisionSetting);
 begin
   if FPrecision<>Value then begin
     FPrecision := Value;
-    NotifyChange(Self);
+    if not GetManualNotification then
+       NotifyChange(Self);
   end;
+end;
+
+// GetManualNotification
+//
+function TCgProgram.GetManualNotification: Boolean;
+begin
+  Result := not Assigned(TStringList(FCode).OnChange);
+end;
+
+// SetManualNotification
+//
+procedure TCgProgram.SetManualNotification(const Value: Boolean);
+begin
+  if Value = GetManualNotification then Exit;
+  if Value then
+    TStringList(FCode).OnChange := nil
+  else
+    TStringList(FCode).OnChange := NotifyChange;
 end;
 
 // ------------------
@@ -1233,10 +1299,24 @@ procedure TCustomCgShader.DoInitialize;
 begin
   if (csDesigning in ComponentState) and (not FDesignEnable) then
     Exit;
-  FVertexProgram.Initialize;
-  FFragmentProgram.Initialize;
 
-  if assigned(FOnInitialize) then FOnInitialize(self);
+  if not ShaderSupported then
+  begin
+    Enabled := False;
+    HandleFailedInitialization;
+  end
+  else
+    try
+      FVertexProgram.Initialize;
+      FFragmentProgram.Initialize;
+      if Assigned(FOnInitialize) then FOnInitialize(Self);
+    except
+      on E: Exception do
+      begin
+        Enabled := False;
+        HandleFailedInitialization(E.Message);
+      end;
+    end;
 end;
 
 // DoApply
@@ -1271,7 +1351,7 @@ end;
 
 // LoadShaderPrograms
 //
-procedure TCustomCgShader.LoadShaderPrograms(VPFilename,
+procedure TCustomCgShader.LoadShaderPrograms(const VPFilename,
   FPFilename: string);
 begin
   VertexProgram.LoadFromFile(VPFilename);
@@ -1285,6 +1365,62 @@ begin
   result:=cgGLIsProfileSupported(Profile)=CG_TRUE;
 end;
 
+// ShaderSupported
+//
+function TCustomCgShader.ShaderSupported: Boolean;
+begin
+  Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
+             GL_ARB_vertex_shader and GL_ARB_fragment_shader);
+end;
+
+
+// ------------------
+// ------------------ TCadencableCustomCgShader ------------------
+// ------------------
+
+// DoInitialize
+//
+procedure TCadencableCustomCgShader.DoInitialize;
+begin
+  if FCadencer = nil then
+  begin
+    Enabled := False;
+    raise EGLCGShaderException.CreateFmt(glsCadencerNotDefinedEx, [ClassName]);
+  end
+  else
+    inherited;
+end;
+
+// Notification
+//
+procedure TCadencableCustomCgShader.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited;
+  if (AComponent is TGLCadencer) and (Operation = opRemove) then
+  begin
+    FCadencer := nil;
+    Enabled := False;
+  end;
+end;
+
+// SetCadencer
+//
+procedure TCadencableCustomCgShader.SetCadencer(const Value: TGLCadencer);
+begin
+  if Value = FCadencer then Exit;
+
+  if Value = nil then
+    if Enabled then
+      Enabled := False;
+
+  if FCadencer <> nil then
+    FCadencer.RemoveFreeNotification(Self);
+  FCadencer := Value;
+  if FCadencer <> nil then
+    FCadencer.FreeNotification(Self);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1294,7 +1430,8 @@ initialization
 // ------------------------------------------------------------------
 
   // class registrations
-  RegisterClass(TCustomCgShader);
+  RegisterClasses([TCgShader, TCustomCgShader, TCadencableCustomCgShader,
+                   TCgFragmentProgram, TCgVertexProgram, TCgProgram]);
 
   cgSetErrorCallBack(ErrorCallBack);
 

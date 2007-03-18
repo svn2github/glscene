@@ -232,7 +232,7 @@ end;
 //
 procedure TGLCustomGLSLShader.SetParameter3f(const Index: string; const Value: TAffineVector);
 begin
-  glUniform3fARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1], Value[2]);
+  glUniform3fARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 // GetParameter4f
@@ -246,7 +246,7 @@ end;
 //
 procedure TGLCustomGLSLShader.SetParameter4f(const Index: string; const Value: TVector);
 begin
-  glUniform4fARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1], Value[2], Value[3]);
+  glUniform4fARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
 end;
 
 // GetParameterMatrix4fv
@@ -304,25 +304,25 @@ end;
 
 procedure TGLCustomGLSLShader.SetParameter2f(const Index: string; const Value: TVector2f);
 begin
-  glUniform2fARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1]);
+  glUniform2fARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1]);
 end;
 
 
 procedure TGLCustomGLSLShader.SetParameter2i(const Index: string; const Value: TVector2i);
 begin
-  glUniform2iARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1]);
+  glUniform2iARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1]);
 end;
 
 
 procedure TGLCustomGLSLShader.SetParameter3i(const Index: string; const Value: TVector3i);
 begin
-  glUniform3iARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1], Value[2]);
+  glUniform3iARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 
 procedure TGLCustomGLSLShader.SetParameter4i(const Index: string; const Value: TVector4i);
 begin
-  glUniform4iARB(FGLSLProg.GetUniformLocation(Index), Value[0], Value[1], Value[2], Value[3]);
+  glUniform4iARB(FGLSLProg.GetUniformLocation(Index), Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
 end;
 
 

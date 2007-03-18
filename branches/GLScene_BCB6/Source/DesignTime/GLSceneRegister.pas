@@ -1,8 +1,33 @@
-// GLSceneRegister
-{: Registration unit for GLScene library components, property editors and
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLSceneRegister<p>
+
+   Registration unit for GLScene library components, property editors and
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - SpriteAnimation now makes use of
+                                         TGLLibMaterialName's property editor
+      <li>04/03/07 - DaStr - Added TGLPostShaderHolder
+      <li>28/02/07 - LIN   - Added GLShadowHDS
+      <li>25/02/07 - DaStr - Added TGLPostEffect
+                             Moved all terrain components to a separate tab
+                             Moved all shader components registration here
+      <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
+                             TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
+                             TGLSmoothNavigator, TGLSmoothUserInterface
+                             Moved TGLLibMaterialNameProperty to the interface
+                                                                        section
+      <li>21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
+      <li>16/02/07 - DaStr - Added GLMaterialMultiProxy
+      <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
+      <li>13/02/07 - LIN   - Added GLAsyncHDS and GLTexturedHDS
+      <li>06/02/07 - DaStr - Added GLSimpleNavigation
+      <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
+                               procedures from other units to this one
+      <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
+                                   (to support IGLMaterialLibrarySupported)
       <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
       <li>13/10/04 - MRQZZZ - Added GLTrail
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array        
@@ -26,11 +51,11 @@
                           enhanced GetRegisteredSceneObjects
       <li>16/04/00 - EG - Objects icons are now loaded from ressources using
                           ClassName (more VCL-like)
-		<li>11/04/00 - EG - Components now install under 'GLScene',
-								  Fixed DestroySceneObjectList (thanks Uwe Raabe)
-		<li>06/04/00 - EG - Added TGLBehavioursProperty
-		<li>18/03/00 - EG - Added TGLImageClassProperty
-		<li>13/03/00 - EG - Updated TGLTextureImageProperty
+      <li>11/04/00 - EG - Components now install under 'GLScene',
+                          Fixed DestroySceneObjectList (thanks Uwe Raabe)
+      <li>06/04/00 - EG - Added TGLBehavioursProperty
+      <li>18/03/00 - EG - Added TGLImageClassProperty
+      <li>13/03/00 - EG - Updated TGLTextureImageProperty
       <li>14/02/00 - EG - Added MaterialLibrary editor and picker
       <li>09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
                           object-oriented and encapsulated
@@ -127,6 +152,15 @@ type
 
       end;
 
+	// TGLLibMaterialNameProperty
+	//
+	TGLLibMaterialNameProperty = class(TStringProperty)
+		public
+			{ Protected Declarations }
+         function GetAttributes: TPropertyAttributes; override;
+			procedure Edit; override;
+	end;
+
 procedure Register;
 
 //: Auto-create for object manager
@@ -141,7 +175,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-   TypInfo, VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
+   TypInfo, VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
@@ -149,12 +183,21 @@ uses
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
-   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLLinePFX,
-   GLScriptBase, GLGameMenu,
+   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLTexturedHDS,
+   GLAnimatedSprite, GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
+   GLLinePFX, GLScriptBase, GLGameMenu, GLEParticleMasksManager, GLAVIRecorder,
+   GLTimeEventsMgr, GLNavigator, GLMaterialScript, GLFPSMovement, GLDCE,
+   ApplicationFileIO,  GLScreen, GLMisc, GLVfsPAK, GLSimpleNavigation,
+   GLAsyncHDS, GLConsole, GLAtmosphere, GLProxyObjects, GLMaterialMultiProxy,
+   GLSLShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLAsmShader,
+   GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
+   GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
+   GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS,
+
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
+   GLWideBitmapFont, 
    Graphics, Dialogs, ExtDlgs, Forms,
    GLWin32Viewer, GLWin32FullScreenViewer
 {$endif}
@@ -405,15 +448,6 @@ type
 {$endif}
 	end;
 
-	// TGLLibMaterialNameProperty
-	//
-	TGLLibMaterialNameProperty = class(TStringProperty)
-		protected
-			{ Protected Declarations }
-         function GetAttributes: TPropertyAttributes; override;
-			procedure Edit; override;
-	end;
-
 	// TGLAnimationNameProperty
 	//
 	TGLAnimationNameProperty = class(TStringProperty)
@@ -592,9 +626,10 @@ procedure TObjectManager.CreateDefaultObjectIcons;
 var
    pic : TPicture;
 begin
-   pic:=TPicture.Create;
+   pic:=TPicture.Create;            
    // load first pic to get size
    GLLoadBitmapFromInstance(Pic.Bitmap,'gls_cross');
+
    FObjectIcons:=TImageList.CreateSize(Pic.Width, Pic.height);
 
    with FObjectIcons, pic.Bitmap.Canvas do begin
@@ -1362,22 +1397,20 @@ end;
 //
 procedure TGLLibMaterialNameProperty.Edit;
 var
-   buf : String;
-   ml : TGLMaterialLibrary;
-   obj : TPersistent;
+  buf: string;
+  ml: TGLMaterialLibrary;
+  obj: TPersistent;
+  Int: IGLMaterialLibrarySupported;
 begin
-	buf:=GetStrValue;
-   obj:=GetComponent(0);
-   if obj is TGLMaterial then
-   	ml:=TGLMaterial(obj).MaterialLibrary
-   else if obj is TGLLibMaterial then
-      ml:=(TGLLibMaterials(TGLLibMaterial(obj).Collection).Owner as TGLMaterialLibrary)
-   else if obj is TGLSkyBox then
-      ml:=TGLSkyBox(obj).MaterialLibrary
-   else begin
-      ml:=nil;
-      Assert(False, 'oops, unsupported...');
-   end;
+	buf := GetStrValue;
+  obj := GetComponent(0);
+  if Supports(Obj, IGLMaterialLibrarySupported, Int) then
+    ml := Int.GetMaterialLibrary
+  else
+  begin
+    ml := nil;
+    Assert(False, 'oops, unsupported...');
+  end;
 	if not Assigned(ml) then
 		ShowMessage('Select the material library first.')
 	else if LibMaterialPicker.Execute(buf, ml) then
@@ -1757,6 +1790,7 @@ begin
                        TGLCadencer,
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
+                       TGLWideBitmapFont,
                        TGLScriptLibrary
                        {$ifdef WIN32}
                        ,
@@ -1770,15 +1804,32 @@ begin
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLCustomSpritePFXManager,
                        TGLPerlinPFXManager, TGLLinePFXManager,
-                       TGLFireFXManager, TGLThorFXManager
+                       TGLFireFXManager, TGLThorFXManager,
+                       TGLEParticleMasksManager
                       ]);
 
    RegisterComponents('GLScene Utils',
-                      [TAsyncTimer,
-                       TGLStaticImposterBuilder,
-                       TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TGLBumpmapHDS, TGLPerlinHDS,
-                       TCollisionManager, TGLAnimationControler
+                      [TAsyncTimer, TGLStaticImposterBuilder,
+                       TCollisionManager, TGLAnimationControler,
+                       TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
+                       TGLMaterialScripter, TGLUserInterface, TGLNavigator,
+                       TGLSmoothNavigator, TGLSmoothUserInterface,
+                       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
+                       TGLSimpleNavigation 
+                      ]);
+
+   RegisterComponents('GLScene Terrain',
+                      [TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS,
+                       TGLShadowHDS
+                      ]);
+
+   RegisterComponents('GLScene Shaders',
+                      [ TGLTexCombineShader, TGLPhongShader, TGLUserShader,
+                        TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
+                        TGLMultiMaterialShader, TGLBumpShader,
+                        TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
+                        TGLAsmShader,TGLShaderCombiner
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
@@ -1802,9 +1853,16 @@ begin
 {$ifdef GLS_DELPHI_5_UP}
 	RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
+
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
-	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, 'Texture2Name', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSkyBox, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLEParticleMask, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLGameMenu, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TSpriteAnimation, '', TGLLibMaterialNameProperty);
+
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
@@ -1827,6 +1885,7 @@ initialization
       RegisterSceneObject(TGLLightSource, 'LightSource', '');
       RegisterSceneObject(TGLDummyCube, 'DummyCube', '');
 
+      //Basic geometry
       RegisterSceneObject(TGLSprite, 'Sprite', glsOCBasicGeometry);
       RegisterSceneObject(TGLPoints, 'Points', glsOCBasicGeometry);
       RegisterSceneObject(TGLLines, 'Lines', glsOCBasicGeometry);
@@ -1843,6 +1902,7 @@ initialization
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
       {$endif}
 
+      //Advanced geometry
       RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
@@ -1852,6 +1912,7 @@ initialization
       RegisterSceneObject(TGLRevolutionSolid, 'RevolutionSolid', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLTorus, 'Torus', glsOCAdvancedGeometry);
 
+      //Mesh objects
       RegisterSceneObject(TGLActor, 'Actor', glsOCMeshObjects);
       RegisterSceneObject(TGLFreeForm, 'FreeForm', glsOCMeshObjects);
       RegisterSceneObject(TGLMesh, 'Mesh', glsOCMeshObjects);
@@ -1859,21 +1920,28 @@ initialization
       RegisterSceneObject(TGLPortal, 'Portal', glsOCMeshObjects);
       RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', glsOCMeshObjects);
 
+      //Graph-plotting objects
       RegisterSceneObject(TGLFlatText, 'FlatText', glsOCGraphPlottingObjects);
       RegisterSceneObject(TGLHeightField, 'HeightField', glsOCGraphPlottingObjects);
       RegisterSceneObject(TGLXYZGrid, 'XYZGrid', glsOCGraphPlottingObjects);
 
+      //Particle systems
       RegisterSceneObject(TGLParticles, 'Particles', glsOCParticleSystems);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCParticleSystems);
 
+      //Environment objects
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects);
+      RegisterSceneObject(TGLAtmosphere, 'Atmosphere', glsOCEnvironmentObjects);
 
+      //HUD objects
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects);
+      RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects);
 
+      //GUI objects
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
       RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
@@ -1887,6 +1955,7 @@ initialization
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
       RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
 
+      //Special objects
       RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
       {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', glsOCSpecialObjects);
@@ -1895,20 +1964,32 @@ initialization
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
-      {$ifdef WIN32}  // Unknown resource
+      {$ifdef WIN32}
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
-      RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
+      RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects);
+      RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects);
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects);
       {$endif}
+      RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects);
+      RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', glsOCSpecialObjects);
+
+      // Doodad objects
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
       RegisterSceneObject(TGLWaterPlane, 'WaterPlane', glsOCDoodad);
 
+      //Proxy objects
+      RegisterSceneObject(TGLProxyObject, 'ProxyObject', glsOCProxyObjects);
+      RegisterSceneObject(TGLColorProxy, 'ColorProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLActorProxy, 'ActorProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLMultiProxy, 'MultiProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy', glsOCProxyObjects);
+
+      //Other objects
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
-      RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
-      RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '');

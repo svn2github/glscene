@@ -3,7 +3,9 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>03/07/04 - LR - Make change for Linux
+      <li>19/12/06 - DaS - All comboboxes get their Items using RTTI
+                            (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
+      <li>03/07/04 - LR  - Make change for Linux
       <li>24/03/00 - Egg - Added Blending
       <li>06/02/00 - Egg - Creation
    </ul></font>
@@ -17,12 +19,12 @@ interface
 {$IFDEF MSWINDOWS}
 uses
   Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls, 
-  Classes, GLTexture, Buttons, FRTextureEdit, GLWin32Viewer;
+  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLWin32Viewer;
 {$ENDIF}
 {$IFDEF LINUX}
 uses
   QForms, FRMaterialPreview, FRColorEditor, QComCtrls, FRFaceEditor, QStdCtrls, QControls, 
-  Classes, GLTexture, QButtons, FRTextureEdit, GLLinuxViewer; 
+  Classes, GLTexture, QButtons, FRTextureEdit, GLLinuxViewer;
 {$ENDIF}
 
 
@@ -84,8 +86,13 @@ end;
 // Create
 //
 constructor TMaterialEditorForm.Create(AOwner : TComponent);
+var
+  I: Integer;
 begin
 	inherited;
+  for i := 0 to Integer(High(TBlendingMode)) do
+    CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
+
 	FEFront.OnChange:=OnMaterialChanged;
 	FEBack.OnChange:=OnMaterialChanged;
 	RTextureEdit.OnChange:=OnMaterialChanged;

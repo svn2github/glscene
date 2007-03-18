@@ -7,6 +7,7 @@
    by returning the OpenGL state to how you found it.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>05/08/03 - SG - Creation
    </ul></font>
 }
@@ -35,8 +36,6 @@ type
       property ShaderStyle;
   end;
 
-procedure Register;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -44,11 +43,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-procedure Register;
-begin
-  RegisterComponents('GLScene Shaders', [TGLUserShader]);
-end;
 
 // ------------------
 // ------------------ TGLUserShader ------------------

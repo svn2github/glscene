@@ -22,6 +22,7 @@
    texture lookups.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>15/04/05 - SG - Added parallax offset mapping for the BasicARBfp bump method (experimental)
                           Height data is expected in the normal map alpha channel.
       <li>21/12/04 - SG - Added light attenutation support through the 
@@ -125,8 +126,6 @@ type
 
    end;
 
-procedure Register;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -134,13 +133,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-// Register
-//
-procedure Register;
-begin
-  RegisterComponents('GLScene Shaders', [TGLBumpShader]);
-end;
 
 // ------------------
 // ------------------ TGLBumpShader ------------------

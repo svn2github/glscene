@@ -32,6 +32,15 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
+      <li>03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
+                             Added Vector[More/Less](Equal)Then
+      <li>15/02/07 - DaStr - Returned to old code formating style
+      <li>29/01/07 - DaStr - Added IntersectSphereBox (Thanks to dikoe Kenguru)
+      <li>23/01/07 - fig - Added TexpointEquals() function
+      <li>13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
+                             Deleted types that were duplicated  (BugTrackerID = 1586318),
+                             some other types moved to VectorTypes unit
       <li>07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
       <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
                           of rcci
@@ -162,7 +171,7 @@ unit VectorGeometry;
 
 interface
 
-uses VectorTypes;
+uses Types, VectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
@@ -236,12 +245,10 @@ type
    //                          w -> 3
 
    PHomogeneousByteVector = ^THomogeneousByteVector;
-   THomogeneousByteVector = array[0..3] of Byte;
-   TVector4b = THomogeneousByteVector;
+   THomogeneousByteVector = TVector4b;
 
    PHomogeneousWordVector = ^THomogeneousWordVector;
-   THomogeneousWordVector = array[0..3] of Word;
-   TVector4w = THomogeneousWordVector;
+   THomogeneousWordVector = TVector4w;
 
    PHomogeneousIntVector = ^THomogeneousIntVector;
    THomogeneousIntVector = TVector4i;
@@ -253,20 +260,16 @@ type
    THomogeneousDblVector = TVector4d;
 
    PHomogeneousExtVector = ^THomogeneousExtVector;
-   THomogeneousExtVector = array[0..3] of Extended;
-   TVector4e = THomogeneousExtVector;
+   THomogeneousExtVector = TVector4e;
 
    PHomogeneousPtrVector = ^THomogeneousPtrVector;
-   THomogeneousPtrVector = array[0..3] of Pointer;
-   TVector4p = THomogeneousPtrVector;
+   THomogeneousPtrVector = TVector4p;
 
    PAffineByteVector = ^TAffineByteVector;
-   TAffineByteVector = array[0..2] of Byte;
-   TVector3b = TAffineByteVector;
+   TAffineByteVector = TVector3b;
 
    PAffineWordVector = ^TAffineWordVector;
-   TAffineWordVector = array[0..2] of Word;
-   TVector3w = TAffineWordVector;
+   TAffineWordVector = TVector3w;
 
    PAffineIntVector = ^TAffineIntVector;
    TAffineIntVector = TVector3i;
@@ -278,12 +281,10 @@ type
    TAffineDblVector = TVector3d;
 
    PAffineExtVector = ^TAffineExtVector;
-   TAffineExtVector = array[0..2] of Extended;
-   TVector3e = TAffineExtVector;
+   TAffineExtVector = TVector3e;
 
    PAffinePtrVector = ^TAffinePtrVector;
-   TAffinePtrVector = array[0..2] of Pointer;
-   TVector3p = TAffinePtrVector;
+   TAffinePtrVector = TVector3p;
 
    // some simplified names
    PVector = ^TVector;
@@ -296,14 +297,13 @@ type
    TAffineVector = TVector3f;
 
    PVertex    = ^TVertex;
-	TVertex    = TAffineVector;
+   TVertex    = TAffineVector;
 
    PTexPointArray = ^TTexPointArray;
    TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
 
    // matrices
-   THomogeneousByteMatrix = array[0..3] of THomogeneousByteVector;
-   TMatrix4b = THomogeneousByteMatrix;
+   THomogeneousByteMatrix = TMatrix4b;
 
    THomogeneousWordMatrix = array[0..3] of THomogeneousWordVector;
    TMatrix4w = THomogeneousWordMatrix;
@@ -317,8 +317,7 @@ type
    THomogeneousExtMatrix = array[0..3] of THomogeneousExtVector;
    TMatrix4e = THomogeneousExtMatrix;
 
-   TAffineByteMatrix = array[0..2] of TAffineByteVector;
-   TMatrix3b = TAffineByteMatrix;
+   TAffineByteMatrix = TMatrix3b;
 
    TAffineWordMatrix = array[0..2] of TAffineWordVector;
    TMatrix3w = TAffineWordMatrix;
@@ -486,6 +485,178 @@ procedure MakeVector(var v : TVector; const av : TVector); overload;
 procedure RstVector(var v : TAffineVector); overload;
 procedure RstVector(var v : TVector); overload;
 
+//2
+function VectorEquals(const V1, V2: TVector2f): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2b): Boolean; overload;
+
+//3
+//function VectorEquals(const V1, V2: TVector3f): Boolean; overload; //declared further
+function VectorEquals(const V1, V2: TVector3i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3b): Boolean; overload;
+
+//4
+//function VectorEquals(const V1, V2: TVector4f): Boolean; overload; //declared further
+function VectorEquals(const V1, V2: TVector4i): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4d): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4s): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4b): Boolean; overload;
+
+//3x3
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3i): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3d): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3s): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3b): Boolean; overload;
+
+//4x4
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4f): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4i): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4d): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4s): Boolean; overload;
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean; overload;
+
+
+  //2x
+function Vector2fMake(const X, Y: Single): TVector2f; overload;
+function Vector2iMake(const X, Y: Longint): TVector2i; overload;
+function Vector2sMake(const X, Y: Smallint): TVector2s; overload;
+function Vector2dMake(const X, Y: Double): TVector2d; overload;
+function Vector2bMake(const X, Y: Byte): TVector2b; overload;
+
+function Vector2fMake(const Vector: TVector3f): TVector2f; overload;
+function Vector2iMake(const Vector: TVector3i): TVector2i; overload;
+function Vector2sMake(const Vector: TVector3s): TVector2s; overload;
+function Vector2dMake(const Vector: TVector3d): TVector2d; overload;
+function Vector2bMake(const Vector: TVector3b): TVector2b; overload;
+
+function Vector2fMake(const Vector: TVector4f): TVector2f; overload;
+function Vector2iMake(const Vector: TVector4i): TVector2i; overload;
+function Vector2sMake(const Vector: TVector4s): TVector2s; overload;
+function Vector2dMake(const Vector: TVector4d): TVector2d; overload;
+function Vector2bMake(const Vector: TVector4b): TVector2b; overload;
+
+  //3x
+function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;
+function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;
+function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;
+function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;
+function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;
+
+function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;
+function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;
+function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;
+function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;
+
+function Vector3fMake(const Vector: TVector4f): TVector3f; overload;
+function Vector3iMake(const Vector: TVector4i): TVector3i; overload;
+function Vector3sMake(const Vector: TVector4s): TVector3s; overload;
+function Vector3dMake(const Vector: TVector4d): TVector3d; overload;
+function Vector3bMake(const Vector: TVector4b): TVector3b; overload;
+
+  //4x
+function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+
+function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;
+
+function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
+function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
+function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
+function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+
+//: Vector comparison functions:
+      //ComparedVector
+  //3f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+  //4f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+  //3i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+  //4i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+
+  //3s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+  //4s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+
+      //ComparedNumber
+  //3f
+function VectorMoreThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+  //4f
+function VectorMoreThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+  //3i
+function VectorMoreThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+  //4i
+function VectorMoreThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+  //3s
+function VectorMoreThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+  //4s
+function VectorMoreThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+
+function VectorLessThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+function VectorLessEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+
+
 //: Returns the sum of two affine vectors
 function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; overload;
 //: Adds two vectors and places result in vr
@@ -606,6 +777,9 @@ procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVecto
 function Lerp(const start, stop, t : Single) : Single;
 //: Calculates angular interpolation between start and stop at point t
 function AngleLerp(start, stop, t : Single) : Single;
+{: This is used for interpolating between 2 matrices. The result
+   is used to reposition the model parts each frame. }
+function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
 
 {: Calculates the angular distance between two angles in radians.<p>
    Result is in the [0; PI] range. }
@@ -628,6 +802,26 @@ function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineV
 //: Calculates linear interpolation between vector arrays
 procedure VectorArrayLerp(const src1, src2 : PVectorArray; t : Single; n : Integer; dest : PVectorArray); overload;
 procedure VectorArrayLerp(const src1, src2 : PAffineVectorArray; t : Single; n : Integer; dest : PAffineVectorArray); overload;
+
+type
+  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn);
+
+{: There functions that do the same as "Lerp", but add some distortions. }
+function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+
+{: Only valid where Delta belongs to [0..1] }
+function InterpolateSin(const Start, Stop, Delta: Single): Single;
+function InterpolateTan(const Start, Stop, Delta: Single): Single;
+
+{: "Alt" functions are valid everywhere }
+function InterpolateSinAlt(const Start, Stop, Delta: Single): Single;
+
+function InterpolateCombinedFastPower(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single): Single;
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+
 
 {: Calculates the length of a vector following the equation sqrt(x*x+y*y). }
 function VectorLength(const x, y : Single) : Single; overload;
@@ -707,6 +901,10 @@ procedure VectorScale(const v : TVector; factor : Single; var vr : TAffineVector
    v[x]:=v[x]/divider[x], v[y]:=v[y]/divider[y] etc. }
 procedure DivideVector(var v : TVector; const divider : TVector); overload;
 
+//: True if all components are equal.
+function TexpointEquals(const p1, p2: TTexpoint): Boolean;
+//: True if all components are equal.
+function RectEquals(const Rect1, Rect2: TRect): Boolean;
 //: True if all components are equal.
 function VectorEquals(const V1, V2: TVector) : Boolean; overload;
 //: True if all components are equal.
@@ -1271,6 +1469,25 @@ function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
                             intersectPoint : PVector = nil) : Integer; overload;
 
+{: Compute intersection between a triangle and a box.<p>
+   Returns True if an intersection was found. }
+function IntersectTriangleBox(
+  const p1, p2, p3, aMinExtent, aMaxExtent : TAffineVector): Boolean;
+
+{: Compute intersection between a Sphere and a box.<p>
+  Up, Direction and Right must be normalized!
+  Use CubDepht, CubeHeight and CubeWidth to scale TGLCube.}
+function IntersectSphereBox(
+    const SpherePos     : TVector;
+    const SphereRadius  : Single;
+    const BoxMatrix     : TMatrix;
+    const BoxScale      : TAffineVector
+    ; intersectPoint    : PAffineVector = nil
+    ; normal            : PAffineVector = nil
+    ; depth             : PSingle = nil
+  ) : Boolean;
+
+
 {: Compute intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
    in intersectPoint is the reference is not nil. }
@@ -1301,6 +1518,13 @@ function RayCastSphereIntersect(const rayStart, rayVector : TVector;
                                 const sphereCenter : TVector;
                                 const sphereRadius : Single;
                                 var i1, i2 : TVector) : Integer; overload;
+{: Compute intersection between a ray and a box.<p>
+  Returns True if an intersection was found, the intersection point is
+  placed in intersectPoint if the reference is not nil.}
+function RayCastBoxIntersect(
+  const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
+  intersectPoint : PAffineVector = nil) : Boolean;
+
 {: Computes the visible radius of a sphere in a perspective projection.<p>
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
@@ -3396,6 +3620,104 @@ begin
    end;
 end;
 
+// InterpolateCombined
+//
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+begin
+  case InterpolationType of
+    itLinear: Result := Lerp(Start, Stop, Delta);
+    itPower: Result := InterpolatePower(Start, Stop, Delta, DistortionDegree);
+    itSin: Result := InterpolateSin(Start, Stop, Delta);
+    itSinAlt: Result := InterpolateSinAlt(Start, Stop, Delta);
+    itTan: Result := InterpolateTan(Start, Stop, Delta);
+    itLn: Result := InterpolateLn(Start, Stop, Delta, DistortionDegree);
+    else
+    begin
+      Result := -1;
+      Assert(False);
+    end;
+  end;
+end;
+
+// InterpolateCombinedFastPower
+//
+function InterpolateCombinedFastPower(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single): Single;
+begin
+  Result := InterpolatePower(TargetStart, TargetStop, (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart), DistortionDegree);
+end;
+
+// InterpolateCombinedSafe
+//
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+var
+  ChangeDelta: Single;
+begin
+  if OriginalStop = OriginalStart then
+    Result := TargetStart
+  else
+  begin
+    ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
+    Result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+  end;
+end;
+
+// InterpolateCombinedFast
+//
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+var
+  ChangeDelta: Single;
+begin
+  ChangeDelta := (OriginalCurrent - OriginalStart) / (OriginalStop - OriginalStart);
+  Result := InterpolateCombined(TargetStart, TargetStop, ChangeDelta, DistortionDegree, InterpolationType);
+end;
+
+// InterpolateLn
+//
+function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+begin
+  Result := (Stop - Start) * Ln(1 + Delta * DistortionDegree) / Ln(1 + DistortionDegree) + Start;
+end;
+
+// InterpolateSinAlt
+//
+function InterpolateSinAlt(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * Delta * Sin(Delta * Pi / 2) + Start;
+end;
+
+// InterpolateSin
+//
+function InterpolateSin(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * Sin(Delta * Pi / 2) + Start;
+end;
+
+// InterpolateTan
+//
+function InterpolateTan(const Start, Stop, Delta: Single): Single;
+begin
+  Result := (Stop - Start) * VectorGeometry.Tan(Delta * Pi / 4) + Start;
+end;
+
+// InterpolatePower
+//
+function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+begin
+  Result := (Stop - Start) * VectorGeometry.Power(Delta, DistortionDegree) + Start;
+end;
+
+// MatrixLerp
+//
+function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
+var
+  I, J: Integer;
+begin
+  for J := 0 to 3 do
+    for I := 0 to 3 do
+      Result.Coord[I].Coord[J] := m1.Coord[I].Coord[J] + (m2.Coord[I].Coord[J] - m1.Coord[I].Coord[J]) * Delta;
+end;
+
+
 // VectorLength (array)
 //
 function VectorLength(const V : array of Single) : Single;
@@ -4291,6 +4613,23 @@ begin
    v.Coord[1]:=v.Coord[1]/divider.Coord[1];
    v.Coord[2]:=v.Coord[2]/divider.Coord[2];
    v.Coord[3]:=v.Coord[3]/divider.Coord[3];
+end;
+
+// TexpointEquals
+//
+function TexpointEquals(const p1, p2: TTexpoint): Boolean;
+begin
+   Result := (p1.S = p2.S) and (p1.T = p2.T);
+end;
+
+// RectEquals
+//
+function RectEquals(const Rect1, Rect2: TRect): Boolean;
+begin
+  Result := (Rect1.Left = Rect2.Left) and
+            (Rect1.Right = Rect2.Right) and
+            (Rect1.Top = Rect2.Top) and
+            (Rect1.Bottom = Rect2.Left);
 end;
 
 // VectorEquals (hmg vector)
@@ -8844,6 +9183,67 @@ begin
    Result:=0;
 end;
 
+// RayCastBoxIntersect
+//
+function RayCastBoxIntersect(
+  const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
+  intersectPoint : PAffineVector = nil) : Boolean;
+var
+  i, planeInd            : Integer;
+  ResAFV, MaxDist, Plane : TAffineVector;
+  isMiddle               : array [0..2] of Boolean;
+begin
+    // Find plane.
+  Result := True;
+  for i := 0 to 2 do
+    if          rayStart.Coord[i] < aMinExtent.Coord[i] then begin
+      Plane.Coord[i]    := aMinExtent.Coord[i];
+      isMiddle[i] := False;
+      Result      := False;
+    end else if rayStart.Coord[i] > aMaxExtent.Coord[i] then begin
+      Plane.Coord[i]    := aMaxExtent.Coord[i];
+      isMiddle[i] := False;
+      Result      := False;
+    end else begin
+      isMiddle[i] := True;
+    end;
+  if Result then begin
+      // rayStart inside box.
+    if intersectPoint <> nil
+      then intersectPoint^ := rayStart;
+	end else begin
+      // Distance to plane.
+    planeInd := 0;
+    for i := 0 to 2 do
+      if    isMiddle[i]
+         or (rayVector.Coord[i] = 0)
+      then MaxDist.Coord[i] := -1
+      else begin
+         MaxDist.Coord[i] := (Plane.Coord[i] -rayStart.Coord[i]) / rayVector.Coord[i];
+         if MaxDist.Coord[i] > 0 then begin
+           if MaxDist.Coord[planeInd] < MaxDist.Coord[i]
+             then planeInd := i;
+           Result := True;
+         end;
+      end;
+      // Inside box ?
+    if Result then begin
+      for i := 0 to 2 do
+        if planeInd = i
+        then ResAFV.Coord[i] := Plane.Coord[i]
+        else begin
+          ResAFV.Coord[i] := rayStart.Coord[i] +MaxDist.Coord[planeInd] *rayVector.Coord[i];
+          Result :=     (ResAFV.Coord[i] >= aMinExtent.Coord[i])
+                    and (ResAFV.Coord[i] <= aMaxExtent.Coord[i]);
+          if not Result then exit;
+        end;
+      if intersectPoint <> nil
+        then intersectPoint^ := ResAFV;
+    end;
+  end;
+end;
+
+
 // SphereVisibleRadius
 //
 function SphereVisibleRadius(distance, radius : Single) : Single;
@@ -8889,6 +9289,201 @@ begin
       end;
       Result:=1;
    end;
+end;
+
+// TriangleBoxIntersect
+//
+function IntersectTriangleBox(
+  const p1, p2, p3, aMinExtent, aMaxExtent : TAffineVector): Boolean;
+var
+  RayDir, iPoint         : TAffineVector;
+  BoxDiagPt, BoxDiagPt2,
+  BoxDiagDir, iPnt       : TVector;
+begin
+    // Triangle edge (p2, p1) - Box intersection
+  VectorSubtract(p2, p1, RayDir);
+  Result := RayCastBoxIntersect(p1, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p1, iPoint))
+              < VectorNorm(VectorSubtract(p1, p2    ));
+  if Result then exit;
+
+    // Triangle edge (p3, p1) - Box intersection
+  VectorSubtract(p3, p1, RayDir);
+  Result := RayCastBoxIntersect(p1, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p1, iPoint))
+              < VectorNorm(VectorSubtract(p1, p3    ));
+  if Result then exit;
+
+    // Triangle edge (p2, p3) - Box intersection
+  VectorSubtract(p2, p3, RayDir);
+  Result := RayCastBoxIntersect(p3, RayDir, aMinExtent, aMaxExtent, @iPoint);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(p3, iPoint))
+              < VectorNorm(VectorSubtract(p3, p2    ));
+  if Result then exit;
+
+
+    // Triangle - Box diagonal 1 intersection
+  BoxDiagPt := VectorMake(aMinExtent);
+  VectorSubtract(aMaxExtent, aMinExtent, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(BoxDiagPt , iPnt      ))
+              < VectorNorm(VectorSubtract(aMaxExtent, aMinExtent));
+  if Result then exit;
+
+    // Triangle - Box diagonal 2 intersection
+  BoxDiagPt  := VectorMake(aMinExtent.Coord[0], aMinExtent.Coord[1], aMaxExtent.Coord[2]);
+  BoxDiagPt2 := VectorMake(aMaxExtent.Coord[0], aMaxExtent.Coord[1], aMinExtent.Coord[2]);
+  VectorSubtract(BoxDiagPt2, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorNorm(VectorSubtract(BoxDiagPt, iPnt      ))
+              < VectorNorm(VectorSubtract(BoxDiagPt, BoxDiagPt2));
+  if Result then exit;
+
+    // Triangle - Box diagonal 3 intersection
+  BoxDiagPt  := VectorMake(aMinExtent.Coord[0], aMaxExtent.Coord[1], aMinExtent.Coord[2]);
+  BoxDiagPt2 := VectorMake(aMaxExtent.Coord[0], aMinExtent.Coord[1], aMaxExtent.Coord[2]);
+  VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=   VectorLength(VectorSubtract(BoxDiagPt, iPnt     ))
+              < VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
+  if Result then exit;
+
+    // Triangle - Box diagonal 4 intersection
+  BoxDiagPt  := VectorMake(aMaxExtent.Coord[0], aMinExtent.Coord[1], aMinExtent.Coord[2]);
+  BoxDiagPt2 := VectorMake(aMinExtent.Coord[0], aMaxExtent.Coord[1], aMaxExtent.Coord[2]);
+  VectorSubtract(BoxDiagPt, BoxDiagPt, BoxDiagDir);
+  Result := RayCastTriangleIntersect(BoxDiagPt, BoxDiagDir, p1, p2, p3, @iPnt);
+  if Result then
+    Result :=  VectorLength(VectorSubtract(BoxDiagPt, iPnt     ))
+              < VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
+end;
+
+// IntersectSphereBox
+//
+function IntersectSphereBox(
+    const SpherePos     : TVector;
+    const SphereRadius  : Single;
+    const BoxMatrix     : TMatrix; // Up Direction and Right must be normalized!
+                                   // Use CubDepht, CubeHeight and CubeWidth
+                                   // for scale TGLCube.
+    const BoxScale      : TAffineVector
+    ; intersectPoint    : PAffineVector = nil
+    ; normal            : PAffineVector = nil
+    ; depth             : PSingle = nil
+  ) : Boolean;
+
+  function dDOTByColumn(const v : TAffineVector; const m : TMatrix;
+    const aColumn : Integer): Single;
+  begin
+    Result :=  v.Coord[0] *m.Coord[0].Coord[aColumn]
+              +v.Coord[1] *m.Coord[1].Coord[aColumn]
+              +v.Coord[2] *m.Coord[2].Coord[aColumn];
+  end;
+
+  function dDotByRow(const v : TAffineVector;
+    const m : TMatrix; const aRow : Integer) : Single;
+  begin
+    // Equal with: Result := VectorDotProduct(v, AffineVectorMake(m[aRow]));
+    Result :=  v.Coord[0] *m.Coord[aRow].Coord[0]
+              +v.Coord[1] *m.Coord[aRow].Coord[1]
+              +v.Coord[2] *m.Coord[aRow].Coord[2];
+  end;
+
+  function dDotMatrByColumn(const V: TAffineVector;
+    const m: TMatrix): TAffineVector;
+  begin
+    Result.Coord[0] := dDOTByColumn(v, m, 0);
+    Result.Coord[1] := dDOTByColumn(v, m, 1);
+    Result.Coord[2] := dDOTByColumn(v, m, 2);
+  end;
+
+  function dDotMatrByRow(const v : TAffineVector;
+    const m : TMatrix) : TAffineVector;
+  begin
+    Result.Coord[0] := dDotByRow(v, m, 0);
+    Result.Coord[1] := dDotByRow(v, m, 1);
+    Result.Coord[2] := dDotByRow(v, m, 2);
+  end;
+
+var
+  tmp, l, t, p, q, r      : TAffineVector;
+  FaceDistance,
+  MinDistance, Depth1     : Single;
+  mini, i                 : Integer;
+  isSphereCenterInsideBox : Boolean;
+begin
+  // this is easy. get the sphere center `p' relative to the box, and then clip
+  // that to the boundary of the box (call that point `q'). if q is on the
+  // boundary of the box and |p-q| is <= sphere radius, they touch.
+  // if q is inside the box, the sphere is inside the box, so set a contact
+  // normal to push the sphere to the closest box face.
+
+  p.Coord[0] := SpherePos.Coord[0] -BoxMatrix.Coord[3].Coord[0];
+  p.Coord[1] := SpherePos.Coord[1] -BoxMatrix.Coord[3].Coord[1];
+  p.Coord[2] := SpherePos.Coord[2] -BoxMatrix.Coord[3].Coord[2];
+
+  isSphereCenterInsideBox := True;
+  for i := 0 to 2 do begin
+    l.Coord[i] := 0.5 *BoxScale.Coord[i];
+    t.Coord[i] := dDOTByRow(p, BoxMatrix, i);
+    if          t.Coord[i] < -l.Coord[i] then begin
+      t.Coord[i]       := -l.Coord[i];
+      isSphereCenterInsideBox := False;
+    end else if t.Coord[i] >  l.Coord[i] then begin
+      t.Coord[i]       :=  l.Coord[i];
+      isSphereCenterInsideBox := False;
+    end;
+  end;
+
+  if isSphereCenterInsideBox then begin
+
+    MinDistance := l.Coord[0] -Abs(t.Coord[0]);
+    mini := 0;
+    for i := 1 to 2 do begin
+      FaceDistance := l.Coord[i] -Abs(t.Coord[i]);
+      if FaceDistance < MinDistance then begin
+        MinDistance := FaceDistance;
+        mini        := i;
+      end;
+    end;
+
+    if intersectPoint <> nil then
+      intersectPoint^ := AffineVectorMake(SpherePos);
+
+    if normal <> nil then begin
+      Tmp := NullVector;
+      if t.Coord[mini] > 0 then Tmp.Coord[mini] :=  1
+                           else Tmp.Coord[mini] := -1;
+      normal^ := dDotMatrByRow(tmp, BoxMatrix);
+    end;
+
+    if Depth <> nil then
+      Depth^ := MinDistance +SphereRadius;
+
+    Result := True;
+  end else begin
+    q      := dDotMatrByColumn(t, BoxMatrix);
+    r      := VectorSubtract(p, q);
+    Depth1 := SphereRadius -VectorLength(r);
+    if Depth1 < 0 then begin
+      Result := False;
+    end else begin
+      if intersectPoint <> nil then
+        intersectPoint^ := VectorAdd(q, AffineVectorMake(BoxMatrix.Coord[3]));
+      if normal <> nil then begin
+        normal^ := VectorNormalize(r);
+      end;
+      if Depth <> nil then
+        Depth^ := Depth1;
+      Result   := True;
+    end;
+  end;
 end;
 
 // ExtractFrustumFromModelViewProjection
@@ -9129,6 +9724,878 @@ begin
       q.RealPart:=0
    else q.RealPart:=Sqrt(q.RealPart);
    Result:=QuaternionToMatrix(q);
+end;
+
+{*****************************************************************************}
+
+//VectorMake functions
+  //2x
+function Vector2fMake(const X, Y: Single): TVector2f;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+end;
+
+function Vector2iMake(const X, Y: Longint): TVector2i;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+end;
+
+function Vector2sMake(const X, Y: Smallint): TVector2s;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+end;
+
+function Vector2dMake(const X, Y: Double): TVector2d;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+end;
+
+function Vector2bMake(const X, Y: Byte): TVector2b;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+end;
+
+//**************
+
+function Vector2fMake(const Vector: TVector3f): TVector2f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2iMake(const Vector: TVector3i): TVector2i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2sMake(const Vector: TVector3s): TVector2s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2dMake(const Vector: TVector3d): TVector2d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2bMake(const Vector: TVector3b): TVector2b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+//**********
+
+function Vector2fMake(const Vector: TVector4f): TVector2f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2iMake(const Vector: TVector4i): TVector2i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2sMake(const Vector: TVector4s): TVector2s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2dMake(const Vector: TVector4d): TVector2d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+function Vector2bMake(const Vector: TVector4b): TVector2b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+end;
+
+{*****************************************************************************}
+
+  //3x
+function Vector3fMake(const X, Y, Z: Single): TVector3f;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+end;
+
+function Vector3iMake(const X, Y, Z: Longint): TVector3i;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+end;
+
+function Vector3sMake(const X, Y, Z: Smallint): TVector3s;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+end;
+
+function Vector3dMake(const X, Y, Z: Double): TVector3d;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+end;
+
+function Vector3bMake(const X, Y, Z: Byte): TVector3b;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+end;
+
+//*******
+
+function Vector3fMake(const Vector: TVector2f; const Z: Single): TVector3f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+end;
+
+function Vector3iMake(const Vector: TVector2i; const Z: Longint): TVector3i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+end;
+
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint): TVector3s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+end;
+
+function Vector3dMake(const Vector: TVector2d; const Z: Double): TVector3d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+end;
+
+function Vector3bMake(const Vector: TVector2b; const Z: Byte): TVector3b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+end;
+
+//*******
+
+function Vector3fMake(const Vector: TVector4f): TVector3f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+end;
+
+function Vector3iMake(const Vector: TVector4i): TVector3i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+end;
+
+function Vector3sMake(const Vector: TVector4s): TVector3s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+end;
+
+function Vector3dMake(const Vector: TVector4d): TVector3d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+end;
+
+function Vector3bMake(const Vector: TVector4b): TVector3b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+end;
+
+{*****************************************************************************}
+
+  //4x
+function Vector4fMake(const X, Y, Z, W: Single): TVector4f;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4iMake(const X, Y, Z, W: Longint): TVector4i;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4sMake(const X, Y, Z, W: Smallint): TVector4s;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4dMake(const X, Y, Z, W: Double): TVector4d;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4bMake(const X, Y, Z, W: Byte): TVector4b;
+begin
+  Result.Coord[0] := X;
+  Result.Coord[1] := Y;
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+//********
+
+function Vector4fMake(const Vector: TVector3f; const W: Single): TVector4f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+  Result.Coord[3] := W;
+end;
+
+function Vector4iMake(const Vector: TVector3i; const W: Longint): TVector4i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+  Result.Coord[3] := W;
+end;
+
+function Vector4sMake(const Vector: TVector3s; const W: Smallint): TVector4s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+  Result.Coord[3] := W;
+end;
+
+function Vector4dMake(const Vector: TVector3d; const W: Double): TVector4d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+  Result.Coord[3] := W;
+end;
+
+function Vector4bMake(const Vector: TVector3b; const W: Byte): TVector4b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Vector.Coord[2];
+  Result.Coord[3] := W;
+end;
+
+//*******
+
+function Vector4fMake(const Vector: TVector2f; const Z: Single; const W: Single): TVector4f;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4iMake(const Vector: TVector2i; const Z: Longint; const W: Longint): TVector4i;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint; const W: Smallint): TVector4s;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4dMake(const Vector: TVector2d; const Z: Double; const W: Double): TVector4d;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+function Vector4bMake(const Vector: TVector2b; const Z: Byte; const W: Byte): TVector4b;
+begin
+  Result.Coord[0] := Vector.Coord[0];
+  Result.Coord[1] := Vector.Coord[1];
+  Result.Coord[2] := Z;
+  Result.Coord[3] := W;
+end;
+
+{*****************************************************************************}
+
+//2
+function VectorEquals(const V1, V2: TVector2f): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2i): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2d): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2s): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]);
+end;
+
+function VectorEquals(const V1, V2: TVector2b): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]);
+end;
+
+{*****************************************************************************}
+
+//3
+function VectorEquals(const V1, V2: TVector3i): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3d): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3s): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]);
+end;
+
+function VectorEquals(const V1, V2: TVector3b): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]);
+end;
+
+{*****************************************************************************}
+
+//4
+function VectorEquals(const V1, V2: TVector4i): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]) and (V1.Coord[3] = V2.Coord[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4d): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]) and (V1.Coord[3] = V2.Coord[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4s): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]) and (V1.Coord[3] = V2.Coord[3]);
+end;
+
+function VectorEquals(const V1, V2: TVector4b): Boolean;
+begin
+  Result := (V1.Coord[0] = V2.Coord[0]) and (V1.Coord[1] = V2.Coord[1]) and (V1.Coord[2] = V2.Coord[2]) and (V1.Coord[3] = V2.Coord[3]);
+end;
+
+{*****************************************************************************}
+
+//3x3f
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]);
+end;
+
+//3x3i
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3i): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]);
+end;
+
+//3x3d
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3d): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]);
+end;
+
+//3x3s
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3s): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]);
+end;
+
+//3x3b
+function MatrixEquals(const Matrix1, Matrix2: TMatrix3b): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]);
+end;
+
+{*****************************************************************************}
+
+//4x4f
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4f): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]) and
+            VectorEquals(Matrix1.Coord[3], Matrix2.Coord[3]);
+end;
+
+//4x4i
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4i): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]) and
+            VectorEquals(Matrix1.Coord[3], Matrix2.Coord[3]);
+end;
+
+//4x4d
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4d): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]) and
+            VectorEquals(Matrix1.Coord[3], Matrix2.Coord[3]);
+end;
+
+//4x4s
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4s): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]) and
+            VectorEquals(Matrix1.Coord[3], Matrix2.Coord[3]);
+end;
+
+//4x4b
+function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean;
+begin
+  Result := VectorEquals(Matrix1.Coord[0], Matrix2.Coord[0]) and
+            VectorEquals(Matrix1.Coord[1], Matrix2.Coord[1]) and
+            VectorEquals(Matrix1.Coord[2], Matrix2.Coord[2]) and
+            VectorEquals(Matrix1.Coord[3], Matrix2.Coord[3]);
+end;
+
+{*****************************************************************************}
+
+//Vector comparison functions:
+  //3f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]);
+end;
+  //4f
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] > ComparedVector.Coord[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] >= ComparedVector.Coord[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] < ComparedVector.Coord[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] <= ComparedVector.Coord[3]);
+end;
+
+   //3i
+//Vector comparison functions:
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]);
+end;
+  //4i
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] > ComparedVector.Coord[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] >= ComparedVector.Coord[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] < ComparedVector.Coord[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] <= ComparedVector.Coord[3]);
+end;
+
+   //3s
+//Vector comparison functions:
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]);
+end;
+  //4s
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] > ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] > ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] > ComparedVector.Coord[3]);
+end;
+
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] >= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] >= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] >= ComparedVector.Coord[3]);
+end;
+
+function VectorLessThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] < ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] < ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] < ComparedVector.Coord[3]);
+end;
+
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedVector.Coord[0]) and
+            (SourceVector.Coord[1] <= ComparedVector.Coord[1]) and
+            (SourceVector.Coord[2] <= ComparedVector.Coord[2]) and
+            (SourceVector.Coord[3] <= ComparedVector.Coord[3]);
+end;
+
+        //ComparedNumber
+    //3f
+function VectorMoreThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber);
+end;
+  //4f
+function VectorMoreThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber) and
+            (SourceVector.Coord[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber) and
+            (SourceVector.Coord[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber) and
+            (SourceVector.Coord[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4f; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber) and
+            (SourceVector.Coord[3] <= ComparedNumber);
+end;
+
+
+    //3i
+function VectorMoreThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber);
+end;
+  //4i
+function VectorMoreThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber) and
+            (SourceVector.Coord[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber) and
+            (SourceVector.Coord[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber) and
+            (SourceVector.Coord[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4i; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber) and
+            (SourceVector.Coord[3] <= ComparedNumber);
+end;
+    //3s
+function VectorMoreThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector3s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber);
+end;
+  //4s
+function VectorMoreThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] > ComparedNumber) and
+            (SourceVector.Coord[1] > ComparedNumber) and
+            (SourceVector.Coord[2] > ComparedNumber) and
+            (SourceVector.Coord[3] > ComparedNumber);
+end;
+
+function VectorMoreEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] >= ComparedNumber) and
+            (SourceVector.Coord[1] >= ComparedNumber) and
+            (SourceVector.Coord[2] >= ComparedNumber) and
+            (SourceVector.Coord[3] >= ComparedNumber);
+end;
+
+function VectorLessThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] < ComparedNumber) and
+            (SourceVector.Coord[1] < ComparedNumber) and
+            (SourceVector.Coord[2] < ComparedNumber) and
+            (SourceVector.Coord[3] < ComparedNumber);
+end;
+
+function VectorLessEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
+begin
+  Result := (SourceVector.Coord[0] <= ComparedNumber) and
+            (SourceVector.Coord[1] <= ComparedNumber) and
+            (SourceVector.Coord[2] <= ComparedNumber) and
+            (SourceVector.Coord[3] <= ComparedNumber);
 end;
 
 //--------------------------------------------------------------
