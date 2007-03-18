@@ -4,6 +4,7 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>13/02/07 - aidave - Updated Target.Style to csPoint 
     <li>23/12/04 - PhP - GLScenestyled Header
     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
     <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
@@ -147,6 +148,7 @@ begin
   FClients := TList.Create;
   RegisterManager(Self);
   FTarget := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));
+  FTarget.Style := csPoint;
   FMaxpoints:=64;
   FGlowSize:=0.2;
   FVibrate:=0;
@@ -391,6 +393,7 @@ constructor TGLBThorFX.Create(aOwner : TXCollection);
 begin
   inherited Create(aOwner);
   FTarget := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));
+  FTarget.Style := csPoint;
 end;
 
 // Destroy

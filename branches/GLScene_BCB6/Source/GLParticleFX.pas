@@ -10,6 +10,12 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>24/01/07 - DaStr - TGLSourcePFXEffect.Burst and TGLBaseSpritePFXManager.RenderParticle bugfixed
+                             TGLLifeColoredPFXManager.RotateVertexBuf bugfixed (all based on old code)
+      <li>28/10/06 - LC - Fixed access violation in TGLParticleFXRenderer. Bugtracker ID=1585907 (thanks Da Stranger)
+      <li>19/10/06 - LC - Fixed memory leak in TGLParticleFXManager. Bugtracker ID=1551866 (thanks Dave Gravel)
       <li>08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
                              form but a particleFX still had a reference to it (added
                              the FUsers property). Butracker ID=783625. 
@@ -946,7 +952,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorTypes, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
+uses SysUtils, VectorTypes, OpenGL1x, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
 
 // GetOrCreateSourcePFX
 //
@@ -1178,7 +1184,7 @@ begin
       if aItem.Manager=Self.Owner then
          aItem.Manager:=nil;
       aItem.Free;
-      FItemList.List[i]:=nil;
+      FItemList.List^[i]:=nil;
    end;
 end;
 
@@ -1225,6 +1231,7 @@ begin
    DeRegisterManager(Self);
    Renderer:=nil;
    FParticles.Free;
+   FUsers.Free;
 end;
 
 // NotifyChange
@@ -1572,18 +1579,18 @@ var
       buf : Pointer;
    begin
       if endIndex-startIndex>1 then begin
-         poptr:=@region.particleOrder[0];
+         poptr:=@region^.particleOrder[0];
          repeat
             I:=startIndex;
             J:=endIndex;
-            P:=PParticleReference(poptr[(I + J) shr 1]).distance;
+            P:=PParticleReference(poptr^[(I + J) shr 1])^.distance;
             repeat
-               while PParticleReference(poptr[I]).distance<P do Inc(I);
-               while PParticleReference(poptr[J]).distance>P do Dec(J);
+               while PParticleReference(poptr^[I])^.distance<P do Inc(I);
+               while PParticleReference(poptr^[J])^.distance>P do Dec(J);
                if I<=J then begin
-                  buf:=poptr[I];
-                  poptr[I]:=poptr[J];
-                  poptr[J]:=buf;
+                  buf:=poptr^[I];
+                  poptr^[I]:=poptr^[J];
+                  poptr^[J]:=buf;
                   Inc(I); Dec(J);
                end;
             until I>J;
@@ -1592,11 +1599,11 @@ var
             startIndex:=I;
          until I >= endIndex;
       end else if endIndex-startIndex>0 then begin
-         poptr:=@region.particleOrder[0];
-         if PParticleReference(poptr[endIndex]).distance<PParticleReference(poptr[startIndex]).distance then begin
-            buf:=poptr[startIndex];
-            poptr[startIndex]:=poptr[endIndex];
-            poptr[endIndex]:=buf;
+         poptr:=@region^.particleOrder[0];
+         if PParticleReference(poptr^[endIndex])^.distance<PParticleReference(poptr^[startIndex])^.distance then begin
+            buf:=poptr^[startIndex];
+            poptr^[startIndex]:=poptr^[endIndex];
+            poptr^[endIndex]:=buf;
          end;
       end;
    end;
@@ -1604,15 +1611,21 @@ var
    // !! WARNING !! This may cause incorrect behaviour if optimization is turned
    // off for the project.
    procedure DistToRegionIdx; register;
+   {$IFOPT O-}
+   begin
+      regionIdx := Trunc((dist - distDelta) * invRegionSize);
+   {$ELSE}
+   // !! WARNING !! This may cause incorrect behaviour if optimization is turned
+   // off for the project.
    asm
-//   begin
-      // fast version of
-//      regionIdx := Trunc((dist - distDelta) * invRegionSize);
       FLD     dist
       FSUB    distDelta
       FMUL    invRegionSize
       FISTP   regionIdx
+   {$ENDIF}
    end;
+
+
 
 var
    minDist, maxDist, sortMaxRegion : Integer;
@@ -1652,7 +1665,7 @@ begin
          curList:=curManager.FParticles.List;
          Inc(FLastParticleCount, curManager.ParticleCount);
          for particleIdx:=0 to curManager.ParticleCount-1 do begin
-            curParticle:=curList[particleIdx];
+            curParticle:=curList^[particleIdx];
             dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
             if not FZCull then begin
                if PInteger(@dist)^<minDist then
@@ -1662,16 +1675,16 @@ begin
                DistToRegionIdx;
                curRegion:=@FRegions[regionIdx];
                // add particle to region
-               if curRegion.count=curRegion.capacity then begin
-                  Inc(curRegion.capacity, cPFXGranularity);
-                  ReallocMem(curRegion.particleRef, curRegion.capacity*SizeOf(TParticleReference));
-                  ReallocMem(curRegion.particleOrder, curRegion.capacity*SizeOf(Pointer));
+               if curRegion^.count=curRegion^.capacity then begin
+                  Inc(curRegion^.capacity, cPFXGranularity);
+                  ReallocMem(curRegion^.particleRef, curRegion^.capacity*SizeOf(TParticleReference));
+                  ReallocMem(curRegion^.particleOrder, curRegion^.capacity*SizeOf(Pointer));
                end;
-               with curRegion.particleRef[curRegion.count] do begin
+               with curRegion^.particleRef^[curRegion^.count] do begin
                   particle:=curParticle;
                   distance:=PInteger(@dist)^;
                end;
-               Inc(curRegion.count);
+               Inc(curRegion^.count);
             end;
          end;
       end;
@@ -1686,16 +1699,16 @@ begin
       end;
       for regionIdx:=0 to cPFXNbRegions-1 do begin
          curRegion:=@FRegions[regionIdx];
-         if curRegion.count>1 then begin
+         if curRegion^.count>1 then begin
             // Prepare order table
             with curRegion^ do for particleIdx:=0 to count-1 do
-               particleOrder[particleIdx]:=@particleRef[particleIdx];
+               particleOrder^[particleIdx]:=@particleRef^[particleIdx];
             // QuickSort
             if (regionIdx<sortMaxRegion) and (FBlendingMode<>bmAdditive) then
-               QuickSortRegion(0, curRegion.count-1, curRegion);
-         end else if curRegion.Count=1 then begin
+               QuickSortRegion(0, curRegion^.count-1, curRegion);
+         end else if curRegion^.Count=1 then begin
             // Prepare order table
-            curRegion.particleOrder[0]:=@curRegion.particleRef[0];
+            curRegion^.particleOrder^[0]:=@curRegion^.particleRef[0];
          end;
       end;
       FLastSortTime:=StopPrecisionTimer(timer)*1000;
@@ -1734,16 +1747,16 @@ begin
       try
          // Initialize managers
          for managerIdx:=0 to FManagerList.Count-1 do
-            TGLParticleFXManager(FManagerList.List[managerIdx]).InitializeRendering;
+            TGLParticleFXManager(FManagerList.List^[managerIdx]).InitializeRendering;
          // Start Rendering... at last ;)
          try
             curManager:=nil;
             for regionIdx:=cPFXNbRegions-1 downto 0 do begin
                curRegion:=@FRegions[regionIdx];
-               if curRegion.count>0 then begin
-                  curParticleOrder:=@curRegion.particleOrder[0];
-                  for particleIdx:=curRegion.count-1 downto 0 do begin
-                     curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
+               if curRegion^.count>0 then begin
+                  curParticleOrder:=@curRegion^.particleOrder[0];
+                  for particleIdx:=curRegion^.count-1 downto 0 do begin
+                     curParticle:=PParticleReference(curParticleOrder^[particleIdx])^.particle;
                      if curParticle.Manager<>curManager then begin
                         if Assigned(curManager) then
                            curManager.EndParticles;
@@ -1766,7 +1779,7 @@ begin
          finally
             // Finalize managers
             for managerIdx:=0 to FManagerList.Count-1 do
-               TGLParticleFXManager(FManagerList.List[managerIdx]).FinalizeRendering;
+               TGLParticleFXManager(FManagerList.List^[managerIdx]).FinalizeRendering;
          end;
       finally
          if FZWrite then
@@ -1959,22 +1972,34 @@ end;
 // Burst
 //
 procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
+
 var
    particle : TGLParticle;
    av, pos : TAffineVector;
+   OwnerObjRelPos : TAffineVector;
 begin
    if Manager=nil then Exit;
-   pos:=ParticleAbsoluteInitialPos;
-   while nb>0 do begin
+
+   OwnerObjRelPos := OwnerBaseSceneObject.LocalToAbsolute(NullVector);
+   pos := ParticleAbsoluteInitialPos;
+
+   if FManager is TGLDynamicPFXManager then
+     TGLDynamicPFXManager(FManager).FRotationCenter := pos;
+
+   while nb>0 do
+   begin
       particle:=Manager.CreateParticle;
-      particle.FEffectScale:=EffectScale;
+      particle.FEffectScale := FEffectScale;
       RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
+      if VelocityMode=svmRelative then
+         av:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(av),OwnerObjRelPos);
+
+      ScaleVector(av,FEffectScale);
       VectorAdd(pos, av, @particle.Position);
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       if VelocityMode=svmRelative then
-         SetVector(particle.FVelocity, OwnerBaseSceneObject.LocalToAbsolute(InitialVelocity.AsVector))
-      else SetVector(particle.FVelocity, InitialVelocity.AsVector);
-      AddVector(particle.FVelocity, av);
+         particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerObjRelPos);
+
       particle.CreationTime:=time;
       Dec(nb);
    end;
@@ -2231,7 +2256,7 @@ begin
    doPack:=False;
    list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
-      curParticle:=list[i];
+      curParticle:=list^[i];
       if (progressTime.newTime-curParticle.CreationTime)<maxAge then begin
          // particle alive, just update velocity and position
          with curParticle do begin
@@ -2267,7 +2292,7 @@ begin
       end else begin
          // kill particle
          curParticle.Free;
-         list[i]:=nil;
+         list^[i]:=nil;
          doPack:=True;
       end;
    end;
@@ -2377,19 +2402,19 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+               lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
                f:=lifeTime*lck.InvLifeTime;
                VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
                VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
             end;
          else
-            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
-            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List^[k-1]);
             f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
@@ -2416,16 +2441,16 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if TPFXLifeColor(lifeColorsLookupList[i]).LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(lifeColorsLookupList^[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          if k=0 then begin
-            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
+            lck:=TPFXLifeColor(lifeColorsLookupList^[k]);
             f:=lifeTime*lck.InvLifeTime;
             VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
          end else begin
-            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
-            lck1:=TPFXLifeColor(lifeColorsLookupList[k-1]);
+            lck:=TPFXLifeColor(lifeColorsLookupList^[k]);
+            lck1:=TPFXLifeColor(lifeColorsLookupList^[k-1]);
             f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
          end;
@@ -2449,18 +2474,18 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+               lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
                f:=lifeTime*lck.InvLifeTime;
                VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
             end;
          else
-            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
-            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List^[k-1]);
             f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
@@ -2484,12 +2509,12 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+               lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
                Result:=lck.FDoScale;
                if Result then begin
                   f:=lifeTime*lck.InvLifeTime;
@@ -2497,8 +2522,8 @@ begin
                end;
             end;
          else
-            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
-            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List^[k-1]);
             Result:=lck.FDoScale or lck1.FDoScale;
             if Result then begin
                f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
@@ -2560,14 +2585,14 @@ var
    rotateAngle : Single;
    axis, p : TAffineVector;
    rotMatrix : TMatrix;
+   diff : Single;
 begin
    if ComputeRotateAngle(lifeTime, rotateAngle) then begin
-      MakeVector(axis, 0, 0, 1);
-      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
+      SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
+      SetVector(axis, VectorSubtract(axis, pos));
       NormalizeVector(axis);
-
-      // code below probably does it in the slowest fashion possible
-      rotMatrix := CreateRotationMatrix(axis, rotateAngle*c180divPI);
+      diff := DegToRad(rotateAngle);
+      rotMatrix := CreateRotationMatrix(axis, diff);
       p.Coord[0] := -pos.Coord[0];
       p.Coord[1] := -pos.Coord[1];
       p.Coord[2] := -pos.Coord[2];
@@ -2601,11 +2626,11 @@ begin
       list:=Particles.List;
       for i:=0 to Particles.ItemCount-1 do begin
          killParticle:=True;
-         curParticle:=list[i];
+         curParticle:=list^[i];
          FOnParticleProgress(Self, progressTime, curParticle, killParticle);
          if killParticle then begin
             curParticle.Free;
-            list[i]:=nil;
+            list^[i]:=nil;
             doPack:=True;
          end;
       end;
@@ -2759,7 +2784,7 @@ begin
 
    if aParticle.FEffectScale<>1 then begin
       for i:=0 to FVertBuf.Count-1 do
-         VectorAdd(VectorScale(FVertices.List[i], aParticle.FEffectScale), pos, vertexList[i])
+         VectorAdd(VectorScale(FVertices.List^[i], aParticle.FEffectScale), pos, vertexList[i])
    end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
 
    if FLifeRotations then
@@ -2776,7 +2801,7 @@ begin
          glVertex3fv(@vertexList[i]);
 
       glVertex3fv(@vertexList[0]);
-   glEnd;                 
+   glEnd;
 end;
 
 // EndParticles
@@ -2914,7 +2939,7 @@ begin
             bmp32.Free;
          end;
       end else begin
-         Renderer.CurrentRCI.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
+         Renderer.CurrentRCI^.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
       end;
    end;
 end;
@@ -2989,10 +3014,12 @@ const
 var
    lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
+   pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
    spt : TSpritesPerTexture;
+
 
    procedure IssueVertices(tcs : PTexCoordsSet; vertexList : PAffineVectorArray);
    begin
@@ -3019,17 +3046,18 @@ begin
    end;
 
    vertexList:=FVertBuf.List;
-   if aParticle.FEffectScale<>1 then begin
-      if ComputeSizeScale(lifeTime, sizeScale) then
-         sizeScale:=sizeScale*aParticle.FEffectScale
-      else sizeScale:=aParticle.FEffectScale;
+   sizeScale :=1;
+   if (aParticle.FEffectScale<>1) or ComputeSizeScale(lifeTime, sizeScale) then
+   begin
+      sizeScale := aParticle.FEffectScale;
       for i:=0 to FVertBuf.Count-1 do
-         vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
-   end else begin
-      if ComputeSizeScale(lifeTime, sizeScale) then begin
-         for i:=0 to FVertBuf.Count-1 do
-            vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
-      end else VectorArrayAdd(FVertices.List, aParticle.Position, FVertBuf.Count, vertexList);
+         vertexList^[i]:=VectorCombine(FVertices.List^[i], pos, sizeScale, 1);
+   end
+   else
+   begin
+      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+      {for i:=0 to FVertBuf.Count-1 do
+          ScaleVector(vertexList^[i],aParticle.FEffectScale);}
    end;
 
    if FLifeRotations then
@@ -3040,8 +3068,8 @@ begin
          ComputeColors(lifeTime, inner, outer);
          glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@inner);
-            glTexCoord2f((tcs[0].S+tcs[2].S)*0.5, (tcs[0].T+tcs[2].T)*0.5);
-            glVertex3fv(@aParticle.Position);
+            glTexCoord2f((tcs^[0].S+tcs^[2].S)*0.5, (tcs^[0].T+tcs^[2].T)*0.5);
+            glVertex3fv(@pos);
             glColor4fv(@outer);
             IssueVertices(tcs, vertexList);
             glTexCoord2fv(@tcs[0]);

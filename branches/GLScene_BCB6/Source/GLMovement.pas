@@ -3,6 +3,8 @@
    Movement path behaviour by Roger Cao<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
+      <li>27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
       <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)  
       <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
@@ -526,8 +528,12 @@ end;
 
 destructor TGLMovementPath.Destroy;
 begin
+  // make sure the splines are freed
+  FLooped:= false;
+  
   ClearNodes;
   FNodes.Free;
+
   inherited Destroy;
 end;
 
@@ -618,7 +624,6 @@ end;
 procedure TGLMovementPath.SetShowPath(Value: Boolean);
 var
   OwnerObj: TGLBaseSceneObject;
-  LineObj: TGLLines;
 begin
   if FShowPath<>Value then
   begin
@@ -627,19 +632,14 @@ begin
     OwnerObj := (Collection as TGLMovementPaths).Owner{TGLMovement}.Owner{TGLBehavours}.Owner as TGLBaseSceneObject;
     if FShowPath then
     begin
-      //allways add the line object to the root
-      LineObj := OwnerObj.Scene.Objects.AddNewChild(TGLLines) as TGLLines;
-      //set the link
-      FPathLine := LineObj;
+      FPathLine := TGLLines.Create(OwnerObj);
+      FPathLine.SetSubComponent(True);
+      OwnerObj.Scene.Objects.AddChild(FPathLine);
       FPathLine.SplineMode := FPathSplineMode;
-
       UpdatePathLine;
-    end else
-    begin
-      OwnerObj.Scene.Objects.Remove(FPathLine, False);
-      FPathLine.free;
-      FPathLine := nil;
-    end;
+    end
+    else
+      FreeAndNil(FPathLine);
   end;
 end;
 
@@ -963,6 +963,7 @@ begin
     FreeMem(sy);
     FreeMem(sz);
 
+    FreeAndNil(FCurrentNode);
     FCurrentNode := TGLPathNode.Create(nil);
     FCurrentNode.Assign(Nodes[0]);
     FCurrentNodeIndex := -1;
@@ -976,9 +977,9 @@ begin
   end 
   else
   begin
-    MotionSplineControl.Free;
-    RotationSplineControl.Free;
-    ScaleSplineControl.Free;
+    FreeAndNil(MotionSplineControl);
+    FreeAndNil(RotationSplineControl);
+    FreeAndNil(ScaleSplineControl);
     if Assigned(FOnTravelStop) then
       FOnTravelStop(self);
   end;

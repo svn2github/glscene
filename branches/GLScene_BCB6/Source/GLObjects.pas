@@ -13,6 +13,13 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>15/02/07 - DaStr - Global $R- removed, added default values to
+                               TGLSprite.NoZWrite, MirrorU, MirrorV
+      <li>14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
+      <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
+      <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
       <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
                              Also fixed a TGLLineBase.assign problem (object being assigned to
                              was refering the base lists, not copying them). 
@@ -119,8 +126,6 @@
    </ul></font>
 }
 unit GLObjects;
-
-{$R-}
 
 interface
 
@@ -332,11 +337,11 @@ type
          property AlphaChannel : Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
          {: If True, sprite will not write to Z-Buffer.<p>
             Sprite will STILL be maskable by ZBuffer test. }
-         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite default False;
          {: Reverses the texture coordinates in the U and V direction to mirror 
             the texture. }
-         property MirrorU : Boolean read FMirrorU write SetMirrorU;
-         property MirrorV : Boolean read FMirrorV write SetMirrorV;
+         property MirrorU : Boolean read FMirrorU write SetMirrorU default False;
+         property MirrorV : Boolean read FMirrorV write SetMirrorV default False;
 	end;
 
    // TGLPointStyle
@@ -951,14 +956,14 @@ begin
    for i:=0 to 11 do begin
       faceIndices:=@polygons[i, 0];
 
-      n:=CalcPlaneNormal(vertices[faceIndices[0]],
-                         vertices[faceIndices[1]],
-                         vertices[faceIndices[2]]);
+      n:=CalcPlaneNormal(vertices[faceIndices^[0]],
+                         vertices[faceIndices^[1]],
+                         vertices[faceIndices^[2]]);
       glNormal3fv(@N);
 
       glBegin(GL_TRIANGLE_FAN);
       for j:=0 to 4 do
-         glVertex3fv(@vertices[faceIndices[j]]);
+         glVertex3fv(@vertices[faceIndices^[j]]);
       glEnd;
    end;
 end;
@@ -971,11 +976,9 @@ const
    B = 0.30901699437; // 1/(1+Sqrt(5))
 const
    vertices : packed array [0..11] of TAffineVector =
-      ((X: 0; Y:-A; Z:-A), (X: 0; Y:-B; Z: A), (X: 0; Y: B; Z:-A), (X: 0; Y: B; Z: A),
+      ((X: 0; Y:-B; Z:-A), (X: 0; Y:-B; Z: A), (X: 0; Y: B; Z:-A), (X: 0; Y: B; Z: A),
        (X:-A; Y: 0; Z:-B), (X:-A; Y: 0; Z: B), (X: A; Y: 0; Z:-B), (X: A; Y: 0; Z: B),
        (X:-B; Y:-A; Z: 0), (X:-B; Y: A; Z: 0), (X: B; Y:-A; Z: 0), (X: B; Y: A; Z: 0));
-
-
    triangles : packed array [0..19] of packed array [0..2] of Byte =
       (( 2, 9,11), ( 3,11, 9), ( 3, 5, 1), ( 3, 1, 7),
        ( 2, 6, 0), ( 2, 0, 4), ( 1, 8,10), ( 0,10, 8),
@@ -991,14 +994,14 @@ begin
    for i:=0 to 19 do begin
       faceIndices:=@triangles[i, 0];
 
-      n:=CalcPlaneNormal(vertices[faceIndices[0]],
-                         vertices[faceIndices[1]],
-                         vertices[faceIndices[2]]);
+      n:=CalcPlaneNormal(vertices[faceIndices^[0]],
+                         vertices[faceIndices^[1]],
+                         vertices[faceIndices^[2]]);
       glNormal3fv(@N);
 
       glBegin(GL_TRIANGLES);
       for j:=0 to 2 do
-         glVertex3fv(@vertices[faceIndices[j]]);
+         glVertex3fv(@vertices[faceIndices^[j]]);
       glEnd;
    end;
 end;
@@ -2092,7 +2095,8 @@ begin
       LinePattern:=TGLLineBase(Source).FLinePattern;
       LineWidth:=TGLLineBase(Source).FLineWidth;
       AntiAliased:=TGLLineBase(Source).FAntiAliased;
-   end else inherited Assign(Source);
+   end;
+   inherited Assign(Source);
 end;
 
 // SetupLineStyle
@@ -2630,45 +2634,45 @@ begin
    glBegin(GL_QUADS);
    if cpFront in FParts then begin
       glNormal3f(  0,  0, nd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw,  hh, hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,  hh, hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, -hh, hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw,      hh,    hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw*nd,   hh*nd, hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw,     -hh,    hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw*nd,  -hh*nd, hd);
    end;
    if cpBack in FParts then begin
       glNormal3f(  0,  0, -nd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f( hw,  hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f( hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw,  hh, -hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f( hw,     hh,    -hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f( hw*nd, -hh*nd, -hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw,    -hh,    -hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw*nd,  hh*nd, -hd);
    end;
    if cpLeft in FParts then begin
       glNormal3f(-nd,  0,  0);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw,  hh,  hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,  hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh,  hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw,  hh,     hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,  hh*nd, -hd*nd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh,    -hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh*nd,  hd*nd);
    end;
    if cpRight in FParts then begin
       glNormal3f(nd,  0,  0);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(hw,  hh,  hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(hw, -hh,  hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f(hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(hw,  hh, -hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(hw,  hh,     hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(hw, -hh*nd,  hd*nd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f(hw, -hh,    -hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(hw,  hh*nd, -hd*nd);
    end;
    if cpTop in FParts then begin
       glNormal3f(  0, nd,  0);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, hh,  hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, hh,  hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, hh, -hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,    hh, -hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw*nd, hh,  hd*nd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw,    hh,  hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw*nd, hh, -hd*nd);
    end;
    if cpBottom in FParts then begin
       glNormal3f(  0, -nd,  0);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, -hh,  hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, -hh,  hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw,    -hh, -hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw*nd, -hh, -hd*nd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw,    -hh,  hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw*nd, -hh,  hd*nd);
    end;
    glEnd;
 end;

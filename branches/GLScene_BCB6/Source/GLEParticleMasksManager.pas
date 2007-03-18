@@ -661,9 +661,9 @@ end;
 
 procedure TGLEParticleMasksManager.ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
 begin
-  Vec[0] := (Mask.LX / 2 - Vec[0]) / Mask.LX;
-  Vec[1] := (Mask.LY / 2 - Vec[1]) / Mask.LY;
-  Vec[2] := (Mask.LZ / 2 - Vec[2]) / Mask.LZ;
+  Vec.Coord[0] := (Mask.LX / 2 - Vec.Coord[0]) / Mask.LX;
+  Vec.Coord[1] := (Mask.LY / 2 - Vec.Coord[1]) / Mask.LY;
+  Vec.Coord[2] := (Mask.LZ / 2 - Vec.Coord[2]) / Mask.LZ;
 end;
 
 procedure TGLEParticleMasksManager.ApplyRotation(var Vec: TVector3f; Mask: TGLEParticleMask);
@@ -683,16 +683,16 @@ end;
 
 procedure TGLEParticleMasksManager.ApplyScaleAndPosition(var Vec: TVector3f; Mask: TGLEParticleMask);
 begin
-  Vec[0] := Vec[0] * Mask.FScale.DirectX + Mask.FPosition.DirectX;
-  Vec[1] := Vec[1] * Mask.FScale.DirectY + Mask.FPosition.DirectY;
-  Vec[2] := Vec[2] * Mask.FScale.DirectZ + Mask.FPosition.DirectZ;
+  Vec.Coord[0] := Vec.Coord[0] * Mask.FScale.DirectX + Mask.FPosition.DirectX;
+  Vec.Coord[1] := Vec.Coord[1] * Mask.FScale.DirectY + Mask.FPosition.DirectY;
+  Vec.Coord[2] := Vec.Coord[2] * Mask.FScale.DirectZ + Mask.FPosition.DirectZ;
 end;
 
 procedure TGLEParticleMasksManager.ApplyScaleAndPositionTarget(var Vec: TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
 begin
-  Vec[0] := Vec[0] * Mask.FScale.DirectX * TargetObject.Scale.DirectX + Mask.FPosition.DirectX + TargetObject.AbsolutePosition[0];
-  Vec[1] := Vec[1] * Mask.FScale.DirectY * TargetObject.Scale.DirectY + Mask.FPosition.DirectY + TargetObject.AbsolutePosition[1];
-  Vec[2] := Vec[2] * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ + Mask.FPosition.DirectZ + TargetObject.AbsolutePosition[2];
+  Vec.Coord[0] := Vec.Coord[0] * Mask.FScale.DirectX * TargetObject.Scale.DirectX + Mask.FPosition.DirectX + TargetObject.AbsolutePosition.Coord[0];
+  Vec.Coord[1] := Vec.Coord[1] * Mask.FScale.DirectY * TargetObject.Scale.DirectY + Mask.FPosition.DirectY + TargetObject.AbsolutePosition.Coord[1];
+  Vec.Coord[2] := Vec.Coord[2] * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ + Mask.FPosition.DirectZ + TargetObject.AbsolutePosition.Coord[2];
 end;
 
 constructor TGLEParticleMasksManager.Create(AOwner: TComponent);

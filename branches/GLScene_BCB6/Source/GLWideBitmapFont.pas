@@ -319,10 +319,8 @@ end;
 procedure TGLWideBitmapFont.SetWideCharacters(const Value: WideString);
 Var
   I, L : Integer;
-  CL   : Integer;
   wChar : WideChar;
-  Loader : TMemoryStream;
-  S : String;
+//  Loader : TMemoryStream;
 
 begin
   if Length(FWideChars) = 0 then
@@ -346,11 +344,11 @@ begin
   Loader.Read(FWideCharacters[1], Loader.Size-2);
   Loader.Free;
 *)
-  I := 1;
-  L := Length(WideCharacters);
-  assert( Length(WideCharacters)+32<=255, 'You cannot have more than 223 characters in an WideBitmapFont!');
 
-  For I := 1 to Length(WideCharacters) do
+  L := Length(WideCharacters);
+  assert( L+32<=255, 'You cannot have more than 223 characters in an WideBitmapFont!');
+
+  For I := 1 to L do
   Begin
     wChar := WideCharacters[I];
     FWideChars[31+i] := wChar;

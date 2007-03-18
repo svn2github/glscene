@@ -6,6 +6,7 @@
    Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
 	</ul></font>
 }
@@ -241,14 +242,7 @@ type
                             
                          end;
 
-procedure Register;
-
 implementation
-
-procedure Register;
-begin
-  RegisterComponents('GLScene Utils', [TGLMaterialScripter]);
-end;
 
 procedure TGLShaderItem.SetShader(const Value: TGLShader);
 begin

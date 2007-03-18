@@ -1,10 +1,15 @@
-// GLExtrusion
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLExtrusion<p>
 
 	Extrusion objects for GLScene. Extrusion objects are solids defined by the
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>02/01/06 - LC - Fixed TGLExtrusionSolid texuring. Bugtracker ID=1619318
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Added VectorTypes Unit
       <li>02/11/01 - Egg - TGLPipe.BuildList now has a "persistent" cache
@@ -404,8 +409,8 @@ var
       tb : TAffineVector;
       mx, mz : Single;
    begin
-      mx:=ptBottom.Coord[0]+ptTop.Coord[0];
-      mz:=ptBottom.Coord[2]+ptTop.Coord[2];
+      mx:=ptBottom^.Coord[0]+ptTop^.Coord[0];
+      mz:=ptBottom^.Coord[2]+ptTop^.Coord[2];
       VectorSubtract(ptBottom^, ptTop^, tb);
       normal.Coord[0]:=-tb.Coord[1]*mx;
       normal.Coord[1]:=mx*tb.Coord[0]+mz*tb.Coord[2];
@@ -427,16 +432,16 @@ var
         if (FNormals=nsFlat) or FirstStep then begin
           topNormal:=normal;
           bottomNormal:=normal;
-          if (FNormals=nsSmooth) then lastNormals[i]:=normal;
+          if (FNormals=nsSmooth) then lastNormals^[i]:=normal;
         end else if (FNormals=nsSmooth) then begin
           if invertNormals then begin
             topNormal:=normal;
-            bottomNormal:=lastNormals[i];
+            bottomNormal:=lastNormals^[i];
           end else begin
-            topNormal:=lastNormals[i];
+            topNormal:=lastNormals^[i];
             bottomNormal:=normal;
           end;
-          lastNormals[i]:=normal;
+          lastNormals^[i]:=normal;
         end;
       end;
 
@@ -866,10 +871,10 @@ const
       ScaleVector(vx, FRadius);
       ScaleVector(vy, FRadius);
       // generate the circle
-      for i:=0 to High(row.node) do begin
-         row.node[i].normal:=VectorCombine(vx, vy, vCosCache[i], vSinCache[i]);
-         row.node[i].pos:=VectorCombine(PAffineVector(@center)^,
-                                        row.node[i].normal, 1, radius);
+      for i:=0 to High(row^.node) do begin
+         row^.node[i].normal:=VectorCombine(vx, vy, vCosCache[i], vSinCache[i]);
+         row^.node[i].pos:=VectorCombine(PAffineVector(@center)^,
+                                        row^.node[i].normal, 1, radius);
       end;
    end;
 
@@ -880,13 +885,13 @@ const
       i : Integer;
    begin
       if NodesColorMode<>pncmNone then
-         glColor4fv(@row.color);
+         glColor4fv(@row^.color);
       glBegin(GL_TRIANGLE_FAN);
          glNormal3fv(@normal);
          glVertex3fv(@center);
          if invert then
-            for i:=High(row.node) downto 0 do glVertex3fv(@row.node[i].pos)
-         else for i:=0 to High(row.node) do glVertex3fv(@row.node[i].pos);
+            for i:=High(row^.node) downto 0 do glVertex3fv(@row^.node[i].pos)
+         else for i:=0 to High(row^.node) do glVertex3fv(@row^.node[i].pos);
       glEnd;
    end;
 
@@ -898,12 +903,12 @@ const
       kx:=1;   ky:=1;   kz:=1;
       kpx:=1;  kpy:=1;  kpz:=1;
       for j:=0 to Slices do begin
-         if Sign(curRow.node[j].normal.Coord[0])<>Sign(prevRow.node[j].normal.Coord[0]) then Inc(kx);
-         if Sign(curRow.node[j].normal.Coord[1])<>Sign(prevRow.node[j].normal.Coord[1]) then Inc(ky);
-         if Sign(curRow.node[j].normal.Coord[2])<>Sign(prevRow.node[j].normal.Coord[2]) then Inc(kz);
-         if Sign(curRow.node[j].pos.Coord[0])<>Sign(prevRow.node[j].pos.Coord[0]) then Inc(kpx);
-         if Sign(curRow.node[j].pos.Coord[1])<>Sign(prevRow.node[j].pos.Coord[1]) then Inc(kpy);
-         if Sign(curRow.node[j].pos.Coord[2])<>Sign(prevRow.node[j].pos.Coord[2]) then Inc(kpz);
+         if Sign(curRow^.node[j].normal.Coord[0])<>Sign(prevRow^.node[j].normal.Coord[0]) then Inc(kx);
+         if Sign(curRow^.node[j].normal.Coord[1])<>Sign(prevRow^.node[j].normal.Coord[1]) then Inc(ky);
+         if Sign(curRow^.node[j].normal.Coord[2])<>Sign(prevRow^.node[j].normal.Coord[2]) then Inc(kz);
+         if Sign(curRow^.node[j].pos.Coord[0])<>Sign(prevRow^.node[j].pos.Coord[0]) then Inc(kpx);
+         if Sign(curRow^.node[j].pos.Coord[1])<>Sign(prevRow^.node[j].pos.Coord[1]) then Inc(kpy);
+         if Sign(curRow^.node[j].pos.Coord[2])<>Sign(prevRow^.node[j].pos.Coord[2]) then Inc(kpz);
       end;
       // k is a Value, which indicate the similarity of the normal vectors
       // between curRow and PrevRow
@@ -920,8 +925,8 @@ const
             deltapos[k]:=0;                //sum of difference for pos vector
             for j:=0 to Slices-1 do begin  //over all places
                n:=(j+k) mod Slices;
-               deltanormal[k]:=deltanormal[k]+VectorSpacing(curRow.node[n].normal, prevRow.node[j].normal);
-               deltapos[k]   :=deltapos[k]   +VectorSpacing(curRow.node[n].pos,    prevRow.node[j].pos);
+               deltanormal[k]:=deltanormal[k]+VectorSpacing(curRow^.node[n].normal, prevRow^.node[j].normal);
+               deltapos[k]   :=deltapos[k]   +VectorSpacing(curRow^.node[n].pos,    prevRow^.node[j].pos);
             end;
          end;
          //Search minimum
@@ -933,31 +938,31 @@ const
          // rotate count
          for k:=1 to m do begin
             // rotate the values of curRow
-            curRow.node[Slices]:=curRow.node[0];
-            System.Move(curRow.node[1], curRow.node[0], SizeOf(TNodeData)*Slices);
-            curRow.node[Slices]:=curRow.node[0];
+            curRow^.node[Slices]:=curRow^.node[0];
+            System.Move(curRow^.node[1], curRow^.node[0], SizeOf(TNodeData)*Slices);
+            curRow^.node[Slices]:=curRow^.node[0];
          end;
       end;
       // go on
       glBegin(GL_TRIANGLE_STRIP);
          if NodesColorMode<>pncmNone then
-            glColor4fv(@prevRow.color);
-         glNormal3fv(@prevRow.node[0].normal);
-         glVertex3fv(@prevRow.node[0].pos);
+            glColor4fv(@prevRow^.color);
+         glNormal3fv(@prevRow^.node[0].normal);
+         glVertex3fv(@prevRow^.node[0].pos);
          for j:=0 to Slices-1 do begin
             if NodesColorMode<>pncmNone then
-               glColor4fv(@curRow.color);
-            glNormal3fv(@curRow.node[j].normal);
-            glVertex3fv(@curRow.node[j].pos);
+               glColor4fv(@curRow^.color);
+            glNormal3fv(@curRow^.node[j].normal);
+            glVertex3fv(@curRow^.node[j].pos);
             if NodesColorMode<>pncmNone then
-               glColor4fv(@prevRow.color);
-            glNormal3fv(@prevRow.node[j+1].normal);
-            glVertex3fv(@prevRow.node[j+1].pos);
+               glColor4fv(@prevRow^.color);
+            glNormal3fv(@prevRow^.node[j+1].normal);
+            glVertex3fv(@prevRow^.node[j+1].pos);
          end;
          if NodesColorMode<>pncmNone then
-            glColor4fv(@curRow.color);
-         glNormal3fv(@curRow.node[Slices].normal);
-         glVertex3fv(@curRow.node[Slices].pos);
+            glColor4fv(@curRow^.color);
+         glNormal3fv(@curRow^.node[Slices].normal);
+         glVertex3fv(@curRow^.node[Slices].pos);
       glEnd;
    end;
 
@@ -1002,7 +1007,7 @@ begin
       // create radius spline
       GetMem(ra, SizeOf(TGLFloat)*Nodes.Count);
       for i:=0 to Nodes.Count-1 do
-         ra[i]:=TGLPipeNode(Nodes[i]).RadiusFactor;
+         ra^[i]:=TGLPipeNode(Nodes[i]).RadiusFactor;
       rSpline:=TCubicSpline.Create(ra, nil, nil, nil, Nodes.Count);
       FreeMem(ra);
       normal:=posSpline.SplineSlopeVector(0);
@@ -1137,6 +1142,7 @@ var
       topTPBase, topTPNext, bottomTPBase, bottomTPNext : TTexPoint;
       ptBuffer : TAffineVector;
       angle: Double;
+      dir: TAffineVector;
    begin
       // to invert normals, we just need to flip top & bottom
       if invertNormals then begin
@@ -1146,12 +1152,10 @@ var
       end;
       // generate triangle strip for a level
       // TODO : support for triangle fans (when ptTop or ptBottom is on the Y Axis)
-      topTPBase.S:=0;         bottomTPBase.S:=0;
+//      topTPBase.S:=0;         bottomTPBase.S:=0;
       topTPBase.T:=topT;      bottomTPBase.T:=bottomT;
       topBase:=ptTop;
       bottomBase:=ptBottom;
-      //topBase[2]:=FHeight;
-      //bottomBase[2]:=FHeight;
       CalcNormal(topBase,bottomBase,normal);
       if (FNormals=nsFlat) then
          lastNormal:=normal
@@ -1168,6 +1172,14 @@ var
          normTop:=lastNormal;
          normBottom:=normal;
       end;
+
+      dir:= VectorNormalize(VectorSubtract(bottomBase, topBase));
+
+      topTPBase.S:= VectorDotProduct(topBase, dir);
+      topTPBase.T:= topBase.Coord[2];
+      bottomTPBase.S:= VectorDotProduct(bottomBase, dir);
+      bottomTPBase.T:= bottomBase.Coord[2];
+
       lastNormal:=normal;
       topNext:=topBase;
       bottomNext:=bottomBase;
@@ -1181,10 +1193,10 @@ var
          glNormal3fv(@normBottom);
          xglTexCoord2fv(@bottomTPBase);
          glVertex3fv(@bottomBase);
-         topTPNext.S:=step*deltaS;
-         bottomTPNext.S:=step*deltaS;
          topNext.Coord[2]:=step*DeltaZ;
          bottomNext.Coord[2]:=topNext.Coord[2];
+         topTPNext.T:=topNext.Coord[2];
+         bottomTPNext.T:=bottomNext.Coord[2];
          xglTexCoord2fv(@topTPNext);
          glNormal3fv(@normTop);
          glVertex3fv(@topNext);
@@ -1212,24 +1224,24 @@ begin
       for n:=0 to Outline.Count-1 do begin
          with Outline.List[n] do if count>1 then begin
             if espInside in Parts then begin
-               CalcNormal(List[count-1],List[0],lastNormal);
+               CalcNormal(List^[count-1],List^[0],lastNormal);
                if not InvertedNormals then
                   NegateVector(lastNormal);
                for i:=0 to Count-2 do begin
-                  BuildStep(List[i], List[i+1], not invertedNormals,
+                  BuildStep(List^[i], List^[i+1], not invertedNormals,
                             i/(Count-1), (i+1)/(Count-1));
                end;
-               BuildStep(List[count-1], List[0], not invertedNormals, 1, 0);
+               BuildStep(List^[count-1], List^[0], not invertedNormals, 1, 0);
             end;
             if espOutside in Parts then begin
-               CalcNormal(List[count-1], List[0], lastNormal);
+               CalcNormal(List^[count-1], List^[0], lastNormal);
                if InvertedNormals then
                   NegateVector(lastNormal);
                for i:=0 to Count-2 do begin
-                  BuildStep(List[i],List[i+1], invertedNormals,
+                  BuildStep(List^[i],List^[i+1], invertedNormals,
                             i/(Count-1), (i+1)/(Count-1));
                end;
-               BuildStep(List[count-1],List[0], invertedNormals, 1, 0);
+               BuildStep(List^[count-1],List^[0], invertedNormals, 1, 0);
             end;
          end;
       end;

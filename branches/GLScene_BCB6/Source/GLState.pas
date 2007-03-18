@@ -2,8 +2,9 @@
 
    Miscellaneous support routines & classes.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)   
+	<b>History : </b><font size=-1><ul>
+      <li>19/12/06 - DaS - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
+      <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>07/01/04 - EG - Introduced TGLStateCache
       <li>05/09/03 - EG - Creation from GLMisc split
@@ -15,7 +16,7 @@ interface
 
 uses Classes, VectorGeometry, SysUtils, OpenGL1x;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 type
 
@@ -78,10 +79,11 @@ type
          procedure ResetGLMaterialColors;
 
          {: Specify a new texture handle for the target of textureUnit.<p>
-            Does NOT perform glActiveTextureARB calls. } 
+            Does NOT perform glActiveTextureARB calls. }
          procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
+         function GetGLCurrentTexture(const TextureUnit: Integer): Integer;
+         procedure ResetGLTexture(const TextureUnit: Integer);
          procedure ResetGLCurrentTexture;
-
          {: Defines the OpenGL texture matrix.<p>
             Assumed texture mode is GL_MODELVIEW. }
          procedure SetGLTextureMatrix(const matrix : TMatrix);
@@ -102,7 +104,6 @@ type
          procedure ResetAll;
 
          // read only properties
-
          property States : TGLStates read FStates;
    end;
 
@@ -256,6 +257,22 @@ begin
    FFrontBackShininess[1]:=0;
 end;
 
+// GetGLCurrentTexture
+//
+function TGLStateCache.GetGLCurrentTexture(
+  const TextureUnit: Integer): Integer;
+begin
+  Result := FTextureHandle[TextureUnit];
+end;
+
+// ResetGLTexture
+//
+procedure TGLStateCache.ResetGLTexture(const TextureUnit: Integer);
+begin
+  FTextureHandle[TextureUnit] := -1;
+end;
+
+
 // SetGLCurrentTexture
 //
 procedure TGLStateCache.SetGLCurrentTexture(const textureUnit, target, handle : Integer);
@@ -345,5 +362,6 @@ begin
    ResetGLCurrentTexture;
    ResetGLFrontFace;
 end;
+
 
 end.

@@ -4,6 +4,7 @@
    for use as a skybox always centered on the camera.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/01/07 - DaStr - Added IGLMaterialLibrarySupported support
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>12/04/04 - EG - Added Style property, multipass support
       <li>27/11/03 - EG - Cleanup and fixes
@@ -28,7 +29,7 @@ type
 
    // TGLSkyBox
    //
-   TGLSkyBox = class(TGLImmaterialSceneObject)
+   TGLSkyBox = class(TGLImmaterialSceneObject, IGLMaterialLibrarySupported)
 	   private
 	      { Private Declarations }
          FMatNameTop : String;
@@ -43,6 +44,8 @@ type
          FCloudsPlaneSize : Single;
          FStyle : TGLSkyBoxStyle;
 
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
 	   protected
 			{ Protected Declarations }
          procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
@@ -109,6 +112,13 @@ end;
 destructor TGLSkyBox.Destroy;
 begin
    inherited;
+end;
+
+// GetMaterialLibrary
+//
+function TGLSkyBox.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
 end;
 
 // Notification

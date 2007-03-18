@@ -146,6 +146,8 @@ type
 
 implementation
 
+uses VectorTypes;
+
 const
   EPS = 0.0001;
   cIntDivTable: array [2..20] of Single =
@@ -226,19 +228,19 @@ var
         intensity := intensity * contrib;
         alt := (VectorLength(atmPoint) - PlanetRadius) * invAtmosphereHeight;
         VectorLerp(LowAtmColor.Color, HighAtmColor.Color, alt, altColor);
-        Result[0] := Result[0] * decay + altColor[0] * intensity;
-        Result[1] := Result[1] * decay + altColor[1] * intensity;
-        Result[2] := Result[2] * decay + altColor[2] * intensity;
+        Result.Coord[0] := Result.Coord[0] * decay + altColor.Coord[0] * intensity;
+        Result.Coord[1] := Result.Coord[1] * decay + altColor.Coord[1] * intensity;
+        Result.Coord[2] := Result.Coord[2] * decay + altColor.Coord[2] * intensity;
       end
       else
       begin
         // sample on the dark sid
-        Result[0] := Result[0] * decay;
-        Result[1] := Result[1] * decay;
-        Result[2] := Result[2] * decay;
+        Result.Coord[0] := Result.Coord[0] * decay;
+        Result.Coord[1] := Result.Coord[1] * decay;
+        Result.Coord[2] := Result.Coord[2] * decay;
       end;
     end;
-    Result[3] := n * contrib * Opacity * 0.1;
+    Result.Coord[3] := n * contrib * Opacity * 0.1;
   end;
 
 
@@ -406,10 +408,10 @@ end;
 
 function TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result[0] := FAtmosphereRadius;
-  Result[1] := Result[0];
-  Result[2] := Result[0];
-  Result[3] := 0;
+  Result.Coord[0] := FAtmosphereRadius;
+  Result.Coord[1] := Result.Coord[0];
+  Result.Coord[2] := Result.Coord[0];
+  Result.Coord[3] := 0;
 end;
 
 procedure TGLCustomAtmosphere.Notification(AComponent: TComponent;

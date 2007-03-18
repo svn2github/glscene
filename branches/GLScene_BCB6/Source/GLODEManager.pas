@@ -2647,7 +2647,7 @@ begin
   // Override this procedure with element drawing OpenGL code
 end;
 
-// Initialize
+// GetEnabled
 //
 procedure TODEElementBase.Initialize;
 var
@@ -2701,7 +2701,7 @@ begin
   FInitialized:=False;
 end;
 
-// WriteToFiler
+// AddForceAtRelPos
 //
 procedure TODEElementBase.WriteToFiler(writer : TWriter);
 begin
@@ -2715,7 +2715,7 @@ begin
   end;
 end;
 
-// ReadFromFiler
+// AddRelForce
 //
 procedure TODEElementBase.ReadFromFiler(reader : TReader);
 begin
@@ -3561,6 +3561,7 @@ begin
     Radius:=ReadFloat;
     Length:=ReadFloat;
   end;
+  NotifyChange(Self);
 end;
 
 // FriendlyName

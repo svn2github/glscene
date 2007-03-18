@@ -2,6 +2,7 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                fixed BCB Compiler error "E2370 Simple type name expected"
       <li>07/05/04 - EG - Perspective distortion properly applied
@@ -609,7 +610,7 @@ begin
    inherited;
    FImposterRegister:=TPersistentObjectList.Create;
    FBackColor:=TGLColor.CreateInitialized(Self, clrTransparent);
-   FBuildOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint);
+   FBuildOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, CsPoint);
    FImposterOptions:=cDefaultImposterOptions;
    FAlphaTreshold:=0.5;
 end;

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // GLMesh
 {: Raw Mesh support in GLScene.<p>
 
@@ -5,6 +8,8 @@
    implements more efficient (though more complex) mesh tools.<p> 
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
       <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
@@ -220,8 +225,8 @@ begin
    Move(FValues[0], Result.FValues[0], Count*SizeOf(TVertexData));
    // interpolate vertices
    for i:=0 to Count-1 do
-      VectorLerp(FValues[i].coord, list2.FValues[i].coord,
-                 lerpFactor, Result.FValues[i].coord);
+      VectorLerp(FValues^[i].coord, list2.FValues^[i].coord,
+                 lerpFactor, Result.FValues^[i].coord);
 end;
 
 // SetCapacity
@@ -257,7 +262,7 @@ end;
 //
 function TVertexList.GetFirstColor: PGLFLoat;
 begin
-   Result:=@(FValues[0].color);
+   Result:=@(FValues^[0].color);
 end;
 
 // GetFirstEntry
@@ -271,21 +276,21 @@ end;
 //
 function TVertexList.GetFirstNormal: PGLFLoat;
 begin
-   Result:=@(FValues[0].normal);
+   Result:=@(FValues^[0].normal);
 end;
 
 // GetFirstVertex
 //
 function TVertexList.GetFirstVertex: PGLFLoat;
 begin
-   Result:=@(FValues[0].coord);
+   Result:=@(FValues^[0].coord);
 end;
 
 // GetFirstTexPoint
 //
 function TVertexList.GetFirstTexPoint : PGLFLoat;
 begin
-   Result:=@(FValues[0].textCoord);
+   Result:=@(FValues^[0].textCoord);
 end;
 
 // GetLocked
@@ -348,7 +353,7 @@ end;
 procedure TVertexList.SetVertices(index : Integer; const val : TVertexData);
 begin
    Assert(Cardinal(index)<Cardinal(Count));
-   FValues[index]:=val;
+   FValues^[index]:=val;
    NotifyChange(Self);
 end;
 
@@ -357,14 +362,14 @@ end;
 function TVertexList.GetVertices(index : Integer) : TVertexData;
 begin
    Assert(Cardinal(index)<Cardinal(Count));
-   Result:=FValues[index];
+   Result:=FValues^[index];
 end;
 
 // SetVertexCoord
 //
 procedure TVertexList.SetVertexCoord(index : Integer; const val : TAffineVector);
 begin
-   FValues[index].coord:=val;
+   FValues^[index].coord:=val;
    NotifyChange(Self);
 end;
 
@@ -372,14 +377,14 @@ end;
 //
 function TVertexList.GetVertexCoord(index : Integer) : TAffineVector;
 begin
-   Result:=FValues[index].coord;
+   Result:=FValues^[index].coord;
 end;
 
 // SetVertexNormal
 //
 procedure TVertexList.SetVertexNormal(index : Integer; const val : TAffineVector);
 begin
-   FValues[index].normal:=val;
+   FValues^[index].normal:=val;
    NotifyChange(Self);
 end;
 
@@ -387,14 +392,14 @@ end;
 //
 function TVertexList.GetVertexNormal(index : Integer) : TAffineVector;
 begin
-   Result:=FValues[index].normal;
+   Result:=FValues^[index].normal;
 end;
 
 // SetVertexTexCoord
 //
 procedure TVertexList.SetVertexTexCoord(index : Integer; const val : TTexPoint);
 begin
-   FValues[index].textCoord:=val;
+   FValues^[index].textCoord:=val;
    NotifyChange(Self);
 end;
 
@@ -402,7 +407,7 @@ end;
 //
 function TVertexList.GetVertexTexCoord(index : Integer) : TTexPoint;
 begin
-   Result:=FValues[index].textCoord;
+   Result:=FValues^[index].textCoord;
 end;
 
 // AddVertex (direct)
@@ -410,7 +415,7 @@ end;
 procedure TVertexList.AddVertex(const vertexData : TVertexData);
 begin
    if FCount=FCapacity then Grow;
-   FValues[FCount]:=vertexData;
+   FValues^[FCount]:=vertexData;
    Inc(FCount);
    NotifyChange(Self);
 end;
@@ -422,9 +427,9 @@ begin
    // extend memory space
    if FCount+2>=FCapacity then Grow;
    // calculate destination address for new vertex data
-   FValues[FCount]:=vd1;
-   FValues[FCount+1]:=vd2;
-   FValues[FCount+2]:=vd3;
+   FValues^[FCount]:=vd1;
+   FValues^[FCount+1]:=vd2;
+   FValues^[FCount+2]:=vd3;
    Inc(FCount, 3);
    NotifyChange(Self);
 end;
@@ -436,7 +441,7 @@ procedure TVertexList.AddVertex(const aVertex: TVertex; const aNormal: TAffineVe
 begin
    if FCount=FCapacity then Grow;
    // calculate destination address for new vertex data
-   with FValues[FCount] do begin
+   with FValues^[FCount] do begin
       textCoord:=aTexPoint;
       color:=aColor;
       normal:=aNormal;
@@ -492,7 +497,7 @@ var
 begin
    Result:=NullVector;
    for i:=0 to Count-1 do
-      AddVector(Result, FValues[i].coord);
+      AddVector(Result, FValues^[i].coord);
 end;
 
 // GetExtents
@@ -508,7 +513,7 @@ begin
    SetVector(min, cBigValue, cBigValue, cBigValue);
    SetVector(max, cSmallValue, cSmallValue, cSmallValue);
    for i:=0 to Count-1 do begin
-      with FValues[i] do for k:=0 to 2 do begin
+      with FValues^[i] do for k:=0 to 2 do begin
          f:=coord.Coord[k];
          if f<min.Coord[k] then min.Coord[k]:=f;
          if f>max.Coord[k] then max.Coord[k]:=f;
@@ -523,7 +528,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      NormalizeVector(FValues[i].coord);
+      NormalizeVector(FValues^[i].coord);
 end;
 
 // Translate
@@ -533,7 +538,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      AddVector(FValues[i].coord, v);
+      AddVector(FValues^[i].coord, v);
 end;
 
 // DefineOpenGLArrays
@@ -672,38 +677,38 @@ begin
       mmTriangleStrip:
          with Vertices do for i:=0 to Count-3 do begin
             if (FrontFace=fwCounterClockWise) xor ((i and 1)=0) then
-               vn:=CalcPlaneNormal(FValues[i+0].coord, FValues[i+1].coord, FValues[i+2].coord)
-            else vn:=CalcPlaneNormal(FValues[i+2].coord, FValues[i+1].coord, FValues[i+0].coord);
-            FValues[i].Normal:=vn;
+               vn:=CalcPlaneNormal(FValues^[i+0].coord, FValues^[i+1].coord, FValues^[i+2].coord)
+            else vn:=CalcPlaneNormal(FValues^[i+2].coord, FValues^[i+1].coord, FValues^[i+0].coord);
+            FValues^[i].Normal:=vn;
          end;
       mmTriangles:
          with Vertices do for i:=0 to ((Count-3) div 3) do begin
             j:=i*3;
             if FrontFace=fwCounterClockWise then
-               vn:=CalcPlaneNormal(FValues[j+0].coord, FValues[j+1].coord, FValues[j+2].coord)
-            else vn:=CalcPlaneNormal(FValues[j+2].coord, FValues[j+1].coord, FValues[j+0].coord);
-            FValues[j+0].normal:=vn;
-            FValues[j+1].normal:=vn;
-            FValues[j+2].normal:=vn;
+               vn:=CalcPlaneNormal(FValues^[j+0].coord, FValues^[j+1].coord, FValues^[j+2].coord)
+            else vn:=CalcPlaneNormal(FValues^[j+2].coord, FValues^[j+1].coord, FValues^[j+0].coord);
+            FValues^[j+0].normal:=vn;
+            FValues^[j+1].normal:=vn;
+            FValues^[j+2].normal:=vn;
          end;
       mmQuads:
          with Vertices do for I := 0 to ((Count-4) div 4) do begin
             j:=i*4;
             if FrontFace=fwCounterClockWise then
-               vn:=CalcPlaneNormal(FValues[j+0].coord, FValues[j+1].coord, FValues[j+2].coord)
-            else vn:=CalcPlaneNormal(FValues[j+2].coord, FValues[j+1].coord, FValues[j+0].coord);
-            FValues[j+0].normal:=vn;
-            FValues[j+1].normal:=vn;
-            FValues[j+2].normal:=vn;
-            FValues[j+3].normal:=vn;
+               vn:=CalcPlaneNormal(FValues^[j+0].coord, FValues^[j+1].coord, FValues^[j+2].coord)
+            else vn:=CalcPlaneNormal(FValues^[j+2].coord, FValues^[j+1].coord, FValues^[j+0].coord);
+            FValues^[j+0].normal:=vn;
+            FValues^[j+1].normal:=vn;
+            FValues^[j+2].normal:=vn;
+            FValues^[j+3].normal:=vn;
          end;
       mmPolygon:
          with Vertices do if Count>2 then begin
             if FrontFace=fwCounterClockWise then
-               vn:=CalcPlaneNormal(FValues[0].coord, FValues[1].coord, FValues[2].coord)
-            else vn:=CalcPlaneNormal(FValues[2].coord, FValues[1].coord, FValues[0].coord);
+               vn:=CalcPlaneNormal(FValues^[0].coord, FValues^[1].coord, FValues^[2].coord)
+            else vn:=CalcPlaneNormal(FValues^[2].coord, FValues^[1].coord, FValues^[0].coord);
             for i:=0 to Count-1 do
-              FValues[i].normal:=vn;
+              FValues^[i].normal:=vn;
          end;
    else
       Assert(False);

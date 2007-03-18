@@ -1,8 +1,39 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLTexture<p>
 
  Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - TGLPicFileImage now provides correct Width and Height
+                                                        (BugtrackerID = 1680742)
+      <li>09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
+                             Bugfixed TGLColor.Initialize and TGLColor.Destroy
+                              (thanks Burkhard Carstens) (BugtrackerID = 1678650)
+      <li>04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
+      <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
+                              EGLShaderException
+                             Added TGLShader.HandleFailedInitialization, ShaderSupported,
+                              GetStardardNotSupportedMessage, FailedInitAction
+                             Added default value for TGLShader.ShaderStyle
+                             Fixed TGLShader.InitializeShader
+                             Fixed TGLTextureExItem.Create (TGLCoordinatesStyle stuff)
+      <li>16/02/07 - DaStr - Global $Q- removed
+                           Added TGLLibMaterials.GetTextureIndex, GetMaterialIndex,
+                             GetNameOfTexture, GetNameOfLibMaterial
+                           Added TGLMaterialLibrary.TextureByName,
+                             GetNameOfTexture, GetNameOfLibMaterial
+      <li>01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users
+      <li>23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
+      <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
+      <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
+                             TGLLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
+      <li>20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
+                             TGLShader.Apply bugfixed, TGLShader.Assign added
+      <li>19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
+                          texture that was never applied. Bugtracker ID=1234085
+      <li>19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843 (thanks Zapology)
       <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
       <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
       <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
@@ -43,7 +74,7 @@
       <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
       <li>20/01/02 - EG - Fixed texture memory use report error
       <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
-                          are now Linear/MipMap 
+                          are now Linear/MipMap
       <li>07/01/02 - EG - Added renderDPI to rci
       <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
       <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
@@ -142,6 +173,7 @@ interface
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses, GLUtils, GLState;
+
 
 type
  PColorVector = ^TColorVector;
@@ -332,13 +364,21 @@ type
  PRGBColor = ^TRGBColor;
  TRGBColor = TAffineByteVector;
 
- TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
- TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
+	TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
+	TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
+  TGLTextureTarget = (ttTexture1d, ttTexture2d, ttTexture3d,
+                      ttTextureRect, ttTextureCube);
 
- TGLFaceProperties  = class;
- TGLTexture         = class;
- TGLMaterial        = class;
-   TGLMaterialLibrary = class;
+  TGLFaceProperties  = class;
+  TGLTexture         = class;
+  TGLMaterial        = class;
+  TGLMaterialLibrary = class;
+
+  //an interface for proper TGLLibMaterialNameProperty support
+  IGLMaterialLibrarySupported = interface(IInterface)
+  ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
+    function GetMaterialLibrary: TGLMaterialLibrary;
+  end;
 
    TDrawState = (dsRendering, dsPicking, dsPrinting);
 
@@ -519,15 +559,18 @@ type
 
    {: Returns image's bitmap handle.<p>
             The specified target can be TEXTURE_2D or one of the cube maps targets.<br>
-    If the actual image is not a windows bitmap (BMP), descendants should
-    take care of properly converting to bitmap. }
-   function GetBitmap32(target : TGLUInt) : TGLBitmap32; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
-   {: Request for unloading bitmapData, to free some memory.<p>
-    This one is invoked when GLScene no longer needs the Bitmap data
-    it got through a call to GetHBitmap.<br>
-    Subclasses may ignore this call if the HBitmap was obtained at
-    no particular memory cost. }
-   procedure ReleaseBitmap32; virtual;
+				If the actual image is not a windows bitmap (BMP), descendants should
+				take care of properly converting to bitmap. }
+			function GetBitmap32(target : TGLUInt) : TGLBitmap32; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
+			{: Request for unloading bitmapData, to free some memory.<p>
+				This one is invoked when GLScene no longer needs the Bitmap data
+				it got through a call to GetHBitmap.<br>
+				Subclasses may ignore this call if the HBitmap was obtained at
+				no particular memory cost. }
+			procedure ReleaseBitmap32; virtual;
+     //{: AsBitmap : Returns the TextureImage as a TBitmap }
+      function  AsBitmap : TGLBitmap;
+      procedure AssignToBitmap(aBitmap:TGLBitmap);
 
    property Width : Integer read GetWidth;
    property Height : Integer read GetHeight;
@@ -656,20 +699,22 @@ type
  //
  {: Uses a picture whose data is found in a file (only filename is stored).<p>
       The image is unloaded after upload to OpenGL. }
- TGLPicFileImage = class(TGLPictureImage)
-  private
-   FPictureFileName : String;
-         FAlreadyWarnedAboutMissingFile : Boolean;
-
-  protected
-   procedure SetPictureFileName(const val : String);
-
-  public
+	TGLPicFileImage = class(TGLPictureImage)
+		private
+			FPictureFileName : String;
+			FAlreadyWarnedAboutMissingFile : Boolean;
+      FWidth: Integer;
+      FHeight: Integer;
+		protected
+			procedure SetPictureFileName(const val : String);
+			function GetHeight: Integer; override;
+			function GetWidth: Integer; override;
+		public
          { Public Declarations }
    constructor Create(AOwner: TPersistent); override;
    destructor Destroy; override;
 
-     procedure Assign(Source: TPersistent); override;
+			procedure Assign(Source: TPersistent); override;
 
    //: Only picture file name is saved
    procedure SaveToFile(const fileName : String); override;
@@ -809,6 +854,32 @@ type
       </ul> }
    TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
+
+   // TGLShaderFailedInitAction
+   //
+   {: Defines what to do if for some reason shader failed to initialize.<ul>
+      <li>fiaSilentdisable:          just disable it
+      <li>fiaRaiseHandledException:  raise an exception, and handle it right away
+                                     (usefull, when debigging within Delphi)
+      <li>fiaRaiseStardardException: raises the exception with a string from this
+                                       function GetStardardNotSupportedMessage
+      <li>fiaReRaiseException:       Re-raises the exception
+      <li>fiaGenerateEvent:          Handles the exception, but generates an event
+                                     that user can respond to. For example, he can
+                                     try to compile a substitude shader, or replace
+                                     it by a material.
+                                     Note: HandleFailedInitialization does *not*
+                                     create this event, it is left to user shaders
+                                     which may chose to override this procedure.
+                                     Commented out, because not sure if this
+                                     option should exist, let other generations of
+                                     developers decide ;)
+      </ul> }
+   TGLShaderFailedInitAction = (
+                    fiaSilentDisable, fiaRaiseStandardException,
+                    fiaRaiseHandledException, fiaReRaiseException
+                    {,fiaGenerateEvent});
+
    // TGLShader
    //
    {: Generic, abstract shader class.<p>
@@ -826,6 +897,7 @@ type
          FShaderStyle : TGLShaderStyle;
          FUpdateCount : Integer;
          FShaderActive, FShaderInitialized : Boolean;
+         FFailedInitAction: TGLShaderFailedInitAction;
 
     protected
    { Protected Declarations }
@@ -856,13 +928,20 @@ type
          procedure RegisterUser(libMat : TGLLibMaterial);
          procedure UnRegisterUser(libMat : TGLLibMaterial);
 
+         {: Used by the DoInitialize procedure of descendant classes to raise errors. }
+         procedure HandleFailedInitialization(const LastErrorMessage: string = ''); virtual;
+
+         {: May be this should be a function inside HandleFailedInitialization... }
+         class function GetStardardNotSupportedMessage: string; virtual;
+
       public
        { Public Declarations }
        constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
-         {: Subclasses should invoke this function when shader properties are altered. }
-   procedure NotifyChange(Sender : TObject); override;
+         {: Subclasses should invoke this function when shader properties are altered.
+             This procedure can also be used to reset/recompile the shader. }
+         procedure NotifyChange(Sender : TObject); override;
          procedure BeginUpdate;
          procedure EndUpdate;
 
@@ -875,7 +954,21 @@ type
          function UnApply(var rci : TRenderContextInfo) : Boolean;
 
          {: Shader application style (default is ssLowLevel). }
-         property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
+         property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle default ssLowLevel;
+
+         procedure Assign(Source: TPersistent); override;
+
+         {: Defines if shader is supported by hardware/drivers.
+            Default - always supported. Descendants are encouraged to override
+            this function. }
+         function  ShaderSupported: Boolean; virtual;
+
+         {: Defines what to do if for some reason shader failed to initialize.
+            Note, that in some cases it cannon be determined by just checking the
+            required OpenGL extentions. You need to try to compile and link the
+            shader - only at that stage you might catch an error }
+         property FailedInitAction: TGLShaderFailedInitAction
+                  read FFailedInitAction write FFailedInitAction default fiaRaiseStandardException;
 
       published
        { Published Declarations }
@@ -885,6 +978,8 @@ type
             the shader is disabled. }
          property Enabled : Boolean read FEnabled write SetEnabled default True;
    end;
+
+   TGLShaderClass = class of TGLShader;
 
    // TGLTextureFormat
    //
@@ -1298,11 +1393,11 @@ type
       TGLLibMaterial (taken for a material library).<p>
       The TGLLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
- TGLMaterial = class (TGLUpdateAbleObject)
+	TGLMaterial = class (TGLUpdateAbleObject, IGLMaterialLibrarySupported)
       private
        { Private Declarations }
          FFrontProperties, FGLBackProperties : TGLFaceProperties;
-   FBlendingMode : TBlendingMode;
+         FBlendingMode : TBlendingMode;
          FTexture : TGLTexture;
          FTextureEx : TGLTextureEx;
          FMaterialLibrary : TGLMaterialLibrary;
@@ -1310,9 +1405,14 @@ type
          FMaterialOptions : TMaterialOptions;
          FFaceCulling : TFaceCulling;
          currentLibMaterial : TGLLibMaterial;
-
-    protected
-       { Protected Declarations }
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
+         //implementing IInterface
+         function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+         function _AddRef: Integer; stdcall;
+         function _Release: Integer; stdcall;
+	   protected
+	      { Protected Declarations }
          function GetBackProperties : TGLFaceProperties;
          procedure SetBackProperties(Values: TGLFaceProperties);
          procedure SetFrontProperties(Values: TGLFaceProperties);
@@ -1362,11 +1462,18 @@ type
          //: Gets the primary texture either from material library or the texture property
          function GetActualPrimaryTexture: TGLTexture;
 
-  published
-   { Published Declarations }
-   property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
-   property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
-   property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
+         //: Gets the primary Material either from material library or the texture property
+         function GetActualPrimaryMaterial: TGLMaterial;
+
+         //: Return the LibMaterial (see LibMaterialName)
+         function GetLibMaterial: TGLLibMaterial;
+
+         procedure QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary; const Material: TGLLibMaterial);
+		published
+			{ Published Declarations }
+			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
+			property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
+			property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
          property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
    property Texture : TGLTexture read GetTexture write SetTexture stored StoreMaterialProps;
          property FaceCulling : TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
@@ -1382,9 +1489,9 @@ type
       Introduces Texture transformations (offset and scale). Those transformations
       are available only for lib materials to minimize the memory cost of basic
       materials (which are used in almost all objects). }
- TGLLibMaterial = class (TCollectionItem)
-    private
-       { Private Declarations }
+	TGLLibMaterial = class (TCollectionItem, IGLMaterialLibrarySupported)
+	   private
+	      { Private Declarations }
          userList : TList;
          FName : TGLLibMaterialName;
          FNameHashKey : Integer;
@@ -1397,9 +1504,14 @@ type
          notifying : Boolean; // used for recursivity protection
          libMatTexture2 : TGLLibMaterial; // internal cache
          FTag : Integer;
-
-    protected
-       { Protected Declarations }
+         //implementing IGLMaterialLibrarySupported
+         function GetMaterialLibrary: TGLMaterialLibrary;
+         //implementing IInterface
+         function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+         function _AddRef: Integer; stdcall;
+         function _Release: Integer; stdcall;
+	   protected
+	      { Protected Declarations }
          function GetDisplayName : String; override;
          procedure Loaded;
 
@@ -1437,7 +1549,7 @@ type
    procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
          procedure NotifyUsersOfTexMapChange;
-
+         function  IsUsed :boolean;   //returns true if the texture has registed users
          property NameHashKey : Integer read FNameHashKey;
 
     published
@@ -1486,15 +1598,30 @@ type
 
          function Owner : TPersistent;
 
+         function IndexOf(const Item: TGLLibMaterial): Integer;
          function Add: TGLLibMaterial;
        function FindItemID(ID: Integer): TGLLibMaterial;
        property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
          function MakeUniqueName(const nameRoot : TGLLibMaterialName) : TGLLibMaterialName;
          function GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+
+         {: Returns index of this Texture if it exists. }
+         function GetTextureIndex(const Texture: TGLTexture): Integer;
+
+         {: Returns index of this Material if it exists. }
+         function GetMaterialIndex(const Material: TGLMaterial): Integer;
+
+         {: Returns name of this Texture if it exists. }
+         function GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+
+         {: Returns name of this Material if it exists. }
+         function GetNameOfLibMaterial(const Material: TGLLibMaterial): TGLLibMaterialName;
+
          procedure PrepareBuildList;
          procedure SetNamesToTStrings(aStrings : TStrings);
          {: Deletes all the unused materials in the collection.<p>
-            A material is considered unused if no other material references it. }
+            A material is considered unused if no other material or updateable object references it.
+            WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture.}
          procedure DeleteUnusedMaterials;
    end;
 
@@ -1546,7 +1673,7 @@ type
          {: Add a "standard" texture material.<p>
             "standard" means linear texturing mode with mipmaps and texture
             modulation mode with default-strength color components.<br>
-            If persistent is True, the image will be loaded oersistently in memory
+            If persistent is True, the image will be loaded persistently in memory
             (via a TGLPersistentImage), if false, it will be unloaded after upload
             to OpenGL (via TGLPicFileImage). }
          function AddTextureMaterial(const materialName, fileName : String;
@@ -1557,6 +1684,15 @@ type
 
          {: Returns libMaterial of given name if any exists. }
          function LibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+
+         {: Returns Texture of given material's name if any exists. }
+         function TextureByName(const LibMatName : TGLLibMaterialName): TGLTexture;
+
+         {: Returns name of texture if any exists. }
+         function GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+
+         {: Returns name of Material if any exists. }
+         function GetNameOfLibMaterial(const LibMat: TGLLibMaterial): TGLLibMaterialName;
 
          {: Applies the material of given name.<p>
             Returns False if the material could not be found. ake sure this
@@ -1602,7 +1738,9 @@ type
          destructor Destroy; override;
          
          procedure AddColor(const aName: String; const aColor: TColorVector);
-         procedure EnumColors(Proc: TGetStrProc);
+         procedure EnumColors(Proc: TGetStrProc); overload;
+         procedure EnumColors(AValues: TStrings); overload;
+
          function  FindColor(const aName: String): TColorVector;
          {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
          function  GetColor(const aName: String): TColorVector;
@@ -1612,7 +1750,7 @@ type
    end;
 
    ETexture = class (Exception);
-
+   EGLShaderException = class(Exception);
    
 function ColorManager: TGLColorManager;
 
@@ -1641,6 +1779,9 @@ procedure SetGLTextureImageClassesToStrings(aStrings : TStrings);
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings : TStrings;
 
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
+
 // Global texturing defaults
 //
 var
@@ -1666,8 +1807,6 @@ implementation
 //------------------------------------------------------------------------------
 
 uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats;
-
-{$Q-} // no range checking
 
 var
  vGLTextureImageClasses : TList;
@@ -1723,6 +1862,42 @@ begin
 end;
 
 {$ENDIF}
+
+// DecodeGLTextureTarget
+//
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+begin
+  case TextureTarget of
+    ttTexture1d: Result := GL_TEXTURE_1D;
+    ttTexture2d: Result := GL_TEXTURE_2D;
+    ttTexture3d: Result := GL_TEXTURE_3D;
+    ttTextureRect: Result := GL_TEXTURE_RECTANGLE_ARB;
+    ttTextureCube: Result := GL_TEXTURE_CUBE_MAP_ARB;
+  else
+    begin
+      Result := 0;
+      Assert(False, glsUnknownType);
+    end;
+  end;
+end;
+
+// EncodeGLTextureTarget
+//
+function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
+begin
+  case TextureTarget of
+    GL_TEXTURE_1D: Result := ttTexture1d;
+    GL_TEXTURE_2D: Result := ttTexture2d;
+    GL_TEXTURE_3D: Result := ttTexture3d;
+    GL_TEXTURE_RECTANGLE_ARB: Result := ttTextureRect;
+    GL_TEXTURE_CUBE_MAP_ARB:  Result := ttTextureCube;
+  else
+    begin
+      Result := ttTexture2d;
+      Assert(False, glsUnknownType);
+    end;
+  end;
+end;
 
 // RegisterTGraphicClassFileExtension
 //
@@ -1942,7 +2117,7 @@ end;
 //
 destructor TGLColor.Destroy;
 begin
-   Dispose(FPDefaultColor);
+   if assigned(FPDefaultColor) then Dispose(FPDefaultColor);
    inherited;
 end;
 
@@ -1950,10 +2125,12 @@ end;
 //
 procedure TGLColor.Initialize(const color : TColorVector);
 begin
- SetVector(FColor, color);
-   if vUseDefaultSets then begin
-      New(FPDefaultColor);
-    SetVector(FPDefaultColor^, color);
+   SetVector(FColor, color);
+   if vUseDefaultSets then
+   begin
+      if not assigned(FPDefaultColor) then
+         New(FPDefaultColor);
+      SetVector(FPDefaultColor^, color);
    end;
 end;
 
@@ -2328,6 +2505,22 @@ end;
 procedure TGLTextureImage.ReleaseBitmap32;
 begin
  // nothing here.
+end;
+
+// AsBitmap : Returns the TextureImage as a TBitmap
+// WARNING: This Creates a new bitmap. Remember to free it, to prevent leaks.
+// If possible, rather use AssignToBitmap.
+//
+function TGLTextureImage.AsBitmap : TGLBitmap;
+begin
+  result:=self.GetBitmap32(GL_TEXTURE_2D).Create32BitsBitmap;
+end;
+
+// AssignToBitmap
+//
+procedure TGLTextureImage.AssignToBitmap(aBitmap:TGLBitmap);
+begin
+  self.GetBitmap32(GL_TEXTURE_2D).AssignToBitmap(aBitmap);
 end;
 
 // NotifyChange
@@ -2741,6 +2934,20 @@ begin
  inherited;
 end;
 
+// GetHeight
+//
+function TGLPicFileImage.GetHeight: Integer;
+begin
+  Result := FHeight;
+end;
+
+// GetWidth
+//
+function TGLPicFileImage.GetWidth: Integer;
+begin
+  Result := FWidth;
+end;
+
 // GetBitmap32
 //
 function TGLPicFileImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
@@ -2766,6 +2973,8 @@ begin
             end;
          end;
          Result:=inherited GetBitmap32(target);
+         FWidth := Result.Width;
+         FHeight := Result.Height;
          Picture.Graphic:=nil;
   finally
    Picture.OnChange:=PictureChanged;
@@ -3027,7 +3236,8 @@ begin
    FVirtualHandle:=TGLVirtualHandle.Create;
    FShaderStyle:=ssLowLevel;
    FEnabled:=True;
- inherited;
+   FFailedInitAction := fiaRaiseStandardException;
+	inherited;
 end;
 
 // Destroy
@@ -3106,8 +3316,8 @@ begin
       FVirtualHandle.OnAllocate:=OnVirtualHandleAllocate;
       FVirtualHandle.OnDestroy:=OnVirtualHandleDestroy;
       FVirtualHandle.AllocateHandle;
-      DoInitialize;
       FShaderInitialized:=True;
+      DoInitialize;
    end;
 end;
 
@@ -3139,11 +3349,16 @@ end;
 procedure TGLShader.Apply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    Assert(not FShaderActive, 'Unbalanced shader application.');
-   if Enabled then begin
+
+   // Need to check it twice, because shader may refuse to initialize
+   // and choose to disable itself during initialization.
+   if FEnabled then
       if FVirtualHandle.Handle=0 then
          InitializeShader;
+
+   if FEnabled then
       DoApply(rci, Sender);
-   end;
+
    FShaderActive:=True;
 end;
 
@@ -3205,6 +3420,60 @@ procedure TGLShader.UnRegisterUser(libMat : TGLLibMaterial);
 begin
    if Assigned(FLibMatUsers) then
       FLibMatUsers.Remove(libMat);
+end;
+
+// Assign
+//
+procedure TGLShader.Assign(Source: TPersistent);
+begin
+  if Source is TGLShader then
+  begin
+    FShaderStyle := TGLShader(Source).FShaderStyle;
+    FFailedInitAction := TGLShader(Source).FFailedInitAction;
+    Enabled := TGLShader(Source).FEnabled;
+  end
+  else
+    inherited Assign(Source);  //to the pit of doom ;)
+end;
+
+// Assign
+//
+function  TGLShader.ShaderSupported: Boolean;
+begin
+  Result := True;
+end;
+
+// HandleFailedInitialization
+//
+procedure TGLShader.HandleFailedInitialization(const LastErrorMessage: string = '');
+begin
+  case FailedInitAction of
+    fiaSilentdisable:; // Do nothing ;)
+    fiaRaiseHandledException:
+      try
+        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+      except end;
+    fiaRaiseStandardException:
+        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+    fiaReRaiseException:
+      begin
+        if LastErrorMessage <> '' then
+          raise EGLShaderException.Create(LastErrorMessage)
+        else
+          raise EGLShaderException.Create(GetStardardNotSupportedMessage)
+      end;
+//    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
+//                       // which may choose to override this procedure.
+  else
+    Assert(False, glsUnknownType);
+  end;
+end;
+
+// GetStardardNotSupportedMessage
+//
+class function TGLShader.GetStardardNotSupportedMessage: string;
+begin
+  Result := 'Your hardware/driver doesn''t support shader ' + ClassName + '!';
 end;
 
 // ------------------
@@ -4117,9 +4386,9 @@ begin
   inherited;
 
   FTexture:=TGLTexture.Create(Self);
-  FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHMGVector);
+  FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHMGVector, csPoint);
   FTextureOffset.OnNotifyChange:=OnNotifyChange;
-  FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector);
+  FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
   FTextureScale.OnNotifyChange:=OnNotifyChange;
 
   FTextureIndex:=ID;
@@ -4413,6 +4682,34 @@ begin
    FTexture.Free;
    FTextureEx.Free;
    inherited Destroy;
+end;
+
+// GetMaterialLibrary
+//
+function TGLMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
+end;
+
+// QueryInterface
+//
+function TGLMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TGLMaterial._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLMaterial._Release: Integer;
+begin
+  Result := -1; //ignore
 end;
 
 // SetBackProperties
@@ -4812,6 +5109,43 @@ begin
    else Result:=Texture;
 end;
 
+// GetActualPrimaryTexture
+//
+function TGLMaterial.GetActualPrimaryMaterial: TGLMaterial;
+begin
+   if Assigned(currentLibMaterial) then
+      Result:=currentLibMaterial.Material
+   else Result:=Self;
+end;
+
+// QuickAssignMaterial
+//
+function TGLMaterial.GetLibMaterial: TGLLibMaterial;
+begin
+  Result := currentLibMaterial;
+end;
+
+// QuickAssignMaterial
+//
+procedure TGLMaterial.QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary; const Material: TGLLibMaterial);
+begin
+  FMaterialLibrary := MaterialLibrary;
+  FLibMaterialName := Material.FName;
+
+  if Material <> CurrentLibMaterial then
+    begin
+    // unregister from old
+    if Assigned(CurrentLibMaterial) then
+      currentLibMaterial.UnregisterUser(Self);
+    CurrentLibMaterial := Material;
+    // register with new
+    if Assigned(CurrentLibMaterial) then
+      CurrentLibMaterial.RegisterUser(Self);
+
+    NotifyTexMapChange(Self);
+    end;
+end;
+
 // ------------------
 // ------------------ TGLLibMaterial ------------------
 // ------------------
@@ -4826,9 +5160,9 @@ begin
    FNameHashKey:=ComputeNameHashKey(FName);
    FMaterial:=TGLMaterial.Create(Self);
    FMaterial.Texture.OnTextureNeeded:=DoOnTextureNeeded;
-   FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgVector);
+   FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
    FTextureOffset.OnNotifyChange:=OnNotifyChange;
-   FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector);
+   FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
    FTextureScale.OnNotifyChange:=OnNotifyChange;
    FTextureMatrixIsIdentity:=True;
 end;
@@ -4858,6 +5192,37 @@ begin
  inherited Destroy;
 end;
 
+// GetMaterialLibrary
+//
+function TGLLibMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  if Collection = nil then
+    Result := nil
+  else
+    Result := TGLMaterialLibrary(TGLLibMaterials(Collection).Owner);
+end;
+
+// QueryInterface
+//
+function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TGLLibMaterial._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLLibMaterial._Release: Integer;
+begin
+  Result := -1; //ignore
+end;
+
 // Assign
 //
 procedure TGLLibMaterial.Assign(Source: TPersistent);
@@ -4869,6 +5234,7 @@ begin
       FTextureOffset.Assign(TGLLibMaterial(Source).TextureOffset);
       FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
       FTexture2Name:=TGLLibMaterial(Source).Texture2Name;
+      FShader := TGLLibMaterial(Source).Shader;
       CalculateTextureMatrix;
  end else inherited;
 end;
@@ -4976,7 +5342,7 @@ begin
       // if multipassing, this will occur upon last pass only
 {      if Assigned(Material.FTextureEx) then begin
          if not Material.TextureEx.IsTextureEnabled(1) then begin}
-            if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
+            if Assigned(libMatTexture2) and GL_ARB_multitexture and (not vSecondTextureUnitForbidden) then begin
                libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
                xglMapTexCoordToMain;
             end;
@@ -5091,6 +5457,12 @@ begin
    end;
 end;
 
+// IsUsed
+//
+function TGLLibMaterial.IsUsed:boolean;
+begin
+  result:=Assigned(self) and (self.userlist.count>0);
+end;
 // GetDisplayName
 //
 function TGLLibMaterial.GetDisplayName : String;
@@ -5340,6 +5712,80 @@ begin
       end;
    end;
    Result:=nil;
+end;
+
+// GetTextureIndex
+//
+function TGLLibMaterials.GetTextureIndex(const Texture: TGLTexture): Integer;
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I).Material.Texture = Texture then
+      begin
+        Result := I;
+        Exit;
+      end;
+  Result := -1;
+end;
+
+// GetMaterialIndex
+//
+function TGLLibMaterials.GetMaterialIndex(const Material: TGLMaterial): Integer;
+var
+  I: Integer;
+begin
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I).Material = Material then
+      begin
+        Result := I;
+        Exit;
+      end;
+  Result := -1;
+end;
+
+// GetMaterialIndex
+//
+function TGLLibMaterials.GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+var
+  MatIndex: Integer;
+begin
+  MatIndex := GetTextureIndex(Texture);
+  if MatIndex <> -1 then
+    Result := GetItems(MatIndex).Name
+  else
+    Result := '';
+end;
+
+// GetNameOfMaterial
+//
+function TGLLibMaterials.GetNameOfLibMaterial(const Material: TGLLibMaterial): TGLLibMaterialName;
+var
+  MatIndex: Integer;
+begin
+  MatIndex := IndexOf(Material);
+  if MatIndex <> -1 then
+    Result := GetItems(MatIndex).Name
+  else
+    Result := '';
+end;
+
+// IndexOf
+//
+function TGLLibMaterials.IndexOf(const Item: TGLLibMaterial): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I) = Item then
+      begin
+        Result := I;
+        Exit;
+      end;
 end;
 
 // PrepareBuildList
@@ -5810,6 +6256,46 @@ begin
    else Result:=nil;
 end;
 
+// TextureByName
+//
+function TGLMaterialLibrary.TextureByName(const LibMatName : TGLLibMaterialName): TGLTexture;
+var
+  LibMat: TGLLibMaterial;
+begin
+  if Self = nil then
+    raise ETexture.Create(glsMatLibNotDefined)
+  else if LibMatName = '' then
+    Result := nil
+  else
+  begin
+    LibMat := LibMaterialByName(LibMatName);
+    if LibMat = nil then
+      raise ETexture.CreateFmt(glsMaterialNotFoundInMatlibEx, [LibMatName])
+    else
+      Result := LibMat.Material.Texture;
+  end;
+end;
+
+// GetNameOfTexture
+//
+function TGLMaterialLibrary.GetNameOfTexture(const Texture: TGLTexture): TGLLibMaterialName;
+begin
+  if (Self = nil) or (Texture = nil) then
+    Result := ''
+  else
+    Result := FMaterials.GetNameOfTexture(Texture);
+end;
+
+// GetNameOfMaterial
+//
+function TGLMaterialLibrary.GetNameOfLibMaterial(const LibMat: TGLLibMaterial): TGLLibMaterialName;
+begin
+  if (Self = nil) or (LibMat = nil) then
+    Result := ''
+  else
+    Result := FMaterials.GetNameOfLibMaterial(LibMat);
+end;
+
 // ApplyMaterial
 //
 function TGLMaterialLibrary.ApplyMaterial(const materialName : String; var rci : TRenderContextInfo) : Boolean;
@@ -5950,6 +6436,17 @@ begin
    for i:=0 to Count-1 do
       Proc(TColorEntry(Items[i]^).Name);
 end;
+
+// EnumColors
+//
+procedure TGLColorManager.EnumColors(AValues: TStrings);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      AValues.Add(TColorEntry(Items[i]^).Name);
+end;
+
 
 // RegisterDefaultColors
 //
@@ -6356,6 +6853,7 @@ begin
 	glTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA_FLOAT16_ATI, TexWidth, TexHeight, 0, GL_RGBA, GL_FLOAT, data);
   RenderingContext.Deactivate;
 end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -1,7 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // GLLensFlare
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/03/07 - DaStr - Removed flicker that occured when LensFlare was
+                             rendered in a picking state (BugTracker ID = 1681031)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>19/04/04 - EG - Fixed occlusion test and pojection matrix stack issues
       <li>16/04/04 - EG - Added StreakAngle
@@ -487,6 +492,7 @@ var
    oldSeed : LongInt;
    projMatrix : TMatrix;
 begin
+   if (rci.drawState = dsPicking) then Exit;
    SetVector(v, AbsolutePosition);
    // are we looking towards the flare?
    rv:=VectorSubtract(v, PAffineVector(@rci.cameraPosition)^);

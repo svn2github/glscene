@@ -6,6 +6,7 @@
   TGLBExplosionFX Effect<p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
     <li>23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
     <li>07/03/04 - Matheus Degiovani - Creation
@@ -71,7 +72,6 @@ type
     class function FriendlyName : String; override;
     class function FriendlyDescription : String; override;
   published
-    // property X: single index 0 read FDirection[0] write FDirection[0];
     property MaxSteps: integer read FMaxSteps write FMaxSteps;
     property Speed: single read FSpeed write FSpeed;
     property Direction: TGLCoordinates read FDirection write SetDirection;
@@ -90,8 +90,7 @@ begin
   FRotList := TAffineVectorList.Create;
   FDirList := TAffineVectorList.Create;
   FPosList := TAffineVectorList.Create;
-  FDirection := TGLCoordinates.CreateInitialized(Self, NullHmgVector);
-  FDirection.SetVector(0, 0, 0, 0);
+  FDirection := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
 end;
 
 // Destroy

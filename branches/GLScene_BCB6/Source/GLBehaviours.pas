@@ -3,13 +3,17 @@
 	Standard TGLBehaviour subclasses for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
-      <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug) 
-      <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
-      <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
-      <li>10/04/00 - Egg - Improved persistence logic
-		<li>06/04/00 - Egg - Added Damping stuff to inertia
-		<li>05/04/00 - Egg - Creation
+    <li>19/12/06 - DaS - TGLBAcceleration.Create - creates Inertia right away,
+                         thus displaying it in the XCollection Editor
+                         TGLBAcceleration.DoProgress - raises an exception
+                         when required Inertia component is deleted by user
+    <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
+    <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug)
+    <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
+    <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
+    <li>10/04/00 - Egg - Improved persistence logic
+    <li>06/04/00 - Egg - Added Damping stuff to inertia
+    <li>05/04/00 - Egg - Creation
 	</ul></font>
 }
 unit GLBehaviours;
@@ -571,6 +575,9 @@ end;
 constructor TGLBAcceleration.Create(aOwner : TXCollection);
 begin
    inherited;
+     if aOwner <> nil then
+       if not (csReading in TComponent(aOwner.Owner).ComponentState) then
+         GetOrCreateInertia(TGLBehaviours(aOwner));
    FAcceleration:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
 end;
 
@@ -632,7 +639,7 @@ end;
 //
 class function TGLBAcceleration.FriendlyDescription : String;
 begin
-	Result:='A simple and constant acceleration'; 
+	Result:='A simple and constant acceleration';
 end;
 
 // UniqueBehaviour
@@ -645,8 +652,22 @@ end;
 // DoProgress
 //
 procedure TGLBAcceleration.DoProgress(const progressTime : TProgressTimes);
+var
+	i : Integer;
+  Inertia: TGLBInertia;
 begin
-   GetOrCreateInertia(OwnerBaseSceneObject).ApplyTranslationAcceleration(progressTime.deltaTime, FAcceleration.DirectVector);
+	i:=Owner.IndexOfClass(TGLBInertia);
+	if i>=0 then
+  begin
+		Inertia:=TGLBInertia(Owner[i]);
+    Inertia.ApplyTranslationAcceleration(progressTime.deltaTime, FAcceleration.DirectVector);
+  end
+	else
+  begin
+    TGLBInertia.Create(Owner);
+    //on next progress event this exception won't be raised, because TGLBInertia will be created again
+    raise Exception.Create(ClassName + ' requires ' + TGLBInertia.ClassName + '! (' + TGLBInertia.ClassName + ' was added to the Behaviours again)');
+  end;
 end;
 
 // ------------------------------------------------------------------

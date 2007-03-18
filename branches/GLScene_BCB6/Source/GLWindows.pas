@@ -2,6 +2,7 @@
 {: In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/12/06 - DaStr - TGLEdit.ReadOnly, TGLScrollbar.Locked, TGLStringGrid.ColSelect added
       <li>10/11/05 - Mathx - Fixed TGLPopupMenu stack overflow on method internalRender.
                              Related to bug 1193909.
       <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at http://www.sulaco.co.za (http://www.sulaco.co.za/opengl/windows.zip)
@@ -11,7 +12,7 @@
       <li>07/01/03 - JAJ - Jeremy Darling modified the TGLEdit's Render, more updates on TGLEdit expected...
       <li>18/01/03 - JAJ - Added TGLStringList, TGLScrollbar, TGLPopupMenu...
       <li>08/08/03 - PS  - Added Horizontal to GLScrollbar...
-      <li>14/08/03 - SG - Fixed TGLBaseComponent.SetGuiLayout (Joen Joensen)
+      <li>14/08/03 - SG  - Fixed TGLBaseComponent.SetGuiLayout (Joen Joensen)
       <li>08/08/03 - JAJ - Merged PS's and SG's update... Added TitleOffset...
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
@@ -28,6 +29,8 @@
 unit GLWindows;
 
 interface
+
+{$I GLScene.inc}
 
 uses
    SysUtils, Classes, GLMisc, GLScene, GLHUDObjects,
@@ -84,7 +87,7 @@ type
     Procedure DoChanges; virtual;
     Procedure MoveGUI(XRel, YRel : Single);
     Procedure PlaceGUI(XPos, YPos : Single);
-	
+
     procedure DoProgress(const progressTime : TProgressTimes); override;
 
     procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
@@ -424,6 +427,7 @@ type
   private
     FOnChange  : TNotifyEvent;
     FSelStart  : Integer;
+    FReadOnly  : Boolean;
     FEditChar  : String;
   protected
     procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
@@ -438,6 +442,7 @@ type
     procedure InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
   published
     property  EditChar : String read FEditChar write SetEditChar;
+    property  ReadOnly : Boolean read FReadOnly write FReadOnly default False;
     property  OnChange : TNotifyEvent read FOnChange write FOnChange;
     property  SelStart : Integer read FSelStart write SetSelStart;
   end;
@@ -479,6 +484,7 @@ type
     FScrollOffs  : Single;
     FScrolling   : Boolean;
     FHorizontal : Boolean;
+    FLocked:Boolean;
   protected
     Procedure SetMin(const val      : Single);
     Procedure SetMax(const val      : Single);
@@ -516,13 +522,15 @@ type
     property PageSize : Single read FPageSize write SetPageSize;
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
     property GuiLayoutKnobName : TGLGuiComponentName read FGuiLayoutKnobName Write SetGuiLayoutKnobName;
+    property Locked : Boolean read FLocked write FLocked default False;
   End;
 
 
   TGLStringGrid = class(TGLFocusControl)
   private
-    FSelCol,FSelRow : Integer;
-    FRowSelect : Boolean;
+    FSelCol, FSelRow : Integer;
+    FRowSelect: Boolean;
+    FColSelect: Boolean;
     FColumns : TStrings;
     FRows    : TList;
     FHeaderColor : TColorVector;
@@ -535,6 +543,7 @@ type
     Function  GetCell(X,Y : Integer; out oCol,oRow : Integer) : Boolean;
     procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); override;
     Procedure SetColumns(const val : TStrings);
+    Procedure SetColSelect(const val : Boolean);
     Function  GetRow (index : Integer) : TStringList;
     Procedure SetRow(index : Integer; const val : TStringList);
     Function  GetRowCount : Integer;
@@ -572,6 +581,7 @@ type
     property SelCol : Integer read FSelCol write SetSelCol;
     property SelRow : Integer read FSelRow write SetSelRow;
     property RowSelect : Boolean read FRowSelect write SetRowSelect;
+    property ColSelect : Boolean read FColSelect write SetColSelect;
     property DrawHeader : Boolean read FDrawHeader write SetDrawHeader;
     property Scrollbar : TGLScrollbar read FScrollbar write SetScrollbar;
   end;
@@ -2489,14 +2499,15 @@ End;
 
 procedure TGLEdit.InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer);
 Begin
-  SetFocus;
+  if not FReadOnly then
+    SetFocus;
   inherited;
 End;
 
 Procedure TGLEdit.InternalKeyPress(var Key: Char);
 Begin
+  if FReadOnly then exit;
   inherited;
-
   Case Key of
     #8 :
     Begin
@@ -2520,10 +2531,9 @@ Begin
 End;
 
 Procedure TGLEdit.InternalKeyDown(var Key: Word; Shift: TShiftState);
-
 Begin
+  if FReadOnly then exit;
   inherited;
-
   Case Key of
     glKey_DELETE :
     Begin
@@ -2881,7 +2891,9 @@ Var
   Tx, Ty : Single;
 
 Begin
-  if Button = mbLeft then
+  if (Button = mbLeft)
+   and not FLocked
+    then
   Begin
     Tx := x - left;
     Ty := y - top;
@@ -3144,7 +3156,6 @@ Begin
 End;
 
 Procedure TGLStringGrid.SetColumns(const val : TStrings);
-
 Var
   XC : Integer;
 Begin
@@ -3152,6 +3163,12 @@ Begin
   For XC := 0 to Columns.Count-1 do
   Columns.Objects[XC] := TObject(ColumnSize);
 end;
+
+Procedure TGLStringGrid.SetColSelect(const val : Boolean);
+Begin
+  FColSelect := Val;
+  NotifyChange(Self);
+End;
 
 Function  TGLStringGrid.GetRow(index : Integer) : TStringList;
 
@@ -3230,7 +3247,6 @@ Begin
 End;
 
 Procedure TGLStringGrid.SetRowSelect(const val : Boolean);
-
 Begin
   FRowSelect := Val;
   NotifyChange(Self);
@@ -3365,13 +3381,17 @@ End;
 procedure TGLStringGrid.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Function CellSelected(X,Y : Integer) : Boolean;
-
 Begin
-  if RowSelect then
+  if (RowSelect and ColSelect) then
+    Result := (Y = SelRow) or (x = SelCol)
+  else if RowSelect then
     Result := Y = SelRow
+  else if ColSelect then
+    Result := X = SelCol
   else
     Result := (Y = SelRow) and (x = SelCol);
 End;
+
 
 Function CellText(X,Y : Integer) : String;
 

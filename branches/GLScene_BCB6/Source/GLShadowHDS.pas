@@ -209,10 +209,10 @@ var L:single;
     v:TAffineVector;
 begin
   MakeVector(v,FLightVector.X/FScale.X,FLightVector.Y/FScale.Y,FLightVector.Z/FScale.Z);
-  L:=MaxFloat(abs(v[0]),abs(v[1]));
+  L:=MaxFloat(abs(v.Coord[0]),abs(v.Coord[1]));
   Step:=VectorScale(v,1/L);
-  step[0]:=trunc(step[0]*4096)/4096;  //round down the fraction now, to prevent rounding errors later
-  step[1]:=trunc(step[1]*4096)/4096;  //round down the fraction now, to prevent rounding errors later
+  step.Coord[0]:=trunc(step.Coord[0]*4096)/4096;  //round down the fraction now, to prevent rounding errors later
+  step.Coord[1]:=trunc(step.Coord[1]*4096)/4096;  //round down the fraction now, to prevent rounding errors later
   result:=step;
 end;
 
@@ -220,9 +220,9 @@ end;
 //
 function TGLShadowHDS.CalcScale:TAffineVector;
 begin
-  FScaleVec[0]:=FScale.X;
-  FScaleVec[1]:=FScale.Y;
-  FScaleVec[2]:=FScale.Z;
+  FScaleVec.Coord[0]:=FScale.X;
+  FScaleVec.Coord[1]:=FScale.Y;
+  FScaleVec.Coord[2]:=FScale.Z;
   result:=FScaleVec;
 end;
 
@@ -233,7 +233,6 @@ var HD    : THeightData;
     libMat: TGLLibMaterial;
     bmp32 : TGLBitmap32;
     MatName:string;
-    OldLibMat:TGLLibMaterial;
 begin
   if not assigned (FShadowmapLibrary) then exit;
   //--Generate Normal Map for tile--
@@ -292,8 +291,8 @@ begin
   ShadowMap.Width :=FTileSize;
   CalcStep;
   CalcScale;
-  sx:=step[0];
-  sy:=step[1];
+  sx:=step.Coord[0];
+  sy:=step.Coord[1];
   if abs(sx)>abs(sy) then begin
     y:=0;
     if sx<0 then x:=FTileSize-1     //right to left
@@ -338,9 +337,9 @@ begin
   ShadowDif:=0;
   rh:=StartH;
   while (ctr<FScanDistance)and(tmpHD.DataState<>hdsNone) do begin
-    lx:=lx-step[0];
-    ly:=ly-step[1];
-    rh:=rh-step[2];
+    lx:=lx-step.Coord[0];
+    ly:=ly-step.Coord[1];
+    rh:=rh-step.Coord[2];
     //--jump to new tile--
     if (lx<0)or(lx>=FTileSize)or(ly<0)or(ly>=FTileSize) then begin
       LocalToWorld(lx,ly,tmpHD,wx,wy); //if our local coordinates are off the tile,
@@ -382,6 +381,7 @@ var HDS:THeightDataSource;
     size:integer;
 begin
   //wrap terrain
+  HDS:=self.HeightDataSource;  
   if wx>=HDS.Width then wx:=wx-HDS.Width;
   if wx<0 then wx:=wx+HDS.Width;
   if wy>=HDS.Height then wy:=wy-HDS.Height;
@@ -425,9 +425,9 @@ var sh,h:single;
       nmRow[px].a:=255;
       //pinkMax:=MinInteger(Integer(lum+8),255);
       //if pink=true then nmRow[px].r:=pinkMax;
-      Lx:=Lx+step[0];
-      Ly:=Ly+step[1];
-      sh:=sh+step[2];
+      Lx:=Lx+step.Coord[0];
+      Ly:=Ly+step.Coord[1];
+      sh:=sh+step.Coord[2];
       inc(ctr);
     end;
 begin
@@ -439,20 +439,20 @@ begin
   //pink:=false;
   if wrapdst<size then begin        // check if this line will wrap before its end
     while ctr<=wrapdst do linestep; //take one exta step, to prevent gaps due to rounding errors
-    Lx:=Lx-step[0];                 //
-    Ly:=Ly-step[1];                 // step back, to compensate for the extra step
+    Lx:=Lx-step.Coord[0];                 //
+    Ly:=Ly-step.Coord[1];                 // step back, to compensate for the extra step
     ctr:=ctr-1;                     //
-    if abs(step[0])>abs(step[1]) then begin    //East or West
-      if step[1]<0 then Ly:=Ly+size;           //ESE or WSW
-      if step[1]>0 then Ly:=Ly-size;           //ENE or WNW
+    if abs(step.Coord[0])>abs(step.Coord[1]) then begin    //East or West
+      if step.Coord[1]<0 then Ly:=Ly+size;           //ESE or WSW
+      if step.Coord[1]>0 then Ly:=Ly-size;           //ENE or WNW
     end else begin                             //North or South
-      if step[0]<0 then Lx:=Lx+size;           //NNW or SSW
-      if step[0]>0 then Lx:=Lx-size;           //NNE or SSE
+      if step.Coord[0]<0 then Lx:=Lx+size;           //NNW or SSW
+      if step.Coord[0]>0 then Lx:=Lx-size;           //NNE or SSE
     end;
     cx:=ClampValue(Lx,0,size-1);
     cy:=ClampValue(Ly,0,size-1);
     sh:=RayCastShadowHeight(HD,cx,cy);
-    sh:=sh+step[2]*0.4;
+    sh:=sh+step.Coord[2]*0.4;
     //pink:=true;
   end;
   while ctr<size do linestep; //No wrapping
@@ -469,8 +469,8 @@ var x,y:single;
     size:integer;
     sx,sy:single;
 begin
-  sx:=step[0];
-  sy:=step[1];
+  sx:=step.Coord[0];
+  sy:=step.Coord[1];
   size:=FTileSize;
   x:=size;
   y:=size;
@@ -505,7 +505,7 @@ begin
   HD:=HeightData;
   nv:=HD.NormalNode(x,y,FScaleVec);
   //--Ambient Light from blue sky (directly up)--
-  ambientLight:=nv[2];
+  ambientLight:=nv.Coord[2];
   //--Shadows/Direct light/Soft shadow edges--
   DirectLight:=ClampValue(1-(ShadowHeight-TerrainHeight)/SoftRange,0,1);
   //--Diffuse light, when not in shadow--

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLBSP<p>
 
 	Binary Space Partion mesh support for GLScene.<p>
@@ -5,13 +8,15 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Added VectorTypes Unit
       <li>07/03/03 - EG - T-junctions now properly supported and repaired
       <li>05/03/03 - EG - Preliminary BSP splitting support
-	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
+      <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
                           MaterialCache support
-	   <li>30/01/03 - EG - Creation
+      <li>30/01/03 - EG - Creation
 	</ul></font>
 }
 unit GLBSP;
@@ -266,7 +271,7 @@ begin
           (Source>=0) and (Destination>=0), 'Node index out of bounds!');
    ByteIdx:=Source*FBytesPerCluster + Destination div 8;
    BitIdx:=Destination mod 8;
-   Result:=(FData[ByteIdx] and (1 shl BitIdx)) > 0;
+   Result:=(FData^[ByteIdx] and (1 shl BitIdx)) > 0;
 end;
 
 // SetVisibility
@@ -281,9 +286,9 @@ begin
    ByteIdx:=Source*FBytesPerCluster + Destination div 8;
    BitIdx:=Destination mod 8;
    if Value then
-      FData[ByteIdx]:=FData[ByteIdx] or (1 shl BitIdx)
+      FData^[ByteIdx]:=FData^[ByteIdx] or (1 shl BitIdx)
    else
-      FData[ByteIdx]:=FData[ByteIdx] and not (1 shl BitIdx);
+      FData^[ByteIdx]:=FData^[ByteIdx] and not (1 shl BitIdx);
 end;
 
 procedure TBSPClusterVisibility.SetData(Source : PByte; NumClusters : Integer);
@@ -381,24 +386,24 @@ begin
          i:=0; j:=0;
          while i<n do begin
             if UseClusterVisibility and Assigned(camNode) then
-               renderNode:=ClusterVisibility.Visibility[camCluster,TFGBSPNode(bspNodeList[i]).Cluster]
+               renderNode:=ClusterVisibility.Visibility[camCluster,TFGBSPNode(bspNodeList^[i]).Cluster]
             else
                renderNode:=True;
-            if renderNode then with TFGBSPNode(bspNodeList[i]) do begin
+            if renderNode then with TFGBSPNode(bspNodeList^[i]) do begin
                libMat:=MaterialCache;
                if Assigned(libMat) then begin
                   j:=i+1;
-                  while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=libMat) do
+                  while (j<n) and (TFGBSPNode(bspNodeList^[j]).MaterialCache=libMat) do
                      Inc(j);
                   libMat.Apply(mrci);
                   repeat
                      for k:=i to j-1 do
-                        TFGBSPNode(bspNodeList[k]).BuildList(mrci);
+                        TFGBSPNode(bspNodeList^[k]).BuildList(mrci);
                   until not libMat.UnApply(mrci);
                end else begin
                   j:=i;
-                  while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=nil) do begin
-                     TFGBSPNode(bspNodeList[j]).BuildList(mrci);
+                  while (j<n) and (TFGBSPNode(bspNodeList^[j]).MaterialCache=nil) do begin
+                     TFGBSPNode(bspNodeList^[j]).BuildList(mrci);
                      Inc(j);
                   end;
                end;
@@ -453,7 +458,7 @@ begin
                if node.VertexIndices.Count=0 then begin
                   if nodeParents[i]>=0 then
                      indicesToCheck.Push(nodeParents[i]);
-                  FaceGroups.List[i]:=nil;
+                  FaceGroups.List^[i]:=nil;
                   node.Owner:=nil;
                   node.Free;
                end;
@@ -759,15 +764,15 @@ end;
 function TFGBSPNode.AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
 begin
    with Owner.Owner do begin
-      with Vertices do Result:=Add(VectorCombine(List[iA], List[iB], fA, fB));
+      with Vertices do Result:=Add(VectorCombine(List^[iA], List^[iB], fA, fB));
       with Normals do if Count>0 then
-         Add(VectorCombine(List[iA], List[iB], fA, fB));
+         Add(VectorCombine(List^[iA], List^[iB], fA, fB));
       with Colors do if Count>0 then
-         Add(VectorCombine(List[iA], List[iB], fA, fB));
+         Add(VectorCombine(List^[iA], List^[iB], fA, fB));
       with TexCoords do if Count>0 then
-         Add(VectorCombine(List[iA], List[iB], fA, fB));
+         Add(VectorCombine(List^[iA], List^[iB], fA, fB));
       with LightMapTexCoords do if Count>0 then
-         Add(TexPointCombine(List[iA], List[iB], fA, fB));
+         Add(TexPointCombine(List^[iA], List^[iB], fA, fB));
    end;
 end;
 
@@ -784,26 +789,26 @@ var
 begin
    with Owner.Owner do begin
       with Vertices do
-         f:=VectorDistance(List[iA], List[iMid])/VectorDistance(List[iA], List[iB]);
+         f:=VectorDistance(List^[iA], List^[iMid])/VectorDistance(List^[iA], List^[iB]);
       spawn:=False;
       with Normals do if Count>0 then begin
-         midNormal:=VectorLerp(List[iA], List[iB], f);
-         spawn:=(VectorSpacing(midNormal, List[iMid])>cTJunctionEpsilon);
+         midNormal:=VectorLerp(List^[iA], List^[iB], f);
+         spawn:=(VectorSpacing(midNormal, List^[iMid])>cTJunctionEpsilon);
       end;
       with Colors do if Count>0 then begin
-         midColor:=VectorLerp(List[iA], List[iB], f);
-         spawn:=spawn or (VectorSpacing(midColor, List[iMid])>cTJunctionEpsilon);
+         midColor:=VectorLerp(List^[iA], List^[iB], f);
+         spawn:=spawn or (VectorSpacing(midColor, List^[iMid])>cTJunctionEpsilon);
       end;
       with TexCoords do if Count>0 then begin
-         midTexCoord:=VectorLerp(List[iA], List[iB], f);
-         spawn:=spawn or (VectorSpacing(midTexCoord, List[iMid])>cTJunctionEpsilon);
+         midTexCoord:=VectorLerp(List^[iA], List^[iB], f);
+         spawn:=spawn or (VectorSpacing(midTexCoord, List^[iMid])>cTJunctionEpsilon);
       end;
       with LightMapTexCoords do if Count>0 then begin
-         midLightmapTexCoord:=TexPointLerp(List[iA], List[iB], f);
-         spawn:=spawn or (VectorSpacing(midLightmapTexCoord, List[iMid])>cTJunctionEpsilon);
+         midLightmapTexCoord:=TexPointLerp(List^[iA], List^[iB], f);
+         spawn:=spawn or (VectorSpacing(midLightmapTexCoord, List^[iMid])>cTJunctionEpsilon);
       end;
       if spawn then begin
-         with Vertices do Result:=Add(List[iMid]);
+         with Vertices do Result:=Add(List^[iMid]);
          with Normals do if Count>0 then
             Add(midNormal);
          with Colors do if Count>0 then
@@ -885,11 +890,11 @@ begin
    i:=0; while i<VertexIndices.Count do begin
       // evaluate all points
       i1:=VertexIndices[i];
-      e1:=PlaneEvaluatePoint(splitPlane, vertices.List[i1]);
+      e1:=PlaneEvaluatePoint(splitPlane, vertices.List^[i1]);
       i2:=VertexIndices[i+1];
-      e2:=PlaneEvaluatePoint(splitPlane, vertices.List[i2]);
+      e2:=PlaneEvaluatePoint(splitPlane, vertices.List^[i2]);
       i3:=VertexIndices[i+2];
-      e3:=PlaneEvaluatePoint(splitPlane, vertices.List[i3]);
+      e3:=PlaneEvaluatePoint(splitPlane, vertices.List^[i3]);
       if Abs(e1)<cOwnTriangleEpsilon then begin
          e1:=0;
          se1:=0;
@@ -1002,11 +1007,11 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates : TIntegerList);
          else invVector.Coord[i]:=0;
       // lookup all candidates
       for i:=0 to candidatesList.Count-1 do begin
-         k:=candidatesList.List[i];
+         k:=candidatesList.List^[i];
          if (k=iA) or (k=iB) or (k=iC) then Continue;
          candidate:=@vertices[k];
-         if     (candidate.Coord[0]>boxMin.Coord[0]) and (candidate.Coord[1]>boxMin.Coord[1]) and (candidate.Coord[2]>boxMin.Coord[2])
-            and (candidate.Coord[0]<boxMax.Coord[0]) and (candidate.Coord[1]<boxMax.Coord[1]) and (candidate.Coord[2]<boxMax.Coord[2]) then begin
+         if     (candidate^.Coord[0]>boxMin.Coord[0]) and (candidate^.Coord[1]>boxMin.Coord[1]) and (candidate^.Coord[2]>boxMin.Coord[2])
+            and (candidate^.Coord[0]<boxMax.Coord[0]) and (candidate^.Coord[1]<boxMax.Coord[1]) and (candidate^.Coord[2]<boxMax.Coord[2]) then begin
             f:=candidate^;
             SubtractVector(f, vA^);
             ScaleVector(f, invVector);
@@ -1030,34 +1035,34 @@ begin
    indices:=VertexIndices.List;
    i:=0; while i<VertexIndices.Count do begin
       if mark[i]<>0 then begin
-         tj:=FindTJunction(indices[i], indices[i+1], indices[i+2], tJunctionsCandidates);
+         tj:=FindTJunction(indices^[i], indices^[i+1], indices^[i+2], tJunctionsCandidates);
          if tj>=0 then begin
             VertexIndices.Add(tj, VertexIndices[i+1], VertexIndices[i+2]);
             mark.Add(1, 1, 0);
             indices:=VertexIndices.List;
-            indices[i+1]:=tj;
+            indices^[i+1]:=tj;
             mark[i+1]:=0;
             Continue;
          end;
       end;
       if mark[i+1]<>0 then begin
-         tj:=FindTJunction(indices[i+1], indices[i+2], indices[i], tJunctionsCandidates);
+         tj:=FindTJunction(indices^[i+1], indices^[i+2], indices^[i], tJunctionsCandidates);
          if tj>=0 then begin
             VertexIndices.Add(tj, VertexIndices[i+2], VertexIndices[i]);
             mark.Add(1, 1, 0);
             indices:=VertexIndices.List;
-            indices[i+2]:=tj;
+            indices^[i+2]:=tj;
             mark[i+2]:=0;
             Continue;
          end;
       end;
       if mark[i+2]<>0 then begin
-         tj:=FindTJunction(indices[i+2], indices[i], indices[i+1], tJunctionsCandidates);
+         tj:=FindTJunction(indices^[i+2], indices^[i], indices^[i+1], tJunctionsCandidates);
          if tj>=0 then begin
             VertexIndices.Add(tj, VertexIndices[i], VertexIndices[i+1]);
             mark.Add(1, 1, 0);
             indices:=VertexIndices.List;
-            indices[i]:=tj;
+            indices^[i]:=tj;
             mark[i]:=0;
             Continue;
          end;

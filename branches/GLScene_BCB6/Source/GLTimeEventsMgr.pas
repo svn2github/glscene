@@ -1,14 +1,18 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLTimeEventsMgr<p>
+     by GliGli
 
-   Time based events mannager using the Cadencer
-   can be useful to make animations with GlScene .<p>
+{: Time based events mannager using the Cadencer<p>
+   can be useful to make animations with GlScene<p>
 
-   <b>History : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>02/08/04 - LR, YHC - BCB corrections: changed ShortString to String
       <li>07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
-      <li>--/--/-- - GliGli - Created           
-   </ul></font>
 }
+
 unit GLTimeEventsMgr;
 
 interface
@@ -119,8 +123,6 @@ type
          property Enabled : boolean read FEnabled write FEnabled  default True;
 
     end;
-
-procedure Register;
 
 implementation
 
@@ -336,16 +338,6 @@ begin
       FOnEvent(Self);
    end;
    Inc(FTickCount);
-end;
-
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-Procedure Register;   // a mettre dans GLSceneRegister
-begin
-  RegisterComponents('GLScene Utils', [TGLTimeEventsMGR]);
 end;
 
 end.
