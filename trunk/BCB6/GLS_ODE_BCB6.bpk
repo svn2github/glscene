@@ -18,7 +18,7 @@
     <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
-    <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs"/>
+    <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs;..\Source\VideoAPIs"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
@@ -27,8 +27,8 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="GLS_ODE_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source;..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source\Platform;..\Source\FileFormats;..\..\Toolsapi;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="..\..\Lib;..\Source;..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source\Platform;..\Source\FileFormats;..\..\Toolsapi;$(BCB)\Source\Toolsapi;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <LIBPATH value="..\..\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
