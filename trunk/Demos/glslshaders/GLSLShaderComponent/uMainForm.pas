@@ -81,8 +81,7 @@ procedure TGLSLTestForm.FormCreate(Sender: TObject);
 const
   FILE_PATH = '..\..\media\';
 begin
-  //First load models
-
+  // First load models.
   Fighter.LoadFromFile(FILE_PATH + 'waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
@@ -97,10 +96,10 @@ begin
   Sphere_little.LoadFromFile(FILE_PATH + 'Sphere_little.3ds'); //Sphere_little
   Sphere_little.Scale.Scale(4);
 
-  //Then load textures
+  // Then load textures.
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(FILE_PATH + 'Earth.jpg');
 
-  //Shader
+  // Shader.
   GLSLShader.LoadShaderPrograms('Shaders/Shader.Vert', 'Shaders/Shader.Frag');
   GLSLShader.Enabled := True;
 end;
