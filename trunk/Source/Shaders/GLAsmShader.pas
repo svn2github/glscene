@@ -7,6 +7,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/03/07 - DaStr - TGLCustomAsmShader now generates its own events
       <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
@@ -20,6 +21,8 @@ unit GLAsmShader;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   // VCL
   Classes, SysUtils,
@@ -28,22 +31,32 @@ uses
   VectorGeometry, VectorTypes, GLTexture, OpenGL1x, VectorLists, ARBProgram,
   GLCustomShader;
 
-  {$Include GLScene.inc}
-
 type
+  TGLCustomAsmShader = class;
+  TGLAsmShaderEvent = procedure(Shader: TGLCustomAsmShader) of object;
+  TGLAsmShaderUnUplyEvent = procedure(Shader: TGLCustomAsmShader; var ThereAreMorePasses: Boolean) of object;
+
   TGLCustomAsmShader = class(TGLCustomShader)
   private
     { Private Declarations }
-    FVPHandle: cardinal;
-    FFPHandle: cardinal;
+    FVPHandle: Cardinal;
+    FFPHandle: Cardinal;
+
+    FOnInitialize: TGLAsmShaderEvent;
+    FOnApply: TGLAsmShaderEvent;
+    FOnUnApply: TGLAsmShaderUnUplyEvent;
   protected
     FLightIDs: TIntegerList;
     procedure FillLights; virtual;
     procedure UnApplyLights; virtual;
 
-    procedure DoLightPass(lightID: cardinal); virtual;
+    procedure DoLightPass(lightID: Cardinal); virtual;
     procedure DoAmbientPass; virtual;
     procedure DestroyARBPrograms; virtual;
+
+    property OnApply: TGLAsmShaderEvent read FOnApply write FOnApply;
+    property OnUnApply: TGLAsmShaderUnUplyEvent read FOnUnApply write FOnUnApply;
+    property OnInitialize: TGLAsmShaderEvent read FOnInitialize write FOnInitialize;
 
     procedure DoInitialize; override;
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
@@ -195,7 +208,7 @@ begin
 end;
 
 
-procedure TGLCustomAsmShader.DoLightPass(lightID: cardinal);
+procedure TGLCustomAsmShader.DoLightPass(lightID: Cardinal);
 var
   light: TVector;
 begin
