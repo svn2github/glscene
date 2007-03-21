@@ -4,6 +4,8 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>28/09/04 - SG - Vertex program now uses ARB_position_invariant option.
       <li>09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
@@ -156,10 +158,10 @@ begin
          else intensity:=150;
       end;
 
-      bmp32.Data[i].r:=intensity;
-      bmp32.Data[i].g:=intensity;
-      bmp32.Data[i].b:=intensity;
-      bmp32.Data[i].a:=1;
+      bmp32.Data^[i].r:=intensity;
+      bmp32.Data^[i].g:=intensity;
+      bmp32.Data^[i].b:=intensity;
+      bmp32.Data^[i].a:=1;
    end;
 end;
 
