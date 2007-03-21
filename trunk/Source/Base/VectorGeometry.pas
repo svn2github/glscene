@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/03/07 - DaStr - Bugfixed MatrixDecompose
+                             (thanks Burkhard Carstens) (BugTrackerID=1684438)
       <li>06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
       <li>03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
                              Added Vector[More/Less](Equal)Then
@@ -5996,7 +5998,7 @@ begin
 
   // compute X scale factor and normalize first row
   Tran[ttScaleX]:=VectorNorm(row0);
-  VectorScale(row0, RSqrt(Tran[ttScaleX]));
+  ScaleVector(row0, RSqrt(Tran[ttScaleX]));
 
   // compute XY shear factor and make 2nd row orthogonal to 1st
   Tran[ttShearXY]:=VectorDotProduct(row0, row1);
@@ -6005,7 +6007,7 @@ begin
 
   // now, compute Y scale and normalize 2nd row
   Tran[ttScaleY]:=VectorNorm(row1);
-  VectorScale(row1, RSqrt(Tran[ttScaleY]));
+  ScaleVector(row1, RSqrt(Tran[ttScaleY]));
   Tran[ttShearXY]:=Tran[ttShearXY]/Tran[ttScaleY];
 
   // compute XZ and YZ shears, orthogonalize 3rd row
@@ -6018,7 +6020,7 @@ begin
 
   // next, get Z scale and normalize 3rd row
   Tran[ttScaleZ]:=VectorNorm(row2);
-  VectorScale(row2, RSqrt(Tran[ttScaleZ]));
+  ScaleVector(row2, RSqrt(Tran[ttScaleZ]));
   Tran[ttShearXZ]:=Tran[ttShearXZ] / tran[ttScaleZ];
   Tran[ttShearYZ]:=Tran[ttShearYZ] / Tran[ttScaleZ];
 
