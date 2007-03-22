@@ -7,6 +7,7 @@
 
 	<b>History : </b><font size=-1><ul>
         <li>22/03/07 - DaStr  - Added checks to TGLMotionBlur for supported extensions
+                                TGLMotionBlur is not rendered when picking now
         <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
         <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
                                 TGLBlur - default values added to all properties,
@@ -421,10 +422,9 @@ end;
 
 procedure TGLMotionBlur.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
 begin
-  if not (rci.ignoreMaterials) and not (csDesigning in ComponentState) then
+  if not (rci.ignoreMaterials or (csDesigning in ComponentState) or
+         (rci.drawState = dsPicking)) and SupportsRequiredExtensions then
   begin
-    if not SupportsRequiredExtensions then
-      Visible := False;
     glEnable( GL_TEXTURE_RECTANGLE_ARB );
     Material.Apply( rci );
     glMatrixMode( GL_PROJECTION );
