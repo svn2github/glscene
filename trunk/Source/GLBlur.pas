@@ -6,6 +6,7 @@
 	Applies a blur effect over the viewport.<p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>22/03/07 - DaStr  - Added checks to TGLMotionBlur for supported extensions
         <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
         <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
                                 TGLBlur - default values added to all properties,
@@ -21,16 +22,17 @@ interface
 
 uses
   // VCL
-  Classes, StdCtrls,
+  Classes, SysUtils,
 
   // GLScene
-  GLScene, VectorGeometry, GLMisc,  GLObjects, GLBitmapFont, GLTexture,
-  GLHudObjects;
+  GLScene, VectorGeometry, GLMisc, GLObjects, GLBitmapFont, GLTexture,
+  GLHudObjects, GLStrings;
 
 type
-    TGLBlurPreset = (pNone,pGlossy,pBeastView,pOceanDepth,pDream,pOverBlur);
+  TGLBlurPreset = (pNone, pGlossy, pBeastView, pOceanDepth, pDream, pOverBlur);
 
-type
+  EGLMotionBlurException = class(Exception);
+
   TGLBlur = class (TGLHUDSprite)
   private
     FViewer : TGLMemoryViewer;
@@ -76,8 +78,7 @@ type
 {:
   This component blurs everything thatis rendered BEFORE it. So if you want part
   of your scene blured, the other not blured, make sure that the other part is
-  rendered after this component.
-  It is fast and does not require shaders.
+  rendered after this component. It is fast and does not require shaders.
 
   Note: it is FPS-dependant. Also also can produce a "blury trail effect", which
   stays on the screen until something new is rendered over it. It can be overcome
@@ -96,14 +97,16 @@ type
     FIntensity: Single;
     function StoreIntensity: Boolean;
   public
+    {: This function is only valid AFTER OpenGL has been initialized. }
+    function SupportsRequiredExtensions: Boolean;
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     constructor Create(aOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
-    // The more the intersity, the more blur you have
+    //: The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
 
-    // From TGLBaseSceneObject.
+    //: From TGLBaseSceneObject.
     property Visible;
     property OnProgress;
     property Behaviours;
@@ -113,7 +116,7 @@ type
 
 implementation
 
-uses SysUtils, OpenGL1x, GLGraphics, XOpenGL, GLState;
+uses OpenGL1x, GLGraphics, XOpenGL, GLState;
 
 const
   EPS = 0.001;
@@ -128,9 +131,9 @@ begin
   FBlurBottom := 0.01;
   FRenderHeight := 256;
   FRenderWidth  := 256;
-  FViewer := TGLMemoryViewer.create(self);
+  FViewer := TGLMemoryViewer.Create(Self);
   FPreset := pNone;
-  Material.Texture.Disabled := false;
+  Material.Texture.Disabled := False;
   // init texture
   Material.Texture.ImageClassName := 'TGLBlankImage';
   TGLBlankImage(Material.Texture.Image).Width := FViewer.Width;
@@ -416,49 +419,54 @@ begin
   FIntensity := 0.975;
 end;
 
-{$Warnings Off}
 procedure TGLMotionBlur.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
 begin
-  if rci.ignoreMaterials then Exit;
-  if csDesigning in ComponentState then Exit;
-
-  glPushMatrix;
-    glEnable( GL_TEXTURE_RECTANGLE_NV );
+  if not (rci.ignoreMaterials) and not (csDesigning in ComponentState) then
+  begin
+    if not SupportsRequiredExtensions then
+      Visible := False;
+    glEnable( GL_TEXTURE_RECTANGLE_ARB );
     Material.Apply( rci );
     glMatrixMode( GL_PROJECTION );
     glPushMatrix;
       glLoadIdentity;
       glOrtho( 0, rci.viewPortSize.cx, rci.viewPortSize.cy, 0, 0, 1 );
       glMatrixMode(GL_MODELVIEW);
-      glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+      glPushMatrix;
       glLoadIdentity;
       glDisable(GL_DEPTH_TEST);
       glDepthMask( FALSE );
       glBegin( GL_QUADS );
-        glTexCoord2f( 0.0, rci.viewPortSize.cy ); glVertex2f( 0, 0 );
-        glTexCoord2f( 0.0, 0.0); glVertex2f( 0, rci.viewPortSize.cy );
-        glTexCoord2f( rci.viewPortSize.cx, 0.0 ); glVertex2f( rci.viewPortSize.cx, rci.viewPortSize.cy );
+        glTexCoord2f( 0.0, rci.viewPortSize.cy );                 glVertex2f( 0, 0 );
+        glTexCoord2f( 0.0, 0.0);                                  glVertex2f( 0, rci.viewPortSize.cy );
+        glTexCoord2f( rci.viewPortSize.cx, 0.0 );                 glVertex2f( rci.viewPortSize.cx, rci.viewPortSize.cy );
         glTexCoord2f( rci.viewPortSize.cx, rci.viewPortSize.cy ); glVertex2f( rci.viewPortSize.cx, 0 );
       glEnd;
+      glPopMatrix;
       glDepthMask( TRUE );
+      glEnable(GL_DEPTH_TEST);
       glMatrixMode( GL_PROJECTION );
     glPopMatrix;
     glMatrixMode( GL_MODELVIEW );
     Material.UnApply( rci );
-    glDisable( GL_TEXTURE_RECTANGLE_NV );
-  glPopMatrix;
+    glDisable( GL_TEXTURE_RECTANGLE_ARB );
 
-  glCopyTexImage2D( GL_TEXTURE_RECTANGLE_NV, 0, GL_RGB, 0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, 0 );
-  if Count>0 then Self.RenderChildren(0, Count-1, rci);
+    glCopyTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB, 0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, 0 );
 
-  Material.FrontProperties.Diffuse.Alpha := FIntensity;
-  Material.FrontProperties.Diffuse.NotifyChange(Self);
+    Material.FrontProperties.Diffuse.Alpha := FIntensity;
+  end;
+
+  if Count > 0 then Self.RenderChildren(0, Count - 1, rci);
 end;
-{$Warnings On}
 
 function TGLMotionBlur.StoreIntensity: Boolean;
 begin
   Result := Abs(FIntensity - 0.975) > EPS;
+end;
+
+function TGLMotionBlur.SupportsRequiredExtensions: Boolean;
+begin
+  Result := (GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle);
 end;
 
 // ------------------------------------------------------------------
