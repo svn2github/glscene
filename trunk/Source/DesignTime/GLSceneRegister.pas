@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/07 - fig - Added TGLSLProjectedTextures
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>14/03/07 - DaStr - SpriteAnimation now makes use of
                                          TGLLibMaterialName's property editor
@@ -192,7 +193,7 @@ uses
    GLSLShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLAsmShader,
    GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
    GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
-   GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS,
+   GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
 
 
 {$ifdef WIN32}
@@ -1964,6 +1965,8 @@ initialization
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
       {$ifdef WIN32}
+      RegisterSceneObject(TGLSLTextureEmitter, 'GLSL Texture Emitter', glsOCSpecialObjects);
+      RegisterSceneObject(TGLSLProjectedTextures, 'GLSL Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects);
