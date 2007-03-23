@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLScreen<p>
 
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>03/07/04 - LR - Suppress CurrentScreenColorDepth because there are in GLCrossPlatform
       <li>24/07/03 - EG - Video modes now read on request only, removed
                           the non-standard low-res video modes
@@ -130,12 +135,12 @@ begin
    // rates, or because we explicitly try all the low-res modes)
    for i:=1 to vNumberVideoModes-1 do with DeviceMode do begin
       vm:=@vVideoModes[i];
-      if (    (dmBitsPerPel=vm.ColorDepth)
-          and (dmPelsWidth =vm.Width)
-          and (dmPelsHeight=vm.Height)) then begin
+      if (    (dmBitsPerPel=vm^.ColorDepth)
+          and (dmPelsWidth =vm^.Width)
+          and (dmPelsHeight=vm^.Height)) then begin
          // it's a duplicate mode, higher frequency?
-         if dmDisplayFrequency>vm.MaxFrequency then
-            vm.MaxFrequency:=dmDisplayFrequency;
+         if dmDisplayFrequency>vm^.MaxFrequency then
+            vm^.MaxFrequency:=dmDisplayFrequency;
          Exit;
       end;
    end;
@@ -146,11 +151,11 @@ begin
    // it's a new, valid mode, so add this to the list
    vm:=@vVideoModes[vNumberVideomodes];
    with DeviceMode do begin
-      vm.ColorDepth:=dmBitsPerPel;
-      vm.Width:=dmPelsWidth;
-      vm.Height:=dmPelsHeight;
-      vm.MaxFrequency:=dmDisplayFrequency;
-      vm.Description:=Format('%d x %d, %d bpp',
+      vm^.ColorDepth:=dmBitsPerPel;
+      vm^.Width:=dmPelsWidth;
+      vm^.Height:=dmPelsHeight;
+      vm^.MaxFrequency:=dmDisplayFrequency;
+      vm^.Description:=Format('%d x %d, %d bpp',
                              [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
    end;
    Inc(vNumberVideomodes);

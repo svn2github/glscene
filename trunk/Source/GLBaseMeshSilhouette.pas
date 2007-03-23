@@ -1,7 +1,13 @@
-// GLBaseMeshSilhouette
-{: Silhouette classes for GLBaseMesh and FaceGroups.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLBaseMeshSilhouette<p>
+
+   Silhouette classes for GLBaseMesh and FaceGroups.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>09/02/04 - MF - Fixed bug where vertices weren't freed when owned
       <li>24/06/03 - MF - Created file from parts of GLShilouette
    </ul></font>
@@ -154,7 +160,7 @@ begin
         for iFace := 0 to FaceGroup.TriangleCount - 1 do
         begin
           List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
-          AddIndexedFace(List[0], List[1], List[2]);
+          AddIndexedFace(List^[0], List^[1], List^[2]);
         end;
       end;
       fgmmTriangleStrip :
@@ -163,9 +169,9 @@ begin
         begin
           List := @FaceGroup.VertexIndices.List[iFace];
           if (iFace and 1)=0 then
-             AddIndexedFace(List[0], List[1], List[2])
+             AddIndexedFace(List^[0], List^[1], List^[2])
           else
-             AddIndexedFace(List[2], List[1], List[0]);
+             AddIndexedFace(List^[2], List^[1], List^[0]);
         end;
       end;
       fgmmTriangleFan :
@@ -173,7 +179,7 @@ begin
         List := FaceGroup.VertexIndices.List;
 
         for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
-          AddIndexedFace(List[0], List[iVertex-1], List[iVertex])
+          AddIndexedFace(List^[0], List^[iVertex-1], List^[iVertex])
       end;
       else
         Assert(false,'Not supported');

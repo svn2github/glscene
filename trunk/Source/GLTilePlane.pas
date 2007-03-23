@@ -1,7 +1,13 @@
-// GLTilePlane
-{: Implements a tiled texture plane.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTilePlane<p>
+
+   Implements a tiled texture plane.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
       <li>23/03/04 - EG - Added NoZWrite
       <li>09/01/04 - EG - Creation
@@ -212,7 +218,7 @@ var
 begin
    startSkip:=MaxInt;
    for i:=0 to FData.Count-1 do begin
-      if FData.List[i]<>0 then begin
+      if FData.List^[i]<>0 then begin
          startSkip:=i;
          Break;
       end;
@@ -222,7 +228,7 @@ begin
       FColMax:=ColMin-1;
    end else begin
       for i:=FData.Count-1 downto 0 do begin
-         if FData.List[i]<>0 then begin
+         if FData.List^[i]<>0 then begin
             FData.Count:=i+1;
             FColMax:=FColMin+FData.Count-1;
             Break;
@@ -367,12 +373,12 @@ begin
    lastNonNil:=-1;
    firstNonNil:=FRows.Count;
    for i:=0 to FRows.Count-1 do begin
-      r:=TGLTiledAreaRow(FRows.List[i]);
+      r:=TGLTiledAreaRow(FRows.List^[i]);
       if Assigned(r) then begin
          r.Pack;
          if r.FData.Count=0 then begin
             r.Free;
-            FRows.List[i]:=nil;
+            FRows.List^[i]:=nil;
          end;
       end;
       if Assigned(r) then begin
