@@ -5,6 +5,8 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
       <li>22/03/07 - DaStr - Cleanup after previous fix - now object does not
                              igore its children in picking state
                              Removed "unsafe type/unsafe code" warnings
@@ -288,7 +290,7 @@ end;
 
 // Create
 //
-constructor TGLLensFlare.Create;
+constructor TGLLensFlare.Create(AOwner: TComponent);
 begin
   inherited;
   // Set default parameters:
