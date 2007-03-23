@@ -4,7 +4,6 @@ program GLSLComponentDemo;
 {%File 'Shaders\Shader.Vert'}
 
 uses
-  FastMM4,
   Forms,
   uMainForm in 'uMainForm.pas' {GLSLTestForm};
 
