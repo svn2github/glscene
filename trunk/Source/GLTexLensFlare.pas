@@ -1,7 +1,13 @@
-// GLTexLensFlare
-{: Texture-based Lens flare object.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTexLensFlare<p>
+
+   Texture-based Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
       <li>25/09/03 - EG - Creation from GLLensFlare split
 	</ul></font><p>
 }
@@ -77,7 +83,7 @@ implementation
 // ------------------ TGLTextureLensFlare ------------------
 // ------------------
 
-constructor TGLTextureLensFlare.Create;
+constructor TGLTextureLensFlare.Create(AOwner: TComponent);;
 begin
   inherited;
   Randomize;
