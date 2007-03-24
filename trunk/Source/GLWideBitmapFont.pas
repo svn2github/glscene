@@ -1,11 +1,17 @@
-// GLWideBitmapFont
-{: TFont Import into a BitmapFont using variable width... With Wide Support... <p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLWideBitmapFont<p>
+
+  TFont Import into a BitmapFont using variable width... With Wide Support... <p>
   Windows only!
 
   JAJ: Credits to the UniCode Version of SynEdit! I located the needed API calls from them. GPL/MPL as GLScene
 
 	<b>History : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>24/03/07 - DaStr - Got rid of Types dependancy
+                             Removed unused variables
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
       <li>18/01/07 - JAJ - Made into a standalone unit...
 	</ul></font>
 }
@@ -19,7 +25,6 @@ uses
   GLBitmapFont, Classes, GLScene, GLTexture, GLCrossPlatform, VectorGeometry,
   {$IFDEF MSWINDOWS}
   Windows,
-  Types,
   Graphics
   {$ENDIF}
   {$IFDEF UNIX}
@@ -320,10 +325,10 @@ end;
 procedure TGLWideBitmapFont.SetWideCharacters(const Value: WideString);
 Var
   I, L : Integer;
-  CL   : Integer;
+//  CL   : Integer;
   wChar : WideChar;
-  Loader : TMemoryStream;
-  S : String;
+//  Loader : TMemoryStream;
+//  S : String;
 
 begin
   if Length(FWideChars) = 0 then
@@ -347,11 +352,11 @@ begin
   Loader.Read(FWideCharacters[1], Loader.Size-2);
   Loader.Free;
 *)
-  I := 1;
+//  I := 1;
   L := Length(WideCharacters);
-  assert( Length(WideCharacters)+32<=255, 'You cannot have more than 223 characters in an WideBitmapFont!');
+  assert(L + 32 <= 255, 'You cannot have more than 223 characters in an WideBitmapFont!');
 
-  For I := 1 to Length(WideCharacters) do
+  For I := 1 to L do
   Begin
     wChar := WideCharacters[I];
     FWideChars[31+i] := wChar;
@@ -388,6 +393,9 @@ begin
   Result := Char(AWideChar);
 end;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
