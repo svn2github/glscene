@@ -83,7 +83,7 @@ implementation
 // ------------------ TGLTextureLensFlare ------------------
 // ------------------
 
-constructor TGLTextureLensFlare.Create(AOwner: TComponent);;
+constructor TGLTextureLensFlare.Create(AOwner: TComponent);
 begin
   inherited;
   Randomize;
