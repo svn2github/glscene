@@ -6,6 +6,8 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>28/01/07 - DaStr - Added transparency and opacity texture support (thanks DIVON)
       <li>09/12/04 - LR - Add Integer cast line 94 for Linux
       <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
@@ -322,7 +324,7 @@ begin
             end;
          end else begin
             // smoothing groups are to be considered
-            for Face:=0 to NFaces-1 do with FaceArray[Face] do begin
+            for Face:=0 to NFaces-1 do with FaceArray^[Face] do begin
                // normal vector for the face
                with mesh.Vertices do begin
                   VectorSubtract(Items[V1], Items[V2], vector1);
@@ -331,7 +333,7 @@ begin
                if standardNormalsOrientation then
                   Normal:=VectorCrossProduct(Vector1, Vector2)
                else Normal:=VectorCrossProduct(Vector2, Vector1);
-               SmoothingGroup:=SmoothArray[Face];
+               SmoothingGroup:=SmoothArray^[Face];
                // go for each vertex in the current face
                for Vertex:=0 to 2 do begin
                   // copy current index for faster access

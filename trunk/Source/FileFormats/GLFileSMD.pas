@@ -6,6 +6,8 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>28/01/07 - DaStr - Optimized bone weights loading a bit
       <li>14/01/07 - DaStr - Fixed bone weights for HL2 models (thanks DIVON)
       <li>24/01/05 - SG - Fix for comma decimal separator in save function (dikoe Kenguru)
@@ -292,7 +294,7 @@ begin
                      v:=Vertices[VertexIndices[3*k+l]];
                      n:=Normals[NormalIndices[3*k+l]];
                      t:=TexCoords[TexCoordIndices[3*k+l]];
-                     b:=VerticesBonesWeights[VertexIndices[3*k+l]][0].BoneID;
+                     b:=VerticesBonesWeights^[VertexIndices[3*k+l]]^[0].BoneID;
                      str.Add(StringReplace(
                        Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
                               [b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]),

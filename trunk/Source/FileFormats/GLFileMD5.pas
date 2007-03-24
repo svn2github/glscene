@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileMD5<p>
 
    Doom3 MD5 mesh and animation vector file format implementation.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>02/12/04 - SG - Updated to support MD5 version 10,
                           version 6 support has been dropped.
       <li>01/06/04 - SG - Initial
@@ -287,14 +292,14 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
       for j:=0 to mesh.BonesPerVertex-1 do begin
         if j<VertexWeightCount[i] then begin
           k:=VertexWeightID[i]+j;
-          mesh.VerticesBonesWeights[i][j].BoneID:=VertexBoneRef[k];
-          mesh.VerticesBonesWeights[i][j].Weight:=VertexWeight[k];
+          mesh.VerticesBonesWeights^[i]^[j].BoneID:=VertexBoneRef[k];
+          mesh.VerticesBonesWeights^[i]^[j].Weight:=VertexWeight[k];
           mat:=Owner.Skeleton.RootBones.BoneByID(VertexBoneRef[k]).GlobalMatrix;
           transformedVert:=VectorTransform(VertexWeighted[k], mat);
           AddVector(blendedVert, VectorScale(transformedVert, VertexWeight[k]));
         end else begin
-          mesh.VerticesBonesWeights[i][j].BoneID:=0;
-          mesh.VerticesBonesWeights[i][j].Weight:=0;
+          mesh.VerticesBonesWeights^[i]^[j].BoneID:=0;
+          mesh.VerticesBonesWeights^[i]^[j].Weight:=0;
         end;
       end;
       mesh.Vertices[i]:=blendedVert;

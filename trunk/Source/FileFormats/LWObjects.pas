@@ -1,6 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+//  24/03/07 - DaStr - Added explicit pointer dereferencing
+//                     (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
 // 08/03/06 - ur - Fixed warnings for Delphi 2006
 // 14/11/02 - EG - Fixed warnings
 // 16/11/02 - BJ - Replaced TLWChunkList.FindChunk search mechanism
@@ -254,7 +256,7 @@ type
   TColr4 = array[0..3] of TU1;
   PColr4 = ^TColr4;
 
-  {{ Lightwave Chunk Struct - Used in TLWOReadCallback }
+  { Lightwave Chunk Struct - Used in TLWOReadCallback }
   PLWChunkRec = ^TLWChunkRec;
   TLWChunkRec = record
     id: TID4;
@@ -262,7 +264,7 @@ type
     data: Pointer;
   end;
 
-  {{ Lightwave SubChunk Struct - Used in TLWOReadCallback }
+  { Lightwave SubChunk Struct - Used in TLWOReadCallback }
   PLWSubChunkRec = ^TLWSubChunkRec;
   TLWSubChunkRec = record
     id: TID4;
@@ -293,7 +295,7 @@ type
   end;
   PLWPolyTagMap = ^TLWPolyTagMap;
 
-  {{ Value Map }
+  { Value Map }
   TLWVertexMap = record
     vert: TU2;
     values: TF4DynArray;
@@ -1510,7 +1512,7 @@ begin
   if IndiceCount = 0 then Exit;
 
   with ParentChunk as TLWLayr do
-    Pnts := TLWPnts(Items[Items.FindChunk(FindChunkById,@ID_PNTS,0)]);
+    Pnts := TLWPnts(Items[Items.FindChunk(@FindChunkById,@ID_PNTS,0)]);
 
   for PolyIdx := 0 to FPolsCount - 1 do
   begin
@@ -1819,7 +1821,7 @@ begin
 
   if (result=nil) and (Source<>'') then
   begin
-    Idx:=RootChunks.FindChunk(FindSurfaceByName,@Param,0);
+    Idx:=RootChunks.FindChunk(@FindSurfaceByName,@Param,0);
 
     if Idx<>-1 then
       result:=TLWSurf(RootChunks[Idx]).ParamAddr[Param];
@@ -1831,11 +1833,11 @@ var
   c, SurfIdx: Integer;
 begin
   c := 0;
-  SurfIdx := Owner.FindChunk(FindChunkById,@ID_SURF);
+  SurfIdx := Owner.FindChunk(@FindChunkById,@ID_SURF);
 
   while (SurfIdx <> -1) and (Owner[SurfIdx] <> Self) do
   begin
-    SurfIdx := Owner.FindChunk(FindChunkById,@ID_SURF,SurfIdx + 1);
+    SurfIdx := Owner.FindChunk(@FindChunkById,@ID_SURF,SurfIdx + 1);
     Inc(c);
   end;
   result := c;
@@ -2066,7 +2068,7 @@ begin
 
   result := nil;
 
-  Idx := Items.FindChunk(FindChunkById,@Param,0);
+  Idx := Items.FindChunk(@FindChunkById,@Param,0);
   if Idx <> -1 then
     result := Items[Idx].Data;
 end;
@@ -2126,13 +2128,13 @@ begin
   if IndiceCount = 0 then Exit;
 
   with ParentChunk as TLWLayr do
-    Pnts := TLWPnts(Items[Items.FindChunk(FindChunkById,@ID_PNTS,0)]);
+    Pnts := TLWPnts(Items[Items.FindChunk(@FindChunkById,@ID_PNTS,0)]);
 
   for PolyIdx := 0 to PolsCount-1 do
   begin
     i := PolsByIndex[PolyIdx];
 
-    SurfIdx := RootChunks.FindChunk(FindSurfaceByTag,@FPolsInfo[PolyIdx].surfid);
+    SurfIdx := RootChunks.FindChunk(@FindSurfaceByTag,@FPolsInfo[PolyIdx].surfid);
 
     TmpAddr := TLWSurf(RootChunks[SurfIdx]).ParamAddr[ID_SMAN];
 
@@ -2296,7 +2298,7 @@ function TLWObjectFile.TagToName(Tag: TU2): string;
 var
   TagsIdx: Integer;
 begin
-  TagsIdx := Chunks.FindChunk(FindChunkById,@ID_TAGS);
+  TagsIdx := Chunks.FindChunk(@FindChunkById,@ID_TAGS);
   if TagsIdx <> -1 then
     result := TLWTags(Chunks[TagsIdx]).TagToName(Tag);
 end;
@@ -2420,28 +2422,28 @@ end;
 
 initialization
 
-  {{ Pnts }
+  { Pnts }
   RegisterChunkClass(TLWPnts);
 
-  {{ Pols }
+  { Pols }
   RegisterChunkClass(TLWPols);
 
-  {{ VMap }
+  { VMap }
   RegisterChunkClass(TLWVMap);
 
-  {{ Tags }
+  { Tags }
   RegisterChunkClass(TLWTags);
 
-  {{ PTAG }
+  { PTAG }
   RegisterChunkClass(TLWPTAG);
 
-  {{ SURF }
+  { SURF }
   RegisterChunkClass(TLWSurf);
 
-  {{ LAYR }
+  { LAYR }
   RegisterChunkClass(TLWLayr);
 
-  {{ CLIP }
+  { CLIP }
   RegisterChunkClass(TLWClip);
 
 finalization

@@ -1,9 +1,14 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileGL2<p>
 
 	Vector file object loading of Ghoul2 model and animation 
 	files into GLScene.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
 	   <li>22/10/03 - SG - Animation fixes, removed skeletal reconstruction
 	   <li>25/03/03 - SG - Creation.
 	</ul></font>
@@ -130,11 +135,11 @@ begin
                 boneref:=G2_GetVertBoneIndex(Vertices[j],k);
                 boneid:=BoneReferences[boneref];
                 boneweight:=G2_GetVertBoneWeight(Vertices[j],k,weighttot,numweights);
-                mesh.VerticesBonesWeights[mesh.Vertices.Count-1][k].BoneID:=boneid;
-                mesh.VerticesBonesWeights[mesh.Vertices.Count-1][k].Weight:=boneweight;
+                mesh.VerticesBonesWeights^[mesh.Vertices.Count-1]^[k].BoneID:=boneid;
+                mesh.VerticesBonesWeights^[mesh.Vertices.Count-1]^[k].Weight:=boneweight;
               end else begin
-                mesh.VerticesBonesWeights[mesh.Vertices.Count-1][k].BoneID:=0;
-                mesh.VerticesBonesWeights[mesh.Vertices.Count-1][k].Weight:=0;
+                mesh.VerticesBonesWeights^[mesh.Vertices.Count-1]^[k].BoneID:=0;
+                mesh.VerticesBonesWeights^[mesh.Vertices.Count-1]^[k].Weight:=0;
               end;
           end;
           fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);

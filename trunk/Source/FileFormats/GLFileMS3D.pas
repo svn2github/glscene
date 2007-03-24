@@ -6,6 +6,8 @@
 	Vector File related objects for GLScene<p>
 
   <b>History :</b><font size=-1><ul>
+    <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                           (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
     <li>19/12/04 - PhP - Added capabilities function
     <li>28/10/03 - SG - Partly implemented skeletal animation,
                         asynchronous animations will fail however.
@@ -163,7 +165,7 @@ begin
     aStream.ReadBuffer(ms3d_vertices^, sizeof(TMS3DVertex) * nNumVertices);
 
     for i := 0 to nNumVertices - 1 do
-      with ms3d_vertices[i] do  begin
+      with ms3d_vertices^[i] do  begin
         // Add the vertex to the vertexlist
         MO.Vertices.Add(vertex.v);
         if Owner is TGLActor then
@@ -212,7 +214,7 @@ begin
 
         for j := 0 to Group.numtriangles - 1 do
         begin
-          ms3d_triangle := ms3d_triangles[integer(Group.triangleIndices[j])];
+          ms3d_triangle := ms3d_triangles^[integer(Group.triangleIndices[j])];
 
           AddFaceVertex(0);
           AddFaceVertex(1);
@@ -262,7 +264,7 @@ begin
           if Group.materialIndex = char(i) then
             for k := 0 to Group.numtriangles - 1 do
             begin
-              ms3d_triangle := ms3d_triangles[integer(Group.triangleIndices[k])];
+              ms3d_triangle := ms3d_triangles^[integer(Group.triangleIndices[k])];
 
               AddFaceVertex(0);
               AddFaceVertex(1);
@@ -291,29 +293,29 @@ begin
     for i := 0 to nNumJoints-1 do
     begin
       // Read the joint base
-      aStream.ReadBuffer(ms3d_joints[i].Base, sizeof(TMS3DJointBase));
+      aStream.ReadBuffer(ms3d_joints^[i].Base, sizeof(TMS3DJointBase));
 
-      if ms3d_joints[i].base.numKeyFramesRot>0 then
+      if ms3d_joints^[i].base.numKeyFramesRot>0 then
       begin
         //     ms3d_keyframe_rot_t keyFramesRot[numKeyFramesRot];      // local animation matrices
         // Allocate memory for the rotations
-        ms3d_joints[i].keyFramesRot := AllocMem(sizeof(TMS3DKeyframeRotation) * ms3d_joints[i].base.numKeyFramesRot);
+        ms3d_joints^[i].keyFramesRot := AllocMem(sizeof(TMS3DKeyframeRotation) * ms3d_joints^[i].base.numKeyFramesRot);
 
         // Read the rotations
-        aStream.ReadBuffer(ms3d_joints[i].keyFramesRot^, sizeof(TMS3DKeyframeRotation) * ms3d_joints[i].base.numKeyFramesRot);
+        aStream.ReadBuffer(ms3d_joints^[i].keyFramesRot^, sizeof(TMS3DKeyframeRotation) * ms3d_joints^[i].base.numKeyFramesRot);
       end else
-        ms3d_joints[i].keyFramesRot := nil;
+        ms3d_joints^[i].keyFramesRot := nil;
 
-      if ms3d_joints[i].base.numKeyFramesTrans>0 then
+      if ms3d_joints^[i].base.numKeyFramesTrans>0 then
       begin
         //     ms3d_keyframe_pos_t keyFramesTrans[numKeyFramesTrans];  // local animation matrices
         // Allocate memory for the translations
-        ms3d_joints[i].keyFramesTrans := AllocMem(sizeof(TMS3DKeyframePosition) * ms3d_joints[i].base.numKeyFramesTrans);
+        ms3d_joints^[i].keyFramesTrans := AllocMem(sizeof(TMS3DKeyframePosition) * ms3d_joints^[i].base.numKeyFramesTrans);
 
         // Read the translations
-        aStream.ReadBuffer(ms3d_joints[i].keyFramesTrans^, sizeof(TMS3DKeyframePosition) * ms3d_joints[i].base.numKeyFramesTrans);
+        aStream.ReadBuffer(ms3d_joints^[i].keyFramesTrans^, sizeof(TMS3DKeyframePosition) * ms3d_joints^[i].base.numKeyFramesTrans);
       end else
-        ms3d_joints[i].keyFramesTrans := nil;
+        ms3d_joints^[i].keyFramesTrans := nil;
     end;
 
     // Right here, it's time to use the joints - this from the ms3d spec;
@@ -342,16 +344,16 @@ begin
       // Bone names are added to a list initally to sort out parents
       bonelist:=TStringList.Create;
       for i := 0 to nNumJoints-1 do
-        bonelist.Add(ms3d_joints[i].Base.Name);
+        bonelist.Add(ms3d_joints^[i].Base.Name);
 
       // Find parent bones and add their children
       for i := 0 to nNumJoints-1 do begin
-        j:=bonelist.IndexOf(ms3d_joints[i].Base.ParentName);
+        j:=bonelist.IndexOf(ms3d_joints^[i].Base.ParentName);
         if j = -1 then
           bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
         else
           bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones.BoneByID(j));
-        bone.Name:=ms3d_joints[i].Base.Name;
+        bone.Name:=ms3d_joints^[i].Base.Name;
         bone.BoneID:=i;
       end;
       bonelist.Free;
@@ -360,8 +362,8 @@ begin
       frame:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
       for i := 0 to nNumJoints-1 do
       begin
-        pos:=ms3d_joints[i].Base.Position.V;
-        rot:=ms3d_joints[i].Base.Rotation.V;
+        pos:=ms3d_joints^[i].Base.Position.V;
+        rot:=ms3d_joints^[i].Base.Rotation.V;
         frame.Position.Add(pos);
         frame.Rotation.Add(rot);
       end;
@@ -369,9 +371,9 @@ begin
       // Now load the animations
       for i:=0 to nNumJoints-1 do
       begin
-        if ms3d_joints[i].Base.NumKeyFramesTrans = ms3d_joints[i].Base.NumKeyFramesRot then
+        if ms3d_joints^[i].Base.NumKeyFramesTrans = ms3d_joints^[i].Base.NumKeyFramesRot then
         begin
-          for j:=0 to ms3d_joints[i].Base.NumKeyFramesTrans-1 do
+          for j:=0 to ms3d_joints^[i].Base.NumKeyFramesTrans-1 do
           begin
             if (j+1) = Owner.Skeleton.Frames.Count then
               frame:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames)
@@ -379,14 +381,14 @@ begin
               frame:=Owner.Skeleton.Frames[j+1];
 
             // Set rootbone values to base pose
-            if ms3d_joints[i].Base.ParentName = '' then begin
-              pos:=ms3d_joints[i].Base.Position.V;
-              rot:=ms3d_joints[i].Base.Rotation.V;
+            if ms3d_joints^[i].Base.ParentName = '' then begin
+              pos:=ms3d_joints^[i].Base.Position.V;
+              rot:=ms3d_joints^[i].Base.Rotation.V;
             end else begin
-              pos:=ms3d_joints[i].KeyFramesTrans[j].Position.V;
-              AddVector(pos,ms3d_joints[i].Base.Position.V);
-              rot:=ms3d_joints[i].KeyFramesRot[j].Rotation.V;
-              rot:=AddRotations(rot,ms3d_joints[i].Base.Rotation.V);
+              pos:=ms3d_joints^[i].KeyFramesTrans^[j].Position.V;
+              AddVector(pos,ms3d_joints^[i].Base.Position.V);
+              rot:=ms3d_joints^[i].KeyFramesRot^[j].Rotation.V;
+              rot:=AddRotations(rot,ms3d_joints^[i].Base.Rotation.V);
             end;
             frame.Position.Add(pos);
             frame.Rotation.Add(rot);
@@ -410,11 +412,11 @@ begin
       // Free the internal storage of the joint
       for i := 0 to nNumJoints-1 do
       begin
-        if Assigned(ms3d_joints[i].keyFramesRot) then
-          FreeMem(ms3d_joints[i].keyFramesRot);
+        if Assigned(ms3d_joints^[i].keyFramesRot) then
+          FreeMem(ms3d_joints^[i].keyFramesRot);
 
-        if Assigned(ms3d_joints[i].keyFramesTrans) then
-          FreeMem(ms3d_joints[i].keyFramesTrans);
+        if Assigned(ms3d_joints^[i].keyFramesTrans) then
+          FreeMem(ms3d_joints^[i].keyFramesTrans);
       end;
 
       FreeMem(ms3d_joints);

@@ -6,6 +6,8 @@
     Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>14/11/02 - EG - Added header, fixed warnings
       <li>16/11/02 - BJ - Added smooth normals with crease angle
       <li>17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
@@ -81,7 +83,7 @@ begin
     Mode:=momFaceGroups;
 
     // pnts
-    Idx:=Layr.Items.FindChunk(FindChunkById,@ID_PNTS);
+    Idx:=Layr.Items.FindChunk(@FindChunkById,@ID_PNTS);
 
     Pnts:=TLWPnts(Layr.Items[Idx]);
 
@@ -89,20 +91,20 @@ begin
       AddPnts(Pnts,Mesh);
 
     // vertex maps
-    Idx:=TLWPnts(Layr.Items[Idx]).Items.FindChunk(FindChunkById,@ID_VMAP);
+    Idx:=TLWPnts(Layr.Items[Idx]).Items.FindChunk(@FindChunkById,@ID_VMAP);
 
     while Idx<>-1 do
     begin
       AddVMap(TLWVMap(Pnts.Items[Idx]),Mesh);
-      Idx := Pnts.Items.FindChunk(FindChunkById,@ID_VMAP,Idx + 1);
+      Idx := Pnts.Items.FindChunk(@FindChunkById,@ID_VMAP,Idx + 1);
     end;
 
     // Polygons
-    Idx:=Layr.Items.FindChunk(FindChunkById,@ID_POLS);
+    Idx:=Layr.Items.FindChunk(@FindChunkById,@ID_POLS);
     while Idx<>-1 do
     begin
       AddPols(TLWPols(Layr.Items[Idx]),Mesh);
-      Idx := Layr.Items.FindChunk(FindChunkById,@ID_POLS, Idx + 1);
+      Idx := Layr.Items.FindChunk(@FindChunkById,@ID_POLS, Idx + 1);
     end;
 //    Normals.Normalize;
   end;
@@ -141,7 +143,7 @@ begin
     if PolsType=POLS_TYPE_FACE then
     begin
 
-      Idx:=Items.FindChunk(FindChunkById,@ID_PTAG);
+      Idx:=Items.FindChunk(@FindChunkById,@ID_PTAG);
       while Idx<>-1 do
       begin
         with TLWPTag(Items[Idx]) do
@@ -239,7 +241,7 @@ begin
             {Todo: PTag Smooth Group}
 
           end;
-          Idx:=Items.FindChunk(FindChunkById,@ID_PTAG,Idx + 1);
+          Idx:=Items.FindChunk(@FindChunkById,@ID_PTAG,Idx + 1);
         end;
       end;
     end else
@@ -347,7 +349,7 @@ begin
             begin
 
               WordParm:=Surf.VXParam[ID_RIMG];
-              Idx:=Surf.RootChunks.FindChunk(FindClipByClipIndex,@WordParm);
+              Idx:=Surf.RootChunks.FindChunk(@FindClipByClipIndex,@WordParm);
 
               if Idx<>-1 then
               begin
@@ -451,26 +453,26 @@ begin
     LoadFromStream(aStream);
   
     // Add Surfaces to material list
-    Ind := Chunks.FindChunk(FindChunkById,@ID_SURF,0);
+    Ind := Chunks.FindChunk(@FindChunkById,@ID_SURF,0);
 
     while Ind <> -1 do
     begin
 
       AddSurf(TLWSurf(Chunks[Ind]), FLWO);
   
-      Ind := Chunks.FindChunk(FindChunkById,@ID_SURF,Ind + 1);
+      Ind := Chunks.FindChunk(@FindChunkById,@ID_SURF,Ind + 1);
 
     end;
   
     // Lw layer
-    Ind := Chunks.FindChunk(FindChunkById,@ID_LAYR,0);
+    Ind := Chunks.FindChunk(@FindChunkById,@ID_LAYR,0);
   
     while Ind <> -1 do
     begin
 
       AddLayr(TLWLayr(Chunks[Ind]),FLWO);
   
-      Ind := Chunks.FindChunk(FindChunkById,@ID_LAYR,Ind + 1);
+      Ind := Chunks.FindChunk(@FindChunkById,@ID_LAYR,Ind + 1);
   
     end;
   
