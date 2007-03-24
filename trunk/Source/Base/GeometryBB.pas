@@ -6,6 +6,8 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>22/06/03 - MF - Added TBSphere for bounding spheres and classes to
                           determine whether one aabb/bsphere contains another
                           aabb/bsphere
@@ -1026,9 +1028,9 @@ begin
    minmax[1]:=@aabb.max;
    v[3]:=1;
    for i:=0 to 7 do begin
-      v[0]:=minmax[i and 1][0];
-      v[1]:=minmax[(i shr 1) and 1][1];
-      v[2]:=minmax[(i shr 2) and 1][2];
+      v[0]:=minmax[i and 1]^[0];
+      v[1]:=minmax[(i shr 1) and 1]^[1];
+      v[2]:=minmax[(i shr 2) and 1]^[2];
 
       // Project
       vt:=VectorTransform(v, modelViewProjection);

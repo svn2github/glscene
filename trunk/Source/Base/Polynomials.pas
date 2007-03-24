@@ -19,6 +19,8 @@
    properly handled, these are marked by comments in the code.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>21/07/02 - EG - Added MinPositiveCoef
       <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
                           droped complex stuff,
@@ -219,8 +221,8 @@ var
 begin
    // normal form: x^2 + px + q = 0
 
-   p := c[1]/(2*c[2]);
-   q := c[0]/c[2];
+   p := c^[1]/(2*c^[2]);
+   q := c^[0]/c^[2];
 
    D := Sqr(p)-q;
 
@@ -249,17 +251,17 @@ var
    cb_p, D : Double;
    u, v, phi, t, sqrt_D, invC3 : Double;
 begin
-   if IsZero(c[3]) then begin
+   if IsZero(c^[3]) then begin
       Result:=SolveQuadric(c);
       Exit;
    end;
 
    // normal form: x^3 + Ax^2 + Bx + C = 0
 
-   invC3:=1/c[3];
-   A := c[2]*invC3;
-   B := c[1]*invC3;
-   Cc:= c[0]*invC3;
+   invC3:=1/c^[3];
+   A := c^[2]*invC3;
+   B := c^[1]*invC3;
+   Cc:= c^[0]*invC3;
 
    // substitute x = y - A/3 to eliminate quadric term:
 	// x^3 +px + q = 0
@@ -317,18 +319,18 @@ var
    i, n, nt : Integer;
    temp : TDoubleArray;
 begin
-   if IsZero(c[4]) then begin
+   if IsZero(c^[4]) then begin
       Result:=SolveCubic(c);
       Exit;
    end;
 
    // normal form: x^4 + Ax^3 + Bx^2 + Cx + D = 0
 
-   invC4:=1/c[4];
-   A := c[3]*invC4;
-   B := c[2]*invC4;
-   Cc:= c[1]*invC4;
-   D := c[0]*invC4;
+   invC4:=1/c^[4];
+   A := c^[3]*invC4;
+   B := c^[2]*invC4;
+   Cc:= c^[1]*invC4;
+   D := c^[0]*invC4;
 
    // substitute x = y - A/4 to eliminate cubic term:
 	// x^4 + px^2 + qx + r = 0

@@ -8,7 +8,9 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)	
+      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
       <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
       <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
       <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
@@ -761,7 +763,7 @@ procedure TOctree.DisposeTree;
    begin
       if Assigned(node) then begin
          for i:=0 to 7 do
-            WalkDispose(node.ChildArray[i]);
+            WalkDispose(node^.ChildArray[i]);
          Dispose(node);
       end;
    end;
@@ -793,9 +795,9 @@ procedure TOctree.CutMesh;
       for x:=0 to High(resultArray) do begin
          p:=resultarray[x];   // Pointer to a node.
 
-         k:=Length(p.TriArray);
-         SetLength(p.TriArray, k+1);  // Increase array by 1.
-         p.TriArray[k]:=n;    // Store triangle # reference.
+         k:=Length(p^.TriArray);
+         SetLength(p^.TriArray, k+1);  // Increase array by 1.
+         p^.TriArray[k]:=n;    // Store triangle # reference.
 
 {$ifdef DEBUG}
          Inc(intersections);
@@ -809,9 +811,9 @@ begin
    TriCountMesh:=triangleFiler.Count div 3;
    n:=0;
    while n<triangleFiler.Count do begin
-      WalkTriToLeaf(RootNode, triangleFiler.List[n],
-                              triangleFiler.List[n+1],
-                              triangleFiler.List[n+2]);
+      WalkTriToLeaf(RootNode, triangleFiler.List^[n],
+                              triangleFiler.List^[n+1],
+                              triangleFiler.List^[n+2]);
       if resultArray <> NIL then begin
          AddTriangleToNodes(n);
          Inc(TriCountOctree, 1);
@@ -908,11 +910,11 @@ procedure TOctree.ConvertR4(ONode: POctreeNode; const scale : TAffineFLTVector);
 var
    n: smallint;
 begin
-   ScaleVector(Onode.MinExtent, scale);
-   ScaleVector(Onode.MaxExtent, scale);
-   if ONode.ChildArray[0] <> NIL then begin //ie: if not a leaf then loop through children.
+   ScaleVector(Onode^.MinExtent, scale);
+   ScaleVector(Onode^.MaxExtent, scale);
+   if ONode^.ChildArray[0] <> NIL then begin //ie: if not a leaf then loop through children.
       for n:=0 to 7 do begin
-         ConvertR4(Onode.ChildArray[n], scale);
+         ConvertR4(Onode^.ChildArray[n], scale);
       end;
    end
 end;
@@ -939,10 +941,10 @@ procedure TOctree.WalkPointToLeafx(Onode: POctreeNode; const p : TAffineVector);
 var
    n : integer;
 begin
-   if PointInNode(Onode.MinExtent, Onode.MaxExtent, p) then begin
-      if Assigned(Onode.ChildArray[0]) then
+   if PointInNode(Onode^.MinExtent, Onode^.MaxExtent, p) then begin
+      if Assigned(Onode^.ChildArray[0]) then
         for n:=0 to 7 do
-          WalkPointToLeafx(Onode.ChildArray[n], p)
+          WalkPointToLeafx(Onode^.ChildArray[n], p)
       else begin
          SetLength(resultarray, Length(resultarray)+1);
          resultarray[High(resultarray)]:=Onode;
@@ -998,10 +1000,10 @@ procedure TOctree.WalkSphereToLeafx(Onode : POctreeNode; const p : TVector;
 var
    n : integer;
 begin
-   if SphereInNode(Onode.MinExtent, Onode.MaxExtent, p, radius) then begin
-      if Assigned(Onode.ChildArray[0]) then
+   if SphereInNode(Onode^.MinExtent, Onode^.MaxExtent, p, radius) then begin
+      if Assigned(Onode^.ChildArray[0]) then
         for n:=0 to 7 do
-          WalkSphereToLeafx(Onode.ChildArray[n], p, radius)
+          WalkSphereToLeafx(Onode^.ChildArray[n], p, radius)
       else begin
          SetLength(resultarray, Length(resultarray)+1);
          resultarray[High(resultarray)]:=Onode;
@@ -1024,10 +1026,10 @@ var
    n : integer;
    coord : TVector;
 begin
-   if HitBoundingBox(Onode.MinExtent, Onode.MaxExtent, p, v, coord) then begin
-      if Assigned(Onode.ChildArray[0]) then
+   if HitBoundingBox(Onode^.MinExtent, Onode^.MaxExtent, p, v, coord) then begin
+      if Assigned(Onode^.ChildArray[0]) then
          for n:=0 to 7 do
-            WalkRayToLeafx(Onode.ChildArray[n], p, v)
+            WalkRayToLeafx(Onode^.ChildArray[n], p, v)
       else begin
          SetLength(resultarray, Length(resultarray)+1);
          resultarray[High(resultarray)]:=Onode;
@@ -1081,13 +1083,13 @@ procedure TOctree.WalkTriToLeafx(Onode: POctreeNode; const v1, v2, v3: TAffineFL
 var
    m : Integer;
 begin
-   if TriIntersectNode(Onode.MinExtent, Onode.MaxExtent, v1, v2, v3) or
-         PointInNode(Onode.MinExtent, Onode.MaxExtent, v1) or
-         PointInNode(Onode.MinExtent, Onode.MaxExtent, v2) or
-         PointInNode(Onode.MinExtent, Onode.MaxExtent, v3) then begin
-      if Onode.ChildArray[0] <> NIL then
+   if TriIntersectNode(Onode^.MinExtent, Onode^.MaxExtent, v1, v2, v3) or
+         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v1) or
+         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v2) or
+         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v3) then begin
+      if Onode^.ChildArray[0] <> NIL then
         for m:=0 to 7 do
-          WalkTriToLeafx(Onode.ChildArray[m], v1, v2, v3)
+          WalkTriToLeafx(Onode^.ChildArray[m], v1, v2, v3)
       else begin
          SetLength(resultarray, Length(resultarray)+1);
          resultarray[High(resultarray)]:=Onode;
@@ -1119,12 +1121,12 @@ begin
    minD:=cInitialMinD;
    for i:=0 to High(resultarray) do begin
       p:=ResultArray[i];
-      for t:=0 to High(p.TriArray) do begin
-         k:=p.triarray[t];
+      for t:=0 to High(p^.TriArray) do begin
+         k:=p^.triarray[t];
          if RayCastTriangleIntersect(rayStart, rayVector,
-                                     triangleFiler.List[k],
-                                     triangleFiler.List[k+1],
-                                     triangleFiler.List[k+2],
+                                     triangleFiler.List^[k],
+                                     triangleFiler.List^[k+1],
+                                     triangleFiler.List^[k+2],
                                      @iPoint, @iNormal) then begin
             d:=VectorDistance2(rayStart, iPoint);
             if d<minD then begin
@@ -1134,10 +1136,10 @@ begin
                if intersectNormal<>nil then
                   intersectNormal^:=iNormal;
                if triangleInfo<>nil then begin
-                  triangleInfo.index:=k;
-                  triangleInfo.vertex[0]:=triangleFiler.List[k];
-                  triangleInfo.vertex[1]:=triangleFiler.List[k+1];
-                  triangleInfo.vertex[2]:=triangleFiler.List[k+2];
+                  triangleInfo^.index:=k;
+                  triangleInfo^.vertex[0]:=triangleFiler.List^[k];
+                  triangleInfo^.vertex[1]:=triangleFiler.List^[k+1];
+                  triangleInfo^.vertex[2]:=triangleFiler.List^[k+2];
                end;
             end;
          end;
@@ -1241,8 +1243,8 @@ begin
    minD2:=cInitialMinD2;
    for i:=0 to High(resultarray) do begin
       p:=ResultArray[i];
-      for t:=0 to High(p.TriArray) do begin
-         k:=p.triarray[t];
+      for t:=0 to High(p^.TriArray) do begin
+         k:=p^.triarray[t];
          //These are the vertices of the triangle to check
          p1:=@trianglefiler.List[k];
          p2:=@trianglefiler.List[k+1];
@@ -1339,8 +1341,8 @@ begin
 
    for i:=0 to High(resultarray) do begin
       p:=ResultArray[i];
-      for t:=0 to High(p.TriArray) do begin
-         k:=p.triarray[t];
+      for t:=0 to High(p^.TriArray) do begin
+         k:=p^.triarray[t];
          //These are the vertices of the triangle to check
          p1:=@trianglefiler.List[k];
          p2:=@trianglefiler.List[k+1];
@@ -1399,13 +1401,13 @@ var
       AABB2: TAABB;
       i: integer;
    begin
-      AABB2.min:=Onode.MinExtent;
-      AABB2.max:=Onode.MaxExtent;
+      AABB2.min:=Onode^.MinExtent;
+      AABB2.max:=Onode^.MaxExtent;
 
       if IntersectAABBsAbsolute(AABB1, AABB2) then begin
-         if Assigned(Onode.ChildArray[0]) then begin
+         if Assigned(Onode^.ChildArray[0]) then begin
             for i:=0 to 7 do
-               HandleNode(Onode.ChildArray[i])
+               HandleNode(Onode^.ChildArray[i])
          end else begin
             SetLength(ResultArray, Length(ResultArray)+1);
             ResultArray[High(ResultArray)]:=Onode;
@@ -1432,13 +1434,13 @@ begin
       //fill the triangles from all nodes in the resultarray to AL
       for i:=0 to High(ResultArray) do begin
          p:=ResultArray[i];
-         triangleIndices.AddIntegers(p.TriArray);
+         triangleIndices.AddIntegers(p^.TriArray);
       end;
       triangleIndices.SortAndRemoveDuplicates;
       Result.Capacity:=triangleIndices.Count*3;
       for i:=0 to triangleIndices.Count-1 do begin
          k:=triangleIndices[i];
-         Result.Add(triangleFiler.List[k], triangleFiler.List[k+1], triangleFiler.List[k+2]);
+         Result.Add(triangleFiler.List^[k], triangleFiler.List^[k+1], triangleFiler.List^[k+2]);
       end;
    finally
       triangleIndices.Free;
@@ -1459,13 +1461,13 @@ var
       AABB2: TAABB;
       i: integer;
    begin
-      AABB2.min:=Onode.MinExtent;
-      AABB2.max:=Onode.MaxExtent;
+      AABB2.min:=Onode^.MinExtent;
+      AABB2.max:=Onode^.MaxExtent;
 
       if IntersectAABBs(AABB1, AABB2, M1To2, M2To1) then begin
-         if Assigned(Onode.ChildArray[0]) then begin
+         if Assigned(Onode^.ChildArray[0]) then begin
             for i:=0 to 7 do
-               HandleNode(Onode.ChildArray[i])
+               HandleNode(Onode^.ChildArray[i])
          end else begin
             SetLength(ResultArray, Length(ResultArray)+1);
             ResultArray[High(ResultArray)]:=Onode;
@@ -1494,13 +1496,13 @@ begin
       //fill the triangles from all nodes in the resultarray to AL
       for i:=0 to High(ResultArray) do begin
          p:=ResultArray[i];
-         triangleIndices.AddIntegers(p.TriArray);
+         triangleIndices.AddIntegers(p^.TriArray);
       end;
       triangleIndices.SortAndRemoveDuplicates;
       Result.Capacity:=triangleIndices.Count*3;
       for i:=0 to triangleIndices.Count-1 do begin
          k:=triangleIndices[i];
-         Result.Add(triangleFiler.List[k], triangleFiler.List[k+1], triangleFiler.List[k+2]);
+         Result.Add(triangleFiler.List^[k], triangleFiler.List^[k+1], triangleFiler.List^[k+2]);
       end;
    finally
       triangleIndices.Free;
