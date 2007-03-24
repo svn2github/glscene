@@ -3,13 +3,14 @@
 //
 {: GLCrossPlatform<p>
 
-	Cross platform support functions and types for GLScene.<p>
+   Cross platform support functions and types for GLScene.<p>
 
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants
+      <li>17/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
+                             Added "Application" function
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>08/07/04 - LR - Added clBlack
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
@@ -500,6 +501,7 @@ const
 const
   glsAllFilter: string = sAllFilter;
 
+function Application: TApplication;
 
 function GLPoint(const x, y : Integer) : TGLPoint;
 
@@ -614,6 +616,16 @@ uses
 var
    vInvPerformanceCounterFrequency : Double;
    vInvPerformanceCounterFrequencyReady : Boolean = False;
+
+function Application: TApplication;
+begin
+{$IFDEF MSWINDOWS}
+  Result := Forms.Application;
+{$ENDIF}
+{$IFDEF UNIX}
+  Result := QForms.Application;
+{$ENDIF}
+end;
 
 procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
 begin
