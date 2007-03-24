@@ -7,6 +7,7 @@
 
    <b>History : </b><font size=-1><ul>
       <li>24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
+                     Got rid of Types dependancy
       <li>29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
 
 
@@ -47,7 +48,7 @@ interface
 
 uses
   // VCL
-  SysUtils, Classes, Types,
+  SysUtils, Classes,
 
   // GLScene
   GLTexture, GLScene, VectorGeometry, VectorTypes, GLMisc,
@@ -266,7 +267,7 @@ var
   FromBitMap: TGLBitmap;
   ToBitMap: TGLBitmap;
   X, Y: Integer;
-  Rect: TRect;
+  Rect: TGLRect;
 begin
 
   FromBitMap := nil;
