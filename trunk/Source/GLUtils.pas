@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/03/07 - Replaced StrUtils with GLCrossPlatform
       <li>23/03/07 - DaStr - Removed compiler warnings caused by
                                SaveComponentToFile and LoadComponentFromFile
       <li>22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
@@ -19,10 +20,10 @@ interface
 
 uses
   //VCL
-  Classes, SysUtils, Graphics, StrUtils,
+  Classes, SysUtils,
 
   //GLScene
-  VectorGeometry, OpenGL1x;
+  VectorGeometry, GLCrossPlatform, OpenGL1x;
 
 {$i GLScene.inc}
 
