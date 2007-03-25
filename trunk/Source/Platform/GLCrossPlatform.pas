@@ -17,7 +17,7 @@
                                    TKeyEvent, TKeyPressEvent
                              Added IInterface, S_OK, E_NOINTERFACE,
                                    glKey_PRIOR, glKey_NEXT, glKey_CONTROL
-      <li>124/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
+      <li>24/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
                              Added "Application" function
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>08/07/04 - LR - Added clBlack
