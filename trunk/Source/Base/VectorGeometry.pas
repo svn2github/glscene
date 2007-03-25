@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
+                             Added YZHmgVector and XZHmgVector
       <li>21/03/07 - DaStr - Bugfixed MatrixDecompose
                              (thanks Burkhard Carstens) (BugTrackerID=1684438)
       <li>06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
@@ -171,7 +173,7 @@ unit VectorGeometry;
 
 interface
 
-uses Types, VectorTypes;
+uses GLCrossPlatform, VectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
@@ -427,6 +429,9 @@ const
   ZHmgVector : THomogeneousVector = (0, 0, 1, 0);
   WHmgVector : THomogeneousVector = (0, 0, 0, 1);
   XYHmgVector  : THomogeneousVector =  (1, 1, 0, 0);
+  YZHmgVector  : THomogeneousVector =  (0, 1, 1, 0);
+  XZHmgVector  : THomogeneousVector =  (1, 0, 1, 0);
+
   XYZHmgVector  : THomogeneousVector = (1, 1, 1, 0);
   XYZWHmgVector : THomogeneousVector = (1, 1, 1, 1);
   NullHmgVector : THomogeneousVector = (0, 0, 0, 0);
