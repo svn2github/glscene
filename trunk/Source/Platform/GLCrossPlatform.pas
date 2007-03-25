@@ -9,7 +9,15 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
+      <li>25/03/07 - DaStr - Replaced some UNIX IFDEFs with KYLIX
+                             Added IdentToColor, ColorToIdent, ColorToString,
+                                   AnsiStartsText, IsSubComponent
+                             Added TPoint, PPoint, TRect, PRect, TPicture, TGraphic,
+                                   TBitmap, TTextLayout, TMouseButton, TMouseEvent,
+                                   TKeyEvent, TKeyPressEvent
+                             Added IInterface, S_OK, E_NOINTERFACE,
+                                   glKey_PRIOR, glKey_NEXT, glKey_CONTROL
+      <li>124/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
                              Added "Application" function
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>08/07/04 - LR - Added clBlack
@@ -39,7 +47,9 @@ interface
 {$IFDEF MSWINDOWS}
 uses
   Windows, Classes, SysUtils, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtDlgs, Consts;
+  Dialogs, StdCtrls, ExtDlgs, Consts
+  {$IFDEF GLS_COMPILER_6_UP},StrUtils{$ENDIF}
+  ;
 {$ENDIF}
 {$IFDEF UNIX}
 uses
@@ -85,28 +95,66 @@ type
    {$endif}
 {$endif}
 
-{$IFDEF WIN32}
-  TPenStyle = Graphics.TPenStyle;
-{$ENDIF}
-{$IFDEF UNIX}
-  TPenStyle = QGraphics.TPenStyle;
-{$ENDIF}
-
-{$IFDEF WIN32}
-  TPenMode = Graphics.TPenStyle;
-{$ENDIF}
-{$IFDEF UNIX}
-  TPenMode = QGraphics.TPenStyle;
+{$IFNDEF GLS_DELPHI_6_UP}
+  IInterface = interface
+    ['{00000000-0000-0000-C000-000000000046}']
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+  end;
 {$ENDIF}
 
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
+  TPoint = Windows.TPoint;
+  PPoint = Windows.PPoint;
+  TRect = Windows.TRect;
+  PRect = Windows.PRect;
+
+  TPicture = Graphics.TPicture;
+  TGraphic = Graphics.TGraphic;
+  TBitmap = Graphics.TBitmap;
+
+  TTextLayout = StdCtrls.TTextLayout;
+
+  TMouseButton = Controls.TMouseButton;
+  TMouseEvent = Controls.TMouseEvent;
+  TKeyEvent = Controls.TKeyEvent;
+  TKeyPressEvent = Controls.TKeyPressEvent;
+
+  TColor      = Graphics.TColor;
+  TPenStyle   = Graphics.TPenStyle;
+  TPenMode    = Graphics.TPenMode;
   TBrushStyle = Graphics.TBrushStyle;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
+  TPoint = QTypes.TPoint;
+  PPoint = QTypes.PPoint;
+  TRect = QTypes.TRect;
+  PRect = QTypes.PRect;
+
+  TPicture = QGraphics.TPicture;
+  TGraphic = QGraphics.TGraphic;
+  TBitmap = QGraphics.TBitmap;
+
+  TTextLayout = QStdCtrls.TTextLayout;
+
+  TMouseButton = QControls.TMouseButton;
+  TMouseEvent = QControls.TMouseEvent;
+  TKeyEvent = QControls.TKeyEvent;
+  TKeyPressEvent = QControls.TKeyPressEvent;
+
+  TColor      = QGraphics.TColor;
+  TPenStyle   = QGraphics.TPenStyle;
+  TPenMode    = QGraphics.TPenMode;
   TBrushStyle = QGraphics.TBrushStyle;
 {$ENDIF}
 
 const
+{$IFNDEF GLS_COMPILER_6_UP}
+  S_OK = 1;
+  E_NOINTERFACE = 2;
+{$ENDIF}
+
 {$ifdef WIN32}
    glpf8Bit = pf8bit;
    glpf24bit = pf24bit;
@@ -121,7 +169,7 @@ const
 {$endif}
 
    // standard colors
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
    { Raw rgb values }
   clBlack = Graphics.clBlack;
   clMaroon = Graphics.clMaroon;
@@ -144,7 +192,7 @@ const
   clNone = Graphics.clNone;
   clDefault = Graphics.clDefault;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
    { Raw rgb values }
   clBlack = QGraphics.clBlack;
   clMaroon = QGraphics.clMaroon;
@@ -168,7 +216,7 @@ const
   clDefault = QGraphics.clDefault;
 {$ENDIF}
 
-{$IFDEF WIN32}  // Not declared in Graphics.pas
+{$IFNDEF KYLIX}  // Not declared in Graphics.pas
   clForeground = TColor(-1);
   clButton = TColor(-2);
   clLight = TColor(-3);
@@ -221,7 +269,7 @@ const
   clDisabledHighlight = TColor(clHighlight - cloDisabled);
   clDisabledHighlightedText = TColor(clHighlightedText - cloDisabled);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   { Base, mapped, pseudo, rgb values }
   clForeground = QGraphics.clForeground;
   clButton = QGraphics.clButton;
@@ -276,7 +324,7 @@ const
   clDisabledHighlightedText = QGraphics.clDisabledHighlightedText;
 {$ENDIF}
 
-{$IFDEF WIN32} // Not declared in Graphics.pas
+{$IFNDEF KYLIX} // Not declared in Graphics.pas
   { Active, mapped, pseudo, rgb values }
   clActiveForeground = TColor(clForeground - cloActive);
   clActiveButton = TColor(clButton - cloActive);
@@ -293,7 +341,7 @@ const
   clActiveHighlight = TColor(clHighlight - cloActive);
   clActiveHighlightedText = TColor(clHighlightedText - cloActive);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   { Active, mapped, pseudo, rgb values }
   clActiveForeground = QGraphics.clActiveForeground;
   clActiveButton = QGraphics.clActiveButton;
@@ -311,7 +359,7 @@ const
   clActiveHighlightedText = QGraphics.clActiveHighlightedText;
 {$ENDIF}
 
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
   { Compatiblity colors }
   clScrollBar = Graphics.clScrollBar;
   clActiveCaption = Graphics.clActiveCaption;
@@ -337,7 +385,7 @@ const
   clInfoBk = Graphics.clInfoBk;
   clHighlightText = Graphics.clHighlightText;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   { Compatiblity colors }
   clScrollBar = QGraphics.clScrollBar;
   clActiveCaption = QGraphics.clActiveCaption;
@@ -365,18 +413,18 @@ const
 {$ENDIF}
 
  // Not declared in Graphics.pas
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
   clFirstSpecialColor = clActiveHighlightedText;
   clMask = clWhite;
   clDontMask = clBlack;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   clMask = QGraphics.clMask;
   clDontMask = QGraphics.clDontMask;
 {$ENDIF}
 
 // standard keyboard
-{$ifdef WIN32}
+{$IFNDEF KYLIX}
   glKey_TAB = VK_TAB;
   glKey_SPACE = VK_SPACE;
   glKey_RETURN = VK_RETURN;
@@ -388,8 +436,11 @@ const
   glKey_CANCEL = VK_CANCEL;
   glKey_UP = VK_UP;
   glKey_DOWN = VK_DOWN;
+  glKey_PRIOR = VK_PRIOR;
+  glKey_NEXT = VK_NEXT;
+  glKey_CONTROL = VK_CONTROL;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   glKey_TAB = Key_Tab;
   glKey_SPACE = Key_Space;
   glKey_RETURN = Key_Return;
@@ -398,22 +449,27 @@ const
   glKey_RIGHT = Key_Right;
   glKey_HOME = Key_Home;
   glKey_END = Key_End;
-  glKey_CANCEL = Key_Escape;   // ?
+  glKey_CANCEL = Key_Escape;     // ?
   glKey_UP = Key_Up;
   glKey_DOWN = Key_DOWN;
+  glKey_PRIOR = Key_PRIOR;       // ?
+  glKey_NEXT = Key_NEXT;         // ?
+  glKey_CONTROL = Key_CONTROL;   // ?
 {$ENDIF}
 
 // TPenStyle.
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
   psSolid = Graphics.psSolid;
   psDash = Graphics.psDash;
   psDot = Graphics.psDot;
   psDashDot = Graphics.psDashDot;
   psDashDotDot = Graphics.psDashDotDot;
   psClear = Graphics.psClear;
+  {$IFNDEF FPC}
   psInsideFrame = Graphics.psInsideFrame;
+  {$ENDIF}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   psSolid = QGraphics.psSolid;
   psDash = QGraphics.psDash;
   psDot = QGraphics.psDot;
@@ -424,7 +480,7 @@ const
 {$ENDIF}
 
 // TPenMode.
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
   pmBlack = Graphics.pmBlack;
   pmWhite = Graphics.pmWhite;
   pmNop = Graphics.pmNop;
@@ -444,7 +500,7 @@ const
   pmXor = Graphics.pmXor;
   pmNotXor = Graphics.pmNotXor;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   pmBlack = QGraphics.pmBlack;
   pmWhite = QGraphics.pmWhite;
   pmNop = QGraphics.pmNop;
@@ -466,7 +522,7 @@ const
 {$ENDIF}
 
 // TBrushStyle.
-{$IFDEF WIN32}
+{$IFNDEF KYLIX}
   bsSolid = Graphics.bsSolid;
   bsClear = Graphics.bsClear;
   bsHorizontal = Graphics.bsHorizontal;
@@ -477,7 +533,7 @@ const
   bsCross = Graphics.bsCross;
   bsDiagCross = Graphics.bsDiagCross;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   bsSolid = QGraphics.bsSolid;
   bsClear = QGraphics.bsClear;
   bsHorizontal = QGraphics.bsHorizontal;
@@ -597,6 +653,14 @@ function GLGetScreenWidth:integer;
 function GLGetScreenHeight:integer;
 function GLGetTickCount:int64;
 
+function IdentToColor(const Ident: string; var Color: Longint): Boolean;
+function ColorToIdent(Color: Longint; var Ident: string): Boolean;
+function ColorToString(Color: TColor): string;
+
+function AnsiStartsText(const ASubText, AText: string): Boolean;
+
+function IsSubComponent(const AComponent: TComponent): Boolean;
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -617,12 +681,79 @@ var
    vInvPerformanceCounterFrequency : Double;
    vInvPerformanceCounterFrequencyReady : Boolean = False;
 
-function Application: TApplication;
+function IsSubComponent(const AComponent: TComponent): Boolean;
+begin
+{$IFNDEF GLS_COMPILER_6_UP}
+  Result := False; // AFAIK Delphi 5 does not know what is a SubComponent.
+{$ELSE}
+  Result := (csSubComponent in AComponent.ComponentStyle);
+{$ENDIF}
+end;
+
+function IdentToColor(const Ident: string; var Color: Longint): Boolean;
+begin
+{$IFNDEF KYLIX}
+  Result := Graphics.IdentToColor(Ident, Color);
+{$ENDIF}
+{$IFDEF KYLIX}
+  Result := QGraphics.IdentToColor(Ident, Color);
+{$ENDIF}
+end;
+
+function ColorToIdent(Color: Longint; var Ident: string): Boolean;
+begin
+{$IFNDEF KYLIX}
+  Result := Graphics.ColorToIdent(Color, Ident);
+{$ENDIF}
+{$IFDEF KYLIX}
+  Result := QGraphics.ColorToIdent(Color, Ident);
+{$ENDIF}
+end;
+
+function ColorToString(Color: TColor): string;
+begin
+  // Taken from Delphi7 Graphics.pas
+  if not ColorToIdent(Color, Result) then
+    FmtStr(Result, '%s%.8x', [HexDisplayPrefix, Color]);
+end;
+
+function AnsiStartsText(const ASubText, AText: string): Boolean;
+{$IFDEF GLS_COMPILER_6_UP}
+begin
+  Result := StrUtils.AnsiStartsText(ASubText, AText);
+end;
+{$ELSE}
+var
+{$IFDEF MSWINDOWS}
+  P: PChar;
+{$ENDIF}
+  L, L2: Integer;
 begin
 {$IFDEF MSWINDOWS}
-  Result := Forms.Application;
+  P := PChar(AText);
+{$ENDIF}
+  L := Length(ASubText);
+  L2 := Length(AText);
+  if L > L2 then
+    Result := False
+  else
+{$IFDEF MSWINDOWS}
+    Result := CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE,
+      P, L, PChar(ASubText), L) = 2;
 {$ENDIF}
 {$IFDEF UNIX}
+    Result := WideSameText(ASubText, Copy(AText, 1, L));
+{$ENDIF}
+end;
+{$ENDIF}
+
+
+function Application: TApplication;
+begin
+{$IFNDEF KYLIX}
+  Result := Forms.Application;
+{$ENDIF}
+{$IFDEF KYLIX}
   Result := QForms.Application;
 {$ENDIF}
 end;
