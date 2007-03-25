@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>25/03/07 - LC - Added VBO support to TFGVertexIndexList, depends on MeshObject owner's UseVBO status
       <li>25/03/07 - LC - Fixed VBO bug. Bugtracker ID=1687665
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -1046,8 +1047,12 @@ type
       private
          { Private Declarations }
          FVertexIndices : TIntegerList;
+         FIndexVBO: TGLVBOElementArrayHandle;
+         FIndexVBOValid: boolean;
          FMode : TFaceGroupMeshMode;
 
+         procedure SetupVBO;
+         procedure InvalidateVBO;
       protected
          { Protected Declarations }
          procedure SetVertexIndices(const val : TIntegerList);
@@ -5339,6 +5344,7 @@ end;
 destructor TFGVertexIndexList.Destroy;
 begin
    FVertexIndices.Free;
+   FIndexVBO.Free;
    inherited;
 end;
 
@@ -5365,14 +5371,33 @@ begin
    if archiveVersion=0 then with reader do begin
       FVertexIndices.ReadFromFiler(reader);
       FMode:=TFaceGroupMeshMode(ReadInteger);
+      InvalidateVBO;
    end else RaiseFilerException(archiveVersion);
 end;
 
 // SetIndices
 //
+procedure TFGVertexIndexList.SetupVBO;
+const
+  BufferUsage = GL_STATIC_DRAW_ARB;
+begin
+  if not assigned(FIndexVBO) then
+  begin
+     FIndexVBO:= TGLVBOElementArrayHandle.CreateFromData(VertexIndices.List, sizeof(integer) * VertexIndices.Count,
+       BufferUsage);
+     FIndexVBOValid:= true;
+  end
+  else if not FIndexVBOValid then
+  begin
+    FIndexVBO.BindBufferData(VertexIndices.List, sizeof(integer) * VertexIndices.Count,
+       BufferUsage);
+  end;
+end;
+
 procedure TFGVertexIndexList.SetVertexIndices(const val : TIntegerList);
 begin
    FVertexIndices.Assign(val);
+   InvalidateVBO;
 end;
 
 // BuildList
@@ -5385,8 +5410,21 @@ begin
    if VertexIndices.Count=0 then Exit;
    Owner.Owner.DeclareArraysToOpenGL(mrci,  False);
    AttachOrDetachLightmap(mrci);
-   glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
-                  GL_UNSIGNED_INT, VertexIndices.List);
+
+   if Owner.Owner.UseVBO then
+   begin
+      SetupVBO;
+
+      FIndexVBO.Bind;
+      glDrawRangeElements(cFaceGroupMeshModeToOpenGL[Mode], 0, VertexIndices.Count, VertexIndices.Count,
+                          GL_UNSIGNED_INT, nil);
+      FIndexVBO.UnBind;
+   end
+   else
+   begin
+     glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
+                    GL_UNSIGNED_INT, VertexIndices.List);
+   end;
 end;
 
 // AddToList
@@ -5457,6 +5495,7 @@ begin
    AddToList(mo.Vertices,  aList,      VertexIndices);
    AddToList(mo.TexCoords, aTexCoords, VertexIndices);
    AddToList(mo.Normals,   aNormals,   VertexIndices);
+   InvalidateVBO;
 end;
 
 // TriangleCount
@@ -5483,6 +5522,7 @@ end;
 procedure TFGVertexIndexList.Reverse;
 begin
    VertexIndices.Reverse;
+   InvalidateVBO;
 end;
 
 // Add
@@ -5490,6 +5530,7 @@ end;
 procedure TFGVertexIndexList.Add(idx : Integer);
 begin
    FVertexIndices.Add(idx);
+   InvalidateVBO;
 end;
 
 // GetExtents
@@ -5546,6 +5587,7 @@ begin
             FMode:=fgmmTriangles;
          end;
       end;
+      InvalidateVBO;
    end;
 end;
 
@@ -5558,6 +5600,11 @@ begin
    else with Owner.Owner.Vertices do
       CalcPlaneNormal(Items[VertexIndices[0]], Items[VertexIndices[1]],
                       Items[VertexIndices[2]], Result);
+end;
+
+procedure TFGVertexIndexList.InvalidateVBO;
+begin
+  FIndexVBOValid:= false;  
 end;
 
 // ------------------
