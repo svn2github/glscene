@@ -1,8 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLSceneEdit<p>
 
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>25/03/07 - DaStr - Abstracted IsSubComponent for Delphi5 compatibility
   <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
   <li>07/02/07 - DaStr - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
                          TGLSceneEditorForm.AddNodes - removed warning
@@ -530,7 +534,7 @@ var
   I: Integer;
   CurrentNode: TTreeNode;
 begin
-  if csSubComponent in AObject.ComponentStyle then
+  if IsSubComponent(AObject) then
   begin
     Result := Tree.Selected;
     Exit;
