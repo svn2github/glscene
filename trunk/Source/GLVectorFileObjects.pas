@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>25/03/07 - LC - Fixed VBO bug. Bugtracker ID=1687665
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>21/02/07 - DaStr - Added TMeshObjectList.BuildTangentSpace, UseVBO
@@ -3525,6 +3526,7 @@ procedure TMeshObject.Prepare;
 var
    i : Integer;
 begin
+   ValidBuffers:= [];
    for i:=0 to FaceGroups.Count-1 do
       FaceGroups[i].Prepare;
 end;
