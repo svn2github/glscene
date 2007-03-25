@@ -5,6 +5,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/03/07 - DaStr - UNSAFE_TYPE and UNSAFE_CODE warnings are now ignored
       <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
                              (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
       <li>22/03/07 - DaStr - Cleanup after previous fix - now object does not
@@ -34,6 +35,8 @@
 unit GLLensFlare;
 
 interface
+
+{$I GLScene.inc}
 
 uses
    Classes, GLScene, VectorGeometry, GLObjects, GLTexture, OpenGL1x, GLMisc, GLContext;
@@ -224,8 +227,10 @@ implementation
 
 uses GLUtils;
 
-{$WARN UNSAFE_TYPE OFF}
-{$WARN UNSAFE_CODE OFF}
+{$IFDEF GLS_COMPILER_6_UP}
+  {$WARN UNSAFE_TYPE OFF}
+  {$WARN UNSAFE_CODE OFF}
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLFlareGradient ------------------
