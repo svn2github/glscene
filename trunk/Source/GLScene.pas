@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>26/03/07 - aidave - added MoveFirst, MoveLast
       <li>26/03/07 - aidave - added MoveChildFirst, MoveChildLast
       <li>25/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
@@ -701,6 +702,8 @@ type
          procedure MoveTo(newParent : TGLBaseSceneObject); dynamic;
          procedure MoveUp;
          procedure MoveDown;
+         procedure MoveFirst;
+         procedure MoveLast;
          procedure BeginUpdate; virtual;
          procedure EndUpdate; virtual;
          {: Make object-specific geometry description here.<p>
@@ -3872,6 +3875,22 @@ procedure TGLBaseSceneObject.MoveDown;
 begin
    if Assigned(parent) then
       parent.MoveChildDown(parent.IndexOfChild(Self));
+end;
+
+// MoveFirst
+//
+procedure TGLBaseSceneObject.MoveFirst;
+begin
+   if Assigned(parent) then
+      parent.MoveChildFirst(parent.IndexOfChild(Self));
+end;
+
+// MoveLast
+//
+procedure TGLBaseSceneObject.MoveLast;
+begin
+   if Assigned(parent) then
+      parent.MoveChildLast(parent.IndexOfChild(Self));
 end;
 
 // MoveObjectAroundTarget
