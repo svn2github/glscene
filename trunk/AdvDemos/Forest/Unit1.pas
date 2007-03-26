@@ -119,7 +119,7 @@ begin
       Texture2Name:='Detail';
    with MLTerrain.AddTextureMaterial('Detail', 'media\detailmap.jpg') do begin
       Material.Texture.TextureMode:=tmModulate;
-      TextureScale.SetVector(128,128,128);
+      TextureScale.SetPoint(128,128,128);
    end;
    Terrain.Material.MaterialLibrary:=MLTerrain;
    Terrain.Material.LibMaterialName:='Terrain';
