@@ -6,6 +6,8 @@
 	Applies a blur effect over the viewport.<p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>25/03/07 - DaStr  - Renamed parameters in some methods
+                                (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
         <li>22/03/07 - DaStr  - Added checks to TGLMotionBlur for supported extensions
                                 TGLMotionBlur is not rendered when picking now
         <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
@@ -63,8 +65,8 @@ type
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime : TProgressTimes); override;
-    procedure DoRender(var rci : TRenderContextInfo;
-                       renderSelf, renderChildren : Boolean); override;
+    procedure DoRender(var ARci : TRenderContextInfo;
+                       ARenderSelf, ARenderChildren : Boolean); override;
   published
     property BlurDeltaTime: Double read FBlurDeltaTime write FBlurDeltaTime stored StoreBlurDeltaTime;
     property BlurLeft: Single read FBlurLeft write FBlurLeft stored StoreBlurLeft;
@@ -100,7 +102,7 @@ type
   public
     {: This function is only valid AFTER OpenGL has been initialized. }
     function SupportsRequiredExtensions: Boolean;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
     constructor Create(aOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -219,27 +221,27 @@ begin
 end;
 
 {$Warnings Off} //Suppress "unsafe" warning
-procedure TGLBlur.DoRender(var rci : TRenderContextInfo;
-                              renderSelf, renderChildren : Boolean);
+procedure TGLBlur.DoRender(var ARci : TRenderContextInfo;
+                              ARenderSelf, ARenderChildren : Boolean);
 var
 	vx, vy, vx1, vy1, f : Single;
         offsx,offsy:single;
         MaxMeasure : integer;
 begin
 
-   if rci.ignoreMaterials then Exit;
-  	Material.Apply(rci);
+   if ARci.ignoreMaterials then Exit;
+  	Material.Apply(ARci);
    repeat
       if AlphaChannel<>1 then
-         rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+         ARci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
       // Prepare matrices
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
       glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-      if rci.renderDPI=96 then
+      if ARci.renderDPI=96 then
          f:=1
-      else f:=rci.renderDPI/96;
-      glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
+      else f:=ARci.renderDPI/96;
+      glScalef(2/ARci.viewPortSize.cx, 2/ARci.viewPortSize.cy, 1);
 
       // center of viewport:
       glTranslatef(0,0, Position.Z);
@@ -255,22 +257,22 @@ begin
 
 
      // calculate offsets in order to keep the quad a square centered in the view
-     if rci.viewPortSize.cx>rci.viewPortSize.cy then
+     if ARci.viewPortSize.cx>ARci.viewPortSize.cy then
      begin
           offsx := 0;
-          offsy := (rci.viewPortSize.cx-rci.viewPortSize.cy)*0.5;
-          MaxMeasure := rci.viewPortSize.cx;
+          offsy := (ARci.viewPortSize.cx-ARci.viewPortSize.cy)*0.5;
+          MaxMeasure := ARci.viewPortSize.cx;
      end
      else
      begin
-          offsx := (rci.viewPortSize.cy-rci.viewPortSize.cx)*0.5;
+          offsx := (ARci.viewPortSize.cy-ARci.viewPortSize.cx)*0.5;
           offsy := 0;
-          MaxMeasure := rci.viewPortSize.cy;
+          MaxMeasure := ARci.viewPortSize.cy;
      end;
 
       // precalc coordinates
-      vx:=-rci.viewPortSize.cx*0.5*f;     vx1:=vx+rci.viewPortSize.cx*f;
-      vy:=+rci.viewPortSize.cy*0.5*f;     vy1:=vy-rci.viewPortSize.cy*f;
+      vx:=-ARci.viewPortSize.cx*0.5*f;     vx1:=vx+ARci.viewPortSize.cx*f;
+      vy:=+ARci.viewPortSize.cy*0.5*f;     vy1:=vy-ARci.viewPortSize.cy*f;
 
 
       vx := vx - offsx; vx1 := vx1 + offsx;
@@ -297,9 +299,9 @@ begin
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix;
-   until not Material.UnApply(rci);
+   until not Material.UnApply(ARci);
    if Count>0 then
-      Self.RenderChildren(0, Count-1, rci);
+      Self.RenderChildren(0, Count-1, ARci);
 end;
 {$Warnings On}
 
@@ -420,27 +422,27 @@ begin
   FIntensity := 0.975;
 end;
 
-procedure TGLMotionBlur.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TGLMotionBlur.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
-  if not (rci.ignoreMaterials or (csDesigning in ComponentState) or
-         (rci.drawState = dsPicking)) and SupportsRequiredExtensions then
+  if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
+         (ARci.drawState = dsPicking)) and SupportsRequiredExtensions then
   begin
     glEnable( GL_TEXTURE_RECTANGLE_ARB );
-    Material.Apply( rci );
+    Material.Apply( ARci );
     glMatrixMode( GL_PROJECTION );
     glPushMatrix;
       glLoadIdentity;
-      glOrtho( 0, rci.viewPortSize.cx, rci.viewPortSize.cy, 0, 0, 1 );
+      glOrtho( 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1 );
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
       glLoadIdentity;
       glDisable(GL_DEPTH_TEST);
       glDepthMask( FALSE );
       glBegin( GL_QUADS );
-        glTexCoord2f( 0.0, rci.viewPortSize.cy );                 glVertex2f( 0, 0 );
-        glTexCoord2f( 0.0, 0.0);                                  glVertex2f( 0, rci.viewPortSize.cy );
-        glTexCoord2f( rci.viewPortSize.cx, 0.0 );                 glVertex2f( rci.viewPortSize.cx, rci.viewPortSize.cy );
-        glTexCoord2f( rci.viewPortSize.cx, rci.viewPortSize.cy ); glVertex2f( rci.viewPortSize.cx, 0 );
+        glTexCoord2f( 0.0, ARci.viewPortSize.cy );                  glVertex2f( 0, 0 );
+        glTexCoord2f( 0.0, 0.0);                                    glVertex2f( 0, ARci.viewPortSize.cy );
+        glTexCoord2f( ARci.viewPortSize.cx, 0.0 );                  glVertex2f( ARci.viewPortSize.cx, ARci.viewPortSize.cy );
+        glTexCoord2f( ARci.viewPortSize.cx, ARci.viewPortSize.cy ); glVertex2f( ARci.viewPortSize.cx, 0 );
       glEnd;
       glPopMatrix;
       glDepthMask( TRUE );
@@ -448,15 +450,15 @@ begin
       glMatrixMode( GL_PROJECTION );
     glPopMatrix;
     glMatrixMode( GL_MODELVIEW );
-    Material.UnApply( rci );
+    Material.UnApply( ARci );
     glDisable( GL_TEXTURE_RECTANGLE_ARB );
 
-    glCopyTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB, 0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, 0 );
+    glCopyTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB, 0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0 );
 
     Material.FrontProperties.Diffuse.Alpha := FIntensity;
   end;
 
-  if Count > 0 then Self.RenderChildren(0, Count - 1, rci);
+  if Count > 0 then Self.RenderChildren(0, Count - 1, ARci);
 end;
 
 function TGLMotionBlur.StoreIntensity: Boolean;

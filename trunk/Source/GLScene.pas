@@ -6,7 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>25/03/07 - DaStr - Small fix for Delphi5 compatibility
+      <li>25/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>10/03/07 - DaStr - TGLSceneBuffer's Events are not stored now
@@ -734,13 +735,13 @@ type
          //: Moves camera along the right vector (move left and right)
          procedure Slide(ADistance: Single);
          //: Orients the object toward a target object
-         procedure PointTo(const targetObject : TGLBaseSceneObject; const upVector : TVector); overload;
+         procedure PointTo(const ATargetObject : TGLBaseSceneObject; const AUpVector : TVector); overload;
          //: Orients the object toward a target absolute position
-         procedure PointTo(const absolutePosition, upVector : TVector); overload;
+         procedure PointTo(const AAbsolutePosition, AUpVector : TVector); overload;
 
-         procedure Render(var rci : TRenderContextInfo);
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); virtual;
+         procedure Render(var ARci : TRenderContextInfo);
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); virtual;
          procedure RenderChildren(firstChildIndex, lastChildIndex : Integer;
                                   var rci : TRenderContextInfo); virtual;
 
@@ -976,8 +977,8 @@ type
          destructor Destroy; override;
 
          procedure Assign(Source: TPersistent); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
 
          property Material : TGLMaterial read FMaterial write SeTGLMaterial;
          property Hint : String read FHint write FHint;
@@ -1006,8 +1007,8 @@ type
    TGLImmaterialSceneObject = class(TGLCustomSceneObject)
       public
          { Public Declarations }
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
                             
       published
          { Published Declarations }
@@ -1050,8 +1051,8 @@ type
          constructor Create(AOwner: TComponent); override;
 
          procedure Assign(Source: TPersistent); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
    end;
 
    // TGLSceneObject
@@ -1190,8 +1191,8 @@ type
          destructor Destroy; override;
 
          procedure Assign(Source: TPersistent); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
 
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
@@ -1277,8 +1278,8 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          //: light sources have different handle types than normal scene objects
          function GetHandle(var rci : TRenderContextInfo) : Cardinal; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
@@ -1365,14 +1366,14 @@ type
 
          //: Apply camera transformation
          procedure Apply;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
 
-         procedure ApplyPerspective(const viewport : TRectangle;
-                                    width, height : Integer; DPI : Integer);
+         procedure ApplyPerspective(const AViewport : TRectangle;
+                                    AWidth, AHeight : Integer; ADPI : Integer);
          procedure AutoLeveling(Factor: Single);
          procedure Reset;
          //: Position the camera so that the whole scene can be seen
@@ -1551,7 +1552,7 @@ type
          procedure NotifyChange(Sender : TObject); override;
          procedure Progress(const deltaTime, newTime : Double);
 
-         function FindSceneObject(const name : String) : TGLBaseSceneObject;
+         function FindSceneObject(const AName : String) : TGLBaseSceneObject;
          {: Calculates, finds and returns the first object intercepted by the ray.<p>
             Returns nil if no intersection was found. This function will be
             accurate only for objects that overrided their RayCastIntersect
@@ -1680,7 +1681,7 @@ type
 
       public
          { Public Declarations }
-         constructor Create(Owner : TPersistent); override;
+         constructor Create(AOwner : TPersistent); override;
          destructor Destroy; override;
 
          procedure ApplyFog;
@@ -3665,21 +3666,21 @@ end;
 
 // PointTo
 //
-procedure TGLBaseSceneObject.PointTo(const targetObject : TGLBaseSceneObject; const upVector : TVector);
+procedure TGLBaseSceneObject.PointTo(const ATargetObject : TGLBaseSceneObject; const AUpVector : TVector);
 begin
-   PointTo(targetObject.AbsolutePosition, upVector);
+   PointTo(ATargetObject.AbsolutePosition, AUpVector);
 end;
 
 // PointTo
 //
-procedure TGLBaseSceneObject.PointTo(const absolutePosition, upVector : TVector);
+procedure TGLBaseSceneObject.PointTo(const AAbsolutePosition, AUpVector : TVector);
 var
    absDir, absRight, absUp : TVector;
 begin
    // first compute absolute attitude for pointing
-   absDir:=VectorSubtract(absolutePosition, Self.AbsolutePosition);
+   absDir:=VectorSubtract(AAbsolutePosition, Self.AbsolutePosition);
    NormalizeVector(absDir);
-   absRight:=VectorCrossProduct(absDir, upVector);
+   absRight:=VectorCrossProduct(absDir, AUpVector);
    NormalizeVector(absRight);
    absUp:=VectorCrossProduct(absRight, absDir);
    // convert absolute to local and adjust object
@@ -3742,13 +3743,13 @@ end;
 //
 procedure TGLBaseSceneObject.SetIndex(aValue : Integer);
 var
-   count : Integer;
+   LCount : Integer;
    parentBackup : TGLBaseSceneObject;
 begin
    if Assigned(FParent) then begin
       if aValue<0 then aValue:=0;
-      count:=FParent.Count;
-      if aValue>=count then aValue:=count-1;
+      LCount:=FParent.Count;
+      if aValue>=LCount then aValue:=LCount-1;
       if aValue<>Index then begin
          if Assigned(FScene) then FScene.BeginUpdate;
          parentBackup:=FParent;
@@ -4101,7 +4102,7 @@ end;
 
 // Render
 //
-procedure TGLBaseSceneObject.Render(var rci : TRenderContextInfo);
+procedure TGLBaseSceneObject.Render(var ARci : TRenderContextInfo);
 var
    shouldRenderSelf, shouldRenderChildren : Boolean;
    aabb : TAABB;
@@ -4109,22 +4110,22 @@ var
    saveMatrixSelf: TMatrix;
 begin
    // visibility culling determination
-   if rci.visibilityCulling in [vcObjectBased, vcHierarchical] then begin
-      if rci.visibilityCulling=vcObjectBased then begin
+   if ARci.visibilityCulling in [vcObjectBased, vcHierarchical] then begin
+      if ARci.visibilityCulling=vcObjectBased then begin
          shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
                            or (not IsVolumeClipped(AbsolutePosition,
                                                    BoundingSphereRadius,
-                                                   rci.rcci));
+                                                   ARci.rcci));
          shouldRenderChildren:=Assigned(FChildren);
       end else begin // vcHierarchical
          aabb:=AxisAlignedBoundingBox;
          shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
-                           or (not IsVolumeClipped(aabb.min, aabb.max, rci.rcci));
+                           or (not IsVolumeClipped(aabb.min, aabb.max, ARci.rcci));
          shouldRenderChildren:=shouldRenderSelf and Assigned(FChildren);
       end;
       if not (shouldRenderSelf or shouldRenderChildren) then Exit;
    end else begin
-      Assert(rci.visibilityCulling in [vcNone, vcInherited],
+      Assert(ARci.visibilityCulling in [vcNone, vcInherited],
              'Unknown visibility culling option');
       shouldRenderSelf:=True;
       shouldRenderChildren:=Assigned(FChildren);
@@ -4140,15 +4141,15 @@ begin
    if ocTransformation in FChanges then
       RebuildMatrix;
    glMultMatrixf(PGLfloat(FLocalMatrix));
-   if rci.drawState=dsPicking then
-      if rci.proxySubObject then
+   if ARci.drawState=dsPicking then
+      if ARci.proxySubObject then
          glPushName(Integer(Self))
       else glLoadName(Integer(Self));
    // Start rendering
    if shouldRenderSelf then begin
 {$IFNDEF GLS_OPTIMIZATIONS}
       if FShowAxes then
-         DrawAxes(rci, $CCCC);
+         DrawAxes(ARci, $CCCC);
 {$ENDIF}
       if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -4158,7 +4159,7 @@ begin
 {$ENDIF}
             glPushMatrix;
 
-         FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
+         FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, ARci);
 {$IFNDEF GLS_OPTIMIZATIONS}
          if OptSaveGLStack then
             glLoadMatrixf(@saveMatrixSelf[0])
@@ -4171,13 +4172,13 @@ begin
           glPushMatrix;
 {$ENDIF}
          if osIgnoreDepthBuffer in ObjectStyle then begin
-            rci.GLStates.UnSetGLState(stDepthTest);
-            DoRender(rci, True, shouldRenderChildren);
-            rci.GLStates.SetGLState(stDepthTest);
-         end else DoRender(rci, True, shouldRenderChildren);
+            ARci.GLStates.UnSetGLState(stDepthTest);
+            DoRender(ARci, True, shouldRenderChildren);
+            ARci.GLStates.SetGLState(stDepthTest);
+         end else DoRender(ARci, True, shouldRenderChildren);
          if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-            rci.GLStates.ResetAll;
-         FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
+            ARci.GLStates.ResetAll;
+         FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, ARci);
 {$IFNDEF GLS_OPTIMIZATIONS}
          if OptSaveGLStack then
             glLoadMatrixf(@saveMatrixSelf[0])
@@ -4186,23 +4187,23 @@ begin
             glPopMatrix;
       end else begin
          if osIgnoreDepthBuffer in ObjectStyle then begin
-            rci.GLStates.UnSetGLState(stDepthTest);
-            DoRender(rci, True, shouldRenderChildren);
-            rci.GLStates.SetGLState(stDepthTest);
-         end else DoRender(rci, True, shouldRenderChildren);
+            ARci.GLStates.UnSetGLState(stDepthTest);
+            DoRender(ARci, True, shouldRenderChildren);
+            ARci.GLStates.SetGLState(stDepthTest);
+         end else DoRender(ARci, True, shouldRenderChildren);
          if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-            rci.GLStates.ResetAll;
+            ARci.GLStates.ResetAll;
       end;
    end else begin
       if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
-         rci.GLStates.UnSetGLState(stDepthTest);
-         DoRender(rci, False, shouldRenderChildren);
-         rci.GLStates.SetGLState(stDepthTest);
-      end else DoRender(rci, False, shouldRenderChildren);
+         ARci.GLStates.UnSetGLState(stDepthTest);
+         DoRender(ARci, False, shouldRenderChildren);
+         ARci.GLStates.SetGLState(stDepthTest);
+      end else DoRender(ARci, False, shouldRenderChildren);
    end;
    // Pop Name & Matrix
-   if rci.drawState=dsPicking then
-      if rci.proxySubObject then
+   if ARci.drawState=dsPicking then
+      if ARci.proxySubObject then
          glPopName;
 {$IFNDEF GLS_OPTIMIZATIONS}
    if OptSaveGLStack then
@@ -4214,18 +4215,18 @@ end;
 
 // DoRender
 //
-procedure TGLBaseSceneObject.DoRender(var rci : TRenderContextInfo;
-                                      renderSelf, renderChildren : Boolean);
+procedure TGLBaseSceneObject.DoRender(var ARci : TRenderContextInfo;
+                                      ARenderSelf, ARenderChildren : Boolean);
 begin
    // start rendering self
-   if renderSelf then begin
-      if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-         BuildList(rci)
-      else glCallList(GetHandle(rci));
+   if ARenderSelf then begin
+      if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+         BuildList(ARci)
+      else glCallList(GetHandle(ARci));
    end;
    // start rendering children (if any)
-   if renderChildren then
-      Self.RenderChildren(0, Count-1, rci);
+   if ARenderChildren then
+      Self.RenderChildren(0, Count-1, ARci);
 end;
 
 // RenderChildren
@@ -4856,29 +4857,29 @@ end;
 
 // DoRender
 //
-procedure TGLCustomSceneObject.DoRender(var rci : TRenderContextInfo;
-                                        renderSelf, renderChildren : Boolean);
+procedure TGLCustomSceneObject.DoRender(var ARci : TRenderContextInfo;
+                                        ARenderSelf, ARenderChildren : Boolean);
 begin
    // start rendering self
-   if renderSelf then begin
+   if ARenderSelf then begin
       if self.FScene<>nil then
          self.FScene.FRenderedObject := self;
-      if not rci.ignoreMaterials then begin
-         FMaterial.Apply(rci);
+      if not ARci.ignoreMaterials then begin
+         FMaterial.Apply(ARci);
          repeat
-            if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-               BuildList(rci)
-            else glCallList(GetHandle(rci));
-         until not FMaterial.UnApply(rci);
+            if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+               BuildList(ARci)
+            else glCallList(GetHandle(ARci));
+         until not FMaterial.UnApply(ARci);
       end else begin
-         if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-            BuildList(rci)
-         else glCallList(GetHandle(rci));
+         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+            BuildList(ARci)
+         else glCallList(GetHandle(ARci));
       end;
    end;
    // start rendering children (if any)
-   if renderChildren then
-      Self.RenderChildren(0, FChildren.Count-1, rci);
+   if ARenderChildren then
+      Self.RenderChildren(0, FChildren.Count-1, ARci);
 end;
 
 // ------------------
@@ -4988,28 +4989,28 @@ end;
 
 // ApplyPerspective
 //
-procedure TGLCamera.ApplyPerspective(const viewport : TRectangle;
-                                     width, height : Integer; DPI : Integer);
+procedure TGLCamera.ApplyPerspective(const AViewport : TRectangle;
+                                     AWidth, AHeight : Integer; ADPI : Integer);
 var
-   Left, Right, Top, Bottom, zFar, MaxDim, Ratio, f: Double;
+   LLeft, LRight, LTop, LBottom, zFar, MaxDim, Ratio, f: Double;
    mat : TMatrix;
 const
    cEpsilon : Single = 1e-4;
 begin
-   if (Width<=0) or (Height<=0) then Exit;
+   if (AWidth<=0) or (AHeight<=0) then Exit;
    if CameraStyle=csOrtho2D then begin
-      gluOrtho2D (0, Width, 0, Height);
+      gluOrtho2D (0, AWidth, 0, AHeight);
       FNearPlane:=-1;
-      FViewPortRadius:=VectorLength(Width, Height)/2;
+      FViewPortRadius:=VectorLength(AWidth, AHeight)/2;
    end else if CameraStyle=csCustom then begin
-      FViewPortRadius:=VectorLength(Width, Height)/2;
+      FViewPortRadius:=VectorLength(AWidth, AHeight)/2;
       if Assigned(FOnCustomPerspective) then
-         FOnCustomPerspective(viewport, width, height, DPI, FViewPortRadius);
+         FOnCustomPerspective(AViewport, AWidth, AHeight, ADPI, FViewPortRadius);
    end else begin
       // determine biggest dimension and resolution (height or width)
-      MaxDim:=Width;
-      if Height > MaxDim then
-         MaxDim:=Height;
+      MaxDim:=AWidth;
+      if AHeight > MaxDim then
+         MaxDim:=AHeight;
 
       // calculate near plane distance and extensions;
       // Scene ratio is determined by the window ratio. The viewport is just a
@@ -5020,45 +5021,45 @@ begin
       // in OGL is the lower left corner
 
       if CameraStyle in [csPerspective, csInfinitePerspective] then
-         f:=FNearPlaneBias/(Width*FSceneScale)
-      else f:=100*FNearPlaneBias/(focalLength*Width*FSceneScale);
+         f:=FNearPlaneBias/(AWidth*FSceneScale)
+      else f:=100*FNearPlaneBias/(focalLength*AWidth*FSceneScale);
 
       // calculate window/viewport ratio for right extent
-      Ratio:=(2 * Viewport.Width + 2 * Viewport.Left - Width) * f;
+      Ratio:=(2 * AViewport.Width + 2 * AViewport.Left - AWidth) * f;
       // calculate aspect ratio correct right value of the view frustum and take
       // the window/viewport ratio also into account
-      Right:=Ratio * Width / (2 * MaxDim);
+      LRight:=Ratio * AWidth / (2 * MaxDim);
 
       // the same goes here for the other three extents
       // left extent:
-      Ratio:=(Width - 2 * Viewport.Left) * f;
-      Left:=-Ratio * Width / (2 * MaxDim);
+      Ratio:=(AWidth - 2 * AViewport.Left) * f;
+      LLeft:=-Ratio * AWidth / (2 * MaxDim);
 
       if CameraStyle in [csPerspective, csInfinitePerspective] then
-         f:=FNearPlaneBias/(Height*FSceneScale)
-      else f:=100*FNearPlaneBias/(focalLength*Height*FSceneScale);
+         f:=FNearPlaneBias/(AHeight*FSceneScale)
+      else f:=100*FNearPlaneBias/(focalLength*AHeight*FSceneScale);
 
       // top extent (keep in mind the origin is left lower corner):
-      Ratio:=(2 * Viewport.Height + 2 * Viewport.Top - Height) * f;
-      Top:=Ratio * Height / (2 * MaxDim);
+      Ratio:=(2 * AViewport.Height + 2 * AViewport.Top - AHeight) * f;
+      LTop:=Ratio * AHeight / (2 * MaxDim);
 
       // bottom extent:
-      Ratio:=(Height - 2 * Viewport.Top) * f;
-      Bottom:=-Ratio * Height / (2 * MaxDim);
+      Ratio:=(AHeight - 2 * AViewport.Top) * f;
+      LBottom:=-Ratio * AHeight / (2 * MaxDim);
 
-      FNearPlane:=FFocalLength * 2 * DPI / (25.4 * MaxDim) * FNearPlaneBias;
+      FNearPlane:=FFocalLength * 2 * ADPI / (25.4 * MaxDim) * FNearPlaneBias;
       zFar:=FNearPlane + FDepthOfView;
 
       // finally create view frustum (perspective or orthogonal)
       case CameraStyle of
          csPerspective :
-            glFrustum(Left, Right, Bottom, Top, FNearPlane, zFar);
+            glFrustum(LLeft, LRight, LBottom, LTop, FNearPlane, zFar);
          csInfinitePerspective : begin
             mat:=IdentityHmgMatrix;
-            mat[0][0]:=2*FNearPlane/(Right-Left);
-            mat[1][1]:=2*FNearPlane/(Top-Bottom);
-            mat[2][0]:=(Right+Left)/(Right-Left);
-            mat[2][1]:=(Top+Bottom)/(Top-Bottom);
+            mat[0][0]:=2*FNearPlane/(LRight-LLeft);
+            mat[1][1]:=2*FNearPlane/(LTop-LBottom);
+            mat[2][0]:=(LRight+LLeft)/(LRight-LLeft);
+            mat[2][1]:=(LTop+LBottom)/(LTop-LBottom);
             mat[2][2]:=cEpsilon-1;
             mat[2][3]:=-1;
             mat[3][2]:=FNearPlane*(cEpsilon-2);
@@ -5066,12 +5067,12 @@ begin
             glMultMatrixf(@mat);
          end;
          csOrthogonal :
-            glOrtho(Left, Right, Bottom, Top, FNearPlane, zFar);
+            glOrtho(LLeft, LRight, LBottom, LTop, FNearPlane, zFar);
       else
          Assert(False);
       end;
 
-      FViewPortRadius:=VectorLength(Right, Top)/FNearPlane;
+      FViewPortRadius:=VectorLength(LRight, LTop)/FNearPlane;
    end;
 end;
 
@@ -5467,11 +5468,11 @@ end;
 
 // DoRender
 //
-procedure TGLCamera.DoRender(var rci : TRenderContextInfo;
-                             renderSelf, renderChildren : Boolean);
+procedure TGLCamera.DoRender(var ARci : TRenderContextInfo;
+                             ARenderSelf, ARenderChildren : Boolean);
 begin
-   if renderChildren and (Count>0) then
-      Self.RenderChildren(0, Count-1, rci);
+   if ARenderChildren and (Count>0) then
+      Self.RenderChildren(0, Count-1, ARci);
 end;
 
 // RayCastIntersect
@@ -5489,18 +5490,18 @@ end;
 
 // DoRender
 //
-procedure TGLImmaterialSceneObject.DoRender(var rci : TRenderContextInfo;
-                                        renderSelf, renderChildren : Boolean);
+procedure TGLImmaterialSceneObject.DoRender(var ARci : TRenderContextInfo;
+                                        ARenderSelf, ARenderChildren : Boolean);
 begin
    // start rendering self
-   if renderSelf then begin
-      if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-         BuildList(rci)
-      else glCallList(GetHandle(rci));
+   if ARenderSelf then begin
+      if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+         BuildList(ARci)
+      else glCallList(GetHandle(ARci));
    end;
    // start rendering children (if any)
-   if renderChildren then
-      Self.RenderChildren(0, FChildren.Count-1, rci);
+   if ARenderChildren then
+      Self.RenderChildren(0, FChildren.Count-1, ARci);
 end;
 
 // Create
@@ -5523,8 +5524,8 @@ end;
 
 // DoRender
 //
-procedure TGLCameraInvariantObject.DoRender(var rci : TRenderContextInfo;
-                                            renderSelf, renderChildren : Boolean);
+procedure TGLCameraInvariantObject.DoRender(var ARci : TRenderContextInfo;
+                                            ARenderSelf, ARenderChildren : Boolean);
 var
    mvMat : TMatrix;
 begin
@@ -5534,7 +5535,7 @@ begin
       case CamInvarianceMode of
          cimPosition : begin
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-            glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
+            glTranslatef(ARci.cameraPosition[0], ARci.cameraPosition[1], ARci.cameraPosition[2]);
          end;
          cimOrientation :  begin
             glLoadIdentity;
@@ -5550,13 +5551,13 @@ begin
       glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
       Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
       try
-         if renderSelf then begin
-            if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-               BuildList(rci)
-            else glCallList(GetHandle(rci));
+         if ARenderSelf then begin
+            if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+               BuildList(ARci)
+            else glCallList(GetHandle(ARci));
          end;
-         if renderChildren then
-            Self.RenderChildren(0, Count-1, rci);
+         if ARenderChildren then
+            Self.RenderChildren(0, Count-1, ARci);
       finally
          Scene.CurrentBuffer.PopModelViewMatrix;
       end;
@@ -5754,8 +5755,8 @@ end;
 
 // Render
 //
-procedure TGLProxyObject.DoRender(var rci : TRenderContextInfo;
-                                  renderSelf, renderChildren : Boolean);
+procedure TGLProxyObject.DoRender(var ARci : TRenderContextInfo;
+                                  ARenderSelf, ARenderChildren : Boolean);
 var
    gotMaster, masterGotEffects, oldProxySubObject : Boolean;
 begin
@@ -5767,19 +5768,19 @@ begin
                         and (FMasterObject.Effects.Count>0);
       if gotMaster then begin
          if pooObjects in FProxyOptions then begin
-            oldProxySubObject:=rci.proxySubObject;
-            rci.proxySubObject:=True;
+            oldProxySubObject:=ARci.proxySubObject;
+            ARci.proxySubObject:=True;
             if pooTransformation in FProxyOptions then
                glMultMatrixf(PGLFloat(FMasterObject.MatrixAsAddress));
-            FMasterObject.DoRender(rci, renderSelf, (FMasterObject.Count>0));
-            rci.proxySubObject:=oldProxySubObject;
+            FMasterObject.DoRender(ARci, ARenderSelf, (FMasterObject.Count>0));
+            ARci.proxySubObject:=oldProxySubObject;
          end;
       end;
       // now render self stuff (our children, our effects, etc.)
-      if renderChildren and (Count>0) then
-         Self.RenderChildren(0, Count-1, rci);
+      if ARenderChildren and (Count>0) then
+         Self.RenderChildren(0, Count-1, ARci);
       if masterGotEffects then
-         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, ARci);
    finally
       FRendering:=False;
    end;
@@ -5909,11 +5910,11 @@ end;
 
 // DoRender
 //
-procedure TGLLightSource.DoRender(var rci : TRenderContextInfo;
-                                  renderSelf, renderChildren : Boolean);
+procedure TGLLightSource.DoRender(var ARci : TRenderContextInfo;
+                                  ARenderSelf, ARenderChildren : Boolean);
 begin
-   if renderChildren and Assigned(FChildren) then
-      Self.RenderChildren(0, Count-1, rci);
+   if ARenderChildren and Assigned(FChildren) then
+      Self.RenderChildren(0, Count-1, ARci);
 end;
 
 // RayCastIntersect
@@ -6493,11 +6494,11 @@ end;
 
 // FindSceneObject
 //
-function TGLScene.FindSceneObject(const name : String) : TGLBaseSceneObject;
+function TGLScene.FindSceneObject(const AName : String) : TGLBaseSceneObject;
 begin
-   Result:=FObjects.FindChild(name, False);
+   Result:=FObjects.FindChild(AName, False);
    if not Assigned(Result) then
-       Result:=FCameras.FindChild(name, False);
+       Result:=FCameras.FindChild(AName, False);
 end;
 
 // RayCastIntersect
@@ -6641,10 +6642,10 @@ end;
 
 // Create
 //
-constructor TGLFogEnvironment.Create(Owner : TPersistent);
+constructor TGLFogEnvironment.Create(AOwner : TPersistent);
 begin
    inherited;
-   FSceneBuffer:=(Owner as TGLSceneBuffer);
+   FSceneBuffer:=(AOwner as TGLSceneBuffer);
    FFogColor:=TGLColor.CreateInitialized(Self, clrBlack);
    FFogMode:=fmLinear;
    FFogStart:=10;
@@ -6989,7 +6990,7 @@ procedure TGLSceneBuffer.SetupRenderingContext;
    end;
 
 var
-   colorDepth : Cardinal;
+   LColorDepth : Cardinal;
 begin
    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
    if roTwoSideLighting in FContextOptions then
@@ -7003,8 +7004,8 @@ begin
    PerformEnable(Lighting, stLighting, GL_LIGHTING);
    PerformEnable(FogEnable, stFog, GL_FOG);
 
-   glGetIntegerv(GL_BLUE_BITS, @colorDepth); // could've used red or green too
-   PerformEnable((colorDepth<8), stDither, GL_DITHER);
+   glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
+   PerformEnable((LColorDepth<8), stDither, GL_DITHER);
 
    glDepthFunc(GL_LESS);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -7344,7 +7345,7 @@ var
    bmpContext : TGLContext;
    backColor : TColorVector;
    aColorBits : Integer;
-   viewport, viewportBackup : TRectangle;
+   LViewport, viewportBackup : TRectangle;
    lastStates : TGLStateCache;
 begin
    Assert((not FRendering), glsAlreadyRendering);
@@ -7373,7 +7374,7 @@ begin
             BackColor:=ConvertWinColor(FBackgroundColor);
             glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
             // set the desired viewport and limit output to this rectangle
-            with viewport do begin
+            with LViewport do begin
                Left:=0;
                Top:=0;
                Width:=ABitmap.Width;
@@ -7386,8 +7387,8 @@ begin
                FRenderDPI:=GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle));
             // render
             viewportBackup:=FViewPort;
-            FViewport:=viewport;
-            DoBaseRender(viewport, FRenderDPI, dsPrinting, nil);
+            FViewport:=LViewport;
+            DoBaseRender(LViewport, FRenderDPI, dsPrinting, nil);
             FViewport:=viewportBackup;
             glFinish;
          finally
