@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>26/03/07 - aidave - added MoveChildFirst, MoveChildLast
       <li>25/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
@@ -693,6 +694,8 @@ type
          {: These procedures are safe. }
          procedure MoveChildUp(anIndex : Integer);
          procedure MoveChildDown(anIndex : Integer);
+         procedure MoveChildFirst(anIndex : Integer);
+         procedure MoveChildLast(anIndex : Integer);
 
          procedure DoProgress(const progressTime : TProgressTimes); override;
          procedure MoveTo(newParent : TGLBaseSceneObject); dynamic;
@@ -4098,6 +4101,30 @@ begin
       FChildren.Exchange(anIndex, anIndex+1);
       NotifyChange(Self);
    end;
+end;
+
+// MoveChildFirst
+//
+procedure TGLBaseSceneObject.MoveChildFirst(anIndex : Integer);
+begin
+  Assert(Assigned(FChildren), 'No children found!');
+  if anIndex<>0 then
+  begin
+    FChildren.Exchange(anIndex, 0);
+    NotifyChange(Self);
+  end;
+end;
+
+// MoveChildLast
+//
+procedure TGLBaseSceneObject.MoveChildLast(anIndex : Integer);
+begin
+  Assert(Assigned(FChildren), 'No children found!');
+  if anIndex<>FChildren.Count-1 then
+  begin
+    FChildren.Exchange(anIndex, FChildren.Count-1);
+    NotifyChange(Self);
+  end;
 end;
 
 // Render
