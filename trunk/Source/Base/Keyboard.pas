@@ -12,6 +12,7 @@
    key code constants (VK_* constants are declared in the "Windows" unit).<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed to GLKeyboard.pas (BugTracker ID = 1678646)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>19/12/06 - DaS - Added additional string constants and made all
                              existing 'Mixed Case', not 'UPPERCASE'
@@ -27,6 +28,9 @@ unit Keyboard;
 interface
 
 {$I GLScene.inc}
+
+{$MESSAGE WARN 'This unit was renamed to GLKeyboard.pas because it conflicted with FPC (see BugTracker ID = 1678646).'}
+{$MESSAGE WARN 'Please change your code accordingly. It will be removed from GLScene after July ''2007.'}
 
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
