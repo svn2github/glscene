@@ -6,6 +6,8 @@
    Implements a tiled texture plane.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>23/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
@@ -127,8 +129,8 @@ type
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          //: Access to the TiledArea data
@@ -571,8 +573,8 @@ end;
 
 // DoRender
 //
-procedure TGLTilePlane.DoRender(var rci : TRenderContextInfo;
-                                renderSelf, renderChildren : Boolean);
+procedure TGLTilePlane.DoRender(var ARci : TRenderContextInfo;
+                                ARenderSelf, ARenderChildren : Boolean);
 var
    i : Integer;
 begin

@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLMisc<p>
 
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>09/03/07 - DaStr - Removed obsolete FPC IFDEF's
@@ -367,17 +372,17 @@ type
 			procedure SetAsVector(const value: TVector);
 			procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
-			procedure SetCoordinate(Index: Integer; AValue: TGLFloat);
+			procedure SetCoordinate(AIndex: Integer; AValue: TGLFloat);
 
 	   protected
 	      { Protected Declarations }
-         function StoreCoordinate(Index: Integer) : Boolean;
+         function StoreCoordinate(AIndex: Integer) : Boolean;
 
          function GetDisplayName : String; override;
 
       public
 	      { Public Declarations }
-	      constructor Create(Collection : TCollection); override;
+	      constructor Create(ACollection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
 
@@ -416,7 +421,7 @@ type
 
       public
 	      { Public Declarations }
-	      constructor Create(AOwner : TPersistent; ItemClass: TCollectionItemClass = nil);
+         constructor Create(AOwner : TPersistent; AItemClass: TCollectionItemClass = nil);
          function CreateCopy(AOwner : TPersistent) : TGLNodes;
 
          function Add : TGLNode;
@@ -462,10 +467,10 @@ type
          //: Rotate nodes around Y axis by the given angle (degrees)
          procedure RotateAroundZ(angle : Single);
 
-         procedure RenderTesselatedPolygon(textured : Boolean;
-                                           normal : PAffineVector = nil;
-                                           splineDivisions : Integer = 1;
-                                           invertNormals : Boolean = False);
+         procedure RenderTesselatedPolygon(ATextured : Boolean;
+                                           ANormal : PAffineVector = nil;
+                                           ASplineDivisions : Integer = 1;
+                                           AInvertNormals : Boolean = False);
 
          function CreateNewCubicSpline : TCubicSpline;
 
@@ -486,7 +491,7 @@ type
 
       public
 	      { Public Declarations }
-         constructor Create(AOwner : TPersistent; ItemClass : TCollectionItemClass);
+         constructor Create(AOwner : TPersistent; AItemClass : TCollectionItemClass);
          property OnNotifyChange : TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
    end;
 
@@ -1077,9 +1082,9 @@ end;
 
 // Create
 //
-constructor TGLNode.Create(Collection : TCollection);
+constructor TGLNode.Create(ACollection : TCollection);
 begin
-	inherited Create(Collection);
+	inherited Create(ACollection);
    // nothing, yet
 end;
 
@@ -1139,17 +1144,17 @@ end;
 
 // SetCoordinate
 //
-procedure TGLNode.SetCoordinate(Index: Integer; AValue: TGLFloat);
+procedure TGLNode.SetCoordinate(AIndex: Integer; AValue: TGLFloat);
 begin
-	FCoords[Index]:=AValue;
+	FCoords[AIndex]:=AValue;
    (Collection as TGLNodes).NotifyChange;
 end;
 
 // StoreCoordinate
 //
-function TGLNode.StoreCoordinate(Index: Integer) : Boolean;
+function TGLNode.StoreCoordinate(AIndex: Integer) : Boolean;
 begin
-   Result:=(FCoords[Index]<>0);
+   Result:=(FCoords[AIndex]<>0);
 end;
 
 // ------------------
@@ -1158,11 +1163,11 @@ end;
 
 // Create
 //
-constructor TGLNodes.Create(AOwner : TPersistent; ItemClass: TCollectionItemClass = nil);
+constructor TGLNodes.Create(AOwner : TPersistent; AItemClass: TCollectionItemClass = nil);
 begin
-   if not Assigned(ItemClass) then
+   if not Assigned(AItemClass) then
       inherited Create(AOwner, TGLNode)
-   else inherited Create(AOwner, ItemClass);
+   else inherited Create(AOwner, AItemClass);
 end;
 
 // CreateCopy
@@ -1493,10 +1498,10 @@ end;
 var
    nbExtraVertices : Integer;
    newVertices : PAffineVectorArray;
-procedure TGLNodes.RenderTesselatedPolygon(textured : Boolean;
-                                           normal : PAffineVector = nil;
-                                           splineDivisions : Integer = 1;
-                                           invertNormals : Boolean = False);
+procedure TGLNodes.RenderTesselatedPolygon(ATextured : Boolean;
+                                           ANormal : PAffineVector = nil;
+                                           ASplineDivisions : Integer = 1;
+                                           AInvertNormals : Boolean = False);
 var
    i : Integer;
    tess : PGLUTesselator;
@@ -1534,7 +1539,7 @@ begin
       // Create and initialize the GLU tesselator
       tess:=gluNewTess;
       gluTessCallback(tess, GLU_TESS_BEGIN, @glBegin);
-      if textured then
+      if ATextured then
          gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
       else gluTessCallback(tess, GLU_TESS_VERTEX, @glVertex3fv);
       gluTessCallback(tess, GLU_TESS_END, @glEnd);
@@ -1542,17 +1547,17 @@ begin
       gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
       nbExtraVertices:=0;
       // Issue normal
-      if Assigned(normal) then begin
-         glNormal3fv(PGLFloat(normal));
-         gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
+      if Assigned(ANormal) then begin
+         glNormal3fv(PGLFloat(ANormal));
+         gluTessNormal(tess, ANormal^[0], ANormal^[1], ANormal^[2]);
       end;
       // Issue polygon
       gluTessBeginPolygon(tess, nil);
       gluTessBeginContour(tess);
-      if splineDivisions<=1 then begin
+      if ASplineDivisions<=1 then begin
          // no spline, use direct coordinates
          GetMem(newVertices, Count*SizeOf(TAffineVector));
-         if invertNormals then begin
+         if AInvertNormals then begin
             for i:=Count-1 downto 0 do begin
                SetVector(dblVector, PAffineVector(Items[i].AsAddress)^);
                gluTessVertex(tess, dblVector, Items[i].AsAddress);
@@ -1565,18 +1570,18 @@ begin
          end;
       end else begin
          // cubic spline
-         GetMem(newVertices, 2*splineDivisions*Count*SizeOf(TAffineVector));
+         GetMem(newVertices, 2*ASplineDivisions*Count*SizeOf(TAffineVector));
          spline:=CreateNewCubicSpline;
-         f:=1.0/splineDivisions;
-         if invertNormals then begin
-            for i:=splineDivisions*(Count-1) downto 0 do begin
+         f:=1.0/ASplineDivisions;
+         if AInvertNormals then begin
+            for i:=ASplineDivisions*(Count-1) downto 0 do begin
                splinePos:=AllocNewVertex;
                spline.SplineAffineVector(i*f, splinePos^);
                SetVector(dblVector, splinePos^);
                gluTessVertex(tess, dblVector, splinePos);
             end;
          end else begin
-            for i:=0 to splineDivisions*(Count-1) do begin
+            for i:=0 to ASplineDivisions*(Count-1) do begin
                splinePos:=AllocNewVertex;
                spline.SplineAffineVector(i*f, splinePos^);
                SetVector(dblVector, splinePos^);
@@ -1600,9 +1605,9 @@ end;
 
 // Create
 //
-constructor TNotifyCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
+constructor TNotifyCollection.Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
 begin
-   inherited Create(AOwner,ItemClass);
+   inherited Create(AOwner,AItemClass);
    if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
       OnNotifyChange:=TGLUpdateAbleComponent(AOwner).NotifyChange;
 end;
@@ -1630,4 +1635,3 @@ finalization
    vManagers:=nil;
 
 end.
-

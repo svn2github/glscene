@@ -1,10 +1,16 @@
-// GLTree
-{: Dynamic tree generation in GLScene<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTree<p>
+
+   Dynamic tree generation in GLScene<p>
 
    This code was adapted from the nVidia Tree Demo:
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
    History:<ul>
+     <li>28/03/07 - DaStr - Renamed parameters in some methods
+                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
      <li>13/01/07 - DaStr - Added changes proposed by Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
                          Modified the code to create much more realistic trees -
                           added third branch for every node and modified constants
@@ -231,8 +237,8 @@ type
          destructor Destroy; override;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
          procedure StructureChanged; override;
 
@@ -854,8 +860,8 @@ end;
 
 // DoRender
 //
-procedure TGLTree.DoRender(var rci : TRenderContextInfo;
-                           renderSelf, renderChildren : Boolean);
+procedure TGLTree.DoRender(var ARci : TRenderContextInfo;
+                           ARenderSelf, ARenderChildren : Boolean);
 begin
    MaterialLibrary.LibMaterialByName(BranchMaterialName).PrepareBuildList;
    MaterialLibrary.LibMaterialByName(LeafMaterialName).PrepareBuildList;

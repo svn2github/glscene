@@ -11,6 +11,8 @@
    CAUTION : both connectivity classes leak memory.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>26/09/03 - EG - Improved performance of TConnectivity data construction
@@ -109,9 +111,9 @@ type
           property FaceCount : integer read GetFaceCount;
 
           property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
-          procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); virtual;
+          procedure CreateSilhouette(const ASilhouetteParameters : TGLSilhouetteParameters; var ASilhouette : TGLSilhouette; AddToSilhouette : boolean); virtual;
 
-          constructor Create(PrecomputeFaceNormal : boolean); virtual;
+          constructor Create(APrecomputeFaceNormal : boolean); virtual;
    end;
 
    // TConnectivity
@@ -150,7 +152,7 @@ type
           property EdgeCount : integer read GetEdgeCount;
           property FaceCount : integer read GetFaceCount;
 
-          constructor Create(PrecomputeFaceNormal : boolean); override;
+          constructor Create(APrecomputeFaceNormal : boolean); override;
           destructor Destroy; override;
    end;
 
@@ -319,12 +321,12 @@ end;
 
 { TBaseConnectivity }
 
-constructor TBaseConnectivity.Create(PrecomputeFaceNormal: boolean);
+constructor TBaseConnectivity.Create(APrecomputeFaceNormal: boolean);
 begin
-  FPrecomputeFaceNormal := PrecomputeFaceNormal;
+  FPrecomputeFaceNormal := APrecomputeFaceNormal;
 end;
 
-procedure TBaseConnectivity.CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean);
+procedure TBaseConnectivity.CreateSilhouette(const ASilhouetteParameters : TGLSilhouetteParameters; var ASilhouette : TGLSilhouette; AddToSilhouette : boolean);
 begin
   // Purely virtual!
 end;
@@ -345,7 +347,7 @@ end;
 
 { TConnectivity }
 
-constructor TConnectivity.Create(PrecomputeFaceNormal : boolean);
+constructor TConnectivity.Create(APrecomputeFaceNormal : boolean);
 begin
   FFaceVisible := TByteList.Create;
 
@@ -355,7 +357,7 @@ begin
   FEdgeVertices := TIntegerList.Create;
   FEdgeFaces := TIntegerList.Create;
 
-  FPrecomputeFaceNormal := PrecomputeFaceNormal;
+  FPrecomputeFaceNormal := APrecomputeFaceNormal;
 
   FVertexMemory := TIntegerList.Create;
 
@@ -584,4 +586,5 @@ begin
   // Second face
   AddIndexedFace(Vi2, Vi3, Vi0);
 end;
+
 end.

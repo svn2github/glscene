@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLProjectedTextures<p>
 
    Implements projected textures through a GLScene object.
 
    <b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>15/06/05 - Mathx - Added the Style property and inverse rendering
       <li>07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
       <li>01/10/04 - SG - Initial (by Matheus Degiovani)
@@ -78,7 +83,7 @@ type
 
       public
          { Public Declarations }
-         constructor Create(Collection: TCollection); override;
+         constructor Create(ACollection: TCollection); override;
          procedure Assign(Source: TPersistent); override;
 
       published
@@ -126,8 +131,8 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
 
       published
          { Published Declarations }
@@ -188,9 +193,9 @@ end;
 
 // Create
 //
-constructor TGLTextureEmitterItem.Create(Collection: TCollection);
+constructor TGLTextureEmitterItem.Create(ACollection: TCollection);
 begin
-   inherited Create(Collection);
+   inherited Create(ACollection);
 end;
 
 // Assign
@@ -308,8 +313,8 @@ end;
 
 // DoRender
 //
-procedure TGLProjectedTextures.DoRender(var rci: TRenderContextInfo;
-renderSelf, renderChildren: boolean);
+procedure TGLProjectedTextures.DoRender(var ARci: TRenderContextInfo;
+ARenderSelf, ARenderChildren: boolean);
 const
    PS: array [0..3] of GLfloat = (1, 0, 0, 0);
    PT: array [0..3] of GLfloat = (0, 1, 0, 0);
@@ -319,7 +324,7 @@ var
    i: integer;
    emitter: TGLTextureEmitter;
 begin
-   if not (renderSelf or renderChildren) then Exit;
+   if not (ARenderSelf or ARenderChildren) then Exit;
    if (csDesigning in ComponentState) then begin
       inherited;
       Exit;
@@ -327,7 +332,7 @@ begin
 
    //First pass of original style: render regular scene
    if Style = ptsOriginal then
-      self.RenderChildren(0, Count-1, rci);
+      self.RenderChildren(0, Count-1, ARci);
 
    glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -374,16 +379,16 @@ begin
              glBlendFunc(GL_ONE,  GL_ONE);
        end;
 
-       emitter.Material.Apply(rci);
+       emitter.Material.Apply(ARci);
 
        //get this emitter's tex matrix
        emitter.SetupTexMatrix;
 
        repeat
-          rci.ignoreMaterials:= true;
-          Self.RenderChildren(0, Count-1, rci);
-          rci.ignoreMaterials:= false;
-       until not emitter.Material.UnApply(rci);
+          ARci.ignoreMaterials:= true;
+          Self.RenderChildren(0, Count-1, ARci);
+          ARci.ignoreMaterials:= false;
+       until not emitter.Material.UnApply(ARci);
    end;
 
    LoseTexMatrix;
@@ -401,9 +406,9 @@ begin
 
       //second pass: render everything, blending with what is
       //already there
-      rci.ignoreBlendingRequests:= true;
-      self.RenderChildren(0, Count-1, rci);
-      rci.ignoreBlendingRequests:= false;
+      ARci.ignoreBlendingRequests:= true;
+      self.RenderChildren(0, Count-1, ARci);
+      ARci.ignoreBlendingRequests:= false;
 
       glPopAttrib;
    end;

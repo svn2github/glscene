@@ -9,6 +9,8 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>24/03/07 - DaStr - Improved Cross-Platform compatibility
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
@@ -199,7 +201,7 @@ type
           CasterZBuf :TGLzBuffer;
     	  constructor Create(AOwner: TComponent); override;
           destructor Destroy; override;
-          procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
+          procedure DoRender(var ARci : TRenderContextInfo; ARenderSelf, ARenderChildren : Boolean); override;
         published
           property Viewer      :TGLSceneViewer  read GetViewer write SetViewer;
           property Caster      :TGLMemoryViewer read GetCaster write SetCaster;
@@ -753,8 +755,8 @@ end;
 
 // DoRender
 //
-procedure TGLZShadows.DoRender(var rci : TRenderContextInfo;
-                              renderSelf, renderChildren : Boolean);
+procedure TGLZShadows.DoRender(var ARci : TRenderContextInfo;
+                              ARenderSelf, ARenderChildren : Boolean);
 var vx, vy, vx1, vy1 : Single;
     xtex, ytex :single;
 begin
@@ -775,13 +777,13 @@ begin
 
    glEnable( GL_BLEND ); //by Juergen Linker
 
-   if FWidth >rci.viewPortSize.cx then Fwidth :=rci.viewPortSize.cx;
-   if FHeight>rci.viewPortSize.cy then FHeight:=rci.viewPortSize.cy;
+   if FWidth >ARci.viewPortSize.cx then Fwidth :=ARci.viewPortSize.cx;
+   if FHeight>ARci.viewPortSize.cy then FHeight:=ARci.viewPortSize.cy;
 
    //-----------------------
-   CalcShadowTexture(rci);
+   CalcShadowTexture(ARci);
    //-----------------------
-   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
+   ARci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -801,9 +803,9 @@ begin
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-   glTranslatef(Position.X-rci.viewPortSize.cx*0.5,
-                rci.viewPortSize.cy*0.5-Position.Y, Position.Z);
+   glScalef(2/ARci.viewPortSize.cx, 2/ARci.viewPortSize.cy, 1);
+   glTranslatef(Position.X-ARci.viewPortSize.cx*0.5,
+                ARci.viewPortSize.cy*0.5-Position.Y, Position.Z);
 
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
@@ -833,7 +835,7 @@ begin
    glDisable( GL_BLEND ); //by Juergen Linker
    glPopAttrib;
 
-   if Count>0 then Self.RenderChildren(0, Count-1, rci);
+   if Count>0 then Self.RenderChildren(0, Count-1, ARci);
 end;
 
 Procedure TGLZShadows.CalcShadowTexture(var rci : TRenderContextInfo);
@@ -1324,6 +1326,8 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-// class registrations
+
+   // class registrations
    RegisterClasses([TGLZShadows]);
+   
 end.

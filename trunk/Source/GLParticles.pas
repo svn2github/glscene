@@ -1,7 +1,13 @@
-// GLParticles
-{: Particle systems for GLScene, based on replication of full-featured scene objects.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLParticles<p>
+
+   Particle systems for GLScene, based on replication of full-featured scene objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>27/07/04 - EG - Added KillParticles
       <li>18/04/04 - EG - Added Before/After events
       <li>12/07/01 - EG - Fixed FEdgeColor memory leak
@@ -74,9 +80,9 @@ type
 			destructor Destroy; override;
 
 			procedure Assign(Source: TPersistent); override;
-			procedure BuildList(var rci : TRenderContextInfo); override;
-			procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+			procedure BuildList(var ARci : TRenderContextInfo); override;
+			procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
 			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 			{: Request creation of a new particle.<p>
@@ -193,7 +199,7 @@ end;
 
 // BuildList
 //
-procedure TGLParticles.BuildList(var rci : TRenderContextInfo);
+procedure TGLParticles.BuildList(var ARci : TRenderContextInfo);
 var
 	mi, ma : Single;
 begin
@@ -232,24 +238,24 @@ end;
 
 // DoRender
 //
-procedure TGLParticles.DoRender(var rci : TRenderContextInfo;
-                                renderSelf, renderChildren : Boolean);
+procedure TGLParticles.DoRender(var ARci : TRenderContextInfo;
+                                ARenderSelf, ARenderChildren : Boolean);
 begin
    if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
-      BuildList(rci);
+      BuildList(ARci);
    if Assigned(FOnBeforeRenderParticles) then
-      FOnBeforeRenderParticles(Self, rci);
+      FOnBeforeRenderParticles(Self, ARci);
    if csDesigning in ComponentState then begin
       // design-time, everything is visible for user convenience
       if Count>0 then
-         Self.RenderChildren(0, Count-1, rci);
+         Self.RenderChildren(0, Count-1, ARci);
    end else begin
       // run-time, template is NOT visible
       if Count>1 then
-         Self.RenderChildren(1, Count-1, rci);
+         Self.RenderChildren(1, Count-1, ARci);
    end;
    if Assigned(FOnAfterRenderParticles) then
-      FOnAfterRenderParticles(Self, rci);
+      FOnAfterRenderParticles(Self, ARci);
 end;
 
 // DoProgress
@@ -371,4 +377,3 @@ initialization
    RegisterClass(TGLParticles);
 
 end.
-

@@ -6,6 +6,8 @@
    Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -121,8 +123,8 @@ type
          procedure Assign(Source: TPersistent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
 
          function TextWidth(const str : String = '') : Single;
          function TextMaxHeight(const str : String = '') : Single;
@@ -447,8 +449,8 @@ end;
 
 // DoRender
 //
-procedure TGLSpaceText.DoRender(var rci : TRenderContextInfo;
-                              renderSelf, renderChildren : Boolean);
+procedure TGLSpaceText.DoRender(var ARci : TRenderContextInfo;
+                              ARenderSelf, ARenderChildren : Boolean);
 var
 	firstChar, lastChar : Integer;
 begin
