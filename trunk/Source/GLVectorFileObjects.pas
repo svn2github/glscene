@@ -6,7 +6,10 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-      <li>25/03/07 - LC - Added VBO support to TFGVertexIndexList, depends on MeshObject owner's UseVBO status
+      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>25/03/07 - LC - Added VBO support to TFGVertexIndexList, depends
+                          on MeshObject owner's UseVBO status
       <li>25/03/07 - LC - Fixed VBO bug. Bugtracker ID=1687665
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -24,7 +27,9 @@
       <li>11/01/05 - SG - Another fix for TGLBaseMesh.Assign (dikoe Kenguru)
       <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
       <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
-      <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
+      <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order
+                              to prevent rendering of the GLBaseMesh but allowing
+                              the rendering of it's children
       <li>25/11/04 - SG - Fixed memory leak in TMeshObject (dikoe Kenguru)
       <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
@@ -34,7 +39,8 @@
       <li>23/07/04 - SG - Added fgmmQuad case for TFGVertexIndexList.TraingleCount
                           (Thanks fig).
       <li>18/07/04 - LR - Suppress Consts in uses
-      <li>20/06/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
+      <li>20/06/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale
+                              a mesh after loading (like Autocentering)
       <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
       <li>23/03/04 - SG - External positions added to skeleton blended lerps.
                           AutoUpdate flag added to skeleton collider list.
@@ -6032,7 +6038,7 @@ end;
 procedure TFaceGroups.SortByMaterial;
 begin
    PrepareMaterialLibraryCache(Owner.Owner.Owner.MaterialLibrary);
-   Sort(CompareMaterials);
+   Sort(@CompareMaterials);
 end;
 
 // ------------------

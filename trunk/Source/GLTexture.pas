@@ -6,6 +6,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
@@ -2006,7 +2008,7 @@ begin
 		if Assigned(vGLTextureImageClasses) then
 			for i:=0 to vGLTextureImageClasses.Count-1 do begin
 				tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
-				AddObject(tic.FriendlyName, Pointer(tic));
+				AddObject(tic.FriendlyName, TObject(Pointer(tic)) );
 			end;
 		EndUpdate;
 	end;
@@ -4200,7 +4202,7 @@ begin
       tiaOpaque :
          bitmap32.SetAlphaToValue(255);
       tiaTopLeftPointColorTransparent :
-         bitmap32.SetAlphaTransparentForColor(bitmap32.Data[0]);
+         bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[0]);
       tiaInverseLuminance : begin
          bitmap32.SetAlphaFromIntensity;
          bitmap32.InvertAlpha;
