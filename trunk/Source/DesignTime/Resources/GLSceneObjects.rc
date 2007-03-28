@@ -2,14 +2,20 @@ gls_camera BITMAP objects\gls_camera.bmp
 gls_lights BITMAP objects\gls_lights.bmp
 gls_objects BITMAP objects\gls_objects.bmp
 gls_root BITMAP objects\gls_root.bmp
+gls_cross BITMAP objects\gls_cross.bmp
+
 TGLCamera BITMAP objects\TGLCamera.bmp
 TGLDirectOpenGL BITMAP objects\TGLDirectOpenGL.bmp
 TGLDummyCube BITMAP objects\TGLDummyCube.bmp
 TGLLightSource BITMAP objects\TGLLightSource.bmp
-TGLProxyObject BITMAP objects\TGLProxyObject.bmp
+
+TGLFeedback BITMAP objects\TGLFeedback.bmp
+TGLImposter BITMAP objects\TGLImposter.bmp
+TGLRenderPoint BITMAP objects\TGLRenderPoint.bmp
 
 TGLHUDSprite BITMAP objects\hud_objects\TGLHUDSprite.bmp
 TGLHUDText BITMAP objects\hud_objects\TGLHUDText.bmp
+TGLConsole BITMAP objects\hud_objects\TGLConsole.bmp
 
 TGLAdvancedLabel BITMAP objects\gui_objects\TGLAdvancedLabel.bmp
 TGLBaseControl BITMAP objects\gui_objects\TGLBaseControl.bmp
@@ -30,6 +36,7 @@ TGLCylinder BITMAP objects\basic_geometry\TGLCylinder.bmp
 TGLDisk BITMAP objects\basic_geometry\TGLDisk.bmp
 TGLDodecahedron BITMAP objects\basic_geometry\TGLDodecahedron.bmp
 TGLFrustrum BITMAP objects\basic_geometry\TGLFrustrum.bmp
+TGLIcosahedron BITMAP objects\basic_geometry\TGLIcosahedron.bmp
 TGLLines BITMAP objects\basic_geometry\TGLLines.bmp
 TGLPlane BITMAP objects\basic_geometry\TGLPlane.bmp
 TGLPoints BITMAP objects\basic_geometry\TGLPoints.bmp
@@ -37,6 +44,7 @@ TGLPolygon BITMAP objects\basic_geometry\TGLPolygon.bmp
 TGLSphere BITMAP objects\basic_geometry\TGLSphere.bmp
 TGLSprite BITMAP objects\basic_geometry\TGLSprite.bmp
 
+TGLAnimatedSprite BITMAP objects\advanced_geometry\TGLAnimatedSprite.bmp
 TGLAnnulus BITMAP objects\advanced_geometry\TGLAnnulus.bmp
 TGLArrowLine BITMAP objects\advanced_geometry\TGLArrowLine.bmp
 TGLExtrusionSolid BITMAP objects\advanced_geometry\TGLExtrusionSolid.bmp
@@ -60,12 +68,23 @@ TGLParticles BITMAP objects\particle_systems\TGLParticles.bmp
 
 TGLEarthSkyDome BITMAP objects\environment_objects\TGLEarthSkyDome.bmp
 TGLSkyDome BITMAP objects\environment_objects\TGLSkyDome.bmp
+TGLAtmosphere BITMAP objects\environment_objects\TGLAtmosphere.bmp
+TGLSkyBox BITMAP objects\environment_objects\TGLSkyBox.bmp
 
 TGLSpaceText BITMAP objects\doodad_objects\TGLSpaceText.bmp
 TGLTeapot BITMAP objects\doodad_objects\TGLTeapot.bmp
+TGLTree BITMAP objects\doodad_objects\TGLTree.bmp
+TGLWaterplane BITMAP objects\doodad_objects\TGLWaterplane.bmp
 
 TGLLensflare BITMAP objects\special_objects\TGLLensflare.bmp
 TGLMirror BITMAP objects\special_objects\TGLMirror.bmp
 TGLShadowPlane BITMAP objects\special_objects\TGLShadowPlane.bmp
 TGLShadowVolume BITMAP objects\special_objects\TGLShadowVolume.bmp
 TGLZShadows BITMAP objects\special_objects\TGLZShadows.bmp
+
+TGLActorProxy BITMAP objects\proxy_objects\TGLActorProxy.bmp
+TGLColorProxy BITMAP objects\proxy_objects\TGLColorProxy.bmp
+TGLFreeFormProxy BITMAP objects\proxy_objects\TGLFreeFormProxy.bmp
+TGLMaterialMultiProxy BITMAP objects\proxy_objects\TGLMaterialMultiProxy.bmp
+TGLMultiProxy BITMAP objects\proxy_objects\TGLMultiProxy.bmp
+TGLProxyObject BITMAP objects\proxy_objects\TGLProxyObject.bmp
