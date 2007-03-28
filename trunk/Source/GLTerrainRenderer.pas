@@ -6,6 +6,7 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Cosmetic fixes for FPC compatibility
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>08/02/08 - Lin- Ignore tiles that are not hdsReady (Prevents crashes when threading)
@@ -454,8 +455,15 @@ var
      // flush whatever is in progress
      TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
      // unapply current
-     if currentMaterialName='' then repeat until not Material.UnApply(rci)     // ... proper multipass support will be implemented later
-                               else repeat until not MaterialLibrary.UnApplyMaterial(rci);
+         if currentMaterialName='' then begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not Material.UnApply(rci)
+         end else begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not MaterialLibrary.UnApplyMaterial(rci);
+         end;
      // apply new
      if materialName='' then Material.Apply(rci)
                         else MaterialLibrary.ApplyMaterial(materialName, rci);
