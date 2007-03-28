@@ -6,8 +6,6 @@
    Silhouette classes for GLBaseMesh and FaceGroups.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>25/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>23/03/07 - DaStr - Added explicit pointer dereferencing
@@ -41,8 +39,8 @@ type
 
           property MeshObject : TMeshObject read FMeshObject write SetMeshObject;
 
-          constructor Create(PrecomputeFaceNormal : boolean); override;
-          constructor CreateFromMesh(aMeshObject : TMeshObject; precomputeFaceNormal : Boolean);
+          constructor Create(APrecomputeFaceNormal : boolean); override;
+          constructor CreateFromMesh(aMeshObject : TMeshObject; APrecomputeFaceNormal : Boolean);
           destructor Destroy; override;
    end;
 
@@ -72,7 +70,7 @@ type
 
           procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
-          constructor Create(PrecomputeFaceNormal : boolean); override;
+          constructor Create(APrecomputeFaceNormal : boolean); override;
           constructor CreateFromMesh(aGLBaseMesh : TGLBaseMesh);
           destructor Destroy; override;
    end;
@@ -102,7 +100,7 @@ begin
     inherited;
 end;
 
-constructor TFaceGroupConnectivity.Create(PrecomputeFaceNormal: boolean);
+constructor TFaceGroupConnectivity.Create(APrecomputeFaceNormal: boolean);
 begin
   inherited;
 
@@ -126,9 +124,9 @@ begin
 end;
 
 constructor TFaceGroupConnectivity.CreateFromMesh(aMeshObject: TMeshObject;
-  PrecomputeFaceNormal: boolean);
+  APrecomputeFaceNormal: boolean);
 begin
-  Create(PrecomputeFaceNormal);
+  Create(APrecomputeFaceNormal);
 
   MeshObject := aMeshObject;
 end;
@@ -220,7 +218,7 @@ begin
   end;
 end;
 
-constructor TGLBaseMeshConnectivity.Create(PrecomputeFaceNormal: boolean);
+constructor TGLBaseMeshConnectivity.Create(APrecomputeFaceNormal: boolean);
 begin
   FFaceGroupConnectivityList := TList.Create;
 
