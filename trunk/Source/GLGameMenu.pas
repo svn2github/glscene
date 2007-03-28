@@ -6,6 +6,8 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>26/03/07 - DaveK - back to TGLSceneObject for Material support
       <li>16/02/07 - DaStr & DaveK - TGLGameMenu.MouseMenuSelect bugfixed (again)
                              Component made descendant of TGLBaseSceneObject
@@ -50,24 +52,24 @@ type
          function GetMaterialLibrary: TGLMaterialLibrary;
 		protected
          { Protected Properties }
-         procedure SetMenuScale(val : TGLGameMenuScale);
-         procedure SetMarginHorz(val : Integer);
-         procedure SetMarginVert(val : Integer);
-         procedure SetSpacing(val : Integer);
-         procedure SetFont(val : TGLCustomBitmapFont);
-         procedure SetBackColor(val : TGLColor);
-         procedure SetInactiveColor(val : TGLColor);
-         procedure SetActiveColor(val : TGLColor);
-         procedure SetDisabledColor(val : TGLColor);
-         function  GetEnabled(index : Integer) : Boolean;
-         procedure SetEnabled(index : Integer; val : Boolean);
-         procedure SetItems(val : TStrings);
-         procedure SetSelected(val : Integer);
+         procedure SetMenuScale(AValue : TGLGameMenuScale);
+         procedure SetMarginHorz(AValue : Integer);
+         procedure SetMarginVert(AValue : Integer);
+         procedure SetSpacing(AValue : Integer);
+         procedure SetFont(AValue : TGLCustomBitmapFont);
+         procedure SetBackColor(AValue : TGLColor);
+         procedure SetInactiveColor(AValue : TGLColor);
+         procedure SetActiveColor(AValue : TGLColor);
+         procedure SetDisabledColor(AValue : TGLColor);
+         function  GetEnabled(AIndex : Integer) : Boolean;
+         procedure SetEnabled(AIndex : Integer; AValue : Boolean);
+         procedure SetItems(AValue : TStrings);
+         procedure SetSelected(AValue : Integer);
          function  GetSelectedText : String;
-         procedure SetMaterialLibrary(val : TGLMaterialLibrary);
-         procedure SetTitleMaterialName(const val : String);
-         procedure SetTitleWidth(val : Integer);
-         procedure SetTitleHeight(val : Integer);
+         procedure SetMaterialLibrary(AValue : TGLMaterialLibrary);
+         procedure SetTitleMaterialName(const AValue : String);
+         procedure SetTitleWidth(AValue : Integer);
+         procedure SetTitleHeight(AValue : Integer);
 
          procedure ItemsChanged(Sender : TObject);
 
@@ -79,7 +81,7 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 		   procedure BuildList(var rci : TRenderContextInfo); override;
 
-         property Enabled[index : Integer] : Boolean read GetEnabled write SetEnabled;
+         property Enabled[AIndex : Integer] : Boolean read GetEnabled write SetEnabled;
          property SelectedText : String read GetSelectedText;
 
          procedure SelectNext;
@@ -96,7 +98,6 @@ type
          property MarginVert : Integer read FMarginVert write SetMarginVert default 16;
          property Spacing : Integer read FSpacing write SetSpacing default 16;
          property Font : TGLCustomBitmapFont read FFont write SetFont;
-
 
          property TitleMaterialName : String read FTitleMaterialName write SetTitleMaterialName;
          property TitleWidth : Integer read FTitleWidth write SetTitleWidth default 0;
@@ -301,114 +302,114 @@ end;
 
 // SetMenuScale
 //
-procedure TGLGameMenu.SetMenuScale(val : TGLGameMenuScale);
+procedure TGLGameMenu.SetMenuScale(AValue : TGLGameMenuScale);
 begin
-   if FMenuScale<>val then begin
-      FMenuScale:=val;
+   if FMenuScale<>AValue then begin
+      FMenuScale:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetMarginHorz
 //
-procedure TGLGameMenu.SetMarginHorz(val : Integer);
+procedure TGLGameMenu.SetMarginHorz(AValue : Integer);
 begin
-   if FMarginHorz<>val then begin
-      FMarginHorz:=val;
+   if FMarginHorz<>AValue then begin
+      FMarginHorz:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetMarginVert
 //
-procedure TGLGameMenu.SetMarginVert(val : Integer);
+procedure TGLGameMenu.SetMarginVert(AValue : Integer);
 begin
-   if FMarginVert<>val then begin
-      FMarginVert:=val;
+   if FMarginVert<>AValue then begin
+      FMarginVert:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetSpacing
 //
-procedure TGLGameMenu.SetSpacing(val : Integer);
+procedure TGLGameMenu.SetSpacing(AValue : Integer);
 begin
-   if FSpacing<>val then begin
-      FSpacing:=val;
+   if FSpacing<>AValue then begin
+      FSpacing:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetFont
 //
-procedure TGLGameMenu.SetFont(val : TGLCustomBitmapFont);
+procedure TGLGameMenu.SetFont(AValue : TGLCustomBitmapFont);
 begin
    if FFont<>nil then
       FFont.RemoveFreeNotification(Self);
-   FFont:=val;
+   FFont:=AValue;
    if FFont<>nil then
       FFont.FreeNotification(Self);
 end;
 
 // SetBackColor
 //
-procedure TGLGameMenu.SetBackColor(val : TGLColor);
+procedure TGLGameMenu.SetBackColor(AValue : TGLColor);
 begin
-   FBackColor.Assign(val);
+   FBackColor.Assign(AValue);
 end;
 
 // SetInactiveColor
 //
-procedure TGLGameMenu.SetInactiveColor(val : TGLColor);
+procedure TGLGameMenu.SetInactiveColor(AValue : TGLColor);
 begin
-   FInactiveColor.Assign(val);
+   FInactiveColor.Assign(AValue);
 end;
 
 // SetActiveColor
 //
-procedure TGLGameMenu.SetActiveColor(val : TGLColor);
+procedure TGLGameMenu.SetActiveColor(AValue : TGLColor);
 begin
-   FActiveColor.Assign(val);
+   FActiveColor.Assign(AValue);
 end;
 
 // SetDisabledColor
 //
-procedure TGLGameMenu.SetDisabledColor(val : TGLColor);
+procedure TGLGameMenu.SetDisabledColor(AValue : TGLColor);
 begin
-   FDisabledColor.Assign(val);
+   FDisabledColor.Assign(AValue);
 end;
 
 // GetEnabled
 //
-function TGLGameMenu.GetEnabled(index : Integer) : Boolean;
+function TGLGameMenu.GetEnabled(AIndex : Integer) : Boolean;
 begin
-   Result:=not Boolean(FItems.Objects[index]);
+  Result:=not Boolean(pointer(FItems.Objects[AIndex]));
 end;
 
 // SetEnabled
 //
-procedure TGLGameMenu.SetEnabled(index : Integer; val : Boolean);
+procedure TGLGameMenu.SetEnabled(AIndex : Integer; AValue : Boolean);
 begin
-   FItems.Objects[index]:=TObject(not val);
+   FItems.Objects[AIndex]:=TObject(pointer(ord(not AValue)));
    StructureChanged;
 end;
 
 // SetItems
 //
-procedure TGLGameMenu.SetItems(val : TStrings);
+procedure TGLGameMenu.SetItems(AValue : TStrings);
 begin
-   FItems.Assign(val);
+   FItems.Assign(AValue);
    SetSelected(Selected);
 end;
 
 // SetSelected
 //
-procedure TGLGameMenu.SetSelected(val : Integer);
+procedure TGLGameMenu.SetSelected(AValue : Integer);
 begin
-   if val<-1 then val:=-1;
-   if val>=FItems.Count then val:=FItems.Count-1;
-   if val<>FSelected then begin
-      FSelected:=val;
+   if AValue<-1 then AValue:=-1;
+   if AValue>=FItems.Count then AValue:=FItems.Count-1;
+   if AValue<>FSelected then begin
+      FSelected:=AValue;
       StructureChanged;
       if Assigned(FOnSelectedChanged) then
          FOnSelectedChanged(Self);
@@ -426,43 +427,43 @@ end;
 
 // SetMaterialLibrary
 //
-procedure TGLGameMenu.SetMaterialLibrary(val : TGLMaterialLibrary);
+procedure TGLGameMenu.SetMaterialLibrary(AValue : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>nil then
       FMaterialLibrary.RemoveFreeNotification(Self);
-   FMaterialLibrary:=val;
+   FMaterialLibrary:=AValue;
    if FMaterialLibrary<>nil then
       FMaterialLibrary.FreeNotification(Self);
 end;
 
 // SetTitleMaterialName
 //
-procedure TGLGameMenu.SetTitleMaterialName(const val : String);
+procedure TGLGameMenu.SetTitleMaterialName(const AValue : String);
 begin
-   if FTitleMaterialName<>val then begin
-      FTitleMaterialName:=val;
+   if FTitleMaterialName<>AValue then begin
+      FTitleMaterialName:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetTitleWidth
 //
-procedure TGLGameMenu.SetTitleWidth(val : Integer);
+procedure TGLGameMenu.SetTitleWidth(AValue : Integer);
 begin
-   if val<0 then val:=0;
-   if FTitleWidth<>val then begin
-      FTitleWidth:=val;
+   if AValue<0 then AValue:=0;
+   if FTitleWidth<>AValue then begin
+      FTitleWidth:=AValue;
       StructureChanged;
    end;
 end;
 
 // SetTitleHeight
 //
-procedure TGLGameMenu.SetTitleHeight(val : Integer);
+procedure TGLGameMenu.SetTitleHeight(AValue : Integer);
 begin
-   if val<0 then val:=0;
-   if FTitleHeight<>val then begin
-      FTitleHeight:=val;
+   if AValue<0 then AValue:=0;
+   if FTitleHeight<>AValue then begin
+      FTitleHeight:=AValue;
       StructureChanged;
    end;
 end;
