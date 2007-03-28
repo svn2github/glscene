@@ -6,6 +6,8 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>25/01/07 - DaStr - Reformated code according to VCL standard
                              Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -345,7 +347,7 @@ type
     function AddNC(const item: Integer): Integer; overload;
     procedure Add(const i1, i2: Integer); overload;
     procedure Add(const i1, i2, i3: Integer); overload;
-    procedure Add(const list: TIntegerList); overload;
+    procedure Add(const AList: TIntegerList); overload;
     procedure Push(const Val: Integer);
     function Pop: Integer;
     procedure Insert(Index: Integer; const item: Integer);
@@ -2173,14 +2175,14 @@ end;
 
 procedure TIntegerList.Add(const i1, i2: Integer);
 var
-  list: PIntegerArray;
+  tmpList : PIntegerArray;
 begin
   Inc(FCount, 2);
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
-  list := @FList[FCount - 2];
-  list^[0] := i1;
-  list^[1] := i2;
+  tmpList := @FList[FCount - 2];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
 end;
 
 // Add (three at once)
@@ -2188,28 +2190,28 @@ end;
 
 procedure TIntegerList.Add(const i1, i2, i3: Integer);
 var
-  list: PIntegerArray;
+  tmpList : PIntegerArray;
 begin
   Inc(FCount, 3);
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
-  list := @FList[FCount - 3];
-  list^[0] := i1;
-  list^[1] := i2;
-  list^[2] := i3;
+  tmpList := @FList[FCount - 3];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
 end;
 
 // Add (list)
 //
 
-procedure TIntegerList.Add(const list: TIntegerList);
+procedure TIntegerList.Add(const AList: TIntegerList);
 begin
-  if Assigned(list) and (list.Count > 0) then
+  if Assigned(AList) and (AList.Count > 0) then
   begin
-    if Count + list.Count > Capacity then
-      Capacity := Count + list.Count;
-    System.Move(list.FList[0], FList[Count], list.Count * SizeOf(Integer));
-    Inc(FCount, list.Count);
+    if Count + AList.Count > Capacity then
+      Capacity := Count + AList.Count;
+    System.Move(AList.FList[0], FList[Count], AList.Count * SizeOf(Integer));
+    Inc(FCount, AList.Count);
   end;
 end;
 
@@ -2305,17 +2307,17 @@ end;
 
 procedure TIntegerList.AddSerie(aBase, aDelta, aCount: Integer);
 var
-  list: PInteger;
+  tmpList : PInteger;
   I:    Integer;
 begin
   if aCount <= 0 then
     Exit;
   AdjustCapacityToAtLeast(Count + aCount);
-  list := @FList[Count];
+  tmpList := @FList[Count];
   for I := Count to Count + aCount - 1 do
   begin
-    list^ := aBase;
-    Inc(list);
+    tmpList^ := aBase;
+    Inc(tmpList);
     aBase := aBase + aDelta;
   end;
   FCount := Count + aCount;
@@ -2737,17 +2739,17 @@ end;
 
 procedure TSingleList.AddSerie(aBase, aDelta: Single; aCount: Integer);
 var
-  list: PSingle;
+  tmpList : PSingle;
   I:    Integer;
 begin
   if aCount <= 0 then
     Exit;
   AdjustCapacityToAtLeast(Count + aCount);
-  list := @FList[Count];
+  tmpList := @FList[Count];
   for I := Count to Count + aCount - 1 do
   begin
-    list^ := aBase;
-    Inc(list);
+    tmpList^ := aBase;
+    Inc(tmpList);
     aBase := aBase + aDelta;
   end;
   FCount := Count + aCount;
@@ -3032,17 +3034,17 @@ end;
 
 procedure TDoubleList.AddSerie(aBase, aDelta: Double; aCount: Integer);
 var
-  list: PDouble;
+  tmpList: PDouble;
   I:    Integer;
 begin
   if aCount <= 0 then
     Exit;
   AdjustCapacityToAtLeast(Count + aCount);
-  list := @FList[Count];
+  tmpList := @FList[Count];
   for I := Count to Count + aCount - 1 do
   begin
-    list^ := aBase;
-    Inc(list);
+    tmpList^ := aBase;
+    Inc(tmpList);
     aBase := aBase + aDelta;
   end;
   FCount := Count + aCount;

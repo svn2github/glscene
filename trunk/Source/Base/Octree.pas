@@ -8,6 +8,8 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
@@ -117,9 +119,9 @@ type
          {: Initializes the tree from the triangle list.<p>
             All triangles must be contained in the world extent to be properly
             taken into account. }
-         procedure InitializeTree(const worldMinExtent, worldMaxExtent : TAffineVector;
-                                  const triangles : TAffineVectorList;
-                                  const treeDepth : Integer);
+         procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent : TAffineVector;
+                                  const ATriangles : TAffineVectorList;
+                                  const ATreeDepth : Integer);
          procedure DisposeTree;
 
          destructor Destroy;  override;
@@ -845,24 +847,24 @@ end;
 
 // InitializeTree
 //
-procedure TOctree.InitializeTree(const worldMinExtent, worldMaxExtent : TAffineVector;
-                                 const triangles : TAffineVectorList;
-                                 const treeDepth : Integer);
+procedure TOctree.InitializeTree(const AWorldMinExtent, AWorldMaxExtent : TAffineVector;
+                                 const ATriangles : TAffineVectorList;
+                                 const ATreeDepth : Integer);
 var
    n : Integer;
    newnode : POctreeNode;
 begin
-   Self.WorldMinExtent:=worldMinExtent;
-   Self.WorldMaxExtent:=worldMaxExtent;
+   Self.WorldMinExtent:=AWorldMinExtent;
+   Self.WorldMaxExtent:=AWorldMaxExtent;
 
    //set up the filer data for this mesh
    if triangleFiler=nil then
       triangleFiler:=TAffineVectorList.Create;
-   triangleFiler.Assign(triangles);
+   triangleFiler.Assign(ATriangles);
 
    New(newnode);
-   newnode^.MinExtent:=WorldMinExtent;
-   newnode^.MaxExtent:=WorldMaxExtent;
+   newnode^.MinExtent:=AWorldMinExtent;
+   newnode^.MaxExtent:=AWorldMaxExtent;
    newnode^.TriArray:=NIL;
    for n:=0 to 7 do newnode^.ChildArray[n]:=NIL;
 
@@ -870,7 +872,7 @@ begin
    rootnode:=newnode; //rootnode always points to root.
    NodeCount:=0;     //initialize node count
 
-   CreateTree(treeDepth);
+   CreateTree(ATreeDepth);
    CutMesh;
 end;
 
@@ -1510,4 +1512,3 @@ begin
 end;
 
 end.
-

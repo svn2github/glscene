@@ -1,6 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+//  28/03/07 - DaStr - Renamed parameters in some methods
+//                     (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
 //  25/03/07 - DaStr - Turned off UNSAFE_TYPE, UNSAFE_CODE warnings
 //  24/03/07 - DaStr - Added explicit pointer dereferencing
 //                     (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -417,9 +419,9 @@ type
     FPols: TLWPolsDynArray;
     FPolsInfo: TLWPolsInfoDynArray;
     FPolsCount: Integer;
-    function GetPolsByIndex(Index: TU2): Integer;
+    function GetPolsByIndex(AIndex: TU2): Integer;
     function GetIndiceCount: TU4;
-    function GetIndice(Index: Integer): TU2;
+    function GetIndice(AIndex: Integer): TU2;
     function GetPolsCount: Integer;
     procedure CalcPolsNormals;
     procedure CalcPntsNormals;
@@ -431,9 +433,9 @@ type
   public
     class function GetID: TID4; override;
     function GetPolsByPntIdx(VertIdx: TU2; var VertPolys: TU2DynArray): Integer;
-    property PolsByIndex[Index: TU2]: Integer read GetPolsByIndex;
+    property PolsByIndex[AIndex: TU2]: Integer read GetPolsByIndex;
     property IndiceCount: TU4 read GetIndiceCount;
-    property Indices[Index: Integer]: TU2 read GetIndice;
+    property Indices[AIndex: Integer]: TU2 read GetIndice;
     property PolsType: TID4 read FPolsType;
     property PolsCount: Integer read GetPolsCount;
     property PolsInfo: TLWPolsInfoDynArray read FPolsInfo;
@@ -445,7 +447,7 @@ type
     FName: string;
     FValues: TLWVertexMapDynArray;
     FVMapType: TID4;
-    function GetValue(Index: TU2): TLWVertexMap;
+    function GetValue(AIndex: TU2): TLWVertexMap;
     function GetValueCount: Integer;
   protected
     procedure Clear; override;
@@ -455,7 +457,7 @@ type
     class function GetID: TID4; override;
     property Dimensions: TU2 read FDimensions;
     property Name: string read FName;
-    property Value[Index: TU2]: TLWVertexMap read GetValue;
+    property Value[AIndex: TU2]: TLWVertexMap read GetValue;
     property ValueCount: Integer read GetValueCount;
     property VMapType: TID4 read FVMapType;
   end;
@@ -518,10 +520,10 @@ type
     FTagMaps: TLWPolyTagMapDynArray;
     FTags: TU2DynArray;
     function AddTag(Value: TU2): Integer;
-    function GetTag(Index: Integer): TU2;
+    function GetTag(AIndex: Integer): TU2;
     function GetTagCount: Integer;
     function GetTagMapCount: Integer;
-    function GetTagMaps(Index: Integer): TLWPolyTagMap;
+    function GetTagMaps(AIndex: Integer): TLWPolyTagMap;
     procedure ValidateTagInfo;
   protected
     procedure Clear; override;
@@ -534,8 +536,8 @@ type
     property MapType: TID4 read FMapType;
     property TagCount: Integer read GetTagCount;
     property TagMapCount: Integer read GetTagMapCount;
-    property TagMaps[Index: Integer]: TLWPolyTagMap read GetTagMaps; default;
-    property Tags[Index: Integer]: TU2 read GetTag;
+    property TagMaps[AIndex: Integer]: TLWPolyTagMap read GetTagMaps; default;
+    property Tags[AIndex: Integer]: TU2 read GetTag;
   end;
   
   TLWObjectFile = class (TObject)
@@ -1550,7 +1552,7 @@ begin
   SetLength(FPols,0);
 end;
 
-function TLWPols.GetPolsByIndex(Index: TU2): Integer;
+function TLWPols.GetPolsByIndex(AIndex: TU2): Integer;
 var
   i, cnt: Cardinal;
 begin
@@ -1558,18 +1560,18 @@ begin
   i := 0;
   cnt := 0;
 
-  if Index = 0 then
+  if AIndex = 0 then
   begin
     result := 0;
     Exit;
   end;
 
-  while (i < IndiceCount - 1) and (cnt <> Index) do
+  while (i < IndiceCount - 1) and (cnt <> AIndex) do
   begin
     Inc(i,Indices[i]+1);
     Inc(cnt);
   end;
-  if cnt = Index then
+  if cnt = AIndex then
     result := i;
 end;
 
@@ -1583,9 +1585,9 @@ begin
   result := Length(FPols);
 end;
 
-function TLWPols.GetIndice(Index: Integer): TU2;
+function TLWPols.GetIndice(AIndex: Integer): TU2;
 begin
-  result := FPols[Index];
+  result := FPols[AIndex];
 end;
 
 function TLWPols.GetPolsCount: Integer;
@@ -1658,10 +1660,10 @@ begin
   
 end;
 
-function TLWVMap.GetValue(Index: TU2): TLWVertexMap;
+function TLWVMap.GetValue(AIndex: TU2): TLWVertexMap;
 begin
 
-  result := FValues[Index];
+  result := FValues[AIndex];
   
 end;
 
@@ -1951,10 +1953,10 @@ begin
   result := ID_PTAG;
 end;
 
-function TLWPTag.GetTag(Index: Integer): TU2;
+function TLWPTag.GetTag(AIndex: Integer): TU2;
 begin
   ValidateTagInfo;
-  result := FTags[Index];
+  result := FTags[AIndex];
 end;
 
 function TLWPTag.GetTagCount: Integer;
@@ -1968,9 +1970,9 @@ begin
   result := Length(FTagMaps) div 2;
 end;
 
-function TLWPTag.GetTagMaps(Index: Integer): TLWPolyTagMap;
+function TLWPTag.GetTagMaps(AIndex: Integer): TLWPolyTagMap;
 begin
-  result := PLWPolyTagMap(@FTagMaps[Index * 2])^;
+  result := PLWPolyTagMap(@FTagMaps[AIndex * 2])^;
 end;
 
 procedure TLWPTag.LoadData(AStream: TStream; DataStart, DataSize: LongWord);
