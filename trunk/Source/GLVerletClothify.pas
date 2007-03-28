@@ -6,6 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/07 - DaStr - Added explicit pointer dereferencing (even more)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>27/05/04 - MF - Added some length information to edges
@@ -290,7 +291,7 @@ end;
 
 function TFaceList.GetItems(i: integer): TFace;
 begin
-  result := Get(i);
+  result := TFace(Get(i));
 end;
 
 procedure TFaceList.SetItems(i: integer; const Value: TFace);
@@ -302,7 +303,7 @@ end;
 
 function TEdgeList.GetItems(i: integer): TEdge;
 begin
-  result := Get(i);
+  result := TEdge(Get(i));
 end;
 
 function TEdgeList.InsertSorted(AEdge: TEdge): integer;
@@ -341,7 +342,7 @@ end;
 
 procedure TEdgeList.SortByLength;
 begin
-  Sort(EdgeLength);
+  Sort(@EdgeLength);
 end;
 
 { TMeshObjectVerletNode }
