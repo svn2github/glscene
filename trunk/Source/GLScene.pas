@@ -6,8 +6,11 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>26/03/07 - aidave - added MoveFirst, MoveLast
-      <li>26/03/07 - aidave - added MoveChildFirst, MoveChildLast
+      <li>28/03/07 - DaStr - Added more explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+                             Fixed TGLBaseSceneObject.Destroy (potential AV)
+      <li>26/03/07 - aidave - Added MoveFirst, MoveLast
+      <li>26/03/07 - aidave - Added MoveChildFirst, MoveChildLast
       <li>25/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
@@ -2500,8 +2503,10 @@ end;
 destructor TGLBaseSceneObject.Destroy;
 begin
    DeleteChildCameras;
-   FreeMem(FLocalMatrix, SizeOf(TMatrix));
-   FreeMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
+   if assigned(FLocalMatrix) then
+     FreeMem(FLocalMatrix, SizeOf(TMatrix));
+   if assigned(FAbsoluteMatrix) then               // This bug have coming surely from a bad commit file.
+     FreeMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);  // k00m memory fix and remove some leak of the old version.
    FGLObjectEffects.Free;
    FGLBehaviours.Free;
    FListHandle.Free;
@@ -2878,10 +2883,10 @@ end;
 procedure TGLBaseSceneObject.RebuildMatrix;
 begin
    if ocTransformation in Changes then begin
-      VectorScale(LeftVector, Scale.X, FLocalMatrix[0]);
-      VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
-      VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
-      SetVector(FLocalMatrix[3], FPosition.AsVector);
+      VectorScale(LeftVector, Scale.X, FLocalMatrix^[0]);
+      VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^[1]);
+      VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^[2]);
+      SetVector(FLocalMatrix^[3], FPosition.AsVector);
       Exclude(FChanges, ocTransformation);
       Include(FChanges, ocAbsoluteMatrix);
       Include(FChanges, ocInvAbsoluteMatrix);
@@ -6118,6 +6123,7 @@ constructor TGLScene.Create(AOwner: TComponent);
 begin
    inherited;
    // root creation
+   FCurrentBuffer := nil;
    FObjects:=TGLSceneRootObject.Create(Self);
    FObjects.Name:='ObjectRoot';
    FCameras:=TGLSceneRootObject.Create(Self);
@@ -7819,13 +7825,13 @@ begin
             subObj:=nil;
             subObjIndex:=current+4;
             if subObjIndex<next then begin
-               SetLength(subObj, buffer[current]-1);
+               SetLength(subObj, buffer^[current]-1);
                while subObjIndex<next do begin
-                  subObj[subObjIndex-current-4]:=buffer[subObjIndex];
+                  subObj[subObjIndex-current-4]:=buffer^[subObjIndex];
                   inc(subObjIndex);
                end;
             end;
-            PickList.AddHit(TGLCustomSceneObject(buffer[current+3]),
+            PickList.AddHit(TGLCustomSceneObject(buffer^[current+3]),
                             subObj, szmin, szmax);
          end;
       finally
