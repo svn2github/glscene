@@ -7,8 +7,9 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>23/03/07 - fig - Added TGLSLProjectedTextures
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
       <li>14/03/07 - DaStr - SpriteAnimation now makes use of
                                          TGLLibMaterialName's property editor
       <li>04/03/07 - DaStr - Added TGLPostShaderHolder
@@ -86,7 +87,7 @@ uses
    DsgnIntf
 {$endif};
 {$endif}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 uses
    Classes, QControls, QStdCtrls, QImgList, GLScene,
    FMaterialEditorForm, FLibMaterialPicker,
@@ -202,7 +203,7 @@ uses
    Graphics, Dialogs, ExtDlgs, Forms,
    GLWin32Viewer, GLWin32FullScreenViewer
 {$endif}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
    QGraphics, QDialogs, Types, GLLinuxViewer
 {$endif}
    ;
@@ -312,7 +313,7 @@ type
    TGLColorProperty = class (TClassProperty,
                              ICustomPropertyDrawing, ICustomPropertyListDrawing)
    {$endif}
-     {$IFDEF UNIX}
+     {$IFDEF KYLIX}
        TGLColorProperty = class (TClassProperty)
      {$endif}
    {$endif}

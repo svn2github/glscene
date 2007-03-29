@@ -4,7 +4,7 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
                              TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
                                now gets the correct variable as its owner (BugTracker ID = 1603743)
@@ -26,7 +26,7 @@ interface
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils, TypInfo;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 uses
   QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils;
 {$ENDIF}
@@ -82,7 +82,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 {$R *.xfm}
 {$ENDIF}
 

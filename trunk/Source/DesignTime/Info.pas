@@ -2,7 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux
       <li>06/07/04 - LR - Display some infos for Linux	
       <li>03/07/04 - LR - Make change for Linux
@@ -30,7 +30,7 @@ uses
   Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls, 
   CommCtrl, ExtCtrls, Graphics, Menus;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 uses
   XLib, QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls,
   QExtCtrls, QGraphics, QMenus; 
@@ -133,7 +133,7 @@ uses
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 {$R *.xfm}
 {$ENDIF}
 

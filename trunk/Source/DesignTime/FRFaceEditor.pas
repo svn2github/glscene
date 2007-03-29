@@ -3,7 +3,7 @@
    Editor fram for a TGLFaceProperties.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
                              PoligonMode are now updated when FaceProperties are assigned
       <li>03/07/04 - LR  - Make change for Linux
@@ -21,7 +21,7 @@ uses
   Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
   Classes, GLTexture;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 uses 
   QForms, QComCtrls, FRTrackBarEdit, QStdCtrls, FRColorEditor, QImgList, QControls, 
   Classes, GLTexture; 
@@ -70,7 +70,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 {$R *.xfm}
 {$ENDIF}
 
@@ -79,7 +79,7 @@ uses
 {$IFDEF MSWINDOWS}
   Graphics; 
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   QGraphics, Types;
 {$ENDIF}
 

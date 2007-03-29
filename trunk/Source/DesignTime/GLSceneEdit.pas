@@ -6,8 +6,9 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>25/03/07 - DaStr - Abstracted IsSubComponent for Delphi5 compatibility
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
   <li>07/02/07 - DaStr - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
                          TGLSceneEditorForm.AddNodes - removed warning
                           (all for proper Subcomponent support)
@@ -54,7 +55,7 @@ uses
   Dialogs, Menus, ActnList, ToolWin, ExtCtrls, StdCtrls,
   {$IFDEF GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$ELSE} DsgnIntf {$ENDIF}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   , QDialogs, QImgList, QActnList, QForms, QMenus, QTypes,
   QComCtrls, QControls, Types, QExtCtrls, QStdCtrls, DesignIntf, VCLEditors
 {$ENDIF}
@@ -218,7 +219,7 @@ type
     {$IFDEF MSWINDOWS}
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
     {$ENDIF}
-    {$IFDEF UNIX}
+    {$IFDEF KYLIX}
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
     {$ENDIF}
 
@@ -244,7 +245,7 @@ implementation
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 {$R *.xfm}
 {$ENDIF}
 
@@ -254,7 +255,7 @@ uses
   GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer,
   GLCrossPlatform;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
   GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer,
   GLCrossPlatform;
 {$ENDIF}
@@ -826,7 +827,7 @@ end;
 {$IFDEF MSWINDOWS}
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
 {$ENDIF}
 var
@@ -930,7 +931,7 @@ begin
             buttons:=[mbAll]+Buttons;
          end else confirmMsg:=confirmMsg+'?';
          {$ENDIF}
-         {$IFDEF UNIX}
+         {$IFDEF KYLIX}
          confirmMsg:=confirmMsg+'?';
          {$ENDIF}
          case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of
