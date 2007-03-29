@@ -6,6 +6,8 @@
    VRML file format parser.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>29/03/07 - DaStr - Added missing parameters in procedure's implementation
+                              (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
       <li>25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
@@ -404,7 +406,7 @@ end;
 
 // ReadUnknownArray
 //
-procedure TVRMLParser.ReadUnknownArray;
+procedure TVRMLParser.ReadUnknownArray(defname : String );
 var
   token : String;
 begin
@@ -423,7 +425,7 @@ end;
 
 // ReadUnknownHeirachy
 //
-procedure TVRMLParser.ReadUnknownHeirachy;
+procedure TVRMLParser.ReadUnknownHeirachy(defname : String );
 var
   token : String;
 begin
@@ -483,7 +485,7 @@ end;
 
 // ReadPointArray
 //
-procedure TVRMLParser.ReadPointArray;
+procedure TVRMLParser.ReadPointArray(defname : String );
 var
   token : String;
 begin
