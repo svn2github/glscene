@@ -29,6 +29,12 @@ interface
 
 {$I GLScene.inc}
 
+{
+  Note: it will generate a compiler error in Delphi 5, but since we want
+  our users to migrate to GLKeyboard.pas, it is OK. To all users:
+      ***** Use GLKeyboard.pas instead of this unit!!! *****
+}
+
 {$MESSAGE WARN 'This unit was renamed to GLKeyboard.pas because it conflicted with FPC (see BugTracker ID = 1678646).'}
 {$MESSAGE WARN 'Please change your code accordingly. It will be removed from GLScene after July ''2007.'}
 
