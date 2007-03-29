@@ -6,6 +6,8 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/03/07 - DaStr - Added more explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>25/01/07 - DaStr - Reformated code according to VCL standard
@@ -2955,7 +2957,7 @@ begin
   Result := FCount;
   if Result = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
-  FList[Result] := Item;
+  FList^[Result] := Item;
   Inc(FCount);
 end;
 
@@ -2967,7 +2969,7 @@ begin
 {$IFOPT R+}
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-  Result := FList[Index];
+  Result := FList^[Index];
 end;
 
 // Insert
@@ -2983,7 +2985,7 @@ begin
   if Index < FCount then
     System.Move(FList[Index], FList[Index + 1],
       (FCount - Index) * SizeOf(Double));
-  FList[Index] := Item;
+  FList^[Index] := Item;
   Inc(FCount);
 end;
 
@@ -2995,7 +2997,7 @@ begin
 {$IFOPT R+}
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-  FList[Index] := Item;
+  FList^[Index] := Item;
 end;
 
 // SetCapacity
@@ -3058,7 +3060,7 @@ var
   I: Integer;
 begin
   for I := 0 to Count - 1 do
-    FList[I] := FList[I] + delta;
+    FList^[I] := FList^[I] + delta;
 end;
 
 // Offset (list)
@@ -3070,7 +3072,7 @@ var
 begin
   if FCount = delta.FCount then
     for I := 0 to Count - 1 do
-      FList[I] := FList[I] + delta[I]
+      FList^[I] := FList^[I] + delta[I]
   else
     raise Exception.Create('DoubleList count do not match');
 end;
@@ -3083,7 +3085,7 @@ var
   I: Integer;
 begin
   for I := 0 to Count - 1 do
-    FList[I] := FList[I] * factor;
+    FList^[I] := FList^[I] * factor;
 end;
 
 // Sqr
@@ -3096,7 +3098,7 @@ var
 begin
   locList := FList;
   for I := 0 to Count - 1 do
-    locList[I] := locList[I] * locList[I];
+    locList^[I] := locList^[I] * locList^[I];
 end;
 
 // Sqrt
@@ -3109,7 +3111,7 @@ var
 begin
   locList := FList;
   for I := 0 to Count - 1 do
-    locList[I] := System.Sqrt(locList[I]);
+    locList^[I] := System.Sqrt(locList^[I]);
 end;
 
 // Sum
