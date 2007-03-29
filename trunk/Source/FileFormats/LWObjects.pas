@@ -1,7 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-//  28/03/07 - DaStr - Renamed parameters in some methods
+//  29/03/07 - DaStr - Renamed parameters in some methods
+//                     Added more explicit pointer dereferencing
+//                     Initialized local string variables in two places
 //                     (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
 //  25/03/07 - DaStr - Turned off UNSAFE_TYPE, UNSAFE_CODE warnings
 //  24/03/07 - DaStr - Added explicit pointer dereferencing
@@ -858,7 +860,7 @@ begin
 
   L:=Length(Src);
   if (L=0) or (Dst=nil) then Exit;
-
+  SubStr:='';
   for i:=1 to L do
   begin
     if (Src[i]<>Delimiter) then SubStr:=SubStr+Src[i] else
@@ -1052,7 +1054,7 @@ var
 begin
 
   Stream.Read(Buf,2);
-
+  StrBuf:='';
   while Buf[1] <> #0 do
   begin
     StrBuf := StrBuf + string(Buf);
@@ -1318,7 +1320,7 @@ function TLWObjectFile.GetSurfaceByName(Index: string): TLWSurf;
 var
   SurfIdx: Integer;
 begin
-  SurfIdx := Chunks.FindChunk(FindSurfaceByName,PChar(Index),0);
+  SurfIdx := Chunks.FindChunk(@FindSurfaceByName,PChar(Index),0);
   if SurfIdx <> -1 then
     result := TLWSurf(Chunks[SurfIdx])
   else
