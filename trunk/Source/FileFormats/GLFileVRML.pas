@@ -6,6 +6,7 @@
    Preliminary VRML vector file support for GLScene.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>29/03/07 - DaStr - RecursNodes bugfixed (thanks Burkhard Carstens)
       <li>25/01/05 - SG - Improved auto-normal generation using creaseAngle,
                           Added Normal and TexCoord reading,
                           Fixes for the polygon tessellation routine (Carsten Pohl)
@@ -441,9 +442,11 @@ var
       end else if node[i] is TVRMLShapeHints then begin
         creaseAngle:=TVRMLShapeHints(node[i]).CreaseAngle;
       end else if node[i] is TVRMLUse then begin
+       if Assigned(Owner.MaterialLibrary) then begin
         tempLibMat:=Owner.MaterialLibrary.Materials.GetLibMaterialByName(TVRMLUse(node[i]).Value);
         if Assigned(tempLibMat) then
           currentMaterial:=tempLibMat;
+        end;
       end;
 
     // Read node data
