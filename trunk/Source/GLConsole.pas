@@ -1,3 +1,4 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLConsole <p>
@@ -5,6 +6,7 @@
    The console is a popdown window that appears on a game for text output/input.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
       <li>25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
       <li>23/02/07 - DaStr - Cosmetic changes, replaced some strings with
                               resource strings from GLStrings.pas
@@ -77,7 +79,7 @@ uses
   Classes, SysUtils, TypInfo,
 
   // GLScene
-  GLScene, GLObjects, GLHUDObjects, GLWin32Viewer, GLBitmapFont, keyboard,
+  GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont, GLKeyboard,
   VectorTypes, PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
   GLCrossPlatform;
 
