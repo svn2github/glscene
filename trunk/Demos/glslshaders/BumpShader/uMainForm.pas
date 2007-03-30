@@ -1,3 +1,13 @@
+{:
+  GLSL Bump Shader Demo<p>
+
+  A demo that shows how to use the TGLSLBumpShader component.
+
+  Version history:
+    30/03/07 - DaStr - Initial version
+
+
+}
 unit uMainForm;
 
 interface
@@ -177,7 +187,7 @@ end;
 
 procedure TGLSLTestForm.Timer1Timer(Sender: TObject);
 begin
-  Caption := 'GLSL Bump Shader Demo made by Da Stranger in November ''2006  -  ' + Viewer.FramesPerSecondText;
+  Caption := 'GLSL Bump Shader Demo  -  ' + Viewer.FramesPerSecondText;
   Viewer.ResetPerformanceMonitor;
 end;
 

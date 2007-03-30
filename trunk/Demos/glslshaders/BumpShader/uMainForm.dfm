@@ -2,7 +2,7 @@ object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
   AutoScroll = False
-  Caption = 'GLSL Bump Shader Demo made by Da Stranger'
+  Caption = 'GLSL Bump Shader Demo'
   ClientHeight = 447
   ClientWidth = 641
   Color = clBtnFace
