@@ -4,6 +4,7 @@
   A demo that shows how to use the TGLSLShader component.
 
   Version history:
+    30/03/07 - DaStr - Cleaned up "uses" section
     20/03/07 - DaStr - Initial version
 
 
@@ -16,14 +17,12 @@ interface
 
 uses
   // VCL
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs,
+  Windows, Messages, SysUtils, Classes, Controls, Forms, ExtCtrls, StdCtrls,
 
   // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects, XOpenGL,
-  Opengl1x, GLGraph, VectorLists, VectorTypes, GLUserShader, GLUtils, GLContext,
-  GLVectorFileObjects,  ExtCtrls, StdCtrls, VectorGeometry, GLGeomObjects,
-  GLShadowVolume, GLSLShader, GLCustomShader, GLSimpleNavigation,
+  GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects,
+  Opengl1x, GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
+  GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;
