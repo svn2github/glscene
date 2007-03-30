@@ -6,6 +6,8 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/03/07 - DaStr - Added a work-around to the Delphi 5 interface bug
+                             in TGLCustomCoordinates.NotifyChange
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
@@ -86,9 +88,14 @@ unit GLMisc;
 
 interface
 
-uses Classes, VectorGeometry, OpenGL1x, Spline, VectorLists, VectorTypes;
+uses
+  //VCL
+  Classes,
 
-{$i GLScene.inc}
+  // GLScene
+  VectorGeometry, OpenGL1x, Spline, VectorLists, VectorTypes, GLCrossPlatform;
+
+{$I GLScene.inc}
 
 type
    TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles,
@@ -349,7 +356,7 @@ type
     //Actually Sender should be TGLCustomCoordinates, but that would require
     //changes in a some other GLScene units and some other projects that use
     //TGLCoordinatesUpdateAbleComponent
-    IGLCoordinatesUpdateAble = interface
+    IGLCoordinatesUpdateAble = interface(IInterface)
     ['{ACB98D20-8905-43A7-AFA5-225CF5FA6FF5}']
       procedure CoordinateChanged(Sender: TGLCoordinates);
     end;
@@ -741,11 +748,19 @@ end;
 // NotifyChange
 //
 procedure TGLCustomCoordinates.NotifyChange(Sender : TObject);
+{$IFNDEF GLS_COMPILER_5_DOWN}
 var
   Int: IGLCoordinatesUpdateAble;
 begin
-	if  Supports(Owner, IGLCoordinatesUpdateAble, Int) then
- 		Int.CoordinateChanged(TGLCoordinates(Self))
+  if  Supports(Owner, IGLCoordinatesUpdateAble, Int) then
+    Int.CoordinateChanged(TGLCoordinates(Self))
+
+{$ELSE}
+begin
+  // A work-around in Delphi 5 interface bug.
+  if Owner is TGLCoordinatesUpdateAbleComponent then
+    TGLCoordinatesUpdateAbleComponent(Owner).CoordinateChanged(TGLCoordinates(Self))
+{$ENDIF}
   else
     inherited NotifyChange(Sender);
 end;
