@@ -6,6 +6,7 @@
    Platform independant viewer.<p>
 
     History:
+      <li>30/03/07 - DaStr - Another update after the previous fix (removed class())
       <li>24/03/07 - DaStr - Update for Windows after the previous fix
       <li>21/03/07 - DaStr - Improved Cross-Platform compatibility
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
@@ -29,13 +30,13 @@ uses
 
 type
 {$IFDEF FPC}  //For FPC, always use LCLViewer
-  TGLSceneViewer = class(GLLCLViewer.TGLSceneViewer);
+  TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
 {$ELSE}  // if not FPC then
   {$IFDEF UNIX}  // kylix
-  TGLSceneViewer = class(GLLinuxViewer.TGLLinuxSceneViewer);
+  TGLSceneViewer = GLLinuxViewer.TGLLinuxSceneViewer;
   {$ENDIF UNIX}
   {$IFDEF MSWINDOWS} // windows
-  TGLSceneViewer = class(GLWin32Viewer.TGLSceneViewer);
+  TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
   {$ENDIF MSWINDOWS}
 {$ENDIF FPC}
 
