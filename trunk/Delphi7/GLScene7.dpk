@@ -85,7 +85,6 @@ contains
   VectorLists in '..\Source\Base\VectorLists.pas',
   TypesSTL in '..\Source\FileFormats\TypesSTL.pas',
   GLFileSTL in '..\Source\FileFormats\GLFileSTL.pas',
-  Keyboard in '..\Source\Base\Keyboard.pas',
   GLExtrusion in '..\Source\GLExtrusion.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
   GLPortal in '..\Source\GLPortal.pas',
@@ -234,6 +233,9 @@ contains
   GLSLBumpShader in '..\Source\GLSLShaders\GLSLBumpShader.pas',
   GLAsmShader in '..\Source\Shaders\GLAsmShader.pas',
   GLPostEffects in '..\Source\GLPostEffects.pas',
-  GLShadowHDS in '..\Source\GLShadowHDS.pas';
+  GLShadowHDS in '..\Source\GLShadowHDS.pas',
+  GLKeyboard in '..\Source\Base\GLKeyboard.pas',
+  GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
+  GLViewer in '..\Source\Platform\GLViewer.pas';
 
 end.
