@@ -72,7 +72,7 @@ implementation
 
 {$R *.DFM}
 
-uses JPeg, Keyboard;
+uses JPeg, GLKeyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

@@ -16,7 +16,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLDCE, GLScene, GLObjects, GLMisc, GLCadencer, GLWin32Viewer,
   GLTexture, GLHeightData, GLTerrainRenderer, GLVectorFileObjects,
   ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects;
@@ -82,7 +82,7 @@ const
 
 implementation
 
-uses Jpeg, GLFileMD2, GLFile3DS, VectorGeometry, KeyBoard, GLProxyObjects,
+uses Jpeg, GLFileMD2, GLFile3DS, VectorGeometry, GLKeyboard, GLProxyObjects,
   OpenGL1x, GLEllipseCollision;
 
 {$R *.dfm}

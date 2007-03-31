@@ -22,7 +22,7 @@ uses
   Windows, Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
 
   // GLScene
-  GLCadencer, GLWin32Viewer, KeyBoard, VectorGeometry, GLGeomObjects,
+  GLCadencer, GLWin32Viewer, GLKeyboard, VectorGeometry, GLGeomObjects,
   GLScene, GLObjects, GLGraph, GLMisc, GLCrossPlatform, GLSmoothNavigator;
 
 type

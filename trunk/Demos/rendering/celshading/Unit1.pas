@@ -44,7 +44,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLFileMD2, JPEG, Keyboard;
+  GLFileMD2, JPEG, GLKeyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

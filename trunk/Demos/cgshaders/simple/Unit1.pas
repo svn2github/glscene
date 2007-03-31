@@ -13,7 +13,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLMisc, GLWin32Viewer, GLTexture, OpenGL1x,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
   GLVectorFileObjects, GLFile3DS, GLGraph;
@@ -133,8 +133,8 @@ begin
   // Shows the profiles to be used. The latest support profiles would be detected
   // if you have CgShader1.VertexProgram.Profile set to vpDetectLatest (similarly
   // for the fragment program).
-  LabelVertProfile.Caption:='Using profile: ' + CgShader.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + CgShader.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileString;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileString;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);

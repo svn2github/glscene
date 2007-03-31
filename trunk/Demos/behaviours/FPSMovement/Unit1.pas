@@ -64,7 +64,7 @@ var
 
 implementation
 
-uses keyboard;
+uses GLKeyboard;
 var yangle:double=90;
     xangle:double=0;
     //Velocity:TVector=(0,0,0,0);

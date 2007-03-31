@@ -10,7 +10,7 @@ unit uParticleMasking;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, GLBitmapFont, GLWindowsFont, GLTexture,
   GLCadencer, GLWin32Viewer, GLMisc, GLScene, StdCtrls, GLObjects,
   GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,

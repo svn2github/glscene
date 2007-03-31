@@ -74,7 +74,7 @@ implementation
 
 {$R *.DFM}
 
-uses Keyboard, OpenGL1x;
+uses GLKeyboard, OpenGL1x;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

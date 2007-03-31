@@ -77,7 +77,7 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, SysUtils, Jpeg, Keyboard;
+uses VectorGeometry, SysUtils, Jpeg, GLKeyboard;
 
 const
   cWalkStep = 6;   // this is our walking speed, in 3D units / second

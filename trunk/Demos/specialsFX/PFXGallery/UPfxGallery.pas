@@ -5,11 +5,11 @@ unit UPfxGallery;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   VectorGeometry,GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
   GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
   GLMisc, GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
-  ExtCtrls, GLGeomObjects, Keyboard, GLSpaceText,
+  ExtCtrls, GLGeomObjects, GLKeyboard, GLSpaceText,
   GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur;
 
 const

@@ -27,7 +27,7 @@ uses
   GLMisc, GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
   GLShadowVolume,
   
-  Keyboard, OpenGL1x, VectorGeometry, GeometryBB, JPEG, VerletClasses, 
+  GLKeyboard, OpenGL1x, VectorGeometry, GeometryBB, JPEG, VerletClasses, 
   SpatialPartitioning;
 
 type

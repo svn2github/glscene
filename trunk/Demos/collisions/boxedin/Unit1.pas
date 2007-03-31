@@ -13,7 +13,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, Keyboard, VectorGeometry, 
+  Windows, SysUtils, Classes, Controls, Forms, GLKeyboard, VectorGeometry, 
   GLMisc, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLCadencer, ExtCtrls, StdCtrls, GLNavigator, ComCtrls, GLGeomObjects;
 

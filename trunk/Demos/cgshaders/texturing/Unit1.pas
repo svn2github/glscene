@@ -11,7 +11,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLMisc, GLWin32Viewer, GLTexture, OpenGL1x,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
   GLGraph, jpeg;
@@ -153,7 +153,7 @@ procedure TForm1.CgShader1Initialize(CgShader: TCustomCgShader);
 begin
   // Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
   // once set can be assigned for once in the OnInitialize event. 
-  with CgShader.FragmentProgram, GLMatLib do begin
+  with CgShader1.FragmentProgram, GLMatLib do begin
     ParamByName('Map0').SetToTextureOf(Materials[0]);
     ParamByName('Map1').SetToTextureOf(Materials[1]);
     ParamByName('Map2').SetToTextureOf(Materials[2]);
@@ -164,8 +164,8 @@ begin
   end;
 
   // Display profiles used
-  LabelVertProfile.Caption:='Using profile: ' + CgShader.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + CgShader.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileString;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileString;
 end;
 
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);

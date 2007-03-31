@@ -13,7 +13,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Keyboard, StdCtrls, ExtCtrls, Buttons;
+  GLKeyboard, StdCtrls, ExtCtrls, Buttons;
 
 type
   TForm1 = class(TForm)
