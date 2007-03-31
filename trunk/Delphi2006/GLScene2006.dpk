@@ -84,7 +84,7 @@ contains
   VectorLists in '..\Source\Base\VectorLists.pas',
   TypesSTL in '..\Source\FileFormats\TypesSTL.pas',
   GLFileSTL in '..\Source\FileFormats\GLFileSTL.pas',
-  GLKeyboard in '..\Source\Base\Keyboard.pas',
+  GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLExtrusion in '..\Source\GLExtrusion.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
   GLPortal in '..\Source\GLPortal.pas',

@@ -46,7 +46,7 @@ contains
   GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',              
   HeightTileFile in '..\Source\Base\HeightTileFile.pas',                  
   Joystick in '..\Source\Base\Joystick.pas',                        
-  Keyboard in '..\Source\Base\Keyboard.pas',                        
+  GLKeyboard in '..\Source\Base\GLKeyboard.pas',                        
   MeshUtils in '..\Source\Base\MeshUtils.pas',                       
   Octree in '..\Source\Base\Octree.pas',                          
   OpenGL1x in '..\Source\Base\OpenGL1x.pas',                        
