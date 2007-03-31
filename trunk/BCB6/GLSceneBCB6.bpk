@@ -9,7 +9,7 @@
       ..\Source\Base\BumpMapping.obj ..\Source\Base\CurvesAndSurfaces.obj 
       ..\Source\Base\GeometryBB.obj ..\Source\Base\GLCanvas.obj 
       ..\Source\Base\GLTextureCombiners.obj ..\Source\Base\HeightTileFile.obj 
-      ..\Source\Base\Joystick.obj ..\Source\Base\Keyboard.obj 
+      ..\Source\Base\Joystick.obj ..\Source\Base\GLKeyboard.obj 
       ..\Source\Base\MeshUtils.obj ..\Source\Base\Octree.obj 
       ..\Source\Base\OpenGL1x.obj ..\Source\Base\PerlinNoise.obj 
       ..\Source\Base\PersistentClasses.obj 
@@ -187,7 +187,7 @@
       <FILE FILENAME="..\Source\Base\GLTextureCombiners.pas" FORMNAME="" UNITNAME="GLTextureCombiners" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\HeightTileFile.pas" FORMNAME="" UNITNAME="HeightTileFile" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Joystick.pas" FORMNAME="" UNITNAME="Joystick" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\Base\Keyboard.pas" FORMNAME="" UNITNAME="Keyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\GLKeyboard.pas" FORMNAME="" UNITNAME="GLKeyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\MeshUtils.pas" FORMNAME="" UNITNAME="MeshUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Octree.pas" FORMNAME="" UNITNAME="Octree" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\OpenGL1x.pas" FORMNAME="" UNITNAME="OpenGL1x" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
