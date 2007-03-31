@@ -306,11 +306,15 @@ begin
    FCastingMode := scmRecursivelyVisible;
 end;
 
+type
+  // Required for Delphi 5 support.
+  THackOwnedCollection = class(TOwnedCollection);
+
 // GetGLShadowVolume
 //
 function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
 begin
-   Result:=TGLShadowVolume(Collection.Owner);
+   Result:=TGLShadowVolume(THackOwnedCollection(Collection).GetOwner);
 end;
 
 // Destroy
@@ -330,7 +334,7 @@ begin
       FCaster:=TGLShadowVolumeCaster(Source).FCaster;
       FEffectiveRadius:=TGLShadowVolumeCaster(Source).FEffectiveRadius;
       FCapping:=TGLShadowVolumeCaster(Source).FCapping;
-      TGLShadowVolume(Collection.Owner).StructureChanged;
+      GetGLShadowVolume.StructureChanged;
    end;
    inherited;
 end;
@@ -345,7 +349,7 @@ begin
       FCaster:=val;
       if FCaster<>nil then
          FCaster.FreeNotification(GLShadowVolume);
-      TGLShadowVolume(Collection.Owner).StructureChanged;
+      GetGLShadowVolume.StructureChanged;
    end;
 end;
 
