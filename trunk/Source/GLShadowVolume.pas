@@ -10,6 +10,8 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/03/07 - DaStr - Fixed issue with invalid typecasting
+                            (thanks Burkhard Carstens) (Bugtracker ID = 1692016)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
@@ -162,14 +164,12 @@ type
    // TGLShadowVolumeCasters
    //
    {: Collection of TGLShadowVolumeCaster. }
-   TGLShadowVolumeCasters = class (TCollection)
+   TGLShadowVolumeCasters = class (TOwnedCollection)
 	   private
 			{ Private Declarations }
-         FOwner : TGLShadowVolume;
 
 		protected
 			{ Protected Declarations }
-         function GetOwner : TPersistent; override;
          function GetItems(index : Integer) : TGLShadowVolumeCaster;
          procedure RemoveNotification(aComponent : TComponent);
 
@@ -310,7 +310,7 @@ end;
 //
 function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
 begin
-   Result:=TGLShadowVolume(TGLShadowVolumeCasters(Collection).GetOwner);
+   Result:=TGLShadowVolume(Collection.Owner);
 end;
 
 // Destroy
@@ -330,7 +330,7 @@ begin
       FCaster:=TGLShadowVolumeCaster(Source).FCaster;
       FEffectiveRadius:=TGLShadowVolumeCaster(Source).FEffectiveRadius;
       FCapping:=TGLShadowVolumeCaster(Source).FCapping;
-      TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
+      TGLShadowVolume(Collection.Owner).StructureChanged;
    end;
    inherited;
 end;
@@ -345,7 +345,7 @@ begin
       FCaster:=val;
       if FCaster<>nil then
          FCaster.FreeNotification(GLShadowVolume);
-      TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
+      TGLShadowVolume(Collection.Owner).StructureChanged;
    end;
 end;
 
@@ -488,12 +488,6 @@ end;
 // ------------------ TGLShadowVolumeCasters ------------------
 // ------------------
 
-// GetOwner
-//
-function TGLShadowVolumeCasters.GetOwner : TPersistent;
-begin
-   Result:=FOwner;
-end;
 
 // RemoveNotification
 //
@@ -563,10 +557,8 @@ begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle-[osDirectDraw]+[osNoVisibilityCulling];
    FActive:=True;
-   FLights:=TGLShadowVolumeCasters.Create(TGLShadowVolumeLight);
-   FLights.FOwner:=Self;
-   FOccluders:=TGLShadowVolumeCasters.Create(TGLShadowVolumeOccluder);
-   FOccluders.FOwner:=Self;
+   FLights:=TGLShadowVolumeCasters.Create(self,TGLShadowVolumeLight);
+   FOccluders:=TGLShadowVolumeCasters.Create(self,TGLShadowVolumeOccluder);
    FCapping:=svcAlways;
    FMode:=svmAccurate;
    FOptions:=[svoCacheSilhouettes, svoScissorClips];
