@@ -10,6 +10,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/04/07 - DaStr - TPFXLifeColors now inherits from TOwnedCollection
+                             (thanks Burkhard Carstens)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -587,17 +589,15 @@ type
 
 	// TPFXLifeColors
 	//
-	TPFXLifeColors = class (TCollection)
+	TPFXLifeColors = class (TOwnedCollection)
 	   protected
 	      { Protected Declarations }
-	      owner : TComponent;
-	      function GetOwner: TPersistent; override;
          procedure SetItems(index : Integer; const val : TPFXLifeColor);
 	      function GetItems(index : Integer) : TPFXLifeColor;
 
       public
 	      { Public Declarations }
-	      constructor Create(AOwner : TComponent);
+	      constructor Create(AOwner: TPersistent);
 
          function Add: TPFXLifeColor;
 	      function FindItemID(ID: Integer): TPFXLifeColor;
@@ -2089,15 +2089,9 @@ end;
 // ------------------ TPFXLifeColors ------------------
 // ------------------
 
-constructor TPFXLifeColors.Create(AOwner : TComponent);
+constructor TPFXLifeColors.Create(AOwner : TPersistent);
 begin
-	Owner:=AOwner;
-	inherited Create(TPFXLifeColor);
-end;
-
-function TPFXLifeColors.GetOwner: TPersistent;
-begin
-	Result:=Owner;
+	inherited Create(AOwner, TPFXLifeColor);
 end;
 
 procedure TPFXLifeColors.SetItems(index : Integer; const val : TPFXLifeColor);
