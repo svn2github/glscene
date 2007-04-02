@@ -1,11 +1,23 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: PlugInManagerPropEditor<p>
+
+   An interface unit to GLScene plug-ins.<p>
+   For more information see help file for writing plug-ins.<p>
+
+   <b>History : </b><font size=-1><ul>
+      <li>02/04/07 - DaStr - Added $I GLScene.inc
+      <li>28/07/01 - EG - Creation
+   </ul></font>
+}
+
+
 unit PlugInIntf;
 
-// PlugInIntf - the interface unit to GLScene plug-ins
-//
-// Last Change - 29. November 1997
-// for more information see help file for writing plug-ins
-
 interface
+
+{$I GLScene.inc}
 
 type TPIServiceType = (stRaw,stObject,stBitmap,stTexture,stImport,stExport);
      TPIServices    = set of TPIServiceType;

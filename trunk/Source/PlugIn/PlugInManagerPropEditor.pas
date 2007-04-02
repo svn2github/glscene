@@ -1,6 +1,21 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: PlugInManagerPropEditor<p>
+
+   Need a short description of what it does here.<p>
+
+   <b>History : </b><font size=-1><ul>
+      <li>02/04/07 - DaStr - Added $I GLScene.inc
+      <li>28/07/01 - EG - Creation
+   </ul></font>
+
+}
 unit PlugInManagerPropEditor;
 
 interface
+
+{$I GLScene.inc}
 
 uses
   Forms, Dialogs, StdCtrls, Controls, Buttons, Classes, PlugInManager;
