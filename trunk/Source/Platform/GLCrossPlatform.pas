@@ -9,6 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/04/07 - DaStr - Added MakeSubComponent
+                             Fixed some IFDEFs to separate FPC from Kylix
       <li>25/03/07 - DaStr - Replaced some UNIX IFDEFs with KYLIX
                              Added IdentToColor, ColorToIdent, ColorToString,
                                    AnsiStartsText, IsSubComponent
@@ -51,7 +53,7 @@ uses
   {$IFDEF GLS_COMPILER_6_UP},StrUtils{$ENDIF}
   ;
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF KYLIX}
 uses
   libc, Classes, SysUtils, Qt, QGraphics, QControls, QForms,
   QDialogs, QStdCtrls, Types, QConsts;
@@ -85,23 +87,18 @@ type
    TGLKeyEvent = TKeyEvent;
    TGLKeyPressEvent = TKeyPressEvent;
 
-{$ifdef GLS_DELPHI_5}
+{$IFDEF GLS_DELPHI_5}
    EGLOSError = EWin32Error;
-{$else}
-   {$ifdef FPC}
+{$ELSE}
+   {$IFDEF FPC}
       EGLOSError = EWin32Error;
-   {$else}
+   {$ELSE}
       EGLOSError = EOSError;
-   {$endif}
-{$endif}
+   {$ENDIF}
+{$ENDIF}
 
-{$IFNDEF GLS_DELPHI_6_UP}
-  IInterface = interface
-    ['{00000000-0000-0000-C000-000000000046}']
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-  end;
+{$IFDEF GLS_DELPHI_5_DOWN}
+  IInterface = IUnknown;
 {$ENDIF}
 
 {$IFNDEF KYLIX}
@@ -150,23 +147,23 @@ type
 {$ENDIF}
 
 const
-{$IFNDEF GLS_COMPILER_6_UP}
-  S_OK = 1;
-  E_NOINTERFACE = 2;
+{$IFDEF GLS_DELPHI_5_DOWN}
+  S_OK = Windows.S_OK;
+  E_NOINTERFACE = Windows.E_NOINTERFACE;
 {$ENDIF}
 
-{$ifdef WIN32}
+{$IFDEF WIN32}
    glpf8Bit = pf8bit;
    glpf24bit = pf24bit;
    glpf32Bit = pf32bit;
    glpfDevice = pfDevice;
-{$endif}
+{$ENDIF}
 {$IFDEF UNIX}
    glpf8Bit = pf8bit;
    glpf24bit = pf32bit;
    glpf32Bit = pf32bit;
    glpfDevice = pf32bit;
-{$endif}
+{$ENDIF}
 
    // standard colors
 {$IFNDEF KYLIX}
@@ -596,9 +593,9 @@ function ApplicationTerminated : Boolean;
 
 procedure RaiseLastOSError;
 
-{$IFNDEF GLS_DELPHI_5_UP}
+{$IFDEF GLS_DELPHI_4_DOWN}
 procedure FreeAndNil(var anObject);
-{$ENDIF GLS_DELPHI_5_UP}
+{$ENDIF}
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
@@ -660,6 +657,7 @@ function ColorToString(Color: TColor): string;
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 
 function IsSubComponent(const AComponent: TComponent): Boolean;
+procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -683,10 +681,19 @@ var
 
 function IsSubComponent(const AComponent: TComponent): Boolean;
 begin
-{$IFNDEF GLS_COMPILER_6_UP}
+{$IFDEF GLS_DELPHI_5_DOWN}
   Result := False; // AFAIK Delphi 5 does not know what is a SubComponent.
 {$ELSE}
   Result := (csSubComponent in AComponent.ComponentStyle);
+{$ENDIF}
+end;
+
+procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+ // AFAIK Delphi 5 does not know what is a SubComponent, so ignore this.
+{$ELSE}
+  AComponent.SetSubComponent(Value);
 {$ENDIF}
 end;
 
@@ -718,7 +725,7 @@ begin
 end;
 
 function AnsiStartsText(const ASubText, AText: string): Boolean;
-{$IFDEF GLS_COMPILER_6_UP}
+{$IFNDEF GLS_DELPHI_5_DOWN}
 begin
   Result := StrUtils.AnsiStartsText(ASubText, AText);
 end;
@@ -1010,13 +1017,13 @@ end;
 //
 function ColorToRGB(color : TColor) : TColor;
 begin
-   {$ifdef MSWINDOWS}
+   {$IFDEF MSWINDOWS}
    if color<0 then
       Result:=GetSysColor(color and $FF)
    else Result:=color;
-   {$else}
+   {$ELSE}
    Result:=QGraphics.ColorToRGB(color);
-   {$endif}
+   {$ENDIF}
 end;
 
 // GetRValue
@@ -1044,7 +1051,7 @@ end;
 //
 procedure InitWinColors;
 begin
-   {$ifdef MSWINDOWS}
+   {$IFDEF MSWINDOWS}
    clrScrollBar:=ConvertWinColor(clScrollBar);
    clrBackground:=ConvertWinColor(clBackground);
    clrActiveCaption:=ConvertWinColor(clActiveCaption);
@@ -1070,7 +1077,7 @@ begin
    clr3DLight:=ConvertWinColor(cl3DLight);
    clrInfoText:=ConvertWinColor(clInfoText);
    clrInfoBk:=ConvertWinColor(clInfoBk);
-   {$endif}
+   {$ENDIF}
 end;
 
 // GLRect
@@ -1147,7 +1154,7 @@ end;
 // SavePictureDialog
 //
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-{$ifdef WIN32}
+{$IFDEF WIN32}
 var
    saveDialog : TSavePictureDialog;
 begin
@@ -1165,17 +1172,17 @@ begin
    finally
       saveDialog.Free;
    end;
-{$else}
+{$ELSE}
 begin
    InformationDlg('SavePictureDialog not supported on this platform.');
    Result:=False;
-{$endif}
+{$ENDIF}
 end;
 
 // OpenPictureDialog
 //
 function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-{$ifdef WIN32}
+{$IFDEF WIN32}
 var
    openDialog : TOpenPictureDialog;
 begin
@@ -1193,11 +1200,11 @@ begin
    finally
       openDialog.Free;
    end;
-{$else}
+{$ELSE}
 begin
    InformationDlg('OpenPictureDialog not supported on this platform.');
    Result:=False;
-{$endif}
+{$ENDIF}
 end;
 
 // ApplicationTerminated
@@ -1217,7 +1224,7 @@ begin
    raise e;
 end;
 
-{$IFNDEF GLS_DELPHI_5_UP}
+{$IFDEF GLS_DELPHI_4_DOWN}
 // FreeAndNil
 //
 procedure FreeAndNil(var anObject);
@@ -1228,7 +1235,7 @@ begin
   TObject(anObject):=nil;  // clear the reference before destroying the object
   buf.Free;
 end;
-{$ENDIF GLS_DELPHI_5_UP}
+{$ENDIF}
 
 type
   TDeviceCapabilities = record
@@ -1280,11 +1287,11 @@ end;
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
-(*   {$ifdef WIN32}
+(*   {$IFDEF WIN32}
    Result:=GetDeviceCaps(device, LOGPIXELSX);
-   {$else}
+   {$ELSE}
    Result:=96; // dunno how to do it properly, so I fake it
-   {$endif}   *)
+   {$ENDIF}   *)
 end;
 
 // GetCurrentColorDepth
@@ -1292,7 +1299,7 @@ end;
 
 function GetCurrentColorDepth : Integer;
 (*
-{$ifdef WIN32}
+{$IFDEF WIN32}
 var
    topDC : HDC;
 begin
@@ -1302,10 +1309,10 @@ begin
    finally
       ReleaseDC(0, topDC);
    end;
-{$else}
+{$ELSE}
 begin
    Result:=32; // dunno how to do it properly, so I fake it
-{$endif}     *)
+{$ENDIF}     *)
 begin
   result := GetDeviceCapabilities().Depth;
 end;
@@ -1315,13 +1322,13 @@ end;
 function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
 begin
    case aPixelFormat of
-      pfCustom {$ifdef WIN32}, pfDevice{$ENDIF} :  // use current color depth
+      pfCustom {$IFDEF WIN32}, pfDevice{$ENDIF} :  // use current color depth
          Result:=GetCurrentColorDepth;
       pf1bit  : Result:=1;
-{$ifdef WIN32}
+{$IFDEF WIN32}
       pf4bit  : Result:=4;
       pf15bit : Result:=15;
-{$endif}
+{$ENDIF}
       pf8bit  : Result:=8;
       pf16bit : Result:=16;
       pf32bit : Result:=32;
@@ -1334,12 +1341,12 @@ end;
 //
 function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
 begin
-{$ifdef FPC}
+{$IFDEF FPC}
    Assert(False, 'BitmapScanLine unsupported');
    Result:=nil;
-{$else}
+{$ELSE}
    Result:=aBitmap.ScanLine[aRow];
-{$endif}
+{$ENDIF}
 end;
 
 
@@ -1347,22 +1354,22 @@ end;
 //
 procedure Sleep(length : Cardinal);
 begin
-{$ifdef WIN32}
+{$IFDEF WIN32}
    Windows.Sleep(length);
-{$else}
+{$ELSE}
    usleep(length*1000);
-{$endif}
+{$ENDIF}
 end;
 
 // QueryPerformanceCounter
 //
 procedure QueryPerformanceCounter(var val : Int64);
 begin
-{$ifdef WIN32}
+{$IFDEF WIN32}
    Windows.QueryPerformanceCounter(val);
-{$else}
+{$ELSE}
    val:=RDTSC;
-{$endif}
+{$ENDIF}
 end;
 
 // QueryPerformanceFrequency
@@ -1372,11 +1379,11 @@ function QueryPerformanceFrequency(var val : Int64) : Boolean;
 var
    startCycles, endCycles : Int64;
    aTime, refTime : TDateTime;
-{$endif}
+{$ENDIF}
 begin
-{$ifdef WIN32}
+{$IFDEF WIN32}
    Result:=Boolean(Windows.QueryPerformanceFrequency(val));
-{$else}
+{$ELSE}
    aTime:=Now;
    while aTime=Now do ;
    startCycles:=RDTSC;
@@ -1386,7 +1393,7 @@ begin
    aTime:=Now;
    val:=Round((endCycles-startCycles)/((aTime-refTime)*(3600*24)));
    Result:=True;
-{$endif}
+{$ENDIF}
 end;
 
 // StartPrecisionTimer
