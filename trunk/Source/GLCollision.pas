@@ -6,6 +6,7 @@
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>03/02/07 - DaStr - Added "public" to TCollisionNode for FPC compatibility
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>19/10/06 - LC - Fixed memory leak in TCollisionManager.CheckCollisions. Bugtracker ID=1548618
       <li>09/05/03 - DanB - fixed for collisions with bounding-box unproperly defined (min>max)
@@ -973,6 +974,7 @@ end;
 type
    //only add collision node to list if GroupIndex>=0
    TCollisionNode = class
+     public
       Collision:TGLBCollision;
       AABB:TAABB;
       constructor Create(Collision:TGLBCollision; AABB:TAABB);
