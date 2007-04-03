@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/04/07 - DaStr - GLS_DELPHI_5_UP renamed to GLS_DELPHI_4_DOWN for
+                             FPC compatibility (thanks Burkhard Carstens)
       <li>29/03/07 - DaStr - GLS_WANT_DATA removed
                              Added IGLInitializable, TGLInitializableObjectList
                              Added TGLScene.InitializableObjects
@@ -1558,7 +1560,7 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 {$endif}
 
@@ -6151,7 +6153,7 @@ begin
    inherited Destroy;
 end;
 
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
 // Notification
 //
 procedure TGLScene.Notification(AComponent: TComponent; Operation: TOperation);

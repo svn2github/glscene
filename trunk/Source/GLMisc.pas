@@ -6,6 +6,8 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/04/07 - DaStr - GLS_DELPHI_5_UP renamed to GLS_DELPHI_4_DOWN for
+                             FPC compatibility (thanks Burkhard Carstens)
       <li>30/03/07 - DaStr - Added a work-around to the Delphi 5 interface bug
                              in TGLCustomCoordinates.NotifyChange
       <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -185,7 +187,7 @@ type
 	TGLCadenceAbleComponent = class (TComponent)
 		public
 	      { Public Declarations }
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
          procedure RemoveFreeNotification(AComponent: TComponent);
 {$endif}
 			procedure DoProgress(const progressTime : TProgressTimes); virtual;
@@ -615,7 +617,7 @@ end;
 // ------------------ TGLCadenceAbleComponent ------------------
 // ------------------
 
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
 // RemoveFreeNotification
 //
 procedure TGLCadenceAbleComponent.RemoveFreeNotification(AComponent: TComponent);
