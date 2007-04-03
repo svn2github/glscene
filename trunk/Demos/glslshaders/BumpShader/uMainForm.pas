@@ -4,6 +4,7 @@
   A demo that shows how to use the TGLSLBumpShader component.
 
   Version history:
+    03/04/07 - DaStr - Added more objects
     30/03/07 - DaStr - Initial version
 
 
@@ -60,6 +61,7 @@ type
     TrinityMatlib: TGLMaterialLibrary;
     GLCube1: TGLCube;
     GLDodecahedron1: TGLDodecahedron;
+    GLSphere3: TGLSphere;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -114,23 +116,19 @@ begin
 }
   Fighter.AnimationMode := aamLoop;
   Fighter.Scale.Scale(3);
-  Fighter.MeshObjects.BuildTangentSpace;
-  Fighter.MeshObjects.UseVBO := False; // A temp workaroud a bug.
+//  Fighter.MeshObjects.BuildTangentSpace;
 
   Teapot.LoadFromFile(FILE_PATH + 'Teapot.3ds'); //Teapot
   Teapot.Scale.Scale(0.8);
   //  Teapot.MeshObjects.BuildTangentSpace; does not have texture coordinates...
-  Teapot.MeshObjects.UseVBO := False; // A temp workaroud a bug.
 
   Sphere_big.LoadFromFile(FILE_PATH + 'Sphere_big.3DS'); //Sphere_big
   Sphere_big.Scale.Scale(70);
   Sphere_big.MeshObjects.BuildTangentSpace;
-  Sphere_big.MeshObjects.UseVBO := False; // A temp workaroud a bug.
 
   Sphere_little.LoadFromFile(FILE_PATH + 'Sphere_little.3ds'); //Sphere_little
   Sphere_little.Scale.Scale(4);
   Sphere_little.MeshObjects.BuildTangentSpace;
-  Sphere_little.MeshObjects.UseVBO := False; // A temp workaroud a bug.
 
   // Then load textures
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(FILE_PATH + 'Earth.jpg');

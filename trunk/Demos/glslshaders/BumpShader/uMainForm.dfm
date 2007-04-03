@@ -212,8 +212,16 @@ object GLSLTestForm: TGLSLTestForm
       object GLDodecahedron1: TGLDodecahedron
         Material.MaterialLibrary = MaterialLibrary
         Material.LibMaterialName = 'Earth'
+        Position.Coordinates = {00001643000016C3000000000000803F}
         Scale.Coordinates = {0000C8420000C8420000C84200000000}
-        Visible = False
+      end
+      object GLSphere3: TGLSphere
+        Material.MaterialLibrary = MaterialLibrary
+        Material.LibMaterialName = 'Earth'
+        Direction.Coordinates = {00000000000080BF0000000000000000}
+        Position.Coordinates = {000016C300001643000000000000803F}
+        Up.Coordinates = {00000000000000000000803F00000000}
+        Radius = 50.000000000000000000
       end
     end
     object Camera: TGLCamera
