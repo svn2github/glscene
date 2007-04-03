@@ -4,6 +4,7 @@
   Note: object "Not_a_planet" is used to test atmosphere transparency issues.
 
   Version history:
+    03/04/07 - DaStr - Cleaned up "uses" section
     02/03/07 - DaStr - Fixed LensFlare object sorting issue
                        Updated GLSimpleNavigation component
     07/02/07 - DaStr - Initial version
@@ -17,13 +18,12 @@ interface
 
 uses
   // VCL
-  Windows, Forms, StdCtrls, Classes, Controls, GLMisc, ExtCtrls, Graphics,
-  SysUtils, Dialogs, ComCtrls,
+  Forms, StdCtrls, Classes, Controls, ExtCtrls,
 
   // GLScene
-  GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer, GLBehaviours,
-  GLTexture, GLTexCombineShader, GLSkydome, OpenGL1x, VectorGeometry, GLContext,
-  GLAtmosphere, GLSimpleNavigation,
+  GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
+  GLTexture, GLSkydome, VectorGeometry, GLMisc, GLCrossPlatform,
+  GLAtmosphere, GLSimpleNavigation, 
 
   // File formats
   Jpeg;
