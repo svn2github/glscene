@@ -1,5 +1,9 @@
-// GLHeightData
-{: Classes for height data access.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLHeightData<p>
+
+   Classes for height data access.<p>
 
    The components and classes in the unit are the core data providers for
    height-based objects (terrain rendering mainly), they are independant
@@ -12,6 +16,10 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/04/07 - DaStr - Commented out lines that caused compiler hints
+                             Added more explicit pointer dereferencing
+                             Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
+                               FPC compatibility (thanks Burkhard Carstens)
       <li>27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
                           -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
                           -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
@@ -45,7 +53,7 @@
       <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
       <li>10/09/01 - EG - Added TGLTerrainBaseHDS
       <li>04/03/01 - EG - Added InterpolatedHeight
-	   <li>11/02/01 - EG - Creation
+      <li>11/02/01 - EG - Creation
 	</ul></font>
 }
 unit GLHeightData;
@@ -54,7 +62,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc, Dialogs;
+uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc;
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;
@@ -125,7 +133,7 @@ type
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
          procedure RemoveFreeNotification(AComponent: TComponent);
 {$endif}
 
@@ -698,7 +706,8 @@ end;
 //
 //When Threading, wait a specified time, for the tile to finish preparing
 function THeightDataSourceThread.WaitForTile(HD:THeightData;seconds:integer):boolean;
-var i:integer;
+var
+//    i:integer;
     eTime:TDateTime;
 begin
   etime:=now+(1000*seconds);
@@ -759,7 +768,7 @@ begin
       FDataHash[i].Free;
 end;
 
-{$ifndef GLS_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_4_DOWN}
 // RemoveFreeNotification
 //
 procedure THeightDataSource.RemoveFreeNotification(AComponent: TComponent);
@@ -954,7 +963,7 @@ begin
          packList:=False;
          // Cleanup dirty tiles and compute used memory
          for i:=Count-1 downto 0 do begin
-            hd:=THeightData(List[i]);
+            hd:=THeightData(List^[i]);
             if hd<>nil then with hd do begin
               //--Release criteria for dirty tiles--
               ReleaseThis:=false;
@@ -981,7 +990,7 @@ begin
          k:=0;
          if usedMemory>MaxPoolSize then begin
             for i:=0 to Count-1 do begin
-               hd:=THeightData(List[i]);
+               hd:=THeightData(List^[i]);
                if hd<>nil then with hd do begin
                   if (DataState=hdsReady)and(UseCounter=0)and(OldVersion=nil)
                   then begin
@@ -989,7 +998,7 @@ begin
                      List^[i]:=nil;
                      FOwner:=nil;
                      Free;
-                     packList:=True;
+//                     packList:=True;
                   end else begin
                      List^[k]:=hd;
                      Inc(k);
@@ -1553,7 +1562,7 @@ begin
       if DataState=hdsReady then begin
          case DataType of
             hdtByte : begin
-               b:=FByteData[0];
+               b:=FByteData^[0];
                for i:=1 to Size*Size-1 do
                   if FByteData^[i]<b then b:=FByteData^[i];
                FHeightMin:=((Integer(b)-128) shl 7);
