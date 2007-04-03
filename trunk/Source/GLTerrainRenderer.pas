@@ -6,6 +6,8 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>28/03/07 - DaStr - Cosmetic fixes for FPC compatibility
       <li>27/03/07 - Lin- Added TileManagement flags. - Helps prevent tile cache fushes.
       <li>19/03/07 - Lin- Added IgnoredByRenderer flag to THeightData.
                           Helps manage duplicate tiles, when a dirty tile is being replaced.
@@ -40,6 +42,8 @@
 unit GLTerrainRenderer;
 
 interface
+
+{$I GLScene.inc}
 
 uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext,
    GLROAMPatch, VectorLists;
@@ -463,8 +467,15 @@ var
      // flush whatever is in progress
      TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
      // unapply current
-     if currentMaterialName='' then repeat until not Material.UnApply(rci)     // ... proper multipass support will be implemented later
-                               else repeat until not MaterialLibrary.UnApplyMaterial(rci);
+         if currentMaterialName='' then begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not Material.UnApply(rci)
+         end else begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not MaterialLibrary.UnApplyMaterial(rci);
+         end;
      // apply new
      if materialName='' then Material.Apply(rci)
                         else MaterialLibrary.ApplyMaterial(materialName, rci);
