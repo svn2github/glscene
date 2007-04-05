@@ -22,7 +22,7 @@ uses
   GLObjects, GLVectorFileObjects, GLSimpleNavigation,
 
   // GlScene shaders
-  GLSLPostBlurShader,
+  GLSLPostBlurShader, CGPostTransformationShader,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;
@@ -71,6 +71,7 @@ type
 var
   PostShaderDemoForm:  TPostShaderDemoForm;
   BlurShader: TGLSLPostBlurShader;
+  TransformationShader: TGLCGPostTransformationShader;
 
 implementation
 
@@ -98,13 +99,21 @@ begin
 
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Earth.jpg');
   MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Waste.jpg');
+  MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Flare1.bmp');
 
-  // My Shader
+  // Blur Shader
   BlurShader := TGLSLPostBlurShader.Create(Self);
   PostShaderHolder.Shaders.Add.Shader := BlurShader;
 
   ShaderCheckListBox.Items.AddObject('Blur Shader', BlurShader);
   ShaderCheckListBox.Checked[0] := True;
+
+  TransformationShader := TGLCGPostTransformationShader.Create(Self);
+  TransformationShader.TransformationTexture := MaterialLibrary.LibMaterialByName('Noise').Material.Texture;
+  PostShaderHolder.Shaders.Add.Shader := TransformationShader;
+
+  ShaderCheckListBox.Items.AddObject('Transformation Shader', TransformationShader);
+  ShaderCheckListBox.Checked[1] := True;
 end;
 
 procedure TPostShaderDemoForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: double);

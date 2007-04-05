@@ -79,9 +79,9 @@ object PostShaderDemoForm: TPostShaderDemoForm
       Top = 24
       Width = 145
       Height = 145
+      OnClickCheck = ShaderCheckListBoxClick
       ItemHeight = 13
       TabOrder = 0
-      OnClick = ShaderCheckListBoxClick
     end
     object BigBlurThicknessCheckbox: TCheckBox
       Left = 6
