@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in VectorTypes.pas)
       <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
                              Added YZHmgVector and XZHmgVector
       <li>21/03/07 - DaStr - Bugfixed MatrixDecompose
@@ -315,7 +316,6 @@ type
    THomogeneousByteMatrix = TMatrix4b;
 
    THomogeneousWordMatrix = array[0..3] of THomogeneousWordVector;
-   TMatrix4w = THomogeneousWordMatrix;
 
    THomogeneousIntMatrix = TMatrix4i;
 
@@ -324,12 +324,10 @@ type
    THomogeneousDblMatrix = TMatrix4d;
 
    THomogeneousExtMatrix = array[0..3] of THomogeneousExtVector;
-   TMatrix4e = THomogeneousExtMatrix;
 
    TAffineByteMatrix = TMatrix3b;
 
    TAffineWordMatrix = array[0..2] of TAffineWordVector;
-   TMatrix3w = TAffineWordMatrix;
 
    TAffineIntMatrix = TMatrix3i;
 
@@ -338,7 +336,6 @@ type
    TAffineDblMatrix = TMatrix3d;
 
    TAffineExtMatrix = array[0..2] of TAffineExtVector;
-   TMatrix3e = TAffineExtMatrix;
 
    // some simplified names
    PMatrix = ^TMatrix;
