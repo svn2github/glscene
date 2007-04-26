@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLSLProjectedTextures<p>
 
    Implements projected textures through a GLScene object via GLSL.
