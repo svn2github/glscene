@@ -6,6 +6,7 @@
    Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/05/07 - DanB - TGLDisk.RayCastIntersect now uses StartAngle & SweepAngle
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,AxisAlignedBoundingBoxUnscaled,AxisAlignedDimensionsUnscaled
       <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
@@ -543,18 +544,44 @@ function TGLDisk.RayCastIntersect(const rayStart, rayVector : TVector;
 var
    ip : TVector;
    d : Single;
+   angle, beginAngle, endAngle:Single;
+   localIntPoint:TVector;
 begin
-   // start and sweep angle aren't honoured yet!
+   Result:=false;
+   if SweepAngle>0 then
    if RayCastPlaneIntersect(rayStart, rayVector, AbsolutePosition, AbsoluteDirection, @ip) then begin
       if Assigned(intersectPoint) then
          SetVector(intersectPoint^, ip);
-      d:=VectorNorm(AbsoluteToLocal(ip));
+      localIntPoint:=AbsoluteToLocal(ip);
+      d:=VectorNorm(localIntPoint);
       if (d>=Sqr(InnerRadius)) and (d<=Sqr(OuterRadius)) then begin
-         if Assigned(intersectNormal) then
-            SetVector(intersectNormal^, AbsoluteUp);
-         Result:=True;
-      end else Result:=False;
-   end else Result:=False;
+        if SweepAngle>=360 then
+          Result:=true
+        else begin
+          //arctan2 returns results between -pi and +pi, we want between 0 and 360
+          angle:=180/pi*arctan2(localIntPoint[0],localIntPoint[1]);
+          if angle<0 then
+            angle:=angle+360;
+          //we also want StartAngle and StartAngle+SweepAngle to be in this range
+          beginAngle:=Trunc(StartAngle)mod 360;
+          endAngle:=Trunc(StartAngle+SweepAngle)mod 360;
+          //If beginAngle>endAngle then area crosses the boundary from 360=>0 degrees
+          //therefore have 2 valid regions  (beginAngle to 360) & (0 to endAngle)
+          //otherwise just 1 valid region (beginAngle to endAngle)
+          if beginAngle>endAngle then
+          begin
+            if (angle>beginAngle)or(angle<endAngle) then
+              Result:=True;
+          end
+          else if (angle>beginAngle)and(angle<endAngle) then
+            Result:=True;
+        end;
+      end;
+   end;
+   if Result=true then
+   if Assigned(intersectNormal) then
+     SetVector(intersectNormal^, AbsoluteUp);
+
 end;
 
 // ------------------
