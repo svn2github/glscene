@@ -6,7 +6,7 @@
    Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>07/05/07 - DanB - TGLDisk.RayCastIntersect now uses StartAngle & SweepAngle
+      <li>07/05/07 - DanB - Added TGLCone.RayCastIntersect + improved TGLDisk.RayCastIntersect
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,AxisAlignedBoundingBoxUnscaled,AxisAlignedDimensionsUnscaled
       <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
@@ -134,7 +134,11 @@ type
 			procedure Assign(Source: TPersistent); override;
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensionsUnscaled : TVector; override;
+      function AxisAlignedDimensionsUnscaled : TVector; override;
+      function RayCastIntersect(const rayStart, rayVector : TVector;
+                                intersectPoint : PVector = nil;
+                                intersectNormal : PVector = nil) : Boolean; override;
+
 
 		published
 			{ Published Declarations }
@@ -817,6 +821,66 @@ end;
 function TGLCone.GetTopRadius: single;
 begin
   result := 0;
+end;
+
+// RayCastIntersect
+//
+function TGLCone.RayCastIntersect(const rayStart, rayVector : TVector;
+                                intersectPoint : PVector = nil;
+                                intersectNormal : PVector = nil) : Boolean;
+var
+   ip, localRayStart, localRayVector : TVector;
+   poly : array [0..2] of Double;
+   roots : TDoubleArray;
+   minRoot : Double;
+   d, t, hconst : Single;
+begin
+  Result:=false;
+  localRayStart:=AbsoluteToLocal(rayStart);
+  localRayVector:=VectorNormalize(AbsoluteToLocal(rayVector));
+
+  if coBottom in Parts then
+  begin
+    //bottom can only be raycast from beneath
+    if localRayStart[1]<-fHeight*0.5 then begin
+      if RayCastPlaneIntersect(localRayStart,localRayVector,PointMake(0,-fHeight*0.5,0),YHmgVector,@ip)then begin
+        d:=VectorNorm(ip[0],ip[2]);
+        if (d<=Sqr(BottomRadius)) then begin
+          Result:=true;
+          if Assigned(intersectPoint) then
+            SetVector(intersectPoint^, LocalToAbsolute(ip));
+          if Assigned(intersectNormal) then
+            SetVector(intersectNormal^, VectorNegate(AbsoluteUp));
+          Exit;
+        end;
+      end;
+    end;
+  end;
+  if coSides in Parts then begin
+    hconst:=-Sqr(BottomRadius)/Sqr(Height);
+    // intersect against infinite cones (in positive and negative direction)
+    poly[0]:=Sqr(localRayStart[0])+hconst*Sqr(localRayStart[1]-0.5*fHeight)+Sqr(localRayStart[2]);
+    poly[1]:=2*(localRayStart[0]*localRayVector[0]+hconst*(localRayStart[1]-0.5*fHeight)*localRayVector[1]+localRayStart[2]*localRayVector[2]);
+    poly[2]:=Sqr(localRayVector[0])+hconst*Sqr(localRayVector[1])+Sqr(localRayVector[2]);
+    roots:=SolveQuadric(@poly);
+    if MinPositiveCoef(roots, minRoot) then begin
+      t:=minRoot;
+      ip:=VectorCombine(localRayStart, localRayVector, 1, t);
+      // check that intersection with infinite cone is within the range we want
+      if (ip[1]>-fHeight*0.5)and (ip[1]<fHeight*0.5) then
+      begin
+        Result:=true;
+        if Assigned(intersectPoint) then
+          intersectPoint^:=LocalToAbsolute(ip);
+        if Assigned(intersectNormal) then begin
+          ip[1]:=hconst*(ip[1]-0.5*Height);
+          ip[3]:=0;
+          NormalizeVector(ip);
+          intersectNormal^:=LocalToAbsolute(ip);
+        end;
+      end;
+    end;
+  end;
 end;
 
 // ------------------
