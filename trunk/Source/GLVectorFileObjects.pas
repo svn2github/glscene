@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>13/05/07 - LC - Fixed AV bug in TMeshObject.BufferArrays (Bugtracker ID = 1718033)
       <li>03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378) 
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing
@@ -4281,7 +4282,7 @@ begin
     if not assigned(FLightmapTexCoordsVBO) then
       FLightmapTexCoordsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
 
-    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List, sizeof(TAffineVector) * LightMapTexCoords.Count, BufferUsage);
+    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List, sizeof(TTexPoint) * LightMapTexCoords.Count, BufferUsage);
     FLightmapTexCoordsVBO.UnBind;
     ValidBuffers:= ValidBuffers + [vbLightMapTexCoords];
   end;
