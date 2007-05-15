@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>15/05/07 - LC - Added workaround for ATI bug in TFGVertexIndexList. (Bugtracker ID = 1719611)
       <li>13/05/07 - LC - Fixed AV bug in TMeshObject.BufferArrays (Bugtracker ID = 1718033)
       <li>03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378) 
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -1861,6 +1862,14 @@ var
 
 const
    cAAFHeader = 'AAF';
+
+function InsideList: boolean;
+var
+  li: integer;
+begin
+  glGetIntegerv(GL_LIST_INDEX, @li);
+  result:= li <> 0;
+end;
 
 // GetVectorFileFormats
 //
@@ -5468,7 +5477,9 @@ begin
    Owner.Owner.DeclareArraysToOpenGL(mrci,  False);
    AttachOrDetachLightmap(mrci);
 
-   if Owner.Owner.UseVBO then
+   // workaround for ATI bug, disable element VBO if
+   // inside a display list
+   if Owner.Owner.UseVBO and not InsideList then
    begin
       SetupVBO;
 
