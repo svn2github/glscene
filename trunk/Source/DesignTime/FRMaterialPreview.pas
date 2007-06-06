@@ -3,6 +3,7 @@
    Material Preview frame.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>16/12/06 - DaStr - Editor enhanced
       <li>03/07/04 - LR  - Make change for Linux
@@ -19,7 +20,7 @@ interface
 uses
   Windows, Forms, StdCtrls, GLScene, GLObjects, Classes, Controls, GLTexture,
   GLMisc, GLWin32Viewer, GLHUDObjects, GLTeapot,
-  GLGeomObjects, GLLensFlare;
+  GLGeomObjects, GLLensFlare, GLColor;
 {$ENDIF}
 {$IFDEF KYLIX}
 uses

@@ -3,6 +3,7 @@
    RGB+Alpha color editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
@@ -17,7 +18,7 @@ interface
 {$IFDEF MSWINDOWS}
 uses
   Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
-  Classes, VectorGeometry, Graphics, SysUtils;
+  Classes, VectorGeometry, Graphics, SysUtils, GLColor;
 {$ENDIF}
 {$IFDEF KYLIX}
 uses

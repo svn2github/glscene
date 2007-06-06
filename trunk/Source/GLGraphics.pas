@@ -11,6 +11,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>23/01/07 - LIN- Added TGLBitmap32.AssignToBitmap : Converts a TGLBitmap32 back into a TBitmap
@@ -52,12 +53,9 @@ uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
 {$endif}
-   OpenGL1x, GLUtils, GLCrossPlatform, GLContext;
+   OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor;
 
 type
-
-   TColor = TDelphiColor;
-
    // TGLPixel24
    //
    TGLPixel24 = packed record
