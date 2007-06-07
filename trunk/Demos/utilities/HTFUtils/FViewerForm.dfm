@@ -102,7 +102,7 @@ object ViewerForm: TViewerForm
     Left = 0
     Top = 28
     Width = 636
-    Height = 378
+    Height = 373
     Cursor = crCross
     Align = alClient
     TabOrder = 1
@@ -113,7 +113,7 @@ object ViewerForm: TViewerForm
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 406
+    Top = 401
     Width = 636
     Height = 19
     Font.Charset = ANSI_CHARSET
@@ -140,7 +140,6 @@ object ViewerForm: TViewerForm
       item
         Width = 50
       end>
-    SimplePanel = False
     UseSystemFont = False
   end
   object ImageList: TImageList

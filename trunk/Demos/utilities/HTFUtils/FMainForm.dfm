@@ -1,9 +1,9 @@
 object MainForm: TMainForm
-  Left = 129
-  Top = 137
-  Width = 591
-  Height = 473
-  Caption = 'TerrainPack v1.0'
+  Left = 252
+  Top = 328
+  Width = 590
+  Height = 474
+  Caption = 'TerrainPack v1.1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,12 +20,11 @@ object MainForm: TMainForm
   object StringGrid: TStringGrid
     Left = 0
     Top = 137
-    Width = 583
-    Height = 268
+    Width = 582
+    Height = 263
     Align = alClient
     BorderStyle = bsNone
-    ColCount = 4
-    DefaultColWidth = 140
+    DefaultColWidth = 110
     DefaultRowHeight = 19
     FixedCols = 0
     RowCount = 2
@@ -37,14 +36,14 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 28
-    Width = 583
+    Width = 582
     Height = 109
     Align = alTop
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 1
     DesignSize = (
-      583
+      582
       109)
     object Label1: TLabel
       Left = 8
@@ -114,7 +113,7 @@ object MainForm: TMainForm
     object EDHTFName: TEdit
       Left = 72
       Top = 8
-      Width = 475
+      Width = 474
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
@@ -122,14 +121,14 @@ object MainForm: TMainForm
     object EDDEMPath: TEdit
       Left = 72
       Top = 80
-      Width = 475
+      Width = 474
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
       OnChange = EDDEMPathChange
     end
     object BUDEMPath: TButton
-      Left = 549
+      Left = 548
       Top = 80
       Width = 24
       Height = 21
@@ -139,7 +138,7 @@ object MainForm: TMainForm
       OnClick = BUDEMPathClick
     end
     object BUPickHTF: TButton
-      Left = 549
+      Left = 548
       Top = 8
       Width = 24
       Height = 21
@@ -194,12 +193,11 @@ object MainForm: TMainForm
     object EDZFilter: TEdit
       Left = 400
       Top = 56
-      Width = 49
+      Width = 50
       Height = 21
       Hint = 
         'All samples with this altitude will be replaced by default heigh' +
         't'
-      Anchors = [akLeft, akTop, akRight]
       TabOrder = 9
       OnChange = EDZFilterChange
     end
@@ -227,7 +225,7 @@ object MainForm: TMainForm
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 583
+    Width = 582
     Height = 28
     AutoSize = True
     BorderWidth = 1
@@ -291,10 +289,11 @@ object MainForm: TMainForm
     end
   end
   object CBType: TComboBox
-    Left = 392
-    Top = 168
-    Width = 139
+    Left = 328
+    Top = 184
+    Width = 113
     Height = 21
+    Hint = 'Select input file format.'
     Style = csDropDownList
     ItemHeight = 13
     TabOrder = 3
@@ -306,23 +305,25 @@ object MainForm: TMainForm
       '16 bits (non-Intel)'
       'VTP'#39's BT (single)'
       'BMP (Windows)'
-      '32 bits FP ([0; 1], Intel)')
+      '32 bits FP ([0; 1], Intel)'
+      'DTED')
   end
   object CBFile: TComboBox
-    Left = 0
-    Top = 168
-    Width = 139
+    Left = 8
+    Top = 184
+    Width = 113
     Height = 21
+    Hint = 'Filename to be inported.'
     DropDownCount = 24
     ItemHeight = 13
     TabOrder = 4
     Visible = False
     OnChange = CBTypeChange
   end
-  object Panel2: TPanel
+  object PanelFoot: TPanel
     Left = 0
-    Top = 405
-    Width = 583
+    Top = 400
+    Width = 582
     Height = 20
     Align = alBottom
     BevelOuter = bvNone
@@ -331,15 +332,36 @@ object MainForm: TMainForm
     object ProgressBar: TProgressBar
       Left = 3
       Top = 3
-      Width = 577
+      Width = 576
       Height = 14
       Align = alClient
-      Min = 0
-      Max = 100
       Smooth = True
       Step = 1
       TabOrder = 0
     end
+  end
+  object CBFlipRotate: TComboBox
+    Left = 448
+    Top = 184
+    Width = 113
+    Height = 21
+    Hint = 
+      'Rotate and/or flip the input data. (Use Rotate 270 for DTED data' +
+      '.)'
+    Style = csDropDownList
+    ItemHeight = 13
+    TabOrder = 6
+    Visible = False
+    OnChange = CBTypeChange
+    Items.Strings = (
+      ''
+      'Flip Horizontal'
+      'Rotate 90'
+      'Rotate 180'
+      'Rotate 270'
+      'Flip and Rotate 90'
+      'Flip and Rotate 180'
+      'Flip and Rotate 270')
   end
   object MainMenu: TMainMenu
     Images = ImageList
@@ -428,8 +450,8 @@ object MainForm: TMainForm
     end
   end
   object ImageList: TImageList
-    Left = 72
-    Top = 200
+    Left = 8
+    Top = 328
     Bitmap = {
       494C010106000900040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030

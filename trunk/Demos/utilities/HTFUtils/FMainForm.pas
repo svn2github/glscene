@@ -1,7 +1,14 @@
-{: Utility to pack on or many DEM sources into a single HTF.<p>
+{: Utility to pack one or many DEM sources into a single HTF.<p>
 
    Note: this is a *basic* tool, error messages are unfriendly and there are
          memory leaks if you do any, I know. So, don't do errors ;)
+
+         DTED data is organized in columns, instead of rows, like most other DEM's.
+         This means that an inported DTED file will have to be rotated by 270 degrees,
+         if you want north at the top. DTED level 2 maps will have a size of 1801x3601
+
+  10/04/2007 -LIN- Added support for DTED DEM files.
+                   Added Flip/Rotate. (Use Rotate 270 for DTED files.)
 }
 unit FMainForm;
 
@@ -17,7 +24,7 @@ type
       fs : TFileStream;
       x, y, w, h : Integer;
       format : Integer;
-
+      FlipRotate : Integer;
    end;
    PSrc = ^TSrc;
 
@@ -72,7 +79,7 @@ type
     ToolButton7: TToolButton;
     N2: TMenuItem;
     Process1: TMenuItem;
-    Panel2: TPanel;
+    PanelFoot: TPanel;
     ProgressBar: TProgressBar;
     EDTileSize: TEdit;
     Label6: TLabel;
@@ -89,6 +96,7 @@ type
     Label9: TLabel;
     EDZScale: TEdit;
     CBWholeOnly: TCheckBox;
+    CBFlipRotate: TComboBox;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
@@ -118,7 +126,8 @@ type
 
     procedure Parse;
     procedure Cleanup;
-    procedure SrcExtract(src : PSrc; relX, relY, len : Integer; dest : PSmallInt);
+    procedure SrcExtractFlip(src : PSrc; relX, relY, len : Integer; dest : PSmallInt);
+    procedure SrcExtract(src : PSrc; relX, relY, len : Integer; dest : PSmallInt; DiagFlip:boolean=false);
     procedure WorldExtract(x, y, len : Integer; dest : PSmallInt);
 
   public
@@ -142,10 +151,11 @@ begin
       for i:=0 to ActionCount-1 do with TAction(Actions[i]) do
          Hint:=Caption;
    with StringGrid do begin
-      Cells[0, 0]:='File Name';
-      Cells[1, 0]:='World Offset';
-      Cells[2, 0]:='Size';
-      Cells[3, 0]:='Data type';
+      Cells[0, 0]:='File Name';           ColWidths[0]:=140;
+      Cells[1, 0]:='World Offset';        ColWidths[1]:=80;
+      Cells[2, 0]:='Size (rotated)';      ColWidths[2]:=80;
+      Cells[3, 0]:='Data type';           ColWidths[3]:=120;
+      Cells[4, 0]:='Flip and Rotate';     ColWidths[4]:=110;
       Row:=0;
    end;
    zScale:=1;
@@ -241,6 +251,10 @@ begin
          CBType.Visible:=True;
          SetCB(CBType);
       end else CBType.Visible:=False;
+      if ACol=4 then begin
+         CBFlipRotate.Visible:=True;
+         SetCB(CBFlipRotate);
+      end else CBFlipRotate.Visible:=False;
       CanSelect:=True;
    end;
 end;
@@ -359,17 +373,8 @@ begin
       p:=Pos('x', row[2]);
       sources[i].w:=StrToInt(Copy(row[2], 1, p-1));
       sources[i].h:=StrToInt(Copy(row[2], p+1, MaxInt));
-      if Pos('non-', row[3])>0 then
-         sources[i].format:=1
-      else if Pos('BT', row[3])>0 then
-         sources[i].format:=2
-      else if Pos('FP', row[3])>0 then
-         sources[i].format:=4
-      else if Pos('BMP', row[3])>0 then
-         sources[i].format:=3
-      else if Pos('unsigned', row[3])>0 then
-         sources[i].format:=5
-      else sources[i].format:=0;
+      sources[i].format:=CBType.Items.IndexOf(row[3]);           //File format
+      sources[i].FlipRotate:=CBFlipRotate.Items.IndexOf(row[4]); //Flip and Rotate
    end;
 end;
 
@@ -382,60 +387,95 @@ begin
    SetLength(sources, 0);
 end;
 
-procedure TMainForm.SrcExtract(src : PSrc; relX, relY, len : Integer; dest : PSmallInt);
+procedure TMainForm.SrcExtractFlip(src : PSrc; relX, relY, len : Integer; dest : PSmallInt);
+var i:integer;
+    val:SmallInt;
+begin
+  if src.FlipRotate<=0 then SrcExtract(src,relX, relY, len, dest)  //None
+  else begin
+    for i:=0 to len-1 do begin
+      case src.FlipRotate of
+      //0 : SrcExtract(src,relX, relY+i,1,@val);                   //No change                  (    )
+        1 : SrcExtract(src,src.w-(relX+i),relY,1,@val);            //H-Flip                     (Flip)
+        2 : SrcExtract(src,relY,src.w-(relX+i),1,@val,true);       //DiagFlip + H-Flip          (90deg)
+        3 : SrcExtract(src,src.w-(relX+i),src.h-relY,1,@val);      //H-Flip   + V-Flip          (180deg)
+        4 : SrcExtract(src,src.h-relY,(relX+i),1,@val,true);       //DiagFlip + V-Flip          (270deg)
+        5 : SrcExtract(src,src.h-relY,src.w-(relX+i),1,@val,true); //DiagFlip + V-Flip + H-Flip (Flip-90deg)
+        6 : SrcExtract(src,relX+i,src.h-relY,1,@val);              //V-FLIP                     (Flip-180deg)
+        7 : SrcExtract(src,relY, relX+i,1,@val,true);              //DiagFlip                   (Flip-270deg)
+      end;
+      PSmallIntArray(dest)[i]:=val;
+    end;
+  end;
+end;
+
+
+procedure TMainForm.SrcExtract(src : PSrc; relX, relY, len : Integer; dest : PSmallInt; DiagFlip:boolean=false);
 var
    i, c : Integer;
    wd : Word;
    buf : array of Single;
    bmp : TBitmap;
+   rw    : integer; //rotated width
 begin
+   if DiagFlip then rw:=src.h else rw:=src.w;
+
    with src^ do begin
       case format of
          0 : begin // 16bits Intel
-            fs.Position:=(relX+relY*w)*2;
+            fs.Position:=(relX+relY*rw)*2;
             fs.Read(dest^, len*2);
          end;
-         1 : begin // 16bits non-Intel
-            fs.Position:=(relX+relY*w)*2;
+         1 : begin // 16bits unsigned Intel
+            fs.Position:=(relX+relY*rw)*2;
+            fs.Read(dest^, len*2);
+            for i:=0 to len-1 do begin
+               wd:=PWord(Integer(dest)+i*2)^;
+               PSmallInt(Integer(dest)+i*2)^:=Integer(wd)-32768;
+            end;
+         end;
+         2 : begin // 16bits non-Intel
+            fs.Position:=(relX+relY*rw)*2;
             fs.Read(dest^, len*2);
             for i:=0 to len-1 do begin
                wd:=PWord(Integer(dest)+i*2)^;
                PWord(Integer(dest)+i*2)^:=((wd and 255) shl 8)+(wd shr 8);
             end;
          end;
-         2 : begin // VTP's BT single
-            fs.Position:=(relX+relY*w)*4+256;
+         3 : begin // VTP's BT single
+            fs.Position:=(relX+relY*rw)*4+256;
             SetLength(buf, len);
             fs.Read(buf[0], len*4);
             for i:=0 to len-1 do
                PSmallInt(Integer(dest)+i*2)^:=Round(buf[i]);
          end;
-         3 : begin // windows BMP
+         4 : begin // windows BMP
             bmp:=TBitmap.Create;
             try
                fs.Position:=0;
                bmp.LoadFromStream(fs);
+               if DiagFlip then rw:=bmp.Width else rw:=bmp.Height;
                for i:=0 to len-1 do begin
-                  c:=bmp.Canvas.Pixels[relX+i, bmp.Height-relY-1];
+                  c:=bmp.Canvas.Pixels[relX+i, rw-relY-1];
                   PSmallInt(Integer(dest)+i*2)^:=(GetGValue(c)-128) shl 7;
                end;
             finally
                bmp.Free;
             end;
          end;
-         4 : begin // 32bits FP Intel
-            fs.Position:=(relX+relY*w)*4;
+         5 : begin // 32bits FP Intel
+            fs.Position:=(relX+relY*rw)*4;
             SetLength(buf, len);
             fs.Read(buf[0], len*4);
             for i:=0 to len-1 do
                PSmallInt(Integer(dest)+i*2)^:=Round((buf[i]-0.5)*32000);
          end;
-         5 : begin // 16bits unsigned Intel
-            fs.Position:=(relX+relY*w)*2;
+         6 : begin // DTED
+            fs.Position:=3434+(relX+relY*rw)*2 +(relY*12);
             fs.Read(dest^, len*2);
             for i:=0 to len-1 do begin
                wd:=PWord(Integer(dest)+i*2)^;
-               PSmallInt(Integer(dest)+i*2)^:=Integer(wd)-32768;
+               PWord(Integer(dest)+i*2)^:=((wd and 255) shl 8)+(wd shr 8);
             end;
          end;
       end;
@@ -463,7 +503,7 @@ begin
          n:=len;
          if rx+n>src.w then
             n:=src.w-rx;
-         SrcExtract(src, rx, ry, n, dest);
+         SrcExtractFlip(src, rx, ry, n, dest);
          if filterZ<>defaultZ then begin
             for i:=0 to n-1 do
                if PSmallIntArray(dest)[i]=filterZ then
@@ -557,7 +597,6 @@ begin
    ShowMessage( 'HTF file created.'#13#10#13#10
                +IntToStr(i)+' bytes in file'#13#10
                +'('+IntToStr(wx*wy*2)+' raw bytes)');
-
 end;
 
 procedure TMainForm.ACViewerExecute(Sender: TObject);
@@ -566,6 +605,9 @@ var
 begin
    viewer:=TViewerForm.Create(nil);
    try
+      Viewer.htf:=THeightTileFile.Create(EDHTFName.Text);                   //R
+      Viewer.Caption:='HTFViewer - '+ExtractFileName(EDHTFName.Text);       //R
+
       viewer.ShowModal;
    finally
       viewer.Free;

@@ -56,12 +56,12 @@ type
     procedure ACPaletteExecute(Sender: TObject);
   private
     { Private declarations }
+  public
+    { Public declarations }
     htf : THeightTileFile;
     bmpTile : TBitmap32;
     curX, curY, mx, my : Integer;
     procedure PrepareBitmap;
-  public
-    { Public declarations }
   end;
 
 var

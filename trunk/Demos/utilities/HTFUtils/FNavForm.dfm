@@ -1,6 +1,6 @@
 object NavForm: TNavForm
   Left = 276
-  Top = 111
+  Top = 328
   BorderStyle = bsDialog
   Caption = 'NavForm'
   ClientHeight = 192
@@ -21,8 +21,9 @@ object NavForm: TNavForm
     Top = 0
     Width = 192
     Height = 192
+    Bitmap.ResamplerClassName = 'TNearestResampler'
     BitmapAlign = baTopLeft
-    Scale = 1
+    Scale = 1.000000000000000000
     ScaleMode = smScale
     TabOrder = 0
     OnMouseDown = ImageMouseDown
