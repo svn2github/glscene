@@ -16,7 +16,7 @@ interface
 
 uses
   Forms, GLScene, GLObjects, GLMisc, GLTexture, Classes, Controls, Dialogs,
-  GLWin32Viewer, GLGeomObjects;
+  GLWin32Viewer, GLGeomObjects, GLColor;
 
 type
   TForm1 = class(TForm)
