@@ -1,9 +1,10 @@
 {: Post Shader Demo<p>
 
-  A demo that demostrates how to use different post shaderes together.
-  More post shaders will be added to it plater.
+  A demo that demostrates how to use different post shaders together.
+  More post shaders will be added to it later on.
 
   Version history:
+    12/06/07 - DaStr - Small cosmetic fixes
     05/04/07 - DaStr - Initial version
 }
 unit UMainForm;
@@ -96,7 +97,7 @@ begin
   Sphere_little.LoadFromFile(MEDIA_PATH + 'Sphere_little.3ds');
   Sphere_little.Scale.Scale(4);
 
-
+  // Then load textures.
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Earth.jpg');
   MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Waste.jpg');
   MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Flare1.bmp');
@@ -108,6 +109,7 @@ begin
   ShaderCheckListBox.Items.AddObject('Blur Shader', BlurShader);
   ShaderCheckListBox.Checked[0] := True;
 
+  // Transformation Shader
   TransformationShader := TGLCGPostTransformationShader.Create(Self);
   TransformationShader.TransformationTexture := MaterialLibrary.LibMaterialByName('Noise').Material.Texture;
   PostShaderHolder.Shaders.Add.Shader := TransformationShader;
@@ -130,12 +132,10 @@ begin
   end;
 end;
 
-
 procedure TPostShaderDemoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Cadencer.Enabled := False;
 end;
-
 
 procedure TPostShaderDemoForm.LightCubeProgress(Sender: TObject; const deltaTime,
   newTime: Double);
@@ -143,7 +143,6 @@ begin
   if LightMovingCheckBox.Checked then
     LightCube.MoveObjectAround(Camera.TargetObject, sin(NewTime) * deltaTime * 10, deltaTime * 20);
 end;
-
 
 procedure TPostShaderDemoForm.BigBlurThicknessCheckboxClick(Sender: TObject);
 begin
@@ -163,5 +162,3 @@ begin
 end;
 
 end.
-
-
