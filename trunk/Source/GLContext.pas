@@ -4,6 +4,8 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/06/06 - LC - Refactored TGLVBOHandle, introduced TGLBufferObjectHandle
+                          and TGLPackPBOHandle/TGLUnpackPBOHandle
       <li>15/02/07 - DaStr - Added more parameters to TGLProgramHandle
                              TGLProgramHandle.Name is now a property
       <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
@@ -327,25 +329,24 @@ type
          function PixelCount : Integer;
    end;
 
-   // TGLVBOHandle
+   // TGLBufferObjectHandle
    //
-   {: Manages a handle to an Vertex Buffer Object.<br>
+   {: Manages a handle to a Buffer Object.<br>
       Does *NOT* check for extension availability, this is assumed to have been
-      checked by the user.<br>
-      Do not use this class directly, use one of its subclasses instead. }
-   TGLVBOHandle = class (TGLContextHandle)
+      checked by the user.<br> }
+   TGLBufferObjectHandle = class (TGLContextHandle)
       private
          { Private Declarations }
-         FVBOTarget : TGLuint;
-
       protected
          { Protected Declarations }
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
 
+         function GetTarget: TGLuint; virtual; abstract;
+
       public
          { Public Declarations }
-         {: Creates the VBO buffer and initializes it. }
+         {: Creates the buffer object buffer and initializes it. }
          constructor CreateFromData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 
          procedure Bind;
@@ -374,7 +375,23 @@ type
             Must follow a MapBuffer, and happen before the buffer is unbound. }
          function UnmapBuffer : Boolean;
 
-         property VBOTarget : TGLuint read FVBOTarget;
+         property Target : TGLuint read GetTarget;
+   end;
+
+   // TGLVBOHandle
+   //
+   {: Manages a handle to an Vertex Buffer Object.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user.<br>
+      Do not use this class directly, use one of its subclasses instead. }
+   TGLVBOHandle = class (TGLBufferObjectHandle)
+      private
+         { Private Declarations }
+
+         function GetVBOTarget: TGLuint;
+      public
+
+         property VBOTarget : TGLuint read GetVBOTarget;
    end;
 
    // TGLVBOArrayBufferHandle
@@ -382,9 +399,8 @@ type
    {: Manages a handle to VBO Array Buffer.<p>
       Typically used to store vertices, normals, texcoords, etc. }
    TGLVBOArrayBufferHandle = class (TGLVBOHandle)
-      public
-         { Public Declarations }
-         constructor Create; override;
+      protected
+         function GetTarget: TGLuint; override;
    end;
 
    // TGLVBOElementArrayHandle
@@ -392,9 +408,28 @@ type
    {: Manages a handle to VBO Element Array Buffer.<p>
       Typically used to store vertex indices. }
    TGLVBOElementArrayHandle = class (TGLVBOHandle)
-      public
-         { Public Declarations }
-         constructor Create; override;
+      protected
+         function GetTarget: TGLuint; override;
+   end;
+
+   // TGLPackPBOHandle
+   //
+   {: Manages a handle to PBO Pixel Pack Buffer.<p>
+      When bound, commands such as ReadPixels write
+      their data into a buffer object. }
+   TGLPackPBOHandle = class(TGLBufferObjectHandle)
+      protected
+         function GetTarget: TGLuint; override;
+   end;
+
+   // TGLUnpackPBOHandle
+   //
+   {: Manages a handle to PBO Pixel Unpack Buffer.<p>
+      When bound, commands such as DrawPixels read
+      their data from a buffer object. }
+   TGLUnpackPBOHandle = class(TGLBufferObjectHandle)
+     protected
+       function GetTarget: TGLuint; override;
    end;
 
    // TGLSLHandle
@@ -1250,12 +1285,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLVBOHandle ------------------
+// ------------------ TGLBufferObjectHandle ------------------
 // ------------------
 
 // CreateFromData
 //
-constructor TGLVBOHandle.CreateFromData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+constructor TGLBufferObjectHandle.CreateFromData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 begin
    Create;
    AllocateHandle;
@@ -1266,15 +1301,14 @@ end;
 
 // DoAllocateHandle
 //
-function TGLVBOHandle.DoAllocateHandle : Cardinal;
+function TGLBufferObjectHandle.DoAllocateHandle : Cardinal;
 begin
-   Assert((FVBOTarget=GL_ARRAY_BUFFER_ARB) or (FVBOTarget=GL_ELEMENT_ARRAY_BUFFER_ARB));
    glGenBuffersARB(1, @Result);
 end;
 
 // DoDestroyHandle
 //
-procedure TGLVBOHandle.DoDestroyHandle;
+procedure TGLBufferObjectHandle.DoDestroyHandle;
 begin
    if not vIgnoreContextActivationFailures then begin
       // reset error status
@@ -1288,76 +1322,107 @@ end;
 
 // BindAsArrayBuffer
 //
-procedure TGLVBOHandle.Bind;
+procedure TGLBufferObjectHandle.Bind;
 begin
-   glBindBufferARB(FVBOTarget, Handle);
+   glBindBufferARB(Target, Handle);
 end;
 
 // UnBind
 //
-procedure TGLVBOHandle.UnBind;
+procedure TGLBufferObjectHandle.UnBind;
 begin
-   glBindBufferARB(FVBOTarget, 0);
+   glBindBufferARB(Target, 0);
 end;
 
 // BufferData
 //
-procedure TGLVBOHandle.BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+procedure TGLBufferObjectHandle.BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 begin
-   glBufferDataARB(FVBOTarget, size, p, bufferUsage);
+   glBufferDataARB(Target, size, p, bufferUsage);
 end;
 
 // BindBufferData
 //
-procedure TGLVBOHandle.BindBufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+procedure TGLBufferObjectHandle.BindBufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 begin
-   glBindBufferARB(FVBOTarget, Handle);
-   glBufferDataARB(FVBOTarget, size, p, bufferUsage);
+   glBindBufferARB(Target, Handle);
+   glBufferDataARB(Target, size, p, bufferUsage);
 end;
 
 // BufferSubData
 //
-procedure TGLVBOHandle.BufferSubData(offset, size : Integer; p : Pointer);
+procedure TGLBufferObjectHandle.BufferSubData(offset, size : Integer; p : Pointer);
 begin
-   glBufferSubDataARB(FVBOTarget, offset, size, p);
+   glBufferSubDataARB(Target, offset, size, p);
 end;
 
 // MapBuffer
 //
-function TGLVBOHandle.MapBuffer(access : TGLuint) : Pointer;
+function TGLBufferObjectHandle.MapBuffer(access : TGLuint) : Pointer;
 begin
-   Result:=glMapBufferARB(FVBOTarget, access);
+   Result:=glMapBufferARB(Target, access);
 end;
 
 // UnmapBuffer
 //
-function TGLVBOHandle.UnmapBuffer : Boolean;
+function TGLBufferObjectHandle.UnmapBuffer : Boolean;
 begin
-   Result:=glUnmapBufferARB(FVBOTarget);
+   Result:=glUnmapBufferARB(Target);
+end;
+
+// ------------------
+// ------------------ TGLVBOHandle ------------------
+// ------------------
+
+// GetVBOTarget
+//
+function TGLVBOHandle.GetVBOTarget: TGLuint;
+begin
+   Result:=Target;
 end;
 
 // ------------------
 // ------------------ TGLVBOArrayBufferHandle ------------------
 // ------------------
 
-// Create
+// GetTarget
 //
-constructor TGLVBOArrayBufferHandle.Create;
+function TGLVBOArrayBufferHandle.GetTarget: TGLuint;
 begin
-   FVBOTarget:=GL_ARRAY_BUFFER_ARB;
-   inherited;
+   Result:=GL_ARRAY_BUFFER_ARB;
 end;
 
 // ------------------
 // ------------------ TGLVBOElementArrayHandle ------------------
 // ------------------
 
-// Create
+// GetTarget
 //
-constructor TGLVBOElementArrayHandle.Create;
+function TGLVBOElementArrayHandle.GetTarget: TGLuint;
 begin
-   FVBOTarget:=GL_ELEMENT_ARRAY_BUFFER_ARB;
-   inherited;
+   Result:=GL_ELEMENT_ARRAY_BUFFER_ARB;
+end;
+
+// ------------------
+// ------------------ TGLPackPBOHandle ------------------
+// ------------------
+
+// GetTarget
+//
+function TGLPackPBOHandle.GetTarget: TGLuint;
+begin
+   Result:=GL_PIXEL_PACK_BUFFER_ARB;
+end;
+
+// ------------------
+// ------------------ TGLUnpackPBOHandle ------------------
+// ------------------
+
+// GetTarget
+//
+function TGLUnpackPBOHandle.GetTarget: TGLuint;
+begin
+   Result:=GL_PIXEL_UNPACK_BUFFER_ARB;
 end;
 
 // ------------------
