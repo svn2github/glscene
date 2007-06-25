@@ -7,6 +7,7 @@
   texture data.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/06/07 - LC - Added SysUtils (needed for AllocMem or D7 and down).
       <li>25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
                           new methods for freeing PBO and buffer.
       <li>24/06/07 - LC - Creation
@@ -18,7 +19,7 @@ unit GLDynamicTexture;
 interface
 
 uses
-  Classes, OpenGL1x, GLContext, GLTexture, GLGraphics;
+  Classes, SysUtils, OpenGL1x, GLContext, GLTexture, GLGraphics;
 
 type
   // TGLDynamicTextureImage
