@@ -7,6 +7,8 @@
   texture data.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
+                          new methods for freeing PBO and buffer.
       <li>24/06/07 - LC - Creation
    </ul></font>
 }
@@ -38,6 +40,9 @@ type
     function GetBitsPerPixel: integer;
     function GetDataFormat: integer;
     function GetTextureFormat: integer;
+
+    procedure FreePBO;
+    procedure FreeBuffer;
 
     property BitsPerPixel: integer read GetBitsPerPixel;
     property DataFormat: integer read GetDataFormat;
@@ -109,6 +114,7 @@ begin
     // This is a bit of a hack, should be a better way...
     glBindTexture(TTarget, OwnerTexture.Handle);
     glTexImage2D(TTarget, 0, OwnerTexture.OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
+    glBindTexture(TTarget, 0);
   end;
 
   CheckOpenGLError;
@@ -177,6 +183,24 @@ begin
   FData:= nil;
 
   CheckOpenGLError;
+end;
+
+procedure TGLDynamicTextureImage.FreeBuffer;
+begin
+  if assigned(FBuffer) then
+  begin
+    FreeMem(FBuffer);
+    FBuffer:= nil;
+  end;
+end;
+
+procedure TGLDynamicTextureImage.FreePBO;
+begin
+  if assigned(FPBO) then
+  begin
+    FPBO.Free;
+    FPBO:= nil;
+  end;
 end;
 
 function TGLDynamicTextureImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
@@ -267,9 +291,8 @@ procedure TGLDynamicTextureImage.NotifyChange(Sender: TObject);
 begin
   if FTexSize <> GetTexSize then
   begin
-    FPBO.Free;
-    if assigned(FBuffer) then    
-      FreeMem(FBuffer);
+    FreePBO;
+    FreeBuffer;
   end;
 
   inherited;
@@ -282,15 +305,9 @@ begin
   begin
     FUsePBO := Value;
     if not FUsePBO then
-    begin
-      FPBO.Free;
-      FPBO:= nil;
-    end
+      FreePBO
     else
-    begin
-      FreeMem(FBuffer);
-      FBuffer:= nil;
-    end;
+      FreeBuffer;
   end;
 end;
 
