@@ -1,8 +1,9 @@
 {
-  A simple demo that shows how to use the TGLGameMenu class
+  A simple demo that shows how to use the TGLGameMenu component
 
   Version history:
-  20/02/07 - DaStr - Initial version
+    20/02/07 - DaStr - Initial version
+    03/07/07 - DaStr - Keyboard renamed to GLKeyboard (BugTracker ID = 1678646)
 
 }
 unit UnitM;
@@ -16,7 +17,7 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLMisc, GLWin32Viewer, GLGeomObjects,
-  GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, Keyboard,
+  GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
 
   // File forrmats
   JPEG;
