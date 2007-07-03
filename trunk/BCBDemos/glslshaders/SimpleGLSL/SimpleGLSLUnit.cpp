@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "SimpleGLSLUnit.h"
-#include "Keyboard.hpp"
+#include "GLKeyboard.hpp"
 #include "GLContext.hpp"
 #include "GLFile3DS.hpp"
 #include <math.h>
@@ -24,7 +24,7 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma link "GLContext"
 #pragma link "GLFile3DS"
 #pragma resource "*.dfm"
@@ -154,7 +154,7 @@ void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass,
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
   Caption=Format("Simple GLSL Shader by k00m [%.2f FPS]", ARRAYOFCONST((GLSceneViewer1->FramesPerSecond())));
-  GLHUDText1->Text= "Keyboard [ 1,2,3,4,5,6,7,8,9,0 ] Current Shader: "+CurrShadName;
+  GLHUDText1->Text= "GLKeyboard [ 1,2,3,4,5,6,7,8,9,0 ] Current Shader: "+CurrShadName;
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------

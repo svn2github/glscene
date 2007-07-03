@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #include <stdlib.h>
-#include <Keyboard.hpp>
+#include <GLKeyboard.hpp>
 #pragma hdrstop
 
 #include "fFurBall.h"
@@ -22,7 +22,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma link "GLVerletClasses"
 #pragma link "dynodegl"
 #pragma link "dynode"

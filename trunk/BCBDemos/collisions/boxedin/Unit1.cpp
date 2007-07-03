@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #include <stdlib.h>
-#include <Keyboard.hpp>
+#include <GLKeyboard.hpp>
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -22,7 +22,7 @@
 #pragma link "GLMisc"
 #pragma link "GLFile3DS"
 #pragma link "VectorGeometry"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 

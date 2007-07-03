@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include <Keyboard.hpp>
+#include <GLKeyboard.hpp>
 #include <stdlib.h>
 #pragma hdrstop
 
@@ -24,7 +24,7 @@
 #pragma link "GLObjects"
 #pragma link "GLTerrainRenderer"
 #pragma link "GLScene"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 

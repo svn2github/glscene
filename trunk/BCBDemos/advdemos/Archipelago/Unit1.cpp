@@ -24,7 +24,7 @@
 #pragma hdrstop
 
 #include "Unit1.h"
-#include "Keyboard.hpp"
+#include "GLKeyboard.hpp"
 #include "OpenGL1x.hpp"
 #include "GLState.hpp"
 #include <math.h>
@@ -45,7 +45,7 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma link "GLState"
 #pragma link "jpeg"
 #pragma resource "*.dfm"
