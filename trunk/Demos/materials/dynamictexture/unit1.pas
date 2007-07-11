@@ -2,10 +2,12 @@
   GLDynamicTexture Demo.
 
   Version history:
+    12/07/07 - DaStr - Restored FPC compatibility
     29/06/07 - DaStr - Initial version (by LordCrc)
 }
 
 unit Unit1;
+
 {$IFDEF FPC}
 {$MODE Delphi}
 {$ENDIF}
@@ -13,11 +15,10 @@ unit Unit1;
 interface
 
 uses
-  {$IFDEF LCL} lcltype, {$ELSE} Windows, GLWin32Viewer,{$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLMisc, GLTexture, GLCadencer,
-  ExtCtrls
-  {$IFDEF LCL}, LResources{$ENDIF};
+  {$IFDEF LCL}lcltype, LResources, GLLCLViewer,{$ELSE}GLWin32Viewer,{$ENDIF}
+  {$IFDEF WIN32} Windows,{$ENDIF}
+  SysUtils, Classes, Controls, Forms, ExtCtrls,
+  GLScene, GLObjects, GLMisc, GLTexture, GLCadencer;
 
 type
   TForm1 = class(TForm)
@@ -52,7 +53,6 @@ implementation
 {$IFNDEF FPC}
 {$R *.dfm}
 {$ENDIF}
-{$I GLScene.inc}
 
 uses
   OpenGL1x, GLUtils, GLContext, GLDynamicTexture;
