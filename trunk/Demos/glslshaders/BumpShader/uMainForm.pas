@@ -4,10 +4,9 @@
   A demo that shows how to use the TGLSLBumpShader component.
 
   Version history:
+    12/17/07 - DaStr - Bugfixed MultiLight stuff. Other small bigfixes...
     03/04/07 - DaStr - Added more objects
     30/03/07 - DaStr - Initial version
-
-
 }
 unit uMainForm;
 
@@ -84,7 +83,7 @@ type
 var
   GLSLTestForm: TGLSLTestForm;
   mx, my:    Integer;
-  MyShader2: TGLSLMLBumpShader;
+  MultiLightShader: TGLSLMLBumpShader;
 
 implementation
 
@@ -136,11 +135,11 @@ begin
   MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture.Image.LoadFromFile(FILE_PATH + 'EarthNormals.jpg');
 
   // Create Shader
-  MyShader2 := TGLSLMLBumpShader.Create(Self);
-  MyShader2.LightSources := [1, 2];
-  MyShader2.LightCompensation := 0.7;
-  MyShader2.NormalTexture := MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture;
-  MyShader2.SpecularTexture := MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture;
+  MultiLightShader := TGLSLMLBumpShader.Create(Self);
+  MultiLightShader.LightSources := [1, 2];
+  MultiLightShader.LightCompensation := 0.7;
+  MultiLightShader.NormalTexture := MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture;
+  MultiLightShader.SpecularTexture := MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture;
 
   // Attach shader to the material
   MaterialLibrary.LibMaterialByName('Earth').Shader := MyBumpShader;
@@ -158,8 +157,11 @@ begin
     Sphere_big.Turn(DeltaTime * 40);
     Sphere_big.Roll(DeltaTime * 40);
     Sphere_little.Pitch(DeltaTime * 20);
-    Fighter.Roll(DeltaTime * 5);
+    Fighter.Roll(DeltaTime * 20);
     Teapot.Roll(-DeltaTime * 10);
+    GLCube1.Pitch(-DeltaTime * 10);
+    GLDodecahedron1.Pitch(DeltaTime * 10);
+    GLSphere3.Roll(-DeltaTime * 10);
   end;
 end;
 
@@ -211,15 +213,25 @@ end;
 procedure TGLSLTestForm.ShaderEnabledCheckBoxClick(Sender: TObject);
 begin
   MyBumpShader.Enabled := ShaderEnabledCheckBox.Checked;
-  MyShader2.Enabled := ShaderEnabledCheckBox.Checked;
+  MultiLightShader.Enabled := ShaderEnabledCheckBox.Checked;
 end;
 
 procedure TGLSLTestForm.MultiLightShaderCheckBoxClick(Sender: TObject);
+var
+  I: Integer;
 begin
   if MultiLightShaderCheckBox.Checked then
-    MaterialLibrary.LibMaterialByName('ShaderMaterial').Shader := MyShader2
+  begin
+    MaterialLibrary.LibMaterialByName('Earth').Shader := MultiLightShader;
+    for I := 0 to TrinityMatlib.Materials.Count - 1 do
+      TrinityMatlib.Materials[I].Shader := MultiLightShader;
+  end
   else
-    MaterialLibrary.LibMaterialByName('ShaderMaterial').Shader := MyBumpShader;
+  begin
+    MaterialLibrary.LibMaterialByName('Earth').Shader := MyBumpShader;
+    for I := 0 to TrinityMatlib.Materials.Count - 1 do
+      TrinityMatlib.Materials[I].Shader := MyBumpShader;
+  end;
 
   Light2.Shining := MultiLightShaderCheckBox.Checked;
   LightCube2.Visible := MultiLightShaderCheckBox.Checked;
@@ -230,12 +242,12 @@ begin
   if UseSpecularTextureCheckBox.Checked then
   begin
     MyBumpShader.SpecularTexture := MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture;
-    MyShader2.SpecularTexture := MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture;
+    MultiLightShader.SpecularTexture := MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture;
   end
   else
   begin
     MyBumpShader.SpecularTexture := nil;
-    MyShader2.SpecularTexture := nil;
+    MultiLightShader.SpecularTexture := nil;
   end;
 end;
 
@@ -244,12 +256,12 @@ begin
   if UseNormalTextureCheckBox.Checked then
   begin
     MyBumpShader.NormalTexture := MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture;
-    MyShader2.NormalTexture := MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture;
+    MultiLightShader.NormalTexture := MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture;
   end
   else
   begin
     MyBumpShader.NormalTexture := nil;
-    MyShader2.NormalTexture := nil;
+    MultiLightShader.NormalTexture := nil;
   end;
 end;
 

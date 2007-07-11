@@ -250,16 +250,6 @@ object GLSLTestForm: TGLSLTestForm
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
       item
-        Name = 'Fighter'
-        Material.FrontProperties.Ambient.Color = {BFBEBE3EBBBABA3EBBBABA3E0000803F}
-        Material.FrontProperties.Emission.Color = {B1B0B03DB1B0B03DB1B0B03D0000803F}
-        Material.FrontProperties.Specular.Color = {8988083E8180003E8988083E0000803F}
-        Material.Texture.TextureMode = tmModulate
-        Material.Texture.Disabled = False
-        Material.MaterialLibrary = MaterialLibrary
-        Tag = 0
-      end
-      item
         Name = 'Earth'
         Material.FrontProperties.Ambient.Color = {E7E6E63EEBEAEA3EEBEAEA3E0000803F}
         Material.FrontProperties.Emission.Color = {F1F0F03DF1F0F03DF1F0F03D0000803F}
