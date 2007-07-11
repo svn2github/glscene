@@ -6,6 +6,8 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>12/07/07 - DaStr - Improved cross-platform compatibility
+                         (BugTrackerID=1684432)
   <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>25/03/07 - DaStr - Abstracted IsSubComponent for Delphi5 compatibility
   <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
@@ -251,13 +253,12 @@ implementation
 
 
 uses
+  GLViewer, GLSceneRegister, GLStrings, Info, OpenGL1x, GLCrossPlatform,
 {$IFDEF MSWINDOWS}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer,
-  GLCrossPlatform;
+  ClipBrd;
 {$ENDIF}
 {$IFDEF KYLIX}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer,
-  GLCrossPlatform;
+  QClipbrd;
 {$ENDIF}
 
 

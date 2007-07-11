@@ -1,11 +1,17 @@
-// GLWin32FullScreenViewer
-{: Win32 specific full-screen viewer.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLWin32FullScreenViewer<p>
+
+   Win32 specific full-screen viewer.<p>
 
    Currently TForm+TGLSceneViewer based, may be made into a standalone
    Win32 control someday, so don't assume there is a TForm in your code.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>24/07/03 - EG - Creation from GLWin32Viewer split 
+      <li>12/07/07 - DaStr -  Improved Cross-Platform compatibility
+                              (Bugtracker ID = 1684432)
+      <li>24/07/03 - EG - Creation from GLWin32Viewer split
 	</ul></font>
 }
 unit GLWin32FullScreenViewer;
@@ -14,7 +20,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Forms, Messages, Classes, GLScene, Controls, Menus, GLWin32Viewer;
+uses Windows, Forms, Messages, Classes, GLScene, Controls, Menus, GLViewer;
 
 type
 
@@ -587,7 +593,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterClasses([TGLSceneViewer, TGLFullScreenViewer]);
+   RegisterClasses([TGLFullScreenViewer]);
 
 end.
 
