@@ -7,6 +7,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
+                             (Bugtracker ID = 1684432)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>23/03/07 - fig - Added TGLSLProjectedTextures
@@ -196,16 +198,16 @@ uses
    GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
    GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
-   GLColor,
+   GLColor, GLViewer,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
-   GLWideBitmapFont, 
+   GLWideBitmapFont,
    Graphics, Dialogs, ExtDlgs, Forms,
-   GLWin32Viewer, GLWin32FullScreenViewer
+   GLWin32FullScreenViewer
 {$endif}
 {$IFDEF KYLIX}
-   QGraphics, QDialogs, Types, GLLinuxViewer
+   QGraphics, QDialogs, QForms, Types
 {$endif}
    ;
 
@@ -1465,7 +1467,7 @@ type
 {$endif}
 begin
 
-   { GLWin32Viewer }
+   { GLViewer }
    // property types
    {$ifdef WIN32}
    RegisterPropertiesInCategory(sOpenGLCategoryName,

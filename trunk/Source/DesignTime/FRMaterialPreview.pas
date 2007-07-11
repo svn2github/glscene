@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FRMaterialPreview<p>
 
    Material Preview frame.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
+                             (Bugtracker ID = 1684432)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>16/12/06 - DaStr - Editor enhanced
@@ -16,16 +21,15 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Windows, Forms, StdCtrls, GLScene, GLObjects, Classes, Controls, GLTexture,
-  GLMisc, GLWin32Viewer, GLHUDObjects, GLTeapot,
-  GLGeomObjects, GLLensFlare, GLColor;
+  Classes,
+  GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot, GLMisc,
+  GLGeomObjects, GLColor,
+{$IFDEF MSWINDOWS}
+   Windows, Forms, StdCtrls, Controls, GLWin32Viewer;
 {$ENDIF}
 {$IFDEF KYLIX}
-uses
-  QForms, QStdCtrls, GLScene, GLObjects, Classes, QControls, GLTexture, 
-  GLMisc, GLLinuxViewer; 
+  QForms, QStdCtrls, QControls;
 {$ENDIF}
 
 
