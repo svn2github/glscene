@@ -4,6 +4,8 @@
   Note: object "Not_a_planet" is used to test atmosphere transparency issues.
 
   Version history:
+    15/08/07 - LC - Added GLBehaviours to "uses" section to
+                    prevent run-time error.
     03/04/07 - DaStr - Cleaned up "uses" section
     02/03/07 - DaStr - Fixed LensFlare object sorting issue
                        Updated GLSimpleNavigation component
@@ -23,7 +25,7 @@ uses
   // GLScene
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
   GLTexture, GLSkydome, VectorGeometry, GLMisc, GLCrossPlatform,
-  GLAtmosphere, GLSimpleNavigation, 
+  GLAtmosphere, GLSimpleNavigation, GLBehaviours,
 
   // File formats
   Jpeg;
