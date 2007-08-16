@@ -2,6 +2,7 @@
   A Demo that shows how the new TGLPostEffect component works.
 
   Version history:
+    16/08/07 - DaStr - Added pepBlur preset.
     09/03/07 - DaStr - Added pepNightVision preset.
     07/03/07 - DaStr - Updated according to changes in the GLPostEffects unit.
     02/03/07 - DaStr - Initial version (based on demo by Grim).
@@ -84,7 +85,8 @@ begin
     3: GLPostEffect1.Preset := pepDistort;
     4: GLPostEffect1.Preset := pepNoise;
     5: GLPostEffect1.Preset := pepNightVision;
-    6: GLPostEffect1.Preset := pepCustom;
+    6: GLPostEffect1.Preset := pepBlur;
+    7: GLPostEffect1.Preset := pepCustom;
   end;
 end;
 

@@ -56,6 +56,7 @@ object MainForm: TMainForm
         'Distort'
         'Noise'
         'NightVision'
+        'Blur'
         'Custom')
     end
   end
