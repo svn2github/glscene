@@ -176,10 +176,6 @@ object MainForm: TMainForm
         AutoZTest = False
         FlareIsNotOccluded = True
         Position.Coordinates = {000020C1000020C1000000000000803F}
-        BehavioursData = {
-          0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-          080500000000000000A003400500000000000000A003400500000000000000A0
-          034008020008020008}
         object GLLightSource1: TGLLightSource
           ConstAttenuation = 1.000000000000000000
           SpotCutOff = 180.000000000000000000
@@ -3068,6 +3064,7 @@ object MainForm: TMainForm
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    OnProgress = GLCadencer1Progress
     Left = 56
   end
   object Timer1: TTimer

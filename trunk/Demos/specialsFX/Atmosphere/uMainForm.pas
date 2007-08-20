@@ -4,6 +4,7 @@
   Note: object "Not_a_planet" is used to test atmosphere transparency issues.
 
   Version history:
+    20/08/07 - DaStr - Now demo correctly displays FPS
     15/08/07 - LC - Added GLBehaviours to "uses" section to
                     prevent run-time error.
     03/04/07 - DaStr - Cleaned up "uses" section
@@ -70,6 +71,8 @@ type
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
     procedure Button10Click(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Private declarations }
   public
@@ -144,6 +147,12 @@ end;
 procedure TMainForm.Button9Click(Sender: TObject);
 begin
   GLCamera1.AdjustDistanceToTarget(1 / 1.1);
+end;
+
+procedure TMainForm.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+  GLSceneViewer1.Invalidate;
 end;
 
 end.
