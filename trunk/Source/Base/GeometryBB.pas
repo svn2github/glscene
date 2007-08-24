@@ -6,6 +6,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/07 - LC - Added RayCastAABBIntersect
       <li>24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>22/06/03 - MF - Added TBSphere for bounding spheres and classes to
@@ -161,6 +162,12 @@ procedure IncludeInClipRect(var clipRect : TClipRect; x, y : Single);
 {: Projects an AABB and determines the extent of its projection as a clip rect. }
 function AABBToClipRect(const aabb : TAABB; modelViewProjection : TMatrix;
                         viewportSizeX, viewportSizeY : Integer) : TClipRect;
+
+{: Finds the intersection between a ray and an axis aligned bounding box. }
+function RayCastAABBIntersect(const rayOrigin, rayDirection: TVector; const aabb: TAABB;
+  out tNear, tFar: single): boolean; overload;
+function RayCastAABBIntersect(const rayOrigin, rayDirection: TVector;
+  const aabb: TAABB; intersectPoint: PVector = nil): boolean; overload;
 
 type
    TPlanIndices = array [0..3] of Integer;
@@ -1047,5 +1054,71 @@ begin
       end;
    end;
 end;
+
+function RayCastAABBIntersect(const rayOrigin, rayDirection: TVector; const aabb: TAABB;
+  out tNear, tFar: single): boolean; overload;
+const
+  Infinity    =  1.0 / 0.0;
+var
+  p: integer;
+  invDir: double;
+  t0, t1, tmp: single;
+begin
+  result:= false;
+
+  tNear:= -Infinity;
+  tFar:= Infinity;
+
+  for p:= 0 to 2 do
+  begin
+    if (rayDirection[p] = 0) then
+    begin
+      if ((rayOrigin[p] < aabb.min[p]) or (rayOrigin[p] > aabb.max[p])) then
+        exit;
+    end
+    else
+    begin
+      invDir:= 1 / rayDirection[p];
+      t0:= (aabb.min[p] - rayOrigin[p]) * invDir;
+      t1:= (aabb.max[p] - rayOrigin[p]) * invDir;
+
+      if (t0 > t1) then
+      begin
+        tmp:= t0;
+        t0:= t1;
+        t1:= tmp;
+      end;
+
+      if (t0 > tNear) then
+        tNear:= t0;
+      if (t1 < tFar) then
+        tFar:= t1;
+
+      if ((tNear > tFar) or (tFar < 0)) then
+        exit;
+    end;
+  end;
+
+  result:= true;
+end;
+
+function RayCastAABBIntersect(const rayOrigin, rayDirection: TVector;
+  const aabb: TAABB; intersectPoint: PVector = nil): boolean; overload;
+var
+  tNear, tFar: single;
+begin
+  result:= RayCastAABBIntersect(rayOrigin, rayDirection, aabb, tNear, tFar);
+
+  if result and assigned(intersectPoint) then
+  begin
+    if tNear >= 0 then
+      // origin outside the box
+      intersectPoint^:= VectorCombine(rayOrigin, rayDirection, 1, tNear)
+    else
+      // origin inside the box, near is "behind", use far
+      intersectPoint^:= VectorCombine(rayOrigin, rayDirection, 1, tFar);
+  end;
+end;
+
 
 end.
