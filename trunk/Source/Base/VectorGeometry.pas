@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/07 - LC - Added BarycentricCoordinates
       <li>16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in VectorTypes.pas)
       <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
                              Added YZHmgVector and XZHmgVector
@@ -1581,6 +1582,15 @@ function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;
 {: Restores a packed rotation matrix.<p>
    See PackRotationMatrix. }
 function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMatrix;
+
+{: Calculates the barycentric coordinates for the point p on the triangle
+   defined by the vertices v1, v2 and v3. That is, solves
+     p = u * v1 + v * v2 + (1-u-v) * v3
+   for u,v.
+   Returns true if the point is inside the triangle, false otherwise.<p>
+   NOTE: This function assumes that the point lies on the plane defined by the triangle.
+   If this is not the case, the function will not work correctly! }
+function BarycentricCoordinates(const v1, v2, v3, p: TAffineVector; var u, v: single): boolean;
 
 const
    cPI       : Single =  3.141592654;
@@ -9730,6 +9740,26 @@ begin
       q.RealPart:=0
    else q.RealPart:=Sqrt(q.RealPart);
    Result:=QuaternionToMatrix(q);
+end;
+
+// BarycentricCoordinates
+//
+function BarycentricCoordinates(const v1, v2, v3, p: TAffineVector; var u, v: single): boolean;
+var
+  e1, e2, pt: TAffineVector;
+begin
+  // calculate edges
+  VectorSubtract(v1, v3, e1);
+  VectorSubtract(v2, v3, e2);
+
+  // calculate p relative to v3
+  VectorSubtract(p, v3, pt);
+
+  // solve for u and v
+  u:= (pt[1] * e2[0] - pt[0] * e2[1]) / (e1[1] * e2[0] - e1[0] * e2[1]);
+  v:= (pt[1] * e1[0] - pt[0] * e1[1]) / (e2[1] * e1[0] - e2[0] * e1[1]);
+
+  result:= (u >= 0) and (v >= 0) and (u+v <= 1);
 end;
 
 {*****************************************************************************}
