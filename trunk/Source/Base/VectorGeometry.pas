@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
+                             (thanks Biot!) (BugTracker ID = 1782005)
       <li>23/08/07 - LC - Added BarycentricCoordinates
       <li>16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in VectorTypes.pas)
       <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
@@ -8975,10 +8977,10 @@ function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 asm
               FLD  DWORD PTR [EAX]
               FSTP QWORD PTR [EDX]
-              FLD  DWORD PTR [EAX + 8]
-              FSTP QWORD PTR [EDX + 4]
-              FLD  DWORD PTR [EAX + 16]
+              FLD  DWORD PTR [EAX + 4]
               FSTP QWORD PTR [EDX + 8]
+              FLD  DWORD PTR [EAX + 8]
+              FSTP QWORD PTR [EDX + 16]
 {$else}
 begin
    Result[0]:=V[0];
@@ -8995,12 +8997,12 @@ function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 asm
               FLD  DWORD PTR [EAX]
               FSTP QWORD PTR [EDX]
-              FLD  DWORD PTR [EAX + 8]
-              FSTP QWORD PTR [EDX + 4]
-              FLD  DWORD PTR [EAX + 16]
+              FLD  DWORD PTR [EAX + 4]
               FSTP QWORD PTR [EDX + 8]
-              FLD  DWORD PTR [EAX + 24]
-              FSTP QWORD PTR [EDX + 12]
+              FLD  DWORD PTR [EAX + 8]
+              FSTP QWORD PTR [EDX + 16]
+              FLD  DWORD PTR [EAX + 12]
+              FSTP QWORD PTR [EDX + 24]
 {$else}
 begin
    Result[0]:=V[0];
