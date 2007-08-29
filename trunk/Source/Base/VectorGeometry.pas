@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/08/07 - LC - Fixed BarycentricCoordinates to work with triangles in yz plane 
       <li>27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
                              (thanks Biot!) (BugTracker ID = 1782005)
       <li>23/08/07 - LC - Added BarycentricCoordinates
@@ -9748,7 +9749,8 @@ end;
 //
 function BarycentricCoordinates(const v1, v2, v3, p: TAffineVector; var u, v: single): boolean;
 var
-  e1, e2, pt: TAffineVector;
+  a1, a2: integer;
+  n, e1, e2, pt: TAffineVector;
 begin
   // calculate edges
   VectorSubtract(v1, v3, e1);
@@ -9757,9 +9759,33 @@ begin
   // calculate p relative to v3
   VectorSubtract(p, v3, pt);
 
+  // find the dominant axis
+  n:= VectorCrossProduct(e1, e2);
+  AbsVector(n);
+  a1:= 0;
+  if n[1] > n[a1] then
+    a1:= 1;
+  if n[2] > n[a1] then
+    a1:= 2;
+
+  // use dominant axis for projection
+  case a1 of
+    0: begin
+      a1:= 1;
+      a2:= 2;
+    end;
+    1: begin
+      a1:= 0;
+      a2:= 2;
+    end;
+  else // 2:
+    a1:= 0;
+    a2:= 1;
+  end;
+
   // solve for u and v
-  u:= (pt[1] * e2[0] - pt[0] * e2[1]) / (e1[1] * e2[0] - e1[0] * e2[1]);
-  v:= (pt[1] * e1[0] - pt[0] * e1[1]) / (e2[1] * e1[0] - e2[0] * e1[1]);
+  u:= (pt[a2] * e2[a1] - pt[a1] * e2[a2]) / (e1[a2] * e2[a1] - e1[a1] * e2[a2]);
+  v:= (pt[a2] * e1[a1] - pt[a1] * e1[a2]) / (e2[a2] * e1[a1] - e2[a1] * e1[a2]);
 
   result:= (u >= 0) and (v >= 0) and (u+v <= 1);
 end;
