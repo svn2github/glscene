@@ -127,7 +127,7 @@ function PointInAABB(const p : TVector; const aabb : TAABB) : Boolean; overload;
 {: Checks if a plane (given by the normal+d) intersects the AABB}
 function PlaneIntersectAABB(Normal: TAffineVector; d: single; aabb: TAABB): boolean;
 {: Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB}
-function TriangleIntersectAABB(const aabb: TAABB; v1, v2, v3: TAffineVector): boolean;
+function TriangleIntersectAABB(const aabb: TAABB; const v1, v2, v3: TAffineVector): boolean;
 
 {: Extract the corners from an AABB}
 procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners : TAABBCorners);
