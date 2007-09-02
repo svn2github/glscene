@@ -4,6 +4,8 @@
   A demo that shows how to use the TGLSLDiffuseSpecularShader component.
 
   Version history:
+    02/07/07 - DaStr - Removed old Timer leftovers
+                       (GLSimpleNavigation component now does this stuff)                     
     20/03/07 - DaStr - Initial version
 
 
@@ -59,7 +61,6 @@ type
     DiffuseSpecularShader: TGLSLDiffuseSpecularShader;    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: double);
-    procedure Timer1Timer(Sender: TObject);
     procedure LightCubeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure ShaderEnabledCheckBoxClick(Sender: TObject);
@@ -125,13 +126,6 @@ begin
 end;
 
 
-procedure TGLSLTestForm.Timer1Timer(Sender: TObject);
-begin
-  Caption := 'GLSL Diffuse Specular Shader demo made by Da Stranger in November ''2006  -  ' + Viewer.FramesPerSecondText;
-  Viewer.ResetPerformanceMonitor;
-end;
-
-
 procedure TGLSLTestForm.LightCubeProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
@@ -180,5 +174,3 @@ begin
 end;
 
 end.
-
-
