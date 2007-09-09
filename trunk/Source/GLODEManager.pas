@@ -17,6 +17,9 @@
 
   History:<ul>
 
+    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to 
+                           make GLODEManager compatible with non-GLODEManager based ODE worlds
+                           Added public property "ContactGroup"
     <li>24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
     <li>07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
                            Added $I GLScene.inc
@@ -97,7 +100,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, dynode, dynodegl, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, dynode, dynodegl, odegl, odeimport, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
   GLColor;
 
@@ -185,6 +188,7 @@ type
 
       property World : PdxWorld read FWorld;
       property Space : PdxSpace read FSpace;
+      property ContactGroup : TdJointGroupID read FContactGroup;
       property NumContactJoints : integer read FNumContactJoints;
 
     published
@@ -4062,7 +4066,7 @@ var
 begin
   if not Assigned(FGeomElement) then exit;
   d:=VectorDotProduct(Mat[2], Mat[3]);
-  dynode.dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
+  {dynode.}dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
 end;
 
 
