@@ -2,7 +2,7 @@
   ***********************************************************************
 
   Change history
-
+  2007.09.11 - Mrqzzz - added reference to odeimport
   2003.02.03 - EG - Fixed CopyPosFromGeomToGL
   2003.02.11 - MF - Added a couple of vector functions for copying between
     ODE formats and GLScene formats
@@ -23,7 +23,7 @@ interface
 }
 
 uses
-  OpenGL1x, VectorGeometry, dynode, GLScene, VectorTypes, VectorLists,
+  OpenGL1x, VectorGeometry, dynode, ODEImport, GLScene, VectorTypes, VectorLists,
   GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);
