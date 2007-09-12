@@ -1,7 +1,13 @@
-// GLWin32Viewer
-{: Win32 specific.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLWin32Viewer<p>
+
+   Win32 specific Scene viewer.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
+                              to GLViewer.pas (Bugtracker ID = 1786279)
       <li>04/12/04 - DaS - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
                            published in TGLSceneViewer
       <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
@@ -25,21 +31,14 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Graphics, Forms, Messages, Classes, GLScene, Controls, Menus,
-   GLContext;
+uses
+  // VCL
+  Windows, Graphics, Forms, Messages, Classes, Controls,
+
+  // GLScene
+  GLScene, GLContext;
 
 type
-
-{$ifdef FPC}
-   TWMPaint = packed record
-      Msg: Cardinal;
-      DC: HDC;
-      Unused: Longint;
-      Result: Longint;
-   end;
-  TWMDestroy = TWMNoParams;
-{$endif}
-
    // TVSyncMode
    //
    TVSyncMode = (vsmSync, vsmNoSync);
@@ -182,8 +181,6 @@ type
 {$endif}
    end;
 
-procedure SetupVSync(vsync : TVSyncMode);
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -192,24 +189,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils, GLWin32Context, GLCrossPlatform;
-
-// SetupVSync
-//
-procedure SetupVSync(vsync : TVSyncMode);
-var
-   i : Integer;
-begin
-   if WGL_EXT_swap_control then begin
-      i:=wglGetSwapIntervalEXT;
-      case VSync of
-         vsmSync    : if i<>1 then wglSwapIntervalEXT(1);
-         vsmNoSync  : if i<>0 then wglSwapIntervalEXT(0);
-      else
-         Assert(False);
-      end;
-   end;
-end;
+uses OpenGL1x, GLWin32Context, SysUtils, GLViewer;
 
 // ------------------
 // ------------------ TGLSceneViewer ------------------

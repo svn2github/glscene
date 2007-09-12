@@ -1,8 +1,14 @@
-// GLLCLViewer
-{: LCL viewer.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLLCLViewer<p>
+
+  A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
-      <li>04/06/04 - EG - Created from GLWin32Viewer
+      <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
+                              to GLViewer.pas (Bugtracker ID = 1786279)
+      <li>04/06/04 -  EG   - Created from GLWin32Viewer
 	</ul></font>
 }
 unit GLLCLViewer;
@@ -11,20 +17,13 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Messages, Graphics, Forms, Classes, GLScene, Controls, Menus, GLContext, LMessages;
+uses
+  Windows, Messages, Graphics, Forms, Classes, Menus, LMessages,
+
+  // GLScene
+  GLScene, Controls,  GLContext;
 
 type
-
-{$ifdef FPC}
-{   TWMPaint = packed record
-      Msg: Cardinal;
-      DC: HDC;
-      Unused: Longint;
-      Result: Longint;
-   end;
-  TWMDestroy = TWMNoParams; }
-{$endif}
-
    // TVSyncMode
    //
    TVSyncMode = (vsmSync, vsmNoSync);
@@ -128,9 +127,9 @@ type
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
-			property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-			property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-         
+         property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+         property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+
          property Align;
          property Anchors;
          property DragCursor;
@@ -155,8 +154,6 @@ type
 {$endif}
    end;
 
-procedure SetupVSync(vsync : TVSyncMode);
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -165,24 +162,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils, GLWin32Context, GLCrossPlatform;
-
-// SetupVSync
-//
-procedure SetupVSync(vsync : TVSyncMode);
-var
-   i : Integer;
-begin
-   if WGL_EXT_swap_control then begin
-      i:=wglGetSwapIntervalEXT;
-      case VSync of
-         vsmSync    : if i<>1 then wglSwapIntervalEXT(1);
-         vsmNoSync  : if i<>0 then wglSwapIntervalEXT(0);
-      else
-         Assert(False);
-      end;
-   end;
-end;
+uses OpenGL1x, SysUtils, GLWin32Context, GLViewer;
 
 // ------------------
 // ------------------ TGLSceneViewer ------------------
