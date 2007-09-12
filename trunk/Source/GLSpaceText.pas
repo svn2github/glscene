@@ -618,19 +618,25 @@ begin
 
   case FAdjust.FHorz of
     haLeft:   AdjustVector[0] := lWidth / 2;
-    haCenter: ; // Nothing.
+    haCenter: AdjustVector[0] := 0; // Nothing.
     haRight:  AdjustVector[0] := - lWidth / 2;
   else
-    Assert(False, glsUnknownType); // Not implemented...
+    begin
+      AdjustVector[0] := 0;
+      Assert(False, glsUnknownType); // Not implemented...
+    end;
   end;
 
   case FAdjust.FVert of
     vaTop:      AdjustVector[1] := - (Abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
-    vaCenter:   ; // Nothing.
+    vaCenter:   AdjustVector[1] := 0; // Nothing.
     vaBottom:   AdjustVector[1] :=    (Abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
     vaBaseLine: AdjustVector[1] :=  - (Abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
   else
-    Assert(False, glsUnknownType); // Not implemented...
+    begin
+      AdjustVector[1] := 0;
+      Assert(False, glsUnknownType); // Not implemented...
+    end;
   end;
 
   AdjustVector[2] := - (FExtrusion / 2);
