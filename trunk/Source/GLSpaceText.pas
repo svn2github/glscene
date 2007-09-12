@@ -6,7 +6,7 @@
    Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>10/09/07 - DaStr - Bugfixed TGLSpaceText.BarycenterAbsolutePosition
+      <li>12/09/07 - DaStr - Bugfixed TGLSpaceText.BarycenterAbsolutePosition
                               (Didn't consider rotations)
       <li>08/09/07 - DaStr - Implemented AxisAlignedDimensionsUnscaled and
                               BarycenterAbsolutePosition for TGLSpaceText
@@ -634,7 +634,8 @@ begin
   end;
 
   AdjustVector[2] := - (FExtrusion / 2);
-  AddVector(Result, LocalToAbsolute(AdjustVector));
+  AdjustVector[3] := 1;
+  Result := LocalToAbsolute(AdjustVector);
 end;
 
 // AxisAlignedDimensionsUnscaled
