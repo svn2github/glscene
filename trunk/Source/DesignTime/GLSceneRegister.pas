@@ -7,6 +7,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/09/07 - DaStr - Added TGLMaterialProxy, TGLAbsoluteHUDText,
+                              TGLResolutionIndependantHUDText
       <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
                              (Bugtracker ID = 1684432)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -1866,6 +1868,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialMultiProxyMaster, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSLBumpShader, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TSpriteAnimation, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialProxy, '', TGLLibMaterialNameProperty);
 
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
@@ -1939,13 +1942,15 @@ initialization
       RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLAtmosphere, 'Atmosphere', glsOCEnvironmentObjects);
 
-      //HUD objects
-      RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
-      RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
+      // HUD objects.
+      RegisterSceneObject(TGLHUDSprite, 'HUD Sprite', glsOCHUDObjects);
+      RegisterSceneObject(TGLHUDText, 'HUD Text', glsOCHUDObjects);
+      RegisterSceneObject(TGLResolutionIndependantHUDText, 'Resolution Independant HUD Text', glsOCHUDObjects);
+      RegisterSceneObject(TGLAbsoluteHUDText, 'Absolute HUD Text', glsOCHUDObjects);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects);
       RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects);
 
-      //GUI objects
+      // GUI objects.
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
       RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
@@ -1981,20 +1986,21 @@ initialization
       RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects);
       RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', glsOCSpecialObjects);
 
-      // Doodad objects
+      // Doodad objects.
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
       RegisterSceneObject(TGLWaterPlane, 'WaterPlane', glsOCDoodad);
 
-      //Proxy objects
+      // Proxy objects.
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', glsOCProxyObjects);
       RegisterSceneObject(TGLColorProxy, 'ColorProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', glsOCProxyObjects);
+      RegisterSceneObject(TGLMaterialProxy, 'MaterialProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLActorProxy, 'ActorProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', glsOCProxyObjects);
       RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy', glsOCProxyObjects);
 
-      //Other objects
+      // Other objects.
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
