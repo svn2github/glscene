@@ -6,6 +6,9 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/09/07 - DaStr - Fixed TGLScene.RenderScene
+                              (InitializableObjects stuff) (BugTracker ID = 1796358)
+                             Moved TGLBaseSceneObject.SetScene to the protected section
       <li>10/09/07 - DaStr - TGLBaseSceneObject:
                                Added AxisAlignedBoundingBoxAbsolute
                                Bugfixed GetAbsoluteScale
@@ -498,7 +501,6 @@ type
          function  GetBehaviours : TGLBehaviours;
          procedure SetEffects(const val : TGLObjectEffects);
          function  GetEffects : TGLObjectEffects;
-         procedure SetScene(const value : TGLScene);
 
          function GetAbsoluteAffineScale: TAffineVector;
          function GetAbsoluteScale: TVector;
@@ -507,6 +509,7 @@ type
       protected
          { Protected Declarations }
          procedure Loaded; override;
+         procedure SetScene(const Value : TGLScene); virtual;
 
          procedure DefineProperties(Filer: TFiler); override;
          procedure WriteBehaviours(stream : TStream);
@@ -6491,11 +6494,12 @@ begin
 
    if FInitializableObjects.Count <> 0 then
    begin
-      // First initialize all objects.
-      for I := 0 to FInitializableObjects.Count - 1 do
+      // First initialize all objects and delete them from the list.
+      for I := FInitializableObjects.Count - 1 downto 0 do
+      begin
          FInitializableObjects.GetItems(I).InitializeObject(Self, rci);
-      // In the end clear the list.
-      FInitializableObjects.Clear;
+         FInitializableObjects.Delete(I);
+      end;
    end;
 
    if baseObject=nil then
