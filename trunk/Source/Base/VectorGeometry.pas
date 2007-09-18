@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/09/07 - DaStr - Added AddPoint() and PointAdd() procedures
       <li>18/09/07 - DaStr - Added two more overloaded versions of VectorScale()
       <li>29/08/07 - LC - Fixed BarycentricCoordinates to work with triangles in yz plane 
       <li>27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
@@ -696,6 +697,13 @@ procedure AddVector(var v1 : TVector; const v2 : TVector); overload;
 procedure AddVector(var v : TAffineVector; const f : Single); overload;
 //: Sums up f to each component of the vector
 procedure AddVector(var v : TVector; const f : Single); overload;
+
+//: Adds V2 to V1, result is placed in V1. W coordinate is always 1.
+procedure AddPoint(var v1 : TVector; const v2 : TVector); overload;
+
+//: Returns the sum of two homogeneous vectors. W coordinate is always 1.
+function PointAdd(var v1 : TVector; const v2 : TVector): TVector; overload;
+
 
 //: Adds delta to nb texpoints in src and places result in dest
 procedure TexPointArrayAdd(const src : PTexPointArray; const delta : TTexPoint;
@@ -2144,6 +2152,16 @@ begin
    Result[3]:=v[3]+f;
 end;
 
+// PointAdd (hmg, W = 1)
+//
+function PointAdd(var v1 : TVector; const v2 : TVector): TVector;
+begin
+   Result[0] := v1[0] + v2[0];
+   Result[1] := v1[1] + v2[1];
+   Result[2] := v1[2] + v2[2];
+   Result[3] := 1;
+end;
+
 // AddVector (affine)
 //
 procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector);
@@ -2249,6 +2267,16 @@ begin
    v[1]:=v[1]+f;
    v[2]:=v[2]+f;
    v[3]:=v[3]+f;
+end;
+
+// AddPoint (hmg, W = 1)
+//
+procedure AddPoint(var v1 : TVector; const v2 : TVector);
+begin
+   v1[0] := v1[0] + v2[0];
+   v1[1] := v1[1] + v2[1];
+   v1[2] := v1[2] + v2[2];
+   v1[3] := 1;
 end;
 
 // TexPointArrayAdd
