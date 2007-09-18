@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/09/07 - DaStr - Added two more overloaded versions of VectorScale()
       <li>29/08/07 - LC - Fixed BarycentricCoordinates to work with triangles in yz plane 
       <li>27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
                              (thanks Biot!) (BugTracker ID = 1782005)
@@ -912,6 +913,10 @@ function VectorScale(const v : TVector; factor : Single) : TVector; overload;
 procedure VectorScale(const v : TVector; factor : Single; var vr : TVector); overload;
 //: Scales a vector by a factor and places result in vr
 procedure VectorScale(const v : TVector; factor : Single; var vr : TAffineVector); overload;
+//: Scales given vector by another vector
+function VectorScale(const v : TAffineVector; const Factor : TAffineVector): TAffineVector; overload;
+//: RScales given vector by another vector
+function VectorScale(const v : TVector; const Factor : TVector): TVector; overload;
 
 {: Divides given vector by another vector.<p>
    v[x]:=v[x]/divider[x], v[y]:=v[y]/divider[y] etc. }
@@ -4627,6 +4632,25 @@ begin
    vr[1]:=v[1]*factor;
    vr[2]:=v[2]*factor;
 {$endif}
+end;
+
+// VectorScale (func, affine)
+//
+function VectorScale(const v : TAffineVector; const Factor : TAffineVector): TAffineVector;
+begin
+  Result[0] := v[0] * Factor[0];
+  Result[1] := v[1] * Factor[1];
+  Result[2] := v[2] * Factor[2];
+end;
+
+// VectorScale (func, hmg)
+//
+function VectorScale(const v : TVector; const Factor : TVector): TVector;
+begin
+  Result[0] := v[0] * Factor[0];
+  Result[1] := v[1] * Factor[1];
+  Result[2] := v[2] * Factor[2];
+  Result[3] := v[3] * Factor[3];
 end;
 
 // DivideVector
