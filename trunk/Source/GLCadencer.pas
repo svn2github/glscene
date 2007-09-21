@@ -1,8 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLCadencer<p>
 
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/09/07 - DaStr - Added TGLCadencer.SetCurrentTime()
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Added some ifdef Win32 for Linux
       <li>20/10/03 - EG - Fixed issues about cadencer destruction
@@ -79,7 +83,7 @@ type
 	TGLCadencer = class (TComponent)
 		private
 			{ Private Declarations }
-         FSubscribedCadenceableComponents : TList;
+			FSubscribedCadenceableComponents : TList;
 			FScene : TGLScene;
 			FTimeMultiplier : Double;
 			lastTime, downTime, lastMultiplier : Double;
@@ -89,9 +93,10 @@ type
 			FTimeReference : TGLCadencerTimeReference;
 			FCurrentTime : Double;
 			FOriginTime : Double;
-         FMaxDeltaTime, FMinDeltaTime, FFixedDeltaTime : Double;
+			FMaxDeltaTime, FMinDeltaTime, FFixedDeltaTime : Double;
 			FOnProgress : TGLProgressEvent;
 			FProgressing : Integer;
+      procedure SetCurrentTime(const Value: Double);
 
 		protected
 			{ Protected Declarations }
@@ -101,41 +106,43 @@ type
 			procedure SetScene(const val : TGLScene);
 			procedure SetMode(const val : TGLCadencerMode);
 			procedure SetTimeReference(const val : TGLCadencerTimeReference);
-         procedure SetTimeMultiplier(const val : Double);
+			procedure SetTimeMultiplier(const val : Double);
 			{: Returns raw ref time (no multiplier, no offset) }
 			function GetRawReferenceTime : Double;
-         procedure RestartASAP;
-         procedure Loaded; override;
+			procedure RestartASAP;
+			procedure Loaded; override;
 
-         procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
+			procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
 
 		public
 			{ Public Declarations }
 			constructor Create(AOwner : TComponent); override;
 			destructor Destroy; override;
 
-         procedure Subscribe(aComponent : TGLCadenceAbleComponent);
-         procedure UnSubscribe(aComponent : TGLCadenceAbleComponent);
+			procedure Subscribe(aComponent : TGLCadenceAbleComponent);
+			procedure UnSubscribe(aComponent : TGLCadenceAbleComponent);
 
 			{: Allows to manually trigger a progression.<p>
 				Time stuff is handled automatically.<br>
 				If cadencer is disabled, this functions does nothing. }
 			procedure Progress;
+
 			{: Adjusts CurrentTime if necessary, then returns its value. }
 			function GetCurrentTime : Double;
+
          {: Returns True if a "Progress" is underway.<p>
             Be aware that as long as IsBusy is True, the Cadencer may be
             sending messages and progression calls to cadenceable components
             and scenes. }
-         function IsBusy : Boolean;
+			function IsBusy : Boolean;
 
-         {: Reset the time parameters and returns to zero.<p>}
-         procedure Reset;
+			{: Reset the time parameters and returns to zero.<p>}
+			procedure Reset;
 
 			{: Value soustracted to current time to obtain progression time. }
 			property OriginTime : Double read FOriginTime write FOriginTime;
 			{: Current time (manually or automatically set, see TimeReference). }
-			property CurrentTime : Double read FCurrentTime write FCurrentTime;
+			property CurrentTime : Double read FCurrentTime write SetCurrentTime;
 
 		published
 			{ Published Declarations }
@@ -145,15 +152,18 @@ type
 				Disabling won't cause a jump when restarting, it is working like
 				a play/pause (ie. may modify OriginTime to keep things smooth). }
 			property Enabled : Boolean read FEnabled write SetEnabled default True;
+
 			{: Defines how CurrentTime is updated.<p>
 				See TGLCadencerTimeReference.<br>
 				Dynamically changeing the TimeReference may cause a "jump".  }
 			property TimeReference : TGLCadencerTimeReference read FTimeReference write SetTimeReference default cmPerformanceCounter;
+
 			{: Multiplier applied to the time reference.<p>
-            Zero isn't an allowed value, and be aware that if negative values
-            are accepted, they may not be supported by other GLScene objects.<br>
+			  Zero isn't an allowed value, and be aware that if negative values
+			  are accepted, they may not be supported by other GLScene objects.<br>
 				Changing the TimeMultiplier will alter OriginTime. }
 			property TimeMultiplier : Double read FTimeMultiplier write SetTimeMultiplier stored StoreTimeMultiplier;
+
          {: Maximum value for deltaTime in progression events.<p>
             If null or negative, no max deltaTime is defined, otherwise, whenever
             an event whose actual deltaTime would be superior to MaxDeltaTime
@@ -161,13 +171,15 @@ type
             by the cadencer (it isn't visible in CurrentTime either).<br>
             This option allows to limit progression rate in simulations where
             high values would result in errors/random behaviour. }
-         property MaxDeltaTime : Double read FMaxDeltaTime write FMaxDeltaTime;
+			property MaxDeltaTime : Double read FMaxDeltaTime write FMaxDeltaTime;
+
          {: Minimum value for deltaTime in progression events.<p>
             If superior to zero, this value specifies the minimum time step
             between two progression events.<br>
             This option allows to limit progression rate in simulations where
             low values would result in errors/random behaviour. }
-         property MinDeltaTime : Double read FMinDeltaTime write FMinDeltaTime;
+			property MinDeltaTime : Double read FMinDeltaTime write FMinDeltaTime;
+
          {: Fixed time-step value for progression events.<p>
             If superior to zero, progression steps will happen with that fixed
             delta time. The progression remains time based, so zero to N events
@@ -177,14 +189,17 @@ type
             This option allows to use fixed time steps in simulations (while the
             animation and rendering itself may happen at a lower or higher
             framerate). }
-         property FixedDeltaTime : Double read FFixedDeltaTime write FFixedDeltaTime;
+			property FixedDeltaTime : Double read FFixedDeltaTime write FFixedDeltaTime;
+
 			{: Adjusts how progression events are triggered.<p>
 				See TGLCadencerMode. }
 			property Mode : TGLCadencerMode read FMode write SetMode default cmASAP;
+
 			{: Allows relinquishing time to other threads/processes.<p>
 				A "sleep" is issued BEFORE each progress if SleepLength>=0 (see
 				help for the "sleep" procedure in delphi for details). }
 			property SleepLength : Integer read FSleepLength write FSleepLength default -1;
+
 			{: Happens AFTER scene was progressed. }
 			property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
 	end;
@@ -689,6 +704,15 @@ begin
    lasttime:=0;
    downTime:=GetRawReferenceTime;
    FOriginTime:=downTime;
+end;
+
+// SetCurrentTime
+//
+procedure TGLCadencer.SetCurrentTime(const Value: Double);
+begin
+  LastTime := Value - (FCurrentTime - LastTime);
+  FOriginTime := FOriginTime + (FCurrentTime - Value);
+  FCurrentTime := Value;
 end;
 
 // ------------------
