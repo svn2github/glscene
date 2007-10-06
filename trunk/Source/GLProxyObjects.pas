@@ -6,6 +6,8 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
+                              (Bugtracker ID = 1808666)
       <li>04/09/07 - DaStr - Added TGLMaterialProxy
                              Cleaned up this unit a bit
       <li>10/05/07 - DaStr - Bugfixed TGLColorProxy.DoRender
@@ -482,7 +484,8 @@ begin
             if pooTransformation in ProxyOptions then
                glMultMatrixf(PGLFloat(MasterObject.MatrixAsAddress));
 
-            GetMasterMaterialObject.Material.QuickAssignMaterial(
+            if (FMasterLibMaterial <> nil) and (FMaterialLibrary <> nil) then
+              GetMasterMaterialObject.Material.QuickAssignMaterial(
                                          FMaterialLibrary, FMasterLibMaterial);
 
             MasterObject.DoRender(ARci, ARenderSelf, MasterObject.Count > 0);
