@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>07/10/07 - Mrqzzz - Added reference to ODEGL
     <li>11/09/07 - Mrqzzz - Added reference to ODEImport
     <li>07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
                            Added $I GLScene.inc
@@ -36,7 +37,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLODEManager, dynode, dynodegl, ODEImport, VectorGeometry,
+  Classes, SysUtils, GLODEManager, dynode, odegl,dynodegl, ODEImport, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
   OpenGL1x, GLTexture, GLColor;
 
