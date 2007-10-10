@@ -347,7 +347,7 @@ end;
 procedure TTimeEvent.SetEnabled(const Value: Boolean);
 begin
   FEnabled := Value;
-  FtartTime := ((GetOwner as TTimeEvents).Owner as TGLTimeEventsMGR).Cadencer.CurrentTime;
+  FStartTime := ((GetOwner as TTimeEvents).Owner as TGLTimeEventsMGR).Cadencer.CurrentTime;
 end;
 
 end.
