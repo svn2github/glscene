@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODEManager<p>
+{: GLODEManager<p>                    
 
   An ODE Manager for GLScene.<p>
 
@@ -17,7 +17,9 @@
 
   History:<ul>
 
-    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to 
+
+    <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^) to avoid ambiguous overloading
+    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
                            make GLODEManager compatible with non-GLODEManager based ODE worlds
                            Added public property "ContactGroup"
     <li>24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
@@ -1269,6 +1271,8 @@ end;
 // GetSurfaceFromObject
 //
 function GetSurfaceFromObject(anObject : TObject) : TODECollisionSurface;
+var
+  odebehaviour: TGLOdeBehaviour;
 begin
   Result:=nil;
   if Assigned(anObject) then
@@ -1276,8 +1280,12 @@ begin
       Result:=TGLODEBehaviour(anObject).Surface
     else
     begin
-         if (anObject is TGLBaseSceneObject) and (TGLBaseSceneObject(anObject).Behaviours.Count>0) and (TGLBaseSceneObject(anObject).Behaviours[0] is TGLODEBehaviour)  then
-            Result:=TGLODEBehaviour(TGLBaseSceneObject(anObject).Behaviours[0]).Surface
+         if (anObject is TGLBaseSceneObject) then
+         begin
+              odebehaviour:=TGLOdeBehaviour(TGLBaseSceneObject(anObject).Behaviours.GetByClass(TGLODEBehaviour));
+              if assigned(odebehaviour) then
+                 Result:=odebehaviour.Surface
+         end;
     end;
 end;
 
@@ -2282,7 +2290,7 @@ var
 begin
   pos:=dBodyGetPosition(Body);
   R:=dBodyGetRotation(Body);
-  ODERToGLSceneMatrix(m,R^,pos^);
+  ODEGL.ODERToGLSceneMatrix(m,R^,pos^);
   if OwnerBaseSceneObject.Parent is TGLBaseSceneObject then
     m:=MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
   OwnerBaseSceneObject.Matrix:=m;
@@ -4834,6 +4842,7 @@ begin
   FAxisParams:=TODEJointParams.Create(Self);
   FAxisParams.SetCallback:=SetAxisParam;
   FAxisParams.GetCallback:=GetAxisParam;
+
 end;
 
 // Destroy
