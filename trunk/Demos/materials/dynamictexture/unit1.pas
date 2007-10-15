@@ -1,7 +1,11 @@
 {
   GLDynamicTexture Demo.
+  Use F2 and F3 to toggle between PBO and non-PBO updates,
+  if your card supports it.
+  Use F4 to toggle partial updates.
 
   Version history:
+    16/10/07 - LC - Updated to use DirtyRectangle property
     12/07/07 - DaStr - Restored FPC compatibility
     29/06/07 - DaStr - Initial version (by LordCrc)
 }
@@ -41,6 +45,7 @@ type
   private
     { Private declarations }
     frame: Integer;
+    partial: boolean;
   public
     { Public declarations }
   end;
@@ -55,7 +60,7 @@ implementation
 {$ENDIF}
 
 uses
-  OpenGL1x, GLUtils, GLContext, GLDynamicTexture;
+  OpenGL1x, GLUtils, GLContext, GLDynamicTexture, GLCrossPlatform, Types;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -78,11 +83,17 @@ begin
     begin
       img.UsePBO := False;
       GLSceneViewer1.ResetPerformanceMonitor;
+      frame:= 0;
     end;
     VK_F3:
     begin
       img.UsePBO := True;
       GLSceneViewer1.ResetPerformanceMonitor;
+      frame:= 0;
+    end;
+    VK_F4:
+    begin
+      partial:= not partial;
     end;
   end;
 end;
@@ -125,9 +136,26 @@ begin
   // draw some silly stuff
   p := img.Data;
   frame := frame + 1;
-  for Y := 0 to img.Height - 1 do
+
+  // first frame must always be drawn completely
+  if partial and (frame > 1) then
   begin
-    for X := 0 to img.Width - 1 do
+    // do partial update, set the dirty rectangle
+    // note that we do NOT offset the p pointer,
+    // since it is relative to the dirty rectangle,
+    // not the complete texture
+    // also note that the right/bottom edge is not included
+    // in the upload
+    img.DirtyRectangle:= GLRect(
+      img.Width div 4,
+      img.Height div 4,
+      img.Width * 3 div 4,
+      img.Height * 3 div 4);
+  end;
+
+  for Y := img.DirtyRectangle.Top to img.DirtyRectangle.Bottom - 1 do
+  begin
+    for X := img.DirtyRectangle.Left to img.DirtyRectangle.Right - 1 do
     begin
       p^.rgbRed := ((X xor Y) + frame) and 255;
       p^.rgbGreen := ((X + frame) xor Y) and 255;
