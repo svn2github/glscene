@@ -6,6 +6,8 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
+                              (CurrentFrame,StartFrame,Endframe,etc..)
       <li>05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
                               (Bugtracker ID = 1808666)
       <li>04/09/07 - DaStr - Added TGLMaterialProxy
@@ -158,6 +160,11 @@ type
     procedure DoRender(var ARci : TRenderContextInfo;
                         ARenderSelf, ARenderChildren : Boolean); override;
     procedure DoProgress(const progressTime : TProgressTimes); override;
+    property CurrentFrame: Integer read FCurrentFrame;
+    property StartFrame: Integer read FStartFrame;
+    property EndFrame: Integer read FEndFrame;
+    property CurrentFrameDelta: Single read FCurrentFrameDelta;
+    property CurrentTime: TProgressTimes read FCurrentTime;
   published
     { Published Declarations }
     property Interval: Integer read FInterval write FInterval default 0;
