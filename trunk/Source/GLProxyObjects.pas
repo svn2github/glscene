@@ -6,6 +6,8 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
+                              (allows different materials on proxy actors sharing same master)
       <li>06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
                               (CurrentFrame,StartFrame,Endframe,etc..)
       <li>05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
@@ -139,7 +141,7 @@ type
   // TGLActorProxy
   //
   {: A proxy object specialized for Actors.<p> }
-  TGLActorProxy = class(TGLProxyObject)
+  TGLActorProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FCurrentFrame: Integer;
@@ -149,14 +151,25 @@ type
     FCurrentTime: TProgressTimes;
     FInterval: Integer;
     FAnimation: TActorAnimationName;
+
+    FTempLibMaterialName: string;
+    FMasterLibMaterial: TGLLibMaterial;
+    FMaterialLibrary: TGLMaterialLibrary;
+
     procedure SetAnimation(const Value: TActorAnimationName);
     procedure SetMasterActorObject(const Value: TGLActor);
     function GetMasterActorObject: TGLActor;
+    function GetLibMaterialName: TGLLibMaterialName;
+    procedure SetLibMaterialName(const Value: TGLLibMaterialName);
+    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+    // Implementing IGLMaterialLibrarySupported.
+    function GetMaterialLibrary: TGLMaterialLibrary;
   protected
     { Protected Declarations }
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoRender(var ARci : TRenderContextInfo;
                         ARenderSelf, ARenderChildren : Boolean); override;
     procedure DoProgress(const progressTime : TProgressTimes); override;
@@ -174,6 +187,10 @@ type
     // Redeclare without pooTransformation
     // (Don't know why it causes the object to be oriented incorrecly.)
     property ProxyOptions default [pooEffects, pooObjects];
+    {: Specifies the MaterialLibrary, that current proxy will use. }
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    {: Specifies the Material, that current proxy will use. }
+    property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write SetLibMaterialName;
   end;
 
 //-------------------------------------------------------------
@@ -400,8 +417,20 @@ begin
           SetCurrentFrameDirect(FCurrentFrame);
           StartFrame := FStartFrame;
           EndFrame := FEndFrame;
+
+
+          // mrqzzz
+          if (FMasterLibMaterial <> nil) and (FMaterialLibrary <> nil) then
+            MasterActor.Material.QuickAssignMaterial(
+                                       FMaterialLibrary, FMasterLibMaterial);
+
+
+
+
+
           DoProgress(FCurrentTime);
           DoRender(ARci,ARenderSelf,Count>0);
+
           FCurrentFrameDelta := CurrentFrameDelta;
           FCurrentFrame := CurrentFrame;
           CurrentFrameDelta := cfd;
@@ -428,6 +457,29 @@ end;
 function TGLActorProxy.GetMasterActorObject: TGLActor;
 begin
   Result := TGLActor(inherited MasterObject);
+end;
+
+function TGLActorProxy.GetLibMaterialName: TGLLibMaterialName;
+begin
+  Result := FMaterialLibrary.GetNameOfLibMaterial(FMasterLibMaterial);
+  if Result = '' then
+    Result := FTempLibMaterialName;
+end;
+
+function TGLActorProxy.GetMaterialLibrary: TGLMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
+end;
+
+procedure TGLActorProxy.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited;
+  if Operation = opRemove then
+  begin
+    if AComponent = FMaterialLibrary then
+      FMaterialLibrary := nil;
+  end;
 end;
 
 // SetAnimation
@@ -458,6 +510,43 @@ begin
   inherited SetMasterObject(Value);
 end;
 
+
+procedure TGLActorProxy.SetLibMaterialName(
+  const Value: TGLLibMaterialName);
+begin
+  if FMaterialLibrary = nil then
+  begin
+    FTempLibMaterialName := Value;
+    if not (csLoading in ComponentState) then
+      raise ETexture.Create(glsMatLibNotDefined);
+  end
+  else
+  begin
+    FMasterLibMaterial := FMaterialLibrary.LibMaterialByName(Value);
+    FTempLibMaterialName := '';
+  end;
+end;
+
+procedure TGLActorProxy.SetMaterialLibrary(const Value: TGLMaterialLibrary);
+begin
+  if FMaterialLibrary <> Value then
+  begin
+    if FMaterialLibrary <> nil then
+      FMaterialLibrary.RemoveFreeNotification(Self);
+    FMaterialLibrary := Value;
+
+    if FMaterialLibrary <> nil then
+    begin
+      FMaterialLibrary.FreeNotification(Self);
+      if FTempLibMaterialName <> '' then
+        SetLibMaterialName(FTempLibMaterialName);
+    end
+    else
+    begin
+      FTempLibMaterialName := '';
+    end;
+  end;
+end;
 
 { TGLMaterialProxy }
 
