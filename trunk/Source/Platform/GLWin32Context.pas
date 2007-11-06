@@ -743,7 +743,7 @@ var
    pixelFormat : Integer;
 begin
    if not wglMakeCurrent(Cardinal(FDC), Cardinal(FRC)) then
-     if not GLContext.vIgnoreContextActivationFailures then // mrqzzz (ignore Context Activation Failures)
+     if not GLContext.vIgnoreContextActivationFailures then
       raise EGLContext.Create(Format(cContextActivationFailed,
                                      [GetLastError, SysErrorMessage(GetLastError)]));
 
