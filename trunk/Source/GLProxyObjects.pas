@@ -6,6 +6,11 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+
+      <li>07/11/07 - mrqzzz - Added "BoneMatrix(Boneidndex|boneName)" function and
+                               StoreBonesMatrix property for TGLActorProxy
+                              (To read each ActorProxy's individual Bone matrices,
+                              f.ex to align a weapon in it's hand)
       <li>06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
                               (allows different materials on proxy actors sharing same master)
       <li>06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
@@ -138,6 +143,15 @@ type
         property MasterObject: TGLFreeForm read GetMasterFreeFormObject write SetMasterFreeFormObject;
    end;
 
+
+
+  // TBoneMatrixObj
+  //
+  {: An object containing the bone matrix for TGLActorProxy.<p> }
+   TBoneMatrixObj = class
+     Matrix:TMatrix;
+   end;
+
   // TGLActorProxy
   //
   {: A proxy object specialized for Actors.<p> }
@@ -156,6 +170,9 @@ type
     FMasterLibMaterial: TGLLibMaterial;
     FMaterialLibrary: TGLMaterialLibrary;
 
+    FBonesMatrices:TStringList;
+    FStoreBonesMatrix: boolean;
+
     procedure SetAnimation(const Value: TActorAnimationName);
     procedure SetMasterActorObject(const Value: TGLActor);
     function GetMasterActorObject: TGLActor;
@@ -164,11 +181,14 @@ type
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLMaterialLibrary;
+    procedure SetStoreBonesMatrix(const Value: boolean);
   protected
     { Protected Declarations }
+    procedure DoStoreBonesMatrices; // stores matrices of bones of the current frame rendered
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DoRender(var ARci : TRenderContextInfo;
                         ARenderSelf, ARenderChildren : Boolean); override;
@@ -178,6 +198,11 @@ type
     property EndFrame: Integer read FEndFrame;
     property CurrentFrameDelta: Single read FCurrentFrameDelta;
     property CurrentTime: TProgressTimes read FCurrentTime;
+    {: Gets the Bones Matrix in the current animation frame.
+     (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
+    function BoneMatrix(BoneIndex:integer):TMatrix; overload;
+    function BoneMatrix(BoneName:string):TMatrix; overload;
+    procedure BoneMatricesClear;
   published
     { Published Declarations }
     property Interval: Integer read FInterval write FInterval default 0;
@@ -191,6 +216,9 @@ type
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     {: Specifies the Material, that current proxy will use. }
     property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write SetLibMaterialName;
+    {: Specifies if it will store the Bones Matrices
+     (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
+    property StoreBonesMatrix:boolean read FStoreBonesMatrix write SetStoreBonesMatrix;
   end;
 
 //-------------------------------------------------------------
@@ -367,14 +395,50 @@ end;
 
 // Create
 //
+function TGLActorProxy.BoneMatrix(BoneIndex: integer): TMatrix;
+begin
+     if BoneIndex<FBonesMatrices.count then
+        result := TBoneMatrixObj(FBonesMatrices.Objects[BoneIndex]).Matrix;
+end;
+
+function TGLActorProxy.BoneMatrix(BoneName: string): TMatrix;
+var
+  i: Integer;
+begin
+     i := FBonesMatrices.IndexOf(BoneName);
+     if i>-1 then
+        result := TBoneMatrixObj(FBonesMatrices.Objects[i]).Matrix;
+end;
+
+procedure TGLActorProxy.BoneMatricesClear;
+var
+  i: Integer;
+begin
+     for i:=0 to FBonesMatrices.Count-1 do
+     begin
+          TBoneMatrixObj(FBonesMatrices.Objects[i]).free;
+     end;
+     FBonesMatrices.Clear;
+end;
+
+
 constructor TGLActorProxy.Create(AOwner: TComponent);
 begin
   inherited;
   ProxyOptions := ProxyOptions - [pooTransformation];
+  FBonesMatrices:=TStringList.create;
+  FStoreBonesMatrix:=false; // default is false to speed up a little if we don't need bones info
 end;
 
 // DoProgress
 //
+destructor TGLActorProxy.Destroy;
+begin
+  BoneMatricesClear;
+  FBonesMatrices.free;
+  inherited;
+end;
+
 procedure TGLActorProxy.DoProgress(const progressTime: TProgressTimes);
 begin
   inherited;
@@ -418,18 +482,16 @@ begin
           StartFrame := FStartFrame;
           EndFrame := FEndFrame;
 
-
-          // mrqzzz
           if (FMasterLibMaterial <> nil) and (FMaterialLibrary <> nil) then
             MasterActor.Material.QuickAssignMaterial(
                                        FMaterialLibrary, FMasterLibMaterial);
 
-
-
-
-
           DoProgress(FCurrentTime);
           DoRender(ARci,ARenderSelf,Count>0);
+
+          // Stores Bones matrices of the current frame
+          if (FStoreBonesMatrix) and (MasterActor.Skeleton<>nil) then
+             DoStoreBonesMatrices;
 
           FCurrentFrameDelta := CurrentFrameDelta;
           FCurrentFrame := CurrentFrame;
@@ -450,6 +512,31 @@ begin
   finally
     ClearStructureChanged;
   end;
+end;
+
+procedure TGLActorProxy.DoStoreBonesMatrices;
+var
+   i,n:integer;
+   Bmo:TBoneMatrixObj;
+begin
+     // Add missing TBoneMatrixObjects (actually ony 1st time)
+     if FBonesMatrices.Count<MasterObject.Skeleton.BoneCount then
+     begin
+          n:=FBonesMatrices.Count;
+          for i := n to MasterObject.Skeleton.BoneCount-2 do  // note : BoneCount actually returns 1 count more.
+          begin
+               Bmo := TBoneMatrixObj.Create;
+               if MasterObject.Skeleton.BoneByID(i)<>nil then
+                  FBonesMatrices.AddObject(MasterObject.Skeleton.BoneByID(i).Name,Bmo);
+          end;
+     end;
+
+     // fill FBonesMatrices list
+     for i:=0 to FBonesMatrices.count-1 do
+     begin
+          Bmo := TBoneMatrixObj(FBonesMatrices.Objects[i]);
+          Bmo.Matrix := MasterObject.Skeleton.BoneByID(i).GlobalMatrix;
+     end;
 end;
 
 // GetMasterObject
@@ -508,6 +595,7 @@ end;
 procedure TGLActorProxy.SetMasterActorObject(const Value: TGLActor);
 begin
   inherited SetMasterObject(Value);
+  BoneMatricesClear;
 end;
 
 
@@ -546,6 +634,11 @@ begin
       FTempLibMaterialName := '';
     end;
   end;
+end;
+
+procedure TGLActorProxy.SetStoreBonesMatrix(const Value: boolean);
+begin
+  FStoreBonesMatrix := Value;
 end;
 
 { TGLMaterialProxy }
