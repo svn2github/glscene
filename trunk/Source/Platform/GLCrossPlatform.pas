@@ -9,6 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
+                              (thanks Dje and Burkhard Carstens)
       <li>06/06/07 - DaStr - Added WORD type
                              Got rid of GLTexture.pas dependancy
                              Moved GetRValue, GetGValue, GetBValue, InitWinColors
@@ -64,6 +66,14 @@ uses
 {$ENDIF}
 
 type
+{$IFNDEF FPC}
+  // These new types were added to be able to cast pointers to integers
+  // in 64 bit mode, because in FPC "Integer" type is always 32 bit 
+  // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
+  // can be 16, 32 or 64 bit.
+  ptrInt  = Integer;
+  PtrUInt = Cardinal;
+{$ENDIF}
 
    // Several aliases to shield us from the need of ifdef'ing between
    // the "almost cross-platform" units like Graphics/QGraphics etc.
