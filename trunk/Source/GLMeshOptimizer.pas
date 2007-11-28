@@ -308,9 +308,9 @@ begin
     aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := NormalList[(I*3+2)];
     if InvertNormals then
     begin
-         NegateVector(aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]]);
-         NegateVector(aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]]);
-         NegateVector(aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]]);
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]]);
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]]);
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]]);
     end;
   end;
   FaceList.free;
