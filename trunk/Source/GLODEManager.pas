@@ -18,6 +18,7 @@
   History:<ul>
 
 
+    <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
     <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^) to avoid ambiguous overloading
     <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
                            make GLODEManager compatible with non-GLODEManager based ODE worlds
@@ -115,7 +116,8 @@ type
                                   var HandleCollision:Boolean) of object;
 
   TODEObjectCollisionEvent = procedure (Sender : TObject; Object2 : TObject;
-                                        Contact:TdContact) of object;
+                                        var Contact:TdContact;
+                                        var HandleCollision:Boolean) of object;
 
   TODECollisionSurfaceMode = (csmMu2,csmFDir1,csmBounce,csmSoftERP,csmSoftCFM,
                               csmMotion1,csmMotion2,csmSlip1,csmSlip2);
@@ -1544,10 +1546,10 @@ begin
       // Fire the OnCollision event for each object
       if TObject(Obj1) is TGLODEBehaviour then
         if Assigned(TGLODEBehaviour(Obj1).FOnCollision) then
-          TGLODEBehaviour(Obj1).FOnCollision(Self,Obj2,FContacts[i]);
+          TGLODEBehaviour(Obj1).FOnCollision(Self,Obj2,FContacts[i],HandleCollision);
       if TObject(Obj2) is TGLODEBehaviour then
         if Assigned(TGLODEBehaviour(Obj2).FOnCollision) then
-          TGLODEBehaviour(Obj2).FOnCollision(Self,Obj1,FContacts[i]);
+          TGLODEBehaviour(Obj2).FOnCollision(Self,Obj1,FContacts[i],HandleCollision);
     end else begin
       // Default surface values
       FContacts[i].surface.mu:=1000;
