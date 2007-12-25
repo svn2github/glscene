@@ -15,9 +15,9 @@
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
-  History:<ul>
-
-
+  <b>History : </b><font size=-1><ul>
+    <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
+                             (thanks Sandor Domokos) (BugtrackerID = 1808371)
     <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
     <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^) to avoid ambiguous overloading
     <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
@@ -1402,6 +1402,8 @@ end;
 //
 destructor TGLODEManager.Destroy;
 begin
+  RenderPoint := nil;
+  
   // Unregister everything
   while FODEBehaviours.Count>0 do
     ODEBehaviours[0].Manager:=nil;
