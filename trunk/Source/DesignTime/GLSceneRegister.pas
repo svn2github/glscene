@@ -7,7 +7,9 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>06/11/07 - mrqzzz - Registered material picker for TGLActorProxy 
+      <li>20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
+                             Registered TGLGizmo
+      <li>06/11/07 - mrqzzz - Registered material picker for TGLActorProxy
       <li>18/09/07 - DaStr - Added TGLMaterialProxy, TGLAbsoluteHUDText,
                               TGLResolutionIndependantHUDText
       <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
@@ -201,7 +203,11 @@ uses
    GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
    GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
+<<<<<<< GLSceneRegister.pas
+   GLColor, GLViewer, GLGizmo,
+=======
    GLColor, GLViewer,GLGizmo,
+>>>>>>> 1.98
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1572,6 +1578,9 @@ begin
    // TGLCylinder
    RegisterPropertiesInCategory(sVisualCategoryName, TGLCylinder,
      ['*Radius', 'Loops', 'Slices', 'Stacks']);
+   // TGLCapsule
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLCapsule,
+     ['*Radius', 'Loops', 'Slices', 'Stacks']);
    // TGLAnnulus
    RegisterPropertiesInCategory(sVisualCategoryName, TGLAnnulus,
      ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
@@ -1822,7 +1831,11 @@ begin
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
+<<<<<<< GLSceneRegister.pas
+                       TGLSimpleNavigation, TGLGizmo 
+=======
                        TGLSimpleNavigation,TGLGizmo 
+>>>>>>> 1.98
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1906,6 +1919,7 @@ initialization
       RegisterSceneObject(TGLDisk, 'Disk', glsOCBasicGeometry);
       RegisterSceneObject(TGLCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TGLCylinder, 'Cylinder', glsOCBasicGeometry);
+      RegisterSceneObject(TGLCapsule, 'Capsule', glsOCBasicGeometry);
       RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
       {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
