@@ -7,6 +7,8 @@
    under GLScene (usefull for an Editor).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
+                             (thanks Lukasz Sokol) 
       <li>18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
                              J.Delauney, Degiovani, Marcus Oblak and a bit myself)
    </ul></font>
@@ -62,12 +64,12 @@ interface
 
 uses
   // Standard
-  Classes, Windows, Controls, Graphics, SysUtils,
+  Classes, SysUtils,
 
   // GLScene
   OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLTexture, GLStrings,
-  GLWin32Viewer, GLSpaceText,  GLGeomObjects, GLBitmapFont, GLHUDObjects,
-  GLMisc, GLVectorFileObjects, PersistentClasses, GLCrossPlatform;
+  GLSpaceText, GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects,
+  GLCrossPlatform, GLMisc;
 
 type
   TGLGizmoUndoCollection = class;
