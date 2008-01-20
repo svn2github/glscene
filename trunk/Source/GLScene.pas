@@ -6,6 +6,11 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/01/08 - DaStr - Bugfixed TGLBaseSceneObject.MoveChild[First/Last]()
+                              (thanks "_") (BugTracker ID = 1857974) 
+                             Converted the TGLBaseSceneObject.AbsoluteMatrix()
+                              function into a property (and added a Set method)
+                             Added TGLBaseSceneObject.AbsoluteLeft()
       <li>19/09/07 - DaStr - Made some changes to TGLBaseSceneObject Bounding Box
                               calculations (BugTracker ID = 1797491)
       <li>17/09/07 - DaStr - Fixed TGLScene.RenderScene
@@ -508,6 +513,9 @@ type
          function GetAbsoluteScale: TVector;
          procedure SetAbsoluteAffineScale(const Value: TAffineVector);
          procedure SetAbsoluteScale(const Value: TVector);
+
+         function GetAbsoluteMatrix: TMatrix;
+         procedure SetAbsoluteMatrix(const Value: TMatrix);
       protected
          { Protected Declarations }
          procedure Loaded; override;
@@ -583,9 +591,7 @@ type
             The local matrix will be reset by the next TransformationChanged,
             position or attitude change. }
          procedure ForceLocalMatrix(const aMatrix : TMatrix);
-         {: The object's absolute matrix by composing all local matrices.<p>
-            Multiplying a local coordinate with this matrix gives an absolute coordinate. }
-         function AbsoluteMatrix : TMatrix;
+
          {: See AbsoluteMatrix. }
          function AbsoluteMatrixAsAddress : PMatrix;
          {: Holds the absolute transformation matrix.<p>
@@ -601,11 +607,16 @@ type
          {: See InvAbsoluteMatrix. }
          function InvAbsoluteMatrixAsAddress : PMatrix;
 
+         {: The object's absolute matrix by composing all local matrices.<p>
+            Multiplying a local coordinate with this matrix gives an absolute coordinate. }
+         property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix write SetAbsoluteMatrix;
+
          {: Direction vector in absolute coordinates. }
          property AbsoluteDirection : TVector read GetAbsoluteDirection write SetAbsoluteDirection;
          property AbsoluteAffineDirection : TAffineVector read GetAbsoluteAffineDirection write SetAbsoluteAffineDirection;
 
-         {: Scale vector in absolute coordinates. }
+         {: Scale vector in absolute coordinates.
+            Warning: SetAbsoluteScale() does not work correctly at the moment. }
          property AbsoluteScale : TVector read GetAbsoluteScale write SetAbsoluteScale;
          property AbsoluteAffineScale : TAffineVector read GetAbsoluteAffineScale write SetAbsoluteAffineScale;
 
@@ -615,6 +626,9 @@ type
 
          {: Calculate the right vector in absolute coordinates. }
          function AbsoluteRight : TVector;
+
+         {: Calculate the left vector in absolute coordinates. }
+         function AbsoluteLeft : TVector;
 
          {: Computes and allows to set the object's absolute coordinates.<p> }
          property AbsolutePosition : TVector read GetAbsolutePosition write SetAbsolutePosition;
@@ -2960,13 +2974,6 @@ begin
    Include(FChanges, ocInvAbsoluteMatrix);
 end;
 
-// AbsoluteMatrix
-//
-function TGLBaseSceneObject.AbsoluteMatrix : TMatrix;
-begin
-   Result:=AbsoluteMatrixAsAddress^;
-end;
-
 // AbsoluteMatrixAsAddress
 //
 function TGLBaseSceneObject.AbsoluteMatrixAsAddress : PMatrix;
@@ -3018,6 +3025,27 @@ begin
    Result:=FInvAbsoluteMatrix;
 end;
 
+// GetAbsoluteMatrix
+//
+function TGLBaseSceneObject.GetAbsoluteMatrix: TMatrix;
+begin
+  Result := AbsoluteMatrixAsAddress^;
+end;
+
+// SetAbsoluteMatrix
+//
+procedure TGLBaseSceneObject.SetAbsoluteMatrix(const Value: TMatrix);
+begin
+  if not MatrixEquals(Value, FAbsoluteMatrix^) then
+  begin
+    FAbsoluteMatrix^ := Value;
+    if Parent <> nil then
+      SetMatrix(MatrixMultiply(FAbsoluteMatrix^, Parent.InvAbsoluteMatrixAsAddress^))
+    else
+      SetMatrix(Value);
+  end;
+end;
+
 // GetAbsoluteDirection
 //
 function TGLBaseSceneObject.GetAbsoluteDirection : TVector;
@@ -3038,9 +3066,10 @@ end;
 //
 function TGLBaseSceneObject.GetAbsoluteScale: TVector;
 begin
-  Result[0] := VectorLength(AbsoluteMatrixAsAddress^[0]);
-  Result[1] := VectorLength(AbsoluteMatrixAsAddress^[1]);
-  Result[2] := VectorLength(AbsoluteMatrixAsAddress^[2]);
+  Result[0] := AbsoluteMatrixAsAddress^[0][0];
+  Result[1] := AbsoluteMatrixAsAddress^[1][1];
+  Result[2] := AbsoluteMatrixAsAddress^[2][2];
+
   Result[3] := 0;
 end;
 
@@ -3075,6 +3104,13 @@ end;
 function TGLBaseSceneObject.AbsoluteRight : TVector;
 begin
    Result:=VectorNormalize(AbsoluteMatrixAsAddress^[0]);
+end;
+
+// AbsoluteLeft
+//
+function TGLBaseSceneObject.AbsoluteLeft : TVector;
+begin
+  Result := VectorNegate(AbsoluteRight);
 end;
 
 // GetAbsolutePosition
@@ -4249,7 +4285,7 @@ begin
   Assert(Assigned(FChildren), 'No children found!');
   if anIndex<>0 then
   begin
-    FChildren.Exchange(anIndex, 0);
+    FChildren.Move(anIndex, 0);
     NotifyChange(Self);
   end;
 end;
@@ -4261,7 +4297,7 @@ begin
   Assert(Assigned(FChildren), 'No children found!');
   if anIndex<>FChildren.Count-1 then
   begin
-    FChildren.Exchange(anIndex, FChildren.Count-1);
+    FChildren.Move(anIndex, FChildren.Count-1);
     NotifyChange(Self);
   end;
 end;
