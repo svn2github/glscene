@@ -203,11 +203,7 @@ uses
    GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
    GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
-<<<<<<< GLSceneRegister.pas
    GLColor, GLViewer, GLGizmo,
-=======
-   GLColor, GLViewer,GLGizmo,
->>>>>>> 1.98
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1831,11 +1827,7 @@ begin
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-<<<<<<< GLSceneRegister.pas
-                       TGLSimpleNavigation, TGLGizmo 
-=======
-                       TGLSimpleNavigation,TGLGizmo 
->>>>>>> 1.98
+                       TGLSimpleNavigation, TGLGizmo
                       ]);
 
    RegisterComponents('GLScene Terrain',
