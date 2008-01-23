@@ -68,8 +68,8 @@ uses
 
   // GLScene
   OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLTexture, GLStrings,
-  GLSpaceText, GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects,
-  GLCrossPlatform, GLMisc;
+  GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
+  GLMisc;
 
 type
   TGLGizmoUndoCollection = class;
