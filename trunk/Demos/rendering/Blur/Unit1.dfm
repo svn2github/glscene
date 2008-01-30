@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 290
   Top = 175
-  Width = 534
-  Height = 498
   Caption = 'Form1'
+  ClientHeight = 462
+  ClientWidth = 518
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,21 +17,22 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 45
-    Width = 526
-    Height = 426
+    Width = 518
+    Height = 417
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {1283003F1283003F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 1
-    Buffer.FogEnvironment.FogEnd = 3
+    Buffer.FogEnvironment.FogStart = 1.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 3.000000000000000000
     Buffer.BackgroundColor = clBlack
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
+    FieldOfView = 153.029327392578100000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 526
+    Width = 518
     Height = 45
     Align = alTop
     Caption = ' '
@@ -67,7 +68,8 @@ object Form1: TForm1
         'pBeastView'
         'pOceanDepth'
         'pDream'
-        'pOverBlur')
+        'pOverBlur'
+        'pAdvancedBlur')
     end
     object ComboBox2: TComboBox
       Left = 216
@@ -96,36 +98,34 @@ object Form1: TForm1
     Top = 48
     object GLLightSource1: TGLLightSource
       Ambient.Color = {BEC0403FBEC0403FBEC0403F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {BEC0403FBEC0403FBEC0403F0000803F}
       Position.Coordinates = {56551B40F9FF2D40F6FF3B400000803F}
       LightStyle = lsOmni
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCube1: TGLCube
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
-      Material.TextureEx = <>
       Direction.Coordinates = {82B16B3E068E77BF3986DFBD00000000}
-      PitchAngle = -95.5
+      PitchAngle = -95.500000000000000000
       Position.Coordinates = {DB9FEC3E806395BE509F213F0000803F}
-      TurnAngle = 6.5
+      TurnAngle = 6.500000000000000000
       Up.Coordinates = {DD7324BEE3EB17BE6BCE793F00000000}
     end
     object GLSphere1: TGLSphere
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
-      Material.TextureEx = <>
       Position.Coordinates = {6E3D38BF0A5515BE733C1CBF0000803F}
-      Radius = 0.5
+      Radius = 0.500000000000000000
     end
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
-      NearPlaneBias = 0.100000001490116
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
+      NearPlaneBias = 0.100000001490116100
       TargetObject = GLDummyCube1
       Position.Coordinates = {41A38A3F6847033F2894FA3F0000803F}
       Direction.Coordinates = {A5C4F6BE96EA77BE3E9257BF00000000}
@@ -138,7 +138,6 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Material.TextureEx = <>
         Tag = 0
       end>
     Left = 228
