@@ -34,7 +34,8 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg;
+  vcljpg,
+  GR32_BDS2006;
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
