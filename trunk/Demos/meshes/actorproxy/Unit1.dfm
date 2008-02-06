@@ -23,11 +23,13 @@ object Form1: TForm1
     Buffer.BackgroundColor = 4194304
     FieldOfView = 157.897079467773400000
     Align = alClient
+    OnMouseMove = GLSceneViewer1MouseMove
   end
   object GLScene1: TGLScene
     Left = 48
     Top = 88
     object InvisibleDummyCube: TGLDummyCube
+      Direction.Coordinates = {00000000000000800000803F00000000}
       Visible = False
       CubeSize = 1.000000000000000000
       object MasterActor: TGLActor
@@ -40,11 +42,13 @@ object Form1: TForm1
       end
     end
     object GLDummyCube2: TGLDummyCube
+      Up.Coordinates = {000000000000803F0000008000000000}
       CubeSize = 1.000000000000000000
       object GLActorProxy1: TGLActorProxy
         MasterObject = MasterActor
         ProxyOptions = [pooEffects, pooObjects, pooTransformation]
         Position.Coordinates = {000000C000000000000000000000803F}
+        Up.Coordinates = {000000000000803F0000008000000000}
         MaterialLibrary = GLMaterialLibrary1
         LibMaterialName = 'Mat1'
         StoreBonesMatrix = True
@@ -63,6 +67,7 @@ object Form1: TForm1
         MasterObject = MasterActor
         ProxyOptions = [pooEffects, pooObjects, pooTransformation]
         Position.Coordinates = {0000004000000000000000000000803F}
+        Up.Coordinates = {000000000000803F0000008000000000}
         MaterialLibrary = GLMaterialLibrary1
         LibMaterialName = 'Mat2'
         StoreBonesMatrix = True
@@ -78,10 +83,24 @@ object Form1: TForm1
         end
       end
     end
+    object GLSphere1: TGLSphere
+      Radius = 0.100000001490116100
+      object GLArrowLine3: TGLArrowLine
+        Position.Coordinates = {0000000000000000CDCC4C3E0000803F}
+        Scale.Coordinates = {CDCCCC3ECDCCCC3ECDCCCC3E00000000}
+        BottomRadius = 0.100000001490116100
+        Height = 10.000000000000000000
+        TopRadius = 0.100000001490116100
+        TopArrowHeadHeight = 0.500000000000000000
+        TopArrowHeadRadius = 0.200000002980232200
+        BottomArrowHeadHeight = 0.500000000000000000
+        BottomArrowHeadRadius = 0.200000002980232200
+      end
+    end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
-      Position.Coordinates = {A6861F3FEB2609400C13A3400000803F}
+      Position.Coordinates = {A6861F3F000000400000A0400000803F}
       Direction.Coordinates = {721B86BD3D30B0BEA7C76FBF00000000}
       Up.Coordinates = {0B9BC4BC7B5D703F69C2AFBE00000000}
       object GLLightSource1: TGLLightSource

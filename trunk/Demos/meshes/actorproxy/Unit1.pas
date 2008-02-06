@@ -8,7 +8,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLProxyObjects, GLVectorFileObjects, GLObjects, GLMisc,
-  GLCadencer, GLTexture, GLWin32Viewer, GLGeomObjects,GLFileSMD,JPEG, ExtCtrls;
+  VectorGeometry, ExtCtrls, GLCadencer, GLTexture, GLGeomObjects, GLWin32Viewer,
+  GLFileSMD,JPEG;
 
 type
   TForm1 = class(TForm)
@@ -21,16 +22,22 @@ type
     GLDummyCube2: TGLDummyCube;
     MasterActor: TGLActor;
     GLActorProxy1: TGLActorProxy;
-    GLActorProxy2: TGLActorProxy;
     GLArrowLine1: TGLArrowLine;
     GLLightSource1: TGLLightSource;
-    GLArrowLine2: TGLArrowLine;
     Timer1: TTimer;
+    GLSphere1: TGLSphere;
+    GLArrowLine3: TGLArrowLine;
+    GLActorProxy2: TGLActorProxy;
+    GLArrowLine2: TGLArrowLine;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
   private
+    mousex,mousey:integer;
+    procedure DoRaycastStuff;
     { Private declarations }
   public
     { Public declarations }
@@ -79,8 +86,46 @@ begin
      GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
 
      // turn actors
-     GLActorProxy2.Turn(deltaTime *100);
      GLActorProxy1.Turn(-deltaTime *130);
+     GLActorProxy2.Turn(deltaTime *100);
+
+     DoRaycastStuff;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+     mousex:=x;
+     mouseY:=y;
+
+end;
+
+procedure TForm1.DoRaycastStuff;
+var
+   rayStart, rayVector, iPoint, iNormal : TVector;
+  t: Integer;
+begin
+     SetVector(rayStart, GLCamera1.AbsolutePosition);
+     SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(AffineVectorMake(mousex, GLSceneViewer1.Height-mousey, 0)));
+     NormalizeVector(rayVector);
+
+     if GLActorProxy1.RayCastIntersect(GLActorProxy1.MasterObject,rayStart,rayVector,@iPoint,@iNormal) then
+     begin
+        GLSphere1.Position.AsVector:=iPoint;
+        GLSphere1.Direction.AsVector:=VectorNormalize(iNormal);
+     end
+     else
+     if GLActorProxy2.RayCastIntersect(GLActorProxy2.MasterObject,rayStart,rayVector,@iPoint,@iNormal) then
+     begin
+        GLSphere1.Position.AsVector:=iPoint;
+        GLSphere1.Direction.AsVector:=VectorNormalize(iNormal);
+     end
+     else
+     begin
+        GLSphere1.Position.AsVector:=rayStart;
+        GLSphere1.Direction.AsVector:=rayVector;
+     end;
+
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
