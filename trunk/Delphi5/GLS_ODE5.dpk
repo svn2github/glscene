@@ -33,7 +33,6 @@ requires
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
   dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
-  dynode in '..\Source\PhysicsAPIs\dynode.pas',
   GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas';
 
