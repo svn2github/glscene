@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; fixes for runtime creation)
     <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808371)
     <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
@@ -103,7 +104,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, dynode, dynodegl, odegl, odeimport, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, dynodegl, odegl, odeimport, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
   GLColor;
 
@@ -662,45 +663,6 @@ type
 
   end;
 
-  // TODEElementCone
-  //
-  {: ODE cone implementation. }
-  TODEElementCone = class (TODEElementBase)
-    private
-      { Private Declarations }
-      FRadius,
-      FLength : TdReal;
-
-    protected
-      { Protected Declarations }
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetRadius : TdReal;
-      function GetLength : TdReal;
-      procedure SetRadius(const Value: TdReal);
-      procedure SetLength(const Value: TdReal);
-
-    public
-      { Public Declarations }
-      constructor Create(AOwner:TXCollection); override;
-
-      procedure Render(var rci : TRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      { Published Declarations }
-      property Radius : TdReal read GetRadius write SetRadius;
-      property Length : TdReal read GetLength write SetLength;
-
-  end;
 
   // TODEElementTriMesh
   //
@@ -2105,9 +2067,9 @@ begin
     end;
     FManager:=Value;
     if Assigned(FManager) then begin
-      FManager.RegisterODEBehaviour(Self);
-      if not (csDesigning in TComponent(Owner.Owner).ComponentState) then
+      if not (csDesigning in TComponent(Owner.Owner).ComponentState) then // mrqzzz moved here
         Initialize;
+      FManager.RegisterODEBehaviour(Self);
     end;
   end;
 end;
@@ -2193,7 +2155,9 @@ begin
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
-  dBodySetMass(FBody,@FMass);
+  CalibrateCenterOfMass;
+  if FBody<>nil then // mrqzzz
+     dBodySetMass(FBody,@FMass);
   Enabled:=FEnabled;
 
   for i:=0 to FJointRegister.Count-1 do
@@ -2276,12 +2240,13 @@ var
   calcmass : TdMass;
 begin
   Result:=nil;
-  if not Assigned(Manager) then exit;
+//  if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
   Result.Initialize;
   calcmass:=CalculateMass;
-  dBodySetMass(FBody,@calcmass);
+  if FBody<>nil then // mrqzzz
+     dBodySetMass(FBody,@calcmass);
 end;
 
 // AlignObject
@@ -2340,6 +2305,7 @@ begin
   NegateVector(pos);
   for i:=0 to FElements.Count-1 do
     TODEElementBase(FElements[i]).Position.Translate(pos);
+   dMassTranslate(Fmass,pos[0],pos[1],pos[2]); 
 end;
 
 // GetMass
@@ -3387,7 +3353,7 @@ begin
   if FInitialized then exit;
   if not IsODEInitialized then exit;
 
-  FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
+  FGeomElement:=dCreateCapsule(nil,FRadius,FLength);
   inherited;
 end;
 
@@ -3440,7 +3406,7 @@ end;
 //
 function TODEElementCapsule.CalculateMass: TdMass;
 begin
-  dMassSetCappedCylinder(FMass,FDensity,3,FRadius,FLength);
+  dMassSetCapsule(FMass,FDensity,3,FRadius,FLength);
   result:=inherited CalculateMass;
 end;
 
@@ -3451,7 +3417,7 @@ var
   rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
-    dGeomCCylinderGetParams(Geom,rad,len);
+    dGeomCapsuleGetParams(Geom,rad,len);
     FRadius:=rad;
   end;
   result:=FRadius;
@@ -3464,7 +3430,7 @@ var
   rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
-    dGeomCCylinderGetParams(Geom,rad,len);
+    dGeomCapsuleGetParams(Geom,rad,len);
     FLength:=len;
   end;
   result:=FLength;
@@ -3475,7 +3441,7 @@ end;
 procedure TODEElementCapsule.ODERebuild;
 begin
   if Assigned(Geom) then
-    dGeomCCylinderSetParams(Geom,FRadius,FLength);
+    dGeomCapsuleSetParams(Geom,FRadius,FLength);
   inherited;
 end;
 
@@ -3672,207 +3638,6 @@ begin
   ODERebuild;
 end;
 
-
-// ---------------
-// --------------- TODEElementCone ---------------
-// ---------------
-
-// Render
-//
-procedure TODEElementCone.Render(var rci : TRenderContextInfo);
-var
-  i,j,
-  Stacks,
-  Slices : integer;
-begin
-  glPushMatrix;
-
-  glMultMatrixf(@FLocalMatrix);
-
-  Stacks:=8;
-  Slices:=16;
-
-  // Middle horizontal circles
-  for j:=1 to Stacks do begin
-    glBegin(GL_LINE_LOOP);
-      for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices)*j/Stacks,FRadius*cos(2*i*PI/Slices)*j/Stacks,FLength*(1-j/Stacks));
-    glEnd;
-  end;
-
-  // Middle vertical lines
-  glBegin(GL_LINES);
-    for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),0);
-      glVertex3f(0,0,FLength);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),0);
-      glVertex3f(0,0,FLength);
-    end;
-  glEnd;
-
-  // Cap
-  glPushMatrix;
-  for j:=0 to (Slices div 2)-1 do begin
-    glBegin(GL_LINES);
-      glVertex3f(-FRadius,0,0);
-      glVertex3f(FRadius,0,0);
-    glEnd;
-    glRotatef(360/Slices,0,0,1);
-  end;
-  glPopMatrix;
-
-  glPopMatrix;
-end;
-
-// Create
-//
-constructor TODEElementCone.Create(AOwner: TXCollection);
-begin
-  inherited;
-  FRadius:=0.5;
-  FLength:=1;
-end;
-
-// Initialize
-//
-procedure TODEElementCone.Initialize;
-begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
-
-  FGeomElement:=dCreateCone(nil,FRadius,FLength);
-  inherited;
-end;
-
-// WriteToFiler
-//
-procedure TODEElementCone.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-  with writer do begin
-    WriteInteger(0); // Archive version
-    WriteFloat(Radius);
-    WriteFloat(Length);
-  end;
-end;
-
-// ReadFromFiler
-//
-procedure TODEElementCone.ReadFromFiler(reader : TReader);
-begin
-  inherited;
-  with reader do begin
-    Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadFloat;
-    Length:=ReadFloat;
-  end;
-end;
-
-// FriendlyName
-//
-class function TODEElementCone.FriendlyName : String;
-begin
-  Result:='Cone';
-end;
-
-// FriendlyDescription
-//
-class function TODEElementCone.FriendlyDescription : String;
-begin
-  Result:='The ODE cone element implementation';
-end;
-
-// ItemCategory
-//
-class function TODEElementCone.ItemCategory : String;
-begin
-  Result:='Primitives';
-end;
-
-// CalculateMass
-//
-function TODEElementCone.CalculateMass: TdMass;
-
-  procedure dMassSetCone(var m : TdMass; const density, radius, length : Single);
-  var
-    ms, Rsqr, Lsqr,
-    Ixx, Iyy, Izz : Single;
-  begin
-    // Calculate Mass
-    Rsqr:=radius*radius;
-    Lsqr:=length*length;
-    ms:=Pi*Rsqr*length*density/3;
-
-    // Calculate Mass Moments of Inertia about the Centroid
-    Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-    Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-    Izz:=0.3*ms*Rsqr;
-
-    // Set the ODE Mass parameters
-    with m do begin
-      mass:=ms;
-      c[0]:=0; c[1]:=0; c[2]:=0.25*length;
-      I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
-      I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
-      I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
-    end;
-  end;
-
-begin
-  dMassSetCone(FMass,FDensity,FRadius,FLength);
-  result:=inherited CalculateMass;
-end;
-
-// GetRadius
-//
-function TODEElementCone.GetRadius: TdReal;
-var
-  rad, len : TdReal;
-begin
-  if Assigned(FGeomElement) then begin
-    dGeomConeGetParams(Geom,rad,len);
-    FRadius:=rad;
-  end;
-  result:=FRadius;
-end;
-
-// GetLength
-//
-function TODEElementCone.GetLength: TdReal;
-var
-  rad, len : TdReal;
-begin
-  if Assigned(FGeomElement) then begin
-    dGeomConeGetParams(Geom,rad,len);
-    FLength:=len;
-  end;
-  result:=FLength;
-end;
-
-// ODERebuild
-//
-procedure TODEElementCone.ODERebuild;
-begin
-  if Assigned(Geom) then
-    dGeomConeSetParams(Geom,FRadius,FLength);
-  inherited;
-end;
-
-// SetRadius
-//
-procedure TODEElementCone.SetRadius(const Value: TdReal);
-begin
-  FRadius:=Value;
-  ODERebuild;
-end;
-
-// SetLength
-//
-procedure TODEElementCone.SetLength(const Value: TdReal);
-begin
-  FLength:=Value;
-  ODERebuild;
-end;
 
 
 // ---------------
@@ -4078,7 +3843,7 @@ var
 begin
   if not Assigned(FGeomElement) then exit;
   d:=VectorDotProduct(Mat[2], Mat[3]);
-  {dynode.}dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
+  dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
 end;
 
 
@@ -4216,7 +3981,7 @@ end;
 constructor TODEJointBase.Create(AOwner : TXCollection);
 begin
   inherited;
-  FJointID:=0;
+  FJointID:=nil;
   FEnabled:=True;
   FInitialized:=False;
 end;
@@ -4253,7 +4018,7 @@ begin
     UnregisterJointWithObject(FObject1);
   if Assigned(FObject2) then
     UnregisterJointWithObject(FObject2);
-  if FJointID<>0 then
+  if FJointID<>nil then
     dJointDestroy(FJointID);
 
   FInitialized:=False;
@@ -4341,7 +4106,7 @@ procedure TODEJointBase.Attach;
 var
   Body1, Body2 : PdxBody;
 begin
-  if (FJointID=0) or not FInitialized then exit;
+  if (FJointID=nil) or not FInitialized then exit;
 
   if Enabled then begin
     Body1:=GetBodyFromGLSceneObject(FObject1);
@@ -4464,7 +4229,7 @@ var
   body1, body2 : PdxBody;
 begin
   Result:=False;
-  if JointID<>0 then begin
+  if JointID<>nil then begin
     body1:=dJointGetBody(JointID, 0);
     body2:=dJointGetBody(JointID, 1);
     if joBothObjectsMustBeAssigned in JointOptions then
@@ -4863,7 +4628,7 @@ end;
 procedure TODEJointHinge.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge(FManager.World,0);
+  FJointID:=dJointCreateHinge(FManager.World,nil);
   inherited;
 end;
 
@@ -5006,7 +4771,7 @@ end;
 procedure TODEJointBall.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateBall(FManager.World,0);
+  FJointID:=dJointCreateBall(FManager.World,nil);
   inherited;
 end;
 
@@ -5098,7 +4863,7 @@ end;
 procedure TODEJointSlider.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateSlider(FManager.World,0);
+  FJointID:=dJointCreateSlider(FManager.World,nil);
   inherited;
 end;
 
@@ -5207,7 +4972,7 @@ end;
 procedure TODEJointFixed.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateFixed(FManager.World,0);
+  FJointID:=dJointCreateFixed(FManager.World,nil);
   inherited;
 end;
 
@@ -5287,7 +5052,7 @@ end;
 procedure TODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge2(FManager.World,0);
+  FJointID:=dJointCreateHinge2(FManager.World,nil);
   inherited;
 end;
 
@@ -5501,7 +5266,7 @@ end;
 procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateUniversal(FManager.World,0);
+  FJointID:=dJointCreateUniversal(FManager.World,nil);
   inherited;
 end;
 
@@ -5692,7 +5457,6 @@ initialization
   RegisterXCollectionItemClass(TODEElementSphere);
   RegisterXCollectionItemClass(TODEElementCapsule);
   RegisterXCollectionItemClass(TODEElementCylinder);
-  RegisterXCollectionItemClass(TODEElementCone);
   RegisterXCollectionItemClass(TODEElementTriMesh);
   RegisterXCollectionItemClass(TODEElementPlane);
 
@@ -5720,7 +5484,6 @@ finalization
   UnregisterXCollectionItemClass(TODEElementSphere);
   UnregisterXCollectionItemClass(TODEElementCapsule);
   UnregisterXCollectionItemClass(TODEElementCylinder);
-  UnregisterXCollectionItemClass(TODEElementCone);
   UnregisterXCollectionItemClass(TODEElementTriMesh);
   UnregisterXCollectionItemClass(TODEElementPlane);
 
@@ -5731,6 +5494,6 @@ finalization
   UnregisterXCollectionItemClass(TODEJointHinge2);
   UnregisterXCollectionItemClass(TODEJointUniversal);
 
-  CloseODE;
+//  CloseODE;
 
 end.

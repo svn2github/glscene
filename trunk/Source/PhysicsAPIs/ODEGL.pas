@@ -3,6 +3,7 @@
 
   Change history
 
+  2008.02.06 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
   2003.02.03 - EG - Fixed CopyPosFromGeomToGL
   2003.02.11 - MF - Added a couple of vector functions for copying between
     ODE formats and GLScene formats
@@ -515,7 +516,7 @@ end;
 
 function dBodyToBodyDistance(Body1, Body2 : PdxBody) : TdReal;
 begin
-  result := dVector3Length(Vector3SUB(Body1.pos, Body2.pos)); 
+  result := dVector3Length(Vector3SUB(Body1.posr.pos, Body2.posr.pos)); 
 end;
 
 function dVector3Length(R : TdVector3) : single;

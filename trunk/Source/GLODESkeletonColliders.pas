@@ -3,6 +3,8 @@
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
    <b>History :</b><font size=-1><ul>
+     <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
+                             CCilinder (ode 0.8) with Capsule(ode 0.9))
      <li>04/12/03 - SG - Creation.
    </ul></font>
 }
@@ -11,8 +13,7 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,
-  dynode;
+  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,odeimport,dynodeGL;
 
 type
   
@@ -284,7 +285,7 @@ end;
 //
 procedure TSCODECCylinder.AddToSpace(Space : PdxSpace);
 begin
-  FGeom:=dCreateCCylinder(Space,FRadius,FLength);
+  FGeom:=dCreateCapsule(Space,FRadius,FLength);
   inherited;
 end;
 
@@ -295,7 +296,7 @@ begin
   if val<>FRadius then begin
     FRadius:=val;
     if Assigned(FGeom) then
-      dGeomCcylinderSetParams(FGeom,FRadius,FLength);
+      dGeomCapsuleSetParams(FGeom,FRadius,FLength);
   end;
 end;
 
@@ -306,7 +307,7 @@ begin
   if val<>FLength then begin
     FLength:=val;
     if Assigned(FGeom) then
-      dGeomCcylinderSetParams(FGeom,FRadius,FLength);
+      dGeomCapsuleSetParams(FGeom,FRadius,FLength);
   end;
 end;
 

@@ -2,6 +2,7 @@
   ***********************************************************************
 
   Change history
+  2008.02.05 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello; added reference to odeimport)
   2007.09.11 - Mrqzzz - added reference to odeimport
   2003.02.03 - EG - Fixed CopyPosFromGeomToGL
   2003.02.11 - MF - Added a couple of vector functions for copying between
@@ -23,7 +24,7 @@ interface
 }
 
 uses
-  OpenGL1x, VectorGeometry, dynode, ODEImport, GLScene, VectorTypes, VectorLists,
+  OpenGL1x, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
   GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);
@@ -515,7 +516,7 @@ end;
 
 function dBodyToBodyDistance(Body1, Body2 : PdxBody) : TdReal;
 begin
-  result := dVector3Length(Vector3SUB(Body1.pos, Body2.pos)); 
+  result := dVector3Length(Vector3SUB(Body1.posr.pos, Body2.posr.pos)); 
 end;
 
 function dVector3Length(R : TdVector3) : single;

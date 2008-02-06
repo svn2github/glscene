@@ -3,6 +3,7 @@
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
     <li>09/11/05 - LucasG - Fixed joints to be relative to the body
     <li>07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
     <li>02/11/05 - LucasG - First version created.
@@ -81,7 +82,7 @@ type
     FRagdoll: TODERagdoll;
     FBody: PdxBody;
     FGeom: PdxGeom;
-    FJointId: Cardinal;
+    FJointId: TdJointID;
     procedure AlignBodyToMatrix(Mat: TMatrix);
   protected
     procedure Start; override;
@@ -278,7 +279,7 @@ begin
     with (Joint as TODERagdollHingeJoint) do
     begin
       vAxis := RotateAxis(Axis);
-      FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, 0);
+      FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
       dJointSetHingeAnchor(FJointId, Anchor[0], Anchor[1], Anchor[2]);
       dJointSetHingeAxis (FJointId, vAxis[0], vAxis[1], vAxis[2]);
@@ -291,7 +292,7 @@ begin
     begin
       vAxis := RotateAxis(Axis);
       vAxis2 := RotateAxis(Axis2);
-      FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, 0);
+      FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, FBody, TODERagdollBone(Owner).Body);
       dJointSetUniversalAnchor(FJointId, Anchor[0], Anchor[1], Anchor[2]);
       dJointSetUniversalAxis1(FJointId, vAxis[0], vAxis[1], vAxis[2]);

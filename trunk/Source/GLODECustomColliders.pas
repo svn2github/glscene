@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; Fixed reference to odeimport)
     <li>25/12/07 - DaStr  - Fixed memory leak in TGLODECustomCollider.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808373)
     <li>10/10/07 - Mrqzzz - Fixed reference ODEGL.ODERToGLSceneMatrix
@@ -26,7 +27,7 @@
     <li>19/11/04 - SG - Changed TGLODETerrainCollider to TGLODEHeightField
                         which now inherits from TGLODEBehaviour and works for
                         both TGLTerrainRenderer and TGLHeightField objects.
-                        Added CCylinder, Cylinder and Cone collider code for
+                        Added Capsule, Cylinder and Cone collider code for
                         the heightfield collider.
     <li>23/04/04 - SG - Removed freeform static collider
     <li>29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
@@ -40,7 +41,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLODEManager, dynode, odegl,dynodegl, ODEImport, VectorGeometry,
+  Classes, SysUtils, GLODEManager, odeimport, odegl,dynodegl, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
   OpenGL1x, GLTexture, GLColor;
 
@@ -334,9 +335,9 @@ begin
   Collider.SetTransform(IdentityHMGMatrix);
 end;
 
-// CollideCCylinder
+// CollideCapsule
 //
-function CollideCCylinder(o1, o2 : PdxGeom; flags : Integer;
+function CollideCapsule(o1, o2 : PdxGeom; flags : Integer;
   contact : PdContactGeom; skip : Integer) : Integer; cdecl;
 var
   Collider : TGLODECustomCollider;
@@ -356,7 +357,7 @@ begin
   ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
   Collider.SetTransform(mat);
 
-  dGeomCCylinderGetParams(o2, rad, len);
+  dGeomCapsuleGetParams(o2, rad, len);
 
   res:=Round(5*MaxFloat(4*rad, len)/Collider.ContactResolution);
   if res<8 then res:=8;
@@ -437,52 +438,6 @@ begin
   Collider.SetTransform(IdentityHMGMatrix);
 end;
 
-// CollideCone
-//
-function CollideCone(o1, o2 : PdxGeom; flags : Integer;
-  contact : PdContactGeom; skip : Integer) : Integer; cdecl;
-var
-  Collider : TGLODECustomCollider;
-  i, j, res : Integer;
-  pos : PdVector3;
-  R : PdMatrix3;
-  mat : TMatrix;
-  rad, len, dx, dy : Single;
-begin
-  Result:=0;
-
-  Collider:=GetColliderFromGeom(o1);
-  if not Assigned(Collider) then exit;
-
-  pos:=dGeomGetPosition(o2);
-  R:=dGeomGetRotation(o2);
-  ODEGL.ODERToGLSceneMatrix(mat, R^, pos^);
-  Collider.SetTransform(mat);
-
-  dGeomConeGetParams(o2, rad, len);
-
-  res:=Round(5*MaxFloat(4*rad, len)/Collider.ContactResolution);
-  if res<8 then res:=8;
-
-  with Collider do begin
-    AddContact(0, 0, 0);
-    AddContact(0, 0, len);
-    for i:=0 to res-1 do begin
-      SinCos(2*Pi*i/res, rad, dy, dx);
-      AddContact(dx, dy, 0);
-
-      for j:=1 to (res div 2)-1 do begin
-        SinCos(2*Pi*i/res, rad*j/(res div 2), dy, dx);
-        AddContact(dx, dy, len*(1-j/(res div 2)));
-        if (j and 1) = 0 then
-          AddContact(dx, dy, 0);
-      end;
-    end;
-  end;
-
-  Result:=Collider.ApplyContacts(o1, o2, flags, contact, skip);
-  Collider.SetTransform(IdentityHMGMatrix);
-end;
 
 // GetCustomColliderFn
 //
@@ -492,12 +447,10 @@ begin
     Result:=CollideSphere
   else if num = dBoxClass then
     Result:=CollideBox
-  else if num = dCCylinderClass then
-    Result:=CollideCCylinder
+  else if num = dCapsuleClass then
+    Result:=CollideCapsule
   else if num = dCylinderClass then
     Result:=CollideCylinder
-  else if num = dConeClass then
-    Result:=CollideCone
   else
     Result:=nil;
 end;

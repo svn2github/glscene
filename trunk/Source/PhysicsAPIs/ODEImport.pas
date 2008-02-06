@@ -1,4 +1,4 @@
-unit odeimport;
+UNIT odeimport;
 {*************************************************************************
  *                                                                       *
  * Open Dynamics Engine, Copyright (C) 2001,2002 Russell L. Smith.       *
@@ -23,7 +23,7 @@ unit odeimport;
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.14                                       *
+ * ODE Delphi Import unit : 0.9.XX                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -63,6 +63,9 @@ unit odeimport;
   ***********************************************************************
 
   Change history
+  2008.02.06 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello; "InitOde" and "CloseODE" in public interface declaration)
+  2008.02.05 - PR - Fixes to breakable joints and class id's
+  2008.01.23 - PR - Massive update for ode 0.9x
 
   2004.05.19 - CH - New single and double dll. Added support for the new QuickStep solver
   2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
@@ -71,7 +74,7 @@ unit odeimport;
                     Added dJointGetUniversalAngle and dJointGetUniversalAngleRate, ...
   2004.04.08 - DL - Changed calling convention of dJointCreateContact and
                     dBodySetMass to require pointers. Again for compatability reasons.
-  2004.04.08 - DL - Minor compatibilit fixes (performed by MF) 
+  2004.04.08 - DL - Minor compatibilit fixes (performed by MF)
   2004.04.05 - CH - New single and double dll. Now handles trimesh/trimesh collision
   2004.03.30 - DL - better crossplatform Module loading support using moduleloader.pas
   2004.03.11 - CH - New single and double dll. Now handles auto-disable and new terrain geom
@@ -109,11 +112,18 @@ unit odeimport;
   JV = John Villar
   DL = Dominique Louis
   EG = Eric Grange
+  PR = Paul Robello
+  MO = Marcus Oblak (mrqzzz)
  }
 
 {$I delphiode.inc}
 
 interface
+// remove . from line below if you are using a generic ODE DLL
+{.$DEFINE VanillaODE}
+{$IFNDEF VanillaODE}
+   {$DEFINE PARODE}
+{$ENDIF}
 
 uses
 {$IFDEF __GPC__}
@@ -158,6 +168,63 @@ const
   ODEDLL = 'libode.dylib';
   {$ENDIF}
 
+
+const
+// enum { TRIMESH_FACE_NORMALS, TRIMESH_LAST_TRANSFORMATION };
+    TRIMESH_FACE_NORMALS = 0;
+    TRIMESH_LAST_TRANSFORMATION = 1;
+
+// Just generate any contacts (disables any contact refining).
+    CONTACTS_UNIMPORTANT = $80000000;
+
+(* Change: New Type added, syntax enforcement *)
+type TJointFlag = Integer;
+
+(* These consts now have defined types *)
+const
+  // if this flag is set, the joint was allocated in a joint group
+    dJOINT_INGROUP: TJointFlag = 1;
+  // if this flag is set, the joint was attached with arguments (0,body).
+  // our convention is to treat all attaches as (body,0), i.e. so node[0].body
+  // is always nonzero, so this flag records the fact that the arguments were
+  // swapped.
+    dJOINT_REVERSE: TJointFlag = 2;
+  // if this flag is set, the joint can not have just one body attached to it,
+  // it must have either zero or two bodies attached.
+    dJOINT_TWOBODIES: TJointFlag = 4;
+
+
+(* Change: New Type added, syntax enforcement *)
+type TdContactType = Integer;
+
+(* These consts now have defined types *)
+const
+    dContactMu2: TdContactType		= $0001;
+    dContactFDir1: TdContactType	= $0002;
+    dContactBounce: TdContactType   	= $0004;
+    dContactSoftERP: TdContactType  	= $0008;
+    dContactSoftCFM: TdContactType  	= $0010;
+    dContactMotion1: TdContactType  	= $0020;
+    dContactMotion2: TdContactType	= $0040;
+    dContactSlip1: TdContactType	= $0080;
+    dContactSlip2: TdContactType	= $0100;
+
+    dContactApprox0: TdContactType	= $0000;
+    dContactApprox1_1: TdContactType	= $1000;
+    dContactApprox1_2: TdContactType	= $2000;
+    dContactApprox1: TdContactType	= $3000;
+
+(* Change: New Type added, syntax enforcement *)
+type TBodyFlags = Integer;
+
+(* These consts now have defined types *)
+const
+  dxBodyFlagFiniteRotation: TBodyFlags = 1;		  // use finite rotations
+  dxBodyFlagFiniteRotationAxis: TBodyFlags = 2;	// use finite rotations only along axis
+  dxBodyDisabled: TBodyFlags = 4;			          // body is disabled
+  dxBodyNoGravity: TBodyFlags = 8;              // body is not influenced by gravity
+
+
 type
   // ********************************************************************
   // ********************************************************************
@@ -185,21 +252,46 @@ type
 
   {define cODEDebugEnabled} // Debug mode
 
-
   // Pointers to internal ODE structures. These I haven't been able to reproduce
   // in delphi, they're C++ classes.
-  TODEID = cardinal;
-  TdJointID = TODEID;
-  TdJointGroupID = TODEID;
+  PdxJointGroup = ^TdxJointGroup;
+  TdJointGroupID = PdxJointGroup;
+
+  TdxJointGroup = record
+     num : integer;
+     stack : pointer;
+  end;
+
+  PdxJointLimitMotor = ^TdxJointLimitMotor;
+  TdxJointLimitMotor = record
+     vel,fmax : TdReal;  // powered joint: velocity, max force
+     lostop,histop : TdReal; // joint limits, relative to initial position
+     fudge_factor : TdReal; // when powering away from joint limits
+     normal_cfm : TdReal; // cfm to use when not at a stop
+     stop_erp,stop_sfm : TdReal; // erp and cfm for when at joint limit
+     bounce : TdReal; // restitution factor
+  // variables used between getInfo1() and getInfo2()
+     limit : integer; // 0=free, 1=at lo limit, 2=at hi limit
+     limit_err : TdReal; // if at limit, amount over limit
+  end;
 
   TdRealArray = array[0..15] of TdReal;
   PdRealArray = ^TdRealArray;
 
-  // typedef dReal dVector3[4];
+  // typedef dReal dVector33[4];
   // Q: Why isn't TdVector3 = array[0..2] of TdReal?
   // A: Because of SIMD alignment.
   TdVector3 = array[0..3] of TdReal;
   PdVector3 = ^TdVector3;
+
+  Pd3Axis = ^Td3Axis;
+  Td3Axis = array[0..2] of TdVector3;
+
+  PdInteger3 = ^TdInteger3;
+  TdInteger3 = array[0..2] of integer;
+
+  PdxJointLimitMotor3 = ^TdxJointLimitMotor3;
+  TdxJointLimitMotor3 = array[0..2] of TdxJointLimitMotor;
 
   // typedef dReal dVector4[4];
   TdVector4 = array[0..3] of TdReal;
@@ -228,36 +320,6 @@ type
   TdAABB = array[0..5] of TdReal;
 
 
-(*enum {
-  dxBodyFlagFiniteRotation = 1,		// use finite rotations
-  dxBodyFlagFiniteRotationAxis = 2,	// use finite rotations only along axis
-  dxBodyDisabled = 4			// body is disabled
-};*)
-
-// Delphi 5 can't handle enums like this :(
-(*  TBodyFlags =
-    (dxBodyFlagFiniteRotation = 1,		// use finite rotations
-    dxBodyFlagFiniteRotationAxis = 2,	// use finite rotations only along axis
-    dxBodyDisabled = 4,			          // body is disabled
-    dxBodyNoGravity = 8);             // body is not influenced by gravity*)
-
-(* Change: New Type added, syntax enforcement *)
-  TBodyFlags = Integer;
-
-(* These consts now have defined types *)
-const
-  dxBodyFlagFiniteRotation: TBodyFlags = 1;		  // use finite rotations
-  dxBodyFlagFiniteRotationAxis: TBodyFlags = 2;	// use finite rotations only along axis
-  dxBodyDisabled: TBodyFlags = 4;			          // body is disabled
-  dxBodyNoGravity: TBodyFlags = 8;              // body is not influenced by gravity
-
-(*typedef struct dMass {
-  dReal mass;   // total mass of the rigid body
-  dVector4 c;   // center of gravity position in body frame (x,y,z)
-  dMatrix3 I;   // 3x3 inertia tensor in body frame, about POR
-} dMass;*)
-
-type
   TdMass = record
     mass : TdReal; // total mass of the rigid body
     c : TdVector4; // center of gravity position in body frame (x,y,z)
@@ -265,20 +327,48 @@ type
   end;
   PdMass = ^TdMass;
 
-(*struct dBase {
-  void *operator new (size_t size) { return dAlloc (size); }
-  void operator delete (void *ptr, size_t size) { dFree (ptr,size); }
-  void *operator new[] (size_t size) { return dAlloc (size); }
-  void operator delete[] (void *ptr, size_t size) { dFree (ptr,size); }
-};
+   TdxAutoDisable = record
+      idle_time : TdReal; // time the body needs to be idle to auto-disable it
+      idle_steps : integer; // steps the body needs to be idle to auto-disable it
+      linear_average_threashold : TdReal;  // linear (squared) average velocity threshold
+      angular_average_threashold : TdReal;  // angular (squared) average velocity threshold
+      average_samples : longword; // size of the average_lvel and average_avel buffers
+   end;
+   TdxDampingParameters = record
+      linear_scale : TdReal; // multiply the linear velocity by (1 - scale)
+      angular_scale : TdReal; // multiply the angular velocity by (1 - scale)
+      linear_threahold : TdReal; // linear (squared) average speed threshold
+      angular_threashold : TdReal; // angular (squared) average speed threshold
+   end;
+   TdxContactParameters = record
+      max_vel : TdReal;   // maximum correcting velocity
+      min_depth : TdReal; // thickness of 'surface layer'
+   end;
+   TdxQuickStepParameters = record
+      num_iterations : integer; // number of SOR iterations to perform
+      w : TdReal; // the SOR over-relaxation parameter
+   end;
+  PdxGeom = ^TdxGeom;
+  PPdxGeom = ^PdxGeom;
 
-struct dObject : public dBase {
-  dxWorld *world;		// world this object is in
-  dObject *next;		// next object of this type in list
-  dObject **tome;		// pointer to previous object's next ptr
-  void *userdata;		// user settable data
-  int tag;			// used by dynamics algorithms
-};*)
+// * Whenever a body has its position or rotation changed during the
+// * timestep, the callback will be called (with body as the argument).
+// * Use it to know which body may need an update in an external
+// * structure (like a 3D engine).
+  TdMovedCallback = procedure(o1: PdxGeom); cdecl;
+
+// * Per triangle callback. Allows the user to say if he wants a collision with
+// * a particular triangle.
+  TdTriCallback = function(TriMesh,RefObject : PdxGeom; TriangleIndex : integer) : integer;
+
+// * Per object callback. Allows the user to get the list of triangles in 1
+// * shot. Maybe we should remove this one.
+  TdTriArrayCallback = procedure(TriMesh,RefObject : PdxGeom; TriIndices:PIntegerArray; TriCount : integer);
+
+// * Allows the user to say if a ray collides with a triangle on barycentric
+// * coords. The user can for example sample a texture with alpha transparency
+// * to determine if a collision should occur.
+  TdTriRayCallback = function(TriMesh,Ray : PdxGeom; TriangleIndex : integer; u,v:TdReal) : integer;
 
 
   PdxWorld = ^TdxWorld;
@@ -293,21 +383,238 @@ struct dObject : public dBase {
     tag       : integer;		// used by dynamics algorithms
   end;
 
-(*struct dxBody : public dObject {
-  dxJointNode *firstjoint;	// list of attached joints
-  int flags;			  // some dxBodyFlagXXX flags
-  dMass mass;			  // mass parameters about POR
-  dMatrix3 invI;		// inverse of mass.I
-  dReal invMass;		// 1 / mass.mass
-  dVector3 pos;			// position of POR (point of reference)
-  dQuaternion q;		// orientation quaternion
-  dMatrix3 R;			  // rotation matrix, always corresponds to q
-  dVector3 lvel,avel;		// linear and angular velocity of POR
-  dVector3 facc,tacc;		// force and torque accululators
-  dVector3 finite_rot_axis;	// finite rotation axis, unit length or 0=none
-}; *)
 
   PdxBody = ^TdxBody;
+  PdxJoint= ^TdxJoint;
+  TdJointID = PdxJoint;
+
+  {$IFDEF PARODE}
+  TdJointBreakCallback = procedure(joint: TdJointID); cdecl;
+
+  TJointBreakMode = Integer;
+
+  PdxJointBreakInfo = ^TdxJointBreakInfo;
+  TdxJointBreakInfo = record
+      flags : integer;
+      b1MaxF:TdVector3; // maximum force on body 1
+      b1MaxT:TdVector3; // maximum torque on body 1
+      b2MaxF:TdVector3; // maximum force on body 2
+      b2MaxT:TdVector3; // maximum torque on body 2
+      callback:TdJointBreakCallback; // function that is called when this joint breaks
+   end;
+  {$ENDIF}
+
+  PdxJointNode = ^TdxJointNode;
+  TdxJointNode = record
+     joint : PdxJoint; // pointer to enclosing dxJoint object
+     body : PdxBody;   // *other* body this joint is connected to
+     next : PdxJointNode; // next node in body's list of connected joints
+  end;
+
+  // info returned by getInfo1 function. the constraint dimension is m (<=6).
+  // i.e. that is the total number of rows in the jacobian. `nub' is the
+  // number of unbounded variables (which have lo,hi = -/+ infinity).
+  TJointInfo1 = record
+     m,nub : integer;
+  end;
+
+  // info returned by getInfo2 function
+  TJointInfo2 = record
+    // integrator parameters: frames per second (1/stepsize), default error
+    // reduction parameter (0..1).
+     fps,erp : TdReal;
+    // for the first and second body, pointers to two (linear and angular)
+    // n*3 jacobian sub matrices, stored by rows. these matrices will have
+    // been initialized to 0 on entry. if the second body is zero then the
+    // J2xx pointers may be 0.
+     J1l,J1a,J2l,J2a : pdReal;
+    // elements to jump from one row to the next in J's
+     rowskip : integer;
+    // right hand sides of the equation J*v = c + cfm * lambda. cfm is the
+    // "constraint force mixing" vector. c is set to zero on entry, cfm is
+    // set to a constant value (typically very small or zero) value on entry.
+     c,cfm : pdReal;
+    // lo and hi limits for variables (set to -/+ infinity on entry).
+     lo,hi : pdReal;
+    // findex vector for variables. see the LCP solver interface for a
+    // description of what this does. this is set to -1 on entry.
+    // note that the returned indexes are relative to the first index of
+    // the constraint.
+     findex : pinteger;
+  end;
+  TdxJoint = record
+     baseObject : TdObject;
+     Info1 : TJointInfo1;
+     Info2 : TJointInfo2;
+  end;
+  TdxJointNull = TdxJoint;
+
+  PdxJointBall = ^TdxJointBall;
+  TdxJointBall = record
+     BaseJoint : TdxJoint;
+     anchor1 : TdVector3;// anchor w.r.t first body
+     anchor2 : TdVector3;// anchor w.r.t second body
+     erp : TdReal; // error reduction
+     cfm : TdReal; // constraint force mix in
+  end;
+
+  PdxJointHinge = ^TdxJointHinge;
+  TdxJointHinge = record
+     BaseJoint : TdxJoint;
+     anchor1 : TdVector3; // anchor w.r.t first body
+     anchor2 : TdVector3; // anchor w.r.t second body
+     axis1 : TdVector3; // axis w.r.t first body
+     axis2 : TdVector3; // axis w.r.t second body
+     qrel : tdQuaternion;  // initial relative rotation body1 -> body2
+     limot : TdxJointLimitMotor; // limit and motor information
+  end;
+
+  PdxJointUniversial = ^TdxJointUniversial;
+  TdxJointUniversial = record
+     BaseJoint : TdxJoint;
+     anchor1 : TdVector3; // anchor w.r.t first body
+     anchor2 : TdVector3; // anchor w.r.t second body
+     axis1 : TdVector3; // axis w.r.t first body
+     axis2 : TdVector3; // axis w.r.t second body
+     qrel1 : tdQuaternion; // initial relative rotation body1 -> virtual cross piece
+     qrel2 : tdQuaternion; // initial relative rotation virtual cross piece -> body2
+     limot1 : TdxJointLimitMotor; // limit and motor information for axis1
+     limot2 : TdxJointLimitMotor;// limit and motor information for axis2
+  end;
+
+  PdxJointPR = ^TdxJointPR;
+  TdxJointPR = record
+     BaseJoint : TdxJoint;
+
+     anchor2:TdVector3;     ///< @brief Position of the rotoide articulation
+                            ///<        w.r.t second body.
+                            ///< @note Position of body 2 in world frame +
+                            ///< anchor2 in world frame give the position
+                            ///< of the rotoide articulation
+     axisR1:TdVector3 ;     ///< axis of the rotoide articulation w.r.t first body.
+                            ///< @note This is considered as axis1 from the parameter
+                            ///< view.
+     axisR2:TdVector3 ;     ///< axis of the rotoide articulation w.r.t second body.
+                            ///< @note This is considered also as axis1 from the
+                            ///< parameter view
+     axisP1:TdVector3;      ///< axis for the prismatic articulation w.r.t first body.
+                            ///< @note This is considered as axis2 in from the parameter
+                            ///< view
+     qrel:TdQuaternion;     ///< initial relative rotation body1 -> body2.
+     offset:TdVector3;      ///< @brief vector between the body1 and the rotoide
+                            ///< articulation.
+                            ///<
+                            ///< Going from the first to the second in the frame
+                            ///<  of body1.
+                            ///< That should be aligned with body1 center along axisP
+                            ///< This is calculated when the axis are set.
+     limotR:TdxJointLimitMotor; ///< limit and motor information for the rotoide articulation.
+     limotP:TdxJointLimitMotor; ///< limit and motor information for the prismatic articulation.
+  end;
+
+  PdxJointPiston = ^TdxJointPiston;
+  TdxJointPiston = record
+     BaseJoint : TdxJoint;
+
+     axis1:TdVector3;          ///< Axis of the prismatic and rotoide w.r.t first body
+     axis2:TdVector3;          ///< Axis of the prismatic and rotoide w.r.t second body
+
+     qrel:TdQuaternion;        ///< Initial relative rotation body1 -> body2
+
+  /// Anchor w.r.t first body.
+  /// This is the same as the offset for the Slider joint
+  /// @note To find the position of the anchor when the body 1 has moved
+  ///       you must add the position of the prismatic joint
+  ///       i.e anchor = R1 * anchor1 + dJointGetPistonPosition() * (R1 * axis1)
+     anchor1:TdVector3;
+     anchor2:TdVector3;        //< anchor w.r.t second body
+
+  /// limit and motor information for the prismatic
+  /// part of the joint
+     limotP:TdxJointLimitMotor;
+
+  /// limit and motor information for the rotoide
+  /// part of the joint
+     limotR:TdxJointLimitMotor;
+  end;
+
+  PdxJointSlider = ^TdxJointSlider;
+  TdxJointSlider = record
+     BaseJoint : TdxJoint;
+     axis1:TdVector3;		// axis w.r.t first body
+     qrel:TdQuaternion;		// initial relative rotation body1 -> body2
+     offset:TdVector3;		// point relative to body2 that should be
+                				// aligned with body1 center along axis1
+     limot:TdxJointLimitMotor;	// limit and motor information
+  end;
+
+  PdxJointHinge2 = ^TdxJointHinge2;
+  TdxJointHinge2 = record
+     BaseJoint : TdxJoint;
+
+     anchor1:TdVector3 ;		// anchor w.r.t first body
+     anchor2:TdVector3 ;		// anchor w.r.t second body
+     axis1:TdVector3;		// axis 1 w.r.t first body
+     axis2:TdVector3;		// axis 2 w.r.t second body
+     c0,s0:TdReal;			// cos,sin of desired angle between axis 1,2
+     v1,v2:TdVector3;		// angle ref vectors embedded in first body
+     limot1:TdxJointLimitMotor;	// limit+motor info for axis 1
+     limot2:TdxJointLimitMotor;	// limit+motor info for axis 2
+     susp_erp,susp_cfm:TdReal;	// suspension parameters (erp,cfm)
+  end;
+
+  TdxJointAMotor = record
+     BaseJoint : TdxJoint;
+
+     num:integer;			// number of axes (0..3)
+     mode:integer;			// a dAMotorXXX constant
+     rel:TdInteger3;			// what the axes are relative to (global,b1,b2)
+     axis:Td3Axis;		// three axes
+     limot:TdxJointLimitMotor3;	// limit+motor info for axes
+     angle:TdVector3;		// user-supplied angles for axes
+  // these vectors are used for calculating euler angles
+     reference1:TdVector3;		// original axis[2], relative to body 1
+     reference2:TdVector3;		// original axis[0], relative to body 2
+  end;
+
+  TdxJointLMotor = record
+     BaseJoint : TdxJoint;
+
+     num: integer;
+     rel:TdInteger3;
+     axis:Td3Axis;		// three axes
+     limot:TdxJointLimitMotor3;	// limit+motor info for axes
+  end;
+
+  TdxJointPlane2D = record
+     BaseJoint : TdxJoint;
+
+     row_motor_x:integer;
+     row_motor_y:integer;
+     row_motor_angle:integer;
+     motor_x:TdxJointLimitMotor;
+     motor_y:TdxJointLimitMotor;
+     motor_angle:TdxJointLimitMotor;
+  end;
+
+  TdxJointFixed = record
+     BaseJoint : TdxJoint;
+
+     qrel:TdQuaternion;		// initial relative rotation body1 -> body2
+     offset:TdVector3;		// relative offset between the bodies
+     erp:TdReal;			// error reduction parameter
+     cfm:TdReal;			// constraint force mix-in
+  end;
+
+
+  // position vector and rotation matrix for geometry objects that are not
+  // connected to bodies.
+  PdxPosR = ^TdxPosR;
+  TdxPosR = record
+    pos : TdVector3;
+    R : TdMatrix3;
+  end;
+
   TdxBody = record
     BaseObject : TdObject;
 
@@ -320,12 +627,21 @@ struct dObject : public dBase {
     mass : TdMass;			    // mass parameters about POR
     invI : TdMatrix3 ;		  // inverse of mass.I
     invMass : TdReal;		    // 1 / mass.mass
-    pos : TdVector3;			  // position of POR (point of reference)
+    posr : TdxPosR;			  // position and orientation of point of reference
     q : TdQuaternion;		    // orientation quaternion
-    R : TdMatrix3;			    // rotation matrix, always corresponds to q
     lvel,avel : TdVector3;	// linear and angular velocity of POR
     facc,tacc : TdVector3 ;	// force and torque accululators
     finite_rot_axis : TdVector3 ;	// finite rotation axis, unit length or 0=none
+    adis : TdxAutoDisable; // auto-disable parameters
+    adis_timeleft : TdReal; // time left to be idle
+    adis_stepsleft : integer;  // steps left to be idle
+    average_lvel_buffer : pdVector3; // buffer for the linear average velocity calculation
+    average_avel_buffer : pdVector3; // buffer for the angular average velocity calculation
+    average_counter : longword; // counter/index to fill the average-buffers
+    average_ready : integer; // indicates ( with = 1 ), if the Body's buffers are ready for average-calculations
+    moved_callback : TdMovedCallback; // let the user know the body moved
+    dampingp : TdxDampingParameters; // damping parameters, depends on flags
+    max_angular_speed : TdReal; // limit the angular velocity to this magnitude
   end;
 
   TBodyList = class(TList)
@@ -349,11 +665,17 @@ struct dObject : public dBase {
 
   TdxWorld = record //(TdBase)
     firstbody : PdxBody;		// body linked list
-    firstjoint : TdJointID;	// joint linked list
+    firstjoint : PdxJoint;	// joint linked list
     nb,nj : integer;			  // number of bodies and joints in lists
     gravity : TdVector3;		// gravity vector (m/s/s)
     global_erp : TdReal;		// global error reduction parameter
     global_cfm : TdReal;		// global costraint force mixing parameter
+    adis : TdxAutoDisable;
+    body_flags : integer;
+    qs : TdxQuickStepParameters;
+    contactp : TdxContactParameters;
+    dampingp : TdxDampingParameters;
+    max_angular_speed : TdReal;
   end;
 
 
@@ -373,32 +695,12 @@ struct dObject : public dBase {
 
   PTdJointFeedback = ^TdJointFeedback;
 
-(*enum {
-  d_ERR_UNKNOWN = 0,		/* unknown error */
-  d_ERR_IASSERT,		/* internal assertion failed */
-  d_ERR_UASSERT,		/* user assertion failed */
-  d_ERR_LCP			/* user assertion failed */
-};*)
   TdErrorType =
-    (d_ERR_UNKNOWN,
-     d_ERR_IASSERT,
-     d_ERR_UASSERT,
-     d_ERR_LCP { = 3//});
+    (d_ERR_UNKNOWN, // unknown error
+     d_ERR_IASSERT, // user assertion failed */
+     d_ERR_UASSERT, // user assertion failed */
+     d_ERR_LCP);
 
-
-(*/* joint type numbers */
-
-enum {
-  dJointTypeNone = 0,		/* or "unknown" */
-  dJointTypeBall,
-  dJointTypeHinge,
-  dJointTypeSlider,
-  dJointTypeContact,
-  dJointTypeHinge2,
-  dJointTypeFixed,
-  dJointTypeNull,
-  dJointTypeAMotor
-};*)
 
   TdJointTypeNumbers =
     (dJointTypeNone,		// or "unknown"
@@ -406,110 +708,22 @@ enum {
     dJointTypeHinge,
     dJointTypeSlider,
     dJointTypeContact,
+    dJointTypeUniversal,
     dJointTypeHinge2,
     dJointTypeFixed,
     dJointTypeNull,
     dJointTypeAMotor,
-    dJointTypePlane2D);
+    dJointTypeLMotor,
+    dJointTypePlane2D,
+    dJointTypePR,
+    dJointTypePiston
+    );
 
   TdAngularMotorModeNumbers =
     (dAMotorUser,
      dAMotorEuler);
 
 
-// joint flags
-(*enum {
-  // if this flag is set, the joint was allocated in a joint group
-  dJOINT_INGROUP = 1,
-
-  // if this flag is set, the joint was attached with arguments (0,body).
-  // our convention is to treat all attaches as (body,0), i.e. so node[0].body
-  // is always nonzero, so this flag records the fact that the arguments were
-  // swapped.
-  dJOINT_REVERSE = 2,
-
-  // if this flag is set, the joint can not have just one body attached to it,
-  // it must have either zero or two bodies attached.
-  dJOINT_TWOBODIES = 4
-};*)
-  //TJointFlag = (
-
-(* Change: New Type added, syntax enforcement *)
-  type
-    TJointFlag = Integer;
-
-(* These consts now have defined types *)
-  const
-    dJOINT_INGROUP: TJointFlag = 1;
-    dJOINT_REVERSE: TJointFlag = 2;
-    dJOINT_TWOBODIES: TJointFlag = 4;
-
-  // Space constants
-  const
-    TYPE_SIMPLE = $bad;
-    TYPE_HASH = $babe;
-
-
-(*enum {
-  dContactMu2		= 0x001,
-  dContactFDir1		= 0x002,
-  dContactBounce	= 0x004,
-  dContactSoftERP	= 0x008,
-  dContactSoftCFM	= 0x010,
-  dContactMotion1	= 0x020,
-  dContactMotion2	= 0x040,
-  dContactSlip1		= 0x080,
-  dContactSlip2		= 0x100,
-
-  dContactApprox0	= 0x0000,
-  dContactApprox1_1	= 0x1000,
-  dContactApprox1_2	= 0x2000,
-  dContactApprox1	= 0x3000
-};*)
-//  TdContactType = (
-(* Change: New Type added, syntax enforcement *)
-  type
-    TdContactType = Integer;
-
-(* These consts now have defined types *)
-  const
-    dContactMu2: TdContactType		    = $0001;
-    dContactFDir1: TdContactType	  	= $0002;
-    dContactBounce: TdContactType   	= $0004;
-    dContactSoftERP: TdContactType  	= $0008;
-    dContactSoftCFM: TdContactType  	= $0010;
-    dContactMotion1: TdContactType  	= $0020;
-    dContactMotion2: TdContactType	  = $0040;
-    dContactSlip1: TdContactType		  = $0080;
-    dContactSlip2: TdContactType		  = $0100;
-
-    dContactApprox0: TdContactType	  = $00000;
-    dContactApprox1_1: TdContactType	= $1000;
-    dContactApprox1_2: TdContactType	= $2000;
-    dContactApprox1: TdContactType	  = $3000;
-
-
-(*  typedef struct dSurfaceParameters {
-  /* must always be defined */
-  int mode;
-  dReal mu;
-
-  /* only defined if the corresponding flag is set in mode */
-  dReal mu2;
-  dReal bounce;
-  dReal bounce_vel;
-  dReal soft_erp;
-  dReal soft_cfm;
-  dReal motion1,motion2;
-  dReal slip1,slip2;
-} dSurfaceParameters;*)
-
-// enum { TRIMESH_FACE_NORMALS, TRIMESH_LAST_TRANSFORMATION };
-const
-  TRIMESH_FACE_NORMALS = 0;
-  TRIMESH_LAST_TRANSFORMATION = 1;
-
-type
   TdSurfaceParameters = record
     // must always be defined
     mode : cardinal;
@@ -532,13 +746,20 @@ type
   dGeomID g1,g2;
 } dContactGeom;*)
 
-  PdxGeom = ^TdxGeom;
+//***********
+{  TdContactGeom = record
+    pos : TdVector3;
+    normal : TdVector3;
+    depth : TdReal;
+    g1,g2 : PdxGeom;
+  end;} // OLD
 
   TdContactGeom = record
     pos : TdVector3;
     normal : TdVector3;
     depth : TdReal;
     g1,g2 : PdxGeom;
+    side1,side2 : integer;
   end;
 
   PdContactGeom = ^TdContactGeom;
@@ -557,6 +778,7 @@ type
 
   // Collission callback structure
   TdNearCallback = procedure(data : pointer; o1, o2 : PdxGeom); cdecl;
+
 
   TdColliderFn = function(o1, o2 : PdxGeom; flags : Integer;
                   contact : PdContactGeom; skip : Integer) : Integer; cdecl;
@@ -583,39 +805,6 @@ type
 
   PdGeomClass = ^TdGeomClass;
 
-(*struct dxGeomClass {
- dGetColliderFnFn *collider;
-  dGetAABBFn *aabb;
-  dAABBTestFn *aabb_test;
-  dGeomDtorFn *dtor;
-  int num;             // class number
-  int size;            // total size of object, including extra data area
-};*)
-
-  TdxGeomClass = record
-    collider : TdGetColliderFnFn;    // collider function
-    aabb : TdGetAABBFn;              // bounding box function
-    aabb_test : TdAABBTestFn;        // aabb tester, can be 0 for none
-    dtor  : TdGeomDtorFn;             // destructor, can be 0 for none
-    num   : integer;             // class number
-    size  : integer;            // total size of object, including extra data area
-  end;
-
-  PdxGeomClass = ^TdxGeomClass;
-
-  (*// position vector and rotation matrix for geometry objects that are not
-  // connected to bodies.
-
-  struct dxPosR {
-    dVector3 pos;
-    dMatrix3 R;
-  };*)
-
-  TdxPosR = record
-    pos : TdVector3;
-    R : TdMatrix3;
-  end;
-
   (*struct dxSpace : public dBase {
   int type;			// don't want to use RTTI
   virtual void destroy()=0;
@@ -624,20 +813,6 @@ type
   virtual void collide (void *data, dNearCallback *callback)=0;
   virtual int query (dGeomID)=0;
 };*)
-  TdxSpace = record
-    _Garbage : integer;
-// * Explaining _Garbage *
-// That member first appears in the TdxSpace record.  This is
-// because the dxSpace struct declares its functions as virtual.  Since the
-// class (a struct in C++ is considered a public class) now contains virtual
-// functions (functions in dxBase are not virtual), it needs a vtable to know
-// what functions to call in what class.  Visual C++ places the pointer to the
-// vtable at offset 0, which is what your _Garbage field caters for.
-//
-// Steve 'Sly' Williams
-
-    SpaceType : integer;
-  end;
 
   PdxSpace = ^TdxSpace;
 
@@ -657,10 +832,10 @@ type
 
     dxTriMeshData();
     ~dxTriMeshData();
-    
-    void Build(const void* Vertices, int VertexStide, int VertexCount, 
-	       const void* Indices, int IndexCount, int TriStride, 
-	       const void* Normals, 
+
+    void Build(const void* Vertices, int VertexStide, int VertexCount,
+	       const void* Indices, int IndexCount, int TriStride,
+	       const void* Normals,
 	       bool Single);
 
         /* aabb in model space */
@@ -674,8 +849,33 @@ type
   TdxTriMeshData = record
     unknown : byte; //
   end;
-
   PdxTriMeshData = ^TdxTriMeshData;
+
+  TdxHeightfieldData = record
+    m_fWidth : TdReal;
+    m_fDepth : TdReal;
+    m_fSampleWidth : TdReal;
+    m_fSampleDepth : TdReal;
+    m_fInvSampleWidth : TdReal;
+    m_fInvSampleDepth : TdReal;
+    m_fHalfWidth : TdReal;
+    m_fHalfDepth : TdReal;
+    m_fMinHeight : TdReal;
+    m_fMaxHeight : TdReal;
+    m_fThickness : TdReal;
+    m_fScale : TdReal;
+    m_fOffset : TdReal;
+    m_nWidthSamples : integer;
+    m_nDepthSamples : integer;
+    m_bCopyHeightData : integer;
+    m_bWrapMode : integer;
+    m_nGetHeightMode : integer;
+    m_pHeightData : pointer;
+    m_pUserData : pointer;
+     m_contacts : PdContactGeom;
+  end;
+  PdxHeightfieldData = ^TdxHeightfieldData;
+
 
 (*//simple space - reports all n^2 object intersections
 struct dxSimpleSpace : public dxSpace {
@@ -687,13 +887,6 @@ struct dxSimpleSpace : public dxSpace {
   int query (dGeomID);
 };*)
 
-  // Copies settings from TdxSpace, beacause pascal doeasn't do inheritance
-  // for records
-  TdxSimpleSpace = record
-    _Garbage : integer; // I don't know where this comes from!
-    SpaceType : integer;
-    First : PdxGeom;
-  end;
 
   PdxSimpleSpace = ^TdxSimpleSpace;
 
@@ -710,15 +903,6 @@ struct dxHashSpace : public dxSpace {
   int query (dGeomID);
 };*)
 
-  // Copies settings from TdxSpace, beacause pascal doeasn't do inheritance
-  // for records
-  TdxHashSpace = record
-    _Garbage : integer; // I don't know where this comes from!
-    SpaceType : integer;
-    First : PdxGeom;
-    global_minlevel : integer;
-    global_maxlevel : integer;
-  end;
 
   PdxHashSpace = ^TdxHashSpace;
 
@@ -727,7 +911,7 @@ struct dxHashSpace : public dxSpace {
 } dGeomSpaceData; *)
 
   TdGeomSpaceData = record
-    next : PdxGeom;
+     next : PdxGeom;
   end;
 
   (*// common data for all geometry objects. the class-specific data area follows
@@ -747,22 +931,24 @@ struct dxHashSpace : public dxSpace {
   };*)
 
   TdxGeom = record // a dGeomID is a pointer to this
-    _class : PdxGeomClass;	// class of this object
+     _type : integer;	// class of this object
 
-    {$ifdef cSINGLE}
-    Padding : array [0..4] of byte;
-    {$else}
-    Padding : array [0..2] of pointer;
-    {$endif}
+     {$ifdef cSINGLE}
+     Padding : byte;
+     {$endif}
+     gflags : integer;
 
-    data : pointer;		// user data pointer
-    Body : PdxBody ;		// dynamics body associated with this object (if any)
-    Pos : PdVector3;		// pointer to object's position vector
-    R : PdMatrix3;		// pointer to object's rotation matrix
-    spaceid : PdxSpace;	// the space this object is in
-    space : TdGeomSpaceData ;	// reserved for use by space this object is in
-    space_aabb : PdReal;	// ptr to aabb array held by dSpaceCollide() fn
-    // class-specific data follows here, with proper alignment.
+     data : pointer;		// user data pointer
+     Body : PdxBody ;		// dynamics body associated with this object (if any)
+     body_next : PdxGeom; // next geom in body's linked list of associated geoms
+     final_posr : PdxPosR; // final position of the geom in world coordinates
+     offset_posr : PdxPosR; // offset from body in local coordinates
+
+     next : PdxGeom;
+     tome : PPdxGeom;
+     parent_space : Pdxspace;
+     aabb : TdAABB;
+     category_bits,collide_bits : longword;
   end;
 
   TGeomList = class(TList)
@@ -774,64 +960,55 @@ struct dxHashSpace : public dxSpace {
     procedure DeleteAllGeoms(DeleteDataAsObject : boolean=false);
   end;
 
-(*
-/* standard joint parameter names. why are these here? - because we don't want
- * to include all the joint function definitions in joint.cpp. hmmmm.
- * MSVC complains if we call D_ALL_PARAM_NAMES_X with a blank second argument,
- * which is why we have the D_ALL_PARAM_NAMES macro as well. please copy and
- * paste between these two.
- */
 
-#define D_ALL_PARAM_NAMES(start) \
-  /* parameters for limits and motors */ \
-  dParamLoStop = start, \
-  dParamHiStop, \
-  dParamVel, \
-  dParamFMax, \
-  dParamFudgeFactor, \
-  dParamBounce, \
-  dParamCFM, \
-  dParamStopERP, \
-  dParamStopCFM, \
-  /* parameters for suspension */ \
-  dParamSuspensionERP, \
-  dParamSuspensionCFM,
+  TdxSpace = record
+    baseGeom : TdxGeom;
+    count : integer;
+    first : PdxGeom;
+    cleanup : integer;
+    current_index : integer;
+    current_geom : PdxGeom;
+    lock_count : integer;
+  end;
 
-#define D_ALL_PARAM_NAMES_X(start,x) \
-  /* parameters for limits and motors */ \
-  dParamLoStop ## x = start, \
-  dParamHiStop ## x, \
-  dParamVel ## x, \
-  dParamFMax ## x, \
-  dParamFudgeFactor ## x, \
-  dParamBounce ## x, \
-  dParamCFM ## x, \
-  dParamStopERP ## x, \
-  dParamStopCFM ## x, \
-  /* parameters for suspension */ \
-  dParamSuspensionERP ## x, \
-  dParamSuspensionCFM ## x,
+  // Copies settings from TdxSpace, beacause pascal doeasn't do inheritance
+  // for records
+  TdxSimpleSpace = TdxSpace;
 
-enum {
-  D_ALL_PARAM_NAMES(0)
-  D_ALL_PARAM_NAMES_X(0x100,2)
-  D_ALL_PARAM_NAMES_X(0x200,3)
+  // Copies settings from TdxSpace, beacause pascal doeasn't do inheritance
+  // for records
+  TdxHashSpace = record
+    BaseSpace : TdxSpace;
+    global_minlevel : integer;
+    global_maxlevel : integer;
+  end;
 
-  /* add a multiple of this constant to the basic parameter numbers to get
-   * the parameters for the second, third etc axes.
-   */
-  dParamGroup=0x100
-};*)
+  TdxQuadTreeSpace = record
+    BaseSpace : TdxSpace;
+    Blocks : pointer;
+    DirtyList : pointer;
+  end;
 
 //  TJointParams = (
-    // parameters for limits and motors
+// parameters for limits and motors
 (* Change: New Type added, sintax enforcement *)
-  type
     TJointParams = Integer;
 
 (* These consts now have defined types *)
+
+{$IFDEF PARODE}
   const
-    _priv_dParamLoStop  = 0;
+     dJOINT_BREAK_UNKNOWN:TJointBreakMode =      $0000;
+     dJOINT_BROKEN:TJointBreakMode =             $0001;
+     dJOINT_DELETE_ON_BREAK:TJointBreakMode =    $0002;
+     dJOINT_BREAK_AT_B1_FORCE:TJointBreakMode =  $0004;
+     dJOINT_BREAK_AT_B1_TORQUE:TJointBreakMode = $0008;
+     dJOINT_BREAK_AT_B2_FORCE:TJointBreakMode =  $0010;
+     dJOINT_BREAK_AT_B2_TORQUE:TJointBreakMode = $0020;
+{$ENDIF}
+
+  const
+    _priv_dParamLoStop  = $000;
     _priv_dParamLoStop2 = $100;
     _priv_dParamLoStop3 = $200;
   const
@@ -882,38 +1059,24 @@ enum {
     // dParamGroup * 2 + dParamBounce = dParamBounce2
     dParamGroup: TJointParams = $100;
 
-{ TODO :
-// How does one import integers?
-dBoxClass
-dCCylinderClass
-dGeomTransformClass
-dSphereClass
-dPlaneClass
-...
 
-// Functions
-dBoxBox
-dDebug
-dError
-dMessage
-dFactorCholesky
-dFactorLDLT
-dPlaneSpace
-dInvertPDMatrix
-dIsPositiveDefinite
-dLDLTAddTL
-dLDLTRemove
-dRemoveRowCol
-dSetDebugHandler
-dSetErrorHandler
-dSetMessageHandler
-dSetZero
-dSolveCholesky
-dSolveLDLT}
+  // added by PAR
+   {$IFDEF PARODE}
+   function dSphereGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dSphereGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dBoxGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dBoxGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dCylinderGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dCylinderGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dCapsuleGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dCapsuleGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dRayGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dRayGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dPlaneGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dPlaneGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dConvexGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dConvexGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dTriMeshGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dTriMeshGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dHeightfieldGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dHeightfieldGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   function dGeomTransformGetClass: integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
+   {$ENDIF}
 
-  // ***************************************************************************
-  // ***************************************************************************
-  // ***** WORLD
+  procedure dInitODE; cdecl; external {$IFDEF __GPC__}name 'dInitODE'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dCloseODE; cdecl; external {$IFDEF __GPC__}name 'dCloseODE'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
 
   //----- dWorld -----
   function dWorldCreate: PdxWorld; cdecl; external {$IFDEF __GPC__}name 'dWorldCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -921,15 +1084,28 @@ dSolveLDLT}
   function dWorldGetCFM(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetCFM'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetERP(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetERP'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldGetGravity(const World: PdxWorld; var gravity: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dWorldGetGravity'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetGravity(const World: PdxWorld; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetGravity'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldImpulseToForce(const World: PdxWorld; const stepsize, ix, iy, iz: TdReal; var force: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dWorldImpulseToForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetCFM(const World: PdxWorld; cfm: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetCFM'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetERP(const World: PdxWorld; erp: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetERP'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetGravity(const World: PdxWorld; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetGravity'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetContactMaxCorrectingVel(const World: PdxWorld; const vel: TdReal); cdecl; external {$IFDEF __GPC__}name 'WorldSetContactMaxCorrectingVel'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetContactMaxCorrectingVel(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactMaxCorrectingVel'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetContactSurfaceLayer(const World: PdxWorld; const depth: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetContactSurfaceLayer(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldExportDIF(const World: PdxWorld; fileHandle: cardinal; const world_name:pchar); cdecl; external {$IFDEF __GPC__}name 'dWorldExportDIF'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
+  // Damping
+  function dWorldGetLinearDampingThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetLinearDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetLinearDampingThreshold(const World: PdxWorld; const threshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetLinearDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAngularDampingThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAngularDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAngularDampingThreshold(const World: PdxWorld; const threshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAngularDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetLinearDamping(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetLinearDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetLinearDamping(const World: PdxWorld; const scale: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetLinearDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAngularDamping(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAngularDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAngularDamping(const World: PdxWorld; const scale: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAngularDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetDamping(const World: PdxWorld; const linear_scale,angular_scale: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetMaxAngularSpeed(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetMaxAngularSpeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetMaxAngularSpeed(const World: PdxWorld; const max_speed: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetMaxAngularSpeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
   // Step
   procedure dWorldStep(const World: PdxWorld; const stepsize: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldStep'{$ELSE} ODEDLL{$ENDIF __GPC__};
   // QuickStep
@@ -942,7 +1118,25 @@ dSolveLDLT}
   procedure dWorldStepFast1(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldStepFast1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetAutoEnableDepthSF1(const World: PdxWorld; autodepth: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoEnableDepthSF1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetAutoEnableDepthSF1(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoEnableDepthSF1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dCloseODE; cdecl; external {$IFDEF __GPC__}name 'dCloseODE'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  // Auto-disable functions
+  function dWorldGetAutoDisableLinearAverageThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableLinearAverageThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableLinearAverageThreshold(const World: PdxWorld; linear_average_threshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableLinearAverageThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableAngularAverageThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableAngularAverageThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableAngularAverageThreshold(const World: PdxWorld; linear_average_threshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableAngularAverageThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableAverageSamplesCount(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableAverageSamplesCount'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableAverageSamplesCount(const World: PdxWorld; linear_average_threshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableAverageSamplesCount'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dWorldGetAutoDisableLinearThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableLinearThreshold(const World: PdxWorld; linThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableAngularThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableAngularThreshold(const World: PdxWorld; angThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableSteps(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableSteps(const World: PdxWorld; steps: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableTime(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableTime(const World: PdxWorld; time: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableFlag(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableFlag(const World: PdxWorld; do_auto_disable: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
 
   //----- dBody -----
   procedure dBodyAddForce(const Body: PdxBody; const fx, fy, fz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodyAddForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -991,109 +1185,26 @@ dSolveLDLT}
   procedure dBodyVectorToWorld(const Body: PdxBody; const px, py, pz: TdReal; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dBodyVectorToWorld'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetData (const Body: PdxBody; data : pointer); cdecl; external {$IFDEF __GPC__}name 'dBodySetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dBodyGetData (const Body: PdxBody) : pointer; cdecl; external {$IFDEF __GPC__}name 'dBodyGetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetMovedCallback (const Body: PdxBody; Callback : TdMovedCallback); cdecl; external {$IFDEF __GPC__}name 'dBodySetMovedCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodyCopyPosition(const Body: PdxBody; const pos: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dBodyCopyPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodyCopyRotation(const Body: PdxBody; const R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dBodyCopyRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodyCopyQuaternion(const Body: PdxBody; const quat: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dBodyCopyQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  //----- dJoint -----
-  procedure dJointAttach(const dJointID : TdJointID; const body1, body2: PdxBody); cdecl; external {$IFDEF __GPC__}name 'dJointAttach'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateAMotor(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateAMotor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateBall(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateBall'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateContact(const World : PdxWorld; dJointGroupID : TdJointGroupID; const dContact: PdContact): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateContact'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  // damping functions
+  procedure dBodySetLinearDamping (const Body: PdxBody; scale : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetLinearDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetLinearDamping (const Body: PdxBody) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodySetLinearDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetAngularDamping(const Body: PdxBody; scale : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAngularDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetAngularDamping(const Body: PdxBody) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAngularDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetDamping(const Body: PdxBody; linear_scale, angular_scale : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetDamping'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetLinearDampingThreshold(const Body: PdxBody) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetLinearDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetLinearDampingThreshold(const Body: PdxBody; threshold : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetLinearDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetAngularDampingThreshold(const Body: PdxBody) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAngularDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetAngularDampingThreshold(const Body: PdxBody; threshold : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAngularDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetDampingDefaults(const Body: PdxBody; threshold : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetDampingDefaults'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetMaxAngularSpeed(const Body: PdxBody; max_speed : TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetMaxAngularSpeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetMaxAngularSpeed(const Body: PdxBody) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetMaxAngularSpeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dJointCreateFixed(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateFixed'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateHinge(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateHinge'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateHinge2(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateHinge2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateSlider(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateSlider'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreateUniversal(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateUniversal'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointCreatePlane2D(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreatePlane2D'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointDestroy(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorAngle(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorAngleRate(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAngleRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetAMotorAxis(const dJointID : TdJointID; const anum: Integer; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorAxisRel(const dJointID : TdJointID; const anum: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAxisRel'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorMode(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorNumAxes(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetBallAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBallAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetBallAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBallAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetBody(const dJointID : TdJointID; const index: Integer): PdxBody; cdecl; external {$IFDEF __GPC__}name 'dJointGetBody'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHinge2Anchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Anchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHinge2Anchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Anchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHinge2Angle1(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHinge2Angle1Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle1Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHinge2Angle2Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle2Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHinge2Axis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Axis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHinge2Axis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Axis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Param'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHingeAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHingeAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHingeAngle(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHingeAngleRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAngleRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetHingeAxis(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetHingeParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetSliderAxis(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetSliderParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetSliderPosition(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetSliderPositionRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderPositionRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetType(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetType'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetUniversalAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetUniversalAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetUniversalAxis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetUniversalAxis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetUniversalAngle1(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetUniversalAngle2(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetUniversalAngle1Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetUniversalAngle2Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGroupCreate(const max_size: Integer): TdJointGroupID; cdecl; external {$IFDEF __GPC__}name 'dJointGroupCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGroupDestroy(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGroupEmpty(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupEmpty'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetAMotorAngle(const dJointID : TdJointID; const anum: Integer; const angle: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetAMotorAxis(const dJointID : TdJointID; const anum, rel: Integer; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetAMotorMode(const dJointID : TdJointID; const mode: TdAngularMotorModeNumbers); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetAMotorNumAxes(const dJointID : TdJointID; const num: Integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetBallAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBallAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetFixed(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointSetFixed'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHinge2Anchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Anchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHinge2Axis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Axis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHinge2Axis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Axis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Param'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHingeAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHingeAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetHingeParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetSliderAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetSliderAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetSliderParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetSliderParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetUniversalAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetUniversalAxis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetUniversalAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetPlane2DXParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DXParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetPlane2DYParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DYParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetPlane2DAngleParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DAngleParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetData (const dJointID : TdJointID) : pointer; cdecl; external {$IFDEF __GPC__}name 'dJointGetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetData (const dJointID : TdJointID; data : Pointer); cdecl; external {$IFDEF __GPC__}name 'dJointSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointAddAMotorTorques (const dJointID : TdJointID; torque1, torque2, torque3: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddAMotorTorques'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointAddHinge2Torques (const dJointID : TdJointID; torque1, torque2: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddHinge2Torques'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointAddHingeTorque (const dJointID : TdJointID; torque: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddHingeTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointAddSliderForce (const dJointID : TdJointID; force: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddSliderForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointAddUniversalTorques (const dJointID : TdJointID; torque1, torque2: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddUniversalTorques'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // callback routines for feedback of joints
-  procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external {$IFDEF __GPC__}name 'dJointSetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointGetFeedback (const dJointID : TdJointID) : PTdJointFeedback; cdecl; external {$IFDEF __GPC__}name 'dJointGetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointCorrectHinge2(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointCorrectHinge2'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  //* Auto-disable functions */
-  function dWorldGetAutoDisableLinearThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetAutoDisableLinearThreshold(const World: PdxWorld; linThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dWorldGetAutoDisableAngularThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetAutoDisableAngularThreshold(const World: PdxWorld; angThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dWorldGetAutoDisableSteps(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetAutoDisableSteps(const World: PdxWorld; steps: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dWorldGetAutoDisableTime(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetAutoDisableTime(const World: PdxWorld; time: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dWorldGetAutoDisableFlag(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldSetAutoDisableFlag(const World: PdxWorld; do_auto_disable: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
+  // Auto-disable functions
   function dBodyGetAutoDisableLinearThreshold(const Body: PdxBody): TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableLinearThreshold(const Body: PdxBody; linThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dBodyGetAutoDisableAngularThreshold(const Body: PdxBody): TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1105,166 +1216,356 @@ dSolveLDLT}
   function dBodyGetAutoDisableFlag(const Body: PdxBody): Integer; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableFlag(const Body: PdxBody; do_auto_disable: Integer); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableDefaults(const Body: PdxBody); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableDefaults'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetAutoDisableAverageSamplesCount(const Body: PdxBody; average_samples_count : longword); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableAverageSamplesCount'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+
+  //----- dJoint -----
+  {$IFDEF PARODE}
+  // breakable joints
+  procedure dJointSetBreakable (const dJointID : TdJointID; b: integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakable'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetBreakCallback (const dJointID : TdJointID; callbackFunc:TdJointBreakCallback); cdecl; external {$IFDEF __GPC__}name 'JointSetBreakable'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetBreakMode (const dJointID : TdJointID; mode: integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetBreakMode (const dJointID : TdJointID): integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetBreakMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetBreakForce(const dJointID : TdJointID; body : integer; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetBreakTorque(const dJointID : TdJointID; body : integer; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointIsBreakable (const dJointID : TdJointID): integer; cdecl; external {$IFDEF __GPC__}name 'dJointIsBreakable'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetBreakForce(const dJointID : TdJointID; body : integer; var force: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBreakForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetBreakTorque(const dJointID : TdJointID; body : integer; var torque: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBreakTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  {$ENDIF}
+
+  // normal joints
+  procedure dJointGroupDestroy(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGroupCreate(const max_size: Integer): TdJointGroupID; cdecl; external {$IFDEF __GPC__}name 'dJointGroupCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGroupEmpty(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupEmpty'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  procedure dJointAttach(const dJointID : TdJointID; const body1, body2: PdxBody); cdecl; external {$IFDEF __GPC__}name 'dJointAttach'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointDestroy(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dJointGetData (const dJointID : TdJointID) : pointer; cdecl; external {$IFDEF __GPC__}name 'dJointGetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetData (const dJointID : TdJointID; data : Pointer); cdecl; external {$IFDEF __GPC__}name 'dJointSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  // callback routines for feedback of joints
+  procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external {$IFDEF __GPC__}name 'dJointSetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetFeedback (const dJointID : TdJointID) : PTdJointFeedback; cdecl; external {$IFDEF __GPC__}name 'dJointGetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dJointGetType(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetType'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetBody(const dJointID : TdJointID; const index: Integer): PdxBody; cdecl; external {$IFDEF __GPC__}name 'dJointGetBody'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Contact
+  function dJointCreateContact(const World : PdxWorld; dJointGroupID : TdJointGroupID; const dContact: PdContact): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateContact'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //AMotor
+  function dJointCreateAMotor(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateAMotor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetAMotorAngle(const dJointID : TdJointID; const anum: Integer; const angle: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorAngle(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetAMotorAxis(const dJointID : TdJointID; const anum, rel: Integer; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetAMotorAxis(const dJointID : TdJointID; const anum: Integer; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetAMotorNumAxes(const dJointID : TdJointID; const num: Integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorNumAxes(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetAMotorMode(const dJointID : TdJointID; const mode: TdAngularMotorModeNumbers); cdecl; external {$IFDEF __GPC__}name 'dJointSetAMotorMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorMode(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddAMotorTorques (const dJointID : TdJointID; torque1, torque2, torque3: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddAMotorTorques'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorAngleRate(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAngleRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetAMotorAxisRel(const dJointID : TdJointID; const anum: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetAMotorAxisRel'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //LMotor
+  function dJointCreateLMotor(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateLMotor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetLMotorAxis(const dJointID : TdJointID; const anum, rel: Integer; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetLMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetLMotorAxis(const dJointID : TdJointID; const anum: Integer; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetLMotorAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetLMotorNumAxes(const dJointID : TdJointID; const num: Integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetLMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetLMotorNumAxes(const dJointID : TdJointID): Integer; cdecl; external {$IFDEF __GPC__}name 'dJointGetLMotorNumAxes'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetLMotorParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetLMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetLMotorParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetLMotorParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Ball
+  function dJointCreateBall(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateBall'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetBallAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBallAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetBallAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBallAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetBallAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBallAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Hinge
+  function dJointCreateHinge(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateHinge'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHingeAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHingeAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHingeAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHingeAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHingeAxis(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHingeParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHingeParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHingeParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHingeAngle(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHingeAngleRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHingeAngleRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddHingeTorque (const dJointID : TdJointID; torque: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddHingeTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Hinge2
+  function dJointCreateHinge2(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateHinge2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHinge2Anchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Anchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHinge2Anchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Anchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHinge2Anchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Anchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHinge2Axis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Axis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHinge2Axis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Axis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHinge2Axis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Axis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetHinge2Axis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Axis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetHinge2Param'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Param'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHinge2Angle1(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHinge2Angle1Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle1Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetHinge2Angle2Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetHinge2Angle2Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddHinge2Torques (const dJointID : TdJointID; torque1, torque2: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddHinge2Torques'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointCorrectHinge2(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointCorrectHinge2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Slider
+  function dJointCreateSlider(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateSlider'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetSliderAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetSliderAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetSliderAxis(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetSliderParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetSliderParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetSliderParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetSliderPosition(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetSliderPositionRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetSliderPositionRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddSliderForce (const dJointID : TdJointID; force: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddSliderForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Universal
+  function dJointCreateUniversal(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateUniversal'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetUniversalAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetUniversalAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetUniversalAxis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetUniversalAxis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetUniversalAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetUniversalAxis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle1(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle2(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle1Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle2Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetUniversalAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetUniversalAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddUniversalTorques (const dJointID : TdJointID; torque1, torque2: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddUniversalTorques'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Fixed
+  function dJointCreateFixed(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreateFixed'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetFixed(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointSetFixed'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Plane2D
+  function dJointCreatePlane2D(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreatePlane2D'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPlane2DXParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DXParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPlane2DYParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DYParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPlane2DAngleParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPlane2DAngleParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //PR
+  function dJointCreatePR(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreatePR'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPRAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPRAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPRAxis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPRAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetPRAxis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetPRAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPRAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPRAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetPRAxis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetPRAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPRParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPRParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPRParam(const dJointID : TdJointID; parameter: integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPRParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddPRTorque (const dJointID : TdJointID; torque: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddPRTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Pistion
+  function dJointCreatePiston(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external {$IFDEF __GPC__}name 'dJointCreatePiston'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPistonAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPistonAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetPistionAnchor(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetPistionAnchor'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetPistionAnchor2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetPistionAnchor2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPistonAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPistonAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointGetPistionAxis(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetPistionAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPistonParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPistonParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPistonParam(const dJointID : TdJointID; parameter : integer): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPistonParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointSetPistonAxisDelta(const dJointID : TdJointID; const x, y, z, ax, ay, az: TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetPistonAxis'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dJointAddPistonForce (const dJointID : TdJointID; force: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddPistonForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPistonPosition(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPistonPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPistonAngle(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPistonAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPistonAngleRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPistonAngleRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetPistonRate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetPistonRate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
 
   //----- dGeom -----
-  procedure dGeomBoxGetLengths(const Geom : PdxGeom; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomBoxGetLengths'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomBoxSetLengths(const Geom : PdxGeom; const lx, ly, lz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomBoxSetLengths'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomCCylinderGetParams(const Geom : PdxGeom; var radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCCylinderGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomCCylinderSetParams(const Geom : PdxGeom; const radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCCylinderSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomDestroy(const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomGetAABB(const Geom : PdxGeom; var aabb: TdAABB); cdecl; external {$IFDEF __GPC__}name 'dGeomGetAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetBody(const Geom : PdxGeom): PdxBody; cdecl; external {$IFDEF __GPC__}name 'dGeomGetBody'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dCreateGeomClass(const classptr : TdGeomClass) : Integer; cdecl; external {$IFDEF __GPC__}name 'dCreateGeomClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomGetClass(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomGetClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetPosition(const Geom : PdxGeom): PdVector3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomGetQuaternion(const Geom : PdxGeom; var result: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomGetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomGetClassData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   function dGeomGetSpace(const Geom : PdxGeom): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dGeomGetSpace'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  procedure dGeomPlaneGetParams(const Geom : PdxGeom; var result: TdVector4); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomPlaneSetParams (const Geom : PdxGeom; const a, b, c, d: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomIsSpace (const Geom : PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomIsSpace'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomSetBody(const Geom : PdxGeom; Body: PdxBody); cdecl; external {$IFDEF __GPC__}name 'dGeomSetBody'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSetPosition(const Geom : PdxGeom; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSetRotation(const Geom : PdxGeom; const R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomSetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSetQuaternion(const Geom : PdxGeom; const TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomSetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetBody(const Geom : PdxGeom): PdxBody; cdecl; external {$IFDEF __GPC__}name 'dGeomGetBody'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dGeomSphereGetRadius(const Geom : PdxGeom): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomSphereGetRadius'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSphereSetRadius(const Geom : PdxGeom; const radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSphereSetRadius'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTransformGetCleanup(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTransformGetGeom(const Geom : PdxGeom): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTransformSetCleanup(const Geom : PdxGeom; const mode: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTransformSetGeom(const Geom, obj: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetPosition(const Geom : PdxGeom; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetPosition(const Geom : PdxGeom): PdVector3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetRotation(const Geom : PdxGeom; const R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomSetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetQuaternion(const Geom : PdxGeom; const TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomSetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomGetQuaternion(const Geom : PdxGeom; var result: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomGetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCopyPosition(const Geom : PdxGeom; const pos: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomCopyPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCopyRotation(const Geom : PdxGeom; const R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomCopyRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCopyQuaternion(const Geom : PdxGeom; const quat: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomCopyQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   procedure dGeomSetData (const Geom : PdxGeom; data : pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomGetData (const Geom : PdxGeom) : pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomGetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTransformSetInfo (const Geom : PdxGeom; mode : integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetInfo'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTransformGetInfo (const Geom : PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetInfo'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  function dGeomIsSpace (const Geom : PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomIsSpace'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSetCategoryBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetCategoryBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomSetCollideBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetCollideBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetCategoryBits (const Geom : PdxGeom) : cardinal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetCategoryBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetCollideBits (const Geom : PdxGeom) : cardinal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetCollideBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomEnable (const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomEnable'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomDisable (const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomDisable'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomIsEnabled (const Geom : PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomIsEnabled'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomGetAABB(const Geom : PdxGeom; var aabb: TdAABB); cdecl; external {$IFDEF __GPC__}name 'dGeomGetAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetCategoryBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetCategoryBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetCategoryBits (const Geom : PdxGeom) : cardinal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetCategoryBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetCollideBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetCollideBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetCollideBits (const Geom : PdxGeom) : cardinal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetCollideBits'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dGeomSpherePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomSpherePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetPosition (const Geom : PdxGeom; x,y,z:TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetOffsetPosition(const Geom : PdxGeom): PdVector3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetOffsetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetRotation (const Geom : PdxGeom; R:TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomGetOffsetRotation(const Geom : PdxGeom): PdVector3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetOffsetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetQuaternion (const Geom : PdxGeom; const Q:TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomGetOffsetQuaternion (const Geom : PdxGeom; var Q:TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomGetOffsetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomClearOffset (const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomClearOffset'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetWorldPosition (const Geom : PdxGeom; x,y,z:TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetWorldPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetWorldRotation (const Geom : PdxGeom; R:TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetWorldRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetOffsetWorldQuaternion (const Geom : PdxGeom; const Q:TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomSetOffsetWorldQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCopyOffsetPosition(const Geom : PdxGeom; var pos: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomCopyOffsetPosition'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCopyOffsetRotation(const Geom : PdxGeom; var R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dGeomCopyOffsetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomIsOffset (const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomIsOffset'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Transform
+  function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransform';
+  procedure dGeomTransformSetGeom(const Geom, obj: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTransformGetGeom(const Geom : PdxGeom): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTransformSetInfo (const Geom : PdxGeom; mode : integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetInfo'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTransformGetInfo (const Geom : PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetInfo'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTransformSetCleanup(const Geom : PdxGeom; const mode: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTransformSetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTransformGetCleanup(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTransformGetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Box
+  function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateBox';
+  procedure dGeomBoxGetLengths(const Geom : PdxGeom; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomBoxGetLengths'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomBoxSetLengths(const Geom : PdxGeom; const lx, ly, lz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomBoxSetLengths'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomBoxPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomBoxPointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomPlanePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomPlanePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomCCylinderPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomCCylinderPointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // A strange fix, so the class ids can be updated
-  // ***************
-  function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl;
-  function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
-  function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
-  function dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl;
-  function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
-  function dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl;
-  function dCreateTerrainY(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;
-  function dCreateTerrainZ(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;
-  function dCreateRay(const Space : PdxSpace; length: TdReal) : PdxGeom; cdecl;
-  function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
-  function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
-
-  function EXT_dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateSphere';
-  function EXT_dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateBox';
-  function EXT_dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreatePlane';
-  function EXT_dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateCCylinder';
-  function EXT_dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateCylinder';
-  function EXT_dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateCone';
-  function EXT_dCreateTerrainY(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl; external ODEDLL name 'dCreateTerrainY';
-  function EXT_dCreateTerrainZ(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl; external ODEDLL name 'dCreateTerrainZ';
-  function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
-  function EXT_dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransform';
-  function EXT_dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriMesh';
-  // ***************
-
-  // dCone
-  procedure dGeomConeSetParams(const Geom: PdxGeom; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomConeSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomConeGetParams(const Geom: PdxGeom; var radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomConeGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomConePointDepth(const Geom: PdxGeom; const x, y, z: TdReal): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomConePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // dTerrain
-  function dGeomTerrainYPointDepth(const Geom: PdxGeom; const x, y, z: TdReal): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomTerrainYPointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTerrainZPointDepth(const Geom: PdxGeom; const x, y, z: TdReal): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomTerrainZPointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   // dCylinder (not a capped cylinder).
+  function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateCylinder';
   procedure dGeomCylinderSetParams (const Geom : PdxGeom; radius, length : TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCylinderSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomCylinderGetParams (const Geom : PdxGeom; var radius, length : TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCylinderGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
+  // dCapsule (a capped cylinder).
+  function dCreateCapsule(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateCapsule';
+  procedure dGeomCapsuleSetParams(const Geom : PdxGeom; const radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCapsuleSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomCapsuleGetParams(const Geom : PdxGeom; var radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomCapsuleGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomCapsulePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomCapsulePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Plane
+  function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreatePlane';
+  procedure dGeomPlaneSetParams (const Geom : PdxGeom; const a, b, c, d: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomPlaneGetParams(const Geom : PdxGeom; var result: TdVector4); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomPlanePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomPlanePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Sphere
+  function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateSphere';
+  procedure dGeomSphereSetRadius(const Geom : PdxGeom; const radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomSphereSetRadius'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomSphereGetRadius(const Geom : PdxGeom): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomSphereGetRadius'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomSpherePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomSpherePointDepth'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Convex
+  function dCreateConvex(const Space : PdxSpace; _planes: PdReal; _planecount: longword; _points : PdReal; _pointcount: longword; const _polygons:longword): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateConvex'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomSetConvex(const Geom: PdxGeom; _planes: PdReal; _planecount: longword; _points : PdReal; _pointcount: longword; const _polygons:longword); cdecl; external {$IFDEF __GPC__}name 'dGeomSetConvex'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  //Heightfield  (incomplete)
+  function dCreateHeightfield(const Space : PdxSpace; Data: PdxHeightfieldData; bPlaceable:Integer): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateHeightfield'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomHeightfieldDataCreate: PdxHeightfieldData; cdecl; external {$IFDEF __GPC__}name 'dGeomHeightfieldDataCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomHeightfieldDataDestroy(Data: PdxHeightfieldData); cdecl; external {$IFDEF __GPC__}name 'dGeomHeightfieldDataDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomHeightfieldSetHeightfieldData(const Geom : PdxGeom; Data: PdxHeightfieldData); cdecl; external {$IFDEF __GPC__}name 'dGeomHeightfieldSetHeightfieldData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomHeightfieldGetHeightfieldData(const Geom : PdxGeom):PdxHeightfieldData; cdecl; external {$IFDEF __GPC__}name 'dGeomHeightfieldGetHeightfieldData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomHeightfieldDataSetBounds (Data: PdxHeightfieldData; minHeight, MaxHeight : TdReal) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomHeightfieldDataSetBounds'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   //dRay
-  procedure dGeomRaySetLength(const Geom : PdxGeom; length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySetLength'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomRayGetLength(const Geom : PdxGeom) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomRayGetLength'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomRaySetClosestHit(const Geom : PdxGeom; closestHit: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySetClosestHit'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomRayGetClosestHit(const Geom : PdxGeom) : Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomRayGetClosestHit'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
   procedure dGeomRaySet(const Geom : PdxGeom; px, py, pz, dx, dy, dz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySet'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomRayGet(const Geom : PdxGeom; var start, dir: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomRayGet'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomRaySetLength(const Geom : PdxGeom; length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySetLength'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomRayGetLength(const Geom : PdxGeom) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomRayGetLength'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomRaySetParams(const Geom : PdxGeom; FirstContact, BackfacCull: integer); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomRayGetParams(const Geom : PdxGeom; var FirstContact, BackfacCull: integer); cdecl; external {$IFDEF __GPC__}name 'dGeomRayGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomRaySetClosestHit(const Geom : PdxGeom; closestHit: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomRaySetClosestHit'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomRayGetClosestHit(const Geom : PdxGeom) : Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomRayGetClosestHit'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dCreateGeomClass(const classptr : TdGeomClass) : Integer; cdecl; external {$IFDEF __GPC__}name 'dCreateGeomClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomGetClassData'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  //----- dTrilistCollider -----
+  //TriMesh
+  function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback:TdTriCallback; ArrayCallback:TdTriArrayCallback; RayCallback: TdTriRayCallback): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateTriMesh'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  procedure dGeomTriMeshSetData(g: PdxGeom; Data: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetData(g: PdxGeom):PdxTriMeshData; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetTriMeshDataID(g: PdxGeom) : PdxTriMeshData; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetTriMeshDataID'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataUpdate(g: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataUpdate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dGeomTriMeshIsTCEnabled(g: PdxGeom; geomClass: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshIsTCEnabled'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshEnableTC(g: PdxGeom; geomClass, enable: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshEnableTC'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshClearTCCache(g: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshClearTCCache'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  function dGeomTriMeshGetTriangleCount(g: PdxGeom) : integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetTriangleCount'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetTriangle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetPoint'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetArrayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetRayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetArrayCallback(g: PdxGeom; ArrayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetRayCallback(g: PdxGeom; RayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetCallback(g: PdxGeom; Callback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataSet(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataSet'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   procedure dGeomTriMeshDataBuildSimple(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSimple'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomTriMeshDataBuildSimple1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSimple1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomTriMeshDataBuildDouble(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildDouble'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomTriMeshDataBuildDouble1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildDouble1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomTriMeshDataBuildSingle(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSingle'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomTriMeshDataBuildSingle1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSingle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshDataSet(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataSet'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetTriangle'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetPoint'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshClearTCCache(g: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshClearTCCache'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshEnableTC(g: PdxGeom; geomClass, enable: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshEnableTC'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTriMeshIsTCEnabled(g: PdxGeom; geomClass: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshIsTCEnabled'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTriMeshGetArrayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTriMeshGetCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dGeomTriMeshGetRayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshSetArrayCallback(g: PdxGeom; ArrayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshSetCallback(g: PdxGeom; Callback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshSetRayCallback(g: PdxGeom; RayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dGeomTriMeshSetData(g: PdxGeom; Data: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  {MethodVariables}
+  procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external {$IFDEF __GPC__}name 'dInfiniteAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
 
   //----- dSpace -----
-  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dSpaceAdd'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external {$IFDEF __GPC__}name 'dSpaceDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dSpaceClean (const Space : PdxSpace); cdecl; external {$IFDEF __GPC__}name 'dSpaceClean'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dSpaceQuery'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dSpaceRemove'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   function dSimpleSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dSimpleSpaceCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dHashSpaceCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dQuadTreeSpaceCreate(const Space : PdxSpace; const Center, Extents : TdVector3; const Depth : Integer): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dQuadTreeSpaceCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceSetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dHashSpaceGetLevels(const Space: PdxSpace; var minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceGetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external {$IFDEF __GPC__}name 'dInfiniteAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dSpaceAdd'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dSpaceRemove'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dSpaceClean (const Space : PdxSpace); cdecl; external {$IFDEF __GPC__}name 'dSpaceClean'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dSpaceQuery'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dSpaceGetNumGeoms (const Space: PdxSpace) : integer; cdecl; external {$IFDEF __GPC__}name 'dSpaceGetNumGeoms'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dSpaceGetGeom (const Space: PdxSpace; const i: Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dSpaceGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
+  procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceSetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dHashSpaceGetLevels(const Space: PdxSpace; var minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceGetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dSpaceSetCleanup (space : PdxSpace; const mode : integer); cdecl; external {$IFDEF __GPC__}name 'dSpaceSetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dSpaceGetCleanup(Space : PdxSpace): integer; cdecl; external {$IFDEF __GPC__}name 'dSpaceGetCleanup'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
+  function dCollide (o1, o2 : PdxGeom; flags : integer; var Contact : TdContactGeom; Skip : integer) : integer; cdecl; external {$IFDEF __GPC__}name 'dCollide'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dSpaceCollide (const Space : PdxSpace; data : pointer; callback : TdNearCallback); cdecl; external {$IFDEF __GPC__}name 'dSpaceCollide'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dSpaceCollide2 (o1, o2 : PdxGeom; data : pointer; callback : TdNearCallback); cdecl; external {$IFDEF __GPC__}name 'dSpaceCollide2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   //----- dMass -----
+  procedure dMassSetParameters(var m: TdMass; themass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetParameters'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassAdd(var a,b : TdMass); cdecl; external {$IFDEF __GPC__}name 'dMassAdd'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassAdjust(var m: TdMass; newmass: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassAdjust'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassTranslate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassRotate(var m: TdMass; var R: TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dMassRotate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  procedure dMassSetZero(var m: TdMass); cdecl; external {$IFDEF __GPC__}name 'dMassSetZero'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetBox(var m: TdMass; density, lx, ly, lz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetBox'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetBoxTotal(var m: TdMass; total_mass, lx, ly, lz: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetBoxTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetCylinder(var m: TdMass; density: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCylinder'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCylinderTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetCappedCylinder(var m: TdMass; density: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCappedCylinder'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetCappedCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCappedCylinderTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetParameters(var m: TdMass; themass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetParameters'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetCapsule(var m: TdMass; density: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCapsule'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetCapsuleTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetCapsuleTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetSphere(var m: TdMass; density, radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetSphere'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetSphereTotal(var m: TdMass; total_mass, radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetSphereTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetTriMesh(var m: TdMass; density: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dMassSetTriMesh'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetTriMeshTotal(var m: TdMass; total_mass: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dMassSetTriMeshTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetZero(var m: TdMass); cdecl; external {$IFDEF __GPC__}name 'dMassSetZero'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassTranslate'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
+  procedure dMassSetTrimesh(var m: TdMass; density: TdReal; trimesh:PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dMassSetTrimesh'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetTrimeshTotal(var m: TdMass; total_mass: TdReal; trimesh:PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dMassSetTrimeshTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   //----- Rotation.h -----
   procedure dQFromAxisAndAngle (var q : TdQuaternion; const ax, ay ,az, angle : TdReal); cdecl; external {$IFDEF __GPC__}name 'dQFromAxisAndAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1300,17 +1601,14 @@ dSolveLDLT}
   function dAreConnected (a, b : PdxBody) : integer; cdecl; external {$IFDEF __GPC__}name 'dAreConnected'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dAreConnectedExcluding (a, b : PdxBody; joint_type : TdJointTypeNumbers) : integer; cdecl; external {$IFDEF __GPC__}name 'dAreConnectedExcluding'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dCollide (o1, o2 : PdxGeom; flags : integer; var Contact : TdContactGeom; Skip : integer) : integer; cdecl; external {$IFDEF __GPC__}name 'dCollide'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dSpaceCollide (const Space : PdxSpace; data : pointer; callback : TdNearCallback); cdecl; external {$IFDEF __GPC__}name 'dSpaceCollide'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dSpaceCollide2 (o1, o2 : PdxGeom; data : pointer; callback : TdNearCallback); cdecl; external {$IFDEF __GPC__}name 'dSpaceCollide2'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMakeRandomMatrix (A : PdRealArray; n, m : integer; range :  TdReal); cdecl; external {$IFDEF __GPC__}name 'dMakeRandomMatrix'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dClearUpperTriangle (A : PdRealArray; n : integer); cdecl; external {$IFDEF __GPC__}name 'dClearUpperTriangle'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  //function dMaxDifferenceLowerTriangle (A : PdRealArray;  var B : TdReal;  n : integer) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dMaxDifferenceLowerTriangle'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   function dRandGetSeed: Cardinal; cdecl; external {$IFDEF __GPC__}name 'dRandGetSeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dRandSetSeed (const s: Cardinal); cdecl; external {$IFDEF __GPC__}name 'dRandSetSeed'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dRandInt (const n: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dRandInt'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dRandReal: TdReal; cdecl; external {$IFDEF __GPC__}name 'dRandReal'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
   // return 1 if the random number generator is working.
   function dTestRand: Integer; cdecl; external {$IFDEF __GPC__}name 'dTestRand'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
@@ -1334,28 +1632,34 @@ dSolveLDLT}
   function Vector3Cross(const V1, V2 : TdVector3) : TdVector3;
   function Vector3Make(const x,y,z : TdReal) : TdVector3;
 
-  procedure DisableStillBodies(World : PdxWorld; Threshold : TdReal=0.0001);
 
   procedure VerifyDelphiODE(Body : PdxBody; Geom : PdxGeom);
 
   {ExportInitODEMarker}
 
+const MaxUserClasses = 4;
+
 var
-  // These must be set up, so I catch the first time a user creates a new
-  // object and ask what the class number became. Very fancy... They should
-  // be exported from the dll, but how does one export integers from dlls?
-  dSphereClass : integer=-1;
-  dBoxClass : integer=-1;
-  dCCylinderClass : integer=-1;
-  dGeomTransformClass : integer=-1;
-  dPlaneClass : integer=-1;
-  dCylinderClass : integer=-1;
-  dRayClass : integer=-1;
-  dGeomTransformGroupClass : integer=-1;
-  dTriMeshClass : integer=-1;
-  dTerrainYClass : integer=-1;
-  dTerrainZClass : integer=-1;
-  dConeClass : integer=-1;
+
+  dSphereClass : integer=0;
+  dBoxClass : integer=1;
+  dCapsuleClass : integer=2;
+  dCylinderClass : integer=3;
+  dPlaneClass : integer=4;
+  dRayClass : integer=5;
+  dConvexClass : integer=6;
+  dGeomTransformClass : integer=7;
+  dTriMeshClass : integer=8;
+  dHeightFieldClass : integer=9;
+  dFirstSpaceClass : integer = 10;
+  dSimpleSpaceClass : integer = 10;
+  dHashSpaceClass : integer = 11;
+  dSweepAndPruneSpaceClass : integer = 12;
+  dQuadTreeSpaceClass : integer = 13;
+  dLastSpaceClass : integer = 13;
+  dFirstUserClass : integer = 14;
+  dLastUserClass : integer = 17;
+  dGeomNumClasses : integer = 18;
 
   IsODEInitialized : boolean = False;
   DisabledDebugGeom : boolean = False;
@@ -1370,30 +1674,25 @@ var
    ODEDebugCollisionList: array of TdContact;
 {$ENDIF}
 
+
+  // These are made public in the dynamic version MRQZZZ
+  function InitODE(ADllName : PChar) : boolean;
+  procedure CloseODE;
+
+
+
 implementation
 
 uses
   moduleloader;
 
-var
-  WasStillBefore, WasStillBeforeOld : TList;
-
-const
-  // to be used as descriptive indices
-  IndexX = 0;
-  IndexY = 1;
-  IndexZ = 2;
-  IndexW = 3;
 
 { TBodyList }
 
 procedure TBodyList.DeleteAllBodies;
-var
-  i : integer;
+var i : integer;
 begin
-  for i := 0 to Count-1 do
-    dBodyDestroy(Get(i));
-
+  for i := 0 to Count-1 do  dBodyDestroy(Get(i));
   Clear;
 end;
 
@@ -1410,30 +1709,25 @@ end;
 { TGeomList }
 
 procedure TGeomList.DeleteAllGeoms(DeleteDataAsObject : boolean=false);
-var
-  i : integer;
-  geom : PdxGeom;
+var i : integer;
+    geom : PdxGeom;
 begin
-  for i := 0 to Count-1 do
-  begin
-    geom := Get(i);
-    if DeleteDataAsObject and (geom.data<>nil) then
-      TObject(geom.data).Free;
-
-    dGeomDestroy(geom);
-  end;
-
-  Clear;
+   for i := 0 to Count-1 do begin
+      geom := Get(i);
+      if DeleteDataAsObject and (geom.data<>nil) then TObject(geom.data).Free;
+      dGeomDestroy(geom);
+   end;
+   Clear;
 end;
 
 function TGeomList.GetItems(i: integer): PdxGeom;
 begin
-  result := Get(i);
+   result := Get(i);
 end;
 
 procedure TGeomList.SetItems(i: integer; const Value: PdxGeom);
 begin
-  Put(i, Value);
+   Put(i, Value);
 end;
 
 //----- Recreated -----
@@ -1538,9 +1832,9 @@ end;
 
 function Vector3Cross(const V1, V2 : TdVector3) : TdVector3;
 begin
-   Result[IndexX]:=V1[IndexY] * V2[IndexZ] - V1[IndexZ] * V2[IndexY];
-   Result[IndexY]:=V1[IndexZ] * V2[IndexX] - V1[IndexX] * V2[IndexZ];
-   Result[IndexZ]:=V1[IndexX] * V2[IndexY] - V1[IndexY] * V2[IndexX];
+   Result[0]:=V1[1] * V2[2] - V1[2] * V2[1];
+   Result[1]:=V1[2] * V2[0] - V1[0] * V2[2];
+   Result[2]:=V1[0] * V2[1] - V1[1] * V2[0];
 end;
 
 function Vector3Make(const x,y,z : TdReal) : TdVector3;
@@ -1550,199 +1844,7 @@ begin
   result[2] := z;
 end;
 
-function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateSphere(Space, radius);
-
-  if dSphereClass=-1 then
-    dSphereClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateBox(Space, lx, ly, lz);
-
-  if dBoxClass=-1 then
-    dBoxClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
-begin
-  result := EXT_dCreatePlane(Space, a, b, c, d);
-
-  if dPlaneClass=-1 then
-    dPlaneClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateCCylinder(Space, radius, length);
-
-  if dCCylinderClass=-1 then
-    dCCylinderClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateCone(Space, radius, length);
-
-  if dConeClass=-1 then
-    dConeClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
-var
-  ms, Rsqr, Lsqr,
-  Ixx, Iyy, Izz : TdReal;
-begin
-  // Calculate Mass
-  Rsqr:=radius*radius;
-  Lsqr:=length*length;
-  ms:=Pi*Rsqr*length*density/3;
-
-  // Calculate Mass Moments of Inertia about the Centroid
-  Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-  Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-  Izz:=0.3*ms*Rsqr;
-
-  // Set the ODE Mass parameters
-  with m do begin
-    mass:=ms;
-    c[0]:=0; c[1]:=0; c[2]:=0.25*length;
-    I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
-    I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
-    I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
-  end;
-end;
-
-function dCreateTerrainY(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateTerrainY(Space, pHeights, vLength, nNumNodesPerSide, bFinite, bPlaceable);
-
-  if dTerrainYClass=-1 then
-    dTerrainYClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateTerrainZ(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateTerrainZ(Space, pHeights, vLength, nNumNodesPerSide, bFinite, bPlaceable);
-
-  if dTerrainZClass=-1 then
-    dTerrainZClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateGeomTransform(Space);
-
-  if dGeomTransformClass=-1 then
-    dGeomTransformClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
-begin
-  result := EXT_dCreateCylinder(Space, r, lz);
-
-  if dCylinderClass=-1 then
-    dCylinderClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl;
-begin
-  result := EXT_dCreateRay(Space, length);
-
-  if dRayClass=-1 then
-    dRayClass := dGeomGetClass(result);
-{$IFDEF cODEDebugEnabled}
-   If Not DisabledDebugGeom Then
-      Begin
-      if Not Assigned(ODEDebugGeomList) then
-         ODEDebugGeomList := TGeomList.create();
-      ODEDebugGeomList.Add(result);
-      End ;
-{$ENDIF}
-end;
-
-function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateTriMesh(Space, Data, Callback, ArrayCallback, RayCallback);
-
-  if dTriMeshClass=-1 then
-    dTriMeshClass := dGeomGetClass(result);
-end;
-
+{
 procedure DisableStillBodies(World : PdxWorld; Threshold : TdReal=0.0001);
 var
   Body : PdxBody;
@@ -1760,7 +1862,7 @@ begin
 
   // We can't disable bodies just as soon as they're still - that could disable
   // bodies that are just slowed down or titering on an edge. If they've been
-  // still for two frames, we consider them truly still. 
+  // still for two frames, we consider them truly still.
   while Assigned(Body) do
   begin
     if dBodyIsEnabled(Body)=1 then
@@ -1782,7 +1884,7 @@ begin
   TempList := WasStillBeforeOld;
   WasStillBeforeOld := WasStillBefore;
   WasStillBefore := TempList;
-end;
+end;}
 
 procedure VerifyDelphiODE(Body : PdxBody; Geom : PdxGeom);
 var
@@ -1809,32 +1911,48 @@ end;
 var
   vODEHandle : TModuleHandle;
 
+procedure GetODEClassIDs;
+begin
+  {$IFDEF PARODE}
+   dSphereClass:=dSphereGetClass;
+   dBoxClass:=dBoxGetClass;
+   dPlaneClass:=dPlaneGetClass;
+   dCylinderClass:=dCylinderGetClass;
+   dConvexClass:=dConvexGetClass;
+   dGeomTransformClass:=dGeomTransformGetClass;
+   dRayClass:=dRayGetClass;
+   dTriMeshClass:=dTriMeshGetClass;
+   dHeightfieldClass:=dHeightfieldGetClass;
+   {$ENDIF}
+end;
+
 function InitODE(ADllName : PChar) : boolean;
 begin
-  if ADllName = '' then
-    ADllName := ODEDLL;
+  if ADllName = '' then ADllName := ODEDLL;
 
   IsODEInitialized := LoadModule( vODEHandle, ADllName );
   result := IsODEInitialized;
 
-  if IsODEInitialized then
-  begin
+  if IsODEInitialized then begin
+     dInitODE;
+     GetODEClassIDs;
+
     {DynamicLoadMarker}
   end;
 end;
 
 procedure CloseODE;
 begin
+  if IsODEInitialized then dCloseODE;
   IsODEInitialized := false;
   UnLoadModule( vODEHandle );
 end;
 
-initialization
 
+initialization
    InitODE(ODEDLL);
 
 finalization
-
    CloseODE;
 
 end.
