@@ -7,7 +7,7 @@ uses
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLODEManager,
-  GLODECustomColliders, GLNavigator, GLGeomObjects;
+  GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor;
 
 type
   TForm1 = class(TForm)
@@ -33,6 +33,7 @@ type
     ODEObjects: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     ODERenderPoint: TGLRenderPoint;
+    GLCube1: TGLCube;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -193,7 +194,7 @@ begin
       '2' : DropODEObject(TODEElementBox);
       '3' : DropODEObject(TODEElementCapsule);
       '4' : DropODEObject(TODEElementCylinder);
-      '5' : DropODEObject(TODEElementCone);
+//      '5' : DropODEObject(TODEElementCone); CONE is currently unsupported
    end;
    Key:=#0;
 end;
@@ -211,8 +212,8 @@ begin
   dummy:=ODEObjects.AddNewChild(TGLDummyCube);
   dummy.Position.AsVector:=ODEDrop.AbsolutePosition;
   dyn:=TGLODEDynamic.Create(dummy.Behaviours);
+  dyn.AddNewElement(anElementClass);  // mrqzzz : AddNewElement must come *before* setting manager!
   dyn.Manager:=GLODEManager1;
-  dyn.AddNewElement(anElementClass);
 end;
 
 end.
