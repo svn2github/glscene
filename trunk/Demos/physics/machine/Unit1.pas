@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLODEManager,
-  GLCadencer, GLGeomObjects, dynode, GLHUDObjects, GLBitmapFont,
+  GLCadencer, GLGeomObjects, odeimport, GLHUDObjects, GLBitmapFont,
   GLWindowsFont;
 
 type
