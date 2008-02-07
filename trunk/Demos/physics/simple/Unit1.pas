@@ -54,7 +54,8 @@ type
     procedure DoBox;
     procedure DoCapsule;
     procedure DoCylinder;
-    procedure DoCone;
+    // CONE IS CURRENTLY UNSUPPOETED FOR ODE 0.9
+    //procedure DoCone;
   end;
 
 var
@@ -93,7 +94,7 @@ begin
     1 : DoBox;
     2 : DoCapsule;
     3 : DoCylinder;
-    4 : DoCone;
+    //4 : DoCone; // CONE IS CURRENTLY UNSUPPOETED FOR ODE 0.9
   end;
 end;
 
@@ -106,9 +107,9 @@ begin
   sphere.Position.SetPoint(5*random-2.5,2,5*random-2.5);
   sphere.Radius:=0.3*(Random+1);
   dyn:=TGLODEDynamic.Create(sphere.Behaviours);
-  dyn.Manager:=GLODEManager1;
-  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
+  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
     Radius:=sphere.Radius;
+  dyn.Manager:=GLODEManager1;
 end;
 
 procedure TForm1.DoBox;
@@ -122,12 +123,12 @@ begin
   cube.CubeHeight:=0.5*(Random+1);
   cube.CubeDepth:=0.5*(Random+1);
   dyn:=TGLODEDynamic.Create(cube.Behaviours);
-  dyn.Manager:=GLODEManager1;
-  with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do begin
+  with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
     BoxWidth:=cube.CubeWidth;
     BoxHeight:=cube.CubeHeight;
     BoxDepth:=cube.CubeDepth;
   end;
+  dyn.Manager:=GLODEManager1;
 end;
 
 procedure TForm1.DoCapsule;
@@ -154,13 +155,13 @@ begin
     end;
   end;
   dyn:=TGLODEDynamic.Create(capsule.Behaviours);
-  dyn.Manager:=GLODEManager1;
-  with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do begin
+  with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
     Radius:=capsule.BottomRadius;
     Length:=capsule.Height;
     Direction.SetVector(0,1,0);
     Up.SetVector(0,0,1);
   end;
+  dyn.Manager:=GLODEManager1;
 end;
 
 procedure TForm1.DoCylinder;
@@ -176,13 +177,15 @@ begin
     Height:=random+1;
   end;
   dyn:=TGLODEDynamic.Create(cylinder.Behaviours);
-  dyn.Manager:=GLODEManager1;
-  with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do begin
+  with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do begin // ELEMENTS MUST BE ADDED BEFORE SETTING MANAGER
     Radius:=cylinder.BottomRadius;
     Length:=cylinder.Height;
   end;
+  dyn.Manager:=GLODEManager1;
 end;
 
+// CONE IS CURRENTLY UNSUPPOETED FOR ODE 0.9
+{
 procedure TForm1.DoCone;
 var
   cone : TGLCone;
@@ -204,6 +207,7 @@ begin
     Position.SetPoint(0,-cone.Height/2,0);
   end;
 end;
+}
 
 procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
   var color: TVector4f; var texPoint: TTexPoint);
