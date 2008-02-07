@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLWin32Viewer, GLScene, GLObjects, GLMisc, GLCadencer, ODEImport,
   StdCtrls, GLTexture, GLExtrusion, VectorGeometry, GLShadowPlane, GLNavigator,
-  VerletClasses, VerletHairClasses, jpeg, GLKeyboard, ExtCtrls, ComCtrls;
+  VerletClasses, VerletHairClasses, jpeg, GLKeyboard, ExtCtrls, ComCtrls,GLColor;
 
 const
   cMaxWindMag = 8;
