@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>12/02/08 - Mrqzzz - Dave Gravel fixed ResetAndPitchTurnRoll
       <li>20/01/08 - DaStr - Bugfixed TGLBaseSceneObject.MoveChild[First/Last]()
                               (thanks "_") (BugTracker ID = 1857974) 
                              Converted the TGLBaseSceneObject.AbsoluteMatrix()
@@ -3575,7 +3576,7 @@ var
 begin
    ResetRotations;
    // set DegX (Pitch)
-   rotMatrix:=CreateRotationMatrix(Right, degX*cPIdiv180);
+   rotMatrix:=CreateRotationMatrix(Right, degX*cPIdiv360);
    FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
    FUp.Normalize;
    FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
