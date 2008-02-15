@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett
       <li>12/02/08 - Mrqzzz - Dave Gravel added const cPIdiv360 to fix ResetAndPitchTurnRoll
       <li>18/11/07 - DaStr - Added MatrixInvert(), VectorDivide() functions
       <li>19/09/07 - DaStr - Added AddPoint() and PointAdd() procedures
@@ -1631,7 +1632,6 @@ const
    c360 :      Single = 360;
    cOneHalf :  Single = 0.5;
    cLn10 :     Single = 2.302585093;
-   cPIdiv360 : Single = 0.008726646;
 
 
    // Ranges of the IEEE floating point types, including denormals
