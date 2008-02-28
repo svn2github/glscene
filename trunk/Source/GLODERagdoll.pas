@@ -3,6 +3,8 @@
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
+                            in TODERagdollBone.Start
     <li>05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
     <li>09/11/05 - LucasG - Fixed joints to be relative to the body
     <li>07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
@@ -243,6 +245,7 @@ procedure TODERagdollBone.Start;
 var
   mass: TdMass;
   boneSize, vAxis, vAxis2: TAffineVector;
+  n:integer;
 
   function RotateAxis(Axis: TAffineVector): TAffineVector;
   var absMat: TMatrix;
@@ -259,7 +262,13 @@ begin
   boneSize[1] := Size[1]*VectorLength(BoneMatrix[1]);
   boneSize[2] := Size[2]*VectorLength(BoneMatrix[2]);
 
+  // prevent ODE 0.9 "bNormalizationResult failed" error:
+  for n:=0 to 2 do
+      if (BoneSize[n]=0) then
+         BoneSize[n]:=0.000001;
+
   dMassSetBox(mass, cDensity, BoneSize[0], BoneSize[1], BoneSize[2]);
+
   dMassAdjust(mass, cMass);
   dBodySetMass(FBody, @mass);
 

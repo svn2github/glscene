@@ -16,6 +16,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+
+    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint creation in TODEJointUniversal.Create
     <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; fixes for runtime creation)
     <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808371)
@@ -5238,7 +5240,7 @@ begin
   FAnchor.OnNotifyChange:=AnchorChange;
   FAxis1:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FAxis1.OnNotifyChange:=Axis1Change;
-  FAxis2:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis2:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
   FAxis2.OnNotifyChange:=Axis2Change;
   FAxis1Params:=TODEJointParams.Create(Self);
   FAxis1Params.SetCallback:=SetAxis1Param;
