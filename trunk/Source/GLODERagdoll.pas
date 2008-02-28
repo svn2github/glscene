@@ -4,7 +4,8 @@
 
 	<b>History :</b><font size=-1><ul>
     <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
-                            in TODERagdollBone.Start
+                            in TODERagdollBone.Start.
+                            Fixed a memory leak in TODERagdollBone.Stop
     <li>05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
     <li>09/11/05 - LucasG - Fixed joints to be relative to the body
     <li>07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
@@ -327,11 +328,21 @@ begin
 end;
 
 procedure TODERagdollBone.Stop;
+var
+   o:TGLBaseSceneobject;
 begin
   inherited;
   dBodyDestroy(FBody);
   if Assigned(FGeom.data) then
-    FRagdoll.GLSceneRoot.Remove(TGLBaseSceneObject(FGeom.data), false);
+  begin
+       o:=TGLBaseSceneObject(FGeom.data);
+       FRagdoll.GLSceneRoot.Remove(o, false);
+       o.free;
+  end;
+
+  if FJointId<>nil then
+       dJointDestroy(FJointId);
+
   dGeomDestroy(FGeom);
 end;
 
