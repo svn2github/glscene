@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>01/03/08 - DaStr - Added Borland-style persistency support to TBaseList
       <li>29/03/07 - DaStr - Added more explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -87,6 +88,10 @@ type
     function GetSetCountResetsMemory: Boolean;
     procedure SetSetCountResetsMemory(const Val: Boolean);
 
+    // Borland-style persistency support.
+    procedure ReadItemsData(AReader : TReader); virtual;
+    procedure WriteItemsData(AWriter : TWriter); virtual;
+    procedure DefineProperties(AFiler: TFiler); override;
   public
     { Public Declarations }
     constructor Create; override;
@@ -769,6 +774,37 @@ begin
   end
   else
     inherited;
+end;
+
+// DefineProperties
+procedure TBaseList.DefineProperties(AFiler: TFiler);
+begin
+  inherited DefineProperties(AFiler);
+  AFiler.DefineProperty('Items', ReadItemsData, WriteItemsData, True);
+end;
+
+// ReadItemsData
+procedure TBaseList.ReadItemsData(AReader: TReader);
+var
+  lData: string;
+  lOutputText: string;
+begin
+  lOutputText := AReader.ReadString;
+  SetLength(lData, Length(lOutputText) div 2 + 1);
+  HexToBin(PChar(lOutputText), PChar(lData), Length(lData));
+  LoadFromString(lData);
+end;
+
+// WriteItemsData
+procedure TBaseList.WriteItemsData(AWriter: TWriter);
+var
+  lData: string;
+  lOutputText: string;
+begin
+  lData := SaveToString;
+  SetLength(lOutputText, Length(lData) * 2);
+  BinToHex(PChar(lData), PChar(lOutputText), Length(lData));
+  AWriter.WriteString(lOutputText);
 end;
 
 // WriteToFiler
