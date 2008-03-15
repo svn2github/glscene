@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 285
+  Top = 192
+  Width = 647
+  Height = 542
   Caption = 'Form1'
-  ClientHeight = 512
-  ClientWidth = 639
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,30 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 639
-    Height = 512
+    Height = 488
     Camera = GLCamera1
     Buffer.BackgroundColor = 4194304
-    FieldOfView = 157.897079467773400000
+    FieldOfView = 156.838760375976600000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 488
+    Width = 639
+    Height = 27
+    Align = alBottom
+    TabOrder = 1
+    object cbActorsAreTurning: TCheckBox
+      Left = 13
+      Top = 5
+      Width = 116
+      Height = 17
+      Caption = 'Actors are turning'
+      Checked = True
+      State = cbChecked
+      TabOrder = 0
+    end
   end
   object GLScene1: TGLScene
     Left = 48
