@@ -6,7 +6,9 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
-
+      <li>15/03/08 - DaStr - Fixup after previous update: removed all hints and
+                              warnings, TGLActorProxy now has two versions of
+                              RayCastIntersect()
       <li>06/02/08 - mrqzzz - Added a "RayCastIntersect" overload for Actorproxy
       <li>07/11/07 - mrqzzz - Added "OnBeforeRender" event to Actorproxy
                               allowing to apply extra transformations (f.ex: bone rotations)
@@ -214,6 +216,13 @@ type
     function BoneMatrix(BoneIndex:integer):TMatrix; overload;
     function BoneMatrix(BoneName:string):TMatrix; overload;
     procedure BoneMatricesClear;
+
+    {: A standard version of the RayCastIntersect function. }
+    function RayCastIntersect(const rayStart, rayVector : TVector;
+                              intersectPoint : PVector = nil;
+                              intersectNormal : PVector = nil) : Boolean; override;
+
+
     {: Raycasts on self, but actually on the "RefActor" Actor.
        Note that the "RefActor" parameter does not necessarily have to be
        the same Actor refernced by the MasterObject property:
@@ -221,7 +230,7 @@ type
        while using a high-poly Actor in the "MasterObject" property,
        of course we assume that the two Masterobject Actors have same animations.
       }
-    function RayCastIntersect( RefActor:TGLActor; const rayStart, rayVector : TVector;
+    function RayCastIntersectEx( RefActor:TGLActor; const rayStart, rayVector : TVector;
                                intersectPoint : PVector = nil;
                                intersectNormal : PVector = nil) : Boolean; overload;
 
@@ -634,17 +643,26 @@ begin
   end;
 end;
 
-function TGLActorProxy.RayCastIntersect(RefActor: TGLActor; const rayStart,
+function TGLActorProxy.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint, intersectNormal: PVector): Boolean;
+begin
+  if MasterObject <> nil then
+    Result := RayCastIntersectEx(GetMasterActorObject, rayStart, rayVector,
+                                               intersectPoint, intersectNormal)
+  else
+    Result := inherited RayCastIntersect(rayStart, rayVector, intersectPoint,
+                                                               intersectNormal);
+end;
+
+function TGLActorProxy.RayCastIntersectEx(RefActor: TGLActor; const rayStart,
   rayVector: TVector; intersectPoint, intersectNormal: PVector): Boolean;
 var
    localRayStart, localRayVector : TVector;
    cf, sf, ef: Integer;
    cfd: Single;
    HaspooTransformation:boolean;
-   invScale:TVector;
-  dummyRCI: TRenderContextInfo;
+   dummyRCI: TRenderContextInfo;
 begin
-
    // Set RefObject frame as current ActorProxy frame
    with RefActor do
    begin
@@ -697,8 +715,6 @@ begin
 
 
      // Return RefObject to it's old time
-     // (USELESS??) :
-     {
      CurrentFrameDelta:=cfd;
      SetCurrentFrameDirect(cf);
      CurrentFrame:=cf;
@@ -707,7 +723,6 @@ begin
 
      // REVERT ACTOR TO ASSUME ORIGINAL ANIMATION FRAME
      BuildList(dummyRCI);
-     }
    end;
 end;
 
