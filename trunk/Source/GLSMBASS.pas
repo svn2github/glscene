@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/03/08 - DaStr - Added $I GLScene.inc
       <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
       <li>24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
       <li>27/02/02 - EG - Added 3D Factors and Environment support
@@ -20,6 +21,8 @@
 unit GLSMBASS;
 
 interface
+
+{$I GLScene.inc}
 
 uses Classes, GLSound, GLScene;
 
