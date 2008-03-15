@@ -12,6 +12,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
       <li>07/06/07 - DaStr - Added $I GLScene.inc
       <li>18/10/03 - EG - Dynamic support is back
       <li>18/09/03 - ARH - updated for fmod 3.7
@@ -85,7 +86,7 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, FMod, VectorGeometry;
+uses SysUtils, FMod, fmodtypes, fmodpresets, VectorGeometry;
 
 type
    TFMODInfo =  record
@@ -133,7 +134,7 @@ function TGLSMFMOD.DoActivate : Boolean;
 var
    cap : Cardinal;
 begin
-   FMOD_Load;
+   FMOD_Load(nil);
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
       Result:=False;
       Exit;
