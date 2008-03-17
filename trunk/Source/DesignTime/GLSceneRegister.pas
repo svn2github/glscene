@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/08 - mrqzzz - Registered TGLTextureSharingShader
       <li>20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
                              Registered TGLGizmo
       <li>06/11/07 - mrqzzz - Registered material picker for TGLActorProxy
@@ -203,7 +204,7 @@ uses
    GLShaderCombiner, GLSmoothNavigator, GLPostEffects, GLPhongShader,
    GLTexCombineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
-   GLColor, GLViewer, GLGizmo,
+   GLColor, GLViewer, GLGizmo,GLTextureSharingShader,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1841,12 +1842,12 @@ begin
                         TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
                         TGLMultiMaterialShader, TGLBumpShader,
                         TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
-                        TGLAsmShader,TGLShaderCombiner
+                        TGLAsmShader,TGLShaderCombiner,TGLTextureSharingShader
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
-
+   
 {$ifdef GLS_DELPHI_5_UP}
    GLRegisterPropertiesInCategories;
 	RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
@@ -1876,10 +1877,11 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TSpriteAnimation, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialProxy, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLActorProxy, '', TGLLibMaterialNameProperty);
-
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TMMat, 'LibMaterialName', TGLLibMaterialNameProperty);
 {$endif}
-   RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
+ RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
+ 
 
 end;
 
