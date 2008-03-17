@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..." to keep compatibility with
+                              dws2OpenGL1x. 
       <li>16/03/08 - DanB - Major rewrite of unit, including:
                             OpenGL 1.3, 1.4, 1.5, 2.0, 2.1 support.
                             removed TRCOptions (not used).
@@ -2512,8 +2514,11 @@ const
    GL_BLEND_DST_ALPHA_EXT                           = $80CA;
    GL_BLEND_SRC_ALPHA_EXT                           = $80CB;
 
-   // GL_EXT_texture_cube_map (can't find this extension in OpenGL registry so removed)
-  { GL_NORMAL_MAP_EXT                                = $8511;
+   // DanB : "GL_EXT_texture_cube_map (can't find this extension in OpenGL registry so removed)"
+   // Mrqzzz : The following block was commented by DanB
+   // But the constants are currently used in dws2openGL1x.pas, so i re-add them. If they
+   // result harmful, we will remove them again.
+   GL_NORMAL_MAP_EXT                                = $8511;
    GL_REFLECTION_MAP_EXT                            = $8512;
    GL_TEXTURE_CUBE_MAP_EXT                          = $8513;
    GL_TEXTURE_BINDING_CUBE_MAP_EXT                  = $8514;
@@ -2525,7 +2530,8 @@ const
    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_EXT               = $851A;
    GL_PROXY_TEXTURE_CUBE_MAP_EXT                    = $851B;
    GL_MAX_CUBE_MAP_TEXTURE_SIZE_EXT                 = $851C;
-   }
+
+
 
    // GL_EXT_stencil_wrap (#176)
    GL_INCR_WRAP_EXT                                  = $8507;
