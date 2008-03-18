@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODEManager<p>                    
+{: GLODEManager<p>
 
   An ODE Manager for GLScene.<p>
 
@@ -17,6 +17,7 @@
 
   <b>History : </b><font size=-1><ul>
 
+    <li>19/03/08 - Mrqzzz - by DAlex : added different geom colors; don't create contact between static objects; In Destroying procedures placed to last line the "Inherited"
     <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint creation in TODEJointUniversal.Create
     <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; fixes for runtime creation)
     <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
@@ -155,7 +156,9 @@ type
       FRenderPoint : TGLRenderPoint;
       FVisible,
       FVisibleAtRunTime : Boolean;
-      FGeomColor : TGLColor;
+      FGeomColorDynD,
+      FGeomColorDynE,
+      FGeomColorStat: TGLColor;
 
     protected
       { Protected Declarations }
@@ -178,10 +181,14 @@ type
       procedure RenderEvent(Sender : TObject; var rci : TRenderContextInfo);
       procedure RenderPointFreed(Sender : TObject);
 
-      procedure SetVisible(const Value : Boolean);
-      procedure SetVisibleAtRunTime(const Value : Boolean);
-      procedure SetGeomColor(const Value : TGLColor);
-      procedure GeomColorChange(Sender:TObject);
+    procedure SetVisible(const Value: Boolean);
+    procedure SetVisibleAtRunTime(const Value: Boolean);
+    procedure SetGeomColorDynE(const Value: TGLColor);
+    procedure GeomColorChangeDynE(Sender: TObject);
+    procedure SetGeomColorDynD(const Value: TGLColor);
+    procedure GeomColorChangeDynD(Sender: TObject);
+    procedure SetGeomColorStat(const Value: TGLColor);
+    procedure GeomColorChangeStat(Sender: TObject);
 
       property ODEBehaviours[index : Integer] : TGLODEBehaviour read GetODEBehaviour;
 
@@ -209,7 +216,9 @@ type
       property RenderPoint : TGLRenderPoint read FRenderPoint write SetRenderPoint;
       property Visible : Boolean read FVisible write SetVisible;
       property VisibleAtRunTime : Boolean read FVisibleAtRunTime write SetVisibleAtRunTime;
-      property GeomColor : TGLColor read FGeomColor write SetGeomColor;
+      property GeomColorDynD: TGLColor read FGeomColorDynD write SetGeomColorDynD;
+      property GeomColorDynE: TGLColor read FGeomColorDynE write SetGeomColorDynE;
+      property GeomColorStat: TGLColor read FGeomColorStat write SetGeomColorStat;
 
   end;
 
@@ -1357,7 +1366,9 @@ begin
     FContactGroup:=dJointGroupCreate(100);
   end;
 
-  FGeomColor:=TGLColor.CreateInitialized(Self, clrWhite, GeomColorChange);
+  FGeomColorDynD := TGLColor.CreateInitialized(Self, clrRed, GeomColorChangeDynD);
+  FGeomColorDynE := TGLColor.CreateInitialized(Self, clrLime, GeomColorChangeDynE);
+  FGeomColorStat := TGLColor.CreateInitialized(Self, clrBlue, GeomColorChangeStat);
 
   RegisterManager(Self);
 end;
@@ -1367,7 +1378,7 @@ end;
 destructor TGLODEManager.Destroy;
 begin
   RenderPoint := nil;
-  
+
   // Unregister everything
   while FODEBehaviours.Count>0 do
     ODEBehaviours[0].Manager:=nil;
@@ -1384,7 +1395,9 @@ begin
     dWorldDestroy(FWorld);
   end;
 
-  FGeomColor.Free;
+  FGeomColorDynD.Free;
+  FGeomColorDynE.Free;
+  FGeomColorStat.Free;
 
   DeregisterManager(Self);
   inherited Destroy;
@@ -1483,6 +1496,9 @@ begin
   Obj2:=dGeomGetData(g2);
   b1:=dGeomGetBody(g1);
   b2:=dGeomGetBody(g2);
+
+  // don't create contact between static objects
+  if not Assigned(b1) and not Assigned(b2) then Exit;
 
   if Assigned(b1) and Assigned(b2) then
     if dAreConnected(b1,b2)=1 then
@@ -1644,9 +1660,17 @@ begin
   glEnable(GL_POLYGON_OFFSET_LINE);
   glPolygonOffset(1, 2);
 
-  glColor4fv(GeomColor.AsAddress);
-  for i:=0 to FODEBehaviours.Count-1 do
+  for i := 0 to FODEBehaviours.Count - 1 do begin
+    if ODEBehaviours[i] is TGLODEDynamic then
+      if TGLODEDynamic(ODEBehaviours[i]).GetEnabled then
+        glColor4fv(GeomColorDynE.AsAddress)
+      else
+        glColor4fv(GeomColorDynD.AsAddress)
+    else
+      glColor4fv(GeomColorStat.AsAddress);
+
     ODEBehaviours[i].Render(rci);
+  end;
 
   glPopAttrib;
 end;
@@ -1678,21 +1702,56 @@ begin
   end;
 end;
 
-// SetGeomColor
+// SetGeomColorDynD
 //
-procedure TGLODEManager.SetGeomColor(const Value: TGLColor);
+
+procedure TGLODEManager.SetGeomColorDynD(const Value: TGLColor);
 begin
-  FGeomColor.Assign(Value);
+  FGeomColorDynD.Assign(Value);
   NotifyChange(Self);
 end;
 
-// GeomColorChange
+// GeomColorChangeDynD
 //
-procedure TGLODEManager.GeomColorChange(Sender:TObject);
+
+procedure TGLODEManager.GeomColorChangeDynD(Sender: TObject);
 begin
   NotifyChange(Self);
 end;
 
+// SetGeomColorDynE
+//
+
+procedure TGLODEManager.SetGeomColorDynE(const Value: TGLColor);
+begin
+  FGeomColorDynE.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// GeomColorChangeDynE
+//
+
+procedure TGLODEManager.GeomColorChangeDynE(Sender: TObject);
+begin
+  NotifyChange(Self);
+end;
+
+// SetGeomColorStat
+//
+
+procedure TGLODEManager.SetGeomColorStat(const Value: TGLColor);
+begin
+  FGeomColorStat.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// GeomColorChangeStat
+//
+
+procedure TGLODEManager.GeomColorChangeStat(Sender: TObject);
+begin
+  NotifyChange(Self);
+end;
 
 // ---------------
 // --------------- TODECollisionSurface ---------------
@@ -2112,9 +2171,9 @@ end;
 //
 destructor TGLODEDynamic.Destroy;
 begin
-  inherited;
   FElements.Free;
   FJointRegister.Free;
+  inherited;
 end;
 
 // Render
@@ -2307,7 +2366,7 @@ begin
   NegateVector(pos);
   for i:=0 to FElements.Count-1 do
     TODEElementBase(FElements[i]).Position.Translate(pos);
-   dMassTranslate(Fmass,pos[0],pos[1],pos[2]); 
+   dMassTranslate(Fmass,pos[0],pos[1],pos[2]);
 end;
 
 // GetMass
@@ -2434,8 +2493,8 @@ end;
 //
 destructor TGLODEStatic.Destroy;
 begin
-  inherited;
   FElements.Free;
+  inherited;
 end;
 
 // Render
