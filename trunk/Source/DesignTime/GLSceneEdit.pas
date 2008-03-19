@@ -6,6 +6,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
   <li>12/07/07 - DaStr - Improved cross-platform compatibility
                          (BugTrackerID=1684432)
@@ -83,11 +84,9 @@ type
     ActionList: TActionList;
     ToolButton1: TToolButton;
     TBAddObjects: TToolButton;
-    ToolButton3Sep: TToolButton;
     ToolButton4: TToolButton;
     PMToolBar: TPopupMenu;
     ToolButton5: TToolButton;
-    ToolButton6Sep: TToolButton;
     ToolButton7: TToolButton;
     ACAddCamera: TAction;
     ACAddObject: TAction;
@@ -102,10 +101,8 @@ type
     ACLoadScene: TAction;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    ToolButton2Sep: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
-    ToolButtonInfo: TToolButton;
     ACInfo: TAction;
     ACCopy: TAction;
     ACCut: TAction;
@@ -140,7 +137,6 @@ type
     TBAddBehaviours: TToolButton;
     TBAddEffects: TToolButton;
     TBEffectsPanel: TToolButton;
-    ToolButton10Sep: TToolButton;
     TBStayOnTop: TToolButton;
     ACStayOnTop: TAction;
     procedure FormCreate(Sender: TObject);
@@ -1062,13 +1058,13 @@ begin
 	TBAddObjects.CheckMenuDropdown;
 end;
 
-  procedure TGLSceneEditorForm.ACStayOnTopExecute(Sender: TObject);
-  begin
-    if TBStayOnTop.Down then
-      GLSceneEditorForm.FormStyle := fsStayOnTop
-    else
-      GLSceneEditorForm.FormStyle := fsNormal;
-  end;
+procedure TGLSceneEditorForm.ACStayOnTopExecute(Sender: TObject);
+begin
+  if TBStayOnTop.Down then
+    FormStyle := fsStayOnTop
+  else
+    FormStyle := fsNormal;
+end;
 
 // ACSaveSceneExecute
 //
