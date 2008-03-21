@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/03/08 - DaStr - Renamed TMMat to TGLTextureSharingShaderMaterial 
       <li>17/03/08 - mrqzzz - Registered TGLTextureSharingShader
       <li>20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
                              Registered TGLGizmo
@@ -1878,7 +1879,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialProxy, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLActorProxy, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
-  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TMMat, 'LibMaterialName', TGLLibMaterialNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
 {$endif}
  RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
  
