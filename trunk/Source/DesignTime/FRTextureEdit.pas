@@ -4,6 +4,8 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+                              to GLGraphics.pas (BugTracker ID = 1923844)  
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
                              TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
@@ -24,11 +26,11 @@ interface
 
 {$IFDEF MSWINDOWS}
 uses
-  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils, TypInfo;
+  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLGraphics, TypInfo;
 {$ENDIF}
 {$IFDEF KYLIX}
 uses
-  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils;
+  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLGraphics;
 {$ENDIF}
 
 type
