@@ -13,6 +13,8 @@
     </p>
 
   <b>History : </b><font size=-1><ul>
+      <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
+                               Delphi 5 compatibility (thanks Pascal)
       <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
       <li>17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
       <li>14/03/08 - Pascal - Initial version (contributed to GLScene)
@@ -366,9 +368,11 @@ begin
   Result := FTextureMatrixIsUnitary;
 end;
 
+type THackCollection = class(TOwnedCollection); // Required for Delphi5.
+
 function TGLTextureSharingShaderMaterial.GetTextureSharingShader: TGLTextureSharingShader;
 begin
-  Result := TGLTextureSharingShader(Collection.Owner);
+  Result := TGLTextureSharingShader(THackCollection(Collection).GetOwner);
 end;
 
 procedure TGLTextureSharingShaderMaterial.OtherNotifychange(Sender: TObject);
@@ -410,9 +414,7 @@ begin
   if (FLibMaterialName = '') or (FMaterialLibrary = nil) then
     FLibMaterial := nil
   else
-  begin
-    FLibMaterial := FMaterialLibrary.LibMaterialByName(FLibMaterialName);
-  end;
+    SetLibMaterial(FMaterialLibrary.LibMaterialByName(FLibMaterialName));
 end;
 
 procedure TGLTextureSharingShaderMaterial.SetLibMaterial(const Value: TGLLibMaterial);
@@ -443,9 +445,7 @@ begin
   if (FLibMaterialName = '') or (FMaterialLibrary = nil) then
     FLibMaterial := nil
   else
-  begin
-    FLibMaterial := FMaterialLibrary.LibMaterialByName(FLibMaterialName);
-  end;
+    SetLibMaterial(FMaterialLibrary.LibMaterialByName(FLibMaterialName));
 end;
 
 procedure TGLTextureSharingShaderMaterial.SetShininess(const Value: TShininess);
@@ -518,7 +518,7 @@ end;
 function TGLTextureSharingShader.AddLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
 begin
   Result := FMaterials.Add;
-  Result.FLibMaterial := ALibMaterial;
+  Result.SetLibMaterial(ALibMaterial);
 end;
 
 constructor TGLTextureSharingShader.Create(AOwner: TComponent);
