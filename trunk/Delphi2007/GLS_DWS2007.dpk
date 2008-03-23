@@ -30,7 +30,7 @@ package GLS_DWS2007;
 requires
   rtl,
   vcl,
-  GLScene7,
+  GLScene2007,
   dws2Runtime;
 
 contains

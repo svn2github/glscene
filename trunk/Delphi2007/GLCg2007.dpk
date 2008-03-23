@@ -28,7 +28,7 @@ package GLCg2007;
 
 requires
   vcl,
-  GLScene7;
+  GLScene2007;
 
 contains
   cgGL in '..\Source\CgShaders\cgGL.pas',

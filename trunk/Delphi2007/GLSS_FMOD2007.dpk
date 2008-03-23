@@ -28,7 +28,7 @@ package GLSS_FMOD2007;
 
 requires
   vcl,
-  GLScene7,
+  GLScene2007,
   rtl;
 
 contains
