@@ -78,6 +78,8 @@ TGLTeapot BITMAP objects\doodad_objects\TGLTeapot.bmp
 TGLTree BITMAP objects\doodad_objects\TGLTree.bmp
 TGLWaterplane BITMAP objects\doodad_objects\TGLWaterplane.bmp
 
+TGLBlur BITMAP objects\special_objects\TGLBlur.bmp
+TGLMotionBlur BITMAP objects\special_objects\TGLMotionBlur.bmp
 TGLLensflare BITMAP objects\special_objects\TGLLensflare.bmp
 TGLMirror BITMAP objects\special_objects\TGLMirror.bmp
 TGLShadowPlane BITMAP objects\special_objects\TGLShadowPlane.bmp
@@ -91,5 +93,3 @@ TGLMaterialProxy BITMAP objects\proxy_objects\TGLMaterialProxy.bmp
 TGLMaterialMultiProxy BITMAP objects\proxy_objects\TGLMaterialMultiProxy.bmp
 TGLMultiProxy BITMAP objects\proxy_objects\TGLMultiProxy.bmp
 TGLProxyObject BITMAP objects\proxy_objects\TGLProxyObject.bmp
-TGLBlur BITMAP objects\proxy_objects\TGLBlur.bmp
-TGLMotionBlur BITMAP objects\proxy_objects\TGLMotionBlur.bmp
