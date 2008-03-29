@@ -325,15 +325,18 @@ var
 
    GL_NV_blend_square,
    GL_NV_fence,
+   GL_NV_float_buffer,
    GL_NV_fog_distance,
    GL_NV_light_max_exponent,
    GL_NV_multisample_filter_hint,
    GL_NV_occlusion_query,
+   GL_NV_point_sprite,
    GL_NV_register_combiners,
    GL_NV_texgen_reflection,
    GL_NV_texture_env_combine4,
    GL_NV_texture_rectangle,
    GL_NV_vertex_array_range,
+   GL_NV_vertex_array_range2,
    GL_NV_vertex_program,
 
    GL_SGI_color_matrix,
@@ -6420,15 +6423,18 @@ begin
 
    GL_NV_blend_square := CheckExtension('GL_NV_blend_square');
    GL_NV_fence := CheckExtension('GL_NV_fence');
+   GL_NV_float_buffer := CheckExtension('GL_NV_float_buffer');
    GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance');
    GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
    GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
    GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
+   GL_NV_point_sprite := CheckExtension('GL_NV_point_sprite');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
    GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4');
    GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
    GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
+   GL_NV_vertex_array_range2 := CheckExtension('GL_NV_vertex_array_range2');
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
