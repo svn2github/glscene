@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/04/07 - DaStr - Added IsInfinite, IsNan
       <li>18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
                               (thanks Dje and Burkhard Carstens)
       <li>06/06/07 - DaStr - Added WORD type
@@ -670,10 +671,19 @@ function IdentToColor(const Ident: string; var Color: Longint): Boolean;
 function ColorToIdent(Color: Longint; var Ident: string): Boolean;
 function ColorToString(Color: TColor): string;
 
+// StrUtils.pas
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 
+// Classes.pas
 function IsSubComponent(const AComponent: TComponent): Boolean;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
+
+// Math.pas
+function IsNan(const AValue: Double): Boolean; overload;
+function IsNan(const AValue: Single): Boolean; overload;
+function IsNan(const AValue: Extended): Boolean; overload;
+function IsInfinite(const AValue: Double): Boolean;
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -710,6 +720,53 @@ begin
  // AFAIK Delphi 5 does not know what is a SubComponent, so ignore this.
 {$ELSE}
   AComponent.SetSubComponent(Value);
+{$ENDIF}
+end;
+
+function IsNan(const AValue: Single): Boolean;
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+  Result := ((PLongWord(@AValue)^ and $7F800000)  = $7F800000) and
+            ((PLongWord(@AValue)^ and $007FFFFF) <> $00000000);
+{$ELSE}
+  Result := Math.IsNan(AValue);
+{$ENDIF}
+end;
+
+function IsNan(const AValue: Double): Boolean;
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+  Result := ((PInt64(@AValue)^ and $7FF0000000000000)  = $7FF0000000000000) and
+            ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
+{$ELSE}
+  Result := Math.IsNan(AValue);
+{$ENDIF}
+end;
+
+function IsNan(const AValue: Extended): Boolean;
+{$IFDEF GLS_DELPHI_5_DOWN}
+type
+  TExtented = packed record
+    Mantissa: Int64;
+    Exponent: Word;
+  end;
+  PExtended = ^TExtented;
+begin
+  Result := ((PExtended(@AValue)^.Exponent and $7FFF)  = $7FFF) and
+            ((PExtended(@AValue)^.Mantissa and $7FFFFFFFFFFFFFFF) <> 0);
+{$ELSE}
+begin
+  Result := Math.IsNan(AValue);
+{$ENDIF}
+end;
+
+function IsInfinite(const AValue: Double): Boolean;
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+  Result := ((PInt64(@AValue)^ and $7FF0000000000000) = $7FF0000000000000) and
+            ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) = $0000000000000000);
+{$ELSE}
+  Result := Math.IsInfinite(AValue);
 {$ENDIF}
 end;
 
