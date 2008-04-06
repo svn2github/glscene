@@ -26,12 +26,12 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Math,
+  Classes, SysUtils,
 
   // GLScene
   GLScene,  GLObjects,  GLVectorFileObjects, GLTexture, ApplicationFileIO,
   VectorGeometry, File3DS, Types3DS, GLMisc, OpenGL1x, PersistentClasses,
-  GLStrings, GLFile3DSSceneObjects;
+  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform;
 
 type
   {: TGLFile3DSAnimationData.

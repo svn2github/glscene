@@ -21,7 +21,7 @@ uses
 
   // GLScene
   VectorGeometry, OpenGL1x, GLMisc, GLScene, GLTexture, GLVectorFileObjects,
-  PersistentClasses, Math;
+  PersistentClasses, GLCrossPlatform;
 
 type
   TGLFile3DSLight = class(TGLLightSource)
