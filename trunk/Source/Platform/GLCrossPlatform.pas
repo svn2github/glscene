@@ -57,7 +57,7 @@ interface
 uses
   Windows, Classes, SysUtils, Graphics, Controls, Forms, VectorTypes,
   Dialogs, StdCtrls, ExtDlgs, Consts
-  {$IFDEF GLS_COMPILER_6_UP},StrUtils{$ENDIF}
+  {$IFDEF GLS_COMPILER_6_UP}, Math, StrUtils{$ENDIF}
   ;
 {$ENDIF}
 {$IFDEF KYLIX}
