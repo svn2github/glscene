@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBitmapFont<p>
+{: GLHUDObjects<p>
 
    GLScene objects that get rendered in 2D coordinates<p>
 
