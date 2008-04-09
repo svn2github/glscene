@@ -17,13 +17,20 @@
 
   <b>History : </b><font size=-1><ul>
 
-    <li>19/03/08 - Mrqzzz - by DAlex : added different geom colors; don't create contact between static objects; In Destroying procedures placed to last line the "Inherited"
-    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint creation in TODEJointUniversal.Create
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; fixes for runtime creation)
+    <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
+    <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
+                            Don't create contact between static objects;
+                            In Destroying procedures placed to last line the "Inherited"
+    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint
+                             creation in TODEJointUniversal.Create
+    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello;
+                             fixes for runtime creation)
     <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808371)
     <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
-    <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^) to avoid ambiguous overloading
+    <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit
+                             reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^)
+                             to avoid ambiguous overloading
     <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
                            make GLODEManager compatible with non-GLODEManager based ODE worlds
                            Added public property "ContactGroup"
@@ -2300,8 +2307,6 @@ function TGLODEDynamic.AddNewElement(AChild:TODEElementClass):TODEElementBase;
 var
   calcmass : TdMass;
 begin
-  Result:=nil;
-//  if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
   Result.Initialize;
