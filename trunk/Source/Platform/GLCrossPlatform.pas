@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/04/07 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
       <li>07/04/07 - DaStr - Added IsInfinite, IsNan
       <li>18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
                               (thanks Dje and Burkhard Carstens)
@@ -114,6 +115,13 @@ type
 
 {$IFDEF GLS_DELPHI_5_DOWN}
   IInterface = IUnknown;
+{$ENDIF}
+
+// A work-around a Delphi5 interface bug.
+{$IFDEF GLS_DELPHI_5_DOWN}
+  TGLComponent = class(TComponent, IInterface);
+{$ELSE}
+  TGLComponent = class(TComponent);
 {$ENDIF}
 
 {$IFNDEF KYLIX}
