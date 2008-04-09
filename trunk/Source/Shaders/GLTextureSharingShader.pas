@@ -13,6 +13,10 @@
     </p>
 
   <b>History : </b><font size=-1><ul>
+      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
+                              (BugTracker ID = 1938988).
+                             TGLTextureSharingShaderMaterial.GetTextureSharingShader()
+                              is now more safe
       <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
                                Delphi 5 compatibility (thanks Pascal)
       <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
@@ -30,13 +34,14 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, VectorGeometry, GLMisc, GlColor, GLTexture, OpenGL1x, GLVectorFileObjects,
-  GLStrings, XOpenGL, GLState, {Needed for Delphi 5} GlCrossPlatform;
+  GLScene, VectorGeometry, GLMisc, GlColor, GLTexture, OpenGL1x,GLStrings,
+  GLVectorFileObjects, XOpenGL, GLState, PersistentClasses,
+  {Needed for Delphi 5} GlCrossPlatform;
 
 type
   TGLTextureSharingShader = class;
 
-  TGLTextureSharingShaderMaterial = class(TCollectionItem, IGLMaterialLibrarySupported)
+  TGLTextureSharingShaderMaterial = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;
@@ -69,18 +74,15 @@ type
     function GetTextureMatrix: TMatrix;
     function GetTextureMatrixIsUnitary: Boolean;
   protected
-    // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary; virtual;
-    // Implementing IInterface.
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
-
     procedure coordNotifychange(Sender: TObject);
     procedure OtherNotifychange(Sender: TObject);
 
     function GetDisplayName: string; override;
     function GetTextureSharingShader: TGLTextureSharingShader;
+
+    // Implementing IGLMaterialLibrarySupported.
+    function GetMaterialLibrary: TGLMaterialLibrary; virtual;
+
   public
     procedure Apply(var rci: TRenderContextInfo);
     procedure UnApply(var rci: TRenderContextInfo);
@@ -109,6 +111,7 @@ type
   protected
     function GetItems(const AIndex: Integer): TGLTextureSharingShaderMaterial;
     procedure SetItems(const AIndex: Integer; const Value: TGLTextureSharingShaderMaterial);
+    function GetParent: TGLTextureSharingShader;
   public
     function Add: TGLTextureSharingShaderMaterial;
     constructor Create(AOwner: TGLTextureSharingShader);
@@ -368,24 +371,17 @@ begin
   Result := FTextureMatrixIsUnitary;
 end;
 
-type THackCollection = class(TOwnedCollection); // Required for Delphi5.
-
 function TGLTextureSharingShaderMaterial.GetTextureSharingShader: TGLTextureSharingShader;
 begin
-  Result := TGLTextureSharingShader(THackCollection(Collection).GetOwner);
+  if Collection is TGLTextureSharingShaderMaterials then
+    Result := TGLTextureSharingShaderMaterials(Collection).GetParent
+  else
+    Result := nil;
 end;
 
 procedure TGLTextureSharingShaderMaterial.OtherNotifychange(Sender: TObject);
 begin
   GetTextureSharingShader.NotifyChange(Self);
-end;
-
-function TGLTextureSharingShaderMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
-begin
-  if GetInterface(IID, Obj) then
-    Result := S_OK
-  else
-    Result := E_NOINTERFACE;
 end;
 
 procedure TGLTextureSharingShaderMaterial.SetAmbient(const Value: TGLColor);
@@ -503,16 +499,6 @@ begin
   end;
 end;
 
-function TGLTextureSharingShaderMaterial._AddRef: Integer;
-begin
-  Result := -1; //ignore
-end;
-
-function TGLTextureSharingShaderMaterial._Release: Integer;
-begin
-  Result := -1; //ignore
-end;
-
 { TGLTextureSharingShader }
 
 function TGLTextureSharingShader.AddLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
@@ -618,6 +604,11 @@ end;
 function TGLTextureSharingShaderMaterials.GetItems(const AIndex: Integer): TGLTextureSharingShaderMaterial;
 begin
   Result := (inherited Items[AIndex]) as TGLTextureSharingShaderMaterial;
+end;
+
+function TGLTextureSharingShaderMaterials.GetParent: TGLTextureSharingShader;
+begin
+  Result := TGLTextureSharingShader(GetOwner);
 end;
 
 procedure TGLTextureSharingShaderMaterials.SetItems(const AIndex: Integer; const Value: TGLTextureSharingShaderMaterial);
