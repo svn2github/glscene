@@ -31,6 +31,7 @@
                              pepNone preset does not call gl[Read/Draw]Pixels
       <li>23/02/07 - DaStr - Initial version of TGLPostEffect
                                                 (based on OldCity demo by FedeX)
+    </ul></font>                                                
 
 }
 unit GLPostEffects;
