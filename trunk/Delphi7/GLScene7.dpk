@@ -236,6 +236,10 @@ contains
   GLShadowHDS in '..\Source\GLShadowHDS.pas',
   GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
-  GLViewer in '..\Source\Platform\GLViewer.pas';
+  GLViewer in '..\Source\Platform\GLViewer.pas',
+  GLColor in '..\Source\Base\GLColor.pas',
+  GLFile3DSSceneObjects in '..\Source\FileFormats\GLFile3DSSceneObjects.pas',
+  GLTextureSharingShader in '..\Source\Shaders\GLTextureSharingShader.pas',
+  GLGizmo in '..\Source\GLGizmo.pas';
 
 end.
