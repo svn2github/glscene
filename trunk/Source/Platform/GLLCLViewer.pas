@@ -6,6 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
+                              (thanks z80maniac) (Bugtracker ID = 1936108)
       <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
                               to GLViewer.pas (Bugtracker ID = 1786279)
       <li>04/06/04 -  EG   - Created from GLWin32Viewer
@@ -198,8 +200,11 @@ end;
 //
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation = opRemove) and (AComponent = Camera) then
-      Camera:=nil;
+   if (Operation = opRemove) and (FBuffer<>nil) then
+   begin
+      if (AComponent = FBuffer.Camera) then
+         FBuffer.Camera := nil;
+   end;
    inherited;
 end;
 
