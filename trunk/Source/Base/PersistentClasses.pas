@@ -13,6 +13,8 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/04/08 - DaStr - Added classes TGLInterfacedPersistent and
+                              TGLInterfacedCollectionItem (BugTracker ID = 1938988)
       <li>11/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() once again
                              (BugTracker ID = 1857974)
                              (thanks Yann PAPOUIN and Burkhard Carstens)
@@ -35,7 +37,7 @@ unit PersistentClasses;
 
 interface
 
-uses Classes, SysUtils;
+uses Classes, SysUtils, GLCrossPlatform;
 
 {$i GLScene.inc}
 
@@ -109,7 +111,7 @@ type
       This interface does not really allow polymorphic persistence,
       but is rather intended as a way to unify persistence calls
       for iterators. }
-   IPersistentObject = interface (IUnknown)
+   IPersistentObject = interface(IInterface)
       procedure WriteToFiler(writer : TVirtualWriter);
 	   procedure ReadFromFiler(reader : TVirtualReader);
    end;
@@ -366,7 +368,7 @@ type
 
    // TGLOwnedPersistent
    //
-   {: TPersistent which has knowledge of its owner . }
+   {: TPersistent which has knowledge of its owner. }
    TGLOwnedPersistent = class (TPersistent)
    private
      FOwner: TPersistent;
@@ -374,6 +376,28 @@ type
      function GetOwner: TPersistent; override;
    public
      constructor Create(AOwner: TPersistent); virtual;
+   end;
+
+   // TGLInterfacedPersistent
+   //
+   {: TPersistent thet inplements IInterface. }
+   TGLInterfacedPersistent = class(TPersistent, IInterface)
+   protected
+     // Implementing IInterface.
+     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+     function _AddRef: Integer; virtual; stdcall;
+     function _Release: Integer; virtual; stdcall;
+   end;
+
+   // TGLInterfacedCollectionItem
+   //
+   {: TCollectionItem thet inplements IInterface. }
+   TGLInterfacedCollectionItem = class(TCollectionItem, IInterface)
+   protected
+     // Implementing IInterface.
+     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+     function _AddRef: Integer; virtual; stdcall;
+     function _Release: Integer; virtual; stdcall;
    end;
 
    // EInvalidFileSignature
@@ -1910,6 +1934,7 @@ begin
    WriteLine(cVTListEnd, '');
 end;
 
+
 // ------------------
 // ------------------ TGLOwnedPersistent ------------------
 // ------------------
@@ -1926,6 +1951,60 @@ end;
 function TGLOwnedPersistent.GetOwner: TPersistent;
 begin
   Result := FOwner;
+end;
+
+
+// ------------------
+// ------------------ TGLInterfacedPersistent ------------------
+// ------------------
+
+// _AddRef
+//
+function TGLInterfacedPersistent._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLInterfacedPersistent._Release: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// QueryInterface
+//
+function TGLInterfacedPersistent.QueryInterface(const IID: TGUID;
+  out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+
+// ------------------
+// ------------------ TGLInterfacedCollectionItem ------------------
+// ------------------
+
+// _AddRef
+//
+function TGLInterfacedCollectionItem._AddRef: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+function TGLInterfacedCollectionItem._Release: Integer;
+begin
+  Result := -1; //ignore
+end;
+
+// QueryInterface
+//
+function TGLInterfacedCollectionItem.QueryInterface(const IID: TGUID;
+  out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
 end;
 
 // ------------------------------------------------------------------
