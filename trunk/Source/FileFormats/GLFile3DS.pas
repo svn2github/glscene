@@ -6,6 +6,8 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>12/04/08 - DaStr - Added TGL3DSVectorFile.UseTextureEx option
+                             (Bugtracker ID = 1940451)
       <li>06/04/08 - DaStr - Added animation support (by Lexer, Luca Burlizzi,
                               Dave Gravel, mif, Oxygen and a bit myself)
       <li>05/11/07 - DaStr - Fixed transparency issue.
@@ -34,6 +36,9 @@ uses
   GLStrings, GLFile3DSSceneObjects, GLCrossPlatform;
 
 type
+
+  EGLFile3DS = class(Exception);
+
   {: TGLFile3DSAnimationData.
      A record that holds all the information that is used during 3ds animation. }
   TGLFile3DSAnimationData = packed record
@@ -254,10 +259,24 @@ type
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
   TGL3DSVectorFile = class(TVectorFile)
+  private
+    function GetUseTextureEx: Boolean;
+    procedure SetUseTextureEx(const Value: Boolean);
   public
     { Public Declarations }
     class function Capabilities: TDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
+
+    // UseTextureEx
+    //
+    {: This is a class property (similar to a global variable).
+
+       If enabled, advanced parameters will be loaded from a 3ds file
+       (TextureScale, TextureOffset), but it might break backwards
+       compatibility.
+       If disabled, it won't break anything, but some parameters will not be
+       loaded correctly from a 3ds file. }
+    property UseTextureEx: Boolean read GetUseTextureEx write SetUseTextureEx;
   end;
 
 
@@ -269,6 +288,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+var
+  vUseTextureEx: Boolean = True;
 
 // ------------------
 // ------------------ Misc functions ------------------
@@ -1396,6 +1417,20 @@ begin
    Result:=[dfcRead];
 end;
 
+// GetUseTextureEx
+//
+function TGL3DSVectorFile.GetUseTextureEx: Boolean;
+begin
+  Result := vUseTextureEx;
+end;
+
+// SetUseTextureEx
+//
+procedure TGL3DSVectorFile.SetUseTextureEx(const Value: Boolean);
+begin
+  vUseTextureEx := Value;
+end;
+
 // LoadFromStream
 //
 procedure TGL3DSVectorFile.LoadFromStream(aStream: TStream);
@@ -1418,7 +1453,7 @@ var
     material:  PMaterial3DS;
     specColor: TVector;
     matLib:    TGLMaterialLibrary;
-    libMat:    TGLLibMaterial;
+    libMat, SecondMaterial:    TGLLibMaterial;
   begin
     material := Materials.MaterialByName[Name];
     Assert(Assigned(material));
@@ -1447,18 +1482,26 @@ var
           end;
           if Trim(material.Texture.Map.NameStr) <> '' then
             try
-              with libMat.Material.TextureEx.Add do
-              begin
-                Texture.Image.LoadFromFile(material.Texture.Map.NameStr);
-                Texture.Disabled := False;
-                Texture.TextureMode := tmModulate;
-                TextureIndex := 0;
-                with material.Texture.Map do
+              if vUseTextureEx then
+                with libMat.Material.TextureEx.Add do
                 begin
-                  TextureScale.SetPoint(UScale, VScale, 0);
-                  TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
-                end;
-              end;
+                  Texture.Image.LoadFromFile(material.Texture.Map.NameStr);
+                  Texture.Disabled := False;
+                  Texture.TextureMode := tmModulate;
+                  TextureIndex := 0;
+                  with material.Texture.Map do
+                  begin
+                    TextureScale.SetPoint(UScale, VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
+                  end;
+                end
+              else
+                with libMat.Material.Texture do
+                begin
+                  Image.LoadFromFile(material.Texture.Map.NameStr);
+                  Disabled := False;
+                  TextureMode := tmModulate;
+                end
 
             except
               on E: ETexture do
@@ -1473,20 +1516,34 @@ var
 
           if Trim(material.Opacity.Map.NameStr) <> '' then
             try
-              with libMat.Material.TextureEx.Add do
-              begin
-                libMat.Material.BlendingMode := bmTransparency;
-                Texture.ImageAlpha := tiaAlphaFromIntensity;
-                Texture.TextureMode := tmModulate;
-                Texture.Image.LoadFromFile(material.Opacity.Map.NameStr);
-                Texture.Disabled := False;
-                TextureIndex := 1;
-                with material.Opacity.Map do
+              if vUseTextureEx then
+                with libMat.Material.TextureEx.Add do
                 begin
-                  TextureScale.SetPoint(UScale, VScale, 0);
-                  TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
+                  libMat.Material.BlendingMode := bmTransparency;
+                  Texture.ImageAlpha := tiaAlphaFromIntensity;
+                  Texture.TextureMode := tmModulate;
+                  Texture.Image.LoadFromFile(material.Opacity.Map.NameStr);
+                  Texture.Disabled := False;
+                  TextureIndex := 1;
+                  with material.Opacity.Map do
+                  begin
+                    TextureScale.SetPoint(UScale, VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
+                  end;
+                end
+              else
+                with libMat.Material.Texture do
+                begin
+                  SecondMaterial := matLib.Materials.Add;
+                  SecondMaterial.Material.Texture.Image.LoadFromFile(material.Opacity.Map.NameStr);
+                  SecondMaterial.Material.Texture.Disabled := false;
+                  SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
+                  SecondMaterial.Material.Texture.TextureMode := tmModulate;
+                  SecondMaterial.Name := material.Opacity.Map.NameStr;
+                  LibMat.Texture2Name := SecondMaterial.Name;
+                  Disabled := False;
                 end;
-              end;
+
             except
               on E: ETexture do
               begin
@@ -1499,19 +1556,33 @@ var
             end;
           if Trim(material.Bump.Map.NameStr) <> '' then
             try
-              with libMat.Material.TextureEx.Add do
-              begin
-                Texture.Image.LoadFromFile(material.Bump.Map.NameStr);
-                Texture.Disabled := False;
-                Texture.TextureMode := tmModulate;
-                //Texture.TextureFormat:=tfNormalMap;  //Если этот параметр активен, то должна быть карта высот(как в макс-е)
-                TextureIndex := 2;
-                with material.Bump.Map do
+              if vUseTextureEx then
+                with libMat.Material.TextureEx.Add do
                 begin
-                  TextureScale.SetPoint(UScale, VScale, 0);
-                  TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
+                  Texture.Image.LoadFromFile(material.Bump.Map.NameStr);
+                  Texture.Disabled := False;
+                  Texture.TextureMode := tmModulate;
+                  // You need a hight map for this parameter (like in 3d Max).
+                  // Texture.TextureFormat := tfNormalMap;
+                  TextureIndex := 2;
+                  with material.Bump.Map do
+                  begin
+                    TextureScale.SetPoint(UScale, VScale, 0);
+                    TextureOffset.SetPoint((1 - frac(UOffset)) * UScale, (frac(VOffset)) * VScale, 0);
+                  end;
+                end
+              else
+                with libMat.Material.Texture do
+                begin
+                  SecondMaterial := matLib.Materials.Add;
+                  SecondMaterial.Material.Texture.Image.LoadFromFile(material.Bump.Map.NameStr);
+                  SecondMaterial.Material.Texture.Disabled := False;
+                  SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
+                  SecondMaterial.Material.Texture.TextureMode := tmModulate;
+                  SecondMaterial.Name := material.Opacity.Map.NameStr;
+                  Disabled := False;
                 end;
-              end;
+
             except
               on E: ETexture do
               begin
