@@ -12,7 +12,10 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello; Fixed reference to odeimport)
+    <li>12/04/08 - DaStr - Cleaned up uses section
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373) 
+    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (by Paul Robello)
+                            Fixed reference to odeimport
     <li>25/12/07 - DaStr  - Fixed memory leak in TGLODECustomCollider.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808373)
     <li>10/10/07 - Mrqzzz - Fixed reference ODEGL.ODERToGLSceneMatrix
@@ -41,7 +44,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLODEManager, odeimport, odegl,dynodegl, VectorGeometry,
+  // VCL
+  Classes, SysUtils,
+
+  // GLscene
+  GLODEManager, odeimport, odegl, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
   OpenGL1x, GLTexture, GLColor;
 
