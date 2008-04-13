@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLODESkeletonColliders<p>
 
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
    <b>History :</b><font size=-1><ul>
+    <li>12/04/08 - DaStr - Cleaned up uses section
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
      <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
                              CCilinder (ode 0.8) with Capsule(ode 0.9))
      <li>04/12/03 - SG - Creation.
@@ -13,7 +18,7 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,odeimport,dynodeGL;
+  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects, odeimport;
 
 type
   

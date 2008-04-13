@@ -16,7 +16,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
-
+    <li>12/04/08 - DaStr - Cleaned up uses section
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373) 
     <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
     <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
                             Don't create contact between static objects;
@@ -114,7 +115,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, dynodegl, odegl, odeimport, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, odegl, odeimport, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
   GLColor;
 
