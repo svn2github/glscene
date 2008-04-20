@@ -1418,20 +1418,20 @@ const
 
    // Changed Tokens
    // new naming scheme in OpenGL v1.5, old tokens kept for backwards compatibility
-	 FOG_COORD_SRC		              = GL_FOG_COORDINATE_SOURCE;
-	 FOG_COORD					            = GL_FOG_COORDINATE;
-	 CURRENT_FOG_COORD				      = GL_CURRENT_FOG_COORDINATE;
-	 FOG_COORD_ARRAY_TYPE				    = GL_FOG_COORDINATE_ARRAY_TYPE;
-	 FOG_COORD_ARRAY_STRIDE				  = GL_FOG_COORDINATE_ARRAY_STRIDE;
-	 FOG_COORD_ARRAY_POINTER				= GL_FOG_COORDINATE_ARRAY_POINTER;
-	 FOG_COORD_ARRAY					      = GL_FOG_COORDINATE_ARRAY;
-	 FOG_COORD_ARRAY_BUFFER_BINDING	= GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING;
-	 SRC0_RGB					              = GL_SOURCE0_RGB;
-	 SRC1_RGB					              = GL_SOURCE1_RGB;
-	 SRC2_RGB					              = GL_SOURCE2_RGB;
-	 SRC0_ALPHA				              = GL_SOURCE0_ALPHA;
-	 SRC1_ALPHA					            = GL_SOURCE1_ALPHA;
-	 SRC2_ALPHA					            = GL_SOURCE2_ALPHA;
+	 GL_FOG_COORD_SRC		                = GL_FOG_COORDINATE_SOURCE;
+	 GL_FOG_COORD					              = GL_FOG_COORDINATE;
+	 GL_CURRENT_FOG_COORD				        = GL_CURRENT_FOG_COORDINATE;
+	 GL_FOG_COORD_ARRAY_TYPE				    = GL_FOG_COORDINATE_ARRAY_TYPE;
+	 GL_FOG_COORD_ARRAY_STRIDE				  = GL_FOG_COORDINATE_ARRAY_STRIDE;
+	 GL_FOG_COORD_ARRAY_POINTER				  = GL_FOG_COORDINATE_ARRAY_POINTER;
+	 GL_FOG_COORD_ARRAY					        = GL_FOG_COORDINATE_ARRAY;
+	 GL_FOG_COORD_ARRAY_BUFFER_BINDING	= GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING;
+	 GL_SRC0_RGB					              = GL_SOURCE0_RGB;
+	 GL_SRC1_RGB					              = GL_SOURCE1_RGB;
+	 GL_SRC2_RGB					              = GL_SOURCE2_RGB;
+	 GL_SRC0_ALPHA				              = GL_SOURCE0_ALPHA;
+	 GL_SRC1_ALPHA					            = GL_SOURCE1_ALPHA;
+	 GL_SRC2_ALPHA					            = GL_SOURCE2_ALPHA;
 
    {.$endregion}
 
@@ -3048,35 +3048,35 @@ const
    GL_PROGRAM_POINT_SIZE_EXT                        = $8642;
 
    // GL_EXT_gpu_shader4 (#326)
-   VERTEX_ATTRIB_ARRAY_INTEGER_EXT                  = $88FD;
-   SAMPLER_1D_ARRAY_EXT                             = $8DC0;
-   SAMPLER_2D_ARRAY_EXT                             = $8DC1;
-   SAMPLER_BUFFER_EXT                               = $8DC2;
-   SAMPLER_1D_ARRAY_SHADOW_EXT                      = $8DC3;
-   SAMPLER_2D_ARRAY_SHADOW_EXT                      = $8DC4;
-   SAMPLER_CUBE_SHADOW_EXT                          = $8DC5;
-   UNSIGNED_INT                                     = $1405;
-   UNSIGNED_INT_VEC2_EXT                            = $8DC6;
-   UNSIGNED_INT_VEC3_EXT                            = $8DC7;
-   UNSIGNED_INT_VEC4_EXT                            = $8DC8;
-   INT_SAMPLER_1D_EXT                               = $8DC9;
-   INT_SAMPLER_2D_EXT                               = $8DCA;
-   INT_SAMPLER_3D_EXT                               = $8DCB;
-   INT_SAMPLER_CUBE_EXT                             = $8DCC;
-   INT_SAMPLER_2D_RECT_EXT                          = $8DCD;
-   INT_SAMPLER_1D_ARRAY_EXT                         = $8DCE;
-   INT_SAMPLER_2D_ARRAY_EXT                         = $8DCF;
-   INT_SAMPLER_BUFFER_EXT                           = $8DD0;
-   UNSIGNED_INT_SAMPLER_1D_EXT                      = $8DD1;
-   UNSIGNED_INT_SAMPLER_2D_EXT                      = $8DD2;
-   UNSIGNED_INT_SAMPLER_3D_EXT                      = $8DD3;
-   UNSIGNED_INT_SAMPLER_CUBE_EXT                    = $8DD4;
-   UNSIGNED_INT_SAMPLER_2D_RECT_EXT                 = $8DD5;
-   UNSIGNED_INT_SAMPLER_1D_ARRAY_EXT                = $8DD6;
-   UNSIGNED_INT_SAMPLER_2D_ARRAY_EXT                = $8DD7;
-   UNSIGNED_INT_SAMPLER_BUFFER_EXT                  = $8DD8;
-   MIN_PROGRAM_TEXEL_OFFSET_EXT                     = $8904;
-   MAX_PROGRAM_TEXEL_OFFSET_EXT                     = $8905;
+   GL_VERTEX_ATTRIB_ARRAY_INTEGER_EXT                  = $88FD;
+   GL_SAMPLER_1D_ARRAY_EXT                             = $8DC0;
+   GL_SAMPLER_2D_ARRAY_EXT                             = $8DC1;
+   GL_SAMPLER_BUFFER_EXT                               = $8DC2;
+   GL_SAMPLER_1D_ARRAY_SHADOW_EXT                      = $8DC3;
+   GL_SAMPLER_2D_ARRAY_SHADOW_EXT                      = $8DC4;
+   GL_SAMPLER_CUBE_SHADOW_EXT                          = $8DC5;
+   //GL_UNSIGNED_INT                                     = $1405;
+   GL_UNSIGNED_INT_VEC2_EXT                            = $8DC6;
+   GL_UNSIGNED_INT_VEC3_EXT                            = $8DC7;
+   GL_UNSIGNED_INT_VEC4_EXT                            = $8DC8;
+   GL_INT_SAMPLER_1D_EXT                               = $8DC9;
+   GL_INT_SAMPLER_2D_EXT                               = $8DCA;
+   GL_INT_SAMPLER_3D_EXT                               = $8DCB;
+   GL_INT_SAMPLER_CUBE_EXT                             = $8DCC;
+   GL_INT_SAMPLER_2D_RECT_EXT                          = $8DCD;
+   GL_INT_SAMPLER_1D_ARRAY_EXT                         = $8DCE;
+   GL_INT_SAMPLER_2D_ARRAY_EXT                         = $8DCF;
+   GL_INT_SAMPLER_BUFFER_EXT                           = $8DD0;
+   GL_UNSIGNED_INT_SAMPLER_1D_EXT                      = $8DD1;
+   GL_UNSIGNED_INT_SAMPLER_2D_EXT                      = $8DD2;
+   GL_UNSIGNED_INT_SAMPLER_3D_EXT                      = $8DD3;
+   GL_UNSIGNED_INT_SAMPLER_CUBE_EXT                    = $8DD4;
+   GL_UNSIGNED_INT_SAMPLER_2D_RECT_EXT                 = $8DD5;
+   GL_UNSIGNED_INT_SAMPLER_1D_ARRAY_EXT                = $8DD6;
+   GL_UNSIGNED_INT_SAMPLER_2D_ARRAY_EXT                = $8DD7;
+   GL_UNSIGNED_INT_SAMPLER_BUFFER_EXT                  = $8DD8;
+   GL_MIN_PROGRAM_TEXEL_OFFSET_EXT                     = $8904;
+   GL_MAX_PROGRAM_TEXEL_OFFSET_EXT                     = $8905;
 
 
    // GL_EXT_packed_float (#328)
@@ -3099,10 +3099,10 @@ const
    GL_MAX_ARRAY_TEXTURE_LAYERS_EXT                  = $88FF;
    GL_COMPARE_REF_DEPTH_TO_TEXTURE_EXT              = $884E;
    //GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER_EXT      = $8CD4;
-   GL_SAMPLER_1D_ARRAY_EXT                          = $8DC0;
-   GL_SAMPLER_2D_ARRAY_EXT                          = $8DC1;
-   GL_SAMPLER_1D_ARRAY_SHADOW_EXT                   = $8DC3;
-   GL_SAMPLER_2D_ARRAY_SHADOW_EXT                   = $8DC4;
+   //GL_SAMPLER_1D_ARRAY_EXT                          = $8DC0;
+   //GL_SAMPLER_2D_ARRAY_EXT                          = $8DC1;
+   //GL_SAMPLER_1D_ARRAY_SHADOW_EXT                   = $8DC3;
+   //GL_SAMPLER_2D_ARRAY_SHADOW_EXT                   = $8DC4;
 
    // GL_EXT_texture_buffer_object (#330)
    GL_TEXTURE_BUFFER_EXT                            = $8C2A;
