@@ -6,6 +6,8 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/04/08 - DaStr - TGL3DSVectorFile.UseTextureEx converted into a
+                             global variable and disabled by default
       <li>12/04/08 - DaStr - Added TGL3DSVectorFile.UseTextureEx option
                              (Bugtracker ID = 1940451)
       <li>06/04/08 - DaStr - Added animation support (by Lexer, Luca Burlizzi,
@@ -259,26 +261,20 @@ type
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
   TGL3DSVectorFile = class(TVectorFile)
-  private
-    function GetUseTextureEx: Boolean;
-    procedure SetUseTextureEx(const Value: Boolean);
   public
     { Public Declarations }
     class function Capabilities: TDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
-
-    // UseTextureEx
-    //
-    {: This is a class property (similar to a global variable).
-
-       If enabled, advanced parameters will be loaded from a 3ds file
-       (TextureScale, TextureOffset), but it might break backwards
-       compatibility.
-       If disabled, it won't break anything, but some parameters will not be
-       loaded correctly from a 3ds file. }
-    property UseTextureEx: Boolean read GetUseTextureEx write SetUseTextureEx;
   end;
 
+var
+  {: If enabled, advanced parameters will be loaded from a 3ds file
+     (TextureScale, TextureOffset), but it might break backwards compatibility.
+     If disabled, it won't break anything, but some parameters will not be
+     loaded correctly from a 3ds file.
+     Also there is a significant drop in FPS when this option is on
+     (for unknown reasons), so it is off by default. }
+  vGLFile3DS_UseTextureEx: Boolean = False;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -287,9 +283,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-var
-  vUseTextureEx: Boolean = True;
 
 // ------------------
 // ------------------ Misc functions ------------------
@@ -1417,20 +1410,6 @@ begin
    Result:=[dfcRead];
 end;
 
-// GetUseTextureEx
-//
-function TGL3DSVectorFile.GetUseTextureEx: Boolean;
-begin
-  Result := vUseTextureEx;
-end;
-
-// SetUseTextureEx
-//
-procedure TGL3DSVectorFile.SetUseTextureEx(const Value: Boolean);
-begin
-  vUseTextureEx := Value;
-end;
-
 // LoadFromStream
 //
 procedure TGL3DSVectorFile.LoadFromStream(aStream: TStream);
@@ -1482,7 +1461,7 @@ var
           end;
           if Trim(material.Texture.Map.NameStr) <> '' then
             try
-              if vUseTextureEx then
+              if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   Texture.Image.LoadFromFile(material.Texture.Map.NameStr);
@@ -1516,7 +1495,7 @@ var
 
           if Trim(material.Opacity.Map.NameStr) <> '' then
             try
-              if vUseTextureEx then
+              if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   libMat.Material.BlendingMode := bmTransparency;
@@ -1556,7 +1535,7 @@ var
             end;
           if Trim(material.Bump.Map.NameStr) <> '' then
             try
-              if vUseTextureEx then
+              if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
                   Texture.Image.LoadFromFile(material.Bump.Map.NameStr);
