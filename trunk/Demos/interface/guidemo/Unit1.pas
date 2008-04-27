@@ -40,7 +40,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLMisc, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
   GLBitmapFont, GLWin32Viewer, GLWindowsFont, Menus, GLWindows, GLGui,
-  GLTexture;
+  GLTexture, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -89,8 +89,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses GLCrossPlatform;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
