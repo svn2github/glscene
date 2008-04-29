@@ -6,6 +6,7 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>29/04/08 - DaStr - Fixed memory leak in TGLFile3DSCameraObject
       <li>27/04/08 - DaStr - TGL3DSVectorFile.UseTextureEx converted into a
                              global variable and disabled by default
       <li>12/04/08 - DaStr - Added TGL3DSVectorFile.UseTextureEx option
@@ -1393,7 +1394,7 @@ end;
 destructor TGLFile3DSCameraObject.Destroy;
 begin
   FCameraSrc.Free;
-
+  FTargetObj.Free;
   inherited;
 end;
 
