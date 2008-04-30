@@ -107,8 +107,6 @@ type
    // TGLSpaceText
    //
    {: Renders a text in 3D. }
-   TSpaceTextSideMode=(smsOneSide,smsTwoSideRegroup,smsTwoSideNoRegroup,smsDirectionSprite,smsSprite);
-
    TGLSpaceText = class (TGLSceneObject)
       private
 			{ Private Declarations }
@@ -121,9 +119,6 @@ type
          FOblique : Single;
          FTextHeight : Single;
          FLines: TStringList;
-         FLineToLineSpacing:single;
-         FSideMode:TSpaceTextSideMode;
-
          procedure SetCharacterRange(const val : TSpaceTextCharRange);
          procedure SetAllowedDeviation(const val : Single);
          procedure SetExtrusion(AValue: Single);
@@ -135,8 +130,6 @@ type
          procedure SetAspectRatio(const value : Single);
          procedure SetOblique(const value : Single);
          procedure SetTextHeight(const value : Single);
-         procedure SetLineToLineSpacing(const Value : Single);
-         procedure SetSideMode(const Value : TSpaceTextSideMode);
 		protected
 			{ Protected Declarations }
          FTextFontEntry : PFontEntry;
@@ -186,9 +179,6 @@ type
          property TextHeight : Single read FTextHeight write SetTextHeight;
          property Oblique : Single read FOblique write SetOblique;
          property Adjust : TGLTextAdjust read FAdjust write SetAdjust;
-         property LineToLineSpacing: single read FLineToLineSpacing write SetLineToLineSpacing;
-         property SideMode: TSpaceTextSideMode read FSideMode write SetSideMode default smsOneSide;
-
     end;
 
    // TFontManager
@@ -320,12 +310,10 @@ begin
    FontChanged:=True;
    CharacterRange:=stcrAll;
    FFont.OnChange:=OnFontChange;
-   FAdjust:=TGLTextAdjust.Create;  
+   FAdjust:=TGLTextAdjust.Create;
    FAdjust.OnChange:=OnFontChange;
    FLines := TStringList.Create;
    FLines.OnChange := DoOnLinesChange;
-   FLineToLineSpacing:=0.25;
-   FSideMode:=smsOneSide; 
 end;
 
 // Destroy
@@ -417,14 +405,12 @@ end;
 // BuildList
 //
 procedure TGLSpaceText.BuildList(var rci : TRenderContextInfo);
-
- procedure BuildText;
- var
+var
    textL, maxUnder, maxHeight : Single;
    charScale : Single;
    i: integer;
-   BoxSize:TVector;
- begin
+begin
+   if Length(GetText)>0 then begin
       glPushMatrix;
 
       //FAspectRatio ignore
@@ -441,95 +427,35 @@ procedure TGLSpaceText.BuildList(var rci : TRenderContextInfo);
         glListBase(FTextFontEntry^.FVirtualHandle.Handle);
       end;
 
-      BoxSize:=AxisAlignedDimensionsUnscaled;
-
-      {case FAdjust.Horz of
-         haLeft :   glTranslatef(-BoxSize[0], 0, 0); // nothing
-         haCenter : ;//nothing
-         haRight :  glTranslatef(BoxSize[0], 0, 0);
-      end; }
-      case FAdjust.Vert of
-         vaBaseLine : ; // nothing;
-         vaBottom :   ; // nothing;
-         vaCenter : glTranslatef(0,BoxSize[1],0);
-         vaTop :    glTranslatef(0,BoxSize[1]*2,0);
-      end;
-      maxHeight:=0;
-      maxUnder:=0;
       for i:=0 to FLines.Count-1 do begin
-       TextMetrics(FLines[i], textL, maxHeight, maxUnder);
-       if FTextHeight=0 then
-        charScale:=1
-       else
-        charScale:=FTextHeight/MaxHeight;
-       if i>0 then
-          glTranslatef(0, -(abs(maxUnder)+abs(maxHeight))*charScale, 0)
-       else
-        if not (FAdjust.Vert=vaBaseLine) then
-           glTranslatef(0, -(abs(maxHeight))*charScale, 0);
-
        glPushMatrix;
-       glScalef(charScale,charScale,1);
-       case FAdjust.Horz of
-          haLeft : ; // nothing
-          haCenter : glTranslatef(-textL*0.5, 0, 0);
-          haRight :  glTranslatef(-textL, 0, 0);
+
+       TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
+       if (FAdjust.Horz<>haLeft) or (FAdjust.Vert<>vaBaseLine) or (FTextHeight<>0) then begin
+          if FTextHeight<>0 then begin
+             charScale:=FTextHeight/MaxHeight;
+             glScalef(CharScale,CharScale,1);
+          end;
+          case FAdjust.Horz of
+             haLeft : ; // nothing
+             haCenter : glTranslatef(-textL*0.5, 0, 0);
+             haRight :  glTranslatef(-textL, 0, 0);
+          end;
+          case FAdjust.Vert of
+             vaBaseLine : ; // nothing;
+             vaBottom : glTranslatef(0, abs(maxUnder), 0);
+             vaCenter : glTranslatef(0, abs(maxUnder)*0.5-maxHeight*0.5, 0);
+             vaTop :    glTranslatef(0, -maxHeight, 0);
+          end;
        end;
+
+       glTranslatef(0,-i*(maxHeight+FAspectRatio),0);
        glCallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE, PChar(FLines.Strings[i]));
        glPopMatrix;
-       glTranslatef(0,-FLineToLineSpacing,0);
       end;
-
+      
       glPopAttrib;
       glPopMatrix;
- end;
-
-var
- curAdjustHorz:TGLTextHorzAdjust;
- mat:TMAtrix;
-begin
-   if Length(GetText)>0 then begin
-
-    if FSideMode=smsSprite then begin
-     glPushMatrix;
-     glGetFloatv(GL_MODELVIEW_MATRIX,@mat);
-     NormalizeMatrix(mat);
-     InvertMatrix(mat);
-     glMultMatrixf(@mat);
-    end;
-    if FSideMode=smsDirectionSprite then begin
-     glPushMatrix;
-     glGetFloatv(GL_MODELVIEW_MATRIX,@mat);
-     NormalizeMatrix(mat);
-     InvertMatrix(mat);
-     mat[1]:=VectorMake(0,1,0,0);
-     glMultMatrixf(@mat);
-    end;
-
-    BuildText;
-
-    if (FSideMode=smsTwoSideRegroup) or
-       (FSideMode=smsTwoSideNoRegroup) then begin
-
-     curAdjustHorz:=FAdjust.FHorz;
-     if FSideMode=smsTwoSideNoRegroup then begin
-      if FAdjust.FHorz=haLeft then
-       FAdjust.FHorz:=haRight
-      else
-       if FAdjust.FHorz=haRight then
-        FAdjust.FHorz:=haLeft;
-     end;
-     glRotatef(180,0,1,0);
-     BuildText;
-     glRotatef(-180,0,1,0);
-     if FSideMode=smsTwoSideNoRegroup then
-      FAdjust.FHorz:=curAdjustHorz;
-    end;
-
-    if (FSideMode=smsSprite) or
-       (FSideMode=smsDirectionSprite) then
-     glPopMatrix;
-
    end;
 end;
 
@@ -704,25 +630,6 @@ begin
    end;
 end;
 
-procedure TGLSpaceText.SetLineToLineSpacing(const Value : Single);
-begin
- FLineToLineSpacing:=Value;
- StructureChanged;
-end;
-
-procedure TGLSpaceText.SetSideMode(const Value : TSpaceTextSideMode);
-begin
- FSideMode:=Value;
-
- if (FSideMode=smsDirectionSprite) or
-    (FSideMode=smsSprite) then
-  ObjectStyle:=ObjectStyle+[osDirectDraw]
- else
-  ObjectStyle:=ObjectStyle-[osDirectDraw];
-
- StructureChanged;
-end;
-
 // NotifyFontChanged
 //
 procedure TGLSpaceText.NotifyFontChanged;
@@ -755,66 +662,57 @@ end;
 //
 function TGLSpaceText.BarycenterAbsolutePosition: TVector;
 var
-  AdjustVector: TVector;
   lWidth, lHeightMax, lHeightMin: Single;
+  AdjustVector: TVector;
 begin
-  lHeightMax:= 0;
-  lHeightMin:= 0;
-  lWidth:=0;
-  AdjustVector:=NullHMGVector;
+  TextMetrics(Text, lWidth, lHeightMax, lHeightMin);
 
   case FAdjust.FHorz of
-    haLeft:      AdjustVector[0]:=AxisAlignedDimensionsUnscaled[0];
-    haCenter:   ; //nothing
-    haRight:   AdjustVector[0]:=-AxisAlignedDimensionsUnscaled[0];
+    haLeft:   AdjustVector[0] := lWidth / 2;
+    haCenter: AdjustVector[0] := 0; // Nothing.
+    haRight:  AdjustVector[0] := - lWidth / 2;
+  else
+    begin
+      AdjustVector[0] := 0;
+      Assert(False, glsUnknownType); // Not implemented...
+    end;
   end;
+
   case FAdjust.FVert of
-    vaTop:      AdjustVector[1]:=AxisAlignedDimensionsUnscaled[1];
-    vaCenter:   ; //nothing
-    vaBottom:   AdjustVector[1]:=-AxisAlignedDimensionsUnscaled[1];
-    vaBaseLine:
-                if FLines.Count>0 then begin
-                   TextMetrics(FLines[0], lWidth, lHeightMax, lHeightMin);
-                   AdjustVector[1] := -AxisAlignedDimensionsUnscaled[1] + lHeightMax;
-                end;
+    vaTop:      AdjustVector[1] := - (Abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+    vaCenter:   AdjustVector[1] := 0; // Nothing.
+    vaBottom:   AdjustVector[1] :=    (Abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+    vaBaseLine: AdjustVector[1] :=  - (Abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
+  else
+    begin
+      AdjustVector[1] := 0;
+      Assert(False, glsUnknownType); // Not implemented...
+    end;
   end;
-  AdjustVector[2] := AdjustVector[2] - FExtrusion / 2;
-  Result := VectorAdd(LocalToAbsolute(AdjustVector),AbsolutePosition);
+
+  AdjustVector[2] := - (FExtrusion / 2);
+  AdjustVector[3] := 1;
+  Result := LocalToAbsolute(AdjustVector);
 end;
 
 // AxisAlignedDimensionsUnscaled
 //
 function TGLSpaceText.AxisAlignedDimensionsUnscaled: TVector;
 var
-  i:integer;
-  curlWidth, lWidth, lHeightMax,
-  lHeightMin: Single;
-
+  lWidth, lHeightMax, lHeightMin: Single;
   charScale: Single;
 begin
- lWidth:=0;
- lHeightMax:=0;
- lHeightMin:=0;
- charScale := 1;
- Result[1]:=0;
- for i:=0 to FLines.Count-1 do begin
-  TextMetrics(FLines[i], curlWidth, lHeightMax, lHeightMin);
-  if ((i=0) or (curlWidth>lWidth)) and (FLines[i]<>'') then
-   lWidth:=curlWidth;
+  TextMetrics(Text, lWidth, lHeightMax, lHeightMin);
 
-  if FTextHeight <> 0 then
-     charScale := FTextHeight / lHeightMax;
+  if FTextHeight = 0 then
+    charScale := 1
+  else
+    charScale := FTextHeight / lHeightMax;
 
-  Result[1] := Result[1]+(lHeightMax + abs(lHeightMin))*charScale;
- end;
- Result[1]:=Result[1]+(FLineToLineSpacing * (FLines.Count-1));
-
- Result[0] := lWidth / 2 * charScale;
- if FAspectRatio<>0 then
-  Result[0] := Result[0] * FAspectRatio;
- Result[1]:=Result[1]/2;
- Result[2] := FExtrusion / 2;
- Result[3] := 0;
+  Result[0] := lWidth / 2 * charScale;
+  Result[1] := (lHeightMax + Abs(lHeightMin)) / 2 * charScale;
+  Result[2] := FExtrusion / 2;
+  Result[3] := 0;
 end;
 
 // ------------------
