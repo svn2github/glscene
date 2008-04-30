@@ -18,6 +18,7 @@ TGLHUDText BITMAP objects\hud_objects\TGLHUDText.bmp
 TGLResolutionIndependantHUDText BITMAP objects\hud_objects\TGLResolutionIndependantHUDText.bmp
 TGLAbsoluteHUDText BITMAP objects\hud_objects\TGLAbsoluteHUDText.bmp
 TGLConsole BITMAP objects\hud_objects\TGLConsole.bmp
+TGLGameMenu BITMAP objects\hud_objects\TGLGameMenu.bmp
 
 TGLAdvancedLabel BITMAP objects\gui_objects\TGLAdvancedLabel.bmp
 TGLBaseControl BITMAP objects\gui_objects\TGLBaseControl.bmp
@@ -45,6 +46,7 @@ TGLPoints BITMAP objects\basic_geometry\TGLPoints.bmp
 TGLPolygon BITMAP objects\basic_geometry\TGLPolygon.bmp
 TGLSphere BITMAP objects\basic_geometry\TGLSphere.bmp
 TGLSprite BITMAP objects\basic_geometry\TGLSprite.bmp
+TGLCapsule BITMAP objects\basic_geometry\TGLCapsule.bmp
 
 TGLAnimatedSprite BITMAP objects\advanced_geometry\TGLAnimatedSprite.bmp
 TGLAnnulus BITMAP objects\advanced_geometry\TGLAnnulus.bmp
@@ -60,6 +62,7 @@ TGLFreeForm BITMAP objects\mesh_objects\TGLFreeForm.bmp
 TGLMesh BITMAP objects\mesh_objects\TGLMesh.bmp
 TGLPortal BITMAP objects\mesh_objects\TGLPortal.bmp
 TGLTerrainRenderer BITMAP objects\mesh_objects\TGLTerrainRenderer.bmp
+TGLTilePlane BITMAP objects\mesh_objects\TGLTilePlane.bmp
 
 TGLFlatText BITMAP objects\graph_plotting_objects\TGLFlatText.bmp
 TGLHeightfield BITMAP objects\graph_plotting_objects\TGLHeightfield.bmp
@@ -85,6 +88,9 @@ TGLMirror BITMAP objects\special_objects\TGLMirror.bmp
 TGLShadowPlane BITMAP objects\special_objects\TGLShadowPlane.bmp
 TGLShadowVolume BITMAP objects\special_objects\TGLShadowVolume.bmp
 TGLZShadows BITMAP objects\special_objects\TGLZShadows.bmp
+TGLTrail BITMAP objects\special_objects\TGLTrail.bmp
+TGLTextureLensFlare BITMAP objects\special_objects\TGLTextureLensFlare.bmp
+TGLTextureEmitter BITMAP objects\special_objects\TGLTextureEmitter.bmp
 
 TGLActorProxy BITMAP objects\proxy_objects\TGLActorProxy.bmp
 TGLColorProxy BITMAP objects\proxy_objects\TGLColorProxy.bmp

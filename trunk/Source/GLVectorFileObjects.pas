@@ -8,8 +8,7 @@
 	<b>History :</b><font size=-1><ul>
       <li>06/04/08 - DaStr - TMeshObjectList.MorphTo() and Lerp() are now virtual
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>16/05/07 - PvD - Applied fixes to skeletonmesh to fix problems with
-                            physics engines. (Bugtracker ID = 1719652)
+      <li>16/05/07 - PvD - Applied fixes to skeletonmesh to fix problems with physics engines. (Bugtracker ID = 1719652)
       <li>15/05/07 - LC - Added workaround for ATI bug in TFGVertexIndexList. (Bugtracker ID = 1719611)
       <li>13/05/07 - LC - Fixed AV bug in TMeshObject.BufferArrays (Bugtracker ID = 1718033)
       <li>03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378) 
@@ -1335,6 +1334,7 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
          function AxisAlignedDimensionsUnscaled : TVector;override;
+         function BarycenterAbsolutePosition : TVector; override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 			procedure DoRender(var rci : TRenderContextInfo;
@@ -1343,7 +1343,7 @@ type
          {: Notifies that geometry data changed, but no re-preparation is needed.<p>
             Using this method will usually be faster, but may result in incorrect
             rendering, reduced performance and/or invalid bounding box data
-            (ie. invalid collision detection). Use with caution. } 
+            (ie. invalid collision detection). Use with caution. }
          procedure StructureChangedNoPrepare;
 
          {: BEWARE! Utterly inefficient implementation! }
@@ -6554,23 +6554,6 @@ begin
    inherited;
 end;
 
-// AxisAlignedDimensions
-//
-{
-function TGLBaseMesh.AxisAlignedDimensions : TVector;
-var
-   dMin, dMax : TAffineVector;
-begin
-   if FAxisAlignedDimensionsCache[0]<0 then begin
-      MeshObjects.GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
-   end;
-   SetVector(Result, FAxisAlignedDimensionsCache);
-   ScaleVector(Result,Scale.AsVector);  //added by DanB
-end;
-}
 // AxisAlignedDimensionsUnscaled
 //
 function TGLBaseMesh.AxisAlignedDimensionsUnscaled : TVector;
@@ -6579,11 +6562,27 @@ var
 begin
    if FAxisAlignedDimensionsCache[0]<0 then begin
       MeshObjects.GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+      FAxisAlignedDimensionsCache[0]:= (dMax[0] - dMin[0]) / 2;
+      FAxisAlignedDimensionsCache[1]:= (dMax[1] - dMin[1]) / 2;
+      FAxisAlignedDimensionsCache[2]:= (dMax[2] - dMin[2]) / 2;
+      FAxisAlignedDimensionsCache[3]:= 0;
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
+end;
+
+// BarycenterAbsolutePosition
+//
+function TGLBaseMesh.BarycenterAbsolutePosition : TVector;
+var
+   dMin, dMax : TAffineVector;
+begin
+  MeshObjects.GetExtents(dMin, dMax);
+  Result[0]:= (dMax[0] + dMin[0]) / 2;
+  Result[1]:= (dMax[1] + dMin[1]) / 2;
+  Result[2]:= (dMax[2] + dMin[2]) / 2;
+  Result[3]:= 1;
+
+  Result := LocalToAbsolute(Result);
 end;
 
 // DestroyHandle
