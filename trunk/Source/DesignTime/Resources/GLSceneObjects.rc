@@ -91,6 +91,11 @@ TGLZShadows BITMAP objects\special_objects\TGLZShadows.bmp
 TGLTrail BITMAP objects\special_objects\TGLTrail.bmp
 TGLTextureLensFlare BITMAP objects\special_objects\TGLTextureLensFlare.bmp
 TGLTextureEmitter BITMAP objects\special_objects\TGLTextureEmitter.bmp
+TGLSLTextureEmitter BITMAP objects\special_objects\TGLSLTextureEmitter.bmp
+TGLProjectedTextures BITMAP objects\special_objects\TGLProjectedTextures.bmp
+TGLSLProjectedTextures BITMAP objects\special_objects\TGLSLProjectedTextures.bmp
+TGLPostShaderHolder BITMAP objects\special_objects\TGLPostShaderHolder.bmp
+TGLPostEffect BITMAP objects\special_objects\TGLPostEffect.bmp
 
 TGLActorProxy BITMAP objects\proxy_objects\TGLActorProxy.bmp
 TGLColorProxy BITMAP objects\proxy_objects\TGLColorProxy.bmp
