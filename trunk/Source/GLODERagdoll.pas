@@ -3,6 +3,8 @@
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
+                            (contains reference to Bone and Ragdoll, useful in collision events)
     <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
                             in TODERagdollBone.Start.
                             Fixed a memory leak in TODERagdollBone.Stop
@@ -25,8 +27,17 @@ const
   cMass = 1;
   cMaxContacts = 4;
 
-type                       
+type
+
   TODERagdoll = class;
+
+  TODERagdollBone = class;
+
+  TODERagdollCube = class(TGLCube)
+   public
+    Bone:TODERagdollBone; // Useful in Oncollision Event
+    Ragdoll:TODERagdoll;  // Useful in Oncollision Event
+  end;
 
   TODERagdollWorld = class
   private
@@ -276,7 +287,7 @@ begin
   AlignBodyToMatrix(ReferenceMatrix);
 
   FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize[0], BoneSize[1], BoneSize[2]);
-  FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TGLCube);
+  FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TODERagdollCube);
   if (Joint is TODERagdollDummyJoint) then
     dGeomSetBody(FGeom, FOwner.Body)
   else
@@ -316,13 +327,15 @@ begin
 
   end;
 
-  with TGLCube(FGeom.data) do
+  with TODERagdollCube(FGeom.data) do
   begin
     Visible := FRagdoll.ShowBoundingBoxes;
     Material.FrontProperties.Diffuse.SetColor(1,0,0,0.4);
     CubeWidth := BoneSize[0];
     CubeHeight := BoneSize[1];
     CubeDepth := BoneSize[2];
+    Bone:=self;
+    Ragdoll:=self.FRagdoll;
   end;
 
 end;
