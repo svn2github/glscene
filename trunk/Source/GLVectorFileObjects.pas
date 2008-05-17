@@ -6,6 +6,9 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>17/05/08 - DaStr - Added TSkeleton.MorphInvisibleParts
+                             (thanks andron13 and Веон) (BugtrackerID = 1966020)
+                             Added vGLVectorFileObjectsEnableVBOByDefault
       <li>01/05/08 - DaStr - Implemented TGLBaseMesh.BarycenterAbsolutePosition()
                              Bugfixed TGLBaseMesh.AxisAlignedDimensionsUnscaled()
       <li>06/04/08 - DaStr - TMeshObjectList.MorphTo() and Lerp() are now virtual
@@ -561,6 +564,8 @@ type
          FBonesByIDCache : TList;
          FColliders : TSkeletonColliderList;
          FRagDollEnabled : Boolean; // ragdoll
+         FMorphInvisibleParts: Boolean;
+         
 	   protected
 	      { Protected Declarations }
          procedure SetRootBones(const val : TSkeletonRootBoneList);
@@ -619,6 +624,11 @@ type
          procedure StartRagdoll; // ragdoll
          {: Restore the BoneMatrixInvertedMeshes to stop the ragdoll }
          procedure StopRagdoll; // ragdoll
+
+         {: Turning this option off (by default) alows to increase FPS,
+            but may break backwards-compatibility, because some may choose to
+            attach other objects to invisible parts. }
+         property MorphInvisibleParts: Boolean read FMorphInvisibleParts write FMorphInvisibleParts;
 	end;
 
    // TMeshObjectRenderingOption
@@ -1863,6 +1873,7 @@ procedure UnregisterVectorFileClass(aClass : TVectorFileClass);
 
 var
    vGLVectorFileObjectsAllocateMaterials : Boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
+   vGLVectorFileObjectsEnableVBOByDefault: Boolean = True;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -3350,11 +3361,21 @@ begin
       RootBones.PrepareGlobalMatrices;
       if Colliders.Count>0 then
          Colliders.AlignColliders;
-      for i:=0 to Owner.MeshObjects.Count-1 do begin
-         mesh:=Owner.MeshObjects.Items[i];
-         if mesh is TSkeletonMeshObject then
-            TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
-      end;
+
+      if FMorphInvisibleParts then
+        for i:=0 to Owner.MeshObjects.Count-1 do
+        begin
+           mesh:=Owner.MeshObjects.Items[i];
+           if (mesh is TSkeletonMeshObject) then
+              TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
+        end
+      else
+        for i:=0 to Owner.MeshObjects.Count-1 do
+        begin
+           mesh:=Owner.MeshObjects.Items[i];
+           if (mesh is TSkeletonMeshObject) and mesh.Visible then
+              TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
+        end
    end;
 end;
 
@@ -3440,8 +3461,7 @@ begin
    FTangentsTexCoordIndex:=1;
    FBinormalsTexCoordIndex:=2;
 
-   FUseVBO:= true;
-
+   FUseVBO:= vGLVectorFileObjectsEnableVBOByDefault;
    inherited;
 end;
 
