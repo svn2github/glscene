@@ -6,6 +6,7 @@
   3ds-specific scene objects.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
       <li>06/04/08 - DaStr - Initial version (by Lexer)
   </ul></font>
 }
@@ -88,7 +89,8 @@ type
     property Scale3DS: TGLCoordinates4 read FScale3DS;
   end;
 
-
+var
+  vGLFile3DSSceneObjects_RenderCameraAndLights: Boolean = False;
 
 implementation
 
@@ -177,6 +179,7 @@ var
 
 begin
   inherited;
+  if not vGLFile3DSSceneObjects_RenderCameraAndLights then Exit;
 
   rci.GLStates.SetGLPolygonMode(GL_FRONT, GL_LINE);
   glPushMatrix;
@@ -269,7 +272,8 @@ var
 
 begin
   inherited;
-
+  if not vGLFile3DSSceneObjects_RenderCameraAndLights then Exit;
+  
   v := VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector));
 
   v1 := AffineVectorMake(v[0], v[1], 0);
