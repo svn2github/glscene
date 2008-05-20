@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>20/05/08 - Mrqzzz - Fixed memory leak in TSkeletonMeshObject.Destroy (thanks Dave Gravel)
       <li>17/05/08 - DaStr - Added TSkeleton.MorphInvisibleParts
                              (thanks andron13 and Веон) (BugtrackerID = 1966020)
                              Added vGLVectorFileObjectsEnableVBOByDefault
@@ -5026,6 +5027,7 @@ destructor TSkeletonMeshObject.Destroy;
 begin
    Clear;
    FBoneMatrixInvertedMeshes.Free;
+   FBackupInvertedMeshes.Free;
 	inherited Destroy;
 end;
 
