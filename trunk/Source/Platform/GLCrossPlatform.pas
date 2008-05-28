@@ -9,8 +9,9 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>10/04/07 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
-      <li>07/04/07 - DaStr - Added IsInfinite, IsNan
+      <li>29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
+      <li>10/04/08 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
+      <li>07/04/08 - DaStr - Added IsInfinite, IsNan
       <li>18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
                               (thanks Dje and Burkhard Carstens)
       <li>06/06/07 - DaStr - Added WORD type
@@ -686,6 +687,12 @@ function AnsiStartsText(const ASubText, AText: string): Boolean;
 function IsSubComponent(const AComponent: TComponent): Boolean;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
+// SysUtils.pas
+function StrToFloatDef(const S: string; const Default: Extended): Extended; overload;
+function TryStrToFloat(const S: string; out Value: Extended): Boolean; overload;
+function TryStrToFloat(const S: string; out Value: Double): Boolean; overload;
+function TryStrToFloat(const S: string; out Value: Single): Boolean; overload;
+
 // Math.pas
 function IsNan(const AValue: Double): Boolean; overload;
 function IsNan(const AValue: Single): Boolean; overload;
@@ -730,6 +737,56 @@ begin
   AComponent.SetSubComponent(Value);
 {$ENDIF}
 end;
+
+function StrToFloatDef(const S: string; const Default: Extended): Extended;
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+  if not TextToFloat(PChar(S), Result, fvExtended) then
+    Result := Default;
+{$ELSE}
+  Result := SysUtils.StrToFloatDef(S, Default);
+{$ENDIF}
+end;
+
+function TryStrToFloat(const S: string; out Value: Extended): Boolean;
+begin
+{$IFDEF GLS_DELPHI_5_DOWN}
+  Result := TextToFloat(PChar(S), Value, fvExtended)
+{$ELSE}
+  Result := SysUtils.TryStrToFloat(S, Value);
+{$ENDIF}
+end;
+
+function TryStrToFloat(const S: string; out Value: Double): Boolean;
+{$IFDEF GLS_DELPHI_5_DOWN}
+var
+  LValue: Extended;
+begin
+  Result := TextToFloat(PChar(S), LValue, fvExtended);
+  if Result then
+    Value := LValue;
+end;
+{$ELSE}
+begin
+  Result := SysUtils.TryStrToFloat(S, Value);
+end;
+{$ENDIF}
+
+
+function TryStrToFloat(const S: string; out Value: Single): Boolean;
+{$IFDEF GLS_DELPHI_5_DOWN}
+var
+  LValue: Extended;
+begin
+  Result := TextToFloat(PChar(S), LValue, fvExtended);
+  if Result then
+    Value := LValue;
+end;
+{$ELSE}
+begin
+  Result := SysUtils.TryStrToFloat(S, Value);
+end;
+{$ENDIF}
 
 function IsNan(const AValue: Single): Boolean;
 begin
