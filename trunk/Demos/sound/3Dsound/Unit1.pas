@@ -49,7 +49,7 @@ interface
 uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects, GLMisc,
   GLSound, GLSMFMOD, ComCtrls, Controls, GLSMBASS, StdCtrls, GLWin32Viewer,
-  GLGeomObjects, GLSMOpenAL;
+  GLGeomObjects, GLSMOpenAL, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

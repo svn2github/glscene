@@ -37,7 +37,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLTexture, GLBumpShader, GLScene,
   GLVectorFileObjects, GLMisc, GLCadencer, GLWin32Viewer, JPEG, ExtCtrls,
-  StdCtrls, AsyncTimer;
+  StdCtrls, AsyncTimer, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

@@ -1,0 +1,36 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = clothactor.exe Clothify.exe FurBall.exe machine.exe odeterrain.exe \
+  simple.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+clothactor.exe: clothactor\clothactor.dpr
+  $(DCC)
+
+Clothify.exe: Clothify\Clothify.dpr
+  $(DCC)
+
+FurBall.exe: FurBall\FurBall.dpr
+  $(DCC)
+
+machine.exe: machine\machine.dpr
+  $(DCC)
+
+odeterrain.exe: odeterrain\odeterrain.dpr
+  $(DCC)
+
+simple.exe: simple\simple.dpr
+  $(DCC)
+
+

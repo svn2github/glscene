@@ -21,7 +21,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLCadencer, GLObjects, GLScene, ExtCtrls, GLMisc, GLWin32Viewer,
-  GLHUDObjects, StdCtrls, GLSpaceText;
+  GLHUDObjects, StdCtrls, GLSpaceText, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -66,7 +66,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, Unit2, GLGraphics, GLCrossPlatform;
+uses Jpeg, Unit2, GLGraphics;
 
 {
    A utility function, this takes the bitmap and uses Form2 to display it with

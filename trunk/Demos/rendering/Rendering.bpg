@@ -1,0 +1,71 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = basicsdl.exe GLBlurDemo.exe BlurAdvanced.exe bunnybump.exe \
+  celshading.exe culling.exe fog.exe fullscreen.exe invariance.exe lining.exe \
+  memviewer.exe multiproxy.exe OctreeDemo.exe phong.exe QuadtreeVisCulling.exe \
+  SkyboxDemo.exe tobitmap.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+basicsdl.exe: basicsdl\basicsdl.dpr
+  $(DCC)
+
+GLBlurDemo.exe: Blur\GLBlurDemo.dpr
+  $(DCC)
+
+BlurAdvanced.exe: BlurAdvanced\BlurAdvanced.dpr
+  $(DCC)
+
+bunnybump.exe: bunnybump\bunnybump.dpr
+  $(DCC)
+
+celshading.exe: celshading\celshading.dpr
+  $(DCC)
+
+culling.exe: culling\culling.dpr
+  $(DCC)
+
+fog.exe: fog\fog.dpr
+  $(DCC)
+
+fullscreen.exe: fullscreen\fullscreen.dpr
+  $(DCC)
+
+invariance.exe: invariance\invariance.dpr
+  $(DCC)
+
+lining.exe: lining\lining.dpr
+  $(DCC)
+
+memviewer.exe: memviewer\memviewer.dpr
+  $(DCC)
+
+multiproxy.exe: multiproxy\multiproxy.dpr
+  $(DCC)
+
+OctreeDemo.exe: OctreeDemo\OctreeDemo.dpr
+  $(DCC)
+
+phong.exe: phong\phong.dpr
+  $(DCC)
+
+QuadtreeVisCulling.exe: quadtreevisculling\QuadtreeVisCulling.dpr
+  $(DCC)
+
+SkyboxDemo.exe: SkyBox\SkyboxDemo.dpr
+  $(DCC)
+
+tobitmap.exe: tobitmap\tobitmap.dpr
+  $(DCC)
+
+

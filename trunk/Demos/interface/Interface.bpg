@@ -1,0 +1,64 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = bmpfont.exe Camera.exe GLConsoleDemo.exe cursor.exe Fading.exe \
+  fontcolor.exe GLMenuDemo.exe DemoGizmo.exe guidemo.exe guipaint.exe hfpick.exe \
+  Pick.exe SimpleNavigationDemo.exe winfont.exe WideBitmapFontDemo.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+bmpfont.exe: bmpfont\bmpfont.dpr
+  $(DCC)
+
+Camera.exe: camera\Camera.dpr
+  $(DCC)
+
+GLConsoleDemo.exe: Console\GLConsoleDemo.dpr
+  $(DCC)
+
+cursor.exe: cursor\cursor.dpr
+  $(DCC)
+
+Fading.exe: fadingintf\Fading.dpr
+  $(DCC)
+
+fontcolor.exe: fontcolor\fontcolor.dpr
+  $(DCC)
+
+GLMenuDemo.exe: GameMenu\GLMenuDemo.dpr
+  $(DCC)
+
+DemoGizmo.exe: Gizmo\DemoGizmo.dpr
+  $(DCC)
+
+guidemo.exe: guidemo\guidemo.dpr
+  $(DCC)
+
+guipaint.exe: GuiPaint\guipaint.dpr
+  $(DCC)
+
+hfpick.exe: hfpick\hfpick.dpr
+  $(DCC)
+
+Pick.exe: pick\Pick.dpr
+  $(DCC)
+
+SimpleNavigationDemo.exe: SimpleNavigation\SimpleNavigationDemo.dpr
+  $(DCC)
+
+winfont.exe: storedfont\winfont.dpr
+  $(DCC)
+
+WideBitmapFontDemo.exe: WideBitmapFont\WideBitmapFontDemo.dpr
+  $(DCC)
+
+

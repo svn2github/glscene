@@ -1,0 +1,32 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = fxy.exe heightfield.exe points.exe projection.exe splines.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+fxy.exe: fxy\fxy.dpr
+  $(DCC)
+
+heightfield.exe: heightfield\heightfield.dpr
+  $(DCC)
+
+points.exe: points\points.dpr
+  $(DCC)
+
+projection.exe: projection\projection.dpr
+  $(DCC)
+
+splines.exe: splines\splines.dpr
+  $(DCC)
+
+

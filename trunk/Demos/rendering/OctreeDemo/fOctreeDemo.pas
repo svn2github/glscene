@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, GLMisc, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
-  ComCtrls;
+  ComCtrls, GLCrossPlatform;
 
 const
   cBOX_SIZE = 14.2;

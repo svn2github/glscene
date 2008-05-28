@@ -1,0 +1,29 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = cellshading.exe CGBombShaderDemo.exe CgSimple.exe CgTexture.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+cellshading.exe: cellshading\cellshading.dpr
+  $(DCC)
+
+CGBombShaderDemo.exe: CGBombShader\CGBombShaderDemo.dpr
+  $(DCC)
+
+CgSimple.exe: simple\CgSimple.dpr
+  $(DCC)
+
+CgTexture.exe: texturing\CgTexture.dpr
+  $(DCC)
+
+

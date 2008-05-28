@@ -21,7 +21,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, GLMisc, GLGui, StdCtrls, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont, ExtDlgs,
-  GLTexture, GuiSkinEditorFormUnit;
+  GLTexture, GuiSkinEditorFormUnit, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
