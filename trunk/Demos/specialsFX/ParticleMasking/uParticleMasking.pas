@@ -14,7 +14,7 @@ uses
   Dialogs, ExtCtrls, ComCtrls, GLBitmapFont, GLWindowsFont, GLTexture,
   GLCadencer, GLWin32Viewer, GLMisc, GLScene, StdCtrls, GLObjects,
   GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
-  GLGeomObjects, AsyncTimer;
+  GLGeomObjects, AsyncTimer, GLCrossPlatform;
 
 const
 

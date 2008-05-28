@@ -1,0 +1,81 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = GLAtmosphereDemo.exe beer.exe boom.exe candles.exe fire.exe \
+  GLSLProjectedTextureDemo.exe meshexplosion.exe motionblur.exe \
+  GLMotionBlurDemo.exe ParticleMasksManagerDemo.exe PFXGallery.exe posteffect.exe \
+  ProjTextures.exe shadowplane.exe Shadows.exe spiral.exe Thor.exe TrailDemo.exe \
+  warping.exe waterplane.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+GLAtmosphereDemo.exe: Atmosphere\GLAtmosphereDemo.dpr
+  $(DCC)
+
+beer.exe: beer\beer.dpr
+  $(DCC)
+
+boom.exe: boom\boom.dpr
+  $(DCC)
+
+candles.exe: candles\candles.dpr
+  $(DCC)
+
+fire.exe: fire\fire.dpr
+  $(DCC)
+
+meshexplosion.exe: meshexplosion\meshexplosion.dpr
+  $(DCC)
+
+motionblur.exe: motionblur\motionblur.dpr
+  $(DCC)
+
+GLMotionBlurDemo.exe: motionblur2\GLMotionBlurDemo.dpr
+  $(DCC)
+
+ParticleMasksManagerDemo.exe: ParticleMasking\ParticleMasksManagerDemo.dpr
+  $(DCC)
+
+PFXGallery.exe: PFXGallery\PFXGallery.dpr
+  $(DCC)
+
+posteffect.exe: posteffect\posteffect.dpr
+  $(DCC)
+
+ProjTextures.exe: projtextures\ProjTextures.dpr
+  $(DCC)
+
+shadowplane.exe: shadowplane\shadowplane.dpr
+  $(DCC)
+
+Shadows.exe: shadows\Shadows.dpr
+  $(DCC)
+
+spiral.exe: spiral\spiral.dpr
+  $(DCC)
+
+Thor.exe: thor\Thor.dpr
+  $(DCC)
+
+warping.exe: warping\warping.dpr
+  $(DCC)
+
+waterplane.exe: waterplane\waterplane.dpr
+  $(DCC)
+
+GLSLProjectedTextureDemo.exe: GLSLProjectedTexture\GLSLProjectedTextureDemo.dpr
+  $(DCC)
+
+TrailDemo.exe: Trail\TrailDemo.dpr
+  $(DCC)
+
+

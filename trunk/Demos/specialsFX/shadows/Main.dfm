@@ -2,7 +2,7 @@ object MainFm: TMainFm
   Left = 135
   Top = 57
   Width = 561
-  Height = 470
+  Height = 468
   AutoSize = True
   Caption = 'MainFm'
   Color = clBtnFace
@@ -61,6 +61,7 @@ object MainFm: TMainFm
       Width = 256
       Height = 256
       Camera = GLCamera2
+      FieldOfView = 137.326278686523400000
       OnMouseDown = CasterMouseDown
       OnMouseMove = CasterMouseMove
       OnMouseUp = CasterMouseUp
@@ -78,6 +79,7 @@ object MainFm: TMainFm
       Width = 256
       Height = 256
       Camera = GLCamera1
+      FieldOfView = 137.326278686523400000
       OnMouseDown = ViewerMouseDown
       OnMouseMove = ViewerMouseMove
       OnMouseUp = ViewerMouseUp
@@ -123,9 +125,7 @@ object MainFm: TMainFm
       Hint = 'Moves the main camera closer/further from the teapot'
       Max = 30
       Min = 1
-      Orientation = trHorizontal
       ParentShowHint = False
-      Frequency = 1
       Position = 8
       SelEnd = 20
       SelStart = 1
@@ -133,8 +133,6 @@ object MainFm: TMainFm
       TabOrder = 0
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = DistanceBarChange
     end
     object CastBtn: TButton
@@ -190,9 +188,7 @@ object MainFm: TMainFm
       Hint = 'Moves the light closer/further from the teapot.'
       Max = 30
       Min = 1
-      Orientation = trHorizontal
       ParentShowHint = False
-      Frequency = 1
       Position = 9
       SelEnd = 20
       SelStart = 1
@@ -200,8 +196,6 @@ object MainFm: TMainFm
       TabOrder = 0
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = DistanceBar2Change
     end
     object Focal: TTrackBar
@@ -214,18 +208,13 @@ object MainFm: TMainFm
         ' lightbeam width'
       Max = 300
       Min = 1
-      Orientation = trHorizontal
       ParentShowHint = False
       Frequency = 10
       Position = 50
-      SelEnd = 0
-      SelStart = 0
       ShowHint = True
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = FocalChange
     end
   end
@@ -334,7 +323,6 @@ object MainFm: TMainFm
       Hint = 'Adjust depth of view'
       Max = 100
       Min = 1
-      Orientation = trHorizontal
       ParentShowHint = False
       Frequency = 5
       Position = 50
@@ -344,8 +332,6 @@ object MainFm: TMainFm
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = dovBarChange
     end
     object AlphaBar: TTrackBar
@@ -356,7 +342,6 @@ object MainFm: TMainFm
       Hint = 'Adjust the darkness of shadows'
       Max = 256
       Min = 1
-      Orientation = trHorizontal
       ParentShowHint = False
       Frequency = 10
       Position = 128
@@ -366,8 +351,6 @@ object MainFm: TMainFm
       TabOrder = 2
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = AlphaBarChange
     end
   end
@@ -405,32 +388,32 @@ object MainFm: TMainFm
     Left = 16
     Top = 32
     object Objects: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object HeightField1: TGLHeightField
+        Material.MaterialLibrary = GLMaterialLibrary1
+        Material.LibMaterialName = 'Tiles'
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000000020C0000000000000803F}
         Scale.Coordinates = {00002041000020410000004000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
-        Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'Tiles'
-        XSamplingScale.Min = -1
-        XSamplingScale.Max = 1
-        XSamplingScale.Step = 0.0700000002980232
-        YSamplingScale.Min = -1
-        YSamplingScale.Max = 1
-        YSamplingScale.Step = 0.0700000002980232
+        XSamplingScale.Min = -1.000000000000000000
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.070000000298023220
+        YSamplingScale.Min = -1.000000000000000000
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.070000000298023220
         Options = [hfoTextureCoordinates]
       end
       object Cube1: TGLCube
-        Position.Coordinates = {CDCCCC3F00000000000000000000803F}
-        Scale.Coordinates = {CDCCCC3D000020400000404000000000}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'PlaneMat'
+        Position.Coordinates = {CDCCCC3F00000000000000000000803F}
+        Scale.Coordinates = {CDCCCC3D000020400000404000000000}
       end
       object Torus1: TGLTorus
         Material.Texture.TextureMode = tmModulate
-        MajorRadius = 1.10000002384186
-        MinorRadius = 0.150000005960464
+        MajorRadius = 1.100000023841858000
+        MinorRadius = 0.150000005960464500
         Rings = 28
         Sides = 16
         BehavioursData = {
@@ -439,9 +422,9 @@ object MainFm: TMainFm
           034009020008020008}
       end
       object Teapot1: TGLTeapot
-        Scale.Coordinates = {9A99D93F9A99D93F9A99D93F00000000}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BeigeMarble'
+        Scale.Coordinates = {9A99D93F9A99D93F9A99D93F00000000}
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
           080500000000000000A003400500000000000000000000050000000000000000
@@ -458,28 +441,28 @@ object MainFm: TMainFm
       Height = 256
       Color.Color = {0000000000000000000000000000003F}
       Soft = False
-      Tolerance = 0.0149999996647239
+      Tolerance = 0.014999999664723870
       DepthFade = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Objects
       Position.Coordinates = {00000000000000000000A0400000803F}
       Left = 272
       Top = 200
     end
     object GLCamera2: TGLCamera
-      DepthOfView = 50
-      FocalLength = 50
+      DepthOfView = 50.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Objects
       Position.Coordinates = {000040400000E040000080400000803F}
       Left = 280
       Top = 208
       object GLLightSource1: TGLLightSource
         Ambient.Color = {9A99993E9A99993E9A99993E0000803F}
-        ConstAttenuation = 1
-        SpotCutOff = 180
+        ConstAttenuation = 1.000000000000000000
+        SpotCutOff = 180.000000000000000000
       end
     end
   end
@@ -527,6 +510,7 @@ object MainFm: TMainFm
     Enabled = True
     Interval = 700
     OnTimer = AsyncTimer1Timer
+    ThreadPriority = tpNormal
     Left = 16
     Top = 80
   end

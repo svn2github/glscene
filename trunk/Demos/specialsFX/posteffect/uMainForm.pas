@@ -19,7 +19,8 @@ uses
 
   // GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, VectorLists, GLCadencer,
-  GLWin32Viewer, GLMisc, GLSimpleNavigation, GLPostEffects;
+  GLWin32Viewer, GLMisc, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
+  MeshUtils, VectorGeometry;
 
 type
   TMainForm = class(TForm)
@@ -55,8 +56,7 @@ implementation
 
 {$R *.dfm}
 
-uses MeshUtils, VectorGeometry, JPEG, TGA, GLFileObj, GLCrossPlatform,
-  GLFile3DS, GLFileMD2, GLFileSMD;
+uses JPEG, TGA, GLFileObj, GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TMainForm.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin

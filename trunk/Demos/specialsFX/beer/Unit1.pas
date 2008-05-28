@@ -16,7 +16,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLMisc, GLWin32Viewer,
   GLFile3ds, GLCadencer, jpeg, GLGeomObjects, VectorGeometry,
-  GLShadowPlane, GLParticleFX, GLPerlinPFX;
+  GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

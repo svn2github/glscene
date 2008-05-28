@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLCadencer, GLScene, GLObjects, GLGeomObjects, GLMisc,
   GLWin32Viewer,GLTrail,GLTexture,Vectorgeometry, StdCtrls,
-  ComCtrls, ExtCtrls, GLMesh,VectorTypes;
+  ComCtrls, ExtCtrls, GLMesh,VectorTypes, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

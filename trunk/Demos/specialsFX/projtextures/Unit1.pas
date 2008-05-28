@@ -34,7 +34,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLMisc, GLScene, GLWin32Viewer, glTexture, tga, GLObjects,
   glShadowVolume, vectorgeometry, opengl1x, ExtCtrls, glProjectedTextures,
-  GLHUDObjects, jpeg;
+  GLHUDObjects, jpeg, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

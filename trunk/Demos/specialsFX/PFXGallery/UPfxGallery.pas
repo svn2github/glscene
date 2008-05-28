@@ -10,7 +10,7 @@ uses
   GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
   GLMisc, GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
   ExtCtrls, GLGeomObjects, GLKeyboard, GLSpaceText,
-  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur;
+  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur, GLCrossPlatform;
 
 const
      cRunBoost = 10;
@@ -77,8 +77,6 @@ implementation
 
 procedure TFrmMain.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
-var
-   VCameraPos : TVector4f;
 begin
      HandleKeys(deltaTime);
      GLUserInterface1.Mouselook;
@@ -92,7 +90,6 @@ end;
 
 procedure TFrmMain.HandleKeys(const deltaTime: Double);
 var
-   moving : String;
    boost : Single;
 begin
    if IsKeyDown(VK_ESCAPE) then begin
