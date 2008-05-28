@@ -1,15 +1,20 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FileB3D<p>
 
 	File streaming class for the B3D loader<p>
 
 	<b>History :</b><font size=-1><ul>
-	   <li>22/12/05 - Mathx - Added to the GLScene Project.
+      <li>29/05/08 - DaStr - Added $I GLScene.inc
+      <li>22/12/05 - Mathx - Added to the GLScene Project.
 	</ul></font>
 }
 unit FileB3D;
 
 interface
 
+{$I GLScene.inc}
 {$R-}
 
 uses
@@ -473,10 +478,8 @@ procedure TFileB3D.LoadFromStream(aStream : TStream);
 var
   aChunk: TB3DChunk;
   FileSize: Integer;
-  Node: PNODEChunk;
 begin
   FileSize := aStream.Size;
-  Node := nil;
   while aStream.Position<FileSize do
   begin
     aStream.Read(aChunk, sizeof(TB3DChunk));
@@ -561,12 +564,11 @@ begin
     end;
     Node := Node^.next;
   end;
-  {
+
   MessageBeep(FaceCount);
   MessageBeep(VerticesCount);
   MessageBeep(NodeLevel);
   MessageBeep(NodeCount);
-  }
 end;
 
 end.
