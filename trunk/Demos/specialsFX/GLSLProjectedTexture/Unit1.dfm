@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 440
   Top = 264
+  Width = 640
+  Height = 473
   Caption = 'Form1'
-  ClientHeight = 446
-  ClientWidth = 632
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -64,14 +64,15 @@ object Form1: TForm1
         Brightness = 1.299999952316284000
         Color.Color = {0000803F0000803F0000803F0000803F}
         UseAttenuation = False
+        UseQuadraticAttenuation = False
         AllowReverseProjection = False
         Position.Coordinates = {000000000000A040000000000000803F}
         ShowAxes = True
       end
       object GLArrowLine1: TGLArrowLine
-        Direction.Coordinates = {00000000000080BF2EBD3BB300000000}
         PitchAngle = -90.000000000000000000
         Position.Coordinates = {0000A0C10000A0410000A0C10000803F}
+        Direction.Coordinates = {00000000000080BF2EBD3BB300000000}
         Up.Coordinates = {000000002EBD3BB30000803F00000000}
         BottomRadius = 1.000000000000000000
         Height = 10.000000000000000000
@@ -88,6 +89,7 @@ object Form1: TForm1
           Brightness = 0.800000011920929000
           Color.Color = {0000803F0000803F0000803F0000803F}
           UseAttenuation = False
+          UseQuadraticAttenuation = False
           AllowReverseProjection = False
           Position.Coordinates = {0000000000000000000020C10000803F}
           ShowAxes = True
