@@ -60,7 +60,7 @@ implementation
 {$ENDIF}
 
 uses
-  OpenGL1x, GLUtils, GLContext, GLDynamicTexture, GLCrossPlatform;
+  OpenGL1x, GLUtils, GLContext, GLDynamicTexture;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
