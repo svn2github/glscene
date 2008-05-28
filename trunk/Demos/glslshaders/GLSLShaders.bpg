@@ -1,0 +1,33 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = GLSLBumpshaderDemo.exe DiffuseSpecularShaderDemo.exe \
+  GLSLComponentDemo.exe ocean.exe PostShaderDemo.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+GLSLBumpshaderDemo.exe: BumpShader\GLSLBumpshaderDemo.dpr
+  $(DCC)
+
+DiffuseSpecularShaderDemo.exe: DiffuseSpecularShader\DiffuseSpecularShaderDemo.dpr
+  $(DCC)
+
+GLSLComponentDemo.exe: GLSLShaderComponent\GLSLComponentDemo.dpr
+  $(DCC)
+
+ocean.exe: ocean\ocean.dpr
+  $(DCC)
+
+PostShaderDemo.exe: PostShaders\PostShaderDemo.dpr
+  $(DCC)
+
+
