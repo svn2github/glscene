@@ -30,7 +30,7 @@ object Form1: TForm1
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
-    FieldOfView = 2.698534965515137000
+    FieldOfView = 154.614669799804700000
     Align = alClient
   end
   object GLBitmapHDS1: TGLBitmapHDS
@@ -81,8 +81,6 @@ object Form1: TForm1
         Width = 30.000000000000000000
         Height = 30.000000000000000000
         NoZWrite = True
-        MirrorU = False
-        MirrorV = False
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -97,8 +95,6 @@ object Form1: TForm1
         Width = 60.000000000000000000
         Height = 60.000000000000000000
         NoZWrite = True
-        MirrorU = False
-        MirrorV = False
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
@@ -128,8 +124,6 @@ object Form1: TForm1
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object GLLensFlare: TGLLensFlare
       Size = 100
@@ -216,23 +210,18 @@ object Form1: TForm1
     RenderPoint = ODERenderPoint
     Visible = True
     VisibleAtRunTime = True
-    GeomColor.Color = {ACC8483ECDCC4C3FACC8483E0000803F}
     Left = 96
     Top = 16
   end
   object GLNavigator1: TGLNavigator
-    MoveUpWhenMovingForward = False
-    InvertHorizontalSteeringWhenUpsideDown = False
     VirtualUp.Coordinates = {00000000000000000000803F0000803F}
     MovingObject = GLCamera1
     UseVirtualUp = True
     AutoUpdateObject = True
-    AngleLock = False
     Left = 96
     Top = 56
   end
   object GLUserInterface1: TGLUserInterface
-    InvertMouse = False
     MouseSpeed = 25.000000000000000000
     GLNavigator = GLNavigator1
     GLVertNavigator = GLNavigator1

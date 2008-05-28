@@ -12,7 +12,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCadencer, GLMisc, GLVectorFileObjects, ExtCtrls,
-  StdCtrls, GLWin32Viewer, VectorGeometry, GLGraph, GLGeomObjects
+  StdCtrls, GLWin32Viewer, VectorGeometry, GLGraph, GLGeomObjects,
+  GLCrossPlatform
   ;
 
 type

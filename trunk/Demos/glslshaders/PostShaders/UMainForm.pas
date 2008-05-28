@@ -20,7 +20,7 @@ uses
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLPostEffects,
   Opengl1x, GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
-  GLObjects, GLVectorFileObjects, GLSimpleNavigation,
+  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
   // GlScene shaders
   GLSLPostBlurShader, CGPostTransformationShader,

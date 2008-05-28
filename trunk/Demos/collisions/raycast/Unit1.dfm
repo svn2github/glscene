@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 170
   Top = 79
   Width = 513
-  Height = 287
+  Height = 285
   AutoSize = True
   Caption = 'Form1'
   Color = clBtnFace
@@ -38,6 +38,7 @@ object Form1: TForm1
     Width = 209
     Height = 193
     Camera = GLCamera1
+    FieldOfView = 125.219512939453100000
   end
   object BUCast: TButton
     Left = 232
@@ -105,60 +106,61 @@ object Form1: TForm1
     Top = 64
     object Sphere1: TGLSphere
       Material.FrontProperties.Diffuse.Color = {8D8C0C3F8D8C0C3F0000803F0000803F}
-      Radius = 0.200000002980232
+      Radius = 0.200000002980232200
     end
     object DummyCube1: TGLDummyCube
       Direction.Coordinates = {00000000000080330000803F00000000}
       Up.Coordinates = {EE8384BEEA46773FEA4677B300000000}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Torus1: TGLTorus
+        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
         Direction.Coordinates = {5D1C7C3F02004032CED0313E00000000}
         Position.Coordinates = {000000BF00000000000000000000803F}
         Up.Coordinates = {00C02FB20000803F0000403200000000}
         Visible = False
-        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-        MajorRadius = 0.400000005960464
-        MinorRadius = 0.100000001490116
+        MajorRadius = 0.400000005960464500
+        MinorRadius = 0.100000001490116100
       end
       object Plane1: TGLPlane
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
         Material.FaceCulling = fcNoCull
-        Height = 0.699999988079071
-        Width = 0.300000011920929
+        Height = 0.699999988079071000
+        Width = 0.300000011920929000
+        NoZWrite = False
       end
       object Cylinder1: TGLCylinder
+        Material.FrontProperties.Diffuse.Color = {0000803F0000803F8180003F0000803F}
         Direction.Coordinates = {00000000010000BFD6B35D3F00000000}
         Position.Coordinates = {0000003F00000000000000000000803F}
         Up.Coordinates = {00000000D6B35D3F0100003F00000000}
-        Material.FrontProperties.Diffuse.Color = {0000803F0000803F8180003F0000803F}
-        BottomRadius = 0.100000001490116
-        Height = 0.600000023841858
-        TopRadius = 0.100000001490116
+        BottomRadius = 0.100000001490116100
+        Height = 0.600000023841857900
+        TopRadius = 0.100000001490116100
         object GLAnnulus1: TGLAnnulus
           Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
-          BottomRadius = 0.230000004172325
-          Height = 0.200000002980232
-          BottomInnerRadius = 0.180000007152557
-          TopInnerRadius = 0.180000007152557
-          TopRadius = 0.230000004172325
+          BottomRadius = 0.230000004172325100
+          Height = 0.200000002980232200
+          BottomInnerRadius = 0.180000007152557400
+          TopInnerRadius = 0.180000007152557400
+          TopRadius = 0.230000004172325100
         end
       end
       object GLCube1: TGLCube
+        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
         Direction.Coordinates = {00000000B28F70BF431DAF3E00000000}
         Position.Coordinates = {000000BF00000000000000000000803F}
         Up.Coordinates = {00000000431DAF3EB28F703F00000000}
-        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
         CubeSize = {CDCC4C3ECDCCCC3D9A99993E}
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100001041000070410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       Position.Coordinates = {0000000000000000000040400000803F}
       Left = 256
       Top = 160

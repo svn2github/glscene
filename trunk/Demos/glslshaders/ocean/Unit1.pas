@@ -7,7 +7,7 @@ uses
   Dialogs, GLWin32Viewer, GLMisc, GLScene, GLTexture, GLObjects, GLUtils,
   ComCtrls, OpenGL1x, GLContext, Jpeg, TGA, VectorGeometry, GLGeomObjects,
   GLCadencer, ExtCtrls, GLUserShader, GLGraph, VectorTypes, GLSkydome,
-  VectorLists;
+  VectorLists, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

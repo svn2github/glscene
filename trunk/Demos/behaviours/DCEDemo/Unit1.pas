@@ -19,7 +19,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLDCE, GLScene, GLObjects, GLMisc, GLCadencer, GLWin32Viewer,
   GLTexture, GLHeightData, GLTerrainRenderer, GLVectorFileObjects,
-  ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects;
+  ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

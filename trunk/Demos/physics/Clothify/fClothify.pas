@@ -21,7 +21,8 @@ uses
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
   OpenGL1x, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
   GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
-  GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils;
+  GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils,
+  GLCrossPlatform;
 
 type
   TfrmClothify = class(TForm)

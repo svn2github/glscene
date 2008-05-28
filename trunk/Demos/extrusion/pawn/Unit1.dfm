@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 166
   Top = 89
   Width = 391
-  Height = 308
+  Height = 306
   AutoSize = True
   BorderWidth = 3
   Caption = 'Form1'
@@ -57,6 +57,7 @@ object Form1: TForm1
     Height = 273
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
+    FieldOfView = 137.477478027343800000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
   end
@@ -100,15 +101,10 @@ object Form1: TForm1
     Height = 17
     Max = 360
     Min = 30
-    Orientation = trHorizontal
     Frequency = 45
     Position = 360
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 4
     ThumbLength = 10
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object CheckBox4: TCheckBox
@@ -129,15 +125,10 @@ object Form1: TForm1
     Height = 17
     Max = 64
     Min = 4
-    Orientation = trHorizontal
     Frequency = 16
     Position = 24
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 6
     ThumbLength = 10
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBar2Change
   end
   object TrackBar3: TTrackBar
@@ -147,77 +138,72 @@ object Form1: TForm1
     Height = 17
     Max = 30
     Min = 1
-    Orientation = trHorizontal
     Frequency = 10
     Position = 10
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 7
     ThumbLength = 10
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBar3Change
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 8
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000484200004842000048420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object RotationSolid1: TGLRevolutionSolid
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         Nodes = <
           item
-            Y = 0.899999976158142
+            Y = 0.899999976158142100
           end
           item
-            X = 0.400000005960464
-            Y = 0.800000011920929
+            X = 0.400000005960464500
+            Y = 0.800000011920929000
           end
           item
-            X = 0.449999988079071
-            Y = 0.5
+            X = 0.449999988079071000
+            Y = 0.500000000000000000
           end
           item
-            X = 0.25
-            Y = 0.300000011920929
+            X = 0.250000000000000000
+            Y = 0.300000011920929000
           end
           item
-            X = 0.25
-            Y = -0.100000001490116
+            X = 0.250000000000000000
+            Y = -0.100000001490116100
           end
           item
-            X = 0.600000023841858
-            Y = -0.5
+            X = 0.600000023841857900
+            Y = -0.500000000000000000
           end
           item
-            X = 0.600000023841858
-            Y = -0.899999976158142
+            X = 0.600000023841857900
+            Y = -0.899999976158142100
           end
           item
-            X = 0.589999973773956
-            Y = -0.949999988079071
+            X = 0.589999973773956300
+            Y = -0.949999988079071000
           end
           item
-            X = 0.600000023841858
-            Y = -1
+            X = 0.600000023841857900
+            Y = -1.000000000000000000
           end
           item
-            X = 0.600000023841858
-            Y = -1
+            X = 0.600000023841857900
+            Y = -1.000000000000000000
           end
           item
-            X = 0.5
-            Y = -1
+            X = 0.500000000000000000
+            Y = -1.000000000000000000
           end
           item
-            Y = -1
+            Y = -1.000000000000000000
           end>
         SplineMode = lsmCubicSpline
         Slices = 24
@@ -225,8 +211,8 @@ object Form1: TForm1
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000804000000000000000000000803F}
       Left = 208

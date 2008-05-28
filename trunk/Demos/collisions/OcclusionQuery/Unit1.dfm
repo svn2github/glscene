@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 194
+  Top = 119
+  Width = 701
+  Height = 579
   Caption = 'Form1'
-  ClientHeight = 552
-  ClientWidth = 693
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -90,7 +90,7 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
       object GLTorus1: TGLTorus
         Material.FrontProperties.Ambient.Color = {0000803F00000000000000000000803F}
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
       end
       object GLCone1: TGLCone

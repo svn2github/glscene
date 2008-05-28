@@ -20,7 +20,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLGeomObjects, GLObjects, GLMisc, GLCadencer, GLWin32Viewer, GLTexture, opengl1x,
-  StdCtrls, ExtCtrls;
+  StdCtrls, ExtCtrls, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

@@ -22,7 +22,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLMisc, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
-  GLWin32Viewer, ComCtrls, GLGeomObjects, GLColor;
+  GLWin32Viewer, ComCtrls, GLGeomObjects, GLColor, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -62,7 +62,7 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, Polynomials, GLCrossPlatform;
+uses VectorGeometry, Polynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var

@@ -22,7 +22,7 @@ uses
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects, GLPolyhedron,
   GLVectorFileObjects, GLGraph, GLGeomObjects, VectorGeometry, GLSLBumpShader,
-  GLCustomShader, GLSLShader,
+  GLCustomShader, GLSLShader, GLCrossPlatform,
 
   // FileFormats
   TGA, GLFileMS3D, GLFile3DS, JPEG, DDS, GLFileMD2, GLFileSMD;

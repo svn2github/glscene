@@ -21,7 +21,7 @@ uses
 
   //GLScene
   GLTexture, GLBitmapFont, GLWindowsFont, GLScene, GLMisc, GLObjects,
-  GLCadencer, GLWin32Viewer, GLBehaviours, GLConsole;
+  GLCadencer, GLWin32Viewer, GLBehaviours, GLConsole, GLCrossPlatform;
 
 type
   TMainForm = class(TForm)

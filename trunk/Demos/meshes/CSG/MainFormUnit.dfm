@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 2
-  Top = 3
+  Left = 321
+  Top = 128
   Width = 624
   Height = 611
   Caption = 'Constructive Solid Geometry Demo'
@@ -23,6 +23,7 @@ object Form1: TForm1
     Height = 542
     Camera = GLCamera1
     Buffer.BackgroundColor = clTeal
+    FieldOfView = 159.092758178710900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -99,19 +100,19 @@ object Form1: TForm1
       MaterialLibrary = GLMaterialLibrary1
     end
     object GLFreeForm1: TGLFreeForm
-      Scale.Coordinates = {00002042000020420000204200000000}
       Material.FrontProperties.Ambient.Color = {B1A8A83EB1A8A83EB1A8A83E0000803F}
       Material.FrontProperties.Diffuse.Color = {9484843E9484843EDBDEDE3E0000803F}
       Material.FrontProperties.Emission.Color = {EBE0E03EE4DB5B3F9A93133F0000803F}
       Material.FrontProperties.Specular.Color = {9A99593F9A99593FCDCCCC3D0000803F}
+      Scale.Coordinates = {00002042000020420000204200000000}
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
       MaterialLibrary = GLMaterialLibrary1
     end
     object GLFreeForm2: TGLFreeForm
-      Position.Coordinates = {0000804100000000000000000000803F}
-      Scale.Coordinates = {0000A0410000A0410000A04100000000}
       Material.FrontProperties.Ambient.Color = {029F1F3FBEBEBE3E999F1F3F0000803F}
       Material.FrontProperties.Specular.Color = {BEBEBE3E999F1F3F999F1F3F0000803F}
+      Position.Coordinates = {0000804100000000000000000000803F}
+      Scale.Coordinates = {0000A0410000A0410000A04100000000}
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object GLCamera1: TGLCamera

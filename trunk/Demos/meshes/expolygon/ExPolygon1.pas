@@ -10,7 +10,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   VectorGeometry, GLTexture, GLScene, GLObjects, GLGeomObjects, GLMisc, GLMultiPolygon,
-  GLWin32Viewer;
+  GLWin32Viewer, GLCrossPlatform;
 
 type
   TVektor = record

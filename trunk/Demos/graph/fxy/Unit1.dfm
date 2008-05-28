@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 179
   Top = 106
   Width = 497
-  Height = 334
+  Height = 332
   AutoSize = True
   BorderWidth = 4
   Caption = 'Form1'
@@ -29,6 +29,7 @@ object Form1: TForm1
     Height = 297
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 99.821952819824220000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
   end
@@ -50,80 +51,72 @@ object Form1: TForm1
     Height = 249
     Min = -10
     Orientation = trVertical
-    Frequency = 1
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 2
     TickMarks = tmBoth
-    TickStyle = tsAuto
     OnChange = TBXYPositionChange
   end
   object GLScene1: TGLScene
     Left = 16
     Top = 16
     object HeightField1: TGLHeightField
+      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Direction.Coordinates = {0044F4970000803F2EBD3BB300000000}
       ShowAxes = True
       Up.Coordinates = {0000803F583DAF262EBD3B3300000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      XSamplingScale.Min = -1
-      XSamplingScale.Max = 1
-      XSamplingScale.Step = 0.0199999995529652
-      YSamplingScale.Min = -1
-      YSamplingScale.Max = 1
-      YSamplingScale.Step = 0.0199999995529652
+      XSamplingScale.Min = -1.000000000000000000
+      XSamplingScale.Max = 1.000000000000000000
+      XSamplingScale.Step = 0.019999999552965160
+      YSamplingScale.Min = -1.000000000000000000
+      YSamplingScale.Max = 1.000000000000000000
+      YSamplingScale.Step = 0.019999999552965160
       OnGetHeight = HeightField1GetHeight
       object YZGrid: TGLXYZGrid
         LineColor.Color = {0000803F00000000000000000000803F}
-        XSamplingScale.Min = -1
-        XSamplingScale.Max = 1
-        XSamplingScale.Step = 0.100000001490116
-        YSamplingScale.Min = -1
-        YSamplingScale.Max = 1
-        YSamplingScale.Step = 0.100000001490116
-        ZSamplingScale.Min = -1
-        ZSamplingScale.Max = 1
-        ZSamplingScale.Step = 0.100000001490116
+        XSamplingScale.Min = -1.000000000000000000
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
+        YSamplingScale.Min = -1.000000000000000000
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
+        ZSamplingScale.Min = -1.000000000000000000
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
         Parts = [gpY, gpZ]
-        LinesSmoothing = False
       end
       object XZGrid: TGLXYZGrid
         LineColor.Color = {000000000000803F000000000000803F}
-        XSamplingScale.Min = -1
-        XSamplingScale.Max = 1
-        XSamplingScale.Step = 0.100000001490116
-        YSamplingScale.Min = -1
-        YSamplingScale.Max = 1
-        YSamplingScale.Step = 0.100000001490116
-        ZSamplingScale.Min = -1
-        ZSamplingScale.Max = 1
-        ZSamplingScale.Step = 0.100000001490116
+        XSamplingScale.Min = -1.000000000000000000
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
+        YSamplingScale.Min = -1.000000000000000000
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
+        ZSamplingScale.Min = -1.000000000000000000
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
         Parts = [gpX, gpZ]
-        LinesSmoothing = False
       end
       object XYGrid: TGLXYZGrid
         LineColor.Color = {00000000000000000000803F0000803F}
-        XSamplingScale.Min = -1
-        XSamplingScale.Max = 1
-        XSamplingScale.Step = 0.100000001490116
-        YSamplingScale.Min = -1
-        YSamplingScale.Max = 1
-        YSamplingScale.Step = 0.100000001490116
-        ZSamplingScale.Min = -1
-        ZSamplingScale.Max = 1
-        ZSamplingScale.Step = 0.100000001490116
-        LinesSmoothing = False
+        XSamplingScale.Min = -1.000000000000000000
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
+        YSamplingScale.Min = -1.000000000000000000
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
+        ZSamplingScale.Min = -1.000000000000000000
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000F041000048420000C8420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 125
+      DepthOfView = 100.000000000000000000
+      FocalLength = 125.000000000000000000
       TargetObject = HeightField1
       Position.Coordinates = {0000404000008040000000410000803F}
       Left = 208

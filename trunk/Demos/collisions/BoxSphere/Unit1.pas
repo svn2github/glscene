@@ -12,7 +12,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCadencer, GLMisc, GLVectorFileObjects, ExtCtrls,
   StdCtrls, GLWin32Viewer, VectorGeometry, GLGraph, GLGeomObjects, Spin,
-  ComCtrls;
+  ComCtrls, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

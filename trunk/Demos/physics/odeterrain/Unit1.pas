@@ -7,7 +7,7 @@ uses
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLODEManager,
-  GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor;
+  GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -33,7 +33,6 @@ type
     ODEObjects: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     ODERenderPoint: TGLRenderPoint;
-    GLCube1: TGLCube;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

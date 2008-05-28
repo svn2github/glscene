@@ -11,7 +11,8 @@ uses
   Dialogs,
 
   // GLScene
-  GLScene, GLObjects, GLMisc, GLWin32Viewer, GLCadencer, GLSimpleNavigation;
+  GLScene, GLObjects, GLMisc, GLWin32Viewer, GLCadencer, GLSimpleNavigation,
+  GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

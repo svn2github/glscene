@@ -4,7 +4,8 @@ interface
 
 uses
   Classes, Graphics, Controls, Forms, GLScene, GLObjects, GLMisc, GLTexture,
-  GLCadencer, StdCtrls, ComCtrls, GLWin32Viewer, GLTimeEventsMgr, ExtCtrls;
+  GLCadencer, StdCtrls, ComCtrls, GLWin32Viewer, GLTimeEventsMgr, ExtCtrls,
+  GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

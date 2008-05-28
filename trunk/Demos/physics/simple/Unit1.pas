@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLODEManager, GLScene, GLObjects, GLGeomObjects, GLCadencer,
   GLWin32Viewer, GLMisc, GLShadowPlane, StdCtrls, ComCtrls,
-  ExtCtrls, GLGraph, VectorTypes, VectorGeometry, GLODECustomColliders;
+  ExtCtrls, GLGraph, VectorTypes, VectorGeometry, GLODECustomColliders,
+  GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

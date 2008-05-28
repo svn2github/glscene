@@ -22,7 +22,7 @@ uses
   VectorGeometry,
 
   // FileFormats
-  JPEG, GLFileMD2;
+  JPEG, GLFileMD2, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

@@ -19,7 +19,7 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, Classes, Controls, GLTeapot,
-  GLWin32Viewer;
+  GLWin32Viewer, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

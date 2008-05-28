@@ -17,7 +17,7 @@ interface
 uses
   Windows, SysUtils, Classes, Controls, Forms,
   GLMisc, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLCadencer, ExtCtrls, StdCtrls, GLGeomObjects;
+  GLCadencer, ExtCtrls, StdCtrls, GLGeomObjects, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -62,7 +62,7 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, GLCrossPlatform, VectorLists, GLFile3DS;
+uses VectorGeometry, VectorLists, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

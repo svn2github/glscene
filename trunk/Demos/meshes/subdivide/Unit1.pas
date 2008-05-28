@@ -11,7 +11,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, GLScene, GLVectorFileObjects, GLObjects, GLTexture,
-  GLWin32Viewer, GLMisc, VectorLists, ComCtrls, ExtCtrls, GLCadencer;
+  GLWin32Viewer, GLMisc, VectorLists, ComCtrls, ExtCtrls, GLCadencer,
+  GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -58,7 +59,7 @@ implementation
 
 {$R *.dfm}
 
-uses MeshUtils, VectorGeometry, Jpeg, TGA, GLFileObj, GLCrossPlatform, 
+uses MeshUtils, VectorGeometry, Jpeg, TGA, GLFileObj,
      GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);

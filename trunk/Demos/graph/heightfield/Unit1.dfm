@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 196
   Top = 94
   Width = 433
-  Height = 438
+  Height = 436
   AutoSize = True
   BorderWidth = 4
   Caption = 'Form1'
@@ -51,6 +51,7 @@ object Form1: TForm1
     Height = 297
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 112.087295532226600000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
   end
@@ -60,15 +61,10 @@ object Form1: TForm1
     Width = 169
     Height = 33
     Max = 50
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 10
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
     ThumbLength = 10
     TickMarks = tmBoth
-    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object TrackBar2: TTrackBar
@@ -77,15 +73,10 @@ object Form1: TForm1
     Width = 169
     Height = 33
     Max = 50
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 10
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 2
     ThumbLength = 10
     TickMarks = tmBoth
-    TickStyle = tsAuto
     OnChange = TrackBar2Change
   end
   object CheckBox1: TCheckBox
@@ -106,15 +97,11 @@ object Form1: TForm1
     Height = 33
     Max = 160
     Min = 10
-    Orientation = trHorizontal
     Frequency = 10
     Position = 80
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 4
     ThumbLength = 10
     TickMarks = tmBoth
-    TickStyle = tsAuto
     OnChange = TrackBar3Change
   end
   object RadioGroup1: TRadioGroup
@@ -160,22 +147,22 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object HeightField1: TGLHeightField
+      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      XSamplingScale.Min = -1
-      XSamplingScale.Max = 1
-      XSamplingScale.Step = 0.0799999982118607
-      YSamplingScale.Min = -1
-      YSamplingScale.Max = 1
-      YSamplingScale.Step = 0.0799999982118607
+      XSamplingScale.Min = -1.000000000000000000
+      XSamplingScale.Max = 1.000000000000000000
+      XSamplingScale.Step = 0.079999998211860660
+      YSamplingScale.Min = -1.000000000000000000
+      YSamplingScale.Max = 1.000000000000000000
+      YSamplingScale.Step = 0.079999998211860660
       object Sphere1: TGLSphere
+        Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
+        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000803F0000803F000000000000803F}
         Visible = False
         OnProgress = Sphere1Progress
-        Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 0.100000001490116
+        Radius = 0.100000001490116100
         Slices = 12
         Stacks = 9
         object Lines1: TGLLines
@@ -183,7 +170,7 @@ object Form1: TForm1
             item
             end
             item
-              Z = -1.5
+              Z = -1.500000000000000000
             end>
           NodesAspect = lnaInvisible
           Options = []
@@ -191,13 +178,13 @@ object Form1: TForm1
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000F041000048420000C8420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 100
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = HeightField1
       Position.Coordinates = {0000404000008040000000410000803F}
       Left = 208

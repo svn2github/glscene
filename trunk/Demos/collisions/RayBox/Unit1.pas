@@ -13,7 +13,7 @@ uses
   ExtCtrls, StdCtrls,
   //GLScene
   GLScene, GLObjects, GLCadencer, GLMisc, GLVectorFileObjects,
-  GLWin32Viewer, GLTexture, VectorGeometry;
+  GLWin32Viewer, GLTexture, VectorGeometry, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

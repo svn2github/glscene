@@ -23,7 +23,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, GLObjects, GLGraph, GLScene, GLMisc, GLWin32Viewer,
   VectorGeometry, GLTilePlane, GLTexture, GLCadencer, Jpeg, StdCtrls,
-  OpenGL1x;
+  OpenGL1x, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

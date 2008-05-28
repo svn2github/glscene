@@ -25,7 +25,7 @@ uses
   GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects, GLGraph,
   VectorTypes, GLUserShader, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
   GLVectorFileObjects, GLSLDiffuseSpecularShader, GLSLShader, GLCustomShader,
-  GLSimpleNavigation,
+  GLSimpleNavigation, GLCrossPlatform,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;

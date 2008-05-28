@@ -14,7 +14,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLTree, GLTexture,
   ExtCtrls, ComCtrls, StdCtrls, GLVectorFileObjects, Menus, ExtDlgs,
-  AsyncTimer, GLCadencer;
+  AsyncTimer, GLCadencer, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

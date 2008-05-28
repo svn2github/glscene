@@ -29,7 +29,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLGraph, GLWin32Viewer, GLMisc, VectorGeometry, VectorTypes,
-  GLTexture, GLObjects, StdCtrls, ExtCtrls, GLColor;
+  GLTexture, GLObjects, StdCtrls, ExtCtrls, GLColor, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -113,7 +113,7 @@ begin
          // show last coord in the caption bar
          Caption:=Format('Last coord. : %d %d', [ix, iy]);
          // and paint blue or red depending on the button
-         if Button=mbLeft then
+         if Button=TMouseButton(mbLeft) then
             grid[ix, iy]:=clBlue
          else grid[ix, iy]:=clRed;
          // Height field changed, rebuild it!
@@ -128,9 +128,9 @@ begin
    if RBPaint.Checked then begin
       // in paint mode, paint if a button is pressed
       if ssLeft in Shift then
-         GLSceneViewerMouseDown(Sender, mbLeft, Shift, x, y)
+         GLSceneViewerMouseDown(Sender, TMouseButton(mbLeft), Shift, x, y)
       else if ssRight in Shift then
-         GLSceneViewerMouseDown(Sender, mbRight, Shift, x, y);
+         GLSceneViewerMouseDown(Sender, TMouseButton(mbRight), Shift, x, y);
    end else begin
       // rotate mode
       if Shift<>[] then begin

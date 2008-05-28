@@ -26,7 +26,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLMisc, ExtCtrls, StdCtrls, GLWin32Viewer,
-  GLBitmapFont, GLWindowsFont, GLTexture;
+  GLBitmapFont, GLWindowsFont, GLTexture, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -67,7 +67,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLCanvas, GLCrossPlatform, OpenGL1x;
+uses GLCanvas, OpenGL1x;
 
 type
    TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut);

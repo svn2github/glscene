@@ -13,7 +13,7 @@ interface
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, GLTexture, VectorGeometry, ExtCtrls,
   Classes, Controls, GLCadencer, GLWin32Viewer, GLSpaceText, GLShadowPlane,
-  GLShadowVolume;
+  GLShadowVolume, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

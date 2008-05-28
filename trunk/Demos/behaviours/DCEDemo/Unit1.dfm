@@ -20,13 +20,13 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 670
-    Height = 478
+    Height = 485
     Camera = GLCamera1
     Buffer.FogEnvironment.FogStart = 50.000000000000000000
     Buffer.FogEnvironment.FogEnd = 250.000000000000000000
     Buffer.BackgroundColor = clBlack
     Buffer.FogEnable = True
-    FieldOfView = 156.367706298828100000
+    FieldOfView = 156.699401855468800000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
   end
@@ -71,7 +71,6 @@ object Form1: TForm1
       Material.FrontProperties.Diffuse.Color = {A9A8283F8B8A8A3E9190103E0000803F}
       Position.Coordinates = {00000000000000000000A0C00000803F}
       NormalsOrientation = mnoInvert
-      Rendered = True
       BehavioursData = {
         0201060C54474C4443455374617469630200060D474C4443454D616E61676572
         310202020009090F0000803F0F00000000020008}
@@ -128,21 +127,15 @@ object Form1: TForm1
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000804000000000000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object HelpShadow: TGLHUDText
       Position.Coordinates = {000030410000F841000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
       ModulateColor.Color = {A19E9E3ECFBC3C3ECFBC3C3E0000803F}
     end
     object Help: TGLHUDText
       Position.Coordinates = {000020410000F041000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
   end
   object GLCadencer1: TGLCadencer
@@ -157,6 +150,7 @@ object Form1: TForm1
     WorldScale = 1.000000000000000000
     MovimentScale = 1.000000000000000000
     StandardiseLayers = ccsDCEStandard
+    ManualStep = False
     Left = 8
     Top = 72
   end

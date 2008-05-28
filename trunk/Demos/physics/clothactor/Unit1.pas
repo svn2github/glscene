@@ -28,7 +28,7 @@ uses
   GLShadowVolume,
   
   GLKeyboard, OpenGL1x, VectorGeometry, GeometryBB, JPEG, VerletClasses, 
-  SpatialPartitioning;
+  SpatialPartitioning, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)

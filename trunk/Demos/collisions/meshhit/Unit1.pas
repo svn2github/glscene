@@ -11,7 +11,7 @@ interface
 uses
   Windows, SysUtils, Classes, Controls, Forms,
   GLMisc, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLGeomObjects, StdCtrls;
+  GLGeomObjects, StdCtrls, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -89,7 +89,7 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
    // when mouse moves, recompute intersection
-   if Shift<>[] then GLSceneViewer1MouseDown(Sender, mbLeft, Shift, x, y);
+   if Shift<>[] then GLSceneViewer1MouseDown(Sender, TMouseButton(mbLeft), Shift, x, y);
 end;
 
 // Perform the raycasting for the perspective camera & viewer
@@ -123,7 +123,7 @@ end;
 procedure TForm1.GLSceneViewer2MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-   if Shift<>[] then GLSceneViewer2MouseDown(Sender, mbLeft, Shift, x, y);
+   if Shift<>[] then GLSceneViewer2MouseDown(Sender, TMouseButton(mbLeft), Shift, x, y);
 end;
 
 end.

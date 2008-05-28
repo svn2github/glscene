@@ -20,7 +20,7 @@ uses
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
 
   // File forrmats
-  JPEG;
+  JPEG, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
