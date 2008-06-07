@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GuiSkinEditorFormUnit<p>
 
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
+                              (thanks Nicoara Adrian)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>18/02/07 - DaStr - Fixed range check error.
       <li>22/02/05 - Mathx - Fixed Delphi 5 support.
@@ -24,13 +29,13 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
-  GLMisc, GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus;
+  GLMisc, GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus, GLCrossPlatform;
 {$ENDIF}
 {$IFDEF KYLIX}
 uses
   SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
   QStdCtrls, QComCtrls, QExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
-  GLMisc, GLLinuxViewer, GLGui, GLGraphics, GLUtils;
+  GLMisc, GLLinuxViewer, GLGui, GLGraphics, GLUtils, GLCrossPlatform;
 {$ENDIF}
 
 
@@ -186,8 +191,6 @@ implementation
 {$IFDEF KYLIX}
 {$R *.xfm}
 {$ENDIF}
-
-uses GLCrossPlatform;
 
 Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
 var
@@ -874,8 +877,8 @@ begin
   NewElement := TheGuiComponent.Add as TGLGuiElement;
   NewElement.Name := S;
   NewElement.Align := TGUIAlignments(Index);
-  NewElement.BottomRight.SetPoint(0,0,0);
-  NewElement.TopLeft.SetPoint(0,0,0);
+  NewElement.BottomRight.SetPoint2D(0,0);
+  NewElement.TopLeft.SetPoint2D(0,0);
   lbElements.ItemIndex := lbElements.Items.Add(S);
   UpdateRegionEdits;
 end;
