@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>07/06/08 - DaStr - Implemented TBaseMeshObject.Assign(), TMeshObject.Assign()
       <li>20/05/08 - Mrqzzz - Fixed memory leak in TSkeletonMeshObject.Destroy (thanks Dave Gravel)
       <li>17/05/08 - DaStr - Added TSkeleton.MorphInvisibleParts
                              (thanks andron13 and Веон) (BugtrackerID = 1966020)
@@ -214,8 +215,10 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TVirtualWriter); override;
-			procedure ReadFromFiler(reader : TVirtualReader); override;
+         procedure Assign(Source: TPersistent); override;
+
+         procedure WriteToFiler(writer : TVirtualWriter); override;
+         procedure ReadFromFiler(reader : TVirtualReader); override;
 
          {: Clears all mesh object data, submeshes, facegroups, etc. }
          procedure Clear; dynamic;
@@ -712,8 +715,10 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TVirtualWriter); override;
-			procedure ReadFromFiler(reader : TVirtualReader); override;
+         procedure Assign(Source: TPersistent); override;
+
+         procedure WriteToFiler(writer : TVirtualWriter); override;
+         procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure Clear; override;
 
@@ -2104,6 +2109,20 @@ begin
    inherited;
 end;
 
+// Assign
+//
+procedure TBaseMeshObject.Assign(Source: TPersistent);
+begin
+  if Source is TBaseMeshObject then
+  begin
+    FName := TBaseMeshObject(Source).Name;
+    FVertices.Assign(TBaseMeshObject(Source).FVertices);
+    FNormals.Assign(TBaseMeshObject(Source).FNormals);
+  end
+  else
+    inherited; // Die!
+end;
+
 // WriteToFiler
 //
 procedure TBaseMeshObject.WriteToFiler(writer : TVirtualWriter);
@@ -3489,6 +3508,40 @@ begin
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
+end;
+
+// Assign
+//
+procedure TMeshObject.Assign(Source: TPersistent);
+var
+  I: Integer;
+begin
+  inherited Assign(Source);
+
+  if Source is TMeshObject then
+  begin
+    FTexCoords.Assign(TMeshObject(Source).FTexCoords);
+    FLightMapTexCoords.Assign(TMeshObject(Source).FLightMapTexCoords);
+    FColors.Assign(TMeshObject(Source).FColors);
+    FFaceGroups.Assign(TMeshObject(Source).FFaceGroups);
+    FMode := TMeshObject(Source).FMode;
+    FRenderingOptions := TMeshObject(Source).FRenderingOptions;
+    FBinormalsTexCoordIndex := TMeshObject(Source).FBinormalsTexCoordIndex;
+    FTangentsTexCoordIndex := TMeshObject(Source).FTangentsTexCoordIndex;
+
+    // Clear FTexCoordsEx.
+    for I := 0 to FTexCoordsEx.Count - 1 do
+      TVectorList(FTexCoordsEx[I]).Free;
+
+    FTexCoordsEx.Count := TMeshObject(Source).FTexCoordsEx.Count;
+
+    // Fill FTexCoordsEx.
+    for I := 0 to FTexCoordsEx.Count - 1 do
+    begin
+      FTexCoordsEx[I] := TVectorList.Create;
+      TVectorList(FTexCoordsEx[I]).Assign(TMeshObject(Source).FTexCoordsEx[I]);
+    end;
+  end;
 end;
 
 // WriteToFiler
