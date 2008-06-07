@@ -6,6 +6,8 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
+                             Implemented TGLFile3DSDummyObject.ExtractTriangles() 
       <li>29/04/08 - DaStr - Fixed memory leak in TGLFile3DSCameraObject
       <li>27/04/08 - DaStr - TGL3DSVectorFile.UseTextureEx converted into a
                              global variable and disabled by default
@@ -36,7 +38,7 @@ uses
   // GLScene
   GLScene,  GLObjects,  GLVectorFileObjects, GLTexture, ApplicationFileIO,
   VectorGeometry, File3DS, Types3DS, GLMisc, OpenGL1x, PersistentClasses,
-  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform;
+  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorLists;
 
 type
 
@@ -195,6 +197,8 @@ type
     procedure MorphTo(morphTargetIndex: Integer); override;
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer; lerpFactor: Single); override;
     procedure GetExtents(var min, max: TAffineVector); override;
+    function ExtractTriangles(texCoords : TAffineVectorList = nil;
+                              normals : TAffineVectorList = nil) : TAffineVectorList; override;
 
     procedure WriteToFiler(Writer: TVirtualWriter); override;
     procedure ReadFromFiler(Reader: TVirtualReader); override;
@@ -276,6 +280,14 @@ var
      Also there is a significant drop in FPS when this option is on
      (for unknown reasons), so it is off by default. }
   vGLFile3DS_UseTextureEx: Boolean = False;
+
+  {: If enabled, allows 3ds animation and fixes loading of some 3ds models,
+     but has a few bugs:
+     - TGLFreeForm.AutoCentering does now work correctly.
+     - TMeshObject.vertices return values different from
+        TMeshObject.ExtractTriangles()
+     }
+  vGLFile3DS_EnableAnimation: Boolean = False;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -494,12 +506,7 @@ begin
   FNumKeys := ANumKeys;
   SetLength(FKeys, FNumKeys);
   for I := 0 to FNumKeys - 1 do
-  try
     FKeys[I] := Keys[I];
-  except
-     if Self.FNumKeys = 0 then Beep;
-     if i = 10000000 then beep;
-  end
 end;
 
 procedure TGLFile3DSAnimationKeys.Assign(Source: TPersistent);
@@ -1018,6 +1025,8 @@ var
   p:      TGLFile3DSDummyObject;
   lAnimationData: TGLFile3DSAnimationData;
 begin
+  if not vGLFile3DS_EnableAnimation then Exit;
+
   if (FParentName <> '') then
   begin
     FParent := Owner.FindMeshByName(FParentName) as TGLFile3DSDummyObject;
@@ -1065,6 +1074,18 @@ begin
     min := VectorTransform(min, FAnimTransf.ModelMatrix);
   if not IsInfinite(max[0]) then
     max := VectorTransform(max, FAnimTransf.ModelMatrix);
+end;
+
+function TGLFile3DSDummyObject.ExtractTriangles(texCoords,
+  normals: TAffineVectorList): TAffineVectorList;
+var
+  I: Integer;
+begin
+  Result := inherited ExtractTriangles(texCoords, normals);
+
+  if (Result.Count <> 0) and not MatrixEquals(FAnimTransf.ModelMatrix, IdentityHmgMatrix) then
+    for I := 0 to Result.Count - 1 do
+      Result[I] := VectorTransform(Result[I], FAnimTransf.ModelMatrix);
 end;
 
 procedure TGLFile3DSDummyObject.WriteToFiler(Writer: TVirtualWriter);
@@ -1815,7 +1836,7 @@ begin
         for x:=0 to KeyFramer.Settings.Anim.Length-1 do
           TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
-         with mesh,KeyFramer do begin
+         with mesh do begin
             Mode:=momFaceGroups;
             // make a copy of the vertex data, this must always be available
             Vertices.Capacity:=NVertices;
