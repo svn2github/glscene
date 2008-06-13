@@ -3,6 +3,8 @@
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
+                            global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"
     <li>11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
                             (contains reference to Bone and Ragdoll, useful in collision events)
     <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
@@ -23,9 +25,8 @@ uses GLRagdoll, ODEImport, GLScene, GLObjects, VectorGeometry, ODEGL, GLTexture,
   GLVectorFileObjects;
 
 const
-  cDensity = 20;
-  cMass = 1;
-  cMaxContacts = 4;
+     cMaxContacts = 4;
+
 
 type
 
@@ -121,6 +122,11 @@ type
     property GLSceneRoot: TGLBaseSceneObject read FGLSceneRoot write FGLSceneRoot;
     property ShowBoundingBoxes: Boolean read FShowBoundingBoxes write FShowBoundingBoxes;
   end;
+
+
+var
+  vGLODERagdoll_cDensity : Single;
+  vGLODERagdoll_cMass : Single;
 
 implementation
 
@@ -279,9 +285,9 @@ begin
       if (BoneSize[n]=0) then
          BoneSize[n]:=0.000001;
 
-  dMassSetBox(mass, cDensity, BoneSize[0], BoneSize[1], BoneSize[2]);
+  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize[0], BoneSize[1], BoneSize[2]);
 
-  dMassAdjust(mass, cMass);
+  dMassAdjust(mass, vGLODERagdoll_cMass);
   dBodySetMass(FBody, @mass);
 
   AlignBodyToMatrix(ReferenceMatrix);
@@ -378,6 +384,12 @@ begin
   inherited Create(AOwner);
   FShowBoundingBoxes := False;
 end;
+
+
+
+initialization
+  vGLODERagdoll_cDensity := 20;
+  vGLODERagdoll_cMass := 1;
 
 
 end.
