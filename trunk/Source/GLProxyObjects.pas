@@ -6,6 +6,7 @@
    Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/08 - mrqzzz - Don't raise error when setting animation to an ActorProxy and no MasterObject is defined
       <li>15/03/08 - DaStr - Fixup after previous update: removed all hints and
                               warnings, TGLActorProxy now has two versions of
                               RayCastIntersect()
@@ -735,15 +736,15 @@ begin
   // We first assign the value (for persistency support), then check it.
   FAnimation := Value;
 
-  if not Assigned(MasterObject) then
-    raise EGLProxyException.Create(glsErrorEx + 'No MasterObject defined!');
-
-  anAnimation := GetMasterActorObject.Animations.FindName(Value);
-  if Assigned(anAnimation) then
+  if Assigned(MasterObject) then
   begin
-    FStartFrame := anAnimation.StartFrame;
-    FEndFrame := anAnimation.EndFrame;
-    FCurrentFrame := FStartFrame;
+    anAnimation := GetMasterActorObject.Animations.FindName(Value);
+    if Assigned(anAnimation) then
+    begin
+      FStartFrame := anAnimation.StartFrame;
+      FEndFrame := anAnimation.EndFrame;
+      FCurrentFrame := FStartFrame;
+    end;
   end;
 end;
 
