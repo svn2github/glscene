@@ -6,6 +6,7 @@
 	 ASE (ASCI Scene Export) file format support for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
       <li>29/05/08 - DaStr - Made compatible with Delphi 5
       <li>27/12/07 - DaStr - Added skipping unknown file sections
                              Improved ASE material objects structure:
@@ -781,7 +782,12 @@ procedure CopyASEToMesh(aASEMesh: TGLASEMeshObject; aMesh: TMeshObject; aASEMate
      name: string;
    begin
     Result := nil;
-    name := aASEMaterials[aMaterialID].Name + IntToStr(aMaterialID) + IntToStr(aSubMaterialID);
+	  if aMaterialID >= 0 then
+      name := aASEMaterials[aMaterialID].Name +
+              IntToStr(aMaterialID) + IntToStr(aSubMaterialID)
+    else
+      name := '';
+      
     if Assigned(vLastFG) and (vLastFG.MaterialName = name) then
       Result := vLastFG
     else begin
