@@ -6,6 +6,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>22/06/08 - DaStr - TMeshObject.LightMapTexCoords converted to TAffineVectorList
+                              (thanks Ast) (Bugtracker ID = 2000089)
       <li>07/06/08 - DaStr - Implemented TBaseMeshObject.Assign(), TMeshObject.Assign()
       <li>20/05/08 - Mrqzzz - Fixed memory leak in TSkeletonMeshObject.Destroy (thanks Dave Gravel)
       <li>17/05/08 - DaStr - Added TSkeleton.MorphInvisibleParts
@@ -19,7 +21,7 @@
                             physics engines. (Bugtracker ID = 1719652)
       <li>15/05/07 - LC - Added workaround for ATI bug in TFGVertexIndexList. (Bugtracker ID = 1719611)
       <li>13/05/07 - LC - Fixed AV bug in TMeshObject.BufferArrays (Bugtracker ID = 1718033)
-      <li>03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378) 
+      <li>03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -661,7 +663,7 @@ type
          { Private Declarations }
          FOwner : TMeshObjectList;
          FTexCoords : TAffineVectorList; // provision for 3D textures
-         FLightMapTexCoords : TTexPointList; // reserved for 2D surface needs
+         FLightMapTexCoords : TAffineVectorList; // reserved for 2D surface needs
          FColors : TVectorList;
          FFaceGroups: TFaceGroups;
          FMode : TMeshObjectMode;
@@ -685,7 +687,7 @@ type
       protected
          { Protected Declarations }
          procedure SetTexCoords(const val : TAffineVectorList);
-         procedure SetLightmapTexCoords(const val : TTexPointList);
+         procedure SetLightmapTexCoords(const val : TAffineVectorList);
          procedure SetColors(const val : TVectorList);
 
          procedure BufferArrays;
@@ -751,7 +753,7 @@ type
             var v0, v1, v2 : TVector); overload;
 
          //: Sets the triangle data of a given triangle
-         procedure SetTriangleData(tri : Integer; list : TAffineVectorList; 
+         procedure SetTriangleData(tri : Integer; list : TAffineVectorList;
             const v0, v1, v2 : TAffineVector); overload;
          procedure SetTriangleData(tri : Integer; list : TVectorList;
             const v0, v1, v2 : TVector); overload;
@@ -766,7 +768,7 @@ type
          property Owner : TMeshObjectList read FOwner;
          property Mode : TMeshObjectMode read FMode write FMode;
          property TexCoords : TAffineVectorList read FTexCoords write SetTexCoords;
-         property LightMapTexCoords : TTexPointList read FLightMapTexCoords write SetLightMapTexCoords;
+         property LightMapTexCoords : TAffineVectorList read FLightMapTexCoords write SetLightMapTexCoords;
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
          property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
@@ -3474,7 +3476,7 @@ constructor TMeshObject.Create;
 begin
    FMode:=momTriangles;
    FTexCoords:=TAffineVectorList.Create;
-   FLightMapTexCoords:=TTexPointList.Create;
+   FLightMapTexCoords:=TAffineVectorList.Create;
    FColors:=TVectorList.Create;
    FFaceGroups:=TFaceGroups.CreateOwned(Self);
    FTexCoordsEx:=TList.Create;
@@ -3497,6 +3499,7 @@ begin
    for i := 0 to high(FTexCoordsVBO) do
       FTexCoordsVBO[i].Free;
    FLightmapTexCoordsVBO.Free;
+
 
    FFaceGroups.Free;
    FColors.Free;
@@ -3718,7 +3721,7 @@ end;
 
 // SetLightmapTexCoords
 //
-procedure TMeshObject.SetLightmapTexCoords(const val : TTexPointList);
+procedure TMeshObject.SetLightmapTexCoords(const val :  TAffineVectorList);
 begin
    FLightMapTexCoords.Assign(val);
 end;
@@ -4078,7 +4081,7 @@ begin
     FreeAndNil(FNormalsVBO);
     FreeAndNil(FColorsVBO);
     for i := 0 to high(FTexCoordsVBO) do
-      FreeAndNil(FTexCoordsVBO[i]);      
+      FreeAndNil(FTexCoordsVBO[i]);
     FreeAndNil(FLightmapTexCoordsVBO);
   end;
 
@@ -4235,7 +4238,7 @@ begin
                if FUseVBO then
                   FLightmapTexCoordsVBO.Bind;
                glClientActiveTextureARB(GL_TEXTURE1_ARB);
-               glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), lists[4]);
+               glTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[4]);
                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             end;
             for i:=0 to FTexCoordsEx.Count-1 do begin
@@ -4328,7 +4331,7 @@ begin
               FTexCoordsVBO[i].UnBind;
           end;
         end;
-          
+
       end;
       FArraysDeclared:=False;
    end;
@@ -4431,7 +4434,7 @@ begin
     if not assigned(FLightmapTexCoordsVBO) then
       FLightmapTexCoordsVBO:= TGLVBOArrayBufferHandle.CreateAndAllocate;
 
-    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List, sizeof(TTexPoint) * LightMapTexCoords.Count, BufferUsage);
+    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List, sizeof(TAffineVector) * LightMapTexCoords.Count, BufferUsage);
     FLightmapTexCoordsVBO.UnBind;
     ValidBuffers:= ValidBuffers + [vbLightMapTexCoords];
   end;
