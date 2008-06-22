@@ -8,6 +8,8 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
+                             to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
@@ -774,7 +776,7 @@ begin
       with TexCoords do if Count>0 then
          Add(VectorCombine(List^[iA], List^[iB], fA, fB));
       with LightMapTexCoords do if Count>0 then
-         Add(TexPointCombine(List^[iA], List^[iB], fA, fB));
+         Add(VectorCombine(List^[iA], List^[iB], fA, fB));
    end;
 end;
 
@@ -785,7 +787,7 @@ var
    midNormal : TAffineVector;
    midColor : TColorVector;
    midTexCoord : TAffineVector;
-   midLightmapTexCoord : TTexPoint;
+   midLightmapTexCoord : TAffineVector;
    f : Single;
    spawn : Boolean;
 begin
@@ -806,7 +808,7 @@ begin
          spawn:=spawn or (VectorSpacing(midTexCoord, List^[iMid])>cTJunctionEpsilon);
       end;
       with LightMapTexCoords do if Count>0 then begin
-         midLightmapTexCoord:=TexPointLerp(List^[iA], List^[iB], f);
+         midLightmapTexCoord:=VectorLerp(List^[iA], List^[iB], f);
          spawn:=spawn or (VectorSpacing(midLightmapTexCoord, List^[iMid])>cTJunctionEpsilon);
       end;
       if spawn then begin
