@@ -26,17 +26,15 @@ package GLScene;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$LIBSUFFIX '2009'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
-{$LIBSUFFIX '2009'}
 
 requires
   vcl,
   designide,
   rtl,
   vclimg;
-
-{%File '..\Source\GLScene.inc'}
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
@@ -100,7 +98,7 @@ contains
   GLBitmapFont in '..\Source\GLBitmapFont.pas',
   GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
   GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
-  VFW in '..\Source\VideoAPIs\vfw.pas',
+  vfw in '..\Source\VideoAPIs\vfw.pas',
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
@@ -237,6 +235,10 @@ contains
   GLShadowHDS in '..\Source\GLShadowHDS.pas',
   GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
-  GLViewer in '..\Source\Platform\GLViewer.pas';
+  GLViewer in '..\Source\Platform\GLViewer.pas',
+  GLGizmo in '..\Source\GLGizmo.pas',
+  GLFile3DSSceneObjects in '..\Source\FileFormats\GLFile3DSSceneObjects.pas',
+  GLTextureSharingShader in '..\Source\Shaders\GLTextureSharingShader.pas',
+  GLColor in '..\Source\Base\GLColor.pas';
 
 end.

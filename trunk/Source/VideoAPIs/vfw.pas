@@ -2,7 +2,7 @@ unit VFW;
 
 interface
 
-{$UNDEF UNICODE}
+{.$UNDEF UNICODE}
 {$I GLScene.inc}
 
 (****************************************************************************

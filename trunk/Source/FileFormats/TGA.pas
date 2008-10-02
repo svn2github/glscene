@@ -79,7 +79,7 @@ type
 
 // ReadAndUnPackRLETGA24
 //
-procedure ReadAndUnPackRLETGA24(stream : TStream; destBuf : PChar; totalSize : Integer);
+procedure ReadAndUnPackRLETGA24(stream : TStream; destBuf : PAnsiChar; totalSize : Integer);
 type
    TRGB24 = packed record
       r, g, b : Byte;
@@ -88,7 +88,7 @@ type
 var
    n : Integer;
    color : TRGB24;
-   bufEnd : PChar;
+   bufEnd : PAnsiChar;
    b : Byte;
 begin
    bufEnd:=@destBuf[totalSize];
@@ -113,7 +113,7 @@ end;
 
 // ReadAndUnPackRLETGA32
 //
-procedure ReadAndUnPackRLETGA32(stream : TStream; destBuf : PChar; totalSize : Integer);
+procedure ReadAndUnPackRLETGA32(stream : TStream; destBuf : PAnsiChar; totalSize : Integer);
 type
    TRGB32 = packed record
       r, g, b, a : Byte;
@@ -122,7 +122,7 @@ type
 var
    n : Integer;
    color : TRGB32;
-   bufEnd : PChar;
+   bufEnd : PAnsiChar;
    b : Byte;
 begin
    bufEnd:=@destBuf[totalSize];
@@ -170,7 +170,7 @@ var
    header : TTGAHeader;
    y, rowSize, bufSize : Integer;
    verticalFlip : Boolean;
-   unpackBuf : PChar;
+   unpackBuf : PAnsiChar;
 begin
    stream.Read(header, Sizeof(TTGAHeader));
 
