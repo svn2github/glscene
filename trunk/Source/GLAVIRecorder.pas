@@ -74,7 +74,7 @@ type
 
        AVI_DPI : integer;
 
-       asi   : TAVIStreamInfoA;
+       asi   : TAVIStreamInfo;
 
        pfile : IAVIFile;
        Stream, Stream_c : IAVIStream; // AVI stream and stream to be compressed
