@@ -46,9 +46,9 @@ function RoundDownToPowerOf2(value : Integer): Integer;
 function IsPowerOf2(value : Integer) : Boolean;
 {: Read a CRLF terminated string from a stream.<p>
    The CRLF is NOT in the returned string. }
-function ReadCRLFString(aStream : TStream) : String;
+function ReadCRLFString(aStream : TStream) : AnsiString;
 //: Write the string and a CRLF in the stream
-procedure WriteCRLFString(aStream : TStream; const aString : String);
+procedure WriteCRLFString(aStream : TStream; const aString : AnsiString);
 //: TryStrToFloat
 function TryStrToFloat(const strValue : String; var val : Extended) : Boolean;
 //: StrToFloatDef
@@ -152,9 +152,9 @@ end;
 
 // ReadCRLFString
 //
-function ReadCRLFString(aStream : TStream) : String;
+function ReadCRLFString(aStream : TStream) : AnsiString;
 var
-   c : Char;
+   c : AnsiChar;
 begin
    Result:='';
    while Copy(Result, Length(Result)-1, 2)<>#13#10 do begin
@@ -166,7 +166,7 @@ end;
 
 // WriteCRLFString
 //
-procedure WriteCRLFString(aStream : TStream; const aString : String);
+procedure WriteCRLFString(aStream : TStream; const aString : AnsiString);
 const
    cCRLF : Integer = $0A0D;
 begin

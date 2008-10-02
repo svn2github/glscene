@@ -367,9 +367,9 @@ end;
 procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer); register;
 begin
    while pixelCount>0 do begin
-      PChar(dest)[0]:=PChar(src)[2];
-      PChar(dest)[1]:=PChar(src)[1];
-      PChar(dest)[2]:=PChar(src)[0];
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
       dest:=Pointer(Integer(dest)+3);
       src:=Pointer(Integer(src)+3);
       Dec(pixelCount);
@@ -381,10 +381,10 @@ end;
 procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
 {begin
    while pixelCount>0 do begin
-      PChar(dest)[0]:=PChar(src)[2];
-      PChar(dest)[1]:=PChar(src)[1];
-      PChar(dest)[2]:=PChar(src)[0];
-      PChar(dest)[3]:=#255;
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
+      PAnsiChar(dest)[3]:=#255;
       dest:=Pointer(Integer(dest)+4);
       src:=Pointer(Integer(src)+3);
       Dec(pixelCount);
@@ -458,10 +458,10 @@ end;
 procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
 {begin
    while pixelCount>0 do begin
-      PChar(dest)[0]:=PChar(src)[2];
-      PChar(dest)[1]:=PChar(src)[1];
-      PChar(dest)[2]:=PChar(src)[0];
-      PChar(dest)[3]:=PChar(src)[3];
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
+      PAnsiChar(dest)[3]:=PAnsiChar(src)[3];
       dest:=Pointer(Integer(dest)+4);
       src:=Pointer(Integer(src)+4);
       Dec(pixelCount);
@@ -566,7 +566,7 @@ end;
 procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
-   pSrc, pDest : PChar;
+   pSrc, pDest : PAnsiChar;
 begin
    Assert(aBitmap.PixelFormat=glpf24bit);
    Assert((aBitmap.Width and 3)=0);
@@ -576,7 +576,7 @@ begin
    ReallocMem(FData, FDataSize);
    FBlank:=false;
    if Height>0 then begin
-      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      pDest:=@PAnsiChar(FData)[Width*4*(Height-1)];
       if Height=1 then begin
          BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
       end else begin
@@ -601,7 +601,7 @@ end;
 procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
-   pSrc, pDest : PChar;
+   pSrc, pDest : PAnsiChar;
 begin
    Assert(aBitmap.PixelFormat=glpf24bit);
    Assert((aBitmap.Width and 3)=0);
@@ -611,7 +611,7 @@ begin
    ReallocMem(FData, FDataSize);
    FBlank:=false;
    if Height>0 then begin
-      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      pDest:=@PAnsiChar(FData)[Width*4*(Height-1)];
       if Height=1 then begin
          RGB24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
       end else begin
@@ -636,7 +636,7 @@ end;
 procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
-   pSrc, pDest : PChar;
+   pSrc, pDest : PAnsiChar;
 begin
    Assert(aBitmap.PixelFormat=glpf32bit);
    Assert((aBitmap.Width and 3)=0);
@@ -646,7 +646,7 @@ begin
    ReallocMem(FData, FDataSize);
    FBlank:=false;
    if Height>0 then begin
-      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      pDest:=@PAnsiChar(FData)[Width*4*(Height-1)];
       if VerticalReverseOnAssignFromBitmap then begin
          pSrc:=BitmapScanLine(aBitmap, Height-1);
          if Height>1 then
@@ -672,7 +672,7 @@ end;
 procedure TGLBitmap32.AssignFromBitmap32(aBitmap32 : TBitmap32);
 var
    y : Integer;
-   pSrc, pDest : PChar;
+   pSrc, pDest : PAnsiChar;
 begin
    Assert((aBitmap32.Width and 3)=0);
    FWidth:=aBitmap32.Width;
@@ -681,11 +681,11 @@ begin
    ReallocMem(FData, FDataSize);
    FBlank:=false;
    if Height>0 then begin
-      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      pDest:=@PAnsiChar(FData)[Width*4*(Height-1)];
       for y:=0 to Height-1 do begin
          if VerticalReverseOnAssignFromBitmap then
-            pSrc:=PChar(aBitmap32.ScanLine[Height-1-y])
-         else pSrc:=PChar(aBitmap32.ScanLine[y]);
+            pSrc:=PAnsiChar(aBitmap32.ScanLine[Height-1-y])
+         else pSrc:=PAnsiChar(aBitmap32.ScanLine[y]);
          BGRA32ToRGBA32(pSrc, pDest, Width);
          Dec(pDest, Width*4);
       end;
@@ -746,7 +746,7 @@ end;
 function TGLBitmap32.Create32BitsBitmap : TGLBitmap;
 var
    y, x, x4 : Integer;
-   pSrc, pDest : PChar;
+   pSrc, pDest : PAnsiChar;
 begin
    if FBlank then begin
      Result:=nil;
@@ -758,7 +758,7 @@ begin
    Result.Width:=Width;
    Result.Height:=Height;
    if Height>0 then begin
-      pSrc:=@PChar(FData)[Width*4*(Height-1)];
+      pSrc:=@PAnsiChar(FData)[Width*4*(Height-1)];
       for y:=0 to Height-1 do begin
          pDest:=BitmapScanLine(Result, y);
          for x:=0 to Width-1 do begin
@@ -1258,13 +1258,13 @@ end;
 //
 procedure TGLBitmap32.AssignToBitmap(aBitmap : TGLBitmap); //TGLBitmap = TBitmap
 var y :integer;
-    pSrc, pDest : PChar;
+    pSrc, pDest : PAnsiChar;
 begin
   aBitmap.Width:=FWidth;
   aBitmap.Height:=FHeight;
   aBitmap.PixelFormat:=glpf32bit;
   for y:=0 to FHeight-1 do begin
-    pSrc:=@PChar(FData)[y*(FWidth*4)];
+    pSrc:=@PAnsiChar(FData)[y*(FWidth*4)];
     pDest:=aBitmap.ScanLine[FHeight-1-y];
     BGRA32ToRGBA32(pSrc, pDest, FWidth);
   end;

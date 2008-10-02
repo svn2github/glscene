@@ -1899,7 +1899,7 @@ var
    vNextRenderGroupID : Integer = 1;
 
 const
-   cAAFHeader = 'AAF';
+   cAAFHeader: AnsiString = 'AAF';
 
 function InsideList: boolean;
 var
