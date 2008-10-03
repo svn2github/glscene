@@ -26,10 +26,12 @@ package GLScene_DesignTime;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$LIBSUFFIX '2009'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
+  designide,
   GLScene_RunTime;
 
 contains

@@ -666,7 +666,7 @@ function StopPrecisionTimer(const precisionTimer : Int64) : Double;
    Use the similarly named CPU instruction. }
 function RDTSC : Int64;
 
-procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
+procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure ShowHTMLUrl(Url: String);
 procedure GLShowCursor(AShow: boolean);
@@ -903,13 +903,13 @@ begin
 {$ENDIF}
 end;
 
-procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
+procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 begin
 {$IFDEF MSWINDOWS}
-  ABitmap.Handle := LoadBitmap(HInstance, PChar(AName));
+  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
 {$ENDIF}
 {$IFDEF UNIX}
-  ABitmap.LoadFromResourceName(HInstance, PChar(AName));
+  ABitmap.LoadFromResourceName(Instance, PChar(AName));
 {$ENDIF}
 end;
 

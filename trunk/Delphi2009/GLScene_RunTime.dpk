@@ -1,9 +1,6 @@
 package GLScene_RunTime;
 
 {$R *.res}
-{$R '..\Source\DesignTime\GLSceneObjects.dcr'}
-{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
-{$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -32,7 +29,6 @@ package GLScene_RunTime;
 
 requires
   vcl,
-  designide,
   rtl,
   vclimg;
 
