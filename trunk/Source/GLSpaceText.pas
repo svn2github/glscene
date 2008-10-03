@@ -450,7 +450,7 @@ begin
        end;
 
        glTranslatef(0,-i*(maxHeight+FAspectRatio),0);
-       glCallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE, PChar(FLines.Strings[i]));
+       glCallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE, PGLChar(TGLString(FLines.Strings[i])));
        glPopMatrix;
       end;
       
