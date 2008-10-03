@@ -305,8 +305,6 @@ type
          property BranchMaterialName : TGLLibMaterialName read FBranchMaterialName write SetBranchMaterialName;
    end;
 
-procedure Register;
-
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -316,11 +314,6 @@ implementation
 // -----------------------------------------------------------------------------
 
 uses XOpenGL, GLState;
-
-procedure Register;
-begin
-   RegisterClasses([TGLTree]);
-end;
 
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves
@@ -1415,5 +1408,9 @@ begin
       FAutoRebuild:=Value;
    end;
 end;
+
+initialization
+
+   RegisterClasses([TGLTree]);
 
 end.
