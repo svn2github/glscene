@@ -598,7 +598,7 @@ begin
             NewEntry^.Category:=aCategory;
             Index:=FSceneObjectList.Count;
             resBitmapName:=ASceneObject.ClassName;
-            GLLoadBitmapFromInstance(Pic.Bitmap,resBitmapName);
+            GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,resBitmapName);
             bmp:=TBitmap.Create;
             bmp.PixelFormat:=glpf24bit;
             bmp.Width:=24; bmp.Height:=24;
@@ -642,7 +642,7 @@ var
 begin
    pic:=TPicture.Create;
    // load first pic to get size
-   GLLoadBitmapFromInstance(Pic.Bitmap,'gls_cross');
+   GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,'gls_cross');
    FObjectIcons:=TImageList.CreateSize(Pic.Width, Pic.height);
 
    with FObjectIcons, pic.Bitmap.Canvas do begin
@@ -654,13 +654,13 @@ begin
          FOverlayIndex:=Count-1;
          Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
          {$endif}
-         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_root');
+         GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,'gls_root');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FSceneRootIndex:=Count-1;
-         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_camera');
+         GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,'gls_camera');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FCameraRootIndex:=Count-1;
-         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_lights');
+         GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,'gls_lights');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FLightsourceRootIndex:=Count-1;
-         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_objects');
+         GLLoadBitmapFromInstance(HInstance, Pic.Bitmap,'gls_objects');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FObjectRootIndex:=Count-1;
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FStockObjectRootIndex:=Count-1;
       finally
