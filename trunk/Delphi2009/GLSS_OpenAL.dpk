@@ -29,7 +29,7 @@ package GLSS_OpenAL;
 
 requires
   vcl,
-  GLScene,
+  GLScene_RunTime,
   rtl;
 
 contains

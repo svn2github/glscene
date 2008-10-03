@@ -29,7 +29,7 @@ package GLCg;
 
 requires
   vcl,
-  GLScene;
+  GLScene_RunTime;
 
 contains
   cgGL in '..\Source\CgShaders\cgGL.pas',

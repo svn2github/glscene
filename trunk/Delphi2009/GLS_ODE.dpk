@@ -29,7 +29,7 @@ package GLS_ODE;
 
 requires
   vcl,
-  GLScene;
+  GLScene_RunTime;
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',

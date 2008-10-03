@@ -31,7 +31,7 @@ package GLS_DWS;
 requires
   rtl,
   vcl,
-  GLScene,
+  GLScene_RunTime,
   dws2Runtime;
 
 contains

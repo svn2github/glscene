@@ -30,7 +30,7 @@ package GLS_SDL;
 
 requires
   vcl,
-  GLScene;
+  GLScene_RunTime;
 
 contains
   GLSDLContext in '..\Source\Platform\GLSDLContext.pas',

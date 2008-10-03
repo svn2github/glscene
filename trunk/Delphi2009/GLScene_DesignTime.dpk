@@ -1,7 +1,9 @@
-package GLSS_BASS;
+package GLScene_DesignTime;
 
 {$R *.res}
-{$R '..\Source\SoundAPIs\GLSceneVCLBass.dcr'}
+{$R '..\Source\DesignTime\GLSceneObjects.dcr'}
+{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
+{$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -23,16 +25,17 @@ package GLSS_BASS;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - BASS Manager'}
 {$LIBSUFFIX '2009'}
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
+  rtl,
   GLScene_RunTime;
 
 contains
-  GLSMBASS in '..\Source\GLSMBASS.pas',
-  Bass in '..\Source\SoundAPIs\Bass.pas';
+  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
+  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
+  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas';
 
 end.

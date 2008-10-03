@@ -1,4 +1,4 @@
-package GLScene;
+package GLScene_RunTime;
 
 {$R *.res}
 {$R '..\Source\DesignTime\GLSceneObjects.dcr'}
@@ -27,7 +27,7 @@ package GLScene;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$LIBSUFFIX '2009'}
-{$DESIGNONLY}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
@@ -37,14 +37,12 @@ requires
   vclimg;
 
 contains
-  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
   GLMisc in '..\Source\GLMisc.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
   GLScreen in '..\Source\GLScreen.pas',
   VectorGeometry in '..\Source\Base\VectorGeometry.pas',
-  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugIn\PlugInManager.pas',
   Info in '..\Source\DesignTime\Info.pas' {InfoForm},
@@ -70,8 +68,6 @@ contains
   GLBehaviours in '..\Source\GLBehaviours.pas',
   ScreenSaver in '..\Source\Base\ScreenSaver.pas',
   GLCadencer in '..\Source\GLCadencer.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
   XCollection in '..\Source\Base\XCollection.pas',
   GLParticles in '..\Source\GLParticles.pas',
   GLObjects in '..\Source\GLObjects.pas',

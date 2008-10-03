@@ -29,7 +29,7 @@ package GLSS_FMOD;
 
 requires
   vcl,
-  GLScene,
+  GLScene_RunTime,
   rtl;
 
 contains
