@@ -126,7 +126,7 @@ function FSOUND_GetOutputHandle: Pointer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {
 function FSOUND_GetDriver: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetMixer: TFSoundMixerTypes; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetNumDrivers: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_GetDriverName(Id: Integer): PChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_GetDriverName(Id: Integer): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetDriverCaps(Id: Integer; var Caps: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetOutputRate: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetMaxChannels: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -148,7 +148,7 @@ procedure FSOUND_GetMemoryStats(var CurrentAlloced: Cardinal; var MaxAlloced: Ca
            Use FSOUND_LOADRAW      flag with FSOUND_Sample_Load to treat as as raw pcm data.
 }
 
-function FSOUND_Sample_Load(Index: Integer; const NameOrData: PChar; Mode: Cardinal; Offset: Integer; Length: Integer): PFSoundSample; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Sample_Load(Index: Integer; const NameOrData: PAnsiChar; Mode: Cardinal; Offset: Integer; Length: Integer): PFSoundSample; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_Alloc(Index: Integer; Length: Integer; Mode: Cardinal; DefFreq: Integer; DefVol: Integer; DefPan: Integer; DefPri: Integer): PFSoundSample; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 procedure FSOUND_Sample_Free(Sptr: PFSoundSample); {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_Upload(Sptr: PFSoundSample; SrcData: Pointer; Mode: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -171,7 +171,7 @@ function FSOUND_Sample_SetMaxPlaybacks(Sptr: PFSoundSample; Max: Integer): ByteB
 }
 
 function FSOUND_Sample_Get(SampNo: Integer): PFSoundSample; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Sample_GetName(Sptr: PFSoundSample): PCHAR; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Sample_GetName(Sptr: PFSoundSample): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_GetLength(Sptr: PFSoundSample): Cardinal; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_GetLoopPoints(Sptr: PFSoundSample; var LoopStart: Integer; var LoopEnd: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_GetDefaults(Sptr: PFSoundSample; var DefFreq: Integer; var DefVol: Integer; var DefPan: Integer; var DefPri: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -299,7 +299,7 @@ function FSOUND_FX_SetWavesReverb(FXId: Integer; InGain, ReverbMix, ReverbTime, 
 
 function FSOUND_Stream_SetBufferSize(Ms: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
-function FSOUND_Stream_Open(const name_or_data: PChar; Mode: Cardinal; Offset: Integer; Length: Integer): PFSoundStream; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_Open(const name_or_data: PAnsiChar; Mode: Cardinal; Offset: Integer; Length: Integer): PFSoundStream; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_Create(Callback: TFSoundStreamCallback; Length: Integer; Mode: Cardinal; SampleRate: Integer; UserData: Integer): PFSoundStream; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_Close(Stream: PFSoundStream): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
@@ -325,26 +325,26 @@ function FSOUND_Stream_CreateDSP(Stream: PFSoundStream; Callback: TFSoundDSPCall
 function FSOUND_Stream_SetEndCallback(Stream: PFSoundStream; Callback: TFSoundStreamCallback; UserData: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_SetSyncCallback(Stream: PFSoundStream; Callback: TFSoundStreamCallback; UserData: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
-function FSOUND_Stream_AddSyncPoint(Stream: PFSoundStream; PCMOffset: Cardinal; Name: PChar): PFSyncPoint; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_AddSyncPoint(Stream: PFSoundStream; PCMOffset: Cardinal; Name: PAnsiChar): PFSyncPoint; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_DeleteSyncPoint(Point: PFSyncPoint): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_GetNumSyncPoints(Stream: PFSoundStream): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_GetSyncPoint(Stream: PFSoundStream; Index: Integer): PFSyncPoint; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Stream_GetSyncPointInfo(Point: PFSyncPoint; var PCMOffset: Cardinal): PCHAR; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_GetSyncPointInfo(Point: PFSyncPoint; var PCMOffset: Cardinal): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 function FSOUND_Stream_SetSubStream(Stream: PFSoundStream; Index: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_GetNumSubStreams(Stream: PFSoundStream): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_SetSubStreamSentence(Stream: PFSoundStream; var SentenceList: Cardinal; NumItems: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 function FSOUND_Stream_GetNumTagFields(Stream: PFSoundStream; var Num: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Stream_GetTagField(Stream: PFSoundStream; Num: Integer; var TagType: TFSoundTagFieldType; var Name: PChar; var Value: Pointer; var Length: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Stream_FindTagField(Stream: PFSoundStream; TagType: TFSoundTagFieldType; Name: PChar; var Value: Pointer; var Length: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_GetTagField(Stream: PFSoundStream; Num: Integer; var TagType: TFSoundTagFieldType; var Name: PAnsiChar; var Value: Pointer; var Length: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_FindTagField(Stream: PFSoundStream; TagType: TFSoundTagFieldType; Name: PAnsiChar; var Value: Pointer; var Length: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
     Internet streaming functions
 }
 
-function FSOUND_Stream_Net_SetProxy(Proxy: PChar): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Stream_Net_GetLastServerStatus(): PChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_Net_SetProxy(Proxy: PAnsiChar): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Stream_Net_GetLastServerStatus(): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_Net_SetBufferProperties(BufferSize: Integer; PreBuffer_Percent: Integer; ReBuffer_Percent:  Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_Net_GetBufferProperties(var Buffersize: Integer; var PreBuffer_Percent: Integer;  var ReBuffer_Percent: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Stream_Net_SetMetadataCallback(Stream: PFSoundStream; Callback: TFMetaDataCallback; UserData: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -435,7 +435,7 @@ function FSOUND_Reverb_GetChannelProperties(Channel: Integer; var Prop: TFSoundR
 
 function FSOUND_Record_SetDriver(OutputType: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Record_GetNumDrivers: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Record_GetDriverName(Id: Integer): PChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Record_GetDriverName(Id: Integer): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Record_GetDriver: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
@@ -454,7 +454,7 @@ function FSOUND_Record_GetPosition: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcal
     Song management / playback functions.
 }
 
-function FMUSIC_LoadSong(const Name: PChar): PFMusicModule; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FMUSIC_LoadSong(const Name: PAnsiChar): PFMusicModule; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_LoadSongEx(Name_Or_Data: Pointer; Offset: Integer; Length: Integer; Mode: Cardinal; var SampleList: Integer; SampleListNum: Integer): PFMusicModule; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetOpenState(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_FreeSong(Module: PFMusicModule): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -487,7 +487,7 @@ function FMUSIC_SetPanSeperation(Module: PFMusicModule; PanSep: Single): ByteBoo
     Static song information functions.
 }
 
-function FMUSIC_GetName(Module: PFMusicModule): PCHAR; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FMUSIC_GetName(Module: PFMusicModule): PAnsiChar; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetType(Module: PFMusicModule): TFMusicTypes; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetNumOrders(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetNumPatterns(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
