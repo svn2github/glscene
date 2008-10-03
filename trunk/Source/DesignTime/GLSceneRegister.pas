@@ -210,7 +210,7 @@ uses
    GLColor, GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics,
 
 {$ifdef WIN32}
-   GLSound, GLSoundFileObjects, GLSpaceText,
+   GLSound, GLSoundFileObjects, GLSpaceText, Joystick, ScreenSaver,
    GLWideBitmapFont,
    Graphics, Dialogs, ExtDlgs, Forms,
    GLWin32FullScreenViewer
@@ -1809,7 +1809,7 @@ begin
                        TGLWideBitmapFont,
                        TGLScriptLibrary
                        {$ifdef WIN32}
-                       ,
+                       , TGLSoundLibrary, TGLSMWaveOut,
                        TGLFullScreenViewer
                        {$endif}
                       ]);
@@ -1832,6 +1832,9 @@ begin
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLGizmo
+                       {$IFDEF MSWINDOWS}
+                       , TJoystick, TScreenSaver
+                       {$ENDIF}
                       ]);
 
    RegisterComponents('GLScene Terrain',
