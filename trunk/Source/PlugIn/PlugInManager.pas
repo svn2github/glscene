@@ -35,7 +35,7 @@ type PPlugInEntry = ^TPlugInEntry;
 
      TResourceManager = class(TComponent)
      public
-       procedure Notify(Sender: TPlugInManager; Operation: TOperation; PlugIn: Integer); virtual; abstract;
+       procedure Notify(Sender: TPlugInManager; Operation: TOperation; Service: TPIServiceType; PlugIn: Integer); virtual; abstract;
      end;
 
      TPlugInList = class(TStringList)
@@ -166,11 +166,13 @@ end;
 //------------------------------------------------------------------------------
 
 destructor TPlugInManager.Destroy;
-
+var
+  i:integer;
 begin
   FLibraryList.ClearList;
   FLibraryList.Free;
-  while FResManagerList.Count > 0 do FreeMem(FResManagerList[0],SizeOf(TResManagerEntry));
+  for i := 0 to FResManagerList.Count - 1 do
+    FreeMem( PResManagerEntry(FResManagerList[i]),SizeOf(TResManagerEntry));
   FResManagerList.Free;
   inherited Destroy;
 end;
@@ -249,7 +251,7 @@ var I : Integer;
 begin
   for I:=0 TO FResManagerList.Count-1 do
     if Service in PResManagerEntry(FResManagerList[I]).Services then
-      PResManagerEntry(FResManagerList[I]).Manager.Notify(Self,Operation,PlugIn);
+      PResManagerEntry(FResManagerList[I]).Manager.Notify(Self,Operation,Service,PlugIn);
 end;
 
 //------------------------------------------------------------------------------
@@ -310,6 +312,7 @@ begin
     New(ManagerEntry);
     ManagerEntry.Manager:=AManager;
     ManagerEntry.Services:=Services;
+    FResManagerList.Add(ManagerEntry);
   end;
 end;
 
