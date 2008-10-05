@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
       <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)  
       <li>21/03/08 - DaStr - Renamed TMMat to TGLTextureSharingShaderMaterial 
@@ -868,11 +869,8 @@ end;
 // Edit
 //
 procedure TGLTextureImageProperty.Edit;
-var
-	ownerTexture : TGLTexture;
 begin
-	ownerTexture:=TGLTextureImage(GetOrdValue).OwnerTexture;
-	if ownerTexture.Image.Edit then
+  if EditGLTextureImage(TGLTextureImage(GetOrdValue)) then
 		Designer.Modified;
 end;
 

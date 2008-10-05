@@ -6,6 +6,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - separated texture image editor from texture unit
       <li>12/04/08 - DaStr - Bugfixed TGLTextureExItem.Create()
                               (thanks dAlex) (BugTracker ID = 1940451)
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
@@ -352,10 +353,6 @@ type
 			property OwnerTexture : TGLTexture read FOwnerTexture write FOwnerTexture;
 			procedure NotifyChange(Sender : TObject); override;
 
-			{: Request to edit the textureImage.<p>
-				Returns True if changes have been made.<br>
-				This method may be invoked from the IDE or at run-time. }
-			function Edit : Boolean;
 			{: Save textureImage to file.<p>
 				This may not save a picture, but for instance, parameters, if the
 				textureImage is a procedural texture. }
@@ -2218,13 +2215,6 @@ procedure TGLTextureImage.NotifyChange(Sender : TObject);
 begin
 	Include(FOwnerTexture.FChanges, tcImage);
 	FOwnerTexture.NotifyChange(Self);
-end;
-
-// Edit
-//
-function TGLTextureImage.Edit : Boolean;
-begin
-   Result:=EditGLTextureImage(Self);
 end;
 
 // LoadFromFile
