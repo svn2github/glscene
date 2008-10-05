@@ -3,6 +3,7 @@
    RGB+Alpha color editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/09/08 - DanB - Removed Kylix support
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
@@ -15,17 +16,9 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
   Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
   Classes, VectorGeometry, Graphics, SysUtils, GLColor;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, QStdCtrls, QComCtrls, QExtCtrls, FRTrackBarEdit, QDialogs, QControls, 
-  Classes, VectorGeometry, QGraphics, SysUtils; 
-{$ENDIF}
-
 
 type
 
@@ -82,13 +75,7 @@ type
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
   GLTexture, GLCrossPlatform;
