@@ -403,19 +403,6 @@ type
 
 	TGLTextureImageClass = class of TGLTextureImage;
 
-   // TGLTextureImageEditor
-   //
-   TGLTextureImageEditor = class(TObject)
-		public
-         { Public Properties }
-			{: Request to edit a textureImage.<p>
-				Returns True if changes have been made.<br>
-				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual; abstract;
-   end;
-
-   TGLTextureImageEditorClass = class of TGLTextureImageEditor;
-
 	// TGLBlankImage
 	//
 	{: A texture image with no specified content, only a size.<p>
@@ -1593,12 +1580,6 @@ var
    vDefaultTextureFormat : TGLTextureFormat = tfRGBA;
    vDefaultTextureCompression : TGLTextureCompression = tcNone;
 
-//: Invokes the editor for the given TGLTextureImage
-function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
-procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
-                                       texImageEditor : TGLTextureImageEditorClass);
-procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
-
 procedure RegisterTGraphicClassFileExtension(const extension : String;
                                              const aClass : TGraphicClass);
 function CreateGraphicFromFile(const fileName : String) : TGLGraphic;
@@ -1616,7 +1597,6 @@ uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats;
 var
 	vGLTextureImageClasses : TList;
 	vColorManager : TGLColorManager;
-   vTIEClass, vTIEEditor : TList;
 
 const
 	cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
@@ -1710,53 +1690,6 @@ begin
             FreeAndNil(Result);
             raise;
          end;
-      end;
-   end;
-end;
-
-// EditGLTextureImage
-//
-function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
-var
-   i : Integer;
-   editor : TGLTextureImageEditorClass;
-begin
-   if Assigned(vTIEClass) then begin
-      i:=vTIEClass.IndexOf(Pointer(aTexImage.ClassType));
-      if i>=0 then begin
-         editor:=TGLTextureImageEditorClass(vTIEEditor[i]);
-         Result:=editor.Edit(aTexImage);
-         Exit;
-      end;
-   end;
-   InformationDlg(aTexImage.ClassName+': editing not supported.');
-   Result:=False;
-end;
-
-// RegisterGLTextureImageEditor
-//
-procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
-                                       texImageEditor : TGLTextureImageEditorClass);
-begin
-   if not Assigned(vTIEClass) then begin
-      vTIEClass:=TList.Create;
-      vTIEEditor:=TList.Create;
-   end;
-   vTIEClass.Add(Pointer(aTexImageClass));
-   vTIEEditor.Add(texImageEditor);
-end;
-
-// UnRegisterGLTextureImageEditor
-//
-procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
-var
-   i : Integer;
-begin
-   if Assigned(vTIEClass) then begin
-      i:=vTIEEditor.IndexOf(texImageEditor);
-      if i>=0 then begin
-         vTIEClass.Delete(i);
-         vTIEEditor.Delete(i);
       end;
    end;
 end;
@@ -6583,7 +6516,5 @@ finalization
 	vColorManager.Free;
 	vGLTextureImageClasses.Free;
    vGLTextureImageClasses:=nil;
-   FreeAndNil(vTIEClass);
-   FreeAndNil(vTIEEditor);
 
 end.
