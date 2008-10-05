@@ -4,6 +4,7 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - Removed Kylix support
       <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)  
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
@@ -24,14 +25,9 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLGraphics, TypInfo;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLGraphics;
-{$ENDIF}
+  Forms, StdCtrls, Buttons, Controls, Classes, TypInfo,
+  GLTexture, GLGraphics;
 
 type
   TRTextureEdit = class(TFrame)
@@ -81,17 +77,10 @@ type
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
-  SysUtils, GLMisc, GLState; 
-
+  SysUtils, GLState, GLTextureImageEditors;
 
 // Create
 //
@@ -222,7 +211,7 @@ end;
 //
 procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
-	FTexture.Image.Edit;
+  EditGLTextureImage(FTexture.Image);
   DoOnChange;
 end;
 

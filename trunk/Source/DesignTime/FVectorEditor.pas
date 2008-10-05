@@ -3,6 +3,7 @@
    Editor for a vector.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - Removed Kylix support   
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>?/?/? -  - Creation
@@ -14,17 +15,9 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls, 
+  Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls,
   Classes;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, QComCtrls, QStdCtrls, QExtCtrls, QButtons, QGraphics, QControls, 
-  Classes; 
-{$ENDIF}
-
 
 type
   TVectorEditorForm = class(TForm)
@@ -83,17 +76,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
   SysUtils, VectorGeometry, GLUtils; 
-
 
 var
 	vVectorEditorForm : TVectorEditorForm;

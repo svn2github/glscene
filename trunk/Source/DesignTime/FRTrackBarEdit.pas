@@ -3,6 +3,7 @@
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - Removed Kylix support   
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - Fixed bug in SetValue, SetValueMin, SetValueMax when
                              changing these values didn't change the Edit's Text
@@ -16,15 +17,8 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
-uses 
-  Forms, StdCtrls, ComCtrls, Classes, Controls;
-{$ENDIF}
-{$IFDEF KYLIX}
 uses
-  QForms, QStdCtrls, QComCtrls, Classes, QControls; 
-{$ENDIF}
-
+  Forms, StdCtrls, ComCtrls, Classes, Controls;
 
 type
   TRTrackBarEdit = class(TFrame)
@@ -49,17 +43,10 @@ type
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
   SysUtils; 
-
 
 procedure TRTrackBarEdit.TrackBarChange(Sender: TObject);
 begin
