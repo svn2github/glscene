@@ -526,8 +526,6 @@ type
          property MaxChannels default 4;
 	end;
 
-procedure Register;
-
 function ActiveSoundManager : TGLSoundManager;
 function GetSoundLibraryByName(const aName : String) : TGLSoundLibrary;
 
@@ -551,13 +549,6 @@ uses SysUtils, MMSystem, GLCrossPlatform;
 var
    vActiveSoundManager : TGLSoundManager;
    vSoundLibraries : TList;
-
-// Register
-//
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TGLSoundLibrary, TGLSMWaveOut]);
-end;
 
 // ActiveSoundManager
 //
@@ -1873,12 +1864,14 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
+  RegisterClasses([TGLSoundLibrary, TGLSMWaveOut]);
 	RegisterXCollectionItemClass(TGLBSoundEmitter);
    vSoundLibraries:=TList.Create;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
