@@ -317,7 +317,7 @@ uses
    // GLScene
    VectorGeometry, XCollection, GLSilhouette, PersistentClasses, GLState,
    GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists, GLTexture,
-   GLMisc;
+   GLMisc, GLColor;
 
 type
 
@@ -2381,7 +2381,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils, GLColor;
+uses GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
 
 var
    vCounterFrequency : Int64;

@@ -1730,7 +1730,7 @@ const
    cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 begin
    rci.GLStates.SetGLMaterialColors(aFace,
-      Emission.FColor, Ambient.FColor, Diffuse.FColor, Specular.FColor, FShininess);
+      Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
    rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
 end;
 
@@ -1741,7 +1741,7 @@ procedure TGLFaceProperties.ApplyNoLighting(var rci : TRenderContextInfo;
 const
    cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 begin
-   glColor4fv(@Diffuse.FColor);
+   glColor4fv(@Diffuse.Color);
    rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
 end;
 
@@ -1750,12 +1750,12 @@ end;
 procedure TGLFaceProperties.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLFaceProperties) then begin
-      FAmbient.FColor:=TGLFaceProperties(Source).FAmbient.FColor;
-      FDiffuse.FColor:=TGLFaceProperties(Source).FDiffuse.FColor;
-      FSpecular.FColor:=TGLFaceProperties(Source).FSpecular.FColor;
-      FShininess:=TGLFaceProperties(Source).FShininess;
-      FPolygonMode:=TGLFaceProperties(Source).FPolygonMode;
-		FEmission.FColor:=TGLFaceProperties(Source).FEmission.FColor;
+      FAmbient.DirectColor:=TGLFaceProperties(Source).Ambient.Color;
+      FDiffuse.DirectColor:=TGLFaceProperties(Source).Diffuse.Color;
+  		FEmission.DirectColor:=TGLFaceProperties(Source).Emission.Color;
+      FSpecular.DirectColor:=TGLFaceProperties(Source).Specular.Color;
+      FShininess:=TGLFaceProperties(Source).Shininess;
+      FPolygonMode:=TGLFaceProperties(Source).PolygonMode;
 		NotifyChange(Self);
    end;
 end;
@@ -1764,7 +1764,7 @@ end;
 //
 procedure TGLFaceProperties.SetAmbient(AValue: TGLColor);
 begin
-   FAmbient.FColor:=AValue.FColor;
+   FAmbient.DirectColor:=AValue.Color;
    NotifyChange(Self);
 end;
 
@@ -1772,7 +1772,7 @@ end;
 //
 procedure TGLFaceProperties.SetDiffuse(AValue: TGLColor);
 begin
-   FDiffuse.FColor:=AValue.FColor;
+   FDiffuse.DirectColor:=AValue.Color;
    NotifyChange(Self);
 end;
 
@@ -1780,7 +1780,7 @@ end;
 //
 procedure TGLFaceProperties.SetEmission(AValue: TGLColor);
 begin
-   FEmission.FColor:=AValue.FColor;
+   FEmission.DirectColor:=AValue.Color;
    NotifyChange(Self);
 end;
 
@@ -1788,7 +1788,7 @@ end;
 //
 procedure TGLFaceProperties.SetSpecular(AValue: TGLColor);
 begin
-   FSpecular.FColor:=AValue.FColor;
+   FSpecular.DirectColor:=AValue.Color;
    NotifyChange(Self);
 end;
 

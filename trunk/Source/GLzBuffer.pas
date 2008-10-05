@@ -74,7 +74,7 @@ interface
 
 uses  Classes, GLMisc, OpenGL1x, GLScene, VectorGeometry, GLGraphics,
      SysUtils, GLObjects, GLBitmapFont, XOpenGL, GLTexture,
-     GLContext, GLBehaviours, XCollection, GLState, GLViewer;
+     GLContext, GLBehaviours, XCollection, GLState, GLViewer, GLColor;
 
 type
   EZBufferException = class(Exception);
