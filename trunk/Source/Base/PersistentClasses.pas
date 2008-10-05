@@ -1518,7 +1518,7 @@ end;
 function TBinaryReader.ReadWideString(vType : TValueType) : WideString;
 var
    n : Cardinal;
-   utf8buf : String;
+   utf8buf : AnsiString;
 begin
    Read(n , 4);
    case Cardinal(vType) of
