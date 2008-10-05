@@ -22,15 +22,10 @@ interface
 {$i GLScene.inc}
 
 uses
-  Classes,
-  GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot, GLMisc,
-  GLGeomObjects, GLColor,
-{$IFDEF MSWINDOWS}
-   Windows, Forms, StdCtrls, Controls, GLWin32Viewer;
-{$ENDIF}
-{$IFDEF KYLIX}
-  QForms, QStdCtrls, QControls;
-{$ENDIF}
+  Classes, Forms, StdCtrls, Controls,
+  GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
+  GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
+  GLCrossPlatform, BaseClasses;
 
 
 type
@@ -79,21 +74,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
 
 
 uses
-{$IFDEF MSWINDOWS}
-  Graphics; 
-{$ENDIF}
-{$IFDEF KYLIX}
-  QGraphics; 
-{$ENDIF}
+  Graphics;
 
 var
   MX, MY: Integer;

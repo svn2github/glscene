@@ -40,8 +40,8 @@ uses
   Classes,
 
   // GLSCene
-  GLScene, GLMisc, GLTexture, VectorGeometry, GLGraphics, GLCrossPlatform,
-  VectorTypes, GLColor;
+  GLScene, VectorGeometry, GLGraphics, GLCrossPlatform,
+  VectorTypes, GLColor, GLRenderContextInfo;
 
 type
 

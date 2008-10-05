@@ -26,8 +26,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, GLContext, GLTexture, VectorTypes, VectorGeometry,
-  GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform, GLGraphics, GLColor;
+  Classes, GLScene, GLContext, VectorTypes, VectorGeometry,
+  GeometryBB, PersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
+  GLRenderContextInfo, GLCoordinates, BaseClasses;
 
 type
    // TImposterOptions

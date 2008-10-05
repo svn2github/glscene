@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - removed Kylix support + some other old ifdefs
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>12/07/03 - DanB - Fixed crash when owner deleted        
@@ -18,18 +19,10 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Windows, Forms, XCollection, Messages, ImgList, Controls, Classes, ActnList, 
-  Menus, ComCtrls, ToolWin, 
+  Windows, Forms, XCollection, Messages, ImgList, Controls, Classes, ActnList,
+  Menus, ComCtrls, ToolWin,
   {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, XCollection, QImgList, QControls, Classes, QActnList, 
-  QMenus, QComCtrls, DesignEditors, DesignIntf; 
-{$ENDIF}
-
 
 type
   TXCollectionEditor = class(TForm)
@@ -94,22 +87,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
-{$IFDEF MSWINDOWS}
-  GLMisc, SysUtils, GLBehaviours, GLScene, Dialogs; 
-{$ENDIF}
-{$IFDEF KYLIX}
-  GLMisc, SysUtils, GLBehaviours, GLScene, QDialogs; 
-{$ENDIF}
-
+  SysUtils, GLBehaviours, GLScene, Dialogs;
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';
@@ -201,11 +182,7 @@ begin
       if Assigned(FDesigner) then
          if sel then
             FDesigner.SelectComponent(TXCollectionItem(ListView.Selected.Data))
-{$ifndef GLS_DELPHI_4}
-         else FDesigner.NoSelection;
-{$else}
          else FDesigner.SelectComponent(nil);
-{$endif}
 	end;
 end;
 
@@ -255,11 +232,7 @@ var
 begin
 	list:=GetXCollectionItemClassesList(FXCollection.ItemsClass);
 	try
-{$ifdef GLS_DELPHI_5_UP}
 		parent.Clear;
-{$else}
-		for i:=parent.Count-1 downto 0 do parent.Delete(i); 
-{$endif}
 		for i:=0 to list.Count-1 do begin
 			XCollectionItemClass:=TXCollectionItemClass(list[i]);
 			mi:=TMenuItem.Create(owner);
@@ -323,11 +296,7 @@ procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
 	if ListView.Selected<>nil then begin
       FDesigner.Modified;
-{$ifndef GLS_DELPHI_4}
-      FDesigner.NoSelection;
-{$else}
       FDesigner.SelectComponent(nil);
-{$endif}
 		TXCollectionItem(ListView.Selected.Data).Free;
       ListView.Selected.Free;
       ListViewChange(Self, nil, ctState);

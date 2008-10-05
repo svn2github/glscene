@@ -24,8 +24,9 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, GLMisc, XCollection, VectorGeometry, GLTexture,
-    GLCadencer, GLColor;
+uses Classes, GLScene, XCollection, VectorGeometry,
+    GLCadencer, GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo,
+    GLManager;
 
 type
   PThorpoint = ^TThorpoint;

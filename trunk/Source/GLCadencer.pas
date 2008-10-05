@@ -37,12 +37,9 @@ interface
 
 {$i GLScene.inc}
 
-uses GLScene, Classes, GLMisc, GLCrossPlatform,
+uses GLScene, Classes, GLCrossPlatform, BaseClasses,
    {$ifdef WIN32}
-   Windows, Controls, Messages, StdCtrls, Forms
-   {$endif}
-   {$IFDEF UNIX}
-   QForms
+   Windows, Messages
    {$endif}
    ;
 

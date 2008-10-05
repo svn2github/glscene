@@ -64,7 +64,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, GLMisc, Dialogs;
+uses Classes, VectorGeometry, GLCrossPlatform, GLTexture, BaseClasses;
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;

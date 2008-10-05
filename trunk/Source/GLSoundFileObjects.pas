@@ -22,7 +22,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, MMSystem, GLMisc, ApplicationFileIO;
+uses Classes, MMSystem, ApplicationFileIO;
 
 type
 

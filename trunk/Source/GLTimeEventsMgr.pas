@@ -21,7 +21,7 @@ unit GLTimeEventsMgr;
 interface
 
 uses
-  GLCadencer, SysUtils, Classes, GLMisc;
+  GLCadencer, SysUtils, Classes, BaseClasses;
 
 type
 
