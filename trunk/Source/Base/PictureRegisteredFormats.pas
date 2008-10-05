@@ -26,8 +26,9 @@ uses Classes, Graphics;
 {$ifdef GLS_DELPHI_6} {$define PRF_HACK_PASSES}  {$endif} // Delphi 6
 {$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif} // Delphi 7
                                                           // skip Delphi 8
-{$ifdef GLS_DELPHI_9} {$define PRF_HACK_PASSES}  {$endif} // Delphi 2005
-{$ifdef GLS_DELPHI_10}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2006
+{$ifdef GLS_DELPHI_2005} {$define PRF_HACK_PASSES}  {$endif} // Delphi 2005
+{$ifdef GLS_DELPHI_2006}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2006
+{$ifdef GLS_DELPHI_2007}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2007
 
 {$ifndef PRF_HACK_PASSES}
   {$Message Warn 'PRF hack not tested for this Delphi version!'}
