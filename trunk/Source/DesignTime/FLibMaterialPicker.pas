@@ -4,6 +4,7 @@
 	Allows choosing a material in a material library<p>
 
     <b>Historique : </b><font size=-1><ul>
+      <li>05/09/08 - DanB - Removed Kylix support    
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - LBMaterials.OnDblClick now handled
       <li>03/07/04 - LR  - Make change for Linux
@@ -16,15 +17,8 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture, GLWin32Viewer;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, QStdCtrls, QButtons, FRMaterialPreview, QControls, Classes, GLTexture, GLLinuxViewer; 
-{$ENDIF}
-
+  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture, GLViewer{, GLMaterial};
 
 type
   TLibMaterialPicker = class(TForm)
@@ -50,13 +44,7 @@ procedure ReleaseLibMaterialPicker;
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 var
 	vLibMaterialPicker : TLibMaterialPicker;
