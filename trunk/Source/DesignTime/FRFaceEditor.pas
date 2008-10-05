@@ -3,6 +3,7 @@
    Editor fram for a TGLFaceProperties.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/09/08 - DanB - Removed Kylix support   
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
                              PoligonMode are now updated when FaceProperties are assigned
@@ -16,17 +17,9 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
   Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
-  Classes, GLTexture;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses 
-  QForms, QComCtrls, FRTrackBarEdit, QStdCtrls, FRColorEditor, QImgList, QControls, 
-  Classes, GLTexture; 
-{$ENDIF}
-
+  Classes, GLTexture{, GLMaterial};
 
 type
   TRFaceEditor = class(TFrame)
@@ -67,22 +60,10 @@ type
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 uses
-{$IFDEF MSWINDOWS}
-  Graphics; 
-{$ENDIF}
-{$IFDEF KYLIX}
-  QGraphics, Types;
-{$ENDIF}
-
+  Graphics;
 
 constructor TRFaceEditor.Create(AOwner : TComponent);
 begin

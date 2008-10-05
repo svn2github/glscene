@@ -3,6 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/10/08 - DanB - Removed Kylix support   
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
                              (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
@@ -17,17 +18,9 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-  Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls, 
-  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLWin32Viewer;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  QForms, FRMaterialPreview, FRColorEditor, QComCtrls, FRFaceEditor, QStdCtrls, QControls, 
-  Classes, GLTexture, QButtons, FRTextureEdit, GLLinuxViewer;
-{$ENDIF}
-
+  Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls,
+  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLViewer{, GLMaterial};
 
 type
   TMaterialEditorForm = class(TForm)
@@ -59,13 +52,7 @@ procedure ReleaseMaterialEditorForm;
 
 implementation
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
-
 
 var
 	vMaterialEditorForm : TMaterialEditorForm;
