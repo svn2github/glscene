@@ -33,7 +33,6 @@ requires
   vclimg;
 
 contains
-  GLMisc in '..\Source\GLMisc.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
@@ -231,6 +230,20 @@ contains
   GLGizmo in '..\Source\GLGizmo.pas',
   GLFile3DSSceneObjects in '..\Source\FileFormats\GLFile3DSSceneObjects.pas',
   GLTextureSharingShader in '..\Source\Shaders\GLTextureSharingShader.pas',
-  GLColor in '..\Source\Base\GLColor.pas';
+  GLColor in '..\Source\Base\GLColor.pas',
+  BaseClasses in '..\Source\Base\BaseClasses.pas',
+  GLCoordinates in '..\Source\Base\GLCoordinates.pas',
+  GLManager in '..\Source\GLManager.pas',
+  GLNodes in '..\Source\GLNodes.pas',
+  GLRenderContextInfo in '..\Source\GLRenderContextInfo.pas',
+  GLFileB3D in '..\Source\FileFormats\GLFileB3D.pas',
+  GLFileGL2 in '..\Source\FileFormats\GLFileGL2.pas',
+  GLFileLMTS in '..\Source\FileFormats\GLFileLMTS.pas',
+  TypesB3D in '..\Source\FileFormats\TypesB3D.pas',
+  FileB3D in '..\Source\FileFormats\FileB3D.pas',
+  FileGL2 in '..\Source\FileFormats\FileGL2.pas',
+  GLFileASE in '..\Source\FileFormats\GLFileASE.pas',
+  GLGLUTesselation in '..\Source\GLGLUTesselation.pas',
+  GLMeshBuilder in '..\Source\GLMeshBuilder.pas';
 
 end.
