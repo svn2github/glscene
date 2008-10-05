@@ -114,7 +114,7 @@
     {$DEFINE GLS_COMPILER_2009}
     {$DEFINE GLS_COMPILER_2009_UP}
     {$DEFINE GLS_COMPILER_2009_DOWN}
-  {$else}
+  {$elseif CompilerVersion<20}
     {$DEFINE GLS_COMPILER_2009_DOWN}
   {$ifend}
 
@@ -125,7 +125,7 @@
     {$DEFINE GLS_COMPILER_2007}
     {$DEFINE GLS_COMPILER_2007_UP}
     {$DEFINE GLS_COMPILER_2007_DOWN}
-  {$else}
+  {$elseif CompilerVersion<18.5}
     {$DEFINE GLS_COMPILER_2007_DOWN}
   {$ifend}
 
@@ -136,7 +136,7 @@
     {$DEFINE GLS_COMPILER_2006}
     {$DEFINE GLS_COMPILER_2006_UP}
     {$DEFINE GLS_COMPILER_2006_DOWN}
-  {$else}
+  {$elseif CompilerVersion<18.0}
     {$DEFINE GLS_COMPILER_2006_DOWN}
   {$ifend}
 
@@ -147,7 +147,7 @@
     {$DEFINE GLS_COMPILER_2005}
     {$DEFINE GLS_COMPILER_2005_UP}
     {$DEFINE GLS_COMPILER_2005_DOWN}
-  {$else}
+  {$elseif CompilerVersion<17.0}
     {$DEFINE GLS_COMPILER_2005_DOWN}
   {$ifend}
 
@@ -158,7 +158,7 @@
     {$DEFINE GLS_COMPILER_8}
     {$DEFINE GLS_COMPILER_8_UP}
     {$DEFINE GLS_COMPILER_8_DOWN}
-  {$else}
+  {$elseif CompilerVersion<16.0}
     {$DEFINE GLS_COMPILER_8_DOWN}
   {$ifend}
 
@@ -169,7 +169,7 @@
     {$DEFINE GLS_COMPILER_7}
     {$DEFINE GLS_COMPILER_7_UP}
     {$DEFINE GLS_COMPILER_7_DOWN}
-  {$else}
+  {$elseif CompilerVersion<15.0}
     {$DEFINE GLS_COMPILER_7_DOWN}
   {$ifend}
 
@@ -180,11 +180,22 @@
     {$DEFINE GLS_COMPILER_6}
     {$DEFINE GLS_COMPILER_6_UP}
     {$DEFINE GLS_COMPILER_6_DOWN}
-  {$else}
+  {$elseif CompilerVersion<14.0}
     {$DEFINE GLS_COMPILER_6_DOWN}
   {$ifend}
 
-   // We've already determined it's Delphi 6+
+
+  {$if CompilerVersion>13.0}
+    {$DEFINE GLS_COMPILER_5_UP}
+  {$elseif CompilerVersion=13.0}
+    {$DEFINE GLS_COMPILER_5}
+    {$DEFINE GLS_COMPILER_5_UP}
+    {$DEFINE GLS_COMPILER_5_DOWN}
+  {$elseif CompilerVersion<13.0}
+    {$DEFINE GLS_COMPILER_5_DOWN}
+  {$ifend}
+
+   // We've already determined it's Delphi 5+
   {$DEFINE GLS_COMPILER_5_UP}
 
   // Friendly names

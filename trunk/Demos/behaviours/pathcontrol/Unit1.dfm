@@ -14,9 +14,6 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnActivate = FormActivate
-  DesignSize = (
-    505
-    385)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -26,6 +23,7 @@ object Form1: TForm1
     Height = 370
     Camera = GLCamera1
     Buffer.BackgroundColor = clAppWorkSpace
+    FieldOfView = 149.751983642578
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object MoveBtn: TBitBtn
@@ -45,10 +43,10 @@ object Form1: TForm1
       CubeSize = 2
       VisibleAtRunTime = True
       object Cube2: TGLCube
-        Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8786063F8786063F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000000000000000A1A0203F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000404000000000000000000000803F}
       end
     end
     object GLLightSource1: TGLLightSource
@@ -58,9 +56,9 @@ object Form1: TForm1
       SpotCutOff = 180
     end
     object Sphere1: TGLSphere
+      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Position.Coordinates = {0000004500002042008009450000803F}
       Scale.Coordinates = {0000A0400000A0400000A04000000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.5
     end
     object GLCamera1: TGLCamera
