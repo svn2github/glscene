@@ -1,4 +1,4 @@
-package GLCg;
+package GLCg_DesignTime;
 
 {$R *.res}
 {$R '..\Source\CgShaders\GLSceneVCLCg.dcr'}
@@ -23,19 +23,17 @@ package GLCg;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - Cg Shaders'}
-{$IMPLICITBUILD ON}
 {$LIBSUFFIX '2009'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
 
 requires
-  vcl,
-  GLScene_RunTime;
+  rtl,
+  designide,
+  GLCg_RunTime,
+  GLScene_DesignTime;
 
 contains
-  cgGL in '..\Source\CgShaders\cgGL.pas',
-  cg in '..\Source\CgShaders\cg.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas';
+  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas';
 
 end.
