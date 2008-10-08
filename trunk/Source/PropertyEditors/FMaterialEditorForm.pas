@@ -20,7 +20,7 @@ interface
 
 uses
   Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls,
-  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLViewer{, GLMaterial};
+  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLViewer, GLMaterial;
 
 type
   TMaterialEditorForm = class(TForm)

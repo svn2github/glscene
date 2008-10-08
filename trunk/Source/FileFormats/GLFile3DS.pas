@@ -39,7 +39,7 @@ uses
   GLScene,  GLObjects,  GLVectorFileObjects, GLTexture, ApplicationFileIO,
   VectorGeometry, File3DS, Types3DS, OpenGL1x, PersistentClasses,
   GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorLists,
-  GLRenderContextInfo;
+  GLRenderContextInfo, GLMaterial;
 
 type
 

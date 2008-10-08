@@ -30,7 +30,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
   GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, BaseClasses, GLMaterial;
 
 type
   TGUISkinEditor = class(TForm)

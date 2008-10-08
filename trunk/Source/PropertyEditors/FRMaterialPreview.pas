@@ -25,7 +25,7 @@ uses
   Classes, Forms, StdCtrls, Controls,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
   GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  GLCrossPlatform, BaseClasses, GLMaterial;
 
 
 type

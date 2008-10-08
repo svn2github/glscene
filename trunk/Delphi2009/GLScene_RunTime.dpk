@@ -244,6 +244,7 @@ contains
   FileGL2 in '..\Source\FileFormats\FileGL2.pas',
   GLFileASE in '..\Source\FileFormats\GLFileASE.pas',
   GLGLUTesselation in '..\Source\GLGLUTesselation.pas',
-  GLMeshBuilder in '..\Source\GLMeshBuilder.pas';
+  GLMeshBuilder in '..\Source\GLMeshBuilder.pas',
+  GLMaterial in '..\Source\GLMaterial.pas';
 
 end.

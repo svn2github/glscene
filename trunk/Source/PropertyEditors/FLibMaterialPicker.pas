@@ -18,7 +18,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture, GLViewer{, GLMaterial};
+  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLViewer, GLMaterial;
 
 type
   TLibMaterialPicker = class(TForm)
