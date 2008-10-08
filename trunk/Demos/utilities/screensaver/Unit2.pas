@@ -16,9 +16,9 @@ unit Unit2;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms, GLMisc, GLScene,
+  Windows, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLObjects, StdCtrls, GLTexture, GLCadencer, GLWin32Viewer, GLSpaceText,
-  GLGeomObjects;
+  GLGeomObjects, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TForm2 = class(TForm)

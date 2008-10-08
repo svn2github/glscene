@@ -15,8 +15,8 @@ uses
 
   // GLScene
   GLScene, GLCadencer, GLObjects, GLSpaceText, GLPolyhedron, GLWin32Viewer,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects, GLMisc, GLGeomObjects, GLGizmo,
-  GLCrossPlatform;
+  GLBitmapFont, GLWindowsFont, GLHUDObjects, GLGeomObjects, GLGizmo,
+  GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

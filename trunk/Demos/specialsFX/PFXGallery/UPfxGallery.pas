@@ -8,9 +8,10 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   VectorGeometry,GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
   GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
-  GLMisc, GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
+  GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
   ExtCtrls, GLGeomObjects, GLKeyboard, GLSpaceText,
-  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur, GLCrossPlatform;
+  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur, GLCrossPlatform, GLCoordinates,
+  BaseClasses;
 
 const
      cRunBoost = 10;

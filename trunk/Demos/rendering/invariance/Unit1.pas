@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLMisc, GLWin32Viewer, GLTexture, JPeg,
-  GLGeomObjects, GLCrossPlatform;
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, JPeg,
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -5,9 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLODEManager, GLScene, GLObjects, GLGeomObjects, GLCadencer,
-  GLWin32Viewer, GLMisc, GLShadowPlane, StdCtrls, ComCtrls,
+  GLWin32Viewer, GLShadowPlane, StdCtrls, ComCtrls,
   ExtCtrls, GLGraph, VectorTypes, VectorGeometry, GLODECustomColliders,
-  GLCrossPlatform;
+  GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

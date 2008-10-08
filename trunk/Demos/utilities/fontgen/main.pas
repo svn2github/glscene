@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLMisc, GLBitmapFont, GLWindowsFont, StdCtrls, ExtCtrls;
+  Dialogs, GLBitmapFont, GLWindowsFont, StdCtrls, ExtCtrls;
 
 type
   TfrmMain = class(TForm)

@@ -26,9 +26,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, GLMisc, GLTexture, Classes, Controls,
+  Windows, Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
   ExtCtrls, SysUtils, VectorGeometry, GLWin32Viewer, GLGeomObjects, GLColor,
-  GLCrossPlatform;
+  GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

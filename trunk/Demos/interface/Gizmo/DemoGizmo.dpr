@@ -1,7 +1,6 @@
 Program DemoGizmo;
 
 uses
-  FastMM4,
   Forms,
   DemoGizmoForm in 'DemoGizmoForm.pas' {Form1};
 

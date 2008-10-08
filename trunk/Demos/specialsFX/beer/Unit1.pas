@@ -14,9 +14,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  GLScene, GLVectorFileObjects, GLObjects, GLMisc, GLWin32Viewer,
+  GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLFile3ds, GLCadencer, jpeg, GLGeomObjects, VectorGeometry,
-  GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform;
+  GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform, GLCoordinates,
+  BaseClasses;
 
 type
   TForm1 = class(TForm)

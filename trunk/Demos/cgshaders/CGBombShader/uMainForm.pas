@@ -18,11 +18,11 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLTexture, GLCadencer, GLSimpleNavigation,
-  GLVectorFileObjects, GLFile3DS, GLGraph,  GLMisc, GLCgBombShader,
+  GLVectorFileObjects, GLFile3DS, GLGraph, GLCgBombShader, GLMaterial,
   VectorGeometry,
 
   // FileFormats
-  JPEG, GLFileMD2, GLCrossPlatform;
+  JPEG, GLFileMD2, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

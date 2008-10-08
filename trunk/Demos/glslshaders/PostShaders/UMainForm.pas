@@ -18,7 +18,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, CheckLst, ExtCtrls, StdCtrls,
 
   // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLPostEffects,
+  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
   Opengl1x, GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
@@ -26,7 +26,8 @@ uses
   GLSLPostBlurShader, CGPostTransformationShader,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS, GLMaterial, GLCoordinates,
+  BaseClasses;
 
 type
   TPostShaderDemoForm = class(TForm)

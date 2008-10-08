@@ -20,9 +20,10 @@ uses
   ExtCtrls, StdCtrls,
 
   // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects, GLPolyhedron,
+  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
   GLVectorFileObjects, GLGraph, GLGeomObjects, VectorGeometry, GLSLBumpShader,
-  GLCustomShader, GLSLShader, GLCrossPlatform,
+  GLCustomShader, GLSLShader, GLCrossPlatform, GLMaterial, GLCoordinates,
+  BaseClasses,
 
   // FileFormats
   TGA, GLFileMS3D, GLFile3DS, JPEG, DDS, GLFileMD2, GLFileSMD;

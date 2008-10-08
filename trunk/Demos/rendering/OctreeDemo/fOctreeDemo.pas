@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLScene, GLWin32Viewer, GLMisc, VectorGeometry, StdCtrls,
+  Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
-  ComCtrls, GLCrossPlatform;
+  ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo;
 
 const
   cBOX_SIZE = 14.2;

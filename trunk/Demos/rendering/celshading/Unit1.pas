@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
-  AsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLMisc, GLObjects,
-  GLCrossPlatform;
+  AsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

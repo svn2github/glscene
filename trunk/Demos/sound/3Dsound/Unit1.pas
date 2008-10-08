@@ -47,9 +47,9 @@ unit Unit1;
 interface
 
 uses
-  Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects, GLMisc,
+  Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, GLSMFMOD, ComCtrls, Controls, GLSMBASS, StdCtrls, GLWin32Viewer,
-  GLGeomObjects, GLSMOpenAL, GLCrossPlatform;
+  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

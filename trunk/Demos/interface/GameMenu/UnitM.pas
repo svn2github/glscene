@@ -16,11 +16,11 @@ uses
   Dialogs, StdCtrls,
 
   // GLScene
-  GLScene, GLObjects, GLMisc, GLWin32Viewer, GLGeomObjects,
+  GLScene, GLObjects, GLWin32Viewer, GLGeomObjects,
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
 
   // File forrmats
-  JPEG, GLCrossPlatform;
+  JPEG, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

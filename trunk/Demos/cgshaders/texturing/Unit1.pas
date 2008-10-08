@@ -12,9 +12,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLMisc, GLWin32Viewer, GLTexture, OpenGL1x,
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, OpenGL1x,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
-  GLGraph, jpeg, GLCrossPlatform;
+  GLGraph, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

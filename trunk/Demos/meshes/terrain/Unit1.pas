@@ -44,10 +44,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData, GLColor,
+  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData, GLColor,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLCrossPlatform;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

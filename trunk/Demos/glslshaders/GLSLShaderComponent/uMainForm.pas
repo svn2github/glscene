@@ -20,11 +20,11 @@ uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, ExtCtrls, StdCtrls,
 
   // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLMisc, GLScene, GLObjects,
+  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
   Opengl1x, GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
-  GLCrossPlatform,
-  
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;
 

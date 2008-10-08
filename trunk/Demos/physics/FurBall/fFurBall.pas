@@ -7,10 +7,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLWin32Viewer, GLScene, GLObjects, GLMisc, GLCadencer, ODEImport,
+  Dialogs, GLWin32Viewer, GLScene, GLObjects, GLCadencer, ODEImport,
   StdCtrls, GLTexture, GLExtrusion, VectorGeometry, GLShadowPlane, GLNavigator,
   VerletClasses, VerletHairClasses, jpeg, GLKeyboard, ExtCtrls, ComCtrls,GLColor,
-  GLCrossPlatform;
+  GLCrossPlatform, GLCoordinates, BaseClasses;
 
 const
   cMaxWindMag = 8;

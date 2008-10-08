@@ -14,7 +14,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLColor,
   Dialogs, GLCadencer, GLScene, GLObjects, GLParticles, GLWin32Viewer,
-  GLMisc, ExtCtrls, GLMultiProxy, StdCtrls, GLTexture, GLCrossPlatform;
+  ExtCtrls, GLMultiProxy, StdCtrls, GLTexture, GLCrossPlatform, GLCoordinates,
+  BaseClasses;
 
 type
   TForm1 = class(TForm)

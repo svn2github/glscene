@@ -10,8 +10,8 @@ interface
 
 uses
   Windows, SysUtils, Classes, Controls, Forms,
-  GLMisc, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLGeomObjects, StdCtrls, GLCrossPlatform;
+  GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
+  GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

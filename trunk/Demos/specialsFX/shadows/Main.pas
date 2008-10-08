@@ -7,10 +7,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, GLScene, GLMisc, GLGraph, GLObjects, GLTexture, StdCtrls,
+  ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls,jpeg, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
   GLzBuffer, OpenGL1x, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
-  GLGeomObjects, GLCrossPlatform;
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TMainFm = class(TForm)

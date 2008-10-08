@@ -19,8 +19,9 @@ uses
 
   // GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, VectorLists, GLCadencer,
-  GLWin32Viewer, GLMisc, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
-  MeshUtils, VectorGeometry;
+  GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
+  MeshUtils, VectorGeometry, GLMaterial, GLCoordinates, BaseClasses,
+  GLRenderContextInfo;
 
 type
   TMainForm = class(TForm)

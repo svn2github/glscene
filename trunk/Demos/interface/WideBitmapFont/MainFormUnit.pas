@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLBitmapFont, GLWindowsFont, GLMisc, GLScene, StdCtrls,
+  Dialogs, GLBitmapFont, GLWindowsFont, GLScene, StdCtrls,
   GLWideBitmapFont, GLHUDObjects, GLWin32Viewer, GLSpaceText, GLCadencer,
-  GLCrossPlatform;
+  GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TMainForm = class(TForm)

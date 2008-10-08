@@ -20,8 +20,9 @@ uses
   ExtCtrls,
 
   //GLScene
-  GLTexture, GLBitmapFont, GLWindowsFont, GLScene, GLMisc, GLObjects,
-  GLCadencer, GLWin32Viewer, GLBehaviours, GLConsole, GLCrossPlatform;
+  GLTexture, GLBitmapFont, GLWindowsFont, GLScene, GLObjects,
+  GLCadencer, GLWin32Viewer, GLBehaviours, GLConsole, GLCrossPlatform,
+  GLCoordinates, BaseClasses;
 
 type
   TMainForm = class(TForm)

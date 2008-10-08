@@ -24,11 +24,12 @@ uses
   StdCtrls, ExtCtrls,
   
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer, 
-  GLMisc, GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
+  GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
   GLShadowVolume,
   
   GLKeyboard, OpenGL1x, VectorGeometry, GeometryBB, JPEG, VerletClasses, 
-  SpatialPartitioning, GLCrossPlatform;
+  SpatialPartitioning, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)

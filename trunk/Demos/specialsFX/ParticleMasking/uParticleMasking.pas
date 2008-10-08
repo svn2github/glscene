@@ -12,9 +12,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, GLBitmapFont, GLWindowsFont, GLTexture,
-  GLCadencer, GLWin32Viewer, GLMisc, GLScene, StdCtrls, GLObjects,
+  GLCadencer, GLWin32Viewer, GLScene, StdCtrls, GLObjects,
   GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
-  GLGeomObjects, AsyncTimer, GLCrossPlatform;
+  GLGeomObjects, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
+  BaseClasses;
 
 const
 

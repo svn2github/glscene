@@ -22,7 +22,8 @@ uses
   {$IFDEF LCL}lcltype, LResources, GLLCLViewer,{$ELSE}GLWin32Viewer,{$ENDIF}
   {$IFDEF WIN32} Windows,{$ENDIF}
   SysUtils, Classes, Controls, Forms, ExtCtrls,
-  GLScene, GLObjects, GLMisc, GLTexture, GLCadencer, GLCrossPlatform;
+  GLScene, GLObjects, GLTexture, GLCadencer, GLCrossPlatform, GLMaterial,
+  GLCoordinates, BaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)

@@ -12,7 +12,6 @@ uses
   Dialogs,
   GLScene,
   GLObjects,
-  GLMisc,
   GLTexture,
   GLWin32Viewer,
   TGA,
@@ -36,7 +35,7 @@ uses
   GLUserShader,
   GLProjectedTextures,
   GLCrossPlatform,
-  GLGraphics;
+  GLGraphics, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)

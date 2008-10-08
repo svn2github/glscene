@@ -25,11 +25,11 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
-  GLTexture, GLSkydome, VectorGeometry, GLMisc, GLCrossPlatform,
+  GLTexture, GLSkydome, VectorGeometry, GLCrossPlatform,
   GLAtmosphere, GLSimpleNavigation, GLBehaviours,
 
   // File formats
-  Jpeg;
+  Jpeg, GLCoordinates, BaseClasses;
 
 type
   TMainForm = class(TForm)

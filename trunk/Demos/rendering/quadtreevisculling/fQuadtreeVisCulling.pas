@@ -9,11 +9,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLWin32Viewer, GLSkydome, GLMisc, GLObjects,  jpeg, GLKeyboard,
+  Dialogs, GLScene, GLWin32Viewer, GLSkydome, GLObjects,  jpeg, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
   SpatialPartitioning, VectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
   GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls, OpenGL1x,
-  GLCrossPlatform;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
 
 type
   TfrmQuadtreeVisCulling = class(TForm)
