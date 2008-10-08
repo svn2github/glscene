@@ -37,7 +37,7 @@ requires
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  GLMisc in '..\Source\GLMisc.pas',
+  GLMaterial in '..\Source\GLMaterial.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',

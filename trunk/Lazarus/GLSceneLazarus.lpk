@@ -32,8 +32,8 @@
     <Version Major="1"/>
     <Files Count="38">
       <Item1>
-        <Filename Value="..\Source\GLMisc.pas"/>
-        <UnitName Value="GLMisc"/>
+        <Filename Value="..\Source\GLMaterial.pas"/>
+        <UnitName Value="GLMaterial"/>
       </Item1>
       <Item2>
         <Filename Value="..\Source\Base\VectorGeometry.pas"/>
