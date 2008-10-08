@@ -25,7 +25,7 @@ uses
 {$ENDIF}
 
   // GLScene
-  GLSceneRegister, GLTexture,
+  GLSceneRegister, GLTexture, GLMaterial,
 
   // CG
   Cg, CgGL, GLCgShader, GLCgBombShader;

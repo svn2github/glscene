@@ -24,8 +24,8 @@ package GLSS_FMOD;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'GLScene - FMOD Manager'}
-{$IMPLICITBUILD ON}
 {$LIBSUFFIX '2009'}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
@@ -33,7 +33,11 @@ requires
   rtl;
 
 contains
-  FMOD in '..\Source\SoundAPIs\fmod.pas',
-  GLSMFMOD in '..\Source\GLSMFMOD.pas';
+  fmod in '..\Source\SoundAPIs\fmod.pas',
+  GLSMFMOD in '..\Source\GLSMFMOD.pas',
+  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
+  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas',
+  fmoddyn in '..\Source\SoundAPIs\fmoddyn.pas';
 
 end.

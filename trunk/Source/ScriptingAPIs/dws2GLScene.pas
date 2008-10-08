@@ -16,7 +16,8 @@ interface
 uses
   Classes, SysUtils,
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc, GLScene, GLMisc, VectorGeometry;
+  dws2Functions, dws2HelperFunc, GLScene, VectorGeometry,
+  GLCoordinates;
 
 type
   Tdws2GLSceneUnit = class(Tdws2UnitComponent)

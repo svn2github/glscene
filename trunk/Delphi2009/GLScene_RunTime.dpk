@@ -245,6 +245,13 @@ contains
   GLFileASE in '..\Source\FileFormats\GLFileASE.pas',
   GLGLUTesselation in '..\Source\GLGLUTesselation.pas',
   GLMeshBuilder in '..\Source\GLMeshBuilder.pas',
-  GLMaterial in '..\Source\GLMaterial.pas';
+  GLMaterial in '..\Source\GLMaterial.pas',
+  GLDynamicTexture in '..\Source\GLDynamicTexture.pas',
+  GLRagdoll in '..\Source\GLRagdoll.pas',
+  GLVerletClasses in '..\Source\GLVerletClasses.pas',
+  BumpMapping in '..\Source\Base\BumpMapping.pas',
+  GeometryCoordinates in '..\Source\Base\GeometryCoordinates.pas',
+  VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
+  GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas';
 
 end.

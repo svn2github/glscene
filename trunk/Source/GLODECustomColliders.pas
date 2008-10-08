@@ -50,7 +50,7 @@ uses
   // GLscene
   GLODEManager, odeimport, odegl, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
-  OpenGL1x, GLTexture, GLColor;
+  OpenGL1x, GLTexture, GLColor, GLRenderContextInfo;
 
 type
   TContactPoint = class

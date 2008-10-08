@@ -6,6 +6,8 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/04/08 - DanB - Change to HackTPictureRegisteredFormats due to Char changing
+                            size in Delphi 2009
       <li>06/04/08 - DaStr - Added IFDEFs for Delphi 5 compatibility
       <li>20/12/06 - DaStr - Added a warning about optimization turned off
                              in HackTPictureRegisteredFormats (BugTrackerID=1586936)
@@ -91,7 +93,7 @@ type
 //
 procedure HackTPictureRegisteredFormats(destList : TStrings);
 var
-   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats : PChar;
+   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats : PAnsiChar;
    iCall : Integer;
    i : Integer;
    list : TList;
@@ -104,13 +106,13 @@ begin
   {$ENDIF}
 {$ENDIF}
 {$ENDIF}
-   pRegisterFileFormat:=PChar(@TPicture.RegisterFileFormat);
+   pRegisterFileFormat:=PAnsiChar(@TPicture.RegisterFileFormat);
    if pRegisterFileFormat[0]=#$FF then // in case of BPL redirector
-      pRegisterFileFormat:=PChar(PInteger(PInteger(@pRegisterFileFormat[2])^)^);
+      pRegisterFileFormat:=PAnsiChar(PInteger(PInteger(@pRegisterFileFormat[2])^)^);
    pCallGetFileFormat:=@pRegisterFileFormat[16];
    iCall:=PInteger(pCallGetFileFormat)^;
    pGetFileFormats:=@pCallGetFileFormat[iCall+4];
-   pFileFormats:=PChar(PInteger(@pGetFileFormats[2])^);
+   pFileFormats:=PAnsiChar(PInteger(@pGetFileFormats[2])^);
    list:=TList(PInteger(pFileFormats)^);
    if list<>nil then begin
       for i:=0 to list.Count-1 do begin

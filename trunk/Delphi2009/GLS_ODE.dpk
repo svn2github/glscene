@@ -24,18 +24,21 @@ package GLS_ODE;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'GLScene - ODE Manager'}
-{$IMPLICITBUILD ON}
 {$LIBSUFFIX '2009'}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
-  GLScene_RunTime;
+  GLScene_RunTime,
+  rtl;
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
   dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
   GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas';
+  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
+  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
+  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas';
 
 end.

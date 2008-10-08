@@ -5,6 +5,7 @@
    This unit is still under development.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/10/2008 - DanB - Split AddUnitSymbols into two procedures, to prevent error
       <li>23/09/2004 - SG - Added main GL constants and a few procedures
       <li>21/09/2004 - SG - Creation
    </ul></font>
@@ -21,6 +22,7 @@ uses
 type
   Tdws2OpenGL1xUnit = class(Tdws2UnitComponent)
     protected
+      procedure AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
       procedure AddUnitSymbols(SymbolTable: TSymbolTable); override;
     public
       constructor Create(AOwner: TComponent); override;
@@ -294,7 +296,6 @@ begin
                           Info.Element([i]).Element([2]).Value,
                           Info.Element([i]).Element([3]).Value);
 end;
-
 
 // ----------
 // ---------- Tdws2OpenGL1xUnit ----------
@@ -1025,6 +1026,86 @@ begin
 
   // miscellaneous
   SymbolTable.AddSymbol(TConstSymbol.Create('GL_DITHER', CardinalSymbol, GL_DITHER));
+
+  // Add extensions
+  AddExtensionUnitSymbols(SymbolTable);
+
+  // ---------- GL procedures ----------
+
+  TglPushAttrib.Create(SymbolTable, 'glPushAttrib', ['mask', 'Cardinal'], '');
+  TglPopAttrib.Create(SymbolTable, 'glPopAttrib', [], '');
+  TglPushClientAttrib.Create(SymbolTable, 'glPushClientAttrib', ['mask', 'Cardinal'], '');
+  TglPopClientAttrib.Create(SymbolTable, 'glPopClientAttrib', [], '');
+
+  TglEnable.Create(SymbolTable, 'glEnable', ['cap', 'Cardinal'], '');
+  TglDisable.Create(SymbolTable, 'glDisable', ['cap', 'Cardinal'], '');
+  TglEnableClientState.Create(SymbolTable, 'glEnableClientState', ['aarray', 'Cardinal'], '');
+  TglDisableClientState.Create(SymbolTable, 'glDisableClientState', ['aarray', 'Cardinal'], '');
+
+  TglMatrixMode.Create(SymbolTable, 'glMatrixMode', ['mode', 'Cardinal'], '');
+  TglPushMatrix.Create(SymbolTable, 'glPushMatrix', [], '');
+  TglPopMatrix.Create(SymbolTable, 'glPopMatrix', [], '');
+  TglLoadIdentity.Create(SymbolTable, 'glLoadIdentity', [], '');
+  TglLoadMatrixf.Create(SymbolTable, 'glLoadMatrixf', ['m', 'TMatrix'], '');
+  TglTranslatef.Create(SymbolTable, 'glTranslatef', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
+  TglRotatef.Create(SymbolTable, 'glRotatef', ['angle', 'Float', 'x', 'Float', 'y', 'Float', 'z', 'Float'], '');
+  TglScalef.Create(SymbolTable, 'glScalef', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
+
+  TglShadeModel.Create(SymbolTable, 'glShadeModel', ['mode', 'Cardinal'], '');
+  TglCullFace.Create(SymbolTable, 'glCullFace', ['mode', 'Cardinal'], '');
+  TglFrontFace.Create(SymbolTable, 'glFrontFace', ['mode', 'Cardinal'], '');
+  TglPolygonMode.Create(SymbolTable, 'glPolygonMode', ['face', 'Cardinal', 'mode', 'Cardinal'], '');
+  TglBegin.Create(SymbolTable, 'glBegin', ['mode', 'Cardinal'], '');
+  TglEnd.Create(SymbolTable, 'glEnd', [], '');
+  TglColor3f.Create(SymbolTable, 'glColor3f', ['red', 'Float', 'green', 'Float', 'blue', 'Float'], '');
+  TglColor4f.Create(SymbolTable, 'glColor4f', ['red', 'Float', 'green', 'Float', 'blue', 'Float', 'alpha', 'Float'], '');
+  TglNormal3f.Create(SymbolTable, 'glNormal3f', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
+  TglVertex3f.Create(SymbolTable, 'glVertex3f', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
+  TglTexCoord1f.Create(SymbolTable, 'glTexCoord1f', ['s', 'Float'], '');
+  TglTexCoord2f.Create(SymbolTable, 'glTexCoord2f', ['s', 'Float', 't', 'Float'], '');
+  TglTexCoord3f.Create(SymbolTable, 'glTexCoord3f', ['s', 'Float', 't', 'Float', 'r', 'Float'], '');
+  TglTexCoord4f.Create(SymbolTable, 'glTexCoord4f', ['s', 'Float', 't', 'Float', 'r', 'Float', 'q', 'Float'], '');
+  TglLineWidth.Create(SymbolTable, 'glLineWidth', ['width', 'Float'], '');
+
+  TglMultiTexCoord1fARB.Create(SymbolTable, 'glMultiTexCoord1fARB', ['target', 'Cardinal', 's', 'Float'], '');
+  TglMultiTexCoord2fARB.Create(SymbolTable, 'glMultiTexCoord2fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float'], '');
+  TglMultiTexCoord3fARB.Create(SymbolTable, 'glMultiTexCoord3fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float', 'r', 'Float'], '');
+  TglMultiTexCoord4fARB.Create(SymbolTable, 'glMultiTexCoord4fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float', 'r', 'Float', 'q', 'Float'], '');
+  TglActiveTextureARB.Create(SymbolTable, 'glActiveTextureARB', ['target', 'Cardinal'], '');
+  TglClientActiveTextureARB.Create(SymbolTable, 'glClientActiveTextureARB', ['target', 'Cardinal'], '');
+
+  TglTexEnvf.Create(SymbolTable, 'glTexEnvf', ['target', 'Cardinal', 'pname', 'Cardinal', 'param', 'Float'], '');
+  TglTexEnvi.Create(SymbolTable, 'glTexEnvi', ['target', 'Cardinal', 'pname', 'Cardinal', 'param', 'Integer'], '');
+
+  TglBlendFunc.Create(SymbolTable, 'glBlendFunc', ['sfactor', 'Cardinal', 'dfactor', 'Cardinal'], '');
+
+  TglDepthFunc.Create(SymbolTable, 'glDepthFunc', ['func', 'Cardinal'], '');
+  TglDepthMask.Create(SymbolTable, 'glDepthMask', ['flag', 'Byte'], '');
+  TglDepthRange.Create(SymbolTable, 'glDepthRange', ['znear', 'Float', 'zfar', 'Float'], '');
+
+  TglStencilFunc.Create(SymbolTable, 'glStencilFunc', ['func', 'Cardinal', 'ref', 'Integer', 'mask', 'Cardinal'], '');
+  TglStencilMask.Create(SymbolTable, 'glStencilMask', ['mask', 'Cardinal'], '');
+  TglStencilOp.Create(SymbolTable, 'glStencilOp', ['fail', 'Cardinal', 'zfail', 'Cardinal', 'zpass', 'Cardinal'], '');
+
+  TglLogicOp.Create(SymbolTable, 'glLogicOp', ['opcode', 'Cardinal'], '');
+end;
+
+procedure Tdws2OpenGL1xUnit.AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
+var
+  CardinalSymbol,
+  ByteSymbol : TSymbol;
+begin
+  CardinalSymbol:=SymbolTable.FindSymbol('Cardinal');
+  if not Assigned(CardinalSymbol) then begin
+    CardinalSymbol:=TBaseSymbol.Create('Cardinal', TypCardinalID, VarAsType(0, varLongWord));
+    SymbolTable.AddSymbol(CardinalSymbol);
+  end;
+
+  ByteSymbol:=SymbolTable.FindSymbol('Byte');
+  if not Assigned(ByteSymbol) then begin
+    ByteSymbol:=TBaseSymbol.Create('Byte', TypByteID, VarAsType(0, varByte));
+    SymbolTable.AddSymbol(ByteSymbol);
+  end;
 
   // ---------- extensions enumerants ----------
 
@@ -1933,64 +2014,6 @@ begin
   // NV_multisample_filter_hint
   SymbolTable.AddSymbol(TConstSymbol.Create('GL_MULTISAMPLE_FILTER_HINT_NV', CardinalSymbol, GL_MULTISAMPLE_FILTER_HINT_NV));
 
-  // ---------- GL procedures ----------
-
-  TglPushAttrib.Create(SymbolTable, 'glPushAttrib', ['mask', 'Cardinal'], '');
-  TglPopAttrib.Create(SymbolTable, 'glPopAttrib', [], '');
-  TglPushClientAttrib.Create(SymbolTable, 'glPushClientAttrib', ['mask', 'Cardinal'], '');
-  TglPopClientAttrib.Create(SymbolTable, 'glPopClientAttrib', [], '');
-
-  TglEnable.Create(SymbolTable, 'glEnable', ['cap', 'Cardinal'], '');
-  TglDisable.Create(SymbolTable, 'glDisable', ['cap', 'Cardinal'], '');
-  TglEnableClientState.Create(SymbolTable, 'glEnableClientState', ['aarray', 'Cardinal'], '');
-  TglDisableClientState.Create(SymbolTable, 'glDisableClientState', ['aarray', 'Cardinal'], '');
-
-  TglMatrixMode.Create(SymbolTable, 'glMatrixMode', ['mode', 'Cardinal'], '');
-  TglPushMatrix.Create(SymbolTable, 'glPushMatrix', [], '');
-  TglPopMatrix.Create(SymbolTable, 'glPopMatrix', [], '');
-  TglLoadIdentity.Create(SymbolTable, 'glLoadIdentity', [], '');
-  TglLoadMatrixf.Create(SymbolTable, 'glLoadMatrixf', ['m', 'TMatrix'], '');
-  TglTranslatef.Create(SymbolTable, 'glTranslatef', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
-  TglRotatef.Create(SymbolTable, 'glRotatef', ['angle', 'Float', 'x', 'Float', 'y', 'Float', 'z', 'Float'], '');
-  TglScalef.Create(SymbolTable, 'glScalef', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
-
-  TglShadeModel.Create(SymbolTable, 'glShadeModel', ['mode', 'Cardinal'], '');
-  TglCullFace.Create(SymbolTable, 'glCullFace', ['mode', 'Cardinal'], '');
-  TglFrontFace.Create(SymbolTable, 'glFrontFace', ['mode', 'Cardinal'], '');
-  TglPolygonMode.Create(SymbolTable, 'glPolygonMode', ['face', 'Cardinal', 'mode', 'Cardinal'], '');
-  TglBegin.Create(SymbolTable, 'glBegin', ['mode', 'Cardinal'], '');
-  TglEnd.Create(SymbolTable, 'glEnd', [], '');
-  TglColor3f.Create(SymbolTable, 'glColor3f', ['red', 'Float', 'green', 'Float', 'blue', 'Float'], '');
-  TglColor4f.Create(SymbolTable, 'glColor4f', ['red', 'Float', 'green', 'Float', 'blue', 'Float', 'alpha', 'Float'], '');
-  TglNormal3f.Create(SymbolTable, 'glNormal3f', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
-  TglVertex3f.Create(SymbolTable, 'glVertex3f', ['x', 'Float', 'y', 'Float', 'z', 'Float'], '');
-  TglTexCoord1f.Create(SymbolTable, 'glTexCoord1f', ['s', 'Float'], '');
-  TglTexCoord2f.Create(SymbolTable, 'glTexCoord2f', ['s', 'Float', 't', 'Float'], '');
-  TglTexCoord3f.Create(SymbolTable, 'glTexCoord3f', ['s', 'Float', 't', 'Float', 'r', 'Float'], '');
-  TglTexCoord4f.Create(SymbolTable, 'glTexCoord4f', ['s', 'Float', 't', 'Float', 'r', 'Float', 'q', 'Float'], '');
-  TglLineWidth.Create(SymbolTable, 'glLineWidth', ['width', 'Float'], '');
-
-  TglMultiTexCoord1fARB.Create(SymbolTable, 'glMultiTexCoord1fARB', ['target', 'Cardinal', 's', 'Float'], '');
-  TglMultiTexCoord2fARB.Create(SymbolTable, 'glMultiTexCoord2fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float'], '');
-  TglMultiTexCoord3fARB.Create(SymbolTable, 'glMultiTexCoord3fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float', 'r', 'Float'], '');
-  TglMultiTexCoord4fARB.Create(SymbolTable, 'glMultiTexCoord4fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float', 'r', 'Float', 'q', 'Float'], '');
-  TglActiveTextureARB.Create(SymbolTable, 'glActiveTextureARB', ['target', 'Cardinal'], '');
-  TglClientActiveTextureARB.Create(SymbolTable, 'glClientActiveTextureARB', ['target', 'Cardinal'], '');
-
-  TglTexEnvf.Create(SymbolTable, 'glTexEnvf', ['target', 'Cardinal', 'pname', 'Cardinal', 'param', 'Float'], '');
-  TglTexEnvi.Create(SymbolTable, 'glTexEnvi', ['target', 'Cardinal', 'pname', 'Cardinal', 'param', 'Integer'], '');
-
-  TglBlendFunc.Create(SymbolTable, 'glBlendFunc', ['sfactor', 'Cardinal', 'dfactor', 'Cardinal'], '');
-
-  TglDepthFunc.Create(SymbolTable, 'glDepthFunc', ['func', 'Cardinal'], '');
-  TglDepthMask.Create(SymbolTable, 'glDepthMask', ['flag', 'Byte'], '');
-  TglDepthRange.Create(SymbolTable, 'glDepthRange', ['znear', 'Float', 'zfar', 'Float'], '');
-
-  TglStencilFunc.Create(SymbolTable, 'glStencilFunc', ['func', 'Cardinal', 'ref', 'Integer', 'mask', 'Cardinal'], '');
-  TglStencilMask.Create(SymbolTable, 'glStencilMask', ['mask', 'Cardinal'], '');
-  TglStencilOp.Create(SymbolTable, 'glStencilOp', ['fail', 'Cardinal', 'zfail', 'Cardinal', 'zpass', 'Cardinal'], '');
-
-  TglLogicOp.Create(SymbolTable, 'glLogicOp', ['opcode', 'Cardinal'], '');
 end;
 
 constructor Tdws2OpenGL1xUnit.Create(AOwner: TComponent);

@@ -7,6 +7,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
+                            + register TGLSLPostBlurShader
       <li>05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
                             + GLMisc split, tidied up some old ifdefs
       <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
@@ -202,7 +204,7 @@ uses
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
    GLColor, GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
-   GLMaterial,
+   GLMaterial, GLDynamicTexture, GLSLPostBlurShader,
 
    // Image file formats
    DDS, TGA,
@@ -1819,7 +1821,8 @@ begin
                         TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
                         TGLMultiMaterialShader, TGLBumpShader,
                         TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
-                        TGLAsmShader,TGLShaderCombiner,TGLTextureSharingShader
+                        TGLAsmShader,TGLShaderCombiner,TGLTextureSharingShader,
+                        TGLSLPostBlurShader
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
