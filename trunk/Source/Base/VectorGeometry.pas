@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
+                            use TRenderContextClippingInfo to GLRenderContextInfo.pas
       <li>21/02/07 - DaStr - Bugfixed InterpolatePower() to support negative Base
                                and not round Exponent parameters
       <li>12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett
@@ -396,16 +398,6 @@ type
    // [Sx][Sy][Sz][ShearXY][ShearXZ][ShearZY][Rx][Ry][Rz][Tx][Ty][Tz][P(x,y,z,w)]
    // constants are declared for easier access (see MatrixDecompose below)
    TTransformations  = array [TTransType] of Single;
-
-   // TRenderContextClippingInfo
-   //
-   TRenderContextClippingInfo = record
-      origin : TVector;
-      clippingDirection : TVector;
-      viewPortRadius : Single; // viewport bounding radius per distance unit
-      farClippingDistance : Single;
-      frustum : TFrustum;
-   end;
 
    TPackedRotationMatrix = array [0..2] of SmallInt;
 
@@ -1575,12 +1567,6 @@ function SphereVisibleRadius(distance, radius : Single) : Single;
 function ExtractFrustumFromModelViewProjection(const modelViewProj : TMatrix) : TFrustum;
 
 //: Determines if volume is clipped or not
-function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
-                         const rcci : TRenderContextClippingInfo) : Boolean; overload;
-function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
-                         const rcci : TRenderContextClippingInfo) : Boolean; overload;
-function IsVolumeClipped(const min, max : TAffineVector;
-                         const rcci : TRenderContextClippingInfo) : Boolean; overload;
 function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
                          const Frustum : TFrustum) : Boolean; overload;
 
@@ -9663,30 +9649,6 @@ end;
 
 // IsVolumeClipped
 //
-function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
-                         const rcci : TRenderContextClippingInfo) : Boolean;
-begin
-   Result:=IsVolumeClipped(PAffineVector(@objPos)^, objRadius, rcci);
-end;
-
-// IsVolumeClipped
-//
-function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
-                         const rcci : TRenderContextClippingInfo) : Boolean;
-var
-   negRadius : Single;
-begin
-   negRadius:=-objRadius;
-   Result:=   (PlaneEvaluatePoint(rcci.frustum.pLeft, objPos)<negRadius)
-           or (PlaneEvaluatePoint(rcci.frustum.pTop, objPos)<negRadius)
-           or (PlaneEvaluatePoint(rcci.frustum.pRight, objPos)<negRadius)
-           or (PlaneEvaluatePoint(rcci.frustum.pBottom, objPos)<negRadius)
-           or (PlaneEvaluatePoint(rcci.frustum.pNear, objPos)<negRadius)
-           or (PlaneEvaluatePoint(rcci.frustum.pFar, objPos)<negRadius);
-end;
-
-// IsVolumeClipped
-//
 function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
                          const Frustum : TFrustum) : Boolean;
 var
@@ -9699,16 +9661,6 @@ begin
            or (PlaneEvaluatePoint(frustum.pBottom, objPos)<negRadius)
            or (PlaneEvaluatePoint(frustum.pNear, objPos)<negRadius)
            or (PlaneEvaluatePoint(frustum.pFar, objPos)<negRadius);
-end;
-
-// IsVolumeClipped
-//
-function IsVolumeClipped(const min, max : TAffineVector;
-                         const rcci : TRenderContextClippingInfo) : Boolean;
-begin
-   // change box to sphere
-   Result:=IsVolumeClipped(VectorScale(VectorAdd(min, max), 0.5),
-                           VectorDistance(min, max)*0.5, rcci);
 end;
 
 // MakeParallelProjectionMatrix
