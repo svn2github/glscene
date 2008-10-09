@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/10/08 - DanB - removed TGLScene.RenderedObject, moved TGLProgressEvent
+                            to BaseClasses
       <li>20/04/08 - DaStr - Added a AABB cauching mechanism to TGLBaseSceneObject
                              TGLDirectOpenGL's dimentions are now all all zeros
                              (all above changes were made by Pascal)
@@ -413,13 +415,6 @@ type
    TGLObjectStyle = (osDirectDraw, osDoesTemperWithColorsOrFaceWinding,
                      osIgnoreDepthBuffer, osNoVisibilityCulling);
    TGLObjectStyles = set of TGLObjectStyle;
-
-   // TGLProgressEvent
-   //
-   {: Progression event for time-base animations/simulations.<p>
-      deltaTime is the time delta since last progress and newTime is the new
-      time after the progress event is completed. }
-   TGLProgressEvent = procedure (Sender : TObject; const deltaTime, newTime : Double) of object;
 
    // IGLInitializable
    //
@@ -1626,7 +1621,6 @@ type
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
          FOnProgress : TGLProgressEvent;
-         FRenderedObject: TGLCustomSceneObject;
          FInitializableObjects: TGLInitializableObjectList;
 
       protected
@@ -1645,7 +1639,6 @@ type
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
 
          procedure ReadState(Reader: TReader); override;
-         function  GetRenderedObject: TGLCustomSceneObject;
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -1704,9 +1697,6 @@ type
          property Lights : TPersistentObjectList read FLights;
          property Objects : TGLSceneRootObject read FObjects;
          property CurrentBuffer : TGLSceneBuffer read FCurrentBuffer;
-         {: Stores the current rendered object.<p>
-            Useful when using shaders, to know what object we are applying the material to. }
-         property RenderedObject : TGLCustomSceneObject read GetRenderedObject;
 
          {: List of objects that request to be initialized when rendering context is active.<p>
            They are removed automaticly from this list once initialized. }
@@ -5243,8 +5233,6 @@ procedure TGLCustomSceneObject.DoRender(var ARci : TRenderContextInfo;
 begin
    // start rendering self
    if ARenderSelf then begin
-      if self.FScene<>nil then
-         self.FScene.FRenderedObject := self;
       if not ARci.ignoreMaterials then begin
          FMaterial.Apply(ARci);
          repeat
@@ -6713,7 +6701,6 @@ var
    rci : TRenderContextInfo;
    rightVector : TVector;
 begin
-   FRenderedObject := nil;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
    FillChar(rci, SizeOf(rci), 0);
@@ -7037,11 +7024,6 @@ begin
    // turn off other lights
    for i:=nbLights to maxLights-1 do
       glDisable(GL_LIGHT0+i);
-end;
-
-function TGLScene.GetRenderedObject:TGLCustomSceneObject;
-begin
-   Result := FRenderedObject;
 end;
 
 
