@@ -36,6 +36,7 @@ contains
   cgGL in '..\Source\CgShaders\cgGL.pas',
   cg in '..\Source\CgShaders\cg.pas',
   GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas';
+  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas',
+  CGPostTransformationShader in '..\Source\CgShaders\CGPostTransformationShader.pas';
 
 end.
