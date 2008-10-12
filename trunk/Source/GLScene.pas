@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>12/10/08 - DanB - added nearClippingDistance to RCI
       <li>09/10/08 - DanB - removed TGLScene.RenderedObject, moved TGLProgressEvent
                             to BaseClasses
       <li>20/04/08 - DaStr - Added a AABB cauching mechanism to TGLBaseSceneObject
@@ -6724,6 +6725,7 @@ begin
          origin:=rci.cameraPosition;
          clippingDirection:=rci.cameraDirection;
          viewPortRadius:=FViewPortRadius;
+         nearClippingDistance:=FNearPlane;
          farClippingDistance:=FNearPlane+FDepthOfView;
          frustum:=ExtractFrustumFromModelViewProjection(GetMVProj);
       end;
