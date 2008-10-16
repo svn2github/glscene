@@ -1292,8 +1292,8 @@ end;
 //
 procedure TGLBlankImage.SaveToFile(const fileName : String);
 begin
-   SaveStringToFile(fileName, '[BlankImage]'#13#10'Width='+IntToStr(Width)
-                              +#13#10'Height='+IntToStr(Height));
+   SaveAnsiStringToFile(fileName, '[BlankImage]'#13#10'Width='+IntToStr(Width)
+                                  +#13#10'Height='+IntToStr(Height));
 end;
 
 // LoadFromFile
@@ -1309,7 +1309,7 @@ begin
    if FileExists(buf) then begin
       sl:=TStringList.Create;
       try
-         sl.LoadFromFile(buf);
+         sl.LoadFromFile(buf{$IFDEF GLS_DELPHI_2009_UP},TEncoding.ASCII{$ENDIF});
          FWidth:=StrToInt(sl.Values['Width']);
          FHeight:=StrToInt(sl.Values['Height']);
       finally
@@ -1632,7 +1632,7 @@ end;
 //
 procedure TGLPicFileImage.SaveToFile(const fileName : String);
 begin
-	SaveStringToFile(fileName, PictureFileName);
+	SaveAnsiStringToFile(fileName, PictureFileName);
 end;
 
 // LoadFromFile
@@ -1645,7 +1645,7 @@ begin
    // attempt to autodetect if we are pointed to a file containing
    // a filename or directly to an image
    if SizeOfFile(fileName)<512 then begin
-   	buf:=LoadStringFromFile(fileName);
+   	buf:=LoadAnsiStringFromFile(fileName);
       if Pos(#0, buf)>0 then
          PictureFileName:=fileName
       else PictureFileName:=buf;
@@ -3208,8 +3208,8 @@ end;
 //
 procedure TGLFloatDataImage.SaveToFile(const fileName : String);
 begin
-   SaveStringToFile(fileName, '[FloatDataImage]'#13#10'Width='+IntToStr(Width)
-                              +#13#10'Height='+IntToStr(Height));
+   SaveAnsiStringToFile(fileName, '[FloatDataImage]'#13#10'Width='+IntToStr(Width)
+                                  +#13#10'Height='+IntToStr(Height));
 end;
 
 // LoadFromFile
@@ -3225,7 +3225,7 @@ begin
    if FileExists(buf) then begin
       sl:=TStringList.Create;
       try
-         sl.LoadFromFile(buf);
+         sl.LoadFromFile(buf{$IFDEF GLS_DELPHI_2009_UP},TEncoding.ASCII{$ENDIF});
          FWidth:=StrToInt(sl.Values['Width']);
          FHeight:=StrToInt(sl.Values['Height']);
       finally
