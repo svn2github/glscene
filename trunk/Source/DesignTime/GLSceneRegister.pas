@@ -204,7 +204,7 @@ uses
    GLBumpShader, GLHiddenLineShader, GLUserShader, GLShadowHDS, GLSLProjectedTextures,
    GLColor, GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
-   GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses,
+   GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
 
    // Image file formats
    DDS, TGA,
