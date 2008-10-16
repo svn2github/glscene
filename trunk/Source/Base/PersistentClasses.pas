@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/10/08 - DanB - Delphi 2009 compatibility fix for TBinaryReader.ReadString / WriteString
       <li>10/04/08 - DaStr - Added classes TGLInterfacedPersistent and
                               TGLInterfacedCollectionItem (BugTracker ID = 1938988)
       <li>11/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() once again
@@ -298,6 +299,8 @@ type
 
 		protected
 	      { Protected Declarations }
+         procedure WriteAnsiString(const aString : AnsiString); virtual;
+         procedure WriteWideString(const aString : WideString); virtual;
 
 		public
 	      { Public Declarations }
@@ -1312,13 +1315,14 @@ begin
          version:=ReadInteger;
          if version=0 then begin
             ReadListBegin;
-            while not EndOfList do case NextValue of
-               vaFalse, vaTrue : begin
+            while not EndOfList do case Cardinal(NextValue) of
+               Cardinal(vaFalse), Cardinal(vaTrue) : begin
                   // stored 'as was' value
                   ReadBoolean; // ignored
                   Add(Pointer(ReadInteger));
                end;
-               vaString, vaLString : begin
+               Cardinal(vaString), Cardinal(vaLString), Cardinal(vaWString),
+               Cardinal(vaInt64)+1 { vaUTF8String }: begin
                   // Unknown class, to be registered
                   m:=TPersistentObjectClass(FindClass(ReadString));
                   objTypes.Add(m);
@@ -1328,7 +1332,7 @@ begin
                   obj.ReadFromFiler(reader);
                   Add(obj);
                end;
-               vaInt8, vaInt16, vaInt32 : begin
+               Cardinal(vaInt8), Cardinal(vaInt16), Cardinal(vaInt32) : begin
                   // known class, direct retrieve
                   m:=TPersistentObjectClass(objTypes[ReadInteger]);
                   obj:=m.Create;
@@ -1494,6 +1498,7 @@ function TBinaryReader.ReadString : String;
 var
    n : Cardinal;
    vType : TValueType;
+   tempString: AnsiString;
 begin
    n:=0;
    vType:=ReadValue;
@@ -1508,9 +1513,10 @@ begin
    else
       ReadTypeError;
    end;
-   SetLength(Result, n);
+   SetLength(tempString, n);
    if n>0 then
-      Read(Result[1], n);
+      Read(tempString[1], n);
+   Result:=String(tempString);
 end;
 
 // ReadWideString
@@ -1615,9 +1621,9 @@ begin
    Write(cBoolToType[aBoolean], 1);
 end;
 
-// WriteString
+// WriteAnsiString
 //
-procedure TBinaryWriter.WriteString(const aString : String);
+procedure TBinaryWriter.WriteAnsiString(const aString : AnsiString);
 type
    TStringHeader = packed record
       typ : TValueType;
@@ -1637,6 +1643,35 @@ begin
       Write(sh, 5);
       Write(aString[1], sh.Length);
    end;
+end;
+
+// WriteWideString
+//
+procedure TBinaryWriter.WriteWideString(const aString : WideString);
+type
+   TStringHeader = packed record
+      typ : TValueType;
+      length : Integer;
+   end;
+var
+   sh : TStringHeader;
+begin
+   sh.Length:=Length(aString);
+   sh.typ:=vaWString;
+   Write(sh, 5);
+   Write(aString[1], sh.length*SizeOf(WideChar));
+end;
+
+// WriteString
+//
+procedure TBinaryWriter.WriteString(const aString : String);
+begin
+   {$IFDEF UNICODE}
+   // TODO: should really check if the string can be simplified to: vaString / vaLString / vaUTF8String
+   WriteWideString(aString);
+   {$ELSE}
+   WriteAnsiString(aString);
+   {$ENDIF}
 end;
 
 // WriteFloat
