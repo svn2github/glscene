@@ -6,6 +6,7 @@
    Need a short description of what it does here.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>02/04/07 - DaStr - Added $I GLScene.inc
       <li>28/07/01 - EG - Creation
    </ul></font>
@@ -124,7 +125,7 @@ begin
     SizeLabel.Enabled:=True;
     DateLabel.Caption:=DateToStr(FManager.PlugIns[Entry].FileDate);
     DateLabel.Enabled:=True;
-    DescriptionMemo.SetTextBuf(FManager.PlugIns[Entry].GetDescription);
+    DescriptionMemo.Lines.Text := FManager.PlugIns[Entry].GetDescription;
     ServiceBox.Items.Clear;
     ServiceBox.Enabled:=True;
     Services:=FManager.PlugIns[Entry].GetServices;
@@ -183,7 +184,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure NameCallback(Name: PChar); stdcall;
+procedure NameCallback(Name: PAnsiChar); stdcall;
 
 begin
   PlugInManagerPropForm.NameBox.Items.Add(StrPas(Name));

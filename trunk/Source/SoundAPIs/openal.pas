@@ -76,13 +76,13 @@ type
   PALboolean = ^TALboolean;
   //character
   TALchar = char;
-  PALchar = pchar;
+  PALchar = PAnsiChar;
   // OpenAL 8bit signed byte.
   TALbyte = ShortInt;
   PALbyte = ^TALbyte;
   // OpenAL 8bit unsigned byte.
   TALuByte = Char;
-  PALuByte = PChar;
+  PALuByte = PAnsiChar;
   // OpenAL 16bit signed short integer type.
   TALshort = SmallInt;
   PALshort = ^TALshort;
@@ -129,13 +129,13 @@ type
   PALCboolean = ^TALCboolean;
   // ALC character type
   TALCchar = char;
-  PALCchar = pchar;
+  PALCchar = PAnsiChar;
   // ALC 8bit signed byte.
   TALCbyte = ShortInt;
   PALCbyte = ^TALCbyte;
   // ALC 8bit unsigned byte.
   TALCubyte = Char;
-  PALCubyte = PChar;
+  PALCubyte = PAnsiChar;
   // ALC 16bit signed short integer type.
   TALCshort = smallint;
   PALCshort = ^TALCshort;
@@ -1581,7 +1581,7 @@ var
 
   //Obtain the address of a function (usually an extension)
   // with the name fname. All addresses are context-independent.
-  alIsExtensionPresent: function(fname: Pchar): TALboolean; cdecl;
+  alIsExtensionPresent: function(fname: PAnsiChar): TALboolean; cdecl;
 
   //Obtain the address of a function (usually an extension)
   //with the name fname. All addresses are context-independent.
@@ -1938,8 +1938,8 @@ const
   RTLD_BINDING_MASK = $003;
   LibraryLib        = {$IFDEF Linux}'dl'{$ELSE}'c'{$ENDIF};
 
-function LoadLibraryEx(Name : PChar; Flags : LongInt) : Pointer; cdecl; external LibraryLib name 'dlopen';
-function GetProcAddressEx(Lib : Pointer; Name : PChar) : Pointer; cdecl; external LibraryLib name 'dlsym';
+function LoadLibraryEx(Name : PAnsiChar; Flags : LongInt) : Pointer; cdecl; external LibraryLib name 'dlopen';
+function GetProcAddressEx(Lib : Pointer; Name : PAnsiChar) : Pointer; cdecl; external LibraryLib name 'dlsym';
 function FreeLibraryEx(Lib : Pointer) : LongInt; cdecl; external LibraryLib name 'dlclose';
 
 function LoadLibrary(Name : PChar) : THandle;
@@ -1947,7 +1947,7 @@ begin
  Result := THandle(LoadLibraryEx(Name, RTLD_LAZY));
 end;
 
-function GetProcAddress(LibHandle : THandle; ProcName : PChar) : Pointer;
+function GetProcAddress(LibHandle : THandle; ProcName : PAnsiChar) : Pointer;
 begin
  Result := GetProcAddressEx(Pointer(LibHandle), ProcName);
 end;
@@ -1963,7 +1963,7 @@ end;
 {$ENDIF}
 
 //ProcName can be case sensitive !!!
-function alProcedure(ProcName : PChar) : Pointer;
+function alProcedure(ProcName : PAnsiChar) : Pointer;
 begin
 Result := NIL;
 if Addr(alGetProcAddress) <> NIL then
@@ -2204,7 +2204,7 @@ end;
 function LoadWavStream(Stream: Tstream; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint): Boolean;
 var
   WavHeader: TWavHeader;
-  readname: pchar;
+  readname: PAnsiChar;
   name: string;
   readint: integer;
 begin

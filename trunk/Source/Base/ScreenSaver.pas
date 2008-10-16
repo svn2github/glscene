@@ -6,6 +6,7 @@
 	Component for making screen-savers an easy task<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>09/07/01 - Egg - Fix in PreviewSaver (from Marco Dissel)
       <li>12/04/00 - Egg - Added ssoEnhancedMouseMoveDetection
@@ -186,7 +187,7 @@ end;
 //
 procedure SetScreenSaverPassword;
 type
-	TSetPwdFunc = function(a: PChar; ParentHandle: THandle; b, c: Integer): Integer; stdcall;
+	TSetPwdFunc = function(a: PAnsiChar; ParentHandle: THandle; b, c: Integer): Integer; stdcall;
 var
 	mprDll : THandle;
 	p : TSetPwdFunc;

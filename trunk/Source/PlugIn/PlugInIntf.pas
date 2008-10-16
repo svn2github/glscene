@@ -7,6 +7,8 @@
    For more information see help file for writing plug-ins.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
+                     PlugIn interface stays at PAnsiChar
       <li>02/04/07 - DaStr - Added $I GLScene.inc
       <li>28/07/01 - EG - Creation
    </ul></font>
@@ -22,13 +24,13 @@ interface
 type TPIServiceType = (stRaw,stObject,stBitmap,stTexture,stImport,stExport);
      TPIServices    = set of TPIServiceType;
 
-     TEnumCallBack = procedure(Name: PChar); stdcall;
+     TEnumCallBack = procedure(Name: PAnsiChar); stdcall;
 
      TEnumResourceNames = procedure(Service: TPIServiceType; Callback: TEnumCallback); stdcall;
      TGetServices    = function : TPIServices; stdcall;
-     TGetVendor      = function : PChar; stdcall;
-     TGetDescription = function : PChar; stdcall;
-     TGetVersion     = function : PChar; stdcall;
+     TGetVendor      = function : PAnsiChar; stdcall;
+     TGetDescription = function : PAnsiChar; stdcall;
+     TGetVersion     = function : PAnsiChar; stdcall;
 
 implementation
 

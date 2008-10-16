@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Delphi 2009 compatibility fix for TPersistentObject, TTextReader and TTextWriter
       <li>16/10/08 - DanB - Delphi 2009 compatibility fix for TBinaryReader.ReadString / WriteString
       <li>10/04/08 - DaStr - Added classes TGLInterfacedPersistent and
                               TGLInterfacedCollectionItem (BugTracker ID = 1938988)
@@ -717,7 +718,7 @@ end;
 procedure TPersistentObject.SaveToStream(stream : TStream; writerClass : TVirtualWriterClass = nil);
 var
    wr : TVirtualWriter;
-   fileSig : String;
+   fileSig : AnsiString;
 begin
    if writerClass=nil then
       writerClass:=TBinaryWriter;
@@ -738,7 +739,7 @@ end;
 procedure TPersistentObject.LoadFromStream(stream : TStream; readerClass : TVirtualReaderClass = nil);
 var
    rd : TVirtualReader;
-   sig : String;
+   sig : AnsiString;
 begin
    if readerClass=nil then
       readerClass:=TBinaryReader;
@@ -1717,16 +1718,16 @@ end;
 procedure TTextReader.ReadLine(const requestedType : String = '');
 var
    line : String;
-   c : Char;
+   c : Byte;
    p : Integer;
 begin
    // will need speed upgrade, someday...
    line:='';
    repeat
       Stream.Read(c, 1);
-      if c>=#32 then
-         line:=line+c;
-   until c=#10;
+      if c>=32 then
+         line:=line+chr(c);
+   until c=10;
    line:=Trim(line);
    p:=Pos(' ', line);
    if p>0 then begin
@@ -1761,8 +1762,8 @@ begin
    ReadLine(cVTRaw);
    j:=1;
    for i:=0 to Count-1 do begin
-      PChar(@Buf)[i]:=Char((HexCharToInt(FData[j]) shl 4)
-                           +HexCharToInt(FData[j+1]));
+      PAnsiChar(@Buf)[i]:=AnsiChar((HexCharToInt(FData[j]) shl 4)
+                                   +HexCharToInt(FData[j+1]));
       Inc(j, 2);
    end;
 end;
@@ -1889,7 +1890,7 @@ end;
 //
 procedure TTextWriter.WriteLine(const valueType, data : String);
 var
-   buf : String;
+   buf : AnsiString;
 begin
    buf:=StringOfChar(' ', FIndentLevel)+valueType+' '+data+#13#10;
    Stream.Write(buf[1], Length(buf));
@@ -1907,7 +1908,7 @@ begin
    SetLength(data, Count*2);
    j:=1;
    for i:=0 to Count-1 do begin
-      b:=Integer(PChar(@buf)[i]);
+      b:=Integer(PAnsiChar(@buf)[i]);
       data[j]:=cNibbleToHex[b shr 4];
       data[j+1]:=cNibbleToHex[b and 15];
       Inc(j, 2);

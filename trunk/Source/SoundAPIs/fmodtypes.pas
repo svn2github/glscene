@@ -808,7 +808,7 @@ const
 }
 type
   TFSoundTOCTag = record
-    Name: array [0..3] of Char;             // The string "TOC" (4th character is 0), just in case this structure is accidentally treated as a string.
+    Name: array [0..3] of AnsiChar;             // The string "TOC" (4th character is 0), just in case this structure is accidentally treated as a string.
     NumTracks: Integer;                     // The number of tracks on the CD.
     Min: array [0..99] of Integer;          // The start offset of each track in minutes.
     Sec: array [0..99] of Integer;          // The start offset of each track in seconds.

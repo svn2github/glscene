@@ -63,6 +63,7 @@ UNIT odeimport;
   ***********************************************************************
 
   Change history
+  2008.10.16 - UweR - Compatibility fix for Delphi 2009
   2008.02.06 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello; "InitOde" and "CloseODE" in public interface declaration)
   2008.02.05 - PR - Fixes to breakable joints and class id's
   2008.01.23 - PR - Massive update for ode 0.9x
@@ -1092,7 +1093,7 @@ struct dxHashSpace : public dxSpace {
   function dWorldGetContactMaxCorrectingVel(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactMaxCorrectingVel'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetContactSurfaceLayer(const World: PdxWorld; const depth: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetContactSurfaceLayer(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWorldExportDIF(const World: PdxWorld; fileHandle: cardinal; const world_name:pchar); cdecl; external {$IFDEF __GPC__}name 'dWorldExportDIF'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldExportDIF(const World: PdxWorld; fileHandle: cardinal; const world_name:PAnsiChar); cdecl; external {$IFDEF __GPC__}name 'dWorldExportDIF'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   // Damping
   function dWorldGetLinearDampingThreshold(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetLinearDampingThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};

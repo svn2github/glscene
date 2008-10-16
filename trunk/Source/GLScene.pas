@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
+                            changed PChar to Pointer where possible   
       <li>12/10/08 - DanB - added nearClippingDistance to RCI
       <li>09/10/08 - DanB - removed TGLScene.RenderedObject, moved TGLProgressEvent
                             to BaseClasses
@@ -7606,7 +7608,7 @@ procedure TGLSceneBuffer.CopyToTexture(aTexture : TGLTexture;
                                        forceCreateTexture : Boolean = False);
 var
    handle, bindTarget : Integer;
-   buf : PChar;
+   buf : Pointer;
    createTexture : Boolean;
 begin
    if RenderingContext<>nil then begin
@@ -8691,7 +8693,7 @@ procedure TGLNonVisualViewer.CopyToTextureMRT(aTexture: TGLTexture; xSrc,
   ySrc, width, height, xDest, yDest, BufferIndex: integer);
 var
    target, handle : Integer;
-   buf : PChar;
+   buf : Pointer;
    createTexture : Boolean;
 
    procedure CreateNewTexture;

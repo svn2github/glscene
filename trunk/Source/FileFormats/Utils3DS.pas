@@ -8,6 +8,7 @@
    they deal actually with the database and chunks.
 
 	<b>History :</b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>02/11/07 - DaStr - Fixed incorrect positioning when importing 3ds
                               animation (Bugtracker ID = 1824372)
                              Fixed memory leaks in the FreeChunkData() procedure
@@ -1432,13 +1433,12 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-const IndentString : PChar = #9#9#9#9#9#9#9#9#9#9#9#9;
+const
+  IndentString : string = #9#9#9#9#9#9#9#9#9#9#9#9;
 
-function Indent(Level: Integer): PChar;
-
+function Indent(Level: Integer): string;
 begin
-  Result := IndentString;
-  Inc(Result, Length(IndentString)-Level);
+  Result := Copy(IndentString, 1, Level);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1448,7 +1448,7 @@ procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS; IndentLevel
 var OutString : String;
 
 begin
-  OutString := Format('%sChunk %s ($%x), Length is %d ($%3:x)', [Indent(IndentLevel), 
+  OutString := Format('%sChunk %s ($%x), Length is %d ($%3:x)', [Indent(IndentLevel),
 	            ChunkTagToString(Chunk^.Tag), Chunk^.Tag, Chunk^.Size]);
   Strings.Add(OutString);
 end;

@@ -6,6 +6,7 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Added IFDEF for Delphi 2009
       <li>06/04/08 - DanB - Change to HackTPictureRegisteredFormats due to Char changing
                             size in Delphi 2009
       <li>06/04/08 - DaStr - Added IFDEFs for Delphi 5 compatibility
@@ -31,6 +32,7 @@ uses Classes, Graphics;
 {$ifdef GLS_DELPHI_2005} {$define PRF_HACK_PASSES}  {$endif} // Delphi 2005
 {$ifdef GLS_DELPHI_2006}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2006
 {$ifdef GLS_DELPHI_2007}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2007
+{$ifdef GLS_DELPHI_2009}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2009
 
 {$ifndef PRF_HACK_PASSES}
   {$Message Warn 'PRF hack not tested for this Delphi version!'}

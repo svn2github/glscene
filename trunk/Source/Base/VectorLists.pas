@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>01/03/08 - DaStr - Added Borland-style persistency support to TBaseList
       <li>29/03/07 - DaStr - Added more explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -786,24 +787,24 @@ end;
 // ReadItemsData
 procedure TBaseList.ReadItemsData(AReader: TReader);
 var
-  lData: string;
+  lData: AnsiString;
   lOutputText: string;
 begin
   lOutputText := AReader.ReadString;
   SetLength(lData, Length(lOutputText) div 2 + 1);
-  HexToBin(PChar(lOutputText), PChar(lData), Length(lData));
+  HexToBin(PChar(lOutputText), PAnsiChar(lData), Length(lData));
   LoadFromString(lData);
 end;
 
 // WriteItemsData
 procedure TBaseList.WriteItemsData(AWriter: TWriter);
 var
-  lData: string;
-  lOutputText: string;
+  lData: AnsiString;
+  lOutputText: String;
 begin
   lData := SaveToString;
   SetLength(lOutputText, Length(lData) * 2);
-  BinToHex(PChar(lData), PChar(lOutputText), Length(lData));
+  BinToHex(PAnsiChar(lData), PChar(lOutputText), Length(lData));
   AWriter.WriteString(lOutputText);
 end;
 

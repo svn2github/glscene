@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
       <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
       <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
                              Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
@@ -58,7 +59,7 @@ function StrToFloatDef(const strValue : String; defValue : Extended = 0) : Exten
 //: Converts a string into color
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
 //: Converts a string into color
-function TryStringToColorAdvanced(const Str: string; var OutColot: TColor): Boolean;
+function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
 //: Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
@@ -280,7 +281,7 @@ end;
 
 // TryStringToColorAdvanced
 //
-function TryStringToColorAdvanced(const Str: string; var OutColot: TColor): Boolean;
+function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
 var
   Code, I: Integer;
   Temp:    string;
@@ -290,18 +291,18 @@ begin
 
   Val(Temp, I, Code); //to see if it is a number
   if Code = 0 then
-    OutColot := TColor(I)                                       //Str = $0000FF
+    OutColor := TColor(I)                                       //Str = $0000FF
   else
   begin
-    if not IdentToColor(Temp, Longint(OutColot)) then           //Str = clRed
+    if not IdentToColor(Temp, Longint(OutColor)) then           //Str = clRed
     begin
       if AnsiStartsText('clr', Temp) then                       //Str = clrRed
       begin
         Delete(Temp, 3, 1);
-        if not IdentToColor(Temp, Longint(OutColot)) then
+        if not IdentToColor(Temp, Longint(OutColor)) then
           Result := False;
       end
-      else if not IdentToColor('cl' + Temp, Longint(OutColot)) then //Str = Red
+      else if not IdentToColor('cl' + Temp, Longint(OutColor)) then //Str = Red
         Result := False;
     end;
   end;
