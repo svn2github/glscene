@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLWin32Viewer, GLMisc, GLScene, GLTexture, GLObjects, GLUtils,
+  Dialogs, GLWin32Viewer, GLScene, GLTexture, GLObjects, GLUtils,
   ComCtrls, OpenGL1x, GLContext, Jpeg, TGA, VectorGeometry, GLGeomObjects,
   GLCadencer, ExtCtrls, GLUserShader, GLGraph, VectorTypes, GLSkydome,
-  VectorLists, GLCrossPlatform;
+  VectorLists, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -107,8 +108,8 @@ begin
 
    programObject:=TGLProgramHandle.CreateAndAllocate;
 
-   programObject.AddShader(TGLVertexShaderHandle, LoadStringFromFile('ocean_vp.glsl'), True);
-   programObject.AddShader(TGLFragmentShaderHandle, LoadStringFromFile('ocean_fp.glsl'), True);
+   programObject.AddShader(TGLVertexShaderHandle, String(LoadAnsiStringFromFile('ocean_vp.glsl')), True);
+   programObject.AddShader(TGLFragmentShaderHandle, String(LoadAnsiStringFromFile('ocean_fp.glsl')), True);
 
    if not programObject.LinkProgram then 
       raise Exception.Create(programObject.InfoLog);
