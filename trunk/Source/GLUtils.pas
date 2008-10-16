@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
       <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
                              Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
@@ -71,9 +72,9 @@ function ParseInteger(var p : PChar) : Integer;
 function ParseFloat(var p : PChar) : Extended;
 
 {: Saves "data" to "filename". }
-procedure SaveStringToFile(const fileName, data : String);
+procedure SaveAnsiStringToFile(const fileName: String; const data : AnsiString);
 {: Returns the content of "filename". }
-function LoadStringFromFile(const fileName : String) : String;
+function LoadAnsiStringFromFile(const fileName : String) : AnsiString;
 
 {: Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
@@ -398,7 +399,7 @@ end;
 
 // SaveStringToFile
 //
-procedure SaveStringToFile(const fileName, data : String);
+procedure SaveAnsiStringToFile(const fileName: String; const data : AnsiString);
 var
    n : Cardinal;
 	fs : TStream;
@@ -415,7 +416,7 @@ end;
 
 // LoadStringFromFile
 //
-function LoadStringFromFile(const fileName : String) : String;
+function LoadAnsiStringFromFile(const fileName : String) : AnsiString;
 var
    n : Cardinal;
 	fs : TStream;
