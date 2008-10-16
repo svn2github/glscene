@@ -229,7 +229,7 @@ object MainForm: TMainForm
     Ranges = <
       item
         StartASCII = #0
-        StopASCII = #1103
+        StopASCII = #255
         StartGlyphIdx = 0
       end>
     Left = 192

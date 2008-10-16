@@ -100,7 +100,7 @@ begin
   else
   if Command.strings[0] = 'exit' then
   begin
-    Close;
+    Application.Terminate;
     Command.UnknownCommand := False; // user won't see it anyway, but you should
                                      // get used to puting this line in every
                                      // command you recognize :)
