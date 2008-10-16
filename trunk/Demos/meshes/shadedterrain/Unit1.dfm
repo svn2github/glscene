@@ -458,7 +458,7 @@ object Form1: TForm1
     Top = 136
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
-    ElevationHDS = GLBitmapHDS1
+    HeightDataSource = GLBitmapHDS1
     BumpmapLibrary = GLMaterialLibrary1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
     BumpScale = 0.100000001490116
