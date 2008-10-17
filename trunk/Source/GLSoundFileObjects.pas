@@ -497,7 +497,7 @@ begin
    SetLength(data, totalSize);
    stream.Position:=startPosition;
    if totalSize>0 then
-      stream.Read(data[1], totalSize);
+      stream.Read(data[0], totalSize);
    // update Sampling data
    with waveFormat do begin
       Sampling.Frequency:=nSamplesPerSec;
