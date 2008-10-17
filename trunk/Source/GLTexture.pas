@@ -6,6 +6,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
       <li>08/10/08 - DanB - split materials related stuff into GLMaterial.pas
       <li>06/10/08 - DanB - added Assert check for trying to create texture images
       <li>05/10/08 - DanB - separated texture image editor from texture unit
@@ -1964,7 +1965,7 @@ procedure TGLTexture.NotifyChange(Sender : TObject);
 begin
   if Assigned(Owner) then begin
     if Owner is TGLTextureExItem then
-      TGLTextureExItem(Owner).NotifyChange(Sender);
+      TGLTextureExItem(Owner).NotifyChange(Self);
   end;
 
   inherited;
@@ -2875,7 +2876,7 @@ end;
 procedure TGLTextureExItem.NotifyChange(Sender : TObject);
 begin
   if Assigned(Collection) then
-    TGLTextureEx(Collection).NotifyChange(Sender);
+    TGLTextureEx(Collection).NotifyChange(Self);
 end;
 
 // Apply
@@ -3023,7 +3024,7 @@ end;
 procedure TGLTextureEx.NotifyChange(Sender : TObject);
 begin
   if Assigned(FOwner) then
-    FOwner.NotifyChange(Sender);
+    FOwner.NotifyChange(Self);
 end;
 
 // Apply

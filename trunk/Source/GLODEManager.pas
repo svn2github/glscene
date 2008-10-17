@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
     <li>12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373) 
     <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
@@ -2121,7 +2122,7 @@ end;
 procedure TGLODEBehaviour.NotifyChange(Sender: TObject);
 begin
   if Assigned(Manager) then
-    Manager.NotifyChange(Sender);
+    Manager.NotifyChange(Self);
 end;
 
 // SetManager
@@ -2666,7 +2667,7 @@ procedure TODEElements.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
     if Owner is TGLODEBehaviour then
-      TGLODEBehaviour(Owner).NotifyChange(Sender);
+      TGLODEBehaviour(Owner).NotifyChange(Self);
 end;
 
 
@@ -2897,7 +2898,7 @@ begin
       FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
       FDirection.Normalize;
     end;
-    NotifyChange(Sender);
+    NotifyChange(Self);
   finally
     FIsCalculating:=False;
   end;
