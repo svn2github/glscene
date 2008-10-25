@@ -2,6 +2,8 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/10/08 - DanB - Delphi 2009 compatibility, extensions are now looked
+                            up from www.opengl.org/registry/
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux
       <li>06/07/04 - LR - Display some infos for Linux	
@@ -186,8 +188,8 @@ begin
 	Caption:=Caption+' (current context in '+(aSceneBuffer.Owner as TComponent).Name+')';
 	with aSceneBuffer do begin
       // common properties
-      VendorLabel.Caption:=StrPas(PChar(glGetString(GL_VENDOR)));
-      RendererLabel.Caption:=StrPas(PChar(glGetString(GL_RENDERER)));
+      VendorLabel.Caption:=String(glGetString(GL_VENDOR));
+      RendererLabel.Caption:=String(glGetString(GL_RENDERER));
       {$IFDEF MSWINDOWS}
       PixelFormat:=GetPixelFormat(Canvas.Handle);
       DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
@@ -196,8 +198,8 @@ begin
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
       {$ENDIF}
-      VersionLabel.Caption:=StrPas(PChar(glGetString(GL_VERSION)));
-      ExtStr:=PChar(glGetString(GL_EXTENSIONS));
+      VersionLabel.Caption:=String(glGetString(GL_VERSION));
+      ExtStr:=String(glGetString(GL_EXTENSIONS));
       Extensions.Clear;
       while Length(ExtStr) > 0 do begin
         I:=Pos(' ',ExtStr);
@@ -290,7 +292,7 @@ begin
    if (buf<>'GL') and (buf<>'WGL') and (buf<>'GLX') then Exit;
    p:=Pos('_', url);
    buf:=Copy(url, 1, p-1);
-   url:= 'http://oss.sgi.com/projects/ogl-sample/registry/'
+   url:= 'http://www.opengl.org/registry/specs/'
         +buf+'/'+Copy(url, p+1, 255)+'.txt';
    ShowHTMLUrl(url);
 end;
