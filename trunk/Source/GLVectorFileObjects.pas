@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/11/08 - DanB - fix to TFGVertexIndexList.BuildList
       <li>05/10/08 - DaStr - Added GLSM format backward compatibility after
                               MeshObject.LightMapTexCoords update
                               (thanks Uwe Raabe) (Bugtracker ID = 2140994)
@@ -5685,15 +5686,13 @@ begin
    Owner.Owner.DeclareArraysToOpenGL(mrci,  False);
    AttachOrDetachLightmap(mrci);
 
-   // workaround for ATI bug, disable element VBO if
-   // inside a display list
-   if Owner.Owner.UseVBO and not InsideList then
+   if Owner.Owner.UseVBO then
    begin
       SetupVBO;
 
       FIndexVBO.Bind;
-      glDrawRangeElements(cFaceGroupMeshModeToOpenGL[Mode], 0, VertexIndices.Count, VertexIndices.Count,
-                          GL_UNSIGNED_INT, nil);
+      glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
+                     GL_UNSIGNED_INT, nil);
       FIndexVBO.UnBind;
    end
    else
