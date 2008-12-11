@@ -39,7 +39,7 @@ requires
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  GLMaterial in '..\Source\GLMaterial.pas',
+  //GLMisc in '..\Source\GLMisc.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
@@ -228,6 +228,7 @@ contains
   GLAtmosphere in '..\Source\GLAtmosphere.pas',
   GLMaterialMultiProxy in '..\Source\GLMaterialMultiProxy.pas',
   GLWideBitmapFont in '..\Source\GLWideBitmapFont.pas',
-  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas';
+  GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas',
+  GLTextureSharingShader in '..\Source\Shaders\GLTextureSharingShader.pas';
 
 end.
