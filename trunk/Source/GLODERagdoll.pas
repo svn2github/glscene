@@ -229,6 +229,9 @@ begin
   FAxis2 := Axis2;
   FParamLoStop := ParamLoStop;
   FParamHiStop := ParamHiStop;
+
+  FParamLoStop2 := ParamLoStop2;
+  FParamHiStop2 := ParamHiStop2;
 end;
 
 
@@ -320,7 +323,7 @@ begin
       vAxis := RotateAxis(Axis);
       vAxis2 := RotateAxis(Axis2);
       FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
-      dJointAttach(FJointId, FBody, TODERagdollBone(Owner).Body);
+      dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
       dJointSetUniversalAnchor(FJointId, Anchor[0], Anchor[1], Anchor[2]);
       dJointSetUniversalAxis1(FJointId, vAxis[0], vAxis[1], vAxis[2]);
       dJointSetUniversalAxis2(FJointId, vAxis2[0], vAxis2[1], vAxis2[2]);
