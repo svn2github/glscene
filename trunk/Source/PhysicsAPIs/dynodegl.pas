@@ -2,6 +2,7 @@
   ***********************************************************************
 
   Change history
+  2008.12.08 - PR dBodySetMass no longer accepts zero mass. check added
   2008.02.05 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello; added reference to odeimport)
   2007.09.11 - Mrqzzz - added reference to odeimport
   2003.02.03 - EG - Fixed CopyPosFromGeomToGL
@@ -502,7 +503,7 @@ var
 begin
   // Stup the body
   dMassSetBox(m, 1, Cube.CubeWidth, Cube.CubeHeight, Cube.CubeDepth);
-  dBodySetMass(Body, @m);
+  if m.mass>0 then dBodySetMass(Body, @m);
 
   // Setup the geom
   Geom := CreateGeomFromCube(Cube, Space);

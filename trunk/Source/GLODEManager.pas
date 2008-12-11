@@ -16,9 +16,12 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
+                         joint parms now have a 1 appended to them for first parm
+                         example dParamLoStop is now dParamLoStop1
     <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
     <li>12/04/08 - DaStr - Cleaned up uses section
-                            (thanks Sandor Domokos) (BugtrackerID = 1808373) 
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
     <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
     <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
                             Don't create contact between static objects;
@@ -2226,7 +2229,7 @@ begin
   FElements.Initialize;
   CalculateMass;
   CalibrateCenterOfMass;
-  if FBody<>nil then // mrqzzz
+  if (FMass.mass>0) and (FBody<>nil) then // mrqzzz
      dBodySetMass(FBody,@FMass);
   Enabled:=FEnabled;
 
@@ -2310,10 +2313,10 @@ var
   calcmass : TdMass;
 begin
   Result:=AChild.Create(FElements);
-  FElements.Add(Result);
+  //FElements.Add(Result);
   Result.Initialize;
   calcmass:=CalculateMass;
-  if FBody<>nil then // mrqzzz
+  if (calcMass.mass>0) and (FBody<>nil) then // mrqzzz
      dBodySetMass(FBody,@calcmass);
 end;
 
@@ -2389,7 +2392,7 @@ end;
 procedure TGLODEDynamic.SetMass(const value: TdMass);
 begin
   FMass:=value;
-  dBodySetMass(FBody,@FMass);
+  if FMass.mass>0 then dBodySetMass(FBody,@FMass);
 end;
 
 // UniqueItem
@@ -4407,7 +4410,7 @@ end;
 function TODEJointParams.GetLoStop : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamLoStop, FLoStop);
+    GetCallback(dParamLoStop1, FLoStop);
   Result:=FLoStop;
 end;
 
@@ -4416,7 +4419,7 @@ end;
 function TODEJointParams.GetHiStop : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamHiStop, FHiStop);
+    GetCallback(dParamHiStop1, FHiStop);
   Result:=FHiStop;
 end;
 
@@ -4425,7 +4428,7 @@ end;
 function TODEJointParams.GetVel : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamVel, FVel);
+    GetCallback(dParamVel1, FVel);
   Result:=FVel;
 end;
 
@@ -4434,7 +4437,7 @@ end;
 function TODEJointParams.GetFMax : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamFMax, FFMax);
+    GetCallback(dParamFMax1, FFMax);
   Result:=FFMax;
 end;
 
@@ -4443,7 +4446,7 @@ end;
 function TODEJointParams.GetFudgeFactor : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamFudgeFactor, FFudgeFactor);
+    GetCallback(dParamFudgeFactor1, FFudgeFactor);
   Result:=FFudgeFactor;
 end;
 
@@ -4452,7 +4455,7 @@ end;
 function TODEJointParams.GetBounce : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamBounce, FBounce);
+    GetCallback(dParamBounce1, FBounce);
   Result:=FBounce;
 end;
 
@@ -4461,7 +4464,7 @@ end;
 function TODEJointParams.GetCFM : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamCFM, FCFM);
+    GetCallback(dParamCFM1, FCFM);
   Result:=FCFM;
 end;
 
@@ -4470,7 +4473,7 @@ end;
 function TODEJointParams.GetStopERP : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamStopERP, FStopERP);
+    GetCallback(dParamStopERP1, FStopERP);
   Result:=FStopERP;
 end;
 
@@ -4479,7 +4482,7 @@ end;
 function TODEJointParams.GetStopCFM : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamStopCFM, FStopCFM);
+    GetCallback(dParamStopCFM1, FStopCFM);
   Result:=FStopCFM;
 end;
 
@@ -4508,7 +4511,7 @@ begin
   if Value<>FLoStop then begin
     FLoStop:=Value;
     if Assigned(SetCallback) then
-      FFlagLoStop:=not SetCallback(dParamLoStop, FLoStop)
+      FFlagLoStop:=not SetCallback(dParamLoStop1, FLoStop)
     else
       FFlagLoStop:=True;
   end;
@@ -4521,7 +4524,7 @@ begin
   if Value<>FHiStop then begin
     FHiStop:=Value;
     if Assigned(SetCallback) then
-      FFlagHiStop:=not SetCallback(dParamHiStop, FHiStop)
+      FFlagHiStop:=not SetCallback(dParamHiStop1, FHiStop)
     else
       FFlagHiStop:=True;
   end;
@@ -4534,7 +4537,7 @@ begin
   if Value<>FVel then begin
     FVel:=Value;
     if Assigned(SetCallback) then
-      FFlagVel:=not SetCallback(dParamVel, FVel)
+      FFlagVel:=not SetCallback(dParamVel1, FVel)
     else
       FFlagVel:=True;
   end;
@@ -4547,7 +4550,7 @@ begin
   if Value<>FFMax then begin
     FFMax:=Value;
     if Assigned(SetCallback) then
-      FFlagFMax:=not SetCallback(dParamFMax, FFMax)
+      FFlagFMax:=not SetCallback(dParamFMax1, FFMax)
     else
       FFlagFMax:=True;
   end;
@@ -4560,7 +4563,7 @@ begin
   if Value<>FFudgeFactor then begin
     FFudgeFactor:=Value;
     if Assigned(SetCallback) then
-      FFlagFudgeFactor:=not SetCallback(dParamFudgeFactor, FFudgeFactor)
+      FFlagFudgeFactor:=not SetCallback(dParamFudgeFactor1, FFudgeFactor)
     else
       FFlagFudgeFactor:=True;
   end;
@@ -4573,7 +4576,7 @@ begin
   if Value<>FBounce then begin
     FBounce:=Value;
     if Assigned(SetCallback) then
-      FFlagBounce:=not SetCallback(dParamBounce, FBounce)
+      FFlagBounce:=not SetCallback(dParamBounce1, FBounce)
     else
       FFlagBounce:=True;
   end;
@@ -4586,7 +4589,7 @@ begin
   if Value<>FCFM then begin
     FCFM:=Value;
     if Assigned(SetCallback) then
-      FFlagCFM:=not SetCallback(dParamCFM, FCFM)
+      FFlagCFM:=not SetCallback(dParamCFM1, FCFM)
     else
       FFlagCFM:=True;
   end;
@@ -4599,7 +4602,7 @@ begin
   if Value<>FStopERP then begin
     FStopERP:=Value;
     if Assigned(SetCallback) then
-      FFlagStopERP:=not SetCallback(dParamStopERP, FStopERP)
+      FFlagStopERP:=not SetCallback(dParamStopERP1, FStopERP)
     else
       FFlagStopERP:=True;
   end;
@@ -4612,7 +4615,7 @@ begin
   if Value<>FStopCFM then begin
     FStopCFM:=Value;
     if Assigned(SetCallback) then
-      FFlagStopCFM:=not SetCallback(dParamStopCFM, FStopCFM)
+      FFlagStopCFM:=not SetCallback(dParamStopCFM1, FStopCFM)
     else
       FFlagStopCFM:=True;
   end;
@@ -4649,15 +4652,15 @@ end;
 procedure TODEJointParams.ApplyFlagged;
 begin
   if not Assigned(SetCallback) then Exit;
-  if FFlagLoStop then SetCallback(dParamLoStop, FLoStop);
-  if FFlagHiStop then SetCallback(dParamHiStop, FHiStop);
-  if FFlagVel then SetCallback(dParamVel, FVel);
-  if FFlagFMax then SetCallback(dParamFMax, FFMax);
-  if FFlagFudgeFactor then SetCallback(dParamFudgeFactor, FFudgeFactor);
-  if FFlagBounce then SetCallback(dParamBounce, FBounce);
-  if FFlagCFM then SetCallback(dParamCFM, FCFM);
-  if FFlagStopERP then SetCallback(dParamStopERP, FStopERP);
-  if FFlagStopCFM then SetCallback(dParamStopCFM, FStopCFM);
+  if FFlagLoStop then SetCallback(dParamLoStop1, FLoStop);
+  if FFlagHiStop then SetCallback(dParamHiStop1, FHiStop);
+  if FFlagVel then SetCallback(dParamVel1, FVel);
+  if FFlagFMax then SetCallback(dParamFMax1, FFMax);
+  if FFlagFudgeFactor then SetCallback(dParamFudgeFactor1, FFudgeFactor);
+  if FFlagBounce then SetCallback(dParamBounce1, FBounce);
+  if FFlagCFM then SetCallback(dParamCFM1, FCFM);
+  if FFlagStopERP then SetCallback(dParamStopERP1, FStopERP);
+  if FFlagStopCFM then SetCallback(dParamStopCFM1, FStopCFM);
   if FFlagSuspensionERP then SetCallback(dParamSuspensionERP, FSuspensionERP);
   if FFlagSuspensionCFM then SetCallback(dParamSuspensionCFM, FSuspensionCFM);
 end;
