@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>16/01/09 - DanB - re-disable VBOs in display list to prevent AV on ATI cards
       <li>27/11/08 - DanB - fix to TFGVertexIndexList.BuildList
       <li>05/10/08 - DaStr - Added GLSM format backward compatibility after
                               MeshObject.LightMapTexCoords update
@@ -4213,7 +4214,9 @@ begin
       FillChar(lists, sizeof(lists), 0);
       SetLength(tlists, FTexCoordsEx.Count);
 
-      FUseVBO:= FUseVBO and GL_ARB_vertex_buffer_object;
+      // workaround for ATI bug, disable element VBO if
+      // inside a display list
+      FUseVBO:= FUseVBO and GL_ARB_vertex_buffer_object and not InsideList;
 
       if not FUseVBO then
       begin
