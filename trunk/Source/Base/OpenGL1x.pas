@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
       <li>05/10/08 - DanB - Moved error handling code here from GLContext.pas
                             OpenGL 3.0 support, new core features + ARB extensions
       <li>23/03/08 - DanB - Added more Vendor/EXT extensions
@@ -117,7 +118,7 @@ type
    PGLint64EXT = ^TGLint64EXT;
    {$ENDIF}
 
-   {$IFNDEF GLS_DELPHI_6_DOWN}
+   {$IFNDEF GLS_DELPHI_7_DOWN}
    GLuint64EXT = UInt64;
    TGLuint64EXT= UInt64;
    PGLuint64EXT= ^TGLuint64EXT;
@@ -5554,7 +5555,7 @@ var
    {$IFNDEF GLS_DELPHI_4_DOWN}
    glGetQueryObjecti64vEXT: procedure(id: TGLuint; pname: TGLenum; params: PGLint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    {$ENDIF}
-   {$IFNDEF GLS_DELPHI_6_DOWN}
+   {$IFNDEF GLS_DELPHI_7_DOWN}
    glGetQueryObjectui64vEXT: procedure(id: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    {$ENDIF}
 
@@ -6841,7 +6842,7 @@ begin
    {$IFNDEF GLS_DELPHI_4_DOWN}
    glGetQueryObjecti64vEXT := GLGetProcAddress('glGetQueryObjecti64vEXT');
    {$ENDIF}
-   {$IFNDEF GLS_DELPHI_6_DOWN}
+   {$IFNDEF GLS_DELPHI_7_DOWN}
    glGetQueryObjectui64vEXT := GLGetProcAddress('glGetQueryObjectui64vEXT');
    {$ENDIF}
 
