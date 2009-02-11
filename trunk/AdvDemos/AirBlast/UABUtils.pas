@@ -5,7 +5,7 @@ unit UABUtils;
 
 interface
 
-uses Classes, VectorGeometry, GLCanvas, GLTexture;
+uses Classes, VectorGeometry, GLCanvas, GLMaterial, GLRenderContextInfo;
 
 function StringToVector3(const str : String) : TAffineVector;
 function Vector3ToString(const v : TVector) : String; overload;

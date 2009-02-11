@@ -49,7 +49,7 @@ implementation
 
 {$R *.dfm}
 
-uses Keyboard, FEnterKey;
+uses GLKeyboard, FEnterKey;
 
 // Execute
 //

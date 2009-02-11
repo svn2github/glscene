@@ -5,7 +5,7 @@ unit UABVoice;
 
 interface
 
-uses Classes, FMod;
+uses Classes, FMod, FModTypes;
 
 type
 
@@ -77,7 +77,7 @@ begin
    s.Read(FSampleData[1], s.Size);
    s.Free;
 
-   FSoundSample:=FSOUND_Sample_Load(FSOUND_FREE, PChar(FSampleData),
+   FSoundSample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(AnsiString(FSampleData)),
                                        FSOUND_8BITS or FSOUND_MONO or FSOUND_HW2D
                                     or FSOUND_LOOP_OFF or FSOUND_LOADMEMORY,
                                     0, Length(FSampleData));

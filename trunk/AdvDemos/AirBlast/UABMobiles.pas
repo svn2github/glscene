@@ -6,7 +6,7 @@ unit UABMobiles;
 interface
 
 uses Classes, Graphics, UGameEngine, UAirBlastEngine, GLScene, VectorGeometry,
-   GLMisc, PersistentClasses;
+   PersistentClasses, GLRenderContextInfo, GLMaterial, GLColor;
 
 type
 

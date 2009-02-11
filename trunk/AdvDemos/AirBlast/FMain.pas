@@ -7,12 +7,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, FMod,
-  Dialogs, GLMisc, GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
   GLVectorFileObjects, GLTexture, ApplicationFileIO, UAirplane, GLCadencer,
   GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS, GLSkyBox,
   GLTexCombineShader, UAirBlastEngine, UAirBlastControler, UABControlerUI,
   GLParticleFX, GLPerlinPFX, UGameEngine, GLCanvas, GLSound, GLSMFMOD, UABVoice,
-  DToolBox, GLBitmapFont, GLWindowsFont, ExtCtrls, GLGameMenu, GLHUDObjects;
+  DToolBox, GLBitmapFont, GLWindowsFont, ExtCtrls, GLGameMenu, GLHUDObjects,
+  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TMain = class(TForm)
@@ -88,7 +89,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLFile3DS, Jpeg, Keyboard, FConfigControls, FOptionsDlg, UABUtils, GLScreen;
+uses GLFile3DS, Jpeg, GLKeyboard, FConfigControls, FOptionsDlg, UABUtils, GLScreen;
 
 const
    cPaths = 'Terrains;Models;Skymap;Textures;Missions;Sounds;Voices;Music';

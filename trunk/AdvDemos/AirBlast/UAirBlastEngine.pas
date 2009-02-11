@@ -8,7 +8,7 @@ interface
 uses Classes, UGameEngine, UAirplane, GLScene, VectorGeometry, GLVectorFileObjects,
    PersistentClasses, GLParticleFX, GLPerlinPFX, GLCadencer, GLTexture, GLCanvas,
    GLTerrainRenderer, GLSound, UABVoice, GLObjects, GLScreen, GLContext, Graphics,
-   GLWindowsFont, FMod;
+   GLWindowsFont, FMod, FModTypes, GLRenderContextInfo, GLMaterial, GLColor;
 
 type
 
@@ -1667,7 +1667,7 @@ begin
    airplane.Position:=PointMake(StringToVector3(data.Values['Position']));
    airplane.Velocity:=PointMake(StringToVector3(data.Values['Velocity']));
    airplane.SetOrientationFromVelocity(ZHmgVector);
-   airplane.Throttle:=StrToFloatDef(data.Values['Throttle'], 0.7);
+   airplane.Throttle:=GLCrossPlatform.StrToFloatDef(data.Values['Throttle'], 0.7);
    airplane.LeaderName:=data.Values['Leader'];
    airplane.SyncObject:=TGLDummyCube.CreateAsChild(SceneRoot);
    airplane.KillScore:=StrToIntDef(data.Values['KillScore'], 1);
@@ -2049,7 +2049,7 @@ begin
    if loop then
       loopOpt:=FSOUND_LOOP_NORMAL
    else loopOpt:=0;
-   sample:=FSOUND_Sample_Load(FSOUND_FREE, PChar(sampleData),
+   sample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(sampleData),
                               FSOUND_HW2D or loopOpt or FSOUND_LOADMEMORY,
                               0, Length(sampleData));
    if channel<>-1 then
@@ -2714,8 +2714,8 @@ begin
    Amount:=StrToIntDef(data.Values['Amount'], 1);
    AmountRemaining:=Amount;
    MaxSimultaneous:=StrToIntDef(data.Values['MaxSimultaneous'], 1);
-   SpawnDelay:=StrToFloatDef(data.Values['SpawnDelay'], 1);
-   DelayToNextSpawn:=StrToFloatDef(data.Values['InitialSpawnDelay'], SpawnDelay);
+   SpawnDelay:=GLCrossPlatform.StrToFloatDef(data.Values['SpawnDelay'], 1);
+   DelayToNextSpawn:=GLCrossPlatform.StrToFloatDef(data.Values['InitialSpawnDelay'], SpawnDelay);
    FCounter:=0;
 end;
 

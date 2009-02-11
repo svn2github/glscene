@@ -113,7 +113,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, DateUtils, UAirBlastEngine, KeyBoard;
+uses SysUtils, DateUtils, UAirBlastEngine, GLKeyBoard;
 
 // SaveControls
 //

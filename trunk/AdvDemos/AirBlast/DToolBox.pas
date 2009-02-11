@@ -6,7 +6,8 @@ unit DToolBox;
 interface
 
 uses
-  SysUtils, Classes, GLVectorFileObjects, GLMisc, GLScene, Graphics;
+  SysUtils, Classes, GLVectorFileObjects, GLScene, Graphics, GLNonVisualViewer,
+  GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TDMToolBox = class(TDataModule)
