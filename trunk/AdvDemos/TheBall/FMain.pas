@@ -14,10 +14,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
-  GLObjects, GLShadowPlane, GLWin32Viewer, GLMisc, GLTexture, GLMirror,
-  dynode, dynodegl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
+  GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
+  odeimport, dynodegl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
-  GLParticleFX, KeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects;
+  GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects, GLMaterial,
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
@@ -196,7 +197,7 @@ begin
    RandSeed:=0;
    levelWidth:=10;
    levelDepth:=10;
-   ParseTheBallMap(LoadStringFromFile(fileName), currentLevelStrucs, currentLevelName);
+   ParseTheBallMap(String(LoadAnsiStringFromFile(fileName)), currentLevelStrucs, currentLevelName);
    pt.deltaTime:=0;
    pt.newTime:=0;
    for i:=0 to currentLevelStrucs.Count-1 do begin

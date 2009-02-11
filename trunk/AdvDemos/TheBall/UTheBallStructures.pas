@@ -9,8 +9,8 @@ unit UTheBallStructures;
 
 interface
 
-uses Classes, SysUtils, GLScene, GLMisc, GLObjects, VectorGeometry, dynode, GLBitmapFont,
-   GLGeomObjects;
+uses Classes, SysUtils, GLScene, GLObjects, VectorGeometry, odeimport, GLBitmapFont,
+   GLGeomObjects, BaseClasses, GLColor;
 
 type
 
