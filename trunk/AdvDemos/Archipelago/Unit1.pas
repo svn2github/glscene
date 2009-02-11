@@ -25,10 +25,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
+  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, VectorLists,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLHeightTileFileHDS, GLWindowsFont,
-  GLBitmapFont, ComCtrls, GLRoamPatch, GLVectorFileObjects;
+  GLBitmapFont, ComCtrls, GLRoamPatch, GLVectorFileObjects, GLNonVisualViewer,
+  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo,
+  GLColor;
 
 type
   TForm1 = class(TForm)
@@ -96,7 +98,7 @@ implementation
 
 {$R *.DFM}
 
-uses Keyboard, OpenGL1x, GLState;
+uses GLKeyboard, OpenGL1x, GLState;
 
 const
    cWaterLevel = -10000;
