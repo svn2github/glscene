@@ -2049,7 +2049,7 @@ begin
    if loop then
       loopOpt:=FSOUND_LOOP_NORMAL
    else loopOpt:=0;
-   sample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(sampleData),
+   sample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(@sampleData[1]),
                               FSOUND_HW2D or loopOpt or FSOUND_LOADMEMORY,
                               0, Length(sampleData));
    if channel<>-1 then

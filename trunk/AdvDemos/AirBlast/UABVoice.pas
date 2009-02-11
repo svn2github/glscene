@@ -77,8 +77,8 @@ begin
    s.Read(FSampleData[1], s.Size);
    s.Free;
 
-   FSoundSample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(AnsiString(FSampleData)),
-                                       FSOUND_8BITS or FSOUND_MONO or FSOUND_HW2D
+   FSoundSample:=FSOUND_Sample_Load(FSOUND_FREE, PAnsiChar(@FSampleData[1]),
+                                       {FSOUND_8BITS or} FSOUND_MONO or FSOUND_HW2D
                                     or FSOUND_LOOP_OFF or FSOUND_LOADMEMORY,
                                     0, Length(FSampleData));
    FChannel:=-1;
