@@ -4,11 +4,12 @@ interface
 
 uses
    Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-   GLWin32Viewer, GLCadencer, GLTexture, GLMisc, GLScene, GLTerrainRenderer,
-   GLHeightData, GLObjects, VectorGeometry, GLTree, JPEG, TGA, Keyboard,
+   GLWin32Viewer, GLCadencer, GLTexture, GLScene, GLTerrainRenderer,
+   GLHeightData, GLObjects, VectorGeometry, GLTree, JPEG, TGA, GLKeyboard,
    VectorLists, GLBitmapFont, GLContext, GLWindowsFont, GLHUDObjects, GLSkydome,
    GLImposter, GLParticleFX, GLGraphics, PersistentClasses, OpenGL1x, ExtCtrls,
-   GLUtils, GLTextureCombiners, XOpenGL, GLHeightTileFileHDS;
+   GLUtils, GLTextureCombiners, XOpenGL, GLHeightTileFileHDS, GLMaterial,
+   GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo;
 
 type
    TForm1 = class(TForm)
@@ -477,12 +478,12 @@ begin
    glPushMatrix;
 
    // Mirror coordinates
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
    refMat:=MakeReflectionMatrix(NullVector, YVector);
    glMultMatrixf(@refMat);
    glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
-   GLScene.CurrentBuffer.PushModelViewMatrix(curMat);
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
+   TGLSceneBuffer(rci.buffer).PushModelViewMatrix(curMat);
 
    glFrontFace(GL_CW);
 
@@ -517,9 +518,9 @@ begin
    rci.rcci.frustum:=frustumBackup;
 
    // Restore to "normal"
-   GLScene.CurrentBuffer.PopModelViewMatrix;
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
-   GLScene.SetupLights(GLScene.CurrentBuffer.LimitOf[limLights]);
+   TGLSceneBuffer(rci.buffer).PopModelViewMatrix;
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
+   GLScene.SetupLights(TGLSceneBuffer(rci.buffer).LimitOf[limLights]);
 
    glFrontFace(GL_CCW);
    glPopMatrix;
@@ -671,8 +672,8 @@ begin
    if not Assigned(reflectionProgram) then begin
       reflectionProgram:=TGLProgramHandle.CreateAndAllocate;
 
-      reflectionProgram.AddShader(TGLVertexShaderHandle, LoadStringFromFile('media\water_vp.glsl'));
-      reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadStringFromFile('media\water_fp.glsl'));
+      reflectionProgram.AddShader(TGLVertexShaderHandle, LoadAnsiStringFromFile('media\water_vp.glsl'));
+      reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadAnsiStringFromFile('media\water_fp.glsl'));
       if not reflectionProgram.LinkProgram then
          raise Exception.Create(reflectionProgram.InfoLog);
       if not reflectionProgram.ValidateProgram then
