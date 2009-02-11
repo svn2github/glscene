@@ -8,10 +8,11 @@ unit Unit1;
 interface
 
 uses
-  Windows,Forms,ExtCtrls,GLCadencer,GLScene,GLObjects,GLMisc,
+  Windows,Forms,ExtCtrls,GLCadencer,GLScene,GLObjects,
   ComCtrls,Classes,Controls,GLWin32Viewer,SysUtils,StdCtrls,
   GLVectorFileObjects,GLShadowPlane,VectorGeometry,GLTexture,
-  GLParticleFX,JPeg,Dialogs,
+  GLParticleFX,JPeg,Dialogs, GLMaterial, GLCoordinates, GLCrossPlatform,
+  BaseClasses,
 
   GLFileMD3, // MD3 loading into GLScene
   Q3MD3;     // Misc. Quake3 helper structures and functions

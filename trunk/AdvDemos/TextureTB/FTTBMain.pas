@@ -12,9 +12,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLHUDObjects, GLScene, GLMisc, ExtCtrls,
+  Dialogs, GLObjects, GLHUDObjects, GLScene, ExtCtrls,
   GLWin32Viewer, ComCtrls, ActnList, Menus, ImgList, JPeg, TGA, ToolWin,
-  ExtDlgs, StdCtrls;
+  ExtDlgs, StdCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TTTBMain = class(TForm)
