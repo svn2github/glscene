@@ -37,9 +37,9 @@ interface
 
 {$i GLScene.inc}
 
-uses GLScene, Classes, GLCrossPlatform, BaseClasses,
+uses GLScene, Classes, GLCrossPlatform, BaseClasses
    {$ifdef WIN32}
-   Windows, Messages
+   ,Windows, Messages
    {$endif}
    ;
 
