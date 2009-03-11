@@ -28,7 +28,7 @@ uses
   GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, VectorLists,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLHeightTileFileHDS, GLWindowsFont,
-  GLBitmapFont, ComCtrls, GLRoamPatch, GLVectorFileObjects, GLNonVisualViewer,
+  GLBitmapFont, ComCtrls, GLRoamPatch, GLVectorFileObjects,
   GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo,
   GLColor;
 
