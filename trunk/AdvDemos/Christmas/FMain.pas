@@ -22,10 +22,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer, GLMisc,
+  Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, VectorGeometry,
   GLLensFlare, GLSound, GLSMBASS, GLBitmapFont, GLWindowsFont, GLHUDObjects,
-  ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects;
+  ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
+  GLCoordinates, BaseClasses, GLCrossPlatform, GLColor;
 
 type
   TMain = class(TForm)
@@ -151,8 +152,8 @@ begin
    Viewer.ResetPerformanceMonitor;
 
    if GLSMBASS.Active and (bStream=0) then begin
-      bStream:=BASS_StreamCreateFile(false, PChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
-      BASS_StreamPlay(bStream, False, 0);
+      bStream:=BASS_StreamCreateFile(false, PAnsiChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
+      BASS_ChannelPlay(bStream, False);
    end;
 
    DecodeDate(Now, y, m, d);
