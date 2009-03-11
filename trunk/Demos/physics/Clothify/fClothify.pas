@@ -458,7 +458,6 @@ begin
 
       RecalcMeshNormals(GLActor1);
 
-      GLActor1.Position.X := GLActor1.Position.X + 0.001;
    end;
 end;
 
