@@ -6,7 +6,7 @@ unit DToolBox;
 interface
 
 uses
-  SysUtils, Classes, GLVectorFileObjects, GLScene, Graphics, GLNonVisualViewer,
+  SysUtils, Classes, GLVectorFileObjects, GLScene, Graphics,
   GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
