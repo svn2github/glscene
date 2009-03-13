@@ -10,7 +10,8 @@ uses
   ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls,jpeg, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
   GLzBuffer, OpenGL1x, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLBehaviours;
 
 type
   TMainFm = class(TForm)

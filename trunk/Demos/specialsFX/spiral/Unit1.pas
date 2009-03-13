@@ -131,7 +131,7 @@ procedure TForm1.GLSceneViewerMouseMove(Sender: TObject;
 begin
    // Mouse moved in the Viewer (windowed or fullscreen mode)
    if ssRight in Shift then
-      GLCamera.Position.Y:=(GLScene.CurrentBuffer.Height div 2-Y)*0.1/GLCamera.SceneScale;
+      GLCamera.Position.Y:=(GLSceneViewer.Height div 2-Y)*0.1/GLCamera.SceneScale;
    // Ensures we don't flood the event system with mouse moves (high priority events)
    // and then prevent the cadencer from progressing (low priority events)
    GLCadencer.Progress;
