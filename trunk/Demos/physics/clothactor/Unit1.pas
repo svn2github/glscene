@@ -153,7 +153,7 @@ begin
 
   // Load the cape
   Cape.LoadFromFile('cape.3ds');
-  Cape.Position.Y:=GLActor1.BoundingSphereRadius*0.5-10;
+  Cape.Position.Y:=GLActor1.BoundingSphereRadius-10;
   PrepareMeshForNormalsRecalc(Cape);
   Cape.BuildSilhouetteConnectivityData;
 
@@ -162,7 +162,7 @@ begin
     Image.LoadFromFile('beigemarble.jpg');
     Disabled:=False;
   end;
-  GLPlane1.Position.Y:=-GLActor1.BoundingSphereRadius*0.5;
+  GLPlane1.Position.Y:=-GLActor1.BoundingSphereRadius;
 
   // Setting up the verlet world using the optional dynamic octree can
   // give good perfamnce increases.
