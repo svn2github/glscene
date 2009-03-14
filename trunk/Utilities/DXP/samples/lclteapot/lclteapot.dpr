@@ -26,7 +26,7 @@ begin
    light:=TGLLightSource(scene.Objects.AddNewChild(TGLLightSource));
    light.Position.SetPoint(10, 15, 20);
 
-   camera:=TGLCamera(scene.Cameras.AddNewChild(TGLCamera));
+   camera:=TGLCamera(scene.Objects.AddNewChild(TGLCamera));
    camera.TargetObject:=teapot;
    camera.SceneScale:=4;
    camera.Position.SetPoint(4, 2, 1);

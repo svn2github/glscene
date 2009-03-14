@@ -3,9 +3,10 @@
 //
 {: GLSceneEdit<p>
 
-   Handles all the color and texture stuff.<p>
+   Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
   <li>12/07/07 - DaStr - Improved cross-platform compatibility
@@ -178,7 +179,7 @@ type
     FSelectedItems:Integer; //
 
     FScene: TGLScene;
-    FObjectNode, FCameraNode: TTreeNode;
+    FObjectNode: TTreeNode;
     FCurrentDesigner: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF};
     FLastMouseDownPos : TPoint;
 
@@ -402,12 +403,6 @@ begin
          ImageIndex:=ObjectManager.SceneRootIndex;
          SelectedIndex:=ImageIndex;
       end;
-      // next the root for all cameras
-      FCameraNode:=AddChild(CurrentNode, glsCameraRoot);
-      with FCameraNode do begin
-         ImageIndex:=ObjectManager.CameraRootIndex;
-         SelectedIndex:=ObjectManager.CameraRootIndex;
-      end;
       // and the root for all objects
       FObjectNode:=AddChild(CurrentNode, glsObjectRoot);
       with FObjectNode do begin
@@ -493,13 +488,6 @@ begin
   Tree.Items.BeginUpdate;
   with FScene do
   begin
-    if Assigned(Cameras) then
-    begin
-      FCameraNode.Data:=Cameras;
-      for I:=0 to Cameras.Count - 1 do AddNodes(FCameraNode, Cameras[I]);
-      FCameraNode.Expand(False);
-    end;
-
     if Assigned(Objects) then
 	 begin
       FObjectNode.Data:=Objects;
@@ -518,8 +506,6 @@ begin
    // delete all subtrees (empty tree)
    Tree.Items.BeginUpdate;
    try
-      FCameraNode.DeleteChildren;
-      FCameraNode.Data:=nil;
       with FObjectNode do begin
          DeleteChildren;
 			Data:=nil;
@@ -891,9 +877,9 @@ var
    Node: TTreeNode;
 begin
    if Assigned(FCurrentDesigner) then begin
-      AObject:=TGLBaseSceneObject(FCurrentDesigner.CreateComponent(TGLCamera, FScene.Cameras, 0, 0, 0, 0));
-      FScene.Cameras.AddChild(AObject);
-      Node:=AddNodes(FCameraNode, AObject);
+      AObject:=TGLBaseSceneObject(FCurrentDesigner.CreateComponent(TGLCamera, FScene.Objects, 0, 0, 0, 0));
+      FScene.Objects.AddChild(AObject);
+      Node:=AddNodes(FObjectNode, AObject);
       Node.Selected:=True;
       FCurrentDesigner.Modified;
    end;
@@ -1168,8 +1154,7 @@ end;
 {$IFDEF GLS_DELPHI_6_UP}
 function TGLSceneEditorForm.CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
 begin
-   Result:=((obj is TGLCamera) or (destination<>FScene.Cameras))
-           and (obj is TGLBaseSceneObject);
+   Result:= Assigned(obj) and Assigned(destination);
 end;
 {$ENDIF}
 
@@ -1404,7 +1389,7 @@ begin
             FCurrentDesigner.SelectComponent(TGLBaseSceneObject(selNode.Data))
          else FCurrentDesigner.SelectComponent(FScene);
          // enablings
-         ACAddCamera.Enabled:=(selNode=FCameraNode);
+         ACAddCamera.Enabled:=((selNode=FObjectNode) or selNode.HasAsParent(FObjectNode));
          ACAddObject.Enabled:=((selNode=FObjectNode) or selNode.HasAsParent(FObjectNode));
          ACAddBehaviour.Enabled:=(selNode.HasAsParent(FObjectNode));
          ACAddEffect.Enabled:=(selNode.HasAsParent(FObjectNode));

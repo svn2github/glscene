@@ -252,6 +252,7 @@ contains
   BumpMapping in '..\Source\Base\BumpMapping.pas',
   GeometryCoordinates in '..\Source\Base\GeometryCoordinates.pas',
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
-  GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas';
+  GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
+  GLObjectManager in '..\Source\GLObjectManager.pas';
 
 end.
