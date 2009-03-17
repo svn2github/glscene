@@ -348,7 +348,7 @@ var
    d : Single;
    camPos : TVector;
 begin
-   if not IsVolumeClipped(VectorAdd(aParticle.Position, cTreeCenteringOffset), 30, rci.rcci) then begin;
+   if not IsVolumeClipped(VectorAdd(aParticle.Position, cTreeCenteringOffset), 30, rci.rcci.frustum) then begin;
       VectorSubtract(rci.cameraPosition, aParticle.Position, camPos);
       d:=VectorNorm(camPos);
       if d>Sqr(180) then begin
