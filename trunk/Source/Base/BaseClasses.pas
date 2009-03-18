@@ -30,12 +30,12 @@ type
    TGLProgressEvent = procedure (Sender : TObject; const deltaTime, newTime : Double) of object;
 
 
-   IGLNotifyAble = interface
+   IGLNotifyAble = interface(IInterface)
    ['{00079A6C-D46E-4126-86EE-F9E2951B4593}']
      procedure NotifyChange(Sender : TObject);
    end;
 
-  IGLProgessAble = interface
+  IGLProgessAble = interface(IInterface)
   ['{95E44548-B0FE-4607-98D0-CA51169AF8B5}']
 			procedure DoProgress(const progressTime : TProgressTimes);
   end;
