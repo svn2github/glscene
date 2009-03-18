@@ -13,7 +13,7 @@ unit GLCoordinates;
 
 interface
 
-uses Classes, VectorGeometry, VectorTypes, OpenGL1x, BaseClasses;
+uses Classes, VectorGeometry, VectorTypes, OpenGL1x, BaseClasses, GLCrossPlatform;
 
 {$I GLScene.inc}
 
