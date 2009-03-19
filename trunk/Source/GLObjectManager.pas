@@ -23,7 +23,7 @@ unit GLObjectManager;
 
 interface
 
-uses Classes, Controls, GLCrossPlatform, GLScene;
+uses Classes, Graphics, Controls, GLCrossPlatform, GLScene;
 
 type
 
@@ -192,7 +192,9 @@ begin
   bmp := TBitmap.Create;
   try
     // Try loading bitmap from module that class is in
+    {$IFNDEF FPC}
     GLLoadBitmapFromInstance(FindClassHInstance(ASceneObject), bmp, resBitmapName);
+    {$ENDIF}
     if bmp.Width=0 then
       GLLoadBitmapFromInstance(HInstance, bmp, resBitmapName);
     // If resource was found, register scene object with bitmap
@@ -313,7 +315,9 @@ begin
          {$ifdef WIN32}
          GLLoadBitmapFromInstance(ResourceModule, bmp,'gls_cross');
          FOverlayIndex:=AddMasked(bmp, Pixels[0, 0]);
+         {$IFNDEF FPC}
          Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
+         {$ENDIF}
          {$endif}
          GLLoadBitmapFromInstance(ResourceModule, bmp,'gls_root');
          FSceneRootIndex:=AddMasked(bmp, Pixels[0, 0]);

@@ -33,7 +33,7 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes, SysUtils, Math,
 
   // GLScene
   GLScene,  GLObjects,  GLVectorFileObjects, GLTexture, ApplicationFileIO,

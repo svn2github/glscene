@@ -20,10 +20,10 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Messages, Graphics, Forms, Classes, Menus, LMessages,
+  Windows, Messages, Graphics, Forms, Classes, Controls, Menus, LMessages, LCLType,
 
   // GLScene
-  GLScene, Controls,  GLContext;
+  GLScene, GLContext;
 
 type
    // TVSyncMode
@@ -336,7 +336,7 @@ end;
 //
 procedure TGLSceneViewer.LMPaint(var Message: TLMPaint);
 var
-   PS : TPaintStruct;
+   PS : Windows.TPaintStruct;
    p : TPoint;
 begin
    p:=ClientToScreen(Point(0, 0));

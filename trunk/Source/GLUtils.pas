@@ -25,7 +25,7 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes, SysUtils, Graphics,
 
   // GLScene
   VectorGeometry, GLCrossPlatform;

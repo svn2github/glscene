@@ -51,7 +51,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes,
+uses Classes, Graphics,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
 {$endif}
@@ -1265,7 +1265,7 @@ begin
   aBitmap.PixelFormat:=glpf32bit;
   for y:=0 to FHeight-1 do begin
     pSrc:=@PAnsiChar(FData)[y*(FWidth*4)];
-    pDest:=aBitmap.ScanLine[FHeight-1-y];
+    pDest := BitmapScanLine(aBitmap, FHeight-1-y);
     BGRA32ToRGBA32(pSrc, pDest, FWidth);
   end;
 end;
