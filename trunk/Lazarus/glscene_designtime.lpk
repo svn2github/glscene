@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="GLScene_DesignTime"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\Source\;C:\Downloads\GLScene\Source\PropertyEditors\"/>
+        <OtherUnitFiles Value="C:\Downloads\GLScene\Source\DesignTime\;C:\Downloads\GLScene\Source\;C:\Downloads\GLScene\Source\PropertyEditors\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+          <CStyleOperator Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Major="1"/>
+    <Files Count="4">
+      <Item1>
+        <Filename Value="..\Source\DesignTime\GLLazarusRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLLazarusRegister"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\PropertyEditors\FVectorEditor.lfm"/>
+        <Type Value="LFM"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\PropertyEditors\FVectorEditor.lrs"/>
+        <Type Value="LRS"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\PropertyEditors\FVectorEditor.pas"/>
+        <UnitName Value="FVectorEditor"/>
+      </Item4>
+    </Files>
+    <Type Value="DesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="glscene_runtime"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
