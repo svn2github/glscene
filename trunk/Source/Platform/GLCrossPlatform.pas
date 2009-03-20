@@ -59,13 +59,16 @@ interface
 
 {$include GLScene.inc}
 
-{$IFDEF MSWINDOWS}
+//{$IFDEF MSWINDOWS}
 uses
-  Windows, Classes, SysUtils, Graphics, Controls, Forms, //VectorTypes,
-  Dialogs, StdCtrls, ExtDlgs {$IFDEF FPC}, LCLStrConsts {$ELSE}, Consts{$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF UNIX} Unix,{$ENDIF}
+//  {$IFDEF UNIX} libc, {$ENDIF}
+  Classes, SysUtils, Graphics, Controls, Forms, //VectorTypes,
+  Dialogs, StdCtrls, ExtDlgs {$IFDEF FPC}, LCLType, LCLStrConsts {$ELSE}, Consts{$ENDIF}
   {$IFNDEF GLS_COMPILER_5_DOWN}{, Math}, StrUtils, Types{$ENDIF}
   ;
-{$ENDIF}
+//{$ENDIF}
 
 type
 {$IFNDEF FPC}
@@ -106,11 +109,12 @@ type
 {$IFDEF GLS_DELPHI_5}
    EGLOSError = EWin32Error;
 {$ELSE}
-   {$IFDEF FPC}
-      EGLOSError = EWin32Error;
-   {$ELSE}
-      EGLOSError = EOSError;
-   {$ENDIF}
+   EGLOSError = EOSError;
+//   {$IFDEF FPC}
+//      EGLOSError = EWin32Error;
+//   {$ELSE}
+//      EGLOSError = EOSError;
+//   {$ENDIF}
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5_DOWN}
@@ -132,11 +136,11 @@ type
   PRect = Windows.PRect;
 {$ELSE}
   {$IFDEF FPC}
-  DWORD = Windows.DWORD;
-  TPoint = Windows.TPoint;
-  PPoint = Windows.PPoint;
-  TRect = Windows.TRect;
-  PRect = Windows.PRect;
+  DWORD = System.DWORD;
+  TPoint = Types.TPoint;
+  PPoint = ^TPoint;
+  TRect = Types.TRect;
+  PRect = ^TRect;
   {$ELSE}
   DWORD = Types.DWORD;
   TPoint = Types.TPoint;
@@ -236,7 +240,7 @@ function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
    slice is relinquished. }
-procedure Sleep(length : Cardinal);
+//procedure Sleep(length : Cardinal);
 
 {: Returns the current value of the highest-resolution counter.<p>
    If the platform has none, should return a value derived from the highest
@@ -508,10 +512,10 @@ begin
   Form := TForm.Create(Application);
   with Form do
     try
-      Scaled := false;
+      //Scaled := false;
       Canvas.Font := Font;
       Dialogfrms := Point(Canvas.TextWidth('L'),Canvas.TextHeight('R'));
-      BorderStyle := fbsDialog;
+      BorderStyle := bsDialog;
       Caption := ACaption;
       ClientWidth := MulDiv(180, Dialogfrms.X, 4);
       ClientHeight := MulDiv(63, Dialogfrms.Y, 8);
@@ -542,7 +546,7 @@ begin
       with TButton.Create(Form) do
       begin
         Parent := Form;
-        Caption := SMsgDlgOK;
+        Caption := rsMbOK;//SMsgDlgOK;
         ModalResult := mrOk;
         Default := True;
         SetBounds(MulDiv(38, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
@@ -552,7 +556,7 @@ begin
       with TButton.Create(Form) do
       begin
         Parent := Form;
-        Caption := SMsgDlgCancel;
+        Caption := rsMbCancel;//SMsgDlgCancel;
         ModalResult := mrCancel;
         Cancel := True;
         SetBounds(MulDiv(92, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
@@ -579,7 +583,8 @@ var
 begin
   Result := '';
   TmpFile := TStringList.Create;
-  Libc.system(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
+  shell(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
+//  Libc.system(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
   TmpFile.LoadFromFile(sFileName);
   if (Length(TmpFile.Strings[0]) > 0) then
     if (Pos('not installed', TmpFile.Strings[0]) = 0) then
@@ -596,8 +601,9 @@ var
   BrowserList: TStringList;
 begin
 {Get the $BROWSER environment variable:}
-  ExeName := getenv('BROWSER');
-
+  //ExeName := getenv('BROWSER');
+  ExeName := GetEnvironmentVariable('BROWSER');
+  (*
   if (Length(ExeName) = 0) then
   begin
 {Get the various possible browsers:}
@@ -629,13 +635,14 @@ begin
       begin
         ExeName := AProgram;
         Libc.putenv(PChar('BROWSER=' + ExeName));
+        
       end;
 
     finally
       BrowserList.Free;
     end;
   end;
-
+  *)
   Result := ExeName;
 end;
 {$ENDIF}
@@ -653,7 +660,8 @@ begin
   TheBrowser := GetBrowser;
 {the ' &' means immediately continue:}
   if (Length(TheBrowser) > 0) then
-    Libc.system(PChar(TheBrowser + ' ' + Url + ' &'));
+     Shell(PChar(TheBrowser + ' ' + Url + ' &'));
+//    Libc.system(PChar(TheBrowser + ' ' + Url + ' &'));
 {$ENDIF}
 end;
 
@@ -805,7 +813,11 @@ procedure RaiseLastOSError;
 var
    e : EGLOSError;
 begin
+   {$IFDEF FPC}
+   e:=EGLOSError.Create('OS Error : '+SysErrorMessage(GetLastOSError));
+   {$ELSE}
    e:=EGLOSError.Create('OS Error : '+SysErrorMessage(GetLastError));
+   {$ENDIF}
    raise e;
 end;
 
@@ -888,14 +900,14 @@ end;
 
 // Sleep
 //
-procedure Sleep(length : Cardinal);
+(*procedure Sleep(length : Cardinal);
 begin
 {$IFDEF WIN32}
    Windows.Sleep(length);
 {$ELSE}
    usleep(length*1000);
 {$ENDIF}
-end;
+end;*)
 
 // QueryPerformanceCounter
 //
