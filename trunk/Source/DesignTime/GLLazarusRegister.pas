@@ -76,10 +76,9 @@ uses
    VectorGeometry, SysUtils, Graphics, 
    ComponentEditors, PropEdits, GLLazarusSceneEdit, FVectorEditor,
 
-   {$IFDEF WIN32}GLLCLViewer,{$ENDIF}
-   {$IFDEF LINUX}GLLinuxViewer,{$ENDIF}
+   GLViewer,
 
-   {GLMisc,} GLCrossPlatform, GLStrings, GLObjects, GLGeomObjects,
+   GLCrossPlatform, GLStrings, GLObjects, GLGeomObjects,
    GLTeapot, GLTexture, GLCoordinates, GLMaterial, GLColor;
 
 var
