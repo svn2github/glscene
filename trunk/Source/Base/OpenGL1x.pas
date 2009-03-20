@@ -75,7 +75,7 @@ uses
   {$ENDIF }
 
   {$IFDEF unix}
-    Libc, Xlib, Types
+    {Libc,}Types, LCLType, X, Xlib, XUtil, dynlibs
   {$ENDIF}
   ;
 
@@ -178,16 +178,20 @@ type
 
    // Unix types
    {$IFDEF unix}
+   XPixmap = TXID;
+   XFont = TXID;
+   XColormap = TXID;
+  
    GLXContext    = Pointer;
-   GLXPixmap     = XID;
-   GLXDrawable   = XID;
+   GLXPixmap     = TXID;
+   GLXDrawable   = TXID;
 
    // GLX 1.3 and later
    GLXFBConfig   = Pointer;
-   GLXFBConfigID = XID;
-   GLXContextID  = XID;
-   GLXWindow     = XID;
-   GLXPbuffer    = XID;
+   GLXFBConfigID = TXID;
+   GLXContextID  = TXID;
+   GLXWindow     = TXID;
+   GLXPbuffer    = TXID;
    {$ENDIF}
 
 {.$region 'OpenGL extension feature checks'}
@@ -4361,7 +4365,7 @@ type
    function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
    procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: TGLuint); cdecl; external opengl32;
    procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
-   function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap): GLXPixmap; cdecl; external opengl32;
+   function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo; pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
    procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
    function glXQueryExtension(dpy: PDisplay; errorb: PGLInt; event: PGLInt): TGLboolean; cdecl; external opengl32;
    function glXQueryVersion(dpy: PDisplay; maj: PGLInt; min: PGLINT): TGLboolean; cdecl; external opengl32;
@@ -4371,7 +4375,7 @@ type
    function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
    procedure glXWaitGL; cdecl; external opengl32;
    procedure glXWaitX; cdecl; external opengl32;
-   procedure glXUseXFont(font: Font; first: TGLInt; count: TGLInt; list: TGLint); cdecl; external opengl32;
+   procedure glXUseXFont(font: XFont; first: TGLInt; count: TGLInt; list: TGLint); cdecl; external opengl32;
 
    // GLX 1.1 and later
    function glXQueryExtensionsString(dpy: PDisplay; screen: TGLInt): PGLChar; cdecl; external opengl32;
@@ -4386,9 +4390,9 @@ type
    function glXGetFBConfigAttrib(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
    function glXGetFBConfigs(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl; external opengl32;
    function glXGetVisualFromFBConfig(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl; external opengl32;
-   function glXCreateWindow(dpy: PDisplay; config: GLXFBConfig; win: Window; const attribList: PGLInt): GLXWindow; cdecl; external opengl32;
+   function glXCreateWindow(dpy: PDisplay; config: GLXFBConfig; win: GLXWindow; const attribList: PGLInt): GLXWindow; cdecl; external opengl32;
    procedure glXDestroyWindow(dpy: PDisplay; window: GLXWindow); cdecl; external opengl32;
-   function glXCreatePixmap(dpy: PDisplay; config: GLXFBConfig; pixmap: Pixmap; attribList: PGLInt): GLXPixmap; cdecl; external opengl32;
+   function glXCreatePixmap(dpy: PDisplay; config: GLXFBConfig; pixmap: GLXPixmap; attribList: PGLInt): GLXPixmap; cdecl; external opengl32;
    procedure glXDestroyPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
    function glXCreatePbuffer(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl; external opengl32;
    procedure glXDestroyPbuffer(dpy: PDisplay; pbuf: GLXPBuffer); cdecl; external opengl32;
@@ -4408,7 +4412,7 @@ type
    function glXImportContextEXT(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl; external opengl32;
    function glXQueryContextInfoEXT(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
    procedure glXCopySubBufferMESA(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl; external opengl32;
-   function glXCreateGLXPixmapMESA(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap; cmap: Colormap): GLXPixmap; cdecl; external opengl32;
+   function glXCreateGLXPixmapMESA(dpy: PDisplay; visual: PXVisualInfo; pixmap: XPixmap; cmap: XColormap): GLXPixmap; cdecl; external opengl32;
    function glXReleaseBuffersMESA(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl; external opengl32;
    function glXSet3DfxModeMESA(mode: TGLint): TGLboolean; cdecl; external opengl32;
    {$ENDIF}
@@ -4963,7 +4967,7 @@ var
    //  ###########################################################
 
    // GLX_SGI_swap_control (EXT #40)
-   function glXSwapIntervalSGI(interval: TGLint): TGLint; cdecl;
+   glXSwapIntervalSGI: function(interval: TGLint): TGLint; cdecl;
 
    {$ENDIF}
    {.$endregion}
@@ -5765,11 +5769,11 @@ end;
 // ************** UNIX specific ********************
 {$IFDEF UNIX}
 const
-   INVALID_MODULEHANDLE = nil;
+   INVALID_MODULEHANDLE = 0;//nil;
 
 var
-   GLHandle: Pointer;
-   GLUHandle: Pointer;
+   GLHandle: TLibHandle;//Pointer;
+   GLUHandle: TLibHandle;//Pointer;
    
 function GLGetProcAddress(ProcName: PGLChar):Pointer;
 begin
@@ -7440,15 +7444,15 @@ begin
    Result := False;
    CloseOpenGL;
 
-   {$IFDEF Win32}
+   //{$IFDEF Win32}
    GLHandle:=LoadLibrary(PChar(GLName));
    GLUHandle:=LoadLibrary(PChar(GLUName));
-   {$ENDIF}
+   //{$ENDIF}
 
-   {$IFDEF UNIX}
-   GLHandle:=dlopen(PChar(GLName), RTLD_GLOBAL or RTLD_LAZY);
-   GLUHandle:=dlopen(PChar(GLUName), RTLD_GLOBAL or RTLD_LAZY);
-   {$ENDIF}
+//   {$IFDEF UNIX}
+//   GLHandle:=dlopen(PChar(GLName), RTLD_GLOBAL or RTLD_LAZY);
+//   GLUHandle:=dlopen(PChar(GLUName), RTLD_GLOBAL or RTLD_LAZY);
+//   {$ENDIF}
 
    if (GLHandle<>INVALID_MODULEHANDLE) and (GLUHandle<>INVALID_MODULEHANDLE) then
      Result:=True
