@@ -378,17 +378,8 @@ end;
 
 // BGR24ToRGBA32
 //
+{$IFNDEF GEOMETRY_NO_ASM}
 procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
-{begin
-   while pixelCount>0 do begin
-      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
-      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
-      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
-      PAnsiChar(dest)[3]:=#255;
-      dest:=Pointer(Integer(dest)+4);
-      src:=Pointer(Integer(src)+3);
-      Dec(pixelCount);
-   end; }
 // EAX stores src
 // EDX stores dest
 // ECX stores pixelCount
@@ -421,9 +412,24 @@ asm
 @@Done:
          pop   edi
 end;
+{$ELSE}
+procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
+begin
+   while pixelCount>0 do begin
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
+      PAnsiChar(dest)[3]:=#255;
+      dest:=Pointer(Integer(dest)+4);
+      src:=Pointer(Integer(src)+3);
+      Dec(pixelCount);
+   end;
+end;
+{$ENDIF}
 
 // RGB24ToRGBA32
 //
+{$IFNDEF GEOMETRY_NO_ASM}
 procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
 // EAX stores src
 // EDX stores dest
@@ -452,20 +458,25 @@ asm
 @@Done:
          pop   edi
 end;
+{$ELSE}
+procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
+begin
+   while pixelCount>0 do begin
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[0];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[3]:=#255;
+      dest:=Pointer(Integer(dest)+4);
+      src:=Pointer(Integer(src)+3);
+      Dec(pixelCount);
+   end;
+end;
+{$ENDIF}
 
 // BGRA32ToRGBA32
 //
+{$IFNDEF GEOMETRY_NO_ASM}
 procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
-{begin
-   while pixelCount>0 do begin
-      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
-      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
-      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
-      PAnsiChar(dest)[3]:=PAnsiChar(src)[3];
-      dest:=Pointer(Integer(dest)+4);
-      src:=Pointer(Integer(src)+4);
-      Dec(pixelCount);
-   end; }
 // EAX stores src
 // EDX stores dest
 // ECX stores pixelCount
@@ -487,6 +498,20 @@ asm
 @@Done:
          pop   edi 
 end;
+{$ELSE}
+procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer);
+begin
+   while pixelCount>0 do begin
+      PAnsiChar(dest)[0]:=PAnsiChar(src)[2];
+      PAnsiChar(dest)[1]:=PAnsiChar(src)[1];
+      PAnsiChar(dest)[2]:=PAnsiChar(src)[0];
+      PAnsiChar(dest)[3]:=PAnsiChar(src)[3];
+      dest:=Pointer(Integer(dest)+4);
+      src:=Pointer(Integer(src)+4);
+      Dec(pixelCount);
+   end;
+end;
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLBitmap32 ------------------
@@ -531,7 +556,7 @@ begin
         Move(TGLBitmap32(Source).Data^, Data^, DataSize);
       end;
    end else if Source is TGLGraphic then begin
-      if (Source is TGLBitmap) and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+      if (Source is TGLBitmap) and (TGLBitmap(Source).PixelFormat in [pf24bit, pf32bit])
             and ((TGLBitmap(Source).Width and 3)=0) then begin
          if TGLBitmap(Source).PixelFormat=glpf24bit then
             AssignFrom24BitsBitmap(TGLBitmap(Source))
@@ -925,6 +950,7 @@ type
    T2Pixel32 = packed array [0..1] of TGLPixel32;
    P2Pixel32 = ^T2Pixel32;
 
+   {$IFNDEF GEOMETRY_NO_ASM}
    procedure ProcessRow3DNow(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
    asm     // 3DNow! version 30% faster
       db $0F,$EF,$C0           /// pxor        mm0, mm0          // set mm0 to [0, 0, 0, 0]
@@ -961,6 +987,7 @@ type
 
       db $0F,$0E               /// femms
    end;
+   {$ENDIF}
 
    procedure ProcessRowPascal(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
    var
@@ -988,6 +1015,7 @@ begin
    pDest:=@FData[0];
    pLineA:=@FData[0];
    pLineB:=@FData[Width];
+   {$IFNDEF GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
       for y:=0 to h2-1 do begin
          ProcessRow3DNow(pDest, pLineA, pLineB, w2);
@@ -995,7 +1023,7 @@ begin
          Inc(pLineA, Width);
          Inc(pLineB, Width);
       end;
-   end else begin
+   end else {$ENDIF}begin
       for y:=0 to h2-1 do begin
          ProcessRowPascal(pDest, pLineA, pLineB, w2);
          Inc(pDest, w2);
