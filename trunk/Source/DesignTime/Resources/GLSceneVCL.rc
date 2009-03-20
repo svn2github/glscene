@@ -57,3 +57,4 @@ TGLAsmShader BITMAP vcl\glscene_icon_TGLAsmShader.bmp
 TGLShaderCombiner BITMAP vcl\glscene_icon_TGLShaderCombiner.bmp
 TGLGizmo BITMAP vcl\glscene_icon_TGLGizmo.bmp
 TGLTextureSharingShader BITMAP vcl\glscene_icon_TGLTextureSharingShader.bmp
+TGLCameraController BITMAP vcl\glscene_icon_TGLCameraController.bmp

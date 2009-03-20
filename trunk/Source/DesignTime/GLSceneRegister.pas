@@ -370,6 +370,7 @@ uses
    GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
+   GLCameraController,
 
    // Image file formats
    DDS, TGA,
@@ -1533,7 +1534,7 @@ begin
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-                       TGLSimpleNavigation, TGLGizmo
+                       TGLSimpleNavigation, TGLGizmo, TGLCameraController
                        {$IFDEF MSWINDOWS}
                        , TJoystick, TScreenSaver
                        {$ENDIF}

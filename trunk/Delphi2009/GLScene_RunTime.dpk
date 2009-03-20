@@ -253,6 +253,7 @@ contains
   GeometryCoordinates in '..\Source\Base\GeometryCoordinates.pas',
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
   GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
-  GLObjectManager in '..\Source\GLObjectManager.pas';
+  GLObjectManager in '..\Source\GLObjectManager.pas',
+  GLCameraController in '..\Source\GLCameraController.pas';
 
 end.
