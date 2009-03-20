@@ -318,7 +318,7 @@ begin
     else
     begin
       Result := nil;
-      Assert(False, glsUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
     end;
   end;
 end;
@@ -346,7 +346,7 @@ begin
   else
   begin
     Result := ctScale;
-    Assert(False, glsUnknownType);
+    Assert(False, glsErrorEx + glsUnknownType);
   end;
 end;
 

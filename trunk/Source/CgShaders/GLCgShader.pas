@@ -1386,7 +1386,7 @@ begin
   if FCadencer = nil then
   begin
     Enabled := False;
-    raise EGLCGShaderException.CreateFmt(glsCadencerNotDefinedEx, [ClassName]);
+    raise EGLCGShaderException.CreateFmt(glsErrorEx + glsCadencerNotDefinedEx, [ClassName]);
   end
   else
     inherited;

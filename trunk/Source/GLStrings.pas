@@ -18,13 +18,12 @@ unit GLStrings;
 
 interface
 
-const
+resourcestring
   // General
   glsDot = '.';
   glsError   = 'Error!';
   glsErrorEx = 'Error: ';
 
-resourcestring
   // SceneViewer
   glsNoRenderingContext = 'Could not create a rendering context';
   glsWrongVersion       = 'Need at least OpenGL version 1.1';
@@ -33,15 +32,15 @@ resourcestring
   glsWrongBitmapCanvas  = 'Couldn''t create a rendering context for the given bitmap';
   glsWrongPrinter       = 'Couldn''t render to printer';
   glsAlreadyRendering   = 'Already rendering';
-  glsSceneViewerNotDefined = glsErrorEx + 'SceneViewer not defined!';
+  glsSceneViewerNotDefined = 'SceneViewer not defined!';
 
   // GLCadencer
-  glsCadencerNotDefined   = glsErrorEx + 'Cadencer not defined!';
-  glsCadencerNotDefinedEx = glsErrorEx + 'Cadencer not defined for  the ''%s'' component';
+  glsCadencerNotDefined   = 'Cadencer not defined!';
+  glsCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
 
   // Shaders
-  glsShaderNeedsAtLeastOneLightSource   = glsErrorEx + 'This shader needs at least one LightSource!';
-  glsShaderNeedsAtLeastOneLightSourceEx = glsErrorEx + 'Shader ''%s'' needs at least one LightSource!';
+  glsShaderNeedsAtLeastOneLightSource   = 'This shader needs at least one LightSource!';
+  glsShaderNeedsAtLeastOneLightSourceEx = 'Shader ''%s'' needs at least one LightSource!';
 
   // GLTree
   glsSceneRoot  = 'Scene root';
@@ -54,9 +53,9 @@ resourcestring
   glsNoNewTexture = 'Could not get new texture name';
 
   // GLMaterials
-  glsMatLibNotDefined = glsErrorEx + 'Material Library not defined!';
-  glsMaterialNotFoundInMatlib = glsErrorEx + 'Material not found in current Material Library!';
-  glsMaterialNotFoundInMatlibEx = glsErrorEx + 'Material "%s" not found in current Material Library!';
+  glsMatLibNotDefined = 'Material Library not defined!';
+  glsMaterialNotFoundInMatlib = 'Material not found in current Material Library!';
+  glsMaterialNotFoundInMatlibEx = 'Material "%s" not found in current Material Library!';
 
   // GLObjects
   glsSphereTopBottom = 'The top angle must be higher than the bottom angle';
@@ -72,9 +71,9 @@ resourcestring
   glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
 
-  glsUncompatibleTypes = glsErrorEx + 'uncompatible types!';
-  glsUnknownType       = glsErrorEx + 'unknown type!';
-  glsUnsupportedType   = glsErrorEx + 'unsupported type!';
+  glsIncompatibleTypes = 'Incompatible types!';
+  glsUnknownType       = 'Unknown type!';
+  glsUnsupportedType   = 'Unsupported type!';
 
   // object categories
   glsOCBasicGeometry = 'Basic geometry';

@@ -246,18 +246,19 @@ var
 {$ifdef WIN32}
 type
    TASAPHandler = class
-   	FWindowHandle : HWND;
-      FTooFastCounter : Integer;
-      FTimer : Cardinal;
-
-   	procedure WndProc(var Msg: TMessage);
-
-      constructor Create;
-      destructor Destroy; override;
+      private
+         FWindowHandle : HWND;
+         FTooFastCounter : Integer;
+         FTimer : Cardinal;
+      protected
+         procedure WndProc(var Msg: TMessage);
+      public
+         constructor Create;
+         destructor Destroy; override;
    end;
 
 var
-	vWMTickCadencer : Cardinal;
+   vWMTickCadencer : Cardinal;
    vASAPCadencerList : TList;
    vHandler : TASAPHandler;
 
@@ -754,6 +755,7 @@ initialization
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
+   RegisterClasses([TGLCadencer]);
 	// Get our Windows message ID
    {$ifdef WIN32}
 	vWMTickCadencer:=RegisterWindowMessage(cTickGLCadencer);
