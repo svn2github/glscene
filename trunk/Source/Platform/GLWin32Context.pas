@@ -35,6 +35,8 @@ interface
 
 {$i GLScene.inc}
 
+{$IFDEF MSWINDOWS}
+
 uses Windows, Classes, SysUtils, GLContext;
 
 type
@@ -96,7 +98,7 @@ var
      they are (improperly) released by some drivers upon top-level form
      destruction. }
    vUseWindowTrackingHook : Boolean = True;
-
+{$ENDIF}
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -104,7 +106,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
+{$IFDEF MSWINDOWS}
 uses Forms, OpenGL1x, GLCrossPlatform, Messages;
 
 resourcestring
@@ -809,5 +811,6 @@ initialization
 // ------------------------------------------------------------------
 
    RegisterGLContextClass(TGLWin32Context);
-   
+{$ENDIF}
 end.
+
