@@ -323,7 +323,7 @@ begin
          maskBmp.Height:=Resolution;
          maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution), FMask.Graphic);
          for j:=0 to Resolution-1 do begin
-            scanLine:=maskBmp.ScanLine[Resolution-1-j];
+            scanLine:=BitmapScanLine(maskBmp, Resolution-1-j); //maskBmp.ScanLine[Resolution-1-j];
             for i:=0 to Resolution-1 do
                FLocks[i+j*Resolution]:=(((scanLine[i] shr 8) and $FF)<128);
          end;

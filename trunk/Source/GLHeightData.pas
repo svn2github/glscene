@@ -1813,7 +1813,7 @@ begin
    // some picture formats trigger a "change" when drawed
    Picture.OnChange:=nil;
    try
-      FBitmap.Canvas.StretchDraw(Rect(0, 0, size, size), Picture.Graphic);
+      FBitmap.Canvas.StretchDraw(classes.Rect(0, 0, size, size), Picture.Graphic);
    finally
       Picture.OnChange:=OnPictureChanged;
    end;
@@ -1843,7 +1843,7 @@ function TGLBitmapHDS.GetScanLine(y : Integer) : PByteArray;
 begin
    Result:=FScanLineCache[y];
    if not Assigned(Result) then begin
-      Result:=FBitmap.ScanLine[y];
+      Result:=BitmapScanLine(FBitmap, y);//FBitmap.ScanLine[y];
       FScanLineCache[y]:=Result;
    end;
 end;

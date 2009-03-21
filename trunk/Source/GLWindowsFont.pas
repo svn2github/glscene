@@ -226,7 +226,7 @@ begin
       Font:=Self.Font;
       Font.Color:=clWhite;
       // get characters dimensions for the font
-      CharWidth:=Round(2+MaxFloat(TextWidth('M'), TextWidth('W'), TextWidth('_')));
+      CharWidth:=Round(2+MaxInteger(TextWidth('M'), TextWidth('W'), TextWidth('_')));
       CharHeight:=2+TextHeight('"_pI|,');
       if fsItalic in Font.Style then begin
          // italics aren't properly acknowledged in font width
