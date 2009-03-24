@@ -82,7 +82,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLTextureCombiners, OpenGL1x, XOpenGL, GLCrossPlatform;
+uses SysUtils, GLTextureCombiners, OpenGL1x, XOpenGL, GLCrossPlatform, GLUtils;
 
 // ------------------
 // ------------------ TGLTexCombineShader ------------------

@@ -545,7 +545,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, MMSystem, GLCrossPlatform;
+uses SysUtils, MMSystem, GLCrossPlatform, GLUtils;
 
 var
    vActiveSoundManager : TGLSoundManager;

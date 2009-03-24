@@ -81,7 +81,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  SysUtils, GLCrossPlatform;
+  SysUtils, GLCrossPlatform, GLUtils;
 
 var
    vTIEClass, vTIEEditor : TList;
