@@ -6,6 +6,8 @@
    Miscellaneous support utilities & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
+                            they work on all platforms (with FPC)
       <li>16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
       <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
       <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
@@ -25,7 +27,7 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Graphics,
+  Classes, SysUtils, Graphics, Controls,
 
   // GLScene
   VectorGeometry, GLCrossPlatform;
@@ -89,6 +91,22 @@ function SizeOfFile(const fileName : String) : Int64;
 {: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array : PSqrt255Array;
 
+{: Pops up a simple dialog with a title, a msg and an Ok button. }
+function GLOKMessageBox(const Text, Caption: string): Integer;
+{: Pops up a simple dialog with msg and an Ok button. }
+procedure InformationDlg(const msg : String);
+{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+   Returns True if answer was "yes". }
+function QuestionDlg(const msg : String) : Boolean;
+{: Posp a simple dialog with a string input. }
+function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
+
+{: Pops up a simple save picture dialog. }
+function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+{: Pops up a simple open picture dialog. }
+function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+
+
 //------------------------------------------------------
 //------------------------------------------------------
 //------------------------------------------------------
@@ -97,7 +115,7 @@ implementation
 //------------------------------------------------------
 //------------------------------------------------------
 
-uses ApplicationFileIO;
+uses ApplicationFileIO, Dialogs, ExtDlgs;
 
 var
 	vSqrt255 : TSqrt255Array;
@@ -529,5 +547,78 @@ begin
 	end;
 	Result:=@vSqrt255;
 end;
+
+// GLOKMessageBox
+//
+function GLOKMessageBox(const Text, Caption: string): Integer;
+begin
+  result := MessageDlg(Caption, Text, mtInformation, [mbOk], 0);
+end;
+
+// InformationDlg
+//
+procedure InformationDlg(const msg : String);
+begin
+   ShowMessage(msg);
+end;
+
+// QuestionDlg
+//
+function QuestionDlg(const msg : String) : Boolean;
+begin
+   Result:=(MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0)=mrYes);
+end;
+
+// InputDlg
+//
+function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
+begin
+   Result:=InputBox(aCaption, aPrompt, aDefault);
+end;
+
+// SavePictureDialog
+//
+function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+var
+   saveDialog : TSavePictureDialog;
+begin
+   saveDialog:=TSavePictureDialog.Create(nil);
+   try
+      with saveDialog do begin
+         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
+         if aTitle<>'' then
+            Title:=aTitle;
+         FileName:=aFileName;
+         Result:=Execute;
+         if Result then
+            aFileName:=FileName;
+      end;
+   finally
+      saveDialog.Free;
+   end;
+end;
+
+// OpenPictureDialog
+//
+function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+var
+   openDialog : TOpenPictureDialog;
+begin
+   openDialog:=TOpenPictureDialog.Create(nil);
+   try
+      with openDialog do begin
+         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
+         if aTitle<>'' then
+            Title:=aTitle;
+         FileName:=aFileName;
+         Result:=Execute;
+         if Result then
+            aFileName:=FileName;
+      end;
+   finally
+      openDialog.Free;
+   end;
+end;
+
 
 end.

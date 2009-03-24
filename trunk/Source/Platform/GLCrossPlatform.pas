@@ -12,6 +12,7 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
       <li>19/03/09 - DanB - Removed some Kylix IFDEFs, and other changes mostly affecting D5/FPC
       <li>29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
       <li>10/04/08 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
@@ -59,16 +60,13 @@ interface
 
 {$include GLScene.inc}
 
-//{$IFDEF MSWINDOWS}
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
   {$IFDEF UNIX} Unix,{$ENDIF}
-//  {$IFDEF UNIX} libc, {$ENDIF}
-  Classes, SysUtils, Graphics, Controls, Forms, //VectorTypes,
-  Dialogs, StdCtrls, ExtDlgs {$IFDEF FPC}, LCLType, LCLStrConsts {$ELSE}, Consts{$ENDIF}
-  {$IFNDEF GLS_COMPILER_5_DOWN}{, Math}, StrUtils, Types{$ENDIF}
+  Classes, SysUtils, Graphics, Controls, Forms,
+  Dialogs, StdCtrls {$IFDEF FPC}, LCLType, LCLStrConsts {$ELSE}, Consts{$ENDIF}
+  {$IFNDEF GLS_COMPILER_5_DOWN}, StrUtils, Types{$ENDIF}
   ;
-//{$ENDIF}
 
 type
 {$IFNDEF FPC}
@@ -211,19 +209,6 @@ function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
 procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
 procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
 
-{: Pops up a simple dialog with msg and an Ok button. }
-procedure InformationDlg(const msg : String);
-{: Pops up a simple question dialog with msg and yes/no buttons.<p>
-   Returns True if answer was "yes". }
-function QuestionDlg(const msg : String) : Boolean;
-{: Posp a simple dialog with a string input. }
-function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
-
-{: Pops up a simple save picture dialog. }
-function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-{: Pops up a simple open picture dialog. }
-function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-
 procedure RaiseLastOSError;
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
@@ -270,7 +255,6 @@ function StopPrecisionTimer(const precisionTimer : Int64) : Double;
 function RDTSC : Int64;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
-function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure ShowHTMLUrl(Url: String);
 procedure GLShowCursor(AShow: boolean);
 procedure GLSetCursorPos(AScreenX, AScreenY: integer);
@@ -443,11 +427,6 @@ begin
 {$ENDIF}
 end;
 
-function GLOKMessageBox(const Text, Caption: string): Integer;
-begin
-  result := Application.MessageBox(PChar(Text),PChar(Caption),MB_OK);
-end;
-
 procedure GLShowCursor(AShow: boolean);
 begin
 {$IFDEF MSWINDOWS}
@@ -498,170 +477,13 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF UNIX}
-function QueryCombo(const ACaption, APrompt: string; Alist:TStringList;
-                          var Index: integer; var Value: string): Boolean;
-var
-  Form: TForm;
-  Prompt: TLabel;
-  Combo: TComboBox;
-  Dialogfrms: TPoint;
-  ButtonTop, ButtonWidth, ButtonHeight: Integer;
-begin
-  Result := False;
-  Form := TForm.Create(Application);
-  with Form do
-    try
-      //Scaled := false;
-      Canvas.Font := Font;
-      Dialogfrms := Point(Canvas.TextWidth('L'),Canvas.TextHeight('R'));
-      BorderStyle := bsDialog;
-      Caption := ACaption;
-      ClientWidth := MulDiv(180, Dialogfrms.X, 4);
-      ClientHeight := MulDiv(63, Dialogfrms.Y, 8);
-      Position := poScreenCenter;
-      Prompt := TLabel.Create(Form);
-      with Prompt do
-      begin
-        Parent := Form;
-        AutoSize := True;
-        Left := MulDiv(8, Dialogfrms.X, 4);
-        Top := MulDiv(8, Dialogfrms.Y, 8);
-        Caption := APrompt;
-      end;
-      Combo := TComboBox.Create(Form);
-      with Combo do
-      begin
-        Parent := Form;
-        Left := Prompt.Left;
-        Top := MulDiv(19, Dialogfrms.Y, 8);
-        Width := MulDiv(164, Dialogfrms.X, 4);
-        DropDownCount := 3;
-        Items.AddStrings(AList);
-        Combo.ItemIndex := index;
-      end;
-      ButtonTop := MulDiv(41, Dialogfrms.Y, 8);
-      ButtonWidth := MulDiv(50, Dialogfrms.X, 4);
-      ButtonHeight := MulDiv(14, Dialogfrms.Y, 8);
-      with TButton.Create(Form) do
-      begin
-        Parent := Form;
-        Caption := rsMbOK;//SMsgDlgOK;
-        ModalResult := mrOk;
-        Default := True;
-        SetBounds(MulDiv(38, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
-          ButtonHeight);
-        TabOrder := 0;
-      end;
-      with TButton.Create(Form) do
-      begin
-        Parent := Form;
-        Caption := rsMbCancel;//SMsgDlgCancel;
-        ModalResult := mrCancel;
-        Cancel := True;
-        SetBounds(MulDiv(92, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
-          ButtonHeight);
-      end;
-      if ShowModal = mrOk then
-      begin
-        Value := Combo.Text;
-        index := Combo.ItemIndex;
-        Result := True;
-      end;
-    finally
-      Form.Free;
-    end;
-end;
-
-resourcestring
-  sFileName = '/tmp/delete-me.txt';
-
-// Code inspired from unit Misc.pas of TPlot component of Mat Ballard
-function CheckForRPM(AnRPM: String): String;
-var
-  TmpFile: TStringList;
-begin
-  Result := '';
-  TmpFile := TStringList.Create;
-  shell(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
-//  Libc.system(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
-  TmpFile.LoadFromFile(sFileName);
-  if (Length(TmpFile.Strings[0]) > 0) then
-    if (Pos('not installed', TmpFile.Strings[0]) = 0) then
-      Result := TmpFile.Strings[0];
-  DeleteFile(sFileName);
-  TmpFile.Free;
-end;
-
-function GetBrowser: String;
-var
-  Index: Integer;
-  AProgram,
-  ExeName: String;
-  BrowserList: TStringList;
-begin
-{Get the $BROWSER environment variable:}
-  //ExeName := getenv('BROWSER');
-  ExeName := GetEnvironmentVariable('BROWSER');
-  (*
-  if (Length(ExeName) = 0) then
-  begin
-{Get the various possible browsers:}
-    BrowserList := TStringList.Create;
-
-    try
-      if (FileExists('/usr/bin/konqueror')) then
-        BrowserList.Add('/usr/bin/konqueror');
-
-      AProgram := CheckForRPM('mozilla');
-      if (Length(AProgram) > 0) then
-        BrowserList.Add(AProgram);
-      AProgram := CheckForRPM('netscape-common');
-      if (Length(AProgram) > 0) then
-        BrowserList.Add(AProgram);
-      AProgram := CheckForRPM('opera');
-      if (Length(AProgram) > 0) then
-        BrowserList.Add(AProgram);
-      AProgram := CheckForRPM('lynx');
-      if (Length(AProgram) > 0) then
-        BrowserList.Add(AProgram);
-      AProgram := CheckForRPM('links');
-      if (Length(AProgram) > 0) then
-        BrowserList.Add(AProgram);
-
-      Index := 0;
-      if QueryCombo('Browser Selection', 'Which Web Browser Program To Use ?',
-        BrowserList, Index, AProgram) then
-      begin
-        ExeName := AProgram;
-        Libc.putenv(PChar('BROWSER=' + ExeName));
-        
-      end;
-
-    finally
-      BrowserList.Free;
-    end;
-  end;
-  *)
-  Result := ExeName;
-end;
-{$ENDIF}
-
 procedure ShowHTMLUrl(Url: String);
-{$IFDEF UNIX}
-var
-  TheBrowser: String;
-{$ENDIF}
 begin
 {$IFDEF MSWINDOWS}
   ShellExecute(0, 'open', PChar(Url), Nil, Nil, SW_SHOW);
 {$ENDIF}
 {$IFDEF UNIX}
-  TheBrowser := GetBrowser;
-{the ' &' means immediately continue:}
-  if (Length(TheBrowser) > 0) then
-     Shell(PChar(TheBrowser + ' ' + Url + ' &'));
-//    Libc.system(PChar(TheBrowser + ' ' + Url + ' &'));
+  Shell(PChar('env xdg-open ' + Url));
 {$ENDIF}
 end;
 
@@ -728,83 +550,6 @@ begin
       if aRect.Bottom>rect2.Bottom then
          aRect.Bottom:=rect2.Bottom;
    end;
-end;
-
-// InformationDlg
-//
-procedure InformationDlg(const msg : String);
-begin
-   ShowMessage(msg);
-end;
-
-// QuestionDlg
-//
-function QuestionDlg(const msg : String) : Boolean;
-begin
-   Result:=(MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0)=mrYes);
-end;
-
-// InputDlg
-//
-function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
-begin
-   Result:=InputBox(aCaption, aPrompt, aDefault);
-end;
-
-// SavePictureDialog
-//
-function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-{$IFDEF WIN32}
-var
-   saveDialog : TSavePictureDialog;
-begin
-   saveDialog:=TSavePictureDialog.Create(Application);
-   try
-      with saveDialog do begin
-         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
-         if aTitle<>'' then
-            Title:=aTitle;
-         FileName:=aFileName;
-         Result:=Execute;
-         if Result then
-            aFileName:=FileName;
-      end;
-   finally
-      saveDialog.Free;
-   end;
-{$ELSE}
-begin
-   InformationDlg('SavePictureDialog not supported on this platform.');
-   Result:=False;
-{$ENDIF}
-end;
-
-// OpenPictureDialog
-//
-function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
-{$IFDEF WIN32}
-var
-   openDialog : TOpenPictureDialog;
-begin
-   openDialog:=TOpenPictureDialog.Create(Application);
-   try
-      with openDialog do begin
-         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
-         if aTitle<>'' then
-            Title:=aTitle;
-         FileName:=aFileName;
-         Result:=Execute;
-         if Result then
-            aFileName:=FileName;
-      end;
-   finally
-      openDialog.Free;
-   end;
-{$ELSE}
-begin
-   InformationDlg('OpenPictureDialog not supported on this platform.');
-   Result:=False;
-{$ENDIF}
 end;
 
 // RaiseLastOSError
