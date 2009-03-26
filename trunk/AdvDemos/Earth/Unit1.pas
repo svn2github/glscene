@@ -80,7 +80,7 @@ implementation
 {$WARN UNIT_PLATFORM OFF}
 {$ENDIF}
 
-uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext, GLUtils;
+uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 
@@ -292,9 +292,9 @@ begin
 
    for i:=0 to sl.Count-1 do begin
       line.CommaText:=sl[i];
-      pos1:=LonLatToPos(StrToFloatDef(line[0]), StrToFloatDef(line[1]));
+      pos1:=LonLatToPos(StrToFloatDef(line[0], 0), StrToFloatDef(line[1], 0));
       ConstellationLines.AddNode(pos1);
-      pos2:=LonLatToPos(StrToFloatDef(line[2]), StrToFloatDef(line[3]));
+      pos2:=LonLatToPos(StrToFloatDef(line[2], 0), StrToFloatDef(line[3], 0));
       ConstellationLines.AddNode(pos2);
    end;
 
