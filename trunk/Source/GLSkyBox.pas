@@ -7,6 +7,7 @@
    for use as a skybox always centered on the camera.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/03/09 - DanB - Skybox is now a TGLCameraInvariantObject
       <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
                             of Scene.CurrentGLCamera
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -38,7 +39,7 @@ type
 
    // TGLSkyBox
    //
-   TGLSkyBox = class(TGLImmaterialSceneObject, IGLMaterialLibrarySupported)
+   TGLSkyBox = class(TGLCameraInvariantObject, IGLMaterialLibrarySupported)
 	   private
 	      { Private Declarations }
          FMatNameTop : String;
@@ -74,7 +75,7 @@ type
          constructor Create(AOwner : TComponent); override;
          destructor  Destroy; override;
          
-         procedure DoRender(var ARci : TRenderContextInfo; ARenderSelf, ARenderChildren : Boolean); override;
+         procedure BuildList(var ARci: TRenderCOntextInfo); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
       published
@@ -111,7 +112,8 @@ uses GLState;
 constructor TGLSkyBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
+  CamInvarianceMode:=cimPosition;
+//  ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
   FCloudsPlaneOffset:=0.2; // this should be set far enough to avoid near plane clipping
   FCloudsPlaneSize:=32;    // the bigger, the more this extends the clouds cap to the horizon
 end;
@@ -141,15 +143,11 @@ end;
 
 // DoRender
 //
-procedure TGLSkyBox.DoRender(var ARci : TRenderContextInfo;
-                             ARenderSelf, ARenderChildren : Boolean);
+procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo); 
 var
    f, cps, cof1 : Single;
-   mvMat : TMatrix;
    oldStates : TGLStates;
    libMat : TGLLibMaterial;
-   transMat : TMatrix;
-   CurrentBuffer : TGLSceneBuffer;
 begin
    if FMaterialLibrary=nil then Exit;
 
@@ -161,22 +159,11 @@ begin
    end;
    glDepthMask(False);
 
-   CurrentBuffer := TGLSceneBuffer(Arci.buffer);
-
-   glLoadMatrixf(@CurrentBuffer.ModelViewMatrix);
-   SetVector(transMat[0], LeftVector);
-   SetVector(transMat[1], Up.AsVector);
-   SetVector(transMat[2], Direction.AsVector);
-   SetVector(transMat[3], ARci.cameraPosition);
-   glMultMatrixf(@transMat);
-   
+   glPushMatrix;   
    f := ARci.rcci.farClippingDistance*0.5;
    glScalef(f, f, f);
 
-   glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
-   CurrentBuffer.PushModelViewMatrix(mvMat);
    try
-      glPushMatrix;
       case Style of
          sbsFull : ;
          sbsTopHalf, sbsTopHalfClamped : begin
@@ -320,19 +307,10 @@ begin
          ARci.GLStates.SetGLState(stLighting);
       if stFog in oldStates then
          ARci.GLStates.SetGLState(stFog);
-
-      // process children
-      if ARenderChildren then begin
-         f:=1/f;
-         glScalef(f, f, f);
-         Self.RenderChildren(0, Count-1, ARci);
-      end;
-
       if stDepthTest in oldStates then
          ARci.GLStates.SetGLState(stDepthTest);
 
    finally
-      CurrentBuffer.PopModelViewMatrix;
    end;
 end;
 
