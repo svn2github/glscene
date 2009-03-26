@@ -17,7 +17,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, HeightTileFile, GLUtils;
+  ActnList, ImgList, HeightTileFile;
 
 type
    TSrc = record
@@ -354,7 +354,7 @@ end;
 
 procedure TMainForm.EDZScaleChange(Sender: TObject);
 begin
-   zScale:=GLUtils.StrToFloatDef(EDZScale.Text, 1.0);
+   zScale:=StrToFloatDef(EDZScale.Text, 1.0);
 end;
 
 procedure TMainForm.Parse;
