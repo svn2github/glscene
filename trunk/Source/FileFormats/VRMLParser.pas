@@ -20,7 +20,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, VectorTypes, VectorLists, GLUtils;
+  Classes, SysUtils, VectorTypes, VectorLists;
 
 type
   TVRMLNode = class
@@ -464,7 +464,7 @@ end;
 //
 function TVRMLParser.ReadSingle : Single;
 begin
-  Result:=StrToFloatDef(ReadToken);
+  Result:=StrToFloatDef(ReadToken,0);
 end;
 
 // ReadVector3f
@@ -505,7 +505,7 @@ begin
     if token = '' then
       exit
     else if token <> ']' then
-      TVRMLSingleArray(FCurrentNode).Values.Add(StrToFloatDef(token));
+      TVRMLSingleArray(FCurrentNode).Values.Add(StrToFloatDef(token,0));
   until token = ']';
 
   FCurrentNode:=FCurrentNode.Parent;

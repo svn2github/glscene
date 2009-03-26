@@ -155,8 +155,8 @@ begin
                frame.Position.Add(NullVector);
                frame.Rotation.Add(NullVector);
             end;
-            frame.Position.Add(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3]));
-            v:=AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6]));
+            frame.Position.Add(StrToFloatDefZero(tl[1]), StrToFloatDefZero(tl[2]), StrToFloatDefZero(tl[3]));
+            v:=AffineVectorMake(StrToFloatDefZero(tl[4]), StrToFloatDefZero(tl[5]), StrToFloatDefZero(tl[6]));
             frame.Rotation.Add(v);
             Inc(i);
          end;
@@ -203,11 +203,11 @@ begin
                    SetLength(boneIDs,weightCount);
                    for j := 0 to weightCount - 1 do begin
                      BoneIDs[j].BoneID := StrToInt(tl[10+j*2]);
-                     BoneIDs[j].Weight := StrToFloatDef(tl[11+j*2]);
+                     BoneIDs[j].Weight := StrToFloatDefZero(tl[11+j*2]);
                    end;
 
-                   nVert:=FindOrAdd(boneIDs, AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
-                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
+                   nVert:=FindOrAdd(boneIDs, AffineVectorMake(StrToFloatDefZero(tl[1]), StrToFloatDefZero(tl[2]), StrToFloatDefZero(tl[3])),                                AffineVectorMake(StrToFloatDefZero(tl[4]), StrToFloatDefZero(tl[5]), StrToFloatDefZero(tl[6])));
+                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDefZero(tl[7]), StrToFloatDefZero(tl[8]), 0));
                    faceGroup.Add(nVert, nVert, nTex);
                    Inc(i);
                  end
@@ -215,8 +215,8 @@ begin
                  begin
                    // Half-Life 1 simple format
                    boneID:=StrToInt(tl[0]);
-                   nVert:=FindOrAdd(boneID,AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),                                AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
-                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
+                   nVert:=FindOrAdd(boneID,AffineVectorMake(StrToFloatDefZero(tl[1]), StrToFloatDefZero(tl[2]), StrToFloatDefZero(tl[3])),                                AffineVectorMake(StrToFloatDefZero(tl[4]), StrToFloatDefZero(tl[5]), StrToFloatDefZero(tl[6])));
+                   nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDefZero(tl[7]), StrToFloatDefZero(tl[8]), 0));
                    faceGroup.Add(nVert, nVert, nTex);
                    Inc(i);
                  end;
