@@ -74,7 +74,9 @@ type
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor  Destroy; override;
-         
+
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var ARci: TRenderCOntextInfo); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -113,7 +115,7 @@ constructor TGLSkyBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   CamInvarianceMode:=cimPosition;
-//  ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
+  ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
   FCloudsPlaneOffset:=0.2; // this should be set far enough to avoid near plane clipping
   FCloudsPlaneSize:=32;    // the bigger, the more this extends the clouds cap to the horizon
 end;
@@ -143,7 +145,17 @@ end;
 
 // DoRender
 //
-procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo); 
+procedure TGLSkyBox.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  // We want children of the sky box to appear far away too
+  glDepthMask(False);
+  inherited;
+  glDepthMask(True);
+end;
+// DoRender
+//
+procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo);
 var
    f, cps, cof1 : Single;
    oldStates : TGLStates;
@@ -157,7 +169,6 @@ begin
       UnSetGLState(stLighting);
       UnSetGLState(stFog);
    end;
-   glDepthMask(False);
 
    glPushMatrix;   
    f := ARci.rcci.farClippingDistance*0.5;
@@ -302,7 +313,6 @@ begin
 
       glPopMatrix;
 
-      glDepthMask(True); // restore
       if stLighting in oldStates then
          ARci.GLStates.SetGLState(stLighting);
       if stFog in oldStates then
