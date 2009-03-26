@@ -770,9 +770,9 @@ begin
    FAmmoCapacity:=FAmmoMaxCapacity;
    FPrimaryConsumption:=StrToIntDef(data.Values['PrimaryConsumption'], 1);
    FAlternateConsumption:=StrToIntDef(data.Values['AlternateConsumption'], FPrimaryConsumption);
-   FPrimaryCoolDown:=GLCrossPlatform.StrToFloatDef(data.Values['PrimaryCoolDown'], 0);
-   FAlternateCoolDown:=GLCrossPlatform.StrToFloatDef(data.Values['AlternateCoolDown'], FPrimaryCoolDown);
-   FReloadCoolDown:=GLCrossPlatform.StrToFloatDef(data.Values['ReloadCoolDown'], 0);
+   FPrimaryCoolDown:=StrToFloatDef(data.Values['PrimaryCoolDown'], 0);
+   FAlternateCoolDown:=StrToFloatDef(data.Values['AlternateCoolDown'], FPrimaryCoolDown);
+   FReloadCoolDown:=StrToFloatDef(data.Values['ReloadCoolDown'], 0);
    FMaxRange:=StrToFloat(data.Values['MaxRange']);
    FOptimalRange:=StrToFloat(data.Values['OptimalRange']);
    VoiceNotification:=data.Values['VoiceNotification'];
@@ -888,14 +888,14 @@ end;
 procedure TABEqptGun.LoadFromStrings(data : TStrings);
 begin
    inherited;
-   TimeToLive:=GLCrossPlatform.StrToFloatDef(data.Values['TimeToLive'], 5);
+   TimeToLive:=StrToFloatDef(data.Values['TimeToLive'], 5);
    TargetingAssist:=StrToIntDef(data.Values['TargetingAssist'], -1);
    PrimaryDamage:=StrToIntDef(data.Values['PrimaryDamage'], 5);
    PrimarySalvoCount:=StrToIntDef(data.Values['PrimarySalvoCount'], 1);
-   PrimarySalvoInterval:=GLCrossPlatform.StrToFloatDef(data.Values['PrimarySalvoInterval'], 0.1);
+   PrimarySalvoInterval:=StrToFloatDef(data.Values['PrimarySalvoInterval'], 0.1);
    AlternateDamage:=StrToIntDef(data.Values['AlternateDamage'], PrimaryDamage);
    AlternateSalvoCount:=StrToIntDef(data.Values['AlternateSalvoCount'], PrimarySalvoCount);
-   AlternateSalvoInterval:=GLCrossPlatform.StrToFloatDef(data.Values['AlternateSalvoInterval'], PrimarySalvoInterval);
+   AlternateSalvoInterval:=StrToFloatDef(data.Values['AlternateSalvoInterval'], PrimarySalvoInterval);
 end;
 
 // HUDRender
@@ -1151,8 +1151,8 @@ end;
 procedure TABEqptGuidedMissile.LoadFromStrings(data : TStrings);
 begin
    inherited;
-   LockDelay:=GLCrossPlatform.StrToFloatDef(data.Values['LockDelay'], 3);
-   LockAngle:=GLCrossPlatform.StrToFloatDef(data.Values['LockAngle'], 0.25);
+   LockDelay:=StrToFloatDef(data.Values['LockDelay'], 3);
+   LockAngle:=StrToFloatDef(data.Values['LockAngle'], 0.25);
    FLockDelayRemaining:=LockDelay;
 end;
 
@@ -1305,10 +1305,10 @@ begin
    inherited;
    MaxCapacity:=StrToIntDef(data.Values['MaxCapacity'], 1);
    Capacity:=MaxCapacity;
-   Efficiency:=GLCrossPlatform.StrToFloatDef(data.Values['Efficiency'], 0.1);
-   CoolDown:=GLCrossPlatform.StrToFloatDef(data.Values['CoolDown'], 0.5);
+   Efficiency:=StrToFloatDef(data.Values['Efficiency'], 0.1);
+   CoolDown:=StrToFloatDef(data.Values['CoolDown'], 0.5);
    FCoolDownRemaining:=0;
-   DecoyLifeTime:=GLCrossPlatform.StrToFloatDef(data.Values['DecoyLifeTime'], 7);
+   DecoyLifeTime:=StrToFloatDef(data.Values['DecoyLifeTime'], 7);
 end;
 
 // Progress
@@ -1405,8 +1405,8 @@ begin
    inherited;
    MaxCapacity:=StrToIntDef(data.Values['MaxCapacity'], 1);
    Capacity:=MaxCapacity;
-   Efficiency:=GLCrossPlatform.StrToFloatDef(data.Values['Efficiency'], 0.1);
-   CoolDown:=GLCrossPlatform.StrToFloatDef(data.Values['CoolDown'], 0.5);
+   Efficiency:=StrToFloatDef(data.Values['Efficiency'], 0.1);
+   CoolDown:=StrToFloatDef(data.Values['CoolDown'], 0.5);
    FCoolDownRemaining:=0;
 end;
 
@@ -1564,7 +1564,7 @@ end;
 procedure TABMissile.LoadFromStrings(data : TStrings);
 begin
    inherited;
-   DecoyResistance:=GLCrossPlatform.StrToFloatDef(data.Values['DecoyResistance'], 1);
+   DecoyResistance:=StrToFloatDef(data.Values['DecoyResistance'], 1);
    DamageRadius:=StrToFloat(data.Values['DamageRadius']);
    DamageMin:=StrToFloat(data.Values['DamageMin']);
    DamageMax:=StrToFloat(data.Values['DamageMax']);

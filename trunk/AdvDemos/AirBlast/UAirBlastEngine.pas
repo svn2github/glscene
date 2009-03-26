@@ -1667,7 +1667,7 @@ begin
    airplane.Position:=PointMake(StringToVector3(data.Values['Position']));
    airplane.Velocity:=PointMake(StringToVector3(data.Values['Velocity']));
    airplane.SetOrientationFromVelocity(ZHmgVector);
-   airplane.Throttle:=GLCrossPlatform.StrToFloatDef(data.Values['Throttle'], 0.7);
+   airplane.Throttle:=StrToFloatDef(data.Values['Throttle'], 0.7);
    airplane.LeaderName:=data.Values['Leader'];
    airplane.SyncObject:=TGLDummyCube.CreateAsChild(SceneRoot);
    airplane.KillScore:=StrToIntDef(data.Values['KillScore'], 1);
@@ -2714,8 +2714,8 @@ begin
    Amount:=StrToIntDef(data.Values['Amount'], 1);
    AmountRemaining:=Amount;
    MaxSimultaneous:=StrToIntDef(data.Values['MaxSimultaneous'], 1);
-   SpawnDelay:=GLCrossPlatform.StrToFloatDef(data.Values['SpawnDelay'], 1);
-   DelayToNextSpawn:=GLCrossPlatform.StrToFloatDef(data.Values['InitialSpawnDelay'], SpawnDelay);
+   SpawnDelay:=StrToFloatDef(data.Values['SpawnDelay'], 1);
+   DelayToNextSpawn:=StrToFloatDef(data.Values['InitialSpawnDelay'], SpawnDelay);
    FCounter:=0;
 end;
 
