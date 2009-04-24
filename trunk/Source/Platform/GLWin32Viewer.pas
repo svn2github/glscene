@@ -179,9 +179,8 @@ type
          property OnMouseWheel;
          property OnMouseWheelDown;
          property OnMouseWheelUp;
-{$ifdef GLS_COMPILER_5_UP}
+
          property OnContextPopup;
-{$endif}
    end;
 
 // ------------------------------------------------------------------
