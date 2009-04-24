@@ -73,9 +73,7 @@ begin
    CEDiffuse.OnChange:=OnColorChange;
    CEEmission.OnChange:=OnColorChange;
    CESpecular.OnChange:=OnColorChange;
-   {$IFDEF MSWINDOWS}
    PageControl.DoubleBuffered:=True;
-   {$ENDIF}
 end;
 
 destructor TRFaceEditor.Destroy;

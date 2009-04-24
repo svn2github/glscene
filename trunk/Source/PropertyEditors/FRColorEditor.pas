@@ -3,6 +3,7 @@
    RGB+Alpha color editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>24/04/09 - DanB - removed some ifdef MSWINDOWS, which were actually for Kylix
       <li>05/09/08 - DanB - Removed Kylix support
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
@@ -39,7 +40,6 @@ type
     procedure PAPreviewDblClick(Sender: TObject);
     procedure ColorEditorPaintBoxPaint(Sender: TObject);
     procedure FrameResize(Sender: TObject);
-    procedure RTrackBarEdit1EditChange(Sender: TObject);
     procedure ColorEditorPaintBoxMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ColorEditorPaintBoxMouseMove(Sender: TObject;
@@ -156,15 +156,12 @@ begin
   inherited;
   WorkBitmap := TBitmap.Create;
   WorkBitmap.PixelFormat := glpf24bit;
-  {$IFDEF MSWINDOWS}
   WorkBitmap.HandleType := bmDib;
-  {$ENDIF}
+
   RedValue := 200;
   GreenValue := 120;
   BlueValue := 60;
   AlphaValue := 450;
-
-
 end;
 
 destructor TRColorEditor.Destroy;
@@ -192,12 +189,6 @@ begin
   GreenEdit.Height := 18;
   BlueEdit.Height := 18;
   AlphaEdit.Height := 18;
-
-end;
-
-procedure TRColorEditor.RTrackBarEdit1EditChange(Sender: TObject);
-begin
-//  RTrackBarEdit1.EditChange(Sender);
 
 end;
 
@@ -253,21 +244,11 @@ begin
     TextOut(6,48,'Blue');
     TextOut(6,70,'Alpha');
 
-
-{    Brush.Color := clWhite;
-    FillRect(Rect(ColorSliderLeft,RTop,ColorSliderLeft+ColorSliderWidth,RTop+ColorSliderHeight));
-    FillRect(Rect(ColorSliderLeft,GTop,ColorSliderLeft+ColorSliderWidth,GTop+ColorSliderHeight));
-    FillRect(Rect(ColorSliderLeft,BTop,ColorSliderLeft+ColorSliderWidth,BTop+ColorSliderHeight));
-    FillRect(Rect(ColorSliderLeft,ATop,ColorSliderLeft+ColorSliderWidth,ATop+ColorSliderHeight));
-}
     Brush.Color := clBlack;
-
-    {$IFDEF MSWINDOWS}
     FrameRect(Rect(ColorSliderLeft,RTop,ColorSliderLeft+ColorSliderWidth,RTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,GTop,ColorSliderLeft+ColorSliderWidth,GTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,BTop,ColorSliderLeft+ColorSliderWidth,BTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,ATop,ColorSliderLeft+ColorSliderWidth,ATop+ColorViewHeight));
-    {$ENDIF}
 
     // Color View Frames
     Pen.Color := clBtnShadow;
