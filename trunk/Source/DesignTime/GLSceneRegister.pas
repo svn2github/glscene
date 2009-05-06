@@ -378,7 +378,9 @@ uses
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
    GLFileNurbs, GLFileObj, GLFileOCT, GLFilePLY, GLFileQ3BSP, GLFileSMD, GLFileSTL,
-   GLFileTIN, GLFileVRML
+   GLFileTIN, GLFileVRML,
+   // Sound file formats
+   GLFileWAV, GLFileMP3
 
 
 {$ifdef WIN32}
