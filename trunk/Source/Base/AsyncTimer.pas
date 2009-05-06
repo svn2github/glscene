@@ -6,6 +6,7 @@
    This component is based on ThreadedTimer by Carlos Barbosa.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/05/09 - DanB - removed TThreadPriority, was needed for Kylix, but not FPC
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Added TThreadPriority for Linux
       <li>24/09/02 - EG - Fixed ThreadPriority default value (Nelson Chu)
@@ -24,11 +25,6 @@ uses Classes;
 
 const
   cDEFAULT_TIMER_INTERVAL = 1000;
-
-{$IFDEF UNIX}
-type
-  TThreadPriority = integer;
-{$ENDIF}
 
 type
    // TAsyncTimer
@@ -61,7 +57,7 @@ type
          property Enabled: Boolean read FEnabled write SetEnabled default False;
          property Interval: Word read GetInterval write SetInterval  default cDEFAULT_TIMER_INTERVAL;
          property OnTimer: TNotifyEvent read FOnTimer write FOnTimer;
-         property ThreadPriority: TThreadPriority read GetThreadPriority write SetThreadPriority {$IFDEF WINDOWS} default tpTimeCritical{$ENDIF};
+         property ThreadPriority: TThreadPriority read GetThreadPriority write SetThreadPriority default tpTimeCritical;
   end;
 
 // ------------------------------------------------------------------
@@ -134,7 +130,7 @@ begin
    with TTimerThread(FTimerThread) do begin
       FOwner:=Self;
       FreeOnTerminate:=False;
-      {$IFDEF WINDOWS} Priority:=tpTimeCritical;{$ENDIF}
+      Priority:=tpTimeCritical;
       FInterval:=cDEFAULT_TIMER_INTERVAL;
    end;
 end;
