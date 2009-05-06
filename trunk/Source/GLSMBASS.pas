@@ -222,7 +222,8 @@ var
    objPos, objOri, objVel : TVector;
    position, orientation, velocity : BASS_3DVECTOR;
 begin
-   if (aSource.Sample=nil) or (aSource.Sample.Data.WAVDataSize=0) then Exit;
+   if (aSource.Sample=nil) or (aSource.Sample.Data=nil) or
+      (aSource.Sample.Data.WAVDataSize=0) then Exit;
    if aSource.ManagerTag<>0 then begin
       p:=PBASSInfo(aSource.ManagerTag);
       if BASS_ChannelIsActive(p.channel)=0 then begin

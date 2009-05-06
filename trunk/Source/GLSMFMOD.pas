@@ -253,7 +253,8 @@ var
    objPos, objVel : TVector;
    position, velocity : TFSoundVector;
 begin
-   if (aSource.Sample=nil) or (aSource.Sample.Data.WAVDataSize=0) then Exit;
+   if (aSource.Sample=nil) or (aSource.Sample.Data=nil) or
+      (aSource.Sample.Data.WAVDataSize=0) then Exit;
    if aSource.ManagerTag<>0 then begin
       p:=PFMODInfo(aSource.ManagerTag);
       if not FSOUND_IsPlaying(p.channel) then begin

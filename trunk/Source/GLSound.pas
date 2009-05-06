@@ -664,6 +664,7 @@ begin
       FData:=sfc.Create(Self);
       FData.LoadFromFile(fileName);
    end else FData:=nil;
+   Assert(Data<>nil,'Could not load '+fileName+', make sure you include the unit required to load this format in your uses clause.');
    Name:=ExtractFileName(fileName);
 end;
 
