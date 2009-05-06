@@ -370,7 +370,7 @@ uses
    GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
-   GLCameraController,
+   GLCameraController, GLSMWaveOut,
 
    // Image file formats
    DDS, TGA,
