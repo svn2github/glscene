@@ -108,65 +108,6 @@ type
 
    TGLSoundFileClass = class of TGLSoundFile;
 
-   // TGLWAVFile
-   //
-   {: Support for Windows WAV format. }
-   TGLWAVFile = class (TGLSoundFile)
-      private
-         { Public Declarations }
-         waveFormat : TWaveFormatEx;
-         pcmOffset : Integer;
-         data : array of Byte; // used to store WAVE bitstream
-
-      protected
-         { Protected Declarations }
-
-      public
-         { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
-
-         class function Capabilities : TDataFileCapabilities; override;
-
-         procedure LoadFromStream(Stream: TStream); override;
-         procedure SaveToStream(Stream: TStream); override;
-
-         procedure PlayOnWaveOut; override;
-
-	      function WAVData : Pointer; override;
-         function WAVDataSize : Integer; override;
-	      function PCMData : Pointer; override;
-	      function LengthInBytes : Integer; override;
-   end;
-
-   // TGLMP3File
-   //
-   {: Support for MP3 format.<p>
-      *Partial* support only, access to PCMData is NOT supported. }
-   TGLMP3File = class (TGLSoundFile)
-      private
-         { Public Declarations }
-         data : array of Byte; // used to store MP3 bitstream
-
-      protected
-         { Protected Declarations }
-
-      public
-         { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
-
-         class function Capabilities : TDataFileCapabilities; override;
-
-         procedure LoadFromStream(Stream: TStream); override;
-         procedure SaveToStream(Stream: TStream); override;
-
-         procedure PlayOnWaveOut; override;
-
-	      function WAVData : Pointer; override;
-         function WAVDataSize : Integer; override;
-	      function PCMData : Pointer; override;
-	      function LengthInBytes : Integer; override;
-   end;
-
    // TGLSoundFileFormat
    //
    TGLSoundFileFormat = record
@@ -189,11 +130,6 @@ type
          procedure BuildFilterStrings(SoundFileClass: TGLSoundFileClass; var Descriptions, Filters: string);
    end;
 
-procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
-                        sampling : TGLSoundSampling); overload;
-function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
-                        waveFormat : TWaveFormatEx) : HWaveOut; overload;
-
 function GetGLSoundFileFormats : TGLSoundFileFormatsList;
 procedure RegisterSoundFileFormat(const AExtension, ADescription: String; AClass: TGLSoundFileClass);
 procedure UnregisterSoundFileClass(AClass: TGLSoundFileClass);
@@ -207,16 +143,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, GLStrings, consts;
-
-type
-
-   TRIFFChunkInfo = packed record
-      ckID : FOURCC;
-      ckSize : LongInt;
-   end;
-
-const
-  WAVE_Format_ADPCM = 2;
 
 var
    vSoundFileFormats : TGLSoundFileFormatsList;
@@ -244,62 +170,6 @@ procedure UnregisterSoundFileClass(AClass: TGLSoundFileClass);
 begin
 	if Assigned(vSoundFileFormats) then
 		vSoundFileFormats.Remove(AClass);
-end;
-
-
-procedure _waveOutCallBack(hwo : HWAVEOUT; uMsg : Cardinal;
-                           dwInstance, dwParam1, dwParam2 : Integer); stdcall;
-begin
-   if uMsg=WOM_DONE then
-      waveOutClose(hwo);
-end;
-
-// PlayOnWaveOut (sampling)
-//
-procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
-                        sampling : TGLSoundSampling);
-var
-   wfx : TWaveFormatEx;
-   hwo : hwaveout;
-   wh : wavehdr;
-   mmres : MMRESULT;
-begin
-   wfx:=sampling.WaveFormat;
-   mmres:=waveOutOpen(@hwo, WAVE_MAPPER, @wfx, Cardinal(@_waveOutCallBack), 0, CALLBACK_FUNCTION);
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-   wh.dwBufferLength:=lengthInBytes;
-   wh.lpData:=pcmData;
-   wh.dwFlags:=0;
-   wh.dwLoops:=1;
-   wh.lpNext:=nil;
-   mmres:=waveOutPrepareHeader(hwo, @wh, SizeOf(wavehdr));
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-   mmres:=waveOutWrite(hwo, @wh, SizeOf(wavehdr));
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-end;
-
-// PlayOnWaveOut (waveformat)
-//
-function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
-                       waveFormat : TWaveFormatEx) : HWaveOut;
-var
-   hwo : hwaveout;
-   wh : wavehdr;
-   mmres : MMRESULT;
-begin
-   mmres:=waveOutOpen(@hwo, WAVE_MAPPER, @waveFormat, Cardinal(@_waveOutCallBack),
-                      0, CALLBACK_FUNCTION);
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-   wh.dwBufferLength:=lengthInBytes;
-   wh.lpData:=pcmData;
-   wh.dwFlags:=0;
-   wh.dwLoops:=1;
-   wh.lpNext:=nil;
-   mmres:=waveOutPrepareHeader(hwo, @wh, SizeOf(wavehdr));
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-   mmres:=waveOutWrite(hwo, @wh, SizeOf(wavehdr));
-   Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-   Result:=hwo;
 end;
 
 // ------------------
@@ -400,7 +270,7 @@ end;
 //
 procedure TGLSoundFile.PlayOnWaveOut;
 begin
-   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInSamples, Sampling);
+//   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInSamples, Sampling);
 end;
 
 // LengthInSamples
@@ -420,215 +290,6 @@ end;
 function TGLSoundFile.LengthInSec : Single;
 begin
 	Result:=LengthInBytes/Sampling.BytesPerSec;
-end;
-
-// ------------------
-// ------------------ TGLWAVFile ------------------
-// ------------------
-
-// CreateCopy
-//
-function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TDataFile;
-begin
-   Result:=inherited CreateCopy(AOwner);
-   if Assigned(Result) then begin
-      TGLWAVFile(Result).waveFormat:=waveFormat;
-      TGLWAVFile(Result).data := Copy(data);
-   end;
-end;
-
-// Capabilities
-//
-class function TGLWAVFile.Capabilities : TDataFileCapabilities;
-begin
-   Result:=[dfcRead, dfcWrite];
-end;
-
-// LoadFromStream
-//
-procedure TGLWAVFile.LoadFromStream(stream : TStream);
-var
-   ck : TRIFFChunkInfo;
-   dw, bytesToGo, startPosition, totalSize : Integer;
-   id : Cardinal;
-   dwDataOffset, dwDataSamples : Integer;
-begin
-   // this WAVE loading code is an adaptation of the 'minimalist' sample from
-   // the Microsoft DirectX SDK.
-   Assert(Assigned(stream));
-   dwDataOffset:=0;
-   // Check RIFF Header
-   startPosition:=stream.Position;
-   stream.Read(ck, SizeOf(TRIFFChunkInfo));
-   Assert((ck.ckID=mmioStringToFourCC('RIFF',0)), 'RIFF required');
-   totalSize:=ck.ckSize+SizeOf(TRIFFChunkInfo);
-   stream.Read(id, SizeOf(Integer));
-   Assert((id=mmioStringToFourCC('WAVE',0)), 'RIFF-WAVE required');
-   // lookup for 'fmt '
-   repeat
-      stream.Read(ck, SizeOf(TRIFFChunkInfo));
-      bytesToGo:=ck.ckSize;
-      if (ck.ckID = mmioStringToFourCC('fmt ',0)) then begin
-         if waveFormat.wFormatTag=0 then begin
-            dw:=ck.ckSize;
-            if dw>SizeOf(TWaveFormatEx) then
-               dw:=SizeOf(TWaveFormatEx);
-            stream.Read(waveFormat, dw);
-            bytesToGo:=ck.ckSize-dw;
-         end;
-         // other 'fmt ' chunks are ignored (?)
-      end else if (ck.ckID = mmioStringToFourCC('fact',0)) then begin
-         if (dwDataSamples = 0) and (waveFormat.wFormatTag = WAVE_Format_ADPCM) then begin
-            stream.Read(dwDataSamples, SizeOf(LongInt));
-            Dec(bytesToGo, SizeOf(LongInt));
-         end;
-         // other 'fact' chunks are ignored (?)
-      end else if (ck.ckID = mmioStringToFourCC('data',0)) then begin
-         dwDataOffset:=stream.Position-startPosition;
-         Break;
-      end;
-      // all other sub-chunks are ignored, move to the next chunk
-      stream.Seek(bytesToGo, soFromCurrent);
-   until Stream.Position = 2048; // this should never be reached
-   // Only PCM wave format is recognized
-//   Assert((waveFormat.wFormatTag=Wave_Format_PCM), 'PCM required');
-   // seek start of data
-   pcmOffset:=dwDataOffset;
-   SetLength(data, totalSize);
-   stream.Position:=startPosition;
-   if totalSize>0 then
-      stream.Read(data[0], totalSize);
-   // update Sampling data
-   with waveFormat do begin
-      Sampling.Frequency:=nSamplesPerSec;
-      Sampling.NbChannels:=nChannels;
-      Sampling.BitsPerSample:=wBitsPerSample;
-   end;
-end;
-
-// SaveToStream
-//
-procedure TGLWAVFile.SaveToStream(stream: TStream);
-begin
-   if Length(data)>0 then
-      stream.Write(data[0], Length(data));
-end;
-
-// PlayOnWaveOut
-//
-procedure TGLWAVFile.PlayOnWaveOut;
-begin
-   PlaySound(WAVData, 0, SND_ASYNC+SND_MEMORY);
-//   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInBytes, waveFormat);
-end;
-
-// WAVData
-//
-function TGLWAVFile.WAVData : Pointer;
-begin
-   if Length(data)>0 then
-      Result:=@data[0]
-   else Result:=nil;
-end;
-
-// WAVDataSize
-//
-function TGLWAVFile.WAVDataSize : Integer;
-begin
-   Result:=Length(data);
-end;
-
-// PCMData
-//
-function TGLWAVFile.PCMData : Pointer;
-begin
-   if Length(data)>0 then
-      Result:=@data[pcmOffset]
-   else Result:=nil;
-end;
-
-// LengthInBytes
-//
-function TGLWAVFile.LengthInBytes : Integer;
-begin
-   Result:=Length(data)-pcmOffset;
-end;
-
-// ------------------
-// ------------------ TGLMP3File ------------------
-// ------------------
-
-// CreateCopy
-//
-function TGLMP3File.CreateCopy(AOwner: TPersistent) : TDataFile;
-begin
-   Result:=inherited CreateCopy(AOwner);
-   if Assigned(Result) then begin
-      TGLMP3File(Result).data := Copy(data);
-   end;
-end;
-
-// Capabilities
-//
-class function TGLMP3File.Capabilities : TDataFileCapabilities;
-begin
-   Result:=[dfcRead, dfcWrite];
-end;
-
-// LoadFromStream
-//
-procedure TGLMP3File.LoadFromStream(stream : TStream);
-begin
-   // MP3 isn't actually, just loaded directly...
-   Assert(Assigned(stream));
-   SetLength(data, stream.Size);
-   if Length(data)>0 then
-      stream.Read(data[0], Length(data));
-end;
-
-// SaveToStream
-//
-procedure TGLMP3File.SaveToStream(stream: TStream);
-begin
-   if Length(data)>0 then
-      stream.Write(data[0], Length(data));
-end;
-
-// PlayOnWaveOut
-//
-procedure TGLMP3File.PlayOnWaveOut;
-begin
-   Assert(False, 'MP3 playback on WaveOut not supported.');
-end;
-
-// WAVData
-//
-function TGLMP3File.WAVData : Pointer;
-begin
-   if Length(data)>0 then
-      Result:=@data[0]
-   else Result:=nil;
-end;
-
-// WAVDataSize
-//
-function TGLMP3File.WAVDataSize : Integer;
-begin
-   Result:=Length(data);
-end;
-
-// PCMData
-//
-function TGLMP3File.PCMData : Pointer;
-begin
-   Result:=nil;
-end;
-
-// LengthInBytes
-//
-function TGLMP3File.LengthInBytes : Integer;
-begin
-   Result:=0;
 end;
 
 // ------------------
@@ -732,9 +393,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-	// class registrations
-  RegisterSoundFileFormat('wav', 'Windows WAV files', TGLWAVFile);
-  RegisterSoundFileFormat('mp3', 'MPEG Layer3 files', TGLMP3File);
 finalization
 
   FreeAndNil(vSoundFileFormats);
