@@ -12,6 +12,8 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
+                            on prior versions of Delphi)
       <li>24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
       <li>19/03/09 - DanB - Removed some Kylix IFDEFs, and other changes mostly affecting D5/FPC
       <li>29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
@@ -287,6 +289,11 @@ function IsNan(const AValue: Double): Boolean; overload;
 function IsNan(const AValue: Single): Boolean; overload;
 function IsNan(const AValue: Extended): Boolean; overload;
 function IsInfinite(const AValue: Double): Boolean;
+{$ENDIF}
+
+{$IFDEF GLS_DELPHI_7_UP}
+function FindUnitName(anObject: TObject): string; overload;
+function FindUnitName(aClass: TClass): string; overload;
 {$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -731,5 +738,60 @@ function RDTSC : Int64;
 asm
    db $0f, $31
 end;
+
+{$IFDEF GLS_DELPHI_7_UP}
+{$IFNDEF GLS_COMPILER_2009_UP}
+type
+  PClassData = ^TClassData;
+  TClassData = record
+    ClassType: TClass;
+    ParentInfo: Pointer;
+    PropCount: SmallInt;
+    UnitName: ShortString;
+  end;
+{$ENDIF}
+
+function FindUnitName(anObject: TObject): string;
+{$IFDEF GLS_COMPILER_2009_UP}
+begin
+  if Assigned(anObject) then
+    Result := anObject.UnitName
+  else
+    Result:='';
+end;
+{$ELSE}
+var
+  LClassInfo: Pointer;
+begin
+  Result:='';
+  if anObject=nil then Exit;
+
+  LClassInfo := anObject.ClassInfo;
+  if LClassInfo <> nil then
+    Result := String(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
+end;
+{$ENDIF}
+
+function FindUnitName(aClass: TClass): string;
+{$IFDEF GLS_COMPILER_2009_UP}
+begin
+  if Assigned(aClass) then
+    Result := aClass.UnitName
+  else
+    Result:='';
+end;
+{$ELSE}
+var
+  LClassInfo: Pointer;
+begin
+  Result:='';
+  if aClass=nil then Exit;
+
+  LClassInfo := aClass.ClassInfo;
+  if LClassInfo <> nil then
+    Result := String(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
+end;
+{$ENDIF}
+{$ENDIF}
 
 end.

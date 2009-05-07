@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
       <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
                             editors to interface section, and made their methods public.
       <li>08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
@@ -320,6 +321,24 @@ type
 			function GetAttributes : TPropertyAttributes; override;
 			procedure GetValues(proc : TGetStrProc); override;
 	end;
+
+{$IFDEF GLS_DELPHI_7_UP}
+  {: Selection editor for TGLSoundLibrary.<p>
+     Allows units to be added to the uses clause automatically when
+     sound files are loaded into a TGLSoundLibrary at design-time. }
+  TGLSoundLibrarySelectionEditor = class(TSelectionEditor)
+    public
+      procedure RequiresUnits(Proc: TGetStrProc); override;
+  end;
+
+  {: Selection editor for TGLBaseSceneObject.<p>
+     Allows units to be added to the uses clause automatically when
+     behaviours/effects are added to a TGLBaseSceneObject at design-time. }
+  TGLBaseSceneObjectSelectionEditor = class(TSelectionEditor)
+    public
+      procedure RequiresUnits(Proc: TGetStrProc); override;
+  end;
+{$ENDIF}
 
 resourcestring
    { OpenGL property category }
@@ -1166,6 +1185,51 @@ begin
 	end;
 end;
 
+{$IFDEF GLS_DELPHI_7_UP}
+{ TGLBaseSceneObjectSelectionEditor }
+
+procedure TGLBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
+var
+  i, j:integer;
+  comp: TGLBaseSceneObject;
+begin
+  if (Designer=nil)or(Designer.Root=nil) then Exit;
+
+  for I := 0 to Designer.Root.ComponentCount - 1 do
+  begin
+      if (Designer.Root.Components[i] is TGLBaseSceneObject) then
+      begin
+        comp := TGLBaseSceneObject(Designer.Root.Components[i]);
+        for j:=0 to comp.Behaviours.Count-1 do
+          Proc(FindUnitName(comp.Behaviours[j]));
+        for j:=0 to comp.Effects.Count-1 do
+          Proc(FindUnitName(comp.Effects[j]));
+      end;
+  end;
+end;
+
+{ TGLSoundLibrarySelectionEditor }
+
+procedure TGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
+var
+  i, j:integer;
+  comp: TGLSoundLibrary;
+begin
+  if (Designer=nil)or(Designer.Root=nil) then Exit;
+
+  for I := 0 to Designer.Root.ComponentCount - 1 do
+  begin
+      if (Designer.Root.Components[i] is TGLSoundLibrary) then
+      begin
+        comp := TGLSoundLibrary(Designer.Root.Components[i]);
+        for j:=0 to comp.Samples.Count-1 do
+          if Assigned(comp.Samples[j].Data) then
+            Proc(FindUnitName(comp.Samples[j].Data));
+      end;
+  end;
+end;
+{$ENDIF}
+
 procedure GLRegisterPropertiesInCategories;
 {$ifdef GLS_DELPHI_5}
   { The first parameter of RegisterPropertiesInCategory is of type
@@ -1589,8 +1653,10 @@ begin
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
-
-
+  {$IFDEF GLS_DELPHI_7_UP}
+  RegisterSelectionEditor(TGLBaseSceneObject, TGLBaseSceneObjectSelectionEditor);
+  RegisterSelectionEditor(TGLSoundLibrary, TGLSoundLibrarySelectionEditor);
+  {$ENDIF}
 end;
 
 // ------------------------------------------------------------------
