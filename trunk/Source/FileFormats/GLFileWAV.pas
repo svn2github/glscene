@@ -6,6 +6,7 @@
 	Support for Windows WAV format.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
@@ -25,6 +26,7 @@ type
          { Public Declarations }
          waveFormat : TWaveFormatEx;
          pcmOffset : Integer;
+         FPCMDataLength: Integer;
          data : array of Byte; // used to store WAVE bitstream
 
       protected
@@ -88,12 +90,13 @@ var
    ck : TRIFFChunkInfo;
    dw, bytesToGo, startPosition, totalSize : Integer;
    id : Cardinal;
-   dwDataOffset, dwDataSamples : Integer;
+   dwDataOffset, dwDataSamples, dwDataLength : Integer;
 begin
    // this WAVE loading code is an adaptation of the 'minimalist' sample from
    // the Microsoft DirectX SDK.
    Assert(Assigned(stream));
    dwDataOffset:=0;
+   dwDataLength:=0;
    // Check RIFF Header
    startPosition:=stream.Position;
    stream.Read(ck, SizeOf(TRIFFChunkInfo));
@@ -122,6 +125,7 @@ begin
          // other 'fact' chunks are ignored (?)
       end else if (ck.ckID = mmioStringToFourCC('data',0)) then begin
          dwDataOffset:=stream.Position-startPosition;
+         dwDataLength := ck.ckSize;
          Break;
       end;
       // all other sub-chunks are ignored, move to the next chunk
@@ -131,6 +135,7 @@ begin
 //   Assert((waveFormat.wFormatTag=Wave_Format_PCM), 'PCM required');
    // seek start of data
    pcmOffset:=dwDataOffset;
+   FPCMDataLength:=dwDataLength;
    SetLength(data, totalSize);
    stream.Position:=startPosition;
    if totalSize>0 then
@@ -188,7 +193,7 @@ end;
 //
 function TGLWAVFile.LengthInBytes : Integer;
 begin
-   Result:=Length(data)-pcmOffset;
+   Result:=FPCMDataLength;
 end;
 
 initialization
