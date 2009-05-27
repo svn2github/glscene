@@ -621,7 +621,7 @@ var
    res : Single;
 begin
    if Assigned(SelectedElement) then begin
-      res:=StrToFloatDef(ScaleXEdit.Text, 0);
+      res:=GLUtils.StrToFloatDef(ScaleXEdit.Text, 0);
       if res>0 then begin
          SelectedElement.Scale.X:=Res;
          GLPanel1.ReBuildGui:=True;
@@ -636,7 +636,7 @@ var
    res : Single;
 begin
    if Assigned(SelectedElement) then begin
-      res:=StrToFloatDef(ScaleYEdit.Text, 0);
+      res:=GLUtils.StrToFloatDef(ScaleYEdit.Text, 0);
       if res>0 then begin
          SelectedElement.Scale.Y:=Res;
          GLPanel1.ReBuildGui:=True;
@@ -653,7 +653,7 @@ begin
    if Assigned(SelectedElement) then begin
       GLPanel1.BlockRender;
       try
-        res:=StrToFloatDef(LeftEdit.Text, -1);
+        res:=GLUtils.StrToFloatDef(LeftEdit.Text, -1);
         if res>=0 then begin
            SelectedElement.TopLeft.X:=Res;
         end;
@@ -673,7 +673,7 @@ begin
    if Assigned(SelectedElement) then begin
       GLPanel1.BlockRender;
       try
-        res:=StrToFloatDef(TopEdit.Text, -1);
+        res:=GLUtils.StrToFloatDef(TopEdit.Text, -1);
         if res>=0 then begin
            SelectedElement.TopLeft.Y:=Res;
         end;
@@ -693,7 +693,7 @@ begin
    if Assigned(SelectedElement) then begin
       GLPanel1.BlockRender;
       try
-        res:=StrToFloatDef(RightEdit.Text, -1);
+        res:=GLUtils.StrToFloatDef(RightEdit.Text, -1);
         if res>=0 then begin
            SelectedElement.BottomRight.X:=Res;
         end;
@@ -713,7 +713,7 @@ begin
    if Assigned(SelectedElement) then begin
       GLPanel1.BlockRender;
       try
-        res:=StrToFloatDef(BottomEdit.Text, -1);
+        res:=GLUtils.StrToFloatDef(BottomEdit.Text, -1);
         if res>=0 then begin
            SelectedElement.BottomRight.Y:=Res;
         end;

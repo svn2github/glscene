@@ -56,10 +56,10 @@ function IsPowerOf2(value : Integer) : Boolean;
 function ReadCRLFString(aStream : TStream) : AnsiString;
 //: Write the string and a CRLF in the stream
 procedure WriteCRLFString(aStream : TStream; const aString : AnsiString);
-//: TryStrToFloat
+//: Similar to SysUtils.TryStrToFloat, but ignores user's locale
 function TryStrToFloat(const strValue : String; var val : Extended) : Boolean;
-//: StrToFloatDefZero
-function StrToFloatDefZero(const strValue : String) : Extended; overload;
+//: Similar to SysUtils.StrToFloatDef, but ignores user's locale
+function StrToFloatDef(const strValue : String; defValue : Extended = 0) : Extended;
 
 //: Converts a string into color
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
@@ -286,10 +286,10 @@ end;
 
 // StrToFloatDef
 //
-function StrToFloatDefZero(const strValue : String) : Extended;
+function StrToFloatDef(const strValue : String; defValue : Extended = 0) : Extended;
 begin
    if not TryStrToFloat(strValue, Result) then
-      result:=0;
+      result:=defValue;
 end;
 
 // StringToColorAdvancedSafe

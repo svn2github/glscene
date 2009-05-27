@@ -459,13 +459,13 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcolor.Alpha := StrToFloatDefZero(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcolor.Alpha := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcolor.Red := StrToFloatDefZero(copy(val, 1, pos(';',val) - 1));
+      tmpcolor.Red := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcolor.Green := StrToFloatDefZero(copy(val, 1, pos(';',val) - 1));
+      tmpcolor.Green := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcolor.Blue := StrToFloatDefZero(copy(val, 1, pos(')',val) - 1));
+      tmpcolor.Blue := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -475,11 +475,11 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcoords.X := StrToFloatDefZero(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcoords.X := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcoords.Y := StrToFloatDefZero(copy(val, 1, pos(';',val) - 1));
+      tmpcoords.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords.Z := StrToFloatDefZero(copy(val, 1, pos(')',val) - 1));
+      tmpcoords.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -489,13 +489,13 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcoords4.W := StrToFloatDefZero(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcoords4.W := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcoords4.X := StrToFloatDefZero(copy(val, 1, pos(';',val) - 1));
+      tmpcoords4.X := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords4.Y := StrToFloatDefZero(copy(val, 1, pos(';',val) - 1));
+      tmpcoords4.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords4.Z := StrToFloatDefZero(copy(val, 1, pos(')',val) - 1));
+      tmpcoords4.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -880,7 +880,7 @@ procedure TGLMaterialScripter.XImageBrightness;
 begin
    if classexists('imagebrightness') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageBrightness := StrToFloatDefZero(extractvalue);
+      NewMat.Material.Texture.ImageBrightness := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 
@@ -888,7 +888,7 @@ procedure TGLMaterialScripter.XImageGamma;
 begin
    if classexists('imagegamma') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageGamma := StrToFloatDefZero(extractvalue);
+      NewMat.Material.Texture.ImageGamma := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XLibMaterialName;
@@ -990,7 +990,7 @@ procedure TGLMaterialScripter.XNormalMapScale;
 begin
    if classexists('normalmapscale') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.NormalMapScale := StrToFloatDefZero(extractvalue);
+      NewMat.Material.Texture.NormalMapScale := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 

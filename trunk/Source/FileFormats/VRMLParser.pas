@@ -174,6 +174,8 @@ type
 
 implementation
 
+uses GLUtils;
+
 function CreateVRMLTokenList(Text : String) : TStringList;
 const
   cSymbols : array[0..3] of char = ( '{','}','[',']' );
@@ -464,7 +466,7 @@ end;
 //
 function TVRMLParser.ReadSingle : Single;
 begin
-  Result:=StrToFloatDef(ReadToken,0);
+  Result:=GLUtils.StrToFloatDef(ReadToken,0);
 end;
 
 // ReadVector3f
@@ -505,7 +507,7 @@ begin
     if token = '' then
       exit
     else if token <> ']' then
-      TVRMLSingleArray(FCurrentNode).Values.Add(StrToFloatDef(token,0));
+      TVRMLSingleArray(FCurrentNode).Values.Add(GLUtils.StrToFloatDef(token,0));
   until token = ']';
 
   FCurrentNode:=FCurrentNode.Parent;
