@@ -6,6 +6,7 @@
 	Basic sound manager based on WinMM <p>
 
 	<b>History : </b><font size=-1><ul>
+     <li>30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
 	   <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
 	</ul></font>
 }
@@ -36,13 +37,13 @@ type
 	      procedure DoDeActivate; override;
 
          procedure KillSource(aSource : TGLBaseSoundSource); override;
-         procedure UpdateSource(aSource : TGLBaseSoundSource); override;
 
       public
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
+        procedure UpdateSources; override;
       published
 	      { Published Declarations }
          property MaxChannels default 4;
@@ -56,6 +57,16 @@ function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
 implementation
 
 uses SysUtils;
+
+type
+  TSoundState = (ssPlaying, ssFinished);
+
+  TWaveOutPlayingRec = record
+    CurrentState: TSoundState;
+    WaveOutDevice: hwaveout;
+    WaveHeader: wavehdr;
+  end;
+  PWaveOutPlayingRec = ^TWaveOutPlayingRec;
 
 procedure _waveOutCallBack2(hwo : HWAVEOUT; uMsg : Cardinal;
                            dwInstance, dwParam1, dwParam2 : Integer); stdcall;
@@ -138,25 +149,37 @@ end;
 // KillSource
 //
 procedure TGLSMWaveOut.KillSource(aSource : TGLBaseSoundSource);
+var
+  pRec: PWaveOutPlayingRec;
 begin
    if aSource.ManagerTag<>0 then begin
-      waveOutClose(aSource.ManagerTag);
+      pRec := PWaveOutPlayingRec(aSource.ManagerTag);
+      if pRec.CurrentState=ssPlaying then
+        waveOutReset(pRec.WaveOutDevice);
+      waveOutUnprepareHeader(pRec.WaveOutDevice, @pRec.WaveHeader, sizeof(wavehdr));
+      waveOutClose(pRec.WaveOutDevice);
+      Dispose(pRec);
       aSource.ManagerTag:=0;
    end;
 end;
 
+// Note: This callback function is called from another thread, from MSDN docs:
+// "Applications should not call any system-defined functions from inside a
+// callback function, except for EnterCriticalSection, LeaveCriticalSection,
+// midiOutLongMsg, midiOutShortMsg, OutputDebugString, PostMessage,
+// PostThreadMessage, SetEvent, timeGetSystemTime, timeGetTime, timeKillEvent,
+// and timeSetEvent. Calling other wave functions will cause deadlock."
 procedure _waveOutCallBack(hwo : HWAVEOUT; uMsg : Cardinal;
                            dwInstance, dwParam1, dwParam2 : Integer); stdcall;
 begin
    if uMsg=WOM_DONE then begin
-      waveOutClose(hwo);
-      TGLSoundSource(dwInstance).ManagerTag:=-1;
+      PWaveOutPlayingRec(TGLSoundSource(dwInstance).ManagerTag).CurrentState:=ssFinished;
    end;
 end;
 
 // UpdateSource
 //
-procedure TGLSMWaveOut.UpdateSource(aSource : TGLBaseSoundSource);
+procedure TGLSMWaveOut.UpdateSources;
 var
    i, n : Integer;
    wfx : TWaveFormatEx;
@@ -164,13 +187,15 @@ var
    wh : wavehdr;
    mmres : MMRESULT;
    hwo : hwaveout;
+   pRec: PWaveOutPlayingRec;
 begin
    // count nb of playing sources and delete done ones
    n:=0;
    for i:=Sources.Count-1 downto 0 do
-      if Sources[i].ManagerTag>0 then
+     if Sources[i].ManagerTag<>0 then
+       if PWaveOutPlayingRec(Sources[i].ManagerTag).currentState=ssPlaying then
          Inc(n)
-      else if Sources[i].ManagerTag=-1 then
+       else
          Sources.Delete(i);
 	// start sources if some capacity remains, and forget the others
    for i:=Sources.Count-1 downto 0 do if Sources[i].ManagerTag=0 then begin
@@ -182,6 +207,8 @@ begin
                                Cardinal(@_waveOutCallBack), Integer(Sources[i]),
                                CALLBACK_FUNCTION);
             Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
+
+            FillChar(wh,sizeof(wh),0);
             wh.dwBufferLength:=smp.LengthInBytes;
             wh.lpData:=smp.Data.PCMData;
             wh.dwLoops:=Sources[i].NbLoops;
@@ -189,11 +216,18 @@ begin
                wh.dwFlags:=WHDR_BEGINLOOP+WHDR_ENDLOOP
             else wh.dwFlags:=0;
             wh.lpNext:=nil;
-            mmres:=waveOutPrepareHeader(hwo, @wh, SizeOf(wavehdr));
+
+            new(pRec);
+            pRec.waveoutdevice:=hwo;
+            pRec.waveheader:=wh;
+            pRec.CurrentState:=ssPlaying;
+
+            mmres:=waveOutPrepareHeader(hwo, @pRec.waveheader, SizeOf(wavehdr));
             Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-            mmres:=waveOutWrite(hwo, @wh, SizeOf(wavehdr));
+            Sources[i].ManagerTag:=Integer(prec);
+            mmres:=waveOutWrite(hwo, @pRec.waveheader, SizeOf(wavehdr));
             Assert(mmres=MMSYSERR_NOERROR, IntToStr(mmres));
-            Sources[i].ManagerTag:=hwo;
+
             Inc(n);
 			end else
 				Sources.Delete(i);

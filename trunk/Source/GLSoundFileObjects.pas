@@ -7,6 +7,7 @@
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>07/06/07 - DaStr - Added $I GLScene.inc
       <li>26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
@@ -235,8 +236,8 @@ begin
    Result.wFormatTag:=Wave_Format_PCM;
    Result.nAvgBytesPerSec:=BytesPerSec;
    Result.wBitsPerSample:=BitsPerSample;
-   Result.nBlockAlign:=1024;
-   Result.cbSize:=SizeOf(TWaveFormatEx);
+   Result.nBlockAlign:=NbChannels*BytesPerSample;
+   Result.cbSize:=0;
 end;
 
 // ------------------
