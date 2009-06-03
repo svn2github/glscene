@@ -12,6 +12,7 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
       <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
                             on prior versions of Delphi)
       <li>24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
@@ -224,10 +225,12 @@ function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
 {: Returns the bitmap's scanline for the specified row. }
 function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
 
+{$IFDEF GLS_DELPHI_5_DOWN}
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
    slice is relinquished. }
-//procedure Sleep(length : Cardinal);
+procedure Sleep(length : Cardinal);
+{$ENDIF}
 
 {: Returns the current value of the highest-resolution counter.<p>
    If the platform has none, should return a value derived from the highest
@@ -656,16 +659,14 @@ begin
 {$ENDIF}
 end;
 
+{$IFDEF GLS_DELPHI_5_DOWN}
 // Sleep
 //
-(*procedure Sleep(length : Cardinal);
+procedure Sleep(length : Cardinal);
 begin
-{$IFDEF WIN32}
    Windows.Sleep(length);
-{$ELSE}
-   usleep(length*1000);
+end;
 {$ENDIF}
-end;*)
 
 // QueryPerformanceCounter
 //
