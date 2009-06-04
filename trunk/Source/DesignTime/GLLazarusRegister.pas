@@ -63,14 +63,14 @@ uses
    // GLScene - particles
    GLParticles, GLParticleFX,
    // GLScene - environment
-   GLSkyDome, GLSkyBox, GLAtmosphere,
+   GLSkydome, GLSkyBox, GLAtmosphere,
    // GLScene - hud
-   GLHudObjects, GLGameMenu, GLConsole,
+   GLHUDObjects, GLGameMenu, {$IFDEF MSWINDOWS}GLConsole,{$ENDIF}
    // GLScene - gui
    GLWindows,
    // GLScene - special
    GLLensFlare, GLTexLensFlare, GLMirror, GLShadowPlane, GLShadowVolume,
-   GLZBuffer, GLSLProjectedTextures, GLProjectedTextures, GLBLur,
+   GLzBuffer, GLSLProjectedTextures, GLProjectedTextures, GLBlur,
    {$IFDEF MSWINDOWS} GLSpaceText, {$ENDIF}
    GLTrail, GLPostEffects,
    // GLScene - doodad
@@ -272,7 +272,9 @@ initialization
       RegisterSceneObject(TGLResolutionIndependantHUDText, 'Resolution Independant HUD Text', glsOCHUDObjects, HInstance);
       RegisterSceneObject(TGLAbsoluteHUDText, 'Absolute HUD Text', glsOCHUDObjects, HInstance);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects, HInstance);
+      {$ifdef MSWINDOWS}
       RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects, HInstance);
+      {$ENDIF}
 
       // GUI objects.
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects, HInstance);
@@ -301,7 +303,7 @@ initialization
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects, HInstance);
-      {$ifdef WIN32}
+      {$ifdef MSWINDOWS}
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);
       {$endif}
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects, HInstance);
