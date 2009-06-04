@@ -19,14 +19,7 @@ interface
 {$include GLScene.inc}
 
 uses
-  GLBitmapFont, Classes, GLScene, GLTexture, GLCrossPlatform,
-  {$IFDEF MSWINDOWS}
-  Graphics
-  {$ENDIF}
-  {$IFDEF UNIX}
-  QGraphics
-  {$ENDIF}
-  ;
+  GLBitmapFont, Classes, GLScene, GLTexture, Graphics, GLCrossPlatform;
 
 type
 
