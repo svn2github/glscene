@@ -20,6 +20,7 @@ interface
 {$i GLScene.inc}
 
 uses
+  {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   Messages, Graphics, Forms, Classes, Controls, Menus, LMessages, LCLType,
 
   // GLScene
