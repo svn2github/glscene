@@ -109,13 +109,6 @@ implementation
 {$IFDEF MSWINDOWS}
 uses Forms, OpenGL1x, GLCrossPlatform, Messages;
 
-resourcestring
-   cIncompatibleContexts =       'Incompatible contexts';
-   cDeleteContextFailed =        'Delete context failed';
-   cContextActivationFailed =    'Context activation failed: %X, %s';
-   cContextDeactivationFailed =  'Context deactivation failed';
-   cUnableToCreateLegacyContext= 'Unable to create legacy context';
-
 var
    vTrackingCount : Integer;
    vTrackedHwnd : array of HWND;

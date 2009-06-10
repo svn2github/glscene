@@ -20,7 +20,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Messages, Graphics, Forms, Classes, Controls, Menus, LMessages, LCLType,
+  Messages, Graphics, Forms, Classes, Controls, Menus, LMessages, LCLType,
 
   // GLScene
   GLScene, GLContext;
@@ -163,7 +163,42 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils, GLWin32Context, GLViewer;
+uses OpenGL1x, SysUtils
+     {$ifndef fpc} // delphi
+     ,GLWin32Context
+     {$else}
+     ,LCLIntf
+       {$ifdef LCLWIN32}
+         {$ifndef CONTEXT_INCLUDED}
+     ,GLWin32Context
+         {$define CONTEXT_INCLUDED}
+         {$endif}
+       {$endif}
+
+       {$ifdef LCLGTK}
+         {$ifndef CONTEXT_INCLUDED}
+     ,GLLinGTKContext
+         {$define CONTEXT_INCLUDED}
+         {$endif}
+       {$endif}
+
+       {$ifdef LCLGTK2}
+         {$ifndef CONTEXT_INCLUDED}
+     ,GLLinGTKContext
+         {$define CONTEXT_INCLUDED}
+         {$endif}
+       {$endif}
+
+       {$ifdef LCLCARBON}
+     ,GLCarbonContext
+       {$endif}
+
+       {$ifdef LCLQT}
+         {$error unimplemented QT context}
+       {$endif}
+
+     {$endif}
+   ,GLViewer;
 
 // ------------------
 // ------------------ TGLSceneViewer ------------------
@@ -284,7 +319,9 @@ begin
    inherited CreateParams(Params);
    with Params do begin
       Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
+      {$IFDEF MSWINDOWS}
       WindowClass.Style:=WindowClass.Style or CS_OWNDC;
+      {$ENDIF}
    end;
 end;
 
@@ -335,7 +372,7 @@ end;
 //
 procedure TGLSceneViewer.LMPaint(var Message: TLMPaint);
 var
-   PS : Windows.TPaintStruct;
+   PS : LCLType.TPaintStruct;
    p : TPoint;
 begin
    p:=ClientToScreen(Point(0, 0));

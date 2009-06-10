@@ -11,10 +11,10 @@ uses
   PersistentClasses, XOpenGL, XCollection, GeometryBB, Polynomials, GLContext, 
   GLState, GLUtils, GLGraphics, GLTexture, GLStrings, GLScene, GLSilhouette, 
   GLObjects, GLTeapot, GLGeomObjects, GLBehaviours, GLCrossPlatform, 
-  GLWin32Context, ApplicationFileIO, GLLCLViewer, GLObjectManager, 
-  GLPolyhedron, GLCadencer, GLAnimatedSprite, GLExtrusion, GLMultiPolygon, 
-  Octree, MeshUtils, PerlinNoise, GLStarRecord, GLCanvas, GLKeyboard, 
-  GLCustomShader, GLTerrainRenderer, GLMirror;
+  ApplicationFileIO, GLObjectManager, GLPolyhedron, GLCadencer, 
+  GLAnimatedSprite, GLExtrusion, GLMultiPolygon, Octree, MeshUtils, 
+  PerlinNoise, GLStarRecord, GLCanvas, GLCustomShader, GLTerrainRenderer, 
+  GLMirror, GLViewer, GLSkydome, GLzBuffer, GLBlur, GLHUDObjects, GLWindowsFont;
 
 implementation
 

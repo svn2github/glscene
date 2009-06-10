@@ -1,15 +1,13 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <PathDelim Value="\"/>
     <Name Value="GLScene_DesignTime"/>
     <CompilerOptions>
       <Version Value="8"/>
-      <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\;C:\Downloads\GLScene\Source\PropertyEditors\"/>
-        <OtherUnitFiles Value="C:\Downloads\GLScene\Source\DesignTime\;C:\Downloads\GLScene\Source\;C:\Downloads\GLScene\Source\PropertyEditors\"/>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
+        <OtherUnitFiles Value="../Source/DesignTime/;../Source/;../Source/PropertyEditors/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -24,20 +22,20 @@
     <Version Major="1"/>
     <Files Count="4">
       <Item1>
-        <Filename Value="..\Source\DesignTime\GLLazarusRegister.pas"/>
+        <Filename Value="../Source/DesignTime/GLLazarusRegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLLazarusRegister"/>
       </Item1>
       <Item2>
-        <Filename Value="..\Source\PropertyEditors\FVectorEditor.lfm"/>
+        <Filename Value="../Source/PropertyEditors/FVectorEditor.lfm"/>
         <Type Value="LFM"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\PropertyEditors\FVectorEditor.lrs"/>
+        <Filename Value="../Source/PropertyEditors/FVectorEditor.lrs"/>
         <Type Value="LRS"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\PropertyEditors\FVectorEditor.pas"/>
+        <Filename Value="../Source/PropertyEditors/FVectorEditor.pas"/>
         <UnitName Value="FVectorEditor"/>
       </Item4>
     </Files>
@@ -52,7 +50,7 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)\"/>
+      <UnitPath Value="$(PkgOutDir)/"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

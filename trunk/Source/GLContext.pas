@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
       <li>16/03/08 - DanB - moved MRT_BUFFERS into unit from opengl1x.pas rewrite,
                             and added some experimental geometry shader code
       <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
@@ -662,20 +663,18 @@ type
 
    EGLShader = class(EGLContext);
 
-   EOpenGLError = class(Exception);
-
 {: Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
 {: The TGLContext that is the currently active context, if any.<p>
    Returns nil if no context is active. }
 function CurrentGLContext : TGLContext;
 
-{: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
-procedure CheckOpenGLError;
-{: Clears all pending OpenGL errors. }
-procedure ClearGLError;
-{: Raises an EOpenGLError with 'msg' error string. }
-procedure RaiseOpenGLError(const msg : String);
+resourcestring
+   cIncompatibleContexts =       'Incompatible contexts';
+   cDeleteContextFailed =        'Delete context failed';
+   cContextActivationFailed =    'Context activation failed: %X, %s';
+   cContextDeactivationFailed =  'Context deactivation failed';
+   cUnableToCreateLegacyContext= 'Unable to create legacy context';
 
 var
    GLContextManager : TGLContextManager;
@@ -709,45 +708,6 @@ var
 function CurrentGLContext : TGLContext;
 begin
    Result:=vCurrentGLContext;
-end;
-
-// CheckOpenGLError
-//
-procedure CheckOpenGLError;
-var
-   GLError : LongWord;
-	Count : Word;
-begin
-	GLError:=glGetError;
-	if GLError <> GL_NO_ERROR then begin
-		Count:=0;
-      // Because under some circumstances reading the error code creates a new error
-      // and thus hanging up the thread, we limit the loop to 6 reads.
-      try
-         while (glGetError <> GL_NO_ERROR) and (Count < 6) do Inc(Count);
-      except
-         // Egg : ignore exceptions here, will perhaps avoid problem expressed before
-		end;
-      if not vIgnoreOpenGLErrors then
-   		raise EOpenGLError.Create(String(gluErrorString(GLError)));
-	end;
-end;
-
-// ClearGLError
-//
-procedure ClearGLError;
-var
-   n : Integer;
-begin
-   n:=0;
-   while (glGetError<>GL_NO_ERROR) and (n<6) do Inc(n);
-end;
-
-// RaiseOpenGLError
-//
-procedure RaiseOpenGLError(const msg : String);
-begin
-   raise EOpenGLError.Create(msg);
 end;
 
 // RegisterGLContextClass
