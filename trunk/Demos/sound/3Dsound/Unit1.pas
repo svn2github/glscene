@@ -49,7 +49,8 @@ interface
 uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, GLSMFMOD, ComCtrls, Controls, GLSMBASS, StdCtrls, GLWin32Viewer,
-  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
+  GLFileMP3;
 
 type
   TForm1 = class(TForm)
