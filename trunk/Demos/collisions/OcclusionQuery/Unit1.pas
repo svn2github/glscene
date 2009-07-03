@@ -65,6 +65,7 @@ const
 var
   Form1: TForm1;
   queries: array[0..NUM_QUERIES-1] of TGLuint;
+  queriesCreated: boolean;
   available:TGLint;
 
   // (can use TGLuint64EXT if using Delphi 7+, and require time queries > approx. 4 seconds)
@@ -91,8 +92,6 @@ begin
     Messagedlg('Requires at least OpenGL version 1.5 to run', mtError, [mbOK],0);
     Application.Terminate;
   end;
-  // Generate the queries
-  glGenQueries(NUM_QUERIES,@queries);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -114,6 +113,12 @@ end;
 procedure TForm1.OGLBeginQueriesRender(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
+  // Generate the queries, if not already created
+  if not queriesCreated then
+  begin
+    glGenQueries(NUM_QUERIES,@queries);
+    queriesCreated := true;
+  end;
   // Begin the timer + occlusion queries
   if GL_EXT_timer_query then
     glBeginQuery(GL_TIME_ELAPSED_EXT, queries[0]);
