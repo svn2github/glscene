@@ -96,9 +96,12 @@ begin
    if not Assigned(FMaterialLibrary) then exit;
    if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
       if FMaterialLibrary.Materials.Count>0 then
-         repeat
-           // handle multi-pass materials
-         until not FMaterialLibrary.Materials[FPass-1].UnApply(rci);
+         // handle multi-pass materials
+         if FMaterialLibrary.Materials[FPass-1].UnApply(rci) then
+         begin
+           Result:=true;
+           Exit;
+         end;
       if (FPass >= FMaterialLibrary.Materials.Count) then begin
          glDepthFunc(GL_LESS);
          //glPopAttrib;
