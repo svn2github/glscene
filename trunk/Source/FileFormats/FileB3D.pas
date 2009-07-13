@@ -22,6 +22,7 @@ uses
 
 type
   TB3DMaterial = class
+  public
     MaterialData: TBRUSChunk;
     constructor Create;
     destructor Destroy; override;
@@ -29,6 +30,7 @@ type
   end;
 
   TB3DTexture = class
+  public
     TextureData: TTEXSChunk;
     constructor Create;
     destructor Destroy; override;
@@ -36,6 +38,7 @@ type
   end;
 
   TB3DNode = class
+  public
     NodeData: PNODEChunk;
     constructor Create;
     destructor Destroy; override;
@@ -74,7 +77,7 @@ type
 implementation
 
 uses
-  SysUtils, Windows;
+  SysUtils{, Windows};
 
 constructor TB3DMaterial.Create;
 begin
@@ -565,10 +568,10 @@ begin
     Node := Node^.next;
   end;
 
-  MessageBeep(FaceCount);
-  MessageBeep(VerticesCount);
-  MessageBeep(NodeLevel);
-  MessageBeep(NodeCount);
+  //MessageBeep(FaceCount);
+  //MessageBeep(VerticesCount);
+  //MessageBeep(NodeLevel);
+  //MessageBeep(NodeCount);
 end;
 
 end.

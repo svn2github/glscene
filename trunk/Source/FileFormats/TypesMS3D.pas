@@ -41,6 +41,7 @@ type
   //     char            materialIndex;                      // -1 = no material
   // } ms3d_group_t;
   TMS3DGroup = class
+  public
     Flags: byte;
     Name: array[0..31] of AnsiChar;
     NumTriangles: word;
