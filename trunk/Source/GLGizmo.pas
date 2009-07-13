@@ -866,7 +866,7 @@ var
 begin
   if FGizmoThickness <> Value then
   begin
-    thk := MaxFloat(1, Round(3 * Value));
+    thk := MaxInteger(1, Round(3 * Value));
     _GZOlinex.LineWidth := thk;
     _GZOliney.LineWidth := thk;
     _GZOlinez.LineWidth := thk;

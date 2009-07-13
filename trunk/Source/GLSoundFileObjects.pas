@@ -7,6 +7,7 @@
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
       <li>30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>07/06/07 - DaStr - Added $I GLScene.inc
@@ -24,7 +25,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, MMSystem, ApplicationFileIO;
+uses Classes, MMSystem, ApplicationFileIO, GLCrossPlatform;
 
 type
 
@@ -143,7 +144,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLStrings, consts;
+uses SysUtils, GLStrings;
 
 var
    vSoundFileFormats : TGLSoundFileFormatsList;
@@ -383,7 +384,7 @@ begin
          end;
    end;
    if C > 1 then
-      FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]);
+      FmtStr(Descriptions, '%s (%s)|%1:s|%s', [glsAllFilter, Filters, Descriptions]);
 end;
 
 // ------------------------------------------------------------------
