@@ -539,7 +539,7 @@ Begin
 
   For YC := 0 to Height-1 do
   Begin
-    Posi := Param.ScanLine[YC];
+    Posi := BitmapScanLine(Param, YC);
     For XC := 0 to Width-1 do
     Begin
       Value := 0;
