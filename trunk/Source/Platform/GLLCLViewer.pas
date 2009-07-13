@@ -6,6 +6,7 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/07/09 - DanB - added the FieldOfView property + reduced OpenGL dependencies
       <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
       <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
@@ -50,7 +51,6 @@ type
          FOwnDC : Cardinal;
 			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
          FMouseInControl : Boolean;
-         FIsOpenGLAvailable : Boolean;
          FLastScreenPos : TPoint;
 
          procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); Message LM_ERASEBKGND;
@@ -60,6 +60,9 @@ type
 
 	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
 	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+        function GetFieldOfView: single;
+        procedure SetFieldOfView(const Value: single);
+        function GetIsRenderingContextAvailable: Boolean;
 
       protected
          { Protected Declarations }
@@ -93,7 +96,7 @@ type
             between RCs that already have display lists. }
          procedure RecreateWnd;
 
-         property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
+         property IsRenderingContextAvailable : Boolean read GetIsRenderingContextAvailable;
 
          function LastFrameTime : Single;
          function FramesPerSecond : Single;
@@ -130,6 +133,12 @@ type
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
+         {: Returns or sets the field of view for the viewer, in degrees.<p>
+         This value depends on the camera and the width and height of the scene.
+         The value isn't persisted, if the width/height or camera.focallength is
+         changed, FieldOfView is changed also. }
+         property FieldOfView : single read GetFieldOfView write SetFieldOfView;
+
          property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
          property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
 
@@ -164,7 +173,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils
+uses SysUtils
      {$ifndef fpc} // delphi
      ,GLWin32Context
      {$else}
@@ -209,7 +218,6 @@ uses OpenGL1x, SysUtils
 //
 constructor TGLSceneViewer.Create(AOwner: TComponent);
 begin
-   FIsOpenGLAvailable:=InitOpenGL;
    inherited Create(AOwner);
    ControlStyle:=[csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
    if csDesigning in ComponentState then
@@ -331,13 +339,11 @@ end;
 procedure TGLSceneViewer.CreateWnd;
 begin
    inherited CreateWnd;
-   if IsOpenGLAvailable then begin
-      // initialize and activate the OpenGL rendering context
-      // need to do this only once per window creation as we have a private DC
-      FBuffer.Resize(Self.Width, Self.Height);
-      FOwnDC:=GetDC(Handle);
-      FBuffer.CreateRC(FOwnDC, False);
-   end;
+   // initialize and activate the OpenGL rendering context
+   // need to do this only once per window creation as we have a private DC
+   FBuffer.Resize(Self.Width, Self.Height);
+   FOwnDC:=GetDC(Handle);
+   FBuffer.CreateRC(FOwnDC, False);
 end;
 
 // DestroyWnd
@@ -356,7 +362,7 @@ end;
 //
 procedure TGLSceneViewer.LMEraseBkgnd(var Message: TLMEraseBkgnd);
 begin
-   if IsOpenGLAvailable then
+   if IsRenderingContextAvailable then
       Message.Result:=1
    else inherited; 
 end;
@@ -386,7 +392,7 @@ begin
    end;
    BeginPaint(Handle, PS);
    try
-      if IsOpenGLAvailable then
+      if IsRenderingContextAvailable and (Width>0) and (Height>0) then
          FBuffer.Render;
    finally
       EndPaint(Handle, PS);
@@ -494,6 +500,37 @@ begin
 
    BitBlt(Result.Canvas.Handle, 0, 0, Width, Height,
           RenderDC, 0, 0, SRCCOPY);
+end;
+
+// GetFieldOfView
+//
+function TGLSceneViewer.GetFieldOfView: single;
+begin
+  if not Assigned(Camera) then
+    result := 0
+
+  else if Width<Height then
+    result := Camera.GetFieldOfView(Width)
+
+  else
+    result := Camera.GetFieldOfView(Height);
+end;
+
+function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
+begin
+  Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
+end;
+
+procedure TGLSceneViewer.SetFieldOfView(const Value: single);
+begin
+  if Assigned(Camera) then
+  begin
+    if Width<Height then
+      Camera.SetFieldOfView(Value, Width)
+
+    else
+      Camera.SetFieldOfView(Value, Height);
+  end;
 end;
 
 // ------------------------------------------------------------------
