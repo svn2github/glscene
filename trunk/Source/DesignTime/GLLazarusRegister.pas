@@ -4,7 +4,7 @@ interface
 
 uses
    Classes,
-   GLObjectManager, ComponentEditors, PropEdits;
+   GLObjectManager, ComponentEditors, PropEdits, LResources;
 
 type
 
@@ -57,17 +57,21 @@ uses
    // GLScene - advanced geometry
    GLAnimatedSprite, GLExtrusion, GLMultiPolygon,
    // GLScene - mesh
-   GLVectorFileObjects, GLMesh, GLTilePlane, GLPortal, GLTerrainRenderer,
+   GLVectorFileObjects, GLMesh, GLTilePlane, GLPortal,
+   // GLScene - terrain
+   GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS, GLBumpmapHDS, GLPerlin,
+   GLTexturedHDS, GLAsyncHDS, GLShadowHDS,
    // GLScene - graph plotting
-   GLBitmapFont, GLGraph,
+   GLBitmapFont, GLGraph, GLWindowsFont, {$IFDEF MSWINDOWS}GLWideBitmapFont,{$ENDIF}
    // GLScene - particles
-   GLParticles, GLParticleFX,
+   GLParticles, GLParticleFX, GLPerlinPFX, GLLinePFX, GLFireFX, GLThorFX,
+   GLEParticleMasksManager,
    // GLScene - environment
    GLSkydome, GLSkyBox, GLAtmosphere,
    // GLScene - hud
    GLHUDObjects, GLGameMenu, {$IFDEF MSWINDOWS}GLConsole,{$ENDIF}
    // GLScene - gui
-   GLWindows,
+   GLWindows, GLGui,
    // GLScene - special
    GLLensFlare, GLTexLensFlare, GLMirror, GLShadowPlane, GLShadowVolume,
    GLzBuffer, GLSLProjectedTextures, GLProjectedTextures, GLBlur,
@@ -77,8 +81,16 @@ uses
    GLTeapot, GLTree, GLWaterPlane,
    // GLScene - proxy
    GLProxyObjects, GLMultiProxy, GLMaterialMultiProxy,
+   // GLScene - shaders
+   GLTexCombineShader, GLPhongShader, GLUserShader, GLSLShader,
+   GLHiddenLineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
+   GLBumpShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLSLPostBlurShader,
+   GLAsmShader, GLShaderCombiner, GLTextureSharingShader,
    // GLScene - other
-   GLImposter, GLFeedback,
+   GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
+   GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
+   GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
+   GLCameraController, {$IFDEF MSWINDOWS}GLGizmo,{$ENDIF}
 
    // Property editor forms
    GLLazarusSceneEdit, FVectorEditor;
@@ -193,8 +205,54 @@ procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLScene,
-                       TGLSceneViewer,
-                       TGLMaterialLibrary
+                       TGLSceneViewer, TGLMemoryViewer,
+                       TGLMaterialLibrary,
+                       TGLCadencer,
+                       TGLGuiLayout,
+                       TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
+                       TGLScriptLibrary
+                       {$ifdef MSWINDOWS}
+                       ,TGLWideBitmapFont, TGLSoundLibrary, TGLSMWaveOut,
+                       TGLFullScreenViewer
+                       {$endif}
+                      ]);
+
+   RegisterComponents('GLScene PFX',
+                      [
+                       TGLCustomPFXManager,
+                       TGLPolygonPFXManager, TGLPointLightPFXManager,
+                       TGLCustomSpritePFXManager,
+                       TGLPerlinPFXManager, TGLLinePFXManager,
+                       TGLFireFXManager, TGLThorFXManager,
+                       TGLEParticleMasksManager
+                      ]);
+
+   RegisterComponents('GLScene Utils',
+                      [TAsyncTimer, TGLStaticImposterBuilder,
+                       TCollisionManager, TGLAnimationControler,
+                       TGLDCEManager, TGLFPSMovementManager,
+                       TGLMaterialScripter, TGLUserInterface, TGLNavigator,
+                       TGLSmoothNavigator, TGLSmoothUserInterface,
+                       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
+                       TGLSimpleNavigation, TGLCameraController
+                       {$IFDEF MSWINDOWS}
+                       ,TAVIRecorder, TGLGizmo, TJoystick, TScreenSaver
+                       {$ENDIF}
+                      ]);
+
+   RegisterComponents('GLScene Terrain',
+                      [TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS,
+                       TGLShadowHDS
+                      ]);
+
+   RegisterComponents('GLScene Shaders',
+                      [ TGLTexCombineShader, TGLPhongShader, TGLUserShader,
+                        TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
+                        TGLMultiMaterialShader, TGLBumpShader,
+                        TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader,
+                        TGLAsmShader,TGLShaderCombiner,TGLTextureSharingShader,
+                        TGLSLPostBlurShader
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
@@ -206,6 +264,8 @@ begin
 end;
 
 initialization
+
+   {$I GLSceneVCL.lrs}
 
    GLColor.vUseDefaultColorSets:=True;
    GLCoordinates.vUseDefaultCoordinateSets:=True;
