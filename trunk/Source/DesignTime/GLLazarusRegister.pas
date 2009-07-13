@@ -49,7 +49,7 @@ implementation
 uses
    SysUtils, Graphics,
    // GLScene units
-   VectorGeometry, GLScene, GLViewer,
+   VectorGeometry, GLScene, GLViewer, {$IFDEF MSWINDOWS}{GLWin32FullScreenViewer,}{$ENDIF}
    GLStrings, GLCoordinates, GLColor, GLTexture, GLMaterial,
    GLCadencer, GLCrossPlatform,
    // GLScene - basic geometry
@@ -90,7 +90,8 @@ uses
    GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
    GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
-   GLCameraController, {$IFDEF MSWINDOWS}GLGizmo,{$ENDIF}
+   GLCameraController, {$IFDEF MSWINDOWS}GLGizmo, GLSound, GLSMWaveOut,
+   {GLAVIRecorder,} Joystick, ScreenSaver,{$ENDIF}
 
    // Property editor forms
    GLLazarusSceneEdit, FVectorEditor;
@@ -212,8 +213,8 @@ begin
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
                        TGLScriptLibrary
                        {$ifdef MSWINDOWS}
-                       ,TGLWideBitmapFont, TGLSoundLibrary, TGLSMWaveOut,
-                       TGLFullScreenViewer
+                       ,TGLWideBitmapFont, TGLSoundLibrary, TGLSMWaveOut{,
+                       TGLFullScreenViewer}
                        {$endif}
                       ]);
 
@@ -236,7 +237,7 @@ begin
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLCameraController
                        {$IFDEF MSWINDOWS}
-                       ,TAVIRecorder, TGLGizmo, TJoystick, TScreenSaver
+                       {,TAVIRecorder}, TGLGizmo, TJoystick, TScreenSaver
                        {$ENDIF}
                       ]);
 
