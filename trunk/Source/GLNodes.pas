@@ -6,6 +6,7 @@
    Nodes are used to describe lines, polygons + more.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/07/09 - DaStr - Added $I GLScene.inc
       <li>05/10/08 - DanB - Created from GLMisc.pas split
    </ul></font>
 }
@@ -14,6 +15,8 @@ unit GLNodes;
 interface
 
 uses Classes, VectorGeometry, OpenGL1x, BaseClasses, GLCoordinates, Spline;
+
+{$I GLScene.inc}
 
 type
 	// TGLNode
