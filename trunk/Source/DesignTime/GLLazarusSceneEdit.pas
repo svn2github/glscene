@@ -256,6 +256,8 @@ begin
   newObject.Name:=UniqueName(newObject);
   newObject.MoveTo(objParent);
   SceneTreeView.Selected:=AddGLSObjectToTreeView(selectedNode, newObject.Name, newObject);
+  FCurrentDesigner.PropertyEditorHook.PersistentAdded(newObject,True);
+  FCurrentDesigner.Modified;
 end;
 
 procedure TGLSceneEditorForm.MIAddCameraClick(Sender: TObject);

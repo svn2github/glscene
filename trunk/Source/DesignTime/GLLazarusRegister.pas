@@ -262,16 +262,6 @@ begin
    RegisterClasses([TGLCoordinates]);
 
    RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '', TGLCoordinatesProperty);
-end;
-
-initialization
-
-   {$I GLSceneVCL.lrs}
-
-   GLColor.vUseDefaultColorSets:=True;
-   GLCoordinates.vUseDefaultCoordinateSets:=True;
-
-   //ReadVideoModes;
 
    with ObjectManager do begin
       RegisterSceneObject(TGLCamera, 'Camera', '', HInstance);
@@ -391,6 +381,16 @@ initialization
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '', HInstance);
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '', HInstance);
    end;
+end;
+
+initialization
+
+   {$I GLSceneVCL.lrs}
+
+   GLColor.vUseDefaultColorSets:=True;
+   GLCoordinates.vUseDefaultCoordinateSets:=True;
+
+   //ReadVideoModes;
 
 finalization
 
