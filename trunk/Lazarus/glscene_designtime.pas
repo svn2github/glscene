@@ -7,7 +7,7 @@ unit GLScene_DesignTime;
 interface
 
 uses
-GLLazarusRegister, FVectorEditor, LazarusPackageIntf;
+GLLazarusRegister, FVectorEditor, GLLazarusSceneEdit, LazarusPackageIntf;
 
 implementation
 

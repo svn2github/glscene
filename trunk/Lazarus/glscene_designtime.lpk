@@ -20,7 +20,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1"/>
-    <Files Count="5">
+    <Files Count="8">
       <Item1>
         <Filename Value="../Source/DesignTime/GLLazarusRegister.pas"/>
         <HasRegisterProc Value="True"/>
@@ -42,6 +42,18 @@
         <Filename Value="../Source/DesignTime/GLSceneVCL.lrs"/>
         <Type Value="LRS"/>
       </Item5>
+      <Item6>
+        <Filename Value="../Source/DesignTime/GLLazarusSceneEdit.lfm"/>
+        <Type Value="LFM"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../Source/DesignTime/GLLazarusSceneEdit.lrs"/>
+        <Type Value="LRS"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../Source/DesignTime/GLLazarusSceneEdit.pas"/>
+        <UnitName Value="GLLazarusSceneEdit"/>
+      </Item8>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="3">
