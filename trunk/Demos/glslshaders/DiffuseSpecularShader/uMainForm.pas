@@ -4,8 +4,9 @@
   A demo that shows how to use the TGLSLDiffuseSpecularShader component.
 
   Version history:
+    24/07/09 - DaStr - Added fog support
     02/07/07 - DaStr - Removed old Timer leftovers
-                       (GLSimpleNavigation component now does this stuff)                     
+                       (GLSimpleNavigation component now does this stuff)
     20/03/07 - DaStr - Initial version
 
 
@@ -59,6 +60,7 @@ type
     MultiLightShaderCheckBox: TCheckBox;
 
     DiffuseSpecularShader: TGLSLDiffuseSpecularShader;    GLSimpleNavigation1: TGLSimpleNavigation;
+    EnableFogCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: double);
     procedure LightCubeProgress(Sender: TObject; const deltaTime,
@@ -66,6 +68,7 @@ type
     procedure ShaderEnabledCheckBoxClick(Sender: TObject);
     procedure RealisticSpecularCheckBoxClick(Sender: TObject);
     procedure MultiLightShaderCheckBoxClick(Sender: TObject);
+    procedure EnableFogCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -110,6 +113,9 @@ begin
   MultiLightShader := TGLSLMLDiffuseSpecularShader.Create(Self);
   MultiLightShader.LightCompensation := 0.7;
   MultiLightShader.LightCount := 2;
+
+  // Disable fog.
+  EnableFogCheckBoxClick(nil);
 end;
 
 procedure TGLSLTestForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: double);
@@ -171,6 +177,24 @@ begin
 
   Light2.Shining := MultiLightShaderCheckBox.Checked;
   LightCube2.Visible := MultiLightShaderCheckBox.Checked;
+end;
+
+procedure TGLSLTestForm.EnableFogCheckBoxClick(Sender: TObject);
+begin
+  if EnableFogCheckBox.Checked then
+  begin
+    Viewer.Buffer.FogEnable := True;
+    
+    DiffuseSpecularShader.NotifyChange(Self);
+    MultiLightShader.NotifyChange(Self);
+  end
+  else
+  begin
+    Viewer.Buffer.FogEnable := False;
+
+    DiffuseSpecularShader.NotifyChange(Self);
+    MultiLightShader.NotifyChange(Self);
+  end;
 end;
 
 end.

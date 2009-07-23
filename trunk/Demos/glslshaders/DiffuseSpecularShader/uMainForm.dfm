@@ -20,21 +20,25 @@ object GLSLTestForm: TGLSLTestForm
     Left = 0
     Top = 0
     Width = 641
-    Height = 416
+    Height = 400
     Camera = Camera
+    Buffer.FogEnvironment.FogColor.Color = {ACC8483E9A99193FCDCC4C3F9A99993E}
+    Buffer.FogEnvironment.FogStart = 50.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 5000.000000000000000000
+    Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clBackground
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 145.291946411132800000
+    FieldOfView = 143.991683959960900000
     Align = alClient
   end
   object Panel1: TPanel
     Left = 0
-    Top = 416
+    Top = 400
     Width = 641
-    Height = 29
+    Height = 45
     Align = alBottom
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
@@ -50,7 +54,7 @@ object GLSLTestForm: TGLSLTestForm
       TabOrder = 0
     end
     object ShaderEnabledCheckBox: TCheckBox
-      Left = 256
+      Left = 176
       Top = 8
       Width = 97
       Height = 17
@@ -61,15 +65,15 @@ object GLSLTestForm: TGLSLTestForm
       OnClick = ShaderEnabledCheckBoxClick
     end
     object TurnPitchrollCheckBox: TCheckBox
-      Left = 112
-      Top = 8
+      Left = 8
+      Top = 24
       Width = 137
       Height = 17
       Caption = 'Turn-Pitch-Roll Enabled'
       TabOrder = 2
     end
     object RealisticSpecularCheckBox: TCheckBox
-      Left = 368
+      Left = 336
       Top = 8
       Width = 137
       Height = 17
@@ -78,13 +82,22 @@ object GLSLTestForm: TGLSLTestForm
       OnClick = RealisticSpecularCheckBoxClick
     end
     object MultiLightShaderCheckBox: TCheckBox
-      Left = 520
-      Top = 8
+      Left = 176
+      Top = 24
       Width = 113
       Height = 17
       Caption = 'MultiLight Shader'
       TabOrder = 4
       OnClick = MultiLightShaderCheckBoxClick
+    end
+    object EnableFogCheckBox: TCheckBox
+      Left = 336
+      Top = 24
+      Width = 137
+      Height = 17
+      Caption = 'Enable fog'
+      TabOrder = 5
+      OnClick = EnableFogCheckBoxClick
     end
   end
   object Scene: TGLScene
@@ -126,7 +139,6 @@ object GLSLTestForm: TGLSLTestForm
       OnProgress = LightCubeProgress
       CubeSize = 1.000000000000000000
       object Light: TGLLightSource
-        Ambient.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
         ConstAttenuation = 1.000000000000000000
         LightStyle = lsOmni
         Specular.Color = {0000803F0000803F0000803F0000803F}
@@ -194,7 +206,7 @@ object GLSLTestForm: TGLSLTestForm
       FocalLength = 65.000000000000000000
       TargetObject = GLXYZGrid1
       CameraStyle = csInfinitePerspective
-      Position.Coordinates = {000048C20000164300007A430000803F}
+      Position.Coordinates = {000016C30000E1430000B4430000803F}
       Direction.Coordinates = {00000000000080BF0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
     end
