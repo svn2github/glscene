@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLContext<p>
 
    Prototypes and base implementation of TGLContext.<p>
@@ -1531,7 +1534,7 @@ begin
       if shader.Handle=0 then
          raise EGLShader.Create('Couldn''t allocate '+shaderType.ClassName);
       shader.ShaderSource(shaderSource);
-      if    (not shader.CompileShader)
+      if (not shader.CompileShader)
          or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog))>0)) then
          raise EGLShader.Create(FName + ' (' + shader.ClassName+'): '#13#10 + shader.InfoLog);
       AttachObject(shader);
