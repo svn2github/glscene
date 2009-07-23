@@ -7,7 +7,9 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)  
+                              (BugTracker ID = 2826217)
+                              Fixed a bug with "fRDotV" clamping, which occured
+                              on all GeForce 8x and later graphic cards
       <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
       <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
                               a single Str procedure (thanks Uwe Raabe)
@@ -353,7 +355,7 @@ begin
     Add('   Texcoord    = gl_MultiTexCoord0.xy; ');
     Add(' ');
     Add('   vec3 fvViewDirection   = (gl_ModelViewMatrix * gl_Vertex).xyz; ');
-    Add('   vec3 fvLightDirection  = gl_LightSource[0].position.xyz - fvViewDirection; ');
+    Add('   vec3 fvLightDirection  =  gl_LightSource[0].position.xyz - fvViewDirection; ');
     Add(' ');
     Add('   vec3 fvNormal         = gl_NormalMatrix * gl_Normal; ');
     Add('   vec3 fvBinormal       = gl_NormalMatrix * gl_MultiTexCoord2.xyz; ');
@@ -410,8 +412,7 @@ begin
     Add('   float fNDotL           = dot( fvNormal, LightDirection ); ');
     Add('   vec3  fvReflection     = normalize( ( (fSpecularSpread * fvNormal ) * fNDotL ) - LightDirection ); ');
     Add(' ');
-    Add('   //there was a max(fRDotV, 0) procedure, but it seemed useless ');
-    Add('   float fRDotV           = dot( fvReflection, -ViewDirection ); ');
+    Add('   float fRDotV           = max( dot( fvReflection, -ViewDirection ), 0.0 ); ');
     Add(' ');
     Add('   vec4  fvBaseColor      = texture2D( baseMap, Texcoord ); ');
     if UseSpecularMap then
@@ -457,13 +458,12 @@ begin
     if UseNormalMap then
       Add('   vec3  fvNormal = normalize( ( texture2D( bumpMap, Texcoord ).xyz * fBumpSmoothness) - fBumpHeight * fBumpSmoothness); ')
     else
-      Add('   vec3  fvNormal = vec3(0.0, 0.0, 1);');
+      Add('   vec3  fvNormal = vec3(0.0, 0.0, 1.0);');
     Add(' ');
     Add('   float fNDotL           = dot( fvNormal, LightDirection ); ');
     Add('   vec3  fvReflection     = normalize( ( (fSpecularSpread * fvNormal ) * fNDotL ) - LightDirection ); ');
     Add(' ');
-    Add('   //there was a max(fRDotV, 0) procedure, but it seemed useless ');
-    Add('   float fRDotV           = dot( fvReflection, -ViewDirection ); ');
+    Add('   float fRDotV           = max(dot( fvReflection, -ViewDirection ), 0.0); ');
     Add(' '); 
     Add('   vec4  fvBaseColor      = texture2D( baseMap, Texcoord ); ');
     if UseSpecularMap then
@@ -579,7 +579,7 @@ begin
     Add(' ');
     Add('   fNDotL           = dot( fvBumpNormal, LightDirection ); ');
     Add('   fvReflection     = normalize( ( (fSpecularSpread * fvBumpNormal ) * fNDotL ) - LightDirection ); ');
-    Add('   fRDotV           = dot( fvReflection, -ViewDirection ); ');
+    Add('   fRDotV           = max( dot( fvReflection, -ViewDirection ), 0.0 ); ');
     Add('   fvNewDiffuse     = clamp(gl_LightSource[' + IntToStr(CurrentLight) + '].diffuse * fNDotL, 0.0, 1.0); ');
     Add('   fvTotalDiffuse   = min(fvTotalDiffuse + fvNewDiffuse, 1.0); ');
     Add('   fvTotalSpecular  = min(fvTotalSpecular + clamp((pow(fRDotV, fSpecularPower ) ) * (fvNewDiffuse + 0.2) / 1.2 * (fvSpecColor * gl_LightSource[' + IntToStr(CurrentLight) + '].specular), 0.0, 1.0), 1.0); ');
@@ -644,7 +644,6 @@ function TGLBaseCustomGLSLBumpShader.DoUnApply(
 begin
   //don't inherit not to call the event
   Result := False;
-  glActiveTextureARB(GL_TEXTURE0_ARB);
   GetGLSLProg.EndUseProgramObject;
 end;
 
@@ -675,7 +674,7 @@ begin
     if AComponent = FMaterialLibrary then
       if FMaterialLibrary <> nil then
       begin
-        //need to nil the textures that were ownned by it
+        // Need to nil the textures that were ownned by it.
         if FNormalTexture <> nil then
         begin
           Index := FMaterialLibrary.Materials.GetTextureIndex(FNormalTexture);
@@ -826,11 +825,12 @@ end;
 constructor TGLCustomGLSLBumpShaderAM.Create(AOwner: TComponent);
 begin
   inherited;
+
   FAmbientColor := TGLColor.Create(Self);
   FDiffuseColor := TGLColor.Create(Self);
   FSpecularColor := TGLColor.Create(Self);
 
-  //setup initial parameters
+  // Setup initial parameters.
   FAmbientColor.SetColor(0.15, 0.15, 0.15, 1);
   FDiffuseColor.SetColor(1, 1, 1, 1);
   FSpecularColor.SetColor(1, 1, 1, 1);
@@ -881,6 +881,7 @@ end;
 constructor TGLCustomGLSLMLBumpShaderMT.Create(AOwner: TComponent);
 begin
   inherited;
+
   FLightSources := [1];
   FLightCompensation := 1;
 end;
@@ -895,7 +896,7 @@ end;
 procedure TGLCustomGLSLMLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 var
   I: Integer;
-  FLightCount: Integer;
+  lLightCount: Integer;
 begin
   GetMLVertexProgramCode(VertexProgram.Code);
   
@@ -903,16 +904,16 @@ begin
   begin
     GetMLFragmentProgramCodeBeg(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
 
-    FLightCount := 0;
-    //repeat for all lights
+    lLightCount := 0;
+    // Repeat for all lights.
     for I := 0 to glsShaderMaxLightSources - 1 do
       if I + 1 in FLightSources then
       begin
         GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
-        Inc(FLightCount);
+        Inc(lLightCount);
       end;
 
-    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount, FLightCompensation);
+    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, lLightCount, FLightCompensation);
   end;
   inherited;
 end;
@@ -1031,6 +1032,7 @@ end;
 constructor TGLCustomGLSLMLBumpShader.Create(AOwner: TComponent);
 begin
   inherited;
+
   FLightSources := [1];
   FLightCompensation := 1;
 end;
@@ -1054,7 +1056,8 @@ begin
     GetMLFragmentProgramCodeBeg(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
 
     lLightCount := 0;
-    //repeat for all lights
+
+    // Repeat for all lights.
     for I := 0 to glsShaderMaxLightSources - 1 do
       if I + 1 in FLightSources then
       begin
