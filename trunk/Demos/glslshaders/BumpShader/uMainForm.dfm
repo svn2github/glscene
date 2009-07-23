@@ -54,15 +54,15 @@ object GLSLTestForm: TGLSLTestForm
       TabOrder = 0
     end
     object RollPitchTurnCheckBox: TCheckBox
-      Left = 112
-      Top = 8
+      Left = 8
+      Top = 24
       Width = 161
       Height = 17
       Caption = 'Roll / Pitch / Turn Enabled'
       TabOrder = 1
     end
     object ShaderEnabledCheckBox: TCheckBox
-      Left = 280
+      Left = 176
       Top = 8
       Width = 97
       Height = 17
@@ -73,8 +73,8 @@ object GLSLTestForm: TGLSLTestForm
       OnClick = ShaderEnabledCheckBoxClick
     end
     object MultiLightShaderCheckBox: TCheckBox
-      Left = 528
-      Top = 8
+      Left = 176
+      Top = 24
       Width = 106
       Height = 17
       Caption = 'MultiLight Shader'
@@ -82,7 +82,7 @@ object GLSLTestForm: TGLSLTestForm
       OnClick = MultiLightShaderCheckBoxClick
     end
     object UseSpecularTextureCheckBox: TCheckBox
-      Left = 392
+      Left = 320
       Top = 8
       Width = 121
       Height = 17
@@ -93,7 +93,7 @@ object GLSLTestForm: TGLSLTestForm
       OnClick = UseSpecularTextureCheckBoxClick
     end
     object UseNormalTextureCheckBox: TCheckBox
-      Left = 392
+      Left = 320
       Top = 24
       Width = 121
       Height = 17
@@ -102,6 +102,15 @@ object GLSLTestForm: TGLSLTestForm
       State = cbChecked
       TabOrder = 5
       OnClick = UseNormalTextureCheckBoxClick
+    end
+    object ShowUnsupportedSceneObjectsCheckBox: TCheckBox
+      Left = 456
+      Top = 8
+      Width = 185
+      Height = 17
+      Caption = 'Show unsupported scene objects'
+      TabOrder = 6
+      OnClick = ShowUnsupportedSceneObjectsCheckBoxClick
     end
   end
   object Scene: TGLScene
@@ -195,32 +204,37 @@ object GLSLTestForm: TGLSLTestForm
         Material.MaterialLibrary = MaterialLibrary
         Material.LibMaterialName = 'Earth'
         Position.Coordinates = {000016C300000000000000000000803F}
+        Visible = False
         Interval = 100
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
       end
       object Fighter: TGLActor
         Position.Coordinates = {0000164300000000000000000000803F}
+        Visible = False
         Interval = 100
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
         MaterialLibrary = TrinityMatlib
       end
-      object GLCube1: TGLCube
+      object GLCube: TGLCube
         Material.MaterialLibrary = MaterialLibrary
         Material.LibMaterialName = 'Earth'
+        Visible = False
         CubeSize = {000096420000964200009642}
       end
-      object GLDodecahedron1: TGLDodecahedron
+      object GLDodecahedron: TGLDodecahedron
         Material.MaterialLibrary = MaterialLibrary
         Material.LibMaterialName = 'Earth'
         Position.Coordinates = {00001643000016C3000000000000803F}
         Scale.Coordinates = {0000C8420000C8420000C84200000000}
+        Visible = False
       end
-      object GLSphere3: TGLSphere
+      object GLSphere: TGLSphere
         Material.MaterialLibrary = MaterialLibrary
         Material.LibMaterialName = 'Earth'
         Direction.Coordinates = {00000000000080BF0000000000000000}
         Position.Coordinates = {000016C300001643000000000000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
+        Visible = False
         Radius = 50.000000000000000000
       end
     end

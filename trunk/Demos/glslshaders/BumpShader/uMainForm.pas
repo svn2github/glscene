@@ -3,8 +3,12 @@
 
   A demo that shows how to use the TGLSLBumpShader component.
 
+  Note: All unsupported scene objects have only one thing in common -
+        they cannot call the BuildTangentSpace() function.
+
   Version history:
-    12/17/07 - DaStr - Bugfixed MultiLight stuff. Other small bigfixes...
+    24/07/09 - DaStr - Added the "Show unsupported scene objects" checkbox
+    12/07/07 - DaStr - Bugfixed MultiLight stuff. Other small bigfixes...
     03/04/07 - DaStr - Added more objects
     30/03/07 - DaStr - Initial version
 }
@@ -59,9 +63,10 @@ type
     UseNormalTextureCheckBox: TCheckBox;
     MyBumpShader: TGLSLBumpShader;
     TrinityMatlib: TGLMaterialLibrary;
-    GLCube1: TGLCube;
-    GLDodecahedron1: TGLDodecahedron;
-    GLSphere3: TGLSphere;
+    GLCube: TGLCube;
+    GLDodecahedron: TGLDodecahedron;
+    GLSphere: TGLSphere;
+    ShowUnsupportedSceneObjectsCheckBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -74,6 +79,7 @@ type
     procedure MultiLightShaderCheckBoxClick(Sender: TObject);
     procedure UseSpecularTextureCheckBoxClick(Sender: TObject);
     procedure UseNormalTextureCheckBoxClick(Sender: TObject);
+    procedure ShowUnsupportedSceneObjectsCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -160,9 +166,9 @@ begin
     Sphere_little.Pitch(DeltaTime * 20);
     Fighter.Roll(DeltaTime * 20);
     Teapot.Roll(-DeltaTime * 10);
-    GLCube1.Pitch(-DeltaTime * 10);
-    GLDodecahedron1.Pitch(DeltaTime * 10);
-    GLSphere3.Roll(-DeltaTime * 10);
+    GLCube.Pitch(-DeltaTime * 10);
+    GLDodecahedron.Pitch(DeltaTime * 10);
+    GLSphere.Roll(-DeltaTime * 10);
   end;
 end;
 
@@ -264,6 +270,16 @@ begin
     MyBumpShader.NormalTexture := nil;
     MultiLightShader.NormalTexture := nil;
   end;
+end;
+
+procedure TGLSLTestForm.ShowUnsupportedSceneObjectsCheckBoxClick(
+  Sender: TObject);
+begin
+  Teapot.Visible := ShowUnsupportedSceneObjectsCheckBox.Checked;
+  Fighter.Visible := ShowUnsupportedSceneObjectsCheckBox.Checked;
+  GLCube.Visible := ShowUnsupportedSceneObjectsCheckBox.Checked;
+  GLDodecahedron.Visible := ShowUnsupportedSceneObjectsCheckBox.Checked;
+  GLSphere.Visible := ShowUnsupportedSceneObjectsCheckBox.Checked;
 end;
 
 end.
