@@ -6,6 +6,8 @@
    A GLSL shader that applies bump mapping.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+                              (BugTracker ID = 2826217)  
       <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
       <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
                               a single Str procedure (thanks Uwe Raabe)
@@ -159,7 +161,7 @@ type
     procedure SetAlpha(const Value: Single);
   protected
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize; override;
+    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -174,7 +176,7 @@ type
   TGLCustomGLSLBumpShaderMT = class(TGLBaseCustomGLSLBumpShaderMT)
   protected
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize; override;
+    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
   end;
 
   TGLCustomGLSLBumpShader = class(TGLBaseCustomGLSLBumpShader, IGLShaderDescription)
@@ -195,7 +197,7 @@ type
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize; override;
+    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
   end;
 
   // MultiLight shaders.
@@ -222,7 +224,7 @@ type
     function GetShaderDescription: string;
   protected
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize; override;
+    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
@@ -239,7 +241,7 @@ type
     procedure SetLightCompensation(const Value: Single);
   protected
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize; override;
+    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
@@ -855,7 +857,7 @@ begin
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TGLCustomGLSLBumpShaderAM.DoInitialize;
+procedure TGLCustomGLSLBumpShaderAM.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCodeMP(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -890,7 +892,7 @@ begin
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TGLCustomGLSLMLBumpShaderMT.DoInitialize;
+procedure TGLCustomGLSLMLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 var
   I: Integer;
   FLightCount: Integer;
@@ -939,7 +941,7 @@ begin
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TGLCustomGLSLBumpShaderMT.DoInitialize;
+procedure TGLCustomGLSLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCode(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -955,7 +957,7 @@ begin
   Param['baseMap'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TGLCustomGLSLBumpShader.DoInitialize;
+procedure TGLCustomGLSLBumpShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCode(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -1040,10 +1042,10 @@ begin
   Param['baseMap'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TGLCustomGLSLMLBumpShader.DoInitialize;
+procedure TGLCustomGLSLMLBumpShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 var
   I: Integer;
-  FLightCount: Integer;
+  lLightCount: Integer;
 begin
   GetMLVertexProgramCode(VertexProgram.Code);
   
@@ -1051,16 +1053,16 @@ begin
   begin
     GetMLFragmentProgramCodeBeg(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
 
-    FLightCount := 0;
+    lLightCount := 0;
     //repeat for all lights
     for I := 0 to glsShaderMaxLightSources - 1 do
       if I + 1 in FLightSources then
       begin
         GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
-        Inc(FLightCount);
+        Inc(lLightCount);
       end;
 
-    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount, FLightCompensation);
+    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, lLightCount, FLightCompensation);
   end;
   inherited;
 end;
