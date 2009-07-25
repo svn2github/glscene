@@ -6,12 +6,15 @@
 	Support for MP3 format.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/07/09 - DaStr - Added $I GLScene.inc  
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
 unit GLFileMP3;
 
 interface
+
+{$I GLScene.inc}
 
 uses Classes, ApplicationFileIO, GLSoundFileObjects;
 

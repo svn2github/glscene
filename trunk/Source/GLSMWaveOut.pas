@@ -6,6 +6,7 @@
 	Basic sound manager based on WinMM <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/07/09 - DaStr - Added $I GLScene.inc  
      <li>30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
 	   <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
 	</ul></font>
@@ -13,6 +14,8 @@
 unit GLSMWaveOut;
 
 interface
+
+{$I GLScene.inc}
 
 uses Classes, GLSound, MMSystem, GLSoundFileObjects;
 

@@ -6,6 +6,7 @@
 	Support for Windows WAV format.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/07/09 - DaStr - Added $I GLScene.inc  
       <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
@@ -13,6 +14,8 @@
 unit GLFileWAV;
 
 interface
+
+{$I GLScene.inc}
 
 uses Classes, ApplicationFileIO, GLSoundFileObjects, MMSystem;
 
