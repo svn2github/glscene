@@ -10,12 +10,13 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
       <li>20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
       <li>05/10/08 - DanB - Moved error handling code here from GLContext.pas
                             OpenGL 3.0 support, new core features + ARB extensions
       <li>23/03/08 - DanB - Added more Vendor/EXT extensions
-      <li>17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..." to keep compatibility with
-                              dws2OpenGL1x.
+      <li>17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..."
+                              to keep compatibility with dws2OpenGL1x.
       <li>16/03/08 - DanB - Major rewrite of unit, including:
                             OpenGL 1.3, 1.4, 1.5, 2.0, 2.1 support.
                             removed TRCOptions (not used).
@@ -3590,6 +3591,10 @@ const
    GL_TRANSFORM_FEEDBACK_BUFFER_MODE_EXT               = $8C7F;
    GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH_EXT        = $8C76;
 
+   // GL_GEOMETRY_PROGRAM (Don't have info on those...)
+   GL_GEOMETRY_PROGRAM_NV                              = $8C26;
+   GL_MAX_PROGRAM_OUTPUT_VERTICES_NV                   = $8C27;
+   GL_MAX_PROGRAM_TOTAL_OUTPUT_COMPONENTS_NV           = $8C28;
 
    {.$endregion}
 
