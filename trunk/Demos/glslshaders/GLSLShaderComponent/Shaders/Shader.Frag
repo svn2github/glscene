@@ -18,7 +18,7 @@ void main(void)
   float SpecMult = 2.0;
 
   vec3 reflect_vec = reflect(CameraVector, -Normal);
-  float Temp = dot(reflect_vec, LightVector);
+  float Temp = max(dot(reflect_vec, LightVector), 0.0);
   float SpecContrib = pow(Temp, SpecPower);
   SpecContrib = SpecMult * clamp(SpecContrib, 0.0, 0.95);
 
