@@ -647,7 +647,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, GLUtils, OpenGL1x   //, GMisc
+uses SysUtils, ApplicationFileIO, GLUtils
   {$IFDEF MSWINDOWS}
   , Windows  // for CreateMonochromeBitmap
   {$ENDIF}

@@ -9,6 +9,7 @@
    Win32 control someday, so don't assume there is a TForm in your code.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/08/09 - DanB - removed OpenGL1x.pas dependency
       <li>12/07/07 - DaStr -  Improved Cross-Platform compatibility
                               (Bugtracker ID = 1684432)
       <li>24/07/03 - EG - Creation from GLWin32Viewer split
@@ -172,7 +173,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils, GLWin32Context, GLCrossPlatform, GLScreen;
+uses SysUtils, GLWin32Context, GLCrossPlatform, GLScreen;
 
 const
    cScreenDepthToBPP : array [sd8bits..sd32bits] of Integer = (8, 16, 24, 32);
@@ -239,7 +240,6 @@ end;
 //
 procedure TGLFullScreenViewer.Render(baseObject : TGLBaseSceneObject = nil);
 begin
-   LoadOpenGL;
    if Buffer.RenderingContext=nil then begin
       Buffer.CreateRC(0, False);
    end;

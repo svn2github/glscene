@@ -36,7 +36,7 @@ interface
 
 uses Graphics, Classes, SysUtils,
      GLVectorFileObjects, ApplicationFileIO, VectorLists, VectorGeometry,
-     GLTexture, PersistentClasses, OpenGL1x, GLGraphics, GLMaterial;
+     GLTexture, PersistentClasses, GLGraphics, GLMaterial;
 
 const
     C_LMTS_ID = $53544D4C;
