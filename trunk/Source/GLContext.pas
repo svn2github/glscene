@@ -7,6 +7,8 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
+                            use OpenGL 1.5+ queries, instead of GL_NV_occlusion_query extension
       <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
       <li>16/03/08 - DanB - moved MRT_BUFFERS into unit from opengl1x.pas rewrite,
                             and added some experimental geometry shader code
@@ -252,6 +254,9 @@ type
          property Handle : Cardinal read FHandle;
          property RenderingContext : TGLContext read FRenderingContext;
 
+         //: Checks if required extensions / OpenGL version are met
+         class function IsSupported : Boolean; virtual;
+
          procedure AllocateHandle;
          procedure DestroyHandle;
    end;
@@ -316,30 +321,89 @@ type
          { Public Declarations }
    end;
 
-   // TGLOcclusionQueryHandle
+   // TGLQueryHandle
    //
-   {: Manages a handle to an NV_occlusion_query.<br>
-      Does *NOT* check for extension availability, this is assumed to have been
-      checked by the user. }
-   TGLOcclusionQueryHandle = class (TGLContextHandle)
+   {: Manages a handle to a query.<br>
+      Do not use this class directly, use one of its subclasses instead. }
+   TGLQueryHandle = class(TGLContextHandle)
       private
          { Private Declarations }
          FActive : Boolean;
-
       protected
          { Protected Declarations }
          class function Transferable : Boolean; override;
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
-
+         class function GetTarget: TGLuint; virtual; abstract;
       public
          { Public Declarations }
-         procedure BeginOcclusionQuery;
-         procedure EndOcclusionQuery;
+         procedure BeginQuery;
+         procedure EndQuery;
 
-         {: True if within a Begin/EndOcclusionQuery. }
+         // Check if result is available from the query.  Result may not be available
+         // immediately after ending the query
+         function IsResultAvailable: boolean;
+         // Number of bits used to store the query result. eg. 32/64 bit
+         function CounterBits: integer;
+         // Retrieve query result, may cause a stall if the result is not available yet
+         function QueryResultInt: TGLInt;
+         function QueryResultUInt: TGLUInt;
+         function QueryResultInt64: TGLint64EXT;
+         function QueryResultUInt64: TGLuint64EXT;
+
+         property Target : TGLuint read GetTarget;
+
+         {: True if within a Begin/EndQuery. }
          property Active : Boolean read FActive;
+   end;
+
+   // TGLOcclusionQueryHandle
+   //
+   {: Manages a handle to an occlusion query.<br>
+      Requires OpenGL 1.5+<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user. }
+   TGLOcclusionQueryHandle = class (TGLQueryHandle)
+      protected
+         class function GetTarget: TGLuint; override;
+      public
+         class function IsSupported : Boolean; override;
+         // Number of samples (pixels) drawn during the query, some pixels may
+         // be drawn to several times in the same query
          function PixelCount : Integer;
+   end;
+
+   // TGLTimerQueryHandle
+   //
+   {: Manages a handle to a timer query.<br>
+      Requires GL_EXT_timer_query extension.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user. }
+   TGLTimerQueryHandle = class(TGLQueryHandle)
+      protected
+         class function GetTarget: TGLuint; override;
+      public
+         class function IsSupported : Boolean; override;
+         // Time, in nanoseconds (1 ns = 10^-9 s) between starting + ending the query.
+         // with 32 bit integer can measure up to approximately 4 seconds, use
+         // QueryResultUInt64 if you may need longer
+         function Time: Integer;
+   end;
+
+   // TGLPrimitiveQueryHandle
+   //
+   {: Manages a handle to a primitive query.<br>
+      Requires OpenGL 3.0+<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user. }
+   TGLPrimitiveQueryHandle = class(TGLQueryHandle)
+      protected
+         class function GetTarget: TGLuint; override;
+      public
+         class function IsSupported : Boolean; override;
+         // Number of primitives (eg. Points, Triangles etc.) drawn whilst the
+         // query was active
+         function PrimitivesGenerated: Integer;
    end;
 
    // TGLBufferObjectHandle
@@ -388,6 +452,8 @@ type
             Must follow a MapBuffer, and happen before the buffer is unbound. }
          function UnmapBuffer : Boolean;
 
+         class function IsSupported : Boolean; override;
+
          property Target : TGLuint read GetTarget;
    end;
 
@@ -433,6 +499,8 @@ type
    TGLPackPBOHandle = class(TGLBufferObjectHandle)
       protected
          function GetTarget: TGLuint; override;
+      public
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLUnpackPBOHandle
@@ -443,6 +511,8 @@ type
    TGLUnpackPBOHandle = class(TGLBufferObjectHandle)
      protected
        function GetTarget: TGLuint; override;
+      public
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLSLHandle
@@ -460,6 +530,7 @@ type
       public
          { Public Declarations }
          function InfoLog : String;
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLShaderHandle
@@ -495,6 +566,7 @@ type
       public
          { Public Declarations }
          constructor Create; override;
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLGeometryShaderHandle
@@ -504,6 +576,7 @@ type
       public
          { Public Declarations }
          constructor Create; override;
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLFragmentShaderHandle
@@ -513,6 +586,7 @@ type
       public
          { Public Declarations }
          constructor Create; override;
+         class function IsSupported : Boolean; override;
    end;
 
    // TGLProgramHandle
@@ -1107,6 +1181,13 @@ begin
    Result:=True;
 end;
 
+// IsSupported
+//
+class function TGLContextHandle.IsSupported : Boolean;
+begin
+   Result:=True;
+end;
+
 // ------------------
 // ------------------ TGLVirtualHandle ------------------
 // ------------------
@@ -1208,62 +1289,171 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLOcclusionQueryHandle ------------------
+// ------------------ TGLQueryHandle ------------------
 // ------------------
 
-// Transferable
+// BeginQuery
 //
-class function TGLOcclusionQueryHandle.Transferable : Boolean;
+procedure TGLQueryHandle.BeginQuery;
 begin
-   Result:=False;
+   Assert(Handle<>0);
+   glBeginQuery(Target, FHandle);
+   Factive:=True;
+end;
+
+// CounterBits
+//
+function TGLQueryHandle.CounterBits: integer;
+begin
+   glGetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
 end;
 
 // DoAllocateHandle
 //
-function TGLOcclusionQueryHandle.DoAllocateHandle : Cardinal;
+function TGLQueryHandle.DoAllocateHandle: Cardinal;
 begin
-   glGenOcclusionQueriesNV(1, @Result);
+   glGenQueries(1, @Result);
 end;
 
 // DoDestroyHandle
 //
-procedure TGLOcclusionQueryHandle.DoDestroyHandle;
+procedure TGLQueryHandle.DoDestroyHandle;
 begin
    if not vIgnoreContextActivationFailures then begin
       // reset error status
       glGetError;
       // delete
- 	   glDeleteOcclusionQueriesNV(1, @FHandle);
+ 	    glDeleteQueries(1, @FHandle);
       // check for error
       CheckOpenGLError;
    end;
 end;
 
-// BeginOcclusionQuery
+// EndQuery
 //
-procedure TGLOcclusionQueryHandle.BeginOcclusionQuery;
+procedure TGLQueryHandle.EndQuery;
 begin
-   Assert(Handle<>0);
-   glBeginOcclusionQueryNV(Handle);
-   Factive:=True;
-end;
-
-// EndOcclusionQuery
-//
-procedure TGLOcclusionQueryHandle.EndOcclusionQuery;
-begin
+   Assert(FActive=true, 'Cannot end a query before it begins');
    Factive:=False;
    Assert(Handle<>0);
-   glEndOcclusionQueryNV;
+   glEndQuery(Target);
+end;
+
+// IsResultAvailable
+//
+function TGLQueryHandle.IsResultAvailable: boolean;
+begin
+   glGetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
+end;
+
+// QueryResultInt
+//
+function TGLQueryHandle.QueryResultInt: TGLInt;
+begin
+   glGetQueryObjectiv(Handle, GL_QUERY_RESULT, @Result);
+end;
+
+// QueryResultInt64
+//
+function TGLQueryHandle.QueryResultInt64: TGLint64EXT;
+begin
+   glGetQueryObjecti64vEXT(Handle, GL_QUERY_RESULT, @Result);
+end;
+
+// QueryResultUInt
+//
+function TGLQueryHandle.QueryResultUInt: TGLUInt;
+begin
+   glGetQueryObjectuiv(Handle, GL_QUERY_RESULT, @Result);
+end;
+
+// QueryResultUInt64
+//
+function TGLQueryHandle.QueryResultUInt64: TGLuint64EXT;
+begin
+   glGetQueryObjectui64vEXT(Handle, GL_QUERY_RESULT, @Result);
+end;
+
+// Transferable
+//
+class function TGLQueryHandle.Transferable: Boolean;
+begin
+   Result:=False;
+end;
+
+// ------------------
+// ------------------ TGLOcclusionQueryHandle ------------------
+// ------------------
+
+// GetTarget
+//
+class function TGLOcclusionQueryHandle.GetTarget: TGLuint;
+begin
+   Result := GL_SAMPLES_PASSED;
+end;
+
+// IsSupported
+//
+class function TGLOcclusionQueryHandle.IsSupported: Boolean;
+begin
+   Result := GL_VERSION_1_5;
 end;
 
 // PixelCount
 //
 function TGLOcclusionQueryHandle.PixelCount : Integer;
 begin
-   Assert(FHandle<>0);
-   Result:=0;
-   glGetOcclusionQueryuivNV(Handle, GL_PIXEL_COUNT_NV, @Result);
+   Result := QueryResultUInt;
+end;
+
+// ------------------
+// ------------------ TGLTimerQueryHandle ------------------
+// ------------------
+
+// GetTarget
+//
+class function TGLTimerQueryHandle.GetTarget: TGLuint;
+begin
+   Result := GL_TIME_ELAPSED_EXT;
+end;
+
+// IsSupported
+//
+class function TGLTimerQueryHandle.IsSupported: Boolean;
+begin
+   Result := GL_EXT_timer_query;
+end;
+
+// Time
+//
+function TGLTimerQueryHandle.Time: Integer;
+begin
+   Result := QueryResultUInt;
+end;
+
+// ------------------
+// ------------------ TGLPrimitiveQueryHandle ------------------
+// ------------------
+
+// GetTarget
+//
+class function TGLPrimitiveQueryHandle.GetTarget: TGLuint;
+begin
+   Result := GL_PRIMITIVES_GENERATED;
+end;
+
+// IsSupported
+//
+class function TGLPrimitiveQueryHandle.IsSupported: Boolean;
+begin
+   Result := GL_VERSION_3_0;
+end;
+
+// PrimitivesGenerated
+//
+function TGLPrimitiveQueryHandle.PrimitivesGenerated: Integer;
+begin
+   Result := QueryResultUInt;
 end;
 
 // ------------------
@@ -1300,6 +1490,11 @@ begin
       // check for error
       CheckOpenGLError;
    end;
+end;
+
+class function TGLBufferObjectHandle.IsSupported: Boolean;
+begin
+  Result := GL_ARB_vertex_buffer_object;
 end;
 
 // BindAsArrayBuffer
@@ -1396,6 +1591,13 @@ begin
    Result:=GL_PIXEL_PACK_BUFFER_ARB;
 end;
 
+// IsSupported
+//
+class function TGLPackPBOHandle.IsSupported: Boolean;
+begin
+   Result := GL_ARB_pixel_buffer_object;
+end;
+
 // ------------------
 // ------------------ TGLUnpackPBOHandle ------------------
 // ------------------
@@ -1405,6 +1607,13 @@ end;
 function TGLUnpackPBOHandle.GetTarget: TGLuint;
 begin
    Result:=GL_PIXEL_UNPACK_BUFFER_ARB;
+end;
+
+// IsSupported
+//
+class function TGLUnpackPBOHandle.IsSupported: Boolean;
+begin
+   Result := GL_ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -1440,6 +1649,13 @@ begin
       SetLength(log, maxLength);
    end;
    Result:=String(log);
+end;
+
+// IsSupported
+//
+class function TGLSLHandle.IsSupported: Boolean;
+begin
+  Result := GL_ARB_shader_objects;
 end;
 
 // ------------------
@@ -1487,6 +1703,13 @@ begin
    inherited;
 end;
 
+// IsSupported
+//
+class function TGLVertexShaderHandle.IsSupported: Boolean;
+begin
+   Result := GL_ARB_vertex_shader;
+end;
+
 // ------------------
 // ------------------ TGLGeometryShaderHandle ------------------
 // ------------------
@@ -1499,6 +1722,13 @@ begin
    inherited;
 end;
 
+// IsSupported
+//
+class function TGLGeometryShaderHandle.IsSupported: Boolean;
+begin
+   Result := GL_EXT_geometry_shader4;
+end;
+
 // ------------------
 // ------------------ TGLFragmentShaderHandle ------------------
 // ------------------
@@ -1509,6 +1739,13 @@ constructor TGLFragmentShaderHandle.Create;
 begin
    FShaderType:=GL_FRAGMENT_SHADER_ARB;
    inherited;
+end;
+
+// IsSupported
+//
+class function TGLFragmentShaderHandle.IsSupported: Boolean;
+begin
+   Result := GL_ARB_fragment_shader;
 end;
 
 // ------------------
