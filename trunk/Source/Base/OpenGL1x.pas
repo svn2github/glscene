@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
       <li>04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
       <li>28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
       <li>20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
@@ -272,6 +273,7 @@ var
    GL_ARB_fragment_program,
    GL_ARB_fragment_program_shadow,
    GL_ARB_fragment_shader,
+   GL_ARB_framebuffer_object,
    GL_ARB_framebuffer_sRGB,
    GL_ARB_geometry_shader4,
    GL_ARB_half_float_pixel,
@@ -5585,7 +5587,7 @@ var
    glFramebufferTexture3D: procedure(target: TGLenum; attachment: TGLenum;
 			      textarget: TGLenum; texture: TGLuint;
 			      level: TGLint; layer: TGLint);
-   glFramebufferTexturLayer: procedure(target: TGLenum; attachment: TGLenum;
+   glFramebufferTextureLayer: procedure(target: TGLenum; attachment: TGLenum;
 				 texture: TGLuint; level: TGLint; layer: TGLint);
    glFramebufferRenderbuffer: procedure(target: TGLenum; attachment: TGLenum;
 				 renderbuffertarget: TGLenum; renderbuffer: TGLuint);
@@ -6938,7 +6940,7 @@ begin
    glFramebufferTexture1D := GLGetProcAddress('glFramebufferTexture1D');
    glFramebufferTexture2D := GLGetProcAddress('glFramebufferTexture2D');
    glFramebufferTexture3D := GLGetProcAddress('glFramebufferTexture3D');
-   glFramebufferTexturLayer := GLGetProcAddress('glFramebufferTexturLayer');
+   glFramebufferTextureLayer := GLGetProcAddress('glFramebufferTextureLayer');
    glFramebufferRenderbuffer := GLGetProcAddress('glFramebufferRenderbuffer');
    glGetFramebufferAttachmentParameteriv := GLGetProcAddress('glGetFramebufferAttachmentParameteriv');
    glBlitFramebuffer := GLGetProcAddress('glBlitFramebuffer');
@@ -7601,6 +7603,7 @@ begin
    GL_ARB_fragment_program := CheckExtension('GL_ARB_fragment_program');
    GL_ARB_fragment_program_shadow := CheckExtension('GL_ARB_fragment_program_shadow');
    GL_ARB_fragment_shader := CheckExtension('GL_ARB_fragment_shader');
+   GL_ARB_framebuffer_object := CheckExtension('GL_ARB_framebuffer_object');
    GL_ARB_framebuffer_sRGB := CheckExtension('GL_ARB_framebuffer_sRGB');
    GL_ARB_geometry_shader4 := CheckExtension('GL_ARB_geometry_shader4');
    GL_ARB_half_float_pixel := CheckExtension('GL_ARB_half_float_pixel');
