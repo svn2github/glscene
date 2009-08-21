@@ -7,6 +7,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/08/09 - DanB - TGLQueryHandle.GetTarget no longer a class function, for earlier Delphi compatibility
       <li>13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
                             use OpenGL 1.5+ queries, instead of GL_NV_occlusion_query extension
       <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
@@ -334,7 +335,7 @@ type
          class function Transferable : Boolean; override;
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
-         class function GetTarget: TGLuint; virtual; abstract;
+         function GetTarget: TGLuint; virtual; abstract;
       public
          { Public Declarations }
          procedure BeginQuery;
@@ -365,7 +366,7 @@ type
       checked by the user. }
    TGLOcclusionQueryHandle = class (TGLQueryHandle)
       protected
-         class function GetTarget: TGLuint; override;
+         function GetTarget: TGLuint; override;
       public
          class function IsSupported : Boolean; override;
          // Number of samples (pixels) drawn during the query, some pixels may
@@ -381,7 +382,7 @@ type
       checked by the user. }
    TGLTimerQueryHandle = class(TGLQueryHandle)
       protected
-         class function GetTarget: TGLuint; override;
+         function GetTarget: TGLuint; override;
       public
          class function IsSupported : Boolean; override;
          // Time, in nanoseconds (1 ns = 10^-9 s) between starting + ending the query.
@@ -398,7 +399,7 @@ type
       checked by the user. }
    TGLPrimitiveQueryHandle = class(TGLQueryHandle)
       protected
-         class function GetTarget: TGLuint; override;
+         function GetTarget: TGLuint; override;
       public
          class function IsSupported : Boolean; override;
          // Number of primitives (eg. Points, Triangles etc.) drawn whilst the
@@ -1387,7 +1388,7 @@ end;
 
 // GetTarget
 //
-class function TGLOcclusionQueryHandle.GetTarget: TGLuint;
+function TGLOcclusionQueryHandle.GetTarget: TGLuint;
 begin
    Result := GL_SAMPLES_PASSED;
 end;
@@ -1412,7 +1413,7 @@ end;
 
 // GetTarget
 //
-class function TGLTimerQueryHandle.GetTarget: TGLuint;
+function TGLTimerQueryHandle.GetTarget: TGLuint;
 begin
    Result := GL_TIME_ELAPSED_EXT;
 end;
@@ -1437,7 +1438,7 @@ end;
 
 // GetTarget
 //
-class function TGLPrimitiveQueryHandle.GetTarget: TGLuint;
+function TGLPrimitiveQueryHandle.GetTarget: TGLuint;
 begin
    Result := GL_PRIMITIVES_GENERATED;
 end;
