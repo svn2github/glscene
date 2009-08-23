@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
       <li>24/07/09 - DaStr - Added support for TGLCustomShader.DebugMode
                              Fixed spelling mistake in TGLShaderUnAplyEvent
                              TGLShader.DoInitialize() now passes rci
@@ -150,6 +151,9 @@ type
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       const TextureTarget: Word; const Value: Cardinal); override;
 
+    function GetAsUniformBuffer: GLenum; override;
+    procedure SetAsUniformBuffer( UBO: GLenum); override;
+
    public
      // Nothing here ...yet.
    end;
@@ -158,6 +162,7 @@ type
   published
     property FragmentProgram;
     property VertexProgram;
+    property GeometryProgram;    
 
     property OnApply;
     property OnUnApply;
@@ -187,7 +192,7 @@ begin
       HandleFailedInitialization
     else
     try
-      if VertexProgram.Enabled or FragmentProgram.Enabled then
+      if VertexProgram.Enabled or FragmentProgram.Enabled or GeometryProgram.Enabled then
       begin
         FGLSLProg := TGLProgramHandle.CreateAndAllocate;
         FParam.FGLSLProg := FGLSLProg;
@@ -201,9 +206,18 @@ begin
         FGLSLProg.AddShader(TGLVertexShaderHandle, VertexProgram.Code.Text, FDebugMode);
       if FragmentProgram.Enabled then
         FGLSLProg.AddShader(TGLFragmentShaderHandle, FragmentProgram.Code.Text, FDebugMode);
+      if GeometryProgram.Enabled then
+        FGLSLProg.AddShader(TGLGeometryShaderHandle, GeometryProgram.Code.Text, FDebugMode);
 
-      if VertexProgram.Enabled or FragmentProgram.Enabled then
+      if VertexProgram.Enabled or FragmentProgram.Enabled or GeometryProgram.Enabled then
       begin
+        if GeometryProgram.Enabled then
+        begin
+          glProgramParameteriEXT(FGLSLProg.Handle, GL_GEOMETRY_INPUT_TYPE_EXT, GeometryProgram.InputPrimitiveType);
+          glProgramParameteriEXT(FGLSLProg.Handle, GL_GEOMETRY_OUTPUT_TYPE_EXT, GeometryProgram.OutputPrimitiveType);
+          glProgramParameteriEXT(FGLSLProg.Handle, GL_GEOMETRY_VERTICES_OUT_EXT, GeometryProgram.VerticesOut);
+        end;
+
         if (not FGLSLProg.LinkProgram) then
           raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
       end
@@ -444,6 +458,21 @@ end;
 procedure TGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
   glUniform4iARB(FParameterID, Value[0], Value[1], Value[2], Value[3]);
+end;
+
+function TGLSLShaderParameter.GetAsUniformBuffer: GLenum;
+begin
+  glGetUniformivARB(FGLSLProg.Handle, FParameterID, @Result);
+end;
+
+procedure TGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);
+begin
+  if glIsBuffer(UBO) then
+  begin
+    glBindBuffer(GL_UNIFORM_BUFFER_EXT, UBO);
+    glUniformBufferEXT(FGLSLProg.Handle, FParameterID, UBO);
+  end
+  else raise EGLSLShaderException.Create('You are trying to uniform not a buffer object');
 end;
 
 initialization
