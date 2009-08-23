@@ -12,6 +12,7 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
       <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
       <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
                             on prior versions of Delphi)
@@ -230,6 +231,10 @@ function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
    If length is zero, only the remaining time in the current thread's time
    slice is relinquished. }
 procedure Sleep(length : Cardinal);
+
+{: { IncludeTrailingPathDelimiter returns the path without a PathDelimiter
+  ('\' or '/') at the end.  This function is MBCS enabled. }
+function IncludeTrailingPathDelimiter(const S: string): string;
 {$ENDIF}
 
 {: Returns the current value of the highest-resolution counter.<p>
@@ -665,6 +670,11 @@ end;
 procedure Sleep(length : Cardinal);
 begin
    Windows.Sleep(length);
+end;
+
+function IncludeTrailingPathDelimiter(const S: string): string;
+begin
+  Result := IncludeTrailingBackslash(S);
 end;
 {$ENDIF}
 
