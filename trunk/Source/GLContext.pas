@@ -7,7 +7,10 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>21/08/09 - DanB - TGLQueryHandle.GetTarget no longer a class function, for earlier Delphi compatibility
+      <li>24/08/09 - DaStr - Added TGLProgramHandle.GetVaryingLocation(),
+                              AddActiveVarying() (thanks YarUnderoaker)
+      <li>21/08/09 - DanB - TGLQueryHandle.GetTarget no longer a class function,
+                            for earlier Delphi compatibility
       <li>13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
                             use OpenGL 1.5+ queries, instead of GL_NV_occlusion_query extension
       <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
@@ -649,6 +652,10 @@ type
          function ValidateProgram : Boolean;
          function GetAttribLocation(const aName : String) : Integer;
          function GetUniformLocation(const aName : String) : Integer;
+
+         function GetVaryingLocation(const aName : String) : Integer; // Currently, NVidia-specific.
+         procedure AddActiveVarying(const aName : String);            // Currently, NVidia-specific.
+
          procedure UseProgramObject;
          procedure EndUseProgramObject;
 
@@ -1834,6 +1841,21 @@ function TGLProgramHandle.GetUniformLocation(const aName : String) : Integer;
 begin
    Result:=glGetUniformLocationARB(Handle, PGLChar(TGLString(aName)));
    Assert(Result>=0, 'Unknown uniform "'+name+'" or program not in use');
+end;
+
+// GetVaryingLocation
+//
+function TGLProgramHandle.GetVaryingLocation(const aName : String) : Integer;
+begin
+   Result:=glGetVaryingLocationNV( Handle, PGLChar(TGLString(aName)));
+   Assert(Result>=0, 'Unknown varying "'+name+'" or program not in use');
+end;
+
+// AddActiveVarying
+//
+procedure TGLProgramHandle.AddActiveVarying(const aName : String);
+begin
+  glActiveVaryingNV( Handle, PGLChar(TGLString(aName)));
 end;
 
 // GetAttribLocation
