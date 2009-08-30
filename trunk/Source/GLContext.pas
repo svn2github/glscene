@@ -7,6 +7,8 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/08/09 - DanB - renamed vIgnoreContextActivationFailures to vContextActivationFailureOccurred
+                            + re-enabled it's original behaviour (fixes major memory leak).
       <li>30/08/09 - DanB - Added TGLTransformFeedbackBufferHandle, TGLTextureBufferHandle,
                             TGLUniformBufferHandle, TGLVertexArrayHandle,
                             TGLFramebufferHandle, TGLRenderbufferHandle
@@ -918,7 +920,7 @@ resourcestring
 var
    GLContextManager : TGLContextManager;
    vIgnoreOpenGLErrors : Boolean = False;
-   vIgnoreContextActivationFailures : Boolean = true;
+   vContextActivationFailureOccurred : Boolean = false;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1194,8 +1196,6 @@ begin
       if Assigned(oldContext) then
          oldContext.Activate;
    end;
-// DaStr: don't understand why do you need to turn it off?..
-//   vIgnoreContextActivationFailures:=False;
    FAcceleration:=chaUnknown;
 end;
 
@@ -1206,13 +1206,11 @@ begin
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
+      vContextActivationFailureOccurred:=False;
       try
          DoActivate;
       except
-//         if True then // ApplicationTerminated?
-//            vIgnoreContextActivationFailures:=True
-//         else
-         raise;
+         vContextActivationFailureOccurred:=True;
       end;
       vCurrentGLContext:=Self;
    end else Assert(vCurrentGLContext=Self);
@@ -1228,7 +1226,7 @@ begin
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
-      if not vIgnoreContextActivationFailures then
+      if not vContextActivationFailureOccurred then
          DoDeactivate;
       vCurrentGLContext:=nil;
    end else if FActivationCount<0 then
@@ -1367,7 +1365,7 @@ end;
 //
 procedure TGLVirtualHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       ClearGLError;
       // delete
@@ -1393,7 +1391,7 @@ end;
 //
 procedure TGLListHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       ClearGLError;
       // delete
@@ -1439,7 +1437,7 @@ end;
 //
 procedure TGLTextureHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -1481,7 +1479,7 @@ end;
 //
 procedure TGLQueryHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -1644,7 +1642,7 @@ end;
 //
 procedure TGLBufferObjectHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -1884,7 +1882,7 @@ end;
 //
 procedure TGLVertexArrayHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -1930,7 +1928,7 @@ end;
 //
 procedure TGLFramebufferHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -2083,7 +2081,7 @@ end;
 //
 procedure TGLRenderbufferHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       glGetError;
       // delete
@@ -2136,7 +2134,7 @@ end;
 //
 procedure TGLSLHandle.DoDestroyHandle;
 begin
-   if not vIgnoreContextActivationFailures then begin
+   if not vContextActivationFailureOccurred then begin
       // reset error status
       ClearGLError;
       // delete

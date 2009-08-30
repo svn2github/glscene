@@ -316,8 +316,7 @@ end;
 
 destructor TGLCustomGLSLShader.Destroy;
 begin
-  if vIgnoreContextActivationFailures then
-    FGLSLProg.Free;
+  FGLSLProg.Free;
   FParam.Free;
   inherited;
 end;
