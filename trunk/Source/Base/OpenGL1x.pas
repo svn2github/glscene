@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/08/09 - DanB - GLsync changed to NativeInt, fixes to glBindBufferRange calls
       <li>14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
       <li>04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
       <li>28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
@@ -187,22 +188,25 @@ type
    TGLintptr = PtrInt;
    GLsizeiptr = SizeInt;
    TGLsizeiptr = SizeInt;
+   GLsync = PtrInt;
+   TGLsync = PtrInt;
    {$ELSE}
    {$IFDEF GLS_DELPHI_2009_UP}
    GLintptr = NativeInt;
    TGLintptr = NativeInt;
    GLsizeiptr = NativeInt;
    TGLsizeiptr = NativeInt;
+   GLsync = NativeInt;
+   TGLsync = NativeInt;
    {$ELSE}
    GLintptr = Integer;
    TGLintptr = Integer;
    GLsizeiptr = Integer;
    TGLsizeiptr = Integer;
-   {$ENDIF}
-   {$ENDIF}
-
-   // not sure about this one
+   GLsync = Integer;
    TGLsync = Integer;
+   {$ENDIF}
+   {$ENDIF}
 
    // Windows types
    {$IFDEF MSWINDOWS}
@@ -5156,7 +5160,7 @@ var
 
    //promoted to core v3.0 from GL_EXT_transform_feedback
    glBindBufferRange: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:PGLint; size: PGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                            offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBindBufferBase: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBeginTransformFeedback: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glEndTransformFeedback: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -5199,7 +5203,7 @@ var
    glGetBufferParameteri64v: procedure(target: TGLenum; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glProgramParameteri: procedure(_program: TGLuint; pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferTexture: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureFace: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint; face: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+//   glFramebufferTextureFace: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint; face: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    // OpenGL 3.2 also reuses entry points from these extensions:
    // GL_ARB_draw_elements_base_vertex
    // GL_ARB_provoking_vertex
@@ -6034,9 +6038,9 @@ var
 
    // GL_NV_transform_feedback (#341)
    glBindBufferRangeNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                                  offset: TGLint; size: PGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                                  offset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBindBufferOffsetNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                                   offset: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                                   offset: TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBindBufferBaseNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glTransformFeedbackAttribsNV: procedure(count: TGLsizei; attribs: PGLint;
                                            bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6074,9 +6078,9 @@ var
 
    // GL_EXT_transform_feedback (#352)
    glBindBufferRangeEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:TGLint; size: PGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                            offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBindBufferOffsetEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                            offset:TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBindBufferBaseEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    glBeginTransformFeedbackEXT: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
