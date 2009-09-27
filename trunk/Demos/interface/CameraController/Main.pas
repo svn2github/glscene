@@ -208,4 +208,7 @@ begin
   GLCameraController1.StopMovement;
 end;
 
+initialization
+  DecimalSeparator := '.';
+
 end.
