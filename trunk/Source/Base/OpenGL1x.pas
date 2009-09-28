@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/09/09 - DaStr - Added some NVidia-specific extensions (thanks YarUndeoaker)
       <li>30/08/09 - DanB - GLsync changed to NativeInt, fixes to glBindBufferRange calls
       <li>14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
       <li>04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
@@ -424,10 +425,14 @@ var
    GL_NV_texgen_reflection,
    GL_NV_texture_env_combine4,
    GL_NV_texture_rectangle,
+   GL_NV_texture_shader,
+   GL_NV_texture_shader2,
+   GL_NV_texture_shader3,
    GL_NV_transform_feedback,
    GL_NV_vertex_array_range,
    GL_NV_vertex_array_range2,
    GL_NV_vertex_program,
+   GL_NV_depth_buffer_float,
 
    GL_SGI_color_matrix,
 
@@ -3355,9 +3360,107 @@ const
    GL_TEXTURE_BINDING_RECTANGLE_NV                   = $84F6;
    GL_PROXY_TEXTURE_RECTANGLE_NV                     = $84F7;
    GL_MAX_RECTANGLE_TEXTURE_SIZE_NV                  = $84F8;
+
+   // GL_NV_texture_shader
+   GL_OFFSET_TEXTURE_RECTANGLE_NV                   = $864C;
+   GL_OFFSET_TEXTURE_RECTANGLE_SCALE_NV             = $864D;
+   GL_DOT_PRODUCT_TEXTURE_RECTANGLE_NV              = $864E;
+   GL_RGBA_UNSIGNED_DOT_PRODUCT_MAPPING_NV          = $86D9;
+   GL_UNSIGNED_INT_S8_S8_8_8_NV                     = $86DA;
+   GL_UNSIGNED_INT_8_8_S8_S8_REV_NV                 = $86DB;
+   GL_DSDT_MAG_INTENSITY_NV                         = $86DC;
+   GL_SHADER_CONSISTENT_NV                          = $86DD;
+   GL_TEXTURE_SHADER_NV                             = $86DE;
+   GL_SHADER_OPERATION_NV                           = $86DF;
+   GL_CULL_MODES_NV                                 = $86E0;
+   GL_OFFSET_TEXTURE_MATRIX_NV                      = $86E1;
+   GL_OFFSET_TEXTURE_SCALE_NV                       = $86E2;
+   GL_OFFSET_TEXTURE_BIAS_NV                        = $86E3;
+   GL_OFFSET_TEXTURE_2D_MATRIX_NV                   = GL_OFFSET_TEXTURE_MATRIX_NV;
+   GL_OFFSET_TEXTURE_2D_SCALE_NV                    = GL_OFFSET_TEXTURE_SCALE_NV;
+   GL_OFFSET_TEXTURE_2D_BIAS_NV                     = GL_OFFSET_TEXTURE_BIAS_NV;
+   GL_PREVIOUS_TEXTURE_INPUT_NV                     = $86E4;
+   GL_CONST_EYE_NV                                  = $86E5;
+   GL_PASS_THROUGH_NV                               = $86E6;
+   GL_CULL_FRAGMENT_NV                              = $86E7;
+   GL_OFFSET_TEXTURE_2D_NV                          = $86E8;
+   GL_DEPENDENT_AR_TEXTURE_2D_NV                    = $86E9;
+   GL_DEPENDENT_GB_TEXTURE_2D_NV                    = $86EA;
+   GL_DOT_PRODUCT_NV                                = $86EC;
+   GL_DOT_PRODUCT_DEPTH_REPLACE_NV                  = $86ED;
+   GL_DOT_PRODUCT_TEXTURE_2D_NV                     = $86EE;
+   GL_DOT_PRODUCT_TEXTURE_CUBE_MAP_NV               = $86F0;
+   GL_DOT_PRODUCT_DIFFUSE_CUBE_MAP_NV               = $86F1;
+   GL_DOT_PRODUCT_REFLECT_CUBE_MAP_NV               = $86F2;
+   GL_DOT_PRODUCT_CONST_EYE_REFLECT_CUBE_MAP_NV     = $86F3;
+   GL_HILO_NV                                       = $86F4;
+   GL_DSDT_NV                                       = $86F5;
+   GL_DSDT_MAG_NV                                   = $86F6;
+   GL_DSDT_MAG_VIB_NV                               = $86F7;
+   GL_HILO16_NV                                     = $86F8;
+   GL_SIGNED_HILO_NV                                = $86F9;
+   GL_SIGNED_HILO16_NV                              = $86FA;
+   GL_SIGNED_RGBA_NV                                = $86FB;
+   GL_SIGNED_RGBA8_NV                               = $86FC;
+   GL_SIGNED_RGB_NV                                 = $86FE;
+   GL_SIGNED_RGB8_NV                                = $86FF;
+   GL_SIGNED_LUMINANCE_NV                           = $8701;
+   GL_SIGNED_LUMINANCE8_NV                          = $8702;
+   GL_SIGNED_LUMINANCE_ALPHA_NV                     = $8703;
+   GL_SIGNED_LUMINANCE8_ALPHA8_NV                   = $8704;
+   GL_SIGNED_ALPHA_NV                               = $8705;
+   GL_SIGNED_ALPHA8_NV                              = $8706;
+   GL_SIGNED_INTENSITY_NV                           = $8707;
+   GL_SIGNED_INTENSITY8_NV                          = $8708;
+   GL_DSDT8_NV                                      = $8709;
+   GL_DSDT8_MAG8_NV                                 = $870A;
+   GL_DSDT8_MAG8_INTENSITY8_NV                      = $870B;
+   GL_SIGNED_RGB_UNSIGNED_ALPHA_NV                  = $870C;
+   GL_SIGNED_RGB8_UNSIGNED_ALPHA8_NV                = $870D;
+   GL_HI_SCALE_NV                                   = $870E;
+   GL_LO_SCALE_NV                                   = $870F;
+   GL_DS_SCALE_NV                                   = $8710;
+   GL_DT_SCALE_NV                                   = $8711;
+   GL_MAGNITUDE_SCALE_NV                            = $8712;
+   GL_VIBRANCE_SCALE_NV                             = $8713;
+   GL_HI_BIAS_NV                                    = $8714;
+   GL_LO_BIAS_NV                                    = $8715;
+   GL_DS_BIAS_NV                                    = $8716;
+   GL_DT_BIAS_NV                                    = $8717;
+   GL_MAGNITUDE_BIAS_NV                             = $8718;
+   GL_VIBRANCE_BIAS_NV                              = $8719;
+   GL_TEXTURE_BORDER_VALUES_NV                      = $871A;
+   GL_TEXTURE_HI_SIZE_NV                            = $871B;
+   GL_TEXTURE_LO_SIZE_NV                            = $871C;
+   GL_TEXTURE_DS_SIZE_NV                            = $871D;
+   GL_TEXTURE_DT_SIZE_NV                            = $871E;
+   GL_TEXTURE_MAG_SIZE_NV                           = $871F;
+
+   // GL_NV_texture_shader2
+   GL_DOT_PRODUCT_TEXTURE_3D_NV                     = $86EF;
+
+   // GL_NV_texture_shader3
+   GL_OFFSET_PROJECTIVE_TEXTURE_2D_NV               = $8850;
+   GL_OFFSET_PROJECTIVE_TEXTURE_2D_SCALE_NV         = $8851;
+   GL_OFFSET_PROJECTIVE_TEXTURE_RECTANGLE_NV        = $8852;
+   GL_OFFSET_PROJECTIVE_TEXTURE_RECTANGLE_SCALE_NV  = $8853;
+   GL_OFFSET_HILO_TEXTURE_2D_NV                     = $8854;
+   GL_OFFSET_HILO_TEXTURE_RECTANGLE_NV              = $8855;
+   GL_OFFSET_HILO_PROJECTIVE_TEXTURE_2D_NV          = $8856;
+   GL_OFFSET_HILO_PROJECTIVE_TEXTURE_RECTANGLE_NV   = $8857;
+   GL_DEPENDENT_HILO_TEXTURE_2D_NV                  = $8858;
+   GL_DEPENDENT_RGB_TEXTURE_3D_NV                   = $8859;
+   GL_DEPENDENT_RGB_TEXTURE_CUBE_MAP_NV             = $885A;
+   GL_DOT_PRODUCT_PASS_THROUGH_NV                   = $885B;
+   GL_DOT_PRODUCT_TEXTURE_1D_NV                     = $885C;
+   GL_DOT_PRODUCT_AFFINE_DEPTH_REPLACE_NV           = $885D;
+   GL_HILO8_NV                                      = $885E;
+   GL_SIGNED_HILO8_NV                               = $885F;
+   GL_FORCE_BLUE_TO_ONE_NV                          = $8860;
+
    
    // GL_NV_vertex_array_range2 (#232)
-   GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV          = $8533;
+   GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV           = $8533;
 
    // GL_NV_vertex_program (#233)
    GL_VERTEX_PROGRAM_NV                             = $8620;
@@ -7754,10 +7857,14 @@ begin
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
    GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4');
    GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
+   GL_NV_texture_shader := CheckExtension('GL_NV_texture_shader');
+   GL_NV_texture_shader2 := CheckExtension('GL_NV_texture_shader2');
+   GL_NV_texture_shader3 := CheckExtension('GL_NV_texture_shader3');
    GL_NV_transform_feedback := CheckExtension('GL_NV_transform_feedback');
    GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
    GL_NV_vertex_array_range2 := CheckExtension('GL_NV_vertex_array_range2');
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
+   GL_NV_depth_buffer_float := CheckExtension('GL_NV_depth_buffer_float');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
