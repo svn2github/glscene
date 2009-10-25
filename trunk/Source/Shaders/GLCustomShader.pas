@@ -8,6 +8,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
       <li>24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
                               TGLFragmentProgram and TGLGeometryProgram
                              Added TGLCustomShaderParameter.AsUniformBuffer
@@ -114,6 +115,9 @@ const
 
 type
   TGLShaderFogSupport = (sfsEnabled, sfsDisabled, sfsAuto);
+  TGLTransformFeedBackMode = (tfbmInterleaved, tfbmSeparate);
+  TGLgsInTypes = (gsInPoints, gsInLines, gsInAdjLines, gsInTriangles, gsInAdjTriangles);
+  TGLgsOutTypes = (gsOutPoints, gsOutLineStrip, gsOutTriangleStrip);
 
   EGLCustomShaderException = class(EGLShaderException);
 
@@ -206,7 +210,7 @@ type
   public
     procedure LoadFromFile(const AFileName: string);
     procedure Apply; virtual;
-    constructor Create(const AParent: TGLCustomShader);
+    constructor Create(const AParent: TGLCustomShader); virtual;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -228,16 +232,21 @@ type
 
   TGLGeometryProgram = class(TGLShaderProgram)
   private
-    FInputPrimitiveType: TGLint;
-    FOutputPrimitiveType: TGLint;
+    FInputPrimitiveType: TGLgsInTypes;
+    FOutputPrimitiveType: TGLgsOutTypes;
     FVerticesOut: TGLint;
+    procedure SetInputPrimitiveType(const Value: TGLgsInTypes);
+    procedure SetOutputPrimitiveType(const Value: TGLgsOutTypes);
+    procedure SetVerticesOut(const Value: TGLint);
+  public
+    constructor Create(const AParent: TGLCustomShader); override;
   published
     property Code;
     property Enabled;
 
-    property InputPrimitiveType: TGLint read FInputPrimitiveType write FInputPrimitiveType;
-    property OutputPrimitiveType: TGLint read FOutputPrimitiveType write FOutputPrimitiveType;
-    property VerticesOut: TGLint read FVerticesOut write FVerticesOut;
+    property InputPrimitiveType: TGLgsInTypes read FInputPrimitiveType write FInputPrimitiveType default gsInPoints;
+    property OutputPrimitiveType: TGLgsOutTypes read FOutputPrimitiveType write FOutputPrimitiveType default gsOutPoints;
+    property VerticesOut: TGLint read FVerticesOut write FVerticesOut default 0;
   end;
 
   {: Wrapper around a parameter of the main program. }
@@ -602,12 +611,14 @@ end;
 procedure TGLShaderProgram.OnChangeCode(Sender: TObject);
 begin
   FEnabled := True;
+  FParent.NotifyChange(self);
 end;
 
 
 procedure TGLShaderProgram.SetCode(const Value: TStrings);
 begin
   FCode.Assign(Value);
+  FParent.NotifyChange(self);
 end;
 
 
@@ -658,8 +669,8 @@ end;
 
 procedure TGLCustomShader.LoadShaderPrograms(const VPFilename, FPFilename: string; GPFilename: string = '');
 begin
-  VertexProgram.LoadFromFile(VPFilename);
-  FragmentProgram.LoadFromFile(FPFilename);
+  If VPFilename <> '' then VertexProgram.LoadFromFile(VPFilename);
+  If FPFilename <> '' then FragmentProgram.LoadFromFile(FPFilename);
   If GPFilename <> '' then GeometryProgram.LoadFromFile(GPFilename);
 end;
 
@@ -779,6 +790,41 @@ begin
     GL_TEXTURE_RECTANGLE_ARB : SetAsCustomTexture(TextureIndex, GL_TEXTURE_RECTANGLE_ARB, Texture.Handle);
   else
     Assert(False, glsErrorEx + glsUnknownType);
+  end;
+end;
+
+constructor TGLGeometryProgram.Create(const AParent: TGLCustomShader);
+begin
+  inherited Create(AParent);
+  FInputPrimitiveType := gsInPoints;
+  FOutputPrimitiveType := gsOutPoints;
+  FVerticesOut := 0;
+end;
+
+procedure TGLGeometryProgram.SetInputPrimitiveType(const Value: TGLgsInTypes);
+begin
+  if Value <> FInputPrimitiveType then
+  begin
+    FInputPrimitiveType := Value;
+    FParent.NotifyChange(Self);
+  end;
+end;
+
+procedure TGLGeometryProgram.SetOutputPrimitiveType(const Value: TGLgsOutTypes);
+begin
+  if Value<>FOutputPrimitiveType then
+  begin
+    FOutputPrimitiveType := Value;
+    FParent.NotifyChange(Self);
+  end;
+end;
+
+procedure TGLGeometryProgram.SetVerticesOut(const Value: TGLint);
+begin
+  if Value<>FVerticesOut then
+  begin
+    FVerticesOut := Value;
+    FParent.NotifyChange(Self);
   end;
 end;
 
