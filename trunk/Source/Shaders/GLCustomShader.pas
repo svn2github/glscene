@@ -244,9 +244,9 @@ type
     property Code;
     property Enabled;
 
-    property InputPrimitiveType: TGLgsInTypes read FInputPrimitiveType write FInputPrimitiveType default gsInPoints;
-    property OutputPrimitiveType: TGLgsOutTypes read FOutputPrimitiveType write FOutputPrimitiveType default gsOutPoints;
-    property VerticesOut: TGLint read FVerticesOut write FVerticesOut default 0;
+    property InputPrimitiveType: TGLgsInTypes read FInputPrimitiveType write SetInputPrimitiveType default gsInPoints;
+    property OutputPrimitiveType: TGLgsOutTypes read FOutputPrimitiveType write SetOutputPrimitiveType default gsOutPoints;
+    property VerticesOut: TGLint read FVerticesOut write SetVerticesOut default 0;
   end;
 
   {: Wrapper around a parameter of the main program. }
