@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/10/09 - DaStr - Added some texture compression extensions and updated
+                              glTransformFeedbackVaryings()(thanks YarUndeoaker)
       <li>28/09/09 - DaStr - Added some NVidia-specific extensions (thanks YarUndeoaker)
       <li>30/08/09 - DanB - GLsync changed to NativeInt, fixes to glBindBufferRange calls
       <li>14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
@@ -334,10 +336,11 @@ var
    GL_3DFX_multisample,
    GL_3DFX_tbuffer,
    GL_3DFX_texture_compression_FXT1,
+   GL_ATI_texture_compression_3dc,
 
    GL_ATI_draw_buffers,
    GL_ATI_texture_float,
-   GL_ATI_texture_mirror_once,   
+   GL_ATI_texture_mirror_once,
 
    GL_EXT_abgr,
    GL_EXT_bgra,
@@ -423,6 +426,7 @@ var
    GL_NV_point_sprite,
    GL_NV_register_combiners,
    GL_NV_texgen_reflection,
+   GL_NV_texture_compression_vtc,
    GL_NV_texture_env_combine4,
    GL_NV_texture_rectangle,
    GL_NV_texture_shader,
@@ -3843,6 +3847,9 @@ const
    GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT          = $8C72;
    GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT   = $8C73;
 
+   // // GL_ATI_texture_compression_3dc
+   GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI            = $8837;
+
    // GL_EXT_texture_compression_rgtc (#332)
    GL_COMPRESSED_RED_RGTC1_EXT                      = $8DBB;
    GL_COMPRESSED_SIGNED_RED_RGTC1_EXT               = $8DBC;
@@ -5268,7 +5275,7 @@ var
    glBeginTransformFeedback: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glEndTransformFeedback: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glTransformFeedbackVaryings: procedure(_program: TGLuint; count: TGLsizei;
-                                      const locations: PGLint; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                                      const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glGetTransformFeedbackVarying: procedure(_program: TGLuint; index: TGLuint;
                                         location: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
@@ -7766,7 +7773,7 @@ begin
    GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
    GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
    GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
-
+   GL_ATI_texture_compression_3dc := CheckExtension('GL_ATI_texture_compression_3dc');
    GL_ATI_draw_buffers := CheckExtension('GL_ATI_draw_buffers');
    GL_ATI_texture_float := CheckExtension('GL_ATI_texture_float');
    GL_ATI_texture_mirror_once := CheckExtension('GL_ATI_texture_mirror_once');
@@ -7855,6 +7862,7 @@ begin
    GL_NV_point_sprite := CheckExtension('GL_NV_point_sprite');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
+   GL_NV_texture_compression_vtc := CheckExtension('GL_NV_texture_compression_vtc');
    GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4');
    GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
    GL_NV_texture_shader := CheckExtension('GL_NV_texture_shader');
