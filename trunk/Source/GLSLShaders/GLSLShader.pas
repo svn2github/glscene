@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
       <li>26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
       <li>24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
       <li>24/07/09 - DaStr - Added support for TGLCustomShader.DebugMode
@@ -118,7 +119,7 @@ type
     property Param[const Index: string]: TGLSLShaderParameter read GetParam;
     property DirectParam[const Index: Cardinal]: TGLSLShaderParameter read GetDirectParam;
     property ActiveVarying: TStrings read FActiveVarying write SetActiveVarying;
-    property TransformFeedBackMode: TGLTransformFeedBackMode read FTransformFeedBackMode write SetTransformFeedBackMode stored False;
+    property TransformFeedBackMode: TGLTransformFeedBackMode read FTransformFeedBackMode write SetTransformFeedBackMode default tfbmInterleaved;
   end;
 
 
