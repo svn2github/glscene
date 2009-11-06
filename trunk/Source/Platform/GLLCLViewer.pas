@@ -6,6 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+                             (thanks Predator)
       <li>13/07/09 - DanB - added the FieldOfView property + reduced OpenGL dependencies
       <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
@@ -76,7 +78,9 @@ type
          function GetCamera : TGLCamera;
          procedure SetBuffer(const val : TGLSceneBuffer);
 
+         {$IFDEF MSWINDOWS}
          procedure CreateParams(var Params: TCreateParams); override;
+         {$ENDIF}
          procedure CreateWnd; override;
          procedure DestroyWnd; override;
          procedure Loaded; override;
@@ -162,6 +166,10 @@ type
          property OnMouseMove;
          property OnMouseUp;
 
+         property OnMouseWheel;
+         property OnMouseWheelDown;
+         property OnMouseWheelUp;
+
          property OnContextPopup;
    end;
 
@@ -173,11 +181,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils
-     {$ifndef fpc} // delphi
-     ,GLWin32Context
-     {$else}
-     ,LCLIntf
+uses SysUtils ,LCLIntf
        {$ifdef LCLWIN32}
          {$ifndef CONTEXT_INCLUDED}
      ,GLWin32Context
@@ -207,7 +211,6 @@ uses SysUtils
          {$error unimplemented QT context}
        {$endif}
 
-     {$endif}
    ,GLViewer;
 
 // ------------------
@@ -321,6 +324,7 @@ begin
    FBuffer.Assign(val);
 end;
 
+{$IFDEF MSWINDOWS}
 // CreateParams
 //
 procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
@@ -328,11 +332,10 @@ begin
    inherited CreateParams(Params);
    with Params do begin
       Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-      {$IFDEF MSWINDOWS}
       WindowClass.Style:=WindowClass.Style or CS_OWNDC;
-      {$ENDIF}
    end;
 end;
+{$ENDIF}
 
 // CreateWnd
 //
@@ -493,6 +496,7 @@ end;
 //
 function TGLSceneViewer.CreateSnapShotBitmap : TBitmap;
 begin
+{$IFDEF MSWINDOWS}
    Result:=TBitmap.Create;
    Result.PixelFormat:=pf24bit;
    Result.Width:=Width;
@@ -500,6 +504,9 @@ begin
 
    BitBlt(Result.Canvas.Handle, 0, 0, Width, Height,
           RenderDC, 0, 0, SRCCOPY);
+{$ELSE}
+   Result := nil;
+{$ENDIF}
 end;
 
 // GetFieldOfView

@@ -1,8 +1,13 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLGLXContext<p>
 
    GLX specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+                             (thanks Predator)
       <li>10/06/09 - DanB - Added to main GLScene CVS repository (from GLScene-Lazarus).
       <li>14/01/05 - CU - Creation
    </ul></font>
@@ -129,7 +134,7 @@ begin
    DestroyContext;
 end;
 
-procedure GetHandles(outputDevice: Cardinal);
+procedure TGLGLXContext.GetHandles(outputDevice: Cardinal);
 begin
   DoGetHandles(outputDevice, FCurXDisplay, FCurXWindow);
 end;
