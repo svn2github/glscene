@@ -1,3 +1,7 @@
+{ History:
+     DaStr - 07/11/09 - Added $I GLScene.inc for Delhi 5 compatibility
+                        Improved FPC compatibility (thanks Predator) (BugtrackerID = 2893580)
+}                        
 {============================================================================================ }
 { FMOD Main header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2003.           }
 { =========================================================================================== }
@@ -29,6 +33,8 @@ unit fmoddyn;
 {$ASSERTIONS ON}
 
 interface
+
+{$I GLScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -835,30 +841,24 @@ begin
   FMODHandle := INVALID_MODULEHANDLE_VALUE;
 end;
 
+{$ifndef FPC}
 var
   Saved8087CW: Word;
-
-{$ifdef FPC} //FPC do not have this function in its RTL
-const
-  Default8087CW = $1332; //according to the FPC site it's the value used in the
-                         //startup code.
-procedure Set8087CW( value :word ); Assembler;
-asm
-   FLDCW  value
-end;
 {$endif}
 
 initialization
   FMODHandle := INVALID_MODULEHANDLE_VALUE;
 
+{$ifndef FPC}
   { Save the current FPU state and then disable FPU exceptions }
   Saved8087CW := Default8087CW;
   Set8087CW($133f); { Disable all fpu exceptions }
-
+{$endif}
 finalization
   { Make sure the library is unloaded }
   FMOD_Unload;
-
+{$ifndef FPC}
   { Reset the FPU to the previous state }
   Set8087CW(Saved8087CW);
+{$endif}
 end.
