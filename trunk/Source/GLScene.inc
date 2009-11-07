@@ -2,6 +2,8 @@
 // Heavily based on Delphi Free Stuff Include File
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
+// 
+// History:
 // 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
 //                    Added GLS_NO_ASM option
 // 12/09/07 - DaStr - Added GLS_DELPHI_OR_CPPB
