@@ -6,6 +6,8 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>08/11/09 - DaStr - Improved FPC compatibility
+                              (thanks Predator) (BugtrackerID = 2893580)  
       <li>07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
                              Implemented TGLFile3DSDummyObject.ExtractTriangles() 
       <li>29/04/08 - DaStr - Fixed memory leak in TGLFile3DSCameraObject
@@ -1445,7 +1447,6 @@ var
    CurrentVertexCount: Integer;
    SmoothIndices: PSmoothIndexArray;
    mesh: TGLFile3DSMeshObject;
-   bone: TSkeletonBone;
    hasLightmap : Boolean;
 
    //--------------- local functions -------------------------------------------
@@ -1714,25 +1715,45 @@ var
 
    //----------------------------------------------------------------------
 
+{$IFDEF GLS_NO_ASM}
+   function IsVertexMarked(P: PByteArray; Index: word): Boolean; inline;
+      // tests the Index-th bit, returns True if set else False
+   var mi : word;
+   begin
+     DivMod(index,8,mi,index);
+     result:=(((p^[mi] shr Index) and 1) = 1);
+   end;
+{$ELSE}
    function IsVertexMarked(P: Pointer; Index: Integer): Boolean; assembler;
       // tests the Index-th bit, returns True if set else False
    asm
                      BT [EAX], EDX
                      SETC AL
    end;
+{$ENDIF}
 
    //---------------------------------------------------------------------------
 
+{$IFDEF GLS_NO_ASM}
+   function MarkVertex(P: PByteArray; Index: word): Boolean;  inline;
+      // sets the Index-th bit and return True if it was already set else False
+   var mi : word;
+   begin
+     DivMod(index,8,mi,index);
+     result:=(((p^[mi] shr Index) and 1) = 1);
+     if not(result) then p^[mi]:=p^[mi] or (1 shl index);
+   end;
+{$ELSE}
    function MarkVertex(P: Pointer; Index: Integer): Boolean; assembler;
       // sets the Index-th bit and return True if it was already set else False
    asm
                      BTS [EAX], EDX
                      SETC AL
    end;
+{$ENDIF}
 
    //---------------------------------------------------------------------------
-
-   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: Cardinal; P: Pointer);
+   
       // Stores new vertex index (NewIndex) into the smooth index array of vertex ThisIndex
       // using field SmoothingGroup, which must not be 0.
       // For each vertex in the vertex array (also for duplicated vertices) an array of 32 cardinals
@@ -1743,6 +1764,17 @@ var
       // Note: Only one smoothing must be assigned per vertex. Some available models break this rule and
       //       have more than one group assigned to a face. To make the code fail safe the group ID
       //       is scanned for the lowest bit set.
+
+{$IFDEF GLS_NO_ASM}
+   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: Cardinal; P: PSmoothIndexArray);
+   var i : word;
+   begin
+     i:=0;
+     while SmoothingGroup and (1 shl i) = 0 do inc(i);
+     p^[ThisIndex,i]:=NewIndex;
+   end;
+{$ELSE}
+   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: Cardinal; P: Pointer);
    asm
                    PUSH EBX
                    BSF EBX, EDX                  // determine smoothing group index (convert flag into an index)
@@ -1753,9 +1785,21 @@ var
                    MOV [EDX], ECX
                    POP EBX
    end;
+{$ENDIF}
 
    //---------------------------------------------------------------------------
 
+{$IFDEF GLS_NO_ASM}
+   function GetSmoothIndex(ThisIndex, SmoothingGroup: Cardinal; P: PSmoothIndexArray): Integer; inline;
+      // Retrieves the vertex index for the given index and smoothing group.
+      // This redirection is necessary because a vertex might have been duplicated.
+   var i : word;
+   begin
+     i:=0;
+     while SmoothingGroup and (1 shl i) = 0 do inc(i);
+     result:=integer(p^[ThisIndex,i]);
+   end;
+{$ELSE}
    function GetSmoothIndex(ThisIndex, SmoothingGroup: Cardinal; P: Pointer): Integer;
       // Retrieves the vertex index for the given index and smoothing group.
       // This redirection is necessary because a vertex might have been duplicated.
@@ -1768,6 +1812,7 @@ var
                    MOV EAX, [ECX]
                    POP EBX
    end;
+{$ENDIF}
 
    //---------------------------------------------------------------------------
 

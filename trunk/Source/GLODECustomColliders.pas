@@ -12,6 +12,8 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>08/11/09 - DaStr - Improved FPC compatibility
+                            (thanks Predator) (BugtrackerID = 2893580)  
     <li>12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373) 
     <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (by Paul Robello)
@@ -54,6 +56,7 @@ uses
 
 type
   TContactPoint = class
+  public
     Position,
     Normal : TAffineVector;
     Depth : Single;
