@@ -12,8 +12,8 @@
    key code constants (VK_* constants are declared in the "Windows" unit).<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
-                             (thanks Predator)  
+      <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
+                             directory (BugtrackerID = 2893580) (thanks Predator)
       <li>28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
       <li>19/12/06 - DaS - Added additional string constants and made all
