@@ -1373,11 +1373,7 @@ end;
 //
 procedure TPersistentObjectList.ReadFromFiler(reader : TVirtualReader);
 begin
-{$IFDEF FPC}
-  ReadFromFilerWithEvent(reader, @AfterObjectCreatedByReader);
-{$ELSE}
   ReadFromFilerWithEvent(reader, AfterObjectCreatedByReader);
-{$ENDIF}
 end;
 
 // AfterObjectCreatedByReader
