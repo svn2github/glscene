@@ -6,6 +6,8 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
+                             directory (BugtrackerID = 2893580) (thanks Predator)   
       <li>23/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>03/07/04 - LR - Suppress CurrentScreenColorDepth because there are in GLCrossPlatform
@@ -29,7 +31,8 @@ interface
 {$include GLScene.inc}
 
 uses
-   Windows, Classes, Graphics, VectorGeometry;
+   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
+   Classes, Graphics, VectorGeometry;
 
 const
    MaxVideoModes = 200;
@@ -71,13 +74,17 @@ type
    end;
    PVideoMode = ^TVideoMode;
 
-procedure ReadVideoModes;
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
+
+{$IFDEF MSWINDOWS}
+procedure ReadVideoModes;
+
 //: Changes to the video mode given by 'Index'
 function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
 
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 procedure RestoreDefaultMode;
+{$ENDIF}
 
 var
    vVideoModes        : array of TVideoMode;
@@ -122,6 +129,41 @@ begin
       FWindowFitting    :=TDisplayOptions(Source).FWindowFitting;
    end else inherited Assign(Source);
 end;
+
+// GetIndexFromResolution
+//
+function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
+
+// Determines the index of a screen resolution nearest to the
+// given values. The returned screen resolution is always greater
+// or equal than XRes and YRes or, in case the resolution isn't
+// supported, the value 0, which indicates the default mode.
+
+var
+   I : Integer;
+   XDiff, YDiff, CDiff : Integer;
+
+begin
+{$IFDEF MSWINDOWS}
+   ReadVideoModes;
+{$ENDIF}
+   // prepare result in case we don't find a valid mode
+   Result:=0;
+   // set differences to maximum
+   XDiff:=9999; YDiff:=9999; CDiff:=99;
+   for I:=1 to vNumberVideomodes-1 do with vVideoModes[I] do begin
+     if     (Width  >= XRes) and ((Width-XRes)  <= XDiff)
+        and (Height >= YRes) and ((Height-YRes) <= YDiff)
+        and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff) then begin
+         XDiff:=Width-XRes;
+         YDiff:=Height-YRes;
+         CDiff:=ColorDepth-BPP;
+         Result:=I;
+     end;
+   end;
+end;
+
+{$IFDEF MSWINDOWS}
 
 // TryToAddToList
 //
@@ -218,37 +260,6 @@ begin
   end;
 end;
 
-// GetIndexFromResolution
-//
-function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
-
-// Determines the index of a screen resolution nearest to the
-// given values. The returned screen resolution is always greater
-// or equal than XRes and YRes or, in case the resolution isn't
-// supported, the value 0, which indicates the default mode.
-
-var
-   I : Integer;
-   XDiff, YDiff, CDiff : Integer;
-
-begin
-   ReadVideoModes;
-   // prepare result in case we don't find a valid mode
-   Result:=0;
-   // set differences to maximum
-   XDiff:=9999; YDiff:=9999; CDiff:=99;
-   for I:=1 to vNumberVideomodes-1 do with vVideoModes[I] do begin
-     if     (Width  >= XRes) and ((Width-XRes)  <= XDiff)
-        and (Height >= YRes) and ((Height-YRes) <= YDiff)
-        and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff) then begin
-         XDiff:=Width-XRes;
-         YDiff:=Height-YRes;
-         CDiff:=ColorDepth-BPP;
-         Result:=I;
-     end;
-   end;
-end;
-
 // SetFullscreenMode
 //
 function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
@@ -299,6 +310,7 @@ begin
    t:=nil;
    ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 end;
+{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -309,8 +321,8 @@ initialization
 // ------------------------------------------------------------------
 
 finalization
-
+{$IFDEF MSWINDOWS}
    if vCurrentVideoMode<>0 then
       RestoreDefaultMode;  // set default video mode
-
+{$ENDIF}
 end.
