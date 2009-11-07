@@ -12,6 +12,8 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+                             (thanks Predator)  
       <li>24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
       <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
       <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
@@ -66,9 +68,9 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  {$IFDEF UNIX} Unix,{$ENDIF}
-  Classes, SysUtils, Graphics, Controls, Forms,
-  Dialogs, StdCtrls {$IFDEF FPC}, LCLType, LCLStrConsts {$ELSE}, Consts{$ENDIF}
+  {$IFDEF UNIX} Unix, xlib, x,{$ENDIF}
+  Classes, SysUtils, Graphics, Controls, Forms, Dialogs
+  {$IFDEF FPC} ,LCLType {$ELSE}, Consts{$ENDIF}
   {$IFNDEF GLS_COMPILER_5_DOWN}, StrUtils, Types{$ENDIF}
   ;
 
@@ -232,7 +234,7 @@ function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
    slice is relinquished. }
 procedure Sleep(length : Cardinal);
 
-{: { IncludeTrailingPathDelimiter returns the path without a PathDelimiter
+{: IncludeTrailingPathDelimiter returns the path without a PathDelimiter
   ('\' or '/') at the end.  This function is MBCS enabled. }
 function IncludeTrailingPathDelimiter(const S: string): string;
 {$ENDIF}
@@ -459,22 +461,45 @@ begin
 end;
 
 procedure GLSetCursorPos(AScreenX, AScreenY: integer);
-begin
 {$IFDEF MSWINDOWS}
+begin
   SetCursorPos(AScreenX, AScreenY);
 {$ENDIF}
 {$IFDEF UNIX}
-  {$MESSAGE Warn 'SetCursorPos: Needs to be implemented'}
+var
+  dpy: PDisplay;
+  root: TWindow;
+begin
+  dpy := XOpenDisplay(nil);
+  root := RootWindow(dpy, DefaultScreen(dpy));
+  XWarpPointer(dpy, none, root, 0, 0, 0, 0, AScreenX, AScreenY);
+  XCloseDisplay(dpy);
 {$ENDIF}
 end;
 
 procedure GLGetCursorPos(var point: TGLPoint);
-begin
 {$IFDEF MSWINDOWS}
+begin
   GetCursorPos(point);
 {$ENDIF}
 {$IFDEF UNIX}
-  {$MESSAGE Warn 'GetCursorPos: Needs to be implemented'}
+var
+  dpy: PDisplay;
+  root, child : TWindow;
+  rootX, rootY, winX, winY : Integer;
+  xstate : Word;
+  Result:Boolean;
+begin
+  point.x := 0;
+  point.y := 0;
+  dpy := XOpenDisplay(nil);
+  Result := LongBool(XQueryPointer(dpy, XDefaultRootWindow( dpy), @root, @child,
+     @rootX, @rootY, @winX, @winY, @xstate));
+  If Result then begin
+    point.x := rootX;
+    point.y := rootY;
+  end;
+    XCloseDisplay(dpy);
 {$ENDIF}
 end;
 
@@ -672,35 +697,70 @@ begin
    Windows.Sleep(length);
 end;
 
+// IncludeTrailingPathDelimiter
+//
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := IncludeTrailingBackslash(S);
 end;
-{$ENDIF}
+{$ENDIF} // GLS_DELPHI_5_DOWN
 
 // QueryPerformanceCounter
 //
+{$IFDEF UNIX}
+  {$IFDEF FPC}
+   var
+     vProgStartSecond : int64;
+
+   procedure Init_vProgStartSecond;
+   var
+     tz:timeval;
+   begin
+     fpgettimeofday(@tz, nil);
+     vProgStartSecond := tz.tv_sec;
+   end;
+  {$ENDIF}
+{$ENDIF}
+
 procedure QueryPerformanceCounter(var val : Int64);
-begin
 {$IFDEF WIN32}
+begin
    Windows.QueryPerformanceCounter(val);
 {$ELSE}
-   val:=RDTSC;
+   {$IFDEF FPC}
+   var
+     tz: timeval;
+   begin
+     //val:=round(now*MSecsPerDay);
+     fpgettimeofday(@tz, nil);
+     val := tz.tv_sec - vProgStartSecond;
+     val := val * 1000000;
+     val := val + tz.tv_usec;
+   {$ELSE}
+   begin
+     val := RDTSC;
+   {$ENDIF}
 {$ENDIF}
 end;
 
 // QueryPerformanceFrequency
 //
 function QueryPerformanceFrequency(var val : Int64) : Boolean;
-{$ifndef WIN32}
-var
-   startCycles, endCycles : Int64;
-   aTime, refTime : TDateTime;
-{$ENDIF}
-begin
 {$IFDEF WIN32}
+begin
    Result:=Boolean(Windows.QueryPerformanceFrequency(val));
+end;
 {$ELSE}
+  {$IFDEF FPC}
+  begin
+    val := 1000000;
+    Result := True;
+  end;
+  {$ELSE}
+  var
+    startCycles, endCycles : Int64;
+    aTime, refTime : TDateTime;
+  begin
    aTime:=Now;
    while aTime=Now do ;
    startCycles:=RDTSC;
@@ -710,8 +770,9 @@ begin
    aTime:=Now;
    val:=Round((endCycles-startCycles)/((aTime-refTime)*(3600*24)));
    Result:=True;
+  end;
+  {$ENDIF}
 {$ENDIF}
-end;
 
 // StartPrecisionTimer
 //
@@ -746,9 +807,15 @@ end;
 // RDTSC
 //
 function RDTSC : Int64;
+{$IFDEF FPC}
+begin
+  raise exception.create('Using GLCrossPlatform.RDTSC is a bad idea!');
+end;
+{$ELSE}
 asm
    db $0f, $31
 end;
+{$ENDIF}
 
 {$IFDEF GLS_DELPHI_7_UP}
 {$IFNDEF GLS_COMPILER_2009_UP}
@@ -805,4 +872,10 @@ end;
 {$ENDIF}
 {$ENDIF}
 
+initialization
+{$IFDEF FPC}
+  {$IFDEF UNIX}
+  Init_vProgStartSecond;
+  {$ENDIF}
+{$ENDIF}
 end.
