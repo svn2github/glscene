@@ -2,7 +2,8 @@
 // Heavily based on Delphi Free Stuff Include File
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
-//
+// 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+//                    Added GLS_NO_ASM option
 // 12/09/07 - DaStr - Added GLS_DELPHI_OR_CPPB
 // 30/03/07 - DaStr - Added GLS_ENABLE_UNSAFE_WARNINGS
 // 25/03/07 - DaStr - Added UNIX and KYLIX defines
@@ -34,9 +35,11 @@
 // May be useful when debugging.
 {.$DEFINE GLS_ENABLE_UNSAFE_WARNINGS}
 
-// De-Activate assembly routine
+// De-Activate assembly routines in VectorGeometry.pas
 {.$DEFINE GEOMETRY_NO_ASM}
 
+// De-Activate assembly routines in other GLS units.
+{.$DEFINE GLS_NO_ASM}
 
 //
 // Platform Detection
@@ -58,8 +61,10 @@
 // FPC
 {$IFDEF FPC}
   {$DEFINE GEOMETRY_NO_ASM}
+  {$DEFINE GLS_NO_ASM}
   {$TYPEINFO ON}
   {$INLINE ON}
+  {$H+} // Enable long strings.
 {$ENDIF}
 
 // If it's not FPC, determine if C++ builder, or Delphi
