@@ -6,6 +6,7 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
       <li>10/04/08 - DaStr - TXCollectionItem now descends from
                               TGLInterfacedPersistent (BugTracker ID = 1938988)
       <li>08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
@@ -22,9 +23,11 @@
 }
 unit XCollection;
 
+{.$DEFINE DEBUG_XCOLLECTION}
+
 interface
 
-uses Classes, SysUtils, PersistentClasses;
+uses Classes, SysUtils, PersistentClasses{$IFDEF DEBUG_XCOLLECTION}, typinfo {$ENDIF};
 
 {$i GLScene.inc}
 
@@ -521,37 +524,55 @@ begin
 	end;
 end;
 
-// ReadFromFiler
-//
-procedure TXCollection.ReadFromFiler(reader : TReader);
+procedure TXCollection.ReadFromFiler(reader: TReader);
 var
-	n : Integer;
-	classList : TList;
-	cName : String;
-	XCollectionItemClass : TXCollectionItemClass;
-	XCollectionItem : TXCollectionItem;
+  n, lc, lcnum: Integer;
+  classList: TList;
+  cName: string;
+  XCollectionItemClass: TXCollectionItemClass;
+  XCollectionItem: TXCollectionItem;
 begin
-	// see WriteData for a description of what is going on here
-	Clear;
-	classList:=TList.Create;
-	try
-		with reader do begin
-			for n:=1 to ReadInteger do begin
-				if NextValue in [vaString, vaLString] then begin
-					cName:=ReadString;
-					XCollectionItemClass:=FindXCollectionItemClass(cName);
-					Assert(Assigned(XCollectionItemClass),
-                      'Class '+cName+' unknown. Add the relevant unit to your "uses".');
-					classList.Add(XCollectionItemClass);
-				end else XCollectionItemClass:=TXCollectionItemClass(classList[ReadInteger]);
-				XCollectionItem:=XCollectionItemClass.Create(Self);
-            XCollectionItem.ReadFromFiler(reader);
-			end;
-		end;
-	finally
-		classList.Free;
-	end;
-   FCount:=FList.Count;
+  // see WriteData for a description of what is going on here
+  Clear;
+  classList := TList.Create;
+  try
+    with reader do
+    begin
+      lc := ReadInteger;
+      for n := 1 to lc do
+      begin
+        if NextValue in [vaString, vaLString] then
+        begin
+          cName := ReadString;
+          {$IFDEF DEBUG_XCOLLECTION}
+          writeln('TXCollection.ReadFromFiler create class entry: ',cname);
+          {$ENDIF}
+          XCollectionItemClass := FindXCollectionItemClass(cName);
+          Assert(Assigned(XCollectionItemClass), 'Class ' + cName + ' unknown. Add the relevant unit to your "uses".');
+          classList.Add(XCollectionItemClass);
+        end
+        else
+        begin
+          {$IFDEF DEBUG_XCOLLECTION}
+          assert(NextValue in [vaInt8,vaInt16,vaInt32],'Non-Integer ValueType: '+ GetEnumName(TypeInfo(TValueType),ord(NextValue)));
+          {$ENDIF}
+          lcnum := ReadInteger;
+          Assert((lcnum >= 0) and (lcnum < classlist.Count), 'Inavlid classlistIndex: ' + IntToStr(lcnum));
+          XCollectionItemClass := TXCollectionItemClass(classList[lcnum]);
+          {$IFDEF DEBUG_XCOLLECTION}
+          writeln('TXCollection.ReadFromFiler create by number: ',lcnum,' -> ',XCollectionItemClass.ClassName);
+          {$ENDIF}
+        end;
+
+        XCollectionItem := XCollectionItemClass.Create(Self);
+
+        XCollectionItem.ReadFromFiler(reader);
+      end;
+    end;
+  finally
+    classList.Free;
+  end;
+  FCount := FList.Count;
 end;
 
 // ItemsClass
