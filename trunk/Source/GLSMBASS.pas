@@ -9,6 +9,8 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/11/09 - DaStr - Improved FPC compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)  
       <li>21/03/08 - DanB - Updated to BASS Version 2.3
       <li>15/03/08 - DaStr - Added $I GLScene.inc
       <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
@@ -25,7 +27,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLSound, GLScene;
+uses Classes, GLSound, GLScene {$IFDEF FPC} ,Controls{$ENDIF};
 
 type
 
@@ -136,7 +138,11 @@ const
 begin
    assert(bass_isloaded,'BASS DLL is not present');
 
+   {$IFDEF FPC}
+   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, TWinControl(Owner).Handle,nil) then begin
+   {$ELSE}
    if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then begin
+   {$ENDIF}
       Result:=False;
       Exit;
    end;
