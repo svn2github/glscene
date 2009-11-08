@@ -6,6 +6,8 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/11/09 - DaStr - Improved FPC compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>21/09/07 - DaStr - Added TGLCadencer.SetCurrentTime()
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>28/06/04 - LR - Added some ifdef Win32 for Linux
@@ -37,11 +39,16 @@ interface
 
 {$i GLScene.inc}
 
-uses GLScene, Classes, Forms, GLCrossPlatform, BaseClasses
-   {$ifdef WIN32}
-   ,Windows, Messages
-   {$endif}
-   ;
+uses
+  {$IFDEF UNIX} Unix, {$ENDIF}
+  GLScene, Classes, GLCrossPlatform, BaseClasses, Forms
+  {$IFDEF FPC}
+  ,interfacebase, lmessages, lclintf, controls
+  {$ELSE}
+  ,Windows ,Messages
+  {$ENDIF}
+  ;
+//**************************************
 
 type
 
@@ -238,32 +245,56 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
+{$ifdef FPC}
+  {$define FPC_ASAP}
+{$else}
+  {$ifdef unix}
+    {$define NO_ASAP}
+  {$endif}
+{$endif}
+
 uses SysUtils;
 
-var
-	vCounterFrequency : Int64;
+const
+{$IFDEF FPC}
+  LM_GLCADENCER = LM_INTERFACELAST+325;
+  LM_GLTIMER    = LM_INTERFACELAST+326;
+{$ELSE}
+  cTickGLCadencer = 'TickGLCadencer';
+{$ENDIF}
 
-{$ifdef WIN32}
 type
+   { TASAPHandler }
    TASAPHandler = class
-      private
-         FWindowHandle : HWND;
-         FTooFastCounter : Integer;
-         FTimer : Cardinal;
-      protected
-         procedure WndProc(var Msg: TMessage);
-      public
-         constructor Create;
-         destructor Destroy; override;
+     private
+      FTooFastCounter : Integer;
+      FTimer : Cardinal;
+      {$IFNDEF FPC}
+        {$IFDEF MSWINDOWS}
+        FWindowHandle : HWND;
+        procedure WndProc(var Msg: TMessage);
+        {$ENDIF}
+      {$ELSE}
+      FMessageTime : LongInt;
+      {$ENDIF}
+    public
+      {$IFDEF FPC}
+      procedure TimerProc;
+      procedure Cadence(var Msg: TLMessage); message LM_GLCADENCER;
+      {$ENDIF}
+      constructor Create;
+      destructor Destroy; override;
    end;
 
 var
+  {$IFNDEF FPC}
+  {$IFDEF MSWINDOWS}
    vWMTickCadencer : Cardinal;
+  {$ENDIF}
+  {$ENDIF}
    vASAPCadencerList : TList;
    vHandler : TASAPHandler;
-
-const
-	cTickGLCadencer = 'TickGLCadencer';
+   vCounterFrequency : Int64;
 
 // RegisterASAPCadencer
 //
@@ -305,33 +336,60 @@ end;
 //
 constructor TASAPHandler.Create;
 begin
-	inherited Create;
-{$ifdef GLS_DELPHI_6_UP}
-   FWindowHandle:=Classes.AllocateHWnd(WndProc);
-{$else}
-   FWindowHandle:=AllocateHWnd(WndProc);
-{$endif}
-	PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
+  inherited Create;
+{$IFDEF FPC}
+  FTimer := 0;
+  FMessageTime := GetTickCount;
+  FTimer:=InterfaceBase.WidgetSet.CreateTimer(1, TimerProc);
+{$ELSE}
+  {$IFDEF LINUX}
+  // Ignore.
+  {$ELSE}
+  {$ifdef GLS_DELPHI_6_UP}
+     FWindowHandle := Classes.AllocateHWnd(WndProc);
+  {$else}
+     FWindowHandle := AllocateHWnd(WndProc);
+  {$endif}
+     PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
+  {$ENDIF}
+{$ENDIF} // FPC
 end;
 
 // Destroy
 //
 destructor TASAPHandler.Destroy;
 begin
+{$IFDEF FPC}
+  if FTimer <> 0 then
+    begin
+//TODO: make this widgetset independent
+      WidgetSet.DestroyTimer(FTimer);
+      FTimer := 0;
+    end;
+{$ELSE}
+  {$IFDEF LINUX}
+    // Ignore.
+  {$ELSE}
    if FTimer<>0 then
-      KillTimer(FWindowHandle, FTimer);
-{$ifdef GLS_DELPHI_6_UP}
- 	Classes.DeallocateHWnd(FWindowHandle);
-{$else}
- 	DeallocateHWnd(FWindowHandle);
-{$endif}
+     KillTimer(FWindowHandle, FTimer);
+    {$ifdef GLS_DELPHI_6_UP}
+      Classes.DeallocateHWnd(FWindowHandle);
+    {$else}
+      DeallocateHWnd(FWindowHandle);
+    {$endif}
+    
+  {$ENDIF}
+{$ENDIF}
    inherited Destroy;
 end;
 
-// WndProc
-//
 var
    vWndProcInLoop : Boolean;
+
+{$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
+// WndProc
+//
 procedure TASAPHandler.WndProc(var Msg: TMessage);
 var
    i : Integer;
@@ -399,7 +457,94 @@ begin
 		Result:=0;
 	end;
 end;
-{$endif}
+{$ENDIF}
+{$ELSE}
+
+procedure TASAPHandler.TimerProc;
+var
+  NewMsg : TLMessage;
+begin
+  NewMsg.Msg := LM_GLTIMER;
+  Cadence(NewMsg);
+end;
+
+procedure TASAPHandler.Cadence(var Msg: TLMessage);
+var
+  i : Integer;
+   cad : TGLCadencer;
+begin
+  with Msg do
+    begin
+    if FTimer <> 0 then
+      begin
+//TODO: make this widgetset independent
+        WidgetSet.DestroyTimer(FTimer);
+        FTimer := 0;
+      end;
+    if FTimer<> 0 then begin
+      Exit;
+      end;
+      if (Msg<>LM_GLTIMER) and (FMessageTime=GetTickCount) then begin
+         // if we're going too fast, "sleep" for 1 msec
+         Inc(FTooFastCounter);
+         if FTooFastCounter>5000 then begin
+            if FTimer=0 then
+//TODO: make this widgetset independent
+             FTimer:=WidgetSet.CreateTimer(1, TimerProc);
+
+            FTooFastCounter:=0;
+         end;
+      end else FTooFastCounter:=0;
+      if FTimer<>0 then begin
+         Exit;
+      end;
+      if not vWndProcInLoop then begin
+         vWndProcInLoop:=True;
+         try
+         	if (Msg=LM_GLCADENCER) or (Msg=LM_GLTIMER) then begin
+               // Progress
+               for i:=vASAPCadencerList.Count-1 downto 0 do begin
+                  cad:=TGLCadencer(vASAPCadencerList[i]);
+                  if     Assigned(cad) and (cad.Mode=cmASAP)
+                     and cad.Enabled and (cad.FProgressing=0) then begin
+                     if Application.Terminated then begin
+                        // force stop
+                        cad.Enabled:=False
+                     end else begin
+                        try
+                           // do stuff
+                           cad.Progress;
+                        except
+                           Application.HandleException(Self);
+                           // it faulted, stop it
+                           cad.Enabled:=False
+                        end
+                     end;
+                  end;
+               end;
+               // care for nils
+               vASAPCadencerList.Pack;
+               if vASAPCadencerList.Count=0 then begin
+                  vASAPCadencerList.Free;
+                  vASAPCadencerList:=nil;
+                  vHandler.Free;
+                  vHandler:=nil;
+               end else begin
+                  // Prepare the return of the infernal loop...
+                  FMessageTime := GetTickCount;
+//TODO: make this widgetset independent
+                   FTimer:=WidgetSet.CreateTimer(1, TimerProc);
+//                  NewMsg.Msg := LM_GLCADENCER;
+//                  Dispatch(NewMsg);
+               end;
+            end;
+         finally
+            vWndProcInLoop:=False;
+         end;
+      end;
+    end;
+end;
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLCadencer ------------------
@@ -424,7 +569,7 @@ end;
 destructor TGLCadencer.Destroy;
 begin
    Assert(FProgressing=0);
-   {$ifdef WIN32}
+   {$ifndef NO_ASAP}
    UnRegisterASAPCadencer(Self);
    {$endif}
    FSubscribedCadenceableComponents.Free;
@@ -492,7 +637,7 @@ end;
 procedure TGLCadencer.RestartASAP;
 begin
    if not (csLoading in ComponentState) then begin
-      {$ifdef WIN32}
+      {$ifndef NO_ASAP}
       if (Mode in [cmASAP, cmApplicationIdle]) and (not (csDesigning in ComponentState))
          and Assigned(FScene) and Enabled then
             RegisterASAPCadencer(Self)
@@ -569,7 +714,7 @@ end;
 procedure TGLCadencer.SetMode(const val : TGLCadencerMode);
 begin
 	if FMode<>val then begin
-        {$ifdef WIN32}
+        {$ifndef NO_ASAP}
       if FMode<>cmManual then
          UnRegisterASAPCadencer(Self);
         {$endif}
@@ -605,7 +750,7 @@ begin
       // in Idle mode, this processing is implicit
       if Mode=cmASAP then begin
          Application.ProcessMessages;
-         {$ifdef WIN32}
+         {$ifndef NO_ASAP}
          if    (not Assigned(vASAPCadencerList))
             or (vASAPCadencerList.IndexOf(Self)<0) then Exit;
          {$endif}
@@ -756,9 +901,12 @@ initialization
 // ---------------------------------------------------------------------
 
    RegisterClasses([TGLCadencer]);
+
 	// Get our Windows message ID
-   {$ifdef WIN32}
+   {$ifndef NO_ASAP}
+   {$IFNDEF FPC}
 	vWMTickCadencer:=RegisterWindowMessage(cTickGLCadencer);
+   {$ENDIF}
    {$endif}
 
 	// Preparation for high resolution timer
@@ -766,7 +914,7 @@ initialization
 		vCounterFrequency := 0;
 
 finalization
-{$ifdef WIN32}
+{$ifndef NO_ASAP}
    FreeAndNil(vHandler);
    FreeAndNil(vASAPCadencerList);
 {$endif}
