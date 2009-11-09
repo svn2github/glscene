@@ -6,6 +6,7 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/09 - DaStr - Replaced all Delphi2005+ IFDEFs with a single one
       <li>07/11/09 - DaStr - Improved FPC compatibility
                               (BugtrackerID = 2893580) (thanks Predator)
       <li>16/10/08 - UweR - Added IFDEF for Delphi 2009
@@ -31,11 +32,8 @@ uses Classes, Graphics;
 {$ifdef GLS_DELPHI_6} {$define PRF_HACK_PASSES}  {$endif} // Delphi 6
 {$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif} // Delphi 7
                                                           // skip Delphi 8
-{$ifdef GLS_DELPHI_2005} {$define PRF_HACK_PASSES} {$endif} // Delphi 2005
-{$ifdef GLS_DELPHI_2006}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2006
-{$ifdef GLS_DELPHI_2007}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2007
-{$ifdef GLS_DELPHI_2009}{$define PRF_HACK_PASSES}  {$endif} // Delphi 2009
-{$ifdef FPC}            {$define PRF_HACK_PASSES}  {$endif} // FreePascal Compiler
+{$ifdef GLS_DELPHI_2005_UP} {$define PRF_HACK_PASSES} {$endif} // Delphi 2005+
+{$ifdef FPC}            {$define PRF_HACK_PASSES}  {$endif}    // FPC
 
 {$ifndef PRF_HACK_PASSES}
   {$Message Warn 'PRF hack not tested for this Delphi version!'}
