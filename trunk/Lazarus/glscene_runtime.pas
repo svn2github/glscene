@@ -1,19 +1,15 @@
-{ This file was automatically created by Lazarus. do not edit!
-  This source is only used to compile and install the package.
- }
-
 unit GLScene_RunTime; 
 
 interface
 
 uses
-  ARBProgram, ApplicationFileIO, AsyncTimer, BaseClasses, BumpMapping, 
+    ARBProgram, ApplicationFileIO, AsyncTimer, BaseClasses, BumpMapping, 
   CurvesAndSurfaces, GLCanvas, GLColor, GLCoordinates, GLTextureCombiners, 
   GeometryBB, GeometryCoordinates, HeightTileFile, MeshUtils, Octree, 
   OpenGL1x, PerlinNoise, PersistentClasses, Polynomials, SpatialPartitioning, 
   Spline, VectorGeometry, VectorLists, VectorTypes, VerletClasses, 
-  VerletHairClasses, XCollection, XOpenGL, GLFileMD2, GLStarRecord, 
-  GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, GLBSP, GLBaseMeshSilhouette, 
+  VerletHairClasses, XCollection, XOpenGL, GLStarRecord, GLAnimatedSprite, 
+  GLAsyncHDS, GLFileMD2, GLAtmosphere, GLBSP, GLBaseMeshSilhouette, 
   GLBehaviours, GLBitmapFont, GLBlur, GLBumpmapHDS, GLCadencer, 
   GLCameraController, GLCollision, GLContext, GLDCE, GLDCEMisc, 
   GLDynamicTexture, GLEParticleMasksManager, GLEllipseCollision, GLExtrusion, 
@@ -22,16 +18,15 @@ uses
   GLHeightTileFileHDS, GLImposter, GLLensFlare, GLLinePFX, GLManager, 
   GLMaterial, GLMaterialMultiProxy, GLMaterialScript, GLMesh, GLMeshBuilder, 
   GLMeshCSG, GLMeshOptimizer, GLMirror, GLMovement, GLMultiPolygon, 
-  GLMultiProxy, GLNavigator, GLNodes, GLObjectManager, GLObjects, 
-  GLParametricSurfaces, GLParticleFX, GLParticles, GLPerlin, GLPerlinBase, 
-  GLPerlinPFX, GLPolyhedron, GLPortal, GLPostEffects, GLProcTextures, 
-  GLProjectedTextures, GLProxyObjects, GLROAMPatch, GLRagdoll, 
-  GLRenderContextInfo, GLSLProjectedTextures, GLScene, GLScriptBase, 
-  GLShadowHDS, GLShadowPlane, GLShadowVolume, GLSilhouette, 
-  GLSimpleNavigation, GLSkyBox, GLSkydome, GLSmoothNavigator, 
-  GLSpatialPartitioning, GLState, GLStrings, GLTeapot, GLTerrainRenderer, 
-  GLTexLensFlare, GLTexture, GLTexturedHDS, GLThorFX, GLTilePlane, 
-  GLTimeEventsMgr, GLTrail, GLTree, GLUtils, GLVectorFileObjects, 
+  GLMultiProxy, GLNavigator, GLNodes, GLObjects, GLParametricSurfaces, 
+  GLParticleFX, GLParticles, GLPerlin, GLPerlinBase, GLPerlinPFX, 
+  GLPolyhedron, GLPortal, GLPostEffects, GLProcTextures, GLProjectedTextures, 
+  GLProxyObjects, GLROAMPatch, GLRagdoll, GLRenderContextInfo, 
+  GLSLProjectedTextures, GLScene, GLScriptBase, GLShadowHDS, GLShadowPlane, 
+  GLShadowVolume, GLSilhouette, GLSimpleNavigation, GLSkyBox, GLSkydome, 
+  GLSmoothNavigator, GLSpatialPartitioning, GLState, GLStrings, GLTeapot, 
+  GLTerrainRenderer, GLTexLensFlare, GLTexture, GLTexturedHDS, GLThorFX, 
+  GLTilePlane, GLTimeEventsMgr, GLTrail, GLTree, GLUtils, GLVectorFileObjects, 
   GLVerletClasses, GLVerletClothify, GLVerletSkeletonColliders, GLWaterPlane, 
   GLWindows, GLWindowsFont, GLzBuffer, GLCrossPlatform, GLViewer, GLCelShader, 
   GLCustomShader, VRMLParser, Const3DS, DXTC, File3DS, FileB3D, FileGL2, 
@@ -43,7 +38,9 @@ uses
   Utils3DS, GLSLShader, GLSLBumpShader, GLSLDiffuseSpecularShader, 
   GLSLPostBlurShader, GLUserShader, GLAsmShader, GLBumpShader, 
   GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, GLPhongShader, 
-  GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader;
+  GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLKeyboard, 
+  GLFileMDC{$IFDEF MSWINDOWS}, GlFileX, FileX ,GLFileMP3, GLFileWAV, GLLCLFullScreenViewer,
+  GLSound, GLSoundFileObjects, Joystick, ScreenSaver, GLAVIRecorder, VFW{$ENDIF};
 
 implementation
 

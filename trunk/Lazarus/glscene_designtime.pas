@@ -1,21 +1,22 @@
-{ This file was automatically created by Lazarus. do not edit!
-  This source is only used to compile and install the package.
- }
-
 unit GLScene_DesignTime; 
 
 interface
 
 uses
-GLLazarusRegister, FVectorEditor, GLLazarusSceneEdit, LazarusPackageIntf;
+    GLObjectManager, GLSceneRegister, FVectorEditor, Info, 
+  FMaterialEditorForm, FRMaterialPreview, FLibMaterialPicker, FRTextureEdit, 
+  FRColorEditor, FRFaceEditor, FRTrackBarEdit, RegisterXCollection, 
+  FXCollectionEditor, GLSceneEdit, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('GLLazarusRegister', @GLLazarusRegister.Register); 
+  RegisterUnit('GLSceneRegister', @GLSceneRegister.Register); 
+  RegisterUnit('RegisterXCollection', @RegisterXCollection.Register); 
 end; 
 
 initialization
-  RegisterPackage('GLScene_DesignTime', @Register); 
+  RegisterPackage('GLScene_DesignTime', @Register);
+
 end.
