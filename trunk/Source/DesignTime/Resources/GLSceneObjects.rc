@@ -12,6 +12,7 @@ TGLLightSource BITMAP objects\TGLLightSource.bmp
 TGLFeedback BITMAP objects\TGLFeedback.bmp
 TGLImposter BITMAP objects\TGLImposter.bmp
 TGLRenderPoint BITMAP objects\TGLRenderPoint.bmp
+TGLFBORenderer BITMAP objects\TGLFBORenderer.bmp
 
 TGLHUDSprite BITMAP objects\hud_objects\TGLHUDSprite.bmp
 TGLHUDText BITMAP objects\hud_objects\TGLHUDText.bmp

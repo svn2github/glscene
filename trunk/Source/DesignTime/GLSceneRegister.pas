@@ -389,7 +389,7 @@ uses
    GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
-   GLCameraController, GLSMWaveOut,
+   GLCameraController, GLSMWaveOut, GLFBORenderer,
 
    // Image file formats
    DDS, TGA,
@@ -1650,6 +1650,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TSpriteAnimation, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterialProxy, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLActorProxy, '', TGLLibMaterialNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLFBORenderer, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
@@ -1795,6 +1796,7 @@ initialization
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '', HInstance);
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '', HInstance);
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '', HInstance);
+      RegisterSceneObject(TGLFBORenderer, 'OpenGL FrameBuffer', '', HInstance);
    end;
 
 finalization
