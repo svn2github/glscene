@@ -3,14 +3,18 @@
 //
 {: GLGraphics<p>
 
-	Utility class and functions to manipulate a bitmap in OpenGL's default
+   Utility class and functions to manipulate a bitmap in OpenGL's default
    byte order (GL_RGBA vs TBitmap's GL_BGRA)<p>
 
-   Nota: TGLBitmap32 has support for Alex Denissov's Graphics32 library
+   Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/11/09 - DaStr - Updated TGLBitmap32.RegisterAsOpenGLTexture() - fixed
+                               TextureFormat and ColorFormat (thanks YarUnderoaker)
+                             Improved FPC compatibility
+                              (BugtrackerID = 2893580) (thanks Predator)
       <li>24/03/07 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -54,6 +58,9 @@ interface
 uses Classes, Graphics,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
+{$endif}
+{$ifdef FPC}
+   fpimage, intfgraphics, GraphType,
 {$endif}
    OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor;
 
@@ -207,12 +214,12 @@ type
             from the size of the bitmap32). }
          procedure RegisterAsOpenGLTexture(target : TGLUInt;
                                            minFilter : TGLMinFilter;
-                                           texFormat : Integer;
+                                           texFormat : TGLEnum;
                                            var texWidth, texHeight : Integer); overload;
          {: Helper version of RegisterAsOpenGLTexture. }
          procedure RegisterAsOpenGLTexture(target : TGLUInt;
                                            minFilter : TGLMinFilter;
-                                           texFormat : Integer); overload;
+                                           texFormat : TGLEnum); overload;
 
          {: Reads the given area from the current active OpenGL rendering context.<p>
             The best spot for reading pixels is within a SceneViewer's PostRender
@@ -556,15 +563,29 @@ begin
         Move(TGLBitmap32(Source).Data^, Data^, DataSize);
       end;
    end else if Source is TGLGraphic then begin
-      if (Source is TGLBitmap) and (TGLBitmap(Source).PixelFormat in [pf24bit, pf32bit])
-            and ((TGLBitmap(Source).Width and 3)=0) then begin
+      if                     (Source is TGLBitmap)
+         {$ifNdef FPC}  and  (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit]){$ENDIF}
+                        and ((TGLBitmap(Source).Width and 3)=0) then begin
+         {$ifdef FPC}
+         // in FPC this is pixel wize and reads all pixelFormats.
+         AssignFrom24BitsBitmap(TGLBitmap(Source));
+         {$ELSE}
          if TGLBitmap(Source).PixelFormat=glpf24bit then
             AssignFrom24BitsBitmap(TGLBitmap(Source))
          else AssignFrom32BitsBitmap(TGLBitmap(Source))
+         {$ENDIF}
       end else begin
          graphic:=TGLGraphic(Source);
          bmp:=TGLBitmap.Create;
          try
+            // crossbuilder: useless to set pixelformat before setting the size ?
+            //               or maybe just useless at all on gtk .. as soon as
+            //               bmp.canvas is touched, it's the pixelformat of the device
+            //               no matter what was adjusted before ??
+            // bmp.PixelFormat:=glpf24bit;
+            // bmp.Height:=graphic.Height;
+            // crossbuilder: using setsize because setting width or height while
+            // the other one is zero results in not setting with/hight
             bmp.PixelFormat:=glpf24bit;
             bmp.Height:=graphic.Height;
             if (graphic.Width and 3)=0 then begin
@@ -588,6 +609,50 @@ end;
 
 // AssignFrom24BitsBitmap
 //
+{$ifdef FPC}
+procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
+var
+   y, x : Integer;
+   pDest : PByte;
+   pixel : TFPColor;
+   IntfImg: TLazIntfImage;
+begin
+   Assert((aBitmap.Width and 3)=0);
+   FWidth:=aBitmap.Width;
+   FHeight:=aBitmap.Height;
+   FDataSize:=FWidth*FHeight*4;
+   ReallocMem(FData, FDataSize);
+
+   IntfImg:=aBitmap.CreateIntfImage;
+   try
+     pDest:=PByte(FData);
+     if not(VerticalReverseOnAssignFromBitmap) then begin
+       for y:= FHeight-1 downto 0 do
+         for x:= 0 to FWidth-1 do
+         Begin
+           pixel := IntfImg.Colors[x,y];
+           pDest^ := pixel.red shr 8; inc(pDest);
+           pDest^ := pixel.green shr 8; inc(pDest);
+           pDest^ := pixel.blue shr 8; inc(pDest);
+           pDest^ := pixel.alpha shr 8; inc(pDest);
+         end;
+     end
+     else begin
+       for y:= 0 to FHeight-1 do
+         for x:= 0 to FWidth-1 do
+         Begin
+           pixel := IntfImg.Colors[x,y];
+           pDest^ := pixel.red shr 8; inc(pDest);
+           pDest^ := pixel.green shr 8; inc(pDest);
+           pDest^ := pixel.blue shr 8; inc(pDest);
+           pDest^ := pixel.alpha shr 8; inc(pDest);
+         end;
+     end;
+   finally
+     IntfImg.Free;
+   end;
+end;
+{$else}
 procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
@@ -620,6 +685,7 @@ begin
       end;
    end;
 end;
+{$endif}
 
 // AssignFromBitmap24WithoutRGBSwap
 //
@@ -772,6 +838,11 @@ function TGLBitmap32.Create32BitsBitmap : TGLBitmap;
 var
    y, x, x4 : Integer;
    pSrc, pDest : PAnsiChar;
+   {$IFDEF FPC}
+   {$INFO LIntfImg is not needed anymore after Lazarus 0.9.27-r18329, please remove after Laz-0.9.28 release }
+   LIntfImg : TLazIntfImage;
+   RIMG     : TRawImage;
+   {$ENDIF}
 begin
    if FBlank then begin
      Result:=nil;
@@ -780,9 +851,38 @@ begin
 
    Result:=TGLBitmap.Create;
    Result.PixelFormat:=glpf32bit;
+   Result.PixelFormat:=glpf32bit;
+  // Result.SetSize(Width,Height);
    Result.Width:=Width;
    Result.Height:=Height;
+
+
    if Height>0 then begin
+   {$IFDEF FPC}
+     RIMG.Init;
+     rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width,Height);
+     rimg.Description.RedShift:=0;
+     rimg.Description.BlueShift:=16;
+     rimg.Description.LineOrder:=riloBottomToTop;
+     RIMG.DataSize:=FDataSize;
+     rimg.Data:=PByte(FData);
+{ READ THIS PLEASE: !!!!!!!!!!!!  }
+{ If you get a compile time error on the following line, you could either
+  A) update your lazarus to >= 0.9.27-r18329, or
+  B) comment the next line and un-comment the "Workaround for older Lazarus "
+     part after the next line }
+
+     result.LoadFromRawImage(rimg,false);
+
+ { -- "Workaround for older Lazarus "
+     LIntfImg:=TLazIntfImage.Create(rimg,False);
+     try
+       result.LoadFromIntfImage(LIntfImg);
+     finally
+       FreeAndNil(LIntfImg);
+     end;
+   -- End of "Workaround for older Lazarus " }
+   {$ELSE}
       pSrc:=@PAnsiChar(FData)[Width*4*(Height-1)];
       for y:=0 to Height-1 do begin
          pDest:=BitmapScanLine(Result, y);
@@ -795,6 +895,7 @@ begin
          end;
          Dec(pSrc, Width*4);
       end;
+   {$ENDIF}
    end;
 end;
 
@@ -1041,7 +1142,7 @@ end;
 //
 procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
                                               minFilter : TGLMinFilter;
-                                              texFormat : Integer);
+                                              texFormat : TGLEnum);
 var
    tw, th : Integer;
 begin
@@ -1052,7 +1153,7 @@ end;
 //
 procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
                                               minFilter : TGLMinFilter;
-                                              texFormat : Integer;
+                                              texFormat : TGLEnum;
                                               var texWidth, texHeight : Integer);
    function IsFloat(texFormat : Integer) : boolean;
    begin
@@ -1065,6 +1166,7 @@ procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
 var
    w2, h2, maxSize : Integer;
    buffer : Pointer;
+   colorFormat: TGLEnum;   
 begin
    if (DataSize>0) then begin
       if not GL_ARB_texture_non_power_of_two then begin
@@ -1080,14 +1182,27 @@ begin
       if h2>maxSize then h2:=maxSize;
       texWidth:=w2;
       texHeight:=h2;
+      if (texFormat = GL_DEPTH_COMPONENT16)
+      or (texFormat = GL_DEPTH_COMPONENT24)
+      or (texFormat = GL_DEPTH_COMPONENT32) then
+        colorFormat := GL_DEPTH_COMPONENT
+      else
+        colorFormat := GL_RGBA;
 
-      if not IsFloat(texFormat) then begin // Non-power-of-two for float_type
-         if (w2<>Width) or (h2<>Height) then begin
+      if (not IsFloat(texFormat)) and (colorFormat=GL_DEPTH_COMPONENT) then
+      begin
+         // Non-power-of-two for float_type
+         if (w2<>Width) or (h2<>Height) then
+         begin
             GetMem(buffer, w2*h2*4);
             gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
                           GL_UNSIGNED_BYTE, buffer);
-         end else buffer:=Pointer(FData);
-      end else buffer:=Pointer(FData);
+         end
+         else
+            buffer:=Pointer(FData);
+      end
+      else
+         buffer:=Pointer(FData);
 
       try
          if IsFloat(texFormat) then begin // float_type
@@ -1103,13 +1218,13 @@ begin
             case minFilter of
                miNearest, miLinear :
                   glTexImage2d(target, 0, texFormat, w2, h2, 0,
-                               GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+                               colorFormat, GL_UNSIGNED_BYTE, buffer)
             else
                if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
                   // hardware-accelerated when supported
                   glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
                   glTexImage2d(target, 0, texFormat, w2, h2, 0,
-                               GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+                               colorFormat, GL_UNSIGNED_BYTE, buffer);
                end else begin
                   // slower (software mode)
                   gluBuild2DMipmaps(target, texFormat, w2, h2,
@@ -1293,6 +1408,10 @@ begin
   aBitmap.PixelFormat:=glpf32bit;
   for y:=0 to FHeight-1 do begin
     pSrc:=@PAnsiChar(FData)[y*(FWidth*4)];
+    {$ifdef fpc}
+     {$WARNING Crossbuilder: cvs version uses the above line instead of the following, but our TBitmap doesn't support Scanline}
+     {$Note BitmapScanline will generate an Assertion in FPC }
+    {$endif}
     pDest := BitmapScanLine(aBitmap, FHeight-1-y);
     BGRA32ToRGBA32(pSrc, pDest, FWidth);
   end;
