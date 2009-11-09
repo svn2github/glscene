@@ -43,7 +43,7 @@ contains
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
-  GLScreen in '..\Source\GLScreen.pas',
+  GLScreen in '..\Source\Platform\GLScreen.pas',
   VectorGeometry in '..\Source\Base\VectorGeometry.pas',
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
@@ -234,8 +234,9 @@ contains
   GLAsmShader in '..\Source\Shaders\GLAsmShader.pas',
   GLPostEffects in '..\Source\GLPostEffects.pas',
   GLShadowHDS in '..\Source\GLShadowHDS.pas',
-  GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
-  GLViewer in '..\Source\Platform\GLViewer.pas';
+  GLViewer in '..\Source\Platform\GLViewer.pas',
+  GLFBORenderer in '..\Source\GLFBORenderer.pas',
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas';
 
 end.

@@ -21,7 +21,7 @@ USEUNIT("..\Source\GLContext.pas");
 USEUNIT("..\Source\Base\HeightTileFile.pas");
 USEUNIT("..\Source\Base\MeshUtils.pas");
 USEUNIT("..\Source\Base\Joystick.pas");
-USEUNIT("..\Source\Base\GLKeyboard.pas");
+USEUNIT("..\Source\Platform\GLKeyboard.pas");
 USEUNIT("..\Source\Base\Octree.pas");
 USEUNIT("..\Source\Base\Polynomials.pas");
 USEUNIT("..\Source\Base\ScreenSaver.pas");

@@ -36,7 +36,7 @@ contains
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
-  GLScreen in '..\Source\GLScreen.pas',
+  GLScreen in '..\Source\Platform\GLScreen.pas',
   VectorGeometry in '..\Source\Base\VectorGeometry.pas',
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugIn\PlugInManager.pas',
@@ -224,7 +224,6 @@ contains
   GLAsmShader in '..\Source\Shaders\GLAsmShader.pas',
   GLPostEffects in '..\Source\GLPostEffects.pas',
   GLShadowHDS in '..\Source\GLShadowHDS.pas',
-  GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
   GLViewer in '..\Source\Platform\GLViewer.pas',
   GLGizmo in '..\Source\GLGizmo.pas',
@@ -254,6 +253,7 @@ contains
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
   GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
   GLObjectManager in '..\Source\GLObjectManager.pas',
-  GLCameraController in '..\Source\GLCameraController.pas';
-
+  GLCameraController in '..\Source\GLCameraController.pas',
+  GLFBORenderer in '..\Source\GLFBORenderer.pas',
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas';
 end.

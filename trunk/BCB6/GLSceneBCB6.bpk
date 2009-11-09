@@ -187,7 +187,7 @@
       <FILE FILENAME="..\Source\Base\GLTextureCombiners.pas" FORMNAME="" UNITNAME="GLTextureCombiners" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\HeightTileFile.pas" FORMNAME="" UNITNAME="HeightTileFile" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Joystick.pas" FORMNAME="" UNITNAME="Joystick" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\Base\GLKeyboard.pas" FORMNAME="" UNITNAME="GLKeyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Platform\GLKeyboard.pas" FORMNAME="" UNITNAME="GLKeyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\MeshUtils.pas" FORMNAME="" UNITNAME="MeshUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Octree.pas" FORMNAME="" UNITNAME="Octree" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\OpenGL1x.pas" FORMNAME="" UNITNAME="OpenGL1x" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>

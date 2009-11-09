@@ -43,7 +43,7 @@ contains
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
-  GLScreen in '..\Source\GLScreen.pas',
+  GLScreen in '..\Source\Platform\GLScreen.pas',
   VectorGeometry in '..\Source\Base\VectorGeometry.pas',
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
@@ -85,7 +85,6 @@ contains
   VectorLists in '..\Source\Base\VectorLists.pas',
   TypesSTL in '..\Source\FileFormats\TypesSTL.pas',
   GLFileSTL in '..\Source\FileFormats\GLFileSTL.pas',
-  GLKeyboard in '..\Source\Base\GLKeyboard.pas',
   GLExtrusion in '..\Source\GLExtrusion.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
   GLPortal in '..\Source\GLPortal.pas',
@@ -217,6 +216,8 @@ contains
   PictureRegisteredFormats in '..\Source\Base\PictureRegisteredFormats.pas',
   GLLinePFX in '..\Source\GLLinePFX.pas',
   GLGameMenu in '..\Source\GLGameMenu.pas',
-  GLCanvas in '..\Source\Base\GLCanvas.pas';
+  GLCanvas in '..\Source\Base\GLCanvas.pas',
+  GLFBORenderer in '..\Source\GLFBORenderer.pas',
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas';
 
 end.
