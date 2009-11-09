@@ -6,13 +6,14 @@
    Win32 specific Scene viewer.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
       <li>13/03/09 - DanB - Removed OpenGL dependencies
       <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
       <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
                               to GLViewer.pas (Bugtracker ID = 1786279)
-      <li>04/12/04 - DaS - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
-                           published in TGLSceneViewer
+      <li>04/12/04 - DaStr - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
+                              are now published in TGLSceneViewer
       <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
       <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
       <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
@@ -181,6 +182,12 @@ type
          property OnMouseWheelUp;
 
          property OnContextPopup;
+
+{$IFDEF GLS_DELPHI_2010_UP}
+         property OnGesture;
+         property Touch;
+{$ENDIF}
+
    end;
 
 // ------------------------------------------------------------------
@@ -527,4 +534,3 @@ initialization
    RegisterClass(TGLSceneViewer);
 
 end.
-
