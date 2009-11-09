@@ -4,6 +4,7 @@
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 // 
 // History:
+// 10/11/09 - DaStr - Added Delphi 2010 support
 // 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
 //                    Added GLS_NO_ASM option
 // 12/09/07 - DaStr - Added GLS_DELPHI_OR_CPPB
@@ -11,7 +12,7 @@
 // 25/03/07 - DaStr - Added UNIX and KYLIX defines
 // 14/01/07 - DaStr - Added GLS_DELPHI/COMPILER_XX_DOWN defines
 // 20/12/06 - DaStr - Added GLS_OPTIMIZATIONS option
-// 08/03/06 - ur - added Delphi 2006 detection
+// 08/03/06 - ur - Added Delphi 2006 detection
 // 08/07/04 - LR - BCB5 and BCB6 detection
 // 30/08/02 - EG - Delphi 7 detection
 // 24/01/02 - EG - Linux/Kylix changes (Puthoon)
@@ -108,10 +109,15 @@
 // Conditional expressions were introduced in Delphi 6
 {$ifdef CONDITIONALEXPRESSIONS}
 
-  // Unknown version, assume it's a new version of Delphi
-  {$if CompilerVersion>20}
-    {$DEFINE GLS_COMPILER_2009_UP}
-    {$DEFINE GLS_DELPHI_OR_CPPB}
+  // Delphi 2010 & C++ Builder 2010
+  {$if CompilerVersion>21}
+    {$DEFINE GLS_COMPILER_2010_UP}
+  {$elseif CompilerVersion=21}
+    {$DEFINE GLS_COMPILER_2010}
+    {$DEFINE GLS_COMPILER_2010_UP}
+    {$DEFINE GLS_COMPILER_2010_DOWN}
+  {$elseif CompilerVersion<21}
+    {$DEFINE GLS_COMPILER_2010_DOWN}
   {$ifend}
 
   // Delphi 2009 & C++ Builder 2009
@@ -222,6 +228,9 @@
     {$IFDEF GLS_COMPILER_2009}
       {$DEFINE GLS_CPPB_2009}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010}
+      {$DEFINE GLS_CPPB_2010}
+    {$ENDIF}
   {$ELSE}
     {$IFDEF GLS_COMPILER_5}
       {$DEFINE GLS_DELPHI_5}
@@ -247,6 +256,9 @@
     {$IFDEF GLS_COMPILER_2009}
       {$DEFINE GLS_DELPHI_2009}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010}
+      {$DEFINE GLS_DELPHI_2010}
+    {$ENDIF}
   {$ENDIF}
 
   // UP Declarations
@@ -265,6 +277,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2009_UP}
       {$DEFINE GLS_CPPB_2009_UP}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010_UP}
+      {$DEFINE GLS_CPPB_2010_UP}
     {$ENDIF}
   {$ELSE}
     {$IFDEF GLS_COMPILER_5_UP}
@@ -291,6 +306,9 @@
     {$IFDEF GLS_COMPILER_2009_UP}
       {$DEFINE GLS_DELPHI_2009_UP}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010_UP}
+      {$DEFINE GLS_DELPHI_2010_UP}
+    {$ENDIF}
   {$ENDIF}
 
   // Down Declarations
@@ -306,6 +324,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2009_DOWN}
       {$DEFINE GLS_CPPB_2009_DOWN}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010_DOWN}
+      {$DEFINE GLS_CPPB_2010_DOWN}
     {$ENDIF}
   {$ELSE}
     {$IFDEF GLS_COMPILER_6_DOWN}
@@ -328,6 +349,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2009_DOWN}
       {$DEFINE GLS_DELPHI_2009_DOWN}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_2010_DOWN}
+      {$DEFINE GLS_DELPHI_2010_DOWN}
     {$ENDIF}
   {$ENDIF}
 
@@ -395,6 +419,7 @@
 //_DOWN Defines
 
 {$IFDEF GLS_COMPILER_5}
+  {$DEFINE GLS_COMPILER_2010_DOWN}
   {$DEFINE GLS_COMPILER_2009_DOWN}
   {$DEFINE GLS_COMPILER_2007_DOWN}
   {$DEFINE GLS_COMPILER_2006_DOWN}
@@ -406,6 +431,7 @@
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
+  {$DEFINE GLS_DELPHI_2009_DOWN}
   {$DEFINE GLS_DELPHI_2009_DOWN}
   {$DEFINE GLS_DELPHI_2007_DOWN}
   {$DEFINE GLS_DELPHI_2006_DOWN}
