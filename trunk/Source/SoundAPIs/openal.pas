@@ -54,6 +54,8 @@ unit openal;
 
 interface
 
+Added $I GLScene.inc
+
 uses
   SysUtils{$IFDEF Win32},Windows{$ENDIF};
 

@@ -16,6 +16,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/11/09 - DaStr - Added $I GLScene.inc
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>25/03/08 - DanB - Added design-time support, linked to new OpenAL headers
                             (see OpenAL.pas).
@@ -25,6 +26,8 @@
 unit GLSMOpenAL;
 
 interface
+
+{$I GLScene.inc}
 
 uses
    Classes, GLSound, GLScene, SysUtils, GLSoundFileObjects;
