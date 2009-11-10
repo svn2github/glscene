@@ -10,8 +10,9 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = bmpfont.exe Camera.exe GLConsoleDemo.exe cursor.exe Fading.exe \
-  fontcolor.exe GLMenuDemo.exe DemoGizmo.exe guidemo.exe guipaint.exe hfpick.exe \
-  Pick.exe SimpleNavigationDemo.exe winfont.exe WideBitmapFontDemo.exe
+  fontcolor.exe GLMenuDemo.exe DemoGizmo.exe DemoGizmoEx.exe guidemo.exe \
+  guipaint.exe hfpick.exe Pick.exe SimpleNavigationDemo.exe winfont.exe \
+  WideBitmapFontDemo.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -59,6 +60,9 @@ winfont.exe: storedfont\winfont.dpr
   $(DCC)
 
 WideBitmapFontDemo.exe: WideBitmapFont\WideBitmapFontDemo.dpr
+  $(DCC)
+
+DemoGizmoEx.exe: GizmoEx\DemoGizmoEx.dpr
   $(DCC)
 
 
