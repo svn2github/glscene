@@ -12,6 +12,8 @@
    unregistered, any editor that is using the object manager can be notified.
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/11/09 - DaStr - Improved FPC compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>25/07/09 - DaStr - Added $I GLScene.inc  
       <li>26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
       <li>14/03/09 - DanB - Created by moving TObjectManager in from GLSceneRegister.pas,
@@ -27,8 +29,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, Graphics, Controls, Menus, GLCrossPlatform, GLScene;
-
+uses Classes, Graphics, Controls, Menus, GLCrossPlatform, GLScene
+     {$IFDEF FPC},LResources {$ENDIF};
 type
 
 	PSceneObjectEntry = ^TGLSceneObjectEntry;
@@ -49,8 +51,8 @@ type
       { Private Declarations }
       FSceneObjectList : TList;
       FObjectIcons : TImageList;       // a list of icons for scene objects
-      {$ifdef WIN32}
-      FOverlayIndex,                   // indices into the object icon list
+      {$ifdef MSWINDOWS}
+      FOverlayIndex,                  // indices into the object icon list
       {$endif}
       FSceneRootIndex,
       FCameraRootIndex,
@@ -68,16 +70,24 @@ type
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
 
+      {$IFNDEF FPC}
       procedure CreateDefaultObjectIcons(ResourceModule: Cardinal);
+      {$ELSE}
+      procedure CreateDefaultObjectIcons;
+      {$ENDIF}
       function GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
       function GetImageIndex(ASceneObject: TGLSceneObjectClass) : Integer;
       function GetCategory(ASceneObject: TGLSceneObjectClass) : String;
       procedure GetRegisteredSceneObjects(ObjectList: TStringList);
       procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
       //: Registers a stock object and adds it to the stock object list
+     {$IFNDEF FPC}
       procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String);overload;
       procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String; aBitmap: TBitmap);overload;
       procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String; ResourceModule: Cardinal; ResourceName:String='');overload;
+     {$ELSE}
+      procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String; ResourceModule: Cardinal; ResourceName:String='');overload;
+     {$ENDIF}
       //: Unregisters a stock object and removes it from the stock object list
       procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
@@ -102,6 +112,9 @@ begin
   FSceneObjectList:=TList.Create;
   // FObjectIcons Width + Height are set when you add the first bitmap
   FObjectIcons:=TImageList.CreateSize(16, 16);
+  {$IFDEF FPC}
+  CreateDefaultObjectIcons;
+  {$ENDIF}
 end;
 
 // Destroy
@@ -227,6 +240,9 @@ end;
 
 // RegisterSceneObject
 //
+{$IFNDEF FPC}
+// RegisterSceneObject
+//
 procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass;
                                              const aName, aCategory : String);
 var
@@ -238,9 +254,7 @@ begin
   bmp := TBitmap.Create;
   try
     // Try loading bitmap from module that class is in
-    {$IFNDEF FPC}
     GLLoadBitmapFromInstance(FindClassHInstance(ASceneObject), bmp, resBitmapName);
-    {$ENDIF}
     if bmp.Width=0 then
       GLLoadBitmapFromInstance(HInstance, bmp, resBitmapName);
     // If resource was found, register scene object with bitmap
@@ -329,6 +343,46 @@ begin
     bmp.Free;
   end;
 end;
+{$ELSE}
+procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String; ResourceModule: Cardinal; ResourceName:String='');
+var
+   newEntry  : PSceneObjectEntry;
+   pic       : TPicture;
+   resBitmapName : String;
+begin
+//>>Lazarus will crash at this function
+   if Assigned(RegisterNoIconProc) then
+      RegisterNoIcon([ASceneObject]);
+   //Writeln('GL Registered ',ASceneObject.classname);
+   Classes.RegisterClass(ASceneObject);
+   with FSceneObjectList do begin
+      // make sure no class is registered twice
+      if Assigned(FindSceneObjectClass(ASceneObject, AName)) then Exit;
+      New(NewEntry);
+      pic:=TPicture.Create;
+      try
+         with NewEntry^ do begin
+            // object stock stuff
+            // registered objects list stuff
+            ObjectClass:=ASceneObject;
+            NewEntry^.Name:=aName;
+            NewEntry^.Category:=aCategory;
+            Index:=FSceneObjectList.Count;
+            resBitmapName:=ASceneObject.ClassName;
+            if LazarusResources.Find(resBitmapName) <> nil then begin
+              try FObjectIcons.AddLazarusResource(resBitmapName); except end;
+              ImageIndex:=FObjectIcons.Count-1;
+            end else begin
+              ImageIndex:=0;
+            end;
+         end;
+       Add(NewEntry);
+      finally
+         pic.Free;
+      end;
+   end;
+end;
+{$ENDIF}
 
 // UnRegisterSceneObject
 //
@@ -349,6 +403,7 @@ end;
 
 // CreateDefaultObjectIcons
 //
+{$IFNDEF FPC}
 procedure TObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
 var
    bmp : TBitmap;
@@ -361,9 +416,7 @@ begin
          {$ifdef WIN32}
          GLLoadBitmapFromInstance(ResourceModule, bmp,'gls_cross');
          FOverlayIndex:=AddMasked(bmp, Pixels[0, 0]);
-         {$IFNDEF FPC}
          Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
-         {$ENDIF}
          {$endif}
          GLLoadBitmapFromInstance(ResourceModule, bmp,'gls_root');
          FSceneRootIndex:=AddMasked(bmp, Pixels[0, 0]);
@@ -377,6 +430,29 @@ begin
          bmp.Free;
       end;
    end;
+{$ELSE}
+procedure TObjectManager.CreateDefaultObjectIcons;
+begin
+   with FObjectIcons do begin
+         if LazarusResources.Find('gls_cross') <> nil then
+           try AddLazarusResource('gls_cross'); except end;
+        // FOverlayIndex:=Count-1;
+         if LazarusResources.Find('gls_root') <> nil then
+           try AddLazarusResource('gls_root'); except end;
+         FSceneRootIndex:=Count-1;
+         if LazarusResources.Find('gls_camera') <> nil then
+           try AddLazarusResource('gls_camera'); except end;
+         FCameraRootIndex:=Count-1;
+         if LazarusResources.Find('gls_lights') <> nil then
+           try AddLazarusResource('gls_lights'); except end;
+         FLightsourceRootIndex:=Count-1;
+         if LazarusResources.Find('gls_objects') <> nil then
+           try AddLazarusResource('gls_objects'); except end;
+         FObjectRootIndex:=Count-1;
+         if LazarusResources.Find('gls_objects') <> nil then
+           try AddLazarusResource('gls_objects'); except end;
+   end;
+ {$ENDIF}
 end;
 
 // DestroySceneObjectList
@@ -391,5 +467,10 @@ begin
 		Free;
 	end;
 end;
+
+initialization
+{$IFDEF FPC}
+   {$I GLSceneObjectsLCL.lrs}
+{$ENDIF}
 
 end.
