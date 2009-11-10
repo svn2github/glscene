@@ -12,6 +12,7 @@
          files in uses clauses.
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>11/11/09 - DaStr - Added GLS_FONT_CHARS_COUNT constant
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
                              (thanks Predator)  
       <li>24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
@@ -201,6 +202,12 @@ const
   glsAllFilter: string = 'All';
 {$ELSE}
   glsAllFilter: string = sAllFilter;
+{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2009_UP}
+  GLS_FONT_CHARS_COUNT = 2024;
+{$else}
+  GLS_FONT_CHARS_COUNT = 256;
 {$ENDIF}
 
 function GLPoint(const x, y : Integer) : TGLPoint;
