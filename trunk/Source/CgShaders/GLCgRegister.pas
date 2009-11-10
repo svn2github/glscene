@@ -6,6 +6,8 @@
    Registration unit for CG shader.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>11/11/09 - DaStr - Improved FPC compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>23/02/07 - DaStr - Initial version
 
 }
@@ -18,14 +20,18 @@ interface
 uses
   // VCL
   Classes,
-{$IFDEF GLS_DELPHI_6_UP}
-   DesignIntf, DesignEditors, VCLEditors,
-{$ELSE}
-   DsgnIntf,
-{$ENDIF}
-
+  {$IFNDEF FPC}
+    {$IFDEF GLS_DELPHI_6_UP}
+      DesignIntf, DesignEditors, VCLEditors,
+    {$ELSE}
+      DsgnIntf,
+    {$ENDIF}
+    GLSceneRegister,
+  {$ELSE FPC}
+    propedits, GLSceneRegisterLCL,
+  {$ENDIF FPC}
   // GLScene
-  GLSceneRegister, GLTexture, GLMaterial,
+  GLMaterial,
 
   // CG
   Cg, CgGL, GLCgShader, GLCgBombShader;
