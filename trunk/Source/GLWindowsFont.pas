@@ -1,7 +1,12 @@
-// GLWindowsFont
-{: TFont Import into a BitmapFont using variable width...<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLWindowsFont<p>
+
+  TFont Import into a BitmapFont using variable width...<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)  
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>12/15/04 - Eugene Kryukov - Added TGLStoredBitmapFont
       <li>03/07/04 - LR - Added ifdef for Graphics uses
@@ -172,7 +177,7 @@ var
       n:=0;
       px:=0;
       py:=0;
-      while n<256 do begin
+      while n < GLS_FONT_CHARS_COUNT do begin
          cw:=CharWidths[n];
          if cw>0 then begin
             Inc(cw, 2);
@@ -188,7 +193,7 @@ var
                // Draw the Char, the trailing space is to properly handle the italics.
                canvas.TextRect(rect, px+1, py+1, Char(n)+' ');
             end;
-            if ((n<255) and (px+cw+CharWidths[n+1]+2<=x)) or (n=255) then
+            if ((n < GLS_FONT_CHARS_COUNT - 1) and (px+cw+CharWidths[n+1]+2<=x)) or (n = GLS_FONT_CHARS_COUNT - 1) then
                Inc(px, cw)
             else begin
                px:=0;
