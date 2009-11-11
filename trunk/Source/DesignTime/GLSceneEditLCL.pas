@@ -240,7 +240,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLViewer, GLSceneRegisterLCL, GLStrings, Info, OpenGL1x, GLCrossPlatform,
+  GLViewer, GLSceneRegisterLCL, GLStrings, InfoLCL, OpenGL1x, GLCrossPlatform,
   ClipBrd;
 
 

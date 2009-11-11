@@ -322,7 +322,7 @@ begin
     // systems, this function can thow exceptions, which we need to catch here.
   end;
   if (Result = -1) and lExceptionWasRaised then
-    raise Exception.Create('GLKeyboard.KeyNameToVirtualKeyCode not yet fully implemented for your platform or keyName wasn't found!');
+    raise Exception.Create('GLKeyboard.KeyNameToVirtualKeyCode not yet fully implemented for your platform or keyName wasn''t found!');
 end;
 {$ENDIF}
 
