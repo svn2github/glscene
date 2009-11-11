@@ -1,2 +1,2 @@
-TGLSDLViewer BITMAP vcl\glscene_icon_TGLSDLViewer.bmp
-TSDLWindow BITMAP vcl\glscene_icon_TSDLWindow.bmp
+TGLSDLViewer BITMAP vcl\TGLSDLViewer.bmp
+TSDLWindow BITMAP vcl\TSDLWindow.bmp
