@@ -6,9 +6,9 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/;../Source/PropertyEditorsLCL/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTimeLCL/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditorsLCL/;C:/lazarus/components/Glscene/Source/VideoAPIs/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditorsLCL/;C:/lazarus/components/Glscene/Source/VideoAPIs/"/>
         <UnitOutputDirectory Value="lib"/>
-        <SrcPath Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTimeLCL/"/>
+        <SrcPath Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -26,7 +26,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="199">
+    <Files Count="201">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -772,7 +772,7 @@
         <UnitName Value="GLTextureSharingShader"/>
       </Item186>
       <Item187>
-        <Filename Value="../Source/Base/GLKeyboard.pas"/>
+        <Filename Value="../Source/Platform/GLKeyboard.pas"/>
         <UnitName Value="GLKeyboard"/>
       </Item187>
       <Item188>
@@ -823,6 +823,14 @@
         <Filename Value="../Source/VideoAPIs/vfw.pas"/>
         <UnitName Value="VFW"/>
       </Item199>
+      <Item200>
+        <Filename Value="../Source/GLFBO.pas"/>
+        <UnitName Value="GLFBO"/>
+      </Item200>
+      <Item201>
+        <Filename Value="../Source/GLFBORenderer.pas"/>
+        <UnitName Value="GLFBORenderer"/>
+      </Item201>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

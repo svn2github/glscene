@@ -40,7 +40,7 @@ uses
   GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, GLPhongShader, 
   GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLKeyboard, 
   GLFileMDC{$IFDEF MSWINDOWS}, GlFileX, FileX ,GLFileMP3, GLFileWAV, GLLCLFullScreenViewer,
-  GLSound, GLSoundFileObjects, Joystick, ScreenSaver, GLAVIRecorder, VFW{$ENDIF};
+  GLSound, GLSoundFileObjects, Joystick, ScreenSaver, GLAVIRecorder, VFW{$ENDIF},GLFBO,GLFBORenderer;
 
 implementation
 
