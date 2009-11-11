@@ -49,41 +49,44 @@ var
   Path:     TGLMovementPath;
   Node:     TGLPathNode;
 begin
-  //Create a movement, a path and the first node of the path
+  // Create a movement, a path and the first node of the path.
   Movement   := GetOrCreateMovement(Cube2);
   Movement.OnPathTravelStop := PathTravelStop;
   Movement.OnAllPathTravelledOver := PathAllTravelledOver;
   Path       := Movement.AddPath;
   Path.ShowPath := True;
-  //Path.Looped := True;
+
+  // Path.StartTime := 2;
+  // Path.Looped := True;
+
   Node       := Path.AddNodeFromObject(Cube2);
   Node.Speed := 4.0;
 
-  //Add a node
+  // Add a node.
   Node       := Path.AddNode;
   Node.Speed := 4.0;
   Node.PositionAsVector := VectorMake(-10, 0, 0, 1);
   Node.RotationAsVector := VectorMake(0, 0, 0);
 
-  //Add a node
+  // Add a node.
   Node       := Path.AddNode;
   Node.Speed := 4.0;
   Node.PositionAsVector := VectorMake(0, 5, - 5);
   Node.RotationAsVector := VectorMake(0, 90, 0);
 
-  //Add a node
+  // Add a node.
   Node       := Path.AddNode;
   Node.Speed := 4.0;
   Node.PositionAsVector := VectorMake(6, - 5, 2);
   Node.RotationAsVector := VectorMake(0, 180, 0);
 
-  //Add a node
+  // Add a node.
   Node       := Path.AddNode;
   Node.Speed := 4.0;
   Node.PositionAsVector := VectorMake(-6, 0, 0);
   Node.RotationAsVector := VectorMake(0, 259, 0);
 
-  //Activatived the current path
+  // Activatived the current path.
   Movement.ActivePathIndex := 0;
 end;
 
