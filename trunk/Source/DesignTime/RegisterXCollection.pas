@@ -18,7 +18,14 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, XCollection, componenteditors, propedits;
+uses
+  Classes, XCollection,
+  {$IFDEF FPC}
+     componenteditors, propedits
+  {$ELSE}
+    {$IFDEF GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$ELSE} DsgnIntf {$ENDIF}
+  {$ENDIF}
+   ;
 
 type
 
@@ -62,7 +69,11 @@ end;
 procedure TXCollectionProperty.Edit;
 begin
    with XCollectionEditor do begin
+   {$IFDEF FPC}
       SetXCollection(TXCollection(GetOrdValue));
+   {$ELSE}
+      SetXCollection(TXCollection(GetOrdValue), Self.Designer);
+   {$ENDIF}
       Show;
    end;
 end;
