@@ -12,8 +12,8 @@ BRCC = $(ROOT)\bin\brcc32.exe $**
 PROJECTS = GLAtmosphereDemo.exe beer.exe boom.exe candles.exe fire.exe \
   GLSLProjectedTextureDemo.exe meshexplosion.exe motionblur.exe \
   GLMotionBlurDemo.exe ParticleMasksManagerDemo.exe PFXGallery.exe posteffect.exe \
-  ProjTextures.exe shadowplane.exe Shadows.exe spiral.exe Thor.exe TrailDemo.exe \
-  warping.exe waterplane.exe
+  ProjTextures.exe shadowplane.exe Shadows.exe ShadowmappingFBO.exe spiral.exe \
+  Thor.exe TrailDemo.exe warping.exe waterplane.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -76,6 +76,9 @@ GLSLProjectedTextureDemo.exe: GLSLProjectedTexture\GLSLProjectedTextureDemo.dpr
   $(DCC)
 
 TrailDemo.exe: Trail\TrailDemo.dpr
+  $(DCC)
+
+ShadowmappingFBO.exe: ShadowmappingFBO\ShadowmappingFBO.dpr
   $(DCC)
 
 
