@@ -7,6 +7,8 @@
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
       <li>30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -25,7 +27,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, MMSystem, ApplicationFileIO, GLCrossPlatform;
+uses Classes,{$IFDEF MSWINDOWS}MMSystem,{$ENDIF}ApplicationFileIO, GLCrossPlatform;
 
 type
 
@@ -53,8 +55,9 @@ type
          function BytesPerSec : Integer;
          function BytesPerSample : Integer;
 
+        {$IFDEF MSWINDOWS}
          function WaveFormat : TWaveFormatEx;
-
+        {$ENDIF}
 	   published
 	      { Published Declarations }
          {: Sampling frequency in Hz (= samples per sec) }
@@ -228,6 +231,7 @@ begin
    Result:=FBitsPerSample shr 3;
 end;
 
+{$IFDEF MSWINDOWS}
 // WaveFormat
 //
 function TGLSoundSampling.WaveFormat : TWaveFormatEx;
@@ -240,6 +244,7 @@ begin
    Result.nBlockAlign:=NbChannels*BytesPerSample;
    Result.cbSize:=0;
 end;
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLSoundFile ------------------

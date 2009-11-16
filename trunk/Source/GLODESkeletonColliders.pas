@@ -6,11 +6,13 @@
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
    <b>History :</b><font size=-1><ul>
-    <li>12/04/08 - DaStr - Cleaned up uses section
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
+      <li>12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
-     <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
+      <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
                              CCilinder (ode 0.8) with Capsule(ode 0.9))
-     <li>04/12/03 - SG - Creation.
+      <li>04/12/03 - SG - Creation.
    </ul></font>
 }
 unit GLODESkeletonColliders;
@@ -18,7 +20,7 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects, odeimport;
+  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects, ODEImport;
 
 type
   

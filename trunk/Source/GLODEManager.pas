@@ -16,6 +16,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>08/12/08 - DaStr - Improved Unix compatibility
+                           (thanks Predator) (BugtrackerID = 2893580)
     <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
                          joint parms now have a 1 appended to them for first parm
                          example dParamLoStop is now dParamLoStop1
@@ -119,7 +121,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, odegl, odeimport, GLScene, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, ODEGL, ODEImport, GLScene, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
   GLColor, GLCoordinates, GLRenderContextInfo, GLManager;
 

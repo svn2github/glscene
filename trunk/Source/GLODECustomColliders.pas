@@ -12,6 +12,8 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>17/11/09 - DaStr - Improved Unix compatibility
+                           (thanks Predator) (BugtrackerID = 2893580)
     <li>08/11/09 - DaStr - Improved FPC compatibility
                             (thanks Predator) (BugtrackerID = 2893580)  
     <li>12/04/08 - DaStr - Cleaned up uses section
@@ -50,7 +52,7 @@ uses
   Classes, SysUtils,
 
   // GLscene
-  GLODEManager, odeimport, odegl, VectorGeometry,
+  GLODEManager, ODEGL, ODEImport, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
   OpenGL1x, GLTexture, GLColor, GLRenderContextInfo;
 

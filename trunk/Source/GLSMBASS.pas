@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLSMBASS<p>
 
 	BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
@@ -26,6 +29,7 @@ unit GLSMBASS;
 interface
 
 {$I GLScene.inc}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF UNIX}
 
 uses Classes, GLSound, GLScene {$IFDEF FPC} ,Controls{$ENDIF};
 
