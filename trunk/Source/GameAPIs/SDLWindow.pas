@@ -15,6 +15,8 @@
    which is a Delphi header conversion for SDL (http://libsdl.org)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>07/06/07 - DaStr - Added $I GLScene.inc
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
@@ -422,9 +424,18 @@ begin
       {$IFDEF WIN32}
          SDL_putenv('SDL_VIDEODRIVER=windib');
          envVal:='SDL_WINDOWID='+IntToStr(Integer(FWindowHandle));
-      {$ELSE}
+      {$ELSE} // Not Windows.
          {$IFDEF UNIX}
+            {$IFDEF KYLIX}
             EnvVal:='SDL_WINDOWID='+IntToStr(QWidget_WinId(FWindowHandle));
+            {$ELSE} // Unix, but not Kylix.
+              {$IFDEF FPC}
+              SDL_putenv('SDL_VIDEODRIVER=windib');
+              envVal:='SDL_WINDOWID='+IntToStr(Integer(FWindowHandle));
+              {$ELSE}
+              ...Unsupported UNIX target. implement your target code here!...
+              {$ENDIF}
+            {$ENDIF}
          {$ELSE}
             ...Unsupported target. implement your target code here!...
          {$ENDIF}
