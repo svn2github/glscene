@@ -6,7 +6,9 @@
 	Support for Windows WAV format.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>25/07/09 - DaStr - Added $I GLScene.inc  
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
+      <li>25/07/09 - DaStr - Added $I GLScene.inc
       <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
@@ -17,7 +19,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, ApplicationFileIO, GLSoundFileObjects, MMSystem;
+uses Classes, ApplicationFileIO, GLSoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
 
 type
 
@@ -27,7 +29,9 @@ type
    TGLWAVFile = class (TGLSoundFile)
       private
          { Public Declarations }
+         {$IFDEF MSWINDOWS}
          waveFormat : TWaveFormatEx;
+         {$ENDIF}
          pcmOffset : Integer;
          FPCMDataLength: Integer;
          data : array of Byte; // used to store WAVE bitstream
@@ -54,8 +58,8 @@ type
 
 implementation
 
+ {$IFDEF MSWINDOWS}
 type
-
    TRIFFChunkInfo = packed record
       ckID : FOURCC;
       ckSize : LongInt;
@@ -63,7 +67,7 @@ type
 
 const
   WAVE_Format_ADPCM = 2;
-
+  {$ENDIF}
 // ------------------
 // ------------------ TGLWAVFile ------------------
 // ------------------
@@ -74,7 +78,9 @@ function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
+      {$IFDEF MSWINDOWS}
       TGLWAVFile(Result).waveFormat:=waveFormat;
+      {$ENDIF}
       TGLWAVFile(Result).data := Copy(data);
    end;
 end;
@@ -89,6 +95,7 @@ end;
 // LoadFromStream
 //
 procedure TGLWAVFile.LoadFromStream(stream : TStream);
+{$IFDEF MSWINDOWS}
 var
    ck : TRIFFChunkInfo;
    dw, bytesToGo, startPosition, totalSize : Integer;
@@ -149,6 +156,13 @@ begin
       Sampling.NbChannels:=nChannels;
       Sampling.BitsPerSample:=wBitsPerSample;
    end;
+{$ELSE}
+begin
+   Assert(Assigned(stream));
+   SetLength(data, stream.Size);
+   if Length(data)>0 then
+      stream.Read(data[0], Length(data));
+{$ENDIF}
 end;
 
 // SaveToStream
@@ -163,7 +177,9 @@ end;
 //
 procedure TGLWAVFile.PlayOnWaveOut;
 begin
+{$IFDEF MSWINDOWS}
    PlaySound(WAVData, 0, SND_ASYNC+SND_MEMORY);
+{$ENDIF}
 //   GLSoundFileObjects.PlayOnWaveOut(PCMData, LengthInBytes, waveFormat);
 end;
 
@@ -187,9 +203,13 @@ end;
 //
 function TGLWAVFile.PCMData : Pointer;
 begin
+{$IFDEF MSWINDOWS}
    if Length(data)>0 then
       Result:=@data[pcmOffset]
    else Result:=nil;
+{$ELSE}
+   Result:=nil;
+{$ENDIF}
 end;
 
 // LengthInBytes
