@@ -16,7 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
-    <li>08/12/08 - DaStr - Improved Unix compatibility
+    <li>17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
     <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
                          joint parms now have a 1 appended to them for first parm
