@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/physicsapis/;../Source/;../Source/base/;../Source/designtime/;C:/lazarus/components/Glscene/Source/DesignTimeLCL/"/>
+        <OtherUnitFiles Value="../Source/PhysicsAPIs/;../Source/;../Source/Base/;../Source/DesignTime/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -29,7 +29,7 @@
     </CompilerOptions>
     <Description Value="GLScene ODE support"/>
     <Version Major="1" Build="3"/>
-    <Files Count="8">
+    <Files Count="9">
       <Item1>
         <Filename Value="../Source/DesignTime/GLODERegister.pas"/>
         <HasRegisterProc Value="True"/>
@@ -49,7 +49,7 @@
       </Item4>
       <Item5>
         <Filename Value="../Source/PhysicsAPIs/ODEImport.pas"/>
-        <UnitName Value="odeimport"/>
+        <UnitName Value="ODEImport"/>
       </Item5>
       <Item6>
         <Filename Value="../Source/PhysicsAPIs/ODEGL.pas"/>
@@ -63,6 +63,10 @@
         <Filename Value="../Source/GLODESkeletonColliders.pas"/>
         <UnitName Value="GLODESkeletonColliders"/>
       </Item8>
+      <Item9>
+        <Filename Value="../Source/PhysicsAPIs/delphiode.inc"/>
+        <Type Value="Include"/>
+      </Item9>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="2">

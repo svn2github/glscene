@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/;../Source/PropertyEditorsLCL/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditorsLCL/;C:/lazarus/components/Glscene/Source/VideoAPIs/"/>
+        <IncludeFiles Value="../Source/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/;../Source/VideoAPIs/"/>
         <UnitOutputDirectory Value="lib"/>
         <SrcPath Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/"/>
       </SearchPaths>
@@ -26,7 +26,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="201">
+    <Files Count="199">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -781,11 +781,11 @@
       </Item188>
       <Item189>
         <Filename Value="../Source/FileFormats/GlFileX.pas"/>
-        <UnitName Value="glfilex"/>
+        <UnitName Value="GlFileX"/>
       </Item189>
       <Item190>
         <Filename Value="../Source/FileFormats/FileX.pas"/>
-        <UnitName Value="filex"/>
+        <UnitName Value="FileX"/>
       </Item190>
       <Item191>
         <Filename Value="../Source/FileFormats/GLFileMP3.pas"/>
@@ -796,41 +796,33 @@
         <UnitName Value="GLFileWAV"/>
       </Item192>
       <Item193>
-        <Filename Value="../Source/Platform/GLLCLFullScreenViewer.pas"/>
-        <UnitName Value="GLLCLFullscreenViewer"/>
-      </Item193>
-      <Item194>
         <Filename Value="../Source/GLSound.pas"/>
         <UnitName Value="GLSound"/>
-      </Item194>
-      <Item195>
+      </Item193>
+      <Item194>
         <Filename Value="../Source/GLSoundFileObjects.pas"/>
         <UnitName Value="GLSoundFileObjects"/>
-      </Item195>
-      <Item196>
-        <Filename Value="../Source/Base/Joystick.pas"/>
-        <UnitName Value="Joystick"/>
-      </Item196>
-      <Item197>
-        <Filename Value="../Source/Base/ScreenSaver.pas"/>
-        <UnitName Value="ScreenSaver"/>
-      </Item197>
-      <Item198>
-        <Filename Value="../Source/GLAVIRecorder.pas"/>
-        <UnitName Value="GLAVIRecorder"/>
-      </Item198>
-      <Item199>
-        <Filename Value="../Source/VideoAPIs/vfw.pas"/>
-        <UnitName Value="VFW"/>
-      </Item199>
-      <Item200>
+      </Item194>
+      <Item195>
         <Filename Value="../Source/GLFBO.pas"/>
         <UnitName Value="GLFBO"/>
-      </Item200>
-      <Item201>
+      </Item195>
+      <Item196>
         <Filename Value="../Source/GLFBORenderer.pas"/>
         <UnitName Value="GLFBORenderer"/>
-      </Item201>
+      </Item196>
+      <Item197>
+        <Filename Value="../Source/GLGizmoEx.pas"/>
+        <UnitName Value="GLGizmoEx"/>
+      </Item197>
+      <Item198>
+        <Filename Value="../Source/GLGizmo.pas"/>
+        <UnitName Value="GLGizmo"/>
+      </Item198>
+      <Item199>
+        <Filename Value="../Source/Platform/GLScreen.pas"/>
+        <UnitName Value="GLScreen"/>
+      </Item199>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

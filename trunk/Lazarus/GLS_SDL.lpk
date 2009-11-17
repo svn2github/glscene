@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/;../Source/platform/;../Source/soundapis/;../Source/base/;C:/lazarus/components/Glscene/Source/GameAPIs/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/GameAPIs/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>

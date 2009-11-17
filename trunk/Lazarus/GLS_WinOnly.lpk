@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="GLSS_FMOD"/>
+    <Name Value="GLS_WinOnly"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/SoundAPIs/;../Source/;../Source/Base/;../Source/Platform/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/SoundAPIs/;../Source/Base/;../Source/DesignTime/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -14,47 +14,34 @@
           <SyntaxMode Value="Delphi"/>
         </SyntaxOptions>
       </Parsing>
-      <CodeGeneration>
-        <SmartLinkUnit Value="True"/>
-      </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="True"/>
-          <UseHeaptrc Value="True"/>
-        </Debugging>
-      </Linking>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="GLScene FMOD support"/>
+    <Description Value="GLScene support for Windows Only components"/>
     <Version Major="1" Build="3"/>
-    <Files Count="6">
+    <Files Count="5">
       <Item1>
-        <Filename Value="../Source/GLSMFMOD.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="GLSMFMOD"/>
+        <Filename Value="../Source/Base/Joystick.pas"/>
+        <UnitName Value="Joystick"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/SoundAPIs/fmod.pas"/>
-        <UnitName Value="fmod"/>
+        <Filename Value="../Source/Base/ScreenSaver.pas"/>
+        <UnitName Value="ScreenSaver"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/SoundAPIs/fmodpresets.pas"/>
-        <UnitName Value="fmodpresets"/>
+        <Filename Value="../Source/Platform/GLLCLFullScreenViewer.pas"/>
+        <UnitName Value="GLLCLFullscreenViewer"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/SoundAPIs/fmodtypes.pas"/>
-        <UnitName Value="fmodtypes"/>
+        <Filename Value="../Source/GLSMWaveOut.pas"/>
+        <UnitName Value="GLSMWaveOut"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/SoundAPIs/fmoderrors.pas"/>
-        <UnitName Value="fmoderrors"/>
+        <Filename Value="../Source/DesignTime/NonGLSceneRegisterLCL.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="NonGLSceneRegisterLCL"/>
       </Item5>
-      <Item6>
-        <Filename Value="../Source/SoundAPIs/fmoddyn.pas"/>
-        <UnitName Value="fmoddyn"/>
-      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
@@ -67,8 +54,6 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <CustomOptions Value="-dUseCThreads
-"/>
       <UnitPath Value="$(PkgOutDir)/"/>
     </UsageOptions>
     <PublishOptions>

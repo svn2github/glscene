@@ -5,10 +5,10 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/cgshaders/;../Source/DesignTimeLCL/;../Source/"/>
-        <OtherUnitFiles Value="../Source/cgshaders/;../Source/DesignTimeLCL/"/>
+        <IncludeFiles Value="../Source/CgShaders/;../Source/DesignTimeLCL/;../Source/"/>
+        <OtherUnitFiles Value="../Source/CgShaders/;../Source/DesignTimeLCL/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="../Source/cgshaders/;../Source/DesignTimeLCL/;../Source/;../Source/base/"/>
+        <SrcPath Value="../Source/CgShaders/;../Source/DesignTimeLCL/;../Source/;../Source/Base/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -32,24 +32,24 @@
     <Version Major="1" Build="3"/>
     <Files Count="5">
       <Item1>
-        <Filename Value="../Source/cgshaders/glcgregister.pas"/>
+        <Filename Value="../Source/CgShaders/GLCgRegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLCgRegister"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/cgshaders/glcgshader.pas"/>
+        <Filename Value="../Source/CgShaders/GLCgShader.pas"/>
         <UnitName Value="GLCgShader"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/cgshaders/cg.pas"/>
-        <UnitName Value="cg"/>
+        <Filename Value="../Source/CgShaders/cg.pas"/>
+        <UnitName Value="Cg"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/cgshaders/cggl.pas"/>
-        <UnitName Value="cgGL"/>
+        <Filename Value="../Source/CgShaders/cgGL.pas"/>
+        <UnitName Value="CgGL"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/cgshaders/glcgbombshader.pas"/>
+        <Filename Value="../Source/CgShaders/GLCgBombShader.pas"/>
         <UnitName Value="GLCgBombShader"/>
       </Item5>
     </Files>

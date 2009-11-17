@@ -1,4 +1,4 @@
-unit GLScene_CgShader; 
+﻿unit GLScene_CgShader; 
 
 interface
 

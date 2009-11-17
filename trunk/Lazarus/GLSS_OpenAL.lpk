@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/soundapis/;../Source/;../Source/base/;../Source/platform/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/SoundAPIs/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>

@@ -39,8 +39,8 @@ uses
   GLSLPostBlurShader, GLUserShader, GLAsmShader, GLBumpShader, 
   GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, GLPhongShader, 
   GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLKeyboard, 
-  GLFileMDC{$IFDEF MSWINDOWS}, GlFileX, FileX ,GLFileMP3, GLFileWAV, GLLCLFullScreenViewer,
-  GLSound, GLSoundFileObjects, Joystick, ScreenSaver, GLAVIRecorder, VFW{$ENDIF},GLFBO,GLFBORenderer;
+  GLFileMDC, GlFileX, FileX, GLFileMP3, GLFileWAV, GLSound, 
+  GLSoundFileObjects, GLFBO, GLFBORenderer, GLGizmoEx, GLGizmo, GLScreen;
 
 implementation
 
