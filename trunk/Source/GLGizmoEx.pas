@@ -13,6 +13,7 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>17/13/2009 - DaStr - Small bugfixes (by Predator)   
       <li>11/13/2009 - DaStr - Initial version (contributed by Predator)
    </ul></font>
 
@@ -455,15 +456,15 @@ type
 
     property CanAddObjToSelectionList: Boolean read FCanAddObjToSelectionList write FCanAddObjToSelectionList;
     property CanRemoveObjFromSelectionList: Boolean read FCanRemoveObjFromSelectionList write FCanRemoveObjFromSelectionList;
+
     procedure LooseCursorSelection;
     property CursorSelectingRegion: Boolean read FShowMultiSelecting;
 
+    property RootObjects: TGLBaseSceneObject read FRootObjects write SetRootObjects;
+    property RootGizmo: TGLBaseSceneObject read FRootGizmo write SetRootGizmo;
+    property GizmoTmpRoot: TGLBaseSceneObject read FGizmoTmpRoot write SetGizmoTmpRoot;
     //--------------------------------------------------------------------
   published
-
-    property RootGizmo: TGLBaseSceneObject read FRootGizmo write SetRootGizmo;
-    property RootObjects: TGLBaseSceneObject read FRootObjects write SetRootObjects;
-    property GizmoTmpRoot: TGLBaseSceneObject read FGizmoTmpRoot write SetGizmoTmpRoot;
     property Viewer: TGLSceneViewer read FViewer write SetViewer;
 
     property BoundingBoxColor: TGLColor read FBoundingBoxColor write SetBoundingBoxColor;
@@ -4018,11 +4019,14 @@ var
   I:    Integer;
   gotPick: Boolean;
 begin
+  if not Enabled               or
+     not Assigned(RootGizmo)   or
+     not Assigned(RootObjects) or
+     not Assigned(Viewer)      then
+    Exit;
+
   mx := X;
   my := Y;
-
-  if (not Enabled) or (RootGizmo = nil) or (RootObjects = nil) then
-    Exit;
 
   pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1);
   gotPick := False;
@@ -4146,6 +4150,11 @@ var
   v: TVector;
   I: Integer;
 begin
+  if not Assigned(RootGizmo)   or
+     not Assigned(RootObjects) or
+     not Assigned(Viewer)      then
+    Exit;
+    
   if FSelectedObjects.Count - 1 < 0 then
   begin
     FUIRootHelpers.Visible := False;
