@@ -1,0 +1,90 @@
+object RFaceEditor: TRFaceEditor
+  Left = 0
+  Height = 186
+  Top = 0
+  Width = 305
+  AutoSize = True
+  ClientHeight = 186
+  ClientWidth = 305
+  TabOrder = 0
+  object Label1: TLabel
+    Left = 0
+    Height = 14
+    Top = 6
+    Width = 45
+    Caption = 'Shininess'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 0
+    Height = 14
+    Top = 32
+    Width = 68
+    Caption = 'Polygon mode'
+    ParentColor = False
+  end
+  object PageControl: TPageControl
+    Left = 0
+    Height = 130
+    Top = 56
+    Width = 305
+    ActivePage = TSAmbient
+    Images = ImageList
+    TabIndex = 0
+    TabOrder = 0
+    object TSAmbient: TTabSheet
+      Caption = 'Ambient'
+      ClientHeight = 103
+      ClientWidth = 297
+      inline CEAmbiant: TRColorEditor
+      end
+    end
+    object TSDiffuse: TTabSheet
+      Caption = 'Diffuse'
+      ClientHeight = 103
+      ClientWidth = 297
+      ImageIndex = 1
+      inline CEDiffuse: TRColorEditor
+      end
+    end
+    object TSEmission: TTabSheet
+      Caption = 'Emission'
+      ClientHeight = 103
+      ClientWidth = 297
+      ImageIndex = 2
+      inline CEEmission: TRColorEditor
+      end
+    end
+    object TSSpecular: TTabSheet
+      Caption = 'Specular'
+      ClientHeight = 103
+      ClientWidth = 297
+      ImageIndex = 3
+      inline CESpecular: TRColorEditor
+      end
+    end
+  end
+  inline TBEShininess: TRTrackBarEdit
+    Left = 52
+    TabOrder = 1
+  end
+  object CBPolygonMode: TComboBox
+    Left = 80
+    Height = 21
+    Top = 28
+    Width = 89
+    ItemHeight = 13
+    Items.Strings = (
+      'pmFill'
+      'pmLines'
+      'pmPoints'
+    )
+    OnChange = CBPolygonModeChange
+    Style = csDropDownList
+    TabOrder = 2
+  end
+  object ImageList: TImageList
+    left = 264
+    top = 8
+  end
+end

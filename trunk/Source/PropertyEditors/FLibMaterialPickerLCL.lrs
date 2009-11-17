@@ -1,0 +1,39 @@
+{ Это - файл ресурсов, автоматически созданный lazarus }
+
+LazarusResources.Add('TLibMaterialPicker','FORMDATA',[
+  'TPF0'#18'TLibMaterialPicker'#17'LibMaterialPicker'#4'Left'#3'L'#1#6'Height'#3
+  +#234#0#3'Top'#3#147#0#5'Width'#3#202#1#11'BorderStyle'#7#8'bsDialog'#7'Capti'
+  +'on'#6#18'LibMaterial Picker'#12'ClientHeight'#3#234#0#11'ClientWidth'#3#202
+  +#1#11'Font.Height'#2#245#9'Font.Name'#6#13'MS Sans Serif'#10'LCLVersion'#6#6
+  +'0.9.29'#0#6'TLabel'#6'Label1'#4'Left'#3#152#0#6'Height'#2#14#3'Top'#2#8#5'W'
+  +'idth'#2'O'#7'Caption'#6#16'Material Preview'#11'ParentColor'#8#0#0#6'TLabel'
+  +#6'Label2'#4'Left'#2#8#6'Height'#2#14#3'Top'#2#8#5'Width'#2'Y'#7'Caption'#6
+  +#19'Available Materials'#11'ParentColor'#8#0#0#8'TListBox'#11'LBMaterials'#4
+  +'Left'#2#8#6'Height'#3#201#0#3'Top'#2#24#5'Width'#3#137#0#10'ItemHeight'#2#0
+  +#7'OnClick'#7#16'LBMaterialsClick'#10'OnDblClick'#7#19'LBMaterialsDblClick'
+  +#10'OnKeyPress'#7#19'LBMaterialsKeyPress'#8'TabOrder'#2#0#0#0#7'TBitBtn'#4'B'
+  +'BOk'#4'Left'#3'x'#1#6'Height'#2#25#3'Top'#2#24#5'Width'#2'K'#13'GlyphShowMo'
+  +'de'#7#9'gsmAlways'#4'Kind'#7#4'bkOK'#11'ModalResult'#2#1#9'NumGlyphs'#2#0#8
+  +'TabOrder'#2#2#0#0#7'TBitBtn'#8'BBCancel'#4'Left'#3'x'#1#6'Height'#2#25#3'To'
+  +'p'#2'8'#5'Width'#2'K'#13'GlyphShowMode'#7#9'gsmAlways'#4'Kind'#7#8'bkCancel'
+  +#11'ModalResult'#2#2#8'TabOrder'#2#1#0#0#244#17'TRMaterialPreview'#9'MPPrevi'
+  +'ew'#4'Left'#3#152#0#3'Top'#2#22#8'TabOrder'#2#3#0#241#8'TGLScene'#8'GLScene'
+  +'1'#0#241#12'TGLDummyCube'#5'World'#0#241#7'TGLCube'#4'Cube'#24'Material.Mat'
+  +'erialLibrary'#7#27'MPPreview.GLMaterialLibrary'#21'Direction.Coordinates'#10
+  +#16#0#0#0#252#250#240#177#216#179']?'#254#255#255'>'#0#0#0#0#14'Up.Coordinat'
+  +'es'#10#16#0#0#0#215#179']'#191#255#255#127'>'#215#179#221#190#0#0#0#0#0#0
+  +#241#9'TGLSphere'#6'Sphere'#24'Material.MaterialLibrary'#7#27'MPPreview.GLMa'
+  +'terialLibrary'#0#0#241#7'TGLCone'#4'Cone'#24'Material.MaterialLibrary'#7#27
+  +'MPPreview.GLMaterialLibrary'#0#0#241#9'TGLTeapot'#6'Teapot'#24'Material.Mat'
+  +'erialLibrary'#7#27'MPPreview.GLMaterialLibrary'#17'Scale.Coordinates'#10#16
+  +#0#0#0#0#0#0'@'#0#0#0'@'#0#0#0'@'#0#0#0#0#0#0#0#241#12'TGLDummyCube'#5'Light'
+  +#20'Position.Coordinates'#10#16#0#0#0#0#0#0#0#0#0'@@'#0#0' A'#0#0#128'?'#0
+  +#241#14'TGLLightSource'#11'LightSource'#14'Specular.Color'#10#16#0#0#0#0#0
+  +#128'?'#0#0#128'?'#0#0#128'?'#0#0#128'?'#0#0#241#9'TGLSphere'#10'FireSphere&'
+  +'Material.FrontProperties.Ambient.Color'#10#16#0#0#0#163#162'"?'#205#204'L>'
+  +#205#204'L>'#0#0#128'?''Material.FrontProperties.Emission.Color'#10#16#0#0#0
+  +#211#210'R?'#161#160' ?'#0#0#0#0#0#0#128'?'#0#0#0#241#9'TGLCamera'#6'Camera'
+  +#12'TargetObject'#7#14'MPPreview.Cube'#20'Position.Coordinates'#10#16#0#0#0#0
+  +#0#0#0#0#0#0#0#0#0' A'#0#0#128'?'#0#0#0#241#15'TGLMemoryViewer'#15'GLMemoryV'
+  +'iewer1'#6'Camera'#7#16'MPPreview.Camera'#0#0#0#0
+]);

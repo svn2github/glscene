@@ -1,0 +1,118 @@
+object LibMaterialPicker: TLibMaterialPicker
+  Left = 332
+  Height = 234
+  Top = 147
+  Width = 458
+  BorderStyle = bsDialog
+  Caption = 'LibMaterial Picker'
+  ClientHeight = 234
+  ClientWidth = 458
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  LCLVersion = '0.9.29'
+  object Label1: TLabel
+    Left = 152
+    Height = 14
+    Top = 8
+    Width = 79
+    Caption = 'Material Preview'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 14
+    Top = 8
+    Width = 89
+    Caption = 'Available Materials'
+    ParentColor = False
+  end
+  object LBMaterials: TListBox
+    Left = 8
+    Height = 201
+    Top = 24
+    Width = 137
+    ItemHeight = 0
+    OnClick = LBMaterialsClick
+    OnDblClick = LBMaterialsDblClick
+    OnKeyPress = LBMaterialsKeyPress
+    TabOrder = 0
+  end
+  object BBOk: TBitBtn
+    Left = 376
+    Height = 25
+    Top = 24
+    Width = 75
+    GlyphShowMode = gsmAlways
+    Kind = bkOK
+    ModalResult = 1
+    NumGlyphs = 0
+    TabOrder = 2
+  end
+  object BBCancel: TBitBtn
+    Left = 376
+    Height = 25
+    Top = 56
+    Width = 75
+    GlyphShowMode = gsmAlways
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 1
+  end
+  inline MPPreview: TRMaterialPreview
+    Left = 152
+    Top = 22
+    TabOrder = 3
+    inherited GLScene1: TGLScene
+      inherited World: TGLDummyCube
+        inherited Cube: TGLCube
+          Material.MaterialLibrary = MPPreview.GLMaterialLibrary
+          Direction.Coordinates = {
+            FCFAF0B1D8B35D3FFEFFFF3E00000000
+          }
+          Up.Coordinates = {
+            D7B35DBFFFFF7F3ED7B3DDBE00000000
+          }
+        end
+        inherited Sphere: TGLSphere
+          Material.MaterialLibrary = MPPreview.GLMaterialLibrary
+        end
+        inherited Cone: TGLCone
+          Material.MaterialLibrary = MPPreview.GLMaterialLibrary
+        end
+        inherited Teapot: TGLTeapot
+          Material.MaterialLibrary = MPPreview.GLMaterialLibrary
+          Scale.Coordinates = {
+            00000040000000400000004000000000
+          }
+        end
+      end
+      inherited Light: TGLDummyCube
+        Position.Coordinates = {
+          0000000000004040000020410000803F
+        }
+        inherited LightSource: TGLLightSource
+          Specular.Color = {
+            0000803F0000803F0000803F0000803F
+          }
+        end
+        inherited FireSphere: TGLSphere
+          Material.FrontProperties.Ambient.Color = {
+            A3A2223FCDCC4C3ECDCC4C3E0000803F
+          }
+          Material.FrontProperties.Emission.Color = {
+            D3D2523FA1A0203F000000000000803F
+          }
+        end
+      end
+      inherited Camera: TGLCamera
+        TargetObject = MPPreview.Cube
+        Position.Coordinates = {
+          0000000000000000000020410000803F
+        }
+      end
+    end
+    inherited GLMemoryViewer1: TGLMemoryViewer
+      Camera = MPPreview.Camera
+    end
+  end
+end

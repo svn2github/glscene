@@ -1,0 +1,141 @@
+object RTextureEdit: TRTextureEdit
+  Left = 0
+  Height = 162
+  Top = 0
+  Width = 227
+  ClientHeight = 162
+  ClientWidth = 227
+  ParentShowHint = False
+  ShowHint = True
+  TabOrder = 0
+  object Label2: TLabel
+    Left = 0
+    Height = 14
+    Top = 1
+    Width = 31
+    Caption = 'Image'
+    ParentColor = False
+  end
+  object SBEditImage: TSpeedButton
+    Left = 209
+    Height = 21
+    Hint = 'Edit image'
+    Top = 0
+    Width = 17
+    Anchors = [akTop, akRight]
+    Caption = '...'
+    Color = clBtnFace
+    NumGlyphs = 0
+    OnClick = SBEditImageClick
+  end
+  object Label3: TLabel
+    Left = 0
+    Height = 14
+    Top = 52
+    Width = 45
+    Caption = 'MagFilter'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 0
+    Height = 14
+    Top = 76
+    Width = 41
+    Caption = 'MinFilter'
+    ParentColor = False
+  end
+  object Label1: TLabel
+    Left = 0
+    Height = 14
+    Top = 100
+    Width = 68
+    Caption = 'Texture Mode'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 0
+    Height = 14
+    Top = 124
+    Width = 68
+    Caption = 'Texture Wrap'
+    ParentColor = False
+  end
+  object Label6: TLabel
+    Left = 0
+    Height = 14
+    Top = 28
+    Width = 58
+    Caption = 'ImageAlpha'
+    ParentColor = False
+  end
+  object CBMagFilter: TComboBox
+    Left = 72
+    Height = 21
+    Top = 48
+    Width = 154
+    ItemHeight = 13
+    OnChange = CBMagFilterChange
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object CBMinFilter: TComboBox
+    Left = 72
+    Height = 21
+    Top = 72
+    Width = 154
+    ItemHeight = 13
+    OnChange = CBMinFilterChange
+    Style = csDropDownList
+    TabOrder = 1
+  end
+  object CBTextureMode: TComboBox
+    Left = 72
+    Height = 21
+    Top = 96
+    Width = 154
+    ItemHeight = 13
+    OnChange = CBTextureModeChange
+    Style = csDropDownList
+    TabOrder = 2
+  end
+  object CBTextureWrap: TComboBox
+    Left = 72
+    Height = 21
+    Top = 120
+    Width = 154
+    ItemHeight = 13
+    OnChange = CBTextureWrapChange
+    Style = csDropDownList
+    TabOrder = 3
+  end
+  object CBDisabled: TCheckBox
+    Left = 0
+    Height = 17
+    Top = 144
+    Width = 58
+    Caption = 'Disabled'
+    OnClick = CBDisabledClick
+    TabOrder = 4
+  end
+  object CBImageClass: TComboBox
+    Left = 72
+    Height = 21
+    Top = 0
+    Width = 135
+    Anchors = [akTop, akLeft, akRight]
+    ItemHeight = 13
+    OnChange = CBImageClassChange
+    Style = csDropDownList
+    TabOrder = 5
+  end
+  object CBImageAlpha: TComboBox
+    Left = 72
+    Height = 21
+    Top = 24
+    Width = 154
+    ItemHeight = 13
+    OnChange = CBImageAlphaChange
+    Style = csDropDownList
+    TabOrder = 6
+  end
+end

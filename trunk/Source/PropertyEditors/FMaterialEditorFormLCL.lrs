@@ -1,0 +1,59 @@
+{ Это - файл ресурсов, автоматически созданный lazarus }
+
+LazarusResources.Add('TMaterialEditorForm','FORMDATA',[
+  'TPF0'#19'TMaterialEditorForm'#18'MaterialEditorForm'#4'Left'#3#230#0#6'Heigh'
+  +'t'#3'!'#1#3'Top'#3#250#0#5'Width'#3'0'#2#11'BorderStyle'#7#8'bsDialog'#7'Ca'
+  +'ption'#6#15'Material Editor'#12'ClientHeight'#3'!'#1#11'ClientWidth'#3'0'#2
+  +#11'Font.Height'#2#245#9'Font.Name'#6#13'MS Sans Serif'#8'ShowHint'#9#10'LCL'
+  +'Version'#6#6'0.9.29'#0#6'TLabel'#6'Label1'#4'Left'#2#8#6'Height'#2#14#3'Top'
+  +#3#232#0#5'Width'#2'H'#7'Caption'#6#13'Blending Mode'#11'ParentColor'#8#0#0
+  +#12'TPageControl'#12'PageControl1'#4'Left'#2#0#6'Height'#3#217#0#3'Top'#2#8#5
+  +'Width'#3'9'#1#10'ActivePage'#7#7'TSFront'#8'TabIndex'#2#0#8'TabOrder'#2#0#0
+  +#9'TTabSheet'#7'TSFront'#7'Caption'#6#5'Front'#0#0#9'TTabSheet'#6'TSBack'#7
+  +'Caption'#6#4'Back'#10'ImageIndex'#2#1#0#0#9'TTabSheet'#9'TSTexture'#7'Capti'
+  +'on'#6#7'Texture'#12'ClientHeight'#3#191#0#11'ClientWidth'#3'1'#1#10'ImageIn'
+  +'dex'#2#2#0#244#13'TRTextureEdit'#12'RTextureEdit'#6'Height'#3#191#0#5'Width'
+  +#3'1'#1#5'Align'#7#8'alClient'#12'ClientHeight'#3#191#0#11'ClientWidth'#3'1'
+  +#1#0#241#6'TLabel'#6'Label1'#5'Width'#2'C'#0#0#0#0#0#9'TGroupBox'#9'GroupBox'
+  +'1'#4'Left'#3'@'#1#6'Height'#3#241#0#3'Top'#2#8#5'Width'#3#233#0#7'Caption'#6
+  +#16'Material Preview'#12'ClientHeight'#3#223#0#11'ClientWidth'#3#229#0#8'Tab'
+  +'Order'#2#1#0#244#17'TRMaterialPreview'#9'MPPreview'#4'Left'#2#16#3'Top'#2#22
+  +#0#241#8'TGLScene'#8'GLScene1'#0#241#12'TGLDummyCube'#5'World'#0#241#7'TGLCu'
+  +'be'#4'Cube'#24'Material.MaterialLibrary'#7#27'MPPreview.GLMaterialLibrary'
+  +#21'Direction.Coordinates'#10#16#0#0#0#252#250#240#177#216#179']?'#254#255
+  +#255'>'#0#0#0#0#14'Up.Coordinates'#10#16#0#0#0#215#179']'#191#255#255#127'>'
+  +#215#179#221#190#0#0#0#0#0#0#241#9'TGLSphere'#6'Sphere'#24'Material.Material'
+  +'Library'#7#27'MPPreview.GLMaterialLibrary'#0#0#241#7'TGLCone'#4'Cone'#24'Ma'
+  +'terial.MaterialLibrary'#7#27'MPPreview.GLMaterialLibrary'#0#0#241#9'TGLTeap'
+  +'ot'#6'Teapot'#24'Material.MaterialLibrary'#7#27'MPPreview.GLMaterialLibrary'
+  +#17'Scale.Coordinates'#10#16#0#0#0#0#0#0'@'#0#0#0'@'#0#0#0'@'#0#0#0#0#0#0#0
+  +#241#12'TGLDummyCube'#5'Light'#20'Position.Coordinates'#10#16#0#0#0#0#0#0#0#0
+  +#0'@@'#0#0' A'#0#0#128'?'#0#241#14'TGLLightSource'#11'LightSource'#14'Specul'
+  +'ar.Color'#10#16#0#0#0#0#0#128'?'#0#0#128'?'#0#0#128'?'#0#0#128'?'#0#0#241#9
+  +'TGLSphere'#10'FireSphere&Material.FrontProperties.Ambient.Color'#10#16#0#0#0
+  +#163#162'"?'#205#204'L>'#205#204'L>'#0#0#128'?''Material.FrontProperties.Emi'
+  +'ssion.Color'#10#16#0#0#0#211#210'R?'#161#160' ?'#0#0#0#0#0#0#128'?'#0#0#0
+  +#241#9'TGLCamera'#6'Camera'#12'TargetObject'#7#14'MPPreview.Cube'#20'Positio'
+  +'n.Coordinates'#10#16#0#0#0#0#0#0#0#0#0#0#0#0#0' A'#0#0#128'?'#0#0#0#241#15
+  +'TGLMemoryViewer'#15'GLMemoryViewer1'#6'Camera'#7#16'MPPreview.Camera'#0#0#0
+  +#0#7'TBitBtn'#4'BBOk'#4'Left'#3'x'#1#6'Height'#2#25#3'Top'#3#0#1#5'Width'#2
+  +'S'#7'Caption'#6#2'OK'#7'Default'#9#10'Glyph.Data'#10#226#1#0#0#222#1#0#0'BM'
+  +#222#1#0#0#0#0#0#0'v'#0#0#0'('#0#0#0'$'#0#0#0#18#0#0#0#1#0#4#0#0#0#0#0'h'#1#0
+  +#0#0#0#0#0#0#0#0#0#16#0#0#0#0#0#0#0#0#0#0#0#0#0#128#0#0#128#0#0#0#128#128#0
+  +#128#0#0#0#128#0#128#0#128#128#0#0#192#192#192#0#128#128#128#0#0#0#255#0#0
+  +#255#0#0#0#255#255#0#255#0#0#0#255#0#255#0#255#255#0#0#255#255#255#0'3333333'
+  +'33333333333'#0#0'333333333333'#243'33333'#0#0'334C33333338'#143'33333'#0#0
+  +'33B$3333333'#131'8'#243'3333'#0#0'34""C33333833'#143'3333'#0#0'3B""$33333'
+  +#131'338'#243'333'#0#0'4"*""C3338'#243'8'#243'3'#143'333'#0#0'2"'#163#162'"C'
+  +'3338'#243#131#143'3'#143'333'#0#0':*3:"$3338'#248'38'#243'8'#243'33'#0#0'3'
+  +#163'33'#162'"C333'#131'33'#143'3'#143'33'#0#0'3333:"$3333338'#243'8'#243'3'
+  +#0#0'33333'#162'"C333333'#143'3'#143'3'#0#0'33333:"$3333338'#243'8'#243#0#0
+  +'333333'#162'"C333333'#143'3'#143#0#0'333333:"C3333338'#243#143#0#0'3333333'
+  +#162'#3333333'#143#131#0#0'3333333:3333333383'#0#0'333333333333333333'#0#0#11
+  +'ModalResult'#2#1#9'NumGlyphs'#2#2#8'TabOrder'#2#2#0#0#7'TBitBtn'#8'BBCancel'
+  +#4'Left'#3#216#1#6'Height'#2#25#3'Top'#3#0#1#5'Width'#2'S'#13'GlyphShowMode'
+  +#7#9'gsmAlways'#4'Kind'#7#8'bkCancel'#11'ModalResult'#2#2#8'TabOrder'#2#3#0#0
+  +#9'TComboBox'#10'CBBlending'#4'Left'#2'X'#6'Height'#2#21#3'Top'#3#229#0#5'Wi'
+  +'dth'#3#145#0#10'ItemHeight'#2#13#8'OnChange'#7#17'OnMaterialChanged'#5'Styl'
+  +'e'#7#14'csDropDownList'#8'TabOrder'#2#4#0#0#0
+]);
