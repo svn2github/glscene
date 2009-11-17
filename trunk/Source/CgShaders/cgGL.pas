@@ -12,6 +12,7 @@
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
 {*     http://clootie.narod.ru                                                *}
+{*       http://developer.nvidia.com/object/cg_download.html                  *}
 {*                                                                            *}
 {******************************************************************************}
 {                                                                              }
@@ -56,7 +57,7 @@
  *
  * In consideration of your agreement to abide by the following terms, and
  * subject to these terms, NVIDIA grants you a personal, non-exclusive license,
- * under NVIDIAÒs copyrights in this original NVIDIA software (the "NVIDIA
+ * under NVIDIARs copyrights in this original NVIDIA software (the "NVIDIA
  * Software"), to use, reproduce, modify and redistribute the NVIDIA
  * Software, with or without modifications, in source and/or binary forms;
  * provided that if you redistribute the NVIDIA Software, you must retain the
@@ -93,6 +94,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 17-Nov-09 - Da Stranger
+//   - Improved Unix compatibility (thanks Predator) (BugtrackerID = 2893580)
 // 23-Apr-04 - Nelson Chu:
 //   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
 // 04-Mar-04 - Alexey Barkovoy:
@@ -112,12 +115,18 @@ unit cgGL;
 interface
 
 uses
-  OpenGL1x{$IFNDEF COMPILER6_UP}, Windows{$ENDIF}, cg;
+  OpenGL1x, cg
+  {$IFNDEF COMPILER6_UP}{$IFDEF MSWINDOWS} ,Windows{$ENDIF}{$ENDIF}
+  ;
 
 (*$HPPEMIT '#include "cgGL.h"' *)
 
 const
+  {$IFDEF MSWINDOWS}
   CgGLlibrary = 'cgGL.dll';
+  {$ELSE}
+  CgGLlibrary = 'libCgGL.so';
+  {$ENDIF}
 
 (*****************************************************************************)
 (*** cgGL Type Definitions                                                 ***)

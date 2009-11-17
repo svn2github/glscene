@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileX<p>
+{: GlFileX<p>
 
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
@@ -12,6 +12,9 @@
 
    <b>Previous version history : </b><font size=-1><ul>
       $Log$
+      Revision 1.1  2009/11/07 22:12:25  da_stranger
+      Initial version (Added from the GLScene-Lazarus SVN)
+
       Revision 1.1  2006/01/10 20:50:44  z0m3ie
       recheckin to make shure that all is lowercase
 
@@ -26,7 +29,7 @@
    </ul></font>
 }
 
-unit GLFileX;
+unit GlFileX;
 
 interface
 
