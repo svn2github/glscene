@@ -1149,7 +1149,7 @@ procedure TGLMovementPath.TravelPath(const Start: boolean; const aStartTime: dou
 begin
   if FInTravel = Start then
     exit;
-  FInitialTime := aStartTime + FStartTime;
+  FInitialTime := aStartTime;
   FStartTimeApplied := False;
   TravelPath(Start);
 end;
