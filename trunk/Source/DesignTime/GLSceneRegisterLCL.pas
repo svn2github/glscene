@@ -7,6 +7,8 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>24/03/08 - DaStr - Initial version
    </ul></font>
 }
@@ -14,10 +16,11 @@ unit GLSceneRegisterLCL;
 
 interface
 
-uses
+{$I GLScene.inc}
 
-   {$ifdef windows}windows,{$endif}
-   Classes,GLObjectManager, ComponentEditors, PropEdits, LResources;
+uses
+   {$ifdef MSWINDOWS}windows,{$endif}
+   Classes, GLObjectManager, ComponentEditors, PropEdits, LResources;
 
  type
   // TGLLibMaterialNameProperty
@@ -83,23 +86,25 @@ uses
    GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
    GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
-   GLCameraController, GLGizmo,GLKeyboard, GLFBORenderer,
-   {$IFDEF MSWINDOWS} GLSoundFileObjects,GLSound,
-   GLAVIRecorder, Joystick, ScreenSaver,{$ENDIF}
+   GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
+   GLSoundFileObjects, GLSound,
+{$IFDEF MSWINDOWS}
+   GLAVIRecorder, Joystick, ScreenSaver,
+{$ENDIF}
    // Vector file formats
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
    GLFileNurbs, GLFileObj,  GLFilePLY, GLFileSMD, GLFileSTL,
-   GLFileTIN, GLFileVRML,{$IFDEF MSWINDOWS} GLFileX,  {$ENDIF}
-   {$IFDEF MSWINDOWS}
+   GLFileTIN, GLFileVRML, GlFileX,
+
    // Sound file formats
    GLFileWAV, GLFileMP3,
-   {$ENDIF}
+
 
   // Property editor forms
-  GLSceneEditLCL, FVectorEditor,FMaterialEditorForm, FRMaterialPreview, FLibMaterialPicker, FRTextureEdit,
-  FRFaceEditor,
-  FRColorEditor, FRTrackBarEdit;
+  GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL, 
+  FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
+  FRColorEditorLCL, FRTrackBarEditLCL;
 
 var
    vObjectManager : TObjectManager;
@@ -219,7 +224,7 @@ type
          procedure Edit; override;
          procedure SetValue(const Value: string); override;
    end;
-      {$IFDEF MSWINDOWS}
+
    // TSoundFileProperty
    //
    TSoundFileProperty = class (TClassProperty)
@@ -238,7 +243,7 @@ type
          function GetAttributes : TPropertyAttributes; override;
       	procedure GetValues(Proc: TGetStrProc); override;
    end;
-   {$ENDIF}
+
 
    // TGLCoordinatesProperty
    //
@@ -267,25 +272,12 @@ type
       here for the same reason...), the "protected" wasn't meant just to lure
       programmers into code they can't reuse... Arrr! and he did that again
       in D6! Grrr... }
-   TReuseableDefaultEditor = class (TComponentEditor)
-      protected
-			{ Protected Declarations }
-        FFirst: TPropertyEditor;
-	FBest: TPropertyEditor;
-         FContinue: Boolean;
-         procedure CheckEdit(PropertyEditor : TPropertyEditor);
-         procedure EditProperty(PropertyEditor : TPropertyEditor;
-                                var Continue, FreeEditor : Boolean); virtual;
-      public
-         { Public Declarations }
-         procedure Edit; override;
-   end;
 
    // TGLMaterialLibraryEditor
    //
    {: Editor for material library.<p> }
 
-   TGLMaterialLibraryEditor = class(TDefaultComponentEditor{TReuseableDefaultEditor})
+   TGLMaterialLibraryEditor = class(TDefaultComponentEditor)
       protected
       //
       { procedure Edit;
@@ -724,7 +716,7 @@ procedure TVectorFileProperty.SetValue(const Value: string);
 begin
    SetStrValue(Value);
 end;
-      {$IFDEF MSWINDOWS}
+
 //----------------- TSoundFileProperty -----------------------------------------
 
 // GetAttributes
@@ -788,7 +780,7 @@ begin
    if Assigned(source.SoundLibrary) then with source.SoundLibrary do
       for i:=0 to Samples.Count-1 do Proc(Samples[i].Name);
 end;
-{$ENDIF}
+
 //----------------- TGLCoordinatesProperty -------------------------------------
 
 // GetAttributes
@@ -832,85 +824,6 @@ begin
    ml:= TGLMaterial(GetOrdValue);
    if MaterialEditorForm.Execute(ml) then
      Modified;
-end;
-
-//----------------- TReuseableDefaultEditor --------------------------------------------------------------------------------
-
-// CheckEdit
-//
-procedure TReuseableDefaultEditor.CheckEdit(PropertyEditor: TPropertyEditor);
-var
-  FreeEditor: Boolean;
-begin
-  FreeEditor:=True;
-  try
-    if FContinue then EditProperty(PropertyEditor, FContinue, FreeEditor);
-  finally
-    if FreeEditor then PropertyEditor.Free;
-  end;
-end;
-
-// EditProperty
-//
-procedure TReuseableDefaultEditor.EditProperty(PropertyEditor: TPropertyEditor;
-															  var Continue, FreeEditor: Boolean);
-var
-  PropName: string;
-  BestName: string;
-
-  procedure ReplaceBest;
-  begin
-    FBest.Free;
-	 FBest:=PropertyEditor;
-    if FFirst = FBest then FFirst:=nil;
-    FreeEditor:=False;
-  end;
-
-begin
-  if not Assigned(FFirst) and (PropertyEditor is TMethodProperty) then
-  begin
-    FreeEditor:=False;
-    FFirst:=PropertyEditor;
-  end;
-  PropName:=PropertyEditor.GetName;
-  BestName:='';
-  if Assigned(FBest) then BestName:=FBest.GetName;
-  if CompareText(PropName, 'ONCREATE') = 0 then
-    ReplaceBest
-  else if CompareText(BestName, 'ONCREATE') <> 0 then
-    if CompareText(PropName, 'ONCHANGE') = 0 then
-		ReplaceBest
-    else if CompareText(BestName, 'ONCHANGE') <> 0 then
-      if CompareText(PropName, 'ONCLICK') = 0 then
-        ReplaceBest;
-end;
-
-// Edit
-//
-procedure TReuseableDefaultEditor.Edit;
-///var
- // Components : TPersistentSelectionList;
-begin
-  {Components:=TPersistentSelectionList.Create;
-  try
-    FContinue:=True;
-    Components.Add(Component);
-    FFirst:=nil;
-    FBest:=nil;
-	 try
-      GetPersistentProperties(Components, tkVariant, Designer, CheckEdit);
-      if FContinue then
-        if Assigned(FBest) then
-          FBest.Edit
-        else if Assigned(FFirst) then
-          FFirst.Edit;
-    finally
-      FFirst.Free;
-      FBest.Free;
-	 end;
-  finally
-    Components.Free;
-  end;    }
 end;
 
 //----------------- TGLMaterialLibraryEditor --------------------------------------------------------------------------------
@@ -1029,10 +942,9 @@ begin
                        TGLCadencer,
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
-                       TGLScriptLibrary
+                       TGLScriptLibrary, TGLSoundLibrary
                        {$ifdef MSWINDOWS}
-                       ,TGLWideBitmapFont, TGLSoundLibrary,
-                       TGLFullScreenViewer
+                       ,TGLWideBitmapFont, TGLFullScreenViewer
                        {$endif}
                       ]);
 
@@ -1053,10 +965,11 @@ begin
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-                       TGLSimpleNavigation, TGLCameraController, TGLGizmo
-                       {$IFDEF MSWINDOWS}
+                       TGLSimpleNavigation, TGLCameraController,
+                       TGLGizmo,TGLGizmoEx
+                      {$IFDEF MSWINDOWS}
                        ,TAVIRecorder,  TJoystick, TScreenSaver
-                       {$ENDIF}
+                      {$ENDIF}
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1085,10 +998,10 @@ begin
    RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);
    RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '', TGLTextureImageProperty);
    RegisterPropertyEditor(TypeInfo(String), TGLTexture, 'ImageClassName', TGLImageClassProperty);
-   {$IFDEF MSWINDOWS}
+
    RegisterPropertyEditor(TypeInfo(TGLSoundFile), TGLSoundSample, '', TSoundFileProperty);
    RegisterPropertyEditor(TypeInfo(String), TGLBaseSoundSource, 'SoundName', TSoundNameProperty);
-   {$ENDIF}
+
    RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '', TGLCoordinatesProperty);
 
    RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
@@ -1233,6 +1146,7 @@ end;
 initialization
 
    {$I GLSceneLCL.lrs}
+   {$I nonGLSceneLCL.lrs}
 
    GLColor.vUseDefaultColorSets:=True;
    GLCoordinates.vUseDefaultCoordinateSets:=True;
