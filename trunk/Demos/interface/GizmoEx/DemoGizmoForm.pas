@@ -106,7 +106,6 @@ type
     CheckBox16: TCheckBox;
     TabSheet3: TTabSheet;
     Label8: TLabel;
-    GLHUDText1: TGLHUDText;
     Edit1: TEdit;
     Label13: TLabel;
     Panel3: TPanel;
@@ -123,6 +122,7 @@ type
     SpeedButton19: TSpeedButton;
     SpeedButton20: TSpeedButton;
     Label17: TLabel;
+    Timer1: TTimer;
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -150,12 +150,11 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton7MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure SpeedButton7MouseEnter(Sender: TObject);
-    procedure SpeedButton7MouseLeave(Sender: TObject);
     procedure SpeedButton17Click(Sender: TObject);
     procedure SpeedButton14Click(Sender: TObject);
     procedure SpeedButton16Click(Sender: TObject);
     function ObjectName(value: string): string;
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
   public
@@ -307,10 +306,6 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
   viewer.invalidate;
-
-  if GLScene1.IsUpdating then UpdateTreeView;
-
-  GLHUDText1.Text:=viewer.FramesPerSecondText()
 end;
 
 procedure TForm1.OptPickModeClick(Sender: TObject);
@@ -364,18 +359,6 @@ begin
   Panel4.Visible:= not Panel4.Visible;
   Panel4.Left:=SpeedButton6.Left;
   Panel4.Top:= SpeedButton6.Top+SpeedButton6.Height;
-end;
-
-//Changing SelectionRegion
-
-procedure TForm1.SpeedButton7MouseEnter(Sender: TObject);
-begin
- (Sender as TSpeedButton).Down := true;
-end;
-
-procedure TForm1.SpeedButton7MouseLeave(Sender: TObject);
-begin
- (Sender as TSpeedButton).Down := false;
 end;
 
 procedure TForm1.SpeedButton7MouseUp(Sender: TObject; Button: TMouseButton;
@@ -709,13 +692,6 @@ begin
   Gizmo.LabelFont := WindowsBitmapFont;
   Gizmo.Viewer := Viewer;
   Gizmo.ExcludeClassnameList.Add('TGLSphere');
-  label8.Caption:='GLGizmoEx'+#13#10+
-                  'Code by Adirex, Degiovani, Delauney, Mrqzzz'+#13#10+
-                  ''+#13#10+
-                  'Update 07.10.2009'+#13#10+
-                  'Code by Rustam Asmadiarov'+#13#10+
-                  ''+#13#10+
-                  'Thanks to DaStranger, Conferno, Lampogolovii, YarUnderoaker';
   FCreationScenarious := -1;
 end;
 
@@ -742,6 +718,14 @@ procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
 begin
   Camera.AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
   gizmo.UpdateGizmo;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+  Caption := Viewer.FramesPerSecondText();
+  Viewer.ResetPerformanceMonitor;
+
+  if GLScene1.IsUpdating then UpdateTreeView;
 end;
 
 end.

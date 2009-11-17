@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 223
-  Top = 167
+  Left = 153
+  Top = 148
   Width = 832
   Height = 606
   Caption = 'GizmoEx'
@@ -702,11 +702,11 @@ object Form1: TForm1
       OnClick = SpeedButton1Click
     end
     object Label12: TLabel
-      Left = 85
-      Top = 0
+      Left = 149
+      Top = 10
       Width = 96
-      Height = 35
-      Align = alLeft
+      Height = 13
+      Align = alCustom
       Alignment = taCenter
       Caption = '   Operation Mode:  '
       Layout = tlCenter
@@ -949,10 +949,10 @@ object Form1: TForm1
     end
     object Label15: TLabel
       Left = 0
-      Top = 0
+      Top = 10
       Width = 85
-      Height = 35
-      Align = alLeft
+      Height = 13
+      Align = alCustom
       Alignment = taCenter
       Caption = '   Return Action:  '
       Layout = tlCenter
@@ -1133,11 +1133,11 @@ object Form1: TForm1
       OnClick = SpeedButton1Click
     end
     object Label17: TLabel
-      Left = 181
-      Top = 0
+      Left = 482
+      Top = 10
       Width = 150
-      Height = 35
-      Align = alLeft
+      Height = 13
+      Align = alCustom
       Alignment = taCenter
       Caption = '  Reference Coordinate System'
       Layout = tlCenter
@@ -1874,6 +1874,7 @@ object Form1: TForm1
         Top = 279
         Width = 106
         Height = 21
+        Style = csDropDownList
         ItemHeight = 13
         ItemIndex = 1
         TabOrder = 16
@@ -2058,7 +2059,8 @@ object Form1: TForm1
         AutoSize = False
         Caption = 
           'GLGizmoEx  '#13#10'code by Adirex, Degiovani, Delauney, Mrqzzz Update ' +
-          ' '
+          #13#10' '#13#10'Update 07.10.2009'#13#10'Code by Rustam Asmadiarov'#13#10' '#13#10'Thanks to ' +
+          'DaStranger, Conferno, Lampogolovii, YarUnderoaker'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -2736,11 +2738,6 @@ object Form1: TForm1
         LightStyle = lsOmni
         SpotCutOff = 180.000000000000000000
       end
-      object GLHUDText1: TGLHUDText
-        Position.Coordinates = {0000484200004842000000000000803F}
-        BitmapFont = WindowsBitmapFont
-        Text = 'FPC'
-      end
       object GLXYZGrid1: TGLXYZGrid
         XSamplingScale.Min = -5.000000000000000000
         XSamplingScale.Max = 5.000000000000000000
@@ -2758,9 +2755,11 @@ object Form1: TForm1
       Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object GLDodecahedron3: TGLDodecahedron
+        Material.Texture.Border = 0
         Position.Coordinates = {0000000000000000000000400000803F}
         object GLArrowLine3: TGLArrowLine
           Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
+          Material.Texture.Border = 0
           Position.Coordinates = {00000000000000000000003F0000803F}
           BottomRadius = 0.100000001490116100
           Height = 1.000000000000000000
@@ -2771,6 +2770,7 @@ object Form1: TForm1
           BottomArrowHeadRadius = 0.200000002980232200
           object GLArrowLine4: TGLArrowLine
             Material.FrontProperties.Diffuse.Color = {000000000000803F8180803E0000803F}
+            Material.Texture.Border = 0
             Direction.Coordinates = {00000000F304353FF30435BF00000000}
             PitchAngle = 45.000000000000000000
             Position.Coordinates = {000000000000003F0000003F0000803F}
@@ -2783,6 +2783,7 @@ object Form1: TForm1
             BottomArrowHeadHeight = 0.500000000000000000
             BottomArrowHeadRadius = 0.200000002980232200
             object GLCube2: TGLCube
+              Material.Texture.Border = 0
               Position.Coordinates = {00000000000000000000803F0000803F}
               RollAngle = 45.000000000000000000
               Up.Coordinates = {F30435BFF304353F0000000000000000}
@@ -2793,13 +2794,16 @@ object Form1: TForm1
       end
       object GLCube1: TGLCube
         Material.MaterialOptions = [moIgnoreFog, moNoLighting]
+        Material.Texture.Border = 0
         Position.Coordinates = {0000803F00000000000000000000803F}
         object GLSphere1: TGLSphere
+          Material.Texture.Border = 0
           Position.Coordinates = {0000803F00000000000000000000803F}
           Radius = 0.500000000000000000
         end
       end
       object GLFrustrum1: TGLFrustrum
+        Material.Texture.Border = 0
         Position.Coordinates = {0000000000000040000000000000803F}
         ShowAxes = True
         FrustrumSize = {0000A0400000803F0000803F0000803F}
@@ -2807,6 +2811,7 @@ object Form1: TForm1
       object GLDisk1: TGLDisk
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803FF853E33E}
         Material.BlendingMode = bmTransparency
+        Material.Texture.Border = 0
         Material.FaceCulling = fcNoCull
         Position.Coordinates = {0000004000000040000000000000803F}
         OuterRadius = 0.500000000000000000
@@ -2835,6 +2840,11 @@ object Form1: TForm1
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     Left = 272
+    Top = 128
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 240
     Top = 128
   end
 end
