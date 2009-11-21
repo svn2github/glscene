@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = clothactor.exe Clothify.exe FurBall.exe machine.exe odeterrain.exe \
-  simple.exe
+  simple.exe Ragdoll.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -31,6 +31,9 @@ odeterrain.exe: odeterrain\odeterrain.dpr
   $(DCC)
 
 simple.exe: simple\simple.dpr
+  $(DCC)
+
+Ragdoll.exe: OdeRagdoll\Ragdoll.dpr
   $(DCC)
 
 
