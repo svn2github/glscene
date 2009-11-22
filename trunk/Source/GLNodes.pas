@@ -6,6 +6,8 @@
    Nodes are used to describe lines, polygons + more.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>14/07/09 - DaStr - Added $I GLScene.inc
       <li>05/10/08 - DanB - Created from GLMisc.pas split
    </ul></font>
@@ -579,19 +581,19 @@ var
       Result:=@newVertices[nbExtraVertices-1];
    end;
 
-   procedure tessError(errno : TGLEnum); stdcall;
+   procedure tessError(errno : TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
    begin
       Assert(False, IntToStr(errno)+': '+gluErrorString(errno));
    end;
 
-   procedure tessIssueVertex(vertexData : Pointer); stdcall;
+   procedure tessIssueVertex(vertexData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
    begin
       xglTexCoord2fv(vertexData);
       glVertex3fv(vertexData);
    end;
 
    procedure tessCombine(coords : PDoubleVector; vertex_data : Pointer;
-                         weight : PGLFloat; var outData : Pointer); stdcall;
+                         weight : PGLFloat; var outData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
    begin
       outData:=AllocNewVertex;
       SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
