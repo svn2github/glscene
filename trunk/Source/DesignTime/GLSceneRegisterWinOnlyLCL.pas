@@ -13,26 +13,20 @@
 }
 
 unit GLSceneRegisterWinOnlyLCL;
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 interface
 
 uses
-
-   Classes, ComponentEditors, PropEdits, LResources;
-procedure Register;
-
-implementation
-
-uses
    GLLCLFullScreenViewer,
-   GLAVIRecorder, Joystick, ScreenSaver;
+   GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut;
 
 
 procedure Register;
 begin
    RegisterComponents('GLScene',
-                      [
+                      [TGLSMWaveOut,
                        TGLFullScreenViewer
                       ]);
 
