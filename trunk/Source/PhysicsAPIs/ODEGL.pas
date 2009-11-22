@@ -2,7 +2,8 @@
   ***********************************************************************
 
   Change history
-
+  2009.11.22 - DaStr - Improved Unix compatibility
+                         (thanks Predator) (BugtrackerID = 2893580)
   2008.02.06 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
   2003.02.03 - EG - Fixed CopyPosFromGeomToGL
   2003.02.11 - MF - Added a couple of vector functions for copying between
@@ -24,7 +25,7 @@ interface
 }
 
 uses
-  OpenGL1x, VectorGeometry, odeimport, GLScene, VectorTypes, VectorLists,
+  OpenGL1x, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
   GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);

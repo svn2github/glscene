@@ -1,4 +1,4 @@
-UNIT odeimport;
+UNIT ODEImport;
 {*************************************************************************
  *                                                                       *
  * Open Dynamics Engine, Copyright (C) 2001,2002 Russell L. Smith.       *
@@ -63,6 +63,8 @@ UNIT odeimport;
   ***********************************************************************
 
   Change history
+  2009.11.22 - DaStr - Improved Unix compatibility
+                         (thanks Predator) (BugtrackerID = 2893580)
   2008.12.04 - PR - Updated to work with latest ODE from svn Rev(1606) (massive bug fixes and cleanup)
                     Breakable joints are no longer availed until patch is updated
                     ODE no longer allows multiple init's this is now checked for
