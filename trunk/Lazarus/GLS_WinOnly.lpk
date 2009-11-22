@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/SoundAPIs/;../Source/Base/;../Source/DesignTime/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/SoundAPIs/;../Source/Base/;../Source/DesignTime/;../Source/VideoAPIs/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -20,7 +20,7 @@
     </CompilerOptions>
     <Description Value="GLScene support for Windows Only components"/>
     <Version Major="1" Build="3"/>
-    <Files Count="5">
+    <Files Count="7">
       <Item1>
         <Filename Value="../Source/Base/Joystick.pas"/>
         <UnitName Value="Joystick"/>
@@ -38,10 +38,18 @@
         <UnitName Value="GLSMWaveOut"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/DesignTime/NonGLSceneRegisterLCL.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="NonGLSceneRegisterLCL"/>
+        <Filename Value="../Source/VideoAPIs/vfw.pas"/>
+        <UnitName Value="VFW"/>
       </Item5>
+      <Item6>
+        <Filename Value="../Source/GLAVIRecorder.pas"/>
+        <UnitName Value="GLAVIRecorder"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../Source/DesignTime/GLSceneRegisterWinOnlyLCL.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLSceneRegisterWinOnlyLCL"/>
+      </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

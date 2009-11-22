@@ -3,14 +3,14 @@ unit GLS_WinOnly;
 interface
 
 uses
-    Joystick, ScreenSaver, GLLCLFullScreenViewer, GLSMWaveOut, 
-  NonGLSceneRegisterLCL, LazarusPackageIntf;
+    Joystick, ScreenSaver, GLLCLFullScreenViewer, GLSMWaveOut, VFW, 
+  GLAVIRecorder, GLSceneRegisterWinOnlyLCL, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('NonGLSceneRegisterLCL', @NonGLSceneRegisterLCL.Register); 
+  RegisterUnit('GLSceneRegisterWinOnlyLCL', @GLSceneRegisterWinOnlyLCL.Register); 
 end; 
 
 initialization

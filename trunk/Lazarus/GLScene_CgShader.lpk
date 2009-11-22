@@ -5,10 +5,10 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/CgShaders/;../Source/DesignTimeLCL/;../Source/"/>
-        <OtherUnitFiles Value="../Source/CgShaders/;../Source/DesignTimeLCL/"/>
+        <IncludeFiles Value="../Source/CgShaders/;../Source/"/>
+        <OtherUnitFiles Value="../Source/CgShaders/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="../Source/CgShaders/;../Source/DesignTimeLCL/;../Source/;../Source/Base/"/>
+        <SrcPath Value="../Source/CgShaders/;../Source/;../Source/Base/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
