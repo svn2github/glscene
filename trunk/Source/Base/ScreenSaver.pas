@@ -24,7 +24,7 @@ unit ScreenSaver;
 interface
 
 {$i GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses Windows, Classes, Controls, Forms, Extctrls;
 

@@ -18,7 +18,7 @@ unit GLSMWaveOut;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses Classes, GLSound, MMSystem, GLSoundFileObjects;
 
