@@ -7,6 +7,7 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>22/11/09 - DaStr - Improved Unix compatibility (again)
       <li>17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>24/03/08 - DaStr - Initial version
@@ -43,7 +44,6 @@ uses
    SysUtils, Dialogs, Graphics,
    // GLScene units
    VectorGeometry, GLScene, GLViewer,
-   {$IFDEF MSWINDOWS}GLLCLFullScreenViewer,{$ENDIF}
    GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
    GLCadencer, GLTextureImageEditors,GLColor, GLCrossPlatform,
    // GLScene - basic geometry
@@ -88,9 +88,6 @@ uses
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
    GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
    GLSoundFileObjects, GLSound,
-{$IFDEF MSWINDOWS}
-   GLAVIRecorder, Joystick, ScreenSaver,
-{$ENDIF}
    // Vector file formats
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
@@ -944,7 +941,7 @@ begin
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
                        TGLScriptLibrary, TGLSoundLibrary
                        {$ifdef MSWINDOWS}
-                       ,TGLWideBitmapFont, TGLFullScreenViewer
+                       ,TGLWideBitmapFont
                        {$endif}
                       ]);
 
@@ -967,9 +964,6 @@ begin
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLCameraController,
                        TGLGizmo,TGLGizmoEx
-                      {$IFDEF MSWINDOWS}
-                       ,TAVIRecorder,  TJoystick, TScreenSaver
-                      {$ENDIF}
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1082,9 +1076,8 @@ begin
       RegisterSceneObject(TGLResolutionIndependantHUDText, 'Resolution Independant HUD Text', glsOCHUDObjects, HInstance);
       RegisterSceneObject(TGLAbsoluteHUDText, 'Absolute HUD Text', glsOCHUDObjects, HInstance);
       RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects, HInstance);
-     // {$ifdef MSWINDOWS}
       RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects, HInstance);
-    //  {$ENDIF}
+
 
       // GUI objects.
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects, HInstance);
@@ -1146,7 +1139,6 @@ end;
 initialization
 
    {$I GLSceneLCL.lrs}
-   {$I nonGLSceneLCL.lrs}
 
    GLColor.vUseDefaultColorSets:=True;
    GLCoordinates.vUseDefaultCoordinateSets:=True;
