@@ -78,10 +78,10 @@ begin
       // wide pen, and a second time with a thinner pen.
       PenAlpha:=0.4;
       PenWidth:=3;
-      Ellipse(x-16, y-16, x+16, y+16);
+      Ellipse(x, y, 16, 16);
       PenAlpha:=0.75;
       PenWidth:=2;
-      Ellipse(x-16, y-16, x+16, y+16);
+      Ellipse(x, y, 16, 16);
       // Complete the reticle
       PenAlpha:=0.3;
       PenWidth:=2;
