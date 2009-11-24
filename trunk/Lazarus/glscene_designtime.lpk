@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/DesignTime/;../Source/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/"/>
+        <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/"/>
+        <OtherUnitFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Platform/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -38,7 +38,7 @@
         <UnitName Value="GLSceneRegisterLCL"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/PropertyEditorsLCL/FVectorEditorLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FVectorEditorLCL.pas"/>
         <UnitName Value="FVectorEditorLCL"/>
       </Item5>
       <Item6>
@@ -46,35 +46,35 @@
         <Type Value="LRS"/>
       </Item6>
       <Item7>
-        <Filename Value="../Source/PropertyEditorsLCL/InfoLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/InfoLCL.pas"/>
         <UnitName Value="InfoLCL"/>
       </Item7>
       <Item8>
-        <Filename Value="../Source/PropertyEditorsLCL/FMaterialEditorFormLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FMaterialEditorFormLCL.pas"/>
         <UnitName Value="FMaterialEditorFormLCL"/>
       </Item8>
       <Item9>
-        <Filename Value="../Source/PropertyEditorsLCL/FRMaterialPreviewLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FRMaterialPreviewLCL.pas"/>
         <UnitName Value="FRMaterialPreviewLCL"/>
       </Item9>
       <Item10>
-        <Filename Value="../Source/PropertyEditorsLCL/FLibMaterialPickerLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FLibMaterialPickerLCL.pas"/>
         <UnitName Value="FLibMaterialPickerLCL"/>
       </Item10>
       <Item11>
-        <Filename Value="../Source/PropertyEditorsLCL/FRTextureEditLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FRTextureEditLCL.pas"/>
         <UnitName Value="FRTextureEditLCL"/>
       </Item11>
       <Item12>
-        <Filename Value="../Source/PropertyEditorsLCL/FRColorEditorLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FRColorEditorLCL.pas"/>
         <UnitName Value="FRColorEditorLCL"/>
       </Item12>
       <Item13>
-        <Filename Value="../Source/PropertyEditorsLCL/FRFaceEditorLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FRFaceEditorLCL.pas"/>
         <UnitName Value="FRFaceEditorLCL"/>
       </Item13>
       <Item14>
-        <Filename Value="../Source/PropertyEditorsLCL/FRTrackBarEditLCL.pas"/>
+        <Filename Value="../Source/PropertyEditors/FRTrackBarEditLCL.pas"/>
         <UnitName Value="FRTrackBarEditLCL"/>
       </Item14>
       <Item15>

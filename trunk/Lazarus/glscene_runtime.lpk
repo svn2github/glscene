@@ -5,10 +5,9 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditorsLCL/;../Source/PropertyEditors/;../Source/VideoAPIs/"/>
-        <UnitOutputDirectory Value="lib"/>
-        <SrcPath Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/"/>
+        <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -26,7 +25,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="199">
+    <Files Count="200">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -823,6 +822,10 @@
         <Filename Value="../Source/Platform/GLScreen.pas"/>
         <UnitName Value="GLScreen"/>
       </Item199>
+      <Item200>
+        <Filename Value="../Source/GLConsole.pas"/>
+        <UnitName Value="GLConsole"/>
+      </Item200>
     </Files>
     <RequiredPkgs Count="2">
       <Item1>

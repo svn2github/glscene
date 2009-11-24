@@ -40,7 +40,8 @@ uses
   GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, GLPhongShader, 
   GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLKeyboard, 
   GLFileMDC, GlFileX, FileX, GLFileMP3, GLFileWAV, GLSound, 
-  GLSoundFileObjects, GLFBO, GLFBORenderer, GLGizmoEx, GLGizmo, GLScreen;
+  GLSoundFileObjects, GLFBO, GLFBORenderer, GLGizmoEx, GLGizmo, GLScreen, 
+  GLConsole;
 
 implementation
 
