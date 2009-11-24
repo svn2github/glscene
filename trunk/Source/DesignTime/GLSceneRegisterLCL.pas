@@ -7,6 +7,7 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>24/11/09 - DanB - Removed some more windows only units
       <li>22/11/09 - DaStr - Improved Unix compatibility (again)
       <li>17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
@@ -20,7 +21,6 @@ interface
 {$I GLScene.inc}
 
 uses
-   {$ifdef MSWINDOWS}windows,{$endif}
    Classes, GLObjectManager, ComponentEditors, PropEdits, LResources;
 
  type
@@ -57,7 +57,7 @@ uses
    GLTexturedHDS, GLAsyncHDS, GLShadowHDS,
    // GLScene - graph plotting
    GLBitmapFont, GLGraph, GLWindowsFont,
-   {$IFDEF MSWINDOWS}GLWideBitmapFont,{$ENDIF}
+
    // GLScene - particles
    GLParticles, GLParticleFX, GLPerlinPFX, GLLinePFX, GLFireFX, GLThorFX,
    GLEParticleMasksManager,
@@ -71,7 +71,6 @@ uses
    // GLScene - special
    GLLensFlare, GLTexLensFlare, GLMirror, GLShadowPlane, GLShadowVolume,
    GLzBuffer, GLSLProjectedTextures, GLProjectedTextures, GLBlur,
-   {$IFDEF MSWINDOWS} GLSpaceText, {$ENDIF}
    GLTrail, GLPostEffects,
    // GLScene - doodad
    GLTeapot, GLTree, GLWaterPlane,
@@ -940,9 +939,7 @@ begin
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
                        TGLScriptLibrary, TGLSoundLibrary
-                       {$ifdef MSWINDOWS}
-                       ,TGLWideBitmapFont
-                       {$endif}
+
                       ]);
 
    RegisterComponents('GLScene PFX',
@@ -1106,9 +1103,7 @@ begin
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects, HInstance);
-      {$ifdef MSWINDOWS}
-      RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);
-      {$endif}
+
       RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects, HInstance);
       RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', glsOCSpecialObjects, HInstance);

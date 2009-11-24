@@ -8,27 +8,33 @@
    GLSceneRegisterLCL.pas
 
    <b>History :</b><font size=-1><ul>
+      <li>24/11/09 - DanB - Added some more windows only units
       <li>22/11/09 - DaStr - Initial version (by Predator)
    </ul></font>
 }
 
 unit GLSceneRegisterWinOnlyLCL;
 
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFNDEF MSWINDOWS}{$Message Error 'Unit not supported'}{$ENDIF}
 
 interface
 
 uses
-   GLLCLFullScreenViewer,
-   GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut;
+   Classes, GLLCLFullScreenViewer, GLSceneRegisterLCL, GLStrings,
+   GLWideBitmapFont, GLSpaceText,
+   GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut, LResources;
 
+procedure Register;
+
+implementation
 
 procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLSMWaveOut,
-                       TGLFullScreenViewer
-                      ]);
+                       TGLFullScreenViewer,
+                       TGLWideBitmapFont
+                        ]);
 
    RegisterComponents('GLScene Utils',
                       [TAVIRecorder,  TJoystick, TScreenSaver
@@ -39,6 +45,10 @@ end;
 initialization
 
    {$I nonGLSceneLCL.lrs}
+
+   with ObjectManager do begin
+      RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);
+   end;
 
 finalization
 end.
