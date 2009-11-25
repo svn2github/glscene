@@ -6,6 +6,8 @@
    Nodes are used to describe lines, polygons + more.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/11/09 - DaStr - Improved Lazarus compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>22/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>14/07/09 - DaStr - Added $I GLScene.inc
@@ -563,6 +565,31 @@ end;
 var
    nbExtraVertices : Integer;
    newVertices : PAffineVectorArray;
+
+  function AllocNewVertex : PAffineVector;
+  begin
+     Inc(nbExtraVertices);
+     Result:=@newVertices[nbExtraVertices-1];
+  end;
+
+  procedure tessError(errno : TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  begin
+     Assert(False, IntToStr(errno)+': '+gluErrorString(errno));
+  end;
+
+  procedure tessIssueVertex(vertexData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  begin
+     xglTexCoord2fv(vertexData);
+     glVertex3fv(vertexData);
+  end;
+
+  procedure tessCombine(coords : PDoubleVector; vertex_data : Pointer;
+                        weight : PGLFloat; var outData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  begin
+     outData:=AllocNewVertex;
+     SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
+  end;
+
 procedure TGLNodes.RenderTesselatedPolygon(ATextured : Boolean;
                                            ANormal : PAffineVector = nil;
                                            ASplineDivisions : Integer = 1;
@@ -574,30 +601,6 @@ var
    spline : TCubicSpline;
    splinePos : PAffineVector;
    f : Single;
-
-   function AllocNewVertex : PAffineVector;
-   begin
-      Inc(nbExtraVertices);
-      Result:=@newVertices[nbExtraVertices-1];
-   end;
-
-   procedure tessError(errno : TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
-   begin
-      Assert(False, IntToStr(errno)+': '+gluErrorString(errno));
-   end;
-
-   procedure tessIssueVertex(vertexData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
-   begin
-      xglTexCoord2fv(vertexData);
-      glVertex3fv(vertexData);
-   end;
-
-   procedure tessCombine(coords : PDoubleVector; vertex_data : Pointer;
-                         weight : PGLFloat; var outData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
-   begin
-      outData:=AllocNewVertex;
-      SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
-   end;
 
 begin
    if Count>2 then begin
