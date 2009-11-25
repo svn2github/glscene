@@ -11,6 +11,7 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/11/09 - DanB - Fix for TVerletGlobalConstraint.TranslateKickbackTorque
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>14/04/04 - MF - Fixed force for springs, was referring to deltaP...
       <li>13/04/04 - MF - Minor drag changes
@@ -1127,11 +1128,9 @@ end;
 
 function TVerletGlobalConstraint.TranslateKickbackTorque(
   const TorqueCenter: TAffineVector): TAffineVector;
-var
-  Torque : TAffineVector;
 begin
   // EM(b) = EM(a) + EF x VectorSubtract(b, a). <p>
-  Torque := VectorAdd(FKickbackTorque, VectorCrossProduct(VectorSubtract(TorqueCenter, FLocation), FKickbackForce));
+  Result := VectorAdd(FKickbackTorque, VectorCrossProduct(VectorSubtract(TorqueCenter, FLocation), FKickbackForce));
 end;
 
 procedure TVerletGlobalConstraint.BeforeIterations;
@@ -2123,8 +2122,6 @@ var
    delta : TAffineVector;
    f, r : Single;
    projB : TAffineVector;
-const
-   cDefaultDelta : TAffineVector = (0.01, 0, 0);
 begin
    Assert((NodeA<>NodeB), 'The nodes are identical - that causes division by zero!');
 
@@ -2403,7 +2400,7 @@ begin
 
   if shortestDeltaLength<10e8 then
   begin
-     contactNormal := VectorScale(shortestMove, 1/shortestDeltaLength);
+     //contactNormal := VectorScale(shortestMove, 1/shortestDeltaLength);
 
      {aEdge.NodeA.ApplyFriction(FFrictionRatio, shortestDeltaLength, contactNormal);
      aEdge.NodeB.ApplyFriction(FFrictionRatio, shortestDeltaLength, contactNormal);//}
