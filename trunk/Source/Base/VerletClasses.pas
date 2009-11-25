@@ -2299,7 +2299,7 @@ var
   Corners : array[0..7] of TAffineVector;
   EdgeRelative : array[0..1] of TAffineVector;
 
-  shortestMove, contactNormal : TAffineVector;
+  shortestMove{, contactNormal} : TAffineVector;
   shortestDeltaLength : Single;
 
   procedure AddCorner(CornerID : Integer; x,y,z : Single);
