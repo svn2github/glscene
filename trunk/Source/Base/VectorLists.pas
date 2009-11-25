@@ -6,6 +6,8 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/11/09 - DanB - Fixed FastQuickSortLists for 64bit (thanks YarUnderoaker)
+                            ASM code protected with IFDEFs
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>01/03/08 - DaStr - Added Borland-style persistency support to TBaseList
       <li>29/03/07 - DaStr - Added more explicit pointer dereferencing
@@ -687,11 +689,13 @@ procedure FastQuickSortLists(startIndex, endIndex: Integer; refList: TSingleList
 var
   I, J:    Integer;
   p, Temp: Integer;
-  refInts: PIntegerArray;
   ppl:     PIntegerArray;
+  oTemp    : Pointer;
+  oppl     : PPointerArray;
 begin
   // All singles are >=1, so IEEE format allows comparing them as if they were integers
-  refInts := PIntegerArray(@refList.List[0]);
+  ppl := PIntegerArray(@refList.List[0]);
+  oppl := PPointerArray(objList.List);
   if endIndex > startIndex + 1 then
   begin
     repeat
@@ -699,20 +703,20 @@ begin
       J := endIndex;
       p := PInteger(@refList.List[(I + J) shr 1])^;
       repeat
-        ppl := refInts;
         while ppl^[I] < p do
           Inc(I);
         while ppl^[J] > p do
           Dec(J);
         if I <= J then
         begin
+          // swap integers
           Temp := ppl^[I];
           ppl^[I] := ppl^[J];
           ppl^[J] := Temp;
-          ppl := PIntegerArray(objList.List);
-          Temp := ppl^[I];
-          ppl^[I] := ppl^[J];
-          ppl^[J] := Temp;
+          // swap pointers
+          oTemp := oppl^[I];
+          oppl^[I] := oppl^[J];
+          oppl^[J] := oTemp;
           Inc(I);
           Dec(J);
         end;
@@ -725,18 +729,18 @@ begin
   else
   if endIndex > startIndex then
   begin
-    ppl := refInts;
     if ppl^[endIndex] < ppl^[startIndex] then
     begin
       I := endIndex;
       J := startIndex;
+      // swap integers
       Temp := ppl^[I];
       ppl^[I] := ppl^[J];
       ppl^[J] := Temp;
-      ppl := PIntegerArray(objList.List);
-      Temp := ppl^[I];
-      ppl^[I] := ppl^[J];
-      ppl^[J] := Temp;
+      // swap pointers
+      oTemp := oppl^[I];
+      oppl^[I] := oppl^[J];
+      oppl^[J] := oTemp;
     end;
   end;
 end;
@@ -2400,6 +2404,21 @@ end;
 //
 
 function IntegerSearch(item: Integer; list: PIntegerVector; Count: Integer): Integer; register;
+{$IFDEF GLS_NO_ASM}
+var i : integer;
+begin
+  result:=-1;
+  for i := 0 to Count-1 do begin
+    if list^[i]=item then begin
+      result:=i;
+      break;
+    end;
+  end;
+end;
+{$ELSE}
+{$IFDEF FPC}
+ {$ASMMODE INTEL}
+{$ENDIF}
 asm
   push edi;
 
@@ -2424,7 +2443,7 @@ asm
   @@end:
   pop edi;
 end;
-
+{$ENDIF}
 // IndexOf
 //
 
@@ -2851,7 +2870,7 @@ end;
 //
 
 function TSingleList.Sum: Single;
-
+{$IFDEF GLS_NO_ASM}
   function ComputeSum(list: PSingleArrayList; nb: Integer): Single; register;
   asm
     fld   dword ptr [eax]
@@ -2866,6 +2885,14 @@ begin
     Result := ComputeSum(FList, FCount)
   else
     Result := 0;
+{$ELSE}
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to FCount-1 do
+    Result := Result + FList^[i];
+{$ENDIF}
 end;
 
 // ------------------
@@ -3155,7 +3182,7 @@ end;
 //
 
 function TDoubleList.Sum: Double;
-
+{$IFDEF GLS_NO_ASM}
   function ComputeSum(list: PDoubleArrayList; nb: Integer): Double; register;
   asm
     fld   dword ptr [eax]
@@ -3170,6 +3197,14 @@ begin
     Result := ComputeSum(FList, FCount)
   else
     Result := 0;
+{$ELSE}
+var
+  i: Integer;
+begin
+    Result := 0;
+    for i := 0 to FCount-1 do
+    Result := Result + FList^[i];
+{$ENDIF}
 end;
 
 // ------------------
