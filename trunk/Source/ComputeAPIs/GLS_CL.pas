@@ -547,13 +547,13 @@ function clCreateContextFromType(properties: Pcl_context_properties;
                                                                      {$IFDEF CL_CDECL} cdecl;{$ENDIF}
                                                                      external LibOpenCL;
 
-function clRetainContext(context: Tcl_context): Tcl_context; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
-                                                             {$IFDEF CL_CDECL} cdecl;{$ENDIF}
-                                                             external LibOpenCL;
+function clRetainContext(context: Tcl_context): Tcl_int; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
+                                                         {$IFDEF CL_CDECL} cdecl;{$ENDIF}
+                                                         external LibOpenCL;
 
-function clReleaseContext(context: Tcl_context): Tcl_context; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
-                                                              {$IFDEF CL_CDECL} cdecl;{$ENDIF}
-                                                              external LibOpenCL;
+function clReleaseContext(context: Tcl_context): Tcl_int; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
+                                                          {$IFDEF CL_CDECL} cdecl;{$ENDIF}
+                                                          external LibOpenCL;
 
 function clGetContextInfo(context: Tcl_context;
                           param_name: Tcl_context_info;
