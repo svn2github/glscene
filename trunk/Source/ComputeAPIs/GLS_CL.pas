@@ -168,12 +168,11 @@ Pcl_command_type = ^Tcl_command_type;
 Pcl_profiling_info = ^Tcl_profiling_info;
 
 type
-	T_cl_image_format = record
+	Tcl_image_format = record
     image_channel_order: Tcl_channel_order;
     image_channel_data_type: Tcl_channel_type;
  end;
 
- Tcl_image_format	=	^T_cl_image_format;
  Pcl_image_format = ^Tcl_image_format;
 
 // Error Codes
