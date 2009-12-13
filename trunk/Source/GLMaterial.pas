@@ -231,34 +231,39 @@ type
 
    TGLLibMaterialName = String;
 
+    //
+    // DaStr: if you write smth like af_GL_NEVER = GL_NEVER in the definition,
+    // it won't show up in the Dephi 7 design-time editor. So I had to add
+    // vTGlAlphaFuncValues and vTGLBlendFuncFactorValues arrays.
+    //
     TGlAlphaFunc = (
-      af_GL_NEVER = GL_NEVER,
-      af_GL_LESS = af_GL_LESS,
-      af_GL_EQUAL = GL_EQUAL,
-      af_GL_LEQUAL = GL_LEQUAL,
-      af_GL_GREATER = GL_GREATER,
-      af_GL_NOTEQUAL = GL_NOTEQUAL,
-      af_GL_GEQUAL = GL_GEQUAL,
-      af_GL_ALWAYS = GL_ALWAYS
+      af_GL_NEVER,
+      af_GL_LESS,
+      af_GL_EQUAL,
+      af_GL_LEQUAL,
+      af_GL_GREATER,
+      af_GL_NOTEQUAL,
+      af_GL_GEQUAL,
+      af_GL_ALWAYS 
       );
 
     TGLBlendFuncFactor = (
-      bff_GL_ZERO = GL_ZERO,
-      bff_GL_ONE = GL_ONE,
-      bff_GL_DST_COLOR = GL_DST_COLOR,
-      bff_GL_ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
-      bff_GL_SRC_ALPHA = GL_SRC_ALPHA,
-      bff_GL_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA,
-      bff_GL_DST_ALPHA = GL_DST_ALPHA,
-      bff_GL_ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA,
-      bff_GL_SRC_ALPHA_SATURATE = GL_SRC_ALPHA_SATURATE,
+      bff_GL_ZERO,
+      bff_GL_ONE,
+      bff_GL_DST_COLOR,
+      bff_GL_ONE_MINUS_DST_COLOR,
+      bff_GL_SRC_ALPHA,
+      bff_GL_ONE_MINUS_SRC_ALPHA,
+      bff_GL_DST_ALPHA,
+      bff_GL_ONE_MINUS_DST_ALPHA,
+      bff_GL_SRC_ALPHA_SATURATE,
 
       //if the GL_ARB_imaging extension is supported
       //Or OpenGL > 1.0 then
-      bff_GL_CONSTANT_COLOR = GL_CONSTANT_COLOR,
-      bff_GL_ONE_MINUS_CONSTANT_COLOR = GL_ONE_MINUS_CONSTANT_COLOR,
-      bff_GL_CONSTANT_ALPHA = GL_CONSTANT_ALPHA,
-      bff_GL_ONE_MINUS_CONSTANT_ALPHA = GL_ONE_MINUS_CONSTANT_ALPHA
+      bff_GL_CONSTANT_COLOR,
+      bff_GL_ONE_MINUS_CONSTANT_COLOR,
+      bff_GL_CONSTANT_ALPHA,
+      bff_GL_ONE_MINUS_CONSTANT_ALPHA
       );
 
     // TGLBlendingParameters
@@ -670,6 +675,16 @@ type
 implementation
 
 uses SysUtils, GLStrings, GLState, XOpenGL, ApplicationFileIO, GLGraphics;
+
+const
+    vTGlAlphaFuncValues: array[0..7] of TGLEnum =
+     (GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS);
+
+    vTGLBlendFuncFactorValues: array[0..12] of TGLEnum =
+     (GL_ZERO, GL_ONE, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA,
+      GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
+      GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR,
+      GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 
 // ------------------
 // ------------------ TGLFaceProperties ------------------
@@ -1358,13 +1373,15 @@ begin
 
               if FBlendingParams.FUseAlphaFunc then
               begin
-                glAlphaFunc(TGLEnum(FBlendingParams.FAlphaFuncType), FBlendingParams.AlphaFuncRef);
+                glAlphaFunc(vTGlAlphaFuncValues[Integer(FBlendingParams.FAlphaFuncType)],
+                            FBlendingParams.AlphaFuncRef);
               end;
 
               if FBlendingParams.FUseBlendFunc then
               begin
                 rci.GLStates.SetGLState(stBlend);
-                glBlendFunc(TGLEnum(FBlendingParams.FBlendFuncSFactor), TGLEnum(FBlendingParams.FBlendFuncDFactor));
+                glBlendFunc(vTGLBlendFuncFactorValues[Integer(FBlendingParams.FBlendFuncSFactor)],
+                            vTGLBlendFuncFactorValues[Integer(FBlendingParams.FBlendFuncDFactor)]);
               end
               else
                 rci.GLStates.UnSetGLState(stBlend);
@@ -2733,7 +2750,9 @@ end;
 
 procedure TGLBlendingParameters.Changed;
 begin
-  GetRealOwner.SetBlendingMode(bmCustom);
+// DaStr: turned off because there is no way to know TGLMaterial's real owner.
+//  if not (csLoading in GetRealOwner.GetRealOwner.ComponentState) then
+//  GetRealOwner.SetBlendingMode(bmCustom);
 end;
 
 constructor TGLBlendingParameters.Create(AOwner: TPersistent);
