@@ -4,6 +4,7 @@
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 // 
 // History:
+// 13/12/09 - DaStr - Added GLS_MULTITHREAD option (thanks Controller)
 // 10/11/09 - DaStr - Added Delphi 2010 support
 // 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
 //                    Added GLS_NO_ASM option
@@ -44,6 +45,9 @@
 // De-Activate assembly routines in other GLS units.
 {.$DEFINE GLS_NO_ASM}
 
+// Activate Multithread support.
+{.$DEFINE GLS_MULTITHREAD}
+
 //
 // Platform Detection
 //
@@ -54,6 +58,10 @@
     // so need to define MSWINDOWS here to provide Delphi 5 support
     {$DEFINE MSWINDOWS}
   {$ENDIF}
+{$ENDIF}
+
+{$IFDEF GLS_MULTITHREAD}
+  {$DEFINE MULTITHREADOPENGL}
 {$ENDIF}
 
 {$IFDEF LINUX}
