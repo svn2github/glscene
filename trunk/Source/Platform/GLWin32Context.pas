@@ -1,8 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLWin32Context<p>
 
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)  
       <li>30/08/09 - DanB - vIgnoreContextActivationFailures renamed to
                             vContextActivationFailureOccurred + check removed.
       <li>06/11/07 - mrqzzz - Ignore ContextActivation failure
@@ -37,7 +41,7 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
+{$IFNDEF MSWINDOWS} {$MESSAGE Error 'Unit is Windows specific'} {$ENDIF}
 
 uses Windows, Classes, SysUtils, GLContext;
 
@@ -100,7 +104,7 @@ var
      they are (improperly) released by some drivers upon top-level form
      destruction. }
    vUseWindowTrackingHook : Boolean = True;
-{$ENDIF}
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -108,7 +112,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-{$IFDEF MSWINDOWS}
+
 uses Forms, OpenGL1x, GLCrossPlatform, Messages;
 
 var
@@ -212,7 +216,11 @@ end;
 // ------------------ TGLWin32Context ------------------
 // ------------------
 
+{$IFNDEF GLS_MULTITHREAD}
 var
+{$ELSE}
+threadvar
+{$ENDIF}
    vLastPixelFormat : Integer;
    vLastVendor : String;
 
@@ -805,6 +813,6 @@ initialization
 // ------------------------------------------------------------------
 
    RegisterGLContextClass(TGLWin32Context);
-{$ENDIF}
+
 end.
 

@@ -4,9 +4,9 @@
 {: GLContext<p>
 
    Prototypes and base implementation of TGLContext.<p>
-   Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)   
       <li>30/08/09 - DanB - renamed vIgnoreContextActivationFailures to vContextActivationFailureOccurred
                             + re-enabled it's original behaviour (fixes major memory leak).
       <li>30/08/09 - DanB - Added TGLTransformFeedbackBufferHandle, TGLTextureBufferHandle,
@@ -54,9 +54,14 @@ unit GLContext;
 
 interface
 
-uses Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes;
+{$I GLScene.inc}
 
-{$i GLScene.inc}
+uses
+{$IFDEF MSWINDOWS} {$IFDEF GLS_MULTITHREAD}
+Windows,
+{$ENDIF} {$ENDIF}
+
+Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -102,9 +107,14 @@ type
          FOnDestroyContext : TNotifyEvent;
          FManager : TGLContextManager;
          FActivationCount : Integer;
+{$IFNDEF GLS_MULTITHREAD}
          FSharedContexts : TList;
          FOwnedHandles : TList;
-
+{$ELSE}
+         FSharedContexts : TThreadList;
+         FOwnedHandles : TThreadList;
+         FLock: TRTLCriticalSection;
+{$ENDIF}
       protected
          { Protected Declarations }
          FAcceleration : TGLContextAcceleration;
@@ -214,7 +224,7 @@ type
       through an intermediate opaque cross-platform API.<p>
       TGLSceneViewer won't use them, TGLMemoryViewer may be able to use them,
       but most of the time they will be accessed through a specific viewer
-      class/subclass. } 
+      class/subclass. }
    TGLScreenControlingContext = class (TGLContext)
       private
          { Private Declarations }
@@ -940,8 +950,11 @@ resourcestring
 
 var
    vContextClasses : TList = nil;
-
+{$IFNDEF GLS_MULTITHREAD}
 var
+{$ELSE}
+threadvar
+{$ENDIF}
    vCurrentGLContext : TGLContext;
 
 // CurrentGLContext
@@ -969,13 +982,21 @@ end;
 constructor TGLContext.Create;
 begin
    inherited Create;
+{$IFDEF GLS_MULTITHREAD}
+   InitializeCriticalSection(FLock);
+{$ENDIF}
    FColorBits:=32;
    FStencilBits:=0;
    FAccumBits:=0;
    FAuxBuffers:=0;
    FOptions:=[];
+{$IFNDEF GLS_MULTITHREAD}
    FSharedContexts:=TList.Create;
    FOwnedHandles:=TList.Create;
+{$ELSE}
+   FSharedContexts:=TThreadList.Create;
+   FOwnedHandles:=TThreadList.Create;
+{$ENDIF}
    FAcceleration:=chaUnknown;
    GLContextManager.RegisterContext(Self);
 end;
@@ -989,6 +1010,9 @@ begin
    GLContextManager.UnRegisterContext(Self);
    FOwnedHandles.Free;
    FSharedContexts.Free;
+{$IFDEF GLS_MULTITHREAD}
+   DeleteCriticalSection(FLock);
+{$ENDIF}
    inherited Destroy;
 end;
 
@@ -1115,6 +1139,7 @@ var
    i, j : Integer;
    otherContext : TGLContext;
 begin
+{$IFNDEF GLS_MULTITHREAD}
    for i:=0 to FSharedContexts.Count-1 do begin
       if TGLContext(FSharedContexts[i])<>Self then begin
          otherContext:=TGLContext(FSharedContexts[i]);
@@ -1123,6 +1148,21 @@ begin
             otherContext.FSharedContexts.Add(FSharedContexts[j]);
       end;
    end;
+{$ELSE}
+  with FSharedContexts.LockList do
+  try
+    for i:=0 to Count-1 do begin
+      if TGLContext(Items[i])<>Self then begin
+         otherContext:=TGLContext(Items[i]);
+         otherContext.FSharedContexts.Clear;
+         for j:=0 to Count-1 do
+            otherContext.FSharedContexts.Add(Items[j]);
+      end;
+    end;
+  finally
+    FSharedContexts.UnlockList;
+  end;
+{$ENDIF}
 end;
 
 // ShareLists
@@ -1130,11 +1170,24 @@ end;
 procedure TGLContext.ShareLists(aContext : TGLContext);
 begin
    if IsValid then begin
+{$IFNDEF GLS_MULTITHREAD}
       if FSharedContexts.IndexOf(aContext)<0 then begin
          DoShareLists(aContext);
          FSharedContexts.Add(aContext);
          PropagateSharedContext;
       end;
+{$ELSE}
+   with FSharedContexts.LockList do
+   try
+      if IndexOf(aContext)<0 then begin
+         DoShareLists(aContext);
+         Add(aContext);
+         PropagateSharedContext;
+      end;
+   finally
+     FSharedContexts.UnlockList;
+   end;
+{$ENDIF}
    end else raise EGLContext.Create(cContextNotCreated);
 end;
 
@@ -1146,8 +1199,18 @@ var
 begin
    Activate;
    try
+{$IFNDEF GLS_MULTITHREAD}
       for i:=FOwnedHandles.Count-1 downto 0 do
          TGLContextHandle(FOwnedHandles[i]).DestroyHandle;
+{$ELSE}
+     with FOwnedHandles.LockList do
+     try
+      for i:=Count-1 downto 0 do
+         TGLContextHandle(Items[i]).DestroyHandle;
+     finally
+       FOwnedHandles.UnlockList;
+     end;
+{$ENDIF}
    finally
       Deactivate;
    end;
@@ -1160,6 +1223,7 @@ var
    i : Integer;
    oldContext, compatContext : TGLContext;
    contextHandle : TGLContextHandle;
+{$IFNDEF GLS_MULTITHREAD}
 begin
    if vCurrentGLContext<>Self then begin
       oldContext:=vCurrentGLContext;
@@ -1185,6 +1249,40 @@ begin
             contextHandle.ContextDestroying;
          end;
       end;
+{$ELSE}
+   aList:TList;
+begin
+   if vCurrentGLContext<>Self then begin
+      oldContext:=vCurrentGLContext;
+      if Assigned(oldContext) then
+         oldContext.Deactivate;
+   end else oldContext:=nil;
+   Activate;
+   try
+      compatContext:=FindCompatibleContext;
+      aList := FOwnedHandles.LockList;
+      try
+        if Assigned(compatContext) then begin
+           // transfer handle ownerships to the compat context
+           for i:=aList.Count-1 downto 0 do begin
+              contextHandle:=TGLContextHandle(aList[i]);
+              if contextHandle.Transferable then begin
+                 compatContext.FOwnedHandles.Add(contextHandle);
+                 contextHandle.FRenderingContext:=compatContext;
+              end else contextHandle.ContextDestroying;
+           end;
+        end else begin
+           // no compat context, release handles
+           for i:=aList.Count-1 downto 0 do begin
+              contextHandle:=TGLContextHandle(aList[i]);
+              contextHandle.ContextDestroying;
+           end;
+        end;
+        aList.Clear;
+      finally
+        FOwnedHandles.UnlockList;
+      end;
+{$ENDIF}
       FOwnedHandles.Clear;
       Manager.DestroyingContextBy(Self);
       FSharedContexts.Remove(Self);
@@ -1203,6 +1301,9 @@ end;
 //
 procedure TGLContext.Activate;
 begin
+{$IFDEF GLS_MULTITHREAD}
+   EnterCriticalSection(FLock);
+{$ENDIF}
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
@@ -1213,7 +1314,7 @@ begin
          vContextActivationFailureOccurred:=True;
       end;
       vCurrentGLContext:=Self;
-   end else Assert(vCurrentGLContext=Self);
+   end else Assert(vCurrentGLContext=Self, 'vCurrentGLContext <> Self');
    Inc(FActivationCount);
 end;
 
@@ -1231,6 +1332,9 @@ begin
       vCurrentGLContext:=nil;
    end else if FActivationCount<0 then
       raise EGLContext.Create(cUnbalancedContexActivations);
+{$IFDEF GLS_MULTITHREAD}
+  LeaveCriticalSection(FLock);
+{$ENDIF}
 end;
 
 // FindCompatibleContext
@@ -1240,11 +1344,24 @@ var
    i : Integer;
 begin
    Result:=nil;
+{$IFNDEF GLS_MULTITHREAD}
    for i:=0 to FSharedContexts.Count-1 do
       if TGLContext(FSharedContexts[i])<>Self then begin
          Result:=TGLContext(FSharedContexts[i]);
          Break;
       end;
+{$ELSE}
+   with FSharedContexts.LockList do
+   try
+     for i:=0 to Count-1 do
+       if Items[i]<>Self then begin
+         Result:=TGLContext(Items[i]);
+         Break;
+       end;
+   finally
+     FSharedContexts.UnlockList;
+   end;
+{$ENDIF}
 end;
 
 // ------------------
@@ -1294,6 +1411,7 @@ end;
 procedure TGLContextHandle.DestroyHandle;
 var
    oldContext, handleContext : TGLContext;
+{$IFNDEF GLS_MULTITHREAD}
 begin
    if FHandle<>0 then begin
       FRenderingContext.FOwnedHandles.Remove(Self);
@@ -1320,7 +1438,52 @@ begin
       FHandle:=0;
       FRenderingContext:=nil;
    end;
+end;   
+{$ELSE}
+   function HasRenderingContext:boolean;
+   var lList:TList;
+   begin
+     lList := vCurrentGLContext.FSharedContexts.LockList;
+     try
+       Result := lList.IndexOf(FRenderingContext)>=0;
+     finally
+       vCurrentGLContext.FSharedContexts.UnLockList;
+     end;
+   end;
+begin
+   if FHandle<>0 then begin
+      FRenderingContext.FOwnedHandles.Remove(Self);
+      if (vCurrentGLContext=FRenderingContext) then
+         DoDestroyHandle
+      else
+        if (vCurrentGLContext<>nil) and HasRenderingContext then
+        // May be vCurrentGLContext.FSharedContexts should've remained locked
+        begin
+           // current context is ours or compatible one
+          DoDestroyHandle;
+        end
+        else
+        begin
+         // some other context (or none)
+          oldContext:=vCurrentGLContext;
+          if Assigned(oldContext) then
+            oldContext.Deactivate;
+          FRenderingContext.Activate;
+          handleContext:=FRenderingContext;
+          try
+            DoDestroyHandle;
+          finally
+            handleContext.Deactivate;
+            if Assigned(oldContext) then
+               oldContext.Activate;
+          end;
+        end;
+      FHandle:=0;
+      FRenderingContext:=nil;
+   end;
 end;
+{$ENDIF}
+
 
 // ContextDestroying
 //
