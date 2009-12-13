@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/12/09 - DaStr - Added missing stdcall/cdecl modifiers
       <li>25/10/09 - DaStr - Added some texture compression extensions and updated
                               glTransformFeedbackVaryings()(thanks YarUndeoaker)
       <li>28/09/09 - DaStr - Added some NVidia-specific extensions (thanks YarUndeoaker)
@@ -72,8 +73,6 @@ unit OpenGL1x;
 interface
 
 {$i GLScene.inc}
-
-{.$define MULTITHREADOPENGL}
 
 uses
   VectorTypes, SysUtils,
@@ -2942,7 +2941,7 @@ const
    GL_TEXTURE_DEPTH_EXT                              = $8071;
    GL_TEXTURE_WRAP_R_EXT                             = $8072;
    GL_MAX_3D_TEXTURE_SIZE_EXT                        = $8073;
-   
+
    // EXT_histogram (#11)
    GL_HISTOGRAM_EXT                                  = $8024;
    GL_PROXY_HISTOGRAM_EXT                            = $8025;
@@ -5678,39 +5677,39 @@ var
    glDrawElementsInstancedARB: procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
             indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-   // GL_ARB_framebuffer_object (ARB #45)         
-   glIsRenderbuffer: function(renderbuffer: TGLuint): TGLBoolean;
-   glBindRenderbuffer: procedure(target: TGLenum; renderbuffer: TGLuint);
-   glDeleteRenderbuffers: procedure(n: TGLsizei; renderbuffers: PGLuint);
-   glGenRenderbuffers: procedure(n: TGLSizei; renderbuffers: PGLuint);
+   // GL_ARB_framebuffer_object (ARB #45)
+   glIsRenderbuffer: function(renderbuffer: TGLuint): TGLBoolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindRenderbuffer: procedure(target: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDeleteRenderbuffers: procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenRenderbuffers: procedure(n: TGLSizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glRenderbufferStorage: procedure(target: TGLenum; internalformat: TGLenum;
-			      width: TGLsizei;  height: TGLsizei);
+			      width: TGLsizei;  height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glRenderbufferStorageMultisample: procedure(target: TGLenum; samples: TGLsizei;
 					internalformat: TGLenum;
-				  width: TGLsizei; height: TGLsizei);
-   glGetRenderbufferParameteriv: procedure(target: TGLenum; pname: TGLenum; params: PGLint);
-   glIsFramebuffer: function(framebuffer: TGLuint): TGLboolean;
-   glBindFramebuffer: procedure(target: TGLenum; framebuffer: TGLuint);
-   glDeleteFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint);
-   glGenFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint);
-   glCheckFramebufferStatus: function(target: TGLenum): TGLenum;
+				  width: TGLsizei; height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetRenderbufferParameteriv: procedure(target: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIsFramebuffer: function(framebuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindFramebuffer: procedure(target: TGLenum; framebuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDeleteFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCheckFramebufferStatus: function(target: TGLenum): TGLenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferTexture1D: procedure(target: TGLenum; attachment: TGLenum;
-			      textarget: TGLenum; texture: TGLuint; level: TGLint);
+			      textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferTexture2D: procedure(target: TGLenum; attachment: TGLenum;
-			      textarget: TGLenum; texture: TGLuint; level: TGLint);
+			      textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferTexture3D: procedure(target: TGLenum; attachment: TGLenum;
 			      textarget: TGLenum; texture: TGLuint;
-			      level: TGLint; layer: TGLint);
+			      level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferTextureLayer: procedure(target: TGLenum; attachment: TGLenum;
-				 texture: TGLuint; level: TGLint; layer: TGLint);
+				 texture: TGLuint; level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glFramebufferRenderbuffer: procedure(target: TGLenum; attachment: TGLenum;
-				 renderbuffertarget: TGLenum; renderbuffer: TGLuint);
+				 renderbuffertarget: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glGetFramebufferAttachmentParameteriv: procedure(target: TGLenum; attachment: TGLenum;
-					     pname: TGLenum; params: PGLint);
+					     pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glBlitFramebuffer: procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
 			 dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-			 mask: TGLbitfield; filter: TGLenum);
-   glGenerateMipmap: procedure(target: TGLenum);
+			 mask: TGLbitfield; filter: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenerateMipmap: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GL_ARB_geometry_shader4 (ARB #47)
    glProgramParameteriARB: procedure ( _program:TGLuint; pname:TGLenum; value: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -7224,7 +7223,7 @@ begin
 
    // GL_EXT_fog_coord (#149)
    glFogCoordfEXT := GLGetProcAddress('glFogCoordfEXT'); 
-   glFogCoordfvEXT := GLGetProcAddress('glFogCoordfvEXT'); 
+   glFogCoordfvEXT := GLGetProcAddress('glFogCoordfvEXT');
    glFogCoorddEXT := GLGetProcAddress('glFogCoorddEXT');
    glFogCoorddvEXT := GLGetProcAddress('glFogCoorddvEXT'); 
    glFogCoordPointerEXT := GLGetProcAddress('glFogCoordPointerEXT'); 
