@@ -8,13 +8,12 @@
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead.<p>
 
-   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include these
-         files in uses clauses.
-
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/12/09 - DaStr - Moved screen utility functions to GLScreen.pas
+                             (thanks Predator)
       <li>11/11/09 - DaStr - Added GLS_FONT_CHARS_COUNT constant
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
-                             (thanks Predator)  
+                             (thanks Predator)
       <li>24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
       <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
       <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
@@ -66,6 +65,9 @@ unit GLCrossPlatform;
 interface
 
 {$include GLScene.inc}
+
+//   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
+//         these files in uses clauses.
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
@@ -276,11 +278,6 @@ function RDTSC : Int64;
 function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 procedure ShowHTMLUrl(Url: String);
-procedure GLShowCursor(AShow: boolean);
-procedure GLSetCursorPos(AScreenX, AScreenY: integer);
-procedure GLGetCursorPos(var point: TGLPoint);
-function GLGetScreenWidth:integer;
-function GLGetScreenHeight:integer;
 function GLGetTickCount:int64;
 
 {$IFDEF GLS_DELPHI_5_DOWN}
@@ -455,69 +452,6 @@ begin
 {$IFDEF UNIX}
   ABitmap.LoadFromResourceName(Instance, PChar(AName));
 {$ENDIF}
-end;
-
-procedure GLShowCursor(AShow: boolean);
-begin
-{$IFDEF MSWINDOWS}
-  ShowCursor(AShow);
-{$ENDIF}
-{$IFDEF UNIX}
-  {$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
-{$ENDIF}
-end;
-
-procedure GLSetCursorPos(AScreenX, AScreenY: integer);
-{$IFDEF MSWINDOWS}
-begin
-  SetCursorPos(AScreenX, AScreenY);
-{$ENDIF}
-{$IFDEF UNIX}
-var
-  dpy: PDisplay;
-  root: TWindow;
-begin
-  dpy := XOpenDisplay(nil);
-  root := RootWindow(dpy, DefaultScreen(dpy));
-  XWarpPointer(dpy, none, root, 0, 0, 0, 0, AScreenX, AScreenY);
-  XCloseDisplay(dpy);
-{$ENDIF}
-end;
-
-procedure GLGetCursorPos(var point: TGLPoint);
-{$IFDEF MSWINDOWS}
-begin
-  GetCursorPos(point);
-{$ENDIF}
-{$IFDEF UNIX}
-var
-  dpy: PDisplay;
-  root, child : TWindow;
-  rootX, rootY, winX, winY : Integer;
-  xstate : Word;
-  Result:Boolean;
-begin
-  point.x := 0;
-  point.y := 0;
-  dpy := XOpenDisplay(nil);
-  Result := LongBool(XQueryPointer(dpy, XDefaultRootWindow( dpy), @root, @child,
-     @rootX, @rootY, @winX, @winY, @xstate));
-  If Result then begin
-    point.x := rootX;
-    point.y := rootY;
-  end;
-    XCloseDisplay(dpy);
-{$ENDIF}
-end;
-
-function GLGetScreenWidth:integer;
-begin
-  result := Screen.Width;
-end;
-
-function GLGetScreenHeight:integer;
-begin
-  result := Screen.Height;
 end;
 
 function GLGetTickCount:int64;

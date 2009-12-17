@@ -5,9 +5,12 @@
 
    Routines to interact with the screen/desktop.<p>
 
+
    <b>Historique : </b><font size=-1><ul>
+      <li>17/12/09 - DaStr - Added screen utility functions from
+                              GLCrossPlatform.pas (thanks Predator)
       <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
-                             directory (BugtrackerID = 2893580) (thanks Predator)   
+                             directory (BugtrackerID = 2893580) (thanks Predator)
       <li>23/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>03/07/04 - LR - Suppress CurrentScreenColorDepth because there are in GLCrossPlatform
@@ -32,7 +35,7 @@ interface
 
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-   Classes, Graphics, VectorGeometry;
+   Classes, Graphics, VectorGeometry, GLCrossPlatform;
 
 const
    MaxVideoModes = 200;
@@ -86,6 +89,12 @@ procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRecta
 procedure RestoreDefaultMode;
 {$ENDIF}
 
+procedure GLShowCursor(AShow: boolean);
+procedure GLSetCursorPos(AScreenX, AScreenY: integer);
+procedure GLGetCursorPos(var point: TGLPoint);
+function GLGetScreenWidth:integer;
+function GLGetScreenHeight:integer;
+
 var
    vVideoModes        : array of TVideoMode;
    vNumberVideoModes  : Integer = 0;
@@ -99,7 +108,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, SysUtils, Forms;
+uses SysUtils, Forms;
 
 type TLowResMode = packed record
                      Width : Word;
@@ -311,6 +320,69 @@ begin
    ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 end;
 {$ENDIF}
+
+procedure GLShowCursor(AShow: boolean);
+begin
+{$IFDEF MSWINDOWS}
+  ShowCursor(AShow);
+{$ENDIF}
+{$IFDEF UNIX}
+  {$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
+{$ENDIF}
+end;
+
+procedure GLSetCursorPos(AScreenX, AScreenY: integer);
+{$IFDEF MSWINDOWS}
+begin
+  SetCursorPos(AScreenX, AScreenY);
+{$ENDIF}
+{$IFDEF UNIX}
+var
+  dpy: PDisplay;
+  root: TWindow;
+begin
+  dpy := XOpenDisplay(nil);
+  root := RootWindow(dpy, DefaultScreen(dpy));
+  XWarpPointer(dpy, none, root, 0, 0, 0, 0, AScreenX, AScreenY);
+  XCloseDisplay(dpy);
+{$ENDIF}
+end;
+
+procedure GLGetCursorPos(var point: TGLPoint);
+{$IFDEF MSWINDOWS}
+begin
+  GetCursorPos(point);
+{$ENDIF}
+{$IFDEF UNIX}
+var
+  dpy: PDisplay;
+  root, child : TWindow;
+  rootX, rootY, winX, winY : Integer;
+  xstate : Word;
+  Result:Boolean;
+begin
+  point.x := 0;
+  point.y := 0;
+  dpy := XOpenDisplay(nil);
+  Result := LongBool(XQueryPointer(dpy, XDefaultRootWindow( dpy), @root, @child,
+     @rootX, @rootY, @winX, @winY, @xstate));
+  If Result then begin
+    point.x := rootX;
+    point.y := rootY;
+  end;
+    XCloseDisplay(dpy);
+{$ENDIF}
+end;
+
+function GLGetScreenWidth:integer;
+begin
+  result := Screen.Width;
+end;
+
+function GLGetScreenHeight:integer;
+begin
+  result := Screen.Height;
+end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
