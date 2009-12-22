@@ -6,6 +6,8 @@
    Win32 specific Scene viewer.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
+                              properties (thanks Yury Plashenkov)
       <li>10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
       <li>13/03/09 - DanB - Removed OpenGL dependencies
       <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
@@ -182,6 +184,10 @@ type
          property OnMouseWheelUp;
 
          property OnContextPopup;
+         property TabStop;
+         property TabOrder;
+         property OnEnter;
+         property OnExit;
 
 {$IFDEF GLS_DELPHI_2010_UP}
          property OnGesture;
@@ -504,11 +510,15 @@ begin
     result := Camera.GetFieldOfView(Height);
 end;
 
+// GetIsRenderingContextAvailable
+//
 function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
 begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
+// SetFieldOfView
+//
 procedure TGLSceneViewer.SetFieldOfView(const Value: single);
 begin
   if Assigned(Camera) then
@@ -524,8 +534,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

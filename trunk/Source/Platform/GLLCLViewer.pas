@@ -6,6 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
+                              properties (thanks Yury Plashenkov)  
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
                              (thanks Predator)
       <li>13/07/09 - DanB - added the FieldOfView property + reduced OpenGL dependencies
@@ -171,6 +173,10 @@ type
          property OnMouseWheelUp;
 
          property OnContextPopup;
+         property TabStop;
+         property TabOrder;
+         property OnEnter;
+         property OnExit;         
    end;
 
 // ------------------------------------------------------------------

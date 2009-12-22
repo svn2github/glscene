@@ -6,6 +6,8 @@
   Linux specific Scene viewer.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
+                              properties (thanks Yury Plashenkov)  
       <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
@@ -125,6 +127,10 @@ type
          property OnMouseUp;
 
          property OnContextPopup;
+         property TabStop;
+         property TabOrder;
+         property OnEnter;
+         property OnExit;         
    end;
 
 // ------------------------------------------------------------------
@@ -284,9 +290,8 @@ begin
    FBuffer.ResetPerformanceMonitor;
 end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+// CreateWidget
+//
 procedure TGLSceneViewer.CreateWidget;
 begin
   inherited;
@@ -298,23 +303,31 @@ begin
    end;
 end;
 
+// TGLSceneViewer
+//
 procedure TGLSceneViewer.DestroyWidget;
 begin
   FBuffer.DestroyRC;
   inherited;
 end;
 
+// Resize
+//
 procedure TGLSceneViewer.Resize;
 begin
   inherited;
   FBuffer.Resize(Width, Height);
 end;
 
+// WidgetFlags
+//
 function TGLSceneViewer.WidgetFlags: Integer;
 begin
   Result := inherited WidgetFlags or Integer(WidgetFlags_WRepaintNoErase);
 end;
 
+// Painting
+//
 procedure TGLSceneViewer.Painting(Sender: QObjectH; EventRegion: QRegionH);
 begin
   if IsOpenGLAvailable then
@@ -327,6 +340,9 @@ begin
     inherited;
 end;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
