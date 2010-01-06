@@ -6,7 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>07/07/10 - DaStr - Bugfixed all DoInitialize() calls
+      <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)  
       <li>25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
                               which occured on all GeForce 8x and later graphic cards
