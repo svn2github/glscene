@@ -12,6 +12,8 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
+                              sound source and with sscSample in aSource.Changes  
       <li>17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
       <li>15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
       <li>07/06/07 - DaStr - Added $I GLScene.inc
@@ -253,6 +255,11 @@ var
    objPos, objVel : TVector;
    position, velocity : TFSoundVector;
 begin
+   if (sscSample in aSource.Changes) then
+   begin
+     KillSource(aSource);
+   end;
+
    if (aSource.Sample=nil) or (aSource.Sample.Data=nil) or
       (aSource.Sample.Data.WAVDataSize=0) then Exit;
    if aSource.ManagerTag<>0 then begin
@@ -288,10 +295,14 @@ begin
    if p.channel<>-1 then begin
       FSOUND_3D_SetAttributes(p.channel, @position, @velocity);
       FSOUND_SetVolume(p.channel, Round(aSource.Volume*255));
+      FSOUND_SetMute(p.channel, aSource.Mute);
+      FSOUND_SetPaused(p.channel, aSource.Pause);
       FSOUND_SetPriority(p.channel, aSource.Priority);
       if aSource.Frequency>0 then
          FSOUND_SetFrequency(p.channel, aSource.Frequency);
    end else aSource.Free;
+
+   inherited UpdateSource(aSource);
 end;
 
 // MuteSource

@@ -12,8 +12,10 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
+                              sound source and with sscSample in aSource.Changes
       <li>07/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)  
+                             (thanks Predator) (BugtrackerID = 2893580)
       <li>21/03/08 - DanB - Updated to BASS Version 2.3
       <li>15/03/08 - DaStr - Added $I GLScene.inc
       <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
@@ -231,7 +233,13 @@ var
    p : PBASSInfo;
    objPos, objOri, objVel : TVector;
    position, orientation, velocity : BASS_3DVECTOR;
+   res: Boolean;
 begin
+   if (sscSample in aSource.Changes) then
+   begin
+     KillSource(aSource);
+   end;
+   
    if (aSource.Sample=nil) or (aSource.Sample.Data=nil) or
       (aSource.Sample.Data.WAVDataSize=0) then Exit;
    if aSource.ManagerTag<>0 then begin
@@ -277,12 +285,20 @@ begin
                                   Round(aSource.InsideConeAngle),
                                   Round(aSource.OutsideConeAngle),
                                   Round(aSource.ConeOutsideVolume*100));
-      BASS_ChannelPlay(p.channel,true);                                  
+      if not aSource.Pause then
+        BASS_ChannelPlay(p.channel,true);
+
    end else BASS_ChannelSet3DPosition(p.channel, position, orientation, velocity);
-   if p.channel<>0 then begin
-      if not BASS_ChannelSetAttributes(p.channel, aSource.Frequency, Round(aSource.Volume*100), -101) then
-         Assert(False);
+   if p.channel<>0 then
+   begin
+      if aSource.Mute then
+        res := BASS_ChannelSetAttributes(p.channel, aSource.Frequency, 0, -101)
+      else
+        res := BASS_ChannelSetAttributes(p.channel, aSource.Frequency, Round(aSource.Volume*100), -101);
+      Assert(res);
    end else aSource.Free;
+
+   inherited UpdateSource(aSource);   
 end;
 
 // MuteSource
