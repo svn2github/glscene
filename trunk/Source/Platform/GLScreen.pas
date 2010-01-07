@@ -5,8 +5,8 @@
 
    Routines to interact with the screen/desktop.<p>
 
-
    <b>Historique : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Enhanced cross-platform compatibility (thanks Predator)
       <li>17/12/09 - DaStr - Added screen utility functions from
                               GLCrossPlatform.pas (thanks Predator)
       <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
@@ -31,11 +31,12 @@ unit GLScreen;
 
 interface
 
-{$include GLScene.inc}
+{$i GLScene.inc}
 
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-   Classes, Graphics, VectorGeometry, GLCrossPlatform;
+   {$IFDEF UNIX} x,xlib,xf86vmode,{$ENDIF}
+   Classes, VectorGeometry, GLCrossPlatform;
 
 const
    MaxVideoModes = 200;
@@ -79,15 +80,17 @@ type
 
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 
-{$IFDEF MSWINDOWS}
+
 procedure ReadVideoModes;
 
 //: Changes to the video mode given by 'Index'
 function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
 
+{$IFDEF MSWINDOWS}
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
-procedure RestoreDefaultMode;
 {$ENDIF}
+procedure RestoreDefaultMode;
+
 
 procedure GLShowCursor(AShow: boolean);
 procedure GLSetCursorPos(AScreenX, AScreenY: integer);
@@ -96,7 +99,14 @@ function GLGetScreenWidth:integer;
 function GLGetScreenHeight:integer;
 
 var
+   {$IFDEF MSWINDOWS}
    vVideoModes        : array of TVideoMode;
+   {$ELSE}   //Unix
+   vVideoModes        : array of PXF86VidModeModeInfo;
+   vDesktop           : TXF86VidModeModeInfo;
+   vDisplay: PDisplay;
+   vScreenModeChanged : boolean;
+   {$ENDIF}
    vNumberVideoModes  : Integer = 0;
    vCurrentVideoMode  : Integer = 0;
 
@@ -108,7 +118,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses SysUtils, Forms;
+uses Forms, SysUtils;
 
 type TLowResMode = packed record
                      Width : Word;
@@ -151,16 +161,15 @@ function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 var
    I : Integer;
    XDiff, YDiff, CDiff : Integer;
-
 begin
-{$IFDEF MSWINDOWS}
    ReadVideoModes;
-{$ENDIF}
    // prepare result in case we don't find a valid mode
    Result:=0;
    // set differences to maximum
    XDiff:=9999; YDiff:=9999; CDiff:=99;
-   for I:=1 to vNumberVideomodes-1 do with vVideoModes[I] do begin
+   for I:=1 to vNumberVideomodes-1 do
+   {$IFDEF MSWINDOWS}
+   with vVideoModes[I] do begin
      if     (Width  >= XRes) and ((Width-XRes)  <= XDiff)
         and (Height >= YRes) and ((Height-YRes) <= YDiff)
         and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff) then begin
@@ -169,15 +178,27 @@ begin
          CDiff:=ColorDepth-BPP;
          Result:=I;
      end;
+    {$ELSE}
+    with vVideoModes[ i ]^ do begin
+     if     (hDisplay  >= XRes) and ((hDisplay-XRes)  <= XDiff)
+        and (vDisplay >= YRes) and ((vDisplay-YRes) <= YDiff)
+       // and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff)
+        then begin
+         XDiff:=hDisplay-XRes;
+         YDiff:=vDisplay-YRes;
+        // CDiff:=ColorDepth-BPP;
+         Result:=I;
+     end;
+    {$ENDIF}
    end;
 end;
 
-{$IFDEF MSWINDOWS}
 
 // TryToAddToList
 //
 procedure TryToAddToList(deviceMode : TDevMode);
 // Adds a video mode to the list if it's not a duplicate and can actually be set.
+{$IFDEF MSWINDOWS}
 var
    i : Integer;
    vm : PVideoMode;
@@ -210,11 +231,16 @@ begin
                              [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
    end;
    Inc(vNumberVideomodes);
+{$ELSE}
+  XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes );
+{$ENDIF}
 end;
+
 
 // ReadVideoModes
 //
 procedure ReadVideoModes;
+{$IFDEF MSWINDOWS}
 var
    I, ModeNumber : Integer;
    done          : Boolean;
@@ -267,11 +293,38 @@ begin
       end;
     end;
   end;
+{$ELSE}
+var
+   i,j:Integer;
+begin
+  //if error usr/bin/ld: cannot find -lXxf86vm
+  //then sudo apt-get install libXxf86vm-dev
+
+  // Connect to XServer
+  vDisplay := XOpenDisplay( nil );
+  if not Assigned( vDisplay ) Then
+     Assert(False, 'Not conected with X Server');
+  vCurrentVideoMode := DefaultScreen( vDisplay );
+
+  // Check support XF86VidMode Extension
+  if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
+    Assert(False, 'XF86VidMode Extension not support');
+
+  //Get Current Settings
+  if not vScreenModeChanged then
+  XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,
+                          PXF86VidModeModeLine( @vDesktop + SizeOf( vDesktop.dotclock ) ) );
+
+  //TryToAddToList
+  TryToAddToList;
+  XCloseDisplay(vDisplay);
+{$ENDIF}
 end;
 
 // SetFullscreenMode
 //
 function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
+{$IFDEF MSWINDOWS}
 var
    deviceMode : TDevMode;
 begin
@@ -293,10 +346,38 @@ begin
    Result:=ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN) = DISP_CHANGE_SUCCESSFUL;
    if Result then
       vCurrentVideoMode:=ModeIndex;
+{$ELSE}
+var
+  vSettings : TXF86VidModeModeInfo;
+  wnd:TWindow;
+begin
+  ReadVideoModes;
+  vDisplay := XOpenDisplay( nil );
+  vSettings := vVideoModes[modeIndex]^;
+    if ( vSettings.hDisplay <> vDesktop.hDisplay ) and
+       ( vSettings.vDisplay <> vDesktop.vDisplay ) then
+    begin
+
+      //vsettings.vtotal:=vsettings.vdisplay;
+      XF86VidModeSwitchToMode( vDisplay, vCurrentVideoMode, @vSettings );
+      XF86VidModeSetViewPort( vDisplay, vCurrentVideoMode, 0, 0 );
+      wnd:=XDefaultRootWindow( vDisplay);
+      XGrabPointer(vDisplay,wnd,  true,PointerMotionMask+ButtonReleaseMask,GrabModeAsync,GrabModeAsync, wnd,none,0);
+      vScreenModeChanged:=true;
+    end else
+    begin
+    // Restore
+       XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vDesktop);
+       vScreenModeChanged:=false;
+    end;
+    // Disconnect to XServer else settings not accept
+    XCloseDisplay(vDisplay);
+{$ENDIF}
 end;
 
 // ReadScreenImage
 //
+{$IFDEF MSWINDOWS}
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 var
    screenDC : HDC;
@@ -309,17 +390,27 @@ begin
       ReleaseDC(0,ScreenDC);
    end;
 end;
+{$ENDIF}
 
 // RestoreDefaultMode
 //
 procedure RestoreDefaultMode;
+{$IFDEF MSWINDOWS}
 var
    t : PDevMode;
 begin
    t:=nil;
    ChangeDisplaySettings(t^, CDS_FULLSCREEN);
-end;
+{$ELSE}
+begin
+  //if vCurrentVideoMode=0 then
+  ReadVideoModes;
+  vDisplay := XOpenDisplay( nil );
+  XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vDesktop);
+  vScreenModeChanged:=false;
+  XCloseDisplay(vDisplay);
 {$ENDIF}
+end;
 
 procedure GLShowCursor(AShow: boolean);
 begin
@@ -328,6 +419,7 @@ begin
 {$ENDIF}
 {$IFDEF UNIX}
   {$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
+  //Use Form.Cursor:=crNone
 {$ENDIF}
 end;
 
@@ -395,6 +487,8 @@ initialization
 finalization
 {$IFDEF MSWINDOWS}
    if vCurrentVideoMode<>0 then
-      RestoreDefaultMode;  // set default video mode
+{$ELSE}
+   if vScreenModeChanged then
 {$ENDIF}
+      RestoreDefaultMode;  // set default video mode
 end.
