@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Added WGL_COLOR_SAMPLES_NV (thanks YarUndeoaker)
       <li>25/12/09 - DaStr - Added GL_NV_copy_image, GL_LUMINANCE_INTEGER,
                               GL_LUMINANCE_ALPHA_INTEGER extentions and constants
                              Re-added $region declarations (thanks YarUndeoaker)
@@ -1993,6 +1994,7 @@ const
    GLX_SAMPLES_ARB                                   = 100001;
    WGL_SAMPLE_BUFFERS_ARB                            = $2041;
    WGL_SAMPLES_ARB                                   = $2042;
+   WGL_COLOR_SAMPLES_NV                              = $20B9;
 
    // ARB Extension #6 - GL_ARB_texture_env_add
    // (no new tokens)
