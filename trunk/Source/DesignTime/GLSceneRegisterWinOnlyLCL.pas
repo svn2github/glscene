@@ -8,6 +8,8 @@
    GLSceneRegisterLCL.pas
 
    <b>History :</b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Removed GLLCLFullScreenViewer because it became
+                              cross-platform (thanks Predator)
       <li>24/11/09 - DanB - Added some more windows only units
       <li>22/11/09 - DaStr - Initial version (by Predator)
    </ul></font>
@@ -20,7 +22,7 @@ unit GLSceneRegisterWinOnlyLCL;
 interface
 
 uses
-   Classes, GLLCLFullScreenViewer, GLSceneRegisterLCL, GLStrings,
+   Classes, GLSceneRegisterLCL, GLStrings,
    GLWideBitmapFont, GLSpaceText,
    GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut, LResources;
 
@@ -32,7 +34,6 @@ procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLSMWaveOut,
-                       TGLFullScreenViewer,
                        TGLWideBitmapFont
                         ]);
 
