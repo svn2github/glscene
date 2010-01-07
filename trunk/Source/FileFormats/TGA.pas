@@ -10,7 +10,9 @@
    Based on David McDuffee's document from www.wotsit.org<p>
 
 	<b>History : </b><font size=-1><ul>
-           <li>08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
+	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
+                              in Lazarus (thanks Predator)   
+	   <li>08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
 	   <li>21/11/02 - Egg - Creation
 	</ul></font>
 }
@@ -20,7 +22,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, SysUtils, GLCrossPlatform;
+uses Classes, SysUtils{$IFNDEF FPC}, GLCrossPlatform {$ELSE},LazTGA {$ENDIF}  ;
 
 type
 
@@ -29,7 +31,8 @@ type
    {: TGA image load/save capable class for Delphi.<p>
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
-	TTGAImage = class (TGLBitmap)
+      {$IFNDEF FPC}
+        TTGAImage = class (TGLBitmap)
 	   private
 	      { Private Declarations }
 
@@ -49,6 +52,10 @@ type
    //
    ETGAException = class (Exception)
    end;
+   {$ELSE}
+   TTGAImage = LazTGA.TTGAImage;
+   {$ENDIF}
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -57,7 +64,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
+{$IFNDEF FPC}
 type
 
    // TTGAHeader
@@ -245,9 +252,7 @@ begin
    header.Width:=Width;
    header.Height:=Height;
    case PixelFormat of
-   {$IFDEF MSWINDOWS}
       glpf24bit : header.PixelSize:=24;
-   {$ENDIF}
       glpf32bit : header.PixelSize:=32;
    else
       raise ETGAException.Create('Unsupported Bitmap format');
@@ -257,19 +262,27 @@ begin
    for y:=0 to Height-1 do
       stream.Write(ScanLine[Height-y-1]^, rowSize);
 end;
+{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
+   {$IFNDEF FPC}
+   TGLPicture.RegisterFileFormat('tga', 'Targa', LazTGA.TTGAImage);
+   {$ELSE}
+   LazTGA.Register;
+   {$ENDIF}
 
 finalization
 
+   {$IFNDEF FPC}
    TGLPicture.UnregisterGraphicClass(TTGAImage);
-
+   {$ELSE}
+   LazTGA.UnRegister;
+   {$ENDIF}
 end.
