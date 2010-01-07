@@ -3,7 +3,7 @@ unit GLS_WinOnly;
 interface
 
 uses
-    Joystick, ScreenSaver, GLLCLFullScreenViewer, GLSMWaveOut, VFW, 
+    Joystick, ScreenSaver, GLSMWaveOut, VFW, 
   GLAVIRecorder, GLSceneRegisterWinOnlyLCL, LazarusPackageIntf;
 
 implementation

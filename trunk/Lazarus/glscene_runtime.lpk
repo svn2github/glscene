@@ -25,7 +25,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="200">
+    <Files Count="202">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -826,16 +826,27 @@
         <Filename Value="../Source/GLConsole.pas"/>
         <UnitName Value="GLConsole"/>
       </Item200>
+      <Item201>
+        <Filename Value="../Source/Platform/GLLCLFullScreenViewer.pas"/>
+        <UnitName Value="GLLCLFullScreenViewer"/>
+      </Item201>
+      <Item202>
+        <Filename Value="../Source/FileFormats/TGA.pas"/>
+        <UnitName Value="TGA"/>
+      </Item202>
     </Files>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="LCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="ImagesForLazarus"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LCL"/>
         <MinVersion Major="1" Valid="True"/>
       </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <CustomOptions Value="-dUseCThreads"/>

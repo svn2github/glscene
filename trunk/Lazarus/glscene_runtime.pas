@@ -1,3 +1,7 @@
+{ Этот файл был автоматически создан Lazarus. НЊ  ՠредактировать!
+  Исходный код используется только для компЊ    ِܑБǐِؠи установки пакета.
+ }
+
 unit GLScene_RunTime; 
 
 interface
@@ -41,7 +45,7 @@ uses
   GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, GLKeyboard, 
   GLFileMDC, GlFileX, FileX, GLFileMP3, GLFileWAV, GLSound, 
   GLSoundFileObjects, GLFBO, GLFBORenderer, GLGizmoEx, GLGizmo, GLScreen, 
-  GLConsole;
+  GLConsole, GLLCLFullScreenViewer,TGA;
 
 implementation
 

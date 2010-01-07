@@ -20,7 +20,7 @@
     </CompilerOptions>
     <Description Value="GLScene support for Windows Only components"/>
     <Version Major="1" Build="3"/>
-    <Files Count="7">
+    <Files Count="6">
       <Item1>
         <Filename Value="../Source/Base/Joystick.pas"/>
         <UnitName Value="Joystick"/>
@@ -30,26 +30,22 @@
         <UnitName Value="ScreenSaver"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/Platform/GLLCLFullScreenViewer.pas"/>
-        <UnitName Value="GLLCLFullscreenViewer"/>
-      </Item3>
-      <Item4>
         <Filename Value="../Source/GLSMWaveOut.pas"/>
         <UnitName Value="GLSMWaveOut"/>
-      </Item4>
-      <Item5>
+      </Item3>
+      <Item4>
         <Filename Value="../Source/VideoAPIs/vfw.pas"/>
         <UnitName Value="VFW"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="../Source/GLAVIRecorder.pas"/>
         <UnitName Value="GLAVIRecorder"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/DesignTime/GLSceneRegisterWinOnlyLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterWinOnlyLCL"/>
-      </Item7>
+      </Item6>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
