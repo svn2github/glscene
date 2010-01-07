@@ -84,10 +84,11 @@ type
 
    // TGLAntiAliasing
    //
-   TGLAntiAliasing = (aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ,
-                      aa6x, aa8x, aa16x,
-                      // Coverage Sampling Antialiasing
-                      CSAA8x, CSAA8xHQ, CSAA16x, CSAA16xHQ);
+   TGLAntiAliasing = ( // Multisample Antialiasing
+                       aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ,
+                       aa6x, aa8x, aa16x,
+                       // Coverage Sampling Antialiasing
+                       csa8x, csa8xHQ, csa16x, csa16xHQ);
 
    // TGLContext
    //
