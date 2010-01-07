@@ -6,6 +6,7 @@
 	Handles all the material + material library stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - TexturePaths are now cross-platform (thanks Predator)
       <li>22/12/09 - DaStr - Updated TGLMaterialLibrary.WriteToFiler(),
                               ReadFromFiler() (thanks dAlex)
                              Small update for blending constants
@@ -2031,11 +2032,11 @@ var
    tryName : String;
 begin
    mLib:=TGLMaterialLibrary((Collection as TGLLibMaterials).GetOwner);
-   if mLib is TGLMaterialLibrary then with mLib do
+   with mLib do
       if Assigned(FOnTextureNeeded) then
          FOnTextureNeeded(mLib, textureFileName);
    // if a ':' is present, or if it starts with a '\', consider it as an absolute path
-   if (Pos(':', textureFileName)>0) or (Copy(textureFileName, 1, 1)='\') then Exit;
+   if (Pos(':', textureFileName)>0) or (Copy(textureFileName, 1, 1)=PathDelim) then Exit;
    // ok, not an absolute path, try given paths
    with mLib do begin
       if FTexturePathList<>nil then for i:=0 to FTexturePathList.Count-1 do begin
@@ -2334,7 +2335,7 @@ var
       buf:=Trim(Copy(val, lp+1, i-lp-1));
       if Length(buf)>0 then begin
          // make sure '\' is the terminator
-         if buf[Length(buf)]<>'\' then buf:=buf+'\';
+         buf:= IncludeTrailingPathDelimiter(buf);
          FTexturePathList.Add(buf);
       end;
    end;
