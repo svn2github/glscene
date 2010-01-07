@@ -273,7 +273,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
    {$IFNDEF FPC}
-   TGLPicture.RegisterFileFormat('tga', 'Targa', LazTGA.TTGAImage);
+   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
    {$ELSE}
    LazTGA.Register;
    {$ENDIF}
