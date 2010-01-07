@@ -9,26 +9,29 @@
    Win32 control someday, so don't assume there is a TForm in your code.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
       <li>07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
       <li>24/07/03 - EG - Creation from GLWin32Viewer split
 	</ul></font>
 }
-unit GLLCLFullscreenViewer;
+unit GLLCLFullScreenViewer;
 
 interface
 
 {$i GLScene.inc}
 
-uses forms, lcltype, classes, glscene, controls, menus
-     ,glviewer//, gllinuxcontext
+uses forms, lcltype, classes, controls, menus
+     ,GLViewer,GLScene
      {$ifdef LCLGTK}
-     , gllingtkcontext
+     , GLLinGTKContext
      {$endif}
      {$ifdef LCLGTK2}
-     , gllingtkcontext
+     , GLLinGTKContext
      {$endif}
-     {$ifdef LCLWIN32}
-     ,windows
+     {$ifdef MSWINDOWS}
+     , Windows
+     {$else}
+     , Messages
      {$endif}
      ;
 
@@ -132,6 +135,7 @@ type
       published
          { Public Declarations }
 
+         //It is not used in UNIX
          {: Requested ScreenDepth. }
          property ScreenDepth : TGLScreenDepth read FScreenDepth write SetScreenDepth default sd32bits;
 
@@ -155,7 +159,7 @@ type
             75hz or for resolutions beyond 1024x768).<p>
             the value will be automatically clamped to the highest value
             *reported* compatible with the monitor. }
-         property refreshrate : integer read frefreshrate write frefreshrate;
+         property RefreshRate : integer read frefreshrate write frefreshrate;
 
          property Cursor : TCursor read FCursor write SetCursor default crDefault;
          property PopupMenu : TPopupMenu read FPopupMenu write SetPopupMenu;
@@ -183,7 +187,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses opengl1x, sysutils, glcrossplatform, glscreen;
+uses OpenGL1x, sysutils, GLCrossPlatform, GLScreen
+  {$ifdef Unix}
+, LCLIntf, gtkproc
+  {$ENDIF}
+;
 
 const
    cScreenDepthToBPP : array [sd8bits..sd32bits] of Integer = (8, 16, 24, 32);
@@ -205,6 +213,7 @@ begin
    Width:=800;
    Height:=600;
    FScreenDepth:=sd32bits;
+
    FVSync:=vsmSync;
    FCursor:=crDefault;
    Buffer.ViewerBeforeRender:=DoBeforeRender;
@@ -334,26 +343,29 @@ begin
          FormStyle:=fsStayOnTop
       else FormStyle:=fsNormal;
 
-      // Following lines doesn't seem to work on ATI hardware,
-      // so we do it via API calls
-      //  BorderStyle:=bsNone;
-      BorderStyle:=bsSizeable;
+      {$ifdef MSWINDOWS}
       SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION);
+      {$endif}
+
+      BorderStyle:=bsNone;
 
       Cursor:=Self.Cursor;
       PopupMenu:=Self.PopupMenu;
 
       ClientWidth:=Self.Width;
       ClientHeight:=Self.Height;
-      WindowState:=wsMaximized;
+      //WindowState:=wsMaximized;
+     // SetBounds(0, 0, Width, Height) ;
 
       BindFormEvents;
       FOldWndProc:=WindowProc;
       WindowProc:=WndProc;
    end;
 
+   {$ifdef MSWINDOWS}
    // Hides Taskbar
    ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_HIDE);
+   {$endif}
 
    // Switch video mode
    if (Screen.Width<>Width) or (Screen.Height<>Height)
@@ -363,6 +375,10 @@ begin
    end else FSwitchedResolution:=False;
 
    FForm.Show;
+
+   {$ifdef Unix}
+      GrabMouseToForm(FForm);
+   {$endif}
 
    Buffer.Resize(Width, Height);
    dc:=GetDC(FForm.Handle);
@@ -380,6 +396,11 @@ var
 begin
    try
       Buffer.DestroyRC;
+
+      {$ifdef Unix}
+      ReleaseMouseFromForm(FForm) ;
+      {$endif}
+
       f:=FForm;
       FForm:=nil;
       f.WindowProc:=FOldWndProc;
@@ -390,8 +411,10 @@ begin
          RestoreDefaultMode;
    end;
 
+   {$ifdef MSWINDOWS}
    // Restore Taskbar
    ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
+   {$endif}
 
    FActive:=False;
 end;
@@ -611,6 +634,13 @@ initialization
 // ------------------------------------------------------------------
 
    RegisterClasses([TGLFullScreenViewer]);
+
+finalization
+
+{$ifdef MSWINDOWS}
+   // Restore Taskbar
+   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
+{$endif}
 
 end.
 
