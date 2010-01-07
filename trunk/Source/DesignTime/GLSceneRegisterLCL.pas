@@ -7,6 +7,8 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
+                              TResolutionProperty (thanks Predator)
       <li>24/11/09 - DanB - Removed some more windows only units
       <li>22/11/09 - DaStr - Improved Unix compatibility (again)
       <li>17/11/09 - DaStr - Improved Unix compatibility
@@ -43,7 +45,7 @@ implementation
 uses
    SysUtils, Dialogs, Graphics,
    // GLScene units
-   VectorGeometry, GLScene, GLViewer,
+   VectorGeometry, GLScene, GLViewer,GLLCLFullScreenViewer,
    GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
    GLCadencer, GLTextureImageEditors,GLColor, GLCrossPlatform,
    // GLScene - basic geometry
@@ -375,7 +377,13 @@ end;
 //
 function TResolutionProperty.GetValue : String;
 begin
+{$IFDEF MSWINDOWS}
    Result:=vVideoModes[GetOrdValue].Description;
+{$ELSE}
+  //Testing!!!
+   with vVideoModes[GetOrdValue]^ do
+     Result:=Inttostr(hdisplay)+' x '+Inttostr(vdisplay)+', '+'0 bpp';
+{$ENDIF}
 end;
 
 // GetValues
@@ -384,8 +392,14 @@ procedure TResolutionProperty.GetValues(Proc: TGetStrProc);
 var
    i : Integer;
 begin
+{$IFDEF MSWINDOWS}
    for i:=0 to vNumberVideoModes-1 do
       Proc(vVideoModes[i].Description);
+{$ELSE}
+   for i:=0 to vNumberVideoModes-1 do
+      with vVideoModes[i]^ do
+      Proc(Inttostr(hdisplay)+'x'+Inttostr(vdisplay)+'x'+'0');
+{$ENDIF}
 end;
 
 // SetValue
@@ -938,8 +952,8 @@ begin
                        TGLCadencer,
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
-                       TGLScriptLibrary, TGLSoundLibrary
-
+                       TGLScriptLibrary, TGLSoundLibrary,
+                       TGLFullScreenViewer
                       ]);
 
    RegisterComponents('GLScene PFX',
