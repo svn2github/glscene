@@ -9,6 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
+                             (thanks Predator)
       <li>17/12/09 - DaStr - Moved screen utility functions to GLScreen.pas
                              (thanks Predator)
       <li>11/11/09 - DaStr - Added GLS_FONT_CHARS_COUNT constant
@@ -576,11 +578,15 @@ begin
   end;
 end;
 {$ELSE}
+var dpy: PDisplay;
 begin
-  result.Xdpi := 96;
-  result.Ydpi := 96;
-  result.Depth := 32;
-  result.NumColors := 1;
+  dpy := XOpenDisplay(nil);
+  Result.Depth := DefaultDepth(dpy,DefaultScreen(dpy));
+  XCloseDisplay(dpy);
+
+  Result.Xdpi := 96;
+  Result.Ydpi := 96;
+  Result.NumColors := 1;
 end;
 {$ENDIF}
 
