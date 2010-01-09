@@ -196,9 +196,9 @@ end;
 
 // TryToAddToList
 //
+{$IFDEF MSWINDOWS}
 procedure TryToAddToList(deviceMode : TDevMode);
 // Adds a video mode to the list if it's not a duplicate and can actually be set.
-{$IFDEF MSWINDOWS}
 var
    i : Integer;
    vm : PVideoMode;
@@ -232,6 +232,8 @@ begin
    end;
    Inc(vNumberVideomodes);
 {$ELSE}
+procedure TryToAddToList(); // Without input parameters.
+begin
   XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes );
 {$ENDIF}
 end;
