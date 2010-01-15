@@ -6,6 +6,8 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/01/10 - DaStr - Bugfixed TGLWin32Context.ChooseWGLFormat()
+                             (BugtrackerID = 2933081) (thanks YarUndeoaker)
       <li>08/01/10 - DaStr - Added more AntiAliasing modes (thanks YarUndeoaker)
       <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)
       <li>30/08/09 - DanB - vIgnoreContextActivationFailures renamed to
@@ -417,13 +419,32 @@ begin
 
    ClearFAttribs;
    ChoosePixelFormat;
+   if (nNumFormats=0) and (DepthBits>=32) then begin
+      // couldn't find 32+ bits depth buffer, 24 bits one available?
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 24);
+      ChoosePixelFormat;
+   end;
+   if (nNumFormats=0) and (DepthBits>=24) then begin
+      // couldn't find 24+ bits depth buffer, 16 bits one available?
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+      ChoosePixelFormat;
+   end;
+   if (nNumFormats=0) and (ColorBits>=24) then begin
+      // couldn't find 24+ bits color buffer, 16 bits one available?
+      ChangeIAttrib(WGL_COLOR_BITS_ARB, 16);
+      ChoosePixelFormat;
+   end;
    if (nNumFormats=0) and (AntiAliasing<>aaDefault) then begin
+      // Restore DepthBits
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
       // couldn't find AA buffer, try without
       DropIAttrib(WGL_SAMPLE_BUFFERS_ARB);
       DropIAttrib(WGL_SAMPLES_ARB);
       if (AntiAliasing >= csa8x) and (AntiAliasing <= csa16xHQ) then
          DropIAttrib(WGL_COLOR_SAMPLES_NV);
+      ChoosePixelFormat;
    end;
+   // Check DepthBits again
    if (nNumFormats=0) and (DepthBits>=32) then begin
       // couldn't find 32+ bits depth buffer, 24 bits one available?
       ChangeIAttrib(WGL_DEPTH_BITS_ARB, 24);
