@@ -6,6 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>14/03/09 - Yar - Added Expand and Collapse buttons (thanks to lolo)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
@@ -140,6 +141,9 @@ type
     TBEffectsPanel: TToolButton;
     TBStayOnTop: TToolButton;
     ACStayOnTop: TAction;
+    ToolButton10: TToolButton;
+    ToolButton15: TToolButton;
+    ToolButton16: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -174,12 +178,15 @@ type
     procedure TreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ACStayOnTopExecute(Sender: TObject);
+    procedure ToolButton15Click(Sender: TObject);
+    procedure ToolButton16Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
   private
     FSelectedItems:Integer; //
 
     FScene: TGLScene;
-    FObjectNode: TTreeNode;
+    FObjectNode, FSceneObjects: TTreeNode;
     FCurrentDesigner: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF};
     FLastMouseDownPos : TPoint;
 
@@ -405,6 +412,7 @@ begin
       end;
       // and the root for all objects
       FObjectNode:=AddChild(CurrentNode, glsObjectRoot);
+      FSceneObjects:= FObjectNode;
       with FObjectNode do begin
          ImageIndex:=ObjectManager.ObjectRootIndex;
          SelectedIndex:=ObjectManager.ObjectRootIndex;
@@ -475,6 +483,12 @@ begin
       reg.Free;
    end;
    {$ENDIF}
+end;
+
+procedure TGLSceneEditorForm.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_F12 then
+
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -841,7 +855,7 @@ end;
 //
 procedure TGLSceneEditorForm.TreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   FLastMouseDownPos:=Point(X, Y);
+   FLastMouseDownPos:= Point(X, Y);
 end;
 
 // TreeMouseMove
@@ -1490,11 +1504,35 @@ begin
    else Width:=Width-PABehaviours.Width;
 end;
 
+procedure TGLSceneEditorForm.ToolButton15Click(Sender: TObject);
+begin
+  Tree.FullExpand;
+end;
+
+procedure TGLSceneEditorForm.ToolButton16Click(Sender: TObject);
+begin
+  if FSceneObjects <> nil then try
+    Tree.Items.BeginUpdate;
+    FSceneObjects.Collapse(true);
+    FSceneObjects.Expand(false);
+  finally
+    Tree.Items.EndUpdate;
+  end;
+end;
+
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  FNode: TTreeNode;
 begin
   if (Key = glKey_DELETE) and not Tree.IsEditing then begin
     Key := 0;
     ACDeleteObject.Execute;
+  end;
+  if key = VK_F2 then begin
+    FNode:= Tree.Selected;
+    if FNode.Level > 1 then begin
+      FNode.EditText;
+    end;
   end;
 end;
 
