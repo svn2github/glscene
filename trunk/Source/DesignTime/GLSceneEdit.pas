@@ -6,7 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
-  <li>14/03/09 - Yar - Added Expand and Collapse buttons (thanks to lolo)
+  <li>20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
