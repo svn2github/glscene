@@ -9,6 +9,7 @@
     this component on the form.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/01/10 - Yar   - Bugfixed zooming in design time (BugtrackerID = 2936266)
       <li>25/12/09 - DaStr - Added OnMouseMove event (thanks YarUnderoaker)
       <li>18/10/09 - DaStr - Added snoShowFPS option (thanks YarUnderoaker)
                              Fixed a small bug with FPS string
@@ -227,6 +228,9 @@ procedure TGLSimpleNavigation.FormMouseWheel(Sender: TObject;
 var
   Sign: SmallInt;
 begin
+  if csDesigning in ComponentState then
+    Exit;
+
   if snoInvertMouseWheel in FOptions then
     Sign := -1
   else
