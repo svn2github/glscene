@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
       <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
                             editors to interface section, and made their methods public.
@@ -389,7 +390,7 @@ uses
    GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
-   GLCameraController, GLSMWaveOut, GLFBORenderer,
+   GLCameraController, GLSMWaveOut, GLFBORenderer, GLCompositeImage,
 
    // Image file formats
    DDS, TGA,
@@ -398,9 +399,12 @@ uses
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
    GLFileNurbs, GLFileObj, GLFileOCT, GLFilePLY, GLFileQ3BSP, GLFileSMD, GLFileSTL,
    GLFileTIN, GLFileVRML,
-   // Sound file formats
-   GLFileWAV, GLFileMP3
 
+   // Sound file formats
+   GLFileWAV, GLFileMP3,
+
+   // Raster file format
+   GLFileDDS, GLFileO3TC, GLFileHDR
 
 {$ifdef WIN32}
    , GLSound, GLSoundFileObjects, GLSpaceText, Joystick, ScreenSaver,

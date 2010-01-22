@@ -7,6 +7,7 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
                               TResolutionProperty (thanks Predator)
       <li>24/11/09 - DanB - Removed some more windows only units
@@ -88,7 +89,7 @@ uses
    GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
    GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
-   GLSoundFileObjects, GLSound,
+   GLSoundFileObjects, GLSound, GLCompositeImage,
    // Vector file formats
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
@@ -98,6 +99,8 @@ uses
    // Sound file formats
    GLFileWAV, GLFileMP3,
 
+   // Raster file format
+   GLFileDDS, GLFileO3TC, GLFileHDR,
 
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL, 
