@@ -218,7 +218,7 @@ contains
   GLGameMenu in '..\Source\GLGameMenu.pas',
   GLCanvas in '..\Source\Base\GLCanvas.pas',
   GLFBORenderer in '..\Source\GLFBORenderer.pas',
-  GLKeyboard in '..\Source\Platform\GLKeyboard.pas'
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas',
   GLTextureFormat in '..\Source\GLTextureFormat.pas',
   GLFileDDS in '..\Source\FileFormats\GLFileDDS.pas',
   GLFileHDR in '..\Source\FileFormats\GLFileHDR.pas',

@@ -255,7 +255,7 @@ contains
   GLMeshBuilder in '..\Source\GLMeshBuilder.pas',
   GLVerletClasses in '..\Source\GLVerletClasses.pas',
   GLFBORenderer in '..\Source\GLFBORenderer.pas',
-  GLKeyboard in '..\Source\Platform\GLKeyboard.pas'
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas',
   GLTextureFormat in '..\Source\GLTextureFormat.pas',
   GLFileDDS in '..\Source\FileFormats\GLFileDDS.pas',
   GLFileHDR in '..\Source\FileFormats\GLFileHDR.pas',
