@@ -255,5 +255,15 @@ contains
   GLObjectManager in '..\Source\GLObjectManager.pas',
   GLCameraController in '..\Source\GLCameraController.pas',
   GLFBORenderer in '..\Source\GLFBORenderer.pas',
-  GLKeyboard in '..\Source\Platform\GLKeyboard.pas';
+  GLKeyboard in '..\Source\Platform\GLKeyboard.pas',
+  GLTextureFormat in '..\Source\GLTextureFormat.pas',
+  GLFileDDS in '..\Source\FileFormats\GLFileDDS.pas',
+  GLFileHDR in '..\Source\FileFormats\GLFileHDR.pas',
+  GLFileO3TC in '..\Source\FileFormats\GLFileO3TC.pas',
+  DDSImage in '..\Source\FileFormats\DDSImage.pas',
+  HDRImage in '..\Source\FileFormats\HDRImage.pas',
+  O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
+  RGBE in '..\Source\FileFormats\RGBE.pas',
+  GLPBuffer in '..\Source\GLPBuffer.pas',
+  GLCompositeImage in '..\Source\GLCompositeImage.pas';
 end.
