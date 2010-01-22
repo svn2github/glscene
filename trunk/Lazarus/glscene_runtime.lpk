@@ -25,7 +25,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="202">
+    <Files Count="211">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -834,6 +834,42 @@
         <Filename Value="../Source/FileFormats/TGA.pas"/>
         <UnitName Value="TGA"/>
       </Item202>
+      <Item203>
+        <Filename Value="../Source/FileFormats/DDSImage.pas"/>
+        <UnitName Value="DDSImage"/>
+      </Item203>
+      <Item204>
+        <Filename Value="../Source/FileFormats/HDRImage.pas"/>
+        <UnitName Value="HDRImage"/>
+      </Item204>
+      <Item205>
+        <Filename Value="../Source/FileFormats/RGBE.pas"/>
+        <UnitName Value="RGBE"/>
+      </Item205>
+      <Item206>
+        <Filename Value="../Source/FileFormats/GLFileDDS.pas"/>
+        <UnitName Value="GLFileDDS"/>
+      </Item206>
+      <Item207>
+        <Filename Value="../Source/FileFormats/GLFileHDR.pas"/>
+        <UnitName Value="GLFileHDR"/>
+      </Item207>
+      <Item208>
+        <Filename Value="../Source/FileFormats/GLFileO3TC.pas"/>
+        <UnitName Value="GLFileO3TC"/>
+      </Item208>
+      <Item209>
+        <Filename Value="../Source/FileFormats/O3TCImage.pas"/>
+        <UnitName Value="O3TCImage"/>
+      </Item209>
+      <Item210>
+        <Filename Value="../Source/GLCompositeImage.pas"/>
+        <UnitName Value="GLCompositeImage"/>
+      </Item210>
+      <Item211>
+        <Filename Value="../Source/GLTextureFormat.pas"/>
+        <UnitName Value="GLTextureFormat"/>
+      </Item211>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
