@@ -6,6 +6,7 @@
    Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/10 - Yar   - Added GLTextureFormat to uses
       <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
       <li>02/04/07 - DaStr - TGLMaterialScripter is now notified of
@@ -51,7 +52,8 @@ uses
   SysUtils, Classes, StdCtrls,
 
   // GLScene
-  GLTexture, GLGraphics, GLUtils, GLColor, GLCoordinates, GLMaterial;
+  GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
+  GLMaterial;
 
 type
   TGLShaderItem = class(TCollectionItem)
