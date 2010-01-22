@@ -7,6 +7,7 @@
   texture data.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/10 - Yar - Added GLTextureFormat to uses 
       <li>08/10/08 - DanB - added FriendlyName/FriendlyDescription
       <li>16/10/07 - LC - Added DirtyRectangle to allow partial updates.
       <li>12/07/07 - DaStr - Added $I GLScene.inc
@@ -24,7 +25,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, OpenGL1x, GLContext, GLTexture, GLGraphics, GLCrossPlatform;
+  Classes, SysUtils, OpenGL1x, GLContext, GLTexture, GLTextureFormat,
+  GLGraphics, GLCrossPlatform;
 
 type
   // TGLDynamicTextureImage
