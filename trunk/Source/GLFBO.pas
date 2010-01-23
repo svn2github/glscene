@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
       <li>22/01/10 - Yar   - Adapted to Handles of GLContext,
                              texture target unification, level and layer control
       <li>11/11/09 - DaStr - Added $I GLScene.inc
@@ -372,10 +373,10 @@ procedure TGLFrameBuffer.AttachDepthTexture(Texture: TGLTexture);
 begin
   FDepthTexture := Texture;
   // Force texture properties to depth compatibility
-  if not IsDepthFormat(FDepthTexture.TextureFormat) then
+  if not IsDepthFormat(FDepthTexture.TextureFormatEx) then
   begin
     FDepthTexture.ImageClassName := 'TGLBlankImage';
-    FDepthTexture.TextureFormat := tfDEPTH_COMPONENT24;
+    FDepthTexture.TextureFormatEx := tfDEPTH_COMPONENT24;
     TGLBlankImage(FDepthTexture.Image).Width := Width;
     TGLBlankImage(FDepthTexture.Image).Height := Height;
   end;

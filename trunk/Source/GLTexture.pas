@@ -6,6 +6,8 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
+                             and tfExtended to TGLTextureFormat (thanks mif for idea)  
        <li>22/01/10 - Yar  - Added GLTextureFormat to uses,
                              1D, 3D, array, cube map array target support,
                              texture error indication,
@@ -265,7 +267,20 @@ type
   {: Texture format for OpenGL (rendering) use.<p>
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
   specify a generic format to reduce OpenGL texture memory use:<ul>}
-  TGLTextureFormat = TGLInternalFormat;
+  TGLTextureFormat = (
+    tfDefault,
+    tfRGB,            // = tfRGB8
+    tfRGBA,           // = tfRGBA8
+    tfRGB16,          // = tfRGB5
+    tfRGBA16,         // = tfRGBA4
+    tfAlpha,          // = tfALPHA8
+    tfLuminance,      // = tfLUMINANCE8
+    tfLuminanceAlpha, // = tfLUMINANCE8_ALPHA8
+    tfIntensity,      // = tfINTENSITY8
+    tfNormalMap,      // = tfRGB8
+    tfRGBAFloat16,    // = tfRGBA_FLOAT16_ATI
+    tfRGBAFloat32,    // = tfRGBA_FLOAT32_ATI
+    tfExtended);
 
   // TGLTextureCompression
   //
@@ -681,7 +696,7 @@ type
   private
     { Private Declarations }
     FTextureHandle: TGLTextureHandle;
-    FTextureFormat: TGLTextureFormat;
+    FTextureFormat: TGLInternalFormat;
     FTextureMode: TGLTextureMode;
     FTextureWrap: TGLTextureWrap;
     FMinFilter: TGLMinFilter;
@@ -729,7 +744,10 @@ type
     procedure SetTextureWrapS(AValue: TGLSeparateTextureWrap);
     procedure SetTextureWrapT(AValue: TGLSeparateTextureWrap);
     procedure SetTextureWrapR(AValue: TGLSeparateTextureWrap);
+    function  GetTextureFormat: TGLTextureFormat;
     procedure SetTextureFormat(const val: TGLTextureFormat);
+    procedure SetTextureFormatEx(const val: TGLInternalFormat);
+    function  StoreTextureFormatEx: Boolean;
     procedure SetCompression(const val: TGLTextureCompression);
     procedure SetFilteringQuality(const val: TGLTextureFilteringQuality);
     procedure SetMappingMode(const val: TGLTextureMappingMode);
@@ -896,8 +914,11 @@ type
 
     {: Texture format for use by the renderer.<p>
     See TGLTextureFormat for details. }
-    property TextureFormat: TGLTextureFormat read FTextureFormat write
+    property TextureFormat: TGLTextureFormat read GetTextureFormat write
       SetTextureFormat default tfDefault;
+    property TextureFormatEx: TGLInternalFormat read FTextureFormat write
+      SetTextureFormatEx stored StoreTextureFormatEx;
+
     {: Texture compression control.<p>
     If True the compressed TextureFormat variant (the OpenGL ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
@@ -1066,6 +1087,19 @@ uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats,
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
+
+  cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of TGLInternalFormat = (
+    tfRGB8,
+    tfRGBA8,
+    tfRGB5,
+    tfRGBA4,
+    tfALPHA8,
+    tfLUMINANCE8,
+    tfLUMINANCE8_ALPHA8,
+    tfINTENSITY8,
+    tfRGB8,
+    tfRGBA_FLOAT16,
+    tfRGBA_FLOAT32);
 
 var
   vGLTextureImageClasses: TList;
@@ -2382,6 +2416,7 @@ begin
   FTextureCompareMode := tcmNone;
   FTextureCompareFunc := dcfLequal;
   FDepthTextureMode := dtmLuminance;
+  TextureFormat := tfDefault;
 end;
 
 // Destroy
@@ -2795,16 +2830,62 @@ begin
   end;
 end;
 
+// GetTextureFormat
+//
+
+function TGLTexture.GetTextureFormat: TGLTextureFormat;
+var
+  i: TGLTextureFormat;
+begin
+  if vDefaultTextureFormat=FTextureFormat then
+  begin
+    Result := tfDefault;
+    Exit;
+  end;
+  for i := tfRGB to tfRGBAFloat32 do
+  begin
+    if cOldTextureFormatToInternalFormat[i] = FTextureFormat then
+    begin
+      Result := i;
+      Exit;
+    end;
+  end;
+  Result := tfExtended;
+end;
+
 // SetTextureFormat
 //
 
 procedure TGLTexture.SetTextureFormat(const val: TGLTextureFormat);
+begin
+  if val=tfDefault then
+  begin
+    FTextureFormat := vDefaultTextureFormat;
+  end
+  else if val<tfExtended then
+  begin
+    FTextureFormat := cOldTextureFormatToInternalFormat[val];
+  end;
+end;
+
+// SetTextureFormat
+//
+
+procedure TGLTexture.SetTextureFormatEx(const val: TGLInternalFormat);
 begin
   if val <> FTextureFormat then
   begin
     FTextureFormat := val;
     NotifyImageChange;
   end;
+end;
+
+// StoreTextureFormatEx
+//
+
+function TGLTexture.StoreTextureFormatEx: Boolean;
+begin
+  Result := GetTextureFormat>=tfExtended;
 end;
 
 // SetCompression
@@ -3413,7 +3494,7 @@ begin
       // Check supporting
       target := Image.NativeTextureTarget;
       if not IsTargetSupported(target)
-        or not IsFormatSupported(TextureFormat) then
+        or not IsFormatSupported(TextureFormatEx) then
       begin
         SetTextureErrorImage;
         target := Image.NativeTextureTarget;
@@ -3464,7 +3545,7 @@ end;
 
 function TGLTexture.IsFloatType: Boolean;
 begin
-  Result := IsFloatFormat(TextureFormat);
+  Result := IsFloatFormat(TextureFormatEx);
 end;
 
 // OpenGLTextureFormat
@@ -3499,10 +3580,10 @@ begin
     else
       Assert(False);
     end;
-    Result := CompressedInternalFormatToOpenGL(TextureFormat);
+    Result := CompressedInternalFormatToOpenGL(TextureFormatEx);
   end
   else
-    Result := InternalFormatToOpenGLFormat(TextureFormat);
+    Result := InternalFormatToOpenGLFormat(TextureFormatEx);
 end;
 
 // PrepareImage
@@ -3672,7 +3753,7 @@ begin
 
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not GL_SGIS_texture_lod then
+    or not (GL_EXT_texture_lod or GL_SGIS_texture_lod) then
   begin
     if FMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       FMinFilter := miNearest;
@@ -3748,7 +3829,7 @@ begin
   ImageClassName := TGLBlankImage.ClassName;
   TGLBlankImage(Image).Assign(bmp32);
   bmp32.Free;
-  TextureFormat := tfRGB8;
+  TextureFormatEx := tfRGB8;
   MagFilter := maNearest;
   MinFilter := miNearest;
   TextureWrap := twBoth;

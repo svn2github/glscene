@@ -11,6 +11,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>23/01/10 - Yar   - Added to AssignFromTexture CurrentFormat parameter
       <li>22/01/10 - Yar   - Added TRasterFileFormat, TGLBaseImage classes
                              TGLBitmap32 now derived from TGLBaseImage
                              and can contain all types of image
@@ -117,6 +118,7 @@ type
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLenum;
       textureTarget: TGLenum;
+      const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); virtual; abstract;
 
     procedure Assign(Source: TPersistent); override;
@@ -205,7 +207,8 @@ type
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLenum;
       textureTarget: TGLenum;
-      const intFormat: TGLInternalFormat;
+      const CurrentFormat: Boolean;
+      const intFormat: TGLInternalFormat = tfRGBA8;
       const colorFormat: TGLenum = 0;
       const dataType: TGLenum = 0); reintroduce;
     {: Create a 32 bits TBitmap from self content. }
@@ -1747,7 +1750,8 @@ end;
 procedure TGLBitmap32.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: TGLenum;
   textureTarget: TGLenum;
-  const intFormat: TGLInternalFormat;
+  const CurrentFormat: Boolean;
+  const intFormat: TGLInternalFormat = tfRGBA8;
   const colorFormat: TGLenum = 0;
   const dataType: TGLenum = 0);
 var
@@ -1827,7 +1831,7 @@ begin
             glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_DEPTH,
               @fDepth);
           residentFormat := OpenGLFormatToInternalFormat(texFormat);
-          if intFormat = tfDefault then
+          if CurrentFormat then
             fInternalFormat := residentFormat
           else
             fInternalFormat := intFormat;
