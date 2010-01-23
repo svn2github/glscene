@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/01/10 - DaStr - Bugfixed wglChoosePixelFormatARB() and
+                              wglCreatePbufferARB() parameters
       <li>07/01/10 - DaStr - Added WGL_COLOR_SAMPLES_NV (thanks YarUndeoaker)
       <li>25/12/09 - DaStr - Added GL_NV_copy_image, GL_LUMINANCE_INTEGER,
                               GL_LUMINANCE_ALPHA_INTEGER extentions and constants
@@ -5372,14 +5374,14 @@ var
    wglGetPixelFormatAttribfvARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TGLenum;
      const piAttributes: PGLint; piValues: PGLFloat) : BOOL; stdcall;
    wglChoosePixelFormatARB: function(DC: HDC; const piAttribIList: PGLint; const pfAttribFList: PGLFloat;
-     nMaxFormats: GLint; piFormats: PGLint; nNumFormats: PGLenum) : BOOL; stdcall;
+     nMaxFormats: GLuint; piFormats: PGLint; nNumFormats: PGLenum) : BOOL; stdcall;
 
    // WGL_make_current_read (ARB #10)
    wglMakeContextCurrentARB: function(hDrawDC: HDC; hReadDC: HDC; _hglrc: HGLRC): BOOL; stdcall;
    wglGetCurrentReadDCARB: function(): HDC; stdcall;
 
    // WGL_ARB_pbuffer (ARB #11)
-   wglCreatePbufferARB: function(DC: HDC; iPixelFormat: Integer; iWidth, iHeight : Integer;
+   wglCreatePbufferARB: function(DC: HDC; iPixelFormat: GLInt; iWidth, iHeight : GLInt;
      const piAttribList: PGLint) : HPBUFFERARB; stdcall;
    wglGetPbufferDCARB: function(hPbuffer: HPBUFFERARB) : HDC; stdcall;
    wglReleasePbufferDCARB: function(hPbuffer: HPBUFFERARB; DC: HDC) : Integer; stdcall;
