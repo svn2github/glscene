@@ -4,6 +4,7 @@
 {: GLFileO3TC<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>23/11/10 - DaStr - Added $I GLScene.inc
         <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map loading bug
         <li>20/01/10 - Yar - Creation
@@ -12,6 +13,8 @@
 unit GLFileO3TC;
 
 interface
+
+{$I GLScene.inc}
 
 uses
   Classes, SysUtils,
