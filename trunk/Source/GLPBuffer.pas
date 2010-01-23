@@ -1,3 +1,18 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLPBuffer<p>
+
+  Simple handling of pixelbuffers.<p>
+
+  <b>Historique : </b><font size=-1><ul>
+      <li>21/01/10 - DaStr - Bugfixed range check error
+      <li>22/01/10 - Yar - Added to GLScene
+  </ul></font>
+
+}
+// Previous header:
+// 
 // =============================================================================
 //   Copyright © 2003-2004 by Sascha Willems - http://www.delphigl.de
 // =============================================================================
@@ -9,11 +24,9 @@
 // =============================================================================
 //   Simple handling of pixelbuffers
 // =============================================================================
-{  <b>Historique : </b><font size=-1><ul>
-      <li>21/09/09 - Yar - Entering to GLScene
-  </ul></font>
-}
 unit GLPBuffer;
+
+{$i GLScene.inc}
 
 interface
 
@@ -31,9 +44,9 @@ type
     RC: HGLRC;
     ParentDC: HDC;
     ParentRC: HGLRC;
-    fHandle: GLUInt;
-    fWidth: GLUInt;
-    fHeight: GLUInt;
+    fHandle: HPBUFFERARB;
+    fWidth: GLInt;
+    fHeight: GLInt;
     fTextureID: GLUInt;
   public
     constructor Create(pWidth, pHeight: integer);
@@ -45,8 +58,8 @@ type
     procedure Bind;
     procedure Release;
 
-    property Width: GLUInt read fWidth;
-    property Height: GLUInt read fHeight;
+    property Width: GLInt read fWidth;
+    property Height: GLInt read fHeight;
     property TextureID: GLUInt read fTextureID;
   end;
 
@@ -59,7 +72,7 @@ implementation
 
 constructor TPixelBuffer.Create(pWidth, pHeight: integer);
 const
-  PixelFormatAttribs: array[0..12] of TGLUInt =
+  PixelFormatAttribs: array[0..12] of TGLInt =
    (WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
     WGL_DRAW_TO_PBUFFER_ARB, GL_TRUE,
     WGL_COLOR_BITS_ARB, 24,
@@ -67,13 +80,13 @@ const
     WGL_DEPTH_BITS_ARB, 24,
     WGL_DOUBLE_BUFFER_ARB, GL_FALSE, 0);
 
-  PixelBufferAttribs: array[0..4] of TGLUInt =
+  PixelBufferAttribs: array[0..4] of TGLInt =
     (WGL_TEXTURE_FORMAT_ARB, WGL_TEXTURE_RGBA_ARB,
     WGL_TEXTURE_TARGET_ARB,
     WGL_TEXTURE_2D_ARB, 0);
   EmptyF: TGLFLoat = 0;
 var
-  PFormat: array[0..64] of TGLUInt;
+  PFormat: array[0..64] of TGLInt;
   NumPFormat: TGLUInt;
   TempW, TempH: TGLUInt;
 begin
