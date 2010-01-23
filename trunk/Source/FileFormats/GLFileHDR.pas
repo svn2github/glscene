@@ -4,6 +4,7 @@
 {: GLFileHDR<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
@@ -38,6 +39,7 @@ type
     procedure AssignFromTexture(textureContext: TGLContext;
                                 const textureHandle: TGLenum;
                                 textureTarget: TGLenum;
+                                const CurrentFormat: Boolean;
                                 const intFormat: TGLInternalFormat); override;
 
     property Data           : PGLPixel32Array read FData;
@@ -221,6 +223,7 @@ end;
 procedure TGLHDRImage.AssignFromTexture(textureContext: TGLContext;
                                         const textureHandle: TGLenum;
                                         textureTarget: TGLenum;
+                                        const CurrentFormat: Boolean;
                                         const intFormat: TGLInternalFormat);
 var
   oldContext : TGLContext;
@@ -260,7 +263,7 @@ begin
         glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
         fDepth:=0;
         residentFormat := OpenGLFormatToInternalFormat( texFormat );
-        if intFormat=tfDefault then
+        if CurrentFormat then
           fInternalFormat := residentFormat
         else
           fInternalFormat := intFormat;

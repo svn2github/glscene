@@ -4,6 +4,8 @@
 {: GLFileDDS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
+                             Fixed cube map saving bug
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
@@ -34,6 +36,7 @@ type
     procedure AssignFromTexture(textureContext: TGLContext;
                                 const textureHandle: TGLenum;
                                 textureTarget: TGLenum;
+                                const CurrentFormat: Boolean;
                                 const intFormat: TGLInternalFormat); override;
 
     property Data           : PGLPixel32Array read FData;
@@ -224,18 +227,21 @@ begin
   header.SurfaceFormat.dwFlags := DDSD_CAPS or
                                   DDSD_HEIGHT or
                                   DDSD_WIDTH or
-                                  DDSD_PITCH or
-                                  DDSD_PIXELFORMAT or
-                                  DDSD_LINEARSIZE or
-                                  DDSD_DEPTH;
+                                  DDSD_PIXELFORMAT;
   if IsCompressed then
+  begin
     header.SurfaceFormat.dwPitchOrLinearSize := header.SurfaceFormat.dwPitchOrLinearSize * Cardinal(fHeight) * Cardinal(fDepth);
+    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_PITCH;
+  end
+  else
+    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_LINEARSIZE;
 
   header.SurfaceFormat.dwCaps  := DDSCAPS_TEXTURE;
   header.SurfaceFormat.dwCaps2 := 0;
 
   if fDepth>0 then
   begin
+    header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_DEPTH;
     header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX;
     header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or DDSCAPS2_VOLUME;
   end;
@@ -249,6 +255,8 @@ begin
   else header.SurfaceFormat.dwMipMapCount := 0;
 
   if fCubeMap then
+  begin
+    header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX;
     header.SurfaceFormat.dwCaps2 := header.SurfaceFormat.dwCaps2 or
       DDSCAPS2_CUBEMAP or
       DDSCAPS2_CUBEMAP_POSITIVEX or
@@ -257,6 +265,7 @@ begin
       DDSCAPS2_CUBEMAP_NEGATIVEY or
       DDSCAPS2_CUBEMAP_POSITIVEZ or
       DDSCAPS2_CUBEMAP_NEGATIVEZ;
+  end;
 
   if not GLEnumToDDSHeader(header,
                            DX10header,
@@ -301,6 +310,7 @@ end;
 procedure TGLDDSImage.AssignFromTexture(textureContext: TGLContext;
                                         const textureHandle: TGLenum;
                                         textureTarget: TGLenum;
+                                        const CurrentFormat: Boolean;
                                         const intFormat: TGLInternalFormat);
 var
   oldContext : TGLContext;
@@ -371,7 +381,7 @@ begin
           or (textureTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
             glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_DEPTH, @fDepth);
           residentFormat := OpenGLFormatToInternalFormat( texFormat );
-          if intFormat=tfDefault then
+          if CurrentFormat then
             fInternalFormat := residentFormat
           else
             fInternalFormat := intFormat;
