@@ -393,6 +393,7 @@ begin
 
   if FUseLibraryAsMultiTarget then
   begin
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @maxAttachment);
     Assert(FMaterialLibrary.Materials.Count <= maxAttachment,
       'Too many color attachments.');
     // Multicolor attachments
