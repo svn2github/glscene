@@ -6,6 +6,8 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/01/10 - DaStr - Updated warning about a possible crash while using the
+                              'Use Debug DCUs' compiler option (BugTrackerID=1586936)
       <li>10/11/09 - DaStr - Replaced all Delphi2005+ IFDEFs with a single one
       <li>07/11/09 - DaStr - Improved FPC compatibility
                               (BugtrackerID = 2893580) (thanks Predator)
@@ -102,13 +104,8 @@ var
    list : TList;
    fileFormat : PFileFormat;
 begin
-{$IFDEF GLS_DELPHI_7_DOWN}
-{$IFDEF GLS_DELPHI_6_UP}
-  {$IFOPT O-}
-    {$Message Warn 'This may crash when Graphics.pas is compiled with optimization Off'}
-  {$ENDIF}
-{$ENDIF}
-{$ENDIF}
+   // Warning: This will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option.
+
    pRegisterFileFormat:=PAnsiChar(@TPicture.RegisterFileFormat);
    if pRegisterFileFormat[0]=#$FF then // in case of BPL redirector
       pRegisterFileFormat:=PAnsiChar(PInteger(PInteger(@pRegisterFileFormat[2])^)^);
