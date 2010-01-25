@@ -6,7 +6,10 @@
   TFont Import into a BitmapFont using variable width...<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)  
+      <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
+                          (thanks olkondr)
+                          Replace Char to AnsiChar
+      <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
       <li>12/15/04 - Eugene Kryukov - Added TGLStoredBitmapFont
       <li>03/07/04 - LR - Added ifdef for Graphics uses
@@ -191,7 +194,7 @@ var
                rect.Right:=px+cw;
                rect.Bottom:=py+CharHeight;
                // Draw the Char, the trailing space is to properly handle the italics.
-               canvas.TextRect(rect, px+1, py+1, Char(n)+' ');
+               canvas.TextRect(rect, px+1, py+1, AnsiChar(n)+' ');
             end;
             if ((n < GLS_FONT_CHARS_COUNT - 1) and (px+cw+CharWidths[n+1]+2<=x)) or (n = GLS_FONT_CHARS_COUNT - 1) then
                Inc(px, cw)
@@ -210,7 +213,7 @@ var
 var
    bitmap : TGLBitMap;
    fontRange  : TBitmapFontRange;
-   ch : Char;
+   ch : AnsiChar;
    x, y, i, cw : Integer;
    nbChars, n : Integer;
    texMem, bestTexMem : Integer;
@@ -235,15 +238,19 @@ begin
 
    nbChars:=Ranges.CharacterCount;
 
-   // Retrieve width of all characters (texture width)
-   ResetCharWidths(0);
-   for i:=0 to Ranges.Count-1 do begin
-      fontRange:=Ranges.Items[i];
-      for ch:=fontRange.StartASCII to fontRange.StopASCII do begin
-         cw:=bitmap.Canvas.TextWidth(ch)-HSpaceFix;
-         SetCharWidths(Integer(ch), cw);
-      end;
-   end;
+  // Retrieve width of all characters (texture width)
+  ResetCharWidths(0);
+  for i:=0 to Ranges.Count-1 do
+  begin
+    fontRange:=Ranges.Items[i];
+    for ch:=fontRange.StartASCII to fontRange.StopASCII do
+    begin
+      cw:=bitmap.Canvas.TextWidth(ch)-HSpaceFix;
+      SetCharWidths(Integer(ch), cw);
+      if cw=0 then
+        Dec(nbChars);
+    end;
+  end;
 
    // compute texture size: look for best fill ratio
    // and as square a texture as possible
