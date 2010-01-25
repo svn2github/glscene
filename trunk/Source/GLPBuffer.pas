@@ -4,10 +4,13 @@
 {: GLPBuffer<p>
 
   Simple handling of pixelbuffers.<p>
+  
   TGLPixelBuffer can be used for offscreen rendering.<p>
-  Goal is that it does not require the creation of a window.<p>
+  It does not require a fully-functional rendering context.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>26/01/10 - DaStr - Bugfixed range check error, for real ;)
+                             Enhanced TGLPixelBuffer.IsLost()
       <li>24/01/10 - Yar - Removed initialization form constructor,
                            changes of use of desktop windows on foreground
                            (improved work on Delphi7 and Lazarus)
@@ -51,9 +54,9 @@ type
     RC: HGLRC;
     ParentDC: HDC;
     ParentRC: HGLRC;
-    fHandle: GLuint;
-    fWidth: GLuint;
-    fHeight: GLuint;
+    fHandle: HPBUFFERARB;
+    fWidth: GLint;
+    fHeight: GLint;
     fTextureID: GLuint;
   public
     constructor Create;
@@ -66,9 +69,9 @@ type
     procedure Bind;
     procedure Release;
 
-    property Handle: GLuint read fHandle;
-    property Width: GLuint read fWidth;
-    property Height: GLuint read fHeight;
+    property Handle: HPBUFFERARB read fHandle;
+    property Width: GLint read fWidth;
+    property Height: GLint read fHeight;
     property TextureID: GLuint read fTextureID;
   end;
 
@@ -102,8 +105,8 @@ const
   EmptyF: TGLFLoat = 0;
 var
   PFormat: array[0..64] of TGLInt;
-  NumPFormat: TGLUInt;
-  TempW, TempH: TGLUInt;
+  NumPFormat: TGLenum;
+  TempW, TempH: TGLInt;
 {$ELSE}
 
 {$ENDIF}
@@ -128,7 +131,7 @@ begin
 
   fHandle := wglCreatePBufferARB(ParentDC, PFormat[0], fWidth, fHeight,
     @PixelBufferAttribs);
-  if fHandle > 0 then
+  if fHandle <> 0 then
   begin
     wglQueryPbufferARB(fHandle, WGL_PBUFFER_WIDTH_ARB, @TempW);
     wglQueryPbufferARB(fHandle, WGL_PBUFFER_HEIGHT_ARB, @TempH);
@@ -158,7 +161,7 @@ destructor TGLPixelBuffer.Destroy;
 begin
 {$IFDEF MSWINDOWS}
   Disable;
-  if fHandle<>0 then
+  if (fHandle <> 0) then
   begin
     wglDeleteContext(RC);
     wglReleasePbufferDCARB(fHandle, DC);
@@ -175,11 +178,13 @@ var
   Flag: TGLUInt;
 begin
 {$IFDEF MSWINDOWS}
-  Assert(fHandle<>0);
-  Result := False;
-  wglQueryPbufferARB(fHandle, WGL_PBUFFER_LOST_ARB, @Flag);
-  if Flag <> 0 then
-    Result := True;
+  Assert(fHandle <> 0);
+  if wglQueryPbufferARB(fHandle, WGL_PBUFFER_LOST_ARB, @Flag) then
+  begin
+    Result := (Flag <> 0);
+  end
+  else
+    Result := False;
 {$ELSE}
 
 {$ENDIF}
@@ -211,7 +216,7 @@ end;
 procedure TGLPixelBuffer.Bind;
 begin
 {$IFDEF MSWINDOWS}
-  Assert(fHandle<>0);
+  Assert(fHandle <> 0);
   wglBindTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ELSE}
 
@@ -221,7 +226,7 @@ end;
 procedure TGLPixelBuffer.Release;
 begin
 {$IFDEF MSWINDOWS}
-  Assert(fHandle<>0);
+  Assert(fHandle <> 0);
   wglReleaseTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ELSE}
 
