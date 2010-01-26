@@ -4,6 +4,7 @@
   Note: object "Not_a_planet" is used to test atmosphere transparency issues.
 
   Version history:
+    26/01/10 - Yar - Added GLColor to uses
     20/08/07 - DaStr - Now demo correctly displays FPS
     15/08/07 - LC - Added GLBehaviours to "uses" section to
                     prevent run-time error.
@@ -87,6 +88,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLColor;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Atmosphere := TGLAtmosphere.CreateAsChild(GLDummyCube1);
@@ -94,7 +98,7 @@ begin
   Atmosphere.SetOptimalAtmosphere2(GLSphere1.Radius);
 
   GLSkyDome1.Bands.Clear;
-  GLSkyDome1.Stars.AddRandomStars(5000, clWhite);
+  GLSkyDome1.Stars.AddRandomStars(5000, ConvertColorVector(clrWhite));
 end;
 
 
