@@ -53,7 +53,7 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg;
+uses Jpeg, GLTextureFormat;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 var
