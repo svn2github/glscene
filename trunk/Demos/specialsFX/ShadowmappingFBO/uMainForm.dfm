@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
-  Width = 604
-  Height = 417
   Caption = 'Form1'
+  ClientHeight = 379
+  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,13 +19,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 596
-    Height = 390
+    Width = 588
+    Height = 379
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 151.237213134765600000
+    FieldOfView = 150.438476562500000000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 360
@@ -47,19 +48,17 @@ object Form1: TForm1
         SpotCutOff = 180.000000000000000000
         object GLSphere1: TGLSphere
           Material.FrontProperties.Emission.Color = {FCFB7B3FE8E7673F000000000000803F}
-          Material.Texture.Border = 0
           Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
           Radius = 0.500000000000000000
         end
       end
     end
     object LightFBORenderer: TGLFBORenderer
-      ForceTextureDimensions = True
       Width = 1024
       Height = 1024
       DepthTextureName = 'ShadowMap'
       MaterialLibrary = GLMaterialLibrary1
-      UseBufferBackground = True
+      ClearOptions = [coDepthBufferClear, coUseBufferBackground]
       Camera = GLCamera2
       SceneScaleFactor = 500.000000000000000000
       RootObject = SceneRoot
@@ -89,7 +88,7 @@ object Form1: TForm1
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Chekers'
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
       end
       object GLCylinder1: TGLCylinder
@@ -124,30 +123,31 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ShowShadowMap'
-        Material.Texture.Border = 0
+        Material.Texture.TextureFormat = tfExtended
+        Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Tag = 0
         Shader = GLSLShader1
       end
       item
         Name = 'ShadowMap'
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureWrap = twSeparate
         Material.Texture.TextureWrapS = twClampToBorder
         Material.Texture.TextureWrapT = twClampToBorder
         Material.Texture.TextureWrapR = twClampToBorder
-        Material.Texture.TextureFormat = tfDEPTH_COMPONENT24
+        Material.Texture.TextureFormat = tfExtended
+        Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Material.Texture.BorderColor.Color = {0000803F000000000000000000000000}
         Material.Texture.TextureCompareMode = tcmCompareRtoTexture
-        Material.Texture.Border = 1
         Tag = 0
       end
       item
         Name = 'mask'
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureWrap = twSeparate
-        Material.Texture.Border = 0
         Material.FaceCulling = fcNoCull
         Tag = 0
         TextureScale.Coordinates = {00004040000040400000A04000000000}
@@ -155,26 +155,22 @@ object Form1: TForm1
       end
       item
         Name = 'Chekers'
-        Material.Texture.Border = 0
         Tag = 0
         Shader = GLSLShader2
       end
       item
         Name = 'Chekers2'
-        Material.Texture.Border = 0
         Tag = 0
         Shader = GLSLShader2
       end
       item
         Name = 'Lightspot'
         Material.Texture.TextureWrap = twNone
-        Material.Texture.Border = 0
         Tag = 0
         Shader = GLSLShader2
       end
       item
         Name = 'bark'
-        Material.Texture.Border = 0
         Tag = 0
       end>
     Left = 488
