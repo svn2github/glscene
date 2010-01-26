@@ -264,7 +264,7 @@ contains
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
-  GLPBuffer in '..\Source\GLPBuffer.pas',
+  GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas';
 
 end.
