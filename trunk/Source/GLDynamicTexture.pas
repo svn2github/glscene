@@ -264,7 +264,7 @@ function TGLDynamicTextureImage.GetDataFormat: integer;
 var
   data, color: TGLEnum;
 begin
-  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, data, color);
+  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, color, data);
   Result := data;
 end;
 
@@ -277,7 +277,7 @@ function TGLDynamicTextureImage.GetTextureFormat: integer;
 var
   data, color: TGLEnum;
 begin
-  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, data, color);
+  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, color, data);
   if FUseBGR then
     case color of
       GL_RGB: color := GL_BGR;
