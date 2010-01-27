@@ -11,6 +11,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
       <li>23/01/10 - Yar   - Added to AssignFromTexture CurrentFormat parameter
       <li>22/01/10 - Yar   - Added TRasterFileFormat, TGLBaseImage classes
                              TGLBitmap32 now derived from TGLBaseImage
@@ -1775,6 +1776,8 @@ var
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
         3));
+      if Result<0 then
+        Result := 0;
   end;
 
 begin
@@ -2388,6 +2391,8 @@ var
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
         3));
+      if Result<0 then
+        Result := 0;
   end;
 
 begin
