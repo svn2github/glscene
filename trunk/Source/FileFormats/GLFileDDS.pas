@@ -4,6 +4,7 @@
 {: GLFileDDS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
         <li>23/11/10 - DaStr - Added $I GLScene.inc
         <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map saving bug
@@ -334,6 +335,7 @@ var
         Result := fElementSize * (cw * ch * (d and -4) + x +
          cw * (y + ch * (z-4*ch) ))
     else Result := fElementSize * (4 * (x + cw * (y + ch * floor(z/4)))+ (z and 3));
+    if Result<0 then Result := 0;
   end;
 
 begin
