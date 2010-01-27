@@ -1,4 +1,4 @@
-ï»¿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLPBuffer<p>
@@ -9,18 +9,19 @@
   It does not require a fully-functional rendering context.<p>
 
   <b>Historique : </b><font size=-1><ul>
-      <li>26/01/10 - Yar - Contributed to GLScene
-                           (by Sascha Willems http://www.saschawillems.de)
+      <li>27/01/10 - Yar - Updated header and moved to the /Source/Base/ folder
       <li>26/01/10 - DaStr - Bugfixed range check error, for real ;)
                              Enhanced TGLPixelBuffer.IsLost()
-      <li>24/01/10 - Yar - Removed initialization form constructor,
+      <li>24/01/10 - Yar - Removed initialization from constructor,
                            changes of use of desktop windows on foreground
                            (improved work on Delphi7 and Lazarus)
       <li>21/01/10 - DaStr - Bugfixed range check error
-      <li>22/01/10 - Yar - Added to GLScene
+      <li>22/01/10 - Yar - Added to GLScene (contributed by Sascha Willems)
   </ul></font>
 
-   "The contents of this file are subject to the Mozilla Public License
+   Copyright © 2003-2009 by Sascha Willems - http://www.saschawillems.de
+
+   The contents of this file are subject to the Mozilla Public License
    Version 1.1 (the "License"; you may not use this file except in
    compliance with the License. You may obtain a copy of the License at
    http://www.mozilla.org/MPL/
