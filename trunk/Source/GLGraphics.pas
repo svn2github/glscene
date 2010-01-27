@@ -12,6 +12,7 @@
 
  <b>Historique : </b><font size=-1><ul>
       <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
+                             Return to GL_SGIS_generate_mipmap
       <li>23/01/10 - Yar   - Added to AssignFromTexture CurrentFormat parameter
       <li>22/01/10 - Yar   - Added TRasterFileFormat, TGLBaseImage classes
                              TGLBitmap32 now derived from TGLBaseImage
@@ -1776,8 +1777,6 @@ var
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
         3));
-      if Result<0 then
-        Result := 0;
   end;
 
 begin
@@ -2376,7 +2375,7 @@ procedure TGLBitmap32.RegisterAsOpenGLTexture(target: TGLUInt;
 var
   Level: integer;
   ml, face: integer;
-  bCompress: boolean;
+  bCompress, bMipmapGen: boolean;
   w, h, d, cw, ch, maxSize: GLsizei;
   p, buffer: Pointer;
   vtcBuffer, top, bottom: PGLubyte;
@@ -2391,8 +2390,8 @@ var
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
         3));
-      if Result<0 then
-        Result := 0;
+    if Result<0 then
+      Result := 0;
   end;
 
 begin
@@ -2441,6 +2440,13 @@ begin
     end
     else
       fBlank := true;
+  end;
+
+  // Hardware mipmap autogeneration
+  if GL_SGIS_generate_mipmap and (target <> GL_TEXTURE_RECTANGLE) then
+  begin
+    bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
+    glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
   end;
 
   // if image is blank then doing only allocatation texture in videomemory
@@ -2669,22 +2675,6 @@ begin
     FreeMem(buffer);
   if Assigned(vtcBuffer) then
     FreeMem(vtcBuffer);
-
-  // Hardware mipmap generation
-  if not GL_EXT_framebuffer_object then
-    Exit;
-  if (ml = 1) and not (minFilter in [miNearest, miLinear]) then
-  begin
-    // skip face of cubemap and rectangle
-    if ((target < GL_TEXTURE_CUBE_MAP_POSITIVE_X) or
-      (target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)) and
-      (target <> GL_TEXTURE_RECTANGLE) then
-      glGenerateMipmapEXT(target)
-    else
-      {// only on last face of cubemap run mipmap generation} if target =
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z then
-        glGenerateMipmapEXT(GL_TEXTURE_CUBE_MAP);
-  end;
 end;
 
 // ReadPixels
