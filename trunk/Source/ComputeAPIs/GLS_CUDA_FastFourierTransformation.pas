@@ -189,26 +189,29 @@ function cufftExecC2R(plan: TcufftHandle;
 function cufftExecZ2Z(plan: TcufftHandle;
                                   idata: PcufftDoubleComplex;
                                   odata: PcufftDoubleComplex;
-                                  direction: Integer);
+                                  direction: Integer): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}external CUFFTDLL;
 
 function cufftExecD2Z(plan: TcufftHandle;
                              idata: PcufftDoubleReal;
-                             odata: PcufftDoubleComplex);
+                             odata: PcufftDoubleComplex): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}external CUFFTDLL;
 
 function cufftExecZ2D(plan: TcufftHandle;
                             idata: PcufftDoubleComplex;
-                            odata: PcufftDoubleReal);
+                            odata: PcufftDoubleReal): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}external CUFFTDLL;
 
-function cufftSetStream(p: TcufftHandle; stream: Integer);
+function cufftSetStream(p: TcufftHandle; stream: Integer): TcufftResult;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}external CUFFTDLL;
 
 implementation
 

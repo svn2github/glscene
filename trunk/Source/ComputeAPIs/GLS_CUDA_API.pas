@@ -62,21 +62,29 @@ type
 
   TCUdevice = Integer; ///< CUDA device
 
-  PCUcontext = record
+  PCUcontext = ^TCUcontext;
+  TCUcontext = record
   end; ///< CUDA context
-  PCUmodule = record
+  PCUmodule = ^TCUmodule;
+  TCUmodule = record
   end; ///< CUDA module
-  PCUfunction = record
+  PCUfunction = ^TCUfunction;
+  TCUfunction = record
   end; ///< CUDA function
-  PCUarray = record
+  PCUarray = ^TCUarray;
+  TCUarray = record
   end; ///< CUDA array
-  PCUtexref = record
+  PCUtexref = ^TCUtexref;
+  TCUtexref = record
   end; ///< CUDA texture reference
-  PCUevent = record
+  PCUevent = ^TCUevent;
+  TCUevent = record
   end; ///< CUDA event
-  PCUstream = record
+  PCUstream = ^TCUstream;
+  TCUstream = record
   end; ///< CUDA stream
-  PCUgraphicsResource = record
+  PCUgraphicsResource = ^TCUgraphicsResource;
+  TCUgraphicsResource = record
   end; ///< CUDA graphics interop resource
 
   // Context creation flags
