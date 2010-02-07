@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/02/10 - Yar -  Added GL_NV_primitive_restart
       <li>21/01/10 - DaStr - Bugfixed wglChoosePixelFormatARB() and
                               wglCreatePbufferARB() parameters
       <li>07/01/10 - DaStr - Added WGL_COLOR_SAMPLES_NV (thanks YarUndeoaker)
@@ -435,6 +436,7 @@ var
    GL_NV_multisample_filter_hint,
    GL_NV_occlusion_query,
    GL_NV_point_sprite,
+   GL_NV_primitive_restart,
    GL_NV_register_combiners,
    GL_NV_texgen_reflection,
    GL_NV_texture_compression_vtc,
@@ -3580,6 +3582,10 @@ const
    GL_COORD_REPLACE_NV                               = $8862;
    GL_POINT_SPRITE_R_MODE_NV                         = $8863;
 
+   // GL_NV_primitive_restart
+   GL_PRIMITIVE_RESTART_NV                           = $8558;
+   GL_PRIMITIVE_RESTART_INDEX_NV                     = $8559;
+
    // GL_EXT_stencil_two_side (#268)
    GL_STENCIL_TEST_TWO_SIDE_EXT                      = $8910;
    GL_ACTIVE_STENCIL_FACE_EXT                        = $8911;
@@ -5008,6 +5014,10 @@ var
    glPointParameteri: procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glPointParameteriv: procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
+    // promoted to core v1.4 from GL_NV_primitive_restart
+   glPrimitiveRestartNV: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPrimitiveRestartIndexNV: procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
    // promoted to core v1.4 from GL_EXT_secondary_color (#145)
    glSecondaryColor3b: procedure(red, green, blue: TGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glSecondaryColor3bv: procedure(v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6267,7 +6277,7 @@ procedure ClearGLError;
 procedure RaiseOpenGLError(const msg : String);
 
 var
-   vIgnoreOpenGLErrors : Boolean = False;
+   vIgnoreOpenGLErrors : Boolean = false;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -6510,6 +6520,10 @@ begin
    glPointParameterfv := GLGetProcAddress('glPointParameterfv');
    glPointParameteri := GLGetProcAddress('glPointParameteri');
    glPointParameteriv := GLGetProcAddress('glPointParameteriv');
+
+   // promoted to core v1.4 from GL_NV_primitive_restart
+   glPrimitiveRestartNV := GLGetProcAddress('glPrimitiveRestartNV');
+   glPrimitiveRestartIndexNV := GLGetProcAddress('glPrimitiveRestartIndexNV');
 
    // promoted to core v1.4 from GL_EXT_secondary_color (#145)
    glSecondaryColor3b := GLGetProcAddress('glSecondaryColor3b');
@@ -7883,7 +7897,8 @@ begin
    GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
    GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
    GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
-   GL_NV_point_sprite := CheckExtension('GL_NV_point_sprite');
+   GL_NV_point_sprite := CheckExtension('GL_NV_primitive_restart');
+   GL_NV_primitive_restart := CheckExtension('GL_NV_point_sprite');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
    GL_NV_texture_compression_vtc := CheckExtension('GL_NV_texture_compression_vtc');
