@@ -585,7 +585,7 @@ type
 	T4ByteData = packed record
     case Byte of
     0 : (Bytes : record Value : array[0..3] of Byte; end);
-    1 : (Int   : record Value : Integer; end);
+    1 : (Int   : record Value : LongInt; end);
     2 : (Float : record Value : Single; end);
   end;
 
