@@ -7897,8 +7897,8 @@ begin
    GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
    GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
    GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
-   GL_NV_point_sprite := CheckExtension('GL_NV_primitive_restart');
-   GL_NV_primitive_restart := CheckExtension('GL_NV_point_sprite');
+   GL_NV_point_sprite := CheckExtension('GL_NV_point_sprite');
+   GL_NV_primitive_restart := CheckExtension('GL_NV_primitive_restart');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
    GL_NV_texture_compression_vtc := CheckExtension('GL_NV_texture_compression_vtc');
