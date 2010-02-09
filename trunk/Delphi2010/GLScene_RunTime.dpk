@@ -22,7 +22,7 @@ package GLScene_RunTime;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$DESCRIPTION 'GLScene - OpenGL 3D library RunTime'}
 {$LIBSUFFIX '2010'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
