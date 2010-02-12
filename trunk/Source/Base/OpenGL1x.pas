@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/02/10 - Yar -  Added GL_AMD_vertex_shader_tessellator
       <li>07/02/10 - Yar -  Added GL_NV_primitive_restart
       <li>21/01/10 - DaStr - Bugfixed wglChoosePixelFormatARB() and
                               wglCreatePbufferARB() parameters
@@ -464,6 +465,8 @@ var
    GL_SGIX_depth_texture,
    GL_SGIX_shadow,
    GL_SGIX_shadow_ambient,
+
+   GL_AMD_vertex_shader_tessellator,
 
    GL_WIN_swap_hint,
 
@@ -4018,6 +4021,15 @@ const
    GL_MAX_PROGRAM_OUTPUT_VERTICES_NV                   = $8C27;
    GL_MAX_PROGRAM_TOTAL_OUTPUT_COMPONENTS_NV           = $8C28;
 
+   // GL_AMD_vertex_shader_tessellator (#363)
+   GL_SAMPLER_BUFFER_AMD                               = $9001;
+   GL_INT_SAMPLER_BUFFER_AMD                           = $9002;
+   GL_UNSIGNED_INT_SAMPLER_BUFFER_AMD                  = $9003;
+   GL_DISCRETE_AMD                                     = $9006;
+   GL_CONTINUOUS_AMD                                   = $9007;
+   GL_TESSELLATION_MODE_AMD                            = $9004;
+   GL_TESSELLATION_FACTOR_AMD                          = $9005;
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
@@ -5199,6 +5211,8 @@ var
    glVertexAttrib4uiv: procedure(index:TGLuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glVertexAttrib4usv: procedure(index:TGLuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glVertexAttribPointer: procedure(index:TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride:TGLsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTessellationFactorAMD: procedure(factor: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTessellationModeAMD: procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -6708,6 +6722,9 @@ begin
    glVertexAttrib4usv := GLGetProcAddress('glVertexAttrib4usv');
    glVertexAttribPointer := GLGetProcAddress('glVertexAttribPointer');
 
+   glTessellationFactorAMD := GLGetProcAddress('glTessellationFactorAMD');
+   glTessellationModeAMD := GLGetProcAddress('glTessellationModeAMD');
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 2.1'} {$ENDIF}
@@ -7659,19 +7676,19 @@ begin
     // There must be at least one dot to separate major and minor version number.
     Separator := Pos('.', Buffer);
     // At least one number must be before and one after the dot.
-    if (Separator > 1) and (Separator < Length(Buffer)) and (Buffer[Separator - 1] in ['0'..'9']) and
-      (Buffer[Separator + 1] in ['0'..'9']) then
+    if (Separator > 1) and (Separator < Length(Buffer)) and (AnsiChar(Buffer[Separator - 1]) in ['0'..'9']) and
+      (AnsiChar(Buffer[Separator + 1]) in ['0'..'9']) then
     begin
       // OK, it's a valid version string. Now remove unnecessary parts.
       Dec(Separator);
       // Find last non-numeric character before version number.
-      while (Separator > 0) and (Buffer[Separator] in ['0'..'9']) do
+      while (Separator > 0) and (AnsiChar(Buffer[Separator]) in ['0'..'9']) do
         Dec(Separator);
       // Delete leading characters which do not belong to the version string.
       Delete(Buffer, 1, Separator);
       Separator := Pos('.', Buffer) + 1;
       // Find first non-numeric character after version number
-      while (Separator <= Length(Buffer)) and (Buffer[Separator] in ['0'..'9']) do
+      while (Separator <= Length(Buffer)) and (AnsiChar(Buffer[Separator]) in ['0'..'9']) do
         Inc(Separator);
       // delete trailing characters not belonging to the version string
       Delete(Buffer, Separator, 255);
@@ -7926,6 +7943,8 @@ begin
    GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture');
    GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
    GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
+
+   GL_AMD_vertex_shader_tessellator := CheckExtension('GL_AMD_vertex_shader_tessellator');
 
    GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
 
