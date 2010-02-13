@@ -6,6 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/02/10 - Yar - Bugfix painting for winXP and buffer properties changes
+                           (thanks Predator)
       <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
                               properties (thanks Yury Plashenkov)  
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
@@ -49,134 +51,129 @@ type
       depth testing, etc. and can take care of framerate calculation.<p> }
    TGLSceneViewer = class (TWinControl)
       private
-         { Private Declarations }
-         FBuffer : TGLSceneBuffer;
-         FVSync : TVSyncMode;
-         FOwnDC : Cardinal;
-			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
-         FMouseInControl : Boolean;
-         FLastScreenPos : TPoint;
+        { Private Declarations }
+        FBuffer : TGLSceneBuffer;
+        FVSync : TVSyncMode;
+        FOwnDC : Cardinal;
+	FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
+        FMouseInControl : Boolean;
+        FLastScreenPos : TPoint;
 
-         procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); Message LM_ERASEBKGND;
-         procedure LMPaint(var Message: TLMPaint); Message LM_PAINT;
-         procedure LMSize(var Message: TLMSize); Message LM_SIZE;
-         procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
+        procedure WMEraseBkgnd(var Message: TLMEraseBkgnd); Message LM_ERASEBKGND;
+        procedure WMPaint(var Message: TLMPaint); Message LM_PAINT;
+        procedure WMSize(var Message: TLMSize); Message LM_SIZE;
+        procedure WMDestroy(var Message: TLMDestroy); message LM_DESTROY;
 
-	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
-	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+	procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
+	procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
         function GetFieldOfView: single;
         procedure SetFieldOfView(const Value: single);
         function GetIsRenderingContextAvailable: Boolean;
 
       protected
          { Protected Declarations }
-         procedure SetBeforeRender(const val : TNotifyEvent);
-         function GetBeforeRender : TNotifyEvent;
-         procedure SetPostRender(const val : TNotifyEvent);
-         function GetPostRender : TNotifyEvent;
-         procedure SetAfterRender(const val : TNotifyEvent);
-         function GetAfterRender : TNotifyEvent;
-         procedure SetCamera(const val : TGLCamera);
-         function GetCamera : TGLCamera;
-         procedure SetBuffer(const val : TGLSceneBuffer);
+        procedure SetBeforeRender(const val : TNotifyEvent);
+        function GetBeforeRender : TNotifyEvent;
+        procedure SetPostRender(const val : TNotifyEvent);
+        function GetPostRender : TNotifyEvent;
+        procedure SetAfterRender(const val : TNotifyEvent);
+        function GetAfterRender : TNotifyEvent;
+        procedure SetCamera(const val : TGLCamera);
+        function GetCamera : TGLCamera;
+        procedure SetBuffer(const val : TGLSceneBuffer);
 
-         {$IFDEF MSWINDOWS}
-         procedure CreateParams(var Params: TCreateParams); override;
-         {$ENDIF}
-         procedure CreateWnd; override;
-         procedure DestroyWnd; override;
-         procedure Loaded; override;
-         procedure DoBeforeRender(Sender : TObject); dynamic;
-         procedure DoBufferChange(Sender : TObject); virtual;
-         procedure DoBufferStructuralChange(Sender : TObject); dynamic;
+        {$IFDEF MSWINDOWS}
+        procedure CreateParams(var Params: TCreateParams); override;
+        {$ENDIF}
+        procedure CreateWnd; override;
+        procedure DestroyWnd; override;
+        procedure Loaded; override;
+        procedure DoBeforeRender(Sender : TObject); dynamic;
+        procedure DoBufferChange(Sender : TObject); virtual;
+        procedure DoBufferStructuralChange(Sender : TObject); dynamic;
 
       public
          { Public Declarations }
-         constructor Create(AOwner: TComponent); override;
-         destructor  Destroy; override;
+        constructor Create(AOwner: TComponent); override;
+        destructor  Destroy; override;
+        {$IFDEF MSWINDOWS}
+        procedure EraseBackground(DC:HDC); override;
+        {$ENDIF}
+        procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+        {: Makes TWinControl's RecreateWnd public.<p>
+           This procedure allows to work around limitations in some OpenGL
+           drivers (like MS Software OpenGL) that are not able to share lists
+           between RCs that already have display lists. }
+        procedure RecreateWnd;
+        property IsRenderingContextAvailable : Boolean read GetIsRenderingContextAvailable;
+        function LastFrameTime : Single;
+        function FramesPerSecond : Single;
+        function FramesPerSecondText(decimals : Integer = 1) : String;
+        procedure ResetPerformanceMonitor;
 
-         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         {: Makes TWinControl's RecreateWnd public.<p>
-            This procedure allows to work around limitations in some OpenGL
-            drivers (like MS Software OpenGL) that are not able to share lists
-            between RCs that already have display lists. }
-         procedure RecreateWnd;
-
-         property IsRenderingContextAvailable : Boolean read GetIsRenderingContextAvailable;
-
-         function LastFrameTime : Single;
-         function FramesPerSecond : Single;
-         function FramesPerSecondText(decimals : Integer = 1) : String;
-         procedure ResetPerformanceMonitor;
-
-         function CreateSnapShotBitmap : TBitmap;
-
-         property RenderDC : Cardinal read FOwnDC;
-         property MouseInControl : Boolean read FMouseInControl;
-
+        function CreateSnapShotBitmap : TBitmap;
+        property RenderDC : Cardinal read FOwnDC;
+        property MouseInControl : Boolean read FMouseInControl;
+        Procedure Invalidate; override;
       published
-         { Published Declarations }
-         {: Camera from which the scene is rendered. }
-         property Camera : TGLCamera read GetCamera write SetCamera;
+        { Published Declarations }
+        {: Camera from which the scene is rendered. }
+        property Camera : TGLCamera read GetCamera write SetCamera;
+        {: Specifies if the refresh should be synchronized with the VSync signal.<p>
+           If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
+           extension, this property is ignored.  }
+        property VSync : TVSyncMode read FVSync write FVSync default vsmNoSync;
+        {: Triggered before the scene's objects get rendered.<p>
+           You may use this event to execute your own OpenGL rendering. }
+        property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
+        {: Triggered just after all the scene's objects have been rendered.<p>
+           The OpenGL context is still active in this event, and you may use it
+           to execute your own OpenGL rendering.<p> }
+        property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
+        {: Called after rendering.<p>
+           You cannot issue OpenGL calls in this event, if you want to do your own
+           OpenGL stuff, use the PostRender event. }
+        property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+        {: Access to buffer properties. }
+        property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
+        {: Returns or sets the field of view for the viewer, in degrees.<p>
+        This value depends on the camera and the width and height of the scene.
+        The value isn't persisted, if the width/height or camera.focallength is
+        changed, FieldOfView is changed also. }
+        property FieldOfView : single read GetFieldOfView write SetFieldOfView;
 
-         {: Specifies if the refresh should be synchronized with the VSync signal.<p>
-            If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
-            extension, this property is ignored.  }
-         property VSync : TVSyncMode read FVSync write FVSync default vsmNoSync;
+        property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+        property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
 
-         {: Triggered before the scene's objects get rendered.<p>
-            You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
-         {: Triggered just after all the scene's objects have been rendered.<p>
-            The OpenGL context is still active in this event, and you may use it
-            to execute your own OpenGL rendering.<p> }
-         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
-         {: Called after rendering.<p>
-            You cannot issue OpenGL calls in this event, if you want to do your own
-            OpenGL stuff, use the PostRender event. }
-         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+        property Align;
+        property Anchors;
+        property DragCursor;
+        property DragMode;
+        property Enabled;
+        property HelpContext;
+        property Hint;
+        property PopupMenu;
+        property Visible;
 
-         {: Access to buffer properties. }
-         property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
+        property OnClick;
+        property OnDblClick;
+        property OnDragDrop;
+        property OnDragOver;
+        property OnStartDrag;
+        property OnEndDrag;
+        property OnMouseDown;
+        property OnMouseMove;
+        property OnMouseUp;
 
-         {: Returns or sets the field of view for the viewer, in degrees.<p>
-         This value depends on the camera and the width and height of the scene.
-         The value isn't persisted, if the width/height or camera.focallength is
-         changed, FieldOfView is changed also. }
-         property FieldOfView : single read GetFieldOfView write SetFieldOfView;
+        property OnMouseWheel;
+        property OnMouseWheelDown;
+        property OnMouseWheelUp;
 
-         property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-         property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-
-         property Align;
-         property Anchors;
-         property DragCursor;
-         property DragMode;
-         property Enabled;
-         property HelpContext;
-         property Hint;
-         property PopupMenu;
-         property Visible;
-
-         property OnClick;
-         property OnDblClick;
-         property OnDragDrop;
-         property OnDragOver;
-         property OnStartDrag;
-         property OnEndDrag;
-         property OnMouseDown;
-         property OnMouseMove;
-         property OnMouseUp;
-
-         property OnMouseWheel;
-         property OnMouseWheelDown;
-         property OnMouseWheelUp;
-
-         property OnContextPopup;
-         property TabStop;
-         property TabOrder;
-         property OnEnter;
-         property OnExit;         
+        property OnContextPopup;
+        property TabStop;
+        property TabOrder;
+        property OnEnter;
+        property OnExit;
    end;
 
 // ------------------------------------------------------------------
@@ -231,8 +228,7 @@ begin
    ControlStyle:=[csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
    if csDesigning in ComponentState then
       ControlStyle:=ControlStyle+[csFramed];
-   Width:=100;
-   Height:=100;
+   SetInitialBounds(0, 0, 200, 200);
    FVSync:=vsmNoSync;
    FBuffer:=TGLSceneBuffer.Create(Self);
    FBuffer.ViewerBeforeRender:=DoBeforeRender;
@@ -244,7 +240,7 @@ end;
 //
 destructor TGLSceneViewer.Destroy;
 begin
-   FBuffer.Free;
+   FBuffer.free;
    inherited Destroy;
 end;
 
@@ -253,10 +249,7 @@ end;
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (Operation = opRemove) and (FBuffer<>nil) then
-   begin
-      if (AComponent = FBuffer.Camera) then
          FBuffer.Camera := nil;
-   end;
    inherited;
 end;
 
@@ -264,7 +257,7 @@ end;
 //
 procedure TGLSceneViewer.RecreateWnd;
 begin
-   inherited;
+  inherited;
 end;
 
 // SetBeforeRender
@@ -369,7 +362,7 @@ end;
 
 // LMEraseBkgnd
 //
-procedure TGLSceneViewer.LMEraseBkgnd(var Message: TLMEraseBkgnd);
+procedure TGLSceneViewer.WMEraseBkgnd(var Message: TLMEraseBkgnd);
 begin
    if IsRenderingContextAvailable then
       Message.Result:=1
@@ -378,7 +371,7 @@ end;
 
 // LMSize
 //
-procedure TGLSceneViewer.LMSize(var Message: TLMSize);
+procedure TGLSceneViewer.WMSize(var Message: TLMSize);
 begin
    inherited;
    FBuffer.Resize(Message.Width, Message.Height);
@@ -386,7 +379,19 @@ end;
 
 // LMPaint
 //
-procedure TGLSceneViewer.LMPaint(var Message: TLMPaint);
+procedure TGLSceneViewer.WMPaint(var Message: TLMPaint);
+{$IFNDEF MSWINDOWS}
+  begin
+    Include(FControlState,csCustomPaint);
+    inherited WMPaint(Message);
+    try
+       if IsRenderingContextAvailable and (Width>0) and (Height>0) then
+         FBuffer.Render;
+    finally
+    end;
+    Exclude(FControlState,csCustomPaint);
+  end;
+{$ELSE}
 var
    PS : LCLType.TPaintStruct;
    p : TPoint;
@@ -394,9 +399,8 @@ begin
    p:=ClientToScreen(Point(0, 0));
    if (FLastScreenPos.X<>p.X) or (FLastScreenPos.Y<>p.Y) then begin
       // Workaround for MS OpenGL "black borders" bug
-      if FBuffer.RCInstantiated then
-         PostMessage(Handle, WM_SIZE, SIZE_RESTORED,
-                     Width+(Height shl 16));
+      if ((assigned(FBuffer)) and (FBuffer.RCInstantiated)) then
+         PostMessage(Handle, WM_SIZE, SIZE_RESTORED, Width+(Height shl 16));
       FLastScreenPos:=p;
    end;
    BeginPaint(Handle, PS);
@@ -404,14 +408,16 @@ begin
       if IsRenderingContextAvailable and (Width>0) and (Height>0) then
          FBuffer.Render;
    finally
-      EndPaint(Handle, PS);
+     EndPaint(Handle, PS);
       Message.Result:=0;
    end;
 end;
+{$ENDIF}
+
 
 // LMDestroy
 //
-procedure TGLSceneViewer.LMDestroy(var Message: TLMDestroy);
+procedure TGLSceneViewer.WMDestroy(var Message: TLMDestroy);
 begin
    FBuffer.DestroyRC;
    if FOwnDC<>0 then begin
@@ -448,6 +454,16 @@ begin
    HandleNeeded;
 end;
 
+Procedure TGLSceneViewer.Invalidate;
+begin
+   try
+    if IsRenderingContextAvailable and (Width>0) and (Height>0) then
+      FBuffer.Render;
+   finally
+   end;
+end;
+
+
 // DoBeforeRender
 //
 procedure TGLSceneViewer.DoBeforeRender(Sender : TObject);
@@ -467,7 +483,8 @@ end;
 //
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
 begin
-   RecreateWnd;
+   DestroyWnd;
+   CreateWnd;
 end;
 
 // LastFrameTime
@@ -498,6 +515,14 @@ begin
    FBuffer.ResetPerformanceMonitor;
 end;
 
+
+{$IFDEF MSWINDOWS}
+procedure TGLSceneViewer.EraseBackground(DC:HDC);
+begin
+   // everything is painted, so erasing the background is not needed
+end;
+{$ENDIF}
+
 // CreateSnapShotBitmap
 //
 function TGLSceneViewer.CreateSnapShotBitmap : TBitmap;
@@ -515,6 +540,11 @@ begin
 {$ENDIF}
 end;
 
+function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
+begin
+  Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
+end;
+
 // GetFieldOfView
 //
 function TGLSceneViewer.GetFieldOfView: single;
@@ -527,11 +557,6 @@ begin
 
   else
     result := Camera.GetFieldOfView(Height);
-end;
-
-function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
-begin
-  Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
 procedure TGLSceneViewer.SetFieldOfView(const Value: single);
