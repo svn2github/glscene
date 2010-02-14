@@ -98,7 +98,7 @@ implementation
 
 {$R *.DFM}
 
-uses GLKeyboard, OpenGL1x, GLState;
+uses GLKeyboard, OpenGL1x, GLState, GLTextureFormat;
 
 const
    cWaterLevel = -10000;

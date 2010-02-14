@@ -80,7 +80,7 @@ implementation
 {$WARN UNIT_PLATFORM OFF}
 {$ENDIF}
 
-uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext;
+uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext, GLTextureFormat;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 
