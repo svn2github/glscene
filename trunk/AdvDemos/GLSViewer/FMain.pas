@@ -11,14 +11,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Placemnt, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMisc,
+  Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
   GLTexture, OpenGL1x, GLContext, ExtDlgs, VectorLists, GLCadencer,
-  ExtCtrls;
+  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TMain = class(TForm)
-    FormStorage: TFormStorage;
     MainMenu: TMainMenu;
     ActionList: TActionList;
     ImageList: TImageList;
@@ -37,8 +36,8 @@ type
     MIOptions: TMenuItem;
     MIAntiAlias: TMenuItem;
     MIAADefault: TMenuItem;
-    MIAA2x: TMenuItem;
-    MIAA4X: TMenuItem;
+    MSAA2X: TMenuItem;
+    MSAA4X: TMenuItem;
     ACSaveAs: TAction;
     ACZoomIn: TAction;
     ACZoomOut: TAction;
@@ -116,6 +115,10 @@ type
     ACLighting: TAction;
     Lighting1: TMenuItem;
     TBLighting: TToolButton;
+    MSAA8X: TMenuItem;
+    MSAA16X: TMenuItem;
+    CSAA8X: TMenuItem;
+    CSAA16X: TMenuItem;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -187,10 +190,11 @@ implementation
 
 {$R *.dfm}
 
-uses GLColor, KeyBoard, GraphicEx, Registry, PersistentClasses, MeshUtils,
+uses GLColor, GLKeyBoard, GLGraphics, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
-   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer, GLState;
+   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer, GLState,
+   GLRenderContextInfo;
 
 type
 
@@ -307,8 +311,12 @@ begin
    THiddenLineShader(hlShader).BackgroundColor:=ConvertWinColor(GLSceneViewer.Buffer.BackgroundColor);
    if not GL_ARB_multisample then begin
       MIAADefault.Checked:=True;
-      MIAA2x.Enabled:=False;
-      MIAA4X.Enabled:=False;
+      MSAA2x.Enabled:=False;
+      MSAA4X.Enabled:=False;
+      MSAA8X.Enabled:=False;
+      MSAA16X.Enabled:=False;
+      CSAA8X.Enabled:=False;
+      CSAA16X.Enabled:=False;
    end;
 end;
 
@@ -401,10 +409,18 @@ begin
    with GLSceneViewer.Buffer do begin
       if MIAADefault.Checked then
          AntiAliasing:=aaDefault
-      else if MIAA2X.Checked then
+      else if MSAA2X.Checked then
          AntiAliasing:=aa2x
-      else if MIAA4X.Checked then
-         AntiAliasing:=aa4x;
+      else if MSAA4X.Checked then
+         AntiAliasing:=aa4x
+      else if MSAA8X.Checked then
+         AntiAliasing:=aa8x
+      else if MSAA16X.Checked then
+         AntiAliasing:=aa16x
+      else if CSAA8X.Checked then
+         AntiAliasing:=csa8x
+      else if CSAA16X.Checked then
+         AntiAliasing:=csa16x;
    end;
 end;
 
