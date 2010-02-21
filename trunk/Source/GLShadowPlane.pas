@@ -9,6 +9,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/02/10 - Yar - Optimization of switching states
       <li>12/03/09 - DanB - Bug-fix for scissor test on recent NVidia drivers
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -29,7 +30,7 @@ interface
 {$I GLScene.inc}
 
 uses Classes, GLScene, VectorGeometry, OpenGL1x, GLObjects,
-   GLCrossPlatform, GLColor, GLRenderContextInfo;
+   GLCrossPlatform, GLColor, GLRenderContextInfo, GLState;
 
 type
 
@@ -171,7 +172,7 @@ begin
       CurrentBuffer := TGLSceneBuffer(ARci.buffer);
 
       if ARenderSelf and (VectorDotProduct(VectorSubtract(ARci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0) then begin
-         glPushAttrib(GL_ENABLE_BIT or GL_SCISSOR_BIT);
+         glPushAttrib(GL_SCISSOR_BIT);
          
          if     (spoScissor in ShadowOptions)
             and (PointDistance(ARci.cameraPosition)>BoundingSphereRadius) then begin
@@ -179,29 +180,26 @@ begin
             InflateGLRect(sr, 1, 1);
             IntersectGLRect(sr, GLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy));
             glScissor(sr.Left, sr.Top, sr.Right-sr.Left, sr.Bottom-sr.Top);
-            glEnable(GL_SCISSOR_TEST);
+            ARci.GLStates.SetGLState(stScissorTest);
          end;
 
          if (spoUseStencil in ShadowOptions) then begin
             glClearStencil(0);
             glClear(GL_STENCIL_BUFFER_BIT);
-            glEnable(GL_STENCIL_TEST);
+            ARci.GLStates.SetGLState(stStencilTest);
             glStencilFunc(GL_ALWAYS, 1, 1);
             glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
          end;
 
-         if spoIgnoreZ in ShadowOptions then
-            glDisable(GL_DEPTH_TEST);
-
-         glDisable(GL_ALPHA_TEST);
+         ARci.GLStates.UnSetGLState(stAlphaTest);
 
          // "Render"  plane and stencil mask
-         if (spoTransparent in ShadowOptions) then begin
-            glColorMask(False, False, False, False);
-            glDepthMask(False);
+         if (spoTransparent in ShadowOptions) then
+         begin
+            ARci.GLStates.SetGLColorWriting(False);
+            Material.DepthProperties.DepthWrite := False;
             BuildList(ARci);
-            glDepthMask(True);
-            glColorMask(True, True, True, True);
+            ARci.GLStates.SetGLColorWriting(True);
          end else begin
             Material.Apply(ARci);
             repeat
@@ -231,22 +229,23 @@ begin
             glLoadMatrixf(@CurrentBuffer.ModelViewMatrix);
             CurrentBuffer.PushModelViewMatrix(curMat);
 
-            glDisable(GL_CULL_FACE);
-            glEnable(GL_NORMALIZE);
+            ARci.GLStates.UnSetGLState(stCullFace);
+            ARci.GLStates.SetGLState(stNormalize);
             glPolygonOffset(-1, -1);
             glEnable(GL_POLYGON_OFFSET_FILL);
 
             oldIgnoreMaterials:=ARci.ignoreMaterials;
             ARci.ignoreMaterials:=True;
-            glDisable(GL_TEXTURE_2D);
-            glDisable(GL_LIGHTING);
-            glDisable(GL_FOG);
+            ARci.GLStates.UnSetGLState(stTexture2D);
+            ARci.GLStates.UnSetGLState(stLighting);
+            ARci.GLStates.UnSetGLState(stFog);
 
             glColor4fv(ShadowColor.AsAddress);
 
-            if (spoUseStencil in ShadowOptions) then begin
-               glEnable(GL_BLEND);
-               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            if (spoUseStencil in ShadowOptions) then
+            begin
+               ARci.GLStates.SetGLState(stBlend);
+               ARci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                glStencilFunc(GL_EQUAL, 1, 1);
                glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
             end;
@@ -274,7 +273,8 @@ begin
             glPopMatrix;
 
          end;
-
+         ARci.GLStates.UnSetGLState(stStencilTest);
+         glDisable(GL_POLYGON_OFFSET_FILL);
          glPopAttrib;
       end;
 
