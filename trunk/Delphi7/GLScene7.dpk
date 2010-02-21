@@ -265,6 +265,18 @@ contains
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
   GLPBuffer in '..\Source\Base\GLPBuffer.pas',
-  GLCompositeImage in '..\Source\GLCompositeImage.pas';
+  GLCompositeImage in '..\Source\GLCompositeImage.pas',
+  GLFBO in '..\Source\GLFBO.pas',
+  GLRenderContextInfo in '..\Source\GLRenderContextInfo.pas',
+  GLCameraController in '..\Source\GLCameraController.pas',
+  BaseClasses in '..\Source\Base\BaseClasses.pas',
+  GLManager in '..\Source\GLManager.pas',
+  GLObjectManager in '..\Source\GLObjectManager.pas',
+  GLCoordinates in '..\Source\Base\GLCoordinates.pas',
+  GLNodes in '..\Source\GLNodes.pas',
+  GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
+  GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
+  GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
+  GLSMWaveOut in '..\Source\GLSMWaveOut.pas';
 
 end.
