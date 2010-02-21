@@ -302,7 +302,7 @@ var
 begin
   if FIgnoreDeprecation then
     exit;
-  
+
   i := aFace - GL_FRONT;
   if FFrontBackShininess[i] <> shininess then
   begin
@@ -358,21 +358,19 @@ const
   clrGray20: TVector = (0.20, 0.20, 0.20, 1);
   clrGray80: TVector = (0.80, 0.80, 0.80, 1);
 begin
-  if FIgnoreDeprecation then
-    exit;
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, @clrGray20);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, @clrGray80);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, @clrBlack);
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, @clrBlack);
   glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);
   FillChar(FFrontBackColors, SizeOf(FFrontBackColors), 127);
-  FFrontBackShininess[0] := 0;
-  FFrontBackShininess[1] := 0;
+  FFrontBackShininess[0] := 255;
+  FFrontBackShininess[1] := 255;
 end;
 
 procedure TGLStateCache.SetGLBlendFuncion(sFactor, dFactor: TGLEnum);
 begin
-  if (sFactor<>FBlendFunc[0]) or (dFactor<>FBlendFunc[1]) then
+  if (sFactor <> FBlendFunc[0]) or (dFactor <> FBlendFunc[1]) then
   begin
     FBlendFunc[0] := sFactor;
     FBlendFunc[1] := dFactor;
@@ -382,16 +380,15 @@ end;
 
 procedure TGLStateCache.ResetGLBlendFuncion;
 begin
-  FBlendFunc[0] := GL_ONE;
-  FBlendFunc[1] := GL_ZERO;
-  glBlendFunc(GL_ONE, GL_ZERO);
+  FBlendFunc[0] := $FFFFFFFF;
+  FBlendFunc[1] := $FFFFFFFF;
 end;
 
 procedure TGLStateCache.SetGLAlphaFuncion(func: TGLEnum; ref: TGLclampf);
 begin
   if FIgnoreDeprecation then
     exit;
-  if (FAlphaFunc<>func) or (FAlphaRef<>ref) then
+  if (FAlphaFunc <> func) or (FAlphaRef <> ref) then
   begin
     FAlphaFunc := func;
     FAlphaRef := ref;
@@ -401,16 +398,13 @@ end;
 
 procedure TGLStateCache.ResetGLAlphaFuncion;
 begin
-  if FIgnoreDeprecation then
-    exit;
-  FAlphaFunc := GL_ALWAYS;
-  FAlphaRef := 0;
-  glAlphaFunc(GL_ALWAYS, 0);
+  FAlphaFunc := $FFFFFFFF;
+  FAlphaRef := -1;
 end;
 
 procedure TGLStateCache.SetGLDepthFunction(func: TGLEnum);
 begin
-  if FDepthFunc<>func then
+  if FDepthFunc <> func then
   begin
     FDepthFunc := func;
     glDepthFunc(func);
@@ -419,7 +413,7 @@ end;
 
 procedure TGLStateCache.SetGLDepthRange(Znear, Zfar: TGLclampf);
 begin
-  if (Znear<>FDepthRange[0]) or (Zfar<>FDepthRange[1]) then
+  if (Znear <> FDepthRange[0]) or (Zfar <> FDepthRange[1]) then
   begin
     FDepthRange[0] := Znear;
     FDepthRange[1] := Zfar;
@@ -429,19 +423,19 @@ end;
 
 procedure TGLStateCache.ResetGLDepthState;
 begin
-  FDepthFunc := GL_LESS;
-  glDepthFunc(GL_LESS);
-  FDepthRange[0] := 0;
-  FDepthRange[1] := 1;
-  glDepthRange(0, 1);
+  FDepthFunc := $FFFFFFFF;
+  FDepthRange[0] := -1;
+  FDepthRange[1] := -1;
+  FDepthWriting := True;
+  glDepthMask(True);
 end;
 
 procedure TGLStateCache.SetGLLineWidth(width: Single);
 begin
   if FIgnoreDeprecation then
-    if (width=0) or (width>1) then
+    if (width = 0) or (width > 1) then
       exit;
-  if width<>FLineWidth then
+  if width <> FLineWidth then
   begin
     FLineWidth := width;
     glLineWidth(FLineWidth);
@@ -523,7 +517,7 @@ end;
 
 procedure TGLStateCache.SetGLColorWriting(flag: Boolean);
 begin
-  if FColorWriting<>flag then
+  if FColorWriting <> flag then
   begin
     FColorWriting := flag;
     glColorMask(flag, flag, flag, flag);
@@ -535,7 +529,7 @@ end;
 
 procedure TGLStateCache.SetGLDepthWriting(flag: Boolean);
 begin
-  if FDepthWriting<>flag then
+  if FDepthWriting <> flag then
   begin
     FDepthWriting := flag;
     glDepthMask(flag);
@@ -598,13 +592,10 @@ begin
   ResetGLFrontFace;
   ResetGLBlendFuncion;
   ResetGLAlphaFuncion;
-  FColorWriting:=false;
+  FColorWriting := True;
   glColorMask(True, True, True, True);
-  FDepthWriting:=false;
-  glDepthMask(True);
   ResetGLDepthState;
-  FLineWidth := 1;
-  glLineWidth(1);
+  FLineWidth := -1;
 end;
 
 end.

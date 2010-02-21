@@ -2484,15 +2484,17 @@ var
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-  glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT or GL_LINE_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_LINE_STIPPLE);
+  rci.GLStates.SetGLDepthFunction(GL_LESS);
+  rci.GLStates.SetGLDepthRange(0, 1);
+  rci.GLStates.SetGLDepthWriting(True);
+  rci.GLStates.UnSetGLState(stLighting);
+  rci.GLStates.SetGLState(stLineStipple);
   if not rci.ignoreBlendingRequests then
   begin
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    rci.GLStates.SetGLState(stBlend);
+    rci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   end;
-  glLineWidth(1);
+  rci.GLStates.SetGLLineWidth(1.0);
   glLineStipple(1, Pattern);
   glBegin(GL_LINES);
   glColor3f(0.5, 0.0, 0.0);
@@ -2514,10 +2516,9 @@ begin
   glVertex3f(0, 0, 0);
   glVertex3f(0, 0, AxisLen);
   glEnd;
-  glPopAttrib;
   // clear fpu exception flag (sometime raised by the call to glEnd)
-  asm fclex
-  end;
+//  asm fclex
+//  end;
 end;
 
 // RegisterInfoForm
@@ -4915,7 +4916,6 @@ begin
   else
 {$ENDIF}
     glPushMatrix;
-
   if ocTransformation in FChanges then
     RebuildMatrix;
   glMultMatrixf(PGLfloat(FLocalMatrix));
@@ -4962,7 +4962,12 @@ begin
       else
         DoRender(ARci, True, shouldRenderChildren);
       if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-        ARci.GLStates.ResetAll;
+      begin
+        ARci.GLStates.ResetGLPolygonMode;
+        ARci.GLStates.ResetGLMaterialColors;
+        ARci.GLStates.ResetGLCurrentTexture;
+        ARci.GLStates.ResetGLFrontFace;
+      end;
       FGLObjectEffects.RenderPostEffects(ARci);
 {$IFNDEF GLS_OPTIMIZATIONS}
       if OptSaveGLStack then
@@ -4982,7 +4987,12 @@ begin
       else
         DoRender(ARci, True, shouldRenderChildren);
       if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-        ARci.GLStates.ResetAll;
+      begin
+        ARci.GLStates.ResetGLPolygonMode;
+        ARci.GLStates.ResetGLMaterialColors;
+        ARci.GLStates.ResetGLCurrentTexture;
+        ARci.GLStates.ResetGLFrontFace;
+      end;
     end;
   end
   else

@@ -1702,7 +1702,8 @@ begin
     end;
 
     // Apply depth properties
-    FDepthProperties.Apply(rci);
+    if not rci.ignoreDepthRequests then
+      FDepthProperties.Apply(rci);
   end;
 end;
 
