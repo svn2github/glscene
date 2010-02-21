@@ -6,6 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/02/10 - Yar - Optimization of switching states
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing (even more)
       <li>16/03/07 - DaStr - Added explicit pointer dereferencing
@@ -24,7 +25,8 @@ interface
 
 uses
   Classes,  GLVectorFileObjects, VerletClasses, VectorTypes, VectorLists,
-  VectorGeometry, GLTexture, OpenGL1x, SysUtils, GLRenderContextInfo;
+  VectorGeometry, GLTexture, OpenGL1x, SysUtils, GLRenderContextInfo,
+  GLState;
 
 type
   {: Class that represents a face. This structure is not used for rendering, but
@@ -568,9 +570,8 @@ var
 begin
   if EdgeList.Count>0 then
   begin
-    glDisable(GL_LIGHTING);
-
-    glLineWidth(3);
+    rci.GLStates.UnSetGLState(stLighting);
+    rci.GLStates.SetGLLineWidth(3);
     glColor3f(1,1,1);
 
     glBegin(GL_LINES);
@@ -585,7 +586,6 @@ begin
         glVertex3fv(PGLfloat(@Vertex1));
       end;
     glEnd;
-    glEnable(GL_LIGHTING);
   end;//}
 end;
 

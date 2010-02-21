@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/02/10 - Yar - Added function BindedGLSLProgram
       <li>08/01/10 - DaStr - Added TGLFramebufferHandle.AttachLayer()
                              Added more AntiAliasing modes (thanks YarUndeoaker)
       <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)
@@ -926,6 +927,8 @@ procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
 {: The TGLContext that is the currently active context, if any.<p>
    Returns nil if no context is active. }
 function CurrentGLContext : TGLContext;
+{: Return current binded glsl program }
+function BindedGLSLProgram : GLUInt;
 
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';
@@ -963,12 +966,20 @@ var
 threadvar
 {$ENDIF}
    vCurrentGLContext : TGLContext;
+   vBindedGLSLProgram : GLUInt = 0;
 
 // CurrentGLContext
 //
 function CurrentGLContext : TGLContext;
 begin
    Result:=vCurrentGLContext;
+end;
+
+// BindedGLSLProgram
+//
+function BindedGLSLProgram : GLUInt;
+begin
+   Result:=vBindedGLSLProgram;
 end;
 
 // RegisterGLContextClass
@@ -2541,14 +2552,22 @@ end;
 //
 procedure TGLProgramHandle.UseProgramObject;
 begin
-   glUseProgramObjectARB(FHandle);
+  if vBindedGLSLProgram <> FHandle then
+  begin
+    glUseProgramObjectARB(FHandle);
+    vBindedGLSLProgram := FHandle;
+  end;
 end;
 
 // GetAttribLocation
 //
 procedure TGLProgramHandle.EndUseProgramObject;
 begin
-   glUseProgramObjectARB(0);
+  if vBindedGLSLProgram <> 0 then
+  begin
+    glUseProgramObjectARB(0);
+    vBindedGLSLProgram := 0;
+  end;
 end;
 
 // GetUniform1i

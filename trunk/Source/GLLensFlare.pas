@@ -362,7 +362,7 @@ end;
 //
 procedure TGLLensFlare.SetupRenderingOptions;
 begin
-   glPushAttrib(GL_ENABLE_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);

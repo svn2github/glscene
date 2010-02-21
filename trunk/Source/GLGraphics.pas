@@ -114,8 +114,10 @@ type
     fLevels: TList;
     fCubeMap: Boolean;
     fTextureArray: Boolean;
+
+    function GetData: PGLPixel32Array; virtual;
   public
-    constructor Create; reintroduce;
+    constructor Create; reintroduce; virtual;
     destructor Destroy; override;
     {: Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
@@ -146,6 +148,8 @@ type
     procedure Narrow;
     {: Leave top level and remove other }
     procedure UnMipmap; dynamic;
+    {: Direct Access to image data}
+    property Data: PGLPixel32Array read GetData;
   end;
 
   TGLBaseImageClass = class of TGLBaseImage;
@@ -188,7 +192,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
     {: Accepts TGLBitmap32 and TGraphic subclasses. }
     procedure Assign(Source: TPersistent); override;
@@ -1290,6 +1294,11 @@ begin
   fMipLevels := 1;
 end;
 
+function TGLBaseImage.GetData: PGLPixel32Array;
+begin
+  Result := fData;
+end;
+
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 // ------------------
@@ -1332,7 +1341,8 @@ begin
   else if (Source is TGLBitmap32) or (Source is TGLBaseImage) then
   begin
     // duplicate the data
-    FBlank := TGLBitmap32(Source).fBlank;
+    if Source is TGLBitmap32 then
+      FBlank := TGLBitmap32(Source).fBlank;
     FWidth := TGLBitmap32(Source).fWidth;
     FHeight := TGLBitmap32(Source).fHeight;
     FDepth := TGLBitmap32(Source).fDepth;
@@ -1350,7 +1360,7 @@ begin
     if not FBlank then
     begin
       ReallocMem(FData, DataSize);
-      Move(TGLBitmap32(Source).Data^, Data^, DataSize);
+      Move(TGLBaseImage(Source).Data^, Data^, DataSize);
     end;
   end
   else if Source is TGLGraphic then
@@ -2381,7 +2391,6 @@ var
   p, buffer: Pointer;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
-  LODtarget: TGLUInt;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin

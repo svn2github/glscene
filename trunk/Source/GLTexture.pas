@@ -2587,9 +2587,7 @@ function TGLTexture.TextureImageRequiredMemory: Integer;
 var
   w, h, e, levelSize: Integer;
 begin
-  if FRequiredMemorySize > 0 then
-    Result := FRequiredMemorySize
-  else
+  if FRequiredMemorySize < 0 then
   begin
     if IsCompressedFormat(fTextureFormat) then
     begin
@@ -2603,23 +2601,24 @@ begin
     end;
 
     e := GetTextureElementSize(fTextureFormat);
-    Result := w * h * e;
+    FRequiredMemorySize := w * h * e;
     if Image.Depth > 0 then
-      Result := Result * Image.Depth;
+      FRequiredMemorySize := FRequiredMemorySize * Image.Depth;
 
     if not (MinFilter in [miNearest, miLinear]) then
     begin
-      levelSize := Result;
+      levelSize := FRequiredMemorySize;
       while e<levelSize do
       begin
         levelSize := levelSize div 4;
-        Result := Result + levelSize;
+        FRequiredMemorySize := FRequiredMemorySize + levelSize;
       end;
     end;
 
     if Image.GetTextureTarget = GL_TEXTURE_CUBE_MAP then
-      Result := Result * 6;
+      FRequiredMemorySize := FRequiredMemorySize * 6;
   end;
+  Result := FRequiredMemorySize;
 end;
 
 // SetImageAlpha
