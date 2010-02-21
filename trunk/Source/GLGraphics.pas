@@ -11,6 +11,8 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
+                           (thanks to mif)
       <li>10/02/10 - Yar   - Bugfix in RegisterAsOpenGLTexture with Cubemap mipmaping
       <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
                              Return to GL_SGIS_generate_mipmap
@@ -249,7 +251,8 @@ type
     property ScanLine[index: Integer]: PGLPixel32Array read GetScanLine;
 
     property VerticalReverseOnAssignFromBitmap: Boolean read
-      FVerticalReverseOnAssignFromBitmap write FVerticalReverseOnAssignFromBitmap;
+      FVerticalReverseOnAssignFromBitmap write
+        FVerticalReverseOnAssignFromBitmap;
 
     {: Grants direct access to the bitmap's data.<p>
       This property is equivalent to ScanLine[0], and may be nil if the
@@ -352,6 +355,7 @@ type
       TGLBaseImageClass);
     function FindExt(ext: string): TGLBaseImageClass;
     function FindFromFileName(const fileName: string): TGLBaseImageClass;
+    function FindFromStream(const AStream: TStream): TGLBaseImageClass;
     procedure Remove(AClass: TGLBaseImageClass);
     procedure BuildFilterStrings(imageFileClass: TGLBaseImageClass;
       var descriptions, filters: string;
@@ -505,6 +509,31 @@ begin
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
+// FindFromStream
+//
+
+function TRasterFileFormatsList.FindFromStream(const AStream: TStream):
+  TGLBaseImageClass;
+var
+  ext: string;
+  magic: array[0..1] of Longword;
+begin
+  AStream.ReadBuffer(magic, 2*SizeOf(Longword));
+  AStream.Seek(-2*SizeOf(Longword), 1);
+
+  if magic[0] = $20534444 then
+    ext := 'DDS'
+  else if magic[1]=$4354334F then
+    ext := 'O3TC'
+  else if (magic[0] and $0000FFFF)=$00003F23 then
+    ext := 'HDR';
+
+  Result := FindExt(ext);
+  if not Assigned(Result) then
+    raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
+      [ext, 'GLFile' + UpperCase(ext)]);
+end;
+
 // Remove
 //
 
@@ -539,7 +568,7 @@ begin
     p := TRasterFileFormat(Items[i]);
     if p.BaseImageClass.InheritsFrom(imageFileClass) and (p.Extension <> '')
       and ((formatsThatCanBeOpened and (dfcRead in
-        p.BaseImageClass.Capabilities))
+      p.BaseImageClass.Capabilities))
       or (formatsThatCanBeSaved and (dfcWrite in p.BaseImageClass.Capabilities)))
         then
     begin
@@ -582,7 +611,7 @@ begin
       p := TRasterFileFormat(Items[i]);
       if (formatsThatCanBeOpened and (dfcRead in p.BaseImageClass.Capabilities))
         or (formatsThatCanBeSaved and (dfcWrite in
-          p.BaseImageClass.Capabilities)) then
+        p.BaseImageClass.Capabilities)) then
       begin
         if index = 1 then
         begin
@@ -1367,7 +1396,7 @@ begin
   begin
     if (Source is TGLBitmap)
 {$IFNDEF FPC} and (TGLBitmap(Source).PixelFormat in [glpf24bit,
-  glpf32bit]){$ENDIF}
+      glpf32bit]){$ENDIF}
     and ((TGLBitmap(Source).Width and 3) = 0) then
     begin
 {$IFDEF FPC}
@@ -2308,13 +2337,17 @@ type
   begin
     for i := 0 to n - 1 do
     begin
-      pDest^.r := (pLineA^[0].r + pLineA^[1].r + pLineB^[0].r + pLineB^[1].r) shr
+      pDest^.r := (pLineA^[0].r + pLineA^[1].r + pLineB^[0].r + pLineB^[1].r)
+        shr
         2;
-      pDest^.g := (pLineA^[0].g + pLineA^[1].g + pLineB^[0].g + pLineB^[1].g) shr
+      pDest^.g := (pLineA^[0].g + pLineA^[1].g + pLineB^[0].g + pLineB^[1].g)
+        shr
         2;
-      pDest^.b := (pLineA^[0].b + pLineA^[1].b + pLineB^[0].b + pLineB^[1].b) shr
+      pDest^.b := (pLineA^[0].b + pLineA^[1].b + pLineB^[0].b + pLineB^[1].b)
+        shr
         2;
-      pDest^.a := (pLineA^[0].a + pLineA^[1].a + pLineB^[0].a + pLineB^[1].a) shr
+      pDest^.a := (pLineA^[0].a + pLineA^[1].a + pLineB^[0].a + pLineB^[1].a)
+        shr
         2;
       Inc(pLineA);
       Inc(pLineB);
@@ -2348,7 +2381,7 @@ begin
   end
   else
 {$ENDIF}
-begin
+  begin
     for y := 0 to h2 - 1 do
     begin
       ProcessRowPascal(pDest, pLineA, pLineB, w2);
@@ -2401,7 +2434,7 @@ var
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
         3));
-    if Result<0 then
+    if Result < 0 then
       Result := 0;
   end;
 
@@ -2412,7 +2445,7 @@ begin
     w := RoundUpToPowerOf2(Width);
     h := RoundUpToPowerOf2(Height);
     d := RoundUpToPowerOf2(Depth);
-    if Depth=0 then
+    if Depth = 0 then
       d := 0;
   end
   else
@@ -2457,11 +2490,12 @@ begin
   if GL_SGIS_generate_mipmap and (target <> GL_TEXTURE_RECTANGLE) then
   begin
     bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
-    if (target>=GL_TEXTURE_CUBE_MAP_POSITIVE_X)
-      and (target<=GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) then
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen))
-      else
-    glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
+    if (target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X)
+      and (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) then
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP_SGIS,
+        Integer(bMipmapGen))
+    else
+      glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
   end;
 
   // if image is blank then doing only allocatation texture in videomemory
