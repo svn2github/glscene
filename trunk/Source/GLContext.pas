@@ -6,6 +6,9 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/02/10 - DanB - Added TGLContext.GLStates, to be used to cache
+                            global per-context state. Removed BindedGLSLProgram
+                            since it should be per-context state.
       <li>21/02/10 - Yar - Added function BindedGLSLProgram
       <li>08/01/10 - DaStr - Added TGLFramebufferHandle.AttachLayer()
                              Added more AntiAliasing modes (thanks YarUndeoaker)
@@ -64,7 +67,7 @@ uses
 Windows,
 {$ENDIF} {$ENDIF}
 
-Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes;
+Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes, GLState;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -114,6 +117,7 @@ type
          FOnDestroyContext : TNotifyEvent;
          FManager : TGLContextManager;
          FActivationCount : Integer;
+         FGLStates : TGLStateCache;
 {$IFNDEF GLS_MULTITHREAD}
          FSharedContexts : TList;
          FOwnedHandles : TList;
@@ -149,6 +153,10 @@ type
          { Public Declarations }
          constructor Create; virtual;
          destructor Destroy; override;
+
+         {: An application-side cache of global per-context OpenGL states
+            and parameters }
+         property GLStates: TGLStateCache read FGLStates;
 
          //: Context manager reference
          property Manager : TGLContextManager read FManager;
@@ -927,8 +935,6 @@ procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
 {: The TGLContext that is the currently active context, if any.<p>
    Returns nil if no context is active. }
 function CurrentGLContext : TGLContext;
-{: Return current binded glsl program }
-function BindedGLSLProgram : GLUInt;
 
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';
@@ -966,20 +972,12 @@ var
 threadvar
 {$ENDIF}
    vCurrentGLContext : TGLContext;
-   vBindedGLSLProgram : GLUInt = 0;
 
 // CurrentGLContext
 //
 function CurrentGLContext : TGLContext;
 begin
    Result:=vCurrentGLContext;
-end;
-
-// BindedGLSLProgram
-//
-function BindedGLSLProgram : GLUInt;
-begin
-   Result:=vBindedGLSLProgram;
 end;
 
 // RegisterGLContextClass
@@ -1016,6 +1014,7 @@ begin
    FOwnedHandles:=TThreadList.Create;
 {$ENDIF}
    FAcceleration:=chaUnknown;
+   FGLStates := TGLStateCache.Create;
    GLContextManager.RegisterContext(Self);
 end;
 
@@ -1026,6 +1025,7 @@ begin
    if IsValid then
       DestroyContext;
    GLContextManager.UnRegisterContext(Self);
+   FGLStates.Free;
    FOwnedHandles.Free;
    FSharedContexts.Free;
 {$IFDEF GLS_MULTITHREAD}
@@ -2552,22 +2552,14 @@ end;
 //
 procedure TGLProgramHandle.UseProgramObject;
 begin
-  if vBindedGLSLProgram <> FHandle then
-  begin
-    glUseProgramObjectARB(FHandle);
-    vBindedGLSLProgram := FHandle;
-  end;
+  RenderingContext.GLStates.SetGLCurrentProgram(FHandle);
 end;
 
 // GetAttribLocation
 //
 procedure TGLProgramHandle.EndUseProgramObject;
 begin
-  if vBindedGLSLProgram <> 0 then
-  begin
-    glUseProgramObjectARB(0);
-    vBindedGLSLProgram := 0;
-  end;
+  RenderingContext.GLStates.SetGLCurrentProgram(0);
 end;
 
 // GetUniform1i

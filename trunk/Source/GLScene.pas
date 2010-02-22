@@ -6,7 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>22/10/10 - Yar - Added Push/PopProjectionMatrix to TGLSceneBuffer
+      <li>22/02/10 - DanB - Moved TGLSceneBuffer.GLStates to TGLContext.GLStates
+      <li>22/02/10 - Yar - Added Push/PopProjectionMatrix to TGLSceneBuffer
                            Optimization of switching states
       <li>14/03/09 - DanB - Moved RenderScene from TGLScene to TGLSceneBuffer, removed
                             TGLScene.Cameras, place cameras inside scene instead.
@@ -1900,7 +1901,6 @@ type
   private
     { Private Declarations }
     // Internal state
-    FGLStates: TGLStateCache;
     FRendering: Boolean;
     FRenderingContext: TGLContext;
     FAfterRenderEffects: TPersistentObjectList;
@@ -1976,7 +1976,7 @@ type
     procedure DoBaseRender(const aViewPort: TRectangle; resolution: Integer;
       drawState: TDrawState; baseObject: TGLBaseSceneObject);
 
-    procedure SetupRenderingContext;
+    procedure SetupRenderingContext(context: TGLContext);
     procedure SetupRCOptions(context: TGLContext);
     procedure PrepareGLContext;
 
@@ -2183,8 +2183,6 @@ type
        Note that ZBuffer precision is not linear and can be quite low on
        some boards (either from compression or resolution approximations). }
     function PixelRayToWorld(x, y: Integer): TAffineVector;
-
-    property GLStates: TGLStateCache read FGLStates;
 
     {: Time (in second) spent to issue rendering order for the last frame.<p>
        Be aware that since execution by the hardware isn't synchronous,
@@ -7959,7 +7957,6 @@ begin
   FShadeModel := smDefault;
   FFogEnable := False;
   FAfterRenderEffects := TPersistentObjectList.Create;
-  FGLStates := TGLStateCache.Create;
 
   FContextOptions := [roDoubleBuffer, roRenderToWindow];
 
@@ -7972,7 +7969,6 @@ end;
 destructor TGLSceneBuffer.Destroy;
 begin
   Melt;
-  FGLStates.Free;
   // clean up and terminate
   if Assigned(FCamera) and Assigned(FCamera.FScene) then
   begin
@@ -8077,7 +8073,7 @@ begin
       // is posted before the rendering context has been created
       glViewport(0, 0, FViewPort.Width, FViewPort.Height);
       // set up initial context states
-      SetupRenderingContext;
+      SetupRenderingContext(FRenderingContext);
       BackColor := ConvertWinColor(FBackgroundColor);
       glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
     finally
@@ -8148,19 +8144,21 @@ end;
 // SetupRenderingContext
 //
 
-procedure TGLSceneBuffer.SetupRenderingContext;
+procedure TGLSceneBuffer.SetupRenderingContext(context: TGLContext);
 
   procedure PerformEnable(bool: Boolean; csState: TGLState; glState: TGLEnum);
   begin
     case bool of
-      true: GLStates.PerformSetGLState(csState);
-      false: GLStates.PerformUnSetGLState(csState);
+      true: context.GLStates.PerformSetGLState(csState);
+      false: context.GLStates.PerformUnSetGLState(csState);
     end;
   end;
 
 var
   LColorDepth: Cardinal;
 begin
+  if not Assigned(context) then
+    Exit;
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
   if roTwoSideLighting in FContextOptions then
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
@@ -8177,7 +8175,7 @@ begin
   glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
   PerformEnable((LColorDepth < 8), stDither, GL_DITHER);
 
-  GLStates.ResetGLDepthState;
+  context.GLStates.ResetGLDepthState;
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   case ShadeModel of
     smDefault, smSmooth: glShadeModel(GL_SMOOTH);
@@ -8414,7 +8412,7 @@ begin
       else
         handle := aTexture.Handle;
       createTexture := createTexture or forceCreateTexture;
-      GLStates.SetGLCurrentTexture(0, bindTarget, handle);
+      RenderingContext.GLStates.SetGLCurrentTexture(0, bindTarget, handle);
       if createTexture then
       begin
         GetMem(buf, Width * Height * 4);
@@ -8562,7 +8560,6 @@ var
   backColor: TColorVector;
   aColorBits: Integer;
   LViewport, viewportBackup: TRectangle;
-  lastStates: TGLStateCache;
 begin
   Assert((not FRendering), glsAlreadyRendering);
   FRendering := True;
@@ -8584,10 +8581,8 @@ begin
       // we must free the lists before changeing context, or it will have no effect
       GLContextManager.DestroyAllHandles;
       bmpContext.Activate;
-      lastStates := FGLStates;
-      FGLStates := TGLStateCache.Create;
       try
-        SetupRenderingContext;
+        SetupRenderingContext(bmpContext);
         BackColor := ConvertWinColor(FBackgroundColor);
         glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
         // set the desired viewport and limit output to this rectangle
@@ -8611,8 +8606,6 @@ begin
         FViewport := viewportBackup;
         glFinish;
       finally
-        FGLStates.Free;
-        FGLStates := lastStates;
         bmpContext.Deactivate;
       end;
       GLContextManager.DestroyAllHandles;
@@ -9342,7 +9335,7 @@ begin
 
       FRenderDPI := 96; // default value for screen
       ClearGLError;
-      SetupRenderingContext;
+      SetupRenderingContext(FRenderingContext);
       // clear the buffers
       glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
       ClearBuffers;
@@ -9432,7 +9425,7 @@ begin
   rci.viewPortSize.cy := viewPortSizeY;
   rci.renderDPI := FRenderDPI;
   rci.modelViewMatrix := @FModelViewMatrix;
-  rci.GLStates := FGLStates;
+  rci.GLStates := RenderingContext.GLStates;
   rci.GLStates.ResetAll;
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
@@ -9818,7 +9811,7 @@ begin
       // For MRT
       glReadBuffer(MRT_BUFFERS[BufferIndex]);
 
-      Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
+      Buffer.RenderingContext.GLStates.SetGLCurrentTexture(0, target, handle);
 
       if target = GL_TEXTURE_CUBE_MAP_ARB then
         target := GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + FCubeMapRotIdx;

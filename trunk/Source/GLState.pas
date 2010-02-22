@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>22/02/10 - DanB - added SetGLCurrentProgram
       <li>22/02/10 - Yar - Added more control of states
       <li>13/05/07 - fig - Added stTexture3D (GL_TEXTURE_3D)
       <li>19/12/06 - DaStr - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
@@ -60,6 +61,7 @@ type
     FLineWidth: Single;
     FStates: TGLStates;
     FTextureHandle: array[0..7] of Integer;
+    FCurrentProgram: TGLuint;
     FLastFrontMode, FLastBackMode: TGLEnum;
     FFrontFaceCCW: Boolean;
     FTextureMatrixIsIdenty: Boolean;
@@ -110,6 +112,10 @@ type
     function GetGLCurrentTexture(const TextureUnit: Integer): Integer;
     procedure ResetGLTexture(const TextureUnit: Integer);
     procedure ResetGLCurrentTexture;
+
+    {: Sets the current program object. }
+    procedure SetGLCurrentProgram(handle: TGLuint);
+
     {: Defines the OpenGL texture matrix.<p>
        Assumed texture mode is GL_MODELVIEW. }
     procedure SetGLTextureMatrix(const matrix: TMatrix);
@@ -457,6 +463,18 @@ end;
 procedure TGLStateCache.ResetGLTexture(const TextureUnit: Integer);
 begin
   FTextureHandle[TextureUnit] := -1;
+end;
+
+// SetGLCurrentProgram
+//
+
+procedure TGLStateCache.SetGLCurrentProgram(handle: TGLuint);
+begin
+  if handle <> FCurrentProgram then
+  begin
+    FCurrentProgram := handle;
+    glUseProgramObjectARB(handle);
+  end;
 end;
 
 // SetGLCurrentTexture
