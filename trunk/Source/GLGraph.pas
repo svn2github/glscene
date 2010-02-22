@@ -702,7 +702,7 @@ procedure TGLXYZGrid.BuildList(var rci : TRenderContextInfo);
 var
    xBase, x, xStep, xMax, yBase, y, yStep, yMax, zBase, z, zStep, zMax : Single;
 begin
-   SetupLineStyle(rci);
+   SetupLineStyle;
    // precache values
    XSamplingScale.SetBaseStepMaxToVars(xBase, xStep, xMax, (gpX in Parts));
    YSamplingScale.SetBaseStepMaxToVars(yBase, yStep, yMax, (gpY in Parts));
@@ -776,6 +776,7 @@ begin
          x:=x+xStep;
       end;
    end;
+   RestoreLineStyle;
 end;
 
 //-------------------------------------------------------------
