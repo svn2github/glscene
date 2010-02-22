@@ -370,8 +370,8 @@ begin
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, @clrBlack);
   glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 0);
   FillChar(FFrontBackColors, SizeOf(FFrontBackColors), 127);
-  FFrontBackShininess[0] := 255;
-  FFrontBackShininess[1] := 255;
+  FFrontBackShininess[0] := 0;
+  FFrontBackShininess[1] := 0;
 end;
 
 procedure TGLStateCache.SetGLBlendFuncion(sFactor, dFactor: TGLEnum);

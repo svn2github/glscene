@@ -451,7 +451,7 @@ type
   public
     function Add(const Item: IGLInitializable): Integer;
     property Items[const Index: Integer]: IGLInitializable read GetItems write
-      PutItems; default;
+    PutItems; default;
   end;
 
   // TGLBaseSceneObject
@@ -1093,7 +1093,7 @@ type
     class function ItemsClass: TXCollectionItemClass; override;
 
     property ObjectEffect[index: Integer]: TGLObjectEffect read GetEffect;
-      default;
+    default;
 
     function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
 
@@ -1235,8 +1235,8 @@ type
   // TDirectRenderEvent
   //
   {: Event for user-specific rendering in a TGLDirectOpenGL object. }
-  TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo) of
-    object;
+  TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo)
+    of object;
 
   // TGLDirectOpenGL
   //
@@ -2482,18 +2482,21 @@ var
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-  rci.GLStates.SetGLDepthFunction(GL_LESS);
-  rci.GLStates.SetGLDepthRange(0, 1);
-  rci.GLStates.SetGLDepthWriting(True);
-  rci.GLStates.UnSetGLState(stLighting);
-  rci.GLStates.SetGLState(stLineStipple);
+  glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT
+    or GL_LINE_BIT or GL_DEPTH_BUFFER_BIT);
+  glDisable(GL_LIGHTING);
+  glEnable(GL_LINE_STIPPLE);
   if not rci.ignoreBlendingRequests then
   begin
-    rci.GLStates.SetGLState(stBlend);
-    rci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   end;
-  rci.GLStates.SetGLLineWidth(1.0);
+  glLineWidth(1);
   glLineStipple(1, Pattern);
+  glDepthMask(True);
+  glDepthFunc(GL_LESS);
+  if rci.bufferDepthTest then
+    glEnable(GL_DEPTH_TEST);
   glBegin(GL_LINES);
   glColor3f(0.5, 0.0, 0.0);
   glVertex3f(0, 0, 0);
@@ -2514,9 +2517,10 @@ begin
   glVertex3f(0, 0, 0);
   glVertex3f(0, 0, AxisLen);
   glEnd;
+  glPopAttrib;
   // clear fpu exception flag (sometime raised by the call to glEnd)
-//  asm fclex
-//  end;
+  asm fclex
+  end;
 end;
 
 // RegisterInfoForm
@@ -2758,7 +2762,7 @@ begin
   if assigned(FAbsoluteMatrix) then
     // This bug have coming surely from a bad commit file.
     FreeMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-      // k00m memory fix and remove some leak of the old version.
+  // k00m memory fix and remove some leak of the old version.
   FGLObjectEffects.Free;
   FGLBehaviours.Free;
   FListHandle.Free;
@@ -7221,7 +7225,7 @@ function TGLLightSource.Attenuated: Boolean;
 begin
   Result := (LightStyle <> lsParallel)
     and ((ConstAttenuation <> 1) or (LinearAttenuation <> 0) or
-      (QuadraticAttenuation <> 0));
+    (QuadraticAttenuation <> 0));
 end;
 
 // ------------------
@@ -9164,7 +9168,7 @@ begin
   np := Camera.NearPlane; // Near plane distance
   fp := np + dov; // Far plane distance
   Result := (fp * np) / (fp - aDepth * dov);
-    // calculate world distance from z-buffer value
+  // calculate world distance from z-buffer value
 end;
 
 // PixelToDistance
@@ -9183,7 +9187,7 @@ begin
   np := Camera.NearPlane; // Near plane distance
   fp := np + dov; // Far plane distance
   dst := (np * fp) / (fp - z * dov);
-    //calculate from z-buffer value to frustrum depth
+  //calculate from z-buffer value to frustrum depth
   coord[0] := x;
   coord[1] := y;
   vec := self.ScreenToVector(coord); //get the pixel vector
