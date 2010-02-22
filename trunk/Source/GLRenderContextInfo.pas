@@ -105,6 +105,7 @@ type
       proxySubObject : Boolean;
       ignoreMaterials : Boolean;
       ignoreBlendingRequests : Boolean;
+      ignoreDepthRequests : Boolean;
       amalgamating : Boolean;
       lights: TPersistentObjectList;
       afterRenderEffects: TPersistentObjectList;
