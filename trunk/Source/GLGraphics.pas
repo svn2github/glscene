@@ -11,6 +11,8 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
+                           Added in AssignFrom24BitsBitmap, AssignFrom32BitsBitmap using extension GL_EXT_bgra
       <li>22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
                            (thanks to mif)
       <li>10/02/10 - Yar   - Bugfix in RegisterAsOpenGLTexture with Cubemap mipmaping
@@ -1395,9 +1397,10 @@ begin
   else if Source is TGLGraphic then
   begin
     if (Source is TGLBitmap)
-{$IFNDEF FPC} and (TGLBitmap(Source).PixelFormat in [glpf24bit,
-      glpf32bit]){$ENDIF}
-    and ((TGLBitmap(Source).Width and 3) = 0) then
+{$IFNDEF FPC}
+      and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+{$ENDIF}
+      and (((TGLBitmap(Source).Width and 3) = 0) or GL_EXT_bgra) then
     begin
 {$IFDEF FPC}
       // in FPC this is pixel wize and reads all pixelFormats.
@@ -1523,15 +1526,22 @@ var
   pSrc, pDest: PAnsiChar;
 begin
   Assert(aBitmap.PixelFormat = glpf24bit);
-  Assert((aBitmap.Width and 3) = 0);
   FWidth := aBitmap.Width;
   FHeight := aBitmap.Height;
   FDepth := 0;
   fMipLevels := 1;
-  fColorFormat := GL_RGBA;
+  if GL_EXT_bgra then
+  begin
+    fColorFormat := GL_BGR;
+    fElementSize := 3;
+  end
+  else begin
+    Assert((aBitmap.Width and 3) = 0);
+    fColorFormat := GL_RGBA;
+    fElementSize := 4;
+  end;
   fInternalFormat := tfRGBA8;
   fDataType := GL_UNSIGNED_BYTE;
-  fElementSize := 4;
   fLevels.Clear;
   fCubeMap := false;
   fTextureArray := false;
@@ -1539,10 +1549,16 @@ begin
   FBlank := false;
   if Height > 0 then
   begin
-    pDest := @PAnsiChar(FData)[Width * 4 * (Height - 1)];
+    pDest := @PAnsiChar(FData)[Width * fElementSize * (Height - 1)];
     if Height = 1 then
     begin
-      BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
+      if GL_EXT_bgra then
+      begin
+        pSrc := BitmapScanLine(aBitmap, 0);
+        Move(pSrc^, pDest^, Width*fElementSize);
+      end
+      else
+        BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
     end
     else
     begin
@@ -1557,11 +1573,22 @@ begin
         pSrc := BitmapScanLine(aBitmap, 0);
         rowOffset := Integer(BitmapScanLine(aBitmap, 1)) - Integer(pSrc);
       end;
-      for y := 0 to Height - 1 do
+      if GL_EXT_bgra then
       begin
-        BGR24ToRGBA32(pSrc, pDest, Width);
-        Dec(pDest, Width * 4);
-        Inc(pSrc, rowOffset);
+        for y := 0 to Height - 1 do
+        begin
+          Move(pSrc^, pDest^, Width*fElementSize);
+          Dec(pDest, Width * fElementSize);
+          Inc(pSrc, rowOffset);
+        end;
+      end
+      else begin
+        for y := 0 to Height - 1 do
+        begin
+          BGR24ToRGBA32(pSrc, pDest, Width);
+          Dec(pDest, Width * fElementSize);
+          Inc(pSrc, rowOffset);
+        end;
       end;
     end;
   end;
@@ -1629,14 +1656,17 @@ var
   y, rowOffset: Integer;
   pSrc, pDest: PAnsiChar;
 begin
-
   Assert(aBitmap.PixelFormat = glpf32bit);
-  Assert((aBitmap.Width and 3) = 0);
   FWidth := aBitmap.Width;
   FHeight := aBitmap.Height;
   FDepth := 0;
   fMipLevels := 1;
-  fColorFormat := GL_RGBA;
+  if GL_EXT_bgra then
+    fColorFormat := GL_BGRA
+  else begin
+    Assert((aBitmap.Width and 3) = 0);
+    fColorFormat := GL_RGBA;
+  end;
   fInternalFormat := tfRGBA8;
   fDataType := GL_UNSIGNED_BYTE;
   fElementSize := 4;
@@ -1664,11 +1694,22 @@ begin
       else
         rowOffset := 0;
     end;
-    for y := 0 to Height - 1 do
+    if GL_EXT_bgra then
     begin
-      BGRA32ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width * 4);
-      Inc(pSrc, rowOffset);
+      for y := 0 to Height - 1 do
+      begin
+        Move(pSrc^, pDest^, Width*4);
+        Dec(pDest, Width*4);
+        Inc(pSrc, rowOffset);
+      end;
+    end
+    else begin
+      for y := 0 to Height - 1 do
+      begin
+        BGRA32ToRGBA32(pSrc, pDest, Width);
+        Dec(pDest, Width * 4);
+        Inc(pSrc, rowOffset);
+      end;
     end;
   end;
 end;
