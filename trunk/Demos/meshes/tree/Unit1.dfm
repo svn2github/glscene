@@ -19,19 +19,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 153
     Top = 0
-    Width = 575
-    Height = 523
+    Width = 567
+    Height = 511
     Camera = GLCamera1
-    FieldOfView = 158.350875854492200000
+    FieldOfView = 157.854904174804700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 153
-    Height = 523
+    Height = 511
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
@@ -327,7 +328,6 @@ object Form1: TForm1
     object GLPlane1: TGLPlane
       Height = 10.000000000000000000
       Width = 10.000000000000000000
-      NoZWrite = False
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary

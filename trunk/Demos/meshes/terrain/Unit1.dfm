@@ -24,15 +24,17 @@ object Form1: TForm1
     Height = 405
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 200
-    Buffer.FogEnvironment.FogEnd = 650
+    Buffer.FogEnvironment.FogStart = 200.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 650.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
+    FieldOfView = 152.260620117187500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
@@ -50,14 +52,14 @@ object Form1: TForm1
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       Bands = <
         item
-          StartAngle = -5
+          StartAngle = -5.000000000000000000
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 25
+          StopAngle = 25.000000000000000000
           Slices = 9
         end
         item
-          StartAngle = 25
-          StopAngle = 90
+          StartAngle = 25.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Slices = 9
           Stacks = 4
@@ -68,6 +70,7 @@ object Form1: TForm1
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
+        Material.DepthProperties.DepthWrite = False
         Material.BlendingMode = bmTransparency
         Material.MaterialOptions = [moIgnoreFog]
         Material.Texture.ImageAlpha = tiaSuperBlackTransparent
@@ -76,15 +79,13 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Position.Coordinates = {00000C430000C842000096420000803F}
         Visible = False
-        Width = 30
-        Height = 30
-        NoZWrite = True
-        MirrorU = False
-        MirrorV = False
+        Width = 30.000000000000000000
+        Height = 30.000000000000000000
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
+        Material.DepthProperties.DepthWrite = False
         Material.BlendingMode = bmAdditive
         Material.MaterialOptions = [moIgnoreFog]
         Material.Texture.TextureMode = tmReplace
@@ -92,19 +93,16 @@ object Form1: TForm1
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Position.Coordinates = {00000C430000C842000096420000803F}
-        Width = 60
-        Height = 60
-        NoZWrite = True
-        MirrorU = False
-        MirrorV = False
+        Width = 60.000000000000000000
+        Height = 60.000000000000000000
       end
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 650
-        FocalLength = 50
+        DepthOfView = 650.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = DummyCube1
         Position.Coordinates = {0000A040000020410000C8410000803F}
         Left = 264
@@ -119,17 +117,15 @@ object Form1: TForm1
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
-      TilesPerTexture = 1
-      QualityDistance = 150
+      TilesPerTexture = 1.000000000000000000
+      QualityDistance = 150.000000000000000000
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object DCSound: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLLensFlare: TGLLensFlare
       Size = 100
@@ -139,7 +135,7 @@ object Form1: TForm1
       Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
       Visible = False
       object GLDummyCube1: TGLDummyCube
-        CubeSize = 100
+        CubeSize = 100.000000000000000000
         VisibleAtRunTime = True
       end
     end
@@ -164,7 +160,6 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         Texture2Name = 'details'
@@ -174,7 +169,6 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         TextureScale.Coordinates = {00000043000000430000004300000000}
@@ -199,7 +193,7 @@ object Form1: TForm1
   object GLSMBASS1: TGLSMBASS
     Active = True
     MaxChannels = 32
-    MasterVolume = 1
+    MasterVolume = 1.000000000000000000
     Listener = GLCamera1
     Sources = <>
     Cadencer = GLCadencer1
@@ -207,7 +201,7 @@ object Form1: TForm1
     Algorithm3D = algFull
     Left = 96
     Top = 16
-    Doppler = 0
+    Doppler = 0.000000000000000000
   end
   object TISound: TTimer
     Interval = 3000

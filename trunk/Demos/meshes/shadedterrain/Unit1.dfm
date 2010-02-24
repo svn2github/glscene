@@ -19,25 +19,27 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 603
-    Height = 389
+    Width = 595
+    Height = 380
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 200
-    Buffer.FogEnvironment.FogEnd = 650
+    Buffer.FogEnvironment.FogStart = 200.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 650.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 603
+    Width = 595
     Height = 65
     Align = alTop
     BevelOuter = bvLowered
@@ -76,17 +78,12 @@ object Form1: TForm1
       Width = 177
       Height = 29
       Max = 3
-      Orientation = trHorizontal
       PageSize = 1
-      Frequency = 1
       Position = 1
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 0
       TabStop = False
       ThumbLength = 10
       TickMarks = tmBoth
-      TickStyle = tsAuto
       OnChange = TBSubSamplingChange
     end
     object TBIntensity: TTrackBar
@@ -95,17 +92,13 @@ object Form1: TForm1
       Width = 177
       Height = 29
       Max = 100
-      Orientation = trHorizontal
       PageSize = 1
       Frequency = 10
       Position = 100
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
       TickMarks = tmBoth
-      TickStyle = tsAuto
       OnChange = TBIntensityChange
     end
   end
@@ -123,14 +116,14 @@ object Form1: TForm1
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       Bands = <
         item
-          StartAngle = -5
+          StartAngle = -5.000000000000000000
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 25
+          StopAngle = 25.000000000000000000
           Slices = 9
         end
         item
-          StartAngle = 25
-          StopAngle = 90
+          StartAngle = 25.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Slices = 9
           Stacks = 4
@@ -140,6 +133,7 @@ object Form1: TForm1
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
+        Material.DepthProperties.DepthWrite = False
         Material.BlendingMode = bmAdditive
         Material.MaterialOptions = [moIgnoreFog]
         Material.Texture.TextureMode = tmReplace
@@ -147,20 +141,17 @@ object Form1: TForm1
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Position.Coordinates = {00000C430000C842000096420000803F}
-        Width = 60
-        Height = 60
-        NoZWrite = True
-        MirrorU = False
-        MirrorV = False
+        Width = 60.000000000000000000
+        Height = 60.000000000000000000
       end
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 650
-        FocalLength = 50
-        NearPlaneBias = 0.100000001490116
+        DepthOfView = 650.000000000000000000
+        FocalLength = 50.000000000000000000
+        NearPlaneBias = 0.100000001490116100
         TargetObject = DummyCube1
         Position.Coordinates = {0000A040000020410000C8410000803F}
         Direction.Coordinates = {0000803F000000000000000000000000}
@@ -176,16 +167,17 @@ object Form1: TForm1
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLBumpmapHDS1
       TileSize = 128
-      TilesPerTexture = 1
+      TilesPerTexture = 1.000000000000000000
       CLODPrecision = 30
     end
     object GLLensFlare: TGLLensFlare
       Size = 100
       Seed = 978
+      FlareIsNotOccluded = True
       Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
       Visible = False
       object GLDummyCube1: TGLDummyCube
-        CubeSize = 100
+        CubeSize = 100.000000000000000000
         VisibleAtRunTime = True
       end
     end
@@ -210,7 +202,6 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         Texture2Name = 'details'
@@ -220,7 +211,6 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         TextureScale.Coordinates = {00000042000000420000004200000000}
@@ -458,11 +448,13 @@ object Form1: TForm1
     Top = 136
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
+    MaxPoolSize = 0
     HeightDataSource = GLBitmapHDS1
+    Active = True
     BumpmapLibrary = GLMaterialLibrary1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
-    BumpScale = 0.100000001490116
-    MaxPoolSize = 0
+    BumpScale = 0.100000001490116100
+    MaxTextures = 0
     Left = 96
     Top = 96
   end
