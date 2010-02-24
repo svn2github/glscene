@@ -17,20 +17,21 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 153
     Top = 0
-    Width = 533
-    Height = 483
+    Width = 525
+    Height = 472
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 2.733282804489136000
+    FieldOfView = 156.075897216796900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 153
-    Height = 483
+    Height = 472
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
@@ -169,7 +170,6 @@ object Form1: TForm1
       Up.Coordinates = {00000000000000000000803F00000000}
       Height = 10.000000000000000000
       Width = 10.000000000000000000
-      NoZWrite = False
       BehavioursData = {
         0201060C54474C4F444553746174696302000200060D474C4F44454D616E6167
         65723102000500000000006F1283F53F0800000500000000000000FA08400500

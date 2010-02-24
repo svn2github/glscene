@@ -18,17 +18,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 344
-    Height = 306
+    Width = 336
+    Height = 297
     Camera = GLCamera1
     Buffer.AntiAliasing = aaNone
+    FieldOfView = 142.783203125000000000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 344
+    Left = 336
     Top = 0
     Width = 113
-    Height = 306
+    Height = 297
     Align = alRight
     TabOrder = 1
     object BUSnapShot: TButton
@@ -90,43 +92,38 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000B4420000B442000048420000803F}
       Specular.Color = {B072083FB072083FB072083F0000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object HUDSprite1: TGLHUDSprite
       Material.Texture.Disabled = False
-      Width = 16
-      Height = 16
-      NoZWrite = True
-      MirrorU = False
-      MirrorV = False
     end
     object Plane1: TGLPlane
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
-      Height = 6
-      Width = 6
-      NoZWrite = False
+      Height = 6.000000000000000000
+      Width = 6.000000000000000000
       object SpaceText1: TGLSpaceText
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Specular.Color = {FA7EAA3EFA7EAA3E000000000000803F}
         Position.Coordinates = {000020C000000000CDCC4C3D0000803F}
         Up.Coordinates = {0000803F000000800000000000000000}
-        Extrusion = 0.0500000007450581
+        Extrusion = 0.050000000745058060
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -8
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'Render to Bitmap'
-        AllowedDeviation = 1
+        Lines.Strings = (
+          'Render to Bitmap')
+        AllowedDeviation = 1.000000000000000000
         CharacterRange = stcrAlphaNum
-        AspectRatio = 1.29999995231628
-        TextHeight = 0.400000005960464
+        AspectRatio = 1.299999952316284000
+        TextHeight = 0.400000005960464500
         Adjust.Horz = haCenter
         Adjust.Vert = vaCenter
       end
@@ -137,16 +134,16 @@ object Form1: TForm1
       Material.Texture.MappingMode = tmmSphere
       Material.Texture.Disabled = False
       OnProgress = Sphere1Progress
-      Radius = 1
+      Radius = 1.000000000000000000
       Slices = 24
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000040000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000E0400000C040000000410000803F}
     end

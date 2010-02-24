@@ -19,12 +19,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 334
-    Height = 207
+    Width = 326
+    Height = 198
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.DepthTest = False
+    FieldOfView = 126.407836914062500000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     ObjectsSorting = osRenderFarthestFirst
@@ -32,14 +34,13 @@ object Form1: TForm1
     Top = 24
     object DummyCube1: TGLDummyCube
       ObjectsSorting = osNone
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Sprite2: TGLSprite
-        Position.Coordinates = {0000A04000000000000000000000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BlueBall'
-        Width = 2
-        Height = 2
-        NoZWrite = True
+        Position.Coordinates = {0000A04000000000000000000000803F}
+        Width = 2.000000000000000000
+        Height = 2.000000000000000000
       end
     end
     object Sprite1: TGLSprite
@@ -51,15 +52,13 @@ object Form1: TForm1
       Material.Texture.Image.PictureFileName = '..\..\media\Flare1.bmp'
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmModulate
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
-      Width = 4
-      Height = 4
-      NoZWrite = False
+      Width = 4.000000000000000000
+      Height = 4.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {000020410000A040000020410000803F}
     end
@@ -74,7 +73,6 @@ object Form1: TForm1
         Material.BlendingMode = bmAdditive
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
       end>

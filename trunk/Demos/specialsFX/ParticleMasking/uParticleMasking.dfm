@@ -16,20 +16,20 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 584
+    Left = 576
     Top = 0
     Width = 8
-    Height = 581
+    Height = 570
     Align = alRight
     Beveled = True
     MinSize = 200
     ResizeStyle = rsLine
   end
   object MaskBox: TGroupBox
-    Left = 592
+    Left = 584
     Top = 0
     Width = 182
-    Height = 581
+    Height = 570
     Align = alRight
     Caption = 'Particle Masks'
     TabOrder = 0
@@ -106,18 +106,19 @@ object Form1: TForm1
   object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 584
-    Height = 581
+    Width = 576
+    Height = 570
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 176.056930541992200000
+    FieldOfView = 175.980895996093800000
     Align = alClient
     OnMouseMove = SceneViewerMouseMove
+    TabOrder = 1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 581
-    Width = 774
+    Top = 570
+    Width = 766
     Height = 36
     Align = alBottom
     TabOrder = 2
@@ -240,7 +241,6 @@ object Form1: TForm1
       Up.Coordinates = {00000000FFFF7F3F0000000000000000}
       Height = 3.000000000000000000
       Width = 3.000000000000000000
-      NoZWrite = False
     end
     object YPlane: TGLPlane
       Material.MaterialLibrary = MatLib
@@ -252,7 +252,6 @@ object Form1: TForm1
       Up.Coordinates = {010000B331BD3B330000803F00000000}
       Height = 3.000000000000000000
       Width = 3.000000000000000000
-      NoZWrite = False
     end
     object ZPlane: TGLPlane
       Material.MaterialLibrary = MatLib
@@ -263,7 +262,6 @@ object Form1: TForm1
       Hint = '0'
       Height = 3.000000000000000000
       Width = 3.000000000000000000
-      NoZWrite = False
     end
     object PFXRenderer: TGLParticleFXRenderer
     end

@@ -20,15 +20,17 @@ object Main: TMain
   object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 537
-    Height = 406
+    Width = 529
+    Height = 397
     Camera = Camera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
+    FieldOfView = 151.723861694335900000
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseUp = SceneViewerMouseUp
+    TabOrder = 0
   end
   object Scene: TGLScene
     Left = 8
@@ -38,19 +40,19 @@ object Main: TMain
       Up.Coordinates = {0000000000000000000080BF00000000}
       Bands = <
         item
-          StartAngle = -90
+          StartAngle = -90.000000000000000000
           StartColor.Color = {0000000000000000000000000000803F}
-          StopAngle = -10
+          StopAngle = -10.000000000000000000
           StopColor.Color = {0000803F0000803F0000803F0000803F}
         end
         item
-          StartAngle = -10
+          StartAngle = -10.000000000000000000
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 15
+          StopAngle = 15.000000000000000000
         end
         item
-          StartAngle = 15
-          StopAngle = 90
+          StartAngle = 15.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Stacks = 4
         end>
@@ -59,24 +61,23 @@ object Main: TMain
     object DCTable: TGLDummyCube
       ObjectsSorting = osNone
       Direction.Coordinates = {00000000000000800000803F00000000}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Mirror: TGLMirror
-        Direction.Coordinates = {000000000000803F0000000000000000}
-        Position.Coordinates = {000000000AD723BC000000000000803F}
-        Up.Coordinates = {0000000000000000000080BF00000000}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {2B87163F2B87163F2B87163F00000000}
         Material.BlendingMode = bmTransparency
+        Direction.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {000000000AD723BC000000000000803F}
+        Up.Coordinates = {0000000000000000000080BF00000000}
         MirrorObject = DCObstacles
         MirrorOptions = [moUseStencil, moClearZBuffer]
-        Height = 10
-        Width = 10
+        Height = 10.000000000000000000
+        Width = 10.000000000000000000
         OnBeginRenderingMirrors = MirrorBeginRenderingMirrors
         OnEndRenderingMirrors = MirrorEndRenderingMirrors
+        Radius = 1.000000000000000000
       end
       object SPTable: TGLShadowPlane
-        Direction.Coordinates = {000000000000803F0000000000000000}
-        Up.Coordinates = {0000000000000000000080BF00000000}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3F}
         Material.FrontProperties.Emission.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
@@ -582,12 +583,13 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Height = 10
-        Width = 10
+        Direction.Coordinates = {000000000000803F0000000000000000}
+        Up.Coordinates = {0000000000000000000080BF00000000}
+        Height = 10.000000000000000000
+        Width = 10.000000000000000000
         XTiles = 2
         YTiles = 2
         Style = [psTileTexture]
-        NoZWrite = False
         ShadowingObject = DCObstacles
         ShadowedLight = LSWorld
         ShadowColor.Color = {000000000000000000000000CDCCCC3E}
@@ -597,48 +599,47 @@ object Main: TMain
       end
       object DCObstacles: TGLDummyCube
         ObjectsSorting = osNone
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object SPHBall: TGLSphere
-          Position.Coordinates = {0000000000000040000000000000803F}
           Material.MaterialLibrary = MaterialLibrary
           Material.LibMaterialName = 'theball'
-          Radius = 0.300000011920929
+          Position.Coordinates = {0000000000000040000000000000803F}
+          Radius = 0.300000011920929000
         end
         object DCMap: TGLDummyCube
           ObjectsSorting = osRenderBlendedLast
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
         end
         object DCMapTransparent: TGLDummyCube
           ObjectsSorting = osNone
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
           object PFXRenderer: TGLParticleFXRenderer
           end
           object ALStart: TGLArrowLine
+            Material.FrontProperties.Emission.Color = {F0A7463FF0A7463F000000000000803F}
+            Material.BlendingMode = bmTransparency
             Direction.Coordinates = {00000000000080BF0000000000000000}
             Position.Coordinates = {000080BF000040400000803F0000803F}
             Up.Coordinates = {00000000000000000000803F00000000}
-            Material.FrontProperties.Emission.Color = {F0A7463FF0A7463F000000000000803F}
-            Material.BlendingMode = bmTransparency
-            BottomRadius = 0.200000002980232
-            Height = 1
-            TopRadius = 0.150000005960464
-            TopArrowHeadHeight = 0.5
-            TopArrowHeadRadius = 0.300000011920929
-            BottomArrowHeadHeight = 0.5
-            BottomArrowHeadRadius = 0.200000002980232
+            BottomRadius = 0.200000002980232200
+            Height = 1.000000000000000000
+            TopRadius = 0.150000005960464500
+            TopArrowHeadHeight = 0.500000000000000000
+            TopArrowHeadRadius = 0.300000011920929000
+            BottomArrowHeadHeight = 0.500000000000000000
+            BottomArrowHeadRadius = 0.200000002980232200
           end
         end
       end
     end
     object LSWorld: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000000000002041000000000000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCBallAbsolute: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object SPRBallFlare: TGLSprite
-        Visible = False
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F9A99393F0000803F}
@@ -1195,15 +1196,13 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Disabled = False
-        Width = 5
-        Height = 5
-        NoZWrite = False
-        MirrorU = False
-        MirrorV = False
+        Visible = False
+        Width = 5.000000000000000000
+        Height = 5.000000000000000000
       end
     end
     object DCBallLag: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object HUDText: TGLHUDText
       Visible = False
@@ -1220,25 +1219,20 @@ object Main: TMain
       end
     end
     object HSTimerBkGnd: TGLHUDSprite
-      Position.Coordinates = {000070420000B041000000000000803F}
       Material.FrontProperties.Diffuse.Color = {00000000000000001283203F0000003F}
       Material.BlendingMode = bmTransparency
-      Width = 100
-      Height = 24
-      NoZWrite = False
-      MirrorU = False
-      MirrorV = False
+      Position.Coordinates = {000070420000B041000000000000803F}
+      Width = 100.000000000000000000
+      Height = 24.000000000000000000
       object HTTimer: TGLHUDText
         Position.Coordinates = {0000704100002041000000000000803F}
         BitmapFont = WindowsBitmapFont
-        Alignment = taLeftJustify
-        Layout = tlTop
         ModulateColor.Color = {0000803F0000803F000000000000803F}
       end
     end
     object Camera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DCBallLag
       Position.Coordinates = {000020410000C040000000000000803F}
     end
@@ -3648,7 +3642,7 @@ object Main: TMain
   end
   object Cadencer: TGLCadencer
     Scene = Scene
-    FixedDeltaTime = 0.001
+    FixedDeltaTime = 0.001000000000000000
     OnProgress = CadencerProgress
     Left = 72
     Top = 8
@@ -3671,16 +3665,19 @@ object Main: TMain
     Cadencer = Cadencer
     Renderer = PFXRenderer
     Acceleration.Coordinates = {000000000000803F0000000000000000}
-    ParticleSize = 0.25
+    Friction = 1.000000000000000000
+    ParticleSize = 0.250000000000000000
     ColorOuter.Color = {00000000000000000000803F00000000}
     LifeColors = <
       item
         ColorInner.Color = {00000000000000000000803F0000803F}
         ColorOuter.Color = {0000803F0000803F0000000000000000}
-        LifeTime = 0.5
+        LifeTime = 0.500000000000000000
+        SizeScale = 1.000000000000000000
       end
       item
-        LifeTime = 1
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 40
     Top = 96
@@ -3689,13 +3686,15 @@ object Main: TMain
     Cadencer = Cadencer
     Renderer = PFXRenderer
     Acceleration.Coordinates = {00000000000000400000000000000000}
-    ParticleSize = 0.5
+    Friction = 1.000000000000000000
+    ParticleSize = 0.500000000000000000
     ColorInner.Color = {0000803F00000000000000000000803F}
     ColorOuter.Color = {0000803F0000803F0000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F000000000000000000000000}
-        LifeTime = 1
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 72
     Top = 96
@@ -3703,17 +3702,17 @@ object Main: TMain
   object GLSMBASS: TGLSMBASS
     Active = True
     MaxChannels = 16
-    MasterVolume = 1
+    MasterVolume = 1.000000000000000000
     Listener = Camera
     Sources = <>
-    UpdateFrequency = 50
+    UpdateFrequency = 50.000000000000000000
     Cadencer = Cadencer
-    DistanceFactor = 0.100000001490116
-    RollOffFactor = 0.100000001490116
+    DistanceFactor = 0.100000001490116100
+    RollOffFactor = 0.100000001490116100
     Algorithm3D = algFull
     Left = 72
     Top = 40
-    Doppler = 0.100000001490116
+    Doppler = 0.100000001490116100
   end
   object SoundLibrary: TGLSoundLibrary
     Samples = <
@@ -5079,16 +5078,18 @@ object Main: TMain
     Cadencer = Cadencer
     Renderer = PFXRenderer
     Acceleration.Coordinates = {00000000000080BF0000000000000000}
+    Friction = 1.000000000000000000
     BlendingMode = bmTransparency
     NbSides = 7
-    ParticleSize = 0.7
+    ParticleSize = 0.699999988079071000
     ColorInner.Color = {0000803F0000803F0000803F0000003F}
     ColorOuter.Color = {CDCC4C3FCDCC4C3FCDCC4C3F00000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F0000803F0000803F00000000}
         ColorOuter.Color = {0000803F0000803F0000803F00000000}
-        LifeTime = 1
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 72
     Top = 136

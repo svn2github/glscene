@@ -1,8 +1,8 @@
 object MainFm: TMainFm
   Left = 135
   Top = 57
-  Width = 561
-  Height = 468
+  Width = 569
+  Height = 479
   AutoSize = True
   Caption = 'MainFm'
   Color = clBtnFace
@@ -65,6 +65,7 @@ object MainFm: TMainFm
       OnMouseDown = CasterMouseDown
       OnMouseMove = CasterMouseMove
       OnMouseUp = CasterMouseUp
+      TabOrder = 0
     end
   end
   object Panel1: TPanel
@@ -83,6 +84,7 @@ object MainFm: TMainFm
       OnMouseDown = ViewerMouseDown
       OnMouseMove = ViewerMouseMove
       OnMouseUp = ViewerMouseUp
+      TabOrder = 0
     end
   end
   object Panel3: TPanel
@@ -475,11 +477,13 @@ object MainFm: TMainFm
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.ColorFormat = 6408
         Tag = 0
       end
       item
         Name = 'PlaneMat'
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.ColorFormat = 6408
         Tag = 0
       end
       item

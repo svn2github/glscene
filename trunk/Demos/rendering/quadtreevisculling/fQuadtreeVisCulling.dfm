@@ -17,8 +17,8 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   DesignSize = (
-    632
-    446)
+    624
+    442)
   PixelsPerInch = 96
   TextHeight = 13
   object Label2: TLabel
@@ -38,8 +38,9 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     Buffer.FogEnvironment.FogEnd = 3950.000000000000000000
     Buffer.BackgroundColor = clWhite
     Buffer.Lighting = False
-    FieldOfView = 2.684599399566650000
+    FieldOfView = 153.816207885742200000
     Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 0
   end
   object cbUseQuadtree: TCheckBox
     Left = 8
@@ -136,8 +137,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       Position.Coordinates = {0000804000008040000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
       Text = '0'
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object tree: TGLSprite
       Material.BlendingMode = bmTransparency
@@ -146,9 +145,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       Material.Texture.Disabled = False
       Width = 280.000000000000000000
       Height = 300.000000000000000000
-      NoZWrite = False
-      MirrorU = False
-      MirrorV = False
     end
     object GLDirectOpenGL2: TGLDirectOpenGL
       Visible = False
@@ -197,18 +193,14 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     Top = 32
   end
   object GLNavigator1: TGLNavigator
-    MoveUpWhenMovingForward = False
-    InvertHorizontalSteeringWhenUpsideDown = False
     VirtualUp.Coordinates = {000000000000803F000000000000803F}
     MovingObject = GLCamera1
     UseVirtualUp = True
     AutoUpdateObject = True
-    AngleLock = False
     Left = 292
     Top = 160
   end
   object GLUserInterface1: TGLUserInterface
-    InvertMouse = False
     MouseSpeed = 12.000000000000000000
     GLNavigator = GLNavigator1
     Left = 276

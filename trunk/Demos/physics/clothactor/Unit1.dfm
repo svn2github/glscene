@@ -14,8 +14,8 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    626
-    447)
+    618
+    438)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -26,9 +26,11 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.AmbientColor.Color = {CDCCCC3ECDCCCC3ECDCCCC3E0000803F}
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
+    FieldOfView = 153.398193359375000000
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CheckBox_ShowOctree: TCheckBox
     Left = 0
@@ -43,10 +45,10 @@ object Form1: TForm1
     Top = 8
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000048420000C842000048C20000803F}
       Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLShadowVolume1: TGLShadowVolume
       Lights = <
@@ -63,7 +65,7 @@ object Form1: TForm1
         end>
       Options = [svoScissorClips]
       object ActorDummy: TGLDummyCube
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object GLActor1: TGLActor
           Direction.Coordinates = {000000000000803F0000000000000000}
           Up.Coordinates = {00000000000000000000803F00000000}
@@ -92,28 +94,28 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
-        Height = 500
-        Width = 500
+        Height = 500.000000000000000000
+        Width = 500.000000000000000000
         XTiles = 4
         YTiles = 4
-        NoZWrite = False
       end
     end
     object OctreeRenderer: TGLDirectOpenGL
       UseBuildList = False
       OnRender = OctreeRendererRender
+      Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1000
-      FocalLength = 50
+      DepthOfView = 1000.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLActor1
       Position.Coordinates = {00004842000048420000A0C20000803F}
       Direction.Coordinates = {00000000000000800000803F00000000}
       object GLLightSource2: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
         Specular.Color = {0000803F0000803F0000803F0000803F}
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
       end
     end
   end

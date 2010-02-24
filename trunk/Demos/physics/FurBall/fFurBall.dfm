@@ -15,8 +15,8 @@ object frmFurBall: TfrmFurBall
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   DesignSize = (
-    632
-    408)
+    624
+    399)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -44,8 +44,10 @@ object frmFurBall: TfrmFurBall
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 137.391204833984400000
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CheckBox_LockBall: TCheckBox
     Left = 8
@@ -151,6 +153,7 @@ object frmFurBall: TfrmFurBall
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.ColorFormat = 6408
         Material.Texture.TextureMode = tmModulate
         Position.Coordinates = {000000000000C0BF000040400000803F}
         Radius = 0.250000000000000000
@@ -166,7 +169,6 @@ object frmFurBall: TfrmFurBall
       XTiles = 10
       YTiles = 10
       Style = [psTileTexture]
-      NoZWrite = False
       ShadowingObject = DCShadowCaster
       ShadowOptions = [spoUseStencil]
     end
@@ -181,7 +183,6 @@ object frmFurBall: TfrmFurBall
       XTiles = 10
       YTiles = 10
       Style = [psTileTexture]
-      NoZWrite = False
       ShadowingObject = DCShadowCaster
       ShadowOptions = [spoUseStencil]
     end
@@ -196,7 +197,6 @@ object frmFurBall: TfrmFurBall
       XTiles = 10
       YTiles = 10
       Style = [psTileTexture]
-      NoZWrite = False
       ShadowingObject = DCShadowCaster
       ShadowOptions = [spoUseStencil]
     end
@@ -215,7 +215,6 @@ object frmFurBall: TfrmFurBall
       XTiles = 10
       YTiles = 10
       Style = [psTileTexture]
-      NoZWrite = False
       ShadowingObject = DCShadowCaster
       ShadowOptions = [spoUseStencil]
     end
@@ -230,7 +229,6 @@ object frmFurBall: TfrmFurBall
       XTiles = 10
       YTiles = 10
       Style = [psTileTexture]
-      NoZWrite = False
       ShadowingObject = DCShadowCaster
       ShadowOptions = [spoUseStencil]
     end

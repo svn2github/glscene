@@ -32,6 +32,7 @@ object Form1: TForm1
     Buffer.FogEnable = True
     FieldOfView = 154.614669799804700000
     Align = alClient
+    TabOrder = 0
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
@@ -80,7 +81,6 @@ object Form1: TForm1
         Visible = False
         Width = 30.000000000000000000
         Height = 30.000000000000000000
-        NoZWrite = True
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -94,7 +94,6 @@ object Form1: TForm1
         Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60.000000000000000000
         Height = 60.000000000000000000
-        NoZWrite = True
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
@@ -170,7 +169,6 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         Texture2Name = 'details'
@@ -180,7 +178,6 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         TextureScale.Coordinates = {00000043000000430000004300000000}

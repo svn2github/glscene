@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
+  Width = 604
+  Height = 417
   Caption = 'Form1'
-  ClientHeight = 379
-  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -83,7 +83,6 @@ object Form1: TForm1
         Width = 8.000000000000000000
         XTiles = 2
         YTiles = 2
-        NoZWrite = False
       end
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1

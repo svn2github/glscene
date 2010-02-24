@@ -39,6 +39,8 @@ object Form1: TForm1
     Height = 329
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
+    FieldOfView = 142.783203125000000000
+    TabOrder = 1
   end
   object Edit3: TEdit
     Left = 8
@@ -167,26 +169,26 @@ object Form1: TForm1
     Left = 184
     Top = 88
     object HUDSprite1: TGLHUDSprite
-      Position.Coordinates = {0000164300001643000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
-      Width = 200
-      Height = 200
-      NoZWrite = False
+      Position.Coordinates = {0000164300001643000000000000803F}
+      Width = 200.000000000000000000
+      Height = 200.000000000000000000
     end
     object GLPanel1: TGLPanel
       RedrawAtOnce = False
       GuiLayout = GLGuiLayout1
       NoZWrite = False
-      Width = 200
-      Height = 200
-      Left = 50
-      Top = 50
+      DoChangesOnProgress = False
+      Width = 200.000000000000000000
+      Height = 200.000000000000000000
+      Left = 50.000000000000000000
+      Top = 50.000000000000000000
       Position.Coordinates = {0000484200004842000000000000803F}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
     end
   end
   object WindowsBitmapFont1: TGLWindowsBitmapFont

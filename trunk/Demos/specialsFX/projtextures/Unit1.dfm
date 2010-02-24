@@ -18,23 +18,25 @@ object Form1: TForm1
   object viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 684
-    Height = 461
+    Width = 676
+    Height = 450
     Camera = camera
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.DepthPrecision = dp32bits
-    FieldOfView = 155.522048950195300000
+    FieldOfView = 154.942382812500000000
     Align = alClient
     OnMouseDown = viewerMouseDown
     OnMouseMove = viewerMouseMove
     OnMouseUp = viewerMouseUp
+    TabOrder = 0
   end
   object scene: TGLScene
     Left = 40
     Top = 24
     object ProjLight: TGLProjectedTextures
       Emitters = <>
+      Style = ptsOriginal
       object scenery: TGLDummyCube
         CubeSize = 1.000000000000000000
         object GLCube2: TGLCube
@@ -91,7 +93,6 @@ object Form1: TForm1
           Position.Coordinates = {000000000000003F0000C0BF0000803F}
           Height = 4.000000000000000000
           Width = 4.000000000000000000
-          NoZWrite = False
         end
         object GLPlane2: TGLPlane
           Material.Texture.Disabled = False
@@ -99,7 +100,6 @@ object Form1: TForm1
           Position.Coordinates = {000000C00000003F0000003F0000803F}
           Height = 4.000000000000000000
           Width = 4.000000000000000000
-          NoZWrite = False
         end
         object GLPlane3: TGLPlane
           Material.FrontProperties.Diffuse.Color = {FFFEFE3EFFFEFE3EFFFEFE3E0000803F}
@@ -111,7 +111,6 @@ object Form1: TForm1
           Up.Coordinates = {00000000000000000000803F00000000}
           Height = 4.000000000000000000
           Width = 4.000000000000000000
-          NoZWrite = False
         end
         object GLSphere1: TGLSphere
           Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FE1E0E03D0000803F}

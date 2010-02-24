@@ -16,20 +16,22 @@ object FrmMain: TFrmMain
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 688
-    Height = 495
+    Width = 680
+    Height = 484
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {D7A3703ED7A3703ED7A3703E0000803F}
-    Buffer.FogEnvironment.FogStart = 30
-    Buffer.FogEnvironment.FogEnd = 200
+    Buffer.FogEnvironment.FogStart = 30.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 200.000000000000000000
     Buffer.BackgroundColor = clBlack
     Buffer.AmbientColor.Color = {0000803F0000803F0000803F0000803F}
+    FieldOfView = 147.734313964843800000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 688
+    Width = 680
     Height = 25
     Align = alTop
     Caption = ' '
@@ -64,8 +66,8 @@ object FrmMain: TFrmMain
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    MaxDeltaTime = 0.2
-    MinDeltaTime = 0.001
+    MaxDeltaTime = 0.200000000000000000
+    MinDeltaTime = 0.001000000000000000
     SleepLength = 0
     OnProgress = GLCadencer1Progress
     Left = 68
@@ -74,24 +76,24 @@ object FrmMain: TFrmMain
   object PFXElectro: TGLPerlinPFXManager
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
-    Friction = 1
+    Friction = 1.000000000000000000
     TexMapSize = 3
-    Smoothness = 0.699999988079071
-    Brightness = 1
-    Gamma = 1
+    Smoothness = 0.699999988079071000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
     NoiseSeed = 123415
     NoiseAmplitude = 100
     ColorMode = scmFade
-    ParticleSize = 0.300000011920929
+    ParticleSize = 0.300000011920929000
     ColorInner.Color = {00000000000000005839343E0000803F}
     ColorOuter.Color = {0000803F0000803F000000000000803F}
     LifeColors = <
       item
         ColorInner.Color = {A69BC43EA69BC43EA69BC43E0000803F}
         ColorOuter.Color = {0000803F1283003F1283803E0000803F}
-        LifeTime = 0.200000002980232
-        SizeScale = 1
-        RotateAngle = 3000
+        LifeTime = 0.200000002980232200
+        SizeScale = 1.000000000000000000
+        RotateAngle = 3000.000000000000000000
       end>
     Left = 332
     Top = 276
@@ -100,35 +102,35 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {00000000000000C00000000000000000}
-    Friction = 1
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
+    Friction = 1.000000000000000000
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
     ColorMode = scmFade
-    ParticleSize = 0.5
+    ParticleSize = 0.500000000000000000
     ColorInner.Color = {000000001283003F000000000000803F}
     ColorOuter.Color = {E3A53B3F91EDBC3E000000000000803F}
     LifeColors = <
       item
         ColorInner.Color = {1283003F000000001283003F0000803F}
         ColorOuter.Color = {000000000000803F000000000000803F}
-        LifeTime = 0.200000002980232
-        SizeScale = 1
-        RotateAngle = 20
+        LifeTime = 0.200000002980232200
+        SizeScale = 1.000000000000000000
+        RotateAngle = 20.000000000000000000
       end
       item
         ColorInner.Color = {000000000000803F000000000000803F}
         ColorOuter.Color = {0000803F0000803F1283003F0000803F}
-        LifeTime = 0.400000005960464
-        SizeScale = 0.5
-        RotateAngle = 40
+        LifeTime = 0.400000005960464500
+        SizeScale = 0.500000000000000000
+        RotateAngle = 40.000000000000000000
       end
       item
         ColorInner.Color = {000000001283003F000000000000803F}
         ColorOuter.Color = {000000000000803F000000000000803F}
-        LifeTime = 0.800000011920929
-        SizeScale = 0.200000002980232
-        RotateAngle = 80
+        LifeTime = 0.800000011920929000
+        SizeScale = 0.200000002980232200
+        RotateAngle = 80.000000000000000000
       end>
     Left = 144
     Top = 276
@@ -137,29 +139,29 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {00000000000080410000000000000000}
-    Friction = 1
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
+    Friction = 1.000000000000000000
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
     NoiseSeed = 6545
-    ParticleSize = 1
+    ParticleSize = 1.000000000000000000
     ColorInner.Color = {0000803F0000803F46B6333F0000803F}
     LifeColors = <
       item
         ColorInner.Color = {0000803F00000000000000000000803F}
-        LifeTime = 0.300000011920929
-        SizeScale = 1
-        RotateAngle = 30
+        LifeTime = 0.300000011920929000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 30.000000000000000000
       end
       item
         ColorInner.Color = {FCA9F13DFCA9F13DFCA9F13D0000803F}
-        LifeTime = 0.5
-        SizeScale = 1
-        RotateAngle = 50
+        LifeTime = 0.500000000000000000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 50.000000000000000000
       end
       item
-        LifeTime = 1
-        SizeScale = 1
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 184
     Top = 276
@@ -168,24 +170,24 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {000000000000803F0000000000000000}
-    Friction = 1
+    Friction = 1.000000000000000000
     BlendingMode = bmTransparency
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
-    ParticleSize = 2
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
+    ParticleSize = 2.000000000000000000
     ColorInner.Color = {00000000000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {2FDDA43E2FDDA43E2FDDA43E0000803F}
-        LifeTime = 1
-        SizeScale = 1
-        RotateAngle = 2
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 2.000000000000000000
       end
       item
-        LifeTime = 3
-        SizeScale = 1
-        RotateAngle = 90
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 90.000000000000000000
       end>
     Left = 220
     Top = 276
@@ -2280,7 +2282,7 @@ object FrmMain: TFrmMain
     Ranges = <
       item
         StartASCII = #0
-        StopASCII = #255
+        StopASCII = 'y'
         StartGlyphIdx = 0
       end>
     Left = 68
@@ -2292,33 +2294,31 @@ object FrmMain: TFrmMain
     object WorldRoot: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
       Scale.Coordinates = {0000C0400000C0400000C04000000000}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Position.Coordinates = {000000000000A0400000A0410000803F}
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
       end
       object GLPlane1: TGLPlane
         Material.FrontProperties.Ambient.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
         Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCC4C3ECDCCCC3D0000803F}
-        Material.TextureEx = <>
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000000080BF0000C0400000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
         Visible = False
-        Height = 16
-        Width = 8
-        NoZWrite = False
+        Height = 16.000000000000000000
+        Width = 8.000000000000000000
       end
       object ICE: TGLSpaceText
-        Material.TextureEx = <>
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'ice'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'ice')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2326,20 +2326,20 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F757263655046584566666563740201060B504658426C75
-          65417265610500000000000000800040020502000900000000CDCCCC3D000000
+          65417265610500000000000000800040020602000900000000CDCCCC3D000000
           0000000000020008020008050000000000CDCCCCFA3F05000000000000000000
-          00050000000000CDCCCCFA3F0201020009050000000000CDCCCCFB3F08}
+          00050000000000CDCCCCFA3F0201020009050000000000CDCCCCFB3F080200}
       end
       object MAGMA: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {0000000000000000000000400000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'magma'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'magma')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2347,20 +2347,20 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F757263655046584566666563740201060A504658526564
-          4172656105000000000000008000400205020008020008020008050000000000
+          4172656105000000000000008000400206020008020008020008050000000000
           0AD7A3F93F0500000000000000000000050000000000CDCCCCFB3F0201020009
-          0500000000000AD7A3F83F08}
+          0500000000000AD7A3F83F080200}
       end
       object SMOKE: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {0000000000000000000080400000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'smoke'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'smoke')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2368,20 +2368,20 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F7572636550465845666665637402010608504658536D6F
-          6B65050000000000000080FF3F02050200080200080200080500000000000AD7
+          6B65050000000000000080FF3F02060200080200080200080500000000000AD7
           A3F93F050000000000CDCCCCFB3F050000000000CDCCCCFB3F02010200090500
-          000000000AD7A3F83F08}
+          000000000AD7A3F83F080200}
       end
       object FOG: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {00000000000000000000C0400000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'fog'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'fog')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2389,12 +2389,11 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F7572636550465845666665637402010606504658466F67
-          050000000000000080FF3F0205020008020008020008050000000000CDCCCCFA
+          050000000000000080FF3F0206020008020008020008050000000000CDCCCCFA
           3F050000000000CDCCCCFC3F050000000000A4709DFF3F020102000905000000
-          0000000000000008}
+          00000000000000080200}
       end
       object FIRE: TGLSpaceText
-        Material.TextureEx = <>
         Direction.Coordinates = {0000000073F9A7330000803F00000000}
         Position.Coordinates = {0000000000000000000000410000803F}
         Up.Coordinates = {000000000000803F73F9A7B300000000}
@@ -2403,8 +2402,9 @@ object FrmMain: TFrmMain
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'fire'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'fire')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2412,21 +2412,21 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F757263655046584566666563740201060A504658427572
-          6E696E67050000000000000080FF3F020502000900000000CDCC4C3E00000000
+          6E696E67050000000000000080FF3F020602000900000000CDCC4C3E00000000
           000000000200080200090000803F000000000000000000000000050000000000
           CDCCCCFB3F050000000000CDCCCCFD3F0500000000000AD7A3F73F0201020009
-          050000000000000000000008}
+          0500000000000000000000080200}
       end
       object RAIL: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {0000000000000000000020410000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'rail'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'rail')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2434,20 +2434,20 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F7572636550465845666665637402010607504658526169
-          6C050000000000000080FF3F020502000900000000CDCCCC3D00000000000000
+          6C050000000000000080FF3F020602000900000000CDCCCC3D00000000000000
           00020008020008050000000000CDCCCCFC3F0500000000000AD7A3F83F050000
-          0000000AD7A3F93F0201020009050000000000000000000008}
+          0000000AD7A3F93F02010200090500000000000000000000080200}
       end
       object ELECTRIC: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {0000000000000000000040410000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'electric'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'electric')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2455,20 +2455,20 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0201061254474C536F757263655046584566666563740201060A504658456C65
-          6374726F05000000000000008000400205020008020008020009CDCC4C3DCDCC
+          6374726F05000000000000008000400206020008020008020009CDCC4C3DCDCC
           4C3ECDCC4C3D000000000500000000000000000000050000000000000080FF3F
-          0500000000006F1283F53F0201020009050000000000000000000008}
+          0500000000006F1283F53F02010200090500000000000000000000080200}
       end
       object WATER: TGLSpaceText
-        Material.TextureEx = <>
         Position.Coordinates = {0000000000000000000060410000803F}
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Arial'
         Font.Style = []
-        Text = 'water'
-        TextHeight = 0.5
+        Lines.Strings = (
+          'water')
+        TextHeight = 0.500000000000000000
         Adjust.Horz = haCenter
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -2476,13 +2476,13 @@ object FrmMain: TFrmMain
           004009020008020008}
         EffectsData = {
           0202061254474C536F757263655046584566666563740201060C504658576174
-          657266616C6C0500000000000000A0014002050200090000003FCDCC4C3E0000
+          657266616C6C0500000000000000A0014002060200090000003FCDCC4C3E0000
           00000000000002000802000805000000000000000000000500000000000AD7A3
           F93F0500000000000AD7A3F93F02010200090500000000000000000000080200
-          0201060C504658576174657266616C6C050000000000000080FF3F0205020009
-          00000040CDCC4C3E0000000000000000020008020008050000000000000080FF
-          3F050000000000CDCCCCFA3F0500000000000AD7A3F93F020102000905000000
-          0000000000000008}
+          02000201060C504658576174657266616C6C050000000000000080FF3F020602
+          000900000040CDCC4C3E00000000000000000200080200080500000000000000
+          80FF3F050000000000CDCCCCFA3F0500000000000AD7A3F93F02010200090500
+          000000000000000000080200}
       end
       object PfxRenderer: TGLParticleFXRenderer
         BlendingMode = bmTransparency
@@ -2491,29 +2491,28 @@ object FrmMain: TFrmMain
           Material.BlendingMode = bmAdditive
           Material.MaterialOptions = [moNoLighting]
           Material.Texture.ImageClassName = 'TGLBlankImage'
+          Material.Texture.Image.ColorFormat = 6408
           Material.Texture.TextureMode = tmModulate
           Material.Texture.Disabled = False
-          Material.TextureEx = <>
           Visible = False
-          Width = 16
-          Height = 16
-          NoZWrite = False
-          MirrorU = False
-          MirrorV = False
-          BlurDeltaTime = 0.02
-          BlurLeft = 0.0199999995529652
-          BlurTop = 0.0199999995529652
-          BlurRight = 0.0199999995529652
-          BlurBottom = 0.0199999995529652
-          RenderWidth = 256
-          RenderHeight = 256
+          Blur = bNone
+          BlurLeft = 0.019999999552965160
+          BlurTop = 0.019999999552965160
+          BlurRight = 0.019999999552965160
+          BlurBottom = 0.019999999552965160
+          AdvancedBlurPasses = 1
+          AdvancedBlurAmp = 1.100000023841858000
+          AdvancedBlurLowClamp = 0
+          AdvancedBlurHiClamp = 255
+          BlurSelf = True
+          RenderBackgroundColor = clBlack
         end
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 900
-      FocalLength = 70
-      NearPlaneBias = 0.100000001490116
+      DepthOfView = 900.000000000000000000
+      FocalLength = 70.000000000000000000
+      NearPlaneBias = 0.100000001490116100
       Position.Coordinates = {73D8C3416ACB1D41343ED1420000803F}
       Direction.Coordinates = {E51F19BF948289BEA04A41BF00000000}
       Up.Coordinates = {01662ABE2298763F32DF57BE00000000}
@@ -2523,30 +2522,30 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {00000000000000BF0000000000000000}
-    Friction = 1
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
-    ParticleSize = 0.5
+    Friction = 1.000000000000000000
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
+    ParticleSize = 0.500000000000000000
     ColorInner.Color = {00000000000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {0681153F39B4483F14AE273F0000803F}
-        LifeTime = 0.100000001490116
-        SizeScale = 1
-        RotateAngle = 10
+        LifeTime = 0.100000001490116100
+        SizeScale = 1.000000000000000000
+        RotateAngle = 10.000000000000000000
       end
       item
         ColorInner.Color = {00000000000000000000803F0000803F}
-        LifeTime = 0.5
-        SizeScale = 1
-        RotateAngle = 50
+        LifeTime = 0.500000000000000000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 50.000000000000000000
       end
       item
         ColorInner.Color = {00000000000000001283803E0000803F}
-        LifeTime = 2
-        SizeScale = 0.100000001490116
-        RotateAngle = 100
+        LifeTime = 2.000000000000000000
+        SizeScale = 0.100000001490116100
+        RotateAngle = 100.000000000000000000
       end>
     Left = 256
     Top = 276
@@ -2557,19 +2556,14 @@ object FrmMain: TFrmMain
     Top = 80
   end
   object GLNavigator1: TGLNavigator
-    MoveUpWhenMovingForward = False
-    InvertHorizontalSteeringWhenUpsideDown = False
     VirtualUp.Coordinates = {000000000000803F000000000000803F}
     MovingObject = GLCamera1
     UseVirtualUp = True
-    AutoUpdateObject = False
-    AngleLock = False
     Left = 500
     Top = 312
   end
   object GLUserInterface1: TGLUserInterface
-    InvertMouse = False
-    MouseSpeed = 20
+    MouseSpeed = 20.000000000000000000
     GLNavigator = GLNavigator1
     Left = 540
     Top = 312
@@ -2578,30 +2572,30 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {00000000000000BF0000000000000000}
-    Friction = 1
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
-    ParticleSize = 0.5
+    Friction = 1.000000000000000000
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
+    ParticleSize = 0.500000000000000000
     ColorInner.Color = {00000000000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F9A99393F508D173F0000803F}
-        LifeTime = 0.100000001490116
-        SizeScale = 1
-        RotateAngle = 10
+        LifeTime = 0.100000001490116100
+        SizeScale = 1.000000000000000000
+        RotateAngle = 10.000000000000000000
       end
       item
         ColorInner.Color = {0000803F1283003F000000000000803F}
-        LifeTime = 0.5
-        SizeScale = 1
-        RotateAngle = 50
+        LifeTime = 0.500000000000000000
+        SizeScale = 1.000000000000000000
+        RotateAngle = 50.000000000000000000
       end
       item
         ColorInner.Color = {0000803F00000000000000000000803F}
-        LifeTime = 2
-        SizeScale = 0.100000001490116
-        RotateAngle = 100
+        LifeTime = 2.000000000000000000
+        SizeScale = 0.100000001490116100
+        RotateAngle = 100.000000000000000000
       end>
     Left = 292
     Top = 276
@@ -2609,43 +2603,43 @@ object FrmMain: TFrmMain
   object PFXFog: TGLPerlinPFXManager
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
-    Friction = 1
-    Smoothness = 1
-    Brightness = 1
-    Gamma = 1
+    Friction = 1.000000000000000000
+    Smoothness = 1.000000000000000000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
     NoiseSeed = 53434
     NoiseAmplitude = 70
-    ParticleSize = 10
+    ParticleSize = 10.000000000000000000
     ColorInner.Color = {00000000000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {60E5D03D60E5D03D60E5D03D0000803F}
-        LifeTime = 1
-        SizeScale = 1.10000002384186
-        RotateAngle = 10
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.100000023841858000
+        RotateAngle = 10.000000000000000000
       end
       item
         ColorInner.Color = {448B6C3E448B6C3E448B6C3E0000803F}
-        LifeTime = 2
-        SizeScale = 1.20000004768372
-        RotateAngle = 20
+        LifeTime = 2.000000000000000000
+        SizeScale = 1.200000047683716000
+        RotateAngle = 20.000000000000000000
       end
       item
         ColorInner.Color = {448B6C3E448B6C3E448B6C3E0000803F}
-        LifeTime = 3
-        SizeScale = 1.29999995231628
-        RotateAngle = 30
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.299999952316284000
+        RotateAngle = 30.000000000000000000
       end
       item
         ColorInner.Color = {60E5D03D60E5D03D60E5D03D0000803F}
-        LifeTime = 4
-        SizeScale = 1.39999997615814
-        RotateAngle = 40
+        LifeTime = 4.000000000000000000
+        SizeScale = 1.399999976158142000
+        RotateAngle = 40.000000000000000000
       end
       item
-        LifeTime = 5
-        SizeScale = 1.5
-        RotateAngle = 50
+        LifeTime = 5.000000000000000000
+        SizeScale = 1.500000000000000000
+        RotateAngle = 50.000000000000000000
       end>
     Left = 368
     Top = 276
@@ -2654,45 +2648,45 @@ object FrmMain: TFrmMain
     Cadencer = GLCadencer1
     Renderer = PfxRenderer
     Acceleration.Coordinates = {00000000000070C20000000000000000}
-    Friction = 1
+    Friction = 1.000000000000000000
     TexMapSize = 5
-    Smoothness = 0.699999988079071
-    Brightness = 1
-    Gamma = 1
+    Smoothness = 0.699999988079071000
+    Brightness = 1.000000000000000000
+    Gamma = 1.000000000000000000
     NoiseSeed = 67334
     NoiseAmplitude = 100
-    ParticleSize = 1
+    ParticleSize = 1.000000000000000000
     ColorInner.Color = {00000000000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {9EEFA73DC520B03DFCA9F13D0000803F}
-        LifeTime = 0.200000002980232
-        SizeScale = 1.10000002384186
-        RotateAngle = 10
+        LifeTime = 0.200000002980232200
+        SizeScale = 1.100000023841858000
+        RotateAngle = 10.000000000000000000
       end
       item
         ColorInner.Color = {D578E93DBA490C3E2FDD243E0000803F}
-        LifeTime = 0.400000005960464
-        SizeScale = 1.20000004768372
-        RotateAngle = 20
+        LifeTime = 0.400000005960464500
+        SizeScale = 1.200000047683716000
+        RotateAngle = 20.000000000000000000
       end
       item
         ColorInner.Color = {9318043E08AC1C3EEC51383E0000803F}
-        LifeTime = 0.600000023841858
-        SizeScale = 1.29999995231628
-        RotateAngle = 30
+        LifeTime = 0.600000023841857900
+        SizeScale = 1.299999952316284000
+        RotateAngle = 30.000000000000000000
       end
       item
         ColorInner.Color = {9EEFA73D9EEFA73DEC51B83D0000803F}
-        LifeTime = 0.800000011920929
-        SizeScale = 1.39999997615814
-        RotateAngle = 40
+        LifeTime = 0.800000011920929000
+        SizeScale = 1.399999976158142000
+        RotateAngle = 40.000000000000000000
       end
       item
         ColorInner.Color = {0000000000000000000000000000803F}
-        LifeTime = 1
-        SizeScale = 1.5
-        RotateAngle = 50
+        LifeTime = 1.000000000000000000
+        SizeScale = 1.500000000000000000
+        RotateAngle = 50.000000000000000000
       end>
     Left = 404
     Top = 276

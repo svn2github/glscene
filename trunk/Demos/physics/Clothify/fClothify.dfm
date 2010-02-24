@@ -14,6 +14,9 @@ object frmClothify: TfrmClothify
   Position = poScreenCenter
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
+  DesignSize = (
+    707
+    504)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -62,9 +65,10 @@ object frmClothify: TfrmClothify
     Buffer.AmbientColor.Color = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
-    FieldOfView = 144.242599487305
+    FieldOfView = 144.242599487304700000
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GroupBox_LoadForm: TGroupBox
     Left = 48
@@ -203,13 +207,7 @@ object frmClothify: TfrmClothify
     Width = 97
     Height = 25
     Max = 100
-    Orientation = trHorizontal
-    Frequency = 1
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 3
-    TickMarks = tmBottomRight
     TickStyle = tsNone
     OnChange = TrackBar_SlackChange
   end
@@ -220,13 +218,8 @@ object frmClothify: TfrmClothify
     Height = 25
     Max = 30
     Min = 1
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 4
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 4
-    TickMarks = tmBottomRight
     TickStyle = tsNone
     OnChange = TrackBar_IterationsChange
   end
@@ -236,13 +229,8 @@ object frmClothify: TfrmClothify
     Width = 81
     Height = 25
     Max = 100
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 60
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 5
-    TickMarks = tmBottomRight
     TickStyle = tsNone
     OnChange = TrackBar_FrictionChange
   end
@@ -313,36 +301,36 @@ object frmClothify: TfrmClothify
       Options = [svoCacheSilhouettes, svoScissorClips, svoWorldScissorClip, svoDesignVisible]
       Mode = svmDarkening
       object GLDummyCube1: TGLDummyCube
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object GLDummyCube_Light: TGLDummyCube
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
           object GLLightSource1: TGLLightSource
-            ConstAttenuation = 1
+            ConstAttenuation = 1.000000000000000000
             Position.Coordinates = {0000C040000090410000C0400000803F}
-            SpotCutOff = 180
+            SpotCutOff = 180.000000000000000000
           end
         end
         object GL_Capsule: TGLCylinder
           Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
           Direction.Coordinates = {F304353FF304353F0000000000000000}
           Up.Coordinates = {F30435BFF304353F0000000000000000}
-          BottomRadius = 1.5
-          Height = 2
-          TopRadius = 1.5
+          BottomRadius = 1.500000000000000000
+          Height = 2.000000000000000000
+          TopRadius = 1.500000000000000000
           object GLSphere2: TGLSphere
             Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
             Position.Coordinates = {000000000000803F000000000000803F}
-            Radius = 1.5
+            Radius = 1.500000000000000000
           end
           object GLSphere3: TGLSphere
             Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
             Position.Coordinates = {00000000000080BF000000000000803F}
-            Radius = 1.5
+            Radius = 1.500000000000000000
           end
         end
         object GLDummyCube2: TGLDummyCube
           Position.Coordinates = {0000000000007041000000000000803F}
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
           object GLActor1: TGLActor
             Material.BackProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
             Material.FrontProperties.Diffuse.Color = {1283003F0000803F000000000000803F}
@@ -358,7 +346,7 @@ object frmClothify: TfrmClothify
           Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
           Position.Coordinates = {00000000000000C0000000000000803F}
           Visible = False
-          Radius = 2
+          Radius = 2.000000000000000000
         end
         object GLCylinder1: TGLCylinder
           Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
@@ -366,11 +354,11 @@ object frmClothify: TfrmClothify
           Position.Coordinates = {000000000000C0BF000000000000803F}
           Up.Coordinates = {00000000000000000000803F00000000}
           Visible = False
-          BottomRadius = 1.5
-          Height = 50
+          BottomRadius = 1.500000000000000000
+          Height = 50.000000000000000000
           Slices = 24
           Stacks = 16
-          TopRadius = 1.5
+          TopRadius = 1.500000000000000000
         end
         object GLShadowPlane1: TGLShadowPlane
           Material.FrontProperties.Diffuse.Color = {1283003F1283003F000000000000803F}
@@ -378,12 +366,11 @@ object frmClothify: TfrmClothify
           Position.Coordinates = {00000000EC51A0C0000000000000803F}
           Up.Coordinates = {0000000000000000000080BF00000000}
           Visible = False
-          Height = 60
-          Width = 60
+          Height = 60.000000000000000000
+          Width = 60.000000000000000000
           XTiles = 30
           YTiles = 30
           Style = [psTileTexture]
-          NoZWrite = False
           ShadowingObject = GLDummyCube1
           ShadowedLight = GLLightSource1
           ShadowOptions = [spoUseStencil]
@@ -397,7 +384,7 @@ object frmClothify: TfrmClothify
         object GLDummyCube_Stairs: TGLDummyCube
           Direction.Coordinates = {00000000000000800000803F00000000}
           Visible = False
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
           object GLCube_Stair1: TGLCube
             Material.FrontProperties.Diffuse.Color = {1283003F1283003F0000803F0000803F}
             Position.Coordinates = {0000000000000040000000000000803F}
@@ -424,12 +411,11 @@ object frmClothify: TfrmClothify
           Direction.Coordinates = {000000000000803F0000000000000000}
           Position.Coordinates = {000000000000A0C0000000000000803F}
           Up.Coordinates = {0000000000000000000080BF00000000}
-          Height = 60
-          Width = 60
+          Height = 60.000000000000000000
+          Width = 60.000000000000000000
           XTiles = 30
           YTiles = 30
           Style = [psTileTexture]
-          NoZWrite = False
         end
       end
     end
@@ -439,8 +425,8 @@ object frmClothify: TfrmClothify
       Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1.00000003318135E32
-      FocalLength = 75
+      DepthOfView = 1.000000033181354E32
+      FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000704100002041000070410000803F}
     end

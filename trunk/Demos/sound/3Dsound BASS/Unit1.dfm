@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 209
   Top = 92
+  Width = 483
+  Height = 391
   Caption = 'Form1'
-  ClientHeight = 353
-  ClientWidth = 467
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,6 +24,7 @@ object Form1: TForm1
     Buffer.AntiAliasing = aaNone
     FieldOfView = 137.924972534179700000
     Align = alClient
+    TabOrder = 0
   end
   object TrackBar: TTrackBar
     Left = 0
@@ -73,7 +74,7 @@ object Form1: TForm1
       Height = 25
       Anchors = [akTop, akRight]
       Caption = 'Chimes (WAV)'
-      TabOrder = 2
+      TabOrder = 0
       OnClick = Button1Click
     end
     object btnHowl: TButton
@@ -83,7 +84,7 @@ object Form1: TForm1
       Height = 25
       Anchors = [akTop, akRight]
       Caption = 'Howl (MP3)'
-      TabOrder = 3
+      TabOrder = 1
       OnClick = btnHowlClick
     end
   end
@@ -110,7 +111,6 @@ object Form1: TForm1
       object Torus1: TGLTorus
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Emission.Color = {000000008180803E8180003F0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000000BF000000000000803F}
         Scale.Coordinates = {0000803F0000803F0000003F00000000}
@@ -121,27 +121,23 @@ object Form1: TForm1
         Sides = 3
       end
       object Mickey: TGLSphere
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {000000000000003F000000000000803F}
         Radius = 0.500000000000000000
         Slices = 9
         Stacks = 9
         object Sphere2: TGLSphere
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
           Position.Coordinates = {CDCCCC3ECDCC4C3E000000000000803F}
           Radius = 0.300000011920929000
           Slices = 6
           Stacks = 6
         end
         object Sphere3: TGLSphere
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
           Position.Coordinates = {CDCCCCBECDCC4C3E000000000000803F}
           Radius = 0.300000011920929000
           Slices = 6
           Stacks = 6
         end
         object Cone1: TGLCone
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
           Direction.Coordinates = {2EF964BF2EF9E43E0000000000000000}
           Position.Coordinates = {00000000000000000000003F0000803F}
           Up.Coordinates = {00000000000000000000803F00000000}
@@ -153,19 +149,16 @@ object Form1: TForm1
         end
       end
       object Plane1: TGLPlane
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000000BF000000000000803F}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Height = 10.000000000000000000
         Width = 0.500000000000000000
-        NoZWrite = False
       end
     end
     object Sphere: TGLSphere
       Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
       Material.FrontProperties.Emission.Color = {8180003F00000000000000000000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Position.Coordinates = {000000400000003F000000000000803F}
       OnProgress = SphereProgress
       Radius = 0.500000000000000000
@@ -178,7 +171,6 @@ object Form1: TForm1
         474C536F756E644C696272617279060C6472756D6C6F6F702E77617608080203
         09}
       object Disk1: TGLDisk
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000080BF000000000000803F}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}

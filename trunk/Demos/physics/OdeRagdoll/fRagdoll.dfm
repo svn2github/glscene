@@ -29,17 +29,17 @@ object frmRagdoll: TfrmRagdoll
     Camera = GLCamera1
     Buffer.BackgroundColor = 15648684
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 150.611511230468700000
+    FieldOfView = 150.611511230468800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     object ODEScene: TGLDummyCube
       CubeSize = 1.000000000000000000
       object Actor1: TGLActor
         Material.FrontProperties.Diffuse.Color = {0000803FE0DF5F3FB5B4343E0000803F}
-        Material.Texture.Border = 0
         AnimationMode = aamLoop
         Interval = 100
         MaterialLibrary = GLMaterialLibrary1
@@ -50,7 +50,6 @@ object frmRagdoll: TfrmRagdoll
       end
       object GLShadowPlane1: TGLShadowPlane
         Material.FrontProperties.Diffuse.Color = {F5F4743E9392123F9F9E9E3E0000803F}
-        Material.Texture.Border = 0
         Position.Coordinates = {0000000000000000CDCC4CBD0000803F}
         Up.Coordinates = {000000000000803F0000008000000000}
         Height = 100.000000000000000000
@@ -58,7 +57,6 @@ object frmRagdoll: TfrmRagdoll
         XTiles = 50
         YTiles = 50
         Style = [psTileTexture]
-        NoZWrite = False
         ShadowingObject = ODEScene
         ShadowedLight = GLLightSource1
         ShadowColor.Color = {0AD7A33E48E1FA3E1F85EB3E0000803E}
