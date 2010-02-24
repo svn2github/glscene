@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/02/10 - Yar - Bugfix in TGLCustomBitmapFont.PrepareImage when image is not RGBA8
       <li>25/01/10 - Yar - Replace Char to AnsiChar
       <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
       <li>16/10/08 - UweR - Removed unneeded typecast in TBitmapFontRange.SetStartGlyphIdx
@@ -746,6 +747,7 @@ begin
    bitmap32:=TGLBitmap32.Create;
    bitmap32.Assign(bitmap);
    bitmap.Free;
+   bitmap32.Narrow;
    with bitmap32 do begin
       case FGlyphsAlpha of
          tiaAlphaFromIntensity :
