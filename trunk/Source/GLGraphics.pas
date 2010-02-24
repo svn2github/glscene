@@ -11,6 +11,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>24/02/10 - Yar - Improved TGLBaseImage.Narrow by using GLPBuffer for convert any data to RGBA8
       <li>23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
                            Added in AssignFrom24BitsBitmap, AssignFrom32BitsBitmap using extension GL_EXT_bgra
       <li>22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
@@ -69,14 +70,19 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, PersistentClasses, Graphics, ApplicationFileIO, SysUtils,
+uses
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
+  Classes, PersistentClasses, Graphics, ApplicationFileIO, SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
 {$IFDEF FPC}
   fpimage, intfgraphics, GraphType,
 {$ENDIF}
-  OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor, GLTextureFormat;
+  OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor, GLTextureFormat,
+  GLPBuffer;
 
 type
   TGLMinFilter = (miNearest, miLinear, miNearestMipmapNearest,
@@ -1298,6 +1304,14 @@ end;
 //
 
 procedure TGLBaseImage.Narrow;
+{$IFDEF MSWINDOWS}
+var
+  PBuf: TGLPixelBuffer;
+  size: integer;
+  tempTex: GLuint;
+  DC: HDC;
+  RC: HGLRC;
+{$ENDIF}
 begin
   // Check for already norrow
   if (fColorFormat = GL_RGBA)
@@ -1306,14 +1320,70 @@ begin
     and (fMipLevels = 1)
     and not (fTextureArray or fCubeMap) then
     Exit;
-  fDepth := 0;
-  fColorFormat := GL_RGBA;
-  fInternalFormat := tfRGBA8;
-  fDataType := GL_UNSIGNED_BYTE;
-  fElementSize := 4;
-  fCubeMap := false;
-  fTextureArray := false;
+
   UnMipmap;
+{$IFDEF MSWINDOWS}
+  DC := wglGetCurrentDC;
+  RC := wglGetCurrentContext;
+  // Create minimal pixel buffer
+  if (DC = 0) or (RC = 0) then
+  begin
+    PBuf := TGLPixelBuffer.Create;
+    try
+      PBuf.Initialize(1, 1);
+    except
+      PBuf.Free;
+      raise;
+    end;
+    tempTex := PBuf.TextureID;
+  end
+  else
+  begin
+    Pbuf := nil;
+    glPushAttrib(GL_TEXTURE_BIT);
+    glGenTextures(1, @tempTex);
+  end;
+
+  if IsFormatSupported(fInternalFormat) then
+  begin
+    // Setup texture
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tempTex);
+    // copy texture to video memory
+    if IsCompressedFormat(fInternalFormat) then
+    begin
+      size := ((fWidth + 3) div 4) * ((fHeight + 3) div 4) * fElementSize;
+      glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+        InternalFormatToOpenGLFormat(fInternalFormat),
+        fWidth, fHeight, 0, size, fData);
+    end
+    else
+      glTexImage2D(GL_TEXTURE_2D, 0,
+        InternalFormatToOpenGLFormat(fInternalFormat), fWidth,
+        fHeight, 0, fColorFormat, fDataType, fData);
+
+    CheckOpenGLError;
+{$ENDIF}
+    fDepth := 0;
+    fColorFormat := GL_RGBA;
+    fInternalFormat := tfRGBA8;
+    fDataType := GL_UNSIGNED_BYTE;
+    fElementSize := 4;
+    fCubeMap := false;
+    fTextureArray := false;
+    ReallocMem(fData, DataSize);
+{$IFDEF MSWINDOWS}
+    // get texture from video memory in simple format
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, fData);
+  end;
+  if Assigned(pBuf) then
+    pBuf.Destroy
+  else begin
+    glDeleteTextures(1, @tempTex);
+    glPopAttrib;
+  end;
+{$ENDIF}
+
 end;
 
 // UnMipmap
