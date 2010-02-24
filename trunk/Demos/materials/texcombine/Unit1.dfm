@@ -39,7 +39,7 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 8
     Top = 6
-    Width = 150
+    Width = 149
     Height = 19
     Caption = 'Texture Combiners'
     Font.Charset = DEFAULT_CHARSET
@@ -86,6 +86,8 @@ object Form1: TForm1
     PostRender = SceneViewerPostRender
     Buffer.BackgroundColor = clGray
     Buffer.Lighting = False
+    FieldOfView = 121.890792846679700000
+    TabOrder = 0
   end
   object BUApply: TButton
     Left = 200
@@ -236,19 +238,18 @@ object Form1: TForm1
     Left = 64
     Top = 272
     object GLDummyCube: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLHUDSprite: TGLHUDSprite
-      Position.Coordinates = {0000B4420000B442000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary
       Material.LibMaterialName = 'Tex0'
-      Width = 128
-      Height = 128
-      NoZWrite = False
+      Position.Coordinates = {0000B4420000B442000000000000803F}
+      Width = 128.000000000000000000
+      Height = 128.000000000000000000
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLDummyCube
       Position.Coordinates = {00000000000000000000A0400000803F}
     end
@@ -289,7 +290,6 @@ object Form1: TForm1
     Top = 272
   end
   object ColorDialog: TColorDialog
-    Ctl3D = True
     Options = [cdFullOpen, cdSolidColor, cdAnyColor]
     Left = 184
     Top = 16
