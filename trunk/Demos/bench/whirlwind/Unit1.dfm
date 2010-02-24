@@ -16,24 +16,26 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 220
-    Height = 179
+    Width = 212
+    Height = 170
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.DepthTest = False
+    FieldOfView = 147.220916748046900000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 8
     object GLParticles1: TGLParticles
       ObjectsSorting = osNone
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       ParticlePoolSize = 10
       OnActivateParticle = GLParticles1ActivateParticle
       object DummyCube1: TGLDummyCube
         OnProgress = DummyCube1Progress
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
           0805000000000000000000000500000000000000000000050000000000000000
@@ -42,16 +44,14 @@ object Form1: TForm1
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          Width = 0.100000001490116
-          Height = 0.100000001490116
-          NoZWrite = False
+          Width = 0.100000001490116100
+          Height = 0.100000001490116100
         end
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 25
+      DepthOfView = 100.000000000000000000
+      FocalLength = 25.000000000000000000
       TargetObject = GLParticles1
       Position.Coordinates = {0000204100004040000000000000803F}
     end

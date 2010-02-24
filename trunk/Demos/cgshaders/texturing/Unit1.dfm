@@ -20,7 +20,7 @@ object Form1: TForm1
   object Splitter1: TSplitter
     Left = 313
     Top = 0
-    Height = 412
+    Height = 401
     Color = clBtnShadow
     ParentColor = False
   end
@@ -28,7 +28,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 313
-    Height = 412
+    Height = 401
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -37,7 +37,7 @@ object Form1: TForm1
       Left = 2
       Top = 2
       Width = 309
-      Height = 408
+      Height = 397
       ActivePage = TabSheet1
       Align = alClient
       Font.Charset = ANSI_CHARSET
@@ -51,7 +51,7 @@ object Form1: TForm1
         Caption = 'Vertex Program'
         object Splitter3: TSplitter
           Left = 0
-          Top = 287
+          Top = 276
           Width = 301
           Height = 3
           Cursor = crVSplit
@@ -96,7 +96,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 301
-          Height = 262
+          Height = 251
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -115,7 +115,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 299
-            Height = 219
+            Height = 208
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -130,7 +130,7 @@ object Form1: TForm1
           end
           object Panel13: TPanel
             Left = 1
-            Top = 236
+            Top = 225
             Width = 299
             Height = 25
             Align = alBottom
@@ -154,7 +154,7 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 290
+          Top = 279
           Width = 301
           Height = 90
           Align = alBottom
@@ -313,7 +313,7 @@ object Form1: TForm1
         end
         object Panel8: TPanel
           Left = 0
-          Top = 290
+          Top = 279
           Width = 301
           Height = 90
           Align = alBottom
@@ -375,7 +375,7 @@ object Form1: TForm1
         ImageIndex = 2
         DesignSize = (
           301
-          380)
+          369)
         object Label16: TLabel
           Left = 8
           Top = 272
@@ -646,8 +646,8 @@ object Form1: TForm1
   object Panel9: TPanel
     Left = 316
     Top = 0
-    Width = 338
-    Height = 412
+    Width = 330
+    Height = 401
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -659,7 +659,7 @@ object Form1: TForm1
     object Panel10: TPanel
       Left = 1
       Top = 1
-      Width = 336
+      Width = 328
       Height = 48
       Align = alTop
       Caption = 'Cg Multi-Texturing'
@@ -674,14 +674,16 @@ object Form1: TForm1
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
       Top = 49
-      Width = 336
-      Height = 362
+      Width = 328
+      Height = 351
       Camera = GLCamera1
       Buffer.Lighting = False
       Buffer.AntiAliasing = aa4xHQ
+      FieldOfView = 146.089370727539100000
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove
+      TabOrder = 1
     end
   end
   object GLScene1: TGLScene
@@ -698,17 +700,15 @@ object Form1: TForm1
       ZSamplingScale.Max = 2.000000000000000000
       ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
-      LinesSmoothing = False
     end
     object GLPlane1: TGLPlane
+      Material.MaterialLibrary = GLMatLib
+      Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
       PitchAngle = 90.000000000000000000
       Up.Coordinates = {0000000000000000000080BF00000000}
-      Material.MaterialLibrary = GLMatLib
-      Material.LibMaterialName = 'LibMaterial'
       Height = 1.000000000000000000
       Width = 1.000000000000000000
-      NoZWrite = False
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000

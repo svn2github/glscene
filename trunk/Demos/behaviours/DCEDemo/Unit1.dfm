@@ -19,16 +19,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 670
-    Height = 485
+    Width = 662
+    Height = 474
     Camera = GLCamera1
     Buffer.FogEnvironment.FogStart = 50.000000000000000000
     Buffer.FogEnvironment.FogEnd = 250.000000000000000000
     Buffer.BackgroundColor = clBlack
     Buffer.FogEnable = True
-    FieldOfView = 156.699401855468800000
+    FieldOfView = 156.173950195312500000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
@@ -59,7 +60,6 @@ object Form1: TForm1
       XTiles = 50
       YTiles = 50
       Style = []
-      NoZWrite = False
       BehavioursData = {
         0201060C54474C4443455374617469630200060D474C4443454D616E61676572
         310201020009080F0000A0410F00000000020008}
@@ -169,6 +169,12 @@ object Form1: TForm1
     Font.Height = -13
     Font.Name = 'Impact'
     Font.Style = []
+    Ranges = <
+      item
+        StartASCII = ' '
+        StopASCII = #1103
+        StartGlyphIdx = 0
+      end>
     Left = 8
     Top = 168
   end
