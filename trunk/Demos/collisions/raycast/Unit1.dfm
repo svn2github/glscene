@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 170
   Top = 79
-  Width = 513
-  Height = 285
+  Width = 521
+  Height = 296
   AutoSize = True
   Caption = 'Form1'
   Color = clBtnFace
@@ -39,6 +39,7 @@ object Form1: TForm1
     Height = 193
     Camera = GLCamera1
     FieldOfView = 125.219512939453100000
+    TabOrder = 0
   end
   object BUCast: TButton
     Left = 232
@@ -126,7 +127,6 @@ object Form1: TForm1
         Material.FaceCulling = fcNoCull
         Height = 0.699999988079071000
         Width = 0.300000011920929000
-        NoZWrite = False
       end
       object Cylinder1: TGLCylinder
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F8180003F0000803F}
