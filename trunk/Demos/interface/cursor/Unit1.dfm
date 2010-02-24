@@ -19,7 +19,7 @@ object Form1: TForm1
   object Bevel1: TBevel
     Left = 0
     Top = 0
-    Width = 497
+    Width = 489
     Height = 3
     Align = alTop
     Shape = bsTopLine
@@ -27,58 +27,51 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 3
-    Width = 497
-    Height = 285
+    Width = 489
+    Height = 276
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.DepthTest = False
+    FieldOfView = 140.167190551757800000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 288
-    Width = 497
+    Top = 279
+    Width = 489
     Height = 19
     Panels = <>
-    SimplePanel = False
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
     Left = 8
     Top = 16
     object HSBitmap: TGLHUDSprite
-      Position.Coordinates = {0000484200004842000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
-      Width = 256
-      Height = 256
-      NoZWrite = False
+      Position.Coordinates = {0000484200004842000000000000803F}
+      Width = 256.000000000000000000
+      Height = 256.000000000000000000
     end
     object GLParticles1: TGLParticles
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       OnActivateParticle = GLParticles1ActivateParticle
       object HSParticle: TGLHUDSprite
-        OnProgress = HSParticleProgress
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'cursor'
-        Width = 16
-        Height = 16
-        NoZWrite = False
+        OnProgress = HSParticleProgress
       end
     end
     object HSCursor: TGLHUDSprite
-      Position.Coordinates = {0000484200004842000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'cursor'
-      Width = 16
-      Height = 16
-      NoZWrite = False
+      Position.Coordinates = {0000484200004842000000000000803F}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       Left = 232
       Top = 152
     end
@@ -127,7 +120,6 @@ object Form1: TForm1
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmModulate
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
       end>
