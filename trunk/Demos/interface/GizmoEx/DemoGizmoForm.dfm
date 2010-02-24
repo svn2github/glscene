@@ -31,21 +31,22 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 213
     Top = 35
-    Width = 426
-    Height = 508
+    Width = 418
+    Height = 497
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 153.578933715820300000
+    FieldOfView = 153.091491699218800000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
     OnMouseUp = ViewerMouseUp
     OnMouseWheel = ViewerMouseWheel
+    TabOrder = 1
   end
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 824
+    Width = 816
     Height = 35
     Align = alTop
     BevelOuter = bvNone
@@ -1617,7 +1618,7 @@ object Form1: TForm1
     Left = 0
     Top = 35
     Width = 213
-    Height = 508
+    Height = 497
     ActivePage = TabSheet1
     Align = alLeft
     TabOrder = 3
@@ -2073,8 +2074,8 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 543
-    Width = 824
+    Top = 532
+    Width = 816
     Height = 36
     Align = alBottom
     BevelOuter = bvNone
@@ -2644,10 +2645,10 @@ object Form1: TForm1
     end
   end
   object Panel3: TPanel
-    Left = 639
+    Left = 631
     Top = 35
     Width = 185
-    Height = 508
+    Height = 497
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 5
@@ -2665,14 +2666,14 @@ object Form1: TForm1
       Left = 0
       Top = 255
       Width = 185
-      Height = 253
+      Height = 242
       Align = alClient
       TabOrder = 1
       object GroupBox1: TGroupBox
         Left = 1
         Top = 1
         Width = 183
-        Height = 251
+        Height = 240
         Align = alClient
         Caption = 'Create Object'
         TabOrder = 0
@@ -2755,11 +2756,9 @@ object Form1: TForm1
       Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object GLDodecahedron3: TGLDodecahedron
-        Material.Texture.Border = 0
         Position.Coordinates = {0000000000000000000000400000803F}
         object GLArrowLine3: TGLArrowLine
           Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
-          Material.Texture.Border = 0
           Position.Coordinates = {00000000000000000000003F0000803F}
           BottomRadius = 0.100000001490116100
           Height = 1.000000000000000000
@@ -2770,7 +2769,6 @@ object Form1: TForm1
           BottomArrowHeadRadius = 0.200000002980232200
           object GLArrowLine4: TGLArrowLine
             Material.FrontProperties.Diffuse.Color = {000000000000803F8180803E0000803F}
-            Material.Texture.Border = 0
             Direction.Coordinates = {00000000F304353FF30435BF00000000}
             PitchAngle = 45.000000000000000000
             Position.Coordinates = {000000000000003F0000003F0000803F}
@@ -2783,7 +2781,6 @@ object Form1: TForm1
             BottomArrowHeadHeight = 0.500000000000000000
             BottomArrowHeadRadius = 0.200000002980232200
             object GLCube2: TGLCube
-              Material.Texture.Border = 0
               Position.Coordinates = {00000000000000000000803F0000803F}
               RollAngle = 45.000000000000000000
               Up.Coordinates = {F30435BFF304353F0000000000000000}
@@ -2794,16 +2791,13 @@ object Form1: TForm1
       end
       object GLCube1: TGLCube
         Material.MaterialOptions = [moIgnoreFog, moNoLighting]
-        Material.Texture.Border = 0
         Position.Coordinates = {0000803F00000000000000000000803F}
         object GLSphere1: TGLSphere
-          Material.Texture.Border = 0
           Position.Coordinates = {0000803F00000000000000000000803F}
           Radius = 0.500000000000000000
         end
       end
       object GLFrustrum1: TGLFrustrum
-        Material.Texture.Border = 0
         Position.Coordinates = {0000000000000040000000000000803F}
         ShowAxes = True
         FrustrumSize = {0000A0400000803F0000803F0000803F}
@@ -2811,7 +2805,6 @@ object Form1: TForm1
       object GLDisk1: TGLDisk
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803FF853E33E}
         Material.BlendingMode = bmTransparency
-        Material.Texture.Border = 0
         Material.FaceCulling = fcNoCull
         Position.Coordinates = {0000004000000040000000000000803F}
         OuterRadius = 0.500000000000000000
