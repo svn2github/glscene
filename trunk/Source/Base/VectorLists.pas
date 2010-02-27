@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>27/02/10 - Yar - Added TLongWordList
       <li>06/02/10 - Yar - Added methods to TSingleList
                            Added T4ByteList
       <li>25/11/09 - DanB - Fixed FastQuickSortLists for 64bit (thanks YarUnderoaker)
@@ -57,7 +58,7 @@ interface
 uses
   Classes, SysUtils,
 
-  VectorTypes, VectorGeometry, PersistentClasses;
+  VectorTypes, VectorGeometry, PersistentClasses, VectorGeometryEXT;
 
 type
   // TBaseListOption
@@ -618,6 +619,46 @@ type
 
     property Items[Index: Integer]: T4ByteData read Get write Put; default;
     property List: P4ByteArrayList read FList;
+  end;
+
+  // TLongWordList
+  //
+  TLongWordList = class(TBaseList)
+  private
+    { Private Declarations }
+    FList: PLongWordArray;
+
+  protected
+    { Protected Declarations }
+    function Get(Index: Integer): LongWord;
+    procedure Put(Index: Integer; const item: LongWord);
+    procedure SetCapacity(newCapacity: Integer); override;
+
+  public
+    { Public Declarations }
+    constructor Create; override;
+    procedure Assign(src: TPersistent); override;
+
+    function Add(const item: LongWord): Integer; overload;
+    function AddNC(const item: LongWord): Integer; overload;
+    procedure Add(const i1, i2: LongWord); overload;
+    procedure Add(const i1, i2, i3: LongWord); overload;
+    procedure Add(const AList: TLongWordList); overload;
+    procedure Push(const Val: LongWord);
+    function Pop: LongWord;
+    procedure Insert(Index: Integer; const item: LongWord);
+    procedure Remove(const item: LongWord);
+    function IndexOf(item: Integer): LongWord;
+
+    property Items[Index: Integer]: LongWord read Get write Put; default;
+    property List: PLongWordArray read FList;
+
+    {: Add n integers at the address starting at (and including) first. }
+    procedure AddLongWords(const First: PLongWord; n: Integer); overload;
+    {: Add all integers from aList into the list. }
+    procedure AddLongWords(const aList: TLongWordList); overload;
+    {: Add all integers from anArray into the list. }
+    procedure AddLongWords(const anArray: array of LongWord); overload;
   end;
 
 {: Sort the refList in ascending order, ordering objList (TList) on the way. }
@@ -2488,6 +2529,7 @@ asm
   pop edi;
 end;
 {$ENDIF}
+
 // IndexOf
 //
 
@@ -3606,6 +3648,273 @@ begin
     Result := Zero;
 end;
 
+// ------------------
+// ------------------ TLongWordList ------------------
+// ------------------
+
+// Create
+//
+
+constructor TLongWordList.Create;
+begin
+  FItemSize := SizeOf(LongWord);
+  inherited Create;
+  FGrowthDelta := cDefaultListGrowthDelta;
+end;
+
+// Assign
+//
+
+procedure TLongWordList.Assign(Src: TPersistent);
+begin
+  if Assigned(Src) then
+  begin
+    inherited;
+    if (Src is TLongWordList) then
+      System.Move(TLongWordList(Src).FList^, FList^, FCount * SizeOf(LongWord));
+  end
+  else
+    Clear;
+end;
+
+// Add (simple)
+//
+
+function TLongWordList.Add(const item: LongWord): Integer;
+begin
+  Result := FCount;
+  if Result = FCapacity then
+    SetCapacity(FCapacity + FGrowthDelta);
+  FList^[Result] := Item;
+  Inc(FCount);
+end;
+
+// AddNC (simple, no capacity check)
+//
+
+function TLongWordList.AddNC(const item: LongWord): Integer;
+begin
+  Result := FCount;
+  FList^[Result] := Item;
+  Inc(FCount);
+end;
+
+// Add (two at once)
+//
+
+procedure TLongWordList.Add(const i1, i2: LongWord);
+var
+  tmpList : PLongWordArray;
+begin
+  Inc(FCount, 2);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 2];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+end;
+
+// Add (three at once)
+//
+
+procedure TLongWordList.Add(const i1, i2, i3: LongWord);
+var
+  tmpList : PLongWordArray;
+begin
+  Inc(FCount, 3);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 3];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+end;
+
+// Add (list)
+//
+
+procedure TLongWordList.Add(const AList: TLongWordList);
+begin
+  if Assigned(AList) and (AList.Count > 0) then
+  begin
+    if Count + AList.Count > Capacity then
+      Capacity := Count + AList.Count;
+    System.Move(AList.FList[0], FList[Count], AList.Count * SizeOf(LongWord));
+    Inc(FCount, AList.Count);
+  end;
+end;
+
+// Get
+//
+
+function TLongWordList.Get(Index: Integer): LongWord;
+begin
+{$IFOPT R+}
+    Assert(Cardinal(Index) < Cardinal(FCount));
+{$ENDIF}
+  Result := FList^[Index];
+end;
+
+// Insert
+//
+
+procedure TLongWordList.Insert(Index: Integer; const Item: LongWord);
+begin
+{$IFOPT R+}
+    Assert(Cardinal(Index) < Cardinal(FCount));
+{$ENDIF}
+  if FCount = FCapacity then
+    SetCapacity(FCapacity + FGrowthDelta);
+  if Index < FCount then
+    System.Move(FList[Index], FList[Index + 1], (FCount - Index) * SizeOf(LongWord));
+  FList^[Index] := Item;
+  Inc(FCount);
+end;
+
+// Remove
+//
+
+procedure TLongWordList.Remove(const item: LongWord);
+var
+  I: Integer;
+begin
+  for I := 0 to Count - 1 do
+  begin
+    if FList^[I] = item then
+    begin
+      System.Move(FList[I + 1], FList[I], (FCount - 1 - I) * SizeOf(LongWord));
+      Dec(FCount);
+      Break;
+    end;
+  end;
+end;
+
+// Put
+//
+
+procedure TLongWordList.Put(Index: Integer; const Item: LongWord);
+begin
+{$IFOPT R+}
+    Assert(Cardinal(Index) < Cardinal(FCount));
+{$ENDIF}
+  FList^[Index] := Item;
+end;
+
+// SetCapacity
+//
+
+procedure TLongWordList.SetCapacity(NewCapacity: Integer);
+begin
+  inherited;
+  FList := PLongWordArray(FBaseList);
+end;
+
+// Push
+//
+
+procedure TLongWordList.Push(const Val: LongWord);
+begin
+  Add(Val);
+end;
+
+// Pop
+//
+
+function TLongWordList.Pop: LongWord;
+begin
+  if FCount > 0 then
+  begin
+    Result := FList^[FCount - 1];
+    Delete(FCount - 1);
+  end
+  else
+    Result := 0;
+end;
+
+// AddLongWords (pointer & n)
+//
+
+procedure TLongWordList.AddLongWords(const First: PLongWord; n: Integer);
+begin
+  if n < 1 then
+    Exit;
+  AdjustCapacityToAtLeast(Count + n);
+  System.Move(First^, FList[FCount], n * SizeOf(LongWord));
+  FCount := FCount + n;
+end;
+
+// AddLongWords (TLongWordList)
+//
+
+procedure TLongWordList.AddLongWords(const aList: TLongWordList);
+begin
+  if not Assigned(aList) then
+    Exit;
+  AddLongWords(@aList.List[0], aList.Count);
+end;
+
+// AddLongWords (array)
+//
+
+procedure TLongWordList.AddLongWords(const anArray: array of LongWord);
+var
+  n: Integer;
+begin
+  n := Length(anArray);
+  if n > 0 then
+    AddLongWords(@anArray[0], n);
+end;
+
+// LongWordSearch
+//
+
+function LongWordSearch(item: LongWord; list: PLongWordVector; Count: Integer): Integer; register;
+{$IFDEF GLS_NO_ASM}
+var i : integer;
+begin
+  result:=-1;
+  for i := 0 to Count-1 do begin
+    if list^[i]=item then begin
+      result:=i;
+      break;
+    end;
+  end;
+end;
+{$ELSE}
+{$IFDEF FPC}
+ {$ASMMODE INTEL}
+{$ENDIF}
+asm
+  push edi;
+
+  test ecx, ecx
+  jz @@NotFound
+
+  mov edi, edx;
+  mov edx, ecx;
+  repne scasd;
+  je @@FoundIt
+
+  @@NotFound:
+  xor eax, eax
+  dec eax
+  jmp @@end;
+
+  @@FoundIt:
+  sub edx, ecx;
+  dec edx;
+  mov eax, edx;
+
+  @@end:
+  pop edi;
+end;
+{$ENDIF}
+
+function TLongWordList.IndexOf(item: Integer): LongWord; register;
+begin
+  Result := LongWordSearch(item, FList, FCount);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -3615,6 +3924,6 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClasses([TAffineVectorList, TVectorList, TTexPointList, TSingleList,
-                   TDoubleList]);
+                   TDoubleList, T4ByteList, TLongWordList]);
 
 end.
