@@ -6,6 +6,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/02/10 - Yar - Added functions to work with adjacent triangles
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
       <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
@@ -27,7 +28,9 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,PersistentClasses, VectorLists, VectorGeometry;
+uses
+  Classes, PersistentClasses, VectorLists, VectorGeometry, VectorTypes,
+  VectorGeometryEXT;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -39,6 +42,16 @@ procedure ConvertStripToList(const strip : TIntegerList;
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              const indices : TIntegerList;
                              list : TAffineVectorList); overload;
+
+function ConvertStripToList(
+  const AindicesList: PLongWordArray;
+  Count: LongWord;
+  RestartIndex: LongWord): TLongWordList; overload;
+
+function ConvertFansToList(
+  const AindicesList: PLongWordArray;
+  Count: LongWord;
+  RestartIndex: LongWord): TLongWordList;
 
 {: Expands an indexed structure into a non-indexed structure. }
 procedure ConvertIndexedListToList(const data : TAffineVectorList;
@@ -162,7 +175,14 @@ procedure SubdivideTriangles(smoothFactor : Single;
                              normals : TAffineVectorList = nil;
                              onSubdivideEdge : TSubdivideEdgeEvent = nil);
 
+{: Create list of indices of triangles with adjancency from triangle list }
+function MakeTriangleAdjacencyList(
+  const AindicesList: PLongWordArray; Count: LongWord;
+  const AVerticesList: PAffineVectorArray): TLongWordList;
 
+var
+  vImprovedFixingOpenTriangleEdge: Boolean = False;
+  vEdgeInfoReserveSize: Integer = 64;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1148,5 +1168,1011 @@ begin
    end;
 end;
 
+
+type
+
+  TTriangleEdgeInfo = record
+    adjacentTriangle: array[0..2] of LongWord;
+    // Bits 0:1 is edge number of adjacent triangle 0
+    // Bits 2:3 is edge number of adjacent triangle 1
+    // Bits 4:5 is edge number of adjacent triangle 2
+    adjacentTriangleEdges: Byte;
+    openEdgeMask: Byte;
+  end;
+
+  TTriangleEdgeInfoArray = array of TTriangleEdgeInfo;
+
+  TTriangleBoundary = record
+    vertexIndex: LongWord;
+    triangle: LongWord;
+    edge: LongWord;
+    prev: LongWord;
+    next: array[0..2] of LongWord;
+    active: LongWord;
+    maxSqArea: Single;
+  end;
+
+  TTriangleBoundaryArray = array of TTriangleBoundary;
+
+  TVector3dw = array[0..2] of LongWord;
+  PVector3dw = ^TVector3dw;
+
+var
+  indicesList: PLongWordArray; // Reference to indices list of usual triangles
+  VerticesList: PAffineVectorArray; // Reference to vertices list
+  PrimitiveNum: LongWord; // Number of triangles
+  edgeInfo: TTriangleEdgeInfoArray;
+  boundaryList: TTriangleBoundaryArray;
+
+// sameVertex - determine if two vertices are identical.
+//
+
+function sameVertex(i0, i1: LongWord): Boolean;
+begin
+  Result := (VerticesList[i0][0] = VerticesList[i1][0])
+    and (VerticesList[i0][1] = VerticesList[i1][1])
+    and (VerticesList[i0][2] = VerticesList[i1][2]);
+end;
+
+procedure joinTriangles(
+  tri1: Integer; edge1: Cardinal;
+  tri2: Integer; edge2: Cardinal);
+begin
+  Assert((edge1 < 3) and (edge2 < 3), 'joinTriangles: Multiple edge detected.');
+
+  edgeInfo[tri1].adjacentTriangle[edge1] := tri2;
+  edgeInfo[tri1].adjacentTriangleEdges := edgeInfo[tri1].adjacentTriangleEdges
+    and not (3 shl (2 * edge1));
+  edgeInfo[tri1].adjacentTriangleEdges := edgeInfo[tri1].adjacentTriangleEdges
+    or (edge2 shl (2 * edge1));
+
+  edgeInfo[tri2].adjacentTriangle[edge2] := tri1;
+  edgeInfo[tri2].adjacentTriangleEdges := edgeInfo[tri2].adjacentTriangleEdges
+    and not (3 shl (2 * edge2));
+  edgeInfo[tri2].adjacentTriangleEdges := edgeInfo[tri2].adjacentTriangleEdges
+    or (edge1 shl (2 * edge2));
+end;
+
+procedure matchWithTriangleSharingEdge(triangle, edge, v0, v1, otherv: LongWord);
+var
+  i, j: Integer;
+  doubleTri: Integer;
+  otherEdge: Integer;
+  vertexIndex: PVector3dw;
+begin
+  doubleTri := -1;
+  otherEdge := 0;
+  // Match shared edges based on vertex numbers (relatively fast).
+  for i := triangle + 1 to PrimitiveNum - 1 do
+  begin
+    j := i * 3;
+    vertexIndex := @indicesList[j];
+
+    if vertexIndex[0] = v0 then
+      if vertexIndex[2] = v1 then
+        if edgeInfo[i].adjacentTriangle[2] = $FFFFFFFF then
+          if vertexIndex[1] = otherv then
+          begin
+            if (doubleTri < 0) then
+            begin
+              doubleTri := i;
+              otherEdge := 2;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 2, triangle, edge);
+            Exit;
+          end;
+
+    if vertexIndex[1] = v0 then
+      if vertexIndex[0] = v1 then
+        if edgeInfo[i].adjacentTriangle[0] = $FFFFFFFF then
+          if vertexIndex[2] = otherv then
+          begin
+            if doubleTri < 0 then
+            begin
+              doubleTri := i;
+              otherEdge := 0;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 0, triangle, edge);
+            Exit;
+          end;
+
+    if vertexIndex[2] = v0 then
+      if vertexIndex[1] = v1 then
+        if edgeInfo[i].adjacentTriangle[1] = $FFFFFFFF then
+          if vertexIndex[0] = otherv then
+          begin
+            if doubleTri < 0 then
+            begin
+              doubleTri := i;
+              otherEdge := 1;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 1, triangle, edge);
+            Exit;
+          end;
+  end;
+
+  // Match shared edges based on vertex XYZ values (slow check).
+  for i := triangle + 1 to PrimitiveNum - 1 do
+  begin
+    j := i * 3;
+    vertexIndex := @indicesList[j];
+
+    if sameVertex(vertexIndex[0], v0) then
+      if sameVertex(vertexIndex[2], v1) then
+        if edgeInfo[i].adjacentTriangle[2] = $FFFFFFFF then
+          if vertexIndex[0] = otherv then
+          begin
+            if doubleTri < 0 then
+            begin
+              doubleTri := i;
+              otherEdge := 2;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 2, triangle, edge);
+            Exit;
+          end;
+
+    if sameVertex(vertexIndex[1], v0) then
+      if sameVertex(vertexIndex[0], v1) then
+        if edgeInfo[i].adjacentTriangle[0] = $FFFFFFFF then
+          if vertexIndex[0] = otherv then
+          begin
+            if doubleTri < 0 then
+            begin
+              doubleTri := i;
+              otherEdge := 0;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 0, triangle, edge);
+            Exit;
+          end;
+
+    if sameVertex(vertexIndex[2], v0) then
+      if sameVertex(vertexIndex[1], v1) then
+        if edgeInfo[i].adjacentTriangle[1] = $FFFFFFFF then
+          if vertexIndex[0] = otherv then
+          begin
+            if doubleTri < 0 then
+            begin
+              doubleTri := i;
+              otherEdge := 1;
+            end;
+          end
+          else
+          begin
+            joinTriangles(i, 1, triangle, edge);
+            Exit;
+          end;
+  end;
+
+  // Only connect a triangle to a triangle with the exact
+  // same three vertices as a last resort.
+  if doubleTri >= 0 then
+    joinTriangles(doubleTri, otherEdge, triangle, edge);
+end;
+
+function ComputeTriangleEdgeInfo: Boolean;
+var
+  i, j: Integer;
+  vertexIndex: PVector3dw;
+begin
+  Result := true;
+  try
+    // Initialize edge information as if all triangles are fully disconnected.
+    for i := 0 to PrimitiveNum - 1 do
+    begin
+      edgeInfo[i].adjacentTriangle[0] := $FFFFFFFF; // Vertex 0,1 edge
+      edgeInfo[i].adjacentTriangle[1] := $FFFFFFFF; // Vertex 1,2 edge
+      edgeInfo[i].adjacentTriangle[2] := $FFFFFFFF; // Vertex 2,0 edge
+      edgeInfo[i].adjacentTriangleEdges := (3 shl 0) or (3 shl 2) or (3 shl 4);
+      edgeInfo[i].openEdgeMask := 0;
+    end;
+
+    for i := 0 to PrimitiveNum - 1 do
+    begin
+      j := i * 3;
+      vertexIndex := @indicesList[j];
+      if edgeInfo[i].adjacentTriangle[0] = $FFFFFFFF then
+        matchWithTriangleSharingEdge(i, 0,
+          vertexIndex[0], vertexIndex[1], vertexIndex[2]);
+      if edgeInfo[i].adjacentTriangle[1] = $FFFFFFFF then
+        matchWithTriangleSharingEdge(i, 1,
+          vertexIndex[1], vertexIndex[2], vertexIndex[0]);
+      if edgeInfo[i].adjacentTriangle[2] = $FFFFFFFF then
+        matchWithTriangleSharingEdge(i, 2,
+          vertexIndex[2], vertexIndex[0], vertexIndex[1]);
+    end;
+  except
+    Result := false;
+  end;
+end;
+
+procedure findOpenBoundary(triangle, edge: LongWord;
+  var boundaryVertices: LongWord);
+var
+  v0, v, nextEdge, otherTriangle, count: LongWord;
+  i: Byte;
+  finded: Boolean;
+begin
+  count := 0;
+  if (edgeInfo[triangle].openEdgeMask and (1 shl edge)) <> 0 then
+    Exit;
+
+  Assert(edgeInfo[triangle].adjacentTriangle[edge] = $FFFFFFFF);
+
+  edgeInfo[triangle].openEdgeMask := edgeInfo[triangle].openEdgeMask or (1 shl
+    edge);
+
+  v0 := indicesList[3 * triangle + edge];
+  boundaryList[count].vertexIndex := v0;
+  boundaryList[count].triangle := triangle;
+  boundaryList[count].edge := edge;
+  Inc(count);
+
+  nextEdge := (edge + 1) mod 3;
+  v := indicesList[3 * triangle + nextEdge];
+  while not sameVertex(v, v0) do
+  begin
+    otherTriangle := edgeInfo[triangle].adjacentTriangle[nextEdge];
+    while otherTriangle <> $FFFFFFFF do
+    begin
+      finded := false;
+      for i := 0 to 2 do
+        if edgeInfo[otherTriangle].adjacentTriangle[i] = triangle then
+        begin
+          Assert(sameVertex(indicesList[3 * otherTriangle + (i + 1) mod 3], v));
+          triangle := otherTriangle;
+          nextEdge := (i + 1) mod 3;
+          finded := true;
+          Break;
+        end;
+      Assert(finded);
+      otherTriangle := edgeInfo[triangle].adjacentTriangle[nextEdge];
+    end;
+
+    // Mark this edge as processed to avoid reprocessing
+    // the boundary multiple times.
+    edgeInfo[triangle].openEdgeMask :=
+      edgeInfo[triangle].openEdgeMask or (1 shl nextEdge);
+
+    boundaryList[count].vertexIndex := v;
+    boundaryList[count].triangle := triangle;
+    boundaryList[count].edge := nextEdge;
+    Inc(count);
+
+    nextEdge := (nextEdge + 1) mod 3;
+    v := indicesList[3 * triangle + nextEdge];
+  end;
+  boundaryVertices := count;
+end;
+
+function polygonArea(boundaryIndex: LongWord): Single;
+var
+  //  Md2TriangleVertex *v;
+  d01, d02, prod: TVector3f;
+  v0, v1, v2: Integer;
+begin
+  // Get the vertices of the triangle along the boundary.
+  v0 := boundaryList[boundaryIndex].vertexIndex;
+  v1 := boundaryList[boundaryList[boundaryIndex].next[0]].vertexIndex;
+  v2 := boundaryList[boundaryList[boundaryIndex].next[1]].vertexIndex;
+
+  // Compute the area of the triangle
+  d01 := VectorSubtract(VerticesList[v0], VerticesList[v1]);
+  d02 := VectorSubtract(VerticesList[v0], VerticesList[v2]);
+  prod := VectorCrossProduct(d01, d02);
+  Result := VectorLength(prod);
+end;
+
+procedure fixOpenTriangle(boundaryIndex: LongWord);
+var
+  newTriIndex, b0, bp, b1, b2: LongWord;
+begin
+  b0 := boundaryIndex;
+  bp := boundaryList[b0].prev;
+  b1 := boundaryList[b0].next[0];
+  b2 := boundaryList[b0].next[1];
+
+  Assert(boundaryList[b1].next[0] = b2);
+  Assert(boundaryList[bp].next[0] = b0);
+  Assert(boundaryList[bp].next[1] = b1);
+
+  // Initialize the new triangle.
+  indicesList[PrimitiveNum*3+0] := boundaryList[b2].vertexIndex;
+  indicesList[PrimitiveNum*3+1] := boundaryList[b1].vertexIndex;
+  indicesList[PrimitiveNum*3+2] := boundaryList[b0].vertexIndex;
+  Inc(PrimitiveNum);
+
+  // Mark edge 2 unconnected
+  newTriIndex := indicesList[PrimitiveNum*3-3];
+  edgeInfo[newTriIndex].adjacentTriangle[2] := $FFFFFFFF;
+  edgeInfo[newTriIndex].adjacentTriangleEdges := 3 shl 4;
+
+  // Make sure edges we are joining are currently unconnected.
+  Assert(edgeInfo[boundaryList[b1].triangle].adjacentTriangle[boundaryList[b1].edge] = $FFFFFFFF);
+  Assert(edgeInfo[boundaryList[b0].triangle].adjacentTriangle[boundaryList[b0].edge] = $FFFFFFFF);
+
+  // Join the triangles with the new triangle.
+  joinTriangles(newTriIndex, 0, boundaryList[b1].triangle, boundaryList[b1].edge);
+  joinTriangles(newTriIndex, 1, boundaryList[b0].triangle, boundaryList[b0].edge);
+
+  // Update the boundary list based on the addition of the new triangle.
+
+  boundaryList[b0].triangle := newTriIndex;
+  boundaryList[b0].edge := 2;
+  boundaryList[b0].next[0] := b2;
+  boundaryList[b0].next[1] := boundaryList[b2].next[0];
+  boundaryList[b0].maxSqArea := MeshUtils.polygonArea(b0);
+
+  boundaryList[bp].next[1] := b2;
+
+  boundaryList[b1].active := 0;
+
+  boundaryList[b2].prev := b0;
+end;
+
+procedure fixOpenBoundary(Count: LongWord);
+var
+  b0, b1, b2: LongWord;
+  i: Integer;
+  maxMaxSqArea: Single;
+  numActive: LongWord;
+  minIndex: LongWord;
+  min: Single;
+begin
+  if Count = 1 then
+    {: Ugh, a degenerate triangle with two (or perhaps three)
+       identical vertices tricking us into thinking that there
+       is an open edge.  Hopefully these should be eliminated
+       by an earlier "eliminate" pass, but such triangles are
+       harmless. }
+    exit;
+
+  Assert(count >= 3);
+
+  if count = 3 then
+  begin
+    {: Often a common case.  Save bookkeeping and close the triangle
+       boundary immediately. }
+    b0 := 0;
+    b1 := 1;
+    b2 := 2;
+  end
+  else
+  begin
+    minIndex := 0;
+
+    boundaryList[0].prev := count - 1;
+    boundaryList[0].next[0] := 1;
+    boundaryList[0].next[1] := 2;
+    boundaryList[0].active := 1;
+
+    for i := 1 to count - 3 do
+    begin
+      boundaryList[i].prev := i - 1;
+      boundaryList[i].next[0] := i + 1;
+      boundaryList[i].next[1] := i + 2;
+      boundaryList[i].active := 1;
+    end;
+    i := count - 3;
+
+    boundaryList[i].prev := i - 1;
+    boundaryList[i].next[0] := i + 1;
+    boundaryList[i].next[1] := 0;
+    boundaryList[i].active := 1;
+
+    boundaryList[i + 1].prev := i;
+    boundaryList[i + 1].next[0] := 0;
+    boundaryList[i + 1].next[1] := 1;
+    boundaryList[i + 1].active := 1;
+
+    boundaryList[0].maxSqArea := MeshUtils.polygonArea(0);
+    maxMaxSqArea := boundaryList[0].maxSqArea;
+
+    for i := 1 to count - 1 do
+    begin
+      boundaryList[i].maxSqArea := MeshUtils.polygonArea(i);
+      if boundaryList[i].maxSqArea > maxMaxSqArea then
+        maxMaxSqArea := boundaryList[i].maxSqArea;
+    end;
+
+    {: If triangles are formed from adjacent edges along the
+       boundary, at least front-facing such triangle should
+       be front-facing (ie, have a non-negative area). }
+
+    Assert(maxMaxSqArea >= 0.0);
+    maxMaxSqArea := 2.0 * maxMaxSqArea;
+    numActive := count;
+
+    while numActive > 3 do
+    begin
+      min := maxMaxSqArea;
+      for i := 0 to count - 1 do
+        if boundaryList[i].active > 0 then
+          if boundaryList[i].maxSqArea < min then
+            if boundaryList[i].maxSqArea >= 0.0 then
+            begin
+              min := boundaryList[i].maxSqArea;
+              minIndex := i;
+            end;
+
+      Assert(min < maxMaxSqArea);
+      fixOpenTriangle(minIndex);
+
+      {: Newly created triangle formed from adjacent edges
+         along the boundary could be larger than the
+         previous largest triangle. }
+      if (boundaryList[minIndex].maxSqArea > maxMaxSqArea) then
+        maxMaxSqArea := 2.0 * boundaryList[minIndex].maxSqArea;
+
+      Dec(numActive);
+    end;
+
+    for i := 0 to count - 1 do
+      if boundaryList[i].active > 0 then
+      begin
+        minIndex := i;
+        Break;
+      end;
+
+    Assert(LongWord(i) < count);
+
+    b0 := minIndex;
+    b1 := boundaryList[b0].next[0];
+    b2 := boundaryList[b0].next[1];
+
+    Assert(boundaryList[b0].prev = b2);
+    Assert(boundaryList[b1].prev = b0);
+    Assert(boundaryList[b1].next[0] = b2);
+    Assert(boundaryList[b1].next[1] = b0);
+    Assert(boundaryList[b2].prev = b1);
+    Assert(boundaryList[b2].next[0] = b0);
+    Assert(boundaryList[b2].next[1] = b1);
+  end;
+
+  {: Place final "keystone" triangle to fill completely
+     the open boundary. }
+
+  if LongWord(Length(edgeInfo)) < (PrimitiveNum + 1) then
+    SetLength(edgeInfo, Length(edgeInfo) + vEdgeInfoReserveSize);
+
+  // Initialize the new triangle.
+  indicesList[PrimitiveNum*3+0] := boundaryList[b2].vertexIndex;
+  indicesList[PrimitiveNum*3+1] := boundaryList[b1].vertexIndex;
+  indicesList[PrimitiveNum*3+2] := boundaryList[b0].vertexIndex;
+  // Join keystone triangle.
+  joinTriangles(PrimitiveNum, 0, boundaryList[b1].triangle,
+    boundaryList[b1].edge);
+  joinTriangles(PrimitiveNum, 1, boundaryList[b0].triangle,
+    boundaryList[b0].edge);
+  joinTriangles(PrimitiveNum, 2, boundaryList[b2].triangle,
+    boundaryList[b2].edge);
+  Inc(PrimitiveNum);
+end;
+
+procedure findAndFixOpenTriangleGroups(triangle: LongWord);
+var
+  Count: LongWord;
+begin
+  if Length(boundaryList)<(1 + 2 * PrimitiveNum) then
+    SetLength(boundaryList, 1 + 2 * PrimitiveNum);
+
+  if edgeInfo[triangle].adjacentTriangle[0] = $FFFFFFFF then
+  begin
+    findOpenBoundary(triangle, 0, Count);
+    fixOpenBoundary(Count);
+  end;
+  if edgeInfo[triangle].adjacentTriangle[1] = $FFFFFFFF then
+  begin
+    findOpenBoundary(triangle, 1, Count);
+    fixOpenBoundary(Count);
+  end;
+  if edgeInfo[triangle].adjacentTriangle[2] = $FFFFFFFF then
+  begin
+    findOpenBoundary(triangle, 2, Count);
+    fixOpenBoundary(Count);
+  end;
+end;
+
+procedure CloseOpenTriangleGroups;
+var
+  i: LongWord;
+begin
+  i := 0;
+  while i < PrimitiveNum do
+  begin
+    if (edgeInfo[i].adjacentTriangle[0] = $FFFFFFFF)
+      or (edgeInfo[i].adjacentTriangle[1] = $FFFFFFFF)
+      or (edgeInfo[i].adjacentTriangle[2] = $FFFFFFFF) then
+      findAndFixOpenTriangleGroups(i);
+    Inc(i);
+  end;
+end;
+
+procedure CheckForBogusAdjacency;
+
+  function AdjacentEdge(x, n: Integer): Integer;
+  begin
+    Result := (x shr (2 * n)) and 3;
+  end;
+
+var
+  i, j: Integer;
+  adjacentTriangle, adjacentTriangleSharedEdge: LongWord;
+begin
+  for i := 0 to PrimitiveNum - 1 do
+    for j := 0 to 2 do
+    begin
+      adjacentTriangleSharedEdge :=
+        AdjacentEdge(edgeInfo[i].adjacentTriangleEdges, j);
+      adjacentTriangle := edgeInfo[i].adjacentTriangle[j];
+      if adjacentTriangle <> $FFFFFFFF then
+      begin
+        Assert(adjacentTriangleSharedEdge < 3);
+        Assert(edgeInfo[adjacentTriangle].adjacentTriangle[adjacentTriangleSharedEdge] = LongWord(i));
+        Assert(AdjacentEdge(edgeInfo[adjacentTriangle].adjacentTriangleEdges,
+          adjacentTriangleSharedEdge) = j);
+      end
+      else Assert(adjacentTriangleSharedEdge = 3);
+    end;
+end;
+
+procedure reconnectSharedEdges(isTri, wasTri: LongWord);
+var
+  tri, count: LongWord;
+  i, j: Byte;
+begin
+  for i := 0 to 3 do
+  begin
+    tri := edgeInfo[wasTri].adjacentTriangle[i];
+    if tri <>$FFFFFFFF then
+    begin
+      count := 0;
+      for j := 0 to 3 do
+      begin
+        if edgeInfo[tri].adjacentTriangle[j] = wasTri then
+        begin
+          edgeInfo[tri].adjacentTriangle[j] := isTri;
+          Inc(count);
+        end;
+        if edgeInfo[tri].adjacentTriangle[j] = isTri then
+          Inc(count);
+      end;
+      assert(count > 0);
+    end;
+  end;
+end;
+
+procedure possiblyReconnectTriangle(tri, isTri, wasTri: LongWord);
+var
+  j: Byte;
+begin
+  for j := 0 to 3 do
+    if edgeInfo[tri].adjacentTriangle[j] = wasTri then
+      edgeInfo[tri].adjacentTriangle[j] := isTri;
+end;
+
+function eliminateAdjacentDegeneratePair(
+  badTri, otherBadTri, goodTri: LongWord): LongWord;
+var
+  otherGoodTri: LongWord;
+  i: Integer;
+  j: Byte;
+begin
+  assert(badTri < PrimitiveNum);
+  assert(otherBadTri < PrimitiveNum);
+  assert(goodTri < PrimitiveNum);
+
+  otherGoodTri := 0;
+  {: The other good triangle is the triangle adjacent to the other
+     bad triangle but which is not the bad triangle. }
+  for i :=0 to 3 do
+    if edgeInfo[otherBadTri].adjacentTriangle[i] <> badTri then
+    begin
+      otherGoodTri := edgeInfo[otherBadTri].adjacentTriangle[i];
+      break;
+    end;
+
+  assert(i < 3);
+
+  {: Fix the good triangle so that both edges adjacent to the
+     bad triangle are now adjacent to the other good triangle. }
+  for i :=0 to 3 do
+    if edgeInfo[goodTri].adjacentTriangle[i] = badTri then
+      edgeInfo[goodTri].adjacentTriangle[i] := otherGoodTri;
+
+
+  {: Fix the other good triangle so that both edges adjacent to the
+     other bad triangle are now adjacent to the good triangle. }
+  for i :=0 to 3 do
+    if edgeInfo[otherGoodTri].adjacentTriangle[i] = otherBadTri then
+      edgeInfo[otherGoodTri].adjacentTriangle[i] := goodTri;
+
+  {: Decrement the object's triangle count by 2. Then copy
+     non-degenerate triangles from the end of the triangle
+     list to the slots once used by the eliminated triangles.
+     Be sure to copy the edgeInfo data structure too.  Also
+     if goodTri is one of the last two triangles, be careful
+     to make sure it gets copied. }
+
+  Dec(PrimitiveNum, 2);
+
+  if goodTri < PrimitiveNum then
+  begin
+    PVector3lw(@indicesList[3*badTri])^ :=
+      PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+    edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
+    PVector3lw(@indicesList[3*otherBadTri])^ :=
+      PVector3lw(@indicesList[3*PrimitiveNum])^;
+    edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
+    reconnectSharedEdges(badTri, PrimitiveNum+1);
+    reconnectSharedEdges(otherBadTri, PrimitiveNum);
+    {: We are moving two triangles and they each might be
+       connected to each other.  Possibly reconnect the
+       edges appropriately if so. }
+    possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum);
+    possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum+1);
+  end
+  else begin
+    if goodTri = PrimitiveNum+1 then
+      if badTri < PrimitiveNum then
+      begin
+        PVector3lw(@indicesList[3*badTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
+        PVector3lw(@indicesList[3*otherBadTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
+        reconnectSharedEdges(badTri, PrimitiveNum+1);
+        possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum);
+
+        if otherBadTri < PrimitiveNum then
+        begin
+          reconnectSharedEdges(otherBadTri, PrimitiveNum);
+          possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum+1);
+        end;
+
+        goodTri := badTri;
+      end
+      else begin
+        assert(otherBadTri < PrimitiveNum);
+        PVector3lw(@indicesList[3*otherBadTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum+1];
+        PVector3lw(@indicesList[3*badTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        edgeInfo[badTri]  := edgeInfo[PrimitiveNum];
+        reconnectSharedEdges(otherBadTri, PrimitiveNum+1);
+        possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum);
+
+        if badTri < PrimitiveNum then
+        begin
+          reconnectSharedEdges(badTri, PrimitiveNum);
+          possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum+1);
+        end;
+
+        goodTri := otherBadTri;
+      end
+      else begin
+      assert(goodTri = PrimitiveNum);
+      if badTri < PrimitiveNum then
+      begin
+        PVector3lw(@indicesList[3*badTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        edgeInfo[badTri]  := edgeInfo[PrimitiveNum];
+        PVector3lw(@indicesList[3*otherBadTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum+1];
+        reconnectSharedEdges(badTri, PrimitiveNum);
+        possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum+1);
+
+        if otherBadTri < PrimitiveNum then
+        begin
+          reconnectSharedEdges(otherBadTri, PrimitiveNum+1);
+          possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum);
+        end;
+
+        goodTri := badTri;
+      end
+      else begin
+        assert(otherBadTri < PrimitiveNum);
+        PVector3lw(@indicesList[3*otherBadTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
+        PVector3lw(@indicesList[3*badTri])^ :=
+          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
+        reconnectSharedEdges(otherBadTri, PrimitiveNum);
+        possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum+1);
+
+        if badTri < PrimitiveNum then
+        begin
+          reconnectSharedEdges(badTri, PrimitiveNum+1);
+          possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum);
+        end;
+
+        goodTri := otherBadTri;
+      end;
+    end;
+  end;
+
+  assert(goodTri < PrimitiveNum);
+
+  {: Patch up the edge info for the two relocated triangles. }
+  for i := PrimitiveNum-1 downto 0 do
+    for j := 0 to 3 do
+      assert(edgeInfo[i].adjacentTriangle[j] < PrimitiveNum);
+
+  {: Two degenerate triangles eliminated. }
+  Result := 2;
+end;
+
+function findAndFixAdjacentDegeneratePair(tri: LongWord): Integer;
+var
+  t0, t1, t2: LongWord;
+begin
+
+  t0 := edgeInfo[tri].adjacentTriangle[0];
+  t1 := edgeInfo[tri].adjacentTriangle[1];
+  t2 := edgeInfo[tri].adjacentTriangle[2];
+
+  {: Trivially degnerate triangles should have already been eliminated. }
+  assert(t0 <> tri);
+  assert(t1 <> tri);
+  assert(t2 <> tri);
+
+  if (t0 = t1) and (t1 = t2) then
+  begin
+    if t0 <> $FFFFFFFF then
+    begin
+      assert(edgeInfo[t0].adjacentTriangle[0] = tri);
+      assert(edgeInfo[t0].adjacentTriangle[1] = tri);
+      assert(edgeInfo[t0].adjacentTriangle[2] = tri);
+    end;
+    Result := 0;
+    exit;
+  end;
+
+  if t0 = t1 then
+    if t0 <> $FFFFFFFF then
+    begin
+      Result := eliminateAdjacentDegeneratePair(tri, t0, t2);
+      exit;
+    end;
+
+  if t1 = t2 then
+    if t1 <> $FFFFFFFF then
+    begin
+      Result := eliminateAdjacentDegeneratePair(tri, t1, t0);
+      exit;
+    end;
+
+  if t2 = t0 then
+    if t1 <> $FFFFFFFF then
+    begin
+      Result := eliminateAdjacentDegeneratePair(tri, t2, t1);
+      exit;
+    end;
+
+  Result := 0;
+end;
+
+procedure EliminateAdjacentDegenerateTriangles;
+var
+  count: Integer;
+  loopCount: Integer;
+  i: Integer;
+begin
+  {: Eliminating two degenerate triangle pairs may
+     not be the end of the story if the two "good" triangles
+     that get connected are also degenerate.  Loop to
+     handle this unlikely event. }
+  count := 0;
+  repeat
+    loopCount := count;
+    for i := 0 to PrimitiveNum-1 do
+      count := count + findAndFixAdjacentDegeneratePair(i);
+  until count > loopCount;
+end;
+
+function MakeTriangleAdjacencyList(
+  const AindicesList: PLongWordArray; Count: LongWord;
+  const AVerticesList: PAffineVectorArray): TLongWordList;
+
+  function AdjacentEdge(x, n: Integer): Integer;
+  begin
+    Result := (x shr (2 * n)) and 3;
+  end;
+
+var
+  i: Integer;
+  j: Byte;
+  N, ii, jj: LongWord;
+  tri, adjtri: TVector3lw;
+  NewIndices: TLongWordList;
+begin
+  Result := nil;
+  Assert(Assigned(AindicesList));
+  Assert(Assigned(AVerticesList));
+  PrimitiveNum := Count div 3;
+  Count := 3 * PrimitiveNum;
+  Assert(Count > 0);
+  IndicesList := AindicesList;
+  VerticesList := AVerticesList;
+
+  SetLength(edgeInfo, vEdgeInfoReserveSize + PrimitiveNum);
+
+  if not ComputeTriangleEdgeInfo then
+    exit;
+  CheckForBogusAdjacency;
+  if vImprovedFixingOpenTriangleEdge then
+  begin
+    CloseOpenTriangleGroups;
+    EliminateAdjacentDegenerateTriangles;
+  end;
+
+  NewIndices := TLongWordList.Create;
+  NewIndices.SetCountResetsMemory := false;
+  NewIndices.Capacity := 6 * PrimitiveNum;
+
+  for i := 0 to PrimitiveNum - 1 do
+  begin
+    N := 3 * i;
+    tri[0] := indicesList[N + 0];
+    tri[1] := indicesList[N + 1];
+    tri[2] := indicesList[N + 2];
+    for j := 0 to 2 do
+    begin
+      NewIndices.Add(tri[j]);
+      N := edgeInfo[i].adjacentTriangle[j];
+      if N=$FFFFFFFF then
+      begin
+        jj := (j + 2) mod 3;
+        NewIndices.Add(tri[jj]);
+      end
+      else begin
+        N := 3 * N;
+        adjtri[0] := indicesList[N + 0];
+        adjtri[1] := indicesList[N + 1];
+        adjtri[2] := indicesList[N + 2];
+        ii := (AdjacentEdge(edgeInfo[i].adjacentTriangleEdges, j) + 2) mod 3;
+        NewIndices.Add(adjtri[ii]);
+      end;
+    end;
+  end;
+  Result := NewIndices;
+end;
+
+function ConvertStripToList(
+  const AindicesList: PLongWordArray;
+  Count: LongWord;
+  RestartIndex: LongWord): TLongWordList;
+var
+  i: Integer;
+  Index, prevIndex1, prevIndex2, stripCount: LongWord;
+  NewIndices: TLongWordList;
+begin
+  Result := nil;
+  if not Assigned(AindicesList) or (Count<3) then
+    exit;
+  NewIndices := TLongWordList.Create;
+  stripCount := 0;
+  prevIndex1 := 0;
+  prevIndex2 := 0;
+  for i := 0 to Count - 1 do
+  begin
+    Index := AindicesList[i];
+    if stripCount>2 then
+    begin
+      // Check for restart index
+      if Index=RestartIndex then
+      begin
+        stripCount := 0;
+        continue;
+      end
+      // Check for degenerate triangles
+      else if Index=prevIndex1 then
+      begin
+        continue;
+      end
+      else if prevIndex1=prevIndex2 then
+      begin
+        stripCount := 0;
+        continue;
+      end;
+      if Boolean(stripCount and 1) then
+      begin
+        NewIndices.Add(prevIndex2);
+        NewIndices.Add(prevIndex1);
+      end
+      else begin
+        NewIndices.Add(prevIndex1);
+        NewIndices.Add(prevIndex2);
+      end;
+    end
+    else if stripCount=2 then
+    begin
+      NewIndices.Add(prevIndex1);
+      NewIndices.Items[NewIndices.Count-2] := Index;
+      prevIndex2 := prevIndex1;
+      prevIndex1 := Index;
+      Inc(stripCount);
+      continue;
+    end;
+    NewIndices.Add(Index);
+    prevIndex2 := prevIndex1;
+    prevIndex1 := Index;
+    Inc(stripCount);
+  end;
+
+  Result := NewIndices;
+end;
+
+function ConvertFansToList(
+  const AindicesList: PLongWordArray;
+  Count: LongWord;
+  RestartIndex: LongWord): TLongWordList;
+var
+  i: Integer;
+  Index, centerIndex, prevIndex, fansCount: LongWord;
+  NewIndices: TLongWordList;
+  degenerate: Boolean;
+begin
+  Result := nil;
+  if not Assigned(AindicesList) or (Count<3) then
+    exit;
+  NewIndices := TLongWordList.Create;
+  fansCount := 0;
+  prevIndex := 0;
+  degenerate := false;
+  centerIndex := AindicesList[0];
+  for i := 0 to Count - 1 do
+  begin
+    Index := AindicesList[i];
+    if fansCount>2 then
+    begin
+      // Check for restart index
+      if Index=RestartIndex then
+      begin
+        fansCount := 0;
+        continue;
+      end
+      // Check for degenerate triangles
+      else if Index=prevIndex then
+      begin
+        degenerate := true;
+        continue;
+      end
+      else if degenerate then
+      begin
+        degenerate := false;
+        fansCount := 0;
+        continue;
+      end;
+      NewIndices.Add(centerIndex);
+      NewIndices.Add(prevIndex);
+    end
+    else if fansCount=0 then
+      centerIndex := Index;
+    NewIndices.Add(Index);
+    prevIndex := Index;
+    Inc(fansCount);
+  end;
+
+  Result := NewIndices;
+end;
 
 end.
