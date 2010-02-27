@@ -48,48 +48,41 @@ function CreateProjectionMatrix(const Rigth, Left, Top, Bottom: Integer):
 
 implementation
 
-const
-  // to be used as descriptive indices
-  X = 0;
-  Y = 1;
-  Z = 2;
-  W = 3;
-
 // SetVector
 //
 
 procedure SetVector(var v: TVector4s; const x, y, z, w: integer);
 begin
-  v[X] := x;
-  v[Y] := y;
-  v[Z] := z;
-  v[W] := w;
+  v[0] := x;
+  v[1] := y;
+  v[2] := z;
+  v[3] := w;
 end;
 
 procedure SetVector(var v: TVector4s; const vSrc: TVector4s);
 begin
-  v[X] := vSrc[X];
-  v[Y] := vSrc[Y];
-  v[Z] := vSrc[Z];
-  v[W] := vSrc[W];
+  v[0] := vSrc[0];
+  v[1] := vSrc[1];
+  v[2] := vSrc[2];
+  v[3] := vSrc[3];
 end;
 
-procedure SetVector(var v: TVectorZs; const vSrc: TVectorZs);
+procedure SetVector(var v: TVector2s; const vSrc: TVector2s);
 begin
-  v[X] := vSrc[X];
-  v[Y] := vSrc[Y];
+  v[0] := vSrc[0];
+  v[1] := vSrc[1];
 end;
 
-procedure SetVector(var v: TVectorZs; const x, y: Integer); overload;
+procedure SetVector(var v: TVector2s; const x, y: Integer); overload;
 begin
-  v[X] := x;
-  v[Y] := y;
+  v[0] := x;
+  v[1] := y;
 end;
 
-procedure SetVector(var v: TVectorZf; const x, y: single);
+procedure SetVector(var v: TVector2f; const x, y: single);
 begin
-  v[X] := x;
-  v[Y] := y;
+  v[0] := x;
+  v[1] := y;
 end;
 
 // VectorMake
@@ -97,52 +90,52 @@ end;
 
 function VectorMake(const x, y, z: Integer): TVector3i;
 begin
-  Result[X] := x;
-  Result[Y] := y;
-  Result[Z] := z;
+  Result[0] := x;
+  Result[1] := y;
+  Result[2] := z;
 end;
 
-function VectorMake(const x, y: Integer): TVectorZs;
+function VectorMake(const x, y: Integer): TVector2s;
 begin
-  Result[X] := x;
-  Result[Y] := y;
+  Result[0] := x;
+  Result[1] := y;
 end;
 
 // VectorAdd
 //
 
-function VectorAdd(const vY, vZ: TVector3i): TVector3i;
+function VectorAdd(const v1, v2: TVector3i): TVector3i;
 begin
-  Result[X] := vY[X] + vZ[X];
-  Result[Y] := vY[Y] + vZ[Y];
-  Result[Z] := vY[Z] + vZ[Z];
+  Result[0] := v1[0] + v2[0];
+  Result[1] := v1[1] + v2[1];
+  Result[2] := v1[2] + v2[2];
 end;
 
-function VectorAdd(const vY, v2: TVector2s): TVector2s;
+function VectorAdd(const v1, v2: TVector2s): TVector2s;
 begin
-  Result[X] := vY[X] + v2[X];
-  Result[Y] := vY[Y] + v2[Y];
+  Result[0] := v1[0] + v2[0];
+  Result[1] := v1[1] + v2[1];
 end;
 
 // VectorSubtract
 //
 
-function VectorSubtract(const vY, v2: TVector2s): TVector2s;
+function VectorSubtract(const v1, v2: TVector2s): TVector2s;
 begin
-  Result[X] := vY[X] - v2[X];
-  Result[Y] := vY[Y] - v2[Y];
+  Result[0] := v1[0] - v2[0];
+  Result[1] := v1[1] - v2[1];
 end;
 
-procedure AddVector(var vY: TVector2s; const v2: TVector2s);
+procedure AddVector(var v1: TVector2s; const v2: TVector2s);
 begin
-  vY[X] := vY[X] + v2[X];
-  vY[Y] := vY[Y] + v2[Y];
+  v1[0] := v1[0] + v2[0];
+  v1[1] := v1[1] + v2[1];
 end;
 
 procedure ScaleVector(var v: TVector2s; factor: Single);
 begin
-  v[X] := Round(v[X] * factor);
-  v[Y] := Round(v[Y] * factor);
+  v[0] := Round(v[0] * factor);
+  v[1] := Round(v[1] * factor);
 end;
 
 function CreateRotationMatrix(angleX, angleY, angleZ: single): TMatrix;
@@ -153,16 +146,16 @@ begin
   SinCos(angleY, s2, c2);
   SinCos(angleZ, s3, c3);
   Result := EmptyHmgMatrix;
-  Result[W, W] := 1.0;
-  Result[X, X] := s3 * s2 * s1 + c3 * c1;
-  Result[Y, X] := c2 * s1;
-  Result[Z, X] := s3 * c1 - c3 * s2 * s1;
-  Result[X, Y] := s3 * s2 * c1 - c3 * s1;
-  Result[Y, Y] := c2 * c1;
-  Result[Z, Y] := -c3 * s2 * c1 - s3 * s1;
-  Result[X, Z] := -s3 * c2;
-  Result[Y, Z] := s2;
-  Result[Z, Z] := c3 * c2;
+  Result[3, 3] := 1.0;
+  Result[0, 0] := s3 * s2 * s1 + c3 * c1;
+  Result[1, 0] := c2 * s1;
+  Result[2, 0] := s3 * c1 - c3 * s2 * s1;
+  Result[0, 1] := s3 * s2 * c1 - c3 * s1;
+  Result[1, 1] := c2 * c1;
+  Result[2, 1] := -c3 * s2 * c1 - s3 * s1;
+  Result[0, 2] := -s3 * c2;
+  Result[1, 2] := s2;
+  Result[2, 2] := c3 * c2;
 end;
 
 function CreateProjectionMatrix(const fov: single; aspect: single; znear:
@@ -172,29 +165,29 @@ var
 begin
   f := 1.0 / TAN(DegToRad(fov) / 2.0);
   Result := IdentityHmgMatrix;
-  Result[X, X] := f / aspect;
-  Result[Y, Y] := f;
+  Result[0, 0] := f / aspect;
+  Result[1, 1] := f;
   zdif := znear - zfar;
-  if zdif <> X then
+  if zdif <> 0 then
   begin
-    Result[Z, Z] := (zfar + znear) / zdif;
-    Result[W, Z] := 2 * zfar * znear / zdif;
+    Result[2, 2] := (zfar + znear) / zdif;
+    Result[3, 2] := 2 * zfar * znear / zdif;
   end;
-  Result[Z, W] := -1.0;
-  Result[W, W] := 0.0;
+  Result[2, 3] := -1.0;
+  Result[3, 3] := 0.0;
 end;
 
 function CreateProjectionMatrix(const Rigth, Left, Top, Bottom: Integer):
   TMatrix;
 begin
   Result := IdentityHmgMatrix;
-  Result[X, X] := -2 / (Rigth - Left);
-  Result[Y, Y] := -2 / (Top - Bottom);
-  Result[Z, Z] := -1.0;
-  Result[W, X] := (Rigth + Left) / (Rigth - Left);
-  Result[W, Y] := (Top + Bottom) / (Top - Bottom);
-  Result[W, Z] := -EPSILON;
-  Result[W, W] := 1.0;
+  Result[0, 0] := -2 / (Rigth - Left);
+  Result[1, 1] := -2 / (Top - Bottom);
+  Result[2, 2] := -1.0;
+  Result[3, 0] := (Rigth + Left) / (Rigth - Left);
+  Result[3, 1] := (Top + Bottom) / (Top - Bottom);
+  Result[3, 2] := -EPSILON;
+  Result[3, 3] := 1.0;
 end;
 
 end.
