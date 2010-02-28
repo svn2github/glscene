@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;C:/Users/YarUnderoaker/Desktop/GLScene/Source/Experimental/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -25,7 +25,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="212">
+    <Files Count="213">
       <Item1>
         <Filename Value="../Source/Base/ARBProgram.pas"/>
         <UnitName Value="ARBProgram"/>
@@ -874,6 +874,10 @@
         <Filename Value="../Source/Base/GLPBuffer.pas"/>
         <UnitName Value="GLPBuffer"/>
       </Item212>
+      <Item213>
+        <Filename Value="../Source/Experimental/VectorGeometryEXT.pas"/>
+        <UnitName Value="VectorGeometryEXT"/>
+      </Item213>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

@@ -21,74 +21,74 @@
     <Version Major="1"/>
     <Files Count="17">
       <Item1>
-        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
+        <Filename Value="../Source/DesignTime/nonGLSceneLCL.lrs"/>
         <Type Value="LRS"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/DesignTime/nonGLSceneLCL.lrs"/>
-        <Type Value="LRS"/>
-      </Item2>
-      <Item3>
         <Filename Value="../Source/GLObjectManager.pas"/>
         <UnitName Value="GLObjectManager"/>
-      </Item3>
-      <Item4>
+      </Item2>
+      <Item3>
         <Filename Value="../Source/DesignTime/GLSceneRegisterLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterLCL"/>
-      </Item4>
-      <Item5>
+      </Item3>
+      <Item4>
         <Filename Value="../Source/PropertyEditors/FVectorEditorLCL.pas"/>
         <UnitName Value="FVectorEditorLCL"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="../Source/DesignTime/GLSceneLCL.lrs"/>
         <Type Value="LRS"/>
-      </Item6>
-      <Item7>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/PropertyEditors/InfoLCL.pas"/>
         <UnitName Value="InfoLCL"/>
-      </Item7>
-      <Item8>
+      </Item6>
+      <Item7>
         <Filename Value="../Source/PropertyEditors/FMaterialEditorFormLCL.pas"/>
         <UnitName Value="FMaterialEditorFormLCL"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="../Source/PropertyEditors/FRMaterialPreviewLCL.pas"/>
         <UnitName Value="FRMaterialPreviewLCL"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="../Source/PropertyEditors/FLibMaterialPickerLCL.pas"/>
         <UnitName Value="FLibMaterialPickerLCL"/>
-      </Item10>
-      <Item11>
+      </Item9>
+      <Item10>
         <Filename Value="../Source/PropertyEditors/FRTextureEditLCL.pas"/>
         <UnitName Value="FRTextureEditLCL"/>
-      </Item11>
-      <Item12>
+      </Item10>
+      <Item11>
         <Filename Value="../Source/PropertyEditors/FRColorEditorLCL.pas"/>
         <UnitName Value="FRColorEditorLCL"/>
-      </Item12>
-      <Item13>
+      </Item11>
+      <Item12>
         <Filename Value="../Source/PropertyEditors/FRFaceEditorLCL.pas"/>
         <UnitName Value="FRFaceEditorLCL"/>
-      </Item13>
-      <Item14>
+      </Item12>
+      <Item13>
         <Filename Value="../Source/PropertyEditors/FRTrackBarEditLCL.pas"/>
         <UnitName Value="FRTrackBarEditLCL"/>
-      </Item14>
-      <Item15>
+      </Item13>
+      <Item14>
         <Filename Value="../Source/DesignTime/RegisterXCollection.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="RegisterXCollection"/>
-      </Item15>
-      <Item16>
+      </Item14>
+      <Item15>
         <Filename Value="../Source/DesignTime/FXCollectionEditorLCL.pas"/>
         <UnitName Value="FXCollectionEditorLCL"/>
-      </Item16>
-      <Item17>
+      </Item15>
+      <Item16>
         <Filename Value="../Source/DesignTime/GLSceneEditLCL.pas"/>
         <UnitName Value="GLSceneEditLCL"/>
+      </Item16>
+      <Item17>
+        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
+        <Type Value="LRS"/>
       </Item17>
     </Files>
     <Type Value="DesignTime"/>
