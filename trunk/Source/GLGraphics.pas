@@ -11,6 +11,8 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>01/03/10 - Yar - Bugfix when texture, which has lower mip-levels than the standard number is not rendered
+                           (thanks to Controller)
       <li>24/02/10 - Yar - Improved TGLBaseImage.Narrow by using GLPBuffer for convert any data to RGBA8
       <li>23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
                            Added in AssignFrom24BitsBitmap, AssignFrom32BitsBitmap using extension GL_EXT_bgra
@@ -2603,10 +2605,17 @@ begin
     bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
     if (target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X)
       and (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) then
+    begin
       glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP_SGIS,
-        Integer(bMipmapGen))
-    else
+        Integer(bMipmapGen));
+      if ml>1 then
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL_SGIS, ml);
+    end
+    else begin
       glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
+      if ml>1 then
+        glTexParameteri(target, GL_TEXTURE_MAX_LEVEL_SGIS, ml-1);
+    end;
   end;
 
   // if image is blank then doing only allocatation texture in videomemory
