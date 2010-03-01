@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 244
   Top = 109
-  Width = 650
-  Height = 529
   Caption = 'GLAtmosphere Demo'
+  ClientHeight = 495
+  ClientWidth = 642
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -50,7 +50,8 @@ object MainForm: TMainForm
     Height = 474
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 165.571472167968800000
+    FieldOfView = 165.571472167968700000
+    TabOrder = 0
   end
   object Button1: TButton
     Left = 21
@@ -140,7 +141,6 @@ object MainForm: TMainForm
     OnClick = Button10Click
   end
   object GLScene1: TGLScene
-    ObjectsSorting = osNone
     Left = 24
     object GLSkyDome1: TGLSkyDome
       Bands = <
@@ -161,25 +161,11 @@ object MainForm: TMainForm
       CubeSize = 1.000000000000000000
     end
     object World: TGLDummyCube
-      ObjectsSorting = osRenderFarthestFirst
       CubeSize = 1.000000000000000000
       object Not_a_planet: TGLSphere
         Material.FrontProperties.Diffuse.Color = {E6E5653F8F8E8E3ECDCC4C3F0000803F}
         Position.Coordinates = {0000000000007041000000C00000803F}
         Radius = 3.000000000000000000
-      end
-      object GLLensFlare1: TGLLensFlare
-        Seed = 1465
-        NumStreaks = 10
-        NumSecs = 10
-        Resolution = 10
-        AutoZTest = False
-        FlareIsNotOccluded = True
-        Position.Coordinates = {000020C1000020C1000000000000803F}
-        object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1.000000000000000000
-          SpotCutOff = 180.000000000000000000
-        end
       end
       object GLDummyCube1: TGLDummyCube
         ObjectsSorting = osNone
@@ -3052,6 +3038,18 @@ object MainForm: TMainForm
           Radius = 3.500000000000000000
         end
       end
+      object GLLensFlare1: TGLLensFlare
+        Seed = 1465
+        NumStreaks = 10
+        NumSecs = 10
+        Resolution = 10
+        FlareIsNotOccluded = False
+        Position.Coordinates = {000020C1000020C1000000000000803F}
+        object GLLightSource1: TGLLightSource
+          ConstAttenuation = 1.000000000000000000
+          SpotCutOff = 180.000000000000000000
+        end
+      end
     end
     object GLCamera1: TGLCamera
       DepthOfView = 1000.000000000000000000
@@ -3073,6 +3071,7 @@ object MainForm: TMainForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
+    FormCaption = 'GLAtmosphere Demo - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
