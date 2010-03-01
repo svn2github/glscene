@@ -439,7 +439,7 @@ end;
 procedure TDMDXPExpertModule.ACFPCExecuteExecute(Sender: TObject);
 begin
    if FPCCompile('Compile & Execute') then
-      WinExec(PChar(ProjectBinaryName), SW_SHOW);
+      WinExec(PAnsiChar(AnsiString(ProjectBinaryName)), SW_SHOW);
 end;
 
 procedure TDMDXPExpertModule.ACFPCCompileExecute(Sender: TObject);
