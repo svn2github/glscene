@@ -357,94 +357,95 @@ var
   XAxis, ZAxis, YAxis: TVector;
 
 begin
-  if not GL_VERSION_2_1 then
-    exit;
-
-  if ARenderSelf then
+  if GL_VERSION_2_1 then
   begin
-    if AtmosphereShader.Handle = 0 then
+    // Render self
+    if ARenderSelf then
     begin
-      AtmosphereShader.AllocateHandle;
-      with AtmosphereShader do
+      if AtmosphereShader.Handle = 0 then
       begin
-        if GL_VERSION_3_2 then
+        AtmosphereShader.AllocateHandle;
+        with AtmosphereShader do
         begin
-          AddShader(TGLVertexShaderHandle, string(Atmosphere_vp150), true);
-          AddShader(TGLFragmentShaderHandle, string(Atmosphere_fp150), true);
-        end
-        else begin
-          AddShader(TGLVertexShaderHandle, string(Atmosphere_vp120), true);
-          AddShader(TGLFragmentShaderHandle, string(Atmosphere_fp120), true);
-        end;
-        if not LinkProgram then
-          ProgramWorks := false;
-        if not ValidateProgram then
-          ProgramWorks := false;
-      end;
-    end;
-
-    if ProgramWorks then
-    begin
-      XAxis := VectorSubtract(AbsolutePosition, ARci.CameraPosition);
-      NormalizeVector(XAxis);
-      ZAxis := VectorCrossProduct(ARci.CameraUp, XAxis);
-      NormalizeVector(ZAxis);
-      YAxis := VectorCrossProduct(XAxis, ZAxis);
-      NormalizeVector(YAxis);
-      Basis[0] := XAxis;
-      Basis[1] := YAxis;
-      Basis[2] := ZAxis;
-      Basis[3] := NullHmgPoint;
-      M := MatrixMultiply(Basis, Self.AbsoluteMatrix);
-      if Assigned(FSun) then
-        sunPos := FSun.AbsolutePosition
-      else
-        sunPos := ARci.CameraPosition;
-
-      with AtmosphereShader do
-      begin
-        UseProgramObject;
-        // All calculations are doing in absolute space
-        UniformMatrix4fv['ModelMatrix'] := M;
-        UniformMatrix4fv['ViewProjectionMatrix'] := MatrixMultiply(
-          TGLSceneBuffer(ARci.buffer).ModelViewMatrix,
-          TGLSceneBuffer(ARci.buffer).ProjectionMatrix);
-
-        Uniform3f['eyePosition'] := AffineVectorMake(ARci.CameraPosition);
-        Uniform3f['spherePosition'] := AffineVectorMake(AbsolutePosition);
-        Uniform3f['sunPosition'] := AffineVectorMake(sunPos);
-        Uniform1f['invAtmosphereHeight'] :=
-          1 / (FAtmosphereRadius - FPlanetRadius);
-        Uniform1f['Opacity'] := FOpacity;
-        Uniform3f['LowAtmColor'] := AffineVectorMake(FLowAtmColor.Color);
-        Uniform3f['HighAtmColor'] := AffineVectorMake(FHighAtmColor.Color);
-        Uniform1f['PlanetRadius'] := FPlanetRadius;
-        Uniform1f['AtmosphereRadius'] := FAtmosphereRadius;
-
-        FBuiltProperties.Usage := FBuiltProperties.Usage;
-
-        if not FBuiltProperties.Manager.IsBuilded then
-        begin
-          try
-            Self.BuildList(ARci);
-          except
-            FBuiltProperties.Manager.Discard;
-            Self.Visible := false;
+          if GL_VERSION_3_2 then
+          begin
+            AddShader(TGLVertexShaderHandle, string(Atmosphere_vp150), true);
+            AddShader(TGLFragmentShaderHandle, string(Atmosphere_fp150), true);
+          end
+          else begin
+            AddShader(TGLVertexShaderHandle, string(Atmosphere_vp120), true);
+            AddShader(TGLFragmentShaderHandle, string(Atmosphere_fp120), true);
           end;
-          ObjectStyle := ObjectStyle - [osBuiltStage];
-        end
-        else begin
-          ARci.GLStates.SetGLDepthWriting(False);
-          ARci.GLStates.SetGLState(stBlend);
-          EnableGLBlendingMode(ARci);
-          FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
+          if not LinkProgram then
+            ProgramWorks := false;
+          if not ValidateProgram then
+            ProgramWorks := false;
         end;
+      end;
 
-        EndUseProgramObject;
+      if ProgramWorks then
+      begin
+        XAxis := VectorSubtract(AbsolutePosition, ARci.CameraPosition);
+        NormalizeVector(XAxis);
+        ZAxis := VectorCrossProduct(ARci.CameraUp, XAxis);
+        NormalizeVector(ZAxis);
+        YAxis := VectorCrossProduct(XAxis, ZAxis);
+        NormalizeVector(YAxis);
+        Basis[0] := XAxis;
+        Basis[1] := YAxis;
+        Basis[2] := ZAxis;
+        Basis[3] := NullHmgPoint;
+        M := MatrixMultiply(Basis, Self.AbsoluteMatrix);
+        if Assigned(FSun) then
+          sunPos := FSun.AbsolutePosition
+        else
+          sunPos := ARci.CameraPosition;
+
+        with AtmosphereShader do
+        begin
+          UseProgramObject;
+          // All calculations are doing in absolute space
+          UniformMatrix4fv['ModelMatrix'] := M;
+          UniformMatrix4fv['ViewProjectionMatrix'] := MatrixMultiply(
+            TGLSceneBuffer(ARci.buffer).ViewMatrix,
+            TGLSceneBuffer(ARci.buffer).ProjectionMatrix);
+
+          Uniform3f['eyePosition'] := AffineVectorMake(ARci.CameraPosition);
+          Uniform3f['spherePosition'] := AffineVectorMake(AbsolutePosition);
+          Uniform3f['sunPosition'] := AffineVectorMake(sunPos);
+          Uniform1f['invAtmosphereHeight'] :=
+            1 / (FAtmosphereRadius - FPlanetRadius);
+          Uniform1f['Opacity'] := FOpacity;
+          Uniform3f['LowAtmColor'] := AffineVectorMake(FLowAtmColor.Color);
+          Uniform3f['HighAtmColor'] := AffineVectorMake(FHighAtmColor.Color);
+          Uniform1f['PlanetRadius'] := FPlanetRadius;
+          Uniform1f['AtmosphereRadius'] := FAtmosphereRadius;
+
+          FBuiltProperties.Usage := FBuiltProperties.Usage;
+
+          if not FBuiltProperties.Manager.IsBuilded then
+          begin
+            try
+              Self.BuildList(ARci);
+            except
+              FBuiltProperties.Manager.Discard;
+              Self.Visible := false;
+            end;
+            ObjectStyle := ObjectStyle - [osBuiltStage];
+          end
+          else begin
+            ARci.GLStates.SetGLDepthWriting(False);
+            ARci.GLStates.SetGLState(stBlend);
+            EnableGLBlendingMode(ARci);
+            FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
+          end;
+
+          EndUseProgramObject;
+        end;
       end;
     end;
   end;
-
+  // Render children
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
