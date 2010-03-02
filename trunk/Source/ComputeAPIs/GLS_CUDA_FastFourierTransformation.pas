@@ -48,6 +48,7 @@ unit GLS_CUDA_FastFourierTransformation;
 interface
 
 uses
+{$IFDEF MSWINDOWS}  Windows, {$ENDIF}
   VectorTypes;
 
 {$I cuda.inc}
@@ -109,7 +110,110 @@ const
   CUFFT_Z2D = $6c;     // Double-Complex to Double
   CUFFT_Z2Z = $69;     // Double-Complex to Double-Complex
 
-  TcufftResultStrings: array[TcufftResult] of string = (
+var
+
+  cufftPlan1d: function(var plan: TcufftHandle;
+    nx: Integer;
+    atype: Byte;
+    batch: Integer): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftPlan2d: function(var plan: TcufftHandle;
+    nx: Integer;
+    ny: Integer;
+    atype: TcufftType): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftPlan3d: function(var plan: TcufftHandle;
+    nx: Integer;
+    ny: Integer;
+    nz: Integer;
+    atype: TcufftType): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftDestroy: function(plan: TcufftHandle): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftPlanMany: function(var plan: TcufftHandle;
+                         rank: Integer;
+                         var n: Integer;
+                         var inembed: Integer;
+                         istride, idist: Integer;    // Unused: pass "NULL, 1, 0"
+                         var onembed: Integer;
+                         ostride, odist: Integer;    // Unused: pass "NULL, 1, 0"
+                         ctype: TcufftType;
+                         batch: Integer): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecC2C: function(plan: TcufftHandle;
+    idata: PcufftComplex;
+    odata: PcufftComplex;
+    direction: Integer): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecR2C: function(plan: TcufftHandle;
+    idata: PcufftReal;
+    odata: PcufftComplex ): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecC2R: function(plan: TcufftHandle;
+    idata: PcufftComplex;
+    odata: PcufftReal): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecZ2Z: function(plan: TcufftHandle;
+                                    idata: PcufftDoubleComplex;
+                                    odata: PcufftDoubleComplex;
+                                    direction: Integer): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecD2Z: function(plan: TcufftHandle;
+                               idata: PcufftDoubleReal;
+                               odata: PcufftDoubleComplex): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftExecZ2D: function(plan: TcufftHandle;
+                              idata: PcufftDoubleComplex;
+                              odata: PcufftDoubleReal): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+  cufftSetStream: function(p: TcufftHandle; stream: Integer): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
+function InitCUFFT: Boolean;
+procedure CloseCUFFT;
+function InitCUFFTFromLibrary(const LibName: WideString): Boolean;
+function IsCUFFTInitialized: Boolean;
+function GetCUFFTErrorString(error: TcufftResult): string;
+
+implementation
+
+const
+  cufftResultStrings: array[TcufftResult] of string = (
     'success',
     'invalid plan',
     'alloc failed',
@@ -121,99 +225,78 @@ const
     'invalid size'
     );
 
-function cufftPlan1d(var plan: TcufftHandle;
-  nx: Integer;
-  atype: Byte;
-  batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+const
+  INVALID_MODULEHANDLE = 0;
 
-function cufftPlan2d(var plan: TcufftHandle;
-  nx: Integer;
-  ny: Integer;
-  atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+  // ************** Windows specific ********************
+{$IFDEF MSWINDOWS}
+var
+  CUFFTHandle: HINST = INVALID_MODULEHANDLE;
+{$ENDIF}
+  // ************** UNIX specific ********************
+{$IFDEF UNIX}
+var
+  CUFFTHandle: TLibHandle = INVALID_MODULEHANDLE;
+{$ENDIF}
 
-function cufftPlan3d(var plan: TcufftHandle;
-  nx: Integer;
-  ny: Integer;
-  nz: Integer;
-  atype: TcufftType): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+function CUFFTGetProcAddress(ProcName: PAnsiChar): Pointer;
+begin
+  result := GetProcAddress(Cardinal(CUFFTHandle), ProcName);
+end;
 
-function cufftDestroy(plan: TcufftHandle): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+function InitCUFFT: Boolean;
+begin
+  if CUFFTHandle = INVALID_MODULEHANDLE then
+    Result := InitCUFFTFromLibrary(CUFFTDLL)
+  else
+    Result := True;
+end;
 
-function cufftPlanMany(var plan: TcufftHandle;
-                       rank: Integer;
-                       var n: Integer;
-                       var inembed: Integer;
-                       istride, idist: Integer;    // Unused: pass "NULL, 1, 0"
-                       var onembed: Integer;
-                       ostride, odist: Integer;    // Unused: pass "NULL, 1, 0"
-                       ctype: TcufftType;
-                       batch: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+procedure CloseCUFFT;
+begin
+  if CUFFTHandle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(Cardinal(CUFFTHandle));
+    CUFFTHandle := INVALID_MODULEHANDLE;
+  end;
+end;
 
-function cufftExecC2C(plan: TcufftHandle;
-  idata: PcufftComplex;
-  odata: PcufftComplex;
-  direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+function InitCUFFTFromLibrary(const LibName: WideString): Boolean;
+begin
+  Result := False;
+  CloseCUFFT;
+  CUFFTHandle := LoadLibraryW(PWideChar(LibName));
+  if CUFFTHandle = INVALID_MODULEHANDLE then
+    Exit;
+  cufftPlan1d := CUFFTGetProcAddress('cufftPlan1d');
+  cufftPlan2d := CUFFTGetProcAddress('cufftPlan2d');
+  cufftPlan3d := CUFFTGetProcAddress('cufftPlan3d');
+  cufftDestroy := CUFFTGetProcAddress('cufftDestroy');
+  cufftPlanMany := CUFFTGetProcAddress('cufftPlanMany');
+  cufftExecC2C := CUFFTGetProcAddress('cufftExecC2C');
+  cufftExecR2C := CUFFTGetProcAddress('cufftExecR2C');
+  cufftExecC2R := CUFFTGetProcAddress('cufftExecC2R');
+  cufftExecZ2Z := CUFFTGetProcAddress('cufftExecZ2Z');
+  cufftExecD2Z := CUFFTGetProcAddress('cufftExecD2Z');
+  cufftExecZ2D := CUFFTGetProcAddress('cufftExecZ2D');
+  cufftSetStream := CUFFTGetProcAddress('cufftSetStream');
+end;
 
-function cufftExecR2C(plan: TcufftHandle;
-  idata: PcufftReal;
-  odata: PcufftComplex ): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+function IsCUFFTInitialized: Boolean;
+begin
+  Result := (CUFFTHandle <> INVALID_MODULEHANDLE);
+end;
 
-function cufftExecC2R(plan: TcufftHandle;
-  idata: PcufftComplex;
-  odata: PcufftReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+function GetCUFFTErrorString(error: TcufftResult): string;
+begin
+  Result := cufftResultStrings[error];
+end;
 
-function cufftExecZ2Z(plan: TcufftHandle;
-                                  idata: PcufftDoubleComplex;
-                                  odata: PcufftDoubleComplex;
-                                  direction: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+initialization
 
-function cufftExecD2Z(plan: TcufftHandle;
-                             idata: PcufftDoubleReal;
-                             odata: PcufftDoubleComplex): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
+finalization
 
-function cufftExecZ2D(plan: TcufftHandle;
-                            idata: PcufftDoubleComplex;
-                            odata: PcufftDoubleReal): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
-
-function cufftSetStream(p: TcufftHandle; stream: Integer): TcufftResult;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUFFTDLL;
-
-implementation
+  CloseCUFFT;
 
 end.
 

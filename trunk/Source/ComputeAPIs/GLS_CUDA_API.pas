@@ -4,6 +4,7 @@
 {: GLS_CUDA_API<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
       <li>28/01/10 - Yar - Creation
    </ul></font>
 }
@@ -83,6 +84,7 @@ type
   PCUstream = ^TCUstream;
   TCUstream = record
   end; ///< CUDA stream
+  PPCUgraphicsResource = ^PCUgraphicsResource;
   PCUgraphicsResource = ^TCUgraphicsResource;
   TCUgraphicsResource = record
   end; ///< CUDA graphics interop resource
@@ -330,6 +332,29 @@ type
     CU_PREFER_BINARY
     );
 
+  // Flags to register a graphics resource
+
+  TCUgraphicsRegisterFlags = (
+    CU_GRAPHICS_REGISTER_FLAGS_NONE = $00);
+
+  // Flags for mapping and unmapping interop resources
+
+  TCUgraphicsMapResourceFlags = (
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE          = $00,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY     = $01,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD = $02);
+
+  // Array indices for cube faces
+
+  TCUarray_cubemap_face = (
+    CU_CUBEMAP_FACE_POSITIVE_X  = $00, ///< Positive X face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_X  = $01, ///< Negative X face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Y  = $02, ///< Positive Y face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Y  = $03, ///< Negative Y face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Z  = $04, ///< Positive Z face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Z  = $05  ///< Negative Z face of cubemap
+  );
+
   //************************************
   // **
   // **    Error codes
@@ -359,6 +384,8 @@ type
     CUDA_ERROR_NO_BINARY_FOR_GPU = 209, ///< No binary for GPU
     CUDA_ERROR_ALREADY_ACQUIRED = 210, ///< Already acquired
     CUDA_ERROR_NOT_MAPPED = 211, ///< Not mapped
+    CUDA_ERROR_NOT_MAPPED_AS_ARRAY   = 212,      ///< Mapped resource not available for access as an array
+    CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213,      ///< Mapped resource not available for access as a pointer
 
     CUDA_ERROR_INVALID_SOURCE = 300, ///< Invalid source
     CUDA_ERROR_FILE_NOT_FOUND = 301, ///< File not found
@@ -372,8 +399,10 @@ type
     CUDA_ERROR_LAUNCH_FAILED = 700, ///< Launch failed
     CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES = 701, ///< Launch exceeded resources
     CUDA_ERROR_LAUNCH_TIMEOUT = 702, ///< Launch exceeded timeout
-    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING = 703,
-    ///< Launch with incompatible texturing
+    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING = 703, ///< Launch with incompatible texturing
+
+    CUDA_ERROR_POINTER_IS_64BIT     = 800,      ///< Attempted to retrieve 64-bit pointer via 32-bit API function
+    CUDA_ERROR_SIZE_IS_64BIT        = 801,      ///< Attempted to retrieve 64-bit size via 32-bit API function
 
     CUDA_ERROR_UNKNOWN = 999 ///< Unknown error
     );
@@ -654,7 +683,7 @@ var
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuModuleLoadData: function(var module: PCUmodule; var image):
+  cuModuleLoadData: function(var module: PCUmodule; const image: PAnsiChar):
     TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
@@ -790,14 +819,14 @@ var
 
   // 1D functions
         // system <-> device memory
-  cuMemcpyHtoD: function(dstDevice: TCUdeviceptr; var srcHost; ByteCount:
+  cuMemcpyHtoD: function(dstDevice: TCUdeviceptr; const srcHost: Pointer; ByteCount:
     Cardinal): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuMemcpyDtoH: function(var dstHost; srcDevice: TCUdeviceptr; ByteCount:
+  cuMemcpyDtoH: function(const dstHost: Pointer; srcDevice: TCUdeviceptr; ByteCount:
     Cardinal): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
@@ -1307,14 +1336,21 @@ var
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
+
+  /////////////////////////////////////
+  ////
+  ////    Graphics interop
+  ////
+  ///////////////////////////////////*/
+  ///
   cuGraphicsGLRegisterBuffer: function(var pCudaResource: PCUgraphicsResource;
-    buffer: Cardinal; Flags: Cardinal): TCUresult
+    buffer: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cuGraphicsGLRegisterImage: function(var pCudaResource: PCUgraphicsResource;
-    image, target: Cardinal; Flags: Cardinal): TCUresult
+    image, target: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -1327,12 +1363,6 @@ var
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 {$ENDIF}
-
-  /////////////////////////////////////
-  ////
-  ////    Graphics interop
-  ////
-  ///////////////////////////////////*/
 
   cuGraphicsUnregisterResource: function(resource: PCUgraphicsResource):
     TCUresult
@@ -1358,14 +1388,14 @@ var
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cuGraphicsMapResources: function(count: Cardinal; var resources:
-    PCUgraphicsResource; hStream: PCUstream): TCUresult
+  cuGraphicsMapResources: function(count: Cardinal; resources:
+    PPCUgraphicsResource; hStream: PCUstream): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cuGraphicsUnmapResources: function(count: Cardinal; var resources:
-    PCUgraphicsResource; hStream: PCUstream): TCUresult
+  cuGraphicsUnmapResources: function(count: Cardinal; resources:
+    PPCUgraphicsResource; hStream: PCUstream): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -1429,14 +1459,14 @@ var
 
 function InitCUDA: Boolean;
 procedure CloseCUDA;
-function InitCUDAFromLibrary(const CLName: WideString): Boolean;
+function InitCUDAFromLibrary(const LibName: WideString): Boolean;
 function IsCUDAInitialized: Boolean;
 function GetCUDAAPIerrorString(err: TCUresult): string;
 
 implementation
 
 const
-  CUresultString: array[0..26] of string = (
+  CUresultString: array[0..30] of string = (
     'No errors',
     'Invalid value',
     'Out of memory',
@@ -1454,6 +1484,8 @@ const
     'No binary for GPU',
     'Already acquired',
     'Not mapped',
+    'Not mapped as array',
+    'Not mapped as pointer',
     'Invalid source',
     'File not found',
     'Invalid handle',
@@ -1463,6 +1495,8 @@ const
     'Launch exceeded resources',
     'Launch exceeded timeout',
     'Launch with incompatible texturing',
+    'Pointer is 64bit',
+    'Size is 64bit',
     'Unknown error');
 
 const
@@ -1484,9 +1518,6 @@ begin
   result := GetProcAddress(Cardinal(CUDAHandle), ProcName);
 end;
 
-// InitOpenCL
-//
-
 function InitCUDA: Boolean;
 begin
   if CUDAHandle = INVALID_MODULEHANDLE then
@@ -1494,9 +1525,6 @@ begin
   else
     Result := True;
 end;
-
-// CloseOpenCL
-//
 
 procedure CloseCUDA;
 begin
@@ -1507,14 +1535,11 @@ begin
   end;
 end;
 
-// InitOpenCLFromLibrary
-//
-
-function InitCUDAFromLibrary(const CLName: WideString): Boolean;
+function InitCUDAFromLibrary(const LibName: WideString): Boolean;
 begin
   Result := False;
   CloseCUDA;
-  CUDAHandle := LoadLibraryW(PWideChar(CLName));
+  CUDAHandle := LoadLibraryW(PWideChar(LibName));
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
 
@@ -1695,9 +1720,6 @@ begin
   Result := True;
 end;
 
-// IsOpenCLInitialized
-//
-
 function IsCUDAInitialized: Boolean;
 begin
   Result := (CUDAHandle <> INVALID_MODULEHANDLE);
@@ -1706,19 +1728,16 @@ end;
 function GetCUDAAPIerrorString(err: TCUresult): string;
 var
   e: TCUresult;
-  i: Integer;
+  n: Integer;
 begin
-  i := 0;
-  Result := '';
-  for e := Low(TCUresult) to High(TCUresult) do
+  n := 0;
+  e := CUDA_SUCCESS;
+  while (e<>err) or (e=CUDA_ERROR_UNKNOWN) do
   begin
-    if e = err then
-    begin
-      Result := CUresultString[i];
-      exit;
-    end;
-    Inc(i);
+    e := Pred(e);
+    Inc(n);
   end;
+  Result := CUresultString[n];
 end;
 
 end.
