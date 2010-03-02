@@ -53,7 +53,7 @@ uses
 {$I cuda.inc}
 
 const
-  CUDARTDLL = 'cudart.dll';
+  CUDARTDLL = 'cudart32.dll';
 
   // single precision constants
   CUDART_INF_F: Single = $7F800000;
