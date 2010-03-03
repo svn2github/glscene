@@ -9,10 +9,10 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = bmpfont.exe Camera.exe GLConsoleDemo.exe cursor.exe Fading.exe \
-  fontcolor.exe GLMenuDemo.exe DemoGizmo.exe DemoGizmoEx.exe guidemo.exe \
-  guipaint.exe hfpick.exe Pick.exe SimpleNavigationDemo.exe winfont.exe \
-  WideBitmapFontDemo.exe
+PROJECTS = bmpfont.exe Camera.exe CameraControllerDemo.exe GLConsoleDemo.exe \
+  cursor.exe Fading.exe fontcolor.exe GLMenuDemo.exe DemoGizmo.exe \
+  DemoGizmoEx.exe guidemo.exe guipaint.exe hfpick.exe Pick.exe \
+  SimpleNavigationDemo.exe storedfont.exe WideBitmapFontDemo.exe winfont.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -21,6 +21,9 @@ bmpfont.exe: bmpfont\bmpfont.dpr
   $(DCC)
 
 Camera.exe: camera\Camera.dpr
+  $(DCC)
+
+CameraControllerDemo.exe: CameraController\CameraControllerDemo.dpr
   $(DCC)
 
 GLConsoleDemo.exe: Console\GLConsoleDemo.dpr
@@ -56,7 +59,7 @@ Pick.exe: pick\Pick.dpr
 SimpleNavigationDemo.exe: SimpleNavigation\SimpleNavigationDemo.dpr
   $(DCC)
 
-winfont.exe: storedfont\winfont.dpr
+storedfont.exe: storedfont\storedfont.dpr
   $(DCC)
 
 WideBitmapFontDemo.exe: WideBitmapFont\WideBitmapFontDemo.dpr
@@ -65,4 +68,6 @@ WideBitmapFontDemo.exe: WideBitmapFont\WideBitmapFontDemo.dpr
 DemoGizmoEx.exe: GizmoEx\DemoGizmoEx.dpr
   $(DCC)
 
+winfont.exe: winfont\winfont.dpr
+  $(DCC)
 

@@ -1,4 +1,4 @@
-program winfont;
+program storedfont;
 
 uses
   Forms,
