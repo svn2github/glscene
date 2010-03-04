@@ -6,6 +6,7 @@
 	MD2 file loader<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -23,7 +24,7 @@ interface
 {$R-}
 {$I GLScene.inc}
 
-uses Classes, TypesMD2;
+uses Classes, TypesMD2, GLCrossPlatform;
 
 type
   // TFileMD2
@@ -144,7 +145,7 @@ begin
     // read animation / frame info
     aStream.Read(Frame^, Header.FrameSize);
     FrameName := Trim(String(Frame^.Name));
-    if Copy(FrameName, Length(FrameName) - 1, 1)[1] in ['0'..'9'] then
+    if CharInSet(Copy(FrameName, Length(FrameName) - 1, 1)[1], ['0'..'9']) then
       FrameName := Copy(FrameName, 1, Length(FrameName) - 2)
     else
       FrameName := Copy(FrameName, 1, Length(FrameName) - 1);
