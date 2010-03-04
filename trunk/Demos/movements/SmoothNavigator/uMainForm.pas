@@ -24,7 +24,7 @@ uses
   // GLScene
   GLCadencer, GLWin32Viewer, GLKeyboard, VectorGeometry, GLGeomObjects,
   GLScene, GLObjects, GLGraph, GLCrossPlatform, GLSmoothNavigator,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, BaseClasses, GLScreen;
 
 type
   TForm1 = class(TForm)
