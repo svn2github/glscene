@@ -172,7 +172,7 @@ object Form1: TForm1
     Ranges = <
       item
         StartASCII = ' '
-        StopASCII = #1103
+        StopASCII = 'z'
         StartGlyphIdx = 0
       end>
     Left = 8
