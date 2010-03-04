@@ -154,7 +154,7 @@ begin
       cmdLine:=cmdLine+'"'+fileName+'"';
       currentDirBackup:=GetCurrentDir;
       SetCurrentDir(ExtractFilePath(fileName));
-      WinExec(PChar(cmdLine), SW_HIDE);
+      WinExec(PAnsiChar(AnsiString(cmdLine)), SW_HIDE);
       SetCurrentDir(currentDirBackup);
       logFileName:=ExtractFilePath(fileName)+logFileName;
       if FileExists(logFileName) then begin
