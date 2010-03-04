@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
     <li>05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
     <li>06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
                           (separated from GLTexture.pas and GLCrossPlatform.pas)
@@ -784,7 +785,7 @@ begin
       Result:=clrBlack
    else begin
       workCopy:=Trim(AName);
-      if AName[1] in ['(','[','<'] then
+      if CharInSet(AName[1], ['(','[','<']) then
          workCopy:=Copy(workCopy, 2, Length(AName)-2);
       if CompareText(Copy(workCopy,1,3),'clr')=0 then
          SetVector(Result, FindColor(workCopy))
