@@ -26,7 +26,7 @@ uses
   GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, VectorGeometry,
   GLLensFlare, GLSound, GLSMBASS, GLBitmapFont, GLWindowsFont, GLHUDObjects,
   ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
-  GLCoordinates, BaseClasses, GLCrossPlatform, GLColor;
+  GLCoordinates, BaseClasses, GLCrossPlatform, GLColor, GLFileWAV;
 
 type
   TMain = class(TForm)
