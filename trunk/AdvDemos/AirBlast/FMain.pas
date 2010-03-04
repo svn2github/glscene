@@ -13,7 +13,7 @@ uses
   GLTexCombineShader, UAirBlastEngine, UAirBlastControler, UABControlerUI,
   GLParticleFX, GLPerlinPFX, UGameEngine, GLCanvas, GLSound, GLSMFMOD, UABVoice,
   DToolBox, GLBitmapFont, GLWindowsFont, ExtCtrls, GLGameMenu, GLHUDObjects,
-  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses, GLFileWAV, GLFileMP3;
 
 type
   TMain = class(TForm)
