@@ -18,7 +18,7 @@ uses
   odeimport, dynodegl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
   GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor;
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor, GLFileWAV;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
