@@ -20,7 +20,7 @@ interface
 
 uses
   Classes, SysUtils,
-  OpenGL1x, GLContext, GLGraphics, GLTextureFormat,
+  OpenGL1x, GLContext, GLGraphics, GLTextureFormat, RGBE,
   ApplicationFileIO;
 
 type
@@ -67,7 +67,7 @@ type
   end;
 
 var
-  {: Variable determines which detail level to use textures,
+  {: Variable determines which resolution to use textures,
      high - it loads all levels,
      midle - skipped the first level,
      low - skipped the first two levels. }
@@ -464,8 +464,7 @@ begin
   end;
 
   try
-    glPushAttrib(GL_TEXTURE_BIT);
-    glBindTexture(textureTarget, textureHandle);
+    textureContext.GLStates.SetGLCurrentTexture(0, textureTarget, textureHandle);
     //Check for texture is resident in texture memory
     glGetTexParameteriv(textureTarget, GL_TEXTURE_RESIDENT, @texResident);
     fMipLevels := 0;
@@ -603,7 +602,6 @@ begin
       fMipLevels := 1;
     CheckOpenGLError;
   finally
-    glPopAttrib;
     if contextActivate then
     begin
       textureContext.Deactivate;
