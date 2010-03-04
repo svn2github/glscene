@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
       <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
                              (thanks Predator)
       <li>17/12/09 - DaStr - Moved screen utility functions to GLScreen.pas
@@ -310,6 +311,11 @@ function IsInfinite(const AValue: Double): Boolean;
 {$IFDEF GLS_DELPHI_7_UP}
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
+{$ENDIF}
+
+{$IFNDEF GLS_COMPILER_2009_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
+function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean; overload;
 {$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -818,6 +824,19 @@ begin
 end;
 {$ENDIF}
 {$ENDIF}
+
+{$IFNDEF GLS_COMPILER_2009_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
+begin
+  Result := C in CharSet;
+end;
+
+function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean;
+begin
+  Result := (C < #$0100) and (AnsiChar(C) in CharSet);
+end;
+{$ENDIF}
+
 
 initialization
 {$IFDEF FPC}
