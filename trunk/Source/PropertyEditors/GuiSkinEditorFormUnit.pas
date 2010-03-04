@@ -6,6 +6,7 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>04/03/10 - DanB - Now uses CharInSet
       <li>05/10/08 - DanB - removed Kylix support, changed uses clause
       <li>07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
                               (thanks Nicoara Adrian)
@@ -738,7 +739,7 @@ end;
 
 procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key > #32) and Not (Key in ['0'..'9', DecimalSeparator]) then
+  if (Key > #32) and Not CharInSet(Key, ['0'..'9', DecimalSeparator]) then
     Key := #0;
 end;
 

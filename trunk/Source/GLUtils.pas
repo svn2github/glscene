@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/03/10 - DanB - Now uses CharInSet
       <li>27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
       <li>24/03/09 - DanB - removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
                             changed StrToFloatDef to accept only 1 param + now overloaded
@@ -349,7 +350,7 @@ begin
    if p=nil then Exit;
    neg:=False;
    // skip non-numerics
-   while not (p^ in [#0, '0'..'9', '+', '-']) do Inc(p);
+   while not CharInSet(p^, [#0, '0'..'9', '+', '-']) do Inc(p);
    c:=p^;
    if c='+' then
       Inc(p)
@@ -360,7 +361,7 @@ begin
    // Parse numerics
    while True do begin
       c:=p^;
-      if not (c in ['0'..'9']) then Break;
+      if not CharInSet(c, ['0'..'9']) then Break;
       Result:=Result*10+Integer(c)-Integer('0');
       Inc(p);
    end;
@@ -379,7 +380,7 @@ begin
    Result:=0;
    if p=nil then Exit;
    // skip non-numerics
-   while not (p^ in [#0, '0'..'9', '+', '-']) do Inc(p);
+   while not CharInSet(p^, [#0, '0'..'9', '+', '-']) do Inc(p);
    c:=p^;
    if c='+' then begin
       neg:=False;
@@ -389,7 +390,7 @@ begin
       Inc(p);
    end else neg:=False;
    // parse numbers
-   while (p^ in ['0'..'9']) do begin
+   while CharInSet(p^, ['0'..'9']) do begin
       Result:=Result*10+(Integer(p^)-Integer('0'));
       Inc(p);
    end;
@@ -397,14 +398,14 @@ begin
    decimals:=0;
    if (p^='.') then begin
       Inc(p);
-      while (p^ in ['0'..'9']) do begin
+      while CharInSet(p^, ['0'..'9']) do begin
          Result:=Result*10+(Integer(p^)-Integer('0'));
          Inc(p);
          Dec(decimals);
       end;
    end;
    // parse exponent, if any
-   if (p^ in ['e', 'E']) then begin
+   if CharInSet(p^, ['e', 'E']) then begin
       Inc(p);
       // parse exponent sign
       c:=p^;
@@ -417,7 +418,7 @@ begin
       end else expSign:=1;
       // parse exponent
       exponent:=0;
-      while (p^ in ['0'..'9']) do begin
+      while CharInSet(p^, ['0'..'9']) do begin
          exponent:=exponent*10+(Integer(p^)-Integer('0'));
          Inc(p);
       end;
