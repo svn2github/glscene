@@ -243,10 +243,10 @@ begin
     tempImage.Assign(fBitmap);
   try
     tempImage.SaveToFile(fileName);
+    FResourceFile := fileName;
   finally
     tempImage.Free;
   end;
-  FResourceFile := FBitmap.ResourceName;
 end;
 
 // LoadFromFile
