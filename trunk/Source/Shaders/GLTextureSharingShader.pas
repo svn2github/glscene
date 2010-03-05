@@ -35,7 +35,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, VectorGeometry, GlColor, GLMaterial, OpenGL1x, GLStrings,
+  GLScene, VectorGeometry, GlColor, GLMaterial, GLStrings,
   GLVectorFileObjects, XOpenGL, GLState, PersistentClasses,
   {Needed for Delphi 5} GlCrossPlatform, GLCoordinates, GLRenderContextInfo;
 
@@ -231,31 +231,31 @@ begin
       begin
         rci.GLStates.Enable(stBlend);
         rci.GLStates.Enable(stAlphaTest);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
       bmAdditive:
       begin
         rci.GLStates.Enable(stBlend);
         rci.GLStates.Enable(stAlphaTest);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
       bmAlphaTest50:
       begin
         rci.GLStates.Disable(stBlend);
         rci.GLStates.Enable(stAlphaTest);
-        glAlphaFunc(GL_GEQUAL, 0.5);
+        rci.GLStates.SetGLAlphaFunction(cfGEqual, 0.5);
       end;
       bmAlphaTest100:
       begin
         rci.GLStates.Disable(stBlend);
         rci.GLStates.Enable(stAlphaTest);
-        glAlphaFunc(GL_GEQUAL, 1.0);
+        rci.GLStates.SetGLAlphaFunction(cfGEqual, 1.0);
       end;
       bmModulate:
       begin
         rci.GLStates.Enable(stBlend);
         rci.GLStates.Enable(stAlphaTest);
-        glBlendFunc(GL_DST_COLOR, GL_ZERO);
+        rci.GLStates.SetBlendFunc(bfDstColor, bfZero);
       end;
       else
         Assert(False);
@@ -523,8 +523,8 @@ procedure TGLTextureSharingShader.DoApply(var rci: TRenderContextInfo; Sender: T
 begin
   if Materials.Count > 0 then
   begin
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    rci.GLStates.Enable(stDepthTest);
+    rci.GLStates.DepthFunc := cfLEqual;
     Materials[0].Apply(rci);
     FCurrentPass := 1;
   end;
@@ -544,7 +544,7 @@ begin
     end
     else
     begin
-      glDepthFunc(GL_LESS);
+      rci.GLStates.DepthFunc := cfLess;
       rci.GLStates.Disable(stBlend);
       rci.GLStates.Disable(stAlphaTest);
       FCurrentPass := 0;

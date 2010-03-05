@@ -170,14 +170,14 @@ var IgnoreMatSave : boolean;
 //
 procedure TGLLineSettings.Apply(var rci : TRenderContextInfo);
 begin
-  glLineWidth(Width);
+  rci.GLStates.LineWidth := Width;
   glColor4fv(Color.AsAddress);
   if Pattern<>$FFFF then begin
-      glEnable(GL_LINE_STIPPLE);
+      rci.GLStates.Enable(stLineStipple);
       glLineStipple(1, Pattern);
     end
   else
-    glDisable(GL_LINE_STIPPLE);
+    rci.GLStates.Disable(stLineStipple);
 
   if ForceMaterial then begin
     IgnoreMatSave:=rci.ignoreMaterials;
