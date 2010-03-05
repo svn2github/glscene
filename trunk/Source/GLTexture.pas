@@ -6,6 +6,8 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
+                             cause errors on hardware that doesn't support them
        <li>05/03/10 - DanB - More state added to TGLStateCache
        <li>23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
                              and tfExtended to TGLTextureFormat (thanks mif for idea)  
@@ -3283,9 +3285,10 @@ begin // Apply
   begin //default
     rci.GLStates.Disable(stTexture1D);
     rci.GLStates.Disable(stTexture2D);
-    rci.GLStates.Disable(stTextureRect);
-    rci.GLStates.Disable(stTextureCubeMap);
-    rci.GLStates.Disable(stTexture3D);
+    // DanB - these will cause errors where not supported...
+    //rci.GLStates.Disable(stTextureRect);
+    //rci.GLStates.Disable(stTextureCubeMap);
+    //rci.GLStates.Disable(stTexture3D);
     xglMapTexCoordToMain;
   end;
 end;
