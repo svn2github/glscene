@@ -23,7 +23,7 @@ uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
   GLWin32Viewer, OpenGL1x, GLTexture, VectorGeometry, GLGraph,
   GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses,
-  GLRenderContextInfo;
+  GLRenderContextInfo, GLState;
 
 type
   TForm1 = class(TForm)
@@ -86,8 +86,8 @@ begin
    mat:=MakeParallelProjectionMatrix(plane, planeNormal);
 
    // save state, turn off lighting and specify the lines color
-   glPushAttrib(GL_ENABLE_BIT);
-   glDisable(GL_LIGHTING);
+   rci.GLStates.PushAttrib([sttEnable]);
+   rci.GLStates.Disable(stLighting);
    glColor3f(1, 1, 0);
 
    // we'll be drawing a bunch of lines, to specify a line in OpenGL,
@@ -105,7 +105,7 @@ begin
    glEnd;
 
    // restore state
-   glPopAttrib;
+   rci.GLStates.PopAttrib;
 end;
 
 procedure TForm1.SceneViewerMouseDown(Sender: TObject;

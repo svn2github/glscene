@@ -47,7 +47,7 @@ uses
   GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData, GLColor,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3;
 
 type
   TForm1 = class(TForm)

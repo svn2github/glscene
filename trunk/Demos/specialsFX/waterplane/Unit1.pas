@@ -127,10 +127,10 @@ begin
    // Our basic user shader takes care of that.
    if reflectionToggle then begin
       cubeMapMode:=GL_REFLECTION_MAP_ARB;
-      rci.GLStates.SetGLState(stBlend);
+      rci.GLStates.Enable(stBlend);
    end else begin
       cubeMapMode:=GL_NORMAL_MAP_ARB;
-      rci.GLStates.UnSetGLState(stBlend);
+      rci.GLStates.Disable(stBlend);
    end;
 
    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
@@ -143,7 +143,7 @@ end;
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
   var rci: TRenderContextInfo; var Continue: Boolean);
 begin
-   rci.GLStates.UnSetGLState(stBlend);
+   rci.GLStates.Disable(stBlend);
 end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);

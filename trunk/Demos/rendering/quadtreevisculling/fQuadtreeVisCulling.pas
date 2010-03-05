@@ -221,7 +221,7 @@ begin
   for i := 0 to SpacePartition.QueryResult.Count - 1 do begin
     TSceneObj(SpacePartition.QueryResult[i]).Obj.Visible := true;
     if cbShowQuadtree.Checked then
-      RenderAABB(TSceneObj(SpacePartition.QueryResult[i]).FCachedAABB);
+      RenderAABB(rci, TSceneObj(SpacePartition.QueryResult[i]).FCachedAABB);
   end;
   glscene1.EndUpdate;
 end;
@@ -266,7 +266,7 @@ procedure TfrmQuadtreeVisCulling.GLDirectOpenGL2Render(
 {var
   ExtendendFrustum : TExtendedFrustum;//}
 begin
-  RenderSpatialPartitioning(SpacePartition);
+  RenderSpatialPartitioning(rci, SpacePartition);
 
   {ExtendendFrustum := ExtendedFrustumMake(rci.rcci.frustum,
     GLCamera1.NearPlane,

@@ -430,15 +430,15 @@ begin
    repeat
       if not WasAboveWater then
          rci.GLStates.InvertGLFrontFace;
-      glPushAttrib(GL_ENABLE_BIT);
+      rci.GLStates.PushAttrib([sttEnable]);
 
-      glDisable(GL_LIGHTING);
-      glDisable(GL_NORMALIZE);
+      rci.GLStates.Disable(stLighting);
+      rci.GLStates.Disable(stNormalize);
 
-      glStencilFunc(GL_ALWAYS, 1, 255);
-      glStencilMask(255);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-      glEnable(GL_STENCIL_TEST);
+      rci.GLStates.SetStencilFunc(cfAlways, 1, 255);
+      rci.GLStates.StencilWriteMask := 255;
+      rci.GLStates.SetStencilOp(soKeep, soKeep, soReplace);
+      rci.GLStates.Enable(stStencilTest);
       glNormal3f(0, 0, 1);
 
       for i:=0 to heightDatas.Count-1 do begin
@@ -461,8 +461,8 @@ begin
             IssuePoint(0, 0);
          glEnd;
       end;
-      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-      glPopAttrib;
+      rci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
+      rci.GLStates.PopAttrib;
       if not WasAboveWater then
          rci.GLStates.InvertGLFrontFace;
       WaterPolyCount:=heightDatas.Count*8;
@@ -525,19 +525,19 @@ begin
 
    MaterialLibrary.ApplyMaterial('wake', rci);
    repeat
-      glPushAttrib(GL_ENABLE_BIT);
+      rci.GLStates.PushAttrib([sttEnable]);
 
-      glDisable(GL_LIGHTING);
-      glDisable(GL_FOG);
+      rci.GLStates.Disable(stLighting);
+      rci.GLStates.Disable(stFog);
 
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE);
+      rci.GLStates.Enable(stBlend);
+      rci.GLStates.SetBlendFunc(bfOne, bfOne);
 
-      glStencilFunc(GL_EQUAL, 1, 255);
-      glStencilMask(255);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-      glEnable(GL_STENCIL_TEST);
-      glDisable(GL_DEPTH_TEST);
+      rci.GLStates.SetStencilFunc(cfEqual, 1, 255);
+      rci.GLStates.StencilWriteMask := 255;
+      rci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
+      rci.GLStates.Enable(stStencilTest);
+      rci.GLStates.Disable(stDepthTest);
 
       if not WasAboveWater then
          rci.GLStates.InvertGLFrontFace;
@@ -558,8 +558,9 @@ begin
 
       if not WasAboveWater then
          rci.GLStates.InvertGLFrontFace;
-      
-      glPopAttrib;
+
+      rci.GLStates.PopAttrib;
+
    until not MaterialLibrary.UnApplyMaterial(rci);
 end;
 

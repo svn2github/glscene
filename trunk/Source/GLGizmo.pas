@@ -70,7 +70,7 @@ uses
   // GLScene
   OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo;
+  GLCoordinates, GLRenderContextInfo, GLState;
 
 type
   TGLGizmoUndoCollection = class;

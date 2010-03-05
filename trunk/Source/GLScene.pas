@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - DanB - Moved TGLSceneBuffer.GLStates to TGLContext.GLStates
       <li>22/02/10 - Yar - Added Push/PopProjectionMatrix to TGLSceneBuffer
                            Optimization of switching states
@@ -2482,21 +2483,20 @@ var
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-  glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT
-    or GL_LINE_BIT or GL_DEPTH_BUFFER_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_LINE_STIPPLE);
+  rci.GLStates.PushAttrib([sttEnable, sttLighting, sttLine, sttDepthBuffer]);
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stLineStipple);
   if not rci.ignoreBlendingRequests then
   begin
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
   end;
-  glLineWidth(1);
+  rci.GLStates.LineWidth := 1;
   glLineStipple(1, Pattern);
-  glDepthMask(True);
-  glDepthFunc(GL_LESS);
+  rci.GLStates.DepthWriteMask := True;
+  rci.GLStates.DepthFunc := cfLess;
   if rci.bufferDepthTest then
-    glEnable(GL_DEPTH_TEST);
+    rci.GLStates.Enable(stDepthTest);
   glBegin(GL_LINES);
   glColor3f(0.5, 0.0, 0.0);
   glVertex3f(0, 0, 0);
@@ -2517,7 +2517,7 @@ begin
   glVertex3f(0, 0, 0);
   glVertex3f(0, 0, AxisLen);
   glEnd;
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
   // clear fpu exception flag (sometime raised by the call to glEnd)
   asm fclex
   end;
@@ -4957,9 +4957,9 @@ begin
 {$ENDIF}
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.GLStates.UnSetGLState(stDepthTest);
+        ARci.GLStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.GLStates.SetGLState(stDepthTest);
+        ARci.GLStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
@@ -4982,9 +4982,9 @@ begin
     begin
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.GLStates.UnSetGLState(stDepthTest);
+        ARci.GLStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.GLStates.SetGLState(stDepthTest);
+        ARci.GLStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
@@ -5002,9 +5002,9 @@ begin
     if (osIgnoreDepthBuffer in ObjectStyle) and
       TGLSceneBuffer(ARCi.buffer).DepthTest then
     begin
-      ARci.GLStates.UnSetGLState(stDepthTest);
+      ARci.GLStates.Disable(stDepthTest);
       DoRender(ARci, False, shouldRenderChildren);
-      ARci.GLStates.SetGLState(stDepthTest);
+      ARci.GLStates.Enable(stDepthTest);
     end
     else
       DoRender(ARci, False, shouldRenderChildren);
@@ -8150,11 +8150,11 @@ end;
 
 procedure TGLSceneBuffer.SetupRenderingContext(context: TGLContext);
 
-  procedure PerformEnable(bool: Boolean; csState: TGLState; glState: TGLEnum);
+  procedure PerformEnable(bool: Boolean; csState: TGLState);
   begin
     case bool of
-      true: context.GLStates.PerformSetGLState(csState);
-      false: context.GLStates.PerformUnSetGLState(csState);
+      true: context.GLStates.PerformEnable(csState);
+      false: context.GLStates.PerformDisable(csState);
     end;
   end;
 
@@ -8169,15 +8169,15 @@ begin
   else
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 
-  PerformEnable(True, stNormalize, GL_NORMALIZE);
+  PerformEnable(True, stNormalize);
 
-  PerformEnable(DepthTest, stDepthTest, GL_DEPTH_TEST);
-  PerformEnable(FaceCulling, stCullFace, GL_CULL_FACE);
-  PerformEnable(Lighting, stLighting, GL_LIGHTING);
-  PerformEnable(FogEnable, stFog, GL_FOG);
+  PerformEnable(DepthTest, stDepthTest);
+  PerformEnable(FaceCulling, stCullFace);
+  PerformEnable(Lighting, stLighting);
+  PerformEnable(FogEnable, stFog);
 
   glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
-  PerformEnable((LColorDepth < 8), stDither, GL_DITHER);
+  PerformEnable((LColorDepth < 8), stDither);
 
   context.GLStates.ResetGLDepthState;
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -9466,11 +9466,13 @@ begin
     FWrapUpRendering(Self, rci);
   with rci.GLStates do
   begin
-    UnSetGLState(stBlend);
-    UnSetGLState(stTexture2D);
-    UnSetGLState(stTextureRect);
-    SetGLState(stAlphaTest);
-    ResetGLAlphaFuncion;
+    Disable(stBlend);
+    Disable(stTexture2D);
+    if (GL_NV_texture_rectangle or GL_ARB_texture_rectangle or
+        GL_VERSION_3_1) then
+      Disable(stTextureRect);
+    Enable(stAlphaTest);
+    ResetGLAlphaFunction;
   end;
 end;
 

@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - DanB - Added TGLContext.GLStates, to be used to cache
                             global per-context state. Removed BindedGLSLProgram
                             since it should be per-context state.
@@ -369,6 +370,7 @@ type
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
          function GetTarget: TGLuint; virtual; abstract;
+         function GetQueryType: TQueryType; virtual; abstract;
       public
          { Public Declarations }
          procedure BeginQuery;
@@ -386,6 +388,7 @@ type
          function QueryResultUInt64: TGLuint64EXT;
 
          property Target : TGLuint read GetTarget;
+         property QueryType : TQueryType read GetQueryType;
 
          {: True if within a Begin/EndQuery. }
          property Active : Boolean read FActive;
@@ -400,6 +403,7 @@ type
    TGLOcclusionQueryHandle = class (TGLQueryHandle)
       protected
          function GetTarget: TGLuint; override;
+         function GetQueryType: TQueryType; override;
       public
          class function IsSupported : Boolean; override;
          // Number of samples (pixels) drawn during the query, some pixels may
@@ -416,6 +420,7 @@ type
    TGLTimerQueryHandle = class(TGLQueryHandle)
       protected
          function GetTarget: TGLuint; override;
+         function GetQueryType: TQueryType; override;
       public
          class function IsSupported : Boolean; override;
          // Time, in nanoseconds (1 ns = 10^-9 s) between starting + ending the query.
@@ -433,6 +438,7 @@ type
    TGLPrimitiveQueryHandle = class(TGLQueryHandle)
       protected
          function GetTarget: TGLuint; override;
+         function GetQueryType: TQueryType; override;
       public
          class function IsSupported : Boolean; override;
          // Number of primitives (eg. Points, Triangles etc.) drawn whilst the
@@ -564,6 +570,9 @@ type
       vertex or geometry shader stage to perform further processing without
       going on to the fragment shader stage. }
    TGLTransformFeedbackBufferHandle = class(TGLBufferObjectHandle)
+//    FTransformFeedbackBufferBuffer: array[0..15] of TGLuint; // (0, 0, 0, ...)
+//    FTransformFeedbackBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+//    FTransformFeedbackBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
       protected
          function GetTarget: TGLuint; override;
       public
@@ -589,6 +598,9 @@ type
       Uniform buffer objects store "uniform blocks"; groups of uniforms
       that can be passed as a group into a GLSL program. }
    TGLUniformBufferHandle = class(TGLBufferObjectHandle)
+//    FUniformBufferBuffer: array[0..15] of TGLuint; // (0, 0, 0, ...)
+//    FUniformBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+//    FUniformBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
       protected
          function GetTarget: TGLuint; override;
       public
@@ -602,6 +614,7 @@ type
       of array state. }
    TGLVertexArrayHandle = class(TGLContextHandle)
       protected
+         class function Transferable : Boolean; override;
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
       public
@@ -631,6 +644,7 @@ type
       layers, and the corresponding attachment point is considered to be layered. }
    TGLFramebufferHandle = class(TGLContextHandle)
       protected
+         class function Transferable : Boolean; override;
          function DoAllocateHandle : Cardinal; override;
          procedure DoDestroyHandle; override;
       public
@@ -1638,7 +1652,11 @@ end;
 procedure TGLQueryHandle.BeginQuery;
 begin
    Assert(Handle<>0);
-   glBeginQuery(Target, FHandle);
+   Assert(vCurrentGLContext=RenderingContext, 'Queries are not shareable '+
+                                              'across contexts');
+   //glBeginQuery(Target, FHandle);
+   if vCurrentGLContext.GLStates.CurrentQuery[QueryType] = 0 then
+     vCurrentGLContext.GLStates.BeginQuery(QueryType, Handle);
    Factive:=True;
 end;
 
@@ -1677,7 +1695,8 @@ begin
    Assert(FActive=true, 'Cannot end a query before it begins');
    Factive:=False;
    Assert(Handle<>0);
-   glEndQuery(Target);
+   //glEndQuery(Target);
+   vCurrentGLContext.GLStates.EndQuery(QueryType);
 end;
 
 // IsResultAvailable
@@ -1726,6 +1745,13 @@ end;
 // ------------------ TGLOcclusionQueryHandle ------------------
 // ------------------
 
+// GetQueryType
+//
+function TGLOcclusionQueryHandle.GetQueryType: TQueryType;
+begin
+   Result := qrySamplesPassed;
+end;
+
 // GetTarget
 //
 function TGLOcclusionQueryHandle.GetTarget: TGLuint;
@@ -1753,6 +1779,11 @@ end;
 
 // GetTarget
 //
+function TGLTimerQueryHandle.GetQueryType: TQueryType;
+begin
+  Result := qryTimeElapsed;
+end;
+
 function TGLTimerQueryHandle.GetTarget: TGLuint;
 begin
    Result := GL_TIME_ELAPSED_EXT;
@@ -1775,6 +1806,13 @@ end;
 // ------------------
 // ------------------ TGLPrimitiveQueryHandle ------------------
 // ------------------
+
+// GetQueryType
+//
+function TGLPrimitiveQueryHandle.GetQueryType: TQueryType;
+begin
+   Result := qryPrimitivesGenerated;
+end;
 
 // GetTarget
 //
@@ -2077,14 +2115,18 @@ end;
 //
 procedure TGLVertexArrayHandle.Bind;
 begin
-   glBindVertexArray(Handle);
+   //glBindVertexArray(Handle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.VertexArrayBinding := Handle;
 end;
 
 // UnBind
 //
 procedure TGLVertexArrayHandle.UnBind;
 begin
-   glBindVertexArray(0);
+//   glBindVertexArray(0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.VertexArrayBinding := 0;
 end;
 
 // IsSupported
@@ -2092,6 +2134,13 @@ end;
 class function TGLVertexArrayHandle.IsSupported: Boolean;
 begin
    Result := GL_ARB_vertex_array_object;
+end;
+
+// Transferable
+//
+class function TGLVertexArrayHandle.Transferable: Boolean;
+begin
+  Result := False;
 end;
 
 // ------------------
@@ -2123,42 +2172,48 @@ end;
 //
 procedure TGLFramebufferHandle.Bind;
 begin
-   glBindFramebuffer(GL_FRAMEBUFFER, Handle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.SetFrameBuffer(Handle);
 end;
 
 // BindForDrawing
 //
 procedure TGLFramebufferHandle.BindForDrawing;
 begin
-   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Handle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.DrawFrameBuffer := Handle;
 end;
 
 // BindForReading
 //
 procedure TGLFramebufferHandle.BindForReading;
 begin
-   glBindFramebuffer(GL_READ_FRAMEBUFFER, Handle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.ReadFrameBuffer := Handle;
 end;
 
 // UnBind
 //
 procedure TGLFramebufferHandle.UnBind;
 begin
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.SetFrameBuffer(0);
 end;
 
 // UnBindForDrawing
 //
 procedure TGLFramebufferHandle.UnBindForDrawing;
 begin
-   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.DrawFrameBuffer := 0;
 end;
 
 // UnBindForReading
 //
 procedure TGLFramebufferHandle.UnBindForReading;
 begin
-   glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.ReadFrameBuffer := 0;
 end;
 
 // Attach1DTexture
@@ -2254,6 +2309,13 @@ begin
    Result := {GL_EXT_framebuffer_object or} GL_ARB_framebuffer_object;
 end;
 
+// Transferable
+//
+class function TGLFramebufferHandle.Transferable: Boolean;
+begin
+  Result := False;
+end;
+
 // ------------------
 // ------------------ TGLRenderbufferObject ------------------
 // ------------------
@@ -2283,14 +2345,18 @@ end;
 //
 procedure TGLRenderbufferHandle.Bind;
 begin
-   glBindRenderbuffer(GL_RENDERBUFFER, FHandle);
+//   glBindRenderbuffer(GL_RENDERBUFFER, FHandle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.RenderBuffer := FHandle;
 end;
 
 // UnBind
 //
 procedure TGLRenderbufferHandle.UnBind;
 begin
-   glBindRenderbuffer(GL_RENDERBUFFER, 0);
+//   glBindRenderbuffer(GL_RENDERBUFFER, 0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.RenderBuffer := 0;
 end;
 
 // SetStorage
@@ -2552,14 +2618,16 @@ end;
 //
 procedure TGLProgramHandle.UseProgramObject;
 begin
-  RenderingContext.GLStates.SetGLCurrentProgram(FHandle);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.CurrentProgram := Handle;
 end;
 
 // GetAttribLocation
 //
 procedure TGLProgramHandle.EndUseProgramObject;
 begin
-  RenderingContext.GLStates.SetGLCurrentProgram(0);
+   Assert(vCurrentGLContext<>nil);
+   vCurrentGLContext.GLStates.CurrentProgram := 0;
 end;
 
 // GetUniform1i

@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
     <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
@@ -123,7 +124,7 @@ interface
 uses
   Classes, ODEGL, ODEImport, GLScene, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
-  GLColor, GLCoordinates, GLRenderContextInfo, GLManager;
+  GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
 
 type
 
@@ -1669,10 +1670,10 @@ begin
   if not (csDesigning in ComponentState) then
     if not VisibleAtRunTime then Exit;
 
-  glPushAttrib(GL_ENABLE_BIT + GL_CURRENT_BIT + GL_POLYGON_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_POLYGON_OFFSET_LINE);
-  glPolygonOffset(1, 2);
+  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttPolygon]);
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stPolygonOffsetLine);
+  rci.GLStates.SetPolygonOffset(1, 2);
 
   for i := 0 to FODEBehaviours.Count - 1 do begin
     if ODEBehaviours[i] is TGLODEDynamic then
@@ -1686,7 +1687,7 @@ begin
     ODEBehaviours[i].Render(rci);
   end;
 
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 // RenderPointFreed

@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>05/03/10 - DanB - More state added to TGLStateCache
        <li>23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
                              and tfExtended to TGLTextureFormat (thanks mif for idea)  
        <li>22/01/10 - Yar  - Added GLTextureFormat to uses,
@@ -210,7 +211,7 @@ uses
   // GLScene
   OpenGL1x, VectorGeometry, GLGraphics, GLContext, GLColor,
   GLCrossPlatform, BaseClasses, GLCoordinates, GLRenderContextInfo,
-  GLTextureFormat;
+  GLTextureFormat, GLState;
 
 const
   cDefaultNormalMapScale = 0.125;
@@ -244,25 +245,7 @@ type
   TGLDepthTextureMode = (dtmLuminance, dtmIntensity, dtmAlpha);
 
   // Specifies the depth comparison function.
-  TGLDepthCompareFunc =
-    (
-    dcfLequal, // Passes if the	incoming depth value is	less
-    // than or equal	to the stored depth value.
-    dcfGequal, // Passes if the	incoming depth value is
-    // greater than or equal	to the stored depth value.
-    dcfLess, // Passes if the	incoming depth value is	less
-    // than the stored depth	value.
-
-    dcfGreater, // Passes if the	incoming depth value is
-    // greater than the stored depth	value.
-
-    dcfEqual, // Passes if the	incoming depth value is	equal
-    // to the stored	depth value.
-    dcfNotequal, // Passes if the	incoming depth value is	not
-    // equal	to the stored depth value.
-    dcfAlways, // Always passes
-    dcfNever // Never	passes.
-    );
+  TGLDepthCompareFunc = TDepthFunction;
 
   {: Texture format for OpenGL (rendering) use.<p>
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
@@ -964,7 +947,7 @@ type
     property TextureCompareMode: TGLTextureCompareMode read fTextureCompareMode
       write SetTextureCompareMode default tcmNone;
     property TextureCompareFunc: TGLDepthCompareFunc read fTextureCompareFunc
-      write SetTextureCompareFunc default dcfLequal;
+      write SetTextureCompareFunc default cfLequal;
     property DepthTextureMode: TGLDepthTextureMode read fDepthTextureMode write
       SetDepthTextureMode default dtmLuminance;
   end;
@@ -1082,7 +1065,7 @@ implementation
 // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
 
 uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats,
-  GLUtils, GLState;
+  GLUtils;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =
@@ -2414,7 +2397,7 @@ begin
   FBorderColor := TGLColor.CreateInitialized(Self, clrTransparent);
   FNormalMapScale := cDefaultNormalMapScale;
   FTextureCompareMode := tcmNone;
-  FTextureCompareFunc := dcfLequal;
+  FTextureCompareFunc := cfLequal;
   FDepthTextureMode := dtmLuminance;
   TextureFormat := tfDefault;
 end;
@@ -3280,15 +3263,15 @@ begin // Apply
     if Handle = 0 then
       Exit;
     case target of
-      GL_TEXTURE_1D: rci.GLStates.SetGLState(stTexture1D);
-      GL_TEXTURE_2D: rci.GLStates.SetGLState(stTexture2D);
-      GL_TEXTURE_RECTANGLE: rci.GLStates.SetGLState(stTextureRect);
+      GL_TEXTURE_1D: rci.GLStates.Enable(stTexture1D);
+      GL_TEXTURE_2D: rci.GLStates.Enable(stTexture2D);
+      GL_TEXTURE_RECTANGLE: rci.GLStates.Enable(stTextureRect);
       GL_TEXTURE_CUBE_MAP:
         begin
-          rci.GLStates.SetGLState(stTextureCubeMap);
+          rci.GLStates.Enable(stTextureCubeMap);
           SetCubeMapTextureMatrix;
         end;
-      GL_TEXTURE_3D: rci.GLStates.SetGLState(stTexture3D);
+      GL_TEXTURE_3D: rci.GLStates.Enable(stTexture3D);
     end; // of case
 
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
@@ -3298,11 +3281,11 @@ begin // Apply
   end
   else
   begin //default
-    rci.GLStates.UnSetGLState(stTexture1D);
-    rci.GLStates.UnSetGLState(stTexture2D);
-    rci.GLStates.UnSetGLState(stTextureRect);
-    rci.GLStates.UnSetGLState(stTextureCubeMap);
-    rci.GLStates.UnSetGLState(stTexture3D);
+    rci.GLStates.Disable(stTexture1D);
+    rci.GLStates.Disable(stTexture2D);
+    rci.GLStates.Disable(stTextureRect);
+    rci.GLStates.Disable(stTextureCubeMap);
+    rci.GLStates.Disable(stTexture3D);
     xglMapTexCoordToMain;
   end;
 end;
@@ -3315,20 +3298,20 @@ begin
   if not Disabled then
   begin
     if stTexture1D in rci.GLStates.States then
-      rci.GLStates.UnSetGLState(stTexture1D)
+      rci.GLStates.Disable(stTexture1D)
     else if stTexture2D in rci.GLStates.States then
-      rci.GLStates.UnSetGLState(stTexture2D)
+      rci.GLStates.Disable(stTexture2D)
     else if stTextureRect in rci.GLStates.States then
-      rci.GLStates.UnSetGLState(stTextureRECT)
+      rci.GLStates.Disable(stTextureRECT)
     else if stTextureCubeMap in rci.GLStates.States then
     begin
-      rci.GLStates.UnSetGLState(stTextureCubeMap);
+      rci.GLStates.Disable(stTextureCubeMap);
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
     end
     else if stTexture3D in rci.GLStates.States then
-      rci.GLStates.UnSetGLState(stTexture3D);
+      rci.GLStates.Disable(stTexture3D);
 
     UnApplyMappingMode;
   end;
@@ -3692,9 +3675,9 @@ const
     GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
   cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cTextureCompareFunc: array[dcfLequal..dcfNever] of TGLenum =
-    (GL_LEQUAL, GL_GEQUAL, GL_LESS, GL_GREATER, GL_EQUAL, GL_NOTEQUAL,
-    GL_ALWAYS, GL_NEVER);
+//  cTextureCompareFunc: array[dcfLequal..dcfNever] of TGLenum =
+//    (GL_LEQUAL, GL_GEQUAL, GL_LESS, GL_GREATER, GL_EQUAL, GL_NOTEQUAL,
+//    GL_ALWAYS, GL_NEVER);
   cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
     (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
 
@@ -3772,7 +3755,7 @@ begin
     glTexParameteri(target, GL_TEXTURE_COMPARE_MODE,
       cTextureCompareMode[fTextureCompareMode]);
     glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
-      cTextureCompareFunc[fTextureCompareFunc]);
+      cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
     glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
       cDepthTextureMode[fDepthTextureMode]);
   end;

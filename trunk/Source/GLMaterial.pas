@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>21/02/10 - Yar - Added TGLDepthProperties,
                            optimization of switching states
       <li>22/01/10 - Yar - Remove Texture.Border and
@@ -37,7 +38,8 @@ unit GLMaterial;
 interface
 
 uses Classes, GLRenderContextInfo, BaseClasses, GLContext, GLTexture, GLColor,
-  GLCoordinates, VectorGeometry, PersistentClasses, OpenGL1x, GLCrossPlatform;
+  GLCoordinates, VectorGeometry, PersistentClasses, OpenGL1x, GLCrossPlatform,
+  GLState;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
@@ -200,7 +202,6 @@ type
   TGLShaderClass = class of TGLShader;
 
   TShininess = 0..128;
-  TPolygonMode = (pmFill, pmLines, pmPoints);
 
   // TGLFaceProperties
   //
@@ -230,8 +231,8 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
-    procedure Apply(var rci: TRenderContextInfo; aFace: TGLEnum);
-    procedure ApplyNoLighting(var rci: TRenderContextInfo; aFace: TGLEnum);
+    procedure Apply(var rci: TRenderContextInfo; aFace: TCullFaceMode);
+    procedure ApplyNoLighting(var rci: TRenderContextInfo; aFace: TCullFaceMode);
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -251,7 +252,7 @@ type
     FDepthTest: boolean;
     FDepthWrite: boolean;
     FZNear, FZFar: Single;
-    FCompareFunc: TGLDepthCompareFunc;
+    FCompareFunc: TDepthfunction;
   protected
     { Protected Declarations }
     procedure SetZNear(Value: Single);
@@ -279,8 +280,8 @@ type
     {: Specifies the function used to compare each
       incoming pixel depth value with the depth value present in
       the depth buffer. }
-    property DepthCompareFunction: TGLDepthCompareFunc
-      read FCompareFunc write SetCompareFunc default dcfLess;
+    property DepthCompareFunction: TDepthFunction
+      read FCompareFunc write SetCompareFunc default cfLequal;
     {: DepthTest enabling.<p>
        When DepthTest is enabled, objects closer to the camera will hide
        farther ones (via use of Z-Buffering).<br>
@@ -300,72 +301,45 @@ type
   // it won't show up in the Dephi 7 design-time editor. So I had to add
   // vTGlAlphaFuncValues and vTGLBlendFuncFactorValues arrays.
   //
-  TGlAlphaFunc = (
-    af_GL_NEVER,
-    af_GL_LESS,
-    af_GL_EQUAL,
-    af_GL_LEQUAL,
-    af_GL_GREATER,
-    af_GL_NOTEQUAL,
-    af_GL_GEQUAL,
-    af_GL_ALWAYS
-    );
-
-  TGLBlendFuncFactor = (
-    bff_GL_ZERO,
-    bff_GL_ONE,
-    bff_GL_DST_COLOR,
-    bff_GL_ONE_MINUS_DST_COLOR,
-    bff_GL_SRC_ALPHA,
-    bff_GL_ONE_MINUS_SRC_ALPHA,
-    bff_GL_DST_ALPHA,
-    bff_GL_ONE_MINUS_DST_ALPHA,
-    bff_GL_SRC_ALPHA_SATURATE,
-
-    //if the GL_ARB_imaging extension is supported
-    //Or OpenGL > 1.0 then
-    bff_GL_CONSTANT_COLOR,
-    bff_GL_ONE_MINUS_CONSTANT_COLOR,
-    bff_GL_CONSTANT_ALPHA,
-    bff_GL_ONE_MINUS_CONSTANT_ALPHA
-    );
+  TGlAlphaFunc = TComparisonFunction;
 
   // TGLBlendingParameters
   //
-  TGLBlendingParameters = class(TGLOwnedPersistent)
+  TGLBlendingParameters = class(TGLUpdateAbleObject)
   private
     FUseAlphaFunc: Boolean;
     FUseBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
     FAlphaFuncRef: TGLclampf;
-    FBlendFuncSFactor: TGLBlendFuncFactor;
-    FBlendFuncDFactor: TGLBlendFuncFactor;
+    FBlendFuncSFactor: TBlendFunction;
+    FBlendFuncDFactor: TBlendFunction;
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
     procedure SetAlphaFuncRef(const Value: TGLclampf);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
-    procedure SetBlendFuncDFactor(const Value: TGLBlendFuncFactor);
-    procedure SetBlendFuncSFactor(const Value: TGLBlendFuncFactor);
+    procedure SetBlendFuncDFactor(const Value: TBlendFunction);
+    procedure SetBlendFuncSFactor(const Value: TBlendFunction);
     function StoreAlphaFuncRef: Boolean;
   protected
     function GetRealOwner: TGLMaterial;
     procedure Changed; virtual;
   public
     constructor Create(AOwner: TPersistent); override;
+    procedure Apply(var rci: TRenderContextInfo);
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc
       default False;
     property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write
-      SetAlphaFuncType default af_GL_GREATER;
+      SetAlphaFuncType default cfGreater;
     property AlphaFuncRef: TGLclampf read FAlphaFuncRef write SetAlphaFuncRef
       stored StoreAlphaFuncRef;
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc
       default True;
-    property BlendFuncSFactor: TGLBlendFuncFactor read FBlendFuncSFactor write
-      SetBlendFuncSFactor default bff_GL_SRC_ALPHA;
-    property BlendFuncDFactor: TGLBlendFuncFactor read FBlendFuncDFactor write
-      SetBlendFuncDFactor default bff_GL_ONE_MINUS_SRC_ALPHA;
+    property BlendFuncSFactor: TBlendFunction read FBlendFuncSFactor write
+      SetBlendFuncSFactor default bfSrcAlpha;
+    property BlendFuncDFactor: TBlendFunction read FBlendFuncDFactor write
+      SetBlendFuncDFactor default bfOneMinusSrcAlpha;
   end;
 
   // TBlendingMode
@@ -772,18 +746,18 @@ type
 
 implementation
 
-uses SysUtils, GLStrings, GLState, XOpenGL, ApplicationFileIO, GLGraphics;
+uses SysUtils, GLStrings, XOpenGL, ApplicationFileIO, GLGraphics;
 
-const
-  cTGlAlphaFuncValues: array[TGlAlphaFunc] of TGLEnum =
-    (GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL,
-    GL_ALWAYS);
-
-  cTGLBlendFuncFactorValues: array[TGLBlendFuncFactor] of TGLEnum =
-    (GL_ZERO, GL_ONE, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA,
-    GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
-    GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR,
-    GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+//const
+//  cTGlAlphaFuncValues: array[TGlAlphaFunc] of TGLEnum =
+//    (GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL,
+//    GL_ALWAYS);
+//
+//  cTGLBlendFuncFactorValues: array[TGLBlendFuncFactor] of TGLEnum =
+//    (GL_ZERO, GL_ONE, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA,
+//    GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
+//    GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR,
+//    GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 
   // ------------------
   // ------------------ TGLFaceProperties ------------------
@@ -819,27 +793,21 @@ end;
 //
 
 procedure TGLFaceProperties.Apply(var rci: TRenderContextInfo;
-  aFace: TGLEnum);
-const
-  cPolygonMode: array[pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE,
-    GL_POINT);
+  aFace: TCullFaceMode);
 begin
   rci.GLStates.SetGLMaterialColors(aFace,
     Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
-  rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
+  rci.GLStates.SetGLPolygonMode(aFace, FPolygonMode);
 end;
 
 // ApplyNoLighting
 //
 
 procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
-  aFace: TGLEnum);
-const
-  cPolygonMode: array[pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE,
-    GL_POINT);
+  aFace: TCullFaceMode);
 begin
   glColor4fv(@Diffuse.Color);
-  rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
+  rci.GLStates.SetGLPolygonMode(aFace, FPolygonMode);
 end;
 
 // Assign
@@ -930,22 +898,18 @@ begin
   FDepthWrite:=True;
   FZNear:=0;
   FZFar:=1;
-  FCompareFunc:=dcfLess;
+  FCompareFunc:=cfLequal;
 end;
 
 procedure TGLDepthProperties.Apply(var rci: TRenderContextInfo);
-const
-  cCompareFunc: array[TGLDepthCompareFunc] of TGLenum =
-    (GL_LEQUAL, GL_GEQUAL, GL_LESS, GL_GREATER, GL_EQUAL, GL_NOTEQUAL,
-    GL_ALWAYS, GL_NEVER);
 begin
   if FDepthTest and rci.bufferDepthTest then
-    rci.GLStates.SetGLState(stDepthTest)
+    rci.GLStates.Enable(stDepthTest)
   else
-    rci.GLStates.UnSetGLState(stDepthTest);
-  rci.GLStates.SetGLDepthWriting(FDepthWrite);
-  rci.GLStates.SetGLDepthFunction(cCompareFunc[FCompareFunc]);
-  rci.GLStates.SetGLDepthRange(FZNear, FZFar);
+    rci.GLStates.Disable(stDepthTest);
+  rci.GLStates.DepthWriteMask := FDepthWrite;
+  rci.GLStates.DepthFunc := FCompareFunc;
+  rci.GLStates.SetDepthRange(FZNear, FZFar);
 end;
 
 procedure TGLDepthProperties.Assign(Source: TPersistent);
@@ -981,7 +945,7 @@ begin
   end;
 end;
 
-procedure TGLDepthProperties.SetCompareFunc(Value: TGLDepthCompareFunc);
+procedure TGLDepthProperties.SetCompareFunc(Value: TDepthFunction);
 begin
   if Value<>FCompareFunc then
   begin
@@ -1590,13 +1554,13 @@ begin
     // Lighting switch
     if (moNoLighting in MaterialOptions) or not rci.bufferLighting then
     begin
-      rci.GLStates.UnSetGLState(stLighting);
-      FFrontProperties.ApplyNoLighting(rci, GL_FRONT);
+      rci.GLStates.Disable(stLighting);
+      FFrontProperties.ApplyNoLighting(rci, cmFront);
     end
     else
     begin
-      rci.GLStates.SetGLState(stLighting);
-      FFrontProperties.Apply(rci, GL_FRONT);
+      rci.GLStates.Enable(stLighting);
+      FFrontProperties.Apply(rci, cmFront);
     end;
 
     // Apply FaceCulling and BackProperties (if needs be)
@@ -1604,89 +1568,74 @@ begin
       fcBufferDefault:
         begin
           if rci.bufferFaceCull then
-            rci.GLStates.SetGLState(stCullFace)
+            rci.GLStates.Enable(stCullFace)
           else
-            rci.GLStates.UnSetGLState(stCullFace);
-          BackProperties.Apply(rci, GL_BACK);
+            rci.GLStates.Disable(stCullFace);
+          BackProperties.Apply(rci, cmBack);
         end;
-      fcCull: rci.GLStates.SetGLState(stCullFace);
+      fcCull: rci.GLStates.Enable(stCullFace);
       fcNoCull:
         begin
-          rci.GLStates.UnSetGLState(stCullFace);
-          BackProperties.Apply(rci, GL_BACK);
+          rci.GLStates.Disable(stCullFace);
+          BackProperties.Apply(rci, cmBack);
         end;
     end;
+    // note: Front + Back with different PolygonMode are no longer supported.
+    // Currently state cache just ignores back facing mode changes, changes to
+    // front affect both front + back PolygonMode
 
     // Apply Blending mode
     if not rci.ignoreBlendingRequests then
       case FBlendingMode of
         bmOpaque:
           begin
-            rci.GLStates.UnSetGLState(stBlend);
-            rci.GLStates.UnSetGLState(stAlphaTest);
+            rci.GLStates.Disable(stBlend);
+            rci.GLStates.Disable(stAlphaTest);
           end;
         bmTransparency:
           begin
-            rci.GLStates.SetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
-            rci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA,
-              GL_ONE_MINUS_SRC_ALPHA);
-            rci.GLStates.SetGLAlphaFuncion(GL_GREATER, 0);
+            rci.GLStates.Enable(stBlend);
+            rci.GLStates.Enable(stAlphaTest);
+            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
           end;
         bmAdditive:
           begin
-            rci.GLStates.SetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
-            rci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
-            rci.GLStates.SetGLAlphaFuncion(GL_GREATER, 0);
+            rci.GLStates.Enable(stBlend);
+            rci.GLStates.Enable(stAlphaTest);
+            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
           end;
         bmAlphaTest50:
           begin
-            rci.GLStates.UnSetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
-            rci.GLStates.SetGLAlphaFuncion(GL_GEQUAL, 0.5);
+            rci.GLStates.Disable(stBlend);
+            rci.GLStates.Enable(stAlphaTest);
+            rci.GLStates.SetGLAlphaFunction(cfGEqual, 0.5);
           end;
         bmAlphaTest100:
           begin
-            rci.GLStates.UnSetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
-            rci.GLStates.SetGLAlphaFuncion(GL_GEQUAL, 1.0);
+            rci.GLStates.Disable(stBlend);
+            rci.GLStates.Enable(stAlphaTest);
+            rci.GLStates.SetGLAlphaFunction(cfGEqual, 1.0);
           end;
         bmModulate:
           begin
-            rci.GLStates.SetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
-            rci.GLStates.SetGLBlendFuncion(GL_DST_COLOR, GL_ZERO);
-            rci.GLStates.SetGLAlphaFuncion(GL_GREATER, 0);
+            rci.GLStates.Enable(stBlend);
+            rci.GLStates.Enable(stAlphaTest);
+            rci.GLStates.SetBlendFunc(bfDstColor, bfZero);
+            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
           end;
         bmCustom:
           begin
-            rci.GLStates.SetGLState(stAlphaTest);
-
-            if FBlendingParams.FUseAlphaFunc then
-              rci.GLStates.SetGLAlphaFuncion(
-                cTGlAlphaFuncValues[FBlendingParams.FAlphaFuncType],
-                FBlendingParams.AlphaFuncRef)
-            else
-              rci.GLStates.SetGLAlphaFuncion(GL_GREATER, 0);
-
-            if FBlendingParams.FUseBlendFunc then
-            begin
-              rci.GLStates.SetGLState(stBlend);
-              rci.GLStates.SetGLBlendFuncion(
-                cTGLBlendFuncFactorValues[FBlendingParams.FBlendFuncSFactor],
-                cTGLBlendFuncFactorValues[FBlendingParams.FBlendFuncDFactor]);
-            end
-            else
-              rci.GLStates.UnSetGLState(stBlend);
+            FBlendingParams.Apply(rci);
           end;
       end;
 
     // Fog switch
     if (moIgnoreFog in MaterialOptions) or not rci.bufferFog then
-      rci.GLStates.UnSetGLState(stFog)
+      rci.GLStates.Disable(stFog)
     else
-      rci.GLStates.SetGLState(stFog);
+      rci.GLStates.Enable(stFog);
 
     if not Assigned(FTextureEx) then
     begin
@@ -3063,8 +3012,8 @@ begin
               begin
                 AlphaFuncRef := ReadFloat;
                 AlphaFunctType := TGlAlphaFunc(ReadInteger);
-                BlendFuncDFactor := TGLBlendFuncFactor(ReadInteger);
-                BlendFuncSFactor := TGLBlendFuncFactor(ReadInteger);
+                BlendFuncDFactor := TBlendFunction(ReadInteger);
+                BlendFuncSFactor := TBlendFunction(ReadInteger);
                 UseAlphaFunc := ReadBoolean;
                 UseBlendFunc := ReadBoolean;
               end;
@@ -3341,6 +3290,24 @@ end;
 
 { TGLBlendingParameters }
 
+procedure TGLBlendingParameters.Apply(var rci: TRenderContextInfo);
+begin
+  if FUseAlphaFunc then
+  begin
+    rci.GLStates.Enable(stAlphaTest);
+    rci.GLStates.SetGLAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
+  end
+  else
+    rci.GLStates.Disable(stAlphaTest);
+  if FUseBlendFunc then
+  begin
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+  end
+  else
+    rci.GLStates.Disable(stBlend);
+end;
+
 procedure TGLBlendingParameters.Changed;
 begin
   // DaStr: turned off because there is no way to know TGLMaterial's real owner.
@@ -3352,12 +3319,12 @@ constructor TGLBlendingParameters.Create(AOwner: TPersistent);
 begin
   inherited;
   FUseAlphaFunc := False;
-  FAlphaFuncType := af_GL_GREATER;
+  FAlphaFuncType := cfGreater;
   FAlphaFuncRef := 0;
 
   FUseBlendFunc := True;
-  FBlendFuncSFactor := bff_GL_SRC_ALPHA;
-  FBlendFuncDFactor := bff_GL_ONE_MINUS_SRC_ALPHA;
+  FBlendFuncSFactor := bfSrcAlpha;
+  FBlendFuncDFactor := bfOneMinusSrcAlpha;
 end;
 
 function TGLBlendingParameters.GetRealOwner: TGLMaterial;
@@ -3385,7 +3352,7 @@ begin
 end;
 
 procedure TGLBlendingParameters.SetBlendFuncDFactor(
-  const Value: TGLBlendFuncFactor);
+  const Value: TBlendFunction);
 begin
   if (FBlendFuncDFactor <> Value) then
   begin
@@ -3395,7 +3362,7 @@ begin
 end;
 
 procedure TGLBlendingParameters.SetBlendFuncSFactor(
-  const Value: TGLBlendFuncFactor);
+  const Value: TBlendFunction);
 begin
   if (FBlendFuncSFactor <> Value) then
   begin

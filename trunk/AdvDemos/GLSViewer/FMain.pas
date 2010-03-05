@@ -14,7 +14,7 @@ uses
   Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
   GLTexture, OpenGL1x, GLContext, ExtDlgs, VectorLists, GLCadencer,
-  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
+  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses, GLState;
 
 type
   TMain = class(TForm)
@@ -193,7 +193,7 @@ implementation
 uses GLColor, GLKeyBoard, GLGraphics, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
-   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer, GLState,
+   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer,
    GLRenderContextInfo;
 
 type
@@ -212,13 +212,13 @@ type
 procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    PassCount:=1;
-   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-   glPushAttrib(GL_ENABLE_BIT);
-   glPushAttrib(GL_CURRENT_BIT+GL_ENABLE_BIT);
+   rci.GLStates.PolygonMode := pmFill;
+   rci.GLStates.PushAttrib([sttEnable]);
+   rci.GLStates.PushAttrib([sttCurrent, sttEnable]);
    glColor3fv(@BackgroundColor);
    glDisable(GL_TEXTURE_2D);
-   glEnable(GL_POLYGON_OFFSET_FILL);
-   glPolygonOffset(1, 2);
+   rci.GLStates.Enable(stPolygonOffsetFill);
+   rci.GLStates.SetPolygonOffset(1, 2);
 end;
 
 function THiddenLineShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
@@ -226,14 +226,14 @@ begin
    case PassCount of
       1 : begin
          PassCount:=2;
-         rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-         glPopAttrib;
+         rci.GLStates.PolygonMode := pmLines;
+         rci.GLStates.PopAttrib;
          glColor3fv(@LinesColor);
-         glDisable(GL_LIGHTING);
+         rci.GLStates.Disable(stLighting);
          Result:=True;
       end;
       2 : begin
-         glPopAttrib;
+         rci.GLStates.PopAttrib;
          Result:=False;
       end;
    else

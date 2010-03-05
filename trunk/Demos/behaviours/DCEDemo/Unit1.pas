@@ -20,7 +20,7 @@ uses
   Dialogs, GLDCE, GLScene, GLObjects, GLCadencer, GLWin32Viewer,
   GLTexture, GLHeightData, GLTerrainRenderer, GLVectorFileObjects,
   ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo, GLState;
 
 type
   TForm1 = class(TForm)
@@ -349,10 +349,10 @@ begin
   //GLEllipseCollision.pas, if you do, don't forget to clear the
   //triangle list! -> SetLength(debug_tri,0);
 
-  glPointSize(5.0);
+  rci.GLStates.PointSize := 5.0;
   glColor3f(0,1,0);
-  glPushAttrib(GL_LIGHTING_BIT);
-  glDisable(GL_LIGHTING);
+  rci.GLStates.PushAttrib([sttLighting]);
+  rci.GLStates.Disable(stLighting);
 
   for i := 0 to High(debug_tri) do
   with debug_tri[i] do begin
@@ -392,7 +392,7 @@ begin
   end; //}
 
   //glEnable(GL_DEPTH_TEST);
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
   SetLength(debug_tri,0);
 end;
 

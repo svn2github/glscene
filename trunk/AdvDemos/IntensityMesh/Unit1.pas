@@ -143,22 +143,22 @@ begin
    case Pass of
       1 : begin
          // 2nd pass is a wireframe pass (two-sided)
-         glPushAttrib(GL_ENABLE_BIT);  // backup states
-         glDisable(GL_TEXTURE_2D);
-         glEnable(GL_LINE_SMOOTH);     // setup smoothed lines
-         glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         glLineWidth(0.5);
-         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   // lines visible on both sides
-         glPolygonOffset(-1, -1); 
-         glEnable(GL_POLYGON_OFFSET_LINE);
+         rci.GLStates.PushAttrib([sttEnable]);  // backup states
+         rci.GLStates.Disable(stTexture2D);
+         rci.GLStates.Enable(stLineSmooth); // setup smoothed lines
+         rci.GLStates.Enable(stBlend);
+         rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+         rci.GLStates.LineWidth := 0.5;
+         rci.GLStates.PolygonMode := pmLines;
+         rci.GLStates.SetPolygonOffset(-1, -1);
+         rci.GLStates.Enable(stPolygonOffsetLine);
          glColor3f(0, 0, 0);
          Continue:=True;
       end;
    else
       // restore states or mark them dirty
       if CBWireFrame.Checked then
-         glPopAttrib;
+         rci.GLStates.PopAttrib;
       rci.GLStates.ResetGLPolygonMode;
       Continue:=False;
    end;

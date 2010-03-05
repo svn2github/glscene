@@ -89,15 +89,15 @@ begin
    PassCount:=1;
 
    // backup state
-   glPushAttrib(GL_ENABLE_BIT);
+   rci.GLStates.PushAttrib([sttEnable]);
    // disable lighting, this is a solid fill
-   glDisable(GL_LIGHTING);
-   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+   rci.GLStates.Disable(stLighting);
+   rci.GLStates.PolygonMode := pmFill;
    // use background color
    glColor3fv(@BackgroundColor);
    // enable and adjust polygon offset
-   glEnable(GL_POLYGON_OFFSET_FILL);
-   glPolygonOffset(1, 2);
+   rci.GLStates.Enable(stPolygonOffsetFill);
+   rci.GLStates.SetPolygonOffset(1, 2);
 end;
 
 function THiddenLineShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
@@ -108,16 +108,16 @@ begin
          PassCount:=2;
 
          // switch to wireframe and its color
-         rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+         rci.GLStates.PolygonMode := pmLines;
          glColor3fv(@LineColor);
          // disable polygon offset
-         glDisable(GL_POLYGON_OFFSET_LINE);
+         rci.GLStates.Disable(stPolygonOffsetLine);
 
          Result:=True;
       end;
       2 : begin
          // restore state
-         glPopAttrib;
+         rci.GLStates.PopAttrib;
 
          // we're done
          Result:=False;
@@ -132,21 +132,21 @@ end;
 procedure TOutLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    PassCount:=1;
-   glPushAttrib(GL_ENABLE_BIT);
-   glDisable(GL_LIGHTING);
+   rci.GLStates.PushAttrib([sttEnable]);
+   rci.GLStates.Enable(stLighting);
 
    if outlineSmooth then begin
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-      glEnable(GL_LINE_SMOOTH);
-   end else glDisable(GL_LINE_SMOOTH);
+      rci.GLStates.Enable(stBlend);
+      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      rci.GLStates.LineSmoothHint := hintNicest;
+      rci.GLStates.Enable(stLineSmooth);
+   end else rci.GLStates.Disable(stLineSmooth);
 
    glGetFloatv(GL_LINE_WIDTH,@oldlinewidth);
-   glLineWidth(OutLineWidth);
-   glPolygonMode(GL_BACK, GL_LINE);
-   glCullFace(GL_FRONT);
-   glDepthFunc(GL_LEQUAL);
+   rci.GLStates.LineWidth := OutlineWidth;
+   rci.GLStates.PolygonMode := pmLines;
+   rci.GLStates.CullFaceMode := cmFront;
+   rci.GLStates.DepthFunc := cfLEqual;
    glColor3fv(@lineColor);
 end;
 
@@ -156,17 +156,17 @@ begin
       1 : begin
          PassCount:=2;
          if lighting then
-           glEnable(GL_LIGHTING)
+           rci.GLStates.Enable(stLighting)
          else glColor3fv(@backGroundColor);
-         glDepthFunc(GL_LESS);
-         glCullFace(GL_BACK);
-         glPolygonMode(GL_BACK, GL_FILL);
+         rci.GLStates.DepthFunc := cfLess;
+         rci.GLStates.CullFaceMode := cmBack;
+         rci.GLStates.PolygonMode := pmFill;
 
          Result:=True;
       end;
       2 : begin
-         glPopAttrib;
-         glLineWidth(oldLineWidth);
+         rci.GLStates.PopAttrib;
+         rci.GLStates.LineWidth := oldLineWidth;
          Result:=False;
       end;
    else

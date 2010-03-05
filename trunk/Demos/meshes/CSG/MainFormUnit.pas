@@ -31,7 +31,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG,
   GLWin32Viewer, GLObjects, GLTexture, GLFile3ds, ExtCtrls, ComCtrls,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState;
 
 type
   TForm1 = class(TForm)

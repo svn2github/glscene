@@ -13,6 +13,7 @@
     </p>
 
   <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
                               (BugTracker ID = 1938988).
                              TGLTextureSharingShaderMaterial.GetTextureSharingShader()
@@ -141,8 +142,6 @@ type
 implementation
 
 { TGLTextureSharingShaderMaterial }
-const
-  cPolygonMode: array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 
 procedure TGLTextureSharingShaderMaterial.Apply(var rci: TRenderContextInfo);
 begin
@@ -172,31 +171,31 @@ begin
   begin
     if stLighting in rci.GLStates.States then
     begin
-      rci.GLStates.UnSetGLState(stLighting);
+      rci.GLStates.Disable(stLighting);
       Inc(rci.lightingDisabledCounter);
     end;
   end;
   if stLighting in rci.GLStates.States then
   begin
-    rci.GLStates.SetGLMaterialColors(GL_FRONT,
+    rci.GLStates.SetGLMaterialColors(cmFront,
       Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, Shininess);
-    rci.GLStates.SetGLPolygonMode(GL_FRONT, cPolygonMode[FLibMaterial.Material.FrontProperties.PolygonMode]);
+    rci.GLStates.PolygonMode :=FLibMaterial.Material.FrontProperties.PolygonMode;
   end
   else
-    FLibMaterial.Material.FrontProperties.ApplyNoLighting(rci, GL_FRONT);
+    FLibMaterial.Material.FrontProperties.ApplyNoLighting(rci, cmFront);
   if (stCullFace in rci.GLStates.States) then
   begin
     case FLibMaterial.Material.FaceCulling of
       fcBufferDefault: if not rci.bufferFaceCull then
         begin
-          rci.GLStates.UnSetGLState(stCullFace);
-          FLibMaterial.Material.BackProperties.Apply(rci, GL_BACK);
+          rci.GLStates.Disable(stCullFace);
+          FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
         end;
       fcCull: ; // nothing to do
       fcNoCull:
       begin
-        rci.GLStates.UnSetGLState(stCullFace);
-        FLibMaterial.Material.BackProperties.Apply(rci, GL_BACK);
+        rci.GLStates.Disable(stCullFace);
+        FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       end;
       else
         Assert(False);
@@ -209,12 +208,12 @@ begin
       fcBufferDefault:
       begin
         if rci.bufferFaceCull then
-          rci.GLStates.SetGLState(stCullFace)
+          rci.GLStates.Enable(stCullFace)
         else
-          FLibMaterial.Material.BackProperties.Apply(rci, GL_BACK);
+          FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       end;
-      fcCull: rci.GLStates.SetGLState(stCullFace);
-      fcNoCull: FLibMaterial.Material.BackProperties.Apply(rci, GL_BACK);
+      fcCull: rci.GLStates.Enable(stCullFace);
+      fcNoCull: FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
       else
         Assert(False);
     end;
@@ -225,37 +224,37 @@ begin
     case BlendingMode of
       bmOpaque:
       begin
-        rci.GLStates.UnSetGLState(stBlend);
-        rci.GLStates.UnSetGLState(stAlphaTest);
+        rci.GLStates.Disable(stBlend);
+        rci.GLStates.Disable(stAlphaTest);
       end;
       bmTransparency:
       begin
-        rci.GLStates.SetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.Enable(stAlphaTest);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       end;
       bmAdditive:
       begin
-        rci.GLStates.SetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.Enable(stAlphaTest);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
       end;
       bmAlphaTest50:
       begin
-        rci.GLStates.UnSetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.Disable(stBlend);
+        rci.GLStates.Enable(stAlphaTest);
         glAlphaFunc(GL_GEQUAL, 0.5);
       end;
       bmAlphaTest100:
       begin
-        rci.GLStates.UnSetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.Disable(stBlend);
+        rci.GLStates.Enable(stAlphaTest);
         glAlphaFunc(GL_GEQUAL, 1.0);
       end;
       bmModulate:
       begin
-        rci.GLStates.SetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.Enable(stAlphaTest);
         glBlendFunc(GL_DST_COLOR, GL_ZERO);
       end;
       else
@@ -266,7 +265,7 @@ begin
   begin
     if stFog in rci.GLStates.States then
     begin
-      rci.GLStates.UnSetGLState(stFog);
+      rci.GLStates.Disable(stFog);
       Inc(rci.fogDisabledCounter);
     end;
   end;
@@ -546,8 +545,8 @@ begin
     else
     begin
       glDepthFunc(GL_LESS);
-      rci.GLStates.UnSetGLState(stBlend);
-      rci.GLStates.UnSetGLState(stAlphaTest);      
+      rci.GLStates.Disable(stBlend);
+      rci.GLStates.Disable(stAlphaTest);
       FCurrentPass := 0;
     end;
   end;

@@ -9,7 +9,7 @@ uses
    VectorLists, GLBitmapFont, GLContext, GLWindowsFont, GLHUDObjects, GLSkydome,
    GLImposter, GLParticleFX, GLGraphics, PersistentClasses, OpenGL1x, ExtCtrls,
    GLUtils, GLTextureCombiners, XOpenGL, GLHeightTileFileHDS, GLMaterial,
-   GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo;
+   GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo, GLState;
 
 type
    TForm1 = class(TForm)
@@ -474,7 +474,7 @@ begin
    if not Assigned(mirrorTexture) then
       mirrorTexture:=TGLTextureHandle.Create;
 
-   glPushAttrib(GL_ENABLE_BIT);
+   rci.GLStates.PushAttrib([sttEnable]);
    glPushMatrix;
 
    // Mirror coordinates
@@ -485,11 +485,11 @@ begin
    glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
    TGLSceneBuffer(rci.buffer).PushModelViewMatrix(curMat);
 
-   glFrontFace(GL_CW);
+   rci.GLStates.FrontFace := fwClockWise;
 
    glEnable(GL_CLIP_PLANE0);
    SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
-   glClipPlane(GL_CLIP_PLANE0, @clipPlane); 
+   glClipPlane(GL_CLIP_PLANE0, @clipPlane);
 
    cameraPosBackup:=rci.cameraPosition;
    cameraDirectionBackup:=rci.cameraDirection;
@@ -522,9 +522,9 @@ begin
    glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
    GLScene.SetupLights(TGLSceneBuffer(rci.buffer).LimitOf[limLights]);
 
-   glFrontFace(GL_CCW);
+   rci.GLStates.FrontFace := fwCounterClockWise;
    glPopMatrix;
-   glPopAttrib;
+   rci.GLStates.PopAttrib;
    rci.GLStates.ResetGLMaterialColors;
    rci.GLStates.ResetGLCurrentTexture;
 
@@ -576,7 +576,7 @@ begin
                                                      
    tWave:=GLCadencer.CurrentTime*cWaveSpeed;
 
-   glPushAttrib(GL_ENABLE_BIT);
+   rci.GLStates.PushAttrib([sttEnable]);
 
    glMatrixMode(GL_TEXTURE);
 
@@ -659,7 +659,7 @@ begin
 
    glMatrixMode(GL_MODELVIEW);
 
-   glPopAttrib;
+   rci.GLStates.PopAttrib;
 end;
 
 procedure TForm1.DOGLSLWaterPlaneRender(Sender: TObject;
@@ -735,8 +735,8 @@ begin
 
    glDisable(GL_TEXTURE_2D);
 
-   glEnable(GL_DEPTH_TEST);
-   glDisable(GL_STENCIL_TEST);
+   rci.GLStates.Enable(stDepthTest);
+   rci.GLStates.Disable(stStencilTest);
 end;
 
 // SetupReflectionMatrix

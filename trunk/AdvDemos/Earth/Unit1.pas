@@ -22,7 +22,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLObjects, GLWin32Viewer, GLSkydome, GLTexture,
   ExtCtrls, GLCadencer, GLLensFlare, GLTexCombineShader, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo, GLColor;
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo, GLColor,
+  GLState;
 
 type
   TForm1 = class(TForm)
@@ -209,11 +210,11 @@ begin
    GetMem(pVertex, 2*(cSlices+1)*SizeOf(TVector));
    GetMem(pColor, 2*(cSlices+1)*SizeOf(TVector));
 
-   glPushAttrib(GL_ENABLE_BIT);
-   glDepthMask(False);
-   glDisable(GL_LIGHTING);
-   glEnable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   rci.GLStates.PushAttrib([sttEnable]);
+   rci.GLStates.DepthWriteMask := False;
+   rci.GLStates.Disable(stLighting);
+   rci.GLStates.Enable(stBlend);
+   rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
    for i:=0 to 13 do begin
       if i<5 then
          radius:=cPlanetRadius*Sqrt(i*(1/5))
@@ -261,8 +262,8 @@ begin
          glEnd;
       end;
    end;
-   glDepthMask(True);
-   glPopAttrib;
+   rci.GLStates.DepthWriteMask := True;
+   rci.GLStates.PopAttrib;
 
    FreeMem(pVertex);
    FreeMem(pColor);

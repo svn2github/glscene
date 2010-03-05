@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
     <li>08/11/09 - DaStr - Improved FPC compatibility
@@ -54,7 +55,7 @@ uses
   // GLscene
   GLODEManager, ODEGL, ODEImport, VectorGeometry,
   VectorLists, GLScene, GLTerrainRenderer, GLGraph, XCollection,
-  OpenGL1x, GLTexture, GLColor, GLRenderContextInfo;
+  OpenGL1x, GLTexture, GLColor, GLRenderContextInfo, GLState;
 
 type
   TContactPoint = class
@@ -665,14 +666,14 @@ var
   i : Integer;
 begin
   if FRenderContacts and (FContactRenderPoints.Count>0) then begin
-    glPushAttrib(GL_CURRENT_BIT);
+    rci.GLStates.PushAttrib([sttCurrent]);
     glColor3fv(FContactColor.AsAddress);
     glPointSize(FPointSize);
     glBegin(GL_POINTS);
       for i:=0 to FContactRenderPoints.Count-1 do
         glVertex3fv(@FContactRenderPoints.List[i]);
     glEnd;
-    glPopAttrib;
+    rci.GLStates.PopAttrib;
   end;
   FContactRenderPoints.Clear;
 end;

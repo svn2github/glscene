@@ -10,6 +10,7 @@
    or the casters will be rendered incorrectly.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>31/03/07 - DaStr - Fixed issue with invalid typecasting
                             (thanks Burkhard Carstens) (Bugtracker ID = 1692016)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -865,6 +866,7 @@ begin
     end;
 
     // render the shadow volumes
+    ARci.GLStates.PushAttrib(cAllAttribBits);
 
     if Mode = svmAccurate then
     begin
@@ -881,17 +883,19 @@ begin
         end;
       end;
     end;
-
     // render shadow receivers with ambient lighting
-    Self.RenderChildren(0, Count - 1, ARci);
 
+    // DanB - not sure why this doesn't render properly with these statements
+    // where they were originally (after the RenderChildren call).
     ARci.ignoreBlendingRequests := True;
     ARci.ignoreDepthRequests := True;
-    ARci.GLStates.SetGLDepthWriting(False);
-    ARci.GLStates.SetGLState(stDepthTest);
-    ARci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
-    ARci.GLStates.UnSetGLState(stAlphaTest);
-    ARci.GLStates.SetGLState(stStencilTest);
+    Self.RenderChildren(0, Count - 1, ARci);
+
+    ARci.GLStates.DepthWriteMask := False;
+    ARci.GLStates.Enable(stDepthTest);
+    ARci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+    ARci.GLStates.Disable(stAlphaTest);
+    ARci.GLStates.Enable(stStencilTest);
     if GL_ARB_vertex_buffer_object then
     begin
       glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -931,31 +935,31 @@ begin
       if Assigned(pWorldAABB) or (svoScissorClips in Options) then
       begin
         if lightCaster.SetupScissorRect(pWorldAABB, ARci) then
-          ARci.GLStates.SetGLState(stScissorTest)
+          ARci.GLStates.Enable(stScissorTest)
         else
-          ARci.GLStates.UnSetGLState(stScissorTest);
+          ARci.GLStates.Disable(stScissorTest);
       end;
 
       // clear the stencil and prepare for shadow volume pass
       glClear(GL_STENCIL_BUFFER_BIT);
-      glStencilFunc(GL_ALWAYS, 0, 0);
-      ARci.GLStates.SetGLDepthFunction(GL_LESS);
+      ARci.GLStates.SetStencilFunc(cfAlways, 0, 255);
+      ARci.GLStates.DepthFunc := cfLess;
 
       if svoShowVolumes in Options then
       begin
         glColor3f(0.05 * i, 0.1, 0);
-        ARci.GLStates.SetGLState(stBlend);
+        ARci.GLStates.Enable(stBlend);
       end
       else
       begin
         ARci.GLStates.SetGLColorWriting(False);
-        ARci.GLStates.UnSetGLState(stBlend);
+        ARci.GLStates.Disable(stBlend);
       end;
-      ARci.GLStates.SetGLState(stCullFace);
+      ARci.GLStates.Enable(stCullFace);
 
-      ARci.GLStates.UnSetGLState(stLighting);
+      ARci.GLStates.Disable(stLighting);
       glEnableClientState(GL_VERTEX_ARRAY);
-      glPolygonOffset(1, 1);
+      ARci.GLStates.SetPolygonOffset(1, 1);
 
       // for all opaque shadow casters
       for k := 0 to opaques.Count - 1 do
@@ -993,30 +997,30 @@ begin
               if GL_EXT_compiled_vertex_array then
                 glLockArraysEXT(0, sil.Vertices.Count);
 
-              glCullFace(GL_FRONT);
-              glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+              ARci.GLStates.CullFaceMode := cmFront;
+              ARci.GLStates.SetStencilOp(soKeep, soIncr, soKeep);
 
               with sil do
               begin
                 glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
                   Indices.List);
-                glEnable(GL_POLYGON_OFFSET_FILL);
+                ARci.GLStates.Enable(stPolygonOffsetFill);
                 glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT,
                   CapIndices.List);
-                glDisable(GL_POLYGON_OFFSET_FILL);
+                ARci.GLStates.Disable(stPolygonOffsetFill);
               end;
 
-              glCullFace(GL_BACK);
-              glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+              ARci.GLStates.CullFaceMode := cmBack;
+              ARci.GLStates.SetStencilOp(soKeep, soDecr, soKeep);
 
               with sil do
               begin
                 glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
                   Indices.List);
-                glEnable(GL_POLYGON_OFFSET_FILL);
+                ARci.GLStates.Enable(stPolygonOffsetFill);
                 glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT,
                   CapIndices.List);
-                glDisable(GL_POLYGON_OFFSET_FILL);
+                ARci.GLStates.Disable(stPolygonOffsetFill);
               end;
 
               if GL_EXT_compiled_vertex_array then
@@ -1025,14 +1029,14 @@ begin
             else
             begin
               // z-pass
-              glCullFace(GL_BACK);
-              glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+              ARci.GLStates.CullFaceMode := cmBack;
+              ARci.GLStates.SetStencilOp(soKeep, soKeep, soIncr);
 
               glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
                 sil.Indices.List);
 
-              glCullFace(GL_FRONT);
-              glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+              ARci.GLStates.CullFaceMode := cmFront;
+              ARci.GLStates.SetStencilOp(soKeep, soKeep, soDecr);
 
               glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
                 sil.Indices.List);
@@ -1057,25 +1061,25 @@ begin
       glLightfv(lightID, GL_SPECULAR, lightSource.Specular.AsAddress);
 
       ARci.GLStates.SetGLColorWriting(True);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+      Arci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
 
-      ARci.GLStates.SetGLState(stBlend);
+      ARci.GLStates.Enable(stBlend);
 
-      glCullFace(GL_BACK);
+      Arci.GLStates.CullFaceMode := cmBack;
 
       if Mode = svmAccurate then
       begin
-        glStencilFunc(GL_EQUAL, 0, 255);
-        ARci.GLStates.SetGLDepthFunction(GL_EQUAL);
-
-        Self.RenderChildren(0, Count - 1, ARci)
+        Arci.GLStates.SetStencilFunc(cfEqual, 0, 255);
+        ARci.GLStates.DepthFunc := cfEqual;
+  {removed?}  //glEnable(GL_LIGHTING);
+        Self.RenderChildren(0, Count - 1, ARci);
       end
       else
       begin
-        glStencilFunc(GL_NOTEQUAL, 0, 255);
+        ARci.GLStates.SetStencilFunc(cfNotEqual, 0, 255);
 
-        ARci.GLStates.SetGLDepthFunction(GL_ALWAYS);
-        ARci.GLStates.SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        ARci.GLStates.DepthFunc := cfAlways;
+        ARci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
         glPushMatrix;
         glLoadIdentity;
@@ -1095,6 +1099,8 @@ begin
         glPopMatrix;
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix;
+
+        Arci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
 
       // disable light, but restore its ambient component
@@ -1103,15 +1109,8 @@ begin
     end;
 
     // restore OpenGL state
-    for i := 0 to TGLScene(ARci.scene).Lights.Count - 1 do
-    begin
-      lightSource := TGLScene(ARci.scene).Lights.Items[i] as TGLLightSource;
-      if Assigned(lightSource) and lightSource.Shining then
-        glEnable(lightSource.LightID);
-    end;
-    ARci.GLStates.UnSetGLState(stStencilTest);
-    ARci.GLStates.UnSetGLState(stScissorTest);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
+    ARci.GLStates.PopAttrib;
+
     ARci.ignoreBlendingRequests := False;
     ARci.ignoreDepthRequests := False;
   finally

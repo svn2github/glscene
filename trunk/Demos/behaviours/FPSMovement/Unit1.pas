@@ -21,7 +21,8 @@ uses
   Dialogs, GLVectorFileObjects, GLScene, GLTexture, ExtCtrls, GLCadencer,
   GLWin32Viewer, StdCtrls, GLObjects, jpeg, GLCollision,
   GLNavigator, VectorLists, Octree, GLFile3DS, vectorGeometry, OpenGL1X,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLState;
 
 type
   TForm1 = class(TForm)

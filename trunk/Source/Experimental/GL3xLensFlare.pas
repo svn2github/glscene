@@ -330,8 +330,8 @@ begin
   with rci.GLStates do
   begin
     SetGLColorWriting(True);
-    UnSetGLState(stDepthTest);
-    UnSetGLState(stCullFace);
+    Disable(stDepthTest);
+    Disable(stCullFace);
     SetGLState(stBlend);
     SetGLDepthWriting(False);
     SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
@@ -805,12 +805,12 @@ begin
   with rci.GLStates do
   begin
     SetGLState(stBlend);
-    UnSetGLState(stDepthTest);
+    Disable(stDepthTest);
     SetGLDepthWriting(False);
     SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     SetGLLineWidth(1);
-    UnSetGLState(stLineSmooth);
+    Disable(stLineSmooth);
   end;
   glClearColor(0, 0, 0, 0);
   glClear(GL_COLOR_BUFFER_BIT);

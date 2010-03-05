@@ -106,7 +106,6 @@ object Form1: TForm1
       Material.FrontProperties.Specular.Color = {9A99593F9A99593FCDCCCC3D0000803F}
       Scale.Coordinates = {00002042000020420000204200000000}
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
-      MaterialLibrary = GLMaterialLibrary1
     end
     object GLFreeForm2: TGLFreeForm
       Material.FrontProperties.Ambient.Color = {029F1F3FBEBEBE3E999F1F3F0000803F}

@@ -6,7 +6,7 @@ unit UABConditions;
 interface
 
 uses Classes, UAirBlastEngine, UGameEngine, UABEvents, PersistentClasses,
-     VectorGeometry, GLMaterial;
+     VectorGeometry, GLMaterial, GLState;
 
 type
 

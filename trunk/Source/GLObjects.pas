@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
                            Now use Material.DepthProperties
       <li>28/12/09 - DanB - Modifying TGLLineBase.LineColor now calls StructureChanged
@@ -543,9 +544,9 @@ type
     {: Setup OpenGL states according to line style.<p>
        You must call RestoreLineStyle after drawing your lines.<p>
        You may use nested calls with SetupLineStyle/RestoreLineStyle. }
-    procedure SetupLineStyle;
+    procedure SetupLineStyle(var rci: TRenderContextInfo);
     {: Restore OpenGL states, must follow a SetupLineStyle }
-    procedure RestoreLineStyle;
+    procedure RestoreLineStyle(var rci: TRenderContextInfo);
 
   public
     { Public Declarations }
@@ -917,23 +918,22 @@ procedure CubeWireframeBuildList(var rci: TRenderContextInfo;
 var
   mi, ma: Single;
 begin
-  glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT
-    or GL_COLOR_BUFFER_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_LINE_SMOOTH);
+  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLighting, sttLine, sttColorBuffer]);
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stLineSmooth);
   if stipple then
   begin
-    glEnable(GL_LINE_STIPPLE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    rci.GLStates.Enable(stLineStipple);
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     glLineStipple(1, $CCCC);
   end;
-  glLineWidth(1);
+  rci.GLStates.LineWidth := 1;
   ma := 0.5 * size;
   mi := -ma;
   rci.GLStates.ResetGLMaterialColors;
   glColorMaterial(GL_FRONT, GL_EMISSION);
-  glEnable(GL_COLOR_MATERIAL);
+  rci.GLStates.Enable(stColorMaterial);
   glColor4fv(@color);
   glBegin(GL_LINE_STRIP);
   // front face
@@ -961,7 +961,7 @@ begin
   glVertex3f(ma, mi, ma);
   glVertex3f(mi, mi, ma);
   glEnd;
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 // DodecahedronBuildList
@@ -2063,8 +2063,8 @@ begin
     glColorPointer(4, GL_FLOAT, 0, FColors.List);
     glEnableClientState(GL_COLOR_ARRAY);
   end;
-  glPushAttrib(GL_ENABLE_BIT and GL_COLOR_BUFFER_BIT and GL_DEPTH_BUFFER_BIT);
-  glDisable(GL_LIGHTING);
+  rci.GLStates.PushAttrib([sttEnable, sttColorBuffer, sttDepthBuffer]);
+  rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
@@ -2075,8 +2075,8 @@ begin
     glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
   glEnableClientState(GL_VERTEX_ARRAY);
   if NoZWrite then
-    glDepthMask(False);
-  glPointSize(FSize);
+    rci.GLStates.DepthWriteMask := false;
+  rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
   if GL_EXT_compiled_vertex_array and (n > 64) then
     glLockArraysEXT(0, n);
@@ -2084,35 +2084,35 @@ begin
     psSquare:
       begin
         // square point (simplest method, fastest)
-        glDisable(GL_BLEND);
+        rci.GLStates.Disable(stBlend);
       end;
     psRound:
       begin
-        glEnable(GL_POINT_SMOOTH);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER, 0.5);
-        glDisable(GL_BLEND);
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfGreater, 0.5);
+        rci.GLStates.Disable(stBlend);
       end;
     psSmooth:
       begin
-        glEnable(GL_POINT_SMOOTH);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_NOTEQUAL, 0.0);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
     psSmoothAdditive:
       begin
-        glEnable(GL_POINT_SMOOTH);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_NOTEQUAL, 0.0);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
     psSquareAdditive:
       begin
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
   else
     Assert(False);
@@ -2124,7 +2124,7 @@ begin
   glDisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
     glDisableClientState(GL_COLOR_ARRAY);
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 // StoreSize
@@ -2317,48 +2317,48 @@ end;
 // SetupLineStyle
 //
 
-procedure TGLLineBase.SetupLineStyle;
+procedure TGLLineBase.SetupLineStyle(var rci: TRenderContextInfo);
 begin
-  glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or
-    GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-  glDisable(GL_LIGHTING);
+  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer,
+    sttDepthBuffer]);
+  rci.GLStates.Disable(stLighting);
   if FLinePattern <> $FFFF then
   begin
-    glEnable(GL_LINE_STIPPLE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    rci.GLStates.Enable(stLineStipple);
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     glLineStipple(1, FLinePattern);
   end;
   if FAntiAliased then
   begin
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    rci.GLStates.Enable(stLineSmooth);
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
   end
   else
-    glDisable(GL_LINE_SMOOTH);
-  glLineWidth(FLineWidth);
+    rci.GLStates.Disable(stLineSmooth);
+  rci.GLStates.LineWidth := FLineWidth;
   if FLineColor.Alpha <> 1 then
   begin
     if not FAntiAliased then
     begin
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      rci.GLStates.Enable(stBlend);
+      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     end;
     glColor4fv(FLineColor.AsAddress);
   end
   else
     glColor3fv(FLineColor.AsAddress);
-  glDepthMask(True);
-  glDepthFunc(GL_LESS);
+  rci.GLStates.DepthWriteMask := True;
+  rci.GLStates.DepthFunc := cfLess;
 end;
 
 // RestoreLineStyle
 //
 
-procedure TGLLineBase.RestoreLineStyle;
+procedure TGLLineBase.RestoreLineStyle(var rci: TRenderContextInfo);
 begin
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 // ------------------
@@ -2570,14 +2570,14 @@ begin
         begin
           glPushMatrix;
           glScalef(FNodeSize, FNodeSize, FNodeSize);
-          rci.GLStates.SetGLMaterialColors(GL_FRONT, clrBlack, clrGray20,
+          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
           glPopMatrix;
         end
         else
         begin
-          rci.GLStates.SetGLMaterialColors(GL_FRONT, clrBlack, clrGray20,
+          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
         end;
@@ -2769,9 +2769,9 @@ begin
   if Nodes.Count > 1 then
   begin
     // first, we setup the line color & stippling styles
-    SetupLineStyle;
+    SetupLineStyle(rci);
     if rci.bufferDepthTest then
-      glEnable(GL_DEPTH_TEST);
+      rci.GLStates.Enable(stDepthTest);
     // Set up the control point buffer for Bezier splines and NURBS curves.
     // If required this could be optimized by storing a cached node buffer.
     if (FSplineMode = lsmBezierSpline) or (FSplineMode = lsmNURBSCurve) then
@@ -2789,7 +2789,7 @@ begin
     if FSplineMode = lsmBezierSpline then
     begin
       // map evaluator
-      glPushAttrib(GL_EVAL_BIT);
+      rci.GLStates.PushAttrib([sttEval]);
       glEnable(GL_MAP1_VERTEX_3);
       glEnable(GL_MAP1_COLOR_4);
 
@@ -2887,22 +2887,22 @@ begin
     end;
 
     if FSplineMode = lsmBezierSpline then
-      glPopAttrib;
+      rci.GLStates.PopAttrib;
     if Length(nodeBuffer) > 0 then
     begin
       SetLength(nodeBuffer, 0);
       SetLength(colorBuffer, 0);
     end;
 
-    RestoreLineStyle;
+    RestoreLineStyle(rci);
 
     if FNodesAspect <> lnaInvisible then
     begin
-      glPushAttrib(GL_ENABLE_BIT);
+      rci.GLStates.PushAttrib([sttEnable]);
       if not rci.ignoreBlendingRequests then
       begin
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
       glDisable(GL_TEXTURE_2D);
       if GL_ARB_texture_cube_map then
@@ -2910,7 +2910,7 @@ begin
       for i := 0 to Nodes.Count - 1 do
         with TGLLinesNode(Nodes[i]) do
           DrawNode(rci, X, Y, Z, Color);
-      glPopAttrib;
+      rci.GLStates.PopAttrib;
     end;
   end;
 end;
@@ -3384,7 +3384,7 @@ var
   DoReverse: Boolean;
 begin
   DoReverse := (FNormalDirection = ndInside);
-  glPushAttrib(GL_POLYGON_BIT);
+  rci.GLStates.PushAttrib([sttPolygon]);
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
 
@@ -3535,7 +3535,7 @@ begin
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
   glPopMatrix;
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 // RayCastIntersect

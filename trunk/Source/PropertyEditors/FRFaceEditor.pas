@@ -19,7 +19,7 @@ interface
 
 uses
   Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
-  Classes, GLTexture, GLMaterial;
+  Classes, GLTexture, GLMaterial, GLState;
 
 type
   TRFaceEditor = class(TFrame)

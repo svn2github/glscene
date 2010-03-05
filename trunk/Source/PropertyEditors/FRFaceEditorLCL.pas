@@ -16,7 +16,7 @@ uses
     lresources,
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}  Forms, ComCtrls, FRTrackBarEditLCL,
   StdCtrls, FRColorEditorLCL, ImgList, Controls,  Classes,
-  GLTexture, GLMaterial;
+  GLTexture, GLMaterial, GLState;
 
 type
   TRFaceEditor = class(TFrame)

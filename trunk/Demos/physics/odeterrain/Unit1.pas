@@ -8,7 +8,7 @@ uses
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLODEManager,
   GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses;
+  GLMaterial, GLCoordinates, BaseClasses, GLState;
 
 type
   TForm1 = class(TForm)
