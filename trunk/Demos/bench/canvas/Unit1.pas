@@ -68,7 +68,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLCanvas, OpenGL1x;
+uses GLCanvas;
 
 type
    TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut);

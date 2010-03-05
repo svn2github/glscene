@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, OpenGL1x,
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
   GLGraph, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 

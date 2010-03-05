@@ -20,7 +20,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLVectorFileObjects, GLScene, GLTexture, ExtCtrls, GLCadencer,
   GLWin32Viewer, StdCtrls, GLObjects, jpeg, GLCollision,
-  GLNavigator, VectorLists, Octree, GLFile3DS, vectorGeometry, OpenGL1X,
+  GLNavigator, VectorLists, Octree, GLFile3DS, VectorGeometry,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
   GLState;
 
