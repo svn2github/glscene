@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLTeapot, GLObjects, GLWin32Viewer, OpenGL1x,
+  Dialogs, GLScene, GLTeapot, GLObjects, GLWin32Viewer,
   VectorGeometry, GLTexture, GLCadencer, GLImposter, StdCtrls, ExtCtrls, GLSkydome,
   GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo;
 

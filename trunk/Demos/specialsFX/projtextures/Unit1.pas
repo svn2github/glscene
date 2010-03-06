@@ -33,7 +33,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLWin32Viewer, glTexture, tga, GLObjects,
-  glShadowVolume, vectorgeometry, opengl1x, ExtCtrls, glProjectedTextures,
+  VectorGeometry, ExtCtrls, glProjectedTextures,
   GLHUDObjects, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type

@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls,jpeg, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
-  GLzBuffer, OpenGL1x, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
+  GLzBuffer, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
   GLBehaviours;
 
