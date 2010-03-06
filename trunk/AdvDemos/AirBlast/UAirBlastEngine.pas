@@ -8,7 +8,8 @@ interface
 uses Classes, UGameEngine, UAirplane, GLScene, VectorGeometry, GLVectorFileObjects,
    PersistentClasses, GLParticleFX, GLPerlinPFX, GLCadencer, GLTexture, GLCanvas,
    GLTerrainRenderer, GLSound, UABVoice, GLObjects, GLScreen, GLContext, Graphics,
-   GLWindowsFont, FMod, FModTypes, GLRenderContextInfo, GLMaterial, GLColor;
+   GLWindowsFont, FMod, FModTypes, GLRenderContextInfo, GLMaterial, GLColor,
+   GLState;
 
 type
 
@@ -1349,6 +1350,7 @@ var
    sl : TStringList;
    f : Single;
    textRect : TGLRect;
+   scissorRect: TRectangle;
    buf : String;
    pMess : PGameMessage;
    color : TColor;
@@ -1368,9 +1370,13 @@ begin
       canvas.StopPrimitive;
 
       f:=TGLSceneBuffer(rci.buffer).Width/canvas.CanvasSizeX;
-      glScissor(Round((textRect.Left+3)*f), 0,
-                Round((textRect.Right-textRect.Left-6)*f), TGLSceneBuffer(rci.buffer).Height);
-      glEnable(GL_SCISSOR_TEST);
+      scissorRect.Left := Round((textRect.Left+3)*f);
+      scissorRect.Top := 0;
+      scissorRect.Width := Round((textRect.Right-textRect.Left-6)*f);
+      scissorRect.Height := TGLSceneBuffer(rci.buffer).Height;
+
+      rci.GLStates.ScissorBox := scissorRect;
+      rci.GLStates.Enable(stScissorTest);
 
       //canvas.PenColor:=clYellow; canvas.FillRect(0, 0, 1024, 768); canvas.StopPrimitive;
 
@@ -1386,7 +1392,7 @@ begin
          ABEngine.SmallFont.TextOut(rci, 15, 15+i*h, buf, color);
       end;
 
-      glDisable(GL_SCISSOR_TEST);
+      rci.GLStates.Disable(stScissorTest);
    end;
    sl.Free;
 end;
