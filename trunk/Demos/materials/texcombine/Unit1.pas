@@ -19,7 +19,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLTexture, GLObjects, StdCtrls, jpeg, ExtCtrls,
-  GLWin32Viewer, OpenGL1x, GLTexCombineShader, GLHUDObjects, GLMaterial,
+  GLWin32Viewer, GLTexCombineShader, GLHUDObjects, GLMaterial,
   GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
