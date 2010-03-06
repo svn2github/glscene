@@ -62,7 +62,8 @@ type
     stLogicOp, stNormalize, stPointSmooth, stPointSprite, stPolygonSmooth,
     stPolygonStipple, stScissorTest, stStencilTest,
     stTexture1D, stTexture2D, stTextureCubeMap, stTextureRect,
-    stTexture3D, stPolygonOffsetPoint, stPolygonOffsetLine, stPolygonOffsetFill);
+    stTexture3D, stPolygonOffsetPoint, stPolygonOffsetLine, stPolygonOffsetFill,
+    stDepthClamp);
 
   TGLStates = set of TGLState;
 
@@ -130,7 +131,7 @@ type
     FStates: TGLStates;
     FTextureHandle: array[0..7] of Integer;
     FTextureMatrixIsIdentity: Boolean;
-    FIgnoreDeprecation: Boolean;
+    FForwardContext: Boolean;
 
     // Vertex Array Data state
     FArrayBufferBinding: TGLuint;
@@ -786,8 +787,8 @@ type
     property States: TGLStates read FStates;
 
     {: True for ignore deprecated and removed features in OpenGL 3x }
-    property IgnoreDeprecation: Boolean read FIgnoreDeprecation
-      write FIgnoreDeprecation;
+    property ForwardContext: Boolean read FForwardContext
+      write FForwardContext;
   end;
 
 type
@@ -834,7 +835,8 @@ const
     (GLConst: GL_TEXTURE_3D; GLDeprecated: True),
     (GLConst: GL_POLYGON_OFFSET_POINT; GLDeprecated: False),
     (GLConst: GL_POLYGON_OFFSET_LINE; GLDeprecated: False),
-    (GLConst: GL_POLYGON_OFFSET_FILL; GLDeprecated: False)
+    (GLConst: GL_POLYGON_OFFSET_FILL; GLDeprecated: False),
+    (GLConst: GL_DEPTH_CLAMP; GLDeprecated: False)    
     );
 
   cGLTexTypeToGLEnum: array[TTextureTarget] of TGLenum =
@@ -897,9 +899,6 @@ implementation
   // ------------------ TGLStateCache ------------------
   // ------------------
 
-  // Create
-  //
-
 procedure TGLStateCache.BeginQuery(const Target: TQueryType; const Value: TGLuint);
 begin
   Assert(FCurrentQuery[Target]=0, 'Can only have one query (of each type)'+
@@ -912,13 +911,16 @@ begin
   end;
 end;
 
+// Create
+//
+
 constructor TGLStateCache.Create;
 var
   I: Integer;
 begin
   inherited;
   FTextureMatrixIsIdentity := True;
-  FIgnoreDeprecation := False;
+  FForwardContext := False;
 
   // Vertex Array Data state
   FArrayBufferBinding := 0;
@@ -1093,7 +1095,7 @@ end;
 
 procedure TGLStateCache.Enable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FIgnoreDeprecation then
+  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
  // if not (aState in FStates) then
   begin
@@ -1107,7 +1109,7 @@ end;
 
 procedure TGLStateCache.Disable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FIgnoreDeprecation then
+  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
  // if (aState in FStates) then
   begin
@@ -1121,7 +1123,7 @@ end;
 
 procedure TGLStateCache.PerformEnable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FIgnoreDeprecation then
+  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Include(FStates, aState);
   glEnable(cGLStateToGLEnum[aState].GLConst);
@@ -1132,7 +1134,7 @@ end;
 
 procedure TGLStateCache.PerformDisable(const aState: TGLState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FIgnoreDeprecation then
+  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Exclude(FStates, aState);
   glDisable(cGLStateToGLEnum[aState].GLConst);
@@ -1210,7 +1212,7 @@ var
   i: Integer;
   currentFace: TGLenum;
 begin
-  if FIgnoreDeprecation then
+  if FForwardContext then
     exit;
   Assert((aFace=cmFront)or(aFace=cmBack), 'Only cmFront or cmBack supported');
   i := Integer(aFace);
@@ -1251,7 +1253,7 @@ procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: TGLEnum; const
 var
   i: Integer;
 begin
-  if FIgnoreDeprecation then
+  if FForwardContext then
     exit;
   i := aFace - GL_FRONT;
   if FFrontBackColors[i][2][3] <> alpha then
@@ -1674,7 +1676,7 @@ end;
 procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction;
   ref: TGLclampf);
 begin
-  if FIgnoreDeprecation then
+  if FForwardContext then
     exit;
 //  if (FAlphaFunc <> func) or (FAlphaRef <> ref) then
   begin
@@ -1791,7 +1793,7 @@ end;
 
 procedure TGLStateCache.SetGLTextureMatrix(const matrix: TMatrix);
 begin
-  if FIgnoreDeprecation then
+  if FForwardContext then
     exit;
   FTextureMatrixIsIdentity := False;
   glMatrixMode(GL_TEXTURE);
@@ -2341,7 +2343,7 @@ end;
 
 procedure TGLStateCache.ResetGLTextureMatrix;
 begin
-  if FIgnoreDeprecation then
+  if FForwardContext then
     exit;
   if not FTextureMatrixIsIdentity then
   begin
