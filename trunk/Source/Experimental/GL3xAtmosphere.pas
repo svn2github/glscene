@@ -434,8 +434,8 @@ begin
             ObjectStyle := ObjectStyle - [osBuiltStage];
           end
           else begin
-            ARci.GLStates.SetGLDepthWriting(False);
-            ARci.GLStates.SetGLState(stBlend);
+            ARci.GLStates.EnableDepthTest := False;
+            ARci.GLStates.Enable(stBlend);
             EnableGLBlendingMode(ARci);
             FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
           end;
@@ -594,10 +594,10 @@ procedure TGL3xCustomAtmosphere.EnableGLBlendingMode(
 begin
   with rci.GLStates do
     case FBlendingMode of
-      abmOneMinusDstColor: SetGLBlendFuncion(GL_DST_ALPHA,
-        GL_ONE_MINUS_DST_COLOR);
-      abmOneMinusSrcAlpha: SetGLBlendFuncion(GL_DST_ALPHA,
-        GL_ONE_MINUS_SRC_ALPHA);
+      abmOneMinusDstColor: SetBlendFunc(bfDstAlpha,
+        bfOneMinusDstColor);
+      abmOneMinusSrcAlpha: SetBlendFunc(bfDstAlpha,
+        bfOneMinusSrcAlpha);
     else
       Assert(False, glsErrorEx + glsUnknownType);
     end;

@@ -332,9 +332,9 @@ begin
     SetGLColorWriting(True);
     Disable(stDepthTest);
     Disable(stCullFace);
-    SetGLState(stBlend);
-    SetGLDepthWriting(False);
-    SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
+    Enable(stBlend);
+    DepthWriteMask := False;
+    SetBlendFunc(bfSrcAlpha, bfOne);
   end;
 end;
 
@@ -486,8 +486,8 @@ begin
             FlareIsNotOccluded := True;
 
             ARci.GLStates.SetGLColorWriting(False);
-            ARci.GLStates.SetGLDepthWriting(False);
-            ARci.GLStates.SetGLState(stDepthTest);
+            ARci.GLStates.DepthWriteMask := False;
+            ARci.GLStates.Enable(stDepthTest);
 
             usedOcclusionQuery := TGLOcclusionQueryHandle.IsSupported;
             if usedOcclusionQuery then
@@ -516,7 +516,7 @@ begin
               // occlusion_test, stalls rendering a bit
               glEnable(GL_OCCLUSION_TEST_HP);
             end;
-            ARci.GLStates.SetGLDepthFunction(GL_LEQUAL);
+            ARci.GLStates.DepthFunc := cfLequal;
             GradientProgram.UniformMatrix4fv['ProjectionMatrix'] := projMatrix;
             with DynamicVBOManager do
             begin
@@ -532,7 +532,7 @@ begin
               EndPrimitives;
               EndObject;
             end;
-            ARci.GLStates.SetGLDepthFunction(GL_LESS);
+            ARci.GLStates.DepthFunc := cfLess;
 
             if usedOcclusionQuery then
               FOcclusionQuery.EndQuery
@@ -543,7 +543,7 @@ begin
             end;
 
             ARci.GLStates.SetGLColorWriting(True);
-            ARci.GLStates.SetGLDepthWriting(True);
+            ARci.GLStates.DepthWriteMask := True;
           end
           else
           begin
@@ -572,12 +572,12 @@ begin
           // Streaks
           if feStreaks in Elements then
           begin
-            ARci.GLStates.SetGLState(stLineSmooth);
+            ARci.GLStates.Enable(stLineSmooth);
             if GL_VERSION_3_2 then
               lw := StreakWidth
             else
               lw := StreakWidth*10;
-            ARci.GLStates.SetGLLineWidth(lw);
+            ARci.GLStates.LineWidth := lw;
             StaticVBOManager.RenderClient(FBuiltPropertiesStreaks, ARci);
           end;
 
@@ -586,11 +586,10 @@ begin
           begin
             RaysProgram.UseProgramObject;
             RaysProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
-            ARci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D,
-              FRaysTexture.Handle);
-            ARci.GLStates.SetGLState(stTexture2D);
-            glActiveTexture(GL_TEXTURE0);
-            RaysProgram.Uniform1i[uniformNameTexUnit0] := 0;
+            ARci.GLStates.Enable(stTexture2D);
+            with FRaysTexture do
+              RaysProgram.UniformTextureHandle[uniformNameTexUnit0, 0,
+                Image.NativeTextureTarget] := Handle;
             StaticVBOManager.RenderClient(FBuiltPropertiesRays, ARci);
           end;
 
@@ -804,12 +803,11 @@ begin
   glViewport(0, 0, 2*FSize, 2*FSize);
   with rci.GLStates do
   begin
-    SetGLState(stBlend);
+    Enable(stBlend);
     Disable(stDepthTest);
-    SetGLDepthWriting(False);
-    SetGLBlendFuncion(GL_SRC_ALPHA, GL_ONE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    SetGLLineWidth(1);
+    DepthWriteMask := False;
+    SetBlendFunc(bfSrcAlpha, bfOne);
+    LineWidth := 1;
     Disable(stLineSmooth);
   end;
   glClearColor(0, 0, 0, 0);
