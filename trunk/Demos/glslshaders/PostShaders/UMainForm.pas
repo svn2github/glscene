@@ -19,7 +19,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
-  Opengl1x, GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
+  GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
   // GlScene shaders

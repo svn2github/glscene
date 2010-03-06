@@ -21,7 +21,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
-  Opengl1x, GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
+  GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
 
