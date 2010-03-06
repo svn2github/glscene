@@ -22,7 +22,8 @@ uses
   OpenGL1x, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
   GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
   GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo,
+  GLState;
 
 type
   TfrmClothify = class(TForm)
@@ -509,7 +510,7 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderC
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
     glColor3f(r,g,b);
-    glLineWidth(w);
+    rci.GLStates.LineWidth := w;
 
     glBegin(GL_LINE_STRIP);
       glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
@@ -560,11 +561,11 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderC
 begin
   if CheckBox_ShowOctree.Checked and (VerletWorld.SpacePartition is TOctreeSpacePartition) then
   begin
-    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
-    glDisable(GL_LIGHTING);
+    rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer]);
+    rci.GLStates.Disable(stLighting);
 
     RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition).RootNode);
-    glPopAttrib;
+    rci.GLStates.PopAttrib;
   end;
 end;
 
