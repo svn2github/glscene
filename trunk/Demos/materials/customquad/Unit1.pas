@@ -15,7 +15,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCoordinates, BaseClasses, GLRenderContextInfo, GLState;
 
 type
   TForm1 = class(TForm)
@@ -61,7 +61,7 @@ var
    material : TGLLibMaterial;
 begin
    // disable face culling
-   glDisable(GL_CULL_FACE);
+   rci.GLStates.Disable(stCullFace);
    // 1st quad, textured with 'wood', using standard method
    GLMaterialLibrary.ApplyMaterial('wood', rci);
    glBegin(GL_QUADS);
@@ -80,11 +80,11 @@ begin
       glTexCoord2f(0, 1);  glVertex3f(0.5, -0.5, -0.5);
       glTexCoord2f(0, 0);  glVertex3f(0.5, 0, 0.5);
       glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
-      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5); 
+      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5);
    glEnd;
    material.Material.UnApply(rci);
    // enable face culling again
-   glEnable(GL_CULL_FACE);
+   rci.GLStates.Enable(stCullFace);
 end;
 
 end.
