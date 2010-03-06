@@ -19,8 +19,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLGeomObjects, GLObjects, GLCadencer, GLWin32Viewer, GLTexture, opengl1x,
-  StdCtrls, ExtCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  Dialogs, GLScene, GLGeomObjects, GLObjects, GLCadencer, GLWin32Viewer,
+  StdCtrls, ExtCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo, GLContext;
 
 type
   TForm1 = class(TForm)
@@ -59,23 +59,16 @@ type
     { Public declarations }
   end;
 
-const
-  NUM_QUERIES = 2;
-
 var
   Form1: TForm1;
-  queries: array[0..NUM_QUERIES-1] of TGLuint;
+  TimerQuery: TGLTimerQueryHandle;
+  OcclusionQuery: TGLOcclusionQueryHandle;
+
   queriesCreated: boolean;
-  available:TGLint;
+  timerQuerySupported: Boolean;
 
-  // (can use TGLuint64EXT if using Delphi 7+, and require time queries > approx. 4 seconds)
-  // since time is measured in nanoseconds (1E-9 s), a 32bit TGLuint can only measure
-  // up to 4.3 seconds before it overflows
-  //  (2^32)*(1E-9) = 4.2949....
-
-  //timeTaken: TGLuint64EXT;
-  timeTaken: TGLuint;
-  samplesPassed: TGLint;
+  timeTaken: Integer;  // in nanoseconds
+  samplesPassed: Integer;
 
 implementation
 
@@ -87,9 +80,10 @@ begin
   // To use them, you'd need to check if GL_NV_occlusion_query or GL_ARB_occlusion_query
   // extensions are present, and makes the appropriate calls to the functions/procedures
   // they provide.
-  if (not GL_VERSION_1_5) then
+  if (not TGLOcclusionQueryHandle.IsSupported) then
   begin
-    Messagedlg('Requires at least OpenGL version 1.5 to run', mtError, [mbOK],0);
+    Messagedlg('Requires hardware that supports occlusion queries to run',
+      mtError, [mbOK],0);
     Application.Terminate;
   end;
 end;
@@ -97,7 +91,8 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   // Delete the queries
-  glDeleteQueries(NUM_QUERIES,@queries);
+  TimerQuery.Free;
+  OcclusionQuery.Free;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -116,40 +111,46 @@ begin
   // Generate the queries, if not already created
   if not queriesCreated then
   begin
-    glGenQueries(NUM_QUERIES,@queries);
+    OcclusionQuery := TGLOcclusionQueryHandle.CreateAndAllocate();
+    timerQuerySupported := TGLTimerQueryHandle.IsSupported;
+    if timerQuerySupported then
+      TimerQuery := TGLTimerQueryHandle.CreateAndAllocate();
     queriesCreated := true;
   end;
   // Begin the timer + occlusion queries
-  if GL_EXT_timer_query then
-    glBeginQuery(GL_TIME_ELAPSED_EXT, queries[0]);
-  glBeginQuery(GL_SAMPLES_PASSED, queries[1]);
+
+  if timerQuerySupported then
+    TimerQuery.BeginQuery;
+  OcclusionQuery.BeginQuery;
 end;
 
 procedure TForm1.OGLEndQueriesRender(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
   // End the timer + occlusion queries
-  glEndQuery(GL_SAMPLES_PASSED);
-  if GL_EXT_timer_query then
-    glEndQuery(GL_TIME_ELAPSED_EXT);
+  OcclusionQuery.EndQuery;
+  if timerQuerySupported then
+    TimerQuery.EndQuery;
 
   // Most of the frame rate is lost waiting for results to become available
   //  + updating the captions every frame, but as this is a demo, we want to
   // see what is going on.
 
-  available:=0;
-  while available=0 do
-    glGetQueryObjectiv(queries[1], GL_QUERY_RESULT_AVAILABLE, @available);
-  glGetQueryObjectiv(queries[1], GL_QUERY_RESULT, @samplesPassed);
+  while not OcclusionQuery.IsResultAvailable do
+   { wait }; // would normally do something in this period before checking if
+             // result is available
 
-  if GL_EXT_timer_query then
+  samplesPassed := OcclusionQuery.PixelCount;
+
+  if timerQuerySupported then
   begin
-    available:=0;
-    while available=0 do
-      glGetQueryObjectiv(queries[0], GL_QUERY_RESULT_AVAILABLE, @available);
-    glGetQueryObjectiv(queries[0], GL_QUERY_RESULT, @timeTaken);
-  // Use this line instead of the one above to use 64 bit timer (requires Delphi 7+)
-//  glGetQueryObjectui64vEXT(queries[0], GL_QUERY_RESULT, @timeTaken);
+    while not TimerQuery.IsResultAvailable do
+     { wait }; // would normally do something in this period before checking if
+               // result is available
+    timeTaken := TimerQuery.Time;
+    // Use this line instead of the one above to use 64 bit timer, to allow
+    // recording time periods more than a couple of seconds (requires Delphi 7+)
+    // timeTaken := TimerQuery.QueryResultUInt64;
   end;
 
   label2.caption:='Number of test pixels visible: ' + IntToStr(samplesPassed);
@@ -162,10 +163,10 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   // Convert time taken from ns => ms & display
-  if GL_EXT_timer_query then
+  if timerQuerySupported then
     label1.caption:='Time taken: '+ FloatToSTr(timeTaken/1000000) +' ms'
   else
-    label1.Caption:='Time query unavailable, requires GL_EXT_timer_query';
+    label1.Caption:='Time query unavailable, requires hardware support';
 
   caption := GLSceneViewer1.FramesPerSecondText(0);
   GLSceneViewer1.ResetPerformanceMonitor;
