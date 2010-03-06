@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData,
   GLCadencer, StdCtrls, GLTexture, GLSkydome, GLWin32Viewer, VectorGeometry,
-  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, OpenGL1x, ExtCtrls,
+  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, ExtCtrls,
   ComCtrls, GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses, GLState;
 
 type
