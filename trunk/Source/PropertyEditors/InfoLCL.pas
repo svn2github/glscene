@@ -146,6 +146,7 @@ var
 {$IFDEF MSWINDOWS}
    pfd            : TPixelformatDescriptor;
    pixelFormat    : Integer;
+   dc             : HDC;
 {$ENDIF}
    i              : Integer;
    ExtStr         : String;
@@ -157,13 +158,15 @@ var
 
 begin
 	Caption:=Caption+' (current context in '+(aSceneBuffer.Owner as TComponent).Name+')';
+        aSceneBuffer.RenderingContext.Activate;
 	with aSceneBuffer do begin
       // common properties
       VendorLabel.Caption:=String(glGetString(GL_VENDOR));
       RendererLabel.Caption:=String(glGetString(GL_RENDERER));
       {$IFDEF MSWINDOWS}
-      PixelFormat:=GetPixelFormat(Canvas.Handle);
-      DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
+      dc := wglGetCurrentDC();
+      PixelFormat:=GetPixelFormat(dc);
+      DescribePixelFormat(dc,PixelFormat,SizeOf(pfd), PFD);
       // figure out the driver type
       if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
@@ -178,21 +181,43 @@ begin
         Extensions.Items.Add(Copy(ExtStr,1,I-1));
         Delete(ExtStr,1,I);
       end;
+
+      if LimitOf[limDoubleBuffer] = GL_TRUE then
+        DoubleLabel.Caption:='yes'
+      else
+        DoubleLabel.Caption:='no';
+
+      if LimitOf[limStereo] = GL_TRUE then
+        StereoLabel.Caption:='yes'
+      else
+        StereoLabel.Caption:='no';
+
       {$IFDEF MSWINDOWS}
-      if DoubleBuffered then begin
-        DoubleLabel.Caption:='yes';
+      // Include WGL extensions
+      if WGL_ARB_extensions_string then
+      begin
+        ExtStr:=String(wglGetExtensionsStringARB(dc));
+        while Length(ExtStr) > 0 do begin
+          I:=Pos(' ',ExtStr);
+          if I = 0 then I:=255;
+          Extensions.Items.Add(Copy(ExtStr,1,I-1));
+          Delete(ExtStr,1,I);
+        end;
+      end;
+
+      // Some extra info about the double buffer mode
+      if (pfd.dwFlags and PFD_DOUBLEBUFFER)=PFD_DOUBLEBUFFER then begin
         CopyLabel.Caption:='';
         if (pfd.dwFlags and PFD_SWAP_EXCHANGE) > 0 then CopyLabel.Caption:='exchange';
-        if Length(CopyLabel.Caption) > 0 then CopyLabel.Caption:=CopyLabel.Caption+', ';
-        if (pfd.dwFlags and PFD_SWAP_COPY) > 0 then CopyLabel.Caption:=CopyLabel.Caption+'copy';
+        if (pfd.dwFlags and PFD_SWAP_COPY) > 0 then
+        begin
+          if Length(CopyLabel.Caption) > 0 then CopyLabel.Caption:=CopyLabel.Caption+', ';
+          CopyLabel.Caption:=CopyLabel.Caption+'copy';
+        end;
         if Length(CopyLabel.Caption) = 0 then CopyLabel.Caption:='no info available';
       end else begin
-        DoubleLabel.Caption:='no';
         CopyLabel.Caption:='n/a';
       end;
-      if (pfd.dwFlags and PFD_STEREO) > 0 then
-         StereoLabel.Caption:='yes'
-      else StereoLabel.Caption:='no';
       {$ENDIF}
       // buffer and pixel depths
       ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
@@ -225,6 +250,7 @@ begin
       IntLimitToLabel(TexStackLabel, limTextureStack);
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
    end;
+   aSceneBuffer.RenderingContext.DeActivate;
    VersionLbl.Caption := GLSCENE_VERSION;
 end;
 
