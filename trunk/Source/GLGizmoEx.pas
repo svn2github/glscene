@@ -71,7 +71,7 @@ uses
   {$IFDEF MSWINDOWS}Windows,{$ENDIF} Classes, SysUtils,
 
   // GLScene
-  GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
+  OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GeometryBB, VectorTypes, GLCanvas,
   PersistentClasses, GLScreen, GLState;
