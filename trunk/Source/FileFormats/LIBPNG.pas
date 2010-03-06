@@ -1,3 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: LIBPNG<p>
+
+  <b>Historique : </b><font size=-1><ul>
+      <li>05/03/10 - Yar - Creation
+  </ul></font>
+}
 
 unit LIBPNG;
 
