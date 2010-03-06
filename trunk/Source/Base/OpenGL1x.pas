@@ -7563,6 +7563,7 @@ begin
    // GL_NV_primitive_restart (#285)
    glPrimitiveRestartNV := GLGetProcAddress('glPrimitiveRestartNV');
    glPrimitiveRestartIndexNV := GLGetProcAddress('glPrimitiveRestartIndexNV');
+   glPrimitiveRestartIndex := GLGetProcAddress('glPrimitiveRestartIndex');
 
    // GL_EXT_depth_bounds_test (#297)
    glDepthBoundsEXT := GLGetProcAddress('glDepthBoundsEXT');
