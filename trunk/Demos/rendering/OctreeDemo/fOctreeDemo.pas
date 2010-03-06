@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
-  ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
+  GLState;
 
 const
   cBOX_SIZE = 14.2;
@@ -154,7 +155,7 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
     glColor3f(r,g,b);
-    glLineWidth(w);
+    rci.GLStates.LineWidth := w;
 
     glBegin(GL_LINE_STRIP);
       glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
@@ -205,14 +206,14 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 var
   AABB : TAABB;
 begin
-  glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
-  glDisable(GL_LIGHTING);
+  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer]);
+  rci.GLStates.Disable(stLighting);
 
   MakeVector(AABB.min, -cBOX_SIZE, -cBOX_SIZE, -cBOX_SIZE);
   MakeVector(AABB.max,  cBOX_SIZE,  cBOX_SIZE,  cBOX_SIZE);
   RenderAABB(AABB,2, 0,0,0);
   RenderOctreeNode(Octree.RootNode);
-  glPopAttrib;
+  rci.GLStates.PopAttrib;
 end;
 
 procedure TfrmOctreeDemo.FormMouseWheel(Sender: TObject; Shift: TShiftState;
