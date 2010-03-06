@@ -223,7 +223,7 @@ begin
 
          // Mirror lights
          glPushMatrix;
-         glLoadMatrixf(@CurrentBuffer.ModelViewMatrix);
+         glLoadMatrixf(@CurrentBuffer.ViewMatrix);
          refMat:=MakeReflectionMatrix(AffineVectorMake(AbsolutePosition),
                                       AffineVectorMake(AbsoluteDirection));
          glMultMatrixf(@refMat);
@@ -231,7 +231,7 @@ begin
 
          // mirror geometry and render master
          glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-         glLoadMatrixf(@CurrentBuffer.ModelViewMatrix);
+         glLoadMatrixf(@CurrentBuffer.ViewMatrix);
          CurrentBuffer.PushModelViewMatrix(curMat);
 
          ARci.GLStates.Disable(stCullFace);
@@ -270,7 +270,7 @@ begin
          ARci.GLStates.CullFaceMode := cmBack;
          // Restore to "normal"
          CurrentBuffer.PopModelViewMatrix;
-         glLoadMatrixf(@CurrentBuffer.ModelViewMatrix);
+         glLoadMatrixf(@CurrentBuffer.ViewMatrix);
          Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
 
          glPopMatrix;
