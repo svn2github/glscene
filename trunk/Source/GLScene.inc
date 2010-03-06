@@ -48,6 +48,12 @@
 // Activate Multithread support.
 {.$DEFINE GLS_MULTITHREAD}
 
+// Activate Logging
+{.$DEFINE GLS_LOGGING}
+
+// Activate Experimental parts
+{.$DEFINE GLS_EXPERIMENTAL}
+
 //
 // Platform Detection
 //
