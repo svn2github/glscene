@@ -12,7 +12,7 @@ uses
   Dialogs, GLScene, GLWin32Viewer, GLSkydome, GLObjects,  jpeg, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
   SpatialPartitioning, VectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
-  GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls, OpenGL1x,
+  GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
 
 type

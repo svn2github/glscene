@@ -42,7 +42,7 @@ implementation
 
 {$R *.dfm}
 
-uses Windows, OpenGL1x, GLCanvas;
+uses Windows, GLCanvas;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
