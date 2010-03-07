@@ -120,17 +120,16 @@ begin
    // initialize the heightmap
    with MatLib.LibMaterialByName('water') do begin
       PrepareBuildList;
-      glActiveTextureARB(GL_TEXTURE0_ARB);
-      glBindTexture(GL_TEXTURE_2D, Material.Texture.Handle);
-      glActiveTextureARB(GL_TEXTURE0_ARB);
+      rci.GLStates.ActiveTexture := 0;
+      rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Material.Texture.Handle);
    end;
 
    // initialize the heightmap
    with MatLib.LibMaterialByName('cubeMap') do begin
       PrepareBuildList;
-      glActiveTextureARB(GL_TEXTURE1_ARB);
-      glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, Material.Texture.Handle);
-      glActiveTextureARB(GL_TEXTURE0_ARB);
+      rci.GLStates.ActiveTexture := 1;
+      rci.GLStates.SetGLCurrentTexture(1, GL_TEXTURE_CUBE_MAP, Material.Texture.Handle);
+      rci.GLStates.ActiveTexture := 0;
    end;
 
    programObject.UseProgramObject;
