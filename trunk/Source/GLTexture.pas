@@ -3350,12 +3350,12 @@ var
 begin
   if not Disabled then
   begin
-    glActiveTextureARB(GL_TEXTURE0 + n - 1);
+    rci.GLStates.ActiveTexture := n - 1;
     target := Image.NativeTextureTarget;
 
     if (target = GL_TEXTURE_CUBE_MAP) and GL_ARB_texture_cube_map then
     begin
-      glEnable(GL_TEXTURE_CUBE_MAP);
+      rci.GLStates.Enable(stTextureCubeMap);
       rci.GLStates.SetGLCurrentTexture(n - 1, GL_TEXTURE_CUBE_MAP, Handle);
 
       // compute model view matrix for proper viewing
@@ -3389,7 +3389,7 @@ begin
     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
 
     ApplyMappingMode;
-    glActiveTextureARB(GL_TEXTURE0);
+    rci.GLStates.ActiveTexture := 0;
   end;
 end;
 
@@ -3401,7 +3401,7 @@ procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
 var
   target: GLenum;
 begin
-  glActiveTextureARB(GL_TEXTURE0 + n - 1);
+  rci.GLStates.ActiveTexture := n - 1;
   UnApplyMappingMode;
   target := Image.NativeTextureTarget;
   if (target = GL_TEXTURE_CUBE_MAP) and GL_ARB_texture_cube_map
@@ -3412,7 +3412,7 @@ begin
     glMatrixMode(GL_MODELVIEW);
   end;
   glDisable(target);
-  glActiveTextureARB(GL_TEXTURE0);
+  rci.GLStates.ActiveTexture := 0;
 end;
 
 // AllocateHandle
@@ -3936,7 +3936,7 @@ begin
   FApplied := False;
   if FTexture.Enabled then
   begin
-    glActiveTextureARB(GL_TEXTURE0 + FTextureIndex);
+    rci.GLStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPushMatrix;
     if FTextureMatrixIsIdentity then
@@ -3944,7 +3944,7 @@ begin
     else
       glLoadMatrixf(@FTextureMatrix[0][0]);
     glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0);
+    rci.GLStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
       FTexture.Apply(rci)
     else if FTextureIndex = 1 then
@@ -3968,11 +3968,11 @@ begin
       FTexture.UnApplyAsTexture2(rci, false)
     else if FTextureIndex >= 2 then
       FTexture.UnApplyAsTextureN(FTextureIndex + 1, rci, false);
-    glActiveTextureARB(GL_TEXTURE0 + FTextureIndex);
+    rci.GLStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPopMatrix;
     glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0);
+    rci.GLStates.ActiveTexture := 0;
     FApplied := False;
   end;
 end;
