@@ -6,8 +6,6 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
-       <li>07/03/10 - Yar  - Returned disabling of Rect/CubeMap/3D + added checking support for them
-                             Added forward context cheking to circumvent deprecations
        <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
                              cause errors on hardware that doesn't support them
        <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -3261,7 +3259,7 @@ var
   target: TGLEnum;
   fc: Boolean;
 begin // Apply
-  fc := FTextureHandle.RenderingContext.GLStates.ForwardContext;
+  fc := CurrentGLContext.GLStates.ForwardContext;
   if not Disabled then
   begin
     target := Image.NativeTextureTarget;
@@ -3309,7 +3307,7 @@ end;
 procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
 begin
   if not Disabled
-    and not FTextureHandle.RenderingContext.GLStates.ForwardContext then
+    and not CurrentGLContext.GLStates.ForwardContext then
   begin
     if stTexture1D in rci.GLStates.States then
       rci.GLStates.Disable(stTexture1D)
