@@ -6,6 +6,8 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>07/03/10 - Yar  - Returned disabling of Rect/CubeMap/3D + added checking support for them
+                             Added forward context cheking to circumvent deprecations
        <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
                              cause errors on hardware that doesn't support them
        <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -3257,7 +3259,9 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
 
 var
   target: TGLEnum;
+  fc: Boolean;
 begin // Apply
+  fc := FTextureHandle.RenderingContext.GLStates.ForwardContext;
   if not Disabled then
   begin
     target := Image.NativeTextureTarget;
@@ -3271,24 +3275,30 @@ begin // Apply
       GL_TEXTURE_CUBE_MAP:
         begin
           rci.GLStates.Enable(stTextureCubeMap);
-          SetCubeMapTextureMatrix;
+          if not fc then
+            SetCubeMapTextureMatrix;
         end;
       GL_TEXTURE_3D: rci.GLStates.Enable(stTexture3D);
     end; // of case
 
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-    glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
-    ApplyMappingMode;
-    xglMapTexCoordToMain;
+    if not fc then
+    begin
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      ApplyMappingMode;
+      xglMapTexCoordToMain;
+    end;
   end
-  else
+  else if not fc then
   begin //default
     rci.GLStates.Disable(stTexture1D);
     rci.GLStates.Disable(stTexture2D);
-    // DanB - these will cause errors where not supported...
-    //rci.GLStates.Disable(stTextureRect);
-    //rci.GLStates.Disable(stTextureCubeMap);
-    //rci.GLStates.Disable(stTexture3D);
+    if GL_ARB_texture_rectangle then
+      rci.GLStates.Disable(stTextureRect);
+    if GL_ARB_texture_cube_map then
+      rci.GLStates.Disable(stTextureCubeMap);
+    if GL_EXT_texture3D then
+      rci.GLStates.Disable(stTexture3D);
     xglMapTexCoordToMain;
   end;
 end;
@@ -3298,7 +3308,8 @@ end;
 
 procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
 begin
-  if not Disabled then
+  if not Disabled
+    and not FTextureHandle.RenderingContext.GLStates.ForwardContext then
   begin
     if stTexture1D in rci.GLStates.States then
       rci.GLStates.Disable(stTexture1D)
@@ -3315,10 +3326,8 @@ begin
     end
     else if stTexture3D in rci.GLStates.States then
       rci.GLStates.Disable(stTexture3D);
-
     UnApplyMappingMode;
   end;
-
 end;
 
 // ApplyAsTexture2
@@ -3678,49 +3687,33 @@ const
     GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
   cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-//  cTextureCompareFunc: array[dcfLequal..dcfNever] of TGLenum =
-//    (GL_LEQUAL, GL_GEQUAL, GL_LESS, GL_GREATER, GL_EQUAL, GL_NOTEQUAL,
-//    GL_ALWAYS, GL_NEVER);
   cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
     (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
-
-  function CheckWrapping(mode: TGLSeparateTextureWrap): TGLEnum;
-  begin
-    Result := GL_REPEAT;
-    if ((mode = twMirrorClamp) or (mode = twMirrorClampToEdge)) then
-    begin
-      Assert(GL_ATI_texture_mirror_once, glsFailedApplyWrap);
-      Exit;
-    end;
-    if mode = twMirrorClampToBorder then
-    begin
-      Assert(GL_EXT_texture_mirror_clamp, glsFailedApplyWrap);
-      Exit;
-    end;
-    Result := cSeparateTextureWrap[mode];
-  end;
 
 var
   R_Dim: Boolean;
 begin
   R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+  with FTextureHandle.RenderingContext.GLStates do
+  begin
+    UnpackAlignment := 4;
+    UnpackRowLength :=0;
+    UnpackSkipRows :=0;
+    UnpackSkipPixels := 0;
+  end;
+
   glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
 
   if (GL_VERSION_1_2 or GL_EXT_texture_edge_clamp) then
   begin
     if FTextureWrap = twSeparate then
     begin
-      glTexParameteri(target, GL_TEXTURE_WRAP_S, CheckWrapping(FTextureWrapS));
-      glTexParameteri(target, GL_TEXTURE_WRAP_T, CheckWrapping(FTextureWrapT));
+      glTexParameteri(target, GL_TEXTURE_WRAP_S, cSeparateTextureWrap[FTextureWrapS]);
+      glTexParameteri(target, GL_TEXTURE_WRAP_T, cSeparateTextureWrap[FTextureWrapT]);
       if R_Dim then
         glTexParameteri(target, GL_TEXTURE_WRAP_R,
-          CheckWrapping(FTextureWrapR));
+          cSeparateTextureWrap[FTextureWrapR]);
     end
     else
     begin
@@ -3759,8 +3752,9 @@ begin
       cTextureCompareMode[fTextureCompareMode]);
     glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
-    glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
-      cDepthTextureMode[fDepthTextureMode]);
+    if not FTextureHandle.RenderingContext.GLStates.ForwardContext then
+      glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
+        cDepthTextureMode[fDepthTextureMode]);
   end;
 end;
 
