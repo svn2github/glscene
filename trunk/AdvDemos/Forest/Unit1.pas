@@ -385,7 +385,7 @@ var
    particle : TGLParticle;
 begin
    rci.GLStates.ResetAll;
-   glDisable(Gl_BLEND);
+   rci.GLStates.Disable(stBlend);
    for i:=0 to nearTrees.Count-1 do begin
       particle:=TGLParticle(nearTrees[i]);
       glPushMatrix;
@@ -478,12 +478,12 @@ begin
    glPushMatrix;
 
    // Mirror coordinates
-   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ViewMatrix);
    refMat:=MakeReflectionMatrix(NullVector, YVector);
    glMultMatrixf(@refMat);
    glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
-   TGLSceneBuffer(rci.buffer).PushModelViewMatrix(curMat);
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ViewMatrix);
+   TGLSceneBuffer(rci.buffer).PushViewMatrix(curMat);
 
    rci.GLStates.FrontFace := fwClockWise;
 
@@ -518,8 +518,8 @@ begin
    rci.rcci.frustum:=frustumBackup;
 
    // Restore to "normal"
-   TGLSceneBuffer(rci.buffer).PopModelViewMatrix;
-   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ModelViewMatrix);
+   TGLSceneBuffer(rci.buffer).PopViewMatrix;
+   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ViewMatrix);
    GLScene.SetupLights(TGLSceneBuffer(rci.buffer).LimitOf[limLights]);
 
    rci.GLStates.FrontFace := fwCounterClockWise;
@@ -587,9 +587,9 @@ begin
    tex0Matrix[3][1]:=tWave*1.06;
    glLoadMatrixf(@tex0Matrix);
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
-   glEnable(GL_TEXTURE_2D);
+   rci.GLStates.Enable(stTexture2D);
 
-   glActiveTextureARB(GL_TEXTURE1_ARB);
+   rci.GLStates.ActiveTexture := 1;
 
    tex1Matrix:=IdentityHmgMatrix;
    tex1Matrix[0][0]:=cWaveScale;
@@ -598,10 +598,10 @@ begin
    tex1Matrix[3][1]:=tWave*0.79;
    glLoadMatrixf(@tex1Matrix);
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
-   glEnable(GL_TEXTURE_2D);
+   rci.GLStates.Enable(stTexture2D);
 
    if enableTex2DReflection then begin
-      glActiveTextureARB(GL_TEXTURE2_ARB);
+      rci.GLStates.ActiveTexture := 2;
 
       glBindTexture(mirrorTexType, mirrorTexture.Handle);
       glEnable(mirrorTexType);
@@ -609,7 +609,7 @@ begin
       SetupReflectionMatrix;
    end;
 
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   rci.GLStates.ActiveTexture := 0;
 
    glMatrixMode(GL_MODELVIEW);
 
@@ -624,7 +624,7 @@ begin
       glColor4f(0.0, 0.4, 0.7, 1);
    end;
 
-   glDisable(GL_CULL_FACE);
+   rci.GLStates.Disable(stCullFace);
    for y:=-10 to 10-1 do begin
       glBegin(GL_QUAD_STRIP);
       for x:=-10 to 10 do begin
@@ -647,14 +647,14 @@ begin
    glMatrixMode(GL_TEXTURE);
 
    if enableTex2DReflection then begin
-      glActiveTextureARB(GL_TEXTURE2_ARB);
+      rci.GLStates.ActiveTexture := 2;
       glLoadIdentity;
    end;
 
-   glActiveTextureARB(GL_TEXTURE1_ARB);
+   rci.GLStates.ActiveTexture := 1;
    glLoadIdentity;
 
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   rci.GLStates.ActiveTexture := 0;
    glLoadIdentity;
 
    glMatrixMode(GL_MODELVIEW);
@@ -711,10 +711,10 @@ begin
    reflectionProgram.Uniform1f['Time']:=GLCadencer.CurrentTime;
    reflectionProgram.Uniform4f['EyePos']:=Camera.AbsolutePosition;
    reflectionProgram.Uniform1i['ReflectionMap']:=0;
-   glActiveTextureARB(GL_TEXTURE1_ARB);
+   rci.GLStates.ActiveTexture := 1;
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[1].Material.Texture.Handle);
    reflectionProgram.Uniform1i['WaveMap']:=1;
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   rci.GLStates.ActiveTexture := 0;
 
 //   reflectionProgram.EndUseProgramObject;
 
@@ -733,7 +733,7 @@ begin
       glLoadIdentity;
    glMatrixMode(GL_MODELVIEW);
 
-   glDisable(GL_TEXTURE_2D);
+   rci.GLStates.Disable(stTexture2D);
 
    rci.GLStates.Enable(stDepthTest);
    rci.GLStates.Disable(stStencilTest);
