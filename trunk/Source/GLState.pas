@@ -180,7 +180,7 @@ type
     FTextureBinding: array[0..47, TTextureTarget] of TGLuint;
 
     // Active texture state
-    FActiveTexture: TGLint;
+    FActiveTexture: TGLint;   // 0 .. Max_texture_units
 
     // Pixel operation state
     FEnableScissorTest: TGLboolean;
@@ -538,7 +538,7 @@ type
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
-    {: The active texture unit. }
+    {: The active texture unit.  Valid values are 0 .. Max texture units. }
     property ActiveTexture: TGLint read FActiveTexture write SetActiveTexture;
 
     // Pixel operations
@@ -1292,7 +1292,7 @@ begin
 //  if Value<>FActiveTexture then
   begin
     FActiveTexture := Value;
-    glActiveTexture(Value);
+    glActiveTexture(GL_TEXTURE0 + Value);
   end;
 end;
 
