@@ -137,7 +137,7 @@ begin
    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
 
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
