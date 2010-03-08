@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>08/05/10 - DanB - Added TGLStateCache.SetColorMask
       <li>05/03/10 - DanB - Added initial functions/properties for caching all
                             OpenGL 3.2 state, not complete yet.
       <li>22/02/10 - DanB - added SetGLCurrentProgram
@@ -108,6 +109,11 @@ type
 
   TColorComponent = (ccRed, ccGreen, ccBlue, ccAlpha);
   TColorMask = set of TColorComponent;
+
+const
+  cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
+
+type
 
   THintType = (hintDontCare, hintFastest, hintNicest);
 
@@ -645,6 +651,8 @@ type
     // Framebuffer control
     {: The color write mask, for each draw buffer. }
     property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask write SetColorWriteMask;
+    {: Set the color write mask for all draw buffers. }
+    procedure SetColorMask(mask: TColorMask);
     {: The depth write mask. }
     property DepthWriteMask: TGLBoolean read FDepthWriteMask write SetDepthWriteMask;
     {: The stencil write mask. }
@@ -2105,6 +2113,20 @@ begin
     FColorClearValue := Value;
     glClearColor(Value[0], Value[1], Value[2], Value[3]);
   end;
+end;
+
+procedure TGLStateCache.SetColorMask(mask: TColorMask);
+var
+  i: integer;
+begin
+  // it might be faster to keep track of whether all draw buffers are same
+  // value or not, since using this is probably more common than setting
+  // the color write mask for individual draw buffers
+  for I := low(FColorWriteMask) to high(FColorWriteMask) do
+  begin
+    FColorWriteMask[I] := mask;
+  end;
+  glColorMask(ccRed in mask, ccGreen in mask, ccBlue in mask, ccAlpha in mask);
 end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
