@@ -3259,7 +3259,7 @@ var
   target: TGLEnum;
   fc: Boolean;
 begin // Apply
-  fc := CurrentGLContext.GLStates.ForwardContext;
+  fc := rci.GLStates.ForwardContext;
   if not Disabled then
   begin
     target := Image.NativeTextureTarget;
@@ -3307,7 +3307,7 @@ end;
 procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
 begin
   if not Disabled
-    and not CurrentGLContext.GLStates.ForwardContext then
+    and not rci.GLStates.ForwardContext then
   begin
     if stTexture1D in rci.GLStates.States then
       rci.GLStates.Disable(stTexture1D)
