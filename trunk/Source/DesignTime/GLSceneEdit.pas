@@ -6,6 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>11/03/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
   <li>20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
@@ -1126,8 +1127,8 @@ function TGLSceneEditorForm.IsPastePossible : Boolean;
    begin
      Result := True;
      for I := 1 to Length(S) - 6 do begin
-       if (S[I] in ['O','o']) and (CompareText(Copy(S, I, 6), 'OBJECT') = 0) then Exit;
-       if not (S[I] in [' ',#9, #13, #10]) then Break;
+       if CharInSet(S[I], ['O','o']) and (CompareText(Copy(S, I, 6), 'OBJECT') = 0) then Exit;
+       if not CharInSet(S[I], [' ',#9, #13, #10]) then Break;
      end;
      Result := False;
    end;
