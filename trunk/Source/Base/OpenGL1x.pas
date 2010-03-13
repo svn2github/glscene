@@ -7681,7 +7681,7 @@ begin
    glBlendFuncSeparatei := GLGetProcAddress('glBlendFuncSeparatei');
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShadingARB := GLGetProcAddress('glMinSampleShading');
+   glMinSampleShading := GLGetProcAddress('glMinSampleShading');
 
    // GL_ARB_blend_func_extended (ARB #78)
    glBindFragDataLocationIndexed := GLGetProcAddress('glBindFragDataLocationIndexed');
