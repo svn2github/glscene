@@ -2836,12 +2836,12 @@ var
    i : Integer;
 begin
    // point for self
-   glPointSize(5);
+   mrci.GLStates.PointSize := 5;
    glBegin(GL_POINTS);
       IssueColor(Color);
       glVertex3fv(@GlobalMatrix[3][0]);
    glEnd;
-   glPointSize(1);
+   mrci.GLStates.PointSize := 1;
    // parent-self bone line
    if Owner is TSkeletonBone then begin
       glBegin(GL_LINES);
