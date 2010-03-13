@@ -10,7 +10,9 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions)
+      <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
+                            _ARB suffix from functions/procedures in
+                            GL_ARB_draw_buffers_blend + GL_ARB_sample_shading
       <li>04/03/10 - DanB - Organised core into relevant + deprecated sections,
                             fixed a couple of function params + misc changes.
       <li>12/02/10 - Yar -  Added GL_AMD_vertex_shader_tessellator
@@ -6184,14 +6186,14 @@ var
    glSampleMaski: procedure(index: TGLuint; mask: TGLbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GL_ARB_draw_buffers_blend (ARB #69)
-   glBlendEquationiARB: procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendEquationSeparateiARB: procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendFunciARB: procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendFuncSeparateiARB: procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
+   glBlendEquationi: procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquationSeparatei: procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendFunci: procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendFuncSeparatei: procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
                                srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShadingARB: procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMinSampleShading: procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GL_ARB_blend_func_extended (ARB #78)
    glBindFragDataLocationIndexed: procedure (_program: TGLuint; colorNumber: TGLuint; index: TGLuint; const name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -7673,13 +7675,13 @@ begin
    glSampleMaski := GLGetProcAddress('glSampleMaski');
 
    // GL_ARB_draw_buffers_blend (ARB #69)
-   glBlendEquationiARB := GLGetProcAddress('glBlendEquationiARB');
-   glBlendEquationSeparateiARB := GLGetProcAddress('glBlendEquationSeparateiARB');
-   glBlendFunciARB := GLGetProcAddress('glBlendFunciARB');
-   glBlendFuncSeparateiARB := GLGetProcAddress('glBlendFuncSeparateiARB');
+   glBlendEquationi := GLGetProcAddress('glBlendEquationi');
+   glBlendEquationSeparatei := GLGetProcAddress('glBlendEquationSeparatei');
+   glBlendFunci := GLGetProcAddress('glBlendFunci');
+   glBlendFuncSeparatei := GLGetProcAddress('glBlendFuncSeparatei');
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShadingARB := GLGetProcAddress('glMinSampleShadingARB');
+   glMinSampleShadingARB := GLGetProcAddress('glMinSampleShading');
 
    // GL_ARB_blend_func_extended (ARB #78)
    glBindFragDataLocationIndexed := GLGetProcAddress('glBindFragDataLocationIndexed');
