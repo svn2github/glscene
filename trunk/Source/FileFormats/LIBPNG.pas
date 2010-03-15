@@ -4,6 +4,7 @@
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
       <li>05/03/10 - Yar - Creation
   </ul></font>
 }
@@ -15,6 +16,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF GLS_LOGGING}
+  GLSLog,
+{$ENDIF}
   Classes, SysUtils, VectorGeometry;
 
 const
@@ -164,15 +168,7 @@ const
   PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE;
 
 type
-  {.$IFDEF FPC}
-  //  png_size_t = SizeInt;
-  {.$ELSE}
-  {.$IFDEF GLS_DELPHI_2009_UP}
-  //  png_size_t = NativeUInt; // 32 or 64 bit unsigned integer
-  {.$ELSE}
   png_size_t = Cardinal; // 32 bit unsigned integer
-  {.$ENDIF}
-  {.$ENDIF}
   png_byte = Byte;
   png_int_32 = LongInt;
   png_uint_32 = LongWord;
@@ -182,6 +178,8 @@ type
   png_voidp = Pointer;
   png_byte_array = array[0..MaxInt div 2 - 1] of png_byte;
   png_bytep = ^png_byte_array;
+  png_bytep_array = array[0..MaxInt div (2 * SizeOf(png_bytep))] of png_bytep;
+  png_bytep_arrayp = ^png_bytep_array;
   png_bytepp = ^png_bytep;
   png_uint_32p = ^png_uint_32;
   png_int_32p = PInteger;
@@ -190,6 +188,8 @@ type
   png_int_16p = PShortInt;
   png_const_charp = PAnsiChar;
   png_charp = PAnsiChar;
+  png_charp_array = array[0..MaxInt div (2 * SizeOf(png_charp))] of png_charp;
+  png_charp_arrayp = ^png_charp_array;
   png_charpp = ^png_charp;
   png_fixed_point_p = ^LongInt;
 
@@ -250,6 +250,9 @@ type
     {: libpng-using applications should NOT directly modify this byte.
        png_byte location;  mode of operation at read time }
   end;
+  png_unknown_chunk_array =
+    array[0..MaxInt div (2 * SizeOf(png_unknown_chunk))] of png_unknown_chunk;
+  png_unknown_chunk_arrayp = ^png_unknown_chunk_array;
   png_unknown_chunkp = ^png_unknown_chunk;
   png_unknown_chunkpp = ^png_unknown_chunkp;
 
@@ -276,7 +279,7 @@ type
        chars or a NULL pointer }
     lang_key: png_charp;
   end;
-  png_text_array = array[0..MaxInt div (2*SizeOf(png_text))] of png_text;
+  png_text_array = array[0..MaxInt div (2 * SizeOf(png_text))] of png_text;
   png_text_arrayp = ^png_text_array;
   png_textp = ^png_text;
   png_textpp = ^png_textp;
@@ -299,6 +302,7 @@ type
     alpha: png_uint_16;
     frequency: png_uint_16;
   end;
+
   png_sPLT_entryp = ^png_sPLT_entry;
   png_sPLT_entrypp = ^png_sPLT_entryp;
 
@@ -308,6 +312,9 @@ type
     entries: png_sPLT_entryp; {: palette entries }
     nentries: png_int_32; {: number of palette entries }
   end;
+  png_sPLT_tp_array =
+    array[0..MaxInt div (2 * SizeOf(png_sPLT_t))] of png_sPLT_t;
+  png_sPLT_tp_arrayp = ^png_sPLT_tp_array;
   png_sPLT_tp = ^png_sPLT_t;
   png_sPLT_tpp = ^png_sPLT_tp;
 
@@ -480,6 +487,7 @@ type
     write_data_fn: png_rw_ptr; // function for writing output data
     read_data_fn: png_rw_ptr; // function for reading input data
     io_ptr: png_voidp; // ptr to application struct for I/O functions
+
     read_user_transform_fn: png_user_transform_ptr; // user read transform
     write_user_transform_fn: png_user_transform_ptr; // user write transform
 
@@ -592,9 +600,6 @@ type
     current_text: png_charp; // current text chunk buffer
     current_text_ptr: png_charp; // current location in current_text
 
-    palette_lookup: png_bytep; // lookup table for dithering }
-    dither_index: png_bytep; // index translation for palette files }
-
     hist: png_uint_16p; // histogram }
 
     heuristic_method: png_byte; // heuristic for row filter selection }
@@ -644,25 +649,18 @@ type
     // New member added in libpng-1.0.13 and 1.2.0
     big_row_buf: png_bytep; // buffer to save current (unfiltered) row
 
-    // The following three members were added at version 1.0.14 and 1.2.4
-    dither_sort: png_bytep; // working sort array
-    index_to_palette: png_bytep; // where the original index currently is
-    // in the palette
-    palette_to_index: png_bytep; // which original index points to this
-    // palette color
-
-// New members added in libpng-1.0.16 and 1.2.6
+    // New members added in libpng-1.0.16 and 1.2.6
     compression_type: png_byte;
 
-    user_width_max: png_uint_32;
-    user_height_max: png_uint_32;
-    // Added in libpng-1.4.0: Total number of sPLT, text, and unknown
-    // chunks that can be stored ( $7fffffff means unlimited).
+    //    user_width_max: png_uint_32;
+    //    user_height_max: png_uint_32;
+        // Added in libpng-1.4.0: Total number of sPLT, text, and unknown
+        // chunks that can be stored ( $7fffffff means unlimited).
 
-    user_chunk_cache_max: png_uint_32;
+    //    user_chunk_cache_max: png_uint_32;
 
-    // New member added in libpng-1.0.25 and 1.2.17
-       // Storage for unknown chunk that the library doesn't recognize.
+        // New member added in libpng-1.0.25 and 1.2.17
+        // Storage for unknown chunk that the library doesn't recognize.
     unknown_chunk: png_unknown_chunk;
 
     // New members added in libpng-1.2.26
@@ -680,6 +678,10 @@ type
 procedure pngReadFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
 cdecl;
 procedure pngWriteFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
+cdecl;
+procedure pngErrorFn(struct: png_structp; str: png_const_charp);
+cdecl;
+procedure pngWarnFn(struct: png_structp; str: png_const_charp);
 cdecl;
 (* basic functions *)
 function deflateInit(var strm: TZStreamRec; level: Integer): Integer;
@@ -808,34 +810,39 @@ procedure _png_read_image(png_ptr: png_structp; image: png_bytepp);
 cdecl; forward;
 function _png_get_rowbytes(png_ptr: png_structp; info_ptr: png_infop):
   png_size_t;
-  cdecl; forward;
+cdecl; forward;
 procedure _png_build_gamma_table(png_ptr: png_structp; bit_depth: png_byte);
 cdecl; forward;
 procedure _png_read_end(png_ptr: png_structp; info_ptr: png_infop);
 cdecl; forward;
 procedure _png_free(png_ptr: png_structp; ptr: png_voidp);
 cdecl; forward;
-procedure _png_info_init_3(ptr_ptr: png_infopp; png_info_struct_size: png_size_t); cdecl; forward;
-function _png_get_channels(png_ptr: png_structp; info_ptr: png_infop): png_byte; cdecl; forward;
-function _png_create_write_struct(user_png_ver: png_const_charp; error_ptr: png_voidp;
-   error_fn: png_error_ptr; warn_fn: png_error_ptr): png_structp;
+procedure _png_info_init_3(ptr_ptr: png_infopp; png_info_struct_size:
+  png_size_t); cdecl; forward;
+function _png_get_channels(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+cdecl; forward;
+function _png_create_write_struct(user_png_ver: png_const_charp; error_ptr:
+  png_voidp;
+  error_fn: png_error_ptr; warn_fn: png_error_ptr): png_structp;
 cdecl; forward;
 procedure _png_destroy_write_struct(png_ptr_ptr: png_structpp;
   info_ptr_ptr: png_infopp);
 cdecl; forward;
 procedure _png_set_IHDR(png_ptr: png_structp; info_ptr: png_infop;
-   width: png_uint_32; height: png_uint_32; bit_depth: Integer;
-   color_type: Integer; interlace_type: Integer; compression_type: Integer;
-   filter_type: Integer);
+  width: png_uint_32; height: png_uint_32; bit_depth: Integer;
+  color_type: Integer; interlace_type: Integer; compression_type: Integer;
+  filter_type: Integer);
 cdecl; forward;
 procedure _png_write_image(png_ptr: png_structp; image: png_bytepp);
 cdecl; forward;
 procedure _png_write_end(png_ptr: png_structp; info_ptr: png_infop);
 cdecl; forward;
 procedure _png_set_write_fn(png_ptr: png_structp; io_ptr: png_voidp;
-   write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr);
+  write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr);
 cdecl;
 procedure _png_write_info(png_ptr: png_structp; info_ptr: png_infop);
+cdecl; forward;
+function _png_malloc(png_ptr: png_structp; size: png_size_t): png_voidp;
 cdecl; forward;
 
 implementation
@@ -1070,8 +1077,61 @@ begin
   FillChar(Result^, size, 0);
 end;
 
-procedure _png_check_cHRM_fixed;
+function _png_check_cHRM_fixed(png_ptr: png_structp;
+  white_x, white_y, red_x, red_y, green_x, green_y,
+  blue_x, blue_y: png_fixed_point): Integer; cdecl;
+var
+  ret: Integer;
+  xy, yx: UInt64;
 begin
+  if png_ptr = nil then
+  begin
+    Result := 0;
+    exit;
+  end;
+  ret := 1;
+
+  if (white_x < 0) or (white_y <= 0) or
+    (red_x < 0) or (red_y < 0) or
+    (green_x < 0) or (green_y < 0) or
+    (blue_x < 0) or (blue_y < 0) then
+  begin
+    _png_warning(png_ptr,
+      'Ignoring attempt to set negative chromaticity value');
+    ret := 0;
+  end;
+  if white_x > 100000 - white_y then
+  begin
+    _png_warning(png_ptr, 'Invalid cHRM white point');
+    ret := 0;
+  end;
+  if red_x > 100000 - red_y then
+  begin
+    _png_warning(png_ptr, 'Invalid cHRM red point');
+    ret := 0;
+  end;
+  if green_x > 100000 - green_y then
+  begin
+    _png_warning(png_ptr, 'Invalid cHRM green point');
+    ret := 0;
+  end;
+  if blue_x > 100000 - blue_y then
+  begin
+    _png_warning(png_ptr, 'Invalid cHRM blue point');
+    ret := 0;
+  end;
+
+  xy := (green_x - red_x) * (blue_y - red_y);
+  yx := (green_y - red_y) * (blue_x - red_x);
+
+  if xy = yx then
+  begin
+    _png_warning(png_ptr,
+      'Ignoring attempt to set cHRM RGB triangle with zero area');
+    ret := 0;
+  end;
+
+  Result := ret;
 end;
 
 procedure _png_check_IHDR(png_ptr: png_structp;
@@ -1219,23 +1279,173 @@ begin
   if (png_ptr = nil) or (info_ptr = nil) then
     exit;
 
+  {: Free text item num or (if num = -1) all text items }
   if (mask and PNG_FREE_TEXT <> 0) and (info_ptr.free_me <> 0) then
   begin
     if num <> -1 then
     begin
-      if (info_ptr.text <> nil) and (png_text_arrayp(info_ptr.text)[num].key <> nil) then
+      if (info_ptr.text <> nil) and (png_text_arrayp(info_ptr.text)[num].key <>
+        nil) then
       begin
         _png_free(png_ptr, png_text_arrayp(info_ptr.text)[num].key);
         png_text_arrayp(info_ptr.text)[num].key := nil;
       end;
     end
-    else
+    else begin
       for i := 0 to info_ptr.num_text - 1 do
         _png_free_data(png_ptr, info_ptr, PNG_FREE_TEXT, i);
-    _png_free(png_ptr, info_ptr.text);
-    info_ptr.text := nil;
-    info_ptr.num_text := 0;
+      _png_free(png_ptr, info_ptr.text);
+      info_ptr.text := nil;
+      info_ptr.num_text := 0;
+    end;
   end;
+
+  {: Free any tRNS entry }
+  if (mask and PNG_FREE_TRNS <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    _png_free(png_ptr, info_ptr.trans_alpha);
+    info_ptr.trans_alpha := nil;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_tRNS;
+  end;
+
+  {: Free any pCAL entry }
+  if (mask and PNG_FREE_PCAL <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    _png_free(png_ptr, info_ptr.pcal_purpose);
+    _png_free(png_ptr, info_ptr.pcal_units);
+    info_ptr.pcal_purpose := nil;
+    info_ptr.pcal_units := nil;
+    if info_ptr.pcal_params <> nil then
+    begin
+      for i := 0 to info_ptr.pcal_nparams - 1 do
+      begin
+        _png_free(png_ptr, png_charp_arrayp(info_ptr.pcal_params)[i]);
+        png_charp_arrayp(info_ptr.pcal_params)[i] := nil;
+      end;
+      _png_free(png_ptr, info_ptr.pcal_params);
+      info_ptr.pcal_params := nil;
+    end;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_pCAL;
+  end;
+
+  {: Free any sCAL entry }
+  if (mask and PNG_FREE_SCAL <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    _png_free(png_ptr, info_ptr.scal_s_width);
+    _png_free(png_ptr, info_ptr.scal_s_height);
+    info_ptr.scal_s_width := nil;
+    info_ptr.scal_s_height := nil;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_sCAL;
+  end;
+
+  {: Free any iCCP entry }
+  if (mask and PNG_FREE_ICCP <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    _png_free(png_ptr, info_ptr.iccp_name);
+    _png_free(png_ptr, info_ptr.iccp_profile);
+    info_ptr.iccp_name := nil;
+    info_ptr.iccp_profile := nil;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_iCCP;
+  end;
+
+  {: Free a given sPLT entry, or (if num == -1) all sPLT entries }
+  if (mask and PNG_FREE_SPLT <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    if num <> -1 then
+    begin
+      if info_ptr.splt_palettes <> nil then
+      begin
+        _png_free(png_ptr,
+          png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].name);
+        _png_free(png_ptr,
+          png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].entries);
+        png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].name := nil;
+        png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].entries := nil;
+      end;
+    end
+    else
+    begin
+      if info_ptr.splt_palettes_num <> 0 then
+      begin
+        for i := 0 to info_ptr.splt_palettes_num - 1 do
+          _png_free_data(png_ptr, info_ptr, PNG_FREE_SPLT, i);
+
+        _png_free(png_ptr, info_ptr.splt_palettes);
+        info_ptr.splt_palettes := nil;
+        info_ptr.splt_palettes_num := 0;
+      end;
+      info_ptr.valid := info_ptr.valid and not PNG_INFO_sPLT;
+    end;
+  end;
+
+  if png_ptr.unknown_chunk.data <> nil then
+  begin
+    _png_free(png_ptr, png_ptr.unknown_chunk.data);
+    png_ptr.unknown_chunk.data := nil;
+  end;
+
+  if (mask and PNG_FREE_UNKN <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    if num <> -1 then
+    begin
+      if info_ptr.unknown_chunks <> nil then
+      begin
+        _png_free(png_ptr,
+          png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].data);
+        png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].data := nil;
+      end;
+    end
+    else
+    begin
+      if info_ptr.unknown_chunks_num <> 0 then
+      begin
+        for i := 0 to info_ptr.unknown_chunks_num - 1 do
+          _png_free_data(png_ptr, info_ptr, PNG_FREE_UNKN, i);
+
+        _png_free(png_ptr, info_ptr.unknown_chunks);
+        info_ptr.unknown_chunks := nil;
+        info_ptr.unknown_chunks_num := 0;
+      end;
+    end;
+  end;
+
+  {: Free any hIST entry }
+  if (mask and PNG_FREE_HIST <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    _png_free(png_ptr, info_ptr.hist);
+    info_ptr.hist := nil;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_hIST;
+  end;
+
+  {: Free any PLTE entry that was internally allocated }
+  if (mask and PNG_FREE_PLTE <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    FreeMem(info_ptr.palette);
+    info_ptr.palette := nil;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_PLTE;
+    info_ptr.num_palette := 0;
+  end;
+
+  {: Free any image bits attached to the info structure }
+  if (mask and PNG_FREE_ROWS <> 0) and (info_ptr.free_me <> 0) then
+  begin
+    if info_ptr.row_pointers <> nil then
+    begin
+      for i := 0 to info_ptr.height - 1 do
+      begin
+        _png_free(png_ptr, png_bytep_arrayp(info_ptr.row_pointers)[i]);
+        png_bytep_arrayp(info_ptr.row_pointers)[i] := nil;
+      end;
+      _png_free(png_ptr, info_ptr.row_pointers);
+      info_ptr.row_pointers := nil;
+    end;
+    info_ptr.valid := info_ptr.valid and not PNG_INFO_IDAT;
+  end;
+
+  if num = -1 then
+    info_ptr.free_me := info_ptr.free_me and not mask
+  else
+    info_ptr.free_me := info_ptr.free_me and not (mask and not PNG_FREE_MUL);
 end;
 
 function _png_get_header_ver(png_ptr: png_structp): png_charp; cdecl;
@@ -1302,7 +1512,6 @@ begin
     png_ptr.chunk_list := nil;
     png_ptr.num_chunk_list := 0;
   end;
-
   _png_info_init_3(@info_ptr, SizeOf(png_info));
 end;
 
@@ -1670,11 +1879,16 @@ end;
 
 function _png_malloc_warn(png_ptr: png_structp; size: png_size_t): png_voidp;
   cdecl;
+var
+  save_flags: png_uint_32;
 begin
   Result := nil;
   if png_ptr = nil then
     exit;
-  GetMem(Result, size);
+  save_flags := png_ptr.flags;
+  png_ptr.flags := png_ptr.flags or PNG_FLAG_MALLOC_NULL_MEM_OK;
+  Result := _png_malloc(png_ptr, size);
+  png_ptr.flags := save_flags;
 end;
 
 procedure _png_reset_crc(png_ptr: png_structp); cdecl;
@@ -1725,36 +1939,36 @@ begin
 end;
 
 procedure _png_set_write_fn(png_ptr: png_structp; io_ptr: png_voidp;
-   write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr); cdecl;
+  write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr); cdecl;
 begin
-   if png_ptr = nil then
-      exit;
+  if png_ptr = nil then
+    exit;
 
-   png_ptr.io_ptr := io_ptr;
+  png_ptr.io_ptr := io_ptr;
 
-   if Assigned(write_data_fn) then
-      png_ptr.write_data_fn := write_data_fn
-   else
-      png_ptr.write_data_fn := pngWriteFn;
-   png_ptr.write_data_fn := write_data_fn;
+  if Assigned(write_data_fn) then
+    png_ptr.write_data_fn := write_data_fn
+  else
+    png_ptr.write_data_fn := pngWriteFn;
+  png_ptr.write_data_fn := write_data_fn;
 
-   if Assigned(png_ptr.read_data_fn) then
-   begin
-      png_ptr.read_data_fn := nil;
-      _png_warning(png_ptr,
-         'Attempted to set both read_data_fn and write_data_fn in');
-      _png_warning(png_ptr,
-         'the same structure. Resetting read_data_fn to NULL');
-   end;
+  if Assigned(png_ptr.read_data_fn) then
+  begin
+    png_ptr.read_data_fn := nil;
+    _png_warning(png_ptr,
+      'Attempted to set both read_data_fn and write_data_fn in');
+    _png_warning(png_ptr,
+      'the same structure. Resetting read_data_fn to NULL');
+  end;
 end;
 
 procedure _png_write_data(png_ptr: png_structp; data: png_bytep;
   length: png_size_t); cdecl;
 begin
-   if Assigned(png_ptr.write_data_fn) then
-      png_ptr.write_data_fn(png_ptr, data, length)
-   else
-      _png_error(png_ptr, 'Call to NULL write function');
+  if Assigned(png_ptr.write_data_fn) then
+    png_ptr.write_data_fn(png_ptr, data, length)
+  else
+    _png_error(png_ptr, 'Call to NULL write function');
 end;
 
 procedure _png_write_flush(png_ptr: png_structp); cdecl;
@@ -1777,7 +1991,7 @@ begin
   end;
   if items > Cardinal(-1) div size then
   begin
-    //     _png_warning (p, 'Potential overflow in png_zalloc()');
+    _png_warning(png_ptr, 'Potential overflow in png_zalloc()');
     Result := nil;
     exit;
   end;
@@ -1840,6 +2054,20 @@ begin
   fs.Write(data^, length);
 end;
 
+procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  Log.Log(string(str), lkError);
+{$ENDIF}
+end;
+
+procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  Log.Log(string(str), lkWarning);
+{$ENDIF}
+end;
+
 function _png_sig_cmp; external;
 function _png_create_read_struct; external;
 procedure _png_destroy_read_struct; external;
@@ -1874,6 +2102,7 @@ procedure _png_set_IHDR; external;
 procedure _png_write_image; external;
 procedure _png_write_end; external;
 procedure _png_write_info; external;
+function _png_malloc; external;
 
 end.
 
