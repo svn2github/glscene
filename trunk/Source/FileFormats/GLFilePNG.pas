@@ -4,6 +4,7 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>16/03/10 - Yar - Improved FPC compatibility
         <li>05/03/10 - Yar - Creation
    </ul><p>
 }
@@ -14,6 +15,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF GLS_LOGGING}
+  GLSLog,
+{$ENDIF}
   Classes, SysUtils,
   OpenGL1x, GLContext, GLGraphics, GLTextureFormat,
   ApplicationFileIO;
@@ -48,11 +52,65 @@ type
 
 implementation
 
+{$IFDEF FPC}
+uses
+  png;
+
+const
+  ZLIB_VERSION = '1.2.3';
+  PNG_COLOR_TYPE_GRAY = 0;
+  PNG_COLOR_TYPE_GRAY_ALPHA = 4;
+  PNG_COLOR_TYPE_RGB = 2;
+  PNG_COLOR_TYPE_RGB_ALPHA = 2 or 4;
+  PNG_COLOR_TYPE_PALETTE = 1 or 2;
+  PNG_INTERLACE_NONE = 0;
+  PNG_COMPRESSION_TYPE_DEFAULT = 0;
+  PNG_FILTER_TYPE_DEFAULT = 0;
+  PNG_INFO_tRNS = $0010;
+{$ELSE}
 uses
   libpng;
+{$ENDIF}
 
 resourcestring
   sLIBPNGerror = 'LIBPNG error';
+
+{$IFDEF FPC}
+
+procedure pngReadFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
+  cdecl;
+var
+  fs: TStream;
+begin
+  fs := TStream(png_get_io_ptr(png_ptr));
+  Assert(Assigned(data), 'Attempt to read from null file pointer');
+  fs.Read(data^, length)
+end;
+
+procedure pngWriteFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
+  cdecl;
+var
+  fs: TStream;
+begin
+  fs := TStream(png_get_io_ptr(png_ptr));
+  Assert(Assigned(data), 'Attempt to write to null file pointer');
+  fs.Write(data^, length);
+end;
+
+procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  Log.Log(string(str), lkError);
+{$ENDIF}
+end;
+
+procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  Log.Log(string(str), lkWarning);
+{$ENDIF}
+end;
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLPNGImage ------------------
@@ -108,55 +166,136 @@ var
   rowPointers: array of PGLUbyte;
   ii: Integer;
   use16: Boolean;
+  sz: Integer;
 begin
+  sz := sizeof(png_struct);
+  if sz <> 604 then
+    sleep(0);
   stream.Read(sig, 8);
-  if _png_sig_cmp(@sig, 0, 8) <> 0 then
+
+  if
+{$IFNDEF FPC}
+  _png_sig_cmp(@sig, 0, 8)
+{$ELSE}
+  png_sig_cmp(@sig, 0, 8)
+{$ENDIF} <> 0 then
     raise EInvalidRasterFile.Create('Invalid PNG file');
 
-  png_ptr := _png_create_read_struct(ZLIB_VERSION, nil, nil, nil);
+  png_ptr :=
+{$IFNDEF FPC}
+  _png_create_read_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
+{$ELSE}
+  png_create_read_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
+{$ENDIF}
+
   if not Assigned(png_ptr) then
     raise EInvalidRasterFile.Create(sLIBPNGerror);
 
-  info_ptr := _png_create_info_struct(png_ptr);
+  info_ptr :=
+{$IFNDEF FPC}
+  _png_create_info_struct(png_ptr);
+{$ELSE}
+  png_create_info_struct(png_ptr);
+{$ENDIF}
+
   if not Assigned(png_ptr) then
   begin
+{$IFNDEF FPC}
     _png_destroy_read_struct(@png_ptr, nil, nil);
+{$ELSE}
+    png_destroy_read_struct(@png_ptr, nil, nil);
+{$ENDIF}
     raise EInvalidRasterFile.Create(sLIBPNGerror);
   end;
 
   try
     {: Need to override the standard I/O methods since libPNG
        may be linked against a different run-time }
+{$IFNDEF FPC}
     _png_set_read_fn(png_ptr, stream, pngReadFn);
+{$ELSE}
+    png_set_read_fn(png_ptr, stream, pngReadFn);
+{$ENDIF}
     // skip the sig bytes
+{$IFNDEF FPC}
     _png_set_sig_bytes(png_ptr, 8);
+{$ELSE}
+    png_set_sig_bytes(png_ptr, 8);
+{$ENDIF}
     // automagically read everything to the image data
+{$IFNDEF FPC}
     _png_read_info(png_ptr, info_ptr);
-
-    fWidth := _png_get_image_width(png_ptr, info_ptr);
-    fHeight := _png_get_image_height(png_ptr, info_ptr);
+{$ELSE}
+    png_read_info(png_ptr, info_ptr);
+{$ENDIF}
+    fWidth :=
+{$IFNDEF FPC}
+    _png_get_image_width(png_ptr, info_ptr);
+{$ELSE}
+    png_get_image_width(png_ptr, info_ptr);
+{$ENDIF}
+    fHeight :=
+{$IFNDEF FPC}
+    _png_get_image_height(png_ptr, info_ptr);
+{$ELSE}
+    png_get_image_height(png_ptr, info_ptr);
+{$ENDIF}
     // using the convention of depth = 0 for 2D images
     fDepth := 0;
 
-    colorType := _png_get_color_type(png_ptr, info_ptr);
-    bitDepth := _png_get_bit_depth(png_ptr, info_ptr);
-
+    colorType :=
+{$IFNDEF FPC}
+    _png_get_color_type(png_ptr, info_ptr);
+{$ELSE}
+    png_get_color_type(png_ptr, info_ptr);
+{$ENDIF}
+    bitDepth :=
+{$IFNDEF FPC}
+    _png_get_bit_depth(png_ptr, info_ptr);
+{$ELSE}
+    png_get_bit_depth(png_ptr, info_ptr);
+{$ENDIF}
     {: Setup the read transforms
        expand palette images to RGB and low-bit-depth grayscale images to 8 bits
        convert transparency chunks to full alpha channel }
     if colorType = PNG_COLOR_TYPE_PALETTE then
+{$IFNDEF FPC}
       _png_set_palette_to_rgb(png_ptr);
-
+{$ELSE}
+      png_set_palette_to_rgb(png_ptr);
+{$ENDIF}
     if (colorType = PNG_COLOR_TYPE_GRAY) and (bitDepth < 8) then
+{$IFDEF FPC}
+      png_set_gray_1_2_4_to_8(png_ptr);
+{$ELSE}
       _png_set_expand_gray_1_2_4_to_8(png_ptr);
+{$ENDIF}
 
-    if _png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS) <> 0 then
+    if
+{$IFNDEF FPC}
+    _png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)
+{$ELSE}
+    png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)
+{$ENDIF}
+    <> 0 then
+{$IFNDEF FPC}
       _png_set_tRNS_to_alpha(png_ptr);
-
+{$ELSE}
+      png_set_tRNS_to_alpha(png_ptr);
+{$ENDIF}
     // now configure for reading, and allocate the memory
+{$IFNDEF FPC}
     _png_read_update_info(png_ptr, info_ptr);
+{$ELSE}
+    png_read_update_info(png_ptr, info_ptr);
+{$ENDIF}
 
-    rowBytes := _png_get_rowbytes(png_ptr, info_ptr);
+    rowBytes :=
+{$IFNDEF FPC}
+    _png_get_rowbytes(png_ptr, info_ptr);
+{$ELSE}
+    png_get_rowbytes(png_ptr, info_ptr);
+{$ENDIF}
 
     ReallocMem(fData, rowBytes * fHeight);
 
@@ -168,7 +307,11 @@ begin
         rowBytes);
 
     // read the image
+{$IFNDEF FPC}
     _png_read_image(png_ptr, @rowPointers[0]);
+{$ELSE}
+    png_read_image(png_ptr, @rowPointers[0]);
+{$ENDIF}
 
     use16 := bitDepth > 8;
 
@@ -177,7 +320,13 @@ begin
     else
       fDataType := GL_UNSIGNED_BYTE;
 
-    case _png_get_channels(png_ptr, info_ptr) of
+    case
+{$IFNDEF FPC}
+    _png_get_channels(png_ptr, info_ptr)
+{$ELSE}
+    png_get_channels(png_ptr, info_ptr)
+{$ENDIF}
+    of
       1:
         begin
           fColorFormat := GL_LUMINANCE;
@@ -241,9 +390,17 @@ begin
     fLevels.Clear;
     fLevels.Add(nil);
 
+{$IFNDEF FPC}
     _png_read_end(png_ptr, nil);
+{$ELSE}
+    png_read_end(png_ptr, nil);
+{$ENDIF}
   finally
+{$IFNDEF FPC}
     _png_destroy_read_struct(@png_ptr, @info_ptr, nil);
+{$ELSE}
+    png_destroy_read_struct(@png_ptr, @info_ptr, nil);
+{$ENDIF}
   end;
 end;
 
@@ -259,22 +416,39 @@ var
   rowPointers: array of PGLUbyte;
   ii: Integer;
 begin
-  png_ptr := _png_create_write_struct(ZLIB_VERSION, nil, nil, nil);
+  png_ptr :=
+{$IFNDEF FPC}
+  _png_create_write_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
+{$ELSE}
+  png_create_write_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
+{$ENDIF}
   if not Assigned(png_ptr) then
     raise EInvalidRasterFile.Create(sLIBPNGerror);
 
-  info_ptr := _png_create_info_struct(png_ptr);
+  info_ptr :=
+{$IFNDEF FPC}
+  _png_create_info_struct(png_ptr);
+{$ELSE}
+  png_create_info_struct(png_ptr);
+{$ENDIF}
   if not Assigned(png_ptr) then
   begin
+{$IFNDEF FPC}
     _png_destroy_write_struct(@png_ptr, nil);
+{$ELSE}
+    png_destroy_write_struct(@png_ptr, nil);
+{$ENDIF}
     raise EInvalidRasterFile.Create(sLIBPNGerror);
   end;
 
   try
     {: Need to override the standard I/O methods since
       libPNG may be linked against a different run-time }
+{$IFNDEF FPC}
     _png_set_write_fn(png_ptr, stream, pngWriteFn, nil);
-
+{$ELSE}
+    png_set_write_fn(png_ptr, stream, pngWriteFn, nil);
+{$ENDIF}
     bit_depth := fElementSize * 8;
     color_type := PNG_COLOR_TYPE_GRAY;
     rowBytes := fWidth * fElementSize;
@@ -299,13 +473,21 @@ begin
       raise
         EInvalidRasterFile.Create('These image format do not match the PNG format specification.');
 
+{$IFNDEF FPC}
     _png_set_IHDR(png_ptr, info_ptr, fWidth, fHeight, bit_depth, color_type,
       PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-        PNG_FILTER_TYPE_DEFAULT);
-
+      PNG_FILTER_TYPE_DEFAULT);
+{$ELSE}
+    png_set_IHDR(png_ptr, info_ptr, fWidth, fHeight, bit_depth, color_type,
+      PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+      PNG_FILTER_TYPE_DEFAULT);
+{$ENDIF}
     // write the file header information
+{$IFNDEF FPC}
     _png_write_info(png_ptr, info_ptr);
-
+{$ELSE}
+    png_write_info(png_ptr, info_ptr);
+{$ENDIF}
     SetLength(rowPointers, fHeight);
 
     // set up the row pointers
@@ -313,10 +495,22 @@ begin
       rowPointers[ii] := PGLUbyte(Integer(fData) + (fHeight - 1 - ii) *
         rowBytes);
 
+{$IFNDEF FPC}
     _png_write_image(png_ptr, @rowPointers[0]);
+{$ELSE}
+    png_write_image(png_ptr, @rowPointers[0]);
+{$ENDIF}
+{$IFNDEF FPC}
     _png_write_end(png_ptr, info_ptr);
+{$ELSE}
+    png_write_end(png_ptr, info_ptr);
+{$ENDIF}
   finally
+{$IFNDEF FPC}
     _png_destroy_write_struct(@png_ptr, @info_ptr);
+{$ELSE}
+    png_destroy_write_struct(@png_ptr, @info_ptr);
+{$ENDIF}
   end;
 end;
 
