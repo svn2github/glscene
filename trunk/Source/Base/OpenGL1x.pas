@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/03/10 - Yar - Added more GLX extensions (thanks Predator)
       <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
                             _ARB suffix from functions/procedures in
                             GL_ARB_draw_buffers_blend + GL_ARB_sample_shading
@@ -258,6 +259,27 @@ type
    GLXContextID  = TXID;
    GLXWindow     = TXID;
    GLXPbuffer    = TXID;
+   //GLX 1.4
+   GLXVideoSourceSGIX  = TXID;
+   GLXFBConfigSGIX     = Pointer;
+   GLXFBConfigIDSGIX   = TXID;
+   GLXPbufferSGIX      = TXID;
+   TGLXBufferClobberEventSGIX = record
+     count         : GLint;
+     display       : PDisplay;
+     draw_type     : GLint;
+     drawable      : GLXDrawable;
+     event_type    : GLint;
+     mask          : GLuint; //need test
+     send_event    : GLboolean;
+     serial        : GLint; //need test
+     _type         : GLuint;
+     width ,height : GLint;
+     x, y          : GLint;
+   end;
+   GLXBufferClobberEventSGIX = ^TGLXBufferClobberEventSGIX;
+   GLXVideoDeviceNV          = PGLuint;
+   GLXVideoCaptureDeviceNV   = TXID;
    {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL extension feature checks'} {$ENDIF}
@@ -516,12 +538,42 @@ var
    WGL_EXT_swap_control,
 
    // GLX extension checks
+   GLX_VERSION_1_1,
+   GLX_VERSION_1_2,
+   GLX_VERSION_1_3,
+   GLX_VERSION_1_4,
    GLX_ARB_create_context,
    GLX_ARB_create_context_profile,
    GLX_ARB_framebuffer_sRGB,
+   GLX_ARB_multisample,
    GLX_EXT_framebuffer_sRGB,
    GLX_EXT_fbconfig_packed_float,
+
+   GLX_SGIS_multisample,
+   GLX_EXT_visual_info,
    GLX_SGI_swap_control,
+   GLX_SGI_video_sync,
+   GLX_SGI_make_current_read,
+   GLX_SGIX_video_source,
+   GLX_EXT_visual_rating,
+   GLX_EXT_import_context,
+   GLX_SGIX_fbconfig,
+   GLX_SGIX_pbuffer,
+   GLX_SGI_cushion,
+   GLX_SGIX_video_resize,
+   GLX_SGIX_dmbuffer,
+   GLX_SGIX_swap_group,
+   GLX_SGIX_swap_barrier,
+   GLX_SGIS_blended_overlay,
+   GLX_SGIS_shared_multisample,
+   GLX_SUN_get_transparent_index,
+   GLX_3DFX_multisample,
+   GLX_MESA_copy_sub_buffer,
+   GLX_MESA_pixmap_colormap,
+   GLX_MESA_release_buffers,
+   GLX_MESA_set_3dfx_mode,
+   GLX_SGIX_visual_select_group,
+   GLX_SGIX_hyperpipe,
 
    // OpenGL Utility (GLU) extension checks
    GLU_EXT_object_space_tess,
@@ -2171,6 +2223,11 @@ const
    GLX_SAMPLES_ARB                                   = 100001;
    WGL_SAMPLE_BUFFERS_ARB                            = $2041;
    WGL_SAMPLES_ARB                                   = $2042;
+   //GLX 1.4
+   GLX_SAMPLE_BUFFERS_SGIS		             = $100000; //Visual attribute (SGIS_multisample)
+   GLX_SAMPLES_SGIS			             = $100001;
+   GLX_SAMPLE_BUFFERS				     = $100000; //Visual attribute (GLX 1.4 core - alias of SGIS_multisample)
+   GLX_SAMPLES					     = $100001;
 
    // ARB Extension #6 - GL_ARB_texture_env_add
    // (no new tokens)
@@ -2679,8 +2736,8 @@ const
    GL_FIXED_ONLY_ARB                                 = $891D;
 
    WGL_TYPE_RGBA_FLOAT_ARB                           = $21A0;
-   GLX_RGBA_FLOAT_TYPE                               = $20B9;
-   GLX_RGBA_FLOAT_BIT                                = $00000004;
+   GLX_RGBA_FLOAT_TYPE_ARB                           = $20B9;
+   GLX_RGBA_FLOAT_BIT_ARB                            = $00000004;
 
    // ARB Extension #40 - GL_ARB_half_float_pixel
    GL_HALF_FLOAT_ARB                                 = $140B;
@@ -2902,8 +2959,10 @@ const
    GLX_CONTEXT_MAJOR_VERSION_ARB                       = $2091;
    GLX_CONTEXT_MINOR_VERSION_ARB                       = $2092;
    GLX_CONTEXT_FLAGS_ARB                               = $2094;
-   GLX_CONTEXT_DEBUG_BIT_ARB                           = $0001;
-   GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB              = $0002;
+   //GLX_CONTEXT_DEBUG_BIT_ARB                           = $0001;
+   //GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB              = $0002;
+   GLX_CONTEXT_DEBUG_BIT_ARB                           = $00000001;
+   GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB              = $00000002;
 
    // ARB Extension #57 - GL_ARB_uniform_buffer_object
    GL_UNIFORM_BUFFER                                   = $8A11;
@@ -3190,6 +3249,38 @@ const
    GL_TEXTURE_BINDING_RECTANGLE_EXT                  = $84F6;
    GL_PROXY_TEXTURE_RECTANGLE_EXT                    = $84F7;
    GL_MAX_RECTANGLE_TEXTURE_SIZE_EXT                 = $84F8;
+
+      // ARB Extension #20 - GLX_ARB_render_texture
+   GLX_BIND_TO_TEXTURE_RGB_EXT			     = $20D0;
+   GLX_BIND_TO_TEXTURE_RGBA_EXT		 	     = $20D1;
+   GLX_BIND_TO_MIPMAP_TEXTURE_EXT		     = $20D2;
+   GLX_BIND_TO_TEXTURE_TARGETS_EXT		     = $20D3;
+   GLX_Y_INVERTED_EXT				     = $20D4;
+   GLX_TEXTURE_FORMAT_EXT			     = $20D5;
+   GLX_TEXTURE_TARGET_EXT			     = $20D6;
+   GLX_MIPMAP_TEXTURE_EXT			     = $20D7;
+   GLX_TEXTURE_FORMAT_NONE_EXT			     = $20D8;
+   GLX_TEXTURE_FORMAT_RGB_EXT			     = $20D9;
+   GLX_TEXTURE_FORMAT_RGBA_EXT		  	     = $20DA;
+   GLX_TEXTURE_1D_EXT			  	     = $20DB;
+   GLX_TEXTURE_2D_EXT				     = $20DC;
+   GLX_TEXTURE_RECTANGLE_EXT			     = $20DD;
+   GLX_FRONT_LEFT_EXT				     = $20DE;
+   GLX_FRONT_RIGHT_EXT				     = $20DF;
+   GLX_BACK_LEFT_EXT				     = $20E0;
+   GLX_BACK_RIGHT_EXT				     = $20E1;
+   GLX_FRONT_EXT				     = GLX_FRONT_LEFT_EXT;
+   GLX_BACK_EXT					     = GLX_BACK_LEFT_EXT;
+   GLX_AUX0_EXT					     = $20E2;
+   GLX_AUX1_EXT					     = $20E3;
+   GLX_AUX2_EXT					     = $20E4;
+   GLX_AUX3_EXT					     = 420E5;
+   GLX_AUX4_EXT					     = $20E6;
+   GLX_AUX5_EXT					     = $20E7;
+   GLX_AUX6_EXT					     = $20E8;
+   GLX_AUX7_EXT					     = $20E9;
+   GLX_AUX8_EXT					     = $20EA;
+   GLX_AUX9_EXT					     = $20EB;
 
    // EXT_abgr (#1)
    GL_ABGR_EXT                                       = $8000;
@@ -3613,6 +3704,30 @@ const
    GL_COMBINER5_NV                                  = $8555;
    GL_COMBINER6_NV                                  = $8556;
    GL_COMBINER7_NV                                  = $8557;
+
+   //NV_video_out
+   GLX_VIDEO_OUT_COLOR_NV			    = $20C3;
+   GLX_VIDEO_OUT_ALPHA_NV		 	    = $20C4;
+   GLX_VIDEO_OUT_DEPTH_NV		            = $20C5;
+   GLX_VIDEO_OUT_COLOR_AND_ALPHA_NV		    = $20C6;
+   GLX_VIDEO_OUT_COLOR_AND_DEPTH_NV		    = $20C7;
+   GLX_VIDEO_OUT_FRAME_NV			    = $20C8;
+   GLX_VIDEO_OUT_FIELD_1_NV			    = $20C9;
+   GLX_VIDEO_OUT_FIELD_2_NV			    = $20CA;
+   GLX_VIDEO_OUT_STACKED_FIELDS_1_2_NV		    = $20CB;
+   GLX_VIDEO_OUT_STACKED_FIELDS_2_1_NV		    = $20CC;
+
+   //NV_present_video enum:
+   GLX_NUM_VIDEO_SLOTS_NV			    = $20F0;
+
+   //EXT_swap_control enum:
+   GLX_SWAP_INTERVAL_EXT			    = $20F1;
+   GLX_MAX_SWAP_INTERVAL_EXT			    = $20F2;
+
+   //NV_video_capture
+   GLX_DEVICE_ID_NV				    = $20CD;
+   GLX_UNIQUE_ID_NV				    = $20CE;
+   GLX_NUM_VIDEO_CAPTURE_SLOTS_NV		    = $20CF;
 
    // GL_NV_fog_distance (#192)
    GL_FOG_DISTANCE_MODE_NV                          = $855A;
@@ -4496,9 +4611,6 @@ const
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
 
-   GLX_VERSION_1_1                                  = 1;
-   GLX_VERSION_1_2                                  = 1;
-   GLX_VERSION_1_3                                  = 1;
    GLX_EXTENSION_NAME                               = 'GLX';
    GLX_USE_GL                                       = 1;
    GLX_BUFFER_SIZE                                  = 2;
@@ -4526,6 +4638,9 @@ const
    GLX_BAD_CONTEXT                                  = 5;
    GLX_BAD_VALUE                                    = 6;
    GLX_BAD_ENUM                                     = 7;
+   // SGIX_hyperpipe
+   GLX_BAD_HYPERPIPE_CONFIG_SGIX		    = 91;
+   GLX_BAD_HYPERPIPE_SGIX			    = 92;
 
    // GLX 1.1 and later:
    GLX_VENDOR                                       = 1;
@@ -4534,9 +4649,12 @@ const
 
    // GLX 1.3 and later:
    GLX_CONFIG_CAVEAT                                = $20;
+   //CONFIG_CAVEAT attribute value
+   GLX_NONE                                         = $8000;
    GLX_DONT_CARE                                    = $FFFFFFFF;
    GLX_SLOW_CONFIG                                  = $8001;
    GLX_NON_CONFORMANT_CONFIG                        = $800D;
+
    GLX_X_VISUAL_TYPE                                = $22;
    GLX_TRANSPARENT_TYPE                             = $23;
    GLX_TRANSPARENT_INDEX_VALUE                      = $24;
@@ -4544,17 +4662,35 @@ const
    GLX_TRANSPARENT_GREEN_VALUE                      = $26;
    GLX_TRANSPARENT_BLUE_VALUE                       = $27;
    GLX_TRANSPARENT_ALPHA_VALUE                      = $28;
+   GLX_TRUE_COLOR                                   = $8002;
+   GLX_DIRECT_COLOR                                 = $8003;
+   GLX_PSEUDO_COLOR                                 = $8004;
+   GLX_STATIC_COLOR                                 = $8005;
+   GLX_GRAY_SCALE                                   = $8006;
+   GLX_STATIC_GRAY                                  = $8007;
+   GLX_TRANSPARENT_RGB				    = $8008;
+   GLX_TRANSPARENT_INDEX                            = $8009;
+
    GLX_MAX_PBUFFER_WIDTH                            = $8016;
    GLX_MAX_PBUFFER_HEIGHT                           = $8017;
    GLX_MAX_PBUFFER_PIXELS                           = $8018;
    GLX_PRESERVED_CONTENTS                           = $801B;
    GLX_LARGEST_BUFFER                               = $801C;
+   GLX_WIDTH					    = $801D;
+   GLX_HEIGHT					    = $801E;
+   GLX_EVENT_MASK				    = $801F;
    GLX_DRAWABLE_TYPE                                = $8010;
    GLX_FBCONFIG_ID                                  = $8013;
    GLX_VISUAL_ID                                    = $800B;
+   //GLXDrawableTypeMask
    GLX_WINDOW_BIT                                   = $00000001;
    GLX_PIXMAP_BIT                                   = $00000002;
    GLX_PBUFFER_BIT                                  = $00000004;
+   GLX_WINDOW_BIT_SGIX				    = $00000001;//DRAWABLE_TYPE_SGIX value
+   GLX_PIXMAP_BIT_SGIX				    = $00000002;
+   GLX_PBUFFER_BIT_SGIX			 	    = $00000004;
+
+   //GLXPbufferClobberMask
    GLX_AUX_BUFFERS_BIT                              = $00000010;
    GLX_FRONT_LEFT_BUFFER_BIT                        = $00000001;
    GLX_FRONT_RIGHT_BUFFER_BIT                       = $00000002;
@@ -4563,25 +4699,37 @@ const
    GLX_DEPTH_BUFFER_BIT                             = $00000020;
    GLX_STENCIL_BUFFER_BIT                           = $00000040;
    GLX_ACCUM_BUFFER_BIT                             = $00000080;
+   GLX_FRONT_LEFT_BUFFER_BIT_SGIX	  	    = $00000001;//BufferClobberEventSGIX mask
+   GLX_FRONT_RIGHT_BUFFER_BIT_SGIX		    = $00000002;
+   GLX_BACK_LEFT_BUFFER_BIT_SGIX		    = $00000004;
+   GLX_BACK_RIGHT_BUFFER_BIT_SGIX		    = $00000008;
+   GLX_AUX_BUFFERS_BIT_SGIX			    = $00000010;
+   GLX_DEPTH_BUFFER_BIT_SGIX			    = $00000020;
+   GLX_STENCIL_BUFFER_BIT_SGIX			    = $00000040;
+   GLX_ACCUM_BUFFER_BIT_SGIX			    = $00000080;
+   GLX_SAMPLE_BUFFERS_BIT_SGIX			    = $00000100;
+
+
    GLX_RENDER_TYPE                                  = $8011;
    GLX_X_RENDERABLE                                 = $8012;
-   GLX_NONE                                         = $8000;
-   GLX_TRUE_COLOR                                   = $8002;
-   GLX_DIRECT_COLOR                                 = $8003;
-   GLX_PSEUDO_COLOR                                 = $8004;
-   GLX_STATIC_COLOR                                 = $8005;
-   GLX_GRAY_SCALE                                   = $8006;
-   GLX_STATIC_GRAY                                  = $8007;
-   GLX_TRANSPARENT_INDEX                            = $8009;
+
+   GLX_RGBA_TYPE                                    = $8014;
+   //GLXRenderTypeMask
+   GLX_RGBA_BIT                                     = $00000001;
    GLX_COLOR_INDEX_TYPE                             = $8015;
    GLX_COLOR_INDEX_BIT                              = $00000002;
+   GLX_RGBA_BIT_SGIX				    = $00000001	;
+   GLX_COLOR_INDEX_BIT_SGIX			    = $00000002	;
+
    GLX_SCREEN                                       = $800C;
    GLX_PBUFFER_CLOBBER_MASK                         = $08000000;
    GLX_DAMAGED                                      = $8020;
    GLX_SAVED                                        = $8021;
    GLX_WINDOW                                       = $8022;
+   //CreateGLXPbuffer attribute
    GLX_PBUFFER                                      = $8023;
-   GLX_EXT_visual_info                              = 1;
+   GLX_PBUFFER_HEIGHT				    = $8040;
+   GLX_PBUFFER_WIDTH				    = $8041;
    GLX_X_VISUAL_TYPE_EXT                            = $22;
    GLX_TRANSPARENT_TYPE_EXT                         = $23;
    GLX_TRANSPARENT_INDEX_VALUE_EXT                  = $24;
@@ -4595,10 +4743,10 @@ const
    GLX_STATIC_COLOR_EXT                             = $8005;
    GLX_GRAY_SCALE_EXT                               = $8006;
    GLX_STATIC_GRAY_EXT                              = $8007;
-   GLX_NONE_EXT                                     = $8000;
    GLX_TRANSPARENT_RGB_EXT                          = $8008;
    GLX_TRANSPARENT_INDEX_EXT                        = $8009;
    GLX_VISUAL_CAVEAT_EXT                            = $20;
+   GLX_NONE_EXT                                     = $8000;
    GLX_SLOW_VISUAL_EXT                              = $8001;
    GLX_NON_CONFORMANT_VISUAL_EXT                    = $800D;
    GLX_SHARE_CONTEXT_EXT                            = $800A;
@@ -4607,9 +4755,91 @@ const
    GLX_3DFX_WINDOW_MODE_MESA                        = $1;
    GLX_3DFX_FULLSCREEN_MODE_MESA                    = $2;
 
+   //SGIX
+   GLX_DRAWABLE_TYPE_SGIX			    = $8010;//FBConfigSGIX attribute
+   GLX_RENDER_TYPE_SGIX			   	    = $8011;
+   GLX_X_RENDERABLE_SGIX			 	    = $8012;
+   GLX_FBCONFIG_ID_SGIX			 	    = 48013;
+   GLX_RGBA_TYPE_SGIX			  	    = $8014; //CreateContextWithConfigSGIX render_type value
+   GLX_COLOR_INDEX_TYPE_SGIX		    	    = $8015;
+   GLX_MAX_PBUFFER_WIDTH_SGIX		    	    = $8016; //FBConfigSGIX attribute
+   GLX_MAX_PBUFFER_HEIGHT_SGIX		   	    = $8017;
+   GLX_MAX_PBUFFER_PIXELS_SGIX		   	    = $8018;
+   GLX_OPTIMAL_PBUFFER_WIDTH_SGIX		    = $8019;
+   GLX_OPTIMAL_PBUFFER_HEIGHT_SGIX		    = $801A;
+   GLX_PRESERVED_CONTENTS_SGIX			    = $801B; //PbufferSGIX attribute
+   GLX_LARGEST_PBUFFER_SGIX			    = $801C;
+   GLX_WIDTH_SGIX				    = $801D;
+   GLX_HEIGHT_SGIX			            = $801E;
+   GLX_EVENT_MASK_SGIX				    = $801F;
+   GLX_DAMAGED_SGIX				    = $8020;//BufferClobberSGIX event_type value
+   GLX_SAVED_SGIX				    = $8021;
+   GLX_WINDOW_SGIX			            = $8022;//BufferClobberSGIX draw_type value
+   GLX_PBUFFER_SGIX				    = $8023;
+   GLX_DIGITAL_MEDIA_PBUFFER_SGIX		    = $8024; //PbufferSGIX attribute
+   GLX_BLENDED_RGBA_SGIS			    = $8025; //TRANSPARENT_TYPE_EXT attribute value
+   GLX_MULTISAMPLE_SUB_RECT_WIDTH_SGIS		    = $8026;// Visual attribute (shared_multisample)
+   GLX_MULTISAMPLE_SUB_RECT_HEIGHT_SGIS		    = $8027;
+   GLX_VISUAL_SELECT_GROUP_SGIX			    = $8028; //Visual attribute (visual_select_group)
+   GLX_HYPERPIPE_ID_SGIX			    = $8030;//Associated hyperpipe ID (SGIX_hyperpipe)
+   //GLXSyncType enum:
+   GLX_SYNC_FRAME_SGIX				    = $00000000	;//ChannelRectSyncSGIX synctype
+   GLX_SYNC_SWAP_SGIX				    = $00000001;
+   //GLXEventMask enum:
+   GLX_BUFFER_CLOBBER_MASK_SGIX			    = $08000000;// SelectEventSGIX mask
+   GLX_BUFFER_SWAP_COMPLETE_INTEL_MASK		    = $04000000;
+   //GLXHyperpipeTypeMask enum:
+   GLX_HYPERPIPE_DISPLAY_PIPE_SGIX		    = $00000001;//SGIX_hyperpipe
+   GLX_HYPERPIPE_RENDER_PIPE_SGIX		    = $00000002;
+   //GLXHyperpipeAttrib enum:
+   GLX_PIPE_RECT_SGIX				    = $00000001;//SGIX_hyperpipe
+   GLX_PIPE_RECT_LIMITS_SGIX		  	    = $00000002;
+   GLX_HYPERPIPE_STEREO_SGIX			    = $00000003;
+   GLX_HYPERPIPE_PIXEL_AVERAGE_SGIX	            = $00000004;
+   GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX		    = $80      ;// SGIX_hyperpipe
+   //GLXBindToTextureTargetMask enum:
+   GLX_TEXTURE_1D_BIT_EXT			    = $00000001;// EXT_texture_from_pixmap
+   GLX_TEXTURE_2D_BIT_EXT			    = $00000002;
+   GLX_TEXTURE_RECTANGLE_BIT_EXT		    = $00000004;
+  // OML_swap_method enum:
+   GLX_SWAP_METHOD_OML				    = $8060;
+   GLX_SWAP_EXCHANGE_OML			    = $8061;
+   GLX_SWAP_COPY_OML				    = $8062;
+   GLX_SWAP_UNDEFINED_OML			    = $8063;
+   //INTEL_swap_event enum:
+   GLX_EXCHANGE_COMPLETE_INTEL			    = $8180;
+   GLX_COPY_COMPLETE_INTEL			    = $8181;
+   GLX_FLIP_COMPLETE_INTEL			    = $8182;
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 type
+   {$IFDEF SUPPORT_GLX}
+      TGLXHyperpipeNetworkSGIX = record
+      pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
+      networkId: TGLint;
+   end;
+   PGLXHyperpipeNetworkSGIX = ^TGLXHyperpipeNetworkSGIX;
+   TGLXHyperpipeConfigSGIX = record
+      pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
+      channel: TGLInt;
+      participationType: TGLuInt;
+      timeSlice: TGLInt;
+   end;
+   PGLXHyperpipeConfigSGIX = ^TGLXHyperpipeConfigSGIX;
+   TGLXPipeRect = record
+      pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
+      srcXOrigin, srcYOrigin, srcWidth, srcHeight: TGLInt;
+      destXOrigin, destYOrigin, destWidth, destHeight: TGLInt;
+   end;
+   PGLXPipeRect = ^TGLXPipeRect;
+   TGLXPipeRectLimits = record
+      pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
+      XOrigin, YOrigin, maxHeight, maxWidth: TGLInt;
+   end;
+   PGLXPipeRectLimits = ^TGLXPipeRectLimits;
+   {$ENDIF}
+
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) types'} {$ENDIF}
    // GLU types
@@ -5123,6 +5353,7 @@ type
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Extension to the X Window System (GLX) support functions'} {$ENDIF}
    {$IFDEF SUPPORT_GLX}
+   // GLX 1.0
    function glXChooseVisual(dpy: PDisplay; screen: TGLint; attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
    function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
    procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
@@ -5148,37 +5379,6 @@ type
 
    // GLX 1.2 and later
    function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
-
-   // GLX 1.3 and later
-   function glXChooseFBConfig(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl; external opengl32;
-   function glXGetFBConfigAttrib(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
-   function glXGetFBConfigs(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl; external opengl32;
-   function glXGetVisualFromFBConfig(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl; external opengl32;
-   function glXCreateWindow(dpy: PDisplay; config: GLXFBConfig; win: GLXWindow; const attribList: PGLInt): GLXWindow; cdecl; external opengl32;
-   procedure glXDestroyWindow(dpy: PDisplay; window: GLXWindow); cdecl; external opengl32;
-   function glXCreatePixmap(dpy: PDisplay; config: GLXFBConfig; pixmap: GLXPixmap; attribList: PGLInt): GLXPixmap; cdecl; external opengl32;
-   procedure glXDestroyPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
-   function glXCreatePbuffer(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl; external opengl32;
-   procedure glXDestroyPbuffer(dpy: PDisplay; pbuf: GLXPBuffer); cdecl; external opengl32;
-   procedure glXQueryDrawable(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl; external opengl32;
-   function glXCreateNewContext(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
-   function glXMakeContextCurrent(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
-   function glXGetCurrentReadDrawable: GLXDrawable; cdecl; external opengl32;
-   function glXQueryContext(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
-   procedure glXSelectEvent(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl; external opengl32;
-   procedure glXGetSelectedEvent(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl; external opengl32;
-   //should these extensions should be loaded dynamically?
-   function glXGetVideoSyncSGI(count: PGLuint): TGLInt; cdecl; external opengl32;
-   function glXWaitVideoSyncSGI(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl; external opengl32;
-   procedure glXFreeContextEXT(dpy: PDisplay; context: GLXContext); cdecl; external opengl32;
-   function glXGetContextIDEXT(const context: GLXContext): GLXContextID; cdecl; external opengl32;
-   function glXGetCurrentDisplayEXT: PDisplay; cdecl; external opengl32;
-   function glXImportContextEXT(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl; external opengl32;
-   function glXQueryContextInfoEXT(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
-   procedure glXCopySubBufferMESA(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl; external opengl32;
-   function glXCreateGLXPixmapMESA(dpy: PDisplay; visual: PXVisualInfo; pixmap: XPixmap; cmap: XColormap): GLXPixmap; cdecl; external opengl32;
-   function glXReleaseBuffersMESA(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl; external opengl32;
-   function glXSet3DfxModeMESA(mode: TGLint): TGLboolean; cdecl; external opengl32;
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -5811,11 +6011,35 @@ var
    //               ARB approved GLX extensions
    //  ###########################################################
 
+   // GLX 1.3 and later
+   glXChooseFBConfig: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
+   glXGetFBConfigAttrib: function(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+   glXGetFBConfigs: function(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl;
+   glXGetVisualFromFBConfig: function(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl;
+   glXCreateWindow: function(dpy: PDisplay; config: GLXFBConfig; win: GLXWindow; const attribList: PGLInt): GLXWindow; cdecl;
+   glXDestroyWindow: procedure(dpy: PDisplay; window: GLXWindow); cdecl;
+   glXCreatePixmap: function(dpy: PDisplay; config: GLXFBConfig; pixmap: GLXPixmap; attribList: PGLInt): GLXPixmap; cdecl;
+   glXDestroyPixmap: procedure(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
+   glXCreatePbuffer: function(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl;
+   glXDestroyPbuffer: procedure(dpy: PDisplay; pbuf: GLXPBuffer); cdecl;
+   glXQueryDrawable: procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl;
+   glXCreateNewContext: function(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
+   glXMakeContextCurrent: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
+   glXGetCurrentReadDrawable: function: GLXDrawable; cdecl;
+   glXQueryContext: function(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+   glXSelectEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
+   glXGetSelectedEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
+   glXBindTexImageARB: function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLInt): TGLboolean; cdecl;
+   glXReleaseTexImageARB: function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLint): TGLboolean; cdecl;
+   glxDrawableAttribARB: function(dpy: PDisplay; draw: GLXDrawable; const attribList:PGLInt): TGLboolean; cdecl;
+
+   //GLX 1.4
    // GLX_ARB_create_context (EXT #56)
    glXCreateContextAttribsARB: function(dpy: PDisplay; config: GLXFBConfig;
 		    share_context: GLXContext; direct: TGLBoolean;
 		    attrib_list: PGLint): GLXContext; cdecl;
-
+   glXGetProcAddress: function(const name: PAnsiChar): pointer; cdecl;
+   glXGetProcAddressARB: function (const name: PAnsiChar): pointer; cdecl;
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -5823,12 +6047,88 @@ var
    {$IFDEF SUPPORT_GLX}
    //  ###########################################################
    //           function and procedure definitions for
-   //               Vendor/EXT WGL extensions
+   //               Vendor/EXT GLX extensions
    //  ###########################################################
 
    // GLX_SGI_swap_control (EXT #40)
    glXSwapIntervalSGI: function(interval: TGLint): TGLint; cdecl;
+   glXGetVideoSyncSGI: function(count: PGLuint): TGLInt; cdecl;
+   glXWaitVideoSyncSGI: function(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl;
+   glXFreeContextEXT: procedure(dpy: PDisplay; context: GLXContext); cdecl;
+   glXGetContextIDEXT: function(const context: GLXContext): GLXContextID; cdecl;
+   glXGetCurrentDisplayEXT: function: PDisplay; cdecl;
+   glXImportContextEXT: function(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl;
+   glXQueryContextInfoEXT: function(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+   glXCopySubBufferMESA: procedure(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl;
+   glXCreateGLXPixmapMESA: function(dpy: PDisplay; visual: PXVisualInfo; pixmap: XPixmap; cmap: XColormap): GLXPixmap; cdecl;
+   glXReleaseBuffersMESA: function(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl;
+   glXSet3DfxModeMESA: function(mode: TGLint): TGLboolean; cdecl;
 
+   glXBindTexImageEXT: procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint; const attrib_list: PGLint); cdecl;
+   glXReleaseTexImageEXT: procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint); cdecl;
+
+   //GLX 1.4
+   glXMakeCurrentReadSGI: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
+   glXGetCurrentReadDrawableSGI: function: GLXDrawable; cdecl;
+   glXGetFBConfigAttribSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; attribute: TGLInt; value: PGLInt):TGLInt; cdecl;
+   glXChooseFBConfigSGIX: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfigSGIX; cdecl;
+   glXCreateGLXPixmapWithConfigSGIX: function(dpy: PDisplay; config:GLXFBConfigSGIX;  pixmap: GLXPixmap): GLXPixmap; cdecl;
+   glXCreateContextWithConfigSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
+   glXGetVisualFromFBConfigSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX): PXVisualInfo; cdecl;
+   glXGetFBConfigFromVisualSGIX: function(dpy: PDisplay; vis: PXVisualInfo): GLXFBConfigSGIX; cdecl;
+   glXCreateGLXPbufferSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; width:PGLuint;  height: PGLuint; attribList: PGLInt): GLXPBufferSGIX; cdecl;
+   glXDestroyGLXPbufferSGIX: procedure(dpy: PDisplay; pbuf: GLXFBConfigSGIX); cdecl;
+   glXQueryGLXPbufferSGIX: function(dpy: PDisplay; pbuf: GLXFBConfigSGIX; attribute: PGLInt; value: PGLuint): TGLInt; cdecl;
+   glXSelectEventSGIX: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
+   glXGetSelectedEventSGIX: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
+   glXCushionSGI: procedure(dpy: PDisplay; window: TWindow; cushion: TGLfloat); cdecl;
+   glXBindChannelToWindowSGIX: function(dpy: PDisplay; screen: TGLInt; channel: TGLInt; window: TWindow): TGLInt; cdecl;
+   glXChannelRectSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
+   glXQueryChannelRectSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; dx, dy, dw, dh: TGLInt): TGLInt; cdecl;
+   glXQueryChannelDeltasSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
+   glXChannelRectSyncSGIX: function (dpy: PDisplay; screen: TGLInt; channel: TGLInt; synctype: TGLEnum): TGLInt; cdecl;
+   glXJoinSwapGroupSGIX: procedure (dpy: PDisplay; drawable: GLXDrawable; member: GLXDrawable); cdecl;
+   glXBindSwapBarrierSGIX: procedure (dpy: PDisplay; drawable: GLXDrawable; barrier: TGLInt); cdecl;
+   glXQueryMaxSwapBarriersSGIX: procedure (dpy: PDisplay; screen: TGLInt; max: TGLInt); cdecl;
+   glXQueryHyperpipeNetworkSGIX: function (dpy: PDisplay; npipes:PGLint): PGLXHyperpipeNetworkSGIX; cdecl;
+   glXHyperpipeConfigSGIX: function(dpy: PDisplay; networkId, npipes: PGLint; cfg: PGLXHyperpipeConfigSGIX; hpId: PGLInt): TGLint; cdecl;
+   glXQueryHyperpipeConfigSGIX: function(dpy: PDisplay; hpId: TGLInt; npipes: PGLInt): PGLXHyperpipeConfigSGIX; cdecl;
+   glXDestroyHyperpipeConfigSGIX: function(dpy: PDisplay; hpId:TGLint): PGLInt; cdecl;
+   glXBindHyperpipeSGIX: function(dpy: PDisplay; hpId: PGLint): PGLInt; cdecl;
+   glXQueryHyperpipeBestAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint; returnAttribList: TGLint): TGLint; cdecl;
+   glXHyperpipeAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint): TGLint; cdecl;
+   glXQueryHyperpipeAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; returnAttribList: TGLint): TGLint; cdecl;
+   glXGetAGPOffsetMESA: function(param: Pointer): PGLInt;cdecl;
+   glXEnumerateVideoDevicesNV: function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): PGLuint; cdecl;
+   glXBindVideoDeviceNV: function(dpy: PDisplay; video_slot: TGLInt; video_device: TGLInt; attrib_list: PGLint): TGLint; cdecl;
+   GetVideoDeviceNV: function(dpy: PDisplay; screen: TGLInt; numVideoDevices: TGLInt; pVideoDevice: GLXVideoDeviceNV): TGLInt; cdecl;
+
+   glXAllocateMemoryNV: procedure( size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat ); cdecl;
+   glXFreeMemoryNV: procedure ( GLvoid: pointer ); cdecl;
+
+   glXReleaseVideoDeviceNV: function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
+   glXBindVideoImageNV: function(dpy: PDisplay; VideoDevice: GLXVideoDeviceNV; pbuf: GLXPbuffer; iVideoBuffer: TGLInt): TGLuint; cdecl;
+   glXReleaseVideoImageNV: function(dpy: PDisplay; pbuf: GLXPbuffer): TGLInt; cdecl;
+   glXSendPbufferToVideoNV: function(dpy: PDisplay; pbuf: GLXPbuffer; iBufferType: TGLInt; pulCounterPbuffer: TGLuint64; bBlock: TGLboolean): TGLInt; cdecl;
+   glXGetVideoInfoNV: function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV; pulCounterOutputPbuffer: TGLuInt64; pulCounterOutputVideo: TGLuInt64): TGLInt; cdecl;
+   glXJoinSwapGroupNV: function(dpy: PDisplay; drawable: GLXDrawable; group: TGLuint): TGLBoolean; cdecl;
+   glXBindSwapBarrierNV: function(dpy: PDisplay; group: TGLuint; barrier: TGLuint): TGLboolean; cdecl;
+   glXQuerySwapGroupNV: function(dpy: PDisplay; drawable: GLXDrawable; group: PGLuint; barrier: PGLuint): TGLBoolean; cdecl;
+   glXQueryMaxSwapGroupsNV: function(dpy: PDisplay; screen: TGLInt; maxGroups: TGLuInt; maxBarriers: TGLuInt): TGLBoolean; cdecl;
+   glXQueryFrameCountNV: function(dpy: PDisplay; screen: TGLInt; count: TGLuint): TGLBoolean; cdecl;
+   glXResetFrameCountNV: function(dpy: PDisplay; screen: TGLInt): TGLBoolean; cdecl;
+   glXBindVideoCaptureDeviceNV: function(dpy: PDisplay; video_capture_slot: TGLuint; device: GLXVideoCaptureDeviceNV): TGLint; cdecl;
+   glXEnumerateVideoCaptureDevicesNV: function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): GLXVideoCaptureDeviceNV; cdecl;
+   glxLockVideoCaptureDeviceNV: procedure (dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
+   glXQueryVideoCaptureDeviceNV: function(dpy: PDisplay; device: GLXVideoCaptureDeviceNV; attribute:TGLint; value: PGLint): TGLint; cdecl;
+   glXReleaseVideoCaptureDeviceNV: procedure(dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
+   glXSwapIntervalEXT: function(dpy: PDisplay; drawable: GLXDrawable; interval:TGLint): TGLint; cdecl;
+   glXCopyImageSubDataNV: procedure(dpy: PDisplay; srcCtx: GLXContext; srcName: TGLuint; srcTarget: TGLenum;
+                         srcLevel: TGLuint; srcX: TGLuint;
+                         srcY: TGLuint; srcZ: TGLuint;
+                         dstCtx:GLXContext; dstName:TGLuint; dstTarget: TGLenum; dstLevel: TGLint;
+                         dstX: TGLint; dstY: TGLint; dstZ: TGLint; width: GLsizei; height: GLsizei;
+                         depth: GLsizei); cdecl;
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -6838,6 +7138,21 @@ var
    GLUHandle: TLibHandle;//Pointer;
    
 function GLGetProcAddress(ProcName: PGLChar):Pointer;
+begin
+  if @glXGetProcAddress<>nil then
+    result := glXGetProcAddress(ProcName);
+
+  if result<> nil then exit;
+
+  if @glXGetProcAddressARB<>nil then
+    result := glXGetProcAddressARB(ProcName);
+
+  if result<> nil then exit;
+
+  result := GetProcAddress(Cardinal(GLHandle),ProcName);
+end;
+
+function _GLGetProcAddress(ProcName: PGLChar):Pointer;
 begin
   result := GetProcAddress(Cardinal(GLHandle),ProcName);
 end;
@@ -8300,6 +8615,33 @@ begin
    //                  ARB approved GLX extensions
    //  ###########################################################
 
+   //loading first!
+   glXGetProcAddress := _GLGetProcAddress('glXGetProcAddress');
+   glXGetProcAddressARB := _GLGetProcAddress('glXGetProcAddressARB');
+
+   //GLX 1.3 and later
+   glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
+   glXGetFBConfigAttrib := GLGetProcAddress('glXGetFBConfigAttrib');
+   glXGetFBConfigs := GLGetProcAddress('glXGetFBConfigs');
+   glXGetVisualFromFBConfig := GLGetProcAddress('glXGetVisualFromFBConfig');
+   glXCreateWindow := GLGetProcAddress('glXCreateWindow');
+   glXDestroyWindow := GLGetProcAddress('glXDestroyWindow');
+   glXCreatePixmap := GLGetProcAddress('glXCreatePixmap');
+   glXDestroyPixmap := GLGetProcAddress('glXDestroyPixmap');
+   glXCreatePbuffer := GLGetProcAddress('glXCreatePbuffer');
+   glXDestroyPbuffer := GLGetProcAddress('glXDestroyPbuffer');
+   glXQueryDrawable := GLGetProcAddress('glXQueryDrawable');
+   glXCreateNewContext := GLGetProcAddress('glXCreateNewContext');
+   glXMakeContextCurrent := GLGetProcAddress('glXMakeContextCurrent');
+   glXGetCurrentReadDrawable := GLGetProcAddress('glXGetCurrentReadDrawable');
+   glXQueryContext := GLGetProcAddress('glXQueryContext');
+   glXSelectEvent := GLGetProcAddress('glXSelectEvent');
+   glXGetSelectedEvent := GLGetProcAddress('glXGetSelectedEvent');
+   glXBindTexImageARB := GLGetProcAddress('glXBindTexImageARB');
+   glXReleaseTexImageARB := GLGetProcAddress('glXReleaseTexImageARB');
+   glxDrawableAttribARB := GLGetProcAddress('glxDrawableAttribARB');
+
+   //GLX 1.4
    // GLX_ARB_create_context (EXT #56)
    glXCreateContextAttribsARB := GLGetProcAddress('glXCreateContextAttribsARB');
 
@@ -8309,8 +8651,85 @@ begin
    //  ###########################################################
 
    // WGL_EXT_swap_control (EXT #172)
-   glXSwapIntervalSGI := GLGetProcAddress('glXSwapIntervalSGI');
+    glXSwapIntervalSGI := GLGetProcAddress('glXSwapIntervalSGI');
+    glXGetVideoSyncSGI := GLGetProcAddress('glXGetVideoSyncSGI');
+    glXWaitVideoSyncSGI := GLGetProcAddress('glXWaitVideoSyncSGI');
+    glXFreeContextEXT := GLGetProcAddress('glXFreeContextEXT');
+    glXGetContextIDEXT := GLGetProcAddress('glXGetContextIDEXT');
+    glXGetCurrentDisplayEXT := GLGetProcAddress('glXGetCurrentDisplayEXT');
+    glXImportContextEXT := GLGetProcAddress('glXImportContextEXT');
+    glXQueryContextInfoEXT := GLGetProcAddress('glXQueryContextInfoEXT');
+    glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
+    glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
+    glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
+    glXSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
 
+    glXBindTexImageEXT := GLGetProcAddress('glXBindTexImageEXT');
+    glXReleaseTexImageEXT := GLGetProcAddress('glXReleaseTexImageEXT');
+
+    //GLX 1.4
+    glXMakeCurrentReadSGI := GLGetProcAddress('glXMakeCurrentReadSGI');
+    glXGetCurrentReadDrawableSGI := GLGetProcAddress('glXGetCurrentReadDrawableSGI');
+    glXGetFBConfigAttribSGIX := GLGetProcAddress('glXGetFBConfigAttribSGIX');
+    glXChooseFBConfigSGIX := GLGetProcAddress('glXChooseFBConfigSGIX');
+    glXCreateGLXPixmapWithConfigSGIX := GLGetProcAddress('glXCreateGLXPixmapWithConfigSGIX');
+    glXCreateContextWithConfigSGIX := GLGetProcAddress('glXCreateContextWithConfigSGIX');
+    glXGetVisualFromFBConfigSGIX := GLGetProcAddress('glXGetVisualFromFBConfigSGIX');
+    glXGetFBConfigFromVisualSGIX := GLGetProcAddress('glXGetFBConfigFromVisualSGIX');
+    glXCreateGLXPbufferSGIX := GLGetProcAddress('glXCreateGLXPbufferSGIX');
+    glXDestroyGLXPbufferSGIX := GLGetProcAddress('glXDestroyGLXPbufferSGIX');
+    glXQueryGLXPbufferSGIX := GLGetProcAddress('glXQueryGLXPbufferSGIX');
+    glXSelectEventSGIX := GLGetProcAddress('glXSelectEventSGIX');
+    glXGetSelectedEventSGIX := GLGetProcAddress('glXGetSelectedEventSGIX');
+    glXCushionSGI := GLGetProcAddress('glXCushionSGI');
+    glXBindChannelToWindowSGIX := GLGetProcAddress('glXBindChannelToWindowSGIX');
+    glXChannelRectSGIX := GLGetProcAddress('glXChannelRectSGIX');
+    glXQueryChannelRectSGIX := GLGetProcAddress('glXQueryChannelRectSGIX');
+    glXQueryChannelDeltasSGIX := GLGetProcAddress('glXQueryChannelDeltasSGIX');
+    glXChannelRectSyncSGIX := GLGetProcAddress('glXChannelRectSyncSGIX');
+    glXJoinSwapGroupSGIX := GLGetProcAddress('glXJoinSwapGroupSGIX');
+    glXBindSwapBarrierSGIX := GLGetProcAddress('glXBindSwapBarrierSGIX');
+    glXQueryMaxSwapBarriersSGIX := GLGetProcAddress('glXQueryMaxSwapBarriersSGIX');
+    glXQueryHyperpipeNetworkSGIX := GLGetProcAddress('glXQueryHyperpipeNetworkSGIX');
+
+
+    glXHyperpipeConfigSGIX := GLGetProcAddress('glXHyperpipeConfigSGIX');
+    glXQueryHyperpipeConfigSGIX := GLGetProcAddress('glXQueryHyperpipeConfigSGIX');
+    glXDestroyHyperpipeConfigSGIX := GLGetProcAddress('glXDestroyHyperpipeConfigSGIX');
+    glXBindHyperpipeSGIX := GLGetProcAddress('glXBindHyperpipeSGIX');
+    glXQueryHyperpipeBestAttribSGIX := GLGetProcAddress('glXQueryHyperpipeBestAttribSGIX');
+    glXHyperpipeAttribSGIX := GLGetProcAddress('glXHyperpipeAttribSGIX');
+    glXQueryHyperpipeAttribSGIX := GLGetProcAddress('glXQueryHyperpipeAttribSGIX');
+    glXGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
+    glXEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
+    glXBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
+    GetVideoDeviceNV := GLGetProcAddress('GetVideoDeviceNV');
+    glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
+    glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
+    glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
+    glXSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
+
+    glXAllocateMemoryNV := GLGetProcAddress('glXAllocateMemoryNV');
+    glXFreeMemoryNV := GLGetProcAddress('glXFreeMemoryNV');
+
+    glXReleaseVideoDeviceNV := GLGetProcAddress('glXReleaseVideoDeviceNV');
+    glXBindVideoImageNV := GLGetProcAddress('glXBindVideoImageNV');
+    glXReleaseVideoImageNV := GLGetProcAddress('glXReleaseVideoImageNV');
+    glXSendPbufferToVideoNV := GLGetProcAddress('glXSendPbufferToVideoNV');
+    glXGetVideoInfoNV := GLGetProcAddress('glXGetVideoInfoNV');
+    glXJoinSwapGroupNV := GLGetProcAddress('glXJoinSwapGroupNV');
+    glXBindSwapBarrierNV := GLGetProcAddress('glXBindSwapBarrierNV');
+    glXQuerySwapGroupNV := GLGetProcAddress('glXQuerySwapGroupNV');
+    glXQueryMaxSwapGroupsNV := GLGetProcAddress('glXQueryMaxSwapGroupsNV');
+    glXQueryFrameCountNV := GLGetProcAddress('glXQueryFrameCountNV');
+    glXResetFrameCountNV := GLGetProcAddress('glXResetFrameCountNV');
+    glXBindVideoCaptureDeviceNV := GLGetProcAddress('glXBindVideoCaptureDeviceNV');
+    glXEnumerateVideoCaptureDevicesNV := GLGetProcAddress('glXEnumerateVideoCaptureDevicesNV');
+    glxLockVideoCaptureDeviceNV := GLGetProcAddress('glxLockVideoCaptureDeviceNV');
+    glXQueryVideoCaptureDeviceNV := GLGetProcAddress('glXQueryVideoCaptureDeviceNV');
+    glXReleaseVideoCaptureDeviceNV := GLGetProcAddress('glXReleaseVideoCaptureDeviceNV');
+    glXSwapIntervalEXT := GLGetProcAddress('glXSwapIntervalEXT');
+    glXCopyImageSubDataNV := GLGetProcAddress('glXCopyImageSubDataNV');
 end;
 {$ENDIF}
 
@@ -8686,6 +9105,7 @@ end;
 procedure ReadGLXImplementationProperties;
 var
    Buffer: string;
+   MajorVersion, MinorVersion: Integer;
 
    // Checks if the given Extension string is in Buffer.
    function CheckExtension(const Extension: string): Boolean;
@@ -8702,20 +9122,51 @@ var
    end;
 
 begin
+   buffer:=String(glGetString(GLX_VERSION));
+   TrimAndSplitVersionString(buffer, majorversion, minorVersion);
+   GLX_VERSION_1_1:=IsVersionMet(1,1,majorVersion,minorVersion);
+   GLX_VERSION_1_2:=IsVersionMet(1,2,majorVersion,minorVersion);
+   GLX_VERSION_1_3:=IsVersionMet(1,3,majorVersion,minorVersion);
+   GLX_VERSION_1_4:=IsVersionMet(1,4,majorVersion,minorVersion);
+
    // This procedure will probably need changing, as totally untested
    // This might only work if GLX functions/procedures are loaded dynamically
    if Assigned(glXQueryExtensionsString) then
      Buffer := glXQueryExtensionsString(glXGetCurrentDisplay(), 0)  //guess at a valid screen
    else
      Buffer:='';
-   // ARB GLX extensions
    GLX_ARB_create_context := CheckExtension('GLX_ARB_create_context');
    GLX_ARB_create_context_profile := CheckExtension('GLX_ARB_create_context_profile');
    GLX_ARB_framebuffer_sRGB := CheckExtension('GLX_ARB_framebuffer_sRGB');
-   // EXT/vendor GLX extensions
    GLX_EXT_framebuffer_sRGB := CheckExtension('GLX_EXT_framebuffer_sRGB');
    GLX_EXT_fbconfig_packed_float := CheckExtension('GLX_EXT_fbconfig_packed_float');
    GLX_SGI_swap_control := CheckExtension('GLX_SGI_swap_control');
+   GLX_ARB_multisample := CheckExtension('GLX_ARB_multisample');
+
+   GLX_SGIS_multisample	 := CheckExtension('GLX_SGIS_multisample');
+   GLX_EXT_visual_info	 := CheckExtension('GLX_EXT_visual_info');
+   GLX_SGI_video_sync := CheckExtension('GLX_SGI_video_sync');
+   GLX_SGI_make_current_read := CheckExtension('GLX_SGI_make_current_read');
+   GLX_SGIX_video_source := CheckExtension('GLX_SGIX_video_source');
+   GLX_EXT_visual_rating := CheckExtension('GLX_EXT_visual_rating');
+   GLX_EXT_import_context := CheckExtension('GLX_EXT_import_context');
+   GLX_SGIX_fbconfig := CheckExtension('GLX_SGIX_fbconfig');
+   GLX_SGIX_pbuffer := CheckExtension('GLX_SGIX_pbuffer');
+   GLX_SGI_cushion := CheckExtension('GLX_SGI_cushion');
+   GLX_SGIX_video_resize := CheckExtension('GLX_SGIX_video_resize');
+   GLX_SGIX_dmbuffer := CheckExtension('GLX_SGIX_dmbuffer');
+   GLX_SGIX_swap_group := CheckExtension('GLX_SGIX_swap_group');
+   GLX_SGIX_swap_barrier := CheckExtension('GLX_SGIX_swap_barrier');
+   GLX_SGIS_blended_overlay := CheckExtension('GLX_SGIS_blended_overlay');
+   GLX_SGIS_shared_multisample	 := CheckExtension('GLX_SGIS_shared_multisample');
+   GLX_SUN_get_transparent_index := CheckExtension('GLX_SUN_get_transparent_index');
+   GLX_3DFX_multisample	 := CheckExtension('GLX_3DFX_multisample');
+   GLX_MESA_copy_sub_buffer := CheckExtension('GLX_MESA_copy_sub_buffer');
+   GLX_MESA_pixmap_colormap := CheckExtension('GLX_MESA_pixmap_colormap');
+   GLX_MESA_release_buffers := CheckExtension('GLX_MESA_release_buffers');
+   GLX_MESA_set_3dfx_mode := CheckExtension('GLX_MESA_set_3dfx_mode');
+   GLX_SGIX_visual_select_group	 := CheckExtension('GLX_SGIX_visual_select_group');
+   GLX_SGIX_hyperpipe  := CheckExtension('GLX_SGIX_hyperpipe');
 end;
 {$ENDIF}
 
@@ -8750,15 +9201,8 @@ begin
    Result := False;
    CloseOpenGL;
 
-   //{$IFDEF Win32}
    GLHandle:=LoadLibrary(PChar(GLName));
    GLUHandle:=LoadLibrary(PChar(GLUName));
-   //{$ENDIF}
-
-//   {$IFDEF UNIX}
-//   GLHandle:=dlopen(PChar(GLName), RTLD_GLOBAL or RTLD_LAZY);
-//   GLUHandle:=dlopen(PChar(GLUName), RTLD_GLOBAL or RTLD_LAZY);
-//   {$ENDIF}
 
    if (GLHandle<>INVALID_MODULEHANDLE) and (GLUHandle<>INVALID_MODULEHANDLE) then
      Result:=True
