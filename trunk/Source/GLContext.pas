@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/03/10 - Yar - Added MapBufferRange, Flush to TGLBufferObjectHandle
       <li>06/03/10 - Yar - Added to TGLProgramHandle BindFragDataLocation, GetUniformOffset, GetUniformBlockIndex
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - DanB - Added TGLContext.GLStates, to be used to cache
@@ -497,6 +498,8 @@ type
             Valid only if the buffer has been bound, must be followed by
             an UnmapBuffer, only one buffer may be mapped at a time. }
          function MapBuffer(access : TGLuint) : Pointer;
+         function MapBufferRange(offset: TGLint; len: TGLsizei; access: TGLbitfield): Pointer;
+         procedure Flush(offset: TGLint; len: TGLsizei);
          {: Unmap buffer content from memory.<p>
             Must follow a MapBuffer, and happen before the buffer is unbound. }
          function UnmapBuffer : Boolean;
@@ -1949,6 +1952,21 @@ end;
 function TGLBufferObjectHandle.MapBuffer(access : TGLuint) : Pointer;
 begin
    Result:=glMapBufferARB(Target, access);
+end;
+
+// MapBufferRange
+//
+function TGLBufferObjectHandle.MapBufferRange(offset: TGLint; len: TGLsizei;
+  access: TGLbitfield): Pointer;
+begin
+   Result := glMapBufferRange(Target, offset, len, access);
+end;
+
+// Flush
+//
+procedure TGLBufferObjectHandle.Flush(offset: TGLint; len: TGLsizei);
+begin
+  glFlushMappedBufferRange(Target, offset, len);
 end;
 
 // UnmapBuffer
