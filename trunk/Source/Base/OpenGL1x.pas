@@ -10,7 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>18/03/10 - Yar - Added more GLX extensions (thanks Predator)
+      <li>18/03/10 - Yar - Added more GLX extensions
+                          (thanks to Rustam Asmandiarov aka Predator)
       <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
                             _ARB suffix from functions/procedures in
                             GL_ARB_draw_buffers_blend + GL_ARB_sample_shading
@@ -8369,6 +8370,8 @@ begin
    glPrimitiveRestartNV := GLGetProcAddress('glPrimitiveRestartNV');
    glPrimitiveRestartIndexNV := GLGetProcAddress('glPrimitiveRestartIndexNV');
    glPrimitiveRestartIndex := GLGetProcAddress('glPrimitiveRestartIndex');
+   if Addr(glPrimitiveRestartIndex) = nil then
+    glPrimitiveRestartIndex := glPrimitiveRestartIndexNV;
 
    // GL_EXT_depth_bounds_test (#297)
    glDepthBoundsEXT := GLGetProcAddress('glDepthBoundsEXT');
