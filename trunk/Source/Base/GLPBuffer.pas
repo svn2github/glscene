@@ -9,6 +9,8 @@
   It does not require a fully-functional rendering context.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>21/03/10 - Yar - Added Unix support
+                           (thanks to Rustam Asmandiarov aka Predator)
       <li>08/03/10 - Yar - Added more conditional brackets for unix systems
       <li>27/01/10 - Yar - Updated header and moved to the /Source/Base/ folder
       <li>26/01/10 - DaStr - Bugfixed range check error, for real ;)
@@ -44,6 +46,10 @@ uses
   Windows,
   Classes,
 {$ENDIF}
+{$IFDEF Unix}
+  LCLType,
+  xlib,
+{$ENDIF}
   SysUtils,
   OpenGL1x;
 
@@ -57,11 +63,10 @@ type
     ParentDC: HDC;
     ParentRC: HGLRC;
     fHandle: HPBUFFERARB;
-{$ELSE}
-    DC: LongWord;
-    RC: LongWord;
-    ParentDC: LongWord;
-    ParentRC: LongWord;
+{$ENDIF}
+{$IFDEF Unix}
+    Dpy: PDisplay;
+    RC: GLXContext;
     fHandle: LongInt;
 {$ENDIF}
     fWidth: GLint;
@@ -85,14 +90,25 @@ type
   end;
 
   EGLPixelBuffer = class(Exception);
+  {$IFDEF UNIX}
+   TGLXFBConfigArray = array[0..MaxInt div (SizeOf(GLXFBConfig)*2) ] of GLXFBConfig;
+   PGLXFBConfigArray = ^TGLXFBConfigArray;
+  {$ENDIF}
 
 implementation
 
 constructor TGLPixelBuffer.Create;
 begin
   inherited Create;
+{$IFDEF MSWINDOWS}
   ParentDC := 0;
   ParentRC := 0;
+{$ENDIF}
+{$IFDEF Unix}
+  Dpy := nil;
+  fHandle := 0;
+  RC := nil;
+{$ENDIF}
 end;
 
 procedure TGLPixelBuffer.Initialize(pWidth, pHeight: integer);
@@ -116,8 +132,28 @@ var
   PFormat: array[0..64] of TGLInt;
   NumPFormat: TGLenum;
   TempW, TempH: TGLInt;
-{$ELSE}
+{$ENDIF}
+{$IFDEF Unix}
+const
+  PixelFormatAttribs: array[0..12] of TGLInt =
+   (GLX_RENDER_TYPE   , GLX_RGBA_BIT,
+    GLX_DRAWABLE_TYPE , GLX_PBUFFER_BIT,
+    GLX_BUFFER_SIZE, 24,
+    GLX_ALPHA_SIZE,8,
+    GLX_DEPTH_SIZE,24,
+    GLX_DOUBLEBUFFER, GL_FALSE,
+    0);
 
+  PixelBufferAttribs: array [0..10] of Integer=
+  (GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGBA_EXT,
+    GLX_TEXTURE_TARGET_EXT,  GLX_TEXTURE_2D_EXT,
+    GLX_PBUFFER_WIDTH, 1,
+    GLX_PBUFFER_HEIGHT, 1,
+    GLX_PRESERVED_CONTENTS, gl_True,
+    0);
+var
+  fbConfigs: PGLXFBConfigArray;
+  nitems: integer;
 {$ENDIF}
 begin
   fWidth := pWidth;
@@ -162,7 +198,38 @@ begin
   wglMakeCurrent(DC, RC);
   glGenTextures(1, @fTextureID);
 {$ELSE}
+  Dpy := glXGetCurrentDisplay;
+  if not Assigned(Dpy) then
+  begin
+    Dpy := XOpenDisplay(nil);
+    if not Assigned(Dpy) then
+      raise EGLPixelBuffer.Create(
+        'PixelBuffer->glXGetCurrentDisplay->Couldn''t obtain valid Display');
+  end;
+  fbConfigs := glXChooseFBConfig(Dpy, XDefaultScreen(dpy), PixelFormatAttribs, @nitems);
 
+  if fbConfigs=nil then
+      raise EGLPixelBuffer.Create(
+      'PixelBuffer->glXChooseFBConfig->No suitable pixelformat found');
+
+  fHandle := glXCreatePbuffer(Dpy, fbConfigs[0],  PixelBufferAttribs);
+  if fHandle <> 0 then
+  begin
+    glXQueryDrawable(Dpy, fHandle, GLX_PBUFFER_WIDTH, @fwidth);
+    glXQueryDrawable(Dpy, fHandle, GLX_PBUFFER_HEIGHT, @fHeight);
+  end
+  else
+    raise EGLPixelBuffer.Create(
+      'PixelBuffer->glXCreatePbuffer->Couldn''t obtain valid handle');
+
+  RC := glXCreateNewContext(Dpy, fbConfigs[0], GLX_RGBA_TYPE, nil, true);
+
+  if RC = nil then
+    raise EGLPixelBuffer.Create(
+      'PixelBuffer->glXCreateNewContext->Couldn''t create rendercontext for PBuffer');
+
+  glXMakeContextCurrent(Dpy, fHandle, fHandle, RC);
+  glGenTextures(1, @fTextureID);
 {$ENDIF}
 end;
 
@@ -176,17 +243,26 @@ begin
     wglReleasePbufferDCARB(fHandle, DC);
     wglDestroyPbufferARB(fHandle);
   end;
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF Unix}
+  Disable;
+  if Dpy = nil then Exit;
+  if (fHandle <> 0) then
+  begin
+    glXDestroyContext(Dpy, RC);
+    glXDestroyPbuffer(Dpy, fHandle);
+    fHandle := 0;
+  end;
+  XCloseDisplay(Dpy);
 {$ENDIF}
   inherited;
 end;
 
 function TGLPixelBuffer.IsLost: boolean;
+{$IFDEF MSWINDOWS}
 var
   Flag: TGLUInt;
 begin
-{$IFDEF MSWINDOWS}
   Assert(fHandle <> 0);
   if wglQueryPbufferARB(fHandle, WGL_PBUFFER_LOST_ARB, @Flag) then
   begin
@@ -194,8 +270,10 @@ begin
   end
   else
     Result := False;
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF Unix}
+begin
+  Result := False;
 {$ENDIF}
 end;
 
@@ -205,8 +283,10 @@ begin
   ParentDC := wglGetCurrentDC;
   ParentRC := wglGetCurrentContext;
   wglMakeCurrent(DC, RC);
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF Unix}
+  If Assigned(Dpy) and Assigned(RC) and (fHandle <> 0) then
+    glXMakeContextCurrent(Dpy, fHandle, fHandle, RC);
 {$ENDIF}
 end;
 
@@ -217,18 +297,22 @@ begin
     wglMakeCurrent(0, 0)
   else
     wglMakeCurrent(ParentDC, ParentRC);
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF UNIX}
+  if Dpy <> nil then
+    glXMakeContextCurrent(Dpy, 0, 0, nil);
 {$ENDIF}
 end;
 
 procedure TGLPixelBuffer.Bind;
+var fBuffercount:integer;
 begin
 {$IFDEF MSWINDOWS}
   Assert(fHandle <> 0);
   wglBindTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF UNIX}
+  //not needed
 {$ENDIF}
 end;
 
@@ -237,10 +321,10 @@ begin
 {$IFDEF MSWINDOWS}
   Assert(fHandle <> 0);
   wglReleaseTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
-{$ELSE}
-
+{$ENDIF}
+{$IFDEF UNIX}
+ //not needed
 {$ENDIF}
 end;
 
 end.
-
