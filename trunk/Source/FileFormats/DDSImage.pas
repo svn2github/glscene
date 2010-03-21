@@ -12,6 +12,8 @@
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
  <b>History : </b><font size=-1><ul>
+        <li>21/03/10 - Yar - Added Unix support
+                             (thanks to Rustam Asmandiarov aka Predator)
         <li>24/01/10 - Yar - Improved FPC compatibility
         <li>21/01/10 - Yar - Creation
    </ul><p>
@@ -24,9 +26,9 @@ interface
 {$i GLScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS} Windows, GLPBuffer, {$ENDIF}
+  {$IFDEF MSWINDOWS} Windows,  {$ENDIF}
   Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
-  OpenGL1x;
+  OpenGL1x, GLPBuffer;
 
 type
 
@@ -42,7 +44,7 @@ type
 implementation
 
 uses
-  {$IFDEF FPC} graphtype, {$ENDIF}
+  {$IFDEF FPC} graphtype, LCLType, {$ENDIF}
   DXTC, GLFileDDS, GLTextureFormat;
 
 // ------------------
@@ -58,8 +60,14 @@ var
   size: integer;
   tempBuff: PGLubyte;
   tempTex: GLuint;
+  {$IFDEF MSWINDOWS}
   DC: HDC;
   RC: HGLRC;
+  {$ENDIF}
+  {$IFDEF Unix}
+  DC: GLXDrawable;
+  RC: GLXContext;
+  {$ENDIF}
   {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
@@ -75,12 +83,23 @@ begin
     raise;
   end;
 
+  {$IFDEF MSWINDOWS}
   // Copy surface as posible to TBitmap
   DC := wglGetCurrentDC;
   RC := wglGetCurrentContext;
+  {$ENDIF}
+  {$IFDEF Unix}
+   DC := glXGetCurrentReadDrawable;
+   RC := glxGetCurrentContext;
+  {$ENDIF}
 
   // Create minimal pixel buffer
+  {$IFDEF MSWINDOWS}
   if (DC = 0) or (RC = 0) then
+  {$ENDIF}
+  {$IFDEF Unix}
+  if (DC = 0) or (RC = nil) then
+  {$ENDIF}
   begin
     PBuf := TGLPixelBuffer.Create;
     try
@@ -108,10 +127,13 @@ begin
     begin
       size := ((FullDDS.Width + 3) div 4) * ((FullDDS.Height + 3) div 4) *
         FullDDS.ElementSize;
-      glCompressedTexImage2DARB(GL_TEXTURE_2D, 0,
+
+      glCompressedTexImage2DARB(
+      GL_TEXTURE_2D, 0,
         InternalFormatToOpenGLFormat(FullDDS.InternalFormat),
         FullDDS.Width, FullDDS.Height, 0, size,
         FullDDS.GetLevelData(0));
+
     end
     else
       glTexImage2D(GL_TEXTURE_2D, 0,
@@ -154,7 +176,9 @@ begin
     RIMG.DataSize := Width*Height*4;
     rimg.Data := PByte(tempBuff);
     LoadFromRawImage(rimg, false);
+
 {$ENDIF}
+
     FullDDS.Free;
     FreeMem(tempBuff);
 

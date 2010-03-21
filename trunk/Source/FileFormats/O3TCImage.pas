@@ -5,6 +5,8 @@
     Good for preview picture in OpenDialog, 
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 
+      <li>21/03/10 - Yar - Added Unix support
+                           (thanks to Rustam Asmandiarov aka Predator)
       <li>24/01/10 - Yar - Improved FPC compatibility
       <li>21/01/10 - Yar - Creation 
    </ul></font>
@@ -17,7 +19,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
+   {$IFDEF MSWINDOWS} Windows,  {$ENDIF}  Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
   OpenGL1x, GLPBuffer;
 
 type
@@ -48,8 +50,14 @@ var
   size: integer;
   tempBuff: PGLubyte;
   tempTex : GLuint;
+  {$IFDEF MSWindows}
   DC : HDC;
   RC : HGLRC;
+  {$Endif}
+  {$IFDEF Unix}
+  DC: GLXDrawable;
+  RC: GLXContext;
+  {$ENDIF}
   {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: Integer;
@@ -64,12 +72,23 @@ begin
     FullO3TC.Free;
     raise;
   end;
+  {$IFDEF MSWINDOWS}
   // Copy surface as posible to TBitmap
   DC := wglGetCurrentDC;
   RC := wglGetCurrentContext;
+  {$ENDIF}
+  {$IFDEF Unix}
+   DC := glXGetCurrentReadDrawable;
+   RC := glxGetCurrentContext;
+  {$ENDIF}
 
   // Create minimal pixel buffer
-  if (DC=0) or (RC=0) then
+  {$IFDEF MSWINDOWS}
+  if (DC = 0) or (RC = 0) then
+  {$ENDIF}
+  {$IFDEF Unix}
+  if (DC = 0) or (RC = nil) then
+  {$ENDIF}
   begin
     PBuf := TGLPixelBuffer.Create;
     try
