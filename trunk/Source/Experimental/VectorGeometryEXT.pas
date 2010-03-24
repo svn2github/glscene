@@ -20,6 +20,8 @@ uses
   VectorGeometry, VectorTypes;
 
 type
+
+
   PLongWordVector = ^TLongWordVector;
   PLongWordArray = PLongWordVector;
   TLongWordVector = array[0..cMaxArray] of LongWord;
@@ -31,6 +33,7 @@ procedure SetVector(var v: TVector4s; const vSrc: TVector4s); overload;
 procedure SetVector(var v: TVector2s; const vSrc: TVector2s); overload;
 procedure SetVector(var v: TVector2s; const x, y: Integer); overload;
 procedure SetVector(var v: TVector2f; const x, y: Single); overload;
+function VectorMake(const x, y: Single): TVector2f; overload;
 function VectorMake(const x, y, z: Integer): TVector3i; overload;
 function VectorMake(const x, y: Integer): TVector2s; overload;
 function VectorAdd(const v1, v2: TVector3i): TVector3i; overload;
@@ -96,6 +99,12 @@ begin
 end;
 
 function VectorMake(const x, y: Integer): TVector2s;
+begin
+  Result[0] := x;
+  Result[1] := y;
+end;
+
+function VectorMake(const x, y: Single): TVector2f;
 begin
   Result[0] := x;
   Result[1] := y;
@@ -187,7 +196,6 @@ begin
   Result[3, 0] := (Rigth + Left) / (Rigth - Left);
   Result[3, 1] := (Top + Bottom) / (Top - Bottom);
   Result[3, 2] := -EPSILON;
-  Result[3, 3] := 1.0;
 end;
 
 end.
