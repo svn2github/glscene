@@ -305,7 +305,9 @@ begin
 end;
 
 procedure TGLPixelBuffer.Bind;
-var fBuffercount:integer;
+{$IFDEF UNIX}
+var fBuffercount: Integer;
+{$ENDIF}
 begin
 {$IFDEF MSWINDOWS}
   Assert(fHandle <> 0);

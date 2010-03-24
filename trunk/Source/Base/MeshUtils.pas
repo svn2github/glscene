@@ -182,7 +182,7 @@ function MakeTriangleAdjacencyList(
 
 var
   vImprovedFixingOpenTriangleEdge: Boolean = False;
-  vEdgeInfoReserveSize: Integer = 64;
+  vEdgeInfoReserveSize: LongWord = 64;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1647,7 +1647,7 @@ begin
      the open boundary. }
 
   if LongWord(Length(edgeInfo)) < (PrimitiveNum + 1) then
-    SetLength(edgeInfo, Length(edgeInfo) + vEdgeInfoReserveSize);
+    SetLength(edgeInfo, Length(edgeInfo) + Integer(vEdgeInfoReserveSize));
 
   // Initialize the new triangle.
   indicesList[PrimitiveNum*3+0] := boundaryList[b2].vertexIndex;
@@ -1667,7 +1667,7 @@ procedure findAndFixOpenTriangleGroups(triangle: LongWord);
 var
   Count: LongWord;
 begin
-  if Length(boundaryList)<(1 + 2 * PrimitiveNum) then
+  if Length(boundaryList)<Integer(1 + 2 * PrimitiveNum) then
     SetLength(boundaryList, 1 + 2 * PrimitiveNum);
 
   if edgeInfo[triangle].adjacentTriangle[0] = $FFFFFFFF then
