@@ -19,7 +19,7 @@ interface
 uses
   Classes, GLScene, VectorGeometry, GLObjects, OpenGL1x, GLState,
   GLContext, GLColor, BaseClasses, GLRenderContextInfo, GLLensFlare,
-  GLFBO, GLVBOManagers, GLTexture, GLGraphics;
+  GLFBO, GL3xShadersManager, GLVBOManagers, GL3xMaterial, GLTexture, GLGraphics;
 
 type
 
@@ -164,12 +164,12 @@ const
   Gradient_vp120: AnsiString =
     '#version 120' + #10#13 +
     'attribute vec3 Position;' + #10#13 +
-    'attribute vec4 Color;' + #10#13 +
+    'attribute vec4 VertexColor;' + #10#13 +
     'uniform mat4 ProjectionMatrix;' + #10#13 +
     'varying vec4 color;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' color = Color;' + #10#13 +
+    ' color = VertexColor;' + #10#13 +
     ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   Gradient_fp120: AnsiString =
@@ -202,12 +202,12 @@ const
   Gradient_vp150: AnsiString =
     '#version 150' + #10#13 +
     'in vec3 Position;' + #10#13 +
-    'in vec4 Color;' + #10#13 +
+    'in vec4 VertexColor;' + #10#13 +
     'uniform mat4 ProjectionMatrix;' + #10#13 +
     'out vec4 color;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' color = Color;' + #10#13 +
+    ' color = VertexColor;' + #10#13 +
     ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   Gradient_fp150: AnsiString =
@@ -521,16 +521,23 @@ begin
             with DynamicVBOManager do
             begin
               BeginObject(FBuiltPropertiesRays);
-              Attribute4f(attrColor, 1, 1, 1, 1);
+              Attribute3f(attrPosition, 0, 0, 0);
+              Attribute4f(attrVertexColor, 1, 1, 1, 1);
               BeginPrimitives(GLVBOM_TRIANGLES);
-              Vertex(posVector[0] + 2, posVector[1], 1);
-              Vertex(posVector[0], posVector[1] + 2, 1);
-              Vertex(posVector[0] - 2, posVector[1], 1);
-              Vertex(posVector[0] - 2, posVector[1], 1);
-              Vertex(posVector[0], posVector[1] - 2, 1);
-              Vertex(posVector[0] + 2, posVector[1], 1);
+              Attribute3f(attrPosition,posVector[0] + 2, posVector[1], 1);
+              EmitVertex;
+              Attribute3f(attrPosition,posVector[0], posVector[1] + 2, 1);
+              EmitVertex;
+              Attribute3f(attrPosition,posVector[0] - 2, posVector[1], 1);
+              EmitVertex;
+              Attribute3f(attrPosition,posVector[0] - 2, posVector[1], 1);
+              EmitVertex;
+              Attribute3f(attrPosition,posVector[0], posVector[1] - 2, 1);
+              EmitVertex;
+              Attribute3f(attrPosition,posVector[0] + 2, posVector[1], 1);
+              EmitVertex;
               EndPrimitives;
-              EndObject;
+              EndObject(ARci);
             end;
             ARci.GLStates.DepthFunc := cfLess;
 
@@ -588,7 +595,7 @@ begin
             RaysProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
             ARci.GLStates.Enable(stTexture2D);
             with FRaysTexture do
-              RaysProgram.UniformTextureHandle[uniformNameTexUnit0, 0,
+              RaysProgram.UniformTextureHandle[uniformTexUnit0.Name, 0,
                 Image.NativeTextureTarget] := Handle;
             StaticVBOManager.RenderClient(FBuiltPropertiesRays, ARci);
           end;
@@ -651,44 +658,46 @@ begin
   begin
     // Build glow
     BeginObject(FBuiltPropertiesGlow);
-    Attribute4f(attrColor, 0, 0, 0, 0);
+    Attribute3f(attrPosition, 0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-    with GlowGradient.FromColor do
-      Attribute4f(attrColor, Red, Green, Blue, Alpha);
-    Vertex(0, 0);
-    with GlowGradient.ToColor do
-      Attribute4f(attrColor, Red, Green, Blue, Alpha);
+    Attribute4f(attrVertexColor, GlowGradient.FromColor.Color);
+    EmitVertex;
+    Attribute4f(attrVertexColor, GlowGradient.ToColor.Color);
     angle := 0;
     for i := 0 to Resolution do
     begin
       SinCos(angle, s, c);
-      Vertex(c, Squeeze * s);
+      Attribute3f(attrPosition, c, Squeeze * s, 0);
+      EmitVertex;
       angle := angle + 2*Pi/Resolution;
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
     // Build streaks
     a := c2PI / NumStreaks;
     f := 1.5;
     BeginObject(FBuiltPropertiesStreaks);
-    Attribute4f(attrColor, 0, 0, 0, 0);
+    Attribute3f(attrPosition, 0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_LINES);
     for i := 0 to NumStreaks - 1 do
     begin
       SinCos(StreakAngle * cPIdiv180 + a * i, f, s, c);
-      with StreaksGradient.FromColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(0, 0);
-      with StreaksGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(c, Squeeze * s);
+      Attribute4f(attrVertexColor, StreaksGradient.FromColor.Color);
+      Attribute3f(attrPosition, 0, 0, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, StreaksGradient.ToColor.Color);
+      Attribute3f(attrPosition, c, Squeeze * s, 0);
+      EmitVertex;
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
     // Build ring
     rW := 1 / 15; // Ring width
     BeginObject(FBuiltPropertiesRing);
-    Attribute4f(attrColor, 0, 0, 0, 0);
+    Attribute3f(attrPosition, 0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLES);
     s0 := 0;
     c0 := 0.6;
@@ -700,75 +709,84 @@ begin
       SinCos(angle, s0, c0);
       s0 := s0 * 0.6 * Squeeze;
       c0 := c0 * 0.6;
-      with GlowGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex((1 - rW) * c, (1 - rW) * s);
-      with RingGradient.FromColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(c, Squeeze * s);
-      Vertex(c0, s0);
+      Attribute4f(attrVertexColor, GlowGradient.ToColor.Color);
+      Attribute3f(attrPosition, (1 - rW) * c, (1 - rW) * s, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, RingGradient.FromColor.Color);
+      Attribute3f(attrPosition, c, Squeeze * s, 0);
+      EmitVertex;
+      Attribute3f(attrPosition, c0, s0, 0);
+      EmitVertex;
+      Attribute3f(attrPosition, c0, s0, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, GlowGradient.ToColor.Color);
+      Attribute3f(attrPosition, (1 - rW) * c0, (1 - rW) * s0, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, GlowGradient.ToColor.Color);
+      Attribute3f(attrPosition, (1 - rW) * c, (1 - rW) * s, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, RingGradient.FromColor.Color);
+      Attribute3f(attrPosition, c, s, 0);
+      EmitVertex;
+      Attribute3f(attrPosition, c0, s0, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, GlowGradient.ToColor.Color);
+      Attribute3f(attrPosition, (1 + rW) * c0, (1 + rW) * s0, 0);
+      EmitVertex;
 
-      Vertex(c0, s0);
-      with GlowGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex((1 - rW) * c0, (1 - rW) * s0);
-      with GlowGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex((1 - rW) * c, (1 - rW) * s);
-
-      with RingGradient.FromColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(c, s);
-      Vertex(c0, s0);
-      with GlowGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex((1 + rW) * c0, (1 + rW) * s0);
-
-      Vertex((1 + rW) * c0, (1 + rW) * s0);
-      Vertex((1 + rW) * c, (1 + rW) * s);
-      with RingGradient.FromColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(c, s);
+      Attribute3f(attrPosition, (1 + rW) * c0, (1 + rW) * s0, 0);
+      EmitVertex;
+      Attribute3f(attrPosition, (1 + rW) * c, (1 + rW) * s, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, RingGradient.FromColor.Color);
+      Attribute3f(attrPosition, c, s, 0);
+      EmitVertex;
 
       angle := angle + 2*Pi / Resolution;
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
     // Build secondaries
     BeginObject(FBuiltPropertiesSecondaries);
-    Attribute4f(attrColor, 0, 0, 0, 0);
+    Attribute3f(attrPosition, 0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-    with SecondariesGradient.FromColor do
-      Attribute4f(attrColor, Red, Green, Blue, Alpha);
-    Vertex(0, 0);
-    with SecondariesGradient.ToColor do
-      Attribute4f(attrColor, Red, Green, Blue, Alpha);
+    Attribute4f(attrVertexColor, SecondariesGradient.FromColor.Color);
+    EmitVertex;
+    Attribute4f(attrVertexColor, SecondariesGradient.ToColor.Color);
     angle := 0;
     for i := 0 to Resolution do
     begin
       SinCos(angle, s, c);
-      Vertex(c, Squeeze * s);
+      Attribute3f(attrPosition, c, Squeeze * s, 0);
+      EmitVertex;
       angle := angle + 2*Pi/Resolution;
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
     RaysProgram.UseProgramObject;
     // Build rays
     BeginObject(FBuiltPropertiesRays);
+    Attribute3f(attrPosition, 0, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLES);
-    Vertex(-1, -1);
+    Attribute3f(attrPosition, -1, -1, 0);
+    EmitVertex;
     Attribute2f(attrTexCoord0, 1, 0);
-    Vertex(1, -1);
+    Attribute3f(attrPosition, 1, -1, 0);
+    EmitVertex;
     Attribute2f(attrTexCoord0, 1, 1);
-    Vertex(1, 1);
-    Vertex(1, 1);
+    Attribute3f(attrPosition, 1, 1, 0);
+    EmitVertex;
+    EmitVertex;
     Attribute2f(attrTexCoord0, 0, 1);
-    Vertex(-1, 1);
+    Attribute3f(attrPosition, -1, 1, 0);
+    EmitVertex;
     Attribute2f(attrTexCoord0, 0, 0);
-    Vertex(-1, -1);
+    Attribute3f(attrPosition, -1, -1, 0);
+    EmitVertex;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
   end;
 
 end;
@@ -815,7 +833,8 @@ begin
   with DynamicVBOManager do
   begin
     BeginObject(FBuiltPropertiesRays);
-    Attribute4f(attrColor, 0, 0, 0, 0);
+    Attribute3f(attrPosition, 0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_LINES);
     alpha := 0;
     for i := 0 to Resolution * 20 - 1 do
@@ -824,17 +843,17 @@ begin
         rnd := 1.5 * Random * FSize
       else
         rnd := Random * FSize;
-      with RaysGradient.FromColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
-      Vertex(0, 0);
-      with RaysGradient.ToColor do
-        Attribute4f(attrColor, Red, Green, Blue, Alpha);
+      Attribute4f(attrVertexColor, RaysGradient.FromColor.Color);
+      Attribute3f(attrPosition, 0, 0, 0);
+      EmitVertex;
+      Attribute4f(attrVertexColor, RaysGradient.ToColor.Color);
       SinCos(alpha, s, c);
-      Vertex(rnd * c, rnd * s * Squeeze);
+      Attribute3f(attrPosition,rnd * c, rnd * s * Squeeze, 0);
+      EmitVertex;
       alpha := alpha + 2*Pi/(20*Resolution);
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
   end;
   FrameBuffer.Unbind;
   FrameBuffer.Free;

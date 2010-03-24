@@ -32,7 +32,8 @@ uses
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   GLSLog,
 {$ENDIF}
-  GL3xObjects, GLVBOManagers, GLRenderContextInfo;
+  GL3xObjects, GL3xShadersManager, GLVBOManagers, GL3xMaterial,
+  GLRenderContextInfo;
 
 type
 
@@ -160,8 +161,8 @@ const
   Header_fp: AnsiString =
     '#version 150' + #10#13 +
     'precision highp float;' + #10#13 +
-//    'layout(origin_upper_left, pixel_center_integer) in vec4 gl_FragCoord;' + #10#13 +
-   'layout(std140) uniform ConstantBlock {' + #10#13 +
+    //    'layout(origin_upper_left, pixel_center_integer) in vec4 gl_FragCoord;' + #10#13 +
+  'layout(std140) uniform ConstantBlock {' + #10#13 +
     ' vec3 WavelengthMie;' + #10#13 +
     ' vec3 v3HG;' + #10#13 +
     ' vec3 InvWavelength4;' + #10#13 +
@@ -728,13 +729,17 @@ begin
   with DynamicVBOManager do
   begin
     BeginObject(FBuiltProperties);
+    Attribute3f(attrPosition, -1, -1, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    Vertex(-1, -1);
-    Vertex(-1, 1);
-    Vertex(1, -1);
-    Vertex(1, 1);
+    EmitVertex;
+    Attribute3f(attrPosition, -1, 1, 0);
+    EmitVertex;
+    Attribute3f(attrPosition, 1, -1, 0);
+    EmitVertex;
+    Attribute3f(attrPosition, 1, 1, 0);
+    EmitVertex;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
   end;
   OpticalDepthFBO.Unbind;
   with rci.viewPortSize do
@@ -747,7 +752,8 @@ begin
     useCurrent := false;
     castFormat := tfRGBA_FLOAT16;
   end
-  else begin
+  else
+  begin
     useCurrent := true;
     castFormat := tfRGBA8;
   end;
@@ -802,13 +808,17 @@ begin
   with DynamicVBOManager do
   begin
     BeginObject(FBuiltProperties);
+    Attribute3f(attrPosition, -1, -1, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    Vertex(-1, -1);
-    Vertex(-1,  1);
-    Vertex( 1, -1);
-    Vertex( 1,  1);
+    EmitVertex;
+    Attribute3f(attrPosition, -1, 1, 0);
+    EmitVertex;
+    Attribute3f(attrPosition, 1, -1, 0);
+    EmitVertex;
+    Attribute3f(attrPosition, 1, 1, 0);
+    EmitVertex;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
   end;
   RayleighMieFBO.Unbind;
   with rci.viewPortSize do
@@ -823,7 +833,8 @@ begin
       useCurrent := false;
       castFormat := tfRGBA_FLOAT16;
     end
-    else begin
+    else
+    begin
       useCurrent := true;
       castFormat := tfRGBA8;
     end;
@@ -886,7 +897,8 @@ begin
           SetDepthRange(0, 1);
         end;
 
-        if not FBuiltProperties.Manager.IsBuilded then
+        if (osBuiltStage in ObjectStyle)
+          or (FBuiltProperties.Manager is TGLDynamicVBOManager) then
         begin
           try
             Self.BuildList(ARci);
@@ -925,6 +937,7 @@ begin
   with BuiltProperties.Manager do
   begin
     BeginObject(BuiltProperties);
+    Attribute3f(attrPosition, 0, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
     for j := 0 to FDomeDiv div 2 - 1 do
@@ -946,9 +959,11 @@ begin
         V2[2] := CosP2 * SinT;
         vTexCoord := (0.5 + i) * TexFactor;
         Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
-        Vertex(V2[0], V2[1], V2[2]);
+        Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
+        EmitVertex;
         Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
-        Vertex(V1[0], V1[1], V1[2]);
+        Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
+        EmitVertex;
         Theta := Theta - StepH;
       end;
 
@@ -961,9 +976,11 @@ begin
         V2[2] := CosP2 * SinT;
         vTexCoord := 1.0 - (0.5 + i) * TexFactor;
         Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
-        Vertex(V2[0], V2[1], V2[2]);
+        Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
+        EmitVertex;
         Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
-        Vertex(V1[0], V1[1], V1[2]);
+        Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
+        EmitVertex;
         Theta := Theta - StepH;
       end;
 
@@ -972,7 +989,7 @@ begin
       Phi2 := Phi2 - StepV;
     end;
     EndPrimitives;
-    EndObject;
+    EndObject(rci);
   end;
 end;
 
@@ -1002,7 +1019,7 @@ begin
   Value := frac((Value - 12) / 24);
   v3SunDir := AffineVectorMake(sin(2 * Pi * Value), cos(2 * Pi * Value), 0);
   Include(FChanges, nscTime);
-  StructureChanged;
+  NotifyChange(Self);
 end;
 
 function TGL3xCustomNishitaSky.StoreOclock: Boolean;
@@ -1028,7 +1045,7 @@ begin
     FOpticalDepthN := Value;
     Include(FChanges, nscConstants);
     Include(FChanges, nscOpticalDepth);
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 
@@ -1044,7 +1061,7 @@ begin
     FRayleighMieN := Value;
     Include(FChanges, nscConstants);
     Include(FChanges, nscRayleighMie);
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 
@@ -1056,7 +1073,7 @@ begin
     FColorPrecision := Value;
     Include(FChanges, nscRayleighMie);
     Include(FChanges, nscOpticalDepth);
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 
@@ -1076,7 +1093,7 @@ begin
   begin
     ConstantBlock.v2dRayleighMieScaleHeight[1] := Value;
     Include(FChanges, nscConstants);
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 
@@ -1086,7 +1103,7 @@ begin
   begin
     ConstantBlock.v2dRayleighMieScaleHeight[0] := Value;
     Include(FChanges, nscConstants);
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 

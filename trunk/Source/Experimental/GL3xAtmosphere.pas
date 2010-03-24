@@ -17,13 +17,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   SysUtils, Classes,
-
   // GLScene
   GLScene, GLCadencer, OpenGL1x, VectorGeometry, GLState,
   GLContext, GLStrings, GLColor, GLSLShader,
-  GL3xObjects, GLVBOManagers, GLRenderContextInfo;
+  GL3xObjects, GL3xShadersManager, GLVBOManagers, GLRenderContextInfo;
 
 type
   EGLBAtmosphereException = class(Exception);
@@ -40,7 +38,7 @@ type
   private
     // Used in DoRenderl
     cosCache, sinCache: array of Single;
-    VertexCash: PVectorArray;
+    VertexCash: PAffineVectorArray;
 
     FSlices: Integer;
     FBlendingMode: TGL3xAtmosphereBlendingMode;
@@ -97,7 +95,6 @@ type
 
   TGL3xAtmosphere = class(TGL3xCustomAtmosphere)
   published
-    property BuiltProperties;
     property Sun;
     property Slices;
     property Opacity;
@@ -107,6 +104,7 @@ type
     property HighAtmColor;
     property BlendingMode;
 
+    property BuiltProperties;
     property Position;
     property ObjectsSorting;
     property ShowAxes;
@@ -422,8 +420,12 @@ begin
           Uniform1f['AtmosphereRadius'] := FAtmosphereRadius;
 
           FBuiltProperties.Usage := FBuiltProperties.Usage;
+          ARci.GLStates.EnableDepthTest := False;
+          ARci.GLStates.Enable(stBlend);
+          EnableGLBlendingMode(ARci);
 
-          if not FBuiltProperties.Manager.IsBuilded then
+          if (osBuiltStage in ObjectStyle)
+            or (FBuiltProperties.Manager is TGLDynamicVBOManager) then
           begin
             try
               Self.BuildList(ARci);
@@ -433,12 +435,8 @@ begin
             end;
             ObjectStyle := ObjectStyle - [osBuiltStage];
           end
-          else begin
-            ARci.GLStates.EnableDepthTest := False;
-            ARci.GLStates.Enable(stBlend);
-            EnableGLBlendingMode(ARci);
+          else
             FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
-          end;
 
           EndUseProgramObject;
         end;
@@ -462,6 +460,7 @@ begin
     with BuiltProperties.Manager do
     begin
       BeginObject(BuiltProperties);
+      Attribute3f(attrPosition, 0, 0, 0);
       for I := 0 to 13 do
       begin
         if I < 5 then
@@ -474,8 +473,8 @@ begin
         k1 := (FSlices + 1) - k0;
         for J := 0 to FSlices do
         begin
-          VectorCombine(ZHmgVector, YHmgVector,
-            cosCache[J] * radius, sinCache[J] * radius, VertexCash[k0 + J]);
+          VertexCash[k0 + J] := VectorCombine(ZVector, YVector,
+            cosCache[J] * radius, sinCache[J] * radius);
           if I = 0 then
             Break;
         end;
@@ -487,9 +486,11 @@ begin
             for J := FSlices downto 0 do
             begin
               kt := k1 + J;
-              Vertex(VertexCash[kt][0], VertexCash[kt][1], VertexCash[kt][2]);
+              Attribute3f(attrPosition, VertexCash[kt]);
+              EmitVertex;
               kt := k0 + J;
-              Vertex(VertexCash[kt][0], VertexCash[kt][1], VertexCash[kt][2]);
+              Attribute3f(attrPosition, VertexCash[kt]);
+              EmitVertex;
             end;
             RestartStrip;
           end
@@ -498,9 +499,11 @@ begin
             for J := FSlices downto 0 do
             begin
               kt := k1 + J;
-              Vertex(VertexCash[kt][0], VertexCash[kt][1], VertexCash[kt][2]);
+              Attribute3f(attrPosition, VertexCash[kt]);
+              EmitVertex;
               kt := k0 + J;
-              Vertex(VertexCash[kt][0], VertexCash[kt][1], VertexCash[kt][2]);
+              Attribute3f(attrPosition, VertexCash[kt]);
+              EmitVertex;
             end;
             RestartStrip;
           end;
@@ -508,15 +511,18 @@ begin
         else if I = 1 then
         begin
           BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-          Vertex(VertexCash[k1][0], VertexCash[k1][1], VertexCash[k1][2]);
+          Attribute3f(attrPosition, VertexCash[k1]);
           for J := k0 + FSlices downto k0 do
-            Vertex(VertexCash[J][0], VertexCash[J][1], VertexCash[J][2]);
+          begin
+            Attribute3f(attrPosition, VertexCash[J]);
+            EmitVertex;
+          end;
           EndPrimitives;
           BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
         end;
       end;
       EndPrimitives;
-      EndObject;
+      EndObject(rci);
     end;
   end;
   inherited;
@@ -528,6 +534,7 @@ begin
     FBlendingMode := abmOneMinusDstColor
   else
     FBlendingMode := abmOneMinusSrcAlpha;
+  NotifyChange(Self);
 end;
 
 procedure TGL3xCustomAtmosphere.Assign(Source: TPersistent);
@@ -579,6 +586,7 @@ begin
   FAtmosphereRadius := Value;
   if Value <= FPlanetRadius then
     FPlanetRadius := FAtmosphereRadius / 1.01;
+  StructureChanged;
 end;
 
 procedure TGL3xCustomAtmosphere.SetPlanetRadius(const Value: Single);
@@ -587,6 +595,7 @@ begin
   FPlanetRadius := Value;
   if Value >= FAtmosphereRadius then
     FAtmosphereRadius := FPlanetRadius * 1.01;
+  StructureChanged;
 end;
 
 procedure TGL3xCustomAtmosphere.EnableGLBlendingMode(
@@ -601,6 +610,7 @@ begin
     else
       Assert(False, glsErrorEx + glsUnknownType);
     end;
+  NotifyChange(Self);
 end;
 
 function TGL3xCustomAtmosphere.StoreAtmosphereRadius: Boolean;
@@ -631,7 +641,9 @@ begin
     GetMem(VertexCash, 2 * (FSlices + 1) * SizeOf(TVector));
   end
   else
-    raise EGLBAtmosphereException.Create('Slices must be more than0!');
+    raise EGLBAtmosphereException.Create('Slices must be more than zero!');
+
+  StructureChanged;
 end;
 
 procedure TGL3xCustomAtmosphere.SetOptimalAtmosphere(const ARadius: Single);
@@ -639,6 +651,7 @@ begin
   Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FAtmosphereRadius := ARadius + 0.25;
   FPlanetRadius := ARadius - 0.07;
+  StructureChanged;
 end;
 
 procedure TGL3xCustomAtmosphere.SetOptimalAtmosphere2(const ARadius: Single);
@@ -646,6 +659,7 @@ begin
   Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FAtmosphereRadius := ARadius + ARadius / 15;
   FPlanetRadius := ARadius - ARadius / 50;
+  StructureChanged;
 end;
 
 initialization
