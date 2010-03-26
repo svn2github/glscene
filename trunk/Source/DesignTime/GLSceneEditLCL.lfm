@@ -1,11 +1,12 @@
 object GLSceneEditorForm: TGLSceneEditorForm
-  Left = 402
-  Height = 502
-  Top = 98
+  Left = 346
+  Height = 514
+  Top = 105
   Width = 461
+  ActiveControl = Tree
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
-  ClientHeight = 502
+  ClientHeight = 514
   ClientWidth = 461
   Font.Height = -11
   Font.Name = 'Arial'
@@ -147,8 +148,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
   LCLVersion = '0.9.29'
   object Splitter: TSplitter
     Left = 307
-    Height = 480
-    Top = 22
+    Height = 462
+    Top = 52
     Width = 4
     Align = alRight
     ResizeAnchor = akRight
@@ -156,8 +157,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object Tree: TTreeView
     Left = 0
-    Height = 480
-    Top = 22
+    Height = 462
+    Top = 52
     Width = 307
     Align = alClient
     DefaultItemHeight = 16
@@ -166,6 +167,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Indent = 19
     PopupMenu = PopupMenu
     RightClickSelect = True
+    ScrollBars = ssAutoBoth
     TabOrder = 0
     OnChange = TreeChange
     OnDragDrop = TreeDragDrop
@@ -179,12 +181,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object ToolBar: TToolBar
     Left = 0
-    Height = 22
+    Height = 25
     Top = 0
     Width = 461
     AutoSize = True
     BorderWidth = 1
-    ButtonWidth = 28
+    ButtonHeight = 25
+    ButtonWidth = 30
     Caption = 'ToolBar'
     EdgeBorders = []
     Images = ImageList
@@ -198,12 +201,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Action = ACLoadScene
     end
     object ToolButton9: TToolButton
-      Left = 29
+      Left = 31
       Top = 0
       Action = ACSaveScene
     end
     object TBEffectsPanel: TToolButton
-      Left = 57
+      Left = 61
       Hint = 'Show Behaviours/Effects'
       Top = 0
       Caption = 'Show Behaviours/Effects'
@@ -212,19 +215,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
       OnClick = TBEffectsPanelClick
     end
     object TBStayOnTop: TToolButton
-      Left = 85
+      Left = 91
       Hint = 'Stay on top'
       Top = 0
       Action = ACStayOnTop
       Style = tbsCheck
     end
     object ToolButton11: TToolButton
-      Left = 113
+      Left = 121
       Top = 0
       Action = ACInfo
     end
     object ToolButton2: TToolButton
-      Left = 141
+      Left = 151
       Top = 0
       Width = 8
       Caption = 'ToolButton2'
@@ -232,72 +235,26 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 149
+      Left = 159
       Top = 0
       Action = ACAddCamera
     end
     object TBAddObjects: TToolButton
-      Left = 177
+      Left = 189
       Top = 0
       Action = ACAddObject
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
-    object ToolButton3: TToolButton
-      Left = 212
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton3'
-      ImageIndex = 2
-      Style = tbsSeparator
-    end
-    object ToolButton4: TToolButton
-      Left = 220
-      Top = 0
-      Action = ACMoveUp
-    end
-    object ToolButton7: TToolButton
-      Left = 248
-      Top = 0
-      Action = ACMoveDown
-    end
-    object ToolButton6: TToolButton
-      Left = 276
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton6'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
-    object ToolButton12: TToolButton
-      Left = 284
-      Top = 0
-      Action = ACCut
-    end
-    object ToolButton13: TToolButton
-      Left = 312
-      Top = 0
-      Action = ACCopy
-    end
-    object ToolButton14: TToolButton
-      Left = 340
-      Top = 0
-      Action = ACPaste
-    end
-    object ToolButton5: TToolButton
-      Left = 368
-      Top = 0
-      Action = ACDeleteObject
-    end
   end
   object PABehaviours: TPanel
     Left = 311
-    Height = 480
-    Top = 22
+    Height = 462
+    Top = 52
     Width = 150
     Align = alRight
     Caption = 'PABehaviours'
-    ClientHeight = 480
+    ClientHeight = 462
     ClientWidth = 150
     Constraints.MinWidth = 1
     TabOrder = 2
@@ -338,8 +295,10 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Width = 148
       Align = alTop
       Columns = <>
+      ItemIndex = -1
       PopupMenu = BehavioursPopupMenu
       ReadOnly = True
+      ScrollBars = ssAutoBoth
       TabOrder = 0
       OnClick = BehavioursListViewClick
       OnKeyDown = TreeKeyDown
@@ -347,13 +306,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object EffectsListView: TListView
       Left = 1
-      Height = 305
+      Height = 287
       Top = 174
       Width = 148
       Align = alClient
       Columns = <>
+      ItemIndex = -1
       PopupMenu = BehavioursPopupMenu
       ReadOnly = True
+      ScrollBars = ssAutoBoth
       TabOrder = 1
       OnClick = EffectsListViewClick
       OnKeyDown = TreeKeyDown
@@ -392,11 +353,83 @@ object GLSceneEditorForm: TGLSceneEditorForm
       end
     end
   end
+  object ToolBar2: TToolBar
+    Left = 0
+    Height = 27
+    Top = 25
+    Width = 461
+    AutoSize = True
+    ButtonHeight = 25
+    ButtonWidth = 30
+    Caption = 'ToolBar2'
+    Images = ImageList
+    TabOrder = 4
+    object ToolButton4: TToolButton
+      Left = 1
+      Top = 2
+      Action = ACMoveUp
+    end
+    object ToolButton7: TToolButton
+      Left = 31
+      Top = 2
+      Action = ACMoveDown
+    end
+    object ToolButton6: TToolButton
+      Left = 61
+      Top = 2
+      Width = 8
+      Caption = 'ToolButton6'
+      ImageIndex = 4
+      Style = tbsSeparator
+    end
+    object ToolButton5: TToolButton
+      Left = 159
+      Top = 2
+      Action = ACDeleteObject
+    end
+    object ToolButton12: TToolButton
+      Left = 69
+      Top = 2
+      Action = ACCut
+    end
+    object ToolButton13: TToolButton
+      Left = 99
+      Top = 2
+      Action = ACCopy
+    end
+    object ToolButton14: TToolButton
+      Left = 129
+      Top = 2
+      Action = ACPaste
+    end
+    object ToolButton3: TToolButton
+      Left = 189
+      Top = 2
+      Width = 8
+      Caption = 'ToolButton3'
+      ImageIndex = 2
+      Style = tbsSeparator
+    end
+    object ToolButton10: TToolButton
+      Left = 197
+      Top = 2
+      Action = ACExpand
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object ToolButton15: TToolButton
+      Left = 227
+      Top = 2
+      Action = ACCollapse
+      ParentShowHint = False
+      ShowHint = True
+    end
+  end
   object PopupMenu: TPopupMenu
     Images = ImageList
     OnPopup = PopupMenuPopup
-    left = 8
-    top = 96
+    left = 104
+    top = 232
     object MIAddCamera: TMenuItem
       Action = ACAddCamera
       Bitmap.Data = {
@@ -814,7 +847,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object ActionList: TActionList
     Images = ImageList
-    left = 8
+    left = 24
     top = 64
     object ACAddCamera: TAction
       Caption = 'Add camera'
@@ -908,17 +941,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ImageIndex = 12
       OnExecute = ACStayOnTopExecute
     end
+    object ACExpand: TAction
+      Caption = 'ACExpand'
+      ImageIndex = 13
+      OnExecute = ACExpandExecute
+    end
+    object ACCollapse: TAction
+      Caption = 'ACCollapse'
+      ImageIndex = 14
+      OnExecute = ACCollapseExecute
+    end
   end
   object PMToolBar: TPopupMenu
-    left = 88
+    left = 104
     top = 64
   end
   object ImageList: TImageList
     Masked = True
-    left = 40
-    top = 64
+    left = 24
+    top = 120
     Bitmap = {
-      4C690D0000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      4C690F0000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0038BB5AFF51C570FF53C5
       71FF51C56FFF4CC36BFF42C064FF37BC5AFF2EB953FF25B74AFF23B54BFF23B7
@@ -1334,6 +1377,70 @@ object GLSceneEditorForm: TGLSceneEditorForm
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF007B7363FF7B7363FF7B7363FF7B73
+      63FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5
+      B5FFB5B5B5FFB5B5B5FFB5B5B5FFFF00FF0000F2FFFF00F2FFFF00F2FFFF7B73
+      63FFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDE
+      DEFFDEDEDEFFDEDEDEFFB5B5B5FFFF00FF007B7363FFDEDEDEFFEF9C21FF7B73
+      63FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C
+      21FFEF9C21FFEF9C21FFB5B5B5FFFF00FF007B7363FF7B7363FF7B7363FF7B73
+      63FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B73
+      63FF7B7363FF7B7363FF7B7363FFFF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF0000F2FFFF00F2FFFF7F7F7FFF7F7F
+      7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF007F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F
+      7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF0000F2FFFF00F2FFFF7F7F7FFF7F7F
+      7FFF7F7F7FFF7F7F7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF007B7363FFFF00FF00FF00
+      FF00FF00FF00FF00FF007F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F
+      7FFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF0000F2FFFF00F2FFFF7F7F7FFF7F7F
+      7FFF7F7F7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF007F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFFFF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF007B7363FF241CEDFF7B7363FF7B73
+      63FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5
+      B5FFB5B5B5FFB5B5B5FFB5B5B5FFFF00FF00241CEDFF241CEDFF241CEDFF7B73
+      63FFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDEDEFFDEDE
+      DEFFDEDEDEFFDEDEDEFFB5B5B5FFFF00FF007B7363FF241CEDFFEF9C21FF7B73
+      63FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C21FFEF9C
+      21FFEF9C21FFEF9C21FFB5B5B5FFFF00FF007B7363FF7B7363FF7B7363FF7B73
+      63FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B7363FF7B73
+      63FF7B7363FF7B7363FF7B7363FFFF00FF00FF00FF00241CEDFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00241CEDFF241CEDFF241CEDFF7F7F
+      7FFF7F7F7FFF7F7F7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00241CEDFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00241CEDFF241CEDFF241CEDFF7F7F
+      7FFF7F7F7FFF7F7F7FFF7F7F7FFFFF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00241CEDFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF007F7F7FFFFF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00
     }
   end
@@ -1341,26 +1448,26 @@ object GLSceneEditorForm: TGLSceneEditorForm
     DefaultExt = '.gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    left = 8
-    top = 128
+    left = 24
+    top = 176
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    left = 40
-    top = 128
+    left = 24
+    top = 232
   end
   object PMBehavioursToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMBehavioursToolbarPopup
-    left = 120
-    top = 64
+    left = 104
+    top = 176
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    left = 272
-    top = 72
+    left = 104
+    top = 288
     object Delete1: TMenuItem
       Action = ACDeleteObject
       Bitmap.Data = {
@@ -1490,7 +1597,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMEffectsToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMEffectsToolbarPopup
-    left = 152
-    top = 64
+    left = 104
+    top = 120
   end
 end

@@ -6,6 +6,8 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>26/03/10 - Yar - Added Expand and Collapse buttons, fix for Unix-based systems 
+                       (thanks to Rustam Asmandiarov aka Predator)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
@@ -71,6 +73,15 @@ type
   { TGLSceneEditorForm }
 
   TGLSceneEditorForm = class(TForm)
+    ACExpand: TAction;
+    ACCollapse: TAction;
+    ToolBar2: TToolBar;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton15: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton6: TToolButton;
     Tree: TTreeView;
     PopupMenu: TPopupMenu;
     MIAddCamera: TMenuItem;
@@ -136,6 +147,8 @@ type
     TBEffectsPanel: TToolButton;
     TBStayOnTop: TToolButton;
     ACStayOnTop: TAction;
+    procedure ACCollapseExecute(Sender: TObject);
+    procedure ACExpandExecute(Sender: TObject);
     procedure BehavioursListViewClick(Sender: TObject);
     procedure EffectsListViewClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1317,6 +1330,22 @@ begin
       GlobalDesignHook.SelectOnlyThis(TGLBaseBehaviour(BehavioursListView.Selected.Data));
    FSelectedItems:=BEHAVIOURS_SELECTED;
    EnableAndDisableActions();
+end;
+
+procedure TGLSceneEditorForm.ACExpandExecute(Sender: TObject);
+begin
+  Tree.FullExpand;
+end;
+
+procedure TGLSceneEditorForm.ACCollapseExecute(Sender: TObject);
+begin
+  if FObjectNode <> nil then try
+    Tree.Items.BeginUpdate;
+    FObjectNode.Collapse(true);
+    FObjectNode.Expand(false);
+  finally
+    Tree.Items.EndUpdate;
+  end;
 end;
 
 procedure TGLSceneEditorForm.EffectsListViewClick(Sender: TObject);

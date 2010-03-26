@@ -6,7 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
-  <li>11/03/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
+  <li>20/01/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
   <li>20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
@@ -145,6 +145,8 @@ type
     ToolButton10: TToolButton;
     ToolButton15: TToolButton;
     ToolButton16: TToolButton;
+    ACExpand: TAction;
+    ACColapse: TAction;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -179,9 +181,9 @@ type
     procedure TreeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ACStayOnTopExecute(Sender: TObject);
-    procedure ToolButton15Click(Sender: TObject);
-    procedure ToolButton16Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ACExpandExecute(Sender: TObject);
+    procedure ACColapseExecute(Sender: TObject);
 
   private
     FSelectedItems:Integer; //
@@ -972,6 +974,22 @@ begin
    end;
 end;
 
+procedure TGLSceneEditorForm.ACExpandExecute(Sender: TObject);
+begin
+  Tree.FullExpand;
+end;
+
+procedure TGLSceneEditorForm.ACColapseExecute(Sender: TObject);
+begin
+  if FSceneObjects <> nil then try
+    Tree.Items.BeginUpdate;
+    FSceneObjects.Collapse(true);
+    FSceneObjects.Expand(false);
+  finally
+    Tree.Items.EndUpdate;
+  end;
+end;
+
 // ACMoveUpExecute
 //
 procedure TGLSceneEditorForm.ACMoveUpExecute(Sender: TObject);
@@ -1503,22 +1521,6 @@ begin
    if PABehaviours.Visible then
       Width:=Width+PABehaviours.Width
    else Width:=Width-PABehaviours.Width;
-end;
-
-procedure TGLSceneEditorForm.ToolButton15Click(Sender: TObject);
-begin
-  Tree.FullExpand;
-end;
-
-procedure TGLSceneEditorForm.ToolButton16Click(Sender: TObject);
-begin
-  if FSceneObjects <> nil then try
-    Tree.Items.BeginUpdate;
-    FSceneObjects.Collapse(true);
-    FSceneObjects.Expand(false);
-  finally
-    Tree.Items.EndUpdate;
-  end;
 end;
 
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
