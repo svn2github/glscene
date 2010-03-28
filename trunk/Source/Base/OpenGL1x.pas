@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
+                            added bindless graphics extensions
       <li>18/03/10 - Yar - Added more GLX extensions
                           (thanks to Rustam Asmandiarov aka Predator)
       <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
@@ -489,6 +491,7 @@ var
    GL_NV_point_sprite,
    GL_NV_primitive_restart,
    GL_NV_register_combiners,
+   GL_NV_shader_buffer_load,
    GL_NV_texgen_reflection,
    GL_NV_texture_compression_vtc,
    GL_NV_texture_env_combine4,
@@ -499,6 +502,7 @@ var
    GL_NV_transform_feedback,
    GL_NV_vertex_array_range,
    GL_NV_vertex_array_range2,
+   GL_NV_vertex_buffer_unified_memory,
    GL_NV_vertex_program,
 
    GL_SGI_color_matrix,
@@ -4446,6 +4450,35 @@ const
    GL_TESSELLATION_MODE_AMD                            = $9004;
    GL_TESSELLATION_FACTOR_AMD                          = $9005;
 
+   // GL_NV_shader_buffer_load (#379)
+   GL_BUFFER_GPU_ADDRESS_NV                            = $8F1D;
+   GL_GPU_ADDRESS_NV                                   = $8F34;
+   GL_MAX_SHADER_BUFFER_ADDRESS_NV                     = $8F35;
+
+   // GL_NV_vertex_buffer_unified_memory (#380)
+   GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV                   = $8F1E;
+   GL_ELEMENT_ARRAY_UNIFIED_NV                         = $8F1F;
+   GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV                   = $8F20;
+   GL_VERTEX_ARRAY_ADDRESS_NV                          = $8F21;
+   GL_NORMAL_ARRAY_ADDRESS_NV                          = $8F22;
+   GL_COLOR_ARRAY_ADDRESS_NV                           = $8F23;
+   GL_INDEX_ARRAY_ADDRESS_NV                           = $8F24;
+   GL_TEXTURE_COORD_ARRAY_ADDRESS_NV                   = $8F25;
+   GL_EDGE_FLAG_ARRAY_ADDRESS_NV                       = $8F26;
+   GL_SECONDARY_COLOR_ARRAY_ADDRESS_NV                 = $8F27;
+   GL_FOG_COORD_ARRAY_ADDRESS_NV                       = $8F28;
+   GL_ELEMENT_ARRAY_ADDRESS_NV                         = $8F29;
+   GL_VERTEX_ATTRIB_ARRAY_LENGTH_NV                    = $8F2A;
+   GL_VERTEX_ARRAY_LENGTH_NV                           = $8F2B;
+   GL_NORMAL_ARRAY_LENGTH_NV                           = $8F2C;
+   GL_COLOR_ARRAY_LENGTH_NV                            = $8F2D;
+   GL_INDEX_ARRAY_LENGTH_NV                            = $8F2E;
+   GL_TEXTURE_COORD_ARRAY_LENGTH_NV                    = $8F2F;
+   GL_EDGE_FLAG_ARRAY_LENGTH_NV                        = $8F30;
+   GL_SECONDARY_COLOR_ARRAY_LENGTH_NV                  = $8F31;
+   GL_FOG_COORD_ARRAY_LENGTH_NV                        = $8F32;
+   GL_ELEMENT_ARRAY_LENGTH_NV                          = $8F33;
+
    // unknown extension, where does it come from?
    WGL_COLOR_SAMPLES_NV                              = $20B9;
 
@@ -7061,6 +7094,35 @@ var
      dstX: GLint; dstY: GLint; dstZ: GLint;
      width: GLsizei; height: GLsizei; depth: GLsizei);  {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
+   // GL_NV_shader_buffer_load (#379)
+   glMakeBufferResidentNV: procedure(target: TGLenum; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMakeBufferNonResidentNV: procedure(target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIsBufferResidentNV: function(target: TGLenum): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMakeNamedBufferResidentNV: procedure(buffer: TGLuint; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMakeNamedBufferNonResidentNV: procedure(buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIsNamedBufferResidentNV: function (buffer: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetBufferParameterui64vNV: procedure(target: TGLenum; pname: TGLenum; params: PGLuint64EXT );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetNamedBufferParameterui64vNV: procedure(buffer: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetIntegerui64vNV: procedure(value: TGLenum; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glUniformui64NV: procedure(location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glUniformui64vNV: procedure(location: GLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetUniformui64vNV: procedure(_program: TGLuint; location: TGLint; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramUniformui64NV: procedure(_program: TGLuint; location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramUniformui64vNV: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+   // GL_NV_vertex_buffer_unified_memory (#380)
+   glBufferAddressRangeNV: procedure(pname: TGLenum; index: TGLuint; address: TGLuint64EXT; length: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glNormalFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glColorFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIndexFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexCoordFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glEdgeFlagFormatNV: procedure(stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSecondaryColorFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glFogCoordFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttribFormatNV: procedure(index: TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttribIFormatNV: procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetIntegerui64i_vNV: procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -7651,6 +7713,33 @@ begin
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
+{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.1'} {$ENDIF}
+
+   //  ###########################################################
+   //            locate functions and procedures for
+   //         extensions integrated into OpenGL 3.1 core
+   //  ###########################################################
+
+   glDrawArraysInstanced := GLGetProcAddress('glDrawArraysInstanced');
+   glDrawElementsInstanced := GLGetProcAddress('glDrawElementsInstanced');
+   glTexBuffer := GLGetProcAddress('glTexBuffer');
+   glPrimitiveRestartIndex := GLGetProcAddress('glPrimitiveRestartIndex');
+
+{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.2'} {$ENDIF}
+
+   //  ###########################################################
+   //            locate functions and procedures for
+   //         extensions integrated into OpenGL 3.2 core
+   //  ###########################################################
+
+   glGetInteger64i_v := GLGetProcAddress('glGetInteger64i_v');
+   glGetBufferParameteri64v := GLGetProcAddress('glGetBufferParameteri64v');
+   glProgramParameteri := GLGetProcAddress('glProgramParameteri');
+   glFramebufferTexture := GLGetProcAddress('glFramebufferTexture');
+
+{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
@@ -8534,6 +8623,36 @@ begin
    // GL_NV_copy_image (#376)
    glCopyImageSubDataNV := GLGetProcAddress('glCopyImageSubDataNV');
 
+   // GL_NV_shader_buffer_load (#379)
+   glMakeBufferResidentNV := GLGetProcAddress('glMakeBufferResidentNV');
+   glMakeBufferNonResidentNV := GLGetProcAddress('glMakeBufferNonResidentNV');
+   glIsBufferResidentNV := GLGetProcAddress('glIsBufferResidentNV');
+   glMakeNamedBufferResidentNV := GLGetProcAddress('glMakeNamedBufferResidentNV');
+   glMakeNamedBufferNonResidentNV := GLGetProcAddress('glMakeNamedBufferNonResidentNV');
+   glIsNamedBufferResidentNV := GLGetProcAddress('glIsNamedBufferResidentNV');
+   glGetBufferParameterui64vNV := GLGetProcAddress('glGetBufferParameterui64vNV');
+   glGetNamedBufferParameterui64vNV := GLGetProcAddress('glGetNamedBufferParameterui64vNV');
+   glGetIntegerui64vNV := GLGetProcAddress('glGetIntegerui64vNV');
+   glUniformui64NV := GLGetProcAddress('glUniformui64NV');
+   glUniformui64vNV := GLGetProcAddress('glUniformui64vNV');
+   glGetUniformui64vNV := GLGetProcAddress('glGetUniformui64vNV');
+   glProgramUniformui64NV := GLGetProcAddress('glProgramUniformui64NV');
+   glProgramUniformui64vNV := GLGetProcAddress('glProgramUniformui64vNV');
+
+   // GL_NV_vertex_buffer_unified_memory (#380)
+   glBufferAddressRangeNV := GLGetProcAddress('glBufferAddressRangeNV');
+   glVertexFormatNV := GLGetProcAddress('glVertexFormatNV');
+   glNormalFormatNV := GLGetProcAddress('glNormalFormatNV');
+   glColorFormatNV := GLGetProcAddress('glColorFormatNV');
+   glIndexFormatNV := GLGetProcAddress('glIndexFormatNV');
+   glTexCoordFormatNV := GLGetProcAddress('glTexCoordFormatNV');
+   glEdgeFlagFormatNV := GLGetProcAddress('glEdgeFlagFormatNV');
+   glSecondaryColorFormatNV := GLGetProcAddress('glSecondaryColorFormatNV');
+   glFogCoordFormatNV := GLGetProcAddress('glFogCoordFormatNV');
+   glVertexAttribFormatNV := GLGetProcAddress('glVertexAttribFormatNV');
+   glVertexAttribIFormatNV := GLGetProcAddress('glVertexAttribIFormatNV');
+   glGetIntegerui64i_vNV := GLGetProcAddress('glGetIntegerui64i_vNV');
+
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for Windows OpenGL (WGL) extensions'} {$ENDIF}
@@ -9011,6 +9130,7 @@ begin
    GL_NV_point_sprite := CheckExtension('GL_NV_point_sprite');
    GL_NV_primitive_restart := CheckExtension('GL_NV_primitive_restart');
    GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
+   GL_NV_shader_buffer_load := CheckExtension('GL_NV_shader_buffer_load');
    GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
    GL_NV_texture_compression_vtc := CheckExtension('GL_NV_texture_compression_vtc');
    GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4');
@@ -9021,6 +9141,7 @@ begin
    GL_NV_transform_feedback := CheckExtension('GL_NV_transform_feedback');
    GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
    GL_NV_vertex_array_range2 := CheckExtension('GL_NV_vertex_array_range2');
+   GL_NV_vertex_buffer_unified_memory := CheckExtension('GL_NV_vertex_buffer_unified_memory');
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
