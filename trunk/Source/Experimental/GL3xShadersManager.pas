@@ -384,6 +384,7 @@ begin
     if UniformRegistry[u].ID > 0 then
       if UniformRegistry[u].Name = AName then
       begin
+        Uniform := UniformRegistry[u];
         Result := true;
         exit;
       end;
@@ -887,7 +888,11 @@ end;
 
 procedure TGL3xShadersManager.DeleteShaderObject(AObject: PGLSLShaderObject);
 begin
-  Assert(Assigned(AObject));
+  if not Assigned(AObject) then
+  begin
+    WorkLog.LogWarning('Attempt to delete a nil pointer of shader object');
+    exit;
+  end;
   AObject.FHandle.Free;
   FShaderObjectsList[AObject.FIndex] := nil;
   Dispose(AObject);
@@ -896,7 +901,11 @@ end;
 
 procedure TGL3xShadersManager.DeleteShaderProgram(AProgram: PGLSLShaderProgram);
 begin
-  Assert(Assigned(AProgram));
+  if not Assigned(AProgram) then
+  begin
+    WorkLog.LogWarning('Attempt to delete a nil pointer of shader program');
+    exit;
+  end;
   AProgram.FHandle.Free;
   FShaderProgramsList[AProgram.FIndex] := nil;
   Dispose(AProgram);

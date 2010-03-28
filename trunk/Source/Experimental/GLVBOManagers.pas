@@ -309,7 +309,7 @@ var
   DynamicVBOManager: TGLDynamicVBOManager;
   StreamVBOManager: TGLStreamVBOManager;
 
-  vUseMappingForOftenBufferUpdate: Boolean = True;
+  vUseMappingForOftenBufferUpdate: Boolean = False;
 
 implementation
 
@@ -366,7 +366,7 @@ resourcestring
     'Geometric data of the object already identified.';
 
 var
-  MaxElementsIndices: GLUInt = 0;
+  vMaxElementsIndices: GLUInt = 0;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBuiltProperties'}{$ENDIF}
   // ------------------
@@ -895,7 +895,7 @@ begin
       exit;
 
     Result :=
-      glGetAttribLocationARB(CurrentGLContext.GLStates.CurrentProgram,
+      glGetAttribLocation(CurrentGLContext.GLStates.CurrentProgram,
       PGLChar(TGLString(AttrName.Name)));
 
     Assert(Result < GLS_VERTEX_ATTR_NUM,
@@ -1296,8 +1296,8 @@ begin
   Assert(GLVBOMState = GLVBOM_OBJECT, glsWrongCallEnd);
   GLVBOMState := GLVBOM_DEFAULT;
 
-  if MaxElementsIndices = 0 then
-    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @MaxElementsIndices);
+  if vMaxElementsIndices = 0 then
+    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
 
   // make sure no VAO is bound
   rci.GLStates.VertexArrayBinding := 0;
@@ -1494,18 +1494,18 @@ begin
       end
       else if GL_EXT_draw_range_elements then
       begin
-        fullPartCount := CurrentClient.IndexCount[p] div MaxElementsIndices;
-        restPart := CurrentClient.IndexCount[p] mod MaxElementsIndices;
+        fullPartCount := CurrentClient.IndexCount[p] div vMaxElementsIndices;
+        restPart := CurrentClient.IndexCount[p] mod vMaxElementsIndices;
         for n := 0 to fullPartCount - 1 do
         begin
           glDrawRangeElements(
             pType,
             IndexStart,
-            IndexStart + MaxElementsIndices - 1,
-            MaxElementsIndices,
+            IndexStart + vMaxElementsIndices - 1,
+            vMaxElementsIndices,
             GL_UNSIGNED_INT,
             Pointer(offset));
-          Inc(IndexStart, MaxElementsIndices);
+          Inc(IndexStart, vMaxElementsIndices);
         end;
         if restPart > 0 then
         begin
@@ -1682,7 +1682,7 @@ end;
 
 procedure TGLStaticVBOManager.BeginPrimitives(eType: TGLVBOMEnum);
 begin
-  Assert(GLVBOMState = GLVBOM_DEFAULT, glsWrongCallBeginPrim);
+  Assert(GLVBOMState = GLVBOM_OBJECT, glsWrongCallBeginPrim);
   GLVBOMState := GLVBOM_PRIMITIVE;
   Assert((eType >= GLVBOM_TRIANGLES) and (eType <=
     GLVBOM_TRIANGLE_STRIP_ADJACENCY), glsInvalidPrimType);
@@ -1820,8 +1820,8 @@ begin
   if (HostVertexBuffer.Count = 0) or (HostIndexBuffer.Count = 0) then
     exit;
 
-  if MaxElementsIndices = 0 then
-    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @MaxElementsIndices);
+  if vMaxElementsIndices = 0 then
+    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
 
   fVertexHandle.AllocateHandle;
   fVertexHandle.Bind;
@@ -2003,13 +2003,13 @@ begin
         // Simple drawing with pre-TnL cashing
       else if GL_EXT_draw_range_elements then
       begin
-        fullPartCount := Client.IndexCount[p] div MaxElementsIndices;
-        restPart := Client.IndexCount[p] mod MaxElementsIndices;
+        fullPartCount := Client.IndexCount[p] div vMaxElementsIndices;
+        restPart := Client.IndexCount[p] mod vMaxElementsIndices;
         for n := 0 to fullPartCount - 1 do
         begin
-          glDrawRangeElements(pType, start, start + MaxElementsIndices - 1,
-            MaxElementsIndices, indexType, Pointer(offset));
-          Inc(start, MaxElementsIndices);
+          glDrawRangeElements(pType, start, start + vMaxElementsIndices - 1,
+            vMaxElementsIndices, indexType, Pointer(offset));
+          Inc(start, vMaxElementsIndices);
         end;
         if restPart > 0 then
         begin
@@ -2409,8 +2409,8 @@ var
   uniform: GLInt;
   IndexStart, VertexStart, restPart: LongWord;
 begin
-  if MaxElementsIndices = 0 then
-    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @MaxElementsIndices);
+  if vMaxElementsIndices = 0 then
+    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
 
   Client := ClientList.Items[BuiltProp.ID - 1];
   offset := Client.FirstIndex;
@@ -2498,14 +2498,14 @@ begin
       end
       else if GL_EXT_draw_range_elements then
       begin
-        fullPartCount := Client.IndexCount[p] div MaxElementsIndices;
-        restPart := Client.IndexCount[p] mod MaxElementsIndices;
+        fullPartCount := Client.IndexCount[p] div vMaxElementsIndices;
+        restPart := Client.IndexCount[p] mod vMaxElementsIndices;
         for n := 0 to fullPartCount - 1 do
         begin
           glDrawRangeElements(pType, IndexStart,
-            IndexStart + MaxElementsIndices - 1,
-            MaxElementsIndices, GL_UNSIGNED_INT, Pointer(offset));
-          Inc(IndexStart, MaxElementsIndices);
+            IndexStart + vMaxElementsIndices - 1,
+            vMaxElementsIndices, GL_UNSIGNED_INT, Pointer(offset));
+          Inc(IndexStart, vMaxElementsIndices);
         end;
         if restPart > 0 then
         begin
