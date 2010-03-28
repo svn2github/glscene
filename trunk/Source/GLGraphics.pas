@@ -11,6 +11,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>28/03/10 - Yar - Added glGenerateMipmap when used forward context
       <li>08/03/10 - Yar - Added in TRasterFileFormatsList.FindFromStream PNG singnature
                            Added forward context cheking to circumvent deprecations
       <li>01/03/10 - Yar - Bugfix when texture, which has lower mip-levels than the standard number is not rendered
@@ -2601,6 +2602,7 @@ begin
   end;
 
   // Hardware mipmap autogeneration
+  bMipmapGen := False;
   if GL_SGIS_generate_mipmap and (target <> GL_TEXTURE_RECTANGLE) then
   begin
     bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
@@ -2843,6 +2845,11 @@ begin
     GL_TEXTURE_CUBE_MAP_ARRAY: ;
 
   end; // of case
+
+  // Hardware mipmap generation with forward context
+  if CurrentGLContext.GLStates.ForwardContext and bMipmapGen then
+    glGenerateMipmap(target);
+
   if Assigned(buffer) then
     FreeMem(buffer);
   if Assigned(vtcBuffer) then
