@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/03/10 - Yar - Added 3.3 forward context creation and eliminate memory leaks when multithreading
       <li>06/03/10 - Yar - Added forward context creation in TGLWin32Context.DoActivate
       <li>20/02/10 - DanB - Allow double-buffered memory viewers, if you want single
                             buffered, or no swapping, then change buffer options instead.
@@ -927,7 +928,9 @@ begin
     begin
       if @wglCreateContextAttribsARB = nil then
         raise EGLContext.Create(cForwardContextFailsed);
-      if GL_VERSION_3_2 then
+      if GL_VERSION_3_3 then
+        ForwardContextAttribList[3] := 3
+      else if GL_VERSION_3_2 then
         ForwardContextAttribList[3] := 2
       else if GL_VERSION_3_1 then
         ForwardContextAttribList[3] := 1;
@@ -996,6 +999,12 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterGLContextClass(TGLWin32Context);
+
+finalization
+
+{$IFDEF GLS_MULTITHREAD}
+   vLastVendor := '';
+{$ENDIF}
 
 end.
 
