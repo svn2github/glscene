@@ -5,9 +5,12 @@
 
    Base unit to drawing geometry data in vertex buffer objects.<p>
    Require OpenGL 2.1.<p>
+   Try to not change buffer usage during runtime because static <p>
+   and stream data not removed from video memory until application running.<p>
 
    <b>History : </b><font size=-1><ul>
 
+    <li>29/03/10 - Yar - Added multicontext and multithreading support
     <li>24/03/10 - Yar - Creation
  </ul></font>
 }
@@ -22,7 +25,8 @@ uses
   Classes,
   // GLScene
   BaseClasses, OpenGL1x, GLContext, GLRenderContextInfo, GLState,
-  GL3xShadersManager, VectorTypes, VectorLists;
+  GL3xShadersManager, VectorTypes, VectorLists,
+  GLSLog;
 
 const
   GLVBOM_MAX_DIFFERENT_PRIMITIVES = 8;
@@ -64,6 +68,7 @@ type
   TGLBufferUsage = (buStatic, buDynamic, buStream);
 
   TGLBaseVBOManager = class;
+  TGLBaseVBOManagerClass = class of TGLBaseVBOManager;
   TGLBuiltProperties = class;
 
   // Information about object graphic data (something like DIP)
@@ -87,7 +92,7 @@ type
     RelativeSize: Single;
   end;
 
-  TGLBuiltProperties = class( TPersistent )
+  TGLBuiltProperties = class(TPersistent)
   private
     { Private declarations }
     Owner: TComponent;
@@ -96,7 +101,6 @@ type
     FVertexWelding: Boolean;
     FTriangleAdjacency: Boolean;
     FInstancesNumber: Integer;
-    FManager: TGLBaseVBOManager;
     FOwnerNotifyChange: TNotifyEvent;
     procedure SetUsage(const Value: TGLBufferUsage);
     procedure SetVertexWelding(const Value: Boolean);
@@ -105,6 +109,7 @@ type
     function GetVertexBufferHandle: GLUInt;
     function GetIndexBufferHandle: GLUInt;
     function GetVertexNumber: LongWord;
+    function GetManager: TGLBaseVBOManager;
   protected
     { Protected Declarations }
     VertexBufferCapacity: LongWord;
@@ -116,7 +121,7 @@ type
     property VertexBufferHandle: GLUInt read GetVertexBufferHandle;
     property IndexBufferHandle: GLUInt read GetIndexBufferHandle;
 
-    property Manager: TGLBaseVBOManager read fManager;
+    property Manager: TGLBaseVBOManager read GetManager;
     property OwnerNotifyChange: TNotifyEvent read FOwnerNotifyChange
       write FOwnerNotifyChange;
     property VertexNumber: LongWord read GetVertexNumber;
@@ -133,9 +138,10 @@ type
 
   // TGLBaseVBOManager
   //
-  TGLBaseVBOManager = class( TObject )
+  TGLBaseVBOManager = class
   private
     { Private declarations }
+    FRenderingContext: TGLContext;
     FVertexHandle: TGLVBOArrayBufferHandle;
     FIndexHandle: TGLVBOElementArrayHandle;
     FBuilded: Boolean;
@@ -160,21 +166,24 @@ type
     procedure InitClient(var AClient: PGLRenderPacket);
     procedure FreeClient(const AClient: PGLRenderPacket);
     procedure EnablePrimitiveRestart(const rci: TRenderContextInfo);
-
   public
     { Public Declarations }
-    constructor Create; virtual;
+    constructor Create(const AContext: TGLContext); virtual;
     destructor Destroy; override;
+
     {: Begins storing a piece of geometry }
     procedure BeginObject(const BuiltProp: TGLBuiltProperties);
       virtual; abstract;
     {: Ends a piece of geometry. }
-    procedure EndObject(const rci: TRenderContextInfo); virtual; abstract;
+    procedure EndObject(const rci: TRenderContextInfo);
+      virtual; abstract;
     {: Begins gathering information about the given type of primitives.
        An object can only consist of a set of primitives of the same type. }
-    procedure BeginPrimitives(eType: TGLVBOMEnum); virtual; abstract;
+    procedure BeginPrimitives(eType: TGLVBOMEnum);
+      virtual; abstract;
     {: Ends gathering information about the primitive. }
-    procedure EndPrimitives; virtual; abstract;
+    procedure EndPrimitives;
+      virtual; abstract;
     {: Specifies a new value for the attribute with the given name. }
     procedure Attribute1f(const AttrName: TGLSLAttribute; a1: GLfloat);
     procedure Attribute2f(const AttrName: TGLSLAttribute; a1, a2: GLfloat);
@@ -223,16 +232,19 @@ type
     {: Provides a feature to create an empty buffer
        from the task markup attributes.
        This is useful for transformfeedback or copying operations. }
-    procedure EmitVertices(VertexNumber: LongWord; Indexed: Boolean); dynamic;
+    procedure EmitVertices(VertexNumber: LongWord; Indexed: Boolean);
+      dynamic;
     {: Restart strip by GL_NV_primitive_restart or degenerate primitive }
     procedure RestartStrip;
     {: If during the storing geometry popup an error
        use discard to remove last stored object's data }
     procedure Discard;
     {: Execute build stage }
-    procedure BuildBuffer(const rci: TRenderContextInfo); dynamic;
+    procedure BuildBuffer(const rci: TRenderContextInfo);
+      dynamic;
     {: Store time }
-    procedure DoProgress(const progressTime: TProgressTimes); dynamic;
+    procedure DoProgress(const progressTime: TProgressTimes);
+      dynamic;
     {: Rendering sender }
     procedure RenderClient(const BuiltProp: TGLBuiltProperties; const rci:
       TRenderContextInfo);
@@ -240,6 +252,8 @@ type
     {: Return true if buffer is uploaded to video memory.
        Dynamic VBO always return false }
     property IsBuilded: Boolean read fBuilded;
+    {: Rendering context to which it belongs manager. }
+    property RenderingContext: TGLContext read FRenderingContext;
   end;
 
   // TGLStaticVBOManager
@@ -250,10 +264,9 @@ type
     ClientList: TList;
     HostVertexBuffer: T4ByteList;
     indexType: GLenum; // UByte, UShort or UInt
-    fCurrentTime: Double;
   public
     { Public Declarations }
-    constructor Create; override;
+    constructor Create(const AContext: TGLContext); override;
     destructor Destroy; override;
     procedure BeginObject(const BuiltProp: TGLBuiltProperties);
       override;
@@ -261,7 +274,6 @@ type
     procedure BeginPrimitives(eType: TGLVBOMEnum); override;
     procedure EndPrimitives; override;
     procedure BuildBuffer(const rci: TRenderContextInfo); override;
-    procedure DoProgress(const progressTime: TProgressTimes); override;
     procedure RenderClient(const BuiltProp: TGLBuiltProperties; const rci:
       TRenderContextInfo); override;
     {: Returns the portion of the buffer that is used during the time interval. }
@@ -277,7 +289,7 @@ type
     IndexBufferCapacity: LongWord;
   public
     { Public Declarations }
-    constructor Create; override;
+    constructor Create(const AContext: TGLContext); override;
     destructor Destroy; override;
     procedure BeginObject(const BuiltProp: TGLBuiltProperties); override;
     procedure EndObject(const rci: TRenderContextInfo); override;
@@ -293,7 +305,7 @@ type
     ClientList: TList;
   public
     { Public Declarations }
-    constructor Create; override;
+    constructor Create(const AContext: TGLContext); override;
     destructor Destroy; override;
     procedure BeginObject(const BuiltProp: TGLBuiltProperties); override;
     procedure EndObject(const rci: TRenderContextInfo); override;
@@ -305,11 +317,16 @@ type
   end;
 
 var
-  StaticVBOManager: TGLStaticVBOManager;
-  DynamicVBOManager: TGLDynamicVBOManager;
-  StreamVBOManager: TGLStreamVBOManager;
-
   vUseMappingForOftenBufferUpdate: Boolean = False;
+
+{$IFDEF GLS_MULTITHREAD}
+threadvar
+{$ENDIF}
+  vCurrentTime: Double;
+
+function StaticVBOManager: TGLStaticVBOManager;
+function DynamicVBOManager: TGLDynamicVBOManager;
+function StreamVBOManager: TGLStreamVBOManager;
 
 implementation
 
@@ -364,48 +381,143 @@ resourcestring
     'Too mach different primitive types in one object.';
   glsAlreadyDefined =
     'Geometric data of the object already identified.';
+  glsNoActiveRC =
+    'Using the VBO manager without the active rendeering context.';
 
 var
-  vMaxElementsIndices: GLUInt = 0;
+  vMaxElementsIndices: GLUInt;
+{$IFNDEF GLS_MULTITHREAD}
+  vVBOManagerList: TList;
+{$ELSE}
+  vVBOManagerList: TThreadList;
+{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Global Managment'}{$ENDIF}
+
+function GetVBOManager(const AClass: TGLBaseVBOManagerClass): TGLBaseVBOManager;
+var
+  I: Integer;
+  RC: TGLContext;
+begin
+  RC := CurrentGLContext;
+  if RC = nil then
+    Log.LogWarning(glsNoActiveRC);
+  // Find suitable manager
+{$IFNDEF GLS_MULTITHREAD}
+  for I := 0 to vVBOManagerList.Count - 1 do
+  begin
+    Result := TGLBaseVBOManager(vVBOManagerList[I]);
+    if (Result is AClass)
+      and ((Result.RenderingContext = RC) or (RC = nil)) then
+      exit;
+  end;
+  // Create new
+  Result := AClass.Create(RC);
+  vVBOManagerList.Add(Result);
+{$ELSE}
+  with vVBOManagerList.LockList do
+  begin
+    for I := 0 to Count - 1 do
+    begin
+      Result := TGLBaseVBOManager(Items[I]);
+      if (Result is AClass)
+        and ((Result.RenderingContext = RC) or (RC = nil)) then
+        exit;
+    end;
+    // Create new
+    Result := AClass.Create(RC);
+    Add(Result);
+  end;
+{$ENDIF}
+end;
+
+function StaticVBOManager: TGLStaticVBOManager;
+begin
+  Result := GetVBOManager(TGLStaticVBOManager) as TGLStaticVBOManager;
+end;
+
+function DynamicVBOManager: TGLDynamicVBOManager;
+begin
+  Result := GetVBOManager(TGLDynamicVBOManager) as TGLDynamicVBOManager;
+end;
+
+function StreamVBOManager: TGLStreamVBOManager;
+begin
+  Result := GetVBOManager(TGLStreamVBOManager) as TGLStreamVBOManager;
+end;
+
+procedure FreeVBOManagers;
+var
+  I: Integer;
+  vManager: TGLBaseVBOManager;
+begin
+{$IFNDEF GLS_MULTITHREAD}
+  for I := 0 to vVBOManagerList.Count - 1 do
+  begin
+    vManager := TGLBaseVBOManager(vVBOManagerList[I]);
+    vManager.Free;
+  end;
+{$ELSE}
+  with vVBOManagerList.LockList do
+  begin
+    for I := 0 to Count - 1 do
+    begin
+      vManager := TGLBaseVBOManager(Items[I]);
+      vManager.Free;
+    end;
+  end;
+{$ENDIF}
+  vVBOManagerList.Free;
+end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBuiltProperties'}{$ENDIF}
-  // ------------------
-  // ------------------ TGLBuiltProperties ------------------
-  // ------------------
+// ------------------
+// ------------------ TGLBuiltProperties ------------------
+// ------------------
 
 constructor TGLBuiltProperties.Create(AOwner: TComponent);
 begin
   inherited Create;
   Owner := AOwner;
   ID := 0;
-  fUsage := buStatic;
-  fVertexWelding := true;
-  fTriangleAdjacency := false;
-  fInstancesNumber := 0;
-  fManager := DynamicVBOManager;
+  FUsage := buStatic;
+  FVertexWelding := true;
+  FTriangleAdjacency := false;
+  FInstancesNumber := 0;
 end;
 
 procedure TGLBuiltProperties.SetUsage(const Value: TGLBufferUsage);
 begin
-
-  if (Value <> fUsage) and not Manager.IsBuilded then
+  if Value <> fUsage then
   begin
     fUsage := Value;
+    ID := 0;
     if Assigned(FOwnerNotifyChange) then
       FOwnerNotifyChange(Self);
   end;
+end;
 
-  if not Manager.IsBuilded and not (csDesigning in Owner.ComponentState) then
-    case fUsage of
-      buStatic: fManager := StaticVBOManager;
-      buDynamic: fManager := DynamicVBOManager;
-      buStream: fManager := StreamVBOManager;
+function TGLBuiltProperties.GetManager: TGLBaseVBOManager;
+begin
+  if (FUsage = buStatic) and (csDesigning in Owner.ComponentState) then
+    Result := DynamicVBOManager
+  else
+    case FUsage of
+      buStatic: Result := StaticVBOManager;
+      buDynamic: Result := DynamicVBOManager;
+      buStream: Result := StreamVBOManager;
+    else
+      begin
+        Assert(False, glsErrorEx + glsUnknownType);
+        Result := DynamicVBOManager;
+      end;
     end;
 end;
 
 procedure TGLBuiltProperties.SetVertexWelding(const Value: Boolean);
 begin
-  if (Value <> fVertexWelding) and not Manager.IsBuilded then
+  if Value <> fVertexWelding then
   begin
     fVertexWelding := Value;
     if Assigned(FOwnerNotifyChange) then
@@ -415,7 +527,7 @@ end;
 
 procedure TGLBuiltProperties.SetTriangleAdjacency(const Value: Boolean);
 begin
-  if (Value <> fTriangleAdjacency) and not Manager.IsBuilded then
+  if Value <> fTriangleAdjacency then
   begin
     fTriangleAdjacency := Value;
     if Assigned(FOwnerNotifyChange) then
@@ -427,7 +539,7 @@ procedure TGLBuiltProperties.SetInstancesNumber(Value: Integer);
 begin
   if Value < 0 then
     Value := 0;
-  if (Value <> fInstancesNumber) and not Manager.IsBuilded then
+  if Value <> fInstancesNumber then
   begin
     fInstancesNumber := Value;
     if Assigned(FOwnerNotifyChange) then
@@ -525,10 +637,11 @@ end;
 // ------------------ TGLBaseVBOManager ------------------
 // ------------------
 
-constructor TGLBaseVBOManager.Create;
+constructor TGLBaseVBOManager.Create(const AContext: TGLContext);
 var
   i: Integer;
 begin
+  FRenderingContext := AContext;
   fVertexHandle := TGLVBOArrayBufferHandle.Create;
   fIndexHandle := TGLVBOElementArrayHandle.Create;
   HostIndexBuffer := TLongWordList.Create;
@@ -875,6 +988,8 @@ function TGLBaseVBOManager.GetAttributeLocation(const AttrName: TGLSLAttribute;
 var
   a: integer;
   Finded: Boolean;
+  prog: GLUint;
+  nm: PGLChar;
 begin
   // if the attribute has never been used before
   Result := -1;
@@ -893,10 +1008,9 @@ begin
   begin
     if GLVBOMState <> GLVBOM_OBJECT then
       exit;
-
-    Result :=
-      glGetAttribLocation(CurrentGLContext.GLStates.CurrentProgram,
-      PGLChar(TGLString(AttrName.Name)));
+    prog := FRenderingContext.GLStates.CurrentProgram;
+    nm := PGLChar(TGLString(AttrName.Name));
+    Result := glGetAttribLocation(prog, nm);
 
     Assert(Result < GLS_VERTEX_ATTR_NUM,
       'GetAttributeLocation: Location is out of bound.');
@@ -1241,9 +1355,9 @@ end;
 // ------------------ TGLDynamicVBOManager ------------------
 // ------------------
 
-constructor TGLDynamicVBOManager.Create;
+constructor TGLDynamicVBOManager.Create(const AContext: TGLContext);
 begin
-  inherited;
+  inherited Create(AContext);
   Usage := GL_DYNAMIC_DRAW;
   fBuilded := false;
 end;
@@ -1260,7 +1374,7 @@ var
   i: integer;
 begin
   Assert(GLVBOMState = GLVBOM_DEFAULT, glsWrongCallBegin);
-  Assert(CurrentGLContext.GLStates.CurrentProgram > 0, glsNoShader);
+  Assert(FRenderingContext.GLStates.CurrentProgram > 0, glsNoShader);
 
   InitClient(CurrentClient);
   CurrentClient.VertexHandle := fVertexHandle;
@@ -1459,7 +1573,7 @@ begin
         begin
           // Pseudo-Instancing
           uniform := glGetUniformLocationARB(
-            CurrentGLContext.GLStates.CurrentProgram,
+            FRenderingContext.GLStates.CurrentProgram,
             PGLChar(AnsiString(uniformInstanceID.Name)));
           if CurrentClient.IndexCount[p] > 0 then
           begin
@@ -1592,9 +1706,9 @@ end;
 // ------------------ TGLStaticVBOManager ------------------
 // ------------------
 
-constructor TGLStaticVBOManager.Create;
+constructor TGLStaticVBOManager.Create(const AContext: TGLContext);
 begin
-  inherited;
+  inherited Create(AContext);
   Usage := GL_STATIC_DRAW;
   HostVertexBuffer := T4ByteList.Create;
   ClientList := TList.Create;
@@ -1625,7 +1739,7 @@ var
 begin
   Assert(not fBuilded, glsCanNotRebuild);
   Assert(GLVBOMState = GLVBOM_DEFAULT, glsWrongCallBegin);
-  Assert(CurrentGLContext.GLStates.CurrentProgram > 0, glsNoShader);
+  Assert(FRenderingContext.GLStates.CurrentProgram > 0, glsNoShader);
 
   Assert(BuiltProp.ID = 0, glsAlreadyDefined);
 
@@ -1737,7 +1851,7 @@ begin
     GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
   end;
 
-  Assert(Valid, glsInvalidNumberOfVertex );
+  Assert(Valid, glsInvalidNumberOfVertex);
 
   // Make trinagles with adjancency
   if CurrentClient.BuiltProp.TriangleAdjacency then
@@ -1925,11 +2039,6 @@ begin
   HostIndexBuffer.Clear;
 end;
 
-procedure TGLStaticVBOManager.DoProgress(const progressTime: TProgressTimes);
-begin
-  fCurrentTime := progressTime.newTime;
-end;
-
 procedure TGLStaticVBOManager.RenderClient(const BuiltProp: TGLBuiltProperties;
   const rci: TRenderContextInfo);
 var
@@ -1952,7 +2061,7 @@ begin
   end;
   offset := offset * typeSize;
 
-  Client.LastTimeWhenRendered := fCurrentTime;
+  Client.LastTimeWhenRendered := vCurrentTime;
   Client.ArrayHandle.Bind;
   EnablePrimitiveRestart(rci);
 
@@ -1983,10 +2092,10 @@ begin
         else
         begin
           // Pseudo-Instancing
-          if CurrentGLContext.GLStates.CurrentProgram > 0 then
+          if FRenderingContext.GLStates.CurrentProgram > 0 then
           begin
             uniform := glGetUniformLocationARB(
-              CurrentGLContext.GLStates.CurrentProgram,
+              FRenderingContext.GLStates.CurrentProgram,
               PGLChar(AnsiString(uniformInstanceID.Name)));
             for i := 0 to Client.BuiltProp.InstancesNumber - 1 do
             begin
@@ -2037,7 +2146,7 @@ begin
   for c := 0 to ClientList.Count - 1 do
   begin
     Client := ClientList.Items[c];
-    if Client.LastTimeWhenRendered > fCurrentTime - TimeInterval then
+    if Client.LastTimeWhenRendered > vCurrentTime - TimeInterval then
       portion := portion + Client.RelativeSize;
   end;
   Result := portion;
@@ -2049,9 +2158,9 @@ end;
 // ------------------ TGLStreamVBOManager ------------------
 // ------------------
 
-constructor TGLStreamVBOManager.Create;
+constructor TGLStreamVBOManager.Create(const AContext: TGLContext);
 begin
-  inherited;
+  inherited Create(AContext);
   Usage := GL_STREAM_DRAW;
   fBuilded := false;
   ClientList := TList.Create;
@@ -2078,7 +2187,7 @@ var
   i: integer;
 begin
   Assert(GLVBOMState = GLVBOM_DEFAULT, glsWrongCallBegin);
-  Assert(CurrentGLContext.GLStates.CurrentProgram > 0, glsNoShader);
+  Assert(FRenderingContext.GLStates.CurrentProgram > 0, glsNoShader);
 
   if BuiltProp.ID <> 0 then
     CurrentClient := ClientList.Items[BuiltProp.ID - 1];
@@ -2460,10 +2569,10 @@ begin
         else
         begin
           // Pseudo-Instancing
-          if CurrentGLContext.GLStates.CurrentProgram > 0 then
+          if FRenderingContext.GLStates.CurrentProgram > 0 then
           begin
             uniform := glGetUniformLocationARB(
-              CurrentGLContext.GLStates.CurrentProgram,
+              FRenderingContext.GLStates.CurrentProgram,
               PGLChar(AnsiString(uniformInstanceID.Name)));
             if Client.IndexCount[p] > 0 then
             begin
@@ -2583,18 +2692,16 @@ end;
 
 initialization
 
-  StaticVBOManager := TGLStaticVBOManager.Create;
-  DynamicVBOManager := TGLDynamicVBOManager.Create;
-  StreamVBOManager := TGLStreamVBOManager.Create;
+  vMaxElementsIndices := 0;
+{$IFNDEF GLS_MULTITHREAD}
+  vVBOManagerList := TList.Create;
+{$ELSE}
+  vVBOManagerList := TThreadList.Create;
+{$ENDIF}
 
 finalization
 
-  StaticVBOManager.Destroy;
-  StaticVBOManager := nil;
-  DynamicVBOManager.Destroy;
-  DynamicVBOManager := nil;
-  StreamVBOManager.Destroy;
-  StreamVBOManager := nil;
+  FreeVBOManagers;
 
 end.
 
