@@ -16,6 +16,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>29/03/10 - Yar - Replaced MULTITHREADOPENGL to GLS_MULTITHREAD (thanks Controler)
       <li>16/03/07 - DaStr - Dropped Kylix support in favor of FPC
                              (thanks Burkhard Carstens) (BugTracekrID=1681585)
       <li>08/07/04 - LR - Removed ../ from the GLScene.inc
@@ -27,7 +28,7 @@
       <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
       <li>18/12/01 - EG - Added xglEnableClientState
       <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL1x)
-      <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall) 
+      <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall)
       <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
       <li>14/08/01 - EG - Added xglMapTexCoordToSecond
       <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
@@ -38,8 +39,6 @@ unit XOpenGL;
 interface
 
 {$i GLScene.inc}
-
-{.$define MULTITHREADOPENGL}
 
 uses OpenGL1x;
 
@@ -81,11 +80,11 @@ procedure xglAllowSecondTextureUnit;
 {: Returns the complex mapping in bitwise form. }
 function xglGetBitWiseMapping : Cardinal;
 
-{$ifdef MULTITHREADOPENGL}
+{$IFDEF GLS_MULTITHREAD}
 threadvar
-{$else}
+{$ELSE}
 var
-{$endif}
+{$ENDIF}
 
    xglMapTexCoordMode : TMapTexCoordMode;
    vSecondTextureUnitForbidden : Boolean;
