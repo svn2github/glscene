@@ -1,12 +1,12 @@
 object GLSceneEditorForm: TGLSceneEditorForm
-  Left = 346
-  Height = 514
-  Top = 105
+  Left = 284
+  Height = 502
+  Top = 117
   Width = 461
   ActiveControl = Tree
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
-  ClientHeight = 514
+  ClientHeight = 502
   ClientWidth = 461
   Font.Height = -11
   Font.Name = 'Arial'
@@ -148,7 +148,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   LCLVersion = '0.9.29'
   object Splitter: TSplitter
     Left = 307
-    Height = 462
+    Height = 450
     Top = 52
     Width = 4
     Align = alRight
@@ -157,7 +157,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object Tree: TTreeView
     Left = 0
-    Height = 462
+    Height = 450
     Top = 52
     Width = 307
     Align = alClient
@@ -249,12 +249,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object PABehaviours: TPanel
     Left = 311
-    Height = 462
+    Height = 450
     Top = 52
     Width = 150
     Align = alRight
     Caption = 'PABehaviours'
-    ClientHeight = 462
+    ClientHeight = 450
     ClientWidth = 150
     Constraints.MinWidth = 1
     TabOrder = 2
@@ -306,7 +306,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object EffectsListView: TListView
       Left = 1
-      Height = 287
+      Height = 275
       Top = 174
       Width = 148
       Align = alClient
@@ -412,24 +412,30 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ToolButton10: TToolButton
       Left = 197
+      Hint = 'Expand'
       Top = 2
-      Action = ACExpand
+      Caption = 'Expand'
+      ImageIndex = 13
       ParentShowHint = False
       ShowHint = True
+      OnClick = ToolButton10Click
     end
     object ToolButton15: TToolButton
       Left = 227
+      Hint = 'Collapse'
       Top = 2
-      Action = ACCollapse
+      Caption = 'Collapse'
+      ImageIndex = 14
       ParentShowHint = False
       ShowHint = True
+      OnClick = ToolButton15Click
     end
   end
   object PopupMenu: TPopupMenu
     Images = ImageList
     OnPopup = PopupMenuPopup
-    left = 104
-    top = 232
+    left = 8
+    top = 96
     object MIAddCamera: TMenuItem
       Action = ACAddCamera
       Bitmap.Data = {
@@ -847,7 +853,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object ActionList: TActionList
     Images = ImageList
-    left = 24
+    left = 8
     top = 64
     object ACAddCamera: TAction
       Caption = 'Add camera'
@@ -941,25 +947,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ImageIndex = 12
       OnExecute = ACStayOnTopExecute
     end
-    object ACExpand: TAction
-      Caption = 'ACExpand'
-      ImageIndex = 13
-      OnExecute = ACExpandExecute
-    end
-    object ACCollapse: TAction
-      Caption = 'ACCollapse'
-      ImageIndex = 14
-      OnExecute = ACCollapseExecute
-    end
   end
   object PMToolBar: TPopupMenu
-    left = 104
+    left = 88
     top = 64
   end
   object ImageList: TImageList
     Masked = True
-    left = 24
-    top = 120
+    left = 40
+    top = 64
     Bitmap = {
       4C690F0000001000000010000000FF00FF00FF00FF00FF00FF00FF00FF00FF00
       FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
@@ -1448,26 +1444,26 @@ object GLSceneEditorForm: TGLSceneEditorForm
     DefaultExt = '.gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    left = 24
-    top = 176
+    left = 8
+    top = 128
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    left = 24
-    top = 232
+    left = 40
+    top = 128
   end
   object PMBehavioursToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMBehavioursToolbarPopup
-    left = 104
-    top = 176
+    left = 120
+    top = 64
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    left = 104
-    top = 288
+    left = 272
+    top = 72
     object Delete1: TMenuItem
       Action = ACDeleteObject
       Bitmap.Data = {
@@ -1597,7 +1593,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMEffectsToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMEffectsToolbarPopup
-    left = 104
-    top = 120
+    left = 152
+    top = 64
   end
 end
