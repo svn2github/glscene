@@ -4,6 +4,7 @@
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>01/04/10 - Yar - Bugfix when Delphi not use optimization (thanks Lampogolovii)
       <li>15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
       <li>05/03/10 - Yar - Creation
   </ul></font>
@@ -2010,9 +2011,9 @@ begin
   Result := Power(x, y);
 end;
 
-function _setjmp(__jmpb: jmp_buf): Boolean; cdecl;
+function _setjmp(__jmpb: jmp_buf): Integer; cdecl;
 begin
-  Result := false;
+  Result := 0;
 end;
 
 procedure _snprintf; cdecl;
