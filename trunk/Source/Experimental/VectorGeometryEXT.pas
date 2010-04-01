@@ -6,6 +6,7 @@
    This module is designed to store seldom-used algebraic functions.<p>
 
 	<b>History : </b><font size=-1><ul>
+     <li>01/04/10 - Yar - Added CreateLookAtMatrix
 	   <li>27/02/10 - Yar - Creation
 	</ul></font>
 }
@@ -48,6 +49,7 @@ function CreateProjectionMatrix(const fov: single; aspect: single; znear:
   single; zfar: single): TMatrix; overload;
 function CreateProjectionMatrix(const Rigth, Left, Top, Bottom: Integer):
   TMatrix; overload;
+function CreateLookAtMatrix(const eye, center, normUp: TVector): TMatrix;
 
 implementation
 
@@ -196,6 +198,30 @@ begin
   Result[3, 0] := (Rigth + Left) / (Rigth - Left);
   Result[3, 1] := (Top + Bottom) / (Top - Bottom);
   Result[3, 2] := -EPSILON;
+end;
+
+function CreateLookAtMatrix(const eye, center, normUp: TVector): TMatrix;
+var
+  XAxis, YAxis, ZAxis, negEye: TVector;
+  M: TMatrix;
+begin
+  ZAxis := VectorSubtract(center, eye);
+  NormalizeVector(ZAxis);
+  XAxis := VectorCrossProduct(ZAxis, normUp);
+  NormalizeVector(XAxis);
+  YAxis := VectorCrossProduct(XAxis, ZAxis);
+  M[0] := XAxis;
+  M[1] := YAxis;
+  M[2] := VectorNegate(ZAxis);
+  M[3] := NullHmgPoint;
+  TransposeMatrix(M);
+  negEye[0] := -eye[0];
+  negEye[1] := -eye[1];
+  negEye[2] := -eye[2];
+  negEye[3] := 1;
+  negEye := VectorTransform(negEye, M);
+  M[3] := negEye;
+  Result := M;
 end;
 
 end.
