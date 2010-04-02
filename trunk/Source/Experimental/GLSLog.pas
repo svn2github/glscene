@@ -23,13 +23,11 @@ interface
 
 {$I GLScene.inc}
 
-{$IFDEF GLS_LOGGING}
 uses
   Classes, SysUtils
-{$IFDEF MSWINDOWS}
-  , Windows
-{$ENDIF};
-{$ENDIF}
+{$IFDEF MSWINDOWS} , Windows{$ENDIF}
+  ;
+
 type
   {: Levels of importance of log messages }
   TLogLevel = (lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError);
@@ -153,10 +151,10 @@ implementation
 {$IFDEF GLS_LOGGING}
 uses
   Dialogs;
+{$ENDIF}
 
 var
   vAssertErrorHandler: TAssertErrorProc;
-{$ENDIF}
 
 {$IFDEF FPC}
 procedure LogedAssert(const Message, Filename: ShortString; LineNumber: Integer;
