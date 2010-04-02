@@ -4,6 +4,7 @@
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 // 
 // History:
+// 02/04/10 - Yar - Added GLS_NO_INLINE option
 // 13/12/09 - DaStr - Added GLS_MULTITHREAD option (thanks Controller)
 // 10/11/09 - DaStr - Added Delphi 2010 support
 // 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
@@ -44,6 +45,9 @@
 
 // De-Activate assembly routines in other GLS units.
 {.$DEFINE GLS_NO_ASM}
+
+// De-Activate inline directive in GLS units.
+{.$DEFINE GLS_NO_INLINE}
 
 // Activate Multithread support.
 {.$DEFINE GLS_MULTITHREAD}
@@ -481,5 +485,17 @@
 {$IFDEF GLS_UNSUPPORTED}
   Error: unsupported version, requires at least Delphi 5
 {$ENDIF}
+
+{$IFNDEF GLS_NO_INLINE}
+  {$IFDEF GLS_COMPILER_2005_UP}
+  {$DEFINE GLS_INLINE}
+  {$ENDIF}
+  {$IFDEF FPC}
+  {$DEFINE GLS_INLINE}
+  {$ENDIF}
+{$ENDIF}
+
+
+
 
 
