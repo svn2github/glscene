@@ -6,6 +6,7 @@
    This module is designed to store seldom-used algebraic functions.<p>
 
 	<b>History : </b><font size=-1><ul>
+     <li>02/04/10 - Yar - Added inline directive for small vector operations
      <li>01/04/10 - Yar - Added CreateLookAtMatrix
 	   <li>27/02/10 - Yar - Creation
 	</ul></font>
@@ -29,19 +30,19 @@ type
   TVector3lw = array[0..2] of LongWord;
   PVector3lw = ^TVector3lw;
 
-procedure SetVector(var v: TVector4s; const x, y, z, w: integer); overload;
-procedure SetVector(var v: TVector4s; const vSrc: TVector4s); overload;
-procedure SetVector(var v: TVector2s; const vSrc: TVector2s); overload;
-procedure SetVector(var v: TVector2s; const x, y: Integer); overload;
-procedure SetVector(var v: TVector2f; const x, y: Single); overload;
-function VectorMake(const x, y: Single): TVector2f; overload;
-function VectorMake(const x, y, z: Integer): TVector3i; overload;
-function VectorMake(const x, y: Integer): TVector2s; overload;
-function VectorAdd(const v1, v2: TVector3i): TVector3i; overload;
-function VectorAdd(const v1, v2: TVector2s): TVector2s; overload;
-function VectorSubtract(const v1, v2: TVector2s): TVector2s; overload;
-procedure AddVector(var v1: TVector2s; const v2: TVector2s); overload;
-procedure ScaleVector(var v: TVector2s; factor: Single); overload;
+procedure SetVector(var v: TVector4s; const x, y, z, w: integer); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v: TVector4s; const vSrc: TVector4s); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v: TVector2s; const vSrc: TVector2s); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v: TVector2s; const x, y: Integer); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v: TVector2f; const x, y: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorMake(const x, y: Single): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorMake(const x, y, z: Integer): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorMake(const x, y: Integer): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorAdd(const v1, v2: TVector3i): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorAdd(const v1, v2: TVector2s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorSubtract(const v1, v2: TVector2s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure AddVector(var v1: TVector2s; const v2: TVector2s); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure ScaleVector(var v: TVector2s; factor: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 function CreateRotationMatrix(angleX, angleY, angleZ: single): TMatrix;
 overload;

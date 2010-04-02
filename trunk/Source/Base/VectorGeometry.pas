@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/04/10 - Yar - Added inline directive for small vector operations
       <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
       <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
                             use TRenderContextClippingInfo to GLRenderContextInfo.pas
@@ -474,53 +475,53 @@ const
 // Vector functions
 //------------------------------------------------------------------------------
 
-function TexPointMake(const s, t : Single) : TTexPoint;
-function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload;
-function AffineVectorMake(const v : TVector) : TAffineVector; overload;
-procedure SetAffineVector(var v : TAffineVector; const x, y, z : Single); overload;
-procedure SetVector(var v : TAffineVector; const x, y, z : Single); overload;
-procedure SetVector(var v : TAffineVector; const vSrc : TVector); overload;
-procedure SetVector(var v : TAffineVector; const vSrc : TAffineVector); overload;
-procedure SetVector(var v : TAffineDblVector; const vSrc : TAffineVector); overload;
-procedure SetVector(var v : TAffineDblVector; const vSrc : TVector); overload;
-function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;
-function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;
-function PointMake(const x, y, z: Single) : TVector; overload;
-function PointMake(const v : TAffineVector) : TVector; overload;
-function PointMake(const v : TVector) : TVector; overload;
-procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0); overload;
-procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0); overload;
-procedure SetVector(var v : TVector; const vSrc : TVector); overload;
-procedure MakePoint(var v : TVector; const x, y, z: Single); overload;
-procedure MakePoint(var v : TVector; const av : TAffineVector); overload;
-procedure MakePoint(var v : TVector; const av : TVector); overload;
-procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
-procedure MakeVector(var v : TVector; const x, y, z: Single); overload;
-procedure MakeVector(var v : TVector; const av : TAffineVector); overload;
-procedure MakeVector(var v : TVector; const av : TVector); overload;
+function TexPointMake(const s, t : Single) : TTexPoint; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function AffineVectorMake(const v : TVector) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetAffineVector(var v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TAffineVector; const vSrc : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TAffineVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TAffineDblVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TAffineDblVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function PointMake(const x, y, z: Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function PointMake(const v : TAffineVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function PointMake(const v : TVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(var v : TVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(var v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(var v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(var v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(var v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(var v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(var v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 procedure RstVector(var v : TAffineVector); overload;
 procedure RstVector(var v : TVector); overload;
 
 //2
-function VectorEquals(const V1, V2: TVector2f): Boolean; overload;
-function VectorEquals(const V1, V2: TVector2i): Boolean; overload;
-function VectorEquals(const V1, V2: TVector2d): Boolean; overload;
-function VectorEquals(const V1, V2: TVector2s): Boolean; overload;
-function VectorEquals(const V1, V2: TVector2b): Boolean; overload;
+function VectorEquals(const V1, V2: TVector2f): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //3
 //function VectorEquals(const V1, V2: TVector3f): Boolean; overload; //declared further
-function VectorEquals(const V1, V2: TVector3i): Boolean; overload;
-function VectorEquals(const V1, V2: TVector3d): Boolean; overload;
-function VectorEquals(const V1, V2: TVector3s): Boolean; overload;
-function VectorEquals(const V1, V2: TVector3b): Boolean; overload;
+function VectorEquals(const V1, V2: TVector3i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //4
 //function VectorEquals(const V1, V2: TVector4f): Boolean; overload; //declared further
-function VectorEquals(const V1, V2: TVector4i): Boolean; overload;
-function VectorEquals(const V1, V2: TVector4d): Boolean; overload;
-function VectorEquals(const V1, V2: TVector4s): Boolean; overload;
-function VectorEquals(const V1, V2: TVector4b): Boolean; overload;
+function VectorEquals(const V1, V2: TVector4i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //3x3
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean; overload;
@@ -538,61 +539,61 @@ function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean; overload;
 
 
   //2x
-function Vector2fMake(const X, Y: Single): TVector2f; overload;
-function Vector2iMake(const X, Y: Longint): TVector2i; overload;
-function Vector2sMake(const X, Y: Smallint): TVector2s; overload;
-function Vector2dMake(const X, Y: Double): TVector2d; overload;
-function Vector2bMake(const X, Y: Byte): TVector2b; overload;
+function Vector2fMake(const X, Y: Single): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2iMake(const X, Y: Longint): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2sMake(const X, Y: Smallint): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2dMake(const X, Y: Double): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2bMake(const X, Y: Byte): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector2fMake(const Vector: TVector3f): TVector2f; overload;
-function Vector2iMake(const Vector: TVector3i): TVector2i; overload;
-function Vector2sMake(const Vector: TVector3s): TVector2s; overload;
-function Vector2dMake(const Vector: TVector3d): TVector2d; overload;
-function Vector2bMake(const Vector: TVector3b): TVector2b; overload;
+function Vector2fMake(const Vector: TVector3f): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2iMake(const Vector: TVector3i): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2sMake(const Vector: TVector3s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2dMake(const Vector: TVector3d): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2bMake(const Vector: TVector3b): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector2fMake(const Vector: TVector4f): TVector2f; overload;
-function Vector2iMake(const Vector: TVector4i): TVector2i; overload;
-function Vector2sMake(const Vector: TVector4s): TVector2s; overload;
-function Vector2dMake(const Vector: TVector4d): TVector2d; overload;
-function Vector2bMake(const Vector: TVector4b): TVector2b; overload;
+function Vector2fMake(const Vector: TVector4f): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2iMake(const Vector: TVector4i): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2sMake(const Vector: TVector4s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2dMake(const Vector: TVector4d): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2bMake(const Vector: TVector4b): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
   //3x
-function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;
-function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;
-function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;
-function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;
-function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;
+function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;
-function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;
-function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;
-function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;
-function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;
+function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector3fMake(const Vector: TVector4f): TVector3f; overload;
-function Vector3iMake(const Vector: TVector4i): TVector3i; overload;
-function Vector3sMake(const Vector: TVector4s): TVector3s; overload;
-function Vector3dMake(const Vector: TVector4d): TVector3d; overload;
-function Vector3bMake(const Vector: TVector4b): TVector3b; overload;
+function Vector3fMake(const Vector: TVector4f): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3iMake(const Vector: TVector4i): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3sMake(const Vector: TVector4s): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3dMake(const Vector: TVector4d): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3bMake(const Vector: TVector4b): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
   //4x
-function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
-function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
-function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
-function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
-function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;
-function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;
-function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;
-function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;
-function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;
+function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;
-function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;
-function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;
-function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;
-function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;
+function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: Vector comparison functions:
       //ComparedVector
@@ -682,9 +683,9 @@ procedure VectorAdd(const v1, v2 : TAffineVector; vr : PAffineVector); overload;
 function VectorAdd(const v1, v2 : TVector) : TVector; overload;
 procedure VectorAdd(const v1, v2 : TVector; var vr : TVector); overload;
 //: Sums up f to each component of the vector
-function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;
+function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Sums up f to each component of the vector
-function VectorAdd(const v : TVector; const f : Single) : TVector; overload;
+function VectorAdd(const v : TVector; const f : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector); overload;
 //: Adds V2 to V1, result is placed in V1
@@ -692,15 +693,15 @@ procedure AddVector(var v1 : TAffineVector; const v2 : TVector); overload;
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var v1 : TVector; const v2 : TVector); overload;
 //: Sums up f to each component of the vector
-procedure AddVector(var v : TAffineVector; const f : Single); overload;
+procedure AddVector(var v : TAffineVector; const f : Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Sums up f to each component of the vector
-procedure AddVector(var v : TVector; const f : Single); overload;
+procedure AddVector(var v : TVector; const f : Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: Adds V2 to V1, result is placed in V1. W coordinate is always 1.
-procedure AddPoint(var v1 : TVector; const v2 : TVector); overload;
+procedure AddPoint(var v1 : TVector; const v2 : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: Returns the sum of two homogeneous vectors. W coordinate is always 1.
-function PointAdd(var v1 : TVector; const v2 : TVector): TVector; overload;
+function PointAdd(var v1 : TVector; const v2 : TVector): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 
 //: Adds delta to nb texpoints in src and places result in dest
@@ -729,8 +730,8 @@ function VectorSubtract(const V1, V2 : TVector) : TVector; overload;
 procedure VectorSubtract(const v1, v2 : TVector; var result : TVector); overload;
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TVector; var result : TAffineVector); overload;
-function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector; overload;
-function VectorSubtract(const v1 : TVector; delta : Single) : TVector; overload;
+function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorSubtract(const v1 : TVector; delta : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Subtracts V2 from V1, result is placed in V1
 procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector); overload;
 //: Subtracts V2 from V1, result is placed in V1
@@ -740,29 +741,29 @@ procedure SubtractVector(var V1 : TVector; const V2 : TVector); overload;
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single); overload;
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); overload;
 //: Makes a linear combination of two texpoints
-function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;
+function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;
+function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of three vectors and return the result
-function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector; overload;
-procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector); overload;
+function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TVector; const v : TVector; var f : Single); overload;
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TVector; const v : TAffineVector; var f : Single); overload;
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector; overload;
+function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single): TVector; overload;
+function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and place result in vr
-procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector); overload;
+procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and place result in vr
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of two vectors and place result in vr, F1=1.0
 procedure VectorCombine(const V1, V2: TVector; const F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of three vectors and return the result
-function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;
+function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Makes a linear combination of three vectors and return the result
 procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single; var vr : TVector); overload;
 
@@ -797,9 +798,9 @@ procedure VectorCrossProduct(const v1, v2 : TVector; var vr : TAffineVector); ov
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
 
 //: Calculates linear interpolation between start and stop at point t
-function Lerp(const start, stop, t : Single) : Single;
+function Lerp(const start, stop, t : Single) : Single;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Calculates angular interpolation between start and stop at point t
-function AngleLerp(start, stop, t : Single) : Single;
+function AngleLerp(start, stop, t : Single) : Single;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 {: This is used for interpolating between 2 matrices. The result
    is used to reposition the model parts each frame. }
 function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
@@ -809,15 +810,15 @@ function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
 function DistanceBetweenAngles(angle1, angle2 : Single) : Single;
 
 //: Calculates linear interpolation between texpoint1 and texpoint2 at point t
-function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;
+function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Calculates linear interpolation between vector1 and vector2 at point t
 function VectorLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
 procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineVector); overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t
-function VectorLerp(const v1, v2 : TVector; t : Single) : TVector; overload;
+function VectorLerp(const v1, v2 : TVector; t : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
-procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); overload;
+procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 function VectorAngleLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
 function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineVector; overload;
@@ -926,11 +927,11 @@ function VectorScale(const v : TVector; const Factor : TVector): TVector; overlo
 
 {: Divides given vector by another vector.<p>
    v[x]:=v[x]/divider[x], v[y]:=v[y]/divider[y] etc. }
-procedure DivideVector(var v : TVector; const divider : TVector); overload;
-procedure DivideVector(var v : TAffineVector; const divider : TAffineVector); overload;
+procedure DivideVector(var v : TVector; const divider : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure DivideVector(var v : TAffineVector; const divider : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
-function VectorDivide(const v: TVector; const divider : TVector): TVector; overload;
-function VectorDivide(const v: TAffineVector; const divider : TAffineVector): TAffineVector; overload;
+function VectorDivide(const v: TVector; const divider : TVector): TVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorDivide(const v: TAffineVector; const divider : TAffineVector): TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: True if all components are equal.
 function TexpointEquals(const p1, p2: TTexpoint): Boolean;
@@ -943,9 +944,9 @@ function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload;
 //: True if X, Y and Z components are equal.
 function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload;
 //: True if x=y=z=0, w ignored
-function VectorIsNull(const v : TVector) : Boolean; overload;
+function VectorIsNull(const v : TVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if x=y=z=0, w ignored
-function VectorIsNull(const v : TAffineVector) : Boolean; overload;
+function VectorIsNull(const v : TAffineVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 {: Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y]), also know as "Norm1".<p> }
 function VectorSpacing(const v1, v2 : TTexPoint): Single; overload;
@@ -990,7 +991,7 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineVector; overload;
 
 //: Vector components are replaced by their Abs() value. }
-procedure AbsVector(var v : TVector); overload;
+procedure AbsVector(var v : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Vector components are replaced by their Abs() value. }
 procedure AbsVector(var v : TAffineVector); overload;
 //: Returns a vector with components replaced by their Abs value. }
@@ -1884,7 +1885,7 @@ begin
 	v[0]:=x;
 	v[1]:=y;
 	v[2]:=z;
-	v[3]:=cOne;
+	v[3]:=1;
 end;
 
 // MakePoint
@@ -1894,7 +1895,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=cOne;
+	v[3]:=1;
 end;
 
 // MakePoint
@@ -1904,7 +1905,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=cOne;
+	v[3]:=1;
 end;
 
 // MakeVector
@@ -1923,7 +1924,7 @@ begin
 	v[0]:=x;
 	v[1]:=y;
 	v[2]:=z;
-	v[3]:=cZero;
+	v[3]:=0;
 end;
 
 // MakeVector
@@ -1933,7 +1934,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=cZero;
+	v[3]:=0;
 end;
 
 // MakeVector
@@ -1943,7 +1944,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=cZero;
+	v[3]:=0;
 end;
 
 // RstVector (affine)
@@ -8988,7 +8989,7 @@ begin
    SetVector(Result, sqrt((M[X, X]-cost) / cost1),
                      sqrt((M[Y, Y]-cost) / cost1),
                      sqrt((M[Z, Z]-cost) / cost1),
-                     arccos(cost));
+                     VectorGeometry.arccos(cost));
 
    sint:=2 * Sqrt(1 - cost * cost); // This is actually 2 Sin(t)
 
@@ -9036,7 +9037,7 @@ begin
       beta:=1 - t
    else begin
       // normal case
-      theta:=arccos(cost);
+      theta:=VectorGeometry.arccos(cost);
       phi:=theta + Spin * Pi;
       sint:=sin(theta);
       beta:=sin(theta - t * phi) / sint;
