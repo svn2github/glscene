@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/04/10 - Yar -  Added GetActiveAttribs to TGLCustomGLSLShader
       <li>04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
       <li>26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
       <li>24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
@@ -79,6 +80,14 @@ type
   TGLSLShaderEvent = procedure(Shader: TGLCustomGLSLShader) of object;
   TGLSLShaderUnApplyEvent = procedure(Shader: TGLCustomGLSLShader;
                                      var ThereAreMorePasses: Boolean) of object;
+  TGLActiveAttrib = record
+    Name: string;
+    Size: GLInt;
+    AType: GLenum;
+    Location: Integer;
+  end;
+
+  TGLActiveAttribArray = array of TGLActiveAttrib;
 
   TGLCustomGLSLShader = class(TGLCustomShader)
   private
@@ -115,6 +124,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     function ShaderSupported: Boolean; override;
+    function GetActiveAttribs: TGLActiveAttribArray;
 
     property Param[const Index: string]: TGLSLShaderParameter read GetParam;
     property DirectParam[const Index: Cardinal]: TGLSLShaderParameter read GetDirectParam;
@@ -187,6 +197,9 @@ type
 
 
 implementation
+
+uses
+  GLState;
 
 { TGLCustomGLSLShader }
 
@@ -308,6 +321,34 @@ function TGLCustomGLSLShader.ShaderSupported: Boolean;
 begin
   Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
              GL_ARB_vertex_shader and GL_ARB_fragment_shader);
+end;
+
+function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;
+var
+  i, j: Integer;
+  buff: array[0..127] of AnsiChar;
+  len: GLsizei;
+  max: GLInt;
+begin
+  SetLength(Result, 16);
+  j := 0;
+  if FGLSLProg.Handle<>0 then
+  begin
+    glGetProgramiv(FGLSLProg.Handle, GL_ACTIVE_ATTRIBUTES, @max);
+    for i := 0 to 16 - 1 do
+    if i<max then
+    begin
+      glGetActiveAttrib(FGLSLProg.Handle, i, Length(buff), @len, @Result[j].Size,
+        @Result[j].AType, @buff[0]);
+      if Result[j].AType>0 then
+      begin
+        Result[j].Name := Copy(string(buff), 0, len);
+        Result[j].Location := i;
+        Inc(j);
+      end;
+    end;
+  end;
+  SetLength(Result, j);
 end;
 
 procedure TGLCustomGLSLShader.Assign(Source: TPersistent);
