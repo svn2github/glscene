@@ -3,8 +3,14 @@
 //
 {: GLSLog<p>
 
+  Activate GLS_LOGGING for turn on inner GLScene logger.<p>
+  You may place on form only one exemplar of TGLSLogger<p>
+  then call UserLog function from any module.<p>
+
   <b>Historique : </b><font size=-1><ul>
-      <li>24/03/10 - Yar - Added TGLSLoger component,
+      <li>02/04/10 - Yar - Added properties TimeFormat, LogLevels to TGLSLogger
+                           Added function UserLog. GLS_LOGGING now only turn on inner GLScene logger
+      <li>24/03/10 - Yar - Added TGLSLogger component,
                            possibility to use a more than one of log,
                            limit the number of error messages
       <li>06/03/10 - Yar - Added to GLScene
@@ -24,7 +30,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils
+  Classes, SysUtils, Dialogs, GLCrossPlatform
 {$IFDEF MSWINDOWS} , Windows{$ENDIF}
   ;
 
@@ -71,6 +77,7 @@ type
 {$ENDIF}
     LogKindCount: array[TLogLevel] of Integer;
     procedure SetMode(NewMode: TLogLevels);
+    constructor OnlyCreate;
   protected
     {: Log mode titles }
     ModeTitles: array[TLogLevel] of string;
@@ -84,6 +91,7 @@ type
     { Initializes a log session with the specified log file name, time and level settings }
     constructor Init(const FileName: string; ATimeFormat: TLogTimeFormat;
       ALevels: TLogLevels); virtual;
+
     {: Destructor }
     destructor Shutdown; virtual;
 
@@ -106,11 +114,15 @@ type
 
   {: Abstract class for control loging.<p> }
 
-  TGLSLoger = class(TComponent)
+  TGLSLogger = class(TComponent)
   private
     { Private Declarations }
     FReplaceAssertion: Boolean;
+    FTimeFormat: TLogTimeFormat;
+    FLogLevels: TLogLevels;
+    FLog: TLogSession;
     procedure SetReplaceAssertion(Value: Boolean);
+    function GetLog: TLogSession;
   protected
     { Protected Declarations }
 
@@ -118,49 +130,48 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    {: Set component primary and then UserLog return it's log }
+    procedure DoPrimary;
+    property Log: TLogSession read GetLog;
   published
     { Published Declarations }
     property ReplaceAssertion: Boolean read FReplaceAssertion write
       SetReplaceAssertion default False;
+    {: Only design time sets. Define Log initial properties }
+    property TimeFormat: TLogTimeFormat read FTimeFormat write FTimeFormat
+      default lfElapsed;
+    property LogLevels: TLogLevels read FLogLevels write FLogLevels
+      default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
   end;
 
-  {: You may use this procedure for repalce native Assertion processing
-     AssertErrorProc := LogedAssert; NOTE: default is AssertErrorHandler }
-{$IFDEF GLS_LOGGING}
-{$IFDEF FPC}
-procedure LogedAssert(const Message, Filename: ShortString; LineNumber: Integer;
-  ErrorAddr: Pointer);
-{$ELSE}
- procedure LogedAssert(const Message, Filename: string; LineNumber: Integer;
-  ErrorAddr: Pointer);
-{$ENDIF}
-{$ENDIF}
-
+{: Return logger wich created by TGLSLogger component }
+function UserLog: TLogSession;
 function SkipBeforeSTR(var TextFile: text; SkipSTR: string): boolean;
 function ReadLine(var TextFile: text): string;
 
-{: Replaces logger with a new one of the specified class }
-procedure ChangeLoggerClass(NewClass: CLogSession);
-
 var
-  {: Current logger }
-  Log: TLogSession;
+  {: GLScene inner logger }
+  GLSLogger: TLogSession;
 
 implementation
 
-{$IFDEF GLS_LOGGING}
-uses
-  Dialogs;
-{$ENDIF}
-
 var
   vAssertErrorHandler: TAssertErrorProc;
+  vCurrentLogger: TGLSLogger;
+
+function UserLog: TLogSession;
+begin
+  if Assigned(vCurrentLogger) then
+    Result := vCurrentLogger.Log
+  else
+    Result := nil;
+end;
 
 {$IFDEF FPC}
 procedure LogedAssert(const Message, Filename: ShortString; LineNumber: Integer;
   ErrorAddr: Pointer);
 begin
-  Log.Log(Message + ': in ' + Filename + ' at line ' + IntToStr(LineNumber),
+  UserLog.Log(Message + ': in ' + Filename + ' at line ' + IntToStr(LineNumber),
     lkError);
   Abort;
 end;
@@ -168,12 +179,11 @@ end;
 procedure LogedAssert(const Message, Filename: string; LineNumber: Integer;
   ErrorAddr: Pointer);
 begin
-  Log.Log(Message + ': in ' + Filename + ' at line ' + IntToStr(LineNumber),
+  UserLog.Log(Message + ': in ' + Filename + ' at line ' + IntToStr(LineNumber),
     lkError);
   Abort;
 end;
 {$ENDIF}
-
 
 function SkipBeforeSTR(var TextFile: text; SkipSTR: string): boolean;
 var
@@ -214,53 +224,41 @@ begin
   Result := s;
 end;
 
-procedure ChangeLoggerClass(NewClass: CLogSession);
-var
-  NewLog: TLogSession;
-begin
-  if not Assigned(Log) or (NewClass = nil) then
-    Exit;
-  NewLog := NewClass.Create;
-
-  NewLog.LogKindCount := Log.LogKindCount;
-  NewLog.TimeFormat := Log.TimeFormat;
-  NewLog.LogLevels := Log.LogLevels;
-  NewLog.StartedMs := Log.StartedMs;
-  AssignFile(NewLog.LogFile, TTextRec(Log.LogFile).Name);
-{$IFDEF GLS_MULTITHREAD}
-  NewLog.CriticalSection := Log.CriticalSection;
-{$ENDIF}
-
-{$IFDEF GLS_MULTITHREAD}
-  EnterCriticalSection(NewLog.CriticalSection);
-{$ENDIF}
-
-  Log.Free;
-  Log := NewLog;
-
-{$IFDEF GLS_MULTITHREAD}
-  LeaveCriticalSection(NewLog.CriticalSection);
-{$ENDIF}
-
-  Log.Log('Logger class changed to "' + NewClass.ClassName + '"', lkNotice);
-end;
-
 // ------------------
 // ------------------ TGLSLogger ------------------
 // ------------------
 
-constructor TGLSLoger.Create(AOwner : TComponent);
+constructor TGLSLogger.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
+  FTimeFormat := lfElapsed;
+  FLogLevels := llMax;
   vAssertErrorHandler := AssertErrorProc;
+  vCurrentLogger := Self;
 end;
 
-destructor TGLSLoger.Destroy;
+destructor TGLSLogger.Destroy;
 begin
+  if vCurrentLogger = Self then
+    vCurrentLogger := nil;
+  if Assigned(FLog) then
+    FLog.Shutdown;
 	inherited Destroy;
 end;
 
-procedure TGLSLoger.SetReplaceAssertion(Value: Boolean);
+function TGLSLogger.GetLog: TLogSession;
+begin
+  if not Assigned(FLog) then
+    FLog := TLogSession.Init(Name+'.log', FTimeFormat, FLogLevels);
+  Result := FLog;
+end;
+
+procedure TGLSLogger.DoPrimary;
+begin
+  vCurrentLogger := Self;
+end;
+
+procedure TGLSLogger.SetReplaceAssertion(Value: Boolean);
 begin
   if Value<>FReplaceAssertion then
   begin
@@ -281,7 +279,10 @@ var
   ModeStr: string;
   i: Integer;
 begin
-{$IFDEF GLS_LOGGING}
+{$IFNDEF GLS_LOGGING}
+  if Self = GLSLogger then
+    exit;
+{$ENDIF}
   ModeStr := '[';
   for i := Ord(Low(TLogLevel)) to Ord(High(TLogLevel)) do
     if TLogLevel(i) in NewMode then
@@ -296,7 +297,6 @@ begin
     ModeStr := 'nothing';
   Log('LOGGING ' + ModeStr, lkNotice);
   FLogLevels := NewMode;
-{$ENDIF}
 end;
 
 constructor TLogSession.Init(const FileName: string; ATimeFormat:
@@ -305,10 +305,9 @@ var
   i: Integer;
   ModeStr: string;
 begin
-{$IFDEF GLS_LOGGING}
-{$IFDEF GLS_MULTITHREAD}
+  {$IFDEF GLS_MULTITHREAD}
   InitializeCriticalSection(CriticalSection);
-{$ENDIF}
+  {$ENDIF}
 
   ModeTitles[lkDebug] := 'debug info';
   ModeTitles[lkInfo] := 'info';
@@ -320,14 +319,14 @@ begin
   if Pos(':', FileName) > 0 then
     AssignFile(LogFile, Filename)
   else
-    AssignFile(LogFile, GetCurrentDir + '\' + Filename);
+    AssignFile(LogFile, IncludeTrailingPathDelimiter(GetCurrentDir) + Filename);
 {$I-}
   Rewrite(LogFile);
   CloseFile(LogFile);
   if IOResult <> 0 then
     ALevels := [];
 
-  StartedMs := GetTickCount;
+  StartedMs := GLGetTickCount;
   TimeFormat := ATimeFormat;
   LogLevels := ALevels;
   case TimeFormat of
@@ -342,12 +341,19 @@ begin
 
   for i := Ord(Low(TLogLevel)) to Ord(High(TLogLevel)) do
     LogKindCount[TLogLevel(i)] := 0;
-{$ENDIF}
+end;
+
+constructor TLogSession.OnlyCreate;
+begin
+  inherited;
 end;
 
 destructor TLogSession.Shutdown;
 begin
-{$IFDEF GLS_LOGGING}
+{$IFNDEF GLS_LOGGING}
+  if Self = GLSLogger then
+    exit;
+{$ENDIF}
   Log('Logged fatal errors: ' + IntToStr(LogKindCount[lkFatalError]) +
     ', errors: ' + IntToStr(LogKindCount[lkError]) +
     ', warnings: ' + IntToStr(LogKindCount[lkWarning]) +
@@ -355,17 +361,19 @@ begin
     ', infos: ' + IntToStr(LogKindCount[lkInfo]) +
     ', debug info: ' + IntToStr(LogKindCount[lkDebug]));
   Log('Log session shutdown');
-  if Self = GLSLog.Log then
-    GLSLog.Log := nil;
+  if Self = GLSLogger then
+    GLSLogger := nil;
 {$IFDEF GLS_MULTITHREAD}
   DeleteCriticalSection(CriticalSection);
-{$ENDIF}
 {$ENDIF}
 end;
 
 procedure TLogSession.Log(const Desc: string; Level: TLogLevel = lkInfo);
 begin
-{$IFDEF GLS_LOGGING}
+{$IFNDEF GLS_LOGGING}
+  if Self = GLSLogger then
+    exit;
+{$ENDIF}
   if not (Level in LogLevels) then
     Exit;
 {$IFDEF GLS_MULTITHREAD}
@@ -374,7 +382,6 @@ begin
   AppendLog(Desc, Level);
 {$IFDEF GLS_MULTITHREAD}
   LeaveCriticalSection(CriticalSection);
-{$ENDIF}
 {$ENDIF}
 end;
 
@@ -410,7 +417,10 @@ end;
 
 procedure TLogSession.AppendLog(const Desc: string; Level: TLogLevel = lkInfo);
 begin
-{$IFDEF GLS_LOGGING}
+{$IFNDEF GLS_LOGGING}
+  if Self = GLSLogger then
+    exit;
+{$ENDIF}
 {$I-}
   Append(LogFile);
   if IOResult <> 0 then
@@ -433,19 +443,18 @@ begin
     Shutdown;
     Halt;
   end;
-{$ENDIF}
 end;
 
 initialization
 {$IFDEF GLS_LOGGING}
-  GLSLog.Log := TLogSession.Init(Copy(ExtractFileName(ParamStr(0)), 1,
+  GLSLogger := TLogSession.Init(Copy(ExtractFileName(ParamStr(0)), 1,
     Length(ExtractFileName(ParamStr(0))) - Length(ExtractFileExt(ParamStr(0)))) +
     '.log', lfElapsed, llMax);
 {$ELSE}
-  GLSLog.Log := TLogSession.Init('', lfNone, llMin);
+  GLSLogger := TLogSession.OnlyCreate;
 {$ENDIF}
 finalization
-  GLSLog.Log.Shutdown;
+  GLSLogger.Shutdown;
 
 end.
 
