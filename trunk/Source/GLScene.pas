@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/04/10 - Yar - Removed double camera freeing in TGLSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
       <li>06/03/10 - Yar - Renamed ModelViewMatrix to ViewMatrix, added ModelMatrix
                            All function working with ModelViewMatrix now deprecated
                            Added roForwardContext to buffer options
@@ -7495,7 +7496,7 @@ begin
   pt.newTime := newTime;
   FObjects.DoProgress(pt);
 {$IFDEF GLS_EXPERIMENTAL}
-   StaticVBOManager.DoProgress(pt);
+  GLVBOManagers.vCurrentTime := newTime;
 {$ENDIF}
 end;
 
@@ -7991,12 +7992,6 @@ end;
 destructor TGLSceneBuffer.Destroy;
 begin
   Melt;
-  // clean up and terminate
-  if Assigned(FCamera) and Assigned(FCamera.FScene) then
-  begin
-    FCamera.FScene.RemoveBuffer(Self);
-    FCamera := nil;
-  end;
   DestroyRC;
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
@@ -9507,7 +9502,7 @@ begin
   begin
     aScene.Objects.Render(rci);
 {$IFDEF GLS_EXPERIMENTAL}
-    StaticVBOManager.BuildBuffer;
+    StaticVBOManager.BuildBuffer(rci);
 {$ENDIF}
   end
   else
