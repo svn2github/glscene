@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/04/10 - Yar - Added DoGetHandles to TGLWin32Context (thanks Rustam Asmandiarov aka Predator)
       <li>28/03/10 - Yar - Added 3.3 forward context creation and eliminate memory leaks when multithreading
       <li>06/03/10 - Yar - Added forward context creation in TGLWin32Context.DoActivate
       <li>20/02/10 - DanB - Allow double-buffered memory viewers, if you want single
@@ -91,6 +92,11 @@ type
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
+    {: DoGetHandles must be implemented in child classes,
+       and return the display + window }
+    {$IFDEF FPC}
+    procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal); virtual; abstract;
+    {$ENDIF}
 
   public
     { Public Declarations }
@@ -583,7 +589,12 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
-  outputDC := HDC(outputDevice);
+  {$IFDEF FPC}
+    DoGetHandles(outputDevice, HDC(outputDC));
+  {$ELSE}
+    outputDC := HDC(outputDevice);
+  {$ENDIF}
+
   if vUseWindowTrackingHook then
     TrackWindow(WindowFromDC(outputDC), DestructionEarlyWarning);
 
@@ -997,9 +1008,9 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
+{$IFNDEF FPC}
   RegisterGLContextClass(TGLWin32Context);
-
+{$ENDIF}
 finalization
 
 {$IFDEF GLS_MULTITHREAD}
