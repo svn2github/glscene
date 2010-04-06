@@ -1,4 +1,4 @@
-unit GLScene_DesignTime; 
+unit glscene_designtime; 
 
 interface
 

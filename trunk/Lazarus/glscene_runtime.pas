@@ -1,9 +1,3 @@
-{ Этот файл был автоматически создан Lazarus. Н�
-  � редактировать!
-  Исходный код используется только для комп�
-    �ляции и установки пакета.
- }
-
 unit glscene_runtime; 
 
 interface
@@ -48,7 +42,8 @@ uses
   GLFileMDC, GlFileX, FileX, GLFileMP3, GLFileWAV, GLSound, 
   GLSoundFileObjects, GLFBO, GLFBORenderer, GLGizmoEx, GLGizmo, GLScreen, 
   GLConsole, GLLCLFullScreenViewer, TGA, DDSImage, HDRImage, RGBE, GLFileDDS, 
-  GLFileHDR, GLFileO3TC, O3TCImage, GLCompositeImage, GLTextureFormat;
+  GLFileHDR, GLFileO3TC, O3TCImage, GLCompositeImage, GLTextureFormat, 
+  GLPBuffer, VectorGeometryEXT;
 
 implementation
 
