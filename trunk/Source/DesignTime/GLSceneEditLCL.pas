@@ -330,13 +330,8 @@ end;
 procedure TGLSceneEditorForm.SetScene(AScene : TGLScene; ADesigner : TComponentEditorDesigner);
 begin
    if Assigned(FScene) then begin
-(* removed delphi 4 support {$ifdef GLS_DELPHI_5_UP}*)
-     GlobalDesignHook.SelectOnlyThis(FScene.Owner);
      FScene.RemoveFreeNotification(Self);
    end;
-(* removed delphi 4 support {$else}
-      FScene.Notification(Self, opRemove);
-{$endif}*)
    FScene:=AScene;
    FCurrentDesigner:=ADesigner;
    ResetTree;
@@ -374,6 +369,7 @@ begin
       ACCopy.Enabled:=False;
       ACPaste.Enabled:=False;
    end;
+
    ShowBehavioursAndEffects(nil);
 end;
 
