@@ -7993,6 +7993,7 @@ destructor TGLSceneBuffer.Destroy;
 begin
   Melt;
   DestroyRC;
+  FCamera := nil;
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
   FFogEnvironment.Free;
