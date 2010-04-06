@@ -431,7 +431,7 @@ begin
     lfTime: WriteLn(LogFile, TimeToStr(Now) + #9 + lkPrefix[Level] + Desc);
     lfDateTime: WriteLn(LogFile, DateTimeToStr(Now) + #9 + lkPrefix[Level] +
       Desc);
-    lfElapsed: WriteLn(LogFile, IntToStr(GetTickCount - StartedMs) + #9 +
+    lfElapsed: WriteLn(LogFile, IntToStr(GLGetTickCount - StartedMs) + #9 +
       lkPrefix[Level] + Desc);
   end;
   CloseFile(LogFile);
