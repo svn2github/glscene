@@ -9,9 +9,9 @@
   It does not require a fully-functional rendering context.<p>
 
   <b>Historique : </b><font size=-1><ul>
-      <li>21/03/10 - Yar - Added Unix support
+      <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
-      <li>08/03/10 - Yar - Added more conditional brackets for unix systems
+      <li>08/03/10 - Yar - Added more conditional brackets for Linux systems
       <li>27/01/10 - Yar - Updated header and moved to the /Source/Base/ folder
       <li>26/01/10 - DaStr - Bugfixed range check error, for real ;)
                              Enhanced TGLPixelBuffer.IsLost()
@@ -46,7 +46,7 @@ uses
   Windows,
   Classes,
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
   LCLType,
   xlib,
 {$ENDIF}
@@ -64,7 +64,7 @@ type
     ParentRC: HGLRC;
     fHandle: HPBUFFERARB;
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
     Dpy: PDisplay;
     RC: GLXContext;
     fHandle: LongInt;
@@ -90,7 +90,7 @@ type
   end;
 
   EGLPixelBuffer = class(Exception);
-  {$IFDEF UNIX}
+  {$IFDEF Linux}
    TGLXFBConfigArray = array[0..MaxInt div (SizeOf(GLXFBConfig)*2) ] of GLXFBConfig;
    PGLXFBConfigArray = ^TGLXFBConfigArray;
   {$ENDIF}
@@ -104,7 +104,7 @@ begin
   ParentDC := 0;
   ParentRC := 0;
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
   Dpy := nil;
   fHandle := 0;
   RC := nil;
@@ -133,7 +133,7 @@ var
   NumPFormat: TGLenum;
   TempW, TempH: TGLInt;
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
 const
   PixelFormatAttribs: array[0..12] of TGLInt =
    (GLX_RENDER_TYPE   , GLX_RGBA_BIT,
@@ -244,7 +244,7 @@ begin
     wglDestroyPbufferARB(fHandle);
   end;
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
   Disable;
   if Dpy = nil then Exit;
   if (fHandle <> 0) then
@@ -271,7 +271,7 @@ begin
   else
     Result := False;
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
 begin
   Result := False;
 {$ENDIF}
@@ -284,7 +284,7 @@ begin
   ParentRC := wglGetCurrentContext;
   wglMakeCurrent(DC, RC);
 {$ENDIF}
-{$IFDEF Unix}
+{$IFDEF Linux}
   If Assigned(Dpy) and Assigned(RC) and (fHandle <> 0) then
     glXMakeContextCurrent(Dpy, fHandle, fHandle, RC);
 {$ENDIF}
@@ -298,14 +298,14 @@ begin
   else
     wglMakeCurrent(ParentDC, ParentRC);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF Linux}
   if Dpy <> nil then
     glXMakeContextCurrent(Dpy, 0, 0, nil);
 {$ENDIF}
 end;
 
 procedure TGLPixelBuffer.Bind;
-{$IFDEF UNIX}
+{$IFDEF Linux}
 var fBuffercount: Integer;
 {$ENDIF}
 begin
@@ -313,7 +313,7 @@ begin
   Assert(fHandle <> 0);
   wglBindTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF Linux}
   //not needed
 {$ENDIF}
 end;
@@ -324,7 +324,7 @@ begin
   Assert(fHandle <> 0);
   wglReleaseTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF Linux}
  //not needed
 {$ENDIF}
 end;

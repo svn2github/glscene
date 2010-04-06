@@ -5,7 +5,7 @@
     Good for preview picture in OpenDialog, 
     so you may include both HDRImage (preview) and GLFileHDR (loading)
 
-      <li>21/03/10 - Yar - Added Unix support
+      <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
       <li>24/01/10 - Yar - Improved FPC compatibility
       <li>21/01/10 - Yar - Creation 
@@ -53,7 +53,7 @@ var
   DC: HDC;
   RC: HGLRC;
   {$Endif}
-  {$IFDEF Unix}
+  {$IFDEF Linux}
   DC: GLXDrawable;
   RC: GLXContext;
   {$ENDIF}
@@ -77,7 +77,7 @@ begin
   DC := wglGetCurrentDC;
   RC := wglGetCurrentContext;
   {$ENDIF}
-  {$IFDEF Unix}
+  {$IFDEF Linux}
    DC := glXGetCurrentReadDrawable;
    RC := glxGetCurrentContext;
   {$ENDIF}
@@ -86,7 +86,7 @@ begin
   {$IFDEF MSWINDOWS}
   if (DC = 0) or (RC = 0) then
   {$ENDIF}
-  {$IFDEF Unix}
+  {$IFDEF Linux}
   if (DC = 0) or (RC = nil) then
   {$ENDIF}
   begin
