@@ -6,6 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/04/10 - Yar - Bugfix bad graphics under Windows
+                          (by to Rustam Asmandiarov aka Predator)
       <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
                               properties (thanks Yury Plashenkov)  
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
@@ -100,7 +102,6 @@ type
             This procedure allows to work around limitations in some OpenGL
             drivers (like MS Software OpenGL) that are not able to share lists
             between RCs that already have display lists. }
-         procedure RecreateWnd;
 
          property IsRenderingContextAvailable : Boolean read GetIsRenderingContextAvailable;
 
@@ -187,28 +188,20 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils ,LCLIntf
-       {$ifdef LCLWIN32}
+uses SysUtils ,LCLIntf,GLViewer
+       {$ifdef LCLWIN32 or LCLWIN64}
          {$ifndef CONTEXT_INCLUDED}
-     ,GLWin32Context
+     ,GLWidgetContext
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
 
-       {$ifdef LCLGTK}
+       {$ifdef LCLGTK or LCLGTK2}
          {$ifndef CONTEXT_INCLUDED}
-     ,GLLinGTKContext
+     ,GLWidgetContext
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
-
-       {$ifdef LCLGTK2}
-         {$ifndef CONTEXT_INCLUDED}
-     ,GLLinGTKContext
-         {$define CONTEXT_INCLUDED}
-         {$endif}
-       {$endif}
-
        {$ifdef LCLCARBON}
      ,GLCarbonContext
        {$endif}
@@ -216,9 +209,7 @@ uses SysUtils ,LCLIntf
        {$ifdef LCLQT}
          {$error unimplemented QT context}
        {$endif}
-
-   ,GLViewer;
-
+       ;
 // ------------------
 // ------------------ TGLSceneViewer ------------------
 // ------------------
@@ -257,13 +248,6 @@ begin
       if (AComponent = FBuffer.Camera) then
          FBuffer.Camera := nil;
    end;
-   inherited;
-end;
-
-// RecreateWnd
-//
-procedure TGLSceneViewer.RecreateWnd;
-begin
    inherited;
 end;
 
@@ -467,7 +451,8 @@ end;
 //
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
 begin
-   RecreateWnd;
+   DestroyWnd;
+   CreateWnd
 end;
 
 // LastFrameTime
@@ -546,6 +531,7 @@ begin
   end;
 end;
 
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -553,8 +539,11 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
    RegisterClass(TGLSceneViewer);
+{$IFDEF LCLwin32 or LCLwin64}
+   GLRegisterWSComponent(TGLSceneViewer);
+{$ENDIF}
 
 end.
+
 
