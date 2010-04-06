@@ -35,7 +35,7 @@ interface
 
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-   {$IFDEF UNIX} x,xlib,xf86vmode,{$ENDIF}
+   {$IFDEF UNIX} x,xlib,xf86vmode,LCLVersion,{$ENDIF}
    Classes, VectorGeometry, GLCrossPlatform;
 
 const
@@ -309,7 +309,11 @@ begin
   vCurrentVideoMode := DefaultScreen( vDisplay );
 
   // Check support XF86VidMode Extension
+  {$if   lcl_release <= 28 }
   if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
+  {$ELSE}
+  if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
+  {$ENDIF}
     Assert(False, 'XF86VidMode Extension not support');
 
   //Get Current Settings

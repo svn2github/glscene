@@ -15,11 +15,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLContext, {$IFDEF GLS_LOGGING}GLSLog, {$ENDIF}
+  Classes, SysUtils, GLContext,{$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
 
   // Operation System
 {$IFDEF MSWINDOWS}
-  Windows, GLWin32Context, LCLType, LMessages,
+  Windows, GLWin32Context, LCLType, LMessages, LCLVersion,
 {$ENDIF}
 
 {$IFDEF UNIX}
@@ -226,7 +226,11 @@ var
   Params: TCreateWindowExParams;
 begin
   // general initialization of Params
+  {$if   lcl_release <= 28 }
+  PrepareCreateWindow(AWinControl, Params);
+  {$ELSE}
   PrepareCreateWindow(AWinControl, AParams, Params);
+  {$ENDIF}
   // customization of Params
   with Params do
   begin
@@ -256,4 +260,3 @@ initialization
   RegisterGLContextClass(TGLWidgetContext);
 
 end.
-
