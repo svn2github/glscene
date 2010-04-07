@@ -4,6 +4,7 @@
 {: GLSCUDA<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
       <li>01/04/10 - Yar - Creation
    </ul></font><p>
 }
@@ -1519,7 +1520,7 @@ begin
   MemPerBlock := TGLSCUDA(TCUDAModule(FMaster).FMaster).FDevice.Device.SharedMemPerBlock;
   if Value<0 then
     Value := 0
-  else if Value>MemPerBlock then
+  else if Value>Integer(MemPerBlock) then
     Value := MemPerBlock;
   status := cuFuncSetSharedSize(Handle, Value);
   if status <> CUDA_SUCCESS then
@@ -1857,7 +1858,7 @@ begin
   d := fDepth;
   if d = 0 then
     d := 1;
-  Result := Cardinal(fWidth * h * d) * ElementSize;
+  Result := Cardinal(Width * h * d) * ElementSize;
 end;
 
 procedure TCUDAMemData.CopyTo(const dstMemData: TCUDAMemData);
@@ -1865,59 +1866,103 @@ var
   copyParam2D: TCUDA_MEMCPY2D;
   //  copyParam3D: TCUDA_MEMCPY3D;
   status: TCUresult;
+  Size: Integer;
 begin
   if not Assigned(dstMemData) then
     exit;
-  if (fDepth > 0) or (dstMemData.fDepth > 0) then
+  if (Depth > 0) or (dstMemData.Depth > 0) then
     exit;
+  status := CUDA_SUCCESS;
 
-  FillChar(copyParam2D, SizeOf(copyParam2D), 0);
-  // Setup source copy parameters
-  case fMemoryType of
-    mtHost:
-      begin
-        copyParam2D.srcMemoryType := CU_MEMORYTYPE_HOST;
-        copyParam2D.srcHost := TCUdeviceptr(Data);
-      end;
-    mtDevice:
-      begin
-        copyParam2D.srcMemoryType := CU_MEMORYTYPE_DEVICE;
-        copyParam2D.srcDevice := TCUdeviceptr(Data);
-      end;
-    mtArray:
-      begin
-        copyParam2D.srcMemoryType := CU_MEMORYTYPE_ARRAY;
-        copyParam2D.srcArray := ArrayHandle;
-      end;
+  if (Height = dstMemData.Height) and (Height = 0) then
+  begin
+    // 1D copying
+    Size := MinInteger(DataSize, dstMemData.DataSize);
+    Context.Requires;
+    case MemoryType of
+      mtHost:
+        case dstMemData.MemoryType of
+          mtHost:
+            Move(Data^, dstMemData.Data^, Size);
+          mtDevice:
+            status := cuMemcpyHtoD(dstMemData.Data, Data, Size);
+          mtArray:
+            status := cuMemcpyHtoA(dstMemData.ArrayHandle, 0, Data, Size);
+        end;
+
+      mtDevice:
+        case dstMemData.MemoryType of
+          mtHost:
+            status := cuMemcpyDtoH(dstMemData.Data, Data, Size);
+          mtDevice:
+            status := cuMemcpyDtoD(dstMemData.Data, Data, Size);
+          mtArray:
+            status := cuMemcpyDtoA(dstMemData.ArrayHandle, 0, Data, Size);
+        end;
+
+      mtArray:
+        case dstMemData.MemoryType of
+          mtHost:
+            status := cuMemcpyAtoH(dstMemData.Data, ArrayHandle, 0, Size);
+          mtDevice:
+            status := cuMemcpyAtoD(dstMemData.Data, ArrayHandle, 0, Size);
+          mtArray:
+            status := cuMemcpyAtoA(dstMemData.ArrayHandle, 0, ArrayHandle, 0, Size);
+        end;
+    end;
+    Context.Release;
+  end
+  else begin
+    // 2D copying
+    FillChar(copyParam2D, SizeOf(copyParam2D), 0);
+    // Setup source copy parameters
+    case MemoryType of
+      mtHost:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_HOST;
+          copyParam2D.srcHost := TCUdeviceptr(Data);
+        end;
+      mtDevice:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_DEVICE;
+          copyParam2D.srcDevice := TCUdeviceptr(Data);
+        end;
+      mtArray:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_ARRAY;
+          copyParam2D.srcArray := ArrayHandle;
+        end;
+    end;
+    copyParam2D.srcPitch := fPitch;
+    // Setup destination copy parameters
+    case dstMemData.fMemoryType of
+      mtHost:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_HOST;
+          copyParam2D.dstHost := TCUdeviceptr(dstMemData.Data);
+        end;
+      mtDevice:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_DEVICE;
+          copyParam2D.dstDevice := TCUdeviceptr(dstMemData.Data);
+        end;
+      mtArray:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_ARRAY;
+          copyParam2D.dstArray := dstMemData.ArrayHandle;
+        end;
+    end;
+    copyParam2D.dstPitch := dstMemData.fPitch;
+
+    copyParam2D.WidthInBytes := MinInteger(ElementSize * Cardinal(Width),
+      dstMemData.ElementSize * Cardinal(dstMemData.Width));
+    copyParam2D.Height := MinInteger(fHeight, dstMemData.Height);
+
+    Context.Requires;
+    status := cuMemcpy2D(@copyParam2D);
+    Context.Release;
   end;
-  copyParam2D.srcPitch := fPitch;
-  // Setup destination copy parameters
-  case dstMemData.fMemoryType of
-    mtHost:
-      begin
-        copyParam2D.dstMemoryType := CU_MEMORYTYPE_HOST;
-        copyParam2D.dstHost := TCUdeviceptr(dstMemData.Data);
-      end;
-    mtDevice:
-      begin
-        copyParam2D.dstMemoryType := CU_MEMORYTYPE_DEVICE;
-        copyParam2D.dstDevice := TCUdeviceptr(dstMemData.Data);
-      end;
-    mtArray:
-      begin
-        copyParam2D.dstMemoryType := CU_MEMORYTYPE_ARRAY;
-        copyParam2D.dstArray := dstMemData.ArrayHandle;
-      end;
-  end;
-  copyParam2D.dstPitch := dstMemData.fPitch;
 
-  copyParam2D.WidthInBytes := MinInteger(ElementSize * Cardinal(fWidth),
-    dstMemData.ElementSize * Cardinal(dstMemData.fWidth));
-  copyParam2D.Height := MinInteger(fHeight, dstMemData.fHeight);
-
-  Context.Requires;
-  status := cuMemcpy2D(@copyParam2D);
-  Context.Release;
   if status <> CUDA_SUCCESS then
     raise EGLS_CUDA.Create('TCUDAMemData.CopyTo: ' +
       GetCUDAAPIerrorString(status));
@@ -1960,9 +2005,9 @@ begin
   copyParam2D.dstHost := GLImage.Data;
   copyParam2D.dstPitch := GLImage.ElementSize * GLImage.Width;
 
-  copyParam2D.WidthInBytes := MinInteger(ElementSize * Cardinal(fWidth),
+  copyParam2D.WidthInBytes := MinInteger(ElementSize * Cardinal(Width),
     Cardinal(copyParam2D.dstPitch));
-  copyParam2D.Height := MinInteger(fHeight, GLImage.Height);
+  copyParam2D.Height := MinInteger(Height, GLImage.Height);
 
   Context.Requires;
   status := cuMemcpy2D(@copyParam2D);
@@ -1982,7 +2027,7 @@ begin
   if not Assigned(GLGraphic.FHandle[0]) then
     exit;
   //TODO: volume copying not yet realised
-  if fDepth > 0 then
+  if Depth > 0 then
     exit;
   GLGraphic.MapResources;
   if GLGraphic.FResourceType = rtBuffer then
