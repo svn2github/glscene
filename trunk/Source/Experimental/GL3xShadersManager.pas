@@ -4,6 +4,8 @@
 {: GL3xShadersManager<p>
 
    Base unit to manage shader objects and program.<p>
+   Can work with different rendering context.<p>
+   If contexts shared posible to use same shader program.<p>
 
    <b>History : </b><font size=-1><ul>
     <li>24/03/10 - Yar - Creation (based on uShaders.pas by Alex Karpenyuk aka Fantom)
@@ -89,6 +91,7 @@ type
   public
     Tag: Integer;
     DataType: TGLSLDataType;
+    WarningAbsenceLoged: Boolean;
     property ID: Integer read FID;
     property Name: string read FName;
   end;
@@ -100,6 +103,7 @@ type
     Name: string; // Do not change value at manualy !!
     FNameHashKey: Integer; // Do not change value manualy !!
     DataType: TGLSLDataType;
+    WarningAbsenceLoged: Boolean;
   end;
 {$ENDIF}
   PGLSLAttribute = ^TGLSLAttribute;
@@ -115,6 +119,7 @@ type
   public
     Tag: Integer;
     DataType: TGLSLDataType;
+    WarningAbsenceLoged: Boolean;
     property ID: Integer read FID;
     property Name: string read FName;
   end;
@@ -122,9 +127,10 @@ type
   TGLSLUniform = record
     Location: GLInt;
     Tag: Integer;
-    ID: Integer; // Do not change value manualy !!
-    Name: string; // Do not change value manualy !!
+    ID: Integer;
+    Name: string;
     DataType: TGLSLDataType;
+    WarningAbsenceLoged: Boolean;
   end;
 {$ENDIF}
   PGLSLUniform = ^TGLSLUniform;
@@ -191,7 +197,7 @@ type
 
     function GetShaderObject(const AName: string): PGLSLShaderObject;
     function GetShaderProgram(const AName: string): PGLSLShaderProgram;
-    function GetUniformLocation(const AUniform: TGLSLUniform): GLInt;
+    function GetUniformLocation(var AUniform: TGLSLUniform): GLInt;
     function GetTextureTarget(const AUniform: TGLSLUniform): GLInt;
     procedure DeleteShaderObject(AObject: PGLSLShaderObject); overload;
     procedure DeleteShaderProgram(AProgram: PGLSLShaderProgram); overload;
@@ -223,29 +229,29 @@ type
     procedure ClearShaderObject;
     procedure ClearShaderPrograms;
 
-    procedure Uniform1f(const AUniform: TGLSLUniform; const Value: Single);
-    procedure Uniform2f(const AUniform: TGLSLUniform; const Value: TVector2f);
-    procedure Uniform3f(const AUniform: TGLSLUniform; const Value: TVector3f);
-    procedure Uniform4f(const AUniform: TGLSLUniform; const Value: TVector4f);
-    procedure Uniform1I(const AUniform: TGLSLUniform; const Value: Integer);
+    procedure Uniform1f(var AUniform: TGLSLUniform; const Value: Single);
+    procedure Uniform2f(var AUniform: TGLSLUniform; const Value: TVector2f);
+    procedure Uniform3f(var AUniform: TGLSLUniform; const Value: TVector3f);
+    procedure Uniform4f(var AUniform: TGLSLUniform; const Value: TVector4f);
+    procedure Uniform1I(var AUniform: TGLSLUniform; const Value: Integer);
       overload;
-    procedure Uniform1I(const AUniform: TGLSLUniform; const Value: PGLInt;
+    procedure Uniform1I(var AUniform: TGLSLUniform; const Value: PGLInt;
       Count: Integer);
       overload;
-    procedure Uniform2I(const AUniform: TGLSLUniform; const Value: TVector2I);
-    procedure Uniform3I(const AUniform: TGLSLUniform; const Value: TVector3I);
-    procedure Uniform4I(const AUniform: TGLSLUniform; const Value: TVector4I);
+    procedure Uniform2I(var AUniform: TGLSLUniform; const Value: TVector2I);
+    procedure Uniform3I(var AUniform: TGLSLUniform; const Value: TVector3I);
+    procedure Uniform4I(var AUniform: TGLSLUniform; const Value: TVector4I);
       overload;
-    procedure Uniform4I(const AUniform: TGLSLUniform; const Value: PGLInt;
+    procedure Uniform4I(var AUniform: TGLSLUniform; const Value: PGLInt;
       Count: Integer);
       overload;
-    procedure UniformMat2f(const AUniform: TGLSLUniform; const Value:
+    procedure UniformMat2f(var AUniform: TGLSLUniform; const Value:
       TMatrix2f);
-    procedure UniformMat3f(const AUniform: TGLSLUniform; const Value:
+    procedure UniformMat3f(var AUniform: TGLSLUniform; const Value:
       TMatrix3f);
-    procedure UniformMat4f(const AUniform: TGLSLUniform; const Value:
+    procedure UniformMat4f(var AUniform: TGLSLUniform; const Value:
       TMatrix4f);
-    procedure UniformSampler(const AUniform: TGLSLUniform; const Texture:
+    procedure UniformSampler(var AUniform: TGLSLUniform; const Texture:
       GLUInt; TexUnit: GLUInt);
 
   end;
@@ -336,6 +342,7 @@ begin
       AttributeRegistry[a].Name := AName;
 {$ENDIF}
       AttributeRegistry[a].DataType := GLSLTypeUndefined;
+      AttributeRegistry[a].WarningAbsenceLoged := False;
       Attr := AttributeRegistry[a];
       Result := true;
       exit;
@@ -401,6 +408,7 @@ begin
       UniformRegistry[u].Name := AName;
 {$ENDIF}
       UniformRegistry[u].DataType := GLSLTypeUndefined;
+      UniformRegistry[u].WarningAbsenceLoged := False;
       Uniform := UniformRegistry[u];
       Result := true;
       exit;
@@ -444,10 +452,10 @@ begin
 
   LogPath := ExtractFilePath(ParamStr(0));
   CompilationLog
-    := TLogSession.Init(LogPath + 'ShadersManager Compilation.Log', lfNone,
+    := TLogSession.Init(LogPath + 'ShadersCompilation.Log', lfNone,
     [lkInfo, lkWarning, lkError]);
   WorkLog
-    := TLogSession.Init(LogPath + 'ShadersManager Work.Log', lfNone,
+    := TLogSession.Init(LogPath + 'ShadersWork.Log', lfNone,
     [lkWarning, lkError]);
 end;
 
@@ -501,7 +509,7 @@ begin
     Result := (Result shl 1) + Byte(AName[i]);
 end;
 
-function TGL3xShadersManager.GetUniformLocation(const AUniform: TGLSLUniform):
+function TGL3xShadersManager.GetUniformLocation(var AUniform: TGLSLUniform):
   GLInt;
 var
   I: Integer;
@@ -515,7 +523,11 @@ begin
     end;
   end;
   Result := -1;
-  WorkLog.LogError('Using an unknown uniform "' + AUniform.Name + '"');
+  if not AUniform.WarningAbsenceLoged then
+  begin
+    WorkLog.LogError('Using an unknown uniform "' + AUniform.Name + '"');
+    AUniform.WarningAbsenceLoged := True;
+  end;
 end;
 
 function TGL3xShadersManager.GetTextureTarget(const AUniform: TGLSLUniform):
@@ -834,6 +846,10 @@ begin
           end;
         end;
       end;
+    end
+    else begin
+      CompilationLog.LogError('Active uniform ' + Copy(string(buff), 0, len) +
+        ' not registered');
     end;
   end;
 
@@ -940,7 +956,7 @@ begin
     DeleteShaderProgram(FShaderProgramsList[i]);
 end;
 
-procedure TGL3xShadersManager.Uniform1f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform1f(var AUniform: TGLSLUniform; const
   Value: Single);
 var
   loc: GLInt;
@@ -952,7 +968,7 @@ begin
     glUniform1f(loc, Value);
 end;
 
-procedure TGL3xShadersManager.Uniform2f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform2f(var AUniform: TGLSLUniform; const
   Value: TVector2f);
 var
   loc: GLInt;
@@ -964,7 +980,7 @@ begin
     glUniform2f(loc, Value[0], Value[1]);
 end;
 
-procedure TGL3xShadersManager.Uniform3f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform3f(var AUniform: TGLSLUniform; const
   Value: TVector3f);
 var
   loc: GLInt;
@@ -976,7 +992,7 @@ begin
     glUniform3f(loc, Value[0], Value[1], Value[2]);
 end;
 
-procedure TGL3xShadersManager.Uniform4f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform4f(var AUniform: TGLSLUniform; const
   Value: TVector4f);
 var
   loc: GLInt;
@@ -988,7 +1004,7 @@ begin
     glUniform4f(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
-procedure TGL3xShadersManager.Uniform1I(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform1I(var AUniform: TGLSLUniform; const
   Value: Integer);
 var
   loc: GLInt;
@@ -1000,7 +1016,7 @@ begin
     glUniform1i(loc, Value);
 end;
 
-procedure TGL3xShadersManager.Uniform1I(const AUniform: TGLSLUniform;
+procedure TGL3xShadersManager.Uniform1I(var AUniform: TGLSLUniform;
   const Value: PGLInt; Count: Integer);
 var
   loc: GLInt;
@@ -1012,7 +1028,7 @@ begin
     glUniform1iv(loc, Count, Value);
 end;
 
-procedure TGL3xShadersManager.Uniform2I(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform2I(var AUniform: TGLSLUniform; const
   Value: TVector2I);
 var
   loc: GLInt;
@@ -1024,7 +1040,7 @@ begin
     glUniform2i(loc, Value[0], Value[1]);
 end;
 
-procedure TGL3xShadersManager.Uniform3I(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform3I(var AUniform: TGLSLUniform; const
   Value: TVector3I);
 var
   loc: GLInt;
@@ -1036,7 +1052,7 @@ begin
     glUniform3i(loc, Value[0], Value[1], Value[2]);
 end;
 
-procedure TGL3xShadersManager.Uniform4I(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform4I(var AUniform: TGLSLUniform; const
   Value: TVector4I);
 var
   loc: GLInt;
@@ -1048,7 +1064,7 @@ begin
     glUniform4i(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
-procedure TGL3xShadersManager.Uniform4I(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.Uniform4I(var AUniform: TGLSLUniform; const
   Value: PGLInt; Count: Integer);
 var
   loc: GLInt;
@@ -1060,7 +1076,7 @@ begin
     glUniform4iv(loc, Count, Value);
 end;
 
-procedure TGL3xShadersManager.UniformMat2f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.UniformMat2f(var AUniform: TGLSLUniform; const
   Value: TMatrix2f);
 var
   loc: GLInt;
@@ -1072,7 +1088,7 @@ begin
     glUniformMatrix2fvARB(loc, 1, False, @Value);
 end;
 
-procedure TGL3xShadersManager.UniformMat3f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.UniformMat3f(var AUniform: TGLSLUniform; const
   Value: TMatrix3f);
 var
   loc: GLInt;
@@ -1084,7 +1100,7 @@ begin
     glUniformMatrix3fv(loc, 1, False, @Value);
 end;
 
-procedure TGL3xShadersManager.UniformMat4f(const AUniform: TGLSLUniform; const
+procedure TGL3xShadersManager.UniformMat4f(var AUniform: TGLSLUniform; const
   Value: TMatrix4f);
 var
   loc: GLInt;
@@ -1096,7 +1112,7 @@ begin
     glUniformMatrix4fv(loc, 1, False, @Value);
 end;
 
-procedure TGL3xShadersManager.UniformSampler(const AUniform: TGLSLUniform;
+procedure TGL3xShadersManager.UniformSampler(var AUniform: TGLSLUniform;
   const Texture: GLUInt; TexUnit: GLUInt);
 var
   loc, target: GLInt;

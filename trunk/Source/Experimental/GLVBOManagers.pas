@@ -401,7 +401,7 @@ var
 begin
   RC := CurrentGLContext;
   if RC = nil then
-    Log.LogWarning(glsNoActiveRC);
+    GLSLogger.LogWarning(glsNoActiveRC);
   // Find suitable manager
 {$IFNDEF GLS_MULTITHREAD}
   for I := 0 to vVBOManagerList.Count - 1 do
