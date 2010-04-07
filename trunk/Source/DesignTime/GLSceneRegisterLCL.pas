@@ -90,6 +90,13 @@ uses
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
    GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
    GLSoundFileObjects, GLSound, GLCompositeImage,
+   {$IFDEF GLS_EXPERIMENTAL}
+   GLSLog, GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
+   {$ENDIF}
+
+   // Image file formats
+   DDSImage, HDRImage, O3TCImage,
+
    // Vector file formats
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
@@ -978,6 +985,9 @@ begin
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLCameraController,
                        TGLGizmo,TGLGizmoEx
+                       {$IFDEF GLS_EXPERIMENTAL}
+                       , TGLSLogger
+                       {$ENDIF}
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1145,6 +1155,20 @@ begin
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '', HInstance);
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '', HInstance);
       RegisterSceneObject(TGLFBORenderer, 'OpenGL FrameBuffer', '', HInstance);
+
+      {$IFDEF GLS_EXPERIMENTAL}
+      // Experemental objects
+      RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xCube, 'Forward Cube', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xSphere, 'Forward Sphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xGeoSphere, 'Forward Geodesic Sphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xDisk, 'Forward Disk', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xBilletMesh, 'BilletMesh', glsOCExperemental, HInstance);
+      {$ENDIF}
    end;
 end;
 
