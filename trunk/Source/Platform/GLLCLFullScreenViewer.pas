@@ -207,7 +207,6 @@ uses OpenGL1x, sysutils, GLCrossPlatform, GLScreen
          {$error unimplemented QT context}
        {$endif}
        ;
-;
 
 const
    cScreenDepthToBPP : array [sd8bits..sd32bits] of Integer = (8, 16, 24, 32);
