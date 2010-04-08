@@ -157,7 +157,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils, VectorGeometryEXT, GLTextureFormat;
+uses GLUtils, VectorTypes, VectorGeometryEXT, GLTextureFormat;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const
@@ -420,7 +420,6 @@ begin
           StaticVBOManager.Discard;
           Self.Visible := false;
         end;
-        ObjectStyle := ObjectStyle - [osBuiltStage];
       end
       else
       begin
@@ -788,7 +787,7 @@ begin
     EndPrimitives;
     EndObject(rci);
   end;
-
+  ObjectStyle := ObjectStyle - [osBuiltStage];
 end;
 
 // DoProgress

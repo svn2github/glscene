@@ -540,7 +540,7 @@ begin
       if not LinkProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
@@ -548,7 +548,7 @@ begin
       if not ValidateProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
@@ -565,14 +565,14 @@ begin
       if not LinkProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
       if not ValidateProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
@@ -589,14 +589,14 @@ begin
       if not LinkProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
       if not ValidateProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
@@ -611,14 +611,14 @@ begin
       if not LinkProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
       if not ValidateProgram then
       begin
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-        Log.Log(InfoLog);
+        GLSLogger.Log(InfoLog);
 {$ENDIF}
         ProgramWorks := false;
       end;
@@ -764,9 +764,9 @@ begin
   debugImg.Free;
   glGetActiveUniformBlockiv(CreateOpticalDepthShader.Handle, 0,
     GL_UNIFORM_BLOCK_DATA_SIZE, @uniformBlockSize);
-  Log.Log(Format('GPU Uniform block size = %d', [uniformBlockSize]));
+  GLSLogger.Log(Format('GPU Uniform block size = %d', [uniformBlockSize]));
   uniformBlockSize := SizeOf(TNSConstantBlock);
-  Log.Log(Format('CPU Uniform block size = %d', [uniformBlockSize]));
+  GLSLogger.Log(Format('CPU Uniform block size = %d', [uniformBlockSize]));
 {$ENDIF}
 end;
 
@@ -871,7 +871,6 @@ begin
       begin
         UseProgramObject;
 
-        FBuiltProperties.Usage := FBuiltProperties.Usage;
         VM := TGLSceneBuffer(ARci.buffer).ViewMatrix;
         VM[3, 0] := 0;
         VM[3, 1] := 0;
@@ -906,7 +905,6 @@ begin
             FBuiltProperties.Manager.Discard;
             Self.Visible := false;
           end;
-          ObjectStyle := ObjectStyle - [osBuiltStage];
         end
         else
           FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
@@ -991,6 +989,7 @@ begin
     EndPrimitives;
     EndObject(rci);
   end;
+  inherited;
 end;
 
 procedure TGL3xCustomNishitaSky.Assign(Source: TPersistent);

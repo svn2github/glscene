@@ -419,9 +419,9 @@ begin
           Uniform1f['PlanetRadius'] := FPlanetRadius;
           Uniform1f['AtmosphereRadius'] := FAtmosphereRadius;
 
-          FBuiltProperties.Usage := FBuiltProperties.Usage;
           ARci.GLStates.EnableDepthTest := False;
           ARci.GLStates.Enable(stBlend);
+          ARci.GLStates.Enable(stCullFace);
           EnableGLBlendingMode(ARci);
 
           if (osBuiltStage in ObjectStyle)
@@ -433,7 +433,6 @@ begin
               FBuiltProperties.Manager.Discard;
               Self.Visible := false;
             end;
-            ObjectStyle := ObjectStyle - [osBuiltStage];
           end
           else
             FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
@@ -542,7 +541,6 @@ begin
   inherited;
   if Source is TGL3xCustomAtmosphere then
   begin
-    Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
     SetSlices(TGL3xCustomAtmosphere(Source).FSlices);
     FOpacity := TGL3xCustomAtmosphere(Source).FOpacity;
     FAtmosphereRadius := TGL3xCustomAtmosphere(Source).FAtmosphereRadius;
@@ -582,7 +580,6 @@ end;
 procedure TGL3xCustomAtmosphere.SetAtmosphereRadius(
   const Value: Single);
 begin
-  Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FAtmosphereRadius := Value;
   if Value <= FPlanetRadius then
     FPlanetRadius := FAtmosphereRadius / 1.01;
@@ -591,7 +588,6 @@ end;
 
 procedure TGL3xCustomAtmosphere.SetPlanetRadius(const Value: Single);
 begin
-  Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FPlanetRadius := Value;
   if Value >= FAtmosphereRadius then
     FAtmosphereRadius := FPlanetRadius * 1.01;
@@ -630,7 +626,6 @@ end;
 
 procedure TGL3xCustomAtmosphere.SetSlices(const Value: Integer);
 begin
-  Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   if Value > 0 then
   begin
     FSlices := Value;
@@ -648,7 +643,6 @@ end;
 
 procedure TGL3xCustomAtmosphere.SetOptimalAtmosphere(const ARadius: Single);
 begin
-  Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FAtmosphereRadius := ARadius + 0.25;
   FPlanetRadius := ARadius - 0.07;
   StructureChanged;
@@ -656,7 +650,6 @@ end;
 
 procedure TGL3xCustomAtmosphere.SetOptimalAtmosphere2(const ARadius: Single);
 begin
-  Assert(not FBuiltProperties.Manager.IsBuilded, glsCanNotRebuild);
   FAtmosphereRadius := ARadius + ARadius / 15;
   FPlanetRadius := ARadius - ARadius / 50;
   StructureChanged;
