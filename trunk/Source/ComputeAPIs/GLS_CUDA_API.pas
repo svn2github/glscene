@@ -4,6 +4,7 @@
 {: GLS_CUDA_API<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
       <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
       <li>28/01/10 - Yar - Creation
    </ul></font>
@@ -384,8 +385,8 @@ type
     CUDA_ERROR_NO_BINARY_FOR_GPU = 209, ///< No binary for GPU
     CUDA_ERROR_ALREADY_ACQUIRED = 210, ///< Already acquired
     CUDA_ERROR_NOT_MAPPED = 211, ///< Not mapped
-    CUDA_ERROR_NOT_MAPPED_AS_ARRAY   = 212,      ///< Mapped resource not available for access as an array
-    CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213,      ///< Mapped resource not available for access as a pointer
+    CUDA_ERROR_NOT_MAPPED_AS_ARRAY   = 212, ///< Mapped resource not available for access as an array
+    CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213, ///< Mapped resource not available for access as a pointer
 
     CUDA_ERROR_INVALID_SOURCE = 300, ///< Invalid source
     CUDA_ERROR_FILE_NOT_FOUND = 301, ///< File not found
@@ -782,7 +783,7 @@ var
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuMemFreeHost: function(var p): TCUresult
+  cuMemFreeHost: function(p: Pointer): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -865,14 +866,14 @@ var
 {$ENDIF}
 
   // system <-> array memory
-  cuMemcpyHtoA: function(dstArray: PCUarray; dstIndex: Cardinal; var pSrc;
+  cuMemcpyHtoA: function(dstArray: PCUarray; dstIndex: Cardinal; pSrc: Pointer;
     ByteCount: Cardinal): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuMemcpyAtoH: function(var dstHost; srcArray: PCUarray; srcIndex: Cardinal;
+  cuMemcpyAtoH: function(dstHost: Pointer; srcArray: PCUarray; srcIndex: Cardinal;
     ByteCount: Cardinal): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
@@ -1466,40 +1467,6 @@ function GetCUDAAPIerrorString(err: TCUresult): string;
 implementation
 
 const
-  CUresultString: array[0..30] of string = (
-    'No errors',
-    'Invalid value',
-    'Out of memory',
-    'Driver not initialized',
-    'Driver deinitialized',
-    'No CUDA-capable device available',
-    'Invalid device',
-    'Invalid kernel image',
-    'Invalid context',
-    'Context already current',
-    'Map failed',
-    'Unmap failed',
-    'Array is mapped',
-    'Already mapped',
-    'No binary for GPU',
-    'Already acquired',
-    'Not mapped',
-    'Not mapped as array',
-    'Not mapped as pointer',
-    'Invalid source',
-    'File not found',
-    'Invalid handle',
-    'Not found',
-    'CUDA not ready',
-    'Launch failed',
-    'Launch exceeded resources',
-    'Launch exceeded timeout',
-    'Launch with incompatible texturing',
-    'Pointer is 64bit',
-    'Size is 64bit',
-    'Unknown error');
-
-const
   INVALID_MODULEHANDLE = 0;
 
   // ************** Windows specific ********************
@@ -1726,18 +1693,40 @@ begin
 end;
 
 function GetCUDAAPIerrorString(err: TCUresult): string;
-var
-  e: TCUresult;
-  n: Integer;
 begin
-  n := 0;
-  e := CUDA_SUCCESS;
-  while (e<>err) or (e=CUDA_ERROR_UNKNOWN) do
-  begin
-    e := Pred(e);
-    Inc(n);
+  case err of
+    CUDA_SUCCESS: Result :='No errors';
+    CUDA_ERROR_INVALID_VALUE: Result :='Invalid value';
+    CUDA_ERROR_OUT_OF_MEMORY: Result :='Out of memory';
+    CUDA_ERROR_NOT_INITIALIZED: Result :='Driver not initialized';
+    CUDA_ERROR_DEINITIALIZED: Result :='Driver deinitialized';
+    CUDA_ERROR_NO_DEVICE: Result :='No CUDA-capable device available';
+    CUDA_ERROR_INVALID_DEVICE: Result :='Invalid device';
+    CUDA_ERROR_INVALID_IMAGE: Result :='Invalid kernel image';
+    CUDA_ERROR_INVALID_CONTEXT: Result :='Invalid context';
+    CUDA_ERROR_CONTEXT_ALREADY_CURRENT: Result :='Context already current';
+    CUDA_ERROR_MAP_FAILED: Result :='Map failed';
+    CUDA_ERROR_UNMAP_FAILED: Result :='Unmap failed';
+    CUDA_ERROR_ARRAY_IS_MAPPED: Result :='Array is mapped';
+    CUDA_ERROR_ALREADY_MAPPED: Result :='Already mapped';
+    CUDA_ERROR_NO_BINARY_FOR_GPU: Result :='No binary for GPU';
+    CUDA_ERROR_ALREADY_ACQUIRED: Result :='Already acquired';
+    CUDA_ERROR_NOT_MAPPED: Result :='Not mapped';
+    CUDA_ERROR_NOT_MAPPED_AS_ARRAY: Result :='Not mapped as array';
+    CUDA_ERROR_NOT_MAPPED_AS_POINTER: Result :='Not mapped as pointer';
+    CUDA_ERROR_INVALID_SOURCE: Result :='Invalid source';
+    CUDA_ERROR_FILE_NOT_FOUND: Result :='File not found';
+    CUDA_ERROR_INVALID_HANDLE: Result :='Invalid handle';
+    CUDA_ERROR_NOT_FOUND: Result :='Not found';
+    CUDA_ERROR_NOT_READY: Result :='CUDA not ready';
+    CUDA_ERROR_LAUNCH_FAILED: Result :='Launch failed';
+    CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES: Result :='Launch exceeded resources';
+    CUDA_ERROR_LAUNCH_TIMEOUT: Result :='Launch exceeded timeout';
+    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING: Result :='Launch with incompatible texturing';
+    CUDA_ERROR_POINTER_IS_64BIT: Result :='Pointer is 64bit';
+    CUDA_ERROR_SIZE_IS_64BIT: Result :='Size is 64bit';
+    CUDA_ERROR_UNKNOWN: Result :='Unknown error';
   end;
-  Result := CUresultString[n];
 end;
 
 end.
