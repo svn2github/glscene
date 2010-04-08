@@ -9,6 +9,7 @@
    Win32 control someday, so don't assume there is a TForm in your code.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator) 
       <li>07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
       <li>07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
       <li>24/07/03 - EG - Creation from GLWin32Viewer split
@@ -22,12 +23,6 @@ interface
 
 uses forms, lcltype, classes, controls, menus
      ,GLViewer,GLScene
-     {$ifdef LCLGTK}
-     , GLLinGTKContext
-     {$endif}
-     {$ifdef LCLGTK2}
-     , GLLinGTKContext
-     {$endif}
      {$ifdef MSWINDOWS}
      , Windows
      {$else}
@@ -191,6 +186,27 @@ uses OpenGL1x, sysutils, GLCrossPlatform, GLScreen
   {$ifdef Unix}
 , LCLIntf, gtkproc
   {$ENDIF}
+       {$ifdef LCLWIN32 or LCLWIN64}
+         {$ifndef CONTEXT_INCLUDED}
+     ,GLWidgetContext
+         {$define CONTEXT_INCLUDED}
+         {$endif}
+       {$endif}
+
+       {$ifdef LCLGTK or LCLGTK2}
+         {$ifndef CONTEXT_INCLUDED}
+     ,GLWidgetContext
+         {$define CONTEXT_INCLUDED}
+         {$endif}
+       {$endif}
+       {$ifdef LCLCARBON}
+     ,GLCarbonContext
+       {$endif}
+
+       {$ifdef LCLQT}
+         {$error unimplemented QT context}
+       {$endif}
+       ;
 ;
 
 const
