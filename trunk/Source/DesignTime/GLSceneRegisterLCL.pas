@@ -7,6 +7,7 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
                               TResolutionProperty (thanks Predator)

@@ -105,3 +105,14 @@ TGLMaterialProxy BITMAP objects\proxy_objects\TGLMaterialProxy.bmp
 TGLMaterialMultiProxy BITMAP objects\proxy_objects\TGLMaterialMultiProxy.bmp
 TGLMultiProxy BITMAP objects\proxy_objects\TGLMultiProxy.bmp
 TGLProxyObject BITMAP objects\proxy_objects\TGLProxyObject.bmp
+
+TGL3xPlane BITMAP objects\basic_geometry\TGLPlane.bmp
+TGL3xSprite BITMAP objects\basic_geometry\TGLSprite.bmp
+TGL3xCube BITMAP objects\basic_geometry\TGLCube.bmp
+TGL3xSphere BITMAP objects\basic_geometry\TGLSphere.bmp
+TGL3xGeoSphere BITMAP objects\basic_geometry\TGLSphere.bmp
+TGL3xDisk BITMAP objects\basic_geometry\TGLDisk.bmp
+TGL3xAtmosphere BITMAP objects\environment_objects\TGLAtmosphere.bmp
+TGL3xLensflare BITMAP objects\special_objects\TGLLensflare.bmp
+TGL3xNishitaSky BITMAP objects\environment_objects\TGLEarthSkyDome.bmp
+TGL3xBilletMesh BITMAP objects\mesh_objects\TGLMesh.bmp

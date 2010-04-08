@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL 
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
       <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
@@ -391,7 +392,9 @@ uses
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
    GLCameraController, GLSMWaveOut, GLFBORenderer, GLCompositeImage,
-
+{$IFDEF GLS_EXPERIMENTAL}
+   GLSLog, GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
+{$ENDIF}
    // Image file formats
    DDS, TGA,
    // Vector file formats
@@ -404,7 +407,7 @@ uses
    GLFileWAV, GLFileMP3,
 
    // Raster file format
-   GLFileDDS, GLFileO3TC, GLFileHDR
+   GLFileDDS, GLFileO3TC, GLFileHDR, GLFileJPEG, GLFilePNG
 
 {$ifdef WIN32}
    , GLSound, GLSoundFileObjects, GLSpaceText, Joystick, ScreenSaver,
@@ -552,33 +555,33 @@ begin
     begin
       // determine first number
       for Pos:=1 to SLength do
-        if not (TempStr[Pos] in Nums) then Break;
+        if not (AnsiChar(TempStr[Pos]) in Nums) then Break;
       if Pos <= SLength then
       begin
         // found a number?
         XRes:=StrToInt(Copy(TempStr,1,Pos-1));
         // search for following non-numerics
         for Pos:=Pos to SLength do
-          if TempStr[Pos] in Nums then Break;
+          if AnsiChar(TempStr[Pos]) in Nums then Break;
         Delete(TempStr,1,Pos-1); // take it out of the String
         SLength:=Length(TempStr); // rest length of String
         if SLength > 1 then // something to scan?
         begin
           // determine second number
           for Pos:=1 to SLength do
-            if not (TempStr[Pos] in Nums) then Break;
+            if not (AnsiChar(TempStr[Pos]) in Nums) then Break;
           if Pos <= SLength then
           begin
             YRes:=StrToInt(Copy(TempStr,1,Pos-1));
             // search for following non-numerics
             for Pos:=Pos to SLength do
-              if TempStr[Pos] in Nums then Break;
+              if AnsiChar(TempStr[Pos]) in Nums then Break;
             Delete(TempStr,1,Pos-1); // take it out of the String
             SLength:=Length(TempStr); // rest length of String
             if SLength > 1 then
             begin
               for Pos:=1 to SLength do
-                if not (TempStr[Pos] in Nums) then Break;
+                if not (AnsiChar(TempStr[Pos]) in Nums) then Break;
               if Pos <= SLength then BPP:=StrToInt(Copy(TempStr,1,Pos-1));
             end;
           end;
@@ -1608,6 +1611,9 @@ begin
                        {$IFDEF MSWINDOWS}
                        , TJoystick, TScreenSaver
                        {$ENDIF}
+                       {$IFDEF GLS_EXPERIMENTAL}
+                       , TGLSLogger
+                       {$ENDIF}
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1801,6 +1807,20 @@ initialization
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '', HInstance);
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '', HInstance);
       RegisterSceneObject(TGLFBORenderer, 'OpenGL FrameBuffer', '', HInstance);
+
+{$IFDEF GLS_EXPERIMENTAL}
+      // Experemental objects
+      RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xCube, 'Forward Cube', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xSphere, 'Forward Sphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xGeoSphere, 'Forward Geodesic Sphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xDisk, 'Forward Disk', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xBilletMesh, 'BilletMesh', glsOCExperemental, HInstance);
+{$ENDIF}
    end;
 
 finalization
