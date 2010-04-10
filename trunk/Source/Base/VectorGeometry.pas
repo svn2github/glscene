@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/04/10 - Yar - Added assertion in VectorNormalize, NormalizeVector when vector is null
+                          (thanks Vovik)
       <li>02/04/10 - Yar - Added inline directive for small vector operations
       <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
       <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
@@ -1676,6 +1678,9 @@ const
   cZero : Single = 0.0;
   cOne : Single = 1.0;
   cOneDotFive : Single = 0.5;
+
+resourcestring
+  glsNullVectorNormError = 'Normalization of the null vector can cause the error';
 
 // OptimizationMode
 //
@@ -3973,6 +3978,8 @@ end;
 //
 procedure NormalizeVector(var v : TAffineVector);
 {$ifndef GEOMETRY_NO_ASM}
+begin
+  Assert(not VectorEquals(v, NullVector), glsNullVectorNormError);
 asm
       test vSIMD, 1
       jz @@FPU
@@ -4020,6 +4027,7 @@ asm
       FSTP DWORD PTR [EAX+4]
       FMUL DWORD PTR [EAX+8]
       FSTP DWORD PTR [EAX+8]
+end;
 {$else}
 var
    invLen : Single;
@@ -4035,6 +4043,8 @@ end;
 //
 function VectorNormalize(const v : TAffineVector) : TAffineVector;
 {$ifndef GEOMETRY_NO_ASM}
+begin
+  Assert(not VectorEquals(v, NullVector), glsNullVectorNormError);
 asm
       test vSIMD, 1
       jz @@FPU
@@ -4082,6 +4092,7 @@ asm
       FSTP DWORD PTR [EDX+4]
       FMUL DWORD PTR [EAX+8]
       FSTP DWORD PTR [EDX+8]
+end;
 {$else}
 var
    invLen : Single;
@@ -4169,6 +4180,8 @@ end;
 //
 procedure NormalizeVector(var v : TVector);
 {$ifndef GEOMETRY_NO_ASM}
+begin
+  Assert(not VectorEquals(v, NullHmgVector), glsNullVectorNormError);
 asm
       test vSIMD, 1
       jz @@FPU
@@ -4220,6 +4233,7 @@ asm
       FSTP DWORD PTR [EAX+8]
       xor   edx, edx
       mov   [eax+12], edx
+end;
 {$else}
 var
    invLen : Single;
@@ -4236,6 +4250,8 @@ end;
 //
 function VectorNormalize(const v : TVector) : TVector;
 {$ifndef GEOMETRY_NO_ASM}
+begin
+  Assert(not VectorEquals(v, NullHmgVector), glsNullVectorNormError);
 asm
       test vSIMD, 1
       jz @@FPU
@@ -4287,6 +4303,7 @@ asm
       FSTP DWORD PTR [EDX+8]
       xor   eax, eax
       mov   [edx+12], eax
+end;
 {$else}
 var
    invLen : Single;
