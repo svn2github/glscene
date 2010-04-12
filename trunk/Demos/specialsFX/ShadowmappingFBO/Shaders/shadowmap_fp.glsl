@@ -1,5 +1,5 @@
 uniform sampler2DShadow ShadowMap;
-uniform sampler2D TextureMap: TEXUNIT0;
+uniform sampler2D TextureMap;
 uniform sampler2D projtex;
 
 uniform bool Softly;
