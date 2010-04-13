@@ -6,6 +6,7 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>13/04/10 - Yar - Fixed conditional for delphi (thanks mif) 
       <li>07/01/10 - DaStr - Enhanced cross-platform compatibility (thanks Predator)
       <li>17/12/09 - DaStr - Added screen utility functions from
                               GLCrossPlatform.pas (thanks Predator)
@@ -40,6 +41,9 @@ uses
 
 const
    MaxVideoModes = 200;
+{$IFNDEF FPC}
+   lcl_release = 0;
+{$ENDIF}
 
 type
 
@@ -309,11 +313,11 @@ begin
   vCurrentVideoMode := DefaultScreen( vDisplay );
 
   // Check support XF86VidMode Extension
-  {$if   lcl_release <= 28 }
+  {$IF (lcl_release <= 28) }
   if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
   {$ELSE}
   if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
-  {$ENDIF}
+  {$IFEND}
     Assert(False, 'XF86VidMode Extension not support');
 
   //Get Current Settings
