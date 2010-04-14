@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
       <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
       <li>22/01/10 - Yar   - Adapted to Handles of GLContext,
                              texture target unification, level and layer control
@@ -216,7 +217,9 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  glBindRenderbuffer(GL_RENDERBUFFER, Handle);
+  if FRenderbufferHandle.Handle = 0 then
+    FRenderbufferHandle.AllocateHandle;
+  FRenderbufferHandle.Bind;
   if not FStorageValid then
   begin
     internalFormat := GetInternalFormat;
@@ -226,7 +229,7 @@ end;
 
 procedure TGLRenderbuffer.Unbind;
 begin
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  FRenderbufferHandle.Unbind;
 end;
 
 { TGLDepthRBO }
@@ -463,14 +466,16 @@ end;
 
 procedure TGLFrameBuffer.Bind;
 begin
+  if FFrameBufferHandle.Handle = 0 then
+    FFrameBufferHandle.AllocateHandle;
+  FFrameBufferHandle.Bind;
   FBinded := true;
-  glBindFramebufferEXT(GL_FRAMEBUFFER, Handle);
 end;
 
 procedure TGLFrameBuffer.Unbind;
 begin
+  FFrameBufferHandle.UnBind;
   FBinded := false;
-  glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
 end;
 
 procedure TGLFrameBuffer.DetachTexture(n: Integer);
@@ -486,7 +491,6 @@ begin
     FTextureMipmap := FTextureMipmap and (not (1 shl n));
     FAttachedTexture[n] := nil;
     Unbind;
-    CheckOpenGLError;
   end;
 end;
 
