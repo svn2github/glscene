@@ -658,10 +658,10 @@ object Form1: TForm1
     FragmentProgram.Enabled = True
     VertexProgram.Code.Strings = (
       '#version 150'
-      'in vec2 Position;'
+      'in vec3 Position;'
       'void main(void)'
       '{'
-      '   gl_Position = vec4(sign(Position), 0.0, 1.0);'
+      '   gl_Position = vec4(sign(Position.xy), 0.0, 1.0);'
       '}')
     VertexProgram.Enabled = True
     OnApply = ResultShaderApply
