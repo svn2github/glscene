@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>11/04/10 - Yar - Added NewList, EndList, InsideList
       <li>08/05/10 - DanB - Added TGLStateCache.SetColorMask
       <li>05/03/10 - DanB - Added initial functions/properties for caching all
                             OpenGL 3.2 state, not complete yet.
@@ -287,6 +288,7 @@ type
     FCopyReadBufferBinding: TGLuint;
     FCopyWriteBufferBinding: TGLuint;
     FEnableTextureCubeMapSeamless: TGLboolean;
+    FInsideList: Boolean;
 
   protected
     { Protected Declarations }
@@ -772,6 +774,12 @@ type
     {: Enables/Disables seamless texture cube maps. }
     property EnableTextureCubeMapSeamless: TGLboolean read
       FEnableTextureCubeMapSeamless write SetEnableTextureCubeMapSeamless;
+    {: Indicates the current presence within the list. }
+    property InsideList: Boolean read FInsideList;
+    {: Begin new display list. }
+    procedure NewList(list: TGLuint; mode: TGLEnum);
+    {: End display list. }
+    procedure EndList;
 
     {: Defines the OpenGL texture matrix.<p>
        Assumed texture mode is GL_MODELVIEW. }
@@ -1081,6 +1089,7 @@ begin
   FCopyReadBufferBinding := 0;
   FCopyWriteBufferBinding := 0;
   FEnableTextureCubeMapSeamless:= false;
+  FInsideList := false;
 end;
 
 // Destroy
@@ -2006,7 +2015,7 @@ begin
   //if index<>FPrimitiveRestartIndex then
   begin
     FPrimitiveRestartIndex := index;
-    glPrimitiveRestartIndex(index);
+    glPrimitiveRestartIndex(index)
   end;
 end;
 
@@ -2268,6 +2277,18 @@ begin
     else
       glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
   end;
+end;
+
+procedure TGLStateCache.NewList(list: TGLuint; mode: TGLEnum);
+begin
+  FInsideList := True;
+  glNewList(list, mode)
+end;
+
+procedure TGLStateCache.EndList;
+begin
+  FInsideList := False;
+  glEndList;
 end;
 
 procedure TGLStateCache.SetUniformBufferBinding(const Value: TGLuint);
