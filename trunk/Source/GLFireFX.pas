@@ -6,6 +6,7 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>11/04/10 - Yar -  Replaced glNewList to GLState.NewList in TGLBFireFX.Render
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -730,9 +731,10 @@ begin
 
       FHandle:=glGenLists(1);
       try
-         glNewList(FHandle, GL_COMPILE);
-            Manager.AffParticle3d(Manager.FOuterColor.Color, mat);
-         glEndList;
+         rci.GLStates.NewList(FHandle, GL_COMPILE);
+         Manager.AffParticle3d(Manager.FOuterColor.Color, mat);
+         rci.GLStates.EndList;
+
          glPushMatrix;
          lastTr:=NullVector;
          SetVector(innerColor, Manager.FInnerColor.Color);
