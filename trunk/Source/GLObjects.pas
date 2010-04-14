@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
                            Now use Material.DepthProperties
@@ -1138,13 +1139,13 @@ begin
     begin
       FGroupList.AllocateHandle;
       Assert(FGroupList.Handle <> 0, 'Handle=0 for ' + ClassName);
-      glNewList(FGroupList.Handle, GL_COMPILE);
+      rci.GLStates.NewList(FGroupList.Handle, GL_COMPILE);
       rci.amalgamating := True;
       try
         inherited;
       finally
         rci.amalgamating := False;
-        glEndList;
+        rci.GLStates.EndList;
       end;
     end;
     glCallList(FGroupList.Handle);
