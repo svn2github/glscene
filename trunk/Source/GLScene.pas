@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLBaseSceneObject.GetHandle
       <li>06/04/10 - Yar - Removed double camera freeing in TGLSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
       <li>06/03/10 - Yar - Renamed ModelViewMatrix to ViewMatrix, added ModelMatrix
                            All function working with ModelViewMatrix now deprecated
@@ -2802,11 +2803,11 @@ function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
       FListHandle.AllocateHandle;
       Assert(FListHandle.Handle <> 0);
     end;
-    glNewList(FListHandle.Handle, GL_COMPILE);
+      rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
     try
       BuildList(rci);
     finally
-      glEndList;
+      rci.GLStates.EndList;
     end;
   end;
 
@@ -7993,7 +7994,6 @@ destructor TGLSceneBuffer.Destroy;
 begin
   Melt;
   DestroyRC;
-  FCamera := nil;
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
   FFogEnvironment.Free;
