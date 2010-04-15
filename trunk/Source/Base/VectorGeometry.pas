@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/04/10 - Yar - Bugfixed vector normalization on Intel processors
+                           (thanks mif) (BugTracker ID = 2987779)
       <li>02/04/10 - Yar - Added inline directive for small vector operations
       <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
       <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
@@ -4001,33 +4003,44 @@ asm
       ret
 
 @@FPU:
-      FLD  DWORD PTR [EAX]
-      FMUL ST, ST
-      FLD  DWORD PTR [EAX+4]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+8]
-      FMUL ST, ST
-      FADD
-      FSQRT
-      FLD1
-      FDIVR
-      FLD  ST
-      FMUL DWORD PTR [EAX]
-      FSTP DWORD PTR [EAX]
-      FLD  ST
-      FMUL DWORD PTR [EAX+4]
-      FSTP DWORD PTR [EAX+4]
-      FMUL DWORD PTR [EAX+8]
-      FSTP DWORD PTR [EAX+8]
+    mov   ecx, eax
+    FLD  DWORD PTR [ECX]
+    FMUL ST, ST
+    FLD  DWORD PTR [ECX+4]
+    FMUL ST, ST
+    FADD
+    FLD  DWORD PTR [ECX+8]
+    FMUL ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD  ST
+    FMUL DWORD PTR [ECX]
+    FSTP DWORD PTR [ECX]
+    FLD  ST
+    FMUL DWORD PTR [ECX+4]
+    FSTP DWORD PTR [ECX+4]
+    FMUL DWORD PTR [ECX+8]
+    FSTP DWORD PTR [ECX+8]
 {$else}
 var
-   invLen : Single;
+  invLen : Single;
+  vn : single;
 begin
-   invLen:=RSqrt(VectorNorm(v));
-   v[0]:=v[0]*invLen;
-   v[1]:=v[1]*invLen;
-   v[2]:=v[2]*invLen;
+  vn:=VectorNorm(v);
+  if vn>0 then begin
+    invLen:=RSqrt(vn);
+    v[0]:=v[0]*invLen;
+    v[1]:=v[1]*invLen;
+    v[2]:=v[2]*invLen;
+    end;
 {$endif}
 end;
 
@@ -4063,33 +4076,46 @@ asm
       ret
 
 @@FPU:
-      FLD  DWORD PTR [EAX]
-      FMUL ST, ST
-      FLD  DWORD PTR [EAX+4]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+8]
-      FMUL ST, ST
-      FADD
-      FSQRT
-      FLD1
-      FDIVR
-      FLD  ST
-      FMUL DWORD PTR [EAX]
-      FSTP DWORD PTR [EDX]
-      FLD  ST
-      FMUL DWORD PTR [EAX+4]
-      FSTP DWORD PTR [EDX+4]
-      FMUL DWORD PTR [EAX+8]
-      FSTP DWORD PTR [EDX+8]
+    mov   ecx, eax
+    FLD  DWORD PTR [ECX]
+    FMUL ST, ST
+    FLD  DWORD PTR [ECX+4]
+    FMUL ST, ST
+    FADD
+    FLD  DWORD PTR [ECX+8]
+    FMUL ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD  ST
+    FMUL DWORD PTR [ECX]
+    FSTP DWORD PTR [EDX]
+    FLD  ST
+    FMUL DWORD PTR [ECX+4]
+    FSTP DWORD PTR [EDX+4]
+    FMUL DWORD PTR [ECX+8]
+    FSTP DWORD PTR [EDX+8]
 {$else}
 var
-   invLen : Single;
+  invLen : Single;
+  vn : single;
 begin
-   invLen:=RSqrt(VectorNorm(v));
-   Result[0]:=v[0]*invLen;
-   Result[1]:=v[1]*invLen;
-   Result[2]:=v[2]*invLen;
+  vn:=VectorNorm(v);
+  if vn=0 then
+    setvector(result, v)
+  else begin
+    invLen:=RSqrt(vn);
+    result[0]:=v[0]*invLen;
+    result[1]:=v[1]*invLen;
+    result[2]:=v[2]*invLen;
+    end;
 {$endif}
 end;
 
@@ -4103,7 +4129,7 @@ asm
       OR    EDX, EDX
       JZ    @@End
       test vSIMD, 1
-      jz @@FPULoop
+      jz @@FPU
 @@3DNowLoop:
       db $0F,$6F,$00           /// movq        mm0,[eax]
       db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
@@ -4132,29 +4158,37 @@ asm
       jnz   @@3DNowLOOP
       ret
 
+@@FPU:
+    mov   ecx, eax
 @@FPULoop:
-      FLD   DWORD PTR [EAX]
-      FMUL  ST, ST
-      FLD   DWORD PTR [EAX+4]
-      FMUL  ST, ST
-      FADD
-      FLD   DWORD PTR [EAX+8]
-      FMUL  ST, ST
-      FADD
-      FSQRT
-      FLD1
-      FDIVR
-      FLD   ST
-      FMUL  DWORD PTR [EAX]
-      FSTP  DWORD PTR [EAX]
-      FLD   ST
-      FMUL  DWORD PTR [EAX+4]
-      FSTP  DWORD PTR [EAX+4]
-      FMUL  DWORD PTR [EAX+8]
-      FSTP  DWORD PTR [EAX+8]
-      ADD   EAX, 12
-      DEC   EDX
-      JNZ   @@FPULOOP
+    FLD   DWORD PTR [ECX]
+    FMUL  ST, ST
+    FLD   DWORD PTR [ECX+4]
+    FMUL  ST, ST
+    FADD
+    FLD   DWORD PTR [ECX+8]
+    FMUL  ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD   ST
+    FMUL  DWORD PTR [ECX]
+    FSTP  DWORD PTR [ECX]
+    FLD   ST
+    FMUL  DWORD PTR [ECX+4]
+    FSTP  DWORD PTR [ECX+4]
+    FMUL  DWORD PTR [ECX+8]
+    FSTP  DWORD PTR [ECX+8]
+    ADD   ECX, 12
+    DEC   EDX
+    JNZ   @@FPULOOP
 @@End:
 {$else}
 var
@@ -4199,36 +4233,47 @@ asm
       ret
 
 @@FPU:
-      FLD  DWORD PTR [EAX]
-      FMUL ST, ST
-      FLD  DWORD PTR [EAX+4]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+8]
-      FMUL ST, ST
-      FADD
-      FSQRT
-      FLD1
-      FDIVR
-      FLD  ST
-      FMUL DWORD PTR [EAX]
-      FSTP DWORD PTR [EAX]
-      FLD  ST
-      FMUL DWORD PTR [EAX+4]
-      FSTP DWORD PTR [EAX+4]
-      FMUL DWORD PTR [EAX+8]
-      FSTP DWORD PTR [EAX+8]
-      xor   edx, edx
-      mov   [eax+12], edx
+    mov   ecx, eax
+    FLD  DWORD PTR [ECX]
+    FMUL ST, ST
+    FLD  DWORD PTR [ECX+4]
+    FMUL ST, ST
+    FADD
+    FLD  DWORD PTR [ECX+8]
+    FMUL ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD  ST
+    FMUL DWORD PTR [ECX]
+    FSTP DWORD PTR [ECX]
+    FLD  ST
+    FMUL DWORD PTR [ECX+4]
+    FSTP DWORD PTR [ECX+4]
+    FMUL DWORD PTR [ECX+8]
+    FSTP DWORD PTR [ECX+8]
+    xor   edx, edx
+    mov   [ecx+12], edx
 {$else}
 var
-   invLen : Single;
+  invLen : Single;
+  vn : single;
 begin
-   invLen:=RSqrt(VectorNorm(v));
-   v[0]:=v[0]*invLen;
-   v[1]:=v[1]*invLen;
-   v[2]:=v[2]*invLen;
-   v[3]:=0;
+  vn:=VectorNorm(v);
+  if vn>0 then begin
+    invLen:=RSqrt(vn);
+    v[0]:=v[0]*invLen;
+    v[1]:=v[1]*invLen;
+    v[2]:=v[2]*invLen;
+    end;
+  v[3]:=0;
 {$endif}
 end;
 
@@ -4266,36 +4311,49 @@ asm
       ret
 
 @@FPU:
-      FLD  DWORD PTR [EAX]
-      FMUL ST, ST
-      FLD  DWORD PTR [EAX+4]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+8]
-      FMUL ST, ST
-      FADD
-      FSQRT
-      FLD1
-      FDIVR
-      FLD  ST
-      FMUL DWORD PTR [EAX]
-      FSTP DWORD PTR [EDX]
-      FLD  ST
-      FMUL DWORD PTR [EAX+4]
-      FSTP DWORD PTR [EDX+4]
-      FMUL DWORD PTR [EAX+8]
-      FSTP DWORD PTR [EDX+8]
-      xor   eax, eax
-      mov   [edx+12], eax
+		mov	ecx, eax
+		FLD  DWORD PTR [ECX]
+		FMUL ST, ST
+		FLD  DWORD PTR [ECX+4]
+		FMUL ST, ST
+		FADD
+		FLD  DWORD PTR [ECX+8]
+		FMUL ST, ST
+		FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+		FLD  ST
+		FMUL DWORD PTR [ECX]
+		FSTP DWORD PTR [EDX]
+		FLD  ST
+		FMUL DWORD PTR [ECX+4]
+		FSTP DWORD PTR [EDX+4]
+		FMUL DWORD PTR [ECX+8]
+		FSTP DWORD PTR [EDX+8]
+		xor   ecx, ecx
+		mov   [edx+12], ecx
 {$else}
 var
-   invLen : Single;
+  invLen : Single;
+  vn : Single;
 begin
-   invLen:=RSqrt(VectorNorm(v));
-   Result[0]:=v[0]*invLen;
-   Result[1]:=v[1]*invLen;
-   Result[2]:=v[2]*invLen;
-   Result[3]:=0;
+  vn:=VectorNorm(v);
+  if vn=0 then
+    setvector(result, v)
+  else begin
+    invLen:=RSqrt(vn);
+    Result[0]:=v[0]*invLen;
+    Result[1]:=v[1]*invLen;
+    Result[2]:=v[2]*invLen;
+	end;
+  Result[3]:=0;
 {$endif}
 end;
 
