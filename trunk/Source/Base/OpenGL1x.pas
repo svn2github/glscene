@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/04/10 - Yar - Added Graphics Remedy's Extensions
       <li>28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
                             added bindless graphics extensions
       <li>18/03/10 - Yar - Added more GLX extensions
@@ -579,6 +580,10 @@ var
    GLX_MESA_set_3dfx_mode,
    GLX_SGIX_visual_select_group,
    GLX_SGIX_hyperpipe,
+
+   // Graphics Remedy's Extensions
+   GL_GREMEDY_frame_terminator,
+   GL_GREMEDY_string_marker,
 
    // OpenGL Utility (GLU) extension checks
    GLU_EXT_object_space_tess,
@@ -7124,6 +7129,10 @@ var
    glVertexAttribIFormatNV: procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glGetIntegerui64i_vNV: procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
+   // Special Gremedy debugger extension
+   glFrameTerminatorGREMEDY: procedure(); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glStringMarkerGREMEDY: procedure(len: GLsizei; str: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 
@@ -8653,6 +8662,10 @@ begin
    glVertexAttribIFormatNV := GLGetProcAddress('glVertexAttribIFormatNV');
    glGetIntegerui64i_vNV := GLGetProcAddress('glGetIntegerui64i_vNV');
 
+   // Special Gremedy debugger extensions
+   glFrameTerminatorGREMEDY := GLGetProcAddress('glFrameTerminatorGREMEDY');
+   glStringMarkerGREMEDY := GLGetProcAddress('glStringMarkerGREMEDY');
+
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for Windows OpenGL (WGL) extensions'} {$ENDIF}
@@ -9160,6 +9173,9 @@ begin
    GL_AMD_vertex_shader_tessellator := CheckExtension('GL_AMD_vertex_shader_tessellator');
 
    GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
+
+   GL_GREMEDY_frame_terminator := CheckExtension('GL_GREMEDY_frame_terminator');
+   GL_GREMEDY_string_marker := CheckExtension('GL_GREMEDY_string_marker');
 
    // check supported GLU extensions
    Buffer := String(gluGetString(GLU_EXTENSIONS));
