@@ -37,7 +37,7 @@ object Form1: TForm1
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
     end
-    object SceneParticles: TGL3xBilletMesh
+    object SceneParticles: TGL3xFeedBackMesh
       BuiltProperties.Usage = buStream
       Material.Shader = FluidShader
       Factory = GLSCUDAFactory1

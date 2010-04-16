@@ -37,7 +37,7 @@ object Form1: TForm1
     object GLDummyCube1: TGLDummyCube
       CubeSize = 2.000000000000000000
       VisibleAtRunTime = True
-      object GL3xBilletMesh1: TGL3xBilletMesh
+      object GL3xFeedbackMesh1: TGL3xFeedBackMesh
         BuiltProperties.Usage = buStream
         Material.Shader = GLSLShader1
         Factory = GLSCUDAFactory1
@@ -684,7 +684,7 @@ object Form1: TForm1
       end
     end
     object DotFieldMapper: TCUDAGLGeometryResource
-      SceneObject = GL3xBilletMesh1
+      SceneObject = GL3xFeedbackMesh1
       Mapping = grmWriteDiscard
       Left = 248
       Top = 264

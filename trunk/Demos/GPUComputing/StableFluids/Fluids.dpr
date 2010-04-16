@@ -2,7 +2,7 @@ program Fluids;
 
 uses
   Forms,
-  uMain in 'uMain.pas' {Form1};
+  uDemo in 'uDemo.pas' {Form1};
 
 {$R *.res}
 

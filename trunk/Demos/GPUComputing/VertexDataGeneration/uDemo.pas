@@ -22,7 +22,7 @@ type
     GLSCUDACompiler1: TGLSCUDACompiler;
     MainModule: TCUDAModule;
     DotFieldMapper: TCUDAGLGeometryResource;
-    GL3xBilletMesh1: TGL3xBilletMesh;
+    GL3xFeedbackMesh1: TGL3xFeedBackMesh;
     GLSLShader1: TGLSLShader;
     MakeDotField: TCUDAFunction;
     GLSCUDAFactory1: TGLSCUDAFactory;
@@ -54,7 +54,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   FieldWidth := 256;
   FieldHeight := 256;
-  GL3xBilletMesh1.VertexNumber := FieldWidth * FieldHeight;
+  GL3xFeedbackMesh1.VertexNumber := FieldWidth * FieldHeight;
   MakeDotField.Grid.SizeX := FieldWidth div MakeDotField.BlockShape.SizeX;
   MakeDotField.Grid.SizeY := FieldWidth div MakeDotField.BlockShape.SizeY;
 end;
@@ -86,7 +86,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
   GLSceneViewer1.Invalidate;
-  GL3xBilletMesh1.StructureChanged;
+  GL3xFeedbackMesh1.StructureChanged;
 end;
 
 end.
