@@ -10,6 +10,7 @@
    Based on David McDuffee's document from www.wotsit.org<p>
 
 	<b>History : </b><font size=-1><ul>
+           <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator) 
 	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
                               in Lazarus (thanks Predator)   
 	   <li>08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
@@ -274,15 +275,11 @@ initialization
 // ------------------------------------------------------------------
    {$IFNDEF FPC}
    TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
-   {$ELSE}
-   LazTGA.Register;
    {$ENDIF}
 
 finalization
 
    {$IFNDEF FPC}
    TGLPicture.UnregisterGraphicClass(TTGAImage);
-   {$ELSE}
-   LazTGA.UnRegister;
    {$ENDIF}
 end.
