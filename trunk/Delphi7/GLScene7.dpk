@@ -284,6 +284,6 @@ contains
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
   JPG in '..\Source\FileFormats\JPG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
-  GLSLanguage in '..\Source\GLSLanguage.pas'
+  GLSLanguage in '..\Source\GLSLanguage.pas';
 
 end.
