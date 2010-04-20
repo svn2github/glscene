@@ -440,7 +440,6 @@ begin
   begin
     // Show information (window)
     MessageDlg('Exceeded the number of messages in log!', mtError, [mbOk], 0);
-    Shutdown;
     Halt;
   end;
 end;
