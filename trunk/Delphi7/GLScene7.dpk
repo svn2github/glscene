@@ -275,8 +275,15 @@ contains
   GLCoordinates in '..\Source\Base\GLCoordinates.pas',
   GLNodes in '..\Source\GLNodes.pas',
   GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
+  GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
+  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
-  GLSMWaveOut in '..\Source\GLSMWaveOut.pas';
+  GLSLog in '..\Source\Experimental\GLSLog.pas',
+  GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
+  GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
+  JPG in '..\Source\FileFormats\JPG.pas',
+  LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
+  GLSLanguage in '..\Source\GLSLanguage.pas'
 
 end.

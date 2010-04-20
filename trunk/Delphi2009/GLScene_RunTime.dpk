@@ -22,7 +22,7 @@ package GLScene_RunTime;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - OpenGL 3D library RunTime'}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$LIBSUFFIX '2009'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
@@ -265,6 +265,17 @@ contains
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
   GLPBuffer in '..\Source\Base\GLPBuffer.pas',
-  GLCompositeImage in '..\Source\GLCompositeImage.pas';
+  GLCompositeImage in '..\Source\GLCompositeImage.pas',
+  GLFBO in '..\Source\GLFBO.pas',
+  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
+  GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
+  GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
+  GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
+  GLSLog in '..\Source\Experimental\GLSLog.pas',
+  GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
+  GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
+  JPG in '..\Source\FileFormats\JPG.pas',
+  LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
+  GLSLanguage in '..\Source\GLSLanguage.pas';
 
 end.

@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL 
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
@@ -391,9 +392,10 @@ uses
    GLViewer, GLGizmo, GLTextureSharingShader, GLGraphics, GLCoordinates,
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
-   GLCameraController, GLSMWaveOut, GLFBORenderer, GLCompositeImage,
+   GLCameraController, GLSMWaveOut, GLFBORenderer, GLCompositeImage, GLSLanguage,
+   GLSLog,
 {$IFDEF GLS_EXPERIMENTAL}
-   GLSLog, GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
+   GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
 {$ENDIF}
    // Image file formats
    DDS, TGA,
@@ -1607,12 +1609,10 @@ begin
                        TGLMaterialScripter, TGLUserInterface, TGLNavigator,
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-                       TGLSimpleNavigation, TGLGizmo, TGLCameraController
+                       TGLSimpleNavigation, TGLGizmo, TGLCameraController,
+                       TGLSLanguage, TGLSLogger
                        {$IFDEF MSWINDOWS}
                        , TJoystick, TScreenSaver
-                       {$ENDIF}
-                       {$IFDEF GLS_EXPERIMENTAL}
-                       , TGLSLogger
                        {$ENDIF}
                       ]);
 
@@ -1819,7 +1819,7 @@ initialization
       RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperemental, HInstance);
       RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperemental, HInstance);
       RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xBilletMesh, 'BilletMesh', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh', glsOCExperemental, HInstance);
 {$ENDIF}
    end;
 

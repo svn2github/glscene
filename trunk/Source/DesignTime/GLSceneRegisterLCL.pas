@@ -7,6 +7,7 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
       <li>07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
@@ -90,7 +91,7 @@ uses
    GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
    GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
    GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
-   GLSoundFileObjects, GLSound, GLCompositeImage,
+   GLSoundFileObjects, GLSound, GLCompositeImage, GLSLanguage,
    {$IFDEF GLS_EXPERIMENTAL}
    GLSLog, GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
    {$ENDIF}
@@ -985,7 +986,7 @@ begin
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLCameraController,
-                       TGLGizmo,TGLGizmoEx
+                       TGLGizmo, TGLGizmoEx, TGLSLanguage
                        {$IFDEF GLS_EXPERIMENTAL}
                        , TGLSLogger
                        {$ENDIF}
@@ -1168,7 +1169,7 @@ begin
       RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperemental, HInstance);
       RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperemental, HInstance);
       RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xBilletMesh, 'BilletMesh', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh', glsOCExperemental, HInstance);
       {$ENDIF}
    end;
 end;

@@ -59,3 +59,4 @@ TGLGizmo BITMAP vcl\TGLGizmo.bmp
 TGLTextureSharingShader BITMAP vcl\TGLTextureSharingShader.bmp
 TGLCameraController BITMAP vcl\TGLCameraController.bmp
 TGLSLogger BITMAP vcl\TGLSLogger.bmp
+TGLSLanguage BITMAP vcl\TGLSLanguage.bmp
