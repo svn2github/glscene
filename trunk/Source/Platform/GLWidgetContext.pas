@@ -4,6 +4,8 @@
    GLWidgetContext replaces old GLLinGTKContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/04/10 - Yar - Fixed conditions
+                           (by Rustam Asmandiarov aka Predator)
       <li>06/04/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
    </ul></font>
@@ -45,7 +47,7 @@ uses
 {$ENDIF}
 
   //Widgets
-{$IFDEF  LCLwin32 or LCLwin64}
+{$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   Controls, WSLCLClasses, Win32Int,
   Win32WSControls, Win32Proc, LCLMessageGlue;
 {$ENDIF}
@@ -96,7 +98,7 @@ type
     procedure DoGetHandles(outputDevice: Cardinal; out XWin: LongInt); override;
   end;
 {$ENDIF}
-{$IFDEF LCLwin32 or LCLwin64}
+{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   TGLSOpenGLControl = class(TWin32WSWinControl)
   published
     class function CreateHandle(const AWinControl: TWinControl;
@@ -118,7 +120,7 @@ implementation
 procedure TGLWidgetContext.DoGetHandles(outputDevice: Cardinal; out XWin:
   Cardinal);
 begin
-{$IFDEF  LCLwin32 or LCLwin64}
+{$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   XWin := outputDevice;
 {$IFDEF GLS_LOGGING}
   GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLwin32\64');
@@ -133,12 +135,12 @@ end;
 
 procedure TGLWidgetContext.DoGetHandles(outputDevice: Cardinal; out XWin:
   LongInt);
-{$IFDEF LCLGTK2 or LCLGTK}
+{$IF DEFINED(LCLGTK2) or DEFINED(LCLGTK)}
 var
   FGTKWidget: PGTKWidget;
 {$ENDIF}
 begin
-{$IFDEF LCLGTK2 or LCLGTK}
+{$IF DEFINED(LCLGTK2) or DEFINED(LCLGTK)}
   fGTKWidget := GetFixedWidget(TGtkDeviceContext(outputDevice).Widget);
   // Dirty workaround: force realize
   gtk_widget_realize(FGTKWidget);
@@ -185,7 +187,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF  LCLwin32 or LCLwin64}
+{$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
 //Need to debug Viewer because there is a black square
 //Необходимо для отладки Viewera так как появляется черный квадрат
 //Заимствовано из TOpenGLControl
@@ -226,7 +228,7 @@ var
   Params: TCreateWindowExParams;
 begin
   // general initialization of Params
-  {$if   lcl_release <= 28 }
+  {$if   (lcl_release <= 28) }
   PrepareCreateWindow(AWinControl, Params);
   {$ELSE}
   PrepareCreateWindow(AWinControl, AParams, Params);

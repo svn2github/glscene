@@ -6,8 +6,10 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/04/10 - Yar - Fixed conditions for windows platform
+                           (by Rustam Asmandiarov aka Predator)
       <li>02/04/10 - Yar - Bugfix bad graphics under Windows
-                          (by to Rustam Asmandiarov aka Predator)
+                           (by Rustam Asmandiarov aka Predator)
       <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
                               properties (thanks Yury Plashenkov)  
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
@@ -189,14 +191,14 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils ,LCLIntf,GLViewer
-       {$ifdef LCLWIN32 or LCLWIN64}
+       {$if DEFINED(LCLWIN32) or DEFINED(LCLWIN64)}
          {$ifndef CONTEXT_INCLUDED}
      ,GLWidgetContext
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
 
-       {$ifdef LCLGTK or LCLGTK2}
+       {$if DEFINED(LCLGTK) or DEFINED(LCLGTK2)}
          {$ifndef CONTEXT_INCLUDED}
      ,GLWidgetContext
          {$define CONTEXT_INCLUDED}
