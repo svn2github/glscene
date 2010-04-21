@@ -6,6 +6,10 @@
    TGLDirectOpenGL is placed in a small hierarchy with a torus and dummy cube,
    and the rotation animation are handled by those two object to show that
    the OnRender code uses the hierarchy.
+
+  <b>History : </b><font size=-1><ul>
+      <li>21/04/10 - Yar - Removed direct state changing
+    </ul></font>
 }
 unit Unit1;
 
@@ -15,7 +19,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo, GLState;
+  GLCoordinates, BaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -43,16 +47,22 @@ implementation
 
 {$R *.DFM}
 
-uses OpenGL1x, JPeg;
+uses OpenGL1x, GLState, JPeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    // dynamically create 2 materials and load 2 textures
    with GLMaterialLibrary do begin
       with AddTextureMaterial('wood', '..\..\media\ashwood.jpg') do
+      begin
          Material.FrontProperties.Emission.Color:=clrGray50;
+         Material.FaceCulling := fcNoCull;
+      end;
       with AddTextureMaterial('stone', '..\..\media\walkway.jpg') do
+      begin
          Material.FrontProperties.Emission.Color:=clrGray50;
+         Material.FaceCulling := fcNoCull;
+      end;
    end;
 end;
 
@@ -60,8 +70,6 @@ procedure TForm1.DirectOpenGL1Render(Sender : TObject; var rci: TRenderContextIn
 var
    material : TGLLibMaterial;
 begin
-   // disable face culling
-   rci.GLStates.Disable(stCullFace);
    // 1st quad, textured with 'wood', using standard method
    GLMaterialLibrary.ApplyMaterial('wood', rci);
    glBegin(GL_QUADS);
@@ -80,11 +88,9 @@ begin
       glTexCoord2f(0, 1);  glVertex3f(0.5, -0.5, -0.5);
       glTexCoord2f(0, 0);  glVertex3f(0.5, 0, 0.5);
       glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
-      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5);
+      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5); 
    glEnd;
    material.Material.UnApply(rci);
-   // enable face culling again
-   rci.GLStates.Enable(stCullFace);
 end;
 
 end.
