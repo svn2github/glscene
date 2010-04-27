@@ -92,8 +92,8 @@ object frmMain: TfrmMain
     end
   end
   object GLScene1: TGLScene
-    Left = 572
-    Top = 108
+    Left = 20
+    Top = 84
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 120.000000000000000000
@@ -181,8 +181,8 @@ object frmMain: TfrmMain
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 500
-    Top = 108
+    Left = 84
+    Top = 84
   end
   object MatLib: TGLMaterialLibrary
     Materials = <
@@ -215,14 +215,14 @@ object frmMain: TfrmMain
         Tag = 0
         Shader = GLSLShader1
       end>
-    Left = 412
-    Top = 100
+    Left = 20
+    Top = 132
   end
   object GLSLShader1: TGLSLShader
     Enabled = False
     OnApply = GLSLShader1Apply
-    Left = 668
-    Top = 116
+    Left = 20
+    Top = 180
   end
   object GLNavigation: TGLSimpleNavigation
     Form = Owner
@@ -242,14 +242,14 @@ object frmMain: TfrmMain
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 344
-    Top = 104
+    Left = 88
+    Top = 184
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 784
-    Top = 116
+    Left = 88
+    Top = 132
   end
 end
