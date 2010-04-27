@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
-  Width = 604
-  Height = 417
   Caption = 'Form1'
+  ClientHeight = 379
+  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,8 +29,8 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 360
-    Top = 344
+    Left = 24
+    Top = 136
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
@@ -172,32 +172,32 @@ object Form1: TForm1
         Name = 'bark'
         Tag = 0
       end>
-    Left = 488
-    Top = 344
+    Left = 24
+    Top = 184
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     TimeMultiplier = 2.000000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 424
-    Top = 344
+    Left = 96
+    Top = 136
   end
   object Timer1: TTimer
-    Left = 304
-    Top = 344
+    Left = 96
+    Top = 184
   end
   object GLSLShader1: TGLSLShader
     Enabled = False
     OnApply = GLSLShader1Apply
     OnUnApply = GLSLShader1UnApply
-    Left = 176
-    Top = 344
+    Left = 24
+    Top = 232
   end
   object GLSLShader2: TGLSLShader
     Enabled = False
     OnApply = GLSLShader2Apply
-    Left = 240
-    Top = 344
+    Left = 24
+    Top = 280
   end
   object GLNavigation: TGLSimpleNavigation
     Form = Owner
@@ -216,7 +216,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 88
-    Top = 344
+    Left = 96
+    Top = 232
   end
 end

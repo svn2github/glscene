@@ -15,7 +15,7 @@ uses
   GLWin32Viewer, GLUtils, GLGeomObjects, StdCtrls, ExtCtrls, GLFBO, GLFBORenderer,
   GLCadencer, GLCustomShader, GLSLShader, VectorGeometry, GLPolyhedron,
   GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo,
-  GLSimpleNavigation, GLVectorFileObjects, GLFilemd2;
+  GLSimpleNavigation, GLVectorFileObjects, GLFilemd2, GLState;
 
 type
   TForm1 = class(TForm)
@@ -189,16 +189,11 @@ procedure TForm1.GLSLShader2Apply(Shader: TGLCustomGLSLShader);
 begin
   with Shader, GLMaterialLibrary1 do begin
     Param['ShadowMap'].AsTexture2D[1]:= TextureByName(LightFBORenderer.DepthTextureName);
-    Param['projtex'].AsTexture2D[2]:= TextureByName('Lightspot');
-    Param['SCALEE'].AsFloat:=16.0;
+    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
+    Param['Scale'].AsFloat:=16.0;
     Param['Softly'].AsInteger:=1;
     Param['EyeToLightMatrix'].AsMatrix4f:= FEyeToLightMatrix;
   end;
-end;
-
-procedure TForm1.LightFBORendererAfterRender(Sender: TObject);
-begin
-  glDisable(GL_POLYGON_OFFSET_FILL);
 end;
 
 procedure TForm1.LightFBORendererBeforeRender(Sender: TObject);
@@ -208,8 +203,17 @@ begin
   glGetFloatv(GL_PROJECTION_MATRIX, @FLightProjMatrix);
 
   // push geometry back a bit, prevents false self-shadowing
-  glPolygonOffset(2, 2);
-  glEnable(GL_POLYGON_OFFSET_FILL);
+  with CurrentGLContext.GLStates do
+  begin
+    Enable(stPolygonOffsetFill);
+    PolygonOffsetFactor := 2;
+    PolygonOffsetUnits := 2;
+  end;
+end;
+
+procedure TForm1.LightFBORendererAfterRender(Sender: TObject);
+begin
+  CurrentGLContext.GLStates.Disable(stPolygonOffsetFill);
 end;
 
 end.
