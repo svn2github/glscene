@@ -414,7 +414,7 @@ uses
 {$ifdef WIN32}
    , GLSound, GLSoundFileObjects, GLSpaceText, Joystick, ScreenSaver,
    GLWideBitmapFont,
-   GLWin32FullScreenViewer
+   GLFullScreenViewer
 {$endif}
    ;
 

@@ -48,7 +48,7 @@ implementation
 uses
    SysUtils, Dialogs, Graphics,
    // GLScene units
-   VectorGeometry, GLScene, GLViewer,GLLCLFullScreenViewer,
+   VectorGeometry, GLScene, GLViewer,GLFullScreenViewer,
    GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
    GLCadencer, GLTextureImageEditors,GLColor, GLCrossPlatform,
    // GLScene - basic geometry

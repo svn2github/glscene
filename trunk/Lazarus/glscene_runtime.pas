@@ -44,7 +44,7 @@ uses
   GLTextureFormat, GLThorFX, GLTilePlane, GLTimeEventsMgr, GLTrail, GLTree, 
   GLUtils, GLVectorFileObjects, GLVerletClasses, GLVerletClothify, 
   GLVerletSkeletonColliders, GLWaterPlane, GLWindows, GLWindowsFont, 
-  GLzBuffer, GLCrossPlatform, GLKeyboard, GLLCLFullScreenViewer, GLScreen, 
+  GLzBuffer, GLCrossPlatform, GLKeyboard, GLFullScreenViewer, GLScreen, 
   GLViewer, GLWidgetContext, GLAsmShader, GLBumpShader, GLCelShader, 
   GLCustomShader, GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, 
   GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 

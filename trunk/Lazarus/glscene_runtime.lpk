@@ -823,8 +823,8 @@
         <UnitName Value="GLKeyboard"/>
       </Item199>
       <Item200>
-        <Filename Value="../Source/Platform/GLLCLFullScreenViewer.pas"/>
-        <UnitName Value="GLLCLFullScreenViewer"/>
+        <Filename Value="../Source/Platform/GLFullScreenViewer.pas"/>
+        <UnitName Value="GLFullScreenViewer"/>
       </Item200>
       <Item201>
         <Filename Value="../Source/Platform/GLScreen.pas"/>
