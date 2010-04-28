@@ -6,7 +6,8 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
-      <li>21/04/10 - Yar - Fixed conditions for windows platform
+      <li>28/04/10 - Yar - Fixed conditions for windows platform
+                           Added Render method
                            (by Rustam Asmandiarov aka Predator)
       <li>02/04/10 - Yar - Bugfix bad graphics under Windows
                            (by Rustam Asmandiarov aka Predator)
@@ -98,6 +99,8 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
+
+         procedure Render;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          {: Makes TWinControl's RecreateWnd public.<p>
@@ -457,6 +460,13 @@ begin
    CreateWnd
 end;
 
+// Render
+//
+procedure TGLSceneViewer.Render;
+begin
+   Buffer.Render;
+end;
+
 // LastFrameTime
 //
 function TGLSceneViewer.LastFrameTime : Single;
@@ -542,7 +552,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
    RegisterClass(TGLSceneViewer);
-{$IFDEF LCLwin32 or LCLwin64}
+{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
    GLRegisterWSComponent(TGLSceneViewer);
 {$ENDIF}
 
