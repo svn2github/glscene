@@ -153,7 +153,7 @@ contains
   GLPolyhedron in '..\Source\GLPolyhedron.pas',
   GLTeapot in '..\Source\GLTeapot.pas',
   GLTextureImageEditors in '..\Source\PropertyEditors\GLTextureImageEditors.pas',
-  GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas',
+  GLFullScreenViewer in '..\Source\Platform\GLFullScreenViewer.pas',
   GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas',
   GLUserShader in '..\Source\Shaders\GLUserShader.pas',
   CurvesAndSurfaces in '..\Source\Base\CurvesAndSurfaces.pas',
