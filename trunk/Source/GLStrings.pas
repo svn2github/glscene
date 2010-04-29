@@ -87,7 +87,7 @@ resourcestring
   glsOCHUDObjects = 'HUD objects';
   glsOCGuiObjects = 'GUI objects';
   glsOCProxyObjects = 'Proxy objects';
-  glsOCExperemental = 'Experemental objects';
+  glsOCExperimental = 'Experimental objects';
 
 implementation
 

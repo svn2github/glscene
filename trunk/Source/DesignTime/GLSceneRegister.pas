@@ -1809,7 +1809,7 @@ initialization
       RegisterSceneObject(TGLFBORenderer, 'OpenGL FrameBuffer', '', HInstance);
 
 {$IFDEF GLS_EXPERIMENTAL}
-      // Experemental objects
+      // Experimental objects
       RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperimental, HInstance);
       RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperimental, HInstance);
       RegisterSceneObject(TGL3xCube, 'Forward Cube', glsOCExperimental, HInstance);
