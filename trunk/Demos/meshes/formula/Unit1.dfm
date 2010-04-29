@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 124
   Top = 110
-  Width = 618
+  Width = 624
   Height = 336
   BorderWidth = 5
   Caption = 'Form1'
@@ -19,26 +19,30 @@ object Form1: TForm1
     Left = 0
     Top = 17
     Width = 297
-    Height = 280
+    Height = 271
     Camera = GLCamera1
+    FieldOfView = 107.144798278808600000
     Align = alLeft
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLSceneViewer2: TGLSceneViewer
-    Left = 303
+    Left = 301
     Top = 17
     Width = 297
-    Height = 280
+    Height = 271
     Camera = GLCamera2
+    FieldOfView = 107.144798278808600000
     Align = alRight
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 1
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 600
+    Width = 598
     Height = 17
     Align = alTop
     BevelOuter = bvNone
@@ -68,7 +72,6 @@ object Form1: TForm1
     object DummyCube1: TGLDummyCube
       CubeSize = 10.000000000000000000
       object Mesh1: TGLMesh
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
         VertexMode = vmVNC
       end
@@ -97,7 +100,6 @@ object Form1: TForm1
     object DummyCube2: TGLDummyCube
       CubeSize = 10.000000000000000000
       object Mesh2: TGLMesh
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
         VertexMode = vmVNC
       end

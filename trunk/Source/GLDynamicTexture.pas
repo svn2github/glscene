@@ -138,9 +138,9 @@ begin
 
     // Force creation of texture
     // This is a bit of a hack, should be a better way...
-    glBindTexture(TTarget, OwnerTexture.Handle);
+    CurrentGLContext.GLStates.TextureBinding[0,
+      EncodeGLTextureTarget(TTarget)] := OwnerTexture.Handle;
     glTexImage2D(TTarget, 0, OwnerTexture.OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
-    glBindTexture(TTarget, 0);
   end;
 
   CheckOpenGLError;
@@ -194,7 +194,8 @@ begin
   if TTarget <> 0 then
   begin
     // only change data if it's already been uploaded
-    glBindTexture(TTarget, OwnerTexture.Handle);
+    CurrentGLContext.GLStates.TextureBinding[0,
+      EncodeGLTextureTarget(TTarget)] := OwnerTexture.Handle;
     glTexSubImage2D(TTarget, 0,
       FDirtyRect.Left, FDirtyRect.Top,
       FDirtyRect.Right-FDirtyRect.Left,
@@ -202,14 +203,7 @@ begin
       TextureFormat, DataFormat, d);
 
     if assigned(FPBO) then
-    begin
       FPBO.UnBind;
-    end
-    else
-    begin
-    end;
-
-    glBindTexture(TTarget, 0);
   end;
 
   FData:= nil;

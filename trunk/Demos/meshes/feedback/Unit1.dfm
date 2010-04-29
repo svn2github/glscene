@@ -16,12 +16,15 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 405
-    Height = 301
+    Width = 397
+    Height = 290
     Camera = GLCamera1
+    Buffer.FaceCulling = False
+    FieldOfView = 141.948791503906300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Button1: TButton
     Left = 152
@@ -36,15 +39,15 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = GLDummyCube1
         Position.Coordinates = {0000803F00000040000040400000803F}
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1
-          SpotCutOff = 180
+          ConstAttenuation = 1.000000000000000000
+          SpotCutOff = 180.000000000000000000
         end
       end
     end
@@ -57,7 +60,7 @@ object Form1: TForm1
       Visible = False
       object MeshObject1: TGLDummyCube
         Visible = False
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object GLCube1: TGLCube
           Position.Coordinates = {CDCC0CBFCDCC0CBF000000000000803F}
         end
@@ -67,10 +70,10 @@ object Form1: TForm1
       end
       object MeshObject2: TGLDummyCube
         Visible = False
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object GLSphere1: TGLSphere
           Position.Coordinates = {00000000CDCC0C3F000000000000803F}
-          Radius = 0.5
+          Radius = 0.500000000000000000
         end
       end
     end

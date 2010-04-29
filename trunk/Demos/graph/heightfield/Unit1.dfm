@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 196
   Top = 94
-  Width = 433
-  Height = 436
+  Width = 441
+  Height = 447
   AutoSize = True
   BorderWidth = 4
   Caption = 'Form1'
@@ -54,6 +54,7 @@ object Form1: TForm1
     FieldOfView = 112.087295532226600000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object TrackBar1: TTrackBar
     Left = 64
@@ -147,7 +148,6 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object HeightField1: TGLHeightField
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       XSamplingScale.Min = -1.000000000000000000
@@ -158,7 +158,6 @@ object Form1: TForm1
       YSamplingScale.Step = 0.079999998211860660
       object Sphere1: TGLSphere
         Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000803F0000803F000000000000803F}
         Visible = False
         OnProgress = Sphere1Progress

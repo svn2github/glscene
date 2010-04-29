@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 326
   Top = 126
-  Width = 592
-  Height = 522
+  Width = 598
+  Height = 531
   Caption = 'Simple Navigation Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,6 +20,7 @@ object Form1: TForm1
     Height = 481
     Camera = GLCamera1
     FieldOfView = 156.511001586914100000
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 80

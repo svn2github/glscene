@@ -472,7 +472,8 @@ begin
          if ColorMode<>hfcmNone then begin
             rci.GLStates.Enable(stColorMaterial);
             glColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
-            rci.GLStates.SetGLMaterialColors(cmFrontAndBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+            rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+            rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
          end;
       end;
       rowBottom:=nil; rowMid:=nil;

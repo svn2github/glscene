@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = -1
-  Top = 28
+  Left = 90
+  Top = 97
   Width = 799
   Height = 500
   Caption = 'Form1'
@@ -16,10 +16,10 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 402
+    Left = 394
     Top = 0
     Width = 389
-    Height = 471
+    Height = 462
     Align = alRight
     TabOrder = 0
     object Label1: TLabel
@@ -88,23 +88,24 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 402
-    Height = 471
+    Width = 394
+    Height = 462
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 152.06169128418
+    FieldOfView = 151.517288208007800000
     Align = alClient
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 8
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000803F00000040000040400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCube1: TGLCube
       Material.Texture.Image.Picture.Data = {
@@ -657,8 +658,8 @@ object Form1: TForm1
         F5F5}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000803F0000803F000000400000803F}
     end

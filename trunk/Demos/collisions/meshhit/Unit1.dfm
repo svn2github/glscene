@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 108
   Top = 101
-  Width = 562
-  Height = 302
+  Width = 567
+  Height = 306
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -35,8 +35,10 @@ object Form1: TForm1
     Height = 241
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
+    FieldOfView = 170.512069702148400000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLSceneViewer2: TGLSceneViewer
     Left = 280
@@ -45,8 +47,10 @@ object Form1: TForm1
     Height = 241
     Camera = GLCamera2
     Buffer.BackgroundColor = clGray
+    FieldOfView = 134.929183959960900000
     OnMouseDown = GLSceneViewer2MouseDown
     OnMouseMove = GLSceneViewer2MouseMove
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     Left = 16

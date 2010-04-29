@@ -22,9 +22,11 @@ object Form1: TForm1
     Height = 332
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 146.474884033203100000
     Align = alClient
     OnDblClick = GLSceneViewerDblClick
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
@@ -61,29 +63,31 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object DCBase: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
         080500000000000000F005400500000000000000000000050000000000000000
         000008020008020008}
       EffectsData = {
-        0201061254474C536F757263655046584566666563740200060750465852696E
-        6702010200080200090000000000002040000000000000000005000000000000
-        0000000005000000000000000000000500000000000000FA074002000201}
+        0201061254474C536F757263655046584566666563740201060750465852696E
+        67050000000000000080FF3F0206020008020009000000000000204000000000
+        0000000002000805000000000000000000000500000000000000000000050000
+        0000000000FA074002000201090500000000000000000000080200}
       object DCSrc: TGLDummyCube
         Position.Coordinates = {0000803F00000040000000000000803F}
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         EffectsData = {
-          0201061254474C536F7572636550465845666665637402000609504658537069
-          72616C020102000900000000CDCC4CBE00000000000000000200080500000000
-          00CDCCCCFB3F0500000000000000000000050000000000CDCCCCFA3F02000200}
+          0201061254474C536F7572636550465845666665637402010609504658537069
+          72616C050000000000000080FF3F020602000900000000CDCC4CBE0000000000
+          000000020008020008050000000000CDCCCCFB3F050000000000000000000005
+          0000000000CDCCCCFA3F02000200090500000000000000000000080200}
       end
     end
     object PFXRenderer: TGLParticleFXRenderer
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DCBase
       Position.Coordinates = {0000C0400000A040000080400000803F}
     end
@@ -92,28 +96,32 @@ object Form1: TForm1
     Cadencer = GLCadencer
     Renderer = PFXRenderer
     Acceleration.Coordinates = {00000000CDCC4CBE0000000000000000}
+    Friction = 1.000000000000000000
     NbSides = 9
-    ParticleSize = 0.3
+    ParticleSize = 0.300000011920929000
     LifeColors = <
       item
         ColorInner.Color = {0000803F0000803F000000000000803F}
         ColorOuter.Color = {00000000000000000000803F00000000}
-        LifeTime = 3
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.000000000000000000
       end
       item
         ColorInner.Color = {0AD7A33E48E1FA3E1F85EB3E0000803F}
         ColorOuter.Color = {0000803F000000000000000000000000}
-        LifeTime = 6
+        LifeTime = 6.000000000000000000
+        SizeScale = 1.000000000000000000
       end
       item
-        LifeTime = 9
+        LifeTime = 9.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 88
     Top = 16
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
-    MaxDeltaTime = 0.1
+    MaxDeltaTime = 0.100000000000000000
     Left = 16
     Top = 56
   end
@@ -126,16 +134,19 @@ object Form1: TForm1
   object PFXRing: TGLPolygonPFXManager
     Cadencer = GLCadencer
     Renderer = PFXRenderer
+    Friction = 1.000000000000000000
     NbSides = 9
-    ParticleSize = 0.2
+    ParticleSize = 0.200000002980232200
     ColorInner.Color = {00000000000000001283203F0000803F}
     LifeColors = <
       item
         ColorInner.Color = {0000803F0000803F0000803F9A99193F}
-        LifeTime = 2.5
+        LifeTime = 2.500000000000000000
+        SizeScale = 1.000000000000000000
       end
       item
-        LifeTime = 3.5
+        LifeTime = 3.500000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 88
     Top = 56
@@ -145,6 +156,8 @@ object Form1: TForm1
     Width = 800
     Height = 600
     Buffer.BackgroundColor = clBlack
+    Form = Owner
+    ManualRendering = False
     RefreshRate = 0
     OnKeyPress = GLFullScreenViewerKeyPress
     OnDblClick = GLFullScreenViewerDblClick

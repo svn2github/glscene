@@ -191,7 +191,7 @@ end;
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
    case Key of
-      'w', 'W' : with GLMaterialLibrary1.Materials[0].Material.FrontProperties do begin
+      'w', 'W' : with GLMaterialLibrary1.Materials[0].Material do begin
          if PolygonMode=pmLines then
             PolygonMode:=pmFill
          else PolygonMode:=pmLines;

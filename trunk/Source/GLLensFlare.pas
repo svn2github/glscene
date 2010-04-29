@@ -637,7 +637,10 @@ begin
       FlareIsNotOccluded := True;
 
       rci.GLStates.SetColorMask([]);
+      rci.GLStates.Disable(stAlphaTest);
       rci.GLStates.DepthWriteMask := False;
+      rci.GLStates.Enable(stDepthTest);
+      rci.GLStates.DepthFunc := cfLEqual;
 
       usedOcclusionQuery := TGLOcclusionQueryHandle.IsSupported;
       if usedOcclusionQuery then
@@ -667,14 +670,12 @@ begin
         glEnable(GL_OCCLUSION_TEST_HP);
       end;
 
-      rci.GLStates.DepthFunc := cfLEqual;
       glBegin(GL_QUADS);
       glVertex3f(posVector[0] + 2, posVector[1], 1);
       glVertex3f(posVector[0], posVector[1] + 2, 1);
       glVertex3f(posVector[0] - 2, posVector[1], 1);
       glVertex3f(posVector[0], posVector[1] - 2, 1);
       glEnd;
-      rci.GLStates.DepthFunc := cfLess;
 
       if usedOcclusionQuery then
         FOcclusionQuery.EndQuery
@@ -684,7 +685,7 @@ begin
         glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
       end;
 
-      rci.GLStates.DepthWriteMask := True;
+      rci.GLStates.DepthFunc := cfLEqual;
       rci.GLStates.SetColorMask(cAllColorComponents);
     end
     else

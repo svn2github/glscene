@@ -135,8 +135,8 @@ begin
   GLFreeForm3.MeshObjects.Clear;
   GLFreeForm3.StructureChanged;
 
-  GLFreeForm1.Material.FrontProperties.PolygonMode := pmFill;
-  GLFreeForm2.Material.FrontProperties.PolygonMode := pmFill;
+  GLFreeForm1.Material.PolygonMode := pmFill;
+  GLFreeForm2.Material.PolygonMode := pmFill;
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -153,8 +153,8 @@ begin
   CSG_Operation(GLFreeForm1.MeshObjects.Items[0],GLFreeForm2.MeshObjects.Items[0],CSG_Union,Mesh,'1','2');
   GLFreeForm3.StructureChanged;
 
-  GLFreeForm1.Material.FrontProperties.PolygonMode := pmLines;
-  GLFreeForm2.Material.FrontProperties.PolygonMode := pmLines;
+  GLFreeForm1.Material.PolygonMode := pmLines;
+  GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
 procedure TForm1.Button3Click(Sender: TObject);
@@ -171,8 +171,8 @@ begin
   CSG_Operation(GLFreeForm1.MeshObjects.Items[0],GLFreeForm2.MeshObjects.Items[0],CSG_Subtraction,Mesh,'1','2');
   GLFreeForm3.StructureChanged;
 
-  GLFreeForm1.Material.FrontProperties.PolygonMode := pmLines;
-  GLFreeForm2.Material.FrontProperties.PolygonMode := pmLines;
+  GLFreeForm1.Material.PolygonMode := pmLines;
+  GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
 procedure TForm1.Button4Click(Sender: TObject);
@@ -189,8 +189,8 @@ begin
   CSG_Operation(GLFreeForm2.MeshObjects.Items[0],GLFreeForm1.MeshObjects.Items[0],CSG_Subtraction,Mesh,'1','2');
   GLFreeForm3.StructureChanged;
 
-  GLFreeForm1.Material.FrontProperties.PolygonMode := pmLines;
-  GLFreeForm2.Material.FrontProperties.PolygonMode := pmLines;
+  GLFreeForm1.Material.PolygonMode := pmLines;
+  GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
 procedure TForm1.Button5Click(Sender: TObject);
@@ -207,20 +207,20 @@ begin
   CSG_Operation(GLFreeForm1.MeshObjects.Items[0],GLFreeForm2.MeshObjects.Items[0],CSG_Intersection,Mesh,'1','2');
   GLFreeForm3.StructureChanged;
 
-  GLFreeForm1.Material.FrontProperties.PolygonMode := pmLines;
-  GLFreeForm2.Material.FrontProperties.PolygonMode := pmLines;
+  GLFreeForm1.Material.PolygonMode := pmLines;
+  GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   If CheckBox1.Checked then
   Begin
-    GLMaterialLibrary1.Materials[0].Material.FrontProperties.PolygonMode := pmFill;
-    GLMaterialLibrary1.Materials[1].Material.FrontProperties.PolygonMode := pmFill;
+    GLMaterialLibrary1.Materials[0].Material.PolygonMode := pmFill;
+    GLMaterialLibrary1.Materials[1].Material.PolygonMode := pmFill;
   End else
   Begin
-    GLMaterialLibrary1.Materials[0].Material.FrontProperties.PolygonMode := pmLines;
-    GLMaterialLibrary1.Materials[1].Material.FrontProperties.PolygonMode := pmLines;
+    GLMaterialLibrary1.Materials[0].Material.PolygonMode := pmLines;
+    GLMaterialLibrary1.Materials[1].Material.PolygonMode := pmLines;
   End;
   GLFreeForm3.StructureChanged;
 end;

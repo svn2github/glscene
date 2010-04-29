@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 244
   Top = 109
+  Width = 659
+  Height = 544
   Caption = 'GLAtmosphere Demo'
-  ClientHeight = 495
-  ClientWidth = 642
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -3043,7 +3043,7 @@ object MainForm: TMainForm
         NumStreaks = 10
         NumSecs = 10
         Resolution = 10
-        FlareIsNotOccluded = False
+        FlareIsNotOccluded = True
         Position.Coordinates = {000020C1000020C1000000000000803F}
         object GLLightSource1: TGLLightSource
           ConstAttenuation = 1.000000000000000000

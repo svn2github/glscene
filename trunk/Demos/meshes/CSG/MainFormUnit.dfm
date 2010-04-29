@@ -19,20 +19,22 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 616
-    Height = 542
+    Width = 608
+    Height = 531
     Camera = GLCamera1
     Buffer.BackgroundColor = clTeal
-    FieldOfView = 159.092758178710900000
+    Buffer.FaceCulling = False
+    FieldOfView = 158.669494628906200000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 542
-    Width = 616
+    Top = 531
+    Width = 608
     Height = 42
     Align = alBottom
     TabOrder = 1

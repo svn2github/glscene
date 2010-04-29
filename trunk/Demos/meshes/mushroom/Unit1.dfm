@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 180
   Top = 93
   Width = 414
-  Height = 284
+  Height = 291
   BorderWidth = 3
   Caption = 'Form1'
   Color = clBtnFace
@@ -15,28 +15,30 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnResize = FormResize
   DesignSize = (
-    400
-    249)
+    392
+    247)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 400
-    Height = 249
+    Width = 392
+    Height = 247
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {CECD4D3FCECD4D3FCECD4D3F0000803F}
-    Buffer.FogEnvironment.FogStart = 30
-    Buffer.FogEnvironment.FogEnd = 90
+    Buffer.FogEnvironment.FogStart = 30.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 90.000000000000000000
     Buffer.BackgroundColor = 13487565
     Buffer.FogEnable = True
+    FieldOfView = 135.918060302734400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Button1: TButton
     Left = 144
-    Top = 232
+    Top = 223
     Width = 137
     Height = 17
     Anchors = [akLeft, akBottom]
@@ -55,43 +57,41 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000FA4400409C4500007A450000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Disk1: TGLDisk
-        Direction.Coordinates = {000000000000803F2EBD3BB300000000}
-        Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
         Material.FrontProperties.Emission.Color = {0000803E0000803E0000803E0000803F}
         Material.Texture.Image.Picture.Data = {07544269746D617000000000}
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
+        Direction.Coordinates = {000000000000803F2EBD3BB300000000}
+        Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Loops = 3
-        OuterRadius = 75
+        OuterRadius = 75.000000000000000000
         Slices = 9
-        SweepAngle = 360
+        SweepAngle = 360.000000000000000000
       end
       object FreeForm1: TGLFreeForm
+        Material.FrontProperties.Diffuse.Color = {0AD7633FD7A3F03ECDCC4C3E0000803F}
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000000000004040000000000000803F}
         Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
         Up.Coordinates = {0000803F000000000000008000000000}
-        Material.FrontProperties.Diffuse.Color = {0AD7633FD7A3F03ECDCC4C3E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
         UseMeshMaterials = False
         NormalsOrientation = mnoInvert
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 500
-      FocalLength = 50
+      DepthOfView = 500.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000A041000040410000F0410000803F}
       Left = 200

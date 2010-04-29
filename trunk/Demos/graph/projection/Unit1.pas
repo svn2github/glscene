@@ -86,7 +86,6 @@ begin
    mat:=MakeParallelProjectionMatrix(plane, planeNormal);
 
    // save state, turn off lighting and specify the lines color
-   rci.GLStates.PushAttrib([sttEnable]);
    rci.GLStates.Disable(stLighting);
    glColor3f(1, 1, 0);
 
@@ -103,9 +102,6 @@ begin
          glVertex3fv(@pProj);
       end;
    glEnd;
-
-   // restore state
-   rci.GLStates.PopAttrib;
 end;
 
 procedure TForm1.SceneViewerMouseDown(Sender: TObject;

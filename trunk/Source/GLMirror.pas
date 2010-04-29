@@ -249,7 +249,7 @@ begin
       // mirror geometry and render master
       glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
       glLoadMatrixf(@CurrentBuffer.ViewMatrix);
-      CurrentBuffer.PushModelViewMatrix(curMat);
+      CurrentBuffer.PushViewMatrix(curMat);
 
       Disable(stCullFace);
       Enable(stNormalize);
@@ -290,7 +290,7 @@ begin
       ARci.cameraDirection := cameraDirectionBackup;
       ARci.GLStates.CullFaceMode := cmBack;
       // Restore to "normal"
-      CurrentBuffer.PopModelViewMatrix;
+      CurrentBuffer.PopViewMatrix;
       glLoadMatrixf(@CurrentBuffer.ViewMatrix);
       Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
 

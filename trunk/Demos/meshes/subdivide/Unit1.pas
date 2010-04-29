@@ -231,14 +231,12 @@ end;
 
 procedure TForm1.RBWireFrameClick(Sender: TObject);
 begin
-   GLActor1.Material.FrontProperties.PolygonMode:=pmLines;
-   GLActor1.Material.BackProperties.PolygonMode:=pmLines;
+   GLActor1.Material.PolygonMode:=pmLines;
 end;
 
 procedure TForm1.RBSolidClick(Sender: TObject);
 begin
-   GLActor1.Material.FrontProperties.PolygonMode:=pmFill;
-   GLActor1.Material.BackProperties.PolygonMode:=pmFill;
+   GLActor1.Material.PolygonMode:=pmFill;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);

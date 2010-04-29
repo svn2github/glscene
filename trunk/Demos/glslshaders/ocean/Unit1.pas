@@ -58,6 +58,9 @@ var
 
 implementation
 
+uses
+  GLTextureFormat;
+
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -121,14 +124,14 @@ begin
    with MatLib.LibMaterialByName('water') do begin
       PrepareBuildList;
       rci.GLStates.ActiveTexture := 0;
-      rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Material.Texture.Handle);
+      rci.GLStates.TextureBinding[0, ttTexture2D] := Material.Texture.Handle;
    end;
 
    // initialize the heightmap
    with MatLib.LibMaterialByName('cubeMap') do begin
       PrepareBuildList;
       rci.GLStates.ActiveTexture := 1;
-      rci.GLStates.SetGLCurrentTexture(1, GL_TEXTURE_CUBE_MAP, Material.Texture.Handle);
+      rci.GLStates.TextureBinding[1, ttTextureCube] := Material.Texture.Handle;
       rci.GLStates.ActiveTexture := 0;
    end;
 

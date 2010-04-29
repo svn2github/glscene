@@ -61,6 +61,7 @@ object MainFm: TMainFm
       Width = 256
       Height = 256
       Camera = GLCamera2
+      Buffer.FaceCulling = False
       FieldOfView = 137.326278686523400000
       OnMouseDown = CasterMouseDown
       OnMouseMove = CasterMouseMove

@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 200
   Top = 110
-  Width = 508
-  Height = 355
+  Width = 511
+  Height = 367
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -57,6 +57,8 @@ object Form1: TForm1
     Height = 313
     Camera = GLCamera1
     Buffer.BackgroundColor = 13224393
+    FieldOfView = 135.998596191406300000
+    TabOrder = 0
   end
   object RBSTC: TRadioButton
     Left = 328
@@ -111,59 +113,54 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000A041000048420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object BaseDummyCube: TGLDummyCube
       ObjectsSorting = osRenderFarthestFirst
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object OrbitingSphere1: TGLSphere
-        Position.Coordinates = {0000004000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000003F}
         Material.BlendingMode = bmTransparency
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 0.5
+        Position.Coordinates = {0000004000000000000000000000803F}
+        Radius = 0.500000000000000000
       end
       object OrbitingSphere2: TGLSphere
-        Position.Coordinates = {000000C000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000003F}
         Material.BlendingMode = bmTransparency
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 0.5
+        Position.Coordinates = {000000C000000000000000000000803F}
+        Radius = 0.500000000000000000
       end
       object DCCentral: TGLDummyCube
         ObjectsSorting = osNone
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object Torus1: TGLTorus
-          Direction.Coordinates = {000000000000803F2EBD3BB300000000}
-          Up.Coordinates = {000000002EBD3BB3000080BF00000000}
           Material.FrontProperties.Diffuse.Color = {CDCC4C3EA1A0203EFAF9793F0000803F}
           Material.FrontProperties.Emission.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          MajorRadius = 0.800000011920929
-          MinorRadius = 0.100000001490116
+          Direction.Coordinates = {000000000000803F2EBD3BB300000000}
+          Up.Coordinates = {000000002EBD3BB3000080BF00000000}
+          MajorRadius = 0.800000011920928900
+          MinorRadius = 0.100000001490116100
         end
         object Cone1: TGLCone
-          Position.Coordinates = {000000009A99993E000000000000803F}
           Material.FrontProperties.Diffuse.Color = {FBFA7A3FA5A4243EF9F8F83D0000803F}
           Material.FrontProperties.Emission.Color = {E5E4E43EC1C0403CE1E0603D0000803F}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          BottomRadius = 0.300000011920929
-          Height = 2
+          Position.Coordinates = {000000009A99993E000000000000803F}
+          BottomRadius = 0.300000011920929000
+          Height = 2.000000000000000000
         end
         object CentralSphere: TGLSphere
           Material.FrontProperties.Diffuse.Color = {D3D2523FCCCB4B3FFFFE7E3F9A99193F}
           Material.FrontProperties.Emission.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
           Material.BlendingMode = bmTransparency
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          Radius = 0.600000023841858
+          Radius = 0.600000023841857900
         end
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 60
+      DepthOfView = 100.000000000000000000
+      FocalLength = 60.000000000000000000
       TargetObject = DCCentral
       Position.Coordinates = {0000A04000002040000020400000803F}
       Left = 240

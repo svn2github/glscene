@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 221
   Top = 109
-  Width = 355
-  Height = 381
+  Width = 361
+  Height = 385
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -29,6 +29,8 @@ object Form1: TForm1
     Width = 329
     Height = 297
     Camera = GLCamera1
+    FieldOfView = 102.117973327636700000
+    TabOrder = 1
   end
   object CBAnimate: TCheckBox
     Left = 200
@@ -45,13 +47,13 @@ object Form1: TForm1
     object Cube1: TGLCube
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00007041000020410000E0400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 120
+      DepthOfView = 100.000000000000000000
+      FocalLength = 120.000000000000000000
       TargetObject = Cube1
       Position.Coordinates = {0000A04000008040000040400000803F}
       Left = 208

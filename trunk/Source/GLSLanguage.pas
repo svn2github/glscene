@@ -223,7 +223,6 @@ end;
  *}
 function TLanguage.Translate(const ID: AnsiString): UTF8String;
 var
-  E:  integer; // entry
   EntryIndex: integer;
 begin
   // fallback result in case Text is not a known ID

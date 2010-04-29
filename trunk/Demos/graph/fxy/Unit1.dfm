@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 179
   Top = 106
-  Width = 497
-  Height = 332
+  Width = 505
+  Height = 343
   AutoSize = True
   BorderWidth = 4
   Caption = 'Form1'
@@ -32,6 +32,7 @@ object Form1: TForm1
     FieldOfView = 99.821952819824220000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CBCentered: TCheckBox
     Left = 384
@@ -59,7 +60,6 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object HeightField1: TGLHeightField
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Direction.Coordinates = {0044F4970000803F2EBD3BB300000000}
       ShowAxes = True
       Up.Coordinates = {0000803F583DAF262EBD3B3300000000}

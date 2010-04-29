@@ -17,18 +17,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 33
-    Width = 502
-    Height = 416
+    Width = 494
+    Height = 409
     Camera = GLCamera1
     Buffer.BackgroundColor = 4194304
+    FieldOfView = 152.521591186523400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 502
+    Width = 494
     Height = 33
     Align = alTop
     Caption = ' '
@@ -45,39 +47,31 @@ object Form1: TForm1
       Top = 4
       Width = 133
       Height = 25
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 1
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 0
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
   end
   object GLScene1: TGLScene
     Left = 60
     Top = 36
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00000000E1A22B41000000000000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLSphere1: TGLSphere
-      Material.TextureEx = <>
       Position.Coordinates = {000000008E2EBA3F8C2EBA3E0000803F}
-      Radius = 0.5
+      Radius = 0.500000000000000000
     end
     object Room: TGLSphere
-      Material.FrontProperties.PolygonMode = pmLines
-      Material.TextureEx = <>
+      Material.PolygonMode = pmLines
       Up.Coordinates = {000000000000803F0000008000000000}
       NormalDirection = ndInside
-      Radius = 8
+      Radius = 8.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Room
       Position.Coordinates = {CFBD804073312F409AF80A410000803F}
       Direction.Coordinates = {82FABBBE331FC9BE96D857BF00000000}

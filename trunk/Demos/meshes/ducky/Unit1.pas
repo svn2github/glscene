@@ -99,10 +99,10 @@ procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   with GLActor1.Material do begin
     if Checkbox1.Checked then begin
-      FrontProperties.PolygonMode:=pmLines;
+      PolygonMode:=pmLines;
       FaceCulling:=fcNoCull;
     end else begin
-      FrontProperties.PolygonMode:=pmFill;
+      PolygonMode:=pmFill;
       FaceCulling:=fcBufferDefault;
     end;
   end;

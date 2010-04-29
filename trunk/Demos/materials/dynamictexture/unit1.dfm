@@ -19,12 +19,13 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 591
-    Height = 379
+    Width = 583
+    Height = 368
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
-    FieldOfView = 150.438476562500000000
+    FieldOfView = 149.595184326171900000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 544

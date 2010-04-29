@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 74
   Top = 84
-  Width = 706
-  Height = 453
+  Width = 717
+  Height = 460
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,8 +13,8 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
-    698
-    424)
+    701
+    422)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -33,7 +33,7 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 304
     Top = 8
-    Width = 62
+    Width = 61
     Height = 18
     Caption = '3D View'
     Font.Charset = ANSI_CHARSET
@@ -61,14 +61,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 296
     Top = 32
-    Width = 393
-    Height = 385
+    Width = 421
+    Height = 409
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {00000000000000008180003F0000803F}
-    Buffer.FogEnvironment.FogStart = 1
-    Buffer.FogEnvironment.FogEnd = 10
+    Buffer.FogEnvironment.FogStart = 1.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 10.000000000000000000
     Buffer.BackgroundColor = clNavy
+    FieldOfView = 152.521591186523400000
     Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 0
   end
   object BUForward: TButton
     Left = 96
@@ -153,16 +155,16 @@ object Form1: TForm1
     Left = 488
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000048420000C8420000C8420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {00000000000000000000C0400000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         Position.Coordinates = {000000000000003F000000000000803F}
         Up.Coordinates = {000000800000803F0000000000000000}
         Left = 264
@@ -171,7 +173,6 @@ object Form1: TForm1
     end
     object Portal1: TGLPortal
       Position.Coordinates = {00000000000000BF000000000000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       MaterialLibrary = GLMaterialLibrary1
     end
   end
