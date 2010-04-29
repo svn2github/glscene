@@ -9,6 +9,7 @@
 unit FMaterialEditorFormLCL;
 
 interface
+
 {$MODE DELPHI}
 {$i GLScene.inc}
 
@@ -17,14 +18,19 @@ uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF} FRTrackBarEditLCL, Forms,
   FRColorEditorLCL, ComCtrls, FRFaceEditorLCL, StdCtrls, Controls,
   Graphics,
-  Classes, Buttons, TypInfo, FRTextureEditLCL, 
+  Classes, Buttons, TypInfo, FRTextureEditLCL,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
   GLGeomObjects, GLColor, GLLCLViewer, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLMaterial
-  ,lresources;
+  GLCrossPlatform, BaseClasses, GLMaterial, GLState,
+  LResources;
 
 type
+
+  { TMaterialEditorForm }
+
   TMaterialEditorForm = class(TForm)
+    CBPolygonMode: TComboBox;
+    Label2: TLabel;
     PageControl1: TPageControl;
     TSFront: TTabSheet;
     TSBack: TTabSheet;
@@ -52,146 +58,160 @@ type
     GLMaterialLibrary: TGLMaterialLibrary;
     procedure CBObjectChange(Sender: TObject);
     procedure CBBackgroundChange(Sender: TObject);
-    procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
     procedure SceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure SceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure OnMaterialChanged(Sender : TObject);
+      WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
+    procedure OnMaterialChanged(Sender: TObject);
   private
     { Diclarations privies }
     function GetMaterial: TGLMaterial;
     procedure SetMaterial(const Value: TGLMaterial);
   public
     { Diclarations publiques }
-    constructor Create(AOwner : TComponent); override;
-    function Execute(var amaterial : TGLMaterial) : Boolean;
-    property Material : TGLMaterial read GetMaterial write SetMaterial;
+    constructor Create(AOwner: TComponent); override;
+    function Execute(var amaterial: TGLMaterial): boolean;
+    property Material: TGLMaterial read GetMaterial write SetMaterial;
   end;
 
-function MaterialEditorForm : TMaterialEditorForm;
+function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
 implementation
 
 var
-	vMaterialEditorForm : TMaterialEditorForm;
-        FEFront: TRFaceEditor;
-        FEBack: TRFaceEditor;
-        MX, MY: Integer;
+  vMaterialEditorForm: TMaterialEditorForm;
+  FEFront: TRFaceEditor;
+  FEBack: TRFaceEditor;
+  MX, MY: integer;
 
-function MaterialEditorForm : TMaterialEditorForm;
+function MaterialEditorForm: TMaterialEditorForm;
 begin
-	if not Assigned(vMaterialEditorForm) then
-	   vMaterialEditorForm:=TMaterialEditorForm.Create(nil);
-	Result:=vMaterialEditorForm;
+  if not Assigned(vMaterialEditorForm) then
+    vMaterialEditorForm := TMaterialEditorForm.Create(nil);
+  Result := vMaterialEditorForm;
 end;
 
 procedure ReleaseMaterialEditorForm;
 begin
-	if Assigned(vMaterialEditorForm) then begin
-	   vMaterialEditorForm.Free; vMaterialEditorForm:=nil;
-	end;
+  if Assigned(vMaterialEditorForm) then
+  begin
+    vMaterialEditorForm.Free;
+    vMaterialEditorForm := nil;
+  end;
 end;
 
 // Create
-//
-constructor TMaterialEditorForm.Create(AOwner : TComponent);
+
+constructor TMaterialEditorForm.Create(AOwner: TComponent);
 var
-  I: Integer;
+  I: integer;
 begin
-	inherited;
-  for i := 0 to Integer(High(TBlendingMode)) do
+  inherited;
+  for i := 0 to integer(High(TBlendingMode)) do
     CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
-    FEFront:= TRFaceEditor.Create(self);
-    FEFront.Parent := TSFront;
-    FEFront.Name:='FEFront';
-    FEFront.Align:=alClient;
+  for i := 0 to integer(High(TPolygonMode)) do
+    CBPolygonMode.Items.Add(GetEnumName(TypeInfo(TPolygonMode), i));
+  FEFront := TRFaceEditor.Create(self);
+  FEFront.Parent := TSFront;
+  FEFront.Name := 'FEFront';
+  FEFront.Align := alClient;
 
-    FEBack:= TRFaceEditor.Create(self);
-    FEBack.Parent := TSBack;
-    FEBack.Name:='FEBack';
-    FEBack.Align:=alClient;
+  FEBack := TRFaceEditor.Create(self);
+  FEBack.Parent := TSBack;
+  FEBack.Name := 'FEBack';
+  FEBack.Align := alClient;
 
-    FEFront.OnChange:=OnMaterialChanged;
-    FEBack.OnChange:=OnMaterialChanged;
-    RTextureEdit.OnChange:=OnMaterialChanged;
+  FEFront.OnChange := OnMaterialChanged;
+  FEBack.OnChange := OnMaterialChanged;
+  RTextureEdit.OnChange := OnMaterialChanged;
 
-    BackGroundSprite.Position.X := SceneViewer.Width div 2;
-    BackGroundSprite.Position.Y := SceneViewer.Height div 2;
-    BackGroundSprite.Width := SceneViewer.Width;
-    BackGroundSprite.Height := SceneViewer.Height;
+  BackGroundSprite.Position.X := SceneViewer.Width div 2;
+  BackGroundSprite.Position.Y := SceneViewer.Height div 2;
+  BackGroundSprite.Width := SceneViewer.Width;
+  BackGroundSprite.Height := SceneViewer.Height;
 
-    CBObject.ItemIndex:=0;     CBObjectChange(Self);
-    CBBackground.ItemIndex:=0; CBBackgroundChange(Self);
+  CBObject.ItemIndex := 0;
+  CBObjectChange(Self);
+  CBBackground.ItemIndex := 0;
+  CBBackgroundChange(Self);
 end;
 
 // Execute
-//
-function TMaterialEditorForm.Execute(var amaterial : TGLMaterial) : Boolean;
+
+function TMaterialEditorForm.Execute(var amaterial: TGLMaterial): boolean;
 begin
-   with amaterial do begin
-      FEFront.FaceProperties:=FrontProperties;
-		FEBack.FaceProperties:=BackProperties;
-		RTextureEdit.Texture:=Texture;
-      CBBlending.ItemIndex:=Integer(BlendingMode);
-	end;
-	Self.Material:=material;
-	Result:=(ShowModal=mrOk);
-	if Result then with material do begin
-		FrontProperties:=FEFront.FaceProperties;
-		BackProperties:=FEBack.FaceProperties;
-		Texture:=RTextureEdit.Texture;
-      BlendingMode:=TBlendingMode(CBBlending.ItemIndex);
-	end;
+  with amaterial do
+  begin
+    FEFront.FaceProperties := FrontProperties;
+    FEBack.FaceProperties := BackProperties;
+    RTextureEdit.Texture := Texture;
+    CBBlending.ItemIndex := Integer(BlendingMode);
+    CBPolygonMode.ItemIndex := Integer(PolygonMode);
+  end;
+  Self.Material := material;
+  Result := (ShowModal = mrOk);
+  if Result then
+    with material do
+    begin
+      FrontProperties := FEFront.FaceProperties;
+      BackProperties := FEBack.FaceProperties;
+      Texture := RTextureEdit.Texture;
+      BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+      PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+    end;
 end;
 
 // OnMaterialChanged
-//
-procedure TMaterialEditorForm.OnMaterialChanged(Sender : TObject);
+
+procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
-   with Self.Material do begin
-      FrontProperties:=FEFront.FaceProperties;
-		BackProperties:=FEBack.FaceProperties;
-		Texture:=RTextureEdit.Texture;
-      BlendingMode:=TBlendingMode(CBBlending.ItemIndex);
-	end;
- // MPPreview.Render;
+  with Self.Material do
+  begin
+    FrontProperties := FEFront.FaceProperties;
+    BackProperties := FEBack.FaceProperties;
+    Texture := RTextureEdit.Texture;
+    BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+    PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+  end;
+  // MPPreview.Render;
 end;
 
 procedure TMaterialEditorForm.CBObjectChange(Sender: TObject);
 var
-   i : Integer;
+  i: integer;
 begin
-   i:=CBObject.ItemIndex;
-   Cube.Visible   := I = 0;
-   Sphere.Visible := I = 1;
-   Cone.Visible   := I = 2;
-   Teapot.Visible := I = 3;
+  i := CBObject.ItemIndex;
+  Cube.Visible := I = 0;
+  Sphere.Visible := I = 1;
+  Cone.Visible := I = 2;
+  Teapot.Visible := I = 3;
 end;
 
 procedure TMaterialEditorForm.CBBackgroundChange(Sender: TObject);
 var
-   bgColor : TColor;
+  bgColor: TColor;
 begin
-   case CBBackground.ItemIndex of
-      1 : bgColor:=clWhite;
-      2 : bgColor:=clBlack;
-      3 : bgColor:=clBlue;
-      4 : bgColor:=clRed;
-      5 : bgColor:=clGreen;
-   else
-      bgColor:=clNone;
-   end;
-   with BackGroundSprite.Material do begin
-      Texture.Disabled:=(bgColor<>clNone);
-      FrontProperties.Diffuse.Color:=ConvertWinColor(bgColor);
-   end;
+  case CBBackground.ItemIndex of
+    1: bgColor := clWhite;
+    2: bgColor := clBlack;
+    3: bgColor := clBlue;
+    4: bgColor := clRed;
+    5: bgColor := clGreen;
+    else
+      bgColor := clNone;
+  end;
+  with BackGroundSprite.Material do
+  begin
+    Texture.Disabled := (bgColor <> clNone);
+    FrontProperties.Diffuse.Color := ConvertWinColor(bgColor);
+  end;
 end;
 
 procedure TMaterialEditorForm.SceneViewerMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 begin
   if (ssRight in Shift) and (ssLeft in Shift) then
     Camera.AdjustDistanceToTarget(1 - 0.01 * (MY - Y))
@@ -204,15 +224,14 @@ begin
 end;
 
 procedure TMaterialEditorForm.SceneViewerMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+  Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   MX := X;
   MY := Y;
 end;
 
 procedure TMaterialEditorForm.SceneViewerMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
-  var Handled: Boolean);
+  Shift: TShiftState; WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
 begin
   Camera.AdjustDistanceToTarget(1 - 0.1 * (Abs(WheelDelta) / WheelDelta));
 end;
@@ -232,17 +251,15 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
   {$i FMaterialEditorFormLCL.lrs}
 
 finalization
 
-   ReleaseMaterialEditorForm;
+  ReleaseMaterialEditorForm;
 
 end.
-
-
 

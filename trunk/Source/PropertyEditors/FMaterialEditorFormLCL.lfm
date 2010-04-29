@@ -14,7 +14,7 @@ object MaterialEditorForm: TMaterialEditorForm
   object Label1: TLabel
     Left = 8
     Height = 14
-    Top = 232
+    Top = 259
     Width = 72
     Caption = 'Blending Mode'
     ParentColor = False
@@ -119,7 +119,7 @@ object MaterialEditorForm: TMaterialEditorForm
   object CBBlending: TComboBox
     Left = 88
     Height = 21
-    Top = 229
+    Top = 256
     Width = 145
     ItemHeight = 13
     OnChange = OnMaterialChanged
@@ -171,6 +171,28 @@ object MaterialEditorForm: TMaterialEditorForm
     OnMouseMove = SceneViewerMouseMove
     OnMouseWheel = SceneViewerMouseWheel
     TabOrder = 7
+  end
+  object CBPolygonMode: TComboBox
+    Left = 88
+    Height = 21
+    Top = 228
+    Width = 146
+    ItemHeight = 13
+    ItemIndex = 0
+    Items.Strings = (
+      ''
+    )
+    OnChange = OnMaterialChanged
+    Style = csDropDownList
+    TabOrder = 8
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 14
+    Top = 232
+    Width = 68
+    Caption = 'Polygon mode'
+    ParentColor = False
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone

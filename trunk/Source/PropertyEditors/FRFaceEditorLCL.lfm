@@ -9,18 +9,10 @@ object RFaceEditor: TRFaceEditor
   TabOrder = 0
   object Label1: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 6
-    Width = 45
+    Width = 50
     Caption = 'Shininess'
-    ParentColor = False
-  end
-  object Label2: TLabel
-    Left = 0
-    Height = 14
-    Top = 32
-    Width = 68
-    Caption = 'Polygon mode'
     ParentColor = False
   end
   object PageControl: TPageControl
@@ -34,7 +26,7 @@ object RFaceEditor: TRFaceEditor
     TabOrder = 0
     object TSAmbient: TTabSheet
       Caption = 'Ambient'
-      ClientHeight = 103
+      ClientHeight = 102
       ClientWidth = 297
       inline CEAmbiant: TRColorEditor
       end
@@ -66,22 +58,12 @@ object RFaceEditor: TRFaceEditor
   end
   inline TBEShininess: TRTrackBarEdit
     Left = 52
+    Height = 23
+    ClientHeight = 23
     TabOrder = 1
-  end
-  object CBPolygonMode: TComboBox
-    Left = 80
-    Height = 21
-    Top = 28
-    Width = 89
-    ItemHeight = 13
-    Items.Strings = (
-      'pmFill'
-      'pmLines'
-      'pmPoints'
-    )
-    OnChange = CBPolygonModeChange
-    Style = csDropDownList
-    TabOrder = 2
+    inherited Edit: TEdit
+      Height = 23
+    end
   end
   object ImageList: TImageList
     left = 264
