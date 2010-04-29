@@ -4,6 +4,7 @@
 {: GLFileJPEG<p>
 
   <b>History : </b><font size=-1><ul>
+      <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
       <li>27/02/10 - Yar - Creation
   </ul><p>
 }
@@ -36,8 +37,8 @@ type
 
     {: Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLenum;
-      textureTarget: TGLenum;
+      const textureHandle: TGLuint;
+      textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); override;
 
@@ -191,20 +192,18 @@ begin
         LinesPerCall := 1; // dabei wird's wohl einstweilen bleiben...
 
       if jc.d.buffered_image then
-        // progressiv. Decoding mit Min Quality (= max speed)
       begin
+        // progressiv. Decoding mit Min Quality (= max speed)
         while jpeg_consume_input(@jc.d) <> JPEG_REACHED_EOI do
         begin
           jpeg_start_output(@jc.d, jc.d.input_scan_number);
           // ein kompletter Pass. Reset Oberkante progressives Display
-          DestScanLine := fData;
-          while (jc.d.output_scanline < jc.d.output_height) do
+          while jc.d.output_scanline < jc.d.output_height do
           begin
-            LinesRead := jpeg_read_scanlines(@jc.d, @DestScanline,
-              LinesPerCall);
-            Inc(Integer(DestScanline), PtrInc * LinesRead);
-            if FAbortLoading then
-              Exit;
+            integer(DestScanLine) := integer(fData) +
+              (jc.d.output_height - jc.d.output_scanline - 1) * fWidth *
+                fElementSize;
+            jpeg_read_scanlines(@jc.d, @DestScanLine, LinesPerCall);
           end;
           jpeg_finish_output(@jc.d);
         end;
@@ -218,6 +217,15 @@ begin
         end;
         jpeg_start_output(@jc.d, jc.d.input_scan_number);
         DestScanLine := fData;
+      end;
+
+      // letzter Pass für progressive JPGs, erster & einziger für Baseline-JPGs
+      while (jc.d.output_scanline < jc.d.output_height) do
+      begin
+        integer(DestScanLine) := integer(fData) +
+          (jc.d.output_height - jc.d.output_scanline - 1) * fWidth *
+            fElementSize;
+        jpeg_read_scanlines(@jc.d, @DestScanline, LinesPerCall);
       end;
 
       // letzter Pass für progressive JPGs, erster & einziger für Baseline-JPGs
@@ -250,8 +258,8 @@ end;
 //
 
 procedure TGLJPEGImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLenum;
-  textureTarget: TGLenum;
+  const textureHandle: TGLuint;
+  textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
   const intFormat: TGLInternalFormat);
 begin
@@ -272,7 +280,7 @@ initialization
     TGLJPEGImage);
   RegisterRasterFormat('jpeg', 'Joint Photographic Experts Group Image',
     TGLJPEGImage);
-   RegisterRasterFormat('jpe', 'Joint Photographic Experts Group Image',
+  RegisterRasterFormat('jpe', 'Joint Photographic Experts Group Image',
     TGLJPEGImage);
 end.
 
