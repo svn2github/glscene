@@ -20,12 +20,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 582
-    Height = 448
+    Width = 574
+    Height = 437
     Camera = ThirdPersonCamera
     Buffer.BackgroundColor = clBlack
     Buffer.ShadeModel = smSmooth
+    FieldOfView = 154.221511840820300000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 144
@@ -39,8 +41,6 @@ object Form1: TForm1
           0201060F54474C424650534D6F76656D656E740200020002000F6666263F0909
           060A4D6F764D616E61676572}
         object PlayerSphere: TGLSphere
-          Material.BackProperties.PolygonMode = pmLines
-          Material.FrontProperties.PolygonMode = pmLines
           Radius = 0.649999976158142100
         end
         object FirstPersonCamera: TGLCamera
@@ -58,6 +58,7 @@ object Form1: TForm1
         end
         object GLLightSource1: TGLLightSource
           ConstAttenuation = 1.000000000000000000
+          Diffuse.Color = {3333733F3333733F3333733F0000803F}
           SpotCutOff = 180.000000000000000000
         end
         object PlayerCentre: TGLSphere
@@ -73,14 +74,14 @@ object Form1: TForm1
           Radius = 0.050000000745058060
         end
         object BotSphere: TGLSphere
-          Material.BackProperties.PolygonMode = pmLines
-          Material.FrontProperties.PolygonMode = pmLines
+          Material.MaterialOptions = [moNoLighting]
           Material.FaceCulling = fcNoCull
           Radius = 0.400000005960464500
         end
       end
       object GLLight: TGLLightSource
         ConstAttenuation = 1.000000000000000000
+        Diffuse.Color = {3333733F3333733F3333733F0000803F}
         SpotCutOff = 180.000000000000000000
       end
       object Map1: TGLFreeForm
@@ -229,12 +230,9 @@ object Form1: TForm1
     Top = 80
   end
   object Navigator1: TGLNavigator
-    MoveUpWhenMovingForward = False
-    InvertHorizontalSteeringWhenUpsideDown = False
     VirtualUp.Coordinates = {000000000000803F000000000000803F}
     UseVirtualUp = True
     AutoUpdateObject = True
-    AngleLock = False
     Left = 144
     Top = 136
   end

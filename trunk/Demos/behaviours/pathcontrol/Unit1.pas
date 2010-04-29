@@ -10,7 +10,8 @@ interface
 uses
   Windows, Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
   Classes, Controls, GLCadencer, GLBehaviours, Buttons, GLGraph, GLMovement,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, GLUtils;
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, GLUtils,
+  GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)
@@ -24,6 +25,7 @@ type
     MoveBtn: TBitBtn;
     Timer1: TTimer;
     Sphere1: TGLSphere;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormActivate(Sender: TObject);
     procedure MoveBtnClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);

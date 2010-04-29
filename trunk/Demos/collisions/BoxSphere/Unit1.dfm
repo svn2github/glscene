@@ -21,19 +21,20 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 180
     Top = 0
-    Width = 380
-    Height = 487
+    Width = 372
+    Height = 476
     Camera = GLCamera1
-    FieldOfView = 150.512878417968800000
+    FieldOfView = 149.907211303710900000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
+    TabOrder = 0
   end
   object Panel2: TPanel
     Left = 0
     Top = 0
     Width = 180
-    Height = 487
+    Height = 476
     Align = alLeft
     TabOrder = 1
     object Label5: TLabel
@@ -350,7 +351,7 @@ object Form1: TForm1
     end
     object GLSphere2: TGLSphere
       Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
-      Material.FrontProperties.PolygonMode = pmLines
+      Material.PolygonMode = pmLines
       Radius = 0.500000000000000000
     end
     object GLXYZGrid1: TGLXYZGrid

@@ -96,14 +96,12 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    caption:=Format('%.1f FPS',[GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
-//   caption:=GLCamera1.Position.AsString;
 end;
 
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-//  if Key=Ord('R') then resetScene;
   if Key=VK_ESCAPE then Halt;
 
   //show/hide arrows
@@ -122,16 +120,16 @@ begin
     if WireFrame then
     begin
       Map1.UseMeshMaterials:=false;
-      Map1.Material.FrontProperties.PolygonMode:=pmLines;
+      Map1.Material.PolygonMode:=pmLines;
       map2.UseMeshMaterials:= false;
-      Map2.Material.FrontProperties.PolygonMode:=pmLines;
+      Map2.Material.PolygonMode:=pmLines;
     end
     else
     begin
       Map1.UseMeshMaterials:=true;
-      Map1.Material.FrontProperties.PolygonMode:=pmFill;
+      Map1.Material.PolygonMode:=pmFill;
       Map2.UseMeshMaterials:=true;
-      Map2.Material.FrontProperties.PolygonMode:=pmFill;
+      Map2.Material.PolygonMode:=pmFill;
     end;
   end;
 end;
