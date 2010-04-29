@@ -1810,16 +1810,16 @@ initialization
 
 {$IFDEF GLS_EXPERIMENTAL}
       // Experemental objects
-      RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xCube, 'Forward Cube', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xSphere, 'Forward Sphere', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xGeoSphere, 'Forward Geodesic Sphere', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xDisk, 'Forward Disk', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperemental, HInstance);
-      RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh', glsOCExperemental, HInstance);
+      RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xCube, 'Forward Cube', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xSphere, 'Forward Sphere', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xGeoSphere, 'Forward Geodesic Sphere', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xDisk, 'Forward Disk', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xAtmosphere, 'Forward Atmosphere', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperimental, HInstance);
+      RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh', glsOCExperimental, HInstance);
 {$ENDIF}
    end;
 
