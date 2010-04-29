@@ -8,6 +8,7 @@
   then call UserLog function from any module.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>29/04/10 - Yar - Added auto openning log when error's limit exceeded
       <li>02/04/10 - Yar - Added properties TimeFormat, LogLevels to TGLSLogger
                            Added function UserLog. GLS_LOGGING now only turn on inner GLScene logger
       <li>24/03/10 - Yar - Added TGLSLogger component,
@@ -30,7 +31,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, Dialogs, GLCrossPlatform
+  Classes, SysUtils, Dialogs, GLCrossPlatform, Forms
+{$IFNDEF FPC} ,ShellApi {$ENDIF}
 {$IFDEF MSWINDOWS} , Windows{$ENDIF}
   ;
 
@@ -71,13 +73,16 @@ type
   TLogSession = class
   private
     LogFile: Text;
+    LogFileName: string;
     FLogLevels: TLogLevels;
 {$IFDEF GLS_MULTITHREAD}
     CriticalSection: _RTL_CRITICAL_SECTION;
 {$ENDIF}
     LogKindCount: array[TLogLevel] of Integer;
     procedure SetMode(NewMode: TLogLevels);
+{$IFNDEF GLS_LOGGING}
     constructor OnlyCreate;
+{$ENDIF}
   protected
     {: Log mode titles }
     ModeTitles: array[TLogLevel] of string;
@@ -317,9 +322,10 @@ begin
   ModeTitles[lkFatalError] := 'fatal errors';
 
   if Pos(':', FileName) > 0 then
-    AssignFile(LogFile, Filename)
+    LogFileName := Filename
   else
-    AssignFile(LogFile, IncludeTrailingPathDelimiter(GetCurrentDir) + Filename);
+    LogFileName := IncludeTrailingPathDelimiter(GetCurrentDir) + Filename;
+  AssignFile(LogFile, LogFileName);
 {$I-}
   Rewrite(LogFile);
   CloseFile(LogFile);
@@ -343,10 +349,12 @@ begin
     LogKindCount[TLogLevel(i)] := 0;
 end;
 
+{$IFNDEF GLS_LOGGING}
 constructor TLogSession.OnlyCreate;
 begin
   inherited;
 end;
+{$ENDIF}
 
 destructor TLogSession.Shutdown;
 begin
@@ -361,6 +369,16 @@ begin
     ', infos: ' + IntToStr(LogKindCount[lkInfo]) +
     ', debug info: ' + IntToStr(LogKindCount[lkDebug]));
   Log('Log session shutdown');
+{$IFNDEF FPC}
+  if LogKindCount[lkFatalError] + LogKindCount[lkError] > 0 then
+      ShellExecute(
+        0,
+        'open',
+        'C:\WINDOWS\notepad.exe',
+        PChar(LogFileName),
+        nil,
+        SW_SHOWNORMAL);
+{$ENDIF}
   if Self = GLSLogger then
     GLSLogger := nil;
 {$IFDEF GLS_MULTITHREAD}
@@ -436,11 +454,23 @@ begin
   end;
   CloseFile(LogFile);
   Inc(LogKindCount[Level]);
-  if llMessageLimit[Level] < LogKindCount[Level] then
+  if llMessageLimit[Level] = LogKindCount[Level] then
   begin
     // Show information (window)
     MessageDlg('Exceeded the number of messages in log!', mtError, [mbOk], 0);
-    Halt;
+    if not (csDesigning in Application.ComponentState) then
+    begin
+{$IFNDEF FPC}
+      ShellExecute(
+        0,
+        'open',
+        'C:\WINDOWS\notepad.exe',
+        PChar(LogFileName),
+        nil,
+        SW_SHOWNORMAL);
+{$ENDIF}
+      Halt;
+    end;
   end;
 end;
 
