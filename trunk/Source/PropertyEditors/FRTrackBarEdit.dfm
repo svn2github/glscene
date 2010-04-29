@@ -11,16 +11,11 @@ object RTrackBarEdit: TRTrackBarEdit
     Width = 150
     Height = 20
     Max = 255
-    Orientation = trHorizontal
     PageSize = 10
     Frequency = 32
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 0
     ThumbLength = 10
     TickMarks = tmTopLeft
-    TickStyle = tsAuto
     OnChange = TrackBarChange
   end
   object Edit: TEdit

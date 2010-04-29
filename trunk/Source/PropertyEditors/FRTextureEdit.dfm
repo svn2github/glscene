@@ -12,7 +12,7 @@ object RTextureEdit: TRTextureEdit
   object Label2: TLabel
     Left = 0
     Top = 1
-    Width = 29
+    Width = 30
     Height = 13
     Caption = 'Image'
   end
@@ -29,35 +29,35 @@ object RTextureEdit: TRTextureEdit
   object Label3: TLabel
     Left = 0
     Top = 52
-    Width = 43
+    Width = 44
     Height = 13
     Caption = 'MagFilter'
   end
   object Label4: TLabel
     Left = 0
     Top = 76
-    Width = 39
+    Width = 40
     Height = 13
     Caption = 'MinFilter'
   end
   object Label1: TLabel
     Left = 0
     Top = 100
-    Width = 66
+    Width = 67
     Height = 13
     Caption = 'Texture Mode'
   end
   object Label5: TLabel
     Left = 0
     Top = 124
-    Width = 65
+    Width = 67
     Height = 13
     Caption = 'Texture Wrap'
   end
   object Label6: TLabel
     Left = 0
     Top = 28
-    Width = 56
+    Width = 57
     Height = 13
     Caption = 'ImageAlpha'
   end
@@ -67,7 +67,6 @@ object RTextureEdit: TRTextureEdit
     Width = 154
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CBMagFilterChange
   end
@@ -77,7 +76,6 @@ object RTextureEdit: TRTextureEdit
     Width = 154
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 1
     OnChange = CBMinFilterChange
   end
@@ -87,7 +85,6 @@ object RTextureEdit: TRTextureEdit
     Width = 154
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = CBTextureModeChange
   end
@@ -97,7 +94,6 @@ object RTextureEdit: TRTextureEdit
     Width = 154
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 3
     OnChange = CBTextureWrapChange
   end
@@ -117,7 +113,6 @@ object RTextureEdit: TRTextureEdit
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 5
     OnChange = CBImageClassChange
   end
@@ -127,7 +122,6 @@ object RTextureEdit: TRTextureEdit
     Width = 154
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 6
     OnChange = CBImageAlphaChange
   end

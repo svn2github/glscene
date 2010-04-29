@@ -8,16 +8,9 @@ object RFaceEditor: TRFaceEditor
   object Label1: TLabel
     Left = 0
     Top = 6
-    Width = 45
+    Width = 44
     Height = 13
     Caption = 'Shininess'
-  end
-  object Label2: TLabel
-    Left = 0
-    Top = 32
-    Width = 67
-    Height = 13
-    Caption = 'Polygon mode'
   end
   object PageControl: TPageControl
     Left = 0
@@ -32,6 +25,12 @@ object RFaceEditor: TRFaceEditor
       BorderWidth = 3
       Caption = 'Ambient'
       inline CEAmbiant: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSDiffuse: TTabSheet
@@ -39,6 +38,12 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Diffuse'
       ImageIndex = 1
       inline CEDiffuse: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSEmission: TTabSheet
@@ -46,6 +51,12 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Emission'
       ImageIndex = 2
       inline CEEmission: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSSpecular: TTabSheet
@@ -53,14 +64,25 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Specular'
       ImageIndex = 3
       inline CESpecular: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
   end
   inline TBEShininess: TRTrackBarEdit
     Left = 52
+    Top = 0
     Width = 201
     Height = 21
+    AutoSize = True
     TabOrder = 1
+    ExplicitLeft = 52
+    ExplicitWidth = 201
+    ExplicitHeight = 21
     inherited TrackBar: TTrackBar
       Max = 128
       Frequency = 16
@@ -68,21 +90,8 @@ object RFaceEditor: TRFaceEditor
     end
     inherited Edit: TEdit
       Left = 160
+      ExplicitLeft = 160
     end
-  end
-  object CBPolygonMode: TComboBox
-    Left = 80
-    Top = 28
-    Width = 89
-    Height = 21
-    Style = csDropDownList
-    ItemHeight = 13
-    TabOrder = 2
-    OnChange = CBPolygonModeChange
-    Items.Strings = (
-      'pmFill'
-      'pmLines'
-      'pmPoints')
   end
   object ImageList: TImageList
     Left = 264

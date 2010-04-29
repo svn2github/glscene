@@ -15,6 +15,7 @@ object RMaterialPreview: TRMaterialPreview
     OnMouseDown = SceneViewerMouseDown
     OnMouseMove = SceneViewerMouseMove
     OnMouseWheel = SceneViewerMouseWheel
+    TabOrder = 0
   end
   object CBObject: TComboBox
     Left = 0
@@ -22,7 +23,6 @@ object RMaterialPreview: TRMaterialPreview
     Width = 60
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 1
     OnChange = CBObjectChange
     Items.Strings = (
@@ -37,7 +37,6 @@ object RMaterialPreview: TRMaterialPreview
     Width = 142
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = CBBackgroundChange
     Items.Strings = (

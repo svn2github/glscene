@@ -4,8 +4,7 @@
 	Allows choosing a material in a material library<p>
 
     <b>Historique : </b><font size=-1><ul>
-      <li>24/03/10 - Yar - Fix for Unix-based systems
-                           (thanks to Rustam Asmandiarov aka Predator)
+
     </ul></font>
 }
 
@@ -226,6 +225,5 @@ finalization
    ReleaseLibMaterialPicker;
 
 end.
-
 
 

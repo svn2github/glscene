@@ -155,7 +155,6 @@ object RColorEditor: TRColorEditor
     OnChange = AlphaEditChange
   end
   object ColorDialog: TColorDialog
-    Ctl3D = True
     Left = 8
     Top = 8
   end

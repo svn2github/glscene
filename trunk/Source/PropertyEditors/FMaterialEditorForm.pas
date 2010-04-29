@@ -3,7 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>05/10/08 - DanB - Removed Kylix support   
+      <li>05/10/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
                              (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
@@ -16,15 +16,29 @@ unit FMaterialEditorForm;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
-  Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls,
-  Classes, GLTexture, Buttons, TypInfo, FRTextureEdit, GLViewer, GLMaterial;
+  Windows,
+  Forms,
+  FRMaterialPreview,
+  FRColorEditor,
+  ComCtrls,
+  FRFaceEditor,
+  StdCtrls,
+  Controls,
+  Classes,
+  GLTexture,
+  Buttons,
+  TypInfo,
+  FRTextureEdit,
+  GLViewer,
+  GLMaterial,
+  GLState;
 
 type
   TMaterialEditorForm = class(TForm)
-	 PageControl1: TPageControl;
+    PageControl1: TPageControl;
     TSFront: TTabSheet;
     TSBack: TTabSheet;
     TSTexture: TTabSheet;
@@ -37,17 +51,19 @@ type
     RTextureEdit: TRTextureEdit;
     CBBlending: TComboBox;
     Label1: TLabel;
-    procedure OnMaterialChanged(Sender : TObject);
+    Label2: TLabel;
+    CBPolygonMode: TComboBox;
+    procedure OnMaterialChanged(Sender: TObject);
   private
     { Déclarations privées }
   public
     { Déclarations publiques }
-    constructor Create(AOwner : TComponent); override;
+    constructor Create(AOwner: TComponent); override;
 
-	 function Execute(material : TGLMaterial) : Boolean;
+    function Execute(material: TGLMaterial): Boolean;
   end;
 
-function MaterialEditorForm : TMaterialEditorForm;
+function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
 implementation
@@ -55,83 +71,92 @@ implementation
 {$R *.dfm}
 
 var
-	vMaterialEditorForm : TMaterialEditorForm;
+  vMaterialEditorForm: TMaterialEditorForm;
 
-function MaterialEditorForm : TMaterialEditorForm;
+function MaterialEditorForm: TMaterialEditorForm;
 begin
-	if not Assigned(vMaterialEditorForm) then
-	   vMaterialEditorForm:=TMaterialEditorForm.Create(nil);
-	Result:=vMaterialEditorForm;
+  if not Assigned(vMaterialEditorForm) then
+    vMaterialEditorForm := TMaterialEditorForm.Create(nil);
+  Result := vMaterialEditorForm;
 end;
 
 procedure ReleaseMaterialEditorForm;
 begin
-	if Assigned(vMaterialEditorForm) then begin
-	   vMaterialEditorForm.Free; vMaterialEditorForm:=nil;
-	end;
+  if Assigned(vMaterialEditorForm) then
+  begin
+    vMaterialEditorForm.Free;
+    vMaterialEditorForm := nil;
+  end;
 end;
 
 // Create
 //
-constructor TMaterialEditorForm.Create(AOwner : TComponent);
+
+constructor TMaterialEditorForm.Create(AOwner: TComponent);
 var
   I: Integer;
 begin
-	inherited;
+  inherited;
   for i := 0 to Integer(High(TBlendingMode)) do
     CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
 
-	FEFront.OnChange:=OnMaterialChanged;
-	FEBack.OnChange:=OnMaterialChanged;
-	RTextureEdit.OnChange:=OnMaterialChanged;
+  FEFront.OnChange := OnMaterialChanged;
+  FEBack.OnChange := OnMaterialChanged;
+  RTextureEdit.OnChange := OnMaterialChanged;
 end;
 
 // Execute
 //
-function TMaterialEditorForm.Execute(material : TGLMaterial) : Boolean;
+
+function TMaterialEditorForm.Execute(material: TGLMaterial): Boolean;
 begin
-   with material do begin
-      FEFront.FaceProperties:=FrontProperties;
-		FEBack.FaceProperties:=BackProperties;
-		RTextureEdit.Texture:=Texture;
-      CBBlending.ItemIndex:=Integer(BlendingMode);
-	end;
-	MPPreview.Material:=material;
-	Result:=(ShowModal=mrOk);
-	if Result then with material do begin
-		FrontProperties:=FEFront.FaceProperties;
-		BackProperties:=FEBack.FaceProperties;
-		Texture:=RTextureEdit.Texture;
-      BlendingMode:=TBlendingMode(CBBlending.ItemIndex);
-	end;
+  with material do
+  begin
+    FEFront.FaceProperties := FrontProperties;
+    FEBack.FaceProperties := BackProperties;
+    RTextureEdit.Texture := Texture;
+    CBPolygonMode.ItemIndex:=Integer(PolygonMode);
+    CBBlending.ItemIndex := Integer(BlendingMode);
+  end;
+  MPPreview.Material := material;
+  Result := (ShowModal = mrOk);
+  if Result then
+    with material do
+    begin
+      FrontProperties := FEFront.FaceProperties;
+      BackProperties := FEBack.FaceProperties;
+      Texture := RTextureEdit.Texture;
+      BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+    end;
 end;
 
 // OnMaterialChanged
 //
-procedure TMaterialEditorForm.OnMaterialChanged(Sender : TObject);
+
+procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
-   with MPPreview.Material do begin
-      FrontProperties:=FEFront.FaceProperties;
-		BackProperties:=FEBack.FaceProperties;
-		Texture:=RTextureEdit.Texture;
-      BlendingMode:=TBlendingMode(CBBlending.ItemIndex);
-	end;
-	MPPreview.SceneViewer.Invalidate;
+  with MPPreview.Material do
+  begin
+    FrontProperties := FEFront.FaceProperties;
+    BackProperties := FEBack.FaceProperties;
+    Texture := RTextureEdit.Texture;
+    BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+    PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+  end;
+  MPPreview.SceneViewer.Invalidate;
 end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
 finalization
 
-   ReleaseMaterialEditorForm;
+  ReleaseMaterialEditorForm;
 
 end.
-
-
 

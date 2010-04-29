@@ -3,8 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>24/03/10 - Yar - Fix for Unix-based systems
-                           (thanks to Rustam Asmandiarov aka Predator)
+
    </ul></font>
 }
 unit FMaterialEditorFormLCL;
