@@ -6,6 +6,7 @@
   <p>Spatial partitioning related code that also uses GLScene objects
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
@@ -117,10 +118,8 @@ procedure RenderSpatialPartitioning(var rci: TRenderContextInfo;
     end;
   end;
 begin
-  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer]);
   rci.GLStates.Disable(stLighting);
   RenderSectorNode(Space.RootNode);
-  rci.GLStates.PopAttrib;
 end;
 
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;

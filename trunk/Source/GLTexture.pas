@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>22/04/10 - Yar - Fixes after GLState revision
        <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
                              cause errors on hardware that doesn't support them
        <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -234,10 +235,6 @@ type
     twMirrorClampToBorder
     );
 
-  TGLTextureTarget = (ttTexture1d, ttTexture2d, ttTexture3d,
-    ttTextureRect, ttTextureCube,
-    ttTexture1dArray, ttTexture2dArray, ttTextureCubeArray);
-
   // Specifies the texture comparison mode for currently bound depth textures.
   // That is, a texture whose internal format is tfDEPTH_COMPONENT*
   TGLTextureCompareMode = (tcmNone, tcmCompareRtoTexture);
@@ -318,11 +315,11 @@ type
   private
     function GetResourceName: string;
   protected
-    fPreviousTarget: GLenum;
+    fPreviousTarget: TGLTextureTarget;
     FOwnerTexture: TGLTexture;
     FOnTextureNeeded: TTextureNeededEvent;
     FResourceFile: string;
-    function GetTextureTarget: GLenum; virtual; abstract;
+    function GetTextureTarget: TGLTextureTarget; virtual; abstract;
     function GetHeight: Integer; virtual; abstract;
     function GetWidth: Integer; virtual; abstract;
     function GetDepth: Integer; virtual; abstract;
@@ -381,7 +378,7 @@ type
     property Height: Integer read GetHeight;
     property Depth: Integer read GetDepth;
     {: Native opengl texture target.<p> }
-    property NativeTextureTarget: TGLUInt read GetTextureTarget;
+    property NativeTextureTarget: TGLTextureTarget read GetTextureTarget;
     property ResorceName: string read GetResourceName;
   end;
 
@@ -415,7 +412,7 @@ type
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
-    function GetTextureTarget: GLenum; override;
+    function GetTextureTarget: TGLTextureTarget; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -458,7 +455,7 @@ type
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
     function GetDepth: Integer; override;
-    function GetTextureTarget: GLenum; override;
+    function GetTextureTarget: TGLTextureTarget; override;
 
     function GetPicture: TGLPicture;
     procedure SetPicture(const aPicture: TGLPicture);
@@ -576,7 +573,7 @@ type
     function GetDepth: Integer; override;
     procedure SetPicture(index: TGLCubeMapTarget; const val: TGLPicture);
     function GetPicture(index: TGLCubeMapTarget): TGLPicture;
-    function GetTextureTarget: GLenum; override;
+    function GetTextureTarget: TGLTextureTarget; override;
 
     procedure PictureChanged(Sender: TObject);
 
@@ -633,7 +630,7 @@ type
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
-    function GetTextureTarget: GLenum; override;
+    function GetTextureTarget: TGLTextureTarget; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -1049,9 +1046,6 @@ procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings: TStrings;
 
-function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
-function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
-
 procedure RegisterTGraphicClassFileExtension(const extension: string;
   const aClass: TGraphicClass);
 function CreateGraphicFromFile(const fileName: string): TGLGraphic;
@@ -1067,7 +1061,7 @@ implementation
 // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
 
 uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats,
-  GLUtils;
+  GLUtils, VectorTypes;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =
@@ -1092,50 +1086,6 @@ var
   vTGraphicClass: array of TGraphicClass;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Helper functions'}{$ENDIF}
-
-  // DecodeGLTextureTarget
-  //
-
-function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
-begin
-  case TextureTarget of
-    ttTexture1d: Result := GL_TEXTURE_1D;
-    ttTexture2d: Result := GL_TEXTURE_2D;
-    ttTexture3d: Result := GL_TEXTURE_3D;
-    ttTextureRect: Result := GL_TEXTURE_RECTANGLE;
-    ttTextureCube: Result := GL_TEXTURE_CUBE_MAP;
-    ttTexture1dArray: Result := GL_TEXTURE_1D_ARRAY;
-    ttTexture2dArray: Result := GL_TEXTURE_2D_ARRAY;
-    ttTextureCubeArray: Result := GL_TEXTURE_CUBE_MAP_ARRAY;
-  else
-    begin
-      Result := 0;
-      Assert(False, glsErrorEx + glsUnknownType);
-    end;
-  end;
-end;
-
-// EncodeGLTextureTarget
-//
-
-function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
-begin
-  case TextureTarget of
-    GL_TEXTURE_1D: Result := ttTexture1d;
-    GL_TEXTURE_2D: Result := ttTexture2d;
-    GL_TEXTURE_3D: Result := ttTexture3d;
-    GL_TEXTURE_RECTANGLE: Result := ttTextureRect;
-    GL_TEXTURE_CUBE_MAP: Result := ttTextureCube;
-    GL_TEXTURE_1D_ARRAY: Result := ttTexture1dArray;
-    GL_TEXTURE_2D_ARRAY: Result := ttTexture2dArray;
-    GL_TEXTURE_CUBE_MAP_ARRAY: Result := ttTextureCubeArray;
-  else
-    begin
-      Result := ttTexture2d;
-      Assert(False, glsErrorEx + glsUnknownType);
-    end;
-  end;
-end;
 
 // RegisterTGraphicClassFileExtension
 //
@@ -1295,7 +1245,7 @@ constructor TGLTextureImage.Create(AOwner: TPersistent);
 begin
   inherited;
   FOwnerTexture := (AOwner as TGLTexture);
-  fPreviousTarget := GL_TEXTURE_2D;
+  fPreviousTarget := ttTexture2D;
 end;
 
 // Destroy
@@ -1625,9 +1575,9 @@ end;
 // GetTextureTarget
 //
 
-function TGLBlankImage.GetTextureTarget: GLenum;
+function TGLBlankImage.GetTextureTarget: TGLTextureTarget;
 begin
-  Result := GL_TEXTURE_2D;
+  Result := ttTexture2D;
   // Choose a texture target
   if Assigned(fBitmap) then
   begin
@@ -1639,26 +1589,26 @@ begin
   end;
 
   if FHeight = 1 then
-    Result := GL_TEXTURE_1D;
+    Result := ttTexture1D;
   if FCubeMap then
-    Result := GL_TEXTURE_CUBE_MAP;
+    Result := ttTextureCube;
   if FDepth > 0 then
-    Result := GL_TEXTURE_3D;
+    Result := ttTexture3D;
   if FArray then
   begin
     if FDepth < 2 then
-      Result := GL_TEXTURE_1D_ARRAY
+      Result := ttTexture1DArray
     else
-      Result := GL_TEXTURE_2D_ARRAY;
+      Result := ttTexture2DArray;
     if FCubeMap then
-      Result := GL_TEXTURE_CUBE_MAP_ARRAY;
+      Result := ttTextureCubeArray;
   end;
 
   if Assigned(FOwnerTexture) then
   begin
     if ((FOwnerTexture.FTextureFormat >= tfFLOAT_R16)
       and (FOwnerTexture.FTextureFormat <= tfFLOAT_RGBA32)) then
-      Result := GL_TEXTURE_RECTANGLE;
+      Result := ttTextureRect;
   end;
 
   if Result = fPreviousTarget then
@@ -1838,9 +1788,9 @@ end;
 // GetTextureTarget
 //
 
-function TGLPictureImage.GetTextureTarget: GLenum;
+function TGLPictureImage.GetTextureTarget: TGLTextureTarget;
 begin
-  Result := GL_TEXTURE_2D;
+  Result := ttTexture2D;
   if fPreviousTarget <> Result then
   begin
     if Assigned(FOwnerTexture) then
@@ -2340,9 +2290,9 @@ end;
 // GetTextureTarget
 //
 
-function TGLCubeMapImage.GetTextureTarget: GLenum;
+function TGLCubeMapImage.GetTextureTarget: TGLTextureTarget;
 begin
-  Result := GL_TEXTURE_CUBE_MAP;
+  Result := ttTextureCube;
   if fPreviousTarget <> Result then
   begin
     if Assigned(FOwnerTexture) then
@@ -2552,8 +2502,6 @@ begin
         ' in your uses clause');
       FImage := TGLTextureImageClass(newImageClass).Create(Self);
       FImage.OnTextureNeeded := DoOnTextureNeeded;
-      NotifyImageChange;
-      NotifyTargetChange;
     end;
 end;
 
@@ -2600,7 +2548,7 @@ begin
       end;
     end;
 
-    if Image.GetTextureTarget = GL_TEXTURE_CUBE_MAP then
+    if Image.GetTextureTarget = ttTextureCube then
       FRequiredMemorySize := FRequiredMemorySize * 6;
   end;
   Result := FRequiredMemorySize;
@@ -3193,23 +3141,16 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
 
   procedure SetCubeMapTextureMatrix;
   var
-    m: TMatrix;
+    m, mm: TMatrix;
   begin
     // compute model view matrix for proper viewing
-    glMatrixMode(GL_TEXTURE);
     case MappingMode of
       tmmCubeMapReflection, tmmCubeMapNormal:
         begin
           m := rci.modelViewMatrix^;
           NormalizeMatrix(m);
-          // Transposition = Matrix inversion (matrix is now orthonormal)
-          if GL_ARB_transpose_matrix then
-            glLoadTransposeMatrixfARB(@m)
-          else
-          begin
-            TransposeMatrix(m);
-            glLoadMatrixf(@m);
-          end;
+          TransposeMatrix(m);
+          rci.GLStates.SetGLTextureMatrix(m);
         end;
       tmmCubeMapLight0:
         begin
@@ -3218,18 +3159,11 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
             begin
               m := TGLLightSource(Items[0]).AbsoluteMatrix;
               NormalizeMatrix(m);
-              if GL_ARB_transpose_matrix then
-                glLoadTransposeMatrixfARB(@m)
-              else
-              begin
-                TransposeMatrix(m);
-                glLoadMatrixf(@m);
-              end;
-
-              m := rci.modelViewMatrix^;
-              NormalizeMatrix(m);
-              TransposeMatrix(m);
-              glMultMatrixf(@m);
+              mm := rci.modelViewMatrix^;
+              NormalizeMatrix(mm);
+              TransposeMatrix(mm);
+              m := MatrixMultiply(m, mm);
+              rci.GLStates.SetGLTextureMatrix(m);
             end;
         end;
       tmmCubeMapCamera:
@@ -3238,65 +3172,38 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
           m[1] := VectorNegate(rci.cameraDirection);
           m[2] := rci.cameraUp;
           m[3] := WHmgPoint;
-          if GL_ARB_transpose_matrix then
-            glLoadTransposeMatrixfARB(@m)
-          else
-          begin
-            TransposeMatrix(m);
-            glLoadMatrixf(@m);
-          end;
-
-          m := rci.modelViewMatrix^;
-          NormalizeMatrix(m);
-          TransposeMatrix(m);
-          glMultMatrixf(@m);
+          mm := rci.modelViewMatrix^;
+          NormalizeMatrix(mm);
+          TransposeMatrix(mm);
+          m := MatrixMultiply(m, mm);
+          rci.GLStates.SetGLTextureMatrix(m);
         end;
     end;
-    glMatrixMode(GL_MODELVIEW);
   end;
 
 var
-  target: TGLEnum;
-  fc: Boolean;
-begin // Apply
-  fc := rci.GLStates.ForwardContext;
-  if not Disabled then
+  target: TGLTextureTarget;
+begin
+  // Apply
+  target := Image.NativeTextureTarget;
+  if not Disabled and (Handle > 0) then
   begin
-    target := Image.NativeTextureTarget;
-    rci.GLStates.SetGLCurrentTexture(0, target, Handle);
-    if Handle = 0 then
-      Exit;
-    case target of
-      GL_TEXTURE_1D: rci.GLStates.Enable(stTexture1D);
-      GL_TEXTURE_2D: rci.GLStates.Enable(stTexture2D);
-      GL_TEXTURE_RECTANGLE: rci.GLStates.Enable(stTextureRect);
-      GL_TEXTURE_CUBE_MAP:
-        begin
-          rci.GLStates.Enable(stTextureCubeMap);
-          if not fc then
-            SetCubeMapTextureMatrix;
-        end;
-      GL_TEXTURE_3D: rci.GLStates.Enable(stTexture3D);
-    end; // of case
+    rci.GLStates.TextureBinding[0, target] := Handle;
+    rci.GLStates.ActiveTextureEnabled[target] := True;
 
-    if not fc then
+    if not rci.GLStates.ForwardContext then
     begin
+      if target = ttTextureCube then
+        SetCubeMapTextureMatrix;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xglMapTexCoordToMain;
     end;
   end
-  else if not fc then
-  begin //default
-    rci.GLStates.Disable(stTexture1D);
-    rci.GLStates.Disable(stTexture2D);
-    if GL_ARB_texture_rectangle then
-      rci.GLStates.Disable(stTextureRect);
-    if GL_ARB_texture_cube_map then
-      rci.GLStates.Disable(stTextureCubeMap);
-    if GL_EXT_texture3D then
-      rci.GLStates.Disable(stTexture3D);
+  else if not rci.GLStates.ForwardContext then
+  begin // default
+    rci.GLStates.ActiveTextureEnabled[target] := False;
     xglMapTexCoordToMain;
   end;
 end;
@@ -3305,25 +3212,17 @@ end;
 //
 
 procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
+var
+  target: TGLTextureTarget;
 begin
   if not Disabled
     and not rci.GLStates.ForwardContext then
   begin
-    if stTexture1D in rci.GLStates.States then
-      rci.GLStates.Disable(stTexture1D)
-    else if stTexture2D in rci.GLStates.States then
-      rci.GLStates.Disable(stTexture2D)
-    else if stTextureRect in rci.GLStates.States then
-      rci.GLStates.Disable(stTextureRECT)
-    else if stTextureCubeMap in rci.GLStates.States then
-    begin
-      rci.GLStates.Disable(stTextureCubeMap);
-      glMatrixMode(GL_TEXTURE);
-      glLoadIdentity;
-      glMatrixMode(GL_MODELVIEW);
-    end
-    else if stTexture3D in rci.GLStates.States then
-      rci.GLStates.Disable(stTexture3D);
+    target := Image.NativeTextureTarget;
+    rci.GLStates.ActiveTexture := 0;
+    rci.GLStates.ActiveTextureEnabled[target] := False;
+    if target = ttTextureCube then
+      rci.GLStates.ResetGLTextureMatrix;
     UnApplyMappingMode;
   end;
 end;
@@ -3353,50 +3252,30 @@ procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
   textureMatrix: PMatrix = nil);
 var
   m: TMatrix;
-  target: GLenum;
+  target: TGLTextureTarget;
 begin
   if not Disabled then
   begin
-    rci.GLStates.ActiveTexture := n - 1;
     target := Image.NativeTextureTarget;
-
-    if (target = GL_TEXTURE_CUBE_MAP) and GL_ARB_texture_cube_map then
+    rci.GLStates.ActiveTexture := n-1;
+    rci.GLStates.ActiveTextureEnabled[target] := True;
+    rci.GLStates.TextureBinding[n - 1, target] :=  Handle;
+    if Assigned(textureMatrix) then
+      rci.GLStates.SetGLTextureMatrix(textureMatrix^)
+    else if target = ttTextureCube then
     begin
-      rci.GLStates.Enable(stTextureCubeMap);
-      rci.GLStates.SetGLCurrentTexture(n - 1, GL_TEXTURE_CUBE_MAP, Handle);
-
-      // compute model view matrix for proper viewing
-      glMatrixMode(GL_TEXTURE);
       m := rci.modelViewMatrix^;
       NormalizeMatrix(m);
-      // Transposition = Matrix inversion (matrix is now orthonormal)
-      if GL_ARB_transpose_matrix then
-        glLoadTransposeMatrixfARB(@m)
-      else
-      begin
-        TransposeMatrix(m);
-        glLoadMatrixf(@m);
-      end;
-      glMatrixMode(GL_MODELVIEW);
-    end
-    else
-    begin
-      glEnable(target);
-      rci.GLStates.SetGLCurrentTexture(n - 1, target, Handle);
-
-      if Assigned(textureMatrix) then
-      begin
-        glMatrixMode(GL_TEXTURE);
-        glLoadMatrixf(PGLFloat(textureMatrix));
-        glMatrixMode(GL_MODELVIEW);
-      end;
+      TransposeMatrix(m);
+      rci.GLStates.SetGLTextureMatrix(m);
     end;
 
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-    glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
-
-    ApplyMappingMode;
-    rci.GLStates.ActiveTexture := 0;
+    if not rci.GLStates.ForwardContext then
+    begin
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      ApplyMappingMode;
+    end;
   end;
 end;
 
@@ -3406,20 +3285,17 @@ end;
 procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 var
-  target: GLenum;
+  target: TGLTextureTarget;
 begin
-  rci.GLStates.ActiveTexture := n - 1;
-  UnApplyMappingMode;
-  target := Image.NativeTextureTarget;
-  if (target = GL_TEXTURE_CUBE_MAP) and GL_ARB_texture_cube_map
-    or reloadIdentityTextureMatrix then
+  if not rci.GLStates.ForwardContext then
   begin
-    glMatrixMode(GL_TEXTURE);
-    glLoadIdentity;
-    glMatrixMode(GL_MODELVIEW);
+    target := Image.NativeTextureTarget;
+    rci.GLStates.ActiveTexture := n - 1;
+    rci.GLStates.ActiveTextureEnabled[target] := False;
+    UnApplyMappingMode;
+    if (target = ttTextureCube) or reloadIdentityTextureMatrix then
+      rci.GLStates.ResetGLTextureMatrix;
   end;
-  glDisable(target);
-  rci.GLStates.ActiveTexture := 0;
 end;
 
 // AllocateHandle
@@ -3427,7 +3303,8 @@ end;
 
 function TGLTexture.AllocateHandle: TGLuint;
 var
-  target: TGLUInt;
+  target: TGLTextureTarget;
+  glTarget: TGLEnum;
 begin
   target := Image.NativeTextureTarget;
   if tcTarget in FChanges then
@@ -3443,12 +3320,17 @@ begin
   end;
 
   // bind texture
-  if IsTargetSupported(target) then
+  glTarget := DecodeGLTextureTarget(target);
+  if IsTargetSupported(glTarget) then
   begin
-    glBindTexture(target, FTextureHandle.Handle);
+    with FTextureHandle do
+    begin
+      RenderingContext.GLStates.TextureBinding[
+        RenderingContext.GLStates.ActiveTexture, target] := Handle;
+    end;
     if tcParams in FChanges then
     begin
-      PrepareParams(target);
+      PrepareParams(glTarget);
       Exclude(FChanges, tcParams);
     end;
     Result := FTextureHandle.Handle;
@@ -3479,17 +3361,16 @@ begin
   if (FTextureHandle.Handle = 0) or (FChanges <> []) then
   begin
     AllocateHandle;
-
     if tcImage in FChanges then
     begin
       Exclude(FChanges, tcImage);
       // Check supporting
-      target := Image.NativeTextureTarget;
+      target := DecodeGLTextureTarget(Image.NativeTextureTarget);
       if not IsTargetSupported(target)
         or not IsFormatSupported(TextureFormatEx) then
       begin
         SetTextureErrorImage;
-        target := Image.NativeTextureTarget;
+        target := GL_TEXTURE_2D;
       end;
       // Load images
       if Image is TGLCubeMapImage then
@@ -3769,25 +3650,25 @@ end;
 procedure TGLTexture.GetFloatTexImage(RenderingContext: TGLContext; data:
   pointer);
 var
-  target: TGLEnum;
+  target: TGLTextureTarget;
 begin
   RenderingContext.Activate;
   target := Image.NativeTextureTarget;
-  glBindTexture(target, FTextureHandle.Handle);
-  glGetTexImage(target, 0, GL_RGBA, GL_FLOAT, data);
+  RenderingContext.GLStates.TextureBinding[0, target] := FTextureHandle.Handle;
+  glGetTexImage(DecodeGLTextureTarget(target), 0, GL_RGBA, GL_FLOAT, data);
   RenderingContext.Deactivate;
 end;
 
 procedure TGLTexture.SetFloatTexImage(RenderingContext: TGLContext; data:
   pointer);
 var
-  target: TGLEnum;
+  target: TGLTextureTarget;
 begin
   RenderingContext.Activate;
   target := Image.NativeTextureTarget;
-  glBindTexture(target, FTextureHandle.Handle);
-  glTexImage2d(target, 0, GL_RGBA_FLOAT16_ATI, TexWidth, TexHeight, 0, GL_RGBA,
-    GL_FLOAT, data);
+  RenderingContext.GLStates.TextureBinding[0, target] := FTextureHandle.Handle;
+  glTexImage2d(DecodeGLTextureTarget(target), 0, GL_RGBA_FLOAT16_ATI,
+    TexWidth, TexHeight, 0, GL_RGBA, GL_FLOAT, data);
   RenderingContext.Deactivate;
 end;
 
@@ -4383,9 +4264,9 @@ end;
 // GetTextureTarget
 //
 
-function TGLFloatDataImage.GetTextureTarget: GLenum;
+function TGLFloatDataImage.GetTextureTarget: TGLTextureTarget;
 begin
-  Result := GL_TEXTURE_2D;
+  Result := ttTexture2D;
   if fPreviousTarget <> Result then
   begin
     if Assigned(FOwnerTexture) then

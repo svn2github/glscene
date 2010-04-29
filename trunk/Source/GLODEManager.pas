@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
@@ -1670,7 +1671,6 @@ begin
   if not (csDesigning in ComponentState) then
     if not VisibleAtRunTime then Exit;
 
-  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttPolygon]);
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stPolygonOffsetLine);
   rci.GLStates.SetPolygonOffset(1, 2);
@@ -1686,8 +1686,6 @@ begin
 
     ODEBehaviours[i].Render(rci);
   end;
-
-  rci.GLStates.PopAttrib;
 end;
 
 // RenderPointFreed

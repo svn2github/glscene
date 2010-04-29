@@ -6,6 +6,8 @@
    A shader that blurs the entire scene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
+      <                    Added VectorTypes to uses
       <li>16/04/07 - DaStr - Shader made ATI compatible
       <li>05/04/07 - DaStr - Initial version (contributed to GLScene)
 
@@ -28,7 +30,7 @@ uses
 
   // GLScene
   GLTexture, GLScene, VectorGeometry, GLContext,
-  GLSLShader, GLCustomShader, GLRenderContextInfo;
+  GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat;
 
 type
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -36,7 +38,8 @@ type
     FThreshold: Single;
 
     // Implementing IGLPostShader.
-    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;
+      TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
     function StoreThreshold: Boolean;
   protected
@@ -54,6 +57,9 @@ type
   end;
 
 implementation
+
+uses
+  VectorTypes;
 
 { TGLCustomGLSLPostBlurShader }
 
@@ -141,7 +147,7 @@ begin
 end;
 
 procedure TGLCustomGLSLPostBlurShader.DoUseTempTexture(
-  const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+  const TempTexture: TGLTextureHandle; TextureTarget: TGLTextureTarget);
 begin
   Param['Image'].AsCustomTexture[2, TextureTarget] := TempTexture.Handle;
 end;

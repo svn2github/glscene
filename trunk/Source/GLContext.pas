@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>18/03/10 - Yar - Added MapBufferRange, Flush to TGLBufferObjectHandle
       <li>06/03/10 - Yar - Added to TGLProgramHandle BindFragDataLocation, GetUniformOffset, GetUniformBlockIndex
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -70,7 +71,8 @@ uses
 Windows,
 {$ENDIF} {$ENDIF}
 
-Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes, GLState;
+  Classes, SysUtils, OpenGL1x, VectorGeometry, VectorTypes, GLState,
+  GLTextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -828,9 +830,10 @@ type
          procedure SetUniformMatrix4fv(const index : String; const val : TMatrix);
 
         function GetUniformTextureHandle(const index: string;
-          const TextureIndex: Integer; const TextureTarget: Cardinal): Cardinal;
+          const TextureIndex: Integer; const TextureTarget: TGLTextureTarget): Cardinal;
         procedure SetUniformTextureHandle(const index: string;
-          const TextureIndex: Integer; const TextureTarget, Value: Cardinal);
+          const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
+          const Value: Cardinal);
         procedure SetUniformBuffer(const index: string;
           Value: TGLUniformBufferHandle);
       protected
@@ -891,7 +894,7 @@ type
          property UniformMatrix3fv[const index : String] : TMatrix3f read GetUniformMatrix3fv write SetUniformMatrix3fv;
          property UniformMatrix4fv[const index : String] : TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
 
-         property UniformTextureHandle[const index: string; const TextureIndex: Integer; const TextureTarget: Cardinal]: Cardinal read GetUniformTextureHandle write SetUniformTextureHandle;
+         property UniformTextureHandle[const index: string; const TextureIndex: Integer; const TextureTarget: TGLTextureTarget]: Cardinal read GetUniformTextureHandle write SetUniformTextureHandle;
          property UniformBuffer[const index: string]: TGLUniformBufferHandle write SetUniformBuffer;
    end;
 
@@ -1612,21 +1615,21 @@ end;
 //
 procedure TGLListHandle.NewList(mode : Cardinal);
 begin
-   glNewList(FHandle, mode);
+  FRenderingContext.GLStates.NewList(FHandle, mode);
 end;
 
 // EndList
 //
 procedure TGLListHandle.EndList;
 begin
-   glEndList;
+  FRenderingContext.GLStates.EndList;
 end;
 
 // CallList
 //
 procedure TGLListHandle.CallList;
 begin
-   glCallList(FHandle);
+  FRenderingContext.GLStates.CallList(FHandle);
 end;
 
 // ------------------
@@ -1995,7 +1998,7 @@ end;
 //
 function TGLVBOArrayBufferHandle.GetTarget: TGLuint;
 begin
-   Result:=GL_ARRAY_BUFFER_ARB;
+   Result:=GL_ARRAY_BUFFER;
 end;
 
 // ------------------
@@ -2006,7 +2009,7 @@ end;
 //
 function TGLVBOElementArrayHandle.GetTarget: TGLuint;
 begin
-   Result:=GL_ELEMENT_ARRAY_BUFFER_ARB;
+   Result:=GL_ELEMENT_ARRAY_BUFFER;
 end;
 
 // ------------------
@@ -2017,7 +2020,7 @@ end;
 //
 function TGLPackPBOHandle.GetTarget: TGLuint;
 begin
-   Result:=GL_PIXEL_PACK_BUFFER_ARB;
+   Result:=GL_PIXEL_PACK_BUFFER;
 end;
 
 // IsSupported
@@ -2035,7 +2038,7 @@ end;
 //
 function TGLUnpackPBOHandle.GetTarget: TGLuint;
 begin
-   Result:=GL_PIXEL_UNPACK_BUFFER_ARB;
+   Result:=GL_PIXEL_UNPACK_BUFFER;
 end;
 
 // IsSupported
@@ -2457,7 +2460,10 @@ end;
 //
 function TGLShaderHandle.DoAllocateHandle : Cardinal;
 begin
-   Result:=glCreateShaderObjectARB(FShaderType);
+  if vCurrentGLContext.GLStates.ForwardContext then
+    Result := glCreateShader(FShaderType)
+  else
+    Result := glCreateShaderObjectARB(FShaderType);
 end;
 
 // ShaderSource
@@ -2547,7 +2553,10 @@ end;
 //
 function TGLProgramHandle.DoAllocateHandle : cardinal;
 begin
-   Result:=glCreateProgramObjectARB();
+  if vCurrentGLContext.GLStates.ForwardContext then
+    Result := glCreateProgram()
+  else
+   Result := glCreateProgramObjectARB();
 end;
 
 // AddShader
@@ -2888,7 +2897,7 @@ end;
 // GetUniformTextureHandle
 //
 function TGLProgramHandle.GetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget: Cardinal): Cardinal;
+  const TextureIndex: Integer; const TextureTarget: TGLTextureTarget): Cardinal;
 begin
   Result := GetUniform1i(index);
 end;
@@ -2896,10 +2905,10 @@ end;
 // SetUniformTextureHandle
 //
 procedure TGLProgramHandle.SetUniformTextureHandle(const index: string;
-  const TextureIndex: Integer; const TextureTarget, Value: Cardinal);
+  const TextureIndex: Integer; const TextureTarget: TGLTextureTarget;
+  const Value: Cardinal);
 begin
-  glActiveTextureARB(GL_TEXTURE0_ARB + TextureIndex);
-  RenderingContext.GLStates.SetGLCurrentTexture(0, TextureTarget, Value);
+  RenderingContext.GLStates.TextureBinding[0, TextureTarget] := Value;
   SetUniform1i(index, TextureIndex);
 end;
 

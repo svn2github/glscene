@@ -6,6 +6,7 @@
    Implements projected textures through a GLScene object.
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -129,8 +130,6 @@ type
          { Private Declarations }
          FEmitters: TGLTextureEmitters;
          FStyle: TGLProjectedTexturesStyle;
-
-         procedure LoseTexMatrix;
 
       public
          { Public Declarations }
@@ -301,21 +300,6 @@ begin
    inherited destroy;
 end;
 
-// LoseTexMatrix
-//
-procedure TGLProjectedTextures.LoseTexMatrix;
-begin
-   glBlendFunc(GL_ONE, GL_ZERO);
-   glDisable(GL_TEXTURE_GEN_S);
-   glDisable(GL_TEXTURE_GEN_T);
-   glDisable(GL_TEXTURE_GEN_R);
-   glDisable(GL_TEXTURE_GEN_Q);
-
-   glMatrixMode(GL_TEXTURE);
-   glLoadIdentity;
-   glMatrixMode(GL_MODELVIEW);
-end;
-
 // DoRender
 //
 procedure TGLProjectedTextures.DoRender(var ARci: TRenderContextInfo;
@@ -338,8 +322,6 @@ begin
    //First pass of original style: render regular scene
    if Style = ptsOriginal then
       self.RenderChildren(0, Count-1, ARci);
-
-   Arci.GLStates.PushAttrib(cAllAttribBits);
 
    //generate planes
    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
@@ -396,17 +378,24 @@ begin
        until not emitter.Material.UnApply(ARci);
    end;
 
-   LoseTexMatrix;
-   ARci.GLStates.PopAttrib;
+   // LoseTexMatrix
+   ARci.GLStates.SetBlendFunc(bfOne, bfZero);
+   glDisable(GL_TEXTURE_GEN_S);
+   glDisable(GL_TEXTURE_GEN_T);
+   glDisable(GL_TEXTURE_GEN_R);
+   glDisable(GL_TEXTURE_GEN_Q);
+
+   glMatrixMode(GL_TEXTURE);
+   glLoadIdentity;
+   glMatrixMode(GL_MODELVIEW);
+
+   ARci.GLStates.DepthFunc := cfLEqual;
 
    //second pass (inverse): render regular scene, blending it
    //with the "mask"
    if Style = ptsInverse then begin
-      ARci.GLStates.PushAttrib(cAllAttribBits);
 
       Arci.GLStates.Enable(stBlend);
-      ARci.GLStates.DepthFunc := cfLEqual;
-
       ARci.GLStates.SetBlendFunc(bfDstColor, bfSrcColor);
 
       //second pass: render everything, blending with what is
@@ -415,7 +404,6 @@ begin
       self.RenderChildren(0, Count-1, ARci);
       ARci.ignoreBlendingRequests:= false;
 
-      ARci.GLStates.PopAttrib;
    end;
 end;
 

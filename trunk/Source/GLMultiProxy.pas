@@ -1,9 +1,7 @@
 // GLMultiProxy
 {: Implements a multi-proxy objects, useful for discreet LOD.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>02/04/10 - Yar - Added properties OneMasterPerInterval, RenderChildrenWithMasters to TGLMultiProxy
-                           (thanks Controller)
+	<b>History : </b><font size=-1><ul>
       <li>19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
       <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
       <li>25/11/03 - EG - Added per-master visibility boolean
@@ -15,160 +13,145 @@ unit GLMultiProxy;
 interface
 
 uses Classes, GLScene, VectorGeometry, GLSilhouette,
-  GLRenderContextInfo, BaseClasses;
+     GLRenderContextInfo, BaseClasses;
 
 type
 
-  TGLMultiProxy = class;
+   TGLMultiProxy = class;
 
-  // TGLMultiProxyMaster
-  //
-    {: MasterObject description for a MultiProxy object. }
-  TGLMultiProxyMaster = class(TCollectionItem)
-  private
-    { Private Declarations }
-    FMasterObject: TGLBaseSceneObject;
-    FDistanceMin, FDistanceMin2: Single;
-    FDistanceMax, FDistanceMax2: Single;
-    FVisible: Boolean;
+	// TGLMultiProxyMaster
+	//
+   {: MasterObject description for a MultiProxy object. }
+	TGLMultiProxyMaster = class (TCollectionItem)
+	   private
+	      { Private Declarations }
+         FMasterObject : TGLBaseSceneObject;
+         FDistanceMin, FDistanceMin2 : Single;
+         FDistanceMax, FDistanceMax2 : Single;
+         FVisible : Boolean;
 
-  protected
-    { Protected Declarations }
-    function GetDisplayName: string; override;
-    procedure SetMasterObject(const val: TGLBaseSceneObject);
-    procedure SetDistanceMin(const val: Single);
-    procedure SetDistanceMax(const val: Single);
-    procedure SetVisible(const val: Boolean);
+	   protected
+	      { Protected Declarations }
+         function GetDisplayName : String; override;
+         procedure SetMasterObject(const val : TGLBaseSceneObject);
+         procedure SetDistanceMin(const val : Single);
+         procedure SetDistanceMax(const val : Single);
+         procedure SetVisible(const val : Boolean);
 
-  public
-    { Public Declarations }
-    constructor Create(Collection: TCollection); override;
-    destructor Destroy; override;
-    procedure Assign(Source: TPersistent); override;
+      public
+	      { Public Declarations }
+	      constructor Create(Collection : TCollection); override;
+	      destructor Destroy; override;
+	      procedure Assign(Source: TPersistent); override;
 
-    function OwnerObject: TGLMultiProxy;
-    procedure NotifyChange;
+         function OwnerObject : TGLMultiProxy;
+         procedure NotifyChange;
 
-  published
-    { Published Declarations }
-    {: Specifies the Master object which will be proxy'ed. }
-    property MasterObject: TGLBaseSceneObject read FMasterObject write
-      SetMasterObject;
-    {: Minimum visibility distance (inclusive). }
-    property DistanceMin: Single read FDistanceMin write SetDistanceMin;
-    {: Maximum visibility distance (exclusive). }
-    property DistanceMax: Single read FDistanceMax write SetDistanceMax;
-    {: Determines if the master object can be visible (proxy'ed).<p>
-       Note: the master object's distance also has to be within DistanceMin
-       and DistanceMax.}
-    property Visible: Boolean read FVisible write SetVisible default True;
-  end;
+      published
+         { Published Declarations }
+         {: Specifies the Master object which will be proxy'ed. }
+         property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
+         {: Minimum visibility distance (inclusive). }
+         property DistanceMin : Single read FDistanceMin write SetDistanceMin;
+         {: Maximum visibility distance (exclusive). }
+         property DistanceMax : Single read FDistanceMax write SetDistanceMax;
+         {: Determines if the master object can be visible (proxy'ed).<p>
+            Note: the master object's distance also has to be within DistanceMin
+            and DistanceMax.}
+         property Visible : Boolean read FVisible write SetVisible default True;
+   end;
 
-  // TGLMultiProxyMasters
-  //
-    {: Collection of TGLMultiProxyMaster. }
-  TGLMultiProxyMasters = class(TOwnedCollection)
-  private
-    { Private Declarations }
+	// TGLMultiProxyMasters
+	//
+   {: Collection of TGLMultiProxyMaster. }
+	TGLMultiProxyMasters = class (TOwnedCollection)
+	   private
+	      { Private Declarations }
 
-  protected
-    { Protected Declarations }
-    procedure SetItems(index: Integer; const val: TGLMultiProxyMaster);
-    function GetItems(index: Integer): TGLMultiProxyMaster;
-    procedure Update(Item: TCollectionItem); override;
+	   protected
+	      { Protected Declarations }
+         procedure SetItems(index : Integer; const val : TGLMultiProxyMaster);
+	      function GetItems(index : Integer) : TGLMultiProxyMaster;
+         procedure Update(Item: TCollectionItem); override;
 
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TPersistent);
+      public
+	      { Public Declarations }
+	      constructor Create(AOwner : TPersistent);
 
-    function Add: TGLMultiProxyMaster; overload;
-    function Add(master: TGLBaseSceneObject; distanceMin, distanceMax: Single):
-      TGLMultiProxyMaster; overload;
-    property Items[index: Integer]: TGLMultiProxyMaster read GetItems write
-      SetItems; default;
+         function Add : TGLMultiProxyMaster; overload;
+         function Add(master : TGLBaseSceneObject; distanceMin, distanceMax : Single) : TGLMultiProxyMaster; overload;
+	      property Items[index : Integer] : TGLMultiProxyMaster read GetItems write SetItems; default;
 
-    procedure Notification(AComponent: TComponent);
+         procedure Notification(AComponent: TComponent);
+         
+         procedure NotifyChange;
+         procedure EndUpdate; override;
+   end;
 
-    procedure NotifyChange;
-    procedure EndUpdate; override;
-  end;
+   // TGLMultiProxy
+   //
+   {: Multiple Proxy object.<p>
+      This proxy has multiple master objects, which are individually made visible
+      depending on a distance to the camera criterion. It can be used to implement
+      discreet level of detail directly for static objects, or objects that
+      go through cyclic animation.<p>
+      For dimensionsn raycasting and silhouette purposes, the first master is used
+      (item zero in the MasterObjects collection). }
+   TGLMultiProxy = class (TGLSceneObject)
+      private
+			{ Private Declarations }
+         FMasterObjects : TGLMultiProxyMasters;
+         FRendering : Boolean; // internal use (loop protection)
 
-  // TGLMultiProxy
-  //
-  {: Multiple Proxy object.<p>
-     This proxy has multiple master objects, which are individually made visible
-     depending on a distance to the camera criterion. It can be used to implement
-     discreet level of detail directly for static objects, or objects that
-     go through cyclic animation.<p>
-     For dimensionsn raycasting and silhouette purposes, the first master is used
-     (item zero in the MasterObjects collection). }
-  TGLMultiProxy = class(TGLSceneObject)
-  private
-    { Private Declarations }
-    FMasterObjects: TGLMultiProxyMasters;
-    FRendering: Boolean; // internal use (loop protection)
-    FOneMasterPerInterval: Boolean;
-    FRenderChildrenWithMasters: Boolean;
-    procedure SetOneMasterPerInterval(Value: Boolean);
-    procedure SetRenderChildrenWithMasters(Value: Boolean);
-  protected
-    { Protected Declarations }
-    procedure SetMasterObjects(const val: TGLMultiProxyMasters);
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+	   protected
+	      { Protected Declarations }
+         procedure SetMasterObjects(const val : TGLMultiProxyMasters);
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-    function PrimaryMaster: TGLBaseSceneObject;
+         function PrimaryMaster : TGLBaseSceneObject;
 
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
+      public
+			{ Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
 
-    procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+	      procedure Assign(Source: TPersistent); override;
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+                            
+         function AxisAlignedDimensionsUnscaled : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
-    function GenerateSilhouette(const silhouetteParameters:
-      TGLSilhouetteParameters): TGLSilhouette; override;
+      published
+         { Published Declarations }
+         property MasterObjects : TGLMultiProxyMasters read FMasterObjects write SetMasterObjects;
+         
+         property ObjectsSorting;
+         property Direction;
+         property PitchAngle;
+         property Position;
+         property RollAngle;
+         property Scale;
+         property ShowAxes;
+         property TurnAngle;
+         property Up;
+         property Visible;
+         property OnProgress;
+         property Behaviours;
+   end;
 
-  published
-    { Published Declarations }
-    property MasterObjects: TGLMultiProxyMasters read FMasterObjects write
-      SetMasterObjects;
-
-    property OneMasterPerInterval: Boolean read FOneMasterPerInterval
-      write SetOneMasterPerInterval default False;
-    property RenderChildrenWithMasters: Boolean
-      read FRenderChildrenWithMasters write SetRenderChildrenWithMasters
-      default False;
-
-    property ObjectsSorting;
-    property Direction;
-    property PitchAngle;
-    property Position;
-    property RollAngle;
-    property Scale;
-    property ShowAxes;
-    property TurnAngle;
-    property Up;
-    property Visible;
-    property OnProgress;
-    property Behaviours;
-  end;
-
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, OpenGL1x;
+uses SysUtils,OpenGL1x;
 
 // ------------------
 // ------------------ TGLMultiProxyMaster ------------------
@@ -176,123 +159,105 @@ uses SysUtils, OpenGL1x;
 
 // Create
 //
-
-constructor TGLMultiProxyMaster.Create(Collection: TCollection);
+constructor TGLMultiProxyMaster.Create(Collection : TCollection);
 begin
-  inherited Create(Collection);
-  FVisible := True;
+	inherited Create(Collection);
+   FVisible:=True;
 end;
 
 // Destroy
 //
-
 destructor TGLMultiProxyMaster.Destroy;
 begin
-  MasterObject := nil;
-  inherited Destroy;
+   MasterObject:=nil;
+	inherited Destroy;
 end;
 
 // Assign
 //
-
 procedure TGLMultiProxyMaster.Assign(Source: TPersistent);
 begin
-  if Source is TGLMultiProxyMaster then
-  begin
-    MasterObject := TGLMultiProxyMaster(Source).MasterObject;
-    FDistanceMin := TGLMultiProxyMaster(Source).FDistanceMin;
-    FDistanceMin2 := TGLMultiProxyMaster(Source).FDistanceMin2;
-    FDistanceMax := TGLMultiProxyMaster(Source).FDistanceMax;
-    FDistanceMax2 := TGLMultiProxyMaster(Source).FDistanceMax2;
-    FVisible := TGLMultiProxyMaster(Source).FVisible;
-    NotifyChange;
-  end
-  else
-    inherited;
+	if Source is TGLMultiProxyMaster then begin
+      MasterObject:=TGLMultiProxyMaster(Source).MasterObject;
+      FDistanceMin:=TGLMultiProxyMaster(Source).FDistanceMin;
+      FDistanceMin2:=TGLMultiProxyMaster(Source).FDistanceMin2;
+      FDistanceMax:=TGLMultiProxyMaster(Source).FDistanceMax;
+      FDistanceMax2:=TGLMultiProxyMaster(Source).FDistanceMax2;
+      FVisible:=TGLMultiProxyMaster(Source).FVisible;
+      NotifyChange;
+	end else inherited;
 end;
 
 // OwnerObject
 //
-
-function TGLMultiProxyMaster.OwnerObject: TGLMultiProxy;
+function TGLMultiProxyMaster.OwnerObject : TGLMultiProxy;
 begin
-  Result := TGLMultiProxy(TGLMultiProxyMasters(Collection).GetOwner);
+   Result:=TGLMultiProxy(TGLMultiProxyMasters(Collection).GetOwner);
 end;
 
 // NotifyChange
 //
-
 procedure TGLMultiProxyMaster.NotifyChange;
 begin
-  TGLMultiProxyMasters(Collection).NotifyChange;
+   TGLMultiProxyMasters(Collection).NotifyChange;
 end;
 
 // GetDisplayName
 //
-
-function TGLMultiProxyMaster.GetDisplayName: string;
+function TGLMultiProxyMaster.GetDisplayName : String;
 begin
-  if MasterObject <> nil then
-    Result := MasterObject.Name
-  else
-    Result := '???';
-  Result := Result + Format(' [%.2f; %.2f[', [DistanceMin, DistanceMax]);
-  if not Visible then
-    Result := Result + ' (hidden)';
+   if MasterObject<>nil then
+      Result:=MasterObject.Name
+   else Result:='???';
+	Result:=Result+Format(' [%.2f; %.2f[', [DistanceMin, DistanceMax]);
+   if not Visible then
+      Result:=Result+' (hidden)';
 end;
 
 // SetMasterObject
 //
-
-procedure TGLMultiProxyMaster.SetMasterObject(const val: TGLBaseSceneObject);
+procedure TGLMultiProxyMaster.SetMasterObject(const val : TGLBaseSceneObject);
 begin
-  if FMasterObject <> val then
-  begin
-    if Assigned(FMasterObject) then
-      FMasterObject.RemoveFreeNotification(OwnerObject);
-    FMasterObject := val;
-    if Assigned(FMasterObject) then
-      FMasterObject.FreeNotification(OwnerObject);
-    NotifyChange;
-  end;
+   if FMasterObject<>val then begin
+      if Assigned(FMasterObject) then
+         FMasterObject.RemoveFreeNotification(OwnerObject);
+      FMasterObject:=val;
+      if Assigned(FMasterObject) then
+         FMasterObject.FreeNotification(OwnerObject);
+      NotifyChange;
+   end;
 end;
 
 // SetDistanceMin
 //
-
-procedure TGLMultiProxyMaster.SetDistanceMin(const val: Single);
+procedure TGLMultiProxyMaster.SetDistanceMin(const val : Single);
 begin
-  if FDistanceMin <> val then
-  begin
-    FDistanceMin := val;
-    FDistanceMin2 := Sqr(val);
-    NotifyChange;
-  end;
+   if FDistanceMin<>val then begin
+      FDistanceMin:=val;
+      FDistanceMin2:=Sqr(val);
+      NotifyChange;
+   end;
 end;
 
 // SetDistanceMax
 //
-
-procedure TGLMultiProxyMaster.SetDistanceMax(const val: Single);
+procedure TGLMultiProxyMaster.SetDistanceMax(const val : Single);
 begin
-  if FDistanceMax <> val then
-  begin
-    FDistanceMax := val;
-    FDistanceMax2 := Sqr(val);
-    NotifyChange;
-  end;
+   if FDistanceMax<>val then begin
+      FDistanceMax:=val;
+      FDistanceMax2:=Sqr(val);
+      NotifyChange;
+   end;
 end;
 
 // SetVisible
 //
-
-procedure TGLMultiProxyMaster.SetVisible(const val: Boolean);
+procedure TGLMultiProxyMaster.SetVisible(const val : Boolean);
 begin
-  if FVisible <> val then
-  begin
-    FVisible := val;
-    NotifyChange;
-  end;
+   if FVisible<>val then begin
+      FVisible:=val;
+      NotifyChange;
+   end;
 end;
 
 // ------------------
@@ -301,92 +266,77 @@ end;
 
 // Create
 //
-
-constructor TGLMultiProxyMasters.Create(AOwner: TPersistent);
+constructor TGLMultiProxyMasters.Create(AOwner : TPersistent);
 begin
-  inherited Create(AOwner, TGLMultiProxyMaster)
+   inherited Create(AOwner, TGLMultiProxyMaster)
 end;
 
 // SetItems
 //
-
-procedure TGLMultiProxyMasters.SetItems(index: Integer; const val:
-  TGLMultiProxyMaster);
+procedure TGLMultiProxyMasters.SetItems(index : Integer; const val : TGLMultiProxyMaster);
 begin
-  inherited Items[index] := val;
+	inherited Items[index]:=val;
 end;
 
 // GetItems
 //
-
-function TGLMultiProxyMasters.GetItems(index: Integer): TGLMultiProxyMaster;
+function TGLMultiProxyMasters.GetItems(index : Integer) : TGLMultiProxyMaster;
 begin
-  Result := TGLMultiProxyMaster(inherited Items[index]);
+	Result:=TGLMultiProxyMaster(inherited Items[index]);
 end;
 
 // Update
 //
-
-procedure TGLMultiProxyMasters.Update(Item: TCollectionItem);
+procedure TGLMultiProxyMasters.Update(Item : TCollectionItem);
 begin
-  inherited;
-  NotifyChange;
+   inherited;
+   NotifyChange;
 end;
 
 // Add (simple)
 //
-
-function TGLMultiProxyMasters.Add: TGLMultiProxyMaster;
+function TGLMultiProxyMasters.Add : TGLMultiProxyMaster;
 begin
-  Result := (inherited Add) as TGLMultiProxyMaster;
+	Result:=(inherited Add) as TGLMultiProxyMaster;
 end;
 
 // Add (classic params)
 //
-
-function TGLMultiProxyMasters.Add(master: TGLBaseSceneObject; distanceMin,
-  distanceMax: Single): TGLMultiProxyMaster;
+function TGLMultiProxyMasters.Add(master : TGLBaseSceneObject; distanceMin, distanceMax : Single) : TGLMultiProxyMaster;
 begin
-  BeginUpdate;
-  Result := (inherited Add) as TGLMultiProxyMaster;
-  Result.MasterObject := master;
-  Result.DistanceMin := distanceMin;
-  Result.DistanceMax := distanceMax;
-  EndUpdate;
+   BeginUpdate;
+	Result:=(inherited Add) as TGLMultiProxyMaster;
+   Result.MasterObject:=master;
+   Result.DistanceMin:=distanceMin;
+   Result.DistanceMax:=distanceMax;
+   EndUpdate;
 end;
 
 // Notification
 //
-
 procedure TGLMultiProxyMasters.Notification(AComponent: TComponent);
 var
-  i: Integer;
+   i : Integer;
 begin
-  for i := 0 to Count - 1 do
-    with Items[i] do
-      if FMasterObject = AComponent then
-        FMasterObject := nil;
+   for i:=0 to Count-1 do with Items[i] do
+      if FMasterObject=AComponent then FMasterObject:=nil;
 end;
 
 // NotifyChange
 //
-
 procedure TGLMultiProxyMasters.NotifyChange;
 begin
-  if (UpdateCount = 0) and (GetOwner <> nil) and (GetOwner is
-    TGLUpdateAbleComponent) then
-    TGLUpdateAbleComponent(GetOwner).NotifyChange(Self);
+   if (UpdateCount=0) and (GetOwner<>nil) and (GetOwner is TGLUpdateAbleComponent) then
+      TGLUpdateAbleComponent(GetOwner).NotifyChange(Self);
 end;
 
 // EndUpdate
 //
-
 procedure TGLMultiProxyMasters.EndUpdate;
 begin
-  inherited EndUpdate;
-  // Workaround for a bug in VCL's EndUpdate
-  if UpdateCount = 0 then
-    NotifyChange;
+   inherited EndUpdate;
+   // Workaround for a bug in VCL's EndUpdate
+   if UpdateCount=0 then NotifyChange;
 end;
 
 // ------------------
@@ -395,20 +345,15 @@ end;
 
 // Create
 //
-
 constructor TGLMultiProxy.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDoesTemperWithColorsOrFaceWinding,
-    osDirectDraw];
-  FMasterObjects := TGLMultiProxyMasters.Create(Self);
-  FOneMasterPerInterval := False;
-  FRenderChildrenWithMasters := False;
+   inherited Create(AOwner);
+   ObjectStyle:=ObjectStyle+[osDirectDraw];
+   FMasterObjects:=TGLMultiProxyMasters.Create(Self);
 end;
 
 // Destroy
 //
-
 destructor TGLMultiProxy.Destroy;
 begin
   inherited Destroy;
@@ -417,194 +362,143 @@ end;
 
 // Notification
 //
-
-procedure TGLMultiProxy.Notification(AComponent: TComponent; Operation:
-  TOperation);
+procedure TGLMultiProxy.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-  if Operation = opRemove then
-    FMasterObjects.Notification(AComponent);
-  inherited;
+   if Operation=opRemove then
+      FMasterObjects.Notification(AComponent);
+   inherited;
 end;
 
 // SetMasterObjects
 //
-
-procedure TGLMultiProxy.SetMasterObjects(const val: TGLMultiProxyMasters);
+procedure TGLMultiProxy.SetMasterObjects(const val : TGLMultiProxyMasters);
 begin
-  FMasterObjects.Assign(val);
-  StructureChanged;
-end;
-
-procedure TGLMultiProxy.SetOneMasterPerInterval(Value: Boolean);
-begin
-  if Value <> FOneMasterPerInterval then
-  begin
-    FOneMasterPerInterval := Value;
-    StructureChanged;
-  end;
-end;
-
-procedure TGLMultiProxy.SetRenderChildrenWithMasters(Value: Boolean);
-begin
-  if Value <> FRenderChildrenWithMasters then
-  begin
-    FRenderChildrenWithMasters := Value;
-    StructureChanged;
-  end;
+   FMasterObjects.Assign(val);
+   StructureChanged;
 end;
 
 // Assign
 //
-
 procedure TGLMultiProxy.Assign(Source: TPersistent);
 begin
-  if Source is TGLMultiProxy then
-  begin
-    MasterObjects := TGLMultiProxy(Source).MasterObjects;
-  end;
-  inherited;
+   if Source is TGLMultiProxy then begin
+      MasterObjects:=TGLMultiProxy(Source).MasterObjects;
+   end;
+   inherited;
 end;
 
 // Render
 //
-
-procedure TGLMultiProxy.DoRender(var rci: TRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
+procedure TGLMultiProxy.DoRender(var rci : TRenderContextInfo;
+                                  renderSelf, renderChildren : Boolean);
 var
-  i: Integer;
-  oldProxySubObject: Boolean;
-  mpMaster: TGLMultiProxyMaster;
-  master: TGLBaseSceneObject;
-  d2: Single;
-  RenderChildrenFlag: Boolean;
+   i : Integer;
+   oldProxySubObject : Boolean;
+   mpMaster : TGLMultiProxyMaster;
+   master : TGLBaseSceneObject;
+   d2 : Single;
 begin
-  if FRendering then
-    Exit;
-  FRendering := True;
-  RenderChildrenFlag := renderChildren and (Count > 0)
-    and FRenderChildrenWithMasters;
-  try
-    d2 := VectorDistance2(rci.cameraPosition, AbsolutePosition);
-    for i := 0 to MasterObjects.Count - 1 do
-    begin
-      mpMaster := MasterObjects[i];
-      if mpMaster.Visible then
-      begin
-        master := mpMaster.MasterObject;
-        if (master <> nil) and (d2 >= mpMaster.FDistanceMin2) and (d2 <
-          mpMaster.FDistanceMax2) then
-        begin
-          oldProxySubObject := rci.proxySubObject;
-          rci.proxySubObject := True;
-          glMultMatrixf(PGLFloat(master.MatrixAsAddress));
-          master.DoRender(rci, renderSelf, (master.Count > 0));
-          rci.proxySubObject := oldProxySubObject;
-          if RenderChildrenFlag then
-            Self.RenderChildren(0, Count - 1, rci);
-          if FOneMasterPerInterval then
-            break;
-        end;
+   if FRendering then Exit;
+   FRendering:=True;
+   try
+      d2:=VectorDistance2(rci.cameraPosition, AbsolutePosition);
+      for i:=0 to MasterObjects.Count-1 do begin
+         mpMaster:=MasterObjects[i];
+         if mpMaster.Visible then begin
+            master:=mpMaster.MasterObject;
+            if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
+               oldProxySubObject:=rci.proxySubObject;
+               rci.proxySubObject:=True;
+               glMultMatrixf(PGLFloat(master.MatrixAsAddress));
+               master.DoRender(rci, renderSelf, (master.Count>0));
+               rci.proxySubObject:=oldProxySubObject;
+            end;
+         end;
       end;
-    end;
-
-    if renderChildren and (Count > 0) and not FRenderChildrenWithMasters then
-      Self.RenderChildren(0, Count - 1, rci);
-  finally
-    FRendering := False;
-  end;
-  ClearStructureChanged;
+      // now render self stuff (our children, our effects, etc.)
+      if renderChildren and (Count>0) then
+         Self.RenderChildren(0, Count-1, rci);
+//      if masterGotEffects then
+//         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+   finally
+      FRendering:=False;
+   end;
+   ClearStructureChanged;
 end;
 
 // PrimaryMaster
 //
-
-function TGLMultiProxy.PrimaryMaster: TGLBaseSceneObject;
+function TGLMultiProxy.PrimaryMaster : TGLBaseSceneObject;
 begin
-  if MasterObjects.Count > 0 then
-    Result := MasterObjects[0].MasterObject
-  else
-    Result := nil;
+   if MasterObjects.Count>0 then
+      Result:=MasterObjects[0].MasterObject
+   else Result:=nil;
 end;
 
 // AxisAlignedDimensions
 //
-
-function TGLMultiProxy.AxisAlignedDimensionsUnscaled: TVector;
+function TGLMultiProxy.AxisAlignedDimensionsUnscaled : TVector;
 var
-  master: TGLBaseSceneObject;
+   master : TGLBaseSceneObject;
 begin
-  master := PrimaryMaster;
-  if Assigned(master) then
-  begin
-    Result := master.AxisAlignedDimensionsUnscaled;
-  end
-  else
-    Result := inherited AxisAlignedDimensionsUnscaled;
+   master:=PrimaryMaster;
+   if Assigned(master) then begin
+      Result:=master.AxisAlignedDimensionsUnscaled;
+   end else Result:=inherited AxisAlignedDimensionsUnscaled;
 end;
 
 // RayCastIntersect
 //
-
-function TGLMultiProxy.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+function TGLMultiProxy.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
 var
-  localRayStart, localRayVector: TVector;
-  master: TGLBaseSceneObject;
+   localRayStart, localRayVector : TVector;
+   master : TGLBaseSceneObject;
 begin
-  master := PrimaryMaster;
-  if Assigned(master) then
-  begin
-    SetVector(localRayStart, AbsoluteToLocal(rayStart));
-    SetVector(localRayStart, master.LocalToAbsolute(localRayStart));
-    SetVector(localRayVector, AbsoluteToLocal(rayVector));
-    SetVector(localRayVector, master.LocalToAbsolute(localRayVector));
-    NormalizeVector(localRayVector);
+   master:=PrimaryMaster;
+   if Assigned(master) then begin
+      SetVector(localRayStart, AbsoluteToLocal(rayStart));
+      SetVector(localRayStart, master.LocalToAbsolute(localRayStart));
+      SetVector(localRayVector, AbsoluteToLocal(rayVector));
+      SetVector(localRayVector, master.LocalToAbsolute(localRayVector));
+      NormalizeVector(localRayVector);
 
-    Result := master.RayCastIntersect(localRayStart, localRayVector,
-      intersectPoint, intersectNormal);
-    if Result then
-    begin
-      if Assigned(intersectPoint) then
-      begin
-        SetVector(intersectPoint^, master.AbsoluteToLocal(intersectPoint^));
-        SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+      Result:=master.RayCastIntersect(localRayStart, localRayVector,
+                                            intersectPoint, intersectNormal);
+      if Result then begin
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, master.AbsoluteToLocal(intersectPoint^));
+            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, master.AbsoluteToLocal(intersectNormal^));
+            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         end;
       end;
-      if Assigned(intersectNormal) then
-      begin
-        SetVector(intersectNormal^, master.AbsoluteToLocal(intersectNormal^));
-        SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
-      end;
-    end;
-  end
-  else
-    Result := False;
+   end else Result:=False;
 end;
 
 // GenerateSilhouette
 //
-
-function TGLMultiProxy.GenerateSilhouette(const silhouetteParameters:
-  TGLSilhouetteParameters): TGLSilhouette;
+function TGLMultiProxy.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
-  master: TGLBaseSceneObject;
+   master : TGLBaseSceneObject;
 begin
-  master := PrimaryMaster;
-  if Assigned(master) then
-    Result := master.GenerateSilhouette(silhouetteParameters)
-  else
-    Result := nil;
+   master:=PrimaryMaster;
+   if Assigned(master) then
+      Result:=master.GenerateSilhouette(silhouetteParameters)
+   else Result:=nil;
 end;
 
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
-  RegisterClasses([TGLMultiProxy]);
+   RegisterClasses([TGLMultiProxy]);
 
 end.
-

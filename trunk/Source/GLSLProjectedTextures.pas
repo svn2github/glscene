@@ -55,7 +55,8 @@ uses
     GLContext,
     sysutils,
     GLColor,
-    GLRenderContextInfo;
+    GLRenderContextInfo,
+    GLTextureFormat;
 
 type
     TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);
@@ -612,9 +613,7 @@ begin
         if emitters.count > 0 then
             Shader.Uniform1i['ProjMap'] := 2;
 
-        rci.GLStates.ActiveTexture := 2;
-        rci.GLStates.SetGLCurrentTexture(2, GL_TEXTURE_2D, Material.Texture.Handle);
-        rci.GLStates.ActiveTexture := 0;
+        rci.GLStates.TextureBinding[2, ttTexture2D] := Material.Texture.Handle;
 
         self.RenderChildren(0, Count - 1, rci);
 

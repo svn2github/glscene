@@ -58,6 +58,9 @@
 // Activate Experimental parts
 {.$DEFINE GLS_EXPERIMENTAL}
 
+// Activate OpenGL debug mode
+{.$DEFINE GLS_OPENGL_DEBUG}
+
 //
 // Platform Detection
 //

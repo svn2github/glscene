@@ -9,6 +9,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Optimization of switching states
       <li>12/03/09 - DanB - Bug-fix for scissor test on recent NVidia drivers
@@ -31,7 +32,7 @@ interface
 {$I GLScene.inc}
 
 uses Classes, GLScene, VectorGeometry, OpenGL1x, GLObjects,
-   GLCrossPlatform, GLColor, GLRenderContextInfo, GLState;
+   GLCrossPlatform, GLColor, GLRenderContextInfo, GLState, GLTextureFormat;
 
 type
 
@@ -228,7 +229,7 @@ begin
 
             glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
             glLoadMatrixf(@CurrentBuffer.ViewMatrix);
-            CurrentBuffer.PushModelViewMatrix(curMat);
+            CurrentBuffer.PushViewMatrix(curMat);
 
             ARci.GLStates.Disable(stCullFace);
             ARci.GLStates.Enable(stNormalize);
@@ -237,7 +238,7 @@ begin
 
             oldIgnoreMaterials:=ARci.ignoreMaterials;
             ARci.ignoreMaterials:=True;
-            ARci.GLStates.Disable(stTexture2D);
+            ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
             ARci.GLStates.Disable(stLighting);
             ARci.GLStates.Disable(stFog);
 
@@ -269,7 +270,7 @@ begin
             ARci.ignoreMaterials:=oldIgnoreMaterials;
 
             // Restore to "normal"
-            CurrentBuffer.PopModelViewMatrix;
+            CurrentBuffer.PopViewMatrix;
             glLoadMatrixf(@CurrentBuffer.ViewMatrix);
             glPopMatrix;
 

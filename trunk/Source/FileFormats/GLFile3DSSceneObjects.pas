@@ -6,6 +6,7 @@
   3ds-specific scene objects.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
       <li>06/04/08 - DaStr - Initial version (by Lexer)
@@ -209,8 +210,6 @@ begin
   BuildFace;
 
   glPopMatrix;
-  rci.GLStates.ResetGLPolygonMode;
-
 end;
 
 procedure TGLFile3DSLight.CoordinateChanged(Sender: TGLCustomCoordinates);

@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>24/02/10 - Yar - Bugfix in TGLCustomBitmapFont.PrepareImage when image is not RGBA8
       <li>25/01/10 - Yar - Replace Char to AnsiChar
@@ -47,7 +48,7 @@ interface
 
 uses Classes, Graphics, GLScene, VectorGeometry, GLContext, GLCrossPlatform,
      GLTexture, GLState, GLUtils, GLGraphics, GLColor, BaseClasses,
-     GLRenderContextInfo;
+     GLRenderContextInfo, GLTextureFormat;
 
 type
 
@@ -853,7 +854,7 @@ begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
-      rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
+      rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
       //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
       // texture registration
       if Glyphs.Width<>0 then begin
@@ -874,15 +875,14 @@ begin
    vBottomRight[3]:=1;
    spaceDeltaH:=GetCharWidth(#32)+HSpaceFix+HSpace;
    // set states
-	glEnable(GL_TEXTURE_2D);
+   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
    rci.GLStates.Disable(stLighting);
    rci.GLStates.Enable(stBlend);
    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
+   rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
    //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    // start rendering
-   rci.GLStates.PushAttrib([sttCurrent]);
    glColor4fv(@color);
    glBegin(GL_QUADS);
    for i:=1 to Length(aString) do begin
@@ -922,11 +922,9 @@ begin
       end;
    end;
    glEnd;
-   rci.GLStates.PopAttrib;
    // unbind texture
-   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, 0);
-//   rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
-   rci.GLStates.ResetGLCurrentTexture;
+   rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
+   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
 // TextOut
@@ -936,13 +934,11 @@ procedure TGLCustomBitmapFont.TextOut(var rci : TRenderContextInfo;
 var
    v : TVector;
 begin
-   rci.GLStates.PushAttrib([sttEnable]);
    v[0]:=x;
    v[1]:=y;
    v[2]:=0;
    v[3]:=1;
    RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
-   rci.GLStates.PopAttrib;
 end;
 
 // TextOut
@@ -1124,7 +1120,6 @@ procedure TGLFlatText.DoRender(var rci : TRenderContextInfo;
 begin
    if Assigned(FBitmapFont) and (Text<>'') then begin
       rci.GLStates.PolygonMode := pmFill;
-      rci.GLStates.PushAttrib([sttEnable]);
       if FModulateColor.Alpha<>1 then begin
          rci.GLStates.Enable(stBlend);
          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
@@ -1132,7 +1127,6 @@ begin
       if ftoTwoSided in FOptions then
          rci.GLStates.Disable(stCullFace);
       FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
-      rci.GLStates.PopAttrib;
    end;
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);

@@ -6,6 +6,7 @@
    A PFX whose particles are lines
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>12/10/08 - DanB - updated to use RCI
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)

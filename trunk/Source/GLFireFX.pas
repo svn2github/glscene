@@ -6,6 +6,7 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar -  Replaced glNewList to GLState.NewList in TGLBFireFX.Render
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -34,7 +35,7 @@ interface
 
 uses Classes, GLScene, XCollection, VectorGeometry,
      GLCadencer, GLColor, BaseClasses, GLCoordinates, GLManager,
-     GLRenderContextInfo, GLState;
+     GLRenderContextInfo, GLState, GLTextureFormat;
 
 type
 
@@ -699,7 +700,6 @@ var
 begin
    if Manager=nil then Exit;
 
-   rci.GLStates.PushAttrib(cAllAttribBits);
    glPushMatrix;
    // revert to the base model matrix in the case of a referenced fire
    if Assigned(Manager.Reference) then begin
@@ -707,7 +707,7 @@ begin
    end;
 
    rci.GLStates.Disable(stCullFace);
-   glDisable(GL_TEXTURE_2D);
+   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
    rci.GLStates.Disable(stLighting);
    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
    rci.GLStates.Enable(stBlend);
@@ -744,7 +744,7 @@ begin
             SetVector(lastTr, fp^.Position);
             innerColor[3]:=fp^.Alpha*fp^.TimeToLive/Sqr(fp^.LifeLength);
             glColor4fv(@innerColor);
-            glCallList(FHandle);
+            rci.GLStates.CallList(FHandle);
          end;
          glPopMatrix;
       finally
@@ -755,11 +755,8 @@ begin
       distList.Free;
    end;
 
-   if Manager.NoZWrite then
-      rci.GLStates.DepthWriteMask := True;
    rci.GLStates.DepthFunc := cfLess;
    glPopMatrix;
-   rci.GLStates.PopAttrib;
 end;
 
 // ------------------------------------------------------------------

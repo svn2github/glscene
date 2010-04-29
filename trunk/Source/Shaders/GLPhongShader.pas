@@ -6,6 +6,7 @@
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>28/07/09 - DaStr - Small changes and simplifications  
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
@@ -27,7 +28,7 @@ uses
 
   // GLScene
   GLTexture, ARBProgram, VectorGeometry, VectorLists, OpenGL1x, GLAsmShader,
-  GLRenderContextInfo, GLCustomShader, GLState;
+  GLRenderContextInfo, GLCustomShader, GLContext, GLState;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)
@@ -65,8 +66,6 @@ begin
 
   GetActiveLightsList(FLightIDs);
   FAmbientPass := False;
-  rci.GLStates.PushAttrib([sttEnable, sttTexture, sttDepthBuffer,
-                           sttColorBuffer]);
 
   if FLightIDs.Count > 0 then
   begin
@@ -108,8 +107,7 @@ begin
     Result := True;
     Exit;
   end;
-
-  rci.GLStates.PopAttrib;
+  rci.GLStates.DepthFunc := cfLEqual;
 end;
 
 // DoInitialize
@@ -252,13 +250,16 @@ var
 begin
   Self.ApplyShaderPrograms();
 
-  glGetLightfv(lightID, GL_POSITION, @LightParam);
-  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
-
-  glGetLightfv(lightID, GL_DIFFUSE, @LightParam);
-  glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
-  glGetLightfv(lightID, GL_SPECULAR, @LightParam);
-  glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
+  with CurrentGLContext.GLStates do
+  begin
+    glGetLightfv(GL_LIGHT0+lightID, GL_POSITION, @LightParam);
+    LightParam := LightParam;
+    glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
+    LightParam := LightDiffuse[lightID];
+    glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
+    LightParam := LightSpecular[lightID];
+    glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
+  end;
 end;
 
 initialization

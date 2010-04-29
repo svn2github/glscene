@@ -16,6 +16,7 @@
    <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/10/07 - DaStr - Added $I GLScene.inc, removed unused dependancy
       <li>25/03/07 - DaStr - Replaced Dialogs with GLCrossPlatform for Delphi5 compatibility
       <li>22/03/07 - LIN - Added UseDirtyTiles property - Specifies how dirty tiles are replaced.

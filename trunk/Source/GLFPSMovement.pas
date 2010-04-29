@@ -6,6 +6,7 @@
    FPS-like movement behaviour and manager.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>03/04/07 - DaStr - Added "public" to TCollisionState for FPC compatibility
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -827,7 +828,6 @@ var
 begin
 //  caption:= IntToStr(CollisionStates.Count);
   glColor3f(1,1,1);
-  rci.GLStates.PushAttrib([sttLighting]);
   rci.GLStates.Disable(stLighting);
   //draw position trail
   glBegin(GL_LINE_STRIP);
@@ -853,7 +853,6 @@ begin
       CollisionState.Contact.intPoint[2]+CollisionState.Contact.intNormal[2]);//GLSphere4.Radius);
   end;
   glEnd();
-  rci.GLStates.PopAttrib;
 end;
 
 // ------------------------------------------------------------------

@@ -4,6 +4,7 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
     <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -27,7 +28,7 @@ interface
 
 uses Classes, GLScene, XCollection, VectorGeometry,
     GLCadencer, GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo,
-    GLManager, GLState;
+    GLManager, GLState, GLTextureFormat;
 
 type
   PThorpoint = ^TThorpoint;
@@ -517,7 +518,6 @@ var
 begin
    if Manager=nil then Exit;
 
-   rci.GLStates.PushAttrib(cAllAttribBits);
    glPushMatrix;
    // we get the object position and apply translation...
    //absPos:=OwnerBaseSceneObject.AbsolutePosition;
@@ -525,7 +525,7 @@ begin
    // in the point system (and will also make a better flame effect)
 
    rci.GLStates.Disable(stCullFace);
-   glDisable(GL_TEXTURE_2D);
+   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
    rci.GLStates.Disable(stLighting);
    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
    rci.GLStates.Enable(stBlend);
@@ -553,8 +553,6 @@ begin
       SetVector(innerColor, Manager.FInnerColor.Color);
 
       //---------------
-      rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLighting, sttLine,
-                               sttColorBuffer]);
       rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
       rci.GLStates.Enable(stBlend);
       rci.GLStates.Enable(stLineSmooth);
@@ -604,15 +602,12 @@ begin
        end;//Glow
       end;
 
-      //(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
-      rci.GLStates.PopAttrib;
       glPopMatrix;
 
       objList.Free;
       distList.Free;
    end;
    glPopMatrix;
-   rci.GLStates.PopAttrib;
 end;
 
 // GetOrCreateThorFX

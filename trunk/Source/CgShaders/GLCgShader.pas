@@ -6,6 +6,7 @@
    Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)   
       <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
@@ -72,7 +73,7 @@ uses
   // GLScene
   VectorGeometry, VectorLists, VectorTypes, GLTexture, GLStrings,
   GLCadencer, OpenGL1x, GLCrossPlatform, GLContext, BaseClasses,
-  GLRenderContextInfo, GLMaterial,
+  GLRenderContextInfo, GLMaterial, GLTextureFormat,
 
   // CG
   Cg, CgGL;
@@ -1023,11 +1024,11 @@ procedure TCgParameter.SetToTextureOf(LibMaterial: TGLLibMaterial);
 var TexType : TCGtype;
 begin
   case LibMaterial.Material.Texture.Image.NativeTextureTarget of
-    GL_TEXTURE_2D : TexType:=CG_SAMPLER2D;
-    GL_TEXTURE_CUBE_MAP_ARB : TexType:=CG_SAMPLER2D;
-    GL_TEXTURE_RECTANGLE_NV : TexType:=CG_SAMPLERRECT;
-    GL_TEXTURE_1D : TexType:=CG_SAMPLER1D;
-    GL_TEXTURE_3D : TexType:=CG_SAMPLER3D;
+    ttTexture2D : TexType:=CG_SAMPLER2D;
+    ttTextureCUBE : TexType:=CG_SAMPLER2D;
+    ttTextureRECT : TexType:=CG_SAMPLERRECT;
+    ttTexture1D : TexType:=CG_SAMPLER1D;
+    ttTexture3D : TexType:=CG_SAMPLER3D;
   else begin
       assert(false, 'Unknown texture target');
       TexType:=CG_SAMPLER2D; // to subpress compilation warning

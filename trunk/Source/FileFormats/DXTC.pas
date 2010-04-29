@@ -1230,6 +1230,7 @@ begin
         tfRG16F:                            dwFourCC := FOURCC_G16R16F;
         tfLUMINANCE_ALPHA_FLOAT32,
         tfRG32F:                            dwFourCC := FOURCC_G32R32F;
+        tfRGBA_FLOAT32:                     dwFourCC := FOURCC_A32B32G32R32F
         else Result := false;
       end;
     end;

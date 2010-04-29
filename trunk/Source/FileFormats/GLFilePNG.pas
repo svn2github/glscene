@@ -4,6 +4,7 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>22/04/10 - Yar - Fixes after GLState revision
         <li>16/03/10 - Yar - Improved FPC compatibility
         <li>05/03/10 - Yar - Creation
    </ul><p>
@@ -36,8 +37,8 @@ type
 
     {: Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLenum;
-      textureTarget: TGLenum;
+      const textureHandle: TGLuint;
+      textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); override;
 
@@ -100,14 +101,14 @@ end;
 procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
 begin
 {$IFDEF GLS_LOGGING}
-  Log.Log(string(str), lkError);
+  GLSLogger.Log(string(str), lkError);
 {$ENDIF}
 end;
 
 procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
 begin
 {$IFDEF GLS_LOGGING}
-  Log.Log(string(str), lkWarning);
+  GLSLogger.Log(string(str), lkWarning);
 {$ENDIF}
 end;
 {$ENDIF}
@@ -518,8 +519,8 @@ end;
 //
 
 procedure TGLPNGImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLenum;
-  textureTarget: TGLenum;
+  const textureHandle: TGLuint;
+  textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
   const intFormat: TGLInternalFormat);
 var
@@ -527,9 +528,10 @@ var
   contextActivate: Boolean;
   texFormat, texResident: Cardinal;
   residentFormat: TGLInternalFormat;
+  glTarget: TGLEnum;
 begin
-  if not ((textureTarget = GL_TEXTURE_2D)
-    or (textureTarget = GL_TEXTURE_RECTANGLE)) then
+  if not ((textureTarget = ttTexture2D)
+    or (textureTarget = ttTextureRect)) then
     Exit;
 
   oldContext := CurrentGLContext;
@@ -540,24 +542,24 @@ begin
       oldContext.Deactivate;
     textureContext.Activate;
   end;
+  glTarget := DecodeGLTextureTarget(textureTarget);
 
   try
-    textureContext.GLStates.SetGLCurrentTexture(0, textureTarget,
-      textureHandle);
+    textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
     //Check for texture is resident in texture memory
-    glGetTexParameteriv(textureTarget, GL_TEXTURE_RESIDENT, @texResident);
+    glGetTexParameteriv(glTarget, GL_TEXTURE_RESIDENT, @texResident);
     if texResident = GL_TRUE then
     begin
       fMipLevels := 0;
       fCubeMap := false;
       fTextureArray := false;
       // Check level existence
-      glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat > 1 then
       begin
-        glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
         fDepth := 0;
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CurrentFormat then
@@ -573,7 +575,7 @@ begin
         ReallocMem(FData, DataSize);
         fLevels.Clear;
         fLevels.Add(fData);
-        glGetTexImage(textureTarget, 0, fColorFormat, fDataType, fData);
+        glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
       end
       else
         fMipLevels := 1;

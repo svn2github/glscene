@@ -7,6 +7,7 @@
    for use as a skybox always centered on the camera.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>26/03/09 - DanB - Skybox is now a TGLCameraInvariantObject
       <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
@@ -157,7 +158,6 @@ begin
   Arci.ignoreDepthRequests := true;
   inherited;
   Arci.ignoreDepthRequests := False;
-  Arci.GLStates.DepthWriteMask := True;
 end;
 // DoRender
 //

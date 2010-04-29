@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
@@ -138,9 +139,20 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, GLScene, OpenGL1x, SysUtils,
-  VectorLists, GLCrossPlatform, GLContext, GLSilhouette, GLColor,
-  GLRenderContextInfo, BaseClasses, GLNodes, GLCoordinates;
+uses Classes,
+  VectorGeometry,
+  GLScene,
+  OpenGL1x,
+  SysUtils,
+  VectorLists,
+  GLCrossPlatform,
+  GLContext,
+  GLSilhouette,
+  GLColor,
+  GLRenderContextInfo,
+  BaseClasses,
+  GLNodes,
+  GLCoordinates;
 
 type
 
@@ -546,8 +558,6 @@ type
        You must call RestoreLineStyle after drawing your lines.<p>
        You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TRenderContextInfo);
-    {: Restore OpenGL states, must follow a SetupLineStyle }
-    procedure RestoreLineStyle(var rci: TRenderContextInfo);
 
   public
     { Public Declarations }
@@ -905,7 +915,11 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses GLStrings, Spline, XOpenGL, GLState;
+uses GLStrings,
+  Spline,
+  XOpenGL,
+  GLState,
+  GLTextureFormat;
 
 const
   cDefaultPointSize: Single = 1.0;
@@ -919,7 +933,10 @@ procedure CubeWireframeBuildList(var rci: TRenderContextInfo;
 var
   mi, ma: Single;
 begin
-  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLighting, sttLine, sttColorBuffer]);
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL_GREMEDY_string_marker then
+    glStringMarkerGREMEDY(22, 'CubeWireframeBuildList');
+{$ENDIF}
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stLineSmooth);
   if stipple then
@@ -927,14 +944,15 @@ begin
     rci.GLStates.Enable(stLineStipple);
     rci.GLStates.Enable(stBlend);
     rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    glLineStipple(1, $CCCC);
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $CCCC;
   end;
   rci.GLStates.LineWidth := 1;
   ma := 0.5 * size;
   mi := -ma;
-  rci.GLStates.ResetGLMaterialColors;
-  glColorMaterial(GL_FRONT, GL_EMISSION);
-  rci.GLStates.Enable(stColorMaterial);
+
+//  rci.GLStates.SetGLMaterialColors(cmFront, color, clrGray20, clrGray80,
+//    clrBlack, 0);
   glColor4fv(@color);
   glBegin(GL_LINE_STRIP);
   // front face
@@ -962,7 +980,6 @@ begin
   glVertex3f(ma, mi, ma);
   glVertex3f(mi, mi, ma);
   glEnd;
-  rci.GLStates.PopAttrib;
 end;
 
 // DodecahedronBuildList
@@ -1148,7 +1165,7 @@ begin
         rci.GLStates.EndList;
       end;
     end;
-    glCallList(FGroupList.Handle);
+    rci.GLStates.CallList(FGroupList.Handle);
   end
   else
   begin
@@ -1229,13 +1246,8 @@ begin
   if val <> FAmalgamate then
   begin
     FAmalgamate := val;
-    if val then
-      ObjectStyle := ObjectStyle + [osDoesTemperWithColorsOrFaceWinding]
-    else
-    begin
+    if not val then
       FGroupList.DestroyHandle;
-      ObjectStyle := ObjectStyle - [osDoesTemperWithColorsOrFaceWinding]
-    end;
     inherited StructureChanged;
   end;
 end;
@@ -2064,7 +2076,6 @@ begin
     glColorPointer(4, GL_FLOAT, 0, FColors.List);
     glEnableClientState(GL_COLOR_ARRAY);
   end;
-  rci.GLStates.PushAttrib([sttEnable, sttColorBuffer, sttDepthBuffer]);
   rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
@@ -2125,7 +2136,6 @@ begin
   glDisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
     glDisableClientState(GL_COLOR_ARRAY);
-  rci.GLStates.PopAttrib;
 end;
 
 // StoreSize
@@ -2320,46 +2330,41 @@ end;
 
 procedure TGLLineBase.SetupLineStyle(var rci: TRenderContextInfo);
 begin
-  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer,
-    sttDepthBuffer]);
-  rci.GLStates.Disable(stLighting);
-  if FLinePattern <> $FFFF then
+  with rci.GLStates do
   begin
-    rci.GLStates.Enable(stLineStipple);
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    glLineStipple(1, FLinePattern);
-  end;
-  if FAntiAliased then
-  begin
-    rci.GLStates.Enable(stLineSmooth);
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-  end
-  else
-    rci.GLStates.Disable(stLineSmooth);
-  rci.GLStates.LineWidth := FLineWidth;
-  if FLineColor.Alpha <> 1 then
-  begin
-    if not FAntiAliased then
+    Disable(stLighting);
+    if FLinePattern <> $FFFF then
     begin
-      rci.GLStates.Enable(stBlend);
-      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    end;
-    glColor4fv(FLineColor.AsAddress);
-  end
-  else
-    glColor3fv(FLineColor.AsAddress);
-  rci.GLStates.DepthWriteMask := True;
-  rci.GLStates.DepthFunc := cfLess;
-end;
+      Enable(stLineStipple);
+      Enable(stBlend);
+      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      LineStippleFactor := 1;
+      LineStipplePattern := FLinePattern;
+    end
+    else
+      Disable(stLineStipple);
+    if FAntiAliased then
+    begin
+      Enable(stLineSmooth);
+      Enable(stBlend);
+      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    end
+    else
+      Disable(stLineSmooth);
+    LineWidth := FLineWidth;
 
-// RestoreLineStyle
-//
-
-procedure TGLLineBase.RestoreLineStyle(var rci: TRenderContextInfo);
-begin
-  rci.GLStates.PopAttrib;
+    if FLineColor.Alpha <> 1 then
+    begin
+      if not FAntiAliased then
+      begin
+        Enable(stBlend);
+        SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      end;
+      glColor4fv(FLineColor.AsAddress);
+    end
+    else
+      glColor3fv(FLineColor.AsAddress);
+  end;
 end;
 
 // ------------------
@@ -2895,23 +2900,19 @@ begin
       SetLength(colorBuffer, 0);
     end;
 
-    RestoreLineStyle(rci);
-
     if FNodesAspect <> lnaInvisible then
     begin
-      rci.GLStates.PushAttrib([sttEnable]);
       if not rci.ignoreBlendingRequests then
       begin
         rci.GLStates.Enable(stBlend);
         rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
-      glDisable(GL_TEXTURE_2D);
+      rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
       if GL_ARB_texture_cube_map then
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+        rci.GLStates.ActiveTextureEnabled[ttTextureCube] := False;
       for i := 0 to Nodes.Count - 1 do
         with TGLLinesNode(Nodes[i]) do
           DrawNode(rci, X, Y, Z, Color);
-      rci.GLStates.PopAttrib;
     end;
   end;
 end;

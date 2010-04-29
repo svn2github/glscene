@@ -6,6 +6,7 @@
    Texture-based Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
@@ -204,7 +205,6 @@ begin
   glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
 
 
-  rci.GLStates.PushAttrib([sttEnable]);
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Disable(stDepthTest);
   rci.GLStates.Enable(stBlend);
@@ -284,7 +284,6 @@ begin
 
    // restore state
 
-  rci.GLStates.PopAttrib;
   glPopMatrix;
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix;

@@ -7,6 +7,7 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
                             TGLRevolutionSolid & TGLExtrusionSolid
@@ -1062,7 +1063,6 @@ begin
       rSpline:=nil;
    end;
    if NodesColorMode<>pncmNone then begin
-      rci.GLStates.PushAttrib([sttEnable]);
       rci.GLStates.Enable(stColorMaterial);
       glColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
    end;
@@ -1134,8 +1134,6 @@ begin
       posSpline.Free;
       rSpline.Free;
    end;
-   if (NodesColorMode<>pncmNone) then
-      rci.GLStates.PopAttrib;
 end;
 
 // ------------------

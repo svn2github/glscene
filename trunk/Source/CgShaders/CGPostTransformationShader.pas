@@ -8,6 +8,7 @@
    Does not have any practical use, but is fun to play around with.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/04/07 - DaStr - Contributed to GLScene
       <li>04/11/06 - DaStr - Creation (based on demo by Rick)
 
@@ -24,7 +25,7 @@ uses
 
   // GLScene
   GLTexture,  GLCadencer, GLContext, OpenGL1x, GLScene, GLCustomShader,
-  GLRenderContextInfo,
+  GLRenderContextInfo, GLTextureFormat,
 
   // CG Shaders
   Cg, CgGL, GLCgShader;
@@ -39,7 +40,7 @@ type
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
 
     // Implementing IGLPostShader.
-    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; TextureTarget: TGLTextureTarget);
     function GetTextureTarget: TGLTextureTarget;
   public
     constructor Create(AOwner: TComponent); override;
@@ -130,7 +131,7 @@ begin
 end;
 
 procedure TGLCustomCGPostTransformationShader.DoUseTempTexture(
-  const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+  const TempTexture: TGLTextureHandle; TextureTarget: TGLTextureTarget);
 begin
   FragmentProgram.ParamByName('snapshotTex').SetAsTextureRECT(TempTexture.Handle);
   FragmentProgram.ParamByName('snapshotTex').EnableTexture;

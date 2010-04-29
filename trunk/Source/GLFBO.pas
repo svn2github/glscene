@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
       <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
       <li>22/01/10 - Yar   - Adapted to Handles of GLContext,
@@ -25,7 +26,7 @@ interface
 
 uses
   OpenGL1x,
-  GLScene, GLContext, GLTexture, GLColor, GLRenderContextInfo;
+  GLScene, GLContext, GLState, GLTexture, GLColor, GLRenderContextInfo;
 
 const
   MaxColorAttachments = 32;
@@ -144,6 +145,8 @@ type
     procedure AttachTexture(n: Integer; Texture: TGLTexture); overload;
     procedure DetachTexture(n: Integer);
 
+    function GetStringStatus(out clarification: string): TGLFramebufferStatus;
+    property Status: TGLFramebufferStatus read GetStatus;
     procedure Bind;
     procedure Unbind;
 
@@ -157,14 +160,12 @@ type
     property Height: Integer read FHeight write SetHeight;
     property Layer: Integer read FLayer write SetLayer;
     property Level: Integer read FLevel write SetLevel;
-
-    property Status: TGLFramebufferStatus read GetStatus;
   end;
 
 implementation
 
 uses
-  GLUtils, GLGraphics, GLTextureFormat;
+  GLUtils, GLGraphics, GLTextureFormat, VectorTypes;
 
 { TGLRenderbuffer }
 
@@ -217,9 +218,7 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  if FRenderbufferHandle.Handle = 0 then
-    FRenderbufferHandle.AllocateHandle;
-  FRenderbufferHandle.Bind;
+  glBindRenderbuffer(GL_RENDERBUFFER, Handle);
   if not FStorageValid then
   begin
     internalFormat := GetInternalFormat;
@@ -229,7 +228,7 @@ end;
 
 procedure TGLRenderbuffer.Unbind;
 begin
-  FRenderbufferHandle.Unbind;
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
 end;
 
 { TGLDepthRBO }
@@ -315,7 +314,7 @@ end;
 
 procedure TGLFrameBuffer.AttachTexture(n: Integer; Texture: TGLTexture);
 var
-  textarget: GLenum;
+  textarget: TGLTextureTarget;
 begin
   Assert(n < MaxColorAttachments);
   Texture.Handle;
@@ -323,11 +322,11 @@ begin
   textarget := Texture.Image.NativeTextureTarget;
   // Store mipmaping requires
   if not ((Texture.MinFilter in [miNearest, miLinear])
-    or (textarget = GL_TEXTURE_RECTANGLE)) then
+    or (textarget = ttTextureRect)) then
     FTextureMipmap := FTextureMipmap or (1 shl n);
 
   AttachTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + n,
-    textarget, Texture.Handle,
+    DecodeGLTextureTarget(textarget), Texture.Handle,
     FLevel, FLayer);
 end;
 
@@ -388,9 +387,13 @@ begin
   if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
     FTextureMipmap := FTextureMipmap or (1 shl MaxColorAttachments);
 
-  AttachTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-    FDepthTexture.Image.NativeTextureTarget, FDepthTexture.Handle,
-    FLevel, FLayer);
+  AttachTexture(
+    GL_FRAMEBUFFER,
+    GL_DEPTH_ATTACHMENT,
+    DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+    FDepthTexture.Handle,
+    FLevel,
+    FLayer);
 end;
 
 procedure TGLFrameBuffer.DetachDepthTexture;
@@ -398,8 +401,11 @@ begin
   if Assigned(FDepthTexture) then
   begin
     FTextureMipmap := FTextureMipmap and (not (1 shl MaxColorAttachments));
-    AttachTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-      FDepthTexture.Image.NativeTextureTarget, 0, 0, 0);
+    AttachTexture(
+      GL_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      0, 0, 0);
     FDepthTexture := nil;
   end;
 end;
@@ -533,24 +539,41 @@ begin
   end;
 end;
 
+function TGLFrameBuffer.GetStringStatus(out clarification: string): TGLFramebufferStatus;
+const
+  cFBOStatus: array[TGLFramebufferStatus] of string = (
+  'Complete',
+  'Incomplete attachment',
+  'Incomplete missing attachment',
+  'Incomplete duplicate attachment',
+  'Incomplete dimensions',
+  'Incomplete formats',
+  'Incomplete draw buffer',
+  'Incomplete read buffer',
+  'Unsupported',
+  'Status Error');
+begin
+  Result := GetStatus;
+  clarification := cFBOStatus[Result];
+end;
+
 procedure TGLFrameBuffer.PostRender(const PostGenerateMipmap: Boolean);
 var
   n: Integer;
-  textarget: TGLEnum;
+  textarget: TGLTextureTarget;
 begin
   if (FTextureMipmap > 0) and PostGenerateMipmap then
   begin
-    glPushAttrib(GL_TEXTURE_BIT);
     for n := 0 to MaxColorAttachments - 1 do
       if Assigned(FAttachedTexture[n]) then
       begin
         if FTextureMipmap and (1 shl n) = 0 then
           Continue;
         textarget := FAttachedTexture[n].Image.NativeTextureTarget;
-        glBindTexture(textarget, FAttachedTexture[n].Handle);
-        glGenerateMipmapEXT(textarget);
+        with FFrameBufferHandle.RenderingContext.GLStates do
+          TextureBinding[ActiveTexture, textarget] := FAttachedTexture[n].Handle;
+        glGenerateMipmapEXT(DecodeGLTextureTarget(textarget));
       end;
-    glPopAttrib;
   end;
 end;
 
@@ -573,6 +596,8 @@ begin
   backColor := ConvertWinColor(buffer.BackgroundColor);
   glClearColor(backColor[0], backColor[1], backColor[2],
     buffer.BackgroundAlpha);
+  rci.GLStates.SetColorMask(cAllColorComponents);
+  rci.GLStates.DepthWriteMask := True;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
@@ -612,13 +637,18 @@ begin
   // Reattach layered textures
   for n := 0 to MaxColorAttachments-1 do
     if Assigned(FAttachedTexture[n]) then
-      AttachTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + n,
-        FAttachedTexture[n].Image.NativeTextureTarget,
+      AttachTexture(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + n,
+        DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
-        FLevel, FLayer);
+        FLevel,
+        FLayer);
   if Assigned(FDepthTexture) then
-    AttachTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-      FDepthTexture.Image.NativeTextureTarget, FDepthTexture.Handle,
+    AttachTexture(
+      GL_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      FDepthTexture.Handle,
       FLevel, FLayer);
   Assert(Status = fsComplete, 'Framebuffer not complete');
   CheckOpenGLError;

@@ -15,6 +15,7 @@
    will indicate if there is valid data in the buffer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -176,7 +177,6 @@ begin
 
     FBuffer.Count:=FMaxBufferSize div SizeOf(Single);
     glFeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
-    ARci.GLStates.PushAttrib([sttEnable, sttViewport]);
     ARci.GLStates.Disable(stCullFace);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
@@ -188,7 +188,7 @@ begin
       1.0/FCorrectionScaling,
       1.0/FCorrectionScaling,
       1.0/FCorrectionScaling);
-    glViewPort(-1,-1,2,2);
+    ARci.GLStates.ViewPort := Vector4iMake(-1,-1,2,2);
     glRenderMode(GL_FEEDBACK);
 
     Self.RenderChildren(0, Count-1, ARci);
@@ -199,13 +199,14 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPopMatrix;
     glMatrixMode(GL_MODELVIEW);
-    ARci.GLStates.PopAttrib;
 
   finally
     FBuffered:=(FBuffer.Count>0);
     if ARenderChildren then
       Self.RenderChildren(0, Count-1, ARci);
   end;
+  ARci.GLStates.ViewPort :=
+    Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 end;
 
 // BuildMeshFromBuffer

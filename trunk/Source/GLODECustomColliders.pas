@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
@@ -666,14 +667,12 @@ var
   i : Integer;
 begin
   if FRenderContacts and (FContactRenderPoints.Count>0) then begin
-    rci.GLStates.PushAttrib([sttCurrent]);
     glColor3fv(FContactColor.AsAddress);
-    glPointSize(FPointSize);
+    rci.GLStates.PointSize := FPointSize;
     glBegin(GL_POINTS);
       for i:=0 to FContactRenderPoints.Count-1 do
         glVertex3fv(@FContactRenderPoints.List[i]);
     glEnd;
-    rci.GLStates.PopAttrib;
   end;
   FContactRenderPoints.Clear;
 end;

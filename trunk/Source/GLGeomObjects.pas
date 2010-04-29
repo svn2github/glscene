@@ -6,6 +6,7 @@
    Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
                              now this function references the inherited function
       <li>20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()

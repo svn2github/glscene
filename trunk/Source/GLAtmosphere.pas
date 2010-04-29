@@ -6,6 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
       <li>03/04/07 - DaStr - Optimized TGLCustomAtmosphere.DoRender
@@ -100,7 +101,7 @@ type
     procedure SetSun(const Value: TglBaseSceneObject);
     procedure SetAtmosphereRadius(const Value: Single);
     procedure SetPlanetRadius(const Value: Single);
-    procedure EnableGLBlendingMode(var rci: TRenderContextInfo);
+    procedure EnableGLBlendingMode(StateCache: TGLStateCache);
     function StoreAtmosphereRadius: Boolean;
     function StoreOpacity: Boolean;
     function StorePlanetRadius: Boolean;
@@ -305,11 +306,10 @@ begin
     invAtmosphereHeight := 1 / (FAtmosphereRadius - FPlanetRadius);
     lightingVector := VectorNormalize(sunPos); // sun at infinity
 
-    rci.GLStates.PushAttrib([sttEnable]);
     rci.GLStates.DepthWriteMask := False;
     rci.GLStates.Disable(stLighting);
     rci.GLStates.Enable(stBlend);
-    EnableGLBlendingMode(rci);
+    EnableGLBlendingMode(rci.GLStates);
     for I := 0 to 13 do
     begin
       if I < 5 then
@@ -373,8 +373,6 @@ begin
         glEnd;
       end;
     end;
-    rci.GLStates.DepthWriteMask := True;
-    rci.GLStates.PopAttrib;
   end;
   inherited;
 end;
@@ -441,16 +439,17 @@ begin
     FAtmosphereRadius := FPlanetRadius * 1.01;
 end;
 
-procedure TGLCustomAtmosphere.EnableGLBlendingMode(var rci: TRenderContextInfo);
+procedure TGLCustomAtmosphere.EnableGLBlendingMode(StateCache: TGLStateCache);
 begin
   case FBlendingMode of
     abmOneMinusDstColor:
-      rci.GLStates.SetBlendFunc(bfDstAlpha, bfOneMinusDstColor);
+      StateCache.SetBlendFunc(bfDstAlpha, bfOneMinusDstColor);
     abmOneMinusSrcAlpha:
-      rci.GLStates.SetBlendFunc(bfDstAlpha, bfOneMinusSrcAlpha);
+      StateCache.SetBlendFunc(bfDstAlpha, bfOneMinusSrcAlpha);
   else
     Assert(False, glsErrorEx + glsUnknownType);
   end;
+  StateCache.Enable(stAlphaTest);
 end;
 
 function TGLCustomAtmosphere.StoreAtmosphereRadius: Boolean;

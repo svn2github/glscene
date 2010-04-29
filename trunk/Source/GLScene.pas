@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLBaseSceneObject.GetHandle
       <li>06/04/10 - Yar - Removed double camera freeing in TGLSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
       <li>06/03/10 - Yar - Renamed ModelViewMatrix to ViewMatrix, added ModelMatrix
@@ -336,9 +337,10 @@ uses
   // GLScene
   VectorGeometry, XCollection, GLSilhouette, PersistentClasses, GLState,
   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists, GLTexture,
-  GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo, GLMaterial
+  GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo, GLMaterial,
+  GLTextureFormat
 {$IFDEF GLS_EXPERIMENTAL}
-  ,GLVBOManagers
+  , GLVBOManagers
 {$ENDIF}
   ;
 
@@ -434,7 +436,7 @@ type
      <li>osNoVisibilityCulling : whatever the VisibilityCulling setting,
         it will be ignored and the object rendered
      </ul> }
-  TGLObjectStyle = (osDirectDraw, osDoesTemperWithColorsOrFaceWinding,
+  TGLObjectStyle = (osDirectDraw,
     osIgnoreDepthBuffer, osNoVisibilityCulling, osBuiltStage);
   TGLObjectStyles = set of TGLObjectStyle;
 
@@ -2493,20 +2495,27 @@ var
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-  rci.GLStates.PushAttrib([sttEnable, sttLighting, sttLine, sttDepthBuffer]);
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.Enable(stLineStipple);
-  if not rci.ignoreBlendingRequests then
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL_GREMEDY_string_marker then
+    glStringMarkerGREMEDY(13, 'AxesBuildList');
+{$ENDIF}
+  with rci.GLStates do
   begin
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    Disable(stLighting);
+    if not rci.ignoreBlendingRequests then
+    begin
+      Enable(stBlend);
+      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    end;
+    LineWidth := 1;
+    Enable(stLineStipple);
+    LineStippleFactor := 1;
+    LineStipplePattern := Pattern;
+    DepthWriteMask := True;
+    DepthFunc := cfLEqual;
+    if rci.bufferDepthTest then
+      Enable(stDepthTest);
   end;
-  rci.GLStates.LineWidth := 1;
-  glLineStipple(1, Pattern);
-  rci.GLStates.DepthWriteMask := True;
-  rci.GLStates.DepthFunc := cfLess;
-  if rci.bufferDepthTest then
-    rci.GLStates.Enable(stDepthTest);
   glBegin(GL_LINES);
   glColor3f(0.5, 0.0, 0.0);
   glVertex3f(0, 0, 0);
@@ -2527,10 +2536,6 @@ begin
   glVertex3f(0, 0, 0);
   glVertex3f(0, 0, AxisLen);
   glEnd;
-  rci.GLStates.PopAttrib;
-  // clear fpu exception flag (sometime raised by the call to glEnd)
-  asm fclex
-  end;
 end;
 
 // RegisterInfoForm
@@ -2803,7 +2808,7 @@ function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
       FListHandle.AllocateHandle;
       Assert(FListHandle.Handle <> 0);
     end;
-      rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
+    rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
     try
       BuildList(rci);
     finally
@@ -4892,6 +4897,11 @@ var
   saveMatrixParent,
     saveMatrixSelf: TMatrix;
 begin
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL_GREMEDY_string_marker then
+    glStringMarkerGREMEDY(
+      Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
+{$ENDIF}
   // visibility culling determination
   if ARci.visibilityCulling in [vcObjectBased, vcHierarchical] then
   begin
@@ -4980,13 +4990,7 @@ begin
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
-      if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-      begin
-        ARci.GLStates.ResetGLPolygonMode;
-        ARci.GLStates.ResetGLMaterialColors;
-        ARci.GLStates.ResetGLCurrentTexture;
-        ARci.GLStates.ResetGLFrontFace;
-      end;
+
       FGLObjectEffects.RenderPostEffects(ARci);
 {$IFNDEF GLS_OPTIMIZATIONS}
       if OptSaveGLStack then
@@ -5005,13 +5009,7 @@ begin
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
-      if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
-      begin
-        ARci.GLStates.ResetGLPolygonMode;
-        ARci.GLStates.ResetGLMaterialColors;
-        ARci.GLStates.ResetGLCurrentTexture;
-        ARci.GLStates.ResetGLFrontFace;
-      end;
+
     end;
   end
   else
@@ -5050,7 +5048,7 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      glCallList(GetHandle(ARci));
+      ARci.GLStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -5807,7 +5805,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          glCallList(GetHandle(ARci));
+          ARci.GLStates.CallList(GetHandle(ARci));
       until not FMaterial.UnApply(ARci);
     end
     else
@@ -5815,7 +5813,7 @@ begin
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
       else
-        glCallList(GetHandle(ARci));
+        ARci.GLStates.CallList(GetHandle(ARci));
     end;
   end;
   // start rendering children (if any)
@@ -6550,7 +6548,7 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      glCallList(GetHandle(ARci));
+      ARci.GLStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -6623,7 +6621,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          glCallList(GetHandle(ARci));
+          ARci.GLStates.CallList(GetHandle(ARci));
       end;
       if ARenderChildren then
         Self.RenderChildren(0, Count - 1, ARci);
@@ -6659,8 +6657,7 @@ end;
 constructor TGLDirectOpenGL.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw,
-    osDoesTemperWithColorsOrFaceWinding];
+  ObjectStyle := ObjectStyle + [osDirectDraw];
   FBlend := False;
 end;
 
@@ -6743,8 +6740,7 @@ end;
 constructor TGLRenderPoint.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw,
-    osDoesTemperWithColorsOrFaceWinding];
+  ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
 // Destroy
@@ -6835,7 +6831,6 @@ end;
 constructor TGLProxyObject.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDoesTemperWithColorsOrFaceWinding];
   FProxyOptions := cDefaultProxyOptions;
 end;
 
@@ -7290,7 +7285,7 @@ begin
     if FLights.List^[i] = nil then
     begin
       FLights.List^[i] := ALight;
-      ALight.FLightID := GL_LIGHT0 + i;
+      ALight.FLightID := i;
       Break;
     end;
 end;
@@ -7724,6 +7719,8 @@ begin
   if nbLights > maxLights then
     nbLights := maxLights;
   // setup all light sources
+  with CurrentGLContext.GLStates do
+  begin
   glPushMatrix;
   for i := 0 to nbLights - 1 do
   begin
@@ -7733,50 +7730,51 @@ begin
       begin
         if Shining then
         begin
-          glEnable(FLightID);
+          LightEnabling[FLightID] := True;
           glPopMatrix;
           glPushMatrix;
           RebuildMatrix;
           if LightStyle = lsParallel then
           begin
             glMultMatrixf(PGLFloat(AbsoluteMatrixAsAddress));
-            glLightfv(FLightID, GL_POSITION, SpotDirection.AsAddress)
+            glLightfv(GL_LIGHT0+FLightID, GL_POSITION, SpotDirection.AsAddress);
           end
           else
           begin
             glMultMatrixf(PGLFloat(Parent.AbsoluteMatrixAsAddress));
-            glLightfv(FLightID, GL_POSITION, Position.AsAddress);
+            glLightfv(GL_LIGHT0+FLightID, GL_POSITION, Position.AsAddress);
           end;
-          glLightfv(FLightID, GL_AMBIENT, FAmbient.AsAddress);
-          glLightfv(FLightID, GL_DIFFUSE, FDiffuse.AsAddress);
-          glLightfv(FLightID, GL_SPECULAR, FSpecular.AsAddress);
+          LightAmbient[FLightID] := FAmbient.Color;
+          LightDiffuse[FLightID] := FDiffuse.Color;
+          LightSpecular[FLightID] := FSpecular.Color;
           if LightStyle = lsSpot then
           begin
             if FSpotCutOff <> 180 then
             begin
-              glLightfv(FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-              glLightfv(FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
+              glLightfv(GL_LIGHT0+FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
+              glLightfv(GL_LIGHT0+FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
             end;
-            glLightfv(FLightID, GL_SPOT_CUTOFF, @FSpotCutOff);
+            LightSpotCutoff[FLightID] := FSpotCutOff;
           end
           else
           begin
-            glLightf(FLightID, GL_SPOT_CUTOFF, 180);
+            LightSpotCutoff[FLightID] := 180;
           end;
-          glLightfv(FLightID, GL_CONSTANT_ATTENUATION, @FConstAttenuation);
-          glLightfv(FLightID, GL_LINEAR_ATTENUATION, @FLinearAttenuation);
-          glLightfv(FLightID, GL_QUADRATIC_ATTENUATION, @FQuadraticAttenuation);
+          LightConstantAtten[FLightID] := FConstAttenuation;
+          LightLinearAtten[FLightID] := FLinearAttenuation;
+          LightQuadraticAtten[FLightID] := FQuadraticAttenuation;
         end
         else
-          glDisable(FLightID);
+          LightEnabling[FLightID] := False;
       end
     else
-      glDisable(GL_LIGHT0 + i);
+      LightEnabling[i] := False;
   end;
   glPopMatrix;
   // turn off other lights
   for i := nbLights to maxLights - 1 do
-    glDisable(GL_LIGHT0 + i);
+    LightEnabling[i] := False;
+  end;
 end;
 
 // ------------------
@@ -8049,7 +8047,7 @@ begin
     AccumBits := AccumBufferBits;
     AuxBuffers := 0;
     AntiAliasing := Self.AntiAliasing;
-    GLStates.ForwardContext := roForwardContext in  ContextOptions;
+    GLStates.ForwardContext := roForwardContext in ContextOptions;
     PrepareGLContext;
   end;
 end;
@@ -8059,8 +8057,6 @@ end;
 
 procedure TGLSceneBuffer.CreateRC(deviceHandle: Cardinal; memoryContext:
   Boolean; BufferCount: integer);
-var
-  backColor: TColorVector;
 begin
   DestroyRC;
   FRendering := True;
@@ -8090,11 +8086,12 @@ begin
         raise EOpenGLError.Create(glsWrongVersion);
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
-      glViewport(0, 0, FViewPort.Width, FViewPort.Height);
+      FRenderingContext.GLStates.ViewPort :=
+        Vector4iMake(0, 0, FViewPort.Width, FViewPort.Height);
       // set up initial context states
       SetupRenderingContext(FRenderingContext);
-      BackColor := ConvertWinColor(FBackgroundColor);
-      glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
+      FRenderingContext.GLStates.ColorClearValue :=
+        ConvertWinColor(FBackgroundColor);
     finally
       FRenderingContext.Deactivate;
     end;
@@ -8142,7 +8139,8 @@ begin
     FRenderingContext.Activate;
     try
       // Part of workaround for MS OpenGL "black borders" bug
-      glViewport(0, 0, FViewPort.Width, FViewPort.Height);
+      FRenderingContext.GLStates.ViewPort :=
+        Vector4iMake(0, 0, FViewPort.Width, FViewPort.Height);
     finally
       FRenderingContext.Deactivate;
     end;
@@ -8165,7 +8163,7 @@ end;
 
 procedure TGLSceneBuffer.SetupRenderingContext(context: TGLContext);
 
-  procedure PerformEnable(bool: Boolean; csState: TGLState);
+  procedure SetState(bool: Boolean; csState: TGLState);
   begin
     case bool of
       true: context.GLStates.PerformEnable(csState);
@@ -8179,7 +8177,7 @@ begin
   if not Assigned(context) then
     Exit;
 
-  if not(roForwardContext in ContextOptions) then
+  if not (roForwardContext in ContextOptions) then
   begin
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
     if roTwoSideLighting in FContextOptions then
@@ -8195,19 +8193,18 @@ begin
     end;
   end;
 
-  PerformEnable(True, stNormalize);
-
-  PerformEnable(DepthTest, stDepthTest);
-  PerformEnable(FaceCulling, stCullFace);
-  PerformEnable(Lighting, stLighting);
-  PerformEnable(FogEnable, stFog);
-  if GL_ARB_depth_clamp then
-    PerformEnable(False, stDepthClamp);
-  glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
-  PerformEnable((LColorDepth < 8), stDither);
-
-  context.GLStates.ResetGLDepthState;
-
+  with context.GLStates do
+  begin
+    Enable(stNormalize);
+    SetState(DepthTest, stDepthTest);
+    SetState(FaceCulling, stCullFace);
+    SetState(Lighting, stLighting);
+    SetState(FogEnable, stFog);
+    if GL_ARB_depth_clamp then
+      Disable(stDepthClamp);
+    glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
+    SetState((LColorDepth < 8), stDither);
+  end;
 end;
 
 // GetLimit
@@ -8416,7 +8413,7 @@ begin
     try
       if target <= 0 then
       begin
-        target := aTexture.Image.NativeTextureTarget;
+        target := DecodeGLTextureTarget(aTexture.Image.NativeTextureTarget);
         bindTarget := target;
       end
       else
@@ -8437,7 +8434,8 @@ begin
       else
         handle := aTexture.Handle;
       createTexture := createTexture or forceCreateTexture;
-      RenderingContext.GLStates.SetGLCurrentTexture(0, bindTarget, handle);
+      RenderingContext.GLStates.TextureBinding[0,
+        EncodeGLTextureTarget(bindTarget)] := handle;
       if createTexture then
       begin
         GetMem(buf, Width * Height * 4);
@@ -8582,7 +8580,6 @@ end;
 procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TGLBitmap; DPI: Integer);
 var
   bmpContext: TGLContext;
-  backColor: TColorVector;
   aColorBits: Integer;
   LViewport, viewportBackup: TRectangle;
 begin
@@ -8608,8 +8605,7 @@ begin
       bmpContext.Activate;
       try
         SetupRenderingContext(bmpContext);
-        BackColor := ConvertWinColor(FBackgroundColor);
-        glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
+        bmpContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
         // set the desired viewport and limit output to this rectangle
         with LViewport do
         begin
@@ -8617,7 +8613,8 @@ begin
           Top := 0;
           Width := ABitmap.Width;
           Height := ABitmap.Height;
-          glViewport(Left, Top, Width, Height);
+          bmpContext.GLStates.ViewPort :=
+            Vector4iMake(Left, Top, Width, Height);
         end;
         ClearBuffers;
         FRenderDPI := DPI;
@@ -9030,12 +9027,19 @@ var
 begin
   if roNoDepthBufferClear in ContextOptions then
     bufferBits := 0
-  else
+  else begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
+    CurrentGLContext.GLStates.DepthWriteMask := True;
+  end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
+  begin
     bufferBits := bufferBits or GL_COLOR_BUFFER_BIT;
+    CurrentGLContext.GLStates.SetColorMask(cAllColorComponents);
+  end;
   if roStencilBuffer in ContextOptions then
+  begin
     bufferBits := bufferBits or GL_STENCIL_BUFFER_BIT;
+  end;
   glClear(BufferBits);
 end;
 
@@ -9291,39 +9295,49 @@ end;
 procedure TGLSceneBuffer.DoBaseRender(const aViewPort: TRectangle; resolution:
   Integer;
   drawState: TDrawState; baseObject: TGLBaseSceneObject);
-var
-  maxLights: Integer;
 begin
-  PrepareRenderingMatrices(aViewPort, resolution);
-  xglMapTexCoordToNull; // force XGL rebind
-  xglMapTexCoordToMain;
-  if Assigned(FViewerBeforeRender) then
-    FViewerBeforeRender(Self);
-  if Assigned(FBeforeRender) then
-    if Owner is TComponent then
-      if not (csDesigning in TComponent(Owner).ComponentState) then
-        FBeforeRender(Self);
-  if Assigned(FCamera) and Assigned(FCamera.FScene) then
+  with RenderingContext.GLStates do
   begin
-    with FCamera.FScene do
+    PrepareRenderingMatrices(aViewPort, resolution);
+    if not ForwardContext then
     begin
-      glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
-      SetupLights(maxLights);
-      if FogEnable then
-      begin
-        glEnable(GL_FOG);
-        FogEnvironment.ApplyFog;
-      end
-      else
-        glDisable(GL_FOG);
-      RenderScene(FCamera.FScene, aViewPort.Width, aViewPort.Height, drawState,
-        baseObject);
+      xglMapTexCoordToNull; // force XGL rebind
+      xglMapTexCoordToMain;
     end;
+
+    if Assigned(FViewerBeforeRender) then
+      FViewerBeforeRender(Self);
+    if Assigned(FBeforeRender) then
+      if Owner is TComponent then
+        if not (csDesigning in TComponent(Owner).ComponentState) then
+          FBeforeRender(Self);
+
+    if Assigned(FCamera) and Assigned(FCamera.FScene) then
+    begin
+      with FCamera.FScene do
+      begin
+        if not ForwardContext then
+        begin
+          SetupLights(MaxLights);
+          if FogEnable then
+          begin
+            Enable(stFog);
+            FogEnvironment.ApplyFog;
+          end
+          else
+            Disable(stFog);
+        end;
+
+        RenderScene(FCamera.FScene, aViewPort.Width, aViewPort.Height,
+          drawState,
+          baseObject);
+      end;
+    end;
+    if Assigned(FPostRender) then
+      if Owner is TComponent then
+        if not (csDesigning in TComponent(Owner).ComponentState) then
+          FPostRender(Self);
   end;
-  if Assigned(FPostRender) then
-    if Owner is TComponent then
-      if not (csDesigning in TComponent(Owner).ComponentState) then
-        FPostRender(Self);
   Assert(Length(FViewMatrixStack) = 0,
     'Unbalance Push/PopViewMatrix.');
   Assert(Length(FProjectionMatrixStack) = 0,
@@ -9344,20 +9358,18 @@ end;
 procedure TGLSceneBuffer.Render(baseObject: TGLBaseSceneObject);
 var
   perfCounter, framePerf: Int64;
-  backColor: TColorVector;
 begin
   if FRendering then
     Exit;
   if not Assigned(FRenderingContext) then
     Exit;
 
-  backColor := ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
-
   if Freezed and (FFreezeBuffer <> nil) then
   begin
     RenderingContext.Activate;
     try
-      glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
+      RenderingContext.GLStates.ColorClearValue :=
+        ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity;
@@ -9392,7 +9404,8 @@ begin
       ClearGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
-      glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
+      FRenderingContext.GLStates.ColorClearValue :=
+        ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       CheckOpenGLError;
       // render
@@ -9481,7 +9494,7 @@ begin
   rci.renderDPI := FRenderDPI;
   rci.modelViewMatrix := @FViewMatrix;
   rci.GLStates := RenderingContext.GLStates;
-  rci.GLStates.ResetAll;
+  //  rci.GLStates.ResetAll;
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
     or (rci.drawState = dsPicking);
@@ -9503,7 +9516,7 @@ begin
   begin
     aScene.Objects.Render(rci);
 {$IFDEF GLS_EXPERIMENTAL}
-    StaticVBOManager.BuildBuffer(rci);
+    StaticVBOManager.BuildBuffer;
 {$ENDIF}
   end
   else
@@ -9515,16 +9528,6 @@ begin
         TGLObjectAfterEffect(Items[i]).Render(rci);
   if Assigned(FWrapUpRendering) then
     FWrapUpRendering(Self, rci);
-  with rci.GLStates do
-  begin
-    Disable(stBlend);
-    Disable(stTexture2D);
-    if (GL_NV_texture_rectangle or GL_ARB_texture_rectangle or
-        GL_VERSION_3_1) then
-      Disable(stTextureRect);
-    Enable(stAlphaTest);
-    ResetGLAlphaFunction;
-  end;
 end;
 
 // SetBackgroundColor
@@ -9845,7 +9848,7 @@ begin
   begin
     Buffer.RenderingContext.Activate;
     try
-      target := aTexture.Image.NativeTextureTarget;
+      target := DecodeGLTextureTarget(aTexture.Image.NativeTextureTarget);
 
       CreateTexture := true;
 
@@ -9868,7 +9871,8 @@ begin
       // For MRT
       glReadBuffer(MRT_BUFFERS[BufferIndex]);
 
-      Buffer.RenderingContext.GLStates.SetGLCurrentTexture(0, target, handle);
+      Buffer.RenderingContext.GLStates.TextureBinding[0,
+        EncodeGLTextureTarget(target)] := handle;
 
       if target = GL_TEXTURE_CUBE_MAP_ARB then
         target := GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + FCubeMapRotIdx;

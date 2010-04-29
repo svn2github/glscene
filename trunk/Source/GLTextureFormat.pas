@@ -4,6 +4,7 @@
 {: GLTextureFormat<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>22/04/10 - Yar - Moved TGLTextureTarget
         <li>23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
                              GLTextureFormat moved to GLTexture
         <li>21/01/10 - Yar - Creation
@@ -17,6 +18,12 @@ uses
   OpenGL1x;
 
 type
+
+  // TGLTextureTarget
+  //
+  TGLTextureTarget = (ttTexture1D, ttTexture2D, ttTexture3D, ttTexture1DArray,
+    ttTexture2DArray, ttTextureRect, ttTextureBuffer, ttTextureCube,
+    ttTexture2DMultisample, ttTexture2DMultisampleArray, ttTextureCubeArray);
 
   // TGLInternalFormat
   //
@@ -226,6 +233,9 @@ function GetGenericCompressedFormat(const texFormat: TGLInternalFormat;
 // Give uncompressed texture format and OpenGL color format
 function GetUncompressedFormat(const texFormat: TGLInternalFormat;
   out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
+
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): TGLEnum;
+function EncodeGLTextureTarget(const TextureTarget: TGLEnum): TGLTextureTarget;
 
 implementation
 
@@ -552,6 +562,9 @@ begin
     GL_TEXTURE_1D_ARRAY: Result := GL_EXT_texture_array;
     GL_TEXTURE_2D_ARRAY: Result := GL_EXT_texture_array;
     GL_TEXTURE_CUBE_MAP_ARRAY: Result := GL_ARB_texture_cube_map_array;
+    GL_TEXTURE_BUFFER : Result := GL_ARB_texture_buffer_object;
+    GL_TEXTURE_2D_MULTISAMPLE,
+      GL_TEXTURE_2D_MULTISAMPLE_ARRAY: Result := GL_ARB_texture_multisample;
   else
     begin
       Result := false;
@@ -922,6 +935,49 @@ begin
       end;
   end;
   Result := colorFormat<>0;
+end;
+
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+begin
+  case TextureTarget of
+    ttTexture1d: Result := GL_TEXTURE_1D;
+    ttTexture2d: Result := GL_TEXTURE_2D;
+    ttTexture3d: Result := GL_TEXTURE_3D;
+    ttTextureRect: Result := GL_TEXTURE_RECTANGLE;
+    ttTextureCube: Result := GL_TEXTURE_CUBE_MAP;
+    ttTexture1dArray: Result := GL_TEXTURE_1D_ARRAY;
+    ttTexture2dArray: Result := GL_TEXTURE_2D_ARRAY;
+    ttTextureCubeArray: Result := GL_TEXTURE_CUBE_MAP_ARRAY;
+    ttTextureBuffer: Result := GL_TEXTURE_BUFFER;
+    ttTexture2DMultisample: Result := GL_TEXTURE_2D_MULTISAMPLE;
+    ttTexture2DMultisampleArray: Result := GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+  else
+    begin
+      Result := 0;
+      Assert(False, glsErrorEx + glsUnknownType);
+    end;
+  end;
+end;
+
+function EncodeGLTextureTarget(const TextureTarget: Cardinal): TGLTextureTarget;
+begin
+  case TextureTarget of
+    GL_TEXTURE_1D: Result := ttTexture1d;
+    GL_TEXTURE_2D: Result := ttTexture2d;
+    GL_TEXTURE_3D: Result := ttTexture3d;
+    GL_TEXTURE_RECTANGLE: Result := ttTextureRect;
+    GL_TEXTURE_CUBE_MAP: Result := ttTextureCube;
+    GL_TEXTURE_1D_ARRAY: Result := ttTexture1dArray;
+    GL_TEXTURE_2D_ARRAY: Result := ttTexture2dArray;
+    GL_TEXTURE_CUBE_MAP_ARRAY: Result := ttTextureCubeArray;
+    GL_TEXTURE_2D_MULTISAMPLE: Result := ttTexture2DMultisample;
+    GL_TEXTURE_2D_MULTISAMPLE_ARRAY: Result := ttTexture2DMultisampleArray;
+  else
+    begin
+      Result := ttTexture2d;
+      Assert(False, glsErrorEx + glsUnknownType);
+    end;
+  end;
 end;
 
 end.

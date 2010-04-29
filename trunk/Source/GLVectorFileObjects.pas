@@ -6,8 +6,8 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
-      <li>14/04/10 - Yar - Added null binding VBO and disabling attribute states in TMeshObject.BuildList to avoid conflicts with GLVBOManagers
-                           Replaced function InsideList to GLState.InsideList
+      <li>22/04/10 - Yar - Fixes after GLState revision
+      <li>11/04/10 - Yar - Replaced function InsideList to GLState.InsideList
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>25/12/09 - DaStr - Separated TGLActor.DoAnimate() from TGLActor.BuildList()
       <li>16/01/09 - DanB - re-disable VBOs in display list to prevent AV on ATI cards
@@ -186,7 +186,7 @@ interface
 uses Classes, GLScene, OpenGL1x, VectorGeometry, SysUtils, GLTexture,
   GLMaterial, GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
   ApplicationFileIO, GLSilhouette, GLContext, GLColor, GLRenderContextInfo,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, BaseClasses, GLTextureFormat;
 
 type
 
@@ -2963,14 +2963,12 @@ var
   i: Integer;
 begin
   // root node setups and restore OpenGL stuff
-  mrci.GLStates.PushAttrib([sttEnable]);
   mrci.GLStates.Disable(stColorMaterial);
   mrci.GLStates.Disable(stLighting);
   glColor3f(1, 1, 1);
   // render root-bones
   for i := 0 to Count - 1 do
     Items[i].BuildList(mrci);
-  mrci.GLStates.PopAttrib;
 end;
 
 // ------------------
@@ -4665,7 +4663,7 @@ begin
     // inside a display list
     FUseVBO := FUseVBO
       and GL_ARB_vertex_buffer_object
-      and not mrci.GLStates.InsideList;
+      and mrci.GLStates.InsideList;
 
     if not FUseVBO then
     begin
@@ -4857,7 +4855,7 @@ begin
     if not FLightMapArrayEnabled then
     begin
       mrci.GLStates.ActiveTexture := 1;
-      mrci.GLStates.Enable(stTexture2D);
+      mrci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
       mrci.GLStates.ActiveTexture := 0;
       FLightMapArrayEnabled := True;
     end;
@@ -4872,7 +4870,7 @@ begin
   if GL_ARB_multitexture and FLightMapArrayEnabled then
   begin
     mrci.GLStates.ActiveTexture := 1;
-    mrci.GLStates.Disable(stTexture2D);
+    mrci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
     mrci.GLStates.ActiveTexture := 0;
     FLightMapArrayEnabled := False;
   end;
@@ -4997,24 +4995,15 @@ var
   fg: TFaceGroup;
 begin
   // Make sure no VBO is bound and states enabled
-  if GL_ARB_vertex_buffer_object then
-  begin
-    mrci.GLStates.ArrayBufferBinding := 0;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    if GL_NV_primitive_restart then
-      glDisableClientState(GL_PRIMITIVE_RESTART_NV);
-    for I := 0 to 15 do
-      glDisableVertexAttribArray(I);
-  end;
   FArraysDeclared := False;
   FLastXOpenGLTexMapping := 0;
   gotColor := (Vertices.Count = Colors.Count);
   if gotColor then
   begin
-    mrci.GLStates.PushAttrib([sttEnable]);
     mrci.GLStates.Enable(stColorMaterial);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    mrci.GLStates.ResetGLMaterialColors;
+    mrci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+    mrci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
   case Mode of
     momTriangles, momTriangleStrip: if Vertices.Count > 0 then
@@ -5138,8 +5127,6 @@ begin
   else
     Assert(False);
   end;
-  if gotColor then
-    mrci.GLStates.PopAttrib;
   DisableOpenGLArrays(mrci);
 end;
 
@@ -6231,10 +6218,8 @@ begin
   if GL_ARB_multitexture then
     with lightMap do
     begin
-      Assert(Image.NativeTextureTarget = GL_TEXTURE_2D);
-      mrci.GLStates.ActiveTexture := 1;
-
-      mrci.GLStates.SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
+      Assert(Image.NativeTextureTarget = ttTexture2D);
+      mrci.GLStates.TextureBinding[1, ttTexture2D] := Handle;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
       mrci.GLStates.ActiveTexture := 0;
@@ -7218,7 +7203,6 @@ end;
 constructor TGLBaseMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDoesTemperWithColorsOrFaceWinding];
   if FMeshObjects = nil then
     FMeshObjects := TMeshObjectList.CreateOwned(Self);
   if FSkeleton = nil then
@@ -7753,7 +7737,7 @@ begin
         if (osDirectDraw in ObjectStyle) or rci.amalgamating then
           BuildList(rci)
         else
-          glCallList(GetHandle(rci));
+          rci.GLStates.CallList(GetHandle(rci));
       until not Material.UnApply(rci);
       rci.materialLibrary := nil;
     end
@@ -7762,7 +7746,7 @@ begin
       if (osDirectDraw in ObjectStyle) or rci.amalgamating then
         BuildList(rci)
       else
-        glCallList(GetHandle(rci));
+        rci.GLStates.CallList(GetHandle(rci));
     end;
     if FNormalsOrientation <> mnoDefault then
       rci.GLStates.InvertGLFrontFace;
@@ -8988,10 +8972,8 @@ begin
   inherited;
   if OverlaySkeleton then
   begin
-    rci.GLStates.PushAttrib([sttEnable]);
     rci.GLStates.Disable(stDepthTest);
     Skeleton.RootBones.BuildList(rci);
-    rci.GLStates.PopAttrib;
   end;
 end;
 

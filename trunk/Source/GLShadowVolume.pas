@@ -10,6 +10,7 @@
    or the casters will be rendered incorrectly.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>31/03/07 - DaStr - Fixed issue with invalid typecasting
                             (thanks Burkhard Carstens) (Bugtracker ID = 1692016)
@@ -866,7 +867,6 @@ begin
     end;
 
     // render the shadow volumes
-    ARci.GLStates.PushAttrib(cAllAttribBits);
 
     if Mode = svmAccurate then
     begin
@@ -878,8 +878,8 @@ begin
         if Assigned(lightSource) and (lightSource.Shining) then
         begin
           lightID := lightSource.LightID;
-          glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
-          glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
+          ARci.GLStates.LightDiffuse[lightID] := NullHmgVector;
+          ARci.GLStates.LightSpecular[lightID] := NullHmgVector;
         end;
       end;
     end;
@@ -898,8 +898,8 @@ begin
     ARci.GLStates.Enable(stStencilTest);
     if GL_ARB_vertex_buffer_object then
     begin
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      ARci.GLStates.VertexArrayBinding := 0;
+      ARci.GLStates.ElementBufferBinding := 0;
     end;
 
     // turn off *all* lights
@@ -907,7 +907,7 @@ begin
     begin
       lightSource := (TGLScene(ARci.scene).Lights.Items[i]) as TGLLightSource;
       if Assigned(lightSource) and lightSource.Shining then
-        glDisable(lightSource.LightID);
+        ARci.GLStates.LightEnabling[lightSource.LightID] := False;
     end;
     CheckOpenGLError;
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
@@ -1055,10 +1055,10 @@ begin
       glDisableClientState(GL_VERTEX_ARRAY);
 
       // re-enable light's diffuse and specular, but no ambient
-      glEnable(lightID);
-      glLightfv(lightID, GL_AMBIENT, @NullHmgVector);
-      glLightfv(lightID, GL_DIFFUSE, lightSource.Diffuse.AsAddress);
-      glLightfv(lightID, GL_SPECULAR, lightSource.Specular.AsAddress);
+      ARci.GLStates.LightEnabling[LightID] := True;
+      ARci.GLStates.LightAmbient[LightID] := NullHmgVector;
+      ARci.GLStates.LightDiffuse[LightID] := lightSource.Diffuse.Color;
+      ARci.GLStates.LightSpecular[LightID] := lightSource.Specular.Color;
 
       ARci.GLStates.SetGLColorWriting(True);
       Arci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
@@ -1071,7 +1071,6 @@ begin
       begin
         Arci.GLStates.SetStencilFunc(cfEqual, 0, 255);
         ARci.GLStates.DepthFunc := cfEqual;
-  {removed?}  //glEnable(GL_LIGHTING);
         Self.RenderChildren(0, Count - 1, ARci);
       end
       else
@@ -1104,13 +1103,12 @@ begin
       end;
 
       // disable light, but restore its ambient component
-      glDisable(lightID);
-      glLightfv(lightID, GL_AMBIENT, lightSource.Ambient.AsAddress);
+      Arci.GLStates.LightEnabling[lightID] := False;
+      Arci.GLStates.LightAmbient[lightID] := lightSource.Ambient.Color;
     end;
 
     // restore OpenGL state
-    ARci.GLStates.PopAttrib;
-
+    ARci.GLStates.Disable(stStencilTest);
     ARci.ignoreBlendingRequests := False;
     ARci.ignoreDepthRequests := False;
   finally

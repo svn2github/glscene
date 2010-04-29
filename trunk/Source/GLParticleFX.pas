@@ -10,6 +10,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
                             and fix RegisterAsOpenGLTexture
@@ -67,7 +68,7 @@ interface
 
 uses Classes, PersistentClasses, GLScene, VectorGeometry, XCollection, GLMaterial,
      GLCadencer, VectorLists, GLGraphics, GLContext, GLColor, BaseClasses,
-     GLCoordinates, GLRenderContextInfo, GLManager;
+     GLCoordinates, GLRenderContextInfo, GLManager, GLTextureFormat;
 
 const
    cPFXNbRegions = 128;     // number of distance regions
@@ -1584,7 +1585,6 @@ var
    curParticleOrder : PPointerArray;
    cameraPos, cameraVector : TAffineVector;
    timer : Int64;
-   oldDepthMask : TGLboolean;
    currentTexturingMode : Cardinal;
 begin
    if csDesigning in ComponentState then Exit;
@@ -1662,10 +1662,8 @@ begin
       glPushMatrix;
       glLoadMatrixf(@TGLSceneBuffer(rci.buffer).ViewMatrix);
 
-      rci.GLStates.PushAttrib(cAllAttribBits);
-
       rci.GLStates.Disable(stCullFace);
-      rci.GLStates.Disable(stTexture2D);
+      rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
       currentTexturingMode:=0;
       rci.GLStates.Disable(stLighting);
       rci.GLStates.PolygonMode := pmFill;
@@ -1684,8 +1682,6 @@ begin
       end;
       rci.GLStates.DepthFunc := cfLEqual;
       if not FZWrite then begin
-         glGetBooleanv(GL_DEPTH_WRITEMASK, @oldDepthMask);
-         //oldDepthMask := rci.GLStates.DepthWriteMask;
          rci.GLStates.DepthWriteMask := False;
       end;
       if not FZTest then
@@ -1729,11 +1725,10 @@ begin
                TGLParticleFXManager(FManagerList.List^[managerIdx]).FinalizeRendering(rci);
          end;
       finally
-         if FZWrite then
-            rci.GLStates.DepthWriteMask := oldDepthMask;
          glPopMatrix;
-         rci.GLStates.PopAttrib;
       end;
+      rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+      rci.GLStates.DepthWriteMask := True;
    finally
       // cleanup
       for regionIdx:=cPFXNbRegions-1 downto 0 do
@@ -2910,7 +2905,8 @@ begin
             bmp32.Free;
          end;
       end else begin
-         rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
+
+         rci.GLStates.TextureBinding[0, ttTexture2D] :=  FTexHandle.Handle;
       end;
    end;
 end;

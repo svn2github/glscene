@@ -6,6 +6,7 @@
    Just a good looking shader. And my first one;) <p>
 
    <b>History :</b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)   
       <li>14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.DoInitialize
@@ -43,7 +44,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLContext, OpenGL1x, GLStrings, GLMaterial,
-  GLRenderContextInfo,
+  GLRenderContextInfo, GLTextureFormat,
 
   // CG Shaders
   CgGL, GLCgShader;
@@ -197,9 +198,9 @@ begin
     FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
 {$ELSE}
   case FMainTextureSource of
-    stsPrimaryTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(0));
-    stsSecondadyTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(1));
-    stsThirdTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.GetGLCurrentTexture(2));
+    stsPrimaryTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.TextureBinding[0, ttTexture2D]);
+    stsSecondadyTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.TextureBinding[1, ttTexture2D]);
+    stsThirdTexture: FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(rci.GLStates.TextureBinding[2, ttTexture2D]);
     stsUserSelectedTexture:
       begin
         if FMainTexture <> nil then

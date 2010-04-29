@@ -9,6 +9,7 @@
    implements more efficient (though more complex) mesh tools.<p> 
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for TGLMesh
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -629,7 +630,6 @@ begin
    inherited;
    if osDirectDraw in ObjectStyle then
       FVertices.EnterLockSection;
-   rci.GLStates.PushAttrib([sttPolygon, sttEnable, sttCurrent]);
    case FVertexMode of
       vmV    : glInterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
       vmVN   : glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData), FVertices.FirstNormal);
@@ -642,7 +642,8 @@ begin
    if FVertexMode in [vmVNC, vmVNCT] then begin
       rci.GLStates.Enable(stColorMaterial);
       glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      rci.GLStates.ResetGLMaterialColors;
+      rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+      rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
    end;
    VertexCount := FVertices.Count;
    case FMode of
@@ -655,7 +656,6 @@ begin
    else
       Assert(False);
    end;
-   rci.GLStates.PopAttrib;
    if osDirectDraw in ObjectStyle then
       FVertices.LeaveLockSection;
 end;

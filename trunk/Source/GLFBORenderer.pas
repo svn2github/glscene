@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/02/10 - Yar - Added notification of freeing RootObject
       <li>22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
                              UseBufferBackground moved to coUseBufferBackground
@@ -25,7 +26,7 @@ interface
 
 uses
   Classes, VectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
-  GLMaterial, GLRenderContextInfo;
+  GLMaterial, GLRenderContextInfo, GLState, GLSLog;
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -107,8 +108,6 @@ type
 
     procedure ApplyCamera;
     procedure UnApplyCamera;
-    procedure SetupLights;
-    procedure SetViewport;
 
     procedure DoBeforeRender;
     procedure DoAfterRender;
@@ -215,7 +214,7 @@ type
 implementation
 
 uses
-  OpenGL1x;
+  OpenGL1x, VectorTypes;
 
 var
   vMaxRenderBufferSize: GLsizei = -1;
@@ -512,46 +511,40 @@ procedure TGLFBORenderer.RenderToFBO(var ARci: TRenderContextInfo);
   end;
 
 type
-  TGLStates = record
+  TGLStoredStates = record
     ColorClearValue: TColorVector;
-    ColorWriteMasks: array[0..3] of TGLboolean;
-    DepthTest: TGLboolean;
-    StencilTest: TGLboolean;
+    ColorWriteMask: TColorMask;
+    Tests: TGLStates;
   end;
 
-  function SaveStates: TGLStates;
+  function StoreStates: TGLStoredStates;
   begin
-    glGetFloatv(GL_COLOR_CLEAR_VALUE, @Result.ColorClearValue);
-    glGetBooleanv(GL_COLOR_WRITEMASK, @Result.ColorWriteMasks);
-    Result.DepthTest := glIsEnabled(GL_DEPTH_TEST);
-    Result.StencilTest := glIsEnabled(GL_STENCIL_TEST);
+    Result.ColorClearValue := ARci.GLStates.ColorClearValue;
+    Result.ColorWriteMask := ARci.GLStates.ColorWriteMask[0];
+    Result.Tests := [stDepthTest, stStencilTest] * ARci.GLStates.States;
   end;
 
-  procedure RestoreStates(const states: TGLStates);
-
-    procedure SetEnabled(cap: cardinal; Enabled: TGLboolean);
-    begin
-      if Enabled then
-        glEnable(cap)
-      else
-        glDisable(cap);
-    end;
-
+  procedure RestoreStates(const aStates: TGLStoredStates);
   begin
-    glClearColor(states.ColorClearValue[0], states.ColorClearValue[1],
-      states.ColorClearValue[2], states.ColorClearValue[3]);
-    glColorMask(states.ColorWriteMasks[0], states.ColorWriteMasks[1],
-      states.ColorWriteMasks[2], states.ColorWriteMasks[3]);
+    ARci.GLStates.ColorClearValue := aStates.ColorClearValue;
+    ARci.GLStates.SetColorMask(aStates.ColorWriteMask);
+    if stDepthTest in aStates.Tests then
+      ARci.GLStates.Enable(stDepthTest)
+    else
+      ARci.GLStates.Disable(stDepthTest);
 
-    SetEnabled(GL_DEPTH_TEST, states.DepthTest);
-    SetEnabled(GL_STENCIL_TEST, states.StencilTest);
+    if stStencilTest in aStates.Tests then
+      ARci.GLStates.Enable(stStencilTest)
+    else
+      ARci.GLStates.Disable(stStencilTest);
   end;
 
 var
-  saveLighting: cardinal;
   backColor: TColorVector;
   buffer: TGLSceneBuffer;
-  savedStates: TGLStates;
+  savedStates: TGLStoredStates;
+  w, h: Integer;
+  s: string;
 begin
   // prevent recursion
   if FRendering then
@@ -562,51 +555,51 @@ begin
     InitializeFBO;
 
   try
+    savedStates := StoreStates;
     ApplyCamera;
     DoBeforeRender;
     FFbo.Bind;
-    Assert(FFbo.Status = fsComplete, 'Framebuffer not complete');
-    saveLighting := 0;
-    if assigned(Camera) then
-      saveLighting := GL_LIGHTING_BIT;
+    if FFbo.GetStringStatus(s) <> fsComplete then
+      GLSLogger.LogError('Framebuffer error: ' + s);
 
-    // due to some bug, pushing either GL_ENABLE_BIT or GL_COLOR_BUFFER_BIT
-    // breaks post processing using shaders
-    glPushAttrib(saveLighting or GL_VIEWPORT_BIT);
+    if Assigned(Camera) then
+      Camera.Scene.SetupLights(ARci.GLStates.MaxLights);
 
-    // so we save the states we modify manually
-    savedStates := SaveStates;
-
-    SetupLights;
-    SetViewport;
-
+    w := Width;
+    h := Height;
+    if FFBO.Level > 0 then
+    begin
+      w := w shr FFBO.Level;
+      h := h shr FFBO.Level;
+      if w = 0 then
+        w := 1;
+      if h = 0 then
+        h := 1;
+    end;
+    ARci.GLStates.ViewPort := Vector4iMake(0, 0, w, h);
     buffer := ARci.buffer as TGLSceneBuffer;
 
     if HasColor then
-      glColorMask(True, True, True, True)
+      ARci.GLStates.SetColorMask(cAllColorComponents)
     else
-      glColorMask(False, False, False, False);
+      ARci.GLStates.SetColorMask([]);
 
-    if HasDepth then
-      glEnable(GL_DEPTH_TEST)
-    else
-      glDisable(GL_DEPTH_TEST);
+    ARci.GLStates.DepthWriteMask := HasDepth;
 
     if HasStencil then
-      glEnable(GL_STENCIL_TEST)
+      ARci.GLStates.Enable(stStencilTest)
     else
-      glDisable(GL_STENCIL_TEST);
+      ARci.GLStates.Disable(stStencilTest);
 
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
-      glClearColor(backColor[0], backColor[1], backColor[2],
-        buffer.BackgroundAlpha);
+      backColor[3] := buffer.BackgroundAlpha;
+      ARci.GLStates.ColorClearValue := backColor;
     end
     else
     begin
-      glClearColor(FBackgroundColor.Red, FBackgroundColor.Green,
-        FBackgroundColor.Blue, FBackgroundColor.Alpha);
+      ARci.GLStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
     glClear(GetClearBits);
@@ -629,8 +622,8 @@ begin
     FFbo.PostRender(FPostGenerateMipmap);
 
     RestoreStates(savedStates);
-
-    glPopAttrib;
+    ARci.GLStates.ViewPort :=
+      Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 
     UnApplyCamera;
   finally
@@ -774,37 +767,6 @@ begin
   end;
 end;
 
-procedure TGLFBORenderer.SetupLights;
-var
-  maxLights: Integer;
-begin
-  if not assigned(Camera) then
-    Exit;
-  glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
-  Camera.Scene.SetupLights(maxLights);
-end;
-
-// SetViewport
-//
-
-procedure TGLFBORenderer.SetViewport;
-var
-  w, h: Integer;
-begin
-  w := Width;
-  h := Height;
-  if FFBO.Level > 0 then
-  begin
-    w := w shr FFBO.Level;
-    h := h shr FFBO.Level;
-    if w = 0 then
-      w := 1;
-    if h = 0 then
-      h := 1;
-  end;
-  glViewport(0, 0, w, h);
-end;
-
 // StoreSceneScaleFactor
 //
 
@@ -866,13 +828,26 @@ begin
 end;
 
 procedure TGLFBORenderer.SetLevel(const Value: Integer);
+var
+  w, h: Integer;
 begin
   if Value <> FFBO.Level then
   begin
     if FRendering or FChanged then
     begin
       FFBO.Level := Value;
-      SetViewport;
+      w := Width;
+      h := Height;
+      if FFBO.Level > 0 then
+      begin
+        w := w shr FFBO.Level;
+        h := h shr FFBO.Level;
+        if w = 0 then
+          w := 1;
+        if h = 0 then
+          h := 1;
+        CurrentGLContext.GLStates.ViewPort := Vector4iMake(0, 0, w, h);
+      end;
     end
     else
     begin

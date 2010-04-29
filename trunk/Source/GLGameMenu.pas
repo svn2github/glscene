@@ -6,8 +6,7 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>11/03/10 - Yar - Direct blending state changing bugfixed
-                           (thanks Siroga)
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>04/09/07 - DaStr - Fixed memory leak in TGLGameMenu
                               (BugtrackerID = 1787617) (thanks Pierre Lemerle)
@@ -281,6 +280,7 @@ begin
    finally
       canvas.Free;
    end;
+   glEnable(GL_BLEND); // to match rci change
 end;
 
 // SelectNext

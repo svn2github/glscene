@@ -4,6 +4,7 @@
    its assigned MaterialLibrary.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - Added more state to TGLStateCache
       <li>03/07/09 - DanB - bug fix to allow multi-pass materials to be used by TGLMultiMaterialShader 
       <li>20/01/09 - Mrqzzz - Published property "Shaderstyle"
@@ -80,7 +81,6 @@ begin
 
    FPass:=1;
    if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
-      //rci.GLStates.PushAttrib(cAllAttribBits);
       rci.GLStates.Enable(stDepthTest);
       rci.GLStates.DepthFunc := cfLEqual;
       if FMaterialLibrary.Materials.Count>0 then
@@ -105,7 +105,6 @@ begin
          end;
       if (FPass >= FMaterialLibrary.Materials.Count) then begin
          rci.GLStates.DepthFunc := cfLess;
-         //rci.GLStates.PopAttrib;
          exit;
       end;
       FMaterialLibrary.Materials[FPass].Apply(rci);

@@ -6,6 +6,7 @@
 	Applies a blur effect over the viewport.<p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>22/04/10 - Yar - Fixes after GLState revision
         <li>05/03/10 - DanB - More state added to TGLStateCache
         <li>30/01/08 - Mrqzzz - Several changes to GLBlur. Added Advenced Blur. Looks good now :)
         <li>06/06/07 - DaStr  - Added GLColor to uses (BugtrackerID = 1732211)
@@ -476,7 +477,6 @@ begin
       glMatrixMode(GL_PROJECTION);
       glPushMatrix;
       glLoadIdentity;
-      ARci.GLStates.PushAttrib([sttEnable]);
       ARci.GLStates.Disable(stDepthTest);
       ARci.GLStates.DepthWriteMask := False;
 
@@ -520,8 +520,6 @@ begin
          xglTexCoord2f(0, YTiles);      glVertex2f( vx,  vy);
       glEnd;
       // restore state
-      ARci.GLStates.DepthWriteMask := True;
-      ARci.GLstates.PopAttrib;
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix;

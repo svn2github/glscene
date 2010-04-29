@@ -13,6 +13,7 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/13/2009 - DaStr - Small bugfixes (by Predator)   
       <li>11/13/2009 - DaStr - Initial version (contributed by Predator)
@@ -2296,8 +2297,6 @@ begin
 
   if FShowBoundingBox and (FSelectedObjects.Count - 1 >= 0) then
   begin
-    rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLighting, sttLine,
-                             sttColorBuffer]);
     rci.GLStates.Disable(stLighting);
     if FAntiAliasedLines then
       rci.GLStates.Enable(stLineSmooth);
@@ -2315,9 +2314,8 @@ begin
     for I := 0 to FSelectedObjects.Count - 1 do
       ShowBoundingBox(FSelectedObjects.Hit[I]);
 
-    rci.GLStates.PopAttrib;
   end;
-
+  rci.GLStates.Disable(stColorMaterial);
 end;
 
 procedure TGLGizmoEx.SetReferenceCoordSystem(aValue: TGLGizmoExReferenceCoordinateSystem);

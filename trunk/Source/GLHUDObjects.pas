@@ -6,6 +6,7 @@
    GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>15/03/08 - DaStr - Bugfixed TGLAbsoluteHUDText.DoRender()
                               (thanks Nicoara Adrian) (BugtrackerID = 1914823)
@@ -243,7 +244,6 @@ begin
       glMatrixMode(GL_PROJECTION);
       glPushMatrix;
       glLoadIdentity;
-      rci.GLStates.PushAttrib([sttEnable]);
       rci.GLStates.Disable(stDepthTest);
       rci.GLStates.DepthWriteMask := False;
       // precalc coordinates
@@ -258,8 +258,6 @@ begin
          xglTexCoord2f(0, FYTiles);       glVertex2f( vx,  vy);
       glEnd;
       // restore state
-      rci.GLStates.DepthWriteMask := True;
-      rci.GLStates.PopAttrib;
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix;
@@ -391,12 +389,10 @@ begin
       glMatrixMode(GL_PROJECTION);
       glPushMatrix;
       glLoadIdentity;
-      rci.GLStates.PushAttrib([sttEnable]);
       rci.GLStates.Disable(stDepthTest);
       // render text
       FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
       // restore state
-      rci.GLStates.PopAttrib;
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix;

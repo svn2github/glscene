@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>02/04/10 - Yar -  Added GetActiveAttribs to TGLCustomGLSLShader
       <li>04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
       <li>26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
@@ -70,7 +71,7 @@ uses
 
   // GLScene
   VectorGeometry, VectorTypes, GLTexture, GLContext, OpenGL1x, GLCustomShader,
-  GLRenderContextInfo;
+  GLRenderContextInfo, GLTextureFormat;
 
 type
   TGLSLShaderParameter = class;
@@ -167,9 +168,9 @@ type
     procedure SetAsMatrix4f(const Value: TMatrix4f); override;
 
     function GetAsCustomTexture(const TextureIndex: Integer;
-      const TextureTarget: Word): Cardinal; override;
+      TextureTarget: TGLTextureTarget): Cardinal; override;
     procedure SetAsCustomTexture(const TextureIndex: Integer;
-      const TextureTarget: Word; const Value: Cardinal); override;
+      TextureTarget: TGLTextureTarget; const Value: Cardinal); override;
 
     function GetAsUniformBuffer: GLenum; override;
     procedure SetAsUniformBuffer( UBO: GLenum); override;
@@ -490,7 +491,7 @@ end;
 { TGLSLShaderParameter }
 
 function TGLSLShaderParameter.GetAsCustomTexture(
-  const TextureIndex: Integer; const TextureTarget: Word): Cardinal;
+  const TextureIndex: Integer; TextureTarget: TGLTextureTarget): Cardinal;
 begin
   glGetUniformivARB(FGLSLProg.Handle, TextureIndex, @Result);
 end;
@@ -551,13 +552,11 @@ begin
 end;
 
 procedure TGLSLShaderParameter.SetAsCustomTexture(
-  const TextureIndex: Integer; const TextureTarget: Word;
+  const TextureIndex: Integer; TextureTarget: TGLTextureTarget;
   const Value: Cardinal);
 begin
-  glActiveTextureARB(GL_TEXTURE0_ARB + TextureIndex);
-  glBindTexture(TextureTarget, Value);
+  CurrentGLContext.GLStates.TextureBinding[TextureIndex, TextureTarget] := Value;
   glUniform1iARB(FParameterID, TextureIndex);
-  glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
 procedure TGLSLShaderParameter.SetAsMatrix2f(const Value: TMatrix2f);

@@ -6,6 +6,7 @@
   OpenGL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/10/08 - DanB - reversed order of vertices in TGLCustomControl.InternalRender,
                             which fixes the GUIPaint demo
@@ -698,7 +699,6 @@ Begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   rci.GLStates.PushAttrib([sttEnable]);
    rci.GLStates.Disable(stDepthTest);
    rci.GLStates.DepthWriteMask := False;
 End;
@@ -706,8 +706,6 @@ End;
 Procedure TGLBaseComponent.RenderFooter(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Begin
-   rci.GLStates.DepthWriteMask := True;
-   rci.GLStates.PopAttrib;
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;

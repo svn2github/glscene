@@ -6,7 +6,6 @@
 	String constants that are used in many GLScene units<p>
 
 	<b>History :</b><font size=-1><ul>
-      22/01/10 - Yar - Added glsFailedApplyWrap
       23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
                          glsUnknownType, glsShaderNeedsAtLeastOneLightSource(Ex),
                          glsCadencerNotDefined(Ex), glsSceneViewerNotDefined
@@ -88,7 +87,7 @@ resourcestring
   glsOCHUDObjects = 'HUD objects';
   glsOCGuiObjects = 'GUI objects';
   glsOCProxyObjects = 'Proxy objects';
-  glsFailedApplyWrap = 'Unsupported texture wrapping mode.';
+  glsOCExperemental = 'Experemental objects';
 
 implementation
 

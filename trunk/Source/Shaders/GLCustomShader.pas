@@ -8,7 +8,8 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>22/01/10 - Yar   - Added to TGLCustomShaderParameter property AsTexture
+      <li>22/04/10 - Yar - Fixes after GLState revision
+      <li>22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
       <li>25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
       <li>24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
                               TGLFragmentProgram and TGLGeometryProgram
@@ -109,7 +110,7 @@ uses
   // GLScene
   VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGL1x, GLScene,
   GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
-  VectorLists;
+  VectorLists, GLTextureFormat;
 
 const
   glsShaderMaxLightSources = 8;
@@ -158,7 +159,8 @@ type
   IGLPostShader = interface
   ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
     {: Called on every pass. }
-    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle; const TextureTarget: Cardinal);
+    procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;
+      TextureTarget: TGLTextureTarget);
     {: Called to determine if it is compatible. }
     function GetTextureTarget: TGLTextureTarget;
   end;
@@ -295,9 +297,9 @@ type
       const Value: TGLTexture);
 
     function GetAsCustomTexture(const TextureIndex: Integer;
-      const TextureTarget: Word): Cardinal; virtual; abstract;
+      TextureTarget: TGLTextureTarget): Cardinal; virtual; abstract;
     procedure SetAsCustomTexture(const TextureIndex: Integer;
-      const TextureTarget: Word; const Value: Cardinal); virtual; abstract;
+      TextureTarget: TGLTextureTarget; const Value: Cardinal); virtual; abstract;
 
     function GetAsUniformBuffer: GLenum; virtual; abstract;
     procedure SetAsUniformBuffer(UBO: GLenum); virtual; abstract;
@@ -346,7 +348,7 @@ type
     property AsTextureRect[const TextureIndex: Integer]: TGLTexture write SetAsTextureRect;
     property AsTextureCube[const TextureIndex: Integer]: TGLTexture write SetAsTextureCube;
 
-    property AsCustomTexture[const TextureIndex: Integer; const TextureTarget: Word]: Cardinal read GetAsCustomTexture write SetAsCustomTexture;
+    property AsCustomTexture[const TextureIndex: Integer; TextureTarget: TGLTextureTarget]: Cardinal read GetAsCustomTexture write SetAsCustomTexture;
 
     property AsUniformBuffer: GLenum read GetAsUniformBuffer write SetAsUniformBuffer;
   end;
@@ -382,17 +384,16 @@ implementation
 
 procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 var
-  MaxLights: Integer;
   I: Integer;
-  LightEnabled: GLBoolean;
 begin
   ALightIDs.Clear;
-  glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
-  for I := 0 to maxLights - 1 do
+  with CurrentGLContext.GLStates do
   begin
-    glGetBooleanv(GL_LIGHT0 + I, @lightEnabled);
-    if lightEnabled then
-      ALightIDs.Add(GL_LIGHT0 + I);
+    for I := 0 to MaxLights - 1 do
+    begin
+      if LightEnabling[I] then
+        ALightIDs.Add(I);
+    end;
   end;
 end;
 
@@ -732,31 +733,31 @@ end;
 procedure TGLCustomShaderParameter.SetAsTexture1D(
   const TextureIndex: Integer; const Value: TGLTexture);
 begin
-  SetAsCustomTexture(TextureIndex, GL_TEXTURE_1D, Value.Handle);
+  SetAsCustomTexture(TextureIndex, ttTexture1D, Value.Handle);
 end;
 
 procedure TGLCustomShaderParameter.SetAsTexture2D(
   const TextureIndex: Integer; const Value: TGLTexture);
 begin
-  SetAsCustomTexture(TextureIndex, GL_TEXTURE_2D, Value.Handle);
+  SetAsCustomTexture(TextureIndex, ttTexture2D, Value.Handle);
 end;
 
 procedure TGLCustomShaderParameter.SetAsTexture3D(
   const TextureIndex: Integer; const Value: TGLTexture);
 begin
-  SetAsCustomTexture(TextureIndex, GL_TEXTURE_3D, Value.Handle);
+  SetAsCustomTexture(TextureIndex, ttTexture3D, Value.Handle);
 end;
 
 procedure TGLCustomShaderParameter.SetAsTextureCube(
   const TextureIndex: Integer; const Value: TGLTexture);
 begin
-  SetAsCustomTexture(TextureIndex, GL_TEXTURE_CUBE_MAP_ARB, Value.Handle);
+  SetAsCustomTexture(TextureIndex, ttTextureCube, Value.Handle);
 end;
 
 procedure TGLCustomShaderParameter.SetAsTextureRect(
   const TextureIndex: Integer; const Value: TGLTexture);
 begin
-  SetAsCustomTexture(TextureIndex, GL_TEXTURE_RECTANGLE_ARB, Value.Handle);
+  SetAsCustomTexture(TextureIndex, ttTextureRect, Value.Handle);
 end;
 
 procedure TGLCustomShaderParameter.SetAsVectorF(const Values: array of Single);
@@ -792,15 +793,7 @@ end;
 procedure TGLCustomShaderParameter.SetToTextureOf(
   const Texture: TGLTexture; const TextureIndex: Integer);
 begin
-  case Texture.Image.NativeTextureTarget of
-    GL_TEXTURE_2D : SetAsCustomTexture(TextureIndex, GL_TEXTURE_2D, Texture.Handle);
-    GL_TEXTURE_1D : SetAsCustomTexture(TextureIndex, GL_TEXTURE_1D, Texture.Handle);
-    GL_TEXTURE_3D : SetAsCustomTexture(TextureIndex, GL_TEXTURE_3D, Texture.Handle);
-    GL_TEXTURE_CUBE_MAP_ARB : SetAsCustomTexture(TextureIndex, GL_TEXTURE_CUBE_MAP_ARB, Texture.Handle);
-    GL_TEXTURE_RECTANGLE_ARB : SetAsCustomTexture(TextureIndex, GL_TEXTURE_RECTANGLE_ARB, Texture.Handle);
-  else
-    Assert(False, glsErrorEx + glsUnknownType);
-  end;
+  SetAsCustomTexture(TextureIndex, Texture.Image.NativeTextureTarget, Texture.Handle);
 end;
 
 constructor TGLGeometryProgram.Create(const AParent: TGLCustomShader);
