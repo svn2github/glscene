@@ -174,14 +174,10 @@ object MaterialEditorForm: TMaterialEditorForm
   end
   object CBPolygonMode: TComboBox
     Left = 88
-    Height = 21
+    Height = 23
     Top = 228
     Width = 146
     ItemHeight = 13
-    ItemIndex = 0
-    Items.Strings = (
-      ''
-    )
     OnChange = OnMaterialChanged
     Style = csDropDownList
     TabOrder = 8
