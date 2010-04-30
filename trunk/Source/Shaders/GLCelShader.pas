@@ -61,7 +61,6 @@ type
     FOutlinePass,
       FUnApplyShadeTexture: Boolean;
     FOutlineColor: TGLColor;
-    FStoreStates: TGLStateTypes;
   protected
     procedure SetCelShaderOptions(const val: TGLCelShaderOptions);
     procedure SetOutlineWidth(const val: Single);
