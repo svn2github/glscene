@@ -1657,7 +1657,14 @@ end;
 
 procedure TGLStateCache.SetEnableColorLogicOp(const Value: TGLboolean);
 begin
-
+  if Value<>FEnableColorLogicOp then
+  begin
+    FEnableColorLogicOp := Value;
+    if Value then
+      glEnable(GL_COLOR_LOGIC_OP)
+    else
+      glDisable(GL_COLOR_LOGIC_OP);
+  end;
 end;
 
 procedure TGLStateCache.SetEnableCullFace(const Value: TGLboolean);
