@@ -65,6 +65,7 @@ type
     aniBox: TComboBox;
     aniPos: TTrackBar;
     Timer1: TTimer;
+    procedure GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartStopClick(Sender: TObject);
@@ -334,6 +335,15 @@ begin
     Param['Scale'].AsFloat := 16.0;
     Param['Softly'].AsInteger := 1;
     Param['EyeToLightMatrix'].AsMatrix4f := FEyeToLightMatrix;
+  end;
+end;
+
+procedure TfrmMain.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
+begin
+  with Shader, MatLib do begin
+    Param['TextureMap'].AsTexture2D[0]:= TextureByName('Floor');
+    Param['ShadowMap'].AsTexture2D[1]:= TextureByName(GLFrameBuffer.DepthTextureName);
+    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
   end;
 end;
 

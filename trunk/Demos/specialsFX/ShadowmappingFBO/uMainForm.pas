@@ -2,6 +2,7 @@
 Demo of the new FBO Renderer component.
 
 Version History:
+  30/04/2010 - Yar - Fixed for ATI
   12/11/2009 - DaStr - Initial version (by YarUnderoaker)
 
 }
@@ -39,6 +40,7 @@ type
     GLFreeForm1: TGLFreeForm;
     LightFBORenderer: TGLFBORenderer;
     GLSphere1: TGLSphere;
+    procedure GLSLShader2Initialize(Shader: TGLCustomGLSLShader);
     procedure GLSLShader1UnApply(Shader: TGLCustomGLSLShader; var ThereAreMorePasses: Boolean);
     procedure FormResize(Sender: TObject);
     procedure PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
@@ -70,7 +72,7 @@ implementation
 {$R *.dfm}
 
 uses
-  OpenGL1x, DDS, JPEG, GLFileObj, GLGraphics;
+  OpenGL1x, DDS, JPEG, GLFileObj, GLGraphics, VectorTypes;
 
 procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
@@ -193,6 +195,15 @@ begin
     Param['Scale'].AsFloat:=16.0;
     Param['Softly'].AsInteger:=1;
     Param['EyeToLightMatrix'].AsMatrix4f:= FEyeToLightMatrix;
+  end;
+end;
+
+procedure TForm1.GLSLShader2Initialize(Shader: TGLCustomGLSLShader);
+begin
+  with Shader, GLMaterialLibrary1 do begin
+    Param['TextureMap'].AsTexture2D[0]:= TextureByName('Chekers2');
+    Param['ShadowMap'].AsTexture2D[1]:= TextureByName(LightFBORenderer.DepthTextureName);
+    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
   end;
 end;
 
