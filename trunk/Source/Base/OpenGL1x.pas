@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
       <li>16/04/10 - Yar - Added Graphics Remedy's Extensions
       <li>28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
                             added bindless graphics extensions
@@ -5881,7 +5882,7 @@ var
    glTransformFeedbackVaryings: procedure(_program: TGLuint; count: TGLsizei;
                                       const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    glGetTransformFeedbackVarying: procedure(_program: TGLuint; index: TGLuint;
-                                        location: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+     bufSize: TGLsizei; length: PGLsizei; size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // New commands in OpenGL 3.0
    glClearBufferiv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
