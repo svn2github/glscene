@@ -1491,6 +1491,8 @@ procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
 begin
   if Value <> FVertexArrayBinding then
   begin
+    if Value = 0 then
+      FVAOStates[0] := FVAOStates[FVertexArrayBinding];
     FVertexArrayBinding := Value;
     glBindVertexArray(Value);
   end;
