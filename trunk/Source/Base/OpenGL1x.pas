@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
       <li>01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
       <li>16/04/10 - Yar - Added Graphics Remedy's Extensions
       <li>28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
@@ -405,6 +406,8 @@ var
    GL_ATI_texture_compression_3dc,
    GL_ATI_texture_float,
    GL_ATI_texture_mirror_once,
+
+   GL_S3_s3tc,
 
    GL_EXT_abgr,
    GL_EXT_bgra,
@@ -3352,6 +3355,13 @@ const
    GL_PROXY_TEXTURE_1D_EXT                           = $8063;
    GL_PROXY_TEXTURE_2D_EXT                           = $8064;
    GL_TEXTURE_TOO_LARGE_EXT                          = $8065;
+
+   GL_RGB_S3TC			                     = $83A0;
+   GL_RGB4_S3TC			                     = $83A1;
+   GL_RGBA_S3TC			                     = $83A2;
+   GL_RGBA4_S3TC			             = $83A3;
+   GL_RGBA_DXT5_S3TC			             = $83A4;
+   GL_RGBA4_DXT5_S3TC			             = $83A5;
 
    // EXT_texture3D (#6)
    GL_PACK_SKIP_IMAGES_EXT                           = $806B;
@@ -9057,6 +9067,8 @@ begin
    GL_ATI_texture_float := CheckExtension('GL_ATI_texture_float');
    GL_ATI_texture_mirror_once := CheckExtension('GL_ATI_texture_mirror_once');
 
+   GL_S3_s3tc := CheckExtension('GL_S3_s3tc');
+
    GL_EXT_abgr := CheckExtension('GL_EXT_abgr');
    GL_EXT_bgra := CheckExtension('GL_EXT_bgra');
    GL_EXT_bindable_uniform := CheckExtension('GL_EXT_bindable_uniform');   
@@ -9247,7 +9259,7 @@ procedure ReadGLXImplementationProperties;
 var
    Buffer: string;
    MajorVersion, MinorVersion: Integer;
-
+   Dpy: PDisplay;
    // Checks if the given Extension string is in Buffer.
    function CheckExtension(const Extension: string): Boolean;
    var
@@ -9261,9 +9273,9 @@ var
        Result := ((ExtPos + Length(Extension) - 1)= Length(Buffer))
                  or (Buffer[ExtPos + Length(Extension)]=' ');
    end;
-
 begin
-   buffer:=String(glGetString(GLX_VERSION));
+   Dpy:=glXGetCurrentDisplay();
+   buffer:=String(glXQueryServerString(Dpy, XDefaultScreen(Dpy), GLX_VERSION));
    TrimAndSplitVersionString(buffer, majorversion, minorVersion);
    GLX_VERSION_1_1:=IsVersionMet(1,1,majorVersion,minorVersion);
    GLX_VERSION_1_2:=IsVersionMet(1,2,majorVersion,minorVersion);
@@ -9273,7 +9285,7 @@ begin
    // This procedure will probably need changing, as totally untested
    // This might only work if GLX functions/procedures are loaded dynamically
    if Assigned(glXQueryExtensionsString) then
-     Buffer := glXQueryExtensionsString(glXGetCurrentDisplay(), 0)  //guess at a valid screen
+     Buffer := glXQueryExtensionsString(Dpy, 0)  //guess at a valid screen
    else
      Buffer:='';
    GLX_ARB_create_context := CheckExtension('GLX_ARB_create_context');
@@ -9421,4 +9433,5 @@ finalization
    CloseOpenGL;
 
 end.
+
 
