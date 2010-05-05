@@ -20,6 +20,8 @@ uses
 
 type
 
+  { TInfoForm }
+
   TInfoForm = class(TForm)
     PageControl: TPageControl;
     Sheet1: TTabSheet;
@@ -94,12 +96,12 @@ type
     WebsiteLbl: TLabel;
     CloseButton: TButton;
     procedure CloseButtonClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ExtensionsDblClick(Sender: TObject);
     procedure ExtensionsClick(Sender: TObject);
     procedure ExtensionsKeyPress(Sender: TObject; var Key: Char);
+    procedure FormShow(Sender: TObject);
     procedure MIDelphi3DClick(Sender: TObject);
     procedure WebsiteLblClick(Sender: TObject);
   public
@@ -109,7 +111,7 @@ type
 implementation
 
 uses
-  OpenGL1x, SysUtils, GLCrossPlatform;
+  {$IFDEF Linux}xlib,{$ENDIF}OpenGL1x, SysUtils, GLCrossPlatform;
 
 
 // ShowInfoForm
@@ -163,7 +165,10 @@ begin
       // common properties
       VendorLabel.Caption:=String(glGetString(GL_VENDOR));
       RendererLabel.Caption:=String(glGetString(GL_RENDERER));
+
       {$IFDEF MSWINDOWS}
+      Label2.Show;
+      AccLabel.Show;
       dc := wglGetCurrentDC();
       PixelFormat:=GetPixelFormat(dc);
       DescribePixelFormat(dc,PixelFormat,SizeOf(pfd), PFD);
@@ -172,7 +177,14 @@ begin
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
       {$ENDIF}
-      VersionLabel.Caption:=String(glGetString(GL_VERSION));
+      VersionLabel.Caption:=
+      {$IFDEF Linux}
+      'GLX '+String(glXQueryServerString(glXGetCurrentDisplay(),
+                                          XDefaultScreen(glXGetCurrentDisplay())
+                                          ,GLX_VERSION))+', OpenGL '+
+      {$ENDIF}
+      String(glGetString(GL_VERSION));
+
       ExtStr:=String(glGetString(GL_EXTENSIONS));
       Extensions.Clear;
       while Length(ExtStr) > 0 do begin
@@ -193,6 +205,8 @@ begin
         StereoLabel.Caption:='no';
 
       {$IFDEF MSWINDOWS}
+      Label6.Show;
+      CopyLabel.Show;
       // Include WGL extensions
       if WGL_ARB_extensions_string then
       begin
@@ -219,6 +233,16 @@ begin
         CopyLabel.Caption:='n/a';
       end;
       {$ENDIF}
+      {$IFDEF Linux}
+       // Include GLX extensions
+       ExtStr:=String(glXQueryExtensionsString(glXGetCurrentDisplay(),0));
+        while Length(ExtStr) > 0 do begin
+          I:=Pos(' ',ExtStr);
+          if I = 0 then I:=255;
+          Extensions.Items.Add(Copy(ExtStr,1,I-1));
+          Delete(ExtStr,1,I);
+        end;
+      {$ENDIF}
       // buffer and pixel depths
       ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
                                  [LimitOf[limRedBits], LimitOf[limGreenBits],
@@ -231,6 +255,10 @@ begin
       IntLimitToLabel(AuxLabel, limAuxBuffers);
       IntLimitToLabel(SubLabel, limSubpixelBits);
       {$IFDEF MSWINDOWS}
+      Label18.Show;
+      OverlayLabel.Show;
+      Label20.Show;
+      UnderlayLabel.Show;
       OverlayLabel.Caption:=IntToStr(pfd.bReserved and 7);
       UnderlayLabel.Caption:=IntToStr(pfd.bReserved shr 3);
       {$ENDIF}
@@ -256,13 +284,6 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TInfoForm.FormCreate(Sender: TObject);
-begin
-  PageControl.ActivePageIndex := 0;
-end;
-
-//------------------------------------------------------------------------------
-
 procedure TInfoForm.FormKeyPress(Sender: TObject; var Key: Char);
 
 begin
@@ -271,7 +292,7 @@ end;
 
 procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   Release;
+   Action:= caFree;
 end;
 
 procedure TInfoForm.ExtensionsDblClick(Sender: TObject);
@@ -322,6 +343,17 @@ end;
 procedure TInfoForm.ExtensionsKeyPress(Sender: TObject; var Key: Char);
 begin
    ExtensionsClick(Sender);
+   Key:=' ';
+end;
+
+procedure TInfoForm.FormShow(Sender: TObject);
+begin
+   PageControl.ActivePageIndex := 0;
+   {$IFDEF Linux}
+   PageControl.TabPosition := tpRight;
+   Top := 272;
+   Width := 616;
+   {$ENDIF}
 end;
 
 //------------------------------------------------------------------------------
@@ -342,7 +374,6 @@ initialization
    RegisterInfoForm(ShowInfoForm);
 
 end.
-
 
 
 
