@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>06/03/10 - Yar - Added to TGLDepthProperties DepthClamp property
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -1698,6 +1699,7 @@ begin
     else
       FreeAndNil(FGLBackProperties);
     FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
+    FPolygonMode := TGLMaterial(Source).FPolygonMode;
     FBlendingMode := TGLMaterial(Source).FBlendingMode;
     FMaterialOptions := TGLMaterial(Source).FMaterialOptions;
     if Assigned(TGLMaterial(Source).FTexture) then
