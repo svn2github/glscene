@@ -34,17 +34,19 @@ type
     Label2: TLabel;
     SBEditImage: TSpeedButton;
     CBMagFilter: TComboBox;
-	 Label3: TLabel;
-	 Label4: TLabel;
-	 CBMinFilter: TComboBox;
-	 CBTextureMode: TComboBox;
-	 Label1: TLabel;
-	 Label5: TLabel;
-	 CBTextureWrap: TComboBox;
-	 CBDisabled: TCheckBox;
-	 CBImageClass: TComboBox;
+	  Label3: TLabel;
+	  Label4: TLabel;
+	  CBMinFilter: TComboBox;
+	  CBTextureMode: TComboBox;
+	  Label1: TLabel;
+	  Label5: TLabel;
+	  CBTextureWrap: TComboBox;
+	  CBDisabled: TCheckBox;
+	  CBImageClass: TComboBox;
     CBImageAlpha: TComboBox;
     Label6: TLabel;
+    CBFilteringQuality: TComboBox;
+    Label7: TLabel;
     procedure CBMagFilterChange(Sender: TObject);
     procedure CBMinFilterChange(Sender: TObject);
     procedure CBTextureModeChange(Sender: TObject);
@@ -53,6 +55,7 @@ type
     procedure SBEditImageClick(Sender: TObject);
     procedure CBImageClassChange(Sender: TObject);
     procedure CBImageAlphaChange(Sender: TObject);
+    procedure CBFilteringQualityChange(Sender: TObject);
 	 
   private
 	 { Déclarations privées }
@@ -99,6 +102,8 @@ begin
 	  CBMagFilter.Items.Add(GetEnumName(TypeInfo(TGLMagFilter), i));
 	for i := 0 to Integer(High(TGLMinFilter)) do
 	  CBMinFilter.Items.Add(GetEnumName(TypeInfo(TGLMinFilter), i));
+	for i := 0 to Integer(High(TGLTextureFilteringQuality)) do
+	  CBFilteringQuality.Items.Add(GetEnumName(TypeInfo(TGLTextureFilteringQuality), i));
 	for i := 0 to Integer(High(TGLTextureMode)) do
 	  CBTextureMode.Items.Add(GetEnumName(TypeInfo(TGLTextureMode), i));
 	for i := 0 to Integer(High(TGLTextureWrap)) do
@@ -120,10 +125,11 @@ begin
 	FTexture.Assign(val);
 	changeing:=True;
 	try
-		with CBImageClass do ItemIndex:=Items.IndexOfObject(Pointer(FTexture.ClassType));
+		with CBImageClass do ItemIndex:=Items.IndexOfObject(Pointer(FTexture.Image.ClassType));
 		CBImageAlpha.ItemIndex:=Integer(FTexture.ImageAlpha);
 		CBMagFilter.ItemIndex:=Integer(FTexture.MagFilter);
 		CBMinFilter.ItemIndex:=Integer(FTexture.MinFilter);
+    CBFilteringQuality.ItemIndex:=Integer(FTexture.FilteringQuality);
 		CBTextureMode.ItemIndex:=Integer(FTexture.TextureMode);
 		CBTextureWrap.ItemIndex:=Integer(FTexture.TextureWrap);
 		CBDisabled.Checked:=FTexture.Disabled;
@@ -213,6 +219,12 @@ procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
   EditGLTextureImage(FTexture.Image);
   DoOnChange;
+end;
+
+procedure TRTextureEdit.CBFilteringQualityChange(Sender: TObject);
+begin
+	FTexture.FilteringQuality:=TGLTextureFilteringQuality(CBFilteringQuality.ItemIndex);
+	DoOnChange;
 end;
 
 end.

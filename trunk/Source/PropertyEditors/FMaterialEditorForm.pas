@@ -3,6 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
       <li>05/10/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
@@ -99,6 +100,8 @@ begin
   inherited;
   for i := 0 to Integer(High(TBlendingMode)) do
     CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
+  for i := 0 to Integer(High(TPolygonMode)) do
+    CBPolygonMode.Items.Add(GetEnumName(TypeInfo(TPolygonMode), i));
 
   FEFront.OnChange := OnMaterialChanged;
   FEBack.OnChange := OnMaterialChanged;
@@ -127,6 +130,7 @@ begin
       BackProperties := FEBack.FaceProperties;
       Texture := RTextureEdit.Texture;
       BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+      PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
     end;
 end;
 

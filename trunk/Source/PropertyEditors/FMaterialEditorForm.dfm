@@ -34,7 +34,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Top = 8
     Width = 313
     Height = 217
-    ActivePage = TSFront
+    ActivePage = TSTexture
     Style = tsButtons
     TabOrder = 0
     object TSFront: TTabSheet
@@ -46,24 +46,6 @@ object MaterialEditorForm: TMaterialEditorForm
         Height = 186
         AutoSize = True
         TabOrder = 0
-        inherited Label1: TLabel
-          Width = 45
-          ExplicitWidth = 45
-        end
-        inherited PageControl: TPageControl
-          inherited TSDiffuse: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-          inherited TSEmission: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-          inherited TSSpecular: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-        end
         inherited ImageList: TImageList
           Top = 0
         end
@@ -79,24 +61,6 @@ object MaterialEditorForm: TMaterialEditorForm
         Height = 186
         AutoSize = True
         TabOrder = 0
-        inherited Label1: TLabel
-          Width = 45
-          ExplicitWidth = 45
-        end
-        inherited PageControl: TPageControl
-          inherited TSDiffuse: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-          inherited TSEmission: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-          inherited TSSpecular: TTabSheet
-            ExplicitTop = 24
-            ExplicitHeight = 102
-          end
-        end
       end
     end
     object TSTexture: TTabSheet
@@ -111,39 +75,14 @@ object MaterialEditorForm: TMaterialEditorForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        ExplicitWidth = 305
-        ExplicitHeight = 186
-        inherited Label2: TLabel
-          Width = 29
-          ExplicitWidth = 29
-        end
+        DesignSize = (
+          305
+          186)
         inherited SBEditImage: TSpeedButton
           Left = 287
-          ExplicitLeft = 287
-        end
-        inherited Label3: TLabel
-          Width = 43
-          ExplicitWidth = 43
-        end
-        inherited Label4: TLabel
-          Width = 39
-          ExplicitWidth = 39
-        end
-        inherited Label1: TLabel
-          Width = 66
-          ExplicitWidth = 66
-        end
-        inherited Label5: TLabel
-          Width = 65
-          ExplicitWidth = 65
-        end
-        inherited Label6: TLabel
-          Width = 56
-          ExplicitWidth = 56
         end
         inherited CBImageClass: TComboBox
           Width = 213
-          ExplicitWidth = 213
         end
       end
     end
@@ -162,8 +101,6 @@ object MaterialEditorForm: TMaterialEditorForm
       Height = 203
       AutoSize = True
       TabOrder = 0
-      ExplicitLeft = 16
-      ExplicitTop = 22
       inherited GLScene1: TGLScene
         inherited World: TGLDummyCube
           inherited Cube: TGLCube
@@ -198,7 +135,8 @@ object MaterialEditorForm: TMaterialEditorForm
     Height = 25
     Caption = 'OK'
     Default = True
-    DoubleBuffered = True
+    ModalResult = 1
+    TabOrder = 2
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -216,20 +154,15 @@ object MaterialEditorForm: TMaterialEditorForm
       3338F38F000033333333333333A223333333333333338F830000333333333333
       333A333333333333333338330000333333333333333333333333333333333333
       0000}
-    ModalResult = 1
     NumGlyphs = 2
-    ParentDoubleBuffered = False
-    TabOrder = 2
   end
   object BBCancel: TBitBtn
     Left = 472
     Top = 256
     Width = 83
     Height = 25
-    DoubleBuffered = True
-    Kind = bkCancel
-    ParentDoubleBuffered = False
     TabOrder = 3
+    Kind = bkCancel
   end
   object CBBlending: TComboBox
     Left = 88
@@ -237,6 +170,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Width = 145
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 4
     OnChange = OnMaterialChanged
   end
@@ -246,11 +180,8 @@ object MaterialEditorForm: TMaterialEditorForm
     Width = 145
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 5
     OnChange = OnMaterialChanged
-    Items.Strings = (
-      'pmFill'
-      'pmLines'
-      'pmPoints')
   end
 end
