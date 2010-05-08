@@ -479,6 +479,7 @@ begin
       if fMipLevels = 0 then
         fMipLevels := 1;
       CheckOpenGLError;
+    end;
   finally
     if contextActivate then
     begin
