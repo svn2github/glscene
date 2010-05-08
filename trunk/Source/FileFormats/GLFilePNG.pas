@@ -4,6 +4,7 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>16/03/10 - Yar - Improved FPC compatibility
         <li>05/03/10 - Yar - Creation
@@ -19,8 +20,12 @@ uses
 {$IFDEF GLS_LOGGING}
   GLSLog,
 {$ENDIF}
-  Classes, SysUtils,
-  OpenGL1x, GLContext, GLGraphics, GLTextureFormat,
+  Classes,
+  SysUtils,
+  OpenGL1x,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
   ApplicationFileIO;
 
 type
@@ -546,40 +551,35 @@ begin
 
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    //Check for texture is resident in texture memory
-    glGetTexParameteriv(glTarget, GL_TEXTURE_RESIDENT, @texResident);
-    if texResident = GL_TRUE then
+    fMipLevels := 0;
+    fCubeMap := false;
+    fTextureArray := false;
+    // Check level existence
+    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+      @texFormat);
+    if texFormat > 1 then
     begin
-      fMipLevels := 0;
-      fCubeMap := false;
-      fTextureArray := false;
-      // Check level existence
-      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
-        @texFormat);
-      if texFormat > 1 then
-      begin
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
-        fDepth := 0;
-        residentFormat := OpenGLFormatToInternalFormat(texFormat);
-        if CurrentFormat then
-          fInternalFormat := residentFormat
-        else
-          fInternalFormat := intFormat;
-        FindCompatibleDataFormat(fInternalFormat, fColorFormat, fDataType);
-        Inc(fMipLevels);
-      end;
-      if fMipLevels > 0 then
-      begin
-        fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-        ReallocMem(FData, DataSize);
-        fLevels.Clear;
-        fLevels.Add(fData);
-        glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
-      end
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+      fDepth := 0;
+      residentFormat := OpenGLFormatToInternalFormat(texFormat);
+      if CurrentFormat then
+        fInternalFormat := residentFormat
       else
-        fMipLevels := 1;
+        fInternalFormat := intFormat;
+      FindCompatibleDataFormat(fInternalFormat, fColorFormat, fDataType);
+      Inc(fMipLevels);
     end;
+    if fMipLevels > 0 then
+    begin
+      fElementSize := GetTextureElementSize(fColorFormat, fDataType);
+      ReallocMem(FData, DataSize);
+      fLevels.Clear;
+      fLevels.Add(fData);
+      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+    end
+    else
+      fMipLevels := 1;
     CheckOpenGLError;
   finally
     if contextActivate then

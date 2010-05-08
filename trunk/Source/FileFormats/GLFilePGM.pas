@@ -4,6 +4,7 @@
 {: GLFilePGM<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>04/02/10 - Yar - Creation
    </ul><p>
 }
@@ -31,7 +32,7 @@ type
 
     procedure AssignFromTexture(textureContext: TGLContext;
                                 const textureHandle: TGLenum;
-                                textureTarget: TGLenum;
+                                textureTarget: TGLTextureTarget;
                                 const CurrentFormat: Boolean;
                                 const intFormat: TGLInternalFormat); override;
 
@@ -122,7 +123,7 @@ end;
 //
 procedure TGLPGMImage.AssignFromTexture(textureContext: TGLContext;
                                         const textureHandle: TGLenum;
-                                        textureTarget: TGLenum;
+                                        textureTarget: TGLTextureTarget;
                                         const CurrentFormat: Boolean;
                                         const intFormat: TGLInternalFormat);
 var
@@ -130,10 +131,10 @@ var
   contextActivate : Boolean;
   texFormat, texResident: Cardinal;
   residentFormat : TGLInternalFormat;
-
+  glTarget: TGLEnum;
 begin
-  if not ((textureTarget=GL_TEXTURE_2D)
-  or (textureTarget=GL_TEXTURE_RECTANGLE)) then Exit;
+  if not ((textureTarget=ttTexture2D)
+  or (textureTarget = ttTextureRect)) then Exit;
 
   oldContext:=CurrentGLContext;
   contextActivate:=(oldContext<>textureContext);
@@ -142,42 +143,38 @@ begin
     if Assigned(oldContext) then oldContext.Deactivate;
     textureContext.Activate;
   end;
+  glTarget := DecodeGLTextureTarget(textureTarget);
 
   try
-    textureContext.GLStates.SetGLCurrentTexture(0, textureTarget, textureHandle);
-    //Check for texture is resident in texture memory
-    glGetTexParameteriv(textureTarget, GL_TEXTURE_RESIDENT, @texResident);
-    if texResident=GL_TRUE then
+    textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
+    fMipLevels := 0;
+    fCubeMap  := false;
+    fTextureArray := false;
+    fColorFormat := GL_LUMINANCE;
+    fDataType := GL_FLOAT;
+    // Check level existence
+    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
+    if texFormat > 1 then
     begin
-      fMipLevels := 0;
-      fCubeMap  := false;
-      fTextureArray := false;
-      fColorFormat := GL_LUMINANCE;
-      fDataType := GL_FLOAT;
-      // Check level existence
-      glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
-      if texFormat > 1 then
-      begin
-        glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        glGetTexLevelParameteriv(textureTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
-        fDepth:=0;
-        residentFormat := OpenGLFormatToInternalFormat( texFormat );
-        if CurrentFormat then
-          fInternalFormat := residentFormat
-        else
-          fInternalFormat := intFormat;
-        Inc(fMipLevels);
-      end;
-      if fMipLevels>0 then
-      begin
-        fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-        ReallocMem(FData, DataSize);
-        fLevels.Clear;
-        fLevels.Add(fData);
-        glGetTexImage(textureTarget, 0, fColorFormat, fDataType, fData);
-      end
-      else fMipLevels:=1;
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+      fDepth:=0;
+      residentFormat := OpenGLFormatToInternalFormat( texFormat );
+      if CurrentFormat then
+        fInternalFormat := residentFormat
+      else
+        fInternalFormat := intFormat;
+      Inc(fMipLevels);
     end;
+    if fMipLevels>0 then
+    begin
+      fElementSize := GetTextureElementSize(fColorFormat, fDataType);
+      ReallocMem(FData, DataSize);
+      fLevels.Clear;
+      fLevels.Add(fData);
+      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+    end
+    else fMipLevels:=1;
     CheckOpenGLError;
   finally
     if contextActivate then

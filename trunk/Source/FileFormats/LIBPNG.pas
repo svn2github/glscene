@@ -2058,14 +2058,14 @@ end;
 procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
 begin
 {$IFDEF GLS_LOGGING}
-  Log.Log(string(str), lkError);
+  GLSLogger.Log(string(str), lkError);
 {$ENDIF}
 end;
 
 procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
 begin
 {$IFDEF GLS_LOGGING}
-  Log.Log(string(str), lkWarning);
+  GLSLogger.Log(string(str), lkWarning);
 {$ENDIF}
 end;
 

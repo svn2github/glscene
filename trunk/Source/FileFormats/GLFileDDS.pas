@@ -4,6 +4,7 @@
 {: GLFileDDS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>01/03/10 - Yar - Added control of texture detail level
         <li>27/01/10 - Yar - Bugfix in BlockOffset with negative result
@@ -20,8 +21,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-  OpenGL1x, GLContext, GLGraphics, GLTextureFormat, RGBE,
+  Classes,
+  SysUtils,
+  OpenGL1x,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
+  RGBE,
   ApplicationFileIO;
 
 type
@@ -77,7 +83,9 @@ var
 implementation
 
 uses
-  DXTC, VectorGeometry, GLStrings;
+  DXTC,
+  VectorGeometry,
+  GLStrings;
 
 // ------------------
 // ------------------ TGLDDSImage ------------------
@@ -467,141 +475,136 @@ begin
   glTarget := DecodeGLTextureTarget(textureTarget);
 
   try
-
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    //Check for texture is resident in texture memory
-    glGetTexParameteriv(glTarget, GL_TEXTURE_RESIDENT, @texResident);
     fMipLevels := 0;
-    if texResident = GL_TRUE then
+    glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
-      glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
-      if glTarget = GL_TEXTURE_CUBE_MAP then
-      begin
-        fCubeMap := true;
-        faceCount := 6;
-        glTarget := GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-      end
-      else
-      begin
-        fCubeMap := false;
-        faceCount := 1;
-      end;
-      fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY)
-        or (glTarget = GL_TEXTURE_2D_ARRAY)
-        or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
+      fCubeMap := true;
+      faceCount := 6;
+      glTarget := GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+    end
+    else
+    begin
+      fCubeMap := false;
+      faceCount := 1;
+    end;
+    fTextureArray := (glTarget = GL_TEXTURE_1D_ARRAY)
+      or (glTarget = GL_TEXTURE_2D_ARRAY)
+      or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
 
-      repeat
-        // Check level existence
-        glGetTexLevelParameteriv(glTarget, fMipLevels,
-          GL_TEXTURE_INTERNAL_FORMAT,
-          @texFormat);
-        if texFormat = 1 then
-          Break;
-        Inc(fMipLevels);
-        if fMipLevels = 1 then
-        begin
-          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
-            @fHeight);
-          fDepth := 0;
-          if (glTarget = GL_TEXTURE_3D)
-            or (glTarget = GL_TEXTURE_2D_ARRAY)
-            or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-            glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
-              @fDepth);
-          residentFormat := OpenGLFormatToInternalFormat(texFormat);
-          if CurrentFormat then
-            fInternalFormat := residentFormat
-          else
-            fInternalFormat := intFormat;
-          if not FindDDSCompatibleDataFormat(fInternalFormat,
+    repeat
+      // Check level existence
+      glGetTexLevelParameteriv(glTarget, fMipLevels,
+        GL_TEXTURE_INTERNAL_FORMAT,
+        @texFormat);
+      if texFormat = 1 then
+        Break;
+      Inc(fMipLevels);
+      if fMipLevels = 1 then
+      begin
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
+          @fHeight);
+        fDepth := 0;
+        if (glTarget = GL_TEXTURE_3D)
+          or (glTarget = GL_TEXTURE_2D_ARRAY)
+          or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
+          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
+            @fDepth);
+        residentFormat := OpenGLFormatToInternalFormat(texFormat);
+        if CurrentFormat then
+          fInternalFormat := residentFormat
+        else
+          fInternalFormat := intFormat;
+        if not FindDDSCompatibleDataFormat(fInternalFormat,
+          fColorFormat,
+          fDataType) then
+          FindCompatibleDataFormat(fInternalFormat,
             fColorFormat,
-            fDataType) then
-            FindCompatibleDataFormat(fInternalFormat,
-              fColorFormat,
-              fDataType);
+            fDataType);
 
-          // Get optimal number or MipMap levels
-          optLod := GetImageLodNumber(fWidth, fHeight, fDepth);
-          if texLod > optLod then
-            texLod := optLod;
-          // Check for MipMap posibility
-          if ((fInternalFormat >= tfFLOAT_R16)
-            and (fInternalFormat <= tfFLOAT_RGBA32)) then
-            texLod := 1;
-        end;
-      until fMipLevels = Integer(texLod);
+        // Get optimal number or MipMap levels
+        optLod := GetImageLodNumber(fWidth, fHeight, fDepth);
+        if texLod > optLod then
+          texLod := optLod;
+        // Check for MipMap posibility
+        if ((fInternalFormat >= tfFLOAT_R16)
+          and (fInternalFormat <= tfFLOAT_RGBA32)) then
+          texLod := 1;
+      end;
+    until fMipLevels = Integer(texLod);
 
-      if fMipLevels > 0 then
+    if fMipLevels > 0 then
+    begin
+      fElementSize := GetTextureElementSize(fColorFormat, fDataType);
+      ReallocMem(FData, DataSize);
+      fLevels.Clear;
+      lData := PGLubyte(fData);
+      bCompressed := IsCompressed;
+      vtcBuffer := nil;
+      w := fWidth;
+      h := fHeight;
+      d := fDepth;
+
+      for face := 0 to faceCount - 1 do
       begin
-        fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-        ReallocMem(FData, DataSize);
-        fLevels.Clear;
-        lData := PGLubyte(fData);
-        bCompressed := IsCompressed;
-        vtcBuffer := nil;
-        w := fWidth;
-        h := fHeight;
-        d := fDepth;
-
-        for face := 0 to faceCount - 1 do
+        if fCubeMap then
+          glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+        for level := 0 to fMipLevels - 1 do
         begin
-          if fCubeMap then
-            glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-          for level := 0 to fMipLevels - 1 do
+          fLevels.Add(Pointer(Integer(lData) - Integer(fData)));
+          if bCompressed then
           begin
-            fLevels.Add(Pointer(Integer(lData) - Integer(fData)));
-            if bCompressed then
-            begin
 
-              if GL_NV_texture_compression_vtc and (d > 0) and not fTextureArray
-                then
-              begin
-                if level = 0 then
-                  GetMem(vtcBuffer, LevelSize(0));
-                glGetCompressedTexImage(glTarget, level, vtcBuffer);
-                // Shufle blocks from VTC to S3TC
-                cw := (w + 3) div 4;
-                ch := (h + 3) div 4;
-                top := lData;
-                for k := 0 to d - 1 do
-                  for i := 0 to ch - 1 do
-                    for j := 0 to cw - 1 do
-                    begin
-                      bottom := vtcBuffer;
-                      Inc(bottom, blockOffset(j, i, k));
-                      Move(bottom^, top^, fElementSize);
-                      Inc(top, fElementSize);
-                    end;
-                if w > 1 then
-                  w := w div 2
-                else
-                  w := 1;
-                if h > 1 then
-                  h := h div 2
-                else
-                  h := 1;
-                if d > 1 then
-                  d := d div 2
-                else
-                  d := 1;
-              end
+            if GL_NV_texture_compression_vtc and (d > 0) and not fTextureArray
+              then
+            begin
+              if level = 0 then
+                GetMem(vtcBuffer, LevelSize(0));
+              glGetCompressedTexImage(glTarget, level, vtcBuffer);
+              // Shufle blocks from VTC to S3TC
+              cw := (w + 3) div 4;
+              ch := (h + 3) div 4;
+              top := lData;
+              for k := 0 to d - 1 do
+                for i := 0 to ch - 1 do
+                  for j := 0 to cw - 1 do
+                  begin
+                    bottom := vtcBuffer;
+                    Inc(bottom, blockOffset(j, i, k));
+                    Move(bottom^, top^, fElementSize);
+                    Inc(top, fElementSize);
+                  end;
+              if w > 1 then
+                w := w div 2
               else
-                glGetCompressedTexImage(glTarget, level, lData);
+                w := 1;
+              if h > 1 then
+                h := h div 2
+              else
+                h := 1;
+              if d > 1 then
+                d := d div 2
+              else
+                d := 1;
             end
             else
-              glGetTexImage(glTarget, level, fColorFormat, fDataType,
-                lData);
+              glGetCompressedTexImage(glTarget, level, lData);
+          end
+          else
+            glGetTexImage(glTarget, level, fColorFormat, fDataType,
+              lData);
 
-            Inc(lData, LevelSize(level));
-          end; // for level
-        end; // for face
-        if Assigned(vtcBuffer) then
-          FreeMem(vtcBuffer);
-        // Check memory corruption
-        ReallocMem(FData, DataSize);
-      end;
+          Inc(lData, LevelSize(level));
+        end; // for level
+      end; // for face
+      if Assigned(vtcBuffer) then
+        FreeMem(vtcBuffer);
+      // Check memory corruption
+      ReallocMem(FData, DataSize);
     end;
+
     if fMipLevels = 0 then
       fMipLevels := 1;
     CheckOpenGLError;
