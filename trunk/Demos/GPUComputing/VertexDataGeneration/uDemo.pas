@@ -86,7 +86,6 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
   GLSceneViewer1.Invalidate;
-  GL3xFeedbackMesh1.StructureChanged;
 end;
 
 end.

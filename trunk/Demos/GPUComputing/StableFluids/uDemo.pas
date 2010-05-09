@@ -290,7 +290,6 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime,
   newTime: Double);
 begin
   GLSceneViewer1.Invalidate;
-  SceneParticles.StructureChanged;
 end;
 
 procedure TForm1.FluidShaderApply(Shader: TGLCustomGLSLShader);
