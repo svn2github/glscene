@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>09/05/10 - Yar - Fixed texture compression (thanks Hacker)
        <li>22/04/10 - Yar - Fixes after GLState revision
        <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
                              cause errors on hardware that doesn't support them
@@ -3188,6 +3189,7 @@ begin
   target := Image.NativeTextureTarget;
   if not Disabled and (Handle > 0) then
   begin
+    rci.GLStates.ActiveTexture := 0;
     rci.GLStates.TextureBinding[0, target] := Handle;
     rci.GLStates.ActiveTextureEnabled[target] := True;
 
@@ -3313,7 +3315,9 @@ begin
   if FTextureHandle.Handle = 0 then
   begin
     FTextureHandle.AllocateHandle;
-    Assert(FTextureHandle.Handle <> 0);
+    Result := FTextureHandle.Handle;
+    if Result = 0 then
+      exit;
     Exclude(FChanges, tcTarget);
     Include(FChanges, tcImage);
     Include(FChanges, tcParams);
@@ -3465,6 +3469,8 @@ end;
 procedure TGLTexture.PrepareImage(target: TGLUInt);
 var
   bitmap32: TGLBitmap32;
+  texComp: TGLTextureCompression;
+  glFormat: TGLEnum;
 begin
 
   bitmap32 := Image.GetBitmap32(target);
@@ -3517,10 +3523,42 @@ begin
   if FImageGamma <> 1.0 then
     bitmap32.GammaCorrection(FImageGamma);
 
+  if GL_ARB_texture_compression
+    and (TextureFormat <> tfExtended) then
+  begin
+    if Compression = tcDefault then
+      if vDefaultTextureCompression = tcDefault then
+        texComp := tcNone
+      else
+        texComp := vDefaultTextureCompression
+    else
+      texComp := Compression;
+    if IsFloatType then
+      texComp := tcNone;
+
+  end
+  else
+    texComp := tcNone;
+
+  if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
+  with CurrentGLContext.GLStates do
+  begin
+    case texComp of
+      tcStandard: TextureCompressionHint := hintDontCare;
+      tcHighQuality: TextureCompressionHint := hintNicest;
+      tcHighSpeed: TextureCompressionHint := hintFastest;
+    else
+      Assert(False, glsErrorEx + glsUnknownType);
+    end;
+    glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
+  end
+  else
+    glFormat := InternalFormatToOpenGLFormat(FTextureFormat);
+
   bitmap32.RegisterAsOpenGLTexture(
     target,
     FMinFilter,
-    InternalFormatToOpenGLFormat(FTextureFormat),
+    glFormat,
     FTexWidth,
     FTexHeight,
     FTexDepth);
