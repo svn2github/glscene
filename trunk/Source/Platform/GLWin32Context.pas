@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/05/10 - Yar - Added vLastVendor clearing when multithreading is enabled
       <li>06/04/10 - Yar - Added DoGetHandles to TGLWin32Context (thanks Rustam Asmandiarov aka Predator)
       <li>28/03/10 - Yar - Added 3.3 forward context creation and eliminate memory leaks when multithreading
       <li>06/03/10 - Yar - Added forward context creation in TGLWin32Context.DoActivate
@@ -268,6 +269,8 @@ threadvar
 {$ENDIF}
   vLastPixelFormat: Integer;
   vLastVendor: TGLString;
+  vLastDC: HDC;
+  vLastRC: HGLRC;
 
   // Create
   //
@@ -285,6 +288,9 @@ end;
 destructor TGLWin32Context.Destroy;
 begin
   inherited Destroy;
+{$IFDEF GLS_MULTITHREAD}
+  vLastVendor := '';
+{$ENDIF}
 end;
 
 // SetupPalette
@@ -913,9 +919,20 @@ var
   pixelFormat: Integer;
   FFRC: HGLRC;
 begin
+{$IFDEF GLS_EXPERIMENTAL}
+  if (vLastDC<>FDC) or (vLastRC<>FRC) then
+  begin
+    vLastDC := FDC;
+    vLastRC := FRC;
+    if not wglMakeCurrent(FDC, FRC) then
+      raise EGLContext.Create(Format(cContextActivationFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]));
+  end;
+{$ELSE}
   if not wglMakeCurrent(FDC, FRC) then
     raise EGLContext.Create(Format(cContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]));
+{$ENDIF}
 
   // The extension function addresses are unique for each pixel format. All rendering
   // contexts of a given pixel format share the same extension function addresses.
@@ -939,7 +956,9 @@ begin
     begin
       if @wglCreateContextAttribsARB = nil then
         raise EGLContext.Create(cForwardContextFailsed);
-      if GL_VERSION_3_3 then
+      if GL_VERSION_4_0 then
+        ForwardContextAttribList[1] := 4
+      else if GL_VERSION_3_3 then
         ForwardContextAttribList[3] := 3
       else if GL_VERSION_3_2 then
         ForwardContextAttribList[3] := 2
@@ -972,8 +991,10 @@ end;
 
 procedure TGLWin32Context.DoDeactivate;
 begin
+{$IFNDEF GLS_EXPERIMENTAL}
   if not wglMakeCurrent(0, 0) then
     raise Exception.Create(cContextDeactivationFailed);
+{$ENDIF}
 end;
 
 // IsValid
