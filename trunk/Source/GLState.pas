@@ -40,7 +40,6 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
-{$UNDEF GLS_OPENGL_DEBUG}
 
 uses
   Classes,
@@ -515,6 +514,8 @@ type
        locks this buffer to the currently bound VBO). }
     property VertexArrayBinding: TGLuint read FVertexArrayBinding write
       SetVertexArrayBinding;
+    {: Reset VAO states, tipicaly used when VAO created }
+    procedure ResetVertexArrayStates(Index: TGLuint);
     {: The currently bound vertex buffer object (VAO). }
     property ArrayBufferBinding: TGLuint read GetArrayBufferBinding write
       SetArrayBufferBinding;
@@ -1053,6 +1054,9 @@ implementation
 //------------------------------------------------------
 //------------------------------------------------------
 
+resourcestring
+  glsStateCashMissing = 'States cash missing: ';
+
   // ------------------
   // ------------------ TGLStateCache ------------------
   // ------------------
@@ -1304,7 +1308,7 @@ begin
       Include(FStates, aState);
 {$IFDEF GLS_OPENGL_DEBUG}
     if glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogDebug('Redudant state changing');
+      GLSLogger.LogError(glsStateCashMissing + 'Enable');
 {$ENDIF}
     glEnable(cGLStateToGLEnum[aState].GLConst);
   end;
@@ -1325,7 +1329,7 @@ begin
       Exclude(FStates, aState);
 {$IFDEF GLS_OPENGL_DEBUG}
     if not glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogDebug('Redudant state changing');
+      GLSLogger.LogError(glsStateCashMissing + 'Disable');
 {$ENDIF}
     glDisable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
@@ -1488,14 +1492,31 @@ begin
 end;
 
 procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
+{$IFDEF GLS_OPENGL_DEBUG}
+var vVAO: TGLuint;
+{$ENDIF}
 begin
+  {$IFDEF GLS_OPENGL_DEBUG}
+  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, @vVAO);
+  if FVertexArrayBinding <> vVAO then
+    GLSLogger.LogError(glsStateCashMissing+'VertexArrayBinding');
+  {$ENDIF}
   if Value <> FVertexArrayBinding then
   begin
+    if Value > Length(FVAOStates) then
+      SetLength(FVAOStates, 2*Length(FVAOStates));
     if Value = 0 then
       FVAOStates[0] := FVAOStates[FVertexArrayBinding];
     FVertexArrayBinding := Value;
     glBindVertexArray(Value);
   end;
+end;
+
+procedure TGLStateCache.ResetVertexArrayStates(Index: TGLuint);
+begin
+  FillChar(FVAOStates[Index], SizeOf(FVAOStates[Index]), $00);
+  if FVertexArrayBinding = Index then
+    FVertexArrayBinding := 0;
 end;
 
 function TGLStateCache.GetArrayBufferBinding: TGLuint;
@@ -1504,7 +1525,15 @@ begin
 end;
 
 procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
+{$IFDEF GLS_OPENGL_DEBUG}
+var vVBO: TGLuint;
+{$ENDIF}
 begin
+  {$IFDEF GLS_OPENGL_DEBUG}
+  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, @vVBO);
+  if FVAOStates[FVertexArrayBinding].FArrayBufferBinding <> vVBO then
+    GLSLogger.LogError(glsStateCashMissing+'ArrayBufferBinding');
+  {$ENDIF}
   if Value <> FVAOStates[FVertexArrayBinding].FArrayBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FArrayBufferBinding := Value;
@@ -1518,7 +1547,16 @@ begin
 end;
 
 procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
+{$IFDEF GLS_OPENGL_DEBUG}
+var vEBO: TGLuint;
+{$ENDIF}
 begin
+  {$IFDEF GLS_OPENGL_DEBUG}
+  glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, @vEBO);
+  if FVAOStates[FVertexArrayBinding].FElementBufferBinding <> vEBO then
+    GLSLogger.LogError(glsStateCashMissing+'ElementBufferBinding');
+  {$ENDIF}
+
   if Value <> FVAOStates[FVertexArrayBinding].FElementBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FElementBufferBinding := Value;
@@ -1892,10 +1930,20 @@ begin
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
-    if enabled then
-      glEnable(GL_PRIMITIVE_RESTART)
-    else
-      glDisable(GL_PRIMITIVE_RESTART);
+    if FForwardContext then
+    begin
+      if enabled then
+        glEnable(GL_PRIMITIVE_RESTART)
+      else
+        glDisable(GL_PRIMITIVE_RESTART);
+    end
+    else if GL_NV_primitive_restart then
+    begin
+      if enabled then
+        glEnableClientState(GL_PRIMITIVE_RESTART_NV)
+      else
+        glDisableClientState(GL_PRIMITIVE_RESTART_NV);
+    end;
   end;
 end;
 
@@ -2692,9 +2740,6 @@ procedure TGLStateCache.CallList(list: TGLuint);
 begin
   PushAttrib(FListStates[list - 1]);
   glCallList(list);
-  //{$IFDEF GLS_OPENGL_DEBUG}
-  //  glGetIntegerv(GL_LINE_STIPPLE_PATTERN, @FLineStipplePattern);
-  //{$ENDIF}
   PopAttrib;
 end;
 
