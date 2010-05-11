@@ -1045,7 +1045,7 @@ procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
    Returns nil if no context is active. }
 function CurrentGLContext: TGLContext;
 function SafeCurrentGLContext(out ARC: TGLContext): Boolean;
-{$IFDEF GLS_INLINE}inline{$ENDIF}
+{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 resourcestring
   cIncompatibleContexts = 'Incompatible contexts';
