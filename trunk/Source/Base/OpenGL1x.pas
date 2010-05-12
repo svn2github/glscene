@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/05/10 - Yar - Added GL_ARB_texture_compression_bptc
       <li>04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
       <li>01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
       <li>16/04/10 - Yar - Added Graphics Remedy's Extensions
@@ -396,6 +397,7 @@ var
    GL_ARB_vertex_shader,
    GL_ARB_vertex_type_2_10_10_10_rev,
    GL_ARB_window_pos,
+   GL_ARB_texture_compression_bptc,
 
    // Vendor/EXT OpenGL extension checks
    GL_3DFX_multisample,
@@ -2099,10 +2101,16 @@ const
    GL_SIGNED_NORMALIZED              = $8F9C;
    GL_PRIMITIVE_RESTART              = $8F9D;
    GL_PRIMITIVE_RESTART_INDEX        = $8F9E;
+   // GL_ARB_texture_compression_bptc (ARB #77)
+   GL_COMPRESSED_RGBA_BPTC_UNORM_ARB         = $8E8C;
+   GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB   = $8E8D;
+   GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB   = $8E8E;
+   GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB = $8E8F;
    // re-use tokens from:
    // ARB_copy_buffer (ARB #59)
    // ARB_draw_instanced (ARB #44)
    // ARB_uniform_buffer_object (ARB #57)
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion}  {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'New core constants in OpenGL v3.2'} {$ENDIF}
@@ -9057,6 +9065,7 @@ begin
    GL_ARB_vertex_shader := CheckExtension('GL_ARB_vertex_shader');
    GL_ARB_vertex_type_2_10_10_10_rev := CheckExtension('GL_ARB_vertex_type_2_10_10_10_rev');
    GL_ARB_window_pos := CheckExtension('GL_ARB_window_pos');
+   GL_ARB_texture_compression_bptc := CheckExtension('GL_ARB_texture_compression_bptc');
 
    // check Vendor/EXT OpenGL extensions
    GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
