@@ -1503,7 +1503,7 @@ begin
   {$ENDIF}
   if Value <> FVertexArrayBinding then
   begin
-    if Value > Length(FVAOStates) then
+    if Value > TGLuint(Length(FVAOStates)) then
       SetLength(FVAOStates, 2*Length(FVAOStates));
     if Value = 0 then
       FVAOStates[0] := FVAOStates[FVertexArrayBinding];

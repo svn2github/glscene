@@ -315,9 +315,11 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils,
+uses
+  SysUtils,
   VectorLists,
-  GLState;
+  GLState,
+  VectorTypes;
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------

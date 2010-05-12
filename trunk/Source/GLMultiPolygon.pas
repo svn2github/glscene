@@ -224,7 +224,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, XOpenGL;
+uses SysUtils, XOpenGL, VectorTypes;
 
 type
   { page oriented pointer array, with persistent pointer target memory.

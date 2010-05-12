@@ -234,7 +234,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, XOpenGL, GLState;
+uses SysUtils, OpenGL1x, XOpenGL, GLState, VectorTypes;
 
 // ------------------
 // ------------------ TGLSamplingScale ------------------

@@ -158,7 +158,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Octree;
+uses SysUtils, Octree, VectorTypes;
 
 const
    cEpsilon : Single = 1e-6;

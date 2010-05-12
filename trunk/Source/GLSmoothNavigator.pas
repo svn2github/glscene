@@ -320,6 +320,9 @@ type
 
 implementation
 
+uses
+  VectorTypes;
+
 const
   EPS =  0.001;
   EPS2 = 0.0001;

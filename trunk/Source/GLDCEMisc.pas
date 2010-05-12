@@ -19,7 +19,7 @@ interface
 {$I GLScene.inc}
 
 uses GLVectorFileObjects, Octree, GLEllipseCollision, VectorGeometry, VectorLists,
-  GLScene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy;
+  GLScene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy, VectorTypes;
 
 //Calculate and set the collision range
 procedure ECSetCollisionRange(var MovePack: TECMovePack);

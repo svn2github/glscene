@@ -234,7 +234,7 @@ type
 
 implementation
 
-uses OpenGL1x, XOpenGL;
+uses OpenGL1x, XOpenGL, VectorTypes;
 
 constructor TGLzBuffer.Create;
 begin

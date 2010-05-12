@@ -331,6 +331,9 @@ type
 
 implementation
 
+uses
+  VectorTypes;
+
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject;
   const Axis, Origin: TAffineVector; const angle: Single);
 var

@@ -161,6 +161,9 @@ type
 
 implementation
 
+uses
+  VectorTypes;
+
 const
   EPS = 0.0001;
   cIntDivTable: array [2..20] of Single =

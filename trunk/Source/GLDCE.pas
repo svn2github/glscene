@@ -256,7 +256,7 @@ function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overlo
 
 implementation
 
-uses SysUtils;
+uses SysUtils, VectorTypes;
 
 
 function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;

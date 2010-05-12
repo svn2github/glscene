@@ -176,7 +176,7 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  OpenGL1x;
+  OpenGL1x, VectorTypes;
 
 const
   cNoPrimitive = MaxInt;

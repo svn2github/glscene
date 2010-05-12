@@ -224,7 +224,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorLists;
+uses SysUtils, OpenGL1x, VectorLists, VectorTypes;
 
 // GetOrCreateFireFX (TGLObjectEffects)
 //

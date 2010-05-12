@@ -1959,7 +1959,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses GLStrings, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
-  GLBaseMeshSilhouette;
+  GLBaseMeshSilhouette, VectorTypes;
 
 var
   vVectorFileFormats: TVectorFileFormatsList;

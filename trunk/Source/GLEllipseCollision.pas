@@ -19,7 +19,7 @@ interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry, Octree, VectorLists;
+uses VectorGeometry, Octree, VectorLists, VectorTypes;
 
 type
   TECPlane = class

@@ -39,7 +39,7 @@ uses
   SysUtils, Classes,
 
   // GLScene
-  VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen;
+  VectorGeometry, VectorTypes, GLScene, GLCrossPlatform, GLCoordinates, GLScreen;
 
 type
 

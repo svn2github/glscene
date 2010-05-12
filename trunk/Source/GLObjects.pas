@@ -919,7 +919,8 @@ uses GLStrings,
   Spline,
   XOpenGL,
   GLState,
-  GLTextureFormat;
+  GLTextureFormat,
+  VectorTypes;
 
 const
   cDefaultPointSize: Single = 1.0;

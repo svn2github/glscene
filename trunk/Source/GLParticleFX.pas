@@ -933,7 +933,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
+uses
+  SysUtils, OpenGL1x, GLCrossPlatform, GLState, GLUtils, PerlinNoise,
+  VectorTypes;
 
 // GetOrCreateSourcePFX
 //

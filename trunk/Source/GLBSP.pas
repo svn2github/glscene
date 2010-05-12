@@ -210,7 +210,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils, VectorTypes;
 
 const
    cOwnTriangleEpsilon = 1e-5;

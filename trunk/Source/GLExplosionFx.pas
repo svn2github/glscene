@@ -30,7 +30,7 @@ unit GLExplosionFx;
 interface
 
 uses
-  OpenGL1x, VectorGeometry, GLScene, GLVectorFileObjects,
+  OpenGL1x, VectorGeometry, GLScene, GLVectorFileObjects, VectorTypes,
   VectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
 
 type

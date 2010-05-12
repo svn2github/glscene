@@ -40,7 +40,7 @@ uses
   // GLScene
   GLScene,  GLObjects,  GLVectorFileObjects, GLTexture, ApplicationFileIO,
   VectorGeometry, File3DS, Types3DS, OpenGL1x, PersistentClasses,
-  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorLists,
+  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorTypes, VectorLists,
   GLRenderContextInfo, GLMaterial;
 
 type

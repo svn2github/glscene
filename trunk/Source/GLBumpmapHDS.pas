@@ -112,7 +112,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLUtils;
+uses SysUtils, OpenGL1x, GLUtils, VectorTypes;
 
 const
    cDefaultBumpScale = 0.01;

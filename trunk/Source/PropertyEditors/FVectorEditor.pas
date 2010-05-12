@@ -81,7 +81,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, VectorGeometry, GLUtils; 
+  SysUtils, VectorGeometry, GLUtils, VectorTypes; 
 
 var
 	vVectorEditorForm : TVectorEditorForm;

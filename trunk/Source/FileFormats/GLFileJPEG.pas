@@ -200,9 +200,9 @@ begin
           // ein kompletter Pass. Reset Oberkante progressives Display
           while jc.d.output_scanline < jc.d.output_height do
           begin
-            integer(DestScanLine) := integer(fData) +
-              (jc.d.output_height - jc.d.output_scanline - 1) * fWidth *
-                fElementSize;
+            Cardinal(DestScanLine) := Cardinal(fData) +
+              (jc.d.output_height - jc.d.output_scanline - 1) *
+                Cardinal(fWidth) * Cardinal(fElementSize);
             jpeg_read_scanlines(@jc.d, @DestScanLine, LinesPerCall);
           end;
           jpeg_finish_output(@jc.d);
@@ -222,9 +222,9 @@ begin
       // letzter Pass für progressive JPGs, erster & einziger für Baseline-JPGs
       while (jc.d.output_scanline < jc.d.output_height) do
       begin
-        integer(DestScanLine) := integer(fData) +
-          (jc.d.output_height - jc.d.output_scanline - 1) * fWidth *
-            fElementSize;
+        Cardinal(DestScanLine) := Cardinal(fData) +
+          (jc.d.output_height - jc.d.output_scanline - 1) *
+            Cardinal(fWidth) * Cardinal(fElementSize);
         jpeg_read_scanlines(@jc.d, @DestScanline, LinesPerCall);
       end;
 

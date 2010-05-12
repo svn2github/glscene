@@ -78,7 +78,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLTexture, GLCrossPlatform;
+  GLTexture, GLCrossPlatform, VectorTypes;
 
 
 const

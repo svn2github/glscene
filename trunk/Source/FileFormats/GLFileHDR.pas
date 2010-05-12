@@ -257,7 +257,7 @@ procedure TGLHDRImage.AssignFromTexture(textureContext: TGLContext;
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
-  texFormat, texResident: Cardinal;
+  texFormat: Cardinal;
   residentFormat: TGLInternalFormat;
   glTarget: TGLEnum;
 begin

@@ -241,7 +241,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, XOpenGL, GLUtils;
+uses SysUtils, OpenGL1x, XOpenGL, GLUtils, VectorTypes;
 
 // HashKey
 //

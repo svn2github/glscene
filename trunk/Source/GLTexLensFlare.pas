@@ -85,6 +85,9 @@ type
 
 implementation
 
+uses
+  VectorTypes;
+
 // ------------------
 // ------------------ TGLTextureLensFlare ------------------
 // ------------------

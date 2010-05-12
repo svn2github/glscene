@@ -141,7 +141,7 @@ type
 
 implementation
 
-uses SysUtils, XOpenGL;
+uses SysUtils, XOpenGL, VectorTypes;
 
 // ------------------
 // ------------------ TGLNode ------------------

@@ -31,7 +31,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, VectorLists, GeometryBB;
+uses Classes, VectorTypes, VectorGeometry, VectorLists, GeometryBB;
 
 type
 
