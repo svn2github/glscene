@@ -32,7 +32,7 @@ uses
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   GLSLog,
 {$ENDIF}
-  GL3xObjects, GL3xShadersManager, GLVBOManagers, GL3xMaterial,
+  GL3xObjects, GLShadersManager, GLVBOManagers, GL3xMaterial,
   GLRenderContextInfo;
 
 type
@@ -67,6 +67,7 @@ type
 
   TGL3xCustomNishitaSky = class(TGL3xBaseSceneObject)
   private
+    { Private Declarations }
     ConstantBlock: TNSConstantBlock;
     FUBO: TGLUniformBufferHandle;
     FDomeDiv: Integer;
@@ -95,17 +96,19 @@ type
     function StoreMieScaleHeight: Boolean;
     function StoreRayleighScaleHeight: Boolean;
   protected
-    procedure Initialize(var rci: TRenderContextInfo);
-    procedure MakeGPUOpticalDepth(var rci: TRenderContextInfo);
-    procedure MakeGPUMieRayleighBuffer(var rci: TRenderContextInfo);
+    { Protected Declarations }
+    procedure Initialize(StateCash: TGLStateCache);
+    procedure MakeGPUOpticalDepth(StateCash: TGLStateCache);
+    procedure MakeGPUMieRayleighBuffer(StateCash: TGLStateCache);
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
+    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     property Oclock: Double read FOclock write SetOclock stored StoreOclock;
     property FastUpdate: Boolean read FFastUpdate write FFastUpdate
@@ -227,12 +230,12 @@ const
     'in vec2 TexCoord0;' + #10#13 +
     'out vec2 texcoord;' + #10#13 +
     'out vec3 vertex;' + #10#13 +
-    'uniform mat4 ModelViewProjectionMatrix;' + #10#13 +
+    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
     '	vertex = -Position;' + #10#13 +
     '	texcoord = TexCoord0;' + #10#13 +
-    '	gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
+    '	gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
 
   Update_vp: AnsiString =
@@ -411,11 +414,26 @@ const
     (tfR11F_G11F_B10F, tfRGBA_FLOAT16, tfRGBA_FLOAT32);
 
 var
-  RenderShader: TGLProgramHandle = nil;
-  UpdateShader: TGLProgramHandle = nil;
-  UpdateFastShader: TGLProgramHandle = nil;
-  CreateOpticalDepthShader: TGLProgramHandle = nil;
-  ProgramWorks: Boolean = true;
+  uniformMie,
+  uniformRayleigh,
+  uniformOpticalDepth,
+  uniformSunDir: TGLSLUniform;
+  ublockConstants: TGLSLUniformBlock;
+  RenderProgram: string;
+  RenderVertexObject: string;
+  RenderFragmentObject: string;
+
+  UpdateProgram: string;
+  UpdateVertexObject: string;
+  UpdateFragmentObject: string;
+
+  UpdateFastProgram: string;
+  UpdateFastFragmentObject: string;
+
+  CreateOpticalDepthProgram: string;
+  CreateOpticalDepthFragmentObject: string;
+
+  ProgramsLinked: Boolean = False;
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   SaveOnce: Boolean = true;
 {$ENDIF}
@@ -517,7 +535,7 @@ begin
   inherited;
 end;
 
-procedure TGL3xCustomNishitaSky.Initialize(var rci: TRenderContextInfo);
+procedure TGL3xCustomNishitaSky.Initialize(StateCash: TGLStateCache);
 const
   cDrawBuffers: array[0..1] of GLenum =
     (
@@ -525,103 +543,76 @@ const
     GL_COLOR_ATTACHMENT1
     );
 var
-  code: AnsiString;
+  s: string;
 begin
   // Initialize shaders
-  if (RenderShader.Handle = 0) and ProgramWorks then
+  if Length(RenderProgram) = 0 then
   begin
-    with RenderShader do
-    begin
-      AllocateHandle;
-      Name := 'RenderShader';
-      AddShader(TGLVertexShaderHandle, string(Render_vp), true);
-      code := Header_fp + Render_fp;
-      AddShader(TGLFragmentShaderHandle, string(code), true);
-      if not LinkProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
 
-      if not ValidateProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-    end;
-    with UpdateShader do
+    with ShadersManager do
     begin
-      AllocateHandle;
-      Name := 'UpdateShader';
-      AddShader(TGLVertexShaderHandle, string(Update_vp), true);
-      code := Header_fp + Share_fp + Update_fp;
-      AddShader(TGLFragmentShaderHandle, string(code), true);
-      BindFragDataLocation(0, 'Mie');
-      BindFragDataLocation(1, 'RayLeigh');
-      if not LinkProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-      if not ValidateProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-    end;
-    with UpdateFastShader do
-    begin
-      AllocateHandle;
-      Name := 'UpdateFastShader';
-      AddShader(TGLVertexShaderHandle, string(Update_vp), true);
-      code := Header_fp + Share_fp + UpdateFast_fp;
-      AddShader(TGLFragmentShaderHandle, string(code), true);
-      BindFragDataLocation(0, 'Mie');
-      BindFragDataLocation(1, 'RayLeigh');
-      if not LinkProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-      if not ValidateProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-    end;
-    with CreateOpticalDepthShader do
-    begin
-      AllocateHandle;
-      Name := 'CreateOpticalDepthShader';
-      AddShader(TGLVertexShaderHandle, string(Update_vp), true);
-      code := Header_fp + Share_fp + CreateOpticalDepth_fp;
-      AddShader(TGLFragmentShaderHandle, string(code), true);
-      if not LinkProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
-      if not ValidateProgram then
-      begin
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
-        GLSLogger.Log(InfoLog);
-{$ENDIF}
-        ProgramWorks := false;
-      end;
+      BeginWork;
+      // Register uniforms
+      uniformMie := TGLSLUniform.RegisterUniform('Mie');
+      uniformRayleigh := TGLSLUniform.RegisterUniform('Rayleigh');
+      uniformOpticalDepth := TGLSLUniform.RegisterUniform('OpticalDepth');
+      uniformSunDir := TGLSLUniform.RegisterUniform('v3SunDir');
+      ublockConstants := TGLSLUniformBlock.RegisterUniformBlock('ConstantBlock');
+
+      // Give name to new programs and objects
+      RenderProgram := MakeUniqueProgramName('SkyRenderProgram');
+      RenderVertexObject := MakeUniqueObjectName('SkyRenderVertexObject');
+      RenderFragmentObject := MakeUniqueObjectName('SkyRenderFragmentObject');
+
+      UpdateProgram := MakeUniqueProgramName('SkyUpdateProgram');
+      UpdateVertexObject := MakeUniqueObjectName('SkyUpdateVertexObject');
+      UpdateFragmentObject := MakeUniqueObjectName('SkyUpdateFragmentObject');
+
+      UpdateFastProgram := MakeUniqueProgramName('SkyUpdateFastProgram');
+      UpdateFastFragmentObject :=
+        MakeUniqueObjectName('SkyUpdateFastFragmentObject');
+
+      CreateOpticalDepthProgram :=
+        MakeUniqueProgramName('SkyOpticalDepthProgram');
+      CreateOpticalDepthFragmentObject :=
+        MakeUniqueObjectName('SkyOpticalDepthFragmentObject');
+
+      // Define programs
+      DefineShaderProgram(RenderProgram);
+      DefineShaderProgram(UpdateProgram);
+      DefineShaderProgram(UpdateFastProgram);
+      DefineShaderProgram(CreateOpticalDepthProgram);
+      // Define objects
+      DefineShaderObject(RenderVertexObject, Render_vp, [ptVertex]);
+      DefineShaderObject(RenderFragmentObject, Header_fp + Render_fp,
+        [ptFragment]);
+      DefineShaderObject(UpdateVertexObject, Update_vp, [ptVertex]);
+      DefineShaderObject(UpdateFragmentObject, Header_fp + Share_fp +
+        Update_fp, [ptFragment]);
+      DefineShaderObject(UpdateFastFragmentObject, Header_fp + Share_fp +
+        UpdateFast_fp, [ptFragment]);
+      DefineShaderObject(CreateOpticalDepthFragmentObject, Header_fp + Share_fp
+        + CreateOpticalDepth_fp, [ptFragment]);
+      // Attach objects
+      AttachShaderObjectToProgram(RenderVertexObject, RenderProgram);
+      AttachShaderObjectToProgram(RenderFragmentObject, RenderProgram);
+      AttachShaderObjectToProgram(UpdateVertexObject, UpdateProgram);
+      AttachShaderObjectToProgram(UpdateFragmentObject, UpdateProgram);
+      AttachShaderObjectToProgram(UpdateVertexObject, UpdateFastProgram);
+      AttachShaderObjectToProgram(UpdateFastFragmentObject,
+        UpdateFastProgram);
+      AttachShaderObjectToProgram(UpdateVertexObject,
+        CreateOpticalDepthProgram);
+      AttachShaderObjectToProgram(CreateOpticalDepthFragmentObject,
+        CreateOpticalDepthProgram);
+      // Link programs
+      ProgramsLinked := LinkShaderProgram(RenderProgram);
+      ProgramsLinked := ProgramsLinked and LinkShaderProgram(UpdateProgram);
+      ProgramsLinked := ProgramsLinked and
+        LinkShaderProgram(UpdateFastProgram);
+      ProgramsLinked := ProgramsLinked and
+        LinkShaderProgram(CreateOpticalDepthProgram);
+      EndWork;
     end;
   end;
   // Initialize constant buffer
@@ -635,7 +626,7 @@ begin
     end;
   end;
   // Initialize textures
-  if not FOpticalDepthTexture.IsHandleAllocated and ProgramWorks then
+  if not FOpticalDepthTexture.IsHandleAllocated and ProgramsLinked then
   begin
     TGLBlankImage(FOpticalDepthTexture.Image).Width := FOpticalDepthN;
     TGLBlankImage(FOpticalDepthTexture.Image).Height := FOpticalDepthN;
@@ -651,13 +642,16 @@ begin
     FOpticalDepthTexture.AllocateHandle;
     OpticalDepthFBO.Bind;
     OpticalDepthFBO.AttachTexture(0, FOpticalDepthTexture);
-    Assert(OpticalDepthFBO.Status = fsComplete, 'Framebuffer not complete');
+    Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
+      'Framebuffer error: '+s);
     RayleighMieFBO.Bind;
     RayleighMieFBO.AttachTexture(0, FMieTexture);
     RayleighMieFBO.AttachTexture(1, FRayleighTexture);
     glDrawBuffers(2, @cDrawBuffers);
-    Assert(OpticalDepthFBO.Status = fsComplete, 'Framebuffer not complete');
-    MakeGPUOpticalDepth(rci);
+    Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
+      'Framebuffer error: '+s);
+    MakeGPUOpticalDepth(StateCash);
+    Include(FChanges, nscTime);
   end;
   // Updates
   if nscConstants in FChanges then
@@ -694,15 +688,13 @@ begin
     TGLBlankImage(FOpticalDepthTexture.Image).Width := FOpticalDepthN;
     TGLBlankImage(FOpticalDepthTexture.Image).Height := FOpticalDepthN;
     FOpticalDepthTexture.TextureFormatEx := cTexPrec[FColorPrecision];
-    MakeGPUOpticalDepth(rci);
+    MakeGPUOpticalDepth(StateCash);
     Exclude(FChanges, nscOpticalDepth);
     Include(FChanges, nscTime);
   end;
-
 end;
 
-procedure TGL3xCustomNishitaSky.MakeGPUOpticalDepth(var rci:
-  TRenderContextInfo);
+procedure TGL3xCustomNishitaSky.MakeGPUOpticalDepth(StateCash: TGLStateCache);
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
 var
   debugImg: TGLDDSImage;
@@ -712,23 +704,24 @@ var
 {$ENDIF}
 begin
   OpticalDepthFBO.Bind;
-  glViewport(0, 0, FOpticalDepthN, FOpticalDepthN);
-  with rci.GLStates do
+
+  with StateCash do
   begin
+    ViewPort := Vector4iMake(0, 0, FOpticalDepthN, FOpticalDepthN);
     Disable(stBlend);
     Disable(stDepthTest);
     Disable(stCullFace);
     DepthWriteMask := False;
     SetDepthRange(0, 1);
   end;
-  CreateOpticalDepthShader.UseProgramObject;
 
-  FUBO.BindRange(CreateOpticalDepthShader.GetUniformBlockIndex('ConstantBlock'),
-    0, SizeOf(TNSConstantBlock));
+  ShadersManager.UseProgram(CreateOpticalDepthProgram);
+
+  FUBO.BindRange(ublockConstants.Location, 0, SizeOf(TNSConstantBlock));
 
   with DynamicVBOManager do
   begin
-    BeginObject(FBuiltProperties);
+    BeginObject(nil);
     Attribute3f(attrPosition, -1, -1, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
     EmitVertex;
@@ -739,11 +732,9 @@ begin
     Attribute3f(attrPosition, 1, 1, 0);
     EmitVertex;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   OpticalDepthFBO.Unbind;
-  with rci.viewPortSize do
-    glViewport(0, 0, cx, cy);
 
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   debugImg := TGLDDSImage.Create;
@@ -762,52 +753,53 @@ begin
     FOpticalDepthTexture.Image.NativeTextureTarget, useCurrent, castFormat);
   debugImg.SaveToFile('OpticalDepth.dds');
   debugImg.Free;
-  glGetActiveUniformBlockiv(CreateOpticalDepthShader.Handle, 0,
-    GL_UNIFORM_BLOCK_DATA_SIZE, @uniformBlockSize);
-  GLSLogger.Log(Format('GPU Uniform block size = %d', [uniformBlockSize]));
+  GLSLogger.Log(Format('GPU Uniform block size = %d', [ublockConstants.DataSize]));
   uniformBlockSize := SizeOf(TNSConstantBlock);
   GLSLogger.Log(Format('CPU Uniform block size = %d', [uniformBlockSize]));
 {$ENDIF}
 end;
 
-procedure TGL3xCustomNishitaSky.MakeGPUMieRayleighBuffer(var rci:
-  TRenderContextInfo);
-var
-  UpShader: TGLProgramHandle;
+procedure TGL3xCustomNishitaSky.MakeGPUMieRayleighBuffer(
+  StateCash: TGLStateCache);
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
+var
   debugImg: TGLDDSImage;
   useCurrent: Boolean;
   castFormat: TGLInternalFormat;
 {$ENDIF}
 begin
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL_GREMEDY_string_marker then
+    glStringMarkerGREMEDY(24, 'MakeGPUMieRayleighBuffer');
+{$ENDIF}
   RayleighMieFBO.Bind;
-  glViewport(0, 0, FRayleighMieN, FRayleighMieN div 2);
-  with rci.GLStates do
+
+  with StateCash do
   begin
+    ViewPort := Vector4iMake(0, 0, FRayleighMieN, FRayleighMieN div 2);
     Disable(stBlend);
     Disable(stDepthTest);
     Disable(stCullFace);
     DepthWriteMask := False;
-    SetDepthRange(0, 1);
   end;
-  if FFastUpdate then
-    UpShader := UpdateFastShader
-  else
-    UpShader := UpdateShader;
-  with UpShader do
+
+  with ShadersManager do
   begin
-    UseProgramObject;
-    FUBO.BindRange(GetUniformBlockIndex('ConstantBlock'),
-      0, SizeOf(TNSConstantBlock));
-    Uniform3f['v3SunDir'] := v3SunDir;
     if FFastUpdate then
-      with FOpticalDepthTexture do
-        UniformTextureHandle['OpticalDepth', 0,
-          Image.NativeTextureTarget] := Handle;
+      UseProgram(UpdateFastProgram)
+    else
+      UseProgram(UpdateProgram);
+
+      FUBO.BindRange(ublockConstants.Location, 0, SizeOf(TNSConstantBlock));
+    Uniform3f(uniformSunDir, v3SunDir);
+
+    if FFastUpdate then
+      UniformSampler(uniformOpticalDepth, FOpticalDepthTexture.Handle, 0);
   end;
+
   with DynamicVBOManager do
   begin
-    BeginObject(FBuiltProperties);
+    BeginObject(nil);
     Attribute3f(attrPosition, -1, -1, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
     EmitVertex;
@@ -818,12 +810,11 @@ begin
     Attribute3f(attrPosition, 1, 1, 0);
     EmitVertex;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   RayleighMieFBO.Unbind;
-  with rci.viewPortSize do
-    glViewport(0, 0, cx, cy);
   Exclude(FChanges, nscTime);
+
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   if SaveOnce then
   begin
@@ -855,21 +846,28 @@ procedure TGL3xCustomNishitaSky.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   M, VM: TMatrix;
+  vp: TVector4i;
   storeFrameBuffer: TGLuint;
 begin
   // Render self
   if GL_VERSION_3_2 and ARenderSelf then
   begin
+    // Store states
+    vp := ARci.GLStates.ViewPort;
     storeFrameBuffer := ARci.GLStates.DrawFrameBuffer;
-    Initialize(ARci);
-    if ProgramWorks then
+
+    Initialize(ARci.GLStates);
+
+    if ProgramsLinked then
     begin
       if nscTime in FChanges then
-        MakeGPUMieRayleighBuffer(ARci);
+        MakeGPUMieRayleighBuffer(ARci.GLStates);
+      // restore states
+      ARci.GLStates.ViewPort := vp;
       ARci.GLStates.DrawFrameBuffer := storeFrameBuffer;
-      with RenderShader do
+      with ShadersManager do
       begin
-        UseProgramObject;
+        UseProgram( RenderProgram );
 
         VM := TGLSceneBuffer(ARci.buffer).ViewMatrix;
         VM[3, 0] := 0;
@@ -877,15 +875,11 @@ begin
         VM[3, 2] := 0;
         M := MatrixMultiply(TGLSceneBuffer(ARci.buffer).ModelMatrix, VM);
         M := MatrixMultiply(M, TGLSceneBuffer(ARci.buffer).ProjectionMatrix);
-        UniformMatrix4fv['ModelViewProjectionMatrix'] := M;
+        UniformMat4f(uniformViewProjectionMatrix, M);
 
-        with FMieTexture do
-          UniformTextureHandle['Mie', 0,
-            Image.NativeTextureTarget] := Handle;
-        with FRayleighTexture do
-          UniformTextureHandle['Rayleigh', 1,
-            Image.NativeTextureTarget] := Handle;
-        Uniform3f['v3SunDir'] := v3SunDir;
+        UniformSampler(uniformMie, FMieTexture.Handle, 0);
+        UniformSampler(uniformRayleigh, FRayleighTexture.Handle, 1);
+        Uniform3f(uniformSunDir, v3SunDir);
 
         with ARci.GLStates do
         begin
@@ -893,21 +887,13 @@ begin
           Enable(stDepthTest);
           Enable(stCullFace);
           DepthWriteMask := False;
-          SetDepthRange(0, 1);
         end;
 
-        if (osBuiltStage in ObjectStyle)
-          or (FBuiltProperties.Manager is TGLDynamicVBOManager) then
-        begin
-          try
-            Self.BuildList(ARci);
-          except
-            FBuiltProperties.Manager.Discard;
-            Self.Visible := false;
-          end;
-        end
-        else
-          FBuiltProperties.Manager.RenderClient(FBuiltProperties, ARci);
+        FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+
+        if not ARci.GLStates.ForwardContext then
+          UseFixedFunctionPipeline;
+
       end;
     end;
   end;
@@ -917,7 +903,7 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGL3xCustomNishitaSky.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xCustomNishitaSky.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   V1, V2: TAffineVector;
   i, j: Integer;
@@ -932,7 +918,7 @@ begin
   Phi2 := Phi - StepH;
   TexFactor := 2 / (FDomeDiv + 2);
 
-  with BuiltProperties.Manager do
+  with Sender do
   begin
     BeginObject(BuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -987,7 +973,7 @@ begin
       Phi2 := Phi2 - StepV;
     end;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -1122,22 +1108,7 @@ end;
 
 initialization
 
-  RenderShader := TGLProgramHandle.Create;
-  UpdateShader := TGLProgramHandle.Create;
-  UpdateFastShader := TGLProgramHandle.Create;
-  CreateOpticalDepthShader := TGLProgramHandle.Create;
   RegisterClasses([TGL3xCustomNishitaSky, TGL3xNishitaSky]);
-
-finalization
-
-  RenderShader.Destroy;
-  RenderShader := nil;
-  UpdateShader.Destroy;
-  UpdateShader := nil;
-  UpdateFastShader.Destroy;
-  UpdateFastShader := nil;
-  CreateOpticalDepthShader.Destroy;
-  CreateOpticalDepthShader := nil;
 
 end.
 

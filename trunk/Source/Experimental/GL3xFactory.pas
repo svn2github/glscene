@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, BaseClasses, OpenGL1x, VectorLists, GLContext, GLRenderContextInfo,
-  GLState, GL3xShadersManager, GLVBOManagers, GL3xMaterial, GLSLShader;
+  GLState, GLShadersManager, GLVBOManagers, GL3xMaterial, GLSLShader;
 
 type
 
@@ -27,18 +27,18 @@ type
     procedure SetLaunching(Value: TGLFactoryLaunching);
   protected
     { Protected Declarations }
-    FProducedAttribute: PGLSLAttribute;
-    procedure DoProduce(Sender: TObject; var ARci: TRenderContextInfo); virtual; abstract;
+    FProducedAttribute: TGLSLAttribute;
+    procedure DoProduce(Sender: TObject); virtual; abstract;
 
     property Active: Boolean read FActive write SetActive default false;
     property Launching: TGLFactoryLaunching read FLaunching
       write SetLaunching default flSingle;
-    property ProducedAttribute: PGLSLAttribute read FProducedAttribute;
+    property ProducedAttribute: TGLSLAttribute read FProducedAttribute;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Produce(Sender: TObject; var ARci: TRenderContextInfo);
+    procedure Produce(Sender: TObject);
   end;
 
 implementation
@@ -72,12 +72,12 @@ end;
 // Produre
 //
 
-procedure TGL3xBaseFactory.Produce(Sender: TObject; var ARci: TRenderContextInfo);
+procedure TGL3xBaseFactory.Produce(Sender: TObject);
 begin
   if FActive then
   begin
     Include(FStates, pfsProducing);
-    DoProduce(Sender, ARci);
+    DoProduce(Sender);
     Exclude(FStates, pfsProducing);
   end;
 end;

@@ -17,7 +17,7 @@ interface
 uses
   Classes, GLS_CUDA_API, OpenGL1x, GLContext, GLState, GLSCUDA,
   GLGraphics, GLMaterial, GLTexture, GLRenderContextInfo,
-  GL3xMaterial, GL3xObjects, GL3xShadersManager, GLVBOManagers, GL3xFactory;
+  GL3xMaterial, GL3xObjects, GLShadersManager, GLVBOManagers, GL3xFactory;
 
 type
 
@@ -109,7 +109,7 @@ type
     procedure SetOpenGLResource(Value: TCUDAGraphicResource);
   protected
     { Protected declaration }
-    procedure DoProduce(Sender: TObject; var ARci: TRenderContextInfo);
+    procedure DoProduce(Sender: TObject);
       override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
@@ -140,7 +140,7 @@ type
 implementation
 
 uses
-  GLStrings;
+  GLStrings, GLTextureFormat;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
 // ------------------
@@ -210,10 +210,15 @@ begin
         raise
           EGLS_CUDA.Create('TCUDAGLImageResource.AllocateHandle: OpenGL texture is not created.');
       DestroyHandle;
+
       Context.Requires;
-      status := cuGraphicsGLRegisterImage(FHandle[0], texHandle,
-        texture.Image.NativeTextureTarget, cMapping[fMapping]);
+      status := cuGraphicsGLRegisterImage(
+        FHandle[0],
+        texHandle,
+        DecodeGLTextureTarget(texture.Image.NativeTextureTarget),
+        cMapping[fMapping]);
       Context.Release;
+
       if status <> CUDA_SUCCESS then
         raise EGLS_CUDA.Create('TCUDAGLImageResource.AllocateHandle: ' +
           GetCUDAAPIerrorString(status));
@@ -507,7 +512,6 @@ begin
     GLSLType2I: typeSize := 2 * SizeOf(GLInt);
     GLSLType3I: typeSize := 3 * SizeOf(GLInt);
     GLSLType4I: typeSize := 4 * SizeOf(GLInt);
-    GLSLType4UB: typeSize := 4 * SizeOf(GLUbyte);
   else
     begin
       Assert(False, glsErrorEx + glsUnknownType);
@@ -596,8 +600,7 @@ begin
   inherited;
 end;
 
-procedure TGLSCUDAFactory.DoProduce(Sender: TObject; var ARci:
-  TRenderContextInfo);
+procedure TGLSCUDAFactory.DoProduce(Sender: TObject);
 var
   i: Integer;
   GR: TCUDAGLGeometryResource;

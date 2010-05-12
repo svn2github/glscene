@@ -17,9 +17,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, VectorGeometry, GLObjects, OpenGL1x, GLState,
-  GLContext, GLColor, BaseClasses, GLRenderContextInfo, GLLensFlare,
-  GLFBO, GL3xShadersManager, GLVBOManagers, GL3xMaterial, GLTexture, GLGraphics;
+  Classes,
+  GLScene,
+  VectorGeometry,
+  GLObjects,
+  OpenGL1x,
+  GLState,
+  GLContext,
+  GLColor,
+  BaseClasses,
+  GLRenderContextInfo,
+  GLLensFlare,
+  GLFBO,
+  GLShadersManager,
+  GLVBOManagers,
+  GL3xMaterial,
+  GLTexture,
+  GLGraphics;
 
 type
 
@@ -53,8 +67,6 @@ type
     FBuiltPropertiesStreaks: TGLBuiltProperties;
     FBuiltPropertiesRing: TGLBuiltProperties;
     FBuiltPropertiesSecondaries: TGLBuiltProperties;
-  protected
-    { Protected Declarations }
     procedure SetGlowGradient(const val: TGLFlareGradient);
     procedure SetRingGradient(const val: TGLFlareGradient);
     procedure SetStreaksGradient(const val: TGLFlareGradient);
@@ -73,10 +85,15 @@ type
     procedure SetAutoZTest(aValue: Boolean);
     procedure SetElements(aValue: TFlareElements);
     procedure SetDynamic(aValue: Boolean);
-
-    procedure SetupRenderingOptions(var rci: TRenderContextInfo);
-
-    {: Prepares rays texture.<p> }
+  protected
+    { Protected Declarations }
+    procedure Initialize;
+    procedure SetupRenderingOptions(StatesCash: TGLStateCache);
+    procedure BuildGlow(Sender: TGLBaseVBOManager);
+    procedure BuildStreaks(Sender: TGLBaseVBOManager);
+    procedure BuildRing(Sender: TGLBaseVBOManager);
+    procedure BuildSecondaries(Sender: TGLBaseVBOManager);
+    procedure BuildRays(Sender: TGLBaseVBOManager);
     procedure PrepareRayTexture(var rci: TRenderContextInfo);
   public
     { Public Declarations }
@@ -85,7 +102,6 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
     {: Access to the Flare's current size.<p>
@@ -98,10 +114,14 @@ type
     { Public Declarations }
     property GlowGradient: TGLFlareGradient read FGlowGradient write
       SetGlowGradient;
-    property RingGradient: TGLFlareGradient read FRingGradient;
-    property StreaksGradient: TGLFlareGradient read FStreaksGradient;
-    property RaysGradient: TGLFlareGradient read FRaysGradient;
-    property SecondariesGradient: TGLFlareGradient read FSecondariesGradient;
+    property RingGradient: TGLFlareGradient read FRingGradient write
+      SetRingGradient;
+    property StreaksGradient: TGLFlareGradient read FStreaksGradient write
+      SetStreaksGradient;
+    property RaysGradient: TGLFlareGradient read FRaysGradient write
+      SetRaysGradient;
+    property SecondariesGradient: TGLFlareGradient read FSecondariesGradient
+      write SetSecondariesGradient;
 
     //: MaxRadius of the flare.
     property Size: Integer read FSize write SetSize default 64;
@@ -139,7 +159,7 @@ type
        requires animation to be active, but results in a smoother appearance.<br>
        When false, flare will either be at full size or hidden.<p>
        The flare is always considered non-dynamic at design-time. }
-    property Dynamic: Boolean read FDynamic write FDynamic default True;
+    property Dynamic: Boolean read FDynamic write SetDynamic default True;
 
     property ObjectsSorting;
     property Position;
@@ -157,7 +177,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils, VectorTypes, VectorGeometryEXT, GLTextureFormat;
+uses GLUtils,
+  VectorTypes,
+  VectorGeometryEXT,
+  GLTextureFormat;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const
@@ -165,30 +188,30 @@ const
     '#version 120' + #10#13 +
     'attribute vec3 Position;' + #10#13 +
     'attribute vec4 VertexColor;' + #10#13 +
-    'uniform mat4 ProjectionMatrix;' + #10#13 +
-    'varying vec4 color;' + #10#13 +
+    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
+    'varying vec4 passColor;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' color = VertexColor;' + #10#13 +
-    ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
+    ' passColor = VertexColor;' + #10#13 +
+    ' gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   Gradient_fp120: AnsiString =
     '#version 120' + #10#13 +
-    'varying vec4 color;' + #10#13 +
+    'varying vec4 passColor;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' gl_FragColor = color;' + #10#13 +
+    ' gl_FragColor = passColor;' + #10#13 +
     '}';
   RayTex_vp120: AnsiString =
     '#version 120' + #10#13 +
     'attribute vec3 Position;' + #10#13 +
     'attribute vec2 TexCoord0;' + #10#13 +
-    'uniform mat4 ProjectionMatrix;' + #10#13 +
+    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'varying vec2 texcoord;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
     ' texcoord = TexCoord0;' + #10#13 +
-    ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
+    ' gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   RayTex_fp120: AnsiString =
     '#version 120' + #10#13 +
@@ -203,36 +226,36 @@ const
     '#version 150' + #10#13 +
     'in vec3 Position;' + #10#13 +
     'in vec4 VertexColor;' + #10#13 +
-    'uniform mat4 ProjectionMatrix;' + #10#13 +
-    'out vec4 color;' + #10#13 +
+    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
+    'out vec4 passColor;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' color = VertexColor;' + #10#13 +
-    ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
+    ' passColor = VertexColor;' + #10#13 +
+    ' gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   Gradient_fp150: AnsiString =
     '#version 150' + #10#13 +
-    'precision highp float;'+#10#13+
-    'in vec4 color;' + #10#13 +
+    'precision highp float;' + #10#13 +
+    'in vec4 passColor;' + #10#13 +
     'out vec4 FragColor;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
-    ' FragColor = color;' + #10#13 +
+    ' FragColor = passColor;' + #10#13 +
     '}';
   RayTex_vp150: AnsiString =
     '#version 150' + #10#13 +
     'in vec3 Position;' + #10#13 +
     'in vec2 TexCoord0;' + #10#13 +
-    'uniform mat4 ProjectionMatrix;' + #10#13 +
+    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'out vec2 texcoord;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
     ' texcoord = TexCoord0;' + #10#13 +
-    ' gl_Position = ProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
+    ' gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
   RayTex_fp150: AnsiString =
     '#version 150' + #10#13 +
-    'precision highp float;'+#10#13+
+    'precision highp float;' + #10#13 +
     'in vec2 texcoord;' + #10#13 +
     'out vec4 FragColor;' + #10#13 +
     'uniform sampler2D TexUnit0;' + #10#13 +
@@ -243,9 +266,13 @@ const
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 var
-  GradientProgram: TGLProgramHandle = nil;
-  RaysProgram: TGLProgramHandle = nil;
-  ProgramsWorks: Boolean = true;
+  GradientProgram: string;
+  GradientVertexObject: string;
+  GradientFragmentObject: string;
+  RaysProgram: string;
+  RaysVertexObject: string;
+  RaysFragmentObject: string;
+  ProgramsLinked: Boolean;
 
   // ------------------
   // ------------------ TGL3xLensFlare ------------------
@@ -293,13 +320,18 @@ begin
   FRaysTexture.MinFilter := miLinear;
   FRaysTexture.TextureFormatEx := tfRGB8;
   FRaysTexture.ImageClassName := TGLBlankImage.ClassName;
-  TGLBlankImage(FRaysTexture.Image).Width := 2*FSize;
-  TGLBlankImage(FRaysTexture.Image).Height := 2*FSize;
+  TGLBlankImage(FRaysTexture.Image).Width := 2 * FSize;
+  TGLBlankImage(FRaysTexture.Image).Height := 2 * FSize;
   FBuiltPropertiesGlow := TGLBuiltProperties.Create(Self);
+  FBuiltPropertiesGlow.OnBuildRequest := BuildGlow;
   FBuiltPropertiesRays := TGLBuiltProperties.Create(Self);
+  FBuiltPropertiesRays.OnBuildRequest := BuildRays;
   FBuiltPropertiesStreaks := TGLBuiltProperties.Create(Self);
+  FBuiltPropertiesStreaks.OnBuildRequest := BuildStreaks;
   FBuiltPropertiesRing := TGLBuiltProperties.Create(Self);
+  FBuiltPropertiesRing.OnBuildRequest := BuildRing;
   FBuiltPropertiesSecondaries := TGLBuiltProperties.Create(Self);
+  FBuiltPropertiesSecondaries.OnBuildRequest := BuildSecondaries;
 end;
 
 // Destroy
@@ -325,9 +357,9 @@ end;
 // SetupRenderingOptions
 //
 
-procedure TGL3xLensFlare.SetupRenderingOptions(var rci: TRenderContextInfo);
+procedure TGL3xLensFlare.SetupRenderingOptions(StatesCash: TGLStateCache);
 begin
-  with rci.GLStates do
+  with StatesCash do
   begin
     SetGLColorWriting(True);
     Disable(stDepthTest);
@@ -335,6 +367,49 @@ begin
     Enable(stBlend);
     DepthWriteMask := False;
     SetBlendFunc(bfSrcAlpha, bfOne);
+  end;
+end;
+
+procedure TGL3xLensFlare.Initialize;
+begin
+  with ShadersManager do
+  begin
+    BeginWork;
+    // Give name to new programs and objects
+    GradientProgram := MakeUniqueProgramName('GradientProgram');
+    RaysProgram := MakeUniqueProgramName('RaysProgram');
+
+    GradientVertexObject := MakeUniqueObjectName('GradientVertexObject');
+    GradientFragmentObject := MakeUniqueObjectName('GradientFragmentObject');
+    RaysVertexObject := MakeUniqueProgramName('RaysVertexObject');
+    RaysFragmentObject := MakeUniqueProgramName('RaysFragmentObject');
+    // Define programs
+    DefineShaderProgram(GradientProgram);
+    DefineShaderProgram(RaysProgram);
+    // Define objects
+    if GL_VERSION_3_2 then
+    begin
+      DefineShaderObject(GradientVertexObject, Gradient_vp150, [ptVertex]);
+      DefineShaderObject(GradientFragmentObject, Gradient_fp150, [ptFragment]);
+      DefineShaderObject(RaysVertexObject, RayTex_vp150, [ptVertex]);
+      DefineShaderObject(RaysFragmentObject, RayTex_fp150, [ptFragment]);
+    end
+    else
+    begin
+      DefineShaderObject(GradientVertexObject, Gradient_vp120, [ptVertex]);
+      DefineShaderObject(GradientFragmentObject, Gradient_fp120, [ptFragment]);
+      DefineShaderObject(RaysVertexObject, RayTex_vp120, [ptVertex]);
+      DefineShaderObject(RaysFragmentObject, RayTex_fp120, [ptFragment]);
+    end;
+    // Attach objects
+    AttachShaderObjectToProgram(GradientVertexObject, GradientProgram);
+    AttachShaderObjectToProgram(GradientFragmentObject, GradientProgram);
+    AttachShaderObjectToProgram(RaysVertexObject, RaysProgram);
+    AttachShaderObjectToProgram(RaysFragmentObject, RaysProgram);
+    // Link programs
+    ProgramsLinked := LinkShaderProgram(GradientProgram);
+    ProgramsLinked := ProgramsLinked and LinkShaderProgram(RaysProgram);
+    EndWork;
   end;
 end;
 
@@ -359,280 +434,237 @@ begin
   // Render self
   if GL_VERSION_2_1 and not (csDesigning in ComponentState) then
   begin
-    if GradientProgram.Handle = 0 then
+    if Length(GradientProgram) = 0 then
+      Initialize;
+
+    if osBuiltStage in ObjectStyle then
+    with StaticVBOManager do
     begin
-      GradientProgram.AllocateHandle;
-      with GradientProgram do
-      begin
-        if GL_VERSION_3_2 then
-        begin
-          AddShader(TGLVertexShaderHandle, string(Gradient_vp150), true);
-          AddShader(TGLFragmentShaderHandle, string(Gradient_fp150), true);
-        end
-        else begin
-          AddShader(TGLVertexShaderHandle, string(Gradient_vp120), true);
-          AddShader(TGLFragmentShaderHandle, string(Gradient_fp120), true);
-        end;
-        try
-          LinkProgram;
-          ValidateProgram;
-        except
-          ProgramsWorks := false;
-        end;
-      end;
+      RenderClient(FBuiltPropertiesGlow);
+      RenderClient(FBuiltPropertiesRays);
+      RenderClient(FBuiltPropertiesStreaks);
+      RenderClient(FBuiltPropertiesRing);
+      RenderClient(FBuiltPropertiesSecondaries);
+      ObjectStyle := ObjectStyle - [osBuiltStage];
     end;
 
-    if RaysProgram.Handle = 0 then
-    begin
-      RaysProgram.AllocateHandle;
-      with RaysProgram do
-      begin
-        if GL_VERSION_3_2 then
-        begin
-          AddShader(TGLVertexShaderHandle, string(RayTex_vp150), true);
-          AddShader(TGLFragmentShaderHandle, string(RayTex_fp150), true);
-        end
-        else begin
-          AddShader(TGLVertexShaderHandle, string(RayTex_vp120), true);
-          AddShader(TGLFragmentShaderHandle, string(RayTex_fp120), true);
-        end;
-        try
-          LinkProgram;
-          ValidateProgram;
-        except
-          ProgramsWorks := false;
-        end;
-      end;
-    end;
-
-    if ProgramsWorks then
+    if ProgramsLinked then
     begin
       // Random seed must be backed up, could be used for other purposes
           // (otherwise we essentially reset the random generator at each frame)
       oldSeed := RandSeed;
       RandSeed := Seed;
 
-      if osBuiltStage in ObjectStyle then
+      SetVector(v, AbsolutePosition);
+      // are we looking towards the flare?
+      rv := VectorSubtract(v, PAffineVector(@ARci.cameraPosition)^);
+      if VectorDotProduct(ARci.cameraDirection, rv) > 0 then
       begin
-        try
-          Self.BuildList(ARci);
-        except
-          StaticVBOManager.Discard;
-          Self.Visible := false;
+        // find out where it is on the screen.
+        screenPos := TGLSceneBuffer(ARci.buffer).WorldToScreen(v);
+        flareInViewPort := (screenPos[0] < ARci.viewPortSize.cx)
+          and (screenPos[0] >= 0)
+          and (screenPos[1] < ARci.viewPortSize.cy) and (screenPos[1] >= 0);
+      end
+      else
+        flareInViewPort := False;
+
+      dynamicSize := FDynamic and not (csDesigning in ComponentState);
+      if dynamicSize then
+      begin
+        // make the glow appear/disappear progressively
+        if flareInViewPort and FlareIsNotOccluded then
+        begin
+          FCurrSize := FCurrSize + FDeltaTime * 10 * Size;
+          if FCurrSize > Size then
+            FCurrSize := Size;
+        end
+        else
+        begin
+          FCurrSize := FCurrSize - FDeltaTime * 10 * Size;
+          if FCurrSize < 0 then
+            FCurrSize := 0;
         end;
       end
       else
       begin
-        SetVector(v, AbsolutePosition);
-        // are we looking towards the flare?
-        rv := VectorSubtract(v, PAffineVector(@ARci.cameraPosition)^);
-        if VectorDotProduct(ARci.cameraDirection, rv) > 0 then
-        begin
-          // find out where it is on the screen.
-          screenPos := TGLSceneBuffer(ARci.buffer).WorldToScreen(v);
-          flareInViewPort := (screenPos[0] < ARci.viewPortSize.cx)
-            and (screenPos[0] >= 0)
-            and (screenPos[1] < ARci.viewPortSize.cy) and (screenPos[1] >= 0);
-        end
+        if flareInViewPort and FlareIsNotOccluded then
+          FCurrSize := Size
         else
-          flareInViewPort := False;
+          FCurrSize := 0;
+      end;
 
-        dynamicSize := FDynamic and not (csDesigning in ComponentState);
-        if dynamicSize then
+      // Prepare matrices
+      projMatrix := IdentityHmgMatrix;
+      projMatrix[0][0] := 2 / ARci.viewPortSize.cx;
+      projMatrix[1][1] := 2 / ARci.viewPortSize.cy;
+
+      ShadersManager.UseProgram(GradientProgram);
+      if not FRaysTexture.IsHandleAllocated then
+        PrepareRayTexture(ARci);
+
+      MakeVector(posVector,
+        screenPos[0] - ARci.viewPortSize.cx * 0.5,
+        screenPos[1] - ARci.viewPortSize.cy * 0.5,
+        0);
+
+      if AutoZTest then
+      begin
+        if dynamicSize and (GL_HP_occlusion_test or
+          TGLOcclusionQueryHandle.IsSupported) then
         begin
-          // make the glow appear/disappear progressively
-          if flareInViewPort and FlareIsNotOccluded then
+          // hardware-based occlusion test is possible
+          FlareIsNotOccluded := True;
+
+          ARci.GLStates.SetGLColorWriting(False);
+          ARci.GLStates.DepthWriteMask := False;
+          ARci.GLStates.Enable(stDepthTest);
+
+          usedOcclusionQuery := TGLOcclusionQueryHandle.IsSupported;
+          if usedOcclusionQuery then
           begin
-            FCurrSize := FCurrSize + FDeltaTime * 10 * Size;
-            if FCurrSize > Size then
-              FCurrSize := Size;
-          end
-          else
-          begin
-            FCurrSize := FCurrSize - FDeltaTime * 10 * Size;
-            if FCurrSize < 0 then
-              FCurrSize := 0;
-          end;
-        end
-        else
-        begin
-          if flareInViewPort and FlareIsNotOccluded then
-            FCurrSize := Size
-          else
-            FCurrSize := 0;
-        end;
-
-        // Prepare matrices
-        projMatrix := IdentityHmgMatrix;
-        projMatrix[0][0] := 2 / ARci.viewPortSize.cx;
-        projMatrix[1][1] := 2 / ARci.viewPortSize.cy;
-
-        GradientProgram.UseProgramObject;
-        if not FRaysTexture.IsHandleAllocated then
-          PrepareRayTexture(ARci);
-
-        MakeVector(posVector,
-          screenPos[0] - ARci.viewPortSize.cx * 0.5,
-          screenPos[1] - ARci.viewPortSize.cy * 0.5,
-          0);
-
-        if AutoZTest then
-        begin
-          if dynamicSize and (GL_HP_occlusion_test or
-            TGLOcclusionQueryHandle.IsSupported) then
-          begin
-            // hardware-based occlusion test is possible
-            FlareIsNotOccluded := True;
-
-            ARci.GLStates.SetGLColorWriting(False);
-            ARci.GLStates.DepthWriteMask := False;
-            ARci.GLStates.Enable(stDepthTest);
-
-            usedOcclusionQuery := TGLOcclusionQueryHandle.IsSupported;
-            if usedOcclusionQuery then
+            // preferred method, doesn't stall rendering too badly
+            if not Assigned(FOcclusionQuery) then
+              FOcclusionQuery := TGLOcclusionQueryHandle.Create;
+            if FOcclusionQuery.Handle = 0 then
             begin
-              // preferred method, doesn't stall rendering too badly
-              if not Assigned(FOcclusionQuery) then
-                FOcclusionQuery := TGLOcclusionQueryHandle.Create;
-              if FOcclusionQuery.Handle = 0 then
+              FOcclusionQuery.AllocateHandle;
+              FOcclusionQuery.BeginQuery;
+            end
+            else
+            begin
+              if FOcclusionQuery.RenderingContext = CurrentGLContext then
               begin
-                FOcclusionQuery.AllocateHandle;
+                FlareIsNotOccluded := (FOcclusionQuery.PixelCount <> 0);
                 FOcclusionQuery.BeginQuery;
               end
               else
-              begin
-                if FOcclusionQuery.RenderingContext = CurrentGLContext then
-                begin
-                  FlareIsNotOccluded := (FOcclusionQuery.PixelCount <> 0);
-                  FOcclusionQuery.BeginQuery;
-                end
-                else
-                  usedOcclusionQuery := False;
-              end;
+                usedOcclusionQuery := False;
             end;
-            if not usedOcclusionQuery then
-            begin
-              // occlusion_test, stalls rendering a bit
-              glEnable(GL_OCCLUSION_TEST_HP);
-            end;
-            ARci.GLStates.DepthFunc := cfLequal;
-            GradientProgram.UniformMatrix4fv['ProjectionMatrix'] := projMatrix;
-            with DynamicVBOManager do
-            begin
-              BeginObject(FBuiltPropertiesRays);
-              Attribute3f(attrPosition, 0, 0, 0);
-              Attribute4f(attrVertexColor, 1, 1, 1, 1);
-              BeginPrimitives(GLVBOM_TRIANGLES);
-              Attribute3f(attrPosition,posVector[0] + 2, posVector[1], 1);
-              EmitVertex;
-              Attribute3f(attrPosition,posVector[0], posVector[1] + 2, 1);
-              EmitVertex;
-              Attribute3f(attrPosition,posVector[0] - 2, posVector[1], 1);
-              EmitVertex;
-              Attribute3f(attrPosition,posVector[0] - 2, posVector[1], 1);
-              EmitVertex;
-              Attribute3f(attrPosition,posVector[0], posVector[1] - 2, 1);
-              EmitVertex;
-              Attribute3f(attrPosition,posVector[0] + 2, posVector[1], 1);
-              EmitVertex;
-              EndPrimitives;
-              EndObject(ARci);
-            end;
-            ARci.GLStates.DepthFunc := cfLess;
+          end;
+          if not usedOcclusionQuery then
+          begin
+            // occlusion_test, stalls rendering a bit
+            glEnable(GL_OCCLUSION_TEST_HP);
+          end;
+          ARci.GLStates.DepthFunc := cfLequal;
+          ShadersManager.UniformMat4f(uniformViewProjectionMatrix, projMatrix);
+          with DynamicVBOManager do
+          begin
+            BeginObject(nil);
+            Attribute3f(attrPosition, 0, 0, 0);
+            Attribute4f(attrVertexColor, 1, 1, 1, 1);
+            BeginPrimitives(GLVBOM_TRIANGLES);
+            Attribute3f(attrPosition, posVector[0] + 2, posVector[1], 1);
+            EmitVertex;
+            Attribute3f(attrPosition, posVector[0], posVector[1] + 2, 1);
+            EmitVertex;
+            Attribute3f(attrPosition, posVector[0] - 2, posVector[1], 1);
+            EmitVertex;
+            Attribute3f(attrPosition, posVector[0] - 2, posVector[1], 1);
+            EmitVertex;
+            Attribute3f(attrPosition, posVector[0], posVector[1] - 2, 1);
+            EmitVertex;
+            Attribute3f(attrPosition, posVector[0] + 2, posVector[1], 1);
+            EmitVertex;
+            EndPrimitives;
+            EndObject;
+          end;
+          ARci.GLStates.DepthFunc := cfLess;
 
-            if usedOcclusionQuery then
-              FOcclusionQuery.EndQuery
-            else
-            begin
-              glDisable(GL_OCCLUSION_TEST_HP);
-              glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
-            end;
-
-            ARci.GLStates.SetGLColorWriting(True);
-            ARci.GLStates.DepthWriteMask := True;
-          end
+          if usedOcclusionQuery then
+            FOcclusionQuery.EndQuery
           else
           begin
-            //Compares the distance to the lensflare, to the z-buffer depth.
-            //This prevents the flare from being occluded by objects BEHIND the light.
-            depth :=
-              TGLSceneBuffer(ARci.buffer).PixelToDistance(Round(ScreenPos[0]),
-              Round(ARci.viewPortSize.cy - ScreenPos[1]));
-            dist := VectorDistance(ARci.cameraPosition, self.AbsolutePosition);
-            FlareIsNotOccluded := ((dist - depth) < 1);
+            glDisable(GL_OCCLUSION_TEST_HP);
+            glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
           end;
-        end;
 
-        if FCurrSize > 0 then
+          ARci.GLStates.SetGLColorWriting(True);
+          ARci.GLStates.DepthWriteMask := True;
+        end
+        else
         begin
-          SetupRenderingOptions(ARci);
-          M := CreateScaleMatrix(AffineVectorMake(FCurrSize, FCurrSize, 1));
-          M := MatrixMultiply(M, CreateTranslationMatrix(posVector));
-          M := MatrixMultiply(M, projMatrix);
-          GradientProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
-
-          // Glow (a circle with transparent edges):
-          if feGlow in Elements then
-            StaticVBOManager.RenderClient(FBuiltPropertiesGlow, ARci);
-
-          // Streaks
-          if feStreaks in Elements then
-          begin
-            ARci.GLStates.Enable(stLineSmooth);
-            if GL_VERSION_3_2 then
-              lw := StreakWidth
-            else
-              lw := StreakWidth*10;
-            ARci.GLStates.LineWidth := lw;
-            StaticVBOManager.RenderClient(FBuiltPropertiesStreaks, ARci);
-          end;
-
-          // Rays (random-length lines from the origin):
-          if feRays in Elements then
-          begin
-            RaysProgram.UseProgramObject;
-            RaysProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
-            ARci.GLStates.Enable(stTexture2D);
-            with FRaysTexture do
-              RaysProgram.UniformTextureHandle[uniformTexUnit0.Name, 0,
-                Image.NativeTextureTarget] := Handle;
-            StaticVBOManager.RenderClient(FBuiltPropertiesRays, ARci);
-          end;
-
-          if feRing in Elements then
-          begin
-            GradientProgram.UseProgramObject;
-            StaticVBOManager.RenderClient(FBuiltPropertiesRing, ARci);
-          end;
-          // Other secondaries (plain gradiented circles, like the glow):
-          if feSecondaries in Elements then
-          begin
-            GradientProgram.UseProgramObject;
-            for i := 1 to NumSecs do
-            begin
-              rnd := 2 * Random - 1;
-              // If rnd < 0 then the secondary glow will end up on the other side
-              // of the origin. In this case, we can push it really far away from
-              // the flare. If  the secondary is on the flare's side, we pull it
-              // slightly towards the origin to avoid it winding up in the middle
-              // of the flare.
-              if rnd < 0 then
-                v := VectorScale(posVector, rnd)
-              else
-                v := VectorScale(posVector, 0.8 * rnd);
-              rnd := (Random + 0.1) * FCurrSize * 0.25;
-              M := CreateScaleMatrix(AffineVectorMake(rnd, rnd, 1));
-              M := MatrixMultiply(M, CreateTranslationMatrix(v));
-              M := MatrixMultiply(M, projMatrix);
-              GradientProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
-              if i mod 3 = 0 then
-                StaticVBOManager.RenderClient(FBuiltPropertiesGlow, ARci)
-              else
-                StaticVBOManager.RenderClient(FBuiltPropertiesSecondaries, ARci);
-            end;
-          end;
-          ARci.GLStates.SetGLCurrentProgram(0);
+          //Compares the distance to the lensflare, to the z-buffer depth.
+          //This prevents the flare from being occluded by objects BEHIND the light.
+          depth :=
+            TGLSceneBuffer(ARci.buffer).PixelToDistance(Round(ScreenPos[0]),
+            Round(ARci.viewPortSize.cy - ScreenPos[1]));
+          dist := VectorDistance(ARci.cameraPosition, self.AbsolutePosition);
+          FlareIsNotOccluded := ((dist - depth) < 1);
         end;
+      end;
+
+      if FCurrSize > 0 then
+      begin
+        SetupRenderingOptions(ARci.GLStates);
+        M := CreateScaleMatrix(AffineVectorMake(FCurrSize, FCurrSize, 1));
+        M := MatrixMultiply(M, CreateTranslationMatrix(posVector));
+        M := MatrixMultiply(M, projMatrix);
+        ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+
+        // Glow (a circle with transparent edges):
+        if feGlow in Elements then
+          StaticVBOManager.RenderClient(FBuiltPropertiesGlow);
+
+        // Streaks
+        if feStreaks in Elements then
+        begin
+          ARci.GLStates.Enable(stLineSmooth);
+          if ARci.GLStates.ForwardContext then
+            lw := 1
+          else
+            lw := StreakWidth;
+          ARci.GLStates.LineWidth := lw;
+          StaticVBOManager.RenderClient(FBuiltPropertiesStreaks);
+        end;
+
+        // Rays (random-length lines from the origin):
+        if feRays in Elements then
+          with ShadersManager do
+          begin
+            UseProgram(RaysProgram);
+            UniformMat4f(uniformViewProjectionMatrix, M);
+            UniformSampler(uniformTexUnit0, FRaysTexture.Handle, 0);
+
+            ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
+            StaticVBOManager.RenderClient(FBuiltPropertiesRays);
+          end;
+
+        if feRing in Elements then
+        begin
+          ShadersManager.UseProgram(GradientProgram);
+          StaticVBOManager.RenderClient(FBuiltPropertiesRing);
+        end;
+        // Other secondaries (plain gradiented circles, like the glow):
+        if feSecondaries in Elements then
+        begin
+          ShadersManager.UseProgram(GradientProgram);
+          for i := 1 to NumSecs do
+          begin
+            rnd := 2 * Random - 1;
+            // If rnd < 0 then the secondary glow will end up on the other side
+            // of the origin. In this case, we can push it really far away from
+            // the flare. If  the secondary is on the flare's side, we pull it
+            // slightly towards the origin to avoid it winding up in the middle
+            // of the flare.
+            if rnd < 0 then
+              v := VectorScale(posVector, rnd)
+            else
+              v := VectorScale(posVector, 0.8 * rnd);
+            rnd := (Random + 0.1) * FCurrSize * 0.25;
+            M := CreateScaleMatrix(AffineVectorMake(rnd, rnd, 1));
+            M := MatrixMultiply(M, CreateTranslationMatrix(v));
+            M := MatrixMultiply(M, projMatrix);
+            ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+            if i mod 3 = 0 then
+              StaticVBOManager.RenderClient(FBuiltPropertiesGlow)
+            else
+              StaticVBOManager.RenderClient(FBuiltPropertiesSecondaries);
+          end;
+        end;
+        if not ARci.GLStates.ForwardContext then
+          ShadersManager.UseFixedFunctionPipeline;
       end;
       RandSeed := oldSeed;
     end;
@@ -643,17 +675,12 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-// BuildList
-//
-
-procedure TGL3xLensFlare.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xLensFlare.BuildGlow(Sender: TGLBaseVBOManager);
 var
   i: Integer;
-  a, f, s, c: Single;
-  rW, s0, c0, angle: Single;
+  angle, s, c: Single;
 begin
-  GradientProgram.UseProgramObject;
-  with StaticVBOManager do
+  with Sender do
   begin
     // Build glow
     BeginObject(FBuiltPropertiesGlow);
@@ -669,11 +696,20 @@ begin
       SinCos(angle, s, c);
       Attribute3f(attrPosition, c, Squeeze * s, 0);
       EmitVertex;
-      angle := angle + 2*Pi/Resolution;
+      angle := angle + 2 * Pi / Resolution;
     end;
     EndPrimitives;
-    EndObject(rci);
-    // Build streaks
+    EndObject;
+  end;
+end;
+
+procedure TGL3xLensFlare.BuildStreaks(Sender: TGLBaseVBOManager);
+var
+  i: Integer;
+  a, f, s, c: Single;
+begin
+  with Sender do
+  begin
     a := c2PI / NumStreaks;
     f := 1.5;
     BeginObject(FBuiltPropertiesStreaks);
@@ -691,8 +727,18 @@ begin
       EmitVertex;
     end;
     EndPrimitives;
-    EndObject(rci);
-    // Build ring
+    EndObject;
+  end;
+end;
+
+procedure TGL3xLensFlare.BuildRing(Sender: TGLBaseVBOManager);
+var
+  i: Integer;
+  s, c: Single;
+  rW, s0, c0, angle: Single;
+begin
+  with Sender do
+  begin
     rW := 1 / 15; // Ring width
     BeginObject(FBuiltPropertiesRing);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -741,11 +787,20 @@ begin
       Attribute3f(attrPosition, c, s, 0);
       EmitVertex;
 
-      angle := angle + 2*Pi / Resolution;
+      angle := angle + 2 * Pi / Resolution;
     end;
     EndPrimitives;
-    EndObject(rci);
-    // Build secondaries
+    EndObject;
+  end;
+end;
+
+procedure TGL3xLensFlare.BuildSecondaries(Sender: TGLBaseVBOManager);
+var
+  i: Integer;
+  angle, s, c: Single;
+begin
+  with Sender do
+  begin
     BeginObject(FBuiltPropertiesSecondaries);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute4f(attrVertexColor, 0, 0, 0, 0);
@@ -759,12 +814,17 @@ begin
       SinCos(angle, s, c);
       Attribute3f(attrPosition, c, Squeeze * s, 0);
       EmitVertex;
-      angle := angle + 2*Pi/Resolution;
+      angle := angle + 2 * Pi / Resolution;
     end;
     EndPrimitives;
-    EndObject(rci);
-    RaysProgram.UseProgramObject;
-    // Build rays
+    EndObject;
+  end;
+end;
+
+procedure TGL3xLensFlare.BuildRays(Sender: TGLBaseVBOManager);
+begin
+  with Sender do
+  begin
     BeginObject(FBuiltPropertiesRays);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
@@ -785,9 +845,8 @@ begin
     Attribute3f(attrPosition, -1, -1, 0);
     EmitVertex;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
-  ObjectStyle := ObjectStyle - [osBuiltStage];
 end;
 
 // DoProgress
@@ -815,23 +874,26 @@ begin
   Assert(FrameBuffer.Status = fsComplete, 'Framebuffer not complete');
   M := CreateTranslationMatrix(
     AffineVectorMake(FSize, FSize, 0));
-  M := MatrixMultiply(M, CreateProjectionMatrix(0, 2*FSize, 0, 2*FSize));
-  GradientProgram.UniformMatrix4fv['ProjectionMatrix'] := M;
-  glViewport(0, 0, 2*FSize, 2*FSize);
+  M := MatrixMultiply(M, CreateProjectionMatrix(0, 2 * FSize, 0, 2 * FSize));
+  ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+
   with rci.GLStates do
   begin
+    ViewPort := Vector4iMake(0, 0, 2 * FSize, 2 * FSize);
     Enable(stBlend);
     Disable(stDepthTest);
     DepthWriteMask := False;
     SetBlendFunc(bfSrcAlpha, bfOne);
     LineWidth := 1;
     Disable(stLineSmooth);
+    Disable(stLineStipple);
+    ColorClearValue := clrTransparent;
+    glClear(GL_COLOR_BUFFER_BIT);
   end;
-  glClearColor(0, 0, 0, 0);
-  glClear(GL_COLOR_BUFFER_BIT);
+
   with DynamicVBOManager do
   begin
-    BeginObject(FBuiltPropertiesRays);
+    BeginObject(nil);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_LINES);
@@ -847,18 +909,17 @@ begin
       EmitVertex;
       Attribute4f(attrVertexColor, RaysGradient.ToColor.Color);
       SinCos(alpha, s, c);
-      Attribute3f(attrPosition,rnd * c, rnd * s * Squeeze, 0);
+      Attribute3f(attrPosition, rnd * c, rnd * s * Squeeze, 0);
       EmitVertex;
-      alpha := alpha + 2*Pi/(20*Resolution);
+      alpha := alpha + 2 * Pi / (20 * Resolution);
     end;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   FrameBuffer.Unbind;
   FrameBuffer.Free;
   with rci.viewPortSize do
-    glViewport(0, 0, cx, cy);
-  CheckOpenGLError;
+    rci.GLStates.ViewPort := Vector4iMake(0, 0, cx, cy);
 end;
 
 // SetGlowGradient
@@ -919,8 +980,8 @@ begin
   begin
     FSize := aValue;
     FRaysTexture.DestroyHandles;
-    TGLBlankImage(FRaysTexture.Image).Width := 2*FSize;
-    TGLBlankImage(FRaysTexture.Image).Height := 2*FSize;
+    TGLBlankImage(FRaysTexture.Image).Width := 2 * FSize;
+    TGLBlankImage(FRaysTexture.Image).Height := 2 * FSize;
     StructureChanged;
   end;
 end;
@@ -1056,15 +1117,6 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClasses([TGL3xLensFlare]);
-  GradientProgram := TGLProgramHandle.Create;
-  RaysProgram := TGLProgramHandle.Create;
-
-finalization
-
-  GradientProgram.Destroy;
-  GradientProgram := nil;
-  RaysProgram.Destroy;
-  RaysProgram := nil;
 
 end.
 

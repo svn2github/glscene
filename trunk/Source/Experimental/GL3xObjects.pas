@@ -1,15 +1,3 @@
-//
-// This unit is part of the GLScene Project, http://glscene.org
-//
-{: GLObjects<p>
-
-   Lens flare object.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>07/04/10 - Yar - Adapted GLObjects to OpenGL3x
- </ul></font><p>
-
-}
 unit GL3xObjects;
 
 interface
@@ -20,7 +8,7 @@ uses
   Classes, VectorGeometry, GLScene, OpenGL1x, SysUtils,
   GLCrossPlatform, GLContext, GLSilhouette, GLSLShader,
   GLRenderContextInfo, BaseClasses, GLCoordinates,
-  GLObjects, GL3xShadersManager, GLVBOManagers, GL3xMaterial, GL3xFactory;
+  GLObjects, GLShadersManager, GLVBOManagers, GL3xMaterial, GL3xFactory;
 
 type
 
@@ -33,19 +21,19 @@ type
     FBuiltProperties: TGLBuiltProperties;
     FMaterial: TGL3xMaterial;
     procedure SetBuiltProperties(const Value: TGLBuiltProperties);
-    procedure SetMaterial(const Value: TGL3xMaterial);
+    procedure SetMaterial(const Value: TGL3xMaterial); virtual;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
     procedure StructureChanged; override;
-    procedure NotifyChange(Sender: TObject); override;
     property BuiltProperties: TGLBuiltProperties read FBuiltProperties write
       SetBuiltProperties;
     property Material: TGL3xMaterial read FMaterial write SetMaterial;
@@ -77,6 +65,7 @@ type
 
   TGL3xPlane = class(TGL3xCustomObject)
   private
+    { Private Declarations }
     FXOffset, FYOffset: TGLFloat;
     FXScope, FYScope: TGLFloat;
     FWidth, FHeight: TGLFloat;
@@ -93,12 +82,12 @@ type
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TPlaneStyles);
+  protected
+    { Protected declaration }
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
@@ -129,18 +118,19 @@ type
     FRotation: TGLFloat;
     FMirrorU,
       FMirrorV: Boolean;
-  protected
-    { Protected Declarations }
     procedure SetWidth(const val: TGLFloat);
     procedure SetHeight(const val: TGLFloat);
     procedure SetRotation(const val: TGLFloat);
     procedure SetMirrorU(const val: Boolean);
     procedure SetMirrorV(const val: Boolean);
+  protected
+    { Protected declaration }
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure SetSize(const width, height: TGLFloat);
     procedure SetSquareSize(const size: TGLFloat);
@@ -171,13 +161,13 @@ type
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
     function GenerateSilhouette(const silhouetteParameters:
       TGLSilhouetteParameters): TGLSilhouette; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -222,12 +212,14 @@ type
     procedure SetStacks(aValue: TGLInt);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
+  protected
+    { Protected declaration }
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -260,12 +252,14 @@ type
 
     procedure SetRadius(const Value: TGLFloat);
     procedure SetSubdivisionLevel(Value: TGLInt);
+  protected
+    { Protected declaration }
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -291,11 +285,12 @@ type
     procedure SetLoops(aValue: TGLInt);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
-
+  protected
+    { Protected declaration }
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -312,136 +307,60 @@ type
     property SweepAngle: TGLFloat read FSweepAngle write SetSweepAngle;
   end;
 
-  TBilletMeshPrimitive = (bmpPoint, bmpLine, bmpTriangle);
+  TFeedBackMeshPrimitive = (bmpPoint, bmpLine, bmpTriangle);
 
-  TGL3xBilletMesh = class(TGL3xCustomObject)
+  TGL3xFeedBackMesh = class(TGL3xCustomObject)
   private
     { Private Declarations }
     FFactory: TGL3xBaseFactory;
-    FPrimitiveType: TBilletMeshPrimitive;
+    FPrimitiveType: TFeedBackMeshPrimitive;
     FVertexNumber: Integer;
     FIndexed: Boolean;
+    FAttrArray: TGLSLAttributeArray;
+    FAttrIsDefined: Boolean;
     procedure SetFactory(Value: TGL3xBaseFactory);
-    procedure SetPrimitiveType(Value: TBilletMeshPrimitive);
+    procedure SetPrimitiveType(Value: TFeedBackMeshPrimitive);
     procedure SetVertexNumber(Value: Integer);
     procedure SetIndexed(Value: Boolean);
   protected
     { Protected declaration }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure SetMaterial(const Value: TGL3xMaterial); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
   published
     property Factory: TGL3xBaseFactory read FFactory
       write SetFactory;
-    property PrimitiveType: TBilletMeshPrimitive read FPrimitiveType
+    property PrimitiveType: TFeedBackMeshPrimitive read FPrimitiveType
       write SetPrimitiveType default bmpPoint;
     property VertexNumber: Integer read FVertexNumber write SetVertexNumber
       default 1;
     property Indexed: Boolean read FIndexed write SetIndexed default false;
   end;
 
-var
-  vDefaultViewMatrix: TMatrix =
-    ((1, 0, 0, 0),
-    (0, 1, 0, 0),
-    (0, 0, 1, 0),
-    (0, 0, 0, 1));
-  vDefaultProjectionMatrix: TMatrix =
-    ((1, 0, 0, 0),
-    (0, 1, 0, 0),
-    (0, 0, 1, 0),
-    (0, 0, 0, 1));
-  vDefaultLightSourcePosition: TVector =
-    (10, 10, 10, 1);
-
 implementation
 
 uses
-  GLStrings, GLState, VectorLists;
+  GLStrings, GLState, VectorLists,
+  GLSLog;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
-const
-  DefaultShader_vp120: AnsiString =
-    '#version 120' + #10#13 +
-    'invariant attribute vec3 Position;' + #10#13 +
-    'attribute vec3 Normal;' + #10#13 +
-    'attribute vec2 TexCoord0;' + #10#13 +
-    'varying float diffuse;' + #10#13 +
-    'varying vec2 texcoord;' + #10#13 +
-    'uniform mat4 ModelMatrix;' + #10#13 +
-    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
-    'uniform vec4 LightSourcePos;' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    '	vec4 vertex    = ModelMatrix * vec4(Position, 1.0);' + #10#13 +
-    '	vec4 direction = normalize(LightSourcePos - vertex);' + #10#13 +
-    '	vec3 normal = normalize(mat3(ModelMatrix) * Normal);' + #10#13 +
-    '	diffuse = clamp(dot(normal, direction.xyz), 0.0, 1.0);' + #10#13 +
-    '	texcoord = TexCoord0;' + #10#13 +
-    '	gl_Position = ViewProjectionMatrix * vertex;' + #10#13 +
-    '}';
-
-  DefaultShader_fp120: AnsiString =
-    '#version 120' + #10#13 +
-    'varying float diffuse;' + #10#13 +
-    'varying vec2 texcoord;' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    ' vec2 tc = fract(texcoord);' + #10#13 +
-    ' float df = sign(diffuse+0.01);' + #10#13 +
-    '	gl_FragColor = vec4(tc.s*df, tc.t*df, 0.0, 1.0);' + #10#13 +
-    '}';
-
-  DefaultShader_vp150: AnsiString =
-    '#version 150' + #10#13 +
-    'in vec3 Position;' + #10#13 +
-    'in vec3 Normal;' + #10#13 +
-    'in vec2 TexCoord0;' + #10#13 +
-    'out float diffuse;' + #10#13 +
-    'out vec2 texcoord;' + #10#13 +
-    'uniform mat4 ModelMatrix;' + #10#13 +
-    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
-    'uniform vec4 LightSourcePos;' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    '	vec4 vertex    = ModelMatrix * vec4(Position, 1.0);' + #10#13 +
-    '	vec4 direction = normalize(LightSourcePos - vertex);' + #10#13 +
-    '	vec3 normal = normalize(mat3(ModelMatrix) * Normal);' + #10#13 +
-    '	diffuse = clamp(dot(normal, direction.xyz), 0.0, 1.0);' + #10#13 +
-    '	texcoord = TexCoord0;' + #10#13 +
-    '	gl_Position = ViewProjectionMatrix * vertex;' + #10#13 +
-    '}';
-
-  DefaultShader_fp150: AnsiString =
-    '#version 150' + #10#13 +
-    'in float diffuse;' + #10#13 +
-    'in vec2 texcoord;' + #10#13 +
-    'out vec4 FragColor;' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    ' vec2 tc = fract(texcoord);' + #10#13 +
-    ' float df = sign(diffuse+0.01);' + #10#13 +
-    '	FragColor = vec4(tc.s*df, tc.t*df, 0.0, 1.0);' + #10#13 +
-    '}';
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-
-var
-  DefaultProgram: TGLProgramHandle = nil;
-
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseBufferedObject'}{$ENDIF}
-  // ------------------
-  // ------------------ TGL3xBaseBufferedObject ------------------
-  // ------------------
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseSceneObject'}{$ENDIF}
+// ------------------
+// ------------------ TGL3xBaseSceneObject ------------------
+// ------------------
 
 constructor TGL3xBaseSceneObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FBuiltProperties := TGLBuiltProperties.Create(Self);
   FBuiltProperties.OwnerNotifyChange := NotifyChange;
+  FBuiltProperties.OnBuildRequest := BuildBufferData;
   FMaterial := TGL3xMaterial.Create(Self);
   ObjectStyle := ObjectStyle + [osDirectDraw, osBuiltStage];
 end;
@@ -467,100 +386,32 @@ end;
 procedure TGL3xBaseSceneObject.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
-  vManager: TGLBaseVBOManager;
-  UseDefaultProgram: Boolean;
   SB: TGLSceneBuffer;
   LS: TGLLightSource;
-  ModelMatrix: TMatrix;
 begin
   if GL_VERSION_2_1 then
   begin
     if ARenderSelf then
     begin
-      UseDefaultProgram := true;
-      // if runtime
-      if not (csDesigning in ComponentState) then
+      // Define default important variables
+      SB := TGLSceneBuffer(ARci.buffer);
+      if Assigned(SB) then
       begin
-        if Assigned(FMaterial.Shader) then
-          UseDefaultProgram := false;
-      end
-      else
-        UseDefaultProgram := True;
-
-      if UseDefaultProgram and (DefaultProgram.Handle = 0) then
-      begin
-        DefaultProgram.AllocateHandle;
-        with DefaultProgram do
-        begin
-          if GL_VERSION_3_2 then
-          begin
-            AddShader(TGLVertexShaderHandle, string(DefaultShader_vp150), true);
-            AddShader(TGLFragmentShaderHandle, string(DefaultShader_fp150),
-              true);
-          end
-          else
-          begin
-            AddShader(TGLVertexShaderHandle, string(DefaultShader_vp120), true);
-            AddShader(TGLFragmentShaderHandle, string(DefaultShader_fp120),
-              true);
-          end;
-          if not LinkProgram then
-            UseDefaultProgram := false;
-          if not ValidateProgram then
-            UseDefaultProgram := false;
-        end;
+        vDefaultModelMatrix := SB.ModelMatrix;
+        vDefaultViewMatrix := SB.ViewMatrix;
+        vDefaultProjectionMatrix := SB.ProjectionMatrix;
       end;
 
-      if UseDefaultProgram then
-        with DefaultProgram do
-        begin
-          UseProgramObject;
-          SB := TGLSceneBuffer(ARci.buffer);
-          if Assigned(SB) then
-          begin
-            UniformMatrix4fv['ModelMatrix'] := SB.ModelMatrix;
-            UniformMatrix4fv['ViewProjectionMatrix'] :=
-              MatrixMultiply(SB.ViewMatrix, SB.ProjectionMatrix);
-          end
-          else
-          begin
-            if ocTransformation in Changes then
-              RebuildMatrix;
-            ModelMatrix := LocalMatrix^;
-            UniformMatrix4fv['ModelMatrix'] := ModelMatrix;
-            UniformMatrix4fv['ViewProjectionMatrix'] :=
-              MatrixMultiply(vDefaultViewMatrix, vDefaultProjectionMatrix);
-          end;
-          if Assigned(ARci.lights) then
-          begin
-            LS := TGLLightSource(ARci.lights.First);
-            if Assigned(LS) then
-              Uniform4f['LightSourcePos'] := LS.AbsolutePosition;
-          end
-          else
-            Uniform4f['LightSourcePos'] := vDefaultLightSourcePosition;
-        end
-      else
-        FMaterial.Apply(ARci);
-
-      vManager := FBuiltProperties.Manager;
-      if (osBuiltStage in ObjectStyle)
-        or (vManager is TGLDynamicVBOManager) then
+      if Assigned(ARci.lights) then
       begin
-        try
-          Self.BuildList(ARci);
-        except
-          vManager.Discard;
-          Self.Visible := false;
-        end;
-      end
-      else
-        vManager.RenderClient(FBuiltProperties, ARci);
+        LS := TGLLightSource(ARci.lights.First);
+        if Assigned(LS) then
+          vDefaultLightSourcePosition := LS.AbsolutePosition;
+      end;
 
-      if UseDefaultProgram then
-        DefaultProgram.EndUseProgramObject
-      else
-        FMaterial.UnApply(ARci);
+      FMaterial.Apply(ARci);
+      FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+      FMaterial.UnApply(ARci);
     end;
   end;
 
@@ -568,7 +419,7 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGL3xBaseSceneObject.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xBaseSceneObject.BuildBufferData(Sender: TGLBaseVBOManager);
 begin
   ObjectStyle := ObjectStyle - [osBuiltStage];
 end;
@@ -587,15 +438,12 @@ end;
 procedure TGL3xBaseSceneObject.StructureChanged;
 begin
   inherited;
-  if FBuiltProperties.Usage = buStream then
+  if (FBuiltProperties.Usage = buStream)
+    or (csDesigning in ComponentState) then
+  begin
     ObjectStyle := ObjectStyle + [osBuiltStage];
-end;
-
-procedure TGL3xBaseSceneObject.NotifyChange(Sender: TObject);
-begin
-  inherited NotifyChange(Sender);
-  if Sender is TGLBuiltProperties then
-    StructureChanged;
+    FBuiltProperties.StructureChanged;
+  end;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -620,7 +468,7 @@ end;
 // BuildList
 //
 
-procedure TGL3xPlane.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xPlane.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   hw, hh, posXFact, posYFact, pX, pY0, pY1: TGLFloat;
   tx0, tx1, ty0, ty1, texSFact, texTFact: TGLFloat;
@@ -645,7 +493,7 @@ begin
     ty1 := FYScope;
   end;
   // single quad plane
-  with FBuiltProperties.Manager do
+  with Sender do
   begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -699,7 +547,7 @@ begin
       end;
       EndPrimitives;
     end;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -943,14 +791,14 @@ end;
 // BuildList
 //
 
-procedure TGL3xSprite.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xSprite.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   vx, vy: TAffineVector;
   w, h: Single;
   mat: TMatrix;
   u0, v0, u1, v1: Integer;
 begin
-  mat := TGLSceneBuffer(rci.buffer).ModelMatrix;
+  mat := IdentityHmgMatrix; //TGLSceneBuffer(rci.buffer).ModelMatrix;
   w := FWidth * 0.5;
   h := FHeight * 0.5;
   vx[0] := mat[0][0];
@@ -989,7 +837,7 @@ begin
     vy := VectorTransform(vy, mat);
   end;
 
-  with FBuiltProperties.Manager do
+  with Sender do
   begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -1008,7 +856,7 @@ begin
     Attribute3f(attrPosition, -vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
     EmitVertex;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -1112,11 +960,11 @@ end;
 // BuildList
 //
 
-procedure TGL3xCube.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xCube.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   hw, hh, hd, nd: TGLFloat;
 begin
-  with FBuiltProperties.Manager do
+  with Sender do
   begin
     if FNormalDirection = ndInside then
       nd := -1
@@ -1258,7 +1106,7 @@ begin
       EmitVertex;
     end;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -1529,7 +1377,7 @@ end;
 // BuildList
 //
 
-procedure TGL3xSphere.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xSphere.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   V1, V2, N1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
@@ -1546,7 +1394,7 @@ begin
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
 
-  with FBuiltProperties.Manager do
+  with Sender do
   begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -1670,7 +1518,7 @@ begin
       Phi2 := Phi2 - StepV;
     end;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -1915,7 +1763,7 @@ end;
 // BuildList
 //
 
-procedure TGL3xGeoSphere.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xGeoSphere.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   pivot, dir1, dir2, V, B: TAffineVector;
   level, numLayers: Integer;
@@ -1964,7 +1812,7 @@ var
         t := t + (1 / 6) * V[1] / Abs(B[1]);
     end;
 
-    with FBuiltProperties.Manager do
+    with Sender do
     begin
       Attribute2f(attrTexCoord0, s, t);
       Attribute3f(attrNormal, V[0], V[1], V[2]);
@@ -2068,7 +1916,7 @@ begin
     ProduceOctant;
 
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -2216,7 +2064,7 @@ end;
 // BuildList
 //
 
-procedure TGL3xDisk.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xDisk.BuildBufferData(Sender: TGLBaseVBOManager);
 var
   i, j: Integer;
   Astart, Astep, angle, Rstep, R: Single;
@@ -2225,7 +2073,7 @@ begin
   Astart := DegToRad(FStartAngle);
   Astep := DegToRad(FSweepAngle) / FSlices;
   Rstep := (FOuterRadius - FInnerRadius) / FLoops;
-  with FBuiltProperties.Manager do
+  with Sender do
   begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
@@ -2250,7 +2098,7 @@ begin
       end;
     end;
     EndPrimitives;
-    EndObject(rci);
+    EndObject;
   end;
   inherited;
 end;
@@ -2416,82 +2264,95 @@ end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBilletMesh'}{$ENDIF}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xFeedBackMesh'}{$ENDIF}
 // ------------------
-// ------------------ TGL3xBilletMesh ------------------
+// ------------------ TGL3xFeedBackMesh ------------------
 // ------------------
 
 // Create
 //
 
-constructor TGL3xBilletMesh.Create(AOwner: TComponent);
+constructor TGL3xFeedBackMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FBuiltProperties.Usage := buStream;
   FPrimitiveType := bmpPoint;
   FVertexNumber := 1;
   FIndexed := False;
+  FAttrIsDefined := False;
+end;
+
+// DoRender
+//
+
+procedure TGL3xFeedBackMesh.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+begin
+  inherited;
+  // Call primitive factory
+  if not (csDesigning in ComponentState)
+    and FAttrIsDefined
+    and Assigned(FFactory) then
+    FFactory.Produce(Self);
 end;
 
 // BuildList
 //
 
-procedure TGL3xBilletMesh.BuildList(var rci: TRenderContextInfo);
+procedure TGL3xFeedBackMesh.BuildBufferData(Sender: TGLBaseVBOManager);
 const
-  cPrimitives: array[TBilletMeshPrimitive] of TGLVBOMEnum =
+  cPrimitives: array[TFeedBackMeshPrimitive] of TGLVBOMEnum =
     (GLVBOM_POINTS, GLVBOM_LINES, GLVBOM_TRIANGLES);
 var
   i: Integer;
-  AttrArray: TGLSLAttributeArray;
 begin
   if csDesigning in ComponentState then
     exit;
   if Assigned(FMaterial.Shader) then
   begin
-    if not FMaterial.GetAttributes(AttrArray) then
-      exit;
+    if not FAttrIsDefined then
+    begin
+      FAttrIsDefined := FMaterial.GetAttributes(FAttrArray);
+      if not FAttrIsDefined then
+      begin
+        Visible := False;
+        GLSLogger.LogError('Material of '+Name+' has no attributes');
+        exit;
+      end;
+    end;
     // Create empty graphic buffers
-    with FBuiltProperties.Manager do
+    with Sender do
     begin
       BeginObject(FBuiltProperties);
-      for i := 0 to High(AttrArray) do
-        if AttrArray[i].ID > 0 then
-        begin
-          case AttrArray[i].DataType of
-            GLSLType1F: Attribute1f(AttrArray[i], 0);
-            GLSLType2F: Attribute2f(AttrArray[i], 0, 0);
-            GLSLType3F: Attribute3f(AttrArray[i], 0, 0, 0);
-            GLSLType4F: Attribute4f(AttrArray[i], 0, 0, 0, 0);
-            GLSLType1I: Attribute1i(AttrArray[i], 0);
-            GLSLType2I: Attribute2i(AttrArray[i], 0, 0);
-            GLSLType3I: Attribute3i(AttrArray[i], 0, 0, 0);
-            GLSLType4I: Attribute4i(AttrArray[i], 0, 0, 0, 0);
-            GLSLType4UB: Attribute4ub(AttrArray[i], 0, 0, 0, 0);
+      for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+        if Assigned(FAttrArray[i]) then
+          case FAttrArray[i].DataType of
+            GLSLType1F: Attribute1f(FAttrArray[i], 0);
+            GLSLType2F: Attribute2f(FAttrArray[i], 0, 0);
+            GLSLType3F: Attribute3f(FAttrArray[i], 0, 0, 0);
+            GLSLType4F: Attribute4f(FAttrArray[i], 0, 0, 0, 0);
+            GLSLType1I: Attribute1i(FAttrArray[i], 0);
+            GLSLType2I: Attribute2i(FAttrArray[i], 0, 0);
+            GLSLType3I: Attribute3i(FAttrArray[i], 0, 0, 0);
+            GLSLType4I: Attribute4i(FAttrArray[i], 0, 0, 0, 0);
           end;
-        end;
       BeginPrimitives(cPrimitives[FPrimitiveType]);
       EmitVertices(FVertexNumber, FIndexed);
-      // Call primitive factory
-      if Assigned(FFactory) then
-      begin
-        FFactory.Produce(Self, rci);
-        RenderClient(FBuiltProperties, rci);
-      end;
     end;
   end;
   inherited;
 end;
 
-procedure TGL3xBilletMesh.Assign(Source: TPersistent);
+procedure TGL3xFeedBackMesh.Assign(Source: TPersistent);
 begin
-  if Source is TGL3xBilletMesh then
+  if Source is TGL3xFeedBackMesh then
   begin
-    SetFactory(TGL3xBilletMesh(Source).Factory);
+    SetFactory(TGL3xFeedBackMesh(Source).Factory);
   end;
   inherited;
 end;
 
-procedure TGL3xBilletMesh.SetFactory(Value: TGL3xBaseFactory);
+procedure TGL3xFeedBackMesh.SetFactory(Value: TGL3xBaseFactory);
 begin
   if Value <> FFactory then
   begin
@@ -2504,7 +2365,7 @@ begin
   end;
 end;
 
-procedure TGL3xBilletMesh.SetPrimitiveType(Value: TBilletMeshPrimitive);
+procedure TGL3xFeedBackMesh.SetPrimitiveType(Value: TFeedBackMeshPrimitive);
 begin
   if Value <> FPrimitiveType then
   begin
@@ -2513,7 +2374,7 @@ begin
   end;
 end;
 
-procedure TGL3xBilletMesh.SetVertexNumber(Value: Integer);
+procedure TGL3xFeedBackMesh.SetVertexNumber(Value: Integer);
 begin
   if Value < 1 then
     Value := 1;
@@ -2526,7 +2387,7 @@ begin
   end;
 end;
 
-procedure TGL3xBilletMesh.SetIndexed(Value: Boolean);
+procedure TGL3xFeedBackMesh.SetIndexed(Value: Boolean);
 begin
   if Value <> FIndexed then
   begin
@@ -2535,26 +2396,27 @@ begin
   end;
 end;
 
-procedure TGL3xBilletMesh.Notification(AComponent: TComponent;
+procedure TGL3xFeedBackMesh.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FFactory) then
     FFactory := nil;
   inherited;
 end;
+
+procedure TGL3xFeedBackMesh.SetMaterial(const Value: TGL3xMaterial);
+begin
+  inherited;
+  FAttrIsDefined := False;
+  StructureChanged;
+end;
+
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 initialization
 
   RegisterClasses([TGL3xPlane, TGL3xSprite, TGL3xCube, TGL3xSphere,
-    TGL3xGeoSphere, TGL3xDisk, TGL3xBilletMesh]);
-
-  DefaultProgram := TGLProgramHandle.Create;
-
-finalization
-
-  DefaultProgram.Destroy;
-  DefaultProgram := nil;
+    TGL3xGeoSphere, TGL3xDisk, TGL3xFeedBackMesh]);
 
 end.
 
