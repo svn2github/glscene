@@ -8,7 +8,6 @@
   then call UserLog function from any module.<p>
 
   <b>Historique : </b><font size=-1><ul>
-      <li>29/04/10 - Yar - Added auto openning log when error's limit exceeded
       <li>02/04/10 - Yar - Added properties TimeFormat, LogLevels to TGLSLogger
                            Added function UserLog. GLS_LOGGING now only turn on inner GLScene logger
       <li>24/03/10 - Yar - Added TGLSLogger component,
@@ -76,7 +75,7 @@ type
     LogFileName: string;
     FLogLevels: TLogLevels;
 {$IFDEF GLS_MULTITHREAD}
-    CriticalSection: _RTL_CRITICAL_SECTION;
+    CriticalSection: TRTLCriticalSection;
 {$ENDIF}
     LogKindCount: array[TLogLevel] of Integer;
     procedure SetMode(NewMode: TLogLevels);
@@ -91,7 +90,7 @@ type
     {: Startup timestamp in milliseconds }
     StartedMs: Cardinal;
     {: Appends a string to log. Thread-safe if GLS_MULTITHREAD defined }
-    procedure AppendLog(const Desc: string; Level: TLogLevel = lkInfo); virtual;
+    procedure AppendLog(Desc: string; Level: TLogLevel = lkInfo); virtual;
   public
     { Initializes a log session with the specified log file name, time and level settings }
     constructor Init(const FileName: string; ATimeFormat: TLogTimeFormat;
@@ -433,7 +432,7 @@ begin
   Log(Desc, lkFatalError);
 end;
 
-procedure TLogSession.AppendLog(const Desc: string; Level: TLogLevel = lkInfo);
+procedure TLogSession.AppendLog(Desc: string; Level: TLogLevel = lkInfo);
 begin
 {$IFNDEF GLS_LOGGING}
   if Self = GLSLogger then
@@ -443,6 +442,9 @@ begin
   Append(LogFile);
   if IOResult <> 0 then
     Exit;
+{$IFDEF GLS_MULTITHREAD}
+  Desc := #9 + 'Thread ID ' + IntToStr(GetCurrentThreadId)+#9+Desc;
+{$ENDIF}
   case TimeFormat of
     lfNone: WriteLn(LogFile, lkPrefix[Level] + Desc);
     lfDate: WriteLn(LogFile, DateToStr(Now) + #9 + lkPrefix[Level] + Desc);
