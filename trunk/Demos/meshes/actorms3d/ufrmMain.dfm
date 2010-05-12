@@ -70,6 +70,7 @@ object frmMain: TfrmMain
       Width = 177
       Height = 21
       Style = csDropDownList
+      ItemHeight = 13
       TabOrder = 3
       OnSelect = aniBoxSelect
       Items.Strings = (
@@ -221,6 +222,7 @@ object frmMain: TfrmMain
   object GLSLShader1: TGLSLShader
     Enabled = False
     OnApply = GLSLShader1Apply
+    OnInitialize = GLSLShader1Initialize
     Left = 20
     Top = 180
   end

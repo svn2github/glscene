@@ -87,7 +87,7 @@ object Form1: TForm1
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Chekers'
-        MajorRadius = 0.400000005960464500
+        MajorRadius = 0.400000005960464400
         MinorRadius = 0.100000001490116100
       end
       object GLCylinder1: TGLCylinder
@@ -196,6 +196,7 @@ object Form1: TForm1
   object GLSLShader2: TGLSLShader
     Enabled = False
     OnApply = GLSLShader2Apply
+    OnInitialize = GLSLShader2Initialize
     Left = 24
     Top = 280
   end
