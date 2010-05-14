@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
        <li>09/05/10 - Yar - Fixed texture compression (thanks Hacker)
        <li>22/04/10 - Yar - Fixes after GLState revision
        <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
@@ -3612,9 +3613,9 @@ var
 begin
   R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
-  with FTextureHandle.RenderingContext.GLStates do
+  with CurrentGLContext.GLStates do
   begin
-    UnpackAlignment := 4;
+    UnpackAlignment := 1;
     UnpackRowLength :=0;
     UnpackSkipRows :=0;
     UnpackSkipPixels := 0;
