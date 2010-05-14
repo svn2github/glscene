@@ -1063,10 +1063,7 @@ begin
   size := bw * bh * d * fElementSize;
   // Align to Double Word
   if (size and 3) <> 0 then
-  begin
-    size := size and MaxInt - 3;
-    Inc(size, 4);
-  end;
+    size := 4*(1+size div 4);
   Result := size;
 end;
 
