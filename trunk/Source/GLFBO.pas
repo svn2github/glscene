@@ -218,7 +218,9 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  glBindRenderbuffer(GL_RENDERBUFFER, Handle);
+  if FRenderbufferHandle.Handle = 0 then
+    FRenderbufferHandle.AllocateHandle;
+  FRenderbufferHandle.Bind;
   if not FStorageValid then
   begin
     internalFormat := GetInternalFormat;
@@ -228,7 +230,7 @@ end;
 
 procedure TGLRenderbuffer.Unbind;
 begin
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  FRenderbufferHandle.UnBind;
 end;
 
 { TGLDepthRBO }
