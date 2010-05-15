@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/02/10 - Yar - Added notification of freeing RootObject
       <li>22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
@@ -214,10 +215,10 @@ type
 implementation
 
 uses
-  OpenGL1x, VectorTypes;
-
-var
-  vMaxRenderBufferSize: GLsizei = -1;
+  SysUtils,
+  OpenGL1x,
+  VectorTypes,
+  GLMultisampleImage;
 
   { TGLFBORenderer }
 
@@ -312,9 +313,6 @@ end;
 procedure TGLFBORenderer.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 begin
-  if vMaxRenderBufferSize < 0 then
-    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @vMaxRenderBufferSize);
-
   if (csDesigning in ComponentState) then
     Exit;
 
@@ -330,7 +328,7 @@ end;
 procedure TGLFBORenderer.ForceDimensions(Texture: TGLTexture);
 var
   bi: TGLBlankImage;
-  fi: TGLFloatDataImage;
+  mi: TGLMultisampleImage;
 begin
   if Texture.Image is TGLBlankImage then
   begin
@@ -338,11 +336,11 @@ begin
     bi.Width := Width;
     bi.Height := Height;
   end
-  else if Texture.Image is TGLFloatDataImage then
+  else if Texture.Image is TGLMultisampleImage then
   begin
-    fi := TGLFloatDataImage(Texture.Image);
-    fi.Width := Width;
-    fi.Height := Height;
+    mi := TGLMultisampleImage(Texture.Image);
+    mi.Width := Width;
+    mi.Height := Height;
   end;
 end;
 
@@ -379,10 +377,23 @@ var
   colorTex: TGLTexture;
   depthTex: TGLTexture;
   I: Integer;
-  maxAttachment: Integer;
+  maxAttachment: TGLint;
+  maxSize: TGLint;
 begin
   for I := 0 to MaxColorAttachments - 1 do
     FFbo.DetachTexture(I);
+
+  glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @maxSize);
+  if Width>maxSize then
+  begin
+    FWidth := maxSize;
+    GLSLogger.LogWarning(Name+'.Width out of GL_MAX_RENDERBUFFER_SIZE');
+  end;
+  if Height>maxSize then
+  begin
+    FHeight := maxSize;
+    GLSLogger.LogWarning(Name+'.Height out of GL_MAX_RENDERBUFFER_SIZE');
+  end;
 
   FFbo.Width := Width;
   FFbo.Height := Height;
@@ -401,9 +412,14 @@ begin
 
   if FUseLibraryAsMultiTarget then
   begin
+    if not (GL_ARB_draw_buffers or GL_ATI_draw_buffers) then
+    begin
+      GLSLogger.LogError('Hardware do not support MRT');
+      Visible := False;
+      Abort;
+    end;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @maxAttachment);
-    Assert(FMaterialLibrary.Materials.Count <= maxAttachment,
-      'Too many color attachments.');
+
     // Multicolor attachments
     for I := 0 to FMaterialLibrary.Materials.Count - 1 do
     begin
@@ -413,7 +429,15 @@ begin
         Continue;
       if ForceTextureDimensions then
         ForceDimensions(colorTex);
-      FFbo.AttachTexture(I, colorTex);
+
+      if FColorAttachment >= maxAttachment then
+      begin
+        GLSLogger.LogError('Number of color attachments out of GL_MAX_COLOR_ATTACHMENTS');
+        Visible := False;
+        Abort;
+      end;
+
+      FFbo.AttachTexture(FColorAttachment, colorTex);
       Inc(FColorAttachment);
     end;
     FHasColor := FColorAttachment > 0;
@@ -478,9 +502,6 @@ begin
     FStencilRBO.Free;
     FStencilRBO := nil;
   end;
-
-  CheckOpenGLError;
-
   FFbo.Bind;
 
   if FColorAttachment = 0 then
@@ -495,6 +516,7 @@ begin
   FFbo.Unbind;
 
   FChanged := False;
+  CheckOpenGLError;
 end;
 
 procedure TGLFBORenderer.RenderToFBO(var ARci: TRenderContextInfo);
@@ -560,7 +582,11 @@ begin
     DoBeforeRender;
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
+    begin
       GLSLogger.LogError('Framebuffer error: ' + s);
+      Visible := False;
+      Abort;
+    end;
 
     if Assigned(Camera) then
       Camera.Scene.SetupLights(ARci.GLStates.MaxLights);
@@ -707,7 +733,6 @@ end;
 
 procedure TGLFBORenderer.SetUseLibraryAsMultiTarget(Value: Boolean);
 begin
-  //  Value := Value and (GL_ARB_draw_buffers or GL_ATI_draw_buffers);
   if FUseLibraryAsMultiTarget <> Value then
   begin
     FUseLibraryAsMultiTarget := Value;
@@ -787,9 +812,6 @@ procedure TGLFBORenderer.SetWidth(Value: Integer);
 begin
   if FWidth <> Value then
   begin
-    if (vMaxRenderBufferSize > 0)
-      and (Value > vMaxRenderBufferSize) then
-      Value := vMaxRenderBufferSize;
     FWidth := Value;
     StructureChanged;
   end;
@@ -799,9 +821,6 @@ procedure TGLFBORenderer.SetHeight(Value: Integer);
 begin
   if FHeight <> Value then
   begin
-    if (vMaxRenderBufferSize > 0)
-      and (Value > vMaxRenderBufferSize) then
-      Value := vMaxRenderBufferSize;
     FHeight := Value;
     StructureChanged;
   end;

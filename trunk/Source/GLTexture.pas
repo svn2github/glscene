@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TGLTextureImage
        <li>14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
        <li>09/05/10 - Yar - Fixed texture compression (thanks Hacker)
        <li>22/04/10 - Yar - Fixes after GLState revision
@@ -13,7 +14,7 @@
                              cause errors on hardware that doesn't support them
        <li>05/03/10 - DanB - More state added to TGLStateCache
        <li>23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
-                             and tfExtended to TGLTextureFormat (thanks mif for idea)  
+                             and tfExtended to TGLTextureFormat (thanks mif for idea)
        <li>22/01/10 - Yar  - Added GLTextureFormat to uses,
                              1D, 3D, array, cube map array target support,
                              texture error indication,
@@ -211,12 +212,21 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes,
+  SysUtils,
 
   // GLScene
-  OpenGL1x, VectorGeometry, GLGraphics, GLContext, GLColor,
-  GLCrossPlatform, BaseClasses, GLCoordinates, GLRenderContextInfo,
-  GLTextureFormat, GLState;
+  OpenGL1x,
+  VectorGeometry,
+  GLGraphics,
+  GLContext,
+  GLColor,
+  GLCrossPlatform,
+  BaseClasses,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLState;
 
 const
   cDefaultNormalMapScale = 0.125;
@@ -253,17 +263,17 @@ type
   specify a generic format to reduce OpenGL texture memory use:<ul>}
   TGLTextureFormat = (
     tfDefault,
-    tfRGB,            // = tfRGB8
-    tfRGBA,           // = tfRGBA8
-    tfRGB16,          // = tfRGB5
-    tfRGBA16,         // = tfRGBA4
-    tfAlpha,          // = tfALPHA8
-    tfLuminance,      // = tfLUMINANCE8
+    tfRGB, // = tfRGB8
+    tfRGBA, // = tfRGBA8
+    tfRGB16, // = tfRGB5
+    tfRGBA16, // = tfRGBA4
+    tfAlpha, // = tfALPHA8
+    tfLuminance, // = tfLUMINANCE8
     tfLuminanceAlpha, // = tfLUMINANCE8_ALPHA8
-    tfIntensity,      // = tfINTENSITY8
-    tfNormalMap,      // = tfRGB8
-    tfRGBAFloat16,    // = tfRGBA_FLOAT16_ATI
-    tfRGBAFloat32,    // = tfRGBA_FLOAT32_ATI
+    tfIntensity, // = tfINTENSITY8
+    tfNormalMap, // = tfRGB8
+    tfRGBAFloat16, // = tfRGBA_FLOAT16_ATI
+    tfRGBAFloat32, // = tfRGBA_FLOAT32_ATI
     tfExtended);
 
   // TGLTextureCompression
@@ -321,6 +331,9 @@ type
     FOwnerTexture: TGLTexture;
     FOnTextureNeeded: TTextureNeededEvent;
     FResourceFile: string;
+    class function IsSelfLoading: Boolean; virtual;
+    procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
+      abstract;
     function GetTextureTarget: TGLTextureTarget; virtual; abstract;
     function GetHeight: Integer; virtual; abstract;
     function GetWidth: Integer; virtual; abstract;
@@ -381,7 +394,7 @@ type
     property Depth: Integer read GetDepth;
     {: Native opengl texture target.<p> }
     property NativeTextureTarget: TGLTextureTarget read GetTextureTarget;
-    property ResorceName: string read GetResourceName;
+    property ResourceName: string read GetResourceName;
   end;
 
   TGLTextureImageClass = class of TGLTextureImage;
@@ -728,10 +741,10 @@ type
     procedure SetTextureWrapS(AValue: TGLSeparateTextureWrap);
     procedure SetTextureWrapT(AValue: TGLSeparateTextureWrap);
     procedure SetTextureWrapR(AValue: TGLSeparateTextureWrap);
-    function  GetTextureFormat: TGLTextureFormat;
+    function GetTextureFormat: TGLTextureFormat;
     procedure SetTextureFormat(const val: TGLTextureFormat);
     procedure SetTextureFormatEx(const val: TGLInternalFormat);
-    function  StoreTextureFormatEx: Boolean;
+    function StoreTextureFormatEx: Boolean;
     procedure SetCompression(const val: TGLTextureCompression);
     procedure SetFilteringQuality(const val: TGLTextureFilteringQuality);
     procedure SetMappingMode(const val: TGLTextureMappingMode);
@@ -1062,14 +1075,20 @@ implementation
 
 // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats,
-  GLUtils, VectorTypes;
+uses GLScene,
+  GLStrings,
+  XOpenGL,
+  ApplicationFileIO,
+  PictureRegisteredFormats,
+  GLUtils,
+  VectorTypes;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
-  cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of TGLInternalFormat = (
+  cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of
+    TGLInternalFormat = (
     tfRGB8,
     tfRGBA8,
     tfRGB5,
@@ -1089,8 +1108,8 @@ var
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Helper functions'}{$ENDIF}
 
-// RegisterTGraphicClassFileExtension
-//
+  // RegisterTGraphicClassFileExtension
+  //
 
 procedure RegisterTGraphicClassFileExtension(const extension: string;
   const aClass: TGraphicClass);
@@ -1337,6 +1356,11 @@ begin
   Result := FResourceFile;
 end;
 
+class function TGLTextureImage.IsSelfLoading: Boolean;
+begin
+  Result := False;
+end;
+
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 // ------------------
@@ -1383,7 +1407,7 @@ begin
       FCubeMap := img.fCubeMap;
       FArray := img.fArray;
       fColorFormat := img.ColorFormat;
-      FResourceFile := img.ResorceName;
+      FResourceFile := img.ResourceName;
       Invalidate;
     end
     else
@@ -1914,7 +1938,7 @@ begin
   if Source is TGLPicFileImage then
   begin
     FPictureFileName := TGLPicFileImage(Source).FPictureFileName;
-    FResourceFile := TGLPicFileImage(Source).ResorceName;
+    FResourceFile := TGLPicFileImage(Source).ResourceName;
   end
   else
     inherited;
@@ -2543,7 +2567,7 @@ begin
     if not (MinFilter in [miNearest, miLinear]) then
     begin
       levelSize := FRequiredMemorySize;
-      while e<levelSize do
+      while e < levelSize do
       begin
         levelSize := levelSize div 4;
         FRequiredMemorySize := FRequiredMemorySize + levelSize;
@@ -2771,7 +2795,7 @@ function TGLTexture.GetTextureFormat: TGLTextureFormat;
 var
   i: TGLTextureFormat;
 begin
-  if vDefaultTextureFormat=FTextureFormat then
+  if vDefaultTextureFormat = FTextureFormat then
   begin
     Result := tfDefault;
     Exit;
@@ -2792,11 +2816,11 @@ end;
 
 procedure TGLTexture.SetTextureFormat(const val: TGLTextureFormat);
 begin
-  if val=tfDefault then
+  if val = tfDefault then
   begin
     FTextureFormat := vDefaultTextureFormat;
   end
-  else if val<tfExtended then
+  else if val < tfExtended then
   begin
     FTextureFormat := cOldTextureFormatToInternalFormat[val];
   end;
@@ -2819,7 +2843,7 @@ end;
 
 function TGLTexture.StoreTextureFormatEx: Boolean;
 begin
-  Result := GetTextureFormat>=tfExtended;
+  Result := GetTextureFormat >= tfExtended;
 end;
 
 // SetCompression
@@ -2897,7 +2921,8 @@ function TGLTexture.StoreMappingSCoordinates: Boolean;
 begin
   if Assigned(FMapSCoordinates) then
     Result := not VectorEquals(FMapSCoordinates.AsVector, XHmgVector)
-  else Result := false;
+  else
+    Result := false;
 end;
 
 // SetMappingTCoordinates
@@ -2926,7 +2951,8 @@ function TGLTexture.StoreMappingTCoordinates: Boolean;
 begin
   if Assigned(FMapTCoordinates) then
     Result := not VectorEquals(FMapTCoordinates.AsVector, YHmgVector)
-  else Result := false;
+  else
+    Result := false;
 end;
 
 // SetMappingRCoordinates
@@ -2955,7 +2981,8 @@ function TGLTexture.StoreMappingRCoordinates: Boolean;
 begin
   if Assigned(FMapRCoordinates) then
     Result := not VectorEquals(FMapRCoordinates.AsVector, ZHmgVector)
-  else Result := false;
+  else
+    Result := false;
 end;
 
 // SetMappingQCoordinates
@@ -2984,7 +3011,8 @@ function TGLTexture.StoreMappingQCoordinates: Boolean;
 begin
   if Assigned(FMapQCoordinates) then
     Result := not VectorEquals(FMapQCoordinates.AsVector, WHmgVector)
-  else Result := false;
+  else
+    Result := false;
 end;
 
 // StoreImageClassName
@@ -3188,6 +3216,11 @@ var
 begin
   // Apply
   target := Image.NativeTextureTarget;
+  // Multisample image do not work with FFP
+  if (target = ttTexture2DMultisample) or
+    (target = ttTexture2DMultisampleArray) then
+    exit;
+
   if not Disabled and (Handle > 0) then
   begin
     rci.GLStates.ActiveTexture := 0;
@@ -3198,7 +3231,8 @@ begin
     begin
       if target = ttTextureCube then
         SetCubeMapTextureMatrix;
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+        cTextureMode[FTextureMode]);
       glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xglMapTexCoordToMain;
@@ -3222,6 +3256,11 @@ begin
     and not rci.GLStates.ForwardContext then
   begin
     target := Image.NativeTextureTarget;
+    // Multisample image do not work with FFP
+    if (target = ttTexture2DMultisample) or
+      (target = ttTexture2DMultisampleArray) then
+      exit;
+
     rci.GLStates.ActiveTexture := 0;
     rci.GLStates.ActiveTextureEnabled[target] := False;
     if target = ttTextureCube then
@@ -3260,9 +3299,13 @@ begin
   if not Disabled then
   begin
     target := Image.NativeTextureTarget;
-    rci.GLStates.ActiveTexture := n-1;
+    // Multisample image do not work with FFP
+    if (target = ttTexture2DMultisample) or
+      (target = ttTexture2DMultisampleArray) then
+      exit;
+    rci.GLStates.ActiveTexture := n - 1;
     rci.GLStates.ActiveTextureEnabled[target] := True;
-    rci.GLStates.TextureBinding[n - 1, target] :=  Handle;
+    rci.GLStates.TextureBinding[n - 1, target] := Handle;
     if Assigned(textureMatrix) then
       rci.GLStates.SetGLTextureMatrix(textureMatrix^)
     else if target = ttTextureCube then
@@ -3275,7 +3318,8 @@ begin
 
     if not rci.GLStates.ForwardContext then
     begin
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+        cTextureMode[FTextureMode]);
       glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
     end;
@@ -3293,6 +3337,10 @@ begin
   if not rci.GLStates.ForwardContext then
   begin
     target := Image.NativeTextureTarget;
+    // Multisample image do not work with FFP
+    if (target = ttTexture2DMultisample) or
+      (target = ttTexture2DMultisampleArray) then
+      exit;
     rci.GLStates.ActiveTexture := n - 1;
     rci.GLStates.ActiveTextureEnabled[target] := False;
     UnApplyMappingMode;
@@ -3473,96 +3521,104 @@ var
   texComp: TGLTextureCompression;
   glFormat: TGLEnum;
 begin
-
-  bitmap32 := Image.GetBitmap32(target);
-
-  if (bitmap32 = nil) or bitmap32.IsEmpty then
-    Exit;
-
-  if TextureFormat = tfNormalMap then
-    bitmap32.GrayScaleToNormalMap(NormalMapScale,
-      TextureWrap in [twBoth, twHorizontal],
-      TextureWrap in [twBoth, twVertical]);
-  // prepare AlphaChannel
-  case ImageAlpha of
-    tiaDefault: ; // nothing to do
-    tiaAlphaFromIntensity:
-      bitmap32.SetAlphaFromIntensity;
-    tiaSuperBlackTransparent:
-      bitmap32.SetAlphaTransparentForColor($000000);
-    tiaLuminance:
-      bitmap32.SetAlphaFromIntensity;
-    tiaLuminanceSqrt:
-      begin
-        bitmap32.SetAlphaFromIntensity;
-        bitmap32.SqrtAlpha;
-      end;
-    tiaOpaque:
-      bitmap32.SetAlphaToValue(255);
-    tiaTopLeftPointColorTransparent:
-      bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[0]);
-    tiaInverseLuminance:
-      begin
-        bitmap32.SetAlphaFromIntensity;
-        bitmap32.InvertAlpha;
-      end;
-    tiaInverseLuminanceSqrt:
-      begin
-        bitmap32.SetAlphaFromIntensity;
-        bitmap32.SqrtAlpha;
-        bitmap32.InvertAlpha;
-      end;
-    tiaBottomRightPointColorTransparent:
-      bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[bitmap32.Width - 1]);
-  else
-    Assert(False);
-  end;
-  // apply brightness correction
-  if FImageBrightness <> 1.0 then
-    bitmap32.BrightnessCorrection(FImageBrightness);
-  // apply gamma correction
-  if FImageGamma <> 1.0 then
-    bitmap32.GammaCorrection(FImageGamma);
-
-  if GL_ARB_texture_compression
-    and (TextureFormat <> tfExtended) then
+  if Image.IsSelfLoading then
   begin
-    if Compression = tcDefault then
-      if vDefaultTextureCompression = tcDefault then
-        texComp := tcNone
-      else
-        texComp := vDefaultTextureCompression
+    Image.LoadTexture(FTextureFormat);
+  end
+  else
+  begin
+
+    bitmap32 := Image.GetBitmap32(target);
+
+    if (bitmap32 = nil) or bitmap32.IsEmpty then
+      Exit;
+
+    if TextureFormat = tfNormalMap then
+      bitmap32.GrayScaleToNormalMap(NormalMapScale,
+        TextureWrap in [twBoth, twHorizontal],
+        TextureWrap in [twBoth, twVertical]);
+    // prepare AlphaChannel
+    case ImageAlpha of
+      tiaDefault: ; // nothing to do
+      tiaAlphaFromIntensity:
+        bitmap32.SetAlphaFromIntensity;
+      tiaSuperBlackTransparent:
+        bitmap32.SetAlphaTransparentForColor($000000);
+      tiaLuminance:
+        bitmap32.SetAlphaFromIntensity;
+      tiaLuminanceSqrt:
+        begin
+          bitmap32.SetAlphaFromIntensity;
+          bitmap32.SqrtAlpha;
+        end;
+      tiaOpaque:
+        bitmap32.SetAlphaToValue(255);
+      tiaTopLeftPointColorTransparent:
+        bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[0]);
+      tiaInverseLuminance:
+        begin
+          bitmap32.SetAlphaFromIntensity;
+          bitmap32.InvertAlpha;
+        end;
+      tiaInverseLuminanceSqrt:
+        begin
+          bitmap32.SetAlphaFromIntensity;
+          bitmap32.SqrtAlpha;
+          bitmap32.InvertAlpha;
+        end;
+      tiaBottomRightPointColorTransparent:
+        bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[bitmap32.Width -
+          1]);
     else
-      texComp := Compression;
-    if IsFloatType then
+      Assert(False);
+    end;
+    // apply brightness correction
+    if FImageBrightness <> 1.0 then
+      bitmap32.BrightnessCorrection(FImageBrightness);
+    // apply gamma correction
+    if FImageGamma <> 1.0 then
+      bitmap32.GammaCorrection(FImageGamma);
+
+    if GL_ARB_texture_compression
+      and (TextureFormat <> tfExtended) then
+    begin
+      if Compression = tcDefault then
+        if vDefaultTextureCompression = tcDefault then
+          texComp := tcNone
+        else
+          texComp := vDefaultTextureCompression
+      else
+        texComp := Compression;
+      if IsFloatType then
+        texComp := tcNone;
+
+    end
+    else
       texComp := tcNone;
 
-  end
-  else
-    texComp := tcNone;
-
-  if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
-  with CurrentGLContext.GLStates do
-  begin
-    case texComp of
-      tcStandard: TextureCompressionHint := hintDontCare;
-      tcHighQuality: TextureCompressionHint := hintNicest;
-      tcHighSpeed: TextureCompressionHint := hintFastest;
+    if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
+      with CurrentGLContext.GLStates do
+      begin
+        case texComp of
+          tcStandard: TextureCompressionHint := hintDontCare;
+          tcHighQuality: TextureCompressionHint := hintNicest;
+          tcHighSpeed: TextureCompressionHint := hintFastest;
+        else
+          Assert(False, glsErrorEx + glsUnknownType);
+        end;
+        glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
+      end
     else
-      Assert(False, glsErrorEx + glsUnknownType);
-    end;
-    glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
-  end
-  else
-    glFormat := InternalFormatToOpenGLFormat(FTextureFormat);
+      glFormat := InternalFormatToOpenGLFormat(FTextureFormat);
 
-  bitmap32.RegisterAsOpenGLTexture(
-    target,
-    FMinFilter,
-    glFormat,
-    FTexWidth,
-    FTexHeight,
-    FTexDepth);
+    bitmap32.RegisterAsOpenGLTexture(
+      target,
+      FMinFilter,
+      glFormat,
+      FTexWidth,
+      FTexHeight,
+      FTexDepth);
+  end;
 
   if glGetError <> GL_NO_ERROR then
   begin
@@ -3611,13 +3667,17 @@ const
 var
   R_Dim: Boolean;
 begin
+  if (target = GL_TEXTURE_2D_MULTISAMPLE)
+    or (target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY) then
+    Exit;
+
   R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
   with CurrentGLContext.GLStates do
   begin
     UnpackAlignment := 1;
-    UnpackRowLength :=0;
-    UnpackSkipRows :=0;
+    UnpackRowLength := 0;
+    UnpackSkipRows := 0;
     UnpackSkipPixels := 0;
   end;
 
@@ -3627,8 +3687,10 @@ begin
   begin
     if FTextureWrap = twSeparate then
     begin
-      glTexParameteri(target, GL_TEXTURE_WRAP_S, cSeparateTextureWrap[FTextureWrapS]);
-      glTexParameteri(target, GL_TEXTURE_WRAP_T, cSeparateTextureWrap[FTextureWrapT]);
+      glTexParameteri(target, GL_TEXTURE_WRAP_S,
+        cSeparateTextureWrap[FTextureWrapS]);
+      glTexParameteri(target, GL_TEXTURE_WRAP_T,
+        cSeparateTextureWrap[FTextureWrapT]);
       if R_Dim then
         glTexParameteri(target, GL_TEXTURE_WRAP_R,
           cSeparateTextureWrap[FTextureWrapR]);

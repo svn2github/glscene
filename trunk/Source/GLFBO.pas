@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>16/05/10 - Yar - Added multisampling support (thanks C4)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
       <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
@@ -26,7 +27,13 @@ interface
 
 uses
   OpenGL1x,
-  GLScene, GLContext, GLState, GLTexture, GLColor, GLRenderContextInfo;
+  GLScene,
+  GLContext,
+  GLState,
+  GLTexture,
+  GLColor,
+  GLRenderContextInfo,
+  GLMultisampleImage;
 
 const
   MaxColorAttachments = 32;
@@ -93,12 +100,13 @@ type
     fsIncompleteDuplicateAttachment, fsIncompleteDimensions,
     fsIncompleteFormats,
     fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
+    fsIncompleteMultisample,
     fsStatusError);
 
   TGLFrameBuffer = class
   private
     FFrameBufferHandle: TGLFramebufferHandle;
-    FBinded: Boolean;
+    FTarget: TGLEnum;
     FWidth: Integer;
     FHeight: Integer;
     FLayer: Integer;
@@ -114,7 +122,7 @@ type
     procedure SetLayer(const Value: Integer);
     procedure SetLevel(const Value: Integer);
   protected
-    procedure AttachTexture(const target: TGLenum;
+    procedure AttachTexture(
       const attachment: TGLenum;
       const textarget: TGLenum;
       const texture: TGLuint;
@@ -165,7 +173,10 @@ type
 implementation
 
 uses
-  GLUtils, GLGraphics, GLTextureFormat, VectorTypes;
+  GLUtils,
+  GLGraphics,
+  GLTextureFormat,
+  VectorTypes;
 
 { TGLRenderbuffer }
 
@@ -304,7 +315,7 @@ begin
   FLayer := 0;
   FLevel := 0;
   FTextureMipmap := 0;
-  FBinded := false;
+  FTarget := GL_FRAMEBUFFER;
 end;
 
 destructor TGLFrameBuffer.Destroy;
@@ -327,8 +338,13 @@ begin
     or (textarget = ttTextureRect)) then
     FTextureMipmap := FTextureMipmap or (1 shl n);
 
-  AttachTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + n,
-    DecodeGLTextureTarget(textarget), Texture.Handle,
+  if Texture.Image is TGLMultiSampleImage then
+    FTextureMipmap := 0;
+
+  AttachTexture(
+    GL_COLOR_ATTACHMENT0_EXT + n,
+    DecodeGLTextureTarget(textarget),
+    Texture.Handle,
     FLevel, FLayer);
 end;
 
@@ -339,9 +355,8 @@ procedure TGLFrameBuffer.AttachDepthBuffer(DepthBuffer: TGLDepthRBO);
     // forces initialization
     DepthBuffer.Bind;
     DepthBuffer.Unbind;
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbufferEXT(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, DepthBuffer.Handle);
-    CheckOpenGLError;
   end;
 
 var
@@ -376,21 +391,35 @@ end;
 procedure TGLFrameBuffer.AttachDepthTexture(Texture: TGLTexture);
 begin
   FDepthTexture := Texture;
-  // Force texture properties to depth compatibility
-  if not IsDepthFormat(FDepthTexture.TextureFormatEx) then
+
+  if FDepthTexture.Image is TGLMultisampleImage then
   begin
-    FDepthTexture.ImageClassName := 'TGLBlankImage';
-    FDepthTexture.TextureFormatEx := tfDEPTH_COMPONENT24;
-    TGLBlankImage(FDepthTexture.Image).Width := Width;
-    TGLBlankImage(FDepthTexture.Image).Height := Height;
+    if not IsDepthFormat(FDepthTexture.TextureFormatEx) then
+    begin
+      // Force texture properties to depth compatibility
+      FDepthTexture.TextureFormatEx := tfDEPTH_COMPONENT24;
+      TGLMultisampleImage(FDepthTexture.Image).Width := Width;
+      TGLMultisampleImage(FDepthTexture.Image).Height := Height;
+    end;
+    FTextureMipmap := 0;
+  end
+  else
+  begin
+    if not IsDepthFormat(FDepthTexture.TextureFormatEx) then
+    begin
+      // Force texture properties to depth compatibility
+      FDepthTexture.ImageClassName := TGLBlankImage.ClassName;
+      FDepthTexture.TextureFormatEx := tfDEPTH_COMPONENT24;
+      TGLBlankImage(FDepthTexture.Image).Width := Width;
+      TGLBlankImage(FDepthTexture.Image).Height := Height;
+    end;
+    TGLBlankImage(FDepthTexture.Image).ColorFormat := GL_DEPTH_COMPONENT;
+    // Depth texture mipmaping
+    if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
+      FTextureMipmap := FTextureMipmap or (1 shl MaxColorAttachments);
   end;
-  TGLBlankImage(FDepthTexture.Image).ColorFormat := GL_DEPTH_COMPONENT;
-  // Depth texture mipmaping
-  if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
-    FTextureMipmap := FTextureMipmap or (1 shl MaxColorAttachments);
 
   AttachTexture(
-    GL_FRAMEBUFFER,
     GL_DEPTH_ATTACHMENT,
     DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
     FDepthTexture.Handle,
@@ -404,7 +433,6 @@ begin
   begin
     FTextureMipmap := FTextureMipmap and (not (1 shl MaxColorAttachments));
     AttachTexture(
-      GL_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
       DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       0, 0, 0);
@@ -418,58 +446,67 @@ begin
   // forces initialization
   StencilBuffer.Bind;
   StencilBuffer.Unbind;
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+  glFramebufferRenderbufferEXT(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, StencilBuffer.Handle);
-  CheckOpenGLError;
   Status;
   Unbind;
 end;
 
-procedure TGLFrameBuffer.AttachTexture(const target: TGLenum;
+procedure TGLFrameBuffer.AttachTexture(
   const attachment: TGLenum;
   const textarget: TGLenum;
   const texture: TGLuint;
   const level: TGLint;
   const layer: TGLint);
 var
-  NeedBind: Boolean;
+  storeDFB: TGLuint;
+  RC: TGLContext;
 begin
-  NeedBind := not FBinded;
-  if NeedBind then
+  if not SafeCurrentGLContext(RC) then
+    exit;
+  storeDFB := RC.GLStates.DrawFrameBuffer;
+  if storeDFB <> FFrameBufferHandle.Handle then
     Bind;
 
   with FFrameBufferHandle do
     case textarget of
-      GL_TEXTURE_1D: Attach1DTexture(target, attachment, textarget, texture,
-          level);
-      GL_TEXTURE_2D: Attach2DTexture(target, attachment, textarget, texture,
-          level);
-      GL_TEXTURE_RECTANGLE: // Rectangle texture can't be leveled
-        Attach2DTexture(target, attachment, textarget, texture, 0);
-      GL_TEXTURE_3D: Attach3DTexture(target, attachment, textarget, texture,
-          level, layer);
+      GL_TEXTURE_1D:
+        Attach1DTexture(FTarget, attachment, textarget, texture, level);
 
-      GL_TEXTURE_CUBE_MAP: Attach2DTexture(target, attachment,
-          GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, texture, level);
+      GL_TEXTURE_2D:
+        Attach2DTexture(FTarget, attachment, textarget, texture, level);
+
+      GL_TEXTURE_RECTANGLE: // Rectangle texture can't be leveled
+        Attach2DTexture(FTarget, attachment, textarget, texture, 0);
+
+      GL_TEXTURE_3D:
+        Attach3DTexture(FTarget, attachment, textarget, texture, level, layer);
+
+      GL_TEXTURE_CUBE_MAP:
+        Attach2DTexture(FTarget, attachment, GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, texture, level);
 
       GL_TEXTURE_CUBE_MAP_POSITIVE_X,
         GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
         GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
         GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
         GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: Attach2DTexture(target, attachment,
-          textarget, texture, level);
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+          Attach2DTexture(FTarget, attachment, textarget, texture, level);
 
       GL_TEXTURE_CUBE_MAP_ARRAY,
         GL_TEXTURE_1D_ARRAY,
-        GL_TEXTURE_2D_ARRAY: AttachLayer(target, attachment, texture, level,
-          layer);
+        GL_TEXTURE_2D_ARRAY:
+        AttachLayer(FTarget, attachment, texture, level, layer);
 
+      GL_TEXTURE_2D_MULTISAMPLE: // Multisample texture can't be leveled
+        Attach2DTexture(FTarget, attachment, textarget, texture, 0);
+
+      GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+        AttachLayer(FTarget, attachment, texture, 0, layer);
     end;
 
-  CheckOpenGLError;
-  if NeedBind then
-    Unbind;
+  if storeDFB <> FFrameBufferHandle.Handle then
+    RC.GLStates.SetFrameBuffer(storeDFB);
 end;
 
 procedure TGLFrameBuffer.Bind;
@@ -477,13 +514,11 @@ begin
   if FFrameBufferHandle.Handle = 0 then
     FFrameBufferHandle.AllocateHandle;
   FFrameBufferHandle.Bind;
-  FBinded := true;
 end;
 
 procedure TGLFrameBuffer.Unbind;
 begin
   FFrameBufferHandle.UnBind;
-  FBinded := false;
 end;
 
 procedure TGLFrameBuffer.DetachTexture(n: Integer);
@@ -492,7 +527,8 @@ begin
   if Assigned(FAttachedTexture[n]) then
   begin
     Bind;
-    AttachTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n,
+    AttachTexture(
+      GL_COLOR_ATTACHMENT0 + n,
       GL_TEXTURE_2D, // target does not matter
       0, 0, 0);
 
@@ -505,7 +541,7 @@ end;
 procedure TGLFrameBuffer.DetachDepthBuffer;
 begin
   Bind;
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+  glFramebufferRenderbufferEXT(FTarget, GL_DEPTH_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
 end;
@@ -513,7 +549,7 @@ end;
 procedure TGLFrameBuffer.DetachStencilBuffer;
 begin
   Bind;
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+  glFramebufferRenderbufferEXT(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
 end;
@@ -522,7 +558,7 @@ function TGLFrameBuffer.GetStatus: TGLFramebufferStatus;
 var
   status: cardinal;
 begin
-  status := glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  status := glCheckFramebufferStatusEXT(FTarget);
 
   case status of
     GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
@@ -536,24 +572,27 @@ begin
     GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT: Result := fsIncompleteDrawBuffer;
     GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT: Result := fsIncompleteReadBuffer;
     GL_FRAMEBUFFER_UNSUPPORTED_EXT: Result := fsUnsupported;
+    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: Result := fsIncompleteMultisample;
   else
     Result := fsStatusError;
   end;
 end;
 
-function TGLFrameBuffer.GetStringStatus(out clarification: string): TGLFramebufferStatus;
+function TGLFrameBuffer.GetStringStatus(out clarification: string):
+  TGLFramebufferStatus;
 const
   cFBOStatus: array[TGLFramebufferStatus] of string = (
-  'Complete',
-  'Incomplete attachment',
-  'Incomplete missing attachment',
-  'Incomplete duplicate attachment',
-  'Incomplete dimensions',
-  'Incomplete formats',
-  'Incomplete draw buffer',
-  'Incomplete read buffer',
-  'Unsupported',
-  'Status Error');
+    'Complete',
+    'Incomplete attachment',
+    'Incomplete missing attachment',
+    'Incomplete duplicate attachment',
+    'Incomplete dimensions',
+    'Incomplete formats',
+    'Incomplete draw buffer',
+    'Incomplete read buffer',
+    'Unsupported',
+    'Incomplite multisample',
+    'Status Error');
 begin
   Result := GetStatus;
   clarification := cFBOStatus[Result];
@@ -573,7 +612,8 @@ begin
           Continue;
         textarget := FAttachedTexture[n].Image.NativeTextureTarget;
         with FFrameBufferHandle.RenderingContext.GLStates do
-          TextureBinding[ActiveTexture, textarget] := FAttachedTexture[n].Handle;
+          TextureBinding[ActiveTexture, textarget] :=
+            FAttachedTexture[n].Handle;
         glGenerateMipmapEXT(DecodeGLTextureTarget(textarget));
       end;
   end;
@@ -603,9 +643,6 @@ begin
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
-
-  CheckOpenGLError;
-
   Unbind;
 end;
 
@@ -637,44 +674,53 @@ var
   n: Integer;
 begin
   // Reattach layered textures
-  for n := 0 to MaxColorAttachments-1 do
+  for n := 0 to MaxColorAttachments - 1 do
     if Assigned(FAttachedTexture[n]) then
       AttachTexture(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0_EXT + n,
+        GL_COLOR_ATTACHMENT0_EXT + n,
         DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
         FLevel,
         FLayer);
   if Assigned(FDepthTexture) then
     AttachTexture(
-      GL_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
       DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       FDepthTexture.Handle,
-      FLevel, FLayer);
+      FLevel,
+      FLayer);
   Assert(Status = fsComplete, 'Framebuffer not complete');
-  CheckOpenGLError;
 end;
 
 procedure TGLFrameBuffer.SetLayer(const Value: Integer);
+var
+  RC: TGLContext;
 begin
   if FLayer <> Value then
   begin
     FLayer := Value;
-    if not FBinded then
-      Exit;
-    ReattachTextures;
+    RC := CurrentGLContext;
+    if Assigned(RC) then
+    begin
+      if RC.GLStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+        ReattachTextures;
+    end;
   end;
 end;
 
 procedure TGLFrameBuffer.SetLevel(const Value: Integer);
+var
+  RC: TGLContext;
 begin
   if FLevel <> Value then
   begin
     FLevel := Value;
-    if not FBinded then
-      Exit;
-    ReattachTextures;
+    RC := CurrentGLContext;
+    if Assigned(RC) then
+    begin
+      if RC.GLStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+        ReattachTextures;
+    end;
   end;
 end;
 
