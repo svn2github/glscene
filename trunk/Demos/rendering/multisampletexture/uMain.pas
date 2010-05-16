@@ -6,13 +6,9 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
   // GLScene Units
   GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
-  BaseClasses, OpenGL1X, GLContext, GLMaterial, GLCadencer, VectorGeometry,
-  GLKeyboard, GLUtils, GLRenderContextInfo, xOpenGL, AsyncTimer,
-  GLVectorFileObjects, GLGeomObjects,
-  // Useed File Formats
-  JPEG, TGA, GLFile3DS,
-  GLFBORenderer, GLTexture, GLMultisampleImage, GLSimpleNavigation,
-  GLCustomShader, GLSLShader, GLHUDObjects, GLBitmapFont, GLWindowsFont;
+  BaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
+  GLCustomShader, GLSLShader, GLCadencer, GLHUDObjects, GLGeomObjects,
+  GLFBORenderer, VectorGeometry, VectorTypes, GLTexture, GLSimpleNavigation;
 
 type
   TGLDemoForm = class(TForm)
@@ -43,9 +39,6 @@ type
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
   end;
 
-const
-  demoName = 'GLScene Multisampling FBO Demo';
-
 var
   GLDemoForm: TGLDemoForm;
 
@@ -54,7 +47,8 @@ implementation
 {$R *.dfm}
 
 uses
-  GLState;
+  GLState, OpenGL1X,
+  GLKeyboard, GLMultisampleImage;
 
 procedure TGLDemoForm.FormCreate(Sender: TObject);
 begin
@@ -99,7 +93,6 @@ begin
 
   if isKeyDown(VK_F3) then
   begin
-    GLSphere1.Material.PolygonMode := pmLines;
     GLTorus1.Material.PolygonMode := pmLines;
     GLTorus2.Material.PolygonMode := pmLines;
     GLCone1.Material.PolygonMode := pmLines;
@@ -107,7 +100,6 @@ begin
 
   if isKeyDown(VK_F4) then
   begin
-    GLSphere1.Material.PolygonMode := pmFill;
     GLTorus1.Material.PolygonMode := pmFill;
     GLTorus2.Material.PolygonMode := pmFill;
     GLCone1.Material.PolygonMode := pmFill;

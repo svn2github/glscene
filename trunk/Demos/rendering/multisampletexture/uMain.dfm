@@ -193,7 +193,7 @@ object GLDemoForm: TGLDemoForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = MainViewer
-    FormCaption = 'GLScene Demo - %FPS'
+    FormCaption = 'GLScene Multisample Texture Demo - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
