@@ -4663,7 +4663,7 @@ begin
     // inside a display list
     FUseVBO := FUseVBO
       and GL_ARB_vertex_buffer_object
-      and mrci.GLStates.InsideList;
+      and not mrci.GLStates.InsideList;
 
     if not FUseVBO then
     begin
