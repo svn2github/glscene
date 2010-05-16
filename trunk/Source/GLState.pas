@@ -40,6 +40,7 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
+{$UNDEF GLS_OPENGL_DEBUG}
 
 uses
   Classes,
@@ -330,6 +331,8 @@ type
     procedure SetElementBufferBinding(const Value: TGLuint);
     function GetEnableVertexAttribArray(I: TGLuint): TGLboolean;
     procedure SetEnableVertexAttribArray(I: TGLuint; Value: TGLboolean);
+    function GetEnablePrimitiveRestart: TGLboolean;
+    function GetPrimitiveRestartIndex: TGLuint;
     procedure SetEnablePrimitiveRestart(const enabled: TGLboolean);
     procedure SetPrimitiveRestartIndex(const index: TGLuint);
     procedure SetTextureBufferBinding(const Value: TGLuint);
@@ -490,21 +493,21 @@ type
     {: Lighting states }
     property MaxLights: Integer read GetMaxLights;
     property LightEnabling[Index: Integer]: Boolean read GetLightEnabling write
-      SetLightEnabling;
+    SetLightEnabling;
     property LightAmbient[Index: Integer]: TVector read GetLightAmbient write
-      SetLightAmbient;
+    SetLightAmbient;
     property LightDiffuse[Index: Integer]: TVector read GetLightDiffuse write
-      SetLightDiffuse;
+    SetLightDiffuse;
     property LightSpecular[Index: Integer]: TVector read GetLightSpecular write
-      SetLightSpecular;
+    SetLightSpecular;
     property LightSpotCutoff[Index: Integer]: Single read GetSpotCutoff write
-      SetSpotCutoff;
+    SetSpotCutoff;
     property LightConstantAtten[Index: Integer]: Single read GetConstantAtten
-      write SetConstantAtten;
+    write SetConstantAtten;
     property LightLinearAtten[Index: Integer]: Single read GetLinearAtten write
-      SetLinearAtten;
+    SetLinearAtten;
     property LightQuadraticAtten[Index: Integer]: Single read GetQuadAtten write
-      SetQuadAtten;
+    SetQuadAtten;
 
     {: Blending states }
     procedure SetGLAlphaFunction(func: TComparisonFunction; ref: TGLclampf);
@@ -523,12 +526,13 @@ type
     property ElementBufferBinding: TGLuint read GetElementBufferBinding write
       SetElementBufferBinding;
     {: Enables/Disables vertex attribute arrays. }
-    property EnableVertexAttribArray[Index: TGLuint]: TGLBoolean read GetEnableVertexAttribArray write SetEnableVertexAttribArray;
+    property EnableVertexAttribArray[Index: TGLuint]: TGLBoolean read
+    GetEnableVertexAttribArray write SetEnableVertexAttribArray;
     {: Determines whether primitive restart is turned on or off. }
-    property EnablePrimitiveRestart: TGLboolean read FEnablePrimitiveRestart
+    property EnablePrimitiveRestart: TGLboolean read GetEnablePrimitiveRestart
       write SetEnablePrimitiveRestart;
     {: The index Value that causes a primitive restart. }
-    property PrimitiveRestartIndex: TGLuint read FPrimitiveRestartIndex write
+    property PrimitiveRestartIndex: TGLuint read GetPrimitiveRestartIndex write
       SetPrimitiveRestartIndex;
     {: The currently bound texture buffer object (TBO). }
     property TextureBufferBinding: TGLuint read FTextureBufferBinding write
@@ -547,7 +551,7 @@ type
       SetDepthRangeFar;
     {: Enables/Disables each of the clip distances, used in shaders. }
     property EnableClipDistance[Index: Cardinal]: TGLboolean read
-      GetEnableClipDistance write SetEnableClipDistance;
+    GetEnableClipDistance write SetEnableClipDistance;
     {: Enables/Disables depth clamping. }
     property EnableDepthClamp: TGLboolean read FEnableDepthClamp write
       SetEnableDepthClamp;
@@ -589,7 +593,7 @@ type
       SetCullFaceMode;
     {: The winding direction that indicates a front facing primitive. }
     property FrontFace: {TGLenum} TFaceWinding read FFrontFace write
-      SetFrontFace;
+    SetFrontFace;
     // Enables/Disables polygon smoothing.
     property EnablePolygonSmooth: TGLboolean read FEnablePolygonSmooth write
       SetEnablePolygonSmooth;
@@ -640,14 +644,14 @@ type
       SetEnableSampleMask;
     {: Sample mask values. }
     property SampleMaskValue[Index: Integer]: TGLbitfield read GetSampleMaskValue
-      write SetSampleMaskValue;
+    write SetSampleMaskValue;
 
     // Textures
     {: Textures bound to each texture unit + binding point. }
     property TextureBinding[Index: Integer; target: TGLTextureTarget]: TGLuint
-      read GetTextureBinding write SetTextureBinding;
+    read GetTextureBinding write SetTextureBinding;
     property ActiveTextureEnabled[Target: TGLTextureTarget]: Boolean read
-      GetActiveTextureEnabled write SetActiveTextureEnabled;
+    GetActiveTextureEnabled write SetActiveTextureEnabled;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
@@ -666,49 +670,51 @@ type
     {: The stencil function.  Determines the comparison function to be used
        when comparing the reference + stored stencil values.  }
     property StencilFunc: TStencilFunction read FStencilFunc;
-      // write SetStencilFunc;
-    {: The stencil value mask.  Masks both the reference + stored stencil
-       values. }
+    // write SetStencilFunc;
+  {: The stencil value mask.  Masks both the reference + stored stencil
+     values. }
     property StencilValueMask: TGLuint read FStencilValueMask;
-      // write SetStencilValueMask;
-    {: The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
+    // write SetStencilValueMask;
+  {: The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
     property StencilRef: TGLint read FStencilRef; // write SetStencilRef;
     {: The operation to perform when stencil test fails. }
     property StencilFail: TStencilOp read FStencilFail; // write SetStencilFail;
     {: The operation to perform when stencil test passes + depth test fails. }
     property StencilPassDepthFail: TStencilOp read FStencilPassDepthFail;
-      // write SetStencilPassDepthFail;
-    {: The operation to perform when stencil test passes + depth test passes. }
+    // write SetStencilPassDepthFail;
+  {: The operation to perform when stencil test passes + depth test passes. }
     property StencilPassDepthPass: TStencilOp read FStencilPassDepthPass;
-      // write SetStencilPassDepthPass;
+    // write SetStencilPassDepthPass;
 
-    {: The stencil back function.  Determines the comparison function to be
-       used when comparing the reference + stored stencil values on back
-       facing primitives. }
+  {: The stencil back function.  Determines the comparison function to be
+     used when comparing the reference + stored stencil values on back
+     facing primitives. }
     property StencilBackFunc: TStencilFunction read FStencilBackFunc;
-      // write SetStencilBackFunc;
-    {: The stencil back value mask.  Masks both the reference + stored stencil
-       values. }
+    // write SetStencilBackFunc;
+  {: The stencil back value mask.  Masks both the reference + stored stencil
+     values. }
     property StencilBackValueMask: TGLuint read FStencilBackValueMask;
-      // write SetStencilBackValueMask;
-    {: The stencil back reference value.  Clamped to 0..255 with an 8 bit
-       stencil. }
+    // write SetStencilBackValueMask;
+  {: The stencil back reference value.  Clamped to 0..255 with an 8 bit
+     stencil. }
     property StencilBackRef: TGLuint read FStencilBackRef;
-      // write SetStencilBackRef;
-    {: The operation to perform when stencil test fails on back facing
-       primitives. }
+    // write SetStencilBackRef;
+  {: The operation to perform when stencil test fails on back facing
+     primitives. }
     property StencilBackFail: TStencilOp read FStencilBackFail;
-      // write SetStencilBackFail;
-    {: The operation to perform when stencil test passes + depth test fails on
-       back facing primitives. }
-    property StencilBackPassDepthFail: TStencilOp read FStencilBackPassDepthFail;
-      // write SetStencilBackPassDepthFail;
-    {: The operation to perform when stencil test passes + depth test passes on
-       back facing primitives. }
-    property StencilBackPassDepthPass: TStencilOp read FStencilBackPassDepthPass;
-      // write SetStencilBackPassDepthPass;
-    {: Used to set stencil Function, Reference + Mask values, for both front +
-       back facing primitives. }
+    // write SetStencilBackFail;
+  {: The operation to perform when stencil test passes + depth test fails on
+     back facing primitives. }
+    property StencilBackPassDepthFail: TStencilOp read
+      FStencilBackPassDepthFail;
+    // write SetStencilBackPassDepthFail;
+  {: The operation to perform when stencil test passes + depth test passes on
+     back facing primitives. }
+    property StencilBackPassDepthPass: TStencilOp read
+      FStencilBackPassDepthPass;
+    // write SetStencilBackPassDepthPass;
+  {: Used to set stencil Function, Reference + Mask values, for both front +
+     back facing primitives. }
     procedure SetStencilFunc(const func: TStencilFunction; const ref: TGLint;
       const mask: TGLuint);
     {: Used to set stencil Function, Reference + Mask values for either the
@@ -732,21 +738,21 @@ type
     property DepthFunc: TDepthFunction read FDepthFunc write SetDepthFunc;
     {: Enables/disables blending for each draw buffer. }
     property EnableBlend[Index: Integer]: TGLboolean read GetEnableBlend write
-      SetEnableBlend;
+    SetEnableBlend;
     {: The weighting factor used in blending equation, for source RGB. }
     property BlendSrcRGB: TBlendFunction read FBlendSrcRGB;
-      // write SetBlendSrcRGB;
-    {: The weighting factor used in blending equation, for source alpha. }
+    // write SetBlendSrcRGB;
+  {: The weighting factor used in blending equation, for source alpha. }
     property BlendSrcAlpha: TBlendFunction read FBlendSrcAlpha;
-      // write SetBlendSrcAlpha;
-    {: The weighting factor used in blending equation, for destination RGB. }
+    // write SetBlendSrcAlpha;
+  {: The weighting factor used in blending equation, for destination RGB. }
     property BlendDstRGB: TDstBlendFunction read FBlendDstRGB;
-      // write SetBlendDstRGB;
-    {: The weighting factor used in blending equation, for destination alpha. }
+    // write SetBlendDstRGB;
+  {: The weighting factor used in blending equation, for destination alpha. }
     property BlendDstAlpha: TDstBlendFunction read FBlendDstAlpha;
-      // write SetBlendDstAlpha;
-    {: Sets the weighting factors to be used by the blending equation, for
-       both color + alpha. }
+    // write SetBlendDstAlpha;
+  {: Sets the weighting factors to be used by the blending equation, for
+     both color + alpha. }
     procedure SetBlendFunc(const Src: TBlendFunction;
       const Dst: TDstBlendFunction);
     {: Sets the weighting factors to be used by the blending equation, with
@@ -757,12 +763,12 @@ type
     {: The blending equation.  Determines how the incoming source fragment's
        RGB are combined with the destination RGB. }
     property BlendEquationRGB: TBlendEquation read FBlendEquationRGB;
-      // write SetBlendEquationRGB;
-    {: The blending equation.  Determines how the incoming source fragment's
-       alpha values are combined with the destination alpha values. }
+    // write SetBlendEquationRGB;
+  {: The blending equation.  Determines how the incoming source fragment's
+     alpha values are combined with the destination alpha values. }
     property BlendEquationAlpha: TBlendEquation read FBlendEquationAlpha;
-      // write SetBlendEquationAlpha;
-    {: Sets the blend equation for RGB + alpha to the same value. }
+    // write SetBlendEquationAlpha;
+  {: Sets the blend equation for RGB + alpha to the same value. }
     procedure SetBlendEquation(const mode: TBlendEquation);
     {: Sets the blend equations for RGB + alpha separately. }
     procedure SetBlendEquationSeparate(const modeRGB, modeAlpha:
@@ -783,7 +789,7 @@ type
     // Framebuffer control
     {: The color write mask, for each draw buffer. }
     property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask
-      write SetColorWriteMask;
+    write SetColorWriteMask;
     {: Set the color write mask for all draw buffers. }
     procedure SetColorMask(mask: TColorMask);
     {: The depth write mask. }
@@ -893,7 +899,7 @@ type
     {: Currently bound transform feedbac buffer. }
     property TransformFeedbackBufferBinding: TGLuint
       read FTransformFeedbackBufferBinding write
-        SetTransformFeedbackBufferBinding;
+      SetTransformFeedbackBufferBinding;
 
     // Hints
     {: Line smooth hint. }
@@ -1117,15 +1123,13 @@ begin
     FQuadAtten[I] := 0;
   end;
 
-  FTextureMatrixIsIdentity := True;
+  FTextureMatrixIsIdentity := False;
   FForwardContext := False;
 
   // Vertex Array Data state
   FVertexArrayBinding := 0;
   SetLength(FVAOStates, 128);
   FTextureBufferBinding := 0;
-  FEnablePrimitiveRestart := false;
-  FPrimitiveRestartIndex := 0;
 
   // Transformation state
   // FViewPort := Rect(0,0,0,0);  // (0, 0, Width, Height)
@@ -1492,19 +1496,11 @@ begin
 end;
 
 procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
-{$IFDEF GLS_OPENGL_DEBUG}
-var vVAO: TGLuint;
-{$ENDIF}
 begin
-  {$IFDEF GLS_OPENGL_DEBUG}
-  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, @vVAO);
-  if FVertexArrayBinding <> vVAO then
-    GLSLogger.LogError(glsStateCashMissing+'VertexArrayBinding');
-  {$ENDIF}
   if Value <> FVertexArrayBinding then
   begin
-    if Value > TGLuint(Length(FVAOStates)) then
-      SetLength(FVAOStates, 2*Length(FVAOStates));
+    if Value > Length(FVAOStates) then
+      SetLength(FVAOStates, 2 * Length(FVAOStates));
     if Value = 0 then
       FVAOStates[0] := FVAOStates[FVertexArrayBinding];
     FVertexArrayBinding := Value;
@@ -1525,19 +1521,11 @@ begin
 end;
 
 procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
-{$IFDEF GLS_OPENGL_DEBUG}
-var vVBO: TGLuint;
-{$ENDIF}
 begin
-  {$IFDEF GLS_OPENGL_DEBUG}
-  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, @vVBO);
-  if FVAOStates[FVertexArrayBinding].FArrayBufferBinding <> vVBO then
-    GLSLogger.LogError(glsStateCashMissing+'ArrayBufferBinding');
-  {$ENDIF}
   if Value <> FVAOStates[FVertexArrayBinding].FArrayBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FArrayBufferBinding := Value;
-    glBindBuffer(GL_ARRAY_BUFFER, Value);
+    glBindBufferARB(GL_ARRAY_BUFFER, Value);
   end;
 end;
 
@@ -1547,20 +1535,11 @@ begin
 end;
 
 procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
-{$IFDEF GLS_OPENGL_DEBUG}
-var vEBO: TGLuint;
-{$ENDIF}
 begin
-  {$IFDEF GLS_OPENGL_DEBUG}
-  glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, @vEBO);
-  if FVAOStates[FVertexArrayBinding].FElementBufferBinding <> vEBO then
-    GLSLogger.LogError(glsStateCashMissing+'ElementBufferBinding');
-  {$ENDIF}
-
   if Value <> FVAOStates[FVertexArrayBinding].FElementBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FElementBufferBinding := Value;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Value);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, Value);
   end;
 end;
 
@@ -1569,17 +1548,67 @@ begin
   Result := FVAOStates[FVertexArrayBinding].FAttribEnabling[I];
 end;
 
-procedure TGLStateCache.SetEnableVertexAttribArray(I: TGLuint; Value: TGLboolean);
+procedure TGLStateCache.SetEnableVertexAttribArray(I: TGLuint; Value:
+  TGLboolean);
 begin
-  Assert(I<GLS_VERTEX_ATTR_NUM, 'Out of maximum attribute index');
+  Assert(I < GLS_VERTEX_ATTR_NUM, 'Out of maximum attribute index');
 
   if Value <> FVAOStates[FVertexArrayBinding].FAttribEnabling[I] then
   begin
     FVAOStates[FVertexArrayBinding].FAttribEnabling[I] := Value;
     if Value then
-        glEnableVertexAttribArray(I)
+      glEnableVertexAttribArray(I)
+    else
+      glDisableVertexAttribArray(I);
+  end;
+end;
+
+function TGLStateCache.GetEnablePrimitiveRestart: TGLboolean;
+begin
+  Result := FEnablePrimitiveRestart;
+end;
+
+procedure TGLStateCache.SetEnablePrimitiveRestart(const enabled: TGLboolean);
+begin
+  if enabled <> FEnablePrimitiveRestart then
+  begin
+    FEnablePrimitiveRestart := enabled;
+    if GL_NV_primitive_restart or FForwardContext then
+    begin
+      if enabled then
+        glEnable(GL_PRIMITIVE_RESTART)
       else
-        glDisableVertexAttribArray(I);
+        glDisable(GL_PRIMITIVE_RESTART);
+    end;
+  end;
+end;
+
+function TGLStateCache.GetPrimitiveRestartIndex: TGLuint;
+begin
+  Result := FPrimitiveRestartIndex;
+end;
+
+procedure TGLStateCache.SetPrimitiveRestartIndex(const index: TGLuint);
+begin
+  if index <> FPrimitiveRestartIndex then
+  begin
+    if GL_NV_primitive_restart or FForwardContext then
+    begin
+      FPrimitiveRestartIndex := index;
+      glPrimitiveRestartIndex(index)
+    end;
+  end;
+end;
+
+procedure TGLStateCache.SetEnableProgramPointSize(const Value: TGLboolean);
+begin
+  if Value <> FEnableProgramPointSize then
+  begin
+    FEnableProgramPointSize := Value;
+    if Value then
+      glEnable(GL_PROGRAM_POINT_SIZE)
+    else
+      glDisable(GL_PROGRAM_POINT_SIZE);
   end;
 end;
 
@@ -1691,7 +1720,7 @@ begin
   if Value <> FCopyReadBufferBinding then
   begin
     FCopyReadBufferBinding := Value;
-    glBindBuffer(GL_COPY_READ_BUFFER, Value);
+    glBindBufferARB(GL_COPY_READ_BUFFER, Value);
   end;
 end;
 
@@ -1731,7 +1760,7 @@ begin
   if Value <> FTextureBufferBinding then
   begin
     FTextureBufferBinding := Value;
-    glBindBuffer(GL_TEXTURE_BUFFER, Value);
+    glBindBufferARB(GL_TEXTURE_BUFFER, Value);
   end;
 end;
 
@@ -1828,7 +1857,7 @@ begin
   if Value <> FDrawFrameBuffer then
   begin
     FDrawFrameBuffer := Value;
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Value);
+    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -1925,40 +1954,6 @@ begin
 
 end;
 
-procedure TGLStateCache.SetEnablePrimitiveRestart(const enabled: TGLboolean);
-begin
-  if enabled <> FEnablePrimitiveRestart then
-  begin
-    FEnablePrimitiveRestart := enabled;
-    if FForwardContext then
-    begin
-      if enabled then
-        glEnable(GL_PRIMITIVE_RESTART)
-      else
-        glDisable(GL_PRIMITIVE_RESTART);
-    end
-    else if GL_NV_primitive_restart then
-    begin
-      if enabled then
-        glEnableClientState(GL_PRIMITIVE_RESTART_NV)
-      else
-        glDisableClientState(GL_PRIMITIVE_RESTART_NV);
-    end;
-  end;
-end;
-
-procedure TGLStateCache.SetEnableProgramPointSize(const Value: TGLboolean);
-begin
-  if Value <> FEnableProgramPointSize then
-  begin
-    FEnableProgramPointSize := Value;
-    if Value then
-      glEnable(GL_PROGRAM_POINT_SIZE)
-    else
-      glDisable(GL_PROGRAM_POINT_SIZE);
-  end;
-end;
-
 procedure TGLStateCache.SetEnableSampleAlphaToCoverage(const Value: TGLboolean);
 begin
 
@@ -2008,7 +2003,7 @@ begin
   begin
     FDrawFrameBuffer := Value;
     FReadFrameBuffer := Value;
-    glBindFramebuffer(GL_FRAMEBUFFER, Value);
+    glBindFramebufferEXT(GL_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -2233,7 +2228,7 @@ begin
   if Value <> FPixelPackBufferBinding then
   begin
     FPixelPackBufferBinding := Value;
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, Value);
+    glBindBufferARB(GL_PIXEL_PACK_BUFFER, Value);
   end;
 end;
 
@@ -2242,7 +2237,7 @@ begin
   if Value <> FPixelUnpackBufferBinding then
   begin
     FPixelUnpackBufferBinding := Value;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, Value);
+    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER, Value);
   end;
 end;
 
@@ -2349,15 +2344,6 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPrimitiveRestartIndex(const index: TGLuint);
-begin
-  if index <> FPrimitiveRestartIndex then
-  begin
-    FPrimitiveRestartIndex := index;
-    glPrimitiveRestartIndex(index)
-  end;
-end;
-
 procedure TGLStateCache.SetProvokingVertex(const Value: TGLenum);
 begin
   if Value <> FProvokingVertex then
@@ -2372,7 +2358,7 @@ begin
   if Value <> FReadFrameBuffer then
   begin
     FReadFrameBuffer := Value;
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, Value);
+    glBindFramebufferEXT(GL_READ_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -2381,7 +2367,7 @@ begin
   if Value <> FRenderBuffer then
   begin
     FRenderBuffer := Value;
-    glBindRenderbuffer(GL_RENDERBUFFER, Value);
+    glBindRenderbufferEXT(GL_RENDERBUFFER, Value);
   end;
 end;
 
@@ -2689,7 +2675,7 @@ begin
   if (Value <> FTransformFeedbackBufferBinding) or FInsideList then
   begin
     FTransformFeedbackBufferBinding := Value;
-    glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, Value);
+    glBindBufferARB(GL_TRANSFORM_FEEDBACK_BUFFER, Value);
   end;
 end;
 
@@ -2721,10 +2707,9 @@ begin
   // Reset VBO binding and client attribute
   if GL_ARB_vertex_buffer_object then
   begin
-    VertexArrayBinding := 0;
     ArrayBufferBinding := 0;
     ElementBufferBinding := 0;
-    for I := 0 to GLS_VERTEX_ATTR_NUM-1 do
+    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
       EnableVertexAttribArray[I] := False;
   end;
   glNewList(list, mode)
@@ -2748,7 +2733,7 @@ begin
   if (Value <> FUniformBufferBinding) or FInsideList then
   begin
     FUniformBufferBinding := Value;
-    glBindBuffer(GL_UNIFORM_BUFFER, Value);
+    glBindBufferARB(GL_UNIFORM_BUFFER, Value);
   end;
 end;
 

@@ -668,8 +668,6 @@ type
      Vertex array objects are used to rapidly switch between large sets
      of array state. }
   TGLVertexArrayHandle = class(TGLContextHandle)
-  private
-    FirstBind: Boolean;
   protected
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
@@ -2249,6 +2247,7 @@ begin
   begin
     // reset error status
     glGetError;
+    UnBind;
     // delete
     glDeleteBuffersARB(1, @AHandle);
     // check for error
@@ -2622,7 +2621,6 @@ end;
 function TGLVertexArrayHandle.DoAllocateHandle: Cardinal;
 begin
   glGenVertexArrays(1, @Result);
-  FirstBind := True;
 end;
 
 // DoDestroyHandle
@@ -2649,17 +2647,8 @@ procedure TGLVertexArrayHandle.Bind;
 var
   I: Integer;
 begin
-  //glBindVertexArray(Handle);
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.VertexArrayBinding := Handle;
-  if FirstBind then
-  begin
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-      glDisableVertexAttribArray(I);
-    FirstBind := False;
-  end;
 end;
 
 // UnBind
@@ -2697,7 +2686,7 @@ end;
 
 function TGLFramebufferHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenFramebuffers(1, @Result);
+  glGenFramebuffersEXT(1, @Result)
 end;
 
 // DoDestroyHandle
@@ -2710,7 +2699,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteFramebuffers(1, @AHandle);
+    glDeleteFramebuffersEXT(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2776,7 +2765,7 @@ end;
 procedure TGLFramebufferHandle.Attach1DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTexture1D(target, attachment, textarget, texture, level);
+  glFramebufferTexture1DEXT(target, attachment, textarget, texture, level);
 end;
 
 // Attach2DTexture
@@ -2785,7 +2774,7 @@ end;
 procedure TGLFramebufferHandle.Attach2DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTexture2D(target, attachment, textarget, texture, level);
+  glFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
 end;
 
 // Attach3DTexture
@@ -2794,7 +2783,7 @@ end;
 procedure TGLFramebufferHandle.Attach3DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTexture3D(target, attachment, textarget, texture, level, layer);
+  glFramebufferTexture3DEXT(target, attachment, textarget, texture, level, layer);
 end;
 
 // AttachLayer
@@ -2803,7 +2792,7 @@ end;
 procedure TGLFramebufferHandle.AttachLayer(target: TGLenum; attachment: TGLenum;
   texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTextureLayer(target, attachment, texture, level, layer);
+  glFramebufferTextureLayerEXT(target, attachment, texture, level, layer);
 end;
 
 // AttachRenderBuffer
@@ -2812,7 +2801,7 @@ end;
 procedure TGLFramebufferHandle.AttachRenderBuffer(target: TGLenum; attachment:
   TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint);
 begin
-  glFramebufferRenderbuffer(target, attachment, renderbuffertarget,
+  glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget,
     renderbuffer);
 end;
 
@@ -2822,7 +2811,7 @@ end;
 procedure TGLFramebufferHandle.AttachTexture(target: TGLenum; attachment:
   TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTexture(target, attachment, texture, level);
+  glFramebufferTextureEXT(target, attachment, texture, level);
 end;
 
 // AttachTextureLayer
@@ -2831,7 +2820,7 @@ end;
 procedure TGLFramebufferHandle.AttachTextureLayer(target: TGLenum; attachment:
   TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTextureLayer(target, attachment, texture, level, layer);
+  glFramebufferTextureLayerEXT(target, attachment, texture, level, layer);
 end;
 
 // Blit
@@ -2842,7 +2831,7 @@ procedure TGLFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
   dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
   mask: TGLbitfield; filter: TGLenum);
 begin
-  glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
+  glBlitFramebufferEXT(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
     mask, filter);
 end;
 
@@ -2852,7 +2841,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentParameter(target: TGLenum;
   attachment: TGLenum; pname: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
+  glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, @Result)
 end;
 
 // GetAttachmentObjectType
@@ -2861,7 +2850,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentObjectType(target: TGLenum;
   attachment: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment,
+  glGetFramebufferAttachmentParameterivEXT(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
 end;
 
@@ -2871,7 +2860,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentObjectName(target: TGLenum;
   attachment: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameteriv(target, attachment,
+  glGetFramebufferAttachmentParameterivEXT(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
 end;
 
@@ -2880,7 +2869,7 @@ end;
 
 function TGLFramebufferHandle.CheckStatus(target: TGLenum): TGLenum;
 begin
-  Result := glCheckFramebufferStatus(target);
+  Result := glCheckFramebufferStatusEXT(target);
 end;
 
 // IsSupported
@@ -2888,7 +2877,7 @@ end;
 
 class function TGLFramebufferHandle.IsSupported: Boolean;
 begin
-  Result := {GL_EXT_framebuffer_object or} GL_ARB_framebuffer_object;
+  Result := GL_EXT_framebuffer_object;
 end;
 
 // Transferable
@@ -2908,7 +2897,7 @@ end;
 
 function TGLRenderbufferHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenRenderbuffers(1, @Result);
+  glGenRenderbuffersEXT(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2921,7 +2910,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteRenderbuffers(1, @AHandle);
+    glDeleteRenderbuffersEXT(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2950,7 +2939,7 @@ end;
 procedure TGLRenderbufferHandle.SetStorage(internalformat: TGLenum; width,
   height: TGLsizei);
 begin
-  glRenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER, internalformat, width, height);
 end;
 
 // SetStorageMultisample
@@ -2959,7 +2948,7 @@ end;
 procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: TGLenum;
   samples: TGLsizei; width, height: TGLsizei);
 begin
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
+  glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, samples, internalformat,
     width, height);
 end;
 
@@ -2968,7 +2957,7 @@ end;
 
 class function TGLRenderbufferHandle.IsSupported: Boolean;
 begin
-  Result := {GL_EXT_framebuffer_object or} GL_ARB_framebuffer_object;
+  Result := GL_EXT_framebuffer_object;// or GL_ARB_framebuffer_object;
 end;
 
 // ------------------
