@@ -40,7 +40,6 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
-{$UNDEF GLS_OPENGL_DEBUG}
 
 uses
   Classes,
