@@ -56,11 +56,11 @@ interface
 
 {$I GLScene.inc}
 
-uses {$IFDEF MSWINDOWS}Windows,{$ENDIF}
-  XCollection, GLScene, Classes, SysUtils
-  , Registry, Controls,  Forms, ComCtrls, ImgList,
-  Dialogs, Menus, ActnList, ToolWin, ExtCtrls, StdCtrls,
-  propedits, componenteditors, FormEditingIntf, lclintf, lresources
+uses
+  XCollection, GLScene, Classes, SysUtils,
+  Registry, Controls,  Forms, ComCtrls,
+  Dialogs, Menus, ActnList, ExtCtrls, StdCtrls,
+  propedits, componenteditors, lclintf, lresources
 ;
 
 
@@ -463,6 +463,7 @@ procedure TGLSceneEditorForm.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
     SetScene(nil,nil);
+    CloseAction :=CloseAction;
 end;
 
 // FormDestroy
@@ -579,7 +580,7 @@ begin
             if currentCategory=GetCategory(soc) then begin
                item:=NewItem(objectList[j], 0, False, True, AddObjectClick, 0, '');
                item.ImageIndex:=GetImageIndex(soc);
-               item.Tag:=Integer(soc);
+               item.Tag:=PtrUInt(soc);
                currentParent.Add(item);
                objectList[j]:='';
                if currentCategory='' then Break;
@@ -607,7 +608,7 @@ begin
             mi:=TMenuItem.Create(owner);
             mi.Caption:=XCollectionItemClass.FriendlyName;
             mi.OnClick:=Event;//AddBehaviourClick;
-            mi.Tag:=Integer(XCollectionItemClass);
+            mi.Tag:=PtrUInt(XCollectionItemClass);
             if Assigned(XCollection) then
                mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
             else mi.Enabled:=TBAddBehaviours.Enabled;
@@ -639,10 +640,6 @@ procedure TGLSceneEditorForm.AddObjectClick(Sender: TObject);
 var
    AParent, AObject: TGLBaseSceneObject;
    Node: TTreeNode;
-  ParentCI: TIComponentInterface;
-  CompIntf: TIComponentInterface;
-  TypeClass: TComponentClass;
-  X, Y: integer;
 begin
    if Assigned(FCurrentDesigner) then with Tree do
       if Assigned(Selected) and (Selected.Level > 0) then begin
@@ -707,6 +704,7 @@ begin
                 and Assigned(Target.Data) and
                 (not Target.HasAsParent(Selected));
    end;
+   State:=State;
 end;
 
 procedure TGLSceneEditorForm.TreeDragDrop(Sender, Source: TObject; X, Y: Integer);
@@ -858,6 +856,8 @@ end;
 procedure TGLSceneEditorForm.TreeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
    FLastMouseDownPos:=Point(X, Y);
+   Button:=Button;
+   Shift:=Shift;
 end;
 
 // TreeMouseMove
@@ -1398,6 +1398,8 @@ procedure TGLSceneEditorForm.BehavioursListViewSelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
   EnableAndDisableActions();
+  Item := Item;
+  Selected:=Selected;
 end;
 
 procedure TGLSceneEditorForm.ACAddEffectExecute(Sender: TObject);
@@ -1527,6 +1529,7 @@ begin
     Key := 0;
     ACDeleteObject.Execute;
   end;
+  Shift:=Shift;
 end;
 
 initialization
