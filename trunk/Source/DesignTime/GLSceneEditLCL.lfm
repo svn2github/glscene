@@ -1,7 +1,7 @@
 object GLSceneEditorForm: TGLSceneEditorForm
-  Left = 284
+  Left = 265
   Height = 502
-  Top = 117
+  Top = 353
   Width = 461
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
@@ -144,7 +144,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.29'
   object Splitter: TSplitter
     Left = 307
     Height = 450
@@ -294,6 +294,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Width = 148
       Align = alTop
       Columns = <>
+      ItemIndex = -1
       PopupMenu = BehavioursPopupMenu
       ReadOnly = True
       ScrollBars = ssAutoBoth
@@ -309,6 +310,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Width = 148
       Align = alClient
       Columns = <>
+      ItemIndex = -1
       PopupMenu = BehavioursPopupMenu
       ReadOnly = True
       ScrollBars = ssAutoBoth

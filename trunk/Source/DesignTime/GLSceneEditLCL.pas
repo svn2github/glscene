@@ -6,6 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>18/05/10 - Yar - Fixed for Lazarus-0.9.29-25483 (thanks Predator)
   <li>26/03/10 - Yar - Added Expand and Collapse buttons, fix for Unix-based systems
                        (thanks to Rustam Asmandiarov aka Predator)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
