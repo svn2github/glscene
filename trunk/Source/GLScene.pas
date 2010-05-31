@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Added roHardwareAcceleration Buffer.ContextOptions
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLBaseSceneObject.GetHandle
       <li>06/04/10 - Yar - Removed double camera freeing in TGLSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
@@ -382,6 +383,7 @@ type
   // TContextOption
   //
   {: Options for the rendering context.<p>
+     roHardwareAccelerated: force hardware acceleration.
      roDoubleBuffer: enables double-buffering.<br>
      roRenderToWindows: ignored (legacy).<br>
      roTwoSideLighting: enables two-side lighting model.<br>
@@ -393,8 +395,9 @@ type
          whole viewer is fully repainted each frame, this can improve framerate<br>
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
-         early-z culling.<br> }
-  TContextOption = (roDoubleBuffer, roStencilBuffer,
+         early-z culling.<br>
+     roForwardContext: force OpenGL forward context }
+  TContextOption = (roHardwareAcceleration, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
     roNoSwapBuffers, roNoDepthBufferClear, roForwardContext);
@@ -427,17 +430,16 @@ type
      Allowed styles are:<ul>
      <li>osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
-     <li>osDoesTemperWithColorsOrFaceWinding : object is not "GLScene compatible" for
-        color/face winding. "GLScene compatible" objects must use GLMisc functions
-        for color or face winding setting (to avoid redundant OpenGL calls), for
-        objects that don't comply, the internal cache must be flushed.
      <li>osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
      <li>osNoVisibilityCulling : whatever the VisibilityCulling setting,
         it will be ignored and the object rendered
      </ul> }
-  TGLObjectStyle = (osDirectDraw,
-    osIgnoreDepthBuffer, osNoVisibilityCulling, osBuiltStage);
+  TGLObjectStyle = (
+    osDirectDraw,
+    osIgnoreDepthBuffer,
+    osNoVisibilityCulling,
+    osBuiltStage);
   TGLObjectStyles = set of TGLObjectStyle;
 
   // IGLInitializable
@@ -2242,7 +2244,7 @@ type
     {: Context options allows to setup specifics of the rendering context.<p>
        Not all contexts support all options. }
     property ContextOptions: TContextOptions read FContextOptions write
-      SetContextOptions default [roDoubleBuffer, roRenderToWindow];
+      SetContextOptions default [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow];
     {: Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
       SetAccumBufferBits default 0;
@@ -7980,7 +7982,7 @@ begin
   FFogEnable := False;
   FAfterRenderEffects := TPersistentObjectList.Create;
 
-  FContextOptions := [roDoubleBuffer, roRenderToWindow];
+  FContextOptions := [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow];
 
   ResetPerformanceMonitor;
 end;
@@ -8021,6 +8023,8 @@ var
   locStencilBits, locAlphaBits, locColorBits: Integer;
 begin
   locOptions := [];
+
+
   if roDoubleBuffer in ContextOptions then
     locOptions := locOptions + [rcoDoubleBuffered];
   if roStereo in ContextOptions then
@@ -8039,6 +8043,10 @@ begin
     locAlphaBits := 0;
   with context do
   begin
+    if roHardwareAcceleration in ContextOptions then
+      Acceleration := chaHardware
+    else
+      Acceleration := chaSoftware;
     Options := locOptions;
     ColorBits := locColorBits;
     DepthBits := cDepthPrecisionToDepthBits[DepthPrecision];
@@ -8204,6 +8212,7 @@ begin
       Disable(stDepthClamp);
     glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
     SetState((LColorDepth < 8), stDither);
+    ResetGLTextureMatrix;
   end;
 end;
 
