@@ -6,6 +6,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>26/02/10 - Yar - Added functions to work with adjacent triangles
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
@@ -29,8 +30,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, PersistentClasses, VectorLists, VectorGeometry, VectorTypes,
-  VectorGeometryEXT;
+  Classes, PersistentClasses, VectorLists, VectorGeometry, VectorTypes;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -192,7 +192,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils;
+uses GLCrossPlatform, SysUtils;
 
 var
    v0to255reciproquals : array of Single;
@@ -452,7 +452,7 @@ begin
       end;
       Inc(refListI);
    end;
-   reference.Count:=(Integer(refListN)-Integer(@reference.List[0])) div SizeOf(TAffineVector);
+   reference.Count:=(PtrUInt(refListN)-PtrUInt(@reference.List[0])) div SizeOf(TAffineVector);
 end;
 
 // RemapReferences (integers)
@@ -772,7 +772,7 @@ var
       hashList:=edgesHash[hashKey];
       iList:=@hashList.List[0];
       iListEnd:=@hashList.List[hashList.Count];
-      while Integer(iList)<Integer(iListEnd) do begin
+      while PtrUInt(iList)<PtrUInt(iListEnd) do begin
          n:=iList^;
          if (edgesList[n]=a) and (edgesList[n+1]=b) then begin
             edgesTriangles[n+1]:=curTri;
@@ -1797,6 +1797,7 @@ begin
 
   {: Fix the other good triangle so that both edges adjacent to the
      other bad triangle are now adjacent to the good triangle. }
+
   for i :=0 to 3 do
     if edgeInfo[otherGoodTri].adjacentTriangle[i] = otherBadTri then
       edgeInfo[otherGoodTri].adjacentTriangle[i] := goodTri;
@@ -1812,11 +1813,11 @@ begin
 
   if goodTri < PrimitiveNum then
   begin
-    PVector3lw(@indicesList[3*badTri])^ :=
-      PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+    PVector3dw(@indicesList[3*badTri])^ :=
+      PVector3dw(@indicesList[3*PrimitiveNum+3])^;
     edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
-    PVector3lw(@indicesList[3*otherBadTri])^ :=
-      PVector3lw(@indicesList[3*PrimitiveNum])^;
+    PVector3dw(@indicesList[3*otherBadTri])^ :=
+      PVector3dw(@indicesList[3*PrimitiveNum])^;
     edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
     reconnectSharedEdges(badTri, PrimitiveNum+1);
     reconnectSharedEdges(otherBadTri, PrimitiveNum);
@@ -1830,11 +1831,11 @@ begin
     if goodTri = PrimitiveNum+1 then
       if badTri < PrimitiveNum then
       begin
-        PVector3lw(@indicesList[3*badTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        PVector3dw(@indicesList[3*badTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum+3])^;
         edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
-        PVector3lw(@indicesList[3*otherBadTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        PVector3dw(@indicesList[3*otherBadTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum])^;
         edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
         reconnectSharedEdges(badTri, PrimitiveNum+1);
         possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum);
@@ -1849,11 +1850,11 @@ begin
       end
       else begin
         assert(otherBadTri < PrimitiveNum);
-        PVector3lw(@indicesList[3*otherBadTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        PVector3dw(@indicesList[3*otherBadTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum+3])^;
         edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum+1];
-        PVector3lw(@indicesList[3*badTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        PVector3dw(@indicesList[3*badTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum])^;
         edgeInfo[badTri]  := edgeInfo[PrimitiveNum];
         reconnectSharedEdges(otherBadTri, PrimitiveNum+1);
         possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum);
@@ -1870,11 +1871,11 @@ begin
       assert(goodTri = PrimitiveNum);
       if badTri < PrimitiveNum then
       begin
-        PVector3lw(@indicesList[3*badTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        PVector3dw(@indicesList[3*badTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum])^;
         edgeInfo[badTri]  := edgeInfo[PrimitiveNum];
-        PVector3lw(@indicesList[3*otherBadTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        PVector3dw(@indicesList[3*otherBadTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum+3])^;
         edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum+1];
         reconnectSharedEdges(badTri, PrimitiveNum);
         possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum+1);
@@ -1889,11 +1890,11 @@ begin
       end
       else begin
         assert(otherBadTri < PrimitiveNum);
-        PVector3lw(@indicesList[3*otherBadTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum])^;
+        PVector3dw(@indicesList[3*otherBadTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum])^;
         edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
-        PVector3lw(@indicesList[3*badTri])^ :=
-          PVector3lw(@indicesList[3*PrimitiveNum+3])^;
+        PVector3dw(@indicesList[3*badTri])^ :=
+          PVector3dw(@indicesList[3*PrimitiveNum+3])^;
         edgeInfo[badTri]  := edgeInfo[PrimitiveNum+1];
         reconnectSharedEdges(otherBadTri, PrimitiveNum);
         possiblyReconnectTriangle(otherBadTri, badTri, PrimitiveNum+1);
@@ -2001,7 +2002,7 @@ var
   i: Integer;
   j: Byte;
   N, ii, jj: LongWord;
-  tri, adjtri: TVector3lw;
+  tri, adjtri: TVector3dw;
   NewIndices: TLongWordList;
 begin
   Result := nil;
