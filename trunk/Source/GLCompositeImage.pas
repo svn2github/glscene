@@ -65,7 +65,7 @@ type
 implementation
 
 uses
-  ApplicationFileIO;
+  ApplicationFileIO, GLContext;
 
 // ------------------
 // ------------------ TGLCompositeImage ------------------
@@ -232,7 +232,7 @@ begin
   if Assigned(FOwnerTexture) then
   begin
     if FOwnerTexture.IsHandleAllocated then
-      tempImage.AssignFromTexture(FOwnerTexture.RenderingContext,
+      tempImage.AssignFromTexture(CurrentGLContext,
         FOwnerTexture.Handle,
         NativeTextureTarget,
         false,
