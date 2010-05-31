@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Replace OpenGL1x functions to OpenGLAdapter, not complete yet.
       <li>01/05/10 - Yar - Added cashing to Vertex Array Object
       <li>22/04/10 - Yar - GLState revision
       <li>11/04/10 - Yar - Added NewList, EndList, InsideList
@@ -40,6 +41,7 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
+{$UNDEF GLS_OPENGL_DEBUG}
 
 uses
   Classes,
@@ -1059,6 +1061,9 @@ implementation
 //------------------------------------------------------
 //------------------------------------------------------
 
+uses
+  GLContext;
+
 resourcestring
   glsStateCashMissing = 'States cash missing: ';
 
@@ -1075,7 +1080,7 @@ begin
  //  if Value<>FCurrentQuery[Target] then
   begin
     FCurrentQuery[Target] := Value;
-    glBeginQuery(cGLQueryTypeToGLEnum[Target], Value);
+    GL.BeginQuery(cGLQueryTypeToGLEnum[Target], Value);
   end;
 end;
 
@@ -1293,7 +1298,7 @@ procedure TGLStateCache.EndQuery(const Target: TQueryType);
 begin
   Assert(FCurrentQuery[Target] <> 0, 'No query running');
   FCurrentQuery[Target] := 0;
-  glEndQuery(cGLQueryTypeToGLEnum[Target]);
+  GL.EndQuery(cGLQueryTypeToGLEnum[Target]);
 end;
 
 // Enable
@@ -1310,10 +1315,10 @@ begin
     else
       Include(FStates, aState);
 {$IFDEF GLS_OPENGL_DEBUG}
-    if glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
+    if GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Enable');
 {$ENDIF}
-    glEnable(cGLStateToGLEnum[aState].GLConst);
+    GL.Enable(cGLStateToGLEnum[aState].GLConst);
   end;
 end;
 
@@ -1331,23 +1336,23 @@ begin
     else
       Exclude(FStates, aState);
 {$IFDEF GLS_OPENGL_DEBUG}
-    if not glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
+    if not GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Disable');
 {$ENDIF}
-    glDisable(cGLStateToGLEnum[aState].GLConst);
+    GL.Disable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
     begin
-      glMaterialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
-      glMaterialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
-      glMaterialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
-      glMaterialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
-      glMateriali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
+      GL.Materialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
+      GL.Materialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
+      GL.Materialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
+      GL.Materialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
+      GL.Materiali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
 
-      glMaterialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
-      glMaterialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
-      glMaterialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
-      glMaterialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
-      glMateriali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
+      GL.Materialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
+      GL.Materialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
+      GL.Materialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
+      GL.Materialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
+      GL.Materiali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
     end;
   end;
 end;
@@ -1360,7 +1365,7 @@ begin
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Include(FStates, aState);
-  glEnable(cGLStateToGLEnum[aState].GLConst);
+  GL.Enable(cGLStateToGLEnum[aState].GLConst);
 end;
 
 // PerformDisable
@@ -1371,13 +1376,13 @@ begin
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Exclude(FStates, aState);
-  glDisable(cGLStateToGLEnum[aState].GLConst);
+  GL.Disable(cGLStateToGLEnum[aState].GLConst);
 end;
 
 procedure TGLStateCache.PopAttrib;
 begin
   // TODO: replace with proper client side push/pop
-  glPopAttrib();
+  GL.PopAttrib();
 end;
 
 procedure TGLStateCache.PushAttrib(stateTypes: TGLStateTypes);
@@ -1394,7 +1399,7 @@ begin
       tempFlag := tempFlag or cGLStateTypeToGLEnum[TGLStateType(I)];
     end;
   end;
-  glPushAttrib(tempFlag);
+  GL.PushAttrib(tempFlag);
 end;
 
 // SetGLMaterialColors
@@ -1417,35 +1422,35 @@ begin
   if (FFrontBackShininess[i] <> shininess)
     or FInsideList then
   begin
-    glMateriali(currentFace, GL_SHININESS, shininess);
+    GL.Materiali(currentFace, GL_SHININESS, shininess);
     if not FInsideList then
       FFrontBackShininess[i] := shininess;
   end;
   if not AffineVectorEquals(FFrontBackColors[i][0], emission)
     or FInsideList then
   begin
-    glMaterialfv(currentFace, GL_EMISSION, @emission);
+    GL.Materialfv(currentFace, GL_EMISSION, @emission);
     if not FInsideList then
       SetVector(FFrontBackColors[i][0], emission);
   end;
   if not AffineVectorEquals(FFrontBackColors[i][1], ambient)
     or FInsideList then
   begin
-    glMaterialfv(currentFace, GL_AMBIENT, @ambient);
+    GL.Materialfv(currentFace, GL_AMBIENT, @ambient);
     if not FInsideList then
       SetVector(FFrontBackColors[i][1], ambient);
   end;
   if not VectorEquals(FFrontBackColors[i][2], diffuse)
     or FInsideList then
   begin
-    glMaterialfv(currentFace, GL_DIFFUSE, @diffuse);
+    GL.Materialfv(currentFace, GL_DIFFUSE, @diffuse);
     if not FInsideList then
       SetVector(FFrontBackColors[i][2], diffuse);
   end;
   if not AffineVectorEquals(FFrontBackColors[i][3], specular)
     or FInsideList then
   begin
-    glMaterialfv(currentFace, GL_SPECULAR, @specular);
+    GL.Materialfv(currentFace, GL_SPECULAR, @specular);
     if not FInsideList then
       SetVector(FFrontBackColors[i][3], specular);
   end;
@@ -1478,7 +1483,7 @@ begin
       FFrontBackColors[i][2][3] := alpha;
       color[3] := alpha;
     end;
-    glMaterialfv(aFace, GL_DIFFUSE, @color);
+    GL.Materialfv(aFace, GL_DIFFUSE, @color);
   end;
 end;
 
@@ -1490,7 +1495,7 @@ begin
       Include(FListStates[FCurrentList], sttTexture)
     else
       FActiveTexture := Value;
-    glActiveTexture(GL_TEXTURE0 + Value);
+    GL.ActiveTexture(GL_TEXTURE0 + Value);
   end;
 end;
 
@@ -1498,12 +1503,12 @@ procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
 begin
   if Value <> FVertexArrayBinding then
   begin
-    if Value > Length(FVAOStates) then
+    if Integer(Value) > Length(FVAOStates) then
       SetLength(FVAOStates, 2 * Length(FVAOStates));
     if Value = 0 then
       FVAOStates[0] := FVAOStates[FVertexArrayBinding];
     FVertexArrayBinding := Value;
-    glBindVertexArray(Value);
+    GL.BindVertexArray(Value);
   end;
 end;
 
@@ -1524,7 +1529,7 @@ begin
   if Value <> FVAOStates[FVertexArrayBinding].FArrayBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FArrayBufferBinding := Value;
-    glBindBufferARB(GL_ARRAY_BUFFER, Value);
+    GL.BindBuffer(GL_ARRAY_BUFFER, Value);
   end;
 end;
 
@@ -1538,7 +1543,7 @@ begin
   if Value <> FVAOStates[FVertexArrayBinding].FElementBufferBinding then
   begin
     FVAOStates[FVertexArrayBinding].FElementBufferBinding := Value;
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, Value);
+    GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, Value);
   end;
 end;
 
@@ -1556,9 +1561,9 @@ begin
   begin
     FVAOStates[FVertexArrayBinding].FAttribEnabling[I] := Value;
     if Value then
-      glEnableVertexAttribArray(I)
+      GL.EnableVertexAttribArray(I)
     else
-      glDisableVertexAttribArray(I);
+      GL.DisableVertexAttribArray(I);
   end;
 end;
 
@@ -1572,12 +1577,12 @@ begin
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
-    if GL_NV_primitive_restart or FForwardContext then
+    if GL.NV_primitive_restart or FForwardContext then
     begin
       if enabled then
-        glEnable(GL_PRIMITIVE_RESTART)
+        GL.Enable(GL_PRIMITIVE_RESTART)
       else
-        glDisable(GL_PRIMITIVE_RESTART);
+        GL.Disable(GL_PRIMITIVE_RESTART);
     end;
   end;
 end;
@@ -1591,10 +1596,10 @@ procedure TGLStateCache.SetPrimitiveRestartIndex(const index: TGLuint);
 begin
   if index <> FPrimitiveRestartIndex then
   begin
-    if GL_NV_primitive_restart or FForwardContext then
+    if GL.NV_primitive_restart or FForwardContext then
     begin
       FPrimitiveRestartIndex := index;
-      glPrimitiveRestartIndex(index)
+      GL.PrimitiveRestartIndex(index)
     end;
   end;
 end;
@@ -1605,9 +1610,9 @@ begin
   begin
     FEnableProgramPointSize := Value;
     if Value then
-      glEnable(GL_PROGRAM_POINT_SIZE)
+      GL.Enable(GL_PROGRAM_POINT_SIZE)
     else
-      glDisable(GL_PROGRAM_POINT_SIZE);
+      GL.Disable(GL_PROGRAM_POINT_SIZE);
   end;
 end;
 
@@ -1619,7 +1624,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FBlendColor := Value;
-    glBlendColor(Value[0], Value[1], Value[2], Value[3]);
+    GL.BlendColor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
 
@@ -1650,7 +1655,7 @@ begin
       FBlendEquationRGB := mode;
       FBlendEquationAlpha := mode;
     end;
-    glBlendEquation(cGLBlendEquationToGLEnum[mode]);
+    GL.BlendEquation(cGLBlendEquationToGLEnum[mode]);
   end;
 end;
 
@@ -1663,7 +1668,7 @@ begin
     FBlendDstRGB := Dst;
     FBlendSrcAlpha := Src;
     FBlendSrcAlpha := Dst;
-    glBlendFunc(cGLBlendFunctionToGLEnum[Src], cGLBlendFunctionToGLEnum[Dst]);
+    GL.BlendFunc(cGLBlendFunctionToGLEnum[Src], cGLBlendFunctionToGLEnum[Dst]);
   end;
 end;
 
@@ -1719,7 +1724,7 @@ begin
   if Value <> FCopyReadBufferBinding then
   begin
     FCopyReadBufferBinding := Value;
-    glBindBufferARB(GL_COPY_READ_BUFFER, Value);
+    GL.BindBuffer(GL_COPY_READ_BUFFER, Value);
   end;
 end;
 
@@ -1728,7 +1733,7 @@ begin
   if Value <> FCopyWriteBufferBinding then
   begin
     FCopyWriteBufferBinding := Value;
-    glBindBuffer(GL_COPY_WRITE_BUFFER, Value);
+    GL.BindBuffer(GL_COPY_WRITE_BUFFER, Value);
   end;
 end;
 
@@ -1740,7 +1745,7 @@ begin
       Include(FListStates[FCurrentList], sttPolygon)
     else
       FCullFaceMode := Value;
-    glCullFace(cGLCullFaceModeToGLEnum[Value]);
+    GL.CullFace(cGLCullFaceModeToGLEnum[Value]);
   end;
 
 end;
@@ -1750,7 +1755,7 @@ begin
   if Value <> FCurrentProgram then
   begin
     FCurrentProgram := Value;
-    glUseProgram(Value);
+    GL.UseProgram(Value);
   end;
 end;
 
@@ -1759,7 +1764,7 @@ begin
   if Value <> FTextureBufferBinding then
   begin
     FTextureBufferBinding := Value;
-    glBindBufferARB(GL_TEXTURE_BUFFER, Value);
+    GL.BindBuffer(GL_TEXTURE_BUFFER, Value);
   end;
 end;
 
@@ -1769,7 +1774,7 @@ begin
   if not VectorEquals(Value, FCurrentVertexAttrib[Index]) then
   begin
     FCurrentVertexAttrib[Index] := Value;
-    glVertexAttrib4fv(Index, @Value[0]);
+    GL.VertexAttrib4fv(Index, @Value[0]);
   end;
 end;
 
@@ -1781,7 +1786,7 @@ begin
       Include(FListStates[FCurrentList], sttDepthBuffer)
     else
       FDepthClearValue := Value;
-    glClearDepth(Value);
+    GL.ClearDepth(Value);
   end;
 
 end;
@@ -1794,7 +1799,7 @@ begin
       Include(FListStates[FCurrentList], sttDepthBuffer)
     else
       FDepthFunc := Value;
-    glDepthFunc(cGLComparisonFunctionToGLEnum[Value]);
+    GL.DepthFunc(cGLComparisonFunctionToGLEnum[Value]);
   end;
 
 end;
@@ -1811,7 +1816,7 @@ begin
       FDepthRange[0] := ZNear;
       FDepthRange[1] := ZFar;
     end;
-    glDepthRange(ZNear, ZFar);
+    GL.DepthRange(ZNear, ZFar);
   end;
 end;
 
@@ -1823,7 +1828,7 @@ begin
       Include(FListStates[FCurrentList], sttViewport)
     else
       FDepthRange[1] := Value;
-    glDepthRange(FDepthRange[0], Value);
+    GL.DepthRange(FDepthRange[0], Value);
   end;
 end;
 
@@ -1835,7 +1840,7 @@ begin
       Include(FListStates[FCurrentList], sttViewport)
     else
       FDepthRange[0] := Value;
-    glDepthRange(Value, FDepthRange[1]);
+    GL.DepthRange(Value, FDepthRange[1]);
   end;
 end;
 
@@ -1847,7 +1852,7 @@ begin
       Include(FListStates[FCurrentList], sttDepthBuffer)
     else
       FDepthWriteMask := Value;
-    glDepthMask(Value);
+    GL.DepthMask(Value);
   end;
 end;
 
@@ -1856,7 +1861,7 @@ begin
   if Value <> FDrawFrameBuffer then
   begin
     FDrawFrameBuffer := Value;
-    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, Value);
+    GL.BindFramebuffer(GL_DRAW_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -1880,9 +1885,9 @@ begin
   begin
     FEnableClipDistance[Index] := Value;
     if Value then
-      glEnable(GL_CLIP_DISTANCE0 + Index)
+      GL.Enable(GL_CLIP_DISTANCE0 + Index)
     else
-      glDisable(GL_CLIP_DISTANCE0 + Index);
+      GL.Disable(GL_CLIP_DISTANCE0 + Index);
   end;
 end;
 
@@ -1892,9 +1897,9 @@ begin
   begin
     FEnableColorLogicOp := Value;
     if Value then
-      glEnable(GL_COLOR_LOGIC_OP)
+      GL.Enable(GL_COLOR_LOGIC_OP)
     else
-      glDisable(GL_COLOR_LOGIC_OP);
+      GL.Disable(GL_COLOR_LOGIC_OP);
   end;
 end;
 
@@ -1991,7 +1996,7 @@ begin
       Include(FListStates[FCurrentList], sttHint)
     else
       FFragmentShaderDerivitiveHint := Value;
-    glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, cGLHintToGLEnum[Value]);
+    GL.Hint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
@@ -2002,7 +2007,7 @@ begin
   begin
     FDrawFrameBuffer := Value;
     FReadFrameBuffer := Value;
-    glBindFramebufferEXT(GL_FRAMEBUFFER, Value);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -2014,7 +2019,7 @@ begin
       Include(FListStates[FCurrentList], sttPolygon)
     else
       FFrontFace := Value;
-    glFrontFace(cGLFaceWindingToGLEnum[Value]);
+    GL.FrontFace(cGLFaceWindingToGLEnum[Value]);
   end;
 end;
 
@@ -2033,7 +2038,7 @@ begin
       FAlphaFunc := func;
       FAlphaRef := ref;
     end;
-    glAlphaFunc(cGLComparisonFunctionToGLEnum[func], ref);
+    GL.AlphaFunc(cGLComparisonFunctionToGLEnum[func], ref);
   end;
 end;
 
@@ -2082,9 +2087,9 @@ begin
   if FForwardContext then
     exit;
   FTextureMatrixIsIdentity := False;
-  glMatrixMode(GL_TEXTURE);
-  glLoadMatrixf(PGLFloat(@matrix[0][0]));
-  glMatrixMode(GL_MODELVIEW);
+  GL.MatrixMode(GL_TEXTURE);
+  GL.LoadMatrixf(PGLFloat(@matrix[0][0]));
+  GL.MatrixMode(GL_MODELVIEW);
   if FInsideList then
     Include(FListStates[FCurrentList], sttTransform);
 end;
@@ -2097,7 +2102,7 @@ begin
       Include(FListStates[FCurrentList], sttHint)
     else
       FLineSmoothHint := Value;
-    glHint(GL_LINE_SMOOTH_HINT, cGLHintToGLEnum[Value]);
+    GL.Hint(GL_LINE_SMOOTH_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
@@ -2110,7 +2115,7 @@ begin
       Include(FListStates[FCurrentList], sttLine)
     else
       FLineWidth := Value;
-    glLineWidth(Value);
+    GL.LineWidth(Value);
   end;
 end;
 
@@ -2122,7 +2127,7 @@ begin
       Include(FListStates[FCurrentList], sttLine)
     else
       FLineStippleFactor := Value;
-    glLineStipple(Value, FLineStipplePattern);
+    GL.LineStipple(Value, FLineStipplePattern);
   end;
 end;
 
@@ -2134,7 +2139,7 @@ begin
       Include(FListStates[FCurrentList], sttLine)
     else
       FLineStipplePattern := Value;
-    glLineStipple(FLineStippleFactor, Value);
+    GL.LineStipple(FLineStippleFactor, Value);
   end;
 end;
 
@@ -2146,7 +2151,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FLogicOpMode := Value;
-    glLogicOp(cGLLogicOpToGLEnum[FLogicOpMode]);
+    GL.LogicOp(cGLLogicOpToGLEnum[FLogicOpMode]);
   end;
 end;
 
@@ -2155,7 +2160,7 @@ begin
   if Value <> FPackAlignment then
   begin
     FPackAlignment := Value;
-    glPixelStoref(GL_PACK_ALIGNMENT, Value);
+    GL.PixelStoref(GL_PACK_ALIGNMENT, Value);
   end;
 end;
 
@@ -2164,7 +2169,7 @@ begin
   if Value <> FPackImageHeight then
   begin
     FPackImageHeight := Value;
-    glPixelStoref(GL_PACK_IMAGE_HEIGHT, Value);
+    GL.PixelStoref(GL_PACK_IMAGE_HEIGHT, Value);
   end;
 end;
 
@@ -2173,7 +2178,7 @@ begin
   if Value <> FPackLSBFirst then
   begin
     FPackLSBFirst := Value;
-    glPixelStorei(GL_PACK_LSB_FIRST, byte(Value));
+    GL.PixelStorei(GL_PACK_LSB_FIRST, byte(Value));
   end;
 end;
 
@@ -2182,7 +2187,7 @@ begin
   if Value <> FPackRowLength then
   begin
     FPackRowLength := Value;
-    glPixelStoref(GL_PACK_ROW_LENGTH, Value);
+    GL.PixelStoref(GL_PACK_ROW_LENGTH, Value);
   end;
 end;
 
@@ -2191,7 +2196,7 @@ begin
   if Value <> FPackSkipImages then
   begin
     FPackSkipImages := Value;
-    glPixelStoref(GL_PACK_SKIP_IMAGES, Value);
+    GL.PixelStoref(GL_PACK_SKIP_IMAGES, Value);
   end;
 end;
 
@@ -2200,7 +2205,7 @@ begin
   if Value <> FPackSkipPixels then
   begin
     FPackSkipPixels := Value;
-    glPixelStoref(GL_PACK_SKIP_PIXELS, Value);
+    GL.PixelStoref(GL_PACK_SKIP_PIXELS, Value);
   end;
 end;
 
@@ -2209,7 +2214,7 @@ begin
   if Value <> FPackSkipRows then
   begin
     FPackSkipRows := Value;
-    glPixelStoref(GL_PACK_SKIP_ROWS, Value);
+    GL.PixelStoref(GL_PACK_SKIP_ROWS, Value);
   end;
 end;
 
@@ -2218,7 +2223,7 @@ begin
   if Value <> FPackSwapBytes then
   begin
     FPackSwapBytes := Value;
-    glPixelStorei(GL_PACK_SWAP_BYTES, byte(Value));
+    GL.PixelStorei(GL_PACK_SWAP_BYTES, byte(Value));
   end;
 end;
 
@@ -2227,7 +2232,7 @@ begin
   if Value <> FPixelPackBufferBinding then
   begin
     FPixelPackBufferBinding := Value;
-    glBindBufferARB(GL_PIXEL_PACK_BUFFER, Value);
+    GL.BindBuffer(GL_PIXEL_PACK_BUFFER, Value);
   end;
 end;
 
@@ -2236,7 +2241,7 @@ begin
   if Value <> FPixelUnpackBufferBinding then
   begin
     FPixelUnpackBufferBinding := Value;
-    glBindBufferARB(GL_PIXEL_UNPACK_BUFFER, Value);
+    GL.BindBuffer(GL_PIXEL_UNPACK_BUFFER, Value);
   end;
 end;
 
@@ -2260,7 +2265,7 @@ begin
       Include(FListStates[FCurrentList], sttPoint)
     else
       FPointSize := Value;
-    glPointSize(Value);
+    GL.PointSize(Value);
   end;
 end;
 
@@ -2287,7 +2292,7 @@ begin
       FPolygonMode := Value;
       FPolygonBackMode := Value;
     end;
-    glPolygonMode(GL_FRONT_AND_BACK, cGLPolygonModeToGLEnum[Value]);
+    GL.PolygonMode(GL_FRONT_AND_BACK, cGLPolygonModeToGLEnum[Value]);
   end;
 end;
 
@@ -2303,7 +2308,7 @@ begin
       FPolygonOffsetFactor := factor;
       FPolygonOffsetUnits := units;
     end;
-    glPolygonOffset(factor, units);
+    GL.PolygonOffset(factor, units);
   end;
 end;
 
@@ -2315,7 +2320,7 @@ begin
       Include(FListStates[FCurrentList], sttPolygon)
     else
       FPolygonOffsetFactor := Value;
-    glPolygonOffset(Value, FPolygonOffsetUnits);
+    GL.PolygonOffset(Value, FPolygonOffsetUnits);
   end;
 end;
 
@@ -2327,7 +2332,7 @@ begin
       Include(FListStates[FCurrentList], sttPolygon)
     else
       FPolygonOffsetUnits := Value;
-    glPolygonOffset(FPolygonOffsetFactor, Value);
+    GL.PolygonOffset(FPolygonOffsetFactor, Value);
   end;
 end;
 
@@ -2339,7 +2344,7 @@ begin
       Include(FListStates[FCurrentList], sttHint)
     else
       FPolygonSmoothHint := Value;
-    glHint(GL_POLYGON_SMOOTH_HINT, cGLHintToGLEnum[Value]);
+    GL.Hint(GL_POLYGON_SMOOTH_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
@@ -2357,7 +2362,7 @@ begin
   if Value <> FReadFrameBuffer then
   begin
     FReadFrameBuffer := Value;
-    glBindFramebufferEXT(GL_READ_FRAMEBUFFER, Value);
+    GL.BindFramebuffer(GL_READ_FRAMEBUFFER, Value);
   end;
 end;
 
@@ -2366,7 +2371,7 @@ begin
   if Value <> FRenderBuffer then
   begin
     FRenderBuffer := Value;
-    glBindRenderbufferEXT(GL_RENDERBUFFER, Value);
+    GL.BindRenderbuffer(GL_RENDERBUFFER, Value);
   end;
 end;
 
@@ -2432,7 +2437,7 @@ begin
       Include(FListStates[FCurrentList], sttScissor)
     else
       FScissorBox := Value;
-    glScissor(Value[0], Value[1], Value[2], Value[3]);
+    GL.Scissor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
 
@@ -2470,7 +2475,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FColorClearValue := Value;
-    glClearColor(Value[0], Value[1], Value[2], Value[3]);
+    GL.ClearColor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
 
@@ -2488,7 +2493,7 @@ begin
     begin
       FColorWriteMask[I] := mask;
     end;
-  glColorMask(ccRed in mask, ccGreen in mask, ccBlue in mask, ccAlpha in mask);
+  GL.ColorMask(ccRed in mask, ccGreen in mask, ccBlue in mask, ccAlpha in mask);
 end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
@@ -2542,7 +2547,7 @@ begin
       FStencilRef := ref;
       FStencilValueMask := mask;
     end;
-    glStencilFunc(cGLComparisonFunctionToGLEnum[func], ref, mask);
+    GL.StencilFunc(cGLComparisonFunctionToGLEnum[func], ref, mask);
   end;
 end;
 
@@ -2556,7 +2561,7 @@ begin
     FStencilPassDepthFail := zfail;
     FStencilPassDepthPass := zpass;
   end;
-  glStencilOp(cGLStencilOpToGLEnum[fail],
+  GL.StencilOp(cGLStencilOpToGLEnum[fail],
     cGLStencilOpToGLEnum[zfail],
     cGLStencilOpToGLEnum[zpass]);
 end;
@@ -2624,7 +2629,7 @@ begin
       FTextureBinding[Index, target] := Value;
     lastActiveTexture := ActiveTexture;
     ActiveTexture := Index;
-    glBindTexture(cGLTexTypeToGLEnum[target], Value);
+    GL.BindTexture(cGLTexTypeToGLEnum[target], Value);
     ActiveTexture := lastActiveTexture;
   end;
 end;
@@ -2651,9 +2656,9 @@ begin
     else
       FActiveTextureEnabling[FActiveTexture][Target] := Value;
     if Value then
-      glEnable(glTarget)
+      GL.Enable(glTarget)
     else
-      glDisable(glTarget);
+      GL.Disable(glTarget);
   end;
 end;
 
@@ -2665,7 +2670,7 @@ begin
       Include(FListStates[FCurrentList], sttHint)
     else
       FTextureCompressionHint := Value;
-    glHint(GL_TEXTURE_COMPRESSION_HINT, cGLHintToGLEnum[Value]);
+    GL.Hint(GL_TEXTURE_COMPRESSION_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
@@ -2674,7 +2679,7 @@ begin
   if (Value <> FTransformFeedbackBufferBinding) or FInsideList then
   begin
     FTransformFeedbackBufferBinding := Value;
-    glBindBufferARB(GL_TRANSFORM_FEEDBACK_BUFFER, Value);
+    GL.BindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, Value);
   end;
 end;
 
@@ -2685,9 +2690,9 @@ begin
   begin
     FEnableTextureCubeMapSeamless := Value;
     if Value = true then
-      glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
+      GL.Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
     else
-      glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+      GL.Disable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
   end;
 end;
 
@@ -2711,19 +2716,19 @@ begin
     for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
       EnableVertexAttribArray[I] := False;
   end;
-  glNewList(list, mode)
+  GL.NewList(list, mode)
 end;
 
 procedure TGLStateCache.EndList;
 begin
-  glEndList;
+  GL.EndList;
   FInsideList := False;
 end;
 
 procedure TGLStateCache.CallList(list: TGLuint);
 begin
   PushAttrib(FListStates[list - 1]);
-  glCallList(list);
+  GL.CallList(list);
   PopAttrib;
 end;
 
@@ -2732,7 +2737,7 @@ begin
   if (Value <> FUniformBufferBinding) or FInsideList then
   begin
     FUniformBufferBinding := Value;
-    glBindBufferARB(GL_UNIFORM_BUFFER, Value);
+    GL.BindBuffer(GL_UNIFORM_BUFFER, Value);
   end;
 end;
 
@@ -2741,7 +2746,7 @@ begin
   if Value <> FUnpackAlignment then
   begin
     FUnpackAlignment := Value;
-    glPixelStoref(GL_UNPACK_ALIGNMENT, Value);
+    GL.PixelStoref(GL_UNPACK_ALIGNMENT, Value);
   end;
 end;
 
@@ -2750,7 +2755,7 @@ begin
   if Value <> FUnpackImageHeight then
   begin
     FUnpackImageHeight := Value;
-    glPixelStoref(GL_UNPACK_IMAGE_HEIGHT, Value);
+    GL.PixelStoref(GL_UNPACK_IMAGE_HEIGHT, Value);
   end;
 end;
 
@@ -2759,7 +2764,7 @@ begin
   if Value <> FUnpackLSBFirst then
   begin
     FUnpackLSBFirst := Value;
-    glPixelStorei(GL_UNPACK_LSB_FIRST, byte(Value));
+    GL.PixelStorei(GL_UNPACK_LSB_FIRST, byte(Value));
   end;
 end;
 
@@ -2768,7 +2773,7 @@ begin
   if Value <> FUnpackRowLength then
   begin
     FUnpackRowLength := Value;
-    glPixelStoref(GL_UNPACK_ROW_LENGTH, Value);
+    GL.PixelStoref(GL_UNPACK_ROW_LENGTH, Value);
   end;
 end;
 
@@ -2777,7 +2782,7 @@ begin
   if Value <> FUnpackSkipImages then
   begin
     FUnpackSkipImages := Value;
-    glPixelStoref(GL_UNPACK_SKIP_IMAGES, Value);
+    GL.PixelStoref(GL_UNPACK_SKIP_IMAGES, Value);
   end;
 end;
 
@@ -2786,7 +2791,7 @@ begin
   if Value <> FUnpackSkipPixels then
   begin
     FUnpackSkipPixels := Value;
-    glPixelStoref(GL_UNPACK_SKIP_PIXELS, Value);
+    GL.PixelStoref(GL_UNPACK_SKIP_PIXELS, Value);
   end;
 end;
 
@@ -2795,7 +2800,7 @@ begin
   if Value <> FUnpackSkipRows then
   begin
     FUnpackSkipRows := Value;
-    glPixelStoref(GL_UNPACK_SKIP_ROWS, Value);
+    GL.PixelStoref(GL_UNPACK_SKIP_ROWS, Value);
   end;
 end;
 
@@ -2804,7 +2809,7 @@ begin
   if Value <> FUnpackSwapBytes then
   begin
     FUnpackSwapBytes := Value;
-    glPixelStorei(GL_UNPACK_SWAP_BYTES, byte(Value));
+    GL.PixelStorei(GL_UNPACK_SWAP_BYTES, byte(Value));
   end;
 end;
 
@@ -2816,14 +2821,14 @@ begin
       Include(FListStates[FCurrentList], sttViewport)
     else
       FViewPort := Value;
-    glViewport(Value[0], Value[1], Value[2], Value[3]);
+    GL.Viewport(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
 
 function TGLStateCache.GetMaxLights: Integer;
 begin
   if FMaxLights = 0 then
-    glGetIntegerv(GL_MAX_LIGHTS, @FMaxLights);
+    GL.GetIntegerv(GL_MAX_LIGHTS, @FMaxLights);
   Result := FMaxLights;
 end;
 
@@ -2843,9 +2848,9 @@ begin
     else
       FLightEnabling[I] := Value;
     if Value then
-      glEnable(GL_LIGHT0 + I)
+      GL.Enable(GL_LIGHT0 + I)
     else
-      glDisable(GL_LIGHT0 + I);
+      GL.Disable(GL_LIGHT0 + I);
   end;
 end;
 
@@ -2862,7 +2867,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FLightAmbient[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
   end;
 end;
 
@@ -2879,7 +2884,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FLightDiffuse[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
   end;
 end;
 
@@ -2896,7 +2901,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FLightSpecular[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
   end;
 end;
 
@@ -2913,7 +2918,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FSpotCutoff[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
   end;
 end;
 
@@ -2930,7 +2935,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FConstantAtten[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
   end;
 end;
 
@@ -2947,7 +2952,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FLinearAtten[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
   end;
 end;
 
@@ -2964,7 +2969,7 @@ begin
       Include(FListStates[FCurrentList], sttLighting)
     else
       FQuadAtten[I] := Value;
-    glLightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
+    GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
   end;
 end;
 
@@ -2977,9 +2982,9 @@ begin
     exit;
   if not FTextureMatrixIsIdentity then
   begin
-    glMatrixMode(GL_TEXTURE);
-    glLoadIdentity;
-    glMatrixMode(GL_MODELVIEW);
+    GL.MatrixMode(GL_TEXTURE);
+    GL.LoadIdentity;
+    GL.MatrixMode(GL_MODELVIEW);
     FTextureMatrixIsIdentity := True;
   end;
 end;
@@ -2995,7 +3000,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FColorWriting := flag;
-    glColorMask(flag, flag, flag, flag);
+    GL.ColorMask(flag, flag, flag, flag);
   end;
 end;
 
