@@ -258,6 +258,10 @@ type
    PCardinalArray = PCardinalVector;
    TCardinalVector = array[0..cMaxArray] of Cardinal;
 
+   PLongWordVector = ^TLongWordVector;
+   PLongWordArray = PLongWordVector;
+   TLongWordVector = array[0..cMaxArray] of LongWord;
+
    // common vector and matrix types with predefined limits
    // indices correspond like: x -> 0
    //                          y -> 1
