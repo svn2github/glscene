@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/05/10 - Yar - Added choice between hardware and software acceleration
       <li>06/05/10 - Yar - Added vLastVendor clearing when multithreading is enabled
       <li>06/04/10 - Yar - Added DoGetHandles to TGLWin32Context (thanks Rustam Asmandiarov aka Predator)
       <li>28/03/10 - Yar - Added 3.3 forward context creation and eliminate memory leaks when multithreading
@@ -53,7 +54,12 @@ interface
 
 {$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit is Windows specific'}{$ENDIF}
 
-uses Windows, Classes, SysUtils, GLContext;
+uses
+  Windows,
+  Classes,
+  SysUtils,
+  OpenGL1x,
+  GLContext;
 
 type
 
@@ -95,9 +101,10 @@ type
     procedure DoDeactivate; override;
     {: DoGetHandles must be implemented in child classes,
        and return the display + window }
-    {$IFDEF FPC}
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal); virtual; abstract;
-    {$ENDIF}
+{$IFDEF FPC}
+    procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal); virtual;
+      abstract;
+{$ENDIF}
 
   public
     { Public Declarations }
@@ -130,11 +137,15 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL1x, GLCrossPlatform, Messages;
+uses
+  Forms,
+  GLCrossPlatform,
+  Messages,
+  GLSLog;
 
 resourcestring
   cForwardContextFailsed = 'Can not create OpenGL 3.x Forward Context';
-  
+
 var
   vTrackingCount: Integer;
   vTrackedHwnd: array of HWND;
@@ -453,10 +464,14 @@ var
   float: boolean;
 
 begin
-  float := (ColorBits = 64) or (ColorBits = 128); // float_type
-
   // request hardware acceleration
-  AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
+  case FAcceleration of
+    chaUnknown: AddIAttrib(WGL_ACCELERATION_ARB, WGL_GENERIC_ACCELERATION_ARB);
+    chaHardware: AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
+    chaSoftware: AddIAttrib(WGL_ACCELERATION_ARB, WGL_NO_ACCELERATION_ARB);
+  end;
+
+  float := (ColorBits = 64) or (ColorBits = 128); // float_type
 
   if float then
   begin // float_type
@@ -597,11 +612,11 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
-  {$IFDEF FPC}
-    DoGetHandles(outputDevice, HDC(outputDC));
-  {$ELSE}
-    outputDC := HDC(outputDevice);
-  {$ENDIF}
+{$IFDEF FPC}
+  DoGetHandles(outputDevice, HDC(outputDC));
+{$ELSE}
+  outputDC := HDC(outputDevice);
+{$ENDIF}
 
   if vUseWindowTrackingHook then
     TrackWindow(WindowFromDC(outputDC), DestructionEarlyWarning);
@@ -664,6 +679,7 @@ begin
             AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
             AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in
               Options]);
+
             ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
@@ -753,10 +769,16 @@ begin
     if (dwFlags and PFD_NEED_PALETTE) <> 0 then
       SetupPalette(outputDC, PFDescriptor);
 
-  if (pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0 then
-    FAcceleration := chaSoftware
-  else
-    FAcceleration := chaHardware;
+  if not FLegacyContextsOnly then
+  begin
+    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0)
+      and (FAcceleration = chaHardware) then
+      begin
+        FAcceleration := chaSoftware;
+        GLSLogger.LogWarning('Unable to create rendering context with hardware acceleration - down to software');
+      end;
+  end;
+
 
   FRC := wglCreateContext(outputDC);
   if FRC = 0 then
@@ -922,7 +944,7 @@ var
   FFRC: HGLRC;
 begin
 {$IFDEF GLS_EXPERIMENTAL}
-  if (vLastDC<>FDC) or (vLastRC<>FRC) then
+  if (vLastDC <> FDC) or (vLastRC <> FRC) then
   begin
     vLastDC := FDC;
     vLastRC := FRC;
@@ -954,7 +976,7 @@ begin
     end;
     vLastPixelFormat := pixelFormat;
     // Initialize forward context
-    if GLStates.ForwardContext then
+    if GLStates.ForwardContext and not FLegacyContextsOnly then
     begin
       if @wglCreateContextAttribsARB = nil then
         raise EGLContext.Create(cForwardContextFailsed);
@@ -1031,13 +1053,14 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
+
 {$IFNDEF FPC}
   RegisterGLContextClass(TGLWin32Context);
 {$ENDIF}
 finalization
 
 {$IFDEF GLS_MULTITHREAD}
-   vLastVendor := '';
+  vLastVendor := '';
 {$ENDIF}
 
 end.
