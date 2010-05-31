@@ -864,7 +864,7 @@ end;
 procedure TGL3xLensFlare.PrepareRayTexture(var rci: TRenderContextInfo);
 var
   FrameBuffer: TGLFrameBuffer;
-  M: TMatrix;
+  M, P: TMatrixEXT;
   i: Integer;
   rnd, alpha, s, c: Single;
 begin
@@ -872,9 +872,9 @@ begin
   FrameBuffer.Bind;
   FrameBuffer.AttachTexture(0, FRaysTexture);
   Assert(FrameBuffer.Status = fsComplete, 'Framebuffer not complete');
-  M := CreateTranslationMatrix(
-    AffineVectorMake(FSize, FSize, 0));
-  M := MatrixMultiply(M, CreateProjectionMatrix(0, 2 * FSize, 0, 2 * FSize));
+  M.Translation(VectorMakeEXT(FSize, FSize, 0));
+  P.Ortho(0, 2 * FSize, 0, 2 * FSize, 0, 1);
+  M := M * P;
   ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
 
   with rci.GLStates do

@@ -389,7 +389,7 @@ var
   SB: TGLSceneBuffer;
   LS: TGLLightSource;
 begin
-  if GL_VERSION_2_1 then
+  if GL.VERSION_2_1 then
   begin
     if ARenderSelf then
     begin
@@ -2326,7 +2326,7 @@ begin
       BeginObject(FBuiltProperties);
       for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
         if Assigned(FAttrArray[i]) then
-          case FAttrArray[i].DataType of
+          case FAttrArray[i].DataFormat of
             GLSLType1F: Attribute1f(FAttrArray[i], 0);
             GLSLType2F: Attribute2f(FAttrArray[i], 0, 0);
             GLSLType3F: Attribute3f(FAttrArray[i], 0, 0, 0);

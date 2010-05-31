@@ -133,7 +133,7 @@ type
     procedure ResetLocationCash;
     property Name: string read FName;
     property Location: GLInt read GetLocation write SetLocation;
-    property DataType: TGLSLDataType read GetDataType;
+    property DataFormat: TGLSLDataType read GetDataType;
     property Tag: Integer read FTag write FTag;
   end;
 
@@ -846,11 +846,11 @@ begin
       else
         vShadersManager.CompilationLog.LogError(logstr + ' Failed!');
 
-      glGetShaderiv(FHandles[P].Handle, GL_INFO_LOG_LENGTH, @val);
+      GL.GetShaderiv(FHandles[P].Handle, GL_INFO_LOG_LENGTH, @val);
       if val > 1 then
       begin
         ReallocMem(pLog, val);
-        glGetShaderInfoLog(FHandles[P].Handle, val, @len, pLog);
+        GL.GetShaderInfoLog(FHandles[P].Handle, val, @len, pLog);
         vShadersManager.CompilationLog.LogInfo(string(pLog));
       end;
     end
@@ -911,11 +911,11 @@ begin
       if P in obj.FTypes then
       begin
         if Assigned(obj.FHandles[P]) and (obj.FHandles[P].Handle <> 0) then
-          glAttachShader(FHandle.Handle, obj.FHandles[P].Handle)
+          GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle)
         else
         begin
           if obj.Compile then
-            glAttachShader(FHandle.Handle, obj.FHandles[P].Handle)
+            GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle)
           else
             exit;
         end;
@@ -931,11 +931,11 @@ begin
   else
     vShadersManager.CompilationLog.LogError(logstr + ' Failed!');
 
-  glGetProgramiv(FHandle.Handle, GL_INFO_LOG_LENGTH, @val);
+  GL.GetProgramiv(FHandle.Handle, GL_INFO_LOG_LENGTH, @val);
   if val > 0 then
   begin
     GetMem(pLog, val);
-    glGetProgramInfoLog(FHandle.Handle, val, @len, pLog);
+    GL.GetProgramInfoLog(FHandle.Handle, val, @len, pLog);
     vShadersManager.CompilationLog.LogInfo(string(pLog));
     FreeMem(pLog, val);
   end;
@@ -962,7 +962,7 @@ begin
       begin
         if Assigned(AObject.FHandles[P]) and (AObject.FHandles[P].Handle <> 0)
           then
-          glDetachShader(AObject.FHandles[P].Handle,
+          GL.DetachShader(AObject.FHandles[P].Handle,
             AObject.FHandles[P].Handle);
       end;
 end;
@@ -1202,10 +1202,10 @@ var
 begin
   Assert(vWorked, glsWrongMethodCall);
   // Get all active atttributes
-  glGetProgramiv(ProgramID, GL_ACTIVE_ATTRIBUTES, @max);
+  GL.GetProgramiv(ProgramID, GL_ACTIVE_ATTRIBUTES, @max);
   for I := 0 to max - 1 do
   begin
-    glGetActiveAttrib(
+    GL.GetActiveAttrib(
       ProgramID,
       I,
       Length(buff),
@@ -1221,7 +1221,7 @@ begin
       begin
         CompilationLog.LogInfo('Detected active attribute: ' + Name);
         FLocation[ProgramID] :=
-          glGetAttribLocation(ProgramID, PGLChar(TGLString(Name)));
+          GL.GetAttribLocation(ProgramID, PGLChar(TGLString(Name)));
         case AType of
           GL_FLOAT: FDataType[ProgramID] := GLSLType1F;
           GL_FLOAT_VEC2: FDataType[ProgramID] := GLSLType2F;
@@ -1253,12 +1253,12 @@ begin
         ' not registered');
   end;
 
-  if GL_ARB_uniform_buffer_object then
+  if GL.ARB_uniform_buffer_object then
   begin
-    glGetProgramiv(ProgramID, GL_ACTIVE_UNIFORM_BLOCKS, @max);
+    GL.GetProgramiv(ProgramID, GL_ACTIVE_UNIFORM_BLOCKS, @max);
     for I := 0 to max - 1 do
     begin
-      glGetActiveUniformBlockName(
+      GL.GetActiveUniformBlockName(
         ProgramID,
         I,
         Length(buff),
@@ -1272,15 +1272,15 @@ begin
         begin
           CompilationLog.LogInfo('Detected active uniform Block: ' + Name);
           FLocation[ProgramID] :=
-            glGetUniformBlockIndex(ProgramID, PGLChar(TGLString(Name)));
-          glGetActiveUniformBlockiv(ProgramID, FLocation[ProgramID],
+            GL.GetUniformBlockIndex(ProgramID, PGLChar(TGLString(Name)));
+          GL.GetActiveUniformBlockiv(ProgramID, FLocation[ProgramID],
             GL_UNIFORM_BLOCK_DATA_SIZE, @FSize);
         end;
     end;
   end;
 
   // Get all active uniform
-  glGetProgramiv(ProgramID, GL_ACTIVE_UNIFORMS, @max);
+  GL.GetProgramiv(ProgramID, GL_ACTIVE_UNIFORMS, @max);
 
   for I := 0 to max - 1 do
   begin
@@ -1300,7 +1300,7 @@ begin
       begin
         CompilationLog.LogInfo('Detected active uniform: ' + Name);
         FLocation[ProgramID] :=
-          glGetUniformLocation(ProgramID, PGLChar(TGLString(Name)));
+          GL.GetUniformLocation(ProgramID, PGLChar(TGLString(Name)));
         case AType of
           GL_FLOAT: FDataType[ProgramID] := GLSLType1F;
           GL_FLOAT_VEC2: FDataType[ProgramID] := GLSLType2F;
@@ -1410,14 +1410,17 @@ begin
       begin
         if prog.FHandle.Handle > 0 then
         begin
-          if not prog.FLinked then
-            if not LinkShaderProgram(AName) then
-              Abort;
+          GL.GetProgramiv(prog.FHandle.Handle, GL_LINK_STATUS, @iLinked);
+          bLinked := iLinked <> 0;
+        end
+        else
+          bLinked := LinkShaderProgram(AName);
+        if not bLinked then
+          if not prog.Link then
+            Abort;
 
           vCurrentProgram := prog;
           prog.FHandle.UseProgramObject;
-        end;
-//          WorkLog.LogError('Used not linked program "' + AName + '"');
       end
       else
         WorkLog.LogError('Used unknown program "' + AName + '"');
@@ -1550,7 +1553,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform1f(loc, Value);
+    GL.Uniform1f(loc, Value);
 end;
 
 procedure TGLShadersManager.Uniform2f(AUniform: TGLSLUniform; const
@@ -1561,7 +1564,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform2f(loc, Value[0], Value[1]);
+    GL.Uniform2f(loc, Value[0], Value[1]);
 end;
 
 procedure TGLShadersManager.Uniform3f(AUniform: TGLSLUniform; const
@@ -1572,7 +1575,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform3f(loc, Value[0], Value[1], Value[2]);
+    GL.Uniform3f(loc, Value[0], Value[1], Value[2]);
 end;
 
 procedure TGLShadersManager.Uniform4f(AUniform: TGLSLUniform; const
@@ -1583,7 +1586,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform4f(loc, Value[0], Value[1], Value[2], Value[3]);
+    GL.Uniform4f(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
 procedure TGLShadersManager.Uniform1I(AUniform: TGLSLUniform; const
@@ -1594,7 +1597,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform1i(loc, Value);
+    GL.Uniform1i(loc, Value);
 end;
 
 procedure TGLShadersManager.Uniform1I(AUniform: TGLSLUniform;
@@ -1605,7 +1608,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform1iv(loc, Count, Value);
+    GL.Uniform1iv(loc, Count, Value);
 end;
 
 procedure TGLShadersManager.Uniform2I(AUniform: TGLSLUniform; const
@@ -1616,7 +1619,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform2i(loc, Value[0], Value[1]);
+    GL.Uniform2i(loc, Value[0], Value[1]);
 end;
 
 procedure TGLShadersManager.Uniform3I(AUniform: TGLSLUniform; const
@@ -1627,7 +1630,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform3i(loc, Value[0], Value[1], Value[2]);
+    GL.Uniform3i(loc, Value[0], Value[1], Value[2]);
 end;
 
 procedure TGLShadersManager.Uniform4I(AUniform: TGLSLUniform; const
@@ -1638,7 +1641,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform4i(loc, Value[0], Value[1], Value[2], Value[3]);
+    GL.Uniform4i(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
 procedure TGLShadersManager.Uniform4I(AUniform: TGLSLUniform; const
@@ -1649,7 +1652,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniform4iv(loc, Count, Value);
+    GL.Uniform4iv(loc, Count, Value);
 end;
 
 procedure TGLShadersManager.UniformMat2f(AUniform: TGLSLUniform; const
@@ -1660,7 +1663,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniformMatrix2fvARB(loc, 1, False, @Value);
+    GL.UniformMatrix2fv(loc, 1, False, @Value);
 end;
 
 procedure TGLShadersManager.UniformMat3f(AUniform: TGLSLUniform; const
@@ -1671,7 +1674,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniformMatrix3fv(loc, 1, False, @Value);
+    GL.UniformMatrix3fv(loc, 1, False, @Value);
 end;
 
 procedure TGLShadersManager.UniformMat4f(AUniform: TGLSLUniform; const
@@ -1682,7 +1685,7 @@ begin
   Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
-    glUniformMatrix4fv(loc, 1, False, @Value);
+    GL.UniformMatrix4fv(loc, 1, False, @Value);
 end;
 
 procedure TGLShadersManager.UniformSampler(AUniform: TGLSLUniform;
@@ -1692,12 +1695,11 @@ var
   target: TGLTextureTarget;
 begin
   Assert(vCurrentProgram <> nil);
-  if GetTextureTarget(AUniform, target) then
+  loc := AUniform.Location;
+  if (loc > -1) and GetTextureTarget(AUniform, target) then
   begin
     CurrentGLContext.GLStates.TextureBinding[TexUnit, target] := Texture;
-    loc := AUniform.Location;
-    if loc > -1 then
-      glUniform1i(loc, TexUnit);
+    GL.Uniform1i(loc, TexUnit);
   end;
 end;
 

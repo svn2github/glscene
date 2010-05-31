@@ -15,7 +15,6 @@
  </ul></font>
 }
 
-// TODO: Reload vertex data when called in new context
 // TODO: Matrix attribute
 // TODO: Bindless graphic
 // TODO: Auto-normalization for attribute
@@ -33,6 +32,7 @@ uses
   Classes,
   SysUtils,
   // GLScene
+  GLCrossPlatform,
   BaseClasses,
   OpenGL1x,
   GLContext,
@@ -93,7 +93,7 @@ type
     PrimitiveType: array[0..GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1] of TGLVBOMEnum;
 
     Attributes: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLAttribute;
-    DataType: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
+    DataFormat: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
     DataSize: array[0..GLS_VERTEX_ATTR_NUM - 1] of LongWord;
     TotalDataSize: LongWord;
     BuiltProp: TGLBuiltProperties;
@@ -763,7 +763,7 @@ begin
     begin
       AClient.Attributes[I] := nil;
       AClient.DataSize[I] := 0;
-      AClient.DataType[I] := GLSLTypeUndefined;
+      AClient.DataFormat[I] := GLSLTypeUndefined;
     end;
     AClient.TotalDataSize := 0;
   end;
@@ -808,7 +808,7 @@ begin
       begin
         AA := AttributeArrays[a];
 
-        case CurrentClient.Attributes[a].DataType of
+        case CurrentClient.Attributes[a].DataFormat of
           GLSLType1I,
             GLSLType1F: count := AA.Count;
           GLSLType2I,
@@ -858,7 +858,7 @@ begin
           if Assigned(CurrentClient.Attributes[a]) then
           begin
             AA := AttributeArrays[a];
-            dt := CurrentClient.DataType[a];
+            dt := CurrentClient.DataFormat[a];
             if (dt = GLSLType1I) or (dt = GLSLType1F) then
             begin
               if AA.Items[v].Int.Value <>
@@ -922,7 +922,7 @@ begin
         if Assigned(CurrentClient.Attributes[a]) then
         begin
           AA := AttributeArrays[a];
-          dt := CurrentClient.DataType[a];
+          dt := CurrentClient.DataFormat[a];
           if (dt = GLSLType1I) or (dt = GLSLType1F) then
           begin
             AA.Push(CurrentValue[a][0]);
@@ -1040,7 +1040,7 @@ begin
           begin
             // Record new attribute in uses set
             CurrentClient.Attributes[I] := Attrib;
-            CurrentClient.DataType[I] := eType;
+            CurrentClient.DataFormat[I] := eType;
             if (eType = GLSLType1F) or
               (eType = GLSLType1I) then
               Inc(OneVertexDataSize, 1 * sizeof(T4ByteData))
@@ -1065,7 +1065,7 @@ begin
           if CurrentClient.Attributes[I] = Attrib then
           begin
             // Check attribute type
-            if (CurrentClient.DataType[I] <> eType) and (eType <> GLSLTypeCustom)
+            if (CurrentClient.DataFormat[I] <> eType) and (eType <> GLSLTypeCustom)
               then
               GLSLogger.LogError(glsWrongAttrType)
             else
@@ -1284,7 +1284,7 @@ begin
     exit;
 
   Valid := false;
-  case Attrib.DataType of
+  case Attrib.DataFormat of
     GLSLType1F: Valid := true;
     GLSLType2F: Valid := (AList.Count mod 2 = 0);
     GLSLType3F: Valid := (AList.Count mod 3 = 0);
@@ -1316,7 +1316,7 @@ begin
     exit;
 
   Valid := false;
-  case Attrib.DataType of
+  case Attrib.DataFormat of
     GLSLType1I: Valid := true;
     GLSLType2I: Valid := (AList.Count mod 2 = 0);
     GLSLType3I: Valid := (AList.Count mod 3 = 0);
@@ -1359,7 +1359,7 @@ var
   RC: TGLContext;
   Prog: GLUInt;
   I, L: Integer;
-  Offset: LongWord;
+  Offset: PtrUInt;
   EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
   Result := SafeCurrentGLContext(RC);
@@ -1404,28 +1404,28 @@ begin
       begin
         L := CurrentClient.Attributes[I].Location;
         if (L > -1)
-          and (CurrentClient.Attributes[I].DataType = CurrentClient.DataType[I])
+          and (CurrentClient.Attributes[I].DataFormat = CurrentClient.DataFormat[I])
             then
         begin
           EnabledLocations[L] := True;
           // Setup Client Attributes pointer
-          case CurrentClient.DataType[I] of
+          case CurrentClient.DataFormat[I] of
             GLSLType1F:
-              glVertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
+              GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
             GLSLType2F:
-              glVertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
+              GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
             GLSLType3F:
-              glVertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
+              GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
             GLSLType4F:
-              glVertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+              GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
             GLSLType1I:
-              glVertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
+              GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
             GLSLType2I:
-              glVertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
+              GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
             GLSLType3I:
-              glVertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
+              GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
             GLSLType4I:
-              glVertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
+              GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
           else
             Assert(False, glsErrorEx + glsUnknownType);
           end; // of case
@@ -1460,7 +1460,8 @@ var
   p, n, fullPartCount: Integer;
   pType: TGLEnum;
   restPart: LongWord;
-  IndexStart, VertexStart, Offset, typeSize: LongWord;
+  IndexStart, VertexStart, typeSize: LongWord;
+  Offset: PtrUInt;
 
   function IsPromitiveSupported: Boolean;
   begin
@@ -1475,14 +1476,14 @@ var
   procedure HardwareInstancing;
   begin
     if CurrentClient.IndexCount[p] > 0 then
-      glDrawElementsInstancedEXT(
+      GL.DrawElementsInstanced(
         pType,
         CurrentClient.IndexCount[p],
         FIndexType,
         Pointer(offset),
         CurrentClient.BuiltProp.InstancesNumber)
     else
-      glDrawArraysInstancedEXT(
+      GL.DrawArraysInstanced(
         pType,
         VertexStart,
         CurrentClient.VertexCount[p],
@@ -1494,7 +1495,7 @@ var
     uniform: GLInt;
     i: Integer;
   begin
-    uniform := glGetUniformLocationARB(
+    uniform := GL.GetUniformLocation(
       CurrentGLContext.GLStates.CurrentProgram,
       PGLChar(AnsiString(uniformInstanceID.Name)));
     if CurrentClient.IndexCount[p] > 0 then
@@ -1502,37 +1503,37 @@ var
       for i := 0 to CurrentClient.BuiltProp.InstancesNumber - 1 do
       begin
         if uniform >= 0 then
-          glUniform1i(uniform, i);
-        glDrawElements(
+          GL.Uniform1i(uniform, i);
+        GL.DrawElements(
           pType,
           CurrentClient.IndexCount[p],
           FIndexType,
           Pointer(offset));
       end;
       if uniform >= 0 then
-        glUniform1i(uniform, 0);
+        GL.Uniform1i(uniform, 0);
     end
     else
     begin
       if uniform >= 0 then
-        glUniform1i(uniform, 0);
+        GL.Uniform1i(uniform, 0);
       for i := 0 to CurrentClient.BuiltProp.InstancesNumber - 1 do
       begin
         if uniform >= 0 then
-          glUniform1i(uniform, i);
-        glDrawArrays(
+          GL.Uniform1i(uniform, i);
+        GL.DrawArrays(
           pType,
           VertexStart,
           CurrentClient.VertexCount[p]);
       end;
       if uniform >= 0 then
-        glUniform1i(uniform, 0);
+        GL.Uniform1i(uniform, 0);
     end;
   end;
 
 begin
   if vMaxElementsIndices = 0 then
-    glGetintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
+    GL.Getintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
 
   case FIndexType of
     GL_UNSIGNED_BYTE: typeSize := SizeOf(GLUByte);
@@ -1570,7 +1571,7 @@ begin
       if Assigned(CurrentClient.BuiltProp) and
         (CurrentClient.BuiltProp.InstancesNumber > 0) then
       begin
-        if GL_EXT_draw_instanced then
+        if GL.EXT_draw_instanced then
           HardwareInstancing
         else
           PseudoInstancing;
@@ -1578,19 +1579,19 @@ begin
         // Simple drawing vertex array
       else if CurrentClient.IndexCount[p] = 0 then
       begin
-        glDrawArrays(
+        GL.DrawArrays(
           pType,
           VertexStart,
           CurrentClient.VertexCount[p]);
       end
         // Simple drawing with frendly to vertex buffer mapping
-      else if GL_EXT_draw_range_elements then
+      else if GL.EXT_draw_range_elements then
       begin
         fullPartCount := CurrentClient.IndexCount[p] div vMaxElementsIndices;
         restPart := CurrentClient.IndexCount[p] mod vMaxElementsIndices;
         for n := 0 to fullPartCount - 1 do
         begin
-          glDrawRangeElements(
+          GL.DrawRangeElements(
             pType,
             IndexStart,
             IndexStart + vMaxElementsIndices - 1,
@@ -1601,7 +1602,7 @@ begin
         end;
         if restPart > 0 then
         begin
-          glDrawRangeElements(
+          GL.DrawRangeElements(
             pType,
             IndexStart,
             IndexStart + restPart - 1,
@@ -1612,7 +1613,7 @@ begin
         end;
       end
       else
-        glDrawElements(
+        GL.DrawElements(
           pType,
           CurrentClient.IndexCount[p],
           FIndexType,
@@ -1633,7 +1634,7 @@ var
   start, count: LongWord;
 begin
   Result := False;
-  if not GL_EXT_gpu_shader4 then
+  if not GL.EXT_gpu_shader4 then
     exit;
 
   start := CurrentClient.FirstIndex;
@@ -1998,51 +1999,13 @@ begin
       else
         fVertexHandle.BufferSubData(offset, CurrentClient.DataSize[a],
           Attr.List);
-
-      //      L := CurrentClient.Attributes[a].Location;
-      //      if (L > -1) and (CurrentClient.Attributes[a].DataType =
-      //        CurrentClient.DataType[a]) then
-      //      begin
-      //        EnabledAttribute[L] := True;
-      //        case CurrentClient.DataType[a] of
-      //          GLSLType1F: glVertexAttribPointer(L, 1,
-      //              GL_FLOAT, false, 0, pointer(Offset));
-      //
-      //          GLSLType2F: glVertexAttribPointer(L, 2,
-      //              GL_FLOAT, false, 0, pointer(Offset));
-      //
-      //          GLSLType3F: glVertexAttribPointer(L, 3,
-      //              GL_FLOAT, false, 0, pointer(Offset));
-      //
-      //          GLSLType4F: glVertexAttribPointer(L, 4,
-      //              GL_FLOAT, false, 0, pointer(Offset));
-      //
-      //          GLSLType1I: glVertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
-      //
-      //          GLSLType2I: glVertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
-      //
-      //          GLSLType3I: glVertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
-      //
-      //          GLSLType4I: glVertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
-      //
-      //        else
-      //          Assert(False, glsErrorEx + glsUnknownType);
-      //        end;
       Offset := Offset + CurrentClient.DataSize[a];
-      //      end;
     end;
-
-  end; // of attribute cycle
-
-  //  for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-  //    if EnabledAttribute[a] then
-  //      CurrentGLContext.GLStates.EnableVertexAttribArray[a] := True
-  //    else
-  //      CurrentGLContext.GLStates.EnableVertexAttribArray[a] := False;
+  end;
 
   if vUseMappingForOftenBufferUpdate then
   begin
-    if GL_ARB_map_buffer_range then
+    if GL.ARB_map_buffer_range then
       fVertexHandle.Flush(0, LongWord(ObjectVertexCount) * OneVertexDataSize);
     fVertexHandle.UnmapBuffer;
   end;

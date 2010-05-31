@@ -43,12 +43,12 @@ type
   TGLNishitaSkyTexPrec = (nsp11bit, nsp16bit, nsp32bit);
 
   TNSConstantBlock = packed record
-    WavelengthMie: TVector4f;
-    v3HG: TVector4f;
-    InvWavelength4: TVector4f;
-    v2dRayleighMieScaleHeight: TVector2f;
-    InvRayleighMieN: TVector2f;
-    InvRayleighMieNLessOne: TVector2f;
+    WavelengthMie: TVector4fEXT;
+    v3HG: TVector4fEXT;
+    InvWavelength4: TVector4fEXT;
+    v2dRayleighMieScaleHeight: TVector2fEXT;
+    InvRayleighMieN: TVector2fEXT;
+    InvRayleighMieNLessOne: TVector2fEXT;
     PI: Single;
     InnerRadius: Single;
     OuterRadius: Single;
@@ -473,18 +473,18 @@ begin
   // karman line
   ConstantBlock.fScale := 1.0 / (ConstantBlock.OuterRadius -
     ConstantBlock.InnerRadius);
-  SetVector(ConstantBlock.v2dRayleighMieScaleHeight, 0.5, 0.1);
-  SetVector(ConstantBlock.InvWavelength4,
+  ConstantBlock.v2dRayleighMieScaleHeight := VectorMakeEXT(0.5, 0.1);
+  ConstantBlock.InvWavelength4 := VectorMakeEXT(
     1.0 / power(0.650, 4),
     1.0 / power(0.570, 4),
     1.0 / power(0.475, 4),
     0);
-  SetVector(ConstantBlock.WavelengthMie,
+  ConstantBlock.WavelengthMie := VectorMakeEXT(
     power(0.650, -0.84),
     power(0.570, -0.84),
     power(0.475, -0.84),
     0);
-  SetVector(ConstantBlock.v3HG,
+  ConstantBlock.v3HG := VectorMakeEXT(
     1.5 * (1.0 - g2) / (2.0 + g2),
     1.0 + g2,
     2.0 * g,
@@ -499,10 +499,10 @@ begin
   ConstantBlock.InvOpticalDepthN := 1.0 / FOpticalDepthN;
   ConstantBlock.InvOpticalDepthNLessOne := 1.0 / (FOpticalDepthN - 1);
   ConstantBlock.HalfTexelOpticalDepthN := 0.5 / FOpticalDepthN;
-  SetVector(ConstantBlock.InvRayleighMieN,
+  ConstantBlock.InvRayleighMieN := VectorMakeEXT(
     1.0 / FRayleighMieN,
     1.0 / (FRayleighMieN / 2));
-  SetVector(ConstantBlock.InvRayleighMieNLessOne,
+  ConstantBlock.InvRayleighMieNLessOne := VectorMakeEXT(
     1.0 / (FRayleighMieN - 1),
     1.0 / (FRayleighMieN / 2 - 1));
 
@@ -659,10 +659,10 @@ begin
     ConstantBlock.InvOpticalDepthN := 1.0 / FOpticalDepthN;
     ConstantBlock.InvOpticalDepthNLessOne := 1.0 / (FOpticalDepthN - 1);
     ConstantBlock.HalfTexelOpticalDepthN := 0.5 / FOpticalDepthN;
-    SetVector(ConstantBlock.InvRayleighMieN,
+    ConstantBlock.InvRayleighMieN := VectorMakeEXT(
       1.0 / FRayleighMieN,
       1.0 / (FRayleighMieN / 2));
-    SetVector(ConstantBlock.InvRayleighMieNLessOne,
+    ConstantBlock.InvRayleighMieNLessOne := VectorMakeEXT(
       1.0 / (FRayleighMieN - 1),
       1.0 / (FRayleighMieN / 2 - 1));
     FUBO.BindBufferData(@ConstantBlock, SizeOf(TNSConstantBlock),
@@ -1064,19 +1064,19 @@ end;
 
 function TGL3xCustomNishitaSky.GetMieScaleHeight: Single;
 begin
-  Result := ConstantBlock.v2dRayleighMieScaleHeight[1];
+  Result := ConstantBlock.v2dRayleighMieScaleHeight.Y;
 end;
 
 function TGL3xCustomNishitaSky.GetRayleighScaleHeight: Single;
 begin
-  Result := ConstantBlock.v2dRayleighMieScaleHeight[0];
+  Result := ConstantBlock.v2dRayleighMieScaleHeight.X;
 end;
 
 procedure TGL3xCustomNishitaSky.SetMieScaleHeight(Value: Single);
 begin
-  if Value <> ConstantBlock.v2dRayleighMieScaleHeight[1] then
+  if Value <> ConstantBlock.v2dRayleighMieScaleHeight.Y then
   begin
-    ConstantBlock.v2dRayleighMieScaleHeight[1] := Value;
+    ConstantBlock.v2dRayleighMieScaleHeight.Y := Value;
     Include(FChanges, nscConstants);
     NotifyChange(Self);
   end;
@@ -1084,9 +1084,9 @@ end;
 
 procedure TGL3xCustomNishitaSky.SetRayleighScaleHeight(Value: Single);
 begin
-  if Value <> ConstantBlock.v2dRayleighMieScaleHeight[0] then
+  if Value <> ConstantBlock.v2dRayleighMieScaleHeight.X then
   begin
-    ConstantBlock.v2dRayleighMieScaleHeight[0] := Value;
+    ConstantBlock.v2dRayleighMieScaleHeight.X := Value;
     Include(FChanges, nscConstants);
     NotifyChange(Self);
   end;
@@ -1096,14 +1096,14 @@ function TGL3xCustomNishitaSky.StoreMieScaleHeight: Boolean;
 const
   MSH: Single = 0.1;
 begin
-  Result := ConstantBlock.v2dRayleighMieScaleHeight[1] <> MSH;
+  Result := ConstantBlock.v2dRayleighMieScaleHeight.Y <> MSH;
 end;
 
 function TGL3xCustomNishitaSky.StoreRayleighScaleHeight: Boolean;
 const
   RSH: Single = 0.5;
 begin
-  Result := ConstantBlock.v2dRayleighMieScaleHeight[0] <> RSH;
+  Result := ConstantBlock.v2dRayleighMieScaleHeight.X <> RSH;
 end;
 
 initialization

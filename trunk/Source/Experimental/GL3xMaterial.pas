@@ -15,7 +15,8 @@ uses
   FileUtil, DOM, XMLRead, XMLWrite,
 {$ENDIF}
   BaseClasses, OpenGL1x, GLContext, GLRenderContextInfo,
-  GLState, GLShadersManager, GLVBOManagers, VectorTypes, VectorGeometry,
+  GLState, GLShadersManager, GLVBOManagers,
+  VectorTypes, VectorGeometry, VectorGeometryEXT,
   GLSLShader, GLSLog;
 
 const
@@ -79,23 +80,10 @@ type
   end;
 
 var
-  vDefaultModelMatrix: TMatrix =
-    ((1, 0, 0, 0),
-    (0, 1, 0, 0),
-    (0, 0, 1, 0),
-    (0, 0, 0, 1));
-  vDefaultViewMatrix: TMatrix =
-    ((1, 0, 0, 0),
-    (0, 1, 0, 0),
-    (0, 0, 1, 0),
-    (0, 0, 0, 1));
-  vDefaultProjectionMatrix: TMatrix =
-    ((1, 0, 0, 0),
-    (0, 1, 0, 0),
-    (0, 0, 1, 0),
-    (0, 0, 0, 1));
-  vDefaultLightSourcePosition: TVector =
-    (10, 10, 10, 1);
+  vDefaultModelMatrix: TMatrix;
+  vDefaultViewMatrix: TMatrix;
+  vDefaultProjectionMatrix: TMatrix;
+  vDefaultLightSourcePosition: TVector;
 
 implementation
 
@@ -458,6 +446,10 @@ end;
 initialization
 
   InitMaterialSystem := MaterialSystemInitializer;
+  vDefaultModelMatrix := IdentityHmgMatrix;
+  vDefaultViewMatrix := IdentityHmgMatrix;
+  vDefaultProjectionMatrix := IdentityHmgMatrix;
+  vDefaultLightSourcePosition := VectorMake(10, 10, 10, 1);
 
 end.
 
