@@ -77,6 +77,7 @@ uses
   Classes,
   SysUtils,
   OpenGL1x,
+  OpenGLAdapter,
   VectorGeometry,
   VectorTypes,
   GLState,
@@ -133,6 +134,7 @@ type
     FOnDestroyContext: TNotifyEvent;
     FManager: TGLContextManager;
     FActivationCount: Integer;
+    FGL: TGLExtensionsAndEntryPoints;
     FGLStates: TGLStateCache;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
@@ -154,6 +156,7 @@ type
     procedure SetAuxBuffers(const aAuxBuffers: Integer);
     procedure SetOptions(const aOptions: TGLRCOptions);
     procedure SetAntiAliasing(const val: TGLAntiAliasing);
+    procedure SetAcceleration(const val: TGLContextAcceleration);
     function GetActive: Boolean;
     procedure SetActive(const aActive: Boolean);
     procedure PropagateSharedContext;
@@ -201,7 +204,7 @@ type
        to Activate and Deactivate. }
     property Active: Boolean read GetActive write SetActive;
     {: Indicates if the context is hardware-accelerated. }
-    property Acceleration: TGLContextAcceleration read FAcceleration;
+    property Acceleration: TGLContextAcceleration read FAcceleration write SetAcceleration;
     {: Triggered whenever the context is destroyed.<p>
        This events happens *before* the context has been
        actually destroyed, OpenGL resource cleanup can
@@ -1044,6 +1047,7 @@ procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
 function CurrentGLContext: TGLContext;
 function SafeCurrentGLContext(out ARC: TGLContext): Boolean;
 {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function GL: TGLExtensionsAndEntryPoints;
 
 resourcestring
   cIncompatibleContexts = 'Incompatible contexts';
@@ -1081,6 +1085,7 @@ var
 {$ELSE}
 threadvar
 {$ENDIF}
+  vGL: TGLExtensionsAndEntryPoints;
   vCurrentGLContext: TGLContext;
 
 // CurrentGLContext
@@ -1096,7 +1101,20 @@ begin
   ARC := CurrentGLContext;
   Result := Assigned(ARC);
   if not Result then
+  begin
     GLSLogger.LogError(cNoActiveRC);
+    Abort;
+  end;
+end;
+
+function GL: TGLExtensionsAndEntryPoints;
+begin
+  Result := vGL;
+//  if not Assigned(vGL) then
+//  begin
+//    GLSLogger.LogError(cNoActiveRC);
+//    Abort;
+//  end;
 end;
 
 // RegisterGLContextClass
@@ -1148,6 +1166,7 @@ begin
     DestroyContext;
   GLContextManager.UnRegisterContext(Self);
   FGLStates.Free;
+  FGL.Free;
   FOwnedHandles.Free;
   FSharedContexts.Free;
 {$IFDEF GLS_MULTITHREAD}
@@ -1244,6 +1263,17 @@ begin
     FAntiAliasing := val;
 end;
 
+// SetAcceleration
+//
+
+procedure TGLContext.SetAcceleration(const val: TGLContextAcceleration);
+begin
+  if Active then
+    raise EGLContext.Create(cCannotAlterAnActiveContext)
+  else
+    FAcceleration := val;
+end;
+
 // GetActive
 //
 
@@ -1274,10 +1304,10 @@ procedure TGLContext.CreateContext(outputDevice: Cardinal);
 begin
   if IsValid then
     raise EGLContext.Create(cContextAlreadyCreated);
-  FAcceleration := chaUnknown;
   DoCreateContext(outputDevice);
   FSharedContexts.Add(Self);
   Manager.ContextCreatedBy(Self);
+  FGL := TGLExtensionsAndEntryPoints.Create;
 end;
 
 // CreateMemoryContext
@@ -1470,6 +1500,7 @@ begin
     FSharedContexts.Clear;
     Active := False;
     DoDestroyContext;
+    FreeAndNil(FGL);
   finally
     if Assigned(oldContext) then
       oldContext.Activate;
@@ -1496,6 +1527,9 @@ begin
       vContextActivationFailureOccurred := True;
     end;
     vCurrentGLContext := Self;
+    if not FGL.IsInitialized then
+      FGL.Initialize;
+    vGL := FGL;
   end
   else
     Assert(vCurrentGLContext = Self, 'vCurrentGLContext <> Self');
@@ -1516,6 +1550,7 @@ begin
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
+    vGL := nil;
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
@@ -2021,7 +2056,7 @@ end;
 
 function TGLQueryHandle.CounterBits: integer;
 begin
-  glGetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
+  GL.GetQueryiv(Target, GL_QUERY_COUNTER_BITS, @Result);
 end;
 
 // DoAllocateHandle
@@ -2029,7 +2064,7 @@ end;
 
 function TGLQueryHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenQueries(1, @Result);
+  GL.GenQueries(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2042,7 +2077,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteQueries(1, @AHandle);
+    GL.DeleteQueries(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2065,7 +2100,7 @@ end;
 
 function TGLQueryHandle.IsResultAvailable: boolean;
 begin
-  glGetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
+  GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT_AVAILABLE, @Result);
 end;
 
 // QueryResultInt
@@ -2073,7 +2108,7 @@ end;
 
 function TGLQueryHandle.QueryResultInt: TGLInt;
 begin
-  glGetQueryObjectiv(Handle, GL_QUERY_RESULT, @Result);
+  GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT, @Result);
 end;
 
 // QueryResultInt64
@@ -2081,7 +2116,7 @@ end;
 
 function TGLQueryHandle.QueryResultInt64: TGLint64EXT;
 begin
-  glGetQueryObjecti64vEXT(Handle, GL_QUERY_RESULT, @Result);
+  GL.GetQueryObjecti64v(Handle, GL_QUERY_RESULT, @Result);
 end;
 
 // QueryResultUInt
@@ -2089,7 +2124,7 @@ end;
 
 function TGLQueryHandle.QueryResultUInt: TGLUInt;
 begin
-  glGetQueryObjectuiv(Handle, GL_QUERY_RESULT, @Result);
+  GL.GetQueryObjectuiv(Handle, GL_QUERY_RESULT, @Result);
 end;
 
 // QueryResultUInt64
@@ -2097,7 +2132,7 @@ end;
 
 function TGLQueryHandle.QueryResultUInt64: TGLuint64EXT;
 begin
-  glGetQueryObjectui64vEXT(Handle, GL_QUERY_RESULT, @Result);
+  GL.GetQueryObjectui64v(Handle, GL_QUERY_RESULT, @Result);
 end;
 
 // Transferable
@@ -2235,7 +2270,7 @@ end;
 
 function TGLBufferObjectHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenBuffersARB(1, @Result);
+  GL.GenBuffers(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2249,7 +2284,7 @@ begin
     glGetError;
     UnBind;
     // delete
-    glDeleteBuffersARB(1, @AHandle);
+    GL.DeleteBuffers(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2294,7 +2329,7 @@ end;
 procedure TGLBufferObjectHandle.BufferData(p: Pointer; size: Integer;
   bufferUsage: TGLuint);
 begin
-  glBufferDataARB(Target, size, p, bufferUsage);
+  GL.BufferData(Target, size, p, bufferUsage);
 end;
 
 // BindBufferData
@@ -2304,7 +2339,7 @@ procedure TGLBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
   bufferUsage: TGLuint);
 begin
   Bind;
-  glBufferDataARB(Target, size, p, bufferUsage);
+  GL.BufferData(Target, size, p, bufferUsage);
 end;
 
 // BufferSubData
@@ -2313,7 +2348,7 @@ end;
 procedure TGLBufferObjectHandle.BufferSubData(offset, size: Integer; p:
   Pointer);
 begin
-  glBufferSubDataARB(Target, offset, size, p);
+  GL.BufferSubData(Target, offset, size, p);
 end;
 
 // MapBuffer
@@ -2321,7 +2356,7 @@ end;
 
 function TGLBufferObjectHandle.MapBuffer(access: TGLuint): Pointer;
 begin
-  Result := glMapBufferARB(Target, access);
+  Result := GL.MapBuffer(Target, access);
 end;
 
 // MapBufferRange
@@ -2330,7 +2365,7 @@ end;
 function TGLBufferObjectHandle.MapBufferRange(offset: TGLint; len: TGLsizei;
   access: TGLbitfield): Pointer;
 begin
-  Result := glMapBufferRange(Target, offset, len, access);
+  Result := GL.MapBufferRange(Target, offset, len, access);
 end;
 
 // Flush
@@ -2338,7 +2373,7 @@ end;
 
 procedure TGLBufferObjectHandle.Flush(offset: TGLint; len: TGLsizei);
 begin
-  glFlushMappedBufferRange(Target, offset, len);
+  GL.FlushMappedBufferRange(Target, offset, len);
 end;
 
 // UnmapBuffer
@@ -2346,7 +2381,7 @@ end;
 
 function TGLBufferObjectHandle.UnmapBuffer: Boolean;
 begin
-  Result := glUnmapBufferARB(Target);
+  Result := GL.UnmapBuffer(Target);
 end;
 
 // ------------------
@@ -2493,7 +2528,7 @@ end;
 procedure TGLTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode:
   TGLenum);
 begin
-  glBeginTransformFeedback(primitiveMode);
+  GL.BeginTransformFeedback(primitiveMode);
 end;
 
 // EndTransformFeedback
@@ -2501,26 +2536,26 @@ end;
 
 procedure TGLTransformFeedbackBufferHandle.EndTransformFeedback();
 begin
-  glEndTransformFeedback();
+  GL.EndTransformFeedback();
 end;
 
 procedure TGLTransformFeedbackBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
   size: TGLsizeiptr);
 begin
   // TODO: XBO BindRange state cashing
-  glBindBufferRange(Target, index, Handle, offset, size);
+  GL.BindBufferRange(Target, index, Handle, offset, size);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.BindBase(index: TGLuint);
 begin
   // TODO: XBO BindBase state cashing
-  glBindBufferBase(Target, index, Handle);
+  GL.BindBufferBase(Target, index, Handle);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.UnBindBase(index: TGLuint);
 begin
   // TODO: XBO UnBindBase state cashing
-  glBindBufferBase(Target, index, 0);
+  GL.BindBufferBase(Target, index, 0);
 end;
 
 // IsSupported
@@ -2580,19 +2615,19 @@ procedure TGLUniformBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
   size: TGLsizeiptr);
 begin
   // TODO: UBO BindRange state cashing
-  glBindBufferRange(Target, index, Handle, offset, size);
+  GL.BindBufferRange(Target, index, Handle, offset, size);
 end;
 
 procedure TGLUniformBufferHandle.BindBase(index: TGLuint);
 begin
   // TODO: UBO BindBase state cashing
-  glBindBufferBase(Target, index, Handle);
+  GL.BindBufferBase(Target, index, Handle);
 end;
 
 procedure TGLUniformBufferHandle.UnBindBase(index: TGLuint);
 begin
   // TODO: UBO UnBindBase state cashing
-  glBindBufferBase(Target, index, 0);
+  GL.BindBufferBase(Target, index, 0);
 end;
 
 // GetTarget
@@ -2620,7 +2655,7 @@ end;
 
 function TGLVertexArrayHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenVertexArrays(1, @Result);
+  GL.GenVertexArrays(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2633,7 +2668,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteVertexArrays(1, @AHandle);
+    GL.DeleteVertexArrays(1, @AHandle);
     vCurrentGLContext.GLStates.ResetVertexArrayStates(AHandle);
     // check for error
     CheckOpenGLError;
@@ -2644,8 +2679,6 @@ end;
 //
 
 procedure TGLVertexArrayHandle.Bind;
-var
-  I: Integer;
 begin
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.VertexArrayBinding := Handle;
@@ -2686,7 +2719,7 @@ end;
 
 function TGLFramebufferHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenFramebuffersEXT(1, @Result)
+  GL.GenFramebuffers(1, @Result)
 end;
 
 // DoDestroyHandle
@@ -2699,7 +2732,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteFramebuffersEXT(1, @AHandle);
+    GL.DeleteFramebuffers(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2765,7 +2798,7 @@ end;
 procedure TGLFramebufferHandle.Attach1DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTexture1DEXT(target, attachment, textarget, texture, level);
+  GL.FramebufferTexture1D(target, attachment, textarget, texture, level);
 end;
 
 // Attach2DTexture
@@ -2774,7 +2807,7 @@ end;
 procedure TGLFramebufferHandle.Attach2DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
+  GL.FramebufferTexture2D(target, attachment, textarget, texture, level);
 end;
 
 // Attach3DTexture
@@ -2783,7 +2816,7 @@ end;
 procedure TGLFramebufferHandle.Attach3DTexture(target: TGLenum; attachment:
   TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTexture3DEXT(target, attachment, textarget, texture, level, layer);
+  GL.FramebufferTexture3D(target, attachment, textarget, texture, level, layer);
 end;
 
 // AttachLayer
@@ -2792,7 +2825,7 @@ end;
 procedure TGLFramebufferHandle.AttachLayer(target: TGLenum; attachment: TGLenum;
   texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTextureLayerEXT(target, attachment, texture, level, layer);
+  GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
 
 // AttachRenderBuffer
@@ -2801,7 +2834,7 @@ end;
 procedure TGLFramebufferHandle.AttachRenderBuffer(target: TGLenum; attachment:
   TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint);
 begin
-  glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget,
+  GL.FramebufferRenderbuffer(target, attachment, renderbuffertarget,
     renderbuffer);
 end;
 
@@ -2811,7 +2844,7 @@ end;
 procedure TGLFramebufferHandle.AttachTexture(target: TGLenum; attachment:
   TGLenum; texture: TGLuint; level: TGLint);
 begin
-  glFramebufferTextureEXT(target, attachment, texture, level);
+  GL.FramebufferTexture(target, attachment, texture, level);
 end;
 
 // AttachTextureLayer
@@ -2820,7 +2853,7 @@ end;
 procedure TGLFramebufferHandle.AttachTextureLayer(target: TGLenum; attachment:
   TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
-  glFramebufferTextureLayerEXT(target, attachment, texture, level, layer);
+  GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
 
 // Blit
@@ -2831,7 +2864,7 @@ procedure TGLFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
   dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
   mask: TGLbitfield; filter: TGLenum);
 begin
-  glBlitFramebufferEXT(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
+  GL.BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
     mask, filter);
 end;
 
@@ -2841,7 +2874,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentParameter(target: TGLenum;
   attachment: TGLenum; pname: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, @Result)
+  GL.GetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
 end;
 
 // GetAttachmentObjectType
@@ -2850,7 +2883,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentObjectType(target: TGLenum;
   attachment: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameterivEXT(target, attachment,
+  GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
 end;
 
@@ -2860,7 +2893,7 @@ end;
 function TGLFramebufferHandle.GetAttachmentObjectName(target: TGLenum;
   attachment: TGLenum): TGLint;
 begin
-  glGetFramebufferAttachmentParameterivEXT(target, attachment,
+  GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
 end;
 
@@ -2897,7 +2930,7 @@ end;
 
 function TGLRenderbufferHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenRenderbuffersEXT(1, @Result);
+  GL.GenRenderbuffers(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2910,7 +2943,7 @@ begin
     // reset error status
     glGetError;
     // delete
-    glDeleteRenderbuffersEXT(1, @AHandle);
+    GL.DeleteRenderbuffers(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2939,7 +2972,7 @@ end;
 procedure TGLRenderbufferHandle.SetStorage(internalformat: TGLenum; width,
   height: TGLsizei);
 begin
-  glRenderbufferStorageEXT(GL_RENDERBUFFER, internalformat, width, height);
+  GL.RenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
 end;
 
 // SetStorageMultisample
@@ -2948,7 +2981,7 @@ end;
 procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: TGLenum;
   samples: TGLsizei; width, height: TGLsizei);
 begin
-  glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, samples, internalformat,
+  GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
     width, height);
 end;
 
@@ -3016,10 +3049,7 @@ end;
 
 function TGLShaderHandle.DoAllocateHandle: Cardinal;
 begin
-  if vCurrentGLContext.GLStates.ForwardContext then
-    Result := glCreateShader(FShaderType)
-  else
-    Result := glCreateShaderObjectARB(FShaderType);
+  Result := GL.CreateShader(FShaderType)
 end;
 
 // ShaderSource
@@ -3030,7 +3060,7 @@ var
   p: PGLChar;
 begin
   p := PGLChar(TGLString(source));
-  glShaderSourceARB(SafeGetHandle, 1, @p, nil);
+  GL.ShaderSource(SafeGetHandle, 1, @p, nil);
 end;
 
 // CompileShader
@@ -3040,7 +3070,7 @@ function TGLShaderHandle.CompileShader: Boolean;
 var
   compiled: Integer;
 begin
-  glCompileShaderARB(SafeGetHandle);
+  GL.CompileShader(SafeGetHandle);
   compiled := 0;
   glGetObjectParameterivARB(SafeGetHandle, GL_OBJECT_COMPILE_STATUS_ARB, @compiled);
   Result := (compiled <> 0);
@@ -3118,10 +3148,7 @@ end;
 
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
-  if vCurrentGLContext.GLStates.ForwardContext then
-    Result := glCreateProgram()
-  else
-    Result := glCreateProgramObjectARB();
+  Result := GL.CreateProgram();
 end;
 
 // AddShader
@@ -3155,7 +3182,7 @@ end;
 
 procedure TGLProgramHandle.AttachObject(shader: TGLShaderHandle);
 begin
-  glAttachObjectARB(SafeGetHandle, shader.Handle);
+  GL.AttachShader(SafeGetHandle, shader.Handle);
 end;
 
 // BindAttribLocation
@@ -3164,7 +3191,7 @@ end;
 procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName:
   string);
 begin
-  glBindAttribLocationARB(SafeGetHandle, index, PGLChar(TGLString(aName)));
+  GL.BindAttribLocation(SafeGetHandle, index, PGLChar(TGLString(aName)));
 end;
 
 // BindFragDataLocation
@@ -3173,7 +3200,7 @@ end;
 procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName:
   string);
 begin
-  glBindFragDataLocation(SafeGetHandle, index, PGLChar(TGLString(name)));
+  GL.BindFragDataLocation(SafeGetHandle, index, PGLChar(TGLString(name)));
 end;
 
 // LinkProgram
@@ -3185,7 +3212,7 @@ var
   h: TGLuint;
 begin
   h := SafeGetHandle;
-  glLinkProgramARB(h);
+  GL.LinkProgram(h);
   linked := 0;
   glGetObjectParameterivARB(h, GL_OBJECT_LINK_STATUS_ARB, @linked);
   Result := (linked <> 0);
@@ -3200,7 +3227,7 @@ var
   h: TGLuint;
 begin
   h := SafeGetHandle;
-  glValidateProgramARB(h);
+  GL.ValidateProgram(h);
   validated := 0;
   glGetObjectParameterivARB(h, GL_OBJECT_VALIDATE_STATUS_ARB, @validated);
   Result := (validated <> 0);
@@ -3229,7 +3256,7 @@ end;
 
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
-  Result := glGetVaryingLocationNV(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetVaryingLocation(SafeGetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, 'Unknown varying "' + name + '" or program not in use');
 end;
 
@@ -3238,7 +3265,7 @@ end;
 
 procedure TGLProgramHandle.AddActiveVarying(const aName: string);
 begin
-  glActiveVaryingNV(SafeGetHandle, PGLChar(TGLString(aName)));
+  GL.ActiveVarying(SafeGetHandle, PGLChar(TGLString(aName)));
 end;
 
 // GetAttribLocation
@@ -3264,7 +3291,7 @@ end;
 
 function TGLProgramHandle.GetUniform1i(const index: string): Integer;
 begin
-  glGetUniformivARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform2i
@@ -3272,7 +3299,7 @@ end;
 
 function TGLProgramHandle.GetUniform2i(const index: string): TVector2i;
 begin
-  glGetUniformivARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform3i
@@ -3280,7 +3307,7 @@ end;
 
 function TGLProgramHandle.GetUniform3i(const index: string): TVector3i;
 begin
-  glGetUniformivARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform4i
@@ -3288,7 +3315,7 @@ end;
 
 function TGLProgramHandle.GetUniform4i(const index: string): TVector4i;
 begin
-  glGetUniformivARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform1f
@@ -3296,7 +3323,7 @@ end;
 
 procedure TGLProgramHandle.SetUniform1f(const index: string; val: Single);
 begin
-  glUniform1fARB(GetUniformLocation(index), val);
+  GL.Uniform1f(GetUniformLocation(index), val);
 end;
 
 // GetUniform1f
@@ -3304,7 +3331,7 @@ end;
 
 function TGLProgramHandle.GetUniform1f(const index: string): Single;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform1i
@@ -3312,7 +3339,7 @@ end;
 
 procedure TGLProgramHandle.SetUniform1i(const index: string; val: Integer);
 begin
-  glUniform1iARB(GetUniformLocation(index), val);
+  GL.Uniform1i(GetUniformLocation(index), val);
 end;
 
 // SetUniform2i
@@ -3321,7 +3348,7 @@ end;
 procedure TGLProgramHandle.SetUniform2i(const index: string;
   const Value: TVector2i);
 begin
-  glUniform2iARB(GetUniformLocation(index), Value[0], Value[1]);
+  GL.Uniform2i(GetUniformLocation(index), Value[0], Value[1]);
 end;
 
 // SetUniform3i
@@ -3330,7 +3357,7 @@ end;
 procedure TGLProgramHandle.SetUniform3i(const index: string;
   const Value: TVector3i);
 begin
-  glUniform3iARB(GetUniformLocation(index), Value[0], Value[1], Value[2]);
+  GL.Uniform3i(GetUniformLocation(index), Value[0], Value[1], Value[2]);
 end;
 
 // SetUniform4i
@@ -3339,7 +3366,7 @@ end;
 procedure TGLProgramHandle.SetUniform4i(const index: string;
   const Value: TVector4i);
 begin
-  glUniform4iARB(GetUniformLocation(index), Value[0], Value[1], Value[2],
+  GL.Uniform4i(GetUniformLocation(index), Value[0], Value[1], Value[2],
     Value[3]);
 end;
 
@@ -3348,7 +3375,7 @@ end;
 
 function TGLProgramHandle.GetUniform2f(const index: string): TVector2f;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform2f
@@ -3357,7 +3384,7 @@ end;
 procedure TGLProgramHandle.SetUniform2f(const index: string; const val:
   TVector2f);
 begin
-  glUniform2fARB(GetUniformLocation(index), val[0], val[1]);
+  GL.Uniform2f(GetUniformLocation(index), val[0], val[1]);
 end;
 
 // GetUniform3f
@@ -3365,7 +3392,7 @@ end;
 
 function TGLProgramHandle.GetUniform3f(const index: string): TAffineVector;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform3f
@@ -3374,7 +3401,7 @@ end;
 procedure TGLProgramHandle.SetUniform3f(const index: string; const val:
   TAffineVector);
 begin
-  glUniform3fARB(GetUniformLocation(index), val[0], val[1], val[2]);
+  GL.Uniform3f(GetUniformLocation(index), val[0], val[1], val[2]);
 end;
 
 // GetUniform4f
@@ -3382,7 +3409,7 @@ end;
 
 function TGLProgramHandle.GetUniform4f(const index: string): TVector;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform4f
@@ -3391,7 +3418,7 @@ end;
 procedure TGLProgramHandle.SetUniform4f(const index: string; const val:
   TVector);
 begin
-  glUniform4fARB(GetUniformLocation(index), val[0], val[1], val[2], val[3]);
+  GL.Uniform4f(GetUniformLocation(index), val[0], val[1], val[2], val[3]);
 end;
 
 // GetUniformMatrix2fv
@@ -3399,7 +3426,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix2fv(const index: string): TMatrix2f;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix2fv
@@ -3408,7 +3435,7 @@ end;
 procedure TGLProgramHandle.SetUniformMatrix2fv(const index: string; const val:
   TMatrix2f);
 begin
-  glUniformMatrix2fvARB(GetUniformLocation(index), 1, False, @val);
+  GL.UniformMatrix2fv(GetUniformLocation(index), 1, False, @val);
 end;
 
 // GetUniformMatrix3fv
@@ -3416,7 +3443,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix3fv
@@ -3425,7 +3452,7 @@ end;
 procedure TGLProgramHandle.SetUniformMatrix3fv(const index: string; const val:
   TMatrix3f);
 begin
-  glUniformMatrix3fvARB(GetUniformLocation(index), 1, False, @val);
+  GL.UniformMatrix3fv(GetUniformLocation(index), 1, False, @val);
 end;
 
 // GetUniformMatrix4fv
@@ -3433,7 +3460,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
 begin
-  glGetUniformfvARB(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix4fv
@@ -3442,7 +3469,7 @@ end;
 procedure TGLProgramHandle.SetUniformMatrix4fv(const index: string; const val:
   TMatrix);
 begin
-  glUniformMatrix4fvARB(GetUniformLocation(index), 1, False, @val);
+  GL.UniformMatrix4fv(GetUniformLocation(index), 1, False, @val);
 end;
 
 // SetUniformf
@@ -3543,7 +3570,7 @@ end;
 procedure TGLProgramHandle.SetUniformBuffer(const index: string;
   Value: TGLUniformBufferHandle);
 begin
-  glUniformBufferEXT(Handle, GetUniformLocation(index), Value.Handle);
+  GL.UniformBuffer(Handle, GetUniformLocation(index), Value.Handle);
 end;
 
 // GetUniformBufferSize
@@ -3551,7 +3578,7 @@ end;
 
 function TGLProgramHandle.GetUniformBufferSize(const aName: string): Integer;
 begin
-  Result := glGetUniformBufferSizeEXT(Handle, GetUniformLocation(aName));
+  Result := GL.GetUniformBufferSize(Handle, GetUniformLocation(aName));
 end;
 
 // GetUniformOffset
@@ -3559,7 +3586,7 @@ end;
 
 function TGLProgramHandle.GetUniformOffset(const aName: string): PGLInt;
 begin
-  Result := glGetUniformOffsetEXT(Handle, GetUniformLocation(aName));
+  Result := GL.GetUniformOffset(Handle, GetUniformLocation(aName));
 end;
 
 // GetUniformBlockIndex
@@ -3567,7 +3594,7 @@ end;
 
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
-  Result := glGetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
+  Result := GL.GetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, 'Unknown uniform block"' + name +
     '" or program not in use');
 end;
