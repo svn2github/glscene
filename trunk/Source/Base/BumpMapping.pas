@@ -19,7 +19,7 @@ unit BumpMapping;
 interface
 
 uses
-  VectorGeometry, VectorLists, GLCrossPlatform;
+  VectorGeometry, VectorLists, GLCrossPlatform, VectorTypes;
 
 type
   TNormalMapSpace = (nmsObject, nmsTangent);

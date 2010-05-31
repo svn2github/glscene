@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>27/02/10 - Yar - Added TLongWordList
       <li>06/02/10 - Yar - Added methods to TSingleList
                            Added T4ByteList
@@ -58,7 +59,7 @@ interface
 uses
   Classes, SysUtils,
 
-  VectorTypes, VectorGeometry, PersistentClasses, VectorGeometryEXT;
+  VectorTypes, VectorGeometry, PersistentClasses;
 
 type
   // TBaseListOption
@@ -77,7 +78,7 @@ type
     FGrowthDelta: Integer;
     FBufferItem: PByteArray;
     FOptions: TBaseListOptions;
-
+    FTagString: string;
   protected
     { Protected Declarations }
     //: The base list pointer (untyped)
@@ -143,6 +144,7 @@ type
            which can improve performance is that having empty values isn't
            required. }
     property SetCountResetsMemory: Boolean read GetSetCountResetsMemory write SetSetCountResetsMemory;
+    property TagString: string read FTagString write FTagString;
   end;
 
   // TBaseVectorList
@@ -151,7 +153,6 @@ type
   TBaseVectorList = class(TBaseList)
   private
     { Private Declarations }
-
   protected
     { Protected Declarations }
     function GetItemAddress(Index: Integer): PFloatArray;
@@ -181,6 +182,7 @@ type
     procedure Combine(const list2: TBaseVectorList; factor: Single); dynamic;
 
     property ItemAddress[Index: Integer]: PFloatArray read GetItemAddress;
+
   end;
 
   // TAffineVectorList
@@ -297,7 +299,7 @@ type
   {: A list of TTexPoint.<p>
    Similar to TList, but using TTexPoint as items.<p>
        The list has stack-like push/pop methods. }
-  TTexPointList = class(TBaseList)
+  TTexPointList = class(TBaseVectorList)
   private
     { Private Declarations }
     FList: PTexPointArray;
@@ -859,8 +861,9 @@ begin
   if (Src is TBaseList) then
   begin
     SetCapacity(TBaseList(Src).Count);
-    FGrowthDelta := TAffineVectorList(Src).FGrowthDelta;
+    FGrowthDelta := TBaseList(Src).FGrowthDelta;
     FCount := FCapacity;
+    FTagString := TBaseList(Src).FTagString;
   end
   else
     inherited;
@@ -882,7 +885,7 @@ begin
   lOutputText := AReader.ReadString;
   SetLength(lData, Length(lOutputText) div 2 + 1);
   HexToBin(PChar(lOutputText), PAnsiChar(lData), Length(lData));
-  LoadFromString(lData);
+  LoadFromString(string(lData));
 end;
 
 // WriteItemsData
@@ -891,7 +894,7 @@ var
   lData: AnsiString;
   lOutputText: String;
 begin
-  lData := SaveToString;
+  lData := AnsiString(SaveToString);
   SetLength(lOutputText, Length(lData) * 2);
   BinToHex(PAnsiChar(lData), PChar(lOutputText), Length(lData));
   AWriter.WriteString(lOutputText);
@@ -2986,7 +2989,7 @@ end;
 //
 
 function TSingleList.Sum: Single;
-{$IFDEF GLS_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
   function ComputeSum(list: PSingleArrayList; nb: Integer): Single; register;
   asm
     fld   dword ptr [eax]
@@ -3298,7 +3301,7 @@ end;
 //
 
 function TDoubleList.Sum: Double;
-{$IFDEF GLS_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
   function ComputeSum(list: PDoubleArrayList; nb: Integer): Double; register;
   asm
     fld   dword ptr [eax]

@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
       <li>16/10/08 - UweR - Delphi 2009 compatibility fix for TPersistentObject, TTextReader and TTextWriter
       <li>16/10/08 - DanB - Delphi 2009 compatibility fix for TBinaryReader.ReadString / WriteString
@@ -556,7 +557,7 @@ begin
    objectsStored:=ReadBoolean;
    i:=ReadInteger;
    if objectsStored then while i>0 do begin
-      aStrings.AddObject(ReadString, TObject(Pointer(ReadInteger)));
+      aStrings.AddObject(ReadString, TObject(PtrUInt(ReadInteger)));
       Dec(i);
    end else while i>0 do begin
       aStrings.Add(ReadString);
@@ -724,7 +725,7 @@ begin
    wr:=writerClass.Create(stream);
    try
       if FileSignature<>'' then begin
-         fileSig:=FileSignature;
+         fileSig:=AnsiString(FileSignature);
          wr.Write(fileSig[1], Length(fileSig));
       end;
       WriteToFiler(wr);
@@ -747,7 +748,7 @@ begin
       if FileSignature<>'' then begin
          SetLength(sig, Length(FileSignature));
          rd.Read(sig[1], Length(FileSignature));
-         if sig<>FileSignature then
+         if sig<>AnsiString(FileSignature) then
             raise EInvalidFileSignature.Create(cInvalidFileSignature);
       end;
       ReadFromFiler(rd);
@@ -1150,7 +1151,7 @@ begin
                Inc(pk);
             end;
          end;
-         SetCount((Integer(pk)-Integer(p)) div SizeOf(TObject));
+         SetCount((PtrUInt(pk)-PtrUInt(p)) div SizeOf(TObject));
          Exit;
       end;
    end;
@@ -1336,7 +1337,7 @@ begin
                Cardinal(vaFalse), Cardinal(vaTrue) : begin
                   // stored 'as was' value
                   ReadBoolean; // ignored
-                  Add(TObject(Pointer(ReadInteger)));
+                  Add(TObject(PtrUInt(ReadInteger)));
                end;
                Cardinal(vaString), Cardinal(vaLString), Cardinal(vaWString),
                Cardinal(vaInt64)+1 { vaUTF8String }: begin
@@ -1908,7 +1909,8 @@ procedure TTextWriter.WriteLine(const valueType, data : String);
 var
    buf : AnsiString;
 begin
-   buf:=StringOfChar(' ', FIndentLevel)+valueType+' '+data+#13#10;
+   buf := StringOfChar(AnsiChar(#32), FIndentLevel);
+   buf := buf + AnsiString(valueType+' '+data)+#13#10;
    Stream.Write(buf[1], Length(buf));
 end;
 

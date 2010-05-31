@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Added WGL_NV_gpu_affinity
       <li>12/05/10 - Yar - Added GL_ARB_texture_compression_bptc
       <li>04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
       <li>01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
@@ -289,6 +290,20 @@ type
    GLXVideoCaptureDeviceNV   = TXID;
    {$ENDIF}
 
+{$IFDEF SUPPORT_WGL}
+  PHGPUNV = ^HGPUNV;
+  HGPUNV = THandle;
+
+  PGPUDevice = ^TGPUDevice;
+  TGPUDevice = record
+    cb: Cardinal;
+    DeviceName: array[0..31] of AnsiChar;
+    DeviceString: array[0..127] of AnsiChar;
+    Flags: Cardinal;
+    rcVirtualScreen: TRect;
+  end;
+{$ENDIF}
+
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL extension feature checks'} {$ENDIF}
 
 {$IFDEF MULTITHREADOPENGL}
@@ -548,6 +563,7 @@ var
    WGL_EXT_framebuffer_sRGB,
    WGL_EXT_pixel_format_packed_float,
    WGL_EXT_swap_control,
+   WGL_NV_gpu_affinity,
 
    // GLX extension checks
    GLX_VERSION_1_1,
@@ -4869,11 +4885,9 @@ const
    GLX_COPY_COMPLETE_INTEL			    = $8181;
    GLX_FLIP_COMPLETE_INTEL			    = $8182;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
-
 type
-   {$IFDEF SUPPORT_GLX}
-      TGLXHyperpipeNetworkSGIX = record
+{$IFDEF SUPPORT_GLX}
+   TGLXHyperpipeNetworkSGIX = record
       pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
       networkId: TGLint;
    end;
@@ -4896,8 +4910,8 @@ type
       XOrigin, YOrigin, maxHeight, maxWidth: TGLInt;
    end;
    PGLXPipeRectLimits = ^TGLXPipeRectLimits;
-   {$ENDIF}
-
+{$ENDIF}
+{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) types'} {$ENDIF}
    // GLU types
@@ -6045,7 +6059,12 @@ var
    // WGL_ARB_create_context (ARB #55)
    wglCreateContextAttribsARB: function(DC: HDC; hShareContext: HGLRC;
 				     attribList: PGLint):HGLRC; stdcall;
-
+   // WGL_NV_gpu_affinity
+   wglEnumGpusNV: function(iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean;
+   wglEnumGpuDevicesNV: function(hGpu: HGPUNV; iDeviceIndex: Cardinal; lpGpuDevice: PGPUDevice): Boolean;
+   wglCreateAffinityDCNV: function(hGpuList: PHGPUNV): HDC;
+   wglEnumGpusFromAffinityDCNV: function(hAffinityDC: HDC; iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean;
+   wglDeleteDCNV: function(hdc: HDC): Boolean;
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -6062,7 +6081,7 @@ var
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
- {$IFDEF GLS_COMPILER_2005_UP} {$region 'GLX function/procedure definitions for ARB approved extensions'} {$ENDIF}
+{$IFDEF GLS_COMPILER_2005_UP} {$region 'GLX function/procedure definitions for ARB approved extensions'} {$ENDIF}
  {$IFDEF SUPPORT_GLX}
    //  ###########################################################
    //           function and procedure definitions for
@@ -7156,7 +7175,8 @@ var
 
 
 //------------------------------------------------------------------------------
-
+function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
+function GLGetProcAddress(ProcName: PGLChar): Pointer;
 procedure ReadExtensions;
 procedure ReadImplementationProperties;
 {$IFDEF SUPPORT_WGL}
@@ -7180,6 +7200,8 @@ function LoadOpenGLFromLibrary(GLName, GLUName: String): Boolean;
 function IsOpenGLLoaded : Boolean;
 
 function IsMesaGL : Boolean;
+procedure TrimAndSplitVersionString(Buffer: String; var Max, Min: Integer);
+function IsVersionMet(MajorVersion,MinorVersion, actualMajorVersion, actualMinorVersion:Integer): boolean;
 function IsOpenGLVersionMet(MajorVersion,MinorVersion: Integer): boolean;
 
 type
@@ -7242,12 +7264,11 @@ begin
 
   result := GetProcAddress(Cardinal(GLHandle),ProcName);
 end;
-
-function _GLGetProcAddress(ProcName: PGLChar):Pointer;
+{$ENDIF}
+function GLLibGetProcAddress(ProcName: PGLChar):Pointer;
 begin
   result := GetProcAddress(Cardinal(GLHandle),ProcName);
 end;
-{$ENDIF}
 
 // CheckOpenGLError
 //
@@ -7377,7 +7398,7 @@ begin
    glMultiTexCoord1fV := GLGetProcAddress('glMultiTexCoord1fV');
    glMultiTexCoord1i := GLGetProcAddress('glMultiTexCoord1i');
    glMultiTexCoord1iV := GLGetProcAddress('glMultiTexCoord1iV');
-   glMultiTexCoord1s := GLGetProcAddress('glMultiTexCoord1s'); 
+   glMultiTexCoord1s := GLGetProcAddress('glMultiTexCoord1s');
    glMultiTexCoord1sV := GLGetProcAddress('glMultiTexCoord1sV'); 
    glMultiTexCoord2d := GLGetProcAddress('glMultiTexCoord2d');
    glMultiTexCoord2dv := GLGetProcAddress('glMultiTexCoord2dv');
@@ -7391,7 +7412,7 @@ begin
    glMultiTexCoord3dv := GLGetProcAddress('glMultiTexCoord3dv'); 
    glMultiTexCoord3f := GLGetProcAddress('glMultiTexCoord3f');
    glMultiTexCoord3fv := GLGetProcAddress('glMultiTexCoord3fv');
-   glMultiTexCoord3i := GLGetProcAddress('glMultiTexCoord3i'); 
+   glMultiTexCoord3i := GLGetProcAddress('glMultiTexCoord3i');
    glMultiTexCoord3iv := GLGetProcAddress('glMultiTexCoord3iv'); 
    glMultiTexCoord3s := GLGetProcAddress('glMultiTexCoord3s'); 
    glMultiTexCoord3sv := GLGetProcAddress('glMultiTexCoord3sv');
@@ -7403,7 +7424,6 @@ begin
    glMultiTexCoord4iv := GLGetProcAddress('glMultiTexCoord4iv');
    glMultiTexCoord4s := GLGetProcAddress('glMultiTexCoord4s');
    glMultiTexCoord4sv := GLGetProcAddress('glMultiTexCoord4sv');
-   glActiveTexture := GLGetProcAddress('glActiveTexture');
 
    // promoted to core v1.3 from GL_ARB_transpose_matrix
    glLoadTransposeMatrixf := GLGetProcAddress('glLoadTransposeMatrixf');
@@ -8754,6 +8774,13 @@ begin
    // WGL_EXT_swap_control (EXT #172)
    wglSwapIntervalEXT := GLGetProcAddress('wglSwapIntervalEXT');
    wglGetSwapIntervalEXT := GLGetProcAddress('wglGetSwapIntervalEXT');
+
+   // WGL_NV_gpu_affinity
+   wglEnumGpusNV := GLGetProcAddress('wglEnumGpusNV');
+   wglEnumGpuDevicesNV := GLGetProcAddress('wglEnumGpuDevicesNV');
+   wglCreateAffinityDCNV := GLGetProcAddress('wglCreateAffinityDCNV');
+   wglEnumGpusFromAffinityDCNV := GLGetProcAddress('wglEnumGpusFromAffinityDCNV');
+   wglDeleteDCNV := GLGetProcAddress('wglDeleteDCNV');
 end;
 {$ENDIF}
 
@@ -8770,8 +8797,8 @@ begin
    //  ###########################################################
 
    //loading first!
-   glXGetProcAddress := _GLGetProcAddress('glXGetProcAddress');
-   glXGetProcAddressARB := _GLGetProcAddress('glXGetProcAddressARB');
+   glXGetProcAddress := GLLibGetProcAddress('glXGetProcAddress');
+   glXGetProcAddressARB := GLLibGetProcAddress('glXGetProcAddressARB');
 
    //GLX 1.3 and later
    glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
@@ -9254,10 +9281,11 @@ begin
    WGL_ARB_pixel_format_float:=CheckExtension('WGL_ARB_pixel_format_float');
    WGL_ARB_render_texture:=CheckExtension('WGL_ARB_render_texture');
    // Vendor/EXT wgl extensions
-   WGL_ATI_pixel_format_float:=CheckExtension('WGL_ATI_pixel_format_float');
+   WGL_ATI_pixel_format_float := CheckExtension('WGL_ATI_pixel_format_float');
    WGL_EXT_framebuffer_sRGB := CheckExtension('WGL_EXT_framebuffer_sRGB');
    WGL_EXT_pixel_format_packed_float := CheckExtension('WGL_EXT_pixel_format_packed_float');
-   WGL_EXT_swap_control:=CheckExtension('WGL_EXT_swap_control');
+   WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
+   WGL_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
 end;
 {$ENDIF}
 

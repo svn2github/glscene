@@ -38,7 +38,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses, Math;
+  Classes, VectorTypes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses,
+  Math;
 
 const
   cOctree_LEAF_TRHESHOLD = 30;

@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
     <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
     <li>05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
     <li>06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
@@ -768,7 +769,7 @@ var
 begin
    Result:=clrBlack;
    for i:=0 to Count-1 do
-      if CompareText(TColorEntry(Items[i]^).Name, AName)=0 then begin
+      if CompareText(string(TColorEntry(Items[i]^).Name), AName)=0 then begin
          SetVector(Result, TColorEntry(Items[i]^).Color);
          Break;
       end;
@@ -834,9 +835,10 @@ begin
          (Abs(Color[1]-AColor[1]) < MinDiff) and
          (Abs(Color[2]-AColor[2]) < MinDiff) and
          (Abs(Color[3]-AColor[3]) < MinDiff) then Break;
-  if I < Count then Result:=TColorEntry(Items[I]^).Name
-               else
-      Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor[0],AColor[1],AColor[2],AColor[3]]);
+  if I < Count then
+    Result:=string(TColorEntry(Items[I]^).Name)
+  else
+    Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor[0],AColor[1],AColor[2],AColor[3]]);
 end;
 
 // Destroy
@@ -860,7 +862,7 @@ begin
    if newEntry = nil then
       raise Exception.Create('Could not allocate memory for color registration!');
    with newEntry^ do begin
-     Name:=AName;
+     Name:=shortstring(AName);
      SetVector(Color, aColor);
    end;
    Add(newEntry);
@@ -873,7 +875,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      Proc(TColorEntry(Items[i]^).Name);
+      Proc(string(TColorEntry(Items[i]^).Name));
 end;
 
 // EnumColors
@@ -883,7 +885,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      AValues.Add(TColorEntry(Items[i]^).Name);
+      AValues.Add(string(TColorEntry(Items[i]^).Name));
 end;
 
 
@@ -1055,7 +1057,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do begin
-      if CompareText(TColorEntry(Items[i]^).Name, aName)=0 then begin
+      if CompareText(string(TColorEntry(Items[i]^).Name), aName)=0 then begin
          Delete(i);
          Break;
 	   end;

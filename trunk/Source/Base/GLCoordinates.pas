@@ -90,7 +90,7 @@ type
          function  VectorLength : TGLFloat;
          function  VectorNorm : TGLFloat;
          function  MaxXYZ : Single;
-         function  Equals(const aVector : TVector) : Boolean;
+         function  Equals(const aVector : TVector) : Boolean; reintroduce;
 
          procedure SetVector(const x, y: Single; z : Single = 0); overload;
          procedure SetVector(const x, y, z, w: Single); overload;
