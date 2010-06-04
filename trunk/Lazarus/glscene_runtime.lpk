@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;../Source/Experimental/;C:/Users/YarUnderoaker/Desktop/GLScene/Source/FileFormats/ZLIB/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;../Source/Experimental/;../Source/FileFormats/ZLIB/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -907,24 +907,24 @@
         <UnitName Value="GLFileZLIB"/>
       </Item220>
       <Item221>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.inc"/>
-        <Type Value="Include"/>
-      </Item221>
-      <Item222>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.pas"/>
-        <UnitName Value="ZLibEx"/>
-      </Item222>
-      <Item223>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibExApi.pas"/>
-        <UnitName Value="ZLibExApi"/>
-      </Item223>
-      <Item224>
         <Filename Value="../Source/GLMultisampleImage.pas"/>
         <UnitName Value="GLMultisampleImage"/>
-      </Item224>
-      <Item225>
+      </Item221>
+      <Item222>
         <Filename Value="../Source/Base/OpenGLAdapter.pas"/>
         <UnitName Value="OpenGLAdapter"/>
+      </Item222>
+      <Item223>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.inc"/>
+        <Type Value="Include"/>
+      </Item223>
+      <Item224>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.pas"/>
+        <UnitName Value="ZLibEx"/>
+      </Item224>
+      <Item225>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibExApi.pas"/>
+        <UnitName Value="ZLibExApi"/>
       </Item225>
     </Files>
     <RequiredPkgs Count="3">
