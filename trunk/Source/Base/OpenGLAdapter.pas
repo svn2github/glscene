@@ -1817,6 +1817,26 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+    ClearBufferiv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+  ClearBufferuiv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLuint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+  ClearBufferfv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+  ClearBufferfi: procedure(buffer: TGLenum; drawbuffer: TGLint; depth: TGLfloat; stencil: TGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+  GetStringi: function(name: TGLenum; index: TGLuint): PGLChar;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
     BindVertexArray: procedure(_array: TGLuint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2593,6 +2613,40 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+    SampleCoverage: procedure(Value: TGLclampf; invert: TGLboolean);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    // promoted to core v1.3 from GL_ARB_texture_compression (#12)
+    CompressedTexImage3D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height, depth: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    CompressedTexImage2D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    CompressedTexImage1D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    CompressedTexSubImage3D: procedure(target: TGLenum; level: TGLint; xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    CompressedTexSubImage2D: procedure(target: TGLenum; level: TGLint; xoffset, yoffset: TGLint; width, height: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    CompressedTexSubImage1D: procedure(target: TGLenum; level: TGLint; xoffset: TGLint; width: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetCompressedTexImage: procedure(target: TGLenum; level: TGLint; img: pointer);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+
     ClientActiveTexture: procedure(texture: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2609,7 +2663,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-    MultiTexCoord1fV: procedure(target: TGLenum; v: TGLfloat);
+    MultiTexCoord1fv: procedure(target: TGLenum; v: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -2617,7 +2671,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-    MultiTexCoord1iV: procedure(target: TGLenum; v: PGLInt);
+    MultiTexCoord1iv: procedure(target: TGLenum; v: PGLInt);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -2625,7 +2679,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-    MultiTexCoord1sV: procedure(target: TGLenum; v: PGLshort);
+    MultiTexCoord1sv: procedure(target: TGLenum; v: PGLshort);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -2725,6 +2779,35 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+    GetInteger64i_v: procedure(target: TGLenum; index: TGLuint; data: PGLint64);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetBufferParameteri64v: procedure(target: TGLenum; pname: TGLenum; params: PGLint64);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ProgramParameteri: procedure(_program: TGLuint; pname: TGLenum; value: TGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF} {$IFDEF UNIX} cdecl;
+{$ENDIF}
+ProgramString: procedure(target: GLenum; format: GLenum; len: GLsizei; const _string: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+BindProgram: procedure(target: GLenum; _program: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+DeletePrograms: procedure(n: GLsizei; const programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+GenPrograms: procedure(n: GLsizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramEnvParameter4d: procedure(target: GLenum; index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble; w: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramEnvParameter4dv: procedure(target: GLenum; index: GLuint; const params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramEnvParameter4f: procedure(target: GLenum; index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat; w: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramEnvParameter4fv: procedure(target: GLenum; index: GLuint; const params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramLocalParameter4d: procedure(target: GLenum; index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble; w: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramLocalParameter4dv: procedure(target: GLenum; index: GLuint; const params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramLocalParameter4f: procedure(target: GLenum; index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat; w: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+ProgramLocalParameter4fv: procedure(target: GLenum; index: GLuint; const params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+GetProgramEnvParameterdv: procedure(target: GLenum; index: GLuint; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+GetProgramEnvParameterfv: procedure(target: GLenum; index: GLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+GetProgramLocalParameterdv: procedure(target: GLenum; index: GLuint; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+GetProgramLocalParameterfv: procedure(target: GLenum; index: GLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
     constructor Create;
@@ -2810,6 +2893,8 @@ end;
 
 procedure TGLExtensionsAndEntryPoints.Initialize;
 var
+  I: Integer;
+  numExt: TGLint;
   Buffer: string;
   MajorVersion, MinorVersion: Integer;
 {$IFDEF SUPPORT_GLX}
@@ -2828,11 +2913,18 @@ var
     if Result then
       Result := ((ExtPos + Length(Extension) - 1) = Length(Buffer))
         or (Buffer[ExtPos + Length(Extension)] = ' ');
+{$IFDEF GLS_OPENGL_DEBUG}
+      if Result then
+        GLSLogger.LogDebug(Extension);
+{$ENDIF}
   end;
 
 begin
+  GetString := GetAddress('GetString');
+  GetStringi := GetAddress('GetStringi');
+  GetIntegerv := GetAddress('GetIntegerv');
   // determine OpenGL versions supported
-  buffer := string(glGetString(GL_VERSION));
+  buffer := string(GetString(GL_VERSION));
   TrimAndSplitVersionString(buffer, majorversion, minorVersion);
   VERSION_1_0 := True;
   VERSION_1_1 := IsVersionMet(1, 1, majorVersion, minorVersion);
@@ -2849,7 +2941,14 @@ begin
   VERSION_4_0 := IsVersionMet(4, 0, majorVersion, minorVersion);
 
   // check supported OpenGL extensions
-  Buffer := string(glGetString(GL_EXTENSIONS));
+  if VERSION_3_0 then
+  begin
+    GetIntegerv(GL_NUM_EXTENSIONS, @numExt);
+    for I := 0 to numExt-1 do
+      Buffer := Buffer + string(GetStringi(GL_EXTENSIONS, I))+' ';
+  end
+  else
+    Buffer := string(GetString(GL_EXTENSIONS));
   // check ARB approved OpenGL extensions
   ARB_blend_func_extended := CheckExtension('GL_ARB_blend_func_extended');
   ARB_color_buffer_float := CheckExtension('GL_ARB_color_buffer_float');
@@ -2879,7 +2978,7 @@ begin
   ARB_instanced_arrays := CheckExtension('GL_ARB_instanced_arrays');
   ARB_map_buffer_range := CheckExtension('GL_ARB_map_buffer_range');
   ARB_matrix_palette := CheckExtension('GL_ARB_matrix_palette');
-  ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
+  ARB_multisample := CheckExtension('GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
   ARB_multitexture := CheckExtension('GL_ARB_multitexture');
   ARB_occlusion_query := CheckExtension('GL_ARB_occlusion_query');
   ARB_occlusion_query2 := CheckExtension('GL_ARB_occlusion_query2');
@@ -2985,7 +3084,7 @@ begin
   EXT_shadow_funcs := CheckExtension('GL_EXT_shadow_funcs');
   EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
   EXT_stencil_clear_tag := CheckExtension('GL_EXT_stencil_clear_tag');
-  EXT_stencil_two_side := CheckExtension('EXT_stencil_two_side');
+  EXT_stencil_two_side := CheckExtension('GL_EXT_stencil_two_side');
   EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
   EXT_texture3D := CheckExtension('GL_EXT_texture3D');
   EXT_texture_array := CheckExtension('GL_EXT_texture_array');
@@ -3171,7 +3270,6 @@ begin
   GetDoublev := GetAddress('GetDoublev');
   GetError := GetAddress('GetError');
   GetFloatv := GetAddress('GetFloatv');
-  GetIntegerv := GetAddress('GetIntegerv');
   GetPointerv := GetAddress('GetPointerv');
   GetString := GetAddress('GetString');
   GetTexImage := GetAddress('GetTexImage');
@@ -3507,7 +3605,10 @@ begin
   GetFramebufferAttachmentParameteriv := GetAddress('GetFramebufferAttachmentParameteriv');
   BlitFramebuffer := GetAddress('BlitFramebuffer');
   GenerateMipmap := GetAddress('GenerateMipmap');
-
+  ClearBufferiv := GetAddress('ClearBufferiv');
+  ClearBufferuiv := GetAddress('ClearBufferuiv');
+  ClearBufferfv := GetAddress('ClearBufferfv');
+  ClearBufferfi := GetAddress('ClearBufferfi');
   LockArrays := GetAddress('LockArrays');
   UnlockArrays := GetAddress('UnlockArrays');
   BindBuffer := GetAddress('BindBuffer');
@@ -3528,6 +3629,7 @@ begin
   EndTransformFeedback := GetAddress('EndTransformFeedback');
   TransformFeedbackVaryings := GetAddress('TransformFeedbackVaryings');
   GetTransformFeedbackVarying := GetAddress('GetTransformFeedbackVarying');
+
   TransformFeedbackAttribs := GetAddress('TransformFeedbackAttribs');
   TransformFeedbackVaryingsNV := GetAddressNoSuffixes('TransformFeedbackVaryingsNV');
   TexBuffer := GetAddress('TexBuffer');
@@ -3705,15 +3807,22 @@ begin
   DrawBuffers := GetAddress('DrawBuffers');
 
   ActiveTexture := GetAddress('ActiveTexture');
+  CompressedTexImage3D := GetAddress('CompressedTexImage3D');
+  CompressedTexImage2D := GetAddress('CompressedTexImage2D');
+  CompressedTexImage1D := GetAddress('CompressedTexImage1D');
+  CompressedTexSubImage3D := GetAddress('CompressedTexSubImage3D');
+  CompressedTexSubImage2D := GetAddress('CompressedTexSubImage2D');
+  CompressedTexSubImage1D := GetAddress('CompressedTexSubImage1D');
+  GetCompressedTexImage := GetAddress('GetCompressedTexImage');
   ClientActiveTexture := GetAddress('ClientActiveTexture');
   MultiTexCoord1d := GetAddress('MultiTexCoord1d');
-  MultiTexCoord1dV := GetAddress('MultiTexCoord1dV');
+  MultiTexCoord1dv := GetAddress('MultiTexCoord1dv');
   MultiTexCoord1f := GetAddress('MultiTexCoord1f');
-  MultiTexCoord1fV := GetAddress('MultiTexCoord1fV');
+  MultiTexCoord1fv := GetAddress('MultiTexCoord1fv');
   MultiTexCoord1i := GetAddress('MultiTexCoord1i');
-  MultiTexCoord1iV := GetAddress('MultiTexCoord1iV');
+  MultiTexCoord1iv := GetAddress('MultiTexCoord1iv');
   MultiTexCoord1s := GetAddress('MultiTexCoord1s');
-  MultiTexCoord1sV := GetAddress('MultiTexCoord1sV');
+  MultiTexCoord1sv := GetAddress('MultiTexCoord1sv');
   MultiTexCoord2d := GetAddress('MultiTexCoord2d');
   MultiTexCoord2dv := GetAddress('MultiTexCoord2dv');
   MultiTexCoord2f := GetAddress('MultiTexCoord2f');
@@ -3739,8 +3848,28 @@ begin
   MultiTexCoord4s := GetAddress('MultiTexCoord4s');
   MultiTexCoord4sv := GetAddress('MultiTexCoord4sv');
 
+  GetInteger64i_v := GetAddress('GetInteger64i_v');
+  GetBufferParameteri64v := GetAddress('GetBufferParameteri64v');
+  ProgramParameteri := GetAddress('ProgramParameteri');
+
+  ProgramString := GetAddress('ProgramString');
+  BindProgram := GetAddress('BindProgram');
+  DeletePrograms := GetAddress('DeletePrograms');
+  GenPrograms := GetAddress('GenPrograms');
+  ProgramEnvParameter4d := GetAddress('ProgramEnvParameter4d');
+  ProgramEnvParameter4dv := GetAddress('ProgramEnvParameter4dv');
+  ProgramEnvParameter4f := GetAddress('ProgramEnvParameter4f');
+  ProgramEnvParameter4fv := GetAddress('ProgramEnvParameter4fv');
+  ProgramLocalParameter4d := GetAddress('ProgramLocalParameter4d');
+  ProgramLocalParameter4dv := GetAddress('ProgramLocalParameter4dv');
+  ProgramLocalParameter4f := GetAddress('ProgramLocalParameter4f');
+  ProgramLocalParameter4fv := GetAddress('ProgramLocalParameter4fv');
+  GetProgramEnvParameterdv := GetAddress('GetProgramEnvParameterdv');
+  GetProgramEnvParameterfv := GetAddress('GetProgramEnvParameterfv');
+  GetProgramLocalParameterdv := GetAddress('GetProgramLocalParameterdv');
+  GetProgramLocalParameterfv := GetAddress('GetProgramLocalParameterfv');
+
   FInitialized := True;
 end;
 
 end.
-
