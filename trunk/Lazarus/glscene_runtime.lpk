@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;../Source/Experimental/"/>
+        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;../Source/Experimental/;C:/Users/YarUnderoaker/Desktop/GLScene/Source/FileFormats/ZLIB/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -25,7 +25,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="217">
+    <Files Count="225">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -894,6 +894,38 @@
         <Filename Value="../Source/GLSLanguage.pas"/>
         <UnitName Value="GLSLanguage"/>
       </Item217>
+      <Item218>
+        <Filename Value="../Source/GLSArchiveManager.pas"/>
+        <UnitName Value="GLSArchiveManager"/>
+      </Item218>
+      <Item219>
+        <Filename Value="../Source/FileFormats/GLFilePAK.pas"/>
+        <UnitName Value="GLFilePAK"/>
+      </Item219>
+      <Item220>
+        <Filename Value="../Source/FileFormats/GLFileZLIB.pas"/>
+        <UnitName Value="GLFileZLIB"/>
+      </Item220>
+      <Item221>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.inc"/>
+        <Type Value="Include"/>
+      </Item221>
+      <Item222>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.pas"/>
+        <UnitName Value="ZLibEx"/>
+      </Item222>
+      <Item223>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibExApi.pas"/>
+        <UnitName Value="ZLibExApi"/>
+      </Item223>
+      <Item224>
+        <Filename Value="../Source/GLMultisampleImage.pas"/>
+        <UnitName Value="GLMultisampleImage"/>
+      </Item224>
+      <Item225>
+        <Filename Value="../Source/Base/OpenGLAdapter.pas"/>
+        <UnitName Value="OpenGLAdapter"/>
+      </Item225>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
