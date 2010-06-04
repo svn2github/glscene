@@ -7,6 +7,8 @@
       IDE experts for Lazarus.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>04/06/10 - Yar - Added GLSArchiveManager
+                           Foxes for Linux x64
       <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
@@ -102,7 +104,7 @@ uses
    // Vector file formats
    GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
    GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
-   GLFileNurbs, GLFileObj,  GLFilePLY, GLFileSMD, GLFileSTL,
+   GLFileNurbs, GLFileOBJ,  GLFilePLY, GLFileSMD, GLFileSTL,
    GLFileTIN, GLFileVRML, GlFileX,
 
    // Sound file formats
@@ -194,6 +196,7 @@ type
    TGLColorProperty = class (TClassProperty)
       private
         { Private Declarations }
+
       protected
         { Protected Declarations }
 	function GetAttributes: TPropertyAttributes; override;
@@ -201,25 +204,16 @@ type
 	procedure Edit; override;
 
         function ColorToBorderColor(aColor: TColorVector; selected : Boolean) : TColor;
-
+        procedure ListMeasureWidth(const AValue: ansistring; Index:integer;
+                                   ACanvas:TCanvas; var AWidth: Integer); override;
+        procedure ListMeasureHeight(const AValue: ansistring; Index:integer;
+                                    ACanvas:TCanvas; var AHeight: Integer); override;
+        procedure ListDrawValue(const AValue: ansistring; Index:integer;
+                                ACanvas:TCanvas; const ARect: TRect;
+                                AState: TPropEditDrawState); override;
+        procedure PropDrawValue(ACanvas:TCanvas; const ARect:TRect;
+                                AState:TPropEditDrawState); override;
       public
-(*	      {$ifdef GLS_COMPILER_5}
-	      procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-	      procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-	      {$endif}
-	      {$ifdef GLS_COMPILER_6_UP}
-         // Well, i don't know why it's doesn't work with Kylix ...
-         {$ifdef WIN32}
-         // ICustomPropertyListDrawing  stuff
-         procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
-         procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
-         procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
-         // CustomPropertyDrawing
-         procedure PropDrawName(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
-         procedure PropDrawValue(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
-         {$endif}
-         {$endif}
-*)
         function GetValue: String; override;
 	procedure SetValue(const Value: string); override;
    end;
@@ -306,6 +300,17 @@ type
 
       public
          { Public Declarations }
+   end;
+
+   // TGLSArchiveManagerEditor
+   //
+   TGLSArchiveManagerEditor = class(TDefaultComponentEditor)
+      protected
+        procedure Edit;
+        procedure EditProperty(const Prop: TPropertyEditor;
+                               var Continue: Boolean); override;
+        procedure ExecuteVerb(Index: Integer); override;
+        function GetVerb(Index: Integer): String; override;
    end;
 
 //----------------- TGLSceneViewerEditor ---------------------------------------
@@ -578,12 +583,12 @@ end;
 
 function TGLColorProperty.GetValue: String;
 begin
-  Result:=ColorManager.GetColorName(TGLColor(GetOrdValue).Color);
+  Result:=ColorManager.GetColorName(TGLColor(GetObjectValue).Color);
 end;
 
 procedure TGLColorProperty.SetValue(const Value: string);
 begin
-  TGLColor(GetOrdValue).Color:=ColorManager.GetColor(Value);
+  TGLColor(GetObjectValue).Color := ColorManager.GetColor(Value);
   Modified;
 end;
 
@@ -597,102 +602,54 @@ begin
       Result:=clWhite
    else Result:=ConvertColorVector(AColor);
 end;
-(*
-{$ifdef GLS_COMPILER_5}
-procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas;
-                                         const ARect: TRect; ASelected: Boolean);
-var
-   vRight: Integer;
-   vOldPenColor,
-   vOldBrushColor: TColor;
-   Color: TColorVector;
-begin
-   vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
-   with ACanvas do try
-      vOldPenColor:=Pen.Color;
-      vOldBrushColor:=Brush.Color;
 
-      Pen.Color:=Brush.Color;
-      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
-
-      Color:=ColorManager.GetColor(Value);
-      Brush.Color:=ConvertColorVector(Color);
-      Pen.Color:=ColorToBorderColor(Color, ASelected);
-
-      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
-
-      Brush.Color:=vOldBrushColor;
-      Pen.Color:=vOldPenColor;
-   finally
-      inherited ListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom), ASelected);
-   end;
-end;
-
-procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
-begin
-   // draws the small color rectangle in the object inspector
-   if GetVisualValue<>'' then
-      ListDrawValue(GetVisualValue, ACanvas, ARect, True)
-   else inherited PropDrawValue(ACanvas, ARect, ASelected);
-end;
-{$endif}
-
-{$ifdef GLS_COMPILER_6_UP}
-procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+procedure TGLColorProperty.PropDrawValue(ACanvas:TCanvas; const ARect:TRect;
+                                AState: TPropEditDrawState);
 begin
    if GetVisualValue <> '' then
-      ListDrawValue(GetVisualValue, ACanvas, ARect, True)
-   else DefaultPropertyDrawValue(Self, ACanvas, ARect);
+     ListDrawValue(GetVisualValue, GetOrdValue, ACanvas, ARect, [pedsSelected]);
 end;
 
-procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas;
-                                         const ARect: TRect; ASelected: Boolean);
-var
-   vRight: Integer;
-   vOldPenColor,
-   vOldBrushColor: TColor;
-   Color: TColorVector;
-begin
-   vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
-   with ACanvas do try
-      vOldPenColor:=Pen.Color;
-      vOldBrushColor:=Brush.Color;
-
-      Pen.Color:=Brush.Color;
-      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
-
-      Color:=ColorManager.GetColor(Value);
-      Brush.Color:=ConvertColorVector(Color);
-      Pen.Color:=ColorToBorderColor(Color, ASelected);
-
-      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
-
-      Brush.Color:=vOldBrushColor;
-      Pen.Color:=vOldPenColor;
-   finally
-      DefaultPropertyListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom),
-                                   ASelected);
-   end;
-end;
-
-procedure TGLColorProperty.ListMeasureWidth(const Value: string;
-  ACanvas: TCanvas; var AWidth: Integer);
+procedure TGLColorProperty.ListMeasureWidth(const AValue: ansistring; Index:integer;
+                           ACanvas:TCanvas; var AWidth: Integer);
 begin
    AWidth := AWidth + ACanvas.TextHeight('M');
 end;
 
-procedure TGLColorProperty.ListMeasureHeight(const Value: string;
-  ACanvas: TCanvas; var AHeight: Integer);
+procedure TGLColorProperty.ListMeasureHeight(const AValue: ansistring; Index:integer;
+                            ACanvas:TCanvas; var AHeight: Integer);
 begin
    // Nothing
 end;
 
-procedure TGLColorProperty.PropDrawName(ACanvas: TCanvas; const ARect: TRect;
-  ASelected: Boolean);
+procedure TGLColorProperty.ListDrawValue(const AValue: ansistring; Index:integer;
+                        ACanvas:TCanvas; const ARect: TRect;
+                        AState: TPropEditDrawState);
+var
+   vRight: Integer;
+   vOldPenColor,
+   vOldBrushColor: TColor;
+   Color: TColorVector;
 begin
-   DefaultPropertyDrawName(Self, ACanvas, ARect);
+   vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
+   with ACanvas do
+   begin
+      vOldPenColor:=Pen.Color;
+      vOldBrushColor:=Brush.Color;
+
+      Pen.Color:=Brush.Color;
+      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
+
+      Color:=ColorManager.GetColor(AValue);
+      Brush.Color:=ConvertColorVector(Color);
+      Pen.Color:=ColorToBorderColor(Color, pedsSelected in AState);
+
+      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
+
+      Brush.Color:=vOldBrushColor;
+      Pen.Color:=vOldPenColor;
+   end;
 end;
-{$endif GLS_COMPILER_6_UP} *)
 
 //----------------- TVectorFileProperty ----------------------------------------
 
@@ -852,15 +809,11 @@ end;
 
 // EditProperty
 //
-{procedure TGLMaterialLibraryEditor.EditProperty(const Prop: TPropertyEditor;
+procedure TGLMaterialLibraryEditor.EditProperty(const Prop: TPropertyEditor;
                                                       var Continue: Boolean);
 begin
-   if CompareText(Prop.GetName, 'MATERIALS') = 0 then begin
-   self.BestEditEvent:=Prop.GetName
-    //  FBest.Free;
-     // FBest:=Prop;
-     // FreeEditor:=False;
-   end;
+   BestEditEvent := 'MATERIALS';
+   inherited;
 end;
 // Edit
 //
@@ -885,7 +838,7 @@ begin
    case Index of
       0 : Result:='Show Material Library Editor';
    end;
-end;   }
+end;
 
 //----------------- TGLLibMaterialNameProperty ---------------------------------
 
@@ -952,7 +905,40 @@ begin
 	end;
 end;
 
+//----------------- TGLSArchiveManagerEditor --------------------------------------------------------------------------------
 
+// EditProperty
+//
+procedure TGLSArchiveManagerEditor.EditProperty(const Prop: TPropertyEditor;
+                                                      var Continue: Boolean);
+begin
+   BestEditEvent := 'ARCHIVES';
+   inherited;
+end;
+// Edit
+//
+procedure TGLSArchiveManagerEditor.Edit;
+begin
+  inherited;
+end;
+
+// ExecuteVerb
+//
+procedure TGLSArchiveManagerEditor.ExecuteVerb(Index : Integer);
+begin
+   case Index of
+      0 : Edit;
+   end;
+end;
+
+// GetVerb
+//
+function TGLSArchiveManagerEditor.GetVerb(Index : Integer) : String;
+begin
+   case Index of
+      0 : Result:='Show Archive Manager Editor';
+   end;
+end;
 
 
 procedure Register;
@@ -986,10 +972,8 @@ begin
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLCameraController,
-                       TGLGizmo, TGLGizmoEx, TGLSLanguage
-                       {$IFDEF GLS_EXPERIMENTAL}
-                       , TGLSLogger
-                       {$ENDIF}
+                       TGLGizmo, TGLGizmoEx, TGLSLogger, TGLSLanguage,
+                       TGLSArchiveManager
                       ]);
 
    RegisterComponents('GLScene Terrain',
@@ -1013,6 +997,7 @@ begin
    RegisterClasses([TGLCoordinates]);
 
    RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
+   RegisterComponentEditor(TGLSArchiveManager, TGLSArchiveManagerEditor);
 
    RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
    RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);

@@ -6,6 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>20/05/10 - Yar - Fixes for Linux x64
   <li>18/05/10 - Yar - Fixed for Lazarus-0.9.29-25483 (thanks Predator)
   <li>26/03/10 - Yar - Added Expand and Collapse buttons, fix for Unix-based systems
                        (thanks to Rustam Asmandiarov aka Predator)
@@ -190,13 +191,9 @@ type
     FScene: TGLScene;
     FObjectNode: TTreeNode;
     FCurrentDesigner: TComponentEditorDesigner;
-    FLastMouseDownPos : TPoint;
-
-{$IFDEF GLS_DELPHI_6_UP}
-    FPasteOwner : TComponent;
-    FPasteSelection : IDesignerSelections;
-{$ENDIF}
-
+    FLastMouseDownPos: TPoint;
+    FObjectList: TStringList;
+    FXObjectList: TList;
     procedure ReadScene;
     procedure ResetTree;
     // adds the given scene object as well as its children to the tree structure and returns
@@ -216,20 +213,6 @@ type
     procedure ShowEffects(BaseSceneObject:TGLBaseSceneObject);
     procedure ShowBehavioursAndEffects(BaseSceneObject:TGLBaseSceneObject);
     procedure EnableAndDisableActions();
-
-{$IFDEF GLS_DELPHI_6_UP}
-    function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
-    procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
-   procedure MethodError(Reader: TReader; const MethodName: String; var Address: Pointer; var Error: Boolean);
-    procedure PasteComponents(AOwner, AParent: TComponent;const Components: IDesignerSelections);
-    procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
-    procedure ComponentRead(Component: TComponent);
-    function UniqueName(Component: TComponent): string;
-{$ENDIF}
-
-    // We can not use the IDE to define this event because the
-    // prototype is not the same between Delphi and Kylix !!
-
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
 
   protected
@@ -475,7 +458,9 @@ var
 {$ENDIF}
 begin
   SetScene(nil,nil);
-	DeRegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
+  DeRegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
+  FObjectList.Free;
+  FXObjectList.Free;
 
    {$IFDEF MSWINDOWS}
    reg:=TRegistry.Create;
@@ -557,66 +542,76 @@ end;
 
 procedure TGLSceneEditorForm.SetObjectsSubItems(parent : TMenuItem);
 var
-   objectList : TStringList;
    i, j : Integer;
    item, currentParent : TMenuItem;
    currentCategory : String;
    soc : TGLSceneObjectClass;
 begin
-   objectList:=TStringList.Create;
-   try
-      ObjectManager.GetRegisteredSceneObjects(objectList);
-      for i:=0 to objectList.Count-1 do if objectList[i]<>'' then begin
-         with ObjectManager do
-            currentCategory:=GetCategory(TGLSceneObjectClass(objectList.Objects[i]));
-         if currentCategory='' then
-            currentParent:=parent
-         else begin
-            currentParent:=NewItem(currentCategory, 0, False, True, nil, 0, '');
-            parent.Add(currentParent);
-         end;
-         for j:=i to objectList.Count-1 do if objectList[j]<>'' then with ObjectManager do begin
-            soc:=TGLSceneObjectClass(objectList.Objects[j]);
-            if currentCategory=GetCategory(soc) then begin
-               item:=NewItem(objectList[j], 0, False, True, AddObjectClick, 0, '');
-               item.ImageIndex:=GetImageIndex(soc);
-               item.Tag:=PtrUInt(soc);
-               currentParent.Add(item);
-               objectList[j]:='';
-               if currentCategory='' then Break;
+  if not Assigned(FObjectList) then
+  begin
+   FObjectList := TStringList.Create;
+   ObjectManager.GetRegisteredSceneObjects(FObjectList);
+
+   for i:=0 to FObjectList.Count-1 do
+   begin
+     if FObjectList[i]<>'' then
+     begin
+        with ObjectManager do
+           currentCategory:=GetCategory(TGLSceneObjectClass(FObjectList.Objects[i]));
+        if currentCategory='' then
+           currentParent:=parent
+        else begin
+           currentParent:=NewItem(currentCategory, 0, False, True, nil, 0, '');
+           parent.Add(currentParent);
+        end;
+
+        for j := i to FObjectList.Count-1 do
+        begin
+          if FObjectList[j]<>'' then
+            with ObjectManager do
+            begin
+               soc:=TGLSceneObjectClass(FObjectList.Objects[j]);
+               if currentCategory=GetCategory(soc) then
+               begin
+                  item := NewItem(FObjectList[j], 0, False, True, AddObjectClick, 0, '');
+                  item.ImageIndex := GetImageIndex(soc);
+                  item.Tag := j;
+                  currentParent.Add(item);
+                  FObjectList[j] := '';
+                  if currentCategory='' then
+                    Break;
+               end;
             end;
-         end;
-      end;
-	finally
-      objectList.Free;
+        end;
+
+     end;
    end;
+
+  end;
 end;
 
 procedure TGLSceneEditorForm.SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);
 var
-	i : Integer;
-	list : TList;
+	I : Integer;
 	XCollectionItemClass : TXCollectionItemClass;
 	mi : TMenuItem;
 begin
-   parent.Clear;
-   if Assigned(XCollection) then begin
-      list:=GetXCollectionItemClassesList(XCollection.ItemsClass);
-      try
-         for i:=0 to list.Count-1 do begin
-            XCollectionItemClass:=TXCollectionItemClass(list[i]);
-            mi:=TMenuItem.Create(owner);
-            mi.Caption:=XCollectionItemClass.FriendlyName;
-            mi.OnClick:=Event;//AddBehaviourClick;
-            mi.Tag:=PtrUInt(XCollectionItemClass);
-            if Assigned(XCollection) then
-               mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
-            else mi.Enabled:=TBAddBehaviours.Enabled;
-            parent.Add(mi);
-         end;
-      finally
-         list.Free;
-      end;
+  parent.Clear;
+  if Assigned(XCollection) and not Assigned(FXObjectList) then
+  begin
+  FXObjectList := GetXCollectionItemClassesList(XCollection.ItemsClass);
+     for I:=0 to FXObjectList.Count-1 do begin
+        XCollectionItemClass:=TXCollectionItemClass(FXObjectList[i]);
+        mi:=TMenuItem.Create(owner);
+        mi.Caption:=XCollectionItemClass.FriendlyName;
+        mi.OnClick:=Event;//AddBehaviourClick;
+        mi.Tag := I;
+        if Assigned(XCollection) then
+          mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
+        else
+          mi.Enabled:=TBAddBehaviours.Enabled;
+        parent.Add(mi);
+     end;
    end;
 end;
 
@@ -639,33 +634,40 @@ end;
 procedure TGLSceneEditorForm.AddObjectClick(Sender: TObject);
 var
    AParent, AObject: TGLBaseSceneObject;
+   I: Integer;
    Node: TTreeNode;
 begin
-   if Assigned(FCurrentDesigner) then with Tree do
-      if Assigned(Selected) and (Selected.Level > 0) then begin
-         AParent:=TGLBaseSceneObject(Selected.Data);
-         AObject:=TGLBaseSceneObject(TGLSceneObjectClass(TMenuItem(Sender).Tag).Create(FScene.Owner));
-         AObject.Name:=FCurrentDesigner.CreateUniqueComponentName(AObject.ClassName);
-         TComponent(AObject).DesignInfo:=0;
-         AParent.AddChild(AObject);
-         Node:=AddNodes(Selected, AObject);
-         Node.Selected:=True;
-         FCurrentDesigner.PropertyEditorHook.PersistentAdded(AObject,True);
-         FCurrentDesigner.Modified;
-         FCurrentDesigner.SelectOnlyThisComponent(AObject);
-      end;
+  if not Assigned(FObjectList) then
+    exit;
+  if Assigned(FCurrentDesigner) then with Tree do
+    if Assigned(Selected) and (Selected.Level > 0) then
+    begin
+       AParent:=TGLBaseSceneObject(Selected.Data);
+       I := TMenuItem(Sender).Tag;
+       AObject:=TGLBaseSceneObject(TGLSceneObjectClass(FObjectList.Objects[I]).Create(FScene.Owner));
+       AObject.Name:=FCurrentDesigner.CreateUniqueComponentName(AObject.ClassName);
+       TComponent(AObject).DesignInfo:=0;
+       AParent.AddChild(AObject);
+       Node:=AddNodes(Selected, AObject);
+       Node.Selected:=True;
+       FCurrentDesigner.PropertyEditorHook.PersistentAdded(AObject,True);
+       FCurrentDesigner.Modified;
+       FCurrentDesigner.SelectOnlyThisComponent(AObject);
+    end;
 end;
 
 procedure TGLSceneEditorForm.AddBehaviourClick(Sender: TObject);
 var
-	XCollectionItemClass : TXCollectionItemClass;
-        AParent: TGLBaseSceneObject;
-	XCollectionItem : TXCollectionItem;
+   I: Integer;
+   XCollectionItemClass : TXCollectionItemClass;
+   AParent: TGLBaseSceneObject;
+   XCollectionItem : TXCollectionItem;
 begin
-  if Assigned(Tree.Selected) then
+  if Assigned(Tree.Selected) and Assigned(FXObjectList) then
   begin
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
-	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
+        I := (Sender as TMenuItem).Tag;
+	XCollectionItemClass:=TXCollectionItemClass(FXObjectList[I]);
 	XCollectionItem:=XCollectionItemClass.Create(AParent.Behaviours);
         ShowBehaviours(AParent);
        	BehavioursListView.Selected:=BehavioursListView.Items.FindData(XCollectionItem);
@@ -676,6 +678,7 @@ end;
 
 procedure TGLSceneEditorForm.AddEffectClick(Sender: TObject);
 var
+   I: Integer;
 	XCollectionItemClass : TXCollectionItemClass;
         AParent: TGLBaseSceneObject;
         XCollectionItem : TXCollectionItem;
@@ -684,7 +687,8 @@ begin
         begin
 
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
-	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
+        I := (Sender as TMenuItem).Tag;
+	XCollectionItemClass:=TXCollectionItemClass(FXObjectList[I]);
 	XCollectionItem:=XCollectionItemClass.Create(AParent.Effects);
         ShowEffects(AParent);
        	EffectsListView.Selected:=EffectsListView.Items.FindData(XCollectionItem);
@@ -1540,4 +1544,3 @@ finalization
   ReleaseGLSceneEditorForm;
 
 end.
-

@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
       <li>12/07/03 - DanB - Fixed crash when owner deleted        
@@ -316,7 +317,7 @@ var
 	XCollectionItemClass : TXCollectionItemClass;
 	XCollectionItem : TXCollectionItem;
 begin
-	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
+	XCollectionItemClass:=TXCollectionItemClass(PtrUInt((Sender as TMenuItem).Tag));
 	XCollectionItem:=XCollectionItemClass.Create(FXCollection);
 	PrepareListView;
 //	ListView.Selected:=ListView.FindData(0, XCollectionItem, True, False);

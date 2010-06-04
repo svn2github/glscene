@@ -7,6 +7,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/06/10 - Yar - Added GLSArchiveManager
       <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL 
       <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
@@ -229,7 +230,6 @@ type
          procedure SetValue(const Value: string); override;
    end;
 
-{$ifdef WIN32}
    // TSoundFileProperty
    //
    TSoundFileProperty = class (TClassProperty)
@@ -248,7 +248,6 @@ type
          function GetAttributes : TPropertyAttributes; override;
       	procedure GetValues(Proc: TGetStrProc); override;
    end;
-{$endif}
 
    // TGLCoordinatesProperty
    //
@@ -277,27 +276,27 @@ type
       here for the same reason...), the "protected" wasn't meant just to lure
       programmers into code they can't reuse... Arrr! and he did that again
       in D6! Grrr... }
-{$ifdef GLS_DELPHI_6_UP}
+  {$ifdef GLS_DELPHI_6_UP}
    TReuseableDefaultEditor = class (TComponentEditor, IDefaultEditor)
-{$else}
+  {$else}
    TReuseableDefaultEditor = class (TComponentEditor)
-{$endif}
+  {$endif}
       protected
 			{ Protected Declarations }
-{$ifdef GLS_DELPHI_6_UP}
+      {$ifdef GLS_DELPHI_6_UP}
          FFirst: IProperty;
          FBest: IProperty;
          FContinue: Boolean;
          procedure CheckEdit(const Prop : IProperty);
          procedure EditProperty(const Prop: IProperty; var Continue: Boolean); virtual;
-{$else}
+      {$else}
          FFirst: TPropertyEditor;
          FBest: TPropertyEditor;
          FContinue: Boolean;
          procedure CheckEdit(PropertyEditor : TPropertyEditor);
          procedure EditProperty(PropertyEditor : TPropertyEditor;
                                 var Continue, FreeEditor : Boolean); virtual;
-{$endif}
+      {$endif}
 
       public
          { Public Declarations }
@@ -309,11 +308,14 @@ type
    {: Editor for material library.<p> }
    TGLMaterialLibraryEditor = class(TReuseableDefaultEditor{$ifdef GLS_DELPHI_6_UP}, IDefaultEditor{$endif})
       protected
-{$ifdef GLS_DELPHI_6_UP}
+      {$ifdef GLS_DELPHI_6_UP}
          procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-{$else}
+      {$else}
          procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
-{$endif}
+      {$endif}
+			procedure ExecuteVerb(Index: Integer); override;
+			function GetVerb(Index: Integer): String; override;
+			function GetVerbCount: Integer; override;
 	end;
 
 	// TGLAnimationNameProperty
@@ -325,7 +327,7 @@ type
 			procedure GetValues(proc : TGetStrProc); override;
 	end;
 
-{$IFDEF GLS_DELPHI_7_UP}
+  {$IFDEF GLS_DELPHI_7_UP}
   {: Selection editor for TGLSoundLibrary.<p>
      Allows units to be added to the uses clause automatically when
      sound files are loaded into a TGLSoundLibrary at design-time. }
@@ -341,7 +343,22 @@ type
     public
       procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
-{$ENDIF}
+  {$ENDIF}
+
+   // TGLSArchiveManagerEditor
+   //
+   {: Editor for GLScene Archive Manager.<p> }
+   TGLSArchiveManagerEditor = class(TReuseableDefaultEditor{$ifdef GLS_DELPHI_6_UP}, IDefaultEditor{$endif})
+      protected
+      {$ifdef GLS_DELPHI_6_UP}
+         procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+      {$else}
+         procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
+      {$endif}
+			procedure ExecuteVerb(Index: Integer); override;
+			function GetVerb(Index: Integer): String; override;
+			function GetVerbCount: Integer; override;
+	end;
 
 resourcestring
    { OpenGL property category }
@@ -393,7 +410,7 @@ uses
    GLRenderContextInfo, GLNodes, FMaterialEditorForm, FLibMaterialPicker,
    GLMaterial, GLDynamicTexture, GLSLPostBlurShader, BaseClasses, GLExplosionFx,
    GLCameraController, GLSMWaveOut, GLFBORenderer, GLCompositeImage, GLSLanguage,
-   GLSLog,
+   GLSLog, GLSArchiveManager,
 {$IFDEF GLS_EXPERIMENTAL}
    GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
 {$ENDIF}
@@ -1134,6 +1151,25 @@ begin
 end;
 {$endif}
 
+procedure TGLMaterialLibraryEditor.ExecuteVerb(Index: Integer);
+begin
+   case Index of
+      0 : Edit;
+   end;
+end;
+
+function TGLMaterialLibraryEditor.GetVerb(Index: Integer): String;
+begin
+    case Index of
+      0 : Result:='Show Material Library Editor';
+   end;
+end;
+
+function TGLMaterialLibraryEditor.GetVerbCount: Integer;
+begin
+   Result:=1
+end;
+
 //----------------- TGLLibMaterialNameProperty ---------------------------------
 
 // GetAttributes
@@ -1238,6 +1274,48 @@ begin
   end;
 end;
 {$ENDIF}
+
+{ TGLSArchiveManagerEditor }
+{$ifdef GLS_DELPHI_6_UP}
+procedure TGLSArchiveManagerEditor.EditProperty(const Prop: IProperty;
+  var Continue: Boolean);
+begin
+   if CompareText(Prop.GetName, 'ARCHIVES') = 0 then begin
+      FBest:=Prop;
+   end;
+end;
+{$else}
+procedure TGLSArchiveManagerEditor.EditProperty(
+  PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean);
+begin
+   if CompareText(PropertyEditor.GetName, 'ARCHIVES') = 0 then begin
+      FBest.Free;
+      FBest:=PropertyEditor;
+      FreeEditor:=False;
+   end;
+end;
+{$endif}
+
+procedure TGLSArchiveManagerEditor.ExecuteVerb(Index: Integer);
+begin
+   case Index of
+      0 : Edit;
+   end;
+end;
+
+function TGLSArchiveManagerEditor.GetVerb(Index: Integer): String;
+begin
+    case Index of
+      0 : Result:='Show Archive Manager Editor';
+   end;
+end;
+
+function TGLSArchiveManagerEditor.GetVerbCount: Integer;
+begin
+   Result:=1
+end;
+
+//******************************************************************************
 
 procedure GLRegisterPropertiesInCategories;
 {$ifdef GLS_DELPHI_5}
@@ -1610,7 +1688,7 @@ begin
                        TGLSmoothNavigator, TGLSmoothUserInterface,
                        TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
                        TGLSimpleNavigation, TGLGizmo, TGLCameraController,
-                       TGLSLanguage, TGLSLogger
+                       TGLSLanguage, TGLSLogger, TGLSArchiveManager
                        {$IFDEF MSWINDOWS}
                        , TJoystick, TScreenSaver
                        {$ENDIF}
@@ -1634,6 +1712,7 @@ begin
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
    RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
+   RegisterComponentEditor(TGLSArchiveManager, TGLSArchiveManagerEditor);
 
    GLRegisterPropertiesInCategories;
 
@@ -1673,6 +1752,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

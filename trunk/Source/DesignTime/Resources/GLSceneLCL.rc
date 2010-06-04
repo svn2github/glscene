@@ -1,3 +1,4 @@
+vcl\TAsyncTimer.bmp
 vcl\TApplicationFileIO.bmp
 vcl\TCGShader.bmp
 vcl\TCollisionManager.bmp
@@ -68,3 +69,4 @@ vcl\TGLWindowsBitmapFont.bmp
 vcl\TSDLWindow.bmp
 vcl\TGLSLogger.bmp
 vcl\TGLSLanguage.bmp
+vcl\TGLSArchiveManager.bmp
