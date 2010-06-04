@@ -280,10 +280,8 @@ threadvar
 {$ENDIF}
   vLastPixelFormat: Integer;
   vLastVendor: TGLString;
-{$IFDEF GLS_EXPERIMENTAL}
   vLastDC: HDC;
   vLastRC: HGLRC;
-{$ENDIF}
 
   // Create
   //
