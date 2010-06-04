@@ -276,7 +276,6 @@ contains
   GLNodes in '..\Source\GLNodes.pas',
   GLSLPostBlurShader in '..\Source\GLSLShaders\GLSLPostBlurShader.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
   GLSLog in '..\Source\Experimental\GLSLog.pas',
@@ -284,6 +283,13 @@ contains
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
   JPG in '..\Source\FileFormats\JPG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
-  GLSLanguage in '..\Source\GLSLanguage.pas';
+  GLSLanguage in '..\Source\GLSLanguage.pas',
+  GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
+  GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
+  GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
+  ZLibEx in '..\Source\FileFormats\ZLIB\ZLibEx.pas',
+  ZLibExApi in '..\Source\FileFormats\ZLIB\ZLibExApi.pas',
+  OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
 
 end.
