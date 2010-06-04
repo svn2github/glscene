@@ -27,16 +27,16 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     procedure FormCreate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
   private
     { private declarations }
   public
     { public declarations }
-  end; 
+  end;
 
 var
-  Form1: TForm1; 
+  Form1: TForm1;
 
 implementation
 
@@ -44,23 +44,32 @@ implementation
 
 { TForm1 }
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-   GLCamera .Position.Rotate(VectorMake(0, 1, 0), deltaTime * 0.1);
+  GLCamera.Position.Rotate(VectorMake(0, 1, 0), deltaTime * 0.1);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: integer;
 begin
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+
   with GLSArchiveManager1.Archives[0] do
   begin
-    LoadFromFile('..\..\Media\Chair.zlib');
-    if FileName='' then ShowMessage('Archive Can not be Loaded');
+    LoadFromFile('Chair.zlib');
+    if FileName = '' then
+      ShowMessage('Archive Can not be Loaded');
     {: Automatic loading from archive.
        If file is not in archive, then it's loaded from harddrive. }
     GLFreeForm.LoadFromFile('Chair.ms3d');
     {: Direct loading from archive }
-    GLFreeForm1.LoadFromStream('Chair.ms3d',GetContent('Chair.ms3d'));
+    GLFreeForm1.LoadFromStream('Chair.ms3d', GetContent('Chair.ms3d'));
   end;
 end;
 
