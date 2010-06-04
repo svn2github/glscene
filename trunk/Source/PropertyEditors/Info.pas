@@ -2,6 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
       <li>20/02/10 - DanB - Now uses correct DC, rather than using
                             the info form (bug due to "with" keyword)
       <li>25/10/08 - DanB - Delphi 2009 compatibility, extensions are now looked
@@ -29,93 +30,90 @@ interface
 
 {$i GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
   Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls, 
-  CommCtrl, ExtCtrls, Graphics, Menus;
-{$ENDIF}
-{$IFDEF KYLIX}
-uses
-  XLib, QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls,
-  QExtCtrls, QGraphics, QMenus; 
-{$ENDIF}
+  CommCtrl, ExtCtrls, Graphics, Menus, jpeg;
 
 
 type
 
   TInfoForm = class(TForm)
-    PageControl: TPageControl;
-    Sheet1: TTabSheet;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Sheet2: TTabSheet;
-    Sheet3: TTabSheet;
-    Label5: TLabel;
-    Label6: TLabel;
-    VendorLabel: TLabel;
     AccLabel: TLabel;
-    VersionLabel: TLabel;
+    AccumLabel: TLabel;
+    AuxLabel: TLabel;
+    ClipLabel: TLabel;
+    ColorLabel: TLabel;
     CopyLabel: TLabel;
+    DepthLabel: TLabel;
     DoubleLabel: TLabel;
-    Label7: TLabel;
-    StereoLabel: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
+    EvalLabel: TLabel;
+    Image1: TImage;
+    Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
-    ColorLabel: TLabel;
-    DepthLabel: TLabel;
-    StencilLabel: TLabel;
-    AuxLabel: TLabel;
-    AccumLabel: TLabel;
+    Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
-    ClipLabel: TLabel;
-    EvalLabel: TLabel;
-    ListLabel: TLabel;
-    LightLabel: TLabel;
+    Label18: TLabel;
+    Label2: TLabel;
+    Label20: TLabel;
     Label23: TLabel;
-    ModelLabel: TLabel;
     Label25: TLabel;
     Label26: TLabel;
     Label27: TLabel;
     Label28: TLabel;
     Label29: TLabel;
+    Label3: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
+    Label35: TLabel;
+    Label37: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    LightLabel: TLabel;
+    ListLabel: TLabel;
+    Memo1: TMemo;
+    Contributors: TMemo;
+    ModelLabel: TLabel;
     NameLabel: TLabel;
+    OverlayLabel: TLabel;
+    PageControl: TPageControl;
     PixelLabel: TLabel;
     ProjLabel: TLabel;
-    TexStackLabel: TLabel;
-    TexSizeLabel: TLabel;
-    Label35: TLabel;
-    ViewLabel: TLabel;
-    SubLabel: TLabel;
-    Label37: TLabel;
-    Label18: TLabel;
-    OverlayLabel: TLabel;
-    UnderlayLabel: TLabel;
-    Label20: TLabel;
-    TabSheet1: TTabSheet;
-    Label4: TLabel;
-    TexUnitsLabel: TLabel;
-    Extensions: TListBox;
-    Label13: TLabel;
     RendererLabel: TLabel;
+    ScrollBox1: TScrollBox;
+    TabSheet4: TTabSheet;
+    StencilLabel: TLabel;
+    StereoLabel: TLabel;
+    SubLabel: TLabel;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TexSizeLabel: TLabel;
+    TexStackLabel: TLabel;
+    TexUnitsLabel: TLabel;
+    UnderlayLabel: TLabel;
+    VendorLabel: TLabel;
+    VersionLabel: TLabel;
+    TabSheet5: TTabSheet;
+    Extensions: TListBox;
     PMWebLink: TPopupMenu;
     MIRegistryLink: TMenuItem;
     MIDelphi3D: TMenuItem;
-    TabSheet2: TTabSheet;
-    Label19: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label24: TLabel;
-    Label30: TLabel;
-    VersionLbl: TLabel;
-    WebsiteLbl: TLabel;
+    TabSheet1: TTabSheet;
     CloseButton: TButton;
+    VersionLbl: TLabel;
+    ViewLabel: TLabel;
+    WebsiteLbl: TLabel;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -123,8 +121,11 @@ type
     procedure ExtensionsDblClick(Sender: TObject);
     procedure ExtensionsClick(Sender: TObject);
     procedure ExtensionsKeyPress(Sender: TObject; var Key: Char);
+    procedure FormShow(Sender: TObject);
     procedure MIDelphi3DClick(Sender: TObject);
     procedure WebsiteLblClick(Sender: TObject);
+  private
+    procedure LoadContributors;
   public
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
@@ -134,12 +135,7 @@ implementation
 uses
   OpenGL1x, SysUtils, GLCrossPlatform;
 
-{$IFDEF MSWINDOWS}
 {$R *.dfm}
-{$ENDIF}
-{$IFDEF KYLIX}
-{$R *.xfm}
-{$ENDIF}
 
 {$R Info.res}
 
@@ -169,16 +165,12 @@ end;
 // GetInfoFrom
 //
 procedure TInfoForm.GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
-{$IFDEF MSWINDOWS}
 const
    DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
-{$ENDIF}
 var
-{$IFDEF MSWINDOWS}
    pfd            : TPixelformatDescriptor;
    pixelFormat    : Integer;
    dc             : HDC;
-{$ENDIF}
    i              : Integer;
    ExtStr         : String;
 
@@ -195,7 +187,6 @@ begin
       // common properties
       VendorLabel.Caption:=String(glGetString(GL_VENDOR));
       RendererLabel.Caption:=String(glGetString(GL_RENDERER));
-      {$IFDEF MSWINDOWS}
       dc := wglGetCurrentDC();
       PixelFormat:=GetPixelFormat(dc);
       DescribePixelFormat(dc,PixelFormat,SizeOf(pfd), PFD);
@@ -203,7 +194,6 @@ begin
       if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
-      {$ENDIF}
       VersionLabel.Caption:=String(glGetString(GL_VERSION));
       ExtStr:=String(glGetString(GL_EXTENSIONS));
       Extensions.Clear;
@@ -224,7 +214,6 @@ begin
       else
         StereoLabel.Caption:='no';
 
-      {$IFDEF MSWINDOWS}
       // Include WGL extensions
       if WGL_ARB_extensions_string then
       begin
@@ -250,7 +239,6 @@ begin
       end else begin
         CopyLabel.Caption:='n/a';
       end;
-      {$ENDIF}
       // buffer and pixel depths
       ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
                                  [LimitOf[limRedBits], LimitOf[limGreenBits],
@@ -262,10 +250,8 @@ begin
                                   LimitOf[limAccumBlueBits],LimitOf[limAccumAlphaBits]]);
       IntLimitToLabel(AuxLabel, limAuxBuffers);
       IntLimitToLabel(SubLabel, limSubpixelBits);
-      {$IFDEF MSWINDOWS}
       OverlayLabel.Caption:=IntToStr(pfd.bReserved and 7);
       UnderlayLabel.Caption:=IntToStr(pfd.bReserved shr 3);
-      {$ENDIF}
 
       // Maximum values
       IntLimitToLabel(ClipLabel, limClipPlanes);
@@ -356,6 +342,28 @@ end;
 procedure TInfoForm.ExtensionsKeyPress(Sender: TObject; var Key: Char);
 begin
    ExtensionsClick(Sender);
+end;
+
+procedure TInfoForm.FormShow(Sender: TObject);
+begin
+   PageControl.ActivePageIndex := 0;
+end;
+
+procedure TInfoForm.LoadContributors;
+var
+  ContributorsFileName: string;
+begin
+   //В будущем будет загружатся из файла
+  //In the future, will be loaded from a file
+
+ { ContributorsFileName:=
+  // 'GLSceneContributors.txt';
+
+  if FileExistsUTF8(ContributorsFileName) then
+    Contributors.Lines.LoadFromFile(UTF8ToSys(ContributorsFileName))
+  else
+    Contributors.Lines.Text:='Cannot find contributors list.';
+  Contributors.Lines.Add( ContributorsFileName)  }
 end;
 
 //------------------------------------------------------------------------------
