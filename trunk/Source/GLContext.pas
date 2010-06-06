@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
       <li>02/05/10 - Yar - Handles are universal for contexts.
                            You can use one handle in different contexts, regardless of the compatibility of contexts.
       <li>01/05/10 - Yar - Added buffer objects state cashing
@@ -73,9 +74,12 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-
   Classes,
   SysUtils,
+{$IFDEF FPC}
+  LCLType,
+{$ENDIF}
+  GLCrossPlatform,
   OpenGL1x,
   OpenGLAdapter,
   VectorGeometry,
@@ -134,8 +138,6 @@ type
     FOnDestroyContext: TNotifyEvent;
     FManager: TGLContextManager;
     FActivationCount: Integer;
-    FGL: TGLExtensionsAndEntryPoints;
-    FGLStates: TGLStateCache;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
     FOwnedHandles: TList;
@@ -146,6 +148,8 @@ type
 {$ENDIF}
   protected
     { Protected Declarations }
+    FGL: TGLExtensionsAndEntryPoints;
+    FGLStates: TGLStateCache;
     FAcceleration: TGLContextAcceleration;
 
     procedure SetColorBits(const aColorBits: Integer);
@@ -161,8 +165,8 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure PropagateSharedContext;
 
-    procedure DoCreateContext(outputDevice: Cardinal); dynamic; abstract;
-    procedure DoCreateMemoryContext(outputDevice: Cardinal; width, height:
+    procedure DoCreateContext(outputDevice: HWND); dynamic; abstract;
+    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer = 1); dynamic; abstract;
     procedure DoShareLists(aContext: TGLContext); dynamic; abstract;
     procedure DoDestroyContext; dynamic; abstract;
@@ -214,12 +218,12 @@ type
 
     {: Creates the context.<p>
        This method must be invoked before the context can be used. }
-    procedure CreateContext(outputDevice: Cardinal);
+    procedure CreateContext(outputDevice: HWND);
     {: Creates an in-memory context.<p>
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
        contexts). }
-    procedure CreateMemoryContext(outputDevice: Cardinal; width, height:
+    procedure CreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer = 1);
     {: Setup display list sharing between two rendering contexts.<p>
        Both contexts must have the same pixel format. }
@@ -1154,6 +1158,7 @@ begin
 {$ENDIF}
   FAcceleration := chaUnknown;
   FGLStates := TGLStateCache.Create;
+  FGL := TGLExtensionsAndEntryPoints.Create;
   GLContextManager.RegisterContext(Self);
 end;
 
@@ -1300,20 +1305,19 @@ end;
 // CreateContext
 //
 
-procedure TGLContext.CreateContext(outputDevice: Cardinal);
+procedure TGLContext.CreateContext(outputDevice: HWND);
 begin
   if IsValid then
     raise EGLContext.Create(cContextAlreadyCreated);
   DoCreateContext(outputDevice);
   FSharedContexts.Add(Self);
   Manager.ContextCreatedBy(Self);
-  FGL := TGLExtensionsAndEntryPoints.Create;
 end;
 
 // CreateMemoryContext
 //
 
-procedure TGLContext.CreateMemoryContext(outputDevice: Cardinal;
+procedure TGLContext.CreateMemoryContext(outputDevice: HWND;
   width, height: Integer; BufferCount: integer);
 begin
   if IsValid then
@@ -1500,7 +1504,7 @@ begin
     FSharedContexts.Clear;
     Active := False;
     DoDestroyContext;
-    FreeAndNil(FGL);
+    FGL.Close;
   finally
     if Assigned(oldContext) then
       oldContext.Activate;
@@ -1520,16 +1524,15 @@ begin
   begin
     if not IsValid then
       raise EGLContext.Create(cContextNotCreated);
+
     vContextActivationFailureOccurred := False;
     try
       DoActivate;
     except
       vContextActivationFailureOccurred := True;
     end;
-    vCurrentGLContext := Self;
-    if not FGL.IsInitialized then
-      FGL.Initialize;
     vGL := FGL;
+    vCurrentGLContext := Self;
   end
   else
     Assert(vCurrentGLContext = Self, 'vCurrentGLContext <> Self');
@@ -1966,7 +1969,7 @@ end;
 
 function TGLListHandle.DoAllocateHandle: Cardinal;
 begin
-  Result := glGenLists(1);
+  Result := GL.GenLists(1);
 end;
 
 // DoDestroyHandle
@@ -1979,7 +1982,7 @@ begin
     // reset error status
     ClearGLError;
     // delete
-    glDeleteLists(AHandle, 1);
+    GL.DeleteLists(AHandle, 1);
     // check for error
     CheckOpenGLError;
   end;
@@ -2018,7 +2021,7 @@ end;
 
 function TGLTextureHandle.DoAllocateHandle: Cardinal;
 begin
-  glGenTextures(1, @Result);
+  GL.GenTextures(1, @Result);
 end;
 
 // DoDestroyHandle
@@ -2029,9 +2032,9 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
 
-    glDeleteTextures(1, @AHandle);
+    GL.DeleteTextures(1, @AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -2075,7 +2078,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
     // delete
     GL.DeleteQueries(1, @AHandle);
     // check for error
@@ -2168,7 +2171,7 @@ end;
 
 class function TGLOcclusionQueryHandle.IsSupported: Boolean;
 begin
-  Result := GL_VERSION_1_5;
+  Result := GL.VERSION_1_5;
 end;
 
 // PixelCount
@@ -2201,7 +2204,7 @@ end;
 
 class function TGLTimerQueryHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_timer_query;
+  Result := GL.EXT_timer_query;
 end;
 
 // Time
@@ -2237,7 +2240,7 @@ end;
 
 class function TGLPrimitiveQueryHandle.IsSupported: Boolean;
 begin
-  Result := GL_VERSION_3_0;
+  Result := GL.VERSION_3_0;
 end;
 
 // PrimitivesGenerated
@@ -2281,7 +2284,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
     UnBind;
     // delete
     GL.DeleteBuffers(1, @AHandle);
@@ -2295,7 +2298,7 @@ end;
 
 class function TGLBufferObjectHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_vertex_buffer_object;
+  Result := GL.ARB_vertex_buffer_object;
 end;
 
 // BindRange
@@ -2467,7 +2470,7 @@ end;
 
 class function TGLPackPBOHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_pixel_buffer_object;
+  Result := GL.ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2497,7 +2500,7 @@ end;
 
 class function TGLUnpackPBOHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_pixel_buffer_object;
+  Result := GL.ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2563,7 +2566,7 @@ end;
 
 class function TGLTransformFeedbackBufferHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_transform_feedback or GL_VERSION_3_0;
+  Result := GL.EXT_transform_feedback or GL.VERSION_3_0;
 end;
 
 // ------------------
@@ -2593,8 +2596,8 @@ end;
 
 class function TGLTextureBufferHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_texture_buffer_object or GL_ARB_texture_buffer_object or
-    GL_VERSION_3_1;
+  Result := GL.EXT_texture_buffer_object or GL.ARB_texture_buffer_object or
+    GL.VERSION_3_1;
 end;
 
 // ------------------
@@ -2643,7 +2646,7 @@ end;
 
 class function TGLUniformBufferHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_uniform_buffer_object;
+  Result := GL.ARB_uniform_buffer_object;
 end;
 
 // ------------------
@@ -2666,7 +2669,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
     // delete
     GL.DeleteVertexArrays(1, @AHandle);
     vCurrentGLContext.GLStates.ResetVertexArrayStates(AHandle);
@@ -2689,7 +2692,6 @@ end;
 
 procedure TGLVertexArrayHandle.UnBind;
 begin
-  //   glBindVertexArray(0);
   Assert(vCurrentGLContext <> nil);
   vCurrentGLContext.GLStates.VertexArrayBinding := 0;
 end;
@@ -2699,7 +2701,7 @@ end;
 
 class function TGLVertexArrayHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_vertex_array_object;
+  Result := GL.ARB_vertex_array_object;
 end;
 
 // Transferable
@@ -2730,7 +2732,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
     // delete
     GL.DeleteFramebuffers(1, @AHandle);
     // check for error
@@ -2902,7 +2904,7 @@ end;
 
 function TGLFramebufferHandle.CheckStatus(target: TGLenum): TGLenum;
 begin
-  Result := glCheckFramebufferStatusEXT(target);
+  Result := GL.CheckFramebufferStatus(target);
 end;
 
 // IsSupported
@@ -2910,7 +2912,7 @@ end;
 
 class function TGLFramebufferHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_framebuffer_object;
+  Result := GL.EXT_framebuffer_object or GL.ARB_framebuffer_object;
 end;
 
 // Transferable
@@ -2941,7 +2943,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    glGetError;
+    GL.GetError;
     // delete
     GL.DeleteRenderbuffers(1, @AHandle);
     // check for error
@@ -2990,7 +2992,7 @@ end;
 
 class function TGLRenderbufferHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_framebuffer_object;// or GL_ARB_framebuffer_object;
+  Result := GL.EXT_framebuffer_object or GL.ARB_framebuffer_object;
 end;
 
 // ------------------
@@ -3007,7 +3009,7 @@ begin
     // reset error status
     ClearGLError;
     // delete
-    glDeleteObjectARB(AHandle);
+    GL.DeleteObject(AHandle);
     // check for error
     CheckOpenGLError;
   end;
@@ -3022,11 +3024,11 @@ var
   log: TGLString;
 begin
   maxLength := 0;
-  glGetObjectParameterivARB(SafeGetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
+  GL.GetObjectParameteriv(SafeGetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
   SetLength(log, maxLength);
   if maxLength > 0 then
   begin
-    glGetInfoLogARB(SafeGetHandle, maxLength, @maxLength, @log[1]);
+    GL.GetInfoLog(SafeGetHandle, maxLength, @maxLength, @log[1]);
     SetLength(log, maxLength);
   end;
   Result := string(log);
@@ -3037,7 +3039,7 @@ end;
 
 class function TGLSLHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_shader_objects;
+  Result := GL.ARB_shader_objects;
 end;
 
 // ------------------
@@ -3072,7 +3074,7 @@ var
 begin
   GL.CompileShader(SafeGetHandle);
   compiled := 0;
-  glGetObjectParameterivARB(SafeGetHandle, GL_OBJECT_COMPILE_STATUS_ARB, @compiled);
+  GL.GetObjectParameteriv(SafeGetHandle, GL_OBJECT_COMPILE_STATUS_ARB, @compiled);
   Result := (compiled <> 0);
 end;
 
@@ -3094,7 +3096,7 @@ end;
 
 class function TGLVertexShaderHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_vertex_shader;
+  Result := GL.ARB_vertex_shader;
 end;
 
 // ------------------
@@ -3115,7 +3117,7 @@ end;
 
 class function TGLGeometryShaderHandle.IsSupported: Boolean;
 begin
-  Result := GL_EXT_geometry_shader4;
+  Result := GL.EXT_geometry_shader4;
 end;
 
 // ------------------
@@ -3136,7 +3138,7 @@ end;
 
 class function TGLFragmentShaderHandle.IsSupported: Boolean;
 begin
-  Result := GL_ARB_fragment_shader;
+  Result := GL.ARB_fragment_shader;
 end;
 
 // ------------------
@@ -3214,7 +3216,7 @@ begin
   h := SafeGetHandle;
   GL.LinkProgram(h);
   linked := 0;
-  glGetObjectParameterivARB(h, GL_OBJECT_LINK_STATUS_ARB, @linked);
+  GL.GetObjectParameteriv(h, GL_OBJECT_LINK_STATUS_ARB, @linked);
   Result := (linked <> 0);
 end;
 
@@ -3229,7 +3231,7 @@ begin
   h := SafeGetHandle;
   GL.ValidateProgram(h);
   validated := 0;
-  glGetObjectParameterivARB(h, GL_OBJECT_VALIDATE_STATUS_ARB, @validated);
+  GL.GetObjectParameteriv(h, GL_OBJECT_VALIDATE_STATUS_ARB, @validated);
   Result := (validated <> 0);
 end;
 
@@ -3238,7 +3240,7 @@ end;
 
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
-  Result := glGetAttribLocationARB(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetAttribLocation(SafeGetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, 'Unknown attrib "' + name + '" or program not in use');
 end;
 
@@ -3247,7 +3249,7 @@ end;
 
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
-  Result := glGetUniformLocationARB(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetUniformLocation(SafeGetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, 'Unknown uniform "' + name + '" or program not in use');
 end;
 

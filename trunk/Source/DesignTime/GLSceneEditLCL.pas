@@ -58,8 +58,11 @@ interface
 {$I GLScene.inc}
 
 uses
+  {$IFDEF MSWINDOWS}
+  Registry,
+  {$ENDIF}
   XCollection, GLScene, Classes, SysUtils,
-  Registry, Controls,  Forms, ComCtrls,
+  Controls,  Forms, ComCtrls,
   Dialogs, Menus, ActnList, ExtCtrls, StdCtrls,
   propedits, componenteditors, lclintf, lresources
 ;
@@ -243,9 +246,6 @@ uses
 resourcestring
    cGLSceneEditor = 'GLScene Editor';
 
-const
-   cRegistryKey = 'Software\GLScene.org\GLSceneEdit';
-
 var
 	vGLSceneEditorForm : TGLSceneEditorForm;
 
@@ -265,6 +265,9 @@ begin
 end;
 
 {$IFDEF MSWINDOWS}
+const
+   cRegistryKey = 'Software\GLScene.org\GLSceneEdit';
+
 function ReadRegistryInteger(reg : TRegistry; const name : String;
                              defaultValue : Integer) : Integer;
 begin

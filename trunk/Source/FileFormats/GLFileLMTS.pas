@@ -4,6 +4,7 @@
 {: GLFileLMTS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>31/05/10 - Yar - Fixes for Linux x64
 	<li>22/01/10 - Yar - Added GLTextureFormat to uses
         <li>25/07/07 - DaStr - Replaced some types to get rid of compiler warnings
         <li>08/10/08 - DanB - fix for different Char size in Delphi 2009+
@@ -450,6 +451,9 @@ var
     MatInfoCount: integer;
     libmat: TGLLibMaterial;
 begin
+    SetLength(tris, 0);
+    SetLength(subsets, 0);
+    SetLength(texdata, 0);
     c := 0;
     lmstartindex := maxint;
     for i := 0 to Owner.MeshObjects.count - 1 do
@@ -581,6 +585,7 @@ begin
         end;
     end;
 
+    SetLength(matinfo, 0);
     //store the material properties..
     if assigned(owner.MaterialLibrary) then
     begin
@@ -701,4 +706,3 @@ initialization
     RegisterVectorFileFormat('lmts', 'Pulsar Studio LMTS File Format', TGLLMTSVectorFile);
 
 end.
-

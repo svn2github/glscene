@@ -13,6 +13,7 @@
     Original code by Osman Turan (osmanturancom@yahoo.com)<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixes for Linux x64
       <li>08/11/09 - DaStr - Compatibility fix for FPC
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -151,7 +152,7 @@ begin
 
       mesh := TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       //easiest way to convert a char array to string ;)
-      mesh.Name := Trim(PChar(surfheader.Name[0]));
+      mesh.Name := Trim(string(PChar(surfheader.Name[0])));
       with mesh do
       begin
         Mode:=momFaceGroups;
@@ -182,7 +183,7 @@ begin
         for j:=0 to fileheader.NumFrames-1 do
         begin
           morphTarget := TMeshMorphTarget.CreateOwned(MorphTargets);
-          morphTarget.Name := Trim(Pchar(surfheader.Name[0]))+'['+IntToStr(j)+']';
+          morphTarget.Name := Trim(string(Pchar(surfheader.Name[0])))+'['+IntToStr(j)+']';
           numVerts := surfheader.NumVertices;
           morphTarget.Vertices.Capacity := numVerts;
 

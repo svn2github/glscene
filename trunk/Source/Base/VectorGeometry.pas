@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings for FPC
       <li>15/04/10 - Yar - Bugfixed vector normalization on Intel processors
                            (thanks mif) (BugTracker ID = 2987779)
       <li>02/04/10 - Yar - Added inline directive for small vector operations
@@ -484,27 +485,27 @@ const
 function TexPointMake(const s, t : Single) : TTexPoint; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 function AffineVectorMake(const v : TVector) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetAffineVector(var v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TAffineVector; const vSrc : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TAffineVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TAffineDblVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TAffineDblVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetAffineVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const vSrc : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TAffineDblVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TAffineDblVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 function PointMake(const x, y, z: Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 function PointMake(const v : TAffineVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 function PointMake(const v : TVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(var v : TVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(var v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(var v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(var v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(var v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(var v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(var v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const x, y, z : Single; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const av : TAffineVector; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(out v : TAffineVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 procedure RstVector(var v : TAffineVector); overload;
 procedure RstVector(var v : TVector); overload;
 
@@ -1247,20 +1248,20 @@ function NormalizeAngle(angle : Single) : Single;
 function NormalizeDegAngle(angle : Single) : Single;
 
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Extended; var Sin, Cos: Extended); overload;
+procedure SinCos(const Theta: Extended; out Sin, Cos: Extended); overload;
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Double; var Sin, Cos: Double); overload;
+procedure SinCos(const Theta: Double; out Sin, Cos: Double); overload;
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Single; var Sin, Cos: Single); overload;
+procedure SinCos(const Theta: Single; out Sin, Cos: Single); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended); overload;
+procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); overload;
+procedure SinCos(const theta, radius : Double; out Sin, Cos: Double); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Single; var Sin, Cos: Single); overload;
+procedure SinCos(const theta, radius : Single; out Sin, Cos: Single); overload;
 
 {: Fills up the two given dynamic arrays with sin cos values.<p>
    start and stop angles must be given in degrees, the number of steps is
@@ -1751,7 +1752,7 @@ end;
 
 // SetAffineVector
 //
-procedure SetAffineVector(var v : TAffineVector; const x, y, z : Single); overload;
+procedure SetAffineVector(out v : TAffineVector; const x, y, z : Single); overload;
 begin
    v[0]:=x;
    v[1]:=y;
@@ -1760,7 +1761,7 @@ end;
 
 // SetVector (affine)
 //
-procedure SetVector(var v : TAffineVector; const x, y, z : Single);
+procedure SetVector(out v : TAffineVector; const x, y, z : Single);
 begin
    v[0]:=x;
    v[1]:=y;
@@ -1769,7 +1770,7 @@ end;
 
 // SetVector (affine-hmg)
 //
-procedure SetVector(var v : TAffineVector; const vSrc : TVector);
+procedure SetVector(out v : TAffineVector; const vSrc : TVector);
 begin
    v[0]:=vSrc[0];
    v[1]:=vSrc[1];
@@ -1778,7 +1779,7 @@ end;
 
 // SetVector (affine-affine)
 //
-procedure SetVector(var v : TAffineVector; const vSrc : TAffineVector);
+procedure SetVector(out v : TAffineVector; const vSrc : TAffineVector);
 begin
    v[0]:=vSrc[0];
    v[1]:=vSrc[1];
@@ -1787,7 +1788,7 @@ end;
 
 // SetVector (affine double - affine single)
 //
-procedure SetVector(var v : TAffineDblVector; const vSrc : TAffineVector);
+procedure SetVector(out v : TAffineDblVector; const vSrc : TAffineVector);
 begin
    v[0]:=vSrc[0];
    v[1]:=vSrc[1];
@@ -1796,7 +1797,7 @@ end;
 
 // SetVector (affine double - hmg single)
 //
-procedure SetVector(var v : TAffineDblVector; const vSrc : TVector);
+procedure SetVector(out v : TAffineDblVector; const vSrc : TVector);
 begin
    v[0]:=vSrc[0];
    v[1]:=vSrc[1];
@@ -1855,7 +1856,7 @@ end;
 
 // SetVector
 //
-procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0);
+procedure SetVector(out v : TVector; const x, y, z : Single; w : Single = 0);
 begin
 	v[0]:=x;
 	v[1]:=y;
@@ -1865,7 +1866,7 @@ end;
 
 // SetVector
 //
-procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0);
+procedure SetVector(out v : TVector; const av : TAffineVector; w : Single = 0);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -1875,7 +1876,7 @@ end;
 
 // SetVector
 //
-procedure SetVector(var v : TVector; const vSrc : TVector);
+procedure SetVector(out v : TVector; const vSrc : TVector);
 begin
    // faster than memcpy, move or ':=' on the TVector...
 	v[0]:=vSrc[0];
@@ -1886,7 +1887,7 @@ end;
 
 // MakePoint
 //
-procedure MakePoint(var v : TVector; const x, y, z: Single);
+procedure MakePoint(out v : TVector; const x, y, z: Single);
 begin
 	v[0]:=x;
 	v[1]:=y;
@@ -1896,7 +1897,7 @@ end;
 
 // MakePoint
 //
-procedure MakePoint(var v : TVector; const av : TAffineVector);
+procedure MakePoint(out v : TVector; const av : TAffineVector);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -1906,7 +1907,7 @@ end;
 
 // MakePoint
 //
-procedure MakePoint(var v : TVector; const av : TVector);
+procedure MakePoint(out v : TVector; const av : TVector);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -1916,7 +1917,7 @@ end;
 
 // MakeVector
 //
-procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
+procedure MakeVector(out v : TAffineVector; const x, y, z: Single); overload;
 begin
 	v[0]:=x;
 	v[1]:=y;
@@ -1925,7 +1926,7 @@ end;
 
 // MakeVector
 //
-procedure MakeVector(var v : TVector; const x, y, z: Single);
+procedure MakeVector(out v : TVector; const x, y, z: Single);
 begin
 	v[0]:=x;
 	v[1]:=y;
@@ -1935,7 +1936,7 @@ end;
 
 // MakeVector
 //
-procedure MakeVector(var v : TVector; const av : TAffineVector);
+procedure MakeVector(out v : TVector; const av : TAffineVector);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -1945,7 +1946,7 @@ end;
 
 // MakeVector
 //
-procedure MakeVector(var v : TVector; const av : TVector);
+procedure MakeVector(out v : TVector; const av : TVector);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -7115,7 +7116,7 @@ end;
 
 // SinCos (Extended)
 //
-procedure SinCos(const Theta: Extended; var Sin, Cos: Extended);
+procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -7133,7 +7134,7 @@ end;
 
 // SinCos (Double)
 //
-procedure SinCos(const Theta: Double; var Sin, Cos: Double);
+procedure SinCos(const Theta: Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -7156,7 +7157,7 @@ end;
 
 // SinCos (Single)
 //
-procedure SinCos(const Theta: Single; var Sin, Cos: Single);
+procedure SinCos(const Theta: Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -7179,7 +7180,7 @@ end;
 
 // SinCos (Extended w radius)
 //
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended);
+procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -7202,7 +7203,7 @@ end;
 
 // SinCos (Double w radius)
 //
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Double);
+procedure SinCos(const theta, radius : Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -7225,7 +7226,7 @@ end;
 
 // SinCos (Single w radius)
 //
-procedure SinCos(const theta, radius : Single; var Sin, Cos: Single);
+procedure SinCos(const theta, radius : Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack

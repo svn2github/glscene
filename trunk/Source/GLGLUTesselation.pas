@@ -7,6 +7,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings
       <li>26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
       <li>10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
                             TGLFreeform, so can now use TGLActor with it too
@@ -39,7 +40,6 @@ uses
 Var
   TessMesh : TMeshObject;
   TessFace : TFGIndexTexCoordList;
-  TessError : Boolean;
   TessExtraVertices : Integer;
   TessVertices : PAffineVectorArray;
 
@@ -50,7 +50,6 @@ Begin
     GL_TRIANGLES      : TessFace.Mode := fgmmTriangles;
     GL_TRIANGLE_STRIP : TessFace.Mode := fgmmTriangleStrip;
     GL_TRIANGLE_FAN   : TessFace.Mode := fgmmTriangleFan;
-    else TessError := True;
   End;
 End;
 
@@ -88,8 +87,6 @@ Var
   i : Integer;
   dblVector : TAffineDblVector;
 Begin
-  TessError := False;
-
   // Select or Create FaceGroup
   If Mesh.MeshObjects.Count = 0 then
   Begin

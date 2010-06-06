@@ -6,6 +6,7 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Fixed for Linux x64
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>04/09/07 - DaStr - Fixed memory leak in TGLGameMenu
@@ -394,14 +395,14 @@ end;
 //
 function TGLGameMenu.GetEnabled(AIndex : Integer) : Boolean;
 begin
-  Result:=not Boolean(pointer(FItems.Objects[AIndex]));
+  Result:=not Boolean(PtrUint(FItems.Objects[AIndex]));
 end;
 
 // SetEnabled
 //
 procedure TGLGameMenu.SetEnabled(AIndex : Integer; AValue : Boolean);
 begin
-   FItems.Objects[AIndex]:=TObject(pointer(ord(not AValue)));
+   FItems.Objects[AIndex]:=TObject(pointer(PtrUInt(ord(not AValue))));
    StructureChanged;
 end;
 

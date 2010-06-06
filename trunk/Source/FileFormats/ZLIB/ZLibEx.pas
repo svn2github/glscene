@@ -1,5 +1,14 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: ZLibEx<p>
+
+  <b>Historique : </b><font size=-1><ul>
+      <li>07/05/10 - Yar - Fixed for Linux x64
+      <li>06/05/10 - Yar - Added to GLScene (contributed by oleg matrozov)
+  </ul></font>
+
 {*****************************************************************************
-*  ZLibEx.pas                                                                *
 *                                                                            *
 *  copyright (c) 2000-2010 base2 technologies                                *
 *  copyright (c) 1995-2002 Borland Software Corporation                      *
@@ -93,6 +102,7 @@ unit ZLibEx;
 interface
 
 {$I ZLibEx.inc}
+{$I GLScene.inc}
 
 uses
   SysUtils, Classes, ZLibExApi;
@@ -238,8 +248,6 @@ type
     function  GetStreamPosition: TStreamPos;
     procedure SetStreamPosition(value: TStreamPos);
   protected
-    constructor Create(stream: TStream);
-
     function  StreamRead(var buffer; count: Longint): Longint;
     function  StreamWrite(const buffer; count: Longint): Longint;
     function  StreamSeek(offset: Longint; origin: Word): Longint;
@@ -252,6 +260,8 @@ type
     property StreamPosition: TStreamPos read GetStreamPosition write SetStreamPosition;
 
     property OnProgress: TNotifyEvent read FOnProgress write FOnProgress;
+  public
+    constructor Create(stream: TStream);
   end;
 
   {** TZCompressionStream ***************************************************}
@@ -361,47 +371,47 @@ type
 
 function  ZDeflateInit(var stream: TZStreamRec;
   level: TZCompressionLevel): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZDeflateInit2(var stream: TZStreamRec;
   level: TZCompressionLevel; windowBits, memLevel: Integer;
   strategy: TZStrategy): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZDeflate(var stream: TZStreamRec; flush: TZFlush): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZDeflateEnd(var stream: TZStreamRec): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZDeflateReset(var stream: TZStreamRec): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 {** zlib inflate routines ***************************************************}
 
 function  ZInflateInit(var stream: TZStreamRec): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZInflateInit2(var stream: TZStreamRec;
   windowBits: Integer): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZInflate(var stream: TZStreamRec; flush: TZFlush): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZInflateEnd(var stream: TZStreamRec): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZInflateReset(var stream: TZStreamRec): Integer;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 {** zlib checksum routines **************************************************}
 
 function  ZAdler32(adler: Longint; const buffer; size: Integer): Longint;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 function  ZCrc32(crc: Longint; const buffer; size: Integer): Longint;
-  {$ifdef Version2005Plus} inline; {$endif}
+  {$ifdef GLS_INLINE} inline; {$endif}
 
 {** zlib custom routines ****************************************************}
 
@@ -756,7 +766,7 @@ begin
 end;
 
 {** zlib checksum routines **************************************************}
-
+{$WARNINGS OFF}
 function ZAdler32(adler: Longint; const buffer; size: Integer): Longint;
 begin
   result := adler32(adler,buffer,size);
@@ -766,7 +776,7 @@ function ZCrc32(crc: Longint; const buffer; size: Integer): Longint;
 begin
   result := crc32(crc,buffer,size);
 end;
-
+{$WARNINGS ON}
 {** zlib extended routines **************************************************}
 
 procedure ZDeflateEx(var stream: TZStreamRec; param: Pointer;
@@ -878,7 +888,7 @@ begin
   result := param^.InSize - param^.InPosition;
   if result > size then result := size;
 
-  Move(Pointer(Integer(param^.InBuffer) + param^.InPosition)^, buffer, result);
+  Move(Pointer(PtrUInt(param^.InBuffer) + PtrUInt(param^.InPosition))^, buffer, result);
 
   Inc(param^.InPosition, result);
 end;
@@ -896,7 +906,7 @@ begin
     ReallocMem(Pointer(param^.OutBuffer), param^.OutSize);
   end;
 
-  Move(buffer, Pointer(Integer(param^.OutBuffer) + param^.OutPosition)^, size);
+  Move(buffer, Pointer(PtrUInt(param^.OutBuffer) + PtrUInt(param^.OutPosition))^, size);
 
   Inc(param^.OutPosition, size);
 
@@ -984,7 +994,7 @@ begin
       repeat
         ReallocMem(outBuffer, outSize);
 
-        zstream.next_out := Pointer(Integer(outBuffer) + zstream.total_out);
+        zstream.next_out := Pointer(PtrUInt(outBuffer) + PtrUInt(zstream.total_out));
         zstream.avail_out := outSize - zstream.total_out;
 
         zresult := ZCompressCheck(ZDeflate(zstream, zfNoFlush));
@@ -996,7 +1006,7 @@ begin
       begin
         ReallocMem(outBuffer, outSize);
 
-        zstream.next_out := Pointer(Integer(outBuffer) + zstream.total_out);
+        zstream.next_out := Pointer(PtrUInt(outBuffer) + PtrUInt(zstream.total_out));
         zstream.avail_out := outSize - zstream.total_out;
 
         zresult := ZCompressCheck(ZDeflate(zstream, zfFinish));
@@ -1042,7 +1052,7 @@ begin
         repeat
           ReallocMem(outBuffer, outSize);
 
-          zstream.next_out := Pointer(Integer(outBuffer) + zstream.total_out);
+          zstream.next_out := Pointer(PtrUInt(outBuffer) + zstream.total_out);
           zstream.avail_out := outSize - zstream.total_out;
 
           zresult := ZDecompressCheck(ZInflate(zstream, zfNoFlush), False);
@@ -1712,6 +1722,7 @@ end;
 
 function TZCompressionStream.Read(var buffer; count: Longint): Longint;
 begin
+  Result:=0;
   raise EZCompressionError.Create(SZInvalid);
 end;
 
@@ -1838,6 +1849,7 @@ end;
 
 function TZDecompressionStream.Write(const Buffer; Count: Longint): Longint;
 begin
+  Result := 0;
   raise EZDecompressionError.Create(SZInvalid);
 end;
 
@@ -1934,7 +1946,7 @@ begin
   begin
     BufferCapacity(FBufferSize + size);
 
-    Move(buffer^, Pointer(Integer(FBuffer) + FBufferSize)^, size);
+    Move(buffer^, Pointer(PtrUInt(FBuffer) + FBufferSize)^, size);
 
     Inc(FBufferSize, size);
   end;
@@ -1946,7 +1958,7 @@ begin
   begin
     Move(FBuffer^, buffer^, size);
 
-    Move(Pointer(Integer(FBuffer) + size)^, FBuffer^, FBufferSize - size);
+    Move(Pointer(PtrUInt(FBuffer) + size)^, FBuffer^, FBufferSize - size);
 
     Dec(FBufferSize, size);
   end;

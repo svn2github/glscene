@@ -177,12 +177,16 @@ begin
       j := Length(cGamma);
       s := Copy(header.Strings[i], j + 1, Length(header.Strings[i]) - j);
       val(s, fGamma, err);
+      if err <> 0 then
+        raise EInvalidRasterFile.Create('Bad HDR header.');
     end
     else if CmpWord(cEXPOSURE) then
     begin
       j := Length(cEXPOSURE);
       s := Copy(header.Strings[i], j + 1, Length(header.Strings[i]) - j);
       val(s, fExposure, err);
+      if err <> 0 then
+        raise EInvalidRasterFile.Create('Bad HDR header.');
     end
     else if CmpWord(cY) then
     begin
@@ -193,6 +197,8 @@ begin
       val(sn, fHeight, err);
       Delete(s, 1, j + 3); // scip '+X '
       val(s, fWidth, err);
+      if err <> 0 then
+        raise EInvalidRasterFile.Create('Bad HDR header.');
     end
   end; // for i
   header.Free;
@@ -331,4 +337,3 @@ initialization
   RegisterRasterFormat('hdr', 'High Dynamic Range Image', TGLHDRImage);
 
 end.
-

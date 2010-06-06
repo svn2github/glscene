@@ -4,6 +4,7 @@
    GLWidgetContext replaces old GLLinGTKContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/05/10 - Yar - Fixes for Linux x64
       <li>21/04/10 - Yar - Fixed conditions
                            (by Rustam Asmandiarov aka Predator)
       <li>06/04/10 - Yar - Added to GLScene
@@ -17,17 +18,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLContext,{$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
+  Classes, SysUtils, LCLType,
+  GLCrossPlatform, GLContext,{$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
 
   // Operation System
 {$IFDEF MSWINDOWS}
-  Windows, GLWin32Context, LCLType, LMessages, LCLVersion,
+  Windows, GLWin32Context, LMessages, LCLVersion,
 {$ENDIF}
 
 {$IFDEF UNIX}
 {$IFDEF LINUX}
   GLGLXContext,
-  x, xlib, xutil, GLCrossPlatform,
+  x, xlib, xutil,
 {$ENDIF}
 {$IFDEF Darwin}
   GLCarbonContext,
@@ -78,7 +80,7 @@ type
   TGLWidgetContext = class(TGLWin32Context)
   protected
     { Protected Declarations }
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal);
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND);
       override;
   end;
 {$ENDIF}
@@ -87,7 +89,7 @@ type
   TGLWidgetContext = class(TGLCarbonContext)
   protected
     { Protected Declarations }
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: LongInt); override;
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
   end;
 {$ENDIF}
   // Linux Ubuntu, Kubuntu,...
@@ -95,7 +97,7 @@ type
   TGLWidgetContext = class(TGLGLXContext)
   protected
     { Protected Declarations }
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: LongInt); override;
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
   end;
 {$ENDIF}
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
@@ -117,8 +119,7 @@ implementation
 
 {$IFDEF MSWINDOWS}
 
-procedure TGLWidgetContext.DoGetHandles(outputDevice: Cardinal; out XWin:
-  Cardinal);
+procedure TGLWidgetContext.DoGetHandles(outputDevice: HWND; out XWin: HWND);
 begin
 {$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   XWin := outputDevice;
@@ -133,27 +134,32 @@ end;
 
 {$IFDEF LINUX}
 
-procedure TGLWidgetContext.DoGetHandles(outputDevice: Cardinal; out XWin:
-  LongInt);
+procedure TGLWidgetContext.DoGetHandles(outputDevice: HWND; out XWin: HWND);
 {$IF DEFINED(LCLGTK2) or DEFINED(LCLGTK)}
 var
-  FGTKWidget: PGTKWidget;
+  vGTKWidget: PGTKWidget;
+  ptr: Pointer;
 {$ENDIF}
 begin
 {$IF DEFINED(LCLGTK2) or DEFINED(LCLGTK)}
-  fGTKWidget := GetFixedWidget(TGtkDeviceContext(outputDevice).Widget);
+  vGTKWidget := TGtkDeviceContext(outputDevice).Widget;
+  if Assigned(vGTKWidget) then
+    ptr := Pointer(vGTKWidget)
+  else
+    ptr := Pointer(outputDevice);
+  vGTKWidget := GetFixedWidget(ptr);
   // Dirty workaround: force realize
-  gtk_widget_realize(FGTKWidget);
+  gtk_widget_realize(vGTKWidget);
 {$ENDIF}
 {$IFDEF LCLGTK2}
-  gtk_widget_set_double_buffered(FGTKWidget, False);
-  XWin := GDK_WINDOW_XWINDOW(PGdkDrawable(fGTKWidget^.window));
+  gtk_widget_set_double_buffered(vGTKWidget, False);
+  XWin := GDK_WINDOW_XWINDOW(PGdkDrawable(vGTKWidget^.window));
 {$IFDEF GLS_LOGGING}
   GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLGTK2');
 {$ENDIF}
 {$ENDIF}
 {$IFDEF LCLGTK}
-  XWin := GDK_WINDOW_XWINDOW(PGdkWindowPrivate(fGTKWidget^.window));
+  XWin := GDK_WINDOW_XWINDOW(PGdkWindowPrivate(vGTKWidget^.window));
 {$IFDEF GLS_LOGGING}
   GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLGTK');
 {$ENDIF}
@@ -175,8 +181,7 @@ end;
 //
 {$IFDEF Darwin}
 
-procedure TGLWidgetContext.DoGetHandles(outputDevice: Cardinal; out XWin:
-  LongInt);
+procedure TGLWidgetContext.DoGetHandles(outputDevice: HWND; out XWin: HWND);
 begin
 {$IFNDEF LCLcarbon}
   XWin := outputDevice;

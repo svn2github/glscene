@@ -37,11 +37,11 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); override;
+    destructor Destroy; override;
   published
     property SpotTargetPos: TGLCoordinates read FTargetPos;
     property HotSpot: Single read FHotSpot write FHotSpot;
     property Multipler: Single read FMultipler write FMultipler;
-    destructor Destroy; override;
   end;
 
   TGLFile3DSCamera = class(TGLCamera)

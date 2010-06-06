@@ -9,6 +9,7 @@
     and to attach such textures to FBOs for rendering.
 
    <b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Replaced OpenGL1x function to OpenGLAdapter
       <li>16/05/10 - Yar - Creation (thanks to C4)
    </ul></font>
 }
@@ -307,23 +308,23 @@ var
   maxSamples, maxSize: TGLint;
 begin
   // Check smaples count range
-  glGetIntegerv(GL_MAX_SAMPLES, @maxSamples);
+  GL.GetIntegerv(GL_MAX_SAMPLES, @maxSamples);
   if FSamplesCount > maxSamples then
     FSamplesCount := maxSamples;
   if IsDepthFormat(AInternalFormat) then
   begin
-    glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
+    GL.GetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end
   else
   begin
-    glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
+    GL.GetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end;
   // Check texture size
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+  GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if FWidth > maxSize then
     FWidth := maxSize;
   if FHeight > maxSize then
@@ -333,7 +334,7 @@ begin
   case target of
 
     ttTexture2DMultisample:
-      glTexImage2DMultisample(
+      GL.TexImage2DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),
@@ -342,7 +343,7 @@ begin
         FFixedSamplesLocation);
 
     ttTexture2DMultisampleArray:
-      glTexImage3DMultisample(
+      GL.TexImage3DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),

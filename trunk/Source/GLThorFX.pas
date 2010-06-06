@@ -505,7 +505,6 @@ var
    I: Integer;
    //absPos :TVector;
    innerColor : TVector;
-   lastTr : TAffineVector;
    distList : TSingleList;
    objList : TList;
    fp : PThorpoint;
@@ -549,7 +548,6 @@ begin
       end;
 
       glPushMatrix;
-      lastTr:=NullVector;
       SetVector(innerColor, Manager.FInnerColor.Color);
 
       //---------------
@@ -648,4 +646,3 @@ initialization
 	RegisterXCollectionItemClass(TGLBThorFX);
 
 end.
-

@@ -4,6 +4,7 @@
 {: GLFileO3TC<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>31/05/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
@@ -22,6 +23,7 @@ interface
 uses
   Classes,
   SysUtils,
+  GLCrossPlatform,
   OpenGL1x,
   GLContext,
   GLGraphics,
@@ -240,7 +242,7 @@ begin
     begin
       bw := (w + 3) div 4;
       bh := (h + 3) div 4;
-      fLevels.Add(Pointer(Integer(lData) - Integer(fData)));
+      fLevels.Add(Pointer(PtrUInt(lData) - PtrUInt(fData)));
       Inc(lData, bw * bh * d * fElementSize);
       if w > 1 then
         w := w div 2
@@ -322,7 +324,7 @@ procedure TGLO3TCImage.AssignFromTexture(textureContext: TGLContext;
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
-  texFormat, texLod, texResident, optLod: Cardinal;
+  texFormat, texLod, optLod: Cardinal;
   level, faceCount, face: Integer;
   lData: PByte;
   residentFormat: TGLInternalFormat;
@@ -359,7 +361,7 @@ begin
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
     fMipLevels := 0;
-    glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -377,15 +379,15 @@ begin
 
     repeat
       // Check level existence
-      glGetTexLevelParameteriv(glTarget, fMipLevels, GL_TEXTURE_INTERNAL_FORMAT,
+      GL.GetTexLevelParameteriv(glTarget, fMipLevels, GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
         Break;
       Inc(fMipLevels);
       if fMipLevels = 1 then
       begin
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
         fDepth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
@@ -426,7 +428,7 @@ begin
           glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
         for level := 0 to fMipLevels - 1 do
         begin
-          fLevels.Add(Pointer(Integer(lData) - Integer(fData)));
+          fLevels.Add(Pointer(PtrUInt(lData) - PtrUInt(fData)));
           if bCompressed then
           begin
 
@@ -435,7 +437,7 @@ begin
             begin
               if level = 0 then
                 GetMem(vtcBuffer, LevelSize(0));
-              glGetCompressedTexImage(glTarget, level, vtcBuffer);
+              GL.GetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
               cw := (w + 3) div 4;
               ch := (h + 3) div 4;
@@ -463,10 +465,10 @@ begin
                 d := 1;
             end
             else
-              glGetCompressedTexImage(glTarget, level, lData);
+              GL.GetCompressedTexImage(glTarget, level, lData);
           end
           else
-            glGetTexImage(glTarget, level, fColorFormat, fDataType, lData);
+            GL.GetTexImage(glTarget, level, fColorFormat, fDataType, lData);
 
           Inc(lData, LevelSize(level));
         end; // for level
@@ -503,4 +505,3 @@ initialization
   RegisterRasterFormat('o3tc', 'oZone3D Texture Compression', TGLO3TCImage);
 
 end.
-

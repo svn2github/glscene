@@ -234,11 +234,11 @@ var
     newVertices, newNormals, newTexCoords : TAffineVectorList;
     optimized : TIntegerList;
     cosAngle : Single;
-    normal,norm1,norm2 : TAffineVector;
+    normal : TAffineVector;
     s, t : array[0..2] of Integer;
     n : array[0..2] of TIntegerList;
     smooth,
-    hasVertices, hasVertexIndices,
+    hasVertices,
     hasNormals, hasNormalIndices,
     hasTexCoords, hasTexCoordIndices : Boolean;
   begin
@@ -263,7 +263,6 @@ var
     for i:=0 to mesh.FaceGroups.Count-1 do begin
       fg:=TFGVertexNormalTexIndexList(mesh.FaceGroups[i]);
 
-      hasVertexIndices:=fg.VertexIndices.Count>0;
       hasNormalIndices:=fg.NormalIndices.Count>0;
       hasTexCoordIndices:=fg.TexCoordIndices.Count>0;
 

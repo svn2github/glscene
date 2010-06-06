@@ -6,6 +6,7 @@
    Functions for generating perlin noise.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Cosmetic fixes for FPC compatibility.
       <li>29/01/03 - JaJ - Submitted to GLScene.
@@ -43,6 +44,9 @@ procedure Smooth_Interpolate_Strip(B1,B2,B3,Res : T1DPerlinArray; Width : Intege
 Function ExponateCrap(root, exponant : Integer) : Integer;
 
 implementation
+
+uses
+  GLCrossPlatform;
 
 type
    PDouble = ^Double;
@@ -91,7 +95,7 @@ Begin
   For XC := 0 to Width-1 do
   Begin
     Posi^ := Perlin_Random1(X)*Amp;
-    inc(Integer(Posi),SizeOf(Double));
+    inc(Posi);
     Inc(X,Step);
   End;
 End;
@@ -118,20 +122,20 @@ Begin
   C1 := @B2[0];
   L1 := @B3[0];
 
-  T2 := Pointer(Integer(T1)+SizeOf(Double));
-  C2 := Pointer(Integer(C1)+SizeOf(Double));
-  L2 := Pointer(Integer(L1)+SizeOf(Double));
+  T2 := Pointer(PtrUInt(T1)+SizeOf(Double));
+  C2 := Pointer(PtrUInt(C1)+SizeOf(Double));
+  L2 := Pointer(PtrUInt(L1)+SizeOf(Double));
 
-  T3 := Pointer(Integer(T2)+SizeOf(Double));
-  C3 := Pointer(Integer(C2)+SizeOf(Double));
-  L3 := Pointer(Integer(L2)+SizeOf(Double));
+  T3 := Pointer(PtrUInt(T2)+SizeOf(Double));
+  C3 := Pointer(PtrUInt(C2)+SizeOf(Double));
+  L3 := Pointer(PtrUInt(L2)+SizeOf(Double));
 
   For XC := 0 to Width-1 do
   Begin
     Posi^ := (T1^+T3^+L1^+L3^) / 16
             +(T2^+C1^+C3^+L2^) / 8
             +C2^             / 4;
-    Inc(Integer(Posi),SizeOf(Double));
+    Inc(Posi);
 
     T1 := T2;
     C1 := C2;
@@ -141,9 +145,9 @@ Begin
     C2 := C3;
     L2 := L3;
 
-    Inc(Integer(T3),SizeOf(Double));
-    Inc(Integer(C3),SizeOf(Double));
-    Inc(Integer(L3),SizeOf(Double));
+    Inc(T3);
+    Inc(C3);
+    Inc(L3);
   End;
 End;
 
@@ -176,17 +180,17 @@ Begin
   For XC := 0 to Width-1 do
   Begin
     Posi^ := Cubic_Interpolate(V1^,V2^,V3^,V4^,0.5)/2+Cubic_Interpolate(H1^,H2^,H3^,H4^,0.5)/2;
-    Inc(Integer(Posi),SizeOf(Double));
+    Inc(Posi);
 
     H1 := H2;
     H2 := H3;
     H3 := H4;
-    Inc(Integer(H4),SizeOf(Double));
+    Inc(H4);
 
-    Inc(Integer(V1),SizeOf(Double));
-    Inc(Integer(V2),SizeOf(Double));
-    Inc(Integer(V3),SizeOf(Double));
-    Inc(Integer(V4),SizeOf(Double));
+    Inc(V1);
+    Inc(V2);
+    Inc(V3);
+    Inc(V4);
   End;
 End;
 

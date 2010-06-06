@@ -6,6 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Optimization of switching states
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -159,9 +160,10 @@ type
   end;
 
   TMeshObjectVerletNode = class(TVerletNode)
+  private
     MeshObject : TMeshObject;
     VertexIndices : TIntegerList;
-
+  public
     procedure AfterProgress; override;
 
     constructor CreateOwned(const aOwner : TVerletWorld); override;

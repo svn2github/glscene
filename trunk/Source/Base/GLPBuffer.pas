@@ -305,16 +305,13 @@ begin
 end;
 
 procedure TGLPixelBuffer.Bind;
-{$IFDEF Linux}
-var fBuffercount: Integer;
-{$ENDIF}
 begin
 {$IFDEF MSWINDOWS}
   Assert(fHandle <> 0);
   wglBindTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ENDIF}
 {$IFDEF Linux}
-  //not needed
+  {$WARNING GLPixelBuffer.Bind not yet implemented for your platform!}
 {$ENDIF}
 end;
 

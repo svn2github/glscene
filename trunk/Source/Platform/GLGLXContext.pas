@@ -6,6 +6,7 @@
    GLX specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixes for Linux x64. DoActivate method now check contexts difference
       <li>21/04/10 - Yar - Added support for GLX versions lower than 1.3
                            (by Rustam Asmandiarov aka Predator)
       <li>06/04/10 - Yar - Update to GLX 1.3-1.4, added PBuffer, forward context creation
@@ -23,7 +24,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, sysutils, GLCrossPlatform, GLContext, OpenGL1x,
+  Classes, SysUtils, LCLType,
+  GLCrossPlatform, GLContext, OpenGL1x,
   x, xlib, xutil;
 
 type
@@ -40,9 +42,9 @@ type
     FDisplay: PDisplay;
     FCurScreen: Integer;
     FDC: GLXDrawable;
+    FRC, FShareContext: GLXContext;
     FHPBUFFER: GLXPBuffer;
-    FRenderingContext, FShareContext: GLXContext;
-    FCurXWindow: LongInt;
+    FCurXWindow: HWND;
     FiAttribs: packed array of Integer;
     nret: Integer;
     fbConfigs: PGLXFBConfigArray;
@@ -63,11 +65,11 @@ type
 
     {: DoGetHandles must be implemented in child classes,
        and return the display + window }
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: LongInt); virtual;
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual;
       abstract;
-    procedure GetHandles(outputDevice: Cardinal);
-    procedure DoCreateContext(outputDevice: Cardinal); override;
-    procedure DoCreateMemoryContext(outputDevice: Cardinal; width, height:
+    procedure GetHandles(outputDevice: HWND);
+    procedure DoCreateContext(outputDevice: HWND); override;
+    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer); override;
     procedure DoShareLists(aContext: TGLContext); override;
     procedure DoDestroyContext; override;
@@ -75,8 +77,8 @@ type
     procedure DoDeactivate; override;
 
     property DC: GLXDrawable read FDC;
-    property RenderingContext: GLXContext read FRenderingContext;
-    property CurXWindow: LongInt read FCurXWindow;
+    property RenderingContext: GLXContext read FRC;
+    property CurXWindow: HWND read FCurXWindow;
   public
     { Public Declarations }
     constructor Create; override;
@@ -96,10 +98,8 @@ implementation
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
 
-{$IFDEF GLS_LOGGING}
 uses
-  GLSLog;
-{$ENDIF}
+  GLState, GLSLog;
 
 resourcestring
   cForwardContextFailsed = 'Can not create OpenGL 3.x Forward Context';
@@ -108,8 +108,20 @@ resourcestring
   // ------------------ TGLGLXContext ------------------
   // ------------------
 
+{$IFNDEF GLS_MULTITHREAD}
 var
-  vLastVendor: string;
+{$ELSE}
+threadvar
+{$ENDIF}
+  vLastConfigs: PGLXFBConfigArray;
+  vLastConfigsNumber: GLint;
+  vLastVendor: TGLString;
+{$IFDEF GLS_EXPERIMENTAL}
+  vLastDC: GLXDrawable;
+  vLastRC: GLXContext;
+{$ENDIF}
+
+var
   ForwardContextAttribList: array[0..6] of Integer = (
     GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
     GLX_CONTEXT_MINOR_VERSION_ARB, 0,
@@ -190,7 +202,6 @@ const
     0);
 var
   vi: PXvisualInfo;
-  numReturned: integer;
 begin
   // Lets create temporary window with glcontext
   Result := XCreateSimpleWindow(FDisplay, XRootWindow(FDisplay, FCurScreen),
@@ -202,9 +213,9 @@ begin
   XFlush(FDisplay); // Makes XServer execute commands
   vi := glXChooseVisual(FDisplay, FCurScreen, Attribute);
   if vi <> nil then
-    FRenderingContext := glXCreateContext(FDisplay, vi, nil, true);
-  if FRenderingContext <> nil then
-    glXMakeCurrent(FDisplay, Result, FRenderingContext);
+    FRC := glXCreateContext(FDisplay, vi, nil, true);
+  if FRC <> nil then
+    glXMakeCurrent(FDisplay, Result, FRC);
   if vi <> nil then
     Xfree(vi);
 end;
@@ -217,10 +228,10 @@ begin
   if FDisplay = nil then
     Exit;
 
-  if FRenderingContext <> nil then
+  if FRC <> nil then
   begin
     glXMakeCurrent(FDisplay, 0, nil);
-    glXDestroyContext(FDisplay, FRenderingContext);
+    glXDestroyContext(FDisplay, FRC);
   end;
 
   if @AWin <> nil then
@@ -234,8 +245,9 @@ function TGLGLXContext._glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable;
   ctx: GLXContext): boolean;
 begin
   if fOldContext then
-     Result := glXMakeCurrent(dpy, draw, ctx)
-     else      Result := glXMakeContextCurrent(dpy, draw, draw, ctx)
+    Result := glXMakeCurrent(dpy, draw, ctx)
+  else
+    Result := glXMakeContextCurrent(dpy, draw, draw, ctx);
 end;
 
 // ChooseGLXFormat
@@ -359,7 +371,7 @@ begin
   DestroyContext;
 end;
 
-procedure TGLGLXContext.GetHandles(outputDevice: Cardinal);
+procedure TGLGLXContext.GetHandles(outputDevice: HWND);
 begin
   DoGetHandles(outputDevice, FCurXWindow);
 end;
@@ -367,7 +379,7 @@ end;
 // DoCreateContext
 //
 
-procedure TGLGLXContext.DoCreateContext(outputDevice: Cardinal);
+procedure TGLGLXContext.DoCreateContext(outputDevice: HWND);
 var
   FWin: TWindow;
   vi: PXvisualInfo;
@@ -379,10 +391,8 @@ begin
   FDisplay := XOpenDisplay(nil);
 
   if FDisplay = nil then
-  begin
     raise EGLContext.Create('Failed connect to XServer');
-    Exit;
-  end;
+
   {$IFDEF GLS_LOGGING}
   GLSLogger.Log('GLGLXContext: DoCreateContext->Were connected to XServer');
   {$ENDIF}
@@ -393,28 +403,26 @@ begin
   {$IFDEF GLS_LOGGING}
   GLSLogger.Log('GLGLXContext: DoCreateContext->Have created a time window');
   {$ENDIF}
-
   if glGetString(GL_VENDOR) <> vLastVendor then
   begin
     ReadExtensions;
     ReadImplementationProperties;
     vLastVendor := glGetString(GL_VENDOR);
   end;
-
   DestroyTmpWnd(fWin);
   {$IFDEF GLS_LOGGING}
   GLSLogger.Log('GLGLXContext: DoCreateContext->Have deleted a time window');
   {$ENDIF}
+
   GetHandles(outputDevice);
   FDC := CurXWindow; //FDC - TWindow
                      //   |- PBuffer
   {$IFDEF GLS_LOGGING}
   GLSLogger.Log('GLGLXContext: DoCreateContext->Handle it is received');
   {$ENDIF}
-
-  if GLX_VERSION_1_3 or GLX_VERSION_1_4 then
+  fOldContext := not (GLX_VERSION_1_3 or GLX_VERSION_1_4);
+  if fOldContext then
   begin
-      fOldContext := False;
       AddIAttrib(GLX_X_RENDERABLE, GL_True);
       AddIAttrib(GLX_RENDER_TYPE, GLX_RGBA_BIT);
       AddIAttrib(GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT);
@@ -423,16 +431,15 @@ begin
       if fbConfigs = nil then
         raise EGLContext.Create('Failed to accept attributes');
       {$IFDEF GLS_LOGGING}
-      GLSLogger.Log('GLGLXContext: DoCreateContext->GLXFormat it is Choosed');
+      GLSLogger.Log('GLGLXContext: DoCreateContext->GLXFormat it is choosed');
       {$ENDIF}
-      FRenderingContext := glXCreateNewContext(FDisplay, fbConfigs[0],
+      FRC := glXCreateNewContext(FDisplay, fbConfigs[0],
                       GLX_RGBA_TYPE, FShareContext, true);
       XFree(fbConfigs);
   end
     else
       begin
         //Create Old Context
-        fOldContext := True;
         AddIAttrib(GLX_RGBA,GL_TRUE);
         AddIAttrib(GLX_RED_SIZE, round(ColorBits/4));
         AddIAttrib(GLX_GREEN_SIZE, round(ColorBits/4));
@@ -456,9 +463,9 @@ begin
         if vi = nil then
           raise EGLContext.Create('Failed to accept attributes');
         {$IFDEF GLS_LOGGING}
-        GLSLogger.Log('GLGLXContext: DoCreateContext->GLXFormat it is Choosed');
+        GLSLogger.Log('GLGLXContext: DoCreateContext->GLXFormat it is choosed');
         {$ENDIF}
-        FRenderingContext := glXCreateContext(FDisplay, vi, FShareContext, true);
+        FRC := glXCreateContext(FDisplay, vi, FShareContext, true);
         XFree(vi);
       end;
   if RenderingContext = nil then
@@ -466,14 +473,67 @@ begin
   if PtrUInt(RenderingContext) = GLX_BAD_CONTEXT then
     raise EGLContext.Create('Bad context');
   {$IFDEF GLS_LOGGING}
-   GLSLogger.Log('GLGLXContext: DoCreateContext->RenderingContext it is Created');
+   GLSLogger.Log('GLGLXContext: DoCreateContext->RenderingContext it is created');
   {$ENDIF}
+
+  Activate;
+
+  if GLStates.ForwardContext then
+  begin
+    if fOldContext then
+      raise EGLContext.Create('Functions glXChooseFBConfig or glXGetFBConfigAttrib or glXCreateNewContext have not been loaded. It is required GLX above 1.2');
+    {$IFDEF GLS_LOGGING}
+    GLSLogger.Log('GLGLXContext: DoActivate->Activating Forward Context');
+    {$ENDIF}
+    if FRC <> nil then
+    begin
+      glXDestroyContext(FDisplay, FRC);
+      {$IFDEF GLS_LOGGING}
+      GLSLogger.Log('GLGLXContext: DoActivate->Old Context it is Destoyd');
+      {$ENDIF}
+    end;
+    if @glXCreateContextAttribsARB = nil then
+      raise EGLContext.Create(cForwardContextFailsed);
+
+    if GL.VERSION_4_0 then
+      ForwardContextAttribList[1] := 4
+    else if GL.VERSION_3_3 then
+      ForwardContextAttribList[3] := 3
+    else if GL.VERSION_3_2 then
+      ForwardContextAttribList[3] := 2
+    else if GL.VERSION_3_1 then
+      ForwardContextAttribList[3] := 1;
+
+    fbConfigs := glXChooseFBConfig(FDisplay, FCurScreen, @FiAttribs[0], @nret);
+    {$IFDEF GLS_LOGGING}
+    GLSLogger.Log('GLGLXContext: DoActivate->GLXFormat it is choosed');
+    {$ENDIF}
+    FRC := glXCreateContextAttribsARB(FDisplay, fbConfigs[0],
+      FShareContext, True, @ForwardContextAttribList);
+    if RenderingContext = nil then
+      raise EGLContext.Create(cForwardContextFailsed);
+    if not _glXMakeCurrent(FDisplay, FDC, FRC) then
+      raise EGLContext.Create(cContextActivationFailed);
+    {$IFDEF GLS_LOGGING}
+    GLSLogger.Log('GLGLXContext: DoActivate->Forward rendering context it is created');
+    {$ENDIF}
+    XFree(fbConfigs);
+    FGL.Initialize;
+  end;
+  // If we are using AntiAliasing, adjust filtering hints
+  if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+    // Hint for nVidia HQ modes (Quincunx etc.)
+    GLStates.MultisampleFilterHint := hintNicest
+  else
+    GLStates.MultisampleFilterHint := hintDontCare;
+
+  Deactivate;
 end;
 
 // DoCreateMemoryContext
 //
 
-procedure TGLGLXContext.DoCreateMemoryContext(outputDevice: Cardinal; width,
+procedure TGLGLXContext.DoCreateMemoryContext(outputDevice: HWND; width,
   height: Integer; BufferCount: integer);
 var
   FHPBufferAttribList: array[0..6] of Integer = (
@@ -556,7 +616,7 @@ begin
     {$IFDEF GLS_LOGGING}
     GLSLogger.Log('GLGLXContext: DoCreateContext->PBuffer it is Created');
     {$ENDIF}
-    FRenderingContext := glXCreateNewContext(FDisplay, fbConfigs[0],
+    FRC := glXCreateNewContext(FDisplay, fbConfigs[0],
       GLX_RGBA_TYPE, FShareContext, true);
     if RenderingContext = nil then
       raise EGLContext.Create('Failed to create rendering context');
@@ -596,92 +656,92 @@ end;
 
 procedure TGLGLXContext.DoDestroyContext;
 begin
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: DoDestroyContext');
-  {$ENDIF}
-  if not Assigned(FDisplay) then
-    raise EGLContext.Create('Lost connection XServer');
-  if (glXGetCurrentContext() = FRenderingContext) and
-    (not _glXMakeCurrent(FDisplay, 0, nil)) then
-    raise EGLContext.Create(cContextDeactivationFailed);
-  glXDestroyContext(FDisplay, FRenderingContext);
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: DoDestroyContext->RenderingContext it is Destroyd');
-  {$ENDIF}
-  if FHPBUFFER <> 0 then
-  begin
-    glXDestroyPbuffer(FDisplay, FHPBUFFER);
-    FHPBUFFER := 0;
+  try
+    {$IFDEF GLS_LOGGING}
+    GLSLogger.Log('GLGLXContext: DoDestroyContext');
+    {$ENDIF}
+    if not Assigned(FDisplay) then
+      raise EGLContext.Create('Lost connection XServer');
+    if (glXGetCurrentContext() = FRC) and
+      (not _glXMakeCurrent(FDisplay, 0, nil)) then
+      raise EGLContext.Create(cContextDeactivationFailed);
+    glXDestroyContext(FDisplay, FRC);
     {$IFDEF GLS_LOGGING}
     GLSLogger.Log('GLGLXContext: DoDestroyContext->RenderingContext it is Destroyd');
     {$ENDIF}
+    if FHPBUFFER <> 0 then
+    begin
+      glXDestroyPbuffer(FDisplay, FHPBUFFER);
+      FHPBUFFER := 0;
+      {$IFDEF GLS_LOGGING}
+      GLSLogger.Log('GLGLXContext: DoDestroyContext->RenderingContext it is Destroyd');
+      {$ENDIF}
+    end;
+    FRC := nil;
+    FDC := 0;
+    XCloseDisplay(FDisplay);
+    FCurScreen := 0;
+  finally
+    if vLastConfigs <> nil then
+      FreeMem(vLastConfigs, vLastConfigsNumber);
+    vLastConfigs := nil;
+    vLastConfigsNumber := 0;
   end;
-  FRenderingContext := nil;
-  FDC := 0;
-  XCloseDisplay(FDisplay);
-  FCurScreen := 0;
 end;
 
 // DoActivate
 //
 
 procedure TGLGLXContext.DoActivate;
+var
+  vVendor: string;
+  vConfigs: PGLXFBConfigArray;
+  N: TGLint;
 begin
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: DoActivate->Activating Context');
-  {$ENDIF}
-  if GLStates.ForwardContext then
+{$IFDEF GLS_EXPERIMENTAL}
+  if (vLastDC <> FDC) or (vLastRC <> FRC) then
   begin
-    if fOldContext then
-      raise EGLContext.Create('Functions glXChooseFBConfig or glXGetFBConfigAttrib or glXCreateNewContext have not been loaded. It is required GLX above 1.2');
-    {$IFDEF GLS_LOGGING}
-    GLSLogger.Log('GLGLXContext: DoActivate->Activating Forward Context');
-    {$ENDIF}
-    if FRenderingContext <> nil then
-    begin
-      glXDestroyContext(FDisplay, FRenderingContext);
-      {$IFDEF GLS_LOGGING}
-      GLSLogger.Log('GLGLXContext: DoActivate->Old Context it is Destoyd');
-      {$ENDIF}
-    end;
-    if @glXCreateContextAttribsARB = nil then
-      raise EGLContext.Create(cForwardContextFailsed);
-
-    if GL_VERSION_3_3 then
-      ForwardContextAttribList[3] := 3
-    else if GL_VERSION_3_2 then
-      ForwardContextAttribList[3] := 2
-    else if GL_VERSION_3_1 then
-      ForwardContextAttribList[3] := 1
-    else if GL_VERSION_3_0 then
-      ForwardContextAttribList[3] := 0;
-
-    fbConfigs := glXChooseFBConfig(FDisplay, FCurScreen, @FiAttribs[0], @nret);
-    {$IFDEF GLS_LOGGING}
-    GLSLogger.Log('GLGLXContext: DoActivate->GLXFormat it is Choosed');
-    {$ENDIF}
-    FRenderingContext := glXCreateContextAttribsARB(FDisplay, fbConfigs[0],
-      FShareContext, True, @ForwardContextAttribList);
-    if RenderingContext = nil then
-      raise EGLContext.Create(cForwardContextFailsed);
-    {$IFDEF GLS_LOGGING}
-    GLSLogger.Log('GLGLXContext: DoActivate->Forward RenderingContext it is Created');
-    {$ENDIF}
-    XFree(fbConfigs);
-  end;
-
-  if not _glXMakeCurrent(FDisplay, FDC, FRenderingContext) then
+    vLastDC := FDC;
+    vLastRC := FRC;
+  if not _glXMakeCurrent(FDisplay, FDC, FRC) then
     raise EGLContext.Create(cContextActivationFailed);
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext::DoActivate->RenderingContext it is Activated');
-  {$ENDIF}
+  end;
+{$ELSE}
+  if not _glXMakeCurrent(FDisplay, FDC, FRC) then
+    raise EGLContext.Create(cContextActivationFailed);
+{$ENDIF}
 
-  // If we are using AntiAliasing, adjust filtering hints
-  if (AntiAliasing in [aa2xHQ, aa4xHQ]) and GLX_ARB_multisample then
+  if not FGL.IsInitialized then
+    FGL.Initialize;
+
+  // The extension function addresses are unique for each pixel format. All rendering
+  // contexts of a given pixel format share the same extension function addresses.
+  if not fOldContext then
   begin
-    // Hint for nVidia HQ modes (Quincunx etc.)
-    if GL_NV_multisample_filter_hint then
-      glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+    vConfigs := glXChooseFBConfig(FDisplay, FCurScreen, nil, @N);
+    if (N <> vLastConfigsNumber) or not CompareMem(vConfigs, vLastConfigs, N) then
+    begin
+      vVendor := string(FGL.GetString(GL_VENDOR));
+      if vVendor <> vLastVendor then
+      begin
+        ReadExtensions;
+        ReadImplementationProperties;
+        vLastVendor :=  vVendor;
+      end
+      else
+      begin
+        ReadGLXExtensions;
+        ReadGLXImplementationProperties;
+      end;
+      vLastConfigsNumber := N;
+      ReallocMem(vLastConfigs, N);
+      Move(vConfigs^, vLastConfigs^, N);
+    end;
+    XFree(vConfigs);
+  end
+  else
+  begin
+    raise EGLContext.Create('Low GLX version not yet supported')
   end;
 end;
 
@@ -690,14 +750,10 @@ end;
 
 procedure TGLGLXContext.DoDeactivate;
 begin
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: DoDeactivate->RenderingContext it is DoDeactivate');
-  {$ENDIF}
+{$IFNDEF GLS_EXPERIMENTAL}
   if not _glXMakeCurrent(FDisplay, 0, nil) then
     raise EGLContext.Create(cContextDeactivationFailed);
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: DoDeactivate->RenderingContext it is DoDeactivated');
-  {$ENDIF}
+{$ENDIF}
 end;
 
 constructor TGLGLXContext.Create;
@@ -708,6 +764,9 @@ end;
 
 destructor TGLGLXContext.Destroy;
 begin
+{$IFDEF GLS_MULTITHREAD}
+  vLastVendor := '';
+{$ENDIF}
   inherited Destroy;
 end;
 
@@ -716,7 +775,7 @@ end;
 
 function TGLGLXContext.IsValid: Boolean;
 begin
-  Result := (FRenderingContext <> nil);
+  Result := (FRC <> nil);
 end;
 
 // SwapBuffers
@@ -724,14 +783,8 @@ end;
 
 procedure TGLGLXContext.SwapBuffers;
 begin
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: SwapBuffers->SwapBuffers');
-  {$ENDIF}
   if (FDC <> 0) and (rcoDoubleBuffered in Options) then
     glXSwapBuffers(FDisplay, FDC);
-  {$IFDEF GLS_LOGGING}
-  GLSLogger.Log('GLGLXContext: SwapBuffers->SwapBuffers it is Swapd');
-  {$ENDIF}
 end;
 
 function TGLGLXContext.RenderOutputDevice: Integer;

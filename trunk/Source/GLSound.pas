@@ -6,6 +6,7 @@
 	Base classes and interface for GLScene Sound System<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings
       <li>06/05/09 - DanB - Split TGLSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
@@ -615,7 +616,7 @@ begin
       SetLength(clName, n);
       if n>0 then
          Read(clName[1], n);
-      FData:=TGLSoundFileClass(FindClass(clName)).Create(Self);
+      FData:=TGLSoundFileClass(FindClass(string(clName))).Create(Self);
       FData.LoadFromStream(Stream);
    end;
 end;
@@ -630,7 +631,7 @@ begin
    with Stream do begin
       n:=Length(FData.ClassName);
       Write(n, SizeOf(Integer));
-      buf:=FData.ClassName;
+      buf:=AnsiString(FData.ClassName);
       if n>0 then
          Write(buf[1], n);
       FData.SaveToStream(Stream);

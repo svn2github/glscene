@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
       <li>16/05/10 - Yar - Added multisampling support (thanks C4)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
@@ -176,7 +177,8 @@ uses
   GLUtils,
   GLGraphics,
   GLTextureFormat,
-  VectorTypes;
+  VectorTypes,
+  GLSLog;
 
 { TGLRenderbuffer }
 
@@ -355,7 +357,7 @@ procedure TGLFrameBuffer.AttachDepthBuffer(DepthBuffer: TGLDepthRBO);
     // forces initialization
     DepthBuffer.Bind;
     DepthBuffer.Unbind;
-    glFramebufferRenderbufferEXT(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, DepthBuffer.Handle);
   end;
 
@@ -446,7 +448,7 @@ begin
   // forces initialization
   StencilBuffer.Bind;
   StencilBuffer.Unbind;
-  glFramebufferRenderbufferEXT(FTarget, GL_STENCIL_ATTACHMENT,
+  GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, StencilBuffer.Handle);
   Status;
   Unbind;
@@ -541,7 +543,7 @@ end;
 procedure TGLFrameBuffer.DetachDepthBuffer;
 begin
   Bind;
-  glFramebufferRenderbufferEXT(FTarget, GL_DEPTH_ATTACHMENT,
+  GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
 end;
@@ -549,7 +551,7 @@ end;
 procedure TGLFrameBuffer.DetachStencilBuffer;
 begin
   Bind;
-  glFramebufferRenderbufferEXT(FTarget, GL_STENCIL_ATTACHMENT,
+  GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
 end;
@@ -558,7 +560,7 @@ function TGLFrameBuffer.GetStatus: TGLFramebufferStatus;
 var
   status: cardinal;
 begin
-  status := glCheckFramebufferStatusEXT(FTarget);
+  status := GL.CheckFramebufferStatus(FTarget);
 
   case status of
     GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
@@ -614,7 +616,7 @@ begin
         with FFrameBufferHandle.RenderingContext.GLStates do
           TextureBinding[ActiveTexture, textarget] :=
             FAttachedTexture[n].Handle;
-        glGenerateMipmapEXT(DecodeGLTextureTarget(textarget));
+        GL.GenerateMipmap(DecodeGLTextureTarget(textarget));
       end;
   end;
 end;
@@ -636,11 +638,11 @@ begin
   buffer := TGLSceneBuffer(rci.buffer);
 
   backColor := ConvertWinColor(buffer.BackgroundColor);
-  glClearColor(backColor[0], backColor[1], backColor[2],
+  GL.ClearColor(backColor[0], backColor[1], backColor[2],
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
   rci.GLStates.DepthWriteMask := True;
-  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
   Unbind;
@@ -725,4 +727,3 @@ begin
 end;
 
 end.
-

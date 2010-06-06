@@ -206,7 +206,6 @@ begin
 
    FStream.Position := FHeader.DirOffset;
    //???
-   Temp := nil;
    if FHeader.DirLength > 0 then
    begin
       Temp := TMemoryStream.Create;
@@ -229,7 +228,7 @@ begin
    FStream.CopyFrom(compressed, 0);
    //Запоминаем  размер файла
    Dir.FileLength := compressed.Size;
-   Compressed.Free;
+   Compressed .Free;
 
    //???
    FHeader.DirOffset := FStream.Position;

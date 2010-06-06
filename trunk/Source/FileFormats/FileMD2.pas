@@ -150,7 +150,7 @@ begin
     else
       FrameName := Copy(FrameName, 1, Length(FrameName) - 1);
     if FrameNames.IndexOf(FrameName) < 0 then
-      FrameNames.AddObject(FrameName, TObject(Pointer(I)));
+      FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
     // fill the vertices list  
     for J := 0 to Header.Num_Vertices - 1 do begin
       VertexList(FrameList(m_frame_list)[I])[J][0] := Frame^.Vertices[J].V[0] * Frame^.Scale[0] + Frame^.Translate[0];
@@ -161,4 +161,3 @@ begin
 end;
 
 end.
-

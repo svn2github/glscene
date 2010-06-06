@@ -4,6 +4,7 @@
 {: GLFileDDS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>06/06/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>01/03/10 - Yar - Added control of texture detail level
@@ -23,6 +24,7 @@ interface
 uses
   Classes,
   SysUtils,
+  GLCrossPlatform,
   OpenGL1x,
   GLContext,
   GLGraphics,
@@ -298,7 +300,7 @@ begin
       stream.Seek(offset, soCurrent);
     for level := 0 to MipLevels - 1 do
     begin
-      fLevels.Add(pointer(integer(lData) - integer(fData)));
+      fLevels.Add(pointer(PtrUInt(lData) - PtrUInt(fData)));
       CalcSize;
       stream.Read(lData^, size);
       if not fCubeMap and vVerticalFlipDDS then
@@ -440,7 +442,7 @@ procedure TGLDDSImage.AssignFromTexture(textureContext: TGLContext;
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
-  texFormat, texLod, texResident, optLod: Cardinal;
+  texFormat, texLod, optLod: Cardinal;
   level, faceCount, face: Integer;
   lData: PGLubyte;
   residentFormat: TGLInternalFormat;
@@ -477,7 +479,7 @@ begin
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
     fMipLevels := 0;
-    glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -495,7 +497,7 @@ begin
 
     repeat
       // Check level existence
-      glGetTexLevelParameteriv(glTarget, fMipLevels,
+      GL.GetTexLevelParameteriv(glTarget, fMipLevels,
         GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
@@ -503,14 +505,14 @@ begin
       Inc(fMipLevels);
       if fMipLevels = 1 then
       begin
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
           @fHeight);
         fDepth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
+          GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
             @fDepth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CurrentFormat then
@@ -553,11 +555,11 @@ begin
           glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
         for level := 0 to fMipLevels - 1 do
         begin
-          fLevels.Add(Pointer(Integer(lData) - Integer(fData)));
+          fLevels.Add(Pointer(PtrUInt(lData) - PtrUInt(fData)));
           if bCompressed then
           begin
 
-            if GL_NV_texture_compression_vtc and (d > 0) and not fTextureArray
+            if GL.NV_texture_compression_vtc and (d > 0) and not fTextureArray
               then
             begin
               if level = 0 then
@@ -590,10 +592,10 @@ begin
                 d := 1;
             end
             else
-              glGetCompressedTexImage(glTarget, level, lData);
+              GL.GetCompressedTexImage(glTarget, level, lData);
           end
           else
-            glGetTexImage(glTarget, level, fColorFormat, fDataType,
+            GL.GetTexImage(glTarget, level, fColorFormat, fDataType,
               lData);
 
           Inc(lData, LevelSize(level));

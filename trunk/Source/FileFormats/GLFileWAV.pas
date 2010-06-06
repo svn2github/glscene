@@ -31,8 +31,8 @@ type
          { Public Declarations }
          {$IFDEF MSWINDOWS}
          waveFormat : TWaveFormatEx;
-         {$ENDIF}
          pcmOffset : Integer;
+         {$ENDIF}
          FPCMDataLength: Integer;
          data : array of Byte; // used to store WAVE bitstream
 

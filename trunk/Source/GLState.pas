@@ -314,6 +314,7 @@ type
     FPolygonSmoothHint: THintType;
     FFragmentShaderDerivitiveHint: THintType;
     FLineSmoothHint: THintType;
+    FMultisampleFilterHint: THintType;
 
     // Misc state
     FCurrentQuery: array[TQueryType] of TGLuint;
@@ -446,6 +447,7 @@ type
     procedure SetPolygonSmoothHint(const Value: THintType);
     procedure SetTextureCompressionHint(const Value: THintType);
     procedure SetFragmentShaderDerivitiveHint(const Value: THintType);
+    procedure SetMultisampleFilterHint(const Value: THintType);
     // Misc
     function GetCurrentQuery(Index: TQueryType): TGLuint;
     //    procedure SetCurrentQuery(Index: TQueryType; const Value: TGLuint);
@@ -915,6 +917,8 @@ type
     {: Fragment shader derivitive hint. }
     property FragmentShaderDerivitiveHint: THintType
       read FFragmentShaderDerivitiveHint write SetFragmentShaderDerivitiveHint;
+    property MultisampleFilterHint: THintType read FMultisampleFilterHint
+      write SetMultisampleFilterHint;
 
     // Misc
     {: Current queries. }
@@ -2000,6 +2004,19 @@ begin
   end;
 end;
 
+procedure TGLStateCache.SetMultisampleFilterHint(const Value: THintType);
+begin
+  if GL.NV_multisample_filter_hint then
+    if Value <> FMultisampleFilterHint then
+    begin
+      if FInsideList then
+        Include(FListStates[FCurrentList], sttHint)
+      else
+        FMultisampleFilterHint := Value;
+      GL.Hint(GL_MULTISAMPLE_FILTER_HINT_NV, cGLHintToGLEnum[Value]);
+    end;
+end;
+
 procedure TGLStateCache.SetFrameBuffer(const Value: TGLuint);
 begin
   if (Value <> FDrawFrameBuffer) or (Value <> FReadFrameBuffer)
@@ -3016,4 +3033,3 @@ begin
 end;
 
 end.
-

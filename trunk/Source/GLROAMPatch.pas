@@ -6,6 +6,7 @@
    Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
@@ -228,7 +229,7 @@ begin
       
    // go through all the old nodes and 
    // fix the pointers
-   delta:= int64(Integer(newbase) - Integer(oldbase));
+   delta:= int64(PtrUInt(newbase) - PtrUInt(oldbase));
    for i := 0 to oldsize - 1 do
    begin
       node:= @vTriangleNodes[i];
@@ -708,38 +709,33 @@ class procedure TGLROAMPatch.FlushAccum(vertices : TAffineVectorList;
                                         vertexIndices : TIntegerList;
                                         texCoords : TTexPointList);
 begin
-   if vertexIndices.Count=0 then Exit;
+   if vertexIndices.Count=0 then
+     Exit;
 
-//   if GL_ARB_vertex_buffer_object then begin
-   if False then begin // VBO currently off (slower)
-      if FVBOVertHandle.Handle=0 then
-         FVBOVertHandle.AllocateHandle;
+   if GL.ARB_vertex_buffer_object then
+   begin
+      FVBOVertHandle.AllocateHandle;
       FVBOVertHandle.BindBufferData(vertices.List, vertices.DataSize, GL_STREAM_DRAW_ARB);
-      glVertexPointer(3, GL_FLOAT, 0, nil);
+      GL.VertexPointer(3, GL_FLOAT, 0, nil);
 
-      if FVBOTexHandle.Handle=0 then
-         FVBOTexHandle.AllocateHandle;
+      FVBOTexHandle.AllocateHandle;
       FVBOTexHandle.BindBufferData(texCoords.List, texCoords.DataSize, GL_STREAM_DRAW_ARB);
       xglTexCoordPointer(2, GL_FLOAT, 0, nil);
 
-//      if FVBOIndicesHandle.Handle=0 then
-//         FVBOIndicesHandle.AllocateHandle;
-//      FVBOIndicesHandle.BindBufferData(vertexIndices.List, vertexIndices.DataSize, GL_STREAM_DRAW_ARB);
-
-      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
+      GL.DrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
                           GL_UNSIGNED_INT, vertexIndices.List);
-//      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
-//                          GL_UNSIGNED_INT, nil);
-
-      glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-   end else if GL_EXT_compiled_vertex_array and GL_EXT_draw_range_elements then begin
-      glLockArraysEXT(0, vertices.Count);
-      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
+      GL.BindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+      GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+   end
+   else if GL.EXT_compiled_vertex_array and GL.EXT_draw_range_elements then
+   begin
+      GL.LockArrays(0, vertices.Count);
+      GL.DrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
                           GL_UNSIGNED_INT, vertexIndices.List);
-      glUnLockArraysEXT;
-   end else begin
-      glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+      GL.UnLockArrays;
+   end else
+   begin
+      GL.DrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
    end;
    vertices.Count:=0;
    texCoords.Count:=0;
@@ -808,7 +804,7 @@ begin
    RecursRender(@vTriangleNodes[FTLNode], rbl, rtr, rtl);
    RecursRender(@vTriangleNodes[FBRNode], rtr, rbl, rbr);
 
-   vertexIndices.Count:=(Integer(renderIndices)-Integer(vertexIndices.List)) div SizeOf(Integer);
+   vertexIndices.Count:=(PtrUInt(renderIndices)-PtrUInt(vertexIndices.List)) div SizeOf(Integer);
 end;
 
 // RenderAsStrips

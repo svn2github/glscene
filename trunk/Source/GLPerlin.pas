@@ -9,6 +9,7 @@
    A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/10 - Yar - Fixes for Linux x64
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing
                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
@@ -566,7 +567,7 @@ Begin
 
       B := Round(Value * $FF) and $FF;
       Posi^ := b;
-      inc(Integer(Posi));
+      inc(Posi);
     End;
   End;
 End;
@@ -617,7 +618,7 @@ Begin
 //        raise Exception.create('In Cubic_Interpolate_Strip a value greater than 1 occured! value = '+FloatToStr(Value)+' values=['+S+']');
       End;
 
-      inc(Integer(Posi),SizeOf(SmallInt));
+      inc(Posi);
     End;
   End;
 End;

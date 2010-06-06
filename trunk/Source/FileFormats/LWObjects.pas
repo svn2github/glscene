@@ -1,6 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+//  20/05/10 - Yar - Fixes for Linux x64
 //  16/10/08 - UweR - Compatibility fix for Delphi 2009
 //  30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
 //  29/03/07 - DaStr - Renamed parameters in some methods
@@ -36,7 +37,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes;
+uses Classes, VectorGeometry;
 
 type
 
@@ -701,18 +702,6 @@ begin
       Found := true;
 end;
 
-function ArcTan2(const y, x : Single) : Single;
-asm
-      FLD  Y
-      FLD  X
-      FPATAN
-end;
-
-function ArcCos(X: Single): Single;
-begin
-  Result:=ArcTan2(Sqrt(1 - Sqr(X)), X);
-end;
-
 function VecAdd(v1,v2: TVec12):TVec12;
 begin
   result[0]:=v1[0]+v2[0];
@@ -950,6 +939,8 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
+  pB: PByte;
+  Blo, Bhi: Byte;
   L: LongWord;
   i: Integer;
 begin
@@ -963,14 +954,21 @@ begin
 
         W := PU2Array(ValueIn)^[i];
 
+{$IFNDEF GLS_NO_ASM}
         asm
-
           mov ax,w;   { move w into ax register }
           xchg al,ah; { swap lo and hi byte of word }
           mov w,ax;   { move "swapped" ax back to w }
-
         end;
-
+{$ELSE}
+        pB := @W;
+        Blo := pB^;
+        Inc(pB);
+        Bhi := pB^;
+        pB^ := Blo;
+        Dec(pB);
+        pB^ := Bhi;
+{$ENDIF}
         PU2Array(ValueIn)^[i] := w;
 
         Inc(i);
@@ -986,13 +984,21 @@ begin
 
         L := PU4Array(ValueIn)^[i];
 
+{$IFNDEF GLS_NO_ASM}
         asm
-
-          mov eax,l; { move l into eax register }
-          BSWAP eax; { reverse the order of bytes in eax }
-          mov l,eax; { move "swapped" eax back to 1 }
-
+          mov ax,w;   { move w into ax register }
+          xchg al,ah; { swap lo and hi byte of word }
+          mov w,ax;   { move "swapped" ax back to w }
         end;
+{$ELSE}
+        pB := @W;
+        Blo := pB^;
+        Inc(pB);
+        Bhi := pB^;
+        pB^ := Blo;
+        Dec(pB);
+        pB^ := Bhi;
+{$ENDIF}
 
         PU4Array(ValueIn)^[i] := l;
 

@@ -6,6 +6,7 @@
   In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings
       <li>30/03/07 - DaStr - Added $I GLScene.inc, cosmetic changes
       <li>17/02/07 - DaStr - TGLGuiElement.Create - vectors creation fixed
                           Changed some types from TGLCoordinates to TGLCoordinates2
@@ -193,7 +194,7 @@ Type
   end;
 
 Const
-  GuiNullRect : TGUIRect =(X1:0.0;Y1:0.0;X2:0.0;Y2:0.0);
+  GuiNullRect : TGUIRect =(X1:0.0;Y1:0.0;X2:0.0;Y2:0.0;XTiles:0.0;YTiles:0.0);
 
 Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
 
@@ -605,7 +606,6 @@ Var
   TexWidth,
   TexHeight   : TGLFloat;
   AlignCount  : TGUIAlignments;
-  TmpElement  : TGLGuiElement;
 
   Procedure Prepare;
   Begin

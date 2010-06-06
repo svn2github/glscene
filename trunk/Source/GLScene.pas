@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Fixes for Linux x64
       <li>31/05/10 - Yar - Added roHardwareAcceleration Buffer.ContextOptions
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLBaseSceneObject.GetHandle
@@ -333,7 +334,13 @@ interface
 
 uses
   // VCL
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
   Classes, SysUtils, Graphics,
+{$IFDEF FPC}
+  LCLType,
+{$ENDIF}
 
   // GLScene
   VectorGeometry, XCollection, GLSilhouette, PersistentClasses, GLState,
@@ -2006,7 +2013,7 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    procedure CreateRC(deviceHandle: Cardinal; memoryContext: Boolean;
+    procedure CreateRC(deviceHandle: HWND; memoryContext: Boolean;
       BufferCount: integer = 1);
     procedure ClearBuffers;
     procedure DestroyRC;
@@ -3262,7 +3269,7 @@ begin
     if not Assigned(FAbsoluteMatrix) then
     begin
       GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-      FInvAbsoluteMatrix := PMatrix(Integer(FAbsoluteMatrix) + SizeOf(TMatrix));
+      FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) + SizeOf(TMatrix));
     end;
     if Assigned(Parent) and (not (Parent is TGLSceneRootObject)) then
     begin
@@ -3298,7 +3305,7 @@ begin
       if not Assigned(FAbsoluteMatrix) then
       begin
         GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-        FInvAbsoluteMatrix := PMatrix(Integer(FAbsoluteMatrix) +
+        FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) +
           SizeOf(TMatrix));
       end;
       RebuildMatrix;
@@ -8063,7 +8070,7 @@ end;
 // CreateRC
 //
 
-procedure TGLSceneBuffer.CreateRC(deviceHandle: Cardinal; memoryContext:
+procedure TGLSceneBuffer.CreateRC(deviceHandle: HWND; memoryContext:
   Boolean; BufferCount: integer);
 begin
   DestroyRC;
@@ -8117,7 +8124,8 @@ begin
   begin
     Melt;
     // for some obscure reason, Mesa3D doesn't like this call... any help welcome
-    FreeAndNil(FRenderingContext);
+    FRenderingContext.Free;
+    FRenderingContext := nil;
     if Assigned(FCamera) and Assigned(FCamera.FScene) then
       FCamera.FScene.RemoveBuffer(Self);
   end;
@@ -10201,4 +10209,3 @@ initialization
   QueryPerformanceFrequency(vCounterFrequency);
 
 end.
-

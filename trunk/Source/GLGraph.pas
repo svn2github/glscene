@@ -404,7 +404,6 @@ type
 const
    cHFCMtoEnum : array [hfcmEmission..hfcmAmbientAndDiffuse] of TGLEnum =
       (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
-   cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 
 var
    nx, m, k : Integer;
@@ -788,4 +787,3 @@ initialization
    RegisterClasses([TGLHeightField, TGLXYZGrid]);
 
 end.
-

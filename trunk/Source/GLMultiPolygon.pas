@@ -544,7 +544,7 @@ var
 
 procedure tessError(errno : TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}
 begin
-   Assert(False, IntToStr(errno)+' : '+gluErrorString(errno));
+   Assert(False, IntToStr(errno)+' : '+string(gluErrorString(errno)));
 end;
 
 procedure tessIssueVertex(vertexData : Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$ifdef unix} cdecl; {$ENDIF}

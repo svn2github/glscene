@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/06/10 - Yar - Fixes for Linux x64
       <li>31/05/10 - Yar - Added WGL_NV_gpu_affinity
       <li>12/05/10 - Yar - Added GL_ARB_texture_compression_bptc
       <li>04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
@@ -7247,8 +7248,8 @@ const
    INVALID_MODULEHANDLE = 0;//nil;
 
 var
-   GLHandle: TLibHandle;//Pointer;
-   GLUHandle: TLibHandle;//Pointer;
+   GLHandle: TLibHandle = 0;//Pointer;
+   GLUHandle: TLibHandle = 0;//Pointer;
    
 function GLGetProcAddress(ProcName: PGLChar):Pointer;
 begin
@@ -7262,12 +7263,12 @@ begin
 
   if result<> nil then exit;
 
-  result := GetProcAddress(Cardinal(GLHandle),ProcName);
+  result := GetProcAddress(GLHandle, ProcName);
 end;
 {$ENDIF}
 function GLLibGetProcAddress(ProcName: PGLChar):Pointer;
 begin
-  result := GetProcAddress(Cardinal(GLHandle),ProcName);
+  result := GetProcAddress(GLHandle, ProcName);
 end;
 
 // CheckOpenGLError
@@ -9470,5 +9471,4 @@ finalization
    CloseOpenGL;
 
 end.
-
 

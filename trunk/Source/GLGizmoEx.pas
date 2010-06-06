@@ -13,6 +13,7 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>31/05/10 - Yar - Fixed warnings
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/13/2009 - DaStr - Small bugfixes (by Predator)   
@@ -2259,7 +2260,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
-    wm := TGLSceneBuffer(rci.buffer).ModelViewMatrix;
+    wm := TGLSceneBuffer(rci.buffer).ViewMatrix;
 
     TransposeMatrix(wm);
 
@@ -3876,9 +3877,11 @@ var
   end;
 
   procedure LoopCursorMoving(isvector: Boolean = False);
+  {$IFDEF MSWINDOWS}
   var
     R, vR: TGLRect;
     cp:    TGLpoint;
+  {$ENDIF}
   begin
   {$IFDEF MSWINDOWS}
     //Процедура для перевода курсора из начала в конец

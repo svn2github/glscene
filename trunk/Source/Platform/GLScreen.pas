@@ -6,6 +6,7 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixed warnings
       <li>13/04/10 - Yar - Fixed conditional for delphi (thanks mif) 
       <li>07/01/10 - DaStr - Enhanced cross-platform compatibility (thanks Predator)
       <li>17/12/09 - DaStr - Added screen utility functions from
@@ -131,6 +132,7 @@ type TLowResMode = packed record
                    end;
 
 const NumberLowResModes = 15;
+{$IFDEF MSWINDOWS}
       LowResModes       : array [0..NumberLowResModes-1] of TLowResMode =
       (
        (Width:320;Height:200;ColorDepth: 8),(Width:320;Height:200;ColorDepth:15),(Width:320;Height:200;ColorDepth:16),
@@ -140,7 +142,7 @@ const NumberLowResModes = 15;
        (Width:512;Height:384;ColorDepth: 8),(Width:512;Height:384;ColorDepth:15),(Width:512;Height:384;ColorDepth:16),
        (Width:512;Height:384;ColorDepth:24),(Width:512;Height:384;ColorDepth:32)
       );
-
+{$ENDIF}
 // Assign
 //
 procedure TDisplayOptions.Assign(Source: TPersistent);
@@ -164,13 +166,19 @@ function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 
 var
    I : Integer;
-   XDiff, YDiff, CDiff : Integer;
+   XDiff, YDiff: Integer;
+   {$IFDEF MSWINDOWS}
+   CDiff : Integer;
+   {$ENDIF}
 begin
    ReadVideoModes;
    // prepare result in case we don't find a valid mode
    Result:=0;
    // set differences to maximum
-   XDiff:=9999; YDiff:=9999; CDiff:=99;
+   XDiff:=9999; YDiff:=9999;
+   {$IFDEF MSWINDOWS}
+   CDiff:=99;
+   {$ENDIF}
    for I:=1 to vNumberVideomodes-1 do
    {$IFDEF MSWINDOWS}
    with vVideoModes[I] do begin
@@ -186,11 +194,9 @@ begin
     with vVideoModes[ i ]^ do begin
      if     (hDisplay  >= XRes) and ((hDisplay-XRes)  <= XDiff)
         and (vDisplay >= YRes) and ((vDisplay-YRes) <= YDiff)
-       // and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff)
         then begin
          XDiff:=hDisplay-XRes;
          YDiff:=vDisplay-YRes;
-        // CDiff:=ColorDepth-BPP;
          Result:=I;
      end;
     {$ENDIF}
@@ -323,7 +329,7 @@ begin
   //Get Current Settings
   if not vScreenModeChanged then
   XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,
-                          PXF86VidModeModeLine( @vDesktop + SizeOf( vDesktop.dotclock ) ) );
+                          PXF86VidModeModeLine( PtrUInt(@vDesktop) + SizeOf( vDesktop.dotclock ) ) );
 
   //TryToAddToList
   TryToAddToList;
@@ -382,6 +388,7 @@ begin
     end;
     // Disconnect to XServer else settings not accept
     XCloseDisplay(vDisplay);
+    Result:= vScreenModeChanged;
 {$ENDIF}
 end;
 

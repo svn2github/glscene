@@ -6,6 +6,7 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
+      <li>06/06/10 - Yar - Fixes for Linux x64
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced function InsideList to GLState.InsideList
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -3912,6 +3913,7 @@ procedure TMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
   i, Count, archiveVersion: Integer;
   lOldLightMapTexCoords: TTexPointList;
+  tc: TTexPoint;
 begin
   inherited ReadFromFiler(reader);
   archiveVersion := reader.ReadInteger;
@@ -3929,8 +3931,10 @@ begin
       begin
         lOldLightMapTexCoords := TTexPointList.CreateFromFiler(reader);
         for i := 0 to lOldLightMapTexCoords.Count - 1 do
-          FLightMapTexCoords.Add(lOldLightMapTexCoords[i].S,
-            lOldLightMapTexCoords[i].T);
+        begin
+          tc:=lOldLightMapTexCoords[i];
+          FLightMapTexCoords.Add(tc.S, tc.T);
+        end;
         lOldLightMapTexCoords.Free;
       end
       else
@@ -5849,7 +5853,7 @@ begin
     GetMem(newArea, VerticeBoneWeightCapacity * SizeOf(PVertexBoneWeightArray));
     newArea[0] := AllocMem(n * SizeOf(TVertexBoneWeight));
     for i := 1 to VerticeBoneWeightCapacity - 1 do
-      newArea[i] := PVertexBoneWeightArray(Integer(newArea[0]) + i *
+      newArea[i] := PVertexBoneWeightArray(PtrUInt(newArea[0]) + i *
         SizeOf(TVertexBoneWeight) * BonesPerVertex);
     // transfer old data
     if FLastVerticeBoneWeightCount < VerticeBoneWeightCount then

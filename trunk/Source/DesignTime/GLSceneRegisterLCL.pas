@@ -307,7 +307,7 @@ type
 
   TGLSArchiveManagerEditor = class(TDefaultComponentEditor)
   protected
-    procedure Edit;
+    procedure Edit; override;
     procedure EditProperty(const Prop: TPropertyEditor;
       var Continue: boolean); override;
     procedure ExecuteVerb(Index: integer); override;
@@ -513,7 +513,7 @@ end;
 
 procedure TGLTextureImageProperty.Edit;
 begin
-  if EditGLTextureImage(TGLTextureImage(GetOrdValue)) then
+  if EditGLTextureImage(TGLTextureImage(GetObjectValue)) then
     Modified;
 end;
 
@@ -798,7 +798,7 @@ var
   glc: TGLCoordinates;
   x, y, z: single;
 begin
-  glc := TGLCoordinates(GetOrdValue);
+  glc := TGLCoordinates(GetObjectValue);
   x := glc.x;
   y := glc.y;
   z := glc.z;
@@ -824,7 +824,7 @@ procedure TGLMaterialProperty.Edit;
 var
   ml: TGLMaterial;
 begin
-  ml := TGLMaterial(GetOrdValue);
+  ml := TGLMaterial(GetObjectValue);
   if MaterialEditorForm.Execute(ml) then
     Modified;
 end;
@@ -1235,4 +1235,3 @@ finalization
   ObjectManager.Free;
 
 end.
-

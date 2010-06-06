@@ -6,6 +6,7 @@
   A FPC specific Scene viewer.
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/06/10 - Yar - Fixes for Linux x64
       <li>28/04/10 - Yar - Fixed conditions for windows platform
                            Added Render method
                            (by Rustam Asmandiarov aka Predator)
@@ -57,8 +58,8 @@ type
          { Private Declarations }
          FBuffer : TGLSceneBuffer;
          FVSync : TVSyncMode;
-         FOwnDC : Cardinal;
-			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
+         FOwnDC : HWND;
+	 FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
          FMouseInControl : Boolean;
          FLastScreenPos : TPoint;
 
@@ -117,7 +118,7 @@ type
 
          function CreateSnapShotBitmap : TBitmap;
 
-         property RenderDC : Cardinal read FOwnDC;
+         property RenderDC : HWND read FOwnDC;
          property MouseInControl : Boolean read FMouseInControl;
 
       published
@@ -557,5 +558,4 @@ initialization
 {$ENDIF}
 
 end.
-
 

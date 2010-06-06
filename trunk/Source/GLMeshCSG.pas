@@ -15,6 +15,7 @@
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/10 - Yar - Added VectorTypes to uses
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
@@ -36,7 +37,7 @@ Procedure CSG_Operation(obj1, obj2 : TMeshObject; Operation : TCSGOperation; Res
 
 implementation
 
-uses Math;
+uses Math, VectorTypes;
 
 const
    cOwnTriangleEpsilon = 1e-5;
@@ -137,7 +138,6 @@ Var
   intersect_points : array[0..2] of TAffineVector;
   intersect_lines  : array[0..2] of Integer;
   intersect_count : Integer;
-  t : array[0..2] of TCSGTri;
   p0,p1 : Integer;
   NextNode : TFGBSPNode;
   plane : THmgPlane;

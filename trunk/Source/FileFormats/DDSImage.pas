@@ -12,6 +12,7 @@
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
  <b>History : </b><font size=-1><ul>
+        <li>20/05/10 - Yar - Fixes for Linux x64
         <li>21/03/10 - Yar - Added Linux support
                              (thanks to Rustam Asmandiarov aka Predator)
         <li>24/01/10 - Yar - Improved FPC compatibility
@@ -199,7 +200,10 @@ const
   Magic: array[0..3] of AnsiChar = 'DDS ';
 var
   header: TDDSHeader;
-  i, rowSize: integer;
+  rowSize: integer;
+  {$IFNDEF FPC}
+  i: Integer;
+  {$ENDIF}
 begin
   FillChar(header, SizeOf(TDDSHeader), 0);
   header.magic := cardinal(Magic);

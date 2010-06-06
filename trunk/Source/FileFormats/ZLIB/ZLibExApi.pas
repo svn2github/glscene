@@ -236,15 +236,15 @@ implementation
 *  functions being undefined                                                 *
 *****************************************************************************}
 {$IFNDEF FPC}
-  {$L ../LinkedObjects/deflate.obj}
-  {$L ../LinkedObjects/inflate.obj}
-  {$L ../LinkedObjects/inftrees.obj}
-  {$L ../LinkedObjects/infback.obj}
-  {$L ../LinkedObjects/inffast.obj}
-  {$L ../LinkedObjects/trees.obj}
-  {$L ../LinkedObjects/compress.obj}
-  {$L ../LinkedObjects/adler32.obj}
-  {$L ../LinkedObjects/crc32.obj}
+  {$L ..\LinkedObjects\deflate.obj}
+  {$L ..\LinkedObjects\inflate.obj}
+  {$L ..\LinkedObjects\inftrees.obj}
+  {$L ..\LinkedObjects\infback.obj}
+  {$L ..\LinkedObjects\inffast.obj}
+  {$L ..\LinkedObjects\trees.obj}
+  {$L ..\LinkedObjects\compress.obj}
+  {$L ..\LinkedObjects\adler32.obj}
+  {$L ..\LinkedObjects\crc32.obj}
 {$ENDIF}
 
 {** macros ******************************************************************}

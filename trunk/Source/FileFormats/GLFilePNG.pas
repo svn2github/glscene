@@ -4,6 +4,7 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>31/05/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>16/03/10 - Yar - Improved FPC compatibility
@@ -17,16 +18,15 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_LOGGING}
-  GLSLog,
-{$ENDIF}
   Classes,
   SysUtils,
+  GLCrossPlatform,
   OpenGL1x,
   GLContext,
   GLGraphics,
   GLTextureFormat,
-  ApplicationFileIO;
+  ApplicationFileIO,
+  GLSLog;
 
 type
 
@@ -309,7 +309,7 @@ begin
 
     // set up the row pointers
     for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(Integer(fData) + (fHeight - 1 - ii) *
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + (fHeight - 1 - ii) *
         rowBytes);
 
     // read the image
@@ -498,7 +498,7 @@ begin
 
     // set up the row pointers
     for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(Integer(fData) + (fHeight - 1 - ii) *
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + (fHeight - 1 - ii) *
         rowBytes);
 
 {$IFNDEF FPC}
@@ -531,7 +531,7 @@ procedure TGLPNGImage.AssignFromTexture(textureContext: TGLContext;
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
-  texFormat, texResident: Cardinal;
+  texFormat: Cardinal;
   residentFormat: TGLInternalFormat;
   glTarget: TGLEnum;
 begin
@@ -604,4 +604,3 @@ initialization
   RegisterRasterFormat('png', 'Portable Network Graphic', TGLPNGImage);
 
 end.
-

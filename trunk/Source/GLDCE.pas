@@ -304,7 +304,7 @@ begin
 end;
 
 function TGLDCEManager.MoveByDistance(var Body: TGLDCEDynamic; deltaS, deltaAbsS: TAffineVector): Single;
-var NewPosition: TVector;
+var
     //Friction and bounce
     TotalFriction, bounce,f,m,restitution: Single;
     ContactList: TIntegerList;
@@ -314,7 +314,7 @@ var NewPosition: TVector;
     //Collision results
     ColInfo: TDCECollision;
     lastobj:integer;//gak:20041119
-    i,j, oi: Integer;
+    i, oi: Integer;
     MP: TECMovePack;
     CanCollide,GravCollided: boolean;
     //Vars used to calculate high velocities

@@ -98,6 +98,7 @@ begin
   anim:=TStringList.Create;
   TorsoStartFrame := 0;
   LegsStartFrame  := 0;
+  FillChar(val[0], SizeOf(val), $00);
   for strindex:=0 to Strings.Count-1 do begin
     commatext:=Strings.Strings[strindex];
     while Pos('  ',commatext)>0 do

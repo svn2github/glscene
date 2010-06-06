@@ -9,7 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
-
+      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/02/10 - Yar - Added notification of freeing RootObject
       <li>22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
@@ -228,26 +228,26 @@ var
 begin
   if assigned(Camera) then
   begin
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadIdentity;
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PushMatrix;
+    GL.LoadIdentity;
     sc := FCamera.SceneScale;
     if FSceneScaleFactor > 0 then
       FCamera.SceneScale := Width / FSceneScaleFactor;
     FCamera.ApplyPerspective(Viewport, Width, Height, 96); // 96 is default dpi
     FCamera.SceneScale := sc;
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-    glLoadIdentity;
-    glScalef(1.0 / FAspect, 1.0, 1.0);
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PushMatrix;
+    GL.LoadIdentity;
+    GL.Scalef(1.0 / FAspect, 1.0, 1.0);
     FCamera.Apply;
   end
   else
   begin
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-    glScalef(1.0 / FAspect, 1.0, 1.0);
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PushMatrix;
+    GL.Scalef(1.0 / FAspect, 1.0, 1.0);
   end;
 end;
 
@@ -383,7 +383,7 @@ begin
   for I := 0 to MaxColorAttachments - 1 do
     FFbo.DetachTexture(I);
 
-  glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @maxSize);
+  GL.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @maxSize);
   if Width>maxSize then
   begin
     FWidth := maxSize;
@@ -412,13 +412,13 @@ begin
 
   if FUseLibraryAsMultiTarget then
   begin
-    if not (GL_ARB_draw_buffers or GL_ATI_draw_buffers) then
+    if not (GL.ARB_draw_buffers or GL.ATI_draw_buffers) then
     begin
       GLSLogger.LogError('Hardware do not support MRT');
       Visible := False;
       Abort;
     end;
-    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @maxAttachment);
+    GL.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @maxAttachment);
 
     // Multicolor attachments
     for I := 0 to FMaterialLibrary.Materials.Count - 1 do
@@ -506,11 +506,11 @@ begin
 
   if FColorAttachment = 0 then
   begin
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
+    GL.DrawBuffer(GL_NONE);
+    GL.ReadBuffer(GL_NONE);
   end
   else
-    glDrawBuffers(FColorAttachment, @cDrawBuffers);
+    GL.DrawBuffers(FColorAttachment, @cDrawBuffers);
 
   DoPostInitialize;
   FFbo.Unbind;
@@ -569,7 +569,7 @@ var
   s: string;
 begin
   // prevent recursion
-  if FRendering then
+  if not TGLFramebufferHandle.IsSupported or FRendering then
     Exit;
 
   FRendering := True;
@@ -628,7 +628,7 @@ begin
       ARci.GLStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
-    glClear(GetClearBits);
+    GL.Clear(GetClearBits);
 
     FFbo.PreRender;
     // render to fbo
@@ -892,16 +892,16 @@ procedure TGLFBORenderer.UnApplyCamera;
 begin
   if assigned(Camera) then
   begin
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix;
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PopMatrix;
 
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PopMatrix;
   end
   else
   begin
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PopMatrix;
   end;
 end;
 
@@ -910,4 +910,3 @@ initialization
   RegisterClasses([TGLFBORenderer]);
 
 end.
-
