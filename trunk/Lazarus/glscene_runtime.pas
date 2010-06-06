@@ -1,5 +1,5 @@
-{ This file was automatically created by Lazarus. Do not edit!
-  This source is only used to compile and install the package.
+{ Этот файл был автоматически создан Lazarus. Не редактировать!
+  Исходный код используется только для компиляции и установки пакета.
  }
 
 unit glscene_runtime; 
@@ -17,27 +17,27 @@ uses
   FileNMF, FileOCT, FileX, GLFile3DS, GLFile3DSSceneObjects, GLFileASE, 
   GLFileB3D, GLFileDDS, GLFileGL2, GLFileGTS, GLFileHDR, GLFileLMTS, 
   GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMP3, 
-  GLFileMS3D, GLFileNMF, GLFileNurbs, GLFileO3TC, GLFileObj, GLFilePLY, 
-  GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLFileWAV, GlFileX, 
-  GLStarRecord, GLVfsPAK, HDRImage, LWObjects, O3TCImage, Q3BSP, Q3MD3, RGBE, 
-  TGA, Types3DS, TypesB3D, TypesMD2, TypesMDC, TypesMS3D, TypesSTL, Utils3DS, 
-  VRMLParser, GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, 
-  GLBaseMeshSilhouette, GLBehaviours, GLBitmapFont, GLBlur, GLBSP, 
-  GLBumpmapHDS, GLCadencer, GLCameraController, GLCollision, GLCompositeImage, 
-  GLConsole, GLContext, GLDCE, GLDCEMisc, GLDynamicTexture, 
-  GLEllipseCollision, GLEParticleMasksManager, GLExtrusion, GLFBO, 
-  GLFBORenderer, GLFeedback, GLFireFX, GLFPSMovement, GLGameMenu, 
-  GLGeomObjects, GLGizmo, GLGizmoEx, GLGLUTesselation, GLGraph, GLGraphics, 
-  GLGui, GLHeightData, GLHeightTileFileHDS, GLHUDObjects, GLImposter, 
-  GLLensFlare, GLLinePFX, GLManager, GLMaterial, GLMaterialMultiProxy, 
-  GLMaterialScript, GLMesh, GLMeshBuilder, GLMeshCSG, GLMeshOptimizer, 
-  GLMirror, GLMovement, GLMultiPolygon, GLMultiProxy, GLNavigator, GLNodes, 
-  GLObjects, GLParametricSurfaces, GLParticleFX, GLParticles, GLPerlin, 
-  GLPerlinBase, GLPerlinPFX, GLPolyhedron, GLPortal, GLPostEffects, 
-  GLProcTextures, GLProjectedTextures, GLProxyObjects, GLRagdoll, 
-  GLRenderContextInfo, GLROAMPatch, GLScene, GLScriptBase, GLShadowHDS, 
-  GLShadowPlane, GLShadowVolume, GLSilhouette, GLSimpleNavigation, GLSkyBox, 
-  GLSkydome, GLSLProjectedTextures, GLSLBumpShader, GLSLDiffuseSpecularShader, 
+  GLFileMS3D, GLFileNMF, GLFileNurbs, GLFileO3TC, GLFilePLY, GLFileSMD, 
+  GLFileSTL, GLFileTIN, GLFileVRML, GLFileWAV, GlFileX, GLStarRecord, 
+  GLVfsPAK, HDRImage, LWObjects, O3TCImage, Q3BSP, Q3MD3, RGBE, TGA, Types3DS, 
+  TypesB3D, TypesMD2, TypesMDC, TypesMS3D, TypesSTL, Utils3DS, VRMLParser, 
+  GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, GLBaseMeshSilhouette, 
+  GLBehaviours, GLBitmapFont, GLBlur, GLBSP, GLBumpmapHDS, GLCadencer, 
+  GLCameraController, GLCollision, GLCompositeImage, GLConsole, GLContext, 
+  GLDCE, GLDCEMisc, GLDynamicTexture, GLEllipseCollision, 
+  GLEParticleMasksManager, GLExtrusion, GLFBO, GLFBORenderer, GLFeedback, 
+  GLFireFX, GLFPSMovement, GLGameMenu, GLGeomObjects, GLGizmo, GLGizmoEx, 
+  GLGLUTesselation, GLGraph, GLGraphics, GLGui, GLHeightData, 
+  GLHeightTileFileHDS, GLHUDObjects, GLImposter, GLLensFlare, GLLinePFX, 
+  GLManager, GLMaterial, GLMaterialMultiProxy, GLMaterialScript, GLMesh, 
+  GLMeshBuilder, GLMeshCSG, GLMeshOptimizer, GLMirror, GLMovement, 
+  GLMultiPolygon, GLMultiProxy, GLNavigator, GLNodes, GLObjects, 
+  GLParametricSurfaces, GLParticleFX, GLParticles, GLPerlin, GLPerlinBase, 
+  GLPerlinPFX, GLPolyhedron, GLPortal, GLPostEffects, GLProcTextures, 
+  GLProjectedTextures, GLProxyObjects, GLRagdoll, GLRenderContextInfo, 
+  GLROAMPatch, GLScene, GLScriptBase, GLShadowHDS, GLShadowPlane, 
+  GLShadowVolume, GLSilhouette, GLSimpleNavigation, GLSkyBox, GLSkydome, 
+  GLSLProjectedTextures, GLSLBumpShader, GLSLDiffuseSpecularShader, 
   GLSLPostBlurShader, GLSLShader, GLSmoothNavigator, GLSound, 
   GLSoundFileObjects, GLSpatialPartitioning, GLState, GLStrings, GLTeapot, 
   GLTerrainRenderer, GLTexLensFlare, GLTexture, GLTexturedHDS, 
@@ -49,7 +49,9 @@ uses
   GLCustomShader, GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, 
   GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 
   GLUserShader, GLSLog, GLSLanguage, GLSArchiveManager, GLFilePAK, GLFileZLIB, 
-  ZLibEx, ZLibExApi, GLMultisampleImage, OpenGLAdapter;
+  GLMultisampleImage, OpenGLAdapter, ZLibEx, ZLibExApi, GLFileOBJ, 
+  GL3xAtmosphere, GL3xFactory, GL3xLensFlare, GL3xMaterial, GL3xNishitaSky, 
+  GL3xObjects, GLShadersManager, GLSRedBlackTree, GLVBOManagers;
 
 implementation
 

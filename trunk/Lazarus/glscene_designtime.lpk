@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Platform/"/>
+        <OtherUnitFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Platform/;/home/yarunderkaer/GLScene/Source/Experimental/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
