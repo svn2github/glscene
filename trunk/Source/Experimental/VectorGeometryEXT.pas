@@ -31,7 +31,7 @@ type
     V: array[0..1] of Single;
     property X: Single read V[0] write V[0];
     property Y: Single read V[1] write V[1];
-{$IFDEF GLS_COMPILER_2007_UP}
+{$IFDEF GLS_COMPILER_2005_UP}
     class operator Add(const a, b: TVector2fEXT): TVector2fEXT; inline;
     class operator Subtract(const a, b: TVector2fEXT): TVector2fEXT; inline;
     class operator Multiply(const a, b: TVector2fEXT): TVector2fEXT; inline;
@@ -56,7 +56,7 @@ type
     property X: Single read V[0] write V[0];
     property Y: Single read V[1] write V[1];
     property Z: Single read V[2] write V[2];
-{$IFDEF GLS_COMPILER_2007_UP}
+{$IFDEF GLS_COMPILER_2005_UP}
     class operator Implicit(const a: TVector3f): TVector3fEXT; inline;
     class operator Add(const a, b: TVector3fEXT): TVector3fEXT; inline;
     class operator Subtract(const a, b: TVector3fEXT): TVector3fEXT; inline;
@@ -89,7 +89,7 @@ type
     property Z: Single read V[2] write V[2];
     property W: Single read V[3] write V[3];
     property XYZ: TVector3fEXT read Get3f write Set3f;
-{$IFDEF GLS_COMPILER_2007_UP}
+{$IFDEF GLS_COMPILER_2005_UP}
     class operator Implicit(const a: TVector4f): TVector4fEXT; inline;
     class operator Add(const a, b: TVector4fEXT): TVector4fEXT; inline;
     class operator Subtract(const a, b: TVector4fEXT): TVector4fEXT; inline;
@@ -137,7 +137,7 @@ type
     property e23: Single read V[14] write V[14];
     property e33: Single read V[15] write V[15];
     property Row[Index: Integer]: TVector4fEXT read GetRow write SetRow;
-{$IFDEF GLS_COMPILER_2007_UP}
+{$IFDEF GLS_COMPILER_2005_UP}
     class operator Implicit(const a: TMatrix4f): TMatrix4fEXT;
     class operator Implicit(const a: TMatrix4fEXT): TMatrix4f;
     class operator Add(const a, b: TMatrix4fEXT): TMatrix4fEXT;
@@ -1040,4 +1040,3 @@ end;
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 
 end.
-
