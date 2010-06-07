@@ -105,7 +105,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, ZLibExApi;
+  SysUtils, Classes, GLCrossPlatform, ZLibExApi;
 
 type
 
