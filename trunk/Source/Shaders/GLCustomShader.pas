@@ -8,6 +8,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/06/10 - Yar - Added unsigned integer uniforms
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
       <li>25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
@@ -259,22 +260,34 @@ type
   protected
     { Protected Declarations }
     function GetAsVector1f: Single; virtual; abstract;
-    function GetAsVector1i: Integer; virtual; abstract;
     function GetAsVector2f: TVector2f; virtual; abstract;
-    function GetAsVector2i: TVector2i; virtual; abstract;
     function GetAsVector3f: TVector3f; virtual; abstract;
-    function GetAsVector3i: TVector3i; virtual; abstract;
     function GetAsVector4f: TVector; virtual; abstract;
+
+    function GetAsVector1i: Integer; virtual; abstract;
+    function GetAsVector2i: TVector2i; virtual; abstract;
+    function GetAsVector3i: TVector3i; virtual; abstract;
     function GetAsVector4i: TVector4i; virtual; abstract;
 
+    function GetAsVector1ui: GLuint; virtual; abstract;
+    function GetAsVector2ui: TVector2ui; virtual; abstract;
+    function GetAsVector3ui: TVector3ui; virtual; abstract;
+    function GetAsVector4ui: TVector4ui; virtual; abstract;
+
     procedure SetAsVector1f(const Value: Single); virtual; abstract;
+    procedure SetAsVector2f(const Value: TVector2f); virtual; abstract;
+    procedure SetAsVector3f(const Value: TVector3f); virtual; abstract;
+    procedure SetAsVector4f(const Value: TVector4f); virtual; abstract;
+
     procedure SetAsVector1i(const Value: Integer); virtual; abstract;
     procedure SetAsVector2i(const Value: TVector2i); virtual; abstract;
     procedure SetAsVector3i(const Value: TVector3i); virtual; abstract;
     procedure SetAsVector4i(const Value: TVector4i); virtual; abstract;
-    procedure SetAsVector2f(const Value: TVector2f); virtual; abstract;
-    procedure SetAsVector3f(const Value: TVector3f); virtual; abstract;
-    procedure SetAsVector4f(const Value: TVector4f); virtual; abstract;
+
+    procedure SetAsVector1ui(const Value: GLuint); virtual; abstract;
+    procedure SetAsVector2ui(const Value: TVector2ui); virtual; abstract;
+    procedure SetAsVector3ui(const Value: TVector3ui); virtual; abstract;
+    procedure SetAsVector4ui(const Value: TVector4ui); virtual; abstract;
 
     function GetAsMatrix2f: TMatrix2f; virtual; abstract;
     function GetAsMatrix3f: TMatrix3f; virtual; abstract;
@@ -335,6 +348,12 @@ type
     property AsVector3i: TVector3i read GetAsVector3i write SetAsVector3i;
     property AsVector4i: TVector4i read GetAsVector4i write SetAsVector4i;
 
+    //: Unsigned integer vector  types.
+    property AsVector1ui: GLuint   read GetAsVector1ui write SetAsVector1ui;
+    property AsVector2ui: TVector2ui read GetAsVector2ui write SetAsVector2ui;
+    property AsVector3ui: TVector3ui read GetAsVector3ui write SetAsVector3ui;
+    property AsVector4ui: TVector4ui read GetAsVector4ui write SetAsVector4ui;
+
     //: Matrix Types.
     property AsMatrix2f: TMatrix2f read GetAsMatrix2f write SetAsMatrix2f;
     property AsMatrix3f: TMatrix3f read GetAsMatrix3f write SetAsMatrix3f;
@@ -362,23 +381,23 @@ type
     bmxDestColorOne, bmxDestAlphaOne);
 
 // Exported procedures.
-procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
-procedure UnApplyBlendingModeEx;
-procedure InitTexture(const TextureHandle: Cardinal; const TextureSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
+procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx); deprecated;
+procedure UnApplyBlendingModeEx;deprecated;
+procedure InitTexture(const TextureHandle: Cardinal; const TextureSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
 
 // Probably need to give them proper names, instead of numbers... 
-procedure DrawTexturedScreenQuad;
-procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
-procedure DrawTexturedScreenQuad3;
-procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize);
-procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize);
-procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize);
+procedure DrawTexturedScreenQuad; deprecated;
+procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize); deprecated;
+procedure DrawTexturedScreenQuad3; deprecated;
+procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize); deprecated;
+procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize); deprecated;
+procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize); deprecated;
 
-procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
-procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
+procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
+procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
 
-function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean;
-procedure GetActiveLightsList(const ALightIDs: TIntegerList);
+function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean; deprecated;
+procedure GetActiveLightsList(const ALightIDs: TIntegerList); deprecated;
 
 implementation
 
@@ -411,28 +430,28 @@ end;
 
 procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 begin
-  glCopyTexSubImage2D(TextureTarget, 0, 0, 0, 0, 0, ViewPortSize.cx, ViewPortSize.cy);
+  GL.CopyTexSubImage2D(TextureTarget, 0, 0, 0, 0, 0, ViewPortSize.cx, ViewPortSize.cy);
 end;
 
 procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 begin
-  glCopyTexImage2D(TextureTarget, 0, GL_RGB, 0, 0, ViewPortSize.cx, ViewPortSize.cy, 0);
+  GL.CopyTexImage2D(TextureTarget, 0, GL_RGB, 0, 0, ViewPortSize.cx, ViewPortSize.cy, 0);
 end;
 
 procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
 begin
-  glPushAttrib(GL_COLOR_BUFFER_BIT);
-  glEnable(GL_BLEND);
+  GL.PushAttrib(GL_COLOR_BUFFER_BIT);
+  GL.Enable(GL_BLEND);
 
   case BlendingMode of
-    bmxOpaque: glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    bmxTransparency: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    bmxAdditive: glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    bmxAlphaTest50: glAlphaFunc(GL_GEQUAL, 0.5);
-    bmxAlphaTest100: glAlphaFunc(GL_GEQUAL, 1.0);
-    bmxModulate: glBlendFunc(GL_DST_COLOR, GL_ZERO);
-    bmxDestColorOne: glBlendFunc(GL_DST_COLOR, GL_ONE);
-    bmxDestAlphaOne: glBlendFunc(GL_DST_ALPHA, GL_ONE);
+    bmxOpaque: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE);
+    bmxTransparency: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    bmxAdditive: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE);
+    bmxAlphaTest50: GL.AlphaFunc(GL_GEQUAL, 0.5);
+    bmxAlphaTest100: GL.AlphaFunc(GL_GEQUAL, 1.0);
+    bmxModulate: GL.BlendFunc(GL_DST_COLOR, GL_ZERO);
+    bmxDestColorOne: GL.BlendFunc(GL_DST_COLOR, GL_ONE);
+    bmxDestAlphaOne: GL.BlendFunc(GL_DST_ALPHA, GL_ONE);
     else
       Assert(False, glsErrorEx + glsUnknownType);
   end;
@@ -440,127 +459,127 @@ end;
 
 procedure UnApplyBlendingModeEx;
 begin
-  glPopAttrib;
+  GL.PopAttrib;
 end;
 
 procedure DrawTexturedScreenQuad;
 begin
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadIdentity;
-  glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadIdentity;
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PushMatrix;
+  GL.LoadIdentity;
+  GL.MatrixMode(GL_PROJECTION);
+    GL.PushMatrix;
+    GL.LoadIdentity;
 
     // drawing rectangle over screen
-    glDisable(GL_DEPTH_TEST);
+    GL.Disable(GL_DEPTH_TEST);
     DrawTexturedScreenQuad3;
-    glEnable(GL_DEPTH_TEST);
+    GL.Enable(GL_DEPTH_TEST);
 
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
+  GL.PopMatrix;
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PopMatrix;
 end;
 
 procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
 //var
 //  ProjectionMatrix: TMatrix4f;
 begin
-  glPushMatrix;
-  glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadIdentity;
-    glOrtho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
+  GL.PushMatrix;
+  GL.MatrixMode(GL_PROJECTION);
+    GL.PushMatrix;
+    GL.LoadIdentity;
+    GL.Ortho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
     {
           glMatrixMode(GL_MODELVIEW);
           glGetFloatv(GL_PROJECTION_MATRIX, @ProjectionMatrix);
           glLoadMatrixf(@ProjectionMatrix);
           glLoadIdentity;
     }
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(False);
-    glBegin(GL_QUADS);
-      glTexCoord2f(0.0, ViewPortSize.cy);             glVertex2f(0, 0);
-      glTexCoord2f(0.0, 0.0);                         glVertex2f(0, ViewPortSize.cy);
-      glTexCoord2f(ViewPortSize.cx, 0.0);             glVertex2f(ViewPortSize.cx, ViewPortSize.cy);
-      glTexCoord2f(ViewPortSize.cx, ViewPortSize.cy); glVertex2f(ViewPortSize.cx, 0);
-    glEnd;
-    glDepthMask(True);
-    glEnable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
+    GL.Disable(GL_DEPTH_TEST);
+    GL.DepthMask(False);
+    GL.Begin_(GL_QUADS);
+      GL.TexCoord2f(0.0, ViewPortSize.cy);             GL.Vertex2f(0, 0);
+      GL.TexCoord2f(0.0, 0.0);                         GL.Vertex2f(0, ViewPortSize.cy);
+      GL.TexCoord2f(ViewPortSize.cx, 0.0);             GL.Vertex2f(ViewPortSize.cx, ViewPortSize.cy);
+      GL.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); GL.Vertex2f(ViewPortSize.cx, 0);
+    GL.End_;
+    GL.DepthMask(True);
+    GL.Enable(GL_DEPTH_TEST);
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PopMatrix;
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PopMatrix;
 end;
 
 procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize);
 begin
-  glBegin(GL_QUADS);
-    glTexCoord2f(0, 0);                             glVertex2f(-1, -1);
-    glTexCoord2f(ViewPortSize.cx, 0);               glVertex2f( 1, -1);
-    glTexCoord2f(ViewPortSize.cx, ViewPortSize.cy); glVertex2f( 1,  1);
-    glTexCoord2f(0, ViewPortSize.cy);               glVertex2f(-1,  1);
-  glEnd;
+  GL.Begin_(GL_QUADS);
+    GL.TexCoord2f(0, 0);                             GL.Vertex2f(-1, -1);
+    GL.TexCoord2f(ViewPortSize.cx, 0);               GL.Vertex2f( 1, -1);
+    GL.TexCoord2f(ViewPortSize.cx, ViewPortSize.cy); GL.Vertex2f( 1,  1);
+    GL.TexCoord2f(0, ViewPortSize.cy);               GL.Vertex2f(-1,  1);
+  GL.End_;
 end;
 
 procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize);
 begin
-  glMatrixMode( GL_PROJECTION );
-  glPushMatrix;
-    glLoadIdentity;
-    glOrtho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-      glLoadIdentity;
-      glDisable(GL_DEPTH_TEST);
-      glDepthMask( FALSE );
+  GL.MatrixMode( GL_PROJECTION );
+  GL.PushMatrix;
+    GL.LoadIdentity;
+    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PushMatrix;
+      GL.LoadIdentity;
+      GL.Disable(GL_DEPTH_TEST);
+      GL.DepthMask( FALSE );
       DrawTexturedScreenQuad3;
-      glDepthMask( TRUE );
-      glEnable(GL_DEPTH_TEST);
-    glPopMatrix;
-    glMatrixMode( GL_PROJECTION );
-  glPopMatrix;
-  glMatrixMode( GL_MODELVIEW );
+      GL.DepthMask( TRUE );
+      GL.Enable(GL_DEPTH_TEST);
+    GL.PopMatrix;
+    GL.MatrixMode( GL_PROJECTION );
+  GL.PopMatrix;
+  GL.MatrixMode( GL_MODELVIEW );
 end;
 
 procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize);
 begin
-  glMatrixMode( GL_PROJECTION );
-  glPushMatrix;
-    glLoadIdentity;
-    glOrtho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-      glLoadIdentity;
-      glDisable(GL_DEPTH_TEST);
-      glDepthMask( FALSE );
+  GL.MatrixMode( GL_PROJECTION );
+  GL.PushMatrix;
+    GL.LoadIdentity;
+    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PushMatrix;
+      GL.LoadIdentity;
+      GL.Disable(GL_DEPTH_TEST);
+      GL.DepthMask( FALSE );
       DrawTexturedScreenQuad4(ViewPortSize);;
-      glDepthMask( TRUE );
-      glEnable(GL_DEPTH_TEST);
-    glPopMatrix;
-    glMatrixMode( GL_PROJECTION );
-  glPopMatrix;
-  glMatrixMode( GL_MODELVIEW );
+      GL.DepthMask( TRUE );
+      GL.Enable(GL_DEPTH_TEST);
+    GL.PopMatrix;
+    GL.MatrixMode( GL_PROJECTION );
+  GL.PopMatrix;
+  GL.MatrixMode( GL_MODELVIEW );
 end;
 
 procedure DrawTexturedScreenQuad3;
 begin
-  glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(-1, -1);
-    glTexCoord2f(1, 0); glVertex2f(1, -1);
-    glTexCoord2f(1, 1); glVertex2f(1, 1);
-    glTexCoord2f(0, 1); glVertex2f(-1, 1);
-  glEnd;
+  GL.Begin_(GL_QUADS);
+    GL.TexCoord2f(0, 0); GL.Vertex2f(-1, -1);
+    GL.TexCoord2f(1, 0); GL.Vertex2f(1, -1);
+    GL.TexCoord2f(1, 1); GL.Vertex2f(1, 1);
+    GL.TexCoord2f(0, 1); GL.Vertex2f(-1, 1);
+  GL.End_;
 end;
 
 procedure InitTexture(const TextureHandle: Cardinal; const TextureSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 begin
-  glBindTexture(TextureTarget, TextureHandle);
-  glTexParameteri(TextureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(TextureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(TextureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(TextureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glCopyTexImage2d(TextureTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
+  GL.BindTexture(TextureTarget, TextureHandle);
+  GL.TexParameteri(TextureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  GL.TexParameteri(TextureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  GL.TexParameteri(TextureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  GL.TexParameteri(TextureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  GL.CopyTexImage2d(TextureTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
 end;
 
 { TGLShaderProgram }

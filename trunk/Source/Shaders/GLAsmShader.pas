@@ -9,6 +9,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/06/10 - Yar - Replace OpenGL functons to OpenGLAdapter
       <li>28/07/09 - DaStr - Added GeomertyShader support (thanks YarUnderoaker)
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)  
@@ -34,8 +35,8 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  VectorGeometry, VectorTypes, GLTexture, OpenGL1x, ARBProgram, GLCustomShader,
-  GLRenderContextInfo;
+  VectorGeometry, VectorTypes, GLTexture, OpenGL1x, GLContext, ARBProgram,
+  GLCustomShader, GLRenderContextInfo;
 
 type
   TGLCustomAsmShader = class;
@@ -181,19 +182,19 @@ procedure TGLCustomAsmShader.DestroyARBPrograms;
 begin
   if FVPHandle <> 0 then
   begin
-    glDeleteProgramsARB(1, @FVPHandle);
+    GL.DeletePrograms(1, @FVPHandle);
     FVPHandle := 0;
   end;
 
   if FFPHandle <> 0 then
   begin
-    glDeleteProgramsARB(1, @FFPHandle);
+    GL.DeletePrograms(1, @FFPHandle);
     FFPHandle := 0;
   end;
 
   if FGPHandle <> 0 then
   begin
-    glDeleteProgramsARB(1, @FGPHandle);
+    GL.DeletePrograms(1, @FGPHandle);
     FGPHandle := 0;
   end;
 end;
@@ -276,7 +277,7 @@ end;
 
 function TGLCustomAsmShader.ShaderSupported: Boolean;
 begin
-  Result := (GL_ARB_vertex_program and GL_ARB_fragment_program);
+  Result := (GL.ARB_vertex_program and GL.ARB_fragment_program);
 end;
 
 function TGLCustomAsmShader.GetFPHandle: Cardinal;
@@ -297,28 +298,27 @@ end;
 procedure TGLCustomAsmShader.ApplyShaderPrograms;
 begin
   if VertexProgram.Enabled then begin
-    glEnable(GL_VERTEX_PROGRAM_ARB);
-    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVPHandle);
+    GL.Enable(GL_VERTEX_PROGRAM_ARB);
+    GL.BindProgram(GL_VERTEX_PROGRAM_ARB, FVPHandle);
   end;
   if FragmentProgram.Enabled then begin
-    glEnable(GL_FRAGMENT_PROGRAM_ARB);
-    glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFPHandle);
+    GL.Enable(GL_FRAGMENT_PROGRAM_ARB);
+    GL.BindProgram(GL_FRAGMENT_PROGRAM_ARB, FFPHandle);
   end;
   if GeometryProgram.Enabled then begin
-    glEnable(GL_GEOMETRY_PROGRAM_NV);
-    glBindProgramARB(GL_GEOMETRY_PROGRAM_NV, FGPHandle);
+    GL.Enable(GL_GEOMETRY_PROGRAM_NV);
+    GL.BindProgram(GL_GEOMETRY_PROGRAM_NV, FGPHandle);
   end;
 end;
 
 procedure TGLCustomAsmShader.UnApplyShaderPrograms;
 begin
-  if VertexProgram.Enabled   then glDisable(GL_VERTEX_PROGRAM_ARB);
-  if FragmentProgram.Enabled then glDisable(GL_FRAGMENT_PROGRAM_ARB);
-  if GeometryProgram.Enabled then glDisable(GL_GEOMETRY_PROGRAM_NV);
+  if VertexProgram.Enabled   then GL.Disable(GL_VERTEX_PROGRAM_ARB);
+  if FragmentProgram.Enabled then GL.Disable(GL_FRAGMENT_PROGRAM_ARB);
+  if GeometryProgram.Enabled then GL.Disable(GL_GEOMETRY_PROGRAM_NV);
 end;
 
 initialization
   RegisterClasses([TGLCustomAsmShader, TGLAsmShader]);
 
 end.
-
