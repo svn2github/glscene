@@ -6,6 +6,7 @@
    Registration unit for GLScene Computing package.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
       <li>19/03/10 - Yar - Creation
 	</ul></font>
 }
@@ -14,7 +15,8 @@ unit GLSComputingRegister;
 interface
 
 uses
-  Classes, DesignIntf, DesignEditors, STREDIT, Dialogs;
+  Classes, SysUtils,
+  DesignIntf, DesignEditors, STREDIT, ToolsAPI;
 
 procedure Register;
 
@@ -39,14 +41,22 @@ type
   end;
 
   TGLSCUDACompilerSourceProperty = class(TStringProperty)
+  private
+    FModuleList: TStringList;
+    procedure RefreshModuleList;
   public
     { Public Declarations }
+    constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
+    destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
-    procedure Edit; override;
+    function GetValue : string; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: String); override;
   end;
 
   TCUDAModuleCodeEditor = class(TStringListProperty)
   public
+    { Public Declarations }
     procedure Edit; override;
   end;
 
@@ -64,7 +74,7 @@ begin
   RegisterComponentEditor(TGLSCUDACompiler, TGLSCUDACompilerEditor);
 	RegisterPropertyEditor(TypeInfo(TStringList), TCUDAModule, 'Code',
     TCUDAModuleCodeEditor);
-  RegisterPropertyEditor(TypeInfo(string), TGLSCUDACompiler, 'CodeSourceFile',
+  RegisterPropertyEditor(TypeInfo(string), TGLSCUDACompiler, 'ProjectModule',
     TGLSCUDACompilerSourceProperty);
   RegisterNoIcon([TCUDAModule, TCUDAMemData, TCUDAFunction, TCUDATexture,
     TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource]);
@@ -164,22 +174,108 @@ begin
   Result := 1;
 end;
 
-function TGLSCUDACompilerSourceProperty.GetAttributes;
+// ------------------
+// ------------------ TGLSCUDACompilerSourceProperty ------------------
+// ------------------
+
+constructor TGLSCUDACompilerSourceProperty.Create(
+  const ADesigner: IDesigner; APropCount: Integer);
 begin
-  Result := [paDialog];
+  inherited;
+  FModuleList := TStringList.Create;
 end;
 
-procedure TGLSCUDACompilerSourceProperty.Edit;
-var
-  Dialog: TOpenDialog;
+destructor TGLSCUDACompilerSourceProperty.Destroy;
 begin
-  Dialog := TOpenDialog.Create(nil);
-  try
-    if Dialog.Execute then
-      SetStrValue(Dialog.FileName);
-  finally
-    Dialog.Free;
+  FModuleList.Free;
+  inherited;
+end;
+
+procedure TGLSCUDACompilerSourceProperty.RefreshModuleList;
+var
+  proj: IOTAProject;
+  I: Integer;
+  module: IOTAModuleInfo;
+  name: string;
+begin
+  FModuleList.Clear;
+  FModuleList.Add('none');
+  proj := GetActiveProject;
+  if proj <> nil then
+  begin
+    for I := 0 to proj.GetModuleCount - 1 do
+    begin
+      module := proj.GetModule(I);
+      name := UpperCase(ExtractFileExt(module.FileName));
+      if name = '.CU' then
+        FModuleList.Add(module.FileName);
+    end;
   end;
+end;
+
+function TGLSCUDACompilerSourceProperty.GetAttributes;
+begin
+  Result := [paValueList];
+end;
+
+// GetValue
+//
+function TGLSCUDACompilerSourceProperty.GetValue : String;
+var
+  I : Integer;
+begin
+  RefreshModuleList;
+  Result := FModuleList[0];
+  for I := 1 to FModuleList.Count - 1 do
+  begin
+    if GetStrValue = ExtractFileName(FModuleList[I]) then
+    begin
+      Result := GetStrValue;
+      exit;
+    end;
+  end;
+    Result := FModuleList[1];
+  end;
+end;
+
+// GetValues
+//
+procedure TGLSCUDACompilerSourceProperty.GetValues(Proc: TGetStrProc);
+var
+   I : Integer;
+begin
+  RefreshModuleList;
+  for I := 0 to FModuleList.Count - 1 do
+      Proc(ExtractFileName(FModuleList[I]));
+end;
+
+// SetValue
+//
+procedure TGLSCUDACompilerSourceProperty.SetValue(const Value: String);
+var
+  I, J: Integer;
+  Correct: Boolean;
+begin
+  RefreshModuleList;
+  Correct := False;
+  for I := 1 to FModuleList.Count - 1 do
+    if Value = ExtractFileName(FModuleList[I]) then
+    begin
+      J := I;
+      Correct := True;
+      Break;
+    end;
+
+  if Correct then
+  begin
+    TGLSCUDACompiler(GetComponent(0)).CodeSourceFile := FModuleList[J];
+    SetStrValue(Value);
+  end
+  else
+  begin
+    SetStrValue('none');
+  end;
+	Modified;
 end;
 
 // ------------------
