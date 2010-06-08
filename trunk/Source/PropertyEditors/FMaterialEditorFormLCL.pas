@@ -3,7 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
-
+      <li>08/06/10 - Yar - Bugfixed asignment edition result to material
    </ul></font>
 }
 unit FMaterialEditorFormLCL;
@@ -65,15 +65,10 @@ type
     procedure SceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
     procedure OnMaterialChanged(Sender: TObject);
-  private
-    { Diclarations privies }
-    function GetMaterial: TGLMaterial;
-    procedure SetMaterial(const Value: TGLMaterial);
   public
     { Diclarations publiques }
     constructor Create(AOwner: TComponent); override;
-    function Execute(var amaterial: TGLMaterial): boolean;
-    property Material: TGLMaterial read GetMaterial write SetMaterial;
+    function Execute(AMaterial: TGLMaterial): boolean;
   end;
 
 function MaterialEditorForm: TMaterialEditorForm;
@@ -141,20 +136,20 @@ end;
 
 // Execute
 
-function TMaterialEditorForm.Execute(var amaterial: TGLMaterial): boolean;
+function TMaterialEditorForm.Execute(AMaterial: TGLMaterial): boolean;
 begin
-  with amaterial do
+  with AMaterial do
   begin
+    CBBlending.ItemIndex := integer(BlendingMode);
+    CBPolygonMode.ItemIndex := integer(PolygonMode);
     FEFront.FaceProperties := FrontProperties;
     FEBack.FaceProperties := BackProperties;
     RTextureEdit.Texture := Texture;
-    CBBlending.ItemIndex := Integer(BlendingMode);
-    CBPolygonMode.ItemIndex := Integer(PolygonMode);
   end;
-  Self.Material := material;
+
   Result := (ShowModal = mrOk);
   if Result then
-    with material do
+    with AMaterial do
     begin
       FrontProperties := FEFront.FaceProperties;
       BackProperties := FEBack.FaceProperties;
@@ -168,7 +163,7 @@ end;
 
 procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
-  with Self.Material do
+  with GLMaterialLibrary.Materials[0].Material do
   begin
     FrontProperties := FEFront.FaceProperties;
     BackProperties := FEBack.FaceProperties;
@@ -235,17 +230,6 @@ procedure TMaterialEditorForm.SceneViewerMouseWheel(Sender: TObject;
 begin
   Camera.AdjustDistanceToTarget(1 - 0.1 * (Abs(WheelDelta) / WheelDelta));
 end;
-
-function TMaterialEditorForm.GetMaterial: TGLMaterial;
-begin
-  Result := GLMaterialLibrary.Materials[0].Material;
-end;
-
-procedure TMaterialEditorForm.SetMaterial(const Value: TGLMaterial);
-begin
-  GLMaterialLibrary.Materials[0].Material.Assign(Value);
-end;
-
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
