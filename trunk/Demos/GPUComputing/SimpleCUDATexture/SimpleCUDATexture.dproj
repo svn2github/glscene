@@ -41,7 +41,9 @@
 			<DCCReference Include="uDemo.pas">
 				<Form>Form1</Form>
 			</DCCReference>
-			<None Include="simpleTexture_kernel.c"/>
+			<None Include="simpleTexture_kernel.cu">
+				<ContainerId>CCompiler</ContainerId>
+			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

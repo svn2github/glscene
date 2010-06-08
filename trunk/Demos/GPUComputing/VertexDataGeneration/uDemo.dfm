@@ -693,7 +693,7 @@ object Form1: TForm1
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\CUDA\bin\'
     CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
-    CodeSourceFile = 'G:\Doc\Projects\CUDA\FrameWork test 2.0\Simple kernel.c'
+    ProjectModule = 'Simple kernel.cu'
     Left = 448
     Top = 128
   end

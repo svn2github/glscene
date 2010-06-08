@@ -38,7 +38,7 @@ object Form1: TForm1
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\CUDA\bin\'
     CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
-    CodeSourceFile = 'G:\Doc\Projects\CUDA\FrameWork test 1.1\simpleTexture_kernel.c'
+    ProjectModule = 'simpleTexture_kernel.cu'
     Left = 80
     Top = 256
   end
@@ -56,9 +56,9 @@ object Form1: TForm1
         ''
         #9'//-----------------------------------------------------------'
         
-          #9'// Compiling C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000b' +
-          '94_00000000-9_temp.cpp3.i (C:/Users/YARUND~1/AppData/Local/Temp/' +
-          'ccBI#.a03684)'
+          #9'// Compiling C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000a' +
+          '14_00000001-9_temp.cpp3.i (C:/Users/YARUND~1/AppData/Local/Temp/' +
+          'ccBI#.a03752)'
         #9'//-----------------------------------------------------------'
         ''
         #9'//-----------------------------------------------------------'
@@ -71,8 +71,8 @@ object Form1: TForm1
         #9'//-----------------------------------------------------------'
         ''
         
-          #9'.file'#9'1'#9'"C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000b94_0' +
-          '0000000-8_temp.cudafe2.gpu"'
+          #9'.file'#9'1'#9'"C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000a14_0' +
+          '0000001-8_temp.cudafe2.gpu"'
         
           #9'.file'#9'2'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLUD' +
           'E\crtdefs.h"'

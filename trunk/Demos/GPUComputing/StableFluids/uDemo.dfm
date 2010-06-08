@@ -822,7 +822,7 @@ object Form1: TForm1
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\CUDA\bin\'
     CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
-    CodeSourceFile = 'G:\Doc\Projects\CUDA\4 fluidsGL 2.0\Fluids kernels.c'
+    ProjectModule = 'Fluids kernels.cu'
     Left = 448
     Top = 160
   end

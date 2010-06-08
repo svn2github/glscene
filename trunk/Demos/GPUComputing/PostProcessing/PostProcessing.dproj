@@ -46,7 +46,9 @@
 			<DCCReference Include="uDemo.pas">
 				<Form>Form1</Form>
 			</DCCReference>
-			<None Include="postProcessGL_kernel.c"/>
+			<None Include="postProcessGL_kernel.cu">
+				<ContainerId>CCompiler</ContainerId>
+			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

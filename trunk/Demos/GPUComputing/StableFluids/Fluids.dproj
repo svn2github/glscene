@@ -41,7 +41,9 @@
 			<DCCReference Include="uDemo.pas">
 				<Form>Form1</Form>
 			</DCCReference>
-			<None Include="Fluids kernels.c"/>
+			<None Include="Fluids kernels.cu">
+				<ContainerId>CCompiler</ContainerId>
+			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -67,6 +69,7 @@
 						<Parameters Name="UseLauncher">False</Parameters>
 						<Parameters Name="LoadAllSymbols">True</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+						<Parameters Name="DebugSourceDirs">D:\glscene\Source\Experimental\</Parameters>
 					</Parameters>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>

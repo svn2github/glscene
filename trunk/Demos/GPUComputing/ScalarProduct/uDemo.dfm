@@ -46,9 +46,9 @@ object Form1: TForm1
         ''
         #9'//-----------------------------------------------------------'
         
-          #9'// Compiling C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000c' +
-          '0c_00000000-9_temp.cpp3.i (C:/Users/YARUND~1/AppData/Local/Temp/' +
-          'ccBI#.a02136)'
+          #9'// Compiling C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_000008' +
+          'a0_00000000-9_temp.cpp3.i (C:/Users/YARUND~1/AppData/Local/Temp/' +
+          'ccBI#.a00816)'
         #9'//-----------------------------------------------------------'
         ''
         #9'//-----------------------------------------------------------'
@@ -61,7 +61,7 @@ object Form1: TForm1
         #9'//-----------------------------------------------------------'
         ''
         
-          #9'.file'#9'1'#9'"C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000c0c_0' +
+          #9'.file'#9'1'#9'"C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_000008a0_0' +
           '0000000-8_temp.cudafe2.gpu"'
         
           #9'.file'#9'2'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLUD' +
@@ -298,7 +298,7 @@ object Form1: TForm1
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\CUDA\bin\'
     CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
-    CodeSourceFile = 'G:\Doc\Projects\CUDA\scalarProd\scalarProd_kernel.c'
+    ProjectModule = 'scalarProd_kernel.cu'
     Left = 200
     Top = 248
   end
