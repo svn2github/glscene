@@ -3,6 +3,7 @@ object GLDemoForm: TGLDemoForm
   Height = 381
   Top = 280
   Width = 557
+  ActiveControl = MainViewer
   Caption = 'GLScene Multisample Texture Demo'
   ClientHeight = 381
   ClientWidth = 557

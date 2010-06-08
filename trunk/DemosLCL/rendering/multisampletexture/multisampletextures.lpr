@@ -1,10 +1,15 @@
-program MultiSampleTextures;
+program multisampletextures;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 uses
-  Forms, Interfaces,
-  uMain in 'uMain.pas', glscene_designtime, glscene_runtime;
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Interfaces, // this includes the LCL widgetset
+  Forms,
+  umain,
+  glscene_designtime, glscene_runtime;
 
 {$R *.res}
 
