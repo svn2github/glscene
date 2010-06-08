@@ -234,8 +234,7 @@ begin
       exit;
     end;
   end;
-    Result := FModuleList[1];
-  end;
+  Result := FModuleList[1];
 end;
 
 // GetValues
