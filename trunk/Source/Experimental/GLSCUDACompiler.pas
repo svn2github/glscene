@@ -8,6 +8,7 @@
    To work requires the presence of CUDA Toolkit 3.0 and MS Visual Studio C++.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/06/10 - Yar - Added ProjectModule property
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
 }
@@ -31,6 +32,7 @@ type
     FNVCCPath: string;
     FCppCompilerPath: string;
     FCode: TStringList;
+    FProjectModule: string;
     FCodeSourceFile: string;
     FOutputCodeType: TGLSCUDACompilerOutput;
     FArchitecture: TGLSCUDACompilerArch;
@@ -38,6 +40,7 @@ type
     FDesignerTaskList: TList;
     procedure setMaxRegisterCount(Value: Integer);
     procedure setOutputCodeType(const Value: TGLSCUDACompilerOutput);
+    function StoreProjectModule: Boolean;
   protected
     { Protected declarations }
   public
@@ -49,14 +52,21 @@ type
 
     property DesignerTaskList: TList read fDesignerTaskList write
       fDesignerTaskList;
+    property CodeSourceFile: string read FCodeSourceFile write FCodeSourceFile;
   published
     { Published declarations }
-    {: NVidia Cuda Compiler}
+    {: NVidia CUDA Compiler}
     property NVCCPath: string read fNVCCPath write fNVCCPath;
-    {: Microsoft Visual Studio Compiler }
+    {: Microsoft Visual Studio Compiler.
+       Pascal compiler is still not done. }
     property CppCompilerPath: string read fCppCompilerPath write
       fCppCompilerPath;
-    property CodeSourceFile: string read FCodeSourceFile write FCodeSourceFile;
+    {: Disign-time only property.
+       Make choose of one of the Project module as CUDA kernel source }
+    property ProjectModule: string read FProjectModule write FProjectModule stored StoreProjectModule;
+    {: Output code type for module kernel
+       - Ptx - Parallel Thread Execution
+       - Cubin - CUDA Binary}
     property OutputCodeType: TGLSCUDACompilerOutput read fOutputCodeType write
       setOutputCodeType default codePtx;
     property Architecture: TGLSCUDACompilerArch read fArchitecture write
@@ -132,6 +142,7 @@ begin
     else
       fCppCompilerPath := '';
   end;
+  FProjectModule := 'none';
 end;
 
 procedure TGLSCUDACompiler.Assign(Source: TPersistent);
@@ -261,6 +272,11 @@ begin
   if Value = codeUndefined then
     exit;
   fOutputCodeType := Value;
+end;
+
+function TGLSCUDACompiler.StoreProjectModule: Boolean;
+begin
+  Result := FProjectModule <> 'none';
 end;
 
 end.

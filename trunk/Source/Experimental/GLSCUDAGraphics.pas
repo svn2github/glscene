@@ -501,9 +501,9 @@ begin
     if not FAttrInfoReady then
       exit;
   end;
-  if FAttributes[Attr].DataType = GLSLTypeUndefined then
+  if FAttributes[Attr].DataFormat = GLSLTypeUndefined then
     exit;
-  case FAttributes[Attr].DataType of
+  case FAttributes[Attr].DataFormat of
     GLSLType1F: typeSize := SizeOf(GLFloat);
     GLSLType2F: typeSize := 2 * SizeOf(GLFloat);
     GLSLType3F: typeSize := 3 * SizeOf(GLFloat);
@@ -636,7 +636,7 @@ begin
       flOnePerAtttribute:
         begin
           for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-            if GR.FAttributes[i].DataType <> GLSLTypeUndefined then
+            if GR.FAttributes[i].DataFormat <> GLSLTypeUndefined then
             begin
               FProducedAttribute := @GR.FAttributes[i];
               ProdeuceData;

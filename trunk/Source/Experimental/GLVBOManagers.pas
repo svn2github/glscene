@@ -86,8 +86,8 @@ type
     VertexHandle: TGLVBOArrayBufferHandle;
     IndexHandle: TGLVBOElementArrayHandle;
 
-    FirstVertex: LongWord;
-    FirstIndex: LongWord;
+    FirstVertex: PtrUInt;
+    FirstIndex: PtrUInt;
     VertexCount: array[0..GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1] of LongWord;
     IndexCount: array[0..GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1] of LongWord;
     PrimitiveType: array[0..GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1] of TGLVBOMEnum;
@@ -95,7 +95,7 @@ type
     Attributes: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLAttribute;
     DataFormat: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
     DataSize: array[0..GLS_VERTEX_ATTR_NUM - 1] of LongWord;
-    TotalDataSize: LongWord;
+    TotalDataSize: PtrUInt;
     BuiltProp: TGLBuiltProperties;
     LastTimeWhenRendered: Double;
     RelativeSize: Single;
@@ -1468,7 +1468,7 @@ var
     if (CurrentClient.PrimitiveType[p] >= GLVBOM_LINES_ADJACENCY)
       and (CurrentClient.PrimitiveType[p] <= GLVBOM_TRIANGLE_STRIP_ADJACENCY)
         then
-      Result := GL_EXT_gpu_shader4
+      Result := GL.EXT_gpu_shader4
     else
       Result := True;
   end;
@@ -1898,10 +1898,9 @@ procedure TGLDynamicVBOManager.EndObject;
 var
   a: Integer;
   Attr: T4ByteList;
-  offset, size: LongWord;
+  offset, size: PtrUInt;
   HostVertexMap: Pointer;
   HostIndexMap: Pointer;
-  EnabledAttribute: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
   hVAO: TGLVertexArrayHandle;
 begin
   if GLVBOMState <> GLVBOM_OBJECT then
@@ -1982,9 +1981,6 @@ begin
     HostVertexMap := nil;
 
   for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-    EnabledAttribute[a] := False;
-
-  for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
   begin
     if Assigned(CurrentClient.Attributes[a]) then
     begin
@@ -1994,7 +1990,7 @@ begin
       if vUseMappingForOftenBufferUpdate then
         Move(
           Attr.List^,
-          PByte(Integer(HostVertexMap) + Integer(offset))^,
+          PByte(PtrUInt(HostVertexMap) + PtrUInt(offset))^,
           CurrentClient.DataSize[a])
       else
         fVertexHandle.BufferSubData(offset, CurrentClient.DataSize[a],
@@ -2506,7 +2502,7 @@ procedure TGLStreamVBOManager.EndObject;
 var
   a: Integer;
   Attr: T4ByteList;
-  offset, size: LongWord;
+  offset, size: PtrUInt;
   HostVertexMap: Pointer;
   HostIndexMap: Pointer;
   BuiltProp: TGLBuiltProperties;
@@ -2581,7 +2577,7 @@ begin
       begin
         Attr := AttributeArrays[a];
         CurrentClient.DataSize[a] := Attr.Count * SizeOf(T4ByteData);
-        Move(Attr.List^, PByte(Integer(HostVertexMap) + Integer(offset))^,
+        Move(Attr.List^, PByte(PtrUInt(HostVertexMap) + offset)^,
           CurrentClient.DataSize[a]);
         Inc(offset, CurrentClient.DataSize[a]);
       end;
@@ -2843,4 +2839,3 @@ finalization
   FreeVBOManagers;
 
 end.
-
