@@ -1459,8 +1459,11 @@ end;
 // ReadValue
 //
 function TBinaryReader.ReadValue : TValueType;
+var
+  b: byte;
 begin
-   FStream.Read(Result, SizeOf(Result));
+  Read(b, 1);
+  Result := TValueType(b);
 end;
 
 // NextValue
@@ -1611,7 +1614,7 @@ end;
 procedure TBinaryWriter.WriteInteger(anInteger : Integer);
 type
    TIntStruct = packed record
-      typ : TValueType;
+      typ : byte;
       val : Integer;
    end;
 var
@@ -1619,13 +1622,13 @@ var
 begin
    ins.val:=anInteger;
    if (anInteger>=Low(ShortInt)) and (anInteger<=High(ShortInt)) then begin
-      ins.typ:=vaInt8;
+      ins.typ:=byte(vaInt8);
       Write(ins, 2);
    end else if (anInteger>=Low(SmallInt)) and (anInteger<=High(SmallInt)) then begin
-      ins.typ:=vaInt16;
+      ins.typ:=byte(vaInt16);
       Write(ins, 3);
    end else begin
-      ins.typ:=vaInt32;
+      ins.typ:=byte(vaInt32);
       Write(ins, 5);
    end;
 end;
@@ -1634,7 +1637,7 @@ end;
 //
 procedure TBinaryWriter.WriteBoolean(aBoolean : Boolean);
 const
-   cBoolToType : array [False..True] of TValueType = (vaFalse, vaTrue);
+   cBoolToType : array [False..True] of byte = (byte(vaFalse), byte(vaTrue));
 begin
    Write(cBoolToType[aBoolean], 1);
 end;
@@ -1644,7 +1647,7 @@ end;
 procedure TBinaryWriter.WriteAnsiString(const aString : AnsiString);
 type
    TStringHeader = packed record
-      typ : TValueType;
+      typ : Byte;
       length : Integer;
    end;
 var
@@ -1652,12 +1655,12 @@ var
 begin
    sh.Length:=Length(aString);
    if sh.Length<=255 then begin
-      sh.typ:=vaString;
+      sh.typ:=byte(vaString);
       Write(sh, 2);
       if sh.Length>0 then
          Write(aString[1], sh.Length);
    end else begin
-      sh.typ:=vaLString;
+      sh.typ:=byte(vaLString);
       Write(sh, 5);
       Write(aString[1], sh.Length);
    end;
@@ -1668,14 +1671,14 @@ end;
 procedure TBinaryWriter.WriteWideString(const aString : WideString);
 type
    TStringHeader = packed record
-      typ : TValueType;
+      typ : Byte;
       length : Integer;
    end;
 var
    sh : TStringHeader;
 begin
    sh.Length:=Length(aString);
-   sh.typ:=vaWString;
+   sh.typ:=byte(vaWString);
    Write(sh, 5);
    Write(aString[1], sh.length*SizeOf(WideChar));
 end;
@@ -1697,13 +1700,13 @@ end;
 procedure TBinaryWriter.WriteFloat(const aFloat : Extended);
 type
    TExtendedStruct = packed record
-      typ : TValueType;
+      typ : Byte;
       val : Extended;
    end;
 var
    str : TExtendedStruct;
 begin
-   str.typ:=vaExtended;
+   str.typ:=byte(vaExtended);
    str.val:=aFloat;
    Write(str, SizeOf(str));
 end;
@@ -1712,7 +1715,7 @@ end;
 //
 procedure TBinaryWriter.WriteListBegin;
 const
-   buf : TValueType = vaList;
+   buf : byte = byte(vaList);
 begin
    Write(buf, 1);
 end;
@@ -1721,7 +1724,7 @@ end;
 //
 procedure TBinaryWriter.WriteListEnd;
 const
-   buf : TValueType = vaNull;
+   buf : byte = byte(vaNull);
 begin
    Write(buf, 1);
 end;
