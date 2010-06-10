@@ -48,7 +48,7 @@ type
     FiAttribs: packed array of Integer;
     nret: Integer;
     fbConfigs: PGLXFBConfigArray;
-    fOldContext: boolean;
+    fNewContext: boolean;
     procedure ChooseGLXFormat;
     function CreateTempWnd: TWindow;
     procedure DestroyTmpWnd(AWin: TWindow);
@@ -244,10 +244,10 @@ end;
 function TGLGLXContext._glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable;
   ctx: GLXContext): boolean;
 begin
-  if fOldContext then
-    Result := glXMakeCurrent(dpy, draw, ctx)
+  if fNewContext then
+    Result := glXMakeContextCurrent(dpy, draw, draw, ctx)
   else
-    Result := glXMakeContextCurrent(dpy, draw, draw, ctx);
+    Result := glXMakeCurrent(dpy, draw, ctx);
 end;
 
 // ChooseGLXFormat
@@ -420,8 +420,8 @@ begin
   {$IFDEF GLS_LOGGING}
   GLSLogger.Log('GLGLXContext: DoCreateContext->Handle it is received');
   {$ENDIF}
-  fOldContext := not (GLX_VERSION_1_3 or GLX_VERSION_1_4);
-  if fOldContext then
+  fNewContext := GLX_VERSION_1_3 or GLX_VERSION_1_4;
+  if fNewContext then
   begin
       AddIAttrib(GLX_X_RENDERABLE, GL_True);
       AddIAttrib(GLX_RENDER_TYPE, GLX_RGBA_BIT);
@@ -480,7 +480,7 @@ begin
 
   if GLStates.ForwardContext then
   begin
-    if fOldContext then
+    if not fNewContext then
       raise EGLContext.Create('Functions glXChooseFBConfig or glXGetFBConfigAttrib or glXCreateNewContext have not been loaded. It is required GLX above 1.2');
     {$IFDEF GLS_LOGGING}
     GLSLogger.Log('GLGLXContext: DoActivate->Activating Forward Context');
@@ -504,7 +504,7 @@ begin
     else if GL.VERSION_3_1 then
       ForwardContextAttribList[3] := 1;
 
-    fbConfigs := glXChooseFBConfig(FDisplay, FCurScreen, @FiAttribs[0], @nret);
+    fbConfigs := glXChooseFBConfig(FDisplay, FCurScreen, nil, @nret);
     {$IFDEF GLS_LOGGING}
     GLSLogger.Log('GLGLXContext: DoActivate->GLXFormat it is choosed');
     {$ENDIF}
@@ -716,7 +716,7 @@ begin
 
   // The extension function addresses are unique for each pixel format. All rendering
   // contexts of a given pixel format share the same extension function addresses.
-  if not fOldContext then
+  if fNewContext then
   begin
     vConfigs := glXChooseFBConfig(FDisplay, FCurScreen, nil, @N);
     if (N <> vLastConfigsNumber) or not CompareMem(vConfigs, vLastConfigs, N) then
@@ -793,4 +793,3 @@ begin
 end;
 
 end.
-
