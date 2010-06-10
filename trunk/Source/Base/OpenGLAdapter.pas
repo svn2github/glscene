@@ -3428,7 +3428,7 @@ function TGLExtensionsAndEntryPoints.GetAddressAlt(ProcName1, ProcName2:
   string): Pointer;
 begin
   Result := GetAddress(ProcName1);
-  if Result <> @glCap then
+  if Result = @glCap then
     Result := GetAddress(ProcName2);
 end;
 
