@@ -727,7 +727,7 @@ Var
     TmpElement.FTopLeft.Y := ThisElement.FTopLeft.Y;
     TmpElement.FBottomRight.X := ThisElement.FTopLeft.X+ThisElement.Scale.X;
     TmpElement.FBottomRight.Y := ThisElement.FTopLeft.Y+ThisElement.Scale.Y;
-    TmpElement.Scale.SetPoint(1,1,1);
+    TmpElement.Scale.csPoint2D(1,1);
     RenderIt(Res[GLALTopLeft],TmpElement);
 
     TmpElement.FTopLeft.X := ThisElement.FTopLeft.X+ThisElement.Scale.X;
