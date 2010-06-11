@@ -22,6 +22,7 @@
             и проблемы с DoActivate DoDeactivate.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
       <li>28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
                            (by Rustam Asmandiarov aka Predator)
       <li>08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
@@ -132,7 +133,7 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
 
-         procedure Render;overload;
+         procedure Render; overload;
 
          {: Adjusts property so that current resolution will be used.<p>
             Call this method if you want to make sure video mode isn't switched. }
@@ -221,7 +222,12 @@ implementation
 uses OpenGL1x, SysUtils, GLCrossPlatform, GLScreen
   {$IFDEF FPC}
     {$ifdef Linux}
-    , gtkproc
+      {$IFDEF LCLGTK2}
+      ,gtk2proc
+      {$ENDIF}
+      {$IFDEF LCLGTK}
+      ,gtkproc
+      {$ENDIF}
     {$ENDIF}
     {$IF DEFINED(LCLWIN32) or DEFINED(LCLWIN64)}
       {$ifndef CONTEXT_INCLUDED}

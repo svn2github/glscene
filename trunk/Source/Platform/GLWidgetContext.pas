@@ -4,6 +4,7 @@
    GLWidgetContext replaces old GLLinGTKContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
       <li>02/05/10 - Yar - Fixes for Linux x64
       <li>21/04/10 - Yar - Fixed conditions
                            (by Rustam Asmandiarov aka Predator)
@@ -54,10 +55,10 @@ uses
   Win32WSControls, Win32Proc, LCLMessageGlue;
 {$ENDIF}
 {$IFDEF LCLGTK2}
-GTKProc, gtk2, gdk2, gdk2x, gtkdef;
+gtk2proc, gtk2, gdk2, gdk2x, gtk2def;
 {$ENDIF}
 {$IFDEF LCLGTK}
-GTKProc, gtk, gtkdef, gdk;
+gtkproc, gtk, gtkdef, gdk;
 {$ENDIF}
 {$IFDEF LCLQT}
 QT4, QTWidgets;

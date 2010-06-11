@@ -6,6 +6,7 @@
    GLX specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
       <li>06/06/10 - Yar - Fixes for Linux x64. DoActivate method now check contexts difference
       <li>21/04/10 - Yar - Added support for GLX versions lower than 1.3
                            (by Rustam Asmandiarov aka Predator)
@@ -793,3 +794,4 @@ begin
 end;
 
 end.
+
