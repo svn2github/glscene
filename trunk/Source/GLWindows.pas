@@ -6,6 +6,7 @@
   OpenGL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/06/10 - YP - Link GUI elements to their parent
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/10/08 - DanB - reversed order of vertices in TGLCustomControl.InternalRender,
@@ -73,9 +74,11 @@ type
     BlockedCount   : Integer;
     GuiDestroying : Boolean;
     FDoChangesOnProgress: Boolean;
+    FAutosize: Boolean;
 
     procedure SetGUIRedraw(value : Boolean);
 	procedure SetDoChangesOnProgress(const Value: Boolean);
+    procedure SetAutosize(const Value: Boolean);
   protected
     Procedure RenderHeader(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
     Procedure RenderFooter(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
@@ -109,6 +112,7 @@ type
     property  GUIRedraw     : Boolean read FGUIRedraw write SetGUIRedraw;
     property  ReBuildGui    : Boolean read FReBuildGui write FReBuildGui;
   published
+    property  Autosize      : Boolean read FAutosize write SetAutosize;
     property  RedrawAtOnce  : Boolean                read FRedrawAtOnce  write FRedrawAtOnce;
     property  GuiLayout     : TGLGuiLayout           read FGuiLayout     write SetGuiLayout;
     property  GuiLayoutName : TGLGuiComponentName    read FGuiLayoutName write SetGuiLayoutName;
@@ -129,7 +133,6 @@ type
     property Left;
     property Top;
     property Position;
-
   End;
 
   TGLFocusControl = class;
@@ -604,7 +607,7 @@ Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) :
 
 implementation
 
-uses GLObjects, GLState, GLUtils;
+uses GLObjects, GLState, GLUtils, Math;
 
 Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) : Boolean;
 
@@ -792,6 +795,77 @@ begin
    end;
 end;
 
+procedure TGLBaseComponent.SetAutosize(const Value: Boolean);
+var
+  MarginLeft, MarginCenter, MarginRight : TGLFloat;
+  MarginTop, MarginMiddle, MarginBottom : TGLFloat;
+  MaxWidth : TGLFloat;
+  MaxHeight : TGLFloat;
+  i :integer;
+begin
+  if FAutosize <> Value then
+  begin
+    FAutosize := Value;
+
+    if FAutosize and Assigned(FGuiComponent) then
+    begin
+      MarginLeft := 0;
+      MarginCenter := 0;
+      MarginRight := 0;
+      MarginTop := 0;
+      MarginMiddle := 0;
+      MarginBottom := 0;
+
+      for i := 0 to FGuiComponent.Elements.Count - 1 do
+      with FGuiComponent.Elements[i] do
+      begin
+        case Align of
+          GLAlTopLeft, GLAlLeft, GLAlBottomLeft:
+          begin
+            MarginLeft := Max(MarginLeft, abs(BottomRight.X - TopLeft.X) * Scale.X);
+          end;
+          GLAlTop, GLAlCenter, GLAlBottom:
+          begin
+            MarginCenter := Max(MarginCenter, abs(BottomRight.X - TopLeft.X) * Scale.X);
+          end;
+          GLAlTopRight, GLAlRight, GLAlBottomRight:
+          begin
+            MarginRight := Max(MarginRight, abs(BottomRight.X - TopLeft.X) * Scale.X);
+          end;
+        end;
+      end;
+
+      for i := 0 to FGuiComponent.Elements.Count - 1 do
+      with FGuiComponent.Elements[i] do
+      begin
+        case Align of
+          GLAlTopLeft, GLAlTop, GLAlTopRight:
+          begin
+            MarginTop := Max(MarginTop, abs(BottomRight.Y - TopLeft.Y) * Scale.Y);
+          end;
+          GLAlLeft, GLAlCenter, GLAlRight:
+          begin
+            MarginMiddle := Max(MarginMiddle, abs(BottomRight.Y - TopLeft.Y) * Scale.Y);
+          end;
+          GLAlBottomLeft, GLAlBottom, GLAlBottomRight:
+          begin
+            MarginBottom := Max(MarginBottom, abs(BottomRight.Y - TopLeft.Y) * Scale.Y);
+          end;
+        end;
+      end;
+
+      MaxWidth := MarginLeft + MarginCenter + MarginRight;
+      MaxHeight := MarginTop + MarginMiddle + MarginBottom;
+
+      if MaxWidth > 0 then
+        Width := MaxWidth;
+
+      if MaxHeight > 0 then
+        Height := MaxHeight;
+    end;
+  end;
+end;
+
 // StoreAlphaChannel
 //
 function TGLBaseComponent.StoreAlphaChannel : Boolean;
@@ -898,9 +972,8 @@ Begin
 End;
 
 Procedure TGLBaseComponent.PlaceGUI(XPos, YPos : Single);
-
 Begin
-  MoveGUI(XPos-Left,YPos-Top);
+  MoveGUI(XPos-Position.X, YPos-Position.Y);
 end;
 
 Procedure TGLBaseComponent.DoChanges;
@@ -1790,8 +1863,8 @@ Var
   Ty : Single;
 
 Begin
-  Tx := X-Left;
-  Ty := Y-Top;
+  Tx := X-Position.X;
+  Ty := Y-Position.Y;
   If Button = mbLeft then
   If IsInRect(fRenderStatus[glAlCenter],Tx,Ty) then
   If Assigned(BitmapFont) then
@@ -1810,8 +1883,8 @@ Var
   Tx : Single;
   Ty : Single;
 Begin
-  Tx := X-Left;
-  Ty := Y-Top;
+  Tx := X-Position.X;
+  Ty := Y-Position.Y;
   If IsInRect(fRenderStatus[glAlCenter],Tx,Ty) then
   If Assigned(BitmapFont) then
   Begin
@@ -2002,11 +2075,11 @@ Begin
       XRel := X - OldX;
       YRel := Y - OldY;
 
-      XRel := XRel + Left;
-      YRel := YRel + Top;
+      XRel := XRel + Position.X;
+      YRel := YRel + Position.Y;
       If Assigned(OnMoving) then OnMoving(Self,XRel,YRel);
-      XRel := XRel - Left;
-      YRel := YRel - Top;
+      XRel := XRel - Position.X;
+      YRel := YRel - Position.Y;
 
       MoveGUI(XRel,YRel);
       OldX := X;
@@ -2898,8 +2971,8 @@ Begin
    and not FLocked
     then
   Begin
-    Tx := x - left;
-    Ty := y - top;
+    Tx := x - Position.X;
+    Ty := y - Position.Y;
     // is in mid area ?
     If IsInRect(FRenderStatus[GLAlCenter],Tx,Ty) then
     Begin
@@ -2965,11 +3038,11 @@ Begin
   If fScrolling then
   If FHorizontal then
   Begin
-    Tx := GetXScrollPos(x - left)-FScrollOffs;
+    Tx := GetXScrollPos(x - Position.X)-FScrollOffs;
     Pos := Round(Tx);
   End else
   Begin
-    Ty := GetYScrollPos(y - top)-FScrollOffs;
+    Ty := GetYScrollPos(y - Position.Y)-FScrollOffs;
     Pos := Round(Ty);
   End;
 
@@ -3150,7 +3223,7 @@ Var
   tRow, tCol : Integer;
 Begin
   SetFocus;
-  If GetCell(Round(X-Left),Round(Y-Top), tCol, tRow) then
+  If GetCell(Round(X-Position.X),Round(Y-Position.Y), tCol, tRow) then
   Begin
     SelCol := tCol;
     SelRow := tRow;
@@ -3441,8 +3514,8 @@ Begin
 
     If Assigned(Scrollbar) then
     Begin
-      Scrollbar.Left := Left+FRenderStatus[GLAlCenter].X2-Scrollbar.Width;
-      Scrollbar.Top  := Top +FRenderStatus[GLAlCenter].Y1;
+      Scrollbar.Position.X := Position.X +FRenderStatus[GLAlCenter].X2-Scrollbar.Width;
+      Scrollbar.Position.Y := Position.Y +FRenderStatus[GLAlCenter].Y1;
       Scrollbar.Height := FRenderStatus[GLAlCenter].Y2-FRenderStatus[GLAlCenter].Y1;
       XC := (ClientRect.Height - ClientRect.Top);
       If FDrawHeader then

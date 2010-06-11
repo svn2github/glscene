@@ -6,6 +6,7 @@
   In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/06/10 - YP - Link GUI elements to their parent
       <li>06/06/10 - Yar - Fixed warnings
       <li>30/03/07 - DaStr - Added $I GLScene.inc, cosmetic changes
       <li>17/02/07 - DaStr - TGLGuiElement.Create - vectors creation fixed
@@ -47,10 +48,10 @@ Type
          //: child notification on show. Also notifies children.
          procedure NotifyShow; dynamic;
 
-         procedure SetLeft(const val : Single);
-         Function  GetLeft : Single;
-         procedure SetTop(const val : Single);
-         Function  GetTop : Single;
+         procedure SetLeft(const Value : TGLFloat);
+         Function  GetLeft : TGLFloat;
+         procedure SetTop(const Value : TGLFloat);
+         Function  GetTop : TGLFloat;
          procedure SetWidth(const val : Single);
          procedure SetHeight(const val : Single);
          procedure SetVisible(aValue : Boolean); override;
@@ -66,9 +67,9 @@ Type
          {: GuiComponent Height in 3D world units. }
          property Height : Single read FHeight write SetHeight;
          {: GuiComponent Left in 3D world units. }
-         property Left : Single read GetLeft write SetLeft;
+         property Left : TGLFloat read GetLeft write SetLeft;
          {: GuiComponent Top in 3D world units. }
-         property Top : Single read GetTop write SetTop;
+         property Top : TGLFloat read GetTop write SetTop;
 
          property RecursiveVisible : Boolean read FRecursiveVisible;
    end;
@@ -220,34 +221,74 @@ end;
 
 // SetLeft
 //
-procedure TGLBaseGuiObject.SetLeft(const val : TGLFloat);
+procedure TGLBaseGuiObject.SetLeft(const Value : TGLFloat);
+var
+  NewPosX : TGLFloat;
+  i : integer;
+  Diff : TGLFloat;
 begin
-	if Position.X<>val then begin
-		Position.X:=val;
-	end;
+  if Assigned(Parent) and (Parent is TGLBaseGuiObject) then
+    NewPosX := (Parent as TGLBaseGuiObject).Position.X + Value
+  else
+    NewPosX := Value;
+
+  if Position.X <> NewPosX then
+  begin
+    Diff := NewPosX - Position.X;
+		Position.X := NewPosX;
+
+    for i := 0 to Count -1 do
+    if Children[i] is TGLBaseGuiObject then
+    begin
+      (Children[i] as TGLBaseGuiObject).Left := (Children[i] as TGLBaseGuiObject).Left + Diff;
+    end;
+  end;
 end;
 
 // GetLeft
 //
-Function  TGLBaseGuiObject.GetLeft : Single;
+function TGLBaseGuiObject.GetLeft: TGLFloat;
 begin
-   Result := Position.X;
+  if Assigned(Parent) and (Parent is TGLBaseGuiObject) then
+    Result := Position.X - (Parent as TGLBaseGuiObject).Position.X
+  else
+    Result := Position.X;
 end;
 
 // SetTop
 //
-procedure TGLBaseGuiObject.SetTop(const val : TGLFloat);
+procedure TGLBaseGuiObject.SetTop(const Value: TGLFloat);
+var
+  NewPosY : TGLFloat;
+  i : integer;
+  Diff : TGLFloat;
 begin
-	if Position.Y<>val then begin
-		Position.Y:=val;
-	end;
+  if Assigned(Parent) and (Parent is TGLBaseGuiObject) then
+    NewPosY := (Parent as TGLBaseGuiObject).Position.Y + Value
+  else
+    NewPosY := Value;
+
+  if Position.Y <> NewPosY then
+  begin
+    Diff := NewPosY - Position.Y;
+		Position.Y := NewPosY;
+
+    for i := 0 to Count -1 do
+    if Children[i] is TGLBaseGuiObject then
+    begin
+      (Children[i] as TGLBaseGuiObject).Top := (Children[i] as TGLBaseGuiObject).Top + Diff;
+    end;
+  end;
 end;
 
 // GetTop
 //
-Function  TGLBaseGuiObject.GetTop : Single;
+function TGLBaseGuiObject.GetTop: TGLFloat;
 begin
-   Result := Position.Y;
+  if Assigned(Parent) and (Parent is TGLBaseGuiObject) then
+    Result := Position.Y - (Parent as TGLBaseGuiObject).Position.Y
+  else
+    Result := Position.Y;
 end;
 
 // SetWidth
@@ -727,7 +768,7 @@ Var
     TmpElement.FTopLeft.Y := ThisElement.FTopLeft.Y;
     TmpElement.FBottomRight.X := ThisElement.FTopLeft.X+ThisElement.Scale.X;
     TmpElement.FBottomRight.Y := ThisElement.FTopLeft.Y+ThisElement.Scale.Y;
-    TmpElement.Scale.csPoint2D(1,1);
+    TmpElement.Scale.SetPoint2D(1,1);
     RenderIt(Res[GLALTopLeft],TmpElement);
 
     TmpElement.FTopLeft.X := ThisElement.FTopLeft.X+ThisElement.Scale.X;
