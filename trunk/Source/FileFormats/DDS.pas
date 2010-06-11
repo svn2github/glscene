@@ -21,6 +21,7 @@
    </ul>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/10 - YP - Fix out of range issue in GetBitsFromMask
       <li>03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
       <li>01/09/04 - SG - Added support for DXTC compression (DXT1, DXT3 and DXT5)
       <li>31/08/04 - SG - Added support for 16 bit textures,
@@ -131,7 +132,7 @@ const
 
 function GetBitsFromMask(Mask : Cardinal) : Byte;
 var
-   i, temp : Integer;
+   i, temp : Cardinal;
 begin
    if Mask=0 then begin
      Result:=0;
