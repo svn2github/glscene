@@ -9,6 +9,7 @@
     this component on the form.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/10 - YP    - Fixed wheeldata can be equal to 0 in FormMouseWheel (div by 0 exception)
       <li>21/01/10 - Yar   - Bugfixed zooming in design time (BugtrackerID = 2936266)
       <li>25/12/09 - DaStr - Added OnMouseMove event (thanks YarUnderoaker)
       <li>18/10/09 - DaStr - Added snoShowFPS option (thanks YarUnderoaker)
@@ -228,7 +229,7 @@ procedure TGLSimpleNavigation.FormMouseWheel(Sender: TObject;
 var
   Sign: SmallInt;
 begin
-  if csDesigning in ComponentState then
+  if (csDesigning in ComponentState) or (WheelDelta = 0) then
     Exit;
 
   if snoInvertMouseWheel in FOptions then
