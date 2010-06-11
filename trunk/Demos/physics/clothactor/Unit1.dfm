@@ -25,7 +25,7 @@ object Form1: TForm1
     Height = 423
     Camera = GLCamera1
     Buffer.AmbientColor.Color = {CDCCCC3ECDCCCC3ECDCCCC3E0000803F}
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
     FieldOfView = 153.398193359375000000
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseDown = GLSceneViewer1MouseDown

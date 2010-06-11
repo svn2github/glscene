@@ -23,7 +23,7 @@ object Form1: TForm1
     Camera = Cam
     Buffer.BackgroundColor = clWhite
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     FieldOfView = 147.975616455078100000
     Align = alClient

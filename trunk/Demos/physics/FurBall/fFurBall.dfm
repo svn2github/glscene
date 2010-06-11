@@ -42,7 +42,7 @@ object frmFurBall: TfrmFurBall
     Height = 359
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa4xHQ
     FieldOfView = 137.391204833984400000
     Anchors = [akLeft, akTop, akRight, akBottom]

@@ -25,7 +25,7 @@ object GLSLTestForm: TGLSLTestForm
     Height = 400
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits

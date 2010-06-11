@@ -22,7 +22,7 @@ object Form1: TForm1
     Height = 450
     Camera = camera
     Buffer.BackgroundColor = clSilver
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.DepthPrecision = dp32bits
     FieldOfView = 154.942382812500000000
     Align = alClient

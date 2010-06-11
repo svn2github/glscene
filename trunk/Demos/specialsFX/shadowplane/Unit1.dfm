@@ -21,7 +21,7 @@ object Form1: TForm1
     Height = 333
     Camera = GLCamera1
     Buffer.BackgroundColor = 8421440
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Align = alClient
   end
   object Panel1: TPanel

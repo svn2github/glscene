@@ -1,7 +1,6 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
-  AutoScroll = False
   Caption = 'GLSL Shader Test Application'
   ClientHeight = 445
   ClientWidth = 641
@@ -24,12 +23,13 @@ object GLSLTestForm: TGLSLTestForm
     Height = 416
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
     FieldOfView = 145.291946411132800000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
@@ -201,6 +201,7 @@ object GLSLTestForm: TGLSLTestForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = Viewer
+    FormCaption = 'GLSL Shader Test Application - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]

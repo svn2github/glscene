@@ -145,6 +145,19 @@ object frmMain: TfrmMain
         OnRender = GLDirectOpenGL1Render
         Blend = False
       end
+      object Actor1: TGLActor
+        Material.Texture.Disabled = False
+        Material.MaterialLibrary = MatLib
+        Direction.Coordinates = {2EBD3B34F0AD099D0000803F00000000}
+        Position.Coordinates = {000080BF00000000000000000000803F}
+        Up.Coordinates = {043D48A70000803F6042CA2600000000}
+        Visible = False
+        Reference = aarSkeleton
+        Interval = 8
+        Options = []
+        OnEndFrameReached = Actor1EndFrameReached
+        MaterialLibrary = MatLib
+      end
       object GLPlane1: TGLPlane
         Material.MaterialLibrary = MatLib
         Material.LibMaterialName = 'Floor'
@@ -155,18 +168,6 @@ object frmMain: TfrmMain
         XTiles = 5
         YTiles = 5
         Style = [psTileTexture]
-      end
-      object Actor1: TGLActor
-        Material.Texture.Disabled = False
-        Material.MaterialLibrary = MatLib
-        Direction.Coordinates = {2EBD3B34F0AD099D0000803F00000000}
-        Position.Coordinates = {000080BF00000000000000000000803F}
-        Up.Coordinates = {043D48A70000803F6042CA2600000000}
-        Reference = aarSkeleton
-        Interval = 8
-        Options = []
-        OnEndFrameReached = Actor1EndFrameReached
-        MaterialLibrary = MatLib
       end
       object Chair1: TGLFreeForm
         Material.FrontProperties.Ambient.Color = {00000000000000000000000000000000}
@@ -192,6 +193,7 @@ object frmMain: TfrmMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         Tag = 0
+        TextureScale.Coordinates = {0000803F0000803F0000000000000000}
         Shader = GLSLShader1
       end
       item

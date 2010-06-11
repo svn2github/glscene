@@ -27,7 +27,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.FogEnvironment.FogEnd = 5000.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
