@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>27/02/10 - Yar - Added TLongWordList
       <li>06/02/10 - Yar - Added methods to TSingleList
@@ -1195,6 +1196,8 @@ end;
 procedure TBaseVectorList.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited;
+  if Self is TTexPointList then
+    exit;
   with writer do
   begin
     WriteInteger(0); // Archive Version 0
@@ -1209,6 +1212,8 @@ var
   archiveVersion: Integer;
 begin
   inherited;
+  if Self is TTexPointList then
+    exit;
   archiveVersion := reader.ReadInteger;
   if archiveVersion = 0 then
     with reader do
