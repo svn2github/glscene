@@ -18,20 +18,22 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 560
-    Height = 456
+    Width = 552
+    Height = 447
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    FieldOfView = 154.779571533203100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 560
+    Left = 552
     Top = 0
     Width = 135
-    Height = 456
+    Height = 447
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -44,11 +46,11 @@ object Form1: TForm1
     TabOrder = 1
     DesignSize = (
       135
-      456)
+      447)
     object Label1: TLabel
       Left = 8
       Top = 8
-      Width = 120
+      Width = 119
       Height = 18
       Caption = 'Shadow Volumes'
       Font.Charset = ANSI_CHARSET
@@ -271,7 +273,6 @@ object Form1: TForm1
         XTiles = 9
         YTiles = 9
         Style = [psTileTexture]
-        NoZWrite = False
       end
       object GLPlane2: TGLPlane
         Material.FrontProperties.Ambient.Color = {D7A3703E00000000000000000000803F}
@@ -283,7 +284,6 @@ object Form1: TForm1
         XTiles = 9
         YTiles = 9
         Style = [psTileTexture]
-        NoZWrite = False
       end
       object GLPlane3: TGLPlane
         Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
@@ -295,7 +295,6 @@ object Form1: TForm1
         XTiles = 20
         YTiles = 20
         Style = [psTileTexture]
-        NoZWrite = False
       end
       object GLFreeForm: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
