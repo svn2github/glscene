@@ -17,80 +17,81 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 421
-    Height = 351
+    Height = 353
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 148.366622924804700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 8
     object DCCamera: TGLDummyCube
       Position.Coordinates = {000000400000803F0000803F0000803F}
-      CubeSize = 0.5
+      CubeSize = 0.500000000000000000
       object GLCamera: TGLCamera
-        DepthOfView = 30
-        FocalLength = 50
-        NearPlaneBias = 0.100000001490116
+        DepthOfView = 30.000000000000000000
+        FocalLength = 50.000000000000000000
+        NearPlaneBias = 0.100000001490116100
         TargetObject = DCCamera
         Position.Coordinates = {CDCCCC3E9A99993ECDCC4C3E0000803F}
       end
     end
     object PLGround: TGLPlane
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMaterialLibrary
       Material.LibMaterialName = 'walkway'
-      Height = 3
-      Width = 3
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {0000000000000000000080BF00000000}
+      Height = 3.000000000000000000
+      Width = 3.000000000000000000
       XTiles = 3
       YTiles = 3
-      NoZWrite = False
       object GLCube1: TGLCube
-        Position.Coordinates = {000000BF0000803F0000803E0000803F}
         Material.MaterialLibrary = GLMaterialLibrary
         Material.LibMaterialName = 'rawwall'
+        Position.Coordinates = {000000BF0000803F0000803E0000803F}
         CubeSize = {00000040CDCC4C3E0000003F}
       end
     end
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000803F0000803F0000803F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000000000004842000020420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCPositionInvariant: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       CamInvarianceMode = cimPosition
       object GLCylinder1: TGLCylinder
         Material.MaterialLibrary = GLMaterialLibrary
         Material.LibMaterialName = 'marbletiles'
         NormalDirection = ndInside
-        BottomRadius = 6
-        Height = 3
+        BottomRadius = 6.000000000000000000
+        Height = 3.000000000000000000
         Slices = 24
-        TopRadius = 6
+        TopRadius = 6.000000000000000000
         Parts = [cySides]
       end
     end
     object DCOrientationInvariant: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       CamInvarianceMode = cimOrientation
       object GLArrowLine1: TGLArrowLine
         Direction.Coordinates = {00000000000000BFD6B35D3F00000000}
-        PitchAngle = -30
+        PitchAngle = -30.000000000000000000
         Position.Coordinates = {000000009A99993E3333333F0000803F}
         Scale.Coordinates = {CDCC4C3ECDCC4C3ECDCC4C3E00000000}
         Up.Coordinates = {00000000D7B35D3F0100003F00000000}
-        BottomRadius = 0.100000001490116
-        Height = 1
-        TopRadius = 0.100000001490116
-        TopArrowHeadHeight = 0.5
-        TopArrowHeadRadius = 0.200000002980232
-        BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.200000002980232
+        BottomRadius = 0.100000001490116100
+        Height = 1.000000000000000000
+        TopRadius = 0.100000001490116100
+        TopArrowHeadHeight = 0.500000000000000000
+        TopArrowHeadRadius = 0.200000002980232200
+        BottomArrowHeadHeight = 0.500000000000000000
+        BottomArrowHeadRadius = 0.200000002980232200
       end
     end
   end
