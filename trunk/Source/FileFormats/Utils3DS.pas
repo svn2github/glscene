@@ -8,6 +8,7 @@
    they deal actually with the database and chunks.
 
  <b>History :</b><font size=-1><ul>
+      <li>12/06/10 - Yar - Fixes for Linux x64
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>02/11/07 - DaStr - Fixed incorrect positioning when importing 3ds
                               animation (Bugtracker ID = 1824372)
@@ -6094,6 +6095,7 @@ begin
   end;
 
   // set-up and fill-in the TKFOmni3DS structure
+  FillChar(Result, SizeOf(Result), $00);
   InitOmnilightMotion(Result, PosKeys, ColKeys);
   with Result do
   begin

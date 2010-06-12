@@ -307,12 +307,13 @@ type
    //
    {: Editor for material library.<p> }
    TGLMaterialLibraryEditor = class(TReuseableDefaultEditor{$ifdef GLS_DELPHI_6_UP}, IDefaultEditor{$endif})
-      protected
-      {$ifdef GLS_DELPHI_6_UP}
-         procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-      {$else}
-         procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
-      {$endif}
+   protected
+   {$ifdef GLS_DELPHI_6_UP}
+      procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+   {$else}
+      procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
+   {$endif}
+   public
 			procedure ExecuteVerb(Index: Integer); override;
 			function GetVerb(Index: Integer): String; override;
 			function GetVerbCount: Integer; override;
@@ -349,12 +350,13 @@ type
    //
    {: Editor for GLScene Archive Manager.<p> }
    TGLSArchiveManagerEditor = class(TReuseableDefaultEditor{$ifdef GLS_DELPHI_6_UP}, IDefaultEditor{$endif})
-      protected
-      {$ifdef GLS_DELPHI_6_UP}
-         procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-      {$else}
-         procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
-      {$endif}
+    protected
+    {$ifdef GLS_DELPHI_6_UP}
+      procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+    {$else}
+      procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
+    {$endif}
+    public
 			procedure ExecuteVerb(Index: Integer); override;
 			function GetVerb(Index: Integer): String; override;
 			function GetVerbCount: Integer; override;

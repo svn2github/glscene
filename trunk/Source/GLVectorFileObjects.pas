@@ -7,7 +7,8 @@
 
  <b>History :</b><font size=-1><ul>
       <li>11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
-      <li>06/06/10 - Yar - Fixes for Linux x64
+                           Replace OpenGL1x functions to OpenGLAdapter. TGLFreeFrom now osDirectDraw by default
+                           Fixes for Linux x64
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced function InsideList to GLState.InsideList
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -2967,7 +2968,7 @@ begin
   // root node setups and restore OpenGL stuff
   mrci.GLStates.Disable(stColorMaterial);
   mrci.GLStates.Disable(stLighting);
-  glColor3f(1, 1, 1);
+  GL.Color3f(1, 1, 1);
   // render root-bones
   for i := 0 to Count - 1 do
     Items[i].BuildList(mrci);
@@ -3051,7 +3052,7 @@ procedure TSkeletonBone.BuildList(var mrci: TRenderContextInfo);
 
   procedure IssueColor(color: Cardinal);
   begin
-    glColor4f(GetRValue(color) / 255, GetGValue(color) / 255, GetBValue(color) /
+    GL.Color4f(GetRValue(color) / 255, GetGValue(color) / 255, GetBValue(color) /
       255,
       ((color shr 24) and 255) / 255);
   end;
@@ -3060,19 +3061,18 @@ var
   i: Integer;
 begin
   // point for self
-  glPointSize(5);
-  glBegin(GL_POINTS);
+  mrci.GLStates.PointSize := 5;
+  GL.Begin_(GL_POINTS);
   IssueColor(Color);
-  glVertex3fv(@GlobalMatrix[3][0]);
-  glEnd;
-  glPointSize(1);
+  GL.Vertex3fv(@GlobalMatrix[3][0]);
+  GL.End_;
   // parent-self bone line
   if Owner is TSkeletonBone then
   begin
-    glBegin(GL_LINES);
-    glVertex3fv(@TSkeletonBone(Owner).GlobalMatrix[3][0]);
-    glVertex3fv(@GlobalMatrix[3][0]);
-    glEnd;
+    GL.Begin_(GL_LINES);
+    GL.Vertex3fv(@TSkeletonBone(Owner).GlobalMatrix[3][0]);
+    GL.Vertex3fv(@GlobalMatrix[3][0]);
+    GL.End_;
   end;
   // render sub-bones
   for i := 0 to Count - 1 do
@@ -3951,7 +3951,11 @@ begin
       size := ReadInteger;
       ro := 0;
       Read(ro, size);
+{$IFDEF GLS_COMPILER_7_DOWN}
+      FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
+{$ELSE}
       FRenderingOptions := TMeshObjectRenderingOptions(ro);
+{$ENDIF}
       if archiveVersion >= 2 then
       begin
         Count := ReadInteger;
@@ -4669,7 +4673,7 @@ begin
     // workaround for ATI bug, disable element VBO if
     // inside a display list
     FUseVBO := FUseVBO
-      and GL_ARB_vertex_buffer_object
+      and GL.ARB_vertex_buffer_object
       and not mrci.GLStates.InsideList;
 
     if not FUseVBO then
@@ -4692,11 +4696,11 @@ begin
     begin
       if FUseVBO then
         FVerticesVBO.Bind;
-      glEnableClientState(GL_VERTEX_ARRAY);
-      glVertexPointer(3, GL_FLOAT, 0, lists[0]);
+      GL.EnableClientState(GL_VERTEX_ARRAY);
+      GL.VertexPointer(3, GL_FLOAT, 0, lists[0]);
     end
     else
-      glDisableClientState(GL_VERTEX_ARRAY);
+      GL.DisableClientState(GL_VERTEX_ARRAY);
 
     if not mrci.ignoreMaterials then
     begin
@@ -4704,20 +4708,20 @@ begin
       begin
         if FUseVBO then
           FNormalsVBO.Bind;
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glNormalPointer(GL_FLOAT, 0, lists[1]);
+        GL.EnableClientState(GL_NORMAL_ARRAY);
+        GL.NormalPointer(GL_FLOAT, 0, lists[1]);
       end
       else
-        glDisableClientState(GL_NORMAL_ARRAY);
+        GL.DisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
       begin
         if FUseVBO then
           FColorsVBO.Bind;
-        glEnableClientState(GL_COLOR_ARRAY);
-        glColorPointer(4, GL_FLOAT, 0, lists[2]);
+        GL.EnableClientState(GL_COLOR_ARRAY);
+        GL.ColorPointer(4, GL_FLOAT, 0, lists[2]);
       end
       else
-        glDisableClientState(GL_COLOR_ARRAY);
+        GL.DisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
       begin
         if FUseVBO then
@@ -4727,15 +4731,15 @@ begin
       end
       else
         xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL_ARB_multitexture then
+      if GL.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
           if FUseVBO then
             FLightmapTexCoordsVBO.Bind;
-          glClientActiveTextureARB(GL_TEXTURE1_ARB);
-          glTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[4]);
-          glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+          GL.ClientActiveTexture(GL_TEXTURE1);
+          GL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[4]);
+          GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
         end;
         for i := 0 to FTexCoordsEx.Count - 1 do
         begin
@@ -4743,23 +4747,23 @@ begin
           begin
             if FUseVBO then
               FTexCoordsVBO[i].Bind;
-            glClientActiveTextureARB(GL_TEXTURE0_ARB + i);
-            glTexCoordPointer(4, GL_FLOAT, SizeOf(TVector), tlists[i]);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            GL.ClientActiveTexture(GL_TEXTURE0 + i);
+            GL.TexCoordPointer(4, GL_FLOAT, SizeOf(TVector), tlists[i]);
+            GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
           end;
         end;
-        glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        GL.ClientActiveTexture(GL_TEXTURE0);
       end;
     end
     else
     begin
-      glDisableClientState(GL_NORMAL_ARRAY);
-      glDisableClientState(GL_COLOR_ARRAY);
+      GL.DisableClientState(GL_NORMAL_ARRAY);
+      GL.DisableClientState(GL_COLOR_ARRAY);
       xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
     end;
-    if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
+    if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
-      glLockArraysEXT(0, vertices.Count);
+      GL.LockArrays(0, vertices.Count);
     FLastLightMapIndex := -1;
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;
@@ -4793,35 +4797,35 @@ begin
   if FArraysDeclared then
   begin
     DisableLightMapArray(mrci);
-    if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
+    if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
-      glUnLockArraysEXT;
+      GL.UnLockArrays;
     if Vertices.Count > 0 then
-      glDisableClientState(GL_VERTEX_ARRAY);
+      GL.DisableClientState(GL_VERTEX_ARRAY);
     if not mrci.ignoreMaterials then
     begin
       if Normals.Count > 0 then
-        glDisableClientState(GL_NORMAL_ARRAY);
+        GL.DisableClientState(GL_NORMAL_ARRAY);
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
-        glDisableClientState(GL_COLOR_ARRAY);
+        GL.DisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
         xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if GL_ARB_multitexture then
+      if GL.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
         begin
-          glClientActiveTextureARB(GL_TEXTURE1_ARB);
-          glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+          GL.ClientActiveTexture(GL_TEXTURE1);
+          GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
         end;
         for i := 0 to FTexCoordsEx.Count - 1 do
         begin
           if TexCoordsEx[i].Count > 0 then
           begin
-            glClientActiveTextureARB(GL_TEXTURE0_ARB + i);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            GL.ClientActiveTexture(GL_TEXTURE0 + i);
+            GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
           end;
         end;
-        glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        GL.ClientActiveTexture(GL_TEXTURE0);
       end;
     end;
 
@@ -4856,7 +4860,7 @@ end;
 
 procedure TMeshObject.EnableLightMapArray(var mrci: TRenderContextInfo);
 begin
-  if GL_ARB_multitexture and (not mrci.ignoreMaterials) then
+  if GL.ARB_multitexture and (not mrci.ignoreMaterials) then
   begin
     Assert(FArraysDeclared);
     if not FLightMapArrayEnabled then
@@ -4874,7 +4878,7 @@ end;
 
 procedure TMeshObject.DisableLightMapArray(var mrci: TRenderContextInfo);
 begin
-  if GL_ARB_multitexture and FLightMapArrayEnabled then
+  if GL.ARB_multitexture and FLightMapArrayEnabled then
   begin
     mrci.GLStates.ActiveTexture := 1;
     mrci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
@@ -5008,7 +5012,7 @@ begin
   if gotColor then
   begin
     mrci.GLStates.Enable(stColorMaterial);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    GL.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     mrci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
     mrci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
@@ -5021,26 +5025,26 @@ begin
         SetLength(gotTexCoordsEx, FTexCoordsEx.Count);
         for i := 0 to FTexCoordsEx.Count - 1 do
           gotTexCoordsEx[i] := (TexCoordsEx[i].Count > 0) and
-            GL_ARB_multitexture;
+            GL.ARB_multitexture;
         if Mode = momTriangles then
-          glBegin(GL_TRIANGLES)
+          GL.Begin_(GL_TRIANGLES)
         else
-          glBegin(GL_TRIANGLE_STRIP);
+          GL.Begin_(GL_TRIANGLE_STRIP);
         for i := 0 to Vertices.Count - 1 do
         begin
           if gotNormals then
-            glNormal3fv(@Normals.List[i]);
+            GL.Normal3fv(@Normals.List[i]);
           if gotColor then
-            glColor4fv(@Colors.List[i]);
+            GL.Color4fv(@Colors.List[i]);
           if FTexCoordsEx.Count > 0 then
           begin
             if gotTexCoordsEx[0] then
-              glMultiTexCoord4fvARB(GL_TEXTURE0_ARB, @TexCoordsEx[0].List[i])
+              GL.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
             else if gotTexCoords then
               xglTexCoord2fv(@TexCoords.List[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
-                glMultiTexCoord4fvARB(GL_TEXTURE0_ARB + j,
+                GL.MultiTexCoord4fv(GL_TEXTURE0 + j,
                   @TexCoordsEx[j].List[i]);
           end
           else
@@ -5048,9 +5052,9 @@ begin
             if gotTexCoords then
               xglTexCoord2fv(@TexCoords.List[i]);
           end;
-          glVertex3fv(@Vertices.List[i]);
+          GL.Vertex3fv(@Vertices.List[i]);
         end;
-        glEnd;
+        GL.End_;
       end;
     momFaceGroups:
       begin
@@ -5856,8 +5860,9 @@ begin
     GetMem(newArea, VerticeBoneWeightCapacity * SizeOf(PVertexBoneWeightArray));
     newArea[0] := AllocMem(n * SizeOf(TVertexBoneWeight));
     for i := 1 to VerticeBoneWeightCapacity - 1 do
-      newArea[i] := PVertexBoneWeightArray(PtrUInt(newArea[0]) + i *
-        SizeOf(TVertexBoneWeight) * BonesPerVertex);
+      newArea[i] := PVertexBoneWeightArray(
+        PtrUInt(newArea[0]) +
+        PtrUInt(i * SizeOf(TVertexBoneWeight) * BonesPerVertex));
     // transfer old data
     if FLastVerticeBoneWeightCount < VerticeBoneWeightCount then
       n := FLastVerticeBoneWeightCount
@@ -6222,12 +6227,12 @@ end;
 procedure TFaceGroup.AttachLightmap(lightMap: TGLTexture; var mrci:
   TRenderContextInfo);
 begin
-  if GL_ARB_multitexture then
+  if GL.ARB_multitexture then
     with lightMap do
     begin
       Assert(Image.NativeTextureTarget = ttTexture2D);
       mrci.GLStates.TextureBinding[1, ttTexture2D] := Handle;
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
       mrci.GLStates.ActiveTexture := 0;
     end;
@@ -6240,7 +6245,7 @@ procedure TFaceGroup.AttachOrDetachLightmap(var mrci: TRenderContextInfo);
 var
   libMat: TGLLibMaterial;
 begin
-  if GL_ARB_multitexture then
+  if GL.ARB_multitexture then
   begin
     if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then
     begin
@@ -6416,13 +6421,13 @@ begin
     SetupVBO;
 
     FIndexVBO.Bind;
-    glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
+    GL.DrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
       GL_UNSIGNED_INT, nil);
     FIndexVBO.UnBind;
   end
   else
   begin
-    glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
+    GL.DrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
       GL_UNSIGNED_INT, VertexIndices.List);
   end;
 end;
@@ -6737,9 +6742,9 @@ begin
   normalPool := Owner.Owner.Normals.List;
   texCoordPool := Owner.Owner.TexCoords.List;
   case Mode of
-    fgmmTriangles, fgmmFlatTriangles: glBegin(GL_TRIANGLES);
-    fgmmTriangleStrip: glBegin(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: glBegin(GL_TRIANGLE_FAN);
+    fgmmTriangles, fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
   else
     Assert(False);
   end;
@@ -6756,20 +6761,20 @@ begin
   begin
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      glNormal3fv(@normalPool[normalIdxList^[i]]);
+      GL.Normal3fv(@normalPool[normalIdxList^[i]]);
       xglTexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
-      glVertex3fv(@vertexPool[vertexIdxList^[i]]);
+      GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
     end;
   end
   else
   begin
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      glNormal3fv(@normalPool[normalIdxList^[i]]);
-      glVertex3fv(@vertexPool[vertexIdxList^[i]]);
+      GL.Normal3fv(@normalPool[normalIdxList^[i]]);
+      GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
     end;
   end;
-  glEnd;
+  GL.End_;
 end;
 
 // AddToTriangles
@@ -6878,11 +6883,11 @@ begin
   gotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
   case Mode of
-    fgmmTriangles: glBegin(GL_TRIANGLES);
-    fgmmFlatTriangles: glBegin(GL_TRIANGLES);
-    fgmmTriangleStrip: glBegin(GL_TRIANGLE_STRIP);
-    fgmmTriangleFan: glBegin(GL_TRIANGLE_FAN);
-    fgmmQuads: glBegin(GL_QUADS);
+    fgmmTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
+    fgmmTriangleStrip: GL.Begin_(GL_TRIANGLE_STRIP);
+    fgmmTriangleFan: GL.Begin_(GL_TRIANGLE_FAN);
+    fgmmQuads: GL.Begin_(GL_QUADS);
   else
     Assert(False);
   end;
@@ -6894,9 +6899,9 @@ begin
       xglTexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
       if gotColor then
-        glColor4fv(@colorPool[k]);
-      glNormal3fv(@normalPool[k]);
-      glVertex3fv(@vertexPool[k]);
+        GL.Color4fv(@colorPool[k]);
+      GL.Normal3fv(@normalPool[k]);
+      GL.Vertex3fv(@vertexPool[k]);
     end;
   end
   else
@@ -6905,11 +6910,11 @@ begin
     begin
       xglTexCoord2fv(@texCoordPool[i]);
       if gotColor then
-        glColor4fv(@colorPool[indicesPool[i]]);
-      glVertex3fv(@vertexPool[indicesPool[i]]);
+        GL.Color4fv(@colorPool[indicesPool[i]]);
+      GL.Vertex3fv(@vertexPool[indicesPool[i]]);
     end;
   end;
-  glEnd;
+  GL.End_;
   CheckOpenGLError;
 end;
 
