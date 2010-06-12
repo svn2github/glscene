@@ -19,24 +19,29 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 603
-    Height = 422
+    Width = 595
+    Height = 413
     Camera = GLCamera
     Buffer.BackgroundColor = clWhite
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roStereo]
     Buffer.FaceCulling = False
     Buffer.Lighting = False
+    FieldOfView = 152.777770996093800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 603
+    Left = 595
     Top = 0
     Width = 87
-    Height = 422
+    Height = 413
     Align = alRight
     TabOrder = 1
+    DesignSize = (
+      87
+      413)
     object Label1: TLabel
       Left = 8
       Top = 64
@@ -75,12 +80,8 @@ object Form1: TForm1
       PageSize = 10
       Frequency = 10
       Position = 50
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 2
       ThumbLength = 15
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = TBScaleChange
     end
   end
@@ -88,46 +89,37 @@ object Form1: TForm1
     Left = 8
     Top = 72
     object GLFreeForm: TGLFreeForm
-      Scale.Coordinates = {A69B443BA69B443BA69B443B00000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Palette'
+      Scale.Coordinates = {A69B443BA69B443BA69B443B00000000}
       AutoCentering = [macCenterX, macCenterY, macUseBarycenter]
     end
     object DCTarget: TGLDummyCube
       ShowAxes = True
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera: TGLCamera
-        DepthOfView = 500
-        FocalLength = 50
-        SceneScale = 2
+        DepthOfView = 500.000000000000000000
+        FocalLength = 50.000000000000000000
+        SceneScale = 2.000000000000000000
         TargetObject = DCTarget
         Position.Coordinates = {0000A04000002041000020420000803F}
       end
     end
     object HSPalette: TGLHUDSprite
-      Position.Coordinates = {0000964300007041000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Palette'
-      Width = 300
-      Height = 16
-      NoZWrite = False
-      MirrorU = False
-      MirrorV = False
+      Position.Coordinates = {0000964300007041000000000000803F}
     end
     object HTPaletteLeft: TGLHUDText
       Position.Coordinates = {000002430000E040000000000000803F}
       BitmapFont = GLWindowsBitmapFont
       Text = '0'
-      Alignment = taLeftJustify
-      Layout = tlTop
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTPaletteRight: TGLHUDText
       Position.Coordinates = {0000E6430000E040000000000000803F}
       BitmapFont = GLWindowsBitmapFont
       Text = '100'
-      Alignment = taLeftJustify
-      Layout = tlTop
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
   end
@@ -158,7 +150,6 @@ object Form1: TForm1
   end
   object GLUserShader: TGLUserShader
     OnDoUnApply = GLUserShaderDoUnApply
-    ShaderStyle = ssLowLevel
     Left = 48
     Top = 112
   end

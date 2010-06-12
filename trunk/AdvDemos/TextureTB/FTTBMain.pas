@@ -234,6 +234,7 @@ begin
    // Opaque alpha channel
    bmp:=SpawnBitmap;
    bmp32:=TGLBitmap32.Create;
+   GLSceneViewer.Buffer.RenderingContext.Activate;
    try
       bmp.Canvas.StretchDraw(Rect(0, 0, bmp.Width, bmp.Height), IMRGB.Picture.Graphic);
       bmp32.Assign(bmp);
@@ -256,6 +257,7 @@ begin
    finally
       bmp32.Free;
       bmp.Free;
+      GLSceneViewer.Buffer.RenderingContext.Deactivate;
    end;
    TextureChanged;
 end;
@@ -267,7 +269,9 @@ var
    bmp : TBitmap;
    pSrc, pDest : PIntegerArray;
 begin
+   GLSceneViewer.Buffer.RenderingContext.Activate;
    bmp:=SpawnBitmap;
+
    try
       for y:=0 to bmp.Height-1 do begin
          pSrc:=IMAlpha.Picture.Bitmap.ScanLine[y];
@@ -281,6 +285,7 @@ begin
       IMAlpha.Picture.Bitmap:=bmp;
    finally
       bmp.Free;
+      GLSceneViewer.Buffer.RenderingContext.Deactivate;
    end;
 end;
 
@@ -289,6 +294,7 @@ var
    bmp : TBitmap;
 begin
    if im.Height=0 then Exit;
+
    bmp:=SpawnBitmap;
    try
       bmp.Canvas.StretchDraw(Rect(0, 0, bmp.Width, bmp.Height), im.Picture.Graphic);

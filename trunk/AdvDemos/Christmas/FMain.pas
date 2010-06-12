@@ -235,7 +235,7 @@ procedure TMain.ScreenSaverCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
    Application.Terminate;
-   CanClose:=True;
+   CanClose:=False;
 end;
 
 procedure TMain.ScreenSaverPreview(Sender: TObject; previewHwnd: HWND);

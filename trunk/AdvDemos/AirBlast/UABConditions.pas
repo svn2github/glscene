@@ -159,7 +159,7 @@ begin
       Radius:=FBumpRadius;
       Slices:=9;
       Stacks:=7;
-      Material.FrontProperties.PolygonMode:=pmLines;
+      Material.PolygonMode:=pmLines;
    end;
 end;
 

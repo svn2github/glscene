@@ -19,7 +19,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 717
+    Width = 709
     Height = 73
     Align = alTop
     TabOrder = 0
@@ -85,14 +85,7 @@ object Form1: TForm1
       Height = 21
       Max = 90
       Min = -90
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 2
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object TrackBar2: TTrackBar
       Left = 372
@@ -101,14 +94,7 @@ object Form1: TForm1
       Height = 21
       Max = 90
       Min = -90
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 3
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object TrackBar3: TTrackBar
       Left = 488
@@ -117,14 +103,7 @@ object Form1: TForm1
       Height = 21
       Max = 90
       Min = -90
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 4
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object TrackBar4: TTrackBar
       Left = 488
@@ -133,14 +112,7 @@ object Form1: TForm1
       Height = 21
       Max = 90
       Min = -90
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 5
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object ComboSkin: TComboBox
       Left = 612
@@ -160,30 +132,32 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 73
-    Width = 717
-    Height = 437
+    Width = 709
+    Height = 428
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    FieldOfView = 56.293563842773440000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 80
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
         Ambient.Color = {0000803F0000803F0000803F0000803F}
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Position.Coordinates = {0000204100000000000020410000803F}
         LightStyle = lsOmni
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
       end
       object GLCamera1: TGLCamera
-        DepthOfView = 1000
-        FocalLength = 400
+        DepthOfView = 1000.000000000000000000
+        FocalLength = 400.000000000000000000
         TargetObject = DummyCube1
         Position.Coordinates = {00009041000080410000C0400000803F}
         Direction.Coordinates = {2EF964BF2EF9E43E0000000000000000}
@@ -191,7 +165,7 @@ object Form1: TForm1
       end
     end
     object ModelCube: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Legs: TGLActor
         Interval = 100
         MaterialLibrary = MatLib
@@ -206,21 +180,22 @@ object Form1: TForm1
             Interval = 100
             MaterialLibrary = MatLib
             object GunSmoke: TGLDummyCube
-              CubeSize = 1
+              CubeSize = 1.000000000000000000
               EffectsData = {
-                0201061254474C536F7572636550465845666665637402000617474C506F696E
-                744C696768745046584D616E61676572310201020008020008050000000000CD
-                CCCCFA3F050000000000CDCCCCFA3F050000000000CDCCCCFA3F02000200}
+                0201061254474C536F7572636550465845666665637402010617474C506F696E
+                744C696768745046584D616E6167657231050000000000000080FF3F02060200
+                08020008020008050000000000CDCCCCFA3F050000000000CDCCCCFA3F050000
+                000000CDCCCCFA3F02000200090500000000000000000000080200}
             end
           end
         end
       end
     end
     object GLShadowPlane1: TGLShadowPlane
+      Material.DepthProperties.DepthWrite = False
       Position.Coordinates = {0000000000000000000080BF0000803F}
-      Height = 10
-      Width = 10
-      NoZWrite = False
+      Height = 10.000000000000000000
+      Width = 10.000000000000000000
       ShadowingObject = ModelCube
       ShadowedLight = GLLightSource1
     end
@@ -247,13 +222,14 @@ object Form1: TForm1
     Cadencer = GLCadencer1
     Renderer = GLParticleFXRenderer1
     Acceleration.Coordinates = {0000000000000000CDCC4C3E00000000}
-    ColorMode = scmInner
-    ParticleSize = 0.2
+    Friction = 1.000000000000000000
+    ParticleSize = 0.200000002980232200
     ColorInner.Color = {0000403F0000403F0000403F0000403F}
     ColorOuter.Color = {0000403F0000403F0000403F00000000}
     LifeColors = <
       item
-        LifeTime = 3
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 72
     Top = 112

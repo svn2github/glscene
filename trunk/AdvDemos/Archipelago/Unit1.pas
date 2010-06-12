@@ -98,7 +98,7 @@ implementation
 
 {$R *.DFM}
 
-uses GLKeyboard, OpenGL1x, GLState, GLTextureFormat;
+uses GLKeyboard, OpenGL1x, GLContext, GLState, GLTextureFormat;
 
 const
    cWaterLevel = -10000;
@@ -298,14 +298,14 @@ begin
    case Key of
       'w', 'W' : begin
          with MaterialLibrary do begin
-            if Materials[0].Material.FrontProperties.PolygonMode=pmLines then
+            if Materials[0].Material.PolygonMode=pmLines then
                pm:=pmFill
             else pm:=pmLines;
             for i:=0 to Materials.Count-1 do
-               Materials[i].Material.FrontProperties.PolygonMode:=pm;
+               Materials[i].Material.PolygonMode:=pm;
          end;
          with MLSailBoat do for i:=0 to Materials.Count-1 do
-            Materials[i].Material.FrontProperties.PolygonMode:=pm;
+            Materials[i].Material.PolygonMode:=pm;
          FFSailBoat.StructureChanged;
       end;
       's', 'S' : WaterPlane:=not WaterPlane;
@@ -418,9 +418,9 @@ const
       end;
       SinCos(WaterPhase(px, py), sa, ca);
       colorRatio:=1-alpha*0.1;
-      glColor4f(r*colorRatio, g*colorRatio, b, alpha);
-      glTexCoord2f(px*0.01+0.002*sa, py*0.01+0.0022*ca-t*0.002);
-      glVertex3f(px, py, cWaterLevel+cWaveAmplitude*sa);
+      GL.Color4f(r*colorRatio, g*colorRatio, b, alpha);
+      GL.TexCoord2f(px*0.01+0.002*sa, py*0.01+0.0022*ca-t*0.002);
+      GL.Vertex3f(px, py, cWaterLevel+cWaveAmplitude*sa);
    end;
 
 begin
@@ -428,41 +428,43 @@ begin
    t:=GLCadencer.CurrentTime;
    MaterialLibrary.ApplyMaterial('water', rci);
    repeat
-      if not WasAboveWater then
-         rci.GLStates.InvertGLFrontFace;
-      rci.GLStates.PushAttrib([sttEnable]);
+     with rci.GLStates do
+     begin
+        if not WasAboveWater then
+           InvertGLFrontFace;
+        Disable(stLighting);
+        Disable(stNormalize);
+        SetStencilFunc(cfAlways, 1, 255);
+        StencilWriteMask := 255;
+        Enable(stStencilTest);
+        SetStencilOp(soKeep, soKeep, soReplace);
 
-      rci.GLStates.Disable(stLighting);
-      rci.GLStates.Disable(stNormalize);
+        GL.Normal3f(0, 0, 1);
 
-      rci.GLStates.SetStencilFunc(cfAlways, 1, 255);
-      rci.GLStates.StencilWriteMask := 255;
-      rci.GLStates.SetStencilOp(soKeep, soKeep, soReplace);
-      rci.GLStates.Enable(stStencilTest);
-      glNormal3f(0, 0, 1);
-
-      for i:=0 to heightDatas.Count-1 do begin
-         hd:=THeightData(heightDatas.List[i]);
-         if (hd.DataState=hdsReady) and (hd.HeightMin>cWaterLevel) then continue;
-         x:=hd.XLeft;
-         y:=hd.YTop;
-         s:=hd.Size-1;
-         s2:=s div 2;
-         glBegin(GL_TRIANGLE_FAN);
-            IssuePoint(s2, s2);
-            IssuePoint(0, 0);
-            IssuePoint(s2, 0);
-            IssuePoint(s, 0);
-            IssuePoint(s, s2);
-            IssuePoint(s, s);
-            IssuePoint(s2, s);
-            IssuePoint(0, s);
-            IssuePoint(0, s2);
-            IssuePoint(0, 0);
-         glEnd;
+        for i:=0 to heightDatas.Count-1 do begin
+           hd:=THeightData(heightDatas.List[i]);
+           if (hd.DataState=hdsReady) and (hd.HeightMin>cWaterLevel) then continue;
+           x:=hd.XLeft;
+           y:=hd.YTop;
+           s:=hd.Size-1;
+           s2:=s div 2;
+           GL.Begin_(GL_TRIANGLE_FAN);
+              IssuePoint(s2, s2);
+              IssuePoint(0, 0);
+              IssuePoint(s2, 0);
+              IssuePoint(s, 0);
+              IssuePoint(s, s2);
+              IssuePoint(s, s);
+              IssuePoint(s2, s);
+              IssuePoint(0, s);
+              IssuePoint(0, s2);
+              IssuePoint(0, 0);
+           GL.End_;
+        end;
+        SetStencilOp(soKeep, soKeep, soKeep);
+        Disable(stStencilTest);
       end;
-      rci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
-      rci.GLStates.PopAttrib;
+
       if not WasAboveWater then
          rci.GLStates.InvertGLFrontFace;
       WaterPolyCount:=heightDatas.Count*8;
@@ -525,41 +527,40 @@ begin
 
    MaterialLibrary.ApplyMaterial('wake', rci);
    repeat
-      rci.GLStates.PushAttrib([sttEnable]);
+      with rci.GLStates do
+      begin
+        Disable(stLighting);
+        Disable(stFog);
+        Enable(stBlend);
+        SetBlendFunc(bfOne, bfOne);
 
-      rci.GLStates.Disable(stLighting);
-      rci.GLStates.Disable(stFog);
-
-      rci.GLStates.Enable(stBlend);
-      rci.GLStates.SetBlendFunc(bfOne, bfOne);
-
-      rci.GLStates.SetStencilFunc(cfEqual, 1, 255);
-      rci.GLStates.StencilWriteMask := 255;
-      rci.GLStates.SetStencilOp(soKeep, soKeep, soKeep);
-      rci.GLStates.Enable(stStencilTest);
-      rci.GLStates.Disable(stDepthTest);
+        SetStencilFunc(cfEqual, 1, 255);
+        StencilWriteMask := 255;
+        Enable(stStencilTest);
+        SetStencilOp(soKeep, soKeep, soKeep);
+        Disable(stDepthTest);
 
       if not WasAboveWater then
-         rci.GLStates.InvertGLFrontFace;
+         InvertGLFrontFace;
 
-      glBegin(GL_TRIANGLE_STRIP);
+      GL.Begin_(GL_TRIANGLE_STRIP);
       n:=WakeVertices.Count;
       for i:=0 to n-1 do begin
          p:=@WakeVertices.List[i xor 1];
          sbp:=TerrainRenderer.AbsoluteToLocal(VectorMake(p^));
          if (i and 1)=0 then begin
             c:=(i and $FFE)*0.2/n;
-            glColor3f(c, c, c);
-            glTexCoord2f(0, WakeTime[i div 2]);
-         end else glTexCoord2f(1, WakeTime[i div 2]);
-         glVertex3f(p[0], WaterHeight(sbp[0], sbp[1]), p[2]);
+            GL.Color3f(c, c, c);
+            GL.TexCoord2f(0, WakeTime[i div 2]);
+         end else GL.TexCoord2f(1, WakeTime[i div 2]);
+         GL.Vertex3f(p[0], WaterHeight(sbp[0], sbp[1]), p[2]);
       end;
-      glEnd;
+      GL.End_;
 
       if not WasAboveWater then
-         rci.GLStates.InvertGLFrontFace;
-
-      rci.GLStates.PopAttrib;
+         InvertGLFrontFace;
+      Disable(stStencilTest);
+     end;
 
    until not MaterialLibrary.UnApplyMaterial(rci);
 end;

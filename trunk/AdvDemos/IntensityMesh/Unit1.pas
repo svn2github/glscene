@@ -70,7 +70,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLState;
+uses GLState, GLTextureFormat;
 
 type
    // Structures used in our binary file
@@ -141,25 +141,27 @@ begin
    if not CBWireFrame.Checked then
       Pass:=2; // skip wireframe pass
    case Pass of
-      1 : begin
+      1 : with rci.GLStates do begin
          // 2nd pass is a wireframe pass (two-sided)
-         rci.GLStates.PushAttrib([sttEnable]);  // backup states
-         rci.GLStates.Disable(stTexture2D);
-         rci.GLStates.Enable(stLineSmooth); // setup smoothed lines
-         rci.GLStates.Enable(stBlend);
-         rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-         rci.GLStates.LineWidth := 0.5;
-         rci.GLStates.PolygonMode := pmLines;
-         rci.GLStates.SetPolygonOffset(-1, -1);
-         rci.GLStates.Enable(stPolygonOffsetLine);
+         ActiveTextureEnabled[ttTexture2D] := False;
+         Enable(stLineSmooth);
+         Enable(stBlend);
+         SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+         LineWidth := 0.5;
+         PolygonMode := pmLines;
+         PolygonOffsetFactor := -1;
+         PolygonOffsetUnits := -1;
+         Enable(stPolygonOffsetLine);
          glColor3f(0, 0, 0);
          Continue:=True;
       end;
    else
       // restore states or mark them dirty
       if CBWireFrame.Checked then
-         rci.GLStates.PopAttrib;
-      rci.GLStates.ResetGLPolygonMode;
+      begin
+        rci.GLStates.Disable(stPolygonOffsetLine);
+      end;
+
       Continue:=False;
    end;
 end;

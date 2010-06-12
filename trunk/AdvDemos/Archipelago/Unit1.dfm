@@ -29,9 +29,11 @@ object Form1: TForm1
     Buffer.FogEnvironment.FogEnd = 1000.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.FogEnable = True
+    FieldOfView = 138.887908935546900000
     Align = alClient
+    TabOrder = 0
   end
   object PAProgress: TPanel
     Left = 200
@@ -111,6 +113,7 @@ object Form1: TForm1
       OnProgress = DOWakeProgress
       UseBuildList = False
       OnRender = DOWakeRender
+      Blend = False
     end
     object FFSailBoat: TGLFreeForm
       Scale.Coordinates = {9A99193E9A99193E9A99193E00000000}
@@ -128,14 +131,10 @@ object Form1: TForm1
     object HTFPS: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BFSmall
-      Alignment = taLeftJustify
-      Layout = tlTop
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTHelp: TGLHUDText
       BitmapFont = BFLarge
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
   end
   object Timer1: TTimer
@@ -158,7 +157,6 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
         TextureScale.Coordinates = {00008042000080420000804200000000}
@@ -187,9 +185,9 @@ object Form1: TForm1
     Top = 56
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
-    MaxPoolSize = 0
     HTFFileName = 'Islands.htf'
     InfiniteWrap = False
+    MaxPoolSize = 0
     Left = 160
     Top = 16
   end

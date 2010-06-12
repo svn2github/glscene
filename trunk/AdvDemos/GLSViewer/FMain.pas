@@ -14,7 +14,7 @@ uses
   Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
   GLTexture, OpenGL1x, GLContext, ExtDlgs, VectorLists, GLCadencer,
-  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses, GLState;
+  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TMain = class(TForm)
@@ -193,8 +193,8 @@ implementation
 uses GLColor, GLKeyBoard, GLGraphics, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
-   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer,
-   GLRenderContextInfo;
+   GLFilePLY, GLFileGTS, GLFileVRML, GLFileMD5, GLMeshOptimizer, GLState,
+   GLRenderContextInfo, GLTextureFormat;
 
 type
 
@@ -212,28 +212,33 @@ type
 procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    PassCount:=1;
-   rci.GLStates.PolygonMode := pmFill;
-   rci.GLStates.PushAttrib([sttEnable]);
-   rci.GLStates.PushAttrib([sttCurrent, sttEnable]);
-   glColor3fv(@BackgroundColor);
-   glDisable(GL_TEXTURE_2D);
-   rci.GLStates.Enable(stPolygonOffsetFill);
-   rci.GLStates.SetPolygonOffset(1, 2);
+   with rci.GLStates do
+   begin
+     PolygonMode := pmFill;
+//   glPushAttrib(GL_ENABLE_BIT);
+//   glPushAttrib(GL_CURRENT_BIT+GL_ENABLE_BIT);
+     glColor3fv(@BackgroundColor);
+     ActiveTextureEnabled[ttTexture2D] := False;
+     Enable(stPolygonOffsetFill);
+     PolygonOffsetFactor := 1;
+     PolygonOffsetUnits := 2;
+   end;
 end;
 
 function THiddenLineShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
 begin
    case PassCount of
-      1 : begin
+      1 : with rci.GLStates do
+       begin
          PassCount:=2;
-         rci.GLStates.PolygonMode := pmLines;
-         rci.GLStates.PopAttrib;
+         PolygonMode := pmLines;
+//         glPopAttrib;
          glColor3fv(@LinesColor);
-         rci.GLStates.Disable(stLighting);
+         Disable(stLighting);
          Result:=True;
       end;
       2 : begin
-         rci.GLStates.PopAttrib;
+ //        glPopAttrib;
          Result:=False;
       end;
    else
@@ -309,7 +314,7 @@ procedure TMain.GLSceneViewerBeforeRender(Sender: TObject);
 begin
    THiddenLineShader(hlShader).LinesColor:=VectorMake(107/256, 123/256, 173/256, 1);
    THiddenLineShader(hlShader).BackgroundColor:=ConvertWinColor(GLSceneViewer.Buffer.BackgroundColor);
-   if not GL_ARB_multisample then begin
+   if not GL.ARB_multisample then begin
       MIAADefault.Checked:=True;
       MSAA2x.Enabled:=False;
       MSAA4X.Enabled:=False;
@@ -364,28 +369,23 @@ begin
       if ACShadeSmooth.Checked then begin
          GLSceneViewer.Buffer.Lighting:=True;
          GLSceneViewer.Buffer.ShadeModel:=smSmooth;
-         aMaterial.FrontProperties.PolygonMode:=pmFill;
-         aMaterial.BackProperties.PolygonMode:=pmFill;
+         aMaterial.PolygonMode:=pmFill;
       end else if ACFlatShading.Checked then begin
          GLSceneViewer.Buffer.Lighting:=True;
          GLSceneViewer.Buffer.ShadeModel:=smFlat;
-         aMaterial.FrontProperties.PolygonMode:=pmFill;
-         aMaterial.BackProperties.PolygonMode:=pmFill;
+         aMaterial.PolygonMode:=pmFill;
       end else if ACFlatLined.Checked then begin
          GLSceneViewer.Buffer.Lighting:=True;
          GLSceneViewer.Buffer.ShadeModel:=smFlat;
-         aMaterial.FrontProperties.PolygonMode:=pmLines;
-         aMaterial.BackProperties.PolygonMode:=pmLines;
+         aMaterial.PolygonMode:=pmLines;
       end else if ACHiddenLines.Checked then begin
          GLSceneViewer.Buffer.Lighting:=False;
          GLSceneViewer.Buffer.ShadeModel:=smSmooth;
-         aMaterial.FrontProperties.PolygonMode:=pmLines;
-         aMaterial.BackProperties.PolygonMode:=pmLines;
+         aMaterial.PolygonMode:=pmLines;
       end else if ACWireframe.Checked then begin
          GLSceneViewer.Buffer.Lighting:=False;
          GLSceneViewer.Buffer.ShadeModel:=smSmooth;
-         aMaterial.FrontProperties.PolygonMode:=pmLines;
-         aMaterial.BackProperties.PolygonMode:=pmLines;
+         aMaterial.PolygonMode:=pmLines;
       end;
    end;
 end;

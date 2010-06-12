@@ -4,7 +4,7 @@ uses
   Forms, GLSound,
   FMain in 'FMain.pas' {Main};
 
-{$E scr}
+{$E .src}
 
 {$R *.res}
 
