@@ -28,7 +28,7 @@ object frmRagdoll: TfrmRagdoll
     Height = 572
     Camera = GLCamera1
     Buffer.BackgroundColor = 15648684
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     FieldOfView = 150.611511230468800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown

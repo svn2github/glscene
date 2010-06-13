@@ -25,7 +25,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
     Height = 416
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits

@@ -24,7 +24,7 @@ object Main: TMain
     Height = 397
     Camera = Camera
     Buffer.BackgroundColor = clBlack
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     FieldOfView = 151.723861694335900000
     Align = alClient

@@ -125,7 +125,7 @@ object Form1: TForm1
     Width = 128
     Height = 128
     Buffer.BackgroundColor = clBlack
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
+    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Left = 64
     Top = 56
   end

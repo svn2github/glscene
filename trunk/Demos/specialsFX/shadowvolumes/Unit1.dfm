@@ -22,7 +22,7 @@ object Form1: TForm1
     Height = 447
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     FieldOfView = 154.779571533203100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown

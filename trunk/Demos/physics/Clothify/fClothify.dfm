@@ -63,7 +63,7 @@ object frmClothify: TfrmClothify
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.AmbientColor.Color = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
     FieldOfView = 144.242599487304700000
     Anchors = [akLeft, akTop, akRight, akBottom]

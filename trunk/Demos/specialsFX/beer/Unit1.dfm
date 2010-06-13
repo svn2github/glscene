@@ -22,7 +22,7 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa2x
     Buffer.ShadeModel = smSmooth
     FieldOfView = 150.213058471679700000

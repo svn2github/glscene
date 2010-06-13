@@ -20,7 +20,7 @@ object Form1: TForm1
     Width = 407
     Height = 312
     Camera = GLCamera1
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
+    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
   end
