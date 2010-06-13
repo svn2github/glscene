@@ -7,7 +7,7 @@
 
    <b>History : </b><font size=-1><ul>
       <li>31/05/10 - Yar - Fixes for Linux x64
-      <li>31/05/10 - Yar - Added roHardwareAcceleration Buffer.ContextOptions
+      <li>31/05/10 - Yar - Added roSoftwareMode Buffer.ContextOptions
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLBaseSceneObject.GetHandle
       <li>06/04/10 - Yar - Removed double camera freeing in TGLSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
@@ -390,7 +390,7 @@ type
   // TContextOption
   //
   {: Options for the rendering context.<p>
-     roHardwareAccelerated: force hardware acceleration.
+     roSoftwareMode: force software rendering.
      roDoubleBuffer: enables double-buffering.<br>
      roRenderToWindows: ignored (legacy).<br>
      roTwoSideLighting: enables two-side lighting model.<br>
@@ -404,7 +404,7 @@ type
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
          early-z culling.<br>
      roForwardContext: force OpenGL forward context }
-  TContextOption = (roHardwareAcceleration, roDoubleBuffer, roStencilBuffer,
+  TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
     roNoSwapBuffers, roNoDepthBufferClear, roForwardContext);
@@ -2251,7 +2251,7 @@ type
     {: Context options allows to setup specifics of the rendering context.<p>
        Not all contexts support all options. }
     property ContextOptions: TContextOptions read FContextOptions write
-      SetContextOptions default [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow];
+      SetContextOptions default [roDoubleBuffer, roRenderToWindow];
     {: Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
       SetAccumBufferBits default 0;
@@ -7989,7 +7989,7 @@ begin
   FFogEnable := False;
   FAfterRenderEffects := TPersistentObjectList.Create;
 
-  FContextOptions := [roHardwareAcceleration, roDoubleBuffer, roRenderToWindow];
+  FContextOptions := [roDoubleBuffer, roRenderToWindow];
 
   ResetPerformanceMonitor;
 end;
@@ -8050,10 +8050,10 @@ begin
     locAlphaBits := 0;
   with context do
   begin
-    if roHardwareAcceleration in ContextOptions then
-      Acceleration := chaHardware
+    if roSoftwareMode in ContextOptions then
+      Acceleration := chaSoftware
     else
-      Acceleration := chaSoftware;
+      Acceleration := chaHardware;
     Options := locOptions;
     ColorBits := locColorBits;
     DepthBits := cDepthPrecisionToDepthBits[DepthPrecision];

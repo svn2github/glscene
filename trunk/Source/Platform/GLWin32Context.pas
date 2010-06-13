@@ -478,7 +478,7 @@ begin
 
   if float then
   begin // float_type
-    if GL_ATI_texture_float then
+    if WGL_ATI_pixel_format_float then
     begin // NV40 uses ATI_float, with linear filtering
       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_FLOAT_ATI);
     end
@@ -791,7 +791,6 @@ begin
     vLastPixelFormat := 0;
   FDC := outputDC;
 
-  // Specific which color buffers are to be drawn into
   Activate;
   // Initialize forward context
   if GLStates.ForwardContext then
