@@ -2704,6 +2704,7 @@ object InfoForm: TInfoForm
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
+        Transparent = True
       end
       object Label30: TLabel
         Left = 129
@@ -2720,6 +2721,7 @@ object InfoForm: TInfoForm
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
+        Transparent = True
       end
     end
     object TabSheet2: TTabSheet
