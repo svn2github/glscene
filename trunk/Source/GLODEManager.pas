@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
     <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>17/11/09 - DaStr - Improved Unix compatibility
@@ -2375,9 +2376,7 @@ var
 begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);
-  for i:=0 to FElements.Count-1 do
-    TODEElementBase(FElements[i]).Position.Translate(pos);
-   dMassTranslate(Fmass,pos[0],pos[1],pos[2]);
+  dMassTranslate(Fmass,pos[0],pos[1],pos[2]);
 end;
 
 // GetMass
