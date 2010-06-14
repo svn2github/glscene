@@ -4,6 +4,7 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
     <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
     <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -444,9 +445,12 @@ end;
 // ReadFromFiler
 //
 procedure TGLBThorFX.ReadFromFiler(reader : TReader);
+var
+  I: LongInt;
 begin
   with reader do begin
-    Assert(ReadInteger=0);
+    I := ReadInteger;
+    Assert(I=0);
     FManagerName:=ReadString;
     Manager:=nil;
   end;
@@ -646,3 +650,4 @@ initialization
 	RegisterXCollectionItemClass(TGLBThorFX);
 
 end.
+

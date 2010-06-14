@@ -6,6 +6,7 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/06/10 - Yar - Bugfixed in TGLBFireFX.ReadFromFiler when assertion off (thanks olkondr)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar -  Replaced glNewList to GLState.NewList in TGLBFireFX.Render
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -639,9 +640,12 @@ end;
 // ReadFromFiler
 //
 procedure TGLBFireFX.ReadFromFiler(reader : TReader);
+var
+  I: LongInt; 
 begin
    with reader do begin
-      Assert(ReadInteger=0);
+      I := ReadInteger;
+      Assert(I=0);
       FManagerName:=ReadString;
       Manager:=nil;
    end;
