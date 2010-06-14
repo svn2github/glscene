@@ -63,6 +63,7 @@ UNIT ODEImport;
   ***********************************************************************
 
   Change history
+  2010.06.14 - YP - Updated DLLs
   2009.11.22 - DaStr - Improved Unix compatibility
                          (thanks Predator) (BugtrackerID = 2893580)
   2008.12.04 - PR - Updated to work with latest ODE from svn Rev(1606) (massive bug fixes and cleanup)
@@ -165,8 +166,37 @@ uses
   Classes;
 
 const
+  // ********************************************************************
+  // ********************************************************************
+  //
+  //   ODE precision:
+  //
+  //   ODE can be run in Single or Double precision, Single is less precise,
+  //   but requires less memory.
+  //
+  //   If you choose to run in Single mode, you must deploy the single precision
+  //   dll (this is default)
+  //
+  //   If you choose to run in Double mode, you must deploy the double precision
+  //   dll (named ode_double.dll and located in the dll directory)
+
+  {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
+  {.$define cDEBUG}
+
   {$IFDEF WIN32}
-  ODEDLL = 'ode.dll';
+    {$IFDEF cSINGLE}
+      {$IFDEF cDEBUG}
+        ODEDLL = 'ode_singled.dll';
+      {$ELSE}
+        ODEDLL = 'ode_single.dll';
+      {$ENDIF}
+    {$ELSE}
+      {$IFDEF cDEBUG}
+        ODEDLL = 'ode_doubled.dll';
+      {$ELSE}
+        ODEDLL = 'ode_double.dll';
+      {$ENDIF}
+    {$ENDIF}
   {$ENDIF}
   {$IFDEF UNIX}
   ODEDLL = 'libode.so';
@@ -237,21 +267,6 @@ const
 
 
 type
-  // ********************************************************************
-  // ********************************************************************
-  //
-  //   ODE precision:
-  //
-  //   ODE can be run in Single or Double precision, Single is less precise,
-  //   but requires less memory.
-  //
-  //   If you choose to run in Single mode, you must deploy the single precision
-  //   dll (this is default)
-  //
-  //   If you choose to run in Double mode, you must deploy the double precision
-  //   dll (named ode-Double.dll and located in the dll directory)
-
-  {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
 
   {$ifdef cSINGLE}
     TdReal = single;
