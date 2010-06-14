@@ -3951,7 +3951,7 @@ begin
       size := ReadInteger;
       ro := 0;
       Read(ro, size);
-{$IFDEF GLS_COMPILER_7_DOWN}
+{$IFNDEF FPC}
       FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
 {$ELSE}
       FRenderingOptions := TMeshObjectRenderingOptions(ro);
