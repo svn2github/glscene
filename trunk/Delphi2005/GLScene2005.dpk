@@ -100,7 +100,7 @@ contains
   GLBitmapFont in '..\Source\GLBitmapFont.pas',
   GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
   GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
-  VFW in '..\Source\VideoAPIs\vfw.pas',
+  GLSVfw in '..\Source\VideoAPIs\GLSVfw.pas',
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
@@ -237,7 +237,7 @@ contains
   GLSLog in '..\Source\Experimental\GLSLog.pas',
   GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
-  JPG in '..\Source\FileFormats\JPG.pas',
+  GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
   GLSLanguage in '..\Source\GLSLanguage.pas';
 

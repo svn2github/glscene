@@ -7,7 +7,7 @@
     <OBJFILES value="GLS_ODE_BCB6.obj ..\Source\GLODESkeletonColliders.obj 
       ..\Source\GLODECustomColliders.obj ..\Source\GLODEManager.obj 
       ..\Source\DesignTime\GLODERegister.obj ..\Source\PhysicsAPIs\dynodegl.obj 
-      ..\Source\PhysicsAPIs\dynode.obj ..\Source\PhysicsAPIs\moduleloader.obj"/>
+      ..\Source\PhysicsAPIs\dynode.obj ..\Source\PhysicsAPIs\GLSModuleLoader.obj"/>
     <RESFILES value="GLS_ODE_BCB6.res ..\Source\PhysicsAPIs\GLSceneVCLODE.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -62,7 +62,7 @@
       <FILE FILENAME="..\Source\DesignTime\GLODERegister.pas" FORMNAME="" UNITNAME="GLODERegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\PhysicsAPIs\dynodegl.pas" FORMNAME="" UNITNAME="dynodegl" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\PhysicsAPIs\dynode.pas" FORMNAME="" UNITNAME="dynode" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\PhysicsAPIs\moduleloader.pas" FORMNAME="" UNITNAME="moduleloader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PhysicsAPIs\GLSModuleLoader.pas" FORMNAME="" UNITNAME="GLSModuleLoader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

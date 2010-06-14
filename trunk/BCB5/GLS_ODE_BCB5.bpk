@@ -5,7 +5,7 @@
     <VERSION value="BCB.05.03"/>
     <PROJECT value="GLS_ODE_BCB5.bpl"/>
     <OBJFILES value="..\Source\PhysicsAPIs\dynode.obj ..\Source\PhysicsAPIs\dynodegl.obj 
-      ..\Source\PhysicsAPIs\moduleloader.obj 
+      ..\Source\PhysicsAPIs\GLSModuleLoader.obj 
       ..\Source\GLODESkeletonColliders.obj ..\Source\GLODECustomColliders.obj 
       ..\Source\GLODEManager.obj ..\Source\DesignTime\GLODERegister.obj 
       GLS_ODE_BCB5.obj"/>

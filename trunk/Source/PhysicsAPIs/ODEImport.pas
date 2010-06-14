@@ -1691,7 +1691,7 @@ var
 implementation
 
 uses
-  moduleloader;
+  GLSModuleLoader;
 
 
 { TBodyList }

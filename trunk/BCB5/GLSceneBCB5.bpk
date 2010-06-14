@@ -19,7 +19,7 @@
       ..\Source\Base\XOpenGL.obj ..\Source\GLState.obj ..\Source\GLMisc.obj 
       ..\Source\GLScreen.obj ..\Source\GLTexture.obj ..\Source\GLScene.obj 
       ..\Source\GLMirror.obj ..\Source\GLGraphics.obj 
-      ..\Source\VideoAPIs\vfw.obj ..\Source\Platform\GLWin32Context.obj 
+      ..\Source\VideoAPIs\GLSVfw.obj ..\Source\Platform\GLWin32Context.obj 
       ..\Source\Platform\GLWin32Viewer.obj 
       ..\Source\Platform\GLWin32FullScreenViewer.obj ..\Source\GLAVIRecorder.obj 
       ..\Source\GLBaseMeshSilhouette.obj ..\Source\GLBehaviours.obj 

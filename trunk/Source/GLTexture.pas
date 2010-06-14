@@ -1973,11 +1973,13 @@ begin
       else
       begin
         Picture.Graphic := nil;
+        (*
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
           Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
         end;
+        *)
       end;
       Result := inherited GetBitmap32(target);
       FWidth := Result.Width;

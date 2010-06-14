@@ -3954,7 +3954,7 @@ begin
 {$IFDEF GLS_COMPILER_7_DOWN}
       FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
 {$ELSE}
-      FRenderingOptions := TMeshObjectRenderingOptions(ro);
+      FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
 {$ENDIF}
       if archiveVersion >= 2 then
       begin

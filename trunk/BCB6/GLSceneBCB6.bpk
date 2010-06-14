@@ -111,7 +111,7 @@
       ..\Source\Shaders\GLOutlineShader.obj ..\Source\Shaders\GLPhongShader.obj 
       ..\Source\Shaders\GLShaderCombiner.obj 
       ..\Source\Shaders\GLTexCombineShader.obj 
-      ..\Source\Shaders\GLUserShader.obj ..\Source\VideoAPIs\vfw.obj"/>
+      ..\Source\Shaders\GLUserShader.obj ..\Source\VideoAPIs\vfwex.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <IDLFILES value=""/>
@@ -376,7 +376,7 @@
       <FILE FILENAME="..\Source\Shaders\GLShaderCombiner.pas" FORMNAME="" UNITNAME="GLShaderCombiner" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Shaders\GLTexCombineShader.pas" FORMNAME="" UNITNAME="GLTexCombineShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Shaders\GLUserShader.pas" FORMNAME="" UNITNAME="GLUserShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\VideoAPIs\vfw.pas" FORMNAME="" UNITNAME="vfw" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\VideoAPIs\GLSVfw.pas" FORMNAME="" UNITNAME="GLSVfw" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

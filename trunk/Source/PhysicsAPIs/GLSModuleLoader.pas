@@ -4,7 +4,7 @@
                                                          (BugTracekrID=1681585)
 
 }
-unit moduleloader;
+unit GLSModuleLoader;
 {******************************************************************}
 {                                                                  }
 {       Project JEDI                                               }

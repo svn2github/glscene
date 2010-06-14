@@ -1,4 +1,4 @@
-unit VFW;
+unit GLSVfw;
 
 interface
 

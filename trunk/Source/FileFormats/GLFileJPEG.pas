@@ -60,7 +60,7 @@ type
 implementation
 
 uses
-  JPG, VectorGeometry;
+  GLSJPG, VectorGeometry;
 
 // ------------------
 // ------------------ TGLJPEGImage ------------------
