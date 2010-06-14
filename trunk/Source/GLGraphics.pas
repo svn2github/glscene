@@ -10,7 +10,13 @@
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile.<p>
 
+   Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
+   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
+   is active in GLScene.inc and recompile.<p>
+
+
  <b>Historique : </b><font size=-1><ul>
+      <li>14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
       <li>20/05/10 - Yar - Fixes for Linux x64
                            Replace OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -85,6 +91,9 @@ uses
   Classes, PersistentClasses, Graphics, ApplicationFileIO, SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
+{$ENDIF}
+{$IFDEF GLS_PngImage_SUPPORT}
+  PngImage,
 {$ENDIF}
 {$IFDEF FPC}
   fpimage, intfgraphics, GraphType,
@@ -206,6 +215,9 @@ type
     procedure AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
 {$IFDEF GLS_Graphics32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
+{$ENDIF}
+{$IFDEF GLS_PngImage_SUPPORT}
+    Procedure AssignFromPngImage(aPngImage: TPngImage);
 {$ENDIF}
 
   public
@@ -1497,6 +1509,10 @@ begin
         AssignFrom32BitsBitmap(TGLBitmap(Source))
 {$ENDIF}
     end
+{$IFDEF GLS_PngImage_SUPPORT}
+    else if Source is TPngImage then
+      AssignFromPngImage(TPngImage(Source))
+{$ENDIF}
     else
     begin
       graphic := TGLGraphic(Source);
@@ -1739,7 +1755,8 @@ end;
 
 procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
 var
-  y, rowOffset: Integer;
+  y: Integer;
+  rowOffset : int64;
   pSrc, pDest: PAnsiChar;
 begin
   Assert(aBitmap.PixelFormat = glpf32bit);
@@ -1776,7 +1793,7 @@ begin
     begin
       pSrc := BitmapScanLine(aBitmap, 0);
       if Height > 1 then
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1)) - PtrUInt(pSrc)
+        rowOffset := BitmapScanLine(aBitmap, 1) - (pSrc)
       else
         rowOffset := 0;
     end;
@@ -1834,6 +1851,75 @@ begin
         pSrc := PAnsiChar(aBitmap32.ScanLine[y]);
       BGRA32ToRGBA32(pSrc, pDest, Width);
       Dec(pDest, Width * 4);
+    end;
+  end;
+end;
+{$ENDIF}
+
+
+{$IFDEF GLS_PngImage_SUPPORT}
+// AlphaChannel Support
+
+procedure TGLBitmap32.AssignFromPngImage(aPngImage: TPngImage);
+var
+  i, j: Integer;
+  SourceScan: PRGBLine;
+  DestScan: PGLPixel32Array;
+  AlphaScan: pngimage.pByteArray;
+  Pixel: Integer;
+begin
+{$IFDEF GLS_PngImage_RESIZENEAREST}
+  if (aPngImage.Width and 3) > 0 then
+    aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
+{$ENDIF}
+  FWidth := aPngImage.Width;
+  FHeight := aPngImage.Height;
+  FDepth := 0;
+  fMipLevels := 1;
+  fColorFormat := GL_RGBA;
+  fInternalFormat := tfRGBA8;
+  fDataType := GL_UNSIGNED_BYTE;
+  fElementSize := 4;
+  fLevels.Clear;
+  fCubeMap := false;
+  fTextureArray := false;
+  ReallocMem(FData, DataSize);
+  FBlank := False;
+  case aPngImage.Header.ColorType of
+    { Direct ScanLine (24 Bits) }
+    COLOR_RGB, COLOR_RGBALPHA: for j := 1 To aPngImage.Height do
+    begin
+        SourceScan := aPngImage.Scanline[aPngImage.Height - j];
+        AlphaScan := aPngImage.AlphaScanline[aPngImage.Height - j];
+        DestScan := ScanLine[Pred(j)];
+        for i := 0 To Pred(aPngImage.Width) do
+        begin
+          DestScan^[i].r := SourceScan^[i].rgbtRed;
+          DestScan^[i].g := SourceScan^[i].rgbtGreen;
+          DestScan^[i].b := SourceScan^[i].rgbtBlue;
+          if Assigned(AlphaScan) then
+            DestScan^[i].a := AlphaScan^[i]
+          else
+            DestScan^[i].a := $FF;
+        end;
+      end;
+  else
+    { Internal Decode TColor - Palette }
+    for j := 1 To aPngImage.Height do
+    begin
+      AlphaScan := aPngImage.AlphaScanline[aPngImage.Height - j];
+      DestScan := ScanLine[Pred(j)];
+      for i := 0 To Pred(aPngImage.Width) do
+      begin
+        Pixel := aPngImage.Pixels[i, aPngImage.Height - j];
+        DestScan^[i].r := Pixel and $FF;
+        DestScan^[i].g := (Pixel shr 8) and $FF;
+        DestScan^[i].b := (Pixel shr 16) and $FF;
+        if Assigned(AlphaScan) then
+          DestScan^[i].a := AlphaScan^[i]
+        else
+          DestScan^[i].a := $FF;
+      end;
     end;
   end;
 end;

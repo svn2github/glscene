@@ -32,6 +32,11 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
+// Activate support for png images (using pngimage.pas library)
+// Also, Define "Auto" Resize To Nearest 8 Multiple Size
+{.$DEFINE GLS_PngImage_SUPPORT}
+{.$DEFINE GLS_PngImage_RESIZENEAREST}
+
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE GLS_OPTIMIZATIONS}
