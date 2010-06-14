@@ -7,7 +7,6 @@
       <TargetFileExt Value=""/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
@@ -54,7 +53,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="254"/>
-        <CursorPos X="99" Y="274"/>
+        <CursorPos X="35" Y="277"/>
         <SyntaxHighlighter Value="FreePascal"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>

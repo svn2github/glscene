@@ -3,7 +3,6 @@ object GLSLTestForm: TGLSLTestForm
   Height = 447
   Top = 176
   Width = 641
-  ActiveControl = Viewer
   Caption = 'GLSL Bump Shader Demo'
   ClientHeight = 447
   ClientWidth = 641
@@ -21,7 +20,6 @@ object GLSLTestForm: TGLSLTestForm
     Width = 641
     Camera = Camera
     Buffer.BackgroundColor = clBlack
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
@@ -42,9 +40,9 @@ object GLSLTestForm: TGLSLTestForm
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
       Left = 8
-      Height = 24
+      Height = 17
       Top = 8
-      Width = 112
+      Width = 89
       Caption = 'Light is Moving'
       Checked = True
       Color = clBtnFace
@@ -54,17 +52,17 @@ object GLSLTestForm: TGLSLTestForm
     end
     object RollPitchTurnCheckBox: TCheckBox
       Left = 8
-      Height = 24
+      Height = 17
       Top = 24
-      Width = 179
+      Width = 146
       Caption = 'Roll / Pitch / Turn Enabled'
       TabOrder = 1
     end
     object ShaderEnabledCheckBox: TCheckBox
       Left = 176
-      Height = 24
+      Height = 17
       Top = 8
-      Width = 116
+      Width = 94
       Caption = 'Shader Enabled'
       Checked = True
       OnClick = ShaderEnabledCheckBoxClick
@@ -73,18 +71,18 @@ object GLSLTestForm: TGLSLTestForm
     end
     object MultiLightShaderCheckBox: TCheckBox
       Left = 176
-      Height = 24
+      Height = 17
       Top = 24
-      Width = 123
+      Width = 100
       Caption = 'MultiLight Shader'
       OnClick = MultiLightShaderCheckBoxClick
       TabOrder = 3
     end
     object UseSpecularTextureCheckBox: TCheckBox
       Left = 320
-      Height = 24
+      Height = 17
       Top = 8
-      Width = 147
+      Width = 121
       Caption = 'Use Specular Texture'
       Checked = True
       OnClick = UseSpecularTextureCheckBoxClick
@@ -93,9 +91,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object UseNormalTextureCheckBox: TCheckBox
       Left = 320
-      Height = 24
+      Height = 17
       Top = 24
-      Width = 138
+      Width = 112
       Caption = 'Use Normal Texture'
       Checked = True
       OnClick = UseNormalTextureCheckBoxClick
@@ -104,9 +102,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object ShowUnsupportedSceneObjectsCheckBox: TCheckBox
       Left = 456
-      Height = 24
+      Height = 17
       Top = 8
-      Width = 214
+      Width = 176
       Caption = 'Show unsupported scene objects'
       OnClick = ShowUnsupportedSceneObjectsCheckBoxClick
       TabOrder = 6
@@ -413,9 +411,11 @@ object GLSLTestForm: TGLSLTestForm
         Material.FrontProperties.Specular.Color = {
           8180003E8180003EE1E0E03D0000803F
         }
-        Material.Texture.TextureMode = tmModulate
+        Material.Texture.ImageAlpha = tiaOpaque
+        Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
         Material.MaterialLibrary = MaterialLibrary
+        Material.PolygonMode = pmLines
         Tag = 0
       end    
       item
