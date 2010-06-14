@@ -1924,7 +1924,7 @@ type
     function FindFromFileName(const fileName: string): TVectorFileClass;
     procedure Remove(AClass: TVectorFileClass);
     procedure BuildFilterStrings(vectorFileClass: TVectorFileClass;
-      var descriptions, filters: string;
+      out descriptions, filters: string;
       formatsThatCanBeOpened: Boolean = True;
       formatsThatCanBeSaved: Boolean = False);
     function FindExtByIndex(index: Integer;
@@ -2111,7 +2111,7 @@ end;
 
 procedure TVectorFileFormatsList.BuildFilterStrings(
   vectorFileClass: TVectorFileClass;
-  var descriptions, filters: string;
+  out descriptions, filters: string;
   formatsThatCanBeOpened: Boolean = True;
   formatsThatCanBeSaved: Boolean = False);
 var
@@ -3954,7 +3954,7 @@ begin
 {$IFDEF GLS_COMPILER_7_DOWN}
       FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
 {$ELSE}
-      FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
+      FRenderingOptions := TMeshObjectRenderingOptions(ro);
 {$ENDIF}
       if archiveVersion >= 2 then
       begin

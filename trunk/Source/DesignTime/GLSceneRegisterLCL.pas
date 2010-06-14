@@ -92,7 +92,7 @@ uses
   GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
   GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
   GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
-  GLCameraController, GLGizmo, GLGizmoEx, GLKeyboard, GLFBORenderer,
+  GLCameraController, GLGizmo, GLGizmoEx, GLFBORenderer,
   GLSoundFileObjects, GLSound, GLCompositeImage, GLSLog, GLSLanguage,
   GLSArchiveManager,
    {$IFDEF GLS_EXPERIMENTAL}
@@ -166,16 +166,16 @@ type
   // TClassProperty
 
   TGLTextureProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
   end;
 
   // TGLTextureImageProperty
 
   TGLTextureImageProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -183,23 +183,17 @@ type
   // TGLImageClassProperty
 
   TGLImageClassProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
-    function GetAttributes: TPropertyAttributes; override;
-    procedure GetValues(proc: TGetStrProc); override;
-
   public
     { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(proc: TGetStrProc); override;
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
 
   TGLColorProperty = class(TClassProperty)
-  private
-    { Private Declarations }
-
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure Edit; override;
@@ -215,7 +209,6 @@ type
       AState: TPropEditDrawState); override;
     procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect;
       AState: TPropEditDrawState); override;
-  public
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
@@ -223,7 +216,7 @@ type
   // TVectorFileProperty
 
   TVectorFileProperty = class(TClassProperty)
-  protected
+  public
     { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
@@ -234,8 +227,8 @@ type
   // TSoundFileProperty
 
   TSoundFileProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure Edit; override;
@@ -244,8 +237,8 @@ type
   // TSoundNameProperty
 
   TSoundNameProperty = class(TStringProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
@@ -254,8 +247,8 @@ type
   // TGLCoordinatesProperty
 
   TGLCoordinatesProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -263,8 +256,8 @@ type
   // TGLMaterialProperty
 
   TGLMaterialProperty = class(TClassProperty)
-  protected
-    { Protected Declarations }
+  public
+    { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -284,7 +277,8 @@ type
   {: Editor for material library.<p> }
 
   TGLMaterialLibraryEditor = class(TDefaultComponentEditor)
-  protected
+  public
+    { Public Declarations }
     procedure EditProperty(const Prop: TPropertyEditor;
       var Continue: boolean); override;
     procedure ExecuteVerb(Index: integer); override;
@@ -294,19 +288,17 @@ type
   // TGLAnimationNameProperty
 
   TGLAnimationNameProperty = class(TStringProperty)
-  protected
-    { Protected Declarations }
-    function GetAttributes: TPropertyAttributes; override;
-    procedure GetValues(proc: TGetStrProc); override;
-
   public
     { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(proc: TGetStrProc); override;
   end;
 
   // TGLSArchiveManagerEditor
 
   TGLSArchiveManagerEditor = class(TDefaultComponentEditor)
-  protected
+  public
+    { Public Declarations }
     procedure Edit; override;
     procedure EditProperty(const Prop: TPropertyEditor;
       var Continue: boolean); override;

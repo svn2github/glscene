@@ -132,7 +132,7 @@ type
          procedure Add(const Ext, Desc: String; DescID: Integer; AClass: TGLSoundFileClass);
          function FindExt(Ext: string): TGLSoundFileClass;
          procedure Remove(AClass: TGLSoundFileClass);
-         procedure BuildFilterStrings(SoundFileClass: TGLSoundFileClass; var Descriptions, Filters: string);
+         procedure BuildFilterStrings(SoundFileClass: TGLSoundFileClass; out Descriptions, Filters: string);
    end;
 
 function GetGLSoundFileFormats : TGLSoundFileFormatsList;
@@ -364,7 +364,7 @@ end;
 // BuildFilterStrings
 //
 procedure TGLSoundFileFormatsList.BuildFilterStrings(SoundFileClass: TGLSoundFileClass;
-                                                    var Descriptions, Filters: string);
+                                                    out Descriptions, Filters: string);
 var
    c, i : Integer;
    p    : PSoundFileFormat;
