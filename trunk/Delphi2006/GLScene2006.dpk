@@ -279,6 +279,9 @@ contains
   GLViewer in '..\Source\Platform\GLViewer.pas',
   GLRenderContextInfo in '..\Source\GLRenderContextInfo.pas',
   GLCustomShader in '..\Source\Shaders\GLCustomShader.pas',
-  GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas';
+  GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
+  OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
+  GLSArchiveManager in '..\Source\GLSArchiveManager.pas';
 
 end.
