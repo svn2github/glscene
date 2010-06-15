@@ -339,7 +339,7 @@ var
       Result:=PtrUInt(dest)-Result;
    end;
 
-   function RLEEncode(src : PSmallIntArray; dest : PAnsiChar) : Integer;
+   function RLEEncode(src : PSmallIntArray; dest : PAnsiChar) : Cardinal;
    var
       v : SmallInt;
       i, n : Integer;
@@ -463,7 +463,7 @@ end;
 //
 procedure THeightTileFile.UnPackTile(source : PShortIntArray);
 var
-   unpackWidth, tileWidth : Integer;
+   unpackWidth, tileWidth : Cardinal;
    src : PShortInt;
    dest : PSmallInt;
 
@@ -499,7 +499,7 @@ var
 
    procedure RLEDecode;
    var
-      n, j : Integer;
+      n, j : Cardinal;
       v : SmallInt;
       locSrc : PShortInt;
       destEnd, locDest : PSmallInt;
@@ -664,7 +664,8 @@ end;
 //
 procedure THeightTileFile.ExtractRow(x, y, len : Integer; dest : PSmallIntArray);
 var
-   n, rx : Integer;
+   rx : Integer;
+   n : Cardinal;
    tileInfo : PHeightTileInfo;
    tile : PHeightTile;
 begin
@@ -672,8 +673,8 @@ begin
       tileInfo:=XYTileInfo(x, y);
       if not Assigned(tileInfo) then Exit;
       rx:=x-tileInfo.left;
-      n:=tileInfo.width-rx;
-      if n>len then n:=len;
+      n:=Cardinal(tileInfo.width-rx);
+      if n>Cardinal(len) then n:=Cardinal(len);
       tile:=GetTile(tileInfo.left, tileInfo.top);
       Move(tile.data[(y-tileInfo.top)*tileInfo.width+rx], dest^, n*2);
       dest:=PSmallIntArray(PtrUInt(dest)+n*2);
