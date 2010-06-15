@@ -939,8 +939,10 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
+{$IFDEF GLS_NO_ASM}
   pB: PByte;
   Blo, Bhi: Byte;
+{$ENDIF}
   L: LongWord;
   i: Integer;
 begin

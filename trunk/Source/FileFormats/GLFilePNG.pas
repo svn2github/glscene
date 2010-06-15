@@ -168,7 +168,7 @@ var
   png_ptr: png_structp;
   info_ptr: png_infop;
   colorType, bitDepth: Integer;
-  rowBytes: Integer;
+  rowBytes: Cardinal;
   rowPointers: array of PGLUbyte;
   ii: Integer;
   use16: Boolean;
@@ -303,13 +303,13 @@ begin
     png_get_rowbytes(png_ptr, info_ptr);
 {$ENDIF}
 
-    ReallocMem(fData, rowBytes * fHeight);
+    ReallocMem(fData, rowBytes * Cardinal(fHeight));
 
     SetLength(rowPointers, fHeight);
 
     // set up the row pointers
     for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + (fHeight - 1 - ii) *
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + Cardinal(fHeight - 1 - ii) *
         rowBytes);
 
     // read the image
@@ -417,7 +417,8 @@ procedure TGLPNGImage.SaveToStream(stream: TStream);
 var
   png_ptr: png_structp;
   info_ptr: png_infop;
-  bit_depth, color_type, rowBytes: Integer;
+  bit_depth, color_type: Integer;
+  rowBytes: Cardinal;
   canSave: Boolean;
   rowPointers: array of PGLUbyte;
   ii: Integer;
@@ -498,7 +499,7 @@ begin
 
     // set up the row pointers
     for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + (fHeight - 1 - ii) *
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + Cardinal(fHeight - 1 - ii) *
         rowBytes);
 
 {$IFNDEF FPC}

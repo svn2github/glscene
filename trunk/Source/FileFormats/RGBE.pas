@@ -15,7 +15,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, VectorTypes, VectorGeometry;
+  Classes, VectorTypes, VectorGeometry, GLCrossPlatform;
 
 procedure float2rgbe(var rgbe: TVector4b; const red, green, blue: Single);
 procedure rgbe2float(var red, green, blue: Single; const rgbe: TVector4b);
@@ -154,7 +154,8 @@ var
   rf, gf, bf: Single;
   scanline_buffer: PByteArray;
   ptr, ptr_end: PByte;
-  i, count: integer;
+  i: integer;
+  count: Cardinal;
 begin
   if (scanline_width < 8) or (scanline_width > $7FFF) then begin
     //run length encoding is not allowed so read flat

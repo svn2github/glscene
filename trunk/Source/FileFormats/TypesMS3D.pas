@@ -211,7 +211,7 @@ type
   private
   protected
   public
-    destructor destroy; override;
+    destructor Destroy; override;
     function NewComment: pMS3DComment;
   end;
 
@@ -234,8 +234,8 @@ type
   protected
   public
     function newWeight: pMS3D_vertex_ex_t;
-    procedure clear; override;
-    destructor destroy; override;
+    procedure Clear; override;
+    destructor Destroy; override;
     property Weight[idx: Integer]: pMS3D_vertex_ex_t read GetWeight;
     property subVersion: Integer read FsubVersion write SetsubVersion;
 
