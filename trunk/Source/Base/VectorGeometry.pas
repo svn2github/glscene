@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/06/10 - Yar - Added VectorArrayLerp for TTexPointArray
       <li>06/06/10 - Yar - Fixed warnings for FPC
       <li>15/04/10 - Yar - Bugfixed vector normalization on Intel processors
                            (thanks mif) (BugTracker ID = 2987779)
@@ -833,6 +834,8 @@ function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineV
 //: Calculates linear interpolation between vector arrays
 procedure VectorArrayLerp(const src1, src2 : PVectorArray; t : Single; n : Integer; dest : PVectorArray); overload;
 procedure VectorArrayLerp(const src1, src2 : PAffineVectorArray; t : Single; n : Integer; dest : PAffineVectorArray); overload;
+procedure VectorArrayLerp(const src1, src2 : PTexPointArray; t : Single; n : Integer; dest : PTexPointArray); overload;
+
 
 type
   TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn);
@@ -3691,6 +3694,16 @@ begin
          dest^[i][2]:=src1^[i][2]+(src2^[i][2]-src1^[i][2])*t;
       end;
    end;
+end;
+
+procedure VectorArrayLerp(const src1, src2 : PTexPointArray; t : Single; n : Integer; dest : PTexPointArray);
+var
+   i : Integer;
+begin
+  for i:=0 to n-1 do begin
+     dest^[i].S:=src1^[i].S+(src2^[i].S-src1^[i].S)*t;
+     dest^[i].T:=src1^[i].T+(src2^[i].T-src1^[i].T)*t;
+  end;
 end;
 
 // InterpolateCombined

@@ -336,6 +336,8 @@ type
     procedure Translate(const delta: TTexPoint);
     procedure ScaleAndTranslate(const scale, delta: TTexPoint); overload;
     procedure ScaleAndTranslate(const scale, delta: TTexPoint; base, nb: Integer); overload;
+
+    procedure Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single); override;
   end;
 
   // TIntegerList
@@ -2253,6 +2255,21 @@ var
 begin
   p := @FList[base];
   TexPointArrayScaleAndAdd(p, delta, nb, scale, p);
+end;
+
+// Lerp
+//
+
+procedure TTexPointList.Lerp(const list1, list2: TBaseVectorList; lerpFactor: Single);
+begin
+  if (list1 is TTexPointList) and (list2 is TTexPointList) then
+  begin
+    Assert(list1.Count = list2.Count);
+    Capacity := list1.Count;
+    FCount := list1.Count;
+    VectorArrayLerp(TTexPointList(list1).List, TTexPointList(list2).List,
+      lerpFactor, FCount, List);
+  end;
 end;
 
 // ------------------
