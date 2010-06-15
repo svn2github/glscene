@@ -22,8 +22,7 @@ uses lresources,
   Classes, Forms, StdCtrls, Controls, ExtCtrls,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
   GLGeomObjects, GLColor, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLMaterial,GLgraphics, LCLIntf
-  ;
+  GLCrossPlatform, GLMaterial,GLgraphics, LCLIntf;
 
 
 type

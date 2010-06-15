@@ -13,10 +13,10 @@ interface
 {$i GLScene.inc}
 
 uses
-    lresources,
-  {$IFDEF MSWINDOWS} Windows,{$ENDIF}  Forms, ComCtrls, FRTrackBarEditLCL,
-  StdCtrls, FRColorEditorLCL, ImgList, Controls,  Classes,
-  GLTexture, GLMaterial, GLState;
+  LResources,
+  Forms, ComCtrls, FRTrackBarEditLCL,
+  StdCtrls, FRColorEditorLCL, Controls,  Classes,
+  GLTexture, GLMaterial;
 
 type
   TRFaceEditor = class(TFrame)
@@ -99,13 +99,13 @@ begin
          bmpRect:=Rect(0, 0, 16, 16);
          ImageList.Clear;
          AddBitmapFor(CEAmbiant);
-         FFaceProperties.Ambient.Color:=CEAmbiant.Color;
+         FFaceProperties.Ambient.Color:=CEAmbiant.EditedColor;
          AddBitmapFor(CEDiffuse);
-         FFaceProperties.Diffuse.Color:=CEDiffuse.Color;
+         FFaceProperties.Diffuse.Color:=CEDiffuse.EditedColor;
          AddBitmapFor(CEEmission);
-         FFaceProperties.Emission.Color:=CEEmission.Color;
+         FFaceProperties.Emission.Color:=CEEmission.EditedColor;
          AddBitmapFor(CESpecular);
-         FFaceProperties.Specular.Color:=CESpecular.Color;
+         FFaceProperties.Specular.Color:=CESpecular.EditedColor;
       finally
          bmp.Free;
       end;
@@ -129,10 +129,10 @@ procedure TRFaceEditor.SetGLFaceProperties(const val : TGLFaceProperties);
 begin
    updating:=True;
    try
-      CEAmbiant.Color:=val.Ambient.Color;
-      CEDiffuse.Color:=val.Diffuse.Color;
-      CEEmission.Color:=val.Emission.Color;
-      CESpecular.Color:=val.Specular.Color;
+      CEAmbiant.EditedColor:=val.Ambient.Color;
+      CEDiffuse.EditedColor:=val.Diffuse.Color;
+      CEEmission.EditedColor:=val.Emission.Color;
+      CESpecular.EditedColor:=val.Specular.Color;
       TBEShininess.Value:=val.Shininess;
    finally
       updating:=False;

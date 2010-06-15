@@ -13,7 +13,7 @@ interface
 {$i GLScene.inc}
 
 uses  lresources,
-  Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls,
+  Forms, ComCtrls, StdCtrls, ExtCtrls, Buttons, Graphics, Controls,
   Classes;
 
 type

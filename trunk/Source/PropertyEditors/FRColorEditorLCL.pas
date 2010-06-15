@@ -13,7 +13,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS} Windows,{$ENDIF} Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEditLCL, Dialogs, Controls,
+  Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEditLCL, Dialogs, Controls,
   Classes, VectorGeometry, Graphics, SysUtils, GLColor,lresources;
 
 type
@@ -55,15 +55,15 @@ type
     BlueValue : integer;
     AlphaVAlue : integer;
     DraggingValue : (None,Red,Green,Blue,Alpha);
-    procedure SetColor(const val : THomogeneousFltVector);
-    function GetColor : THomogeneousFltVector;
+    procedure SetEditedColor(const val : THomogeneousFltVector);
+    function GetEditedColor : THomogeneousFltVector;
     Procedure DrawContents;
     Procedure DragColorSliderToPosition(XPos : integer);
     Procedure ContentsChanged;
   public
     constructor Create(AOwner: TComponent); override;
     Destructor Destroy; override;
-    property Color : THomogeneousFltVector read GetColor write SetColor;
+    property EditedColor : THomogeneousFltVector read GetEditedColor write SetEditedColor;
   published
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
   end;
@@ -107,7 +107,7 @@ end;
 
 // SetColor
 //
-procedure TRColorEditor.SetColor(const val : THomogeneousFltVector);
+procedure TRColorEditor.SetEditedColor(const val : THomogeneousFltVector);
 begin
   RedValue:=Round(val[0]*255);
   GreenValue:=Round(val[1]*255);
@@ -119,7 +119,7 @@ end;
 
 // GetColor
 //
-function TRColorEditor.GetColor : THomogeneousFltVector;
+function TRColorEditor.GetEditedColor : THomogeneousFltVector;
 begin
    Result:=VectorMake(RedValue/255, GreenValue/255, BlueValue/255,
                       AlphaValue/1000);
@@ -129,7 +129,7 @@ procedure TRColorEditor.PAPreviewDblClick(Sender: TObject);
 begin
    ColorDialog.Color:=PAPreview.Color;
    if ColorDialog.Execute then
-      SetColor(ConvertWinColor(ColorDialog.Color));
+      SetEditedColor(ConvertWinColor(ColorDialog.Color));
 end;
 
 procedure TRColorEditor.ColorEditorPaintBoxPaint(Sender: TObject);
@@ -244,7 +244,7 @@ begin
     FrameRect(Rect(ColorSliderLeft,BTop,ColorSliderLeft+ColorSliderWidth,BTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,ATop,ColorSliderLeft+ColorSliderWidth,ATop+ColorViewHeight));
 
-    // Color View Frames
+    // EditedColor View Frames
     Pen.Color := clBtnShadow;
     PolyLine([  Point(ColorSliderLeft-1,RTop+ColorViewHeight),
                 Point(ColorSliderLeft-1,RTop-1),
@@ -280,7 +280,7 @@ begin
                 Point(ColorSliderLeft+ColorSliderWidth,ATop+ColorViewHeight),
                 Point(ColorSliderLeft+ColorSliderWidth,ATop) ]);
 
-  // Color pointer triangles
+  // EditedColor pointer triangles
 
     Pen.Color := clBlack;
     Position:=ColorValueToColorViewPosition(RedValue) + ColorSliderLeft;
@@ -307,7 +307,7 @@ begin
                Point(Position-6,ATop+ColorViewHeight+8),
                Point(Position,ATop+ColorViewHeight+2)]);
 
-    // Color view spectrums
+    // EditedColor view spectrums
     For tx := 1 to ColorSliderWidth - 2 do
     begin
       ViewLevel := (tx * 256) div ColorSliderWidth;
@@ -324,7 +324,7 @@ begin
       end;
     end;
 
-    // Color preview panel
+    // EditedColor preview panel
     Pen.Color := clBtnShadow;
     PolyLine([  Point(PreviewPanelLeft-1,PreviewPanelTop+PreviewPanelHeight),
                 Point(PreviewPanelLeft-1,PreviewPanelTop-1),
@@ -372,7 +372,7 @@ begin
   begin
     if (X > ColorSliderLeft-5) and ( X < (ColorSliderLeft+ColorSliderMaxValue+5)) then
     begin
-      // In X range For Color Sliders
+      // In X range For EditedColor Sliders
       If (Y > RTop) and ( (RTop+ColorSliderHeight) > Y ) then DraggingValue := Red;
       If (Y > GTop) and ( (GTop+ColorSliderHeight) > Y ) then DraggingValue := Green;
       If (Y > BTop) and ( (BTop+ColorSliderHeight) > Y ) then DraggingValue := Blue;

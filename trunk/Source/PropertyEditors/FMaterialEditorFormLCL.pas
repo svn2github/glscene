@@ -15,13 +15,13 @@ interface
 
 uses
 
-  {$IFDEF MSWINDOWS} Windows,{$ENDIF} FRTrackBarEditLCL, Forms,
+  FRTrackBarEditLCL, Forms,
   FRColorEditorLCL, ComCtrls, FRFaceEditorLCL, StdCtrls, Controls,
   Graphics,
   Classes, Buttons, TypInfo, FRTextureEditLCL,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
   GLGeomObjects, GLColor, GLLCLViewer, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLMaterial, GLState,
+  GLCrossPlatform, GLMaterial, GLState,
   LResources;
 
 type

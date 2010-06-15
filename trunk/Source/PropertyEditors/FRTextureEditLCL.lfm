@@ -10,9 +10,9 @@ object RTextureEdit: TRTextureEdit
   TabOrder = 0
   object Label2: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 1
-    Width = 31
+    Width = 34
     Caption = 'Image'
     ParentColor = False
   end
@@ -30,129 +30,129 @@ object RTextureEdit: TRTextureEdit
   end
   object Label3: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 52
-    Width = 45
+    Width = 51
     Caption = 'MagFilter'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 76
-    Width = 41
+    Width = 48
     Caption = 'MinFilter'
     ParentColor = False
   end
   object Label1: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 124
-    Width = 68
+    Width = 74
     Caption = 'Texture Mode'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 148
-    Width = 68
+    Width = 71
     Caption = 'Texture Wrap'
     ParentColor = False
   end
   object Label6: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 28
-    Width = 58
+    Width = 65
     Caption = 'ImageAlpha'
     ParentColor = False
   end
   object CBMagFilter: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 48
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBMagFilterChange
     Style = csDropDownList
     TabOrder = 0
   end
   object CBMinFilter: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 72
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBMinFilterChange
     Style = csDropDownList
     TabOrder = 1
   end
   object CBTextureMode: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 120
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBTextureModeChange
     Style = csDropDownList
     TabOrder = 2
   end
   object CBTextureWrap: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 144
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBTextureWrapChange
     Style = csDropDownList
     TabOrder = 3
   end
   object CBDisabled: TCheckBox
     Left = 0
-    Height = 17
+    Height = 19
     Top = 175
-    Width = 58
+    Width = 65
     Caption = 'Disabled'
     OnClick = CBDisabledClick
     TabOrder = 4
   end
   object CBImageClass: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 0
     Width = 138
     Anchors = [akTop, akLeft, akRight]
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBImageClassChange
     Style = csDropDownList
     TabOrder = 5
   end
   object CBImageAlpha: TComboBox
     Left = 80
-    Height = 21
+    Height = 23
     Top = 24
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBImageAlphaChange
     Style = csDropDownList
     TabOrder = 6
   end
   object CBFilteringQuality: TComboBox
     Left = 81
-    Height = 21
+    Height = 23
     Top = 96
     Width = 154
-    ItemHeight = 13
+    ItemHeight = 15
     OnChange = CBFilteringQualityChange
     Style = csDropDownList
     TabOrder = 7
   end
   object Label7: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 103
-    Width = 76
+    Width = 85
     Caption = 'Filtering Quality'
     ParentColor = False
   end

@@ -9,10 +9,10 @@ object RMaterialPreview: TRMaterialPreview
   TabOrder = 0
   object CBObject: TComboBox
     Left = 0
-    Height = 21
+    Height = 23
     Top = 0
     Width = 60
-    ItemHeight = 13
+    ItemHeight = 15
     Items.Strings = (
       'Cube'
       'Sphere'
@@ -25,10 +25,10 @@ object RMaterialPreview: TRMaterialPreview
   end
   object CBBackground: TComboBox
     Left = 60
-    Height = 21
+    Height = 23
     Top = 0
     Width = 142
-    ItemHeight = 13
+    ItemHeight = 15
     Items.Strings = (
       'on a pattern background'
       'on a white background'

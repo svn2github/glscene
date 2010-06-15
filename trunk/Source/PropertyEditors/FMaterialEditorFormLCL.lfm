@@ -63,8 +63,36 @@ object MaterialEditorForm: TMaterialEditorForm
         inherited Label6: TLabel
           Width = 57
         end
+        inherited CBMagFilter: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
+        inherited CBMinFilter: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
+        inherited CBTextureMode: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
+        inherited CBTextureWrap: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
         inherited CBDisabled: TCheckBox
           Width = 59
+        end
+        inherited CBImageClass: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
+        inherited CBImageAlpha: TComboBox
+          Height = 21
+          ItemHeight = 13
+        end
+        inherited CBFilteringQuality: TComboBox
+          Height = 21
+          ItemHeight = 13
         end
       end
     end

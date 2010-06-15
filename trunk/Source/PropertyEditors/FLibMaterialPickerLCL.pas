@@ -16,7 +16,7 @@ interface
 
 uses
   lresources, LCLIntf,
-  Controls, Classes, Forms, StdCtrls, Buttons, dialogs, ToolWin,Graphics,
+  Controls, Classes, Forms, StdCtrls, Buttons, dialogs, Graphics,
   GLViewer, GLMaterial, GLScene, GLObjects, GLTexture,
   GLHUDObjects, GLTeapot,  GLGeomObjects, GLColor,
   GLCoordinates;
