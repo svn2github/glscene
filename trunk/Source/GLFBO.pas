@@ -27,6 +27,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  SysUtils,
   OpenGL1x,
   GLScene,
   GLContext,

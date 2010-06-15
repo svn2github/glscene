@@ -92,7 +92,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x;
+uses SysUtils, OpenGL1x, VectorTypes;
 
 Var
   Win32PlatformIsUnicode : Boolean;

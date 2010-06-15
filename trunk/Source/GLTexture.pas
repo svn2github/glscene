@@ -1024,7 +1024,6 @@ implementation
 uses
   GLScene,
   GLStrings,
-  OpenGLAdapter,
   XOpenGL,
   ApplicationFileIO,
   PictureRegisteredFormats,
@@ -4127,4 +4126,3 @@ finalization
   vGLTextureImageClasses := nil;
 
 end.
-
