@@ -8,6 +8,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
       <li>04/06/10 - Yar - Added unsigned integer uniforms
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
@@ -381,25 +382,30 @@ type
     bmxDestColorOne, bmxDestAlphaOne);
 
 // Exported procedures.
-procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx); deprecated;
-procedure UnApplyBlendingModeEx;deprecated;
-procedure InitTexture(const TextureHandle: Cardinal; const TextureSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
-
+procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
+procedure UnApplyBlendingModeEx;
+procedure InitTexture(
+  const TextureHandle: Cardinal;
+  const TextureSize: TGLSize;
+  const TextureTarget: TGLTextureTarget = ttTexture2D);
 // Probably need to give them proper names, instead of numbers... 
-procedure DrawTexturedScreenQuad; deprecated;
-procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize); deprecated;
-procedure DrawTexturedScreenQuad3; deprecated;
-procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize); deprecated;
-procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize); deprecated;
-procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize); deprecated;
+procedure DrawTexturedScreenQuad;
+procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
+procedure DrawTexturedScreenQuad3;
+procedure DrawTexturedScreenQuad4(const ViewPortSize: TGLSize);
+procedure DrawTexturedScreenQuad5(const ViewPortSize: TGLSize);
+procedure DrawTexturedScreenQuad6(const ViewPortSize: TGLSize);
 
-procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
-procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D); deprecated;
+procedure CopyScreentoTexture(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
+procedure CopyScreentoTexture2(const ViewPortSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
 
-function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean; deprecated;
-procedure GetActiveLightsList(const ALightIDs: TIntegerList); deprecated;
+function IsFogEnabled(const AFogSupportMode: TGLShaderFogSupport; var rci: TRenderContextInfo): Boolean;
+procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 
 implementation
+
+uses
+  GLState;
 
 procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 var
@@ -440,26 +446,27 @@ end;
 
 procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
 begin
-  GL.PushAttrib(GL_COLOR_BUFFER_BIT);
-  GL.Enable(GL_BLEND);
+  with CurrentGLContext.GLStates do
+  begin
+    Enable(stBlend);
 
-  case BlendingMode of
-    bmxOpaque: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE);
-    bmxTransparency: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    bmxAdditive: GL.BlendFunc(GL_SRC_ALPHA, GL_ONE);
-    bmxAlphaTest50: GL.AlphaFunc(GL_GEQUAL, 0.5);
-    bmxAlphaTest100: GL.AlphaFunc(GL_GEQUAL, 1.0);
-    bmxModulate: GL.BlendFunc(GL_DST_COLOR, GL_ZERO);
-    bmxDestColorOne: GL.BlendFunc(GL_DST_COLOR, GL_ONE);
-    bmxDestAlphaOne: GL.BlendFunc(GL_DST_ALPHA, GL_ONE);
-    else
-      Assert(False, glsErrorEx + glsUnknownType);
+    case BlendingMode of
+      bmxOpaque: SetBlendFunc(bfSRCALPHA, bfONE);
+      bmxTransparency: SetBlendFunc(bfSRCALPHA, bfONEMINUSSRCALPHA);
+      bmxAdditive: SetBlendFunc(bfSRCALPHA, bfONE);
+      bmxAlphaTest50: SetGLAlphaFunction(cfGEQUAL, 0.5);
+      bmxAlphaTest100: SetGLAlphaFunction(cfGEQUAL, 1.0);
+      bmxModulate: SetBlendFunc(bfDSTCOLOR, bfZERO);
+      bmxDestColorOne: SetBlendFunc(bfDSTCOLOR, bfONE);
+      bmxDestAlphaOne: SetBlendFunc(bfDSTALPHA, bfONE);
+      else
+        Assert(False, glsErrorEx + glsUnknownType);
+    end;
   end;
 end;
 
 procedure UnApplyBlendingModeEx;
 begin
-  GL.PopAttrib;
 end;
 
 procedure DrawTexturedScreenQuad;
@@ -482,20 +489,12 @@ begin
 end;
 
 procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
-//var
-//  ProjectionMatrix: TMatrix4f;
 begin
   GL.PushMatrix;
   GL.MatrixMode(GL_PROJECTION);
     GL.PushMatrix;
     GL.LoadIdentity;
     GL.Ortho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
-    {
-          glMatrixMode(GL_MODELVIEW);
-          glGetFloatv(GL_PROJECTION_MATRIX, @ProjectionMatrix);
-          glLoadMatrixf(@ProjectionMatrix);
-          glLoadIdentity;
-    }
     GL.Disable(GL_DEPTH_TEST);
     GL.DepthMask(False);
     GL.Begin_(GL_QUADS);
@@ -572,14 +571,23 @@ begin
   GL.End_;
 end;
 
-procedure InitTexture(const TextureHandle: Cardinal; const TextureSize: TGLSize; const TextureTarget: Word = GL_TEXTURE_2D);
+procedure InitTexture(
+  const TextureHandle: Cardinal;
+  const TextureSize: TGLSize;
+  const TextureTarget: TGLTextureTarget = ttTexture2D);
+var
+  glTarget: TGLEnum;
 begin
-  GL.BindTexture(TextureTarget, TextureHandle);
-  GL.TexParameteri(TextureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  GL.TexParameteri(TextureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  GL.TexParameteri(TextureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  GL.TexParameteri(TextureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  GL.CopyTexImage2d(TextureTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
+  with CurrentGLContext.GLStates do
+  begin
+    TextureBinding[ActiveTexture, TextureTarget] := TextureHandle;
+  end;
+  glTarget := DecodeGLTextureTarget(TextureTarget);
+  GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  GL.TexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  GL.TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  GL.TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  GL.CopyTexImage2D(glTarget, 0, GL_RGBA8, 0, 0, TextureSize.cx, TextureSize.cy, 0);
 end;
 
 { TGLShaderProgram }
