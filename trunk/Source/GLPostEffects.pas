@@ -416,7 +416,7 @@ begin
        (FPreviousViewportSize.cy <> rci.viewPortSize.cy) then
     begin
       InitTexture(FTempTexture.Handle, rci.viewPortSize,
-        DecodeGLTextureTarget(FTempTextureTarget));
+        FTempTextureTarget);
       FPreviousViewportSize := rci.viewPortSize;
     end;
 
