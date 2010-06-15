@@ -114,6 +114,7 @@ type
 
   TDXGI_FORMAT =
   (
+    DXGI_FORMAT_FORCE_UINT                  = -1,
     DXGI_FORMAT_UNKNOWN	                    = 0,
     DXGI_FORMAT_R32G32B32A32_TYPELESS       = 1,
     DXGI_FORMAT_R32G32B32A32_FLOAT          = 2,
@@ -213,8 +214,7 @@ type
     DXGI_FORMAT_BC6H_SF16                   = 96,
     DXGI_FORMAT_BC7_TYPELESS                = 97,
     DXGI_FORMAT_BC7_UNORM                   = 98,
-    DXGI_FORMAT_BC7_UNORM_SRGB              = 99,
-    DXGI_FORMAT_FORCE_UINT                  = $ffffffff
+    DXGI_FORMAT_BC7_UNORM_SRGB              = 99
   );
 
   TD3D11_RESOURCE_DIMENSION =

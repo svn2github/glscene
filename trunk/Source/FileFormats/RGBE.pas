@@ -4,6 +4,7 @@
 {: RGBE<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>15/06/10 - Yar - Fixes for Linux x64
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
@@ -190,13 +191,13 @@ begin
     for i := 0 to 3 do
     begin
       ptr_end := @scanline_buffer[(i+1)*scanline_width];
-      while Integer(ptr) < Integer(ptr_end) do
+      while PtrUInt(ptr) < PtrUInt(ptr_end) do
       begin
         stream.Read(buf, SizeOf( TVector2b ));
         if buf[0] > 128 then
         begin //a run of the same value
           count := buf[0]-128;
-          if (count = 0) or (count > Integer(ptr_end) - Integer(ptr)) then
+          if (count = 0) or (count > PtrUInt(ptr_end) - PtrUInt(ptr)) then
           begin
             FreeMem( scanline_buffer );
             raise ERGBEexception.Create('Bad HDR scanline data.');
@@ -210,7 +211,7 @@ begin
         end
         else begin //a non-run
           count := buf[0];
-          if (count = 0) or (count > Integer(ptr_end) - Integer(ptr)) then
+          if (count = 0) or (count > PtrUInt(ptr_end) - PtrUInt(ptr)) then
           begin
             FreeMem( scanline_buffer );
             raise ERGBEexception.Create('Bad HDR scanline data.');
