@@ -1,9 +1,9 @@
 object frmMain: TfrmMain
   Left = 332
   Top = 110
+  Width = 1154
+  Height = 859
   Caption = 'MS3D Animation Demo'
-  ClientHeight = 821
-  ClientWidth = 1138
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -151,7 +151,6 @@ object frmMain: TfrmMain
         Direction.Coordinates = {2EBD3B34F0AD099D0000803F00000000}
         Position.Coordinates = {000080BF00000000000000000000803F}
         Up.Coordinates = {043D48A70000803F6042CA2600000000}
-        Visible = False
         Reference = aarSkeleton
         Interval = 8
         Options = []
