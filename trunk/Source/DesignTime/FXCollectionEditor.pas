@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>16/06/10 - YP - Fixed IDE exception when item removed
       <li>05/10/08 - DanB - removed Kylix support + some other old ifdefs
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux
@@ -296,7 +297,8 @@ procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
 	if ListView.Selected<>nil then begin
       FDesigner.Modified;
-      FDesigner.SelectComponent(nil);
+      FDesigner.SelectComponent(FXCollection.Owner);
+
 		TXCollectionItem(ListView.Selected.Data).Free;
       ListView.Selected.Free;
       ListViewChange(Self, nil, ctState);
