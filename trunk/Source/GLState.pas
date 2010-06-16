@@ -122,6 +122,7 @@ type
 
 const
   cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
+  MAX_HARDWARE_LIGHT = 16;
 
 type
 
@@ -151,14 +152,14 @@ type
 
     // Lighting state
     FMaxLights: GLuint;
-    FLightEnabling: array[0..7] of Boolean;
-    FLightAmbient: array[0..7] of TVector;
-    FLightDiffuse: array[0..7] of TVector;
-    FLightSpecular: array[0..7] of TVector;
-    FSpotCutoff: array[0..7] of Single;
-    FConstantAtten: array[0..7] of Single;
-    FLinearAtten: array[0..7] of Single;
-    FQuadAtten: array[0..7] of Single;
+    FLightEnabling : array[0..MAX_HARDWARE_LIGHT-1] of Boolean;
+    FLightAmbient  : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    FLightDiffuse  : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    FLightSpecular : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    FSpotCutoff    : array[0..MAX_HARDWARE_LIGHT-1] of Single;
+    FConstantAtten : array[0..MAX_HARDWARE_LIGHT-1] of Single;
+    FLinearAtten   : array[0..MAX_HARDWARE_LIGHT-1] of Single;
+    FQuadAtten     : array[0..MAX_HARDWARE_LIGHT-1] of Single;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
@@ -2858,6 +2859,7 @@ procedure TGLStateCache.SetLightEnabling(I: Integer; Value: Boolean);
 begin
   if FForwardContext then
     exit;
+
   if (FLightEnabling[I] <> Value) or FInsideList then
   begin
     if FInsideList then
