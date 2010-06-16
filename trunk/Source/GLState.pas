@@ -6,6 +6,8 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
+      <li>16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
       <li>31/05/10 - Yar - Replace OpenGL1x functions to OpenGLAdapter, not complete yet.
       <li>01/05/10 - Yar - Added cashing to Vertex Array Object
       <li>22/04/10 - Yar - GLState revision
@@ -2721,7 +2723,7 @@ begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
   FCurrentList := list - 1;
-  if High(FListStates) < Integer(FCurrentList) then
+  while High(FListStates) < Integer(FCurrentList) do
     SetLength(FListStates, 2 * Length(FListStates));
 
   FListStates[FCurrentList] := [];
