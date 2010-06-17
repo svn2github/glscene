@@ -23,7 +23,7 @@ uses
 {$IFDEF unix}
   ,
   Xlib
-{$ENDIF}  ;
+{$ENDIF};
 
 type
 
@@ -39,88 +39,88 @@ type
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Extensions'}{$ENDIF}
     // supported version checks
     VERSION_1_0, VERSION_1_1, VERSION_1_2, VERSION_1_3,
-    VERSION_1_4, VERSION_1_5, VERSION_2_0, VERSION_2_1,
-    VERSION_3_0, VERSION_3_1, VERSION_3_2, VERSION_3_3,
-    VERSION_4_0: boolean;
+      VERSION_1_4, VERSION_1_5, VERSION_2_0, VERSION_2_1,
+      VERSION_3_0, VERSION_3_1, VERSION_3_2, VERSION_3_3,
+      VERSION_4_0: boolean;
 
     // ARB approved OpenGL extension checks
     ARB_blend_func_extended, ARB_color_buffer_float, ARB_compatibility,
-    ARB_copy_buffer, ARB_depth_buffer_float, ARB_depth_clamp,
-    ARB_depth_texture, ARB_draw_buffers, ARB_draw_buffers_blend,
-    ARB_draw_elements_base_vertex, ARB_draw_indirect,
-    ARB_draw_instanced, ARB_explicit_attrib_location,
-    ARB_fragment_coord_conventions, ARB_fragment_program,
-    ARB_fragment_program_shadow, ARB_fragment_shader,
-    ARB_framebuffer_object, ARB_framebuffer_sRGB, ARB_geometry_shader4,
-    ARB_gpu_shader_fp64, ARB_gpu_shader5, ARB_half_float_pixel,
-    ARB_half_float_vertex, ARB_imaging, ARB_instanced_arrays,
-    ARB_map_buffer_range, ARB_matrix_palette, ARB_multisample,
-    ARB_multitexture, ARB_occlusion_query, ARB_occlusion_query2,
-    ARB_pixel_buffer_object, ARB_point_parameters, ARB_point_sprite,
-    ARB_provoking_vertex, ARB_sample_shading, ARB_sampler_objects,
-    ARB_seamless_cube_map, ARB_shader_bit_encoding,
-    ARB_shader_subroutine, ARB_shader_texture_lod,
-    ARB_shading_language_100, ARB_shadow, ARB_shadow_ambient,
-    ARB_shader_objects, ARB_sync, ARB_tessellation_shader,
-    ARB_texture_border_clamp, ARB_texture_buffer_object,
-    ARB_texture_buffer_object_rgb32, ARB_texture_compression,
-    ARB_texture_compression_rgtc, ARB_texture_cube_map,
-    ARB_texture_cube_map_array, ARB_texture_env_add,
-    ARB_texture_env_combine, ARB_texture_env_crossbar,
-    ARB_texture_env_dot3, ARB_texture_float, ARB_texture_gather,
-    ARB_texture_mirrored_repeat, ARB_texture_multisample,
-    ARB_texture_non_power_of_two, ARB_texture_query_lod,
-    ARB_texture_rectangle, ARB_texture_rg, ARB_texture_rgb10_a2ui,
-    ARB_texture_swizzle, ARB_timer_query, ARB_transform_feedback2,
-    ARB_transform_feedback3, ARB_transpose_matrix,
-    ARB_uniform_buffer_object, ARB_vertex_array_bgra,
-    ARB_vertex_array_object, ARB_vertex_blend, ARB_vertex_buffer_object,
-    ARB_vertex_program, ARB_vertex_shader, ARB_vertex_type_2_10_10_10_rev,
-    ARB_window_pos, ARB_texture_compression_bptc,
+      ARB_copy_buffer, ARB_depth_buffer_float, ARB_depth_clamp,
+      ARB_depth_texture, ARB_draw_buffers, ARB_draw_buffers_blend,
+      ARB_draw_elements_base_vertex, ARB_draw_indirect,
+      ARB_draw_instanced, ARB_explicit_attrib_location,
+      ARB_fragment_coord_conventions, ARB_fragment_program,
+      ARB_fragment_program_shadow, ARB_fragment_shader,
+      ARB_framebuffer_object, ARB_framebuffer_sRGB, ARB_geometry_shader4,
+      ARB_gpu_shader_fp64, ARB_gpu_shader5, ARB_half_float_pixel,
+      ARB_half_float_vertex, ARB_imaging, ARB_instanced_arrays,
+      ARB_map_buffer_range, ARB_matrix_palette, ARB_multisample,
+      ARB_multitexture, ARB_occlusion_query, ARB_occlusion_query2,
+      ARB_pixel_buffer_object, ARB_point_parameters, ARB_point_sprite,
+      ARB_provoking_vertex, ARB_sample_shading, ARB_sampler_objects,
+      ARB_seamless_cube_map, ARB_shader_bit_encoding,
+      ARB_shader_subroutine, ARB_shader_texture_lod,
+      ARB_shading_language_100, ARB_shadow, ARB_shadow_ambient,
+      ARB_shader_objects, ARB_sync, ARB_tessellation_shader,
+      ARB_texture_border_clamp, ARB_texture_buffer_object,
+      ARB_texture_buffer_object_rgb32, ARB_texture_compression,
+      ARB_texture_compression_rgtc, ARB_texture_cube_map,
+      ARB_texture_cube_map_array, ARB_texture_env_add,
+      ARB_texture_env_combine, ARB_texture_env_crossbar,
+      ARB_texture_env_dot3, ARB_texture_float, ARB_texture_gather,
+      ARB_texture_mirrored_repeat, ARB_texture_multisample,
+      ARB_texture_non_power_of_two, ARB_texture_query_lod,
+      ARB_texture_rectangle, ARB_texture_rg, ARB_texture_rgb10_a2ui,
+      ARB_texture_swizzle, ARB_timer_query, ARB_transform_feedback2,
+      ARB_transform_feedback3, ARB_transpose_matrix,
+      ARB_uniform_buffer_object, ARB_vertex_array_bgra,
+      ARB_vertex_array_object, ARB_vertex_blend, ARB_vertex_buffer_object,
+      ARB_vertex_program, ARB_vertex_shader, ARB_vertex_type_2_10_10_10_rev,
+      ARB_window_pos, ARB_texture_compression_bptc,
 
     // Vendor/EXT OpenGL extension checks
     _3DFX_multisample, _3DFX_tbuffer, _3DFX_texture_compression_FXT1,
-    ATI_draw_buffers, ATI_texture_compression_3dc, ATI_texture_float,
-    ATI_texture_mirror_once, S3_s3tc, EXT_abgr, EXT_bgra,
-    EXT_bindable_uniform, EXT_blend_color, EXT_blend_equation_separate,
-    EXT_blend_func_separate, EXT_blend_logic_op, EXT_blend_minmax,
-    EXT_blend_subtract, EXT_Cg_shader, EXT_clip_volume_hint,
-    EXT_compiled_vertex_array, EXT_copy_texture, EXT_depth_bounds_test,
-    EXT_draw_buffers2, EXT_draw_instanced, EXT_draw_range_elements,
-    EXT_fog_coord, EXT_framebuffer_blit, EXT_framebuffer_multisample,
-    EXT_framebuffer_object, EXT_framebuffer_sRGB, EXT_geometry_shader4,
-    EXT_gpu_program_parameters, EXT_gpu_shader4, EXT_multi_draw_arrays,
-    EXT_multisample, EXT_packed_depth_stencil, EXT_packed_float,
-    EXT_packed_pixels, EXT_paletted_texture, EXT_pixel_buffer_object,
-    EXT_polygon_offset, EXT_rescale_normal, EXT_secondary_color,
-    EXT_separate_specular_color, EXT_shadow_funcs,
-    EXT_shared_texture_palette, EXT_stencil_clear_tag,
-    EXT_stencil_two_side, EXT_stencil_wrap, EXT_texture3D,
-    EXT_texture_array, EXT_texture_buffer_object,
-    EXT_texture_compression_latc, EXT_texture_compression_rgtc,
-    EXT_texture_compression_s3tc, EXT_texture_cube_map,
-    EXT_texture_edge_clamp, EXT_texture_env_add, EXT_texture_env_combine,
-    EXT_texture_env_dot3, EXT_texture_filter_anisotropic,
-    EXT_texture_integer, EXT_texture_lod, EXT_texture_lod_bias,
-    EXT_texture_mirror_clamp, EXT_texture_object,
-    EXT_texture_rectangle, EXT_texture_sRGB, EXT_texture_shared_exponent,
-    EXT_timer_query, EXT_transform_feedback, EXT_vertex_array,
-    HP_occlusion_test, IBM_rasterpos_clip, KTX_buffer_region,
-    MESA_resize_buffers, NV_blend_square, NV_conditional_render,
-    NV_copy_image, NV_depth_buffer_float, NV_fence,
-    NV_float_buffer, NV_fog_distance, NV_geometry_program4,
-    NV_light_max_exponent, NV_multisample_filter_hint,
-    NV_occlusion_query, NV_point_sprite, NV_primitive_restart,
-    NV_register_combiners, NV_shader_buffer_load, NV_texgen_reflection,
-    NV_texture_compression_vtc, NV_texture_env_combine4,
-    NV_texture_rectangle, NV_texture_shader, NV_texture_shader2,
-    NV_texture_shader3, NV_transform_feedback, NV_vertex_array_range,
-    NV_vertex_array_range2, NV_vertex_buffer_unified_memory,
-    NV_vertex_program, SGI_color_matrix, SGIS_generate_mipmap,
-    SGIS_multisample, SGIS_texture_border_clamp, SGIS_texture_color_mask,
-    SGIS_texture_edge_clamp, SGIS_texture_lod, SGIX_depth_texture,
-    SGIX_shadow, SGIX_shadow_ambient, AMD_vertex_shader_tessellator,
-    WIN_swap_hint,
+      ATI_draw_buffers, ATI_texture_compression_3dc, ATI_texture_float,
+      ATI_texture_mirror_once, S3_s3tc, EXT_abgr, EXT_bgra,
+      EXT_bindable_uniform, EXT_blend_color, EXT_blend_equation_separate,
+      EXT_blend_func_separate, EXT_blend_logic_op, EXT_blend_minmax,
+      EXT_blend_subtract, EXT_Cg_shader, EXT_clip_volume_hint,
+      EXT_compiled_vertex_array, EXT_copy_texture, EXT_depth_bounds_test,
+      EXT_draw_buffers2, EXT_draw_instanced, EXT_draw_range_elements,
+      EXT_fog_coord, EXT_framebuffer_blit, EXT_framebuffer_multisample,
+      EXT_framebuffer_object, EXT_framebuffer_sRGB, EXT_geometry_shader4,
+      EXT_gpu_program_parameters, EXT_gpu_shader4, EXT_multi_draw_arrays,
+      EXT_multisample, EXT_packed_depth_stencil, EXT_packed_float,
+      EXT_packed_pixels, EXT_paletted_texture, EXT_pixel_buffer_object,
+      EXT_polygon_offset, EXT_rescale_normal, EXT_secondary_color,
+      EXT_separate_specular_color, EXT_shadow_funcs,
+      EXT_shared_texture_palette, EXT_stencil_clear_tag,
+      EXT_stencil_two_side, EXT_stencil_wrap, EXT_texture3D,
+      EXT_texture_array, EXT_texture_buffer_object,
+      EXT_texture_compression_latc, EXT_texture_compression_rgtc,
+      EXT_texture_compression_s3tc, EXT_texture_cube_map,
+      EXT_texture_edge_clamp, EXT_texture_env_add, EXT_texture_env_combine,
+      EXT_texture_env_dot3, EXT_texture_filter_anisotropic,
+      EXT_texture_integer, EXT_texture_lod, EXT_texture_lod_bias,
+      EXT_texture_mirror_clamp, EXT_texture_object,
+      EXT_texture_rectangle, EXT_texture_sRGB, EXT_texture_shared_exponent,
+      EXT_timer_query, EXT_transform_feedback, EXT_vertex_array,
+      HP_occlusion_test, IBM_rasterpos_clip, KTX_buffer_region,
+      MESA_resize_buffers, NV_blend_square, NV_conditional_render,
+      NV_copy_image, NV_depth_buffer_float, NV_fence,
+      NV_float_buffer, NV_fog_distance, NV_geometry_program4,
+      NV_light_max_exponent, NV_multisample_filter_hint,
+      NV_occlusion_query, NV_point_sprite, NV_primitive_restart,
+      NV_register_combiners, NV_shader_buffer_load, NV_texgen_reflection,
+      NV_texture_compression_vtc, NV_texture_env_combine4,
+      NV_texture_rectangle, NV_texture_shader, NV_texture_shader2,
+      NV_texture_shader3, NV_transform_feedback, NV_vertex_array_range,
+      NV_vertex_array_range2, NV_vertex_buffer_unified_memory,
+      NV_vertex_program, SGI_color_matrix, SGIS_generate_mipmap,
+      SGIS_multisample, SGIS_texture_border_clamp, SGIS_texture_color_mask,
+      SGIS_texture_edge_clamp, SGIS_texture_lod, SGIX_depth_texture,
+      SGIX_shadow, SGIX_shadow_ambient, AMD_vertex_shader_tessellator,
+      WIN_swap_hint,
 
     // Graphics Remedy's Extensions
     GREMEDY_frame_terminator, GREMEDY_string_marker: boolean;
@@ -3025,7 +3025,7 @@ type
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.3 deprecated'}{$ENDIF}
+
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Sampler object'}{$ENDIF}
     // promoted to core v1.3 from GL_ARB_multitexture (#1)
     ActiveTexture:
@@ -3344,21 +3344,33 @@ type
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 
-TexImage2DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
-                            width: TGLsizei; height: TGLsizei;
-                            fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-TexImage3DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
-                            width: TGLsizei; height: TGLsizei; depth: TGLsizei;
-                            fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-GetMultisamplefv: procedure(pname: TGLenum; index: TGLuint; val: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-SampleMaski: procedure(index: TGLuint; mask: TGLbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-
+    TexImage2DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
+      width: TGLsizei; height: TGLsizei;
+      fixedsamplelocations: TGLboolean);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    TexImage3DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
+      width: TGLsizei; height: TGLsizei; depth: TGLsizei;
+      fixedsamplelocations: TGLboolean);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetMultisamplefv: procedure(pname: TGLenum; index: TGLuint; val: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SampleMaski: procedure(index: TGLuint; mask: TGLbitfield);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
     constructor Create;
     procedure Initialize;
     procedure Close;
+    procedure CheckError;
     property IsInitialized: boolean read FInitialized;
   end;
 
@@ -3442,6 +3454,27 @@ end;
 function TGLExtensionsAndEntryPoints.GetCapAddress: Pointer;
 begin
   Result := @glCap;
+end;
+
+procedure TGLExtensionsAndEntryPoints.CheckError;
+var
+  glError : TGLuint;
+	Count : Word;
+begin
+  if FInitialized then
+  begin
+    glError := GetError();
+    if glError <> GL_NO_ERROR then
+    begin
+      Count:=0;
+      try
+        while (GetError <> GL_NO_ERROR) and (Count < 6) do Inc(Count);
+      except
+      end;
+      GLSLogger.LogError('OpenGL error: '+string(gluErrorString(glError)));
+      Abort;
+    end;
+  end;
 end;
 
 procedure TGLExtensionsAndEntryPoints.Initialize;
@@ -4962,7 +4995,7 @@ begin
   FramebufferTextureLayer := GetCapAddress();
   FramebufferTextureFace := GetCapAddress();
   FramebufferRenderbuffer := GetCapAddress();
-  GetFramebufferAttachmentParameteriv :=  GetCapAddress();
+  GetFramebufferAttachmentParameteriv := GetCapAddress();
   BlitFramebuffer := GetCapAddress();
   GenerateMipmap := GetCapAddress();
   ClearBufferiv := GetCapAddress();
@@ -5245,3 +5278,4 @@ begin
 end;
 
 end.
+
