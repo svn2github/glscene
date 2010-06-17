@@ -9,6 +9,8 @@
     this component on the form.<p>
 
    <b>History : </b><font size=-1><ul>
+
+      <li>17/06/10 - YP    - Fixed Zoom in/out inconsistence (mousewheel up/down inverted)
       <li>11/06/10 - YP    - Fixed wheeldata can be equal to 0 in FormMouseWheel (div by 0 exception)
       <li>21/01/10 - Yar   - Bugfixed zooming in design time (BugtrackerID = 2936266)
       <li>25/12/09 - DaStr - Added OnMouseMove event (thanks YarUnderoaker)
@@ -233,9 +235,9 @@ begin
     Exit;
 
   if snoInvertMouseWheel in FOptions then
-    Sign := -1
+    Sign := 1
   else
-    Sign := 1;
+    Sign := -1;
 
   if FGLSceneViewer <> nil then
     if FGLSceneViewer.Camera <> nil then
