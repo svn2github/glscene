@@ -129,8 +129,10 @@ type
 			{ Private Declarations }
 			FOwner : TPersistent;
 			FList : TList;
-         FCount : Integer;
+      FCount : Integer;
 
+      {: Archive Version is used to update the way data items is loaded. }
+      FArchiveVersion : integer;
 		protected
 			{ Protected Declarations }
 			function GetItems(index : Integer) : TXCollectionItem;
@@ -173,6 +175,8 @@ type
 			{: Indicates if an object of the given class can be added.<p>
           	This function is used to enforce Unique XCollection. }
 			function CanAdd(aClass : TXCollectionItemClass) : Boolean; virtual;
+
+      property ArchiveVersion : integer read FArchiveVersion;
 	end;
 
 resourcestring
@@ -201,6 +205,12 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+const
+  {: Magic is a workaround that will allow us to know when the archive
+    version is 0 (equivalent to : there is no ArchiveVersion stored in
+    the DFM file) }
+  MAGIC: array[0..3] of AnsiChar = 'XCOL';
 
 var
   vXCollectionItemClasses : TList;
@@ -505,11 +515,18 @@ begin
 	// written, otherwise, only the index in the table is written.
 	// Using a global lookup table (instead of a "per-WriteData" one) could save
 	// more space, but would also increase dependencies, and this I don't want 8)
+  FArchiveVersion := 1;
 	classList:=TList.Create;
 	try
-		with writer do begin
+		with writer do
+    begin
+      // Magic header and archive version are always written now
+      Write(MAGIC[0], Length(MAGIC));
+      WriteInteger(FArchiveVersion);
+
 			WriteInteger(FList.Count);
-			for i:=0 to FList.Count-1 do begin
+			for i:=0 to FList.Count-1 do
+      begin
 				XCollectionItem:=TXCollectionItem(FList[i]);
 				n:=classList.IndexOf(XCollectionItem.ClassType);
 				if n<0 then begin
@@ -526,6 +543,8 @@ end;
 
 procedure TXCollection.ReadFromFiler(reader: TReader);
 var
+  InitialPosition : integer;
+  Header : array[0..3] of AnsiChar;
   n, lc, lcnum: Integer;
   classList: TList;
   cName: string;
@@ -538,6 +557,24 @@ begin
   try
     with reader do
     begin
+      // save current reader position, it will be used to rewind the reader if the DFM is too old
+      InitialPosition := reader.Position;
+      Read(Header[0], Length(Header));
+
+      // after reading the header, we need to compare it with the MAGIC reference
+      if  (Header[0] = MAGIC[0]) and (Header[1] = MAGIC[1])
+      and (Header[2] = MAGIC[2]) and (Header[3] = MAGIC[3]) then
+      begin
+        // if its ok we can just read the archive version
+        FArchiveVersion := ReadInteger;
+      end
+        else
+      begin
+        // if the header is invalid (old DFM) just assume archive version is 0 and rewind reader
+        FArchiveVersion := 0;
+        reader.Position := InitialPosition;
+      end;
+
       lc := ReadInteger;
       for n := 1 to lc do
       begin

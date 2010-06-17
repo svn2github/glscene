@@ -1024,7 +1024,6 @@ type
   protected
     { Protected Declarations }
     function GetBehaviour(index: Integer): TGLBehaviour;
-
   public
     { Public Declarations }
     constructor Create(aOwner: TPersistent); override;
@@ -5490,6 +5489,7 @@ end;
 
 procedure TGLBaseBehaviour.WriteToFiler(writer: TWriter);
 begin
+  inherited;
   with writer do
   begin
     WriteInteger(0); // Archive Version 0
@@ -5502,6 +5502,9 @@ end;
 
 procedure TGLBaseBehaviour.ReadFromFiler(reader: TReader);
 begin
+  if Owner.ArchiveVersion > 0 then
+    inherited;
+
   with reader do
   begin
     if ReadInteger <> 0 then
@@ -5600,6 +5603,7 @@ end;
 
 procedure TGLObjectEffect.WriteToFiler(writer: TWriter);
 begin
+  inherited;
   with writer do
   begin
     WriteInteger(0); // Archive Version 0
@@ -5612,6 +5616,9 @@ end;
 
 procedure TGLObjectEffect.ReadFromFiler(reader: TReader);
 begin
+  if Owner.ArchiveVersion > 0 then
+    inherited;
+
   with reader do
   begin
     if ReadInteger <> 0 then
