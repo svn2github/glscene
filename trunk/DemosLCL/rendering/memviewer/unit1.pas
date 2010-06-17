@@ -86,7 +86,7 @@ end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
-   if not WGL_ARB_pbuffer then begin
+   if not (WGL_ARB_pbuffer or GLX_VERSION_1_3 or GLX_VERSION_1_4) then begin
       ShowMessage( 'WGL_ARB_pbuffer not supported...'#13#10#13#10
                   +'Get newer graphics hardware or try updating your drivers!');
       GLSceneViewer1.AfterRender:=nil;
