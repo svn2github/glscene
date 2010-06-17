@@ -1,4 +1,14 @@
-{*****************************************************************************
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: ZLibEx<p>
+
+  <b>Historique : </b><font size=-1><ul>
+      <li>18/05/10 - Yar - Changed to dynamic library loading for FPC (by Predator)
+      <li>06/05/10 - Yar - Added to GLScene (contributed by oleg matrozov)
+  </ul></font>
+
+******************************************************************************
 *  ZLibExApi.pas                                                             *
 *                                                                            *
 *  copyright (c) 2000-2010 base2 technologies                                *
@@ -29,7 +39,7 @@ unit ZLibExApi;
 interface
 
 {$I ZLibEx.inc}
-
+{$I GLScene.inc}
 const
   {** version ids ***********************************************************}
 
@@ -114,10 +124,6 @@ const
     'Incompatible version', // Z_VERSION_ERROR  (-6)
     ''
   );
-{$IFDEF FPC}
-var
-  ZLIB_VERSION            :PChar;
-{$ENDIF}
 
 type
   TZAlloc = function (opaque: Pointer; items, size: Integer): Pointer;
@@ -177,54 +183,88 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
 
 {** external routines *******************************************************}
 {$IFDEF FPC}
-function zlibVersionpchar(): pchar; cdecl; external libz name 'zlibVersion';
+function Initzlib : Boolean;
+procedure Closezlib;
+procedure ReadEntryPoints;
 function zlibVersion(): string;
-function zErrorpchar(err: integer): pchar; cdecl; external libz name 'zError';
-function inflateSyncPoint(z: TZstreamRec): integer; cdecl; external libz name 'inflateSyncPoint';
-function get_crc_table(): pointer; cdecl; external libz name 'get_crc_table';
-{$ENDIF}
+function ZLIB_VERSION(): PChar;
+function zGetProcAddress(ProcName: PChar): Pointer;
+
+var
+
+zlibVersionpchar: function(): pchar; cdecl;
+zErrorpchar: function (err: integer): pchar; cdecl;
+inflateSyncPoint: function (z: TZstreamRec): integer; cdecl;
+get_crc_table: function (): pointer; cdecl;
+
+deflateInit_: function (var strm: TZStreamRec; level: Integer;
+  version: PAnsiChar; recsize: Integer): Integer; cdecl;
+deflateInit2_: function (var strm: TZStreamRec; level, method, windowBits,
+  memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
+  cdecl;
+deflate: function (var strm: TZStreamRec; flush: Integer): Integer;  cdecl;
+deflateEnd: function (var strm: TZStreamRec): Integer; cdecl;
+deflateReset: function (var strm: TZStreamRec): Integer; cdecl;
+
+inflateInit_: function (var strm: TZStreamRec; version: PAnsiChar;
+  recsize: Integer): Integer; cdecl;
+
+inflateInit2_: function (var strm: TZStreamRec; windowBits: Integer;
+  version: PAnsiChar; recsize: Integer): Integer ;cdecl;
+
+inflate: function (var strm: TZStreamRec; flush: Integer): Integer; cdecl;
+
+inflateEnd: function (var strm: TZStreamRec): Integer; cdecl;
+
+inflateReset: function (var strm: TZStreamRec): Integer; cdecl;
+
+adler32: function (adler: Longint; const buf; len: Integer): Longint;cdecl;
+
+crc32: function (crc: Longint; const buf; len: Integer): Longint; cdecl;
+
+{$ELSE}
 
 function deflateInit_(var strm: TZStreamRec; level: Integer;
   version: PAnsiChar; recsize: Integer): Integer;
-  {$IFDEF FPC}cdecl; external libz name 'deflateInit_';{$ENDIF}
 
 function deflateInit2_(var strm: TZStreamRec; level, method, windowBits,
   memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'inflateInit2_';{$ENDIF}
 
 function deflate(var strm: TZStreamRec; flush: Integer): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'deflate';{$ENDIF}
 
 function deflateEnd(var strm: TZStreamRec): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'deflateEnd';{$ENDIF}
 
 function deflateReset(var strm: TZStreamRec): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'deflateReset';{$ENDIF}
 
 function inflateInit_(var strm: TZStreamRec; version: PAnsiChar;
   recsize: Integer): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'inflateInit_';{$ENDIF}
 
 function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
   version: PAnsiChar; recsize: Integer): Integer;
-  {$IFDEF FPC}cdecl; external libz name 'inflateInit2_';{$ENDIF}
 
 function inflate(var strm: TZStreamRec; flush: Integer): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'inflate';{$ENDIF}
 
 function inflateEnd(var strm: TZStreamRec): Integer;
-  {$IFDEF FPC}cdecl; external libz name 'inflateEnd';{$ENDIF}
 
 function inflateReset(var strm: TZStreamRec): Integer;
-  {$IFDEF FPC} cdecl; external libz name 'inflateReset';{$ENDIF}
 
 function adler32(adler: Longint; const buf; len: Integer): Longint;
-  {$IFDEF FPC} cdecl; external libz name 'adler32';{$ENDIF}
 
 function crc32(crc: Longint; const buf; len: Integer): Longint;
-  {$IFDEF FPC} cdecl; external libz name 'crc32';{$ENDIF}
+{$ENDIF}
 
 implementation
+
+Uses
+  {$IFDEF GLS_LOGGING}
+  GLSLog,
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+  Windows;
+  {$ENDIF}
+  {$IFDEF Unix}
+  x, dynlibs;
+  {$ENDIF}
 
 {*****************************************************************************
 *  link zlib code                                                            *
@@ -314,10 +354,89 @@ function adler32(adler: Longint; const buf; len: Integer): Longint;
 function crc32(crc: Longint; const buf; len: Integer): Longint;
   external;
 {$ELSE}
+
+const
+   INVALID_MODULEHANDLE = 0;//nil;
+
+var
+   {$IFDEF MSWindows}
+   vzHandle: HINST;//Pointer;
+   {$ENDIF}
+   {$IFDEF Unix}
+   vzHandle: TLibHandle = 0;//Pointer;
+   {$ENDIF}
+
+function Initzlib: Boolean;
+begin
+  Result := False;
+  if (vzHandle=INVALID_MODULEHANDLE) then
+  begin
+     Closezlib;
+     vzHandle := LoadLibrary(PChar(libz));
+     if (vzHandle <> INVALID_MODULEHANDLE) then
+      Result := True
+     else begin
+       if vzHandle <> INVALID_MODULEHANDLE then
+         FreeLibrary(Cardinal(vzHandle));
+      {$IFDEF GLS_GLS_LOGGING}
+        GLSLogger.Log('ZLibEx.pas: Zlib library not loaded');
+      {$ENDIF}
+     end;
+  end
+  else Result:=True;
+end;
+
+procedure Closezlib;
+begin
+   if vzHandle<>INVALID_MODULEHANDLE then begin
+      FreeLibrary(Cardinal(vzHandle));
+      vzHandle:=INVALID_MODULEHANDLE;
+   end;
+end;
+
+procedure ReadEntryPoints;
+begin
+  zlibVersionpchar := zGetProcAddress('zlibVersion');
+  zErrorpchar := zGetProcAddress('zError');
+  inflateSyncPoint := zGetProcAddress('inflateSyncPoint');
+  get_crc_table := zGetProcAddress('get_crc_table');
+
+  deflateInit_:= zGetProcAddress('deflateInit_');
+
+  deflateInit2_:= zGetProcAddress('inflateInit2_');
+
+  deflate:= zGetProcAddress('deflate');
+
+  deflateEnd:= zGetProcAddress('deflateEnd');
+
+  deflateReset:= zGetProcAddress('deflateReset');
+
+  inflateInit_:= zGetProcAddress('inflateInit_');
+
+  inflateInit2_:= zGetProcAddress('inflateInit2_');
+
+  inflate:= zGetProcAddress('inflate');
+
+  inflateEnd:= zGetProcAddress('inflateEnd');
+
+  inflateReset:= zGetProcAddress('inflateReset');
+
+  adler32:= zGetProcAddress('adler32');
+
+  crc32:= zGetProcAddress('crc32');
+
+end;
+
 function zlibversion(): string;
 begin
    zlibversion := string(zlibversionpchar);
 end;
+
+function ZLIB_VERSION(): PChar;
+begin
+  ZLIB_VERSION := zlibversionpchar;
+end;
+
 {$ENDIF}
 
 {** zlib function implementations *******************************************}
@@ -344,9 +463,22 @@ begin
   Move(source^,dest^,count);
 end;
 
+function zGetProcAddress(ProcName: PChar):Pointer;
+begin
+  result := GetProcAddress(vzHandle, ProcName);
+end;
+
 initialization
- {$IFDEF FPC}
- ZLIB_VERSION := zlibVersionpchar;
- {$ENDIF}
+
+{$IFDEF FPC}
+Initzlib;
+ReadEntryPoints;
+{$ENDIF}
+
+finalization
+
+{$IFDEF FPC}
+Closezlib
+{$ENDIF}
 
 end.
