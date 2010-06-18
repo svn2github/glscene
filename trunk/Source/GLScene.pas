@@ -3942,7 +3942,7 @@ var
   i: Integer;
   child, newChild: TGLBaseSceneObject;
 begin
-  if Source is TGLBaseSceneObject then
+  if Assigned(Source) and (Source is TGLBaseSceneObject) then
   begin
     DestroyHandles;
     FVisible := TGLBaseSceneObject(Source).FVisible;
