@@ -334,8 +334,8 @@ end;
 
 function TGLCustomGLSLShader.ShaderSupported: Boolean;
 begin
-  Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
-             GL_ARB_vertex_shader and GL_ARB_fragment_shader);
+  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
+             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
 end;
 
 function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;
@@ -494,7 +494,7 @@ begin
       GL.TransformFeedbackVaryings( FGLSLProg.Handle, NumVarying, @pVaryings[0],
         cBufferMode[FTransformFeedBackMode] );
     end;
-    CheckOpenGLError;
+    GL.CheckError;
   end;
   
   if Assigned(FOnInitialize) then FOnInitialize(Self);

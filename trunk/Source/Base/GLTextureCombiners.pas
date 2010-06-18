@@ -6,6 +6,7 @@
    Texture combiners setup utility functions.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
       <li>02/04/07 - DaStr - Added $I GLScene.inc
       <li>17/12/03 - EG - Alpha and RGB channels separate combination now supported
       <li>23/05/03 - EG - All tex units now accepted as target
@@ -62,7 +63,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Classes, OpenGL1x;
+uses Classes, OpenGL1x, GLContext;
 
 // TCAssertCheck
 //
@@ -142,9 +143,9 @@ begin
    end;
    TCAssertCheck((operandValue>0) and (sourceValue>0),
                  'invalid argument : "'+origArg+'"');
-   glTexEnvf(GL_TEXTURE_ENV, sourceEnum , sourceValue);
-   glTexEnvf(GL_TEXTURE_ENV, operandEnum, operandValue);
-   CheckOpenGLError;
+   GL.TexEnvf(GL_TEXTURE_ENV, sourceEnum , sourceValue);
+   GL.TexEnvf(GL_TEXTURE_ENV, operandEnum, operandValue);
+   GL.CheckError;
 end;
 
 // ProcessTextureCombinerLine
@@ -184,11 +185,11 @@ begin
    if Copy(dest, 1, 3)='tex' then begin
       p:=StrToIntDef(Copy(dest, 4, MaxInt), -1);
       TCAssertCheck(p>=0, 'Invalid destination texture unit "'+dest+'"');
-      glActiveTextureARB(GL_TEXTURE0_ARB+p)
+      GL.ActiveTexture(GL_TEXTURE0+p)
    end else TCAssertCheck(False, 'Invalid destination "'+dest+'"');
    // parse combiner operator
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-   CheckOpenGLError;
+   GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+   GL.CheckError;
    operEnum:=0;
    arg1:=''; arg2:=''; arg3:='';
    p:=Pos('+', line);
@@ -253,8 +254,8 @@ begin
       arg1:=line;
    end;
 
-   glTexEnvi(GL_TEXTURE_ENV, destEnum, operEnum);
-   CheckOpenGLError;
+   GL.TexEnvi(GL_TEXTURE_ENV, destEnum, operEnum);
+   GL.CheckError;
    // parse arguments
    if arg1<>'' then
       ProcessTextureCombinerArgument(arg1, sourceBaseEnum, operandBaseEnum, dest);
@@ -263,7 +264,7 @@ begin
    if arg3<>'' then
       ProcessTextureCombinerArgument(arg3, sourceBaseEnum+2, operandBaseEnum+2, dest);
 
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   GL.ActiveTexture(GL_TEXTURE0);
 end;
 
 // SetupTextureCombiners

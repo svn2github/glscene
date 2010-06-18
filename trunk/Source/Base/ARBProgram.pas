@@ -42,7 +42,7 @@ begin
       errString:=String(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
       raise Exception.CreateFmt('ARB Program Error - [Handle: %d][Pos: %d][Error %s]', [handle, errPos, errString]);
    end;
-   CheckOpenGLError;
+   GL.CheckError;
 end;
 
 end.

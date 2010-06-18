@@ -3367,6 +3367,16 @@ type
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
+    // Special Gremedy debugger extension
+    FrameTerminatorGREMEDY: procedure();
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    StringMarkerGREMEDY: procedure(len: GLsizei; str: PGLChar);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+
     constructor Create;
     procedure Initialize;
     procedure Close;
@@ -3458,20 +3468,21 @@ end;
 
 procedure TGLExtensionsAndEntryPoints.CheckError;
 var
-  glError : TGLuint;
-	Count : Word;
+  glError: TGLuint;
+  Count: Word;
 begin
   if FInitialized then
   begin
     glError := GetError();
     if glError <> GL_NO_ERROR then
     begin
-      Count:=0;
+      Count := 0;
       try
-        while (GetError <> GL_NO_ERROR) and (Count < 6) do Inc(Count);
+        while (GetError <> GL_NO_ERROR) and (Count < 6) do
+          Inc(Count);
       except
       end;
-      GLSLogger.LogError('OpenGL error: '+string(gluErrorString(glError)));
+      GLSLogger.LogError('OpenGL error: ' + string(gluErrorString(glError)));
       Abort;
     end;
   end;
@@ -4397,6 +4408,9 @@ begin
   GetMultisamplefv := GetAddress('GetMultisamplefv');
   SampleMaski := GetAddress('SampleMaski');
 
+  FrameTerminatorGREMEDY := GetAddress('FrameTerminatorGREMEDY');
+  StringMarkerGREMEDY := GetAddress('StringMarkerGREMEDY');
+
   FInitialized := True;
 end;
 
@@ -5273,6 +5287,9 @@ begin
   TexImage3DMultisample := GetCapAddress();
   GetMultisamplefv := GetCapAddress();
   SampleMaski := GetCapAddress();
+
+  FrameTerminatorGREMEDY := GetCapAddress();
+  StringMarkerGREMEDY := GetCapAddress();
 
   FInitialized := False;
 end;
