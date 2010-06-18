@@ -516,7 +516,7 @@ begin
   FFbo.Unbind;
 
   FChanged := False;
-  CheckOpenGLError;
+  GL.CheckError;
 end;
 
 procedure TGLFBORenderer.RenderToFBO(var ARci: TRenderContextInfo);

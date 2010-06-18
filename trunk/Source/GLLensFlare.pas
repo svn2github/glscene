@@ -852,7 +852,7 @@ begin
   glPopMatrix;
   glMatrixMode(GL_MODELVIEW);
 
-  CheckOpenGLError;
+  GL.CheckError;
 end;
 
 // SetGlowGradient

@@ -25,7 +25,6 @@
                            Added forward context cheking to circumvent deprecations
       <li>01/03/10 - Yar - Bugfix when texture, which has lower mip-levels than the standard number is not rendered
                            (thanks to Controller)
-      <li>24/02/10 - Yar - Improved TGLBaseImage.Narrow by using GLPBuffer for convert any data to RGBA8
       <li>23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
                            Added in AssignFrom24BitsBitmap, AssignFrom32BitsBitmap using extension GL_EXT_bgra
       <li>22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
@@ -98,8 +97,7 @@ uses
 {$IFDEF FPC}
   fpimage, intfgraphics, GraphType,
 {$ENDIF}
-  OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor, GLTextureFormat,
-  GLPBuffer;
+  OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor, GLTextureFormat;
 
 type
   TGLMinFilter = (miNearest, miLinear, miNearestMipmapNearest,
@@ -692,7 +690,8 @@ procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
 var
   vGammaLUT: array[0..255] of Byte;
   invGamma: Single;
-   i : PtrUInt;
+  i : Integer;
+  ptr: PByte;
 begin
   if pixelCount < 1 then
     Exit;
@@ -705,8 +704,12 @@ begin
   for i := 0 to 255 do
     vGammaLUT[i] := Round(255 * Power(i * (1 / 255), InvGamma));
   // perform correction
-  for i := PtrUInt(base) to PtrUInt(base) + PtrUInt(pixelCount * 3 - 1) do
-    PByte(i)^ := vGammaLUT[PByte(i)^];
+  ptr := base;
+  for i := 0 to pixelCount * 3 - 1 do
+  begin
+    ptr^ := vGammaLUT[ptr^];
+    Inc(ptr);
+  end;
 end;
 
 // GammaCorrectRGBAArray
@@ -718,7 +721,8 @@ var
   vGammaLUT: array[0..255] of Byte;
   pLUT: PByteArray;
   invGamma: Single;
-   i, n : PtrUInt;
+  i: Integer;
+  ptr : PByte;
 begin
   if pixelCount < 1 then
     Exit;
@@ -731,17 +735,16 @@ begin
   for i := 0 to 255 do
     vGammaLUT[i] := Round(255 * Power(i * (1 / 255), InvGamma));
   // perform correction
-  n := PtrUInt(base) + PtrUInt(pixelCount * 4);
-  i := PtrUInt(base);
+  ptr := base;
   pLUT := @vGammaLUT[0];
-  while i < n do
+  for i := 0 to pixelCount - 1 do
   begin
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i);
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i);
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i, 2);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr, 2);
   end;
 end;
 
@@ -752,8 +755,8 @@ procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
   factor: Single);
 var
   vBrightnessLUT: array[0..255] of Byte;
-   i : PtrUint;
-   k : Integer;
+  i, k : Integer;
+  ptr: PByte;
 begin
   if pixelCount < 1 then
     Exit;
@@ -767,8 +770,12 @@ begin
     vBrightnessLUT[i] := Byte(k);
   end;
   // perform correction
-  for i := PtrUInt(base) to PtrUInt(base) + PtrUInt(pixelCount * 3 - 1) do
-    PByte(i)^ := vBrightnessLUT[PByte(i)^];
+  ptr := base;
+  for i := 0 to pixelCount * 3 - 1 do
+  begin
+    ptr^ := vBrightnessLUT[ptr^];
+    Inc(ptr);
+  end;
 end;
 
 // BrightenRGBAArray
@@ -779,7 +786,8 @@ procedure BrightenRGBAArray(base: Pointer; pixelCount: Integer;
 var
   vBrightnessLUT: array[0..255] of Byte;
   pLUT: PByteArray;
-  i, n : PtrUInt;
+  i: Integer;
+  ptr : PByte;
   k : Integer;
 begin
   if pixelCount < 1 then
@@ -794,17 +802,16 @@ begin
     vBrightnessLUT[i] := k;
   end;
   // perform correction
-  n := PtrUInt(base) + PtrUInt(pixelCount * 4);
-  i := PtrUInt(base);
+  ptr := base;
   pLUT := @vBrightnessLUT[0];
-  while i < n do
+  for i := 0 to pixelCount - 1 do
   begin
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i);
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i);
-    PByte(i)^ := pLUT^[PByte(i)^];
-    Inc(i, 2);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr);
+    ptr^ := pLUT^[ptr^];
+    Inc(ptr, 2);
   end;
 end;
 
@@ -818,8 +825,8 @@ begin
     PAnsiChar(dest)[0] := PAnsiChar(src)[2];
     PAnsiChar(dest)[1] := PAnsiChar(src)[1];
     PAnsiChar(dest)[2] := PAnsiChar(src)[0];
-    dest := Pointer(PtrUInt(dest) + 3);
-    src := Pointer(PtrUInt(src) + 3);
+    Inc(PAnsiChar(dest), 3);
+    Inc(PAnsiChar(src), 3);
     Dec(pixelCount);
   end;
 end;
@@ -871,8 +878,8 @@ begin
     PAnsiChar(dest)[1] := PAnsiChar(src)[1];
     PAnsiChar(dest)[2] := PAnsiChar(src)[0];
     PAnsiChar(dest)[3] := #255;
-    dest := Pointer(PtrUInt(dest) + 4);
-    src := Pointer(PtrUInt(src) + 3);
+    Inc(PAnsiChar(dest), 4);
+    Inc(PAnsiChar(src), 3);
     Dec(pixelCount);
   end;
 end;
@@ -920,8 +927,8 @@ begin
     PAnsiChar(dest)[1] := PAnsiChar(src)[1];
     PAnsiChar(dest)[2] := PAnsiChar(src)[2];
     PAnsiChar(dest)[3] := #255;
-    dest := Pointer(PtrUInt(dest) + 4);
-    src := Pointer(PtrUInt(src) + 3);
+    Inc(PAnsiChar(dest), 4);
+    Inc(PAnsiChar(src), 3);
     Dec(pixelCount);
   end;
 end;
@@ -963,8 +970,8 @@ begin
     PAnsiChar(dest)[1] := PAnsiChar(src)[1];
     PAnsiChar(dest)[2] := PAnsiChar(src)[0];
     PAnsiChar(dest)[3] := PAnsiChar(src)[3];
-    dest := Pointer(PtrUInt(dest) + 4);
-    src := Pointer(PtrUInt(src) + 4);
+    Inc(PAnsiChar(dest), 4);
+    Inc(PAnsiChar(src), 4);
     Dec(pixelCount);
   end;
 end;
@@ -1108,8 +1115,7 @@ begin
   Assert((face >= 0) and (face < 6));
   // Add level offset
   if (face * fMipLevels + level) < fLevels.Count then
-    Result := PGLPixel32Array(PtrUInt(Result) + PtrUInt(fLevels.Items[face *
-      fMipLevels + level]));
+    Inc(PByte(Result), PtrUInt(fLevels.Items[face * fMipLevels + level]));
 end;
 
 // IsEmpty
@@ -1143,7 +1149,7 @@ function TGLBaseImage.ConvertCrossToCubemap: boolean;
 var
   fW, fH, pW, pH: integer;
   lData: PByteArray;
-  ptr: PGLubyte;
+  ptr, lvl: PGLubyte;
   i, j: integer;
 begin
   Result := false;
@@ -1177,7 +1183,9 @@ begin
   // Extract the faces
   ptr := PGLubyte(fData);
   // positive X
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
     Move(lData[((fH - (pH + j + 1)) * fW + 2 * pW) * fElementSize],
@@ -1185,7 +1193,9 @@ begin
     Inc(ptr, pW * fElementSize);
   end;
   // negative X
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
     Move(lData[(fH - (pH + j + 1)) * fW * fElementSize],
@@ -1193,7 +1203,9 @@ begin
     Inc(ptr, pW * fElementSize);
   end;
   // positive Y
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
     Move(lData[((4 * pH - j - 1) * fW + pW) * fElementSize],
@@ -1201,7 +1213,9 @@ begin
     Inc(ptr, pW * fElementSize);
   end;
   // negative Y
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
     Move(lData[((2 * pH - j - 1) * fW + pW) * fElementSize],
@@ -1209,7 +1223,9 @@ begin
     Inc(ptr, pW * fElementSize);
   end;
   // positive Z
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
     Move(lData[((fH - (pH + j + 1)) * fW + pW) * fElementSize],
@@ -1217,7 +1233,9 @@ begin
     Inc(ptr, pW * fElementSize);
   end;
   // negative Z
-  fLevels.Add(Pointer(PtrUInt(ptr) - PtrUInt(fData)));
+  lvl := ptr;
+  Dec(lvl, PtrUInt(fData));
+  fLevels.Add(lvl);
   for j := 0 to pH - 1 do
     for i := 0 to pW - 1 do
     begin
@@ -1319,14 +1337,9 @@ end;
 //
 
 procedure TGLBaseImage.Narrow;
-{$IFDEF MSWINDOWS}
 var
-  PBuf: TGLPixelBuffer;
   size: integer;
   tempTex: GLuint;
-  DC: HDC;
-  RC: HGLRC;
-{$ENDIF}
 begin
   // Check for already norrow
   if (fColorFormat = GL_RGBA)
@@ -1337,68 +1350,47 @@ begin
     Exit;
 
   UnMipmap;
-{$IFDEF MSWINDOWS}
-  DC := wglGetCurrentDC;
-  RC := wglGetCurrentContext;
-  // Create minimal pixel buffer
-  if (DC = 0) or (RC = 0) then
+  if CurrentGLContext <> nil then
   begin
-    PBuf := TGLPixelBuffer.Create;
-    try
-      PBuf.Initialize(1, 1);
-    except
-      PBuf.Free;
-      raise;
-    end;
-    tempTex := PBuf.TextureID;
-  end
-  else
-  begin
-    Pbuf := nil;
     GL.PushAttrib(GL_TEXTURE_BIT);
     GL.GenTextures(1, @tempTex);
-  end;
 
-  if IsFormatSupported(fInternalFormat) then
-  begin
-    // Setup texture
-    GL.Enable(GL_TEXTURE_2D);
-    GL.BindTexture(GL_TEXTURE_2D, tempTex);
-    // copy texture to video memory
-    if IsCompressedFormat(fInternalFormat) then
+    if IsFormatSupported(fInternalFormat) then
     begin
-      size := ((fWidth + 3) div 4) * ((fHeight + 3) div 4) * fElementSize;
-      GL.CompressedTexImage2D(GL_TEXTURE_2D, 0,
-        InternalFormatToOpenGLFormat(fInternalFormat),
-        fWidth, fHeight, 0, size, fData);
-    end
-    else
-      GL.TexImage2D(GL_TEXTURE_2D, 0,
-        InternalFormatToOpenGLFormat(fInternalFormat), fWidth,
-        fHeight, 0, fColorFormat, fDataType, fData);
+      // Setup texture
+      GL.Enable(GL_TEXTURE_2D);
+      GL.BindTexture(GL_TEXTURE_2D, tempTex);
+      // copy texture to video memory
+      if IsCompressedFormat(fInternalFormat) then
+      begin
+        size := ((fWidth + 3) div 4) * ((fHeight + 3) div 4) * fElementSize;
+        GL.CompressedTexImage2D(
+          GL_TEXTURE_2D, 0,
+          InternalFormatToOpenGLFormat(fInternalFormat),
+          fWidth, fHeight, 0, size, fData);
+      end
+      else
+        GL.TexImage2D(
+          GL_TEXTURE_2D,
+          0,
+          InternalFormatToOpenGLFormat(fInternalFormat),
+          fWidth, fHeight, 0, fColorFormat, fDataType, fData);
 
-    CheckOpenGLError;
-{$ENDIF}
-    fDepth := 0;
-    fColorFormat := GL_RGBA;
-    fInternalFormat := tfRGBA8;
-    fDataType := GL_UNSIGNED_BYTE;
-    fElementSize := 4;
-    fCubeMap := false;
-    fTextureArray := false;
-    ReallocMem(fData, DataSize);
-{$IFDEF MSWINDOWS}
-    // get texture from video memory in simple format
-    GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, fData);
-  end;
-  if Assigned(pBuf) then
-    pBuf.Destroy
-  else begin
-    GL.DeleteTextures(1, @tempTex);
-    GL.PopAttrib;
-  end;
-{$ENDIF}
+      fDepth := 0;
+      fColorFormat := GL_RGBA;
+      fInternalFormat := tfRGBA8;
+      fDataType := GL_UNSIGNED_BYTE;
+      fElementSize := 4;
+      fCubeMap := false;
+      fTextureArray := false;
+      ReallocMem(fData, DataSize);
 
+      // get texture from video memory in simple format
+      GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, fData);
+      GL.DeleteTextures(1, @tempTex);
+      GL.PopAttrib;
+    end;
+  end;
 end;
 
 // UnMipmap
@@ -1623,7 +1615,8 @@ end;
 
 procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
 var
-  y, rowOffset: Integer;
+  y: Integer;
+  rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
   Assert(aBitmap.PixelFormat = glpf24bit);
@@ -1631,7 +1624,7 @@ begin
   FHeight := aBitmap.Height;
   FDepth := 0;
   fMipLevels := 1;
-  if GL_EXT_bgra then
+  if GL.EXT_bgra then
   begin
     fColorFormat := GL_BGR;
     fElementSize := 3;
@@ -1702,7 +1695,7 @@ end;
 procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
 var
   y: Integer;
-  rowOffset: PtrUInt;
+  rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
   Assert(aBitmap.PixelFormat = glpf24bit);
@@ -1732,13 +1725,14 @@ begin
       if VerticalReverseOnAssignFromBitmap then
       begin
         pSrc := BitmapScanLine(aBitmap, Height - 1);
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, Height - 2)) -
-          PtrUInt(pSrc);
+        rowOffset := PtrUInt(BitmapScanLine(aBitmap, Height - 2));
+        Dec(rowOffset, PtrUInt(pSrc));
       end
       else
       begin
         pSrc := BitmapScanLine(aBitmap, 0);
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1)) - PtrUInt(pSrc);
+        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1));
+        Dec(rowOffset, PtrUInt(pSrc));
       end;
       for y := 0 to Height - 1 do
       begin
@@ -1756,7 +1750,7 @@ end;
 procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
 var
   y: Integer;
-  rowOffset : int64;
+  rowOffset : Int64;
   pSrc, pDest: PAnsiChar;
 begin
   Assert(aBitmap.PixelFormat = glpf32bit);
@@ -1785,7 +1779,10 @@ begin
     begin
       pSrc := BitmapScanLine(aBitmap, Height - 1);
       if Height > 1 then
-        rowOffset := PtrUInt(BitmapScanLine(aBitmap, Height - 2)) - PtrUInt(pSrc)
+      begin
+        rowOffset := PtrUInt(BitmapScanLine(aBitmap, Height - 2));
+        Dec(rowOffset, PtrUInt(pSrc));
+      end
       else
         rowOffset := 0;
     end
@@ -1793,7 +1790,10 @@ begin
     begin
       pSrc := BitmapScanLine(aBitmap, 0);
       if Height > 1 then
-        rowOffset := BitmapScanLine(aBitmap, 1) - (pSrc)
+      begin
+        rowOffset := PtrUInt(BitmapScanLine(aBitmap, 1));
+        Dec(rowOffset, PtrUInt(pSrc));
+      end
       else
         rowOffset := 0;
     end;
@@ -2023,7 +2023,7 @@ var
   lData: PGLubyte;
   residentFormat: TGLInternalFormat;
   bCompressed: Boolean;
-  vtcBuffer, top, bottom: PGLubyte;
+  vtcBuffer, top, bottom, ptr: PGLubyte;
   i, j, k: Integer;
   w, d, h, cw, ch: Integer;
 
@@ -2128,7 +2128,9 @@ begin
           glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
         for level := 0 to fMipLevels - 1 do
         begin
-          fLevels.Add(Pointer(PtrUInt(lData) - PtrUInt(fData)));
+          ptr := lData;
+          Dec(ptr, PtrUInt(fData));
+          fLevels.Add(ptr);
           if bCompressed then
           begin
 
@@ -2187,7 +2189,7 @@ begin
       FreeMem(fData);
       fData := nil;
     end;
-    CheckOpenGLError;
+    GL.CheckError;
   finally
     if contextActivate then
     begin
@@ -2702,7 +2704,7 @@ begin
 
   // Hardware mipmap autogeneration
   bMipmapGen := False;
-  if GL.SGIS_generate_mipmap and (target <> GL_TEXTURE_RECTANGLE) then
+  if GL.SGIS_generate_mipmap and IsTargetSupportMipmap(target) then
   begin
     bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
     if (target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X)

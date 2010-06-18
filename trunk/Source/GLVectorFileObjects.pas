@@ -706,6 +706,7 @@ type
     FValidBuffers: TVBOBuffers;
 
     procedure SetUseVBO(const Value: boolean);
+    procedure SetValidBuffers(Value: TVBOBuffers);
   protected
     { Protected Declarations }
     procedure SetTexCoords(const val: TAffineVectorList);
@@ -731,7 +732,7 @@ type
     function GetTangents: TVectorList;
     procedure SetTangentsTexCoordIndex(const val: Integer);
 
-    property ValidBuffers: TVBOBuffers read FValidBuffers write FValidBuffers;
+    property ValidBuffers: TVBOBuffers read FValidBuffers write SetValidBuffers;
   public
     { Public Declarations }
     {: Creates, assigns Owner and adds to list. }
@@ -1130,7 +1131,6 @@ type
     { Private Declarations }
     FVertexIndices: TIntegerList;
     FIndexVBO: TGLVBOElementArrayHandle;
-    FIndexVBOValid: boolean;
     FMode: TFaceGroupMeshMode;
 
     procedure SetupVBO;
@@ -4541,6 +4541,27 @@ begin
   FUseVBO := Value;
 end;
 
+procedure TMeshObject.SetValidBuffers(Value: TVBOBuffers);
+var
+  I: Integer;
+begin
+  if FValidBuffers <> Value then
+  begin
+    FValidBuffers := Value;
+    if Assigned(FVerticesVBO) then
+      FVerticesVBO.NotifyChangesOfData;
+    if Assigned(FNormalsVBO) then
+      FNormalsVBO.NotifyChangesOfData;
+    if Assigned(FColorsVBO) then
+      FColorsVBO.NotifyChangesOfData;
+    for I := 0 to high(FTexCoordsVBO) do
+      if Assigned(FTexCoordsVBO[I]) then
+        FTexCoordsVBO[I].NotifyChangesOfData;
+    if Assigned(FLightmapTexCoordsVBO) then
+      FLightmapTexCoordsVBO.NotifyChangesOfData;
+  end;
+end;
+
 // BuildTangentSpace
 //
 
@@ -4910,91 +4931,133 @@ end;
 
 procedure TMeshObject.BufferArrays;
 const
-  BufferUsage = GL_DYNAMIC_DRAW_ARB;
+  BufferUsage = GL_DYNAMIC_DRAW;
 var
-  i: integer;
+  I: integer;
 begin
-  if (Vertices.Count > 0) and not (vbVertices in ValidBuffers) then
+  if Vertices.Count > 0 then
   begin
-    if not assigned(FVerticesVBO) then
-      FVerticesVBO := TGLVBOArrayBufferHandle.CreateAndAllocate;
+    if not Assigned(FVerticesVBO) then
+      FVerticesVBO := TGLVBOArrayBufferHandle.Create;
+    FVerticesVBO.AllocateHandle;
 
-    FVerticesVBO.BindBufferData(Vertices.List, sizeof(TAffineVector) *
-      Vertices.Count, BufferUsage);
-    FVerticesVBO.UnBind;
-    ValidBuffers := ValidBuffers + [vbVertices];
-  end;
-
-  if (Normals.Count > 0) and not (vbNormals in ValidBuffers) then
-  begin
-    if not assigned(FNormalsVBO) then
-      FNormalsVBO := TGLVBOArrayBufferHandle.CreateAndAllocate;
-
-    FNormalsVBO.BindBufferData(Normals.List, sizeof(TAffineVector) *
-      Normals.Count, BufferUsage);
-    FNormalsVBO.UnBind;
-    ValidBuffers := ValidBuffers + [vbNormals];
-  end;
-
-  if (Colors.Count > 0) and not (vbColors in ValidBuffers) then
-  begin
-    if not assigned(FColorsVBO) then
-      FColorsVBO := TGLVBOArrayBufferHandle.CreateAndAllocate;
-
-    FColorsVBO.BindBufferData(Colors.List, sizeof(TVector) * Colors.Count,
+    if FVerticesVBO.IsDataNeedUpdate then
+    begin
+      FVerticesVBO.BindBufferData(
+      Vertices.List,
+      sizeof(TAffineVector) * Vertices.Count,
       BufferUsage);
-    FColorsVBO.UnBind;
-    ValidBuffers := ValidBuffers + [vbColors];
+      FVerticesVBO.NotifyDataUpdated;
+      FVerticesVBO.UnBind;
+    end;
+
+    Include(FValidBuffers, vbVertices);
   end;
 
-  if (TexCoords.Count > 0) and not (vbTexCoords in ValidBuffers) then
+  if Normals.Count > 0 then
   begin
-    if length(FTexCoordsVBO) < 1 then
+    if not Assigned(FNormalsVBO) then
+      FNormalsVBO := TGLVBOArrayBufferHandle.Create;
+    FNormalsVBO.AllocateHandle;
+
+    if FNormalsVBO.IsDataNeedUpdate then
+    begin
+      FNormalsVBO.BindBufferData(
+        Normals.List,
+        sizeof(TAffineVector) * Normals.Count,
+        BufferUsage);
+      FNormalsVBO.NotifyDataUpdated;
+      FNormalsVBO.UnBind;
+    end;
+
+    Include(FValidBuffers, vbNormals);
+  end;
+
+  if Colors.Count > 0 then
+  begin
+    if not Assigned(FColorsVBO) then
+      FColorsVBO := TGLVBOArrayBufferHandle.Create;
+    FColorsVBO.AllocateHandle;
+
+    if FColorsVBO.IsDataNeedUpdate then
+    begin
+      FColorsVBO.BindBufferData(
+        Colors.List,
+        sizeof(TVector) * Colors.Count,
+        BufferUsage);
+      FColorsVBO.NotifyDataUpdated;
+      FColorsVBO.UnBind;
+    end;
+
+    Include(FValidBuffers, vbColors);
+  end;
+
+  if TexCoords.Count > 0 then
+  begin
+    if Length(FTexCoordsVBO) < 1 then
       SetLength(FTexCoordsVBO, 1);
 
-    if not assigned(FTexCoordsVBO[0]) then
-      FTexCoordsVBO[0] := TGLVBOArrayBufferHandle.CreateAndAllocate;
+    if not Assigned(FTexCoordsVBO[0]) then
+      FTexCoordsVBO[0] := TGLVBOArrayBufferHandle.Create;
+    FTexCoordsVBO[0].AllocateHandle;
 
-    FTexCoordsVBO[0].BindBufferData(TexCoords.List, sizeof(TAffineVector) *
-      TexCoords.Count, BufferUsage);
-    FTexCoordsVBO[0].UnBind;
-    ValidBuffers := ValidBuffers + [vbTexCoords];
+    if FTexCoordsVBO[0].IsDataNeedUpdate then
+    begin
+      FTexCoordsVBO[0].BindBufferData(
+        TexCoords.List,
+        sizeof(TAffineVector) * TexCoords.Count,
+        BufferUsage);
+      FTexCoordsVBO[0].NotifyDataUpdated;
+      FTexCoordsVBO[0].UnBind;
+    end;
+
+    Include(FValidBuffers, vbTexCoords);
   end;
 
-  if (LightMapTexCoords.Count > 0) and not (vbLightMapTexCoords in ValidBuffers)
-    then
+  if LightMapTexCoords.Count > 0 then
   begin
-    if not assigned(FLightmapTexCoordsVBO) then
-      FLightmapTexCoordsVBO := TGLVBOArrayBufferHandle.CreateAndAllocate;
+    if not Assigned(FLightmapTexCoordsVBO) then
+      FLightmapTexCoordsVBO := TGLVBOArrayBufferHandle.Create;
+    FLightmapTexCoordsVBO.AllocateHandle;
 
-    FLightmapTexCoordsVBO.BindBufferData(LightMapTexCoords.List,
-      sizeof(TAffineVector) * LightMapTexCoords.Count, BufferUsage);
+    FLightmapTexCoordsVBO.BindBufferData(
+      LightMapTexCoords.List,
+      sizeof(TAffineVector) * LightMapTexCoords.Count,
+      BufferUsage);
+    FLightmapTexCoordsVBO.NotifyDataUpdated;
     FLightmapTexCoordsVBO.UnBind;
-    ValidBuffers := ValidBuffers + [vbLightMapTexCoords];
+
+    Include(FValidBuffers, vbLightMapTexCoords);
   end;
 
-  if (FTexCoordsEx.Count > 0) and not (vbTexCoordsEx in ValidBuffers) then
+  if FTexCoordsEx.Count > 0 then
   begin
-    if length(FTexCoordsVBO) < FTexCoordsEx.Count then
+    if Length(FTexCoordsVBO) < FTexCoordsEx.Count then
       SetLength(FTexCoordsVBO, FTexCoordsEx.Count);
 
-    for i := 0 to FTexCoordsEx.Count - 1 do
+    for I := 0 to FTexCoordsEx.Count - 1 do
     begin
       if TexCoordsEx[i].Count <= 0 then
         continue;
 
-      if not assigned(FTexCoordsVBO[i]) then
-        FTexCoordsVBO[i] := TGLVBOArrayBufferHandle.CreateAndAllocate;
+      if not Assigned(FTexCoordsVBO[i]) then
+        FTexCoordsVBO[i] := TGLVBOArrayBufferHandle.Create;
+      FTexCoordsVBO[i].AllocateHandle;
 
-      FTexCoordsVBO[i].BindBufferData(TexCoordsEx[i].List, sizeof(TVector) *
-        TexCoordsEx[i].Count, BufferUsage);
-      FTexCoordsVBO[i].UnBind;
+      if FTexCoordsVBO[i].IsDataNeedUpdate then
+      begin
+        FTexCoordsVBO[i].BindBufferData(
+          TexCoordsEx[i].List, sizeof(TVector) * TexCoordsEx[i].Count,
+          BufferUsage);
+        FTexCoordsVBO[i].NotifyDataUpdated;
+        FTexCoordsVBO[i].UnBind;
+      end;
     end;
 
-    ValidBuffers := ValidBuffers + [vbTexCoordsEx];
+    Include(FValidBuffers, vbTexCoordsEx);
   end;
 
-  CheckOpenGLError;
+  GL.CheckError;
 end;
 
 procedure TMeshObject.BuildList(var mrci: TRenderContextInfo);
@@ -6380,20 +6443,20 @@ end;
 
 procedure TFGVertexIndexList.SetupVBO;
 const
-  BufferUsage = GL_STATIC_DRAW_ARB;
+  BufferUsage = GL_STATIC_DRAW;
 begin
-  if not assigned(FIndexVBO) then
+  if not Assigned(FIndexVBO) then
+    FIndexVBO := TGLVBOElementArrayHandle.Create;
+
+  FIndexVBO.AllocateHandle;
+
+  if FIndexVBO.IsDataNeedUpdate then
   begin
-    FIndexVBO := TGLVBOElementArrayHandle.CreateFromData(VertexIndices.List,
-      sizeof(integer) * VertexIndices.Count,
+    FIndexVBO.BindBufferData(
+      VertexIndices.List,
+      SizeOf(Integer) * VertexIndices.Count,
       BufferUsage);
-    FIndexVBOValid := true;
-  end
-  else if not FIndexVBOValid then
-  begin
-    FIndexVBO.BindBufferData(VertexIndices.List, sizeof(integer) *
-      VertexIndices.Count,
-      BufferUsage);
+    FIndexVBO.NotifyDataUpdated;
   end;
 end;
 
@@ -6646,7 +6709,8 @@ end;
 
 procedure TFGVertexIndexList.InvalidateVBO;
 begin
-  FIndexVBOValid := false;
+  if Assigned(FIndexVBO) then
+    FIndexVBO.NotifyChangesOfData;
 end;
 
 // ------------------
@@ -6915,7 +6979,7 @@ begin
     end;
   end;
   GL.End_;
-  CheckOpenGLError;
+  GL.CheckError;
 end;
 
 // AddToTriangles

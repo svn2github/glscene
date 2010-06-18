@@ -7,6 +7,7 @@
   texture data.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
       <li>20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
       <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
                            simplify GetBitsPerPixel and GetDataFormat
@@ -143,7 +144,7 @@ begin
     glTexImage2D(TTarget, 0, OwnerTexture.OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
   end;
 
-  CheckOpenGLError;
+  GL.CheckError;
   
   if assigned(FPBO) then
   begin
@@ -156,7 +157,7 @@ begin
     FData:= FBuffer;
   end;
 
-  CheckOpenGLError;
+  GL.CheckError;
 
   FDirtyRect:= GLRect(0, 0, Width, Height);
 end;
@@ -208,7 +209,7 @@ begin
 
   FData:= nil;
 
-  CheckOpenGLError;
+  GL.CheckError;
 end;
 
 procedure TGLDynamicTextureImage.FreeBuffer;

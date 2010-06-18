@@ -1471,7 +1471,7 @@ begin
         (rci.scene as TGLScene).SetupLights(maxLight);
       glTranslatef(FBuildOffset.X, FBuildOffset.Y, FBuildOffset.Z);
       impostoredObject.Render(rci);
-      CheckOpenGLError;
+      GL.CheckError;
 
       xDest := (curSample mod FSamplesPerAxis.X) * SampleSize;
       yDest := (curSample div FSamplesPerAxis.X) * SampleSize;

@@ -36,10 +36,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   GLScene,
   VectorGeometry,
   OpenGL1x,
+  GLContext,
   GLSilhouette,
   GLCrossPlatform,
   PersistentClasses,
@@ -319,7 +321,6 @@ implementation
 uses
   SysUtils,
   VectorLists,
-  GLContext,
   GLState,
   VectorTypes;
 
@@ -1157,4 +1158,3 @@ initialization
   RegisterClasses([TGLShadowVolume]);
 
 end.
-
