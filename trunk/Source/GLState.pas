@@ -125,6 +125,7 @@ type
 const
   cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
   MAX_HARDWARE_LIGHT = 16;
+  MAX_HARDWARE_TEXTURE_UNIT = 48;
 
 type
 
@@ -218,11 +219,12 @@ type
     FSampleMaskValue: array[0..15] of TGLbitfield;
 
     // Texture state
-    FTextureBinding: array[0..47, TGLTextureTarget] of TGLuint;
+    FMaxTextureImageUnits: TGLuint;
+    FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of TGLuint;
 
     // Active texture state
     FActiveTexture: TGLint; // 0 .. Max_texture_units
-    FActiveTextureEnabling: array[0..47, TGLTextureTarget] of Boolean;
+    FActiveTextureEnabling: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Boolean;
 
     // Pixel operation state
     FEnableScissorTest: TGLboolean;
@@ -381,6 +383,7 @@ type
     function GetSampleMaskValue(Index: Integer): TGLbitfield;
     procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield);
     // Texture state
+    function GetMaxTextureImageUnits: Integer;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
       TGLuint;
     procedure SetTextureBinding(Index: Integer; target: TGLTextureTarget;
@@ -658,6 +661,7 @@ type
     read GetTextureBinding write SetTextureBinding;
     property ActiveTextureEnabled[Target: TGLTextureTarget]: Boolean read
     GetActiveTextureEnabled write SetActiveTextureEnabled;
+    property MaxTextureImageUnits: Integer read GetMaxTextureImageUnits;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
@@ -2093,6 +2097,13 @@ begin
   Result := FSampleMaskValue[Index];
 end;
 
+function TGLStateCache.GetMaxTextureImageUnits: Integer;
+begin
+  if FMaxTextureImageUnits = 0 then
+    GL.GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, @FMaxTextureImageUnits);
+  Result := Integer(FMaxTextureImageUnits);
+end;
+
 function TGLStateCache.GetTextureBinding(Index: Integer;
   target: TGLTextureTarget): TGLuint;
 begin
@@ -2861,7 +2872,6 @@ procedure TGLStateCache.SetLightEnabling(I: Integer; Value: Boolean);
 begin
   if FForwardContext then
     exit;
-
   if (FLightEnabling[I] <> Value) or FInsideList then
   begin
     if FInsideList then
