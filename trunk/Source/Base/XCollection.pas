@@ -558,10 +558,17 @@ begin
     with reader do
     begin
       // save current reader position, it will be used to rewind the reader if the DFM is too old
-      {$IFNDEF FPC}
-      InitialPosition := reader.Position;
-      {$ENDIF}
-      Read(Header[0], Length(Header));
+      try
+        {$IFNDEF FPC}
+        InitialPosition := Position;
+        {$ENDIF}
+        Read(Header[0], Length(Header));
+      except
+        Header[0] := #0;
+        Header[1] := #0;
+        Header[2] := #0;
+        Header[3] := #0;
+      end;
 
       // after reading the header, we need to compare it with the MAGIC reference
       if  (Header[0] = MAGIC[0]) and (Header[1] = MAGIC[1])
@@ -575,7 +582,7 @@ begin
         // if the header is invalid (old DFM) just assume archive version is 0 and rewind reader
         FArchiveVersion := 0;
         {$IFNDEF FPC}
-        reader.Position := InitialPosition;
+        Position := InitialPosition;
         {$ENDIF}
       end;
 
