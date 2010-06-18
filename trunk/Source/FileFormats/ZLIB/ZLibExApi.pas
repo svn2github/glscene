@@ -40,6 +40,7 @@ interface
 
 {$I ZLibEx.inc}
 {$I GLScene.inc}
+
 const
   {** version ids ***********************************************************}
 
@@ -175,7 +176,7 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
     {$ifdef netware}  {zlib.nlm comes with netware6}
      libz='zlib';
     {$ENDIF}
-    {$IFDEF MSWindows}
+    {$IFDEF MSWINDOWS}
      //Note that this is the official ZLIB1 .DLL from the http://www.zlib.net/
      libz='zlib1';
      {$ENDIF}
@@ -359,10 +360,10 @@ const
    INVALID_MODULEHANDLE = 0;//nil;
 
 var
-   {$IFDEF MSWindows}
+   {$IFDEF MSWINDOWS}
    vzHandle: HINST;//Pointer;
    {$ENDIF}
-   {$IFDEF Unix}
+   {$IFDEF UNIX}
    vzHandle: TLibHandle = 0;//Pointer;
    {$ENDIF}
 
@@ -400,31 +401,18 @@ begin
   zErrorpchar := zGetProcAddress('zError');
   inflateSyncPoint := zGetProcAddress('inflateSyncPoint');
   get_crc_table := zGetProcAddress('get_crc_table');
-
   deflateInit_:= zGetProcAddress('deflateInit_');
-
   deflateInit2_:= zGetProcAddress('inflateInit2_');
-
   deflate:= zGetProcAddress('deflate');
-
   deflateEnd:= zGetProcAddress('deflateEnd');
-
   deflateReset:= zGetProcAddress('deflateReset');
-
   inflateInit_:= zGetProcAddress('inflateInit_');
-
   inflateInit2_:= zGetProcAddress('inflateInit2_');
-
   inflate:= zGetProcAddress('inflate');
-
   inflateEnd:= zGetProcAddress('inflateEnd');
-
   inflateReset:= zGetProcAddress('inflateReset');
-
   adler32:= zGetProcAddress('adler32');
-
   crc32:= zGetProcAddress('crc32');
-
 end;
 
 function zlibversion(): string;
@@ -437,6 +425,10 @@ begin
   ZLIB_VERSION := zlibversionpchar;
 end;
 
+function zGetProcAddress(ProcName: PChar):Pointer;
+begin
+  result := GetProcAddress(vzHandle, ProcName);
+end;
 {$ENDIF}
 
 {** zlib function implementations *******************************************}
@@ -461,11 +453,6 @@ end;
 procedure _memcpy(dest, source: Pointer; count: Integer); cdecl;
 begin
   Move(source^,dest^,count);
-end;
-
-function zGetProcAddress(ProcName: PChar):Pointer;
-begin
-  result := GetProcAddress(vzHandle, ProcName);
 end;
 
 initialization

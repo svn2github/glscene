@@ -3944,7 +3944,7 @@ var
   i: Integer;
   child, newChild: TGLBaseSceneObject;
 begin
-  if Assigned(Source) and (Source is TGLBaseSceneObject) then
+  if Source is TGLBaseSceneObject then
   begin
     DestroyHandles;
     FVisible := TGLBaseSceneObject(Source).FVisible;
@@ -8622,9 +8622,6 @@ begin
       CreateContext(Cardinal(ABitmap.Canvas.Handle));
     end;
     try
-      // save current window context states
-      // we must free the lists before changeing context, or it will have no effect
-      GLContextManager.DestroyAllHandles;
       bmpContext.Activate;
       try
         SetupRenderingContext(bmpContext);
@@ -8653,7 +8650,6 @@ begin
       finally
         bmpContext.Deactivate;
       end;
-      GLContextManager.DestroyAllHandles;
     finally
       bmpContext.Free;
     end;
