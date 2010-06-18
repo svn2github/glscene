@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>15/06/10 - Yar - Replace Shell to fpSystem
       <li>04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
       <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
                              (thanks Predator)
@@ -478,7 +479,7 @@ begin
   ShellExecute(0, 'open', PChar(Url), Nil, Nil, SW_SHOW);
 {$ENDIF}
 {$IFDEF UNIX}
-  Shell(PChar('env xdg-open ' + Url));
+  fpSystem(PChar('env xdg-open ' + Url));
 {$ENDIF}
 end;
 
