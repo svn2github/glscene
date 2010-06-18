@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/06/10 - Yar - Changed context sharing method for similarity to GLX
       <li>06/06/10 - Yar - Moved forward context creation to DoCreateContext
                            make outputDevice HWND type
       <li>19/05/10 - Yar - Added choice between hardware and software acceleration
@@ -71,8 +72,8 @@ type
   TGLWin32Context = class(TGLContext)
   private
     { Private Declarations }
-    FRC: HGLRC;
     FDC: HDC;
+    FRC, FShareContext: HGLRC;
     FHPBUFFER: Integer;
     FiAttribs: packed array of Integer;
     FfAttribs: packed array of Single;
@@ -107,7 +108,6 @@ type
     procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal); virtual;
       abstract;
 {$ENDIF}
-
   public
     { Public Declarations }
     constructor Create; override;
@@ -283,10 +283,6 @@ threadvar
 {$ENDIF}
   vLastPixelFormat: Integer;
   vLastVendor: TGLString;
-{$IFDEF GLS_EXPERIMENTAL}
-  vLastDC: HDC;
-  vLastRC: HGLRC;
-{$ENDIF}
 
   // Create
   //
@@ -503,8 +499,7 @@ begin
     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
   if AuxBuffers > 0 then
     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample and GL_ARB_multisample
-    then
+  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample and GL_ARB_multisample then
   begin
     if AntiAliasing = aaNone then
       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
@@ -594,7 +589,7 @@ var
   tempWnd: HWND;
   tempDC, outputDC: HDC;
   localDC: HDC;
-  localRC: HGLRC;
+  localRC, sharedRC: HGLRC;
 
   function CurrentPixelFormatIsHardwareAccelerated: Boolean;
   var
@@ -687,8 +682,7 @@ begin
             ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
-              if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault])
-                then
+              if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then
               begin
                 // Pick first non AntiAliased for aaDefault and aaNone modes
                 iAttrib := WGL_SAMPLE_BUFFERS_ARB;
@@ -715,7 +709,9 @@ begin
           DoDeactivate;
         end;
       finally
+        sharedRC := FShareContext;
         DoDestroyContext;
+        FShareContext := sharedRC;
       end;
     finally
       ReleaseDC(0, tempDC);
@@ -777,12 +773,11 @@ begin
   begin
     if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0)
       and (FAcceleration = chaHardware) then
-      begin
-        FAcceleration := chaSoftware;
-        GLSLogger.LogWarning('Unable to create rendering context with hardware acceleration - down to software');
-      end;
+    begin
+      FAcceleration := chaSoftware;
+      GLSLogger.LogWarning('Unable to create rendering context with hardware acceleration - down to software');
+    end;
   end;
-
 
   FRC := wglCreateContext(outputDC);
   if FRC = 0 then
@@ -827,6 +822,11 @@ begin
     GLStates.MultisampleFilterHint := hintDontCare;
 
   Deactivate;
+
+  // Share identifiers with other context if it deffined
+  if not FLegacyContextsOnly and (FShareContext <> 0) then
+    if not wglShareLists(FRC, FShareContext) then
+      GLSLogger.LogError('DoCreateContext - Failed to share contexts');
 end;
 
 // SpawnLegacyContext
@@ -860,7 +860,7 @@ var
   iFormats: array[0..31] of Integer;
   iPBufferAttribs: array[0..0] of Integer;
   localHPBuffer: Integer;
-  localRC, FFRC: HGLRC;
+  localRC, FFRC, shareRC: HGLRC;
   localDC, tempDC: HDC;
   tempWnd: HWND;
 begin
@@ -912,12 +912,14 @@ begin
         end
         else
           raise Exception.Create('WGL_ARB_pbuffer support required.');
-        CheckOpenGLError;
+        GL.CheckError;
       finally
         DoDeactivate;
       end;
     finally
+      shareRC := FShareContext;
       DoDestroyContext;
+      FShareContext :=  shareRC;
     end;
   finally
     ReleaseDC(0, tempDC);
@@ -928,7 +930,6 @@ begin
   end;
   FAcceleration := chaHardware;
 
-  // Specific which color buffers are to be drawn into
   Activate;
   // Initialize forward context
   if GLStates.ForwardContext then
@@ -964,9 +965,16 @@ begin
   else
     GLStates.MultisampleFilterHint := hintDontCare;
 
+  // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
     FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+
   Deactivate;
+
+  // Share identifiers with other context if it deffined
+  if FShareContext <> 0 then
+    if not wglShareLists(FShareContext, FRC) then
+      GLSLogger.LogError('DoCreateMemoryContext - Failed to share contexts');
 end;
 
 // DoShareLists
@@ -978,11 +986,17 @@ var
 begin
   if aContext is TGLWin32Context then
   begin
-    otherRC := TGLWin32Context(aContext).FRC;
-    // some drivers fail (access violation) when requesting to share
-    // a context with itself
-    if FRC <> otherRC then
-      wglShareLists(FRC, otherRC);
+    otherRC := TGLWin32Context(aContext).RC;
+    if RC <> 0 then
+    begin
+      if RC <> otherRC then
+      begin
+        FShareContext := otherRC;
+        wglShareLists(FRC, otherRC);
+      end;
+    end
+    else
+      FShareContext := otherRC;
   end
   else
     raise Exception.Create(cIncompatibleContexts);
@@ -1007,6 +1021,7 @@ begin
   end;
   FRC := 0;
   FDC := 0;
+  FShareContext := 0;
 end;
 
 // DoActivate
@@ -1016,22 +1031,11 @@ procedure TGLWin32Context.DoActivate;
 var
   pixelFormat: Integer;
 begin
-{$IFDEF GLS_EXPERIMENTAL}
-  if (vLastDC <> FDC) or (vLastRC <> FRC) then
-  begin
-    vLastDC := FDC;
-    vLastRC := FRC;
-    if not wglMakeCurrent(FDC, FRC) then
-      raise EGLContext.Create(Format(cContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]));
-  end;
-{$ELSE}
   if not wglMakeCurrent(FDC, FRC) then
     raise EGLContext.Create(Format(cContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]));
-{$ENDIF}
 
-   if not FGL.IsInitialized then
+  if not FGL.IsInitialized then
     FGL.Initialize;
 
   // The extension function addresses are unique for each pixel format. All rendering
@@ -1059,10 +1063,8 @@ end;
 
 procedure TGLWin32Context.DoDeactivate;
 begin
-{$IFNDEF GLS_EXPERIMENTAL}
   if not wglMakeCurrent(0, 0) then
     raise Exception.Create(cContextDeactivationFailed);
-{$ENDIF}
 end;
 
 // IsValid
@@ -1108,3 +1110,4 @@ finalization
 {$ENDIF}
 
 end.
+
