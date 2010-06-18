@@ -378,7 +378,8 @@ end;
 
 procedure TGLSDLContext.DoActivate;
 begin
-  // nothing particular (only one context, always active)
+  if not FGL.IsInitialized then
+    FGL.Initialize;
 end;
 
 // Deactivate
