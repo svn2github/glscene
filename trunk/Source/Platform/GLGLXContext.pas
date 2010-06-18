@@ -6,6 +6,7 @@
    GLX specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/06/10 - Yar - Improved memory context and context sharing
       <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
       <li>06/06/10 - Yar - Fixes for Linux x64. DoActivate method now check contexts difference
       <li>21/04/10 - Yar - Added support for GLX versions lower than 1.3
@@ -117,10 +118,6 @@ threadvar
   vLastConfigs: PGLXFBConfigArray;
   vLastConfigsNumber: GLint;
   vLastVendor: TGLString;
-{$IFDEF GLS_EXPERIMENTAL}
-  vLastDC: GLXDrawable;
-  vLastRC: GLXContext;
-{$ENDIF}
 
 var
   ForwardContextAttribList: array[0..6] of Integer = (
@@ -538,9 +535,9 @@ procedure TGLGLXContext.DoCreateMemoryContext(outputDevice: HWND; width,
   height: Integer; BufferCount: integer);
 var
   FHPBufferAttribList: array[0..6] of Integer = (
-    GLX_PBUFFER_WIDTH, 30,
-    GLX_PBUFFER_HEIGHT, 30,
-    GLX_PRESERVED_CONTENTS, GL_True,
+    GLX_PBUFFER_WIDTH, 256,
+    GLX_PBUFFER_HEIGHT, 256,
+    GLX_LARGEST_PBUFFER, GL_False,
     none);
   fMaxWidth, TempW, fMaxHeight, TempH: Integer;
   fwin: TWindow;
@@ -578,10 +575,12 @@ begin
   GLSLogger.Log('GLGLXContext :DoCreateContext->Have deleted a time window');
 {$ENDIF}
 
-  if GLX_VERSION_1_3 or GLX_VERSION_1_4 then
+  fNewContext := GLX_VERSION_1_3 or GLX_VERSION_1_4;
+  if fNewContext then
   begin
-    if (@glXChooseFBConfig = nil) or (@glXGetFBConfigAttrib = nil) or
-      (@glXCreateNewContext = nil) then
+    if (@glXChooseFBConfig = nil)
+      or (@glXGetFBConfigAttrib = nil)
+      or (@glXCreateNewContext = nil) then
       raise
         EGLContext.Create('Functions glXChooseFBConfig or glXGetFBConfigAttrib or glXCreateNewContext have not been loaded.');
     AddIAttrib(GLX_X_RENDERABLE, GL_True);
@@ -631,6 +630,13 @@ begin
   else
     raise
         EGLContext.Create('For Memory Context required GLX above 1.2');
+
+  Activate;
+
+  if BufferCount > 1 then
+    FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+
+  Deactivate;
 end;
 
 // DoShareLists
@@ -640,16 +646,19 @@ procedure TGLGLXContext.DoShareLists(aContext: TGLContext);
 var
   otherRC: GLXContext;
 begin
-{$MESSAGE Warn 'DoShareLists: Needs to be implemented'}
   if aContext is TGLGLXContext then
   begin
     otherRC := TGLGLXContext(aContext).RenderingContext;
-    // some drivers fail (access violation) when requesting to share
-    // a context with itself
-    if RenderingContext <> otherRC then
-      //Can't find such a function.
-      //wglShareLists(FRC, otherRC);
-      //Seems, a sharedList context must be given when creating the context (3. parameter of glXCeateContext)
+    if RenderingContext <> nil then
+    begin
+      if (RenderingContext <> otherRC) then
+      begin
+        DestroyContext;
+        FShareContext:= otherRC;
+      end;
+    end
+    else
+      FShareContext := otherRC;
   end
   else
     raise Exception.Create(cIncompatibleContexts);
@@ -680,6 +689,7 @@ begin
     end;
     FRC := nil;
     FDC := 0;
+    FShareContext := nil;
     XCloseDisplay(FDisplay);
     FCurScreen := 0;
   finally
@@ -699,18 +709,8 @@ var
   vConfigs: PGLXFBConfigArray;
   N: TGLint;
 begin
-{$IFDEF GLS_EXPERIMENTAL}
-  if (vLastDC <> FDC) or (vLastRC <> FRC) then
-  begin
-    vLastDC := FDC;
-    vLastRC := FRC;
   if not _glXMakeCurrent(FDisplay, FDC, FRC) then
     raise EGLContext.Create(cContextActivationFailed);
-  end;
-{$ELSE}
-  if not _glXMakeCurrent(FDisplay, FDC, FRC) then
-    raise EGLContext.Create(cContextActivationFailed);
-{$ENDIF}
 
   if not FGL.IsInitialized then
     FGL.Initialize;
@@ -751,10 +751,8 @@ end;
 
 procedure TGLGLXContext.DoDeactivate;
 begin
-{$IFNDEF GLS_EXPERIMENTAL}
   if not _glXMakeCurrent(FDisplay, 0, nil) then
     raise EGLContext.Create(cContextDeactivationFailed);
-{$ENDIF}
 end;
 
 constructor TGLGLXContext.Create;
