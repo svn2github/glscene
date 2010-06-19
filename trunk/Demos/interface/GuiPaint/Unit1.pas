@@ -233,8 +233,8 @@ begin
   Bitmap.Height := Round(GLCanvas.height);
   If StartX <> -1 then
   Begin
-    Bitmap.Canvas.MoveTo(StartX-Round(Sender.left),StartY-Round(Sender.top));
-    Bitmap.Canvas.LineTo(CurrentX-Round(Sender.left),CurrentY-Round(Sender.top));
+    Bitmap.Canvas.MoveTo(StartX-Round(Sender.Position.X),StartY-Round(Sender.Position.Y));
+    Bitmap.Canvas.LineTo(CurrentX-Round(Sender.Position.X),CurrentY-Round(Sender.Position.Y));
     StartX := CurrentX;
     StartY := CurrentY;
   End;

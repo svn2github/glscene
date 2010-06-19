@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 182
   Top = 91
-  Width = 515
-  Height = 504
   Caption = 'Gui Paint'
+  ClientHeight = 446
+  ClientWidth = 499
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,54 +21,63 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 507
-    Height = 458
+    Width = 499
+    Height = 446
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 154.724838256835900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000020410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GuiRoot: TGLBaseControl
+      Autosize = False
       RedrawAtOnce = False
       NoZWrite = False
-      Width = 10000
-      Height = 10000
+      DoChangesOnProgress = False
+      Width = 10000.000000000000000000
+      Height = 10000.000000000000000000
       object GLForm1: TGLForm
+        Autosize = False
         RedrawAtOnce = False
         GuiLayout = GLGuiLayout1
         GuiLayoutName = 'form'
-        AlphaChannel = 0.5
+        AlphaChannel = 0.500000000000000000
         NoZWrite = False
-        Width = 300
-        Height = 300
-        Left = 100
-        Top = 100
+        DoChangesOnProgress = False
+        Width = 300.000000000000000000
+        Height = 300.000000000000000000
+        Left = 100.000000000000000000
+        Top = 100.000000000000000000
         Position.Coordinates = {0000C8420000C842000000000000803F}
         BitmapFont = WindowsBitmapFont1
         DefaultColor = clMaroon
         Caption = 'Paint'
         TitleColor = clWhite
         OnMoving = GLForm1Moving
+        TitleOffset = 2.000000000000000000
         object PenButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 40
-          Height = 40
-          Left = 110
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 40.000000000000000000
+          Height = 40.000000000000000000
+          Left = 10.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {0000DC4200000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -80,20 +89,22 @@ object Form1: TForm1
           Pressed = True
           OnButtonClick = PenButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 32
-          LogicHeight = 34
-          YOffset = 1
+          LogicWidth = 32.000000000000000000
+          LogicHeight = 34.000000000000000000
+          YOffset = 1.000000000000000000
           AllowUp = True
         end
         object BrushButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 40
-          Height = 40
-          Left = 150
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 40.000000000000000000
+          Height = 40.000000000000000000
+          Left = 50.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {0000164300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -105,30 +116,34 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = BrushButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 32
-          LogicHeight = 34
-          YOffset = 1
+          LogicWidth = 32.000000000000000000
+          LogicHeight = 34.000000000000000000
+          YOffset = 1.000000000000000000
           AllowUp = True
         end
         object GLPanel1: TGLPanel
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 280
-          Height = 214
-          Left = 110
-          Top = 176
+          DoChangesOnProgress = False
+          Width = 280.000000000000000000
+          Height = 214.000000000000000000
+          Left = 10.000000000000000000
+          Top = 76.000000000000000000
           Position.Coordinates = {0000DC4200003043000000000000803F}
           object GLCanvas: TGLCustomControl
+            Autosize = False
             RedrawAtOnce = False
             GuiLayout = GLGuiLayout1
             GuiLayoutName = 'button'
             NoZWrite = False
-            Width = 274
-            Height = 208
-            Left = 113
-            Top = 179
+            DoChangesOnProgress = False
+            Width = 274.000000000000000000
+            Height = 208.000000000000000000
+            Left = 3.000000000000000000
+            Top = 3.000000000000000000
             Position.Coordinates = {0000E24200003343000000000000803F}
             OnMouseDown = GLCanvasMouseDown
             OnMouseMove = GLCanvasMouseMove
@@ -139,18 +154,21 @@ object Form1: TForm1
             Focused = False
             FocusedColor = clBlack
             OnRender = GLCanvasRender
+            Centered = False
             MaxInvalidRenderCount = 0
           end
         end
         object WhiteButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 20
-          Height = 20
-          Left = 190
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 20.000000000000000000
+          Height = 20.000000000000000000
+          Left = 90.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {00003E4300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -162,19 +180,21 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = WhiteButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 13
-          LogicHeight = 10
+          LogicWidth = 13.000000000000000000
+          LogicHeight = 10.000000000000000000
           AllowUp = True
         end
         object BlackButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 20
-          Height = 20
-          Left = 210
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 20.000000000000000000
+          Height = 20.000000000000000000
+          Left = 110.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {0000524300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -186,19 +206,21 @@ object Form1: TForm1
           Pressed = True
           OnButtonClick = BlackButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 13
-          LogicHeight = 10
+          LogicWidth = 13.000000000000000000
+          LogicHeight = 10.000000000000000000
           AllowUp = True
         end
         object RedButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 20
-          Height = 20
-          Left = 230
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 20.000000000000000000
+          Height = 20.000000000000000000
+          Left = 130.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {0000664300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -210,19 +232,21 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = RedButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 13
-          LogicHeight = 10
+          LogicWidth = 13.000000000000000000
+          LogicHeight = 10.000000000000000000
           AllowUp = True
         end
         object GreenButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 20
-          Height = 20
-          Left = 250
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 20.000000000000000000
+          Height = 20.000000000000000000
+          Left = 150.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {00007A4300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -234,19 +258,21 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = GreenButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 13
-          LogicHeight = 10
+          LogicWidth = 13.000000000000000000
+          LogicHeight = 10.000000000000000000
           AllowUp = True
         end
         object BlueButton: TGLButton
+          Autosize = False
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
           NoZWrite = False
-          Width = 20
-          Height = 20
-          Left = 270
-          Top = 132
+          DoChangesOnProgress = False
+          Width = 20.000000000000000000
+          Height = 20.000000000000000000
+          Left = 170.000000000000000000
+          Top = 32.000000000000000000
           Position.Coordinates = {0000874300000443000000000000803F}
           BitmapFont = WindowsBitmapFont1
           DefaultColor = clBlack
@@ -258,15 +284,15 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = BlueButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 13
-          LogicHeight = 10
+          LogicWidth = 13.000000000000000000
+          LogicHeight = 10.000000000000000000
           AllowUp = True
         end
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       Position.Coordinates = {0000A04000004040000080400000803F}
       Left = 240
       Top = 152
@@ -320,8 +346,6 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    MinFontSize = 0
-    MaxFontSize = 0
     Left = 112
     Top = 16
   end
@@ -335,63 +359,53 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {00004041000084420000000000000000}
             BottomRight.Coordinates = {000018420000B8420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'center1'
           end
           item
-            TopLeft.Coordinates = {00000000000000000000000000000000}
             BottomRight.Coordinates = {000088410000F0410000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
             TopLeft.Coordinates = {00008841000000000000000000000000}
             BottomRight.Coordinates = {0000E0420000F0410000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
             TopLeft.Coordinates = {000000000000F8410000000000000000}
             BottomRight.Coordinates = {000000410000DA420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
             TopLeft.Coordinates = {0000E042000000000000000000000000}
             BottomRight.Coordinates = {000000430000F0410000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
             TopLeft.Coordinates = {0000F0420000F0410000000000000000}
             BottomRight.Coordinates = {000000430000DE420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
             TopLeft.Coordinates = {000000000000E4420000000000000000}
             BottomRight.Coordinates = {00006041000000430000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
             TopLeft.Coordinates = {000070410000F0420000000000000000}
             BottomRight.Coordinates = {0000E242000000430000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
             TopLeft.Coordinates = {0000E4420000E4420000000000000000}
             BottomRight.Coordinates = {00000043000000430000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
@@ -402,63 +416,54 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {00004041000084420000000000000000}
             BottomRight.Coordinates = {00001C420000BA420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'center1'
           end
           item
             TopLeft.Coordinates = {0000104100007C420000000000000000}
             BottomRight.Coordinates = {00005041000086420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
             TopLeft.Coordinates = {0000304100007C420000000000000000}
             BottomRight.Coordinates = {00002042000084420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
             TopLeft.Coordinates = {00001041000082420000000000000000}
             BottomRight.Coordinates = {000040410000BC420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
             TopLeft.Coordinates = {0000184200007C420000000000000000}
             BottomRight.Coordinates = {00002842000086420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
             TopLeft.Coordinates = {00001C42000082420000000000000000}
             BottomRight.Coordinates = {000028420000BA420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
             TopLeft.Coordinates = {000010410000B8420000000000000000}
             BottomRight.Coordinates = {000050410000C0420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
             TopLeft.Coordinates = {000030410000BA420000000000000000}
             BottomRight.Coordinates = {000020420000C0420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
             TopLeft.Coordinates = {000018420000B8420000000000000000}
             BottomRight.Coordinates = {000028420000C0420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
@@ -469,63 +474,54 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {000024420000F8410000000000000000}
             BottomRight.Coordinates = {00003442000018420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
             TopLeft.Coordinates = {000034420000F8410000000000000000}
             BottomRight.Coordinates = {00005442000014420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
             TopLeft.Coordinates = {000054420000F8410000000000000000}
             BottomRight.Coordinates = {00006442000018420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
             TopLeft.Coordinates = {00002442000018420000000000000000}
             BottomRight.Coordinates = {00003442000030420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
             TopLeft.Coordinates = {00003442000014420000000000000000}
             BottomRight.Coordinates = {0000544200002C420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end
           item
             TopLeft.Coordinates = {00005442000018420000000000000000}
             BottomRight.Coordinates = {00006442000030420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
             TopLeft.Coordinates = {00002442000030420000000000000000}
             BottomRight.Coordinates = {00003442000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
             TopLeft.Coordinates = {00003442000030420000000000000000}
             BottomRight.Coordinates = {00005442000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
             TopLeft.Coordinates = {00005442000030420000000000000000}
             BottomRight.Coordinates = {00006442000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
@@ -536,63 +532,54 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {000068420000F8410000000000000000}
             BottomRight.Coordinates = {00007842000014420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
             TopLeft.Coordinates = {000078420000F8410000000000000000}
             BottomRight.Coordinates = {00008C42000014420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
             TopLeft.Coordinates = {00008C420000F8410000000000000000}
             BottomRight.Coordinates = {00009442000014420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
             TopLeft.Coordinates = {00006842000014420000000000000000}
             BottomRight.Coordinates = {00007842000030420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
             TopLeft.Coordinates = {00007842000018420000000000000000}
             BottomRight.Coordinates = {00008C42000030420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end
           item
             TopLeft.Coordinates = {00008C42000014420000000000000000}
             BottomRight.Coordinates = {00009442000030420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
             TopLeft.Coordinates = {00006842000030420000000000000000}
             BottomRight.Coordinates = {00007842000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
             TopLeft.Coordinates = {00007842000030420000000000000000}
             BottomRight.Coordinates = {00008C42000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
             TopLeft.Coordinates = {00008C42000030420000000000000000}
             BottomRight.Coordinates = {00009442000044420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
@@ -603,7 +590,6 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {0000B44200003C420000000000000000}
             BottomRight.Coordinates = {0000D042000074420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end>
@@ -614,7 +600,6 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {0000B4420000F8410000000000000000}
             BottomRight.Coordinates = {0000D042000034420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end>
@@ -625,7 +610,6 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {0000964200003C420000000000000000}
             BottomRight.Coordinates = {0000B242000074420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end>
@@ -636,7 +620,6 @@ object Form1: TForm1
           item
             TopLeft.Coordinates = {000096420000F8410000000000000000}
             BottomRight.Coordinates = {0000B242000034420000000000000000}
-            Scale.Coordinates = {0000803F0000803F0000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end>
