@@ -16,6 +16,7 @@
 
 
  <b>Historique : </b><font size=-1><ul>
+      <li>20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
       <li>14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
       <li>20/05/10 - Yar - Fixes for Linux x64
                            Replace OpenGL1x functions to OpenGLAdapter
@@ -556,7 +557,9 @@ begin
   else if (magic[0] and $0000FFFF)=$00003F23 then
     ext := 'HDR'
   else if (magic[0] = $474E5089) and (magic[1] = $0A1A0A0D) then
-    ext := 'PNG';
+    ext := 'PNG'
+  else if (magic[0] = $E0FFD8FF) and (magic[1] = $464A1000) then
+    ext := 'JPG';
 
   Result := FindExt(ext);
   if not Assigned(Result) then
