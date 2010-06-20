@@ -146,7 +146,6 @@ object frmMain: TfrmMain
         Blend = False
       end
       object Actor1: TGLActor
-        Material.Texture.Disabled = False
         Material.MaterialLibrary = MatLib
         Direction.Coordinates = {2EBD3B34F0AD099D0000803F00000000}
         Position.Coordinates = {000080BF00000000000000000000803F}
@@ -159,7 +158,7 @@ object frmMain: TfrmMain
       end
       object GLPlane1: TGLPlane
         Material.MaterialLibrary = MatLib
-        Material.LibMaterialName = 'Floor'
+        Material.LibMaterialName = 'floor_parquet'
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {0000000000000000000080BF00000000}
         Height = 11.000000000000000000
@@ -188,7 +187,11 @@ object frmMain: TfrmMain
   object MatLib: TGLMaterialLibrary
     Materials = <
       item
-        Name = 'Floor'
+        Name = 'floor_parquet'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         Tag = 0
@@ -208,14 +211,43 @@ object frmMain: TfrmMain
         Material.Texture.TextureFormat = tfExtended
         Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Material.Texture.BorderColor.Color = {0000803F000000000000000000000000}
+        Material.Texture.Disabled = False
         Material.Texture.TextureCompareMode = tcmCompareRtoTexture
         Tag = 0
       end
       item
         Name = 'Lightspot'
         Material.Texture.TextureWrap = twNone
+        Material.Texture.Disabled = False
         Tag = 0
         Shader = GLSLShader1
+      end
+      item
+        Name = 'Hair'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
+        Material.Texture.Disabled = False
+        Tag = 0
+      end
+      item
+        Name = 'Woman4-Remap-texture'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
+        Material.Texture.Disabled = False
+        Tag = 0
+      end
+      item
+        Name = 'Chair'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
+        Material.Texture.Disabled = False
+        Tag = 0
       end>
     Left = 20
     Top = 132
@@ -254,5 +286,13 @@ object frmMain: TfrmMain
     OnTimer = Timer1Timer
     Left = 88
     Top = 132
+  end
+  object GLSArchiveManager1: TGLSArchiveManager
+    Archives = <
+      item
+        Name = 'LibArchive'
+      end>
+    Left = 24
+    Top = 224
   end
 end

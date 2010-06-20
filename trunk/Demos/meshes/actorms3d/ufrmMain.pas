@@ -34,10 +34,11 @@ uses
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,
     GLFileMS3D,
   GLMaterial, StdCtrls, ExtCtrls, GLCameraController, GLGraphics, TGA,
-  ApplicationFileIO, jpeg, GLRenderContextInfo,
+  ApplicationFileIO, GLRenderContextInfo,
   GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane, GLCOntext,
     VectorGeometry,
-  GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState;
+  GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState,
+  GLSArchiveManager;
 
 type
   TfrmMain = class(TForm)
@@ -65,6 +66,7 @@ type
     aniBox: TComboBox;
     aniPos: TTrackBar;
     Timer1: TTimer;
+    GLSArchiveManager1: TGLSArchiveManager;
     procedure GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -110,7 +112,9 @@ var
 
 implementation
 
-uses OpenGL1x;
+uses
+  OpenGL1x,
+  GLFileZLIB, GLCompositeImage, GLFileJPEG, GLFilePNG;
 
 {$R *.dfm}
 
@@ -187,11 +191,32 @@ begin
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
+  procedure LoadTexture(const AName: string; const ext: string);
+  var
+    img: TGLCompositeImage;
+    strm: TStream;
+  begin
+    img := MatLib.TextureByName(AName).Image as TGLCompositeImage;
+    strm := GLSArchiveManager1.Archives[0].GetContent('Main/'+AName+'.'+ext);
+    img.LoadFromStream(strm);
+  end;
+
 begin
+  with GLSArchiveManager1.Archives[0] do
+  begin
+    LoadFromFile('..\..\media\ActorMS3D.zlib');
+    LoadTexture('floor_parquet', 'JPG');
+    LoadTexture('Chair', 'PNG');
+    LoadTexture('Hair', 'PNG');
+    LoadTexture('Woman4-Remap-texture', 'PNG');
+    Actor1.LoadFromStream('Woman4.ms3d', GetContent('Main/Woman4.ms3d'));
+    Chair1.LoadFromStream('Chair.ms3d', GetContent('Main/Chair.ms3d'));
+  end;
+  MatLib.TextureByName('Lightspot').Image.LoadFromFile('..\..\media\Flare1.bmp');
+
   Actor1.AnimationMode := aamNone;
-  Actor1.LoadFromFile('..\..\media\Woman4.ms3d');
   Actor1.Scale.SetVector(0.1, 0.1, 0.1, 0);
-  Chair1.LoadFromFile('..\..\media\Chair.ms3d');
   Chair1.Scale.SetVector(0.35, 0.35, 0.35, 0);
 
   //The MS3D Model has multiple animations all in sequence.
@@ -256,11 +281,6 @@ begin
     '..\..\specialsFX\ShadowmappingFBO\Shaders\shadowmap_vp.glsl');
   GLSLShader1.FragmentProgram.LoadFromFile(
     '..\..\specialsFX\ShadowmappingFBO\Shaders\shadowmap_fp.glsl');
-
-  MatLib.TextureByName('Floor').Image.LoadFromFile(AppPath +
-    '..\..\media\floor_parquet.JPG');
-  MatLib.TextureByName('Lightspot').Image.LoadFromFile(
-    '..\..\media\Flare1.bmp');
   GLSLShader1.Enabled := true;
 end;
 
@@ -293,7 +313,7 @@ procedure TfrmMain.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
   // prepare shadow mapping matrix
-  glGetFloatv(GL_MODELVIEW_MATRIX, @FInvCameraMatrix);
+  GL.GetFloatv(GL_MODELVIEW_MATRIX, @FInvCameraMatrix);
   InvertMatrix(FInvCameraMatrix);
 
   // go from eye space to light's "eye" space
@@ -313,8 +333,8 @@ end;
 procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject);
 begin
   // get the modelview and projection matrices from the light's "camera"
-  glGetFloatv(GL_MODELVIEW_MATRIX, @FLightModelViewMatrix);
-  glGetFloatv(GL_PROJECTION_MATRIX, @FLightProjMatrix);
+  GL.GetFloatv(GL_MODELVIEW_MATRIX, @FLightModelViewMatrix);
+  GL.GetFloatv(GL_PROJECTION_MATRIX, @FLightProjMatrix);
 
   // push geometry back a bit, prevents false self-shadowing
   with CurrentGLContext.GLStates do
@@ -341,7 +361,7 @@ end;
 procedure TfrmMain.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
 begin
   with Shader, MatLib do begin
-    Param['TextureMap'].AsTexture2D[0]:= TextureByName('Floor');
+    Param['TextureMap'].AsTexture2D[0]:= TextureByName('floor_parquet');
     Param['ShadowMap'].AsTexture2D[1]:= TextureByName(GLFrameBuffer.DepthTextureName);
     Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
   end;
