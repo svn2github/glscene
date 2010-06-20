@@ -66,6 +66,7 @@ resourcestring
   // common messages
   glsOutOfMemory = 'Fatal: Out of memory';
   glsFailedOpenFile = 'Could not open file: %s';
+  glsFailedOpenFileFromCurrentDir = 'Could not open file: %s'#13#10'(Current directory is %s)';
   glsNoDescriptionAvailable = 'No description available';
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
   glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '

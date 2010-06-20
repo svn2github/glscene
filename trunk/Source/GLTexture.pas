@@ -1972,13 +1972,12 @@ begin
       else
       begin
         Picture.Graphic := nil;
-        (*
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
-          Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
+          GLOKMessageBox(Format(glsFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),glsError);
+          //Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
         end;
-        *)
       end;
       Result := inherited GetBitmap32(target);
       FWidth := Result.Width;
