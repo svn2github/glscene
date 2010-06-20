@@ -307,7 +307,7 @@ constructor TLogSession.Init(const FileName: string; ATimeFormat:
   TLogTimeFormat; ALevels: TLogLevels);
 var
   i: Integer;
-  ModeStr: string;
+  ModeStr, Path: string;
 begin
   {$IFDEF GLS_MULTITHREAD}
   InitializeCriticalSection(CriticalSection);
@@ -320,7 +320,8 @@ begin
   ModeTitles[lkError] := 'errors';
   ModeTitles[lkFatalError] := 'fatal errors';
 
-  if Pos(':', FileName) > 0 then
+  Path := ExtractFilePath(FileName);
+  if Length(Path) > 0 then
     LogFileName := Filename
   else
     LogFileName := IncludeTrailingPathDelimiter(GetCurrentDir) + Filename;
@@ -488,4 +489,3 @@ finalization
   GLSLogger.Shutdown;
 
 end.
-

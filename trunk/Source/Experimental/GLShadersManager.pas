@@ -115,7 +115,7 @@ type
   // TGLSLAttribute
   //
 
-  TGLSLAttribute = class(TObject)
+  TGLSLAttribute = class
   private
     FName: string;
     FLocation: array[1..GLS_MAX_SHADER_PROGRAM] of GLInt;
@@ -142,7 +142,7 @@ type
   // TGLSLUniform
   //
 
-  TGLSLUniform = class(TObject)
+  TGLSLUniform = class
   private
     { Private Declarations }
     FName: string;
@@ -165,10 +165,12 @@ type
     property Tag: Integer read FTag write FTag;
   end;
 
+  TGLSLUniformClass = class of TGLSLUniform;
+
   // TGLSLUniformBBeginWork
   //
 
-  TGLSLUniformBlock = class(TObject)
+  TGLSLUniformBlock = class
   private
     { Private Declarations }
     FName: string;
@@ -842,9 +844,14 @@ begin
         FriendlyName + '" compilation - ';
 
       if Result then
-        vShadersManager.CompilationLog.LogInfo(logstr + ' Successful')
-      else
+      begin
+        vShadersManager.CompilationLog.LogInfo(logstr + ' Successful');
+        FHandles[P].NotifyDataUpdated;
+      end
+      else begin
         vShadersManager.CompilationLog.LogError(logstr + ' Failed!');
+        FHandles[P].NotifyChangesOfData;
+      end;
 
       GL.GetShaderiv(FHandles[P].Handle, GL_INFO_LOG_LENGTH, @val);
       if val > 1 then
@@ -910,7 +917,7 @@ begin
     for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
       if P in obj.FTypes then
       begin
-        if Assigned(obj.FHandles[P]) and (obj.FHandles[P].Handle <> 0) then
+        if Assigned(obj.FHandles[P]) and not (obj.FHandles[P].IsDataNeedUpdate) then
           GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle)
         else
         begin
@@ -927,7 +934,10 @@ begin
 
   logstr := 'Shader Program ' + FriendlyName + ' Linking - ';
   if FLinked then
-    vShadersManager.CompilationLog.LogInfo(logstr + ' Successful')
+  begin
+    vShadersManager.CompilationLog.LogInfo(logstr + ' Successful');
+    FHandle.NotifyDataUpdated;
+  end
   else
     vShadersManager.CompilationLog.LogError(logstr + ' Failed!');
 
@@ -960,10 +970,11 @@ begin
     for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
       if P in AObject.FTypes then
       begin
-        if Assigned(AObject.FHandles[P]) and (AObject.FHandles[P].Handle <> 0)
-          then
-          GL.DetachShader(AObject.FHandles[P].Handle,
-            AObject.FHandles[P].Handle);
+        if Assigned(AObject.FHandles[P]) and (AObject.FHandles[P].Handle <> 0) then
+        begin
+          GL.DetachShader(FHandle.Handle, AObject.FHandles[P].Handle);
+          FHandle.NotifyChangesOfData;
+        end;
       end;
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -999,10 +1010,10 @@ begin
 
   LogPath := ExtractFilePath(ParamStr(0));
   CompilationLog
-    := TLogSession.Init(LogPath + 'ShadersCompilation.Log', lfNone,
+    := TLogSession.Init(LogPath + 'ShadersCompilation.log', lfNone,
     [lkNotice, lkInfo, lkWarning, lkError]);
   WorkLog
-    := TLogSession.Init(LogPath + 'ShadersWork.Log', lfNone,
+    := TLogSession.Init(LogPath + 'ShadersWork.log', lfNone,
     [lkWarning, lkError]);
   vWorked := False;
 {$IFDEF GLS_MULTITHREAD}
@@ -1103,20 +1114,31 @@ procedure TGLShadersManager.DefineShaderObject(
   ATypes: TGLSLProgramTypes);
 var
   Obj: TGLSLShaderObject;
+  newCode: Boolean;
 begin
   Assert(vWorked, glsWrongMethodCall);
   Obj := GetShaderObject(AName);
   if not Assigned(Obj) then
+  begin
     with Obj do
     begin
       Obj := TGLSLShaderObject.Create;
       FFriendlyName := AName;
       FNameHashKey := ComputeNameHashKey(AName);
       FShaderObjectsTree.Add(FNameHashKey, Obj);
-      FCode := string(Code);
+      newCode := True;
     end;
-  Obj.FTypes := ATypes;
-  Obj.Compile;
+  end
+  else
+    newCode := CompareStr(Obj.FCode, string(Code)) <> 0;
+
+  if newCode then
+    with Obj do
+    begin
+      FTypes := ATypes;
+      FCode := string(Code);
+      Compile;
+    end;
 end;
 
 procedure TGLShadersManager.DefineShaderProgram(const AName: string);
@@ -1146,7 +1168,10 @@ begin
   Prog := GetShaderProgram(AProgram);
   obj := GetShaderObject(AObject);
   if Prog.FAttachedObjects.IndexOf(obj) < 0 then
-    Prog.FAttachedObjects.Add(obj)
+  begin
+    Prog.FAttachedObjects.Add(obj);
+    Prog.FHandle.NotifyChangesOfData;
+  end
   else
     Prog.Detach(obj);
 
@@ -1284,7 +1309,7 @@ begin
 
   for I := 0 to max - 1 do
   begin
-    glGetActiveUniform(
+    GL.GetActiveUniform(
       ProgramID,
       I,
       Length(buff),
@@ -1397,7 +1422,6 @@ procedure TGLShadersManager.UseProgram(const AName: string);
 var
   RC: TGLContext;
   prog: TGLSLShaderProgram;
-  iLinked: GLint;
   bLinked: TGLboolean;
 begin
   if SafeCurrentGLContext(RC) then
@@ -1408,19 +1432,17 @@ begin
 
       if Assigned(prog) then
       begin
-        if prog.FHandle.Handle > 0 then
+        if prog.FHandle.IsDataNeedUpdate then
         begin
-          GL.GetProgramiv(prog.FHandle.Handle, GL_LINK_STATUS, @iLinked);
-          bLinked := iLinked <> 0;
-        end
-        else
-          bLinked := LinkShaderProgram(AName);
-        if not bLinked then
-          if not prog.Link then
-            Abort;
+          if not LinkShaderProgram(AName) then
+            if not prog.Link then
+              Abort;
+        end;
 
-          vCurrentProgram := prog;
-          prog.FHandle.UseProgramObject;
+
+
+        vCurrentProgram := prog;
+        prog.FHandle.UseProgramObject;
       end
       else
         WorkLog.LogError('Used unknown program "' + AName + '"');
@@ -1763,4 +1785,3 @@ finalization
   ClearRegistries;
 
 end.
-

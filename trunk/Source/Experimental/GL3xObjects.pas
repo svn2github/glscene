@@ -26,6 +26,8 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual;
+    procedure BeforeRender; virtual;
+    procedure AfterRender; virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -328,12 +330,11 @@ type
       override;
     procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
     procedure SetMaterial(const Value: TGL3xMaterial); override;
+    procedure BeforeRender; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
-      ARenderSelf, ARenderChildren: Boolean); override;
   published
     property Factory: TGL3xBaseFactory read FFactory
       write SetFactory;
@@ -410,7 +411,9 @@ begin
       end;
 
       FMaterial.Apply(ARci);
+      BeforeRender;
       FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+      AfterRender;
       FMaterial.UnApply(ARci);
     end;
   end;
@@ -422,6 +425,14 @@ end;
 procedure TGL3xBaseSceneObject.BuildBufferData(Sender: TGLBaseVBOManager);
 begin
   ObjectStyle := ObjectStyle - [osBuiltStage];
+end;
+
+procedure TGL3xBaseSceneObject.BeforeRender;
+begin
+end;
+
+procedure TGL3xBaseSceneObject.AfterRender;
+begin
 end;
 
 procedure TGL3xBaseSceneObject.SetBuiltProperties(const Value:
@@ -2282,14 +2293,8 @@ begin
   FAttrIsDefined := False;
 end;
 
-// DoRender
-//
-
-procedure TGL3xFeedBackMesh.DoRender(var ARci: TRenderContextInfo;
-  ARenderSelf, ARenderChildren: Boolean);
+procedure TGL3xFeedBackMesh.BeforeRender;
 begin
-  inherited;
-  // Call primitive factory
   if not (csDesigning in ComponentState)
     and FAttrIsDefined
     and Assigned(FFactory) then
