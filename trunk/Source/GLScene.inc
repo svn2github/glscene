@@ -33,6 +33,7 @@
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
 // Activate support for png images (using pngimage.pas library)
+// GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
 // Also, Define "Auto" Resize To Nearest 8 Multiple Size
 {.$DEFINE GLS_PngImage_SUPPORT}
 {.$DEFINE GLS_PngImage_RESIZENEAREST}
@@ -501,6 +502,11 @@
   {$IFDEF FPC}
   {$DEFINE GLS_INLINE}
   {$ENDIF}
+{$ENDIF}
+
+// PNG is supported by Delphi since Dephi 2009
+{$IFDEF GLS_DELPHI_2009_UP}
+  {$DEFINE GLS_PngImage_SUPPORT}
 {$ENDIF}
 
 
