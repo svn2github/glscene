@@ -46,6 +46,7 @@ type
     { Protected declaration }
     procedure AllocateHandle;
     procedure DestroyHandle;
+    class procedure CheckLib();
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
@@ -97,65 +98,85 @@ begin
   inherited;
 end;
 
+class procedure TCUDAFFTPlan.CheckLib();
+begin
+  if not IsCUFFTInitialized then
+    if not InitCUFFT then
+      raise ECUDAFFTPlan.Create('Can not initialize library');
+end;
+
 procedure TCUDAFFTPlan.Assign(Source: TPersistent);
 var
   plan: TCUDAFFTPlan;
 begin
-  if Source is TCUDAFFTPlan then
-  begin
-    DestroyHandle;
-    plan := TCUDAFFTPlan(Source);
-    fWidth := plan.fWidth;
-    fHeight := plan.fHeight;
-    fDepth := plan.fDepth;
-    fTransform := plan.fTransform;
-    AllocateHandle;
+  try
+    CheckLib();
+  finally
+    if Source is TCUDAFFTPlan then
+    begin
+      DestroyHandle;
+      plan := TCUDAFFTPlan(Source);
+      fWidth := plan.fWidth;
+      fHeight := plan.fHeight;
+      fDepth := plan.fDepth;
+      fTransform := plan.fTransform;
+      AllocateHandle;
+    end;
+    inherited Assign(Source);
   end;
-  inherited Assign(Source);
 end;
 
 procedure TCUDAFFTPlan.AllocateHandle;
 var
   status: TcufftResult;
 begin
-  if not IsCUFFTInitialized then
-    if not InitCUFFT then
-      raise ECUDAFFTPlan.Create('Can not initialize library');
+  try
 
-  Context.Requires;
-  if (fHeight = 0) and (fDepth = 0) then
-  begin
-    status := cufftPlan1d(fHandle, fWidth, cCUDAFFT[fTransform], fBatch);
-  end
-  else if fDepth = 0 then
-  begin
-    status := cufftPlan2d(fHandle, fWidth, fHeight, cCUDAFFT[fTransform]);
-  end
-  else
-  begin
-    status := cufftPlan3d(fHandle, fWidth, fHeight, fDepth,
-      cCUDAFFT[fTransform]);
+    CheckLib;
+    Context.Requires;
+    if (fHeight = 0) and (fDepth = 0) then
+    begin
+      status := cufftPlan1d(fHandle, fWidth, cCUDAFFT[fTransform], fBatch);
+    end
+    else if fDepth = 0 then
+    begin
+      status := cufftPlan2d(fHandle, fWidth, fHeight, cCUDAFFT[fTransform]);
+    end
+    else
+    begin
+      status := cufftPlan3d(fHandle, fWidth, fHeight, fDepth,
+        cCUDAFFT[fTransform]);
+    end;
+    Context.Release;
+
+    if status <> CUFFT_SUCCESS then
+      raise ECUDAFFTPlan.Create('TCUDAFFTPlan.AllocateHandle: ' +
+        GetCUFFTErrorString(status));
+
+  finally
+
   end;
-  Context.Release;
-
-  if status <> CUFFT_SUCCESS then
-    raise ECUDAFFTPlan.Create('TCUDAFFTPlan.AllocateHandle: ' +
-      GetCUFFTErrorString(status));
 end;
 
 procedure TCUDAFFTPlan.DestroyHandle;
 var
   status: TcufftResult;
 begin
-  if FHandle > 0 then
-  begin
-    Context.Requires;
-    status := cufftDestroy(fHandle);
-    Context.Release;
-    if status <> CUFFT_SUCCESS then
-      raise ECUDAFFTPlan.Create('TCUDAFFTPlan.DestroyHandle: ' +
-        GetCUFFTErrorString(status));
-    FHandle := 0;
+  try
+
+    if FHandle > 0 then
+    begin
+      Context.Requires;
+      status := cufftDestroy(fHandle);
+      Context.Release;
+      if status <> CUFFT_SUCCESS then
+        raise ECUDAFFTPlan.Create('TCUDAFFTPlan.DestroyHandle: ' +
+          GetCUFFTErrorString(status));
+      FHandle := 0;
+    end;
+
+  finally
+
   end;
 end;
 
@@ -226,27 +247,34 @@ var
 begin
   if FHandle = 0 then
     AllocateHandle;
-  if not Assigned(src) or not Assigned(dst) then
-    exit;
-  Context.Requires;
-  case fTransform of
-    fftRealToComplex: status := cufftExecR2C(fHandle, src.Data, dst.Data);
-    fftComplexToReal: status := cufftExecC2R(fHandle, src.Data, dst.Data);
-    fftComplexToComplex: status := cufftExecC2C(fHandle, src.Data, dst.Data,
-      sFFTdir[dir]);
-    fftDoubleToDoubleComplex: status := cufftExecD2Z(fHandle, src.Data,
-      dst.Data);
-    fftDoubleComplexToDouble: status := cufftExecZ2D(fHandle, src.Data,
-      dst.Data);
-    fftDoubleComplexToDoubleComplex: status := cufftExecZ2Z(fHandle, src.Data,
-      dst.Data, sFFTdir[dir]);
-  else
-    status := CUFFT_INVALID_VALUE;
+
+  try
+
+    if not Assigned(src) or not Assigned(dst) then
+      exit;
+    Context.Requires;
+    case fTransform of
+      fftRealToComplex: status := cufftExecR2C(fHandle, src.Data, dst.Data);
+      fftComplexToReal: status := cufftExecC2R(fHandle, src.Data, dst.Data);
+      fftComplexToComplex: status := cufftExecC2C(fHandle, src.Data, dst.Data,
+        sFFTdir[dir]);
+      fftDoubleToDoubleComplex: status := cufftExecD2Z(fHandle, src.Data,
+        dst.Data);
+      fftDoubleComplexToDouble: status := cufftExecZ2D(fHandle, src.Data,
+        dst.Data);
+      fftDoubleComplexToDoubleComplex: status := cufftExecZ2Z(fHandle, src.Data,
+        dst.Data, sFFTdir[dir]);
+    else
+      status := CUFFT_INVALID_VALUE;
+    end;
+    Context.Release;
+    if status <> CUFFT_SUCCESS then
+      raise ECUDAFFTPlan.Create('TCUDAFFTPlan.Execute: ' +
+        GetCUFFTErrorString(status));
+
+  finally
+
   end;
-  Context.Release;
-  if status <> CUFFT_SUCCESS then
-    raise ECUDAFFTPlan.Create('TCUDAFFTPlan.Execute: ' +
-      GetCUFFTErrorString(status));
 end;
 
 // ------------------------------------------------------------------

@@ -18,28 +18,30 @@ uses
 
 type
 
-  TDim3 = class(TPersistent)
+  TCUDADimensions = class(TPersistent)
   private
     { Private declarations }
-    FXYZ: array[0..2] of Integer;
-    FMaxXYZ: array[0..2] of Integer;
+    FXYZ: TDim3;
+    FMaxXYZ: TDim3;
+    function GetDimComponent(index: Integer): Integer;
     procedure SetDimComponent(index: Integer; Value: Integer);
+    function GetMaxDimComponent(index: Integer): Integer;
     procedure SetMaxDimComponent(index: Integer; Value: Integer);
   public
     { Public declarations }
     constructor Create;
     procedure Assign(Source: TPersistent); override;
-    property MaxSizeX: Integer index 0 read FMaxXYZ[0] write SetMaxDimComponent;
-    property MaxSizeY: Integer index 1 read FMaxXYZ[1] write SetMaxDimComponent;
-    property MaxSizeZ: Integer index 2 read FMaxXYZ[2] write SetMaxDimComponent;
+    property MaxSizeX: Integer index 0 read GetMaxDimComponent write SetMaxDimComponent;
+    property MaxSizeY: Integer index 1 read GetMaxDimComponent write SetMaxDimComponent;
+    property MaxSizeZ: Integer index 2 read GetMaxDimComponent write SetMaxDimComponent;
   published
     { Published Properties }
-    property SizeX: Integer index 0 read FXYZ[0] write SetDimComponent default
-      1;
-    property SizeY: Integer index 1 read FXYZ[1] write SetDimComponent default
-      1;
-    property SizeZ: Integer index 2 read FXYZ[2] write SetDimComponent default
-      1;
+    property SizeX: Integer index 0 read GetDimComponent write SetDimComponent
+      default 1;
+    property SizeY: Integer index 1 read GetDimComponent write SetDimComponent
+      default 1;
+    property SizeZ: Integer index 2 read GetDimComponent write SetDimComponent
+      default 1;
   end;
 
   TCUDAContext = class;
@@ -56,8 +58,8 @@ type
     fReady: Boolean;
     fUsed: Boolean;
     fUniqueName: string;
-    fMaxThreadsDim: TDim3;
-    fMaxGridSize: TDim3;
+    fMaxThreadsDim: TCUDADimensions;
+    fMaxGridSize: TCUDADimensions;
   protected
     { Protected declarations }
     function GetName: string;
@@ -80,8 +82,8 @@ type
     property MemPitch: size_t read fDeviceProperties.MemPitch;
     property MaxThreadsPerBlock: Integer read
       fDeviceProperties.MaxThreadsPerBlock;
-    property MaxThreadsDim: TDim3 read fMaxThreadsDim;
-    property MaxGridSize: TDim3 read fMaxGridSize;
+    property MaxThreadsDim: TCUDADimensions read fMaxThreadsDim;
+    property MaxGridSize: TCUDADimensions read fMaxGridSize;
     property ClockRate: Integer read fDeviceProperties.ClockRate;
     property TotalConstMem: size_t read fDeviceProperties.TotalConstMem;
     property Major: Integer read fDeviceProperties.Major;
@@ -174,50 +176,66 @@ var
   CUDAContextManager: TCUDAContextManager;
 
 // ------------------
-// ------------------ TDim3 ------------------
+// ------------------ TCUDADimensions ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TDim3'}{$ENDIF}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDADimensions'}{$ENDIF}
 
-constructor TDim3.Create;
+constructor TCUDADimensions.Create;
+const
+  cXYZone: TDim3 = (1, 1, 1);
+  cXYZmax: TDim3 = (MaxInt, MaxInt, MaxInt);
 begin
   inherited;
-  FXYZ[0] := 1;
-  FXYZ[1] := 1;
-  FXYZ[2] := 1;
-  FMaxXYZ[0] := MaxInt;
-  FMaxXYZ[1] := MaxInt;
-  FMaxXYZ[2] := MaxInt;
+  FXYZ := cXYZone;
+  FMaxXYZ := cXYZmax;
 end;
 
-procedure TDim3.Assign(Source: TPersistent);
+procedure TCUDADimensions.Assign(Source: TPersistent);
 begin
-  if Source is TDim3 then
+  if Source is TCUDADimensions then
   begin
-    FMaxXYZ[0] := TDim3(Source).FMaxXYZ[0];
-    FMaxXYZ[1] := TDim3(Source).FMaxXYZ[1];
-    FMaxXYZ[2] := TDim3(Source).FMaxXYZ[2];
-    FXYZ[0] := TDim3(Source).FXYZ[0];
-    FXYZ[1] := TDim3(Source).FXYZ[1];
-    FXYZ[2] := TDim3(Source).FXYZ[2];
+    FMaxXYZ[0] := TCUDADimensions(Source).FMaxXYZ[0];
+    FMaxXYZ[1] := TCUDADimensions(Source).FMaxXYZ[1];
+    FMaxXYZ[2] := TCUDADimensions(Source).FMaxXYZ[2];
+    FXYZ[0] := TCUDADimensions(Source).FXYZ[0];
+    FXYZ[1] := TCUDADimensions(Source).FXYZ[1];
+    FXYZ[2] := TCUDADimensions(Source).FXYZ[2];
   end;
   inherited Assign(Source);
 end;
 
-procedure TDim3.SetDimComponent(index: Integer; Value: Integer);
+function TCUDADimensions.GetDimComponent(index: Integer): Integer;
 begin
-  if Value < 1 then
-    Value := 1;
-  if Value > FMaxXYZ[index] then
-    Value := FMaxXYZ[index];
-  FXYZ[index] := Value;
+  Result := FXYZ[index];
 end;
 
-procedure TDim3.SetMaxDimComponent(index: Integer; Value: Integer);
+procedure TCUDADimensions.SetDimComponent(index: Integer; Value: Integer);
+var
+  v: LongWord;
 begin
-  FMaxXYZ[index] := Value;
-  if FXYZ[index] > FMaxXYZ[index] then
-    FXYZ[index] := FMaxXYZ[index];
+  if Value < 1 then
+    v := 1
+  else
+    v := LongWord(Value);
+  if v > FMaxXYZ[index] then
+    v := FMaxXYZ[index];
+  FXYZ[index] := v;
+end;
+
+function TCUDADimensions.GetMaxDimComponent(index: Integer): Integer;
+begin
+  Result := FMaxXYZ[index];
+end;
+
+procedure TCUDADimensions.SetMaxDimComponent(index: Integer; Value: Integer);
+begin
+  if Value > 0 then
+  begin
+    FMaxXYZ[index] := LongWord(Value);
+    if FXYZ[index] > FMaxXYZ[index] then
+      FXYZ[index] := FMaxXYZ[index];
+  end;
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -235,23 +253,27 @@ var
   status: TCUResult;
 begin
   inherited Create;
-  fID := id;
-  status := cuDeviceGet(fHandle, id);
-  fReady := status = CUDA_SUCCESS;
-  fUsed := false;
-  fMaxThreadsDim := TDim3.Create;
-  fMaxGridSize := TDim3.Create;
-  if not fReady then
-    exit;
-  cudaGetDeviceProperties(fDeviceProperties, id);
-  fGFlops := fDeviceProperties.multiProcessorCount *
-    fDeviceProperties.clockRate;
-  fMaxThreadsDim.FXYZ[0] := fDeviceProperties.maxThreadsDim[0];
-  fMaxThreadsDim.FXYZ[1] := fDeviceProperties.maxThreadsDim[1];
-  fMaxThreadsDim.FXYZ[2] := fDeviceProperties.maxThreadsDim[2];
-  fMaxGridSize.FXYZ[0] := fDeviceProperties.maxGridSize[0];
-  fMaxGridSize.FXYZ[1] := fDeviceProperties.maxGridSize[1];
-  fMaxGridSize.FXYZ[2] := fDeviceProperties.maxGridSize[2];
+  if IsCUDAInitialized then
+  begin
+    fID := id;
+    status := cuDeviceGet(fHandle, id);
+    fReady := status = CUDA_SUCCESS;
+    fReady := fReady and InitCUDART;
+    fUsed := false;
+    fMaxThreadsDim := TCUDADimensions.Create;
+    fMaxGridSize := TCUDADimensions.Create;
+    if fReady then
+    begin
+      cudaGetDeviceProperties(fDeviceProperties, id);
+      fGFlops := fDeviceProperties.multiProcessorCount * fDeviceProperties.clockRate;
+      fMaxThreadsDim.FXYZ[0] := fDeviceProperties.maxThreadsDim[0];
+      fMaxThreadsDim.FXYZ[1] := fDeviceProperties.maxThreadsDim[1];
+      fMaxThreadsDim.FXYZ[2] := fDeviceProperties.maxThreadsDim[2];
+      fMaxGridSize.FXYZ[0] := fDeviceProperties.maxGridSize[0];
+      fMaxGridSize.FXYZ[1] := fDeviceProperties.maxGridSize[1];
+      fMaxGridSize.FXYZ[2] := fDeviceProperties.maxGridSize[2];
+    end;
+  end;
 end;
 
 // Destroy
@@ -593,6 +615,7 @@ begin
     if Assigned(glContext) then
     begin
       glContext.Activate;
+      cuContext := nil;
       status := cuGLCtxCreate(cuContext, 0, device.fHandle);
       glContext.Deactivate;
     end

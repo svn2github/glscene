@@ -322,14 +322,14 @@ type
     FKernelName: string;
     FHandle: PCUfunction;
     FAutoSync: Boolean;
-    FBlockShape: TDim3;
-    FGrid: TDim3;
+    FBlockShape: TCUDADimensions;
+    FGrid: TCUDADimensions;
     ParamOffset: Integer;
     FLaunching: Boolean;
     FOnParameterSetup: TNotifyEvent;
     FParams: array of TCUDAPtxNumType;
-    procedure SetBlockShape(const shape: TDim3);
-    procedure SetGrid(const grid: TDim3);
+    procedure SetBlockShape(const shape: TCUDADimensions);
+    procedure SetGrid(const grid: TCUDADimensions);
     procedure SetKernelName(const name: string);
     function GetHandle: PCUfunction;
     procedure SetSharedMemorySize(Value: Integer);
@@ -367,8 +367,8 @@ type
     property KernelName: string read fKernelName write SetKernelName;
 
     property AutoSync: Boolean read fAutoSync write fAutoSync default true;
-    property BlockShape: TDim3 read fBlockShape write SetBlockShape;
-    property Grid: TDim3 read fGrid write SetGrid;
+    property BlockShape: TCUDADimensions read fBlockShape write SetBlockShape;
+    property Grid: TCUDADimensions read fGrid write SetGrid;
     property OnParameterSetup: TNotifyEvent read FOnParameterSetup write
       FOnParameterSetup;
   end;
@@ -1282,8 +1282,8 @@ begin
   inherited Create(AOwner);
   fHandle := nil;
   fAutoSync := true;
-  fBlockShape := TDim3.Create;
-  fGrid := TDim3.Create;
+  fBlockShape := TCUDADimensions.Create;
+  fGrid := TCUDADimensions.Create;
   fLaunching := false;
 end;
 
@@ -1338,7 +1338,7 @@ end;
 // SetBlockShape
 //
 
-procedure TCUDAFunction.SetBlockShape(const shape: TDim3);
+procedure TCUDAFunction.SetBlockShape(const shape: TCUDADimensions);
 begin
   fBlockShape.Assign(shape);
 end;
@@ -1346,7 +1346,7 @@ end;
 // SetGrid
 //
 
-procedure TCUDAFunction.SetGrid(const grid: TDim3);
+procedure TCUDAFunction.SetGrid(const grid: TCUDADimensions);
 begin
   fGrid.Assign(grid);
 end;

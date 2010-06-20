@@ -179,6 +179,15 @@ type
     ///< Compute mode (See ::CUcomputemode for details)
     );
 
+
+(**
+ * CUDA Limits
+ *)
+  TcudaLimit = (
+    cudaLimitStackSize      = $00, ///< GPU thread stack size
+    cudaLimitPrintfFifoSize = $01  ///< GPU printf FIFO size
+  );
+
   // Legacy device properties
 
   TCUdevprop = record
@@ -336,24 +345,60 @@ type
   // Flags to register a graphics resource
 
   TCUgraphicsRegisterFlags = (
-    CU_GRAPHICS_REGISTER_FLAGS_NONE = $00);
+    CU_GRAPHICS_REGISTER_FLAGS_NONE = $00000000);
 
   // Flags for mapping and unmapping interop resources
 
   TCUgraphicsMapResourceFlags = (
-    CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE          = $00,
-    CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY     = $01,
-    CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD = $02);
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE          = $00000000,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY     = $00000001,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD = $00000002);
 
   // Array indices for cube faces
 
   TCUarray_cubemap_face = (
-    CU_CUBEMAP_FACE_POSITIVE_X  = $00, ///< Positive X face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_X  = $01, ///< Negative X face of cubemap
-    CU_CUBEMAP_FACE_POSITIVE_Y  = $02, ///< Positive Y face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_Y  = $03, ///< Negative Y face of cubemap
-    CU_CUBEMAP_FACE_POSITIVE_Z  = $04, ///< Positive Z face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_Z  = $05  ///< Negative Z face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_X  = $00000000, ///< Positive X face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_X  = $00000001, ///< Negative X face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Y  = $00000002, ///< Positive Y face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Y  = $00000003, ///< Negative Y face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Z  = $00000004, ///< Positive Z face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Z  = $00000005  ///< Negative Z face of cubemap
+  );
+
+ (*
+ * CUDA function attributes
+ *)
+
+  TcudaFuncAttributes = record
+    sharedSizeBytes: size_t;  ///< Size of shared memory in bytes
+    constSizeBytes: size_t;   ///< Size of constant memory in bytes
+    localSizeBytes: size_t;   ///< Size of local memory in bytes
+    maxThreadsPerBlock: Integer;  ///< Maximum number of threads per block
+    numRegs: Integer;             ///< Number of registers used
+    (* \brief PTX virtual architecture version for which the function was
+    *  compiled. This value is the major PTX version * 10 + the minor PTX
+    *  version, so a PTX version 1.3 function would return the value 13.
+    *  For device emulation kernels, this is set to 9999.
+    *)
+    ptxVersion: Integer;
+    (** \brief Binary architecture version for which the function was compiled.
+    *  This value is the major binary version * 10 + the minor binary version,
+    *  so a binary version 1.3 function would return the value 13.
+    *  For device emulation kernels, this is set to 9999.
+    *)
+    binaryVersion: Integer;
+    __cudaReserved: array[0..5] of Integer;
+  end;
+
+  (**
+   * CUDA function cache configurations
+   *)
+
+  TcudaFuncCache =
+  (
+    cudaFuncCachePreferNone   = 0,    ///< Default function cache configuration, no preference
+    cudaFuncCachePreferShared = 1,    ///< Prefer larger shared memory and smaller L1 cache
+    cudaFuncCachePreferL1     = 2     ///< Prefer larger L1 cache and smaller shared memory
   );
 
   //************************************
@@ -542,6 +587,9 @@ const
    * texture reference.   }
 
   CU_PARAM_TR_DEFAULT = -1;
+
+type
+  TDim3 = array[0..2] of LongWord;
 
 {$IFDEF MSWINDOWS}
 type

@@ -48,13 +48,26 @@ unit GLS_CUDA_Runtime;
 interface
 
 uses
-  GLS_CL_Platform, OpenGL1x;
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
+  GLS_CL_Platform,
+  GLS_CUDA_API,
+  OpenGL1x;
 
 {$I cuda.inc}
 
 const
-  CUDARTDLL = 'cudart32.dll';
+  CUDARTDLLNAMES: array[0..5] of string = (
+    'cudart32_31_4',
+    'cudart32_30_14',
+    'cudart32_30_9',
+    'cudart32_30_8',
+    'cudart32',
+    'cudart'
+    );
 
+const
   // single precision constants
   CUDART_INF_F: Single = $7F800000;
   CUDART_NAN_F: Single = $7FFFFFFF;
@@ -201,9 +214,9 @@ type
     cudaGLMapFlagsNone, ///< Default; Assume resource can be read/written
     cudaGLMapFlagsReadOnly, ///< CUDA kernels will not write to this resource
     cudaGLMapFlagsWriteDiscard);
-      ///< CUDA kernels will only write to and will not read from this resource
+  ///< CUDA kernels will only write to and will not read from this resource
 
-  {+//DEVICE_BUILTIN*/ }
+{+//DEVICE_BUILTIN*/ }
   PcudaChannelFormatDesc = ^TCudaChannelFormatDesc;
   TCudaChannelFormatDesc = record
     x: Integer;
@@ -214,7 +227,7 @@ type
   end {cudaChannelFormatDesc};
 
   {+//DEVICE_BUILTIN*/ }
-  cudaArray = record
+  TcudaArray = record
   end; //!ATTENTION foreward Declaration?)
 
   {+//DEVICE_BUILTIN*/ }
@@ -295,7 +308,7 @@ type
     __cudaReserved: array[0..15] of Integer;
   end;
 
-  PcudaArray = Pointer;
+  PcudaArray = ^TcudaArray;
 
   {+//****************************************************************************** }
   {-** }
@@ -315,347 +328,610 @@ type
   {-** }
   {=****************************************************************************** }
 
-function cudaBindTexture(var offset: size_t; const texref: PTextureReference; var
-  devPtr: Pointer; var desc: TcudaChannelFormatDesc; size: size_t): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-function cudaBindTexture2D(var offset: size_t; const texref: PTextureReference;
-  const devPtr: Pointer; var desc: TcudaChannelFormatDesc; width, height, pitch:
-  size_t): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-function cudaBindTextureToArray(const texref: PTextureReference; const
-  cudaArray: PcudaArray): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-function cudaUnbindTexture(const texref: PTextureReference): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-function cudaGetTextureAlignmentOffset(offset: size_t; const texref:
-  PTextureReference): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-function cudaGetTextureReference(const texref: PTextureReference; const symbol:
-  PAnsiChar): cudaError_t;
-{$IFDEF CUDA_STDCALL}stdcall;
-{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+var
 
-function cudaCreateChannelDesc(x, y, z, w: Integer; f: TCudaChannelFormatKind):
-  TCudaChannelFormatDesc;
+  cudaBindTexture: function(var offset: size_t; const texref: PTextureReference; var
+    devPtr: Pointer; var desc: TcudaChannelFormatDesc; size: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-
-function cudaMalloc(var devPtr;
-  size: size_t): cudaError_t;
+{$ENDIF}
+  cudaBindTexture2D: function(var offset: size_t; const texref: PTextureReference;
+    const devPtr: Pointer; var desc: TcudaChannelFormatDesc; width, height, pitch:
+    size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-
-function cudaMallocHost(var ptr: Pointer;
-  size: size_t): cudaError_t;
+{$ENDIF}
+  cudaBindTextureToArray: function(const texref: PTextureReference; const
+    cudaArray: PcudaArray): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-
-function cudaMallocPitch(var devPtr;
-  var pitch: size_t;
-  width: size_t;
-  height: size_t): cudaError_t;
+{$ENDIF}
+  cudaUnbindTexture: function(const texref: PTextureReference): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-
-function cudaMallocArray(var aarray: Pointer;
-  var desc: TCudaChannelFormatDesc;
-  width: size_t;
-  height: size_t): cudaError_t;
+{$ENDIF}
+  cudaGetTextureAlignmentOffset: function(offset: size_t; const texref:
+    PTextureReference): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
-
-function cudaFree(devPtr: Pointer): cudaError_t;
+{$ENDIF}
+  cudaGetTextureReference: function(const texref: PTextureReference; const symbol:
+    PAnsiChar): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaFreeHost(ptr: Pointer): cudaError_t;
+  cudaGetChannelDesc: function(var desc: TcudaChannelFormatDesc; const array_: Pointer): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaFreeArray(const aarray: Pointer): cudaError_t;
+  cudaCreateChannelDesc: function(x, y, z, w: Integer; f: TCudaChannelFormatKind):
+    TCudaChannelFormatDesc;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy(dst: Pointer; src: Pointer; count: size_t;
-  kind: TcudaMemcpyKind): cudaError_t;
+
+(*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                                                                              *
+*******************************************************************************)
+
+  cudaMalloc3D: function(var pitchedDevPtr: TcudaPitchedPtr; extent: TcudaExtent): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyToArray(var dst: PcudaArray; wOffset: size_t; hOffset:
-  size_t; var src; count: size_t; kind: TcudaMemcpyKind): cudaError_t;
+  cudaMalloc3DArray: function(var arrayPtr: PcudaArray; const desc: TcudaChannelFormatDesc; extent: TcudaExtent; flags: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyFromArray(var dst; const src: PcudaArray; wOffset: size_t;
-  hOffset: size_t; count: size_t; kind: TcudaMemcpyKind): cudaError_t;
+  cudaMemset3D: function(pitchedDevPtr: TcudaPitchedPtr; value: Integer; extent: TcudaExtent): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyArrayToArray(dst: PcudaArray; wOffsetDst: size_t; hOffsetDst:
-  size_t; const src: PcudaArray; wOffsetSrc: size_t; hOffsetSrc: size_t; count:
-  size_t; const kind: TcudaMemcpyKind = cudaMemcpyDeviceToDevice): cudaError_t;
+  cudaMemcpy3D: function(const p: TcudaMemcpy3DParms): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2D(var dst; dpitch: size_t; var src; spitch: size_t; width:
-  size_t; height: size_t; kind: TcudaMemcpyKind): cudaError_t;
+  cudaMemcpy3DAsync: function(const p: TcudaMemcpy3DParms; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DToArray(dst: PcudaArray; wOffset: size_t; hOffset: size_t;
-  var src; spitch: size_t; width: size_t; height: size_t; kind: TcudaMemcpyKind):
-  cudaError_t;
+  cudaMalloc: function(var devPtr;
+    size: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DFromArray(var dst; dpitch: size_t; src: PcudaArray;
-  wOffset: size_t; hOffset: size_t; width: size_t; height: size_t; kind:
-  TcudaMemcpyKind): cudaError_t;
+  cudaMallocHost: function(var ptr: Pointer;
+    size: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DArrayToArray(dst: PcudaArray; wOffsetDst: size_t;
-  hOffsetDst: size_t; src: PcudaArray; wOffsetSrc: size_t; hOffsetSrc: size_t;
-  width: size_t; height: size_t; const kind: TcudaMemcpyKind =
-  cudaMemcpyDeviceToDevice): cudaError_t;
+  cudaMallocPitch: function(var devPtr;
+    var pitch: size_t;
+    width: size_t;
+    height: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyToSymbol(symbol: PAnsiChar; var src; count: size_t; const
-  offset: size_t = 0; const kind: TcudaMemcpyKind = cudaMemcpyHostToDevice):
-  cudaError_t;
+  cudaMallocArray: function(var aarray: Pointer;
+    var desc: TCudaChannelFormatDesc;
+    width: size_t;
+    height: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyFromSymbol(var dst; symbol: PAnsiChar; count: size_t; const
-  offset: size_t = 0; const kind: TcudaMemcpyKind = cudaMemcpyDeviceToHost):
-  cudaError_t;
+  cudaFree: function(devPtr: Pointer): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-{+//***************************************************************************}
-{-** }
-{-** }
-{-** }
-{=*****************************************************************************}
-
-function cudaMemcpyAsync(var dst; const src; count: size_t; kind:
-  TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
+  cudaFreeHost: function(ptr: Pointer): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyToArrayAsync(dst: PcudaArray; wOffset: size_t; hOffset:
-  size_t; const src; count: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
-  cudaError_t;
+  cudaFreeArray: function(const aarray: Pointer): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyFromArrayAsync(var dst; const src: PcudaArray; wOffset:
-  size_t; hOffset: size_t; count: size_t; kind: TcudaMemcpyKind; stream:
-  cudaStream_t): cudaError_t;
+  cudaHostAlloc: function(var pHost: Pointer; bytes: size_t; flags: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DAsync(var dst; dpitch: size_t; const src; spitch: size_t;
-  width: size_t; height: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
-  cudaError_t;
+  cudaHostGetDevicePointer: function(var pDevice: Pointer; pHost: Pointer; flags: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DToArrayAsync(dst: PcudaArray; wOffset: size_t; hOffset:
-  size_t; const src; spitch: size_t; width: size_t; height: size_t; kind:
-  TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
+  cudaHostGetFlags: function(var pFlags: Cardinal; pHost: Pointer): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpy2DFromArrayAsync(var dst; dpitch: size_t; const src:
-  PcudaArray; wOffset: size_t; hOffset: size_t; width: size_t; height: size_t;
-  kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
+  cudaMemGetInfo: function(var free: size_t; var total: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyToSymbolAsync(const symbol: PAnsiChar; const src; count:
-  size_t; offset: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
-  cudaError_t;
+  cudaMemcpy: function(dst: Pointer; src: Pointer; count: size_t;
+    kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemcpyFromSymbolAsync(var dst; const symbol: PAnsiChar; count:
-  size_t; offset: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
-  cudaError_t;
+  cudaMemcpyToArray: function(var dst: PcudaArray; wOffset: size_t; hOffset:
+    size_t; var src; count: size_t; kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-///*****************************************************************************
-//*                                                                            *
-//*                                                                            *
-//*                                                                            *
-//*****************************************************************************/
-
-function cudaMemset(var devPtr; value: Integer; count: size_t): cudaError_t;
+  cudaMemcpyFromArray: function(var dst; const src: PcudaArray; wOffset: size_t;
+    hOffset: size_t; count: size_t; kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaMemset2D(var devPtr; pitch: size_t; value: Integer; width: size_t;
-  height: size_t): cudaError_t;
+  cudaMemcpyArrayToArray: function(dst: PcudaArray; wOffsetDst: size_t; hOffsetDst:
+    size_t; const src: PcudaArray; wOffsetSrc: size_t; hOffsetSrc: size_t; count:
+    size_t; const kind: TcudaMemcpyKind = cudaMemcpyDeviceToDevice): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-///*****************************************************************************
-//*                                                                            *
-//*                                                                            *
-//*                                                                            *
-//*****************************************************************************/
-
-function cudaGetSymbolAddress(var devPtr: Pointer; const symbol: PAnsiChar):
-  cudaError_t;
+  cudaMemcpy2D: function(var dst; dpitch: size_t; var src; spitch: size_t; width:
+    size_t; height: size_t; kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGetSymbolSize(var size: size_t; const symbol: PAnsiChar):
-  cudaError_t;
+  cudaMemcpy2DToArray: function(dst: PcudaArray; wOffset: size_t; hOffset: size_t;
+    var src; spitch: size_t; width: size_t; height: size_t; kind: TcudaMemcpyKind):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-{+//***************************************************************************}
-{-** }
-{-** }
-{-** }
-{=*****************************************************************************}
-
-function cudaGetDeviceCount(var count: Integer): cudaError_t;
+  cudaMemcpy2DFromArray: function(var dst; dpitch: size_t; src: PcudaArray;
+    wOffset: size_t; hOffset: size_t; width: size_t; height: size_t; kind:
+    TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGetDeviceProperties(var prop: TCudaDeviceProp;
-  device: Integer): cudaError_t;
+  cudaMemcpy2DArrayToArray: function(dst: PcudaArray; wOffsetDst: size_t;
+    hOffsetDst: size_t; src: PcudaArray; wOffsetSrc: size_t; hOffsetSrc: size_t;
+    width: size_t; height: size_t; const kind: TcudaMemcpyKind =
+    cudaMemcpyDeviceToDevice): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaChooseDevice(var device: Integer;
-  const prop: PcudaDeviceProp): cudaError_t;
+  cudaMemcpyToSymbol: function(symbol: PAnsiChar; var src; count: size_t; const
+    offset: size_t = 0; const kind: TcudaMemcpyKind = cudaMemcpyHostToDevice):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaSetDevice(device: Integer): cudaError_t;
+  cudaMemcpyFromSymbol: function(var dst; symbol: PAnsiChar; count: size_t; const
+    offset: size_t = 0; const kind: TcudaMemcpyKind = cudaMemcpyDeviceToHost):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGetDevice(var device: Integer): cudaError_t;
+  {+//***************************************************************************}
+  {-** }
+  {-** }
+  {-** }
+  {=*****************************************************************************}
+
+  cudaMemcpyAsync: function(var dst; const src; count: size_t; kind:
+    TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-{+//****************************************************************************** }
-{-** }
-{-** }
-{-** }
-{=*******************************************************************************/ }
-
-function cudaGetLastError: cudaError_t;
+  cudaMemcpyToArrayAsync: function(dst: PcudaArray; wOffset: size_t; hOffset:
+    size_t; const src; count: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-{+//****************************************************************************** }
-{-** }
-{-** }
-{-** }
-{=*******************************************************************************/ }
-function cudaGLSetGLDevice(device: Integer): cudaError_t;
+  cudaMemcpyFromArrayAsync: function(var dst; const src: PcudaArray; wOffset:
+    size_t; hOffset: size_t; count: size_t; kind: TcudaMemcpyKind; stream:
+    cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLRegisterBufferObject(bufObj: GLuint): cudaError_t;
+  cudaMemcpy2DAsync: function(var dst; dpitch: size_t; const src; spitch: size_t;
+    width: size_t; height: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLMapBufferObject(devPtr: Pointer; bufObj: GLuint): cudaError_t;
+  cudaMemcpy2DToArrayAsync: function(dst: PcudaArray; wOffset: size_t; hOffset:
+    size_t; const src; spitch: size_t; width: size_t; height: size_t; kind:
+    TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLUnmapBufferObject(bufObj: GLuint): cudaError_t;
+  cudaMemcpy2DFromArrayAsync: function(var dst; dpitch: size_t; const src:
+    PcudaArray; wOffset: size_t; hOffset: size_t; width: size_t; height: size_t;
+    kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLUnregisterBufferObject(bufObj: GLuint): cudaError_t;
+  cudaMemcpyToSymbolAsync: function(const symbol: PAnsiChar; const src; count:
+    size_t; offset: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLSetBufferObjectMapFlags(bufObj: GLuint; flags: TCudaGLMapFlags):
-  cudaError_t;
+  cudaMemcpyFromSymbolAsync: function(var dst; const symbol: PAnsiChar; count:
+    size_t; offset: size_t; kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLMapBufferObjectAsync(var devPtr: Pointer; bufObj: GLuint; stream:
-  cudaStream_t): cudaError_t;
+  ///*****************************************************************************
+  //*                                                                            *
+  //*                                                                            *
+  //*                                                                            *
+  //*****************************************************************************/
+
+  cudaMemset: function(var devPtr; value: Integer; count: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGLUnmapBufferObjectAsync(bufObj: GLuint; stream: cudaStream_t):
-  cudaError_t;
+  cudaMemset2D: function(var devPtr; pitch: size_t; value: Integer; width: size_t;
+    height: size_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
 
-function cudaGetErrorString(error: cudaError_t): PAnsiChar;
+  ///*****************************************************************************
+  //*                                                                            *
+  //*                                                                            *
+  //*                                                                            *
+  //*****************************************************************************/
+
+  cudaGetSymbolAddress: function(var devPtr: Pointer; const symbol: PAnsiChar):
+    cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
-{$ENDIF}external CUDARTDLL;
+{$ENDIF}
+
+  cudaGetSymbolSize: function(var size: size_t; const symbol: PAnsiChar):
+    cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  {+//***************************************************************************}
+  {-** }
+  {-** }
+  {-** }
+  {=*****************************************************************************}
+
+  cudaGetDeviceCount: function(var count: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGetDeviceProperties: function(var prop: TCudaDeviceProp;
+    device: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaChooseDevice: function(var device: Integer;
+    const prop: PcudaDeviceProp): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaSetDevice: function(device: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGetDevice: function(var device: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaSetDeviceFlags: function(flags: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaSetValidDevices: function(var device_arr: Integer; len: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  {+//****************************************************************************** }
+  {-** }
+  {-** }
+  {-** }
+  {=*******************************************************************************/ }
+
+  cudaConfigureCall: function(gridDim, blockDim: TDim3; sharedMem: size_t; stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+  cudaSetupArgument: function(const arg: Pointer; size: size_t; offset: size_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+  cudaFuncSetCacheConfig: function(const func: PAnsiChar; cacheConfig: TcudaFuncCache): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+  cudaLaunch: function(const entry: PAnsiChar): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+  cudaFuncGetAttributes: function(var attr: TcudaFuncAttributes; const func: PAnsiChar): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  {+//****************************************************************************** }
+  {-** }
+  {-** }
+  {-** }
+  {=*******************************************************************************/ }
+
+  cudaGetLastError: function: cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  {+//****************************************************************************** }
+  {-** }
+  {-** }
+  {-** }
+  {=*******************************************************************************/ }
+  cudaGLSetGLDevice: function(device: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLRegisterBufferObject: function(bufObj: GLuint): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+  cudaGraphicsGLRegisterImage: function(const resource: PCUgraphicsResource; image: GLuint; target: GLenum; Flags: Cardinal): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGraphicsGLRegisterBuffer: function(const resource: PCUgraphicsResource; buffer: GLuint; Flags: Cardinal): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLMapBufferObject: function(devPtr: Pointer; bufObj: GLuint): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLUnmapBufferObject: function(bufObj: GLuint): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLUnregisterBufferObject: function(bufObj: GLuint): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLSetBufferObjectMapFlags: function(bufObj: GLuint; flags: TCudaGLMapFlags):
+    cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLMapBufferObjectAsync: function(var devPtr: Pointer; bufObj: GLuint; stream:
+    cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGLUnmapBufferObjectAsync: function(bufObj: GLuint; stream: cudaStream_t):
+    cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsUnregisterResource: function(resource: PCUgraphicsResource): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsResourceSetMapFlags: function(resource: PCUgraphicsResource; flags: Cardinal): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsMapResources: function(count: Integer; const resources: PCUgraphicsResource; stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsUnmapResources: function(count: Integer; const resources: PCUgraphicsResource; stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsResourceGetMappedPointer: function(var pDevPtr: TCUdeviceptr; var pSize: Cardinal; resource: PCUgraphicsResource): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+cudaGraphicsSubResourceGetMappedArray: function(var pArray: PCUarray; resource:
+    PCUgraphicsResource; arrayIndex: Cardinal; mipLevel: Cardinal): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaGetErrorString: function(error: cudaError_t): PAnsiChar;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaDriverGetVersion: function(var driverVersion: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaRuntimeGetVersion: function(var runtimeVersion: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+(*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                                                                              *
+*******************************************************************************)
+
+  cudaSetDoubleForDevice: function(var d: Double): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaSetDoubleForHost: function(var d: Double): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+(*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                                                                              *
+*******************************************************************************)
+
+  cudaStreamCreate: function(var pStream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaStreamDestroy: function(stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaStreamSynchronize: function(stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaStreamQuery: function(stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+(*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                                                                              *
+*******************************************************************************)
+
+  cudaEventCreate: function(var event: cudaEvent_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventCreateWithFlags: function(var event: cudaEvent_t; flags: Integer): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventRecord: function(event: cudaEvent_t; stream: cudaStream_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventQuery: function(event: cudaEvent_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventSynchronize: function(event: cudaEvent_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventDestroy: function(event: cudaEvent_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaEventElapsedTime: function(var ms: Single; start: cudaEvent_t; ending: cudaEvent_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaWGLGetDevice: function(var device: Integer; hGpu: HGPUNV): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+(*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                                                                              *
+*******************************************************************************)
+
+  cudaThreadExit: function(): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaThreadSynchronize: function(): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaThreadSetLimit: function(limit: TcudaLimit; value: size_t): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
+
+  cudaThreadGetLimit: function(var Value: size_t; limit: TcudaLimit): cudaError_t;
+{$IFDEF CUDA_STDCALL}stdcall;
+{$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+{$ENDIF}
 
 function cudaGetLastErrorString: string;
+function InitCUDART: Boolean;
+procedure CloseCUDART;
+function InitCUDARTFromLibrary(const LibName: WideString): Boolean;
+function IsCUDARTInitialized: Boolean;
 
 implementation
 
@@ -663,6 +939,149 @@ function cudaGetLastErrorString: string;
 begin
   Result := string(cudaGetErrorString(cudaGetLastError));
 end;
+
+const
+  INVALID_MODULEHANDLE = 0;
+
+var
+{$IFDEF MSWINDOWS}
+  CUDARTHandle: HINST = INVALID_MODULEHANDLE;
+{$ENDIF}
+
+{$IFDEF LINUX}
+  CUDARTHandle: TLibHandle = INVALID_MODULEHANDLE;
+{$ENDIF}
+
+function CUDARTGetProcAddress(ProcName: PAnsiChar): Pointer;
+begin
+  result := GetProcAddress(CUDARTHandle, ProcName);
+end;
+
+function InitCUDART: Boolean;
+var
+  I: Integer;
+begin
+  Result := True;
+  if CUDARTHandle = INVALID_MODULEHANDLE then
+  begin
+    for I := 0 to High(CUDARTDLLNAMES) do
+    begin
+      if InitCUDARTFromLibrary(CUDARTDLLNAMES[I] + '.dll') then
+        Exit;
+    end;
+  end;
+  Result := False;
+end;
+
+procedure CloseCUDART;
+begin
+  if CUDARTHandle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(CUDARTHandle);
+    CUDARTHandle := INVALID_MODULEHANDLE;
+  end;
+end;
+
+function InitCUDARTFromLibrary(const LibName: WideString): Boolean;
+begin
+  Result := False;
+  CloseCUDART;
+  CUDARTHandle := LoadLibraryW(PWideChar(LibName));
+  if CUDARTHandle = INVALID_MODULEHANDLE then
+    Exit;
+  cudaFreeHost := CUDARTGetProcAddress('cudaFreeHost');
+  cudaFuncGetAttributes := CUDARTGetProcAddress('cudaFuncGetAttributes');
+  cudaGetChannelDesc := CUDARTGetProcAddress('cudaGetChannelDesc');
+  cudaGetDevice := CUDARTGetProcAddress('cudaGetDevice');
+  cudaGetDeviceCount := CUDARTGetProcAddress('cudaGetDeviceCount');
+  cudaGetDeviceProperties := CUDARTGetProcAddress('cudaGetDeviceProperties');
+  cudaGetErrorString := CUDARTGetProcAddress('cudaGetErrorString');
+  cudaGetLastError := CUDARTGetProcAddress('cudaGetLastError');
+  cudaGetSymbolAddress := CUDARTGetProcAddress('cudaGetSymbolAddress');
+  cudaGetSymbolSize := CUDARTGetProcAddress('cudaGetSymbolSize');
+  cudaGetTextureAlignmentOffset := CUDARTGetProcAddress('cudaGetTextureAlignmentOffset');
+  cudaGetTextureReference := CUDARTGetProcAddress('cudaGetTextureReference');
+  cudaGLMapBufferObject := CUDARTGetProcAddress('cudaGLMapBufferObject');
+  cudaGLMapBufferObjectAsync := CUDARTGetProcAddress('cudaGLMapBufferObjectAsync');
+  cudaGLRegisterBufferObject := CUDARTGetProcAddress('cudaGLRegisterBufferObject');
+  cudaGLSetBufferObjectMapFlags := CUDARTGetProcAddress('cudaGLSetBufferObjectMapFlags');
+  cudaGLSetGLDevice := CUDARTGetProcAddress('cudaGLSetGLDevice');
+  cudaGLUnmapBufferObject := CUDARTGetProcAddress('cudaGLUnmapBufferObject');
+  cudaGLUnmapBufferObjectAsync := CUDARTGetProcAddress('cudaGLUnmapBufferObjectAsync');
+  cudaGLUnregisterBufferObject := CUDARTGetProcAddress('cudaGLUnregisterBufferObject');
+  cudaGraphicsGLRegisterBuffer := CUDARTGetProcAddress('cudaGraphicsGLRegisterBuffer');
+  cudaGraphicsGLRegisterImage := CUDARTGetProcAddress('cudaGraphicsGLRegisterImage');
+  cudaGraphicsMapResources := CUDARTGetProcAddress('cudaGraphicsMapResources');
+  cudaGraphicsResourceGetMappedPointer := CUDARTGetProcAddress('cudaGraphicsResourceGetMappedPointer');
+  cudaGraphicsResourceSetMapFlags := CUDARTGetProcAddress('cudaGraphicsResourceSetMapFlags');
+  cudaGraphicsSubResourceGetMappedArray := CUDARTGetProcAddress('cudaGraphicsSubResourceGetMappedArray');
+  cudaGraphicsUnmapResources := CUDARTGetProcAddress('cudaGraphicsUnmapResources');
+  cudaGraphicsUnregisterResource := CUDARTGetProcAddress('cudaGraphicsUnregisterResource');
+  cudaHostAlloc := CUDARTGetProcAddress('cudaHostAlloc');
+  cudaHostGetDevicePointer := CUDARTGetProcAddress('cudaHostGetDevicePointer');
+  cudaHostGetFlags := CUDARTGetProcAddress('cudaHostGetFlags');
+  cudaLaunch := CUDARTGetProcAddress('cudaLaunch');
+  cudaMalloc := CUDARTGetProcAddress('cudaMalloc');
+  cudaMalloc3D := CUDARTGetProcAddress('cudaMalloc3D');
+  cudaMalloc3DArray := CUDARTGetProcAddress('cudaMalloc3DArray');
+  cudaMallocArray := CUDARTGetProcAddress('cudaMallocArray');
+  cudaMallocHost := CUDARTGetProcAddress('cudaMallocHost');
+  cudaMallocPitch := CUDARTGetProcAddress('cudaMallocPitch');
+  cudaMemcpy := CUDARTGetProcAddress('cudaMemcpy');
+  cudaMemcpy2D := CUDARTGetProcAddress('cudaMemcpy2D');
+  cudaMemcpy2DArrayToArray := CUDARTGetProcAddress('cudaMemcpy2DArrayToArray');
+  cudaMemcpy2DAsync := CUDARTGetProcAddress('cudaMemcpy2DAsync');
+  cudaMemcpy2DFromArray := CUDARTGetProcAddress('cudaMemcpy2DFromArray');
+  cudaMemcpy2DFromArrayAsync := CUDARTGetProcAddress('cudaMemcpy2DFromArrayAsync');
+  cudaMemcpy2DToArray := CUDARTGetProcAddress('cudaMemcpy2DToArray');
+  cudaMemcpy2DToArrayAsync := CUDARTGetProcAddress('cudaMemcpy2DToArrayAsync');
+  cudaMemcpy3D := CUDARTGetProcAddress('cudaMemcpy3D');
+  cudaMemcpy3DAsync := CUDARTGetProcAddress('cudaMemcpy3DAsync');
+  cudaMemcpyArrayToArray := CUDARTGetProcAddress('cudaMemcpyArrayToArray');
+  cudaMemcpyAsync := CUDARTGetProcAddress('cudaMemcpyAsync');
+  cudaMemcpyFromArray := CUDARTGetProcAddress('cudaMemcpyFromArray');
+  cudaMemcpyFromArrayAsync := CUDARTGetProcAddress('cudaMemcpyFromArrayAsync');
+  cudaMemcpyFromSymbol := CUDARTGetProcAddress('cudaMemcpyFromSymbol');
+  cudaMemcpyFromSymbolAsync := CUDARTGetProcAddress('cudaMemcpyFromSymbolAsync');
+  cudaMemcpyToArray := CUDARTGetProcAddress('cudaMemcpyToArray');
+  cudaMemcpyToArrayAsync := CUDARTGetProcAddress('cudaMemcpyToArrayAsync');
+  cudaMemcpyToSymbol := CUDARTGetProcAddress('cudaMemcpyToSymbol');
+  cudaMemcpyToSymbolAsync := CUDARTGetProcAddress('cudaMemcpyToSymbolAsync');
+  cudaMemGetInfo := CUDARTGetProcAddress('cudaMemGetInfo');
+  cudaMemset := CUDARTGetProcAddress('cudaMemset');
+  cudaMemset2D := CUDARTGetProcAddress('cudaMemset2D');
+  cudaMemset3D := CUDARTGetProcAddress('cudaMemset3D');
+  cudaRuntimeGetVersion := CUDARTGetProcAddress('cudaRuntimeGetVersion');
+  cudaSetDevice := CUDARTGetProcAddress('cudaSetDevice');
+  cudaSetDeviceFlags := CUDARTGetProcAddress('cudaSetDeviceFlags');
+  cudaSetDoubleForDevice := CUDARTGetProcAddress('cudaSetDoubleForDevice');
+  cudaSetDoubleForHost := CUDARTGetProcAddress('cudaSetDoubleForHost');
+  cudaSetupArgument := CUDARTGetProcAddress('cudaSetupArgument');
+  cudaSetValidDevices := CUDARTGetProcAddress('cudaSetValidDevices');
+  cudaStreamCreate := CUDARTGetProcAddress('cudaStreamCreate');
+  cudaStreamDestroy := CUDARTGetProcAddress('cudaStreamDestroy');
+  cudaStreamQuery := CUDARTGetProcAddress('cudaStreamQuery');
+  cudaStreamSynchronize := CUDARTGetProcAddress('cudaStreamSynchronize');
+  cudaThreadExit := CUDARTGetProcAddress('cudaThreadExit');
+  cudaThreadSynchronize := CUDARTGetProcAddress('cudaThreadSynchronize');
+  cudaThreadSetLimit := CUDARTGetProcAddress('cudaThreadSetLimit');
+  cudaThreadGetLimit := CUDARTGetProcAddress('cudaThreadGetLimit');
+  cudaUnbindTexture := CUDARTGetProcAddress('cudaUnbindTexture');
+  cudaWGLGetDevice := CUDARTGetProcAddress('cudaWGLGetDevice');
+
+  Result := True;
+end;
+
+function IsCUDARTInitialized: Boolean;
+begin
+  Result := (CUDARTHandle <> INVALID_MODULEHANDLE);
+end;
+
+initialization
+
+finalization
+
+  CloseCUDART;
 
 end.
 

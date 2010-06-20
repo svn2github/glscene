@@ -100,7 +100,11 @@ begin
     Result := fpt_S32
   else if str = '.f32' then
     Result := fpt_F32
-  else Assert(False, glsErrorEx + glsUnknownType);
+  else
+  begin
+    Assert(False, glsErrorEx + glsUnknownType);
+    Result := fpt_U32;
+  end;
 end;
 
 procedure ParseModule(var Info: TCUDAModuleInfo; source: TStrings);

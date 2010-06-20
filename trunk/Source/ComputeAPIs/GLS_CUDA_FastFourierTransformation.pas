@@ -54,7 +54,14 @@ uses
 {$I cuda.inc}
 
 const
-  CUFFTDLL = 'cufft.dll';
+  CUFFTDLLNAMES: array[0..5] of string = (
+    'cufft32_31_4',
+    'cufft32_30_14',
+    'cufft32_30_9',
+    'cufft32_30_8',
+    'cufft32',
+    'cufft'
+    );
 
   {/// CUFFT API function return values }
 
@@ -109,6 +116,39 @@ const
   CUFFT_D2Z = $6a;     // Double to Double-Complex
   CUFFT_Z2D = $6c;     // Double-Complex to Double
   CUFFT_Z2Z = $69;     // Double-Complex to Double-Complex
+
+(*
+ Certain R2C and C2R transforms go much more slowly when FFTW memory
+ layout and behaviour is required. The default is "best performance",
+ which means not-compatible-with-fftw. Use the cufftSetCompatibilityMode
+ API to enable exact FFTW-like behaviour.
+
+ These flags can be ORed together to select precise FFTW compatibility
+ behaviour. The two levels presently supported are:
+
+  CUFFT_COMPATIBILITY_FFTW_PADDING
+      Inserts extra padding between packed in-place transforms for
+      batched transforms with power-of-2 size.
+
+  CUFFT_COMPATIBILITY_FFTW_C2R_ASYMMETRIC
+      Guarantees FFTW-compatible output for non-symmetric complex inputs
+      for transforms with power-of-2 size. This is only useful for
+      artificial (i.e. random) datasets as actual data will always be
+      symmetric if it has come from the real plane. If you don't
+      understand what this means, you probably don't have to use it.
+
+  CUFFT_COMPATIBILITY_FFTW
+      For convenience, enables all FFTW compatibility modes at once.
+*)
+
+type
+
+  TcufftCompatibility = (
+    CUFFT_COMPATIBILITY_NORMAL              = $00,     // The default value
+    CUFFT_COMPATIBILITY_FFTW_PADDING        = $01,
+    CUFFT_COMPATIBILITY_FFTW_C2R_ASYMMETRIC = $02,
+    CUFFT_COMPATIBILITY_FFTW                = $03
+  );
 
 var
 
@@ -204,6 +244,11 @@ var
   {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
   {$ENDIF}
 
+  cufftSetCompatibilityMode: function(plan: TcufftHandle; mode: TcufftCompatibility): TcufftResult;
+  {$IFDEF CUDA_STDCALL}stdcall;
+  {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
+  {$ENDIF}
+
 function InitCUFFT: Boolean;
 procedure CloseCUFFT;
 function InitCUFFTFromLibrary(const LibName: WideString): Boolean;
@@ -228,28 +273,34 @@ const
 const
   INVALID_MODULEHANDLE = 0;
 
-  // ************** Windows specific ********************
-{$IFDEF MSWINDOWS}
 var
+{$IFDEF MSWINDOWS}
   CUFFTHandle: HINST = INVALID_MODULEHANDLE;
 {$ENDIF}
-  // ************** UNIX specific ********************
-{$IFDEF UNIX}
-var
+
+{$IFDEF LINUX}
   CUFFTHandle: TLibHandle = INVALID_MODULEHANDLE;
 {$ENDIF}
 
 function CUFFTGetProcAddress(ProcName: PAnsiChar): Pointer;
 begin
-  result := GetProcAddress(Cardinal(CUFFTHandle), ProcName);
+  result := GetProcAddress(CUFFTHandle, ProcName);
 end;
 
 function InitCUFFT: Boolean;
+var
+  I: Integer;
 begin
+  Result := True;
   if CUFFTHandle = INVALID_MODULEHANDLE then
-    Result := InitCUFFTFromLibrary(CUFFTDLL)
-  else
-    Result := True;
+  begin
+    for I := 0 to High(CUFFTDLLNAMES) do
+    begin
+      if InitCUFFTFromLibrary(CUFFTDLLNAMES[I] + '.dll') then
+        Exit;
+    end;
+  end;
+  Result := False;
 end;
 
 procedure CloseCUFFT;
@@ -280,6 +331,7 @@ begin
   cufftExecD2Z := CUFFTGetProcAddress('cufftExecD2Z');
   cufftExecZ2D := CUFFTGetProcAddress('cufftExecZ2D');
   cufftSetStream := CUFFTGetProcAddress('cufftSetStream');
+  cufftSetCompatibilityMode := CUFFTGetProcAddress('cufftSetCompatibilityMode');
 end;
 
 function IsCUFFTInitialized: Boolean;
