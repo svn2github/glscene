@@ -6,15 +6,16 @@
  Support for MS3D file format.<p>
 
   <b>History :</b><font size=-1><ul>
+    <li>20/06/10 - Yar - Added checking of existing material in material library
     <li>31/05/10 - Yar - Fixes for Linux x64
-    <li>04/23/2010 - TL - Animations now load properly (note: All animations must be full key frames. All bones selected in MS3D)
+    <li>04/23/10 - TL - Animations now load properly (note: All animations must be full key frames. All bones selected in MS3D)
                           The entire animation will be available in TActor.Animations[0]
-    <li>04/23/2010 - TL - Added support for double sided textures. To make a double sided texture, you must set the transparency
+    <li>04/23/10 - TL - Added support for double sided textures. To make a double sided texture, you must set the transparency
                           slider to the left just a little bit in MS3D. This loader will notice that,  and turn off backface culling for
                           that group.
-    <li>04/23/2010 - TL - Added weighted vertex animations
-    <li>04/23/2010 - TL - Fixed the way normals are loaded. They will now be loaded properly.
-    <li>04/23/2010 - TL - Added support to read the comments section of MS3D files.
+    <li>04/23/10 - TL - Added weighted vertex animations
+    <li>04/23/10 - TL - Fixed the way normals are loaded. They will now be loaded properly.
+    <li>04/23/10 - TL - Added support to read the comments section of MS3D files.
 
     <li>16/10/08 - UweR - Compatibility fix for Delphi 2009: MaterialIndex is now Byte instead of Char
     <li>31/03/07 - DaStr - Added $I GLScene.inc
@@ -130,7 +131,8 @@ var
   ms3d_norm_Array: array of TD3DVector;
   ms3d_norm: TD3DVector;
 
-  path: string;
+  path, libtexture: string;
+  dotpos: Integer;
 
   //Helper classes for MS3D comments if you want to use them.
 
@@ -311,7 +313,15 @@ begin
       // Create the material, if there's a materiallibrary!
       if Assigned(Owner.MaterialLibrary) then
       begin
-        if FileExists(path + ms3d_material.texture) then
+        libtexture := string(ms3d_material.texture);
+        dotpos := System.Pos('.', libtexture);
+        Delete(libtexture, dotpos, Length(libtexture)-dotpos+1);
+        GLLibMaterial := Owner.MaterialLibrary.LibMaterialByName(libtexture);
+        if Assigned(GLLibMaterial) then
+        begin
+          GLLibMaterial.Material.Texture.Disabled := False;
+        end
+        else if FileExists(path + ms3d_material.texture) then
           GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(ms3d_material.name, path + ms3d_material.texture)
         else
         begin
