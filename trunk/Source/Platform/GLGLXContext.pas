@@ -537,7 +537,7 @@ var
   FHPBufferAttribList: array[0..6] of Integer = (
     GLX_PBUFFER_WIDTH, 256,
     GLX_PBUFFER_HEIGHT, 256,
-    GLX_LARGEST_PBUFFER, GL_False,
+    GLX_LARGEST_BUFFER, GL_False,
     none);
   fMaxWidth, TempW, fMaxHeight, TempH: Integer;
   fwin: TWindow;
@@ -792,4 +792,3 @@ begin
 end;
 
 end.
-
