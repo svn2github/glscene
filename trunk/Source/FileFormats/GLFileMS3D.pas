@@ -6,7 +6,7 @@
  Support for MS3D file format.<p>
 
   <b>History :</b><font size=-1><ul>
-    <li>20/06/10 - Yar - Added checking of existing material in material library
+    <li>22/06/10 - Yar - Added checking of existing material in material library
     <li>31/05/10 - Yar - Fixes for Linux x64
     <li>04/23/10 - TL - Animations now load properly (note: All animations must be full key frames. All bones selected in MS3D)
                           The entire animation will be available in TActor.Animations[0]
@@ -202,8 +202,8 @@ begin
   try
     //Save the path of the MS3D so we can load the texture from that location instead of the EXE location.
     path := ExtractFilePath(ResourceName);
-    if (not (copy(path, length(path), 1) = '\')) then
-      path := path + '\';
+    if Length(path)>0 then
+      path := IncludeTrailingPathDelimiter( path );
 
     // First comes the header.
     aStream.ReadBuffer(ms3d_header, sizeof(TMS3DHeader));
@@ -321,8 +321,8 @@ begin
         begin
           GLLibMaterial.Material.Texture.Disabled := False;
         end
-        else if FileExists(path + ms3d_material.texture) then
-          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(ms3d_material.name, path + ms3d_material.texture)
+        else if FileStreamExists(path + ms3d_material.texture) then
+          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(libtexture, path + ms3d_material.texture)
         else
         begin
           if not Owner.IgnoreMissingTextures then
