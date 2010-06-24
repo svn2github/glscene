@@ -15,6 +15,12 @@
           <CStyleOperator Value="False"/>
         </SyntaxOptions>
       </Parsing>
+      <CodeGeneration>
+        <Checks>
+          <RangeChecks Value="True"/>
+          <OverflowChecks Value="True"/>
+        </Checks>
+      </CodeGeneration>
       <Other>
         <Verbosity>
           <ShowHints Value="False"/>
@@ -423,16 +429,16 @@
         <UnitName Value="VRMLParser"/>
       </Item99>
       <Item100>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.pas"/>
-        <UnitName Value="ZLibEx"/>
+        <Filename Value="../Source/FileFormats/ZLIB/GLSZLibEx.pas"/>
+        <UnitName Value="GLSZLibEx"/>
       </Item100>
       <Item101>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.inc"/>
-        <Type Value="Include"/>
+        <Filename Value="../Source/FileFormats/ZLIB/GLSZLibExApi.pas"/>
+        <UnitName Value="GLSZLibExApi"/>
       </Item101>
       <Item102>
-        <Filename Value="../Source/FileFormats/ZLIB/ZLibExApi.pas"/>
-        <UnitName Value="ZLibExApi"/>
+        <Filename Value="../Source/FileFormats/ZLIB/ZLibEx.inc"/>
+        <Type Value="Include"/>
       </Item102>
       <Item103>
         <Filename Value="../Source/GLAnimatedSprite.pas"/>

@@ -23,7 +23,7 @@ uses
   GLFilePAK, GLFilePLY, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, 
   GLFileWAV, GlFileX, GLFileZLIB, GLStarRecord, GLVfsPAK, HDRImage, LWObjects, 
   O3TCImage, Q3BSP, Q3MD3, RGBE, TGA, Types3DS, TypesB3D, TypesMD2, TypesMDC, 
-  TypesMS3D, TypesSTL, Utils3DS, VRMLParser, ZLibEx, ZLibExApi, 
+  TypesMS3D, TypesSTL, Utils3DS, VRMLParser, GLSZLibEx, GLSZLibExApi, 
   GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, GLBaseMeshSilhouette, 
   GLBehaviours, GLBitmapFont, GLBlur, GLBSP, GLBumpmapHDS, GLCadencer, 
   GLCameraController, GLCollision, GLCompositeImage, GLConsole, GLContext, 
