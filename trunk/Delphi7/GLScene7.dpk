@@ -287,8 +287,8 @@ contains
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
   GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
   GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
-  ZLibEx in '..\Source\FileFormats\ZLIB\ZLibEx.pas',
-  ZLibExApi in '..\Source\FileFormats\ZLIB\ZLibExApi.pas',
+  GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
+  GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
 

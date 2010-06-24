@@ -280,8 +280,12 @@ contains
   GLRenderContextInfo in '..\Source\GLRenderContextInfo.pas',
   GLCustomShader in '..\Source\Shaders\GLCustomShader.pas',
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
+  GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
+  GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
+  GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
+  GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
+  GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
-  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
-  GLSArchiveManager in '..\Source\GLSArchiveManager.pas';
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
 
 end.

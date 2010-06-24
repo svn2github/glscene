@@ -22,7 +22,7 @@ package GLScene_RunTime;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$DESCRIPTION 'GLScene - OpenGL 3D library RunTime'}
 {$LIBSUFFIX '2009'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
@@ -89,7 +89,7 @@ contains
   GLBitmapFont in '..\Source\GLBitmapFont.pas',
   GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
   GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
-  GLSVfw in '..\Source\VideoAPIs\GLSVfw.pas',
+  vfw in '..\Source\VideoAPIs\vfw.pas',
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
@@ -147,7 +147,7 @@ contains
   GLPolyhedron in '..\Source\GLPolyhedron.pas',
   GLTeapot in '..\Source\GLTeapot.pas',
   GLTextureImageEditors in '..\Source\PropertyEditors\GLTextureImageEditors.pas',
-  GLFullScreenViewer in '..\Source\Platform\GLFullScreenViewer.pas',
+  GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas',
   GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas',
   GLUserShader in '..\Source\Shaders\GLUserShader.pas',
   CurvesAndSurfaces in '..\Source\Base\CurvesAndSurfaces.pas',
@@ -266,16 +266,13 @@ contains
   RGBE in '..\Source\FileFormats\RGBE.pas',
   GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
-  GLFBO in '..\Source\GLFBO.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
-  GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
-  GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
-  GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
-  GLSLog in '..\Source\Experimental\GLSLog.pas',
-  GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
-  GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
-  GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
-  LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
-  GLSLanguage in '..\Source\GLSLanguage.pas';
+  GLSLanguage in '..\Source\GLSLanguage.pas',
+  GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
+  GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
+  GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
+  GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
+  GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
+  OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
 
 end.

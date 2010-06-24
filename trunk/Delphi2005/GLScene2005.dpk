@@ -239,6 +239,13 @@ contains
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
   GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
-  GLSLanguage in '..\Source\GLSLanguage.pas';
+  GLSLanguage in '..\Source\GLSLanguage.pas',
+  GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
+  GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
+  GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
+  GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
+  GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
+  OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
 
 end.
