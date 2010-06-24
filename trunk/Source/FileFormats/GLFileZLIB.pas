@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLFileZLIB<p>
@@ -16,7 +16,7 @@ unit GLFileZLIB;
 interface
 
 uses
-  Classes, SysUtils, GLSArchiveManager, ZLibEx;
+  Classes, SysUtils, GLSArchiveManager, GLSZLibEx;
 
 const
    SIGN = 'ZLIB'; //Signature for compressed zlib.

@@ -34,7 +34,7 @@
 *      2005.07.25  informing me about the zlib 1.2.3 update                  *
 *****************************************************************************}
 
-unit ZLibExApi;
+unit GLSZLibExApi;
 
 interface
 
