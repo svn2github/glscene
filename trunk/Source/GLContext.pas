@@ -1511,7 +1511,6 @@ begin
     FSharedContexts.Clear;
     Active := False;
     DoDestroyContext;
-    FGL.Close;
   finally
     if Assigned(oldContext) then
       oldContext.Activate;
@@ -2147,6 +2146,7 @@ end;
 
 function TGLTextureHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenTextures(1, @Result);
 end;
 
@@ -2163,7 +2163,7 @@ begin
     // reset error status
     GL.GetError;
     {: Unbind identifier from all image selectors. }
-    if GL.VERSION_1_2 then
+    if GL.ARB_multitexture then
     begin
       with GetContext.GLStates do
       begin
@@ -2212,6 +2212,7 @@ end;
 
 function TGLQueryHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenQueries(1, @Result);
 end;
 
@@ -2418,6 +2419,7 @@ end;
 
 function TGLBufferObjectHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenBuffers(1, @Result);
 end;
 
@@ -2803,6 +2805,7 @@ end;
 
 function TGLVertexArrayHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenVertexArrays(1, @Result);
 end;
 
@@ -2866,6 +2869,7 @@ end;
 
 function TGLFramebufferHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenFramebuffers(1, @Result)
 end;
 
@@ -3077,6 +3081,7 @@ end;
 
 function TGLRenderbufferHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   GL.GenRenderbuffers(1, @Result);
 end;
 
@@ -3196,6 +3201,7 @@ end;
 
 function TGLShaderHandle.DoAllocateHandle: Cardinal;
 begin
+  Result := 0;
   Result := GL.CreateShader(FShaderType)
 end;
 
@@ -3295,6 +3301,7 @@ end;
 
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
+  Result := 0;
   Result := GL.CreateProgram();
 end;
 
