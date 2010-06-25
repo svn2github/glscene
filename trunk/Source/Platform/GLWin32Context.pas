@@ -148,6 +148,8 @@ uses
 
 resourcestring
   cForwardContextFailsed = 'Can not create OpenGL 3.x Forward Context';
+  cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
+  'on - down to software';
 
 var
   vTrackingCount: Integer;
@@ -763,9 +765,8 @@ begin
   end;
 
   // Check the properties we just set.
-  DescribePixelFormat(outputDC, pixelFormat, SizeOf(PFDescriptor),
-    PFDescriptor);
-  with pfDescriptor do
+  DescribePixelFormat(outputDC, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+  with PFDescriptor do
     if (dwFlags and PFD_NEED_PALETTE) <> 0 then
       SetupPalette(outputDC, PFDescriptor);
 
@@ -775,7 +776,7 @@ begin
       and (FAcceleration = chaHardware) then
     begin
       FAcceleration := chaSoftware;
-      GLSLogger.LogWarning('Unable to create rendering context with hardware acceleration - down to software');
+      GLSLogger.LogWarning(cFailHWRC);
     end;
   end;
 
@@ -786,47 +787,50 @@ begin
     vLastPixelFormat := 0;
   FDC := outputDC;
 
-  Activate;
-  // Initialize forward context
-  if GLStates.ForwardContext then
+  if not FLegacyContextsOnly then
   begin
-    if @wglCreateContextAttribsARB = nil then
-      raise EGLContext.Create(cForwardContextFailsed);
+    Activate;
+    // Initialize forward context
+    if GLStates.ForwardContext then
+    begin
+      if @wglCreateContextAttribsARB = nil then
+        raise EGLContext.Create(cForwardContextFailsed);
 
-    if GL_VERSION_4_0 then
-      ForwardContextAttribList[1] := 4
-    else if GL_VERSION_3_3 then
-      ForwardContextAttribList[3] := 3
-    else if GL_VERSION_3_2 then
-      ForwardContextAttribList[3] := 2
-    else if GL_VERSION_3_1 then
-      ForwardContextAttribList[3] := 1;
+      if GL_VERSION_4_0 then
+        ForwardContextAttribList[1] := 4
+      else if GL_VERSION_3_3 then
+        ForwardContextAttribList[3] := 3
+      else if GL_VERSION_3_2 then
+        ForwardContextAttribList[3] := 2
+      else if GL_VERSION_3_1 then
+        ForwardContextAttribList[3] := 1;
 
-    FFRC := wglCreateContextAttribsARB(FDC, 0, @ForwardContextAttribList);
-    if FFRC = 0 then
-      raise EGLContext.Create(cForwardContextFailsed);
+      FFRC := wglCreateContextAttribsARB(FDC, 0, @ForwardContextAttribList);
+      if FFRC = 0 then
+        raise EGLContext.Create(cForwardContextFailsed);
 
-    wglDeleteContext(FRC);
-    FRC := FFRC;
-    if not wglMakeCurrent(FDC, FRC) then
-      raise EGLContext.Create(Format(cContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]));
-    FGL.Initialize;
+      wglDeleteContext(FRC);
+      FRC := FFRC;
+      if not wglMakeCurrent(FDC, FRC) then
+        raise EGLContext.Create(Format(cContextActivationFailed,
+          [GetLastError, SysErrorMessage(GetLastError)]));
+      FGL.Initialize;
+    end;
+
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+      // Hint for nVidia HQ modes (Quincunx etc.)
+      GLStates.MultisampleFilterHint := hintNicest
+    else
+      GLStates.MultisampleFilterHint := hintDontCare;
+
+    Deactivate;
+
+    // Share identifiers with other context if it deffined
+    if FShareContext <> 0 then
+      if not wglShareLists(FRC, FShareContext) then
+        GLSLogger.LogError('DoCreateContext - Failed to share contexts');
   end;
-
-  // If we are using AntiAliasing, adjust filtering hints
-  if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-    // Hint for nVidia HQ modes (Quincunx etc.)
-    GLStates.MultisampleFilterHint := hintNicest
-  else
-    GLStates.MultisampleFilterHint := hintDontCare;
-
-  Deactivate;
-
-  // Share identifiers with other context if it deffined
-  if not FLegacyContextsOnly and (FShareContext <> 0) then
-    if not wglShareLists(FRC, FShareContext) then
-      GLSLogger.LogError('DoCreateContext - Failed to share contexts');
 end;
 
 // SpawnLegacyContext
@@ -863,6 +867,7 @@ var
   localRC, FFRC, shareRC: HGLRC;
   localDC, tempDC: HDC;
   tempWnd: HWND;
+  pfDescriptor: TPixelFormatDescriptor;
 begin
   localHPBuffer := 0;
   localDC := 0;
@@ -928,7 +933,14 @@ begin
     FDC := localDC;
     FRC := localRC;
   end;
-  FAcceleration := chaHardware;
+
+  DescribePixelFormat(FDC, GetPixelFormat(FDC), SizeOf(PFDescriptor), PFDescriptor);
+  if ((PFDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0)
+    and (FAcceleration = chaHardware) then
+  begin
+    FAcceleration := chaSoftware;
+    GLSLogger.LogWarning(cFailHWRC);
+  end;
 
   Activate;
   // Initialize forward context
@@ -975,6 +987,7 @@ begin
   if FShareContext <> 0 then
     if not wglShareLists(FShareContext, FRC) then
       GLSLogger.LogError('DoCreateMemoryContext - Failed to share contexts');
+
 end;
 
 // DoShareLists
@@ -1022,6 +1035,7 @@ begin
   FRC := 0;
   FDC := 0;
   FShareContext := 0;
+  FGL.Close;
 end;
 
 // DoActivate
