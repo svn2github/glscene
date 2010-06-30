@@ -77,8 +77,8 @@ type
   TGLState = (stAlphaTest, stAutoNormal,
     stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
     stFog, stLighting, stLineSmooth, stLineStipple,
-    stLogicOp, stNormalize, stPointSmooth, stPointSprite, stPolygonSmooth,
-    stPolygonStipple, stScissorTest, stStencilTest,
+    stIndexLogicOp, stColorLogicOp, stNormalize, stPointSmooth, stPointSprite,
+    stPolygonSmooth, stPolygonStipple, stScissorTest, stStencilTest,
     stPolygonOffsetPoint, stPolygonOffsetLine, stPolygonOffsetFill,
     stDepthClamp);
 
@@ -155,14 +155,14 @@ type
 
     // Lighting state
     FMaxLights: GLuint;
-    FLightEnabling : array[0..MAX_HARDWARE_LIGHT-1] of Boolean;
-    FLightAmbient  : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
-    FLightDiffuse  : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
-    FLightSpecular : array[0..MAX_HARDWARE_LIGHT-1] of TVector;
-    FSpotCutoff    : array[0..MAX_HARDWARE_LIGHT-1] of Single;
-    FConstantAtten : array[0..MAX_HARDWARE_LIGHT-1] of Single;
-    FLinearAtten   : array[0..MAX_HARDWARE_LIGHT-1] of Single;
-    FQuadAtten     : array[0..MAX_HARDWARE_LIGHT-1] of Single;
+    FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
+    FLightAmbient: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
+    FLightDiffuse: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
+    FLightSpecular: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
+    FSpotCutoff: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
+    FConstantAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
+    FLinearAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
+    FQuadAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
@@ -490,6 +490,13 @@ type
     procedure Disable(const aState: TGLState);
     procedure PerformEnable(const aState: TGLState);
     procedure PerformDisable(const aState: TGLState);
+
+    procedure ResetGLPolygonMode; deprecated;
+    procedure ResetGLMaterialColors; deprecated;
+    procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
+    procedure ResetGLCurrentTexture; deprecated;
+    procedure ResetGLFrontFace; deprecated;
+    procedure ResetAll; deprecated;
 
     {: Adjusts material colors for a face. }
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
@@ -1004,7 +1011,8 @@ const
     (GLConst: GL_LIGHTING; GLDeprecated: True),
     (GLConst: GL_LINE_SMOOTH; GLDeprecated: True),
     (GLConst: GL_LINE_STIPPLE; GLDeprecated: True),
-    (GLConst: GL_LOGIC_OP; GLDeprecated: False),
+    (GLConst: GL_INDEX_LOGIC_OP; GLDeprecated: True),
+    (GLConst: GL_COLOR_LOGIC_OP; GLDeprecated: False),
     (GLConst: GL_NORMALIZE; GLDeprecated: True),
     (GLConst: GL_POINT_SMOOTH; GLDeprecated: True),
     (GLConst: GL_POINT_SPRITE; GLDeprecated: True),
@@ -1073,7 +1081,7 @@ implementation
 //------------------------------------------------------
 
 uses
-  GLContext;
+  GLContext, GLColor;
 
 resourcestring
   glsStateCashMissing = 'States cash missing: ';
@@ -1099,11 +1107,6 @@ end;
 //
 
 constructor TGLStateCache.Create;
-const
-  clrBlack: TVector = (0, 0, 0, 1);
-  clrGray20: TVector = (0.20, 0.20, 0.20, 1);
-  clrGray80: TVector = (0.80, 0.80, 0.80, 1);
-  clrWhite: TVector = (1, 1, 1, 1);
 var
   I: Integer;
 begin
@@ -2182,7 +2185,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FLogicOpMode := Value;
-    GL.LogicOp(cGLLogicOpToGLEnum[FLogicOpMode]);
+    GL.LogicOp(cGLLogicOpToGLEnum[Value]);
   end;
 end;
 
@@ -3046,4 +3049,109 @@ begin
     FrontFace := fwCounterClockWise;
 end;
 
+// ResetGLPolygonMode
+//
+
+procedure TGLStateCache.ResetGLPolygonMode;
+begin
+  GL.PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  FPolygonMode := pmFill;
+  FPolygonBackMode := pmFill;
+end;
+
+// ResetGLMaterialColors
+//
+
+procedure TGLStateCache.ResetGLMaterialColors;
+begin
+  GL.Materialfv(GL_FRONT_AND_BACK, GL_AMBIENT, @clrGray20);
+  GL.Materialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, @clrGray80);
+  GL.Materialfv(GL_FRONT_AND_BACK, GL_SPECULAR, @clrBlack);
+  GL.Materialfv(GL_FRONT_AND_BACK, GL_EMISSION, @clrBlack);
+  GL.Materiali(GL_FRONT_AND_BACK, GL_SHININESS, 0);
+  FillChar(FFrontBackColors, SizeOf(FFrontBackColors), 127);
+  FFrontBackShininess[0] := 0;
+  FFrontBackShininess[1] := 0;
+end;
+
+// ResetGLTexture
+//
+
+procedure TGLStateCache.ResetGLTexture(const TextureUnit: Integer);
+var
+  t: TGLTextureTarget;
+  glTarget: TGLEnum;
+begin
+  GL.ActiveTexture(GL_TEXTURE0 + TextureUnit);
+  for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+  begin
+    glTarget := DecodeGLTextureTarget(t);
+    if IsTargetSupported(glTarget) then
+    begin
+      GL.BindTexture(glTarget, 0);
+      FTextureBinding[TextureUnit, t] := 0;
+    end;
+  end;
+  GL.ActiveTexture(GL_TEXTURE0);
+  FActiveTexture := 0;
+end;
+
+// ResetGLCurrentTexture
+//
+
+procedure TGLStateCache.ResetGLCurrentTexture;
+var
+  a: TGLint;
+  t: TGLTextureTarget;
+  glTarget: TGLEnum;
+begin
+  if GL.ARB_multitexture then
+  begin
+    for a := MaxTextureImageUnits - 1 to 0 do
+    begin
+      GL.ActiveTexture(GL_TEXTURE0 + a);
+      for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+      begin
+        glTarget := DecodeGLTextureTarget(t);
+        if IsTargetSupported(glTarget) then
+        begin
+          GL.BindTexture(glTarget, 0);
+          FTextureBinding[a, t] := 0;
+        end;
+      end;
+    end;
+  end
+  else
+    for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+    begin
+      glTarget := DecodeGLTextureTarget(t);
+      if IsTargetSupported(glTarget) then
+      begin
+        GL.BindTexture(glTarget, 0);
+        FTextureBinding[0, t] := 0;
+      end;
+    end;
+end;
+
+// ResetGLFrontFace
+//
+
+procedure TGLStateCache.ResetGLFrontFace;
+begin
+  GL.FrontFace(GL_CCW);
+  FFrontFace := fwCounterClockWise;
+end;
+
+// ResetAll
+//
+
+procedure TGLStateCache.ResetAll;
+begin
+  ResetGLPolygonMode;
+  ResetGLMaterialColors;
+  ResetGLCurrentTexture;
+  ResetGLFrontFace;
+end;
+
 end.
+
