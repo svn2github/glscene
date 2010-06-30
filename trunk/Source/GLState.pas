@@ -491,6 +491,8 @@ type
     procedure PerformEnable(const aState: TGLState);
     procedure PerformDisable(const aState: TGLState);
 
+    procedure SetGLState(const aState : TGLState); deprecated;
+    procedure UnSetGLState(const aState : TGLState); deprecated;
     procedure ResetGLPolygonMode; deprecated;
     procedure ResetGLMaterialColors; deprecated;
     procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
@@ -3047,6 +3049,20 @@ begin
     FrontFace := fwClockWise
   else
     FrontFace := fwCounterClockWise;
+end;
+
+// SetGLState
+//
+procedure TGLStateCache.SetGLState(const aState : TGLState);
+begin
+	Enable(aState);
+end;
+
+// UnSetGLState
+//
+procedure TGLStateCache.UnSetGLState(const aState : TGLState);
+begin
+	Disable(aState);
 end;
 
 // ResetGLPolygonMode
