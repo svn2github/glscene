@@ -10,6 +10,7 @@
 
    <b>History : </b><font size=-1><ul>
 
+      <li>01/07/10 - Yar   - Fixed zooming for FPC (by Rustam Asmandiarov aka Predator)
       <li>17/06/10 - YP    - Fixed Zoom in/out inconsistence (mousewheel up/down inverted)
       <li>11/06/10 - YP    - Fixed wheeldata can be equal to 0 in FormMouseWheel (div by 0 exception)
       <li>21/01/10 - Yar   - Bugfixed zooming in design time (BugtrackerID = 2936266)
@@ -114,9 +115,9 @@ type
     FRotateTargetSpeed: Single;
     FOnMouseMove: TMouseMoveEvent;
     procedure ShowFPS(Sender: TObject);
-    procedure GLSceneViewerMouseMove(Sender: TObject;
+    procedure ViewerMouseMove(Sender: TObject;
       Shift: TShiftState; X, Y: Integer);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+    procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TGLPoint; var Handled: Boolean);
 
     procedure SetGLSceneViewer(const Value: TGLSceneViewer);
@@ -225,7 +226,7 @@ begin
   inherited;
 end;
 
-procedure TGLSimpleNavigation.FormMouseWheel(Sender: TObject;
+procedure TGLSimpleNavigation.ViewerMouseWheel(Sender: TObject;
   Shift: TShiftState; WheelDelta: Integer; MousePos: TGLPoint;
   var Handled: Boolean);
 var
@@ -248,7 +249,7 @@ begin
     Handled := True;
 end;
 
-procedure TGLSimpleNavigation.GLSceneViewerMouseMove(Sender: TObject;
+procedure TGLSimpleNavigation.ViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 
   procedure DoZoom;
@@ -353,8 +354,10 @@ procedure TGLSimpleNavigation.SetForm(const Value: TCustomForm);
 begin
   if FForm <> nil then
   begin
-    TForm(FForm).OnMouseWheel := nil;
     FForm.RemoveFreeNotification(Self);
+    {$IFNDEF FPC}
+    TForm(FForm).OnMouseWheel := nil;
+    {$ENDIF}
   end;
 
   FForm := Value;
@@ -363,8 +366,9 @@ begin
   begin
     if FFormCaption = vFPSString then
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
-
-    TForm(FForm).OnMouseWheel := FormMouseWheel;
+    {$IFNDEF FPC}
+     TForm(FForm).OnMouseWheel := ViewerMouseWheel;
+    {$ENDIF}
     FForm.FreeNotification(Self);
   end;
 end;
@@ -376,13 +380,19 @@ begin
   begin
     FGLSceneViewer.RemoveFreeNotification(Self);
     FGLSceneViewer.OnMouseMove := nil;
+    {$IFDEF FPC}
+    FGLSceneViewer.OnMouseWheel := nil;
+    {$ENDIF}
   end;
 
   FGLSceneViewer := Value;
 
   if FGLSceneViewer <> nil then
   begin
-    FGLSceneViewer.OnMouseMove := GLSceneViewerMouseMove;
+    {$IFDEF FPC}
+    FGLSceneViewer.OnMouseWheel := ViewerMouseWheel;
+    {$ENDIF}
+    FGLSceneViewer.OnMouseMove := ViewerMouseMove;
     FGLSceneViewer.FreeNotification(Self);
   end;
 end;
