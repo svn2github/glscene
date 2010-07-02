@@ -48,6 +48,7 @@ type
     procedure Normalize;
     function Length: Single; inline;
     function Distance(const a: TVector2fEXT): Single;
+    function IsNull: Boolean;
   end;
 
   PVector3f = ^TVector3fEXT;
@@ -75,6 +76,7 @@ type
     procedure Normalize;
     function Length: Single; inline;
     function Distance(const a: TVector3fEXT): Single;
+    function IsNull: Boolean;
   end;
 
   PVector4f = ^TVector4fEXT;
@@ -108,6 +110,7 @@ type
     procedure Normalize;
     function Length: Single; inline;
     function Distance(const a: TVector4fEXT): Single;
+    function IsNull: Boolean;
   end;
   TVectorEXT = TVector4fEXT;
 
@@ -358,6 +361,11 @@ begin
   dif := Self - a;
   Result := Sqrt(dif.Norm);
 end;
+
+function TVector2fEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0);
+end;
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3fEXT'}{$ENDIF}
@@ -513,6 +521,11 @@ var
 begin
   dif := Self - a;
   Result := Sqrt(dif.Norm);
+end;
+
+function TVector3fEXT.IsNull: Boolean;
+begin
+  Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
 
@@ -694,6 +707,11 @@ var
 begin
   dif := Self - a;
   Result := Sqrt(dif.Norm);
+end;
+
+function TVector4fEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
 end;
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 

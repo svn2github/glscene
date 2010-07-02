@@ -9,15 +9,20 @@
   and uses the same comparison function as TList.Sort (TListSortCompare).
   Functions Clear, Add, Delete, First and Last are equivalent,
   except that First and Last return a _Key_ so they
-  can be used for comparisons in loops. All _Values_ occur only once in the
-  tree: when the same value is added twice, the second one is not stored.
+  can be used for comparisons in loops.
+
+  All _Key_ occur only once in the tree if DuplicateKeys if False:
+  when the same value is added twice, the second one is not stored.
+
+  When DuplicateKeys is enabled the second comparison function is used
+  for sort _Value_ and it duplicates not allowed.
 
   To be able to manage the tree, the Create constructor has a argument
   specifying the comparison function that should be used.
 
   The function Find can be used to find a _Value_ that was put in the tree,
   it searches for the given _Key_ using the comparison function given
-  at time of object creation. It returns a TRBNodeP.
+  at time of object creation.
 
   The functions NextKey and PrevKey can be used to "walk" through the tree:
   given a _Key_, NextKey replace it with the smallest key that
@@ -47,7 +52,8 @@ type
   GRedBlackTree < K, V > = class
   { Public Declarations }
   type {$IFDEF FPC}public{$ENDIF}
-    TCompareFunc = function(const Item1, Item2: K): Integer;
+    TKeyCompareFunc = function(const Item1, Item2: K): Integer;
+    TValueCompareFunc = function(const Item1, Item2: V): Integer;
     TForEachProc = procedure (AKey: K; AValue: V; out AContinue: Boolean);
     { Private Declarations }
   {$IFDEF GLS_COMPILER_2009_DOWN}
@@ -72,7 +78,9 @@ type
       FLeftmost: TRBNode;
       FRightmost: TRBNode;
       FLastNode: TRBNode;
-      FCompareFunc: TCompareFunc;
+      FKeyCompareFunc: TKeyCompareFunc;
+      FDuplicateKeys: Boolean;
+      FValueCompareFunc: TValueCompareFunc;
 
     function FindNode(const key: K): TRBNode;
     procedure RotateLeft(var x: TRBNode);
@@ -81,35 +89,40 @@ type
     function Maximum(var x: TRBNode): TRBNode;
     function GetFirst: K;
     function GetLast: K;
+    procedure SetDuplicateKeys(Value: Boolean);
     class procedure FastErase(x: TRBNode);
 
   public
     { Public Declarations }
-    constructor Create(Compare: TCompareFunc);
+    constructor Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
     destructor Destroy; override;
 
     procedure Clear;
 
     function Find(const key: K; out Value: V): Boolean;
-    function NextKey(var key: K): V;
-    function PrevKey(var key: K): V;
+    function NextKey(var key: K; out Value: V): Boolean;
+    function PrevKey(var key: K; out Value: V): Boolean;
     procedure Add(const key: K; const Value: V);
     procedure Delete(const key: K);
     procedure ForEach(AProc: TForEachProc);
     property First: K read GetFirst;
     property Last: K read GetLast;
+    property DuplicateKeys: Boolean read FDuplicateKeys write SetDuplicateKeys;
   end;
 
 implementation
 
 constructor GRedBlackTree
-{$IFNDEF FPC}<K, V>{$ENDIF} .Create(Compare: TCompareFunc);
+{$IFNDEF FPC}<K, V>{$ENDIF} .Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
 begin
   inherited Create;
-  FCompareFunc := Compare;
+  Assert(Assigned(KeyCompare));
+  FKeyCompareFunc := KeyCompare;
+  FValueCompareFunc := ValueCompare;
   FRoot := nil;
   FLeftmost := nil;
   FRightmost := nil;
+  FDuplicateKeys := False;
 end;
 
 destructor GRedBlackTree
@@ -162,7 +175,7 @@ begin
   Result := FRoot;
   while (Result <> nil) do
   begin
-    cmp := FCompareFunc(Result.Key, key);
+    cmp := FKeyCompareFunc(Result.Key, key);
     if cmp < 0 then
     begin
       Result := Result.right;
@@ -260,6 +273,7 @@ begin
   z := TRBNode.Create;
 {$ELSE}
   New(z);
+  FillChar(z^, SizeOf(TRBNodeRec), $00);
 {$ENDIF}
   { Initialize fields in new node z }
   z.Key := key;
@@ -269,11 +283,11 @@ begin
   z.Value := Value;
 
   { Maintain FLeftmost and FRightmost nodes }
-  if ((FLeftmost = nil) or (FCompareFunc(key, FLeftmost.Key) < 0)) then
+  if ((FLeftmost = nil) or (FKeyCompareFunc(key, FLeftmost.Key) < 0)) then
   begin
     FLeftmost := z;
   end;
-  if ((FRightmost = nil) or (FCompareFunc(FRightmost.Key, key) < 0)) then
+  if ((FRightmost = nil) or (FKeyCompareFunc(FRightmost.Key, key) < 0)) then
   begin
     FRightmost := z;
   end;
@@ -284,18 +298,29 @@ begin
   while (x <> nil) do
   begin
     y := x;
-    cmp := FCompareFunc(key, x.Key);
-    if (cmp < 0) then
-    begin
-      x := x.left;
-    end
-    else if (cmp > 0) then
-    begin
-      x := x.right;
-    end
+    cmp := FKeyCompareFunc(key, x.Key);
+    if cmp < 0 then
+      x := x.left
+    else if cmp > 0 then
+      x := x.right
     else
     begin
-      { Value already exists in tree. }
+      { Key already exists in tree. }
+      if FDuplicateKeys then
+      begin
+        cmp := FValueCompareFunc(Value, x.Value);
+        if cmp < 0 then
+        begin
+          x := x.left;
+          continue;
+        end
+        else if cmp > 0 then
+        begin
+          x := x.right;
+          continue;
+        end;
+        { Value already exists in tree. }
+      end;
 {$IFDEF GLS_COMPILER_2009_DOWN}
       z.Free;
 {$ELSE}
@@ -310,7 +335,7 @@ begin
   begin
     FRoot := z;
   end
-  else if (FCompareFunc(key, y.Key) < 0) then
+  else if (FKeyCompareFunc(key, y.Key) < 0) then
   begin
     y.left := z;
   end
@@ -377,6 +402,7 @@ var
   w, x, y, z, x_parent: TRBNode;
   tmpcol: TRBColor;
 begin
+  repeat
   z := FindNode(key);
   if z = nil then
     exit;
@@ -585,14 +611,16 @@ begin
 {$ELSE}
   Dispose(y);
 {$ENDIF}
+  until False;
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC}<K, V>{$ENDIF} .NextKey(var key: K): V;
+{$IFNDEF FPC}<K, V>{$ENDIF} .NextKey(var key: K; out Value: V): Boolean;
 var
   x, y: TRBNode;
 begin
-  if Assigned(FLastNode) and (FCompareFunc(FLastNode.Key, key) = 0) then
+  Result := False;
+  if Assigned(FLastNode) and (FKeyCompareFunc(FLastNode.Key, key) = 0) then
     x := FLastNode
   else
     x := FindNode(key);
@@ -609,7 +637,7 @@ begin
   else if (x.parent <> nil) then
   begin
     y := x.parent;
-    while (x = y.right) do
+    while Assigned(y) and (x = y.right) do
     begin
       x := y;
       y := y.parent;
@@ -619,17 +647,21 @@ begin
   end
   else
     x := FRoot;
+  if x = nil then
+    exit;
   key := x.Key;
   FLastNode := x;
-  Result := x.Value;
+  Value := x.Value;
+  Result := True;
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC}<K, V>{$ENDIF} .PrevKey(var key: K): V;
+{$IFNDEF FPC}<K, V>{$ENDIF} .PrevKey(var key: K; out Value: V): Boolean;
 var
   x, y: TRBNode;
 begin
-  if Assigned(FLastNode) and (FCompareFunc(FLastNode.Key, key) = 0) then
+  Result := False;
+  if Assigned(FLastNode) and (FKeyCompareFunc(FLastNode.Key, key) = 0) then
     x := FLastNode
   else
     x := FindNode(key);
@@ -656,9 +688,12 @@ begin
   end
   else
     x := FRoot;
+  if x = nil then
+    exit;
   key := x.Key;
   FLastNode := x;
-  Result := x.Value;
+  Value := x.Value;
+  Result := True
 end;
 
 function GRedBlackTree
@@ -712,6 +747,15 @@ begin
     if cont and (FLeftMost <> FRightMost) then
       AProc(FRightMost.Key, FRightMost.Value, cont);
   end;
+end;
+
+procedure GRedBlackTree
+{$IFNDEF FPC}<K, V>{$ENDIF}.SetDuplicateKeys(Value: Boolean);
+begin
+  if Value and Assigned(FValueCompareFunc) then
+    FDuplicateKeys := True
+  else
+    FDuplicateKeys := False;
 end;
 
 end.

@@ -746,7 +746,7 @@ begin
       AClient.VertexHandle := TGLVBOArrayBufferHandle.Create;
       AClient.IndexHandle := TGLVBOElementArrayHandle.Create;
     end;
-    AClient.ArrayHandle := TGLVAOHandleTree.Create(CompareGLuint);
+    AClient.ArrayHandle := TGLVAOHandleTree.Create(CompareGLuint, nil);
   end
   else
   begin

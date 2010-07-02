@@ -149,9 +149,12 @@ type
     FLocation: array[1..GLS_MAX_SHADER_PROGRAM] of GLInt;
     FDataType: array[1..GLS_MAX_SHADER_PROGRAM] of TGLSLDataType;
     FWarningAbsenceLoged: array[1..GLS_MAX_SHADER_PROGRAM] of Boolean;
+    FBindedBuffer: array[1..GLS_MAX_SHADER_PROGRAM] of TGLuint;
     FTag: Integer;
     function GetLocation: GLInt;
     function GetDataType: TGLSLDataType;
+    function GetBindedBuffer: TGLuint;
+    procedure SetBindedBuffer(Value: TGLuint);
   public
     { Public Declarations }
     constructor Create;
@@ -162,6 +165,7 @@ type
     property Name: string read FName;
     property Location: GLInt read GetLocation;
     property DataType: TGLSLDataType read GetDataType;
+    property BindedBuffer: TGLuint read GetBindedBuffer write SetBindedBuffer;
     property Tag: Integer read FTag write FTag;
   end;
 
@@ -294,30 +298,34 @@ type
        for cashing shader variables location }
     procedure CashLocationsOfGLSLShader;
 
+    // Float uniforms
     procedure Uniform1f(AUniform: TGLSLUniform; const Value: Single);
     procedure Uniform2f(AUniform: TGLSLUniform; const Value: TVector2f);
     procedure Uniform3f(AUniform: TGLSLUniform; const Value: TVector3f);
     procedure Uniform4f(AUniform: TGLSLUniform; const Value: TVector4f);
-    procedure Uniform1I(AUniform: TGLSLUniform; const Value: Integer);
-      overload;
-    procedure Uniform1I(AUniform: TGLSLUniform; const Value: PGLInt;
-      Count: Integer);
-      overload;
+
+    // Integer uniforms
+    procedure Uniform1I(AUniform: TGLSLUniform; const Value: TGLint); overload;
+    procedure Uniform1I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
     procedure Uniform2I(AUniform: TGLSLUniform; const Value: TVector2I);
     procedure Uniform3I(AUniform: TGLSLUniform; const Value: TVector3I);
-    procedure Uniform4I(AUniform: TGLSLUniform; const Value: TVector4I);
-      overload;
-    procedure Uniform4I(AUniform: TGLSLUniform; const Value: PGLInt;
-      Count: Integer);
-      overload;
-    procedure UniformMat2f(AUniform: TGLSLUniform; const Value:
-      TMatrix2f);
-    procedure UniformMat3f(AUniform: TGLSLUniform; const Value:
-      TMatrix3f);
-    procedure UniformMat4f(AUniform: TGLSLUniform; const Value:
-      TMatrix4f);
-    procedure UniformSampler(AUniform: TGLSLUniform; const Texture:
-      GLUInt; TexUnit: GLUInt);
+    procedure Uniform4I(AUniform: TGLSLUniform; const Value: TVector4I); overload;
+    procedure Uniform4I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
+
+    // Unsigned integer uniforms
+    procedure Uniform1UI(AUniform: TGLSLUniform; const Value: TGLuint);
+    procedure Uniform2UI(AUniform: TGLSLUniform; const Value: TVector2UI);
+    procedure Uniform3UI(AUniform: TGLSLUniform; const Value: TVector3UI);
+    procedure Uniform4UI(AUniform: TGLSLUniform; const Value: TVector4UI);
+
+    // Matrix uniforms
+    procedure UniformMat2f(AUniform: TGLSLUniform; const Value: TMatrix2f);
+    procedure UniformMat3f(AUniform: TGLSLUniform; const Value: TMatrix3f);
+    procedure UniformMat4f(AUniform: TGLSLUniform; const Value: TMatrix4f);
+
+    // Other uniforms
+    procedure UniformSampler(AUniform: TGLSLUniform; const Texture: GLUInt; TexUnit: GLUInt);
+//    procedure UniformBuffer(const ProgramName: string; AUniform: TGLSLUniform; const Buffer: GLUInt);
   end;
 
 var
@@ -331,7 +339,7 @@ var
     attrTexCoord3,
     attrTangent,
     attrBinormal,
-    attrIndex: TGLSLAttribute;
+    attrInstanceID: TGLSLAttribute;
 
   uniformModelMatrix,
     uniformViewProjectionMatrix,
@@ -665,6 +673,51 @@ begin
     exit;
   end;
   Result := FDataType[Prog];
+end;
+
+function TGLSLUniform.GetBindedBuffer: TGLuint;
+var
+  Prog: GLUint;
+begin
+  Result := 0;
+  Prog := CurrentGLContext.GLStates.CurrentProgram;
+  if Prog = 0 then
+    exit;
+  if Prog > GLS_MAX_SHADER_PROGRAM then
+  begin
+    ShadersManager.WorkLog.LogFatalError(glsOutOfMaxShader);
+    exit;
+  end;
+  Result := FBindedBuffer[Prog];
+end;
+
+procedure TGLSLUniform.SetBindedBuffer(Value: TGLuint);
+var
+  Prog: GLUint;
+begin
+  Prog := CurrentGLContext.GLStates.CurrentProgram;
+  if Prog = 0 then
+    exit;
+  if Prog > GLS_MAX_SHADER_PROGRAM then
+  begin
+    ShadersManager.WorkLog.LogFatalError(glsOutOfMaxShader);
+    exit;
+  end;
+  if FLocation[Prog] = -1 then
+  begin
+    if not FWarningAbsenceLoged[Prog] then
+    begin
+      ShadersManager.WorkLog.LogWarning('Using an unknown uniform "' + FName +
+        '" in program "' + vCurrentProgram.FFriendlyName + '" to bind buffer object');
+      FWarningAbsenceLoged[Prog] := True;
+    end;
+  end
+  else
+    if Value <> FBindedBuffer[Prog] then
+    begin
+      FBindedBuffer[Prog] := Value;
+      GL.UniformBuffer(Prog, FLocation[Prog], Value);
+    end;
 end;
 
 procedure TGLSLUniform.ResetLocationCash;
@@ -1005,8 +1058,8 @@ constructor TGLShadersManager.Create;
 var
   LogPath: string;
 begin
-  FShaderObjectsTree := TShaderObjectTree.Create(CompareInteger);
-  FShaderProgramsTree := TShaderProgramTree.Create(CompareInteger);
+  FShaderObjectsTree := TShaderObjectTree.Create(CompareInteger, nil);
+  FShaderProgramsTree := TShaderProgramTree.Create(CompareInteger, nil);
 
   LogPath := ExtractFilePath(ParamStr(0));
   CompilationLog
@@ -1335,6 +1388,10 @@ begin
           GL_INT_VEC2: FDataType[ProgramID] := GLSLType2I;
           GL_INT_VEC3: FDataType[ProgramID] := GLSLType3I;
           GL_INT_VEC4: FDataType[ProgramID] := GLSLType4I;
+          GL_UNSIGNED_INT: FDataType[ProgramID] := GLSLType1UI;
+          GL_UNSIGNED_INT_VEC2: FDataType[ProgramID] := GLSLType2UI;
+          GL_UNSIGNED_INT_VEC3: FDataType[ProgramID] := GLSLType3UI;
+          GL_UNSIGNED_INT_VEC4: FDataType[ProgramID] := GLSLType4UI;
           GL_BOOL: FDataType[ProgramID] := GLSLType1I;
           GL_BOOL_VEC2: FDataType[ProgramID] := GLSLType2I;
           GL_BOOL_VEC3: FDataType[ProgramID] := GLSLType3I;
@@ -1422,7 +1479,6 @@ procedure TGLShadersManager.UseProgram(const AName: string);
 var
   RC: TGLContext;
   prog: TGLSLShaderProgram;
-  bLinked: TGLboolean;
 begin
   if SafeCurrentGLContext(RC) then
   begin
@@ -1438,8 +1494,6 @@ begin
             if not prog.Link then
               Abort;
         end;
-
-
 
         vCurrentProgram := prog;
         prog.FHandle.UseProgramObject;
@@ -1572,7 +1626,7 @@ procedure TGLShadersManager.Uniform1f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform1f(loc, Value);
@@ -1583,7 +1637,7 @@ procedure TGLShadersManager.Uniform2f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform2f(loc, Value[0], Value[1]);
@@ -1594,7 +1648,7 @@ procedure TGLShadersManager.Uniform3f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform3f(loc, Value[0], Value[1], Value[2]);
@@ -1605,7 +1659,7 @@ procedure TGLShadersManager.Uniform4f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform4f(loc, Value[0], Value[1], Value[2], Value[3]);
@@ -1616,7 +1670,7 @@ procedure TGLShadersManager.Uniform1I(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform1i(loc, Value);
@@ -1627,7 +1681,7 @@ procedure TGLShadersManager.Uniform1I(AUniform: TGLSLUniform;
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform1iv(loc, Count, Value);
@@ -1638,7 +1692,7 @@ procedure TGLShadersManager.Uniform2I(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform2i(loc, Value[0], Value[1]);
@@ -1649,7 +1703,7 @@ procedure TGLShadersManager.Uniform3I(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform3i(loc, Value[0], Value[1], Value[2]);
@@ -1660,7 +1714,7 @@ procedure TGLShadersManager.Uniform4I(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform4i(loc, Value[0], Value[1], Value[2], Value[3]);
@@ -1671,10 +1725,54 @@ procedure TGLShadersManager.Uniform4I(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.Uniform4iv(loc, Count, Value);
+end;
+
+procedure TGLShadersManager.Uniform1UI(AUniform: TGLSLUniform; const
+  Value: TGLuint);
+var
+  loc: GLInt;
+begin
+  // Assert(vCurrentProgram <> nil);
+  loc := AUniform.Location;
+  if loc > -1 then
+    GL.Uniform1ui(loc, Value);
+end;
+
+procedure TGLShadersManager.Uniform2UI(AUniform: TGLSLUniform; const
+  Value: TVector2UI);
+var
+  loc: GLInt;
+begin
+  // Assert(vCurrentProgram <> nil);
+  loc := AUniform.Location;
+  if loc > -1 then
+    GL.Uniform2ui(loc, Value[0], Value[1]);
+end;
+
+procedure TGLShadersManager.Uniform3UI(AUniform: TGLSLUniform; const
+  Value: TVector3UI);
+var
+  loc: GLInt;
+begin
+  // Assert(vCurrentProgram <> nil);
+  loc := AUniform.Location;
+  if loc > -1 then
+    GL.Uniform3ui(loc, Value[0], Value[1], Value[2]);
+end;
+
+procedure TGLShadersManager.Uniform4UI(AUniform: TGLSLUniform; const
+  Value: TVector4UI);
+var
+  loc: GLInt;
+begin
+  // Assert(vCurrentProgram <> nil);
+  loc := AUniform.Location;
+  if loc > -1 then
+    GL.Uniform4ui(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
 procedure TGLShadersManager.UniformMat2f(AUniform: TGLSLUniform; const
@@ -1682,7 +1780,7 @@ procedure TGLShadersManager.UniformMat2f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.UniformMatrix2fv(loc, 1, False, @Value);
@@ -1693,7 +1791,7 @@ procedure TGLShadersManager.UniformMat3f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.UniformMatrix3fv(loc, 1, False, @Value);
@@ -1704,7 +1802,7 @@ procedure TGLShadersManager.UniformMat4f(AUniform: TGLSLUniform; const
 var
   loc: GLInt;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if loc > -1 then
     GL.UniformMatrix4fv(loc, 1, False, @Value);
@@ -1716,7 +1814,7 @@ var
   loc: GLInt;
   target: TGLTextureTarget;
 begin
-  Assert(vCurrentProgram <> nil);
+  // Assert(vCurrentProgram <> nil);
   loc := AUniform.Location;
   if (loc > -1) and GetTextureTarget(AUniform, target) then
   begin
@@ -1725,6 +1823,39 @@ begin
   end;
 end;
 
+//procedure TGLShadersManager.UniformBuffer(const ProgramName: string; AUniform: TGLSLUniform; const Buffer: GLUInt);
+//var
+//  RC: TGLContext;
+//  prog: TGLSLShaderProgram;
+//  loc: GLInt;
+//begin
+//  if SafeCurrentGLContext(RC) then
+//  begin
+//    loc := AUniform.Location;
+//    if loc < 0 then
+//      exit;
+//    BeginWork;
+//
+//    try
+//      prog := GetShaderProgram(ProgramName);
+//      if Assigned(prog) then
+//      begin
+//        if prog.FHandle.IsDataNeedUpdate then
+//        begin
+//          if not LinkShaderProgram(ProgramName) then
+//            if not prog.Link then
+//              Abort;
+//        end;
+//        GL.UniformBuffer(prog.FHandle.Handle, loc, Buffer);
+//      end
+//      else if RC.GLStates.CurrentProgram > 0 then
+//        GL.UniformBuffer(RC.GLStates.CurrentProgram, loc, Buffer);
+//
+//    finally
+//      EndWork;
+//    end;
+//  end;
+//end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 initialization
@@ -1748,8 +1879,8 @@ initialization
     TGLSLAttribute.RegisterAttribute('Tangent');
   attrBinormal :=
     TGLSLAttribute.RegisterAttribute('Binormal');
-  attrIndex :=
-    TGLSLAttribute.RegisterAttribute('Index');
+  attrInstanceID :=
+    TGLSLAttribute.RegisterAttribute('gl_InstanceID');
 
   {: Registration of the most common uniforms. }
   uniformModelMatrix
@@ -1776,8 +1907,6 @@ initialization
     := TGLSLUniform.RegisterUniform('TexUnit6');
   uniformTexUnit7
     := TGLSLUniform.RegisterUniform('TexUnit7');
-  uniformInstanceID
-    := TGLSLUniform.RegisterUniform('InstanceID');
 
 finalization
 
