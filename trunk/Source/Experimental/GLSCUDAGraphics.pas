@@ -137,6 +137,9 @@ type
     property Launching;
   end;
 
+var
+  attrIndex: TGLSLAttribute;
+
 implementation
 
 uses
@@ -713,6 +716,8 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
+  attrIndex :=
+    TGLSLAttribute.RegisterAttribute('Index');
 
   RegisterClasses([TCUDAGLImageResource, TCUDAGLGeometryResource,
     TGLSCUDAFactory]);
