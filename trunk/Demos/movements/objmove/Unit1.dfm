@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 87
   Top = 128
+  Width = 696
+  Height = 414
   Caption = 'Moving Objects with Mouse'
-  ClientHeight = 376
-  ClientWidth = 680
   Color = clBtnFace
   ParentFont = True
   KeyPreview = True
@@ -22,7 +22,7 @@ object Form1: TForm1
     Height = 376
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 50.347049713134770000
+    FieldOfView = 50.347049713134760000
     Align = alClient
     OnMouseDown = ScnMouseDown
     OnMouseMove = ScnMouseMove
@@ -37,66 +37,54 @@ object Form1: TForm1
     BevelOuter = bvNone
     TabOrder = 1
     object Label2: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 58
-      Width = 155
+      Left = 0
+      Top = 26
+      Width = 161
       Height = 26
       Align = alTop
       Caption = 'Select and move with the mouse any of the two cubes.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 179
     end
     object Label1: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 3
-      Width = 155
+      Left = 0
+      Top = 0
+      Width = 161
       Height = 13
       Align = alTop
       Caption = 'Author: Rado Stoyanov'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 114
     end
     object Label3: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 90
-      Width = 155
-      Height = 13
+      Left = 0
+      Top = 52
+      Width = 161
+      Height = 26
       Align = alTop
       Caption = 'Default movement is on the XY plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 180
     end
     object Label4: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 109
-      Width = 155
-      Height = 13
-      Margins.Bottom = 20
+      Left = 0
+      Top = 78
+      Width = 161
+      Height = 26
       Align = alTop
       Caption = 'Shift + Drag moves on the XZ plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 175
     end
     object Label5: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 22
-      Width = 155
+      Left = 0
+      Top = 13
+      Width = 161
       Height = 13
-      Margins.Bottom = 20
       Align = alTop
       Caption = 'radostoyanov@softhome.net'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 142
     end
     object Button1: TButton
       Left = 618
@@ -107,29 +95,21 @@ object Form1: TForm1
       TabOrder = 0
     end
     object GroupBox1: TGroupBox
-      AlignWithMargins = True
-      Left = 3
-      Top = 145
-      Width = 155
+      Left = 0
+      Top = 104
+      Width = 161
       Height = 43
       Align = alTop
       Caption = 'Options'
       TabOrder = 1
-      ExplicitTop = 158
-      ExplicitWidth = 187
       object ShowAxes: TCheckBox
-        AlignWithMargins = True
         Left = 5
         Top = 18
         Width = 145
         Height = 17
-        Align = alTop
         Caption = 'Show selection axes'
         TabOrder = 0
         OnClick = ShowAxesClick
-        ExplicitLeft = 8
-        ExplicitTop = 88
-        ExplicitWidth = 97
       end
     end
   end
@@ -143,7 +123,7 @@ object Form1: TForm1
     end
     object TopLight1: TGLLightSource
       Ambient.Color = {0000003F0000003F0000003F0000803F}
-      ConstAttenuation = 0.800000011920929000
+      ConstAttenuation = 0.800000011920928900
       Diffuse.Color = {EAE9693FEAE9693FEAE9693F0000803F}
       Position.Coordinates = {0000804100005041000040410000803F}
       SpotCutOff = 180.000000000000000000
