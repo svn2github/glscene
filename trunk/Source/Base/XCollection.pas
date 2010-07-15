@@ -197,6 +197,7 @@ function FindXCollectionItemClass(const className : String) : TXCollectionItemCl
 	Returned list should be freed by caller, the parameter defines an ancestor
    class filter. If baseClass is left nil, TXCollectionItem is used as ancestor. }
 function GetXCollectionItemClassesList(baseClass : TXCollectionItemClass = nil) : TList;
+procedure GetXCollectionClassesList(var ClassesList : TList; baseClass : TXCollectionItemClass = nil);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -272,16 +273,22 @@ end;
 // GetXCollectionItemClassesList
 //
 function GetXCollectionItemClassesList(baseClass : TXCollectionItemClass = nil) : TList;
+begin
+   Result:=TList.Create;
+   GetXCollectionClassesList(Result, baseClass);
+end;
+
+procedure GetXCollectionClassesList(var ClassesList: TList;
+  baseClass: TXCollectionItemClass = nil);
 var
 	i : Integer;
 begin
-	Result:=TList.Create;
-   if not Assigned(baseClass) then
-      baseClass:=TXCollectionItem;
-	if Assigned(vXCollectionItemClasses) then
-		for i:=0 to vXCollectionItemClasses.Count-1 do
-         if TXCollectionItemClass(vXCollectionItemClasses[i]).InheritsFrom(baseClass) then
-   			Result.Add(vXCollectionItemClasses[i]);
+        if not Assigned(baseClass) then
+           baseClass:=TXCollectionItem;
+     	if Assigned(vXCollectionItemClasses) then
+     		for i:=0 to vXCollectionItemClasses.Count-1 do
+              if TXCollectionItemClass(vXCollectionItemClasses[i]).InheritsFrom(baseClass) then
+        			ClassesList.Add(vXCollectionItemClasses[i]);
 end;
 
 // ------------------
@@ -543,7 +550,9 @@ end;
 
 procedure TXCollection.ReadFromFiler(reader: TReader);
 var
+  {$IFNDEF FPC}
   InitialPosition : integer;
+  {$ENDIF}
   Header : array[0..3] of AnsiChar;
   n, lc, lcnum: Integer;
   classList: TList;

@@ -1,8 +1,9 @@
 object GLSceneEditorForm: TGLSceneEditorForm
-  Left = 265
+  Left = 709
   Height = 502
-  Top = 353
+  Top = 49
   Width = 461
+  ActiveControl = Tree
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
   ClientHeight = 502
@@ -340,7 +341,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         Style = tbsDropDown
       end
       object TBAddEffects: TToolButton
-        Left = 76
+        Left = 83
         Hint = 'Add effect'
         Top = 2
         Action = ACAddEffect
@@ -473,6 +474,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACAddCameraExecute
     end
     object MIAddObject: TMenuItem
@@ -513,6 +515,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FFEFEFEFFFC0C0C0FFAFAFAFFF9F9F9FFF8F8F
         8FFF8F8F8FFFCFCFCFFF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACAddObjectExecute
     end
     object MIBehaviourSeparator: TMenuItem
@@ -557,6 +560,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF4A4A42FF6B6363FF6B6363FF6B6363FF7B7363FF0839EFFF
       }
+      GlyphShowMode = gsmAlways
       ImageIndex = 11
       OnClick = ACAddBehaviourExecute
     end
@@ -599,6 +603,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF4A4A42FF6B6363FF6B6363FF6B6363FF7B7363FF0839EFFF
       }
+      GlyphShowMode = gsmAlways
       Hint = 'Add effect'
       ImageIndex = 11
       OnClick = ACAddEffectExecute
@@ -644,6 +649,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACCutExecute
     end
     object Copy1: TMenuItem
@@ -684,6 +690,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         88FFB48E88FFB48E88FFB48E88FFB48E88FFB48E88FFB48E88FFBC8782FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACCopyExecute
     end
     object Paste1: TMenuItem
@@ -724,6 +731,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF2F9FD8FF2F9FD8FF9F9189FF9F9189FF9F9189FF9F9189FF9F91
         89FF2F9FD8FF2F9FD8FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACPasteExecute
     end
     object MIDelObject: TMenuItem
@@ -764,6 +772,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACDeleteObjectExecute
     end
     object N2: TMenuItem
@@ -807,6 +816,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACMoveUpExecute
     end
     object Moveobjectdown1: TMenuItem
@@ -847,6 +857,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
         00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
         00FF000000FF000000FF000000FF000000FF000000FF000000FF
       }
+      GlyphShowMode = gsmAlways
       OnClick = ACMoveDownExecute
     end
   end
@@ -950,9 +961,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMToolBar: TPopupMenu
     left = 88
     top = 64
+    object MenuItem1: TMenuItem
+      Caption = 'New Item1'
+    end
   end
   object ImageList: TImageList
     Masked = True
+    ShareImages = True
     left = 40
     top = 64
     Bitmap = {

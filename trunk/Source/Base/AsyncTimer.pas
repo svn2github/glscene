@@ -79,8 +79,9 @@ type
          FOwner: TAsyncTimer;
          FInterval: Word;
       protected
-         constructor Create(CreateSuspended: Boolean); virtual;
          procedure Execute; override;
+      public
+         constructor Create(CreateSuspended: Boolean); virtual;
    end;
 
 // Create

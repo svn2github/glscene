@@ -78,6 +78,7 @@ type
   { TGLSceneEditorForm }
 
   TGLSceneEditorForm = class(TForm)
+    MenuItem1: TMenuItem;
     ToolBar2: TToolBar;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
@@ -369,7 +370,8 @@ var
    reg : TRegistry;
    {$ENDIF}
 begin
-	RegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
+   FObjectList := TStringList.Create;
+   RegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
    Tree.Images:=ObjectManager.ObjectIcons;
    Tree.Indent:=ObjectManager.ObjectIcons.Width;
    with Tree.Items do begin
@@ -388,11 +390,7 @@ begin
    end;
    // Build SubMenus
    SetObjectsSubItems(MIAddObject);
-(* removed delphi 4 support {$IFDEF GLS_DELPHI_5_UP}
-{$IFDEF MSWINDOWS}*)
    MIAddObject.SubMenuImages:=ObjectManager.ObjectIcons;
-(* removed delphi 4 support {$ENDIF}
-{$endif}*)
 {$IFNDEF GLS_DELPHI_6_UP}
    ACCut.Visible:=False;
    ACCopy.Visible:=False;
@@ -463,7 +461,6 @@ begin
   SetScene(nil,nil);
   DeRegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
   FObjectList.Free;
-  FXObjectList.Free;
 
    {$IFDEF MSWINDOWS}
    reg:=TRegistry.Create;
@@ -550,9 +547,6 @@ var
    currentCategory : String;
    soc : TGLSceneObjectClass;
 begin
-  if not Assigned(FObjectList) then
-  begin
-   FObjectList := TStringList.Create;
    ObjectManager.GetRegisteredSceneObjects(FObjectList);
 
    for i:=0 to FObjectList.Count-1 do
@@ -578,6 +572,7 @@ begin
                begin
                   item := NewItem(FObjectList[j], 0, False, True, AddObjectClick, 0, '');
                   item.ImageIndex := GetImageIndex(soc);
+                  item.GlyphShowMode:= gsmAlways;
                   item.Tag := j;
                   currentParent.Add(item);
                   FObjectList[j] := '';
@@ -589,8 +584,6 @@ begin
 
      end;
    end;
-
-  end;
 end;
 
 procedure TGLSceneEditorForm.SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);
@@ -600,14 +593,14 @@ var
 	mi : TMenuItem;
 begin
   parent.Clear;
-  if Assigned(XCollection) and not Assigned(FXObjectList) then
+  if Assigned(XCollection) then
   begin
-  FXObjectList := GetXCollectionItemClassesList(XCollection.ItemsClass);
+     FXObjectList := GetXCollectionItemClassesList(XCollection.ItemsClass);
      for I:=0 to FXObjectList.Count-1 do begin
         XCollectionItemClass:=TXCollectionItemClass(FXObjectList[i]);
         mi:=TMenuItem.Create(owner);
         mi.Caption:=XCollectionItemClass.FriendlyName;
-        mi.OnClick:=Event;//AddBehaviourClick;
+        mi.OnClick:=Event;
         mi.Tag := I;
         if Assigned(XCollection) then
           mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
@@ -615,6 +608,7 @@ begin
           mi.Enabled:=TBAddBehaviours.Enabled;
         parent.Add(mi);
      end;
+     FXObjectList.Free;
    end;
 end;
 
@@ -640,8 +634,6 @@ var
    I: Integer;
    Node: TTreeNode;
 begin
-  if not Assigned(FObjectList) then
-    exit;
   if Assigned(FCurrentDesigner) then with Tree do
     if Assigned(Selected) and (Selected.Level > 0) then
     begin
@@ -666,15 +658,19 @@ var
    AParent: TGLBaseSceneObject;
    XCollectionItem : TXCollectionItem;
 begin
-  if Assigned(Tree.Selected) and Assigned(FXObjectList) then
+  if Assigned(Tree.Selected) then
   begin
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
         I := (Sender as TMenuItem).Tag;
+
+        FXObjectList := GetXCollectionItemClassesList(AParent.Behaviours.ItemsClass);
+
 	XCollectionItemClass:=TXCollectionItemClass(FXObjectList[I]);
 	XCollectionItem:=XCollectionItemClass.Create(AParent.Behaviours);
         ShowBehaviours(AParent);
        	BehavioursListView.Selected:=BehavioursListView.Items.FindData(XCollectionItem);
         GlobalDesignHook.Modified(Sender);
+        FXObjectList.Free;
    end;
 end;
 
@@ -688,14 +684,17 @@ var
 begin
         if Assigned(Tree.Selected) then
         begin
-
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
         I := (Sender as TMenuItem).Tag;
+
+        FXObjectList := GetXCollectionItemClassesList(AParent.Effects.ItemsClass);
+
 	XCollectionItemClass:=TXCollectionItemClass(FXObjectList[I]);
 	XCollectionItem:=XCollectionItemClass.Create(AParent.Effects);
         ShowEffects(AParent);
        	EffectsListView.Selected:=EffectsListView.Items.FindData(XCollectionItem);
         GlobalDesignHook.Modified(Sender);
+        FXObjectList.Free;
    end;
 end;
 
@@ -1081,7 +1080,7 @@ end;
 //
 procedure TGLSceneEditorForm.ACAddObjectExecute(Sender: TObject);
 begin
- 	 //TBAddObjects.CheckMenuDropdown;
+  TBAddObjects.CheckMenuDropdown;
 end;
 
 procedure TGLSceneEditorForm.ACStayOnTopExecute(Sender: TObject);
@@ -1360,7 +1359,7 @@ end;
 
 procedure TGLSceneEditorForm.ACAddBehaviourExecute(Sender: TObject);
 begin
-  //TBAddBehaviours.CheckMenuDropdown
+  TBAddBehaviours.CheckMenuDropdown
 end;
 
 procedure TGLSceneEditorForm.DeleteBaseBehaviour(ListView:TListView);
@@ -1411,7 +1410,7 @@ end;
 
 procedure TGLSceneEditorForm.ACAddEffectExecute(Sender: TObject);
 begin
-   //TBAddEffects.CheckMenuDropdown;
+   TBAddEffects.CheckMenuDropdown;
 end;
 
 procedure TGLSceneEditorForm.EnableAndDisableActions();
