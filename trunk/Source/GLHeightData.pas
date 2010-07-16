@@ -16,8 +16,9 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>17/07/07 - LIN- Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
-      <li>17/07/07 - LIN- Reversed the order in which Queued tiles are prepared.
+      <li>18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
+      <li>17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
+      <li>17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
       <li>03/04/07 - DaStr - Commented out lines that caused compiler hints
                              Added more explicit pointer dereferencing
                              Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
@@ -64,7 +65,8 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses;
+uses Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
+     {$IFDEF FPC},IntfGraphics {$ENDIF};
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;
@@ -484,6 +486,9 @@ type
 	      { Private Declarations }
          FScanLineCache : array of PByteArray;
          FBitmap : TGLBitmap;
+         {$IFDEF FPC}
+         IntfImg1: TLazIntfImage;
+         {$ENDIF}
          FPicture : TGLPicture;
          FInfiniteWrap : Boolean;
          FInverted : Boolean;
@@ -1817,6 +1822,10 @@ begin
    finally
       Picture.OnChange:=OnPictureChanged;
    end;
+   {$IFDEF FPC}
+   IntfImg1 := TLazIntfImage.Create(0,0);
+   IntfImg1.LoadFromBitmap(FBitmap.Handle,FBitmap.MaskHandle);
+   {$ENDIF}
    SetLength(FScanLineCache, 0); // clear the cache
    SetLength(FScanLineCache, size);
 end;
@@ -1835,6 +1844,10 @@ begin
    SetLength(FScanLineCache, 0);
    FBitmap.Free;
    FBitmap:=nil;
+   {$IFDEF FPC}
+   IntfImg1.Free;
+   IntfImg1:=nil;
+   {$ENDIF}
 end;
 
 // GetScanLine
@@ -1843,7 +1856,11 @@ function TGLBitmapHDS.GetScanLine(y : Integer) : PByteArray;
 begin
    Result:=FScanLineCache[y];
    if not Assigned(Result) then begin
+      {$IFNDEF FPC}
       Result:=BitmapScanLine(FBitmap, y);//FBitmap.ScanLine[y];
+      {$ELSE}
+      Result:=IntfImg1.GetDataLineStart(y);
+      {$ENDIF}
       FScanLineCache[y]:=Result;
    end;
 end;
