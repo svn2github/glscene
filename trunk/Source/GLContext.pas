@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/07/10 - Yar - Added TGLTessControlShaderHandle, TGLTessEvaluationShaderHandle, TGLSamplerHandle
       <li>17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TGLContextHandle
       <li>02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
       <li>02/05/10 - Yar - Handles are universal for contexts.
@@ -326,6 +327,8 @@ type
     property RenderingContext: TGLContext read GetContext;
     {: Return True is data need update in current context. }
     function IsDataNeedUpdate: Boolean;
+    {: Return True if data updated in all contexts. }
+    function IsDataComplitelyUpdated: Boolean;
     {: Notify the data was updated in current context. }
     procedure NotifyDataUpdated;
     {: Notify the data was changed through all context. }
@@ -391,14 +394,22 @@ type
   //
   {: Manages a handle to a texture. }
   TGLTextureHandle = class(TGLContextHandle)
-  private
-    { Private Declarations }
-
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+  public
+    { Public Declarations }
+  end;
 
+  // TGLTextureHandle
+  //
+  {: Manages a handle to a sampler. }
+  TGLSamplerHandle = class(TGLContextHandle)
+  protected
+    { Protected Declarations }
+    function DoAllocateHandle: Cardinal; override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
   public
     { Public Declarations }
   end;
@@ -872,6 +883,26 @@ type
     class function IsSupported: Boolean; override;
   end;
 
+  // TGLTessControlShaderHandle
+  //
+  {: Manages a handle to a Tessellation Control Shader Object. }
+  TGLTessControlShaderHandle = class(TGLShaderHandle)
+  public
+    { Public Declarations }
+    constructor Create; override;
+    class function IsSupported: Boolean; override;
+  end;
+
+  // TGLTessEvaluationShaderHandle
+  //
+  {: Manages a handle to a Tessellation Evaluation Shader Object. }
+  TGLTessEvaluationShaderHandle = class(TGLShaderHandle)
+  public
+    { Public Declarations }
+    constructor Create; override;
+    class function IsSupported: Boolean; override;
+  end;
+
   // TGLProgramHandle
   //
   {: Manages a GLSL Program Object.<br>
@@ -1060,7 +1091,7 @@ procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
 {: The TGLContext that is the currently active context, if any.<p>
    Returns nil if no context is active. }
 function CurrentGLContext: TGLContext;
-function SafeCurrentGLContext(out ARC: TGLContext): Boolean;
+function SafeCurrentGLContext: TGLContext;
 {$IFDEF GLS_INLINE}inline;
 {$ENDIF}
 function GL: TGLExtensionsAndEntryPoints;
@@ -1112,11 +1143,10 @@ begin
   Result := vCurrentGLContext;
 end;
 
-function SafeCurrentGLContext(out ARC: TGLContext): Boolean;
+function SafeCurrentGLContext: TGLContext;
 begin
-  ARC := CurrentGLContext;
-  Result := Assigned(ARC);
-  if not Result then
+  Result := CurrentGLContext;
+  if not Assigned(Result) then
   begin
     GLSLogger.LogError(cNoActiveRC);
     Abort;
@@ -1911,71 +1941,82 @@ var
   I: Integer;
   RC: TGLContext;
 begin
-  Result := SafeCurrentGLContext(RC);
-  if Result then
+  RC := SafeCurrentGLContext;
+  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
   begin
-    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    if (FHandles[I].FRenderingContext = RC)
+      and (FHandles[I].FHandle <> 0) then
     begin
-      if (FHandles[I].FRenderingContext = RC)
-        and (FHandles[I].FHandle <> 0) then
-      begin
-        Result := FHandles[I].FChanged;
-        exit;
-      end;
+      Result := FHandles[I].FChanged;
+      exit;
     end;
   end;
+  Result := True;
+end;
+
+function TGLContextHandle.IsDataComplitelyUpdated: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  begin
+    if (FHandles[I].FRenderingContext <> nil)
+      and (FHandles[I].FHandle <> 0) then
+      Result := Result or FHandles[I].FChanged;
+  end;
+  Result := not Result;
 end;
 
 procedure TGLContextHandle.NotifyDataUpdated;
 var
   I, J: Integer;
   RC, vContext: TGLContext;
-{$IFDEF GLS_MULTITHREAD}aList: TList;
+{$IFDEF GLS_MULTITHREAD}
+  aList: TList;
 {$ENDIF}
 begin
   if not Transferable then
   begin
-    if SafeCurrentGLContext(RC) then
-      for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    RC := SafeCurrentGLContext;
+    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    begin
+      if (FHandles[I].FRenderingContext = RC)
+        and (FHandles[I].FHandle <> 0) then
       begin
-        if (FHandles[I].FRenderingContext = RC)
-          and (FHandles[I].FHandle <> 0) then
-        begin
-          FHandles[I].FChanged := False;
-          exit;
-        end;
+        FHandles[I].FChanged := False;
+        exit;
       end;
+    end;
   end
 
   else
   begin
-    if SafeCurrentGLContext(RC) then
-    begin
+    RC := SafeCurrentGLContext;
 {$IFNDEF GLS_MULTITHREAD}
-      for J := 0 to RC.FSharedContexts.Count - 1 do
+    for J := 0 to RC.FSharedContexts.Count - 1 do
+    begin
+      vContext := TGLContext(RC.FSharedContexts[J]);
+      for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+        if (FHandles[I].FRenderingContext = vContext)
+          and (FHandles[I].FHandle <> 0) then
+          FHandles[I].FChanged := False;
+    end;
+{$ELSE}
+    aList := RC.FSharedContexts.LockList;
+    try
+      for J := 0 to aList.Count - 1 do
       begin
-        vContext := TGLContext(RC.FSharedContexts[J]);
+        vContext := TGLContext(aList[J]);
         for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
           if (FHandles[I].FRenderingContext = vContext)
             and (FHandles[I].FHandle <> 0) then
             FHandles[I].FChanged := False;
       end;
-{$ELSE}
-      aList := RC.FSharedContexts.LockList;
-      try
-        for J := 0 to aList.Count - 1 do
-        begin
-          vContext := TGLContext(aList[J]);
-          for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
-            if (FHandles[I].FRenderingContext = vContext)
-              and (FHandles[I].FHandle <> 0) then
-              FHandles[I].FChanged := False;
-        end;
-      finally
-        RC.FSharedContexts.UnlockList;
-      end;
-{$ENDIF}
+    finally
+      RC.FSharedContexts.UnlockList;
     end;
+{$ENDIF}
   end;
 end;
 
@@ -2180,6 +2221,35 @@ begin
             TextureBinding[0, t] := 0;
 
     GL.DeleteTextures(1, @AHandle);
+    // check for error
+    GL.CheckError;
+  end;
+end;
+
+// ------------------
+// ------------------ TGLSamplerHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+
+function TGLSamplerHandle.DoAllocateHandle: Cardinal;
+begin
+  Result := 0;
+  GL.GenSamplers(1, @Result);
+end;
+
+// DoDestroyHandle
+//
+
+procedure TGLSamplerHandle.DoDestroyHandle(var AHandle: TGLuint);
+begin
+  if not vContextActivationFailureOccurred then
+  begin
+    // reset error status
+    GL.GetError;
+    // delete
+    GL.DeleteSamplers(1, @AHandle);
     // check for error
     GL.CheckError;
   end;
@@ -3201,7 +3271,6 @@ end;
 
 function TGLShaderHandle.DoAllocateHandle: Cardinal;
 begin
-  Result := 0;
   Result := GL.CreateShader(FShaderType)
 end;
 
@@ -3293,6 +3362,48 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLTessControlShaderHandle ------------------
+// ------------------
+
+// Create
+//
+
+constructor TGLTessControlShaderHandle.Create;
+begin
+  FShaderType := GL_TESS_CONTROL_SHADER;
+  inherited;
+end;
+
+// IsSupported
+//
+
+class function TGLTessControlShaderHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_tessellation_shader;
+end;
+
+// ------------------
+// ------------------ TGLTessEvaluationShaderHandle ------------------
+// ------------------
+
+// Create
+//
+
+constructor TGLTessEvaluationShaderHandle.Create;
+begin
+  FShaderType := GL_TESS_EVALUATION_SHADER;
+  inherited;
+end;
+
+// IsSupported
+//
+
+class function TGLTessEvaluationShaderHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_tessellation_shader;
+end;
+
+// ------------------
 // ------------------ TGLProgramHandle ------------------
 // ------------------
 
@@ -3301,7 +3412,6 @@ end;
 
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
-  Result := 0;
   Result := GL.CreateProgram();
 end;
 
