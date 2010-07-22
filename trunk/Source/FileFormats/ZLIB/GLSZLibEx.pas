@@ -1052,7 +1052,7 @@ begin
         repeat
           ReallocMem(outBuffer, outSize);
 
-          zstream.next_out := Pointer(PtrUInt(outBuffer) + zstream.total_out);
+          zstream.next_out := Pointer(PtrUInt(outBuffer) + PtrUInt(zstream.total_out));
           zstream.avail_out := outSize - zstream.total_out;
 
           zresult := ZDecompressCheck(ZInflate(zstream, zfNoFlush), False);
@@ -1946,7 +1946,7 @@ begin
   begin
     BufferCapacity(FBufferSize + size);
 
-    Move(buffer^, Pointer(PtrUInt(FBuffer) + FBufferSize)^, size);
+    Move(buffer^, Pointer(PtrUInt(FBuffer) + PtrUInt(FBufferSize))^, size);
 
     Inc(FBufferSize, size);
   end;
@@ -1958,7 +1958,7 @@ begin
   begin
     Move(FBuffer^, buffer^, size);
 
-    Move(Pointer(PtrUInt(FBuffer) + size)^, FBuffer^, FBufferSize - size);
+    Move(Pointer(PtrUInt(FBuffer) + PtrUInt(size))^, FBuffer^, FBufferSize - size);
 
     Dec(FBufferSize, size);
   end;
