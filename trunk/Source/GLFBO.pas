@@ -33,7 +33,6 @@ uses
   GLContext,
   GLState,
   GLTexture,
-  GLTextureImage,
   GLColor,
   GLRenderContextInfo,
   GLMultisampleImage;
