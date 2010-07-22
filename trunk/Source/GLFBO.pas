@@ -33,6 +33,7 @@ uses
   GLContext,
   GLState,
   GLTexture,
+  GLTextureImage,
   GLColor,
   GLRenderContextInfo,
   GLMultisampleImage;
@@ -200,8 +201,7 @@ end;
 
 function TGLRenderbuffer.GetHandle: GLuint;
 begin
-  if FRenderbufferHandle.Handle = 0 then
-    FRenderbufferHandle.AllocateHandle;
+  FRenderbufferHandle.AllocateHandle;
   Result := FRenderbufferHandle.Handle;
 end;
 
@@ -232,8 +232,7 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  if FRenderbufferHandle.Handle = 0 then
-    FRenderbufferHandle.AllocateHandle;
+  FRenderbufferHandle.AllocateHandle;
   FRenderbufferHandle.Bind;
   if not FStorageValid then
   begin
@@ -465,8 +464,7 @@ var
   storeDFB: TGLuint;
   RC: TGLContext;
 begin
-  if not SafeCurrentGLContext(RC) then
-    exit;
+  RC := SafeCurrentGLContext;
   storeDFB := RC.GLStates.DrawFrameBuffer;
   if storeDFB <> FFrameBufferHandle.Handle then
     Bind;
@@ -514,8 +512,7 @@ end;
 
 procedure TGLFrameBuffer.Bind;
 begin
-  if FFrameBufferHandle.Handle = 0 then
-    FFrameBufferHandle.AllocateHandle;
+  FFrameBufferHandle.AllocateHandle;
   FFrameBufferHandle.Bind;
 end;
 
@@ -651,8 +648,7 @@ end;
 
 function TGLFrameBuffer.GetHandle: GLuint;
 begin
-  if FFrameBufferHandle.Handle = 0 then
-    FFrameBufferHandle.AllocateHandle;
+  FFrameBufferHandle.AllocateHandle;
   Result := FFrameBufferHandle.Handle;
 end;
 
@@ -680,7 +676,7 @@ begin
   for n := 0 to MaxColorAttachments - 1 do
     if Assigned(FAttachedTexture[n]) then
       AttachTexture(
-        GL_COLOR_ATTACHMENT0_EXT + n,
+        GL_COLOR_ATTACHMENT0 + n,
         DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
         FLevel,
