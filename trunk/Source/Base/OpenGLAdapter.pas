@@ -3080,7 +3080,6 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-
     ClientActiveTexture:
     procedure(texture: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
@@ -3364,6 +3363,63 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+    // GL_ARB_sampler_objects (ARB #81)
+    GenSamplers: procedure(count: TGLsizei; samplers: PGLuint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    DeleteSamplers: procedure(count: TGLsizei; const samplers: PGLuint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    IsSampler: function(sampler: TGLuint): TGLboolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    BindSampler: procedure(_unit: TGLuint; sampler: TGLuint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameteri: procedure(sampler: TGLuint; pname: TGLenum; param: TGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameteriv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameterf: procedure(sampler: TGLuint; pname: TGLenum; param: TGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameterfv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameterIiv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    SamplerParameterIuiv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLuint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetSamplerParameteriv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetSamplerParameterIiv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetSamplerParameterfv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    GetSamplerParameterIfv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -3381,6 +3437,7 @@ type
     procedure Initialize;
     procedure Close;
     procedure CheckError;
+    procedure ClearError;
     property IsInitialized: boolean read FInitialized;
   end;
 
@@ -3486,6 +3543,15 @@ begin
       Abort;
     end;
   end;
+end;
+
+procedure TGLExtensionsAndEntryPoints.ClearError;
+var
+  n: Integer;
+begin
+  n := 0;
+  while (GetError <> GL_NO_ERROR) and (n < 6) do
+    Inc(n);
 end;
 
 procedure TGLExtensionsAndEntryPoints.Initialize;
@@ -4407,6 +4473,20 @@ begin
   TexImage3DMultisample := GetAddress('TexImage3DMultisample');
   GetMultisamplefv := GetAddress('GetMultisamplefv');
   SampleMaski := GetAddress('SampleMaski');
+  GenSamplers := GetAddress('GenSamplers');
+  DeleteSamplers := GetAddress('DeleteSamplers');
+  IsSampler := GetAddress('IsSampler');
+  BindSampler := GetAddress('BindSampler');
+  SamplerParameteri := GetAddress('SamplerParameteri');
+  SamplerParameteriv := GetAddress('SamplerParameteriv');
+  SamplerParameterf := GetAddress('SamplerParameterf');
+  SamplerParameterfv := GetAddress('SamplerParameterfv');
+  SamplerParameterIiv := GetAddress('SamplerParameterIiv');
+  SamplerParameterIuiv := GetAddress('SamplerParameterIuiv');
+  GetSamplerParameteriv := GetAddress('GetSamplerParameteriv');
+  GetSamplerParameterIiv := GetAddress('GetSamplerParameterIiv');
+  GetSamplerParameterfv := GetAddress('GetSamplerParameterfv');
+  GetSamplerParameterIfv := GetAddress('GetSamplerParameterIfv');
 
   FrameTerminatorGREMEDY := GetAddress('FrameTerminatorGREMEDY');
   StringMarkerGREMEDY := GetAddress('StringMarkerGREMEDY');
@@ -5287,11 +5367,27 @@ begin
   TexImage3DMultisample := GetCapAddress();
   GetMultisamplefv := GetCapAddress();
   SampleMaski := GetCapAddress();
+  GenSamplers := GetCapAddress();
+  DeleteSamplers := GetCapAddress();
+  IsSampler := GetCapAddress();
+  BindSampler := GetCapAddress();
+  SamplerParameteri := GetCapAddress();
+  SamplerParameteriv := GetCapAddress();
+  SamplerParameterf := GetCapAddress();
+  SamplerParameterfv := GetCapAddress();
+  SamplerParameterIiv := GetCapAddress();
+  SamplerParameterIuiv := GetCapAddress();
+  GetSamplerParameteriv := GetCapAddress();
+  GetSamplerParameterIiv := GetCapAddress();
+  GetSamplerParameterfv := GetCapAddress();
+  GetSamplerParameterIfv := GetCapAddress();
 
   FrameTerminatorGREMEDY := GetCapAddress();
   StringMarkerGREMEDY := GetCapAddress();
 
   FInitialized := False;
+
+  GLSLogger.LogDebug('OpenGL closed entry points and falsed extensions');
 end;
 
 end.
