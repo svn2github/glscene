@@ -1362,9 +1362,7 @@ var
   Offset: PtrUInt;
   EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
-  Result := SafeCurrentGLContext(RC);
-  if not Result then
-    exit;
+  RC := SafeCurrentGLContext;
 
   Prog := RC.GLStates.CurrentProgram;
   Result := Prog > 0;
