@@ -869,15 +869,12 @@ const
   cObjectTypeName: array[TGLSLProgramType] of string =
     ('Vertex', 'Geomtery', 'Fragment');
 var
-  RC: TGLContext;
   P: TGLSLProgramType;
   val, len: Integer;
   pLog: PAnsiChar;
   logstr: string;
 begin
   Result := False;
-  if not SafeCurrentGLContext(RC) then
-    exit;
 
   pLog := nil;
   for P := Low(TGLSLProgramType) to High(TGLSLProgramType) do
@@ -945,7 +942,6 @@ end;
 
 function TGLSLShaderProgram.Link: Boolean;
 var
-  RC: TGLContext;
   P: TGLSLProgramType;
   obj: TGLSLShaderObject;
   I: Integer;
@@ -954,8 +950,6 @@ var
   logstr: string;
 begin
   Result := False;
-  if not SafeCurrentGLContext(RC) then
-    exit;
 
   if FHandle.Handle = 0 then
     FHandle.AllocateHandle;
@@ -1013,11 +1007,8 @@ end;
 
 procedure TGLSLShaderProgram.Detach(AObject: TGLSLShaderObject);
 var
-  RC: TGLContext;
   P: TGLSLProgramType;
 begin
-  if not SafeCurrentGLContext(RC) then
-    exit;
 
   if FHandle.Handle <> 0 then
     for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
@@ -1460,28 +1451,21 @@ end;
 
 function TGLShadersManager.LinkShaderProgram(const AName: string): Boolean;
 var
-  RC: TGLContext;
   prog: TGLSLShaderProgram;
 begin
   Assert(vWorked, glsWrongMethodCall);
 
   Result := False;
-  if SafeCurrentGLContext(RC) then
-  begin
     prog := GetShaderProgram(AName);
     Result := prog.Link;
     if Result then
       CashLocations(prog.FHandle.Handle);
-  end;
 end;
 
 procedure TGLShadersManager.UseProgram(const AName: string);
 var
-  RC: TGLContext;
   prog: TGLSLShaderProgram;
 begin
-  if SafeCurrentGLContext(RC) then
-  begin
     BeginWork;
     try
       prog := GetShaderProgram(AName);
@@ -1504,7 +1488,6 @@ begin
     finally
       EndWork;
     end;
-  end;
 end;
 
 function TGLShadersManager.IsProgramDefined(const AName: string): Boolean;
