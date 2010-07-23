@@ -6,6 +6,7 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
+      <li>23/07/10 - Yar - Bugfixed TSkeleton.WriteToFiler (thanks E-Cone)
       <li>11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
                            Replace OpenGL1x functions to OpenGLAdapter. TGLFreeFrom now osDirectDraw by default
                            Fixes for Linux x64
@@ -3367,20 +3368,19 @@ end;
 // WriteToFiler
 //
 
-procedure TSkeleton.WriteToFiler(writer: TVirtualWriter);
+procedure TSkeleton.WriteToFiler(writer : TVirtualWriter);
 begin
-  inherited WriteToFiler(writer);
-  with writer do
-  begin
-    if FColliders.Count > 0 then
-      WriteInteger(1) // Archive Version 1 : with colliders
-    else
-      WriteInteger(0); // Archive Version 0
-    FRootBones.WriteToFiler(writer);
-    FFrames.WriteToFiler(writer);
-    if FColliders.Count > 0 then
+   inherited WriteToFiler(writer);
+   with writer do begin
+      if FColliders.Count > 0 then
+        WriteInteger(1) // Archive Version 1 : with colliders
+      else
+        WriteInteger(0); // Archive Version 0
+      FRootBones.WriteToFiler(writer);
       FFrames.WriteToFiler(writer);
-  end;
+      if FColliders.Count > 0 then
+        FColliders.WriteToFiler(writer);
+   end;
 end;
 
 // ReadFromFiler
