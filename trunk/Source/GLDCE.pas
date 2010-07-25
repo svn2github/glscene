@@ -578,7 +578,7 @@ var
    i : Integer;
 begin
    // Fast deregistration
-   for i:=0 to FStatics.Count-1 do
+   for i:=0 to FDynamics.Count-1 do
       TGLDCEDynamic(FDynamics[i]).FManager:=nil;
    FDynamics.Clear;
 end;
