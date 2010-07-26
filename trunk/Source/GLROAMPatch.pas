@@ -227,9 +227,9 @@ begin
    if oldbase = newbase then
       exit; 
       
-   // go through all the old nodes and 
-   // fix the pointers
-   delta:= int64(PtrUInt(newbase) - PtrUInt(oldbase));
+   // go through all the old nodes and fix the pointers
+   // YP: Delphi needs int64 dual casting to avoid overflow exception
+   delta:= int64(PtrUInt(newbase)) - int64(PtrUInt(oldbase));
    for i := 0 to oldsize - 1 do
    begin
       node:= @vTriangleNodes[i];
