@@ -917,7 +917,7 @@ begin
         end
         else
           raise Exception.Create('WGL_ARB_pbuffer support required.');
-        GL.CheckError;
+        FGL.CheckError;
       finally
         DoDeactivate;
       end;
