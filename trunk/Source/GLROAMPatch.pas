@@ -6,6 +6,8 @@
    Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
+      <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -29,9 +31,12 @@ interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext;
+uses VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext, SysUtils;
 
 type
+
+  // Exception use by Split for SafeTesselate
+  EGLROAMException = class(Exception);
 
    // TROAMTriangleNode
    //
@@ -76,6 +81,8 @@ type
          FOcclusionSkip, FOcclusionCounter : Integer;
          FLastOcclusionTestPassed : Boolean;
 
+
+
 	   protected
 	      { Protected Declarations }
          procedure SetHeightData(val : THeightData);
@@ -88,6 +95,7 @@ type
                                   vertexIndices : TIntegerList;
                                   texCoords : TTexPointList);
 
+         function  Tesselate :Boolean;     // Returns false if MaxCLODTriangles limit is reached(Lin)
 	   public
 	      { Public Declarations }
 	      constructor Create;
@@ -98,7 +106,13 @@ type
          procedure ResetTessellation;
          procedure ConnectToTheWest(westPatch : TGLROAMPatch);
          procedure ConnectToTheNorth(northPatch : TGLROAMPatch);
-         function  Tesselate :Boolean;     //Returns false if MaxCLODTriangles limit is reached(Lin)
+
+         {: AV free version of Tesselate.<p>
+            When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
+            values in higher function became invalid due to the memory shifting.
+            Recursivity is the main problem, that's why SafeTesselate is calling
+            Tesselate in a try..except .}
+         function  SafeTesselate: Boolean;
 
          {: Render the patch in high-resolution.<p>
             The lists are assumed to have enough capacity to allow AddNC calls
@@ -148,6 +162,7 @@ type
          property Tag : Integer read FTag write FTag;
 	end;
 
+
 {: Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb : Integer);
 function GetROAMTrianglesCapacity: integer;
@@ -160,7 +175,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, XOpenGL, SysUtils;
+uses OpenGL1x, XOpenGL;
 
 var
    FVBOVertHandle, FVBOTexHandle : TGLVBOArrayBufferHandle;
@@ -196,26 +211,29 @@ begin
   result:= vTriangleNodesCapacity;
 end;
 
-procedure IncreaseTrianglesCapacity(NewCapacity: integer);
-   procedure FixNodePtr(var p: PROAMTriangleNode; const delta: int64);
-   begin
-      if p = nil then
-         exit;
 
-      inc(PByte(p), delta);
-   end;
+// The result is the delta between the old address of the array and the new one
+function IncreaseTrianglesCapacity(NewCapacity: integer) : int64;
+
+  procedure FixNodePtr(var p: PROAMTriangleNode; const delta: int64);
+  begin
+    if p = nil then
+       exit;
+
+    inc(PByte(p), delta);
+  end;
 
 var
    oldbase, newbase: pointer;
    node: PROAMTriangleNode;
    i, oldsize: integer;
-   delta: int64;
 begin
+    Result := 0;
    if NewCapacity <= vTriangleNodesCapacity then
       exit;
    
    oldsize:= vTriangleNodesCapacity;
-   
+
    oldbase:= pointer(vTriangleNodes);
    SetLength(vTriangleNodes, NewCapacity);
 
@@ -229,16 +247,16 @@ begin
       
    // go through all the old nodes and fix the pointers
    // YP: Delphi needs int64 dual casting to avoid overflow exception
-   delta:= int64(PtrUInt(newbase)) - int64(PtrUInt(oldbase));
+   Result:= int64(PtrUInt(newbase)) - int64(PtrUInt(oldbase));
    for i := 0 to oldsize - 1 do
    begin
       node:= @vTriangleNodes[i];
 
-      FixNodePtr(node^.base, delta);
-      FixNodePtr(node^.left, delta);
-      FixNodePtr(node^.right, delta);
-      FixNodePtr(node^.leftChild, delta);
-      FixNodePtr(node^.rightChild, delta);
+      FixNodePtr(node^.base, Result);
+      FixNodePtr(node^.left, Result);
+      FixNodePtr(node^.right, Result);
+      FixNodePtr(node^.leftChild, Result);
+      FixNodePtr(node^.rightChild, Result);
    end;
 end;
 
@@ -266,30 +284,41 @@ end;
 // Split
 //
 function Split(tri : PROAMTriangleNode) : Boolean;
-var n : Integer;
-    lc,rc:PROAMTriangleNode;
+var
+  n : Integer;
+  lc,rc:PROAMTriangleNode;
+  Shift : Int64;
 begin
-  result:=Assigned(tri.leftChild);
-  if result then exit;                            //dont split if tri already has a left child
+  Result:=Assigned(tri.leftChild);
+  if Result then Exit;                            //dont split if tri already has a left child
   with tri^ do begin
     if Assigned(base)and(base.base<>tri) then Split(base); // If this triangle is not in a proper diamond, force split our base neighbor
     n:=vNbTris;
+  end;
 
-    if n>=vTriangleNodesCapacity then begin
-       // grow by 50%
-       IncreaseTrianglesCapacity(vTriangleNodesCapacity + (vTriangleNodesCapacity shr 1));
-    end;
+  if n>=vTriangleNodesCapacity-1 then begin
+     // grow by 50%
+     Shift := IncreaseTrianglesCapacity(vTriangleNodesCapacity + (vTriangleNodesCapacity shr 1));
+     if Shift <> 0 then
+     begin
+       raise EGLROAMException.Create('PROAMTriangleNode addresses are invalid now');
+     end;
+  end;
 
+  with tri^ do begin
 
   	// Create children and cross-link them
     lc:=@vTriangleNodes[n];           //left child
     rc:=@vTriangleNodes[n+1];         //right child
-    leftChild :=lc;
-    rightChild:=rc;
+
+    leftChild    :=lc;
+    rightChild   :=rc;
+
     rc.base      :=right;         //right child
     rc.leftChild :=nil;
     rc.rightChild:=leftChild;
     rc.right     :=leftChild;
+
     lc.base      :=left;          //left child
     lc.leftChild :=nil;
     lc.rightChild:=leftChild;
@@ -312,7 +341,10 @@ begin
         rightChild.left:=base.leftChild;
         base.rightChild.left:=leftChild;
         leftChild.right:=base.rightChild;
-      end else Split(base);
+      end else
+      begin
+        Split(base);
+      end;
     end else begin // An edge triangle, trivial case.
       leftChild.right:=nil;
       rightChild.left:=nil;
@@ -530,7 +562,6 @@ begin
 end;
 
 function TGLROAMPatch.Tesselate:boolean; //Returns false if MaxCLODTriangles limit is reached.
-                                                       
 var
    tessFrameVarianceDelta : Integer;
 
@@ -606,12 +637,33 @@ begin
    s:=FPatchSize;
    tessCurrentVariance:=@FTLVariance[0];
    tessMaxVariance:=FMaxTLVarianceDepth;
-   result:=
-      RecursTessellate(@vTriangleNodes[FTLNode], 1, VertexDist(0, s), VertexDist(s, 0), VertexDist(0, 0));
+   result:= RecursTessellate(@vTriangleNodes[FTLNode], 1, VertexDist(0, s), VertexDist(s, 0), VertexDist(0, 0));
    tessCurrentVariance:=@FBRVariance[0];
    tessMaxVariance:=FMaxBRVarianceDepth;
-   if result then result:=
-      RecursTessellate(@vTriangleNodes[FBRNode], 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
+   if result then result:= RecursTessellate(@vTriangleNodes[FBRNode], 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
+end;
+
+
+// SafeTesselate
+//
+function TGLROAMPatch.SafeTesselate : Boolean;
+var
+  Fail : Boolean;
+begin
+  Result := false;
+  repeat
+    try
+     ResetTessellation;
+     Result := Tesselate;
+     Fail := false;
+    except
+      on e:EGLROAMException do
+      begin
+        //Nothing to do, just wait the next iteration
+        Fail := true;
+      end;
+    end;
+  until not Fail;
 end;
 
 // RenderHighRes
@@ -625,35 +677,35 @@ var
 begin
    // Prepare display list if needed
    if FListHandle.Handle=0 then begin
-      // either use brute-force strips or a high-res static tesselation
-      if forceROAM then begin
-         ResetTessellation;
-         Tesselate;
-         RenderROAM(vertices, vertexIndices, texCoords);
-         primitive:=GL_TRIANGLES;
-         FTriangleCount:=vertexIndices.Count div 3;
-      end else begin
-         RenderAsStrips(vertices, vertexIndices, texCoords);
-         primitive:=GL_TRIANGLE_STRIP;
-         FTriangleCount:=vertexIndices.Count-2*FPatchSize;
-      end;
 
-      vertices.Translate(VertexOffset);
-      texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
-                                  PTexPoint(@TextureOffset)^);
+        // either use brute-force strips or a high-res static tesselation
+        if forceROAM then begin
+           SafeTesselate;
+           RenderROAM(vertices, vertexIndices, texCoords);
+           primitive:=GL_TRIANGLES;
+           FTriangleCount:=vertexIndices.Count div 3;
+        end else begin
+           RenderAsStrips(vertices, vertexIndices, texCoords);
+           primitive:=GL_TRIANGLE_STRIP;
+           FTriangleCount:=vertexIndices.Count-2*FPatchSize;
+        end;
 
-      glVertexPointer(3, GL_FLOAT, 0, vertices.List);
-      xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
+        vertices.Translate(VertexOffset);
+        texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
+                                    PTexPoint(@TextureOffset)^);
 
-      FListHandle.AllocateHandle;
-      glNewList(FListHandle.Handle, GL_COMPILE);
-      glDrawElements(primitive, vertexIndices.Count,
-                     GL_UNSIGNED_INT, vertexIndices.List);
-      glEndList;
+        glVertexPointer(3, GL_FLOAT, 0, vertices.List);
+        xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
 
-      vertices.Count:=0;
-      texCoords.Count:=0;
-      vertexIndices.Count:=0;
+        FListHandle.AllocateHandle;
+        glNewList(FListHandle.Handle, GL_COMPILE);
+        glDrawElements(primitive, vertexIndices.Count,
+                       GL_UNSIGNED_INT, vertexIndices.List);
+        glEndList;
+
+        vertices.Count:=0;
+        texCoords.Count:=0;
+        vertexIndices.Count:=0;
    end;
    // perform the render
    glCallList(FListHandle.Handle);
