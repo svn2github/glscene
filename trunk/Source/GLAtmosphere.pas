@@ -6,6 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/10 - DaStr - Fixed memory leak and typo
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -126,7 +127,7 @@ type
 
     procedure SetOptimalAtmosphere(const ARadius: Single);  //absolute
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
-    procedure TogleBlendingMode; //changes between 2 blending modes
+    procedure ToggleBlendingMode; //changes between 2 blending modes
 
     //: Standard component stuff.
     procedure Assign(Source: TPersistent); override;
@@ -190,6 +191,8 @@ begin
   FHighAtmColor := TGLColor.Create(Self);
 
   FOpacity := 2.1;
+  pVertex := nil;
+  pColor := nil;
   SetSlices(60);
   FAtmosphereRadius := 3.55;
   FPlanetRadius := 3.395;
@@ -380,7 +383,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomAtmosphere.TogleBlendingMode;
+procedure TGLCustomAtmosphere.ToggleBlendingMode;
 begin
   if FBlendingMode = abmOneMinusSrcAlpha then
     FBlendingMode := abmOneMinusDstColor
@@ -479,11 +482,15 @@ begin
     SetLength(sinCache, FSlices + 1);
     PrepareSinCosCache(sinCache, cosCache, 0, 360);
 
+    if pVertex <> nil then
+        FreeMem(pVertex);
+    if pColor <> nil then
+      FreeMem(pColor);
     GetMem(pVertex, 2 * (FSlices + 1) * SizeOf(TVector));
     GetMem(pColor, 2 * (FSlices + 1) * SizeOf(TVector));
   end
   else
-    raise EGLAtmosphereException.Create('Slices must be more than0!');
+    raise EGLAtmosphereException.Create('Slices must be more than 0!');
 end;
 
 initialization
