@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/10 - DaStr - Bugfixed TGLContextHandle.DestroyHandle()
       <li>18/07/10 - Yar - Added TGLTessControlShaderHandle, TGLTessEvaluationShaderHandle, TGLSamplerHandle
       <li>17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TGLContextHandle
       <li>02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
@@ -1850,7 +1851,8 @@ begin
         if not Assigned(vCurrentGLContext) then
           FHandles[I].FRenderingContext.Activate;
         DoDestroyHandle(FHandles[I].FHandle);
-        FHandles[I].FRenderingContext.FOwnedHandles.Remove(Self);
+        if FHandles[I].FRenderingContext <> nil then
+          FHandles[I].FRenderingContext.FOwnedHandles.Remove(Self);
       end;
     end;
   finally
