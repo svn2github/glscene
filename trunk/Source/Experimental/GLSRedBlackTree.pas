@@ -30,6 +30,7 @@
   smaller than _Key_. For Last and First key result not returned.
 
    <b>History : </b><font size=-1><ul>
+      <li>04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
       <li>19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
    </ul></font><p>
 }
@@ -51,20 +52,22 @@ type
 {$ENDIF}
   GRedBlackTree < K, V > = class
   { Public Declarations }
-  type {$IFDEF FPC}public{$ENDIF}
-    TKeyCompareFunc = function(const Item1, Item2: K): Integer;
-    TValueCompareFunc = function(const Item1, Item2: V): Integer;
-    TForEachProc = procedure (AKey: K; AValue: V; out AContinue: Boolean);
+  public
+    type
+      TKeyCompareFunc = function(const Item1, Item2: K): Integer;
+      TValueCompareFunc = function(const Item1, Item2: V): Integer;
+      TForEachProc = procedure (AKey: K; AValue: V; out AContinue: Boolean);
     { Private Declarations }
-  {$IFDEF GLS_COMPILER_2009_DOWN}
-    type {$IFDEF FPC}private{$ENDIF}
+  private
+    type
+   {$IFDEF GLS_COMPILER_2009_DOWN}
       TRBNode = class
         Key: K;
         Left, Right, Parent: TRBNode;
         Color: TRBColor;
         Value: V;
       end;
-  {$ELSE}
+   {$ELSE}
       TRBNode = ^TRBNodeRec;
       TRBNodeRec = record
         Key: K;
@@ -72,8 +75,8 @@ type
         Color: TRBColor;
         Value: V;
       end;
-  {$ENDIF}
-   var private
+   {$ENDIF}
+    var
       FRoot: TRBNode;
       FLeftmost: TRBNode;
       FRightmost: TRBNode;
