@@ -3165,7 +3165,7 @@ procedure TGLStateCache.SetGLFrontFaceCW;
 begin
   if FFrontFace = fwCounterClockWise then
   begin
-    glFrontFace(GL_CW);
+    GL.FrontFace(GL_CW);
     FFrontFace := fwClockWise;
   end;
 end;
@@ -3175,10 +3175,12 @@ end;
 
 procedure TGLStateCache.ResetAll;
 begin
+{$WARN SYMBOL_DEPRECATED OFF}
   ResetGLPolygonMode;
   ResetGLMaterialColors;
   ResetGLCurrentTexture;
   ResetGLFrontFace;
+{$WARN SYMBOL_DEPRECATED ON}
 end;
 
 
