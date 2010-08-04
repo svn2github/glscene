@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
       <li>16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
       <li>16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
       <li>31/05/10 - Yar - Replace OpenGL1x functions to OpenGLAdapter, not complete yet.
@@ -497,6 +498,7 @@ type
     procedure ResetGLMaterialColors; deprecated;
     procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
     procedure ResetGLCurrentTexture; deprecated;
+    procedure SetGLFrontFaceCW; deprecated;
     procedure ResetGLFrontFace; deprecated;
     procedure ResetAll; deprecated;
 
@@ -3158,6 +3160,16 @@ begin
   FFrontFace := fwCounterClockWise;
 end;
 
+
+procedure TGLStateCache.SetGLFrontFaceCW;
+begin
+  if FFrontFace = fwCounterClockWise then
+  begin
+    glFrontFace(GL_CW);
+    FFrontFace := fwClockWise;
+  end;
+end;
+
 // ResetAll
 //
 
@@ -3168,6 +3180,7 @@ begin
   ResetGLCurrentTexture;
   ResetGLFrontFace;
 end;
+
 
 end.
 
