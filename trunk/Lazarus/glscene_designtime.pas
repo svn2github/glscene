@@ -1,4 +1,8 @@
-unit glscene_designtime; 
+{ This file was automatically created by Lazarus. Do not edit!
+  This source is only used to compile and install the package.
+ }
+
+unit GLScene_DesignTime; 
 
 interface
 
