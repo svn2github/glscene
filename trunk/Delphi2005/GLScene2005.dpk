@@ -28,6 +28,7 @@ package GLScene2005;
 {$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
+{%File '..\Source\GLScene.inc'}
 
 requires
   vcl,
@@ -35,11 +36,8 @@ requires
   rtl,
   vcljpg;
 
-{%File '..\Source\GLScene.inc'}
-
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  GLMisc in '..\Source\GLMisc.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
@@ -48,7 +46,7 @@ contains
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugIn\PlugInManager.pas',
-  Info in '..\Source\DesignTime\Info.pas' {InfoForm},
+  Info in '..\Source\PropertyEditors\Info.pas' {InfoForm},
   PlugInManagerPropEditor in '..\Source\PlugIn\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
   Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
   File3DS in '..\Source\FileFormats\File3DS.pas',
@@ -57,22 +55,22 @@ contains
   Types3DS in '..\Source\FileFormats\Types3DS.pas',
   Const3DS in '..\Source\FileFormats\Const3DS.pas',
   AsyncTimer in '..\Source\Base\AsyncTimer.pas',
-  FVectorEditor in '..\Source\DesignTime\FVectorEditor.pas' {VectorEditorForm},
-  FRTrackBarEdit in '..\Source\DesignTime\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  FRColorEditor in '..\Source\DesignTime\FRColorEditor.pas' {RColorEditor: TFrame},
-  FRFaceEditor in '..\Source\DesignTime\FRFaceEditor.pas' {RFaceEditor: TFrame},
-  FRMaterialPreview in '..\Source\DesignTime\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
-  FMaterialEditorForm in '..\Source\DesignTime\FMaterialEditorForm.pas' {MaterialEditorForm},
+  FVectorEditor in '..\Source\PropertyEditors\FVectorEditor.pas' {VectorEditorForm},
+  FRTrackBarEdit in '..\Source\PropertyEditors\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FRColorEditor in '..\Source\PropertyEditors\FRColorEditor.pas' {RColorEditor: TFrame},
+  FRFaceEditor in '..\Source\PropertyEditors\FRFaceEditor.pas' {RFaceEditor: TFrame},
+  FRMaterialPreview in '..\Source\PropertyEditors\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FMaterialEditorForm in '..\Source\PropertyEditors\FMaterialEditorForm.pas' {MaterialEditorForm},
   OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLVectorFileObjects in '..\Source\GLVectorFileObjects.pas',
-  FLibMaterialPicker in '..\Source\DesignTime\FLibMaterialPicker.pas' {LibMaterialPicker},
-  FRTextureEdit in '..\Source\DesignTime\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FLibMaterialPicker in '..\Source\PropertyEditors\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FRTextureEdit in '..\Source\PropertyEditors\FRTextureEdit.pas' {RTextureEdit: TFrame},
   Joystick in '..\Source\Base\Joystick.pas',
   GLBehaviours in '..\Source\GLBehaviours.pas',
   ScreenSaver in '..\Source\Base\ScreenSaver.pas',
   GLCadencer in '..\Source\GLCadencer.pas',
   RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  FXCollectionEditor in '..\Source\PropertyEditors\FXCollectionEditor.pas' {XCollectionEditor},
   XCollection in '..\Source\Base\XCollection.pas',
   GLParticles in '..\Source\GLParticles.pas',
   GLObjects in '..\Source\GLObjects.pas',
@@ -121,7 +119,7 @@ contains
   GLExplosionFX in '..\Source\GLExplosionFX.pas',
   GLGui in '..\Source\GLGui.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
-  GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
+  GuiSkinEditorFormUnit in '..\Source\PropertyEditors\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
   GLShadowPlane in '..\Source\GLShadowPlane.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
@@ -157,7 +155,7 @@ contains
   GLGeomObjects in '..\Source\GLGeomObjects.pas',
   GLPolyhedron in '..\Source\GLPolyhedron.pas',
   GLTeapot in '..\Source\GLTeapot.pas',
-  GLTextureImageEditors in '..\Source\DesignTime\GLTextureImageEditors.pas',
+  GLTextureImageEditors in '..\Source\PropertyEditors\GLTextureImageEditors.pas',
   GLFullScreenViewer in '..\Source\Platform\GLFullScreenViewer.pas',
   GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas',
   GLUserShader in '..\Source\Shaders\GLUserShader.pas',
@@ -230,7 +228,6 @@ contains
   GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
   GLFBO in '..\Source\GLFBO.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
