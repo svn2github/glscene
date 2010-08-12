@@ -166,7 +166,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+{$IFDEF GLS_MULTITHREAD}
+threadvar
+{$ELSE}
 var
+{$ENDIF}
   vUpdCount: Integer;
   vUpdNewMode: TMapTexCoordMode;
   vStateStack: array of TMapTexCoordMode;
