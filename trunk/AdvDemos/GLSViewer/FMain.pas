@@ -215,9 +215,7 @@ begin
    with rci.GLStates do
    begin
      PolygonMode := pmFill;
-//   glPushAttrib(GL_ENABLE_BIT);
-//   glPushAttrib(GL_CURRENT_BIT+GL_ENABLE_BIT);
-     glColor3fv(@BackgroundColor);
+     GL.Color3fv(@BackgroundColor);
      ActiveTextureEnabled[ttTexture2D] := False;
      Enable(stPolygonOffsetFill);
      PolygonOffsetFactor := 1;
@@ -232,13 +230,12 @@ begin
        begin
          PassCount:=2;
          PolygonMode := pmLines;
-//         glPopAttrib;
-         glColor3fv(@LinesColor);
+         GL.Color3fv(@LinesColor);
          Disable(stLighting);
          Result:=True;
       end;
       2 : begin
- //        glPopAttrib;
+         rci.GLStates.Disable(stPolygonOffsetFill);
          Result:=False;
       end;
    else
