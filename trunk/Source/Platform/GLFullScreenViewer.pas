@@ -252,9 +252,9 @@ uses OpenGL1x, SysUtils, GLCrossPlatform, GLScreen
   ,GLWin32Context
   {$ENDIF}
        ;
-
 const
    cScreenDepthToBPP : array [sd8bits..sd32bits] of Integer = (8, 16, 24, 32);
+
 
 procedure Register;
 begin
@@ -407,10 +407,11 @@ end;
 procedure TGLFullScreenViewer.SetActive(const val : Boolean);
 begin
    if val<>FActive then begin
-     {$IFDEF MSWindows}
-     Application.OnDeactivate:=DoDeActivate;
-     Application.OnActivate:=DoActivate;
-     {$ENDIF}
+     //Alt+Tab delayed until better times
+     //{$IFDEF MSWindows}
+    // Application.OnDeactivate:=DoDeActivate;
+    // Application.OnActivate:=DoActivate;
+    // {$ENDIF}
       if FActive then 
          ShutDown
       else Startup;
@@ -444,18 +445,20 @@ begin
            FormStyle:=fsStayOnTop
         else FormStyle:=fsNormal;
      {$ifdef MSWINDOWS}
-     SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION);
+       SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION);
      {$endif}
         //WindowState:=wsMaximized;
      // Switch video mode
      if (Screen.Width<>Width) or (Screen.Height<>Height)
-           or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then begin
-        SetFullscreenMode(res, FRefreshRate);
-        FSwitchedResolution:=True;
-        end;
+           or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then
+       begin
+         SetFullscreenMode(res, FRefreshRate);
+         FSwitchedResolution:=True;
+       end;
      {$ifdef MSWINDOWS}
-     // Hides Taskbar
+     // Hides Taskbar + Windows 7 Button
       ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_HIDE);
+      ShowWindow(FindWindow('BUTTON', nil), SW_HIDE);
      {$endif}
     // Show;
    end;
@@ -463,8 +466,7 @@ begin
    Buffer.Resize(Width, Height);
    FOwnDC:=GetDC(FForm.Handle);
    Buffer.CreateRC(FOwnDC, False);
-
-   //Внимание!!!Не перемещать вверх, возможно переменное срабатывание
+   //Linux Unicode
    {$ifdef Linux}
    GrabMouseToForm(FForm);
    {$endif}
@@ -489,8 +491,9 @@ begin
      ReleaseMouseFromForm(FForm) ;
      {$endif}
      {$ifdef MSWINDOWS}
-     // Restore Taskbar
+     // Restore Taskbar + Windows 7 Button
      ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
+     ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
      {$endif}
      // attempt that, at the very least...
      if FSwitchedResolution then
@@ -542,17 +545,17 @@ end;
 
 procedure TGLFullScreenViewer.DoActivate(Sender: TObject);
 begin
-   If not Active and (Form <> nil) then begin
+ (*  If not Active and (Form <> nil) then begin
      {$IFDEF FPC}
      Application.Restore;
      {$ENDIF}
      Startup;
-   end;
+   end; *)
 end;
 
 procedure TGLFullScreenViewer.DoDeactivate(Sender: TObject);
 begin
-  If Active and (Form <> nil) then begin
+ (* If Active and (Form <> nil) then begin
    Shutdown;
     {$IFDEF FPC}
    Application.Minimize;
@@ -560,7 +563,7 @@ begin
      Form.Height:=0;
      Form.Width:=0;
     {$ENDIF}
-  end;
+  end; *)
 end;
 
 procedure TGLFullScreenViewer.DoFormDestroy(Sender: TObject);
@@ -756,8 +759,9 @@ initialization
 finalization
 
 {$ifdef MSWINDOWS}
-   // Restore Taskbar
+   // Restore Taskbar + Windows 7 Button
    ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
+   ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
 {$endif}
 
 end.
