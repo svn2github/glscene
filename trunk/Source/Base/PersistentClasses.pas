@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/08/10 - Yar - Fixed WriteWideString for empty strings
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
       <li>16/10/08 - UweR - Delphi 2009 compatibility fix for TPersistentObject, TTextReader and TTextWriter
@@ -1680,7 +1681,8 @@ begin
    sh.Length:=Length(aString);
    sh.typ:=byte(vaWString);
    Write(sh, 5);
-   Write(aString[1], sh.length*SizeOf(WideChar));
+   if sh.Length>0 then
+     Write(aString[1], sh.length*SizeOf(WideChar));
 end;
 
 // WriteString
