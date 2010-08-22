@@ -6,6 +6,7 @@
    Editor of TGLSCUDA.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
       <li>19/03/10 - Yar - Creation
 	</ul></font>
 }
@@ -17,8 +18,11 @@ uses
 {$IFDEF MSWINDOWS}Registry, {$ENDIF}
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ImgList, StdCtrls, ComCtrls, ToolWin,
-
+  {$IFNDEF FPC}
   DesignIntf, VCLEditors,
+  {$ELSE}
+  propedits, componenteditors,
+  {$ENDIF}
   GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics;
 
 type

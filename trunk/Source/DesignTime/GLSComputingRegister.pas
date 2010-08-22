@@ -6,6 +6,7 @@
    Registration unit for GLScene Computing package.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
       <li>09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
       <li>19/03/10 - Yar - Creation
 	</ul></font>
@@ -16,7 +17,11 @@ interface
 
 uses
   Classes, SysUtils,
-  DesignIntf, DesignEditors, STREDIT, ToolsAPI;
+  {$IFNDEF FPC}
+  DesignIntf, DesignEditors, STREDIT, ToolsAPI
+  {$ELSE}
+  propedits, componenteditors
+  {$ENDIF};
 
 procedure Register;
 
@@ -46,7 +51,11 @@ type
     procedure RefreshModuleList;
   public
     { Public Declarations }
+    {$IFNDEF FPC}
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
+    {$ELSE}
+    constructor Create(Hook:TPropertyEditorHook; APropCount: Integer); override;
+    {$ENDIF}
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
     function GetValue : string; override;
@@ -54,11 +63,11 @@ type
     procedure SetValue(const Value: String); override;
   end;
 
-  TCUDAModuleCodeEditor = class(TStringListProperty)
+  (*TCUDAModuleCodeEditor = class(TStringListProperty)
   public
     { Public Declarations }
     procedure Edit; override;
-  end;
+  end;  *)
 
 implementation
 
@@ -177,9 +186,13 @@ end;
 // ------------------
 // ------------------ TGLSCUDACompilerSourceProperty ------------------
 // ------------------
-
+{$IFNDEF FPC}
 constructor TGLSCUDACompilerSourceProperty.Create(
-  const ADesigner: IDesigner; APropCount: Integer);
+    const ADesigner: IDesigner; APropCount: Integer); override;
+{$ELSE}
+constructor TGLSCUDACompilerSourceProperty.Create(
+       Hook:TPropertyEditorHook; APropCount: Integer); override;
+{$ENDIF};
 begin
   inherited;
   FModuleList := TStringList.Create;

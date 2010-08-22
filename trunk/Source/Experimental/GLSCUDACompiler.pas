@@ -8,6 +8,7 @@
    To work requires the presence of CUDA Toolkit 3.0 and MS Visual Studio C++.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
       <li>08/06/10 - Yar - Added ProjectModule property
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
@@ -80,7 +81,12 @@ implementation
 uses
 {$IFDEF MSWINDOWS}Windows, {$ENDIF}
   SysUtils, Dialogs,
-  ShellAPI, TlHelp32;
+  ShellAPI ,
+  {$IFNDEF FPC}
+  TlHelp32
+  {$ELSE}
+  jwatlhelp32  //JEDI
+  {$ENDIF} ;
 
 function IsProcessRunning(const processName: string): Boolean;
 var
