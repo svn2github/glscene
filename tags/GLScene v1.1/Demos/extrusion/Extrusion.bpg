@@ -1,0 +1,32 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = bendingcyl.exe cutoutstar.exe nutsnbolts.exe pawn.exe tentacles.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+bendingcyl.exe: bendingcyl\bendingcyl.dpr
+  $(DCC)
+
+cutoutstar.exe: cutoutstar\cutoutstar.dpr
+  $(DCC)
+
+nutsnbolts.exe: nutsnbolts\nutsnbolts.dpr
+  $(DCC)
+
+pawn.exe: pawn\pawn.dpr
+  $(DCC)
+
+tentacles.exe: tentacles\tentacles.dpr
+  $(DCC)
+
+

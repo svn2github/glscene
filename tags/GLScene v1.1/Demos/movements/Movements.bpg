@@ -1,0 +1,42 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = Column.exe events.exe Hierarchy.exe Manual.exe objmove.exe \
+  pointto.exe Pong.exe SmoothNavigatorDemo.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+Column.exe: column\Column.dpr
+  $(DCC)
+
+events.exe: events\events.dpr
+  $(DCC)
+
+Hierarchy.exe: hierarch\Hierarchy.dpr
+  $(DCC)
+
+Manual.exe: manual\Manual.dpr
+  $(DCC)
+
+objmove.exe: objmove\objmove.dpr
+  $(DCC)
+
+pointto.exe: pointto\pointto.dpr
+  $(DCC)
+
+Pong.exe: pong\Pong.dpr
+  $(DCC)
+
+SmoothNavigatorDemo.exe: SmoothNavigator\SmoothNavigatorDemo.dpr
+  $(DCC)
+
+

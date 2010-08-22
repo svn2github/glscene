@@ -1,0 +1,29 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = dceDemo.exe FPSMovement.exe PathControl.exe Torque.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+dceDemo.exe: DCEDemo\dceDemo.dpr
+  $(DCC)
+
+FPSMovement.exe: FPSMovement\FPSMovement.dpr
+  $(DCC)
+
+PathControl.exe: pathcontrol\PathControl.dpr
+  $(DCC)
+
+Torque.exe: torque\Torque.dpr
+  $(DCC)
+
+
