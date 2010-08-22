@@ -6,6 +6,7 @@
    Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/10 - DaStr - Fixed compiler warning
       <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
       <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -651,6 +652,7 @@ var
   Fail : Boolean;
 begin
   Result := false;
+  Fail := True;
   repeat
     try
      ResetTessellation;

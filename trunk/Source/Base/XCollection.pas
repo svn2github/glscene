@@ -577,6 +577,7 @@ begin
         Header[1] := #0;
         Header[2] := #0;
         Header[3] := #0;
+        InitialPosition := 0;
       end;
 
       // after reading the header, we need to compare it with the MAGIC reference

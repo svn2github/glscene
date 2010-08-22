@@ -1722,7 +1722,7 @@ end;
 
 function TZCompressionStream.Read(var buffer; count: Longint): Longint;
 begin
-  Result:=0;
+//  Result:=0;
   raise EZCompressionError.Create(SZInvalid);
 end;
 
@@ -1849,7 +1849,7 @@ end;
 
 function TZDecompressionStream.Write(const Buffer; Count: Longint): Longint;
 begin
-  Result := 0;
+//  Result := 0;
   raise EZDecompressionError.Create(SZInvalid);
 end;
 
