@@ -13,8 +13,8 @@ interface
 
 uses
   Forms, Controls, SysUtils, Classes, GLScene, GLObjects,
-  Graphics, GLTeapot, GLWin32FullScreenViewer, GLCoordinates, GLCrossPlatform,
-  BaseClasses;
+  Graphics, GLTeapot, GLCoordinates, GLCrossPlatform,
+  BaseClasses, GLFullScreenViewer;
 
 type
   TDataModule1 = class(TDataModule)
