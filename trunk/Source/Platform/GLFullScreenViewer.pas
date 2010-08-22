@@ -5,12 +5,11 @@
 
    A Platform specific full-screen viewer.<p>
 
-   Note: Eng: As Lazarus has a problem of minimizing - the normalization window. 
-          See code DoAvtivate DoDeactivate. Tests were 
-          conducted on Lazarus 0.9.29.24627. In the case of elimination of 
-          problems in Lazarus, remove code Lazarus leaving that which for Delphi.
-          The module is not finished yet! 
-          As Linux has problems intercept the mouse and problems 
+   Note: Eng: Lazarus has problems with minimizing and normalizing windows.
+          See code DoAvtivate DoDeactivate. Tests were conducted on
+          Lazarus 0.9.29.24627. If these problems are fixed in future versions
+          of FPC / Lazarus, you can safely remove work-arounds.
+          Note: Linux still has problems intercepting mouse events and problems 
             with DoActivate DoDeactivate.
          Ru(CP1251)
           В лазарусе есть проблемы минимизации - нормализации окна. 
@@ -22,6 +21,7 @@
             и проблемы с DoActivate DoDeactivate.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/10 - DaStr - Restored backward-compatibility after previous changes
       <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
       <li>28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
                            (by Rustam Asmandiarov aka Predator)
@@ -68,6 +68,7 @@ type
    TGLFullScreenViewer = class (TGLNonVisualViewer)
       private
          { Private Declarations }
+         FFormIsOwned: Boolean;
          FForm : TForm;
          FOwnDC : Cardinal;
          FScreenDepth : TGLScreenDepth;
@@ -205,8 +206,8 @@ type
          property OnMouseUp : TMouseEvent read FOnMouseUp write SetOnMouseUp;
          property OnMouseMove : TMouseMoveEvent read FOnMouseMove write SetOnMouseMove;
          property OnMouseWheel : TMouseWheelEvent read FOnMouseWheel write SetOnMouseWheel;
-         property OnMouseWheelDown: TMouseWheelUpDownEvent read FOnMouseWheelDown write FOnMouseWheelDown;
-         property OnMouseWheelUp: TMouseWheelUpDownEvent read FOnMouseWheelUp write FOnMouseWheelUp;
+         property OnMouseWheelDown: TMouseWheelUpDownEvent read FOnMouseWheelDown write SetOnMouseWheelDown;
+         property OnMouseWheelUp: TMouseWheelUpDownEvent read FOnMouseWheelUp write SetOnMouseWheelUp;
    end;
 
 procedure Register;
@@ -406,15 +407,19 @@ end;
 //
 procedure TGLFullScreenViewer.SetActive(const val : Boolean);
 begin
-   if val<>FActive then begin
-     //Alt+Tab delayed until better times
-     //{$IFDEF MSWindows}
-    // Application.OnDeactivate:=DoDeActivate;
-    // Application.OnActivate:=DoActivate;
-    // {$ENDIF}
-      if FActive then 
-         ShutDown
-      else Startup;
+  if val <> FActive then
+  begin
+
+   //Alt+Tab delayed until better times
+   //{$IFDEF MSWindows}
+  // Application.OnDeactivate:=DoDeActivate;
+  // Application.OnActivate:=DoActivate;
+  // {$ENDIF}
+
+    if val then
+      Startup
+    else
+      ShutDown;
    end;
 end;
 
@@ -424,8 +429,16 @@ procedure TGLFullScreenViewer.Startup;
 var
    res : TResolution;
 begin
-   if Form=nil then Exit;
    if FActive then Exit;
+
+   if FForm = nil then
+   begin
+     FFormIsOwned := True;
+     FForm := TForm.Create(nil);
+     FForm.Show();
+   end
+   else
+     FFormIsOwned := False;
 
    with FForm do
    begin
@@ -478,8 +491,8 @@ end;
 //
 procedure TGLFullScreenViewer.Shutdown;
 begin
-   if Form=nil then Exit;
    if not FActive then Exit;
+   Assert(FForm <> nil);
 
    Buffer.DestroyRC;
    with FForm do
@@ -499,6 +512,8 @@ begin
      if FSwitchedResolution then
        RestoreDefaultMode;
    FActive:=False;
+
+   if FFormIsOwned then FreeAndNil(FForm);   
 end;
 
 // BindFormEvents
@@ -643,6 +658,8 @@ begin
    FOnMouseWheel := val;
 end;
 
+// SetOnMouseWheelDown
+//
 procedure TGLFullScreenViewer.SetOnMouseWheelDown(
   const val: TMouseWheelUpDownEvent);
 begin
@@ -651,6 +668,8 @@ begin
   FOnMouseWheelDown := val;
 end;
 
+// SetOnMouseWheelUp
+//
 procedure TGLFullScreenViewer.SetOnMouseWheelUp(const val: TMouseWheelUpDownEvent);
 begin
   If Form <> nil then
