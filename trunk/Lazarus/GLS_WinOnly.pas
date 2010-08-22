@@ -1,16 +1,21 @@
+{ This file was automatically created by Lazarus. Do not edit!
+  This source is only used to compile and install the package.
+ }
+
 unit GLS_WinOnly; 
 
 interface
 
 uses
-    Joystick, ScreenSaver, GLSMWaveOut, GLSVfw,
-  GLAVIRecorder, GLSceneRegisterWinOnlyLCL, LazarusPackageIntf;
+    Joystick, ScreenSaver, GLSMWaveOut, GLAVIRecorder, 
+  GLSceneRegisterWinOnlyLCL, GLSVfw, GLSpaceText, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('GLSceneRegisterWinOnlyLCL', @GLSceneRegisterWinOnlyLCL.Register); 
+  RegisterUnit('GLSceneRegisterWinOnlyLCL', @GLSceneRegisterWinOnlyLCL.Register
+    ); 
 end; 
 
 initialization

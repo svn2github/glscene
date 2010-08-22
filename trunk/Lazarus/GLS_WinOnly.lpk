@@ -3,7 +3,7 @@
   <Package Version="3">
     <Name Value="GLS_WinOnly"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
         <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/SoundAPIs/;../Source/Base/;../Source/DesignTime/;../Source/VideoAPIs/"/>
@@ -12,6 +12,7 @@
       <Parsing>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <Other>
@@ -20,7 +21,7 @@
     </CompilerOptions>
     <Description Value="GLScene support for Windows Only components"/>
     <Version Major="1" Build="3"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="../Source/Base/Joystick.pas"/>
         <UnitName Value="Joystick"/>
@@ -34,18 +35,22 @@
         <UnitName Value="GLSMWaveOut"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/VideoAPIs/vfw.pas"/>
-        <UnitName Value="VFW"/>
-      </Item4>
-      <Item5>
         <Filename Value="../Source/GLAVIRecorder.pas"/>
         <UnitName Value="GLAVIRecorder"/>
-      </Item5>
-      <Item6>
+      </Item4>
+      <Item5>
         <Filename Value="../Source/DesignTime/GLSceneRegisterWinOnlyLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterWinOnlyLCL"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../Source/VideoAPIs/GLSVfw.pas"/>
+        <UnitName Value="GLSVfw"/>
       </Item6>
+      <Item7>
+        <Filename Value="../Source/GLSpaceText.pas"/>
+        <UnitName Value="GLSpaceText"/>
+      </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

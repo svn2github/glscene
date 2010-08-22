@@ -1,9 +1,14 @@
-﻿unit GLScene_CgShader; 
+{ This file was automatically created by Lazarus. Do not edit!
+  This source is only used to compile and install the package.
+ }
+
+unit GLScene_CgShader; 
 
 interface
 
 uses
-  GLCgRegister, GLCgShader, cg, cgGL, GLCgBombShader, LazarusPackageIntf;
+    GLCgRegister, GLCgShader, cg, cgGL, GLCgBombShader, 
+  CGPostTransformationShader, LazarusPackageIntf;
 
 implementation
 
