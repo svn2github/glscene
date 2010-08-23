@@ -33,7 +33,9 @@ requires
   vcl,
   designide,
   rtl,
-  vcljpg;
+  vcljpg,
+  xmlrtl,
+  inet;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -192,7 +194,6 @@ contains
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
-  DDS in '..\Source\FileFormats\DDS.pas',
   DXTC in '..\Source\FileFormats\DXTC.pas',
   GLMaterialScript in '..\Source\GLMaterialScript.pas',
   GLDCEMisc in '..\Source\GLDCEMisc.pas',
@@ -202,7 +203,6 @@ contains
   GLBlur in '..\Source\GLBlur.pas',
   GLPerlinBase in '..\Source\GLPerlinBase.pas',
   GLPerlin in '..\Source\GLPerlin.pas',
-  ARBProgram in '..\Source\Base\ARBProgram.pas',
   GLPhongShader in '..\Source\Shaders\GLPhongShader.pas',
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
@@ -290,6 +290,9 @@ contains
   GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
-  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
+  GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
+  GLSCrossXML in '..\Source\Base\GLSCrossXML.pas',
+  OpenGLTokens in '..\Source\Base\OpenGLTokens.pas';
 
 end.
