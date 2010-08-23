@@ -6,6 +6,7 @@
   A collection of components that generate post effects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>28/05/08 - DaStr - Fixed AV in TGLPostEffect.MakeDistortEffect()
                              Got rid of all R- hacks
@@ -48,7 +49,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, GLTexture, OpenGL1x, GLGraphics, GLStrings, GLCustomShader, GLContext,
+  GLScene, GLTexture, OpenGLTokens, GLGraphics, GLStrings, GLCustomShader, GLContext,
   VectorGeometry, GLRenderContextInfo, GLMaterial, GLTextureFormat;
 
 type
@@ -190,7 +191,7 @@ begin
     if NewScreenSize <> Length(FRenderBuffer) then
       SetLength(FRenderBuffer, NewScreenSize);
 
-    glReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    GL.ReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
     case FPreset of
       // pepNone is handled in the first line.
       pepGray:        MakeGrayEffect;
@@ -203,7 +204,7 @@ begin
     else
       Assert(False, glsErrorEx + glsUnknownType);
     end;
-    glDrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    GL.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
 
   // Start rendering children (if any).

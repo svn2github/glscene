@@ -6,6 +6,7 @@
    FPS-like movement behaviour and manager.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>03/04/07 - DaStr - Added "public" to TCollisionState for FPC compatibility
@@ -200,7 +201,7 @@ function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overl
 
 implementation
 
-uses SysUtils, OpenGL1x, GLCrossPlatform;
+uses SysUtils, OpenGLTokens, GLContext, GLCrossPlatform;
 
 function GetFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 var
@@ -827,32 +828,32 @@ var
   CollisionState:TCollisionState;
 begin
 //  caption:= IntToStr(CollisionStates.Count);
-  glColor3f(1,1,1);
+  GL.Color3f(1,1,1);
   rci.GLStates.Disable(stLighting);
   //draw position trail
-  glBegin(GL_LINE_STRIP);
+  GL.Begin_(GL_LINE_STRIP);
   for i:=0 to CollisionStates.Count-1 do
   begin
     CollisionState:=TCollisionState(CollisionStates.Items[i]);
     x:=CollisionState.Position[0];
     y:=CollisionState.Position[1];
     z:=CollisionState.Position[2];
-    glVertex3f(x,y,z);
+    GL.Vertex3f(x,y,z);
   end;
-  glEnd();
+  GL.End_();
   //draw normals trail
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
   for i:=0 to CollisionStates.Count-1 do
   begin
     CollisionState:=TCollisionState(CollisionStates.Items[i]);
     t:=(Manager.DisplayTime-(TickCount-CollisionState.Time))/manager.DisplayTime;
-    glColor3f(t,t,t);
-      glvertex3f(CollisionState.Contact.intPoint[0],CollisionState.Contact.intPoint[1],CollisionState.Contact.intPoint[2]);
-      glvertex3f(CollisionState.Contact.intPoint[0]+CollisionState.Contact.intNormal[0],//GLSphere4.Radius,
+    GL.Color3f(t,t,t);
+      GL.vertex3f(CollisionState.Contact.intPoint[0],CollisionState.Contact.intPoint[1],CollisionState.Contact.intPoint[2]);
+      GL.vertex3f(CollisionState.Contact.intPoint[0]+CollisionState.Contact.intNormal[0],//GLSphere4.Radius,
       CollisionState.Contact.intPoint[1]+CollisionState.Contact.intNormal[1],//GLSphere4.Radius,
       CollisionState.Contact.intPoint[2]+CollisionState.Contact.intNormal[2]);//GLSphere4.Radius);
   end;
-  glEnd();
+  GL.End_();
 end;
 
 // ------------------------------------------------------------------

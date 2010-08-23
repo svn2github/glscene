@@ -5,6 +5,7 @@
    A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>22/01/10 - Yar - Added GLTextureFormat to uses
       <li>13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
@@ -112,7 +113,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLUtils, VectorTypes;
+uses SysUtils, OpenGLTokens, GLUtils, VectorTypes;
 
 const
    cDefaultBumpScale = 0.01;

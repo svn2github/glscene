@@ -9,6 +9,7 @@
   JAJ: Credits to the UniCode Version of SynEdit! I located the needed API calls from them. GPL/MPL as GLScene
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>13/07/09 - DanB - fix for FPC
       <li>24/03/07 - DaStr - Got rid of Types dependancy
                              Removed unused variables
@@ -92,7 +93,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorTypes;
+uses SysUtils, OpenGLTokens, VectorTypes;
 
 Var
   Win32PlatformIsUnicode : Boolean;

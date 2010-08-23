@@ -6,6 +6,7 @@
    Skydome object<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>10/10/08 - DanB - changed Skydome buildlists to use rci instead
@@ -323,8 +324,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils,
-  OpenGL1x,
+uses
+  SysUtils,
+  OpenGLTokens,
+  GLContext,
   GLStarRecord,
   GLState;
 
@@ -472,53 +475,53 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
     if start = -90 then
     begin
       // triangle fan with south pole
-      glBegin(GL_TRIANGLE_FAN);
-      glColor4fv(@colStart);
-      glVertex3f(0, 0, -1);
+      GL.Begin_(GL_TRIANGLE_FAN);
+      GL.Color4fv(@colStart);
+      GL.Vertex3f(0, 0, -1);
       f := 2 * PI / Slices;
       SinCos(DegToRad(stop), vertex1[2], r);
-      glColor4fv(@colStop);
+      GL.Color4fv(@colStop);
       for i := 0 to Slices do
       begin
         SinCos(i * f, r, vertex1[1], vertex1[0]);
-        glVertex4fv(@vertex1);
+        GL.Vertex4fv(@vertex1);
       end;
-      glEnd;
+      GL.End_;
     end
     else if stop = 90 then
     begin
       // triangle fan with north pole
-      glBegin(GL_TRIANGLE_FAN);
-      glColor4fv(@colStop);
-      glVertex3fv(@ZHmgPoint);
+      GL.Begin_(GL_TRIANGLE_FAN);
+      GL.Color4fv(@colStop);
+      GL.Vertex3fv(@ZHmgPoint);
       f := 2 * PI / Slices;
       SinCos(DegToRad(start), vertex1[2], r);
-      glColor4fv(@colStart);
+      GL.Color4fv(@colStart);
       for i := Slices downto 0 do
       begin
         SinCos(i * f, r, vertex1[1], vertex1[0]);
-        glVertex4fv(@vertex1);
+        GL.Vertex4fv(@vertex1);
       end;
-      glEnd;
+      GL.End_;
     end
     else
     begin
       vertex2[3] := 1;
       // triangle strip
-      glBegin(GL_TRIANGLE_STRIP);
+      GL.Begin_(GL_TRIANGLE_STRIP);
       f := 2 * PI / Slices;
       SinCos(DegToRad(start), vertex1[2], r);
       SinCos(DegToRad(stop), vertex2[2], r2);
       for i := 0 to Slices do
       begin
         SinCos(i * f, r, vertex1[1], vertex1[0]);
-        glColor4fv(@colStart);
-        glVertex4fv(@vertex1);
+        GL.Color4fv(@colStart);
+        GL.Vertex4fv(@vertex1);
         SinCos(i * f, r2, vertex2[1], vertex2[0]);
-        glColor4fv(@colStop);
-        glVertex4fv(@vertex2);
+        GL.Color4fv(@colStop);
+        GL.Vertex4fv(@vertex2);
       end;
-      glEnd;
+      GL.End_;
     end;
   end;
 
@@ -726,7 +729,7 @@ var
     if (n and 63) = 0 then
     begin
       twinkleColor := VectorScale(color, Random * 0.6 + 0.4);
-      glColor3fv(@twinkleColor[0]);
+      GL.Color3fv(@twinkleColor[0]);
       n := 0;
     end
     else
@@ -747,7 +750,7 @@ begin
   rci.GLStates.Enable(stBlend);
   rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
 
-  glBegin(GL_POINTS);
+  GL.Begin_(GL_POINTS);
   for i := 0 to Count - 1 do
   begin
     star := Items[i];
@@ -756,17 +759,17 @@ begin
     begin
       if pointSize10 > 15 then
       begin
-        glEnd;
+        GL.End_;
         lastPointSize10 := pointSize10;
-        glPointSize(pointSize10 * 0.1);
-        glBegin(GL_POINTS);
+        GL.PointSize(pointSize10 * 0.1);
+        GL.Begin_(GL_POINTS);
       end
       else if lastPointSize10 <> 15 then
       begin
-        glEnd;
+        GL.End_;
         lastPointSize10 := 15;
-        glPointSize(1.5);
-        glBegin(GL_POINTS);
+        GL.PointSize(1.5);
+        GL.Begin_(GL_POINTS);
       end;
     end;
     if lastColor <> star.FColor then
@@ -778,14 +781,14 @@ begin
         DoTwinkle;
       end
       else
-        glColor3fv(@color[0]);
+        GL.Color3fv(@color[0]);
       lastColor := star.FColor;
     end
     else if twinkle then
       DoTwinkle;
-    glVertex3fv(@star.FCacheCoord[0]);
+    GL.Vertex3fv(@star.FCacheCoord[0]);
   end;
-  glEnd;
+  GL.End_;
 
   rci.GLStates.PointSize := 1;
   // restore default GLScene AlphaFunc
@@ -989,7 +992,7 @@ var
   f: Single;
 begin
   // setup states
-  glPushMatrix;
+  GL.PushMatrix;
   with rci.GLStates do
   begin
     Disable(stLighting);
@@ -1001,13 +1004,13 @@ begin
   end;
 
   f := rci.rcci.farClippingDistance * 0.90;
-  glScalef(f, f, f);
+  GL.Scalef(f, f, f);
 
   Bands.BuildList(rci);
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
   // restore
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // ------------------
@@ -1192,7 +1195,7 @@ var
   f: Single;
 begin
   // setup states
-  glPushMatrix;
+  GL.PushMatrix;
   with rci.GLStates do
   begin
     Disable(stLighting);
@@ -1205,7 +1208,7 @@ begin
   end;
 
   f := rci.rcci.farClippingDistance * 0.95;
-  glScalef(f, f, f);
+  GL.Scalef(f, f, f);
 
   RenderDome;
   Bands.BuildList(rci);
@@ -1213,7 +1216,7 @@ begin
 
   // restore
   rci.GLStates.DepthWriteMask := True;
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // OnColorChanged
@@ -1319,10 +1322,10 @@ var
     r := 0;
     vertex1[3] := 1;
     // triangle fan with south pole
-    glBegin(GL_TRIANGLE_FAN);
+    GL.Begin_(GL_TRIANGLE_FAN);
     color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
-    glColor4fv(DeepColor.AsAddress);
-    glVertex3f(0, 0, -1);
+    GL.Color4fv(DeepColor.AsAddress);
+    GL.Vertex3f(0, 0, -1);
     SinCos(DegToRad(stop), vertex1[2], r);
     thetaStart := DegToRad(90 - stop);
     for i := 0 to steps - 1 do
@@ -1330,10 +1333,10 @@ var
       vertex1[0] := r * cosTable[i];
       vertex1[1] := r * sinTable[i];
       color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-      glColor4fv(@color);
-      glVertex4fv(@vertex1);
+      GL.Color4fv(@color);
+      GL.Vertex4fv(@vertex1);
     end;
-    glEnd;
+    GL.End_;
   end;
 
   procedure RenderBand(start, stop: Single);
@@ -1347,10 +1350,10 @@ var
     if stop = 90 then
     begin
       // triangle fan with north pole
-      glBegin(GL_TRIANGLE_FAN);
+      GL.Begin_(GL_TRIANGLE_FAN);
       color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
-      glColor4fv(@color);
-      glVertex4fv(@ZHmgPoint);
+      GL.Color4fv(@color);
+      GL.Vertex4fv(@ZHmgPoint);
       SinCos(DegToRad(start), vertex1[2], r);
       thetaStart := DegToRad(90 - start);
       for i := 0 to steps - 1 do
@@ -1358,16 +1361,16 @@ var
         vertex1[0] := r * cosTable[i];
         vertex1[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-        glColor4fv(@color);
-        glVertex4fv(@vertex1);
+        GL.Color4fv(@color);
+        GL.Vertex4fv(@vertex1);
       end;
-      glEnd;
+      GL.End_;
     end
     else
     begin
       vertex2[3] := 1;
       // triangle strip
-      glBegin(GL_TRIANGLE_STRIP);
+      GL.Begin_(GL_TRIANGLE_STRIP);
       SinCos(DegToRad(start), vertex1[2], r);
       SinCos(DegToRad(stop), vertex2[2], r2);
       thetaStart := DegToRad(90 - start);
@@ -1377,15 +1380,15 @@ var
         vertex1[0] := r * cosTable[i];
         vertex1[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-        glColor4fv(@color);
-        glVertex4fv(@vertex1);
+        GL.Color4fv(@color);
+        GL.Vertex4fv(@vertex1);
         vertex2[0] := r2 * cosTable[i];
         vertex2[1] := r2 * sinTable[i];
         color := CalculateColor(thetaStop, CalculateCosGamma(vertex2));
-        glColor4fv(@color);
-        glVertex4fv(@vertex2);
+        GL.Color4fv(@color);
+        GL.Vertex4fv(@vertex2);
       end;
-      glEnd;
+      GL.End_;
     end;
   end;
 

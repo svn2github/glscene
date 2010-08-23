@@ -6,6 +6,7 @@
   OpenGL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>11/06/10 - YP - Link GUI elements to their parent
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -49,7 +50,7 @@ interface
 
 uses
    SysUtils, Classes, GLScene, GLHUDObjects,
-   GLMaterial, OpenGL1x, GLBitmapFont, GLWindowsFont, VectorGeometry,
+   GLMaterial, OpenGLTokens, GLContext, GLBitmapFont, GLWindowsFont, VectorGeometry,
    GLGui, GLCrossPlatform, GLColor, GLRenderContextInfo, BaseClasses;
 
 type
@@ -688,20 +689,20 @@ Begin
    if AlphaChannel<>1 then
       rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
    // Prepare matrices
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix;
-   glLoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
+   GL.MatrixMode(GL_MODELVIEW);
+   GL.PushMatrix;
+   GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
    if rci.renderDPI=96 then
       f:=1
    else f:=rci.renderDPI/96;
-   glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
-   glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
+   GL.Scalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
+   GL.Translatef(f*Position.X-rci.viewPortSize.cx*0.5,
                 rci.viewPortSize.cy*0.5-f*Position.Y, 0);
    if Rotation<>0 then
-      glRotatef(Rotation, 0, 0, 1);
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix;
-   glLoadIdentity;
+      GL.Rotatef(Rotation, 0, 0, 1);
+   GL.MatrixMode(GL_PROJECTION);
+   GL.PushMatrix;
+   GL.LoadIdentity;
    rci.GLStates.Disable(stDepthTest);
    rci.GLStates.DepthWriteMask := False;
 End;
@@ -709,9 +710,9 @@ End;
 Procedure TGLBaseComponent.RenderFooter(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Begin
-   glPopMatrix;
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix;
+   GL.PopMatrix;
+   GL.MatrixMode(GL_MODELVIEW);
+   GL.PopMatrix;
    FGuiLayout.Material.UnApply(rci);
 End;
 
@@ -1655,7 +1656,6 @@ Begin
 End;
 
 Procedure TGLBaseFontControl.WriteTextAt(var rci : TRenderContextInfo; Const X,Y : TGLFloat; Const Data : String; Const Color : TColorVector);
-
 Var
   Position : TVector;
 Begin
@@ -1665,7 +1665,7 @@ Begin
     Position[1] := Round(Y);
     Position[2] := 0;
     Position[3] := 0;
-    BitmapFont.RenderString(rci, Data,taLeftJustify,tlTop,Color, @Position);
+    BitmapFont.RenderString(rci, Data, taLeftJustify,tlTop,Color, @Position);
   End;
 End;
 
@@ -1795,21 +1795,21 @@ Begin
 
   GuiLayout.Material.UnApply(rci);
   Material.Apply(rci);
-  glBegin(GL_QUADS);
+  GL.Begin_(GL_QUADS);
 
-    glTexCoord2f( FXTexCoord, -FYTexCoord);
-    glVertex2f(X2,Y2);
+    GL.TexCoord2f( FXTexCoord, -FYTexCoord);
+    GL.Vertex2f(X2,Y2);
 
-    glTexCoord2f( FXTexCoord, 0);
-    glVertex2f(X2,Y1);
+    GL.TexCoord2f( FXTexCoord, 0);
+    GL.Vertex2f(X2,Y1);
 
-    glTexCoord2f( 0, 0);
-    glVertex2f(X1,Y1);
+    GL.TexCoord2f( 0, 0);
+    GL.Vertex2f(X1,Y1);
 
-    glTexCoord2f( 0, -FYTexCoord);
-    glVertex2f(X1,Y2);
+    GL.TexCoord2f( 0, -FYTexCoord);
+    GL.Vertex2f(X1,Y2);
 
-  glEnd();
+  GL.End_();
 
   Material.UnApply(rci);
   GuiLayout.Material.Apply(rci);
@@ -2533,21 +2533,21 @@ Begin
     If TexHeight = 0 then
     TexHeight := Material.Texture.Image.Height;
 
-    glBegin(GL_QUADS);
+    GL.Begin_(GL_QUADS);
 
-    glTexCoord2f(0,0);
-    glVertex2f(X1-XOffSet, -Y1+YOffSet);
+    GL.TexCoord2f(0,0);
+    GL.Vertex2f(X1-XOffSet, -Y1+YOffSet);
 
-    glTexCoord2f(0,-(LogicHeight-1)/TexHeight);
-    glVertex2f(X1-XOffSet, -Y1+YOffset-LogicHeight+1);
+    GL.TexCoord2f(0,-(LogicHeight-1)/TexHeight);
+    GL.Vertex2f(X1-XOffSet, -Y1+YOffset-LogicHeight+1);
 
-    glTexCoord2f((LogicWidth-1)/TexWidth,-(LogicHeight-1)/TexHeight);
-    glVertex2f(X1-XOffSet+LogicWidth-1, -Y1+YOffset-LogicHeight+1);
+    GL.TexCoord2f((LogicWidth-1)/TexWidth,-(LogicHeight-1)/TexHeight);
+    GL.Vertex2f(X1-XOffSet+LogicWidth-1, -Y1+YOffset-LogicHeight+1);
 
-    glTexCoord2f((LogicWidth-1)/TexWidth,0);
-    glVertex2f(X1-XOffSet+LogicWidth-1, -Y1+YOffSet);
+    GL.TexCoord2f((LogicWidth-1)/TexWidth,0);
+    GL.Vertex2f(X1-XOffSet+LogicWidth-1, -Y1+YOffSet);
 
-    glEnd();
+    GL.End_();
     BitBtn.UnApply(rci);
     GuiLayout.Material.Apply(rci);
   End;

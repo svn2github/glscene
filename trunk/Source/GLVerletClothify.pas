@@ -6,6 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>06/06/10 - Yar - Fixed warnings
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Optimization of switching states
@@ -27,7 +28,7 @@ interface
 
 uses
   Classes,  GLVectorFileObjects, VerletClasses, VectorTypes, VectorLists,
-  VectorGeometry, GLTexture, OpenGL1x, SysUtils, GLRenderContextInfo,
+  VectorGeometry, GLTexture, OpenGLTokens, SysUtils, GLRenderContextInfo,
   GLState;
 
 type
@@ -171,6 +172,9 @@ type
   end;
 
 implementation
+
+uses
+  GLContext;
 
 { TFaceExtractor }
 
@@ -575,9 +579,9 @@ begin
   begin
     rci.GLStates.Disable(stLighting);
     rci.GLStates.LineWidth := 3;
-    glColor3f(1,1,1);
+    GL.Color3f(1,1,1);
 
-    glBegin(GL_LINES);
+    GL.Begin_(GL_LINES);
       for i := 0 to EdgeList.Count - 1 do
       begin
         Edge := EdgeList[i];
@@ -585,10 +589,10 @@ begin
         Vertex0 := Edge.MeshObject.Vertices[Edge.Vertices[0]];
         Vertex1 := Edge.MeshObject.Vertices[Edge.Vertices[1]];
 
-        glVertex3fv(PGLfloat(@Vertex0));
-        glVertex3fv(PGLfloat(@Vertex1));
+        GL.Vertex3fv(PGLfloat(@Vertex0));
+        GL.Vertex3fv(PGLfloat(@Vertex1));
       end;
-    glEnd;
+    GL.End_;
   end;//}
 end;
 

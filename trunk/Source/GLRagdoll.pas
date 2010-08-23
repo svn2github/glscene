@@ -3,6 +3,7 @@
 	Base abstract ragdoll class. Should be extended to use any physics system. <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>23/08/10 - Yar - Added VectorTypes to uses
     <li>09/11/05 - LucasG - Fixed joint and few small things
     <li>07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
     <li>02/11/05 - LucasG - First version created.
@@ -126,6 +127,9 @@ type
 	end;
 
 implementation
+
+uses
+  VectorTypes;
 
 { TRagdollBoneList }
 

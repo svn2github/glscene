@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>23/08/10 - Yar - Added OpenGLTokens to uses
        <li>21/05/10 - Yar - Removed TGLFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
        <li>16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TGLTextureImage
        <li>14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
@@ -219,7 +220,7 @@ uses
   // GLScene
   GLCrossPlatform,
   BaseClasses,
-  OpenGL1x,
+  OpenGLTokens,
   VectorGeometry,
   GLGraphics,
   GLContext,
@@ -293,7 +294,7 @@ type
   TTextureNeededEvent = procedure(Sender: TObject; var textureFileName: string)
     of object;
 
-  TGLTextureChange = (tcImage, tcParams, tcTarget);
+  TGLTextureChange = (tcImage, tcParams);
   TGLTextureChanges = set of TGLTextureChange;
 
   {: Defines how and if Alpha channel is defined for a texture image.<ul>
@@ -328,7 +329,6 @@ type
   private
     function GetResourceName: string;
   protected
-    fPreviousTarget: TGLTextureTarget;
     FOwnerTexture: TGLTexture;
     FOnTextureNeeded: TTextureNeededEvent;
     FResourceFile: string;
@@ -649,6 +649,7 @@ type
   private
     { Private Declarations }
     FTextureHandle: TGLTextureHandle;
+    FTextureTarget: TGLTextureTarget;
     FTextureFormat: TGLInternalFormat;
     FTextureMode: TGLTextureMode;
     FTextureWrap: TGLTextureWrap;
@@ -766,7 +767,6 @@ type
     procedure NotifyChange(Sender: TObject); override;
     procedure NotifyImageChange;
     procedure NotifyParamsChange;
-    procedure NotifyTargetChange;
 
     procedure DestroyHandles;
 
@@ -1213,7 +1213,6 @@ constructor TGLTextureImage.Create(AOwner: TPersistent);
 begin
   inherited;
   FOwnerTexture := (AOwner as TGLTexture);
-  fPreviousTarget := ttTexture2D;
 end;
 
 // Destroy
@@ -1587,13 +1586,6 @@ begin
       and (FOwnerTexture.FTextureFormat <= tfFLOAT_RGBA32)) then
       Result := ttTextureRect;
   end;
-
-  if Result = fPreviousTarget then
-    Exit;
-  fPreviousTarget := Result;
-  // update texture target
-  if Assigned(FOwnerTexture) then
-    FOwnerTexture.NotifyTargetChange;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -1768,12 +1760,6 @@ end;
 function TGLPictureImage.GetTextureTarget: TGLTextureTarget;
 begin
   Result := ttTexture2D;
-  if fPreviousTarget <> Result then
-  begin
-    if Assigned(FOwnerTexture) then
-      FOwnerTexture.NotifyTargetChange;
-    fPreviousTarget := Result;
-  end;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -2271,12 +2257,6 @@ end;
 function TGLCubeMapImage.GetTextureTarget: TGLTextureTarget;
 begin
   Result := ttTextureCube;
-  if fPreviousTarget <> Result then
-  begin
-    if Assigned(FOwnerTexture) then
-      FOwnerTexture.NotifyTargetChange;
-    fPreviousTarget := Result;
-  end;
 end;
 
 // SetPicture
@@ -2313,7 +2293,7 @@ begin
   FDisabled := True;
   FChanges := [tcImage, tcParams];
   FImage := TGLPersistentImage.Create(Self);
-  FImage.FOnTextureNeeded := DoOnTextureNeeded;
+  FImage.OnTextureNeeded := DoOnTextureNeeded;
   FImageAlpha := tiaDefault;
   FImageBrightness := 1.0;
   FImageGamma := 1.0;
@@ -2330,6 +2310,7 @@ begin
   FTextureCompareFunc := cfLequal;
   FDepthTextureMode := dtmLuminance;
   TextureFormat := tfDefault;
+  FTextureTarget := ttTexture2D;
 end;
 
 // Destroy
@@ -2410,6 +2391,8 @@ begin
     if Owner is TGLTextureExItem then
       TGLTextureExItem(Owner).NotifyChange(Self);
   end;
+  if Sender is TGLTextureImage then
+    Include(FChanges, tcImage);
 
   inherited;
 end;
@@ -2432,15 +2415,6 @@ begin
   NotifyChange(Self);
 end;
 
-// NotifyTargetChange
-//
-
-procedure TGLTexture.NotifyTargetChange;
-begin
-  Include(FChanges, tcTarget);
-  NotifyChange(Self);
-end;
-
 // SetImage
 //
 
@@ -2460,7 +2434,7 @@ begin
   begin
     FImage.Free;
     FImage := TGLPersistentImage.Create(Self);
-    FImage.FOnTextureNeeded := DoOnTextureNeeded;
+    FImage.OnTextureNeeded := DoOnTextureNeeded;
   end;
 end;
 
@@ -2526,7 +2500,7 @@ begin
       end;
     end;
 
-    if Image.GetTextureTarget = ttTextureCube then
+    if Image.NativeTextureTarget = ttTextureCube then
       FRequiredMemorySize := FRequiredMemorySize * 6;
   end;
   Result := FRequiredMemorySize;
@@ -3067,7 +3041,7 @@ begin
           GL.Enable(GL_TEXTURE_GEN_R);
           GL.Enable(GL_TEXTURE_GEN_Q);
         end;
-        glPopMatrix;
+        GL.PopMatrix;
       end;
     tmmSphere:
       begin
@@ -3076,7 +3050,7 @@ begin
         GL.Enable(GL_TEXTURE_GEN_S);
         GL.Enable(GL_TEXTURE_GEN_T);
       end;
-    tmmCubeMapReflection, tmmCubeMapCamera: if GL_ARB_texture_cube_map then
+    tmmCubeMapReflection, tmmCubeMapCamera: if GL.ARB_texture_cube_map then
       begin
         GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
         GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
@@ -3085,7 +3059,7 @@ begin
         GL.Enable(GL_TEXTURE_GEN_T);
         GL.Enable(GL_TEXTURE_GEN_R);
       end;
-    tmmCubeMapNormal, tmmCubeMapLight0: if GL_ARB_texture_cube_map then
+    tmmCubeMapNormal, tmmCubeMapLight0: if GL.ARB_texture_cube_map then
       begin
         GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
         GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
@@ -3108,7 +3082,7 @@ begin
   begin
     GL.Disable(GL_TEXTURE_GEN_S);
     GL.Disable(GL_TEXTURE_GEN_T);
-    if GL.EXT_texture3D or GL_ARB_texture_cube_map then
+    if GL.EXT_texture3D or GL.ARB_texture_cube_map then
     begin
       GL.Disable(GL_TEXTURE_GEN_R);
       GL.Disable(GL_TEXTURE_GEN_Q);
@@ -3129,7 +3103,7 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
     case MappingMode of
       tmmCubeMapReflection, tmmCubeMapNormal:
         begin
-          m := rci.modelViewMatrix^;
+          m := rci.PipelineTransformation.ViewMatrix;
           NormalizeMatrix(m);
           TransposeMatrix(m);
           rci.GLStates.SetGLTextureMatrix(m);
@@ -3141,7 +3115,7 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
             begin
               m := TGLLightSource(Items[0]).AbsoluteMatrix;
               NormalizeMatrix(m);
-              mm := rci.modelViewMatrix^;
+              mm := rci.PipelineTransformation.ViewMatrix;
               NormalizeMatrix(mm);
               TransposeMatrix(mm);
               m := MatrixMultiply(m, mm);
@@ -3154,7 +3128,7 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
           m[1] := VectorNegate(rci.cameraDirection);
           m[2] := rci.cameraUp;
           m[3] := WHmgPoint;
-          mm := rci.modelViewMatrix^;
+          mm := rci.PipelineTransformation.ViewMatrix;
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
           m := MatrixMultiply(m, mm);
@@ -3269,7 +3243,7 @@ begin
         SetGLTextureMatrix(textureMatrix^)
       else if target = ttTextureCube then
       begin
-        m := rci.modelViewMatrix^;
+        m := rci.PipelineTransformation.ModelViewMatrix;
         NormalizeMatrix(m);
         TransposeMatrix(m);
         rci.GLStates.SetGLTextureMatrix(m);
@@ -3320,7 +3294,7 @@ var
   glTarget: TGLEnum;
 begin
   target := Image.NativeTextureTarget;
-  if tcTarget in FChanges then
+  if FTextureTarget <> target then
     fTextureHandle.DestroyHandle;
 
   if FTextureHandle.Handle = 0 then
@@ -3329,7 +3303,7 @@ begin
     Result := FTextureHandle.Handle;
     if Result = 0 then
       exit;
-    Exclude(FChanges, tcTarget);
+    FTextureTarget := target;
     Include(FChanges, tcImage);
     Include(FChanges, tcParams);
   end;
@@ -3424,7 +3398,7 @@ end;
 procedure TGLTexture.DestroyHandles;
 begin
   FTextureHandle.DestroyHandle;
-  FChanges := [tcParams, tcImage, tcTarget];
+  FChanges := [tcParams, tcImage];
   FRequiredMemorySize := -1;
 end;
 
@@ -3583,9 +3557,9 @@ begin
       FTexDepth);
   end;
 
-  if glGetError <> GL_NO_ERROR then
+  if GL.GetError <> GL_NO_ERROR then
   begin
-    ClearGLError;
+    GL.ClearError;
     SetTextureErrorImage;
   end
   else
@@ -3674,7 +3648,7 @@ begin
 
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not (GL_EXT_texture_lod or GL_SGIS_texture_lod) then
+    or not (GL.EXT_texture_lod or GL.SGIS_texture_lod) then
   begin
     if FMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       FMinFilter := miNearest;

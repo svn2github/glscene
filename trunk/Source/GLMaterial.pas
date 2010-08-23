@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>06/03/10 - Yar - Added to TGLDepthProperties DepthClamp property
@@ -40,9 +41,10 @@ unit GLMaterial;
 
 interface
 
-uses Classes, GLRenderContextInfo, BaseClasses, GLContext, GLTexture, GLColor,
-  GLCoordinates, VectorGeometry, PersistentClasses, OpenGL1x, GLCrossPlatform,
-  GLState;
+uses
+  Classes, SysUtils, GLRenderContextInfo, BaseClasses, OpenGLTokens, GLContext,
+  GLTexture, GLColor, GLCoordinates, VectorGeometry, PersistentClasses,
+  GLCrossPlatform, GLState;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
@@ -203,6 +205,7 @@ type
   end;
 
   TGLShaderClass = class of TGLShader;
+  EGLShaderException = class(Exception);
 
   TShininess = 0..128;
 
@@ -755,9 +758,11 @@ type
 
   end;
 
+  ETexture = class(Exception);
+
 implementation
 
-uses SysUtils, GLStrings, XOpenGL, ApplicationFileIO, GLGraphics;
+uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics;
 
   // ------------------
   // ------------------ TGLFaceProperties ------------------
@@ -808,7 +813,7 @@ end;
 procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  glColor4fv(@Diffuse.Color);
+  GL.Color4fv(@Diffuse.Color);
 end;
 
 // Assign
@@ -901,7 +906,7 @@ begin
     DepthWriteMask := FDepthWrite;
     DepthFunc := FCompareFunc;
     SetDepthRange(FZNear, FZFar);
-    if GL_ARB_depth_clamp then
+    if GL.ARB_depth_clamp then
       if FDepthClamp then
         Enable(stDepthClamp)
       else
@@ -1982,7 +1987,7 @@ begin
         end;
     end;
   end;
-  if (Texture2Name <> '') and GL_ARB_multitexture and (not
+  if (Texture2Name <> '') and GL.ARB_multitexture and (not
     vSecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
@@ -2062,7 +2067,7 @@ begin
     // if multipassing, this will occur upon last pass only
 {      if Assigned(Material.FTextureEx) then begin
        if not Material.TextureEx.IsTextureEnabled(1) then begin}
-    if Assigned(libMatTexture2) and GL_ARB_multitexture and (not
+    if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
       vSecondTextureUnitForbidden) then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, (not

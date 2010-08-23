@@ -4,6 +4,7 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
     <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -143,7 +144,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorLists, VectorTypes;
+uses SysUtils, OpenGLTokens, GLContext, VectorLists, VectorTypes;
 
 
 // ------------------
@@ -521,7 +522,7 @@ var
 begin
    if Manager=nil then Exit;
 
-   glPushMatrix;
+   GL.PushMatrix;
    // we get the object position and apply translation...
    //absPos:=OwnerBaseSceneObject.AbsolutePosition;
    // ...should be removed when absolute coords will be handled directly
@@ -545,13 +546,13 @@ begin
       end;
       QuickSortLists(0, N-1, distList, objList);
 
-      glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
+      GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
       for m:=0 to 2 do begin
           vx[m]:=mat[m][0]*Manager.GlowSize;
           vy[m]:=mat[m][1]*Manager.GlowSize;
       end;
 
-      glPushMatrix;
+      GL.PushMatrix;
       SetVector(innerColor, Manager.FInnerColor.Color);
 
       //---------------
@@ -569,14 +570,14 @@ begin
       //---Core Line---
       if Manager.FCore then begin
       rci.GLStates.Disable(stBlend);
-      glColor4fv(@Ccol);
-      glBegin(GL_LINE_STRIP);
+      GL.Color4fv(@Ccol);
+      GL.Begin_(GL_LINE_STRIP);
       for i:=0 to n-1 do begin
           fp:=@(Manager.FThorpoints[i]);
           SetVector(Ppos, fp^.position);
-          glVertex3f(Ppos[0],Ppos[1],Ppos[2]);
+          GL.Vertex3f(Ppos[0],Ppos[1],Ppos[2]);
       end;
-      glEnd;
+      GL.End_;
       end;//Core;
 
       //---Point Glow---
@@ -587,29 +588,29 @@ begin
           SetVector(Ppos, fp^.position);
           fp:=@(Manager.FThorpoints[i]);
           SetVector(Ppos2, fp^.position);
-          glBegin(GL_TRIANGLE_FAN);
-            glColor4fv(@Icol);
-            glVertex3f(ppos[0],ppos[1],ppos[2]);//middle1
-            glColor4fv(@Ocol);
-            glVertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
-            glVertex3f( vx[0]*1.4  +ppos[0] , vx[1]*1.4  +ppos[1] , vx[2]*1.4  +ppos[2]   );//Right1
-            glVertex3f( vx[0]-vy[0]+ppos[0] , vx[1]-vy[1]+ppos[1] , vx[2]-vy[2]+ppos[2]   );//BottomRight
-            glVertex3f(-vy[0]*1.4  +ppos[0] ,-vy[1]*1.4  +ppos[1] ,-vy[2]*1.4  +ppos[2]   );//bottom1
-            glVertex3f(-vx[0]-vy[0]+ppos[0] ,-vx[1]-vy[1]+ppos[1] ,-vx[2]-vy[2]+ppos[2]   );//BottomLeft
-            glVertex3f(-vx[0]*1.4  +ppos[0] ,-vx[1]*1.4  +ppos[1] ,-vx[2]*1.4  +ppos[2]   );//left1
-            glVertex3f(-vx[0]+vy[0]+ppos[0] ,-vx[1]+vy[1]+ppos[1] ,-vx[2]+vy[2]+ppos[2]   );//TopLeft
-            glVertex3f( vy[0]*1.4  +ppos[0] , vy[1]*1.4  +ppos[1] , vy[2]*1.4  +ppos[2]   );//top1
-            glVertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
-         glEnd;
+          GL.Begin_(GL_TRIANGLE_FAN);
+            GL.Color4fv(@Icol);
+            GL.Vertex3f(ppos[0],ppos[1],ppos[2]);//middle1
+            GL.Color4fv(@Ocol);
+            GL.Vertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
+            GL.Vertex3f( vx[0]*1.4  +ppos[0] , vx[1]*1.4  +ppos[1] , vx[2]*1.4  +ppos[2]   );//Right1
+            GL.Vertex3f( vx[0]-vy[0]+ppos[0] , vx[1]-vy[1]+ppos[1] , vx[2]-vy[2]+ppos[2]   );//BottomRight
+            GL.Vertex3f(-vy[0]*1.4  +ppos[0] ,-vy[1]*1.4  +ppos[1] ,-vy[2]*1.4  +ppos[2]   );//bottom1
+            GL.Vertex3f(-vx[0]-vy[0]+ppos[0] ,-vx[1]-vy[1]+ppos[1] ,-vx[2]-vy[2]+ppos[2]   );//BottomLeft
+            GL.Vertex3f(-vx[0]*1.4  +ppos[0] ,-vx[1]*1.4  +ppos[1] ,-vx[2]*1.4  +ppos[2]   );//left1
+            GL.Vertex3f(-vx[0]+vy[0]+ppos[0] ,-vx[1]+vy[1]+ppos[1] ,-vx[2]+vy[2]+ppos[2]   );//TopLeft
+            GL.Vertex3f( vy[0]*1.4  +ppos[0] , vy[1]*1.4  +ppos[1] , vy[2]*1.4  +ppos[2]   );//top1
+            GL.Vertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
+         GL.End_;
        end;//Glow
       end;
 
-      glPopMatrix;
+      GL.PopMatrix;
 
       objList.Free;
       distList.Free;
    end;
-   glPopMatrix;
+   GL.PopMatrix;
 end;
 
 // GetOrCreateThorFX

@@ -9,6 +9,7 @@
    materials/mirror demo before using this component.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/06/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/02/10 - Yar - Optimization of switching states
@@ -31,10 +32,10 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   GLScene,
   VectorGeometry,
-  OpenGL1x,
   GLObjects,
   GLCrossPlatform,
   GLColor,
@@ -139,7 +140,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-uses GLContext;
+uses OpenGLTokens, GLContext;
 // ------------------
 // ------------------ TGLShadowPlane ------------------
 // ------------------
@@ -176,6 +177,7 @@ var
   curMat, shadowMat: TMatrix;
   sr: TGLRect;
   CurrentBuffer: TGLSceneBuffer;
+  ModelMat: TMatrix;
 begin
   if FRendering then
     Exit;
@@ -235,9 +237,7 @@ begin
         if Assigned(FShadowedLight) then
         begin
 
-          GL.PushMatrix;
-          GL.LoadIdentity;
-          GL.LoadMatrixf(@CurrentBuffer.ViewMatrix);
+          ARci.PipelineTransformation.Push;
 
           case ShadowedLight.LightStyle of
             lsParallel:
@@ -250,11 +250,10 @@ begin
               ShadowedLight.AbsolutePosition);
           end;
 
-          GL.MultMatrixf(@shadowMat);
-
-          GL.GetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-          GL.LoadMatrixf(@CurrentBuffer.ViewMatrix);
-          CurrentBuffer.PushViewMatrix(curMat);
+          ARci.PipelineTransformation.ViewMatrix := MatrixMultiply(
+            shadowMat,
+            ARci.PipelineTransformation.ViewMatrix);
+          ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
 
           Disable(stCullFace);
           Enable(stNormalize);
@@ -280,15 +279,15 @@ begin
           else
             Disable(stBlend);
 
-          GL.MultMatrixf(@shadowMat);
-
           if Assigned(FOnBeginRenderingShadows) then
             FOnBeginRenderingShadows(Self);
           if Assigned(FShadowingObject) then
           begin
+            ModelMat := IdentityHmgMatrix;
             if FShadowingObject.Parent <> nil then
-              GL.MultMatrixf(PGLFloat(FShadowingObject.Parent.AbsoluteMatrixAsAddress));
-            GL.MultMatrixf(PGLFloat(FShadowingObject.LocalMatrix));
+              MatrixMultiply(ModelMat, FShadowingObject.Parent.AbsoluteMatrix, ModelMat);
+            MatrixMultiply(ModelMat, FShadowingObject.LocalMatrix^, ModelMat);
+            ARci.PipelineTransformation.ModelMatrix := ModelMat;
             FShadowingObject.DoRender(ARci, True, (FShadowingObject.Count > 0));
           end
           else
@@ -301,9 +300,7 @@ begin
           ARci.ignoreMaterials := oldIgnoreMaterials;
 
           // Restore to "normal"
-          CurrentBuffer.PopViewMatrix;
-          GL.LoadMatrixf(@CurrentBuffer.ViewMatrix);
-          GL.PopMatrix;
+          ARci.PipelineTransformation.Pop;
 
         end;
         Disable(stStencilTest);

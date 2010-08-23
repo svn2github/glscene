@@ -7,6 +7,7 @@
     TGLO3TCImage, TGLHDRImage etc.
 
  <b>History : </b><font size=-1><ul>
+        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
         <li>22/04/10 - Yar - Fixes after GLState revision
         <li>22/02/10 - Yar - Added LoadFromStream (thanks to mif)
         <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
@@ -19,7 +20,7 @@ unit GLCompositeImage;
 interface
 
 uses
-  Classes, OpenGL1x, GLGraphics, GLTexture, GLTextureFormat;
+  Classes, OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
 
 type
 
@@ -113,7 +114,7 @@ begin
     FResourceFile := FBitmap.ResourceName;
     // Composite image always rewrite texture format
     if Assigned(FOwnerTexture) then
-      FOwnerTexture.TextureFormatEx := FBitmap.InternalFormat;
+      TGLTexture(FOwnerTexture).TextureFormatEx := FBitmap.InternalFormat;
     NotifyChange(Self);
   end
   else
@@ -225,18 +226,18 @@ var
   BaseImageClass: TGLBaseImageClass;
   tempImage: TGLBaseImage;
 begin
-  if (filename = '') and Assigned(FBitmap) then
-    EXIT;
+  if filename = '' then
+    exit;
   BaseImageClass := GetRasterFileFormats.FindFromFileName(filename);
   tempImage := BaseImageClass.Create;
   if Assigned(FOwnerTexture) then
   begin
-    if FOwnerTexture.IsHandleAllocated then
+    if TGLTexture(FOwnerTexture).IsHandleAllocated then
       tempImage.AssignFromTexture(CurrentGLContext,
-        FOwnerTexture.Handle,
+        TGLTexture(FOwnerTexture).Handle,
         NativeTextureTarget,
         false,
-        FOwnerTexture.TextureFormatEx)
+        TGLTexture(FOwnerTexture).TextureFormatEx)
     else
       tempImage.Assign(fBitmap);
   end
@@ -273,7 +274,7 @@ begin
     FResourceFile := FBitmap.ResourceName;
     // Internal image always rewrite texture format
     if Assigned(FOwnerTexture) then
-      FOwnerTexture.TextureFormatEx := FBitmap.InternalFormat;
+      TGLTexture(FOwnerTexture).TextureFormatEx := FBitmap.InternalFormat;
     NotifyChange(Self);
   finally
     tempImage.Free;
@@ -301,7 +302,7 @@ begin
     FDepth := FBitmap.Depth;
     FResourceFile := '';
     if Assigned(FOwnerTexture) then
-      FOwnerTexture.TextureFormatEx := FBitmap.InternalFormat;
+      TGLTexture(FOwnerTexture).TextureFormatEx := FBitmap.InternalFormat;
     NotifyChange(Self);
   finally
     tempImage.Free;
@@ -329,9 +330,9 @@ end;
 
 function TGLCompositeImage.GetTextureTarget: TGLTextureTarget;
 begin
+  Result := ttTexture2D;
   if Assigned(fBitmap) then
   begin
-    Result := ttTexture2D;
     // Choose a texture target
     if fBitmap.Height = 1 then
       Result := ttTexture1D;
@@ -352,17 +353,7 @@ begin
     if ((fBitmap.InternalFormat >= tfFLOAT_R16)
       and (fBitmap.InternalFormat <= tfFLOAT_RGBA32)) then
       Result := ttTextureRect;
-
-    if Result = fPreviousTarget then
-      Exit;
-    fPreviousTarget := Result;
-    // update texture target
-    if Assigned(FOwnerTexture) then
-      FOwnerTexture.NotifyTargetChange;
-  end
-    // if bitmap is already realised then give a previous target
-  else
-    Result := fPreviousTarget;
+  end;
 end;
 
 initialization

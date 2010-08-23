@@ -7,6 +7,7 @@
   Based on Jason Lanford's demo. <p>
 
 	<b>History : </b><font size=-1><ul>
+        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
         <li>03/04/07 - DaStr - Added default values to some properties
                                Added TGLTrail.AntiZFightOffset
                                Subscribed for Notification in TGLTrail.SetTrailObject
@@ -30,7 +31,7 @@ uses
 
   // GLScene
   GLScene, VectorTypes, MeshUtils, VectorGeometry, GLVectorFileObjects,
-  GLMesh, GLObjects, OpenGL1x, GLMaterial, GLStrings, BaseClasses;
+  GLMesh, GLObjects, OpenGLTokens, GLMaterial, GLStrings, BaseClasses;
 
 
 const cMaxVerts = 2000;

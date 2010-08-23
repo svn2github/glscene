@@ -6,6 +6,7 @@
   In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>11/06/10 - YP - Link GUI elements to their parent
       <li>06/06/10 - Yar - Fixed warnings
       <li>30/03/07 - DaStr - Added $I GLScene.inc, cosmetic changes
@@ -31,8 +32,8 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform,
-  OpenGL1x, PersistentClasses, VectorGeometry, GLCoordinates, BaseClasses;
+  GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
+  PersistentClasses, VectorGeometry, GLCoordinates, BaseClasses;
 
 Type
 
@@ -691,17 +692,17 @@ Var
   Begin
     If (ARect.XTiles = 1) and (ARect.YTiles = 1) then
     Begin
-      glTexCoord2f( AElement.TopLeft.X/TexWidth,     -AElement.TopLeft.Y/TexHeight);
-      glVertex2f(ARect.X1, -ARect.Y1);
+      GL.TexCoord2f( AElement.TopLeft.X/TexWidth,     -AElement.TopLeft.Y/TexHeight);
+      GL.Vertex2f(ARect.X1, -ARect.Y1);
 
-      glTexCoord2f( AElement.TopLeft.X/TexWidth,     -AElement.BottomRight.Y/TexHeight);
-      glVertex2f(ARect.X1, -ARect.Y2);
+      GL.TexCoord2f( AElement.TopLeft.X/TexWidth,     -AElement.BottomRight.Y/TexHeight);
+      GL.Vertex2f(ARect.X1, -ARect.Y2);
 
-      glTexCoord2f( AElement.BottomRight.X/TexWidth, -AElement.BottomRight.Y/TexHeight);
-      glVertex2f(ARect.X2, -ARect.Y2);
+      GL.TexCoord2f( AElement.BottomRight.X/TexWidth, -AElement.BottomRight.Y/TexHeight);
+      GL.Vertex2f(ARect.X2, -ARect.Y2);
 
-      glTexCoord2f( AElement.BottomRight.X/TexWidth, -AElement.TopLeft.Y/TexHeight);
-      glVertex2f(ARect.X2, -ARect.Y1);
+      GL.TexCoord2f( AElement.BottomRight.X/TexWidth, -AElement.TopLeft.Y/TexHeight);
+      GL.Vertex2f(ARect.X2, -ARect.Y1);
     End else
     Begin
       XTileSize := (ARect.X2 - ARect.X1) / ARect.XTiles;
@@ -738,17 +739,17 @@ Var
             ty := ty3;
           End;
 
-          glTexCoord2f( tx1,     ty1);
-          glVertex2f(XPos, -YPos);
+          GL.TexCoord2f( tx1,     ty1);
+          GL.Vertex2f(XPos, -YPos);
 
-          glTexCoord2f( tx1,     ty);
-          glVertex2f(XPos, -Y2Pos);
+          GL.TexCoord2f( tx1,     ty);
+          GL.Vertex2f(XPos, -Y2Pos);
 
-          glTexCoord2f( tx,     ty);
-          glVertex2f(X2Pos, -Y2Pos);
+          GL.TexCoord2f( tx,     ty);
+          GL.Vertex2f(X2Pos, -Y2Pos);
 
-          glTexCoord2f( tx,     ty1);
-          glVertex2f(X2Pos, -YPos);
+          GL.TexCoord2f( tx,     ty1);
+          GL.Vertex2f(X2Pos, -YPos);
           yc := yc - 1.0;
           ypos := Y2Pos;
         End;
@@ -1001,7 +1002,7 @@ Begin
   If TexHeight = 0 then
   TexHeight := Material.Texture.Image.Height;
 
-  glBegin(GL_QUADS);
+  GL.Begin_(GL_QUADS);
 
     For XC := 0 to FElements.Count-1 do
     Begin
@@ -1022,7 +1023,7 @@ Begin
       End;
 
     End;
-  glEnd();
+  GL.End_;
 End;
 
 Function TGLGuiComponent.GetOwnerList : TGLGuiComponentList;

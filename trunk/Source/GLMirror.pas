@@ -9,6 +9,7 @@
    materials/mirror demo before using this component.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>15/12/08- Paul Robello - corrected call to  FOnEndRenderingMirrors
@@ -33,8 +34,17 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, VectorGeometry, OpenGL1x, GLMaterial, GLColor,
-  GLRenderContextInfo, GLTextureFormat;
+uses
+  Classes,
+  GLScene,
+  VectorGeometry,
+  OpenGL1x,
+  OpenGLTokens,
+  GLContext,
+  GLMaterial,
+  GLColor,
+  GLRenderContextInfo,
+  GLTextureFormat;
 
 type
 
@@ -138,7 +148,7 @@ type
     property Radius: TGLFloat read FRadius write SetRadius; //ORL
     property Slices: TGLInt read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
-      //ORL
+    //ORL
   end;
 
   //-------------------------------------------------------------
@@ -149,7 +159,9 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses GLState, VectorTypes;
+uses
+  GLState,
+  VectorTypes;
 
 // ------------------
 // ------------------ TGLMirror ------------------
@@ -180,7 +192,7 @@ procedure TGLMirror.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   oldProxySubObject: Boolean;
-  refMat, curMat: TMatrix;
+  refMat, curMat, ModelMat: TMatrix;
   clipPlane: TDoubleHmgPlane;
   bgColor: TColorVector;
   cameraPosBackup, cameraDirectionBackup: TVector;
@@ -196,121 +208,119 @@ begin
 
     if VectorDotProduct(VectorSubtract(ARci.cameraPosition, AbsolutePosition),
       AbsoluteDirection) > 0 then
-    with ARci.GLStates do
-    begin
-
-      // "Render" stencil mask
-      if MirrorOptions <> [] then
+      with ARci.GLStates do
       begin
-        if (moUseStencil in MirrorOptions) then
+
+        // "Render" stencil mask
+        if MirrorOptions <> [] then
         begin
-          ARci.GLStates.StencilClearValue := 0;
-          glClear(GL_STENCIL_BUFFER_BIT);
-          Enable(stStencilTest);
-          SetStencilFunc(cfAlways, 1, 1);
-          SetStencilOp(soReplace, soZero, soReplace);
+          if (moUseStencil in MirrorOptions) then
+          begin
+            Enable(stStencilTest);
+            ARci.GLStates.StencilClearValue := 0;
+            GL.Clear(GL_STENCIL_BUFFER_BIT);
+            SetStencilFunc(cfAlways, 1, 1);
+            SetStencilOp(soReplace, soZero, soReplace);
+          end;
+          if (moOpaque in MirrorOptions) then
+          begin
+            bgColor := ConvertWinColor(CurrentBuffer.BackgroundColor);
+            ARci.GLStates.SetGLMaterialColors(cmFront, bgColor, clrBlack,
+              clrBlack, clrBlack, 0);
+          end
+          else
+            SetGLColorWriting(False);
+
+          Enable(stDepthTest);
+          DepthWriteMask := False;
+
+          BuildList(ARci);
+
+          DepthWriteMask := True;
+          if (moUseStencil in MirrorOptions) then
+          begin
+            SetStencilFunc(cfEqual, 1, 1);
+            SetStencilOp(soKeep, soKeep, soKeep);
+          end;
+
+          if (moClearZBuffer in MirrorOptions) then
+            ClearZBufferArea(CurrentBuffer);
+
+          if not (moOpaque in MirrorOptions) then
+            SetGLColorWriting(True);
         end;
-        if (moOpaque in MirrorOptions) then
+
+        ARci.PipelineTransformation.Push;
+        ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+
+        Disable(stCullFace);
+        Enable(stNormalize);
+
+        if moMirrorPlaneClip in MirrorOptions then
         begin
-          bgColor := ConvertWinColor(CurrentBuffer.BackgroundColor);
-          ARci.GLStates.SetGLMaterialColors(cmFront, bgColor, clrBlack,
-            clrBlack, clrBlack, 0);
-          ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
+          GL.Enable(GL_CLIP_PLANE0);
+          SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
+            VectorNegate(AffineVectorMake(AbsoluteDirection))));
+          GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
+        end;
+
+        // Mirror lights
+        refMat := MakeReflectionMatrix(
+          AffineVectorMake(AbsolutePosition),
+          AffineVectorMake(AbsoluteDirection));
+        curMat := MatrixMultiply(refMat, ARci.PipelineTransformation.ViewMatrix);
+        ARci.PipelineTransformation.ViewMatrix := curMat;
+        Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
+
+        // mirror geometry and render master
+        cameraPosBackup := ARci.cameraPosition;
+        cameraDirectionBackup := ARci.cameraDirection;
+        ARci.cameraPosition := VectorTransform(ARci.cameraPosition, refMat);
+        ARci.cameraDirection := VectorTransform(ARci.cameraDirection, refMat);
+
+        // temporary fix? (some objects don't respect culling options, or ?)
+        CullFaceMode := cmFront;
+        if Assigned(FOnBeginRenderingMirrors) then
+          FOnBeginRenderingMirrors(Self);
+        if Assigned(FMirrorObject) then
+        begin
+          ModelMat := IdentityHmgMatrix;
+          if FMirrorObject.Parent <> nil then
+            MatrixMultiply(ModelMat, FMirrorObject.Parent.AbsoluteMatrix, ModelMat);
+          MatrixMultiply(ModelMat, FMirrorObject.LocalMatrix^, ModelMat);
+          ARci.PipelineTransformation.ModelMatrix := ModelMat;
+          FMirrorObject.DoRender(ARci, ARenderSelf, FMirrorObject.Count > 0);
         end
         else
-          SetGLColorWriting(False);
-
-        DepthWriteMask := False;
-
-        BuildList(ARci);
-
-        DepthWriteMask := True;
-        if (moUseStencil in MirrorOptions) then
         begin
-          SetStencilFunc(cfEqual, 1, 1);
-          SetStencilOp(soKeep, soKeep, soKeep);
+          Scene.Objects.DoRender(ARci, ARenderSelf, True);
+        end;
+        if Assigned(FOnEndRenderingMirrors) then
+          FOnEndRenderingMirrors(Self);
+
+        // Restore to "normal"
+        ARci.cameraPosition := cameraPosBackup;
+        ARci.cameraDirection := cameraDirectionBackup;
+        ARci.GLStates.CullFaceMode := cmBack;
+        ARci.PipelineTransformation.ReplaceFromStack;
+        Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
+        ARci.PipelineTransformation.Pop;
+        if moMirrorPlaneClip in MirrorOptions then
+          GL.Disable(GL_CLIP_PLANE0);
+        ARci.GLStates.Disable(stStencilTest);
+
+        ARci.proxySubObject := oldProxySubObject;
+
+        // start rendering self
+        if ARenderSelf then
+        begin
+          Material.Apply(ARci);
+          repeat
+            BuildList(ARci);
+          until not Material.UnApply(ARci);
         end;
 
-        if (moClearZBuffer in MirrorOptions) then
-          ClearZBufferArea(CurrentBuffer);
-
-        if not (moOpaque in MirrorOptions) then
-          SetGLColorWriting(True);
       end;
-
-      // Mirror lights
-      glPushMatrix;
-      glLoadMatrixf(@CurrentBuffer.ViewMatrix);
-      refMat := MakeReflectionMatrix(AffineVectorMake(AbsolutePosition),
-        AffineVectorMake(AbsoluteDirection));
-      glMultMatrixf(@refMat);
-      Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
-
-      // mirror geometry and render master
-      glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-      glLoadMatrixf(@CurrentBuffer.ViewMatrix);
-      CurrentBuffer.PushViewMatrix(curMat);
-
-      Disable(stCullFace);
-      Enable(stNormalize);
-
-      if moMirrorPlaneClip in MirrorOptions then
-      begin
-        glEnable(GL_CLIP_PLANE0);
-        SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
-          VectorNegate(AffineVectorMake(AbsoluteDirection))));
-        glClipPlane(GL_CLIP_PLANE0, @clipPlane);
-      end;
-
-      cameraPosBackup := ARci.cameraPosition;
-      cameraDirectionBackup := ARci.cameraDirection;
-      ARci.cameraPosition := VectorTransform(ARci.cameraPosition, refMat);
-      ARci.cameraDirection := VectorTransform(ARci.cameraDirection, refMat);
-
-      glMultMatrixf(@refMat);
-      // temporary fix? (some objects don't respect culling options, or ?)
-      CullFaceMode := cmFront;
-      if Assigned(FOnBeginRenderingMirrors) then
-        FOnBeginRenderingMirrors(Self);
-      if Assigned(FMirrorObject) then
-      begin
-        if FMirrorObject.Parent <> nil then
-          glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
-        glMultMatrixf(PGLFloat(FMirrorObject.LocalMatrix));
-        FMirrorObject.DoRender(ARci, ARenderSelf, FMirrorObject.Count > 0);
-      end
-      else
-      begin
-        Scene.Objects.DoRender(ARci, ARenderSelf, True);
-      end;
-      if Assigned(FOnEndRenderingMirrors) then
-        FOnEndRenderingMirrors(Self);
-
-      ARci.cameraPosition := cameraPosBackup;
-      ARci.cameraDirection := cameraDirectionBackup;
-      ARci.GLStates.CullFaceMode := cmBack;
-      // Restore to "normal"
-      CurrentBuffer.PopViewMatrix;
-      glLoadMatrixf(@CurrentBuffer.ViewMatrix);
-      Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
-
-      glPopMatrix;
-      if moMirrorPlaneClip in MirrorOptions then
-        glDisable(GL_CLIP_PLANE0);
-      ARci.GLStates.Disable(stStencilTest);
-
-      ARci.proxySubObject := oldProxySubObject;
-
-      // start rendering self
-      if ARenderSelf then
-      begin
-        Material.Apply(ARci);
-        repeat
-          BuildList(ARci);
-        until not Material.UnApply(ARci);
-      end;
-
-    end;
 
     if ARenderChildren then
       Self.RenderChildren(0, Count - 1, ARci);
@@ -334,13 +344,13 @@ begin
   begin
     hw := FWidth * 0.5;
     hh := FHeight * 0.5;
-    glNormal3fv(@ZVector);
-    glBegin(GL_QUADS);
-    glVertex3f(hw, hh, 0);
-    glVertex3f(-hw, hh, 0);
-    glVertex3f(-hw, -hh, 0);
-    glVertex3f(hw, -hh, 0);
-    glEnd;
+    GL.Normal3fv(@ZVector);
+    GL.Begin_(GL_QUADS);
+    GL.Vertex3f(hw, hh, 0);
+    GL.Vertex3f(-hw, hh, 0);
+    GL.Vertex3f(-hw, -hh, 0);
+    GL.Vertex3f(hw, -hh, 0);
+    GL.End_;
   end
   else
   begin
@@ -359,40 +369,46 @@ var
 begin
   with aBuffer do
   begin
-    glPushMatrix;
+    GL.PushMatrix;
     worldMat := Self.AbsoluteMatrix;
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadIdentity;
-    glOrtho(0, Width, 0, Height, 1, -1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity;
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PushMatrix;
+    GL.LoadIdentity;
+    GL.Ortho(0, Width, 0, Height, 1, -1);
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.LoadIdentity;
 
-    glDepthFunc(GL_ALWAYS);
-    glColorMask(False, False, False, False);
+    with aBuffer.RenderingContext.GLStates do
+    begin
+      DepthFunc := cfAlways;
+      SetGLColorWriting(False);
+    end;
 
-    glBegin(GL_QUADS);
+    GL.Begin_(GL_QUADS);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p[0], p[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p[0], p[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p[0], p[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p[0], p[1], 0.999);
-    glEnd;
+    GL.Vertex3f(p[0], p[1], 0.999);
+    GL.End_;
 
-    glColorMask(True, True, True, True);
-    glDepthFunc(GL_LESS);
+    with aBuffer.RenderingContext.GLStates do
+    begin
+      DepthFunc := cfLess;
+      SetGLColorWriting(True);
+    end;
 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PopMatrix;
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PopMatrix;
   end;
 end;
 

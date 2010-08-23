@@ -6,6 +6,7 @@
    A plane simulating animated water<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling
       <li>02/04/03 - EG - More optimizations, mask support
@@ -27,7 +28,7 @@ interface
 {$I GLScene.inc}
 
 uses Classes, VectorTypes, VectorGeometry, GLScene,
-   OpenGL1x, VectorLists, GLCrossPlatform, PersistentClasses,
+   OpenGLTokens, VectorLists, GLCrossPlatform, PersistentClasses,
    BaseClasses, GLRenderContextInfo;
 
 type
@@ -140,6 +141,8 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+uses
+  GLContext;
 
 // Create
 //
@@ -462,29 +465,29 @@ var
    i : Integer;
    il : TIntegerList;
 begin
-   glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+   GL.PushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 
-   glEnableClientState(GL_VERTEX_ARRAY);
-   glVertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
-   glEnableClientState(GL_NORMAL_ARRAY);
-   glNormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
+   GL.EnableClientState(GL_VERTEX_ARRAY);
+   GL.VertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
+   GL.EnableClientState(GL_NORMAL_ARRAY);
+   GL.NormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
    if wpoTextured in Options then begin
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-      glTexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
-   end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+      GL.TexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
+   end else GL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-   if GL_EXT_compiled_vertex_array then
-      glLockArraysEXT(0, FPlaneQuadVertices.Count);
+   if GL.EXT_compiled_vertex_array then
+      GL.LockArrays(0, FPlaneQuadVertices.Count);
 
    for i:=0 to FPlaneQuadIndices.Count-1 do begin
       il:=TIntegerList(FPlaneQuadIndices[i]);
-      glDrawElements(GL_QUAD_STRIP, il.Count, GL_UNSIGNED_INT, il.List);
+      GL.DrawElements(GL_QUAD_STRIP, il.Count, GL_UNSIGNED_INT, il.List);
    end;
 
-   if GL_EXT_compiled_vertex_array then
-      glUnLockArraysEXT;
+   if GL.EXT_compiled_vertex_array then
+      GL.UnLockArrays;
 
-   glPopClientAttrib;
+   GL.PopClientAttrib;
 end;
 
 // Assign

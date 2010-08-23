@@ -6,6 +6,7 @@
    A PFX whose particles are lines
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>12/10/08 - DanB - updated to use RCI
@@ -99,7 +100,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorTypes;
+uses SysUtils, OpenGLTokens, GLContext, VectorTypes;
 
 // ------------------
 // ------------------ TGLLinePFXManager ------------------
@@ -150,7 +151,7 @@ var
    matrix : TMatrix;
 begin
    inherited;
-   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+   GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
       Fvx[i]:=matrix[i][0];
       Fvy[i]:=matrix[i][1];
@@ -195,18 +196,18 @@ begin
 
    dv:=VectorCombine(Fvx, Fvy, fx, fy);
 
-   glBegin(GL_TRIANGLE_FAN);
-      glColor4fv(@inner);
-      glVertex3fv(@start);
-      glColor4fv(@outer);
-      glVertex3f(start[0]+dv[0], start[1]+dv[1], start[2]+dv[2]);
-      glVertex3f(stop[0]+dv[0], stop[1]+dv[1], stop[2]+dv[2]);
-      glColor4fv(@inner);
-      glVertex3fv(@stop);
-      glColor4fv(@outer);
-      glVertex3f(stop[0]-dv[0], stop[1]-dv[1], stop[2]-dv[2]);
-      glVertex3f(start[0]-dv[0], start[1]-dv[1], start[2]-dv[2]);
-   glEnd;
+   GL.Begin_(GL_TRIANGLE_FAN);
+      GL.Color4fv(@inner);
+      GL.Vertex3fv(@start);
+      GL.Color4fv(@outer);
+      GL.Vertex3f(start[0]+dv[0], start[1]+dv[1], start[2]+dv[2]);
+      GL.Vertex3f(stop[0]+dv[0], stop[1]+dv[1], stop[2]+dv[2]);
+      GL.Color4fv(@inner);
+      GL.Vertex3fv(@stop);
+      GL.Color4fv(@outer);
+      GL.Vertex3f(stop[0]-dv[0], stop[1]-dv[1], stop[2]-dv[2]);
+      GL.Vertex3f(start[0]-dv[0], start[1]-dv[1], start[2]-dv[2]);
+   GL.End_;
 end;
 
 // EndParticles

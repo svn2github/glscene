@@ -59,7 +59,7 @@
 {.$DEFINE GLS_MULTITHREAD}
 
 // Activate Logging
-{.$DEFINE GLS_LOGGING}
+{$DEFINE GLS_LOGGING}
 
 // Activate Experimental parts
 {.$DEFINE GLS_EXPERIMENTAL}

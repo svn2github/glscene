@@ -7,6 +7,7 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
@@ -42,7 +43,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, OpenGL1x, GLObjects, GLScene, GLMultiPolygon,
+uses Classes, OpenGLTokens, GLContext, GLObjects, GLScene, GLMultiPolygon,
      GLColor, VectorTypes, VectorGeometry, GLRenderContextInfo, GLNodes,
      GLState;
 
@@ -483,14 +484,14 @@ var
       inc(i);
       topTPNext:=topTPBase;
       bottomTPNext:=bottomTPBase;
-      glBegin(GL_TRIANGLE_STRIP);
-      glNormal3fv(@topNormal);
+      GL.Begin_(GL_TRIANGLE_STRIP);
+      GL.Normal3fv(@topNormal);
       xglTexCoord2fv(@topTPBase);
-      glVertex3fv(@topBase);
+      GL.Vertex3fv(@topBase);
       while alpha<stopAlpha do begin
-         glNormal3fv(@bottomNormal);
+         GL.Normal3fv(@bottomNormal);
          xglTexCoord2fv(@bottomTPBase);
-         glVertex3fv(@bottomBase);
+         GL.Vertex3fv(@bottomBase);
          nextAlpha:=alpha+deltaAlpha;
          topTPNext.S:=topTPNext.S+deltaS;
          bottomTPNext.S:=bottomTPNext.S+deltaS;
@@ -505,16 +506,16 @@ var
          SetLocalNormals;
          inc(i);
          xglTexCoord2fv(@topTPNext);
-         glNormal3fv(@topNormal);
-         glVertex3fv(@topNext);
+         GL.Normal3fv(@topNormal);
+         GL.Vertex3fv(@topNext);
          alpha:=nextAlpha;
          topBase:=topNext;          topTPBase:=topTPNext;
          bottomBase:=bottomNext;    bottomTPBase:=bottomTPNext;
       end;
-      glNormal3fv(@bottomNormal);
+      GL.Normal3fv(@bottomNormal);
       xglTexCoord2fv(@bottomTPBase);
-      glVertex3fv(@bottomBase);
-      glEnd;
+      GL.Vertex3fv(@bottomBase);
+      GL.End_;
       firstStep:=False;
    end;
 
@@ -931,14 +932,14 @@ const
       i : Integer;
    begin
       if NodesColorMode<>pncmNone then
-         glColor4fv(@row^.color);
-      glBegin(GL_TRIANGLE_FAN);
-         glNormal3fv(@normal);
-         glVertex3fv(@center);
+         GL.Color4fv(@row^.color);
+      GL.Begin_(GL_TRIANGLE_FAN);
+         GL.Normal3fv(@normal);
+         GL.Vertex3fv(@center);
          if invert then
-            for i:=High(row^.node) downto 0 do glVertex3fv(@row^.node[i].pos)
-         else for i:=0 to High(row^.node) do glVertex3fv(@row^.node[i].pos);
-      glEnd;
+            for i:=High(row^.node) downto 0 do GL.Vertex3fv(@row^.node[i].pos)
+         else for i:=0 to High(row^.node) do GL.Vertex3fv(@row^.node[i].pos);
+      GL.End_;
    end;
 
    procedure RenderSides(curRow, prevRow : PRowData);
@@ -990,44 +991,44 @@ const
          end;
       end;
       // go on
-      glBegin(GL_TRIANGLE_STRIP);
+      GL.Begin_(GL_TRIANGLE_STRIP);
          if NodesColorMode<>pncmNone then
-            glColor4fv(@prevRow^.color);
-         glNormal3fv(@prevRow^.node[0].normal);
-         glVertex3fv(@prevRow^.node[0].pos);
+            GL.Color4fv(@prevRow^.color);
+         GL.Normal3fv(@prevRow^.node[0].normal);
+         GL.Vertex3fv(@prevRow^.node[0].pos);
          for j:=0 to Slices-1 do begin
             if NodesColorMode<>pncmNone then
-               glColor4fv(@curRow^.color);
-            glNormal3fv(@curRow^.node[j].normal);
-            glVertex3fv(@curRow^.node[j].pos);
+               GL.Color4fv(@curRow^.color);
+            GL.Normal3fv(@curRow^.node[j].normal);
+            GL.Vertex3fv(@curRow^.node[j].pos);
             if NodesColorMode<>pncmNone then
-               glColor4fv(@prevRow^.color);
-            glNormal3fv(@prevRow^.node[j+1].normal);
-            glVertex3fv(@prevRow^.node[j+1].pos);
+               GL.Color4fv(@prevRow^.color);
+            GL.Normal3fv(@prevRow^.node[j+1].normal);
+            GL.Vertex3fv(@prevRow^.node[j+1].pos);
          end;
          if NodesColorMode<>pncmNone then
-            glColor4fv(@curRow^.color);
-         glNormal3fv(@curRow^.node[Slices].normal);
-         glVertex3fv(@curRow^.node[Slices].pos);
-      glEnd;
+            GL.Color4fv(@curRow^.color);
+         GL.Normal3fv(@curRow^.node[Slices].normal);
+         GL.Vertex3fv(@curRow^.node[Slices].pos);
+      GL.End_;
    end;
 
 {   procedure RenderSides(var curRow, prevRow : array of TNodeData);
    var
       j : Integer;
    begin
-      glBegin(GL_TRIANGLE_STRIP);
-         glNormal3fv(@prevRow[0].normal);
-         glVertex3fv(@prevRow[0].pos);
+      GL.Begin_(GL_TRIANGLE_STRIP);
+         GL.Normal3fv(@prevRow[0].normal);
+         GL.Vertex3fv(@prevRow[0].pos);
          for j:=0 to Slices-1 do begin
-            glNormal3fv(@curRow[j].normal);
-            glVertex3fv(@curRow[j].pos);
-            glNormal3fv(@prevRow[j+1].normal);
-            glVertex3fv(@prevRow[j+1].pos);
+            GL.Normal3fv(@curRow[j].normal);
+            GL.Vertex3fv(@curRow[j].pos);
+            GL.Normal3fv(@prevRow[j+1].normal);
+            GL.Vertex3fv(@prevRow[j+1].pos);
          end;
-         glNormal3fv(@curRow[Slices].normal);
-         glVertex3fv(@curRow[Slices].pos);
-      glEnd;
+         GL.Normal3fv(@curRow[Slices].normal);
+         GL.Vertex3fv(@curRow[Slices].pos);
+      GL.End_;
    end;}
 
 var
@@ -1064,7 +1065,7 @@ begin
    end;
    if NodesColorMode<>pncmNone then begin
       rci.GLStates.Enable(stColorMaterial);
-      glColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
+      GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
    end;
    CalculateRow(@rows[0], PAffineVector(@Nodes[0].AsVector)^, normal,
                 TGLPipeNode(Nodes[0]).RadiusFactor);
@@ -1228,28 +1229,28 @@ var
       bottomNext:=bottomBase;
       topTPNext:=topTPBase;
       bottomTPNext:=bottomTPBase;
-      glBegin(GL_TRIANGLE_STRIP);
-      glNormal3fv(@normTop);
+      GL.Begin_(GL_TRIANGLE_STRIP);
+      GL.Normal3fv(@normTop);
       xglTexCoord2fv(@topTPBase);
-      glVertex3fv(@topBase);
+      GL.Vertex3fv(@topBase);
       for step:=1 to FStacks do begin
-         glNormal3fv(@normBottom);
+         GL.Normal3fv(@normBottom);
          xglTexCoord2fv(@bottomTPBase);
-         glVertex3fv(@bottomBase);
+         GL.Vertex3fv(@bottomBase);
          topNext[2]:=step*DeltaZ;
          bottomNext[2]:=topNext[2];
          topTPNext.T:=topNext[2];
          bottomTPNext.T:=bottomNext[2];
          xglTexCoord2fv(@topTPNext);
-         glNormal3fv(@normTop);
-         glVertex3fv(@topNext);
+         GL.Normal3fv(@normTop);
+         GL.Vertex3fv(@topNext);
          topBase:=topNext;          topTPBase:=topTPNext;
          bottomBase:=bottomNext;    bottomTPBase:=bottomTPNext;
       end;
-      glNormal3fv(@normBottom);
+      GL.Normal3fv(@normBottom);
       xglTexCoord2fv(@bottomTPBase);
-      glVertex3fv(@bottomBase);
-      glEnd;
+      GL.Vertex3fv(@bottomBase);
+      GL.End_;
    end;
 
 var
@@ -1295,10 +1296,10 @@ begin
       normal:=ContoursNormal;
       // tessellate stop polygon
       if espStopPolygon in FParts then begin
-         glPushMatrix;
-         glTranslatef(0, 0, FHeight);
+         GL.PushMatrix;
+         GL.Translatef(0, 0, FHeight);
          RenderTesselatedPolygon(true, @normal, invertedNormals);
-         glPopMatrix;
+         GL.PopMatrix;
       end;
       // tessellate start polygon
       if espStartPolygon in FParts then begin

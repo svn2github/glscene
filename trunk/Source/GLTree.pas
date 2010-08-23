@@ -9,6 +9,7 @@
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
    History:<ul>
+     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
      <li>30/03/07 - DaStr - Added $I GLScene.inc
      <li>28/03/07 - DaStr - Renamed parameters in some methods
                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
@@ -45,7 +46,7 @@ interface
 
 uses
    Classes, SysUtils, GLScene, GLMaterial, VectorGeometry, VectorLists,
-   OpenGL1x, GLVectorFileObjects, ApplicationFileIO, GLRenderContextInfo;
+   OpenGLTokens, GLVectorFileObjects, ApplicationFileIO, GLRenderContextInfo;
 
 type
    TGLTree = class;
@@ -313,7 +314,7 @@ implementation
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-uses XOpenGL, GLState, VectorTypes;
+uses XOpenGL, GLContext, GLState, VectorTypes;
 
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves
@@ -377,15 +378,15 @@ begin
    if Assigned(libMat) then
       libMat.Apply(rci);
 
-   glEnableClientState(GL_VERTEX_ARRAY);
+   GL.EnableClientState(GL_VERTEX_ARRAY);
    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
    xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    for i:=0 to (FVertices.Count div 4)-1 do begin
-      glNormal3fv(@FNormals.List[i]);
-      glDrawArrays(GL_QUADS, 4*i, 4);
+      GL.Normal3fv(@FNormals.List[i]);
+      GL.DrawArrays(GL_QUADS, 4*i, 4);
    end;
 
    with Owner do if LeafMaterialName<>LeafBackMaterialName then begin
@@ -399,12 +400,12 @@ begin
    rci.GLStates.InvertGLFrontFace;
    for i:=0 to (FVertices.Count div 4)-1 do begin
       n:=VectorNegate(FNormals[i]);
-      glNormal3fv(@n);
-      glDrawArrays(GL_QUADS, 4*i, 4);
+      GL.Normal3fv(@n);
+      GL.DrawArrays(GL_QUADS, 4*i, 4);
    end;
    rci.GLStates.InvertGLFrontFace;
 
-   glDisableClientState(GL_VERTEX_ARRAY);
+   GL.DisableClientState(GL_VERTEX_ARRAY);
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    if Assigned(libMat) then
@@ -717,22 +718,22 @@ begin
    if Assigned(libMat) then
       libMat.Apply(rci);
 
-   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
-   glNormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
+   GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   GL.NormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
    xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
-   glEnableClientState(GL_VERTEX_ARRAY);
-   glEnableClientState(GL_NORMAL_ARRAY);
+   GL.EnableClientState(GL_VERTEX_ARRAY);
+   GL.EnableClientState(GL_NORMAL_ARRAY);
    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
    repeat
       for i:=0 to (FIndices.Count div stride)-1 do
-         glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
+         GL.DrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
    until (not Assigned(libMat)) or (not libMat.UnApply(rci));
 
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-   glDisableClientState(GL_NORMAL_ARRAY);
-   glDisableClientState(GL_VERTEX_ARRAY);
+   GL.DisableClientState(GL_NORMAL_ARRAY);
+   GL.DisableClientState(GL_VERTEX_ARRAY);
 end;
 
 // Clear

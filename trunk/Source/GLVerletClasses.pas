@@ -7,6 +7,7 @@
    objects easy.
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added VectorTypes to uses
       <li>13/04/04 - MF - Verlet call now uses TVerletProgressTimes
       <li>06/03/04 - MF - Creation
    </ul>
@@ -41,6 +42,9 @@ type
   function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 
 implementation
+
+uses
+  VectorTypes;
 
 function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 begin

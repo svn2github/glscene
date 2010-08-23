@@ -7,7 +7,7 @@
   texture data.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>18/06/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
       <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
                            simplify GetBitsPerPixel and GetDataFormat
@@ -29,7 +29,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, OpenGL1x, GLContext, GLTexture, GLTextureFormat,
+  Classes, SysUtils, OpenGLTOkens, GLContext, GLTexture, GLTextureFormat,
   GLGraphics, GLCrossPlatform;
 
 type
@@ -140,8 +140,8 @@ begin
     // Force creation of texture
     // This is a bit of a hack, should be a better way...
     CurrentGLContext.GLStates.TextureBinding[0,
-      EncodeGLTextureTarget(TTarget)] := OwnerTexture.Handle;
-    glTexImage2D(TTarget, 0, OwnerTexture.OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
+      EncodeGLTextureTarget(TTarget)] := TGLTexture(OwnerTexture).Handle;
+    GL.TexImage2D(TTarget, 0, TGLTexture(OwnerTexture).OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
   end;
 
   GL.CheckError;
@@ -196,8 +196,8 @@ begin
   begin
     // only change data if it's already been uploaded
     CurrentGLContext.GLStates.TextureBinding[0,
-      EncodeGLTextureTarget(TTarget)] := OwnerTexture.Handle;
-    glTexSubImage2D(TTarget, 0,
+      EncodeGLTextureTarget(TTarget)] := TGLTexture(OwnerTexture).Handle;
+    GL.TexSubImage2D(TTarget, 0,
       FDirtyRect.Left, FDirtyRect.Top,
       FDirtyRect.Right-FDirtyRect.Left,
       FDirtyRect.Bottom-FDirtyRect.Top,
@@ -253,14 +253,14 @@ end;
 
 function TGLDynamicTextureImage.GetBitsPerPixel: integer;
 begin
-  Result := 8 * GetTextureElementSize( OwnerTexture.TextureFormatEx );
+  Result := 8 * GetTextureElementSize( TGLTexture(OwnerTexture).TextureFormatEx );
 end;
 
 function TGLDynamicTextureImage.GetDataFormat: integer;
 var
   data, color: TGLEnum;
 begin
-  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, color, data);
+  FindCompatibleDataFormat(TGLTexture(OwnerTexture).TextureFormatEx, color, data);
   Result := data;
 end;
 
@@ -273,7 +273,7 @@ function TGLDynamicTextureImage.GetTextureFormat: integer;
 var
   data, color: TGLEnum;
 begin
-  FindCompatibleDataFormat(OwnerTexture.TextureFormatEx, color, data);
+  FindCompatibleDataFormat(TGLTexture(OwnerTexture).TextureFormatEx, color, data);
   if FUseBGR then
     case color of
       GL_RGB: color := GL_BGR;

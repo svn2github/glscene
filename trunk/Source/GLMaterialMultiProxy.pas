@@ -7,6 +7,7 @@
    Allows assign a unique material for each proxy master.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
                               TGLMaterialMultiProxyMaster (BugTracker ID = 1938988)
@@ -192,7 +193,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, VectorTypes;
+uses SysUtils, OpenGLTokens, GLContext, VectorTypes;
 
 // ------------------
 // ------------------ TGLMaterialMultiProxyMaster ------------------
@@ -525,7 +526,7 @@ begin
       begin
         oldProxySubObject := rci.proxySubObject;
         rci.proxySubObject := True;
-        glMultMatrixf(PGLFloat(mpMaster.MasterObject.MatrixAsAddress));
+        GL.MultMatrixf(PGLFloat(mpMaster.MasterObject.MatrixAsAddress));
         if (mpMaster.MasterObject is TGLCustomSceneObject) and (FMaterialLibrary <> nil) then
         begin
           TGLCustomSceneObject(mpMaster.MasterObject).Material.QuickAssignMaterial(

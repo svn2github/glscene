@@ -6,6 +6,7 @@
    Manages a basic game menu UI<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>31/05/10 - Yar - Fixed for Linux x64
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -148,7 +149,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLCanvas, OpenGL1x;
+uses SysUtils, GLCanvas, OpenGLTokens, GLContext;
 
 // ------------------
 // ------------------ TGLGameMenu ------------------
@@ -253,12 +254,12 @@ begin
             if libMat<>nil then begin
                libMat.Apply(rci);
                repeat
-               glBegin(GL_QUADS);
-                  glTexCoord2f(0, 0);  glVertex2f(Position.X-TitleWidth div 2, y+TitleHeight);
-                  glTexCoord2f(1, 0);  glVertex2f(Position.X+TitleWidth div 2, y+TitleHeight);
-                  glTexCoord2f(1, 1);  glVertex2f(Position.X+TitleWidth div 2, y);
-                  glTexCoord2f(0, 1);  glVertex2f(Position.X-TitleWidth div 2, y);
-               glEnd;
+               GL.Begin_(GL_QUADS);
+                  GL.TexCoord2f(0, 0);  GL.Vertex2f(Position.X-TitleWidth div 2, y+TitleHeight);
+                  GL.TexCoord2f(1, 0);  GL.Vertex2f(Position.X+TitleWidth div 2, y+TitleHeight);
+                  GL.TexCoord2f(1, 1);  GL.Vertex2f(Position.X+TitleWidth div 2, y);
+                  GL.TexCoord2f(0, 1);  GL.Vertex2f(Position.X-TitleWidth div 2, y);
+               GL.End_;
                until (not libMat.UnApply(rci));
             end;
          end;
@@ -281,7 +282,6 @@ begin
    finally
       canvas.Free;
    end;
-   glEnable(GL_BLEND); // to match rci change
 end;
 
 // SelectNext

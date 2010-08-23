@@ -4,6 +4,7 @@
 {: GLTextureFormat<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>03/08/10 - Yar - Added SNORM texture format
         <li>15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
         <li>22/04/10 - Yar - Moved TGLTextureTarget
         <li>23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
@@ -16,7 +17,7 @@ unit GLTextureFormat;
 interface
 
 uses
-  OpenGL1x;
+  OpenGLTokens;
 
 type
 
@@ -179,7 +180,16 @@ type
     tfCOMPRESSED_RED_RGTC1,
     tfCOMPRESSED_SIGNED_RED_RGTC1,
     tfCOMPRESSED_RG_RGTC2,
-    tfCOMPRESSED_SIGNED_RG_RGTC2);
+    tfCOMPRESSED_SIGNED_RG_RGTC2,
+    tfR8_SNORM,
+    tfRG8_SNORM,
+    tfRGB8_SNORM,
+    tfRGBA8_SNORM,
+    tfR16_SNORM,
+    tfRG16_SNORM,
+    tfRGB16_SNORM,
+    tfRGBA16_SNORM
+    );
 
   // TGLInternalCompression
   //
@@ -216,7 +226,8 @@ procedure FindCompatibleDataFormat(texFormat: TGLInternalFormat; out dFormat:
 function CompressedInternalFormatToOpenGL(texFormat: TGLInternalFormat):
   Integer;
 // True if texture target supported
-function IsTargetSupported(target: TGLEnum): Boolean;
+function IsTargetSupported(target: TGLEnum): Boolean; overload;
+function IsTargetSupported(target: TGLTextureTarget): Boolean; overload;
 // True if texture format is supported by hardware or software
 function IsFormatSupported(texFormat: TGLInternalFormat): Boolean;
 // True if texture format is float
@@ -421,7 +432,15 @@ const
       GL_COMPRESSED_SIGNED_RED_RGTC1),
     (GL_COMPRESSED_RG_RGTC2, GL_COMPRESSED_RG_RGTC2, GL_COMPRESSED_RG_RGTC2),
     (GL_COMPRESSED_SIGNED_RG_RGTC2, GL_COMPRESSED_SIGNED_RG_RGTC2,
-      GL_COMPRESSED_SIGNED_RG_RGTC2)
+      GL_COMPRESSED_SIGNED_RG_RGTC2),
+    (GL_R8_SNORM, GL_R, GL_BYTE),
+    (GL_RG8_SNORM, GL_RG, GL_BYTE),
+    (GL_RGB8_SNORM, GL_RGB, GL_BYTE),
+    (GL_RGBA8_SNORM, GL_RGBA, GL_BYTE),
+    (GL_R16_SNORM, GL_R, GL_SHORT),
+    (GL_RG16_SNORM, GL_RG, GL_SHORT),
+    (GL_RGB16_SNORM, GL_RGB, GL_SHORT),
+    (GL_RGBA16_SNORM, GL_RGBA, GL_SHORT)
     );
 
 function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): Integer;
@@ -548,11 +567,16 @@ begin
   dType := cTextureFormatToOpenGL[texFormat, 2];
 end;
 
+function IsTargetSupported(target: TGLTextureTarget): Boolean;
+begin
+  Result := IsTargetSupported(DecodeGLTextureTarget(target));
+end;
+
 function IsTargetSupported(target: TGLEnum): Boolean;
 begin
   case target of
-    GL_TEXTURE_1D: Result := GL_VERSION_1_1 or GL.EXT_texture_object;
-    GL_TEXTURE_2D: Result := GL_VERSION_1_1 or GL.EXT_texture_object;
+    GL_TEXTURE_1D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
+    GL_TEXTURE_2D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
     GL_TEXTURE_3D: Result := GL.EXT_texture3D;
     GL_TEXTURE_RECTANGLE: Result := GL.ARB_texture_rectangle;
     GL_TEXTURE_CUBE_MAP,
@@ -663,6 +687,7 @@ begin
     tfCOMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2)) then
   begin
     Result := GL.EXT_texture_compression_latc;
+    EXIT;
   end;
 
   if texFormat = tfCOMPRESSED_LUMINANCE_ALPHA_3DC then
@@ -684,6 +709,13 @@ begin
     tfCOMPRESSED_SIGNED_RG_RGTC2)) then
   begin
     Result := GL.ARB_texture_compression_rgtc;
+    EXIT;
+  end;
+
+  if ((texFormat >= tfR8_SNORM) and (texFormat <= tfRGBA16_SNORM)) then
+  begin
+    Result := GL.VERSION_3_1;
+    EXIT;
   end
 end;
 

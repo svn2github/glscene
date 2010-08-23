@@ -6,10 +6,11 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
       <li>03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
       <li>16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
       <li>16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
-      <li>31/05/10 - Yar - Replace OpenGL1x functions to OpenGLAdapter, not complete yet.
+      <li>31/05/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter, not complete yet.
       <li>01/05/10 - Yar - Added cashing to Vertex Array Object
       <li>22/04/10 - Yar - GLState revision
       <li>11/04/10 - Yar - Added NewList, EndList, InsideList
@@ -32,11 +33,11 @@
 //       won't be linked to texture units in some future version of OpenGL.
 // TODO: Once more of GLScene is cache-aware, enable some of the checks before
 //       changing OpenGL state (where we will gain a speed increase).
-// TODO: Cache some relevant legacy state
+// DONE: Cache some relevant legacy state
 // TODO: improve binding objects to binding points
 // TODO: decide how to implement the new Enable* options (without going above
 //       32 elements in sets if possible, which would be slower in 32bit Delphi)
-// TODO: remove stTexture1D, 2D, etc from TGLState if possible, since they are
+// DONE: remove stTexture1D, 2D, etc from TGLState if possible, since they are
 //       per texture-unit + also deprecated in OpenGL 3+
 
 unit GLState;
@@ -44,14 +45,14 @@ unit GLState;
 interface
 
 {$I GLScene.inc}
-{$UNDEF GLS_OPENGL_DEBUG}
+{.$DEFINE GLS_CACHE_MISS_CHECK}
 
 uses
   Classes,
   VectorTypes,
   VectorGeometry,
   SysUtils,
-  OpenGL1x,
+  OpenGLTokens,
   GLTextureFormat,
   GLSLog;
 
@@ -132,6 +133,18 @@ type
 
   THintType = (hintDontCare, hintFastest, hintNicest);
 
+  TLightSourceState = packed record
+    Position: TVector;
+    Ambient: TVector;
+    Diffuse: TVector;
+    Specular: TVector;
+    SpotCutoff: Single;
+    ConstantAtten: Single;
+    LinearAtten: Single;
+    QuadAtten: Single;
+  end;
+
+
   TVAOStates = record
     FArrayBufferBinding: TGLuint;
     FElementBufferBinding: TGLuint;
@@ -157,13 +170,9 @@ type
     // Lighting state
     FMaxLights: GLuint;
     FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
-    FLightAmbient: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
-    FLightDiffuse: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
-    FLightSpecular: array[0..MAX_HARDWARE_LIGHT - 1] of TVector;
-    FSpotCutoff: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
-    FConstantAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
-    FLinearAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
-    FQuadAtten: array[0..MAX_HARDWARE_LIGHT - 1] of Single;
+    FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of GLInt;
+    FLightCount: Integer;
+    FLightStates: array[0..MAX_HARDWARE_LIGHT - 1] of TLightSourceState;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
@@ -171,6 +180,7 @@ type
     FCurrentList: TGLuint;
     FTextureMatrixIsIdentity: Boolean;
     FForwardContext: Boolean;
+    FFFPLight: Boolean;
 
     // Vertex Array Data state
     FVertexArrayBinding: TGLuint;
@@ -329,6 +339,8 @@ type
     FEnableTextureCubeMapSeamless: TGLboolean;
     FInsideList: Boolean;
 
+    FOnLightsChanged: TNotifyEvent;
+
   protected
     { Protected Declarations }
     // Vertex Array Data state
@@ -462,9 +474,12 @@ type
     procedure SetCopyWriteBufferBinding(const Value: TGLuint);
     procedure SetEnableTextureCubeMapSeamless(const Value: TGLboolean);
     // Ligting
+    procedure SetFFPLight(Value: Boolean);
     function GetMaxLights: Integer;
     function GetLightEnabling(I: Integer): Boolean;
     procedure SetLightEnabling(I: Integer; Value: Boolean);
+    function GetLightPosition(I: Integer): TVector;
+    procedure SetLightPosition(I: Integer; const Value: TVector);
     function GetLightAmbient(I: Integer): TVector;
     procedure SetLightAmbient(I: Integer; const Value: TVector);
     function GetLightDiffuse(I: Integer): TVector;
@@ -479,6 +494,7 @@ type
     procedure SetLinearAtten(I: Integer; const Value: Single);
     function GetQuadAtten(I: Integer): Single;
     procedure SetQuadAtten(I: Integer; const Value: Single);
+    procedure SetForwardContext(Value: Boolean);
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -498,8 +514,8 @@ type
     procedure ResetGLMaterialColors; deprecated;
     procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
     procedure ResetGLCurrentTexture; deprecated;
-    procedure SetGLFrontFaceCW; deprecated;
     procedure ResetGLFrontFace; deprecated;
+    procedure SetGLFrontFaceCW; deprecated;
     procedure ResetAll; deprecated;
 
     {: Adjusts material colors for a face. }
@@ -511,9 +527,12 @@ type
       TGLFloat);
 
     {: Lighting states }
+    property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
     property MaxLights: Integer read GetMaxLights;
     property LightEnabling[Index: Integer]: Boolean read GetLightEnabling write
     SetLightEnabling;
+    property LightPosition[Index: Integer]: TVector read GetLightPosition write
+    SetLightPosition;
     property LightAmbient[Index: Integer]: TVector read GetLightAmbient write
     SetLightAmbient;
     property LightDiffuse[Index: Integer]: TVector read GetLightDiffuse write
@@ -528,6 +547,10 @@ type
     SetLinearAtten;
     property LightQuadraticAtten[Index: Integer]: Single read GetQuadAtten write
     SetQuadAtten;
+    function GetLightIndicesAsAddress: PGLInt;
+    function GetLightStateAsAddress: PGLInt;
+    property LightCount: Integer read FLightCount;
+    property OnLightsChanged: TNotifyEvent read FOnLightsChanged write FOnLightsChanged;
 
     {: Blending states }
     procedure SetGLAlphaFunction(func: TComparisonFunction; ref: TGLclampf);
@@ -983,7 +1006,7 @@ type
 
     {: True for ignore deprecated and removed features in OpenGL 3x }
     property ForwardContext: Boolean read FForwardContext
-      write FForwardContext;
+      write SetForwardContext;
   end;
 
 type
@@ -1131,18 +1154,24 @@ begin
   FFrontBackColors[1][3] := clrBlack;
   FFrontBackShininess[1] := 0;
 
+  FAlphaFunc := cfAlways;
+
   // Lighting
+  FFFPLight := True;
   FMaxLights := 0;
+  FLightCount := 0;
   for I := 0 to High(FLightEnabling) do
   begin
     FLightEnabling[I] := False;
-    FLightAmbient[I] := clrBlack;
-    FLightDiffuse[I] := clrWhite;
-    FLightSpecular[I] := clrBlack;
-    FSpotCutoff[I] := 180;
-    FConstantAtten[I] := 1;
-    FLinearAtten[I] := 0;
-    FQuadAtten[I] := 0;
+    FLightIndices[I] := 0;
+    FLightStates[I].Position := NullHmgVector;
+    FLightStates[I].Ambient := clrBlack;
+    FLightStates[I].Diffuse := clrWhite;
+    FLightStates[I].Specular := clrBlack;
+    FLightStates[I].SpotCutoff := 180;
+    FLightStates[I].ConstantAtten := 1;
+    FLightStates[I].LinearAtten := 0;
+    FLightStates[I].QuadAtten := 0;
   end;
 
   FTextureMatrixIsIdentity := False;
@@ -1332,7 +1361,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Include(FStates, aState);
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF GLS_CACHE_MISS_CHECK}
     if GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Enable');
 {$ENDIF}
@@ -1353,7 +1382,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Exclude(FStates, aState);
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF GLS_CACHE_MISS_CHECK}
     if not GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Disable');
 {$ENDIF}
@@ -1654,7 +1683,7 @@ begin
   begin
     FBlendEquationRGB := modeRGB;
     FBlendEquationAlpha := modeAlpha;
-    glBlendEquationSeparate(cGLBlendEquationToGLEnum[modeRGB],
+    GL.BlendEquationSeparate(cGLBlendEquationToGLEnum[modeRGB],
       cGLBlendEquationToGLEnum[modeAlpha]);
   end;
   if FInsideList then
@@ -1707,7 +1736,7 @@ begin
       FBlendSrcAlpha := SrcAlpha;
       FBlendDstAlpha := DstAlpha;
     end;
-    glBlendFuncSeparate(cGLBlendFunctionToGLEnum[SrcRGB],
+    GL.BlendFuncSeparate(cGLBlendFunctionToGLEnum[SrcRGB],
       cGLBlendFunctionToGLEnum[DstRGB],
       cGLBlendFunctionToGLEnum[SrcAlpha],
       cGLBlendFunctionToGLEnum[DstAlpha]);
@@ -1722,7 +1751,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FClampReadColor := Value;
-    glClampColor(GL_CLAMP_READ_COLOR, Value);
+    GL.ClampColor(GL_CLAMP_READ_COLOR, Value);
   end;
 end;
 
@@ -1732,7 +1761,7 @@ begin
   if FColorWriteMask[Index] <> Value then
   begin
     FColorWriteMask[Index] := Value;
-    glColorMaski(Index, ccRed in Value, ccGreen in Value, ccBlue in Value,
+    GL.ColorMaski(Index, ccRed in Value, ccGreen in Value, ccBlue in Value,
       ccAlpha in Value);
   end;
 end;
@@ -1890,9 +1919,9 @@ begin
   begin
     FEnableBlend[Index] := Value;
     if Value then
-      glEnablei(GL_BLEND, Index)
+      GL.Enablei(GL_BLEND, Index)
     else
-      glDisablei(GL_BLEND, Index);
+      GL.Disablei(GL_BLEND, Index);
   end;
 end;
 
@@ -2056,9 +2085,20 @@ end;
 
 procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction;
   ref: TGLclampf);
+{$IFDEF GLS_CACHE_MISS_CHECK}
+var I: TGLuint; E: Single;
+{$ENDIF}
 begin
   if FForwardContext then
     exit;
+{$IFDEF GLS_CACHE_MISS_CHECK}
+  GL.GetIntegerv(GL_ALPHA_TEST_FUNC, @I);
+  if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'AlphaTest function');
+  GL.GetFloatv(GL_ALPHA_TEST_REF, @E);
+  if FAlphaRef <> E then
+    GLSLogger.LogError(glsStateCashMissing + 'AlphaTest reference');
+{$ENDIF}
   if (FAlphaFunc <> func) or (FAlphaRef <> ref)
     or FInsideList then
   begin
@@ -2291,7 +2331,7 @@ begin
       Include(FListStates[FCurrentList], sttPoint)
     else
       FPointFadeThresholdSize := Value;
-    glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, Value);
+    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, Value);
   end;
 end;
 
@@ -2315,7 +2355,7 @@ begin
       Include(FListStates[FCurrentList], sttPoint)
     else
       FPointSpriteCoordOrigin := Value;
-    glPointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, Value);
+    GL.PointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, Value);
   end;
 end;
 
@@ -2391,7 +2431,7 @@ begin
   if Value <> FProvokingVertex then
   begin
     FProvokingVertex := Value;
-    glProvokingVertex(Value);
+    GL.ProvokingVertex(Value);
   end;
 end;
 
@@ -2426,7 +2466,7 @@ begin
       FSampleCoverageValue := Value;
       FSampleCoverageInvert := invert;
     end;
-    glSampleCoverage(Value, invert);
+    GL.SampleCoverage(Value, invert);
   end;
 end;
 
@@ -2438,7 +2478,7 @@ begin
       Include(FListStates[FCurrentList], sttMultisample)
     else
       FSampleCoverageInvert := Value;
-    glSampleCoverage(FSampleCoverageValue, Value);
+    GL.SampleCoverage(FSampleCoverageValue, Value);
   end;
 end;
 
@@ -2450,7 +2490,7 @@ begin
       Include(FListStates[FCurrentList], sttMultisample)
     else
       FSampleCoverageValue := Value;
-    glSampleCoverage(Value, FSampleCoverageInvert);
+    GL.SampleCoverage(Value, FSampleCoverageInvert);
   end;
 end;
 
@@ -2463,7 +2503,7 @@ begin
       Include(FListStates[FCurrentList], sttMultisample)
     else
       FSampleMaskValue[Index] := Value;
-    glSampleMaski(Index, Value);
+    GL.SampleMaski(Index, Value);
   end;
 end;
 
@@ -2488,20 +2528,28 @@ begin
     else
       FStencilBackWriteMask := Value;
     // TODO: ignore if unsupported
-    if GL_VERSION_2_0 then
-      glStencilMaskSeparate(GL_BACK, Value);
+    if GL.VERSION_2_0 then
+      GL.StencilMaskSeparate(GL_BACK, Value);
   end;
 end;
 
 procedure TGLStateCache.SetStencilClearValue(const Value: TGLuint);
+{$IFDEF GLS_CACHE_MISS_CHECK}
+var I: TGLuint;
+{$ENDIF}
 begin
+{$IFDEF GLS_CACHE_MISS_CHECK}
+  GL.GetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
+  if FStencilClearValue <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil clear value');
+{$ENDIF}
   if (Value <> FStencilClearValue) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttStencilBuffer)
     else
       FStencilClearValue := Value;
-    glClearStencil(Value);
+    GL.ClearStencil(Value);
   end;
 end;
 
@@ -2536,46 +2584,62 @@ end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
   const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
+{$IFDEF GLS_CACHE_MISS_CHECK}
+var UI: TGLuint; I: TGLint;
+{$ENDIF}
 begin
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttStencilBuffer)
-  else
-    case face of
-      cmFront:
-        begin
-          FStencilFunc := func;
-          FStencilRef := ref;
-          FStencilValueMask := mask;
-        end;
-      cmBack:
-        begin
-          FStencilBackFunc := func;
-          FStencilBackRef := ref;
-          FStencilBackValueMask := mask;
-        end;
-      cmFrontAndBack:
-        begin
-          FStencilFunc := func;
-          FStencilRef := ref;
-          FStencilValueMask := mask;
-          FStencilBackFunc := func;
-          FStencilBackRef := ref;
-          FStencilBackValueMask := mask;
-        end;
-    end;
+//  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
+//    or FInsideList then
+{$IFDEF GLS_CACHE_MISS_CHECK}
+  GL.GetIntegerv(GL_STENCIL_FUNC, @UI);
+  if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
+  GL.GetIntegerv(GL_STENCIL_REF, @I);
+  if FStencilRef <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil reference');
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
+  GL.GetIntegerv(GL_STENCIL_VALUE_MASK, @UI);
+  if FStencilValueMask <> UI then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil value mask');
+{$ENDIF}
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttStencilBuffer)
+    else
+      case face of
+        cmFront:
+          begin
+            FStencilFunc := func;
+            FStencilRef := ref;
+            FStencilValueMask := mask;
+          end;
+        cmBack:
+          begin
+            FStencilBackFunc := func;
+            FStencilBackRef := ref;
+            FStencilBackValueMask := mask;
+          end;
+        cmFrontAndBack:
+          begin
+            FStencilFunc := func;
+            FStencilRef := ref;
+            FStencilValueMask := mask;
+            FStencilBackFunc := func;
+            FStencilBackRef := ref;
+            FStencilBackValueMask := mask;
+          end;
+      end;
 
-  glStencilFuncSeparate(cGLCullFaceModeToGLEnum[face],
-    cGLComparisonFunctionToGLEnum[func], ref, mask);
-  //if (func<>FStencilFunc)or(ref<>FStencilRef)or(mask<>FStencilValueMask) then
+    GL.StencilFuncSeparate(cGLCullFaceModeToGLEnum[face],
+      cGLComparisonFunctionToGLEnum[func], ref, mask);
+  end;
 end;
 
 procedure TGLStateCache.SetStencilFunc(const func: TStencilFunction; const ref:
-  TGLint;
-  const mask: TGLuint);
+  TGLint; const mask: TGLuint);
 begin
   if (func <> FStencilFunc) or (ref <> FStencilRef) or (mask <>
-    FStencilValueMask)
-    or FInsideList then
+    FStencilValueMask) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttStencilBuffer)
@@ -2590,23 +2654,40 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
+{$IFDEF GLS_CACHE_MISS_CHECK}
+var I: TGLuint;
+{$ENDIF}
 begin
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttStencilBuffer)
-  else
+{$IFDEF GLS_CACHE_MISS_CHECK}
+  GL.GetIntegerv(GL_STENCIL_FAIL, @I);
+  if cGLStencilOpToGLEnum[FStencilFail] <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil fail');
+  GL.GetIntegerv(GL_STENCIL_PASS_DEPTH_FAIL, @I);
+  if cGLStencilOpToGLEnum[FStencilPassDepthFail] <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil zfail');
+  GL.GetIntegerv(GL_STENCIL_PASS_DEPTH_PASS, @I);
+  if cGLStencilOpToGLEnum[FStencilPassDepthPass] <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil zpass');
+{$ENDIF}
+  if (fail <> FStencilFail) or (zfail <> FStencilPassDepthFail)
+    or (zpass <> FStencilPassDepthPass) or FInsideList then
   begin
-    FStencilFail := fail;
-    FStencilPassDepthFail := zfail;
-    FStencilPassDepthPass := zpass;
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttStencilBuffer)
+    else
+    begin
+      FStencilFail := fail;
+      FStencilPassDepthFail := zfail;
+      FStencilPassDepthPass := zpass;
+    end;
+    GL.StencilOp(cGLStencilOpToGLEnum[fail],
+      cGLStencilOpToGLEnum[zfail],
+      cGLStencilOpToGLEnum[zpass]);
   end;
-  GL.StencilOp(cGLStencilOpToGLEnum[fail],
-    cGLStencilOpToGLEnum[zfail],
-    cGLStencilOpToGLEnum[zpass]);
 end;
 
-procedure TGLStateCache.SetStencilOpSeparate(const face: TCullFaceMode; const
-  sfail, dpfail,
-  dppass: TStencilOp);
+procedure TGLStateCache.SetStencilOpSeparate(const face: TCullFaceMode;
+  const sfail, dpfail, dppass: TStencilOp);
 begin
   if FInsideList then
     Include(FListStates[FCurrentList], sttStencilBuffer)
@@ -2635,21 +2716,29 @@ begin
         end;
     end;
 
-  glStencilOpSeparate(cGLCullFaceModeToGLEnum[face],
+  GL.StencilOpSeparate(cGLCullFaceModeToGLEnum[face],
     cGLStencilOpToGLEnum[sfail],
     cGLStencilOpToGLEnum[dpfail],
     cGLStencilOpToGLEnum[dppass]);
 end;
 
 procedure TGLStateCache.SetStencilWriteMask(const Value: TGLuint);
+{$IFDEF GLS_CACHE_MISS_CHECK}
+var I: TGLuint;
+{$ENDIF}
 begin
+{$IFDEF GLS_CACHE_MISS_CHECK}
+  GL.GetIntegerv(GL_STENCIL_WRITEMASK, @I);
+  if FStencilWriteMask <> I then
+    GLSLogger.LogError(glsStateCashMissing + 'Stencil write mask');
+{$ENDIF}
   if (Value <> FStencilWriteMask) or FInsideList then
   begin
     if FInsideList then
-      Include(FListStates[Value], sttStencilBuffer)
+      Include(FListStates[FCurrentList], sttStencilBuffer)
     else
-      FStencilValueMask := Value;
-    glStencilMaskSeparate(GL_FRONT, Value);
+      FStencilWriteMask := Value;
+    GL.StencilMaskSeparate(GL_FRONT, Value);
   end;
 end;
 
@@ -2747,7 +2836,7 @@ begin
   FListStates[FCurrentList] := [];
   FInsideList := True;
   // Reset VBO binding and client attribute
-  if GL_ARB_vertex_buffer_object then
+  if GL.ARB_vertex_buffer_object then
   begin
     ArrayBufferBinding := 0;
     ElementBufferBinding := 0;
@@ -2863,9 +2952,17 @@ begin
   end;
 end;
 
+procedure TGLStateCache.SetFFPLight(Value: Boolean);
+begin
+  FFFPLight := Value and not FForwardContext;
+  end;
+
 function TGLStateCache.GetMaxLights: Integer;
 begin
   if FMaxLights = 0 then
+  if FForwardContext then
+    FMaxLights := MAX_HARDWARE_LIGHT
+  else
     GL.GetIntegerv(GL_MAX_LIGHTS, @FMaxLights);
   Result := FMaxLights;
 end;
@@ -2876,138 +2973,226 @@ begin
 end;
 
 procedure TGLStateCache.SetLightEnabling(I: Integer; Value: Boolean);
+var
+  J, K: Integer;
 begin
-  if FForwardContext then
-    exit;
   if (FLightEnabling[I] <> Value) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
       FLightEnabling[I] := Value;
-    if Value then
-      GL.Enable(GL_LIGHT0 + I)
-    else
-      GL.Disable(GL_LIGHT0 + I);
+
+    if FFFPLight then
+    begin
+      if Value then
+        GL.Enable(GL_LIGHT0 + I)
+      else
+        GL.Disable(GL_LIGHT0 + I);
+    end;
+
+    K := 0;
+    for J := 0 to MAX_HARDWARE_LIGHT - 1 do
+    if FLightEnabling[J] then
+    begin
+      FLightIndices[K] := J;
+      Inc(K);
+    end;
+    FLightCount := K;
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
+  end;
+end;
+
+function TGLStateCache.GetLightIndicesAsAddress: PGLInt;
+begin
+  Result := @FLightIndices[0];
+end;
+
+function TGLStateCache.GetLightStateAsAddress: PGLInt;
+begin
+  Result := @FLightStates[0];
+end;
+
+function TGLStateCache.GetLightPosition(I: Integer): TVector;
+begin
+  Result := FLightStates[I].Position;
+end;
+
+procedure TGLStateCache.SetLightPosition(I: Integer; const Value: TVector);
+begin
+  if not VectorEquals(Value, FLightStates[I].Position) then
+  begin
+    FLightStates[I].Position := Value;
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetLightAmbient(I: Integer): TVector;
 begin
-  Result := FLightAmbient[I];
+  Result := FLightStates[I].Ambient;
 end;
 
 procedure TGLStateCache.SetLightAmbient(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightAmbient[I]) or FInsideList then
+  if not VectorEquals(Value, FLightStates[I].Ambient) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightAmbient[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
+      FLightStates[I].Ambient := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetLightDiffuse(I: Integer): TVector;
 begin
-  Result := FLightDiffuse[I];
+  Result := FLightStates[I].Diffuse;
 end;
 
 procedure TGLStateCache.SetLightDiffuse(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightDiffuse[I]) or FInsideList then
+  if not VectorEquals(Value, FLightStates[I].Diffuse) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightDiffuse[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
+      FLightStates[I].Diffuse := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetLightSpecular(I: Integer): TVector;
 begin
-  Result := FLightSpecular[I];
+  Result := FLightStates[I].Specular;
 end;
 
 procedure TGLStateCache.SetLightSpecular(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightSpecular[I]) or FInsideList then
+  if not VectorEquals(Value, FLightStates[I].Specular) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightSpecular[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
+      FLightStates[I].Specular := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetSpotCutoff(I: Integer): Single;
 begin
-  Result := FSpotCutoff[I];
+  Result := FLightStates[I].SpotCutoff;
 end;
 
 procedure TGLStateCache.SetSpotCutoff(I: Integer; const Value: Single);
 begin
-  if (Value <> FSpotCutoff[I]) or FInsideList then
+  if (Value <> FLightStates[I].SpotCutoff) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FSpotCutoff[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
+      FLightStates[I].SpotCutoff := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetConstantAtten(I: Integer): Single;
 begin
-  Result := FConstantAtten[I];
+  Result := FLightStates[I].ConstantAtten;
 end;
 
 procedure TGLStateCache.SetConstantAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FConstantAtten[I]) or FInsideList then
+  if (Value <> FLightStates[I].ConstantAtten) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FConstantAtten[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
+      FLightStates[I].ConstantAtten := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetLinearAtten(I: Integer): Single;
 begin
-  Result := FLinearAtten[I];
+  Result := FLightStates[I].LinearAtten;
 end;
 
 procedure TGLStateCache.SetLinearAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLinearAtten[I]) or FInsideList then
+  if (Value <> FLightStates[I].LinearAtten) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLinearAtten[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
+      FLightStates[I].LinearAtten := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
   end;
 end;
 
 function TGLStateCache.GetQuadAtten(I: Integer): Single;
 begin
-  Result := FQuadAtten[I];
+  Result := FLightStates[I].QuadAtten;
 end;
 
 procedure TGLStateCache.SetQuadAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FQuadAtten[I]) or FInsideList then
+  if (Value <> FLightStates[I].QuadAtten) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FQuadAtten[I] := Value;
-    GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
+      FLightStates[I].QuadAtten := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
+  end;
+end;
+
+procedure TGLStateCache.SetForwardContext(Value: Boolean);
+begin
+  if Value <> FForwardContext then
+  begin
+    FForwardContext := Value;
+    if Value then
+    begin
+      SetFFPlight(False);
+    end;
   end;
 end;
 
@@ -3182,7 +3367,6 @@ begin
   ResetGLFrontFace;
 {$WARN SYMBOL_DEPRECATED ON}
 end;
-
 
 end.
 

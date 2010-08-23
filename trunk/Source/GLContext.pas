@@ -6,6 +6,11 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+                           Added to TGLContext property PipelineTransformation
+                           Added feature of debug context creating
+                           Improved TGLContextHandle destroying
+                           Added TGLARBVertexProgramHandle, TGLARBFragmentProgramHandle, TGLARBGeometryProgramHandle
       <li>02/08/10 - DaStr - Bugfixed TGLContextHandle.DestroyHandle()
       <li>18/07/10 - Yar - Added TGLTessControlShaderHandle, TGLTessEvaluationShaderHandle, TGLSamplerHandle
       <li>17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TGLContextHandle
@@ -83,11 +88,12 @@ uses
   LCLType,
 {$ENDIF}
   GLCrossPlatform,
-  OpenGL1x,
+  OpenGLTokens,
   OpenGLAdapter,
   VectorGeometry,
   VectorTypes,
   GLState,
+  GLPipelineTransformation,
   GLTextureFormat,
   GLSLog;
 
@@ -100,7 +106,7 @@ type
 
   // TGLRCOptions
   //
-  TGLRCOption = (rcoDoubleBuffered, rcoStereo);
+  TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug);
   TGLRCOptions = set of TGLRCOption;
 
   TGLContextManager = class;
@@ -116,6 +122,10 @@ type
     aa6x, aa8x, aa16x,
     // Coverage Sampling Antialiasing
     csa8x, csa8xHQ, csa16x, csa16xHQ);
+
+  // TVSyncMode
+  //
+  TVSyncMode = (vsmSync, vsmNoSync);
 
   // TGLContext
   //
@@ -140,6 +150,12 @@ type
     FOnDestroyContext: TNotifyEvent;
     FManager: TGLContextManager;
     FActivationCount: Integer;
+  protected
+    { Protected Declarations }
+    FGL: TGLExtensionsAndEntryPoints;
+    FGLStates: TGLStateCache;
+    FTransformation: TGLPipelineTransformation;
+    FAcceleration: TGLContextAcceleration;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
     FOwnedHandles: TList;
@@ -148,11 +164,6 @@ type
     FOwnedHandles: TThreadList;
     FLock: TRTLCriticalSection;
 {$ENDIF}
-  protected
-    { Protected Declarations }
-    FGL: TGLExtensionsAndEntryPoints;
-    FGLStates: TGLStateCache;
-    FAcceleration: TGLContextAcceleration;
 
     procedure SetColorBits(const aColorBits: Integer);
     procedure SetAlphaBits(const aAlphaBits: Integer);
@@ -175,6 +186,8 @@ type
     procedure DoActivate; virtual; abstract;
     procedure DoDeactivate; virtual; abstract;
     procedure AddSelfToSharedList;
+    class function ResourceContext: TGLContext;
+    procedure MakeGLCurrent;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -183,6 +196,8 @@ type
     {: An application-side cache of global per-context OpenGL states
        and parameters }
     property GLStates: TGLStateCache read FGLStates;
+
+    property PipelineTransformation: TGLPipelineTransformation read FTransformation;
 
     //: Context manager reference
     property Manager: TGLContextManager read FManager;
@@ -311,6 +326,7 @@ type
 
     //: Specifies if the handle can be transfered across shared contexts
     class function Transferable: Boolean; virtual;
+    class function IsValid(const ID: GLuint): Boolean; virtual;
 
     function DoAllocateHandle: Cardinal; virtual; abstract;
     procedure DoDestroyHandle(var AHandle: TGLuint); virtual; abstract;
@@ -383,7 +399,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
     procedure NewList(mode: Cardinal);
@@ -399,6 +415,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
   end;
@@ -411,6 +428,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
   end;
@@ -430,6 +448,7 @@ type
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     function GetTarget: TGLuint; virtual; abstract;
     function GetQueryType: TQueryType; virtual; abstract;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
     procedure BeginQuery;
@@ -519,7 +538,7 @@ type
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
     function GetTarget: TGLuint; virtual; abstract;
-
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
     {: Creates the buffer object buffer and initializes it. }
@@ -702,6 +721,7 @@ type
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     procedure Bind;
     procedure UnBind;
@@ -731,6 +751,7 @@ type
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     // Bind framebuffer for both drawing + reading
     procedure Bind;
@@ -801,12 +822,59 @@ type
   protected
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     procedure Bind;
     procedure UnBind;
     procedure SetStorage(internalformat: TGLenum; width, height: TGLsizei);
     procedure SetStorageMultisample(internalformat: TGLenum; samples: TGLsizei;
       width, height: TGLsizei);
+    class function IsSupported: Boolean; override;
+  end;
+
+  TGLARBProgramHandle = class(TGLContextHandle)
+  private
+    { Private Declarations }
+    FReady: Boolean;
+  protected
+    { Protected Declarations }
+    function DoAllocateHandle: Cardinal; override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    class function IsValid(const ID: GLuint): Boolean; override;
+    class function GetTarget: TGLenum; virtual; abstract;
+  public
+    { Public Declarations }
+    procedure LoadARBProgram(AText: string);
+    procedure Enable;
+    procedure Disable;
+    procedure Bind;
+    property Ready: Boolean read FReady;
+  end;
+
+  TGLARBVertexProgramHandle = class(TGLARBProgramHandle)
+  protected
+    { Protected Declarations }
+    class function GetTarget: TGLenum; override;
+  public
+    { Public Declarations }
+    class function IsSupported: Boolean; override;
+  end;
+
+  TGLARBFragmentProgramHandle = class(TGLARBProgramHandle)
+  protected
+    { Protected Declarations }
+    class function GetTarget: TGLenum; override;
+  public
+    { Public Declarations }
+    class function IsSupported: Boolean; override;
+  end;
+
+  TGLARBGeometryProgramHandle = class(TGLARBProgramHandle)
+  protected
+    { Protected Declarations }
+    class function GetTarget: TGLenum; override;
+  public
+    { Public Declarations }
     class function IsSupported: Boolean; override;
   end;
 
@@ -842,7 +910,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-
+    class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
     procedure ShaderSource(const source: string); overload;
@@ -910,6 +978,8 @@ type
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user.<br> }
   TGLProgramHandle = class(TGLSLHandle)
+  public
+    class function IsValid(const ID: GLuint): Boolean; override;
   private
     { Private Declarations }
     FName: string;
@@ -1042,7 +1112,7 @@ type
     FTerminated: Boolean;
     FNotifications: array of TGLContextNotification;
     FCreatedRCCount: Integer;
-
+    FResourceContext: TGLContext;
   protected
     { Protected Declarations }
     procedure Lock;
@@ -1062,6 +1132,8 @@ type
     {: Returns an appropriate, ready-to use context.<p>
        The returned context should be freed by caller. }
     function CreateContext: TGLContext;
+    {: Create a special resource-keeper context. }
+    function CreateResourceContext: TGLContext;
 
     {: Returns the number of TGLContext object.<p>
        This is *not* the number of OpenGL rendering contexts! }
@@ -1117,6 +1189,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+uses
+  GLPBuffer;
 
 resourcestring
   cCannotAlterAnActiveContext = 'Cannot alter an active context';
@@ -1157,11 +1231,11 @@ end;
 function GL: TGLExtensionsAndEntryPoints;
 begin
   Result := vGL;
-  //  if not Assigned(vGL) then
-  //  begin
-  //    GLSLogger.LogError(cNoActiveRC);
-  //    Abort;
-  //  end;
+  if not Assigned(vGL) then
+  begin
+    if PBufferService.IsEnabled then
+      Result := PBufferService.GL;
+  end;
 end;
 
 // RegisterGLContextClass
@@ -1202,6 +1276,8 @@ begin
   FAcceleration := chaUnknown;
   FGLStates := TGLStateCache.Create;
   FGL := TGLExtensionsAndEntryPoints.Create;
+  FTransformation := TGLPipelineTransformation.Create;
+  FTransformation.FFPTransformation := True;
   GLContextManager.RegisterContext(Self);
 end;
 
@@ -1590,6 +1666,7 @@ begin
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
+    vGL := nil;
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
@@ -1643,6 +1720,17 @@ begin
     end;
 {$ENDIF}
 end;
+
+class function TGLContext.ResourceContext: TGLContext;
+begin
+  Result := GLContextManager.FResourceContext;
+end;
+
+procedure TGLContext.MakeGLCurrent;
+begin
+  vGL := FGL;
+end;
+
 // ------------------
 // ------------------ TGLContextHandle ------------------
 // ------------------
@@ -1848,11 +1936,11 @@ begin
       if FHandles[I].FHandle > 0 then
       begin
         // Active at least one of shareded context
-        if not Assigned(vCurrentGLContext) then
-          FHandles[I].FRenderingContext.Activate;
-        DoDestroyHandle(FHandles[I].FHandle);
-        if FHandles[I].FRenderingContext <> nil then
-          FHandles[I].FRenderingContext.FOwnedHandles.Remove(Self);
+        FHandles[I].FRenderingContext.Activate;
+        if IsValid(FHandles[I].FHandle) then
+          DoDestroyHandle(FHandles[I].FHandle);
+        FHandles[I].FRenderingContext.Deactivate;
+        FHandles[I].FRenderingContext.FOwnedHandles.Remove(Self);
       end;
     end;
   finally
@@ -2089,6 +2177,10 @@ begin
   Result := True;
 end;
 
+class function TGLContextHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := True;
+end;
 // IsSupported
 //
 
@@ -2119,7 +2211,7 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    ClearGLError;
+    GL.ClearError;
     // delete
     if Assigned(FOnDestroy) then
       FOnDestroy(Self, AHandle);
@@ -2148,12 +2240,20 @@ begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    ClearGLError;
+    GL.ClearError;
     // delete
     GL.DeleteLists(AHandle, 1);
     // check for error
     GL.CheckError;
   end;
+end;
+
+// IsValid
+//
+
+class function TGLListHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsList(ID);
 end;
 
 // NewList
@@ -2228,6 +2328,14 @@ begin
   end;
 end;
 
+// IsValid
+//
+
+class function TGLTextureHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsTexture(ID);
+end;
+
 // ------------------
 // ------------------ TGLSamplerHandle ------------------
 // ------------------
@@ -2255,6 +2363,14 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+// IsValid
+//
+
+class function TGLSamplerHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsSampler(ID);
 end;
 
 // ------------------
@@ -2302,6 +2418,14 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+// IsValid
+//
+
+class function TGLQueryHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsQuery(ID);
 end;
 
 // EndQuery
@@ -2510,6 +2634,14 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+// IsValid
+//
+
+class function TGLBufferObjectHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsBuffer(ID);
 end;
 
 // IsSupported
@@ -2898,6 +3030,14 @@ begin
   end;
 end;
 
+// IsValid
+//
+
+class function TGLVertexArrayHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsVertexArray(ID);
+end;
+
 // Bind
 //
 
@@ -2959,6 +3099,14 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+// IsValid
+//
+
+class function TGLFramebufferHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsFramebuffer(ID);
 end;
 
 // Bind
@@ -3173,6 +3321,14 @@ begin
   end;
 end;
 
+// IsValid
+//
+
+class function TGLRenderbufferHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsRenderbuffer(ID);
+end;
+
 // Bind
 //
 
@@ -3218,18 +3374,128 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLSLHandle ------------------
+// ------------------ TGLARBProgramHandle ------------------
 // ------------------
+
+// DoAllocateHandle
+//
+
+function TGLARBProgramHandle.DoAllocateHandle: Cardinal;
+begin
+  Result := 0;
+  GL.GenPrograms(1, @Result);
+  FReady := False;
+end;
 
 // DoDestroyHandle
 //
+
+procedure TGLARBProgramHandle.DoDestroyHandle(var AHandle: TGLuint);
+begin
+  if not vContextActivationFailureOccurred then
+  begin
+    // reset error status
+    GL.GetError;
+    // delete
+    GL.DeletePrograms(1, @AHandle);
+    // check for error
+    GL.CheckError;
+  end;
+end;
+
+// IsValid
+//
+
+class function TGLARBProgramHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsProgram(ID);
+end;
+
+procedure TGLARBProgramHandle.LoadARBProgram(AText: string);
+const
+  cProgType: array[0..2] of string =
+  ('ARB vertex', 'ARB fragment', 'NV geometry');
+var
+  errPos, P: Integer;
+  errString: string;
+begin
+  Bind;
+  GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
+    Length(AText), PGLChar(TGLString(AText)));
+  GL.GetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
+  if errPos > -1 then
+  begin
+    errString := string(GL.GetString(GL_PROGRAM_ERROR_STRING_ARB));
+    case GetTarget of
+      GL_VERTEX_PROGRAM_ARB: P := 0;
+      GL_FRAGMENT_PROGRAM_ARB: P := 1;
+      else P := 2;
+    end;
+    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, errString]));
+    FReady := False;
+  end
+  else
+    FReady := True;
+end;
+
+procedure TGLARBProgramHandle.Enable;
+begin
+  if FReady then
+    GL.Enable(GetTarget)
+  else
+    Abort;
+end;
+
+procedure TGLARBProgramHandle.Disable;
+begin
+  GL.Disable(GetTarget);
+end;
+
+procedure TGLARBProgramHandle.Bind;
+begin
+  GL.BindProgram(GetTarget, Handle);
+end;
+
+class function TGLARBVertexProgramHandle.GetTarget: TGLenum;
+begin
+  Result := GL_VERTEX_PROGRAM_ARB;
+end;
+
+class function TGLARBVertexProgramHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_vertex_program;
+end;
+
+class function TGLARBFragmentProgramHandle.GetTarget: TGLenum;
+begin
+  Result := GL_FRAGMENT_PROGRAM_ARB;
+end;
+
+class function TGLARBFragmentProgramHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_vertex_program;
+end;
+
+class function TGLARBGeometryProgramHandle.GetTarget: TGLenum;
+begin
+  Result := GL_GEOMETRY_PROGRAM_NV;
+end;
+
+class function TGLARBGeometryProgramHandle.IsSupported: Boolean;
+begin
+  Result := GL.NV_geometry_program4;
+end;
+
+// ------------------
+// ------------------ TGLSLHandle ------------------
+// ------------------
 
 procedure TGLSLHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   begin
     // reset error status
-    ClearGLError;
+    GL.ClearError;
     // delete
     GL.DeleteObject(AHandle);
     // check for error
@@ -3274,6 +3540,14 @@ end;
 function TGLShaderHandle.DoAllocateHandle: Cardinal;
 begin
   Result := GL.CreateShader(FShaderType)
+end;
+
+// IsValid
+//
+
+class function TGLShaderHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsShader(ID);
 end;
 
 // ShaderSource
@@ -3415,6 +3689,14 @@ end;
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
   Result := GL.CreateProgram();
+end;
+
+// IsValid
+//
+
+class function TGLProgramHandle.IsValid(const ID: GLuint): Boolean;
+begin
+  Result := GL.IsProgram(ID);
 end;
 
 // AddShader
@@ -3908,6 +4190,12 @@ begin
   end
   else
     Result := nil;
+end;
+
+function TGLContextManager.CreateResourceContext: TGLContext;
+begin
+  Result := CreateContext;
+  FResourceContext := Result;
 end;
 
 // Lock

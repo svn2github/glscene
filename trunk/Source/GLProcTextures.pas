@@ -6,6 +6,7 @@
   Procedural textures.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>22/01/10 - Yar - Added bmp32.Blank:=false for memory allocation,
                            Depth dimension, NativeTextureTarget becomes property
@@ -33,7 +34,7 @@ unit GLProcTextures;
 
 interface
 
-uses Classes, GLTexture, GLGraphics, OpenGL1x, GLCrossPlatform, SysUtils,
+uses Classes, GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform, SysUtils,
   GLTextureFormat;
 
 const
@@ -286,12 +287,6 @@ end;
 function TGLProcTextureNoise.GetTextureTarget: TGLTextureTarget;
 begin
   Result := ttTexture2D;
-  if fPreviousTarget <> Result then
-  begin
-    if Assigned(FOwnerTexture) then
-      FOwnerTexture.NotifyTargetChange;
-    fPreviousTarget := Result;
-  end;
 end;
 
 procedure TGLProcTextureNoise.SetHeight(const val: Integer);

@@ -13,6 +13,8 @@
    objects can be found GLGeomObjects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>29/06/10 - Yar - Added loColorLogicXor to TGLLines.Options
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -143,6 +145,7 @@ uses Classes,
   VectorGeometry,
   GLScene,
   OpenGL1x,
+  OpenGLTokens,
   SysUtils,
   VectorLists,
   GLCrossPlatform,
@@ -643,7 +646,7 @@ type
 
   // TLinesOptions
   //
-  TLinesOption = (loUseNodeColorForLines);
+  TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
   TLinesOptions = set of TLinesOption;
 
   // TGLLines
@@ -700,6 +703,7 @@ type
        <li>loUseNodeColorForLines: if set lines will be drawn using node
           colors (and color interpolation between nodes), if not, LineColor
           will be used (single color).
+           loColorLogicXor: enable logic operation for color of XOR type.
        </ul> }
     property Options: TLinesOptions read FOptions write SetOptions;
   end;
@@ -935,8 +939,8 @@ var
   mi, ma: Single;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(22, 'CubeWireframeBuildList');
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stLineSmooth);
@@ -952,35 +956,33 @@ begin
   ma := 0.5 * size;
   mi := -ma;
 
-//  rci.GLStates.SetGLMaterialColors(cmFront, color, clrGray20, clrGray80,
-//    clrBlack, 0);
-  glColor4fv(@color);
-  glBegin(GL_LINE_STRIP);
+  GL.Color4fv(@color);
+  GL.Begin_(GL_LINE_STRIP);
   // front face
-  glVertex3f(ma, mi, mi);
-  glVertex3f(ma, ma, mi);
-  glVertex3f(ma, ma, ma);
-  glVertex3f(ma, mi, ma);
-  glVertex3f(ma, mi, mi);
+  GL.Vertex3f(ma, mi, mi);
+  GL.Vertex3f(ma, ma, mi);
+  GL.Vertex3f(ma, ma, ma);
+  GL.Vertex3f(ma, mi, ma);
+  GL.Vertex3f(ma, mi, mi);
   // partial up back face
-  glVertex3f(mi, mi, mi);
-  glVertex3f(mi, mi, ma);
-  glVertex3f(mi, ma, ma);
-  glVertex3f(mi, ma, mi);
+  GL.Vertex3f(mi, mi, mi);
+  GL.Vertex3f(mi, mi, ma);
+  GL.Vertex3f(mi, ma, ma);
+  GL.Vertex3f(mi, ma, mi);
   // right side low
-  glVertex3f(ma, ma, mi);
-  glEnd;
-  glBegin(GL_LINES);
+  GL.Vertex3f(ma, ma, mi);
+  GL.End_;
+  GL.Begin_(GL_LINES);
   // right high
-  glVertex3f(ma, ma, ma);
-  glVertex3f(mi, ma, ma);
+  GL.Vertex3f(ma, ma, ma);
+  GL.Vertex3f(mi, ma, ma);
   // back low
-  glVertex3f(mi, mi, mi);
-  glVertex3f(mi, ma, mi);
+  GL.Vertex3f(mi, mi, mi);
+  GL.Vertex3f(mi, ma, mi);
   // left high
-  glVertex3f(ma, mi, ma);
-  glVertex3f(mi, mi, ma);
-  glEnd;
+  GL.Vertex3f(ma, mi, ma);
+  GL.Vertex3f(mi, mi, ma);
+  GL.End_;
 end;
 
 // DodecahedronBuildList
@@ -1019,12 +1021,12 @@ begin
     n := CalcPlaneNormal(vertices[faceIndices^[0]],
       vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    glNormal3fv(@N);
+    GL.Normal3fv(@N);
 
-    glBegin(GL_TRIANGLE_FAN);
+    GL.Begin_(GL_TRIANGLE_FAN);
     for j := 0 to 4 do
-      glVertex3fv(@vertices[faceIndices^[j]]);
-    glEnd;
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
   end;
 end;
 
@@ -1060,12 +1062,12 @@ begin
     n := CalcPlaneNormal(vertices[faceIndices^[0]],
       vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    glNormal3fv(@N);
+    GL.Normal3fv(@N);
 
-    glBegin(GL_TRIANGLES);
+    GL.Begin_(GL_TRIANGLES);
     for j := 0 to 2 do
-      glVertex3fv(@vertices[faceIndices^[j]]);
-    glEnd;
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
   end;
 end;
 
@@ -1405,7 +1407,7 @@ var
 begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
-  glNormal3fv(@ZVector);
+  GL.Normal3fv(@ZVector);
   // determine tex coords extents
   if psTileTexture in FStyle then
   begin
@@ -1425,16 +1427,16 @@ begin
   if psSingleQuad in FStyle then
   begin
     // single quad plane
-    glBegin(GL_QUADS);
+    GL.Begin_(GL_QUADS);
     xglTexCoord2f(tx1, ty1);
-    glVertex2f(hw, hh);
+    GL.Vertex2f(hw, hh);
     xglTexCoord2f(tx0, ty1);
-    glVertex2f(-hw, hh);
+    GL.Vertex2f(-hw, hh);
     xglTexCoord2f(tx0, ty0);
-    glVertex2f(-hw, -hh);
+    GL.Vertex2f(-hw, -hh);
     xglTexCoord2f(tx1, ty0);
-    glVertex2f(hw, -hh);
-    glEnd;
+    GL.Vertex2f(hw, -hh);
+    GL.End_;
   end
   else
   begin
@@ -1449,17 +1451,17 @@ begin
     begin
       texT1 := (y + 1) * texTFact;
       pY1 := (y + 1) * posYFact - hh;
-      glBegin(GL_TRIANGLE_STRIP);
+      GL.Begin_(GL_TRIANGLE_STRIP);
       for x := 0 to FXTiles do
       begin
         texS := tx0 + x * texSFact;
         pX := x * posXFact - hw;
         xglTexCoord2f(texS, texT1);
-        glVertex2f(pX, pY1);
+        GL.Vertex2f(pX, pY1);
         xglTexCoord2f(texS, texT0);
-        glVertex2f(pX, pY0);
+        GL.Vertex2f(pX, pY0);
       end;
-      glEnd;
+      GL.End_;
       texT0 := texT1;
       pY0 := pY1;
     end;
@@ -1685,7 +1687,7 @@ begin
   if FAlphaChannel <> 1 then
     rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
 
-  glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
+  GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
   // extraction of the "vecteurs directeurs de la matrice"
   // (dunno how they are named in english)
   w := FWidth * 0.5;
@@ -1721,21 +1723,21 @@ begin
 
   if FRotation <> 0 then
   begin
-    glPushMatrix;
-    glRotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
+    GL.PushMatrix;
+    GL.Rotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
   end;
-  glBegin(GL_QUADS);
+  GL.Begin_(GL_QUADS);
   xglTexCoord2f(u1, v1);
-  glVertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
+  GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
   xglTexCoord2f(u0, v1);
-  glVertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
+  GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
   xglTexCoord2f(u0, v0);
-  glVertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
+  GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
   xglTexCoord2f(u1, v0);
-  glVertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
-  glEnd;
+  GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
+  GL.End_;
   if FRotation <> 0 then
-    glPopMatrix;
+    GL.PopMatrix;
 end;
 
 // SetWidth
@@ -1922,12 +1924,12 @@ end;
 
 procedure TGLPointParameters.Apply;
 begin
-  if Enabled and GL_ARB_point_parameters then
+  if Enabled and GL.ARB_point_parameters then
   begin
-    glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, FMinSize);
-    glPointParameterfARB(GL_POINT_SIZE_MAX_ARB, FMaxSize);
-    glPointParameterfARB(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
-    glPointParameterfvARB(GL_DISTANCE_ATTENUATION_ARB,
+    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
+    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
+    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
+    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
       FDistanceAttenuation.AsAddress);
   end;
 end;
@@ -1937,12 +1939,12 @@ end;
 
 procedure TGLPointParameters.UnApply;
 begin
-  if Enabled and GL_ARB_point_parameters then
+  if Enabled and GL.ARB_point_parameters then
   begin
-    glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, 0);
-    glPointParameterfARB(GL_POINT_SIZE_MAX_ARB, 128);
-    glPointParameterfARB(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
-    glPointParameterfvARB(GL_DISTANCE_ATTENUATION_ARB, @XVector);
+    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
+    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
+    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
+    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
   end;
 end;
 
@@ -2069,30 +2071,30 @@ begin
   if n = 0 then
     Exit;
   case FColors.Count of
-    0: glColor4f(1, 1, 1, 1);
-    1: glColor4fv(PGLFloat(FColors.List));
+    0: GL.Color4f(1, 1, 1, 1);
+    1: GL.Color4fv(PGLFloat(FColors.List));
   else
     if FColors.Count < n then
       n := FColors.Count;
-    glColorPointer(4, GL_FLOAT, 0, FColors.List);
-    glEnableClientState(GL_COLOR_ARRAY);
+    GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
+    GL.EnableClientState(GL_COLOR_ARRAY);
   end;
   rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
-    glVertexPointer(3, GL_FLOAT, 0, @v);
+    GL.VertexPointer(3, GL_FLOAT, 0, @v);
     n := 1;
   end
   else
-    glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
-  glEnableClientState(GL_VERTEX_ARRAY);
+    GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
+  GL.EnableClientState(GL_VERTEX_ARRAY);
   if NoZWrite then
     rci.GLStates.DepthWriteMask := false;
   rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
-  if GL_EXT_compiled_vertex_array and (n > 64) then
-    glLockArraysEXT(0, n);
+  if GL.EXT_compiled_vertex_array and (n > 64) then
+    GL.LockArrays(0, n);
   case FStyle of
     psSquare:
       begin
@@ -2130,13 +2132,13 @@ begin
   else
     Assert(False);
   end;
-  glDrawArrays(GL_POINTS, 0, n);
-  if GL_EXT_compiled_vertex_array and (n > 64) then
-    glUnlockArraysEXT;
+  GL.DrawArrays(GL_POINTS, 0, n);
+  if GL.EXT_compiled_vertex_array and (n > 64) then
+    GL.UnlockArrays;
   PointParameters.UnApply;
-  glDisableClientState(GL_VERTEX_ARRAY);
+  GL.DisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
-    glDisableClientState(GL_COLOR_ARRAY);
+    GL.DisableClientState(GL_COLOR_ARRAY);
 end;
 
 // StoreSize
@@ -2361,10 +2363,11 @@ begin
         Enable(stBlend);
         SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
-      glColor4fv(FLineColor.AsAddress);
+      GL.Color4fv(FLineColor.AsAddress);
     end
     else
-      glColor3fv(FLineColor.AsAddress);
+      GL.Color3fv(FLineColor.AsAddress);
+
   end;
 end;
 
@@ -2564,8 +2567,8 @@ end;
 procedure TGLNodedLines.DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
   Color: TGLColor);
 begin
-  glPushMatrix;
-  glTranslatef(x, y, z);
+  GL.PushMatrix;
+  GL.Translatef(x, y, z);
   case NodesAspect of
     lnaAxes:
       AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
@@ -2575,12 +2578,12 @@ begin
       begin
         if FNodeSize <> 1 then
         begin
-          glPushMatrix;
-          glScalef(FNodeSize, FNodeSize, FNodeSize);
+          GL.PushMatrix;
+          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
           rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
-          glPopMatrix;
+          GL.PopMatrix;
         end
         else
         begin
@@ -2592,7 +2595,7 @@ begin
   else
     Assert(False)
   end;
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // AxisAlignedDimensionsUnscaled
@@ -2779,6 +2782,11 @@ begin
     SetupLineStyle(rci);
     if rci.bufferDepthTest then
       rci.GLStates.Enable(stDepthTest);
+    if loColorLogicXor in Options then
+    begin
+      rci.GLStates.Enable(stColorLogicOp);
+      rci.GLStates.LogicOpMode := loXOr;
+    end;
     // Set up the control point buffer for Bezier splines and NURBS curves.
     // If required this could be optimized by storing a cached node buffer.
     if (FSplineMode = lsmBezierSpline) or (FSplineMode = lsmNURBSCurve) then
@@ -2797,11 +2805,11 @@ begin
     begin
       // map evaluator
       rci.GLStates.PushAttrib([sttEval]);
-      glEnable(GL_MAP1_VERTEX_3);
-      glEnable(GL_MAP1_COLOR_4);
+      GL.Enable(GL_MAP1_VERTEX_3);
+      GL.Enable(GL_MAP1_COLOR_4);
 
-      glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
-      glMap1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
+      GL.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
+      GL.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
     end;
 
     // start drawing the line
@@ -2809,6 +2817,7 @@ begin
     begin
       if (FNURBSOrder > 0) and (FNURBSKnots.Count > 0) then
       begin
+
         nurbsRenderer := gluNewNurbsRenderer;
         try
           gluNurbsProperty(nurbsRenderer, GLU_SAMPLING_TOLERANCE,
@@ -2830,13 +2839,12 @@ begin
     begin
       // lines, cubic splines or bezier
       if FSplineMode = lsmSegments then
-        glBegin(GL_LINES)
+        GL.Begin_(GL_LINES)
       else if FSplineMode = lsmLoop then
-        glBegin(GL_LINE_LOOP)
+        GL.Begin_(GL_LINE_LOOP)
       else
-        glBegin(GL_LINE_STRIP);
-      if (FDivision < 2) or (FSplineMode in [lsmLines, lsmSegments, lsmLoop])
-        then
+        GL.Begin_(GL_LINE_STRIP);
+      if (FDivision < 2) or (FSplineMode in [lsmLines, lsmSegments, lsmLoop]) then
       begin
         // standard line(s), draw directly
         if loUseNodeColorForLines in Options then
@@ -2845,8 +2853,8 @@ begin
           for i := 0 to Nodes.Count - 1 do
             with TGLLinesNode(Nodes[i]) do
             begin
-              glColor4fv(Color.AsAddress);
-              glVertex3f(X, Y, Z);
+              GL.Color4fv(Color.AsAddress);
+              GL.Vertex3f(X, Y, Z);
             end;
         end
         else
@@ -2854,7 +2862,7 @@ begin
           // single color
           for i := 0 to Nodes.Count - 1 do
             with Nodes[i] do
-              glVertex3f(X, Y, Z);
+              GL.Vertex3f(X, Y, Z);
         end;
       end
       else if FSplineMode = lsmCubicSpline then
@@ -2876,9 +2884,9 @@ begin
               else
                 SetVector(vertexColor, TGLLinesNode(Nodes[Nodes.Count -
                   1]).Color.Color);
-              glColor4fv(@vertexColor);
+              GL.Color4fv(@vertexColor);
             end;
-            glVertex3f(a, b, c);
+            GL.Vertex3f(a, b, c);
           end;
         finally
           spline.Free;
@@ -2888,10 +2896,11 @@ begin
       begin
         f := 1 / FDivision;
         for i := 0 to FDivision do
-          glEvalCoord1f(i * f);
+          GL.EvalCoord1f(i * f);
       end;
-      glEnd;
+      GL.End_;
     end;
+    rci.GLStates.Disable(stColorLogicOp);
 
     if FSplineMode = lsmBezierSpline then
       rci.GLStates.PopAttrib;
@@ -2908,9 +2917,7 @@ begin
         rci.GLStates.Enable(stBlend);
         rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
-      rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-      if GL_ARB_texture_cube_map then
-        rci.GLStates.ActiveTextureEnabled[ttTextureCube] := False;
+
       for i := 0 to Nodes.Count - 1 do
         with TGLLinesNode(Nodes[i]) do
           DrawNode(rci, X, Y, Z, Color);
@@ -2949,80 +2956,80 @@ begin
   hh := FCubeSize[1] * 0.5;
   hd := FCubeSize[2] * 0.5;
 
-  glBegin(GL_QUADS);
+  GL.Begin_(GL_QUADS);
   if cpFront in FParts then
   begin
-    glNormal3f(0, 0, nd);
+    GL.Normal3f(0, 0, nd);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(hw, hh, hd);
+    GL.Vertex3f(hw, hh, hd);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(-hw * nd, hh * nd, hd);
+    GL.Vertex3f(-hw * nd, hh * nd, hd);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(-hw, -hh, hd);
+    GL.Vertex3f(-hw, -hh, hd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(hw * nd, -hh * nd, hd);
+    GL.Vertex3f(hw * nd, -hh * nd, hd);
   end;
   if cpBack in FParts then
   begin
-    glNormal3f(0, 0, -nd);
+    GL.Normal3f(0, 0, -nd);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(hw, hh, -hd);
+    GL.Vertex3f(hw, hh, -hd);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(hw * nd, -hh * nd, -hd);
+    GL.Vertex3f(hw * nd, -hh * nd, -hd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(-hw, -hh, -hd);
+    GL.Vertex3f(-hw, -hh, -hd);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(-hw * nd, hh * nd, -hd);
+    GL.Vertex3f(-hw * nd, hh * nd, -hd);
   end;
   if cpLeft in FParts then
   begin
-    glNormal3f(-nd, 0, 0);
+    GL.Normal3f(-nd, 0, 0);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(-hw, hh, hd);
+    GL.Vertex3f(-hw, hh, hd);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(-hw, hh * nd, -hd * nd);
+    GL.Vertex3f(-hw, hh * nd, -hd * nd);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(-hw, -hh, -hd);
+    GL.Vertex3f(-hw, -hh, -hd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(-hw, -hh * nd, hd * nd);
+    GL.Vertex3f(-hw, -hh * nd, hd * nd);
   end;
   if cpRight in FParts then
   begin
-    glNormal3f(nd, 0, 0);
+    GL.Normal3f(nd, 0, 0);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(hw, hh, hd);
+    GL.Vertex3f(hw, hh, hd);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(hw, -hh * nd, hd * nd);
+    GL.Vertex3f(hw, -hh * nd, hd * nd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(hw, -hh, -hd);
+    GL.Vertex3f(hw, -hh, -hd);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(hw, hh * nd, -hd * nd);
+    GL.Vertex3f(hw, hh * nd, -hd * nd);
   end;
   if cpTop in FParts then
   begin
-    glNormal3f(0, nd, 0);
+    GL.Normal3f(0, nd, 0);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(-hw, hh, -hd);
+    GL.Vertex3f(-hw, hh, -hd);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(-hw * nd, hh, hd * nd);
+    GL.Vertex3f(-hw * nd, hh, hd * nd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(hw, hh, hd);
+    GL.Vertex3f(hw, hh, hd);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(hw * nd, hh, -hd * nd);
+    GL.Vertex3f(hw * nd, hh, -hd * nd);
   end;
   if cpBottom in FParts then
   begin
-    glNormal3f(0, -nd, 0);
+    GL.Normal3f(0, -nd, 0);
     xglTexCoord2fv(@NullTexPoint);
-    glVertex3f(-hw, -hh, -hd);
+    GL.Vertex3f(-hw, -hh, -hd);
     xglTexCoord2fv(@XTexPoint);
-    glVertex3f(hw * nd, -hh, -hd * nd);
+    GL.Vertex3f(hw * nd, -hh, -hd * nd);
     xglTexCoord2fv(@XYTexPoint);
-    glVertex3f(hw, -hh, hd);
+    GL.Vertex3f(hw, -hh, hd);
     xglTexCoord2fv(@YTexPoint);
-    glVertex3f(-hw * nd, -hh, hd * nd);
+    GL.Vertex3f(-hw * nd, -hh, hd * nd);
   end;
-  glEnd;
+  GL.End_;
 end;
 
 // GenerateSilhouette
@@ -3398,24 +3405,24 @@ begin
   AngStop := DegToRad(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
-  glPushMatrix;
-  glScalef(Radius, Radius, Radius);
+  GL.PushMatrix;
+  GL.Scalef(Radius, Radius, Radius);
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
-    glBegin(GL_TRIANGLE_FAN);
+    GL.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngTop, SinP, CosP);
     xglTexCoord2f(0.5, 0.5);
     if DoReverse then
-      glNormal3f(0, -1, 0)
+      GL.Normal3f(0, -1, 0)
     else
-      glNormal3f(0, 1, 0);
+      GL.Normal3f(0, 1, 0);
     if FTopCap = ctCenter then
-      glVertex3f(0, 0, 0)
+      GL.Vertex3f(0, 0, 0)
     else
     begin
-      glVertex3f(0, SinP, 0);
+      GL.Vertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
         N1[1] := -N1[1];
@@ -3434,11 +3441,11 @@ begin
           NegateVector(N1);
       end;
       xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      glNormal3fv(@N1);
-      glVertex3fv(@V1);
+      GL.Normal3fv(@N1);
+      GL.Vertex3fv(@V1);
       Theta := Theta + StepH;
     end;
-    glEnd;
+    GL.End_;
   end;
 
   // main body
@@ -3457,7 +3464,7 @@ begin
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
-    glBegin(GL_TRIANGLE_STRIP);
+    GL.Begin_(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
 
@@ -3472,25 +3479,25 @@ begin
       if DoReverse then
       begin
         N1 := VectorNegate(V1);
-        glNormal3fv(@N1);
+        GL.Normal3fv(@N1);
       end
       else
-        glNormal3fv(@V1);
-      glVertex3fv(@V1);
+        GL.Normal3fv(@V1);
+      GL.Vertex3fv(@V1);
 
       xglTexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
-        glNormal3fv(@N1);
+        GL.Normal3fv(@N1);
       end
       else
-        glNormal3fv(@V2);
-      glVertex3fv(@V2);
+        GL.Normal3fv(@V2);
+      GL.Vertex3fv(@V2);
 
       Theta := Theta + StepH;
     end;
-    glEnd;
+    GL.End_;
     Phi := Phi2;
     Phi2 := Phi2 - StepV;
   end;
@@ -3498,18 +3505,18 @@ begin
   // bottom cap
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
-    glBegin(GL_TRIANGLE_FAN);
+    GL.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngBottom, SinP, CosP);
     xglTexCoord2f(0.5, 0.5);
     if DoReverse then
-      glNormal3f(0, 1, 0)
+      GL.Normal3f(0, 1, 0)
     else
-      glNormal3f(0, -1, 0);
+      GL.Normal3f(0, -1, 0);
     if FBottomCap = ctCenter then
-      glVertex3f(0, 0, 0)
+      GL.Vertex3f(0, 0, 0)
     else
     begin
-      glVertex3f(0, SinP, 0);
+      GL.Vertex3f(0, SinP, 0);
       if DoReverse then
         MakeVector(N1, 0, -1, 0)
       else
@@ -3529,15 +3536,15 @@ begin
           NegateVector(N1);
       end;
       xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      glNormal3fv(@N1);
-      glVertex3fv(@V1);
+      GL.Normal3fv(@N1);
+      GL.Vertex3fv(@V1);
       Theta := Theta - StepH;
     end;
-    glEnd;
+    GL.End_;
   end;
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
-  glPopMatrix;
+  GL.PopMatrix;
   rci.GLStates.PopAttrib;
 end;
 

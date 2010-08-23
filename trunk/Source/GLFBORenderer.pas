@@ -9,7 +9,8 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
-      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
+      <li>23/08/10 - Yar - Changes for forward core
+      <li>02/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/02/10 - Yar - Added notification of freeing RootObject
       <li>22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
@@ -75,6 +76,8 @@ type
     FSceneScaleFactor: Single;
     FUseLibraryAsMultiTarget: Boolean;
     FPostGenerateMipmap: Boolean;
+    FMaxSize: Integer;
+    FMaxAttachment: Integer;
 
     // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLMaterialLibrary;
@@ -107,8 +110,8 @@ type
 
     procedure RenderToFBO(var ARci: TRenderContextInfo);
 
-    procedure ApplyCamera;
-    procedure UnApplyCamera;
+    procedure ApplyCamera(var ARci: TRenderContextInfo);
+    procedure UnApplyCamera(var ARci: TRenderContextInfo);
 
     procedure DoBeforeRender;
     procedure DoAfterRender;
@@ -216,39 +219,41 @@ implementation
 
 uses
   SysUtils,
-  OpenGL1x,
+  OpenGLTokens,
   VectorTypes,
   GLMultisampleImage;
 
   { TGLFBORenderer }
 
-procedure TGLFBORenderer.ApplyCamera;
+procedure TGLFBORenderer.ApplyCamera(var ARci: TRenderContextInfo);
 var
   sc: Single;
 begin
-  if assigned(Camera) then
+  with ARci.PipelineTransformation do
   begin
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    sc := FCamera.SceneScale;
-    if FSceneScaleFactor > 0 then
-      FCamera.SceneScale := Width / FSceneScaleFactor;
-    FCamera.ApplyPerspective(Viewport, Width, Height, 96); // 96 is default dpi
-    FCamera.SceneScale := sc;
+    Push;
+    if Assigned(Camera) then
+    begin
+      IdentityAll;
+      sc := FCamera.SceneScale;
+      if FSceneScaleFactor > 0 then
+        FCamera.SceneScale := Width / FSceneScaleFactor;
+      FCamera.ApplyPerspective(Viewport, Width, Height, 96); // 96 is default dpi
+      FCamera.SceneScale := sc;
 
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Scalef(1.0 / FAspect, 1.0, 1.0);
-    FCamera.Apply;
-  end
-  else
-  begin
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.Scalef(1.0 / FAspect, 1.0, 1.0);
+      ViewMatrix := CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0));
+      FCamera.Apply;
+    end
+    else
+    begin
+      ViewMatrix := MatrixMultiply(ViewMatrix, CreateScaleMatrix(Vector3fMake(1.0 / FAspect, 1.0, 1.0)));
+    end;
   end;
+end;
+
+procedure TGLFBORenderer.UnApplyCamera(var ARci: TRenderContextInfo);
+begin
+  ARci.PipelineTransformation.Pop;
 end;
 
 constructor TGLFBORenderer.Create(AOwner: TComponent);
@@ -377,21 +382,20 @@ var
   colorTex: TGLTexture;
   depthTex: TGLTexture;
   I: Integer;
-  maxAttachment: TGLint;
-  maxSize: TGLint;
 begin
   for I := 0 to MaxColorAttachments - 1 do
     FFbo.DetachTexture(I);
 
-  GL.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @maxSize);
-  if Width>maxSize then
+  if FMaxSize = 0 then
+    GL.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @FMaxSize);
+  if Width>FMaxSize then
   begin
-    FWidth := maxSize;
+    FWidth := FMaxSize;
     GLSLogger.LogWarning(Name+'.Width out of GL_MAX_RENDERBUFFER_SIZE');
   end;
-  if Height>maxSize then
+  if Height>FMaxSize then
   begin
-    FHeight := maxSize;
+    FHeight := FMaxSize;
     GLSLogger.LogWarning(Name+'.Height out of GL_MAX_RENDERBUFFER_SIZE');
   end;
 
@@ -418,7 +422,8 @@ begin
       Visible := False;
       Abort;
     end;
-    GL.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @maxAttachment);
+    if FMaxAttachment = 0 then
+      GL.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
 
     // Multicolor attachments
     for I := 0 to FMaterialLibrary.Materials.Count - 1 do
@@ -430,7 +435,7 @@ begin
       if ForceTextureDimensions then
         ForceDimensions(colorTex);
 
-      if FColorAttachment >= maxAttachment then
+      if FColorAttachment >= FMaxAttachment then
       begin
         GLSLogger.LogError('Number of color attachments out of GL_MAX_COLOR_ATTACHMENTS');
         Visible := False;
@@ -568,17 +573,24 @@ var
   w, h: Integer;
   s: string;
 begin
+  if not TGLFramebufferHandle.IsSupported then
+  begin
+    GLSLogger.LogError('Framebuffer unsupported');
+    Visible := False;
+    Abort;
+  end;
+
   // prevent recursion
-  if not TGLFramebufferHandle.IsSupported or FRendering then
+  if FRendering then
     Exit;
 
   FRendering := True;
-  if (not assigned(FFbo)) or FChanged then
+  if (not Assigned(FFbo)) or FChanged then
     InitializeFBO;
 
   try
     savedStates := StoreStates;
-    ApplyCamera;
+    ApplyCamera(ARci);
     DoBeforeRender;
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
@@ -651,7 +663,7 @@ begin
     ARci.GLStates.ViewPort :=
       Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 
-    UnApplyCamera;
+    UnApplyCamera(ARci);
   finally
     FFbo.Unbind;
     FRendering := False;
@@ -886,23 +898,6 @@ procedure TGLFBORenderer.StructureChanged;
 begin
   FChanged := True;
   inherited;
-end;
-
-procedure TGLFBORenderer.UnApplyCamera;
-begin
-  if assigned(Camera) then
-  begin
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
-  end
-  else
-  begin
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
-  end;
 end;
 
 initialization

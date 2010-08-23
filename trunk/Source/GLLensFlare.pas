@@ -6,6 +6,7 @@
    Lens flare object.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>13/03/09 - DanB - changed glReadPixels/glTexImage2D calls to glCopyTexImage2D
@@ -49,7 +50,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, VectorGeometry, GLObjects, OpenGL1x,
+  Classes, GLScene, VectorGeometry, GLObjects, OpenGLTokens,
   GLContext, GLColor, BaseClasses, GLRenderContextInfo, GLState,
   GLTextureFormat;
 
@@ -410,8 +411,8 @@ var
   rnd: Single;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(14, 'LensFlare.Rays');
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
 
   with StateCache do
@@ -421,19 +422,19 @@ begin
     Disable(stLineStipple);
   end;
 
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
   for i := 0 to Resolution * 20 - 1 do
   begin
     if (i and 1) <> 0 then
       rnd := 1.5 * Random * size
     else
       rnd := Random * size;
-    glColor4fv(RaysGradient.FromColor.AsAddress);
-    glVertex2f(0, 0);
-    glColor4fv(RaysGradient.ToColor.AsAddress);
-    glVertex2f(rnd * FCos20Res[i], rnd * FSin20Res[i] * Squeeze);
+    GL.Color4fv(RaysGradient.FromColor.AsAddress);
+    GL.Vertex2f(0, 0);
+    GL.Color4fv(RaysGradient.ToColor.AsAddress);
+    GL.Vertex2f(rnd * FCos20Res[i], rnd * FSin20Res[i] * Squeeze);
   end;
-  glEnd;
+  GL.End_;
 end;
 
 // RenderStreak
@@ -446,22 +447,22 @@ var
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(17, 'LensFlare.Streaks');
+    GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
   StateCache.Enable(stLineSmooth);
   StateCache.LineWidth := StreakWidth;
   a := c2PI / NumStreaks;
   f := 1.5 * FCurrSize;
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
   for i := 0 to NumStreaks - 1 do
   begin
     SinCos(StreakAngle * cPIdiv180 + a * i, f, s, c);
-    glColor4fv(StreaksGradient.FromColor.AsAddress);
-    glVertex3fv(@NullVector);
-    glColor4fv(StreaksGradient.ToColor.AsAddress);
-    glVertex2f(c, Squeeze * s);
+    GL.Color4fv(StreaksGradient.FromColor.AsAddress);
+    GL.Vertex3fv(@NullVector);
+    GL.Color4fv(StreaksGradient.ToColor.AsAddress);
+    GL.Vertex2f(c, Squeeze * s);
   end;
-  glEnd;
+  GL.End_;
   StateCache.Disable(stLineSmooth);
 end;
 
@@ -475,10 +476,10 @@ var
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(14, 'LensFlare.Ring');
+    GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
   rW := FCurrSize * (1 / 15); // Ring width
-  glBegin(GL_QUADS);
+  GL.Begin_(GL_QUADS);
   s0 := 0;
   c0 := 0.6;
   for i := 0 to Resolution - 1 do
@@ -488,24 +489,24 @@ begin
     s0 := FSinRes[i] * 0.6 * Squeeze;
     c0 := FCosRes[i] * 0.6;
 
-    glColor4fv(GlowGradient.ToColor.AsAddress);
-    glVertex2f((FCurrSize - rW) * c, (FCurrSize - rW) * s);
-    glColor4fv(RingGradient.FromColor.AsAddress);
-    glVertex2f(FCurrSize * c, Squeeze * FCurrSize * s);
+    GL.Color4fv(GlowGradient.ToColor.AsAddress);
+    GL.Vertex2f((FCurrSize - rW) * c, (FCurrSize - rW) * s);
+    GL.Color4fv(RingGradient.FromColor.AsAddress);
+    GL.Vertex2f(FCurrSize * c, Squeeze * FCurrSize * s);
 
-    glVertex2f(FCurrSize * c0, FCurrSize * s0);
-    glColor4fv(GlowGradient.ToColor.AsAddress);
-    glVertex2f((FCurrSize - rW) * c0, (FCurrSize - rW) * s0);
+    GL.Vertex2f(FCurrSize * c0, FCurrSize * s0);
+    GL.Color4fv(GlowGradient.ToColor.AsAddress);
+    GL.Vertex2f((FCurrSize - rW) * c0, (FCurrSize - rW) * s0);
 
-    glColor4fv(RingGradient.FromColor.AsAddress);
-    glVertex2f(FCurrSize * c, FCurrSize * s);
-    glVertex2f(FCurrSize * c0, FCurrSize * s0);
+    GL.Color4fv(RingGradient.FromColor.AsAddress);
+    GL.Vertex2f(FCurrSize * c, FCurrSize * s);
+    GL.Vertex2f(FCurrSize * c0, FCurrSize * s0);
 
-    glColor4fv(GlowGradient.ToColor.AsAddress);
-    glVertex2f((FCurrSize + rW) * c0, (FCurrSize + rW) * s0);
-    glVertex2f((FCurrSize + rW) * c, (FCurrSize + rW) * s);
+    GL.Color4fv(GlowGradient.ToColor.AsAddress);
+    GL.Vertex2f((FCurrSize + rW) * c0, (FCurrSize + rW) * s0);
+    GL.Vertex2f((FCurrSize + rW) * c, (FCurrSize + rW) * s);
   end;
-  glEnd;
+  GL.End_;
 end;
 
 // RenderSecondaries
@@ -520,7 +521,7 @@ var
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(21, 'LensFlare.Secondaries');
+    GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
   // Other secondaries (plain gradiented circles, like the glow):
   for j := 1 to NumSecs do
@@ -541,13 +542,13 @@ begin
       grad := SecondariesGradient;
     rnd := (Random + 0.1) * FCurrSize * 0.25;
 
-    glBegin(GL_TRIANGLE_FAN);
-    glColor4fv(grad.FromColor.AsAddress);
-    glVertex2f(v[0], v[1]);
-    glColor4fv(grad.ToColor.AsAddress);
+    GL.Begin_(GL_TRIANGLE_FAN);
+    GL.Color4fv(grad.FromColor.AsAddress);
+    GL.Vertex2f(v[0], v[1]);
+    GL.Color4fv(grad.ToColor.AsAddress);
     for i := 0 to Resolution - 1 do
-      glVertex2f(FCosRes[i] * rnd + v[0], FSinRes[i] * rnd + v[1]);
-    glEnd;
+      GL.Vertex2f(FCosRes[i] * rnd + v[0], FSinRes[i] * rnd + v[1]);
+    GL.End_;
   end;
 end;
 
@@ -560,7 +561,7 @@ var
   depth, dist: Single;
   posVector, v, rv: TAffineVector;
   screenPos: TAffineVector;
-  flareInViewPort, usedOcclusionQuery, dynamicSize: Boolean;
+  flareInViewPort, dynamicSize: Boolean;
   oldSeed: LongInt;
   projMatrix: TMatrix;
   CurrentBuffer: TGLSceneBuffer;
@@ -580,9 +581,10 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := CurrentBuffer.WorldToScreen(v);
-    flareInViewPort := (screenPos[0] < rci.viewPortSize.cx) and (screenPos[0] >=
-      0)
-      and (screenPos[1] < rci.viewPortSize.cy) and (screenPos[1] >= 0);
+    flareInViewPort := (screenPos[0] < rci.viewPortSize.cx)
+    and (screenPos[0] >= 0)
+    and (screenPos[1] < rci.viewPortSize.cy)
+    and (screenPos[1] >= 0);
   end
   else
     flareInViewPort := False;
@@ -613,15 +615,15 @@ begin
   end;
 
   // Prepare matrices
-  glPushMatrix;
-  glLoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
+  GL.PushMatrix;
+  GL.LoadMatrixf(@CurrentBuffer.BaseProjectionMatrix);
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
+  GL.MatrixMode(GL_PROJECTION);
+  GL.PushMatrix;
   projMatrix := IdentityHmgMatrix;
   projMatrix[0][0] := 2 / rci.viewPortSize.cx;
   projMatrix[1][1] := 2 / rci.viewPortSize.cy;
-  glLoadMatrixf(@projMatrix);
+  GL.LoadMatrixf(@projMatrix);
 
   MakeVector(posVector,
     screenPos[0] - rci.viewPortSize.cx * 0.5,
@@ -630,7 +632,7 @@ begin
 
   if AutoZTest then
   begin
-    if dynamicSize and (GL_HP_occlusion_test or
+    if dynamicSize and (GL.HP_occlusion_test or
       TGLOcclusionQueryHandle.IsSupported) then
     begin
       // hardware-based occlusion test is possible
@@ -642,47 +644,37 @@ begin
       rci.GLStates.Enable(stDepthTest);
       rci.GLStates.DepthFunc := cfLEqual;
 
-      usedOcclusionQuery := TGLOcclusionQueryHandle.IsSupported;
-      if usedOcclusionQuery then
+      if TGLOcclusionQueryHandle.IsSupported then
       begin
         // preferred method, doesn't stall rendering too badly
         if not Assigned(FOcclusionQuery) then
           FOcclusionQuery := TGLOcclusionQueryHandle.Create;
-        if FOcclusionQuery.Handle = 0 then
-        begin
-          FOcclusionQuery.AllocateHandle;
-          FOcclusionQuery.BeginQuery;
-        end
+        FOcclusionQuery.AllocateHandle;
+        if FOcclusionQuery.IsDataNeedUpdate then
+          FOcclusionQuery.NotifyDataUpdated
         else
-        begin
-          if FOcclusionQuery.RenderingContext = CurrentGLContext then
-          begin
-            FlareIsNotOccluded := (FOcclusionQuery.PixelCount <> 0);
-            FOcclusionQuery.BeginQuery;
-          end
-          else
-            usedOcclusionQuery := False;
-        end;
-      end;
-      if not usedOcclusionQuery then
+          FlareIsNotOccluded := (FOcclusionQuery.PixelCount <> 0);
+        FOcclusionQuery.BeginQuery;
+      end
+      else
       begin
         // occlusion_test, stalls rendering a bit
-        glEnable(GL_OCCLUSION_TEST_HP);
+        GL.Enable(GL_OCCLUSION_TEST_HP);
       end;
 
-      glBegin(GL_QUADS);
-      glVertex3f(posVector[0] + 2, posVector[1], 1);
-      glVertex3f(posVector[0], posVector[1] + 2, 1);
-      glVertex3f(posVector[0] - 2, posVector[1], 1);
-      glVertex3f(posVector[0], posVector[1] - 2, 1);
-      glEnd;
+      GL.Begin_(GL_QUADS);
+      GL.Vertex3f(posVector[0] + 2, posVector[1], 1);
+      GL.Vertex3f(posVector[0], posVector[1] + 2, 1);
+      GL.Vertex3f(posVector[0] - 2, posVector[1], 1);
+      GL.Vertex3f(posVector[0], posVector[1] - 2, 1);
+      GL.End_;
 
-      if usedOcclusionQuery then
+      if TGLOcclusionQueryHandle.IsSupported then
         FOcclusionQuery.EndQuery
       else
       begin
-        glDisable(GL_OCCLUSION_TEST_HP);
-        glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
+        GL.Disable(GL_OCCLUSION_TEST_HP);
+        GL.GetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
       end;
 
       rci.GLStates.DepthFunc := cfLEqual;
@@ -690,10 +682,6 @@ begin
     end
     else
     begin
-      // explicit ZTesting, can hurt framerate badly
-      //depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),Round(rci.viewPortSize.cy-ScreenPos[1]));
-      //FlareIsNotOccluded:=(depth>=1); //this assumes the light is further than the farplane.
-
       //Compares the distance to the lensflare, to the z-buffer depth.
       //This prevents the flare from being occluded by objects BEHIND the light.
       depth := CurrentBuffer.PixelToDistance(Round(ScreenPos[0]),
@@ -715,19 +703,19 @@ begin
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
-      glTranslatef(posVector[0], posVector[1], posVector[2]);
+      GL.Translatef(posVector[0], posVector[1], posVector[2]);
 
       // Glow (a circle with transparent edges):
       if feGlow in Elements then
       begin
-        glBegin(GL_TRIANGLE_FAN);
-        glColor4fv(GlowGradient.FromColor.AsAddress);
-        glVertex2f(0, 0);
-        glColor4fv(GlowGradient.ToColor.AsAddress);
+        GL.Begin_(GL_TRIANGLE_FAN);
+        GL.Color4fv(GlowGradient.FromColor.AsAddress);
+        GL.Vertex2f(0, 0);
+        GL.Color4fv(GlowGradient.ToColor.AsAddress);
         for i := 0 to Resolution - 1 do
-          glVertex2f(FCurrSize * FCosRes[i],
+          GL.Vertex2f(FCurrSize * FCosRes[i],
             Squeeze * FCurrSize * FSinRes[i]);
-        glEnd;
+        GL.End_;
       end;
 
       if feStreaks in Elements then
@@ -740,22 +728,22 @@ begin
         begin
         {$IFDEF GLS_OPENGL_DEBUG}
           if GL_GREMEDY_string_marker then
-            glStringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
+            GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
           rci.GLStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
           rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
-          glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+          GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-          glBegin(GL_QUADS);
-          glTexCoord2f(0, 0);
-          glVertex2f(-FCurrSize, -FCurrSize);
-          glTexCoord2f(1, 0);
-          glVertex2f(FCurrSize, -FCurrSize);
-          glTexCoord2f(1, 1);
-          glVertex2f(FCurrSize, FCurrSize);
-          glTexCoord2f(0, 1);
-          glVertex2f(-FCurrSize, FCurrSize);
-          glEnd;
+          GL.Begin_(GL_QUADS);
+          GL.TexCoord2f(0, 0);
+          GL.Vertex2f(-FCurrSize, -FCurrSize);
+          GL.TexCoord2f(1, 0);
+          GL.Vertex2f(FCurrSize, -FCurrSize);
+          GL.TexCoord2f(1, 1);
+          GL.Vertex2f(FCurrSize, FCurrSize);
+          GL.TexCoord2f(0, 1);
+          GL.Vertex2f(-FCurrSize, FCurrSize);
+          GL.End_;
 
           rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
         end
@@ -766,7 +754,7 @@ begin
       if feRing in Elements then
         RenderRing;
 
-      glLoadMatrixf(@projMatrix);
+      GL.LoadMatrixf(@projMatrix);
     end;
 
     if feSecondaries in Elements then
@@ -775,9 +763,9 @@ begin
     RandSeed := oldSeed;
   end;
 
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
+  GL.PopMatrix;
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PopMatrix;
 
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, rci);
@@ -802,55 +790,49 @@ var
 begin
   if FTexRays.Handle <> 0 then
     Exit;
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
-  glLoadIdentity;
-  gluOrtho2D(0, activeBuffer.Width, 0, activeBuffer.Height);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadIdentity;
-
-  stateCache := activeBuffer.RenderingContext.GLStates;
+  with activeBuffer.RenderingContext do
+  begin
+    stateCache := GLStates;
+    PipelineTransformation.Push;
+    PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1);
+    PipelineTransformation.ViewMatrix := IdentityHmgMatrix;
+  end;
   SetupRenderingOptions(stateCache);
 
   texSize := RoundUpToPowerOf2(Size);
   if texSize < Size * 1.5 then
     texSize := texSize * 2;
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+  GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if texSize > maxSize then
     texSize := maxSize;
 
   stateCache.Disable(stBlend);
-  glColor4f(0, 0, 0, 0);
-  glBegin(GL_QUADS);
-  glVertex2f(0, 0);
-  glVertex2f(texSize + 4, 0);
-  glVertex2f(texSize + 4, texSize + 4);
-  glVertex2f(0, texSize + 4);
-  glEnd;
+  GL.Color4f(0, 0, 0, 0);
+  GL.Begin_(GL_QUADS);
+  GL.Vertex2f(0, 0);
+  GL.Vertex2f(texSize + 4, 0);
+  GL.Vertex2f(texSize + 4, texSize + 4);
+  GL.Vertex2f(0, texSize + 4);
+  GL.End_;
   stateCache.Enable(stBlend);
 
-  glTranslatef(texSize * 0.5 + 2, texSize * 0.5 + 2, 0);
+  GL.Translatef(texSize * 0.5 + 2, texSize * 0.5 + 2, 0);
   RenderRays(stateCache, texSize * 0.5);
 
   FTexRays.AllocateHandle;
   stateCache.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
-  if GL_EXT_texture_edge_clamp then
+  if GL.EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, texSize, texSize, 0);
+  GL.CopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, texSize, texSize, 0);
 
-  glPopMatrix;
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
+  activeBuffer.RenderingContext.PipelineTransformation.Pop;
 
   GL.CheckError;
 end;

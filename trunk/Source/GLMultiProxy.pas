@@ -2,6 +2,7 @@
 {: Implements a multi-proxy objects, useful for discreet LOD.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
       <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
       <li>25/11/03 - EG - Added per-master visibility boolean
@@ -151,7 +152,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils,OpenGL1x;
+uses SysUtils, OpenGLTokens, GLContext;
 
 // ------------------
 // ------------------ TGLMultiProxyMaster ------------------
@@ -409,7 +410,7 @@ begin
             if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
                oldProxySubObject:=rci.proxySubObject;
                rci.proxySubObject:=True;
-               glMultMatrixf(PGLFloat(master.MatrixAsAddress));
+               GL.MultMatrixf(PGLFloat(master.MatrixAsAddress));
                master.DoRender(rci, renderSelf, (master.Count>0));
                rci.proxySubObject:=oldProxySubObject;
             end;

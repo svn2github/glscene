@@ -16,6 +16,7 @@
 
 
  <b>Historique : </b><font size=-1><ul>
+      <li>18/07/10 - Yar - Raname TGLBitmap32 to TGLImage
       <li>20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
       <li>14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -98,7 +99,8 @@ uses
 {$IFDEF FPC}
   fpimage, intfgraphics, GraphType,
 {$ENDIF}
-  OpenGL1x, GLUtils, GLCrossPlatform, GLContext, GLColor, GLTextureFormat;
+  OpenGL1x, OpenGLTokens, GLContext,
+  GLUtils, GLCrossPlatform,  GLColor, GLTextureFormat;
 
 type
   TGLMinFilter = (miNearest, miLinear, miNearestMipmapNearest,
@@ -180,7 +182,7 @@ type
 
   TGLBaseImageClass = class of TGLBaseImage;
 
-  // TGLBitmap32
+  // TGLImage
   //
     {: Contains and manipulates a 32 bits (24+8) bitmap.<p>
        This is the base class for preparing and manipulating textures in GLScene,
@@ -192,7 +194,7 @@ type
        data for use in OpenGL.<p>
        The class has support for registering its content as a texture, as well
        as for directly drawing/reading from the current OpenGL buffer. }
-  TGLBitmap32 = class(TGLBaseImage)
+  TGLImage = class(TGLBaseImage)
   private
     { Private Declarations }
     FVerticalReverseOnAssignFromBitmap: Boolean;
@@ -223,7 +225,7 @@ type
     { Public Declarations }
     constructor Create; override;
     destructor Destroy; override;
-    {: Accepts TGLBitmap32 and TGraphic subclasses. }
+    {: Accepts TGLImage and TGraphic subclasses. }
     procedure Assign(Source: TPersistent); override;
     {: Assigns from a 24 bits bitmap without swapping RGB.<p>
       This is faster than a regular assignment, but R and B channels
@@ -327,7 +329,8 @@ type
       </ul>The texWidth and texHeight parameters are used to return
       the actual width and height of the texture (that can be different
       from the size of the bitmap32). }
-    procedure RegisterAsOpenGLTexture(target: TGLUInt;
+    procedure RegisterAsOpenGLTexture(
+      target: TGLEnum;
       minFilter: TGLMinFilter;
       texFormat: TGLEnum;
       out texWidth: integer;
@@ -359,6 +362,8 @@ type
     procedure AssignToBitmap(aBitmap: TGLBitmap);
     procedure UnMipmap; override;
   end;
+
+  TGLBitmap32 = TGLImage;
 
   // TRasterFileFormat
   //
@@ -428,7 +433,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  VectorGeometry, GLStrings;
+  VectorGeometry, GLStrings, GLPBuffer;
 
 var
   vRasterFileFormats: TRasterFileFormatsList;
@@ -1342,7 +1347,7 @@ end;
 procedure TGLBaseImage.Narrow;
 var
   size: integer;
-  tempTex: GLuint;
+  oldContext: TGLContext;
 begin
   // Check for already norrow
   if (fColorFormat = GL_RGBA)
@@ -1353,47 +1358,52 @@ begin
     Exit;
 
   UnMipmap;
-  if CurrentGLContext <> nil then
+
+  oldContext := CurrentGLContext;
+  if Assigned(oldContext) then
+    oldContext.Deactivate;
+
+  if PBufferService.TextureID = 0 then
+    PBufferService.Initialize(1, 1);
+  PBufferService.Enable;
+
+  if IsFormatSupported(fInternalFormat) then
   begin
-    GL.PushAttrib(GL_TEXTURE_BIT);
-    GL.GenTextures(1, @tempTex);
-
-    if IsFormatSupported(fInternalFormat) then
+    // Setup texture
+    PBufferService.GL.BindTexture(GL_TEXTURE_2D, PBufferService.TextureID);
+    // copy texture to video memory
+    if IsCompressedFormat(fInternalFormat) then
     begin
-      // Setup texture
-      GL.Enable(GL_TEXTURE_2D);
-      GL.BindTexture(GL_TEXTURE_2D, tempTex);
-      // copy texture to video memory
-      if IsCompressedFormat(fInternalFormat) then
-      begin
-        size := ((fWidth + 3) div 4) * ((fHeight + 3) div 4) * fElementSize;
-        GL.CompressedTexImage2D(
-          GL_TEXTURE_2D, 0,
-          InternalFormatToOpenGLFormat(fInternalFormat),
-          fWidth, fHeight, 0, size, fData);
-      end
-      else
-        GL.TexImage2D(
-          GL_TEXTURE_2D,
-          0,
-          InternalFormatToOpenGLFormat(fInternalFormat),
-          fWidth, fHeight, 0, fColorFormat, fDataType, fData);
+      size := ((fWidth + 3) div 4) * ((fHeight + 3) div 4) * fElementSize;
+      PBufferService.GL.CompressedTexImage2D(
+        GL_TEXTURE_2D, 0,
+        InternalFormatToOpenGLFormat(fInternalFormat),
+        fWidth, fHeight, 0, size, fData);
+    end
+    else
+      PBufferService.GL.TexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        InternalFormatToOpenGLFormat(fInternalFormat),
+        fWidth, fHeight, 0, fColorFormat, fDataType, fData);
 
-      fDepth := 0;
-      fColorFormat := GL_RGBA;
-      fInternalFormat := tfRGBA8;
-      fDataType := GL_UNSIGNED_BYTE;
-      fElementSize := 4;
-      fCubeMap := false;
-      fTextureArray := false;
-      ReallocMem(fData, DataSize);
+    fDepth := 0;
+    fColorFormat := GL_RGBA;
+    fInternalFormat := tfRGBA8;
+    fDataType := GL_UNSIGNED_BYTE;
+    fElementSize := 4;
+    fCubeMap := false;
+    fTextureArray := false;
+    ReallocMem(fData, DataSize);
 
-      // get texture from video memory in simple format
-      GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, fData);
-      GL.DeleteTextures(1, @tempTex);
-      GL.PopAttrib;
-    end;
+    // get texture from video memory in simple format
+    PBufferService.GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, fData);
+    PBufferService.GL.CheckError;
   end;
+
+  PBufferService.Disable;
+  if Assigned(oldContext) then
+    oldContext.Activate;
 end;
 
 // UnMipmap
@@ -1424,14 +1434,14 @@ end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 // ------------------
-// ------------------ TGLBitmap32 ------------------
+// ------------------ TGLImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBitmap32'}{$ENDIF}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLImage'}{$ENDIF}
 // Create
 //
 
-constructor TGLBitmap32.Create;
+constructor TGLImage.Create;
 begin
   inherited Create;
   SetBlank(false);
@@ -1440,7 +1450,7 @@ end;
 // Destroy
 //
 
-destructor TGLBitmap32.Destroy;
+destructor TGLImage.Destroy;
 begin
   inherited Destroy;
 end;
@@ -1448,7 +1458,7 @@ end;
 // Assign
 //
 
-procedure TGLBitmap32.Assign(Source: TPersistent);
+procedure TGLImage.Assign(Source: TPersistent);
 var
   bmp: TGLBitmap;
   graphic: TGLGraphic;
@@ -1460,25 +1470,25 @@ begin
     Narrow;
     ReallocMem(FData, 0);
   end
-  else if (Source is TGLBitmap32) or (Source is TGLBaseImage) then
+  else if (Source is TGLImage) or (Source is TGLBaseImage) then
   begin
     // duplicate the data
-    if Source is TGLBitmap32 then
-      FBlank := TGLBitmap32(Source).fBlank
+    if Source is TGLImage then
+      FBlank := TGLImage(Source).fBlank
     else
       FBlank := false;
-    FWidth := TGLBitmap32(Source).fWidth;
-    FHeight := TGLBitmap32(Source).fHeight;
-    FDepth := TGLBitmap32(Source).fDepth;
-    fMipLevels := TGLBitmap32(Source).fMipLevels;
-    fCubeMap := TGLBitmap32(Source).fCubeMap;
-    fColorFormat := TGLBitmap32(Source).fColorFormat;
-    fInternalFormat := TGLBitmap32(Source).fInternalFormat;
-    fDataType := TGLBitmap32(Source).fDataType;
-    fElementSize := TGLBitmap32(Source).fElementSize;
+    FWidth := TGLImage(Source).fWidth;
+    FHeight := TGLImage(Source).fHeight;
+    FDepth := TGLImage(Source).fDepth;
+    fMipLevels := TGLImage(Source).fMipLevels;
+    fCubeMap := TGLImage(Source).fCubeMap;
+    fColorFormat := TGLImage(Source).fColorFormat;
+    fInternalFormat := TGLImage(Source).fInternalFormat;
+    fDataType := TGLImage(Source).fDataType;
+    fElementSize := TGLImage(Source).fElementSize;
     fLevels.Clear;
-    fLevels.Assign(TGLBitmap32(Source).fLevels);
-    fTextureArray := TGLBitmap32(Source).fTextureArray;
+    fLevels.Assign(TGLImage(Source).fLevels);
+    fTextureArray := TGLImage(Source).fTextureArray;
     if not FBlank then
     begin
       ReallocMem(FData, DataSize);
@@ -1554,7 +1564,7 @@ end;
 //
 {$IFDEF FPC}
 
-procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
 var
   y, x: Integer;
   pDest: PByte;
@@ -1616,7 +1626,7 @@ begin
 end;
 {$ELSE}
 
-procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -1695,7 +1705,7 @@ end;
 // AssignFromBitmap24WithoutRGBSwap
 //
 
-procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -1750,7 +1760,7 @@ end;
 // AssignFrom32BitsBitmap
 //
 
-procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
 var
   y: Integer;
   rowOffset : Int64;
@@ -1824,7 +1834,7 @@ end;
 // AssignFromBitmap32
 //
 
-procedure TGLBitmap32.AssignFromBitmap32(aBitmap32: TBitmap32);
+procedure TGLImage.AssignFromBitmap32(aBitmap32: TBitmap32);
 var
   y: Integer;
   pSrc, pDest: PAnsiChar;
@@ -1863,7 +1873,7 @@ end;
 {$IFDEF GLS_PngImage_SUPPORT}
 // AlphaChannel Support
 
-procedure TGLBitmap32.AssignFromPngImage(aPngImage: TPngImage);
+procedure TGLImage.AssignFromPngImage(aPngImage: TPngImage);
 var
   i, j: Integer;
   SourceScan: PRGBLine;
@@ -1931,7 +1941,7 @@ end;
 // AssignFromTexture2D
 //
 
-procedure TGLBitmap32.AssignFromTexture2D(textureHandle: Cardinal);
+procedure TGLImage.AssignFromTexture2D(textureHandle: Cardinal);
 var
   oldTex: Cardinal;
 begin
@@ -1962,7 +1972,7 @@ end;
 // AssignFromTexture2D
 //
 
-procedure TGLBitmap32.AssignFromTexture2D(textureHandle: TGLTextureHandle);
+procedure TGLImage.AssignFromTexture2D(textureHandle: TGLTextureHandle);
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
@@ -2010,7 +2020,7 @@ end;
 // AssignFromTexture
 //
 
-procedure TGLBitmap32.AssignFromTexture(textureContext: TGLContext;
+procedure TGLImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: TGLuint;
   textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
@@ -2206,7 +2216,7 @@ end;
 // Create32BitsBitmap
 //
 
-function TGLBitmap32.Create32BitsBitmap: TGLBitmap;
+function TGLImage.Create32BitsBitmap: TGLBitmap;
 var
 {$IFDEF FPC}
   RIMG: TRawImage;
@@ -2275,7 +2285,7 @@ end;
 // SetWidth
 //
 
-procedure TGLBitmap32.SetWidth(val: Integer);
+procedure TGLImage.SetWidth(val: Integer);
 begin
   //  if (val and 3)>0 then
   //    val:=(val and $FFFC)+4;
@@ -2290,7 +2300,7 @@ end;
 // SetHeight
 //
 
-procedure TGLBitmap32.SetHeight(const val: Integer);
+procedure TGLImage.SetHeight(const val: Integer);
 begin
   if val <> FHeight then
   begin
@@ -2303,7 +2313,7 @@ end;
 // SetDepth
 //
 
-procedure TGLBitmap32.SetDepth(const val: Integer);
+procedure TGLImage.SetDepth(const val: Integer);
 begin
   if val <> FDepth then
   begin
@@ -2316,7 +2326,7 @@ end;
 // SetCubeMap
 //
 
-procedure TGLBitmap32.SetCubeMap(const val: Boolean);
+procedure TGLImage.SetCubeMap(const val: Boolean);
 begin
   if val <> fCubeMap then
   begin
@@ -2328,7 +2338,7 @@ end;
 // SetArray
 //
 
-procedure TGLBitmap32.SetArray(const val: Boolean);
+procedure TGLImage.SetArray(const val: Boolean);
 begin
   if val <> fTextureArray then
   begin
@@ -2340,7 +2350,7 @@ end;
 // SetInternalFormat
 //
 
-procedure TGLBitmap32.SetInternalFormat(const val: TGLInternalFormat);
+procedure TGLImage.SetInternalFormat(const val: TGLInternalFormat);
 begin
   Assert(fBlank);
   fInternalFormat := val;
@@ -2350,7 +2360,7 @@ end;
 // SetFormat
 //
 
-procedure TGLBitmap32.SetColorFormat(const val: GLenum);
+procedure TGLImage.SetColorFormat(const val: GLenum);
 begin
   Assert(fBlank);
   fColorFormat := val;
@@ -2360,7 +2370,7 @@ end;
 // SetDataType
 //
 
-procedure TGLBitmap32.SetDataType(const val: GLenum);
+procedure TGLImage.SetDataType(const val: GLenum);
 begin
   Assert(fBlank);
   fDataType := val;
@@ -2370,7 +2380,7 @@ end;
 // GetScanLine
 //
 
-function TGLBitmap32.GetScanLine(index: Integer): PGLPixel32Array;
+function TGLImage.GetScanLine(index: Integer): PGLPixel32Array;
 begin
   Narrow;
   Result := PGLPixel32Array(@FData[index * Width]);
@@ -2379,7 +2389,7 @@ end;
 // SetAlphaFromIntensity
 //
 
-procedure TGLBitmap32.SetAlphaFromIntensity;
+procedure TGLImage.SetAlphaFromIntensity;
 var
   i: Integer;
 begin
@@ -2392,7 +2402,7 @@ end;
 // SetAlphaTransparentForColor
 //
 
-procedure TGLBitmap32.SetAlphaTransparentForColor(const aColor: TColor);
+procedure TGLImage.SetAlphaTransparentForColor(const aColor: TColor);
 var
   color: TGLPixel24;
 begin
@@ -2405,7 +2415,7 @@ end;
 // SetAlphaTransparentForColor
 //
 
-procedure TGLBitmap32.SetAlphaTransparentForColor(const aColor: TGLPixel32);
+procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel32);
 var
   color: TGLPixel24;
 begin
@@ -2418,7 +2428,7 @@ end;
 // SetAlphaTransparentForColor
 //
 
-procedure TGLBitmap32.SetAlphaTransparentForColor(const aColor: TGLPixel24);
+procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel24);
 var
   i: Integer;
   intCol: Integer;
@@ -2435,7 +2445,7 @@ end;
 // SetAlphaToValue
 //
 
-procedure TGLBitmap32.SetAlphaToValue(const aValue: Byte);
+procedure TGLImage.SetAlphaToValue(const aValue: Byte);
 var
   i: Integer;
 begin
@@ -2447,7 +2457,7 @@ end;
 // SetAlphaToFloatValue
 //
 
-procedure TGLBitmap32.SetAlphaToFloatValue(const aValue: Single);
+procedure TGLImage.SetAlphaToFloatValue(const aValue: Single);
 begin
   SetAlphaToValue(Byte(Trunc(aValue * 255) and 255));
 end;
@@ -2455,7 +2465,7 @@ end;
 // InvertAlpha
 //
 
-procedure TGLBitmap32.InvertAlpha;
+procedure TGLImage.InvertAlpha;
 var
   i: Integer;
 begin
@@ -2466,7 +2476,7 @@ end;
 // SqrtAlpha
 //
 
-procedure TGLBitmap32.SqrtAlpha;
+procedure TGLImage.SqrtAlpha;
 var
   i: Integer;
   sqrt255Array: PSqrt255Array;
@@ -2480,7 +2490,7 @@ end;
 // BrightnessCorrection
 //
 
-procedure TGLBitmap32.BrightnessCorrection(const factor: Single);
+procedure TGLImage.BrightnessCorrection(const factor: Single);
 begin
   if Assigned(FData) then
   begin
@@ -2492,7 +2502,7 @@ end;
 // GammaCorrection
 //
 
-procedure TGLBitmap32.GammaCorrection(const gamma: Single);
+procedure TGLImage.GammaCorrection(const gamma: Single);
 begin
   if Assigned(FData) then
   begin
@@ -2504,7 +2514,7 @@ end;
 // DownSampleByFactor2
 //
 
-procedure TGLBitmap32.DownSampleByFactor2;
+procedure TGLImage.DownSampleByFactor2;
 type
   T2Pixel32 = packed array[0..1] of TGLPixel32;
   P2Pixel32 = ^T2Pixel32;
@@ -2617,7 +2627,7 @@ end;
 // RegisterAsOpenGLTexture
 //
 
-procedure TGLBitmap32.RegisterAsOpenGLTexture(target: TGLUInt;
+procedure TGLImage.RegisterAsOpenGLTexture(target: TGLUInt;
   minFilter: TGLMinFilter;
   texFormat: TGLEnum);
 var
@@ -2629,7 +2639,7 @@ end;
 // RegisterAsOpenGLTexture
 //
 
-procedure TGLBitmap32.RegisterAsOpenGLTexture(target: TGLUInt;
+procedure TGLImage.RegisterAsOpenGLTexture(target: TGLUInt;
   minFilter: TGLMinFilter;
   texFormat: TGLEnum;
   out texWidth: integer;
@@ -2707,24 +2717,22 @@ begin
 
   // Hardware mipmap autogeneration
   bMipmapGen := False;
-  if GL.SGIS_generate_mipmap and IsTargetSupportMipmap(target) then
+  if IsTargetSupportMipmap(target) then
   begin
     bMipmapGen := (ml = 1) and not (minFilter in [miNearest, miLinear]);
+
+    if not CurrentGLContext.GLStates.ForwardContext and GL.SGIS_generate_mipmap then
+    begin
     if (target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X)
       and (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) then
-    begin
-      if not CurrentGLContext.GLStates.ForwardContext then
-        GL.TexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP_SGIS,
-          Integer(bMipmapGen));
-      if ml>1 then
-        GL.TexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL_SGIS, ml);
-    end
-    else begin
-      if not CurrentGLContext.GLStates.ForwardContext then
-        GL.TexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
-      if ml>1 then
-        GL.TexParameteri(target, GL_TEXTURE_MAX_LEVEL_SGIS, ml-1);
+      GL.TexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP_SGIS,
+          Integer(bMipmapGen))
+    else
+      GL.TexParameteri(target, GL_GENERATE_MIPMAP_SGIS, Integer(bMipmapGen));
     end;
+
+    if GL.SGIS_texture_lod and (ml>1) then
+      GL.TexParameteri(target, GL_TEXTURE_MAX_LEVEL_SGIS, ml-1);
   end;
 
   // if image is blank then doing only allocatation texture in videomemory
@@ -2963,7 +2971,7 @@ end;
 // ReadPixels
 //
 
-procedure TGLBitmap32.ReadPixels(const area: TGLRect);
+procedure TGLImage.ReadPixels(const area: TGLRect);
 begin
   FWidth := (area.Right - area.Left) and $FFFC;
   FHeight := (area.Bottom - area.Top);
@@ -2984,7 +2992,7 @@ end;
 // DrawPixels
 //
 
-procedure TGLBitmap32.DrawPixels(const x, y: Single);
+procedure TGLImage.DrawPixels(const x, y: Single);
 begin
   if fBlank or IsEmpty then
     Exit;
@@ -2993,10 +3001,10 @@ begin
   GL.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
 
-// TGLBitmap32
+// TGLImage
 //
 
-procedure TGLBitmap32.GrayScaleToNormalMap(const scale: Single;
+procedure TGLImage.GrayScaleToNormalMap(const scale: Single;
   wrapX: Boolean = True; wrapY: Boolean = True);
 var
   x, y: Integer;
@@ -3070,7 +3078,7 @@ end;
 // NormalizeNormalMap
 //
 
-procedure TGLBitmap32.NormalizeNormalMap;
+procedure TGLImage.NormalizeNormalMap;
 var
   x, y: Integer;
   sr, sg, sb: Single;
@@ -3101,17 +3109,17 @@ begin
   end;
 end;
 
-procedure TGLBitmap32.SetBlank(const Value: boolean);
+procedure TGLImage.SetBlank(const Value: boolean);
 begin
   if not Value and not IsEmpty then
     ReallocMem(FData, DataSize);
   FBlank := Value;
 end;
 
-//Converts a TGLBitmap32 back into a TBitmap
+//Converts a TGLImage back into a TBitmap
 //
 
-procedure TGLBitmap32.AssignToBitmap(aBitmap: TGLBitmap); //TGLBitmap = TBitmap
+procedure TGLImage.AssignToBitmap(aBitmap: TGLBitmap); //TGLBitmap = TBitmap
 var
   y: integer;
   pSrc, pDest: PAnsiChar;
@@ -3135,7 +3143,7 @@ end;
 // UnMipmap
 //
 
-procedure TGLBitmap32.UnMipmap;
+procedure TGLImage.UnMipmap;
 begin
   inherited UnMipmap;
   if not (fBlank or IsEmpty) then

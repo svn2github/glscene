@@ -15,6 +15,7 @@
    will indicate if there is valid data in the buffer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -111,7 +112,7 @@ implementation
 // ----------------------------------------------------------------------
 
 uses
-  OpenGL1x,
+  OpenGLTokens,
   MeshUtils,
   VectorTypes;
 
@@ -197,27 +198,20 @@ begin
     GL.FeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
     ARci.GLStates.Disable(stCullFace);
     ARci.ignoreMaterials := True;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Scalef(
-      1.0 / FCorrectionScaling,
-      1.0 / FCorrectionScaling,
-      1.0 / FCorrectionScaling);
+    ARci.PipelineTransformation.Push;
+    ARci.PipelineTransformation.ProjectionMatrix := IdentityHmgMatrix;
+    ARci.PipelineTransformation.ViewMatrix :=
+      CreateScaleMatrix(VectorMake(
+        1.0 / FCorrectionScaling,
+        1.0 / FCorrectionScaling,
+        1.0 / FCorrectionScaling));
     ARci.GLStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
     GL.RenderMode(GL_FEEDBACK);
 
     Self.RenderChildren(0, Count - 1, ARci);
 
     FBuffer.Count := GL.RenderMode(GL_RENDER);
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
+    ARci.PipelineTransformation.Pop;
 
   finally
     ARci.ignoreMaterials := False;

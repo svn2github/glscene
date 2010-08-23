@@ -9,7 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
-      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>16/05/10 - Yar - Added multisampling support (thanks C4)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
@@ -28,7 +28,7 @@ interface
 
 uses
   SysUtils,
-  OpenGL1x,
+  OpenGLTokens,
   GLScene,
   GLContext,
   GLState,
@@ -200,7 +200,8 @@ end;
 
 function TGLRenderbuffer.GetHandle: GLuint;
 begin
-  FRenderbufferHandle.AllocateHandle;
+  if FRenderbufferHandle.Handle = 0 then
+    FRenderbufferHandle.AllocateHandle;
   Result := FRenderbufferHandle.Handle;
 end;
 
@@ -231,7 +232,8 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  FRenderbufferHandle.AllocateHandle;
+  if FRenderbufferHandle.Handle = 0 then
+    FRenderbufferHandle.AllocateHandle;
   FRenderbufferHandle.Bind;
   if not FStorageValid then
   begin
@@ -511,7 +513,8 @@ end;
 
 procedure TGLFrameBuffer.Bind;
 begin
-  FFrameBufferHandle.AllocateHandle;
+  if FFrameBufferHandle.Handle = 0 then
+    FFrameBufferHandle.AllocateHandle;
   FFrameBufferHandle.Bind;
 end;
 
@@ -647,7 +650,8 @@ end;
 
 function TGLFrameBuffer.GetHandle: GLuint;
 begin
-  FFrameBufferHandle.AllocateHandle;
+  if FFrameBufferHandle.Handle = 0 then
+    FFrameBufferHandle.AllocateHandle;
   Result := FFrameBufferHandle.Handle;
 end;
 
@@ -675,7 +679,7 @@ begin
   for n := 0 to MaxColorAttachments - 1 do
     if Assigned(FAttachedTexture[n]) then
       AttachTexture(
-        GL_COLOR_ATTACHMENT0 + n,
+        GL_COLOR_ATTACHMENT0_EXT + n,
         DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
         FLevel,

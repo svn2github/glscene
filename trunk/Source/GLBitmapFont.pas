@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -214,7 +215,7 @@ type
        of rotated and linear distorted text with this method, OpenGL
        Enable states are also possibly altered. }
     procedure RenderString(var rci: TRenderContextInfo;
-      const aString: AnsiString; alignment: TAlignment;
+      const wString: string; alignment: TAlignment;
       layout: TGLTextLayout; const color: TColorVector;
       position: PVector = nil; reverseY: Boolean = False);
     {: A simpler canvas-style TextOut helper for RenderString.<p>
@@ -327,7 +328,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, XOpenGL, VectorTypes;
+uses SysUtils, OpenGLTokens, XOpenGL, VectorTypes;
 
 // ------------------
 // ------------------ TBitmapFontRange ------------------
@@ -856,26 +857,28 @@ const
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
 begin
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   rci.GLStates.UnpackAlignment := 4;
   rci.GLStates.UnpackRowLength := 0;
   rci.GLStates.UnpackSkipRows := 0;
   rci.GLStates.UnpackSkipPixels := 0;
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 end;
 
 // RenderString
 //
 
 procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
-  const aString: AnsiString; alignment: TAlignment;
+  const wString: string; alignment: TAlignment;
   layout: TGLTextLayout; const color: TColorVector; position: PVector = nil;
   reverseY: Boolean = False);
+var
+  aString: AnsiString;
 
   function AlignmentAdjustement(p: Integer): Single;
   var
@@ -918,8 +921,9 @@ var
   deltaH, deltaV, spaceDeltaH: Single;
   currentChar: AnsiChar;
 begin
-  if (Glyphs.Width = 0) or (aString = '') then
+  if (Glyphs.Width = 0) or (wString = '') then
     Exit;
+  aString := AnsiString(wString);
   // prepare texture if necessary
   if FHandleIsDirty or (FTextureHandle.Handle = 0) then
   begin
@@ -959,10 +963,10 @@ begin
   rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
   rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
   //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   // start rendering
-  glColor4fv(@color);
-  glBegin(GL_QUADS);
+  GL.Color4fv(@color);
+  GL.Begin_(GL_QUADS);
   for i := 1 to Length(aString) do
   begin
     currentChar := aString[i];
@@ -988,23 +992,23 @@ begin
         GetCharTexCoords(currentChar, topLeft, bottomRight);
         vBottomRight[0] := vTopLeft[0] + deltaH;
 
-        glTexCoord2fv(@topLeft);
-        glVertex4fv(@vTopLeft);
+        GL.TexCoord2fv(@topLeft);
+        GL.Vertex4fv(@vTopLeft);
 
-        glTexCoord2f(topLeft.S, bottomRight.T);
-        glVertex2f(vTopLeft[0], vBottomRight[1]);
+        GL.TexCoord2f(topLeft.S, bottomRight.T);
+        GL.Vertex2f(vTopLeft[0], vBottomRight[1]);
 
-        glTexCoord2fv(@bottomRight);
-        glVertex4fv(@vBottomRight);
+        GL.TexCoord2fv(@bottomRight);
+        GL.Vertex4fv(@vBottomRight);
 
-        glTexCoord2f(bottomRight.S, topLeft.T);
-        glVertex2f(vBottomRight[0], vTopLeft[1]);
+        GL.TexCoord2f(bottomRight.S, topLeft.T);
+        GL.Vertex2f(vBottomRight[0], vTopLeft[1]);
 
         vTopLeft[0] := vTopLeft[0] + deltaH + HSpace;
       end;
     end;
   end;
-  glEnd;
+  GL.End_;
   // unbind texture
   rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;

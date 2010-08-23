@@ -6,6 +6,7 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>23/07/10 - Yar - Bugfixed TSkeleton.WriteToFiler (thanks E-Cone)
       <li>11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
                            Replace OpenGL1x functions to OpenGLAdapter. TGLFreeFrom now osDirectDraw by default
@@ -187,7 +188,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, OpenGL1x, VectorGeometry, SysUtils, GLTexture,
+uses Classes, GLScene, OpenGLTokens, VectorGeometry, SysUtils, GLTexture,
   GLMaterial, GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
   ApplicationFileIO, GLSilhouette, GLContext, GLColor, GLRenderContextInfo,
   GLCoordinates, BaseClasses, GLTextureFormat;

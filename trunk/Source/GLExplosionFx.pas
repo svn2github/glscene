@@ -6,6 +6,7 @@
   TGLBExplosionFX Effect<p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
     <li>23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
     <li>07/03/04 - Matheus Degiovani - Creation
@@ -30,7 +31,7 @@ unit GLExplosionFx;
 interface
 
 uses
-  OpenGL1x, VectorGeometry, GLScene, GLVectorFileObjects, VectorTypes,
+  OpenGLTokens, VectorGeometry, GLScene, GLVectorFileObjects, VectorTypes,
   VectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
 
 type
@@ -77,6 +78,9 @@ type
   end;
 
 implementation
+
+uses
+  GLContext, GLState;
 
 { TGLBExplosionFx }
 
@@ -249,8 +253,8 @@ begin
       Exit;
   end;
   // render explosion
-  glDisable(GL_CULL_FACE);
-  glBegin(GL_TRIANGLES);
+  rci.GLStates.Disable(stCullFace);
+  GL.Begin_(GL_TRIANGLES);
   for Face := 0 to FaceCount - 1 do begin
     SetVector(p1, FTriList.Items[Face * 3]);
     SetVector(p2, FTriList.Items[Face * 3 + 1]);
@@ -271,7 +275,7 @@ begin
     AddVector(p3, FPosList.Items[Face]);  // -''-
   // move the face in the direction it is heading
     SetVector(dir, FDirList.Items[Face]);
-    glNormal3f(dir[0], dir[1], dir[2]);
+    GL.Normal3f(dir[0], dir[1], dir[2]);
     ScaleVector(dir, Speed);
     AddVector(p1, dir);
     AddVector(p2, dir);
@@ -284,12 +288,12 @@ begin
     FTrilist.Items[face * 3 +1] := p2;
     FTrilist.Items[face * 3 +2] := p3;
 
-    glVertex3f(p1[0], p1[1], p1[2]);
-    glVertex3f(p2[0], p2[1], p2[2]);
-    glVertex3f(p3[0], p3[1], p3[2]);
+    GL.Vertex3f(p1[0], p1[1], p1[2]);
+    GL.Vertex3f(p2[0], p2[1], p2[2]);
+    GL.Vertex3f(p3[0], p3[1], p3[2]);
   end;
-  glEnd;
-  glEnable(GL_CULL_FACE);
+  GL.End_;
+  rci.GLStates.Enable(stCullFace);
   if FMaxSteps <> 0 then begin
     Inc(FStep);
     if FStep = FMaxSteps then

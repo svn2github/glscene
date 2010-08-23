@@ -6,7 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>02/08/10 - DaStr - Fixed memory leak and typo
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -69,7 +69,7 @@ uses
   SysUtils, Classes,
 
   // GLScene
-  GLScene, GLObjects, GLCadencer, OpenGL1x, VectorGeometry,
+  GLScene, GLObjects, GLCadencer, OpenGLTokens, VectorGeometry,
   GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState;
 
 type
@@ -127,7 +127,7 @@ type
 
     procedure SetOptimalAtmosphere(const ARadius: Single);  //absolute
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
-    procedure ToggleBlendingMode; //changes between 2 blending modes
+    procedure TogleBlendingMode; //changes between 2 blending modes
 
     //: Standard component stuff.
     procedure Assign(Source: TPersistent); override;
@@ -191,8 +191,6 @@ begin
   FHighAtmColor := TGLColor.Create(Self);
 
   FOpacity := 2.1;
-  pVertex := nil;
-  pColor := nil;
   SetSlices(60);
   FAtmosphereRadius := 3.55;
   FPlanetRadius := 3.395;
@@ -340,50 +338,50 @@ begin
       begin
         if I = 13 then
         begin
-          // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glBegin(GL_QUAD_STRIP);
+          // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          GL.Begin_(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            glColor4fv(@pColor[k1 + J]);
-            glVertex3fv(@pVertex[k1 + J]);
-            glColor4fv(@clrTransparent);
-            glVertex3fv(@pVertex[k0 + J]);
+            GL.Color4fv(@pColor[k1 + J]);
+            GL.Vertex3fv(@pVertex[k1 + J]);
+            GL.Color4fv(@clrTransparent);
+            GL.Vertex3fv(@pVertex[k0 + J]);
           end;
-          glEnd;
+          GL.End_;
         end
         else
         begin
-          // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
-          glBegin(GL_QUAD_STRIP);
+          // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
+          GL.Begin_(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            glColor4fv(@pColor[k1 + J]);
-            glVertex3fv(@pVertex[k1 + J]);
-            glColor4fv(@pColor[k0 + J]);
-            glVertex3fv(@pVertex[k0 + J]);
+            GL.Color4fv(@pColor[k1 + J]);
+            GL.Vertex3fv(@pVertex[k1 + J]);
+            GL.Color4fv(@pColor[k0 + J]);
+            GL.Vertex3fv(@pVertex[k0 + J]);
           end;
-          glEnd;
+          GL.End_;
         end;
       end
       else if I = 1 then
       begin
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glBegin(GL_TRIANGLE_FAN);
-        glColor4fv(@pColor[k1]);
-        glVertex3fv(@pVertex[k1]);
+        //GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL.Begin_(GL_TRIANGLE_FAN);
+        GL.Color4fv(@pColor[k1]);
+        GL.Vertex3fv(@pVertex[k1]);
         for J := k0 + FSlices downto k0 do
         begin
-          glColor4fv(@pColor[J]);
-          glVertex3fv(@pVertex[J]);
+          GL.Color4fv(@pColor[J]);
+          GL.Vertex3fv(@pVertex[J]);
         end;
-        glEnd;
+        GL.End_;
       end;
     end;
   end;
   inherited;
 end;
 
-procedure TGLCustomAtmosphere.ToggleBlendingMode;
+procedure TGLCustomAtmosphere.TogleBlendingMode;
 begin
   if FBlendingMode = abmOneMinusSrcAlpha then
     FBlendingMode := abmOneMinusDstColor
@@ -482,15 +480,11 @@ begin
     SetLength(sinCache, FSlices + 1);
     PrepareSinCosCache(sinCache, cosCache, 0, 360);
 
-    if pVertex <> nil then
-        FreeMem(pVertex);
-    if pColor <> nil then
-      FreeMem(pColor);
     GetMem(pVertex, 2 * (FSlices + 1) * SizeOf(TVector));
     GetMem(pColor, 2 * (FSlices + 1) * SizeOf(TVector));
   end
   else
-    raise EGLAtmosphereException.Create('Slices must be more than 0!');
+    raise EGLAtmosphereException.Create('Slices must be more than0!');
 end;
 
 initialization

@@ -10,6 +10,7 @@
    or the casters will be rendered incorrectly.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>31/05/10 - Yar - Fixes forLinux x64
       <li>01/05/10 - Yar - Moved ignoreBlendingRequests and ignoreDepthRequests behind RenderChildren
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -40,7 +41,7 @@ uses
   Classes,
   GLScene,
   VectorGeometry,
-  OpenGL1x,
+  OpenGLTokens,
   GLContext,
   GLSilhouette,
   GLCrossPlatform,
@@ -505,7 +506,7 @@ end;
 function TGLShadowVolumeLight.SetupScissorRect(worldAABB: PAABB; var rci:
   TRenderContextInfo): Boolean;
 var
-  mv, proj, mvp: TMatrix;
+  mvp: TMatrix;
   ls: TGLLightSource;
   aabb: TAABB;
   clipRect: TClipRect;
@@ -536,11 +537,8 @@ begin
     Exit;
   end;
 
-  mv := rci.modelViewMatrix^;
-  GL.GetFloatv(GL_PROJECTION_MATRIX, @proj);
-
   // Calculate the window-space bounds of the light's bounding box.
-  mvp := MatrixMultiply(mv, proj);
+  mvp := rci.PipelineTransformation.ViewProjectionMatrix;
 
   clipRect := AABBToClipRect(aabb, mvp, rci.viewPortSize.cx,
     rci.viewPortSize.cy);
@@ -816,9 +814,9 @@ var
   caster: TGLShadowVolumeCaster;
   opaques, opaqueCapping: TList;
   silParams: TGLSilhouetteParameters;
-  mat: TMatrix;
   worldAABB: TAABB;
   pWorldAABB: PAABB;
+  PM: TMatrix;
 begin
   if not Active then
   begin
@@ -935,6 +933,7 @@ begin
       end;
 
       GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
+      ARci.PipelineTransformation.Push;
 
       // render contribution of all shadow casting lights
       for i := 0 to Lights.Count - 1 do
@@ -1007,12 +1006,7 @@ begin
           if Assigned(sil) then
             try
               // render the silhouette
-              GL.PushMatrix;
-
-              GL.LoadMatrixf(PGLFloat(ARci.modelViewMatrix));
-              mat := obj.AbsoluteMatrix;
-              GL.MultMatrixf(@mat);
-
+              ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
               GL.VertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
               if Boolean(PtrUInt(opaqueCapping[k])) then
@@ -1068,7 +1062,6 @@ begin
                   sil.Indices.List);
               end;
 
-              GL.PopMatrix;
             finally
               if (svoCacheSilhouettes in Options) and (not (osDirectDraw in
                 ObjectStyle)) then
@@ -1110,8 +1103,8 @@ begin
           GL.LoadIdentity;
           GL.MatrixMode(GL_PROJECTION);
           GL.PushMatrix;
-          GL.LoadIdentity;
-          gluOrtho2D(0, 1, 1, 0);
+          PM := CreateOrthoMatrix(0, 1, 1, 0, -1, 1);
+          GL.LoadMatrixf(PGLFloat(@PM));
 
           GL.Color4fv(FDarkeningColor.AsAddress);
           GL.Begin_(GL_QUADS);
@@ -1131,7 +1124,8 @@ begin
         // disable light, but restore its ambient component
         LightEnabling[lightID] := False;
         LightAmbient[lightID] := lightSource.Ambient.Color;
-      end;
+      end; // for i
+      ARci.PipelineTransformation.Pop;
 
       // restore OpenGL state
       Disable(stStencilTest);
@@ -1158,3 +1152,4 @@ initialization
   RegisterClasses([TGLShadowVolume]);
 
 end.
+

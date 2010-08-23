@@ -12,6 +12,7 @@
    Also extents are valid only when SpaceText has one line. <p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>25/12/07 - DaStr - Added MultiLine support (thanks Lexer)
@@ -50,7 +51,7 @@ uses
   Windows, Messages, Dialogs, Classes, Graphics,
 
   // GLScene
-  GLScene, OpenGL1x, GLTexture, GLContext, VectorGeometry, GLStrings,
+  GLScene, OpenGLTokens, GLTexture, GLContext, VectorGeometry, GLStrings,
   GLRenderContextInfo, GLState;
 
 type
@@ -91,8 +92,7 @@ type
   published
     { Published Declarations }
     property Horz: TGLTextHorzAdjust read FHorz write SetHorz default haLeft;
-    property Vert: TGLTextVertAdjust read FVert write SetVert default
-      vaBaseLine;
+    property Vert: TGLTextVertAdjust read FVert write SetVert default vaBaseLine;
   end;
 
   // holds an entry in the font manager list (used in TGLSpaceText)
@@ -200,10 +200,8 @@ type
   protected
     { Protected Declarations }
     procedure NotifyClients(Clients: TList);
-    procedure VirtualHandleAlloc(sender: TGLVirtualHandle; var handle:
-      Cardinal);
-    procedure VirtualHandleDestroy(sender: TGLVirtualHandle; var handle:
-      Cardinal);
+    procedure VirtualHandleAlloc(sender: TGLVirtualHandle; var handle: Cardinal);
+    procedure VirtualHandleDestroy(sender: TGLVirtualHandle; var handle: Cardinal);
 
   public
     { Public Declarations }
@@ -444,28 +442,29 @@ var
   textL, maxUnder, maxHeight: Single;
   charScale: Single;
   i: integer;
+  glBase: TGLuint;
 begin
   if Length(GetText) > 0 then
   begin
-    glPushMatrix;
+    GL.PushMatrix;
 
     //FAspectRatio ignore
     if FAspectRatio <> 0 then
-      glScalef(FAspectRatio, 1, 1);
+      GL.Scalef(FAspectRatio, 1, 1);
     if FOblique <> 0 then
-      glRotatef(FOblique, 0, 0, 1);
+      GL.Rotatef(FOblique, 0, 0, 1);
 
+    glBase :=  FTextFontEntry^.FVirtualHandle.Handle;
     case FCharacterRange of
-      stcrAlphaNum: glListBase(FTextFontEntry^.FVirtualHandle.Handle - 32);
-      stcrNumbers: glListBase(FTextFontEntry^.FVirtualHandle.Handle -
-        Cardinal('0'));
+      stcrAlphaNum: GL.ListBase(TGLint(glBase) - 32);
+      stcrNumbers: GL.ListBase(TGLint(glBase) -  TGLint('0'));
     else
-      glListBase(FTextFontEntry^.FVirtualHandle.Handle);
+      GL.ListBase(glBase);
     end;
     rci.GLStates.PushAttrib([sttPolygon]);
     for i := 0 to FLines.Count - 1 do
     begin
-      glPushMatrix;
+      GL.PushMatrix;
 
       TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
       if (FAdjust.Horz <> haLeft) or (FAdjust.Vert <> vaBaseLine) or (FTextHeight
@@ -474,28 +473,28 @@ begin
         if FTextHeight <> 0 then
         begin
           charScale := FTextHeight / MaxHeight;
-          glScalef(CharScale, CharScale, 1);
+          GL.Scalef(CharScale, CharScale, 1);
         end;
         case FAdjust.Horz of
           haLeft: ; // nothing
-          haCenter: glTranslatef(-textL * 0.5, 0, 0);
-          haRight: glTranslatef(-textL, 0, 0);
+          haCenter: GL.Translatef(-textL * 0.5, 0, 0);
+          haRight: GL.Translatef(-textL, 0, 0);
         end;
         case FAdjust.Vert of
           vaBaseLine: ; // nothing;
-          vaBottom: glTranslatef(0, abs(maxUnder), 0);
-          vaCenter: glTranslatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
-          vaTop: glTranslatef(0, -maxHeight, 0);
+          vaBottom: GL.Translatef(0, abs(maxUnder), 0);
+          vaCenter: GL.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
+          vaTop: GL.Translatef(0, -maxHeight, 0);
         end;
       end;
 
-      glTranslatef(0, -i * (maxHeight + FAspectRatio), 0);
-      glCallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
+      GL.Translatef(0, -i * (maxHeight + FAspectRatio), 0);
+      GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
         PGLChar(TGLString(FLines.Strings[i])));
-      glPopMatrix;
+      GL.PopMatrix;
     end;
     rci.GLStates.PopAttrib();
-    glPopMatrix;
+    GL.PopMatrix;
   end;
 end;
 
@@ -835,7 +834,7 @@ procedure TFontManager.VirtualHandleDestroy(sender: TGLVirtualHandle; var
   handle: Cardinal);
 begin
   if handle <> 0 then
-    glDeleteLists(handle, sender.Tag);
+    GL.DeleteLists(handle, sender.Tag);
 end;
 
 // FindFond
@@ -917,11 +916,11 @@ begin
       AFont.Name := AName;
       AFont.Style := FStyles;
       SelectObject(MemDC, AFont.Handle);
-      FCurrentBase := glGenLists(nbLists);
+      FCurrentBase := GL.GenLists(nbLists);
       if FCurrentBase = 0 then
         raise Exception.Create('FontManager: no more display lists available');
       NewEntry^.FVirtualHandle.AllocateHandle;
-      if not OpenGL1x.wglUseFontOutlines(MemDC, firstChar, nbLists,
+      if not wglUseFontOutlines(MemDC, firstChar, nbLists,
         FCurrentBase, allowedDeviation,
         FExtrusion, WGL_FONT_POLYGONS,
         @NewEntry^.GlyphMetrics) then

@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
     <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -124,7 +125,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, ODEGL, ODEImport, GLScene, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, ODEGL, ODEImport, GLScene, VectorGeometry, GLTexture, OpenGLTokens,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
   GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
 
@@ -1228,6 +1229,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+uses
+  GLContext;
 
 // nearCallBack
 //
@@ -1679,11 +1682,11 @@ begin
   for i := 0 to FODEBehaviours.Count - 1 do begin
     if ODEBehaviours[i] is TGLODEDynamic then
       if TGLODEDynamic(ODEBehaviours[i]).GetEnabled then
-        glColor4fv(GeomColorDynE.AsAddress)
+        GL.Color4fv(GeomColorDynE.AsAddress)
       else
-        glColor4fv(GeomColorDynD.AsAddress)
+        GL.Color4fv(GeomColorDynD.AsAddress)
     else
-      glColor4fv(GeomColorStat.AsAddress);
+      GL.Color4fv(GeomColorStat.AsAddress);
 
     ODEBehaviours[i].Render(rci);
   end;
@@ -2197,16 +2200,15 @@ var
   mat : TMatrix;
 begin
   if Assigned(Owner.Owner) then begin
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
+    rci.PipelineTransformation.Push;
     mat:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    glMultMatrixf(@mat[0][0]);
+    rci.PipelineTransformation.ModelMatrix := mat;
   end;
 
   Elements.Render(rci);
 
   if Assigned(Owner.Owner) then
-    glPopMatrix;
+    rci.PipelineTransformation.Pop;
 end;
 
 // FriendlyName
@@ -2514,16 +2516,15 @@ var
   mat : TMatrix;
 begin
   if Assigned(Owner.Owner) then begin
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
+    rci.PipelineTransformation.Push;
     mat:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    glMultMatrixf(@mat[0][0]);
+    rci.PipelineTransformation.ModelMatrix := mat;
   end;
 
   Elements.Render(rci);
 
   if Assigned(Owner.Owner) then
-    glPopMatrix;
+    rci.PipelineTransformation.Pop;
 end;
 
 // FriendlyName
@@ -3002,36 +3003,36 @@ end;
 //
 procedure TODEElementBox.Render(var rci : TRenderContextInfo);
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
-  glBegin(GL_LINE_LOOP);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINE_LOOP);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+  GL.End_;
 
-  glBegin(GL_LINE_LOOP);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINE_LOOP);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+  GL.End_;
 
-  glBegin(GL_LINES);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINES);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+  GL.End_;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3196,10 +3197,10 @@ var
   FTop, FBottom, FStart, FStop : Single;
   I, J, FSlices, FStacks: Integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
-  glScalef(Radius, Radius, Radius);
+  GL.MultMatrixf(@FLocalMatrix);
+  GL.Scalef(Radius, Radius, Radius);
 
   FTop:=90;
   FBottom:=-90;
@@ -3222,13 +3223,13 @@ begin
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
 
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCos(Theta, SinT, CosT);
-      glVertex3f(CosP*SinT,SinP,CosP*CosT);
+      GL.Vertex3f(CosP*SinT,SinP,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    glEnd;
+    GL.End_;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
@@ -3240,18 +3241,18 @@ begin
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
 
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCos(Theta, SinT, CosT);
-      glVertex3f(SinP,CosP*SinT,CosP*CosT);
+      GL.Vertex3f(SinP,CosP*SinT,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    glEnd;
+    GL.End_;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3363,49 +3364,49 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
-    glEnd;
+        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+    GL.End_;
   end;
 
   // Middle vertical lines
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
     end;
-  glEnd;
+  GL.End_;
 
   // Cap XZ half-circles
-  glPushMatrix;
+  GL.PushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
     // Top
-    glBegin(GL_LINE_STRIP);
+    GL.Begin_(GL_LINE_STRIP);
       for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
-    glEnd;
+        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
+    GL.End_;
 
     // Bottom
-    glBegin(GL_LINE_STRIP);
+    GL.Begin_(GL_LINE_STRIP);
       for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
-    glEnd;
-    glRotatef(360/Slices,0,0,1);
+        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
+    GL.End_;
+    GL.Rotatef(360/Slices,0,0,1);
   end;
-  glPopMatrix;
-  glPopMatrix;
+  GL.PopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3544,45 +3545,45 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
-    glEnd;
+        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
+    GL.End_;
   end;
 
   // Middle vertical lines
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
     end;
-  glEnd;
+  GL.End_;
 
   // Caps
-  glPushMatrix;
+  GL.PushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
-    glBegin(GL_LINES);
-      glVertex3f(-FRadius,FLength/2,0);
-      glVertex3f(FRadius,FLength/2,0);
-      glVertex3f(-FRadius,-FLength/2,0);
-      glVertex3f(FRadius,-FLength/2,0);
-    glEnd;
-    glRotatef(360/Slices,0,1,0);
+    GL.Begin_(GL_LINES);
+      GL.Vertex3f(-FRadius,FLength/2,0);
+      GL.Vertex3f(FRadius,FLength/2,0);
+      GL.Vertex3f(-FRadius,-FLength/2,0);
+      GL.Vertex3f(FRadius,-FLength/2,0);
+    GL.End_;
+    GL.Rotatef(360/Slices,0,1,0);
   end;
-  glPopMatrix;
+  GL.PopMatrix;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create

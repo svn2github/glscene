@@ -6,7 +6,7 @@
    Stores contextual info useful during rendering methods.<p>
 
 	<b>History : </b><font size=-1><ul>
-
+      <li>23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
       <li>22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TRenderContextInfo
       <li>14/03/09 - DanB - Removed IsVolumeClipped functions, instead replaced with
                             IsVolumeClipped functions in VectorGeometry.pas that use TFrustrum
@@ -19,7 +19,7 @@ unit GLRenderContextInfo;
 
 interface
 
-uses PersistentClasses, VectorGeometry, GLState, GLColor;
+uses PersistentClasses, VectorGeometry, GLState, GLPipelineTransformation, GLColor;
 
 type
 
@@ -85,17 +85,16 @@ type
       buffer : TObject; //usually TGLSceneBuffer
       cameraPosition : TVector;
       cameraDirection, cameraUp : TVector;
-      modelViewMatrix : PMatrix;
       viewPortSize : TGLSize;
       renderDPI : Integer;
       materialLibrary : TObject; //usually TGLMaterialLibrary;
       lightmapLibrary : TObject; //usually TGLMaterialLibrary;
       fogDisabledCounter : Integer;
-      lightingDisabledCounter : Integer;
       drawState : TDrawState;
       objectsSorting : TGLObjectsSorting;
       visibilityCulling : TGLVisibilityCulling;
       GLStates : TGLStateCache;
+      PipelineTransformation: TGLPipelineTransformation;
       rcci : TRenderContextClippingInfo;
       sceneAmbientColor : TColorVector;
       bufferFaceCull : Boolean;

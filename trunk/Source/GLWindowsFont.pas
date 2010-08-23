@@ -6,6 +6,7 @@
   TFont Import into a BitmapFont using variable width...<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>06/06/10 - Yar - Added VectorTypes to uses
       <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
                           (thanks olkondr)
@@ -115,7 +116,7 @@ uses
   SysUtils,
   VectorGeometry,
   VectorTypes,
-  OpenGL1x,
+  OpenGLTokens,
   ApplicationFileIO;
 
 // ------------------
@@ -271,7 +272,7 @@ begin
     fontRange := Ranges.Items[i];
     for ch := fontRange.StartASCII to fontRange.StopASCII do
     begin
-      cw := bitmap.Canvas.TextWidth(ch) - HSpaceFix;
+      cw := bitmap.Canvas.TextWidth(Char(ch)) - HSpaceFix;
       SetCharWidths(Integer(ch), cw);
       if cw = 0 then
         Dec(nbChars);

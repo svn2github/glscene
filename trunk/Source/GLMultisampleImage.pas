@@ -9,8 +9,7 @@
     and to attach such textures to FBOs for rendering.
 
    <b>History : </b><font size=-1><ul>
-      <li>22/08/10 - DaStr - Added $I GLScene.inc   
-      <li>06/06/10 - Yar - Replaced OpenGL1x function to OpenGLAdapter
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>16/05/10 - Yar - Creation (thanks to C4)
    </ul></font>
 }
@@ -18,11 +17,9 @@ unit GLMultisampleImage;
 
 interface
 
-{$I GLScene.inc}
-
 uses
   Classes,
-  OpenGL1x,
+  OpenGLTokens,
   GLContext,
   GLTexture,
   GLGraphics,
@@ -50,8 +47,6 @@ type
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
-    class function IsSelfLoading: Boolean; override;
-    procedure LoadTexture(AInternalFormat: TGLInternalFormat); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -59,6 +54,8 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
+    class function IsSelfLoading: Boolean; override;
+    procedure LoadTexture(AInternalFormat: TGLInternalFormat); override;
     function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D_MULTISAMPLE):
       TGLBitmap32;
       override;
@@ -102,7 +99,6 @@ begin
   FHeight := 256;
   FDepth := 0;
   FSamplesCount := 0;
-  fPreviousTarget := ttTexture2DMultisample;
 end;
 
 // Destroy
@@ -292,12 +288,6 @@ begin
     Result := ttTexture2DMultisampleArray
   else
     Result := ttTexture2DMultisample;
-  if fPreviousTarget <> Result then
-  begin
-    if Assigned(FOwnerTexture) then
-      FOwnerTexture.NotifyTargetChange;
-    fPreviousTarget := Result;
-  end;
 end;
 
 class function TGLMultisampleImage.IsSelfLoading: Boolean;

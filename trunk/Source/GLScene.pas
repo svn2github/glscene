@@ -6,6 +6,9 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Removed all critical deprecated OpenGL function from rendering cycle. 
+                           Now TGLSceneBuffer can work with forward core context.
+                           Pipeline transformation and lighting becomes abststract.
       <li>18/06/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter. Changed AddBuffer to improved GLX context sharing.
       <li>31/05/10 - Yar - Fixes for Linux x64
       <li>31/05/10 - Yar - Added roSoftwareMode Buffer.ContextOptions
@@ -338,18 +341,35 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  Classes, SysUtils, Graphics,
+  Classes,
+  SysUtils,
+  Graphics,
 {$IFDEF FPC}
   LCLType,
 {$ENDIF}
 
   // GLScene
-  VectorGeometry, XCollection, GLSilhouette, PersistentClasses, OpenGL1x, GLState,
-  GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists, GLTexture,
-  GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo, GLMaterial,
+  OpenGLTokens,
+  GLContext,
+  VectorGeometry,
+  XCollection,
+  GLSilhouette,
+  PersistentClasses,
+  GLState,
+  GLGraphics,
+  GeometryBB,
+  GLCrossPlatform,
+  VectorLists,
+  GLTexture,
+  GLColor,
+  BaseClasses,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLMaterial,
   GLTextureFormat
 {$IFDEF GLS_EXPERIMENTAL}
-  , GLVBOManagers
+  ,
+  GLVBOManager
 {$ENDIF}
   ;
 
@@ -1922,7 +1942,6 @@ type
     FRendering: Boolean;
     FRenderingContext: TGLContext;
     FAfterRenderEffects: TPersistentObjectList;
-    FProjectionMatrix, FViewMatrix, FModelMatrix: TMatrix;
     FViewMatrixStack: array of TMatrix;
     FProjectionMatrixStack: array of TMatrix;
     FBaseProjectionMatrix: TMatrix;
@@ -2114,11 +2133,10 @@ type
     property BackgroundAlpha: Single read FBackgroundAlpha write
       SetBackgroundAlpha;
     {: Returns the projection matrix in use or used for the last rendering. }
-    property ProjectionMatrix: TMatrix read FProjectionMatrix;
+    function ProjectionMatrix: TMatrix; deprecated;
     {: Returns the view matrix in use or used for the last rendering. }
-    function ModelViewMatrix: TMatrix; deprecated;
-    property ViewMatrix: TMatrix read FViewMatrix;
-    property ModelMatrix: TMatrix read FModelMatrix;
+    function ViewMatrix: TMatrix; deprecated;
+    function ModelMatrix: TMatrix; deprecated;
 
     {: Returns the base projection matrix in use or used for the last rendering.<p>
        The "base" projection is (as of now) either identity or the pick
@@ -2129,14 +2147,12 @@ type
     {: Back up current View matrix and replace it with newMatrix.<p>
        This method has no effect on the OpenGL matrix, only on the Buffer's
        matrix, and is intended for special effects rendering. }
-    procedure PushModelViewMatrix(const newMatrix: TMatrix); deprecated;
-    procedure PushViewMatrix(const newMatrix: TMatrix);
+    procedure PushViewMatrix(const newMatrix: TMatrix); deprecated;
     {: Restore a View matrix previously pushed. }
-    procedure PopModelViewMatrix; deprecated;
-    procedure PopViewMatrix;
+    procedure PopViewMatrix; deprecated;
 
-    procedure PushProjectionMatrix(const newMatrix: TMatrix);
-    procedure PopProjectionMatrix;
+    procedure PushProjectionMatrix(const newMatrix: TMatrix); deprecated;
+    procedure PopProjectionMatrix; deprecated;
 
     {: Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
        This function accepts standard canvas coordinates, with (0,0) being
@@ -2494,7 +2510,14 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLStrings, XOpenGL, VectorTypes, ApplicationFileIO, GLUtils;
+uses
+  GLSLog,
+  GL3xMaterial,
+  GLStrings,
+  XOpenGL,
+  VectorTypes,
+  ApplicationFileIO,
+  GLUtils;
 
 var
   vCounterFrequency: Int64;
@@ -3826,8 +3849,7 @@ begin
         begin
           // transformation with local matrix
           BBTransform(pbb, TGLBaseSceneObject(FChildren.List^[i]).Matrix);
-          if BoundingBoxesAreEqual(@FBoundingBoxOfChildren, @NullBoundingBox)
-            then
+          if BoundingBoxesAreEqual(@FBoundingBoxOfChildren, @NullBoundingBox) then
             FBoundingBoxOfChildren := pBB
           else
             AddBB(FBoundingBoxOfChildren, pBB);
@@ -4904,8 +4926,6 @@ procedure TGLBaseSceneObject.Render(var ARci: TRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
-  saveMatrixParent,
-    saveMatrixSelf: TMatrix;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
@@ -4941,23 +4961,18 @@ begin
     shouldRenderSelf := True;
     shouldRenderChildren := Assigned(FChildren);
   end;
+
   // Prepare Matrix and PickList stuff
-{$IFNDEF GLS_OPTIMIZATIONS}
-  if OptSaveGLStack then
-    GL.GetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixParent[0])
-  else
-{$ENDIF}
-    GL.PushMatrix;
+  ARci.PipelineTransformation.Push;
   if ocTransformation in FChanges then
     RebuildMatrix;
-  GL.MultMatrixf(PGLfloat(FLocalMatrix));
-{$IFDEF GLS_EXPERIMENTAL}
-  if Parent is TGLSceneRootObject then
-    FScene.CurrentBuffer.FModelMatrix := FLocalMatrix^
+
+  if ARci.proxySubObject then
+    ARci.PipelineTransformation.ModelMatrix :=
+      MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix)
   else
-    FScene.CurrentBuffer.FModelMatrix :=
-      MatrixMultiply(FLocalMatrix^, AbsoluteMatrix);
-{$ENDIF}
+    ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
+
   if ARci.drawState = dsPicking then
     if ARci.proxySubObject then
       GL.PushName(Integer(Self))
@@ -4972,26 +4987,11 @@ begin
 {$ENDIF}
     if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
     begin
-{$IFNDEF GLS_OPTIMIZATIONS}
-      if OptSaveGLStack then
-        GL.GetFloatv(GL_MODELVIEW_MATRIX, @saveMatrixSelf[0])
-      else
-{$ENDIF}
-        GL.PushMatrix;
-
+      ARci.PipelineTransformation.Push;
       FGLObjectEffects.RenderPreEffects(ARci);
-{$IFNDEF GLS_OPTIMIZATIONS}
-      if OptSaveGLStack then
-        GL.LoadMatrixf(@saveMatrixSelf[0])
-      else
-      begin
-        GL.PopMatrix;
-        GL.PushMatrix;
-      end;
-{$ELSE}
-      GL.PopMatrix;
-      GL.PushMatrix;
-{$ENDIF}
+      ARci.PipelineTransformation.Pop;
+
+      ARci.PipelineTransformation.Push;
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
         ARci.GLStates.Disable(stDepthTest);
@@ -5002,12 +5002,7 @@ begin
         DoRender(ARci, True, shouldRenderChildren);
 
       FGLObjectEffects.RenderPostEffects(ARci);
-{$IFNDEF GLS_OPTIMIZATIONS}
-      if OptSaveGLStack then
-        GL.LoadMatrixf(@saveMatrixSelf[0])
-      else
-{$ENDIF}
-        GL.PopMatrix;
+      ARci.PipelineTransformation.Pop;
     end
     else
     begin
@@ -5038,12 +5033,7 @@ begin
   if ARci.drawState = dsPicking then
     if ARci.proxySubObject then
       GL.PopName;
-{$IFNDEF GLS_OPTIMIZATIONS}
-  if OptSaveGLStack then
-    GL.LoadMatrixf(@saveMatrixParent[0])
-  else
-{$ENDIF}
-    GL.PopMatrix;
+  ARci.PipelineTransformation.Pop;
 end;
 
 // DoRender
@@ -5516,7 +5506,6 @@ begin
   end;
 end;
 
-
 // OwnerBaseSceneObject
 //
 
@@ -5733,8 +5722,7 @@ begin
     effect := TGLObjectEffect(Items[i]);
     if effect is TGLObjectPostEffect then
       effect.Render(rci)
-    else if Assigned(rci.afterRenderEffects) and (effect is TGLObjectAfterEffect)
-      then
+    else if Assigned(rci.afterRenderEffects) and (effect is TGLObjectAfterEffect) then
       rci.afterRenderEffects.Add(effect);
   end;
 end;
@@ -5819,18 +5807,18 @@ begin
   if ARenderSelf then
     if ARci.ignoreMaterials then
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-       BuildList(ARci)
+        BuildList(ARci)
       else
-       ARci.GLStates.CallList(GetHandle(ARci))
+        ARci.GLStates.CallList(GetHandle(ARci))
     else
     begin
-     FMaterial.Apply(ARci);
-     repeat
-       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-         BuildList(ARci)
-       else
-         ARci.GLStates.CallList(GetHandle(ARci));
-     until not FMaterial.UnApply(ARci);
+      FMaterial.Apply(ARci);
+      repeat
+        if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+          BuildList(ARci)
+        else
+          ARci.GLStates.CallList(GetHandle(ARci));
+      until not FMaterial.UnApply(ARci);
     end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -5925,9 +5913,9 @@ end;
 
 procedure TGLCamera.Apply;
 var
-  v, d: TVector;
+  v, d, v2: TVector;
   absPos: TVector;
-  mat: TMatrix;
+  LM, mat: TMatrix;
 begin
   if Assigned(FDeferredApply) then
     FDeferredApply(Self)
@@ -5940,9 +5928,7 @@ begin
       VectorSubtract(v, absPos, d);
       NormalizeVector(d);
       FLastDirection := d;
-      gluLookAt(absPos[0], absPos[1], absPos[2],
-        v[0], v[1], v[2],
-        Up.X, Up.Y, Up.Z);
+      LM := CreateLookAtMatrix(absPos, v, Up.AsVector);
     end
     else
     begin
@@ -5951,12 +5937,11 @@ begin
       v := VectorTransform(Direction.AsVector, mat);
       FLastDirection := v;
       d := VectorTransform(Up.AsVector, mat);
-      gluLookAt(absPos[0], absPos[1], absPos[2],
-        absPos[0] + v[0],
-        absPos[1] + v[1],
-        absPos[2] + v[2],
-        d[0], d[1], d[2]);
+      v2 := VectorAdd(absPos, v);
+      LM := CreateLookAtMatrix(absPos, v2, d);
     end;
+    with CurrentGLContext.PipelineTransformation do
+      ViewMatrix := MatrixMultiply(LM, ViewMatrix);
     ClearStructureChanged;
   end;
 end;
@@ -5967,17 +5952,25 @@ end;
 procedure TGLCamera.ApplyPerspective(const AViewport: TRectangle;
   AWidth, AHeight: Integer; ADPI: Integer);
 var
-  LLeft, LRight, LTop, LBottom, zFar, MaxDim, Ratio, f: Double;
+  vLeft, vRight, vBottom, vTop, vFar: Single;
+  MaxDim, Ratio, f: Double;
   mat: TMatrix;
 const
   cEpsilon: Single = 1e-4;
 begin
   if (AWidth <= 0) or (AHeight <= 0) then
     Exit;
+
   if CameraStyle = csOrtho2D then
   begin
-    gluOrtho2D(0, AWidth, 0, AHeight);
+    vLeft := 0;
+    vRight := AWidth;
+    vBottom := 0;
+    vTop := AHeight;
     FNearPlane := -1;
+    vFar := 1;
+    with CurrentGLContext.PipelineTransformation do
+      ProjectionMatrix := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
     FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
   else if CameraStyle = csCustom then
@@ -6010,12 +6003,12 @@ begin
     Ratio := (2 * AViewport.Width + 2 * AViewport.Left - AWidth) * f;
     // calculate aspect ratio correct right value of the view frustum and take
     // the window/viewport ratio also into account
-    LRight := Ratio * AWidth / (2 * MaxDim);
+    vRight := Ratio * AWidth / (2 * MaxDim);
 
     // the same goes here for the other three extents
     // left extent:
     Ratio := (AWidth - 2 * AViewport.Left) * f;
-    LLeft := -Ratio * AWidth / (2 * MaxDim);
+    vLeft := -Ratio * AWidth / (2 * MaxDim);
 
     if CameraStyle in [csPerspective, csInfinitePerspective] then
       f := FNearPlaneBias / (AHeight * FSceneScale)
@@ -6024,39 +6017,44 @@ begin
 
     // top extent (keep in mind the origin is left lower corner):
     Ratio := (2 * AViewport.Height + 2 * AViewport.Top - AHeight) * f;
-    LTop := Ratio * AHeight / (2 * MaxDim);
+    vTop := Ratio * AHeight / (2 * MaxDim);
 
     // bottom extent:
     Ratio := (AHeight - 2 * AViewport.Top) * f;
-    LBottom := -Ratio * AHeight / (2 * MaxDim);
+    vBottom := -Ratio * AHeight / (2 * MaxDim);
 
     FNearPlane := FFocalLength * 2 * ADPI / (25.4 * MaxDim) * FNearPlaneBias;
-    zFar := FNearPlane + FDepthOfView;
+    vFar := FNearPlane + FDepthOfView;
 
     // finally create view frustum (perspective or orthogonal)
     case CameraStyle of
       csPerspective:
-        GL.Frustum(LLeft, LRight, LBottom, LTop, FNearPlane, zFar);
+        begin
+          mat := CreateMatrixFromFrustum(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+          with CurrentGLContext.PipelineTransformation do
+            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+        end;
       csInfinitePerspective:
         begin
           mat := IdentityHmgMatrix;
-          mat[0][0] := 2 * FNearPlane / (LRight - LLeft);
-          mat[1][1] := 2 * FNearPlane / (LTop - LBottom);
-          mat[2][0] := (LRight + LLeft) / (LRight - LLeft);
-          mat[2][1] := (LTop + LBottom) / (LTop - LBottom);
+          mat[0][0] := 2 * FNearPlane / (vRight - vLeft);
+          mat[1][1] := 2 * FNearPlane / (vTop - vBottom);
+          mat[2][0] := (vRight + vLeft) / (vRight - vLeft);
+          mat[2][1] := (vTop + vBottom) / (vTop - vBottom);
           mat[2][2] := cEpsilon - 1;
           mat[2][3] := -1;
           mat[3][2] := FNearPlane * (cEpsilon - 2);
           mat[3][3] := 0;
-          GL.MultMatrixf(@mat);
+          with CurrentGLContext.PipelineTransformation do
+            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
         end;
       csOrthogonal:
-        GL.Ortho(LLeft, LRight, LBottom, LTop, FNearPlane, zFar);
+        with CurrentGLContext.PipelineTransformation do
+          ProjectionMatrix := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
     else
       Assert(False);
     end;
-
-    FViewPortRadius := VectorLength(LRight, LTop) / FNearPlane;
+    FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
   end;
 end;
 
@@ -6601,51 +6599,44 @@ end;
 
 procedure TGLCameraInvariantObject.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
-var
-  mvMat: TMatrix;
-  CurrentBuffer: TGLSceneBuffer;
 begin
-  CurrentBuffer := TGLSceneBuffer(ARCi.buffer);
   if CamInvarianceMode <> cimNone then
-  begin
-    GL.PushMatrix;
-    // prepare
-    case CamInvarianceMode of
-      cimPosition:
-        begin
-          GL.LoadMatrixf(@CurrentBuffer.ViewMatrix);
-          GL.Translatef(ARci.cameraPosition[0], ARci.cameraPosition[1],
-            ARci.cameraPosition[2]);
-        end;
-      cimOrientation:
-        begin
-          GL.LoadIdentity;
-          // makes the coordinates system more 'intuitive' (Z+ forward)
-          GL.Scalef(1, -1, -1);
-        end;
-    else
-      Assert(False);
-    end;
-    // Apply local transform
-    GL.MultMatrixf(PGLFloat(LocalMatrix));
-
-    GL.GetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
-    CurrentBuffer.PushViewMatrix(mvMat);
-    try
-      if ARenderSelf then
-      begin
-        if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-          BuildList(ARci)
+    with ARci.PipelineTransformation do
+    begin
+      Push;
+      try
+        // prepare
+        case CamInvarianceMode of
+          cimPosition:
+            begin
+              ViewMatrix := MatrixMultiply(
+                CreateTranslationMatrix(ARci.cameraPosition),
+                ARci.PipelineTransformation.ViewMatrix);
+            end;
+          cimOrientation:
+            begin
+              // makes the coordinates system more 'intuitive' (Z+ forward)
+              ViewMatrix := CreateScaleMatrix(Vector3fMake(1, -1, -1))
+            end;
         else
-          ARci.GLStates.CallList(GetHandle(ARci));
+          Assert(False);
+        end;
+        // Apply local transform
+        ModelMatrix := LocalMatrix^;
+
+        if ARenderSelf then
+        begin
+          if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+            BuildList(ARci)
+          else
+            ARci.GLStates.CallList(GetHandle(ARci));
+        end;
+        if ARenderChildren then
+          Self.RenderChildren(0, Count - 1, ARci);
+      finally
+        Pop;
       end;
-      if ARenderChildren then
-        Self.RenderChildren(0, Count - 1, ARci);
-    finally
-      CurrentBuffer.PopViewMatrix;
-    end;
-    GL.PopMatrix;
-  end
+    end
   else
     inherited;
 end;
@@ -6893,7 +6884,8 @@ begin
         oldProxySubObject := ARci.proxySubObject;
         ARci.proxySubObject := True;
         if pooTransformation in FProxyOptions then
-          GL.MultMatrixf(PGLFloat(FMasterObject.MatrixAsAddress));
+          with ARci.PipelineTransformation do
+            ModelMatrix := MatrixMultiply(FMasterObject.Matrix, ModelMatrix);
         FMasterObject.DoRender(ARci, ARenderSelf, (FMasterObject.Count > 0));
         ARci.proxySubObject := oldProxySubObject;
       end;
@@ -7508,7 +7500,7 @@ begin
   pt.newTime := newTime;
   FObjects.DoProgress(pt);
 {$IFDEF GLS_EXPERIMENTAL}
-  GLVBOManagers.vCurrentTime := newTime;
+  GLVBOManager.vCurrentTime := newTime;
 {$ENDIF}
 end;
 
@@ -7675,12 +7667,10 @@ var
         begin
           if fnear * fnear > bestDist2 then
           begin
-            if not PointInAABB(rayStart, curObj.AxisAlignedBoundingBoxAbsoluteEx)
-              then
+            if not PointInAABB(rayStart, curObj.AxisAlignedBoundingBoxAbsoluteEx) then
               continue;
           end;
-          if curObj.RayCastIntersect(rayStart, rayVector, @iPoint, pINormal)
-            then
+          if curObj.RayCastIntersect(rayStart, rayVector, @iPoint, pINormal) then
           begin
             dist2 := VectorDistance2(rayStart, iPoint);
             if dist2 < bestDist2 then
@@ -7735,61 +7725,61 @@ begin
   if nbLights > maxLights then
     nbLights := maxLights;
   // setup all light sources
-  with CurrentGLContext.GLStates do
+  with CurrentGLContext.GLStates, CurrentGLContext.PipelineTransformation do
   begin
-  GL.PushMatrix;
-  for i := 0 to nbLights - 1 do
-  begin
-    lightSource := TGLLightSource(FLights[i]);
-    if Assigned(lightSource) then
-      with lightSource do
-      begin
-        if Shining then
+    for i := 0 to nbLights - 1 do
+    begin
+      lightSource := TGLLightSource(FLights[i]);
+      if Assigned(lightSource) then
+        with lightSource do
         begin
-          LightEnabling[FLightID] := True;
-          GL.PopMatrix;
-          GL.PushMatrix;
-          RebuildMatrix;
-          if LightStyle = lsParallel then
+          LightEnabling[FLightID] := Shining;
+          if Shining then
           begin
-            GL.MultMatrixf(PGLFloat(AbsoluteMatrixAsAddress));
-            GL.Lightfv(GL_LIGHT0+FLightID, GL_POSITION, SpotDirection.AsAddress);
-          end
-          else
-          begin
-            GL.MultMatrixf(PGLFloat(Parent.AbsoluteMatrixAsAddress));
-            GL.Lightfv(GL_LIGHT0+FLightID, GL_POSITION, Position.AsAddress);
-          end;
-          LightAmbient[FLightID] := FAmbient.Color;
-          LightDiffuse[FLightID] := FDiffuse.Color;
-          LightSpecular[FLightID] := FSpecular.Color;
-          if LightStyle = lsSpot then
-          begin
-            if FSpotCutOff <> 180 then
+            if FixedFunctionPipeLight then
             begin
-              GL.Lightfv(GL_LIGHT0+FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-              GL.Lightfv(GL_LIGHT0+FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
+              RebuildMatrix;
+              if LightStyle = lsParallel then
+              begin
+                ModelMatrix := AbsoluteMatrix;
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
+              end
+              else
+              begin
+                ModelMatrix := Parent.AbsoluteMatrix;
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
+              end;
+              if LightStyle = lsSpot then
+              begin
+                if FSpotCutOff <> 180 then
+                begin
+                  GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
+                  GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
+                end;
+                LightSpotCutoff[FLightID] := FSpotCutOff;
+              end
+              else
+              begin
+                LightSpotCutoff[FLightID] := 180;
+              end;
             end;
-            LightSpotCutoff[FLightID] := FSpotCutOff;
-          end
-          else
-          begin
-            LightSpotCutoff[FLightID] := 180;
+
+            LightPosition[FLightID] := lightSource.AbsolutePosition;
+            LightAmbient[FLightID] := FAmbient.Color;
+            LightDiffuse[FLightID] := FDiffuse.Color;
+            LightSpecular[FLightID] := FSpecular.Color;
+            LightConstantAtten[FLightID] := FConstAttenuation;
+            LightLinearAtten[FLightID] := FLinearAttenuation;
+            LightQuadraticAtten[FLightID] := FQuadraticAttenuation;
           end;
-          LightConstantAtten[FLightID] := FConstAttenuation;
-          LightLinearAtten[FLightID] := FLinearAttenuation;
-          LightQuadraticAtten[FLightID] := FQuadraticAttenuation;
         end
-        else
-          LightEnabling[FLightID] := False;
-      end
-    else
+      else
+        LightEnabling[i] := False;
+    end;
+    // turn off other lights
+    for i := nbLights to maxLights - 1 do
       LightEnabling[i] := False;
-  end;
-  GL.PopMatrix;
-  // turn off other lights
-  for i := nbLights to maxLights - 1 do
-    LightEnabling[i] := False;
+    ModelMatrix := IdentityHmgMatrix;
   end;
 end;
 
@@ -8038,7 +8028,6 @@ var
 begin
   locOptions := [];
 
-
   if roDoubleBuffer in ContextOptions then
     locOptions := locOptions + [rcoDoubleBuffered];
   if roStereo in ContextOptions then
@@ -8109,8 +8098,11 @@ begin
     FRenderingContext.Activate;
     try
       // this one should NOT be replaced with an assert
-      if not GL_VERSION_1_1 then
-        raise EOpenGLError.Create(glsWrongVersion);
+      if not GL.VERSION_1_1 then
+      begin
+        GLSLogger.LogFatalError(glsWrongVersion);
+        Abort;
+      end;
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
       FRenderingContext.GLStates.ViewPort :=
@@ -8119,6 +8111,9 @@ begin
       SetupRenderingContext(FRenderingContext);
       FRenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor);
+{$IFDEF GLS_EXPERIMENTAL}
+      MaterialManager.Initialize;
+{$ENDIF}
     finally
       FRenderingContext.Deactivate;
     end;
@@ -8230,8 +8225,11 @@ begin
     SetState(FogEnable, stFog);
     if GL.ARB_depth_clamp then
       Disable(stDepthClamp);
-    GL.GetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
-    SetState((LColorDepth < 8), stDither);
+    if not (roForwardContext in ContextOptions) then
+    begin
+      GL.GetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
+      SetState((LColorDepth < 8), stDither);
+    end;
     ResetGLTextureMatrix;
   end;
 end;
@@ -8471,8 +8469,8 @@ begin
             miNearest, miLinear:
               GL.TexImage2d(glTarget, 0, aTexture.OpenGLTextureFormat, Width,
                 Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-          else
-            if GL.SGIS_generate_mipmap and IsTargetSupportMipmap(bindTarget) then
+          else if IsTargetSupportMipmap(bindTarget) then
+            if GL.SGIS_generate_mipmap then
             begin
               // hardware-accelerated when supported
               GL.TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
@@ -8481,9 +8479,11 @@ begin
             end
             else
             begin
-              // slower (software mode)
-              gluBuild2DMipmaps(glTarget, aTexture.OpenGLTextureFormat,
-                Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+              GL.TexImage2d(glTarget, 0, aTexture.OpenGLTextureFormat, Width,
+                Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+              if ((glTarget < GL_TEXTURE_CUBE_MAP_POSITIVE_X)
+                or (glTarget > GL_TEXTURE_CUBE_MAP_POSITIVE_Z)) then
+                GL.GenerateMipmap(glTarget);
             end;
           end;
         finally
@@ -8494,7 +8494,7 @@ begin
       begin
         GL.CopyTexSubImage2D(glTarget, 0, xDest, yDest, xSrc, ySrc, Width, Height);
       end;
-      ClearGLError;
+      GL.ClearError;
     finally
       RenderingContext.Deactivate;
     end;
@@ -8697,8 +8697,8 @@ var
 begin
   n := Length(FViewMatrixStack);
   SetLength(FViewMatrixStack, n + 1);
-  FViewMatrixStack[n] := FViewMatrix;
-  FViewMatrix := newMatrix;
+  FViewMatrixStack[n] := RenderingContext.PipelineTransformation.ViewMatrix;
+  RenderingContext.PipelineTransformation.ViewMatrix := newMatrix;
 end;
 
 // PopModelViewMatrix
@@ -8710,24 +8710,8 @@ var
 begin
   n := High(FViewMatrixStack);
   Assert(n >= 0, 'Unbalanced PopViewMatrix');
-  FViewMatrix := FViewMatrixStack[n];
+  RenderingContext.PipelineTransformation.ViewMatrix := FViewMatrixStack[n];
   SetLength(FViewMatrixStack, n);
-end;
-
-// PushModelViewMatrix
-//
-
-procedure TGLSceneBuffer.PushModelViewMatrix(const newMatrix: TMatrix);
-begin
-  PushViewMatrix(newMatrix);
-end;
-
-// PopModelViewMatrix
-//
-
-procedure TGLSceneBuffer.PopModelViewMatrix;
-begin
-  PopViewMatrix;
 end;
 
 // PushProjectionMatrix
@@ -8739,8 +8723,8 @@ var
 begin
   n := Length(FProjectionMatrixStack);
   SetLength(FProjectionMatrixStack, n + 1);
-  FProjectionMatrixStack[n] := FProjectionMatrix;
-  FProjectionMatrix := newMatrix;
+  FProjectionMatrixStack[n] := RenderingContext.PipelineTransformation.ProjectionMatrix;
+  RenderingContext.PipelineTransformation.ProjectionMatrix := newMatrix;
 end;
 
 // PopProjectionMatrix
@@ -8752,16 +8736,23 @@ var
 begin
   n := High(FProjectionMatrixStack);
   Assert(n >= 0, 'Unbalanced PopProjectionMatrix');
-  FProjectionMatrix := FProjectionMatrixStack[n];
+  RenderingContext.PipelineTransformation.ProjectionMatrix := FProjectionMatrixStack[n];
   SetLength(FProjectionMatrixStack, n);
 end;
 
-// ModelViewMatrix
-//
-
-function TGLSceneBuffer.ModelViewMatrix: TMatrix;
+function TGLSceneBuffer.ProjectionMatrix;
 begin
-  Result := FViewMatrix;
+  Result := RenderingContext.PipelineTransformation.ProjectionMatrix;
+end;
+
+function TGLSceneBuffer.ViewMatrix: TMatrix;
+begin
+  Result := RenderingContext.PipelineTransformation.ViewMatrix;
+end;
+
+function TGLSceneBuffer.ModelMatrix: TMatrix;
+begin
+  Result := RenderingContext.PipelineTransformation.ModelMatrix;
 end;
 
 // OrthoScreenToWorld
@@ -8807,18 +8798,15 @@ end;
 function TGLSceneBuffer.ScreenToWorld(const aPoint: TAffineVector):
   TAffineVector;
 var
-  proj, mv: THomogeneousDblMatrix;
-  x, y, z: Double;
+  rslt: TVector;
 begin
-  if Assigned(FCamera) then
-  begin
-    SetMatrix(proj, ProjectionMatrix);
-    SetMatrix(mv, ViewMatrix);
-    gluUnProject(aPoint[0], aPoint[1], aPoint[2],
-      mv, proj, PHomogeneousIntVector(@FViewPort)^,
-      @x, @y, @z);
-    SetVector(Result, x, y, z);
-  end
+  if Assigned(FCamera)
+    and UnProject(
+    VectorMake(aPoint),
+    RenderingContext.PipelineTransformation.ViewProjectionMatrix,
+    PHomogeneousIntVector(@FViewPort)^,
+    rslt) then
+    Result := Vector3fMake(rslt)
   else
     Result := aPoint;
 end;
@@ -8846,18 +8834,15 @@ end;
 function TGLSceneBuffer.WorldToScreen(const aPoint: TAffineVector):
   TAffineVector;
 var
-  proj, mv: THomogeneousDblMatrix;
-  x, y, z: Double;
+  rslt: TVector;
 begin
-  if Assigned(FCamera) then
-  begin
-    SetMatrix(proj, ProjectionMatrix);
-    SetMatrix(mv, ViewMatrix);
-    gluProject(aPoint[0], aPoint[1], aPoint[2],
-      mv, proj, PHomogeneousIntVector(@FViewPort)^,
-      @x, @y, @z);
-    SetVector(Result, x, y, z);
-  end
+  if Assigned(FCamera)
+    and Project(
+    VectorMake(aPoint),
+    RenderingContext.PipelineTransformation.ViewProjectionMatrix,
+    TVector4i(FViewPort),
+    rslt) then
+    Result := Vector3fMake(rslt)
   else
     Result := aPoint;
 end;
@@ -8876,22 +8861,12 @@ end;
 procedure TGLSceneBuffer.WorldToScreen(points: PVector; nbPoints: Integer);
 var
   i: Integer;
-  proj, mv: THomogeneousDblMatrix;
-  x, y, z: Double;
 begin
   if Assigned(FCamera) then
   begin
-    SetMatrix(proj, ProjectionMatrix);
-    SetMatrix(mv, ViewMatrix);
-    for i := 0 to nbPoints - 1 do
+    for i := nbPoints - 1 downto 0 do
     begin
-      gluProject(points^[0], points^[1], points^[2],
-        mv, proj, PHomogeneousIntVector(@FViewPort)^,
-        @x, @y, @z);
-      points^[0] := x;
-      points^[1] := y;
-      points^[2] := z;
-      points^[3] := 1;
+      Project(points^, RenderingContext.PipelineTransformation.ViewProjectionMatrix, PHomogeneousIntVector(@FViewPort)^, points^);
       Inc(points);
     end;
   end;
@@ -9046,7 +9021,8 @@ var
 begin
   if roNoDepthBufferClear in ContextOptions then
     bufferBits := 0
-  else begin
+  else
+  begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
     CurrentGLContext.GLStates.DepthWriteMask := True;
   end;
@@ -9083,7 +9059,6 @@ var
   szmin, szmax: Single;
   subObj: TPickSubObjects;
   subObjIndex: Cardinal;
-  backupProjectionMatrix: TMatrix;
 begin
   if not Assigned(FCamera) then
     Exit;
@@ -9093,7 +9068,6 @@ begin
   FRendering := True;
   try
     buffer := nil;
-    backupProjectionMatrix := FProjectionMatrix;
     try
       xglMapTexCoordToNull; // turn off
       PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
@@ -9150,7 +9124,6 @@ begin
           subObj, szmin, szmax);
       end;
     finally
-      FProjectionMatrix := backupProjectionMatrix;
       FreeMem(buffer);
     end;
   finally
@@ -9278,26 +9251,30 @@ end;
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
   resolution: Integer; pickingRect: PGLRect = nil);
 begin
+  RenderingContext.PipelineTransformation.IdentityAll;
   // setup projection matrix
-  GL.MatrixMode(GL_PROJECTION);
-  GL.LoadIdentity;
   if Assigned(pickingRect) then
-    gluPickMatrix((pickingRect^.Left + pickingRect^.Right) div 2,
+  begin
+    CurrentGLContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix(
+      (pickingRect^.Left + pickingRect^.Right) div 2,
       FViewPort.Height - ((pickingRect^.Top + pickingRect^.Bottom) div 2),
       Abs(pickingRect^.Right - pickingRect^.Left),
       Abs(pickingRect^.Bottom - pickingRect^.Top),
       TVector4i(FViewport));
-  GL.GetFloatv(GL_PROJECTION_MATRIX, @FBaseProjectionMatrix);
+  end;
+  FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
+
   if Assigned(FCamera) then
   begin
     // apply camera perpective
-    FCamera.ApplyPerspective(aViewport, FViewPort.Width, FViewPort.Height,
+    FCamera.ApplyPerspective(
+      aViewport,
+      FViewPort.Width,
+      FViewPort.Height,
       resolution);
-    GL.GetFloatv(GL_PROJECTION_MATRIX, @FProjectionMatrix);
   end;
+
   // setup model view matrix
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.LoadIdentity;
   if Assigned(FCamera) then
   begin
     // apply camera transformation (viewpoint)
@@ -9305,7 +9282,6 @@ begin
     FCamera.Apply;
     FCameraAbsolutePosition := FCamera.AbsolutePosition;
   end;
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @FViewMatrix);
 end;
 
 // DoBaseRender
@@ -9335,9 +9311,9 @@ begin
     begin
       with FCamera.FScene do
       begin
+        SetupLights(MaxLights);
         if not ForwardContext then
         begin
-          SetupLights(MaxLights);
           if FogEnable then
           begin
             Enable(stFog);
@@ -9421,7 +9397,7 @@ begin
         QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
-      ClearGLError;
+      GL.ClearError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
       FRenderingContext.GLStates.ColorClearValue :=
@@ -9430,7 +9406,7 @@ begin
       GL.CheckError;
       // render
       DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
-      GL.CheckError;
+
       if not (roNoSwapBuffers in ContextOptions) then
         RenderingContext.SwapBuffers;
 
@@ -9461,15 +9437,6 @@ procedure TGLSceneBuffer.RenderScene(aScene: TGLScene;
   drawState: TDrawState;
   baseObject: TGLBaseSceneObject);
 
-  function GetMVProj: TMatrix;
-  var
-    projMat, mvMat: TMatrix;
-  begin
-    GL.GetFloatv(GL_PROJECTION_MATRIX, @projMat);
-    GL.GetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
-    Result := MatrixMultiply(mvMat, projMat);
-  end;
-
 var
   i: Integer;
   rci: TRenderContextInfo;
@@ -9492,6 +9459,10 @@ begin
   with FCamera do
   begin
     rci.cameraPosition := FCameraAbsolutePosition;
+
+    with RenderingContext.PipelineTransformation do
+      CameraPosition := FCameraAbsolutePosition;
+
     rci.cameraDirection := FLastDirection;
     NormalizeVector(rci.cameraDirection);
     rci.cameraDirection[3] := 0;
@@ -9506,15 +9477,14 @@ begin
       viewPortRadius := FViewPortRadius;
       nearClippingDistance := FNearPlane;
       farClippingDistance := FNearPlane + FDepthOfView;
-      frustum := ExtractFrustumFromModelViewProjection(GetMVProj);
+      frustum := RenderingContext.PipelineTransformation.Frustum;
     end;
   end;
   rci.viewPortSize.cx := viewPortSizeX;
   rci.viewPortSize.cy := viewPortSizeY;
   rci.renderDPI := FRenderDPI;
-  rci.modelViewMatrix := @FViewMatrix;
   rci.GLStates := RenderingContext.GLStates;
-  //  rci.GLStates.ResetAll;
+  rci.PipelineTransformation := RenderingContext.PipelineTransformation;
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
     or (rci.drawState = dsPicking);
@@ -9536,7 +9506,8 @@ begin
   begin
     aScene.Objects.Render(rci);
 {$IFDEF GLS_EXPERIMENTAL}
-    StaticVBOManager.BuildBuffer;
+    if CurrentGLContext.Acceleration = chaHardware then
+      StaticVBOManager.BuildBuffer;
 {$ENDIF}
   end
   else
@@ -9853,9 +9824,9 @@ var
         end
         else
         begin
-          // slower (software mode)
-          gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
-            GL_RGBA, GL_UNSIGNED_BYTE, buf);
+          GL.TexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+            0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+          GL.GenerateMipmap(target);
         end;
       end;
     finally
@@ -9902,7 +9873,7 @@ begin
       else
         GL.CopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
 
-      ClearGLError;
+      GL.ClearError;
     finally
       Buffer.RenderingContext.Deactivate;
     end;
@@ -9914,23 +9885,26 @@ end;
 
 procedure TGLNonVisualViewer.SetupCubeMapCamera(Sender: TObject);
 const
-  cRot: array[0..5, 0..1] of Single = (
-    (0, 0), (0, 180), // PX, NX
-    (-90, 90), (90, 90), // PY, NY
-    (0, 90), (0, -90)); // PZ, NZ
+  cFaceMat: array[0..5] of TMatrix =
+  (
+    ((0, 0, -1, 0), (0, -1, 0, 0), (-1, 0, 0, 0), (0, 0, 0, 1)),
+    ((2.4335928828e-08, 0, 1, 0), (0, -1, 0, 0), (1, 0, -2.4335928828e-08, 0), (0, 0, 0, 1)),
+    ((1, 1.2167964414e-08, -1.4805936071e-16, 0), (0, -1.2167964414e-08, -1, 0), (-1.2167964414e-08, 1, -1.2167964414e-08, 0), (0, 0, 0, 1)),
+    ((1, -1.2167964414e-08, -1.4805936071e-16, 0), (0, -1.2167964414e-08, 1, 0), (-1.2167964414e-08, -1, -1.2167964414e-08, 0), (0, 0, 0, 1)),
+    ((1, 0, -1.2167964414e-08, 0), (0, -1, 0, 0), (-1.2167964414e-08, 0, -1, 0), (0, 0, 0, 1)),
+    ((-1, 0, -1.2167964414e-08, 0), (0, -1, 0, 0), (-1.2167964414e-08, 0, 1, 0), (0, 0, 0, 1))
+  );
+
+var
+  TM: TMatrix;
 begin
   // Setup appropriate FOV
-  GL.MatrixMode(GL_PROJECTION);
-  GL.LoadIdentity;
-  gluPerspective(90, 1, FCubeMapZNear, FCubeMapZFar);
-  // Setup appropriate orientation
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.LoadIdentity;
-  gluLookAt(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 0.0); // Dir = X, Up = Y
-  GL.Rotatef(cRot[FCubeMapRotIdx][0], 0.0, 0.0, 1.0); // Rotate around Z
-  GL.Rotatef(cRot[FCubeMapRotIdx][1], 0.0, 1.0, 0.0); // then rotate around Y
-  GL.Translatef(FCubeMapTranslation[0], FCubeMapTranslation[1],
-    FCubeMapTranslation[2]);
+  with CurrentGLContext.PipelineTransformation do
+  begin
+    ProjectionMatrix := CreatePerspectiveMatrix(90, 1, FCubeMapZNear, FCubeMapZFar);
+    TM := CreateTranslationMatrix(FCubeMapTranslation);
+    ViewMatrix := MatrixMultiply(cFaceMat[FCubeMapRotIdx], TM);
+  end;
 end;
 
 // RenderTextures
@@ -10211,3 +10185,4 @@ initialization
   QueryPerformanceFrequency(vCounterFrequency);
 
 end.
+

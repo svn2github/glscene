@@ -6,6 +6,7 @@
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
@@ -28,9 +29,9 @@ unit GLAnimatedSprite;
 interface
 
 uses
-  Classes, SysUtils, GLScene, VectorGeometry, OpenGL1x, GLMaterial, GLUtils,
+  Classes, SysUtils, GLScene, VectorGeometry, OpenGLTokens, GLMaterial, GLUtils,
   PersistentClasses, XCollection, GLCrossPlatform, GLRenderContextInfo,
-  BaseClasses, GLState;
+  BaseClasses, GLContext, GLState;
 
 type
   TSpriteAnimFrame = class;
@@ -834,7 +835,7 @@ begin
           end;
         end;
 
-        glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
+        GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
         vx[0]:=mat[0][0]; vy[0]:=mat[0][1];
         vx[1]:=mat[1][0]; vy[1]:=mat[1][1];
         vx[2]:=mat[2][0]; vy[2]:=mat[2][1];
@@ -855,18 +856,18 @@ begin
         if Assigned(libMat) then libMat.Apply(rci);
         rci.GLStates.Disable(stLighting);
         if FRotation<>0 then begin
-          glMatrixMode(GL_MODELVIEW);
-          glPushMatrix;
-          glRotatef(FRotation,mat[0][2],mat[1][2],mat[2][2]);
+          GL.MatrixMode(GL_MODELVIEW);
+          GL.PushMatrix;
+          GL.Rotatef(FRotation,mat[0][2],mat[1][2],mat[2][2]);
         end;
-        glBegin(GL_QUADS);
-          glTexCoord2f(u1, v1); glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
-          glTexCoord2f(u0, v1); glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
-          glTexCoord2f(u0, v0); glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
-          glTexCoord2f(u1, v0); glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
-        glEnd;
+        GL.Begin_(GL_QUADS);
+          GL.TexCoord2f(u1, v1); GL.Vertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
+          GL.TexCoord2f(u0, v1); GL.Vertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
+          GL.TexCoord2f(u0, v0); GL.Vertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
+          GL.TexCoord2f(u1, v0); GL.Vertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
+        GL.End_;
         if FRotation<>0 then begin
-          glPopMatrix;
+          GL.PopMatrix;
         end;
         if Assigned(libMat) then libMat.UnApply(rci);
       end;

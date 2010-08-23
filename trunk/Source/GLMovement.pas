@@ -9,6 +9,7 @@
    but the default value is rmTurnPitchRoll for backwards compatibility.
 
    <b>Historique : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>12/11/09 - DaStr - Bugfix after previous commit
       <li>25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
       <li>14/03/09 - DanB - Changes to Start/StopAllMovements due to TGLScene.Cameras removal
@@ -43,7 +44,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, VectorGeometry, XCollection, OpenGL1x, Spline, GLObjects,
+  GLScene, VectorGeometry, XCollection, OpenGLTokens, Spline, GLObjects,
   GLCrossPlatform, GLStrings, BaseClasses;
 
 type

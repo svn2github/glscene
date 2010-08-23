@@ -9,6 +9,7 @@
    By René Lindsay.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>29/05/08 - DaStr - Removed unused variables in TGLZShadows.CalcShadowTexture()
@@ -234,7 +235,7 @@ type
 
 implementation
 
-uses OpenGL1x, XOpenGL, VectorTypes;
+uses OpenGLTokens, XOpenGL, VectorTypes;
 
 constructor TGLzBuffer.Create;
 begin
@@ -332,13 +333,13 @@ function TGLzBuffer.GetDepthBuffer(CalcVectors: Boolean; ContextIsActive:
 begin
   if ContextIsActive = True then
   begin
-    glReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
+    GL.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
   end
   else
   begin
     Buffer.RenderingContext.Activate;
     try
-      glReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
+      GL.ReadPixels(0, 0, FWidth, FHeight, GL_DEPTH_COMPONENT, GL_FLOAT, FData);
     finally
       Buffer.RenderingContext.Deactivate;
     end;
@@ -415,14 +416,12 @@ var
   w, h: integer;
   wrp: single;
 begin
-  if not assigned(Buffer) then
+  if not (assigned(Buffer) and Buffer.RCInstantiated) then
     exit;
   if not assigned(cam) then
     raise EZBufferException.Create('No Camera!');
 
-  //  if (FWidth=0) then showMessage('No Width!');
-
-//-----------For ScreenToVector-------------
+  //-----------For ScreenToVector-------------
   w := FWidth;
   h := FHeight;
   setVector(vec, 0, 0, 0);
@@ -739,18 +738,18 @@ begin
       begin
         TextureBinding[0, ttTexture2D] := Handle;
 
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_Fastest);
+        GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_Fastest);
         UnpackAlignment := 1;
         UnpackRowLength := 0;
         UnpackSkipRows := 0;
         UnpackSkipPixels := 0;
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         ActiveTextureEnabled[ttTexture2D] := True;
         SetBlendFunc(bfSRCALPHA, bfONEMINUSSRCALPHA);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        GL.TexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         Enable(stBlend);
 
         PrepareAlphaMemory;
@@ -820,32 +819,32 @@ begin
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-  glColor3f(SCol.r, SCol.g, SCol.b);
+  GL.Color3f(SCol.r, SCol.g, SCol.b);
 
   if not FTexturePrepared then
   begin
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, FXRes, FYRes, 0, GL_ALPHA,
+    GL.TexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, FXRes, FYRes, 0, GL_ALPHA,
       GL_UNSIGNED_BYTE, @FData[0]);
     FTexturePrepared := True;
   end
   else
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, FXRes, FYRes, GL_ALPHA,
+    GL.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, FXRes, FYRes, GL_ALPHA,
       GL_UNSIGNED_BYTE, @FData[0]);
 
   //   NotifyChange(Self);
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
      // Prepare matrices
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
-  glScalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
-  glTranslatef(Position.X - ARci.viewPortSize.cx * 0.5,
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PushMatrix;
+  GL.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
+  GL.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
+  GL.Translatef(Position.X - ARci.viewPortSize.cx * 0.5,
     ARci.viewPortSize.cy * 0.5 - Position.Y, Position.Z);
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
-  glLoadIdentity;
+  GL.MatrixMode(GL_PROJECTION);
+  GL.PushMatrix;
+  GL.LoadIdentity;
   ARci.GLStates.Disable(stDepthTest);
   ARci.GLStates.Disable(stLighting);
 
@@ -858,21 +857,21 @@ begin
   Ytex := 1 - (FHeight / FYres); //0
 
   // issue quad
-  glBegin(GL_QUADS);
-  glNormal3fv(@YVector);
-  glTexCoord2f(0, ytex);
-  glVertex2f(vx, vy1);
-  glTexCoord2f(xtex, ytex);
-  glVertex2f(vx1, vy1);
-  glTexCoord2f(xtex, 1);
-  glVertex2f(vx1, vy);
-  glTexCoord2f(0, 1);
-  glVertex2f(vx, vy);
-  glEnd;
+  GL.Begin_(GL_QUADS);
+  GL.Normal3fv(@YVector);
+  GL.TexCoord2f(0, ytex);
+  GL.Vertex2f(vx, vy1);
+  GL.TexCoord2f(xtex, ytex);
+  GL.Vertex2f(vx1, vy1);
+  GL.TexCoord2f(xtex, 1);
+  GL.Vertex2f(vx1, vy);
+  GL.TexCoord2f(0, 1);
+  GL.Vertex2f(vx, vy);
+  GL.End_;
   // restore state
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
+  GL.PopMatrix;
+  GL.MatrixMode(GL_MODELVIEW);
+  GL.PopMatrix;
 
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, ARci);
