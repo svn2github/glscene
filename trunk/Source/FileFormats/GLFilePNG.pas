@@ -4,6 +4,7 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
         <li>31/05/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
@@ -21,7 +22,7 @@ uses
   Classes,
   SysUtils,
   GLCrossPlatform,
-  OpenGL1x,
+  OpenGLTokens,
   GLContext,
   GLGraphics,
   GLTextureFormat,
@@ -556,12 +557,12 @@ begin
     fCubeMap := false;
     fTextureArray := false;
     // Check level existence
-    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
       @texFormat);
     if texFormat > 1 then
     begin
-      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
       fDepth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
@@ -577,11 +578,11 @@ begin
       ReallocMem(FData, DataSize);
       fLevels.Clear;
       fLevels.Add(fData);
-      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+      GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
       fMipLevels := 1;
-    CheckOpenGLError;
+    GL.CheckError;
   finally
     if contextActivate then
     begin

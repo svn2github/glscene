@@ -5,6 +5,7 @@
     Good for preview picture in OpenDialog, 
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 
+      <li>23/08/10 - Yar - Changes after PBuffer upgrade
       <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
       <li>24/01/10 - Yar - Improved FPC compatibility
@@ -20,7 +21,7 @@ interface
 
 uses
    {$IFDEF MSWINDOWS} Windows,  {$ENDIF}  Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
-  OpenGL1x, GLPBuffer;
+  OpenGLTokens, GLPBuffer;
 
 type
 
@@ -46,18 +47,8 @@ uses
 procedure TO3TCImage.LoadFromStream(stream : TStream);
 var
   FullO3TC : TGLO3TCImage;
-  PBuf : TGLPixelBuffer;
   size: integer;
   tempBuff: PGLubyte;
-  tempTex : GLuint;
-  {$IFDEF MSWindows}
-  DC : HDC;
-  RC : HGLRC;
-  {$Endif}
-  {$IFDEF Linux}
-  DC: GLXDrawable;
-  RC: GLXContext;
-  {$ENDIF}
   {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: Integer;
@@ -72,55 +63,28 @@ begin
     FullO3TC.Free;
     raise;
   end;
-  {$IFDEF MSWINDOWS}
-  // Copy surface as posible to TBitmap
-  DC := wglGetCurrentDC;
-  RC := wglGetCurrentContext;
-  {$ENDIF}
-  {$IFDEF Linux}
-   DC := glXGetCurrentReadDrawable;
-   RC := glxGetCurrentContext;
-  {$ENDIF}
 
-  // Create minimal pixel buffer
-  {$IFDEF MSWINDOWS}
-  if (DC = 0) or (RC = 0) then
-  {$ENDIF}
-  {$IFDEF Linux}
-  if (DC = 0) or (RC = nil) then
-  {$ENDIF}
-  begin
-    PBuf := TGLPixelBuffer.Create;
-    try
-      PBuf.Initialize(1, 1);
-    except
-      FullO3TC.Free;
-      raise;
-    end;
-    tempTex := PBuf.TextureID;
-  end
-  else begin
-    Pbuf := nil;
-    glPushAttrib(GL_TEXTURE_BIT);
-    glGenTextures(1, @tempTex);
-  end;
+  if PBufferService.TextureID = 0 then
+    PBufferService.Initialize(1, 1);
+  PBufferService.Enable;
+
   // Setup texture
-  glEnable       ( GL_TEXTURE_2D );
-  glBindTexture  ( GL_TEXTURE_2D, tempTex);
+  PBufferService.GL.Enable       ( GL_TEXTURE_2D );
+  PBufferService.GL.BindTexture  ( GL_TEXTURE_2D, PBufferService.TextureID);
   // copy texture to video memory
   size := ((FullO3TC.Width + 3) div 4)
         * ((FullO3TC.Height + 3) div 4)
         * FullO3TC.ElementSize;
-  glCompressedTexImage2DARB( GL_TEXTURE_2D, 0,
+  PBufferService.GL.CompressedTexImage2D( GL_TEXTURE_2D, 0,
     InternalFormatToOpenGLFormat(FullO3TC.InternalFormat),
     FullO3TC.Width, FullO3TC.Height, 0, size,
     FullO3TC.GetLevelData(0));
 
-  CheckOpenGLError;
+  PBufferService.GL.CheckError;
 
   GetMem( tempBuff, FullO3TC.Width*FullO3TC.Height*4 );
   // get texture from video memory in simple format
-  glGetTexImage( GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, tempBuff);
+  PBufferService.GL.GetTexImage( GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, tempBuff);
 
   Width       := FullO3TC.Width;
   Height      := FullO3TC.Height;
@@ -147,21 +111,14 @@ begin
 {$ENDIF}
   FullO3TC.Free;
   FreeMem( tempBuff );
-
-  CheckOpenGLError;
-  if Assigned( pBuf ) then
-    pBuf.Destroy
-  else begin
-    glDeleteTextures(1, @tempTex);
-    glPopAttrib;
-  end;
+  PBufferService.Disable;
 end;
 
 // SaveToStream
 //
 procedure TO3TCImage.SaveToStream(stream : TStream);
 begin
-
+  Assert(False, 'Not supported');
 end;
 
 // ------------------------------------------------------------------

@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>11/06/11 - DaStr - Fixes for Linux x64
       <li>08/11/09 - DaStr - Improved FPC compatibility
                               (thanks Predator) (BugtrackerID = 2893580)
@@ -40,7 +41,7 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLVectorFileObjects, GLTexture, ApplicationFileIO,
-  VectorGeometry, File3DS, Types3DS, OpenGL1x, PersistentClasses,
+  VectorGeometry, File3DS, Types3DS, OpenGLTokens, GLContext, PersistentClasses,
   GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorTypes, VectorLists,
   GLRenderContextInfo, GLMaterial;
 
@@ -1224,10 +1225,10 @@ end;
 
 procedure TGLFile3DSMeshObject.BuildList(var ARci: TRenderContextInfo);
 begin
-  glPushMatrix;
-  glMultMatrixf(@FAnimTransf.ModelMatrix);
+  GL.PushMatrix;
+  GL.MultMatrixf(@FAnimTransf.ModelMatrix);
   inherited;
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 constructor TGLFile3DSOmniLightObject.Create;

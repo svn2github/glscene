@@ -7,6 +7,7 @@
    Adapted from DevIL image library (http://openil.sourceforge.net)<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>05/03/10 - Yar - Added float types in GLEnumToDDSHeader
       <li>23/01/10 - Yar - Added more support DX9 DDS color formats
                            and DX11 DXGI constants to future
@@ -23,7 +24,7 @@ interface
 {$Z4}  // Minimum enum size = dword
 
 uses
-   SysUtils, VectorGeometry, OpenGL1x, GLTextureFormat;
+   SysUtils, VectorGeometry, OpenGLTokens, GLTextureFormat;
 
 const
    DDSD_CAPS        = $00000001;

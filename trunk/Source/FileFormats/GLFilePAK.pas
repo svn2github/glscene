@@ -192,9 +192,7 @@ begin
       Temp.CopyFrom(FStream, FHeader.DirLength);
       Temp.Position    := 0;
       FStream.Position := FHeader.DirOffset;
-   end
-   else
-     Temp := nil;
+   end;
    Dir.FilePos    := FHeader.DirOffset;
    Dir.FileLength := FS.Size;
    FStream.CopyFrom(FS, 0);

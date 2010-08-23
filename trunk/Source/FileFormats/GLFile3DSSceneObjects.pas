@@ -6,6 +6,7 @@
   3ds-specific scene objects.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
@@ -20,11 +21,22 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Math,
+  Classes,
+  SysUtils,
+  Math,
 
   // GLScene
-  VectorGeometry, OpenGL1x, GLScene, GLVectorFileObjects, VectorTypes,
-  PersistentClasses, GLCrossPlatform, GLCoordinates, GLRenderContextInfo,
+  VectorGeometry,
+  OpenGL1x,
+  OpenGLTokens,
+  GLContext,
+  GLScene,
+  GLVectorFileObjects,
+  VectorTypes,
+  PersistentClasses,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLRenderContextInfo,
   GLState;
 
 type
@@ -118,7 +130,7 @@ function QuaternionToRotateMatrix(const Quaternion: TQuaternion): TMatrix;
 var
   wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2: Single;
   quat: TVector;
-  m:    TMatrix;
+  m: TMatrix;
 begin
   quat := VectorMake(Quaternion.ImagPart);
   quat[3] := Quaternion.RealPart;
@@ -170,11 +182,11 @@ procedure TGLFile3DSLight.DoRender(var rci: TRenderContextInfo; renderSelf, rend
 
   procedure BuildFace;
   begin
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.03, 0, 0);
-    glVertex3f(0, 0.03, 0);
-    glVertex3f(0, 0, 0.07);
-    glEnd;
+    GL.Begin_(GL_TRIANGLES);
+    GL.Vertex3f(0.03, 0, 0);
+    GL.Vertex3f(0, 0.03, 0);
+    GL.Vertex3f(0, 0, 0.07);
+    GL.End_;
   end;
 
 var
@@ -182,34 +194,35 @@ var
 
 begin
   inherited;
-  if not vGLFile3DSSceneObjects_RenderCameraAndLights then Exit;
+  if not vGLFile3DSSceneObjects_RenderCameraAndLights then
+    Exit;
 
   rci.GLStates.PolygonMode := pmLines;
-  glPushMatrix;
+  GL.PushMatrix;
 
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
-  glScalef(dv, dv, dv);
+  GL.Scalef(dv, dv, dv);
 
   // Up.
   BuildFace;
-  glRotatef(90, 0, 0, 1);
+  GL.Rotatef(90, 0, 0, 1);
   BuildFace;
-  glRotatef(180, 0, 0, 1);
+  GL.Rotatef(180, 0, 0, 1);
   BuildFace;
-  glRotatef(270, 0, 0, 1);
+  GL.Rotatef(270, 0, 0, 1);
   BuildFace;
 
   // Down.
-  glRotatef(180, 0, 1, 0);
+  GL.Rotatef(180, 0, 1, 0);
   BuildFace;
-  glRotatef(90, 0, 0, 1);
+  GL.Rotatef(90, 0, 0, 1);
   BuildFace;
-  glRotatef(180, 0, 0, 1);
+  GL.Rotatef(180, 0, 0, 1);
   BuildFace;
-  glRotatef(270, 0, 0, 1);
+  GL.Rotatef(270, 0, 0, 1);
   BuildFace;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 procedure TGLFile3DSLight.CoordinateChanged(Sender: TGLCustomCoordinates);
@@ -226,7 +239,6 @@ begin
   inherited;
 end;
 
-
 constructor TGLFile3DSCamera.Create(AOwner: TComponent);
 var
   I: Integer;
@@ -237,10 +249,10 @@ begin
 
   for I := 0 to 1 do
   begin
-    FQuadCyl[I] := gluNewQuadric;
-    FQuadDisk[I] := gluNewQuadric;
-    gluQuadricNormals(FQuadCyl[I], GLU_SMOOTH);
-    gluQuadricNormals(FQuadDisk[I], GLU_SMOOTH);
+    //    FQuadCyl[I] := gluNewQuadric;
+    //    FQuadDisk[I] := gluNewQuadric;
+    //    gluQuadricNormals(FQuadCyl[I], GLU_SMOOTH);
+    //    gluQuadricNormals(FQuadDisk[I], GLU_SMOOTH);
   end;
 end;
 
@@ -248,33 +260,34 @@ procedure TGLFile3DSCamera.DoRender(var rci: TRenderContextInfo; renderSelf, ren
 
   procedure BuildCyl;
   begin
-    gluCylinder(FQuadCyl[0], 1, 1, 0.5, 6, 1);
-    glTranslatef(0, 0, 0.5);
-    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
-    glTranslatef(0, 0, -0.5);
+    //    gluCylinder(FQuadCyl[0], 1, 1, 0.5, 6, 1);
+    //    glTranslatef(0, 0, 0.5);
+    //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
+    GL.Translatef(0, 0, -0.5);
     rci.GLStates.InvertGLFrontFace;
-    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
+    //    gluDisk(FQuadDisk[0], 0, 1, 6, 1);
     rci.GLStates.InvertGLFrontFace;
   end;
 
   procedure BuildFace;
   begin
-    glRotatef(-90, 0, 1, 0);
-    glRotatef(45, 0, 0, 1);
-    glTranslatef(0, -0.5, 1);
-    gluCylinder(FQuadCyl[0], 0.5, 1.3, 2.4, 4, 1);
-    glTranslatef(0, 0, 2.4);
-    gluDisk(FQuadDisk[0], 0, 1.3, 4, 1);
+    GL.Rotatef(-90, 0, 1, 0);
+    GL.Rotatef(45, 0, 0, 1);
+    GL.Translatef(0, -0.5, 1);
+    //    gluCylinder(FQuadCyl[0], 0.5, 1.3, 2.4, 4, 1);
+    GL.Translatef(0, 0, 2.4);
+    //    gluDisk(FQuadDisk[0], 0, 1.3, 4, 1);
   end;
 
 var
   dv, ang: Single;
-  v, v1:   TAffineVector;
+  v, v1: TAffineVector;
 
 begin
   inherited;
-  if not vGLFile3DSSceneObjects_RenderCameraAndLights then Exit;
-  
+  if not vGLFile3DSSceneObjects_RenderCameraAndLights then
+    Exit;
+
   v := VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector));
 
   v1 := AffineVectorMake(v[0], v[1], 0);
@@ -283,20 +296,18 @@ begin
 
   rci.GLStates.PolygonMode := pmLines;
 
-  glPushMatrix;
-  glRotatef(ang * 180 / pi, 0, 0, 1);
+  GL.PushMatrix;
+  GL.Rotatef(ang * 180 / pi, 0, 0, 1);
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
-  glScalef(dv / 25, dv / 25, dv / 25);
+  GL.Scalef(dv / 25, dv / 25, dv / 25);
 
-
-
-  glRotateF(90, 0, 1, 0);
-  glTranslatef(0, 1, 0);
+  GL.RotateF(90, 0, 1, 0);
+  GL.Translatef(0, 1, 0);
   BuildCyl;
-  glTranslatef(1, -1, 0);
+  GL.Translatef(1, -1, 0);
   BuildCyl;
   BuildFace;
-  glPopMatrix;
+  GL.PopMatrix;
 
   rci.GLStates.PolygonMode := pmFill;
 end;
@@ -307,8 +318,8 @@ begin
 
   if (Sender = FTargetPos) or (Sender = Position) then
   begin
-    //Up.AsAffineVector := ZVector;
-    //Direction.SetVector(VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector)));
+    //    Up.AsAffineVector := ZVector;
+    //    Direction.SetVector(VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector)));
   end;
 end;
 
@@ -324,7 +335,6 @@ begin
     gluDeleteQuadric(FQuadDisk[I]);
   end;
 end;
-
 
 procedure TGLFile3DSActor.ReadMesh(Stream: TStream);
 var
@@ -348,8 +358,6 @@ procedure TGLFile3DSActor.DefineProperties(Filer: TFiler);
 begin
   Filer.DefineBinaryProperty('MeshObjectsData', ReadMesh, WriteMesh, True);
 end;
-
-
 
 constructor TGLFile3DSFreeForm.Create(AOWner: TComponent);
 begin
@@ -376,7 +384,7 @@ end;
 
 procedure TGLFile3DSFreeForm.ReadMesh(Stream: TStream);
 var
-  v:    TVector;
+  v: TVector;
   virt: TBinaryReader;
 begin
   virt := TBinaryReader.Create(Stream);
@@ -396,7 +404,7 @@ end;
 procedure TGLFile3DSFreeForm.WriteMesh(Stream: TStream);
 var
   virt: TBinaryWriter;
-  v:    TVector;
+  v: TVector;
 begin
   virt := TBinaryWriter.Create(Stream);
 
@@ -419,13 +427,13 @@ end;
 
 procedure TGLFile3DSFreeForm.BuildList(var rci: TRenderContextInfo);
 begin
-  glMultMatrixf(@FTransfMat);
-  glMultMatrixf(@FScaleMat);
+  GL.MultMatrixf(@FTransfMat);
+  GL.MultMatrixf(@FScaleMat);
 
-  glPushMatrix;
-  glMultMatrixf(@FRefMat);
+  GL.PushMatrix;
+  GL.MultMatrixf(@FRefMat);
   inherited;
-  glPopMatrix;
+  GL.PopMatrix;
 
   if parent is TGLFile3DSFreeForm then
     ParentMatrix := (parent as TGLFile3DSFreeForm).ParentMatrix
@@ -479,6 +487,7 @@ end;
 
 // BarycenterAbsolutePosition
 //
+
 function TGLFile3DSFreeForm.BarycenterAbsolutePosition: TVector;
 var
   dMin, dMax: TAffineVector;
@@ -500,8 +509,8 @@ begin
   Result := LocalToAbsolute(Result);
 end;
 
-
 initialization
   RegisterClasses([TGLFile3DSLight, TGLFile3DSCamera, TGLFile3DSActor, TGLFile3DSFreeForm]);
 
 end.
+

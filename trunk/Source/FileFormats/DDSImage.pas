@@ -12,6 +12,7 @@
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
  <b>History : </b><font size=-1><ul>
+        <li>23/08/10 - Yar - Changes after PBuffer upgrade
         <li>20/05/10 - Yar - Fixes for Linux x64
         <li>21/03/10 - Yar - Added Linux support
                              (thanks to Rustam Asmandiarov aka Predator)
@@ -29,7 +30,7 @@ interface
 uses
   {$IFDEF MSWINDOWS} Windows,  {$ENDIF}
   Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
-  OpenGL1x, GLPBuffer;
+  OpenGLTokens, GLContext, GLPBuffer;
 
 type
 
@@ -57,24 +58,15 @@ uses
 procedure TDDSImage.LoadFromStream(stream: TStream);
 var
   FullDDS: TGLDDSImage;
-  PBuf: TGLPixelBuffer;
   size: integer;
   tempBuff: PGLubyte;
-  tempTex: GLuint;
-  {$IFDEF MSWINDOWS}
-  DC: HDC;
-  RC: HGLRC;
-  {$ENDIF}
-  {$IFDEF Linux}
-  DC: GLXDrawable;
-  RC: GLXContext;
-  {$ENDIF}
   {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
   {$ELSE}
   RIMG: TRawImage;
   {$ENDIF}
+  oldContext: TGLContext;
 begin
   FullDDS := TGLDDSImage.Create;
   try
@@ -84,52 +76,25 @@ begin
     raise;
   end;
 
-  {$IFDEF MSWINDOWS}
-  // Copy surface as posible to TBitmap
-  DC := wglGetCurrentDC;
-  RC := wglGetCurrentContext;
-  {$ENDIF}
-  {$IFDEF Linux}
-   DC := glXGetCurrentReadDrawable;
-   RC := glxGetCurrentContext;
-  {$ENDIF}
+  oldContext := CurrentGLContext;
+  if Assigned(oldContext) then
+    oldContext.Deactivate;
 
-  // Create minimal pixel buffer
-  {$IFDEF MSWINDOWS}
-  if (DC = 0) or (RC = 0) then
-  {$ENDIF}
-  {$IFDEF Linux}
-  if (DC = 0) or (RC = nil) then
-  {$ENDIF}
-  begin
-    PBuf := TGLPixelBuffer.Create;
-    try
-      PBuf.Initialize(1, 1);
-    except
-      FullDDS.Free;
-      raise;
-    end;
-    tempTex := PBuf.TextureID;
-  end
-  else
-  begin
-    Pbuf := nil;
-    glPushAttrib(GL_TEXTURE_BIT);
-    glGenTextures(1, @tempTex);
-  end;
+  if PBufferService.TextureID = 0 then
+    PBufferService.Initialize(1, 1);
+  PBufferService.Enable;
 
   if IsFormatSupported(FullDDS.InternalFormat) then
   begin
     // Setup texture
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tempTex);
+    PBufferService.GL.BindTexture(GL_TEXTURE_2D, PBufferService.TextureID);
     // copy texture to video memory
     if FullDDS.isCompressed then
     begin
       size := ((FullDDS.Width + 3) div 4) * ((FullDDS.Height + 3) div 4) *
         FullDDS.ElementSize;
 
-      glCompressedTexImage2DARB(
+      PBufferService.GL.CompressedTexImage2D(
       GL_TEXTURE_2D, 0,
         InternalFormatToOpenGLFormat(FullDDS.InternalFormat),
         FullDDS.Width, FullDDS.Height, 0, size,
@@ -137,16 +102,16 @@ begin
 
     end
     else
-      glTexImage2D(GL_TEXTURE_2D, 0,
+      PBufferService.GL.TexImage2D(GL_TEXTURE_2D, 0,
         InternalFormatToOpenGLFormat(FullDDS.InternalFormat), FullDDS.Width,
         FullDDS.Height, 0, FullDDS.ColorFormat, FullDDS.DataType,
         FullDDS.GetLevelData(0));
 
-    CheckOpenGLError;
+    PBufferService.GL.CheckError;
 
     GetMem(tempBuff, FullDDS.Width * FullDDS.Height * 4);
     // get texture from video memory in simple format
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, tempBuff);
+    PBufferService.GL.GetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, tempBuff);
     PixelFormat := glpf32bit;
     Transparent := FullDDS.Transparent;
     Width := FullDDS.Width;
@@ -177,20 +142,14 @@ begin
     RIMG.DataSize := Width*Height*4;
     rimg.Data := PByte(tempBuff);
     LoadFromRawImage(rimg, false);
-
 {$ENDIF}
-
     FullDDS.Free;
     FreeMem(tempBuff);
+  end;
 
-    CheckOpenGLError;
-  end;
-  if Assigned(pBuf) then
-    pBuf.Destroy
-  else begin
-    glDeleteTextures(1, @tempTex);
-    glPopAttrib;
-  end;
+  PBufferService.Disable;
+  if Assigned(oldContext) then
+    oldContext.Activate;
 end;
 
 // SaveToStream

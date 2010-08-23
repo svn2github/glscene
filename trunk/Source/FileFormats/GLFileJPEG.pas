@@ -4,6 +4,7 @@
 {: GLFileJPEG<p>
 
   <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>29/06/10 - Yar - Improved FPC compatibility
       <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
       <li>27/02/10 - Yar - Creation
@@ -17,7 +18,7 @@ interface
 
 uses
   Classes, SysUtils,
-  GLCrossPlatform, OpenGL1x, GLContext, GLGraphics, GLTextureFormat,
+  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
   ApplicationFileIO;
 
 type
@@ -211,7 +212,7 @@ begin
       ReallocMem(fData, DataSize);
       fLevels.Clear;
       DestScanLine := fData;
-      PtrInc := PtrUInt(fData) - PtrUInt(DestScanline) + fWidth * fElementSize;
+      PtrInc := PtrUInt(fData) - PtrUInt(DestScanline) + PtrUInt(fWidth * fElementSize);
       if (PtrInc > 0) and ((PtrInc and 3) = 0) then
         LinesPerCall := jc.d.rec_outbuf_height // mehrere Scanlines pro Aufruf
       else

@@ -4,6 +4,7 @@
 {: GLFileDDS<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
         <li>06/06/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
@@ -25,7 +26,7 @@ uses
   Classes,
   SysUtils,
   GLCrossPlatform,
-  OpenGL1x,
+  OpenGLTokens,
   GLContext,
   GLGraphics,
   GLTextureFormat,
@@ -564,7 +565,7 @@ begin
             begin
               if level = 0 then
                 GetMem(vtcBuffer, LevelSize(0));
-              glGetCompressedTexImage(glTarget, level, vtcBuffer);
+              GL.GetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
               cw := (w + 3) div 4;
               ch := (h + 3) div 4;
@@ -609,7 +610,7 @@ begin
 
     if fMipLevels = 0 then
       fMipLevels := 1;
-    CheckOpenGLError;
+    GL.CheckError;
   finally
     if contextActivate then
     begin
