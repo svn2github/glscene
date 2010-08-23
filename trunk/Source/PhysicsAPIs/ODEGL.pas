@@ -2,6 +2,7 @@
   ***********************************************************************
 
   Change history
+  2010.08.10 - Yar - Replaced OpenGL1x to OpenGLTokens
   2010.04.05 - Yar - Added GLSceneMatrixToODER (thanks Vovik)
   2009.11.22 - DaStr - Improved Unix compatibility
                          (thanks Predator) (BugtrackerID = 2893580)
@@ -26,8 +27,16 @@ interface
 }
 
 uses
-  OpenGL1x, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
-  GLObjects, GLVerletClothify, GLVectorFileObjects;
+  OpenGLTokens,
+  GLContext,
+  VectorGeometry,
+  ODEImport,
+  GLScene,
+  VectorTypes,
+  VectorLists,
+  GLObjects,
+  GLVerletClothify,
+  GLVectorFileObjects;
 
 procedure DrawBox(Sides: TdVector3);
 procedure setTransform(pos: TdVector3; R: TdMatrix3);
@@ -35,9 +44,9 @@ procedure dsDrawBox(pos: PdVector3; R: PdMatrix3; Sides: TdVector3); overload;
 procedure dsDrawBox(pos: TdVector3; R: TdMatrix3; Sides: TdVector3); overload;
 
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
-  overload;
+overload;
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
-  overload;
+overload;
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:
   TdVector3); overload;
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
@@ -144,40 +153,40 @@ begin
   lz := Sides[2] * 0.5;
 
   // sides
-  glBegin(GL_TRIANGLE_STRIP);
-  glNormal3f(-1, 0, 0);
-  glVertex3f(-lx, -ly, -lz);
-  glVertex3f(-lx, -ly, lz);
-  glVertex3f(-lx, ly, -lz);
-  glVertex3f(-lx, ly, lz);
-  glNormal3f(0, 1, 0);
-  glVertex3f(lx, ly, -lz);
-  glVertex3f(lx, ly, lz);
-  glNormal3f(1, 0, 0);
-  glVertex3f(lx, -ly, -lz);
-  glVertex3f(lx, -ly, lz);
-  glNormal3f(0, -1, 0);
-  glVertex3f(-lx, -ly, -lz);
-  glVertex3f(-lx, -ly, lz);
-  glEnd();
+  GL.Begin_(GL_TRIANGLE_STRIP);
+  GL.Normal3f(-1, 0, 0);
+  GL.Vertex3f(-lx, -ly, -lz);
+  GL.Vertex3f(-lx, -ly, lz);
+  GL.Vertex3f(-lx, ly, -lz);
+  GL.Vertex3f(-lx, ly, lz);
+  GL.Normal3f(0, 1, 0);
+  GL.Vertex3f(lx, ly, -lz);
+  GL.Vertex3f(lx, ly, lz);
+  GL.Normal3f(1, 0, 0);
+  GL.Vertex3f(lx, -ly, -lz);
+  GL.Vertex3f(lx, -ly, lz);
+  GL.Normal3f(0, -1, 0);
+  GL.Vertex3f(-lx, -ly, -lz);
+  GL.Vertex3f(-lx, -ly, lz);
+  GL.End_();
 
   // top face
-  glBegin(GL_TRIANGLE_FAN);
-  glNormal3f(0, 0, 1);
-  glVertex3f(-lx, -ly, lz);
-  glVertex3f(lx, -ly, lz);
-  glVertex3f(lx, ly, lz);
-  glVertex3f(-lx, ly, lz);
-  glEnd();
+  GL.Begin_(GL_TRIANGLE_FAN);
+  GL.Normal3f(0, 0, 1);
+  GL.Vertex3f(-lx, -ly, lz);
+  GL.Vertex3f(lx, -ly, lz);
+  GL.Vertex3f(lx, ly, lz);
+  GL.Vertex3f(-lx, ly, lz);
+  GL.End_();
 
   // bottom face
-  glBegin(GL_TRIANGLE_FAN);
-  glNormal3f(0, 0, -1);
-  glVertex3f(-lx, -ly, -lz);
-  glVertex3f(-lx, ly, -lz);
-  glVertex3f(lx, ly, -lz);
-  glVertex3f(lx, -ly, -lz);
-  glEnd();
+  GL.Begin_(GL_TRIANGLE_FAN);
+  GL.Normal3f(0, 0, -1);
+  GL.Vertex3f(-lx, -ly, -lz);
+  GL.Vertex3f(-lx, ly, -lz);
+  GL.Vertex3f(lx, ly, -lz);
+  GL.Vertex3f(lx, -ly, -lz);
+  GL.End_();
 end;
 
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
@@ -203,7 +212,7 @@ procedure dsDrawBox(pos: TdVector3; R: TdMatrix3; Sides: TdVector3);
 begin
   setTransform(pos, R);
   drawBox(sides);
-  glPopMatrix();
+  GL.PopMatrix();
 end;
 
 procedure setTransform(pos: TdVector3; R: TdMatrix3);
@@ -226,8 +235,8 @@ begin
   matrix[13] := pos[1];
   matrix[14] := pos[2];
   matrix[15] := 1;
-  glPushMatrix();
-  glMultMatrixf(@matrix);
+  GL.PushMatrix();
+  GL.MultMatrixf(@matrix);
 end;
 
 (*$WARNINGS OFF*)

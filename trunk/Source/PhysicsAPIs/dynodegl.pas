@@ -2,6 +2,7 @@
   ***********************************************************************
 
   Change history
+  2010.08.23 - Yar - Replaced OpenGL1x to OpenGLTokens
   2008.12.08 - PR dBodySetMass no longer accepts zero mass. check added
   2008.02.05 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello; added reference to odeimport)
   2007.09.11 - Mrqzzz - added reference to odeimport
@@ -25,7 +26,7 @@ interface
 }
 
 uses
-  OpenGL1x, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
+  OpenGLTokens, GLContext, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
   GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);
@@ -136,40 +137,40 @@ begin
   lz := Sides[2]*0.5;
 
   // sides
-  glBegin (GL_TRIANGLE_STRIP);
-  glNormal3f (-1,0,0);
-  glVertex3f (-lx,-ly,-lz);
-  glVertex3f (-lx,-ly,lz);
-  glVertex3f (-lx,ly,-lz);
-  glVertex3f (-lx,ly,lz);
-  glNormal3f (0,1,0);
-  glVertex3f (lx,ly,-lz);
-  glVertex3f (lx,ly,lz);
-  glNormal3f (1,0,0);
-  glVertex3f (lx,-ly,-lz);
-  glVertex3f (lx,-ly,lz);
-  glNormal3f (0,-1,0);
-  glVertex3f (-lx,-ly,-lz);
-  glVertex3f (-lx,-ly,lz);
-  glEnd();
+  GL.Begin_ (GL_TRIANGLE_STRIP);
+  GL.Normal3f (-1,0,0);
+  GL.Vertex3f (-lx,-ly,-lz);
+  GL.Vertex3f (-lx,-ly,lz);
+  GL.Vertex3f (-lx,ly,-lz);
+  GL.Vertex3f (-lx,ly,lz);
+  GL.Normal3f (0,1,0);
+  GL.Vertex3f (lx,ly,-lz);
+  GL.Vertex3f (lx,ly,lz);
+  GL.Normal3f (1,0,0);
+  GL.Vertex3f (lx,-ly,-lz);
+  GL.Vertex3f (lx,-ly,lz);
+  GL.Normal3f (0,-1,0);
+  GL.Vertex3f (-lx,-ly,-lz);
+  GL.Vertex3f (-lx,-ly,lz);
+  GL.End_();
 
   // top face
-  glBegin (GL_TRIANGLE_FAN);
-  glNormal3f (0,0,1);
-  glVertex3f (-lx,-ly,lz);
-  glVertex3f (lx,-ly,lz);
-  glVertex3f (lx,ly,lz);
-  glVertex3f (-lx,ly,lz);
-  glEnd();
+  GL.Begin_ (GL_TRIANGLE_FAN);
+  GL.Normal3f (0,0,1);
+  GL.Vertex3f (-lx,-ly,lz);
+  GL.Vertex3f (lx,-ly,lz);
+  GL.Vertex3f (lx,ly,lz);
+  GL.Vertex3f (-lx,ly,lz);
+  GL.End_();
 
   // bottom face
-  glBegin (GL_TRIANGLE_FAN);
-  glNormal3f (0,0,-1);
-  glVertex3f (-lx,-ly,-lz);
-  glVertex3f (-lx,ly,-lz);
-  glVertex3f (lx,ly,-lz);
-  glVertex3f (lx,-ly,-lz);
-  glEnd();
+  GL.Begin_ (GL_TRIANGLE_FAN);
+  GL.Normal3f (0,0,-1);
+  GL.Vertex3f (-lx,-ly,-lz);
+  GL.Vertex3f (-lx,ly,-lz);
+  GL.Vertex3f (lx,ly,-lz);
+  GL.Vertex3f (lx,-ly,-lz);
+  GL.End_();
 end;
 
 procedure dsDrawBox (pos : PdVector3; R : PdMatrix3; Sides : TdVector3);
@@ -181,7 +182,7 @@ procedure dsDrawBox (pos : TdVector3; R : TdMatrix3; Sides : TdVector3);
 begin
   setTransform (pos, R);
   drawBox (sides);
-  glPopMatrix();
+  GL.PopMatrix();
 end;
 
 procedure setTransform (pos : TdVector3; R : TdMatrix3);
@@ -204,8 +205,8 @@ begin
   matrix[13] := pos[1];
   matrix[14] := pos[2];
   matrix[15] := 1;
-  glPushMatrix();
-  glMultMatrixf (@matrix);
+  GL.PushMatrix();
+  GL.MultMatrixf (@matrix);
 end;
 
 (*$WARNINGS OFF*)
