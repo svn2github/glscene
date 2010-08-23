@@ -2,6 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>13/06/10 - DaStr - Removed compiler hints
       <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
       <li>20/02/10 - DanB - Now uses correct DC, rather than using
@@ -134,7 +135,7 @@ type
 implementation
 
 uses
-  OpenGL1x, SysUtils, GLCrossPlatform;
+  OpenGLTokens, OpenGLAdapter, GLContext, SysUtils, GLCrossPlatform;
 
 {$R *.dfm}
 
@@ -186,8 +187,8 @@ begin
   try
     with aSceneBuffer do begin
       // common properties
-      VendorLabel.Caption:=String(glGetString(GL_VENDOR));
-      RendererLabel.Caption:=String(glGetString(GL_RENDERER));
+      VendorLabel.Caption:=String(GL.GetString(GL_VENDOR));
+      RendererLabel.Caption:=String(GL.GetString(GL_RENDERER));
       dc := wglGetCurrentDC();
       PixelFormat:=GetPixelFormat(dc);
       DescribePixelFormat(dc,PixelFormat,SizeOf(pfd), PFD);
@@ -195,8 +196,8 @@ begin
       if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
-      VersionLabel.Caption:=String(glGetString(GL_VERSION));
-      ExtStr:=String(glGetString(GL_EXTENSIONS));
+      VersionLabel.Caption:=String(GL.GetString(GL_VERSION));
+      ExtStr:=String(GL.GetString(GL_EXTENSIONS));
       Extensions.Clear;
       while Length(ExtStr) > 0 do begin
         I:=Pos(' ',ExtStr);
