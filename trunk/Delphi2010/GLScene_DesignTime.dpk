@@ -25,7 +25,7 @@ package GLScene_DesignTime;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - OpenGL 3D library DesignTime'}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$LIBSUFFIX '2010'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
@@ -33,12 +33,20 @@ package GLScene_DesignTime;
 requires
   rtl,
   designide,
-  GLScene_RunTime;
+  GLScene_RunTime,
+  vclimg,
+  vcl;
 
 contains
   FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas';
+  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
+  GL3xMaterialCode in '..\Source\Experimental\GL3xMaterialCode.pas' {MaterialCodeForm},
+  GL3xMaterialEditor in '..\Source\Experimental\GL3xMaterialEditor.pas' {MaterialEditorForm},
+  GL3xMaterialNodePalette in '..\Source\Experimental\GL3xMaterialNodePalette.pas' {NodePaletteForm},
+  GL3xMaterialPreview in '..\Source\Experimental\GL3xMaterialPreview.pas' {MaterialPreviewForm},
+  GLSceneFormDesign in '..\Source\Experimental\GLSceneFormDesign.pas';
 
 end.
+
