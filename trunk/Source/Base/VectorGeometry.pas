@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
+                           CreateOrthoMatrix, CreatePickMatrix, Project, UnProject
       <li>14/06/10 - Yar - Added VectorArrayLerp for TTexPointArray
       <li>06/06/10 - Yar - Fixed warnings for FPC
       <li>15/04/10 - Yar - Bugfixed vector normalization on Intel processors
@@ -1111,6 +1113,13 @@ function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix;
    Returns true upon success, false if the matrix is singular. }
 function  MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean;
 
+function CreateLookAtMatrix(const eye, center, normUp: TVector): TMatrix;
+function CreateMatrixFromFrustum(Left, Right, Bottom, Top, ZNear, ZFar: Single): TMatrix;
+function CreatePerspectiveMatrix(FOV, Aspect, ZNear, ZFar: Single): TMatrix;
+function CreateOrthoMatrix(Left, Right, Bottom, Top, ZNear, ZFar: Single): TMatrix;
+function CreatePickMatrix(x, y, deltax, deltay: Single; const viewport: TVector4i): TMatrix;
+function Project(objectVector: TVector; const ViewProjMatrix: TMatrix; const viewport: TVector4i; out WindowVector: TVector): Boolean;
+function UnProject(WindowVector: TVector; ViewProjMatrix: TMatrix; const viewport: TVector4i; out objectVector: TVector): Boolean;
 //------------------------------------------------------------------------------
 // Plane functions
 //------------------------------------------------------------------------------
@@ -6245,6 +6254,150 @@ begin
   end;
   // All done!
   Result:=True;
+end;
+
+function CreateLookAtMatrix(const eye, center, normUp: TVector): TMatrix;
+var
+  XAxis, YAxis, ZAxis, negEye: TVector;
+begin
+  ZAxis := VectorSubtract(center, eye);
+  NormalizeVector(ZAxis);
+  XAxis := VectorCrossProduct(ZAxis, normUp);
+  NormalizeVector(XAxis);
+  YAxis := VectorCrossProduct(XAxis, ZAxis);
+  Result[0] := XAxis;
+  Result[1] := YAxis;
+  Result[2] := ZAxis;
+  NegateVector(Result[2]);
+  Result[3] := NullHmgPoint;
+  TransposeMatrix(Result);
+  negEye := eye;
+  NegateVector(negEye);
+  negEye[3] := 1;
+  negEye := VectorTransform(negEye, Result);
+  Result[3] := negEye;
+end;
+
+function CreateMatrixFromFrustum(Left, Right, Bottom, Top, ZNear, ZFar: Single): TMatrix;
+begin
+  Result[0][0] := 2 * ZNear / (Right - Left);
+  Result[0][1] := 0;
+  Result[0][2] := 0;
+  Result[0][3] := 0;
+
+  Result[1][0] := 0;
+  Result[1][1] := 2 * ZNear / (Top - Bottom);
+  Result[1][2] := 0;
+  Result[1][3] := 0;
+
+  Result[2][0] := (Right + Left) / (Right - Left);
+  Result[2][1] := (Top + Bottom) / (Top - Bottom);
+  Result[2][2] := -(ZFar + ZNear) / (ZFar - ZNear);
+  Result[2][3] := -1;
+
+  Result[3][0] := 0;
+  Result[3][1] := 0;
+  Result[3][2] := -2 * ZFar * ZNear / (ZFar - ZNear);
+  Result[3][3] := 0;
+end;
+
+function CreatePerspectiveMatrix(FOV, Aspect, ZNear, ZFar: Single): TMatrix;
+var
+  x, y: Single;
+begin
+  FOV := MinFloat(179.9, MaxFloat(0, FOV));
+  y:= ZNear * Tan(DegToRad(FOV) * 0.5);
+  x:= y * Aspect;
+  Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
+end;
+
+function CreateOrthoMatrix(Left, Right, Bottom, Top, ZNear, ZFar: Single): TMatrix;
+begin
+  Result[0][0] := 2 / (Right - Left);
+  Result[0][1] := 0;
+  Result[0][2] := 0;
+  Result[0][3] := 0;
+
+  Result[1][0] := 0;
+  Result[1][1] := 2 / (Top - Bottom);
+  Result[1][2] := 0;
+  Result[1][3] := 0;
+
+  Result[2][0] := 0;
+  Result[2][1] := 0;
+  Result[2][2] := -2 / (ZFar - ZNear);
+  Result[2][3] := 0;
+
+  Result[3][0] := (Left + Right) / (Left - Right);
+  Result[3][1] := (Bottom + Top) / (Bottom - Top);
+  Result[3][2] := (ZNear + ZFar) / (ZNear - ZFar);
+  Result[3][3] := 1;
+end;
+
+function CreatePickMatrix(x, y, deltax, deltay: Single; const viewport: TVector4i): TMatrix;
+begin
+  if (deltax <= 0) or (deltay <= 0) then
+  begin
+    Result := IdentityHmgMatrix;
+    exit;
+  end;
+  // Translate and scale the picked region to the entire window
+  Result := CreateTranslationMatrix(AffineVectorMake(
+    (viewport[2] - 2 * (x - viewport[0])) / deltax,
+	  (viewport[3] - 2 * (y - viewport[1])) / deltay,
+    0.0));
+  Result[0][0] := viewport[2] / deltax;
+  Result[1][1] := viewport[3] / deltay;
+end;
+
+function Project(
+  objectVector: TVector;
+  const ViewProjMatrix: TMatrix;
+  const viewport: TVector4i;
+  out WindowVector: TVector): Boolean;
+begin
+  Result := False;
+  objectVector[3] := 1.0;
+  WindowVector := VectorTransform(objectVector, ViewProjMatrix);
+  if WindowVector[3] = 0.0 then
+    exit;
+  WindowVector[0] := WindowVector[0] / WindowVector[3];
+  WindowVector[1] := WindowVector[1] / WindowVector[3];
+  WindowVector[2] := WindowVector[2] / WindowVector[3];
+  // Map x, y and z to range 0-1
+  WindowVector[0] := WindowVector[0] * 0.5 + 0.5;
+  WindowVector[1] := WindowVector[1] * 0.5 + 0.5;
+  WindowVector[2] := WindowVector[2] * 0.5 + 0.5;
+
+  // Map x,y to viewport
+  WindowVector[0] := WindowVector[0] * viewport[2] + viewport[0];
+  WindowVector[1] := WindowVector[1] * viewport[3] + viewport[1];
+  Result := True;
+end;
+
+function UnProject(
+  WindowVector: TVector;
+  ViewProjMatrix: TMatrix;
+  const viewport: TVector4i;
+  out objectVector: TVector): Boolean;
+begin
+  Result := False;
+  InvertMatrix(ViewProjMatrix);
+  WindowVector[3] := 1.0;
+  // Map x and y from window coordinates
+  WindowVector[0] := (WindowVector[0] - viewport[0]) / viewport[2];
+  WindowVector[1] := (WindowVector[1] - viewport[1]) / viewport[3];
+  // Map to range -1 to 1
+  WindowVector[0] := WindowVector[0] * 2 - 1;
+  WindowVector[1] := WindowVector[1] * 2 - 1;
+  WindowVector[2] := WindowVector[2] * 2 - 1;
+  objectVector := VectorTransform(WindowVector, ViewProjMatrix);
+  if objectVector[3] = 0.0 then
+    exit;
+  objectVector[0] := objectVector[0] / objectVector[3];
+  objectVector[1] := objectVector[1] / objectVector[3];
+  objectVector[2] := objectVector[2] / objectVector[3];
+  Result := True;
 end;
 
 // CalcPlaneNormal (func, affine)

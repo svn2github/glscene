@@ -4,11 +4,12 @@
 {: GLPBuffer<p>
 
   Simple handling of pixelbuffers.<p>
-  
+
   TGLPixelBuffer can be used for offscreen rendering.<p>
   It does not require a fully-functional rendering context.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
       <li>08/03/10 - Yar - Added more conditional brackets for Linux systems
@@ -37,7 +38,7 @@
 
 unit GLPBuffer;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 interface
 
@@ -51,7 +52,8 @@ uses
   xlib,
 {$ENDIF}
   SysUtils,
-  OpenGL1x;
+  OpenGLTokens,
+  OpenGLAdapter;
 
 type
 
@@ -62,40 +64,62 @@ type
     RC: HGLRC;
     ParentDC: HDC;
     ParentRC: HGLRC;
-    fHandle: HPBUFFERARB;
+    FHandle: HPBUFFERARB;
 {$ENDIF}
 {$IFDEF Linux}
-    Dpy: PDisplay;
+    DC: PDisplay;
     RC: GLXContext;
-    fHandle: LongInt;
+    ParentDC: PDisplay;
+    ParentRC: GLXContext;
+    FHandle: LongInt;
 {$ENDIF}
-    fWidth: GLint;
-    fHeight: GLint;
-    fTextureID: GLuint;
+    FGL: TGLExtensionsAndEntryPoints;
+    FWidth: GLint;
+    FHeight: GLint;
+    FTextureID: GLuint;
+    FEnabled: Boolean;
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure Initialize(pWidth, pHeight: integer);
-    function  IsLost: boolean;
+    function IsLost: boolean;
     procedure Enable;
     procedure Disable;
     procedure Bind;
     procedure Release;
 
+    property GL: TGLExtensionsAndEntryPoints read FGL;
     property Handle: GLint read fHandle;
     property Width: GLint read fWidth;
     property Height: GLint read fHeight;
     property TextureID: GLuint read fTextureID;
+    property IsEnabled: Boolean read FEnabled;
   end;
 
   EGLPixelBuffer = class(Exception);
-  {$IFDEF Linux}
-   TGLXFBConfigArray = array[0..MaxInt div (SizeOf(GLXFBConfig)*2) ] of GLXFBConfig;
-   PGLXFBConfigArray = ^TGLXFBConfigArray;
-  {$ENDIF}
+{$IFDEF Linux}
+  TGLXFBConfigArray = array[0..MaxInt div (SizeOf(GLXFBConfig) * 2)] of GLXFBConfig;
+  PGLXFBConfigArray = ^TGLXFBConfigArray;
+{$ENDIF}
+
+function PBufferService: TGLPixelBuffer;
 
 implementation
+
+{$IFDEF MULTITHREADOPENGL}
+threadvar
+{$ELSE}
+var
+{$ENDIF}
+  vPBuffer: TGLPixelBuffer;
+
+function PBufferService: TGLPixelBuffer;
+begin
+  if not Assigned(vPBuffer) then
+    vPBuffer := TGLPixelBuffer.Create;
+  Result := vPBuffer;
+end;
 
 constructor TGLPixelBuffer.Create;
 begin
@@ -105,17 +129,18 @@ begin
   ParentRC := 0;
 {$ENDIF}
 {$IFDEF Linux}
-  Dpy := nil;
+  DC := nil;
   fHandle := 0;
   RC := nil;
 {$ENDIF}
+  FGL := TGLExtensionsAndEntryPoints.Create;
 end;
 
 procedure TGLPixelBuffer.Initialize(pWidth, pHeight: integer);
 {$IFDEF MSWINDOWS}
 const
   PixelFormatAttribs: array[0..12] of TGLInt =
-   (WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+    (WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
     WGL_DRAW_TO_PBUFFER_ARB, GL_TRUE,
     WGL_COLOR_BITS_ARB, 24,
     WGL_ALPHA_BITS_ARB, 8,
@@ -124,8 +149,7 @@ const
 
   PixelBufferAttribs: array[0..4] of TGLInt =
     (WGL_TEXTURE_FORMAT_ARB, WGL_TEXTURE_RGBA_ARB,
-    WGL_TEXTURE_TARGET_ARB,
-    WGL_TEXTURE_2D_ARB, 0);
+    WGL_TEXTURE_TARGET_ARB, WGL_TEXTURE_2D_ARB, 0);
 
   EmptyF: TGLFLoat = 0;
 var
@@ -136,20 +160,20 @@ var
 {$IFDEF Linux}
 const
   PixelFormatAttribs: array[0..12] of TGLInt =
-   (GLX_RENDER_TYPE   , GLX_RGBA_BIT,
-    GLX_DRAWABLE_TYPE , GLX_PBUFFER_BIT,
+    (GLX_RENDER_TYPE, GLX_RGBA_BIT,
+    GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
     GLX_BUFFER_SIZE, 24,
-    GLX_ALPHA_SIZE,8,
-    GLX_DEPTH_SIZE,24,
+    GLX_ALPHA_SIZE, 8,
+    GLX_DEPTH_SIZE, 24,
     GLX_DOUBLEBUFFER, GL_FALSE,
     0);
 
-  PixelBufferAttribs: array [0..10] of Integer=
-  (GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGBA_EXT,
-    GLX_TEXTURE_TARGET_EXT,  GLX_TEXTURE_2D_EXT,
+  PixelBufferAttribs: array[0..10] of Integer =
+    (GLX_TEXTURE_FORMAT_EXT, GLX_TEXTURE_FORMAT_RGBA_EXT,
+    GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
     GLX_PBUFFER_WIDTH, 1,
     GLX_PBUFFER_HEIGHT, 1,
-    GLX_PRESERVED_CONTENTS, gl_True,
+    GLX_PRESERVED_CONTENTS, GL_TRUE,
     0);
 var
   fbConfigs: PGLXFBConfigArray;
@@ -196,41 +220,45 @@ begin
       'PixelBuffer->wglGetPBufferDCARB->Couldn''t create rendercontext for PBuffer');
 
   wglMakeCurrent(DC, RC);
-  glGenTextures(1, @fTextureID);
 {$ELSE}
-  Dpy := glXGetCurrentDisplay;
-  if not Assigned(Dpy) then
+  ParentDC := glXGetCurrentReadDrawable;
+  ParentRC := glxGetCurrentContext;
+
+  DC := glXGetCurrentDisplay;
+  if not Assigned(DC) then
   begin
-    Dpy := XOpenDisplay(nil);
-    if not Assigned(Dpy) then
+    DC := XOpenDisplay(nil);
+    if not Assigned(DC) then
       raise EGLPixelBuffer.Create(
         'PixelBuffer->glXGetCurrentDisplay->Couldn''t obtain valid Display');
   end;
-  fbConfigs := glXChooseFBConfig(Dpy, XDefaultScreen(dpy), PixelFormatAttribs, @nitems);
+  fbConfigs := glXChooseFBConfig(DC, XDefaultScreen(dpy), PixelFormatAttribs, @nitems);
 
-  if fbConfigs=nil then
-      raise EGLPixelBuffer.Create(
+  if fbConfigs = nil then
+    raise EGLPixelBuffer.Create(
       'PixelBuffer->glXChooseFBConfig->No suitable pixelformat found');
 
-  fHandle := glXCreatePbuffer(Dpy, fbConfigs[0],  PixelBufferAttribs);
+  fHandle := glXCreatePbuffer(DC, fbConfigs[0], PixelBufferAttribs);
   if fHandle <> 0 then
   begin
-    glXQueryDrawable(Dpy, fHandle, GLX_PBUFFER_WIDTH, @fwidth);
-    glXQueryDrawable(Dpy, fHandle, GLX_PBUFFER_HEIGHT, @fHeight);
+    glXQueryDrawable(DC, fHandle, GLX_PBUFFER_WIDTH, @fwidth);
+    glXQueryDrawable(DC, fHandle, GLX_PBUFFER_HEIGHT, @fHeight);
   end
   else
     raise EGLPixelBuffer.Create(
       'PixelBuffer->glXCreatePbuffer->Couldn''t obtain valid handle');
 
-  RC := glXCreateNewContext(Dpy, fbConfigs[0], GLX_RGBA_TYPE, nil, true);
+  RC := glXCreateNewContext(DC, fbConfigs[0], GLX_RGBA_TYPE, nil, true);
 
   if RC = nil then
     raise EGLPixelBuffer.Create(
       'PixelBuffer->glXCreateNewContext->Couldn''t create rendercontext for PBuffer');
 
-  glXMakeContextCurrent(Dpy, fHandle, fHandle, RC);
-  glGenTextures(1, @fTextureID);
+  glXMakeContextCurrent(DC, fHandle, fHandle, RC);
 {$ENDIF}
+  FEnabled := True;
+  FGL.Initialize;
+  FGL.GenTextures(1, @fTextureID);
 end;
 
 destructor TGLPixelBuffer.Destroy;
@@ -246,15 +274,17 @@ begin
 {$ENDIF}
 {$IFDEF Linux}
   Disable;
-  if Dpy = nil then Exit;
+  if DC = nil then
+    Exit;
   if (fHandle <> 0) then
   begin
-    glXDestroyContext(Dpy, RC);
-    glXDestroyPbuffer(Dpy, fHandle);
+    glXDestroyContext(DC, RC);
+    glXDestroyPbuffer(DC, fHandle);
     fHandle := 0;
   end;
-  XCloseDisplay(Dpy);
+  XCloseDisplay(DC);
 {$ENDIF}
+  FGL.Free;
   inherited;
 end;
 
@@ -272,36 +302,48 @@ begin
     Result := False;
 {$ENDIF}
 {$IFDEF Linux}
-begin
-  Result := False;
+  begin
+    Result := False;
 {$ENDIF}
-end;
+  end;
 
 procedure TGLPixelBuffer.Enable;
 begin
-{$IFDEF MSWINDOWS}
-  ParentDC := wglGetCurrentDC;
-  ParentRC := wglGetCurrentContext;
-  wglMakeCurrent(DC, RC);
-{$ENDIF}
-{$IFDEF Linux}
-  If Assigned(Dpy) and Assigned(RC) and (fHandle <> 0) then
-    glXMakeContextCurrent(Dpy, fHandle, fHandle, RC);
-{$ENDIF}
+  if not FEnabled then
+  begin
+  {$IFDEF MSWINDOWS}
+    ParentDC := wglGetCurrentDC;
+    ParentRC := wglGetCurrentContext;
+    if (DC <> 0)  and (RC <> 0) and (fHandle <> 0) then
+      FEnabled := wglMakeCurrent(DC, RC);
+  {$ENDIF}
+  {$IFDEF Linux}
+    ParentDC := glXGetCurrentReadDrawable;
+    ParentRC := glxGetCurrentContext;
+    if Assigned(DC) and Assigned(RC) and (fHandle <> 0) then
+      FEnabled := glXMakeContextCurrent(DC, fHandle, fHandle, RC);
+  {$ENDIF}
+  end;
 end;
 
 procedure TGLPixelBuffer.Disable;
 begin
-{$IFDEF MSWINDOWS}
-  if (ParentDC = 0) or (ParentRC = 0) then
-    wglMakeCurrent(0, 0)
-  else
-    wglMakeCurrent(ParentDC, ParentRC);
-{$ENDIF}
-{$IFDEF Linux}
-  if Dpy <> nil then
-    glXMakeContextCurrent(Dpy, 0, 0, nil);
-{$ENDIF}
+  if FEnabled then
+  begin
+  {$IFDEF MSWINDOWS}
+    if (ParentDC = 0) or (ParentRC = 0) then
+      FEnabled := not wglMakeCurrent(0, 0)
+    else
+      FEnabled := not wglMakeCurrent(ParentDC, ParentRC);
+  {$ENDIF}
+  {$IFDEF Linux}
+    if Assigned(DC) then
+      if Assigned(ParentDC) and Assigned(ParentRC) then
+        FEnabled := not glXMakeContextCurrent(ParentDC, 0, 0, ParentRC);
+      else
+        FEnabled := not glXMakeContextCurrent(DC, 0, 0, nil);
+  {$ENDIF}
+  end;
 end;
 
 procedure TGLPixelBuffer.Bind;
@@ -311,7 +353,7 @@ begin
   wglBindTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ENDIF}
 {$IFDEF Linux}
-  {$WARNING GLPixelBuffer.Bind not yet implemented for your platform!}
+{$WARNING GLPixelBuffer.Bind not yet implemented for your platform!}
 {$ENDIF}
 end;
 
@@ -322,8 +364,16 @@ begin
   wglReleaseTexImageARB(fHandle, WGL_FRONT_LEFT_ARB);
 {$ENDIF}
 {$IFDEF Linux}
- //not needed
+  //not needed
 {$ENDIF}
 end;
 
+initialization
+
+finalization
+
+  vPBuffer.Free;
+  vPBuffer := nil;
+
 end.
+

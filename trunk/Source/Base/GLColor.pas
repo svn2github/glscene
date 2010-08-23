@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>23/08/10 - Yar - Added OpenGLTokens to uses
     <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
     <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
     <li>05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
@@ -22,7 +23,7 @@ interface
 uses
   // GLScene
   Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
-  PersistentClasses, BaseClasses, OpenGL1x;
+  PersistentClasses, BaseClasses, OpenGLTokens;
 
 type
   PColorVector = ^TColorVector;

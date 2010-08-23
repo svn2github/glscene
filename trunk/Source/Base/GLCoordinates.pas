@@ -6,6 +6,7 @@
    Coordinate related classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>05/10/08 - DanB - Created, from GLMisc.pas
 	</ul></font>
 }
@@ -13,7 +14,7 @@ unit GLCoordinates;
 
 interface
 
-uses Classes, VectorGeometry, VectorTypes, OpenGL1x, BaseClasses, GLCrossPlatform;
+uses Classes, VectorGeometry, VectorTypes, OpenGLTokens, BaseClasses, GLCrossPlatform;
 
 {$I GLScene.inc}
 
