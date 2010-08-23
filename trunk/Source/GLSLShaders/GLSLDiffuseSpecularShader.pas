@@ -6,6 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)  
       <li>25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
@@ -60,7 +61,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLTexture, GLScene, VectorGeometry, OpenGL1x, GLStrings, GLCustomShader,
+  GLTexture, GLScene, VectorGeometry, OpenGLTokens, GLStrings, GLCustomShader,
   GLSLShader, GLColor, GLRenderContextInfo, GLMaterial;
 
 type

@@ -6,6 +6,7 @@
    A GLSL shader that applies bump mapping.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
@@ -83,7 +84,7 @@ uses
   
   // GLScene
   GLTexture, GLScene, VectorGeometry, VectorTypes, GLCadencer, GLStrings,
-  OpenGL1x, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
+  OpenGLTokens, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
   GLMaterial;
 
 type

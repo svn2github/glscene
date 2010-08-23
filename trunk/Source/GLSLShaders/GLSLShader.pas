@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
                            Added unsigned integer uniforms
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -72,7 +73,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  VectorGeometry, VectorTypes, GLTexture, GLContext, OpenGL1x, GLCustomShader,
+  VectorGeometry, VectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
   GLRenderContextInfo, GLTextureFormat;
 
 type
