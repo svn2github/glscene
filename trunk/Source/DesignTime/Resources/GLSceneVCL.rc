@@ -61,3 +61,4 @@ TGLCameraController BITMAP vcl\TGLCameraController.bmp
 TGLSLogger BITMAP vcl\TGLSLogger.bmp
 TGLSLanguage BITMAP vcl\TGLSLanguage.bmp
 TGLSArchiveManager BITMAP vcl\TGLSArchiveManager.bmp
+TGLSLauncher BITMAP vcl\TGLSLauncher.bmp
