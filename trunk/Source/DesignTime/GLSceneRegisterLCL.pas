@@ -28,7 +28,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLObjectManager, ComponentEditors, PropEdits, LResources;
+  Classes, GLObjectManager, ComponentEditors, PropEdits, LResources, LCLType,
+  MacroIntf;
 
 type
   // TGLLibMaterialNameProperty
@@ -95,9 +96,13 @@ uses
   GLCameraController, GLGizmo, GLGizmoEx, GLFBORenderer,
   GLSoundFileObjects, GLSound, GLCompositeImage, GLSLog, GLSLanguage,
   GLSArchiveManager,
-   {$IFDEF GLS_EXPERIMENTAL}
-   GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
-   {$ENDIF}
+{$IFDEF GLS_EXPERIMENTAL}
+  GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
+  GL3xMaterial,
+  GL3xMaterialGraph,
+  GL3xMaterialEditor,
+  GL3xTexture,
+{$ENDIF}
 
   // Image file formats
   DDSImage, HDRImage, O3TCImage,
@@ -201,12 +206,10 @@ type
     function ColorToBorderColor(aColor: TColorVector; selected: boolean): TColor;
     procedure ListMeasureWidth(const AValue: ansistring; Index: integer;
       ACanvas: TCanvas; var AWidth: integer); override;
-    procedure ListMeasureHeight(const AValue: ansistring;
-      Index: integer; ACanvas: TCanvas;
-      var AHeight: integer); override;
+    procedure ListMeasureHeight(const AValue: ansistring; Index: integer;
+      ACanvas: TCanvas; var AHeight: integer); override;
     procedure ListDrawValue(const AValue: ansistring; Index: integer;
-      ACanvas: TCanvas; const ARect: TRect;
-      AState: TPropEditDrawState); override;
+      ACanvas: TCanvas; const ARect: TRect; AState: TPropEditDrawState); override;
     procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect;
       AState: TPropEditDrawState); override;
     function GetValue: string; override;
@@ -243,7 +246,6 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-
   // TGLCoordinatesProperty
 
   TGLCoordinatesProperty = class(TClassProperty)
@@ -279,8 +281,8 @@ type
   TGLMaterialLibraryEditor = class(TDefaultComponentEditor)
   public
     { Public Declarations }
-    procedure EditProperty(const Prop: TPropertyEditor;
-      var Continue: boolean); override;
+    procedure EditProperty(const Prop: TPropertyEditor; var Continue: boolean);
+      override;
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
   end;
@@ -300,11 +302,45 @@ type
   public
     { Public Declarations }
     procedure Edit; override;
-    procedure EditProperty(const Prop: TPropertyEditor;
-      var Continue: boolean); override;
+    procedure EditProperty(const Prop: TPropertyEditor; var Continue: boolean);
+      override;
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
   end;
+
+{$IFDEF GLS_EXPERIMENTAL}
+  // TGL3xMaterialProperty
+
+
+  TGL3xMaterialProperty = class(TStringProperty)
+  private
+    FMaterialNameList: TStringList;
+    procedure RefreshMaterialList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+    procedure Edit; override;
+  end;
+
+  //  TGL3xTextureProperty
+
+
+  TGL3xTextureProperty = class(TStringProperty)
+  private
+    FTextureNameList: TStringList;
+    procedure RefreshTextureList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+  end;
+
+{$ENDIF}
 
 //----------------- TGLSceneViewerEditor ---------------------------------------
 
@@ -335,7 +371,6 @@ function TGLSceneViewerEditor.GetVerbCount: integer;
 begin
   Result := 1;
 end;
-
 
 //----------------- TGLSceneEditor ---------------------------------------------
 
@@ -484,7 +519,6 @@ begin
     SetOrdValue(0);
 end;
 
-
 //----------------- TGLTextureProperty -----------------------------------------
 
 function TGLTextureProperty.GetAttributes: TPropertyAttributes;
@@ -565,9 +599,9 @@ begin
   colorDialog := TColorDialog.Create(nil);
   try
     glColor := TGLColor(GetObjectValue);
-      {$IFNDEF FPC}{$ifdef WIN32}
+{$IFNDEF FPC}{$IFDEF WIN32}
     colorDialog.Options := [cdFullOpen];
-      {$endif}{$ENDIF}
+{$ENDIF}{$ENDIF}
     colorDialog.Color := ConvertColorVector(glColor.Color);
     if colorDialog.Execute then
     begin
@@ -633,8 +667,7 @@ begin
 end;
 
 procedure TGLColorProperty.ListDrawValue(const AValue: ansistring;
-  Index: integer; ACanvas: TCanvas; const ARect: TRect;
-  AState: TPropEditDrawState);
+  Index: integer; ACanvas: TCanvas; const ARect: TRect; AState: TPropEditDrawState);
 var
   vRight: integer;
   vOldPenColor, vOldBrushColor: TColor;
@@ -953,49 +986,188 @@ begin
   end;
 end;
 
+{$IFDEF GLS_EXPERIMENTAL}
+// ------------------
+// ------------------ TGL3xMaterialProperty ------------------
+// ------------------
+
+destructor TGL3xMaterialProperty.Destroy;
+begin
+  FMaterialNameList.Free;
+  inherited;
+end;
+
+procedure TGL3xMaterialProperty.RefreshMaterialList;
+begin
+  MaterialManager.FillMaterialNameList(FMaterialNameList);
+end;
+
+function TGL3xMaterialProperty.GetAttributes;
+begin
+  Result := [paDialog, paValueList];
+end;
+
+// GetValues
+
+
+procedure TGL3xMaterialProperty.GetValues(Proc: TGetStrProc);
+var
+  I: integer;
+begin
+  RefreshMaterialList;
+  for I := 0 to FMaterialNameList.Count - 1 do
+    Proc(FMaterialNameList[I]);
+end;
+
+// SetValue
+
+
+procedure TGL3xMaterialProperty.SetValue(const Value: string);
+var
+  I, J, SaveReq: integer;
+  vFileName: string;
+begin
+  RefreshMaterialList;
+  J := -1;
+  for I := 0 to FMaterialNameList.Count - 1 do
+    if Value = FMaterialNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if J > -1 then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    SaveReq := MessageDlg(Format('Create new material "%s"?', [Value]),
+      mtConfirmation, mbYesNo, 0);
+    if SaveReq = idYes then
+    begin
+      vFileName := '$(TargetFile)';
+      if IDEMacros.SubstituteMacros(vFileName) then
+      begin
+        vFileName := ExtractFilePath(vFileName);
+        vFileName := IncludeTrailingPathDelimiter(vFileName) + Value + '.xml';
+        if MaterialManager.CreateMaterial(Value, vFileName) then
+        begin
+          SetStrValue(Value);
+          exit;
+        end;
+      end;
+    end;
+    SetStrValue(glsDEFAULTMATERIALNAME);
+  end;
+  Modified;
+end;
+
+procedure TGL3xMaterialProperty.Edit;
+var
+  Mat: TGL3xMaterialName;
+begin
+  Mat := GetStrValue;
+  if Mat <> glsDEFAULTMATERIALNAME then
+    with GL3xMaterialEditor.MaterialEditorForm do
+    begin
+//      Designer := Self.;
+      Material := Mat;
+      Show;
+    end;
+end;
+
+// ------------------
+// ------------------ TGL3xTextureProperty ------------------
+// ------------------
+
+destructor TGL3xTextureProperty.Destroy;
+begin
+  FTextureNameList.Free;
+  inherited;
+end;
+
+procedure TGL3xTextureProperty.RefreshTextureList;
+begin
+  MaterialManager.FillTextureNameList(FTextureNameList);
+end;
+
+function TGL3xTextureProperty.GetAttributes;
+begin
+  Result := [paValueList];
+end;
+
+// GetValues
+
+
+procedure TGL3xTextureProperty.GetValues(Proc: TGetStrProc);
+var
+  I: integer;
+begin
+  RefreshTextureList;
+  for I := 0 to FTextureNameList.Count - 1 do
+    Proc(FTextureNameList[I]);
+end;
+
+// SetValue
+
+
+procedure TGL3xTextureProperty.SetValue(const Value: string);
+var
+  I, J: integer;
+begin
+  RefreshTextureList;
+  J := -1;
+  for I := 0 to FTextureNameList.Count - 1 do
+    if Value = FTextureNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if J > -1 then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    SetStrValue(glsDIFFUSEMAP);
+  end;
+  Modified;
+end;
+
+{$ENDIF}
 
 procedure Register;
 begin
   RegisterComponents('GLScene',
-    [TGLScene, TGLSceneViewer,
-    TGLMemoryViewer, TGLMaterialLibrary,
-    TGLCadencer, TGLGuiLayout,
-    TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
-    TGLScriptLibrary, TGLSoundLibrary,
-    TGLFullScreenViewer]);
+    [TGLScene, TGLSceneViewer, TGLMemoryViewer, TGLMaterialLibrary,
+    TGLCadencer, TGLGuiLayout, TGLBitmapFont, TGLWindowsBitmapFont,
+    TGLStoredBitmapFont, TGLScriptLibrary, TGLSoundLibrary, TGLFullScreenViewer]);
 
   RegisterComponents('GLScene PFX',
-    [TGLCustomPFXManager,
-    TGLPolygonPFXManager, TGLPointLightPFXManager,
-    TGLCustomSpritePFXManager,
-    TGLPerlinPFXManager, TGLLinePFXManager,
-    TGLFireFXManager, TGLThorFXManager,
-    TGLEParticleMasksManager]);
+    [TGLCustomPFXManager, TGLPolygonPFXManager, TGLPointLightPFXManager,
+    TGLCustomSpritePFXManager, TGLPerlinPFXManager, TGLLinePFXManager,
+    TGLFireFXManager, TGLThorFXManager, TGLEParticleMasksManager]);
 
   RegisterComponents('GLScene Utils',
-    [TAsyncTimer, TGLStaticImposterBuilder,
-    TCollisionManager, TGLAnimationControler,
-    TGLDCEManager, TGLFPSMovementManager,
-    TGLMaterialScripter, TGLUserInterface, TGLNavigator,
-    TGLSmoothNavigator, TGLSmoothUserInterface,
-    TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
-    TGLSimpleNavigation, TGLCameraController,
-    TGLGizmo, TGLGizmoEx, TGLSLogger, TGLSLanguage,
-    TGLSArchiveManager]);
+    [TAsyncTimer, TGLStaticImposterBuilder, TCollisionManager,
+    TGLAnimationControler, TGLDCEManager, TGLFPSMovementManager,
+    TGLMaterialScripter, TGLUserInterface, TGLNavigator, TGLSmoothNavigator,
+    TGLSmoothUserInterface, TGLTimeEventsMGR, TApplicationFileIO,
+    TGLVfsPAK, TGLSimpleNavigation, TGLCameraController, TGLGizmo,
+    TGLGizmoEx, TGLSLogger, TGLSLanguage, TGLSArchiveManager]);
 
   RegisterComponents('GLScene Terrain',
-    [TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-    TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
-    TGLAsyncHDS, TGLShadowHDS]);
+    [TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS, TGLBumpmapHDS,
+    TGLPerlinHDS, TGLTexturedHDS, TGLAsyncHDS, TGLShadowHDS]);
 
   RegisterComponents('GLScene Shaders',
-    [TGLTexCombineShader, TGLPhongShader, TGLUserShader,
-    TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
-    TGLMultiMaterialShader, TGLBumpShader,
-    TGLSLShader, TGLSLDiffuseSpecularShader,
-    TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner,
-    TGLTextureSharingShader, TGLSLPostBlurShader
-    ]);
+    [TGLTexCombineShader, TGLPhongShader, TGLUserShader, TGLHiddenLineShader,
+    TGLCelShader, TGLOutlineShader, TGLMultiMaterialShader,
+    TGLBumpShader, TGLSLShader, TGLSLDiffuseSpecularShader,
+    TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner, TGLTextureSharingShader,
+    TGLSLPostBlurShader]);
 
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);
@@ -1050,6 +1222,13 @@ begin
     TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName',
     TVectorFileProperty);
+
+{$IFDEF GLS_EXPERIMENTAL}
+  RegisterPropertyEditor(TypeInfo(TGL3xMaterialName), TGL3xBaseSceneObject,
+    'Material', TGL3xMaterialProperty);
+  RegisterPropertyEditor(TypeInfo(TGL3xTextureName), TTextureSamplerNode,
+    'Texture', TGL3xTextureProperty);
+{$ENDIF}
 
   with ObjectManager do
   begin
@@ -1126,7 +1305,6 @@ begin
     RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects, HInstance);
     RegisterSceneObject(TGLConsole, 'Console', glsOCHUDObjects, HInstance);
 
-
     // GUI objects.
     RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects, HInstance);
     RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects, HInstance);
@@ -1192,7 +1370,7 @@ begin
     RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '', HInstance);
     RegisterSceneObject(TGLFBORenderer, 'OpenGL FrameBuffer', '', HInstance);
 
-      {$IFDEF GLS_EXPERIMENTAL}
+{$IFDEF GLS_EXPERIMENTAL}
     // Experimental objects
     RegisterSceneObject(TGL3xPlane, 'Forward Plane', glsOCExperimental, HInstance);
     RegisterSceneObject(TGL3xSprite, 'Forward Sprite', glsOCExperimental, HInstance);
@@ -1209,13 +1387,13 @@ begin
       glsOCExperimental, HInstance);
     RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh',
       glsOCExperimental, HInstance);
-      {$ENDIF}
+{$ENDIF}
   end;
 end;
 
 initialization
 
-   {$I GLSceneLCL.lrs}
+{$I GLSceneLCL.lrs}
 
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
@@ -1227,3 +1405,4 @@ finalization
   ObjectManager.Free;
 
 end.
+
