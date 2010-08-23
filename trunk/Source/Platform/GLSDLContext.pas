@@ -12,6 +12,7 @@
          automatic releases)<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>06/06/10 - Yar - Make outputDevice HWND type
       <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
       <li>11/09/06 - NC - Changes for Multiple-Render-Target
@@ -133,7 +134,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x,
+uses
+  OpenGLAdapter,
   GLCrossPlatform,
   XOpenGL;
 
@@ -342,9 +344,9 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
+  FGL.Initialize;
+  MakeGLCurrent;
   xglMapTexCoordToNull;
-  ReadExtensions;
-  ReadImplementationProperties;
   xglMapTexCoordToMain;
 end;
 
@@ -370,6 +372,7 @@ end;
 procedure TGLSDLContext.DoDestroyContext;
 begin
   // Beware, SDL will also terminate the application
+  FGL.Close;
   FSDLWin.Close;
 end;
 

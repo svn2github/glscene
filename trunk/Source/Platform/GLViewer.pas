@@ -6,6 +6,7 @@
    Platform independant viewer.<p>
 
     History:
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>30/04/10 - Yar - Added vertical synchronization cntrol for Linux (by Rustam Asmandiarov aka Predato) 
       <li>17/09/07 - DaStr - Replaced $IFNDEF KYLIX to $IFDEF MSWINDOWS in 
                               SetupVSync() because wgl* functions are Windows-specific
@@ -28,38 +29,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  OpenGL1x,
+  OpenGLTokens, GLContext,
   {$IFDEF GLS_DELPHI_OR_CPPB} GLWin32Viewer; {$ENDIF}
-  {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
-
+  {$IFDEF FPC}
+               GLLCLViewer;   {$ENDIF}
 type
 {$IFDEF FPC}
   TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
-  TVSyncMode = GLLCLViewer.TVSyncMode;
+{$ELSE}
+  TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
 {$ENDIF FPC}
-
-{$IFDEF GLS_DELPHI_OR_CPPB}
-    TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
-    TVSyncMode = GLWin32Viewer.TVSyncMode;
-{$ENDIF GLS_DELPHI_OR_CPPB}
-
-const
-{$IFDEF FPC}
-  // TVSyncMode.
-  vsmSync = GLLCLViewer.vsmSync;
-  vsmNoSync = GLLCLViewer.vsmNoSync;
-{$ENDIF FPC}
-
-{$IFDEF GLS_DELPHI_OR_CPPB}
-  // TVSyncMode.
-  vsmSync = GLWin32Viewer.vsmSync;
-  vsmNoSync = GLWin32Viewer.vsmNoSync;
-{$ENDIF GLS_DELPHI_OR_CPPB}
-
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 
 implementation
+
+uses
+  OpenGLAdapter;
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 {$IFDEF MSWINDOWS}

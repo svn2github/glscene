@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens. Improved context creation.
       <li>18/06/10 - Yar - Changed context sharing method for similarity to GLX
       <li>06/06/10 - Yar - Moved forward context creation to DoCreateContext
                            make outputDevice HWND type
@@ -61,7 +62,8 @@ uses
   Windows,
   Classes,
   SysUtils,
-  OpenGL1x,
+  OpenGLTokens,
+  OpenGLAdapter,
   GLContext;
 
 type
@@ -80,7 +82,8 @@ type
     FLegacyContextsOnly: Boolean;
 
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
-
+    procedure CreateOldContext(aDC: HDC);
+    procedure CreateNewContext(aDC: HDC);
   protected
     { Protected Declarations }
     procedure ClearIAttribs;
@@ -147,9 +150,9 @@ uses
   GLSLog;
 
 resourcestring
-  cForwardContextFailsed = 'Can not create OpenGL 3.x Forward Context';
+  cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';
   cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
-  'on - down to software';
+    'on - down to software';
 
 var
   vTrackingCount: Integer;
@@ -249,14 +252,6 @@ var
     lpszMenuName: nil;
     lpszClassName: 'GLSUtilWindow');
 
-  ForwardContextAttribList: array[0..6] of GLUInt =
-    (
-    WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-    WGL_CONTEXT_MINOR_VERSION_ARB, 0,
-    WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-    0
-    );
-
   // CreateTempWnd
   //
 
@@ -277,14 +272,6 @@ end;
 // ------------------
 // ------------------ TGLWin32Context ------------------
 // ------------------
-
-{$IFNDEF GLS_MULTITHREAD}
-var
-{$ELSE}
-threadvar
-{$ENDIF}
-  vLastPixelFormat: Integer;
-  vLastVendor: TGLString;
 
   // Create
   //
@@ -501,7 +488,7 @@ begin
     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
   if AuxBuffers > 0 then
     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample and GL_ARB_multisample then
+  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample and FGL.ARB_multisample then
   begin
     if AntiAliasing = aaNone then
       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
@@ -576,6 +563,120 @@ begin
   end;
 end;
 
+procedure TGLWin32Context.CreateOldContext(aDC: HDC);
+begin
+  FRC := wglCreateContext(aDC);
+  if FRC = 0 then
+    RaiseLastOSError;
+  FDC := aDC;
+
+  if not wglMakeCurrent(FDC, FRC) then
+    raise EGLContext.Create(Format(cContextActivationFailed,
+      [GetLastError, SysErrorMessage(GetLastError)]));
+
+  if not FLegacyContextsOnly then
+  begin
+    GLStates.ForwardContext := False;
+    if FShareContext <> 0 then
+      if not wglShareLists(FRC, FShareContext) then
+        GLSLogger.LogError('DoCreateContext - Failed to share contexts');
+    FGL.DebugMode := True; //rcoDebug in Options;
+    FGL.Initialize;
+    MakeGLCurrent;
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+      // Hint for nVidia HQ modes (Quincunx etc.)
+      GLStates.MultisampleFilterHint := hintNicest
+    else
+      GLStates.MultisampleFilterHint := hintDontCare;
+  end
+  else
+    GLSLogger.LogInfo('Temporary rendering context created');
+end;
+
+procedure TGLWin32Context.CreateNewContext(aDC: HDC);
+var
+  bSuccess: Boolean;
+begin
+  bSuccess := False;
+
+  try
+    ClearIAttribs;
+    // Initialize forward context
+    if GLStates.ForwardContext then
+    begin
+      if FGL.VERSION_4_1 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+      end
+      else if FGL.VERSION_4_0 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+      end
+      else if FGL.VERSION_3_3 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+      end
+      else if FGL.VERSION_3_2 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+      end
+      else if FGL.VERSION_3_1 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+      end
+      else if FGL.VERSION_3_0 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+      end
+      else
+        Abort;
+      AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
+    end;
+
+//    if rcoDebug in Options then
+    begin
+      AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
+    end;
+
+    FRC := wglCreateContextAttribsARB(aDC, FShareContext, @FiAttribs[0]);
+
+    if FRC = 0 then
+    begin
+      GLSLogger.LogError(cForwardContextFailed);
+      Abort;
+    end;
+
+    FDC := aDC;
+
+    if not wglMakeCurrent(FDC, FRC) then
+      raise EGLContext.Create(Format(cContextActivationFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]));
+
+    FGL.DebugMode := True;//rcoDebug in Options;
+    FGL.Initialize;
+    MakeGLCurrent;
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+      // Hint for nVidia HQ modes (Quincunx etc.)
+      GLStates.MultisampleFilterHint := hintNicest
+    else
+      GLStates.MultisampleFilterHint := hintDontCare;
+
+    GLSLogger.LogInfo('Forward core context seccussfuly created');
+    bSuccess := True;
+  finally
+    GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
+    PipelineTransformation.FFPTransformation := not GLStates.ForwardContext;
+  end;
+end;
+
 // DoCreateContext
 //
 
@@ -611,7 +712,6 @@ var
 
 var
   i, iAttrib, iValue: Integer;
-  FFRC: HGLRC;
 begin
 {$IFDEF FPC}
   DoGetHandles(outputDevice, HDC(outputDC));
@@ -671,7 +771,7 @@ begin
       try
         DoActivate;
         try
-          ClearGLError;
+          FGL.ClearError;
           if WGL_ARB_pixel_format then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
@@ -712,8 +812,11 @@ begin
         end;
       finally
         sharedRC := FShareContext;
+        FLegacyContextsOnly := True;
         DoDestroyContext;
+        FLegacyContextsOnly := False;
         FShareContext := sharedRC;
+        GLSLogger.LogInfo('Temporary rendering context destroyed');
       end;
     finally
       ReleaseDC(0, tempDC);
@@ -722,6 +825,7 @@ begin
       FRC := localRC;
     end;
   end;
+
   if pixelFormat = 0 then
   begin
     // Legacy pixel format selection
@@ -755,7 +859,6 @@ begin
       if pixelFormat = 0 then
         RaiseLastOSError;
     end;
-    ClearGLError;
   end;
 
   if GetPixelFormat(outputDC) <> pixelFormat then
@@ -780,56 +883,34 @@ begin
     end;
   end;
 
-  FRC := wglCreateContext(outputDC);
-  if FRC = 0 then
-    RaiseLastOSError
+  if not FLegacyContextsOnly and WGL_ARB_create_context and (FAcceleration = chaHardware) then
+    CreateNewContext(outputDC)
   else
-    vLastPixelFormat := 0;
-  FDC := outputDC;
+    CreateOldContext(outputDC);
 
   if not FLegacyContextsOnly then
   begin
-    Activate;
-    // Initialize forward context
-    if GLStates.ForwardContext then
-    begin
-      if @wglCreateContextAttribsARB = nil then
-        raise EGLContext.Create(cForwardContextFailsed);
-
-      if GL_VERSION_4_0 then
-        ForwardContextAttribList[1] := 4
-      else if GL_VERSION_3_3 then
-        ForwardContextAttribList[3] := 3
-      else if GL_VERSION_3_2 then
-        ForwardContextAttribList[3] := 2
-      else if GL_VERSION_3_1 then
-        ForwardContextAttribList[3] := 1;
-
-      FFRC := wglCreateContextAttribsARB(FDC, 0, @ForwardContextAttribList);
-      if FFRC = 0 then
-        raise EGLContext.Create(cForwardContextFailsed);
-
-      wglDeleteContext(FRC);
-      FRC := FFRC;
-      if not wglMakeCurrent(FDC, FRC) then
-        raise EGLContext.Create(Format(cContextActivationFailed,
-          [GetLastError, SysErrorMessage(GetLastError)]));
-      FGL.Initialize;
-    end;
-
-    // If we are using AntiAliasing, adjust filtering hints
-    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-      // Hint for nVidia HQ modes (Quincunx etc.)
-      GLStates.MultisampleFilterHint := hintNicest
-    else
-      GLStates.MultisampleFilterHint := hintDontCare;
-
-    Deactivate;
-
     // Share identifiers with other context if it deffined
-    if FShareContext <> 0 then
-      if not wglShareLists(FRC, FShareContext) then
-        GLSLogger.LogError('DoCreateContext - Failed to share contexts');
+    if ResourceContext <> nil then
+    begin
+      if wglShareLists(TGLWin32Context(ResourceContext).FRC, FRC) then
+      begin
+{$IFNDEF GLS_MULTITHREAD}
+        FSharedContexts.Add(ResourceContext);
+        PropagateSharedContext;
+{$ELSE}
+        with FSharedContexts.LockList do
+          try
+            Add(ResourceContext);
+            PropagateSharedContext;
+          finally
+            FSharedContexts.UnlockList;
+          end;
+{$ENDIF}
+      end
+      else
+        GLSLogger.LogError('DoCreateContext - Failed to share contexts with resource context');
+    end;
   end;
 end;
 
@@ -864,7 +945,7 @@ var
   iFormats: array[0..31] of Integer;
   iPBufferAttribs: array[0..0] of Integer;
   localHPBuffer: Integer;
-  localRC, FFRC, shareRC: HGLRC;
+  localRC, shareRC: HGLRC;
   localDC, tempDC: HDC;
   tempWnd: HWND;
   pfDescriptor: TPixelFormatDescriptor;
@@ -882,7 +963,7 @@ begin
     try
       DoActivate;
       try
-        ClearGLError;
+        FGL.ClearError;
         if WGL_ARB_pixel_format and WGL_ARB_pbuffer then
         begin
           ClearIAttribs;
@@ -924,7 +1005,7 @@ begin
     finally
       shareRC := FShareContext;
       DoDestroyContext;
-      FShareContext :=  shareRC;
+      FShareContext := shareRC;
     end;
   finally
     ReleaseDC(0, tempDC);
@@ -942,52 +1023,16 @@ begin
     GLSLogger.LogWarning(cFailHWRC);
   end;
 
-  Activate;
-  // Initialize forward context
-  if GLStates.ForwardContext then
-  begin
-    if @wglCreateContextAttribsARB = nil then
-      raise EGLContext.Create(cForwardContextFailsed);
-
-    if GL_VERSION_4_0 then
-      ForwardContextAttribList[1] := 4
-    else if GL_VERSION_3_3 then
-      ForwardContextAttribList[3] := 3
-    else if GL_VERSION_3_2 then
-      ForwardContextAttribList[3] := 2
-    else if GL_VERSION_3_1 then
-      ForwardContextAttribList[3] := 1;
-
-    FFRC := wglCreateContextAttribsARB(FDC, 0, @ForwardContextAttribList);
-    if FFRC = 0 then
-      raise EGLContext.Create(cForwardContextFailsed);
-
-    wglDeleteContext(FRC);
-    FRC := FFRC;
-    if not wglMakeCurrent(FDC, FRC) then
-      raise EGLContext.Create(Format(cContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]));
-    FGL.Initialize;
-  end;
-
-  // If we are using AntiAliasing, adjust filtering hints
-  if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-    // Hint for nVidia HQ modes (Quincunx etc.)
-    GLStates.MultisampleFilterHint := hintNicest
+  if WGL_ARB_create_context then
+    CreateNewContext(FDC)
   else
-    GLStates.MultisampleFilterHint := hintDontCare;
+    CreateOldContext(FDC);
 
+  Activate;
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
     FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
-
   Deactivate;
-
-  // Share identifiers with other context if it deffined
-  if FShareContext <> 0 then
-    if not wglShareLists(FShareContext, FRC) then
-      GLSLogger.LogError('DoCreateMemoryContext - Failed to share contexts');
-
 end;
 
 // DoShareLists
@@ -1035,15 +1080,14 @@ begin
   FRC := 0;
   FDC := 0;
   FShareContext := 0;
-  FGL.Close;
+  if not FLegacyContextsOnly then
+    FGL.Close;
 end;
 
 // DoActivate
 //
 
 procedure TGLWin32Context.DoActivate;
-var
-  pixelFormat: Integer;
 begin
   if not wglMakeCurrent(FDC, FRC) then
     raise EGLContext.Create(Format(cContextActivationFailed,
@@ -1051,25 +1095,6 @@ begin
 
   if not FGL.IsInitialized then
     FGL.Initialize;
-
-  // The extension function addresses are unique for each pixel format. All rendering
-  // contexts of a given pixel format share the same extension function addresses.
-  pixelFormat := GetPixelFormat(FDC);
-  if PixelFormat <> vLastPixelFormat then
-  begin
-    if glGetString(GL_VENDOR) <> vLastVendor then
-    begin
-      ReadExtensions;
-      ReadImplementationProperties;
-      vLastVendor := glGetString(GL_VENDOR);
-    end
-    else
-    begin
-      ReadWGLExtensions;
-      ReadWGLImplementationProperties;
-    end;
-    vLastPixelFormat := pixelFormat;
-  end;
 end;
 
 // Deactivate

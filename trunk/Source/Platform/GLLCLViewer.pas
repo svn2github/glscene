@@ -38,9 +38,6 @@ uses
   GLScene, GLContext;
 
 type
-   // TVSyncMode
-   //
-   TVSyncMode = (vsmSync, vsmNoSync);
 
    // TGLSceneViewer
    //
