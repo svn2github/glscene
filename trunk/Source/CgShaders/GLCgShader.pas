@@ -6,6 +6,7 @@
    Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)   
@@ -72,7 +73,7 @@ uses
 
   // GLScene
   VectorGeometry, VectorLists, VectorTypes, GLTexture, GLStrings,
-  GLCadencer, OpenGL1x, GLCrossPlatform, GLContext, BaseClasses,
+  GLCadencer, OpenGLTokens, GLCrossPlatform, GLContext, BaseClasses,
   GLRenderContextInfo, GLMaterial, GLTextureFormat,
 
   // CG
@@ -1373,8 +1374,8 @@ end;
 //
 function TCustomCgShader.ShaderSupported: Boolean;
 begin
-  Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
-             GL_ARB_vertex_shader and GL_ARB_fragment_shader);
+  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
+             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
 end;
 
 

@@ -94,6 +94,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
 // 17-Nov-09 - Da Stranger
 //   - Improved Unix compatibility (thanks Predator) (BugtrackerID = 2893580)
 // 23-Apr-04 - Nelson Chu:
@@ -115,7 +116,7 @@ unit cgGL;
 interface
 
 uses
-  OpenGL1x, cg
+  OpenGLTokens, cg
   {$IFNDEF COMPILER6_UP}{$IFDEF MSWINDOWS} ,Windows{$ENDIF}{$ENDIF}
   ;
 
