@@ -15,6 +15,7 @@ unit LIBPNG;
 interface
 
 {$I GLScene.inc}
+{$WARNINGS OFF}
 
 uses
 {$IFDEF GLS_LOGGING}

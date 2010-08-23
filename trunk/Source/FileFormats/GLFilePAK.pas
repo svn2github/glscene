@@ -184,7 +184,7 @@ var
 begin
       //Добавление файла
    If (FStream = nil) or ContentExists(ContentName) then exit;
-
+   Temp := nil;
    FStream.Position := FHeader.DirOffset;
    if FHeader.DirLength > 0 then
    begin

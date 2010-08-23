@@ -2512,7 +2512,9 @@ implementation
 
 uses
   GLSLog,
+{$IFDEF GLS_EXPERIMENTAL}
   GL3xMaterial,
+{$ENDIF}  
   GLStrings,
   XOpenGL,
   VectorTypes,

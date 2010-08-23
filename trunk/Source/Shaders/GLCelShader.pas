@@ -246,7 +246,6 @@ end;
 
 procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 var
-  str: string;
   light: TVector;
 begin
   if (csDesigning in ComponentState) then
