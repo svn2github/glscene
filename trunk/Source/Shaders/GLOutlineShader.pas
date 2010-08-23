@@ -10,6 +10,7 @@
      <li> 3. Doesn't Works with visible backfaces.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added $I GLScene.inc
@@ -74,7 +75,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, GLState, GLTextureFormat;
+uses OpenGLTokens, GLContext, GLState, GLTextureFormat;
 
 // ------------------
 // ------------------ TGLOutlineShader ------------------
@@ -146,7 +147,7 @@ begin
         else
           Disable(stBlend);
 
-        glColor4fv(FlineColor.AsAddress);
+        GL.Color4fv(FlineColor.AsAddress);
         LineWidth := FOutlineWidth;
         Disable(stLineStipple);
         PolygonMode := pmLines;

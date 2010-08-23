@@ -8,6 +8,7 @@
     It also contains a procedures and function that can be used in all shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
       <li>04/06/10 - Yar - Added unsigned integer uniforms
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -110,7 +111,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGL1x, GLScene,
+  VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGLTokens, GLScene,
   GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
   VectorLists, GLTextureFormat;
 

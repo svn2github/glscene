@@ -7,6 +7,7 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Upgraded program hadles
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/01/10 - Yar   - Added bmp32.Blank:=false for memory allocation
@@ -28,7 +29,7 @@ interface
 
 uses
   Classes, SysUtils, GLTexture, GLContext, GLGraphics, GLUtils,
-  VectorGeometry, OpenGL1x, ARBProgram, GLColor, GLRenderContextInfo,
+  VectorGeometry, OpenGLTokens, GLColor, GLRenderContextInfo,
   GLMaterial, GLState, GLTextureFormat;
 
 type
@@ -55,7 +56,7 @@ type
   private
     FOutlineWidth: Single;
     FCelShaderOptions: TGLCelShaderOptions;
-    FVPHandle: Cardinal;
+    FVPHandle: TGLARBVertexProgramHandle;
     FShadeTexture: TGLTexture;
     FOnGetIntensity: TGLCelShaderGetIntensity;
     FOutlinePass,
@@ -68,7 +69,6 @@ type
     procedure BuildShadeTexture;
     procedure Loaded; override;
     function GenerateVertexProgram: string;
-    procedure DestroyVertexProgram;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -124,6 +124,8 @@ begin
   FOutlineColor.Initialize(clrBlack);
 
   ShaderStyle := ssLowLevel;
+
+  FVPHandle := TGLARBVertexProgramHandle.Create;
 end;
 
 // Destroy
@@ -131,7 +133,7 @@ end;
 
 destructor TGLCelShader.Destroy;
 begin
-  DestroyVertexProgram;
+  FVPHandle.Free;
   FShadeTexture.Free;
   FOutlineColor.Free;
   inherited;
@@ -193,15 +195,6 @@ begin
   end;
 end;
 
-// DestroyVertexProgram
-//
-
-procedure TGLCelShader.DestroyVertexProgram;
-begin
-  if FVPHandle > 0 then
-    glDeleteProgramsARB(1, @FVPHandle);
-end;
-
 // GenerateVertexProgram
 //
 
@@ -253,31 +246,27 @@ end;
 
 procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 var
-  success: Boolean;
   str: string;
   light: TVector;
 begin
   if (csDesigning in ComponentState) then
     exit;
 
-  if FVPHandle = 0 then
+  FVPHandle.AllocateHandle;
+  if FVPHandle.IsDataNeedUpdate then
   begin
-    success := false;
-    try
-      str := GenerateVertexProgram;
-      LoadARBProgram(GL_VERTEX_PROGRAM_ARB, str, FVPHandle);
-      success := True;
-    finally
-      if not success then
-        Enabled := False;
-    end;
+    FVPHandle.LoadARBProgram(GenerateVertexProgram);
+    Enabled := FVPHandle.Ready;
+    FVPHandle.NotifyDataUpdated;
+    if not Enabled then
+      Abort;
   end;
 
   rci.GLStates.Disable(stLighting);
-  glEnable(GL_VERTEX_PROGRAM_ARB);
-  glGetLightfv(GL_LIGHT0, GL_POSITION, @light[0]);
-  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light[0]);
-  glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVPHandle);
+  GL.GetLightfv(GL_LIGHT0, GL_POSITION, @light[0]);
+  FVPHandle.Enable;
+  FVPHandle.Bind;
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @light[0]);
 
   if (csoTextured in FCelShaderOptions) then
     FShadeTexture.ApplyAsTexture2(rci, nil)
@@ -297,7 +286,7 @@ begin
   if (csDesigning in ComponentState) then
     exit;
 
-  glDisable(GL_VERTEX_PROGRAM_ARB);
+  FVPHandle.Disable;
 
   if FUnApplyShadeTexture then
   begin
@@ -324,7 +313,7 @@ begin
       LineSmoothHint := hintNicest;
       SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       DepthFunc := cfLEqual;
-      glColor4fv(FOutlineColor.AsAddress);
+      GL.Color4fv(FOutlineColor.AsAddress);
 
       Result := True;
       FOutlinePass := False;
@@ -349,7 +338,7 @@ begin
   begin
     FCelShaderOptions := val;
     BuildShadeTexture;
-    DestroyVertexProgram;
+    FVPHandle.NotifyChangesOfData;
     NotifyChange(Self);
   end;
 end;

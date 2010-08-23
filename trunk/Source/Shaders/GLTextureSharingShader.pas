@@ -13,6 +13,7 @@
     </p>
 
   <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Fixed light state changes
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
@@ -169,13 +170,8 @@ begin
   end;
 
   if moNoLighting in FLibMaterial.Material.MaterialOptions then
-  begin
-    if stLighting in rci.GLStates.States then
-    begin
-      rci.GLStates.Disable(stLighting);
-      Inc(rci.lightingDisabledCounter);
-    end;
-  end;
+    rci.GLStates.Disable(stLighting);
+
   if stLighting in rci.GLStates.States then
   begin
     rci.GLStates.SetGLMaterialColors(cmFront,

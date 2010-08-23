@@ -5,6 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added $I GLScene.inc
@@ -25,7 +26,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLMaterial, OpenGL1x, GLCrossPlatform, GLScene, GLColor,
+  Classes, GLMaterial, OpenGLTokens, GLCrossPlatform, GLScene, GLColor,
   BaseClasses, GLRenderContextInfo, GLState;
 
 type
@@ -118,7 +119,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
+uses
+  GLContext;
 // ------------------
 // ------------------ TGLLineSettings ------------------
 // ------------------
@@ -184,7 +186,7 @@ var
 procedure TGLLineSettings.Apply(var rci: TRenderContextInfo);
 begin
   rci.GLStates.LineWidth := Width;
-  glColor4fv(Color.AsAddress);
+  GL.Color4fv(Color.AsAddress);
   if Pattern <> $FFFF then
   begin
     rci.GLStates.Enable(stLineStipple);
@@ -273,14 +275,14 @@ begin
       if FLighting then
       begin
         case ShadeModel of
-          smDefault, smSmooth: glShadeModel(GL_SMOOTH);
-          smFlat: glShadeModel(GL_FLAT);
+          smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
+          smFlat: GL.ShadeModel(GL_FLAT);
         end
       end
       else
       begin
         Disable(stLighting);
-        glColor4fv(FBackgroundColor.AsAddress); // use background color
+        GL.Color4fv(FBackgroundColor.AsAddress); // use background color
       end;
       // enable and adjust polygon offset
       Enable(stPolygonOffsetFill);

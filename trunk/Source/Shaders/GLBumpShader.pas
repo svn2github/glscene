@@ -25,6 +25,7 @@
    texture lookups.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Upgraded program hadles
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -64,9 +65,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLMaterial, GLContext, GLGraphics, GLUtils,
-  VectorGeometry, OpenGL1x, VectorLists, ARBProgram, GLColor,
-  GLRenderContextInfo, GLState, GLTextureFormat;
+  Classes,
+  SysUtils,
+  GLMaterial,
+  GLGraphics,
+  GLUtils,
+  VectorGeometry,
+  OpenGLTokens,
+  GLContext,
+  VectorLists,
+  GLColor,
+  GLRenderContextInfo,
+  GLState,
+  GLTextureFormat;
 
 type
   TBumpMethod = (bmDot3TexCombiner, bmBasicARBFP);
@@ -88,8 +99,8 @@ type
   {: A generic bump shader.<p> }
   TGLBumpShader = class(TGLShader)
   private
-    FVertexProgramHandles,
-      FFragmentProgramHandles: array of Cardinal;
+    FVertexProgramHandle: TGLARBVertexProgramHandle;
+    FFragmentProgramHandle: TGLARBFragmentProgramHandle;
     FLightIDs: TIntegerList;
     FLightsEnabled: Integer;
     FBumpMethod: TBumpMethod;
@@ -570,28 +581,28 @@ var
   lightPos, lightAtten,
     materialDiffuse, lightDiffuse, lightSpecular: TVector;
 begin
-  glEnable(GL_VERTEX_PROGRAM_ARB);
-  glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVertexProgramHandles[0]);
+  FVertexProgramHandle.Enable;
+  FVertexProgramHandle.Bind;
 
   // Set the light position to program.local[0]
-  glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_POSITION, @lightPos[0]);
-  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @lightPos[0]);
+  GL.GetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos[0]);
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos[0]);
 
   // Set the light attenutation to program.local[1]
   lightAtten[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
   lightAtten[1] := rci.GLStates.LightLinearAtten[FLightIDs[0]];
   lightAtten[2] := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
-  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten[0]);
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten[0]);
 
   case FBumpMethod of
     bmDot3TexCombiner:
       begin
         rci.GLStates.ActiveTexture := 0;
         dummyHandle := rci.GLStates.TextureBinding[0, ttTexture2D];
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 
         rci.GLStates.ActiveTexture := 1;
         rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
@@ -599,16 +610,16 @@ begin
         if tempHandle = 0 then
           rci.GLStates.TextureBinding[1, ttTexture2D] := dummyHandle;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
-        glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
+        GL.GetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
         lightDiffuse[0] := lightDiffuse[0] * materialDiffuse[0];
         lightDiffuse[1] := lightDiffuse[1] * materialDiffuse[1];
         lightDiffuse[2] := lightDiffuse[2] * materialDiffuse[2];
         lightDiffuse[3] := lightDiffuse[3] * materialDiffuse[3];
-        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
+        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
 
         with rci.GLStates do
         begin
@@ -620,17 +631,17 @@ begin
 
     bmBasicARBFP:
       begin
-        glEnable(GL_FRAGMENT_PROGRAM_ARB);
-        glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFragmentProgramHandles[0]);
+        FFragmentProgramHandle.Enable;
+        FFragmentProgramHandle.Bind;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
         lightSpecular := rci.GLStates.LightSpecular[FLightIDs[0]];
         lightAtten[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
 
-        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0,
+        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0,
           @lightDiffuse[0]);
-        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1,
+        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1,
           @lightSpecular[0]);
-        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2,
+        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 2,
           @lightAtten[0]);
       end;
 
@@ -644,26 +655,23 @@ end;
 
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 var
-  maxLights, maxTextures, i: Integer;
+  maxTextures, i: Integer;
   ambient, materialAmbient: TColorVector;
   success: Boolean;
-  str: string;
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then
     exit;
   if not Enabled then
     exit;
 
-  glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
-  glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
+  GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
 
   success := False;
   try
-    if not GL_ARB_multitexture then
+    if not GL.ARB_multitexture then
       raise Exception.Create('This shader requires GL_ARB_multitexture.');
     if (maxTextures < 3)
-      and ((BumpMethod <> bmDot3TexCombiner) or (BumpSpace = bsTangentExternal))
-        then
+      and ((BumpMethod <> bmDot3TexCombiner) or (BumpSpace = bsTangentExternal)) then
       raise
         Exception.Create('The current shader settings require 3 or more texture units.');
     if (maxTextures < 4)
@@ -673,19 +681,17 @@ begin
       raise
         Exception.Create('The current shader settings require 4 or more texture units.');
 
-    if Length(FVertexProgramHandles) = 0 then
+    if not Assigned(FVertexProgramHandle) then
     begin
-      SetLength(FVertexProgramHandles, 1);
-      str := GenerateVertexProgram;
-      LoadARBProgram(GL_VERTEX_PROGRAM_ARB, str, FVertexProgramHandles[0]);
+      FVertexProgramHandle := TGLARBVertexProgramHandle.CreateAndAllocate;
+      FVertexProgramHandle.LoadARBProgram(GenerateVertexProgram);
     end;
 
-    if Length(FFragmentProgramHandles) = 0 then
+    if not Assigned(FFragmentProgramHandle) then
       if FBumpMethod = bmBasicARBFP then
       begin
-        SetLength(FFragmentProgramHandles, 1);
-        str := GenerateFragmentProgram;
-        LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, str, FFragmentProgramHandles[0])
+        FFragmentProgramHandle := TGLARBFragmentProgramHandle.CreateAndAllocate;
+        FFragmentProgramHandle.LoadARBProgram(GenerateFragmentProgram);
       end;
 
     success := True;
@@ -701,7 +707,7 @@ begin
   FLightIDs.Clear;
   rci.GLStates.ActiveTexture := 0;
   if rci.GLStates.ActiveTextureEnabled[ttTexture2D] then
-    for i := 0 to maxLights - 1 do
+    for i := 0 to rci.GLStates.MaxLights - 1 do
     begin
       if rci.GLStates.LightEnabling[i] then
         FLightIDs.Add(i);
@@ -732,12 +738,12 @@ begin
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 0;
 
-      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
+      GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
       ambient[0] := ambient[0] * materialAmbient[0];
       ambient[1] := ambient[1] * materialAmbient[1];
       ambient[2] := ambient[2] * materialAmbient[2];
-      glColor3fv(@ambient);
+      GL.Color3fv(@ambient);
 
       FAmbientPass := True;
 
@@ -784,7 +790,7 @@ begin
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 1;
       ActiveTextureEnabled[ttTexture2D] := True;
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       ActiveTexture := 2;
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 0;
@@ -798,9 +804,9 @@ begin
     with rci.GLStates do
     begin
 
-      glDisable(GL_VERTEX_PROGRAM_ARB);
+      FVertexProgramHandle.Disable;
       if BumpMethod = bmBasicARBFP then
-        glDisable(GL_FRAGMENT_PROGRAM_ARB);
+        FFragmentProgramHandle.Disable;
 
       Disable(stLighting);
       ActiveTexture := 0;
@@ -815,12 +821,12 @@ begin
       Enable(stBlend);
       SetBlendFunc(bfOne, bfOne);
 
-      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
+      GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
       ambient[0] := ambient[0] * materialAmbient[0];
       ambient[1] := ambient[1] * materialAmbient[1];
       ambient[2] := ambient[2] * materialAmbient[2];
-      glColor3fv(@ambient);
+      GL.Color3fv(@ambient);
 
       FAmbientPass := True;
       Result := True;
@@ -828,9 +834,9 @@ begin
 
     end;
 
-  glDisable(GL_VERTEX_PROGRAM_ARB);
+  FVertexProgramHandle.Disable;
   if BumpMethod = bmBasicARBFP then
-    glDisable(GL_FRAGMENT_PROGRAM_ARB);
+    FFragmentProgramHandle.Disable;
 end;
 
 // DeleteVertexPrograms
@@ -838,12 +844,8 @@ end;
 
 procedure TGLBumpShader.DeleteVertexPrograms;
 begin
-  if Length(FVertexProgramHandles) > 0 then
-  begin
-    glDeleteProgramsARB(
-      Length(FVertexProgramHandles), @FVertexProgramHandles[0]);
-    SetLength(FVertexProgramHandles, 0);
-  end;
+  FVertexProgramHandle.Free;
+  FVertexProgramHandle := nil;
   FVertexProgram.Clear;
 end;
 
@@ -852,12 +854,8 @@ end;
 
 procedure TGLBumpShader.DeleteFragmentPrograms;
 begin
-  if Length(FFragmentProgramHandles) > 0 then
-  begin
-    glDeleteProgramsARB(
-      Length(FFragmentProgramHandles), @FFragmentProgramHandles[0]);
-    SetLength(FFragmentProgramHandles, 0);
-  end;
+  FFragmentProgramHandle.Free;
+  FFragmentProgramHandle := nil;
   FFragmentProgram.Clear;
 end;
 
