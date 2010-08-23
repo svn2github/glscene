@@ -176,7 +176,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, XOpenGL;
+uses OpenGLTokens, XOpenGL;
 
 var
    FVBOVertHandle, FVBOTexHandle : TGLVBOArrayBufferHandle;
@@ -696,21 +696,21 @@ begin
         texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
                                     PTexPoint(@TextureOffset)^);
 
-        glVertexPointer(3, GL_FLOAT, 0, vertices.List);
+        GL.VertexPointer(3, GL_FLOAT, 0, vertices.List);
         xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
 
         FListHandle.AllocateHandle;
-        glNewList(FListHandle.Handle, GL_COMPILE);
-        glDrawElements(primitive, vertexIndices.Count,
+        GL.NewList(FListHandle.Handle, GL_COMPILE);
+        GL.DrawElements(primitive, vertexIndices.Count,
                        GL_UNSIGNED_INT, vertexIndices.List);
-        glEndList;
+        GL.EndList;
 
         vertices.Count:=0;
         texCoords.Count:=0;
         vertexIndices.Count:=0;
    end;
    // perform the render
-   glCallList(FListHandle.Handle);
+   GL.CallList(FListHandle.Handle);
 end;
 
 // RenderAccum

@@ -585,7 +585,7 @@ uses
   GLSLauncher,
 {$ENDIF}
   // Image file formats
-  DDS,
+  DDSImage,
   TGA,
   // Vector file formats
   GLFile3DS,

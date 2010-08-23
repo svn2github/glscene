@@ -38,7 +38,7 @@ interface
 {$i GLScene.inc}
 
 uses Forms, Classes, Controls, Menus, Messages
-     ,GLViewer, GLScene
+     ,GLViewer, GLScene, GLContext
      {$IFDEF FPC}
      ,LcLtype, LCLIntf
      {$ENDIF}
