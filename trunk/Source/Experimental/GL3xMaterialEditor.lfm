@@ -1,0 +1,127 @@
+object MaterialEditorForm: TMaterialEditorForm
+  Left = 309
+  Height = 554
+  Top = 140
+  Width = 640
+  AlphaBlendValue = 192
+  BorderStyle = bsSizeToolWin
+  Caption = 'Material Editor'
+  DockSite = True
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Menu = MainMenu1
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnDragDrop = FormDragDrop
+  OnDragOver = FormDragOver
+  OnKeyDown = FormKeyDown
+  OnMouseDown = FormMouseDown
+  OnMouseLeave = FormMouseLeave
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
+  OnMouseWheel = FormMouseWheel
+  OnResize = FormResize
+  ParentBiDiMode = False
+  PopupMenu = PopupMenu1
+  LCLVersion = '0.9.29'
+  Visible = True
+  object MainMenu1: TMainMenu
+    left = 24
+    top = 32
+    object File1: TMenuItem
+      Caption = 'File'
+      object CloseItem: TMenuItem
+        Caption = 'Close'
+        OnClick = CloseItemClick
+      end
+    end
+    object View1: TMenuItem
+      Caption = 'View'
+      object NodePaletteMenuItem: TMenuItem
+        Caption = 'Node Palette'
+        Checked = True
+        OnClick = ACViewNodePalleteExecute
+      end
+      object MaterialPreviewMenuItem: TMenuItem
+        Caption = 'Material Preview'
+        Checked = True
+        OnClick = ACViewMaterialPreviewExecute
+      end
+      object MaterialCodeMenuItem: TMenuItem
+        Caption = 'Material GLSL Code'
+        Checked = True
+        OnClick = ACViewMaterialCodeExecute
+      end
+      object RealTimePreviewMenuItem: TMenuItem
+        Caption = 'Real Time Expression Preview'
+        Checked = True
+      end
+      object TransparensyMenuItem: TMenuItem
+        Caption = 'Transparensy'
+        OnClick = TransparensyMenuItemClick
+      end
+      object RefreshAllMenuItem: TMenuItem
+        Caption = 'Refresh All'
+        OnClick = ACRefreshAllExecute
+      end
+    end
+    object Model1: TMenuItem
+      Caption = 'Model'
+      object SphereMenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'Sphere'
+        Checked = True
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = ModelMenuItemClick
+      end
+      object CubeMenuItem: TMenuItem
+        Tag = 1
+        AutoCheck = True
+        Caption = 'Cube'
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = ModelMenuItemClick
+      end
+      object PlaneMenuItem: TMenuItem
+        Tag = 2
+        AutoCheck = True
+        Caption = 'Plane'
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = ModelMenuItemClick
+      end
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    AutoPopup = False
+    OnPopup = PopupMenu1Popup
+    left = 104
+    top = 32
+    object DeleteSelected: TMenuItem
+      Caption = 'Delete Selected'
+      OnClick = DeleteSelectedClick
+    end
+    object BreakLink: TMenuItem
+      Caption = 'Break Link'
+      OnClick = BreakLinkClick
+    end
+    object BreakAllLinks: TMenuItem
+      Caption = 'Break All Links'
+      OnClick = BreakAllLinksClick
+    end
+    object Cancel1: TMenuItem
+      Caption = 'Cancel'
+    end
+  end
+  object Cadencer: TTimer
+    Enabled = False
+    Interval = 20
+    OnTimer = Cadence
+    left = 104
+    top = 88
+  end
+end

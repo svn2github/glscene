@@ -5,10 +5,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, VectorGeometry, GLScene, OpenGL1x, SysUtils,
+  Classes, VectorGeometry, GLScene, OpenGLTokens, SysUtils,
   GLCrossPlatform, GLContext, GLSilhouette, GLSLShader,
   GLRenderContextInfo, BaseClasses, GLCoordinates,
-  GLObjects, GLShadersManager, GLVBOManagers, GL3xMaterial, GL3xFactory;
+  GLObjects, GLShaderManager, GLVBOManager, GL3xMaterial, GL3xFactory;
 
 type
 
@@ -19,12 +19,10 @@ type
   protected
     { Protected Declarations }
     FBuiltProperties: TGLBuiltProperties;
-    FMaterial: TGL3xMaterial;
+    FMaterial: TGL3xMaterialName;
     procedure SetBuiltProperties(const Value: TGLBuiltProperties);
-    procedure SetMaterial(const Value: TGL3xMaterial); virtual;
+    procedure SetMaterial(const Value: TGL3xMaterialName); virtual;
 
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
     procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual;
     procedure BeforeRender; virtual;
     procedure AfterRender; virtual;
@@ -38,7 +36,7 @@ type
     procedure StructureChanged; override;
     property BuiltProperties: TGLBuiltProperties read FBuiltProperties write
       SetBuiltProperties;
-    property Material: TGL3xMaterial read FMaterial write SetMaterial;
+    property Material: TGL3xMaterialName read FMaterial write SetMaterial;
   end;
 
   TGL3xCustomObject = class(TGL3xBaseSceneObject)
@@ -329,7 +327,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
-    procedure SetMaterial(const Value: TGL3xMaterial); override;
+    procedure SetMaterial(const Value: TGL3xMaterialName); override;
     procedure BeforeRender; override;
   public
     { Public Declarations }
@@ -362,59 +360,43 @@ begin
   FBuiltProperties := TGLBuiltProperties.Create(Self);
   FBuiltProperties.OwnerNotifyChange := NotifyChange;
   FBuiltProperties.OnBuildRequest := BuildBufferData;
-  FMaterial := TGL3xMaterial.Create(Self);
+  FMaterial := glsDEFAULTMATERIALNAME;
   ObjectStyle := ObjectStyle + [osDirectDraw, osBuiltStage];
 end;
 
 destructor TGL3xBaseSceneObject.Destroy;
 begin
   FBuiltProperties.Destroy;
-  FMaterial.Destroy;
-  inherited;
-end;
-
-procedure TGL3xBaseSceneObject.Notification(AComponent: TComponent;
-  Operation: TOperation);
-begin
-  if Assigned(FMaterial) then
-    if (AComponent = FMaterial.Shader) and (Operation = opRemove) then
-    begin
-      FMaterial.Shader := nil;
-    end;
   inherited;
 end;
 
 procedure TGL3xBaseSceneObject.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
-var
-  SB: TGLSceneBuffer;
-  LS: TGLLightSource;
 begin
   if GL.VERSION_2_1 then
   begin
     if ARenderSelf then
     begin
-      // Define default important variables
-      SB := TGLSceneBuffer(ARci.buffer);
-      if Assigned(SB) then
-      begin
-        vDefaultModelMatrix := SB.ModelMatrix;
-        vDefaultViewMatrix := SB.ViewMatrix;
-        vDefaultProjectionMatrix := SB.ProjectionMatrix;
-      end;
 
-      if Assigned(ARci.lights) then
-      begin
-        LS := TGLLightSource(ARci.lights.First);
-        if Assigned(LS) then
-          vDefaultLightSourcePosition := LS.AbsolutePosition;
+      try
+        if ARci.ignoreMaterials then
+        begin
+          BeforeRender;
+          FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+          AfterRender;
+        end
+        else
+        repeat
+          MaterialManager.ApplyMaterial(FMaterial);
+          BeforeRender;
+          FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+          AfterRender;
+        until MaterialManager.UnApplyMaterial;
+      except
+        Visible := False;
+        if not ARci.GLStates.ForwardContext then
+          ShaderManager.UseFixedFunctionPipeline;
       end;
-
-      FMaterial.Apply(ARci);
-      BeforeRender;
-      FBuiltProperties.Manager.RenderClient(FBuiltProperties);
-      AfterRender;
-      FMaterial.UnApply(ARci);
     end;
   end;
 
@@ -441,9 +423,10 @@ begin
   FBuiltProperties.Assign(Value);
 end;
 
-procedure TGL3xBaseSceneObject.SetMaterial(const Value: TGL3xMaterial);
+procedure TGL3xBaseSceneObject.SetMaterial(const Value: TGL3xMaterialName);
 begin
-  FMaterial.Assign(Value);
+  FMaterial := Value;
+  inherited StructureChanged;
 end;
 
 procedure TGL3xBaseSceneObject.StructureChanged;
@@ -509,6 +492,7 @@ begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute3f(attrNormal, 0, 0, 1);
+    Attribute3f(attrTangent, 1, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
     if psSingleQuad in FStyle then
     begin
@@ -987,133 +971,165 @@ begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute3f(attrNormal, 0, 0, 0);
+    Attribute3f(attrTangent, 0, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
+    Attribute4f(attrVertexColor, 0, 0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLES);
     if cpFront in FParts then
     begin
       Attribute3f(attrNormal, 0, 0, nd);
+      Attribute3f(attrTangent, nd, 0, 0);
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw, hh, hd);
+      Attribute4f(attrVertexColor, 1, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw * nd, hh * nd, hd);
+      Attribute4f(attrVertexColor, 0, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw, -hh, hd);
+      Attribute4f(attrVertexColor, 0, 0, 1, 1);
       EmitVertex;
-      Attribute3f(attrPosition, -hw, -hh, hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, hw * nd, -hh * nd, hd);
+      Attribute4f(attrVertexColor, 1, 0, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw, hh, hd);
+      Attribute4f(attrVertexColor, 1, 1, 1, 1);
       EmitVertex;
     end;
     if cpBack in FParts then
     begin
       Attribute3f(attrNormal, 0, 0, -nd);
+      Attribute3f(attrTangent, -nd, 0, 0);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, -hd);
+      Attribute4f(attrVertexColor, 1, 1, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, hw * nd, -hh * nd, -hd);
+      Attribute4f(attrVertexColor, 1, 0, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, -hw, -hh, -hd);
+      Attribute4f(attrVertexColor, 0, 0, 0, 1);
       EmitVertex;
-      Attribute3f(attrPosition, -hw, -hh, -hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, -hw * nd, hh * nd, -hd);
+      Attribute4f(attrVertexColor, 0, 1, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, -hd);
+      Attribute4f(attrVertexColor, 1, 1, 0, 1);
       EmitVertex;
     end;
     if cpLeft in FParts then
     begin
       Attribute3f(attrNormal, -nd, 0, 0);
+      Attribute3f(attrTangent, 0, 0, nd);
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, -hw, hh, hd);
+      Attribute4f(attrVertexColor, 0, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw, hh * nd, -hd * nd);
+      Attribute4f(attrVertexColor, 0, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw, -hh, -hd);
+      Attribute4f(attrVertexColor, 0, 0, 0, 1);
       EmitVertex;
-      Attribute3f(attrPosition, -hw, -hh, -hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, -hw, -hh * nd, hd * nd);
+      Attribute4f(attrVertexColor, 0, 0, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, -hw, hh, hd);
+      Attribute4f(attrVertexColor, 0, 1, 1, 1);
       EmitVertex;
     end;
     if cpRight in FParts then
     begin
       Attribute3f(attrNormal, nd, 0, 0);
+      Attribute3f(attrTangent, 0, 0, -nd);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, hd);
+      Attribute4f(attrVertexColor, 1, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, hw, -hh * nd, hd * nd);
+      Attribute4f(attrVertexColor, 1, 0, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, hw, -hh, -hd);
+      Attribute4f(attrVertexColor, 1, 0, 0, 1);
       EmitVertex;
-      Attribute3f(attrPosition, hw, -hh, -hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw, hh * nd, -hd * nd);
+      Attribute4f(attrVertexColor, 1, 1, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, hd);
+      Attribute4f(attrVertexColor, 1, 1, 1, 1);
       EmitVertex;
     end;
     if cpTop in FParts then
     begin
       Attribute3f(attrNormal, 0, nd, 0);
+      Attribute3f(attrTangent, nd, 0, 0);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw, hh, -hd);
+      Attribute4f(attrVertexColor, 0, 1, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw * nd, hh, hd * nd);
+      Attribute4f(attrVertexColor, 0, 1, 1, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, hw, hh, hd);
+      Attribute4f(attrVertexColor, 1, 1, 1, 1);
       EmitVertex;
-      Attribute3f(attrPosition, hw, hh, hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw * nd, hh, -hd * nd);
+      Attribute4f(attrVertexColor, 1, 1, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw, hh, -hd);
+      Attribute4f(attrVertexColor, 0, 1, 0, 1);
       EmitVertex;
     end;
     if cpBottom in FParts then
     begin
       Attribute3f(attrNormal, 0, -nd, 0);
+      Attribute3f(attrTangent, -nd, 0, 0);
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw, -hh, -hd);
+      Attribute4f(attrVertexColor, 0, 0, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 0);
       Attribute3f(attrPosition, hw * nd, -hh, -hd * nd);
+      Attribute4f(attrVertexColor, 1, 0, 0, 1);
       EmitVertex;
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw, -hh, hd);
+      Attribute4f(attrVertexColor, 1, 0, 1, 1);
       EmitVertex;
-      Attribute3f(attrPosition, hw, -hh, hd);
       EmitVertex;
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw * nd, -hh, hd * nd);
+      Attribute4f(attrVertexColor, 0, 0, 1, 1);
       EmitVertex;
       Attribute3f(attrNormal, 0, -nd, 0);
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw, -hh, -hd);
+      Attribute4f(attrVertexColor, 0, 0, 0, 1);
       EmitVertex;
     end;
     EndPrimitives;
@@ -1390,7 +1406,7 @@ end;
 
 procedure TGL3xSphere.BuildBufferData(Sender: TGLBaseVBOManager);
 var
-  V1, V2, N1: TAffineVector;
+  V1, V2, N1, T1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
@@ -1410,6 +1426,7 @@ begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute3f(attrNormal, 0, 0, 0);
+    Attribute3f(attrTangent, 0, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
     // top cap
     NeedEnd := false;
@@ -1419,27 +1436,33 @@ begin
       SinCos(AngTop, SinP, CosP);
       Attribute2f(attrTexCoord0, 0.5, 0.5);
       Attribute3f(attrNormal, 0, 1, 0);
+      Attribute3f(attrTangent, 1, 0, 0);
       if FTopCap = ctCenter then
         Attribute3f(attrPosition, 0, 0, 0)
       else
       begin
         Attribute3f(attrPosition, 0, SinP * Radius, 0);
         N1 := YVector;
+        T1 := XVector;
       end;
       EmitVertex;
-      V1[1] := SinP;
       Theta := AngStart;
       for I := 0 to FSlices do
       begin
         SinCos(Theta, SinT, CosT);
         V1[0] := CosP * SinT;
+        V1[1] := SinP;
         V1[2] := CosP * CosT;
         if FTopCap = ctCenter then
+        begin
           N1 := VectorPerpendicular(YVector, V1);
+          T1 := VectorCrossProduct(N1, YVector);
+        end;
         Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-        Attribute3f(attrNormal, N1[0], N1[1], N1[2]);
-        Attribute3f(attrPosition, V1[0] * Radius, V1[1] * Radius, V1[2] *
-          Radius);
+        Attribute3f(attrNormal, N1);
+        Attribute3f(attrTangent, T1);
+        ScaleVector(V1, Radius);
+        Attribute3f(attrPosition, V1);
         EmitVertex;
         Theta := Theta + StepH;
       end;
@@ -1454,27 +1477,33 @@ begin
       SinCos(AngBottom, SinP, CosP);
       Attribute2f(attrTexCoord0, 0.5, 0.5);
       Attribute3f(attrNormal, 0, -1, 0);
+      Attribute3f(attrTangent, -1, 0, 0);
       if FBottomCap = ctCenter then
         Attribute3f(attrPosition, 0, 0, 0)
       else
       begin
         Attribute3f(attrPosition, 0, SinP * Radius, 0);
         N1 := YVector;
+        T1 := XVector;
       end;
       EmitVertex;
-      V1[1] := SinP;
       Theta := AngStop;
       for I := 0 to FSlices do
       begin
         SinCos(Theta, SinT, CosT);
         V1[0] := CosP * SinT;
+        V1[1] := SinP;
         V1[2] := CosP * CosT;
         if FTopCap = ctCenter then
+        begin
           N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), V1);
+          T1 := VectorCrossProduct(N1, YVector);
+        end;
         Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-        Attribute3f(attrNormal, N1[0], N1[1], N1[2]);
-        Attribute3f(attrPosition, V1[0] * Radius, V1[1] * Radius, V1[2] *
-          Radius);
+        Attribute3f(attrNormal, N1);
+        Attribute3f(attrTangent, T1);
+        ScaleVector(V1, Radius);
+        Attribute3f(attrPosition, V1);
         EmitVertex;
         Theta := Theta - StepH;
       end;
@@ -1496,8 +1525,7 @@ begin
       Theta := AngStart;
       SinCos(Phi, SinP, CosP);
       SinCos(Phi2, SinP2, CosP2);
-      V1[1] := SinP;
-      V2[1] := SinP2;
+
       vTexCoord0 := 1 - j * vTexFactor;
       vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
@@ -1505,21 +1533,28 @@ begin
       begin
         SinCos(Theta, SinT, CosT);
         V1[0] := CosP * SinT;
-        V2[0] := CosP2 * SinT;
+        V1[1] := SinP;
         V1[2] := CosP * CosT;
+
+        V2[0] := CosP2 * SinT;
+        V2[1] := SinP2;
         V2[2] := CosP2 * CosT;
 
         uTexCoord := i * uTexFactor;
         Attribute2f(attrTexCoord0, uTexCoord, vTexCoord0);
-        Attribute3f(attrNormal, V1[0], V1[1], V1[2]);
-        Attribute3f(attrPosition, V1[0] * Radius, V1[1] * Radius, V1[2] *
-          Radius);
+        Attribute3f(attrNormal, V1);
+        T1 := VectorCrossProduct(V1, YVector);
+        Attribute3f(attrTangent, T1);
+        ScaleVector(V1, Radius);
+        Attribute3f(attrPosition, V1);
         EmitVertex;
 
         Attribute2f(attrTexCoord0, uTexCoord, vTexCoord1);
-        Attribute3f(attrNormal, V2[0], V2[1], V2[2]);
-        Attribute3f(attrPosition, V2[0] * Radius, V2[1] * Radius, V2[2] *
-          Radius);
+        Attribute3f(attrNormal, V2);
+        T1 := VectorCrossProduct(V2, YVector);
+        Attribute3f(attrTangent, T1);
+        ScaleVector(V2, Radius);
+        Attribute3f(attrPosition, V2);
         EmitVertex;
 
         Theta := Theta + StepH;
@@ -2089,6 +2124,7 @@ begin
     BeginObject(FBuiltProperties);
     Attribute3f(attrPosition, 0, 0, 0);
     Attribute3f(attrNormal, 0, 0, 1);
+    Attribute3f(attrTangent, 1, 0, 0);
     Attribute2f(attrTexCoord0, 0, 0);
     BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
     for j := 0 to FLoops - 1 do
@@ -2313,18 +2349,18 @@ var
 begin
   if csDesigning in ComponentState then
     exit;
-  if Assigned(FMaterial.Shader) then
-  begin
-    if not FAttrIsDefined then
-    begin
-      FAttrIsDefined := FMaterial.GetAttributes(FAttrArray);
-      if not FAttrIsDefined then
-      begin
-        Visible := False;
-        GLSLogger.LogError('Material of '+Name+' has no attributes');
-        exit;
-      end;
-    end;
+//  if Assigned(FMaterial.OverShader) then
+//  begin
+//    if not FAttrIsDefined then
+//    begin
+//      FAttrIsDefined := FMaterial.GetAttributes(FAttrArray);
+//      if not FAttrIsDefined then
+//      begin
+//        Visible := False;
+//        GLSLogger.LogError('Material of '+Name+' has no attributes');
+//        exit;
+//      end;
+//    end;
     // Create empty graphic buffers
     with Sender do
     begin
@@ -2344,7 +2380,7 @@ begin
       BeginPrimitives(cPrimitives[FPrimitiveType]);
       EmitVertices(FVertexNumber, FIndexed);
     end;
-  end;
+//  end;
   inherited;
 end;
 
@@ -2409,7 +2445,7 @@ begin
   inherited;
 end;
 
-procedure TGL3xFeedBackMesh.SetMaterial(const Value: TGL3xMaterial);
+procedure TGL3xFeedBackMesh.SetMaterial(const Value: TGL3xMaterialName);
 begin
   inherited;
   FAttrIsDefined := False;

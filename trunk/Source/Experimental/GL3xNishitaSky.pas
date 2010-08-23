@@ -10,6 +10,7 @@
     at the cost of loosing some quality when sun is near horizon.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>08/03/10 - Yar - Creation
    </ul></font><p>
 }
@@ -26,13 +27,13 @@ uses
   SysUtils, Classes,
 
   // GLScene
-  GLScene, GLCadencer, OpenGL1x, VectorGeometry, VectorTypes, VectorGeometryEXT,
+  GLScene, GLCadencer, OpenGLTokens, VectorGeometry, VectorTypes, VectorGeometryEXT,
   GLState, GLContext, GLTexture, GLGraphics,
   GLTextureFormat, GLFBO,
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   GLSLog,
 {$ENDIF}
-  GL3xObjects, GLShadersManager, GLVBOManagers, GL3xMaterial,
+  GL3xObjects, GLShaderManager, GLVBOManager, GL3xMaterial,
   GLRenderContextInfo;
 
 type
@@ -227,14 +228,14 @@ const
   Render_vp: AnsiString =
     '#version 150' + #10#13 +
     'in vec3 Position;' + #10#13 +
-    'in vec2 TexCoord0;' + #10#13 +
+    'in vec2 TexCoord[1];' + #10#13 +
     'out vec2 texcoord;' + #10#13 +
     'out vec3 vertex;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
     '	vertex = -Position;' + #10#13 +
-    '	texcoord = TexCoord0;' + #10#13 +
+    '	texcoord = TexCoord[0];' + #10#13 +
     '	gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
 
@@ -549,7 +550,7 @@ begin
   if Length(RenderProgram) = 0 then
   begin
 
-    with ShadersManager do
+    with ShaderManager do
     begin
       BeginWork;
       // Register uniforms
@@ -647,7 +648,7 @@ begin
     RayleighMieFBO.Bind;
     RayleighMieFBO.AttachTexture(0, FMieTexture);
     RayleighMieFBO.AttachTexture(1, FRayleighTexture);
-    glDrawBuffers(2, @cDrawBuffers);
+    GL.DrawBuffers(2, @cDrawBuffers);
     Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
       'Framebuffer error: '+s);
     MakeGPUOpticalDepth(StateCash);
@@ -715,9 +716,9 @@ begin
     SetDepthRange(0, 1);
   end;
 
-  ShadersManager.UseProgram(CreateOpticalDepthProgram);
+  ShaderManager.UseProgram(CreateOpticalDepthProgram);
 
-  FUBO.BindRange(ublockConstants.Location, 0, SizeOf(TNSConstantBlock));
+  FUBO.BindBase(ublockConstants.Location);
 
   with DynamicVBOManager do
   begin
@@ -783,14 +784,14 @@ begin
     DepthWriteMask := False;
   end;
 
-  with ShadersManager do
+  with ShaderManager do
   begin
     if FFastUpdate then
       UseProgram(UpdateFastProgram)
     else
       UseProgram(UpdateProgram);
 
-      FUBO.BindRange(ublockConstants.Location, 0, SizeOf(TNSConstantBlock));
+    FUBO.BindBase(ublockConstants.Location);
     Uniform3f(uniformSunDir, v3SunDir);
 
     if FFastUpdate then
@@ -850,7 +851,7 @@ var
   storeFrameBuffer: TGLuint;
 begin
   // Render self
-  if GL_VERSION_3_2 and ARenderSelf then
+  if GL.VERSION_3_2 and ARenderSelf then
   begin
     // Store states
     vp := ARci.GLStates.ViewPort;
@@ -865,16 +866,16 @@ begin
       // restore states
       ARci.GLStates.ViewPort := vp;
       ARci.GLStates.DrawFrameBuffer := storeFrameBuffer;
-      with ShadersManager do
+      with ShaderManager do
       begin
         UseProgram( RenderProgram );
 
-        VM := TGLSceneBuffer(ARci.buffer).ViewMatrix;
+        VM := ARci.PipelineTransformation.ViewMatrix;
         VM[3, 0] := 0;
         VM[3, 1] := 0;
         VM[3, 2] := 0;
-        M := MatrixMultiply(TGLSceneBuffer(ARci.buffer).ModelMatrix, VM);
-        M := MatrixMultiply(M, TGLSceneBuffer(ARci.buffer).ProjectionMatrix);
+        M := MatrixMultiply(ARci.PipelineTransformation.ModelMatrix, VM);
+        M := MatrixMultiply(M, ARci.PipelineTransformation.ProjectionMatrix);
         UniformMat4f(uniformViewProjectionMatrix, M);
 
         UniformSampler(uniformMie, FMieTexture.Handle, 0);

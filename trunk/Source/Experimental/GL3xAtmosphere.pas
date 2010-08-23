@@ -6,6 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>27/02/10 - Yar - Adapted GLAtmosphere to OpenGL3x
    </ul></font><p>
 }
@@ -19,9 +20,9 @@ interface
 uses
   SysUtils, Classes,
   // GLScene
-  GLScene, GLCadencer, OpenGL1x, VectorTypes, VectorGeometry, GLState,
+  GLScene, GLCadencer, OpenGLTokens, VectorTypes, VectorGeometry, GLState,
   GLContext, GLStrings, GLColor, GLSLShader,
-  GL3xObjects, GLShadersManager, GLVBOManagers, GLRenderContextInfo;
+  GL3xObjects, GLShaderManager, GLVBOManager, GLRenderContextInfo;
 
 type
   EGLBAtmosphereException = class(Exception);
@@ -349,7 +350,7 @@ begin
     uniformPlanetRadius := TGLSLUniform.RegisterUniform('PlanetRadius');
     uniformAtmosphereRadius := TGLSLUniform.RegisterUniform('AtmosphereRadius');
 
-    with ShadersManager do
+    with ShaderManager do
     begin
       BeginWork;
       vAtmosphereProgram := MakeUniqueProgramName('AtmosphereProgram');
@@ -357,7 +358,7 @@ begin
       vAtmosphereFragmentObject :=
         MakeUniqueObjectName('AtmosphereFragmentObject');
       DefineShaderProgram(vAtmosphereProgram);
-      if GL_VERSION_3_2 then
+      if GL.VERSION_3_2 then
       begin
         DefineShaderObject(vAtmosphereVertexObject, Atmosphere_vp150,
           [ptVertex]);
@@ -412,7 +413,7 @@ var
   sunPos: TVector;
   XAxis, ZAxis, YAxis: TVector;
 begin
-  if GL_VERSION_2_1 then
+  if GL.VERSION_2_1 then
   begin
     // Render self
     if ARenderSelf then
@@ -438,14 +439,12 @@ begin
         else
           sunPos := ARci.CameraPosition;
 
-        with ShadersManager do
+        with ShaderManager do
         begin
           UseProgram(vAtmosphereProgram);
           // All calculations are doing in world space
           UniformMat4f(uniformModelMatrix, M);
-          UniformMat4f(uniformViewProjectionMatrix, MatrixMultiply(
-            TGLSceneBuffer(ARci.buffer).ViewMatrix,
-            TGLSceneBuffer(ARci.buffer).ProjectionMatrix));
+          UniformMat4f(uniformViewProjectionMatrix, ARci.PipelineTransformation.ViewProjectionMatrix);
 
           Uniform3f(uniformEyePosition, AffineVectorMake(ARci.CameraPosition));
           Uniform3f(uniformSpherePosition, AffineVectorMake(AbsolutePosition));

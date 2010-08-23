@@ -6,6 +6,7 @@
    This module is designed to store seldom-used algebraic functions.<p>
 
  <b>History : </b><font size=-1><ul>
+     <li>23/09/10 - Yar - Added integer vectors and 2x2, 3x3 matrices
      <li>27/04/10 - Yar - Maked TVector**EXT vectors with overloading operators
      <li>01/04/10 - Yar - Added CreateLookAtMatrix
     <li>27/02/10 - Yar - Creation
@@ -51,7 +52,7 @@ type
     function IsNull: Boolean;
   end;
 
-  PVector3f = ^TVector3fEXT;
+  PVector3fEXT = ^TVector3fEXT;
   TVector3fEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
     V: array[0..2] of Single;
     property X: Single read V[0] write V[0];
@@ -79,7 +80,7 @@ type
     function IsNull: Boolean;
   end;
 
-  PVector4f = ^TVector4fEXT;
+  PVector4fEXT = ^TVector4fEXT;
   TVector4fEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
   private
     function Get3f: TVector3fEXT; inline;
@@ -113,6 +114,189 @@ type
     function IsNull: Boolean;
   end;
   TVectorEXT = TVector4fEXT;
+
+  PVector2iEXT = ^TVector2iEXT;
+  TVector2iEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+    V: array[0..1] of Integer;
+    property X: Integer read V[0] write V[0];
+    property Y: Integer read V[1] write V[1];
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Add(const a, b: TVector2iEXT): TVector2iEXT; inline;
+    class operator Subtract(const a, b: TVector2iEXT): TVector2iEXT; inline;
+    class operator Multiply(const a, b: TVector2iEXT): TVector2iEXT; inline;
+    class operator Multiply(const a: TVector2iEXT; b: Integer): TVector2iEXT; inline;
+    class operator Divide(const a, b: TVector2iEXT): TVector2iEXT; inline;
+    class operator Divide(const a: TVector2iEXT; b: Integer): TVector2iEXT; inline;
+    class operator Equal(const a, b: TVector2iEXT): Boolean; inline;
+    class operator Negative(const a: TVector2iEXT): TVector2iEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+
+  PVector3iEXT = ^TVector3iEXT;
+  TVector3iEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+    V: array[0..2] of Integer;
+    property X: Integer read V[0] write V[0];
+    property Y: Integer read V[1] write V[1];
+    property Z: Integer read V[2] write V[2];
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TVector3i): TVector3iEXT; inline;
+    class operator Add(const a, b: TVector3iEXT): TVector3iEXT; inline;
+    class operator Subtract(const a, b: TVector3iEXT): TVector3iEXT; inline;
+    class operator Multiply(const a, b: TVector3iEXT): TVector3iEXT; inline;
+    class operator Multiply(const a: TVector3iEXT; b: Integer): TVector3iEXT; inline;
+    class operator Divide(const a, b: TVector3iEXT): TVector3iEXT; inline;
+    class operator Divide(const a: TVector3iEXT; b: Integer): TVector3iEXT; inline;
+    class operator Equal(const a, b: TVector3iEXT): Boolean; inline;
+    class operator Negative(const a: TVector3iEXT): TVector3iEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+
+  PVector4iEXT = ^TVector4iEXT;
+  TVector4iEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+  private
+    function Get3i: TVector3iEXT; inline;
+    procedure Set3i(Value: TVector3iEXT); inline;
+  public
+    V: array[0..3] of Integer;
+    property X: Integer read V[0] write V[0];
+    property Y: Integer read V[1] write V[1];
+    property Z: Integer read V[2] write V[2];
+    property W: Integer read V[3] write V[3];
+    property XYZ: TVector3iEXT read Get3i write Set3i;
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TVector4i): TVector4iEXT; inline;
+    class operator Add(const a, b: TVector4iEXT): TVector4iEXT; inline;
+    class operator Subtract(const a, b: TVector4iEXT): TVector4iEXT; inline;
+    class operator Multiply(const a, b: TVector4iEXT): TVector4iEXT; inline;
+    class operator Multiply(const a: TVector4iEXT; b: Integer): TVector4iEXT; inline;
+    class operator Divide(const a, b: TVector4iEXT): TVector4iEXT; inline;
+    class operator Divide(const a: TVector4iEXT; b: Integer): TVector4iEXT; inline;
+    class operator Equal(const a, b: TVector4iEXT): Boolean; inline;
+    class operator Negative(const a: TVector4iEXT): TVector4iEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+  TIntVectorEXT = TVector4iEXT;
+
+  PVector2uiEXT = ^TVector2uiEXT;
+  TVector2uiEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+    V: array[0..1] of Cardinal;
+    property X: Cardinal read V[0] write V[0];
+    property Y: Cardinal read V[1] write V[1];
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Add(const a, b: TVector2uiEXT): TVector2uiEXT; inline;
+    class operator Subtract(const a, b: TVector2uiEXT): TVector2uiEXT; inline;
+    class operator Multiply(const a, b: TVector2uiEXT): TVector2uiEXT; inline;
+    class operator Multiply(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT; inline;
+    class operator Divide(const a, b: TVector2uiEXT): TVector2uiEXT; inline;
+    class operator Divide(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT; inline;
+    class operator Equal(const a, b: TVector2uiEXT): Boolean; inline;
+    class operator Negative(const a: TVector2uiEXT): TVector2uiEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+
+  PVector3uiEXT = ^TVector3uiEXT;
+  TVector3uiEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+    V: array[0..2] of Cardinal;
+    property X: Cardinal read V[0] write V[0];
+    property Y: Cardinal read V[1] write V[1];
+    property Z: Cardinal read V[2] write V[2];
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TVector3ui): TVector3uiEXT; inline;
+    class operator Add(const a, b: TVector3uiEXT): TVector3uiEXT; inline;
+    class operator Subtract(const a, b: TVector3uiEXT): TVector3uiEXT; inline;
+    class operator Multiply(const a, b: TVector3uiEXT): TVector3uiEXT; inline;
+    class operator Multiply(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT; inline;
+    class operator Divide(const a, b: TVector3uiEXT): TVector3uiEXT; inline;
+    class operator Divide(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT; inline;
+    class operator Equal(const a, b: TVector3uiEXT): Boolean; inline;
+    class operator Negative(const a: TVector3uiEXT): TVector3uiEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+
+  PVector4uiEXT = ^TVector4uiEXT;
+  TVector4uiEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+  private
+    function Get3ui: TVector3uiEXT; inline;
+    procedure Set3ui(Value: TVector3uiEXT); inline;
+  public
+    V: array[0..3] of Cardinal;
+    property X: Cardinal read V[0] write V[0];
+    property Y: Cardinal read V[1] write V[1];
+    property Z: Cardinal read V[2] write V[2];
+    property W: Cardinal read V[3] write V[3];
+    property XYZ: TVector3uiEXT read Get3ui write Set3ui;
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TVector4ui): TVector4uiEXT; inline;
+    class operator Add(const a, b: TVector4uiEXT): TVector4uiEXT; inline;
+    class operator Subtract(const a, b: TVector4uiEXT): TVector4uiEXT; inline;
+    class operator Multiply(const a, b: TVector4uiEXT): TVector4uiEXT; inline;
+    class operator Multiply(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT; inline;
+    class operator Divide(const a, b: TVector4uiEXT): TVector4uiEXT; inline;
+    class operator Divide(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT; inline;
+    class operator Equal(const a, b: TVector4uiEXT): Boolean; inline;
+    class operator Negative(const a: TVector4uiEXT): TVector4uiEXT; inline;
+{$ENDIF}
+    function IsNull: Boolean;
+  end;
+  TUIntVectorEXT = TVector4uiEXT;
+
+  PMatrix2fEXT = ^TMatrix4fEXT;
+  TMatrix2fEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+  private
+    function  GetRow(Index: Integer): TVector2fEXT;
+    procedure SetRow(Index: Integer; const vec: TVector2fEXT);
+  public
+    V: array[0..3] of Single;
+    property e00: Single read V[0] write V[0];
+    property e10: Single read V[1] write V[1];
+    property e01: Single read V[2] write V[2];
+    property e11: Single read V[3] write V[3];
+    property Row[Index: Integer]: TVector2fEXT read GetRow write SetRow;
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TMatrix2f): TMatrix2fEXT;
+    class operator Implicit(const a: TMatrix2fEXT): TMatrix2f;
+    class operator Add(const a, b: TMatrix2fEXT): TMatrix2fEXT;
+    class operator Multiply(const m: TMatrix2fEXT; const a: TVector2fEXT): TVector2fEXT;
+    class operator Multiply(const a, b: TMatrix2fEXT): TMatrix2fEXT;
+    class operator Multiply(const a: TMatrix2fEXT; x: Single): TMatrix2fEXT;
+    class operator Equal(const a, b: TMatrix2fEXT): Boolean; inline;
+{$ENDIF}
+    procedure Identity;
+  end;
+
+  PMatrix3fEXT = ^TMatrix3fEXT;
+  TMatrix3fEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+  private
+    function  GetRow(Index: Integer): TVector3fEXT;
+    procedure SetRow(Index: Integer; const vec: TVector3fEXT);
+  public
+    V: array[0..15] of Single;
+    property e00: Single read V[0] write V[0];
+    property e10: Single read V[1] write V[1];
+    property e20: Single read V[2] write V[2];
+    property e01: Single read V[3] write V[3];
+    property e11: Single read V[4] write V[4];
+    property e21: Single read V[5] write V[5];
+    property e02: Single read V[6] write V[6];
+    property e12: Single read V[7] write V[7];
+    property e22: Single read V[8] write V[8];
+    property Row[Index: Integer]: TVector3fEXT read GetRow write SetRow;
+{$IFDEF GLS_COMPILER_2005_UP}
+    class operator Implicit(const a: TMatrix3f): TMatrix3fEXT;
+    class operator Implicit(const a: TMatrix3fEXT): TMatrix3f;
+    class operator Add(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+    class operator Multiply(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT;
+    class operator Multiply(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+    class operator Multiply(const a: TMatrix3fEXT; x: Single): TMatrix3fEXT;
+    class operator Equal(const a, b: TMatrix3fEXT): Boolean; inline;
+{$ENDIF}
+    procedure Identity;
+  end;
 
   PMatrix4fEXT = ^TMatrix4fEXT;
   TMatrix4fEXT = packed {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
@@ -170,6 +354,12 @@ type
 function VectorMakeEXT(const x, y : Single) : TVector2fEXT; overload; inline;
 function VectorMakeEXT(const x, y, z : Single) : TVector3fEXT; overload; inline;
 function VectorMakeEXT(const x, y, z, w : Single) : TVector4fEXT; overload; inline;
+function VectorMakeEXT(const x, y : Integer) : TVector2iEXT; overload; inline;
+function VectorMakeEXT(const x, y, z : Integer) : TVector3iEXT; overload; inline;
+function VectorMakeEXT(const x, y, z, w : Integer) : TVector4iEXT; overload; inline;
+function VectorMakeEXT(const x, y : Cardinal) : TVector2uiEXT; overload; inline;
+function VectorMakeEXT(const x, y, z : Cardinal) : TVector3uiEXT; overload; inline;
+function VectorMakeEXT(const x, y, z, w : Cardinal) : TVector4uiEXT; overload; inline;
 
 {$IFDEF FPC}
 operator +(const a, b: TVector2fEXT): TVector2fEXT; overload; inline;
@@ -201,6 +391,82 @@ operator /(const a: TVector4fEXT; b: Single): TVector4fEXT; overload; inline;
 operator =(const a, b: TVector4fEXT): Boolean; overload; inline;
 operator -(const a: TVector4fEXT): TVector4fEXT; overload; inline;
 
+operator +(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
+operator -(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
+operator *(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
+operator *(const a: TVector2iEXT; b: Single): TVector2iEXT; overload; inline;
+operator /(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
+operator /(const a: TVector2iEXT; b: Single): TVector2iEXT; overload; inline;
+operator =(const a, b: TVector2iEXT): Boolean; overload; inline;
+operator -(const a: TVector2iEXT): TVector2iEXT; overload; inline;
+
+operator := (const a: TVector3i): TVector3iEXT; overload; inline;
+operator + (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
+operator - (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
+operator * (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
+operator * (const a: TVector3iEXT; b: Single): TVector3iEXT; overload; inline;
+operator / (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
+operator / (const a: TVector3iEXT; b: Single): TVector3iEXT; overload; inline;
+operator = (const a, b: TVector3iEXT): Boolean; overload; inline;
+operator - (const a: TVector3iEXT): TVector3iEXT; overload; overload; inline;
+
+operator :=(const a: TVector4i): TVector4iEXT; overload; inline;
+operator +(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
+operator -(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
+operator *(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
+operator *(const a: TVector4iEXT; b: Single): TVector4iEXT; overload; inline;
+operator /(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
+operator /(const a: TVector4iEXT; b: Single): TVector4iEXT; overload; inline;
+operator =(const a, b: TVector4iEXT): Boolean; overload; inline;
+operator -(const a: TVector4iEXT): TVector4iEXT; overload; inline;
+
+operator +(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
+operator -(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
+operator *(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
+operator *(const a: TVector2uiEXT; b: Single): TVector2uiEXT; overload; inline;
+operator /(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
+operator /(const a: TVector2uiEXT; b: Single): TVector2uiEXT; overload; inline;
+operator =(const a, b: TVector2uiEXT): Boolean; overload; inline;
+operator -(const a: TVector2uiEXT): TVector2uiEXT; overload; inline;
+
+operator := (const a: TVector3i): TVector3uiEXT; overload; inline;
+operator + (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
+operator - (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
+operator * (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
+operator * (const a: TVector3uiEXT; b: Single): TVector3uiEXT; overload; inline;
+operator / (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
+operator / (const a: TVector3uiEXT; b: Single): TVector3uiEXT; overload; inline;
+operator = (const a, b: TVector3uiEXT): Boolean; overload; inline;
+operator - (const a: TVector3uiEXT): TVector3uiEXT; overload; overload; inline;
+
+operator :=(const a: TVector4i): TVector4uiEXT; overload; inline;
+operator +(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
+operator -(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
+operator *(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
+operator *(const a: TVector4uiEXT; b: Single): TVector4uiEXT; overload; inline;
+operator /(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
+operator /(const a: TVector4uiEXT; b: Single): TVector4uiEXT; overload; inline;
+operator =(const a, b: TVector4uiEXT): Boolean; overload; inline;
+operator -(const a: TVector4uiEXT): TVector4uiEXT; overload; inline;
+
+operator :=(const a: TMatrix2f): TMatrix2fEXT; overload;
+operator :=(const a: TMatrix2fEXT): TMatrix2f; overload;
+operator +(const a, b: TMatrix2fEXT): TMatrix2fEXT; overload;
+operator *(const m: TMatrix2fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
+operator *(const m: TMatrix2fEXT; const a: TVector2fEXT): TVector2fEXT; overload;
+operator *(const a, b: TMatrix2fEXT): TMatrix2fEXT; overload;
+operator *(const a: TMatrix2fEXT; x: Single): TMatrix2fEXT; overload;
+operator =(const a, b: TMatrix2fEXT): Boolean; overload;
+
+operator :=(const a: TMatrix3f): TMatrix3fEXT; overload;
+operator :=(const a: TMatrix3fEXT): TMatrix3f; overload;
+operator +(const a, b: TMatrix3fEXT): TMatrix3fEXT; overload;
+operator *(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
+operator *(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
+operator *(const a, b: TMatrix3fEXT): TMatrix3fEXT; overload;
+operator *(const a: TMatrix3fEXT; x: Single): TMatrix3fEXT; overload;
+operator =(const a, b: TMatrix3fEXT): Boolean; overload;
+
 operator :=(const a: TMatrix4f): TMatrix4fEXT; overload;
 operator :=(const a: TMatrix4fEXT): TMatrix4f; overload;
 operator +(const a, b: TMatrix4fEXT): TMatrix4fEXT; overload;
@@ -227,6 +493,48 @@ begin
 end;
 
 function VectorMakeEXT(const x, y, z, w : Single) : TVector4fEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+  Result.Z := z;
+  Result.W := w;
+end;
+
+function VectorMakeEXT(const x, y : Integer) : TVector2iEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+end;
+
+function VectorMakeEXT(const x, y, z : Integer) : TVector3iEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+  Result.Z := z;
+end;
+
+function VectorMakeEXT(const x, y, z, w : Integer) : TVector4iEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+  Result.Z := z;
+  Result.W := w;
+end;
+
+function VectorMakeEXT(const x, y : Cardinal) : TVector2uiEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+end;
+
+function VectorMakeEXT(const x, y, z : Cardinal) : TVector3uiEXT;
+begin
+  Result.X := x;
+  Result.Y := y;
+  Result.Z := z;
+end;
+
+function VectorMakeEXT(const x, y, z, w : Cardinal) : TVector4uiEXT;
 begin
   Result.X := x;
   Result.Y := y;
@@ -712,6 +1020,857 @@ end;
 function TVector4fEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector2iEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator + (const a, b: TVector2iEXT): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Add(const a, b: TVector2iEXT): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector2iEXT): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Subtract(const a, b: TVector2iEXT): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector2iEXT): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Multiply(const a, b: TVector2iEXT): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector2iEXT): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Divide(const a, b: TVector2iEXT): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector2iEXT; b: Single): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Multiply(const a: TVector2iEXT; b: Integer): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector2iEXT; b: Single): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Divide(const a: TVector2iEXT; b: Integer): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector2iEXT): Boolean;
+{$ELSE}
+class operator TVector2iEXT.Equal(const a, b: TVector2iEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector2iEXT): TVector2iEXT;
+{$ELSE}
+class operator TVector2iEXT.Negative(const a: TVector2iEXT): TVector2iEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+end;
+
+function TVector2iEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0);
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3iEXT'}{$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TVector3i): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Implicit(const a: TVector3i): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a[0];
+  Result.Y := a[1];
+  Result.Z := a[2];
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TVector3iEXT): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Add(const a, b: TVector3iEXT): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+  Result.Z := a.Z+b.Z;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector3iEXT): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Subtract(const a, b: TVector3iEXT): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+  Result.Z := a.Z-b.Z;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector3iEXT): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Multiply(const a, b: TVector3iEXT): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+  Result.Z := a.Z*b.Z;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector3iEXT): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Divide(const a, b: TVector3iEXT): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+  Result.Z := a.Z div b.Z;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector3iEXT; b: Single): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Multiply(const a: TVector3iEXT; b: Integer): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+  Result.Z := a.Z*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector3iEXT; b: Single): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Divide(const a: TVector3iEXT; b: Integer): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+  Result.Z := a.Z div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector3iEXT): Boolean;
+{$ELSE}
+class operator TVector3iEXT.Equal(const a, b: TVector3iEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y) and (a.Z = b.Z);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector3iEXT): TVector3iEXT;
+{$ELSE}
+class operator TVector3iEXT.Negative(const a: TVector3iEXT): TVector3iEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+  Result.Z := -a.Z
+end;
+
+function TVector3iEXT.IsNull: Boolean;
+begin
+  Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
+end;
+{$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4iEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TVector4i): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Implicit(const a: TVector4i): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a[0];
+  Result.Y := a[1];
+  Result.Z := a[2];
+  Result.W := a[3];
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TVector4iEXT): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Add(const a, b: TVector4iEXT): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+  Result.Z := a.Z+b.Z;
+  Result.W := a.W+b.W;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector4iEXT): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Subtract(const a, b: TVector4iEXT): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+  Result.Z := a.Z-b.Z;
+  Result.W := a.W-b.W;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector4iEXT): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Multiply(const a, b: TVector4iEXT): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+  Result.Z := a.Z*b.Z;
+  Result.W := a.W*b.W;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector4iEXT): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Divide(const a, b: TVector4iEXT): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+  Result.Z := a.Z div b.Z;
+  Result.W := a.W div b.W;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector4iEXT; b: Single): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Multiply(const a: TVector4iEXT; b: Integer): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+  Result.Z := a.Z*b;
+  Result.W := a.W*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector4iEXT; b: Single): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Divide(const a: TVector4iEXT; b: Integer): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+  Result.Z := a.Z div b;
+  Result.W := a.W div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector4iEXT): Boolean;
+{$ELSE}
+class operator TVector4iEXT.Equal(const a, b: TVector4iEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y) and (a.Z = b.Z) and (a.W = b.W);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector4iEXT): TVector4iEXT;
+{$ELSE}
+class operator TVector4iEXT.Negative(const a: TVector4iEXT): TVector4iEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+  Result.Z := -a.Z;
+  Result.W := -a.W;
+end;
+
+function TVector4iEXT.Get3i: TVector3iEXT;
+begin
+ Result.X := V[0];
+ Result.Y := V[1];
+ Result.Z := V[2];
+end;
+
+procedure TVector4iEXT.Set3i(Value: TVector3iEXT);
+begin
+ V[0] := Value.X;
+ V[1] := Value.Y;
+ V[2] := Value.Z;
+end;
+
+function TVector4iEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector2uiEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator + (const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Add(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Subtract(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Multiply(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Divide(const a, b: TVector2uiEXT): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector2uiEXT; b: Single): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Multiply(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector2uiEXT; b: Single): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Divide(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector2uiEXT): Boolean;
+{$ELSE}
+class operator TVector2uiEXT.Equal(const a, b: TVector2uiEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector2uiEXT): TVector2uiEXT;
+{$ELSE}
+class operator TVector2uiEXT.Negative(const a: TVector2uiEXT): TVector2uiEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+end;
+
+function TVector2uiEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0);
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3uiEXT'}{$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TVector3ui): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Implicit(const a: TVector3ui): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a[0];
+  Result.Y := a[1];
+  Result.Z := a[2];
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Add(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+  Result.Z := a.Z+b.Z;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Subtract(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+  Result.Z := a.Z-b.Z;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Multiply(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+  Result.Z := a.Z*b.Z;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Divide(const a, b: TVector3uiEXT): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+  Result.Z := a.Z div b.Z;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector3uiEXT; b: Single): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Multiply(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+  Result.Z := a.Z*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector3uiEXT; b: Single): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Divide(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+  Result.Z := a.Z div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector3uiEXT): Boolean;
+{$ELSE}
+class operator TVector3uiEXT.Equal(const a, b: TVector3uiEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y) and (a.Z = b.Z);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector3uiEXT): TVector3uiEXT;
+{$ELSE}
+class operator TVector3uiEXT.Negative(const a: TVector3uiEXT): TVector3uiEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+  Result.Z := -a.Z
+end;
+
+function TVector3uiEXT.IsNull: Boolean;
+begin
+  Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
+end;
+{$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4uiEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TVector4ui): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Implicit(const a: TVector4ui): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a[0];
+  Result.Y := a[1];
+  Result.Z := a[2];
+  Result.W := a[3];
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Add(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X+b.X;
+  Result.Y := a.Y+b.Y;
+  Result.Z := a.Z+b.Z;
+  Result.W := a.W+b.W;
+end;
+
+{$IFDEF FPC}
+operator -(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Subtract(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X-b.X;
+  Result.Y := a.Y-b.Y;
+  Result.Z := a.Z-b.Z;
+  Result.W := a.W-b.W;
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Multiply(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b.X;
+  Result.Y := a.Y*b.Y;
+  Result.Z := a.Z*b.Z;
+  Result.W := a.W*b.W;
+end;
+
+{$IFDEF FPC}
+operator /(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Divide(const a, b: TVector4uiEXT): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b.X;
+  Result.Y := a.Y div b.Y;
+  Result.Z := a.Z div b.Z;
+  Result.W := a.W div b.W;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TVector4uiEXT; b: Single): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Multiply(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X*b;
+  Result.Y := a.Y*b;
+  Result.Z := a.Z*b;
+  Result.W := a.W*b;
+end;
+
+{$IFDEF FPC}
+operator /(const a: TVector4uiEXT; b: Single): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Divide(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := a.X div b;
+  Result.Y := a.Y div b;
+  Result.Z := a.Z div b;
+  Result.W := a.W div b;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TVector4uiEXT): Boolean;
+{$ELSE}
+class operator TVector4uiEXT.Equal(const a, b: TVector4uiEXT): Boolean;
+{$ENDIF}
+begin
+  Result := (a.X = b.X) and (a.Y = b.Y) and (a.Z = b.Z) and (a.W = b.W);
+end;
+
+{$IFDEF FPC}
+operator -(const a: TVector4uiEXT): TVector4uiEXT;
+{$ELSE}
+class operator TVector4uiEXT.Negative(const a: TVector4uiEXT): TVector4uiEXT;
+{$ENDIF}
+begin
+  Result.X := -a.X;
+  Result.Y := -a.Y;
+  Result.Z := -a.Z;
+  Result.W := -a.W;
+end;
+
+function TVector4uiEXT.Get3ui: TVector3uiEXT;
+begin
+ Result.X := V[0];
+ Result.Y := V[1];
+ Result.Z := V[2];
+end;
+
+procedure TVector4uiEXT.Set3ui(Value: TVector3uiEXT);
+begin
+ V[0] := Value.X;
+ V[1] := Value.Y;
+ V[2] := Value.Z;
+end;
+
+function TVector4uiEXT.IsNull: Boolean;
+begin
+  Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix2fEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TMatrix2f): TMatrix2fEXT;
+{$ELSE}
+class operator TMatrix2fEXT.Implicit(const a: TMatrix2f): TMatrix2fEXT;
+{$ENDIF}
+begin
+  Move(a[0][0], Result.V[0], SizeOf(TMatrix2f));
+end;
+
+{$IFDEF FPC}
+operator :=(const a: TMatrix2fEXT): TMatrix42f;
+{$ELSE}
+class operator TMatrix2fEXT.Implicit(const a: TMatrix2fEXT): TMatrix2f;
+{$ENDIF}
+begin
+  Move(a.V[0], Result[0][0], SizeOf(TMatrix2f));
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TMatrix4fEXT): TMatrix4fEXT;
+{$ELSE}
+class operator TMatrix2fEXT.Add(const a, b: TMatrix2fEXT): TMatrix2fEXT;
+{$ENDIF}
+begin
+  Result.Row[0] := a.Row[0] + b.Row[0];
+  Result.Row[1] := a.Row[1] + b.Row[1];
+end;
+
+{$IFDEF FPC}
+operator *(const m: TMatrix2fEXT; const a: TVector2fEXT): TVector2fEXT;
+{$ELSE}
+class operator TMatrix2fEXT.Multiply(const m: TMatrix2fEXT; const a: TVector2fEXT): TVector2fEXT;
+{$ENDIF}
+begin
+  with m do
+    Result := VectorGeometryEXT.VectorMakeEXT(
+      e00 * a.x + e01 * a.y,
+      e10 * a.x + e11 * a.y);
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TMatrix2fEXT): TMatrix2fEXT;
+{$ELSE}
+class operator TMatrix2fEXT.Multiply(const a, b: TMatrix2fEXT): TMatrix2fEXT;
+{$ENDIF}
+begin
+  with Result do
+  begin
+    e00 := a.e00 * b.e00 + a.e01 * b.e10;
+    e10 := a.e10 * b.e00 + a.e11 * b.e10;
+    e01 := a.e00 * b.e01 + a.e01 * b.e11;
+    e11 := a.e10 * b.e01 + a.e11 * b.e11;
+  end;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TMatrix2fEXT; x: Single): TMatrix2fEXT;
+{$ELSE}
+class operator TMatrix2fEXT.Multiply(const a: TMatrix2fEXT; x: Single): TMatrix2fEXT;
+{$ENDIF}
+begin
+  Result.Row[0] := a.Row[0] * x;
+  Result.Row[1] := a.Row[1] * x;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TMatrix2fEXT): Boolean;
+{$ELSE}
+class operator TMatrix2fEXT.Equal(const a, b: TMatrix2fEXT): Boolean;
+{$ENDIF}
+var
+  i : Integer;
+begin
+  Result := False;
+  for i := 0 to High(a.V) do
+    if a.V[i] <> b.V[i] then
+      exit;
+  Result := True;
+end;
+
+function  TMatrix2fEXT.GetRow(Index: Integer): TVector2fEXT;
+begin
+  Result.X := V[Index*2];
+  Result.Y := V[Index*2+1];
+end;
+
+procedure TMatrix2fEXT.SetRow(Index: Integer; const vec: TVector2fEXT);
+begin
+  V[Index*2] := vec.X;
+  V[Index*2+1] := vec.Y;
+end;
+
+procedure TMatrix2fEXT.Identity;
+begin
+  V[0] := 1;
+  V[1] := 0;
+  V[2] := 0;
+  V[3] := 1;
+end;
+{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix3fEXT'} {$ENDIF}
+
+{$IFDEF FPC}
+operator :=(const a: TMatrix3f): TMatrix3fEXT;
+{$ELSE}
+class operator TMatrix3fEXT.Implicit(const a: TMatrix3f): TMatrix3fEXT;
+{$ENDIF}
+begin
+  Move(a[0][0], Result.V[0], SizeOf(TMatrix3f));
+end;
+
+{$IFDEF FPC}
+operator :=(const a: TMatrix3fEXT): TMatrix3f;
+{$ELSE}
+class operator TMatrix3fEXT.Implicit(const a: TMatrix3fEXT): TMatrix3f;
+{$ENDIF}
+begin
+  Move(a.V[0], Result[0][0], SizeOf(TMatrix3f));
+end;
+
+{$IFDEF FPC}
+operator +(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+{$ELSE}
+class operator TMatrix3fEXT.Add(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+{$ENDIF}
+begin
+  Result.Row[0] := a.Row[0] + b.Row[0];
+  Result.Row[1] := a.Row[1] + b.Row[1];
+  Result.Row[2] := a.Row[2] + b.Row[2];
+end;
+
+{$IFDEF FPC}
+operator *(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT;
+{$ELSE}
+class operator TMatrix3fEXT.Multiply(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT;
+{$ENDIF}
+begin
+  with m do
+    Result := VectorGeometryEXT.VectorMakeEXT(
+      e00 * a.x + e01 * a.y + e02 * a.z,
+      e10 * a.x + e11 * a.y + e12 * a.z,
+      e20 * a.x + e21 * a.y + e22 * a.z);
+end;
+
+{$IFDEF FPC}
+operator *(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+{$ELSE}
+class operator TMatrix3fEXT.Multiply(const a, b: TMatrix3fEXT): TMatrix3fEXT;
+{$ENDIF}
+begin
+  with Result do
+  begin
+    e00 := a.e00 * b.e00 + a.e01 * b.e10 + a.e02 * b.e20;
+    e10 := a.e10 * b.e00 + a.e11 * b.e10 + a.e12 * b.e20;
+    e20 := a.e20 * b.e00 + a.e21 * b.e10 + a.e22 * b.e20;
+    e01 := a.e00 * b.e01 + a.e01 * b.e11 + a.e02 * b.e21;
+    e11 := a.e10 * b.e01 + a.e11 * b.e11 + a.e12 * b.e21;
+    e21 := a.e20 * b.e01 + a.e21 * b.e11 + a.e22 * b.e21;
+    e02 := a.e00 * b.e02 + a.e01 * b.e12 + a.e02 * b.e22;
+    e12 := a.e10 * b.e02 + a.e11 * b.e12 + a.e12 * b.e22;
+    e22 := a.e20 * b.e02 + a.e21 * b.e12 + a.e22 * b.e22;
+  end;
+end;
+
+{$IFDEF FPC}
+operator *(const a: TMatrix3fEXT; x: Single): TMatrix3fEXT;
+{$ELSE}
+class operator TMatrix3fEXT.Multiply(const a: TMatrix3fEXT; x: Single): TMatrix3fEXT;
+{$ENDIF}
+begin
+  Result.Row[0] := a.Row[0] * x;
+  Result.Row[1] := a.Row[1] * x;
+  Result.Row[2] := a.Row[2] * x;
+end;
+
+{$IFDEF FPC}
+operator =(const a, b: TMatrix3fEXT): Boolean;
+{$ELSE}
+class operator TMatrix3fEXT.Equal(const a, b: TMatrix3fEXT): Boolean;
+{$ENDIF}
+var
+  i : Integer;
+begin
+  Result := False;
+  for i := 0 to High(a.V) do
+    if a.V[i] <> b.V[i] then
+      exit;
+  Result := True;
+end;
+
+function  TMatrix3fEXT.GetRow(Index: Integer): TVector3fEXT;
+begin
+  Result.X := V[Index*3];
+  Result.Y := V[Index*3+1];
+  Result.Z := V[Index*3+2];
+end;
+
+procedure TMatrix3fEXT.SetRow(Index: Integer; const vec: TVector3fEXT);
+begin
+  V[Index*3] := vec.X;
+  V[Index*3+1] := vec.Y;
+  V[Index*3+2] := vec.Z;
+end;
+
+procedure TMatrix3fEXT.Identity;
+begin
+  Move(IdentityMatrix, Self.V[0], SizeOf(TMatrix3f));
 end;
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 

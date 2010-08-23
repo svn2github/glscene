@@ -9,17 +9,19 @@
    and stream data not deleted from video memory until application running.<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>20/07/10 - Yar - Improved VAO refreshing
     <li>14/04/10 - Yar - Vertex array object per program request
     <li>29/03/10 - Yar - Added multicontext and multithreading support
     <li>24/03/10 - Yar - Creation
  </ul></font>
 }
 
+// TODO: Multiple static buffers of fixed size (256K)
 // TODO: Matrix attribute
 // TODO: Bindless graphic
 // TODO: Auto-normalization for attribute
 
-unit GLVBOManagers;
+unit GLVBOManager;
 
 interface
 
@@ -34,11 +36,11 @@ uses
   // GLScene
   GLCrossPlatform,
   BaseClasses,
-  OpenGL1x,
+  OpenGLTokens,
   GLContext,
   GLRenderContextInfo,
   GLState,
-  GLShadersManager,
+  GLShaderManager,
   VectorTypes,
   VectorLists,
   GLSRedBlackTree,
@@ -74,7 +76,7 @@ type
   // Generics classes
   //
   TGLVAOHandleTree =
-{$IFDEF FPC}specialize{$ENDIF}GRedBlackTree < GLuint, TGLVertexArrayHandle > ;
+{$IFDEF FPC}specialize{$ENDIF}GRedBlackTree < TGLProgramHandle, TGLVertexArrayHandle > ;
 
   TGLBaseVBOManager = class;
   TGLBaseVBOManagerClass = class of TGLBaseVBOManager;
@@ -93,9 +95,10 @@ type
     PrimitiveType: array[0..GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1] of TGLVBOMEnum;
 
     Attributes: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLAttribute;
+    Divisor: array[0..GLS_VERTEX_ATTR_NUM - 1] of GLuint;
     DataFormat: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
     DataSize: array[0..GLS_VERTEX_ATTR_NUM - 1] of LongWord;
-    TotalDataSize: PtrUInt;
+    TotalDataSize: Cardinal;
     BuiltProp: TGLBuiltProperties;
     LastTimeWhenRendered: Double;
     RelativeSize: Single;
@@ -160,16 +163,14 @@ type
     { Private declarations }
     FVertexHandle: TGLVBOArrayBufferHandle;
     FIndexHandle: TGLVBOElementArrayHandle;
+    FClientList: TList;
     FBuilded: Boolean;
-    Usage: LongWord;
     CurrentClient: PGLRenderPacket;
-    GLVBOMState: TGLVBOMState;
+    FState: TGLVBOMState;
 {$IFDEF GLS_MULTITHREAD}
     FLock: TRTLCriticalSection;
 {$ENDIF}
     AttributeArrays: array[0..GLS_VERTEX_ATTR_NUM - 1] of T4ByteList;
-    CurrentValue: array[0..GLS_VERTEX_ATTR_NUM - 1, 0..3] of T4ByteData;
-    OneVertexDataSize: LongWord;
     ObjectVertexCount: Integer; // From BeginObject to EndObject
     HostIndexBuffer: TLongWordList;
     ObjectIndex: LongWord;
@@ -186,16 +187,18 @@ type
     procedure ResetAttribArray(idx: integer);
     procedure InitClient(var AClient: PGLRenderPacket);
     procedure FreeClient(const AClient: PGLRenderPacket);
-    function BindVertexArray(out hVAO: TGLVertexArrayHandle): Boolean;
+    procedure BindVertexArray(out hVAO: TGLVertexArrayHandle);
     procedure RenderCurrentClient;
     function DoMakeAdjacency: Boolean;
     procedure BuildErrorModel(const BuiltProp: TGLBuiltProperties);
-    procedure Lock; inline;
-    procedure Unlock; inline;
+    class function Usage: TGLEnum; virtual; abstract;
   public
     { Public Declarations }
     constructor Create; virtual;
     destructor Destroy; override;
+
+    procedure BeginWork; inline;
+    procedure EndWork; inline;
 
     {: Begins storing a piece of geometry }
     procedure BeginObject(const BuiltProp: TGLBuiltProperties);
@@ -206,10 +209,10 @@ type
     {: Begins gathering information about the given type of primitives.
        An object can only consist of a set of primitives of the same type. }
     procedure BeginPrimitives(eType: TGLVBOMEnum);
-      virtual; abstract;
+      virtual;
     {: Ends gathering information about the primitive. }
     procedure EndPrimitives;
-      virtual; abstract;
+      virtual;
     {: Specifies a new value for the attribute with the given name. }
     procedure Attribute1f(Attrib: TGLSLAttribute; a1: GLfloat);
     procedure Attribute2f(Attrib: TGLSLAttribute; a1, a2: GLfloat);
@@ -238,6 +241,21 @@ type
       a1, a2, a3, a4: GLint); overload;
     procedure Attribute4i(Attrib: TGLSLAttribute; const a: TVector4i);
       overload;
+    procedure Attribute1ui(Attrib: TGLSLAttribute; a1: GLuint);
+    procedure Attribute2ui(Attrib: TGLSLAttribute; a1, a2: GLuint);
+      overload;
+    procedure Attribute2ui(Attrib: TGLSLAttribute; const a: TVector2ui);
+      overload;
+    procedure Attribute3ui(Attrib: TGLSLAttribute; a1, a2, a3: GLuint);
+      overload;
+    procedure Attribute3ui(Attrib: TGLSLAttribute; const a: TVector3ui);
+      overload;
+    procedure Attribute4ui(Attrib: TGLSLAttribute;
+      a1, a2, a3, a4: GLuint); overload;
+    procedure Attribute4ui(Attrib: TGLSLAttribute; const a: TVector4ui);
+      overload;
+    {: Specifies a attrubute divisor for instanced drawing. }
+    procedure AttributeDivisor(Attrib: TGLSLAttribute; Value: GLuint);
     {: Takes a full list of attribute values,
        but does not determine its type, so you must use AttributeXX
        between BeginObject and BeginPrimitives }
@@ -268,6 +286,8 @@ type
     {: Rendering sender }
     procedure RenderClient(const BuiltProp: TGLBuiltProperties);
       dynamic;
+    {: Notify about program is relinked and need to redefine VAO states }
+    procedure NotifyProgramChanged(const AProg: TGLProgramHandle);
     {: Return true if buffer is uploaded to video memory.
        Dynamic VBO always return false }
     property IsBuilded: Boolean read fBuilded;
@@ -278,7 +298,6 @@ type
   TGLStaticVBOManager = class(TGLBaseVBOManager)
   private
     { Private declarations }
-    ClientList: TList;
     HostVertexBuffer: T4ByteList;
   public
     { Public Declarations }
@@ -287,12 +306,11 @@ type
     procedure BeginObject(const BuiltProp: TGLBuiltProperties);
       override;
     procedure EndObject; override;
-    procedure BeginPrimitives(eType: TGLVBOMEnum); override;
-    procedure EndPrimitives; override;
     procedure BuildBuffer; override;
     procedure RenderClient(const BuiltProp: TGLBuiltProperties); override;
     {: Returns the portion of the buffer that is used during the time interval. }
     function UsageStatistic(const TimeInterval: Double): Single;
+    class function Usage: TGLenum; override;
   end;
 
   // TGLDynamicVBOManager
@@ -308,28 +326,23 @@ type
     destructor Destroy; override;
     procedure BeginObject(const BuiltProp: TGLBuiltProperties); override;
     procedure EndObject; override;
-    procedure BeginPrimitives(eType: TGLVBOMEnum); override;
-    procedure EndPrimitives; override;
     procedure RenderClient(const BuiltProp: TGLBuiltProperties); override;
+    class function Usage: TGLenum; override;
   end;
 
   // TGLStreamVBOManager
   //
   TGLStreamVBOManager = class(TGLBaseVBOManager)
-  private
-    { Private declarations }
-    ClientList: TList;
   public
     { Public Declarations }
     constructor Create; override;
     destructor Destroy; override;
     procedure BeginObject(const BuiltProp: TGLBuiltProperties); override;
     procedure EndObject; override;
-    procedure BeginPrimitives(eType: TGLVBOMEnum); override;
-    procedure EndPrimitives; override;
     procedure EmitVertices(VertexNumber: LongWord; Indexed: Boolean); override;
     procedure BuildBuffer; override;
     procedure RenderClient(const BuiltProp: TGLBuiltProperties); override;
+    class function Usage: TGLenum; override;
   end;
 
 var
@@ -339,6 +352,7 @@ var
 threadvar
 {$ENDIF}
   vCurrentTime: Double;
+  vCurrentAttribValue: array[0..GLS_VERTEX_ATTR_NUM - 1, 0..15] of T4ByteData;
 
 function StaticVBOManager: TGLStaticVBOManager;
 function DynamicVBOManager: TGLDynamicVBOManager;
@@ -373,60 +387,24 @@ const
     GL_TRIANGLE_STRIP_ADJACENCY
     );
 
-resourcestring
-  glsCanNotRebuild =
-    'Static object can not be rebuilded';
-  glsBadAttrCombination =
-    'Single and list attributes can not be combined';
-  glsWrongAttrType =
-    'An attribute was used with different type than previously or bad list size';
-  glsWrongCallBegin =
-    'This function cannot be called again before EndPart has been called.';
-  glsWrongCallEnd =
-    'This function must be called after BeginObject ... EndPrimitive.';
-  glsWrongCallEmit =
-    'This function must be called after BeginPrimitive ... EndPrimitive.';
-  glsNoShader =
-    'Currently no shader is bound.';
-  glsInvalidNumberOfVertex =
-    'The number of primitives to render is invalid. You need to construct complete primitives.';
-  glsWrongCallBeginPrim =
-    'This function cannot be called recursively or before BeginObject.';
-  glsInvalidPrimType =
-    'Invalid primitive type.';
-  glsWrongCallEndPrim =
-    'Before calling this function Begin must have been called.';
-  glsTooMachDiffPrim =
-    'Too mach different primitive types in one object. Necessary to increase the constant GLVBOM_MAX_DIFFERENT_PRIMITIVES';
-  glsAlreadyDefined =
-    'Geometric data of the object already identified.';
-  glsUnknownAttrib =
-    'Used not declared attribute. Declare attribute between BeginObject ... BeginPrimitive.';
-  glsErrorBuildModel =
-    'Error occurred when model was builded';
-  glsDoMakeAdjFail =
-    'Unable to convert usualy primitives to primitives whith adjacency';
+type
+  TVBOProgramGetter = class(TCurrentProgramGetter);
 
-function CompareGLuint(const Item1, Item2: GLuint): Integer;
-begin
-  if Item1 < Item2 then
-  begin
-    Result := -1;
-  end
-  else if (Item1 = Item2) then
-  begin
-    Result := 0;
-  end
-  else
-  begin
-    Result := 1;
-  end
-end;
-
-procedure ArrayHandleDestroyer(k: GLuint; AHandle:
-  TGLVertexArrayHandle; out Flag: Boolean);
+procedure ArrayHandleDestroyer(
+  k: TGLProgramHandle;
+  AHandle: TGLVertexArrayHandle;
+  out Flag: Boolean);
 begin
   AHandle.Destroy;
+  Flag := True;
+end;
+
+procedure ArrayHandleNotifyChange(
+  k: TGLProgramHandle;
+  AHandle: TGLVertexArrayHandle;
+  out Flag: Boolean);
+begin
+  AHandle.NotifyChangesOfData;
   Flag := True;
 end;
 
@@ -492,8 +470,7 @@ end;
 
 procedure TGLBuiltProperties.StructureChanged;
 begin
-  if Assigned(FOwnerNotifyChange) and not (csLoading in Owner.ComponentState)
-    then
+  if Assigned(FOwnerNotifyChange) and not (csLoading in Owner.ComponentState) then
     FOwnerNotifyChange(Self);
   FStructureChanged := True;
 end;
@@ -553,7 +530,7 @@ begin
     buStatic:
       if ID > 0 then
       begin
-        Client := TGLStaticVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStaticVBOManager(Manager).FClientList.Items[ID - 1];
         if Assigned(Client.VertexHandle) then
           Result := Client.VertexHandle.Handle;
       end;
@@ -562,7 +539,7 @@ begin
     buStream:
       if ID > 0 then
       begin
-        Client := TGLStreamVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStreamVBOManager(Manager).FClientList.Items[ID - 1];
         if Assigned(Client.VertexHandle) then
           Result := Client.VertexHandle.Handle;
       end;
@@ -578,7 +555,7 @@ begin
     buStatic:
       if ID > 0 then
       begin
-        Client := TGLStaticVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStaticVBOManager(Manager).FClientList.Items[ID - 1];
         if Assigned(Client.IndexHandle) then
           Result := Client.IndexHandle.Handle;
       end;
@@ -587,7 +564,7 @@ begin
     buStream:
       if ID > 0 then
       begin
-        Client := TGLStreamVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStreamVBOManager(Manager).FClientList.Items[ID - 1];
         if Assigned(Client.IndexHandle) then
           Result := Client.IndexHandle.Handle;
       end;
@@ -604,14 +581,14 @@ begin
     buStatic:
       if ID > 0 then
       begin
-        Client := TGLStaticVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStaticVBOManager(Manager).FClientList.Items[ID - 1];
         for p := 0 to GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1 do
           Inc(Result, Client.VertexCount[p]);
       end;
     buStream:
       if ID > 0 then
       begin
-        Client := TGLStreamVBOManager(Manager).ClientList.Items[ID - 1];
+        Client := TGLStreamVBOManager(Manager).FClientList.Items[ID - 1];
         for p := 0 to GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1 do
           Inc(Result, Client.VertexCount[p]);
       end;
@@ -638,12 +615,11 @@ constructor TGLBaseVBOManager.Create;
 var
   i: Integer;
 begin
-  fVertexHandle := TGLVBOArrayBufferHandle.Create;
-  fIndexHandle := TGLVBOElementArrayHandle.Create;
+  FVertexHandle := TGLVBOArrayBufferHandle.Create;
+  FIndexHandle := TGLVBOElementArrayHandle.Create;
   HostIndexBuffer := TLongWordList.Create;
   HostIndexBuffer.SetCountResetsMemory := false;
-  GLVBOMState := GLVBOM_DEFAULT;
-  OneVertexDataSize := 0;
+  FState := GLVBOM_DEFAULT;
   WasUsedList := False;
   FIndexType := GL_UNSIGNED_INT;
   for i := 0 to High(AttributeArrays) do
@@ -668,14 +644,14 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLBaseVBOManager.Lock;
+procedure TGLBaseVBOManager.BeginWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
   EnterCriticalSection(FLock);
 {$ENDIF}
 end;
 
-procedure TGLBaseVBOManager.Unlock;
+procedure TGLBaseVBOManager.EndWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
   LeaveCriticalSection(FLock);
@@ -684,24 +660,22 @@ end;
 
 procedure TGLBaseVBOManager.BeginObject(const BuiltProp: TGLBuiltProperties);
 begin
-  if GLVBOMState <> GLVBOM_DEFAULT then
+  if FState <> GLVBOM_DEFAULT then
   begin
     GLSLogger.LogError(glsWrongCallBegin);
     Abort;
   end;
-  Lock;
 end;
 
 procedure TGLBaseVBOManager.EndObject;
 begin
-  Unlock;
 end;
 
 procedure TGLBaseVBOManager.Discard;
 var
   i, p: integer;
 begin
-  GLVBOMState := GLVBOM_DEFAULT;
+  FState := GLVBOM_DEFAULT;
   for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
     ResetAttribArray(i);
 
@@ -725,12 +699,7 @@ begin
     GLSLogger.LogError('ResetAttribArray: Array index out of bound.');
     Abort;
   end;
-
   AttributeArrays[idx].Flush;
-  CurrentValue[idx][0] := FourByteZero;
-  CurrentValue[idx][1] := FourByteZero;
-  CurrentValue[idx][2] := FourByteZero;
-  CurrentValue[idx][3] := FourByteZero;
 end;
 
 procedure TGLBaseVBOManager.InitClient(var AClient: PGLRenderPacket);
@@ -746,12 +715,11 @@ begin
       AClient.VertexHandle := TGLVBOArrayBufferHandle.Create;
       AClient.IndexHandle := TGLVBOElementArrayHandle.Create;
     end;
-    AClient.ArrayHandle := TGLVAOHandleTree.Create(CompareGLuint, nil);
+    AClient.ArrayHandle := TGLVAOHandleTree.Create(CompareProgram, nil);
   end
   else
   begin
-    AClient.ArrayHandle.ForEach(ArrayHandleDestroyer);
-    AClient.ArrayHandle.Clear;
+    AClient.ArrayHandle.ForEach(ArrayHandleNotifyChange);
 
     for I := 0 to GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1 do
     begin
@@ -762,6 +730,7 @@ begin
     for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
     begin
       AClient.Attributes[I] := nil;
+      AClient.Divisor[I] := 0;
       AClient.DataSize[I] := 0;
       AClient.DataFormat[I] := GLSLTypeUndefined;
     end;
@@ -777,22 +746,109 @@ begin
     AClient.ArrayHandle.Free;
     if Self is TGLStreamVBOManager then
     begin
-      AClient.VertexHandle.Free;
-      AClient.VertexHandle := nil;
-      AClient.IndexHandle.Free;
-      AClient.IndexHandle := nil;
+      FreeAndNil(AClient.VertexHandle);
+      FreeAndNil(AClient.IndexHandle);
     end;
   end;
 end;
 
+procedure TGLBaseVBOManager.BeginPrimitives(eType: TGLVBOMEnum);
+var
+  lastState: TGLVBOMState;
+begin
+  lastState := FState;
+  FState := GLVBOM_PRIMITIVE;
+  if lastState <> GLVBOM_OBJECT then
+  begin
+    GLSLogger.LogError(glsWrongCallBeginPrim);
+    Abort;
+  end;
+
+  if not ((eType >= GLVBOM_TRIANGLES) and (eType <=
+    GLVBOM_TRIANGLE_STRIP_ADJACENCY)) then
+  begin
+    GLSLogger.LogError(glsInvalidPrimType);
+    Abort;
+  end;
+
+  if CurrentClient.PrimitiveType[PrimitiveTypeCount] <> GLVBOM_NOPRIMITIVE then
+  begin
+    Inc(PrimitiveTypeCount);
+    if PrimitiveTypeCount >= GLVBOM_MAX_DIFFERENT_PRIMITIVES then
+    begin
+      GLSLogger.LogError(glsTooMachDiffPrim);
+      Abort;
+    end;
+  end;
+
+  CurrentClient.PrimitiveType[PrimitiveTypeCount] := eType;
+  CurrentClient.VertexCount[PrimitiveTypeCount] := 0;
+end;
+
+procedure TGLBaseVBOManager.EndPrimitives;
+var
+  lastState: TGLVBOMState;
+  Valid: Boolean;
+  count: LongWord;
+begin
+  lastState := FState;
+  FState := GLVBOM_OBJECT;
+  if lastState <> GLVBOM_PRIMITIVE then
+  begin
+    GLSLogger.LogError(glsWrongCallEndPrim);
+    Abort;
+  end;
+
+  if Doubling then
+  begin
+    HostIndexBuffer.Pop;
+    Dec(CurrentClient.IndexCount[PrimitiveTypeCount]);
+    Doubling := false;
+  end;
+
+  Valid := false;
+  count := CurrentClient.VertexCount[PrimitiveTypeCount];
+  case CurrentClient.PrimitiveType[PrimitiveTypeCount] of
+    GLVBOM_TRIANGLES: Valid := (count mod 3 = 0) and
+      (count > 2);
+    GLVBOM_TRIANGLE_STRIP,
+      GLVBOM_TRIANGLE_FAN: Valid := count > 2;
+    GLVBOM_QUADS: Valid := (count mod 4 = 0) and (count > 3);
+    GLVBOM_QUAD_STRIP: Valid := count > 3;
+    GLVBOM_POINTS: Valid := count > 0;
+    GLVBOM_LINES: Valid := (count mod 2 = 0) and (count > 1);
+    GLVBOM_LINE_STRIP,
+      GLVBOM_LINE_LOOP: Valid := count > 2;
+    GLVBOM_POLYGON: Valid := count > 2;
+    GLVBOM_LINES_ADJACENCY: Valid := (count mod 4 = 0) and (count > 3);
+    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
+    GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
+    GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
+  end;
+
+  if not Valid then
+  begin
+    GLSLogger.LogError(glsInvalidNumberOfVertex);
+    Abort;
+  end;
+
+  // Make trinagles with adjancency
+  if Assigned(CurrentClient.BuiltProp)
+    and CurrentClient.BuiltProp.TriangleAdjacency then
+    if not DoMakeAdjacency then
+    begin
+      GLSLogger.LogError(glsDoMakeAdjFail);
+      Abort;
+    end;
+end;
+
 procedure TGLBaseVBOManager.EmitVertex;
 var
-  a, v, I, etalon, count: integer;
+  a, v, I, etalon, count, dsize: integer;
   AA: T4ByteList;
-  dt: TGLSLDataType;
   weld: Boolean;
 begin
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
+  if FState <> GLVBOM_PRIMITIVE then
   begin
     GLSLogger.LogError(glsWrongCallEmit);
     Abort;
@@ -802,24 +858,13 @@ begin
   begin
     // Emit List of Vertex
     etalon := -1;
-    count := 0;
     for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-      if Assigned(CurrentClient.Attributes[a]) then
+      if Assigned(CurrentClient.Attributes[a])
+        and (CurrentClient.Divisor[a] = 0) then
       begin
         AA := AttributeArrays[a];
-
-        case CurrentClient.Attributes[a].DataFormat of
-          GLSLType1I,
-            GLSLType1F: count := AA.Count;
-          GLSLType2I,
-            GLSLType2F: count := AA.Count div 2;
-          GLSLType3I,
-            GLSLType3F: count := AA.Count div 3;
-          GLSLType4I,
-            GLSLType4F: count := AA.Count div 4;
-        else
-          Assert(False, glsErrorEx + glsUnknownType);
-        end;
+        dsize := GLSLTypeComponentCount(CurrentClient.DataFormat[a]);
+        count := AA.Count div dsize;
         if etalon < 0 then
         begin
           etalon := count;
@@ -855,59 +900,21 @@ begin
       begin
         weld := true;
         for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-          if Assigned(CurrentClient.Attributes[a]) then
+          if Assigned(CurrentClient.Attributes[a])
+            and (CurrentClient.Divisor[a] = 0) then
           begin
             AA := AttributeArrays[a];
-            dt := CurrentClient.DataFormat[a];
-            if (dt = GLSLType1I) or (dt = GLSLType1F) then
+            dsize := GLSLTypeComponentCount(CurrentClient.DataFormat[a]);
+            if not CompareMem(
+              @AA.List[v * dsize],
+              @vCurrentAttribValue[a][0],
+              dsize * SizeOf(T4ByteData)) then
             begin
-              if AA.Items[v].Int.Value <>
-                CurrentValue[a][0].Int.Value then
-              begin
-                weld := false;
-                break;
-              end;
-            end
-            else if (dt = GLSLType2I) or (dt = GLSLType2F) then
-            begin
-              if (AA.Items[v * 2 + 0].Int.Value <>
-                CurrentValue[a][0].Int.Value)
-                or (AA.Items[v * 2 + 1].Int.Value <>
-                CurrentValue[a][1].Int.Value) then
-              begin
-                weld := false;
-                break;
-              end;
-            end
-            else if (dt = GLSLType3I) or (dt = GLSLType3F) then
-            begin
-              if (AA.Items[v * 3 + 0].Int.Value <>
-                CurrentValue[a][0].Int.Value)
-                or (AA.Items[v * 3 + 1].Int.Value <>
-                CurrentValue[a][1].Int.Value)
-                or (AA.Items[v * 3 + 2].Int.Value <>
-                CurrentValue[a][2].Int.Value) then
-              begin
-                weld := false;
-                break;
-              end;
-            end
-            else if (dt = GLSLType4I) or (dt = GLSLType4F) then
-            begin
-              if (AA.Items[v * 3 + 0].Int.Value <>
-                CurrentValue[a][0].Int.Value)
-                or (AA.Items[v * 3 + 1].Int.Value <>
-                CurrentValue[a][1].Int.Value)
-                or (AA.Items[v * 3 + 2].Int.Value <>
-                CurrentValue[a][2].Int.Value)
-                or (AA.Items[v * 3 + 3].Int.Value <>
-                CurrentValue[a][3].Int.Value) then
-              begin
-                weld := false;
-                break;
-              end;
+              weld := false;
+              break;
             end;
           end; // of for a
+
         if weld then
         begin
           I := v;
@@ -919,51 +926,35 @@ begin
     if not weld then
     begin
       for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-        if Assigned(CurrentClient.Attributes[a]) then
+        if Assigned(CurrentClient.Attributes[a])
+          and (CurrentClient.Divisor[a] = 0) then
         begin
           AA := AttributeArrays[a];
-          dt := CurrentClient.DataFormat[a];
-          if (dt = GLSLType1I) or (dt = GLSLType1F) then
-          begin
-            AA.Push(CurrentValue[a][0]);
-          end
-          else if (dt = GLSLType2I) or (dt = GLSLType2F) then
-          begin
-            AA.Push(CurrentValue[a][0]);
-            AA.Push(CurrentValue[a][1]);
-          end
-          else if (dt = GLSLType3I) or (dt = GLSLType3F) then
-          begin
-            AA.Push(CurrentValue[a][0]);
-            AA.Push(CurrentValue[a][1]);
-            AA.Push(CurrentValue[a][2]);
-          end
-          else if (dt = GLSLType4I) or (dt = GLSLType4F) then
-          begin
-            AA.Push(CurrentValue[a][0]);
-            AA.Push(CurrentValue[a][1]);
-            AA.Push(CurrentValue[a][2]);
-            AA.Push(CurrentValue[a][3]);
-          end
-          else
-            Assert(False, 'Vertex: Data-Type is invalid');
+          dsize := GLSLTypeComponentCount(CurrentClient.DataFormat[a]);
+          for v := 0 to dsize - 1 do
+            AA.Push(vCurrentAttribValue[a][v]);
+          Inc(CurrentClient.TotalDataSize, dsize * SizeOf(T4ByteData));
+          I := 0;
         end;
 
-      HostIndexBuffer.Push(ObjectIndex);
-      Inc(CurrentClient.IndexCount[PrimitiveTypeCount]);
-      Inc(CurrentClient.VertexCount[PrimitiveTypeCount]);
-      if Doubling then
+      if I > -1 then
       begin
         HostIndexBuffer.Push(ObjectIndex);
         Inc(CurrentClient.IndexCount[PrimitiveTypeCount]);
-        Doubling := false;
+        Inc(CurrentClient.VertexCount[PrimitiveTypeCount]);
+        if Doubling then
+        begin
+          HostIndexBuffer.Push(ObjectIndex);
+          Inc(CurrentClient.IndexCount[PrimitiveTypeCount]);
+          Doubling := false;
+        end;
+        Inc(ObjectIndex);
+        Inc(ObjectVertexCount);
+        if MaxIndexValue < ObjectIndex then
+          MaxIndexValue := ObjectIndex;
       end;
-      Inc(ObjectIndex);
-      Inc(ObjectVertexCount);
-      if MaxIndexValue < ObjectIndex then
-        MaxIndexValue := ObjectIndex;
     end
-    else
+    else if I > -1 then
     begin
       // Push this offer index of repetitive vertex
       HostIndexBuffer.Push(I);
@@ -983,7 +974,7 @@ procedure TGLBaseVBOManager.RestartStrip;
 begin
   if WasUsedList then
     exit;
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
+  if FState <> GLVBOM_PRIMITIVE then
   begin
     GLSLogger.LogError('RestartStrip must be called between Begin / End.');
     Abort;
@@ -1001,7 +992,7 @@ begin
     Abort;
   end;
 
-  if GL_NV_primitive_restart then
+  if GL.NV_primitive_restart then
   begin
     HostIndexBuffer.Push(RestartIndex);
   end
@@ -1020,62 +1011,44 @@ var
   I: Integer;
 begin
   Result := -1;
-  if WasUsedList and (eType <> GLSLTypeCustom) then
+  if WasUsedList and (eType <> GLSLTypeVoid) then
   begin
     GLSLogger.LogError(glsBadAttrCombination);
     Abort;
   end;
 
-  case GLVBOMState of
-    GLVBOM_OBJECT:
+  if (FState = GLVBOM_OBJECT) and (eType <> GLSLTypeVoid) then
+  begin
+    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+      if CurrentClient.Attributes[I] = Attrib then
       begin
-        for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-          if CurrentClient.Attributes[I] = Attrib then
-          begin
-            GLSLogger.LogError('Excessive attribute declaration.');
-            Abort;
-          end;
-        for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-          if not Assigned(CurrentClient.Attributes[I]) then
-          begin
-            // Record new attribute in uses set
-            CurrentClient.Attributes[I] := Attrib;
-            CurrentClient.DataFormat[I] := eType;
-            if (eType = GLSLType1F) or
-              (eType = GLSLType1I) then
-              Inc(OneVertexDataSize, 1 * sizeof(T4ByteData))
-            else if (eType = GLSLType2F) or
-              (eType = GLSLType2I) then
-              Inc(OneVertexDataSize, 2 * sizeof(T4ByteData))
-            else if (eType = GLSLType3F) or
-              (eType = GLSLType3I) then
-              Inc(OneVertexDataSize, 3 * sizeof(T4ByteData))
-            else if (eType = GLSLType4F) or
-              (eType = GLSLType4I) then
-              Inc(OneVertexDataSize, 4 * sizeof(T4ByteData));
-            Result := I;
-            exit;
-          end;
-        GLSLogger.LogError(glsOutOfMaxAttrib);
+        GLSLogger.LogError('Excessive attribute declaration.');
+        Abort;
       end;
+    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+      if not Assigned(CurrentClient.Attributes[I]) then
+      begin
+        // Record new attribute in uses set
+        CurrentClient.Attributes[I] := Attrib;
+        CurrentClient.DataFormat[I] := eType;
+        Result := I;
+        exit;
+      end;
+    GLSLogger.LogError(glsOutOfMaxAttrib);
+  end
 
-    GLVBOM_PRIMITIVE:
-      begin
-        for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-          if CurrentClient.Attributes[I] = Attrib then
-          begin
-            // Check attribute type
-            if (CurrentClient.DataFormat[I] <> eType) and (eType <> GLSLTypeCustom)
-              then
-              GLSLogger.LogError(glsWrongAttrType)
-            else
-              Result := I;
-            exit;
-          end;
-        GLSLogger.LogError(glsUnknownAttrib);
-      end;
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+  begin
+    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+      if CurrentClient.Attributes[I] = Attrib then
+      begin
+        // Check attribute type
+        if (eType <> GLSLTypeVoid) and (CurrentClient.DataFormat[I] <> eType) then
+          GLSLogger.LogError(glsWrongAttrType);
+        Result := I;
+        exit;
+      end;
+    GLSLogger.LogError(glsUnknownAttrib);
   end;
 end;
 
@@ -1087,7 +1060,12 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType1F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a1;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1);
+    end
+    else
+      vCurrentAttribValue[loc, 0].Float.Value := a1;
   end;
 end;
 
@@ -1099,8 +1077,15 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType2F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a1;
-    CurrentValue[loc, 1].Float.Value := a2;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a1;
+      vCurrentAttribValue[loc, 1].Float.Value := a2;
+    end;
   end;
 end;
 
@@ -1112,8 +1097,15 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType2F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a[0];
-    CurrentValue[loc, 1].Float.Value := a[1];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a[0];
+      vCurrentAttribValue[loc, 1].Float.Value := a[1];
+    end;
   end;
 end;
 
@@ -1125,9 +1117,16 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType3F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a1;
-    CurrentValue[loc, 1].Float.Value := a2;
-    CurrentValue[loc, 2].Float.Value := a3;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a1;
+      vCurrentAttribValue[loc, 1].Float.Value := a2;
+      vCurrentAttribValue[loc, 2].Float.Value := a3;
+    end;
   end;
 end;
 
@@ -1139,9 +1138,16 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType3F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a[0];
-    CurrentValue[loc, 1].Float.Value := a[1];
-    CurrentValue[loc, 2].Float.Value := a[2];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a[0];
+      vCurrentAttribValue[loc, 1].Float.Value := a[1];
+      vCurrentAttribValue[loc, 2].Float.Value := a[2];
+    end;
   end;
 end;
 
@@ -1153,10 +1159,17 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType4F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a1;
-    CurrentValue[loc, 1].Float.Value := a2;
-    CurrentValue[loc, 2].Float.Value := a3;
-    CurrentValue[loc, 3].Float.Value := a4;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3, a4);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a1;
+      vCurrentAttribValue[loc, 1].Float.Value := a2;
+      vCurrentAttribValue[loc, 2].Float.Value := a3;
+      vCurrentAttribValue[loc, 3].Float.Value := a4;
+    end;
   end;
 end;
 
@@ -1168,10 +1181,17 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType4F);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Float.Value := a[0];
-    CurrentValue[loc, 1].Float.Value := a[1];
-    CurrentValue[loc, 2].Float.Value := a[2];
-    CurrentValue[loc, 3].Float.Value := a[3];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2], a[3]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Float.Value := a[0];
+      vCurrentAttribValue[loc, 1].Float.Value := a[1];
+      vCurrentAttribValue[loc, 2].Float.Value := a[2];
+      vCurrentAttribValue[loc, 3].Float.Value := a[3];
+    end;
   end;
 end;
 
@@ -1183,7 +1203,14 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType1I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a1;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a1;
+    end;
   end;
 end;
 
@@ -1195,8 +1222,15 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType2I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a1;
-    CurrentValue[loc, 1].Int.Value := a2;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a1;
+      vCurrentAttribValue[loc, 1].Int.Value := a2;
+    end;
   end;
 end;
 
@@ -1208,8 +1242,15 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType2I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a[0];
-    CurrentValue[loc, 1].Int.Value := a[1];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a[0];
+      vCurrentAttribValue[loc, 1].Int.Value := a[1];
+    end;
   end;
 end;
 
@@ -1221,9 +1262,16 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType3I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a1;
-    CurrentValue[loc, 1].Int.Value := a2;
-    CurrentValue[loc, 2].Int.Value := a3;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a1;
+      vCurrentAttribValue[loc, 1].Int.Value := a2;
+      vCurrentAttribValue[loc, 2].Int.Value := a3;
+    end;
   end;
 end;
 
@@ -1235,9 +1283,16 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType3I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a[0];
-    CurrentValue[loc, 1].Int.Value := a[1];
-    CurrentValue[loc, 2].Int.Value := a[2];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a[0];
+      vCurrentAttribValue[loc, 1].Int.Value := a[1];
+      vCurrentAttribValue[loc, 2].Int.Value := a[2];
+    end;
   end;
 end;
 
@@ -1249,10 +1304,17 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType4I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a1;
-    CurrentValue[loc, 1].Int.Value := a2;
-    CurrentValue[loc, 2].Int.Value := a3;
-    CurrentValue[loc, 3].Int.Value := a4;
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3, a4);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a1;
+      vCurrentAttribValue[loc, 1].Int.Value := a2;
+      vCurrentAttribValue[loc, 2].Int.Value := a3;
+      vCurrentAttribValue[loc, 3].Int.Value := a4;
+    end;
   end;
 end;
 
@@ -1264,10 +1326,182 @@ begin
   loc := GetAttributeIndex(Attrib, GLSLType4I);
   if loc > -1 then
   begin
-    CurrentValue[loc, 0].Int.Value := a[0];
-    CurrentValue[loc, 1].Int.Value := a[1];
-    CurrentValue[loc, 2].Int.Value := a[2];
-    CurrentValue[loc, 3].Int.Value := a[3];
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2], a[3]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].Int.Value := a[0];
+      vCurrentAttribValue[loc, 1].Int.Value := a[1];
+      vCurrentAttribValue[loc, 2].Int.Value := a[2];
+      vCurrentAttribValue[loc, 3].Int.Value := a[3];
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute1ui(Attrib: TGLSLAttribute;
+  a1: GLuint);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType1UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a1;
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute2ui(Attrib: TGLSLAttribute; a1, a2:
+  GLuint);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType2UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a1;
+      vCurrentAttribValue[loc, 1].UInt.Value := a2;
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute2ui(Attrib: TGLSLAttribute;
+  const a: TVector2ui);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType2UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a[0];
+      vCurrentAttribValue[loc, 1].UInt.Value := a[1];
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute3ui(Attrib: TGLSLAttribute;
+  a1, a2, a3: GLuint);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType3UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a1;
+      vCurrentAttribValue[loc, 1].UInt.Value := a2;
+      vCurrentAttribValue[loc, 2].UInt.Value := a3;
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute3ui(Attrib: TGLSLAttribute;
+  const a: TVector3ui);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType3UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a[0];
+      vCurrentAttribValue[loc, 1].UInt.Value := a[1];
+      vCurrentAttribValue[loc, 2].UInt.Value := a[2];
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute4ui(Attrib: TGLSLAttribute;
+  a1, a2, a3, a4: GLuint);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType4UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a1, a2, a3, a4);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a1;
+      vCurrentAttribValue[loc, 1].UInt.Value := a2;
+      vCurrentAttribValue[loc, 2].UInt.Value := a3;
+      vCurrentAttribValue[loc, 3].UInt.Value := a4;
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.Attribute4ui(Attrib: TGLSLAttribute;
+  const a: TVector4ui);
+var
+  loc: integer;
+begin
+  loc := GetAttributeIndex(Attrib, GLSLType4UI);
+  if loc > -1 then
+  begin
+    if CurrentClient.Divisor[loc] > 0 then
+    begin
+      AttributeArrays[loc].Add(a[0], a[1], a[2], a[3]);
+    end
+    else
+    begin
+      vCurrentAttribValue[loc, 0].UInt.Value := a[0];
+      vCurrentAttribValue[loc, 1].UInt.Value := a[1];
+      vCurrentAttribValue[loc, 2].UInt.Value := a[2];
+      vCurrentAttribValue[loc, 3].UInt.Value := a[3];
+    end;
+  end;
+end;
+
+procedure TGLBaseVBOManager.AttributeDivisor(Attrib: TGLSLAttribute; Value: GLuint);
+var
+  loc: integer;
+begin
+  if FState <> GLVBOM_OBJECT then
+  begin
+    GLSLogger.LogError(glsWrongCallEnd);
+    Abort;
+  end;
+
+  loc := GetAttributeIndex(Attrib, GLSLTypeVoid);
+  if loc > -1 then
+    CurrentClient.Divisor[loc] := Value
+  else
+  begin
+    GLSLogger.LogError(glsUnknownAttrib);
+    Abort;
   end;
 end;
 
@@ -1279,7 +1513,7 @@ var
   AA: T4ByteList;
   Last: Integer;
 begin
-  loc := GetAttributeIndex(Attrib, GLSLTypeCustom);
+  loc := GetAttributeIndex(Attrib, GLSLTypeVoid);
   if loc = -1 then
     exit;
 
@@ -1311,7 +1545,7 @@ var
   AA: T4ByteList;
   Last: Integer;
 begin
-  loc := GetAttributeIndex(Attrib, GLSLTypeCustom);
+  loc := GetAttributeIndex(Attrib, GLSLTypeVoid);
   if loc = -1 then
     exit;
 
@@ -1353,20 +1587,34 @@ procedure TGLBaseVBOManager.RenderClient(const BuiltProp: TGLBuiltProperties);
 begin
 end;
 
-function TGLBaseVBOManager.BindVertexArray(out hVAO: TGLVertexArrayHandle):
-  Boolean;
+procedure TGLBaseVBOManager.NotifyProgramChanged(const AProg: TGLProgramHandle);
 var
-  RC: TGLContext;
-  Prog: GLUInt;
+  I: Integer;
+  pClient: PGLRenderPacket;
+  hVAO: TGLVertexArrayHandle;
+begin
+  if Assigned(FClientList) then
+  begin
+    for I := 0 to FClientList.Count - 1 do
+    begin
+      pClient := FClientList[I];
+      if pClient.ArrayHandle.Find(AProg, hVAO) then
+        hVAO.NotifyChangesOfData;
+    end;
+  end
+  else if not CurrentClient.ArrayHandle.Find(AProg, hVAO) then
+    hVAO.NotifyChangesOfData;
+end;
+
+procedure TGLBaseVBOManager.BindVertexArray(out hVAO: TGLVertexArrayHandle);
+var
+  Prog: TGLProgramHandle;
   I, L: Integer;
   Offset: PtrUInt;
   EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
-  RC := SafeCurrentGLContext;
-
-  Prog := RC.GLStates.CurrentProgram;
-  Result := Prog > 0;
-  if not Result then
+  Prog := TVBOProgramGetter.CurrentProgram;
+  if Prog = nil then
   begin
     GLSLogger.LogError(glsNoShader);
     Abort;
@@ -1377,18 +1625,24 @@ begin
     hVAO := TGLVertexArrayHandle.Create;
     CurrentClient.ArrayHandle.Add(Prog, hVAO);
   end;
+  hVAO.AllocateHandle;
 
-  if hVAO.Handle = 0 then
+  if hVAO.IsDataNeedUpdate then
   begin
+    if Self is TGLStreamVBOManager then
+      sleep(0);
     // Uniting all the states and buffers in one vertex array object
-    hVAO.AllocateHandle;
     hVAO.Bind;
 
-    if CurrentClient.VertexHandle.Handle = 0 then
+    if CurrentClient.VertexHandle.IsDataNeedUpdate then
       // seems to what has changed context and need to rebuild buffers
       BuildBuffer;
 
-    CurrentClient.VertexHandle.Bind;
+    // Need to direct bind array buffer for correctly VertexAttribPointer set up
+    if CurrentGLcontext.GLStates.ArrayBufferBinding = CurrentClient.VertexHandle.Handle then
+      GL.BindBuffer(GL_ARRAY_BUFFER, CurrentClient.VertexHandle.Handle)
+    else
+      CurrentClient.VertexHandle.Bind;
     CurrentClient.IndexHandle.Bind; // Index handle can be zero
 
     Offset := CurrentClient.FirstVertex;
@@ -1402,10 +1656,10 @@ begin
       begin
         L := CurrentClient.Attributes[I].Location;
         if (L > -1)
-          and (CurrentClient.Attributes[I].DataFormat = CurrentClient.DataFormat[I])
-            then
+          and (CurrentClient.Attributes[I].DataFormat = CurrentClient.DataFormat[I]) then
         begin
           EnabledLocations[L] := True;
+          GL.VertexAttribDivisor(L, CurrentClient.Divisor[I]);
           // Setup Client Attributes pointer
           case CurrentClient.DataFormat[I] of
             GLSLType1F:
@@ -1423,7 +1677,15 @@ begin
             GLSLType3I:
               GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
             GLSLType4I:
-              GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
+              GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType1UI:
+              GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType2UI:
+              GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType3UI:
+              GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType4UI:
+              GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
           else
             Assert(False, glsErrorEx + glsUnknownType);
           end; // of case
@@ -1438,7 +1700,7 @@ begin
         CurrentGLContext.GLStates.EnableVertexAttribArray[I] :=
           EnabledLocations[I];
     end;
-    CurrentClient.TotalDataSize := Offset - CurrentClient.FirstVertex;
+    hVAO.NotifyDataUpdated;
   end
   else
     hVAO.Bind;
@@ -1458,14 +1720,13 @@ var
   p, n, fullPartCount: Integer;
   pType: TGLEnum;
   restPart: LongWord;
-  IndexStart, VertexStart, typeSize: LongWord;
+  IndexStart, IndexFinish, VertexStart, typeSize: LongWord;
   Offset: PtrUInt;
 
   function IsPromitiveSupported: Boolean;
   begin
     if (CurrentClient.PrimitiveType[p] >= GLVBOM_LINES_ADJACENCY)
-      and (CurrentClient.PrimitiveType[p] <= GLVBOM_TRIANGLE_STRIP_ADJACENCY)
-        then
+      and (CurrentClient.PrimitiveType[p] <= GLVBOM_TRIANGLE_STRIP_ADJACENCY) then
       Result := GL.EXT_gpu_shader4
     else
       Result := True;
@@ -1547,6 +1808,7 @@ begin
 
   offset := CurrentClient.FirstIndex * typeSize;
   IndexStart := 0;
+  IndexFinish := vMaxElementsIndices - 1;
   VertexStart := 0;
   for p := 0 to GLVBOM_MAX_DIFFERENT_PRIMITIVES - 1 do
   begin
@@ -1559,8 +1821,7 @@ begin
          primitives with adjacency }
       if Assigned(CurrentClient.BuiltProp)
         and CurrentClient.BuiltProp.TriangleAdjacency
-        and not ((CurrentClient.PrimitiveType[p] =
-        GLVBOM_TRIANGLE_STRIP_ADJACENCY)
+        and not ((CurrentClient.PrimitiveType[p] = GLVBOM_TRIANGLE_STRIP_ADJACENCY)
         or (CurrentClient.PrimitiveType[p] = GLVBOM_TRIANGLES_ADJACENCY)) then
         continue;
 
@@ -1592,11 +1853,12 @@ begin
           GL.DrawRangeElements(
             pType,
             IndexStart,
-            IndexStart + vMaxElementsIndices - 1,
+            IndexFinish,
             vMaxElementsIndices,
             FIndexType,
             Pointer(offset));
           Inc(IndexStart, vMaxElementsIndices);
+          Inc(IndexFinish, vMaxElementsIndices);
         end;
         if restPart > 0 then
         begin
@@ -1640,8 +1902,7 @@ begin
     start := start + CurrentClient.IndexCount[p];
   count := CurrentClient.IndexCount[PrimitiveTypeCount];
 
-  if CurrentClient.PrimitiveType[PrimitiveTypeCount] = GLVBOM_TRIANGLE_STRIP
-    then
+  if CurrentClient.PrimitiveType[PrimitiveTypeCount] = GLVBOM_TRIANGLE_STRIP then
   begin
     // Convert strips to independent triangles
     IndicesList := ConvertStripToList(
@@ -1656,8 +1917,7 @@ begin
       IndicesList.Free;
     end;
   end
-  else if CurrentClient.PrimitiveType[PrimitiveTypeCount] = GLVBOM_TRIANGLE_FAN
-    then
+  else if CurrentClient.PrimitiveType[PrimitiveTypeCount] = GLVBOM_TRIANGLE_FAN then
   begin
     // Convert fans to independent triangles
     IndicesList := ConvertFansToList(
@@ -1856,7 +2116,6 @@ end;
 constructor TGLDynamicVBOManager.Create;
 begin
   inherited;
-  Usage := GL_DYNAMIC_DRAW;
   FBuilded := false;
 end;
 
@@ -1879,11 +2138,10 @@ begin
   CurrentClient.FirstVertex := 0;
   CurrentClient.FirstIndex := 0;
   CurrentClient.BuiltProp := BuiltProp;
-  GLVBOMState := GLVBOM_OBJECT;
+  FState := GLVBOM_OBJECT;
   for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
     ResetAttribArray(i);
 
-  OneVertexDataSize := 0;
   ObjectVertexCount := 0;
   ObjectIndex := 0;
   HostIndexBuffer.Flush;
@@ -1901,45 +2159,52 @@ var
   HostIndexMap: Pointer;
   hVAO: TGLVertexArrayHandle;
 begin
-  if GLVBOMState <> GLVBOM_OBJECT then
+  if FState <> GLVBOM_OBJECT then
   begin
     GLSLogger.LogError(glsWrongCallEnd);
     Abort;
   end;
 
-  GLVBOMState := GLVBOM_DEFAULT;
+  FState := GLVBOM_DEFAULT;
+
+  for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+  begin
+    CurrentClient.DataSize[a] := AttributeArrays[a].Count * SizeOf(T4ByteData);
+    Inc(CurrentClient.TotalDataSize, CurrentClient.DataSize[a]);
+  end;
 
   // Vertex buffer managment
-  if fVertexHandle.Handle = 0 then
+  fVertexHandle.AllocateHandle;
+  if fVertexHandle.IsDataNeedUpdate then
   begin
-    fVertexHandle.AllocateHandle;
-    VertexBufferCapacity := LongWord(ObjectVertexCount) * OneVertexDataSize;
+    VertexBufferCapacity := CurrentClient.TotalDataSize;
     if VertexBufferCapacity < 1024 then
       VertexBufferCapacity := 1024;
     fVertexHandle.BindBufferData(nil, VertexBufferCapacity, Usage);
+    fVertexHandle.NotifyDataUpdated;
   end
   else
   begin
     fVertexHandle.Bind;
-    size := LongWord(ObjectVertexCount) * OneVertexDataSize;
-    if VertexBufferCapacity < size then
+    if VertexBufferCapacity < CurrentClient.TotalDataSize then
     begin
-      VertexBufferCapacity := RoundUpToPowerOf2(size);
+      VertexBufferCapacity := RoundUpToPowerOf2(CurrentClient.TotalDataSize);
       fVertexHandle.BufferData(nil, VertexBufferCapacity, Usage);
     end;
   end;
 
+  fIndexHandle.AllocateHandle;
   if HostIndexBuffer.Count > 0 then
   begin
     // Index buffer managment
-    if fIndexHandle.Handle = 0 then
+    if fIndexHandle.IsDataNeedUpdate then
     begin
-      fIndexHandle.AllocateHandle;
       IndexBufferCapacity := LongWord(HostIndexBuffer.Count) * SizeOf(GLUInt);
       if IndexBufferCapacity < 1024 then
         IndexBufferCapacity := 1024;
       fIndexHandle.BindBufferData(HostIndexBuffer.List, IndexBufferCapacity,
         Usage);
+      fIndexHandle.NotifyDataUpdated;
     end
     else
     begin
@@ -1965,9 +2230,9 @@ begin
   offset := 0;
   if vUseMappingForOftenBufferUpdate then
   begin
-    if GL_ARB_map_buffer_range then
+    if GL.ARB_map_buffer_range then
       HostVertexMap := fVertexHandle.MapBufferRange(0,
-        LongWord(ObjectVertexCount) * OneVertexDataSize,
+        CurrentClient.TotalDataSize,
         GL_MAP_WRITE_BIT or
         GL_MAP_INVALIDATE_BUFFER_BIT or
         GL_MAP_UNSYNCHRONIZED_BIT or
@@ -1983,7 +2248,6 @@ begin
     if Assigned(CurrentClient.Attributes[a]) then
     begin
       Attr := AttributeArrays[a];
-      CurrentClient.DataSize[a] := Attr.Count * SizeOf(T4ByteData);
 
       if vUseMappingForOftenBufferUpdate then
         Move(
@@ -2000,17 +2264,15 @@ begin
   if vUseMappingForOftenBufferUpdate then
   begin
     if GL.ARB_map_buffer_range then
-      fVertexHandle.Flush(0, LongWord(ObjectVertexCount) * OneVertexDataSize);
+      fVertexHandle.Flush(0, CurrentClient.TotalDataSize);
     fVertexHandle.UnmapBuffer;
   end;
   // Fast rendering without build properties
   if not Assigned(CurrentClient.BuiltProp) then
   begin
-    if BindVertexArray(hVAO) then
-    begin
-      RenderCurrentClient;
-      hVAO.UnBind;
-    end;
+    BindVertexArray(hVAO);
+    RenderCurrentClient;
+    hVAO.UnBind;
   end;
 
   inherited;
@@ -2036,11 +2298,9 @@ begin
         GLSLogger.LogError(glsErrorBuildModel);
       end;
 
-      if BindVertexArray(hVAO) then
-      begin
-        RenderCurrentClient;
-        hVAO.UnBind;
-      end;
+      BindVertexArray(hVAO);
+      RenderCurrentClient;
+      hVAO.UnBind;
     end;
 
 {$IFDEF GLS_MULTITHREAD}
@@ -2050,82 +2310,9 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLDynamicVBOManager.BeginPrimitives(eType: TGLVBOMEnum);
+class function TGLDynamicVBOManager.Usage: TGLenum;
 begin
-  if GLVBOMState <> GLVBOM_OBJECT then
-  begin
-    GLSLogger.LogError(glsWrongCallBeginPrim);
-    Abort;
-  end;
-
-  if not ((eType >= GLVBOM_TRIANGLES) and (eType <=
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY)) then
-  begin
-    GLSLogger.LogError(glsInvalidPrimType);
-    Abort;
-  end;
-
-  if CurrentClient.PrimitiveType[PrimitiveTypeCount] <> GLVBOM_NOPRIMITIVE then
-  begin
-    Inc(PrimitiveTypeCount);
-    if PrimitiveTypeCount >= GLVBOM_MAX_DIFFERENT_PRIMITIVES then
-    begin
-      GLSLogger.LogError(glsTooMachDiffPrim);
-      Abort;
-    end;
-  end;
-
-  GLVBOMState := GLVBOM_PRIMITIVE;
-
-  CurrentClient.PrimitiveType[PrimitiveTypeCount] := eType;
-  CurrentClient.VertexCount[PrimitiveTypeCount] := 0;
-end;
-
-procedure TGLDynamicVBOManager.EndPrimitives;
-var
-  Valid: Boolean;
-  count: LongWord;
-begin
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
-  begin
-    GLSLogger.LogError(glsInvalidPrimType);
-    Abort;
-  end;
-
-  if Doubling then
-  begin
-    HostIndexBuffer.Pop;
-    Dec(CurrentClient.IndexCount[PrimitiveTypeCount]);
-    Doubling := false;
-  end;
-
-  Valid := false;
-  count := CurrentClient.VertexCount[PrimitiveTypeCount];
-  case CurrentClient.PrimitiveType[PrimitiveTypeCount] of
-    GLVBOM_TRIANGLES: Valid := (count mod 3 = 0) and
-      (count > 2);
-    GLVBOM_TRIANGLE_STRIP,
-      GLVBOM_TRIANGLE_FAN: Valid := count > 2;
-    GLVBOM_QUADS: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_QUAD_STRIP: Valid := count > 3;
-    GLVBOM_POINTS: Valid := count > 0;
-    GLVBOM_LINES: Valid := (count mod 2 = 0) and (count > 1);
-    GLVBOM_LINE_STRIP,
-      GLVBOM_LINE_LOOP: Valid := count > 2;
-    GLVBOM_POLYGON: Valid := count > 2;
-    GLVBOM_LINES_ADJACENCY: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
-    GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
-  end;
-
-  if not Valid then
-  begin
-    GLSLogger.LogError(glsInvalidNumberOfVertex);
-    Abort;
-  end;
-
-  GLVBOMState := GLVBOM_OBJECT;
+  Result := GL_DYNAMIC_DRAW;
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -2137,9 +2324,8 @@ end;
 constructor TGLStaticVBOManager.Create;
 begin
   inherited;
-  Usage := GL_STATIC_DRAW;
   HostVertexBuffer := T4ByteList.Create;
-  ClientList := TList.Create;
+  FClientList := TList.Create;
   fBuilded := false;
   MaxIndexValue := 0;
 end;
@@ -2151,13 +2337,13 @@ var
 begin
   HostVertexBuffer.Destroy;
   // Clear clients info
-  for i := 0 to ClientList.Count - 1 do
+  for i := 0 to FClientList.Count - 1 do
   begin
-    Client := ClientList.Items[i];
+    Client := FClientList.Items[i];
     FreeClient(Client);
     Dispose(Client);
   end;
-  ClientList.Destroy;
+  FClientList.Destroy;
   inherited;
 end;
 
@@ -2186,13 +2372,12 @@ begin
   CurrentClient.FirstIndex := HostIndexBuffer.Count;
   CurrentClient.BuiltProp := BuiltProp;
 
-  GLVBOMState := GLVBOM_OBJECT;
+  FState := GLVBOM_OBJECT;
   for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
     ResetAttribArray(i);
 
   ObjectVertexCount := 0;
   ObjectIndex := 0;
-  OneVertexDataSize := 0;
   Doubling := false;
   PrimitiveTypeCount := 0;
 end;
@@ -2203,7 +2388,7 @@ var
   Attr: T4ByteList;
 begin
 
-  if GLVBOMState <> GLVBOM_OBJECT then
+  if FState <> GLVBOM_OBJECT then
   begin
     GLSLogger.LogError(glsWrongCallEnd);
     Abort;
@@ -2224,100 +2409,15 @@ begin
       Attr := AttributeArrays[a];
       HostVertexBuffer.Add(Attr);
       CurrentClient.DataSize[a] := Attr.Count * SizeOf(T4ByteData);
+      Inc(CurrentClient.TotalDataSize, CurrentClient.DataSize[a]);
     end;
 
-  ClientList.Add(CurrentClient);
-  CurrentClient.BuiltProp.ID := Longword(ClientList.Count);
+  FClientList.Add(CurrentClient);
+  CurrentClient.BuiltProp.ID := Longword(FClientList.Count);
   CurrentClient := nil;
-  GLVBOMState := GLVBOM_DEFAULT;
+  FState := GLVBOM_DEFAULT;
 
   inherited;
-end;
-
-procedure TGLStaticVBOManager.BeginPrimitives(eType: TGLVBOMEnum);
-begin
-  if GLVBOMState <> GLVBOM_OBJECT then
-  begin
-    GLSLogger.LogError(glsWrongCallBeginPrim);
-    Abort;
-  end;
-
-  if not ((eType >= GLVBOM_TRIANGLES) and (eType <=
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY)) then
-  begin
-    GLSLogger.LogError(glsInvalidPrimType);
-    Abort;
-  end;
-
-  if CurrentClient.PrimitiveType[PrimitiveTypeCount] <> GLVBOM_NOPRIMITIVE then
-  begin
-    Inc(PrimitiveTypeCount);
-    if PrimitiveTypeCount >= GLVBOM_MAX_DIFFERENT_PRIMITIVES then
-    begin
-      GLSLogger.LogError(glsTooMachDiffPrim);
-      Abort;
-    end;
-  end;
-
-  CurrentClient.PrimitiveType[PrimitiveTypeCount] := eType;
-  CurrentClient.VertexCount[PrimitiveTypeCount] := 0;
-  GLVBOMState := GLVBOM_PRIMITIVE;
-end;
-
-procedure TGLStaticVBOManager.EndPrimitives;
-var
-  Valid: Boolean;
-  Index, count: LongWord;
-begin
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
-  begin
-    GLSLogger.LogError(glsWrongCallEndPrim);
-    Abort;
-  end;
-
-  Index := HostIndexBuffer.Items[HostIndexBuffer.Count - 1];
-  if Doubling or (Index = RestartIndex) then
-  begin
-    HostIndexBuffer.Pop;
-    Dec(CurrentClient.IndexCount[PrimitiveTypeCount]);
-    Doubling := false;
-  end;
-
-  Valid := false;
-  count := CurrentClient.VertexCount[PrimitiveTypeCount];
-  case CurrentClient.PrimitiveType[PrimitiveTypeCount] of
-    GLVBOM_TRIANGLES: Valid := (count mod 3 = 0) and
-      (count > 2);
-    GLVBOM_TRIANGLE_STRIP,
-      GLVBOM_TRIANGLE_FAN: Valid := count > 2;
-    GLVBOM_QUADS: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_QUAD_STRIP: Valid := count > 3;
-    GLVBOM_POINTS: Valid := count > 0;
-    GLVBOM_LINES: Valid := (count mod 2 = 0) and (count > 1);
-    GLVBOM_LINE_STRIP,
-      GLVBOM_LINE_LOOP: Valid := count > 2;
-    GLVBOM_POLYGON: Valid := count > 2;
-    GLVBOM_LINES_ADJACENCY: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
-    GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
-  end;
-
-  if not Valid then
-  begin
-    GLSLogger.LogError(glsInvalidNumberOfVertex);
-    Abort;
-  end;
-
-  // Make trinagles with adjancency
-  if CurrentClient.BuiltProp.TriangleAdjacency then
-    if not DoMakeAdjacency then
-    begin
-      GLSLogger.LogError(glsDoMakeAdjFail);
-      Abort;
-    end;
-
-  GLVBOMState := GLVBOM_OBJECT;
 end;
 
 procedure TGLStaticVBOManager.BuildBuffer;
@@ -2325,32 +2425,34 @@ var
   I: Integer;
   tempIndexBuffer: Pointer;
 begin
-  if (FVertexHandle.Handle = 0) or not FBuilded then
-  begin
-    // TODO: consider working with non-indexed geometry
-    if (HostVertexBuffer.Count = 0) or (HostIndexBuffer.Count = 0) then
-      exit;
+  FVertexHandle.AllocateHandle;
+  FIndexHandle.AllocateHandle;
 
-    fVertexHandle.AllocateHandle;
-    fVertexHandle.Bind;
+  if FVertexHandle.IsDataNeedUpdate and (HostVertexBuffer.Count > 0) then
+  begin
     // Upload all vertices data in one buffer
-    fVertexHandle.BufferData(HostVertexBuffer.List, HostVertexBuffer.Count *
-      SizeOf(T4ByteData), Usage);
-    // Upload all indices data in one buffer
-    fIndexHandle.AllocateHandle;
-    fIndexHandle.Bind;
+    FVertexHandle.BindBufferData(
+      HostVertexBuffer.List,
+      HostVertexBuffer.Count * SizeOf(T4ByteData),
+      Usage);
+    FVertexHandle.NotifyDataUpdated;
+  end;
+
+  // Upload all indices data in one buffer
+  if FIndexHandle.IsDataNeedUpdate and (HostIndexBuffer.Count > 0) then
+  begin
     // Adjust index type according its number
     FIndexType := GL_UNSIGNED_INT;
-    tempIndexBuffer := nil;
     RestartIndex := $FFFFFFFF;
+    tempIndexBuffer := nil;
     if MaxIndexValue + 1 < $10000 then
     begin
-      if MaxIndexValue + 1 < $100 then
+      if (MaxIndexValue + 1 < $100) and not GL.VERSION_3_0 then
       begin
         GetMem(tempIndexBuffer, HostIndexBuffer.Count);
         for i := 0 to HostIndexBuffer.Count - 1 do
           PByteArray(tempIndexBuffer)[i] := Byte(HostIndexBuffer.Items[i]);
-        fIndexHandle.BufferData(tempIndexBuffer, HostIndexBuffer.Count, Usage);
+        fIndexHandle.BindBufferData(tempIndexBuffer, HostIndexBuffer.Count, Usage);
         FIndexType := GL_UNSIGNED_BYTE;
         RestartIndex := $FF;
       end
@@ -2359,30 +2461,31 @@ begin
         GetMem(tempIndexBuffer, SizeOf(Word) * HostIndexBuffer.Count);
         for i := 0 to HostIndexBuffer.Count - 1 do
           PWordVector(tempIndexBuffer)[i] := Word(HostIndexBuffer.Items[i]);
-        fIndexHandle.BufferData(tempIndexBuffer, SizeOf(Word) *
+        fIndexHandle.BindBufferData(tempIndexBuffer, SizeOf(Word) *
           HostIndexBuffer.Count, Usage);
         FIndexType := GL_UNSIGNED_SHORT;
         RestartIndex := $FFFF;
       end;
     end
     else
-      fIndexHandle.BufferData(HostIndexBuffer.List, SizeOf(Integer) *
+      FIndexHandle.BindBufferData(HostIndexBuffer.List, SizeOf(Integer) *
         HostIndexBuffer.Count, Usage);
 
-    // TODO: Vertex data relative size calculation
-    //  for c := 0 to ClientList.Count - 1 do
-    //  begin
-    //    Client := ClientList.Items[c];
-    //    CreateVertexArray(Client);
-    //    Client.RelativeSize :=
-    //      Client.TotalDataSize / (HostVertexBuffer.Count * SizeOf(T4ByteData));
-    //  end;
-
-    FBuilded := true;
-
+    FIndexHandle.NotifyDataUpdated;
     if Assigned(tempIndexBuffer) then
       FreeMem(tempIndexBuffer);
   end;
+
+  // TODO: Vertex data relative size calculation
+  //  for c := 0 to ClientList.Count - 1 do
+  //  begin
+  //    Client := ClientList.Items[c];
+  //    CreateVertexArray(Client);
+  //    Client.RelativeSize :=
+  //      Client.TotalDataSize / (HostVertexBuffer.Count * SizeOf(T4ByteData));
+  //  end;
+
+  FBuilded := true;
 end;
 
 procedure TGLStaticVBOManager.RenderClient(const BuiltProp: TGLBuiltProperties);
@@ -2396,12 +2499,10 @@ begin
 
     if BuiltProp.ID > 0 then
     begin
-      CurrentClient := ClientList.Items[BuiltProp.ID - 1];
-      if BindVertexArray(hVAO) then
-      begin
-        RenderCurrentClient;
-        hVAO.UnBind;
-      end;
+      CurrentClient := FClientList.Items[BuiltProp.ID - 1];
+      BindVertexArray(hVAO);
+      RenderCurrentClient;
+      hVAO.UnBind;
       CurrentClient := nil;
     end
     else if FBuilded then
@@ -2431,13 +2532,18 @@ var
   portion: Single;
 begin
   portion := 0;
-  for c := 0 to ClientList.Count - 1 do
+  for c := 0 to FClientList.Count - 1 do
   begin
-    Client := ClientList.Items[c];
+    Client := FClientList.Items[c];
     if Client.LastTimeWhenRendered > vCurrentTime - TimeInterval then
       portion := portion + Client.RelativeSize;
   end;
   Result := portion;
+end;
+
+class function TGLStaticVBOManager.Usage: TGLenum;
+begin
+  Result := GL_STATIC_DRAW;
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -2449,8 +2555,7 @@ end;
 constructor TGLStreamVBOManager.Create;
 begin
   inherited Create;
-  Usage := GL_STREAM_DRAW;
-  ClientList := TList.Create;
+  FClientList := TList.Create;
 end;
 
 destructor TGLStreamVBOManager.Destroy;
@@ -2459,13 +2564,13 @@ var
   Client: PGLRenderPacket;
 begin
   // Clear clients info
-  for i := 0 to ClientList.Count - 1 do
+  for i := 0 to FClientList.Count - 1 do
   begin
-    Client := ClientList.Items[i];
+    Client := FClientList.Items[i];
     FreeClient(Client);
     Dispose(Client);
   end;
-  ClientList.Destroy;
+  FClientList.Destroy;
   inherited;
 end;
 
@@ -2476,7 +2581,7 @@ begin
   inherited;
 
   if BuiltProp.ID <> 0 then
-    CurrentClient := ClientList.Items[BuiltProp.ID - 1];
+    CurrentClient := FClientList.Items[BuiltProp.ID - 1];
 
   InitClient(CurrentClient);
   CurrentClient.FirstVertex := 0;
@@ -2486,64 +2591,70 @@ begin
   for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
     ResetAttribArray(i);
 
-  OneVertexDataSize := 0;
   ObjectVertexCount := 0;
   ObjectIndex := 0;
   HostIndexBuffer.Flush;
   Doubling := false;
   MaxIndexValue := 0;
   PrimitiveTypeCount := 0;
-  GLVBOMState := GLVBOM_OBJECT;
+  FState := GLVBOM_OBJECT;
 end;
 
 procedure TGLStreamVBOManager.EndObject;
 var
   a: Integer;
-  Attr: T4ByteList;
   offset, size: PtrUInt;
   HostVertexMap: Pointer;
   HostIndexMap: Pointer;
   BuiltProp: TGLBuiltProperties;
 begin
-  if GLVBOMState <> GLVBOM_OBJECT then
+  if FState <> GLVBOM_OBJECT then
   begin
     GLSLogger.LogError(glsWrongCallEnd);
     Abort;
   end;
 
-  GLVBOMState := GLVBOM_DEFAULT;
-
-  if ObjectIndex = 0 then
+  FState := GLVBOM_DEFAULT;
+  for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+  begin
+    CurrentClient.DataSize[a] := AttributeArrays[a].Count * SizeOf(T4ByteData);
+    Inc(CurrentClient.TotalDataSize, CurrentClient.DataSize[a]);
+  end;
+  if CurrentClient.TotalDataSize = 0 then
     exit;
 
+  CurrentClient.VertexHandle.AllocateHandle;
+  CurrentClient.IndexHandle.AllocateHandle;
+
   // Vertex buffer managment
-  if CurrentClient.VertexHandle.Handle = 0 then
+  if CurrentClient.VertexHandle.IsDataNeedUpdate then
   begin
     CurrentClient.VertexHandle.AllocateHandle;
-    CurrentClient.BuiltProp.VertexBufferCapacity :=
-      LongWord(ObjectVertexCount) * OneVertexDataSize;
+    CurrentClient.BuiltProp.VertexBufferCapacity := CurrentClient.TotalDataSize;
     CurrentClient.VertexHandle.BindBufferData(nil,
       CurrentClient.BuiltProp.VertexBufferCapacity, Usage);
+    CurrentClient.VertexHandle.NotifyDataUpdated;
   end
   else
   begin
     CurrentClient.VertexHandle.Bind;
-    size := LongWord(ObjectVertexCount) * OneVertexDataSize;
-    if CurrentClient.BuiltProp.VertexBufferCapacity < size then
+    if CurrentClient.BuiltProp.VertexBufferCapacity < CurrentClient.TotalDataSize then
     begin
-      CurrentClient.BuiltProp.VertexBufferCapacity := RoundUpToPowerOf2(size);
+      CurrentClient.BuiltProp.VertexBufferCapacity := RoundUpToPowerOf2(CurrentClient.TotalDataSize);
       CurrentClient.VertexHandle.BufferData(nil,
         CurrentClient.BuiltProp.VertexBufferCapacity, Usage);
     end;
   end;
+
   // Index buffer managment
-  if CurrentClient.IndexHandle.Handle = 0 then
+  if CurrentClient.IndexHandle.IsDataNeedUpdate then
   begin
     CurrentClient.IndexHandle.AllocateHandle;
     CurrentClient.BuiltProp.IndexBufferCapacity :=
       LongWord(HostIndexBuffer.Count) * SizeOf(GLUInt);
     CurrentClient.IndexHandle.BindBufferData(HostIndexBuffer.List,
       CurrentClient.BuiltProp.IndexBufferCapacity, Usage);
+    CurrentClient.IndexHandle.NotifyDataUpdated;
   end
   else
   begin
@@ -2573,9 +2684,7 @@ begin
     for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
       if Assigned(CurrentClient.Attributes[a]) then
       begin
-        Attr := AttributeArrays[a];
-        CurrentClient.DataSize[a] := Attr.Count * SizeOf(T4ByteData);
-        Move(Attr.List^, PByte(PtrUInt(HostVertexMap) + offset)^,
+        Move(AttributeArrays[a].List^, PByte(PtrUInt(HostVertexMap) + offset)^,
           CurrentClient.DataSize[a]);
         Inc(offset, CurrentClient.DataSize[a]);
       end;
@@ -2586,10 +2695,8 @@ begin
     for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
       if Assigned(CurrentClient.Attributes[a]) then
       begin
-        Attr := AttributeArrays[a];
-        CurrentClient.DataSize[a] := Attr.Count * SizeOf(T4ByteData);
         CurrentClient.VertexHandle.BufferSubData(offset,
-          CurrentClient.DataSize[a], Attr.List);
+          CurrentClient.DataSize[a], AttributeArrays[a].List);
         Inc(offset, CurrentClient.DataSize[a]);
       end;
   end;
@@ -2598,8 +2705,8 @@ begin
   BuiltProp := CurrentClient.BuiltProp;
   if BuiltProp.ID = 0 then
   begin
-    ClientList.Add(CurrentClient);
-    CurrentClient.BuiltProp.ID := Longword(ClientList.Count);
+    FClientList.Add(CurrentClient);
+    CurrentClient.BuiltProp.ID := Longword(FClientList.Count);
   end;
   CurrentClient := nil;
   inherited;
@@ -2608,11 +2715,11 @@ end;
 procedure TGLStreamVBOManager.EmitVertices(VertexNumber: LongWord; Indexed:
   Boolean);
 var
-  //  a: Integer;
+  a: Integer;
   //  offset,
   size: LongWord;
 begin
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
+  if FState <> GLVBOM_PRIMITIVE then
   begin
     GLSLogger.LogError(glsWrongCallEmit);
     Abort;
@@ -2624,24 +2731,28 @@ begin
     Abort;
   end;
 
-  GLVBOMState := GLVBOM_DEFAULT;
+  FState := GLVBOM_DEFAULT;
+  for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+  begin
+    CurrentClient.DataSize[a] := AttributeArrays[a].Count * SizeOf(T4ByteData);
+    Inc(CurrentClient.TotalDataSize, CurrentClient.DataSize[a]);
+  end;
+  CurrentClient.VertexHandle.AllocateHandle;
 
   // Vertex buffer managment
-  if CurrentClient.VertexHandle.Handle = 0 then
+  if CurrentClient.VertexHandle.IsDataNeedUpdate then
   begin
-    CurrentClient.VertexHandle.AllocateHandle;
-    CurrentClient.BuiltProp.VertexBufferCapacity :=
-      VertexNumber * OneVertexDataSize;
+    CurrentClient.BuiltProp.VertexBufferCapacity := CurrentClient.TotalDataSize;
     CurrentClient.VertexHandle.BindBufferData(nil,
       CurrentClient.BuiltProp.VertexBufferCapacity, Usage);
+    CurrentClient.VertexHandle.NotifyChangesOfData;
   end
   else
   begin
     CurrentClient.VertexHandle.Bind;
-    size := VertexNumber * OneVertexDataSize;
-    if CurrentClient.BuiltProp.VertexBufferCapacity < size then
+    if CurrentClient.BuiltProp.VertexBufferCapacity < CurrentClient.TotalDataSize then
     begin
-      CurrentClient.BuiltProp.VertexBufferCapacity := RoundUpToPowerOf2(size);
+      CurrentClient.BuiltProp.VertexBufferCapacity := RoundUpToPowerOf2(CurrentClient.TotalDataSize);
       CurrentClient.VertexHandle.BufferData(nil,
         CurrentClient.BuiltProp.VertexBufferCapacity, Usage);
     end;
@@ -2650,13 +2761,14 @@ begin
   if Indexed then
   begin
     // Index buffer managment
-    if CurrentClient.IndexHandle.Handle = 0 then
+    CurrentClient.IndexHandle.AllocateHandle;
+    if CurrentClient.IndexHandle.IsDataNeedUpdate then
     begin
-      CurrentClient.IndexHandle.AllocateHandle;
       CurrentClient.BuiltProp.IndexBufferCapacity :=
         VertexNumber * SizeOf(GLUInt);
       CurrentClient.IndexHandle.BindBufferData(nil,
         CurrentClient.BuiltProp.IndexBufferCapacity, Usage);
+      CurrentClient.IndexHandle.NotifyDataUpdated;
     end
     else
     begin
@@ -2676,11 +2788,10 @@ begin
   // add and setup client
   if CurrentClient.BuiltProp.ID = 0 then
   begin
-    ClientList.Add(CurrentClient);
-    CurrentClient.BuiltProp.ID := Longword(ClientList.Count);
+    FClientList.Add(CurrentClient);
+    CurrentClient.BuiltProp.ID := Longword(FClientList.Count);
   end;
   CurrentClient.VertexCount[PrimitiveTypeCount] := VertexNumber;
-  CurrentClient.BuiltProp.ID := Longword(ClientList.Count);
   CurrentClient := nil;
 end;
 
@@ -2729,12 +2840,10 @@ begin
 
     if (BuiltProp.ID > 0) then
     begin
-      CurrentClient := ClientList.Items[BuiltProp.ID - 1];
-      if BindVertexArray(hVAO) then
-      begin
-        RenderCurrentClient;
-        hVAO.UnBind;
-      end;
+      CurrentClient := FClientList.Items[BuiltProp.ID - 1];
+      BindVertexArray(hVAO);
+      RenderCurrentClient;
+      hVAO.UnBind;
       CurrentClient := nil;
     end;
 
@@ -2745,88 +2854,9 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLStreamVBOManager.BeginPrimitives(eType: TGLVBOMEnum);
+class function TGLStreamVBOManager.Usage: TGLenum;
 begin
-  if GLVBOMState <> GLVBOM_OBJECT then
-  begin
-    GLSLogger.LogError(glsWrongCallBeginPrim);
-    exit;
-  end;
-  if not ((eType >= GLVBOM_TRIANGLES)
-    and (eType <= GLVBOM_TRIANGLE_STRIP_ADJACENCY)) then
-  begin
-    GLSLogger.LogError(glsInvalidPrimType);
-    exit;
-  end;
-
-  GLVBOMState := GLVBOM_PRIMITIVE;
-  if CurrentClient.PrimitiveType[PrimitiveTypeCount] <> GLVBOM_NOPRIMITIVE then
-  begin
-    Inc(PrimitiveTypeCount);
-    if PrimitiveTypeCount >= GLVBOM_MAX_DIFFERENT_PRIMITIVES then
-    begin
-      GLSLogger.LogError(glsTooMachDiffPrim);
-      Abort;
-    end;
-  end;
-
-  CurrentClient.PrimitiveType[PrimitiveTypeCount] := eType;
-  CurrentClient.VertexCount[PrimitiveTypeCount] := 0;
-end;
-
-procedure TGLStreamVBOManager.EndPrimitives;
-var
-  Valid: Boolean;
-  count: LongWord;
-begin
-  if GLVBOMState <> GLVBOM_PRIMITIVE then
-  begin
-    GLSLogger.LogError(glsWrongCallEndPrim);
-    Abort;
-  end;
-
-  if Doubling then
-  begin
-    HostIndexBuffer.Pop;
-    Dec(CurrentClient.IndexCount[PrimitiveTypeCount]);
-    Doubling := false;
-  end;
-
-  Valid := false;
-  count := CurrentClient.VertexCount[PrimitiveTypeCount];
-  case CurrentClient.PrimitiveType[PrimitiveTypeCount] of
-    GLVBOM_TRIANGLES: Valid := (count mod 3 = 0) and
-      (count > 2);
-    GLVBOM_TRIANGLE_STRIP,
-      GLVBOM_TRIANGLE_FAN: Valid := count > 2;
-    GLVBOM_QUADS: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_QUAD_STRIP: Valid := count > 3;
-    GLVBOM_POINTS: Valid := count > 0;
-    GLVBOM_LINES: Valid := (count mod 2 = 0) and (count > 1);
-    GLVBOM_LINE_STRIP,
-      GLVBOM_LINE_LOOP: Valid := count > 2;
-    GLVBOM_POLYGON: Valid := count > 2;
-    GLVBOM_LINES_ADJACENCY: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
-    GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
-  end;
-
-  if not Valid then
-  begin
-    GLSLogger.LogError(glsInvalidNumberOfVertex);
-    Abort;
-  end;
-
-  // Make trinagles with adjancency
-  if CurrentClient.BuiltProp.TriangleAdjacency then
-    if not DoMakeAdjacency then
-    begin
-      GLSLogger.LogError(glsDoMakeAdjFail);
-      Abort;
-    end;
-
-  GLVBOMState := GLVBOM_OBJECT;
+  Result := GL_STREAM_DRAW;
 end;
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -2837,3 +2867,4 @@ finalization
   FreeVBOManagers;
 
 end.
+

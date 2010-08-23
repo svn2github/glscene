@@ -6,6 +6,7 @@
    Lens flare object.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>03/03/10 - Yar - Adapted GLLensFlare to OpenGL3x
  </ul></font><p>
 
@@ -21,7 +22,7 @@ uses
   GLScene,
   VectorGeometry,
   GLObjects,
-  OpenGL1x,
+  OpenGLTokens,
   GLState,
   GLContext,
   GLColor,
@@ -29,8 +30,8 @@ uses
   GLRenderContextInfo,
   GLLensFlare,
   GLFBO,
-  GLShadersManager,
-  GLVBOManagers,
+  GLShaderManager,
+  GLVBOManager,
   GL3xMaterial,
   GLTexture,
   GLGraphics;
@@ -224,6 +225,7 @@ const
 
   Gradient_vp150: AnsiString =
     '#version 150' + #10#13 +
+    'precision highp float;' + #10#13 +
     'in vec3 Position;' + #10#13 +
     'in vec4 VertexColor;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
@@ -244,6 +246,7 @@ const
     '}';
   RayTex_vp150: AnsiString =
     '#version 150' + #10#13 +
+    'precision highp float;' + #10#13 +
     'in vec3 Position;' + #10#13 +
     'in vec2 TexCoord0;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
@@ -372,8 +375,8 @@ end;
 
 procedure TGL3xLensFlare.Initialize;
 begin
-  with ShadersManager do
-  begin
+  with ShaderManager do
+  try
     BeginWork;
     // Give name to new programs and objects
     GradientProgram := MakeUniqueProgramName('GradientProgram');
@@ -387,7 +390,7 @@ begin
     DefineShaderProgram(GradientProgram);
     DefineShaderProgram(RaysProgram);
     // Define objects
-    if GL_VERSION_3_2 then
+    if GL.VERSION_3_2 then
     begin
       DefineShaderObject(GradientVertexObject, Gradient_vp150, [ptVertex]);
       DefineShaderObject(GradientFragmentObject, Gradient_fp150, [ptFragment]);
@@ -409,6 +412,7 @@ begin
     // Link programs
     ProgramsLinked := LinkShaderProgram(GradientProgram);
     ProgramsLinked := ProgramsLinked and LinkShaderProgram(RaysProgram);
+  finally
     EndWork;
   end;
 end;
@@ -432,7 +436,7 @@ begin
     exit;
   end;
   // Render self
-  if GL_VERSION_2_1 and not (csDesigning in ComponentState) then
+  if GL.VERSION_2_1 and not (csDesigning in ComponentState) then
   begin
     if Length(GradientProgram) = 0 then
       Initialize;
@@ -499,7 +503,7 @@ begin
       projMatrix[0][0] := 2 / ARci.viewPortSize.cx;
       projMatrix[1][1] := 2 / ARci.viewPortSize.cy;
 
-      ShadersManager.UseProgram(GradientProgram);
+      ShaderManager.UseProgram(GradientProgram);
       if not FRaysTexture.IsHandleAllocated then
         PrepareRayTexture(ARci);
 
@@ -510,7 +514,7 @@ begin
 
       if AutoZTest then
       begin
-        if dynamicSize and (GL_HP_occlusion_test or
+        if dynamicSize and (GL.HP_occlusion_test or
           TGLOcclusionQueryHandle.IsSupported) then
         begin
           // hardware-based occlusion test is possible
@@ -545,10 +549,10 @@ begin
           if not usedOcclusionQuery then
           begin
             // occlusion_test, stalls rendering a bit
-            glEnable(GL_OCCLUSION_TEST_HP);
+            GL.Enable(GL_OCCLUSION_TEST_HP);
           end;
           ARci.GLStates.DepthFunc := cfLequal;
-          ShadersManager.UniformMat4f(uniformViewProjectionMatrix, projMatrix);
+          ShaderManager.UniformMat4f(uniformViewProjectionMatrix, projMatrix);
           with DynamicVBOManager do
           begin
             BeginObject(nil);
@@ -576,8 +580,8 @@ begin
             FOcclusionQuery.EndQuery
           else
           begin
-            glDisable(GL_OCCLUSION_TEST_HP);
-            glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
+            GL.Disable(GL_OCCLUSION_TEST_HP);
+            GL.GetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
           end;
 
           ARci.GLStates.SetGLColorWriting(True);
@@ -601,7 +605,7 @@ begin
         M := CreateScaleMatrix(AffineVectorMake(FCurrSize, FCurrSize, 1));
         M := MatrixMultiply(M, CreateTranslationMatrix(posVector));
         M := MatrixMultiply(M, projMatrix);
-        ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+        ShaderManager.UniformMat4f(uniformViewProjectionMatrix, M);
 
         // Glow (a circle with transparent edges):
         if feGlow in Elements then
@@ -621,25 +625,23 @@ begin
 
         // Rays (random-length lines from the origin):
         if feRays in Elements then
-          with ShadersManager do
+          with ShaderManager do
           begin
             UseProgram(RaysProgram);
             UniformMat4f(uniformViewProjectionMatrix, M);
             UniformSampler(uniformTexUnit0, FRaysTexture.Handle, 0);
-
-            ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
             StaticVBOManager.RenderClient(FBuiltPropertiesRays);
           end;
 
         if feRing in Elements then
         begin
-          ShadersManager.UseProgram(GradientProgram);
+          ShaderManager.UseProgram(GradientProgram);
           StaticVBOManager.RenderClient(FBuiltPropertiesRing);
         end;
         // Other secondaries (plain gradiented circles, like the glow):
         if feSecondaries in Elements then
         begin
-          ShadersManager.UseProgram(GradientProgram);
+          ShaderManager.UseProgram(GradientProgram);
           for i := 1 to NumSecs do
           begin
             rnd := 2 * Random - 1;
@@ -656,7 +658,7 @@ begin
             M := CreateScaleMatrix(AffineVectorMake(rnd, rnd, 1));
             M := MatrixMultiply(M, CreateTranslationMatrix(v));
             M := MatrixMultiply(M, projMatrix);
-            ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+            ShaderManager.UniformMat4f(uniformViewProjectionMatrix, M);
             if i mod 3 = 0 then
               StaticVBOManager.RenderClient(FBuiltPropertiesGlow)
             else
@@ -664,7 +666,7 @@ begin
           end;
         end;
         if not ARci.GLStates.ForwardContext then
-          ShadersManager.UseFixedFunctionPipeline;
+          ShaderManager.UseFixedFunctionPipeline;
       end;
       RandSeed := oldSeed;
     end;
@@ -872,10 +874,11 @@ begin
   FrameBuffer.Bind;
   FrameBuffer.AttachTexture(0, FRaysTexture);
   Assert(FrameBuffer.Status = fsComplete, 'Framebuffer not complete');
-  M.Translation(VectorMakeEXT(FSize, FSize, 0));
-  P.Ortho(0, 2 * FSize, 0, 2 * FSize, 0, 1);
+  M.Identity;
+  M.Translation(VectorMakeEXT(-1.0, -1.0, 0.0));
+  P.Ortho(0, 2*FSize, 0, 2*FSize, -1, 1);
   M := M * P;
-  ShadersManager.UniformMat4f(uniformViewProjectionMatrix, M);
+  ShaderManager.UniformMat4f(uniformViewProjectionMatrix, M);
 
   with rci.GLStates do
   begin
@@ -887,8 +890,8 @@ begin
     LineWidth := 1;
     Disable(stLineSmooth);
     Disable(stLineStipple);
-    ColorClearValue := clrTransparent;
-    glClear(GL_COLOR_BUFFER_BIT);
+    ColorClearValue := clrBlack;//Transparent;
+    GL.Clear(GL_COLOR_BUFFER_BIT);
   end;
 
   with DynamicVBOManager do
@@ -917,7 +920,7 @@ begin
     EndObject;
   end;
   FrameBuffer.Unbind;
-  FrameBuffer.Free;
+//  FrameBuffer.Free;
   with rci.viewPortSize do
     rci.GLStates.ViewPort := Vector4iMake(0, 0, cx, cy);
 end;

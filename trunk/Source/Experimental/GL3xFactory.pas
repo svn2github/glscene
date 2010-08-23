@@ -5,8 +5,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, BaseClasses, OpenGL1x, VectorLists, GLContext, GLRenderContextInfo,
-  GLState, GLShadersManager, GLVBOManagers, GL3xMaterial, GLSLShader;
+  Classes, BaseClasses, OpenGLTokens, VectorLists, GLContext, GLRenderContextInfo,
+  GLState, GLShaderManager, GLVBOManager, GL3xMaterial, GLSLShader;
 
 type
 
