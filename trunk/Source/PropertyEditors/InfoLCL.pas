@@ -116,7 +116,8 @@ type
 implementation
 
 uses
-  {$IFDEF Linux}xlib,{$ENDIF}OpenGL1x, SysUtils, GLCrossPlatform
+  {$IFDEF Linux}xlib,{$ENDIF}OpenGLTokens, OpenGLAdapter, GLContext,
+  SysUtils, GLCrossPlatform
   //,FileUtil, LCLIntf
   ;
 
@@ -170,8 +171,8 @@ begin
         aSceneBuffer.RenderingContext.Activate;
 	with aSceneBuffer do begin
       // common properties
-      VendorLabel.Caption:=String(glGetString(GL_VENDOR));
-      RendererLabel.Caption:=String(glGetString(GL_RENDERER));
+      VendorLabel.Caption:=String(GL.GetString(GL_VENDOR));
+      RendererLabel.Caption:=String(GL.GetString(GL_RENDERER));
 
       {$IFDEF MSWINDOWS}
       Label2.Show;
@@ -190,9 +191,9 @@ begin
                                           XDefaultScreen(glXGetCurrentDisplay())
                                           ,GLX_VERSION))+', OpenGL '+
       {$ENDIF}
-      String(glGetString(GL_VERSION));
+      String(GL.GetString(GL_VERSION));
 
-      ExtStr:=String(glGetString(GL_EXTENSIONS));
+      ExtStr:=String(GL.GetString(GL_EXTENSIONS));
       Extensions.Clear;
       while Length(ExtStr) > 0 do begin
         I:=Pos(' ',ExtStr);
