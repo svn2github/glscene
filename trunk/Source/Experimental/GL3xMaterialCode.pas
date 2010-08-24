@@ -42,11 +42,11 @@ type
 
 implementation
 
-{.$IFNDEF FPC}
-  {.$R *.dfm}
-{.$ELSE}
+{$IFNDEF FPC}
+  {$R *.dfm}
+{$ELSE}
   {$R *.lfm}
-{.$ENDIF}
+{$ENDIF}
 
 {$IFDEF FPC}
 procedure TMaterialCodeForm.WMMove(var Message: TLMMove);
