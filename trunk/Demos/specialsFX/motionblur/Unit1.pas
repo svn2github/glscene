@@ -62,6 +62,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLContext;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    Frames:=5;

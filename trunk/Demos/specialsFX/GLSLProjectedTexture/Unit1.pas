@@ -97,7 +97,8 @@ end;
 
 procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
 begin
-  gluPerspective(GLCamera1.FocalLength, Width / Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
+  CurrentGlContext.PipelineTransformation.ProjectionMatrix :=
+    CreatePerspectiveMatrix(GLCamera1.GetFieldOfView(Width)/2, Width / Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);

@@ -17,14 +17,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 536
-    Height = 346
+    Width = 528
+    Height = 337
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FaceCulling = False
+    FieldOfView = 159.809509277343800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 24
@@ -32,17 +34,18 @@ object Form1: TForm1
     object GLSphere1: TGLSphere
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'CubeMap'
-      Radius = 50
+      Radius = 50.000000000000000000
       Slices = 9
       Stacks = 9
     end
     object DCTarget: TGLDummyCube
       Position.Coordinates = {00000040000000000000803F0000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
       OnRender = GLDirectOpenGL1Render
+      Blend = False
     end
     object GLHeightField1: TGLHeightField
       Material.Texture.MappingMode = tmmObjectLinear
@@ -53,12 +56,12 @@ object Form1: TForm1
       Position.Coordinates = {00000000000080BF000000000000803F}
       Scale.Coordinates = {1F85EB3D1F85EB3D0000003F00000000}
       Up.Coordinates = {2FBD3B3302000033000080BF00000000}
-      XSamplingScale.Min = -63
-      XSamplingScale.Max = 63
-      XSamplingScale.Step = 2
-      YSamplingScale.Min = -63
-      YSamplingScale.Max = 63
-      YSamplingScale.Step = 2
+      XSamplingScale.Min = -63.000000000000000000
+      XSamplingScale.Max = 63.000000000000000000
+      XSamplingScale.Step = 2.000000000000000000
+      YSamplingScale.Min = -63.000000000000000000
+      YSamplingScale.Max = 63.000000000000000000
+      YSamplingScale.Step = 2.000000000000000000
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLWaterPlane1: TGLWaterPlane
@@ -66,21 +69,21 @@ object Form1: TForm1
       Material.LibMaterialName = 'CubeMap'
       Position.Coordinates = {00000000000080BF000000000000803F}
       Scale.Coordinates = {000070410000803F0000704100000000}
-      RainForce = 5000
-      Viscosity = 0.990000009536743
-      Elastic = 10
+      RainForce = 5000.000000000000000000
+      Viscosity = 0.990000009536743200
+      Elastic = 10.000000000000000000
       Resolution = 128
       Options = []
-      SimulationFrequency = 100
+      SimulationFrequency = 100.000000000000000000
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000E04000007041000040400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 30
+      DepthOfView = 100.000000000000000000
+      FocalLength = 30.000000000000000000
       TargetObject = DCTarget
       Position.Coordinates = {0000E04000008040000040400000803F}
     end
@@ -116,7 +119,6 @@ object Form1: TForm1
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
     OnDoUnApply = GLUserShader1DoUnApply
-    ShaderStyle = ssLowLevel
     Left = 120
     Top = 64
   end

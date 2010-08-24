@@ -11,12 +11,39 @@ unit uMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLContext, GLObjects, GLHUDObjects, GLMaterial, GLTexture,
-  GLWin32Viewer, GLUtils, GLGeomObjects, StdCtrls, ExtCtrls, GLFBO, GLFBORenderer,
-  GLCadencer, GLCustomShader, GLSLShader, VectorGeometry, GLPolyhedron,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLRenderContextInfo,
-  GLSimpleNavigation, GLVectorFileObjects, GLFilemd2, GLState;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  GLScene,
+  GLContext,
+  GLObjects,
+  GLHUDObjects,
+  GLMaterial,
+  GLTexture,
+  GLWin32Viewer,
+  GLUtils,
+  GLGeomObjects,
+  StdCtrls,
+  ExtCtrls,
+  GLFBORenderer,
+  GLCadencer,
+  GLCustomShader,
+  GLSLShader,
+  VectorGeometry,
+  GLPolyhedron,
+  GLCoordinates,
+  GLCrossPlatform,
+  BaseClasses,
+  GLRenderContextInfo,
+  GLSimpleNavigation,
+  GLVectorFileObjects,
+  GLState;
 
 type
   TForm1 = class(TForm)
@@ -52,6 +79,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LightFBORendererBeforeRender(Sender: TObject);
     procedure LightFBORendererAfterRender(Sender: TObject);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
 
@@ -72,20 +100,24 @@ implementation
 {$R *.dfm}
 
 uses
-  OpenGL1x, DDS, JPEG, GLFileObj, GLGraphics, VectorTypes;
+  OpenGLTokens,
+  GLFileMD2,
+  DDSImage,
+  JPEG,
+  GLFileObj,
+  GLGraphics,
+  VectorTypes;
 
 procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
   // prepare shadow mapping matrix
-  glGetFloatv(GL_MODELVIEW_MATRIX, @FInvCameraMatrix);
-  InvertMatrix(FInvCameraMatrix);
-
+  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
   // go from eye space to light's "eye" space
-  FEyeToLightMatrix:= MatrixMultiply(FInvCameraMatrix, FLightModelViewMatrix);
+  FEyeToLightMatrix := MatrixMultiply(FInvCameraMatrix, FLightModelViewMatrix);
   // then to clip space
-  FEyeToLightMatrix:= MatrixMultiply(FEyeToLightMatrix, FLightProjMatrix);
+  FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FLightProjMatrix);
   // and finally make the [-1..1] coordinates into [0..1]
-  FEyeToLightMatrix:= MatrixMultiply(FEyeToLightMatrix, FBiasMatrix);
+  FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FBiasMatrix);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -93,41 +125,41 @@ var
   NativeDir: string;
 begin
 
-  if not (GL_EXT_framebuffer_object) then
-  begin
-    ShowMessage('Sorry, this demo requires GL_EXT_framebuffer_object and either');
-    Application.Terminate;
-    HALT;
-  end;
-
   NativeDir := ExtractFilePath(Application.ExeName);
-  if NativeDir[length(NativeDir)]<>'\' then NativeDir:=NativeDir+'\';
+  if NativeDir[length(NativeDir)] <> '\' then
+    NativeDir := NativeDir + '\';
 
   // Loading textures
-  SetCurrentDir(NativeDir+'..\..\media');
-  with GLMaterialLibrary1 do begin
+  SetCurrentDir(NativeDir + '..\..\media');
+  with GLMaterialLibrary1 do
+  begin
 
-    with TextureByName('Chekers') do begin
+    with TextureByName('Chekers') do
+    begin
       Image.LoadFromFile('marbletiles.jpg');
       Disabled := false;
     end;
 
-    with TextureByName('Chekers2') do begin
+    with TextureByName('Chekers2') do
+    begin
       Image.LoadFromFile('Concrete.jpg');
       Disabled := false;
     end;
 
-    with TextureByName('Lightspot') do begin
+    with TextureByName('Lightspot') do
+    begin
       Image.LoadFromFile('Flare1.bmp');
       Disabled := false;
     end;
 
-    with TextureByName('bark') do begin
+    with TextureByName('bark') do
+    begin
       Image.LoadFromFile('waste.jpg');
       Disabled := false;
     end;
 
-    with TextureByName('mask') do begin
+    with TextureByName('mask') do
+    begin
       Image.LoadFromFile('Masks.dds');
       Disabled := false;
     end;
@@ -139,10 +171,10 @@ begin
   GLFreeForm1.Scale.Scale(0.05);
   GLFreeForm1.Position.Y := GLPlane1.Position.Y + 0.6;
 
-  FBiasMatrix:= CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5));
+  FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5));
 
   // Loading shader
-  SetCurrentDir(NativeDir+'Shaders\');
+  SetCurrentDir(NativeDir + 'Shaders\');
   GLSLShader1.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
   GLSLShader1.FragmentProgram.LoadFromFile('shadowmapvis_fp.glsl');
   GLSLShader1.Enabled := true;
@@ -156,14 +188,15 @@ procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   case Key of
-    VK_F2: begin
-    end;
+    VK_F2:
+      begin
+      end;
   end;
 end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
-  GLSceneViewer1.Camera.SceneScale:= GLSceneViewer1.ClientWidth / 400;
+  GLSceneViewer1.Camera.SceneScale := GLSceneViewer1.ClientWidth / 400;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -174,44 +207,58 @@ begin
   GLCamera2.Position.Rotate(VectorMake(0, 1, 0), deltaTime * 0.1);
 end;
 
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+  if not (GL.EXT_framebuffer_object) then
+  begin
+    ShowMessage('Sorry, this demo requires GL_EXT_framebuffer_object and either');
+    Close;
+  end;
+end;
+
 procedure TForm1.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
-  Shader.Param['ShadowMap'].AsTexture2D[0]:= GLMaterialLibrary1.TextureByName(LightFBORenderer.DepthTextureName);
+  Shader.Param['ShadowMap'].AsTexture2D[0] := GLMaterialLibrary1.TextureByName(LightFBORenderer.DepthTextureName);
   // set compare to none so we can read off the depth value directly
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
 end;
 
 procedure TForm1.GLSLShader1UnApply(Shader: TGLCustomGLSLShader; var ThereAreMorePasses: Boolean);
 begin
   // reset the compare mode to default
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 end;
 
 procedure TForm1.GLSLShader2Apply(Shader: TGLCustomGLSLShader);
 begin
-  with Shader, GLMaterialLibrary1 do begin
-    Param['ShadowMap'].AsTexture2D[1]:= TextureByName(LightFBORenderer.DepthTextureName);
-    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
-    Param['Scale'].AsFloat:=16.0;
-    Param['Softly'].AsInteger:=1;
-    Param['EyeToLightMatrix'].AsMatrix4f:= FEyeToLightMatrix;
+  with Shader, GLMaterialLibrary1 do
+  begin
+    Param['ShadowMap'].AsTexture2D[1] := TextureByName(LightFBORenderer.DepthTextureName);
+    Param['LightspotMap'].AsTexture2D[2] := TextureByName('Lightspot');
+    Param['Scale'].AsFloat := 16.0;
+    Param['Softly'].AsInteger := 1;
+    Param['EyeToLightMatrix'].AsMatrix4f := FEyeToLightMatrix;
   end;
 end;
 
 procedure TForm1.GLSLShader2Initialize(Shader: TGLCustomGLSLShader);
 begin
-  with Shader, GLMaterialLibrary1 do begin
-    Param['TextureMap'].AsTexture2D[0]:= TextureByName('Chekers2');
-    Param['ShadowMap'].AsTexture2D[1]:= TextureByName(LightFBORenderer.DepthTextureName);
-    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
+  with Shader, GLMaterialLibrary1 do
+  begin
+    Param['TextureMap'].AsTexture2D[0] := TextureByName('Chekers2');
+    Param['ShadowMap'].AsTexture2D[1] := TextureByName(LightFBORenderer.DepthTextureName);
+    Param['LightspotMap'].AsTexture2D[2] := TextureByName('Lightspot');
   end;
 end;
 
 procedure TForm1.LightFBORendererBeforeRender(Sender: TObject);
 begin
   // get the modelview and projection matrices from the light's "camera"
-  glGetFloatv(GL_MODELVIEW_MATRIX, @FLightModelViewMatrix);
-  glGetFloatv(GL_PROJECTION_MATRIX, @FLightProjMatrix);
+  with CurrentGLContext.PipelineTransformation do
+  begin
+    FLightModelViewMatrix := ModelViewMatrix;
+    FLightProjMatrix := ProjectionMatrix;
+  end;
 
   // push geometry back a bit, prevents false self-shadowing
   with CurrentGLContext.GLStates do
@@ -228,3 +275,4 @@ begin
 end;
 
 end.
+

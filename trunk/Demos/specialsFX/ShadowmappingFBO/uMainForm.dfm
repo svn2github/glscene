@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
+  Width = 604
+  Height = 417
   Caption = 'Form1'
-  ClientHeight = 379
-  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -87,7 +87,7 @@ object Form1: TForm1
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Chekers'
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
       end
       object GLCylinder1: TGLCylinder

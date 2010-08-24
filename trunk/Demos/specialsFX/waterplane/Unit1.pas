@@ -8,7 +8,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
-  GLCadencer, ExtCtrls, Jpeg, GLTexture, GLUserShader, OpenGL1x,
+  GLCadencer, ExtCtrls, Jpeg, GLTexture, GLUserShader, OpenGLTokens, GLContext,
   VectorGeometry, GLGraph, VectorTypes, GLState, GLCrossPlatform, GLMaterial,
   GLCoordinates, BaseClasses, GLRenderContextInfo;
 
@@ -133,9 +133,9 @@ begin
       rci.GLStates.Disable(stBlend);
    end;
 
-   glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
-   glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
-   glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
 
    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 end;
