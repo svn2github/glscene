@@ -127,7 +127,7 @@
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="5">
       <Item1>
-        <PackageName Value="Pexpandpanels"/>
+        <PackageName Value="GLS_Expand_Panels"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
