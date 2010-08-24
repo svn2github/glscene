@@ -16,7 +16,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, ExpandPanels, LMessages,
+  ExtCtrls, GLExpandPanels, LMessages,
   GL3xMaterialGraph;
 
 type
