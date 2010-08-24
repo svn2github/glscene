@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 162
   Top = 77
-  Width = 463
-  Height = 330
+  Width = 471
+  Height = 341
   AutoSize = True
   BorderWidth = 3
   Caption = 'Form1'
@@ -26,6 +26,7 @@ object Form1: TForm1
     FieldOfView = 142.783203125000000000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8

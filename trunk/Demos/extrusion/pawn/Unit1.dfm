@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 166
   Top = 89
-  Width = 391
-  Height = 306
+  Width = 399
+  Height = 317
   AutoSize = True
   BorderWidth = 3
   Caption = 'Form1'
@@ -60,6 +60,7 @@ object Form1: TForm1
     FieldOfView = 137.477478027343800000
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CheckBox1: TCheckBox
     Left = 264
