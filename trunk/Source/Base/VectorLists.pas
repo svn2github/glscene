@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/08/10 - Yar - Added to T4ByteList more overload of Add method
       <li>11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>27/02/10 - Yar - Added TLongWordList
@@ -591,8 +592,9 @@ type
 	T4ByteData = packed record
     case Byte of
     0 : (Bytes : record Value : array[0..3] of Byte; end);
-    1 : (Int   : record Value : LongInt; end);
-    2 : (Float : record Value : Single; end);
+    1 : (Int   : record Value : Integer; end);
+    2 : (UInt  : record Value : Cardinal; end);
+    3 : (Float : record Value : Single; end);
   end;
 
   T4ByteArrayList = array[0..MaxInt shr 4] of T4ByteData;
@@ -617,6 +619,18 @@ type
     procedure Assign(Src: TPersistent); override;
 
     function  Add(const item: T4ByteData): Integer; overload;
+    procedure Add(const i1: Single); overload;
+    procedure Add(const i1, i2: Single); overload;
+    procedure Add(const i1, i2, i3: Single); overload;
+    procedure Add(const i1, i2, i3, i4: Single); overload;
+    procedure Add(const i1: Integer); overload;
+    procedure Add(const i1, i2: Integer); overload;
+    procedure Add(const i1, i2, i3: Integer); overload;
+    procedure Add(const i1, i2, i3, i4: Integer); overload;
+    procedure Add(const i1: Cardinal); overload;
+    procedure Add(const i1, i2: Cardinal); overload;
+    procedure Add(const i1, i2, i3: Cardinal); overload;
+    procedure Add(const i1, i2, i3, i4: Cardinal); overload;
     procedure Add(const AList: T4ByteList); overload;
     procedure Push(const Val: T4ByteData);
     function  Pop: T4ByteData;
@@ -3588,6 +3602,163 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   FList^[Result] := Item;
   Inc(FCount);
+end;
+
+procedure T4ByteList.Add(const i1: Single);
+var
+  tmpList: PSingle;
+begin
+  Inc(FCount);
+  if FCount = FCapacity then
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount];
+  tmpList^ := i1;
+
+end;
+
+procedure T4ByteList.Add(const i1, i2: Single);
+var
+  tmpList: PSingleArray;
+begin
+  Inc(FCount, 2);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 2];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3: Single);
+var
+  tmpList: PSingleArray;
+begin
+  Inc(FCount, 3);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 3];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3, i4: Single);
+var
+  tmpList: PSingleArray;
+begin
+  Inc(FCount, 4);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 4];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+  tmpList^[3] := i4;
+end;
+
+procedure T4ByteList.Add(const i1: Integer);
+var
+  tmpList: PInteger;
+begin
+  Inc(FCount);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount];
+  tmpList^ := i1;
+end;
+
+procedure T4ByteList.Add(const i1, i2: Integer);
+var
+  tmpList: PIntegerArray;
+begin
+  Inc(FCount, 2);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 2];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3: Integer);
+var
+  tmpList: PIntegerArray;
+begin
+  Inc(FCount, 3);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 3];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3, i4: Integer);
+var
+  tmpList: PIntegerArray;
+begin
+  Inc(FCount, 4);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 4];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+  tmpList^[3] := i4;
+end;
+
+procedure T4ByteList.Add(const i1: Cardinal);
+var
+  tmpList: PLongWord;
+begin
+  Inc(FCount);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount];
+  tmpList^ := i1;
+end;
+
+procedure T4ByteList.Add(const i1, i2: Cardinal);
+var
+  tmpList: PLongWordArray;
+begin
+  Inc(FCount, 2);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 2];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3: Cardinal);
+var
+  tmpList: PLongWordArray;
+begin
+  Inc(FCount, 3);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 3];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+end;
+
+
+procedure T4ByteList.Add(const i1, i2, i3, i4: Cardinal);
+var
+  tmpList: PLongWordArray;
+begin
+  Inc(FCount, 4);
+  while FCount > FCapacity do
+    SetCapacity(FCapacity + FGrowthDelta);
+  tmpList := @FList[FCount - 4];
+  tmpList^[0] := i1;
+  tmpList^[1] := i2;
+  tmpList^[2] := i3;
+  tmpList^[3] := i4;
 end;
 
 procedure T4ByteList.Add(const AList: T4ByteList);
