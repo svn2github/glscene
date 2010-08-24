@@ -11,7 +11,8 @@ uses
   FMaterialEditorFormLCL, FRMaterialPreviewLCL, FLibMaterialPickerLCL, 
   FRTextureEditLCL, FRColorEditorLCL, FRFaceEditorLCL, FRTrackBarEditLCL, 
   RegisterXCollection, FXCollectionEditorLCL, GLSceneEditLCL, 
-  LazarusPackageIntf;
+  GL3xMaterialPreview, GL3xMaterialCode, GL3xMaterialEditor, 
+  GL3xMaterialNodePaletteLCL, LazarusPackageIntf;
 
 implementation
 
