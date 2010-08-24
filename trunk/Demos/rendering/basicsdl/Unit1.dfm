@@ -9,18 +9,17 @@ object DataModule1: TDataModule1
     Left = 16
     Top = 8
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000484200004842000048420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Teapot1: TGLTeapot
       Material.Texture.ImageClassName = 'TGLCubeMapImage'
       Material.Texture.TextureMode = tmReplace
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Teapot1
       Position.Coordinates = {0000404000000040000000400000803F}
     end

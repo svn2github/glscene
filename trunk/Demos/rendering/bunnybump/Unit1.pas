@@ -98,7 +98,7 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, OpenGL1x;
+uses VectorGeometry, GLContext;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -212,13 +212,13 @@ procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
   if IsInitialized then exit;
 
-  if  GL_ARB_multitexture
-  and GL_ARB_vertex_program
-  and GL_ARB_texture_env_dot3 then
+  if  GL.ARB_multitexture
+  and GL.ARB_vertex_program
+  and GL.ARB_texture_env_dot3 then
     ComboBox1.Items.Add('Dot3 Texture Combiner');
-  if  GL_ARB_multitexture
-  and GL_ARB_vertex_program
-  and GL_ARB_fragment_program then begin
+  if  GL.ARB_multitexture
+  and GL.ARB_vertex_program
+  and GL.ARB_fragment_program then begin
     ComboBox1.Items.Add('Basic Fragment Program');
     if GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits]<3 then
       GLBumpShader1.SpecularMode:=smOff;

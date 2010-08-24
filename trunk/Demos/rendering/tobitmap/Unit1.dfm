@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 195
   Top = 103
-  Width = 465
-  Height = 335
   Caption = 'Form1'
+  ClientHeight = 297
+  ClientWidth = 449
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,6 +21,7 @@ object Form1: TForm1
     Width = 336
     Height = 297
     Camera = GLCamera1
+    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     FieldOfView = 142.783203125000000000
     Align = alClient
@@ -98,9 +99,11 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object HUDSprite1: TGLHUDSprite
+      Material.Texture.MinFilter = miLinear
       Material.Texture.Disabled = False
     end
     object Plane1: TGLPlane
+      Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -130,6 +133,7 @@ object Form1: TForm1
     end
     object Sphere1: TGLSphere
       Material.FrontProperties.Diffuse.Color = {9A99393F9A99393F0000803F0000803F}
+      Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmModulate
       Material.Texture.MappingMode = tmmSphere
       Material.Texture.Disabled = False

@@ -21,6 +21,7 @@ object GLDemoForm: TGLDemoForm
     Width = 541
     Height = 343
     Camera = MainCamera
+    BeforeRender = MainViewerBeforeRender
     Buffer.FogEnvironment.FogStart = 10.000000000000000000
     Buffer.FogEnvironment.FogEnd = 100.000000000000000000
     Buffer.BackgroundColor = clGray
@@ -186,7 +187,6 @@ object GLDemoForm: TGLDemoForm
       '}')
     VertexProgram.Enabled = True
     OnApply = GLSLShader1Apply
-    OnInitialize = GLSLShader1Initialize
     Left = 24
     Top = 120
   end

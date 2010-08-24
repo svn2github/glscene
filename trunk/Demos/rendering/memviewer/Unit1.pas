@@ -26,9 +26,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, StdCtrls, GLObjects, ExtCtrls, GLCadencer,
-  GLTexture, JPeg, GLWin32Viewer, OpenGL1x, GLCrossPlatform, GLCoordinates,
+  GLTexture, JPeg, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
   BaseClasses;
-
 type
   TForm1 = class(TForm)
     Timer1: TTimer;
@@ -66,6 +65,9 @@ var
 implementation
 
 {$R *.dfm}
+
+uses
+  GLContext, OpenGLAdapter;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

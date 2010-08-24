@@ -19,19 +19,21 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 57
-    Width = 467
-    Height = 382
+    Width = 459
+    Height = 371
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 149.829803466796900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 467
+    Width = 459
     Height = 57
     Align = alTop
     TabOrder = 1
@@ -182,7 +184,6 @@ object Form1: TForm1
       Material.FrontProperties.Shininess = 64
       Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
-      Material.TextureEx = <>
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object Camera: TGLCamera
@@ -205,7 +206,6 @@ object Form1: TForm1
         Material.FrontProperties.Shininess = 64
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Disabled = False
-        Material.TextureEx = <>
         Tag = 0
         Shader = GLBumpShader1
       end>
@@ -218,6 +218,7 @@ object Form1: TForm1
     BumpOptions = []
     SpecularMode = smOff
     DesignTimeEnabled = False
+    ParallaxOffset = 0.039999999105930330
     Left = 40
     Top = 96
   end

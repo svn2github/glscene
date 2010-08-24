@@ -31,7 +31,7 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 384
     Top = 64
-    Width = 87
+    Width = 86
     Height = 14
     Caption = 'Texture framerate'
   end
@@ -52,6 +52,8 @@ object Form1: TForm1
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.BackgroundColor = clGray
+    FieldOfView = 87.860168457031250000
+    TabOrder = 1
   end
   object RB1to1: TRadioButton
     Tag = 1
@@ -94,22 +96,23 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Cube1: TGLCube
         Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000020410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 150
+      DepthOfView = 100.000000000000000000
+      FocalLength = 150.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000A040000080400000A0400000803F}
     end

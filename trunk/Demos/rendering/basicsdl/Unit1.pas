@@ -45,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-uses OpenGL1x, Dialogs, GLTexture, Jpeg;
+uses GLContext, Dialogs, GLTexture, Jpeg;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
@@ -74,24 +74,29 @@ begin
       // an extension support (cube maps here) would fail...
       // Something less clunky will be introduced, someday...
       firstPassDone:=True;
-      if not GL_ARB_texture_cube_map then
-         ShowMessage('Your graphics board does not support cube maps...'#13#10
-                     +'So, no cube maps for ya...')
-      else begin
-         SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
-         with Teapot1.Material.Texture do begin
-            ImageClassName:=TGLCubeMapImage.ClassName;
-            with Image as TGLCubeMapImage do begin
-               Picture[cmtPX].LoadFromFile('cm_left.jpg');
-               Picture[cmtNX].LoadFromFile('cm_right.jpg');
-               Picture[cmtPY].LoadFromFile('cm_top.jpg');
-               Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
-               Picture[cmtPZ].LoadFromFile('cm_back.jpg');
-               Picture[cmtNZ].LoadFromFile('cm_front.jpg');
-            end;
-            MappingMode:=tmmCubeMapReflection;
-            Disabled:=False;
-         end;
+      GLSDLViewer1.Buffer.RenderingContext.Activate;
+      try
+        if not GL.ARB_texture_cube_map then
+           ShowMessage('Your graphics board does not support cube maps...'#13#10
+                       +'So, no cube maps for ya...')
+        else begin
+           SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+           with Teapot1.Material.Texture do begin
+              ImageClassName:=TGLCubeMapImage.ClassName;
+              with Image as TGLCubeMapImage do begin
+                 Picture[cmtPX].LoadFromFile('cm_left.jpg');
+                 Picture[cmtNX].LoadFromFile('cm_right.jpg');
+                 Picture[cmtPY].LoadFromFile('cm_top.jpg');
+                 Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
+                 Picture[cmtPZ].LoadFromFile('cm_back.jpg');
+                 Picture[cmtNZ].LoadFromFile('cm_front.jpg');
+              end;
+              MappingMode:=tmmCubeMapReflection;
+              Disabled:=False;
+           end;
+        end;
+      finally
+        GLSDLViewer1.Buffer.RenderingContext.Deactivate;
       end;
    end;
 

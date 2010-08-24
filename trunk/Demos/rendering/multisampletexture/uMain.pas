@@ -35,8 +35,8 @@ type
     procedure MainCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormResize(Sender: TObject);
-    procedure GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
+    procedure MainViewerBeforeRender(Sender: TObject);
   end;
 
 var
@@ -47,7 +47,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLState, OpenGL1X,
+  GLState, GLContext,
   GLKeyboard, GLMultisampleImage;
 
 procedure TGLDemoForm.FormCreate(Sender: TObject);
@@ -120,16 +120,6 @@ begin
     0);
 end;
 
-procedure TGLDemoForm.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
-begin
-  if not GL_EXT_framebuffer_multisample then
-  begin
-    ShowMessage
-      ('Sorry, your hardware do not support Multisampling');
-    Close;
-  end;
-end;
-
 procedure TGLDemoForm.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
   with Shader, MainViewer do
@@ -137,6 +127,16 @@ begin
     Param['TexUnit0'].AsTexture[0] :=
       MainMaterialLibrary.TextureByName('MultisampledColor');
     Param['ViewerSize'].AsVector2f := Vector2fMake(Width, Height);
+  end;
+end;
+
+procedure TGLDemoForm.MainViewerBeforeRender(Sender: TObject);
+begin
+  if not GL.EXT_framebuffer_multisample then
+  begin
+    ShowMessage
+      ('Sorry, your hardware do not support Multisampling');
+    Close;
   end;
 end;
 

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
-  GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
+  GeometryBB, GLTexture, GLCadencer, SpatialPartitioning,
   ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
   GLState;
 
@@ -67,6 +67,9 @@ var
 implementation
 
 {$R *.dfm}
+
+uses
+  OpenGLTokens, GLContext;
 
 var
   mx, my : integer;
@@ -154,33 +157,33 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
-    glColor3f(r,g,b);
+    GL.Color3f(r,g,b);
     rci.GLStates.LineWidth := w;
 
-    glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+    GL.Begin_(GL_LINE_STRIP);
+      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
 
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-    glEnd;
+      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+    GL.End_;
 
-    glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+    GL.Begin_(GL_LINES);
+      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
 
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
 
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-    glEnd;
+      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+    GL.End_;
   end;
 
   procedure RenderOctreeNode(Node : TSectorNode);
