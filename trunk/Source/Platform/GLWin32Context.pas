@@ -669,7 +669,8 @@ begin
     else
       GLStates.MultisampleFilterHint := hintDontCare;
 
-    GLSLogger.LogInfo('Forward core context seccussfuly created');
+    if GLStates.ForwardContext then
+      GLSLogger.LogInfo('Forward core context seccussfuly created');
     bSuccess := True;
   finally
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
