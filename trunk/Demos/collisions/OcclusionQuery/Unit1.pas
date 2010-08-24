@@ -18,9 +18,27 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLGeomObjects, GLObjects, GLCadencer, GLWin32Viewer,
-  StdCtrls, ExtCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo, GLContext;
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  GLScene,
+  GLGeomObjects,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  StdCtrls,
+  ExtCtrls,
+  GLCrossPlatform,
+  GLCoordinates,
+  BaseClasses,
+  GLRenderContextInfo,
+  GLContext;
 
 type
   TForm1 = class(TForm)
@@ -48,11 +66,11 @@ type
       var rci: TRenderContextInfo);
     procedure OGLEndQueriesRender(Sender: TObject;
       var rci: TRenderContextInfo);
-    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
   public
@@ -67,26 +85,12 @@ var
   queriesCreated: boolean;
   timerQuerySupported: Boolean;
 
-  timeTaken: Integer;  // in nanoseconds
+  timeTaken: Integer; // in nanoseconds
   samplesPassed: Integer;
 
 implementation
 
 {$R *.dfm}
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  // Occlusion queries are supported by extensions with lower version of OpenGL.
-  // To use them, you'd need to check if GL_NV_occlusion_query or GL_ARB_occlusion_query
-  // extensions are present, and makes the appropriate calls to the functions/procedures
-  // they provide.
-  if (not TGLOcclusionQueryHandle.IsSupported) then
-  begin
-    Messagedlg('Requires hardware that supports occlusion queries to run',
-      mtError, [mbOK],0);
-    Application.Terminate;
-  end;
-end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
@@ -99,10 +103,24 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
   // Move some of the scene objects around
-  GLDummyCube1.Position.X:=Sin(newTime);
-  dcTestObjects.Turn(DeltaTime*50);
-  dcTestObjects.Position.z:=2*Sin(newTime);
-  GLDummyCube2.Position.X:=-sin(newTime);
+  GLDummyCube1.Position.X := Sin(newTime);
+  dcTestObjects.Turn(DeltaTime * 50);
+  dcTestObjects.Position.z := 2 * Sin(newTime);
+  GLDummyCube2.Position.X := -sin(newTime);
+end;
+
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+  // Occlusion queries are supported by extensions with lower version of OpenGL.
+  // To use them, you'd need to check if GL_NV_occlusion_query or GL_ARB_occlusion_query
+  // extensions are present, and makes the appropriate calls to the functions/procedures
+  // they provide.
+  if (not TGLOcclusionQueryHandle.IsSupported) then
+  begin
+    Messagedlg('Requires hardware that supports occlusion queries to run',
+      mtError, [mbOK], 0);
+    Close;
+  end;
 end;
 
 procedure TForm1.OGLBeginQueriesRender(Sender: TObject;
@@ -137,39 +155,40 @@ begin
   // see what is going on.
 
   while not OcclusionQuery.IsResultAvailable do
-   { wait }; // would normally do something in this period before checking if
-             // result is available
+    { wait }; // would normally do something in this period before checking if
+  // result is available
 
   samplesPassed := OcclusionQuery.PixelCount;
 
   if timerQuerySupported then
   begin
     while not TimerQuery.IsResultAvailable do
-     { wait }; // would normally do something in this period before checking if
-               // result is available
+      { wait }; // would normally do something in this period before checking if
+    // result is available
     timeTaken := TimerQuery.Time;
     // Use this line instead of the one above to use 64 bit timer, to allow
     // recording time periods more than a couple of seconds (requires Delphi 7+)
     // timeTaken := TimerQuery.QueryResultUInt64;
   end;
 
-  label2.caption:='Number of test pixels visible: ' + IntToStr(samplesPassed);
-  if samplesPassed=0 then
-    label3.Visible:=true
+  label2.caption := 'Number of test pixels visible: ' + IntToStr(samplesPassed);
+  if samplesPassed = 0 then
+    label3.Visible := true
   else
-    label3.Visible:=false;
+    label3.Visible := false;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   // Convert time taken from ns => ms & display
   if timerQuerySupported then
-    label1.caption:='Time taken: '+ FloatToSTr(timeTaken/1000000) +' ms'
+    label1.caption := 'Time taken: ' + FloatToSTr(timeTaken / 1000000) + ' ms'
   else
-    label1.Caption:='Time query unavailable, requires hardware support';
+    label1.Caption := 'Time query unavailable, requires hardware support';
 
   caption := GLSceneViewer1.FramesPerSecondText(0);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.
+

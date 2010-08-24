@@ -12,23 +12,23 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 41
-    Width = 693
-    Height = 511
+    Width = 685
+    Height = 500
     Camera = GLCamera1
-    FieldOfView = 157.854904174804700000
+    FieldOfView = 157.380142211914100000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 693
+    Width = 685
     Height = 41
     Align = alTop
     TabOrder = 1
