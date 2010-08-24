@@ -24,7 +24,7 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.BackgroundColor = clTeal
     Buffer.FaceCulling = False
-    FieldOfView = 158.669494628906200000
+    FieldOfView = 158.669494628906300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -102,15 +102,17 @@ object Form1: TForm1
       MaterialLibrary = GLMaterialLibrary1
     end
     object GLFreeForm1: TGLFreeForm
-      Material.FrontProperties.Ambient.Color = {B1A8A83EB1A8A83EB1A8A83E0000803F}
+      Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Diffuse.Color = {9484843E9484843EDBDEDE3E0000803F}
-      Material.FrontProperties.Emission.Color = {EBE0E03EE4DB5B3F9A93133F0000803F}
+      Material.FrontProperties.Shininess = 32
       Material.FrontProperties.Specular.Color = {9A99593F9A99593FCDCCCC3D0000803F}
       Scale.Coordinates = {00002042000020420000204200000000}
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object GLFreeForm2: TGLFreeForm
-      Material.FrontProperties.Ambient.Color = {029F1F3FBEBEBE3E999F1F3F0000803F}
+      Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {CFBC3C3EA19E9E3EA19E9E3E0000803F}
+      Material.FrontProperties.Shininess = 32
       Material.FrontProperties.Specular.Color = {BEBEBE3E999F1F3F999F1F3F0000803F}
       Position.Coordinates = {0000804100000000000000000000803F}
       Scale.Coordinates = {0000A0410000A0410000A04100000000}
@@ -125,7 +127,6 @@ object Form1: TForm1
       Up.Coordinates = {000000000000803F0000008000000000}
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1.000000000000000000
-        Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F0000803F}
         LightStyle = lsOmni
         SpotCutOff = 180.000000000000000000
       end

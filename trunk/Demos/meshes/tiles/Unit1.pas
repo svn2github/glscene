@@ -23,7 +23,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, GLObjects, GLGraph, GLScene, GLWin32Viewer,
   VectorGeometry, GLTilePlane, GLTexture, GLCadencer, Jpeg, StdCtrls,
-  OpenGL1x, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  OpenGLTokens, GLContext, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
   GLRenderContextInfo;
 
 type
@@ -176,7 +176,7 @@ procedure TForm1.GLDirectOpenGLRender(Sender : TObject; var rci: TRenderContextI
 begin
    // we clear the depth buffer, so that the grid is always in front of the
    // tile plane and won't Z-Fight with it
-   glClear(GL_DEPTH_BUFFER_BIT);
+   GL.Clear(GL_DEPTH_BUFFER_BIT);
 end;
 
 procedure TForm1.BUPackClick(Sender: TObject);

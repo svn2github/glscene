@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 160
   Top = 105
-  Width = 563
-  Height = 276
+  Width = 577
+  Height = 296
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -31,7 +31,7 @@ object Form1: TForm1
   object Label3: TLabel
     Left = 408
     Top = 8
-    Width = 81
+    Width = 80
     Height = 14
     Caption = 'Centered X, Y, Z'
   end
@@ -42,6 +42,8 @@ object Form1: TForm1
     Height = 209
     Camera = GLCamera1
     Buffer.BackgroundColor = 11447982
+    FieldOfView = 60.275093078613290000
+    TabOrder = 0
   end
   object TrackBar1: TTrackBar
     Left = 528
@@ -52,13 +54,8 @@ object Form1: TForm1
     Min = -80
     Orientation = trVertical
     Frequency = 10
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
     ThumbLength = 10
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object GLScene1: TGLScene
@@ -67,42 +64,39 @@ object Form1: TForm1
     object DummyCube3: TGLDummyCube
       Position.Coordinates = {000000C000000000000000000000803F}
       ShowAxes = True
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       VisibleAtRunTime = True
       object FreeForm3: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
     object DummyCube2: TGLDummyCube
       ShowAxes = True
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       VisibleAtRunTime = True
       object FreeForm2: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000004000000000000000000000803F}
       ShowAxes = True
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       VisibleAtRunTime = True
       object FreeForm1: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00004040000020410000A0400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCCamera: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 180
+        DepthOfView = 100.000000000000000000
+        FocalLength = 180.000000000000000000
         TargetObject = DummyCube2
         Position.Coordinates = {0000000000000040000070410000803F}
         Left = 256

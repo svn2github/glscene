@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 11
-  Top = 34
+  Left = 256
+  Top = 188
   Width = 783
   Height = 540
   Caption = 'Form1'
@@ -17,36 +17,38 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 775
-    Height = 511
+    Width = 767
+    Height = 502
     Camera = Camera
+    FieldOfView = 118.274116516113300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 720
     Top = 40
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000FAC30000FAC3000048440000803F}
       LightStyle = lsOmni
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLLightSource2: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000FA430000FAC3000048440000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Container: TGLDummyCube
-      CubeSize = 100
+      CubeSize = 100.000000000000000000
     end
     object CameraTarget: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object Camera: TGLCamera
-      DepthOfView = 10000
-      FocalLength = 150
+      DepthOfView = 10000.000000000000000000
+      FocalLength = 150.000000000000000000
       TargetObject = CameraTarget
       Position.Coordinates = {0000484300007AC4000048430000803F}
       Direction.Coordinates = {000000000000803F0000008000000000}
@@ -60,13 +62,11 @@ object Form1: TForm1
       item
         Name = 'MatSurface'
         Material.FrontProperties.Diffuse.Color = {6666263F0000003F14AEC73E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Tag = 0
       end
       item
         Name = 'MatInner'
         Material.FrontProperties.Diffuse.Color = {C3F5683F5C8F423F6666263F0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Tag = 0
       end>
     Left = 720

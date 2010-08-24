@@ -35,7 +35,7 @@ uses
     GLFileMS3D,
   GLMaterial, StdCtrls, ExtCtrls, GLCameraController, GLGraphics, TGA,
   ApplicationFileIO, GLRenderContextInfo,
-  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane, GLCOntext,
+  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane,
     VectorGeometry,
   GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState,
   GLSArchiveManager;
@@ -113,7 +113,7 @@ var
 implementation
 
 uses
-  OpenGL1x,
+  OpenGLTokens, GLContext,
   GLFileZLIB, GLCompositeImage, GLFileJPEG, GLFilePNG;
 
 {$R *.dfm}
@@ -313,16 +313,13 @@ procedure TfrmMain.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
   // prepare shadow mapping matrix
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @FInvCameraMatrix);
-  InvertMatrix(FInvCameraMatrix);
-
+  FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
   // go from eye space to light's "eye" space
   FEyeToLightMatrix := MatrixMultiply(FInvCameraMatrix, FLightModelViewMatrix);
   // then to clip space
   FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FLightProjMatrix);
   // and finally make the [-1..1] coordinates into [0..1]
   FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FBiasMatrix);
-
 end;
 
 procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject);
@@ -332,10 +329,11 @@ end;
 
 procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject);
 begin
-  // get the modelview and projection matrices from the light's "camera"
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @FLightModelViewMatrix);
-  GL.GetFloatv(GL_PROJECTION_MATRIX, @FLightProjMatrix);
-
+  with CurrentGLContext.PipelineTransformation do
+  begin
+    FLightModelViewMatrix := ModelViewMatrix;
+    FLightProjMatrix := ProjectionMatrix;
+  end;
   // push geometry back a bit, prevents false self-shadowing
   with CurrentGLContext.GLStates do
   begin

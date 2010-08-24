@@ -42,7 +42,6 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLFreeForm2: TGLFreeForm;
     GLFreeForm3: TGLFreeForm;
-    GLLightSource1: TGLLightSource;
     Panel1: TPanel;
     Button1: TButton;
     Button2: TButton;
@@ -50,6 +49,7 @@ type
     Button4: TButton;
     Button5: TButton;
     CheckBox1: TCheckBox;
+    GLLightSource1: TGLLightSource;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
