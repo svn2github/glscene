@@ -1,9 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
+  Width = 657
+  Height = 483
   Caption = 'GLSL Shader Test Application'
-  ClientHeight = 445
-  ClientWidth = 641
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

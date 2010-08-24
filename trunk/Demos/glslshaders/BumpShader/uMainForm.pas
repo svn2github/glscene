@@ -30,7 +30,7 @@ uses
   BaseClasses,
 
   // FileFormats
-  TGA, GLFileMS3D, GLFile3DS, JPEG, DDS, GLFileMD2, GLFileSMD;
+  TGA, GLFileMS3D, GLFile3DS, JPEG, DDSImage, GLFileMD2, GLFileSMD;
 
 type
   TGLSLTestForm = class(TForm)

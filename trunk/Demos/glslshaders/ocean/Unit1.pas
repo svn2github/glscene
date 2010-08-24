@@ -3,11 +3,37 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLWin32Viewer, GLScene, GLTexture, GLObjects, GLUtils,
-  ComCtrls, OpenGL1x, GLContext, Jpeg, TGA, VectorGeometry, GLGeomObjects,
-  GLCadencer, ExtCtrls, GLUserShader, GLGraph, VectorTypes, GLSkydome,
-  VectorLists, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  Windows,
+  Messages,
+  SysUtils,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  GLWin32Viewer,
+  GLScene,
+  GLTexture,
+  GLObjects,
+  GLUtils,
+  ComCtrls,
+  OpenGL1x,
+  GLContext,
+  Jpeg,
+  TGA,
+  VectorGeometry,
+  GLGeomObjects,
+  GLCadencer,
+  ExtCtrls,
+  GLUserShader,
+  GLGraph,
+  VectorTypes,
+  GLSkydome,
+  VectorLists,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  BaseClasses,
   GLRenderContextInfo;
 
 type
@@ -59,7 +85,8 @@ var
 implementation
 
 uses
-  GLTextureFormat;
+  GLTextureFormat,
+  OpenGLTokens;
 
 {$R *.dfm}
 
@@ -91,14 +118,10 @@ begin
     end;
   end;
 
-  GLMemoryViewer1.RenderCubeMapTextures(matLib.LibMaterialByName('cubeMap').Material.Texture);
-
   SetCurrentDir(ExtractFilePath(Application.ExeName));
-
-  //   GLHeightField1.ObjectStyle:=GLHeightField1.ObjectStyle+[osDirectDraw];
 end;
 
-procedure TForm1.DOInitializeRender(Sender: TObject;
+procedure TForm1.DoInitializeRender(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
   if not (GL.ARB_shader_objects and GL.ARB_vertex_program and GL.ARB_vertex_shader
@@ -112,7 +135,9 @@ begin
     Exit;
   DOInitialize.Tag := 1;
 
-  GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
+  GLSceneViewer1.Buffer.RenderingContext.Deactivate;
+  GLMemoryViewer1.RenderCubeMapTextures(matLib.LibMaterialByName('cubeMap').Material.Texture);
+  GLSceneViewer1.Buffer.RenderingContext.Activate;
 
   programObject := TGLProgramHandle.CreateAndAllocate;
 
@@ -122,11 +147,13 @@ begin
   if not programObject.LinkProgram then
     raise Exception.Create(programObject.InfoLog);
 
+  if not programObject.ValidateProgram then
+    raise Exception.Create(programObject.InfoLog);
+
   // initialize the heightmap
   with MatLib.LibMaterialByName('water') do
   begin
     PrepareBuildList;
-    rci.GLStates.ActiveTexture := 0;
     rci.GLStates.TextureBinding[0, ttTexture2D] := Material.Texture.Handle;
   end;
 
@@ -134,9 +161,7 @@ begin
   with MatLib.LibMaterialByName('cubeMap') do
   begin
     PrepareBuildList;
-    rci.GLStates.ActiveTexture := 1;
     rci.GLStates.TextureBinding[1, ttTextureCube] := Material.Texture.Handle;
-    rci.GLStates.ActiveTexture := 0;
   end;
 
   programObject.UseProgramObject;
@@ -146,21 +171,13 @@ begin
 
   programObject.EndUseProgramObject;
 
-  if not programObject.ValidateProgram then
-    raise Exception.Create(programObject.InfoLog);
-
-  Gl.CheckError;
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
   var rci: TRenderContextInfo);
 var
-  mat: TMatrix;
   camPos: TVector;
 begin
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
-  InvertMatrix(mat);
-
   programObject.UseProgramObject;
 
   programObject.Uniform1f['Time'] := GLCadencer1.CurrentTime * 0.05;
@@ -249,7 +266,7 @@ begin
 
     vbo := TGLVBOArrayBufferHandle.CreateAndAllocate();
     vbo.Bind;
-    vbo.BufferData(v.List, v.DataSize, GL_STATIC_DRAW);
+    vbo.BufferData(v.List, v.DataSize, GL_STATIC_DRAW_ARB);
     nbVerts := v.Count;
 
     GL.VertexPointer(2, GL_FLOAT, 0, nil);

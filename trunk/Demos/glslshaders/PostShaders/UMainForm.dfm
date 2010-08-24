@@ -31,6 +31,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
     Buffer.ColorDepth = cd24bits
     FieldOfView = 145.291946411132800000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0

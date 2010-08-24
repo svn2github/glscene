@@ -33,6 +33,7 @@ object GLSLTestForm: TGLSLTestForm
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0

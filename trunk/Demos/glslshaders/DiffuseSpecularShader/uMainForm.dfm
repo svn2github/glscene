@@ -33,6 +33,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.ColorDepth = cd24bits
     FieldOfView = 143.991683959960900000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0

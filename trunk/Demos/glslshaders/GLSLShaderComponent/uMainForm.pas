@@ -26,7 +26,7 @@ uses
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS;
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage;
 
 type
   TGLSLTestForm = class(TForm)

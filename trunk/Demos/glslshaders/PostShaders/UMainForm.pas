@@ -26,7 +26,7 @@ uses
   GLSLPostBlurShader, CGPostTransformationShader,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDS, GLMaterial, GLCoordinates,
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage, GLMaterial, GLCoordinates,
   BaseClasses;
 
 type
