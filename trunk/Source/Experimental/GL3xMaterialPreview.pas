@@ -81,11 +81,11 @@ type
 implementation
 
 {$I GLScene.inc}
-{$IFNDEF FPC}
-{$R *.dfm}
-{$ELSE}
+{.$IFNDEF FPC}
+{.$R *.dfm}
+{.$ELSE}
 {$R *.lfm}
-{$ENDIF}
+{.$ENDIF}
 
 uses
   OpenGL1x,
@@ -298,11 +298,6 @@ begin
     else Model := Sphere;
   end;
 end;
-
-initialization
-{$IFDEF FPC}
-{$I GL3xMaterialPreview.lrs}
-{$ENDIF}
 
 end.
 

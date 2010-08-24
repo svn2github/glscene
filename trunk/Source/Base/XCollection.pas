@@ -550,9 +550,7 @@ end;
 
 procedure TXCollection.ReadFromFiler(reader: TReader);
 var
-  {$IFNDEF FPC}
   InitialPosition : integer;
-  {$ENDIF}
   Header : array[0..3] of AnsiChar;
   n, lc, lcnum: Integer;
   classList: TList;

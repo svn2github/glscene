@@ -1014,8 +1014,13 @@ var
   vName, vValue: string;
 begin
   FMaterial.Document := GLSNewXMLDocument;
+{$IFDEF FPC}
+  XMLMaterial := FMaterial.Document.CreateElement('TGL3xMaterial');
+  FMaterial.Document.AppendChild(XMLMaterial);
+{$ELSE}
   XMLMaterial := FMaterial.Document.DOMDocument.CreateElement('TGL3xMaterial');
   FMaterial.Document.DOMDocument.AppendChild(XMLMaterial);
+{$ENDIF}
   // Save textures
   vValue := '';
   for I := 0 to High(FTextures) do

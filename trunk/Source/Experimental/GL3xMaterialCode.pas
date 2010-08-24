@@ -42,11 +42,11 @@ type
 
 implementation
 
-{$IFNDEF FPC}
-  {$R *.dfm}
-{$ELSE}
+{.$IFNDEF FPC}
+  {.$R *.dfm}
+{.$ELSE}
   {$R *.lfm}
-{$ENDIF}
+{.$ENDIF}
 
 {$IFDEF FPC}
 procedure TMaterialCodeForm.WMMove(var Message: TLMMove);
@@ -66,10 +66,5 @@ procedure TMaterialCodeForm.FormClose(Sender: TObject;
 begin
   NotifyClose(Self);
 end;
-
-initialization
-{$IFDEF FPC}
-{$I GL3xMaterialCode.lrs}
-{$ENDIF}
 
 end.

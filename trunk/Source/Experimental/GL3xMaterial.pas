@@ -365,7 +365,7 @@ begin
   // Make default diffuse texture
   defTex := TGL3xTexture.Create(Self);
   defTex.Name := glsDIFFUSEMAP;
-  rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_JPG_Type);
+  rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_DDS_Type);
   defTex.LoadFromStream(rStream);
   rStream.Free;
   FTextureTree.Add(defTex.HashCode, defTex);
@@ -373,7 +373,7 @@ begin
   // Make default normal texture
   normTex := TGL3xTexture.Create(Self);
   normTex.Name := glsNORMALMAP;
-  rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_JPG_Type);
+  rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_DDS_Type);
   normTex.LoadFromStream(rStream);
   rStream.Free;
   FTextureTree.Add(normTex.HashCode, normTex);
@@ -1771,7 +1771,11 @@ var
 begin
   if FSourceDoc <> nil then
   begin
+{$IFDEF FPC}
+    XMLMaterial := FSourceDoc.DocumentElement;
+{$ELSE}
     XMLMaterial := FSourceDoc.DOMDocument.DocumentElement;
+{$ENDIF}
     for I := 0 to XMLMaterial.childNodes.length - 1 do
     begin
       XMLSamples := XMLMaterial.childNodes.item[I];

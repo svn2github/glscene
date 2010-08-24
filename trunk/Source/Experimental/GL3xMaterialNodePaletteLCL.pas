@@ -93,6 +93,8 @@ var
 
 implementation
 
+{$R *.lfm}
+
 const
   cNodeClasses: array[0..32] of TCustomMaterialGraphNodeClass = (
     TCustomMaterialGraphNode,
@@ -223,9 +225,6 @@ begin
     Docked := False;
   inherited;
 end;
-
-initialization
-  {$I GL3xMaterialNodePaletteLCL.lrs}
 
 end.
 

@@ -13,6 +13,7 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>24/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>31/05/10 - Yar - Fixed warnings
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -546,6 +547,9 @@ type
 
 
 implementation
+
+uses
+  OpenGLTokens, GLContext;
 
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject; const Axis, Origin: TAffineVector; const angle: Single);
 var
@@ -2234,10 +2238,10 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
         AVector := VectorScale(AVector, 0.25);
         AVector := VectorAdd(AVector, BB[I]);
 
-        glBegin(GL_LINES);
-        glVertex3f(BB[I][0], BB[I][1], BB[I][2]);
-        glVertex3f(AVector[0], AVector[1], AVector[2]);
-        glEnd;
+        GL.Begin_(GL_LINES);
+        GL.Vertex3f(BB[I][0], BB[I][1], BB[I][2]);
+        GL.Vertex3f(AVector[0], AVector[1], AVector[2]);
+        GL.End_;
       end;
     end;
   end;
@@ -2258,9 +2262,9 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
     FLayout := GLCrossPlatform.tlCenter;
     FAlignment := taCenter;
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-    wm := TGLSceneBuffer(rci.buffer).ViewMatrix;
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PushMatrix;
+    wm := rci.PipelineTransformation.ViewMatrix;
 
     TransposeMatrix(wm);
 
@@ -2270,11 +2274,11 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
           wm[I, J] := 1
         else
           wm[I, J] := 0;
-    glLoadMatrixf(@wm);
+    GL.LoadMatrixf(@wm);
 
     rci.GLStates.PolygonMode := pmFill;
-    glScalef(Scale[0], Scale[1], Scale[2]);
-    glTranslatef(Position[0], Position[1], Position[2]);
+    GL.Scalef(Scale[0], Scale[1], Scale[2]);
+    GL.Translatef(Position[0], Position[1], Position[2]);
 
 
     if Color[3] <> 1 then
@@ -2286,7 +2290,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
     rci.GLStates.Disable(stCullFace);
 
     FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
-    glPopMatrix;
+    GL.PopMatrix;
 
   end;
 
@@ -2307,10 +2311,10 @@ begin
     else
       rci.GLStates.LineWidth := 1;
 
-    glColorMaterial(GL_FRONT, GL_EMISSION);
+    GL.ColorMaterial(GL_FRONT, GL_EMISSION);
     rci.GLStates.Enable(stColorMaterial);
 
-    glColor4fv(@FBoundingBoxColor.Color);
+    GL.Color4fv(@FBoundingBoxColor.Color);
 
     for I := 0 to FSelectedObjects.Count - 1 do
       ShowBoundingBox(FSelectedObjects.Hit[I]);

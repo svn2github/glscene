@@ -500,13 +500,13 @@ begin
   begin
     if FName = glsDIFFUSEMAP then
     begin
-      rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_JPG_Type);
+      rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_DDS_Type);
       LoadFromStream(rStream);
       rStream.Free;
     end
     else if FName = glsNORMALMAP then
     begin
-      rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_JPG_Type);
+      rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_DDS_Type);
       LoadFromStream(rStream);
       rStream.Free;
     end

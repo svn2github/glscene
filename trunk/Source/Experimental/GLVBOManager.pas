@@ -367,7 +367,6 @@ uses
   MeshUtils;
 
 const
-  FourByteZero: T4ByteData = (Int: (Value: 0));
   cPrimitiveType: array[GLVBOM_TRIANGLES..GLVBOM_TRIANGLE_STRIP_ADJACENCY] of
     GLenum =
     (

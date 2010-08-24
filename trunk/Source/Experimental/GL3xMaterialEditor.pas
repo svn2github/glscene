@@ -165,11 +165,11 @@ implementation
 
 {$I GLScene.inc}
 
-{$IFNDEF FPC}
-{$R *.dfm}
-{$ELSE}
+{.$IFNDEF FPC}
+{.$R *.dfm}
+{.$ELSE}
 {$R *.lfm}
-{$ENDIF}
+{.$ENDIF}
 
 uses
   OpenGLTokens,
@@ -774,9 +774,6 @@ begin
 end;
 
 initialization
-{$IFDEF FPC}
-{$I MaterialEditorForm.lrs}
-{$ENDIF}
 
 finalization
 

@@ -394,9 +394,9 @@ operator -(const a: TVector4fEXT): TVector4fEXT; overload; inline;
 operator +(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
 operator -(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
 operator *(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
-operator *(const a: TVector2iEXT; b: Single): TVector2iEXT; overload; inline;
+operator *(const a: TVector2iEXT; b: Integer): TVector2iEXT; overload; inline;
 operator /(const a, b: TVector2iEXT): TVector2iEXT; overload; inline;
-operator /(const a: TVector2iEXT; b: Single): TVector2iEXT; overload; inline;
+operator /(const a: TVector2iEXT; b: Integer): TVector2iEXT; overload; inline;
 operator =(const a, b: TVector2iEXT): Boolean; overload; inline;
 operator -(const a: TVector2iEXT): TVector2iEXT; overload; inline;
 
@@ -404,9 +404,9 @@ operator := (const a: TVector3i): TVector3iEXT; overload; inline;
 operator + (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
 operator - (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
 operator * (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
-operator * (const a: TVector3iEXT; b: Single): TVector3iEXT; overload; inline;
+operator * (const a: TVector3iEXT; b: Integer): TVector3iEXT; overload; inline;
 operator / (const a, b: TVector3iEXT): TVector3iEXT; overload; inline;
-operator / (const a: TVector3iEXT; b: Single): TVector3iEXT; overload; inline;
+operator / (const a: TVector3iEXT; b: Integer): TVector3iEXT; overload; inline;
 operator = (const a, b: TVector3iEXT): Boolean; overload; inline;
 operator - (const a: TVector3iEXT): TVector3iEXT; overload; overload; inline;
 
@@ -414,45 +414,44 @@ operator :=(const a: TVector4i): TVector4iEXT; overload; inline;
 operator +(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
 operator -(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
 operator *(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
-operator *(const a: TVector4iEXT; b: Single): TVector4iEXT; overload; inline;
+operator *(const a: TVector4iEXT; b: Integer): TVector4iEXT; overload; inline;
 operator /(const a, b: TVector4iEXT): TVector4iEXT; overload; inline;
-operator /(const a: TVector4iEXT; b: Single): TVector4iEXT; overload; inline;
+operator /(const a: TVector4iEXT; b: Integer): TVector4iEXT; overload; inline;
 operator =(const a, b: TVector4iEXT): Boolean; overload; inline;
 operator -(const a: TVector4iEXT): TVector4iEXT; overload; inline;
 
 operator +(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
 operator -(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
 operator *(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
-operator *(const a: TVector2uiEXT; b: Single): TVector2uiEXT; overload; inline;
+operator *(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT; overload; inline;
 operator /(const a, b: TVector2uiEXT): TVector2uiEXT; overload; inline;
-operator /(const a: TVector2uiEXT; b: Single): TVector2uiEXT; overload; inline;
+operator /(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT; overload; inline;
 operator =(const a, b: TVector2uiEXT): Boolean; overload; inline;
 operator -(const a: TVector2uiEXT): TVector2uiEXT; overload; inline;
 
-operator := (const a: TVector3i): TVector3uiEXT; overload; inline;
+operator := (const a: TVector3ui): TVector3uiEXT; overload; inline;
 operator + (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
 operator - (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
 operator * (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
-operator * (const a: TVector3uiEXT; b: Single): TVector3uiEXT; overload; inline;
+operator * (const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT; overload; inline;
 operator / (const a, b: TVector3uiEXT): TVector3uiEXT; overload; inline;
-operator / (const a: TVector3uiEXT; b: Single): TVector3uiEXT; overload; inline;
+operator / (const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT; overload; inline;
 operator = (const a, b: TVector3uiEXT): Boolean; overload; inline;
 operator - (const a: TVector3uiEXT): TVector3uiEXT; overload; overload; inline;
 
-operator :=(const a: TVector4i): TVector4uiEXT; overload; inline;
+operator :=(const a: TVector4ui): TVector4uiEXT; overload; inline;
 operator +(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
 operator -(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
 operator *(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
-operator *(const a: TVector4uiEXT; b: Single): TVector4uiEXT; overload; inline;
+operator *(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT; overload; inline;
 operator /(const a, b: TVector4uiEXT): TVector4uiEXT; overload; inline;
-operator /(const a: TVector4uiEXT; b: Single): TVector4uiEXT; overload; inline;
+operator /(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT; overload; inline;
 operator =(const a, b: TVector4uiEXT): Boolean; overload; inline;
 operator -(const a: TVector4uiEXT): TVector4uiEXT; overload; inline;
 
 operator :=(const a: TMatrix2f): TMatrix2fEXT; overload;
 operator :=(const a: TMatrix2fEXT): TMatrix2f; overload;
 operator +(const a, b: TMatrix2fEXT): TMatrix2fEXT; overload;
-operator *(const m: TMatrix2fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
 operator *(const m: TMatrix2fEXT; const a: TVector2fEXT): TVector2fEXT; overload;
 operator *(const a, b: TMatrix2fEXT): TMatrix2fEXT; overload;
 operator *(const a: TMatrix2fEXT; x: Single): TMatrix2fEXT; overload;
@@ -461,7 +460,6 @@ operator =(const a, b: TMatrix2fEXT): Boolean; overload;
 operator :=(const a: TMatrix3f): TMatrix3fEXT; overload;
 operator :=(const a: TMatrix3fEXT): TMatrix3f; overload;
 operator +(const a, b: TMatrix3fEXT): TMatrix3fEXT; overload;
-operator *(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
 operator *(const m: TMatrix3fEXT; const a: TVector3fEXT): TVector3fEXT; overload;
 operator *(const a, b: TMatrix3fEXT): TMatrix3fEXT; overload;
 operator *(const a: TMatrix3fEXT; x: Single): TMatrix3fEXT; overload;
@@ -1066,7 +1064,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector2iEXT; b: Single): TVector2iEXT;
+operator *(const a: TVector2iEXT; b: Integer): TVector2iEXT;
 {$ELSE}
 class operator TVector2iEXT.Multiply(const a: TVector2iEXT; b: Integer): TVector2iEXT;
 {$ENDIF}
@@ -1076,7 +1074,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector2iEXT; b: Single): TVector2iEXT;
+operator /(const a: TVector2iEXT; b: Integer): TVector2iEXT;
 {$ELSE}
 class operator TVector2iEXT.Divide(const a: TVector2iEXT; b: Integer): TVector2iEXT;
 {$ENDIF}
@@ -1168,7 +1166,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector3iEXT; b: Single): TVector3iEXT;
+operator *(const a: TVector3iEXT; b: Integer): TVector3iEXT;
 {$ELSE}
 class operator TVector3iEXT.Multiply(const a: TVector3iEXT; b: Integer): TVector3iEXT;
 {$ENDIF}
@@ -1179,7 +1177,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector3iEXT; b: Single): TVector3iEXT;
+operator /(const a: TVector3iEXT; b: Integer): TVector3iEXT;
 {$ELSE}
 class operator TVector3iEXT.Divide(const a: TVector3iEXT; b: Integer): TVector3iEXT;
 {$ENDIF}
@@ -1278,7 +1276,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector4iEXT; b: Single): TVector4iEXT;
+operator *(const a: TVector4iEXT; b: Integer): TVector4iEXT;
 {$ELSE}
 class operator TVector4iEXT.Multiply(const a: TVector4iEXT; b: Integer): TVector4iEXT;
 {$ENDIF}
@@ -1290,7 +1288,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector4iEXT; b: Single): TVector4iEXT;
+operator /(const a: TVector4iEXT; b: Integer): TVector4iEXT;
 {$ELSE}
 class operator TVector4iEXT.Divide(const a: TVector4iEXT; b: Integer): TVector4iEXT;
 {$ENDIF}
@@ -1385,7 +1383,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector2uiEXT; b: Single): TVector2uiEXT;
+operator *(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
 {$ELSE}
 class operator TVector2uiEXT.Multiply(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
 {$ENDIF}
@@ -1395,7 +1393,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector2uiEXT; b: Single): TVector2uiEXT;
+operator /(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
 {$ELSE}
 class operator TVector2uiEXT.Divide(const a: TVector2uiEXT; b: Cardinal): TVector2uiEXT;
 {$ENDIF}
@@ -1487,7 +1485,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector3uiEXT; b: Single): TVector3uiEXT;
+operator *(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
 {$ELSE}
 class operator TVector3uiEXT.Multiply(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
 {$ENDIF}
@@ -1498,7 +1496,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector3uiEXT; b: Single): TVector3uiEXT;
+operator /(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
 {$ELSE}
 class operator TVector3uiEXT.Divide(const a: TVector3uiEXT; b: Cardinal): TVector3uiEXT;
 {$ENDIF}
@@ -1597,7 +1595,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator *(const a: TVector4uiEXT; b: Single): TVector4uiEXT;
+operator *(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
 {$ELSE}
 class operator TVector4uiEXT.Multiply(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
 {$ENDIF}
@@ -1609,7 +1607,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator /(const a: TVector4uiEXT; b: Single): TVector4uiEXT;
+operator /(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
 {$ELSE}
 class operator TVector4uiEXT.Divide(const a: TVector4uiEXT; b: Cardinal): TVector4uiEXT;
 {$ENDIF}
@@ -1673,7 +1671,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator :=(const a: TMatrix2fEXT): TMatrix42f;
+operator :=(const a: TMatrix2fEXT): TMatrix2f;
 {$ELSE}
 class operator TMatrix2fEXT.Implicit(const a: TMatrix2fEXT): TMatrix2f;
 {$ENDIF}
@@ -1682,7 +1680,7 @@ begin
 end;
 
 {$IFDEF FPC}
-operator +(const a, b: TMatrix4fEXT): TMatrix4fEXT;
+operator +(const a, b: TMatrix2fEXT): TMatrix2fEXT;
 {$ELSE}
 class operator TMatrix2fEXT.Add(const a, b: TMatrix2fEXT): TMatrix2fEXT;
 {$ENDIF}
