@@ -21,7 +21,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
-  GLWin32Viewer, OpenGL1x, GLTexture, VectorGeometry, GLGraph,
+  GLWin32Viewer, OpenGLTokens, GLContext, GLTexture, VectorGeometry, GLGraph,
   GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses,
   GLRenderContextInfo, GLState;
 
@@ -87,21 +87,21 @@ begin
 
    // save state, turn off lighting and specify the lines color
    rci.GLStates.Disable(stLighting);
-   glColor3f(1, 1, 0);
+   GL.Color3f(1, 1, 0);
 
    // we'll be drawing a bunch of lines, to specify a line in OpenGL,
    // you only need to specify the line start and end vertices
-   glBegin(GL_LINES);
+   GL.Begin_(GL_LINES);
       for i:=0 to GLPoints.Positions.Count-1 do begin
          // read the point coordinates, directly from the TGLPoints list
          MakePoint(p, GLPoints.Positions.List[i]);
          // project this point on the plane with the matrix
          pProj:=VectorTransform(p, mat);
          // specify the two vertices
-         glVertex3fv(@p);
-         glVertex3fv(@pProj);
+         GL.Vertex3fv(@p);
+         GL.Vertex3fv(@pProj);
       end;
-   glEnd;
+   GL.End_;
 end;
 
 procedure TForm1.SceneViewerMouseDown(Sender: TObject;
