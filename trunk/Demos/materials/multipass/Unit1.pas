@@ -24,7 +24,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, OpenGL1x,
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, OpenGLTokens, GLContext,
   StdCtrls, GLGeomObjects, GLState, GLColor, GLMaterial, GLCoordinates,
   GLCrossPlatform, BaseClasses, GLRenderContextInfo;
 
@@ -94,7 +94,7 @@ begin
     Disable(stLighting);
     PolygonMode := pmFill;
     // use background color
-    glColor3fv(@BackgroundColor);
+    GL.Color3fv(@BackgroundColor);
     // enable and adjust polygon offset
     Enable(stPolygonOffsetFill);
     SetPolygonOffset(1, 2);
@@ -114,8 +114,9 @@ begin
         PolygonMode := pmLines;
         Disable(stPolygonOffsetLine);
         Disable(stLineStipple);
+        Disable(stLineSmooth);
         LineWidth := 1;
-        glColor3fv(@LineColor);
+        GL.Color3fv(@LineColor);
         Result := True;
       end;
     2:
@@ -157,7 +158,7 @@ begin
     PolygonMode := pmLines;
     CullFaceMode := cmFront;
     DepthFunc := cfLEqual;
-    glColor3fv(@lineColor);
+    GL.Color3fv(@lineColor);
   end;
 end;
 
@@ -171,7 +172,7 @@ begin
         if lighting then
           Enable(stLighting)
         else
-          glColor3fv(@backGroundColor);
+          GL.Color3fv(@backGroundColor);
         DepthFunc := cfLess;
         PolygonMode := pmFill;
         CullFaceMode := cmBack;

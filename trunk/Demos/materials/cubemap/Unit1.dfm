@@ -16,13 +16,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 308
-    Height = 305
+    Width = 300
+    Height = 296
     Camera = GLCamera1
+    BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 52.517318725585940000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Button1: TButton
     Left = 136
@@ -37,21 +40,20 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object DummyCube1: TGLDummyCube
-      CubeSize = 0.800000011920929
+      CubeSize = 0.800000011920929000
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000E0400000A040000040400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Teapot1: TGLTeapot
       Material.Texture.TextureMode = tmReplace
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 300
+      DepthOfView = 100.000000000000000000
+      FocalLength = 300.000000000000000000
       TargetObject = Teapot1
       Position.Coordinates = {000040400000A0400000E0400000803F}
     end

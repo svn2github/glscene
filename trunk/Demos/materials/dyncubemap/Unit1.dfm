@@ -16,18 +16,21 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 405
-    Height = 317
+    Width = 397
+    Height = 308
     Camera = GLCamera1
+    BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 144.025329589843800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 405
+    Width = 397
     Height = 25
     Align = alTop
     BevelOuter = bvLowered
@@ -52,25 +55,25 @@ object Form1: TForm1
       Bands = <
         item
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 15
+          StopAngle = 15.000000000000000000
           Slices = 6
         end
         item
-          StartAngle = 15
-          StopAngle = 90
+          StartAngle = 15.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {5C8F023F5C8F023F0000803F0000803F}
           Slices = 6
           Stacks = 4
         end
         item
-          StartAngle = -90
+          StartAngle = -90.000000000000000000
           StartColor.Color = {000000001283803E000000000000803F}
-          StopAngle = -5
+          StopAngle = -5.000000000000000000
           StopColor.Color = {000000001283003F000000000000803F}
           Slices = 6
         end
         item
-          StartAngle = -5
+          StartAngle = -5.000000000000000000
           StartColor.Color = {000000001283003F000000000000803F}
           StopColor.Color = {0000803F0000803F0000803F0000803F}
           Slices = 6
@@ -78,66 +81,61 @@ object Form1: TForm1
       Stars = <>
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {E5D0623FE5D0623FE5D0623F0000803F}
       Position.Coordinates = {0000484200004842000048420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000803F000000000000000000000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      MajorRadius = 5
-      MinorRadius = 0.300000011920929
+      MajorRadius = 5.000000000000000000
+      MinorRadius = 0.300000011920929000
       Rings = 32
       Sides = 12
       object Cylinder1: TGLCylinder
+        Material.FrontProperties.Emission.Color = {00000000000000000000803F0000803F}
         Direction.Coordinates = {000000800000803F0000000000000000}
         Position.Coordinates = {0000A04000000000000000000000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
-        Material.FrontProperties.Emission.Color = {00000000000000000000803F0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        BottomRadius = 0.300000011920929
-        Height = 5
+        BottomRadius = 0.300000011920929000
+        Height = 5.000000000000000000
         Slices = 12
         Stacks = 1
-        TopRadius = 0.300000011920929
+        TopRadius = 0.300000011920929000
       end
       object Sphere1: TGLSphere
-        Position.Coordinates = {0000A0C000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {1283003F0000803F000000000000803F}
         Material.FrontProperties.Emission.Color = {00000000448B0C3FBA490C3E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 1
+        Position.Coordinates = {0000A0C000000000000000000000803F}
+        Radius = 1.000000000000000000
         Slices = 12
         Stacks = 12
       end
       object Cube1: TGLCube
-        Position.Coordinates = {000000000000A040000000000000803F}
         Material.FrontProperties.Diffuse.Color = {AE47613EAE47613EAE47613E0000803F}
         Material.FrontProperties.Emission.Color = {1283003F00000000000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {000000000000A040000000000000803F}
         CubeSize = {0000C03F0000C03F0000C03F}
       end
     end
     object Teapot1: TGLTeapot
-      Direction.Coordinates = {F404353F00000000F204353F00000000}
-      Scale.Coordinates = {00000041000000410000004100000000}
-      Visible = False
       Material.Texture.ImageClassName = 'TGLCubeMapImage'
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
       Material.Texture.MappingMode = tmmCubeMapReflection
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+      Direction.Coordinates = {F404353F00000000F204353F00000000}
+      Scale.Coordinates = {00000041000000410000004100000000}
+      Visible = False
       object CubeMapCamera: TGLCamera
-        DepthOfView = 50
-        FocalLength = 25
+        DepthOfView = 50.000000000000000000
+        FocalLength = 25.000000000000000000
         TargetObject = Sphere1
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Torus1
       Position.Coordinates = {0000204100008040000000410000803F}
     end
@@ -152,7 +150,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    MaxDeltaTime = 20
+    MaxDeltaTime = 20.000000000000000000
     OnProgress = GLCadencer1Progress
     Left = 8
     Top = 64

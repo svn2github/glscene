@@ -16,9 +16,22 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLWin32Viewer, GLObjects, StdCtrls, GLTeapot,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  Windows,
+  Messages,
+  SysUtils,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  GLScene,
+  GLWin32Viewer,
+  GLObjects,
+  StdCtrls,
+  GLTeapot,
+  GLCrossPlatform,
+  GLCoordinates,
+  BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -34,11 +47,13 @@ type
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Button1Click(Sender: TObject);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
+    CubmapSupported: Boolean;
   public
     { Public declarations }
-    mx, my : Integer;
+    mx, my: Integer;
   end;
 
 var
@@ -48,44 +63,56 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, GLTexture, OpenGL1x;
+uses
+  Jpeg,
+  GLTexture,
+  GLContext;
+
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+  CubmapSupported := GL.ARB_texture_cube_map;
+  GLSceneViewer1.BeforeRender := nil;
+end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   // Cube map warning message
-   // If you don't check and turn off cube maps yourself in your apps when
-   // cube maps aren't supported, GLScene will just turn off texturing
-   // (ie. no error generated, just a different output)
-   if not GL_ARB_texture_cube_map then begin
-      ShowMessage('Your graphics board does not support cube maps...');
-      Exit;
-   end;
-   // Our cube map images are here
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+  // Cube map warning message
+  // If you don't check and turn off cube maps yourself in your apps when
+  // cube maps aren't supported, GLScene will just turn off texturing
+  // (ie. no error generated, just a different output)
+  if not CubmapSupported then
+  begin
+    ShowMessage('Your graphics board does not support cube maps...');
+    Exit;
+  end;
+  // Our cube map images are here
+  SetCurrentDir(ExtractFilePath(Application.ExeName) + '..\..\media');
 
-   with Teapot1.Material.Texture do begin
-      // We need a CubeMapImage, which unlike the "regular Images" stores
-      // multiple images.
-      ImageClassName:=TGLCubeMapImage.ClassName;
-      with Image as TGLCubeMapImage do begin
-         // Load all 6 texture map components of the cube map
-         // The 'PX', 'NX', etc. refer to 'positive X', 'negative X', etc.
-         // and follow the RenderMan specs/conventions
-         Picture[cmtPX].LoadFromFile('cm_left.jpg');
-         Picture[cmtNX].LoadFromFile('cm_right.jpg');
-         Picture[cmtPY].LoadFromFile('cm_top.jpg');
-         Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
-         Picture[cmtPZ].LoadFromFile('cm_back.jpg');
-         Picture[cmtNZ].LoadFromFile('cm_front.jpg');
-      end;
-      // Select reflection cube map environment mapping
-      // This is the mode you'll most commonly use with cube maps, normal cube
-      // map generation is also supported (used for diffuse environment lighting)
-      MappingMode:=tmmCubeMapReflection;
-      // That's all folks, let us see the thing!
-      Disabled:=False;
-   end;
-   Button1.Visible:=False;
+  with Teapot1.Material.Texture do
+  begin
+    // We need a CubeMapImage, which unlike the "regular Images" stores
+    // multiple images.
+    ImageClassName := TGLCubeMapImage.ClassName;
+    with Image as TGLCubeMapImage do
+    begin
+      // Load all 6 texture map components of the cube map
+      // The 'PX', 'NX', etc. refer to 'positive X', 'negative X', etc.
+      // and follow the RenderMan specs/conventions
+      Picture[cmtPX].LoadFromFile('cm_left.jpg');
+      Picture[cmtNX].LoadFromFile('cm_right.jpg');
+      Picture[cmtPY].LoadFromFile('cm_top.jpg');
+      Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
+      Picture[cmtPZ].LoadFromFile('cm_back.jpg');
+      Picture[cmtNZ].LoadFromFile('cm_front.jpg');
+    end;
+    // Select reflection cube map environment mapping
+    // This is the mode you'll most commonly use with cube maps, normal cube
+    // map generation is also supported (used for diffuse environment lighting)
+    MappingMode := tmmCubeMapReflection;
+    // That's all folks, let us see the thing!
+    Disabled := False;
+  end;
+  Button1.Visible := False;
 end;
 
 // standard issue handlers for mouse movement
@@ -93,20 +120,23 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   mx:=x;
-   my:=y;
+  mx := x;
+  my := y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-   if Shift<>[] then begin
-      if ssLeft in Shift then
-         GLCamera1.MoveAroundTarget(my-y, mx-x)
-      else GLCamera1.RotateTarget(my-y, mx-x);
-      mx:=x;
-      my:=y;
-   end;
+  if Shift <> [] then
+  begin
+    if ssLeft in Shift then
+      GLCamera1.MoveAroundTarget(my - y, mx - x)
+    else
+      GLCamera1.RotateTarget(my - y, mx - x);
+    mx := x;
+    my := y;
+  end;
 end;
 
 end.
+

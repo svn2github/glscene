@@ -53,12 +53,14 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
     procedure GenerateCubeMap;
   public
     { Public declarations }
     mx, my : Integer;
+    CubmapSupported : Boolean;
     cubeMapWarnDone : Boolean;
   end;
 
@@ -69,10 +71,13 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLContext;
+
 procedure TForm1.GenerateCubeMap;
 begin
    // Don't do anything if cube maps aren't supported
-   if not GL_ARB_texture_cube_map then begin
+   if not CubmapSupported then begin
       if not cubeMapWarnDone then
          ShowMessage('Your graphics hardware does not support cube maps...');
       cubeMapWarnDone:=True;
@@ -127,6 +132,12 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+  CubmapSupported := GL.ARB_texture_cube_map;
+  GLSceneViewer1.BeforeRender := nil;
 end;
 
 end.
