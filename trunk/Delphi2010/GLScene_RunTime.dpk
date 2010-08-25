@@ -182,7 +182,6 @@ contains
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
-  DDS in '..\Source\FileFormats\DDS.pas',
   DXTC in '..\Source\FileFormats\DXTC.pas',
   GLMaterialScript in '..\Source\GLMaterialScript.pas',
   GLDCEMisc in '..\Source\GLDCEMisc.pas',
@@ -295,11 +294,11 @@ contains
   GL3xMaterialGraph in '..\Source\Experimental\GL3xMaterialGraph.pas',
   GLSpecializedUniforms in '..\Source\Experimental\GLSpecializedUniforms.pas',
   GL3xTexture in '..\Source\Experimental\GL3xTexture.pas',
-  GLSCrossXML in '..\Source\Experimental\GLSCrossXML.pas',
+  GLSCrossXML in '..\Source\Base\GLSCrossXML.pas',
   GLSLauncher in '..\Source\Experimental\GLSLauncher.pas',
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
   OpenGL1x in '..\Source\Base\OpenGL1x.pas',
-  GLPipelineTransformation in '..\Source\Experimental\GLPipelineTransformation.pas',
+  GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   GLSceneForm in '..\Source\Experimental\GLSceneForm.pas';
 
 end.
