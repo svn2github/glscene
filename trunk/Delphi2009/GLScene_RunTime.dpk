@@ -30,7 +30,11 @@ package GLScene_RunTime;
 requires
   vcl,
   rtl,
-  vclimg;
+  vclimg,
+  designide,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   GLScene in '..\Source\GLScene.pas',
@@ -182,7 +186,6 @@ contains
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
-  DDS in '..\Source\FileFormats\DDS.pas',
   DXTC in '..\Source\FileFormats\DXTC.pas',
   GLMaterialScript in '..\Source\GLMaterialScript.pas',
   GLDCEMisc in '..\Source\GLDCEMisc.pas',
@@ -192,7 +195,6 @@ contains
   GLBlur in '..\Source\GLBlur.pas',
   GLPerlinBase in '..\Source\GLPerlinBase.pas',
   GLPerlin in '..\Source\GLPerlin.pas',
-  ARBProgram in '..\Source\Base\ARBProgram.pas',
   GLPhongShader in '..\Source\Shaders\GLPhongShader.pas',
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
@@ -273,6 +275,35 @@ contains
   GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
-  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
+  GL3xAtmosphere in '..\Source\Experimental\GL3xAtmosphere.pas',
+  GL3xFactory in '..\Source\Experimental\GL3xFactory.pas',
+  GL3xLensFlare in '..\Source\Experimental\GL3xLensFlare.pas',
+  GL3xMaterial in '..\Source\Experimental\GL3xMaterial.pas',
+  GL3xMaterialConst in '..\Source\Experimental\GL3xMaterialConst.pas',
+  GL3xMaterialGraph in '..\Source\Experimental\GL3xMaterialGraph.pas',
+  GL3xNishitaSky in '..\Source\Experimental\GL3xNishitaSky.pas',
+  GL3xObjects in '..\Source\Experimental\GL3xObjects.pas',
+  GL3xTexture in '..\Source\Experimental\GL3xTexture.pas',
+  GLSceneForm in '..\Source\Experimental\GLSceneForm.pas',
+  GLSGraphStructure in '..\Source\Experimental\GLSGraphStructure.pas',
+  GLShaderManager in '..\Source\Experimental\GLShaderManager.pas',
+  GLSLauncher in '..\Source\Experimental\GLSLauncher.pas',
+  GLSLog in '..\Source\Experimental\GLSLog.pas',
+  GLSpecializedUniforms in '..\Source\Experimental\GLSpecializedUniforms.pas',
+  GLSRedBlackTree in '..\Source\Experimental\GLSRedBlackTree.pas',
+  GLVBOManager in '..\Source\Experimental\GLVBOManager.pas',
+  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
+  GLSCrossXML in '..\Source\Base\GLSCrossXML.pas',
+  GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
+  GLFBO in '..\Source\GLFBO.pas',
+  OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
+  GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
+  GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
+  GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
+  GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
+  GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
+  LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
+  GLSMWaveOut in '..\Source\GLSMWaveOut.pas';
 
 end.
