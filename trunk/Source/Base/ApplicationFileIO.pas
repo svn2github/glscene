@@ -7,6 +7,7 @@
    Allows re-routing file reads to reads from a single archive file f.i.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>25/08/10 - DaStr - Fixed compiler warnings 
       <li>25/07/10 - Yar - Added TGLSResourceStream class and CreateResourceStream string
       <li>23/01/10 - Yar - Change LoadFromStream to dynamic
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
@@ -18,6 +19,8 @@
 unit ApplicationFileIO;
 
 interface
+
+{$I GLScene.inc}
 
 uses
   Classes,
@@ -103,14 +106,9 @@ type
   TDataFile = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
-    FOwner: TPersistent;
     FResourceName: string;
   public
     { Public Declarations }
-    constructor Create(AOwner: TPersistent); virtual;
-    destructor Destroy; override;
-
-    function GetOwner: TPersistent; override;
 
     {: Describes what the TDataFile is capable of.<p>
        Default value is [dfcRead]. }
@@ -260,42 +258,17 @@ end;
 // ------------------ TDataFile ------------------
 // ------------------
 
-// Create
-//
-
-constructor TDataFile.Create(AOwner: TPersistent);
-begin
-  inherited Create(AOwner);
-  FOwner := AOwner;
-end;
-
-// Destroy
-//
-
-destructor TDataFile.Destroy;
-begin
-  inherited;
-end;
 
 // Capabilities
 //
-
 class function TDataFile.Capabilities: TDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-// GetOwner
-//
-
-function TDataFile.GetOwner: TPersistent;
-begin
-  Result := FOwner;
-end;
 
 // CreateCopy
 //
-
 function TDataFile.CreateCopy(AOwner: TPersistent): TDataFile;
 begin
   if Self <> nil then
