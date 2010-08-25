@@ -208,7 +208,7 @@
         <overload Input="vec4;vec4;" Output="vec4">{ return max(A,B); }</overload>
       </Utility_Max>
       <Utility_BumpOffset ObjectType="F">
-        <overload Input="vec2;float;" Output="vec2">in float CameraTangentVector;
+        <overload Input="vec2;float;float;float;" Output="vec2">in float CameraTangentVector;
 //#
 { float offset = B*C - D * CameraTangentVector / C; return A + vec2(offset, offset); }</overload>
       </Utility_BumpOffset>
