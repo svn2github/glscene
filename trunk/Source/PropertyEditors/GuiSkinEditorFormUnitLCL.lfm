@@ -217,9 +217,9 @@ object GUISkinEditor: TGUISkinEditor
     end
     object CheckBox1: TCheckBox
       Left = 12
-      Height = 17
+      Height = 19
       Top = 180
-      Width = 86
+      Width = 88
       Caption = 'Show Preview'
       OnClick = CheckBox1Click
       TabOrder = 2
@@ -502,6 +502,7 @@ object GUISkinEditor: TGUISkinEditor
     end
     object GLPanel1: TGLPanel
       TagFloat = 0
+      Autosize = False
       RedrawAtOnce = False
       Rotation = 0
       NoZWrite = False

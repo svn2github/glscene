@@ -6,7 +6,7 @@
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
-
+      <li>26/08/10 - Yar - Fixed ImageWndProc (thnaks Predator)
    </ul></font>
 }
 unit GuiSkinEditorFormUnitLCL;
@@ -945,7 +945,7 @@ end;
 
 procedure TGUISkinEditor.ImageWndProc(var Message: TMessage);
 begin
-  if (Message.Msg = CM_MOUSELEAVE) then
+  if (Message.Msg = WM_MOUSELEAVE) then
   begin
     DrawCrossair(FullMousePoint);
     FullMousePoint := Point(-1, -1);
@@ -953,16 +953,6 @@ begin
 
   FOriginalWndProc(Message);
 end;
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-  {$i GuiSkinEditorFormUnitLCL.lrs}
-
 
 end.
 
