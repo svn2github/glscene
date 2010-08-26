@@ -5,7 +5,7 @@
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <OtherUnitFiles Value="$(LazarusDir)/components/gradbutton/package/;C:/GLScene SVN/glscene/trunk/Source/DesignTime/"/>
+        <OtherUnitFiles Value="$(LazarusDir)/components/gradbutton/package/;../Source/DesignTime/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>

@@ -5,7 +5,7 @@
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;C:/library/glscene/Source/Experimental/"/>
+        <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Experimental/"/>
         <OtherUnitFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Platform/;../Source/Experimental/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
