@@ -289,9 +289,6 @@ end;
 destructor TGLWin32Context.Destroy;
 begin
   inherited Destroy;
-{$IFDEF GLS_MULTITHREAD}
-  vLastVendor := '';
-{$ENDIF}
 end;
 
 // SetupPalette
@@ -1142,11 +1139,6 @@ initialization
 
 {$IFNDEF FPC}
   RegisterGLContextClass(TGLWin32Context);
-{$ENDIF}
-finalization
-
-{$IFDEF GLS_MULTITHREAD}
-  vLastVendor := '';
 {$ENDIF}
 
 end.
