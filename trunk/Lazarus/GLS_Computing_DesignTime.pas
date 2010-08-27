@@ -7,11 +7,7 @@ unit GLS_Computing_DesignTime;
 interface
 
 uses
-    GLS_CL, GLS_CL_GL, GLS_CL_Platform, GLS_CUDA_API, 
-  GLS_CUDA_FastFourierTransformation, GLS_CUDA_ParallelPrimitives, 
-  GLS_CUDA_Runtime, GLS_CUDA_Utility, GLSComputingRegister, GLSCUDAEditor, 
-  GLSCUDA, GLSCUDACompiler, GLSCUDAContext, GLSCUDAFFTPlan, GLSCUDAGraphics, 
-  GLSCUDAParser, LazarusPackageIntf;
+  GLSComputingRegister, GLSCUDAEditor, LazarusPackageIntf;
 
 implementation
 

@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="GLS_Computing_RunTime"/>
+    <CompilerOptions>
+      <Version Value="9"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\Source\;..\Source\Experimental\;..\Source\DesignTime\;..\Source\ComputeAPIs\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\Experimental\;..\Source\DesignTime\;..\Source\ComputeAPIs\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Files Count="16">
+      <Item1>
+        <Filename Value="..\Source\ComputeAPIs\cl.inc"/>
+        <Type Value="Include"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\ComputeAPIs\cuda.inc"/>
+        <Type Value="Include"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CL.pas"/>
+        <UnitName Value="GLS_CL"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CL_GL.pas"/>
+        <UnitName Value="GLS_CL_GL"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CL_Platform.pas"/>
+        <UnitName Value="GLS_CL_Platform"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CUDA_API.pas"/>
+        <UnitName Value="GLS_CUDA_API"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CUDA_FastFourierTransformation.pas"/>
+        <UnitName Value="GLS_CUDA_FastFourierTransformation"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CUDA_ParallelPrimitives.pas"/>
+        <UnitName Value="GLS_CUDA_ParallelPrimitives"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CUDA_Runtime.pas"/>
+        <UnitName Value="GLS_CUDA_Runtime"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\Source\ComputeAPIs\GLS_CUDA_Utility.pas"/>
+        <UnitName Value="GLS_CUDA_Utility"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\Source\Experimental\GLSCUDA.pas"/>
+        <UnitName Value="GLSCUDA"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\Source\Experimental\GLSCUDACompiler.pas"/>
+        <UnitName Value="GLSCUDACompiler"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\Source\Experimental\GLSCUDAContext.pas"/>
+        <UnitName Value="GLSCUDAContext"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\Source\Experimental\GLSCUDAFFTPlan.pas"/>
+        <UnitName Value="GLSCUDAFFTPlan"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\Source\Experimental\GLSCUDAGraphics.pas"/>
+        <UnitName Value="GLSCUDAGraphics"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\Source\Experimental\GLSCUDAParser.pas"/>
+        <UnitName Value="GLSCUDAParser"/>
+      </Item16>
+    </Files>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="GLScene_RunTime"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="IDEIntf"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
