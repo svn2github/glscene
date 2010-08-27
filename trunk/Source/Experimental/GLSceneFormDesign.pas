@@ -321,7 +321,7 @@ end;
 function TGLSceneFormWizard.GetOwner: IOTAModule;
 var
   IModuleServices: IOTAModuleServices;
-  IModule, INewModule: IOTAModule;
+  IModule: IOTAModule;
   IProjectGroup: IOTAProjectGroup;
   i: Integer;
 begin
@@ -427,7 +427,7 @@ procedure TGLSceneFormWizard.FormCreated(const FormEditor: IOTAFormEditor);
 var
   OContainer: IOTAComponent;
   NContainer: INTAComponent;
-  Component, Component1, Component2: TComponent;
+  Component: TComponent;
 
   procedure RefClean;
   begin
