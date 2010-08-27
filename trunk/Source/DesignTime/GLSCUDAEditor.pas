@@ -44,15 +44,18 @@ type
   private
     { Private declarations }
     FCUDA: TGLSCUDA;
+    {$IFNDEF FPC}
     FCurrentDesigner: IDesigner;
+    {$ENDIF}
   protected
     { Protected declaration }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
   public
     { Public declarations }
-    procedure SetCUDAEditorClient(Client: TGLSCUDA; Designer: IDesigner);
 
+    procedure SetCUDAEditorClient(Client: TGLSCUDA
+      {$IFNDEF FPC}; Designer: IDesigner {$ENDIF});
   end;
 
 function GLSCUDAEditorForm: TGLSCUDAEditorForm;
@@ -103,6 +106,7 @@ procedure TGLSCUDAEditorForm.AddItemButtonClick(Sender: TObject);
 var
   obj: TCUDABaseItem;
 begin
+{$IFNDEF FPC}
   if Assigned(FCurrentDesigner) then
   begin
     obj :=
@@ -112,6 +116,9 @@ begin
     ListBox1.AddItem(obj.Name, obj);
     FCurrentDesigner.Modified;
   end;
+{$ELSE}
+
+{$ENDIF}
 end;
 
 procedure TGLSCUDAEditorForm.DeleteButtonClick(Sender: TObject);
@@ -129,8 +136,19 @@ begin
       obj.Destroy;
     end;
   end;
+
+  {$IFNDEF FPC}
   ListBox1.DeleteSelected;
   FCurrentDesigner.Modified;
+  {$ELSE}
+  i := 0;
+  repeat
+    if ListBox1.Selected[i] then
+      ListBox1.Items.Delete(i)
+    else
+      Inc(i);
+  until i >= ListBox1.Count;
+  {$ENDIF}
 end;
 
 procedure TGLSCUDAEditorForm.FormCreate(Sender: TObject);
@@ -187,6 +205,7 @@ var
   obj: TCUDABaseItem;
   i: Integer;
 begin
+  {$IFNDEF FPC}
   if not Assigned(FCurrentDesigner) then
     exit;
   obj := nil;
@@ -201,9 +220,13 @@ begin
     end;
   if Assigned(obj) then
     FCurrentDesigner.SelectComponent(obj);
+  {$ELSE}
+
+  {$ENDIF}
 end;
 
-procedure TGLSCUDAEditorForm.SetCUDAEditorClient(Client: TGLSCUDA; Designer: IDesigner);
+procedure TGLSCUDAEditorForm.SetCUDAEditorClient(Client: TGLSCUDA
+      {$IFNDEF FPC}; Designer: IDesigner {$ENDIF});
 var
   i: Integer;
   child: TCUDABaseItem;
@@ -211,7 +234,9 @@ begin
   if Assigned(FCUDA) then
     FCUDA.RemoveFreeNotification(Self);
   FCUDA := Client;
+  {$IFNDEF FPC}
   FCurrentDesigner := Designer;
+  {$ENDIF}
   ListBox1.Clear;
   if Assigned(FCUDA) then
   begin
@@ -220,7 +245,11 @@ begin
     for i := 0 to FCUDA.ItemsCount - 1 do
     begin
       child := FCUDA.Items[i];
+      {$IFNDEF FPC}
       ListBox1.AddItem(child.Name, child);
+      {$ELSE}
+      ListBox1.Items.Objects[ListBox1.Items.Add(child.Name)] := child;
+      {$ENDIF}
     end;
   end
   else
@@ -233,7 +262,7 @@ begin
   if (FCUDA = AComponent) and (Operation = opRemove) then
   begin
     FCUDA := nil;
-    SetCUDAEditorClient(nil, nil);
+    SetCUDAEditorClient(nil{$IFNDEF FPC}, nil{$ENDIF});
   end;
   inherited;
 end;

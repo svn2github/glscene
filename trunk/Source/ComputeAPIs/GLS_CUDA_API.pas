@@ -760,21 +760,21 @@ var
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuModuleGetFunction: function(var hfunc: PCUfunction; hmod: PCUmodule; const
+  cuModuleGetFunction: function(out hfunc: PCUfunction; hmod: PCUmodule; const
     name: PAnsiChar): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuModuleGetGlobal: function(var dptr: TCUdeviceptr; var bytes: Cardinal; hmod:
+  cuModuleGetGlobal: function(out dptr: TCUdeviceptr; var bytes: Cardinal; hmod:
     PCUmodule; const name: PAnsiChar): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
 
-  cuModuleGetTexRef: function(var pTexRef: PCUtexref; hmod: PCUmodule; const
+  cuModuleGetTexRef: function(out pTexRef: PCUtexref; hmod: PCUmodule; const
     name: PAnsiChar): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}
@@ -1425,7 +1425,7 @@ var
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cuGraphicsResourceGetMappedPointer: function(var pDevPtr: TCUdeviceptr; var
+  cuGraphicsResourceGetMappedPointer: function(var pDevPtr: TCUdeviceptr; out
     pSize: Cardinal; resource: PCUgraphicsResource): TCUresult
 {$IFDEF CUDA_STDCALL} stdcall;
 {$ENDIF}

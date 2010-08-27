@@ -81,7 +81,7 @@ type
   private
     { Private Declarations }
     FSourceDoc: GLSXMLDocument;
-    FName: string;
+    FName: TGL3xMaterialName;
     FHashCode: Integer;
     FVertObject: string;
     FGeomObject: string;
@@ -94,7 +94,7 @@ type
     FPolygonMode: TPolygonMode;
     FTextureUnits: TStringList;
 
-    procedure SetName(const AName: string);
+    procedure SetName(const AName: TGL3xMaterialName);
   protected
     FSampleList: TList;
     FUniforms: array of TBaseSpecialUniform;
@@ -125,11 +125,11 @@ type
     procedure SaveToStream(stream: TStream); override;
     procedure Initialize; override;
     class function Capabilities: TDataFileCapabilities; override;
-    //    function GetAttributes(out AttrArray: TGLSLAttributeArray): Boolean;
     procedure Apply;
     function UnApply: Boolean;
 
-    property Name: string read FName write SetName;
+    property Name: TGL3xMaterialName read FName write SetName;
+    property ProgramName: string read FProgram;
     property HashCode: Integer read FHashCode;
     property IsReadyToWork: Boolean read FProgramLinked;
   end;
@@ -207,6 +207,7 @@ type
     procedure BindLightsBlock;
 
     function IsMaterialExist(const AName: TGL3xMaterialName): Boolean;
+    function GetMaterialProgramName(const AName: TGL3xMaterialName): string;
   end;
 
 function MaterialManager: TGLSMaterialManager;
@@ -941,6 +942,16 @@ begin
     Result := True;
 end;
 
+function TGLSMaterialManager.GetMaterialProgramName(const AName: TGL3xMaterialName): string;
+begin
+  if IsMaterialExist(AName) then
+  begin
+    Result := GetMaterial(AName).ProgramName;
+  end
+  else
+    Result := '';
+end;
+
 procedure TGLSMaterialManager.FillMaterialNameList(var AList: TStringList);
 begin
   if not Assigned(AList) then
@@ -1285,10 +1296,10 @@ begin
   begin
     try
       BeginWork;
-      FVertObject := MakeUniqueObjectName('MainVertexObj');
-      FGeomObject := MakeUniqueObjectName('MainGeometryObj');
-      FFragObject := MakeUniqueObjectName('MainFragmentObj');
       FProgram := MakeUniqueProgramName('MatProg');
+      FVertObject := MakeUniqueObjectName(FProgram+'_VObj');
+      FGeomObject := MakeUniqueObjectName(FProgram+'_GObj');
+      FFragObject := MakeUniqueObjectName(FProgram+'_FObj');
     finally
       EndWork;
     end;
@@ -1460,7 +1471,7 @@ begin
   Assign(vMaterialManager.GetMaterial(AName));
 end;
 
-procedure TGL3xMaterial.SetName(const AName: string);
+procedure TGL3xMaterial.SetName(const AName: TGL3xMaterialName);
 var
   i, n: Integer;
 begin
@@ -1839,28 +1850,6 @@ begin
 {$ENDIF}
   end;
 end;
-
-//function TGL3xMaterial.GetAttributes(out AttrArray: TGLSLAttributeArray):
-//  Boolean;
-//var
-//  i, j: Integer;
-//  Attribs: TGLActiveAttribArray;
-//begin
-//  Result := false;
-//  if FShader = nil then
-//    exit;
-//  Attribs := FShader.GetActiveAttribs;
-//  j := 0;
-//  for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-//    if (i <= High(Attribs)) then
-//    begin
-//      AttrArray[I] := TGLSLAttribute.GetAttribute(Attribs[i].Name);
-//      Inc(j);
-//    end
-//    else
-//      AttrArray[I] := nil;
-//  Result := (j > 0);
-//end;
 
 procedure TGL3xMaterial.Apply;
 var

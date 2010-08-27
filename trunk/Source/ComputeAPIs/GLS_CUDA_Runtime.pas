@@ -53,7 +53,7 @@ uses
 {$ENDIF}
   GLS_CL_Platform,
   GLS_CUDA_API,
-  OpenGL1x;
+  OpenGLTokens;
 
 {$I cuda.inc}
 

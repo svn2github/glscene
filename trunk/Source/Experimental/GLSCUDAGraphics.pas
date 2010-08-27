@@ -15,9 +15,9 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes, GLS_CUDA_API, OpenGL1x, GLContext, GLState, GLSCUDA,
+  Classes, GLS_CUDA_API, OpenGLTokens, GLContext, GLState, GLSCUDA,
   GLGraphics, GLMaterial, GLTexture, GLRenderContextInfo,
-  GL3xMaterial, GL3xObjects, GLShadersManager, GLVBOManagers, GL3xFactory;
+  GL3xMaterial, GL3xObjects, GLShaderManager, GLVBOManager, GL3xFactory;
 
 type
 
@@ -307,7 +307,7 @@ begin
 end;
 
 procedure TCUDAGLImageResource.BindArrayToImage(var cudaArray: TCUDAMemData;
-  ALeyer, ALevel: LOngWord);
+  ALeyer, ALevel: LongWord);
 var
   status: TCUresult;
   texture: TGLTexture;
@@ -316,6 +316,7 @@ begin
   if FMapCounter=0 then
     exit;
   Context.Requires;
+  newArray := nil;
   status := cuGraphicsSubResourceGetMappedArray(
     newArray, FHandle[0], ALeyer, ALevel);
   Context.Release;
@@ -383,7 +384,9 @@ begin
   buffer := FSceneObject.BuiltProperties.VertexBufferHandle;
   if buffer = 0 then
     exit;
-  FAttrInfoReady := FSceneObject.Material.GetAttributes(FAttributes);
+  FAttrInfoReady := ShaderManager.GetProgramAttribs(
+    MaterialManager.GetMaterialProgramName(FSceneObject.Material),
+    FAttributes);
 
   Context.Requires;
   status := cuGraphicsGLRegisterBuffer(FHandle[0], buffer, cMapping[FMapping]);
@@ -396,8 +399,7 @@ begin
     raise EGLS_CUDA.Create('TCUDAGLGeometryResource.AllocateHandle: ' +
       GetCUDAAPIerrorString(status));
 
-  if FGLContextHandle.Handle = 0 then
-    FGLContextHandle.AllocateHandle;
+  FGLContextHandle.AllocateHandle;
   FRegistered := true;
 end;
 
@@ -500,7 +502,9 @@ begin
   Result := 0;
   if not FAttrInfoReady then
   begin
-    FAttrInfoReady := FSceneObject.Material.GetAttributes(FAttributes);
+    FAttrInfoReady := ShaderManager.GetProgramAttribs(
+      MaterialManager.GetMaterialProgramName(FSceneObject.Material),
+      FAttributes);
     if not FAttrInfoReady then
       exit;
   end;
@@ -528,7 +532,7 @@ function TCUDAGLGeometryResource.GetAttributeDataAddress(Attr: Integer):
   Pointer;
 var
   i: Integer;
-  Size: Cardinal;
+  Size: LongWord;
   DevPtr: Pointer;
   status: TCUresult;
 begin
@@ -546,7 +550,7 @@ begin
       EGLS_CUDA.Create('TCUDAGLGeometryResource.GetAttributeDataAddress: ' +
       GetCUDAAPIerrorString(status));
 
-  if Cardinal(Result) + GetAttributeDataSize(Attr) > Size then
+  if LongWord(Result) + GetAttributeDataSize(Attr) > Size then
     raise
       EGLS_CUDA.Create('TCUDAGLGeometryResource.GetAttributeDataAddress: The amount of device''s data less then size of attribute''s data.');
 

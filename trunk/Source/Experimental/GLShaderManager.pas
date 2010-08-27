@@ -296,6 +296,7 @@ type
     procedure UseFixedFunctionPipeline;
     procedure ClearShaderObject;
     procedure ClearShaderPrograms;
+    function GetProgramAttribs(const AName: string; out Attribs: TGLSLAttributeArray): Boolean;
 
     function MakeUniqueObjectName(const NameRoot: string): string;
     function MakeUniqueProgramName(const NameRoot: string): string;
@@ -2065,6 +2066,29 @@ begin
   Assert(vWorked, glsWrongMethodCall);
   FShaderProgramsTree.ForEach(ProgramDestroyer);
   FShaderProgramsTree.Clear;
+end;
+
+function TGLShaderManager.GetProgramAttribs(const AName: string; out Attribs: TGLSLAttributeArray): Boolean;
+var
+  prog: TGLSLShaderProgram;
+  I, J, K: Integer;
+begin
+  Assert(vWorked, glsWrongMethodCall);
+  prog := GetShaderProgram(AName);
+  if Assigned(prog) then
+  begin
+    J := 0;
+    for I := 0 to High(AttributeRegistry) do
+      if AttributeRegistry[I].FProgramCacheTree.Find(prog.FHandle, K) then
+      begin
+        Attribs[J] := AttributeRegistry[I];
+        Inc(J);
+      end;
+    for I := J to High(Attribs) do
+      Attribs[I] := nil;
+  end
+  else
+    Result := False;
 end;
 
 procedure TGLShaderManager.Uniform1f(AUniform: TGLSLUniform; const

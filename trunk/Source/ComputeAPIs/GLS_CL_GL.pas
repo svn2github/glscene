@@ -37,7 +37,7 @@ unit GLS_CL_GL;
 
 interface
 
-uses GLS_CL, GLS_CL_Platform, OpenGL1x;
+uses GLS_CL, GLS_CL_Platform, OpenGLTokens;
 
 {$I cl.inc}
 

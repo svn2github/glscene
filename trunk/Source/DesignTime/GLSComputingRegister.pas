@@ -63,11 +63,11 @@ type
     procedure SetValue(const Value: String); override;
   end;
 
-  (*TCUDAModuleCodeEditor = class(TStringListProperty)
+  TCUDAModuleCodeEditor = class({$IFNDEF FPC}TStringListProperty{$ELSE}TStringsPropertyEditor{$ENDIF})
   public
     { Public Declarations }
     procedure Edit; override;
-  end;  *)
+  end;
 
 implementation
 
@@ -97,7 +97,7 @@ procedure TGLSCUDAEditor.Edit;
 begin
   with GLSCUDAEditorForm do
   begin
-    SetCUDAEditorClient(TGLSCUDA(Self.Component), Self.Designer);
+    SetCUDAEditorClient(TGLSCUDA(Self.Component){$IFNDEF FPC}, Self.Designer{$ENDIF});
     Show;
   end;
 end;
@@ -140,6 +140,7 @@ begin
     for i := 0 to CUDACompiler.DesignerTaskList.Count - 1 do
     begin
       Task := CUDACompiler.DesignerTaskList.Items[i];
+      {$IFNDEF FPC}
       if Task.Creating then
       begin
         obj := TCUDABaseItem(Designer.CreateComponent(Task.ItemClass,
@@ -156,6 +157,9 @@ begin
         Designer.SelectComponent(Task.Owner);
         Designer.DeleteSelection(true);
       end;
+      {$ELSE}
+
+      {$ENDIF}
       Dispose(Task);
     end;
     CUDACompiler.DesignerTaskList.Free;
@@ -188,11 +192,11 @@ end;
 // ------------------
 {$IFNDEF FPC}
 constructor TGLSCUDACompilerSourceProperty.Create(
-    const ADesigner: IDesigner; APropCount: Integer); override;
+    const ADesigner: IDesigner; APropCount: Integer);
 {$ELSE}
 constructor TGLSCUDACompilerSourceProperty.Create(
-       Hook:TPropertyEditorHook; APropCount: Integer); override;
-{$ENDIF};
+       Hook:TPropertyEditorHook; APropCount: Integer);
+{$ENDIF}
 begin
   inherited;
   FModuleList := TStringList.Create;
@@ -206,13 +210,16 @@ end;
 
 procedure TGLSCUDACompilerSourceProperty.RefreshModuleList;
 var
+  {$IFNDEF FPC}
   proj: IOTAProject;
-  I: Integer;
   module: IOTAModuleInfo;
+  I: Integer;
+  {$ENDIF}
   name: string;
 begin
   FModuleList.Clear;
   FModuleList.Add('none');
+{$IFNDEF FPC}
   proj := GetActiveProject;
   if proj <> nil then
   begin
@@ -224,6 +231,7 @@ begin
         FModuleList.Add(module.FileName);
     end;
   end;
+{$ENDIF}
 end;
 
 function TGLSCUDACompilerSourceProperty.GetAttributes;
@@ -310,6 +318,7 @@ begin
     for i := 0 to TaskList.Count - 1 do
     begin
       Task := TaskList.Items[i];
+{$IFNDEF FPC}
       if Task.Creating then
       begin
         obj := TCUDABaseItem(Designer.CreateComponent(Task.ItemClass,
@@ -326,10 +335,17 @@ begin
         Designer.SelectComponent(Task.Owner);
         Designer.DeleteSelection(true);
       end;
+{$ELSE}
+
+{$ENDIF}
       Dispose(Task);
     end;
     TaskList.Free;
+    {$IFNDEF FPC}
     Designer.Modified;
+    {$ELSE}
+
+    {$ENDIF}
   end;
 end;
 

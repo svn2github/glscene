@@ -17,7 +17,7 @@ interface
 uses
   Classes, SysUtils,
   // GLScene
-  PersistentClasses, BaseClasses, GLCrossPlatform, GLContext, GLS_CL_Platform,
+  PersistentClasses, GLCrossPlatform, GLContext, GLS_CL_Platform,
   VectorGeometry, VectorTypes, VectorLists,
   GLS_CUDA_API, GLSCUDAParser, GLS_CUDA_FastFourierTransformation,
   GLSCUDACompiler, GLSCUDAContext, GLGraphics;
