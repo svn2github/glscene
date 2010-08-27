@@ -8,6 +8,7 @@
         <IncludeFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Experimental/"/>
         <OtherUnitFiles Value="../Source/;../Source/DesignTime/;../Source/PropertyEditors/;../Source/Platform/;../Source/Experimental/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="../Lazarus/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
