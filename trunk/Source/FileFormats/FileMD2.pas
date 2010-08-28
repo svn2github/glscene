@@ -6,6 +6,7 @@
 	MD2 file loader<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
       <li>04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Added explicit pointer dereferencing
@@ -36,8 +37,8 @@ type
     FiTriangles: longint;
     procedure FreeLists;
   public
-    m_index_list: PMD2VertexIndex;
-    m_frame_list: PMD2Frames;
+    fIndexList : TIndexList;
+    fVertexList : TVertexList;
     FrameNames : TStrings;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -45,6 +46,9 @@ type
     property iFrames: longInt read FiFrames;
     property iVertices: longInt read FiVertices;
     property iTriangles: longInt read FiTriangles;
+
+    property IndexList: TIndexList read fIndexList;
+    property VertexList: TVertexList read fVertexList;
   end;
 
 // ------------------------------------------------------------------
@@ -66,11 +70,7 @@ uses SysUtils, VectorGeometry, VectorTypes;
 constructor TFileMD2.Create;
 begin
   inherited;
-  m_index_list := nil;
-  m_frame_list := nil;
-  FiFrames := 0;
-  FiVertices := 0;
-  FiTriangles := 0;
+  FreeLists;
   FrameNames := TStringList.Create;
 end;
 
@@ -88,13 +88,11 @@ var
   I: integer;
 
 begin
-  if Assigned(m_frame_list) then begin
-    for I := 0 to FiFrames - 1 do
-      Dispose(FrameList(m_frame_list)[i]);
-    Dispose(m_frame_list);
-    if Assigned(m_index_list) then
-      Dispose(m_index_list);
-  end;
+  SetLength(fIndexList,0);
+  SetLength(fVertexList,0,0);
+  FiFrames := 0;
+  FiVertices := 0;
+  FiTriangles := 0;
 end;
 
 // LoadFromStream
@@ -118,17 +116,15 @@ begin
   FiFrames := Header.Num_Frames;
   FiVertices := Header.Num_Vertices;
   FiTriangles := Header.Num_VertexIndices;
-  m_index_list := AllocMem(SizeOf(TMD2VertexIndex) * Header.Num_VertexIndices);
-  m_frame_list := AllocMem(SizeOf(TMD2Frames) * Header.Num_Frames);
-  for I := 0 to Header.Num_Frames - 1 do
-    FrameList(m_frame_list)[I] := AllocMem(SizeOf(TVector3f) * Header.Num_Vertices);
+  SetLength(fIndexList, FiTriangles);
+  SetLength(fVertexList, FiFrames, FiVertices);
   // get the skins...
   aStream.Read(Skins, Header.Num_Skins * MAX_MD2_SKINNAME);
   // ...and the texcoords
   aStream.Read(TextureCoords, Header.Num_TextureCoords * SizeOf(TVector2s));
   for I := 0 to Header.Num_VertexIndices - 1 do begin
     aStream.Read(Triangle, SizeOf(TMD2Triangle));
-    with IndexList(m_index_list)[I] do begin
+     with fIndexList[I] do begin
       A := Triangle.VertexIndex[2];
       B := Triangle.VertexIndex[1];
       C := Triangle.VertexIndex[0];
@@ -152,11 +148,11 @@ begin
     if FrameNames.IndexOf(FrameName) < 0 then
       FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
     // fill the vertices list  
-    for J := 0 to Header.Num_Vertices - 1 do begin
-      VertexList(FrameList(m_frame_list)[I])[J][0] := Frame^.Vertices[J].V[0] * Frame^.Scale[0] + Frame^.Translate[0];
-      VertexList(FrameList(m_frame_list)[I])[J][1] := Frame^.Vertices[J].V[1] * Frame^.Scale[1] + Frame^.Translate[1];
-      VertexList(FrameList(m_frame_list)[I])[J][2] := Frame^.Vertices[J].V[2] * Frame^.Scale[2] + Frame^.Translate[2];
-    end;
+     for J := 0 to FiVertices - 1 do begin
+       fVertexList[i][J][0] := Frame^.Vertices[J].V[0] * Frame^.Scale[0] + Frame^.Translate[0];
+       fVertexList[i][J][1] := Frame^.Vertices[J].V[1] * Frame^.Scale[1] + Frame^.Translate[1];
+       fVertexList[i][J][2] := Frame^.Vertices[J].V[2] * Frame^.Scale[2] + Frame^.Translate[2];
+     end;
   end;
 end;
 

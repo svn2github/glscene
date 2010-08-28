@@ -26,11 +26,6 @@ type
     C_S, C_T: single;
   end;
 
-  PMD2Vertex = ^TVector3f;
-
-  PMD2Frames = ^TMD2Frames;
-  TMD2Frames = PMD2Vertex;
-
   TMD2Triangle = record
     VertexIndex: TVector3s;
     TextureCoordIndex: TVector3s;
@@ -72,9 +67,8 @@ type
     Offset_end: integer;
   end;
 
-  FrameList = array of TMD2Frames;
-  IndexList = array of TMD2VertexIndex;
-  VertexList = array of TVector3f;
+  TIndexList = array of TMD2VertexIndex;
+  TVertexList = array of array of TVector3f;
 
 implementation
 
