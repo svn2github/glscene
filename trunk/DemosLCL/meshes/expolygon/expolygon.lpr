@@ -4,7 +4,7 @@ program ExPolygon;
 
 uses
   Forms, Interfaces,
-  expolygon1, glscene_designtime, glscene_runtime;
+  ExPolygon1 in 'ExPolygon1.pas' {Form1};
 
 {$R *.res}
 

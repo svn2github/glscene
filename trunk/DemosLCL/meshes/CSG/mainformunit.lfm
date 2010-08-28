@@ -3,7 +3,6 @@ object Form1: TForm1
   Height = 611
   Top = 128
   Width = 624
-  ActiveControl = GLSceneViewer1
   Caption = 'Constructive Solid Geometry Demo'
   ClientHeight = 611
   ClientWidth = 624
@@ -13,7 +12,6 @@ object Form1: TForm1
   OnMouseWheelDown = FormMouseWheelDown
   OnMouseWheelUp = FormMouseWheelUp
   LCLVersion = '0.9.29'
-  Visible = True
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 569
@@ -25,6 +23,7 @@ object Form1: TForm1
     FieldOfView = 160.064468383789
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
+    OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
     TabOrder = 0
   end
@@ -84,9 +83,9 @@ object Form1: TForm1
     end
     object CheckBox1: TCheckBox
       Left = 408
-      Height = 24
+      Height = 19
       Top = 12
-      Width = 92
+      Width = 76
       Caption = 'Solid Result'
       Checked = True
       OnClick = CheckBox1Click
@@ -95,8 +94,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    left = 64
-    top = 24
+    left = 8
+    top = 8
     object GLFreeForm3: TGLFreeForm
       TagFloat = 0
       PitchAngle = 0
@@ -183,27 +182,7 @@ object Form1: TForm1
         }
         Tag = 0
       end>
-    left = 64
-    top = 88
-  end
-  object GLSimpleNavigation1: TGLSimpleNavigation
-    Form = Owner
-    GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Constructive Solid Geometry Demo - %FPS'
-    KeyCombinations = <    
-      item
-        ShiftState = [ssLeft, ssRight]
-        Action = snaZoom
-      end    
-      item
-        ShiftState = [ssLeft]
-        Action = snaMoveAroundTarget
-      end    
-      item
-        ShiftState = [ssRight]
-        Action = snaMoveAroundTarget
-      end>
-    left = 64
-    top = 152
+    left = 48
+    top = 8
   end
 end

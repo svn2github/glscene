@@ -15,21 +15,14 @@
 
 unit Unit1;
 
-{$MODE Delphi}
-
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls,
-  Forms, Dialogs, ExtCtrls, GLLCLViewer, GLScene, GLMaterial, GLNavigator,
-  GLCadencer, GLTexture, GLSkyBox, GLCrossPlatform,
-  GLKeyboard, GLLensFlare, GLObjects,
-  GLCoordinates, BaseClasses;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls,GLScene, GLTexture, GLSkyBox, GLCrossPlatform,
+  GLCadencer, GLNavigator, GLWin32Viewer, GLKeyboard, GLLensFlare, GLObjects, GLMaterial, GLCoordinates, BaseClasses;
 
 type
-
-  { TForm1 }
-
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
@@ -71,20 +64,12 @@ var
 
 implementation
 
-{$R *.lfm}
+{$R *.dfm}
 
-uses
-  FileUtil;
 
 function mediaPath : string;
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   Result := IncludeTrailingPathDelimiter(path) + IncludeTrailingPathDelimiter('media');
+   Result := ExtractFilePath(Paramstr(0))+'..\..\media\';
 end;
 
 function TForm1.LoadTexture(Matname,Filename : string) : TGLLibMaterial;
@@ -107,7 +92,7 @@ begin
      LoadTexture('Bottom','icecraterdn.jpg');
      LoadTexture('Front','icecraterft.jpg');
      LoadTexture('Back','icecraterbk.jpg');
-     with LoadTexture('Clouds','clouds.jpg') do
+     with LoadTexture('Clouds','Clouds.jpg') do
      begin
           // Add transparency to clouds
           Material.BlendingMode := bmTransparency;
@@ -132,8 +117,13 @@ begin
           Material.Texture.TextureMode := tmModulate;
      end;
 
+
      //Moon
      LoadTexture('Moon','unwrapped moon.jpg').Material.Texture.TextureMode := tmModulate;
+
+
+
+
 
      //-----------------------------------------
      // Assign materials to objects
@@ -164,6 +154,7 @@ begin
           TextureOffset.X := TextureOffset.X + deltaTime * 0.02;
           TextureOffset.Y := TextureOffset.Y + deltaTime * 0.03;
      end;
+
 
      // Rotate moons
      GLSphere1.Turn(deltaTime * 7);

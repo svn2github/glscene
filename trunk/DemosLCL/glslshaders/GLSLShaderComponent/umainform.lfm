@@ -19,11 +19,9 @@ object GLSLTestForm: TGLSLTestForm
     Width = 641
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 145.291946411132
+    FieldOfView = 145.291946411133
     Align = alClient
     TabOrder = 0
   end
@@ -38,9 +36,9 @@ object GLSLTestForm: TGLSLTestForm
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
       Left = 8
-      Height = 17
+      Height = 19
       Top = 8
-      Width = 89
+      Width = 91
       Caption = 'Light is Moving'
       Checked = True
       Color = clBtnFace
@@ -50,9 +48,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object ShadeEnabledCheckBox: TCheckBox
       Left = 288
-      Height = 17
+      Height = 19
       Top = 8
-      Width = 94
+      Width = 96
       Caption = 'Shader Enabled'
       Checked = True
       OnClick = ShadeEnabledCheckBoxClick
@@ -61,9 +59,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object TurnPitchrollCheckBox: TCheckBox
       Left = 112
-      Height = 17
+      Height = 19
       Top = 8
-      Width = 130
+      Width = 132
       Caption = 'Turn-Pitch-Roll Enabled'
       TabOrder = 2
     end
@@ -89,9 +87,9 @@ object GLSLTestForm: TGLSLTestForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149011
+        BottomRadius = 0.10000000149012
         Height = 1
-        TopRadius = 0.10000000149011
+        TopRadius = 0.10000000149012
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5

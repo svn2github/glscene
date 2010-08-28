@@ -4,7 +4,7 @@ program ducky;
 
 uses
   Forms, Interfaces,
-  unit1, glscene_designtime, glscene_runtime;
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

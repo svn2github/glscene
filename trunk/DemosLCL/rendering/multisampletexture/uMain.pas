@@ -1,22 +1,16 @@
-unit umain;
-
-{$MODE Delphi}
+unit uMain;
 
 interface
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-  SysUtils, Classes, Controls, Forms, Dialogs, ExtCtrls,
-  GLScene, GLCadencer, GLMaterial, GLSimpleNavigation, GLLCLViewer,
-  GLWindowsFont, GLSLShader, GLObjects, GLFBORenderer, GLHUDObjects,
-  GLGeomObjects;
+  Windows, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  // GLScene Units
+  GLScene, GLObjects, GLLCLViewer, GLCrossPlatform, GLCoordinates,
+  BaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
+  GLCustomShader, GLSLShader, GLCadencer, GLHUDObjects, GLGeomObjects,
+  GLFBORenderer, VectorGeometry, VectorTypes, GLTexture, GLSimpleNavigation;
 
 type
-
-  { TGLDemoForm }
-
   TGLDemoForm = class(TForm)
     MainScene: TGLScene;
     MainCamera: TGLCamera;
@@ -53,8 +47,8 @@ implementation
 {$R *.lfm}
 
 uses
-  OpenGL1x, GLState, LCLType,
-  GLKeyboard, GLMultisampleImage, VectorGeometry;
+  GLState, OpenGL1X,
+  GLKeyboard, GLMultisampleImage;
 
 procedure TGLDemoForm.FormCreate(Sender: TObject);
 begin
@@ -62,7 +56,7 @@ begin
   height := Screen.height;
   WindowState := wsMaximized;
 
-  with MainMaterialLibrary.TextureByName('MultisampledColor') do
+  with  MainMaterialLibrary.TextureByName('MultisampledColor') do
   begin
     ImageClassName := 'TGLMultisampleImage';
     TGLMultiSampleImage(Image).SamplesCount := 4;
@@ -83,7 +77,6 @@ end;
 procedure TGLDemoForm.MainCadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-
   if isKeyDown(VK_F2) then
   begin
     FBOContainer.Visible := false;
@@ -111,7 +104,6 @@ begin
     GLTorus2.Material.PolygonMode := pmFill;
     GLCone1.Material.PolygonMode := pmFill;
   end;
-
 
   MainViewer.Invalidate;
 end;

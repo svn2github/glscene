@@ -4,7 +4,7 @@ program SkyboxDemo;
 
 uses
   Forms, Interfaces,
-  Unit1 in 'Unit1.pas', glscene_designtime, glscene_runtime {Form1};
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

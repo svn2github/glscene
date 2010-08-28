@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Version Value="7"/>
     <General>
-      <MainUnit Value="0"/>
-      <TargetFileExt Value=".exe"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <ActiveWindowIndexAtStart Value="0"/>
@@ -13,7 +11,7 @@
     <VersionInfo>
       <Language Value=""/>
       <CharSet Value=""/>
-      <StringTable Comments="" CompanyName="" FileDescription="" FileVersion="" InternalName="" LegalCopyright="" LegalTrademarks="" OriginalFilename="" ProductName="" ProductVersion=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -38,7 +36,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="diffusespecularshaderdemo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -48,6 +46,7 @@
         <CursorPos X="9" Y="7"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="umainform.pas"/>
@@ -58,12 +57,11 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="85"/>
-        <CursorPos X="1" Y="116"/>
-        <SyntaxHighlighter Value="FreePascal"/>
+        <TopLine Value="91"/>
+        <CursorPos X="1" Y="93"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Text"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\FileFormats\GLFile3DS.pas"/>
@@ -105,8 +103,18 @@
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Text"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="C:\lazarus\lcl\lresources.pp"/>
+        <UnitName Value="LResources"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1641"/>
+        <CursorPos X="1" Y="1661"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="diffusespecularshaderdemo.lpr"/>
         <Caret Line="7" Column="6" TopLine="1"/>
@@ -219,16 +227,15 @@
         <Filename Value="umainform.pas"/>
         <Caret Line="115" Column="1" TopLine="85"/>
       </Position28>
+      <Position29>
+        <Filename Value="umainform.pas"/>
+        <Caret Line="116" Column="1" TopLine="28"/>
+      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Parsing>
-      <SyntaxOptions>
-        <UseAnsiStrings Value="True"/>
-      </SyntaxOptions>
-    </Parsing>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
@@ -237,7 +244,7 @@
     <BreakPoints Count="1">
       <Item1>
         <Source Value="umainform.pas"/>
-        <Line Value="115"/>
+        <Line Value="95"/>
       </Item1>
     </BreakPoints>
     <Exceptions Count="3">

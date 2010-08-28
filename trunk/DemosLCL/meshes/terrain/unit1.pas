@@ -36,18 +36,17 @@
    it was possible to set roNoColorBufferClear in the Viewer.Buffer.ContextOptions,
    which allows to gain a few more frames per second (try unsetting it). 
 }
-unit unit1;
+unit Unit1;
 
 interface
 
-{þ$I GLScene.inc}
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLTerrainRenderer, GLObjects, GLHeightData, GLColor,
-  ExtCtrls, GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLViewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLState, GLFileMP3;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData, GLColor,
+  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
+  GLSkydome, GLLCLViewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3;
 
 type
   TForm1 = class(TForm)
@@ -98,19 +97,11 @@ implementation
 
 {$R *.lfm}
 
-uses GLKeyboard, FileUtil, LCLType;
+uses GLKeyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p+5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + IncludeTrailingPathDelimiter('media');
-  SetCurrentDirUTF8(path);
-
+   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
    // 8 MB height data cache
    // Note this is the data size in terms of elevation samples, it does not
    // take into account all the data required/allocated by the renderer

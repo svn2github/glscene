@@ -19,14 +19,15 @@
    should be the case for all of the modern boards, and even some of the older
    ones.
 }
-unit unit1;
+unit Unit1;
 
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, StdCtrls, GLObjects, ExtCtrls, GLCadencer,
-  GLTexture, GLViewer, OpenGL1x, GLCrossPlatform, GLCoordinates;
+  GLTexture, GLLCLViewer, OpenGL1x, GLCrossPlatform, GLCoordinates,
+  BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -86,7 +87,7 @@ end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
-   if not (WGL_ARB_pbuffer or GLX_VERSION_1_3 or GLX_VERSION_1_4) then begin
+   if not WGL_ARB_pbuffer then begin
       ShowMessage( 'WGL_ARB_pbuffer not supported...'#13#10#13#10
                   +'Get newer graphics hardware or try updating your drivers!');
       GLSceneViewer1.AfterRender:=nil;

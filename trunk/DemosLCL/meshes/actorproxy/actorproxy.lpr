@@ -1,10 +1,10 @@
-program actorproxy;
+program ActorProxy;
 
 {$MODE Delphi}
 
 uses
   Forms, Interfaces,
-  unit1, glscene_runtime, glscene_designtime;
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

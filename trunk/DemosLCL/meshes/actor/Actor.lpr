@@ -4,8 +4,7 @@ program Actor;
 
 uses
   Forms, Interfaces,
-  demo in 'demo.pas',
-  glscene_designtime, glscene_runtime ;
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

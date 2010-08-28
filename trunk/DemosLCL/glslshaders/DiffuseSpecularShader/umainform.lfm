@@ -3,7 +3,6 @@ object GLSLTestForm: TGLSLTestForm
   Height = 445
   Top = 176
   Width = 641
-  ActiveControl = Viewer
   Caption = 'GLSL Diffuse Specular Shader'
   ClientHeight = 445
   ClientWidth = 641
@@ -25,11 +24,10 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.FogEnvironment.FogEnd = 5000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clBlack
-    Buffer.ContextOptions = [roHardwareAcceleration, roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 143.991668701171
+    FieldOfView = 143.991668701172
     Align = alClient
     TabOrder = 0
   end
@@ -44,9 +42,9 @@ object GLSLTestForm: TGLSLTestForm
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
       Left = 8
-      Height = 24
+      Height = 19
       Top = 8
-      Width = 112
+      Width = 91
       Caption = 'Light is Moving'
       Checked = True
       Color = clBtnFace
@@ -56,9 +54,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object ShaderEnabledCheckBox: TCheckBox
       Left = 176
-      Height = 24
+      Height = 19
       Top = 8
-      Width = 116
+      Width = 96
       Caption = 'Shader Enabled'
       Checked = True
       OnClick = ShaderEnabledCheckBoxClick
@@ -67,35 +65,35 @@ object GLSLTestForm: TGLSLTestForm
     end
     object TurnPitchrollCheckBox: TCheckBox
       Left = 8
-      Height = 24
+      Height = 19
       Top = 24
-      Width = 157
+      Width = 132
       Caption = 'Turn-Pitch-Roll Enabled'
       TabOrder = 2
     end
     object RealisticSpecularCheckBox: TCheckBox
       Left = 336
-      Height = 24
+      Height = 19
       Top = 8
-      Width = 162
+      Width = 135
       Caption = 'Realistic Specular Mode'
       OnClick = RealisticSpecularCheckBoxClick
       TabOrder = 3
     end
     object MultiLightShaderCheckBox: TCheckBox
       Left = 176
-      Height = 24
+      Height = 19
       Top = 24
-      Width = 123
+      Width = 102
       Caption = 'MultiLight Shader'
       OnClick = MultiLightShaderCheckBoxClick
       TabOrder = 4
     end
     object EnableFogCheckBox: TCheckBox
       Left = 336
-      Height = 24
+      Height = 19
       Top = 24
-      Width = 86
+      Width = 71
       Caption = 'Enable fog'
       OnClick = EnableFogCheckBoxClick
       TabOrder = 5
@@ -122,9 +120,9 @@ object GLSLTestForm: TGLSLTestForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149011
+        BottomRadius = 0.10000000149012
         Height = 1
-        TopRadius = 0.10000000149011
+        TopRadius = 0.10000000149012
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5

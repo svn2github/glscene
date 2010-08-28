@@ -90,7 +90,6 @@ procedure TGLSLTestForm.FormCreate(Sender: TObject);
 var
   path: UTF8String;
   p: Integer;
-  I: Integer;
 begin
   path := ExtractFilePath(ParamStrUTF8(0));
   p := Pos('DemosLCL', path);
