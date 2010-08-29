@@ -24,10 +24,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, StdCtrls, GLObjects, ExtCtrls, GLCadencer,
-  GLTexture, GLLCLViewer, OpenGL1x, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLTexture, GLLCLViewer, OpenGLAdapter, GLCrossPlatform, GLCoordinates,
+  BaseClasses, GLContext;
 
 type
   TForm1 = class(TForm)
@@ -87,7 +87,15 @@ end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
-   if not WGL_ARB_pbuffer then begin
+   if
+{$IFDEF MSWINDOWS}
+   not WGL_ARB_pbuffer
+{$ENDIF}
+{$IFDEF LINUX}
+   not (GLX_VERSION_1_3 or GLX_VERSION_1_4)
+{$ENDIF}
+   then
+   begin
       ShowMessage( 'WGL_ARB_pbuffer not supported...'#13#10#13#10
                   +'Get newer graphics hardware or try updating your drivers!');
       GLSceneViewer1.AfterRender:=nil;

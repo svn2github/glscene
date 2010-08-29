@@ -1,20 +1,17 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
     <PathDelim Value="\"/>
+    <Version Value="7"/>
     <General>
       <MainUnit Value="0"/>
+      <TargetFileExt Value=""/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <i18n>
-      <EnableI18N LFM="False"/>
-    </i18n>
     <VersionInfo>
-      <StringTable ProductVersion=""/>
+      <StringTable ProductVersion="" CompanyName="" FileDescription="" FileVersion="" InternalName="" OriginalFilename="" ProductName=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -24,6 +21,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -34,31 +32,95 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="8">
       <Unit0>
         <Filename Value="memviewer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="2" Y="9"/>
+        <UsageCount Value="24"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="Unit1.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="24"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="unit1.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="84"/>
+        <CursorPos X="1" Y="95"/>
+        <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\GLContext.pas"/>
+        <UnitName Value="GLContext"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1423"/>
+        <CursorPos X="18" Y="1448"/>
+        <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\Source\Base\OpenGLAdapter.pas"/>
+        <UnitName Value="OpenGLAdapter"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6445"/>
+        <CursorPos X="1" Y="6464"/>
+        <UsageCount Value="12"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\Source\Platform\GLGLXContext.pas"/>
+        <UnitName Value="GLGLXContext"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="633"/>
+        <CursorPos X="1" Y="652"/>
+        <UsageCount Value="11"/>
+        <Bookmarks Count="2">
+          <Item0 X="22" Y="630" ID="1"/>
+          <Item1 X="17" Y="287" ID="2"/>
+        </Bookmarks>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\Source\GLScene.pas"/>
+        <UnitName Value="GLScene"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8059"/>
+        <CursorPos X="1" Y="8091"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\Source\GLScene.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="37"/>
+        <CursorPos X="2" Y="65"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="8"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="memviewer"/>
@@ -91,6 +153,12 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Source Value="..\..\..\Source\Platform\GLGLXContext.pas"/>
+        <Line Value="629"/>
+      </Item1>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>
