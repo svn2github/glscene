@@ -185,20 +185,17 @@ begin
 {$IFDEF MSWINDOWS}
   ParentDC := wglGetCurrentDC;
   ParentRC := wglGetCurrentContext;
-  if ParentDC = 0 then
-  begin
-    ParentDC := GetDC(GetForegroundWindow);
-    if ParentDC = 0 then
-      raise EGLPixelBuffer.Create(
-        'PixelBuffer->wglGetCurrentDC->Couldn''t obtain valid device context');
-  end;
+  DC := GetDC(GetForegroundWindow);
+  if DC = 0 then
+    raise EGLPixelBuffer.Create(
+      'PixelBuffer->wglGetCurrentDC->Couldn''t obtain valid device context');
 
-  if not wglChoosePixelFormatARB(ParentDC, @PixelFormatAttribs, @EmptyF,
+  if not wglChoosePixelFormatARB(DC, @PixelFormatAttribs, @EmptyF,
     Length(PFormat), @PFormat, @NumPFormat) then
     raise EGLPixelBuffer.Create(
       'PixelBuffer->wglChoosePixelFormatARB->No suitable pixelformat found');
 
-  fHandle := wglCreatePBufferARB(ParentDC, PFormat[0], fWidth, fHeight,
+  fHandle := wglCreatePBufferARB(DC, PFormat[0], fWidth, fHeight,
     @PixelBufferAttribs);
   if fHandle <> 0 then
   begin
@@ -221,18 +218,15 @@ begin
 
   wglMakeCurrent(DC, RC);
 {$ELSE}
-  ParentDC := glXGetCurrentReadDrawable;
+  ParentDC := glXGetCurrentDisplay;
   ParentRC := glxGetCurrentContext;
 
-  DC := glXGetCurrentDisplay;
+  DC := XOpenDisplay(nil);
   if not Assigned(DC) then
-  begin
-    DC := XOpenDisplay(nil);
-    if not Assigned(DC) then
-      raise EGLPixelBuffer.Create(
-        'PixelBuffer->glXGetCurrentDisplay->Couldn''t obtain valid Display');
-  end;
-  fbConfigs := glXChooseFBConfig(DC, XDefaultScreen(dpy), PixelFormatAttribs, @nitems);
+    raise EGLPixelBuffer.Create(
+      'PixelBuffer->XOpenDisplay->Couldn''t obtain valid Display');
+
+  fbConfigs := glXChooseFBConfig(DC, XDefaultScreen(DC), PixelFormatAttribs, @nitems);
 
   if fbConfigs = nil then
     raise EGLPixelBuffer.Create(
@@ -318,7 +312,7 @@ begin
       FEnabled := wglMakeCurrent(DC, RC);
   {$ENDIF}
   {$IFDEF Linux}
-    ParentDC := glXGetCurrentReadDrawable;
+    ParentDC := glXGetCurrentDisplay;
     ParentRC := glxGetCurrentContext;
     if Assigned(DC) and Assigned(RC) and (fHandle <> 0) then
       FEnabled := glXMakeContextCurrent(DC, fHandle, fHandle, RC);
@@ -339,7 +333,7 @@ begin
   {$IFDEF Linux}
     if Assigned(DC) then
       if Assigned(ParentDC) and Assigned(ParentRC) then
-        FEnabled := not glXMakeContextCurrent(ParentDC, 0, 0, ParentRC);
+        FEnabled := not glXMakeContextCurrent(ParentDC, 0, 0, ParentRC)
       else
         FEnabled := not glXMakeContextCurrent(DC, 0, 0, nil);
   {$ENDIF}
@@ -376,4 +370,3 @@ finalization
   vPBuffer := nil;
 
 end.
-
