@@ -24,7 +24,7 @@ uses
   Windows,
 {$ENDIF }
 {$IFDEF UNIX}
-  Xlib,
+  Xlib, Types, LCLType, X, XUtil, dynlibs,
 {$ENDIF}
   OpenGLTokens,
   SysUtils;
@@ -3806,7 +3806,8 @@ var
     GLX_MESA_release_buffers,
     GLX_MESA_set_3dfx_mode,
     GLX_SGIX_visual_select_group,
-    GLX_SGIX_hyperpipe: Boolean;
+    GLX_SGIX_hyperpipe,
+    GLX_NV_multisample_coverage: Boolean;
 
   // GLX 1.3 and later
   glXChooseFBConfig: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
@@ -3822,7 +3823,7 @@ var
   glXQueryDrawable: procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl;
   glXCreateNewContext: function(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
   glXMakeContextCurrent: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
-  glXGetCurrentReadDrawable: function: GLXDrawable; cdecl;
+  glXGetCurrentReadDrawable: function(): GLXDrawable; cdecl;
   glXQueryContext: function(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
   glXSelectEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
   glXGetSelectedEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
@@ -3835,8 +3836,6 @@ var
   glXCreateContextAttribsARB: function(dpy: PDisplay; config: GLXFBConfig;
     share_context: GLXContext; direct: TGLBoolean;
     attrib_list: PGLint): GLXContext; cdecl;
-  glXGetProcAddress: function(const name: PAnsiChar): pointer; cdecl;
-  glXGetProcAddressARB: function(const name: PAnsiChar): pointer; cdecl;
 {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -3958,6 +3957,8 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single; p7: Inte
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL Extension to the X Window System (GLX) support functions'}{$ENDIF}
 {$IFDEF SUPPORT_GLX}
 // GLX 1.0
+function glXGetProcAddress(const name: PAnsiChar): pointer; cdecl; external opengl32;
+function glXGetProcAddressARB(const name: PAnsiChar): pointer; cdecl; external opengl32;
 function glXChooseVisual(dpy: PDisplay; screen: TGLint; attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
 function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
 procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
@@ -4083,10 +4084,6 @@ begin
   //            locating functions and procedures for
   //                  ARB approved GLX extensions
   //  ###########################################################
-
-  //loading first!
-  glXGetProcAddress := GLLibGetProcAddress('glXGetProcAddress');
-  glXGetProcAddressARB := GLLibGetProcAddress('glXGetProcAddressARB');
 
   //GLX 1.3 and later
   glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
@@ -6510,135 +6507,9 @@ begin
   GLX_MESA_set_3dfx_mode := CheckExtension('GLX_MESA_set_3dfx_mode');
   GLX_SGIX_visual_select_group := CheckExtension('GLX_SGIX_visual_select_group');
   GLX_SGIX_hyperpipe := CheckExtension('GLX_SGIX_hyperpipe');
+  GLX_NV_multisample_coverage := CheckExtension('GLX_NV_multisample_coverage');
 end;
 
-// ReadGLXExtensions
-//
-
-procedure ReadGLXExtensions;
-begin
-  // ARB glx extensions
-
-  //  ###########################################################
-  //            locating functions and procedures for
-  //                  ARB approved GLX extensions
-  //  ###########################################################
-
-  //loading first!
-  glXGetProcAddress := GLLibGetProcAddress('glXGetProcAddress');
-  glXGetProcAddressARB := GLLibGetProcAddress('glXGetProcAddressARB');
-
-  //GLX 1.3 and later
-  glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
-  glXGetFBConfigAttrib := GLGetProcAddress('glXGetFBConfigAttrib');
-  glXGetFBConfigs := GLGetProcAddress('glXGetFBConfigs');
-  glXGetVisualFromFBConfig := GLGetProcAddress('glXGetVisualFromFBConfig');
-  glXCreateWindow := GLGetProcAddress('glXCreateWindow');
-  glXDestroyWindow := GLGetProcAddress('glXDestroyWindow');
-  glXCreatePixmap := GLGetProcAddress('glXCreatePixmap');
-  glXDestroyPixmap := GLGetProcAddress('glXDestroyPixmap');
-  glXCreatePbuffer := GLGetProcAddress('glXCreatePbuffer');
-  glXDestroyPbuffer := GLGetProcAddress('glXDestroyPbuffer');
-  glXQueryDrawable := GLGetProcAddress('glXQueryDrawable');
-  glXCreateNewContext := GLGetProcAddress('glXCreateNewContext');
-  glXMakeContextCurrent := GLGetProcAddress('glXMakeContextCurrent');
-  glXGetCurrentReadDrawable := GLGetProcAddress('glXGetCurrentReadDrawable');
-  glXQueryContext := GLGetProcAddress('glXQueryContext');
-  glXSelectEvent := GLGetProcAddress('glXSelectEvent');
-  glXGetSelectedEvent := GLGetProcAddress('glXGetSelectedEvent');
-  glXBindTexImageARB := GLGetProcAddress('glXBindTexImageARB');
-  glXReleaseTexImageARB := GLGetProcAddress('glXReleaseTexImageARB');
-  glxDrawableAttribARB := GLGetProcAddress('glxDrawableAttribARB');
-
-  //GLX 1.4
-  // GLX_ARB_create_context (EXT #56)
-  glXCreateContextAttribsARB := GLGetProcAddress('glXCreateContextAttribsARB');
-
-  //  ###########################################################
-  //            locating functions and procedures for
-  //                Vendor/EXT WGL extensions
-  //  ###########################################################
-
-  // WGL_EXT_swap_control (EXT #172)
-  glXSwapIntervalSGI := GLGetProcAddress('glXSwapIntervalSGI');
-  glXGetVideoSyncSGI := GLGetProcAddress('glXGetVideoSyncSGI');
-  glXWaitVideoSyncSGI := GLGetProcAddress('glXWaitVideoSyncSGI');
-  glXFreeContextEXT := GLGetProcAddress('glXFreeContextEXT');
-  glXGetContextIDEXT := GLGetProcAddress('glXGetContextIDEXT');
-  glXGetCurrentDisplayEXT := GLGetProcAddress('glXGetCurrentDisplayEXT');
-  glXImportContextEXT := GLGetProcAddress('glXImportContextEXT');
-  glXQueryContextInfoEXT := GLGetProcAddress('glXQueryContextInfoEXT');
-  glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
-  glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
-  glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
-  glXSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
-
-  glXBindTexImageEXT := GLGetProcAddress('glXBindTexImageEXT');
-  glXReleaseTexImageEXT := GLGetProcAddress('glXReleaseTexImageEXT');
-
-  //GLX 1.4
-  glXMakeCurrentReadSGI := GLGetProcAddress('glXMakeCurrentReadSGI');
-  glXGetCurrentReadDrawableSGI := GLGetProcAddress('glXGetCurrentReadDrawableSGI');
-  glXGetFBConfigAttribSGIX := GLGetProcAddress('glXGetFBConfigAttribSGIX');
-  glXChooseFBConfigSGIX := GLGetProcAddress('glXChooseFBConfigSGIX');
-  glXCreateGLXPixmapWithConfigSGIX := GLGetProcAddress('glXCreateGLXPixmapWithConfigSGIX');
-  glXCreateContextWithConfigSGIX := GLGetProcAddress('glXCreateContextWithConfigSGIX');
-  glXGetVisualFromFBConfigSGIX := GLGetProcAddress('glXGetVisualFromFBConfigSGIX');
-  glXGetFBConfigFromVisualSGIX := GLGetProcAddress('glXGetFBConfigFromVisualSGIX');
-  glXCreateGLXPbufferSGIX := GLGetProcAddress('glXCreateGLXPbufferSGIX');
-  glXDestroyGLXPbufferSGIX := GLGetProcAddress('glXDestroyGLXPbufferSGIX');
-  glXQueryGLXPbufferSGIX := GLGetProcAddress('glXQueryGLXPbufferSGIX');
-  glXSelectEventSGIX := GLGetProcAddress('glXSelectEventSGIX');
-  glXGetSelectedEventSGIX := GLGetProcAddress('glXGetSelectedEventSGIX');
-  glXCushionSGI := GLGetProcAddress('glXCushionSGI');
-  glXBindChannelToWindowSGIX := GLGetProcAddress('glXBindChannelToWindowSGIX');
-  glXChannelRectSGIX := GLGetProcAddress('glXChannelRectSGIX');
-  glXQueryChannelRectSGIX := GLGetProcAddress('glXQueryChannelRectSGIX');
-  glXQueryChannelDeltasSGIX := GLGetProcAddress('glXQueryChannelDeltasSGIX');
-  glXChannelRectSyncSGIX := GLGetProcAddress('glXChannelRectSyncSGIX');
-  glXJoinSwapGroupSGIX := GLGetProcAddress('glXJoinSwapGroupSGIX');
-  glXBindSwapBarrierSGIX := GLGetProcAddress('glXBindSwapBarrierSGIX');
-  glXQueryMaxSwapBarriersSGIX := GLGetProcAddress('glXQueryMaxSwapBarriersSGIX');
-  glXQueryHyperpipeNetworkSGIX := GLGetProcAddress('glXQueryHyperpipeNetworkSGIX');
-
-  glXHyperpipeConfigSGIX := GLGetProcAddress('glXHyperpipeConfigSGIX');
-  glXQueryHyperpipeConfigSGIX := GLGetProcAddress('glXQueryHyperpipeConfigSGIX');
-  glXDestroyHyperpipeConfigSGIX := GLGetProcAddress('glXDestroyHyperpipeConfigSGIX');
-  glXBindHyperpipeSGIX := GLGetProcAddress('glXBindHyperpipeSGIX');
-  glXQueryHyperpipeBestAttribSGIX := GLGetProcAddress('glXQueryHyperpipeBestAttribSGIX');
-  glXHyperpipeAttribSGIX := GLGetProcAddress('glXHyperpipeAttribSGIX');
-  glXQueryHyperpipeAttribSGIX := GLGetProcAddress('glXQueryHyperpipeAttribSGIX');
-  glXGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
-  glXEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
-  glXBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
-  GetVideoDeviceNV := GLGetProcAddress('GetVideoDeviceNV');
-  glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
-  glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
-  glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
-  glXSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
-
-  glXAllocateMemoryNV := GLGetProcAddress('glXAllocateMemoryNV');
-  glXFreeMemoryNV := GLGetProcAddress('glXFreeMemoryNV');
-
-  glXReleaseVideoDeviceNV := GLGetProcAddress('glXReleaseVideoDeviceNV');
-  glXBindVideoImageNV := GLGetProcAddress('glXBindVideoImageNV');
-  glXReleaseVideoImageNV := GLGetProcAddress('glXReleaseVideoImageNV');
-  glXSendPbufferToVideoNV := GLGetProcAddress('glXSendPbufferToVideoNV');
-  glXGetVideoInfoNV := GLGetProcAddress('glXGetVideoInfoNV');
-  glXJoinSwapGroupNV := GLGetProcAddress('glXJoinSwapGroupNV');
-  glXBindSwapBarrierNV := GLGetProcAddress('glXBindSwapBarrierNV');
-  glXQuerySwapGroupNV := GLGetProcAddress('glXQuerySwapGroupNV');
-  glXQueryMaxSwapGroupsNV := GLGetProcAddress('glXQueryMaxSwapGroupsNV');
-  glXQueryFrameCountNV := GLGetProcAddress('glXQueryFrameCountNV');
-  glXResetFrameCountNV := GLGetProcAddress('glXResetFrameCountNV');
-  glXBindVideoCaptureDeviceNV := GLGetProcAddress('glXBindVideoCaptureDeviceNV');
-  glXEnumerateVideoCaptureDevicesNV := GLGetProcAddress('glXEnumerateVideoCaptureDevicesNV');
-  glxLockVideoCaptureDeviceNV := GLGetProcAddress('glxLockVideoCaptureDeviceNV');
-  glXQueryVideoCaptureDeviceNV := GLGetProcAddress('glXQueryVideoCaptureDeviceNV');
-  glXReleaseVideoCaptureDeviceNV := GLGetProcAddress('glXReleaseVideoCaptureDeviceNV');
-  glXSwapIntervalEXT := GLGetProcAddress('glXSwapIntervalEXT');
-  glXCopyImageSubDataNV := GLGetProcAddress('glXCopyImageSubDataNV');
-end;
 {$ENDIF}
 
 // TrimAndSplitVersionString
@@ -6718,9 +6589,9 @@ begin
   else
   begin
     if GLHandle <> INVALID_MODULEHANDLE then
-      FreeLibrary(Cardinal(GLHandle));
+      FreeLibrary(GLHandle);
     if GLUHandle <> INVALID_MODULEHANDLE then
-      FreeLibrary(Cardinal(GLUHandle));
+      FreeLibrary(GLUHandle);
   end;
 end;
 
@@ -6739,13 +6610,13 @@ procedure CloseOpenGL;
 begin
   if GLHandle <> INVALID_MODULEHANDLE then
   begin
-    FreeLibrary(Cardinal(GLHandle));
+    FreeLibrary(GLHandle);
     GLHandle := INVALID_MODULEHANDLE;
   end;
 
   if GLUHandle <> INVALID_MODULEHANDLE then
   begin
-    FreeLibrary(Cardinal(GLUHandle));
+    FreeLibrary(GLUHandle);
     GLUHandle := INVALID_MODULEHANDLE;
   end;
 end;

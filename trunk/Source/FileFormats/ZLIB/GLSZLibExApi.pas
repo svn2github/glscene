@@ -378,7 +378,7 @@ begin
       Result := True
      else begin
        if vzHandle <> INVALID_MODULEHANDLE then
-         FreeLibrary(Cardinal(vzHandle));
+         FreeLibrary(vzHandle);
       {$IFDEF GLS_GLS_LOGGING}
         GLSLogger.Log('ZLibEx.pas: Zlib library not loaded');
       {$ENDIF}
@@ -390,7 +390,7 @@ end;
 procedure Closezlib;
 begin
    if vzHandle<>INVALID_MODULEHANDLE then begin
-      FreeLibrary(Cardinal(vzHandle));
+      FreeLibrary(vzHandle);
       vzHandle:=INVALID_MODULEHANDLE;
    end;
 end;

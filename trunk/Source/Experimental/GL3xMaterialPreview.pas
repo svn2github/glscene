@@ -18,7 +18,7 @@ uses
   Windows, GLWin32Context,
 {$ENDIF}
 {$IFDEF UNIX}
-  GLGLXContext, GLLinGTKContext,
+  GLWidgetContext,
 {$ENDIF}
   GLCrossPlatform, SysUtils, Classes, Forms, Controls,
 {$IFDEF FPC}
@@ -94,7 +94,13 @@ uses
 
 procedure TMaterialPreviewForm.FormCreate(Sender: TObject);
 begin
+{$IFDEF MSWINDOWS}
   FDC := GetDC(Handle);
+{$ENDIF}
+{$IFDEF LINUX}
+  FDC := Handle;
+{$ENDIF}
+
   FRenderingContext := GLContextManager.CreateContext;
   if not Assigned(FRenderingContext) then
     exit;
@@ -187,12 +193,16 @@ end;
 
 procedure TMaterialPreviewForm.DoPaint;
 var
+{$IFDEF MSWINDOWS}
   ps: TPaintStruct;
+{$ENDIF}
   LM: TMatrixEXT;
 begin
   if Assigned(FRenderingContext) and Visible then
   begin
+    {$IFDEF MSWINDOWS}
     BeginPaint(Handle, ps);
+    {$ENDIF}
     with FRenderingContext do
     begin
       Activate;
@@ -221,7 +231,9 @@ begin
         FRenderingContext.SwapBuffers;
       finally
         Deactivate;
+        {$IFDEF MSWINDOWS}
         EndPaint(Handle, ps);
+        {$ENDIF}
       end;
     end;
   end;
@@ -239,7 +251,6 @@ end;
 
 procedure TMaterialPreviewForm.WMMove(var Message: TLMMove);
 {$ELSE}
-
 procedure TMaterialPreviewForm.WMMove(var Message: TWMMove);
 {$ENDIF}
 begin
@@ -300,4 +311,4 @@ begin
 end;
 
 end.
-
+

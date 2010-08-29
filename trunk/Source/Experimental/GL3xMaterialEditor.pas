@@ -22,8 +22,7 @@ uses
   GLWin32Context,
 {$ENDIF}
 {$IFDEF UNIX}
-  GLGLXContext,
-  GLLinGTKContext,
+  GLWidgetContext,
 {$ENDIF}
   SysUtils,
   Variants,
@@ -35,6 +34,7 @@ uses
   Menus,
   ExtCtrls,
 {$IFDEF FPC}
+  LCLType,
   ComponentEditors,
   PropEdits,
   FileUtil,
@@ -262,7 +262,12 @@ procedure TMaterialEditorForm.FormCreate(Sender: TObject);
 begin
   FMaterialGraph := TMaterialGraph.Create(Self);
 
+{$IFDEF MSWINDOWS}
   FDC := GetDC(Handle);
+{$ENDIF}
+{$IFDEF LINUX}
+  FDC := Handle;
+{$ENDIF}
 
   FRenderingContext := GLContextManager.CreateContext;
   if not Assigned(FRenderingContext) then
@@ -332,6 +337,12 @@ begin
 end;
 
 procedure TMaterialEditorForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+{$IFNDEF MSWINDOWS}
+const
+  idYes = idButtonYes;
+  idNo = idButtonNo;
+  idCancel = idButtonCancel;
+  {$ENDIF}
 var
   SaveReq: Integer;
 begin
@@ -610,12 +621,16 @@ end;
 
 procedure TMaterialEditorForm.DoPaint;
 var
+  {$IFNDEF MSWINDOWS}
   ps: TPaintStruct;
+  {$ENDIF}
   counter: Int64;
 begin
   if Assigned(FRenderingContext) then
   begin
+    {$IFDEF MSWINDOWS}
     BeginPaint(Handle, ps);
+    {$ENDIF}
     FRenderingContext.Activate;
     try
       if Assigned(FMaterialGraph) then
@@ -629,40 +644,37 @@ begin
       FRenderingContext.SwapBuffers;
     finally
       FRenderingContext.Deactivate;
+      {$IFDEF MSWINDOWS}
       EndPaint(Handle, ps);
+      {$ENDIF}
     end;
   end;
 end;
 
 {$IFDEF FPC}
-
 procedure TMaterialEditorForm.WMMove(var Message: TLMMove);
 {$ELSE}
-
 procedure TMaterialEditorForm.WMMove(var Message: TWMMove);
 {$ENDIF}
-var
-  msg: TWMMove;
 begin
-  msg := TWMMove(Message);
   if Assigned(vNodePaletteForm)
     and vNodePaletteForm.Docked
     and Self.Active then
   begin
 {$IFNDEF FPC}
-    vNodePaletteForm.Left := Msg.XPos + Width;
-    vNodePaletteForm.Top := Msg.YPos - 41;
-    vMaterialPreviewForm.Left := Msg.XPos - vMaterialPreviewForm.Width - 15;
+    vNodePaletteForm.Left := Message.XPos + Width;
+    vNodePaletteForm.Top := Message.YPos - 41;
+    vMaterialPreviewForm.Left := Message.XPos - vMaterialPreviewForm.Width - 15;
     vMaterialPreviewForm.Top := vNodePaletteForm.Top;
-    vMaterialCodeForm.Left := Msg.XPos - 3;
-    vMaterialCodeForm.Top := Msg.YPos + Height - 39;
+    vMaterialCodeForm.Left := Message.XPos - 3;
+    vMaterialCodeForm.Top := Message.YPos + Height - 39;
 {$ELSE}
-    vNodePaletteForm.Left := Msg.XPos + Width + 20;
-    vNodePaletteForm.Top := Msg.YPos + 5;
-    vMaterialPreviewForm.Left := Msg.XPos - vMaterialPreviewForm.Width - 7;
+    vNodePaletteForm.Left := Message.XPos + Width + 20;
+    vNodePaletteForm.Top := Message.YPos + 5;
+    vMaterialPreviewForm.Left := Message.XPos - vMaterialPreviewForm.Width - 7;
     vMaterialPreviewForm.Top := vNodePaletteForm.Top;
-    vMaterialCodeForm.Left := Msg.XPos + 5;
-    vMaterialCodeForm.Top := Msg.YPos + Height + 40;
+    vMaterialCodeForm.Left := Message.XPos + 5;
+    vMaterialCodeForm.Top := Message.YPos + Height + 40;
 {$ENDIF}
     vNodePaletteForm.LastChangePosByMainForm := True;
     vNodePaletteForm.Docked := True;
@@ -782,4 +794,4 @@ finalization
 
 
 end.
-
+

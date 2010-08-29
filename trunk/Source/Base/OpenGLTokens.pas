@@ -4413,6 +4413,7 @@ const
    GLX_EXCHANGE_COMPLETE_INTEL			    = $8180;
    GLX_COPY_COMPLETE_INTEL			    = $8181;
    GLX_FLIP_COMPLETE_INTEL			    = $8182;
+   GLX_COLOR_SAMPLES_NV                             = $20B3;
 
 {$IFDEF SUPPORT_GLX}
 type
@@ -4447,4 +4448,4 @@ type
 implementation
 
 end.
-
+

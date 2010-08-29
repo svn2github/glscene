@@ -355,6 +355,7 @@ procedure TVertexList.SetLocked(val: Boolean);
 var
   size: Integer;
 begin
+{$IFDEF MSWINDOWS}
   if val <> Locked then
   begin
     // Only supported with NVidia's right now
@@ -377,12 +378,15 @@ begin
       else
       begin
         // Unlock
+{$IFDEF MSWINDOWS}
         wglFreeMemoryNV(FValues);
+{$ENDIF}
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
       end;
     end;
   end;
+{$ENDIF}
 end;
 
 // EnterLockSection
@@ -891,4 +895,3 @@ initialization
   RegisterClasses([TGLMesh]);
 
 end.
-

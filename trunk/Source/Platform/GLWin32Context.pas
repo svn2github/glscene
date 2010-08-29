@@ -1022,9 +1022,7 @@ begin
   end;
 
   if WGL_ARB_create_context then
-    CreateNewContext(FDC)
-  else
-    CreateOldContext(FDC);
+    CreateNewContext(FDC);
 
   Activate;
   // Specific which color buffers are to be drawn into

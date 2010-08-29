@@ -61,9 +61,13 @@ type
       TValueCompareFunc = function(const Item1, Item2: V): Integer;
       TForEachProc = procedure (AKey: K; AValue: V; out AContinue: Boolean);
     { Private Declarations }
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  type private
+  {$ELSE}
   private
     type
-   {$IFDEF GLS_COMPILER_2009_DOWN}
+  {$ENDIF}
+    {$IFDEF GLS_COMPILER_2009_DOWN}
       TRBNode = class
         Key: K;
         Left, Right, Parent: TRBNode;
@@ -792,4 +796,3 @@ begin
 end;
 
 end.
-

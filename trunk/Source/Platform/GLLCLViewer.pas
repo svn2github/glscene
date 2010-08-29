@@ -347,7 +347,8 @@ end;
 procedure TGLSceneViewer.DestroyWnd;
 begin
    FBuffer.DestroyRC;
-   if FOwnDC<>0 then begin
+   if FOwnDC<>0 then
+   begin
       ReleaseDC(Handle, FOwnDC);
       FOwnDC:=0;
    end;
@@ -455,7 +456,7 @@ end;
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
 begin
    DestroyWnd;
-   CreateWnd
+   CreateWnd;
 end;
 
 // Render
@@ -555,4 +556,3 @@ initialization
 {$ENDIF}
 
 end.
-

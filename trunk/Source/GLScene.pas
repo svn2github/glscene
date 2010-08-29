@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/08/10 - Yar - Bugfixed TGLSceneBuffer.DoStructuralChange when component loading causing excessive context recreation
       <li>23/08/10 - Yar - Removed all critical deprecated OpenGL function from rendering cycle. 
                            Now TGLSceneBuffer can work with forward core context.
                            Pipeline transformation and lighting becomes abststract.
@@ -4977,9 +4978,9 @@ begin
 
   if ARci.drawState = dsPicking then
     if ARci.proxySubObject then
-      GL.PushName(Integer(Self))
+      GL.PushName(TGLuint(Self))
     else
-      GL.LoadName(Integer(Self));
+      GL.LoadName(TGLuint(Self));
   // Start rendering
   if shouldRenderSelf then
   begin
@@ -9727,8 +9728,14 @@ end;
 //
 
 procedure TGLSceneBuffer.DoStructuralChange;
+var
+  bCall: Boolean;
 begin
-  if Assigned(FOnStructuralChange) then
+  if Assigned(Owner) then
+    bCall := not (csLoading in TComponent(GetOwner).ComponentState)
+  else
+    bCall := True;
+  if bCall and Assigned(FOnStructuralChange) then
     FOnStructuralChange(Self);
 end;
 
@@ -10187,4 +10194,3 @@ initialization
   QueryPerformanceFrequency(vCounterFrequency);
 
 end.
-
