@@ -19,8 +19,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLShadowPlane, GLScene, GLWin32Viewer, GLObjects,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, GLShadowPlane, GLScene, GLViewer, GLObjects,
   GLCadencer, StdCtrls, VectorGeometry, ExtCtrls, GLTexture, GLGeomObjects,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
@@ -63,16 +63,22 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
-
+uses
+  FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   textureFileName : String;
+  path: UTF8String;
+  p: Integer;
 begin
-   textureFileName:=ExtractFilePath(Application.ExeName)+'..\..\Media\BeigeMarble.jpg';
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile(textureFileName);
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -106,4 +112,4 @@ begin
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-end.
+end.
