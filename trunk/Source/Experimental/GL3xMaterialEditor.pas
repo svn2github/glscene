@@ -621,8 +621,8 @@ end;
 
 procedure TMaterialEditorForm.DoPaint;
 var
-  {$IFNDEF MSWINDOWS}
-  ps: TPaintStruct;
+  {$IFDEF MSWINDOWS}
+  ps: Windows.TPaintStruct;
   {$ENDIF}
   counter: Int64;
 begin
@@ -794,4 +794,4 @@ finalization
 
 
 end.
-
+

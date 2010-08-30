@@ -81,6 +81,13 @@ uses
   {$IFNDEF GLS_COMPILER_5_DOWN}, StrUtils, Types{$ENDIF}
   ;
 
+{$IFNDEF FPC}
+const
+  FPC_VERSION = 0;
+  FPC_RELEASE = 0;
+  FPC_PATCH = 0;
+{$ENDIF}
+
 type
 {$IFNDEF FPC}
   // These new types were added to be able to cast pointers to integers

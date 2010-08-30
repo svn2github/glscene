@@ -287,7 +287,7 @@ begin
   Result := dVCL;
 end;
 
-{$IFDEF GLS_COMPILER_2010_UP}
+{$IFDEF GLS_COMPILER_8_UP}
 
 function TGLSceneFormWizard.GetGalleryCategory: IOTAGalleryCategory;
 begin

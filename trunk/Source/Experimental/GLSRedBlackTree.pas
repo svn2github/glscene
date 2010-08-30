@@ -42,7 +42,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes;
+  Classes, GLCrossPlatform;
 
 type
 
@@ -66,7 +66,7 @@ type
   {$ELSE}
   private
     type
-  {$ENDIF}
+  {$IFEND}
     {$IFDEF GLS_COMPILER_2009_DOWN}
       TRBNode = class
         Key: K;
