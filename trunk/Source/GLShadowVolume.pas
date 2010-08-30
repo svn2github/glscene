@@ -1128,6 +1128,8 @@ begin
       ARci.PipelineTransformation.Pop;
 
       // restore OpenGL state
+      GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
+      Scene.SetupLights(ARci.GLStates.MaxLights);
       Disable(stStencilTest);
       SetPolygonOffset(0, 0);
       ARci.ignoreBlendingRequests := False;
