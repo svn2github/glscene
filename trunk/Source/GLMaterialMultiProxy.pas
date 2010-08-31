@@ -7,6 +7,7 @@
    Allows assign a unique material for each proxy master.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
@@ -526,7 +527,8 @@ begin
       begin
         oldProxySubObject := rci.proxySubObject;
         rci.proxySubObject := True;
-        GL.MultMatrixf(PGLFloat(mpMaster.MasterObject.MatrixAsAddress));
+        with rci.PipelineTransformation do
+          ModelMatrix := MatrixMultiply(mpMaster.MasterObject.Matrix, ModelMatrix);
         if (mpMaster.MasterObject is TGLCustomSceneObject) and (FMaterialLibrary <> nil) then
         begin
           TGLCustomSceneObject(mpMaster.MasterObject).Material.QuickAssignMaterial(
