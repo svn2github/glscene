@@ -18,7 +18,7 @@ object Form1: TForm1
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 150.512878417968
+    FieldOfView = 150.512878417969
     Align = alClient
     OnMouseDown = GLSceneViewer2MouseDown
     OnMouseMove = GLSceneViewer2MouseMove
@@ -160,7 +160,7 @@ object Form1: TForm1
       Up.Coordinates = {
         E9DC72BF000000009BE8A13E00000000
       }
-      Radius = 0.30000001192092
+      Radius = 0.30000001192093
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
@@ -178,9 +178,9 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        BottomRadius = 0.05000000074505
+        BottomRadius = 0.05000000074506
         Height = 1
-        TopRadius = 0.10000000149011
+        TopRadius = 0.10000000149012
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5

@@ -67,23 +67,32 @@ implementation
 {$R *.lfm}
 
 uses
-  GLFileMD2;
+  GLFileMD2, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
+  path: UTF8String;
+  p: Integer;
 begin
-  // Load the vertex and fragment Cg programs
-  CgCellShader.VertexProgram.LoadFromFile('cellshading_vp.cg');
-  CgCellShader.FragmentProgram.LoadFromFile('cellshading_fp.cg');
+   path := ExtractFilePath(ParamStrUTF8(0));
+   SetCurrentDirUTF8(path);
+   // Load the vertex and fragment Cg programs
+   CgCellShader.VertexProgram.LoadFromFile('cellshading_vp.cg');
+   CgCellShader.FragmentProgram.LoadFromFile('cellshading_fp.cg');
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
+
 
   // Load and scale the actor
-  GLActor1.LoadFromFile('..\..\media\waste.md2');
+  GLActor1.LoadFromFile('waste.md2');
   r:=GLActor1.BoundingSphereRadius;
   GLActor1.Scale.SetVector(2.5/r,2.5/r,2.5/r);
   GLActor1.AnimationMode:=aamLoop;
   // Load the texture
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\wastecell.jpg');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('wastecell.jpg');
 end;
 
 procedure TForm1.CgCellShaderApplyVP(CgProgram: TCgProgram; Sender: TObject);

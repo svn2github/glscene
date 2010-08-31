@@ -3,15 +3,13 @@
   <ProjectOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
-    <General>
-      <MainUnit Value="0"/>
-      <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
+    <General>
+      <UseXPManifest Value="True"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
@@ -50,8 +48,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
-        <CursorPos X="25" Y="62"/>
+        <TopLine Value="64"/>
+        <CursorPos X="15" Y="68"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -94,6 +92,12 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Source Value="Unit1.pas"/>
+        <Line Value="76"/>
+      </Item1>
+    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>

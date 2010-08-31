@@ -3,15 +3,13 @@
   <ProjectOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
-    <General>
-      <MainUnit Value="0"/>
-      <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
+    <General>
+      <UseXPManifest Value="True"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
@@ -53,19 +51,31 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2"/>
-        <CursorPos X="19" Y="13"/>
+        <TopLine Value="132"/>
+        <CursorPos X="1" Y="143"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="15" Column="30" TopLine="55"/>
+        <Caret Line="91" Column="12" TopLine="80"/>
       </Position1>
+      <Position2>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="113" Column="28" TopLine="110"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="120" Column="94" TopLine="102"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="143" Column="3" TopLine="138"/>
+      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -51,12 +51,20 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, GLFile3DS;
+uses VectorGeometry, GLFile3DS, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: Integer;
 begin
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
    // Load mushroom mesh
-   FreeForm1.LoadFromFile('..\..\media\mushroom.3ds');
+   FreeForm1.LoadFromFile('mushroom.3ds');
 end;
 
 // Perform the raycasting for the perspective camera & viewer

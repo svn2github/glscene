@@ -75,6 +75,10 @@ object Form1: TForm1
       RollAngle = 0
       TurnAngle = 0
       Radius = 0.5
+      BehavioursData = {
+        0458434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C
+        6973696F6E4D616E616765723102010200
+      }
     end
     object Sphere2: TGLSphere
       TagFloat = 0
@@ -85,6 +89,10 @@ object Form1: TForm1
       RollAngle = 0
       TurnAngle = 0
       Radius = 0.5
+      BehavioursData = {
+        0458434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C
+        6973696F6E4D616E616765723102010200
+      }
     end
     object GLCamera1: TGLCamera
       TagFloat = 0
@@ -101,6 +109,6 @@ object Form1: TForm1
   object CollisionManager1: TCollisionManager
     OnCollision = CollisionManager1Collision
     left = 16
-    top = 48
+    top = 72
   end
 end

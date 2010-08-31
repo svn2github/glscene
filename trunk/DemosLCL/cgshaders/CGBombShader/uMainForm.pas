@@ -87,28 +87,37 @@ var
 
 implementation
 
+uses
+  FileUtil;
+
 {$R *.lfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
-const
-  MEDIA_PATH = '..\..\media\';
+var
+  path: UTF8String;
+  p: Integer;
 begin
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
   // First load models.
-  GLActor1.LoadFromFile(MEDIA_PATH + 'waste.md2'); //Fighter
+  GLActor1.LoadFromFile('waste.md2'); //Fighter
   GLActor1.SwitchToAnimation(0, True);
   GLActor1.AnimationMode := aamLoop;
   GLActor1.Scale.Scale(0.05);
 
-  GLFreeForm2.LoadFromFile(MEDIA_PATH + 'Teapot.3ds');
-  GLFreeForm3.LoadFromFile(MEDIA_PATH + 'Sphere_little.3DS');
-  GLFreeForm4.LoadFromFile(MEDIA_PATH + 'Sphere_big.3DS');
+  GLFreeForm2.LoadFromFile('Teapot.3ds');
+  GLFreeForm3.LoadFromFile('Sphere_little.3DS');
+  GLFreeForm4.LoadFromFile('Sphere_big.3DS');
   GLFreeForm4.Scale.Scale(20);
 
-  GLMaterialLibrary1.LibMaterialByName('marbles1').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'beigemarble.jpg');
-  GLMaterialLibrary1.LibMaterialByName('marbles2').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'marbletiles.jpg');
-  GLMaterialLibrary1.LibMaterialByName('snow').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'snow512.jpg');
-  GLMaterialLibrary1.LibMaterialByName('Fire').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'FireGrade.bmp');
-  GLMaterialLibrary1.LibMaterialByName('FighterTexture').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'waste.jpg');
+  GLMaterialLibrary1.LibMaterialByName('marbles1').Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+  GLMaterialLibrary1.LibMaterialByName('marbles2').Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+  GLMaterialLibrary1.LibMaterialByName('snow').Material.Texture.Image.LoadFromFile('snow512.jpg');
+  GLMaterialLibrary1.LibMaterialByName('Fire').Material.Texture.Image.LoadFromFile('FireGrade.bmp');
+  GLMaterialLibrary1.LibMaterialByName('FighterTexture').Material.Texture.Image.LoadFromFile('waste.jpg');
 
   Myshader := TGLCgBombShader.Create(Self);
   Myshader.MainTexture := GLMaterialLibrary1.LibMaterialByName('FighterTexture').Material.Texture;

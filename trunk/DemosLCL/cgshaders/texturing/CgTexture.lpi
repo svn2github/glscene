@@ -3,15 +3,13 @@
   <ProjectOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
-    <General>
-      <MainUnit Value="0"/>
-      <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
+    <General>
+      <UseXPManifest Value="True"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
@@ -36,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="CgTexture.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -53,15 +51,39 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="55"/>
-        <CursorPos X="42" Y="140"/>
+        <TopLine Value="115"/>
+        <CursorPos X="11" Y="136"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Source\GLTexture.pas"/>
+        <UnitName Value="GLTexture"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1812"/>
+        <CursorPos X="1" Y="1826"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="140" Column="42" TopLine="55"/>
+      </Position1>
+      <Position2>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="141" Column="3" TopLine="133"/>
+      </Position2>
+      <Position3>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="136" Column="13" TopLine="126"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>

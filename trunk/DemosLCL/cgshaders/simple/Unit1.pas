@@ -106,6 +106,9 @@ implementation
 
 {$R *.lfm}
 
+uses
+  FileUtil;
+
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
 var
   v : TVector;
@@ -141,7 +144,11 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: Integer;
 begin
+   path := ExtractFilePath(ParamStrUTF8(0));
    // Load Cg proggy
    with CgShader1 do begin
      VertexProgram.LoadFromFile('Simple_vp.cg');
@@ -154,6 +161,11 @@ begin
      FragmentProgram.Enabled:=false;
    end;
 
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
+
    ButtonApplyFP.Enabled:=false;
    ButtonApplyVP.Enabled:=false;
 
@@ -164,7 +176,7 @@ begin
    // internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
    // is not aware of that. If you apply a vertex shader on those objects, they
    // would appear scaled and/or rotated.
-   GLFreeForm1.LoadFromFile('..\..\media\teapot.3ds');
+   GLFreeForm1.LoadFromFile('teapot.3ds');
 end;
 
 procedure TForm1.CBVertexProgramClick(Sender: TObject);

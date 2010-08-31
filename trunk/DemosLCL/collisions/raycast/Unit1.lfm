@@ -1,37 +1,40 @@
 object Form1: TForm1
   Left = 170
-  Height = 296
+  Height = 266
   Top = 79
   Width = 521
   AutoSize = True
   Caption = 'Form1'
-  ClientHeight = 296
+  ClientHeight = 266
   ClientWidth = 521
   Font.Height = -11
   Font.Name = 'Arial'
+  OnCreate = FormCreate
   LCLVersion = '0.9.29'
   object Bevel2: TBevel
-    Left = 280
+    Left = 296
     Height = 209
-    Top = 49
+    Top = 57
     Width = 225
+    Align = alRight
   end
   object Bevel1: TBevel
     Left = 0
     Height = 209
-    Top = 49
+    Top = 57
     Width = 225
+    Align = alLeft
   end
   object PaintBox1: TPaintBox
-    Left = 288
+    Left = 304
     Height = 193
-    Top = 56
+    Top = 64
     Width = 209
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
     Height = 193
-    Top = 57
+    Top = 64
     Width = 209
     Camera = GLCamera1
     FieldOfView = 125.219512939453
@@ -40,20 +43,20 @@ object Form1: TForm1
   object BUCast: TButton
     Left = 232
     Height = 25
-    Top = 89
-    Width = 41
+    Top = 232
+    Width = 57
     Caption = 'Cast!'
     OnClick = BUCastClick
     TabOrder = 1
   end
   object Panel1: TPanel
     Left = 0
-    Height = 49
+    Height = 57
     Top = 0
     Width = 521
     Align = alTop
     BevelOuter = bvNone
-    ClientHeight = 49
+    ClientHeight = 57
     ClientWidth = 521
     TabOrder = 2
     object Label1: TLabel
@@ -84,7 +87,7 @@ object Form1: TForm1
       ParentFont = False
     end
     object Label3: TLabel
-      Left = 288
+      Left = 296
       Height = 15
       Top = 32
       Width = 137
@@ -139,7 +142,7 @@ object Form1: TForm1
         }
         Visible = False
         MajorRadius = 0.40000000596046
-        MinorRadius = 0.10000000149011
+        MinorRadius = 0.10000000149012
       end
       object Plane1: TGLPlane
         TagFloat = 0
@@ -151,7 +154,7 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Height = 0.69999998807907
-        Width = 0.30000001192092
+        Width = 0.30000001192093
         XOffset = 0
         YOffset = 0
       end
@@ -172,9 +175,9 @@ object Form1: TForm1
         Up.Coordinates = {
           00000000D6B35D3F0100003F00000000
         }
-        BottomRadius = 0.10000000149011
-        Height = 0.60000002384185
-        TopRadius = 0.10000000149011
+        BottomRadius = 0.10000000149012
+        Height = 0.60000002384186
+        TopRadius = 0.10000000149012
         object GLAnnulus1: TGLAnnulus
           TagFloat = 0
           Material.FrontProperties.Diffuse.Color = {
@@ -183,11 +186,11 @@ object Form1: TForm1
           PitchAngle = 0
           RollAngle = 0
           TurnAngle = 0
-          BottomRadius = 0.23000000417232
+          BottomRadius = 0.23000000417233
           Height = 0.20000000298023
-          BottomInnerRadius = 0.18000000715255
-          TopInnerRadius = 0.18000000715255
-          TopRadius = 0.23000000417232
+          BottomInnerRadius = 0.18000000715256
+          TopInnerRadius = 0.18000000715256
+          TopRadius = 0.23000000417233
         end
       end
       object GLCube1: TGLCube

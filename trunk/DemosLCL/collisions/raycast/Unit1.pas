@@ -26,6 +26,9 @@ uses
   GLCoordinates, BaseClasses;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
@@ -48,6 +51,7 @@ type
     GLCube1: TGLCube;
     GLAnnulus1: TGLAnnulus;
     procedure BUCastClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
@@ -123,6 +127,11 @@ begin
 
    Caption:=Format('RayCast in %.1f ms', [StopPrecisionTimer(t)*1000]); 
    Screen.Cursor:=crDefault;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
