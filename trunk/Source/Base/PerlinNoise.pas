@@ -6,6 +6,7 @@
    Classes and function for generation of PerlinNoise.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>31/08/10 - Bugfixed range error in TPerlin3DNoise.Initialize
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>14/04/04 - EG - Creation
    </ul></font>
@@ -81,7 +82,7 @@ end;
 //
 procedure TPerlin3DNoise.Initialize(randomSeed : Integer);
 var
-   seedBackup : Integer;
+   seedBackup : {$IFDEF FPC}Cardinal{$ELSE}Integer{$ENDIF};
    i, t, j : Integer;
    z, r : Single;
 begin

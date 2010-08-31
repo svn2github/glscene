@@ -7469,7 +7469,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.ArcCos(X);
+   Result:=VectorGeometry.ArcCos(X);
    {$HINTS ON}
 {$endif}
 end;
