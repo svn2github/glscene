@@ -84,9 +84,6 @@ begin
 end;
 
 procedure TFileMD2.FreeLists;
-var
-  I: integer;
-
 begin
   SetLength(fIndexList,0);
   SetLength(fVertexList,0,0);

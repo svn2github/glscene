@@ -1,6 +1,6 @@
-//
+
 // This unit is part of the GLScene Project, http://glscene.org
-//
+
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
@@ -18,12 +18,27 @@ interface
 {$WARNINGS OFF}
 
 uses
+{$IFDEF MSWINDOWS}
+  Windows,
+{$ENDIF}
+{$IFDEF Unix}
+  x, dynlibs,
+{$ENDIF}
 {$IFDEF GLS_LOGGING}
   GLSLog,
 {$ENDIF}
-  Classes, SysUtils, VectorGeometry;
+{$IFDEF FPC}
+  GLSZLibExAPI,
+{$ENDIF}
+  Classes, SysUtils, VectorGeometry, GLCrossPlatform;
 
 const
+{$IFDEF MSWINDOWS}
+  LibPng13 = 'libpng13'; // Library name
+{$ELSE}
+  LibPng13 = 'png.so'; // Library name
+{$ENDIF}
+
   ZLIB_VERSION = '1.2.3';
   LIBPNG_VERSION = '1.4.0';
 
@@ -48,14 +63,13 @@ const
   PNG_FLAG_ADD_ALPHA = $200000;
   PNG_FLAG_STRIP_ALPHA = $400000;
   PNG_FLAG_BENIGN_ERRORS_WARN = $800000;
-  PNG_FLAG_CRC_ANCILLARY_MASK = PNG_FLAG_CRC_ANCILLARY_USE or
-    PNG_FLAG_CRC_ANCILLARY_NOWARN;
+  PNG_FLAG_CRC_ANCILLARY_MASK =
+    PNG_FLAG_CRC_ANCILLARY_USE or PNG_FLAG_CRC_ANCILLARY_NOWARN;
 
-  PNG_FLAG_CRC_CRITICAL_MASK = PNG_FLAG_CRC_CRITICAL_USE or
-    PNG_FLAG_CRC_CRITICAL_IGNORE;
+  PNG_FLAG_CRC_CRITICAL_MASK =
+    PNG_FLAG_CRC_CRITICAL_USE or PNG_FLAG_CRC_CRITICAL_IGNORE;
 
-  PNG_FLAG_CRC_MASK = PNG_FLAG_CRC_ANCILLARY_MASK or
-    PNG_FLAG_CRC_CRITICAL_MASK;
+  PNG_FLAG_CRC_MASK = PNG_FLAG_CRC_ANCILLARY_MASK or PNG_FLAG_CRC_CRITICAL_MASK;
 
   PNG_USER_WIDTH_MAX = 1000000;
   PNG_USER_HEIGHT_MAX = 1000000;
@@ -170,14 +184,40 @@ const
   PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE;
 
 type
-  png_size_t = Cardinal; // 32 bit unsigned integer
-  png_byte = Byte;
-  png_int_32 = LongInt;
-  png_uint_32 = LongWord;
-  png_uint_16 = Word;
-  png_fixed_point = LongInt;
+  time_t = longint;
+  int = longint;
 
-  png_voidp = Pointer;
+  png_uint_32 = dword;
+  png_int_32 = longint;
+  png_uint_16 = word;
+  png_int_16 = smallint;
+  png_byte = byte;
+  ppng_uint_32 = ^png_uint_32;
+  ppng_int_32 = ^png_int_32;
+  ppng_uint_16 = ^png_uint_16;
+  ppng_int_16 = ^png_int_16;
+  ppng_byte = ^png_byte;
+  pppng_uint_32 = ^ppng_uint_32;
+  pppng_int_32 = ^ppng_int_32;
+  pppng_uint_16 = ^ppng_uint_16;
+  ppng_uint_16p = ^png_uint_16p;
+  pppng_int_16 = ^ppng_int_16;
+  pppng_byte = ^ppng_byte;
+  png_size_t = ptruint;
+  png_fixed_point = png_int_32;
+  ppng_fixed_point = ^png_fixed_point;
+  pppng_fixed_point = ^ppng_fixed_point;
+  png_voidp = pointer;
+  ppng_bytep = ^png_bytep;
+  (* Const before type ignored *)
+  png_const_charp = PChar;
+  png_charp = PChar;
+  ppng_charp = ^png_charp;
+  png_fixed_point_p = Ppng_fixed_point;
+  TFile = Pointer;
+  png_FILE_p = ^file;
+  png_doublep = Pdouble;
+
   png_byte_array = array[0..MaxInt div 2 - 1] of png_byte;
   png_bytep = ^png_byte_array;
   png_bytep_array = array[0..MaxInt div (2 * SizeOf(png_bytep))] of png_bytep;
@@ -188,22 +228,20 @@ type
   png_uint_16p = ^png_uint_16;
   png_uint_16pp = ^png_uint_16p;
   png_int_16p = PShortInt;
-  png_const_charp = PAnsiChar;
-  png_charp = PAnsiChar;
   png_charp_array = array[0..MaxInt div (2 * SizeOf(png_charp))] of png_charp;
   png_charp_arrayp = ^png_charp_array;
   png_charpp = ^png_charp;
-  png_fixed_point_p = ^LongInt;
+  ppng_charpp = ^png_charpp;
 
   jmp_buf = record
     j_ebp,
-      j_ebx,
-      j_edi,
-      j_esi,
-      j_esp,
-      j_ret,
-      j_excep,
-      j_context: Cardinal;
+    j_ebx,
+    j_edi,
+    j_esi,
+    j_esp,
+    j_ret,
+    j_excep,
+    j_context: cardinal;
   end;
   jmp_bufp = ^jmp_buf;
 
@@ -228,7 +266,9 @@ type
   end;
   png_color_8p = ^png_color_8;
   png_color_8pp = ^png_color_8p;
+  ppng_color_8p = ^png_color_8p;
 
+  ppng_colorp = ^png_colorp;
   png_color_16 = record
     index: png_byte; // used for palette files
     red: png_uint_16; // for use in red green blue files
@@ -238,6 +278,7 @@ type
   end;
   png_color_16p = ^png_color_16;
   png_color_16pp = ^png_color_16p;
+  ppng_color_16p = ^png_color_16p;
 
   {: png_unknown_chunk is a structure to hold queued chunks for which there is
      no specific support.  The idea is that we can use this to queue
@@ -245,8 +286,8 @@ type
      know about their semantics. }
 
   png_unknown_chunk = record
-    name: array[0..4] of png_byte;
-    data: png_bytep;
+    Name: array[0..4] of png_byte;
+    Data: png_bytep;
     size: png_size_t;
 
     {: libpng-using applications should NOT directly modify this byte.
@@ -264,12 +305,12 @@ type
         0: zTXt, deflate
         1: iTXt, none
         2: iTXt, deflate  }
-    compression: Integer;
+    compression: integer;
     {: keyword, 1-79 character description of "text" }
     key: png_charp;
     {: comment, may be an empty string (ie "")
        or a NULL pointer }
-    text: png_charp;
+    Text: png_charp;
     {: length of the text string }
     text_length: png_size_t;
     {: length of the itxt string }
@@ -285,6 +326,7 @@ type
   png_text_arrayp = ^png_text_array;
   png_textp = ^png_text;
   png_textpp = ^png_textp;
+  ppng_textp = ^png_textp;
 
   png_time = record
     year: png_uint_16; {: full year, as in, 1995 }
@@ -296,6 +338,7 @@ type
   end;
   png_timep = ^png_time;
   png_timepp = ^png_timep;
+  ppng_timep = ^png_timep;
 
   png_sPLT_entry = record
     red: png_uint_16;
@@ -309,7 +352,7 @@ type
   png_sPLT_entrypp = ^png_sPLT_entryp;
 
   png_sPLT_t = record
-    name: png_charp; {: palette name }
+    Name: png_charp; {: palette name }
     depth: png_byte; {: depth of palette samples }
     entries: png_sPLT_entryp; {: palette entries }
     nentries: png_int_32; {: number of palette entries }
@@ -322,9 +365,10 @@ type
 
   png_structp = ^png_struct;
   png_structpp = ^png_structp;
+
   png_info = record
-    width: png_uint_32; {: width of image in pixels (from IHDR) }
-    height: png_uint_32; {: height of image in pixels (from IHDR) }
+    Width: png_uint_32; {: width of image in pixels (from IHDR) }
+    Height: png_uint_32; {: height of image in pixels (from IHDR) }
     valid: png_uint_32; {: valid chunk data (see PNG_INFO_ below) }
     rowbytes: png_size_t; {: bytes needed to hold an untransformed row }
     palette: png_colorp; {: array of color values (valid & PNG_INFO_PLTE) }
@@ -343,12 +387,12 @@ type
     signature: array[0..7] of png_byte;
     {: magic bytes read by libpng from start of file }
 
-    gamma: Single; {: gamma value of image, if (valid & PNG_INFO_gAMA) }
+    gamma: single; {: gamma value of image, if (valid & PNG_INFO_gAMA) }
     srgb_intent: png_byte; {: sRGB rendering intent [0, 1, 2, or 3] }
 
-    num_text: Integer; {: number of comments read/to write }
-    max_text: Integer; {: current size of text array }
-    text: png_textp; {: array of comments read/to write }
+    num_text: integer; {: number of comments read/to write }
+    max_text: integer; {: current size of text array }
+    Text: png_textp; {: array of comments read/to write }
 
     mod_time: png_time;
 
@@ -369,14 +413,14 @@ type
 
     hist: png_uint_16p;
 
-    x_white: Single;
-    y_white: Single;
-    x_red: Single;
-    y_red: Single;
-    x_green: Single;
-    y_green: Single;
-    x_blue: Single;
-    y_blue: Single;
+    x_white: single;
+    y_white: single;
+    x_red: single;
+    y_red: single;
+    x_green: single;
+    y_green: single;
+    x_blue: single;
+    y_blue: single;
 
     pcal_purpose: png_charp; {: pCAL chunk description string }
     pcal_X0: png_int_32; {: minimum value }
@@ -423,7 +467,7 @@ type
   png_infopp = ^png_infop;
 
   png_row_info = record
-    width: png_uint_32; // width of row
+    Width: png_uint_32; // width of row
     rowbytes: png_uint_32; // number of bytes in row
     color_type: png_byte; // color type of row
     bit_depth: png_byte; // bit depth of row
@@ -432,41 +476,41 @@ type
   end;
   png_row_infop = ^png_row_info;
 
-  TAlloc = function(AppData: Pointer; Items, Size: Integer): Pointer; cdecl;
+  TAlloc = function(AppData: Pointer; Items, Size: integer): Pointer; cdecl;
   TFree = procedure(AppData, Block: Pointer); cdecl;
-  TInFunc = function(opaque: Pointer; var buf: PByte): Integer; cdecl;
-  TOutFunc = function(opaque: Pointer; buf: PByte; size: Integer): Integer;
+  TInFunc = function(opaque: Pointer; var buf: PByte): integer; cdecl;
+  TOutFunc = function(opaque: Pointer; buf: PByte; size: integer): integer;
   png_error_ptr = procedure(struct: png_structp; str: png_const_charp); cdecl;
-  png_rw_ptr = procedure(struct: png_structp; data: png_bytep; size:
-    png_size_t); cdecl;
-  png_longjmp_ptr = procedure(jb: jmp_buf; i: Integer); cdecl;
-  png_user_transform_ptr = procedure(struct: png_structp; row_info:
-    png_row_infop; b: png_bytep); cdecl;
+  png_rw_ptr = procedure(struct: png_structp; Data: png_bytep;
+    size: png_size_t); cdecl;
+  png_longjmp_ptr = procedure(jb: jmp_buf; i: integer); cdecl;
+  png_user_transform_ptr = procedure(struct: png_structp;
+    row_info: png_row_infop; b: png_bytep); cdecl;
   png_flush_ptr = procedure(struct: png_structp); cdecl;
-  png_read_status_ptr = procedure(struct: png_structp; ui: png_uint_32; i:
-    Integer); cdecl;
-  png_write_status_ptr = procedure(struct: png_structp; ui: png_uint_32; i:
-    Integer); cdecl;
+  png_read_status_ptr = procedure(struct: png_structp; ui: png_uint_32;
+    i: integer); cdecl;
+  png_write_status_ptr = procedure(struct: png_structp; ui: png_uint_32;
+    i: integer); cdecl;
   png_progressive_info_ptr = procedure(struct: png_structp; info: png_infop);
-  cdecl;
+    cdecl;
   png_progressive_end_ptr = procedure(struct: png_structp; info: png_infop);
-  cdecl;
-  png_progressive_row_ptr = procedure(struct: png_structp; bp: png_bytep; ui:
-    png_uint_32; i: Integer); cdecl;
+    cdecl;
+  png_progressive_row_ptr = procedure(struct: png_structp; bp: png_bytep;
+    ui: png_uint_32; i: integer); cdecl;
   png_malloc_ptr = function(struct: png_structp; size: png_size_t): png_voidp;
   png_free_ptr = procedure(struct: png_structp; ptr: png_voidp);
-  png_user_chunk_ptr = function(struct: png_structp; chunk: png_unknown_chunkp):
-    Integer;
+  png_user_chunk_ptr = function(struct: png_structp;
+    chunk: png_unknown_chunkp): integer;
 
   // Internal structure.  Ignore.
   TZStreamRec = packed record
     next_in: PAnsiChar; // next input byte
-    avail_in: Integer; // number of bytes available at next_in
-    total_in: Integer; // total nb of input bytes read so far
+    avail_in: integer; // number of bytes available at next_in
+    total_in: integer; // total nb of input bytes read so far
 
     next_out: PAnsiChar; // next output byte should be put here
-    avail_out: Integer; // remaining free space at next_out
-    total_out: Integer; // total nb of bytes output so far
+    avail_out: integer; // remaining free space at next_out
+    total_out: integer; // total nb of bytes output so far
 
     msg: PAnsiChar; // last error message, NULL if no error
     internal: Pointer; // not visible by applications
@@ -475,9 +519,9 @@ type
     zfree: TFree; // used to free the internal state
     AppData: Pointer; // private data object passed to zalloc and zfree
 
-    data_type: Integer; //  best guess about the data type: ascii or binary
-    adler: Integer; // adler32 value of the uncompressed data
-    reserved: Integer; // reserved for future use
+    data_type: integer; //  best guess about the data type: ascii or binary
+    adler: integer; // adler32 value of the uncompressed data
+    reserved: integer; // reserved for future use
   end;
 
   png_struct = record
@@ -505,14 +549,14 @@ type
     zstream: TZStreamRec; // pointer to decompression structure (below)
     zbuf: png_bytep; // buffer for zlib
     zbuf_size: png_size_t; // size of zbuf
-    zlib_level: Integer; // holds zlib compression level
-    zlib_method: Integer; // holds zlib compression method
-    zlib_window_bits: Integer; // holds zlib compression window bits
-    zlib_mem_level: Integer; // holds zlib compression memory level
-    zlib_strategy: Integer; // holds zlib compression strategy
+    zlib_level: integer; // holds zlib compression level
+    zlib_method: integer; // holds zlib compression method
+    zlib_window_bits: integer; // holds zlib compression window bits
+    zlib_mem_level: integer; // holds zlib compression memory level
+    zlib_strategy: integer; // holds zlib compression strategy
 
-    width: png_uint_32; // width of image in pixels
-    height: png_uint_32; // height of image in pixels
+    Width: png_uint_32; // width of image in pixels
+    Height: png_uint_32; // height of image in pixels
     num_rows: png_uint_32; // number of rows in current pass
     usr_width: png_uint_32; // width of row at start of write
     rowbytes: png_uint_32; // size of row in bytes
@@ -549,7 +593,7 @@ type
     filler: png_uint_16; // filler bytes for pixel expansion
 
     background_gamma_type: png_byte;
-    background_gamma: Single;
+    background_gamma: single;
     background: png_color_16; // background color in screen gamma space
     background_1: png_color_16; // background normalized to gamma 1.0
 
@@ -557,9 +601,9 @@ type
     flush_dist: png_uint_32; // how many rows apart to flush, 0 - no flush
     flush_rows: png_uint_32; // number of rows written since last flush
 
-    gamma_shift: Integer; // number of "insignificant" bits 16-bit gamma
-    gamma: Single; // file gamma value
-    screen_gamma: Single; // screen gamma value (display_exponent)
+    gamma_shift: integer; // number of "insignificant" bits 16-bit gamma
+    gamma: single; // file gamma value
+    screen_gamma: single; // screen gamma value (display_exponent)
 
     gamma_table: png_bytep; // gamma table for 8-bit depth files
     gamma_from_1: png_bytep; // converts from 1.0 to screen
@@ -594,8 +638,8 @@ type
     save_buffer_max: png_size_t; // total size of save_buffer
     buffer_size: png_size_t; // total amount of available input data
     current_buffer_size: png_size_t; // amount of data now in current_buffer
-    process_mode: Integer; // what push library is currently doing
-    cur_palette: Integer; // current push library palette index
+    process_mode: integer; // what push library is currently doing
+    cur_palette: integer; // current push library palette index
 
     current_text_size: png_size_t; // current size of text input data
     current_text_left: png_size_t; // how much text left to read in input
@@ -621,7 +665,7 @@ type
     user_chunk_ptr: png_voidp;
     read_user_chunk_fn: png_user_chunk_ptr; // user read chunk handler
 
-    num_chunk_list: Integer;
+    num_chunk_list: integer;
     chunk_list: png_bytep;
 
     // New members added in libpng-1.0.3
@@ -656,13 +700,13 @@ type
 
     //    user_width_max: png_uint_32;
     //    user_height_max: png_uint_32;
-        // Added in libpng-1.4.0: Total number of sPLT, text, and unknown
-        // chunks that can be stored ( $7fffffff means unlimited).
+    // Added in libpng-1.4.0: Total number of sPLT, text, and unknown
+    // chunks that can be stored ( $7fffffff means unlimited).
 
     //    user_chunk_cache_max: png_uint_32;
 
-        // New member added in libpng-1.0.25 and 1.2.17
-        // Storage for unknown chunk that the library doesn't recognize.
+    // New member added in libpng-1.0.25 and 1.2.17
+    // Storage for unknown chunk that the library doesn't recognize.
     unknown_chunk: png_unknown_chunk;
 
     // New members added in libpng-1.2.26
@@ -676,179 +720,480 @@ type
     io_state: png_uint_32;
   end;
 
-  (* stream read/write function *)
-procedure pngReadFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
-cdecl;
-procedure pngWriteFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
-cdecl;
+(* stream read/write function *)
+procedure pngReadFn(png_ptr: png_structp; Data: png_bytep; length: png_size_t);
+  cdecl;
+procedure pngWriteFn(png_ptr: png_structp; Data: png_bytep; length: png_size_t);
+  cdecl;
 procedure pngErrorFn(struct: png_structp; str: png_const_charp);
-cdecl;
+  cdecl;
 procedure pngWarnFn(struct: png_structp; str: png_const_charp);
-cdecl;
+  cdecl;
+{$IFNDEF FPC}
 (* basic functions *)
-function deflateInit(var strm: TZStreamRec; level: Integer): Integer;
-forward;
-function deflate(var strm: TZStreamRec; flush: Integer): Integer;
-forward;
-function deflateEnd(var strm: TZStreamRec): Integer;
-forward;
-function inflate(var strm: TZStreamRec; flush: Integer): Integer;
-forward;
-function inflateEnd(var strm: TZStreamRec): Integer;
-forward;
+function deflateInit(var strm: TZStreamRec; level: integer): integer;
+  forward;
+function deflate(var strm: TZStreamRec; flush: integer): integer;
+  forward;
+function deflateEnd(var strm: TZStreamRec): integer;
+  forward;
+function inflate(var strm: TZStreamRec; flush: integer): integer;
+  forward;
+function inflateEnd(var strm: TZStreamRec): integer;
+  forward;
 
 (* advanced functions *)
-function deflateSetDictionary(var strm: TZStreamRec; const dictionary:
-  PAnsiChar;
-  dictLength: Integer): Integer;
-forward;
-function deflateCopy(var dest, source: TZStreamRec): Integer;
-forward;
-function deflateReset(var strm: TZStreamRec): Integer;
-cdecl; forward;
-function deflateParams(var strm: TZStreamRec; level, strategy: Integer):
-  Integer;
-forward;
-function deflateBound(var strm: TZStreamRec; sourceLen: LongInt): LongInt;
-forward;
-function deflatePrime(var strm: TZStreamRec; bits, value: Integer): Integer;
-forward;
-function inflateSetDictionary(var strm: TZStreamRec; const dictionary:
-  PAnsiChar; dictLength: Integer): Integer;
-forward;
-function inflateSync(var strm: TZStreamRec): Integer;
-forward;
-function inflateCopy(var dest, source: TZStreamRec): Integer;
-forward;
-function inflateReset(var strm: TZStreamRec): Integer;
-forward;
+function deflateSetDictionary(var strm: TZStreamRec; const dictionary: PAnsiChar;
+  dictLength: integer): integer;
+  forward;
+function deflateCopy(var dest, Source: TZStreamRec): integer;
+  forward;
+function deflateReset(var strm: TZStreamRec): integer;
+  cdecl; forward;
+function deflateParams(var strm: TZStreamRec; level, strategy: integer): integer;
+  forward;
+function deflateBound(var strm: TZStreamRec; sourceLen: longint): longint;
+  forward;
+function deflatePrime(var strm: TZStreamRec; bits, Value: integer): integer;
+  forward;
+function inflateSetDictionary(var strm: TZStreamRec; const dictionary: PAnsiChar;
+  dictLength: integer): integer;
+  forward;
+function inflateSync(var strm: TZStreamRec): integer;
+  forward;
+function inflateCopy(var dest, Source: TZStreamRec): integer;
+  forward;
+function inflateReset(var strm: TZStreamRec): integer;
+  forward;
 function inflateBack(var strm: TZStreamRec; in_fn: TInFunc; in_desc: Pointer;
-  out_fn: TOutFunc; out_desc: Pointer): Integer;
-forward;
-function inflateBackEnd(var strm: TZStreamRec): Integer;
-forward;
+  out_fn: TOutFunc; out_desc: Pointer): integer;
+  forward;
+function inflateBackEnd(var strm: TZStreamRec): integer;
+  forward;
 
 (* utility functions *)
-function compress(dest: PAnsiChar; var destLen: LongInt;
-  const source: PAnsiChar; sourceLen: LongInt): Integer; forward;
-function compress2(dest: PAnsiChar; var destLen: LongInt;
-  const source: PAnsiChar; sourceLen: LongInt;
-  level: Integer): Integer; forward;
-function compressBound(sourceLen: LongInt): LongInt; forward;
+function compress(dest: PAnsiChar; var destLen: longint; const Source: PAnsiChar;
+  sourceLen: longint): integer; forward;
+function compress2(dest: PAnsiChar; var destLen: longint; const Source: PAnsiChar;
+  sourceLen: longint; level: integer): integer; forward;
+function compressBound(sourceLen: longint): longint; forward;
 
 (* checksum functions *)
-function adler32(adler: LongInt; const buf: PAnsiChar; len: Integer): LongInt;
-forward;
-function crc32(crc: LongInt; const buf: PAnsiChar; len: Integer): LongInt;
-forward;
+function adler32(adler: longint; const buf: PAnsiChar; len: integer): longint;
+  forward;
+function crc32(crc: longint; const buf: PAnsiChar; len: integer): longint;
+  forward;
 
 (* various hacks, don't look :) *)
-function deflateInit_(var strm: TZStreamRec; level: Integer;
-  const version: PAnsiChar; stream_size: Integer): Integer;
+function deflateInit_(var strm: TZStreamRec; level: integer;
+  const version: PAnsiChar; stream_size: integer): integer;
 function inflateInit_(var strm: TZStreamRec; const version: PAnsiChar;
-  stream_size: Integer): Integer;
+  stream_size: integer): integer;
 function deflateInit2_(var strm: TZStreamRec;
-  level, method, windowBits, memLevel, strategy: Integer;
-  const version: PAnsiChar; stream_size: Integer): Integer;
-function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
-  const version: PAnsiChar; stream_size: Integer): Integer;
-function inflateBackInit_(var strm: TZStreamRec;
-  windowBits: Integer; window: PAnsiChar;
-  const version: PAnsiChar; stream_size: Integer): Integer;
+  level, method, windowBits, memLevel, strategy: integer;
+  const version: PAnsiChar; stream_size: integer): integer;
+function inflateInit2_(var strm: TZStreamRec; windowBits: integer;
+  const version: PAnsiChar; stream_size: integer): integer;
+function inflateBackInit_(var strm: TZStreamRec; windowBits: integer;
+  window: PAnsiChar; const version: PAnsiChar; stream_size: integer): integer;
 
 {: Main libpng functions }
-function _png_sig_cmp(sig: png_bytep; start: png_size_t; num_to_check:
-  png_size_t): Integer; cdecl; forward;
-function _png_create_read_struct(
-  user_png_ver: png_const_charp;
-  error_ptr: png_voidp;
-  error_fn: png_error_ptr;
-  warn_fn: png_error_ptr): png_structp; cdecl; forward;
-procedure _png_destroy_read_struct(png_ptr_ptr: png_structpp; info_ptr_ptr:
-  png_infopp;
-  end_info_ptr_ptr: png_infopp); cdecl; forward;
+function _png_sig_cmp(sig: png_bytep; start: png_size_t;
+  num_to_check: png_size_t): integer; cdecl; forward;
+function _png_create_read_struct(user_png_ver: png_const_charp;
+  error_ptr: png_voidp; error_fn: png_error_ptr; warn_fn: png_error_ptr): png_structp;
+  cdecl; forward;
+procedure _png_destroy_read_struct(png_ptr_ptr: png_structpp;
+  info_ptr_ptr: png_infopp; end_info_ptr_ptr: png_infopp); cdecl; forward;
 function _png_create_info_struct(png_ptr: png_structp): png_infop; cdecl;
-forward;
-procedure _png_destroy_info_struct(png_ptr: png_structp; info_ptr_ptr:
-  png_infopp); cdecl; forward;
+  forward;
+procedure _png_destroy_info_struct(png_ptr: png_structp; info_ptr_ptr: png_infopp);
+  cdecl; forward;
 procedure _png_set_read_fn(png_ptr: png_structp; io_ptr: png_voidp;
   read_data_fn: png_rw_ptr); cdecl; forward;
-procedure _png_set_sig_bytes(png_ptr: png_structp; num_bytes: Integer);
-cdecl; forward;
-function _png_get_image_width(png_ptr: png_structp; info_ptr: png_infop):
-  png_uint_32; cdecl; forward;
-function _png_get_image_height(png_ptr: png_structp; info_ptr: png_infop):
-  png_uint_32; cdecl; forward;
-function _png_get_color_type(png_ptr: png_structp; info_ptr: png_infop):
-  png_byte; cdecl; forward;
-function _png_get_bit_depth(png_ptr: png_structp; info_ptr: png_infop):
-  png_byte; cdecl; forward;
-function _png_get_filter_type(png_ptr: png_structp; info_ptr: png_infop):
-  png_byte; cdecl; forward;
-function _png_get_interlace_type(png_ptr: png_structp; info_ptr: png_infop):
-  png_byte; cdecl; forward;
-function _png_get_compression_type(png_ptr: png_structp; info_ptr: png_infop):
-  png_byte; cdecl; forward;
+procedure _png_set_sig_bytes(png_ptr: png_structp; num_bytes: integer);
+  cdecl; forward;
+function _png_get_image_width(png_ptr: png_structp; info_ptr: png_infop): png_uint_32;
+  cdecl; forward;
+function _png_get_image_height(png_ptr: png_structp; info_ptr: png_infop): png_uint_32;
+  cdecl; forward;
+function _png_get_color_type(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+  cdecl; forward;
+function _png_get_bit_depth(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+  cdecl; forward;
+function _png_get_filter_type(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+  cdecl; forward;
+function _png_get_interlace_type(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+  cdecl; forward;
+function _png_get_compression_type(png_ptr: png_structp; info_ptr: png_infop): png_byte;
+  cdecl; forward;
 procedure _png_read_info(png_ptr: png_structp; info_ptr: png_infop);
-cdecl; forward;
+  cdecl; forward;
 function _png_get_io_ptr(png_ptr: png_structp): png_voidp;
-cdecl; forward;
+  cdecl; forward;
 procedure _png_warning(png_ptr: png_structp; warning_message: png_const_charp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_error(png_ptr: png_structp; error_message: png_const_charp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_set_palette_to_rgb(png_ptr: png_structp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_set_expand_gray_1_2_4_to_8(png_ptr: png_structp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_set_tRNS_to_alpha(png_ptr: png_structp);
-cdecl; forward;
-function _png_get_valid(png_ptr: png_structp; info_ptr: png_infop; flag:
-  png_uint_32): png_uint_32;
-cdecl; forward;
+  cdecl; forward;
+function _png_get_valid(png_ptr: png_structp; info_ptr: png_infop;
+  flag: png_uint_32): png_uint_32;
+  cdecl; forward;
 procedure _png_read_update_info(png_ptr: png_structp; info_ptr: png_infop);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_read_image(png_ptr: png_structp; image: png_bytepp);
-cdecl; forward;
-function _png_get_rowbytes(png_ptr: png_structp; info_ptr: png_infop):
-  png_size_t;
-cdecl; forward;
+  cdecl; forward;
+function _png_get_rowbytes(png_ptr: png_structp; info_ptr: png_infop): png_size_t;
+  cdecl; forward;
 procedure _png_build_gamma_table(png_ptr: png_structp; bit_depth: png_byte);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_read_end(png_ptr: png_structp; info_ptr: png_infop);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_free(png_ptr: png_structp; ptr: png_voidp);
-cdecl; forward;
-procedure _png_info_init_3(ptr_ptr: png_infopp; png_info_struct_size:
-  png_size_t); cdecl; forward;
+  cdecl; forward;
+procedure _png_info_init_3(ptr_ptr: png_infopp; png_info_struct_size: png_size_t);
+  cdecl; forward;
 function _png_get_channels(png_ptr: png_structp; info_ptr: png_infop): png_byte;
-cdecl; forward;
-function _png_create_write_struct(user_png_ver: png_const_charp; error_ptr:
-  png_voidp;
-  error_fn: png_error_ptr; warn_fn: png_error_ptr): png_structp;
-cdecl; forward;
+  cdecl; forward;
+function _png_create_write_struct(user_png_ver: png_const_charp;
+  error_ptr: png_voidp; error_fn: png_error_ptr; warn_fn: png_error_ptr): png_structp;
+  cdecl; forward;
 procedure _png_destroy_write_struct(png_ptr_ptr: png_structpp;
   info_ptr_ptr: png_infopp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_set_IHDR(png_ptr: png_structp; info_ptr: png_infop;
-  width: png_uint_32; height: png_uint_32; bit_depth: Integer;
-  color_type: Integer; interlace_type: Integer; compression_type: Integer;
-  filter_type: Integer);
-cdecl; forward;
+  Width: png_uint_32; Height: png_uint_32; bit_depth: integer;
+  color_type: integer; interlace_type: integer; compression_type: integer;
+  filter_type: integer);
+  cdecl; forward;
 procedure _png_write_image(png_ptr: png_structp; image: png_bytepp);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_write_end(png_ptr: png_structp; info_ptr: png_infop);
-cdecl; forward;
+  cdecl; forward;
 procedure _png_set_write_fn(png_ptr: png_structp; io_ptr: png_voidp;
   write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr);
-cdecl;
+  cdecl;
 procedure _png_write_info(png_ptr: png_structp; info_ptr: png_infop);
-cdecl; forward;
+  cdecl; forward;
 function _png_malloc(png_ptr: png_structp; size: png_size_t): png_voidp;
-cdecl; forward;
-
+  cdecl; forward;
+{$ELSE}
+var
+  _png_access_version_number: function(): png_uint_32; cdecl;
+  _png_set_sig_bytes: procedure(png_ptr: png_structp; num_bytes: longint); cdecl;
+  _png_sig_cmp: function(sig: png_bytep; start: png_size_t;
+  num_to_check: png_size_t): longint; cdecl;
+  _png_check_sig: function(sig: png_bytep; num: longint): longint; cdecl;
+  _png_create_read_struct: function(user_png_ver: png_const_charp;
+  error_ptr: png_voidp; error_fn: png_error_ptr;
+  warn_fn: png_error_ptr): png_structp; cdecl;
+  _png_create_write_struct: function(user_png_ver: png_const_charp;
+  error_ptr: png_voidp; error_fn: png_error_ptr;
+  warn_fn: png_error_ptr): png_structp; cdecl;
+  _png_get_compression_buffer_size: function(png_ptr: png_structp): png_uint_32; cdecl;
+  _png_set_compression_buffer_size: procedure(png_ptr: png_structp;
+  size: png_uint_32); cdecl;
+  _png_reset_zstream: function(png_ptr: png_structp): longint; cdecl;
+  _png_write_chunk: procedure(png_ptr: png_structp; chunk_name: png_bytep;
+  Data: png_bytep; length: png_size_t); cdecl;
+  _png_write_chunk_start: procedure(png_ptr: png_structp; chunk_name: png_bytep;
+  length: png_uint_32); cdecl;
+  _png_write_chunk_data: procedure(png_ptr: png_structp; Data: png_bytep;
+  length: png_size_t); cdecl;
+  _png_write_chunk_end: procedure(png_ptr: png_structp); cdecl;
+  _png_create_info_struct: function(png_ptr: png_structp): png_infop; cdecl;
+  _png_info_init: procedure(info_ptr: png_infop); cdecl;
+  _png_write_info_before_PLTE: procedure(png_ptr: png_structp;
+  info_ptr: png_infop); cdecl;
+  _png_write_info: procedure(png_ptr: png_structp; info_ptr: png_infop); cdecl;
+  _png_read_info: procedure(png_ptr: png_structp; info_ptr: png_infop); cdecl;
+  _png_convert_to_rfc1123: function(png_ptr: png_structp;
+  ptime: png_timep): png_charp; cdecl;
+  _png_convert_from_struct_tm: procedure(ptime: png_timep; ttime: Pointer); cdecl;
+  _png_convert_from_time_t: procedure(ptime: png_timep; ttime: time_t); cdecl;
+  _png_set_expand: procedure(png_ptr: png_structp); cdecl;
+  _png_set_gray_1_2_4_to_8: procedure(png_ptr: png_structp); cdecl;
+  _png_set_palette_to_rgb: procedure(png_ptr: png_structp); cdecl;
+  _png_set_tRNS_to_alpha: procedure(png_ptr: png_structp); cdecl;
+  _png_set_bgr: procedure(png_ptr: png_structp); cdecl;
+  _png_set_gray_to_rgb: procedure(png_ptr: png_structp); cdecl;
+  _png_set_rgb_to_gray: procedure(png_ptr: png_structp; error_action: longint;
+  red: double; green: double); cdecl;
+  _png_set_rgb_to_gray_fixed: procedure(png_ptr: png_structp;
+  error_action: longint; red: png_fixed_point; green: png_fixed_point); cdecl;
+  _png_get_rgb_to_gray_status: function(png_ptr: png_structp): png_byte; cdecl;
+  _png_build_grayscale_palette: procedure(bit_depth: longint; palette: png_colorp); cdecl;
+  _png_set_strip_alpha: procedure(png_ptr: png_structp); cdecl;
+  _png_set_swap_alpha: procedure(png_ptr: png_structp); cdecl;
+  _png_set_invert_alpha: procedure(png_ptr: png_structp); cdecl;
+  _png_set_filler: procedure(png_ptr: png_structp; filler: png_uint_32;
+  flags: longint); cdecl;
+  _png_set_swap: procedure(png_ptr: png_structp); cdecl;
+  _png_set_packing: procedure(png_ptr: png_structp); cdecl;
+  _png_set_packswap: procedure(png_ptr: png_structp); cdecl;
+  _png_set_shift: procedure(png_ptr: png_structp; true_bits: png_color_8p); cdecl;
+  _png_set_interlace_handling: function(png_ptr: png_structp): longint; cdecl;
+  _png_set_invert_mono: procedure(png_ptr: png_structp); cdecl;
+  _png_set_background: procedure(png_ptr: png_structp; background_color: png_color_16p;
+  background_gamma_code: longint; need_expand: longint; background_gamma: double); cdecl;
+  _png_set_strip_16: procedure(png_ptr: png_structp); cdecl;
+  _png_set_dither: procedure(png_ptr: png_structp; palette: png_colorp;
+  num_palette: longint; maximum_colors: longint; histogram: png_uint_16p;
+  full_dither: longint); cdecl;
+  _png_set_gamma: procedure(png_ptr: png_structp; screen_gamma: double;
+  default_file_gamma: double); cdecl;
+  _png_permit_empty_plte: procedure(png_ptr: png_structp;
+  empty_plte_permitted: longint); cdecl;
+  _png_set_flush: procedure(png_ptr: png_structp; nrows: longint); cdecl;
+  _png_write_flush: procedure(png_ptr: png_structp); cdecl;
+  _png_start_read_image: procedure(png_ptr: png_structp); cdecl;
+  _png_read_update_info: procedure(png_ptr: png_structp; info_ptr: png_infop); cdecl;
+  _png_read_rows: procedure(png_ptr: png_structp; row: png_bytepp;
+  display_row: png_bytepp; num_rows: png_uint_32); cdecl;
+  _png_read_row: procedure(png_ptr: png_structp; row: png_bytep;
+  display_row: png_bytep); cdecl;
+  _png_read_image: procedure(png_ptr: png_structp; image: png_bytepp); cdecl;
+  _png_write_row: procedure(png_ptr: png_structp; row: png_bytep); cdecl;
+  _png_write_rows: procedure(png_ptr: png_structp; row: png_bytepp;
+  num_rows: png_uint_32); cdecl;
+  _png_write_image: procedure(png_ptr: png_structp; image: png_bytepp); cdecl;
+  _png_write_end: procedure(png_ptr: png_structp; info_ptr: png_infop); cdecl;
+  _png_read_end: procedure(png_ptr: png_structp; info_ptr: png_infop); cdecl;
+  _png_destroy_info_struct: procedure(png_ptr: png_structp;
+  info_ptr_ptr: png_infopp); cdecl;
+  _png_destroy_read_struct: procedure(png_ptr_ptr: png_structpp;
+  info_ptr_ptr: png_infopp; end_info_ptr_ptr: png_infopp); cdecl;
+  _png_read_destroy: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  end_info_ptr: png_infop); cdecl;
+  _png_destroy_write_struct: procedure(png_ptr_ptr: png_structpp;
+  info_ptr_ptr: png_infopp); cdecl;
+  _png_write_destroy_info: procedure(info_ptr: png_infop); cdecl;
+  _png_write_destroy: procedure(png_ptr: png_structp); cdecl;
+  _png_set_crc_action: procedure(png_ptr: png_structp; crit_action: longint;
+  ancil_action: longint); cdecl;
+  _png_set_filter: procedure(png_ptr: png_structp; method: longint;
+  filters: longint); cdecl;
+  _png_set_filter_heuristics: procedure(png_ptr: png_structp;
+  heuristic_method: longint; num_weights: longint; filter_weights: png_doublep;
+  filter_costs: png_doublep); cdecl;
+  _png_set_compression_level: procedure(png_ptr: png_structp; level: longint); cdecl;
+  _png_set_compression_mem_level: procedure(png_ptr: png_structp;
+  mem_level: longint); cdecl;
+  _png_set_compression_strategy: procedure(png_ptr: png_structp;
+  strategy: longint); cdecl;
+  _png_set_compression_window_bits: procedure(png_ptr: png_structp;
+  window_bits: longint); cdecl;
+  _png_set_compression_method: procedure(png_ptr: png_structp; method: longint); cdecl;
+  _png_init_io: procedure(png_ptr: png_structp; fp: png_FILE_p); cdecl;
+  _png_set_error_fn: procedure(png_ptr: png_structp; error_ptr: png_voidp;
+  error_fn: png_error_ptr; warning_fn: png_error_ptr); cdecl;
+  _png_get_error_ptr: function(png_ptr: png_structp): png_voidp; cdecl;
+  _png_set_write_fn: procedure(png_ptr: png_structp; io_ptr: png_voidp;
+  write_data_fn: png_rw_ptr; output_flush_fn: png_flush_ptr); cdecl;
+  _png_set_read_fn: procedure(png_ptr: png_structp; io_ptr: png_voidp;
+  read_data_fn: png_rw_ptr); cdecl;
+  _png_get_io_ptr: function(png_ptr: png_structp): png_voidp; cdecl;
+  _png_set_read_status_fn: procedure(png_ptr: png_structp;
+  read_row_fn: png_read_status_ptr); cdecl;
+  _png_set_write_status_fn: procedure(png_ptr: png_structp;
+  write_row_fn: png_write_status_ptr); cdecl;
+  _png_set_read_user_transform_fn: procedure(png_ptr: png_structp;
+  read_user_transform_fn: png_user_transform_ptr); cdecl;
+  _png_set_write_user_transform_fn: procedure(png_ptr: png_structp;
+  write_user_transform_fn: png_user_transform_ptr); cdecl;
+  _png_set_user_transform_info: procedure(png_ptr: png_structp;
+  user_transform_ptr: png_voidp; user_transform_depth: longint;
+  user_transform_channels: longint); cdecl;
+  _png_get_user_transform_ptr: function(png_ptr: png_structp): png_voidp; cdecl;
+  _png_set_read_user_chunk_fn: procedure(png_ptr: png_structp;
+  user_chunk_ptr: png_voidp; read_user_chunk_fn: png_user_chunk_ptr); cdecl;
+  _png_get_user_chunk_ptr: function(png_ptr: png_structp): png_voidp; cdecl;
+  _png_set_progressive_read_fn: procedure(png_ptr: png_structp;
+  progressive_ptr: png_voidp; info_fn: png_progressive_info_ptr;
+  row_fn: png_progressive_row_ptr; end_fn: png_progressive_end_ptr); cdecl;
+  _png_get_progressive_ptr: function(png_ptr: png_structp): png_voidp; cdecl;
+  _png_process_data: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  buffer: png_bytep; buffer_size: png_size_t); cdecl;
+  _png_progressive_combine_row: procedure(png_ptr: png_structp;
+  old_row: png_bytep; new_row: png_bytep); cdecl;
+  _png_malloc: function(png_ptr: png_structp; size: png_uint_32): png_voidp; cdecl;
+  _png_free: procedure(png_ptr: png_structp; ptr: png_voidp); cdecl;
+  _png_free_data: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  free_me: png_uint_32; num: longint); cdecl;
+  _png_data_freer: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  freer: longint; mask: png_uint_32); cdecl;
+  _png_memcpy_check: function(png_ptr: png_structp; s1: png_voidp;
+  s2: png_voidp; size: png_uint_32): png_voidp; cdecl;
+  _png_memset_check: function(png_ptr: png_structp; s1: png_voidp;
+  Value: longint; size: png_uint_32): png_voidp; cdecl;
+  _png_error: procedure(png_ptr: png_structp; error: png_const_charp); cdecl;
+  _png_chunk_error: procedure(png_ptr: png_structp; error: png_const_charp); cdecl;
+  _png_warning: procedure(png_ptr: png_structp; message: png_const_charp); cdecl;
+  _png_chunk_warning: procedure(png_ptr: png_structp; message: png_const_charp); cdecl;
+  _png_get_valid: function(png_ptr: png_structp; info_ptr: png_infop;
+  flag: png_uint_32): png_uint_32; cdecl;
+  _png_get_rowbytes: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_rows: function(png_ptr: png_structp; info_ptr: png_infop): png_bytepp; cdecl;
+  _png_set_rows: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  row_pointers: png_bytepp); cdecl;
+  _png_get_channels: function(png_ptr: png_structp; info_ptr: png_infop): png_byte; cdecl;
+  _png_get_image_width: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_image_height: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_bit_depth: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_byte; cdecl;
+  _png_get_color_type: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_byte; cdecl;
+  _png_get_filter_type: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_byte; cdecl;
+  _png_get_interlace_type: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_byte; cdecl;
+  _png_get_compression_type: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_byte; cdecl;
+  _png_get_pixels_per_meter: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_x_pixels_per_meter: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_y_pixels_per_meter: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_uint_32; cdecl;
+  _png_get_pixel_aspect_ratio: function(png_ptr: png_structp;
+  info_ptr: png_infop): double; cdecl;
+  _png_get_x_offset_pixels: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_int_32; cdecl;
+  _png_get_y_offset_pixels: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_int_32; cdecl;
+  _png_get_x_offset_microns: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_int_32; cdecl;
+  _png_get_y_offset_microns: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_int_32; cdecl;
+  _png_get_signature: function(png_ptr: png_structp;
+  info_ptr: png_infop): png_bytep; cdecl;
+  _png_get_bKGD: function(png_ptr: png_structp; info_ptr: png_infop;
+  background: Ppng_color_16p): png_uint_32; cdecl;
+  _png_set_bKGD: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  background: png_color_16p); cdecl;
+  _png_get_cHRM: function(png_ptr: png_structp; info_ptr: png_infop;
+  white_x: Pdouble; white_y: Pdouble; red_x: Pdouble; red_y: Pdouble;
+  green_x: Pdouble; green_y: Pdouble; blue_x: Pdouble;
+  blue_y: Pdouble): png_uint_32; cdecl;
+  _png_get_cHRM_fixed: function(png_ptr: png_structp; info_ptr: png_infop;
+  int_white_x: Ppng_fixed_point; int_white_y: Ppng_fixed_point;
+  int_red_x: Ppng_fixed_point; int_red_y: Ppng_fixed_point;
+  int_green_x: Ppng_fixed_point; int_green_y: Ppng_fixed_point;
+  int_blue_x: Ppng_fixed_point; int_blue_y: Ppng_fixed_point): png_uint_32; cdecl;
+  _png_set_cHRM: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  white_x: double; white_y: double; red_x: double; red_y: double;
+  green_x: double; green_y: double; blue_x: double; blue_y: double); cdecl;
+  _png_set_cHRM_fixed: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  int_white_x: png_fixed_point; int_white_y: png_fixed_point;
+  int_red_x: png_fixed_point; int_red_y: png_fixed_point;
+  int_green_x: png_fixed_point; int_green_y: png_fixed_point;
+  int_blue_x: png_fixed_point; int_blue_y: png_fixed_point); cdecl;
+  _png_get_gAMA: function(png_ptr: png_structp; info_ptr: png_infop;
+  file_gamma: Pdouble): png_uint_32; cdecl;
+  _png_get_gAMA_fixed: function(png_ptr: png_structp; info_ptr: png_infop;
+  int_file_gamma: Ppng_fixed_point): png_uint_32; cdecl;
+  _png_set_gAMA: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  file_gamma: double); cdecl;
+  _png_set_gAMA_fixed: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  int_file_gamma: png_fixed_point); cdecl;
+  _png_get_hIST: function(png_ptr: png_structp; info_ptr: png_infop;
+  hist: Ppng_uint_16p): png_uint_32; cdecl;
+  _png_set_hIST: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  hist: png_uint_16p); cdecl;
+  _png_get_IHDR: function(png_ptr: png_structp; info_ptr: png_infop;
+  Width: Ppng_uint_32; Height: Ppng_uint_32; bit_depth: Plongint;
+  color_type: Plongint; interlace_type: Plongint; compression_type: Plongint;
+  filter_type: Plongint): png_uint_32; cdecl;
+  _png_set_IHDR: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  Width: png_uint_32; Height: png_uint_32; bit_depth: longint;
+  color_type: longint; interlace_type: longint; compression_type: longint;
+  filter_type: longint); cdecl;
+  _png_get_oFFs: function(png_ptr: png_structp; info_ptr: png_infop;
+  offset_x: Ppng_int_32; offset_y: Ppng_int_32; unit_type: Plongint): png_uint_32; cdecl;
+  _png_set_oFFs: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  offset_x: png_int_32; offset_y: png_int_32; unit_type: longint); cdecl;
+  _png_get_pCAL: function(png_ptr: png_structp; info_ptr: png_infop;
+  purpose: Ppng_charp; X0: Ppng_int_32; X1: Ppng_int_32; atype: Plongint;
+  nparams: Plongint; units: Ppng_charp; params: Ppng_charpp): png_uint_32; cdecl;
+  _png_set_pCAL: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  purpose: png_charp; X0: png_int_32; X1: png_int_32; atype: longint;
+  nparams: longint; units: png_charp; params: png_charpp); cdecl;
+  _png_get_pHYs: function(png_ptr: png_structp; info_ptr: png_infop;
+  res_x: Ppng_uint_32; res_y: Ppng_uint_32; unit_type: Plongint): png_uint_32; cdecl;
+  _png_set_pHYs: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  res_x: png_uint_32; res_y: png_uint_32; unit_type: longint); cdecl;
+  _png_get_PLTE: function(png_ptr: png_structp; info_ptr: png_infop;
+  palette: Ppng_colorp; num_palette: Plongint): png_uint_32; cdecl;
+  _png_set_PLTE: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  palette: png_colorp; num_palette: longint); cdecl;
+  _png_get_sBIT: function(png_ptr: png_structp; info_ptr: png_infop;
+  sig_bit: Ppng_color_8p): png_uint_32; cdecl;
+  _png_set_sBIT: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  sig_bit: png_color_8p); cdecl;
+  _png_get_sRGB: function(png_ptr: png_structp; info_ptr: png_infop;
+  intent: Plongint): png_uint_32; cdecl;
+  _png_set_sRGB: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  intent: longint); cdecl;
+  _png_set_sRGB_gAMA_and_cHRM: procedure(png_ptr: png_structp;
+  info_ptr: png_infop; intent: longint); cdecl;
+  _png_get_iCCP: function(png_ptr: png_structp; info_ptr: png_infop;
+  Name: png_charpp; compression_type: Plongint; profile: png_charpp;
+  proflen: Ppng_uint_32): png_uint_32; cdecl;
+  _png_set_iCCP: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  Name: png_charp; compression_type: longint; profile: png_charp;
+  proflen: png_uint_32); cdecl;
+  _png_get_sPLT: function(png_ptr: png_structp; info_ptr: png_infop;
+  entries: png_sPLT_tpp): png_uint_32; cdecl;
+  _png_set_sPLT: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  entries: png_sPLT_tp; nentries: longint); cdecl;
+  _png_get_text: function(png_ptr: png_structp; info_ptr: png_infop;
+  text_ptr: Ppng_textp; num_text: Plongint): png_uint_32; cdecl;
+  _png_set_text: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  text_ptr: png_textp; num_text: longint); cdecl;
+  _png_get_tIME: function(png_ptr: png_structp; info_ptr: png_infop;
+  mod_time: Ppng_timep): png_uint_32; cdecl;
+  _png_set_tIME: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  mod_time: png_timep); cdecl;
+  _png_get_tRNS: function(png_ptr: png_structp; info_ptr: png_infop;
+  trans: Ppng_bytep; num_trans: Plongint;
+  trans_values: Ppng_color_16p): png_uint_32; cdecl;
+  _png_set_tRNS: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  trans: png_bytep; num_trans: longint; trans_values: png_color_16p); cdecl;
+  _png_get_sCAL: function(png_ptr: png_structp; info_ptr: png_infop;
+  aunit: Plongint; Width: Pdouble; Height: Pdouble): png_uint_32; cdecl;
+  _png_set_sCAL: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  aunit: longint; Width: double; Height: double); cdecl;
+  _png_set_sCAL_s: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  aunit: longint; swidth: png_charp; sheight: png_charp); cdecl;
+  _png_set_keep_unknown_chunks: procedure(png_ptr: png_structp;
+  keep: longint; chunk_list: png_bytep; num_chunks: longint); cdecl;
+  _png_set_unknown_chunks: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  unknowns: png_unknown_chunkp; num_unknowns: longint); cdecl;
+  _png_set_unknown_chunk_location: procedure(png_ptr: png_structp;
+  info_ptr: png_infop; chunk: longint; location: longint); cdecl;
+  _png_get_unknown_chunks: function(png_ptr: png_structp; info_ptr: png_infop;
+  entries: png_unknown_chunkpp): png_uint_32; cdecl;
+  _png_set_invalid: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  mask: longint); cdecl;
+  _png_read_png: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  transforms: longint; params: Pointer); cdecl;
+  _png_write_png: procedure(png_ptr: png_structp; info_ptr: png_infop;
+  transforms: longint; params: Pointer); cdecl;
+  _png_get_header_ver: function(png_ptr: png_structp): png_charp; cdecl;
+  _png_get_header_version: function(png_ptr: png_structp): png_charp; cdecl;
+  _png_get_libpng_ver: function(png_ptr: png_structp): png_charp; cdecl;
+{$ENDIF}
 implementation
 
+{$IFNDEF FPC}
 {$L LinkedObjects\adler32.obj}
 {$L LinkedObjects\deflate.obj}
 {$L LinkedObjects\infback.obj}
@@ -887,7 +1232,7 @@ function inflateReset; external;
 function inflateSetDictionary; external;
 function inflateSync; external;
 
-function zcalloc(AppData: Pointer; Items, Size: Integer): Pointer;
+function zcalloc(AppData: Pointer; Items, Size: integer): Pointer;
 begin
   GetMem(Result, Items * Size);
 end;
@@ -913,7 +1258,7 @@ end;
 {$LINK LinkedObjects\pngwtran.obj}
 {$LINK LinkedObjects\pngwutil.obj}
 
-function _malloc(Size: Cardinal): Pointer; cdecl;
+function _malloc(Size: cardinal): Pointer; cdecl;
 begin
   GetMem(Result, Size);
 end;
@@ -923,42 +1268,41 @@ begin
   FreeMem(Block);
 end;
 
-procedure _memset(P: Pointer; B: Byte; count: Integer); cdecl;
+procedure _memset(P: Pointer; B: byte; Count: integer); cdecl;
 begin
-  FillChar(P^, count, B);
+  FillChar(P^, Count, B);
 end;
 
-procedure _memcpy(dest, source: Pointer; count: Integer); cdecl;
+procedure _memcpy(dest, Source: Pointer; Count: integer); cdecl;
 begin
-  Move(source^, dest^, count);
+  Move(Source^, dest^, Count);
 end;
 
-function deflateInit(var strm: TZStreamRec; level: Integer): Integer;
+function deflateInit(var strm: TZStreamRec; level: integer): integer;
 begin
   Result := deflateInit_(strm, level, ZLIB_VERSION, sizeof(TZStreamRec));
 end;
 
-function _deflateInit2_(var strm: TZStreamRec; level, method, windowBits,
-  memLevel,
-  strategy: Integer): Integer; cdecl;
+function _deflateInit2_(var strm: TZStreamRec;
+  level, method, windowBits, memLevel, strategy: integer): integer; cdecl;
 begin
-  Result := deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
-    ZLIB_VERSION, sizeof(TZStreamRec));
+  Result := deflateInit2_(strm, level, method, windowBits, memLevel,
+    strategy, ZLIB_VERSION, sizeof(TZStreamRec));
 end;
 
-function _crc32(crc: LongInt; const buf: PAnsiChar; len: Integer): LongInt;
+function _crc32(crc: longint; const buf: PAnsiChar; len: integer): longint;
   cdecl;
 begin
   Result := crc32(crc, buf, len);
 end;
 
-function __ftol: Integer; cdecl;
+function __ftol: integer; cdecl;
 var
   f: double;
 begin
   asm
-    lea    eax, f             //  BC++ passes Singles on the FPU stack
-    fstp  qword ptr [eax]     //  Delphi passes Singles on the CPU stack
+           LEA     EAX, f             //  BC++ passes Singles on the FPU stack
+           FSTP    qword ptr [EAX]     //  Delphi passes Singles on the CPU stack
   end;
   Result := Trunc(f);
 end;
@@ -968,34 +1312,34 @@ begin
 end;
 
 var
-  __turboFloat: LongBool = False;
+  __turboFloat: longbool = False;
 
 procedure _abort; cdecl;
 begin
   Abort;
 end;
 
-function _deflate(var strm: TZStreamRec; flush: Integer): Integer; cdecl;
+function _deflate(var strm: TZStreamRec; flush: integer): integer; cdecl;
 begin
   Result := deflate(strm, flush);
 end;
 
-function _deflateEnd(var strm: TZStreamRec): Integer; cdecl;
+function _deflateEnd(var strm: TZStreamRec): integer; cdecl;
 begin
   Result := deflateEnd(strm);
 end;
 
-function _deflateReset(var strm: TZStreamRec): Integer; cdecl;
+function _deflateReset(var strm: TZStreamRec): integer; cdecl;
 begin
   Result := deflateReset(strm);
 end;
 
-function _fabs(x: Double): Double; cdecl;
+function _fabs(x: double): double; cdecl;
 begin
   Result := Abs(x);
 end;
 
-function _fflush(S: TStream): Integer; cdecl;
+function _fflush(S: TStream): integer; cdecl;
 begin
   Result := 0;
 end;
@@ -1004,13 +1348,13 @@ procedure _fprintf; cdecl;
 begin
 end;
 
-function _fread(var buf; recsize, reccount: Integer; S: TStream): Integer;
+function _fread(var buf; recsize, reccount: integer; S: TStream): integer;
   cdecl;
 begin
   Result := S.Read(buf, recsize * reccount);
 end;
 
-function _fwrite(const buf; recsize, reccount: Integer; S: TStream): Integer;
+function _fwrite(const buf; recsize, reccount: integer; S: TStream): integer;
   cdecl;
 begin
   Result := S.Write(buf, recsize * reccount);
@@ -1020,32 +1364,32 @@ procedure _gmtime; cdecl;
 begin
 end;
 
-function _inflate(var strm: TZStreamRec; flush: Integer): Integer; cdecl;
+function _inflate(var strm: TZStreamRec; flush: integer): integer; cdecl;
 begin
   Result := inflate(strm, flush);
 end;
 
-function _inflateEnd(var strm: TZStreamRec): Integer; cdecl;
+function _inflateEnd(var strm: TZStreamRec): integer; cdecl;
 begin
   Result := inflateEnd(strm);
 end;
 
-function _inflateInit_(var strm: TZStreamRec;
-  const version: PAnsiChar; stream_size: Integer): Integer; cdecl;
+function _inflateInit_(var strm: TZStreamRec; const version: PAnsiChar;
+  stream_size: integer): integer; cdecl;
 begin
   Result := inflateInit_(strm, version, stream_size);
 end;
 
-function _inflateReset(var strm: TZStreamRec): Integer; cdecl;
+function _inflateReset(var strm: TZStreamRec): integer; cdecl;
 begin
   Result := inflateReset(strm);
 end;
 
-procedure _longjmp(__jmpb: jmp_buf; __retval: Integer); cdecl;
+procedure _longjmp(__jmpb: jmp_buf; __retval: integer); cdecl;
 begin
 end;
 
-function _memcmp(P1, P2: Pointer; len: Integer): Boolean; cdecl;
+function _memcmp(P1, P2: Pointer; len: integer): boolean; cdecl;
 begin
   Result := not CompareMem(P1, P2, len);
 end;
@@ -1053,7 +1397,7 @@ end;
 procedure _png_calculate_crc(png_ptr: png_structp; ptr: png_bytep;
   length: png_size_t); cdecl;
 var
-  need_crc: Integer;
+  need_crc: integer;
 begin
   need_crc := 1;
 
@@ -1080,10 +1424,10 @@ begin
 end;
 
 function _png_check_cHRM_fixed(png_ptr: png_structp;
-  white_x, white_y, red_x, red_y, green_x, green_y,
-  blue_x, blue_y: png_fixed_point): Integer; cdecl;
+  white_x, white_y, red_x, red_y, green_x, green_y, blue_x, blue_y:
+  png_fixed_point): integer; cdecl;
 var
-  ret: Integer;
+  ret: integer;
   xy, yx: UInt64;
 begin
   if png_ptr = nil then
@@ -1093,10 +1437,8 @@ begin
   end;
   ret := 1;
 
-  if (white_x < 0) or (white_y <= 0) or
-    (red_x < 0) or (red_y < 0) or
-    (green_x < 0) or (green_y < 0) or
-    (blue_x < 0) or (blue_y < 0) then
+  if (white_x < 0) or (white_y <= 0) or (red_x < 0) or (red_y < 0) or
+    (green_x < 0) or (green_y < 0) or (blue_x < 0) or (blue_y < 0) then
   begin
     _png_warning(png_ptr,
       'Ignoring attempt to set negative chromaticity value');
@@ -1136,58 +1478,55 @@ begin
   Result := ret;
 end;
 
-procedure _png_check_IHDR(png_ptr: png_structp;
-  width: png_uint_32; height: png_uint_32; bit_depth: Integer;
-  color_type: Integer; interlace_type: Integer; compression_type: Integer;
-  filter_type: Integer); cdecl;
+procedure _png_check_IHDR(png_ptr: png_structp; Width: png_uint_32;
+  Height: png_uint_32; bit_depth: integer; color_type: integer;
+  interlace_type: integer; compression_type: integer; filter_type: integer); cdecl;
 var
-  error: Integer;
+  error: integer;
 begin
   error := 0;
 
   {: Check for width and height valid values }
-  if width = 0 then
+  if Width = 0 then
   begin
     _png_warning(png_ptr, 'Image width is zero in IHDR');
     error := 1;
   end;
 
-  if height = 0 then
+  if Height = 0 then
   begin
     _png_warning(png_ptr, 'Image height is zero in IHDR');
     error := 1;
   end;
 
-  if width > PNG_USER_WIDTH_MAX then
+  if Width > PNG_USER_WIDTH_MAX then
   begin
     _png_warning(png_ptr, 'Image width exceeds user limit in IHDR');
     error := 1;
   end;
 
-  if height > PNG_USER_HEIGHT_MAX then
+  if Height > PNG_USER_HEIGHT_MAX then
   begin
     _png_warning(png_ptr, 'Image height exceeds user limit in IHDR');
     error := 1;
   end;
 
-  if width > PNG_UINT_31_MAX then
+  if Width > PNG_UINT_31_MAX then
   begin
     _png_warning(png_ptr, 'Invalid image width in IHDR');
     error := 1;
   end;
 
-  if height > PNG_UINT_31_MAX then
+  if Height > PNG_UINT_31_MAX then
   begin
     _png_warning(png_ptr, 'Invalid image height in IHDR');
     error := 1;
   end;
 
-  if width > (PNG_UINT_32_MAX
-    shr 3) {: 8-byte RGBA pixels  }
-  - 64 {: bigrowbuf hack  }
-  - 1 {: filter byte  }
-  - 7 * 8 {: rounding of width to multiple of 8 pixels  }
-  - 8 then {: extra max_pixel_depth pad  }
+  if Width > (PNG_UINT_32_MAX shr 3) {: 8-byte RGBA pixels  } -
+    64 {: bigrowbuf hack  } - 1 {: filter byte  } - 7 *
+    8 {: rounding of width to multiple of 8 pixels  } - 8 then
+    {: extra max_pixel_depth pad  }
     _png_warning(png_ptr, 'Width is too large for libpng to process pixels');
 
   {: Check other values  }
@@ -1198,16 +1537,14 @@ begin
     error := 1;
   end;
 
-  if (color_type < 0) or (color_type = 1) or
-    (color_type = 5) or (color_type > 6) then
+  if (color_type < 0) or (color_type = 1) or (color_type = 5) or (color_type > 6) then
   begin
     _png_warning(png_ptr, 'Invalid color type in IHDR');
     error := 1;
   end;
 
   if ((color_type = PNG_COLOR_TYPE_PALETTE) and (bit_depth > 8)) or
-    (((color_type = PNG_COLOR_TYPE_RGB) or
-    (color_type = PNG_COLOR_TYPE_GRAY_ALPHA) or
+    (((color_type = PNG_COLOR_TYPE_RGB) or (color_type = PNG_COLOR_TYPE_GRAY_ALPHA) or
     (color_type = PNG_COLOR_TYPE_RGB_ALPHA)) and (bit_depth < 8)) then
   begin
     _png_warning(png_ptr, 'Invalid color type/bit depth combination in IHDR');
@@ -1274,9 +1611,9 @@ begin
 end;
 
 procedure _png_free_data(png_ptr: png_structp; info_ptr: png_infop;
-  mask: png_uint_32; num: Integer); cdecl;
+  mask: png_uint_32; num: integer); cdecl;
 var
-  i: Integer;
+  i: integer;
 begin
   if (png_ptr = nil) or (info_ptr = nil) then
     exit;
@@ -1286,18 +1623,19 @@ begin
   begin
     if num <> -1 then
     begin
-      if (info_ptr.text <> nil) and (png_text_arrayp(info_ptr.text)[num].key <>
+      if (info_ptr.Text <> nil) and (png_text_arrayp(info_ptr.Text)[num].key <>
         nil) then
       begin
-        _png_free(png_ptr, png_text_arrayp(info_ptr.text)[num].key);
-        png_text_arrayp(info_ptr.text)[num].key := nil;
+        _png_free(png_ptr, png_text_arrayp(info_ptr.Text)[num].key);
+        png_text_arrayp(info_ptr.Text)[num].key := nil;
       end;
     end
-    else begin
+    else
+    begin
       for i := 0 to info_ptr.num_text - 1 do
         _png_free_data(png_ptr, info_ptr, PNG_FREE_TEXT, i);
-      _png_free(png_ptr, info_ptr.text);
-      info_ptr.text := nil;
+      _png_free(png_ptr, info_ptr.Text);
+      info_ptr.Text := nil;
       info_ptr.num_text := 0;
     end;
   end;
@@ -1358,10 +1696,10 @@ begin
       if info_ptr.splt_palettes <> nil then
       begin
         _png_free(png_ptr,
-          png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].name);
+          png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].Name);
         _png_free(png_ptr,
           png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].entries);
-        png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].name := nil;
+        png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].Name := nil;
         png_sPLT_tp_arrayp(info_ptr.splt_palettes)[num].entries := nil;
       end;
     end
@@ -1380,10 +1718,10 @@ begin
     end;
   end;
 
-  if png_ptr.unknown_chunk.data <> nil then
+  if png_ptr.unknown_chunk.Data <> nil then
   begin
-    _png_free(png_ptr, png_ptr.unknown_chunk.data);
-    png_ptr.unknown_chunk.data := nil;
+    _png_free(png_ptr, png_ptr.unknown_chunk.Data);
+    png_ptr.unknown_chunk.Data := nil;
   end;
 
   if (mask and PNG_FREE_UNKN <> 0) and (info_ptr.free_me <> 0) then
@@ -1393,8 +1731,8 @@ begin
       if info_ptr.unknown_chunks <> nil then
       begin
         _png_free(png_ptr,
-          png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].data);
-        png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].data := nil;
+          png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].Data);
+        png_unknown_chunk_arrayp(info_ptr.unknown_chunks)[num].Data := nil;
       end;
     end
     else
@@ -1433,7 +1771,7 @@ begin
   begin
     if info_ptr.row_pointers <> nil then
     begin
-      for i := 0 to info_ptr.height - 1 do
+      for i := 0 to info_ptr.Height - 1 do
       begin
         _png_free(png_ptr, png_bytep_arrayp(info_ptr.row_pointers)[i]);
         png_bytep_arrayp(info_ptr.row_pointers)[i] := nil;
@@ -1455,8 +1793,8 @@ begin
   Result := png_charp(ZLIB_VERSION);
 end;
 
-function _png_get_rowbytes(png_ptr: png_structp; info_ptr: png_infop):
-  png_size_t; cdecl;
+function _png_get_rowbytes(png_ptr: png_structp;
+  info_ptr: png_infop): png_size_t; cdecl;
 begin
   if (png_ptr <> nil) and (info_ptr <> nil) then
     Result := info_ptr.rowbytes
@@ -1468,8 +1806,8 @@ procedure _png_get_sBIT; cdecl;
 begin
 end;
 
-function _png_get_valid(png_ptr: png_structp; info_ptr: png_infop; flag:
-  png_uint_32): png_uint_32; cdecl;
+function _png_get_valid(png_ptr: png_structp; info_ptr: png_infop;
+  flag: png_uint_32): png_uint_32; cdecl;
 begin
   if (png_ptr <> nil) and (info_ptr <> nil) then
     Result := info_ptr.valid and flag
@@ -1477,10 +1815,10 @@ begin
     Result := 0;
 end;
 
-function _png_handle_as_unknown(png_ptr: png_structp; chunk_name: png_bytep):
-  Integer; cdecl;
+function _png_handle_as_unknown(png_ptr: png_structp;
+  chunk_name: png_bytep): integer; cdecl;
 var
-  i: Integer;
+  i: integer;
   p: png_bytep;
 begin
   {: Check chunk_name and return "keep" value if it's on the list, else 0 }
@@ -1519,17 +1857,16 @@ end;
 
 procedure _png_init_read_transformations(png_ptr: png_structp); cdecl;
 var
-  color_type: Integer;
-  i, istop, k: Integer;
+  color_type: integer;
+  i, istop, k: integer;
   back, back_1: png_color;
   palette: png_colorp;
-  num_palette: Integer;
+  num_palette: integer;
   g, gs, m: double;
   v, w: png_byte;
-  sr, sg, sb: Integer;
+  sr, sg, sb: integer;
 
-  procedure png_composite(out composite: png_byte; fg, alpha, bg:
-    png_uint_16);
+  procedure png_composite(out composite: png_byte; fg, alpha, bg: png_uint_16);
   var
     temp: png_uint_16;
   begin
@@ -1560,58 +1897,58 @@ begin
     begin
       case png_ptr.bit_depth of
         1:
+        begin
+          png_ptr.background.gray := png_ptr.background.gray * $FF;
+          png_ptr.background.red := png_ptr.background.gray;
+          png_ptr.background.green := png_ptr.background.gray;
+          png_ptr.background.blue := png_ptr.background.gray;
+          if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
           begin
-            png_ptr.background.gray := png_ptr.background.gray * $FF;
-            png_ptr.background.red := png_ptr.background.gray;
-            png_ptr.background.green := png_ptr.background.gray;
-            png_ptr.background.blue := png_ptr.background.gray;
-            if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
-            begin
-              png_ptr.trans_color.gray := png_ptr.trans_color.gray * $FF;
-              png_ptr.trans_color.red := png_ptr.trans_color.gray;
-              png_ptr.trans_color.green := png_ptr.trans_color.gray;
-              png_ptr.trans_color.blue := png_ptr.trans_color.gray;
-            end;
+            png_ptr.trans_color.gray := png_ptr.trans_color.gray * $FF;
+            png_ptr.trans_color.red := png_ptr.trans_color.gray;
+            png_ptr.trans_color.green := png_ptr.trans_color.gray;
+            png_ptr.trans_color.blue := png_ptr.trans_color.gray;
           end;
+        end;
 
         2:
+        begin
+          png_ptr.background.gray := png_ptr.background.gray * $55;
+          png_ptr.background.red := png_ptr.background.gray;
+          png_ptr.background.green := png_ptr.background.gray;
+          png_ptr.background.blue := png_ptr.background.gray;
+          if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
           begin
-            png_ptr.background.gray := png_ptr.background.gray * $55;
-            png_ptr.background.red := png_ptr.background.gray;
-            png_ptr.background.green := png_ptr.background.gray;
-            png_ptr.background.blue := png_ptr.background.gray;
-            if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
-            begin
-              png_ptr.trans_color.gray := png_ptr.trans_color.gray * $55;
-              png_ptr.trans_color.red := png_ptr.trans_color.gray;
-              png_ptr.trans_color.green := png_ptr.trans_color.gray;
-              png_ptr.trans_color.blue := png_ptr.trans_color.gray;
-            end;
+            png_ptr.trans_color.gray := png_ptr.trans_color.gray * $55;
+            png_ptr.trans_color.red := png_ptr.trans_color.gray;
+            png_ptr.trans_color.green := png_ptr.trans_color.gray;
+            png_ptr.trans_color.blue := png_ptr.trans_color.gray;
           end;
+        end;
 
         4:
+        begin
+          png_ptr.background.gray := png_ptr.background.gray * $11;
+          png_ptr.background.red := png_ptr.background.gray;
+          png_ptr.background.green := png_ptr.background.gray;
+          png_ptr.background.blue := png_ptr.background.gray;
+          if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
           begin
-            png_ptr.background.gray := png_ptr.background.gray * $11;
-            png_ptr.background.red := png_ptr.background.gray;
-            png_ptr.background.green := png_ptr.background.gray;
-            png_ptr.background.blue := png_ptr.background.gray;
-            if png_ptr.transformations and PNG_EXPAND_tRNS = 0 then
-            begin
-              png_ptr.trans_color.gray := png_ptr.trans_color.gray * $11;
-              png_ptr.trans_color.red := png_ptr.trans_color.gray;
-              png_ptr.trans_color.green := png_ptr.trans_color.gray;
-              png_ptr.trans_color.blue := png_ptr.trans_color.gray;
-            end;
+            png_ptr.trans_color.gray := png_ptr.trans_color.gray * $11;
+            png_ptr.trans_color.red := png_ptr.trans_color.gray;
+            png_ptr.trans_color.green := png_ptr.trans_color.gray;
+            png_ptr.trans_color.blue := png_ptr.trans_color.gray;
           end;
+        end;
 
         8: ;
 
         16:
-          begin
-            png_ptr.background.red := png_ptr.background.gray;
-            png_ptr.background.green := png_ptr.background.gray;
-            png_ptr.background.blue := png_ptr.background.gray;
-          end;
+        begin
+          png_ptr.background.red := png_ptr.background.gray;
+          png_ptr.background.green := png_ptr.background.gray;
+          png_ptr.background.blue := png_ptr.background.gray;
+        end;
       end;
     end
     else if color_type = PNG_COLOR_TYPE_PALETTE then
@@ -1638,9 +1975,8 @@ begin
 
   png_ptr.background_1 := png_ptr.background;
 
-  if (color_type = PNG_COLOR_TYPE_PALETTE) and (png_ptr.num_trans <> 0)
-    and (abs(png_ptr.screen_gamma * png_ptr.gamma - 1.0)
-    < PNG_GAMMA_THRESHOLD) then
+  if (color_type = PNG_COLOR_TYPE_PALETTE) and (png_ptr.num_trans <> 0) and
+    (abs(png_ptr.screen_gamma * png_ptr.gamma - 1.0) < PNG_GAMMA_THRESHOLD) then
   begin
     k := 0;
     for i := 0 to png_ptr.num_trans - 1 do
@@ -1674,26 +2010,26 @@ begin
 
           case png_ptr.background_gamma_type of
             PNG_BACKGROUND_GAMMA_SCREEN:
-              begin
-                g := png_ptr.screen_gamma;
-                gs := 1.0;
-              end;
+            begin
+              g := png_ptr.screen_gamma;
+              gs := 1.0;
+            end;
 
             PNG_BACKGROUND_GAMMA_FILE:
-              begin
-                g := 1.0 / (png_ptr.gamma);
-                gs := 1.0 / (png_ptr.gamma * png_ptr.screen_gamma);
-              end;
+            begin
+              g := 1.0 / (png_ptr.gamma);
+              gs := 1.0 / (png_ptr.gamma * png_ptr.screen_gamma);
+            end;
 
             PNG_BACKGROUND_GAMMA_UNIQUE:
-              begin
-                g := 1.0 / (png_ptr.background_gamma);
-                gs := 1.0 / (png_ptr.background_gamma *
-                  png_ptr.screen_gamma);
-              end;
-          else
-            g := 1.0;
-            gs := 1.0;
+            begin
+              g := 1.0 / (png_ptr.background_gamma);
+              gs := 1.0 / (png_ptr.background_gamma *
+                png_ptr.screen_gamma);
+            end;
+            else
+              g := 1.0;
+              gs := 1.0;
           end;
 
           if abs(gs - 1.0) < PNG_GAMMA_THRESHOLD then
@@ -1704,20 +2040,20 @@ begin
           end
           else
           begin
-            back.red := Floor(power(
-              png_ptr.background.red / 255.0, gs) * 255.0 + 0.5);
-            back.green := Floor(power(
-              png_ptr.background.green / 255.0, gs) * 255.0 + 0.5);
-            back.blue := Floor(power(
-              png_ptr.background.blue / 255.0, gs) * 255.0 + 0.5);
+            back.red := Floor(power(png_ptr.background.red / 255.0, gs) *
+              255.0 + 0.5);
+            back.green := Floor(power(png_ptr.background.green /
+              255.0, gs) * 255.0 + 0.5);
+            back.blue := Floor(power(png_ptr.background.blue / 255.0, gs) *
+              255.0 + 0.5);
           end;
 
-          back_1.red := Floor(power(
-            png_ptr.background.red / 255.0, g) * 255.0 + 0.5);
-          back_1.green := Floor(power(
-            png_ptr.background.green / 255.0, g) * 255.0 + 0.5);
-          back_1.blue := Floor(power(
-            png_ptr.background.blue / 255.0, g) * 255.0 + 0.5);
+          back_1.red := Floor(power(png_ptr.background.red / 255.0, g) *
+            255.0 + 0.5);
+          back_1.green := Floor(power(png_ptr.background.green / 255.0, g) *
+            255.0 + 0.5);
+          back_1.blue := Floor(power(png_ptr.background.blue / 255.0, g) *
+            255.0 + 0.5);
         end;
         for i := 0 to num_palette - 1 do
         begin
@@ -1746,8 +2082,8 @@ begin
             palette[i].green := png_ptr.gamma_table[palette[i].green];
             palette[i].blue := png_ptr.gamma_table[palette[i].blue];
           end;
-          png_ptr.transformations := png_ptr.transformations and not
-            PNG_BACKGROUND;
+          png_ptr.transformations :=
+            png_ptr.transformations and not PNG_BACKGROUND;
           png_ptr.transformations := png_ptr.transformations and not PNG_GAMMA;
           png_ptr.transformations := png_ptr.transformations or PNG_STRIP_ALPHA;
         end;
@@ -1761,45 +2097,45 @@ begin
 
         case png_ptr.background_gamma_type of
           PNG_BACKGROUND_GAMMA_SCREEN:
-            begin
-              g := png_ptr.screen_gamma;
-              gs := 1.0;
-            end;
+          begin
+            g := png_ptr.screen_gamma;
+            gs := 1.0;
+          end;
 
           PNG_BACKGROUND_GAMMA_FILE:
-            begin
-              g := 1.0 / png_ptr.gamma;
-              gs := 1.0 / png_ptr.gamma * png_ptr.screen_gamma;
-            end;
+          begin
+            g := 1.0 / png_ptr.gamma;
+            gs := 1.0 / png_ptr.gamma * png_ptr.screen_gamma;
+          end;
 
           PNG_BACKGROUND_GAMMA_UNIQUE:
-            begin
-              g := 1.0 / (png_ptr.background_gamma);
-              gs := 1.0 / (png_ptr.background_gamma * png_ptr.screen_gamma);
-            end;
+          begin
+            g := 1.0 / (png_ptr.background_gamma);
+            gs := 1.0 / (png_ptr.background_gamma * png_ptr.screen_gamma);
+          end;
         end;
 
-        png_ptr.background_1.gray := Floor(power(
-          png_ptr.background.gray / m, g) * m + 0.5);
-        png_ptr.background.gray := Floor(power(
-          png_ptr.background.gray / m, gs) * m + 0.5);
+        png_ptr.background_1.gray :=
+          Floor(power(png_ptr.background.gray / m, g) * m + 0.5);
+        png_ptr.background.gray :=
+          Floor(power(png_ptr.background.gray / m, gs) * m + 0.5);
 
         if (png_ptr.background.red <> png_ptr.background.green) or
           (png_ptr.background.red <> png_ptr.background.blue) or
           (png_ptr.background.red <> png_ptr.background.gray) then
         begin
-          png_ptr.background_1.red := Floor(power(
-            png_ptr.background.red / m, g) * m + 0.5);
-          png_ptr.background_1.green := Floor(power(
-            png_ptr.background.green / m, g) * m + 0.5);
-          png_ptr.background_1.blue := Floor(power(
-            png_ptr.background.blue / m, g) * m + 0.5);
-          png_ptr.background.red := Floor(power(
-            png_ptr.background.red / m, gs) * m + 0.5);
-          png_ptr.background.green := Floor(power(
-            png_ptr.background.green / m, gs) * m + 0.5);
-          png_ptr.background.blue := Floor(power(
-            png_ptr.background.blue / m, gs) * m + 0.5);
+          png_ptr.background_1.red :=
+            Floor(power(png_ptr.background.red / m, g) * m + 0.5);
+          png_ptr.background_1.green :=
+            Floor(power(png_ptr.background.green / m, g) * m + 0.5);
+          png_ptr.background_1.blue :=
+            Floor(power(png_ptr.background.blue / m, g) * m + 0.5);
+          png_ptr.background.red :=
+            Floor(power(png_ptr.background.red / m, gs) * m + 0.5);
+          png_ptr.background.green :=
+            Floor(power(png_ptr.background.green / m, gs) * m + 0.5);
+          png_ptr.background.blue :=
+            Floor(power(png_ptr.background.blue / m, gs) * m + 0.5);
         end
         else
         begin
@@ -1925,8 +2261,8 @@ begin
   Result := @png_ptr.jmpbuf;
 end;
 
-procedure _png_set_mem_fn(png_ptr: png_structp; mem_ptr: png_voidp; malloc_fn:
-  png_malloc_ptr; free_fn: png_free_ptr); cdecl;
+procedure _png_set_mem_fn(png_ptr: png_structp; mem_ptr: png_voidp;
+  malloc_fn: png_malloc_ptr; free_fn: png_free_ptr); cdecl;
 begin
   if png_ptr <> nil then
   begin
@@ -1964,11 +2300,11 @@ begin
   end;
 end;
 
-procedure _png_write_data(png_ptr: png_structp; data: png_bytep;
+procedure _png_write_data(png_ptr: png_structp; Data: png_bytep;
   length: png_size_t); cdecl;
 begin
   if Assigned(png_ptr.write_data_fn) then
-    png_ptr.write_data_fn(png_ptr, data, length)
+    png_ptr.write_data_fn(png_ptr, Data, length)
   else
     _png_error(png_ptr, 'Call to NULL write function');
 end;
@@ -1980,8 +2316,7 @@ end;
 
 // Function to allocate memory for zlib.
 
-function _png_zalloc(png_ptr: Pointer; items: Cardinal; size: Cardinal):
-  Pointer;
+function _png_zalloc(png_ptr: Pointer; items: cardinal; size: cardinal): Pointer;
 var
   ptr: png_voidp;
   num_bytes: png_size_t;
@@ -1991,7 +2326,7 @@ begin
     Result := nil;
     exit;
   end;
-  if items > Cardinal(-1) div size then
+  if items > cardinal(-1) div size then
   begin
     _png_warning(png_ptr, 'Potential overflow in png_zalloc()');
     Result := nil;
@@ -2012,7 +2347,7 @@ begin
   Result := Power(x, y);
 end;
 
-function _setjmp(__jmpb: jmp_buf): Integer; cdecl;
+function _setjmp(__jmpb: jmp_buf): integer; cdecl;
 begin
   Result := 0;
 end;
@@ -2021,7 +2356,7 @@ procedure _snprintf; cdecl;
 begin
 end;
 
-function _strlen(str: png_charp): Integer; cdecl;
+function _strlen(str: png_charp): integer; cdecl;
 begin
   Result := length(str);
 end;
@@ -2036,38 +2371,6 @@ end;
 
 procedure _z_errmsg; cdecl;
 begin
-end;
-
-procedure pngReadFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
-var
-  fs: TStream;
-begin
-  fs := TStream(_png_get_io_ptr(png_ptr));
-  Assert(Assigned(data), 'Attempt to read from null file pointer');
-  fs.Read(data^, length)
-end;
-
-procedure pngWriteFn(png_ptr: png_structp; data: png_bytep; length: png_size_t);
-var
-  fs: TStream;
-begin
-  fs := TStream(_png_get_io_ptr(png_ptr));
-  Assert(Assigned(data), 'Attempt to write to null file pointer');
-  fs.Write(data^, length);
-end;
-
-procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
-begin
-{$IFDEF GLS_LOGGING}
-  GLSLogger.Log(string(str), lkError);
-{$ENDIF}
-end;
-
-procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
-begin
-{$IFDEF GLS_LOGGING}
-  GLSLogger.Log(string(str), lkWarning);
-{$ENDIF}
 end;
 
 function _png_sig_cmp; external;
@@ -2105,6 +2408,278 @@ procedure _png_write_image; external;
 procedure _png_write_end; external;
 procedure _png_write_info; external;
 function _png_malloc; external;
+{$ELSE}
+
+const
+  INVALID_MODULEHANDLE = 0;
+
+var
+   {$IFDEF MSWINDOWS}
+  vzHandle: HINST;
+   {$ENDIF}
+   {$IFDEF UNIX}
+  vzHandle: TLibHandle = 0;
+
+   {$ENDIF}
+
+function Loadlibpng13: boolean;
+begin
+  Result := False;
+  if (vzHandle = INVALID_MODULEHANDLE) then
+  begin
+    Closezlib;
+    vzHandle := LoadLibrary(PChar(LibPng13));
+    if (vzHandle <> INVALID_MODULEHANDLE) then
+      Result := True
+    else
+    begin
+      if vzHandle <> INVALID_MODULEHANDLE then
+        FreeLibrary(vzHandle);
+      {$IFDEF GLS_GLS_LOGGING}
+      GLSLogger.Log('LIBPNG.pas: libpng13 library not loaded');
+      {$ENDIF}
+    end;
+  end
+  else
+    Result := True;
+end;
+
+procedure Unloadlibpng13;
+begin
+  if vzHandle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(vzHandle);
+    vzHandle := INVALID_MODULEHANDLE;
+  end;
+end;
+
+function GetAddress(ProcName: PChar):Pointer;
+begin
+  result := GetProcAddress(vzHandle, ProcName);
+end;
+
+procedure ReadEntryPoints;
+begin
+  _png_access_version_number := GetAddress('png_access_version_number');
+  _png_set_sig_bytes := GetAddress('png_set_sig_bytes');
+  _png_sig_cmp := GetAddress('png_sig_cmp');
+  _png_check_sig := GetAddress('png_check_sig');
+  _png_create_read_struct := GetAddress('png_create_read_struct');
+  _png_create_write_struct := GetAddress('png_create_write_struct');
+  _png_get_compression_buffer_size := GetAddress('png_get_compression_buffer_size');
+  _png_set_compression_buffer_size := GetAddress('png_set_compression_buffer_size');
+  _png_reset_zstream := GetAddress('png_reset_zstream');
+  _png_write_chunk := GetAddress('png_write_chunk');
+  _png_write_chunk_start := GetAddress('png_write_chunk_start');
+  _png_write_chunk_data := GetAddress('png_write_chunk_data');
+  _png_write_chunk_end := GetAddress('png_write_chunk_end');
+  _png_create_info_struct := GetAddress('png_create_info_struct');
+  _png_info_init := GetAddress('png_info_init');
+  _png_write_info_before_PLTE := GetAddress('png_write_info_before_PLTE');
+  _png_write_info := GetAddress('png_write_info');
+  _png_read_info := GetAddress('png_read_info');
+  _png_convert_to_rfc1123 := GetAddress('png_convert_to_rfc1123');
+  _png_convert_from_struct_tm := GetAddress('png_convert_from_struct_tm');
+  _png_convert_from_time_t := GetAddress('png_convert_from_time_t');
+  _png_set_expand := GetAddress('png_set_expand');
+  _png_set_gray_1_2_4_to_8 := GetAddress('png_set_gray_1_2_4_to_8');
+  _png_set_palette_to_rgb := GetAddress('png_set_palette_to_rgb');
+  _png_set_tRNS_to_alpha := GetAddress('png_set_tRNS_to_alpha');
+  _png_set_bgr := GetAddress('png_set_bgr');
+  _png_set_gray_to_rgb := GetAddress('png_set_gray_to_rgb');
+  _png_set_rgb_to_gray := GetAddress('png_set_rgb_to_gray');
+  _png_set_rgb_to_gray_fixed := GetAddress('png_set_rgb_to_gray_fixed');
+  _png_get_rgb_to_gray_status := GetAddress('png_get_rgb_to_gray_status');
+  _png_build_grayscale_palette := GetAddress('png_build_grayscale_palette');
+  _png_set_strip_alpha := GetAddress('png_set_strip_alpha');
+  _png_set_swap_alpha := GetAddress('png_set_swap_alpha');
+  _png_set_invert_alpha := GetAddress('png_set_invert_alpha');
+  _png_set_filler := GetAddress('png_set_filler');
+  _png_set_swap := GetAddress('png_set_swap');
+  _png_set_packing := GetAddress('png_set_packing');
+  _png_set_packswap := GetAddress('png_set_packswap');
+  _png_set_shift := GetAddress('png_set_shift');
+  _png_set_interlace_handling := GetAddress('png_set_interlace_handling');
+  _png_set_invert_mono := GetAddress('png_set_invert_mono');
+  _png_set_background := GetAddress('png_set_background');
+  _png_set_strip_16 := GetAddress('png_set_strip_16');
+  _png_set_dither := GetAddress('png_set_dither');
+  _png_set_gamma := GetAddress('png_set_gamma');
+  _png_permit_empty_plte := GetAddress('png_permit_empty_plte');
+  _png_set_flush := GetAddress('png_set_flush');
+  _png_write_flush := GetAddress('png_write_flush');
+  _png_start_read_image := GetAddress('png_start_read_image');
+  _png_read_update_info := GetAddress('png_read_update_info');
+  _png_read_rows := GetAddress('png_read_rows');
+  _png_read_row := GetAddress('png_read_row');
+  _png_read_image := GetAddress('png_read_image');
+  _png_write_row := GetAddress('png_write_row');
+  _png_write_rows := GetAddress('png_write_rows');
+  _png_write_image := GetAddress('png_write_image');
+  _png_write_end := GetAddress('png_write_end');
+  _png_read_end := GetAddress('png_read_end');
+  _png_destroy_info_struct := GetAddress('png_destroy_info_struct');
+  _png_destroy_read_struct := GetAddress('png_destroy_read_struct');
+  _png_read_destroy := GetAddress('png_read_destroy');
+  _png_destroy_write_struct := GetAddress('png_destroy_write_struct');
+  _png_write_destroy_info := GetAddress('png_write_destroy_info');
+  _png_write_destroy := GetAddress('png_write_destroy');
+  _png_set_crc_action := GetAddress('png_set_crc_action');
+  _png_set_filter := GetAddress('png_set_filter');
+  _png_set_filter_heuristics := GetAddress('png_set_filter_heuristics');
+  _png_set_compression_level := GetAddress('png_set_compression_level');
+  _png_set_compression_mem_level := GetAddress('png_set_compression_mem_level');
+  _png_set_compression_strategy := GetAddress('png_set_compression_strategy');
+  _png_set_compression_window_bits := GetAddress('png_set_compression_window_bits');
+  _png_set_compression_method := GetAddress('png_set_compression_method');
+  _png_init_io := GetAddress('png_init_io');
+  _png_set_error_fn := GetAddress('png_set_error_fn');
+  _png_get_error_ptr := GetAddress('png_get_error_ptr');
+  _png_set_write_fn := GetAddress('png_set_write_fn');
+  _png_set_read_fn := GetAddress('png_set_read_fn');
+  _png_get_io_ptr := GetAddress('png_get_io_ptr');
+  _png_set_read_status_fn := GetAddress('png_set_read_status_fn');
+  _png_set_write_status_fn := GetAddress('png_set_write_status_fn');
+  _png_set_read_user_transform_fn := GetAddress('png_set_read_user_transform_fn');
+  _png_set_write_user_transform_fn := GetAddress('png_set_write_user_transform_fn');
+  _png_set_user_transform_info := GetAddress('png_set_user_transform_info');
+  _png_get_user_transform_ptr := GetAddress('png_get_user_transform_ptr');
+  _png_set_read_user_chunk_fn := GetAddress('png_set_read_user_chunk_fn');
+  _png_get_user_chunk_ptr := GetAddress('png_get_user_chunk_ptr');
+  _png_set_progressive_read_fn := GetAddress('png_set_progressive_read_fn');
+  _png_get_progressive_ptr := GetAddress('png_get_progressive_ptr');
+  _png_process_data := GetAddress('png_process_data');
+  _png_progressive_combine_row := GetAddress('png_progressive_combine_row');
+  _png_malloc := GetAddress('png_malloc');
+  _png_free := GetAddress('png_free');
+  _png_free_data := GetAddress('png_free_data');
+  _png_data_freer := GetAddress('png_data_freer');
+  _png_memcpy_check := GetAddress('png_memcpy_check');
+  _png_memset_check := GetAddress('png_memset_check');
+  _png_error := GetAddress('png_error');
+  _png_chunk_error := GetAddress('png_chunk_error');
+  _png_warning := GetAddress('png_warning');
+  _png_chunk_warning := GetAddress('png_chunk_warning');
+  _png_get_valid := GetAddress('png_get_valid');
+  _png_get_rowbytes := GetAddress('png_get_rowbytes');
+  _png_get_rows := GetAddress('png_get_rows');
+  _png_set_rows := GetAddress('png_set_rows');
+  _png_get_channels := GetAddress('png_get_channels');
+  _png_get_image_width := GetAddress('png_get_image_width');
+  _png_get_image_height := GetAddress('png_get_image_height');
+  _png_get_bit_depth := GetAddress('png_get_bit_depth');
+  _png_get_color_type := GetAddress('png_get_color_type');
+  _png_get_filter_type := GetAddress('png_get_filter_type');
+  _png_get_interlace_type := GetAddress('png_get_interlace_type');
+  _png_get_compression_type := GetAddress('png_get_compression_type');
+  _png_get_pixels_per_meter := GetAddress('png_get_pixels_per_meter');
+  _png_get_x_pixels_per_meter := GetAddress('png_get_x_pixels_per_meter');
+  _png_get_y_pixels_per_meter := GetAddress('png_get_y_pixels_per_meter');
+  _png_get_pixel_aspect_ratio := GetAddress('png_get_pixel_aspect_ratio');
+  _png_get_x_offset_pixels := GetAddress('png_get_x_offset_pixels');
+  _png_get_y_offset_pixels := GetAddress('png_get_y_offset_pixels');
+  _png_get_x_offset_microns := GetAddress('png_get_x_offset_microns');
+  _png_get_y_offset_microns := GetAddress('png_get_y_offset_microns');
+  _png_get_signature := GetAddress('png_get_signature');
+  _png_get_bKGD := GetAddress('png_get_bKGD');
+  _png_set_bKGD := GetAddress('png_set_bKGD');
+  _png_get_cHRM := GetAddress('png_get_cHRM');
+  _png_get_cHRM_fixed := GetAddress('png_get_cHRM_fixed');
+  _png_set_cHRM := GetAddress('png_set_cHRM');
+  _png_set_cHRM_fixed := GetAddress('png_set_cHRM_fixed');
+
+  _png_get_gAMA := GetAddress('png_get_gAMA');
+  _png_get_gAMA_fixed := GetAddress('png_get_gAMA_fixed');
+  _png_set_gAMA := GetAddress('png_set_gAMA');
+  _png_set_gAMA_fixed := GetAddress('png_set_gAMA_fixed');
+  _png_get_hIST := GetAddress('png_get_hIST');
+  _png_set_hIST := GetAddress('png_set_hIST');
+  _png_get_IHDR := GetAddress('png_get_IHDR');
+  _png_set_IHDR := GetAddress('png_set_IHDR');
+  _png_get_oFFs := GetAddress('png_get_oFFs');
+  _png_set_oFFs := GetAddress('png_set_oFFs');
+  _png_get_pCAL := GetAddress('png_get_pCAL');
+  _png_set_pCAL := GetAddress('png_set_pCAL');
+  _png_get_pHYs := GetAddress('png_get_pHYs');
+  _png_set_pHYs := GetAddress('png_set_pHYs');
+  _png_get_PLTE := GetAddress('png_get_PLTE');
+  _png_set_PLTE := GetAddress('png_set_PLTE');
+  _png_get_sBIT := GetAddress('png_get_sBIT');
+  _png_set_sBIT := GetAddress('png_set_sBIT');
+  _png_get_sRGB := GetAddress('png_get_sRGB');
+  _png_set_sRGB := GetAddress('png_set_sRGB');
+  _png_set_sRGB_gAMA_and_cHRM := GetAddress('png_set_sRGB_gAMA_and_cHRM');
+  _png_get_iCCP := GetAddress('png_get_iCCP');
+  _png_set_iCCP := GetAddress('png_set_iCCP');
+  _png_get_sPLT := GetAddress('png_get_sPLT');
+  _png_set_sPLT := GetAddress('png_set_sPLT');
+  _png_get_text := GetAddress('png_get_text');
+  _png_set_text := GetAddress('png_set_text');
+  _png_get_tIME := GetAddress('png_get_tIME');
+  _png_set_tIME := GetAddress('png_set_tIME');
+  _png_get_tRNS := GetAddress('png_get_tRNS');
+  _png_set_tRNS := GetAddress('png_set_tRNS');
+  _png_get_sCAL := GetAddress('png_get_sCAL');
+  _png_set_sCAL := GetAddress('png_set_sCAL');
+  _png_set_sCAL_s := GetAddress('png_set_sCAL_s');
+  _png_set_keep_unknown_chunks := GetAddress('png_set_keep_unknown_chunks');
+  _png_set_unknown_chunks := GetAddress('png_set_unknown_chunks');
+  _png_set_unknown_chunk_location := GetAddress('png_set_unknown_chunk_location');
+  _png_get_unknown_chunks := GetAddress('png_get_unknown_chunks');
+  _png_set_invalid := GetAddress('png_set_invalid');
+  _png_read_png := GetAddress('png_read_png');
+  _png_write_png := GetAddress('png_write_png');
+  _png_get_header_ver := GetAddress('png_get_header_ver');
+  _png_get_header_version := GetAddress('png_get_header_version');
+  _png_get_libpng_ver := GetAddress('png_get_libpng_ver');
+end;
+
+{$ENDIF}
+
+procedure pngReadFn(png_ptr: png_structp; Data: png_bytep; length: png_size_t);
+var
+  fs: TStream;
+begin
+  fs := TStream(_png_get_io_ptr(png_ptr));
+  Assert(Assigned(Data), 'Attempt to read from null file pointer');
+  fs.Read(Data^, length);
+end;
+
+procedure pngWriteFn(png_ptr: png_structp; Data: png_bytep; length: png_size_t);
+var
+  fs: TStream;
+begin
+  fs := TStream(_png_get_io_ptr(png_ptr));
+  Assert(Assigned(Data), 'Attempt to write to null file pointer');
+  fs.Write(Data^, length);
+end;
+
+procedure pngErrorFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  GLSLogger.Log(string(str), lkError);
+{$ENDIF}
+end;
+
+procedure pngWarnFn(struct: png_structp; str: png_const_charp); cdecl;
+begin
+{$IFDEF GLS_LOGGING}
+  GLSLogger.Log(string(str), lkWarning);
+{$ENDIF}
+end;
+
+initialization
+
+{$IFDEF FPC}
+  if Loadlibpng13 then
+    ReadEntryPoints;
+{$ENDIF}
+
+finalization
+
+{$IFDEF FPC}
+  Unloadlibpng13;
+{$ENDIF}
 
 end.
 

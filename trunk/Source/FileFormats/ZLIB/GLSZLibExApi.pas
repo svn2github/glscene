@@ -357,7 +357,7 @@ function crc32(crc: Longint; const buf; len: Integer): Longint;
 {$ELSE}
 
 const
-   INVALID_MODULEHANDLE = 0;//nil;
+   INVALID_MODULEHANDLE = 0;
 
 var
    {$IFDEF MSWINDOWS}
@@ -458,14 +458,14 @@ end;
 initialization
 
 {$IFDEF FPC}
-Initzlib;
-ReadEntryPoints;
+if Initzlib then
+  ReadEntryPoints;
 {$ENDIF}
 
 finalization
 
 {$IFDEF FPC}
-Closezlib
+Closezlib;
 {$ENDIF}
 
 end.
