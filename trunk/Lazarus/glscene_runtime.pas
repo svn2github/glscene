@@ -22,12 +22,12 @@ uses
   GLFileGL2, GLFileGTS, GLFileHDR, GLFileJPEG, GLFileLMTS, GLFileLWO, 
   GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMP3, GLFileMS3D, 
   GLFileNMF, GLFileNurbs, GLFileO3TC, GLFileOBJ, GLFilePAK, GLFilePLY, 
-  GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLFileWAV, GlFileX, GLFileZLIB, 
-  GLStarRecord, GLVfsPAK, HDRImage, LWObjects, O3TCImage, Q3BSP, Q3MD3, RGBE, 
-  TGA, Types3DS, TypesB3D, TypesMD2, TypesMDC, TypesMS3D, TypesSTL, Utils3DS, 
-  VRMLParser, GLSZLibEx, GLSZLibExApi, GLAnimatedSprite, GLAsyncHDS, 
-  GLAtmosphere, GLBaseMeshSilhouette, GLBehaviours, GLBitmapFont, GLBlur, 
-  GLBSP, GLBumpmapHDS, GLCadencer, GLCameraController, GLCollision, 
+  GLFilePNG, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, GLFileWAV, GlFileX, 
+  GLFileZLIB, GLStarRecord, GLVfsPAK, HDRImage, LIBPNG, LWObjects, O3TCImage, 
+  Q3BSP, Q3MD3, RGBE, TGA, Types3DS, TypesB3D, TypesMD2, TypesMDC, TypesMS3D, 
+  TypesSTL, Utils3DS, VRMLParser, GLSZLibEx, GLSZLibExApi, GLAnimatedSprite, 
+  GLAsyncHDS, GLAtmosphere, GLBaseMeshSilhouette, GLBehaviours, GLBitmapFont, 
+  GLBlur, GLBSP, GLBumpmapHDS, GLCadencer, GLCameraController, GLCollision, 
   GLCompositeImage, GLConsole, GLContext, GLDCE, GLDCEMisc, GLDynamicTexture, 
   GLEllipseCollision, GLEParticleMasksManager, GLExtrusion, GLFBO, 
   GLFBORenderer, GLFeedback, GLFireFX, GLFPSMovement, GLGameMenu, 
@@ -52,7 +52,7 @@ uses
   GLScreen, GLViewer, GLWidgetContext, GLAsmShader, GLBumpShader, GLCelShader, 
   GLCustomShader, GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, 
   GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 
-  GLUserShader, GLFilePNG;
+  GLUserShader;
 
 implementation
 
