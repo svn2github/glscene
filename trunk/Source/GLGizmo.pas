@@ -71,7 +71,7 @@ uses
   // GLScene
   GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLState;
+  GLCoordinates, GLRenderContextInfo, GLState, GLSelection;
 
 type
   TGLGizmoUndoCollection = class;
@@ -1516,7 +1516,9 @@ begin
     begin
       //primeiro, ver se é uma das linhas/planos
       for I := 0 to pick.Count - 1 do
-        if (_GZOrootLines.IndexOfChild(pick.hit[I]) > -1) or (_GZOrootTorus.IndexOfChild(pick.hit[I]) > -1) or (_GZOrootCubes.IndexOfChild(pick.hit[I]) > -1) then
+        if (_GZOrootLines.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1)
+          or (_GZOrootTorus.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1)
+          or (_GZOrootCubes.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1) then
           gotPick := True;
     end;
 
@@ -1544,10 +1546,10 @@ begin
          (pick.hit[I] <> _GZOAxisLabelY) and
          (pick.hit[I] <> _GZOAxisLabelZ) and
          (pick.hit[I] <> _GZOVisibleInfoLabels) and
-          not (CheckObjectInExcludeList(pick.hit[I])) then
+          not (CheckObjectInExcludeList(TGLBaseSceneObject(pick.hit[I]))) then
       begin
         accept := True;
-        pickedObj := pick.hit[I];
+        pickedObj := TGLBaseSceneObject(pick.hit[I]);
         Dimensions := pickedObj.AxisAlignedDimensions;
         if Assigned(onBeforeSelect) then
           onBeforeSelect(self, pickedObj, accept, Dimensions);

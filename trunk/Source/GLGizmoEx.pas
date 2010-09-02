@@ -77,7 +77,7 @@ uses
   OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GeometryBB, VectorTypes, GLCanvas,
-  PersistentClasses, GLScreen, GLState;
+  PersistentClasses, GLScreen, GLState, GLSelection;
 
 type
   TGLGizmoExObjectCollection = class;
@@ -2090,7 +2090,7 @@ begin
     Result := nil
   else
   if FSelectedObjects.Count - 1 >= 0 then
-    Result := FSelectedObjects.Hit[0];
+    Result := TGLBaseSceneObject(FSelectedObjects.Hit[0]);
 end;
 
 procedure TGLGizmoEx.AddObjToSelectionList(Obj: TGLBaseSceneObject);
@@ -2124,7 +2124,7 @@ var
 begin
   for I := 0 to aList.Count - 1 do
     with aList do
-      if WithOutGizmoElements(Hit[I]) then
+      if WithOutGizmoElements(TGLBaseSceneObject(Hit[I])) then
         if not RemoveObj then
         begin
           if (Hit[I] <> nil) and (FSelectedObjects.FindObject(Hit[I]) = -1) then
@@ -2317,7 +2317,7 @@ begin
     GL.Color4fv(@FBoundingBoxColor.Color);
 
     for I := 0 to FSelectedObjects.Count - 1 do
-      ShowBoundingBox(FSelectedObjects.Hit[I]);
+      ShowBoundingBox(TGLBaseSceneObject(FSelectedObjects.Hit[I]));
 
   end;
   rci.GLStates.Disable(stColorMaterial);
@@ -3085,6 +3085,7 @@ procedure TGLGizmoEx.UpdateVisibleInfoLabels;
 var
   T: string;
   X, Y, Z: Single;
+  obj: TGLBaseSceneObject;
 begin
   t := '';
   X := 0;
@@ -3094,7 +3095,7 @@ begin
     Exit;
 
   if (FSelectedObjects.Count - 1 = 0) and (vliName in FVisibleVisibleInfoLabels) then
-    t := FSelectedObjects[0].Name;
+    t := TGLBaseSceneObject(FSelectedObjects[0]).Name;
 
   if vliOperation in FVisibleVisibleInfoLabels then
   begin
@@ -3118,24 +3119,25 @@ begin
         T := T + ' - ';
       if FinfoLabelCoordType = ilcChanging then
       begin
+        obj := TGLBaseSceneObject(FSelectedObjects[0]);
         case Operation of
           gopMove:
           begin
-            X := FSelectedObjects[0].Position.X;
-            Y := FSelectedObjects[0].Position.Y;
-            Z := FSelectedObjects[0].Position.Z;
+            X := obj.Position.X;
+            Y := obj.Position.Y;
+            Z := obj.Position.Z;
           end;
           gopRotate:
           begin
-            X := FSelectedObjects[0].Rotation.X;
-            Y := FSelectedObjects[0].Rotation.Y;
-            Z := FSelectedObjects[0].Rotation.Z;
+            X := obj.Rotation.X;
+            Y := obj.Rotation.Y;
+            Z := obj.Rotation.Z;
           end;
           gopScale:
           begin
-            X := FSelectedObjects[0].Scale.X;
-            Y := FSelectedObjects[0].Scale.Y;
-            Z := FSelectedObjects[0].Scale.Z;
+            X := obj.Scale.X;
+            Y := obj.Scale.Y;
+            Z := obj.Scale.Z;
           end;
         end;
         T := T + '[' + Format('%2.2f', [X]);
@@ -3658,7 +3660,7 @@ var
     end;
 
     for I := 0 to FSelectedObjects.Count - 1 do
-      with FSelectedObjects.Hit[I] do
+      with TGLBaseSceneObject(FSelectedObjects.Hit[I]) do
       begin
 
         IncludeCh := True;
@@ -3723,15 +3725,17 @@ var
 
         case Ord(FReferenceCoordSystem) of
           0: v := FUIRootHelpers.AbsolutePosition;
-          1: v := Hit[I].AbsolutePosition;
+          1: v := TGLBaseSceneObject(Hit[I]).AbsolutePosition;
         end;
 
         IncludeCh := True;
 
-        if not CanChangeWithChildren and (Hit[I].parent <> RootObjects) and (FSelectedObjects.Count - 1 > 0) then
-          IncludeCh := FindParent(Hit[I].parent);
+        if not CanChangeWithChildren
+          and (TGLBaseSceneObject(Hit[I]).parent <> RootObjects)
+          and (FSelectedObjects.Count - 1 > 0) then
+          IncludeCh := FindParent(TGLBaseSceneObject(Hit[I]).parent);
 
-        pmat := Hit[I].parent.InvAbsoluteMatrix;
+        pmat := TGLBaseSceneObject(Hit[I]).parent.InvAbsoluteMatrix;
         SetVector(pmat[3], NullHmgPoint);
 
         if IncludeCh then
@@ -3739,39 +3743,39 @@ var
             gaX:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
 
             end;
             gaY:
             begin
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
             gaZ:
             begin
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
             end;
             gaXY:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
             gaXZ:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
             gaYZ:
             begin
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(Hit[I], rotV, AffineVectorMake(v), vec1[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
           end;
       end;
@@ -3857,7 +3861,7 @@ var
     end;
 
     for t := 0 to FSelectedObjects.Count - 1 do
-      with FSelectedObjects.Hit[t] do
+      with TGLBaseSceneObject(FSelectedObjects.Hit[t]) do
       begin
         IncludeCh := True;
 
@@ -4076,7 +4080,15 @@ begin
     for I := 0 to pick.Count - 1 do
 
       if (pick.Hit[I] <> FInterfaceRender) and
-        (pick.Hit[I] <> FInternalRender) and not (pick.Hit[I] is TGLGizmoExUISphere) and not (pick.Hit[I] is TGLGizmoExUIPolyGon) and not (pick.Hit[I] is TGLGizmoExuITorus) and not (pick.Hit[I] is TGLGizmoExUIFrustrum) and not (pick.Hit[I] is TGLGizmoExUIArrowLine) and not (pick.Hit[I] is TGLGizmoExUILines) and not (pick.Hit[I] is TGLGizmoExUIFlatText) and not (CheckObjectInExcludeList(pick.hit[I])) and not (CheckClassNameInExcludeList(pick.hit[I])) then
+        (pick.Hit[I] <> FInternalRender) and not (pick.Hit[I] is TGLGizmoExUISphere)
+        and not (pick.Hit[I] is TGLGizmoExUIPolyGon)
+        and not (pick.Hit[I] is TGLGizmoExuITorus)
+        and not (pick.Hit[I] is TGLGizmoExUIFrustrum)
+        and not (pick.Hit[I] is TGLGizmoExUIArrowLine)
+        and not (pick.Hit[I] is TGLGizmoExUILines)
+        and not (pick.Hit[I] is TGLGizmoExUIFlatText)
+        and not (CheckObjectInExcludeList(TGLBaseSceneObject(pick.hit[I])))
+        and not (CheckClassNameInExcludeList(TGLBaseSceneObject(pick.hit[I]))) then
       begin
 
         //Clear list
@@ -4089,9 +4101,9 @@ begin
             ClearSelection;
 
         if not FCanRemoveObjFromSelectionList then
-          AddObjToSelectionList(pick.Hit[I])
+          AddObjToSelectionList(TGLBaseSceneObject(pick.Hit[I]))
         else
-          RemoveObjFromSelectionList(pick.Hit[I]);
+          RemoveObjFromSelectionList(TGLBaseSceneObject(pick.Hit[I]));
 
         if Assigned(onSelect) then
           onSelect(self, FSelectedObjects);
@@ -4177,7 +4189,7 @@ begin
     v := VectorMake(0, 0, 0);
     //устанавливаем гизмо в нужную позицию!
     for  I := 0 to FSelectedObjects.Count - 1 do
-      VectorAdd(v, FSelectedObjects.Hit[I].AbsolutePosition, v);
+      VectorAdd(v, TGLBaseSceneObject(FSelectedObjects.Hit[I]).AbsolutePosition, v);
 
     if FSelectedObjects.Count = 1 then
       I := 1
@@ -4195,8 +4207,8 @@ begin
 
     1:
     begin
-      FUIRootHelpers.AbsoluteDirection := FSelectedObjects.Hit[0].AbsoluteDirection;
-      FUIRootHelpers.AbsoluteUp := FSelectedObjects.Hit[0].AbsoluteUp;
+      FUIRootHelpers.AbsoluteDirection := TGLBaseSceneObject(FSelectedObjects.Hit[0]).AbsoluteDirection;
+      FUIRootHelpers.AbsoluteUp := TGLBaseSceneObject(FSelectedObjects.Hit[0]).AbsoluteUp;
     end;
   end;
 
@@ -4598,7 +4610,7 @@ begin
   with Add do
   begin
     for I := 0 to objs.Count - 1 do
-      GizmoObjectCollection.Add.AssignFromObject(objs.Hit[I]);
+      GizmoObjectCollection.Add.AssignFromObject(TGLBaseSceneObject(objs.Hit[I]));
   end;
 
 end;
@@ -4623,7 +4635,7 @@ begin
         with GizmoObjectCollection.Add do
         begin
           GizmoTmpRoot := self.GizmoTmpRoot;
-          AssignFromObject(objs.Hit[I], True);
+          AssignFromObject(TGLBaseSceneObject(objs.Hit[I]), True);
         end;
 
   objs.Clear;

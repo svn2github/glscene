@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/09/10 - Yar - Added GLSelection to uses. Improved TGLSceneBuffer.PickObjects for 64-bit OSes
       <li>29/08/10 - Yar - Bugfixed TGLSceneBuffer.DoStructuralChange when component loading causing excessive context recreation
       <li>23/08/10 - Yar - Removed all critical deprecated OpenGL function from rendering cycle. 
                            Now TGLSceneBuffer can work with forward core context.
@@ -367,7 +368,8 @@ uses
   GLCoordinates,
   GLRenderContextInfo,
   GLMaterial,
-  GLTextureFormat
+  GLTextureFormat,
+  GLSelection
 {$IFDEF GLS_EXPERIMENTAL}
   ,
   GLVBOManager
@@ -540,6 +542,8 @@ type
     FOnAddedToParent: TNotifyEvent;
     FGLBehaviours: TGLBehaviours;
     FGLObjectEffects: TGLObjectEffects;
+    FPickable: Boolean;
+    FOnPicked: TNotifyEvent;
 
     FTagObject: TObject;
     FTagFloat: Single;
@@ -598,6 +602,7 @@ type
     procedure ReadRotations(stream: TStream);
 
     procedure SetVisible(aValue: Boolean); virtual;
+    procedure SetPickable(aValue: Boolean); virtual;
 
     procedure SetAbsolutePosition(const v: TVector);
     function GetAbsolutePosition: TVector;
@@ -960,11 +965,13 @@ type
     property Scale: TGLCoordinates read FScaling write SetScaling;
     property Scene: TGLScene read FScene;
     property Visible: Boolean read FVisible write SetVisible default True;
+    property Pickable: Boolean read FPickable write SetPickable default True;
     property ObjectsSorting: TGLObjectsSorting read FObjectsSorting write
       SetObjectsSorting default osInherited;
     property VisibilityCulling: TGLVisibilityCulling read FVisibilityCulling
       write SetVisibilityCulling default vcInherited;
     property OnProgress: TGLProgressEvent read FOnProgress write FOnProgress;
+    property OnPicked: TNotifyEvent read FOnPicked write FOnPicked;
     property OnAddedToParent: TNotifyEvent read FOnAddedToParent write
       FOnAddedToParent;
 
@@ -1213,7 +1220,9 @@ type
     property TurnAngle;
     property Up;
     property Visible;
+    property Pickable;
     property OnProgress;
+    property OnPicked;
     property Behaviours;
     property Effects;
     property Hint;
@@ -1265,7 +1274,9 @@ type
     property TurnAngle;
     property Up;
     property Visible;
+    property Pickable;
     property OnProgress;
+    property OnPicked;
     property Behaviours;
     property Effects;
     property Hint;
@@ -1414,7 +1425,9 @@ type
     property TurnAngle;
     property Up;
     property Visible;
+    property Pickable;
     property OnProgress;
+    property OnPicked;
     property Behaviours;
   end;
 
@@ -1809,46 +1822,6 @@ type
 
   end;
 
-  TPickSubObjects = array of LongInt;
-
-  TPickRecord = class
-  public
-    AObject: TGLBaseSceneObject;
-    SubObjects: TPickSubObjects;
-    ZMin, ZMax: Single;
-  end;
-
-  TPickSortType = (psDefault, psName, psMinDepth, psMaxDepth);
-
-  // TGLPickList
-  //
-  {: List class for object picking.<p>
-     This list is used to store the results of a PickObjects call. }
-  TGLPickList = class(TPersistentObjectList)
-  private
-    { Private Declarations }
-    function GetFar(aValue: Integer): Single;
-    function GetHit(aValue: Integer): TGLBaseSceneObject;
-    function GetNear(aValue: Integer): Single;
-    function GetSubObjects(aValue: Integer): TPickSubObjects;
-
-  protected
-    { Protected Declarations }
-
-  public
-    { Public Declarations }
-    constructor Create(aSortType: TPickSortType); overload;
-
-    procedure AddHit(obj: TGLBaseSceneObject; const subObj: TPickSubObjects;
-      zMin, zMax: Single);
-    procedure Clear; override;
-    function FindObject(AObject: TGLBaseSceneObject): Integer;
-    property FarDistance[Index: Integer]: Single read GetFar;
-    property Hit[Index: Integer]: TGLBaseSceneObject read GetHit; default;
-    property NearDistance[Index: Integer]: Single read GetNear;
-    property SubObjects[Index: Integer]: TPickSubObjects read GetSubObjects;
-  end;
-
   // TFogMode
   //
   TFogMode = (fmLinear, fmExp, fmExp2);
@@ -1948,6 +1921,7 @@ type
     FBaseProjectionMatrix: TMatrix;
     FCameraAbsolutePosition: TVector;
     FViewPort: TRectangle;
+    FSelector: TGLBaseSelectTechnique;
 
     // Options & User Properties
     FFaceCulling, FFogEnable, FLighting: Boolean;
@@ -2634,136 +2608,6 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLPickList ------------------
-// ------------------
-
-var
-  vPickListSortFlag: TPickSortType;
-
-  // Create
-  //
-
-constructor TGLPickList.Create(aSortType: TPickSortType);
-begin
-  vPickListSortFlag := aSortType;
-  inherited Create;
-end;
-
-// Comparefunction (for picklist sorting)
-//
-
-function Comparefunction(item1, item2: TObject): Integer;
-var
-  diff: Single;
-begin
-  Result := 0;
-  case vPickListSortFlag of
-    psName:
-      Result := CompareText(TPickRecord(Item1).AObject.Name,
-        TPickRecord(Item2).AObject.Name);
-    psMinDepth:
-      begin
-        Diff := TPickRecord(Item1).ZMin - TPickRecord(Item2).ZMin;
-        if Diff < 0 then
-          Result := -1
-        else if Diff > 0 then
-          Result := 1
-        else
-          Result := 0;
-      end;
-    psMaxDepth:
-      begin
-        Diff := TPickRecord(Item1).ZMax - TPickRecord(Item2).ZMax;
-        if Diff < 0 then
-          Result := -1
-        else if Diff > 0 then
-          Result := 1
-        else
-          Result := 0;
-      end;
-  end;
-end;
-
-// AddHit
-//
-
-procedure TGLPickList.AddHit(obj: TGLBaseSceneObject; const subObj:
-  TPickSubObjects;
-  zMin, zMax: Single);
-var
-  newRecord: TPickRecord;
-begin
-  newRecord := TPickRecord.Create;
-  newRecord.AObject := obj;
-  newRecord.SubObjects := subObj;
-  newRecord.zMin := zMin;
-  newRecord.zMax := zMax;
-  Add(newRecord);
-  if vPickListSortFlag <> psDefault then
-    Sort(@Comparefunction);
-end;
-
-// Clear
-//
-
-procedure TGLPickList.Clear;
-begin
-  DoClean;
-  inherited;
-end;
-
-// FindObject
-//
-
-function TGLPickList.FindObject(aObject: TGLBaseSceneObject): Integer;
-var
-  i: Integer;
-begin
-  Result := -1;
-  if Assigned(AObject) then
-    for i := 0 to Count - 1 do
-    begin
-      if Hit[i] = AObject then
-      begin
-        Result := i;
-        Break;
-      end;
-    end;
-end;
-
-// GetFar
-//
-
-function TGLPickList.GetFar(aValue: Integer): Single;
-begin
-  Result := TPickRecord(Items[AValue]).ZMax;
-end;
-
-// GetHit
-//
-
-function TGLPickList.GetHit(aValue: Integer): TGLBaseSceneObject;
-begin
-  Result := TPickRecord(Items[AValue]).AObject;
-end;
-
-// GetNear
-//
-
-function TGLPickList.GetNear(aValue: Integer): Single;
-begin
-  Result := TPickRecord(Items[AValue]).ZMin;
-end;
-
-// GetSubObjects
-//
-
-function TGLPickList.GetSubObjects(aValue: Integer): TPickSubobjects;
-begin
-  Result := TPickRecord(Items[AValue]).SubObjects;
-end;
-
-// ------------------
 // ------------------ TGLBaseSceneObject ------------------
 // ------------------
 
@@ -2784,6 +2628,7 @@ begin
   GetMem(FLocalMatrix, SizeOf(TMatrix));
   FLocalMatrix^ := IdentityHmgMatrix;
   FVisible := True;
+  FPickable := True;
   FObjectsSorting := osInherited;
   FVisibilityCulling := vcInherited;
 
@@ -4929,12 +4774,15 @@ procedure TGLBaseSceneObject.Render(var ARci: TRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
+  master: TObject;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
 {$ENDIF}
+  if (ARci.drawState = dsPicking) and not FPickable then
+    exit;
   // visibility culling determination
   if ARci.visibilityCulling in [vcObjectBased, vcHierarchical] then
   begin
@@ -4976,11 +4824,14 @@ begin
   else
     ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
 
+  master := nil;
   if ARci.drawState = dsPicking then
+  begin
     if ARci.proxySubObject then
-      GL.PushName(TGLuint(Self))
-    else
-      GL.LoadName(TGLuint(Self));
+      master := TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject;
+    TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := Self;
+  end;
+
   // Start rendering
   if shouldRenderSelf then
   begin
@@ -5033,9 +4884,8 @@ begin
       DoRender(ARci, False, shouldRenderChildren);
   end;
   // Pop Name & Matrix
-  if ARci.drawState = dsPicking then
-    if ARci.proxySubObject then
-      GL.PopName;
+  if Assigned(master) then
+    TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := master;
   ARci.PipelineTransformation.Pop;
 end;
 
@@ -5238,6 +5088,18 @@ begin
   if FVisible <> aValue then
   begin
     FVisible := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetPickable
+//
+
+procedure TGLBaseSceneObject.SetPickable(aValue: Boolean);
+begin
+  if FPickable <> aValue then
+  begin
+    FPickable := AValue;
     NotifyChange(Self);
   end;
 end;
@@ -6052,8 +5914,11 @@ begin
             ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
         end;
       csOrthogonal:
-        with CurrentGLContext.PipelineTransformation do
-          ProjectionMatrix := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+        begin
+          mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+          with CurrentGLContext.PipelineTransformation do
+            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+        end;
     else
       Assert(False);
     end;
@@ -8134,8 +7999,8 @@ begin
   begin
     Melt;
     // for some obscure reason, Mesa3D doesn't like this call... any help welcome
-    FRenderingContext.Free;
-    FRenderingContext := nil;
+    FreeAndNil(FSelector);
+    FreeAndNil(FRenderingContext);
     if Assigned(FCamera) and Assigned(FCamera.FScene) then
       FCamera.FScene.RemoveBuffer(Self);
   end;
@@ -9055,13 +8920,8 @@ end;
 procedure TGLSceneBuffer.PickObjects(const rect: TGLRect; pickList: TGLPickList;
   objectCountGuess: Integer);
 var
-  buffer: PCardinalVector;
-  hits: Integer;
-  i: Integer;
-  current, next: Cardinal;
-  szmin, szmax: Single;
-  subObj: TPickSubObjects;
-  subObjIndex: Cardinal;
+  I: Integer;
+  obj: TGLBaseSceneObject;
 begin
   if not Assigned(FCamera) then
     Exit;
@@ -9070,64 +8930,28 @@ begin
   FRenderingContext.Activate;
   FRendering := True;
   try
-    buffer := nil;
-    try
-      xglMapTexCoordToNull; // turn off
-      PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
-      // check countguess, memory waste is not an issue here
-{$IFNDEF GLS_OPTIMIZATIONS}
-      if objectCountGuess < 8 then
-        objectCountGuess := 8;
-{$ENDIF GLS_OPTIMIZATIONS}
-      hits := -1;
-      repeat
-        if hits < 0 then
-        begin
-          // Allocate 4 integers per row
-          // Add 32 integers of slop (an extra cache line) to end for buggy
-          // hardware that uses DMA to return select results but that sometimes
-          // overrun the buffer.  Yuck.
-          Inc(objectCountGuess, objectCountGuess); // double buffer size
-          ReallocMem(buffer, objectCountGuess * 4 * SizeOf(Integer) + 32 * 4);
-        end;
-        // pass buffer to opengl and prepare render
-        GL.SelectBuffer(objectCountGuess * 4, @Buffer^);
-        GL.RenderMode(GL_SELECT);
-        GL.InitNames;
-        GL.PushName(0);
-        // render the scene (in select mode, nothing is drawn)
-        FRenderDPI := 96;
-        if Assigned(FCamera) and Assigned(FCamera.FScene) then
-          RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height,
-            dsPicking, nil);
-        GL.Flush;
-        Hits := GL.RenderMode(GL_RENDER);
-      until Hits > -1; // try again with larger selection buffer
-      next := 0;
-      PickList.Clear;
-      PickList.Capacity := Hits;
-      for I := 0 to Hits - 1 do
-      begin
-        current := next;
-        next := current + buffer^[current] + 3;
-        szmin := (buffer^[current + 1] shr 1) * (1 / MaxInt);
-        szmax := (buffer^[current + 2] shr 1) * (1 / MaxInt);
-        subObj := nil;
-        subObjIndex := current + 4;
-        if subObjIndex < next then
-        begin
-          SetLength(subObj, buffer^[current] - 1);
-          while subObjIndex < next do
-          begin
-            subObj[subObjIndex - current - 4] := buffer^[subObjIndex];
-            inc(subObjIndex);
-          end;
-        end;
-        PickList.AddHit(TGLBaseSceneObject(buffer^[current + 3]),
-          subObj, szmin, szmax);
-      end;
-    finally
-      FreeMem(buffer);
+    // Create best selector which techniques is hardware can do
+    if not Assigned(FSelector) then
+      FSelector := GetBestSelectorClass.Create;
+
+    xglMapTexCoordToNull; // turn off
+    PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
+    FSelector.Hits := -1;
+    FSelector.ObjectCountGuess := objectCountGuess;
+    repeat
+      FSelector.Start;
+      // render the scene (in select mode, nothing is drawn)
+      FRenderDPI := 96;
+      if Assigned(FCamera) and Assigned(FCamera.FScene) then
+        RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height,
+          dsPicking, nil);
+    until FSelector.Stop;
+    FSelector.FillPickingList(PickList);
+    for I := 0 to PickList.Count-1 do
+    begin
+      obj := TGLBaseSceneObject(PickList[I]);
+      if Assigned(obj.FOnPicked) then
+        obj.FOnPicked(obj);
     end;
   finally
     FRendering := False;
@@ -9155,7 +8979,7 @@ begin
   pkList := GetPickedObjects(Rect(x - 1, y - 1, x + 1, y + 1));
   try
     if pkList.Count > 0 then
-      Result := pkList.Hit[0]
+      Result := TGLBaseSceneObject(pkList.Hit[0])
     else
       Result := nil;
   finally
