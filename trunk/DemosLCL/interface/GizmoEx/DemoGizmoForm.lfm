@@ -1,13 +1,14 @@
 object Form1: TForm1
-  Left = 153
-  Height = 606
-  Top = 148
-  Width = 832
+  Left = 213
+  Height = 679
+  Top = 153
+  Width = 1031
+  ActiveControl = PageControl1
   Caption = 'GizmoEx'
-  ClientHeight = 606
-  ClientWidth = 832
+  ClientHeight = 679
+  ClientWidth = 1031
   Font.Height = -11
-  Font.Name = 'MS Shell Dlg 2'
+  Font.Name = 'verdana [microsoft]'
   KeyPreview = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -19,20 +20,20 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object Label9: TLabel
     Left = 17
-    Height = 14
+    Height = 16
     Top = 277
-    Width = 67
+    Width = 77
     Caption = 'Rotate Coef :'
     ParentColor = False
   end
   object Viewer: TGLSceneViewer
-    Left = 213
-    Height = 535
+    Left = 272
+    Height = 608
     Top = 35
-    Width = 434
+    Width = 574
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 154.049331665039
+    FieldOfView = 160.23469543457
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -44,14 +45,14 @@ object Form1: TForm1
     Left = 0
     Height = 35
     Top = 0
-    Width = 832
+    Width = 1031
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 35
-    ClientWidth = 832
+    ClientWidth = 1031
     TabOrder = 0
     object SpeedButton1: TSpeedButton
-      Left = 280
+      Left = 344
       Height = 35
       Hint = 'Select'
       Top = 0
@@ -183,7 +184,7 @@ object Form1: TForm1
     end
     object SpeedButton2: TSpeedButton
       Tag = 1
-      Left = 313
+      Left = 377
       Height = 35
       Hint = 'Move'
       Top = 0
@@ -314,7 +315,7 @@ object Form1: TForm1
     end
     object SpeedButton3: TSpeedButton
       Tag = 2
-      Left = 347
+      Left = 411
       Height = 35
       Hint = 'Rotate'
       Top = 0
@@ -443,7 +444,7 @@ object Form1: TForm1
     end
     object SpeedButton4: TSpeedButton
       Tag = 3
-      Left = 380
+      Left = 444
       Height = 35
       Hint = 'Scale'
       Top = 0
@@ -572,7 +573,7 @@ object Form1: TForm1
     end
     object SpeedButton5: TSpeedButton
       Tag = 4
-      Left = 247
+      Left = 312
       Height = 35
       Hint = 'None'
       Top = 0
@@ -717,10 +718,10 @@ object Form1: TForm1
       ParentShowHint = False
     end
     object Label12: TLabel
-      Left = 149
-      Height = 14
-      Top = 10
-      Width = 97
+      Left = 192
+      Height = 16
+      Top = 8
+      Width = 120
       Align = alCustom
       Alignment = taCenter
       Caption = '   Operation Mode:  '
@@ -728,7 +729,7 @@ object Form1: TForm1
       ParentColor = False
     end
     object SpeedButton6: TSpeedButton
-      Left = 413
+      Left = 477
       Height = 35
       Hint = 'Change Selection Region'
       Top = 0
@@ -843,7 +844,7 @@ object Form1: TForm1
     end
     object SpeedButton11: TSpeedButton
       Tag = 5
-      Left = 85
+      Left = 120
       Height = 35
       Hint = 'Undo'
       Top = 0
@@ -970,10 +971,10 @@ object Form1: TForm1
       OnClick = SpeedButton1Click
     end
     object Label15: TLabel
-      Left = 0
-      Height = 14
-      Top = 10
-      Width = 86
+      Left = 8
+      Height = 16
+      Top = 8
+      Width = 107
       Align = alCustom
       Alignment = taCenter
       Caption = '   Return Action:  '
@@ -982,7 +983,7 @@ object Form1: TForm1
     end
     object SpeedButton12: TSpeedButton
       Tag = 6
-      Left = 118
+      Left = 153
       Height = 35
       Hint = 'Redo'
       Top = 0
@@ -1110,7 +1111,7 @@ object Form1: TForm1
     end
     object SpeedButton13: TSpeedButton
       Tag = 7
-      Left = 448
+      Left = 512
       Height = 35
       Hint = 'Remove Selected Objects'
       Top = 0
@@ -1162,10 +1163,10 @@ object Form1: TForm1
       OnClick = SpeedButton1Click
     end
     object Label17: TLabel
-      Left = 482
-      Height = 14
+      Left = 544
+      Height = 16
       Top = 10
-      Width = 151
+      Width = 186
       Align = alCustom
       Alignment = taCenter
       Caption = '  Reference Coordinate System'
@@ -1173,11 +1174,11 @@ object Form1: TForm1
       ParentColor = False
     end
     object ComboBox4: TComboBox
-      Left = 637
-      Height = 23
-      Top = 8
+      Left = 736
+      Height = 27
+      Top = 4
       Width = 145
-      ItemHeight = 13
+      ItemHeight = 0
       ItemIndex = 0
       Items.Strings = (
         'View'
@@ -1189,20 +1190,20 @@ object Form1: TForm1
     end
   end
   object Panel4: TPanel
-    Left = 416
+    Left = 480
     Height = 141
-    Top = 34
-    Width = 35
+    Top = 35
+    Width = 32
     ClientHeight = 141
-    ClientWidth = 35
+    ClientWidth = 32
     TabOrder = 2
     Visible = False
     object SpeedButton7: TSpeedButton
       Tag = 20
-      Left = 1
+      Left = -1
       Height = 35
       Hint = 'Rectangle'
-      Top = 1
+      Top = 0
       Width = 33
       AllowAllUp = True
       Color = clBtnFace
@@ -1314,10 +1315,10 @@ object Form1: TForm1
     end
     object SpeedButton8: TSpeedButton
       Tag = 21
-      Left = 1
+      Left = -1
       Height = 35
       Hint = 'Circle'
-      Top = 36
+      Top = 35
       Width = 33
       AllowAllUp = True
       Color = clBtnFace
@@ -1429,10 +1430,10 @@ object Form1: TForm1
     end
     object SpeedButton9: TSpeedButton
       Tag = 22
-      Left = 1
+      Left = -1
       Height = 35
       Hint = 'Fence'
-      Top = 71
+      Top = 70
       Width = 33
       AllowAllUp = True
       Color = clBtnFace
@@ -1544,10 +1545,10 @@ object Form1: TForm1
     end
     object SpeedButton10: TSpeedButton
       Tag = 23
-      Left = 1
+      Left = -1
       Height = 35
       Hint = 'Lasso'
-      Top = 106
+      Top = 105
       Width = 33
       AllowAllUp = True
       Color = clBtnFace
@@ -1660,87 +1661,87 @@ object Form1: TForm1
   end
   object PageControl1: TPageControl
     Left = 0
-    Height = 535
+    Height = 608
     Top = 35
-    Width = 213
+    Width = 272
     ActivePage = TabSheet1
     Align = alLeft
     TabIndex = 0
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
-      ClientHeight = 509
-      ClientWidth = 205
+      ClientHeight = 573
+      ClientWidth = 266
       object Label10: TLabel
         Left = 0
-        Height = 14
+        Height = 16
         Top = 118
-        Width = 59
+        Width = 71
         Caption = 'Scale Coef :'
         ParentColor = False
       end
       object Label11: TLabel
         Left = 0
-        Height = 14
+        Height = 16
         Top = 99
-        Width = 82
+        Width = 105
         Caption = 'Gizmo Thickness:'
         ParentColor = False
       end
       object Label4: TLabel
         Left = 2
-        Height = 14
+        Height = 16
         Top = 422
-        Width = 85
+        Width = 106
         Caption = 'Auto Zoom factor'
         ParentColor = False
       end
       object Label5: TLabel
         Left = 26
-        Height = 14
+        Height = 16
         Top = 445
-        Width = 61
+        Width = 76
         Caption = 'Zoom Factor'
         ParentColor = False
       end
       object Label16: TLabel
-        Left = 1
-        Height = 14
+        Left = 21
+        Height = 16
         Top = 282
-        Width = 108
+        Width = 130
         Caption = 'Info Label Coord Type'
         ParentColor = False
       end
       object Label6: TLabel
         Left = 1
-        Height = 14
+        Height = 16
         Top = 140
-        Width = 60
+        Width = 70
         Caption = 'Move Coef :'
         ParentColor = False
       end
       object Label7: TLabel
         Left = 2
-        Height = 14
+        Height = 16
         Top = 160
-        Width = 67
+        Width = 77
         Caption = 'Rotate Coef :'
         ParentColor = False
       end
       object Label13: TLabel
         Left = 3
-        Height = 14
+        Height = 16
         Top = 231
-        Width = 98
+        Width = 121
         Caption = 'HistoryStepsCount :'
         ParentColor = False
       end
       object CheckBox1: TCheckBox
         Tag = 1
         Left = 2
-        Height = 19
+        Height = 22
         Top = 59
-        Width = 124
+        Width = 157
         Caption = 'Exclude Objects in list'
         Checked = True
         OnClick = CheckBox12Click
@@ -1750,9 +1751,9 @@ object Form1: TForm1
       object CheckBox10: TCheckBox
         Tag = 15
         Left = 2
-        Height = 19
+        Height = 22
         Top = 402
-        Width = 72
+        Width = 90
         Caption = 'Auto Zoom'
         Checked = True
         OnClick = CheckBox12Click
@@ -1762,9 +1763,9 @@ object Form1: TForm1
       object CheckBox11: TCheckBox
         Tag = 12
         Left = 2
-        Height = 19
+        Height = 22
         Top = 368
-        Width = 72
+        Width = 87
         Caption = 'No Z-Write'
         Checked = True
         OnClick = CheckBox12Click
@@ -1773,9 +1774,9 @@ object Form1: TForm1
       end
       object CheckBox12: TCheckBox
         Left = 3
-        Height = 19
+        Height = 22
         Top = 40
-        Width = 58
+        Width = 73
         Caption = 'Enabled'
         Checked = True
         OnClick = CheckBox12Click
@@ -1785,9 +1786,9 @@ object Form1: TForm1
       object CheckBox2: TCheckBox
         Tag = 6
         Left = 3
-        Height = 19
+        Height = 22
         Top = 247
-        Width = 108
+        Width = 137
         Caption = 'Show Bouding Box'
         Checked = True
         OnClick = CheckBox12Click
@@ -1797,9 +1798,9 @@ object Form1: TForm1
       object CheckBox4: TCheckBox
         Tag = 13
         Left = 86
-        Height = 19
+        Height = 22
         Top = 368
-        Width = 103
+        Width = 129
         Caption = 'Anti Aliased Lines'
         Checked = True
         OnClick = CheckBox12Click
@@ -1809,9 +1810,9 @@ object Form1: TForm1
       object CheckBox5: TCheckBox
         Tag = 7
         Left = 3
-        Height = 19
+        Height = 22
         Top = 262
-        Width = 97
+        Width = 121
         Caption = 'Show Axis Label'
         Checked = True
         OnClick = CheckBox12Click
@@ -1821,9 +1822,9 @@ object Form1: TForm1
       object CheckBox6: TCheckBox
         Tag = 8
         Left = 2
-        Height = 19
+        Height = 22
         Top = 299
-        Width = 102
+        Width = 126
         Caption = 'Show Infos Label'
         Checked = True
         OnClick = CheckBox12Click
@@ -1833,9 +1834,9 @@ object Form1: TForm1
       object CheckBox7: TCheckBox
         Tag = 9
         Left = 27
-        Height = 19
+        Height = 22
         Top = 319
-        Width = 82
+        Width = 102
         Caption = 'Object Name'
         Checked = True
         OnClick = CheckBox12Click
@@ -1845,9 +1846,9 @@ object Form1: TForm1
       object CheckBox8: TCheckBox
         Tag = 10
         Left = 27
-        Height = 19
+        Height = 22
         Top = 337
-        Width = 68
+        Width = 83
         Caption = 'Operation'
         Checked = True
         OnClick = CheckBox12Click
@@ -1857,9 +1858,9 @@ object Form1: TForm1
       object CheckBox9: TCheckBox
         Tag = 11
         Left = 27
-        Height = 19
+        Height = 22
         Top = 353
-        Width = 82
+        Width = 99
         Caption = 'Coordonates'
         Checked = True
         OnClick = CheckBox12Click
@@ -1868,10 +1869,10 @@ object Form1: TForm1
       end
       object edAutoZoomFactor: TEdit
         Tag = 6
-        Left = 94
-        Height = 21
-        Top = 416
-        Width = 73
+        Left = 168
+        Height = 25
+        Top = 413
+        Width = 93
         OnChange = edtGizmoThicknessChange
         OnKeyPress = edAutoZoomFactorKeyPress
         TabOrder = 11
@@ -1879,8 +1880,8 @@ object Form1: TForm1
       end
       object edtGizmoThickness: TEdit
         Tag = 1
-        Left = 106
-        Height = 21
+        Left = 162
+        Height = 25
         Top = 93
         Width = 100
         OnChange = edtGizmoThicknessChange
@@ -1889,8 +1890,8 @@ object Form1: TForm1
       end
       object edtScaleCoef: TEdit
         Tag = 2
-        Left = 106
-        Height = 21
+        Left = 162
+        Height = 25
         Top = 112
         Width = 101
         OnChange = edtGizmoThicknessChange
@@ -1900,10 +1901,10 @@ object Form1: TForm1
       end
       object edzoomfactor: TEdit
         Tag = 7
-        Left = 92
-        Height = 21
-        Top = 443
-        Width = 73
+        Left = 168
+        Height = 25
+        Top = 437
+        Width = 93
         Enabled = False
         OnChange = edtGizmoThicknessChange
         OnKeyPress = edAutoZoomFactorKeyPress
@@ -1925,7 +1926,7 @@ object Form1: TForm1
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
-        ClientHeight = 15
+        ClientHeight = 16
         ClientWidth = 165
         Columns = 2
         ItemIndex = 0
@@ -1937,11 +1938,11 @@ object Form1: TForm1
         TabOrder = 15
       end
       object ComboBox3: TComboBox
-        Left = 103
-        Height = 23
-        Top = 279
-        Width = 106
-        ItemHeight = 13
+        Left = 162
+        Height = 31
+        Top = 277
+        Width = 101
+        ItemHeight = 0
         ItemIndex = 1
         Items.Strings = (
           'ilcChanging'
@@ -1955,9 +1956,9 @@ object Form1: TForm1
       object CheckBox13: TCheckBox
         Tag = 5
         Left = 3
-        Height = 19
+        Height = 22
         Top = 214
-        Width = 122
+        Width = 153
         Caption = 'Enable Action History'
         Checked = True
         OnClick = CheckBox12Click
@@ -1967,9 +1968,9 @@ object Form1: TForm1
       object CheckBox14: TCheckBox
         Tag = 4
         Left = 3
-        Height = 19
+        Height = 22
         Top = 196
-        Width = 123
+        Width = 157
         Caption = 'Enable Multi Selection'
         Checked = True
         OnClick = CheckBox12Click
@@ -1979,9 +1980,9 @@ object Form1: TForm1
       object CheckBox15: TCheckBox
         Tag = 3
         Left = 2
-        Height = 19
+        Height = 22
         Top = 179
-        Width = 150
+        Width = 188
         Caption = 'Enable Loop Cursor Moving'
         Checked = True
         OnClick = CheckBox12Click
@@ -1991,17 +1992,17 @@ object Form1: TForm1
       object CheckBox3: TCheckBox
         Tag = 14
         Left = 2
-        Height = 19
+        Height = 22
         Top = 385
-        Width = 146
+        Width = 183
         Caption = 'Can Change With Children'
         OnClick = CheckBox12Click
         TabOrder = 20
       end
       object edMoveCoef: TEdit
         Tag = 3
-        Left = 106
-        Height = 21
+        Left = 162
+        Height = 25
         Top = 135
         Width = 101
         OnChange = edtGizmoThicknessChange
@@ -2011,8 +2012,8 @@ object Form1: TForm1
       end
       object edRotateCoef: TEdit
         Tag = 4
-        Left = 106
-        Height = 21
+        Left = 162
+        Height = 25
         Top = 158
         Width = 101
         OnChange = edtGizmoThicknessChange
@@ -2023,19 +2024,19 @@ object Form1: TForm1
       object CheckBox16: TCheckBox
         Tag = 2
         Left = 2
-        Height = 19
+        Height = 22
         Top = 76
-        Width = 142
+        Width = 181
         Caption = 'Exclude Class Name in list'
         OnClick = CheckBox12Click
         TabOrder = 23
       end
       object Edit1: TEdit
         Tag = 5
-        Left = 112
-        Height = 21
+        Left = 162
+        Height = 25
         Top = 228
-        Width = 94
+        Width = 100
         OnChange = edtGizmoThicknessChange
         TabOrder = 24
         Text = '30'
@@ -2043,44 +2044,44 @@ object Form1: TForm1
     end
     object TabSheet2: TTabSheet
       Caption = 'Colors Settings'
-      ClientHeight = 0
-      ClientWidth = 0
+      ClientHeight = 573
+      ClientWidth = 266
       ImageIndex = 1
       object Label1: TLabel
         Left = 5
-        Height = 13
+        Height = 16
         Top = 6
-        Width = 100
+        Width = 127
         Caption = 'Bounding Box Color :'
         ParentColor = False
       end
       object Label14: TLabel
         Left = 6
-        Height = 13
+        Height = 16
         Top = 149
-        Width = 107
+        Width = 134
         Caption = 'Selection Region Color'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 4
-        Height = 13
+        Height = 16
         Top = 53
-        Width = 81
+        Width = 100
         Caption = 'Label Infos Color'
         ParentColor = False
       end
       object Label3: TLabel
         Left = 5
-        Height = 13
+        Height = 16
         Top = 100
-        Width = 69
+        Width = 87
         Caption = 'Selected Color'
         ParentColor = False
       end
       object ColorBox1: TColorBox
         Left = 5
-        Height = 22
+        Height = 31
         Top = 25
         Width = 188
         DefaultColorColor = clWhite
@@ -2092,7 +2093,7 @@ object Form1: TForm1
       object ColorBox2: TColorBox
         Tag = 1
         Left = 6
-        Height = 22
+        Height = 31
         Top = 72
         Width = 188
         Selected = clYellow
@@ -2103,7 +2104,7 @@ object Form1: TForm1
       object ColorBox3: TColorBox
         Tag = 2
         Left = 6
-        Height = 22
+        Height = 31
         Top = 121
         Width = 188
         Selected = clYellow
@@ -2114,7 +2115,7 @@ object Form1: TForm1
       object ColorBox4: TColorBox
         Tag = 3
         Left = 6
-        Height = 22
+        Height = 31
         Top = 168
         Width = 187
         ItemHeight = 16
@@ -2124,8 +2125,8 @@ object Form1: TForm1
     end
     object TabSheet3: TTabSheet
       Caption = 'About'
-      ClientHeight = 0
-      ClientWidth = 0
+      ClientHeight = 573
+      ClientWidth = 266
       ImageIndex = 2
       object Label8: TLabel
         Left = 5
@@ -2135,7 +2136,7 @@ object Form1: TForm1
         AutoSize = False
         Caption = 'GLGizmoEx  '#13#10'code by Adirex, Degiovani, Delauney, Mrqzzz Update '#13#10' '#13#10'Update 07.10.2009'#13#10'Code by Rustam Asmadiarov'#13#10' '#13#10'Thanks to DaStranger, Conferno, Lampogolovii, YarUnderoaker'
         Font.Height = -11
-        Font.Name = 'MS Shell Dlg 2'
+        Font.Name = 'verdana [microsoft]'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -2146,15 +2147,15 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Height = 36
-    Top = 570
-    Width = 832
+    Top = 643
+    Width = 1031
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 36
-    ClientWidth = 832
+    ClientWidth = 1031
     TabOrder = 4
     object SpeedButton14: TSpeedButton
-      Left = 734
+      Left = 848
       Height = 36
       Hint = 'Arc Rotate'
       Top = 0
@@ -2299,10 +2300,10 @@ object Form1: TForm1
     end
     object SpeedButton15: TSpeedButton
       Tag = 1
-      Left = 697
+      Left = 808
       Height = 36
       Hint = 'Pan View'
-      Top = 0
+      Top = -3
       Width = 37
       AllowAllUp = True
       Color = clBtnFace
@@ -2443,7 +2444,7 @@ object Form1: TForm1
       OnClick = SpeedButton14Click
     end
     object SpeedButton17: TSpeedButton
-      Left = 771
+      Left = 882
       Height = 36
       Hint = 'Zoom Extents'
       Top = 0
@@ -2585,11 +2586,12 @@ object Form1: TForm1
       OnClick = SpeedButton17Click
     end
     object SpeedButton18: TSpeedButton
-      Left = 660
+      Left = 768
       Height = 36
       Hint = 'Zoom'
       Top = 0
-      Width = 37
+      Width = 40
+      Align = alCustom
       AllowAllUp = True
       Color = clBtnFace
       Glyph.Data = {
@@ -2730,13 +2732,13 @@ object Form1: TForm1
     end
   end
   object Panel3: TPanel
-    Left = 647
-    Height = 535
+    Left = 846
+    Height = 608
     Top = 35
     Width = 185
     Align = alRight
     BevelOuter = bvNone
-    ClientHeight = 535
+    ClientHeight = 608
     ClientWidth = 185
     TabOrder = 5
     object TreeView1: TTreeView
@@ -2745,7 +2747,7 @@ object Form1: TForm1
       Top = 0
       Width = 185
       Align = alTop
-      DefaultItemHeight = 15
+      DefaultItemHeight = 17
       Indent = 19
       ReadOnly = True
       TabOrder = 0
@@ -2753,21 +2755,21 @@ object Form1: TForm1
     end
     object Panel5: TPanel
       Left = 0
-      Height = 280
+      Height = 353
       Top = 255
       Width = 185
       Align = alClient
-      ClientHeight = 280
+      ClientHeight = 353
       ClientWidth = 185
       TabOrder = 1
       object GroupBox1: TGroupBox
         Left = 1
-        Height = 278
+        Height = 351
         Top = 1
         Width = 183
         Align = alClient
         Caption = 'Create Object'
-        ClientHeight = 260
+        ClientHeight = 334
         ClientWidth = 179
         TabOrder = 0
         object SpeedButton16: TSpeedButton
@@ -2812,8 +2814,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    left = 240
-    top = 96
+    left = 24
+    top = 552
     object GLRootUserInterface: TGLDummyCube
       TagFloat = 0
       PitchAngle = 0
@@ -3033,19 +3035,19 @@ object Form1: TForm1
     MinDeltaTime = 0
     FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    left = 272
-    top = 96
+    left = 56
+    top = 552
   end
   object WindowsBitmapFont: TGLWindowsBitmapFont
     Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
-    left = 272
-    top = 128
+    left = 56
+    top = 584
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    left = 240
-    top = 128
+    left = 24
+    top = 584
   end
-end
+end

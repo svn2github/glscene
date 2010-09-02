@@ -12,13 +12,13 @@ interface
 
 uses
   // VCL
-  SysUtils, Classes, windows,
+  SysUtils, Classes, LCLType,
   Controls,  Forms, StdCtrls, ExtCtrls,Buttons, ComCtrls, ColorBox,
 
   // GLScene
   GLScene, GLCadencer, GLObjects,
-  GLLCLViewer,glkeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
-  BaseClasses,  VectorGeometry, GLGeomObjects, GLBitmapFont,
+  GLLCLViewer, GLGizmoEx, GLCrossPlatform, GLCoordinates,
+  VectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
 
 type
@@ -728,4 +728,4 @@ begin
   if GLScene1.IsUpdating then UpdateTreeView;
 end;
 
-end.
+end.
