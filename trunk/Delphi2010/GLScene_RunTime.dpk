@@ -299,6 +299,7 @@ contains
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
   OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
-  GLSceneForm in '..\Source\Experimental\GLSceneForm.pas';
+  GLSceneForm in '..\Source\Experimental\GLSceneForm.pas',
+  GLSelection in '..\Source\GLSelection.pas';
 
 end.

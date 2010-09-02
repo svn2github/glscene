@@ -304,6 +304,7 @@ contains
   GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
   GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
-  GLSMWaveOut in '..\Source\GLSMWaveOut.pas';
+  GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
+  GLSelection in '..\Source\GLSelection.pas';
 
 end.
