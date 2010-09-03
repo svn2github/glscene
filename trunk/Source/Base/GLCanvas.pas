@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/09/10 - Yar - Added FillRectGradient (thanks µAlexx)
       <li>23/08/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
       <li>04/04/10 - Yar - Fixes after GLState revision
       <li>07/11/09 - DaStr - Some cosmetic fixes. Overloaded TGLCanvas.EllipseBB(),
@@ -166,6 +167,12 @@ type
       overload;
 
     procedure FillEllipse(const x, y: Single; const Radius: Single); overload;
+
+    procedure FillRectGradient(const x1, y1, x2, y2: Single;
+      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
+    procedure FillRectGradient(const x1, y1, x2, y2: Integer;
+      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
+
   end;
 
   //-------------------------------------------------------------
@@ -646,6 +653,42 @@ end;
 procedure TGLCanvas.FillEllipse(const x, y, Radius: Single);
 begin
   FillEllipse(x, y, Radius, Radius);
+end;
+
+// FillRectGradient
+//
+
+procedure TGLCanvas.FillRectGradient(const x1, y1, x2, y2: Single;
+  const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
+begin
+  StartPrimitive(GL_QUADS);
+  GL.Color4f(x1y1Color[0], x1y1Color[1], x1y1Color[2], x1y1Color[3]);
+  GL.Vertex2f(x1, y1);
+  GL.Color4f(x2y1Color[0], x2y1Color[1], x2y1Color[2], x2y1Color[3]);
+  GL.Vertex2f(x2, y1);
+  GL.Color4f(x2y2Color[0], x2y2Color[1], x2y2Color[2], x2y2Color[3]);
+  GL.Vertex2f(x2, y2);
+  GL.Color4f(x1y2Color[0], x1y2Color[1], x1y2Color[2], x1y2Color[3]);
+  GL.Vertex2f(x1, y2);
+  StopPrimitive;
+end;
+
+// FillRectGradient
+//
+
+procedure TGLCanvas.FillRectGradient(const x1, y1, x2, y2: Integer;
+  const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
+begin
+  StartPrimitive(GL_QUADS);
+  GL.Color4f(x1y1Color[0], x1y1Color[1], x1y1Color[2], x1y1Color[3]);
+  GL.Vertex2i(x1, y1);
+  GL.Color4f(x2y1Color[0], x2y1Color[1], x2y1Color[2], x2y1Color[3]);
+  GL.Vertex2i(x2, y1);
+  GL.Color4f(x2y2Color[0], x2y2Color[1], x2y2Color[2], x2y2Color[3]);
+  GL.Vertex2i(x2, y2);
+  GL.Color4f(x1y2Color[0], x1y2Color[1], x1y2Color[2], x1y2Color[3]);
+  GL.Vertex2i(x1, y2);
+  StopPrimitive;
 end;
 
 end.
