@@ -262,6 +262,7 @@ begin
     Disable(stColorMaterial);
     Disable(stDepthTest);
     Disable(stLineSmooth);
+    Disable(stLineStipple);
     Disable(stPointSmooth);
     Enable(stBlend);
     SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
