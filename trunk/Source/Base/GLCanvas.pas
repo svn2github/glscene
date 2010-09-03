@@ -8,7 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>03/09/10 - Yar - Added FillRectGradient (thanks µAlexx)
+      <li>03/09/10 - Yar - Added FillRectGradient, FillEllipseGradient (thanks µAlexx)
       <li>23/08/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
       <li>04/04/10 - Yar - Fixes after GLState revision
       <li>07/11/09 - DaStr - Some cosmetic fixes. Overloaded TGLCanvas.EllipseBB(),
@@ -149,6 +149,12 @@ type
     procedure FillRect(const x1, y1, x2, y2: Integer); overload;
     procedure FillRect(const x1, y1, x2, y2: Single); overload;
 
+    {: Draw the (x1,y1)-(x2, y2) rectangle (filled with given gradient's color). }
+    procedure FillRectGradient(const x1, y1, x2, y2: Single;
+      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
+    procedure FillRectGradient(const x1, y1, x2, y2: Integer;
+      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
+
     {: Draws an ellipse with (x1,y1)-(x2, y2) bounding rectangle. }
     procedure EllipseBB(const x1, y1, x2, y2: Integer); overload;
     procedure EllipseBB(const x1, y1, x2, y2: Single); overload;
@@ -168,11 +174,14 @@ type
 
     procedure FillEllipse(const x, y: Single; const Radius: Single); overload;
 
-    procedure FillRectGradient(const x1, y1, x2, y2: Single;
-      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
-    procedure FillRectGradient(const x1, y1, x2, y2: Integer;
-      const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector); overload;
-
+    {: Draw a filled gradient ellipse.<p>
+    OpenGL will use the last PenColor and PenAlpha as the center color and do gradient to edge of ellipse using the edgeColor parameter. }
+    procedure FillEllipseGradient(const x, y, xRadius, yRadius: Single;
+      const edgeColor: TColorVector); overload;
+    procedure FillEllipseGradient(const x, y: Integer;
+      const xRadius, yRadius: Integer; const edgeColor: TColorVector); overload;
+    procedure FillEllipseGradient(const x, y, Radius: Single;
+      const edgeColor: TColorVector); overload;
   end;
 
   //-------------------------------------------------------------
@@ -689,6 +698,42 @@ begin
   GL.Color4f(x1y2Color[0], x1y2Color[1], x1y2Color[2], x1y2Color[3]);
   GL.Vertex2i(x1, y2);
   StopPrimitive;
+end;
+
+// FillEllipseGradient (integer)
+//
+
+procedure TGLCanvas.FillEllipseGradient(const x, y: Integer; const xRadius, yRadius: Integer; const edgeColor: TColorVector);
+begin
+  StartPrimitive(GL_TRIANGLE_FAN);
+
+  // the center will use the last set PenColor and PenAlpha
+  GL.Vertex2f(x, y); // really necessary now :)
+
+  // then openGL will do a gradient from the center to the edge using the edgeColor
+  GL.Color4f(edgeColor[0], edgeColor[1], edgeColor[2], edgeColor[3]);
+  EllipseVertices(x, y, xRadius, yRadius);
+  StopPrimitive;
+end;
+
+// FillEllipseGradient (single)
+//
+
+procedure TGLCanvas.FillEllipseGradient(const x, y, xRadius, yRadius: Single; const edgeColor: TColorVector);
+begin
+  StartPrimitive(GL_TRIANGLE_FAN);
+  GL.Vertex2f(x, y); // really necessary now :)
+  GL.Color4f(edgeColor[0], edgeColor[1], edgeColor[2], edgeColor[3]);
+  EllipseVertices(x, y, xRadius, yRadius);
+  StopPrimitive;
+end;
+
+// FillEllipseGradient (single)
+//
+
+procedure TGLCanvas.FillEllipseGradient(const x, y, Radius: Single; const edgeColor: TColorVector);
+begin
+  FillEllipseGradient(x, y, Radius, Radius, edgeColor);
 end;
 
 end.
