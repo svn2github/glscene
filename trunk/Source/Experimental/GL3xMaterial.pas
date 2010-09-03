@@ -1050,6 +1050,7 @@ begin
   begin
     FLightsBuffer.BindBufferData(SafeCurrentGLContext.GLStates.GetLightStateAsAddress, SizeOf(TLightSourceState)*MAX_HARDWARE_LIGHT, GL_STATIC_READ);
     FLightsBuffer.Unbind;
+    FLightsBuffer.NotifyDataUpdated;
   end;
   FLightsBuffer.BindBase(FLightsBlock.Location);
 end;

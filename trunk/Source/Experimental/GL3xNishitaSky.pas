@@ -228,14 +228,14 @@ const
   Render_vp: AnsiString =
     '#version 150' + #10#13 +
     'in vec3 Position;' + #10#13 +
-    'in vec2 TexCoord[1];' + #10#13 +
+    'in vec2 TexCoord0;' + #10#13 +
     'out vec2 texcoord;' + #10#13 +
     'out vec3 vertex;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'void main(void)' + #10#13 +
     '{' + #10#13 +
     '	vertex = -Position;' + #10#13 +
-    '	texcoord = TexCoord[0];' + #10#13 +
+    '	texcoord = TexCoord0;' + #10#13 +
     '	gl_Position = ViewProjectionMatrix * vec4(Position, 1.0);' + #10#13 +
     '}';
 
@@ -537,12 +537,6 @@ begin
 end;
 
 procedure TGL3xCustomNishitaSky.Initialize(StateCash: TGLStateCache);
-const
-  cDrawBuffers: array[0..1] of GLenum =
-    (
-    GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1
-    );
 var
   s: string;
 begin
@@ -617,13 +611,14 @@ begin
     end;
   end;
   // Initialize constant buffer
-  if FUBO.Handle = 0 then
+  with FUBO do
   begin
-    with FUBO do
+    AllocateHandle;
+    if IsDataNeedUpdate then
     begin
-      AllocateHandle;
       BindBufferData(@ConstantBlock, SizeOf(TNSConstantBlock), GL_STATIC_READ);
       Unbind;
+      NotifyDataUpdated;
     end;
   end;
   // Initialize textures
@@ -648,7 +643,6 @@ begin
     RayleighMieFBO.Bind;
     RayleighMieFBO.AttachTexture(0, FMieTexture);
     RayleighMieFBO.AttachTexture(1, FRayleighTexture);
-    GL.DrawBuffers(2, @cDrawBuffers);
     Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
       'Framebuffer error: '+s);
     MakeGPUOpticalDepth(StateCash);
@@ -749,7 +743,7 @@ begin
     useCurrent := true;
     castFormat := tfRGBA8;
   end;
-  debugImg.AssignFromTexture(FOpticalDepthTexture.RenderingContext,
+  debugImg.AssignFromTexture(CurrentGLContext,
     FOpticalDepthTexture.Handle,
     FOpticalDepthTexture.Image.NativeTextureTarget, useCurrent, castFormat);
   debugImg.SaveToFile('OpticalDepth.dds');
@@ -762,6 +756,12 @@ end;
 
 procedure TGL3xCustomNishitaSky.MakeGPUMieRayleighBuffer(
   StateCash: TGLStateCache);
+const
+  cDrawBuffers: array[0..1] of GLenum =
+    (
+    GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1
+    );
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
 var
   debugImg: TGLDDSImage;
@@ -774,6 +774,7 @@ begin
     glStringMarkerGREMEDY(24, 'MakeGPUMieRayleighBuffer');
 {$ENDIF}
   RayleighMieFBO.Bind;
+  GL.DrawBuffers(2, @cDrawBuffers);
 
   with StateCash do
   begin
@@ -830,10 +831,10 @@ begin
       useCurrent := true;
       castFormat := tfRGBA8;
     end;
-    debugImg.AssignFromTexture(FMieTexture.RenderingContext, FMieTexture.Handle,
+    debugImg.AssignFromTexture(CurrentGLContext, FMieTexture.Handle,
       FMieTexture.Image.NativeTextureTarget, useCurrent, castFormat);
     debugImg.SaveToFile('Mie.dds');
-    debugImg.AssignFromTexture(FRayleighTexture.RenderingContext,
+    debugImg.AssignFromTexture(CurrentGLContext,
       FRayleighTexture.Handle,
       FRayleighTexture.Image.NativeTextureTarget, useCurrent, castFormat);
     debugImg.SaveToFile('Rayleigh.dds');
@@ -880,6 +881,7 @@ begin
 
         UniformSampler(uniformMie, FMieTexture.Handle, 0);
         UniformSampler(uniformRayleigh, FRayleighTexture.Handle, 1);
+        FUBO.BindBase(ublockConstants.Location);
         Uniform3f(uniformSunDir, v3SunDir);
 
         with ARci.GLStates do
@@ -888,13 +890,13 @@ begin
           Enable(stDepthTest);
           Enable(stCullFace);
           DepthWriteMask := False;
+          SetDepthRange(0, 1);
         end;
 
         FBuiltProperties.Manager.RenderClient(FBuiltProperties);
 
         if not ARci.GLStates.ForwardContext then
           UseFixedFunctionPipeline;
-
       end;
     end;
   end;
