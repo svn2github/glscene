@@ -46,7 +46,8 @@ contains
   GL3xMaterialEditor in '..\Source\Experimental\GL3xMaterialEditor.pas' {MaterialEditorForm},
   GL3xMaterialNodePalette in '..\Source\Experimental\GL3xMaterialNodePalette.pas' {NodePaletteForm},
   GL3xMaterialPreview in '..\Source\Experimental\GL3xMaterialPreview.pas' {MaterialPreviewForm},
-  GLSceneFormDesign in '..\Source\Experimental\GLSceneFormDesign.pas';
+  GLSceneFormDesign in '..\Source\Experimental\GLSceneFormDesign.pas',
+  GLSIDENotifier in '..\Source\DesignTime\GLSIDENotifier.pas';
 
 end.
 

@@ -367,6 +367,8 @@ begin
     with FMaterialGraph do
     begin
       Save;
+      if Length(Material.ResourceName) = 0 then
+        Material.ResourceName := FStoredMaterial+'_material.xml';
       Material.SaveToFile(Material.ResourceName);
       Material.AssignTo(FStoredMaterial);
     end;

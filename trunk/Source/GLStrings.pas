@@ -133,6 +133,7 @@ resourcestring
   glsDIFFUSEMAP = 'DEFAULTDIFFUSEMAP';
   glsNORMALMAP = 'DEFAULTNORMALMAP';
   glsLauncherData = 'LAUNCHERDATA';
+  glsMaterialManagerData = 'MATERIALMANAGERDATA';
 
 implementation
 

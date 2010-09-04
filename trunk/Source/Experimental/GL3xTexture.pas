@@ -164,6 +164,7 @@ type
 implementation
 
 uses
+  GL3xMaterial,
   SysUtils,
   GLStrings,
   GLSLog;
@@ -549,6 +550,7 @@ begin
   ResourceName := filename;
   try
     SaveToStream(fs);
+    MaterialManager.NotifyResourcesChanged;
   finally
     fs.Free;
   end;

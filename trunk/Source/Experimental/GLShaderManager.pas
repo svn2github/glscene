@@ -2086,6 +2086,7 @@ begin
       end;
     for I := J to High(Attribs) do
       Attribs[I] := nil;
+    Result := True;
   end
   else
     Result := False;

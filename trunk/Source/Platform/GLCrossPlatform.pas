@@ -8,7 +8,8 @@
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+ <b>Historique : </b><font size=-1><ul>
+      <li>04/09/10 - Yar - - Added IsDesignTime variable, SetExeDirectory
       <li>15/06/10 - Yar - Replace Shell to fpSystem
       <li>04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
       <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
@@ -62,23 +63,36 @@
                           Added PrecisionTimer funcs
       <li>06/12/01 - EG - Added several abstraction calls
       <li>31/08/01 - EG - Creation
-	</ul></font>
+ </ul></font>
 }
 unit GLCrossPlatform;
 
 interface
 
-{$include GLScene.inc}
+{$INCLUDE GLScene.inc}
 
 //   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
 //         these files in uses clauses.
 
 uses
-  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  {$IFDEF UNIX} Unix, xlib, x,{$ENDIF}
-  Classes, SysUtils, Graphics, Controls, Forms, Dialogs
-  {$IFDEF FPC} ,LCLType {$ELSE}, Consts{$ENDIF}
-  {$IFNDEF GLS_COMPILER_5_DOWN}, StrUtils, Types{$ENDIF}
+{$IFDEF MSWINDOWS}Windows,
+{$ENDIF}
+{$IFDEF UNIX}Unix,
+  xlib,
+  x,
+{$ENDIF}
+  Classes,
+  SysUtils,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs
+{$IFDEF FPC},
+  LCLType{$ELSE},
+  Consts{$ENDIF}
+{$IFNDEF GLS_COMPILER_5_DOWN},
+  StrUtils,
+  Types{$ENDIF}
   ;
 
 {$IFNDEF FPC}
@@ -94,52 +108,52 @@ type
   // in 64 bit mode, because in FPC "Integer" type is always 32 bit
   // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
   // can be 16, 32 or 64 bit.
-  ptrInt  = Integer;
+  ptrInt = Integer;
   PtrUInt = Cardinal;
 {$ENDIF}
 
-   // Several aliases to shield us from the need of ifdef'ing between
-   // the "almost cross-platform" units like Graphics/QGraphics etc.
-   // Gives a little "alien" look to names, but that's the only way around :(
+  // Several aliases to shield us from the need of ifdef'ing between
+  // the "almost cross-platform" units like Graphics/QGraphics etc.
+  // Gives a little "alien" look to names, but that's the only way around :(
 
-   // DaStr: Actually, there is a way around, see TPenStyle for example.
+  // DaStr: Actually, there is a way around, see TPenStyle for example.
 
-   TGLPoint = TPoint;
-   PGLPoint = ^TGLPoint;
-   TGLRect = TRect;
-   PGLRect = ^TGLRect;
-   TDelphiColor = TColor;
+  TGLPoint = TPoint;
+  PGLPoint = ^TGLPoint;
+  TGLRect = TRect;
+  PGLRect = ^TGLRect;
+  TDelphiColor = TColor;
 
-   TGLPicture = TPicture;
-   TGLGraphic = TGraphic;
-   TGLBitmap = TBitmap;
-   TGraphicClass = class of TGraphic;
+  TGLPicture = TPicture;
+  TGLGraphic = TGraphic;
+  TGLBitmap = TBitmap;
+  TGraphicClass = class of TGraphic;
 
-   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
+  TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
-   TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
-   TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
+  TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
+  TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-   TGLMouseMoveEvent = TMouseMoveEvent;
-   TGLKeyEvent = TKeyEvent;
-   TGLKeyPressEvent = TKeyPressEvent;
+  TGLMouseMoveEvent = TMouseMoveEvent;
+  TGLKeyEvent = TKeyEvent;
+  TGLKeyPressEvent = TKeyPressEvent;
 
 {$IFDEF GLS_DELPHI_5}
-   EGLOSError = EWin32Error;
+  EGLOSError = EWin32Error;
 {$ELSE}
-   EGLOSError = EOSError;
-//   {$IFDEF FPC}
-//      EGLOSError = EWin32Error;
-//   {$ELSE}
-//      EGLOSError = EOSError;
-//   {$ENDIF}
+  EGLOSError = EOSError;
+  //   {$IFDEF FPC}
+  //      EGLOSError = EWin32Error;
+  //   {$ELSE}
+  //      EGLOSError = EOSError;
+  //   {$ENDIF}
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5_DOWN}
   IInterface = IUnknown;
 {$ENDIF}
 
-// A work-around a Delphi5 interface bug.
+  // A work-around a Delphi5 interface bug.
 {$IFDEF GLS_DELPHI_5_DOWN}
   TGLComponent = class(TComponent, IInterface);
 {$ELSE}
@@ -153,20 +167,22 @@ type
   TRect = Windows.TRect;
   PRect = Windows.PRect;
 {$ELSE}
-  {$IFDEF FPC}
+{$IFDEF FPC}
   DWORD = System.DWORD;
   TPoint = Types.TPoint;
   PPoint = ^TPoint;
   TRect = Types.TRect;
   PRect = ^TRect;
-  {$ELSE}
+{$ELSE}
   DWORD = Types.DWORD;
   TPoint = Types.TPoint;
   PPoint = Types.PPoint;
   TRect = Types.TRect;
   PRect = Types.PRect;
-  {$ENDIF}
 {$ENDIF}
+{$ENDIF}
+
+  TProjectTargetNameFunc = function(): string;
 
 const
 {$IFDEF GLS_DELPHI_5_DOWN}
@@ -175,19 +191,19 @@ const
 {$ENDIF}
 
 {$IFDEF WIN32}
-   glpf8Bit = pf8bit;
-   glpf24bit = pf24bit;
-   glpf32Bit = pf32bit;
-   glpfDevice = pfDevice;
+  glpf8Bit = pf8bit;
+  glpf24bit = pf24bit;
+  glpf32Bit = pf32bit;
+  glpfDevice = pfDevice;
 {$ENDIF}
 {$IFDEF UNIX}
-   glpf8Bit = pf8bit;
-   glpf24bit = pf32bit;
-   glpf32Bit = pf32bit;
-   glpfDevice = pf32bit;
+  glpf8Bit = pf8bit;
+  glpf24bit = pf32bit;
+  glpf32Bit = pf32bit;
+  glpfDevice = pf32bit;
 {$ENDIF}
 
-// standard keyboard
+  // standard keyboard
   glKey_TAB = VK_TAB;
   glKey_SPACE = VK_SPACE;
   glKey_RETURN = VK_RETURN;
@@ -203,13 +219,13 @@ const
   glKey_NEXT = VK_NEXT;
   glKey_CONTROL = VK_CONTROL;
 
-// TPenStyle.
- {$IFDEF FPC}
+  // TPenStyle.
+{$IFDEF FPC}
   //FPC doesn't support TPenStyle "psInsideFrame", so provide an alternative
   psInsideFrame = psSolid;
- {$ENDIF}
+{$ENDIF}
 
-// Several define from unit Consts
+  // Several define from unit Consts
 const
 {$IFDEF FPC}
   glsAllFilter: string = 'All';
@@ -219,40 +235,44 @@ const
 
 {$IFDEF GLS_COMPILER_2009_UP}
   GLS_FONT_CHARS_COUNT = 2024;
-{$else}
+{$ELSE}
   GLS_FONT_CHARS_COUNT = 256;
 {$ENDIF}
 
-function GLPoint(const x, y : Integer) : TGLPoint;
+var
+  IsDesignTime: Boolean = False;
+  vProjectTargetName: TProjectTargetNameFunc;
+
+function GLPoint(const x, y: Integer): TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b : Byte) : TColor;
+function RGB(const r, g, b: Byte): TColor;
 
-function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
+function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
 {: Increases or decreases the width and height of the specified rectangle.<p>
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
-procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
-procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
+procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
+procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
 
 procedure RaiseLastOSError;
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
-function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
+function GetDeviceLogicalPixelsX(device: Cardinal): Integer;
 {: Number of bits per pixel for the current desktop resolution. }
-function GetCurrentColorDepth : Integer;
+function GetCurrentColorDepth: Integer;
 {: Returns the number of color bits associated to the given pixel format. }
-function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
+function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 
 {: Returns the bitmap's scanline for the specified row. }
-function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
+function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 
 {$IFDEF GLS_DELPHI_5_DOWN}
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
    slice is relinquished. }
-procedure Sleep(length : Cardinal);
+procedure Sleep(length: Cardinal);
 
 {: IncludeTrailingPathDelimiter returns the path without a PathDelimiter
   ('\' or '/') at the end.  This function is MBCS enabled. }
@@ -263,11 +283,11 @@ function IncludeTrailingPathDelimiter(const S: string): string;
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
-procedure QueryPerformanceCounter(var val : Int64);
+procedure QueryPerformanceCounter(var val: Int64);
 {: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
    Return value is in ticks per second (Hz), returns False if no precision
    counter is available. }
-function QueryPerformanceFrequency(var val : Int64) : Boolean;
+function QueryPerformanceFrequency(var val: Int64): Boolean;
 
 {: Starts a precision timer.<p>
    Returned value should just be considered as 'handle', even if it ain't so.
@@ -275,21 +295,22 @@ function QueryPerformanceFrequency(var val : Int64) : Boolean;
    QueryPerformanceFrequency, if higher precision references are available,
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
-function StartPrecisionTimer : Int64;
+function StartPrecisionTimer: Int64;
 {: Computes time elapsed since timer start.<p>
    Return time lap in seconds. }
-function PrecisionTimerLap(const precisionTimer : Int64) : Double;
+function PrecisionTimerLap(const precisionTimer: Int64): Double;
 {: Computes time elapsed since timer start and stop timer.<p>
    Return time lap in seconds. }
-function StopPrecisionTimer(const precisionTimer : Int64) : Double;
+function StopPrecisionTimer(const precisionTimer: Int64): Double;
 {: Returns the number of CPU cycles since startup.<p>
    Use the similarly named CPU instruction. }
-function RDTSC : Int64;
+function RDTSC: Int64;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
-procedure ShowHTMLUrl(Url: String);
-function GLGetTickCount:int64;
+procedure ShowHTMLUrl(Url: string);
+function GLGetTickCount: int64;
+procedure SetExeDirectory;
 
 {$IFDEF GLS_DELPHI_5_DOWN}
 function ColorToString(Color: TColor): string;
@@ -343,8 +364,8 @@ uses
 {$ENDIF}
 
 var
-   vInvPerformanceCounterFrequency : Double;
-   vInvPerformanceCounterFrequencyReady : Boolean = False;
+  vInvPerformanceCounterFrequency: Double;
+  vInvPerformanceCounterFrequencyReady: Boolean = False;
 
 function IsSubComponent(const AComponent: TComponent): Boolean;
 begin
@@ -358,13 +379,14 @@ end;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 begin
 {$IFDEF GLS_DELPHI_5_DOWN}
- // AFAIK Delphi 5 does not know what is a SubComponent, so ignore this.
+  // AFAIK Delphi 5 does not know what is a SubComponent, so ignore this.
 {$ELSE}
   AComponent.SetSubComponent(Value);
 {$ENDIF}
 end;
 
 {$IFDEF GLS_DELPHI_5_DOWN}
+
 function StrToFloatDef(const S: string; const Default: Extended): Extended;
 begin
   if not TextToFloat(PChar(S), Result, fvExtended) then
@@ -396,14 +418,14 @@ end;
 
 function IsNan(const AValue: Single): Boolean;
 begin
-  Result := ((PLongWord(@AValue)^ and $7F800000)  = $7F800000) and
-            ((PLongWord(@AValue)^ and $007FFFFF) <> $00000000);
+  Result := ((PLongWord(@AValue)^ and $7F800000) = $7F800000) and
+    ((PLongWord(@AValue)^ and $007FFFFF) <> $00000000);
 end;
 
 function IsNan(const AValue: Double): Boolean;
 begin
-  Result := ((PInt64(@AValue)^ and $7FF0000000000000)  = $7FF0000000000000) and
-            ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
+  Result := ((PInt64(@AValue)^ and $7FF0000000000000) = $7FF0000000000000) and
+    ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
 end;
 
 function IsNan(const AValue: Extended): Boolean;
@@ -414,18 +436,19 @@ type
   end;
   PExtended = ^TExtented;
 begin
-  Result := ((PExtended(@AValue)^.Exponent and $7FFF)  = $7FFF) and
-            ((PExtended(@AValue)^.Mantissa and $7FFFFFFFFFFFFFFF) <> 0);
+  Result := ((PExtended(@AValue)^.Exponent and $7FFF) = $7FFF) and
+    ((PExtended(@AValue)^.Mantissa and $7FFFFFFFFFFFFFFF) <> 0);
 end;
 
 function IsInfinite(const AValue: Double): Boolean;
 begin
   Result := ((PInt64(@AValue)^ and $7FF0000000000000) = $7FF0000000000000) and
-            ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) = $0000000000000000);
+    ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) = $0000000000000000);
 end;
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5_DOWN}
+
 function ColorToString(Color: TColor): string;
 begin
   // Taken from Delphi7 Graphics.pas
@@ -470,7 +493,7 @@ begin
 {$ENDIF}
 end;
 
-function GLGetTickCount:int64;
+function GLGetTickCount: int64;
 begin
 {$IFDEF MSWINDOWS}
   result := GetTickCount;
@@ -480,10 +503,10 @@ begin
 {$ENDIF}
 end;
 
-procedure ShowHTMLUrl(Url: String);
+procedure ShowHTMLUrl(Url: string);
 begin
 {$IFDEF MSWINDOWS}
-  ShellExecute(0, 'open', PChar(Url), Nil, Nil, SW_SHOW);
+  ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
 {$ENDIF}
 {$IFDEF UNIX}
   fpSystem(PChar('env xdg-open ' + Url));
@@ -492,88 +515,97 @@ end;
 
 // GLPoint
 //
-function GLPoint(const x, y : Integer) : TGLPoint;
+
+function GLPoint(const x, y: Integer): TGLPoint;
 begin
-   Result.X:=x;
-   Result.Y:=y;
+  Result.X := x;
+  Result.Y := y;
 end;
 
 // RGB
 //
-function RGB(const r, g, b : Byte) : TColor;
+
+function RGB(const r, g, b: Byte): TColor;
 begin
-   Result:=(b shl 16) or (g shl 8) or r;
+  Result := (b shl 16) or (g shl 8) or r;
 end;
 
 // GLRect
 //
-function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
+
+function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
 begin
-   Result.Left:=aLeft;
-   Result.Top:=aTop;
-   Result.Right:=aRight;
-   Result.Bottom:=aBottom;
+  Result.Left := aLeft;
+  Result.Top := aTop;
+  Result.Right := aRight;
+  Result.Bottom := aBottom;
 end;
 
 // InflateRect
 //
-procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
+
+procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
 begin
-   aRect.Left:=aRect.Left-dx;
-   aRect.Right:=aRect.Right+dx;
-   if aRect.Right<aRect.Left then
-      aRect.Right:=aRect.Left;
-   aRect.Top:=aRect.Top-dy;
-   aRect.Bottom:=aRect.Bottom+dy;
-   if aRect.Bottom<aRect.Top then
-      aRect.Bottom:=aRect.Top;
+  aRect.Left := aRect.Left - dx;
+  aRect.Right := aRect.Right + dx;
+  if aRect.Right < aRect.Left then
+    aRect.Right := aRect.Left;
+  aRect.Top := aRect.Top - dy;
+  aRect.Bottom := aRect.Bottom + dy;
+  if aRect.Bottom < aRect.Top then
+    aRect.Bottom := aRect.Top;
 end;
 
 // IntersectGLRect
 //
-procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
+
+procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
 var
-   a : Integer;
+  a: Integer;
 begin
-   if (aRect.Left>rect2.Right) or (aRect.Right<rect2.Left)
-      or (aRect.Top>rect2.Bottom) or (aRect.Bottom<rect2.Top) then begin
-      // no intersection
-      a:=0;
-      aRect.Left:=a;
-      aRect.Right:=a;
-      aRect.Top:=a;
-      aRect.Bottom:=a;
-   end else begin
-      if aRect.Left<rect2.Left then
-         aRect.Left:=rect2.Left;
-      if aRect.Right>rect2.Right then
-         aRect.Right:=rect2.Right;
-      if aRect.Top<rect2.Top then
-         aRect.Top:=rect2.Top;
-      if aRect.Bottom>rect2.Bottom then
-         aRect.Bottom:=rect2.Bottom;
-   end;
+  if (aRect.Left > rect2.Right) or (aRect.Right < rect2.Left)
+    or (aRect.Top > rect2.Bottom) or (aRect.Bottom < rect2.Top) then
+  begin
+    // no intersection
+    a := 0;
+    aRect.Left := a;
+    aRect.Right := a;
+    aRect.Top := a;
+    aRect.Bottom := a;
+  end
+  else
+  begin
+    if aRect.Left < rect2.Left then
+      aRect.Left := rect2.Left;
+    if aRect.Right > rect2.Right then
+      aRect.Right := rect2.Right;
+    if aRect.Top < rect2.Top then
+      aRect.Top := rect2.Top;
+    if aRect.Bottom > rect2.Bottom then
+      aRect.Bottom := rect2.Bottom;
+  end;
 end;
 
 // RaiseLastOSError
 //
+
 procedure RaiseLastOSError;
 var
-   e : EGLOSError;
+  e: EGLOSError;
 begin
-   {$IFDEF FPC}
-   e:=EGLOSError.Create('OS Error : '+SysErrorMessage(GetLastOSError));
-   {$ELSE}
-   e:=EGLOSError.Create('OS Error : '+SysErrorMessage(GetLastError));
-   {$ENDIF}
-   raise e;
+{$IFDEF FPC}
+  e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastOSError));
+{$ELSE}
+  e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastError));
+{$ENDIF}
+  raise e;
 end;
 
 type
   TDeviceCapabilities = record
-    Xdpi, Ydpi: integer;        // Number of pixels per logical inch.
-    Depth: integer;             // The bit depth.
-    NumColors: integer;         // Number of entries in the device's color table.
+    Xdpi, Ydpi: integer; // Number of pixels per logical inch.
+    Depth: integer; // The bit depth.
+    NumColors: integer; // Number of entries in the device's color table.
   end;
 
 function GetDeviceCapabilities: TDeviceCapabilities;
@@ -583,19 +615,20 @@ var
 begin
   Device := GetDC(0);
   try
-    result.Xdpi := GetDeviceCaps(Device,LOGPIXELSX);
-    result.Ydpi := GetDeviceCaps(Device,LOGPIXELSY);
-    result.Depth := GetDeviceCaps(Device,BITSPIXEL);
-    result.NumColors := GetDeviceCaps(Device,NUMCOLORS);
+    result.Xdpi := GetDeviceCaps(Device, LOGPIXELSX);
+    result.Ydpi := GetDeviceCaps(Device, LOGPIXELSY);
+    result.Depth := GetDeviceCaps(Device, BITSPIXEL);
+    result.NumColors := GetDeviceCaps(Device, NUMCOLORS);
   finally
     ReleaseDC(0, Device);
   end;
 end;
 {$ELSE}
-var dpy: PDisplay;
+var
+  dpy: PDisplay;
 begin
   dpy := XOpenDisplay(nil);
-  Result.Depth := DefaultDepth(dpy,DefaultScreen(dpy));
+  Result.Depth := DefaultDepth(dpy, DefaultScreen(dpy));
   XCloseDisplay(dpy);
 
   Result.Xdpi := 96;
@@ -606,60 +639,66 @@ end;
 
 // GetDeviceLogicalPixelsX
 //
-function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
+
+function GetDeviceLogicalPixelsX(device: Cardinal): Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
 end;
 
 // GetCurrentColorDepth
 //
-function GetCurrentColorDepth : Integer;
+
+function GetCurrentColorDepth: Integer;
 begin
   result := GetDeviceCapabilities().Depth;
 end;
 
 // PixelFormatToColorBits
 //
-function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
+
+function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 begin
-   case aPixelFormat of
-      pfCustom {$IFDEF WIN32}, pfDevice{$ENDIF} :  // use current color depth
-         Result:=GetCurrentColorDepth;
-      pf1bit  : Result:=1;
+  case aPixelFormat of
+    pfCustom{$IFDEF WIN32}, pfDevice{$ENDIF}: // use current color depth
+      Result := GetCurrentColorDepth;
+    pf1bit: Result := 1;
 {$IFDEF WIN32}
-      pf4bit  : Result:=4;
-      pf15bit : Result:=15;
+    pf4bit: Result := 4;
+    pf15bit: Result := 15;
 {$ENDIF}
-      pf8bit  : Result:=8;
-      pf16bit : Result:=16;
-      pf32bit : Result:=32;
-   else
-      Result:=24;
-   end;
+    pf8bit: Result := 8;
+    pf16bit: Result := 16;
+    pf32bit: Result := 32;
+  else
+    Result := 24;
+  end;
 end;
 
 // BitmapScanLine
 //
-function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
+
+function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 begin
 {$IFDEF FPC}
-   Assert(False, 'BitmapScanLine unsupported');
-   Result:=nil;
+  Assert(False, 'BitmapScanLine unsupported');
+  Result := nil;
 {$ELSE}
-   Result:=aBitmap.ScanLine[aRow];
+  Result := aBitmap.ScanLine[aRow];
 {$ENDIF}
 end;
 
 {$IFDEF GLS_DELPHI_5_DOWN}
 // Sleep
 //
-procedure Sleep(length : Cardinal);
+
+procedure Sleep(length: Cardinal);
 begin
-   Windows.Sleep(length);
+  Windows.Sleep(length);
 end;
 
 // IncludeTrailingPathDelimiter
 //
+
 function IncludeTrailingPathDelimiter(const S: string): string;
 begin
   Result := IncludeTrailingBackslash(S);
@@ -669,105 +708,113 @@ end;
 // QueryPerformanceCounter
 //
 {$IFDEF UNIX}
-  {$IFDEF FPC}
-   var
-     vProgStartSecond : int64;
+{$IFDEF FPC}
+var
+  vProgStartSecond: int64;
 
-   procedure Init_vProgStartSecond;
-   var
-     tz:timeval;
-   begin
-     fpgettimeofday(@tz, nil);
-     vProgStartSecond := tz.tv_sec;
-   end;
-  {$ENDIF}
+procedure Init_vProgStartSecond;
+var
+  tz: timeval;
+begin
+  fpgettimeofday(@tz, nil);
+  vProgStartSecond := tz.tv_sec;
+end;
+{$ENDIF}
 {$ENDIF}
 
-procedure QueryPerformanceCounter(var val : Int64);
+procedure QueryPerformanceCounter(var val: Int64);
 {$IFDEF WIN32}
 begin
-   Windows.QueryPerformanceCounter(val);
+  Windows.QueryPerformanceCounter(val);
 {$ELSE}
-   {$IFDEF FPC}
-   var
-     tz: timeval;
-   begin
-     //val:=round(now*MSecsPerDay);
-     fpgettimeofday(@tz, nil);
-     val := tz.tv_sec - vProgStartSecond;
-     val := val * 1000000;
-     val := val + tz.tv_usec;
-   {$ELSE}
-   begin
-     val := RDTSC;
-   {$ENDIF}
+{$IFDEF FPC}
+var
+  tz: timeval;
+begin
+  //val:=round(now*MSecsPerDay);
+  fpgettimeofday(@tz, nil);
+  val := tz.tv_sec - vProgStartSecond;
+  val := val * 1000000;
+  val := val + tz.tv_usec;
+{$ELSE}
+begin
+  val := RDTSC;
+{$ENDIF}
 {$ENDIF}
 end;
 
 // QueryPerformanceFrequency
 //
-function QueryPerformanceFrequency(var val : Int64) : Boolean;
+
+function QueryPerformanceFrequency(var val: Int64): Boolean;
 {$IFDEF WIN32}
 begin
-   Result:=Boolean(Windows.QueryPerformanceFrequency(val));
+  Result := Boolean(Windows.QueryPerformanceFrequency(val));
 end;
 {$ELSE}
-  {$IFDEF FPC}
-  begin
-    val := 1000000;
-    Result := True;
-  end;
-  {$ELSE}
-  var
-    startCycles, endCycles : Int64;
-    aTime, refTime : TDateTime;
-  begin
-   aTime:=Now;
-   while aTime=Now do ;
-   startCycles:=RDTSC;
-   refTime:=Now;
-   while refTime=Now do ;
-   endCycles:=RDTSC;
-   aTime:=Now;
-   val:=Round((endCycles-startCycles)/((aTime-refTime)*(3600*24)));
-   Result:=True;
-  end;
-  {$ENDIF}
+{$IFDEF FPC}
+begin
+  val := 1000000;
+  Result := True;
+end;
+{$ELSE}
+var
+  startCycles, endCycles: Int64;
+  aTime, refTime: TDateTime;
+begin
+  aTime := Now;
+  while aTime = Now do
+    ;
+  startCycles := RDTSC;
+  refTime := Now;
+  while refTime = Now do
+    ;
+  endCycles := RDTSC;
+  aTime := Now;
+  val := Round((endCycles - startCycles) / ((aTime - refTime) * (3600 * 24)));
+  Result := True;
+end;
+{$ENDIF}
 {$ENDIF}
 
 // StartPrecisionTimer
 //
-function StartPrecisionTimer : Int64;
+
+function StartPrecisionTimer: Int64;
 begin
-   QueryPerformanceCounter(Result);
+  QueryPerformanceCounter(Result);
 end;
 
 // PrecisionTimeLap
 //
-function PrecisionTimerLap(const precisionTimer : Int64) : Double;
+
+function PrecisionTimerLap(const precisionTimer: Int64): Double;
 begin
-   // we can do this, because we don't really stop anything
-   Result:=StopPrecisionTimer(precisionTimer);
+  // we can do this, because we don't really stop anything
+  Result := StopPrecisionTimer(precisionTimer);
 end;
 
 // StopPrecisionTimer
 //
-function StopPrecisionTimer(const precisionTimer : Int64) : Double;
+
+function StopPrecisionTimer(const precisionTimer: Int64): Double;
 var
-   cur, freq : Int64;
+  cur, freq: Int64;
 begin
-   QueryPerformanceCounter(cur);
-   if not vInvPerformanceCounterFrequencyReady then begin
-      QueryPerformanceFrequency(freq);
-      vInvPerformanceCounterFrequency:=1.0/freq;
-      vInvPerformanceCounterFrequencyReady:=True;
-   end;
-   Result:=(cur-precisionTimer)*vInvPerformanceCounterFrequency;
+  QueryPerformanceCounter(cur);
+  if not vInvPerformanceCounterFrequencyReady then
+  begin
+    QueryPerformanceFrequency(freq);
+    vInvPerformanceCounterFrequency := 1.0 / freq;
+    vInvPerformanceCounterFrequencyReady := True;
+  end;
+  Result := (cur - precisionTimer) * vInvPerformanceCounterFrequency;
 end;
 
 // RDTSC
 //
-function RDTSC : Int64;
+
+function RDTSC: Int64;
 {$IFDEF FPC}
 begin
   raise exception.create('Using GLCrossPlatform.RDTSC is a bad idea!');
@@ -796,18 +843,19 @@ begin
   if Assigned(anObject) then
     Result := anObject.UnitName
   else
-    Result:='';
+    Result := '';
 end;
 {$ELSE}
 var
   LClassInfo: Pointer;
 begin
-  Result:='';
-  if anObject=nil then Exit;
+  Result := '';
+  if anObject = nil then
+    Exit;
 
   LClassInfo := anObject.ClassInfo;
   if LClassInfo <> nil then
-    Result := String(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
+    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
 {$ENDIF}
 
@@ -817,23 +865,25 @@ begin
   if Assigned(aClass) then
     Result := aClass.UnitName
   else
-    Result:='';
+    Result := '';
 end;
 {$ELSE}
 var
   LClassInfo: Pointer;
 begin
-  Result:='';
-  if aClass=nil then Exit;
+  Result := '';
+  if aClass = nil then
+    Exit;
 
   LClassInfo := aClass.ClassInfo;
   if LClassInfo <> nil then
-    Result := String(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
+    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
 {$ENDIF}
 {$ENDIF}
 
 {$IFNDEF GLS_COMPILER_2009_UP}
+
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := C in CharSet;
@@ -845,11 +895,48 @@ begin
 end;
 {$ENDIF}
 
+procedure SetExeDirectory;
+var
+{$IFNDEF FPC}
+  path: string;
+{$ELSE}
+  path: UTF8String;
+{$ENDIF}
+begin
+  if IsDesignTime then
+  begin
+    if Assigned(vProjectTargetName) then
+    begin
+{$IFNDEF FPC}
+      path := ExtractFilePath(vProjectTargetName);
+      path := IncludeTrailingPathDelimiter(path);
+      SetCurrentDir(path);
+{$ELSE}
+      path := ExtractFilePath(vProjectTargetName);
+      path := IncludeTrailingPathDelimiter(path);
+      SetCurrentDirUTF8(path);
+{$ENDIF}
+    end;
+  end
+  else
+  begin
+{$IFNDEF FPC}
+    path := ExtractFilePath(ParamStr(0));
+    path := IncludeTrailingPathDelimiter(path);
+    SetCurrentDir(path);
+{$ELSE}
+    path := ExtractFilePath(ParamStrUTF8(0));
+    path := IncludeTrailingPathDelimiter(path);
+    SetCurrentDirUTF8(path);
+{$ENDIF}
+  end;
+end;
 
 initialization
 {$IFDEF FPC}
-  {$IFDEF UNIX}
+{$IFDEF UNIX}
   Init_vProgStartSecond;
-  {$ENDIF}
+{$ENDIF}
 {$ENDIF}
 end.
+

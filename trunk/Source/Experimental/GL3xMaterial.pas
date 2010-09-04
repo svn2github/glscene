@@ -4,6 +4,7 @@
 {: GL3xMaterial<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>04/09/10 - Yar - Added materials and textures loading. List of MaterialManager's items saved to application resource
     <li>07/07/10 - Yar - Creation
  </ul></font>
 }
@@ -23,7 +24,6 @@ uses
   Classes,
   SysUtils,
   Variants,
-  Forms,
 {$IFDEF FPC}
   FileUtil,
   XMLRead,
@@ -187,6 +187,8 @@ type
     FLightsBuffer: TGLUniformBufferHandle;
     FLightsBlock: TGLSLUniformBlock;
     procedure LoadMaterialSystem;
+    procedure LoadResourceList;
+    procedure ClearResources;
     function GetMaterial(const AName: TGL3xMaterialName): TGL3xMaterial;
     procedure TreeChanged(Sender: TObject);
     procedure LightsChanged(Sender: TObject);
@@ -195,6 +197,11 @@ type
     destructor Destroy; override;
 
     procedure Initialize;
+    // Design time notifications
+    procedure NotifyResourcesChanged;
+    procedure NotifyProjectOpened;
+    procedure NotifyProjectClosed;
+    // Design time helper methods
     function FindCompatibleSample(var ASample: TShaderSample): Boolean;
     function GenerateShaderCode(const SampleList: TList; var vertexProgram, fragmentProgram: TStringList): Boolean;
     procedure FillMaterialNameList(var AList: TStringList);
@@ -208,7 +215,15 @@ type
 
     function IsMaterialExist(const AName: TGL3xMaterialName): Boolean;
     function GetMaterialProgramName(const AName: TGL3xMaterialName): string;
+
   end;
+
+  TUpdateMaterialManagerResourceProc = procedure(Data: Pointer; Size: Integer);
+  TGetMaterialManagerDataStreamFunc = function(): TStream;
+
+var
+  vUpdateMaterialManagerResourceProc: TUpdateMaterialManagerResourceProc;
+  vGetMaterialManagerDataStreamFunc: TGetMaterialManagerDataStreamFunc;
 
 function MaterialManager: TGLSMaterialManager;
 
@@ -311,6 +326,26 @@ begin
   Flag := True;
 end;
 
+var
+  vInfo: TStringList;
+
+procedure MaterialNameAndFileStore(
+  k: Integer; AMaterial: TGL3xMaterial; out Flag: Boolean);
+begin
+  if AMaterial.Name <> glsDEFAULTMATERIALNAME then
+    vInfo.Add(Format('%s=%s', [AMaterial.Name, ExtractFileName(AMaterial.ResourceName)]));
+  Flag := True;
+end;
+
+procedure TextureNameAndFileStore(
+  k: Integer; ATexture: TGL3xTexture; out Flag: Boolean);
+begin
+  if (ATexture.Name <> glsDIFFUSEMAP)
+    and (ATexture.Name <> glsNORMALMAP) then
+    vInfo.Add(Format('%s=%s', [ATexture.Name, ExtractFileName(ATexture.ResourceName)]));
+  Flag := True;
+end;
+
 procedure MaterialDestroyer(
   k: Integer; AMaterial: TGL3xMaterial; out Flag: Boolean);
 begin
@@ -343,62 +378,42 @@ begin
 end;
 
 constructor TGLSMaterialManager.Create;
-var
-  defMat: TGL3xMaterial;
-  defTex, normTex: TGL3xTexture;
-  rStream: TGLSResourceStream;
 begin
   inherited;
   FMaterialTree := TMaterialTree.Create(CompareInteger, CompareMaterial);
   FTextureTree := TTextureTree.Create(CompareInteger, CompareTexture);
   FMaterialTree.OnChange := TreeChanged;
   FTextureTree.OnChange := TreeChanged;
-  LoadMaterialSystem;
-  FInitialized := False;
   FMatTreeChanged := True;
-
-  // Make default material
-  defMat := TGL3xMaterial.Create(Self);
-  defMat.Name := glsDEFAULTMATERIALNAME;
-  defMat.Default;
-  FMaterialTree.Add(defMat.FHashCode, defMat);
-
-  // Make default diffuse texture
-  defTex := TGL3xTexture.Create(Self);
-  defTex.Name := glsDIFFUSEMAP;
-  rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_DDS_Type);
-  defTex.LoadFromStream(rStream);
-  rStream.Free;
-  FTextureTree.Add(defTex.HashCode, defTex);
-
-  // Make default normal texture
-  normTex := TGL3xTexture.Create(Self);
-  normTex.Name := glsNORMALMAP;
-  rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_DDS_Type);
-  normTex.LoadFromStream(rStream);
-  rStream.Free;
-  FTextureTree.Add(normTex.HashCode, normTex);
-
+  LoadMaterialSystem;
+  LoadResourceList;
+  FInitialized := False;
   FLightsBuffer := TGLUniformBufferHandle.Create;
   FLightsBlock := TGLSLUniformBlock.RegisterUniformBlock('LightsBlock');
 end;
 
 destructor TGLSMaterialManager.Destroy;
 begin
-  FMaterialTree.ForEach(MaterialDestroyer);
+  ClearResources;
   FMaterialTree.Destroy;
-  FTextureTree.ForEach(TextureDestroyer);
   FTextureTree.Destroy;
   FLightsBuffer.Destroy;
   inherited;
+end;
+
+procedure TGLSMaterialManager.ClearResources;
+begin
+  FMaterialTree.ForEach(MaterialDestroyer);
+  FMaterialTree.Clear;
+  FTextureTree.ForEach(TextureDestroyer);
+  FTextureTree.Clear;
 end;
 
 procedure TGLSMaterialManager.LoadMaterialSystem;
 var
   rStream: TGLSResourceStream;
 begin
-  if (csDesigning in Application.ComponentState)
-    or not FileStreamExists(fileMaterialSystem) then
+  if IsDesignTime or not FileStreamExists(fileMaterialSystem) then
   begin
     rStream := nil;
     try
@@ -425,6 +440,102 @@ begin
       exit;
 {$ENDIF}
     GLSLogger.LogNotice('Material system loaded from file ' + fileMaterialSystem);
+  end;
+end;
+
+procedure TGLSMaterialManager.LoadResourceList;
+var
+  I: Integer;
+  rStream: TGLSResourceStream;
+  eResType: (resNone, resTexture, resMaterial);
+  line, rName, rFile: string;
+  newTex: TGL3xTexture;
+  newMat: TGL3xMaterial;
+
+  procedure GetNameAndFile;
+  var p: Integer;
+  begin
+    p := Pos('=', line);
+    rName := Copy(line, 1, p-1);
+    rFile := Copy(line, p+1, Length(line)-p+1);
+  end;
+
+begin
+  // Make default material
+  newMat := TGL3xMaterial.Create(Self);
+  newMat.Name := glsDEFAULTMATERIALNAME;
+  newMat.Default;
+  FMaterialTree.Add(newMat.FHashCode, newMat);
+
+  // Make default diffuse texture
+  newTex := TGL3xTexture.Create(Self);
+  newTex.Name := glsDIFFUSEMAP;
+  rStream := CreateResourceStream(glsDIFFUSEMAP, GLS_RC_DDS_Type);
+  newTex.LoadFromStream(rStream);
+  rStream.Free;
+  FTextureTree.Add(newTex.HashCode, newTex);
+
+  // Make default normal texture
+  newTex := TGL3xTexture.Create(Self);
+  newTex.Name := glsNORMALMAP;
+  rStream := CreateResourceStream(glsNORMALMAP, GLS_RC_DDS_Type);
+  newTex.LoadFromStream(rStream);
+  rStream.Free;
+  FTextureTree.Add(newTex.HashCode, newTex);
+
+  // Load materials and textures info from application resource
+  if IsDesignTime then
+    rStream := TGLSResourceStream(vGetMaterialManagerDataStreamFunc())
+  else
+    rStream := CreateResourceStream(glsMaterialManagerData, GLS_RC_String_Type);
+  if Assigned(rStream) then
+  begin
+    vInfo := TStringList.Create;
+    vInfo.LoadFromStream(rStream);
+    rStream.Free;
+    eResType := resNone;
+    SetExeDirectory;
+    for I := 0 to vInfo.Count - 1 do
+    begin
+      line := vInfo.Strings[I];
+      if line = '[TEXTURES]' then
+      begin
+        eResType := resTexture;
+        continue;
+      end
+      else if line = '[MATERIALS]' then
+      begin
+        eResType := resMaterial;
+        continue;
+      end
+      else
+      begin
+        case eResType of
+          resMaterial:
+            begin
+              GetNameAndFile;
+              newMat := TGL3xMaterial.Create(Self);
+              newMat.Name := rName;
+              if FileStreamExists(rFile) then
+                newMat.LoadFromFile(rFile)
+              else
+                newMat.Default;
+              FMaterialTree.Add(newMat.HashCode, newMat);
+            end;
+          resTexture:
+            begin
+              GetNameAndFile;
+              newTex := TGL3xTexture.Create(Self);
+              newTex.Name := rName;
+              if not FileStreamExists(rFile) then
+                rFile := '';
+              newTex.LoadFromFile(rFile);
+              FTextureTree.Add(newTex.HashCode, newTex);
+            end;
+        end;
+      end;
+    end;
+    FreeAndNil(vInfo);
   end;
 end;
 
@@ -552,11 +663,47 @@ begin
     FInitialized := True;
     ShaderManager.EndWork;
     GLSLogger.LogNotice('Material system intialized');
+
     FMaterialTree.ForEach(MaterialInitializer);
     FTextureTree.ForEach(TextureInitializer);
   except
     ShaderManager.EndWork;
     GLSLogger.LogFatalError(sBadMaterialConstr);
+  end;
+end;
+
+procedure TGLSMaterialManager.NotifyResourcesChanged;
+var
+  mStream: TMemoryStream;
+begin
+  if Assigned(vUpdateMaterialManagerResourceProc) then
+  begin
+    vInfo := TStringList.Create;
+    vInfo.Add('[TEXTURES]');
+    FTextureTree.ForEach(TextureNameAndFileStore);
+    vInfo.Add('[MATERIALS]');
+    FMaterialTree.ForEach(MaterialNameAndFileStore);
+    mStream := TMemoryStream.Create;
+    vInfo.SaveToStream(mStream);
+    FreeAndNil(vInfo);
+    vUpdateMaterialManagerResourceProc(mStream.Memory, mStream.Size);
+    mStream.Destroy;
+  end;
+end;
+
+procedure TGLSMaterialManager.NotifyProjectOpened;
+begin
+  if IsDesignTime then
+  begin
+    LoadResourceList;
+  end;
+end;
+
+procedure TGLSMaterialManager.NotifyProjectClosed;
+begin
+  if IsDesignTime then
+  begin
+    ClearResources;
   end;
 end;
 
@@ -1004,7 +1151,7 @@ begin
   if Sender = FMaterialTree then
     FMatTreeChanged := True
   else
-    FtexTreeChanged := True;
+    FTexTreeChanged := True;
 end;
 
 procedure TGLSMaterialManager.LightsChanged(Sender: TObject);
@@ -1048,7 +1195,7 @@ begin
   FLightsBuffer.AllocateHandle;
   if FLightsBuffer.IsDataNeedUpdate then
   begin
-    FLightsBuffer.BindBufferData(SafeCurrentGLContext.GLStates.GetLightStateAsAddress, SizeOf(TLightSourceState)*MAX_HARDWARE_LIGHT, GL_STATIC_READ);
+    FLightsBuffer.BindBufferData(SafeCurrentGLContext.GLStates.GetLightStateAsAddress, SizeOf(TLightSourceState) * MAX_HARDWARE_LIGHT, GL_STATIC_READ);
     FLightsBuffer.Unbind;
     FLightsBuffer.NotifyDataUpdated;
   end;
@@ -1153,7 +1300,7 @@ begin
   Result := '';
   if Self.Name <> MaterialSystem.Utility.Utility_ComponentMask then
   begin
-    if Length(FInputFromMatSys)=0 then
+    if Length(FInputFromMatSys) = 0 then
       if not FindShaderObject then
       begin
         vParams := '(';
@@ -1177,7 +1324,7 @@ begin
         exit;
       end;
     Result := GLSLTypeToString(Self.Output) + ' ' +
-      Self.Name + '('+AnsiString(FInputFromMatSys)+');';
+      Self.Name + '(' + AnsiString(FInputFromMatSys) + ');';
   end;
 end;
 
@@ -1237,13 +1384,14 @@ begin
                     if P < Length(FInputFromMatSys) then
                       ins := ins + ',';
                     FInputFromMatSys[P] := ' ';
-                    Insert(ins, FInputFromMatSys, P+1);
+                    Insert(ins, FInputFromMatSys, P + 1);
                     continue;
                   end;
                   break;
                 end;
               end
-              else FInputFromMatSys := 'void';
+              else
+                FInputFromMatSys := 'void';
 
               if not GetXMLAttribute(XMLOverload, 'ObjectName', FObjectName) then
                 continue;
@@ -1293,18 +1441,6 @@ begin
 
   FSampleList := TList.Create;
   FTextureUnits := TStringList.Create;
-  with ShaderManager do
-  begin
-    try
-      BeginWork;
-      FProgram := MakeUniqueProgramName('MatProg');
-      FVertObject := MakeUniqueObjectName(FProgram+'_VObj');
-      FGeomObject := MakeUniqueObjectName(FProgram+'_GObj');
-      FFragObject := MakeUniqueObjectName(FProgram+'_FObj');
-    finally
-      EndWork;
-    end;
-  end;
 end;
 
 destructor TGL3xMaterial.Destroy;
@@ -1541,12 +1677,13 @@ var
   fs: TStream;
 begin
   fs := CreateFileStream(fileName, fmOpenWrite or fmCreate);
+  ResourceName := filename;
   try
     SaveToStream(fs);
+    MaterialManager.NotifyResourcesChanged;
   finally
     fs.Free;
   end;
-  ResourceName := filename;
 end;
 
 // LoadFromStream
@@ -1753,6 +1890,10 @@ begin
   begin
     try
       BeginWork;
+      FProgram := MakeUniqueProgramName('MatProg');
+      FVertObject := MakeUniqueObjectName(FProgram + '_VObj');
+      FGeomObject := MakeUniqueObjectName(FProgram + '_GObj');
+      FFragObject := MakeUniqueObjectName(FProgram + '_FObj');
       DefineShaderProgram(FProgram);
       DefineShaderObject(FVertObject, VertexMain, [ptVertex]);
       DefineShaderObject(FFragObject, FragmentMain, [ptFragment]);
