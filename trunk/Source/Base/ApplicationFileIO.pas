@@ -218,19 +218,22 @@ end;
 //
 
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
+{$IFDEF FPC}
 var
   InfoBlock: HRSRC;
+{$ENDIF}
 begin
   Result := nil;
 {$IFNDEF FPC}
   InfoBlock := FindResource(HInstance, PChar(ResName), ResType);
   if InfoBlock <> 0 then
     Result := TResourceStream.Create(HInstance, ResName, ResType)
+{$ELSE}
+  if LazarusResources.Find(ResName, ResType) <> nil then
+    Result := TLazarusResourceStream.Create(ResName, ResType)
+{$ENDIF}
   else
     GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));
-{$ELSE}
-  Result := TLazarusResourceStream.Create(ResName, ResType);
-{$ENDIF}
 end;
 
 // ------------------
