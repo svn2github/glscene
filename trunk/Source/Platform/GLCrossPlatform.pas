@@ -88,8 +88,11 @@ uses
   Forms,
   Dialogs
 {$IFDEF FPC},
-  LCLType{$ELSE},
-  Consts{$ENDIF}
+  LCLType,
+  FileUtil
+{$ELSE}
+  ,Consts
+{$ENDIF}
 {$IFNDEF GLS_COMPILER_5_DOWN},
   StrUtils,
   Types{$ENDIF}
