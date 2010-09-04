@@ -61,11 +61,19 @@ implementation
 
 {$R *.lfm}
 
-
+uses FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: Integer;
 begin
-   RotationSolid1.Material.Texture.Image.LoadFromFile('..\..\media\ashwood.jpg');
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
+   RotationSolid1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);

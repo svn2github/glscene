@@ -24,6 +24,9 @@ uses
   GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
