@@ -6,6 +6,7 @@
    Coordinate related classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thnaks C4)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>05/10/08 - DanB - Created, from GLMisc.pas
 	</ul></font>
@@ -313,8 +314,7 @@ var
 begin
   if  Supports(Owner, IGLCoordinatesUpdateAble, Int) then
     Int.CoordinateChanged(TGLCoordinates(Self))
-  else
-    inherited NotifyChange(Sender);
+  inherited NotifyChange(Sender);
 end;
 
 // Translate
