@@ -312,8 +312,8 @@ procedure TGLCustomCoordinates.NotifyChange(Sender : TObject);
 var
   Int: IGLCoordinatesUpdateAble;
 begin
-  if  Supports(Owner, IGLCoordinatesUpdateAble, Int) then
-    Int.CoordinateChanged(TGLCoordinates(Self))
+  if Supports(Owner, IGLCoordinatesUpdateAble, Int) then
+    Int.CoordinateChanged(TGLCoordinates(Self));
   inherited NotifyChange(Sender);
 end;
 
