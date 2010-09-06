@@ -88,6 +88,7 @@ type
       FLeftmost: TRBNode;
       FRightmost: TRBNode;
       FLastNode: TRBNode;
+      FCount: Integer;
       FKeyCompareFunc: TKeyCompareFunc;
       FDuplicateKeys: Boolean;
       FValueCompareFunc: TValueCompareFunc;
@@ -116,6 +117,7 @@ type
     procedure Add(const key: K; const Value: V);
     procedure Delete(const key: K);
     procedure ForEach(AProc: TForEachProc);
+    property Count: Integer read FCount;
     property First: K read GetFirst;
     property Last: K read GetLast;
     property DuplicateKeys: Boolean read FDuplicateKeys write SetDuplicateKeys;
@@ -184,6 +186,7 @@ begin
   FRoot := nil;
   FLeftmost := nil;
   FRightmost := nil;
+  FCount := 0;
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
@@ -426,6 +429,7 @@ begin
     end;
   end;
   FRoot.color := clBlack;
+  Inc(FCount);
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
@@ -646,6 +650,7 @@ begin
 {$ELSE}
     Dispose(y);
 {$ENDIF}
+    Dec(FCount);
   until False;
   if Assigned(FOnChange) then
     FOnChange(Self);

@@ -93,7 +93,7 @@ var
 
 implementation
 
-{$R *.lfm}
+{.$R *.lfm}
 
 const
   cNodeClasses: array[0..32] of TCustomMaterialGraphNodeClass = (

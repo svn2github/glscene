@@ -1909,54 +1909,6 @@ begin
   end;
 end;
 
-procedure MaterialManagerUpdateResource(Data: Pointer; Size: Integer);
-var
-  i: Integer;
-  Editor: IOTAEditor;
-  Project: IOTAProject;
-  Resource: IOTAProjectResource;
-  ResourceEntry: IOTAResourceEntry;
-  Dest: PByte;
-  rName: PChar;
-begin
-  Project := GetActiveProject;
-  if not Assigned(Project) then
-    exit;
-
-  Resource := nil;
-  for i := 0 to Project.GetModuleFileCount - 1 do
-  begin
-    Editor := Project.GetModuleFileEditor(i);
-    if Supports(Editor, IOTAProjectResource, Resource) then
-      Break;
-  end;
-
-  if Assigned(Resource) then
-  begin
-    for I := 0 to Resource.GetEntryCount - 1 do
-    begin
-      ResourceEntry := Resource.GetEntry(I);
-      rName := ResourceEntry.GetResourceName;
-      if Cardinal(rName)>$1000 then
-        if StrComp(rName, PChar(glsMaterialManagerData)) = 0 then
-        begin
-          ResourceEntry.DataSize := Size;
-          Dest := ResourceEntry.GetData;
-          Move(Data^, Dest^, Size);
-          exit;
-        end;
-    end;
-    // Need to create resource
-    ResourceEntry := Resource.CreateEntry(GLS_RC_String_Type, PChar(glsMaterialManagerData), 4112, 1033, 0, 0, 0);
-    if Assigned(ResourceEntry) then
-    begin
-      ResourceEntry.DataSize := Size;
-      Dest := ResourceEntry.GetData;
-      Move(Data^, Dest^, Size);
-    end;
-  end;
-end;
-
 function GetMaterialManagerDataStream(): TStream;
 var
   i: Integer;
@@ -2469,7 +2421,7 @@ initialization
     LoadBitmap(HInstance, 'TGLScene'),
     False,
     'MPL 1.1 license',
-    'CVS version');
+    'SVN version');
 {$ENDIF}
 
   GLCrossPlatform.IsDesignTime := True;
@@ -2481,7 +2433,6 @@ initialization
 {$IFDEF GLS_EXPERIMENTAl}
   vUpdateResourceProc := TGLSLauncherEditor.UpdateResource;
   vGetConfigDataStreamFunc := TGLSLauncherEditor.GetConfigDataStream;
-  vUpdateMaterialManagerResourceProc := MaterialManagerUpdateResource;
   vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;
 {$ENDIF}
 

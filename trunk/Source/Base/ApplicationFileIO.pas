@@ -218,9 +218,19 @@ end;
 //
 
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
-{$IFDEF FPC}
+{$IFNDEF FPC}
 var
   InfoBlock: HRSRC;
+{$ELSE}
+  {$ifndef ver2_2}
+var
+  FPResource: TFPResourceHandle;
+  function IsResourceExist: Boolean;
+  begin
+    FPResource := FindResource(HInstance, PChar(ResName), ResType);
+    Result := FPResource <> 0;
+  end;
+  {$endif}
 {$ENDIF}
 begin
   Result := nil;
@@ -231,6 +241,10 @@ begin
 {$ELSE}
   if LazarusResources.Find(ResName, ResType) <> nil then
     Result := TLazarusResourceStream.Create(ResName, ResType)
+  {$ifndef ver2_2}
+  else if IsResourceExist then
+    Result := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource)
+  {$endif}
 {$ENDIF}
   else
     GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));

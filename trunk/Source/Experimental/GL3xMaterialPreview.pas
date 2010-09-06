@@ -84,7 +84,7 @@ implementation
 {$IFNDEF FPC}
 {$R *.dfm}
 {$ELSE}
-{$R *.lfm}
+{.$R *.lfm}
 {$ENDIF}
 
 uses
@@ -311,4 +311,4 @@ begin
 end;
 
 end.
-
+

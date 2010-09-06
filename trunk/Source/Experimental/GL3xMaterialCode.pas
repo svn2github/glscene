@@ -43,7 +43,7 @@ type
 implementation
 
 {$IFNDEF FPC}
-  {$R *.dfm}
+  {.$R *.dfm}
 {$ELSE}
   {$R *.lfm}
 {$ENDIF}

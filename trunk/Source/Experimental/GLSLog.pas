@@ -8,6 +8,7 @@
   then call UserLog function from any module.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>07/09/10 - Yar - Added Enabled property to TLogSession
       <li>02/04/10 - Yar - Added properties TimeFormat, LogLevels to TGLSLogger
                            Added function UserLog. GLS_LOGGING now only turn on inner GLScene logger
       <li>24/03/10 - Yar - Added TGLSLogger component,
@@ -74,6 +75,7 @@ type
     LogFile: Text;
     LogFileName: string;
     FLogLevels: TLogLevels;
+    FEnabled: Boolean;
 {$IFDEF GLS_MULTITHREAD}
     CriticalSection: TRTLCriticalSection;
 {$ENDIF}
@@ -111,6 +113,7 @@ type
 
     {: Set of levels which to include in the log }
     property LogLevels: TLogLevels read FLogLevels write SetMode;
+    property Enabled: Boolean read FEnabled write FEnabled;
   end;
 
   // TGLSLoger
@@ -312,7 +315,7 @@ begin
   {$IFDEF GLS_MULTITHREAD}
   InitializeCriticalSection(CriticalSection);
   {$ENDIF}
-
+  FEnabled := True;
   ModeTitles[lkDebug] := 'debug info';
   ModeTitles[lkInfo] := 'info';
   ModeTitles[lkNotice] := 'notices';
@@ -392,7 +395,7 @@ begin
   if Self = GLSLogger then
     exit;
 {$ENDIF}
-  if not (Level in LogLevels) then
+  if not (Level in LogLevels) or not FEnabled then
     Exit;
 {$IFDEF GLS_MULTITHREAD}
   EnterCriticalSection(CriticalSection);

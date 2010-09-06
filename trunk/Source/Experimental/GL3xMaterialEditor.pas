@@ -128,7 +128,7 @@ type
     FDC: HDC;
 {$ENDIF}
 {$IFDEF UNIX}
-    FDC: Cardinal;
+    FDC: HDC;
 {$ENDIF}
 {$IFNDEF FPC}
     FCurrentDesigner: IDesigner;
@@ -149,6 +149,8 @@ type
     procedure SetMaterial(Value: TGL3xMaterialName);
     function GetCoordInGraphSpace(const X, Y: Integer): TVector2s;
     procedure DoPaint;
+    procedure SelectNode(ANode: TPersistent; GroupSelection: Boolean);
+    procedure UnSelectAll;
   public
     { Public declarations }
     procedure PrepareContext;
@@ -163,12 +165,10 @@ function MaterialEditorForm: TMaterialEditorForm;
 
 implementation
 
-{$I GLScene.inc}
-
-{$IFNDEF FPC}
-{$R *.dfm}
+{$IFDEF FPC}
+{.$R *.lfm}
 {$ELSE}
-{$R *.lfm}
+{$R *.dfm}
 {$ENDIF}
 
 uses
@@ -346,18 +346,12 @@ const
 var
   SaveReq: Integer;
 begin
-  if not Assigned(FRenderingContext) then
+  if not Assigned(FRenderingContext) or not Visible then
   begin
     CanClose := true;
     exit;
   end;
-{$IFNDEF FPC}
-  FCurrentDesigner.NoSelection;
-  FCurrentDesigner.Modified;
-{$ELSE}
-  FSelection.Clear;
-  GlobalDesignHook.SetSelection(FSelection);
-{$ENDIF}
+  UnSelectAll;
 
   CanClose := True;
 
@@ -503,9 +497,6 @@ procedure TMaterialEditorForm.FormMouseUp(Sender: TObject; Button:
   Shift: TShiftState; X, Y: Integer);
 var
   bGroupSelection: Boolean;
-{$IFDEF FPC}
-  vSelected: TPersistent;
-{$ENDIF}
 begin
   if (smx - mx <> 0) or (smy - my <> 0) then
   begin
@@ -522,18 +513,7 @@ begin
     begin
       FMaterialGraph.SetCursorCoords(GetCoordInGraphSpace(X, Y));
       bGroupSelection := ssShift in Shift;
-      if not bGroupSelection then
-{$IFNDEF FPC}
-        FCurrentDesigner.NoSelection;
-      FCurrentDesigner.SelectComponent(FMaterialGraph.Pick(bGroupSelection));
-      FCurrentDesigner.Modified;
-{$ELSE}
-      FSelection.Clear;
-      vSelected := FMaterialGraph.Pick(bGroupSelection);
-      if Assigned(vSelected) then
-        FSelection.Add(vSelected);
-      GlobalDesignHook.SetSelection(FSelection);
-{$ENDIF}
+      SelectNode(FMaterialGraph.Pick(bGroupSelection), bGroupSelection);
     end;
   end;
   Panning := false;
@@ -763,7 +743,27 @@ begin
   FMaterialGraph.BreakAllLinks;
 end;
 
-procedure TMaterialEditorForm.DeleteSelectedClick(Sender: TObject);
+procedure TMaterialEditorForm.SelectNode(ANode: TPersistent; GroupSelection: Boolean);
+{$IFDEF FPC}
+var
+  vSelected: TPersistent;
+{$ENDIF}
+begin
+  if not GroupSelection then
+{$IFNDEF FPC}
+    FCurrentDesigner.NoSelection;
+  FCurrentDesigner.SelectComponent(FMaterialGraph.Pick(GroupSelection));
+  FCurrentDesigner.Modified;
+{$ELSE}
+  FSelection.Clear;
+  vSelected := FMaterialGraph.Pick(GroupSelection);
+  if Assigned(vSelected) then
+    FSelection.Add(vSelected);
+  GlobalDesignHook.SetSelection(FSelection);
+{$ENDIF}
+end;
+
+procedure TMaterialEditorForm.UnSelectAll;
 begin
 {$IFNDEF FPC}
   FCurrentDesigner.NoSelection;
@@ -771,7 +771,13 @@ begin
 {$ELSE}
   FSelection.Clear;
   GlobalDesignHook.SetSelection(FSelection);
+  GlobalDesignHook.Modified(Self);
 {$ENDIF}
+end;
+
+procedure TMaterialEditorForm.DeleteSelectedClick(Sender: TObject);
+begin
+  UnSelectAll;
   FMaterialGraph.DeleteSelected;
 end;
 
@@ -788,7 +794,9 @@ begin
 end;
 
 initialization
-
+{$IFDEF FPC}
+  {$I GL3xMaterialEditorForms.lrs}
+{$ENDIF}
 finalization
 
   ReleaseMaterialEditorForm;

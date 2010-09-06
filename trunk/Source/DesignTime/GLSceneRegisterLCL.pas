@@ -29,7 +29,7 @@ interface
 
 uses
   Classes, GLObjectManager, ComponentEditors, PropEdits, LResources, LCLType,
-  MacroIntf;
+  LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource;
 
 type
   // TGLLibMaterialNameProperty
@@ -338,6 +338,14 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: string); override;
+  end;
+
+  TMaterialManagerData = class(TAbstractProjectResource)
+  public
+    function UpdateResources(AResources: TAbstractProjectResources;
+                             const MainFilename: string): Boolean; override;
+    procedure WriteToProjectFile(AConfig: TObject; Path: String); override;
+    procedure ReadFromProjectFile(AConfig: TObject; Path: String); override;
   end;
 
 {$ENDIF}
@@ -1071,7 +1079,6 @@ begin
   if Mat <> glsDEFAULTMATERIALNAME then
     with GL3xMaterialEditor.MaterialEditorForm do
     begin
-//      Designer := Self.;
       Material := Mat;
       Show;
     end;
@@ -1134,6 +1141,79 @@ begin
     SetStrValue(glsDIFFUSEMAP);
   end;
   Modified;
+end;
+
+//procedure MaterialManagerUpdateResource(Data: Pointer; Size: Integer);
+//var
+//  buffer: AnsiString;
+//  res: TLResource;
+//  LazProject: TLazProject;
+//begin
+//  SetLength(buffer, Size*2);
+//  BinToHex(PChar(Data), PAnsiChar(buffer), Size);
+//  res := LazarusResources.Find(glsMaterialManagerData, GLS_RC_String_Type);
+//  if not Assigned(res) then
+//    LazarusResources.Add(glsMaterialManagerData, GLS_RC_String_Type, buffer)
+//  else
+//    res.Value := buffer;
+//  LazProject := LazarusIDE.ActiveProject;
+//end;
+
+function GetMaterialManagerDataStream(): TStream;
+var
+  res: TLResource;
+  buffer: array of Byte;
+begin
+  res := LazarusResources.Find(glsMaterialManagerData, GLS_RC_String_Type);
+  if Assigned(res) then
+  begin
+    SetLength(buffer, Length(res.Value) div 2);
+    HexToBin(PChar(res.Value), PAnsiChar(@buffer[0]), Length(buffer));
+    Result := TMemoryStream.Create;
+    Result.Write(buffer, Length(buffer));
+    Result.Seek(0, soBeginning);
+  end
+  else
+    Result := nil;
+end;
+
+function TMaterialManagerData.UpdateResources(
+  AResources: TAbstractProjectResources; const MainFilename: string): Boolean;
+var
+  ResList: TStringList;
+  Res: TGenericResource;
+  RName, RType: TResourceDesc;
+begin
+  Result := True;
+  ResList := MaterialManager.GetResourceList;
+  if Assigned(ResList) then
+  begin
+    RType := TResourceDesc.Create(GLS_RC_String_Type);
+    RName := TResourceDesc.Create(glsMaterialManagerData);
+    Res := TGenericResource.Create(RType, RName);
+    RType.Free; //no longer needed
+    RName.Free;
+    ResList.SaveToStream(Res.RawData);
+    AResources.AddSystemResource(Res);
+    ResList.Destroy;
+  end;
+end;
+
+procedure TMaterialManagerData.WriteToProjectFile(AConfig: TObject; Path: String);
+begin
+  // Nothing here
+end;
+
+procedure TMaterialManagerData.ReadFromProjectFile(AConfig: TObject; Path: String);
+begin
+  // Nothing here
+end;
+
+function GetProjectTargetName: string;
+begin
+  Result := '$(TargetFile)';
+  if not IDEMacros.SubstituteMacros(Result) then
+    Result := '';
 end;
 
 {$ENDIF}
@@ -1397,7 +1477,14 @@ initialization
 
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
-
+  GLCrossPlatform.IsDesignTime := True;
+  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
+{$IFDEF GLS_EXPERIMENTAl}
+  RegisterProjectResource(TMaterialManagerData);
+//  vUpdateResourceProc := TGLSLauncherEditor.UpdateResource;
+//  vGetConfigDataStreamFunc := TGLSLauncherEditor.GetConfigDataStream;
+  vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;
+{$ENDIF}
   //ReadVideoModes;
 
 finalization

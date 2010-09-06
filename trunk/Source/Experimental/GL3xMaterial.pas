@@ -197,8 +197,8 @@ type
     destructor Destroy; override;
 
     procedure Initialize;
+    function  GetResourceList: TStringList;
     // Design time notifications
-    procedure NotifyResourcesChanged;
     procedure NotifyProjectOpened;
     procedure NotifyProjectClosed;
     // Design time helper methods
@@ -222,7 +222,6 @@ type
   TGetMaterialManagerDataStreamFunc = function(): TStream;
 
 var
-  vUpdateMaterialManagerResourceProc: TUpdateMaterialManagerResourceProc;
   vGetMaterialManagerDataStreamFunc: TGetMaterialManagerDataStreamFunc;
 
 function MaterialManager: TGLSMaterialManager;
@@ -484,10 +483,12 @@ begin
   FTextureTree.Add(newTex.HashCode, newTex);
 
   // Load materials and textures info from application resource
+  GLSLogger.Enabled := False;
   if IsDesignTime then
     rStream := TGLSResourceStream(vGetMaterialManagerDataStreamFunc())
   else
     rStream := CreateResourceStream(glsMaterialManagerData, GLS_RC_String_Type);
+  GLSLogger.Enabled := True;
   if Assigned(rStream) then
   begin
     vInfo := TStringList.Create;
@@ -555,7 +556,12 @@ begin
   RC.GLStates.OnLightsChanged := LightsChanged;
   {: Create shader objects from material system database. }
   if FInitialized then
+  begin
+    FMaterialTree.ForEach(MaterialInitializer);
+    FTextureTree.ForEach(TextureInitializer);
     exit;
+  end;
+
   try
     if FMatSysDoc = nil then
       Abort;
@@ -672,22 +678,18 @@ begin
   end;
 end;
 
-procedure TGLSMaterialManager.NotifyResourcesChanged;
-var
-  mStream: TMemoryStream;
+function TGLSMaterialManager.GetResourceList: TStringList;
 begin
-  if Assigned(vUpdateMaterialManagerResourceProc) then
+  if (FMaterialTree.Count = 1) and (FTextureTree.Count = 2) then
+    Result := nil
+  else
   begin
     vInfo := TStringList.Create;
     vInfo.Add('[TEXTURES]');
     FTextureTree.ForEach(TextureNameAndFileStore);
     vInfo.Add('[MATERIALS]');
     FMaterialTree.ForEach(MaterialNameAndFileStore);
-    mStream := TMemoryStream.Create;
-    vInfo.SaveToStream(mStream);
-    FreeAndNil(vInfo);
-    vUpdateMaterialManagerResourceProc(mStream.Memory, mStream.Size);
-    mStream.Destroy;
+    Result := vInfo;
   end;
 end;
 
@@ -1680,7 +1682,6 @@ begin
   ResourceName := filename;
   try
     SaveToStream(fs);
-    MaterialManager.NotifyResourcesChanged;
   finally
     fs.Free;
   end;

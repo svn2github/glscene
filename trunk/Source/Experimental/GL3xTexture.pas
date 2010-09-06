@@ -550,7 +550,6 @@ begin
   ResourceName := filename;
   try
     SaveToStream(fs);
-    MaterialManager.NotifyResourcesChanged;
   finally
     fs.Free;
   end;
