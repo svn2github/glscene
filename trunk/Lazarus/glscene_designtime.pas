@@ -10,9 +10,9 @@ uses
     GLObjectManager, GLSceneRegisterLCL, FVectorEditorLCL, InfoLCL, 
   FMaterialEditorFormLCL, FRMaterialPreviewLCL, FLibMaterialPickerLCL, 
   FRTextureEditLCL, FRColorEditorLCL, FRFaceEditorLCL, FRTrackBarEditLCL, 
-  RegisterXCollection, FXCollectionEditorLCL, GLSceneEditLCL, 
-  GL3xMaterialPreview, GL3xMaterialCode, GL3xMaterialEditor, 
-  GL3xMaterialNodePaletteLCL, LazarusPackageIntf;
+  RegisterXCollection, FXCollectionEditorLCL, GLSceneEditLCL, GLExpandPanels, 
+  GL3xMaterialNodePaletteLCL, GL3xMaterialEditor, GL3xMaterialCode, 
+  GL3xMaterialPreview, GLSIDENotifierLCL, LazarusPackageIntf;
 
 implementation
 
@@ -20,6 +20,8 @@ procedure Register;
 begin
   RegisterUnit('GLSceneRegisterLCL', @GLSceneRegisterLCL.Register); 
   RegisterUnit('RegisterXCollection', @RegisterXCollection.Register); 
+  RegisterUnit('GLExpandPanels', @GLExpandPanels.Register); 
+  RegisterUnit('GLSIDENotifierLCL', @GLSIDENotifierLCL.Register); 
 end; 
 
 initialization

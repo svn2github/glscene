@@ -21,7 +21,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1"/>
-    <Files Count="25">
+    <Files Count="24">
       <Item1>
         <Filename Value="../Source/DesignTime/nonGLSceneLCL.lrs"/>
         <Type Value="LRS"/>
@@ -89,60 +89,55 @@
         <UnitName Value="GLSceneEditLCL"/>
       </Item16>
       <Item17>
-        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
-        <Type Value="LRS"/>
+        <Filename Value="../Source/DesignTime/GLExpandPanels.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLExpandPanels"/>
       </Item17>
       <Item18>
-        <Filename Value="../Source/Experimental/GL3xMaterialPreview.lfm"/>
-        <Type Value="LFM"/>
-      </Item18>
-      <Item19>
-        <Filename Value="../Source/Experimental/GL3xMaterialPreview.pas"/>
-        <UnitName Value="GL3xMaterialPreview"/>
-      </Item19>
-      <Item20>
-        <Filename Value="../Source/Experimental/GL3xMaterialCode.lfm"/>
-        <Type Value="LFM"/>
-      </Item20>
-      <Item21>
-        <Filename Value="../Source/Experimental/GL3xMaterialCode.pas"/>
-        <UnitName Value="GL3xMaterialCode"/>
-      </Item21>
-      <Item22>
-        <Filename Value="../Source/Experimental/GL3xMaterialEditor.pas"/>
-        <UnitName Value="GL3xMaterialEditor"/>
-      </Item22>
-      <Item23>
-        <Filename Value="../Source/Experimental/GL3xMaterialNodePaletteLCL.lfm"/>
-        <Type Value="LFM"/>
-      </Item23>
-      <Item24>
         <Filename Value="../Source/Experimental/GL3xMaterialNodePaletteLCL.pas"/>
         <UnitName Value="GL3xMaterialNodePaletteLCL"/>
+      </Item18>
+      <Item19>
+        <Filename Value="../Source/Experimental/GL3xMaterialEditor.pas"/>
+        <UnitName Value="GL3xMaterialEditor"/>
+      </Item19>
+      <Item20>
+        <Filename Value="../Source/Experimental/GL3xMaterialCode.pas"/>
+        <UnitName Value="GL3xMaterialCode"/>
+      </Item20>
+      <Item21>
+        <Filename Value="../Source/Experimental/GL3xMaterialPreview.pas"/>
+        <UnitName Value="GL3xMaterialPreview"/>
+      </Item21>
+      <Item22>
+        <Filename Value="../Source/DesignTime/GLSIDENotifierLCL.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLSIDENotifierLCL"/>
+      </Item22>
+      <Item23>
+        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
+        <Type Value="LRS"/>
+      </Item23>
+      <Item24>
+        <Filename Value="../Source/Experimental/GL3xMaterialEditorForms.lrs"/>
+        <Type Value="LRS"/>
       </Item24>
-      <Item25>
-        <Filename Value="../Source/Experimental/GL3xMaterialEditor.lfm"/>
-        <Type Value="LFM"/>
-      </Item25>
     </Files>
     <Type Value="DesignTime"/>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="GLS_Expand_Panels"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="IDEIntf"/>
       </Item2>
       <Item3>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item3>
       <Item4>
-        <PackageName Value="GLScene_RunTime"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item5>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>
