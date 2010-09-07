@@ -1209,14 +1209,14 @@ begin
   // Nothing here
 end;
 
+{$ENDIF}
+
 function GetProjectTargetName: string;
 begin
   Result := '$(TargetFile)';
   if not IDEMacros.SubstituteMacros(Result) then
     Result := '';
 end;
-
-{$ENDIF}
 
 procedure Register;
 begin
