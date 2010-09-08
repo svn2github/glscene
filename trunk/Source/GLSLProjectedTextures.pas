@@ -57,7 +57,8 @@ uses
   sysutils,
   GLColor,
   GLRenderContextInfo,
-  GLTextureFormat;
+  GLTextureFormat
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
   TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);
@@ -185,9 +186,6 @@ type
   end;
 
 implementation
-
-uses
-  VectorTypes;
 
 // ------------------
 // ------------------ TGLSLTextureEmitter ------------------

@@ -1027,8 +1027,8 @@ uses
   XOpenGL,
   ApplicationFileIO,
   PictureRegisteredFormats,
-  GLUtils,
-  VectorTypes;
+  GLUtils
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

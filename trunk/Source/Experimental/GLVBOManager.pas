@@ -38,7 +38,6 @@ uses
   BaseClasses,
   OpenGLTokens,
   GLContext,
-  GLRenderContextInfo,
   GLState,
   GLShaderManager,
   VectorTypes,

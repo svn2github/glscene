@@ -70,7 +70,8 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLCadencer, OpenGLTokens, VectorGeometry,
-  GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState;
+  GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
    EGLAtmosphereException = class(Exception);
@@ -161,9 +162,6 @@ type
   end;
 
 implementation
-
-uses
-  VectorTypes;
 
 const
   EPS = 0.0001;

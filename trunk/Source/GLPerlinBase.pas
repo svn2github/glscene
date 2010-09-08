@@ -48,9 +48,6 @@ implementation
 uses
   GLCrossPlatform;
 
-type
-   PDouble = ^Double;
-
 Function ExponateCrap(root, exponant : Integer) : Integer;
 Var
   D : Extended;

@@ -158,7 +158,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Octree, VectorTypes;
+uses SysUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
    cEpsilon : Single = 1e-6;

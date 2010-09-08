@@ -41,10 +41,10 @@ uses Classes,
   OpenGLTokens,
   OpenGLAdapter,
   GLState,
-  VectorTypes,
   GLColor,
   BaseClasses,
-  GLRenderContextInfo;
+  GLRenderContextInfo
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
   TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles,

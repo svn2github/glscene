@@ -39,7 +39,8 @@ uses
   SysUtils, Classes,
 
   // GLScene
-  VectorGeometry, VectorTypes, GLScene, GLCrossPlatform, GLCoordinates, GLScreen;
+  VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 

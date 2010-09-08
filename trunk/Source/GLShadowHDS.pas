@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture,
-  Dialogs, Forms, SyncObjs, VectorTypes, GLCoordinates, GLMaterial;
+  Dialogs, Forms, VectorTypes, GLCoordinates, GLMaterial;
 
 type
    TGLShadowHDS = class;
@@ -129,7 +129,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLUtils, VectorLists, GLTextureFormat;
+uses SysUtils, OpenGLTokens, VectorLists;
 
 // Create
 //

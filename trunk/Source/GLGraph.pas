@@ -247,8 +247,8 @@ uses
   OpenGLTokens,
   GLContext,
   XOpenGL,
-  GLState,
-  VectorTypes;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLSamplingScale ------------------

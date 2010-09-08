@@ -31,9 +31,11 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF GLS_DELPHI_OR_CPPB}
+  Windows,
+{$ENDIF}
   Classes, SysUtils, Dialogs, GLCrossPlatform, Forms
 {$IFNDEF FPC} ,ShellApi {$ENDIF}
-{$IFDEF MSWINDOWS} , Windows{$ENDIF}
   ;
 
 type

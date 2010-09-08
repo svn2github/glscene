@@ -20,7 +20,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  LResources, Forms, XCollection, Messages, ImgList, Controls, Classes, ActnList,
+  LResources, Forms, XCollection, Controls, Classes, ActnList,
   Menus, ComCtrls, Propedits;
 
 type

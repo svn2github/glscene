@@ -949,10 +949,8 @@ uses
   SysUtils,
   OpenGLTokens,
   GLCrossPlatform,
-  GLState,
-  GLUtils,
-  PerlinNoise,
-  VectorTypes;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // GetOrCreateSourcePFX
 //
@@ -1611,9 +1609,6 @@ procedure TGLParticleFXRenderer.BuildList(var rci: TRenderContextInfo);
    in a very efficient manner if all values are superior to 1, which is ensured
    by the distance calculation and a fixed offset of 1.
 }
-type
-  PInteger = ^Integer;
-  PSingle = ^Single;
 var
   dist, distDelta, invRegionSize: Single;
   managerIdx, particleIdx, regionIdx: Integer;

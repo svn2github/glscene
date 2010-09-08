@@ -79,7 +79,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
+{$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
   Classes,

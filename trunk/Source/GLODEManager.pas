@@ -2374,7 +2374,6 @@ end;
 procedure TGLODEDynamic.CalibrateCenterOfMass;
 var
   pos : TAffineVector;
-  i : integer;
 begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);

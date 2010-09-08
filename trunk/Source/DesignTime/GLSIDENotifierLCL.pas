@@ -23,10 +23,11 @@ procedure Register;
 implementation
 
 uses
-  LazIDEIntf, ProjectIntf, Forms, GL3xMaterial;
+  LazIDEIntf, ProjectIntf, IDEMsgIntf, Forms, Controls, GL3xMaterial, GLSLog;
 
 type
   TGLSIDENotifier = class(TObject)
+  public
     constructor Create;
     destructor Destroy; override;
     function OnProjectOpened(Sender: TObject; AProject: TLazProject): TModalResult;
@@ -35,11 +36,12 @@ type
   end;
 
 var
-  GLSIDENotifier: TGLSIDENotifier;
+  GLSIDENotifier: TGLSIDENotifier = nil;
 
 procedure Register;
 begin
-  GLSIDENotifier := TGLSIDENotifier.Create;
+  if not Assigned(GLSIDENotifier) and Assigned(LazarusIDE) then
+    GLSIDENotifier := TGLSIDENotifier.Create;
 end;
 
 constructor TGLSIDENotifier.Create;
@@ -47,33 +49,40 @@ begin
   LazarusIDE.AddHandlerOnProjectOpened(OnProjectOpened);
   LazarusIDE.AddHandlerOnProjectClose(OnProjectClose);
   LazarusIDE.AddHandlerOnProjectBuilding(OnProjectBuilding);
+  GLSLogger.Log('GLScene IDE Notifier Created');
 end;
 
 destructor TGLSIDENotifier.Destroy;
 begin
-  LazarusIDE.RemoveHandlerOnProjectOpened(OnProjectOpened);
-  LazarusIDE.RemoveHandlerOnProjectClose(OnProjectClose);
-  LazarusIDE.RemoveHandlerOnProjectBuilding(OnProjectBuilding);
+  if Assigned(LazarusIDE) then
+  begin
+    LazarusIDE.RemoveHandlerOnProjectOpened(OnProjectOpened);
+    LazarusIDE.RemoveHandlerOnProjectClose(OnProjectClose);
+    LazarusIDE.RemoveHandlerOnProjectBuilding(OnProjectBuilding);
+    GLSLogger.Log('GLScene IDE Notifier Destroyed');
+  end;
 end;
 
 function TGLSIDENotifier.OnProjectOpened(Sender: TObject;
   AProject: TLazProject): TModalResult;
 begin
   MaterialManager.NotifyProjectOpened;
-  Result := 0;
+  GLSLogger.Log('GLScene MaterialManager notified about project opened');
+  Result := mrOk;
 end;
 
 function TGLSIDENotifier.OnProjectClose(Sender: TObject;
   AProject: TLazProject): TModalResult;
 begin
   MaterialManager.NotifyProjectClosed;
-  Result := 0;
+  GLSLogger.Log('GLScene MaterialManager notified about project closed');
+  Result := mrOk;
 end;
 
 function TGLSIDENotifier.OnProjectBuilding(Sender: TObject): TModalResult;
 begin
   // UpdateResource called by IDE itself
-  Result := 0;
+  Result := mrOk;
 end;
 
 initialization

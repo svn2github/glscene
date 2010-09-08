@@ -31,7 +31,8 @@ uses
   GLContext,
   GLRenderContextInfo,
   BaseClasses,
-  GLState;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 
@@ -93,9 +94,6 @@ type
   end;
 
 implementation
-
-uses
-  VectorTypes;
 
 // ------------------
 // ------------------ TGLTextureLensFlare ------------------

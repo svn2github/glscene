@@ -29,7 +29,7 @@ unit GLAnimatedSprite;
 interface
 
 uses
-  Classes, SysUtils, GLScene, VectorGeometry, OpenGLTokens, GLMaterial, GLUtils,
+  Classes, SysUtils, GLScene, VectorGeometry, OpenGLTokens, GLMaterial,
   PersistentClasses, XCollection, GLCrossPlatform, GLRenderContextInfo,
   BaseClasses, GLContext, GLState;
 

@@ -43,8 +43,7 @@ uses
   GLContext,
   GLMaterial,
   GLColor,
-  GLRenderContextInfo,
-  GLTextureFormat;
+  GLRenderContextInfo;
 
 type
 
@@ -160,8 +159,8 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  GLState,
-  VectorTypes;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLMirror ------------------

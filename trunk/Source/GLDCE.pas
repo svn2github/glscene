@@ -48,7 +48,7 @@ interface
 {$I GLScene.inc}
 
 uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObjects,
-   GeometryBB, GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
+   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
    GLTerrainRenderer, GLCoordinates, BaseClasses, GLManager;
 
 type
@@ -256,7 +256,7 @@ function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overlo
 
 implementation
 
-uses SysUtils, VectorTypes;
+uses SysUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 
 function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;

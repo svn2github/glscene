@@ -25,9 +25,8 @@ uses
   VectorGeometry,
   OpenGLTokens,
   GLContext,
-  GLRenderContextInfo,
-  GLState,
-  VectorTypes;
+  GLRenderContextInfo
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 

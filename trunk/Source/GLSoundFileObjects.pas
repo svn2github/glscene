@@ -147,7 +147,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLStrings;
+uses SysUtils;
 
 var
    vSoundFileFormats : TGLSoundFileFormatsList;

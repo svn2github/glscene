@@ -71,7 +71,8 @@ uses
   // GLScene
   GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLState, GLSelection;
+  GLCoordinates, GLRenderContextInfo, GLState, GLSelection
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
   TGLGizmoUndoCollection = class;
@@ -330,9 +331,6 @@ type
   end;
 
 implementation
-
-uses
-  VectorTypes;
 
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject;
   const Axis, Origin: TAffineVector; const angle: Single);

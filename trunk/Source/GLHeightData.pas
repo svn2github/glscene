@@ -65,20 +65,17 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
+uses SysUtils, Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
      {$IFDEF FPC},IntfGraphics {$ENDIF};
 
 type
    TByteArray = array [0..MaxInt shr 1] of Byte;
-   PByteArray = ^TByteArray;
    TByteRaster = array [0..MaxInt shr 3] of PByteArray;
    PByteRaster = ^TByteRaster;
    TSmallintArray = array [0..MaxInt shr 2] of SmallInt;
    PSmallIntArray = ^TSmallIntArray;
    TSmallIntRaster = array [0..MaxInt shr 3] of PSmallIntArray;
    PSmallIntRaster = ^TSmallIntRaster;
-   TSingleArray = array [0..MaxInt shr 3] of Single;
-   PSingleArray = ^TSingleArray;
    TSingleRaster = array [0..MaxInt shr 3] of PSingleArray;
    PSingleRaster = ^TSingleRaster;
 
@@ -652,7 +649,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, GLUtils
+uses ApplicationFileIO, GLUtils
   {$IFDEF MSWINDOWS}
   , Windows  // for CreateMonochromeBitmap
   {$ENDIF}

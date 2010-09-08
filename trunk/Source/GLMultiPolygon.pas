@@ -239,8 +239,8 @@ implementation
 
 uses SysUtils,
   XOpenGL,
-  GLContext,
-  VectorTypes;
+  GLContext
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
   { page oriented pointer array, with persistent pointer target memory.

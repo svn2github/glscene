@@ -18,9 +18,6 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
   Classes,
   SysUtils,
   Variants,
@@ -33,18 +30,15 @@ uses
   GLSCrossXML,
   GLCrossPlatform,
   ApplicationFileIO,
-  BaseClasses,
   OpenGLTokens,
   GLContext,
-  GLRenderContextInfo,
   GLState,
   GLShaderManager,
-  VectorTypes,
   VectorGeometry,
-  VectorGeometryEXT,
   GL3xTexture,
   GLSpecializedUniforms,
-  GLSRedBlackTree;
+  GLSRedBlackTree
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
   fileMaterialSystem = 'MaterialSystem.xml';
@@ -157,7 +151,7 @@ type
     Output: TGLSLDataType;
     UniformClasses: array[0..7] of TSpecialUniformClass;
     ConstantValue: string;
-    Mask: TColorComponentMask;
+    Mask: TGLColorComponentMask;
     procedure Clear;
     property Declaration: AnsiString read GetDeclaration;
     function MaskAsString: string;
@@ -485,7 +479,12 @@ begin
   // Load materials and textures info from application resource
   GLSLogger.Enabled := False;
   if IsDesignTime then
-    rStream := TGLSResourceStream(vGetMaterialManagerDataStreamFunc())
+  begin
+    if Assigned(vGetMaterialManagerDataStreamFunc) then
+      rStream := TGLSResourceStream(vGetMaterialManagerDataStreamFunc())
+    else
+      rStream := nil;
+  end
   else
     rStream := CreateResourceStream(glsMaterialManagerData, GLS_RC_String_Type);
   GLSLogger.Enabled := True;

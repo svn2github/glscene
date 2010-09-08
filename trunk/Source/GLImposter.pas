@@ -30,7 +30,7 @@ interface
 
 uses
   Classes, GLScene, GLContext, VectorTypes, VectorGeometry,
-  GeometryBB, PersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
+  PersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
   GLRenderContextInfo, GLCoordinates, BaseClasses, GLState, GLTextureFormat;
 
 type

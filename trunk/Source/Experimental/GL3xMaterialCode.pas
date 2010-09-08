@@ -12,14 +12,16 @@ unit GL3xMaterialCode;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  {$IFDEF MSWINDOWS}
-  Windows,
-  {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  {$IFDEF FPC}
+{$IFDEF GLS_DELPHI_OR_CPPB}
+  Messages,
+{$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms,
+{$IFDEF FPC}
   LResources, LMessages,
-  {$ENDIF}
+{$ENDIF}
   Dialogs, StdCtrls;
 
 type
@@ -43,9 +45,9 @@ type
 implementation
 
 {$IFNDEF FPC}
-  {.$R *.dfm}
+  {$R *.dfm}
 {$ELSE}
-  {$R *.lfm}
+  {.$R *.lfm}
 {$ENDIF}
 
 {$IFDEF FPC}

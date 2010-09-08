@@ -205,7 +205,6 @@ type
   end;
 
   TGLShaderClass = class of TGLShader;
-  EGLShaderException = class(Exception);
 
   TShininess = 0..128;
 
@@ -757,8 +756,6 @@ type
       FOnTextureNeeded;
 
   end;
-
-  ETexture = class(Exception);
 
 implementation
 

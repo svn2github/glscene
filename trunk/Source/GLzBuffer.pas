@@ -235,7 +235,7 @@ type
 
 implementation
 
-uses OpenGLTokens, XOpenGL, VectorTypes;
+uses OpenGLTokens, XOpenGL {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 constructor TGLzBuffer.Create;
 begin

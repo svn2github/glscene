@@ -80,9 +80,9 @@ uses
   Classes, SysUtils, Graphics, TypInfo,
 
   // GLScene
-  GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont, GLKeyboard,
-  VectorTypes, PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
-  GLCrossPlatform, GLMaterial;
+  GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
+  PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
+  GLCrossPlatform, GLMaterial{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
   CONSOLE_MAX_COMMANDS = 120;

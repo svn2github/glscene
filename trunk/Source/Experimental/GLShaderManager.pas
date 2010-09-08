@@ -23,15 +23,10 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
   Classes,
   SysUtils,
 {$IFNDEF FPC}
   Generics.Collections,
-{$ELSE}
-  Contnrs,
 {$ENDIF}
   // GLScene
   GLCrossPlatform,
@@ -53,8 +48,8 @@ type
   TGLSLProgramType = (ptVertex, ptGeometry, ptFragment, ptControl, ptEvaluation);
   TGLSLProgramTypes = set of TGLSLProgramType;
 
-  TColorComponent = (ccmRed, ccmGreen, ccmBlue, ccmAlpha, ccmWhite);
-  TColorComponentMask = set of TColorComponent;
+  TGLColorComponent = (ccmRed, ccmGreen, ccmBlue, ccmAlpha, ccmWhite);
+  TGLColorComponentMask = set of TGLColorComponent;
 
   TGLSLDataType = (
     GLSLTypeUndefined,
@@ -370,11 +365,11 @@ var
 
 function CompareProgram(const Item1, Item2: TGLProgramHandle): Integer;
 function GetMaxGLSLVersion: AnsiString;
-function GetGLSLTypeCast(const Arg: AnsiString; ArgType: TGLSLDataType; AMask: TColorComponentMask; CastType: TGLSLDataType = GLSLTypeUndefined): AnsiString;
+function GetGLSLTypeCast(const Arg: AnsiString; ArgType: TGLSLDataType; AMask: TGLColorComponentMask; CastType: TGLSLDataType = GLSLTypeUndefined): AnsiString;
 function GLSLTypeToString(AType: TGLSLDataType): AnsiString;
 function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
 function HexToGLSL(tp: TGLSLDataType; HexValue: string): AnsiString;
-function MaskToGLSLType(AMask: TColorComponentMask): TGLSLDataType;
+function MaskToGLSLType(AMask: TGLColorComponentMask): TGLSLDataType;
 function RemoveGLSLQualifier(const InputLine: string): string;
 function ShaderManager: TGLShaderManager;
 
@@ -542,7 +537,7 @@ begin
   Result := '#version 150 core';
 end;
 
-function MaskToGLSLType(AMask: TColorComponentMask): TGLSLDataType;
+function MaskToGLSLType(AMask: TGLColorComponentMask): TGLSLDataType;
 var
   count: Integer;
 begin
@@ -575,7 +570,7 @@ begin
   end;
 end;
 
-function GetGLSLTypeCast(const Arg: AnsiString; ArgType: TGLSLDataType; AMask: TColorComponentMask; CastType: TGLSLDataType): AnsiString;
+function GetGLSLTypeCast(const Arg: AnsiString; ArgType: TGLSLDataType; AMask: TGLColorComponentMask; CastType: TGLSLDataType): AnsiString;
 var
   sMask: AnsiString;
   dif: Integer;

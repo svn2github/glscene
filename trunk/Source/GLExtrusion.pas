@@ -44,8 +44,8 @@ interface
 {$I GLScene.inc}
 
 uses Classes, OpenGLTokens, GLContext, GLObjects, GLScene, GLMultiPolygon,
-     GLColor, VectorTypes, VectorGeometry, GLRenderContextInfo, GLNodes,
-     GLState;
+     GLColor, VectorGeometry, GLRenderContextInfo, GLNodes,
+     GLState{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 

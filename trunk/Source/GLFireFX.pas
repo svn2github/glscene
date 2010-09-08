@@ -238,8 +238,8 @@ implementation
 uses SysUtils,
   OpenGLTokens,
   GLContext,
-  VectorLists,
-  VectorTypes;
+  VectorLists
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // GetOrCreateFireFX (TGLObjectEffects)
 //

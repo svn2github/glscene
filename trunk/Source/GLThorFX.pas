@@ -144,7 +144,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext, VectorLists, VectorTypes;
+uses SysUtils, OpenGLTokens, GLContext, VectorLists {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 
 // ------------------

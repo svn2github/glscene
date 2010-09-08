@@ -2425,12 +2425,12 @@ initialization
 {$ENDIF}
 
   GLCrossPlatform.IsDesignTime := True;
-  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
   ReadVideoModes;
 
 {$IFDEF GLS_EXPERIMENTAl}
+  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   vUpdateResourceProc := TGLSLauncherEditor.UpdateResource;
   vGetConfigDataStreamFunc := TGLSLauncherEditor.GetConfigDataStream;
   vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;

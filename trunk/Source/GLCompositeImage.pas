@@ -66,7 +66,7 @@ type
 implementation
 
 uses
-  ApplicationFileIO, GLContext;
+  GLContext;
 
 // ------------------
 // ------------------ TGLCompositeImage ------------------

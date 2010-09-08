@@ -100,7 +100,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext, VectorTypes;
+uses SysUtils, OpenGLTokens, GLContext {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLLinePFXManager ------------------

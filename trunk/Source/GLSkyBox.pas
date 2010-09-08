@@ -33,11 +33,11 @@ uses
   Classes,
   GLScene,
   GLMaterial,
-  VectorTypes,
   VectorGeometry,
   OpenGLTokens,
   XOpenGL,
-  GLRenderContextInfo;
+  GLRenderContextInfo
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 

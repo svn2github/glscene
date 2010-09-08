@@ -20,9 +20,10 @@ interface
 uses
   SysUtils, Classes,
   // GLScene
-  GLScene, GLCadencer, OpenGLTokens, VectorTypes, VectorGeometry, GLState,
+  GLScene, GLCadencer, VectorGeometry, GLState,
   GLContext, GLStrings, GLColor, GLSLShader,
-  GL3xObjects, GLShaderManager, GLVBOManager, GLRenderContextInfo;
+  GL3xObjects, GLShaderManager, GLVBOManager, GLRenderContextInfo
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
   EGLBAtmosphereException = class(Exception);

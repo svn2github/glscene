@@ -261,7 +261,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, XOpenGL, GLUtils, VectorTypes;
+uses SysUtils, OpenGLTokens, XOpenGL, GLUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // HashKey
 

@@ -2,13 +2,15 @@ unit GLSpecializedUniforms;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   Classes,
   OpenGLTokens,
   GLShaderManager,
   VectorGeometry,
-  VectorTypes,
-  GL3xTexture;
+  GL3xTexture
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 

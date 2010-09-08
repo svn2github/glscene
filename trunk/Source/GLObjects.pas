@@ -919,12 +919,11 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses GLStrings,
+uses
   Spline,
   XOpenGL,
-  GLState,
-  GLTextureFormat,
-  VectorTypes;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
   cDefaultPointSize: Single = 1.0;

@@ -25,10 +25,14 @@ uses
   SysUtils,
   TypInfo,
   ToolsAPI,
-  GL3xMaterial;
+  GL3xMaterial,
+  GLStrings,
+  ApplicationFileIO;
 
 type
   TGLSIDENotifier = class(TNotifierObject, IOTANotifier, IOTAIDENotifier)
+  private
+    FFirstOpen: Boolean;
   protected
     procedure AfterCompile(Succeeded: Boolean);
     procedure BeforeCompile(const Project: IOTAProject; var Cancel: Boolean);
@@ -74,9 +78,9 @@ end;
 procedure TGLSIDENotifier.BeforeCompile(const Project: IOTAProject; var Cancel: Boolean);
 var
   ResList: TStringList;
+  mStream: TMemoryStream;
   I: Integer;
   Editor: IOTAEditor;
-  Project: IOTAProject;
   Resource: IOTAProjectResource;
   ResourceEntry: IOTAResourceEntry;
   Dest: PByte;
@@ -85,13 +89,6 @@ begin
   ResList := MaterialManager.GetResourceList;
   if Assigned(ResList) then
   begin
-    Project := GetActiveProject;
-    if not Assigned(Project) then
-    begin
-      ResList.Destroy;
-      exit;
-    end;
-
     Resource := nil;
     for I := 0 to Project.GetModuleFileCount - 1 do
     begin
@@ -102,6 +99,8 @@ begin
 
     if Assigned(Resource) then
     begin
+      mStream := TMemoryStream.Create;
+      ResList.SaveToStream(mStream);
       Dest := nil;
       for I := 0 to Resource.GetEntryCount - 1 do
       begin
@@ -110,7 +109,7 @@ begin
         if Cardinal(rName)>$1000 then
           if StrComp(rName, PChar(glsMaterialManagerData)) = 0 then
           begin
-            ResourceEntry.DataSize := Size;
+            ResourceEntry.DataSize := mStream.Size;
             Dest := ResourceEntry.GetData;
             break;
           end;
@@ -121,19 +120,22 @@ begin
         ResourceEntry := Resource.CreateEntry(GLS_RC_String_Type, PChar(glsMaterialManagerData), 4112, 1033, 0, 0, 0);
         if Assigned(ResourceEntry) then
         begin
-          ResourceEntry.DataSize := Size;
+          ResourceEntry.DataSize := mStream.Size;
           Dest := ResourceEntry.GetData;
         end
         else begin
           MsgServices.AddTitleMessage('Can''t create resource entry');
           ResList.Destroy;
+          mStream.Destroy;
           exit;
         end;
       end;
-      Move(ResList.Text, Dest^, Size);
-      ResList.Destroy;
+      // Update resource
+      Move(mStream.Memory^, Dest^, mStream.Size);
+      mStream.Destroy;
       MsgServices.AddTitleMessage('MaterialManager updated resource list');
     end;
+    ResList.Destroy;
   end;
 end;
 
@@ -149,11 +151,25 @@ procedure TGLSIDENotifier.FileNotification(NotifyCode: TOTAFileNotification;
     Result := ext = 'DPROJ';
   end;
 
+  function IsPackage: Boolean;
+  var
+    pak: string;
+  begin
+    pak := UpperCase(ExtractFileName(FileName));
+    Result := Pos('GLSCENE_DESIGNTIME', pak) > 0;
+  end;
+
 begin
-  if (NotifyCode = ofnFileOpened)
-    and IsProject then
+  if (NotifyCode = ofnPackageInstalled)
+    and IsPackage then
+  begin
+    FFirstOpen := True;
+  end
+  else if (NotifyCode = ofnFileOpened)
+    and IsProject or FFirstOpen then
   begin
     MaterialManager.NotifyProjectOpened;
+    FFirstOpen := False;
   end
   else if (NotifyCode = ofnFileClosing)
     and IsProject then

@@ -37,7 +37,7 @@ unit GLBumpmapHDS;
 interface
 
 uses Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture, Dialogs, Forms,
-     SyncObjs, GLMaterial, GLTextureFormat;
+     SyncObjs, GLMaterial;
 
 type
    TGLBumpmapHDS = class;
@@ -113,7 +113,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLUtils, VectorTypes;
+uses SysUtils, OpenGLTokens, GLUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
    cDefaultBumpScale = 0.01;

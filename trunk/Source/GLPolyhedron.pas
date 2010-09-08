@@ -15,7 +15,6 @@ uses
   Classes,
   GLScene,
   VectorGeometry,
-  OpenGLTokens,
   GLRenderContextInfo;
 
 type

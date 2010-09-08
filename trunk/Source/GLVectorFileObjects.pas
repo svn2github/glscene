@@ -1964,7 +1964,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses GLStrings, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
-  GLBaseMeshSilhouette, VectorTypes;
+  GLBaseMeshSilhouette
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 var
   vVectorFileFormats: TVectorFileFormatsList;

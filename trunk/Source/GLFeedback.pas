@@ -113,8 +113,8 @@ implementation
 
 uses
   OpenGLTokens,
-  MeshUtils,
-  VectorTypes;
+  MeshUtils
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ----------
 // ---------- TGLFeedback ----------

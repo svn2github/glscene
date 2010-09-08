@@ -112,7 +112,9 @@ type
 
 implementation
 
-uses SysUtils, Forms, VectorTypes, VectorGeometry{, Dialogs};
+uses
+  SysUtils, Forms, VectorGeometry
+  {$IFNDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 //---TGLCameraMover
 

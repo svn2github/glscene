@@ -5,8 +5,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, BaseClasses, OpenGLTokens, VectorLists, GLContext, GLRenderContextInfo,
-  GLState, GLShaderManager, GLVBOManager, GL3xMaterial, GLSLShader;
+  Classes, VectorLists, GLContext,
+  GLShaderManager, GLVBOManager, GL3xMaterial, GLSLShader;
 
 type
 
@@ -42,9 +42,6 @@ type
   end;
 
 implementation
-
-uses
-  GLStrings;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseFactory'}{$ENDIF}
 // ------------------

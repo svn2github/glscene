@@ -60,7 +60,6 @@ uses
   GLScene,
   VectorGeometry,
   GLTexture,
-  GLSilhouette,
   GLVectorFileObjects,
   GLStrings,
   GLRenderContextInfo,
@@ -285,8 +284,8 @@ implementation
 
 uses
   OpenGLTokens,
-  GLContext,
-  VectorTypes;
+  GLContext
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLColorProxy ------------------

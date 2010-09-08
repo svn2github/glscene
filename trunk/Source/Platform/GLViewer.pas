@@ -29,10 +29,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  OpenGLTokens, GLContext,
+  GLContext,
   {$IFDEF GLS_DELPHI_OR_CPPB} GLWin32Viewer; {$ENDIF}
-  {$IFDEF FPC}
-               GLLCLViewer;   {$ENDIF}
+  {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
 type
 {$IFDEF FPC}
   TGLSceneViewer = GLLCLViewer.TGLSceneViewer;

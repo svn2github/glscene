@@ -31,8 +31,6 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-{$ENDIF}
   Classes,
   Graphics,
   Dialogs,
@@ -145,13 +143,13 @@ type
   TNodeJoint = {$IFNDEF FPC}record {$ELSE}object{$ENDIF}
     Step: SmallInt;
     Side: TNodeSize;
-    Mask: TColorComponentMask;
+    Mask: TGLColorComponentMask;
     Caption: AnsiString;
     GivingNode: TCustomMaterialGraphNode;
     GivingNodeJointIndex: Integer;
     SampleCache: PShaderSample;
     procedure SetAtOnce(AStep: SmallInt; ASide: TNodeSize;
-      AMask: TColorComponentMask; const ACaption: AnsiString); inline;
+      AMask: TGLColorComponentMask; const ACaption: AnsiString); inline;
     function Color: TVector;
   end;
 
@@ -195,7 +193,7 @@ type
     function GetViewingCode: AnsiString; virtual;
     procedure SetViewingUniforms; virtual;
     function GetGivingNodeTextureID(JointIndex: SmallInt): TGLuint;
-    function GetGivingNodeMask(JointIndex: SmallInt): TColorComponentMask;
+    function GetGivingNodeMask(JointIndex: SmallInt): TGLColorComponentMask;
     function GetGivingNodeDataType(JointIndex: SmallInt): TGLSLDataType;
     function GetOutputSample(out ASample: TShaderSample): Boolean; virtual; abstract;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; virtual;
@@ -224,7 +222,7 @@ type
 
     property ViewingObjectName: string read FViewingObject;
     property GivingNodeTextureID[JointIndex: SmallInt]: TGLuint read GetGivingNodeTextureID;
-    property GivingNodeMask[JointIndex: SmallInt]: TColorComponentMask read GetGivingNodeMask;
+    property GivingNodeMask[JointIndex: SmallInt]: TGLColorComponentMask read GetGivingNodeMask;
     property GivingNodeDataType[JointIndex: SmallInt]: TGLSLDataType read GetGivingNodeDataType;
   end;
 
@@ -581,7 +579,7 @@ type
 
   TComponentMaskNode = class(TCustomMaterialGraphNode)
   private
-    FMask: TColorComponentMask;
+    FMask: TGLColorComponentMask;
     function GetMask(Index: Integer): Boolean;
     procedure SetMask(Index: Integer; Value: Boolean);
   protected
@@ -1206,10 +1204,10 @@ begin
   bmp.Canvas.Font.Name := 'Fixedsys';
   for i := 0 to 255 do
   begin
-    size := bmp.Canvas.TextHeight(chr(i));
+    size := bmp.Canvas.TextExtent(chr(i)).cy;
     if size > FMaxCharHeight then
       FMaxCharHeight := size;
-    size := bmp.Canvas.TextWidth(chr(i));
+    size := bmp.Canvas.TextExtent(chr(i)).cx;
     if size > FMaxCharWidth then
       FMaxCharWidth := size;
   end;
@@ -1259,7 +1257,7 @@ begin
   GL.TexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   GL.TexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   GL.TexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB5, bmp.Width, bmp.Height, 0,
-{$IFDEF FPC}GL_RGBA{$ELSE}GL_BGR{$ENDIF},
+{$IFDEF LINUX}GL_RGBA{$ELSE}GL_BGR{$ENDIF},
     GL_UNSIGNED_BYTE,
 {$IFDEF FPC}bmp.RawImage.Data{$ELSE}data{$ENDIF});
 
@@ -1810,7 +1808,7 @@ end;
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TNodeJoint'}{$ENDIF}
 
 procedure TNodeJoint.SetAtOnce(AStep: SmallInt; ASide: TNodeSize;
-  AMask: TColorComponentMask; const ACaption: AnsiString);
+  AMask: TGLColorComponentMask; const ACaption: AnsiString);
 begin
   Step := AStep;
   Side := ASide;
@@ -1841,7 +1839,6 @@ end;
 
 constructor TCustomMaterialGraphNode.Create;
 begin
-  inherited;
   FHighlight := false;
   Deletable := True;
   FViewingProgLinked := false;
@@ -2333,7 +2330,7 @@ begin
     Result := 0;
 end;
 
-function TCustomMaterialGraphNode.GetGivingNodeMask(JointIndex: SmallInt): TColorComponentMask;
+function TCustomMaterialGraphNode.GetGivingNodeMask(JointIndex: SmallInt): TGLColorComponentMask;
 var
   I: Integer;
 begin
@@ -2349,7 +2346,7 @@ end;
 function TCustomMaterialGraphNode.GetGivingNodeDataType(JointIndex: SmallInt): TGLSLDataType;
 var
   vSample: TShaderSample;
-  vMask: TColorComponentMask;
+  vMask: TGLColorComponentMask;
   OK: Boolean;
 begin
   if Assigned(Joints[JointIndex].GivingNode) and not FGetOuptupSampleLock then

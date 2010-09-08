@@ -7,7 +7,7 @@ interface
 uses
   Classes, VectorGeometry, GLScene, OpenGLTokens, SysUtils,
   GLCrossPlatform, GLContext, GLSilhouette, GLSLShader,
-  GLRenderContextInfo, BaseClasses, GLCoordinates,
+  GLRenderContextInfo, GLCoordinates,
   GLObjects, GLShaderManager, GLVBOManager, GL3xMaterial, GL3xFactory;
 
 type

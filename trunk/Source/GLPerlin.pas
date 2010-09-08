@@ -144,9 +144,6 @@ Type
 
 implementation
 
-type
-   PSmallInt = ^SmallInt;
-
 function TGLBasePerlin.PerlinNoise_1D(x : Double) : Double;
 
 Var

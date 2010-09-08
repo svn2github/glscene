@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/09/10 - Yar - Added gloabal var vCurrentRenderingObject (Thanks Controller)
       <li>02/09/10 - Yar - Added GLSelection to uses. Improved TGLSceneBuffer.PickObjects for 64-bit OSes
       <li>29/08/10 - Yar - Bugfixed TGLSceneBuffer.DoStructuralChange when component loading causing excessive context recreation
       <li>23/08/10 - Yar - Removed all critical deprecated OpenGL function from rendering cycle. 
@@ -340,7 +341,7 @@ interface
 
 uses
   // VCL
-{$IFDEF MSWINDOWS}
+{$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
   Classes,
@@ -2471,11 +2472,12 @@ procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 
+{$IFNDEF GLS_MULTITHREAD}
 var
-  {: If OptSaveGLStack is true, the scene tree can be any levels deep without
-     overflowing the drives matrix stack. Of course this will slow down
-     performance, so it is switched of by default. }
-  OptSaveGLStack: Boolean = false;
+{$ELSE}
+threadvar
+{$ENDIF}
+  vCurrentRenderingObject: TGLBaseSceneObject;
 
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
@@ -4835,6 +4837,7 @@ begin
   // Start rendering
   if shouldRenderSelf then
   begin
+    vCurrentRenderingObject := Self;
 {$IFNDEF GLS_OPTIMIZATIONS}
     if FShowAxes then
       DrawAxes(ARci, $CCCC);
@@ -4870,6 +4873,7 @@ begin
         DoRender(ARci, True, shouldRenderChildren);
 
     end;
+    vCurrentRenderingObject := nil;
   end
   else
   begin

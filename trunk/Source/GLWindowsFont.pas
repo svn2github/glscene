@@ -115,9 +115,9 @@ implementation
 uses
   SysUtils,
   VectorGeometry,
-  VectorTypes,
   OpenGLTokens,
-  ApplicationFileIO;
+  ApplicationFileIO
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLWindowsBitmapFont ------------------
@@ -272,7 +272,11 @@ begin
     fontRange := Ranges.Items[i];
     for ch := fontRange.StartASCII to fontRange.StopASCII do
     begin
+{$IFDEF GLS_DELPHI_2009_UP or FPC}
+      cw := bitmap.Canvas.TextExtent(Char(ch)).cx - HSpaceFix;
+{$ELSE}
       cw := bitmap.Canvas.TextWidth(Char(ch)) - HSpaceFix;
+{$ENDIF}
       SetCharWidths(Integer(ch), cw);
       if cw = 0 then
         Dec(nbChars);

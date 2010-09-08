@@ -194,7 +194,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext, VectorTypes;
+uses SysUtils, GLContext {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLMaterialMultiProxyMaster ------------------

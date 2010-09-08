@@ -152,8 +152,8 @@ type
     procedure AttachDepthTexture(Texture: TGLTexture); overload;
     procedure DetachDepthTexture;
 
-    procedure AttachTexture(n: Integer; Texture: TGLTexture); overload;
-    procedure DetachTexture(n: Integer);
+    procedure AttachTexture(n: Cardinal; Texture: TGLTexture); overload;
+    procedure DetachTexture(n: Cardinal);
 
     function GetStringStatus(out clarification: string): TGLFramebufferStatus;
     property Status: TGLFramebufferStatus read GetStatus;
@@ -175,11 +175,10 @@ type
 implementation
 
 uses
-  GLUtils,
   GLGraphics,
   GLTextureFormat,
-  VectorTypes,
-  GLSLog;
+  GLSLog
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 { TGLRenderbuffer }
 
@@ -328,7 +327,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TGLFrameBuffer.AttachTexture(n: Integer; Texture: TGLTexture);
+procedure TGLFrameBuffer.AttachTexture(n: Cardinal; Texture: TGLTexture);
 var
   textarget: TGLTextureTarget;
 begin
@@ -523,7 +522,7 @@ begin
   FFrameBufferHandle.UnBind;
 end;
 
-procedure TGLFrameBuffer.DetachTexture(n: Integer);
+procedure TGLFrameBuffer.DetachTexture(n: Cardinal);
 begin
   // textarget ignored when binding 0
   if Assigned(FAttachedTexture[n]) then

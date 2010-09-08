@@ -1110,8 +1110,10 @@ implementation
 uses
   GLContext, GLColor;
 
+{$IFDEF GLS_CACHE_MISS_CHECK}
 resourcestring
   glsStateCashMissing = 'States cash missing: ';
+{$ENDIF}
 
   // ------------------
   // ------------------ TGLStateCache ------------------

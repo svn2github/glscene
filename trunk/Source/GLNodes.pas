@@ -148,9 +148,10 @@ type
 
 implementation
 
-uses SysUtils,
-  XOpenGL,
-  VectorTypes;
+uses
+  SysUtils,
+  XOpenGL
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLNode ------------------

@@ -322,8 +322,8 @@ implementation
 uses
   SysUtils,
   VectorLists,
-  GLState,
-  VectorTypes;
+  GLState
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------

@@ -178,10 +178,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils,
-  VectorTypes,
+uses
   VectorGeometryEXT,
-  GLTextureFormat;
+  GLTextureFormat
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const

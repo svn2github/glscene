@@ -40,7 +40,7 @@ uses
 
   // GLScene
   GLScene, VectorGeometry, GLObjects, GLBitmapFont, GLTexture, GLMaterial,
-  GLHudObjects, GLStrings, GLColor, GLGraphics, GLContext, OpenGLTokens,
+  GLHudObjects, GLColor, GLGraphics, GLContext, OpenGLTokens,
   BaseClasses, GLRenderContextInfo;
 
 type

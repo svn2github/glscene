@@ -13,11 +13,7 @@ unit GL3xTexture;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
   Classes,
-  BaseClasses,
   ApplicationFileIO,
 {$IFDEF FPC}
   LResources,
@@ -25,7 +21,6 @@ uses
   OpenGLTokens,
   GLContext,
   GLColor,
-  GLRenderContextInfo,
   GLState,
   GLGraphics,
   GLShaderManager,

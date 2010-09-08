@@ -29,7 +29,7 @@ interface
 
 uses
   Classes, GLObjectManager, ComponentEditors, PropEdits, LResources, LCLType,
-  LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource;
+  LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource, Laz_XMLCfg;
 
 type
   // TGLLibMaterialNameProperty
@@ -342,6 +342,8 @@ type
 
   TMaterialManagerData = class(TAbstractProjectResource)
   public
+    constructor Create; override;
+    destructor Destroy; override;
     function UpdateResources(AResources: TAbstractProjectResources;
                              const MainFilename: string): Boolean; override;
     procedure WriteToProjectFile(AConfig: TObject; Path: String); override;
@@ -1143,38 +1145,33 @@ begin
   Modified;
 end;
 
-//procedure MaterialManagerUpdateResource(Data: Pointer; Size: Integer);
-//var
-//  buffer: AnsiString;
-//  res: TLResource;
-//  LazProject: TLazProject;
-//begin
-//  SetLength(buffer, Size*2);
-//  BinToHex(PChar(Data), PAnsiChar(buffer), Size);
-//  res := LazarusResources.Find(glsMaterialManagerData, GLS_RC_String_Type);
-//  if not Assigned(res) then
-//    LazarusResources.Add(glsMaterialManagerData, GLS_RC_String_Type, buffer)
-//  else
-//    res.Value := buffer;
-//  LazProject := LazarusIDE.ActiveProject;
-//end;
+var
+  vMaterialManagerData: TMemoryStream;
 
 function GetMaterialManagerDataStream(): TStream;
-var
-  res: TLResource;
-  buffer: array of Byte;
 begin
-  res := LazarusResources.Find(glsMaterialManagerData, GLS_RC_String_Type);
-  if Assigned(res) then
+  if Assigned(vMaterialManagerData) and (vMaterialManagerData.Size>0) then
   begin
-    SetLength(buffer, Length(res.Value) div 2);
-    HexToBin(PChar(res.Value), PAnsiChar(@buffer[0]), Length(buffer));
     Result := TMemoryStream.Create;
-    Result.Write(buffer, Length(buffer));
+    vMaterialManagerData.Seek(0, soBeginning);
+    Result.CopyFrom(vMaterialManagerData, vMaterialManagerData.Size);
     Result.Seek(0, soBeginning);
   end
   else
     Result := nil;
+end;
+
+constructor TMaterialManagerData.Create;
+begin
+  inherited;
+  vMaterialManagerData := TMemoryStream.Create;
+end;
+
+destructor TMaterialManagerData.Destroy;
+begin
+  vMaterialManagerData.Free;
+  vMaterialManagerData := nil;
+  inherited;
 end;
 
 function TMaterialManagerData.UpdateResources(
@@ -1191,7 +1188,7 @@ begin
     RType := TResourceDesc.Create(GLS_RC_String_Type);
     RName := TResourceDesc.Create(glsMaterialManagerData);
     Res := TGenericResource.Create(RType, RName);
-    RType.Free; //no longer needed
+    RType.Free;
     RName.Free;
     ResList.SaveToStream(Res.RawData);
     AResources.AddSystemResource(Res);
@@ -1200,13 +1197,41 @@ begin
 end;
 
 procedure TMaterialManagerData.WriteToProjectFile(AConfig: TObject; Path: String);
+var
+  ResList: TStringList;
 begin
-  // Nothing here
+  if Assigned(AConfig) then
+  begin
+    ResList := MaterialManager.GetResourceList;
+    if Assigned(ResList) then
+    begin
+      TXMLConfig(AConfig).SetValue(Path+'GLScene/MaterialManager/ResourceList', ResList.Text);
+      vMaterialManagerData.Seek(0, soBeginning);
+      ResList.SaveToStream(vMaterialManagerData);
+      ResList.Destroy;
+    end
+    else
+      TXMLConfig(AConfig).DeleteValue(Path+'GLScene/MaterialManager/ResourceList');
+  end;
 end;
 
 procedure TMaterialManagerData.ReadFromProjectFile(AConfig: TObject; Path: String);
+var
+  ResList: TStringList;
+  s: string;
 begin
-  // Nothing here
+  if Assigned(AConfig) then
+  begin
+    s := TXMLConfig(AConfig).GetValue(Path+'GLScene/MaterialManager/ResourceList', '');
+    if Length(s) > 0 then
+    begin
+      ResList := TStringList.Create;
+      ResList.Text := s;
+      vMaterialManagerData.Seek(0, soBeginning);
+      ResList.SaveToStream(vMaterialManagerData);
+      ResList.Destroy;
+    end;
+  end;
 end;
 
 {$ENDIF}
