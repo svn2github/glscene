@@ -7,21 +7,21 @@ unit GLScene_DesignTime;
 interface
 
 uses
-    GLObjectManager, GLSceneRegisterLCL, FVectorEditorLCL, InfoLCL, 
-  FMaterialEditorFormLCL, FRMaterialPreviewLCL, FLibMaterialPickerLCL, 
-  FRTextureEditLCL, FRColorEditorLCL, FRFaceEditorLCL, FRTrackBarEditLCL, 
-  RegisterXCollection, FXCollectionEditorLCL, GLSceneEditLCL, GLExpandPanels, 
-  GL3xMaterialNodePaletteLCL, GL3xMaterialEditor, GL3xMaterialCode, 
-  GL3xMaterialPreview, GLSIDENotifierLCL, LazarusPackageIntf;
+    FXCollectionEditorLCL, GLExpandPanels, GLSceneEditLCL, GLSceneRegisterLCL, 
+  GLSIDENotifierLCL, RegisterXCollection, GL3xMaterialCode, 
+  GL3xMaterialEditor, GL3xMaterialNodePaletteLCL, GL3xMaterialPreview, 
+  GLObjectManager, FLibMaterialPickerLCL, FMaterialEditorFormLCL, 
+  FRColorEditorLCL, FRFaceEditorLCL, FRMaterialPreviewLCL, FRTextureEditLCL, 
+  FRTrackBarEditLCL, FVectorEditorLCL, InfoLCL, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('GLSceneRegisterLCL', @GLSceneRegisterLCL.Register); 
-  RegisterUnit('RegisterXCollection', @RegisterXCollection.Register); 
   RegisterUnit('GLExpandPanels', @GLExpandPanels.Register); 
+  RegisterUnit('GLSceneRegisterLCL', @GLSceneRegisterLCL.Register); 
   RegisterUnit('GLSIDENotifierLCL', @GLSIDENotifierLCL.Register); 
+  RegisterUnit('RegisterXCollection', @RegisterXCollection.Register); 
 end; 
 
 initialization
