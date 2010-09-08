@@ -28,13 +28,22 @@ package GLS_ODE7;
 
 requires
   vcl,
-  GLScene7;
+  GLScene7,
+  rtl,
+  inet,
+  xmlrtl,
+  vcljpg,
+  designide,
+  vclactnband,
+  vclx;
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
   dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
   GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas';
+  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
+  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
+  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas';
 
 end.
