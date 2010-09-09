@@ -9,6 +9,7 @@
    and stream data not deleted from video memory until application running.<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>09/09/10 - Yar - Added patch primitives and VerticesInPatch property
     <li>20/07/10 - Yar - Improved VAO refreshing
     <li>14/04/10 - Yar - Vertex array object per program request
     <li>29/03/10 - Yar - Added multicontext and multithreading support
@@ -67,7 +68,8 @@ type
     GLVBOM_LINES_ADJACENCY,
     GLVBOM_LINE_STRIP_ADJACENCY,
     GLVBOM_TRIANGLES_ADJACENCY,
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY
+    GLVBOM_TRIANGLE_STRIP_ADJACENCY,
+    GLVBOM_PATCHES
     );
 
   TGLBufferUsage = (buStatic, buDynamic, buStream);
@@ -97,6 +99,7 @@ type
     Divisor: array[0..GLS_VERTEX_ATTR_NUM - 1] of GLuint;
     DataFormat: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
     DataSize: array[0..GLS_VERTEX_ATTR_NUM - 1] of LongWord;
+    VerticesInPatch: Cardinal;
     TotalDataSize: Cardinal;
     BuiltProp: TGLBuiltProperties;
     LastTimeWhenRendered: Double;
@@ -191,6 +194,8 @@ type
     function DoMakeAdjacency: Boolean;
     procedure BuildErrorModel(const BuiltProp: TGLBuiltProperties);
     class function Usage: TGLEnum; virtual; abstract;
+    function GetVecticesInPatch: Cardinal;
+    procedure SetVecticesInPatch(Value: Cardinal);
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -290,6 +295,8 @@ type
     {: Return true if buffer is uploaded to video memory.
        Dynamic VBO always return false }
     property IsBuilded: Boolean read fBuilded;
+
+    property VecticesInPatch: Cardinal read GetVecticesInPatch write SetVecticesInPatch;
   end;
 
   // TGLStaticVBOManager
@@ -366,7 +373,7 @@ uses
   MeshUtils;
 
 const
-  cPrimitiveType: array[GLVBOM_TRIANGLES..GLVBOM_TRIANGLE_STRIP_ADJACENCY] of
+  cPrimitiveType: array[GLVBOM_TRIANGLES..GLVBOM_PATCHES] of
     GLenum =
     (
     GL_TRIANGLES,
@@ -382,7 +389,8 @@ const
     GL_LINES_ADJACENCY,
     GL_LINE_STRIP_ADJACENCY,
     GL_TRIANGLES_ADJACENCY,
-    GL_TRIANGLE_STRIP_ADJACENCY
+    GL_TRIANGLE_STRIP_ADJACENCY,
+    GL_PATCHES
     );
 
 type
@@ -656,6 +664,26 @@ begin
 {$ENDIF}
 end;
 
+function TGLBaseVBOManager.GetVecticesInPatch: Cardinal;
+begin
+  if (FState = GLVBOM_OBJECT) or (FState = GLVBOM_PRIMITIVE) then
+    Result := CurrentClient.VerticesInPatch
+  else
+    Result := 0;
+end;
+
+procedure TGLBaseVBOManager.SetVecticesInPatch(Value: Cardinal);
+begin
+  Assert(Value>0);
+  if FState = GLVBOM_OBJECT then
+    CurrentClient.VerticesInPatch := Value
+  else
+  begin
+    GLSLogger.LogError(glsWrongCallEnd);
+    Abort;
+  end;
+end;
+
 procedure TGLBaseVBOManager.BeginObject(const BuiltProp: TGLBuiltProperties);
 begin
   if FState <> GLVBOM_DEFAULT then
@@ -734,6 +762,7 @@ begin
     end;
     AClient.TotalDataSize := 0;
   end;
+  AClient.VerticesInPatch := 1;
 end;
 
 procedure TGLBaseVBOManager.FreeClient(const AClient: PGLRenderPacket);
@@ -763,7 +792,7 @@ begin
   end;
 
   if not ((eType >= GLVBOM_TRIANGLES) and (eType <=
-    GLVBOM_TRIANGLE_STRIP_ADJACENCY)) then
+    GLVBOM_PATCHES)) then
   begin
     GLSLogger.LogError(glsInvalidPrimType);
     Abort;
@@ -822,6 +851,7 @@ begin
     GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
     GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
     GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
+    GLVBOM_PATCHES: Valid := (count mod CurrentClient.VerticesInPatch = 0) and (count > 0);
   end;
 
   if not Valid then
@@ -1726,6 +1756,8 @@ var
     if (CurrentClient.PrimitiveType[p] >= GLVBOM_LINES_ADJACENCY)
       and (CurrentClient.PrimitiveType[p] <= GLVBOM_TRIANGLE_STRIP_ADJACENCY) then
       Result := GL.EXT_gpu_shader4
+    else if CurrentClient.PrimitiveType[p] = GLVBOM_PATCHES then
+      Result := GL.ARB_tessellation_shader
     else
       Result := True;
   end;
@@ -1823,12 +1855,15 @@ begin
         or (CurrentClient.PrimitiveType[p] = GLVBOM_TRIANGLES_ADJACENCY)) then
         continue;
 
+      if CurrentClient.PrimitiveType[p] = GLVBOM_PATCHES then
+        GL.PatchParameteri(GL_PATCH_VERTICES, CurrentClient.VerticesInPatch);
+
       pType := cPrimitiveType[CurrentClient.PrimitiveType[p]];
 
       if Assigned(CurrentClient.BuiltProp) and
         (CurrentClient.BuiltProp.InstancesNumber > 0) then
       begin
-        if GL.EXT_draw_instanced then
+        if GL.EXT_draw_instanced or GL.ARB_draw_instanced then
           HardwareInstancing
         else
           PseudoInstancing;

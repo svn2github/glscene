@@ -2646,6 +2646,14 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+    PatchParameteri: procedure(pname: TGLenum; value: TGLint);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    PatchParameterfv: procedure(pname: TGLenum; values: PGLFloat);
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
@@ -5309,6 +5317,8 @@ begin
   TexParameterIuiv := GetAddress('TexParameterIuiv');
   GetTexParameterIiv := GetAddress('GetTexParameterIiv');
   GetTexParameterIuiv := GetAddress('GetTexParameterIuiv');
+  PatchParameteri := GetAddress('PatchParameteri');
+  PatchParameterfv := GetAddress('PatchParameterfv');
 
   TexImage2DMultisample := GetAddress('TexImage2DMultisample');
   TexImage3DMultisample := GetAddress('TexImage3DMultisample');
@@ -6273,6 +6283,8 @@ begin
   TexParameterIuiv := GetCapAddress();
   GetTexParameterIiv := GetCapAddress();
   GetTexParameterIuiv := GetCapAddress();
+  PatchParameteri := GetCapAddress();
+  PatchParameterfv := GetCapAddress();
 
   TexImage2DMultisample := GetCapAddress();
   TexImage3DMultisample := GetCapAddress();
