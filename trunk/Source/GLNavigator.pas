@@ -34,6 +34,8 @@ unit GLNavigator;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   // VCL
   SysUtils, Classes,

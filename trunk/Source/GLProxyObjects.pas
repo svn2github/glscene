@@ -51,6 +51,8 @@ unit GLProxyObjects;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   // VCL
   Classes,
@@ -285,7 +287,8 @@ implementation
 uses
   OpenGLTokens,
   GLContext
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLColorProxy ------------------
