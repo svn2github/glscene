@@ -4,6 +4,7 @@
 {: OpenGLAdapter<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>10/09/10 - Yar - Added GL_ATI_Meminfo, GL_NVX_gpu_memory_info
     <li>04/08/10 - Yar - Added GL_AMDX_debug_output, GL_ARB_debug_output extension
                          Added WGL and GLX
     <li>21/05/10 - Yar - Creation
@@ -128,7 +129,7 @@ type
       SGIS_multisample, SGIS_texture_border_clamp, SGIS_texture_color_mask,
       SGIS_texture_edge_clamp, SGIS_texture_lod, SGIX_depth_texture,
       SGIX_shadow, SGIX_shadow_ambient, AMD_vertex_shader_tessellator,
-      WIN_swap_hint,
+      WIN_swap_hint, ATI_meminfo, NVX_gpu_memory_info,
 
     // Graphics Remedy's Extensions
     GREMEDY_frame_terminator, GREMEDY_string_marker: boolean;
@@ -4654,6 +4655,8 @@ begin
   AMD_vertex_shader_tessellator := CheckExtension('GL_AMD_vertex_shader_tessellator');
 
   WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
+  ATI_meminfo := CheckExtension('ATI_meminfo');
+  NVX_gpu_memory_info := CheckExtension('NVX_gpu_memory_info');
 
   GREMEDY_frame_terminator := CheckExtension('GL_GREMEDY_frame_terminator');
   GREMEDY_string_marker := CheckExtension('GL_GREMEDY_string_marker');
@@ -5633,6 +5636,8 @@ begin
   AMD_vertex_shader_tessellator := False;
 
   WIN_swap_hint := False;
+  ATI_meminfo := False;
+  NVX_gpu_memory_info := False;
 
   GREMEDY_frame_terminator := False;
   GREMEDY_string_marker := False;
