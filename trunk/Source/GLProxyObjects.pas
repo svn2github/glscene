@@ -170,6 +170,7 @@ type
   //
   {: An object containing the bone matrix for TGLActorProxy.<p> }
   TBoneMatrixObj = class
+  public
     Matrix: TMatrix;
     BoneName: string;
     BoneIndex: integer;
