@@ -299,10 +299,10 @@ type
   TGLStaticVBOManager = class(TGLBaseVBOManager)
   private
     { Private declarations }
-    FArrayBufferSize: UInt32;
-    FElementBufferSize: UInt32;
-    FArrayBufferFreeZone: UInt32;
-    FElementBufferFreeZone: UInt32;
+    FArrayBufferSize: TGLuint;
+    FElementBufferSize: TGLuint;
+    FArrayBufferFreeZone: TGLuint;
+    FElementBufferFreeZone: TGLuint;
   public
     { Public Declarations }
     constructor Create; override;
