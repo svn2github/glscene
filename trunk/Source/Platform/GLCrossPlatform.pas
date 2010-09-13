@@ -262,7 +262,7 @@ procedure RaiseLastOSError;
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
-function GetDeviceLogicalPixelsX(device: Cardinal): Integer;
+function GetDeviceLogicalPixelsX(device: HDC): Integer;
 {: Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth: Integer;
 {: Returns the number of color bits associated to the given pixel format. }
@@ -643,7 +643,7 @@ end;
 // GetDeviceLogicalPixelsX
 //
 
-function GetDeviceLogicalPixelsX(device: Cardinal): Integer;
+function GetDeviceLogicalPixelsX(device: HDC): Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
 end;
