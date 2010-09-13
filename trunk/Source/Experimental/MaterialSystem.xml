@@ -216,16 +216,20 @@
     <Vectors>
       <Vectors_LightVector ObjectType="F">
         <overload Version="34" Input="void;" Output="vec3">in vec3 fLightVector; //# { return normalize(fLightVector); }</overload>
+        <overload Version="2" Input="void;" Output="vec3">varying vec3 fLightVector; //# { return normalize(fLightVector); }</overload>
       </Vectors_LightVector>
       <Vectors_CameraVector ObjectType="F">
         <overload Version="34" Input="void;" Output="vec3">in vec3 fCameraVector; //# { return normalize(fCameraVector); }</overload>
+        <overload Version="2" Input="void;" Output="vec3">varying vec3 fCameraVector; //# { return normalize(fCameraVector); }</overload>
       </Vectors_CameraVector>
       <Vectors_WorldNormal ObjectType="F">
         <overload Version="34" Input="void;" Output="vec3">in vec3 fWorldNormal; //# { return normalize(fWorldNormal); }</overload>
+        <overload Version="2" Input="void;" Output="vec3">varying vec3 fWorldNormal; //# { return normalize(fWorldNormal); }</overload>
       </Vectors_WorldNormal>
       <Vectors_ReflectionVector ObjectType="F">
-        <overload Input="void;" Output="vec3">in vec3 fCameraVector; in vec3 fWorldNormal; //# { return reflect(-normalize(fCameraVector), normalize(fWorldNormal)); }</overload>
+        <overload Version="34" Input="void;" Output="vec3">in vec3 fCameraVector; in vec3 fWorldNormal; //# { return reflect(-normalize(fCameraVector), normalize(fWorldNormal)); }</overload>
         <overload Input="vec3;vec3;" Output="vec3">{ return reflect(-A,B); }</overload>
+        <overload Version="2" Input="void;" Output="vec3">varying vec3 fCameraVector; varying vec3 fWorldNormal; //# { return reflect(-normalize(fCameraVector), normalize(fWorldNormal)); }</overload>
       </Vectors_ReflectionVector>
     </Vectors>
     <Vertex>
@@ -257,9 +261,36 @@ in vec2 TexCoord7;
   A.TexCoord[6] = TexCoord6;
   A.TexCoord[7] = TexCoord7;
 }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void">attribute vec3 Position;
+attribute vec3 Normal;
+attribute vec3 Tangent;
+attribute vec4 VertexColor;
+attribute vec2 TexCoord0;
+attribute vec2 TexCoord1;
+attribute vec2 TexCoord2;
+attribute vec2 TexCoord3;
+attribute vec2 TexCoord4;
+attribute vec2 TexCoord5;
+attribute vec2 TexCoord6;
+attribute vec2 TexCoord7;
+//# 
+{
+  A.ObjectPosition = Position;
+  A.ObjectNormal = Normal;
+  A.ObjectTangent = normalize(Tangent);
+  A.VertexColor = VertexColor;
+  A.TexCoord[0] = TexCoord0;
+  A.TexCoord[1] = TexCoord1;
+  A.TexCoord[2] = TexCoord2;
+  A.TexCoord[3] = TexCoord3;
+  A.TexCoord[4] = TexCoord4;
+  A.TexCoord[5] = TexCoord5;
+  A.TexCoord[6] = TexCoord6;
+  A.TexCoord[7] = TexCoord7;
+}</overload>
       </GetVertex>
       <TransformVertex_O2W ObjectType="V">
-        <overload Version="34" Input="inout vrec;" Output="void" Uniforms="TUniformModelMatrix;">uniform mat4 ModelMatrix; 
+        <overload Input="inout vrec;" Output="void" Uniforms="TUniformModelMatrix;">uniform mat4 ModelMatrix; 
 //# 
 {
   A.WorldPosition = ModelMatrix * vec4(A.ObjectPosition, 1.0);
@@ -267,7 +298,7 @@ in vec2 TexCoord7;
 }</overload>
       </TransformVertex_O2W>
       <TransformVertex_W2S ObjectType="V">
-        <overload Version="34" Input="inout vrec;" Output="void" Uniforms="TUniformViewProjectionMatrix;">uniform mat4 ViewProjectionMatrix;
+        <overload Input="inout vrec;" Output="void" Uniforms="TUniformViewProjectionMatrix;">uniform mat4 ViewProjectionMatrix;
 //# 
 {
   A.ScreenPosition = ViewProjectionMatrix * A.WorldPosition;
@@ -283,9 +314,16 @@ in vec2 TexCoord7;
   A.LightVector = (A.WorldLightPosition - A.WorldPosition).xyz;
   A.LightVector = normalize(A.LightVector);
 }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Uniforms="TUniformLights;">uniform lrec Lights[16];
+//# 
+{
+  A.WorldLightPosition = Lights[0].LightWorldPosition;
+  A.LightVector = (A.WorldLightPosition - A.WorldPosition).xyz;
+  A.LightVector = normalize(A.LightVector);
+}</overload>
       </GetLight>
       <GetCamera ObjectType="V">
-        <overload Version="34" Input="inout vrec;" Output="void" Uniforms="TUniformCameraWorldPosition;">uniform vec4 CameraWorldPosition;
+        <overload Input="inout vrec;" Output="void" Uniforms="TUniformCameraWorldPosition;">uniform vec4 CameraWorldPosition;
 //# 
 {
   A.WorldCameraPosition = CameraWorldPosition;
@@ -294,7 +332,7 @@ in vec2 TexCoord7;
 }</overload>
       </GetCamera>
       <TransformLighting_W2T ObjectType="V">
-        <overload Version="34" Input="inout vrec;" Output="void" Uniforms="TUniformInvModelMatrix;">uniform mat4 InvModelMatrix;
+        <overload Input="inout vrec;" Output="void" Uniforms="TUniformInvModelMatrix;">uniform mat4 InvModelMatrix;
 //# 
 {
   vec3 binormal = cross(A.ObjectNormal, A.ObjectTangent);
@@ -334,6 +372,18 @@ out vec2 fTexCoord[8];
   fTexCoord[6] = A.TexCoord[6] * TexCoordTiling[6];
   fTexCoord[7] = A.TexCoord[7] * TexCoordTiling[7];
 }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void">varying vec2 fTexCoord[8]; 
+//# 
+{
+  fTexCoord[0] = A.TexCoord[0];
+  fTexCoord[1] = A.TexCoord[1];
+  fTexCoord[2] = A.TexCoord[2];
+  fTexCoord[3] = A.TexCoord[3];
+  fTexCoord[4] = A.TexCoord[4];
+  fTexCoord[5] = A.TexCoord[5];
+  fTexCoord[6] = A.TexCoord[6];
+  fTexCoord[7] = A.TexCoord[7];
+}</overload>
       </PassTexCoord_V2F>
       <PassTexCoord_V2G ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void">out vec2 gTexCoord[8]; 
@@ -362,6 +412,22 @@ out vec3 fWorldNormal;
 out vec4 fVertexColor;
 out vec3 fLightVector;
 out vec3 fCameraVector;
+//# 
+{
+  fWorldPosition = A.WorldPosition;
+  gl_Position = A.ScreenPosition;
+  fObjectNormal = A.ObjectNormal;
+  fWorldNormal = A.WorldNormal;
+  fVertexColor = A.VertexColor;
+  fLightVector = A.LightVector;
+  fCameraVector = A.CameraVector;
+}</overload>
+        <overload Version="2" Input="inout vrec;" Output="void">varying vec3 fObjectNormal;
+varying vec4 fWorldPosition;
+varying vec3 fWorldNormal;
+varying vec4 fVertexColor;
+varying vec3 fLightVector;
+varying vec3 fCameraVector;
 //# 
 {
   fWorldPosition = A.WorldPosition;
