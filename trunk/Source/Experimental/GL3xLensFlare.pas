@@ -289,7 +289,7 @@ begin
   inherited;
   // Set default parameters:
   ObjectStyle := ObjectStyle +
-    [osDirectDraw, osNoVisibilityCulling, osBuiltStage];
+    [osDirectDraw, osNoVisibilityCulling];
   FSize := 64;
   FSeed := 1465;
   FSqueeze := 1;
@@ -440,17 +440,6 @@ begin
   begin
     if Length(GradientProgram) = 0 then
       Initialize;
-
-    if osBuiltStage in ObjectStyle then
-    with StaticVBOManager do
-    begin
-      RenderClient(FBuiltPropertiesGlow);
-      RenderClient(FBuiltPropertiesRays);
-      RenderClient(FBuiltPropertiesStreaks);
-      RenderClient(FBuiltPropertiesRing);
-      RenderClient(FBuiltPropertiesSecondaries);
-      ObjectStyle := ObjectStyle - [osBuiltStage];
-    end;
 
     if ProgramsLinked then
     begin
