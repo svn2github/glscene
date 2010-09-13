@@ -9126,7 +9126,7 @@ begin
       xglMapTexCoordToMain;
     end;
 
-    if Assigned(FViewerBeforeRender) then
+    if Assigned(FViewerBeforeRender) and (drawState <> dsPrinting) then
       FViewerBeforeRender(Self);
     if Assigned(FBeforeRender) then
       if Owner is TComponent then
