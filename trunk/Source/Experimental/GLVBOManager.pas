@@ -2344,10 +2344,14 @@ destructor TGLStaticVBOManager.Destroy;
 var
   i: integer;
   Client: PGLRenderPacket;
-  MemoryUsed: Double;
+  Sum, MemoryUsed: Double;
 begin
-  MemoryUsed := (FArrayBufferFreeZone + FElementBufferFreeZone) / (FArrayBufferSize + FElementBufferSize) * 100;
-  GLSLogger.LogInfo(Format('Static buffer pools used on - %f %%', [MemoryUsed]));
+  Sum := FArrayBufferSize + FElementBufferSize;
+  if Sum > 0 then
+  begin
+    MemoryUsed := (FArrayBufferFreeZone + FElementBufferFreeZone) / sum * 100;
+    GLSLogger.LogInfo(Format('Static buffer pools used on - %f %%', [MemoryUsed]));
+  end;
 
   // Clear clients info
   for i := 0 to FClientList.Count - 1 do
