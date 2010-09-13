@@ -534,7 +534,21 @@ end;
 
 function GetMaxGLSLVersion: AnsiString;
 begin
-  Result := '#version 150 core';
+  Result := GL.GetString(GL_SHADING_LANGUAGE_VERSION);
+  Delete(Result, 5, Length(Result));
+  if Result = '1.10' then
+    Result := '// version 110 Yuck'
+  else if Result = '1.20' then
+    Result := '#version 120'
+  else if Result = '1.30' then
+    Result := '#version 130 core'
+  else if Result = '1.40' then
+    Result := '#version 140 core'
+  else if Result = '1.50' then
+    Result := '#version 150 core'
+  else if Result = '3.30' then
+    Result := '#version 330 core'
+  else Result := '#version 400 core';
 end;
 
 function MaskToGLSLType(AMask: TGLColorComponentMask): TGLSLDataType;
