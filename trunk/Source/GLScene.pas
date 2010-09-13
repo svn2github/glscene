@@ -2198,7 +2198,6 @@ type
        Note that ZBuffer precision is not linear and can be quite low on
        some boards (either from compression or resolution approximations). }
     function PixelRayToWorld(x, y: Integer): TAffineVector;
-
     {: Time (in second) spent to issue rendering order for the last frame.<p>
        Be aware that since execution by the hardware isn't synchronous,
        this value may not be an accurate measurement of the time it took
@@ -8474,58 +8473,56 @@ end;
 
 procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TGLBitmap; DPI: Integer);
 var
-  bmpContext: TGLContext;
+  nativeContext: TGLContext;
   aColorBits: Integer;
-  LViewport, viewportBackup: TRectangle;
 begin
   Assert((not FRendering), glsAlreadyRendering);
   FRendering := True;
+  nativeContext := RenderingContext;
   try
     aColorBits := PixelFormatToColorBits(ABitmap.PixelFormat);
     if aColorBits < 8 then
       aColorBits := 8;
-    bmpContext := GLContextManager.CreateContext;
-    SetupRCOptions(bmpContext);
-    with bmpContext do
+    FRenderingContext := GLContextManager.CreateContext;
+    SetupRCOptions(FRenderingContext);
+    with FRenderingContext do
     begin
       Options := []; // no such things for bitmap rendering
       ColorBits := aColorBits; // honour Bitmap's pixel depth
       AntiAliasing := aaNone; // no AA for bitmap rendering
-      CreateContext(Cardinal(ABitmap.Canvas.Handle));
+      CreateContext(ABitmap.Canvas.Handle);
     end;
     try
-      bmpContext.Activate;
+      FRenderingContext.Activate;
       try
-        SetupRenderingContext(bmpContext);
-        bmpContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
+        SetupRenderingContext(FRenderingContext);
+        FRenderingContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
         // set the desired viewport and limit output to this rectangle
-        with LViewport do
+        with FViewport do
         begin
           Left := 0;
           Top := 0;
           Width := ABitmap.Width;
           Height := ABitmap.Height;
-          bmpContext.GLStates.ViewPort :=
+          FRenderingContext.GLStates.ViewPort :=
             Vector4iMake(Left, Top, Width, Height);
         end;
         ClearBuffers;
         FRenderDPI := DPI;
         if FRenderDPI = 0 then
-          FRenderDPI :=
-            GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle));
+          FRenderDPI := GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
         // render
-        viewportBackup := FViewPort;
-        FViewport := LViewport;
-        DoBaseRender(LViewport, FRenderDPI, dsPrinting, nil);
-        FViewport := viewportBackup;
+        DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
+        FViewport := TRectangle(nativeContext.GLStates.ViewPort);
         GL.Finish;
       finally
-        bmpContext.Deactivate;
+        FRenderingContext.Deactivate;
       end;
     finally
-      bmpContext.Free;
+      FRenderingContext.Free;
     end;
   finally
+    FRenderingContext := nativeContext;
     FRendering := False;
   end;
   if Assigned(FAfterRender) then
@@ -9336,10 +9333,6 @@ begin
   if baseObject = nil then
   begin
     aScene.Objects.Render(rci);
-{$IFDEF GLS_EXPERIMENTAL}
-    if CurrentGLContext.Acceleration = chaHardware then
-      StaticVBOManager.BuildBuffer;
-{$ENDIF}
   end
   else
     baseObject.Render(rci);
