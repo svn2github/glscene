@@ -575,7 +575,7 @@ begin
   begin
     GLStates.ForwardContext := False;
     if FShareContext <> 0 then
-      if not wglShareLists(FRC, FShareContext) then
+      if not wglShareLists(FShareContext, FRC) then
         GLSLogger.LogError('DoCreateContext - Failed to share contexts');
     FGL.DebugMode := True; //rcoDebug in Options;
     FGL.Initialize;
@@ -1022,7 +1022,9 @@ begin
   end;
 
   if WGL_ARB_create_context then
-    CreateNewContext(FDC);
+    CreateNewContext(FDC)
+  else
+    CreateOldContext(FDC);
 
   Activate;
   // Specific which color buffers are to be drawn into
