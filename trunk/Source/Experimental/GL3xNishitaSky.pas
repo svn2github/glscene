@@ -978,7 +978,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 procedure TGL3xCustomNishitaSky.Assign(Source: TPersistent);

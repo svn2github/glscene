@@ -552,7 +552,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 procedure TGL3xCustomAtmosphere.TogleBlendingMode;

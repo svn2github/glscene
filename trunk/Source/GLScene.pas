@@ -470,8 +470,7 @@ type
   TGLObjectStyle = (
     osDirectDraw,
     osIgnoreDepthBuffer,
-    osNoVisibilityCulling,
-    osBuiltStage);
+    osNoVisibilityCulling);
   TGLObjectStyles = set of TGLObjectStyle;
 
   // IGLInitializable
@@ -4790,7 +4789,6 @@ begin
     if ARci.visibilityCulling = vcObjectBased then
     begin
       shouldRenderSelf := (osNoVisibilityCulling in ObjectStyle)
-        or (osBuiltStage in ObjectStyle)
         or (not IsVolumeClipped(AbsolutePosition,
         BoundingSphereRadius,
         ARci.rcci.frustum));

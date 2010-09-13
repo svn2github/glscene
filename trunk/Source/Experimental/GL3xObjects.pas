@@ -23,7 +23,7 @@ type
     procedure SetBuiltProperties(const Value: TGLBuiltProperties);
     procedure SetMaterial(const Value: TGL3xMaterialName); virtual;
 
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual;
+    procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual; abstract;
     procedure BeforeRender; virtual;
     procedure AfterRender; virtual;
   public
@@ -361,7 +361,7 @@ begin
   FBuiltProperties.OwnerNotifyChange := NotifyChange;
   FBuiltProperties.OnBuildRequest := BuildBufferData;
   FMaterial := glsDEFAULTMATERIALNAME;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osBuiltStage];
+  ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
 destructor TGL3xBaseSceneObject.Destroy;
@@ -404,11 +404,6 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGL3xBaseSceneObject.BuildBufferData(Sender: TGLBaseVBOManager);
-begin
-  ObjectStyle := ObjectStyle - [osBuiltStage];
-end;
-
 procedure TGL3xBaseSceneObject.BeforeRender;
 begin
 end;
@@ -432,12 +427,7 @@ end;
 procedure TGL3xBaseSceneObject.StructureChanged;
 begin
   inherited;
-  if (FBuiltProperties.Usage = buStream)
-    or (csDesigning in ComponentState) then
-  begin
-    ObjectStyle := ObjectStyle + [osBuiltStage];
-    FBuiltProperties.StructureChanged;
-  end;
+   FBuiltProperties.StructureChanged;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -544,7 +534,6 @@ begin
     end;
     EndObject;
   end;
-  inherited;
 end;
 
 // Assign
@@ -853,7 +842,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 // SetWidth
@@ -1135,7 +1123,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 // GenerateSilhouette
@@ -1566,7 +1553,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 // RayCastIntersect
@@ -1964,7 +1950,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 // Assign
@@ -2147,7 +2132,6 @@ begin
     EndPrimitives;
     EndObject;
   end;
-  inherited;
 end;
 
 // SetOuterRadius
@@ -2381,7 +2365,6 @@ begin
       EmitVertices(FVertexNumber, FIndexed);
     end;
 //  end;
-  inherited;
 end;
 
 procedure TGL3xFeedBackMesh.Assign(Source: TPersistent);
