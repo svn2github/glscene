@@ -1291,6 +1291,7 @@ begin
   GLContextManager.UnRegisterContext(Self);
   FGLStates.Free;
   FGL.Free;
+  FTransformation.Free;
   FOwnedHandles.Free;
   FSharedContexts.Free;
 {$IFDEF GLS_MULTITHREAD}

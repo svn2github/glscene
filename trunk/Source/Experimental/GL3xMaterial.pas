@@ -1448,8 +1448,9 @@ destructor TGL3xMaterial.Destroy;
 begin
   FSourceDoc := nil;
   ClearSamples;
-  FSampleList.Free;
   ClearUniforms;
+  FTextureUnits.Destroy;
+  FSampleList.Destroy;
   inherited;
 end;
 
