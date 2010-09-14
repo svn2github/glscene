@@ -532,6 +532,7 @@ type
   TGLBufferObjectHandle = class(TGLContextHandle)
   private
     { Private Declarations }
+    FSize: Integer;
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
@@ -585,6 +586,7 @@ type
     class function IsSupported: Boolean; override;
 
     property Target: TGLuint read GetTarget;
+    property BufferSize: Integer read FSize;
   end;
 
   // TGLVBOHandle
@@ -2684,6 +2686,7 @@ end;
 procedure TGLBufferObjectHandle.BufferData(p: Pointer; size: Integer;
   bufferUsage: TGLuint);
 begin
+  FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
 end;
 
@@ -2694,6 +2697,7 @@ procedure TGLBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
   bufferUsage: TGLuint);
 begin
   Bind;
+  FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
 end;
 
@@ -2703,6 +2707,7 @@ end;
 procedure TGLBufferObjectHandle.BufferSubData(offset, size: Integer; p:
   Pointer);
 begin
+  Assert(offset+size < FSize);
   GL.BufferSubData(Target, offset, size, p);
 end;
 
