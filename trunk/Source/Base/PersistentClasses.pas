@@ -1858,9 +1858,19 @@ var
    oldDc : Char;
 begin
    ReadLine(cVTInteger);
-   oldDc:=DecimalSeparator;
-   DecimalSeparator:='.';
+   oldDc :=
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+   DecimalSeparator;
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+   DecimalSeparator := '.';
    Result:=StrToFloat(FData);
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
    DecimalSeparator:=oldDc;
 end;
 

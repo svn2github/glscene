@@ -656,7 +656,14 @@ var
   i: TIntVectorEXT;
   oldDS: Char;
 begin
-  oldDS := DecimalSeparator;
+  oldDS :=
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+  DecimalSeparator;
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
   DecimalSeparator := '.';
   Result := '';
   case tp of
@@ -712,6 +719,9 @@ begin
   else
     Assert(False);
   end;
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
   DecimalSeparator := oldDS;
 end;
 

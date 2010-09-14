@@ -739,7 +739,11 @@ end;
 
 procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key > #32) and Not CharInSet(Key, ['0'..'9', DecimalSeparator]) then
+  if (Key > #32) and Not CharInSet(Key, ['0'..'9',
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+  DecimalSeparator]) then
     Key := #0;
 end;
 

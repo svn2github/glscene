@@ -306,6 +306,9 @@ begin
   FMaterialGraph.PullingMode := False;
 
   QueryPerformanceFrequency(CounterFrequency);
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
   DecimalSeparator := '.';
   TransparensyMenuItem.Enabled := False;
 {$IFDEF FPC}
