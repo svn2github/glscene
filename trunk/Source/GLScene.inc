@@ -136,6 +136,17 @@
 // Conditional expressions were introduced in Delphi 6
 {$ifdef CONDITIONALEXPRESSIONS}
 
+  // Delphi XE & C++ Builder XE
+  {$if CompilerVersion>22}
+    {$DEFINE GLS_COMPILER_XE_UP}
+  {$elseif CompilerVersion=22}
+    {$DEFINE GLS_COMPILER_2011}
+    {$DEFINE GLS_COMPILER_XE_UP}
+    {$DEFINE GLS_COMPILER_XE_DOWN}
+  {$elseif CompilerVersion<23}
+    {$DEFINE GLS_COMPILER_XE_DOWN}
+  {$ifend}
+
   // Delphi 2010 & C++ Builder 2010
   {$if CompilerVersion>21}
     {$DEFINE GLS_COMPILER_2010_UP}
@@ -286,6 +297,9 @@
     {$IFDEF GLS_COMPILER_2010}
       {$DEFINE GLS_DELPHI_2010}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_2011}
+      {$DEFINE GLS_DELPHI_2011}
+    {$ENDIF}
   {$ENDIF}
 
   // UP Declarations
@@ -336,6 +350,9 @@
     {$IFDEF GLS_COMPILER_2010_UP}
       {$DEFINE GLS_DELPHI_2010_UP}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE_UP}
+      {$DEFINE GLS_DELPHI_XE_UP}
+    {$ENDIF}
   {$ENDIF}
 
   // Down Declarations
@@ -379,6 +396,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2010_DOWN}
       {$DEFINE GLS_DELPHI_2010_DOWN}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE_DOWN}
+      {$DEFINE GLS_DELPHI_XE_DOWN}
     {$ENDIF}
   {$ENDIF}
 
@@ -446,6 +466,7 @@
 //_DOWN Defines
 
 {$IFDEF GLS_COMPILER_5}
+  {$DEFINE GLS_COMPILER_XE_DOWN}
   {$DEFINE GLS_COMPILER_2010_DOWN}
   {$DEFINE GLS_COMPILER_2009_DOWN}
   {$DEFINE GLS_COMPILER_2007_DOWN}
@@ -458,7 +479,8 @@
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
-  {$DEFINE GLS_DELPHI_2009_DOWN}
+  {$DEFINE GLS_DELPHI_XE_DOWN}
+  {$DEFINE GLS_DELPHI_2010_DOWN}
   {$DEFINE GLS_DELPHI_2009_DOWN}
   {$DEFINE GLS_DELPHI_2007_DOWN}
   {$DEFINE GLS_DELPHI_2006_DOWN}
