@@ -13,7 +13,7 @@
       <Parsing>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
-          <UseAnsiStrings Value="False"/>
+          <IncludeAssertionCode Value="True"/>
         </SyntaxOptions>
       </Parsing>
       <Other>

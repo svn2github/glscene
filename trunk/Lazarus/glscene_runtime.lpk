@@ -13,7 +13,7 @@
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
           <CStyleOperator Value="False"/>
-          <UseAnsiStrings Value="False"/>
+          <IncludeAssertionCode Value="True"/>
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
