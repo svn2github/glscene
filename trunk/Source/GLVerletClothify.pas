@@ -6,6 +6,7 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>06/06/10 - Yar - Fixed warnings
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -80,6 +81,8 @@ type
     property EdgeDoublesSkipped : integer read FEdgeDoublesSkipped;
 
     property GLBaseMesh : TGLBaseMesh read FGLBaseMesh;
+
+    property NodeList : TVerletNodeList read FNodeList;
 
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
 
