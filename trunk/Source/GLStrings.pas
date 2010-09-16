@@ -6,12 +6,13 @@
 	String constants that are used in many GLScene units<p>
 
 	<b>History :</b><font size=-1><ul>
-      23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
+      <li>16/09/10 - YP - Added glsUnknownParam
+      <li>23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
                          glsUnknownType, glsShaderNeedsAtLeastOneLightSource(Ex),
                          glsCadencerNotDefined(Ex), glsSceneViewerNotDefined
-      16/02/07 - DaStr - Added glsOCProxyObjects, glsError, glsErrorEx,
+      <li>16/02/07 - DaStr - Added glsOCProxyObjects, glsError, glsErrorEx,
                          glsMatLibNotDefined, glsMaterialNotFoundInMatlib(Ex)
-      26/08/02 - EG - Added missing header, added glsUnknownExtension
+      <li>26/08/02 - EG - Added missing header, added glsUnknownExtension
 	</ul></font>
 }
 unit GLStrings;
@@ -127,6 +128,8 @@ resourcestring
     'Necessary to increase the constant GLS_VERTEX_ATTR_NUM';
   glsOutOfMaxShader =
     'Necessary to increase the constant GLS_MAX_SHADER_PROGRAM';
+  glsUnknownParam =
+    'Unknown %s "%s" for "%s" or program not in use';
 
   // Resources
   glsDEFAULTMATERIALNAME = 'DEFAULTMATERIAL';

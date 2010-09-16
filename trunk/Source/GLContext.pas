@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
                            Added to TGLContext property PipelineTransformation
                            Added feature of debug context creating
@@ -1192,7 +1193,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  GLPBuffer;
+  GLPBuffer, GLStrings;
 
 resourcestring
   cCannotAlterAnActiveContext = 'Cannot alter an active context';
@@ -3793,7 +3794,7 @@ end;
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
   Result := GL.GetAttribLocation(SafeGetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, 'Unknown attrib "' + name + '" or program not in use');
+  Assert(Result >= 0, Format(glsUnknownParam,['attrib', aName, Name]));
 end;
 
 // GetUniformLocation
@@ -3802,7 +3803,7 @@ end;
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
   Result := GL.GetUniformLocation(SafeGetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, 'Unknown uniform "' + name + '" or program not in use');
+  Assert(Result >= 0, Format(glsUnknownParam,['uniform', aName, Name]));
 end;
 
 // GetVaryingLocation
@@ -3811,7 +3812,7 @@ end;
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
   Result := GL.GetVaryingLocation(SafeGetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, 'Unknown varying "' + name + '" or program not in use');
+  Assert(Result >= 0, Format(glsUnknownParam,['varying', aName, Name]));
 end;
 
 // AddActiveVarying
@@ -4149,8 +4150,7 @@ end;
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
   Result := GL.GetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, 'Unknown uniform block"' + name +
-    '" or program not in use');
+  Assert(Result >= 0, Format(glsUnknownParam,['uniform block', aName, Name]));
 end;
 
 // Create
