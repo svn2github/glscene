@@ -6,6 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/10/10 - Yar - Bugfixed memory leak
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)  
@@ -492,6 +493,8 @@ begin
   FFogSupport := sfsAuto;
   TStringList(VertexProgram.Code).OnChange := nil;
   TStringList(FragmentProgram.Code).OnChange := nil;
+  VertexProgram.Enabled := true;
+  FragmentProgram.Enabled := true;
 end;
 
 procedure TGLBaseCustomGLSLDiffuseSpecular.DoApply(
@@ -640,8 +643,6 @@ procedure TGLCustomGLSLDiffuseSpecularShaderAM.DoInitialize(var rci: TRenderCont
 begin
   GetVertexProgramCode(VertexProgram.Code, IsFogEnabled(FFogSupport, rci), rci);
   GetFragmentProgramCodeAM(FragmentProgram.Code, FRealisticSpecular, IsFogEnabled(FFogSupport, rci));
-  VertexProgram.Enabled := True;
-  FragmentProgram.Enabled := True;
   inherited;
 end;
 
