@@ -6,6 +6,7 @@
    Nodes are used to describe lines, polygons + more.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>26/11/09 - DaStr - Improved Lazarus compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
@@ -38,6 +39,7 @@ type
   private
     { Private Declarations }
     FCoords: TVector;
+    FTagObject: TObject;
     procedure SetAsVector(const value: TVector);
     procedure SetAsAffineVector(const value: TAffineVector);
     function GetAsAffineVector: TAffineVector;
@@ -68,6 +70,7 @@ type
 
     property W: TGLFloat index 3 read FCoords[3] write SetCoordinate stored StoreCoordinate;
 
+    property TagObject: TObject read FTagObject write FTagObject;
   published
     { Published Declarations }
     property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored StoreCoordinate;
