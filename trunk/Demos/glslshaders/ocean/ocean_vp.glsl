@@ -1,3 +1,4 @@
+#version 120
 uniform float Time;
 uniform vec4  EyePos;
 

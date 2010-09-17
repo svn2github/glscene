@@ -147,8 +147,10 @@ begin
   if not programObject.LinkProgram then
     raise Exception.Create(programObject.InfoLog);
 
-  if not programObject.ValidateProgram then
-    raise Exception.Create(programObject.InfoLog);
+  programObject.UseProgramObject;
+  programObject.Uniform1i['NormalMap'] := 0;
+  programObject.Uniform1i['EnvironmentMap'] := 1;
+  programObject.EndUseProgramObject;
 
   // initialize the heightmap
   with MatLib.LibMaterialByName('water') do
@@ -164,13 +166,8 @@ begin
     rci.GLStates.TextureBinding[1, ttTextureCube] := Material.Texture.Handle;
   end;
 
-  programObject.UseProgramObject;
-
-  programObject.Uniform1i['NormalMap'] := 0;
-  programObject.Uniform1i['EnvironmentMap'] := 1;
-
-  programObject.EndUseProgramObject;
-
+  if not programObject.ValidateProgram then
+    raise Exception.Create(programObject.InfoLog);
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
