@@ -413,7 +413,9 @@ Type
     Class Function FriendlyName: String; Override;
     Class Function FriendlyDescription: String; Override;
     Property Initialized: Boolean Read FInitialized;
-
+    Property OnContactProcess
+      : TContactProcessEvent Read FContactProcessEvent
+      Write FContactProcessEvent;
   Published
     { Published Declarations }
     Property Softness: Single Read FSoftness Write SetSoftness;
@@ -425,9 +427,7 @@ Type
       : Single Read FKineticFriction Write SetKineticFriction;
     Property id0: integer Read Fid0 Write Fid0 Default 0;
     Property id1: integer Read Fid1 Write Fid1 Default 0;
-    Property OnContactProcess
-      : TContactProcessEvent Read FContactProcessEvent
-      Write FContactProcessEvent;
+
     Property Manager: TGLNGDManager Read FManager Write SetManager;
   End;
 
