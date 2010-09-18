@@ -456,11 +456,12 @@ begin
 
     glBase :=  FTextFontEntry^.FVirtualHandle.Handle;
     case FCharacterRange of
-      stcrAlphaNum: GL.ListBase(TGLint(glBase) - 32);
-      stcrNumbers: GL.ListBase(TGLint(glBase) -  TGLint('0'));
+      stcrAlphaNum: GL.ListBase(TGLuint(glBase) - TGLuint(32));
+      stcrNumbers: GL.ListBase(TGLuint(glBase) -  TGLuint('0'));
     else
       GL.ListBase(glBase);
     end;
+
     rci.GLStates.PushAttrib([sttPolygon]);
     for i := 0 to FLines.Count - 1 do
     begin
