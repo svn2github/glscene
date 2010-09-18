@@ -15,3 +15,4 @@ into the repository. But you can download them at:
 http://newtondynamics.com/forum/viewtopic.php?f=9&t=4922&start=0
 
 An archive that contains only usefull data can be downloaded at:
+http://ftpmerou.free.fr/delphi/NGD/

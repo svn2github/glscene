@@ -16,6 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
   <li>15/07/10 - FP - Creation by Franck Papouin
   </ul></font>
 }
@@ -785,6 +786,11 @@ procedure UnregisterGLSceneObject(anObject: TGLBaseSceneObject);
 function GetGLSceneObject(anObjectName: string): TGLBaseSceneObject;
 function GetBodyFromGLSceneObject(anObject: TGLBaseSceneObject): PNewtonBody;
 
+function GetNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetOrCreateNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+function GetOrCreateNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+
 var
   vGLNGDObjectRegister: TList;
 
@@ -1043,6 +1049,36 @@ begin
       Result := temp.FNewtonBody;
   end;
 end;
+
+
+// GetNGDStatic
+//
+function GetNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+begin
+     result:= TGLNGDStatic(obj.Behaviours.GetByClass(TGLNGDStatic));
+end;
+
+// GetOrCreateNGDStatic
+//
+function GetOrCreateNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+begin
+     result:= TGLNGDStatic(obj.GetOrCreateBehaviour(TGLNGDStatic));
+end;
+
+// GetNGDDynamic
+//
+function GetNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+begin
+     result:= TGLNGDDynamic(obj.Behaviours.GetByClass(TGLNGDDynamic));
+end;
+
+// GetOrCreateNGDDynamic
+//
+function GetOrCreateNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+begin
+     result:= TGLNGDDynamic(obj.GetOrCreateBehaviour(TGLNGDDynamic));
+end;
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
