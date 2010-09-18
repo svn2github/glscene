@@ -21,6 +21,7 @@
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
   <b>History : </b><font size=-1><ul>
+    <li>18/09/10 - YP - Moved published behaviours' events to public (they cannot be restored by the filer)
     <li>30/03/07 - DaStr - Added $I GLScene.inc
     <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
     <li>01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
@@ -161,6 +162,7 @@ type
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
     class function FriendlyDescription : String; override;
+    property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
     { Published Declarations }
     property Active : Boolean read FActive write FActive;
@@ -171,7 +173,6 @@ type
     property Friction : Single read FFriction write SetFriction;
     property BounceFactor : Single read FBounceFactor write SetBounceFactor;
     property Size : TGLCoordinates read FSize write SetSize;
-    property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   end;
 
   TDCESlideOrBounce = (csbSlide,csbBounce);
@@ -234,6 +235,7 @@ type
     property Speed : TAffineVector read FSpeed write FSpeed;
     property InGround : Boolean read FInGround;
     property MaxRecursionDepth:byte read FMaxRecursionDepth write FMaxRecursionDepth;//gak20041119
+    property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
     { Published Declarations }
     property Active : Boolean read FActive write FActive;
@@ -244,7 +246,6 @@ type
     property Friction : Single read FFriction write SetFriction;
     property BounceFactor : Single read FBounceFactor write SetBounceFactor;
     property Size : TGLCoordinates read FSize write SetSize;
-    property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
     property SlideOrBounce:TDCESlideOrBounce read FSlideOrBounce write FSlideOrBounce;//gak20041122
   end;
 
