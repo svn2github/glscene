@@ -17,17 +17,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 376
-    Height = 330
+    Width = 368
+    Height = 321
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 145.393615722656300000
     Align = alClient
+    TabOrder = 0
   end
   object RadioGroup1: TRadioGroup
-    Left = 376
+    Left = 368
     Top = 0
     Width = 84
-    Height = 330
+    Height = 321
     Align = alRight
     Caption = 'Mode'
     ItemIndex = 1
@@ -45,42 +47,45 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object DCVolcano: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       BehavioursData = {
-        0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-        080500000000000000B405400500000000000000000000050000000000000000
-        000009020008020008}
+        58434F4C02010201060B54474C42496E65727469610200060E53696D706C6520
+        496E657274696102000200050000000000000080FF3F02000805000000000000
+        00B4054005000000000000000000000500000000000000000000090200080200
+        08}
       EffectsData = {
-        0201061254474C536F757263655046584566666563740200060A504658566F6C
-        63616E6F02030200090000000000004040000000000000000002000802000805
-        0000000000000080FF3F050000000000CDCCCCFC3F0500000000008FC2F5F83F
-        0200020009}
+        58434F4C02010201061254474C536F757263655046584566666563740201060A
+        504658566F6C63616E6F050000000000000080FF3F0206020009000000000000
+        40400000000000000000020008020008050000000000000080FF3F0500000000
+        00CDCCCCFC3F0500000000008FC2F5F83F020002000905000000000000000000
+        00080200}
       object Sphere1: TGLSphere
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003F0000803F}
         Position.Coordinates = {0000000000000040000000400000803F}
-        Radius = 0.300000011920929
+        Radius = 0.300000011920929000
         Slices = 12
         Stacks = 12
         EffectsData = {
-          0201061254474C536F7572636550465845666665637402000607504658426C75
-          650203020008020008020008050000000000CDCCCCFB3F050000000000CDCCCC
-          FB3F050000000000CDCCCCFB3F0200020009}
+          58434F4C02010201061254474C536F7572636550465845666665637402010607
+          504658426C7565050000000000000080FF3F0206020008020008020008050000
+          000000CDCCCCFB3F050000000000CDCCCCFB3F050000000000CDCCCCFB3F0200
+          0200090500000000000000000000080200}
       end
     end
     object PFXRenderer: TGLParticleFXRenderer
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000000000000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCCamera: TGLDummyCube
       Position.Coordinates = {0000000000004040000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 30
-        FocalLength = 50
+        DepthOfView = 30.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = DCCamera
         Position.Coordinates = {00002041000000410000C0400000803F}
       end
@@ -90,15 +95,15 @@ object Form1: TForm1
     Cadencer = GLCadencer1
     Renderer = PFXRenderer
     Acceleration.Coordinates = {00000000000080BF0000000000000000}
-    Friction = 1
+    Friction = 1.000000000000000000
     NbSides = 7
-    ParticleSize = 0.25
+    ParticleSize = 0.250000000000000000
     ColorOuter.Color = {0000803F000000000000000000000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F000000000000000000000000}
-        LifeTime = 7
-        SizeScale = 1
+        LifeTime = 7.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 56
     Top = 16
@@ -117,17 +122,17 @@ object Form1: TForm1
   object PFXBlue: TGLPolygonPFXManager
     Cadencer = GLCadencer1
     Renderer = PFXRenderer
-    Friction = 1
-    ParticleSize = 0.550000011920929
+    Friction = 1.000000000000000000
+    ParticleSize = 0.550000011920929000
     ColorInner.Color = {00000000000000000000803F0000803F}
     ColorOuter.Color = {00000000000000001283203F00000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F0000803F0000803F00000000}
-        LifeTime = 3
-        SizeScale = 1
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 56
-    Top = 56
+    Top = 72
   end
 end

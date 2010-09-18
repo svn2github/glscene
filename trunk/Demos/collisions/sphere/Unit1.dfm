@@ -16,27 +16,25 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 450
-    Height = 288
+    Width = 442
+    Height = 279
     Camera = GLCamera1
+    FieldOfView = 140.562316894531200000
     Align = alClient
+    TabOrder = 0
   end
   object TrackBar1: TTrackBar
     Left = 0
-    Top = 288
-    Width = 450
+    Top = 279
+    Width = 442
     Height = 45
     Align = alBottom
     Max = 20
     Min = -20
-    Orientation = trHorizontal
     Frequency = 5
     Position = 20
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
     TickMarks = tmBoth
-    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object Button1: TButton
@@ -52,33 +50,31 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000A0410000A0410000A0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object Sphere1: TGLSphere
-      Position.Coordinates = {0000000000000000000000400000803F}
       Material.FrontProperties.Diffuse.Color = {8A8F0F3FBEBC3C3F8A8F0F3F0000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Radius = 0.5
+      Position.Coordinates = {0000000000000000000000400000803F}
+      Radius = 0.500000000000000000
       BehavioursData = {
-        0201060D54474C42436F6C6C6973696F6E02010611436F6C6C6973696F6E4D61
-        6E616765723102010200}
+        58434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C69
+        73696F6E4D616E616765723102010200}
     end
     object Sphere2: TGLSphere
       Material.FrontProperties.Diffuse.Color = {00000000F8FEFE3E0000803F0000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Radius = 0.5
+      Radius = 0.500000000000000000
       BehavioursData = {
-        0201060D54474C42436F6C6C6973696F6E02010611436F6C6C6973696F6E4D61
-        6E616765723102010200}
+        58434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C69
+        73696F6E4D616E616765723102010200}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000A04000004040000000400000803F}
       Left = 256
@@ -88,6 +84,6 @@ object Form1: TForm1
   object CollisionManager1: TCollisionManager
     OnCollision = CollisionManager1Collision
     Left = 16
-    Top = 48
+    Top = 72
   end
 end
