@@ -6,6 +6,7 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats
       <li>31/05/10 - Yar - Fixes for Linux x64
       <li>25/01/10 - DaStr - Updated warning about a possible crash while using the
                               'Use Debug DCUs' compiler option (BugTrackerID=1586936)
@@ -99,7 +100,10 @@ type
   end;
 
 // HackTPictureRegisteredFormats
-
+{$ifopt R+}
+  {$define HackTPictureRegisteredFormats_Disable_RangeCheck}
+  {$R-}
+{$endif}
 procedure HackTPictureRegisteredFormats(destList: TStrings);
 var
   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats: PAnsiChar;
@@ -129,5 +133,10 @@ begin
     end;
   end;
 end;
+
+{$ifdef HackTPictureRegisteredFormats_Disable_RangeCheck}
+  {$R+}
+  {$undef HackTPictureRegisteredFormats_Disable_RangeCheck}
+{$endif}
 
 end.
