@@ -16,6 +16,8 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+
+  <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
   <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
   <li>15/07/10 - FP - Creation by Franck Papouin
   </ul></font>
@@ -65,6 +67,7 @@ type
     FRenderPoint: TGLRenderPoint;
     FBitmapFont: TGLCustomBitmapFont;
     FMaterials: TNGDMaterials;
+    FMaxMaterialID : integer;
     FVisible, FVisibleAtRunTime: Boolean; // Show Debug
     FNewtonWorld: PNewtonWorld;
     FVersion: integer;
@@ -95,7 +98,6 @@ type
 
     // Events
     FMaterialHitEvent: TMaterialHitEvent;
-
   protected
     { Protected Declarations }
     procedure Loaded; override;
@@ -129,12 +131,12 @@ type
     procedure WriteMaterials(stream: TStream);
     procedure ReadMaterials(stream: TStream);
     procedure DefineProperties(Filer: TFiler); override;
+    procedure MaterialAutoCreateGroupID(MaterialID: integer);
 
     // Events
     procedure NotifyWorldSizeChange(Sender: TObject);
     procedure NotifyGravityChange(Sender: TObject);
     procedure NotifyWaterPlaneChange(Sender: TObject);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1097,6 +1099,7 @@ begin
   FVisible := True;
   FVisibleAtRunTime := False;
   FMaterials := TNGDMaterials.Create(self);
+  FMaxMaterialID := 0;
   FSolverModel := smExact;
   FFrictionModel := fmExact;
   FMinimumFrameRate := 60;
@@ -1191,7 +1194,7 @@ end;
 
 procedure TGLNGDManager.Loaded;
 var
-  maxMaterialID: integer;
+  MaxMaterialID: integer;
   i: integer;
 begin
   inherited;
@@ -1199,27 +1202,32 @@ begin
   // NotifyGravityChange(self);
   // NotifyWaterPlaneChange(self);
 
-  maxMaterialID := 0;
+  MaxMaterialID := 0;
 
   // Get the max MaterialGroupID
   for i := 0 to FMaterials.Count - 1 do
   begin
-    maxMaterialID := MaxInteger(maxMaterialID, FMaterials[i].id0);
-    maxMaterialID := MaxInteger(maxMaterialID, FMaterials[i].id1);
+    MaxMaterialID := MaxInteger(MaxMaterialID, FMaterials[i].id0);
+    MaxMaterialID := MaxInteger(MaxMaterialID, FMaterials[i].id1);
   end;
 
-  // Get the max MaterialID
-  for i := 0 to FNGDBehaviours.Count - 1 do
-    maxMaterialID := MaxInteger(maxMaterialID, NGDBehaviours[i].MaterialID);
-
-  // Create GroupID
-  for i := 0 to maxMaterialID - 1 do
-    MaterialCreateGroupID;
+  MaterialAutoCreateGroupID(MaxMaterialID);
 
   for i := 0 to FMaterials.Count - 1 do
   begin
     FMaterials[i].Loaded;
   end;
+end;
+
+procedure TGLNGDManager.MaterialAutoCreateGroupID(MaterialID: integer);
+var
+  i :integer;
+begin
+  // Create GroupID
+  for i := FMaxMaterialID to MaterialID - 1 do
+    MaterialCreateGroupID;
+
+  FMaxMaterialID := MaxInteger(FMaxMaterialID, MaterialID);
 end;
 
 procedure TGLNGDManager.ReadMaterials(stream: TStream);
@@ -1767,6 +1775,7 @@ begin
   begin
     SetContinuousCollisionMode(FContinuousCollisionMode);
     SetMaterialID(FMaterialID);
+    Manager.MaterialAutoCreateGroupID(FMaterialID);
   end;
 end;
 
