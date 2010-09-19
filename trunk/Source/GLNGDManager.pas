@@ -403,6 +403,9 @@ type
     procedure SetCollidable(val: Boolean);
     procedure SetStaticFriction(val: Single);
     procedure SetKineticFriction(val: Single);
+    procedure Setid0(const Value: integer);
+    procedure Setid1(const Value: integer);
+
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
@@ -429,8 +432,8 @@ type
       : Single read FStaticFriction write SetStaticFriction;
     property KineticFriction
       : Single read FKineticFriction write SetKineticFriction;
-    property id0: integer read Fid0 write Fid0 default 0;
-    property id1: integer read Fid1 write Fid1 default 0;
+    property id0: integer read Fid0 write Setid0 default 0;
+    property id1: integer read Fid1 write Setid1 default 0;
 
     property Manager: TGLNGDManager read FManager write SetManager;
   end;
@@ -1775,7 +1778,6 @@ begin
   begin
     SetContinuousCollisionMode(FContinuousCollisionMode);
     SetMaterialID(FMaterialID);
-    Manager.MaterialAutoCreateGroupID(FMaterialID);
   end;
 end;
 
@@ -1950,6 +1952,7 @@ begin
   if Assigned(FManager) then
   begin
     NewtonBodySetMaterialGroupID(FNewtonBody, FMaterialID);
+    FManager.MaterialAutoCreateGroupID(FMaterialID);
     FManager.NotifyChange(self);
   end;
 
@@ -2586,6 +2589,8 @@ begin
   SetElasticity(FElasticity);
   SetStaticFriction(FStaticFriction);
   SetKineticFriction(FKineticFriction);
+  Setid0(Fid0);
+  Setid1(Fid1);
 end;
 
 procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
@@ -2655,6 +2660,20 @@ begin
   if Initialized then
     NewtonMaterialSetDefaultElasticity(FManager.FNewtonWorld, Fid0, Fid1,
       FElasticity);
+end;
+
+procedure TNGDMaterialPair.Setid0(const Value: integer);
+begin
+  Fid0 := Value;
+  if Assigned(FManager) then
+    FManager.MaterialAutoCreateGroupID(Fid0);
+end;
+
+procedure TNGDMaterialPair.Setid1(const Value: integer);
+begin
+  Fid1 := Value;
+  if Assigned(FManager) then
+    FManager.MaterialAutoCreateGroupID(Fid0);
 end;
 
 procedure TNGDMaterialPair.SetSoftness(val: Single);
