@@ -17,6 +17,7 @@
 
   <b>History : </b><font size=-1><ul>
 
+  <li>20/09/10 - FP - Call Finalize|Initialize in Setid
   <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
   <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
   <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
@@ -2658,16 +2659,16 @@ end;
 
 procedure TNGDMaterialPair.Setid0(const Value: integer);
 begin
+  Finalize;
   Fid0 := Value;
-  if Assigned(FManager) then
-    FManager.MaterialAutoCreateGroupID(Fid0);
+  Initialize;
 end;
 
 procedure TNGDMaterialPair.Setid1(const Value: integer);
 begin
+  Finalize;
   Fid1 := Value;
-  if Assigned(FManager) then
-    FManager.MaterialAutoCreateGroupID(Fid0);
+  Initialize;
 end;
 
 procedure TNGDMaterialPair.SetSoftness(val: Single);
