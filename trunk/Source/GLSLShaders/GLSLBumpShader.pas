@@ -6,6 +6,7 @@
    A GLSL shader that applies bump mapping.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/10/10 - Yar - Bugfixed memory leak
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)
@@ -619,6 +620,8 @@ begin
   FBumpSmoothness := 300;
   TStringList(VertexProgram.Code).OnChange := nil;
   TStringList(FragmentProgram.Code).OnChange := nil;
+  VertexProgram.Enabled := True;
+  FragmentProgram.Enabled := True;
 end;
 
 procedure TGLBaseCustomGLSLBumpShader.DoApply(
@@ -955,8 +958,6 @@ procedure TGLCustomGLSLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; S
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCode(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
-  VertexProgram.Enabled := True;
-  FragmentProgram.Enabled := True;
   inherited;
 end;
 
