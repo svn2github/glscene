@@ -275,7 +275,7 @@ begin
    for i := 0 to FileCount - 1 do
    begin
       FStream.ReadBuffer(Dir, SizeOf(TFileSection));
-      FFiles.Add(Dir.FileName);
+      FFiles.Add(string(Dir.FileName));
    end;
 end;
 

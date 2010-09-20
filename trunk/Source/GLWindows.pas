@@ -1675,7 +1675,7 @@ var
 Begin
   If Assigned(BitmapFont) then
   Begin
-    Position[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(Data))*0.5));
+    Position[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(AnsiString(Data)))*0.5));
     Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5))+2;
     Position[2] := 0;
     Position[3] := 0;
@@ -2173,7 +2173,7 @@ Begin
     ATitleColor := FTitleColor;
     ATitleColor[3] := AlphaChannel;
 
-    WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2+FRenderStatus[GLAlTop].X1-BitmapFont.CalcStringWidth(Caption))*0.5),-((FRenderStatus[GLAlTop].Y2+FRenderStatus[GLAlTop].Y1-GetFontHeight)*0.5)+TitleOffset,Caption,ATitleColor);
+    WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2+FRenderStatus[GLAlTop].X1-BitmapFont.CalcStringWidth(AnsiString(Caption)))*0.5),-((FRenderStatus[GLAlTop].Y2+FRenderStatus[GLAlTop].Y1-GetFontHeight)*0.5)+TitleOffset,Caption,ATitleColor);
   End;
 End;
 
@@ -2711,14 +2711,14 @@ Begin
         // First put in the edit character where it should be.
         system.insert(FEditChar,Tekst,SelStart);
         // Next figure out if the string is too long.
-        if FBitmapFont.CalcStringWidth(Tekst) > Width - 2 then
+        if FBitmapFont.CalcStringWidth(AnsiString(Tekst)) > Width - 2 then
           begin
           // if it is then we need to check to see where SelStart is
           if SelStart >= Length(Tekst) -1 then
             begin
             // SelStart is within close proximity of the end of the string
             // Calculate the % of text that we can use and return it against the length of the string.
-              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
+              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
               dec(pBig);
               Tekst:= Copy(Tekst, Length(Tekst) - pBig + 1, pBig);
             end
@@ -2726,7 +2726,7 @@ Begin
             begin
             // SelStart is within close proximity of the end of the string
             // Calculate the % of text that we can use and return it against the length of the string.
-              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
+              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
               dec(pBig);
             if SelStart + pBig < Length(Tekst) then
               Tekst := Copy(Tekst, SelStart, pBig)
@@ -2736,13 +2736,13 @@ Begin
           end;
       end
     else { if FFocused then }
-      if FBitmapFont.CalcStringWidth(Tekst) > Width - 2 then
+      if FBitmapFont.CalcStringWidth(AnsiString(Tekst)) > Width - 2 then
         begin
         // The while loop should never execute more then once, but just in case its here.
-          while FBitmapFont.CalcStringWidth(Tekst) > Width - 2 do
+          while FBitmapFont.CalcStringWidth(AnsiString(Tekst)) > Width - 2 do
             begin
             // Calculate the % of text that we can use and return it against the length of the string.
-              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
+              pBig := Trunc(Int(((Width - 2) / FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
               Tekst:= Copy(Tekst, 1, pBig);
             end;
         end;

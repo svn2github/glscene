@@ -153,7 +153,7 @@ begin
     begin
       for i := 0 to High(bsp.Textures) do
       begin
-        GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
+        GetOrAllocateMaterial(Trim(string(StrPas(bsp.Textures[i].TextureName))));
       end;
     end;
 
@@ -255,7 +255,7 @@ begin
           end;
           // check for BSP corruption
           if Cardinal(facePtr.textureID) <= Cardinal(bsp.NumOfTextures) then
-            fg.MaterialName := Trim(StrPas(bsp.Textures[facePtr.textureID].TextureName));
+            fg.MaterialName := Trim(string(StrPas(bsp.Textures[facePtr.textureID].TextureName)));
           if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then
             fg.LightMapIndex := facePtr.lightmapID;
           lastfg := fg;

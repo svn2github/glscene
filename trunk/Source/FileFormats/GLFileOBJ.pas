@@ -1071,7 +1071,7 @@ var
 
   procedure WriteLn(const s: string);
   begin
-    Write(s);
+    Write(AnsiString(s));
     Write(#13#10);
   end;
 
@@ -1211,7 +1211,7 @@ var
           while i <= n do
           begin
             if i < n then
-              Write(Format('%d/%0:d ', [fg.VertexIndices[i] + 1 + o]))
+              Write(AnsiString(Format('%d/%0:d ', [fg.VertexIndices[i] + 1 + o])))
             else
               Writeln(Format('%d/%0:d', [fg.VertexIndices[i] + 1 + o]));
             Inc(i);

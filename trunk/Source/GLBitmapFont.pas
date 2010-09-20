@@ -1026,7 +1026,7 @@ begin
   v[1] := y;
   v[2] := 0;
   v[3] := 1;
-  RenderString(rci, AnsiString(text), taLeftJustify, tlTop, color, @v, True);
+  RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
 end;
 
 // TextOut
@@ -1241,7 +1241,7 @@ begin
     end;
     if ftoTwoSided in FOptions then
       rci.GLStates.Disable(stCullFace);
-    FBitmapFont.RenderString(rci, AnsiString(Text), FAlignment, FLayout, FModulateColor.Color);
+    FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
   end;
   if Count > 0 then
     Self.RenderChildren(0, Count - 1, rci);

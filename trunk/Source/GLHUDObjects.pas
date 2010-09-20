@@ -433,7 +433,7 @@ begin
     GL.LoadIdentity;
     rci.GLStates.Disable(stDepthTest);
     // render text
-    FBitmapFont.RenderString(rci, AnsiString(Text), FAlignment, FLayout, FModulateColor.Color);
+    FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
     // restore state
     GL.PopMatrix;
     GL.MatrixMode(GL_MODELVIEW);

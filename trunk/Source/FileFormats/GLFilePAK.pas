@@ -92,7 +92,7 @@ begin
    for i := 0 to ContentCount - 1 do
    begin
       FStream.ReadBuffer(Dir, SizeOf(TFileSection));
-      FContentList.Add(Dir.FileName);
+      FContentList.Add(string(Dir.FileName));
    end;
 end;
 
@@ -107,7 +107,7 @@ procedure TPAKArchive.LoadFromFile(const FileName: string);
 begin
    FFileName := FileName;
     FStream := TFileStream.Create(FileName, fmOpenReadWrite or fmShareDenyWrite);
-    //Добавление файла
+    //?????????? ?????
     If (FStream = nil) then exit;
 
 
@@ -182,7 +182,7 @@ procedure TPAKArchive.AddFromStream(ContentName, Path: string; FS: TStream);
 var
    Temp: TMemoryStream;
 begin
-      //Добавление файла
+      //?????????? ?????
    If (FStream = nil) or ContentExists(ContentName) then exit;
    Temp := nil;
    FStream.Position := FHeader.DirOffset;
@@ -203,12 +203,12 @@ begin
       FStream.CopyFrom(Temp, 0);
       Temp.Free;
    end;
-   StrPCopy(Dir.FileName, Path + ExtractFileName(ContentName));
+   StrPCopy(Dir.FileName, AnsiString(Path + ExtractFileName(ContentName)));
    FStream.WriteBuffer(Dir, SizeOf(TFileSection));
    FHeader.DirLength := FHeader.DirLength + SizeOf(TFileSection);
    FStream.Position  := 0;
    FStream.WriteBuffer(FHeader, SizeOf(TPakHeader));
-   FContentList.Add(Dir.FileName);
+   FContentList.Add(string(Dir.FileName));
 end;
 
 procedure TPAKArchive.AddFromFile(FileName, Path: string);

@@ -93,7 +93,7 @@ begin
    for i := 0 to ContentCount - 1 do
    begin
       FStream.ReadBuffer(Dir, SizeOf(TFileSection));
-      FContentList.Add(Dir.FileName);
+      FContentList.Add(string(Dir.FileName));
    end;
 end;
 
@@ -241,14 +241,14 @@ begin
       Temp.Free;
    end;
    //Складываем имя файла с каталогом
-   StrPCopy(Dir.FileName, Path + ExtractFileName(ContentName));
+   StrPCopy(Dir.FileName, AnsiString(Path + ExtractFileName(ContentName)));
    //Записываем данные о файле
    FStream.WriteBuffer(Dir, SizeOf(TFileSection));
    //Записываем изменения в хидер
    FHeader.DirLength := FHeader.DirLength + SizeOf(TFileSection);
    FStream.Position  := 0;
    FStream.WriteBuffer(FHeader, SizeOf(TZLibHeader));
-   FContentList.Add(Dir.FileName);
+   FContentList.Add(string(Dir.FileName));
 end;
 
 procedure TZLibArchive.AddFromFile(FileName, Path: string);

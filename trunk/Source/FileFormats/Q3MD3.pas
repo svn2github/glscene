@@ -293,7 +293,7 @@ begin
   Result:=IdentityHMGMatrix;
   TagIdx:=-1;
   for i:=0 to FNumTags do
-    if lowercase(trim(TagName))=lowercase(trim(FTags[i].strName)) then begin
+    if lowercase(trim(TagName))=lowercase(trim(string(FTags[i].strName))) then begin
       TagIdx:=i;
       Break;
     end;
