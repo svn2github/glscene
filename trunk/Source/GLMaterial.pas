@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -514,7 +515,9 @@ type
     FNameHashKey: Integer;
     FMaterial: TGLMaterial;
     FTextureOffset, FTextureScale: TGLCoordinates;
+    FTextureRotate: Single;
     FTextureMatrixIsIdentity: Boolean;
+    FTextureOverride: Boolean;
     FTextureMatrix: TMatrix;
     FTexture2Name: TGLLibMaterialName;
     FShader: TGLShader;
@@ -538,8 +541,11 @@ type
     procedure SetMaterial(const val: TGLMaterial);
     procedure SetTextureOffset(const val: TGLCoordinates);
     procedure SetTextureScale(const val: TGLCoordinates);
+    procedure SetTextureMatrix(const Value: TMatrix);
     procedure SetTexture2Name(const val: TGLLibMaterialName);
     procedure SetShader(const val: TGLShader);
+    procedure SetTextureRotate(Value: Single);
+    function StoreTextureRotate: Boolean;
 
     procedure CalculateTextureMatrix;
     procedure DestroyHandles;
@@ -568,7 +574,7 @@ type
     procedure NotifyUsersOfTexMapChange;
     function IsUsed: boolean; //returns true if the texture has registed users
     property NameHashKey: Integer read FNameHashKey;
-    property TextureMatrix: TMatrix read FTextureMatrix;
+    property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
     property TextureMatrixIsIdentity: boolean read FTextureMatrixIsIdentity;
     procedure NotifyTexMapChange(Sender: TObject);
     procedure NotifyChange(Sender: TObject);
@@ -589,6 +595,8 @@ type
     property TextureScale: TGLCoordinates read FTextureScale write
       SetTextureScale;
 
+    property TextureRotate: Single read FTextureRotate write
+      SetTextureRotate stored StoreTextureRotate;
     {: Reference to the second texture.<p>
        The referred LibMaterial *must* be in the same material library.<p>
        Second textures are supported only through ARB multitexturing (ignored
@@ -1866,6 +1874,8 @@ begin
   FTextureScale := TGLCoordinates.CreateInitialized(Self, XYZHmgVector,
     csPoint);
   FTextureScale.OnNotifyChange := OnNotifyChange;
+  FTextureRotate := 0;
+  FTextureOverride := False;
   FTextureMatrixIsIdentity := True;
 end;
 
@@ -1948,9 +1958,11 @@ begin
     FMaterial.Assign(TGLLibMaterial(Source).Material);
     FTextureOffset.Assign(TGLLibMaterial(Source).TextureOffset);
     FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
+    FTextureRotate := TGLLibMaterial(Source).TextureRotate;
+    TextureMatrix := TGLLibMaterial(Source).TextureMatrix;
+    FTextureOverride := TGLLibMaterial(Source).FTextureOverride;
     FTexture2Name := TGLLibMaterial(Source).Texture2Name;
     FShader := TGLLibMaterial(Source).Shader;
-    CalculateTextureMatrix;
   end
   else
     inherited;
@@ -2290,6 +2302,31 @@ begin
   CalculateTextureMatrix;
 end;
 
+// SetTextureMatrix
+//
+
+procedure TGLLibMaterial.SetTextureMatrix(const Value: TMatrix);
+begin
+  FTextureMatrixIsIdentity := CompareMem(@Value[0], @IdentityHmgMatrix[0], SizeOf(TMatrix));
+  FTextureMatrix := Value;
+  FTextureOverride := True;
+  NotifyUsers;
+end;
+
+procedure TGLLibMaterial.SetTextureRotate(Value: Single);
+begin
+  if Value <> FTextureRotate then
+  begin
+    FTextureRotate := Value;
+    CalculateTextureMatrix;
+  end;
+end;
+
+function TGLLibMaterial.StoreTextureRotate: Boolean;
+begin
+  Result := Abs(FTextureRotate) > EPSILON;
+end;
+
 // SetTexture2
 //
 
@@ -2328,15 +2365,21 @@ end;
 
 procedure TGLLibMaterial.CalculateTextureMatrix;
 begin
-  if TextureOffset.Equals(NullHmgVector) and TextureScale.Equals(XYZHmgVector)
-    then
+  if TextureOffset.Equals(NullHmgVector)
+   and TextureScale.Equals(XYZHmgVector)
+   and not StoreTextureRotate then
     FTextureMatrixIsIdentity := True
   else
   begin
     FTextureMatrixIsIdentity := False;
-    FTextureMatrix := CreateScaleAndTranslationMatrix(TextureScale.AsVector,
+    FTextureMatrix := CreateScaleAndTranslationMatrix(
+      TextureScale.AsVector,
       TextureOffset.AsVector);
+    if StoreTextureRotate then
+      FTextureMatrix := MatrixMultiply(FTextureMatrix,
+        CreateRotationMatrixZ(DegToRad(FTextureRotate)));
   end;
+  FTextureOverride := False;
   NotifyUsers;
 end;
 
@@ -2765,7 +2808,7 @@ var
 begin
   with writer do
   begin
-    WriteInteger(3); // archive version 0, texture persistence only
+    WriteInteger(4); // archive version 0, texture persistence only
     // archive version 1, libmat properties
     // archive version 2, Material.TextureEx properties
     // archive version 3, Material.Texture properties
@@ -2883,6 +2926,9 @@ begin
       Write(libMat.TextureScale.AsAddress^, SizeOf(Single) * 3);
       WriteString(libMat.Texture2Name);
 
+      // version 4
+      Write(libMat.TextureRotate, SizeOf(Single));
+
       // version 2
       WriteInteger(libMat.Material.TextureEx.Count);
       for j := 0 to libMat.Material.TextureEx.Count - 1 do
@@ -2995,6 +3041,9 @@ begin
             end;
           // version 3 end
 
+          // version 4
+          if archiveVersion >= 4 then
+            libMat.TextureRotate := ReadFloat;
         end
         else
         begin
