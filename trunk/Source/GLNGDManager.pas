@@ -17,6 +17,7 @@
 
   <b>History : </b><font size=-1><ul>
 
+  <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
   <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
   <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
   <li>15/07/10 - FP - Creation by Franck Papouin
@@ -1197,24 +1198,12 @@ end;
 
 procedure TGLNGDManager.Loaded;
 var
-  MaxMaterialID: integer;
   i: integer;
 begin
   inherited;
   NotifyWorldSizeChange(self);
   // NotifyGravityChange(self);
   // NotifyWaterPlaneChange(self);
-
-  MaxMaterialID := 0;
-
-  // Get the max MaterialGroupID
-  for i := 0 to FMaterials.Count - 1 do
-  begin
-    MaxMaterialID := MaxInteger(MaxMaterialID, FMaterials[i].id0);
-    MaxMaterialID := MaxInteger(MaxMaterialID, FMaterials[i].id1);
-  end;
-
-  MaterialAutoCreateGroupID(MaxMaterialID);
 
   for i := 0 to FMaterials.Count - 1 do
   begin
@@ -2566,10 +2555,15 @@ end;
 
 procedure TNGDMaterialPair.Initialize;
 begin
-  FInitialized := True;
   if Assigned(FManager) then
+  begin
+    FManager.MaterialAutoCreateGroupID(Fid0);
+    FManager.MaterialAutoCreateGroupID(Fid1);
     NewtonMaterialSetCollisionCallback(FManager.FNewtonWorld, Fid0, Fid1, self,
       @NewtonOnAABBOverlap, @NewtonContactsProcess);
+
+    FInitialized := True;
+  end;
 end;
 
 procedure TNGDMaterialPair.Loaded;
