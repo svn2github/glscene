@@ -17,7 +17,7 @@
 
   <b>History : </b><font size=-1><ul>
 
-  <li>20/09/10 - FP - Call Finalize|Initialize in Setid
+  <li>20/09/10 - FP - Call Finalize/Initialize in Setid
   <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
   <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
   <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
@@ -42,7 +42,6 @@ uses
   , OpenGL1x, OpenGLTokens, GLRenderContextInfo // Base OpenGL
   , GLColor, GLBitmapFont, GLState // For show debug
   , GLFile3DS;
-
 
 type
   { Enums }
@@ -69,7 +68,7 @@ type
     FRenderPoint: TGLRenderPoint;
     FBitmapFont: TGLCustomBitmapFont;
     FMaterials: TNGDMaterials;
-    FMaxMaterialID : integer;
+    FMaxMaterialID: integer;
     FVisible, FVisibleAtRunTime: Boolean; // Show Debug
     FNewtonWorld: PNewtonWorld;
     FVersion: integer;
@@ -405,8 +404,8 @@ type
     procedure SetCollidable(val: Boolean);
     procedure SetStaticFriction(val: Single);
     procedure SetKineticFriction(val: Single);
-    procedure Setid0(const Value: integer);
-    procedure Setid1(const Value: integer);
+    procedure Setid0(const value: integer);
+    procedure Setid1(const value: integer);
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -793,10 +792,10 @@ procedure UnregisterGLSceneObject(anObject: TGLBaseSceneObject);
 function GetGLSceneObject(anObjectName: string): TGLBaseSceneObject;
 function GetBodyFromGLSceneObject(anObject: TGLBaseSceneObject): PNewtonBody;
 
-function GetNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
-function GetOrCreateNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
-function GetNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
-function GetOrCreateNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+function GetNGDStatic(Obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetOrCreateNGDStatic(Obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
+function GetOrCreateNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
 
 var
   vGLNGDObjectRegister: TList;
@@ -1057,33 +1056,32 @@ begin
   end;
 end;
 
-
 // GetNGDStatic
 //
-function GetNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetNGDStatic(Obj: TGLBaseSceneObject): TGLNGDStatic;
 begin
-     result:= TGLNGDStatic(obj.Behaviours.GetByClass(TGLNGDStatic));
+  Result := TGLNGDStatic(Obj.Behaviours.GetByClass(TGLNGDStatic));
 end;
 
 // GetOrCreateNGDStatic
 //
-function GetOrCreateNGDStatic(obj: TGLBaseSceneObject): TGLNGDStatic;
+function GetOrCreateNGDStatic(Obj: TGLBaseSceneObject): TGLNGDStatic;
 begin
-     result:= TGLNGDStatic(obj.GetOrCreateBehaviour(TGLNGDStatic));
+  Result := TGLNGDStatic(Obj.GetOrCreateBehaviour(TGLNGDStatic));
 end;
 
 // GetNGDDynamic
 //
-function GetNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+function GetNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
 begin
-     result:= TGLNGDDynamic(obj.Behaviours.GetByClass(TGLNGDDynamic));
+  Result := TGLNGDDynamic(Obj.Behaviours.GetByClass(TGLNGDDynamic));
 end;
 
 // GetOrCreateNGDDynamic
 //
-function GetOrCreateNGDDynamic(obj: TGLBaseSceneObject): TGLNGDDynamic;
+function GetOrCreateNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
 begin
-     result:= TGLNGDDynamic(obj.GetOrCreateBehaviour(TGLNGDDynamic));
+  Result := TGLNGDDynamic(Obj.GetOrCreateBehaviour(TGLNGDDynamic));
 end;
 
 
@@ -1214,7 +1212,7 @@ end;
 
 procedure TGLNGDManager.MaterialAutoCreateGroupID(MaterialID: integer);
 var
-  i :integer;
+  i: integer;
 begin
   // Create GroupID
   for i := FMaxMaterialID to MaterialID - 1 do
@@ -2657,18 +2655,22 @@ begin
       FElasticity);
 end;
 
-procedure TNGDMaterialPair.Setid0(const Value: integer);
+procedure TNGDMaterialPair.Setid0(const value: integer);
 begin
-  Finalize;
-  Fid0 := Value;
-  Initialize;
+  if Initialized then
+    Finalize;
+  Fid0 := value;
+  if not Initialized then
+    Initialize;
 end;
 
-procedure TNGDMaterialPair.Setid1(const Value: integer);
+procedure TNGDMaterialPair.Setid1(const value: integer);
 begin
-  Finalize;
-  Fid1 := Value;
-  Initialize;
+  if Initialized then
+    Finalize;
+  Fid1 := value;
+  if not Initialized then
+    Initialize;
 end;
 
 procedure TNGDMaterialPair.SetSoftness(val: Single);
