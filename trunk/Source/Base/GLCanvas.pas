@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>21/09/10 - Yar - Added Arc, ArcTo (thanks µAlexx)
       <li>03/09/10 - Yar - Added FillRectGradient, FillEllipseGradient (thanks µAlexx)
       <li>23/08/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
       <li>04/04/10 - Yar - Fixes after GLState revision
@@ -46,6 +47,9 @@ uses
   GLState;
 
 type
+
+  TArcDirection = (adCounterClockWise, adClockWise);
+
   // TGLCanvas
   //
     {: A simple Canvas-like interface for OpenGL.<p>
@@ -54,7 +58,7 @@ type
        for drawing lines, ellipses and points.<br>
        This class is typically used by creating an instance, using it for drawing,
        and freeing the instance. When drawing (0, 0) is the top left corner.<br>
-       All coordinates are internally maintained with floating point precisoion.<p>
+       All coordinates are internally maintained with floating point precision.<p>
        Several states are cached and it is of primary importance not to invoke
        OpenGL directly throughout the life of an instance (at the cost of
        unespected behaviour). }
@@ -68,7 +72,7 @@ type
     FPenColor: TColor;
     FPenWidth: Integer;
     FCurrentPenColorVector: TVector;
-
+    FArcDirection: TArcDirection;
   protected
     { Protected Declarations }
     procedure BackupOpenGLStates;
@@ -81,6 +85,15 @@ type
     procedure SetPenAlpha(const val: Single);
     procedure SetPenWidth(const val: Integer);
 
+    procedure SwapSingle(pX, pY: PSingle);
+    procedure NormalizePoint(const x1, y1, x2, y2: Single;
+      const x, y: Single; pX, pY: PSingle);
+
+    procedure DrawArc(x1, y1, x2, y2, x3, y3, x4, y4: Single;
+      UpdateCurrentPos: Boolean); overload;
+    procedure DrawArc(x1, y1, x2, y2: Single;
+      AngleBegin, AngleEnd: Single;
+      UpdateCurrentPos: Boolean); overload;
   public
     { Public Declarations }
     constructor Create(bufferSizeX, bufferSizeY: Integer;
@@ -182,6 +195,27 @@ type
       const xRadius, yRadius: Integer; const edgeColor: TColorVector); overload;
     procedure FillEllipseGradient(const x, y, Radius: Single;
       const edgeColor: TColorVector); overload;
+    {: Draw an elliptical arc.<p>
+       The points (x1, y1) and (x2, y2) specify the bounding rectangle.<p>
+       An ellipse formed by the specified bounding rectangle defines the curve of the arc.<p>
+       The arc extends in the current drawing direction from the point where it intersects the radial from the center of the bounding rectangle to the (x3, y3) point.<p>
+       The arc ends where it intersects the radial from the center of the bounding rectangle to the (x4, y4) point.<p>
+       If the starting point and ending point are the same, a complete ellipse is drawn.<p>
+       Use the ArcDirection property to get and set the current drawing direction for a device context.<p>
+       The default drawing direction is counterclockwise. }
+    procedure Arc(const x1, y1, x2, y2, x3, y3, x4, y4: Integer); overload;
+    procedure Arc(const x1, y1, x2, y2, x3, y3, x4, y4: Single); overload;
+    procedure Arc(const x1, y1, x2, y2: Single; AngleBegin,
+      AngleEnd: Single); overload;
+
+    {: Same as Arc but update the current position. }
+    procedure ArcTo(const x1, y1, x2, y2, x3, y3, x4, y4: Integer); overload;
+    procedure ArcTo(const x1, y1, x2, y2, x3, y3, x4, y4: Single); overload;
+    procedure ArcTo(const x1, y1, x2, y2: Single; AngleBegin,
+      AngleEnd: Single); overload;
+
+    property ArcDirection: TArcDirection read FArcDirection
+      write FArcDirection;
   end;
 
   //-------------------------------------------------------------
@@ -193,7 +227,9 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  OpenGLTokens, GLContext, VectorTypes;
+  OpenGLTokens,
+  GLContext,
+  VectorTypes;
 
 const
   cNoPrimitive = MaxInt;
@@ -225,6 +261,7 @@ begin
   BackupOpenGLStates;
 
   FLastPrimitive := cNoPrimitive;
+  FArcDirection := adCounterClockWise;
 end;
 
 // Create
@@ -277,8 +314,8 @@ begin
   end;
 end;
 
-  // StartPrimitive
-  //
+// StartPrimitive
+//
 
 procedure TGLCanvas.StartPrimitive(const primitiveType: Integer);
 begin
@@ -347,13 +384,13 @@ begin
   if val < 1 then
     Exit;
   if val <> FPenWidth then
-  with CurrentGLContext.GLStates do
-  begin
-    FPenWidth := val;
-    StopPrimitive;
-    LineWidth := val;
-    PointSize := val;
-  end;
+    with CurrentGLContext.GLStates do
+    begin
+      FPenWidth := val;
+      StopPrimitive;
+      LineWidth := val;
+      PointSize := val;
+    end;
 end;
 
 // MoveTo
@@ -735,6 +772,145 @@ end;
 procedure TGLCanvas.FillEllipseGradient(const x, y, Radius: Single; const edgeColor: TColorVector);
 begin
   FillEllipseGradient(x, y, Radius, Radius, edgeColor);
+end;
+
+// Arc
+//
+
+procedure TGLCanvas.Arc(const x1, y1, x2, y2, x3, y3, x4, y4: Integer);
+begin
+  DrawArc(x1, y1, x2, y2, x3, y3, x4, y4, False);
+end;
+
+procedure TGLCanvas.Arc(const x1, y1, x2, y2, x3, y3, x4, y4: Single);
+begin
+  DrawArc(x1, y1, x2, y2, x3, y3, x4, y4, False);
+end;
+
+procedure TGLCanvas.Arc(const x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Single);
+begin
+  DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, False);
+end;
+
+// ArcTo
+//
+
+procedure TGLCanvas.ArcTo(const x1, y1, x2, y2, x3, y3, x4, y4: Integer);
+begin
+  DrawArc(x1, y1, x2, y2, x3, y3, x4, y4, True);
+end;
+
+procedure TGLCanvas.ArcTo(const x1, y1, x2, y2, x3, y3, x4, y4: Single);
+begin
+  DrawArc(x1, y1, x2, y2, x3, y3, x4, y4, True);
+end;
+
+procedure TGLCanvas.ArcTo(const x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Single);
+begin
+  DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, True);
+end;
+
+// Arc Draw
+//
+
+// wrapper from "ByPoints" methode
+
+procedure TGLCanvas.DrawArc(x1, y1, x2, y2, x3, y3, x4, y4: Single; UpdateCurrentPos: Boolean);
+var
+  x, y: Single;
+  AngleBegin, AngleEnd: Single;
+begin
+  if x1 > x2 then
+    SwapSingle(@x1, @x2);
+  if y1 > y2 then
+    SwapSingle(@y1, @y2);
+
+  NormalizePoint(x1, y1, x2, y2, x3, y3, @x, @y);
+  AngleBegin := ArcTan2(y, x);
+
+  NormalizePoint(x1, y1, x2, y2, x4, y4, @x, @y);
+  AngleEnd := ArcTan2(y, x);
+
+  DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, UpdateCurrentPos);
+end;
+
+// Real work is here
+
+procedure TGLCanvas.DrawArc(x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Single; UpdateCurrentPos: Boolean);
+var
+  Xc, Yc, Rx, Ry, x, y: Single;
+  AngleCurrent, AngleDiff, AngleStep: Single;
+begin
+  // check that our box is well set (as the original Arc function do)
+  if x1 > x2 then
+    SwapSingle(@x1, @x2);
+  if y1 > y2 then
+    SwapSingle(@y1, @y2);
+
+  if (x1 = x2) or (y1 = y2) then
+    exit;
+
+  Xc := (x1 + x2) * 0.5;
+  Yc := (y1 + y2) * 0.5;
+
+  Rx := Abs(x2 - x1) * 0.5;
+  Ry := Abs(y2 - y1) * 0.5;
+
+  // if ClockWise then swap AngleBegin and AngleEnd to simulate it.
+  if FArcDirection = adClockWise then
+  begin
+    AngleCurrent := AngleBegin;
+    AngleBegin := AngleEnd;
+    AngleEnd := AngleCurrent;
+  end;
+
+  if (AngleEnd >= AngleBegin) then
+  begin // if end sup to begin, remove 2*Pi (360°)
+    AngleEnd := AngleEnd - 2 * Pi;
+  end;
+
+  AngleDiff := Abs(AngleEnd - AngleBegin); // the amount radian to travel
+  AngleStep := AngleDiff / Round(MaxFloat(Rx, Ry) * 0.1 + 5); // granulity of drawing, not too much, not too less
+
+  AngleCurrent := AngleBegin;
+
+  StartPrimitive(GL_LINE_STRIP);
+  while AngleCurrent >= AngleBegin - AngleDiff do
+  begin
+    x := Xc + (Rx * cos(AngleCurrent));
+    y := Yc + (Ry * sin(AngleCurrent));
+
+    GL.Vertex2f(x, y);
+
+    AngleCurrent := AngleCurrent - AngleStep; // always step down, rotate only one way to draw it
+  end;
+
+  x := Xc + (Rx * cos(AngleEnd));
+  y := Yc + (Ry * sin(AngleEnd));
+
+  GL.Vertex2f(x, y);
+
+  StopPrimitive();
+
+  if UpdateCurrentPos then
+    MoveTo(x, y); //FCurrentPos := CurrentPos;
+end;
+
+// for internal need
+
+procedure TGLCanvas.NormalizePoint(const x1, y1, x2, y2: Single; const x, y: Single; pX, pY: PSingle);
+begin
+  pX^ := (x - x1) / (x2 - x1) * 2.0 - 1.0;
+  pY^ := (y - y1) / (y2 - y1) * 2.0 - 1.0;
+end;
+
+procedure TGLCanvas.SwapSingle(pX, pY: PSingle);
+var
+  tmp: Single;
+begin
+  tmp := pX^;
+  pX^ := pY^;
+  pY^ := tmp;
 end;
 
 end.
