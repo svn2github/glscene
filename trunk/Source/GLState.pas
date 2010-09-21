@@ -1552,7 +1552,7 @@ procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
 begin
   if Value <> FVertexArrayBinding then
   begin
-    if Integer(Value) > Length(FVAOStates) then
+    if Integer(Value) >= Length(FVAOStates) then
       SetLength(FVAOStates, 2 * Length(FVAOStates));
     if Value = 0 then
       FVAOStates[0] := FVAOStates[FVertexArrayBinding];
@@ -1570,7 +1570,7 @@ end;
 
 function TGLStateCache.GetArrayBufferBinding: TGLuint;
 begin
-  Result := FVAOStates[FVertexArrayBinding].FArrayBufferBinding;
+  Result := FVAOStates[FVertexArrayBinding].FArrayBufferBinding
 end;
 
 procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
@@ -1584,7 +1584,7 @@ end;
 
 function TGLStateCache.GetElementBufferBinding: TGLuint;
 begin
-  Result := FVAOStates[FVertexArrayBinding].FElementBufferBinding;
+  Result := FVAOStates[FVertexArrayBinding].FElementBufferBinding
 end;
 
 procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
