@@ -17,6 +17,10 @@
 
   <b>History : </b><font size=-1><ul>
 
+  <li>21/09/10 - FP - Added timestep in TContactProcessEvent.
+  Removed Manager property of MaterialPair.
+  MaterialPair.loaded use the owner.owner component as manager now.
+  MaterialPair FilerVersion up to 1
   <li>20/09/10 - FP - Call Finalize/Initialize in Setid
   <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
   <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
@@ -58,7 +62,7 @@ type
   TMaterialHitEvent = procedure(obj0, obj1: TGLBaseSceneObject;
     id0, id1: integer) of object;
   TContactProcessEvent = procedure(NGDMaterialPair: TNGDMaterialPair;
-    contact: PNewtonJoint) of object;
+    contact: PNewtonJoint; timestep: Float) of object;
 
   { Class }
   TGLNGDManager = class(TComponent)
@@ -348,7 +352,7 @@ type
   TGLNGDStatic = class(TGLNGDBehaviour)
   private
     { Private Declarations }
-    FHeightFieldWordArray: array of UInt16;
+    // FHeightFieldWordArray: array of UInt16;
 
   protected
     { Protected Declarations }
@@ -391,7 +395,6 @@ type
     FStaticFriction: Single; // 0.9
     FKineticFriction: Single; // 0.5
     Fid0, Fid1: integer;
-    FManagerName: string;
     FInitialized: Boolean;
 
     // Event
@@ -410,7 +413,6 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
-    procedure SetManager(const value: TGLNGDManager);
     procedure Initialize; virtual;
     procedure Finalize; virtual;
 
@@ -435,8 +437,6 @@ type
       : Single read FKineticFriction write SetKineticFriction;
     property id0: integer read Fid0 write Setid0 default 0;
     property id1: integer read Fid1 write Setid1 default 0;
-
-    property Manager: TGLNGDManager read FManager write SetManager;
   end;
 
   { : An XCollection decendant for NGD Joints. }
@@ -983,7 +983,7 @@ begin
   with (NGDMaterialPair) do
   begin
     if Assigned(FContactProcessEvent) then
-      FContactProcessEvent(NGDMaterialPair, contact);
+      FContactProcessEvent(NGDMaterialPair, contact, timestep)
   end;
 
   // Raise manager's event when two Bodies Collide
@@ -991,7 +991,7 @@ begin
   obj0 := NGDBehaviour.OwnerBaseSceneObject;
   NGDBehaviour := NewtonBodyGetUserData(NewtonJointGetBody1(contact));
   obj1 := NGDBehaviour.OwnerBaseSceneObject;
-  with (NGDMaterialPair.Manager) do
+  with (NGDMaterialPair.FManager) do
   begin
     if Assigned(FMaterialHitEvent) then
       FMaterialHitEvent(obj0, obj1, NGDMaterialPair.Fid0, NGDMaterialPair.Fid1);
@@ -1939,8 +1939,8 @@ begin
   FMaterialID := val;
   if Assigned(FManager) then
   begin
-    NewtonBodySetMaterialGroupID(FNewtonBody, FMaterialID);
     FManager.MaterialAutoCreateGroupID(FMaterialID);
+    NewtonBodySetMaterialGroupID(FNewtonBody, FMaterialID);
     FManager.NotifyChange(self);
   end;
 
@@ -2566,17 +2566,9 @@ begin
 end;
 
 procedure TNGDMaterialPair.Loaded;
-var
-  mng: TComponent;
 begin
   inherited;
-  if FManagerName <> '' then
-  begin
-    mng := FindManager(TGLNGDManager, FManagerName);
-    if Assigned(mng) then
-      Manager := TGLNGDManager(mng);
-    FManagerName := '';
-  end;
+  FManager := TGLNGDManager(owner.owner);
   SetSoftness(FSoftness);
   SetCollidable(FCollidable);
   SetElasticity(FElasticity);
@@ -2589,13 +2581,18 @@ end;
 procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
 { var
   ContactProcessEventOwner, ContactProcessEventName: string; }
+var
+  Version : integer;
 begin
   inherited;
   with reader do
   begin
-    Assert(ReadInteger = 0);
-    // Archive version
-    FManagerName := ReadString;
+    Version := ReadInteger; // read data version
+    Assert(Version <= 1); // Archive version
+
+    if Version = 0 then
+      ReadString;
+
     FSoftness := ReadSingle;
     FElasticity := ReadSingle;
     FCollidable := ReadBoolean;
@@ -2617,12 +2614,7 @@ begin
   inherited;
   with writer do
   begin
-    WriteInteger(0);
-    // Archive version
-    if Assigned(FManager) then
-      WriteString(FManager.GetNamePath)
-    else
-      WriteString('');
+    WriteInteger(1); // Archive version
     WriteSingle(FSoftness);
     WriteSingle(FElasticity);
     WriteBoolean(FCollidable);
@@ -2698,20 +2690,6 @@ begin
   if Initialized then
     NewtonMaterialSetDefaultFriction(FManager.FNewtonWorld, Fid0, Fid1,
       FStaticFriction, FKineticFriction);
-end;
-
-procedure TNGDMaterialPair.SetManager(const value: TGLNGDManager);
-begin
-  if FManager <> value then
-  begin
-    if Assigned(FManager) then
-      if not(csDesigning in Manager.ComponentState) then
-        Finalize;
-    FManager := value;
-    if Assigned(FManager) then
-      if not(csDesigning in Manager.ComponentState) then
-        Initialize;
-  end;
 end;
 
 { TNGDMaterials }
