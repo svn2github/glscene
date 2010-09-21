@@ -65,6 +65,8 @@ object Form1: TForm1
     Height = 256
     Camera = GLCamera1
     Buffer.Lighting = False
+    FieldOfView = 137.326278686523400000
+    TabOrder = 2
   end
   object RBPenWidth1: TRadioButton
     Left = 432
@@ -83,6 +85,15 @@ object Form1: TForm1
     Height = 17
     Caption = 'Pen Width = 2'
     TabOrder = 4
+  end
+  object BUArc: TButton
+    Left = 168
+    Top = 35
+    Width = 73
+    Height = 25
+    Caption = '20k Arcs'
+    TabOrder = 8
+    OnClick = BUArcClick
   end
   object BUPoints: TButton
     Left = 248
@@ -117,10 +128,11 @@ object Form1: TForm1
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
       OnRender = GLDirectOpenGL1Render
+      Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
     end
   end
   object WindowsBitmapFont: TGLWindowsBitmapFont

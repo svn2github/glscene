@@ -53,6 +53,7 @@ type
     procedure BURectsClick(Sender: TObject);
     procedure BUTextOutClick(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure BUArcClick(Sender: TObject);
   private
     { Private declarations }
     procedure PaintTheBox;
@@ -71,7 +72,7 @@ implementation
 uses GLCanvas;
 
 type
-   TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut);
+   TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut, wArcs);
 
 var
    vWhat : TWhat;
@@ -83,10 +84,17 @@ const
    cNbRects = 5000;
    cNbPoints = 200000;
    cNbTextOuts = 20000;
+   cNbArcs     = 20000;
 
 procedure TForm1.BULinesClick(Sender: TObject);
 begin
    vWhat:=wLines;
+   Bench;
+end;
+
+procedure TForm1.BUArcClick(Sender: TObject);
+begin
+   vWhat:=wArcs;
    Bench;
 end;
 
@@ -158,7 +166,7 @@ begin
          wEllipses : begin
             for i:=1 to cNbEllipses do begin
                PenColor:=Random(256*256*256);
-               Ellipse(Random(256), Random(256),
+               EllipseBB(Random(256), Random(256),
                        Random(256), Random(256));
             end;
          end;
@@ -182,6 +190,15 @@ begin
                x:=Random(256);
                y:=Random(256);
                WindowsBitmapFont.TextOut(rci, x, y, 'Hello', color);
+            end;
+         end;
+         wArcs : begin
+            for i:=1 to cNbEllipses do begin
+               PenColor:=Random(256*256*256);
+               Arc(Random(256), Random(256),
+                   Random(256), Random(256),
+                   Random(256), Random(256),
+                   Random(256), Random(256))
             end;
          end;
       end;
@@ -234,6 +251,15 @@ begin
                y:=Random(256);
                TextOut(x, y, 'Hello');
             end
+         end;
+         wArcs : begin
+            for i:=1 to cNbEllipses do begin
+               Pen.Color:=Random(256*256*256);
+               Arc(Random(256), Random(256),
+                   Random(256), Random(256),
+                   Random(256), Random(256),
+                   Random(256), Random(256))
+            end;
          end;
       end;
    end;
