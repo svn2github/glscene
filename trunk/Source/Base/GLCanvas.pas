@@ -838,7 +838,7 @@ end;
 
 procedure TGLCanvas.DrawArc(x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Single; UpdateCurrentPos: Boolean);
 var
-  Xc, Yc, Rx, Ry, x, y: Single;
+  Xc, Yc, Rx, Ry, x, y, s, c: Single;
   AngleCurrent, AngleDiff, AngleStep: Single;
 begin
   // check that our box is well set (as the original Arc function do)
@@ -877,16 +877,18 @@ begin
   StartPrimitive(GL_LINE_STRIP);
   while AngleCurrent >= AngleBegin - AngleDiff do
   begin
-    x := Xc + (Rx * cos(AngleCurrent));
-    y := Yc + (Ry * sin(AngleCurrent));
+    SinCos(AngleCurrent, s, c);
+    x := Xc + (Rx * c);
+    y := Yc + (Ry * s);
 
     GL.Vertex2f(x, y);
 
     AngleCurrent := AngleCurrent - AngleStep; // always step down, rotate only one way to draw it
   end;
 
-  x := Xc + (Rx * cos(AngleEnd));
-  y := Yc + (Ry * sin(AngleEnd));
+  SinCos(AngleEnd, s, c);
+  x := Xc + (Rx * c);
+  y := Yc + (Ry * s);
 
   GL.Vertex2f(x, y);
 
