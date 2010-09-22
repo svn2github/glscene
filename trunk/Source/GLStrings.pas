@@ -131,6 +131,7 @@ resourcestring
   glsUnknownParam =
     'Unknown %s "%s" for "%s" or program not in use';
 
+const
   // Resources
   glsDEFAULTMATERIALNAME = 'DEFAULTMATERIAL';
   glsDIFFUSEMAP = 'DEFAULTDIFFUSEMAP';
