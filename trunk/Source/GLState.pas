@@ -2832,8 +2832,8 @@ begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
   FCurrentList := list - 1;
-  while High(FListStates) < Integer(FCurrentList) do
-    SetLength(FListStates, 2 * Length(FListStates));
+  if Length(FListStates) <= Integer(FCurrentList) then
+    SetLength(FListStates, list+128);
 
   FListStates[FCurrentList] := [];
   FInsideList := True;
