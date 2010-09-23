@@ -2582,7 +2582,7 @@ procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
 { var
   ContactProcessEventOwner, ContactProcessEventName: string; }
 var
-  Version : integer;
+  Version: integer;
 begin
   inherited;
   with reader do
@@ -3603,6 +3603,13 @@ begin
     FPinAndPivotMatrix := bso.AbsoluteMatrix;
     bso.Free;
 
+    { Newton wait from FPinAndPivotMatrix a structure like that:
+      First row: the pin direction
+      Second and third rows are set to create an orthogonal matrix
+      Fourth: The pivot position
+
+      In glscene, the GLBaseSceneObjects direction is the third row,
+      because the first row is the right vector (second row is up vector). }
     Line[0] := FPinAndPivotMatrix[2, 0];
     Line[1] := FPinAndPivotMatrix[2, 1];
     Line[2] := FPinAndPivotMatrix[2, 2];
