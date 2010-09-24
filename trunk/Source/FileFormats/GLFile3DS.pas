@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>11/06/11 - DaStr - Fixes for Linux x64
       <li>08/11/09 - DaStr - Improved FPC compatibility
@@ -318,6 +319,12 @@ var
      }
   vGLFile3DS_EnableAnimation: boolean = False;
 
+  {: If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
+     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
+     be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
+     }
+  vGLFile3DS_FixDefaultUpAxisY: boolean = False;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -326,9 +333,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// ------------------
-// ------------------ Misc functions ------------------
-// ------------------
+
+{$REGION 'Misc functions'}
 
 // AnimKeysClassTypeToClass
 
@@ -351,6 +357,7 @@ begin
     end;
   end;
 end;
+
 
 // ClassToAnimKeysClassType
 
@@ -447,6 +454,11 @@ end;
 // ------------------
 // ------------------ Support classes ------------------
 // ------------------
+
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSAnimationKeys'}
+
 procedure TGLFile3DSAnimationKeys.InterpolateFrame(var I: integer;
   var w: real; const AFrame: real);
 begin
@@ -578,6 +590,9 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSScaleAnimationKeys'}
 
 procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -596,6 +611,8 @@ begin
   if FNumKeys > 0 then
     DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix,
       CreateScaleMatrix(InterpolateValue(FScale, AFrame)));
+
+
 end;
 
 procedure TGLFile3DSScaleAnimationKeys.Assign(Source: TPersistent);
@@ -626,6 +643,9 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSRotationAnimationKeys'}
 
 procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -691,6 +711,9 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSPositionAnimationKeys'}
 
 procedure TGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -709,6 +732,9 @@ begin
   if FNumKeys > 0 then
     DataTransf.ModelMatrix[3] :=
       VectorAdd(DataTransf.ModelMatrix[3], VectorMake(InterpolateValue(FPos, AFrame)));
+
+  if vGLFile3DS_FixDefaultUpAxisY then
+    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix, CreateRotationMatrixX(-PI/2));
 end;
 
 procedure TGLFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
@@ -739,6 +765,9 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSColorAnimationKeys'}
 
 procedure TGLFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -788,6 +817,9 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TTGLFile3DSPositionAnimationKeys'}
 
 procedure TTGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -837,6 +869,9 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSSpotLightCutOffAnimationKeys'}
 
 procedure TGLFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -886,6 +921,9 @@ begin
     Reader.Read(FFall[0], FNumKeys * SizeOf(single));
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSLightHotSpotAnimationKeys'}
 
 procedure TGLFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -933,6 +971,10 @@ begin
   if FNumKeys > 0 then
     Reader.Read(FHot[0], FNumKeys * SizeOf(single));
 end;
+
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSRollAnimationKeys'}
 
 procedure TGLFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -991,6 +1033,10 @@ begin
   SetLength(FAnimKeysList, ind + 1);
   FAnimKeysList[ind] := AItem;
 end;
+
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSAnimationKeyList'}
 
 procedure TGLFile3DSAnimationKeyList.ApplyAnimKeys(
   var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
@@ -1065,6 +1111,10 @@ begin
   ClearKeys;
   inherited Destroy;
 end;
+
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSDummyObject'}
 
 constructor TGLFile3DSDummyObject.Create;
 begin
@@ -1186,6 +1236,9 @@ begin
   inherited;
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSMeshObject'}
 
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1230,6 +1283,10 @@ begin
   inherited;
   GL.PopMatrix;
 end;
+
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSOmniLightObject'}
 
 constructor TGLFile3DSOmniLightObject.Create;
 begin
@@ -1337,6 +1394,9 @@ begin
   inherited;
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSSpotLightObject'}
 
 procedure TGLFile3DSSpotLightObject.LoadData(const AOwner: TGLBaseMesh;
   const AData: PLight3DS);
@@ -1387,6 +1447,9 @@ begin
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
 
+{$ENDREGION}
+
+{$REGION 'TGLFile3DSCameraObject'}
 
 constructor TGLFile3DSCameraObject.Create;
 begin
@@ -1487,11 +1550,9 @@ begin
   inherited;
 end;
 
+{$ENDREGION}
 
-
-// ------------------
-// ------------------ TGL3DSVectorFile ------------------
-// ------------------
+{$REGION 'TGL3DSVectorFile'}
 
 // Capabilities
 
@@ -1514,6 +1575,7 @@ var
   mesh: TGLFile3DSMeshObject;
   hasLightmap: boolean;
 
+  {$REGION 'TGL3DSVectorFile.LoadFromStream Local functions'}
   //--------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
@@ -1784,6 +1846,7 @@ var
         boolY := (v4[0] > abs(Result[2, 0])) and (v4[1] > abs(Result[2, 1])) and
           (v4[2] > abs(Result[2, 2]));
 
+
         if boolY then
           Result := MatrixMultiply(Result, CreateRotationMatrix(
             AffineVectorMake(0, 1, 0), -pi));
@@ -1938,7 +2001,7 @@ var
 
   //---------------------------------------------------------------------------
 
-  function FindMotionIndex(KeyFramer: TKeyFramer; const ObjectName: string): integer;
+  function FindMotionIndex(KeyFramer: TKeyFramer; const ObjectName: AnsiString): integer;
     // Looks through the motion list for the object "ObjectName" and returns its index
     // or -1 if the name is not it the list
   var
@@ -1954,7 +2017,7 @@ var
         end;
   end;
 
-  //--------------- end local functions ---------------------------------------
+  {$ENDREGION}
 
 var
   CurrentMotionIndex, iMaterial, i, j, x: integer;
@@ -2211,6 +2274,7 @@ begin
           begin
             CurrentMotionIndex := FindMotionIndex(KeyFramer, NameStr);
             FRefTranf.ModelMatrix := InvertMeshMatrix(Objects, NameStr);
+
             if MeshMotionCount > 0 then
               LoadAnimation(MeshMotion[CurrentMotionIndex]);
           end;
@@ -2254,6 +2318,8 @@ begin
       Free;
     end;
 end;
+
+{$ENDREGION}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
