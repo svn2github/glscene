@@ -4,7 +4,7 @@ program Caterpillar;
 
 uses
   Forms, Interfaces,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'Unit1.pas', glscene_designtime {Form1};
 
 {$R *.res}
 
