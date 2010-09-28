@@ -33,9 +33,9 @@ object Form1: TForm1
   end
   object CBCentered: TCheckBox
     Left = 384
-    Height = 19
+    Height = 17
     Top = 0
-    Width = 88
+    Width = 86
     Caption = 'Centered grids'
     Checked = True
     OnClick = CBCenteredClick

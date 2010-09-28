@@ -22,9 +22,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
-  GLLCLViewer, OpenGL1x, GLTexture, VectorGeometry, GLGraph,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses,
+  SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
+  GLLCLViewer, OpenGLTokens, GLContext, GLTexture, VectorGeometry, GLGraph,
+  GLGeomObjects, GLCrossPlatform, GLCoordinates,
   GLRenderContextInfo, GLState;
 
 type
@@ -40,18 +40,18 @@ type
     GLLightSource1: TGLLightSource;
     GLXYZGrid1: TGLXYZGrid;
     procedure FormCreate(Sender: TObject);
-    procedure DirectOpenGLRender(Sender : TObject; var rci: TRenderContextInfo);
+    procedure DirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure SceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+      Shift: TShiftState; X, Y: integer);
+    procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+      WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
   private
     { Private declarations }
   public
     { Public declarations }
-    mx, my : Integer;
+    mx, my: integer;
   end;
 
 var
@@ -63,69 +63,73 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   i : Integer;
+  i: integer;
 begin
-   // generate a bunch of random points
-   for i:=1 to 100 do
-      GLPoints.Positions.Add((Random-0.5)*5, (Random-0.5)*5, (Random-0.5)*5);
+  // generate a bunch of random points
+  for i := 1 to 100 do
+    GLPoints.Positions.Add((Random - 0.5) * 5, (Random - 0.5) * 5, (Random - 0.5) * 5);
 end;
 
-procedure TForm1.DirectOpenGLRender(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.DirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
 var
-   i : Integer;
-   mat : TMatrix;
-   p, pProj : TVector;
-   planePoint, planeNormal : TVector;
-   plane : THmgPlane;
+  i: integer;
+  mat: TMatrix;
+  p, pProj: TVector;
+  planePoint, planeNormal: TVector;
+  plane: THmgPlane;
 begin
-   // Here we recover our plane point and normal...
-   planePoint:=GLPlane.Position.AsVector;
-   planeNormal:=GLPlane.Direction.AsVector;
-   // ...which we use to create a plane (equation)
-   plane:=PlaneMake(planePoint, planeNormal);
-   // from that plane equation and our pojection direction
-   // (which is here the plane normal)
-   mat:=MakeParallelProjectionMatrix(plane, planeNormal);
+  // Here we recover our plane point and normal...
+  planePoint := GLPlane.Position.AsVector;
+  planeNormal := GLPlane.Direction.AsVector;
+  // ...which we use to create a plane (equation)
+  plane := PlaneMake(planePoint, planeNormal);
+  // from that plane equation and our pojection direction
+  // (which is here the plane normal)
+  mat := MakeParallelProjectionMatrix(plane, planeNormal);
 
-   // save state, turn off lighting and specify the lines color
-   rci.GLStates.Disable(stLighting);
-   glColor3f(1, 1, 0);
+  // save state, turn off lighting and specify the lines color
+  rci.GLStates.Disable(stLighting);
+  GL.Color3f(1, 1, 0);
 
-   // we'll be drawing a bunch of lines, to specify a line in OpenGL,
-   // you only need to specify the line start and end vertices
-   glBegin(GL_LINES);
-      for i:=0 to GLPoints.Positions.Count-1 do begin
-         // read the point coordinates, directly from the TGLPoints list
-         MakePoint(p, GLPoints.Positions.List[i]);
-         // project this point on the plane with the matrix
-         pProj:=VectorTransform(p, mat);
-         // specify the two vertices
-         glVertex3fv(@p);
-         glVertex3fv(@pProj);
-      end;
-   glEnd;
+  // we'll be drawing a bunch of lines, to specify a line in OpenGL,
+  // you only need to specify the line start and end vertices
+  GL.Begin_(GL_LINES);
+  for i := 0 to GLPoints.Positions.Count - 1 do
+  begin
+    // read the point coordinates, directly from the TGLPoints list
+    MakePoint(p, GLPoints.Positions.List[i]);
+    // project this point on the plane with the matrix
+    pProj := VectorTransform(p, mat);
+    // specify the two vertices
+    GL.Vertex3fv(@p);
+    GL.Vertex3fv(@pProj);
+  end;
+  GL.End_;
 end;
 
-procedure TForm1.SceneViewerMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.SceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 begin
-   mx:=x; my:=y;
+  mx := x;
+  my := y;
 end;
 
 procedure TForm1.SceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+  X, Y: integer);
 begin
-   if Shift=[ssLeft] then
-      GLCamera.MoveAroundTarget(my-y, mx-x)
-   else if Shift=[ssRight] then
-      GLCamera.RotateObject(GLPlane, my-y, mx-x);
-   mx:=x; my:=y;
+  if Shift = [ssLeft] then
+    GLCamera.MoveAroundTarget(my - y, mx - x)
+  else if Shift = [ssRight] then
+    GLCamera.RotateObject(GLPlane, my - y, mx - x);
+  mx := x;
+  my := y;
 end;
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
 begin
-   GLPlane.Position.Y:=GLPlane.Position.Y+WheelDelta*0.001;
+  GLPlane.Position.Y := GLPlane.Position.Y + WheelDelta * 0.001;
 end;
 
 end.
+
