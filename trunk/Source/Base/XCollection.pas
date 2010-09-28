@@ -577,6 +577,7 @@ end;
 
 procedure TXCollection.ReadFromFiler(reader: TReader);
 var
+  vt: TValueType;
   Header: array[0..3] of AnsiChar;
   n, lc, lcnum: integer;
   classList: TList;
@@ -592,7 +593,8 @@ begin
     begin
       // save current reader position, it will be used to rewind the reader if the DFM is too old
       try
-        if NextValue = vaInt32 then
+        vt := NextValue;
+        if vt in [vaInt32, vaInt16, vaInt8] then
           PInteger(@Header[0])^ := ReadInteger
         else
         begin
