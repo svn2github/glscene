@@ -2812,6 +2812,7 @@ begin
     // archive version 1, libmat properties
     // archive version 2, Material.TextureEx properties
     // archive version 3, Material.Texture properties
+    // archive version 4, Material.TextureRotate
     WriteInteger(Materials.Count);
     for i := 0 to Materials.Count - 1 do
     begin
@@ -2927,7 +2928,7 @@ begin
       WriteString(libMat.Texture2Name);
 
       // version 4
-      Write(libMat.TextureRotate, SizeOf(Single));
+      WriteFloat(libMat.TextureRotate);
 
       // version 2
       WriteInteger(libMat.Material.TextureEx.Count);
@@ -2978,7 +2979,7 @@ var
   texExItem: TGLTextureExItem;
 begin
   archiveVersion := reader.ReadInteger;
-  if (archiveVersion >= 0) and (archiveVersion <= 3) then
+  if (archiveVersion >= 0) and (archiveVersion <= 4) then
     with reader do
     begin
       if not FDoNotClearMaterialsOnLoad then
@@ -3041,9 +3042,6 @@ begin
             end;
           // version 3 end
 
-          // version 4
-          if archiveVersion >= 4 then
-            libMat.TextureRotate := ReadFloat;
         end
         else
         begin
@@ -3103,6 +3101,10 @@ begin
           Read(libMat.TextureOffset.AsAddress^, SizeOf(Single) * 3);
           Read(libMat.TextureScale.AsAddress^, SizeOf(Single) * 3);
           libMat.Texture2Name := ReadString;
+
+          // version 4
+          if archiveVersion >= 4 then
+            libMat.TextureRotate := ReadFloat;
         end;
 
         // version 2
