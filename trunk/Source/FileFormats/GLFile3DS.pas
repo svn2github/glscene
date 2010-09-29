@@ -2012,7 +2012,7 @@ var
     Result := -1;
     with KeyFramer do
       for I := 0 to MeshMotionCount - 1 do
-        if CompareText(string(MeshMotion[I].NameStr), ObjectName) = 0 then
+        if CompareText(string(MeshMotion[I].NameStr), string(ObjectName)) = 0 then
         begin
           Result := I;
           Break;
@@ -2276,7 +2276,7 @@ begin
           mesh := Owner.MeshObjects.FindMeshByName(string(NameStr)) as TGLFile3DSMeshObject;
           with mesh, KeyFramer do
           begin
-            CurrentMotionIndex := FindMotionIndex(KeyFramer, string(NameStr));
+            CurrentMotionIndex := FindMotionIndex(KeyFramer, NameStr);
             FRefTranf.ModelMatrix := InvertMeshMatrix(Objects, string(NameStr));
 
             if MeshMotionCount > 0 then
