@@ -6,6 +6,9 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
+                          SetFrameOffset in Lerp and MorphTo, wrong Frame test
+                          in InterpolateValue
       <li>24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>11/06/11 - DaStr - Fixes for Linux x64
@@ -529,7 +532,7 @@ begin
 
   // First find the final matrix for this frame.
   I := 0;
-  while (FNumKeys > I) and ((FKeys[I].Time) < AFrame) do
+  while (FNumKeys > I) and ((FKeys[I].Time) <= AFrame) do
   begin
     with AValues[I] do
       Result := MatrixMultiply(Result, CreateRotationMatrix(
@@ -1156,7 +1159,7 @@ end;
 
 procedure TGLFile3DSDummyObject.MorphTo(morphTargetIndex: integer);
 begin
-  SetFrame(morphTargetIndex + 1);
+  SetFrame(morphTargetIndex);
 end;
 
 procedure TGLFile3DSDummyObject.Lerp(morphTargetIndex1, morphTargetIndex2: integer;
@@ -1164,9 +1167,9 @@ procedure TGLFile3DSDummyObject.Lerp(morphTargetIndex1, morphTargetIndex2: integ
 begin
   if (Owner.Owner is TGLActor) and ((Owner.Owner as TGLActor).AnimationMode in
     [aamBounceBackward, aamLoopBackward]) then
-    SetFrame(morphTargetIndex1 + 1 - lerpFactor)
+    SetFrame(morphTargetIndex1 - lerpFactor)
   else
-    SetFrame(morphTargetIndex1 + 1 + lerpFactor);
+    SetFrame(morphTargetIndex1 + lerpFactor);
 end;
 
 procedure TGLFile3DSDummyObject.Assign(Source: TPersistent);
@@ -2046,7 +2049,7 @@ begin
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
           mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
           //dummy targets
-          for x := 0 to KeyFramer.Settings.Anim.Length - 1 do
+          for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
             TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           with mesh do
@@ -2261,7 +2264,7 @@ begin
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
           mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
           //dummy targets
-          for X := 0 to KeyFramer.Settings.Anim.Length - 1 do
+          for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
             TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           mesh.LoadAnimation(KeyFramer.MeshMotion[I]);
@@ -2287,7 +2290,7 @@ begin
       begin
         lights_mesh := TGLFile3DSOmniLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for X := 0 to KeyFramer.Settings.Anim.Length - 1 do
+        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.OmniLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.OmniLightMotion[I]);
@@ -2298,7 +2301,7 @@ begin
       begin
         lights_mesh := TGLFile3DSSpotLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for X := 0 to KeyFramer.Settings.Anim.Length - 1 do
+        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.SpotLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.SpotLightMotion[I]);
@@ -2309,7 +2312,7 @@ begin
       begin
         camera_mesh := TGLFile3DSCameraObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
-        for X := 0 to KeyFramer.Settings.Anim.Length - 1 do
+        for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
           TMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
