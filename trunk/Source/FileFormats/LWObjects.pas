@@ -884,7 +884,7 @@ begin
 
     ReadMotorolaNumber(Stream,@CurSize,4);
 
-    if UpperCase(CurId) = 'FORM' then
+    if UpperCase(string(CurId)) = 'FORM' then
     begin
 
       Stream.Read(CurId,4);
@@ -1068,7 +1068,7 @@ begin
     Stream.Read(Buf,2);
   end;
 
-  if Buf[0] <> #0 then StrBuf := StrBuf + Buf[0];
+  if Buf[0] <> #0 then StrBuf := StrBuf + Char(Buf[0]);
 
   Str := Copy(StrBuf,1,Length(StrBuf));
 
@@ -1191,7 +1191,7 @@ begin
 
   TmpId := Id;
 
-  TmpId := UpperCase(Id);
+  TmpId := AnsiString(UpperCase(string(Id)));
 
   result := PInteger(@TmpId)^;
 
@@ -1377,7 +1377,7 @@ begin
 
   ReadMotorolaNumber(AStream,@CurSize,4);
 
-  if UpperCase(CurId) = 'FORM' then
+  if UpperCase(string(CurId)) = 'FORM' then
   begin
 
     AStream.Read(CurId,4);
@@ -1838,7 +1838,7 @@ begin
 
   if (result=nil) and (Source<>'') then
   begin
-    sParam := Param;
+    sParam := string(Param);
     Idx:=RootChunks.FindChunk(@FindSurfaceByName,@sParam,0);
 
     if Idx<>-1 then

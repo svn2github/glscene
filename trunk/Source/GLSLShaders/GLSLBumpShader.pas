@@ -593,7 +593,7 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single);
 var
-  Temp: string;
+  Temp: AnsiString;
 begin
   with Code do
   begin
@@ -601,7 +601,7 @@ begin
     if (FLightCount = 1) or (FLightCompensation = 1) then
       Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular); ')
     else
-      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + Temp + '; ');
+      Add('   gl_FragColor = fLightPower * (fvBaseColor * ( fvTotalAmbient + fvTotalDiffuse ) + fvTotalSpecular) * ' + string(Temp) + '; ');
     Add('} ');
   end;
 end;

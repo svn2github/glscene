@@ -217,7 +217,7 @@ type
     FAnimData: Pointer;
     FRefTranf, FAnimTransf: TGLFile3DSAnimationData;
     FParent: TGLFile3DSDummyObject;
-    FParentName: string[64];
+    FParentName: String64;
   public
     procedure LoadAnimation(const AData: Pointer); virtual;
     procedure SetFrame(const AFrame: real); virtual;
@@ -253,7 +253,7 @@ type
   TGLFile3DSOmniLightObject = class(TGLFile3DSDummyObject)
   private
     FLightSrc: TGLFile3DSLight;
-    FLightSrcName: string[64];
+    FLightSrcName: String64;
   public
     constructor Create; override;
     procedure LoadData(const AOwner: TGLBaseMesh; const AData: PLight3DS); virtual;
@@ -278,7 +278,7 @@ type
   private
     FTargetObj: TGLDummyCube;
     FCameraSrc: TGLFile3DSCamera;
-    FCameraSrcName: string[64];
+    FCameraSrcName: String64;
   public
     constructor Create; override;
     procedure LoadData(Owner: TGLBaseMesh; AData: PCamera3DS);
@@ -1141,7 +1141,7 @@ begin
 
   if (FParentName <> '') then
   begin
-    FParent := Owner.FindMeshByName(FParentName) as TGLFile3DSDummyObject;
+    FParent := Owner.FindMeshByName(string(FParentName)) as TGLFile3DSDummyObject;
     FParentName := '';
   end;
   lAnimationData := FRefTranf;
@@ -1205,13 +1205,13 @@ end;
 
 procedure TGLFile3DSDummyObject.WriteToFiler(Writer: TVirtualWriter);
 var
-  str: string[32];
+  str: string;
 begin
   inherited;
 
   Writer.Write(FRefTranf, SizeOf(FRefTranf));
   if FParent <> nil then
-    str := FParent.Name
+    str := Copy(FParent.Name, 1, 32)
   else
     str := 'nil';
   Writer.WriteString(str);
@@ -1223,7 +1223,7 @@ begin
   inherited;
 
   Reader.Read(FRefTranf, SizeOf(FRefTranf));
-  FParentName := Reader.ReadString;
+  FParentName := String64(Copy(Reader.ReadString, 1, 64));
   if FParentName = 'nil' then
     FParentName := '';
   FAnimList.ReadFromFiler(Reader);
@@ -1263,7 +1263,7 @@ begin
     AddKeys(aPos);
 
     if ParentStr <> '' then
-      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(ParentStr));
+      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(ParentStr)));
 
     with FRefTranf do
     begin
@@ -1299,8 +1299,8 @@ procedure TGLFile3DSOmniLightObject.LoadData(const AOwner: TGLBaseMesh;
 begin
   FLightSrc.Parent := AOwner;
   FLightSrc.LightStyle := lsOmni;
-  FLightSrc.Name := AData.NameStr;
-  Name := AData.NameStr;
+  FLightSrc.Name := string(AData.NameStr);
+  Name := string(AData.NameStr);
   FLightSrc.Position.SetPoint(PAffineVector(@AData.Pos)^);
   FLightSrc.Diffuse.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
   FLightSrc.Specular.Color := VectorMake(AData.Color.R, AData.Color.G, AData.Color.B);
@@ -1331,7 +1331,7 @@ begin
     AddKeys(aCol);
 
     if Parent <> '' then
-      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(Parent));
+      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
   SetFrame(1);
@@ -1343,7 +1343,7 @@ var
 begin
   if FLightSrcName <> '' then
   begin
-    obj := Owner.Owner.FindChild(FLightSrcName, True);
+    obj := Owner.Owner.FindChild(string(FLightSrcName), True);
     if obj is TGLFile3DSLight then
     begin
       FLightSrc.Free;
@@ -1367,14 +1367,14 @@ end;
 
 procedure TGLFile3DSOmniLightObject.WriteToFiler(Writer: TVirtualWriter);
 var
-  str: string[64];
+  str: string;
 begin
   inherited;
 
   if FLightSrc.Name = '' then
     str := 'nil'
   else
-    str := FLightSrc.Name;
+    str := Copy(FLightSrc.Name, 1, 64);
   Writer.WriteString(str);
 end;
 
@@ -1382,7 +1382,7 @@ procedure TGLFile3DSOmniLightObject.ReadFromFiler(Reader: TVirtualReader);
 begin
   inherited;
 
-  FLightSrcName := Reader.ReadString;
+  FLightSrcName := String64(Copy(Reader.ReadString, 1, 64));
   if FLightSrcName = 'nil' then
     FLightSrcName := '';
 end;
@@ -1432,7 +1432,7 @@ begin
     AddKeys(aHot);
 
     if Parent <> '' then
-      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(Parent));
+      FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
   SetFrame(1);
@@ -1464,8 +1464,8 @@ procedure TGLFile3DSCameraObject.LoadData(Owner: TGLBaseMesh; AData: PCamera3DS)
 begin
   FCameraSrc.Parent := Owner;
   FTargetObj.Parent := Owner;
-  FCameraSrc.Name := AData.NameStr;
-  Name := AData.NameStr;
+  FCameraSrc.Name := string(AData.NameStr);
+  Name := string(AData.NameStr);
   FCameraSrc.Position.AsAffineVector := TAffineVector(AData.Position);
   FTargetObj.Position.SetPoint(TAffineVector(AData.Target));
   FCameraSrc.RollAngle := AData.Roll;
@@ -1507,7 +1507,7 @@ begin
 
   if FCameraSrcName <> '' then
   begin
-    obj := Owner.Owner.FindChild(FCameraSrcName, True);
+    obj := Owner.Owner.FindChild(string(FCameraSrcName), True);
     if obj is TGLFile3DSCamera then
     begin
       FCameraSrc.Free;
@@ -1523,14 +1523,14 @@ end;
 
 procedure TGLFile3DSCameraObject.WriteToFiler(Writer: TVirtualWriter);
 var
-  str: string[64];
+  str: string;
 begin
   inherited;
 
   if FCameraSrc.Name = '' then
     str := 'nil'
   else
-    str := FCameraSrc.Name;
+    str := Copy(FCameraSrc.Name, 1, 64);
   Writer.WriteString(str);
 end;
 
@@ -1538,7 +1538,7 @@ procedure TGLFile3DSCameraObject.ReadFromFiler(Reader: TVirtualReader);
 begin
   inherited;
 
-  FCameraSrcName := Reader.ReadString;
+  FCameraSrcName := String64(Copy(Reader.ReadString, 1, 64));
   if FCameraSrcName = 'nil' then
     FCameraSrcName := '';
 end;
@@ -1613,12 +1613,12 @@ var
             if material.Transparency <> 0 then
               libMat.Material.BlendingMode := bmTransparency;
           end;
-          if Trim(material.Texture.Map.NameStr) <> '' then
+          if Trim(string(material.Texture.Map.NameStr)) <> '' then
             try
               if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
-                  Texture.Image.LoadFromFile(material.Texture.Map.NameStr);
+                  Texture.Image.LoadFromFile(string(material.Texture.Map.NameStr));
                   Texture.Disabled := False;
                   Texture.TextureMode := tmModulate;
                   TextureIndex := 0;
@@ -1632,7 +1632,7 @@ var
               else
                 with libMat.Material.Texture do
                 begin
-                  Image.LoadFromFile(material.Texture.Map.NameStr);
+                  Image.LoadFromFile(string(material.Texture.Map.NameStr));
                   Disabled := False;
                   TextureMode := tmModulate;
                 end
@@ -1648,7 +1648,7 @@ var
                 raise;
             end;
 
-          if Trim(material.Opacity.Map.NameStr) <> '' then
+          if Trim(string(material.Opacity.Map.NameStr)) <> '' then
             try
               if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
@@ -1656,7 +1656,7 @@ var
                   libMat.Material.BlendingMode := bmTransparency;
                   Texture.ImageAlpha := tiaAlphaFromIntensity;
                   Texture.TextureMode := tmModulate;
-                  Texture.Image.LoadFromFile(material.Opacity.Map.NameStr);
+                  Texture.Image.LoadFromFile(string(material.Opacity.Map.NameStr));
                   Texture.Disabled := False;
                   TextureIndex := 1;
                   with material.Opacity.Map do
@@ -1670,12 +1670,12 @@ var
                 with libMat.Material.Texture do
                 begin
                   SecondMaterial := matLib.Materials.Add;
-                  SecondMaterial.Material.Texture.Image.LoadFromFile(
-                    material.Opacity.Map.NameStr);
+                  SecondMaterial.Material.Texture.Image.LoadFromFile(string(
+                    material.Opacity.Map.NameStr));
                   SecondMaterial.Material.Texture.Disabled := False;
                   SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
                   SecondMaterial.Material.Texture.TextureMode := tmModulate;
-                  SecondMaterial.Name := material.Opacity.Map.NameStr;
+                  SecondMaterial.Name := string(material.Opacity.Map.NameStr);
                   LibMat.Texture2Name := SecondMaterial.Name;
                   Disabled := False;
                 end;
@@ -1690,12 +1690,12 @@ var
               else
                 raise;
             end;
-          if Trim(material.Bump.Map.NameStr) <> '' then
+          if Trim(string(material.Bump.Map.NameStr)) <> '' then
             try
               if vGLFile3DS_UseTextureEx then
                 with libMat.Material.TextureEx.Add do
                 begin
-                  Texture.Image.LoadFromFile(material.Bump.Map.NameStr);
+                  Texture.Image.LoadFromFile(string(material.Bump.Map.NameStr));
                   Texture.Disabled := False;
                   Texture.TextureMode := tmModulate;
                   // You need a hight map for this parameter (like in 3d Max).
@@ -1712,12 +1712,12 @@ var
                 with libMat.Material.Texture do
                 begin
                   SecondMaterial := matLib.Materials.Add;
-                  SecondMaterial.Material.Texture.Image.LoadFromFile(
-                    material.Bump.Map.NameStr);
+                  SecondMaterial.Material.Texture.Image.LoadFromFile(string(
+                    material.Bump.Map.NameStr));
                   SecondMaterial.Material.Texture.Disabled := False;
                   SecondMaterial.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
                   SecondMaterial.Material.Texture.TextureMode := tmModulate;
-                  SecondMaterial.Name := material.Opacity.Map.NameStr;
+                  SecondMaterial.Name := string(material.Opacity.Map.NameStr);
                   Disabled := False;
                 end;
 
@@ -1755,18 +1755,18 @@ var
       matLib := TGLBaseMesh(GetOwner).LightmapLibrary;
       if Assigned(matLib) then
       begin
-        if Trim(material.IllumMap.Map.NameStr) <> '' then
+        if Trim(string(material.IllumMap.Map.NameStr)) <> '' then
         begin
-          libMat := matLib.Materials.GetLibMaterialByName(
-            material.IllumMap.Map.NameStr);
+          libMat := matLib.Materials.GetLibMaterialByName(string(
+            material.IllumMap.Map.NameStr));
           if not Assigned(libMat) then
           begin
             libMat := matLib.Materials.Add;
-            libMat.Name := material.IllumMap.Map.NameStr;
+            libMat.Name := string(material.IllumMap.Map.NameStr);
             try
               with libMat.Material.Texture do
               begin
-                Image.LoadFromFile(material.IllumMap.Map.NameStr);
+                Image.LoadFromFile(string(material.IllumMap.Map.NameStr));
                 Disabled := False;
                 TextureMode := tmModulate;
               end;
@@ -1804,7 +1804,7 @@ var
     begin
       Index := -1;
       for I := 0 to MeshCount - 1 do
-        if CompareText(Mesh[I].NameStr, Name) = 0 then
+        if CompareText(string(Mesh[I].NameStr), Name) = 0 then
         begin
           Index := I;
           Break;
@@ -2010,7 +2010,7 @@ var
     Result := -1;
     with KeyFramer do
       for I := 0 to MeshMotionCount - 1 do
-        if CompareText(MeshMotion[I].NameStr, ObjectName) = 0 then
+        if CompareText(string(MeshMotion[I].NameStr), ObjectName) = 0 then
         begin
           Result := I;
           Break;
@@ -2044,7 +2044,7 @@ begin
         begin
           hasLightMap := False;
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
-          mesh.Name := PMesh3DS(Objects.Mesh[I])^.NameStr;
+          mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
           //dummy targets
           for x := 0 to KeyFramer.Settings.Anim.Length - 1 do
             TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
@@ -2231,9 +2231,9 @@ begin
               with aFaceGroup do
               begin
                 MaterialName :=
-                  GetOrAllocateMaterial(Materials, MatArray[iMaterial].NameStr);
+                  GetOrAllocateMaterial(Materials, string(MatArray[iMaterial].NameStr));
                 LightMapIndex :=
-                  GetOrAllocateLightMap(Materials, MatArray[iMaterial].NameStr);
+                  GetOrAllocateLightMap(Materials, string(MatArray[iMaterial].NameStr));
                 // copy all vertices belonging to the current face into our index array,
                 // there won't be redundant vertices since this would mean a face has more than one
                 // material
@@ -2255,10 +2255,11 @@ begin
 
       // Adding non-mesh objects (for example, dummies).
       for I := 0 to KeyFramer.MeshMotionCount - 1 do
-        if (Owner.MeshObjects.FindMeshByName(KeyFramer.MeshMotion[I].NameStr) = nil) then
+        if (Owner.MeshObjects.FindMeshByName(string(
+          KeyFramer.MeshMotion[I].NameStr)) = nil) then
         begin
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
-          mesh.Name := KeyFramer.MeshMotion[I].NameStr;
+          mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
           //dummy targets
           for X := 0 to KeyFramer.Settings.Anim.Length - 1 do
             TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
@@ -2269,11 +2270,11 @@ begin
       for I := 0 to Objects.MeshCount - 1 do
         with PMesh3DS(Objects.Mesh[I])^ do
         begin
-          mesh := Owner.MeshObjects.FindMeshByName(NameStr) as TGLFile3DSMeshObject;
+          mesh := Owner.MeshObjects.FindMeshByName(string(NameStr)) as TGLFile3DSMeshObject;
           with mesh, KeyFramer do
           begin
-            CurrentMotionIndex := FindMotionIndex(KeyFramer, NameStr);
-            FRefTranf.ModelMatrix := InvertMeshMatrix(Objects, NameStr);
+            CurrentMotionIndex := FindMotionIndex(KeyFramer, string(NameStr));
+            FRefTranf.ModelMatrix := InvertMeshMatrix(Objects, string(NameStr));
 
             if MeshMotionCount > 0 then
               LoadAnimation(MeshMotion[CurrentMotionIndex]);

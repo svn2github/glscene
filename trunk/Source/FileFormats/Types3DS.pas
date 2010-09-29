@@ -38,6 +38,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PChar3DS = PAnsiChar;
      String3DS = AnsiString;
+     String64 = string[64];
 
      PWordList = ^TWordList;
      TWordList = array[0..MaxInt shr 2] of Word;

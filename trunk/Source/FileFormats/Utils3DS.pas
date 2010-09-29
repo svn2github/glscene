@@ -709,7 +709,7 @@ begin
                 User.Center.z := Chunk^.Data.ViewportData^.Center.Z;
                 User.HorAng := Chunk^.Data.ViewportData^.HorizAng;
                 User.VerAng := Chunk^.Data.ViewportData^.VertAng;
-                CameraStr := Chunk^.Data.ViewportData^.CamNameStr;
+                CameraStr := string(Chunk^.Data.ViewportData^.CamNameStr);
               end;
               Inc(PortIndex);
             end;
@@ -752,7 +752,7 @@ begin
                 User.Center.z := Chunk^.Data.ViewportData^.Center.Z;
                 User.HorAng := Chunk^.Data.ViewportData^.HorizAng;
                 User.VerAng := Chunk^.Data.ViewportData^.VertAng;
-                CameraStr := Chunk^.Data.ViewportData^.CamNameStr;
+                CameraStr := string(Chunk^.Data.ViewportData^.CamNameStr);
               end;
               Inc(PortIndex);
             end;
@@ -4288,7 +4288,7 @@ begin
               begin
                 Source.ReadChunkData(DataChunk);
                 for I := 0 to 5 do
-                  BoxMapStr[I] := DataChunk^.Data.MshBoxmap^[I];
+                  BoxMapStr[I] := string(DataChunk^.Data.MshBoxmap^[I]);
                 UseBoxmap := True;
                 FreeChunkData(DataChunk);
               end;
@@ -4329,7 +4329,7 @@ begin
         PROC_NAME:
           begin
             Source.ReadChunkData(Current);
-            ProcNameStr := StrPas(Current^.Data.ProcName);
+            ProcNameStr := string(StrPas(Current^.Data.ProcName));
             FreeChunkData(Current);
           end;
         PROC_DATA:
@@ -4613,7 +4613,7 @@ begin
           DL_EXCLUDE:
             begin
               Source.ReadChunkData(Current);
-              Exclude.Add(Current^.Data.DlExclude^);
+              Exclude.Add(string(Current^.Data.DlExclude^));
               FreeChunkData(Current);
             end;
           DL_OFF:
@@ -4680,7 +4680,7 @@ begin
             DL_SPOT_PROJECTOR:
               begin
                 Source.ReadChunkData(Current);
-                Spot^.Projector.BitmapStr := StrPas(Current^.Data.DlSpotProjector);
+                Spot^.Projector.BitmapStr := string(StrPas(Current^.Data.DlSpotProjector));
                 Spot^.Projector.Use := True;
                 FreeChunkData(Current);
               end;
@@ -5239,12 +5239,12 @@ begin
     // header Information
     if Assigned(NodeHdrChunk) then
     begin
-      NameStr := NodeHdrChunk^.Data.NodeHdr^.ObjNameStr;
+      NameStr := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
       Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
       Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
     end;
     // parents
-    ParentStr := GetParentName(Source, NodeHdrChunk);
+    ParentStr := AnsiString(GetParentName(Source, NodeHdrChunk));
     TParentStr := GetParentName(Source, TargetHdrChunk);
 
     // target information
@@ -5792,12 +5792,12 @@ begin
   with Result do
   begin
     //--- header Information
-    NameStr := NodeHdrChunk^.Data.NodeHdr^.ObjNameStr;
+    NameStr := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
 
     //--- get parent name if there is one
-    ParentStr := GetParentName(Source, NodeHdrChunk);
+    ParentStr := AnsiString(GetParentName(Source, NodeHdrChunk));
 
     //--- Instance
     if Assigned(InstData) then
@@ -6100,10 +6100,10 @@ begin
   with Result do
   begin
     //--- Header Information
-    Name := NodeHdrChunk^.Data.NodeHdr^.ObjNameStr;
+    Name := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
-    Parent := GetParentName(Source, NodeHdrChunk);
+    Parent := AnsiString(GetParentName(Source, NodeHdrChunk));
 
     //--- Position Information
     if PosKeys <> 0 then
@@ -6468,13 +6468,13 @@ begin
   with Result do
   begin
     // header Information
-    Name := NodeHdrChunk^.Data.NodeHdr^.ObjNameStr;
+    Name := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
 
     // get parent name if there is one
-    Parent := GetParentName(Source, NodeHdrChunk);
-    TParent := GetParentName(Source, TargetHdrChunk);
+    Parent := AnsiString(GetParentName(Source, NodeHdrChunk));
+    TParent := AnsiString(GetParentName(Source, TargetHdrChunk));
 
     if Assigned(TargetHdrChunk) then
     begin

@@ -88,7 +88,7 @@ begin
   try
     for i:=0 to MD3File.ModelHeader.numMeshes-1 do begin
       mesh:=TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
-      mesh.Name:=trim(MD3File.MeshData[i].MeshHeader.strName);
+      mesh.Name:=trim(string(MD3File.MeshData[i].MeshHeader.strName));
       with mesh, MD3File do begin
         Mode:=momFaceGroups;
         faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
@@ -117,7 +117,7 @@ begin
         // Get the mesh data for each morph frame
         for j:=0 to ModelHeader.numFrames-1 do begin
           morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
-          morphTarget.Name:=Trim(MeshData[i].MeshHeader.strName)+'['+IntToStr(j)+']';
+          morphTarget.Name:=Trim(string(MeshData[i].MeshHeader.strName))+'['+IntToStr(j)+']';
           numVerts:=MeshData[i].MeshHeader.numVertices;
           morphTarget.Vertices.Capacity:=numVerts;
           for k:=numVerts*j to numVerts*(j+1)-1 do begin

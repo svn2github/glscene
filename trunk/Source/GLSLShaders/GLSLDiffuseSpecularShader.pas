@@ -455,7 +455,7 @@ end;
 
 procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single; const FRealisticSpecular: Boolean);
 var
-  Temp: string;
+  Temp: AnsiString;
 begin
   with Code do
   begin
@@ -470,9 +470,9 @@ begin
     begin
       Str((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount: 1: 1, Temp);
       if FRealisticSpecular then
-        Add('  gl_FragColor = (LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib) * ' + Temp + '; ')
+        Add('  gl_FragColor = (LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib) * ' + string(Temp) + '; ')
       else
-        Add('  gl_FragColor =  LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib  + SpecContrib) * ' + Temp + '; ');
+        Add('  gl_FragColor =  LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib  + SpecContrib) * ' + string(Temp) + '; ');
     end;
 
     Add('  gl_FragColor.a = TextureContrib.a; ');

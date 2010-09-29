@@ -321,14 +321,14 @@ begin
         begin
           GLLibMaterial.Material.Texture.Disabled := False;
         end
-        else if FileStreamExists(path + ms3d_material.texture) then
-          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(libtexture, path + ms3d_material.texture)
+        else if FileStreamExists(path + string(ms3d_material.texture)) then
+          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(libtexture, path + string(ms3d_material.texture))
         else
         begin
           if not Owner.IgnoreMissingTextures then
-            Exception.Create('Texture file not found: ' + path + ms3d_material.texture);
+            Exception.Create('Texture file not found: ' + path + string(ms3d_material.texture));
           GLLibMaterial := Owner.MaterialLibrary.Materials.Add;
-          GLLibMaterial.Name := ms3d_material.name;
+          GLLibMaterial.Name := string(ms3d_material.name);
         end;
         GLLibMaterial.Material.FrontProperties.Emission.Color := ms3d_material.emissive;
         GLLibMaterial.Material.FrontProperties.Ambient.Color := ms3d_material.ambient;
@@ -560,16 +560,16 @@ begin
       // Bone names are added to a list initally to sort out parents
       bonelist := TStringList.Create;
       for i := 0 to nNumJoints - 1 do
-        bonelist.Add(ms3d_joints^[i].Base.Name);
+        bonelist.Add(string(ms3d_joints^[i].Base.Name));
       // Find parent bones and add their children
       for i := 0 to nNumJoints - 1 do
       begin
-        j := bonelist.IndexOf(ms3d_joints^[i].Base.ParentName);
+        j := bonelist.IndexOf(string(ms3d_joints^[i].Base.ParentName));
         if j = -1 then
           bone := TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
         else
           bone := TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones.BoneByID(j));
-        bone.Name := ms3d_joints^[i].Base.Name;
+        bone.Name := string(ms3d_joints^[i].Base.Name);
         bone.BoneID := i;
       end;
       bonelist.Free;

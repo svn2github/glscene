@@ -8484,9 +8484,9 @@ var
   i: Integer;
 begin
   WriteCRLFString(aStream, cAAFHeader);
-  WriteCRLFString(aStream, IntToStr(Count));
+  WriteCRLFString(aStream, AnsiString(IntToStr(Count)));
   for i := 0 to Count - 1 do
-    WriteCRLFString(aStream, Items[i].AsString);
+    WriteCRLFString(aStream, AnsiString(Items[i].AsString));
 end;
 
 // LoadFromStream
@@ -8499,9 +8499,9 @@ begin
   Clear;
   if ReadCRLFString(aStream) <> cAAFHeader then
     Assert(False);
-  n := StrToInt(ReadCRLFString(aStream));
+  n := StrToInt(string(ReadCRLFString(aStream)));
   for i := 0 to n - 1 do
-    Add.AsString := ReadCRLFString(aStream);
+    Add.AsString := string(ReadCRLFString(aStream));
 end;
 
 // SaveToFile

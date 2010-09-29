@@ -261,7 +261,7 @@ uses Const3DS, Utils3DS, SysUtils, ApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin
-  Result := StrPas(P);
+  Result := string(StrPas(P));
   FreeMem(P);
 end;
 
@@ -350,7 +350,7 @@ begin
     Entry := GetMaterial(Index);
     if Entry = nil then
       Continue;
-    if CompareText(Entry.NameStr, Name) = 0 then
+    if CompareText(string(Entry.NameStr), Name) = 0 then
     begin
       Result := Entry;
       Break;
@@ -811,7 +811,7 @@ begin
     if assigned(InstChunk) then
     begin
       ReadChunkData(InstChunk);
-      NewNode.InstStr := StrPas(InstChunk.Data.InstanceName);
+      NewNode.InstStr := string(StrPas(InstChunk.Data.InstanceName));
       FreeChunkData(InstChunk);
     end;
   end;
@@ -861,8 +861,8 @@ begin
               IDParentNode := FindNodeByID(IDNode.ParentID);
               if assigned(IDParentNode) then
               begin
-                Name := IDParentNode.Name;
-                Inst := IDParentNode.InstStr;
+                Name := AnsiString(IDParentNode.Name);
+                Inst := AnsiString(IDParentNode.InstStr);
               end;
 
               if Length(Name) > 0 then
@@ -2242,7 +2242,7 @@ begin
           Chunk.Data.MshMatGroup := AllocMem(SizeOf(TMshMatGroup));
           with Chunk.Data.MshMatGroup^ do
           begin
-            MatNameStr := StrPasFree(ReadString);
+            MatNameStr := AnsiString(StrPasFree(ReadString));
             Faces := ReadWord;
             if Faces > 0 then
             begin
@@ -2441,7 +2441,7 @@ begin
             Center := ReadPoint;
             HorizAng := ReadSingle;
             VertAng := ReadSingle;
-            CamNameStr := StrPasFree(ReadString);
+            CamNameStr := AnsiString(StrPasFree(ReadString));
           end;
         end;
       XDATA_ENTRY:

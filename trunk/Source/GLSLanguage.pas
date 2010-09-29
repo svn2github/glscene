@@ -159,18 +159,18 @@ var
 begin
   If Language = '' then Exit;
   {$IFDEF GLS_LOGGING}
-  if not FileExists(Language) then
+  if not FileExists(string(Language)) then
   begin
-    GLSLogger.LogFatalError(ExtractFileName(Language)+' Languagefile missing!');
+    GLSLogger.LogFatalError(ExtractFileName(string(Language))+' Languagefile missing!');
     Exit;
   end;
   {$Else}
-  if not FileExists(Language) then
+  if not FileExists(string(Language)) then
     Exit;
   {$ENDIF}
   SetLength(Entry, 0);
   FCurrentLanguageFile := Language;
-  IniFile := TMemIniFile.Create(Language);
+  IniFile := TMemIniFile.Create(string(Language));
   S := TStringList.Create;
 
   IniFile.ReadSectionValues('Text', S);
@@ -206,7 +206,7 @@ var
 begin
   for Index := 0 to High(Entry) do
   begin
-    if UpperCase(ID) = UpperCase(Entry[Index].ID) then
+    if UpperCase(string(ID)) = UpperCase(string(Entry[Index].ID)) then
     begin
       Result := Index;
       Exit;
@@ -286,7 +286,9 @@ begin
   if aValues <> nil then
     for I := 0 to aValues.Count-1 do
     If aValues.Names[I] <> '' then
-       AddConst(EncodeToUTF8(aValues.Names[I]), EncodeToUTF8(aValues.ValueFromIndex[I]));
+       AddConst(
+        EncodeToUTF8(aValues.Names[I]),
+        EncodeToUTF8(aValues.ValueFromIndex[I]));
 end;
 
 {**
@@ -331,11 +333,11 @@ var
 begin
   if Language = '' then Exit;
 
-  IniFile := TMemIniFile.Create(Language);
+  IniFile := TMemIniFile.Create(string(Language));
 
   for E := 0 to Count-1 do
   begin
-    IniFile.WriteString('Text',Items[E].ID, Items[E].Text);
+    IniFile.WriteString('Text', string(Items[E].ID), string(Items[E].Text));
   end;
   IniFile.UpdateFile;
   IniFile.Free;
