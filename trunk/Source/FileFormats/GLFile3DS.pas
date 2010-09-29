@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>29/09/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
       <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
                           SetFrameOffset in Lerp and MorphTo, wrong Frame test
                           in InterpolateValue
@@ -323,8 +324,7 @@ var
   vGLFile3DS_EnableAnimation: boolean = False;
 
   {: If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
-     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
-     be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
+     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will be Y.
      }
   vGLFile3DS_FixDefaultUpAxisY: boolean = False;
 
@@ -547,8 +547,10 @@ begin
     ((FKeys[I - 1].Time) < AFrame) then
   begin
     with AValues[I] do
+    begin
       Result := MatrixMultiply(Result, CreateRotationMatrix(
         AffineVectorMake(X, Y, Z), AngleLerp(0, Angle, w)));
+    end;
   end;
 end;
 
@@ -735,9 +737,6 @@ begin
   if FNumKeys > 0 then
     DataTransf.ModelMatrix[3] :=
       VectorAdd(DataTransf.ModelMatrix[3], VectorMake(InterpolateValue(FPos, AFrame)));
-
-  if vGLFile3DS_FixDefaultUpAxisY then
-    DataTransf.ModelMatrix := MatrixMultiply(DataTransf.ModelMatrix, CreateRotationMatrixX(-PI/2));
 end;
 
 procedure TGLFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
@@ -2033,14 +2032,15 @@ var
   lights_mesh: TGLFile3DSOmniLightObject;
   camera_mesh: TGLFile3DSCameraObject;
   basemesh: TGLBaseMesh;
+  RotationMatrix: TMatrix;
 begin
+
   with TFile3DS.Create do
     try
       LoadFromStream(aStream);
       // determine front face winding
       { TODO : better face winding }
       standardNormalsOrientation := not (NormalsOrientation = mnoDefault);
-
 
       for i := 0 to Objects.MeshCount - 1 do
         with PMesh3DS(Objects.Mesh[I])^ do
@@ -2316,6 +2316,17 @@ begin
           TMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
+      end;
+
+      if vGLFile3DS_FixDefaultUpAxisY then
+      begin
+        RotationMatrix := CreateRotationMatrixX(-PI/2);
+        for i := 0 to Owner.MeshObjects.Count - 1 do
+        begin
+          mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
+          for j := 0 to mesh.Vertices.Count - 1 do
+            mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], RotationMatrix);
+        end;
       end;
 
     finally
