@@ -60,7 +60,7 @@ type
 
   { Events }
   TMaterialHitEvent = procedure(obj0, obj1: TGLBaseSceneObject;
-    id0, id1: integer) of object;
+    id0, id1: Integer) of object;
   TContactProcessEvent = procedure(NGDMaterialPair: TNGDMaterialPair;
     contact: PNewtonJoint; timestep: Float) of object;
 
@@ -72,16 +72,16 @@ type
     FRenderPoint: TGLRenderPoint;
     FBitmapFont: TGLCustomBitmapFont;
     FMaterials: TNGDMaterials;
-    FMaxMaterialID: integer;
+    FMaxMaterialID: Integer;
     FVisible, FVisibleAtRunTime: Boolean; // Show Debug
     FNewtonWorld: PNewtonWorld;
-    FVersion: integer;
+    FVersion: Integer;
     FSolverModel: TNGDSolverModels; // Default=Exact
     FFrictionModel: TNGDFrictionModels; // Default=Exact
-    FMinimumFrameRate: integer; // Default=60
+    FMinimumFrameRate: Integer; // Default=60
     FWorldSizeMin: TGLCoordinates; // Default=-100, -100, -100
     FWorldSizeMax: TGLCoordinates; // Default=100, 100, 100
-    FThreadCount: integer; // Default=1
+    FThreadCount: Integer; // Default=1
     FGravity: TGLCoordinates; // Default=(0,-9.81,0)
     FWaterDensity: Single; // Default=0;
     FWaterPlane: TGLCoordinates4; // direction and distance to origin (0,1,0,0)
@@ -118,17 +118,17 @@ type
     procedure SetShowContact(const value: Boolean);
     procedure SetShowJoint(const value: Boolean);
     procedure SetShowSpring(const value: Boolean);
-    function GetNGDBehaviour(index: integer): TGLNGDBehaviour;
-    property NGDBehaviours[index: integer]
+    function GetNGDBehaviour(index: Integer): TGLNGDBehaviour;
+    property NGDBehaviours[index: Integer]
       : TGLNGDBehaviour read GetNGDBehaviour;
     procedure RegisterNGDBehaviour(NGDBehaviour: TGLNGDBehaviour);
     procedure UnregisterNGDBehaviour(NGDBehaviour: TGLNGDBehaviour);
     procedure SetSolverModel(val: TNGDSolverModels);
     procedure SetFrictionModel(val: TNGDFrictionModels);
-    procedure SetMinimumFrameRate(val: integer);
-    procedure SetThreadCount(val: integer);
-    function GetBodyCount: integer;
-    function GetConstraintCount: integer;
+    procedure SetMinimumFrameRate(val: Integer);
+    procedure SetThreadCount(val: Integer);
+    function GetBodyCount: Integer;
+    function GetConstraintCount: Integer;
     procedure SetWaterDensity(val: Single);
     procedure CallBodyIterator;
 
@@ -136,7 +136,7 @@ type
     procedure WriteMaterials(stream: TStream);
     procedure ReadMaterials(stream: TStream);
     procedure DefineProperties(Filer: TFiler); override;
-    procedure MaterialAutoCreateGroupID(MaterialID: integer);
+    procedure MaterialAutoCreateGroupID(MaterialID: Integer);
 
     // Events
     procedure NotifyWorldSizeChange(Sender: TObject);
@@ -148,7 +148,7 @@ type
     destructor Destroy; override;
     procedure NotifyChange(Sender: TObject);
     procedure Step(deltatime: Single);
-    function MaterialCreateGroupID: integer;
+    function MaterialCreateGroupID: Integer;
     // Property NewtonWorld: PNewtonWorld Read FNewtonWorld;
 
   published
@@ -165,13 +165,13 @@ type
       SetSolverModel default smExact;
     property FrictionModel: TNGDFrictionModels read FFrictionModel write
       SetFrictionModel default fmExact;
-    property MinimumFrameRate: integer read FMinimumFrameRate write
+    property MinimumFrameRate: Integer read FMinimumFrameRate write
       SetMinimumFrameRate default 60;
     property ThreadCount
-      : integer read FThreadCount write SetThreadCount default 1;
-    property Version: integer read FVersion;
-    property BodyCount: integer read GetBodyCount;
-    property ConstraintCount: integer read GetConstraintCount;
+      : Integer read FThreadCount write SetThreadCount default 1;
+    property Version: Integer read FVersion;
+    property BodyCount: Integer read GetBodyCount;
+    property ConstraintCount: Integer read GetConstraintCount;
     property Gravity: TGLCoordinates read FGravity write FGravity;
     property WorldSizeMin
       : TGLCoordinates read FWorldSizeMin write FWorldSizeMin;
@@ -221,7 +221,7 @@ type
     FCollision: PNewtonCollision;
     // For Compound [dynamic] and SceneCollision [static]
     FCollisionArray: array of PNewtonCollision;
-    FMaterialID: integer; // Default=0
+    FMaterialID: Integer; // Default=0
     FNewtonBodyMatrix: TMatrix; // Position and Orientation
     FContinuousCollisionMode: Boolean; // Default=False
     FBoundingSphereRadius: Single; // Checked every frame in design time
@@ -237,7 +237,7 @@ type
     procedure UnregisterJoint(Joint: TNGDJointBase);
     procedure SetNewtonBodyMatrix(val: TMatrix);
     procedure SetContinuousCollisionMode(val: Boolean);
-    procedure SetMaterialID(val: integer);
+    procedure SetMaterialID(val: Integer);
     function GetNewtonBodyMatrix: TMatrix;
     procedure SetCollision; virtual;
     procedure Render(var rci: TRenderContextInfo); virtual;
@@ -261,7 +261,7 @@ type
     property ContinuousCollisionMode
       : Boolean read FContinuousCollisionMode write
       SetContinuousCollisionMode default False;
-    property MaterialID: integer read FMaterialID write SetMaterialID default 0;
+    property MaterialID: Integer read FMaterialID write SetMaterialID default 0;
   end;
 
   TGLNGDDynamic = class(TGLNGDBehaviour)
@@ -317,6 +317,10 @@ type
     constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Pick(pickpoint: TVector; Mode: TNGDPickedModes);
+    function player(pindir: TMatrix; stepfactor, cushion: Single)
+      : PNewtonUserJoint;
+    function car(maxTireCount: Integer; const cordenateSytemInLocalSpace: TMatrix)
+      : PNewtonUserJoint;
 
     class function FriendlyName: string; override;
 
@@ -346,7 +350,7 @@ type
     property AppliedForce: TGLCoordinates read FAppliedForce;
     property AppliedTorque: TGLCoordinates read FAppliedTorque;
     property Volume: Single read FVolume;
-    property Mass: Single read FMass;
+    property mass: Single read FMass;
   end;
 
   TGLNGDStatic = class(TGLNGDBehaviour)
@@ -363,8 +367,8 @@ type
   public
     { Public Declarations }
     class function FriendlyName: string; override;
-    procedure SetHeightField(heightArray: array of UInt16; x: integer;
-      y: integer; xScale: Single; yScale: Single);
+    procedure SetHeightField(heightArray: array of UInt16; x: Integer;
+      y: Integer; xScale: Single; yScale: Single);
 
   published
     { Published Declarations }
@@ -374,14 +378,14 @@ type
   TNGDMaterials = class(TXCollection)
   protected
     { Protected Declarations }
-    function GetMaterialPair(index: integer): TNGDMaterialPair;
+    function GetMaterialPair(index: Integer): TNGDMaterialPair;
 
   public
     { Public Declarations }
     class function ItemsClass: TXCollectionItemClass; override;
     procedure Initialize;
     procedure Finalize;
-    property MaterialPair[index: integer]
+    property MaterialPair[index: Integer]
       : TNGDMaterialPair read GetMaterialPair; default;
   end;
 
@@ -394,7 +398,7 @@ type
     FCollidable: Boolean; // 1
     FStaticFriction: Single; // 0.9
     FKineticFriction: Single; // 0.5
-    Fid0, Fid1: integer;
+    Fid0, Fid1: Integer;
     FInitialized: Boolean;
 
     // Event
@@ -407,8 +411,8 @@ type
     procedure SetCollidable(val: Boolean);
     procedure SetStaticFriction(val: Single);
     procedure SetKineticFriction(val: Single);
-    procedure Setid0(const value: integer);
-    procedure Setid1(const value: integer);
+    procedure Setid0(const value: Integer);
+    procedure Setid1(const value: Integer);
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -428,6 +432,7 @@ type
       write FContactProcessEvent;
   published
     { Published Declarations }
+
     property Softness: Single read FSoftness write SetSoftness;
     property Elasticity: Single read FElasticity write SetElasticity;
     property Collidable: Boolean read FCollidable write SetCollidable;
@@ -435,22 +440,22 @@ type
       : Single read FStaticFriction write SetStaticFriction;
     property KineticFriction
       : Single read FKineticFriction write SetKineticFriction;
-    property id0: integer read Fid0 write Setid0 default 0;
-    property id1: integer read Fid1 write Setid1 default 0;
+    property id0: Integer read Fid0 write Setid0 default 0;
+    property id1: Integer read Fid1 write Setid1 default 0;
   end;
 
   { : An XCollection decendant for NGD Joints. }
   TNGDJoints = class(TXCollection)
   protected
     { Protected Declarations }
-    function GetJoint(index: integer): TNGDJointBase;
+    function GetJoint(index: Integer): TNGDJointBase;
 
   public
     { Public Declarations }
     class function ItemsClass: TXCollectionItemClass; override;
     procedure Initialize;
     procedure Finalize;
-    property Joint[index: integer]: TNGDJointBase read GetJoint; default;
+    property Joint[index: Integer]: TNGDJointBase read GetJoint; default;
   end;
 
   { : Component front-end for storing NGD Joints. }
@@ -569,7 +574,7 @@ type
 
   published
     { Published Declarations }
-    property PinDir: TGLCoordinates read FPinDir write FPinDir;
+    property pindir: TGLCoordinates read FPinDir write FPinDir;
   end;
 
   { : NGD slider joint implementation. }
@@ -710,7 +715,7 @@ type
 
   published
     { Published Declarations }
-    property PinDir: TGLCoordinates read FPinDir write FPinDir;
+    property pindir: TGLCoordinates read FPinDir write FPinDir;
   end;
 
   { : NGD Custom joint hinge implementation. }
@@ -762,29 +767,29 @@ type
   { Pure Newton Callback }
 procedure NewtonBodyIterator(const body: PNewtonBody); cdecl;
 
-function NewtonGetBuoyancyPlane(const collisionID: integer; context: Pointer;
-  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): integer; cdecl;
+function NewtonGetBuoyancyPlane(const collisionID: Integer; context: Pointer;
+  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): Integer; cdecl;
 
 procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: Float;
-  threadIndex: integer); cdecl;
+  threadIndex: Integer); cdecl;
 
 procedure NewtonSetTransform(const body: PNewtonBody;
-  const matrix: NewtonImport.PFloat; threadIndex: integer); cdecl;
+  const matrix: NewtonImport.PFloat; threadIndex: Integer); cdecl;
 
 procedure NewtonBodyDestructor(const body: PNewtonBody); cdecl;
 
 procedure NewtonCollisionIterator(const body: PNewtonBody;
-  VertexCount: integer; const FaceArray: PFloat; FaceId: integer); cdecl;
+  VertexCount: Integer; const FaceArray: PFloat; FaceId: Integer); cdecl;
 
-procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: integer);
+procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: Integer);
   cdecl;
 
 function NewtonOnAABBOverlap(const material: PNewtonMaterial;
   const body0: PNewtonBody; const body1: PNewtonBody;
-  threadIndex: integer): integer; cdecl;
+  threadIndex: Integer): Integer; cdecl;
 
 procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: Float;
-  threadIndex: integer); cdecl;
+  threadIndex: Integer); cdecl;
 
 // GLNGDObject register methods (used for joint object persistence)
 procedure RegisterGLSceneObject(anObject: TGLBaseSceneObject);
@@ -816,8 +821,8 @@ end;
 // API callback called by each body in 'NewtonApplyForceAndTorque' to set the
 // waterplane equation. For the moment the plane is the same for everybody.
 // This function could be used to create physics waves in the futur.
-function NewtonGetBuoyancyPlane(const collisionID: integer; context: Pointer;
-  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): integer;
+function NewtonGetBuoyancyPlane(const collisionID: Integer; context: Pointer;
+  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): Integer;
 var
   NGDManager: TGLNGDManager;
 begin
@@ -833,7 +838,7 @@ end;
 
 // Called after Manager.Step, Runtime only
 procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: Float;
-  threadIndex: integer);
+  threadIndex: Integer);
 var
   NGDDynamicBody: TGLNGDDynamic;
   Gravity: TVector;
@@ -891,7 +896,7 @@ end;
 
 // Runtime Only
 procedure NewtonSetTransform(const body: PNewtonBody;
-  const matrix: NewtonImport.PFloat; threadIndex: integer);
+  const matrix: NewtonImport.PFloat; threadIndex: Integer);
 var
   NGDDynamicBody: TGLNGDDynamic;
   ObjScale: TVector;
@@ -925,9 +930,9 @@ end;
 // The Manager use this CallBack from RenderEvent procedure
 // in Runtime and design time
 procedure NewtonCollisionIterator(const body: PNewtonBody;
-  VertexCount: integer; const FaceArray: PFloat; FaceId: integer);
+  VertexCount: Integer; const FaceArray: PFloat; FaceId: Integer);
 var
-  i: integer;
+  i: Integer;
   v0, v1: array [0 .. 2] of Single;
   vA: array of Single;
 begin
@@ -955,7 +960,7 @@ end;
 // API Callback, When NewtonBody Leave the NewtonWorld
 // [size of NewtonWorld Defined in manager]
 // Do nothing for the moment
-procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: integer);
+procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: Integer);
 begin
   // When The body is leaving the world we change its freezestate to make
   // debuggin color more clear in mind.
@@ -969,7 +974,7 @@ end;
 // API Callback Runtime Only. Raise two even if the application want to
 // apply special effect like conveyor...
 procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: Float;
-  threadIndex: integer);
+  threadIndex: Integer);
 var
   NGDMaterialPair: TNGDMaterialPair;
   obj0, obj1: TGLBaseSceneObject;
@@ -1002,7 +1007,7 @@ end;
 // This function can be used to get or set information of body and behaviors.
 function NewtonOnAABBOverlap(const material: PNewtonMaterial;
   const body0: PNewtonBody; const body1: PNewtonBody;
-  threadIndex: integer): integer;
+  threadIndex: Integer): Integer;
 begin
   // Boolean, if 1, continue
   // if 0, the two body won't collide and will go trough each other.
@@ -1029,7 +1034,7 @@ end;
 // Use the list of registered glscene-Object
 function GetGLSceneObject(anObjectName: string): TGLBaseSceneObject;
 var
-  i: integer;
+  i: Integer;
 begin
   Result := nil;
   for i := 0 to vGLNGDObjectRegister.Count - 1 do
@@ -1197,7 +1202,7 @@ end;
 
 procedure TGLNGDManager.Loaded;
 var
-  i: integer;
+  i: Integer;
 begin
   inherited;
   NotifyWorldSizeChange(self);
@@ -1210,9 +1215,9 @@ begin
   end;
 end;
 
-procedure TGLNGDManager.MaterialAutoCreateGroupID(MaterialID: integer);
+procedure TGLNGDManager.MaterialAutoCreateGroupID(MaterialID: Integer);
 var
-  i: integer;
+  i: Integer;
 begin
   // Create GroupID
   for i := FMaxMaterialID to MaterialID - 1 do
@@ -1252,7 +1257,7 @@ begin
     (Assigned(FMaterials) and (FMaterials.Count > 0)));
 end;
 
-function TGLNGDManager.GetBodyCount: integer;
+function TGLNGDManager.GetBodyCount: Integer;
 begin
   if Assigned(FNewtonWorld) then
     Result := NewtonWorldGetBodyCount(FNewtonWorld)
@@ -1260,7 +1265,7 @@ begin
     Result := FNGDBehaviours.Count;
 end;
 
-function TGLNGDManager.GetConstraintCount: integer;
+function TGLNGDManager.GetConstraintCount: Integer;
 begin
   if Assigned(FNewtonWorld) then
     Result := NewtonWorldGetConstraintCount(FNewtonWorld)
@@ -1269,7 +1274,7 @@ begin
     Result := 0;
 end;
 
-function TGLNGDManager.GetNGDBehaviour(index: integer): TGLNGDBehaviour;
+function TGLNGDManager.GetNGDBehaviour(index: Integer): TGLNGDBehaviour;
 begin
   Result := TGLNGDBehaviour(FNGDBehaviours[index]);
 end;
@@ -1281,7 +1286,7 @@ begin
       @(FWorldSizeMax.AsVector), @NewtonBodyIterator, nil);
 end;
 
-function TGLNGDManager.MaterialCreateGroupID: integer;
+function TGLNGDManager.MaterialCreateGroupID: Integer;
 begin
   if Assigned(FNewtonWorld) then
     Result := NewtonMaterialCreateGroupID(FNewtonWorld)
@@ -1310,7 +1315,7 @@ end;
 procedure TGLNGDManager.RenderEvent(Sender: TObject;
   var rci: TRenderContextInfo);
 var
-  i: integer;
+  i: Integer;
 begin
   if not Visible then
     exit;
@@ -1388,7 +1393,7 @@ begin
   // Nothing here for the moment
 end;
 
-procedure TGLNGDManager.SetMinimumFrameRate(val: integer);
+procedure TGLNGDManager.SetMinimumFrameRate(val: Integer);
 begin
   if (val >= 60) and (val <= 1000) then
   begin
@@ -1471,7 +1476,7 @@ begin
   FSolverModel := val;
 end;
 
-procedure TGLNGDManager.SetThreadCount(val: integer);
+procedure TGLNGDManager.SetThreadCount(val: Integer);
 begin
   if val > 0 then
   begin
@@ -1561,7 +1566,7 @@ end;
 
 procedure TGLNGDBehaviour.Finalize;
 var
-  i: integer;
+  i: Integer;
 begin
   FInitialized := False;
 
@@ -1582,7 +1587,7 @@ function TGLNGDBehaviour.GetCollisionFromBaseSceneObject
   (SceneObject: TGLBaseSceneObject): PNewtonCollision;
 var
   VertexList: array of TAffineVector; // For ConvexHull
-  i, k: integer; // For FreeformMesh
+  i, k: Integer; // For FreeformMesh
   FCollisionOffsetMatrix: TMatrix;
 
   function CorrectOffsetMatrix(SceneObject: TGLBaseSceneObject): TMatrix;
@@ -1626,8 +1631,8 @@ begin
   begin
     FCollisionOffsetMatrix := CorrectOffsetMatrix(SceneObject);
     with (SceneObject as TGLSphere) do
-      Result := NewtonCreateSphere(FManager.FNewtonWorld, Radius, Radius,
-        Radius, 0, @FCollisionOffsetMatrix);
+      Result := NewtonCreateSphere(FManager.FNewtonWorld, radius, radius,
+        radius, 0, @FCollisionOffsetMatrix);
   end
 
   else if (SceneObject is TGLCone) then
@@ -1647,8 +1652,8 @@ begin
     FCollisionOffsetMatrix := CorrectOffsetMatrix(SceneObject);
     with (SceneObject as TGLCapsule) do
       // Use Cylinder shape for buoyancy
-      Result := NewtonCreateCapsule(FManager.FNewtonWorld, Radius,
-        Height + 2 * Radius, 0, @FCollisionOffsetMatrix);
+      Result := NewtonCreateCapsule(FManager.FNewtonWorld, radius,
+        Height + 2 * radius, 0, @FCollisionOffsetMatrix);
   end
 
   else if (SceneObject is TGLCylinder) then
@@ -1716,7 +1721,7 @@ end;
 
 procedure TGLNGDBehaviour.Initialize;
 var
-  i: integer;
+  i: Integer;
 begin
   FInitialized := True;
 
@@ -1792,7 +1797,7 @@ end;
 procedure TGLNGDBehaviour.Render(var rci: TRenderContextInfo);
 var
   NGDJointBase: TNGDJointBase;
-  i: integer;
+  i: Integer;
   bar: TVector;
   f: Single;
   ESPText: string;
@@ -1881,7 +1886,7 @@ end;
 procedure TGLNGDBehaviour.SetCollision;
 var
   CollisionInfoRecord: TNewtonCollisionInfoRecord;
-  k: integer;
+  k: Integer;
 begin
   if Assigned(FCollision) then
   begin
@@ -1934,7 +1939,7 @@ begin
   end;
 end;
 
-procedure TGLNGDBehaviour.SetMaterialID(val: integer);
+procedure TGLNGDBehaviour.SetMaterialID(val: Integer);
 begin
   FMaterialID := val;
   if Assigned(FManager) then
@@ -2000,6 +2005,13 @@ begin
 end;
 
 { TGLNGDDynamic }
+
+function TGLNGDDynamic.car(maxTireCount: Integer;
+  const cordenateSytemInLocalSpace: TMatrix): PNewtonUserJoint;
+begin
+  Result := DGRaycastVehicleCreate(maxTireCount, @cordenateSytemInLocalSpace,
+    FNewtonBody);
+end;
 
 constructor TGLNGDDynamic.Create(AOwner: TXCollection);
 begin
@@ -2400,6 +2412,13 @@ begin
   end;
 end;
 
+function TGLNGDDynamic.player(pindir: TMatrix;
+  stepfactor, cushion: Single): PNewtonUserJoint;
+begin
+  Result := CreateCustomPlayerController(@pindir, FNewtonBody, stepfactor,
+    cushion);
+end;
+
 { TGLNGDStatic }
 
 procedure TGLNGDStatic.Render(var rci: TRenderContextInfo);
@@ -2443,8 +2462,8 @@ begin
 end;
 
 // To create heightField
-procedure TGLNGDStatic.SetHeightField(heightArray: array of UInt16; x: integer;
-  y: integer; xScale: Single; yScale: Single);
+procedure TGLNGDStatic.SetHeightField(heightArray: array of UInt16; x: Integer;
+  y: Integer; xScale: Single; yScale: Single);
 { Var
   attributeMap: Array Of UInt8;
   i: integer; }
@@ -2470,7 +2489,7 @@ end;
 function TGLNGDStatic.GetTree(optimize: Boolean;
   scaleXYZ: Single): PNewtonCollision;
 var
-  MeshIndex, TriangleIndex: integer;
+  MeshIndex, TriangleIndex: Integer;
   TriangleList: TAffineVectorList;
   v: array [0 .. 2] of TAffineVector;
   NewtonCollision: PNewtonCollision;
@@ -2527,6 +2546,7 @@ begin
   Fid0 := 0;
   Fid1 := 0;
   FContactProcessEvent := nil;
+  FManager := TGLNGDManager(owner.owner);
 end;
 
 destructor TNGDMaterialPair.Destroy;
@@ -2568,7 +2588,6 @@ end;
 procedure TNGDMaterialPair.Loaded;
 begin
   inherited;
-  FManager := TGLNGDManager(owner.owner);
   SetSoftness(FSoftness);
   SetCollidable(FCollidable);
   SetElasticity(FElasticity);
@@ -2582,7 +2601,7 @@ procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
 { var
   ContactProcessEventOwner, ContactProcessEventName: string; }
 var
-  Version: integer;
+  Version: Integer;
 begin
   inherited;
   with reader do
@@ -2647,7 +2666,7 @@ begin
       FElasticity);
 end;
 
-procedure TNGDMaterialPair.Setid0(const value: integer);
+procedure TNGDMaterialPair.Setid0(const value: Integer);
 begin
   if Initialized then
     Finalize;
@@ -2656,7 +2675,7 @@ begin
     Initialize;
 end;
 
-procedure TNGDMaterialPair.Setid1(const value: integer);
+procedure TNGDMaterialPair.Setid1(const value: Integer);
 begin
   if Initialized then
     Finalize;
@@ -2696,20 +2715,20 @@ end;
 
 procedure TNGDMaterials.Finalize;
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
     MaterialPair[i].Finalize;
 end;
 
-function TNGDMaterials.GetMaterialPair(index: integer): TNGDMaterialPair;
+function TNGDMaterials.GetMaterialPair(index: Integer): TNGDMaterialPair;
 begin
   Result := TNGDMaterialPair(Items[index]);
 end;
 
 procedure TNGDMaterials.Initialize;
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
     MaterialPair[i].Initialize;
@@ -2724,20 +2743,20 @@ end;
 
 procedure TNGDJoints.Finalize;
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
     Joint[i].Finalize;
 end;
 
-function TNGDJoints.GetJoint(index: integer): TNGDJointBase;
+function TNGDJoints.GetJoint(index: Integer): TNGDJointBase;
 begin
   Result := TNGDJointBase(Items[index]);
 end;
 
 procedure TNGDJoints.Initialize;
 var
-  i: integer;
+  i: Integer;
 begin
   for i := 0 to Count - 1 do
     Joint[i].Initialize;
@@ -2771,7 +2790,7 @@ end;
 
 procedure TGLNGDJointList.Loaded;
 var
-  i: integer;
+  i: Integer;
 begin
   inherited;
   for i := 0 to FJoints.Count - 1 do
@@ -2781,7 +2800,7 @@ end;
 procedure TGLNGDJointList.Notification(AComponent: TComponent;
   Operation: TOperation);
 var
-  i: integer;
+  i: Integer;
 begin
   inherited;
   if (Operation = opRemove) and (AComponent is TGLBaseSceneObject) then
