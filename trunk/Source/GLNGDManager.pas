@@ -317,10 +317,11 @@ type
     constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure Pick(pickpoint: TVector; Mode: TNGDPickedModes);
-    function player(pindir: TMatrix; stepfactor, cushion: Single)
+    { function player(pindir: TMatrix; stepfactor, cushion: Single)
       : PNewtonUserJoint;
-    function car(maxTireCount: Integer; const cordenateSytemInLocalSpace: TMatrix)
-      : PNewtonUserJoint;
+      function car(maxTireCount: Integer; const cordenateSytemInLocalSpace: TMatrix)
+      : PNewtonUserJoint; }
+    procedure AddImpulse(veloc, pointposit: TVector);
 
     class function FriendlyName: string; override;
 
@@ -350,7 +351,7 @@ type
     property AppliedForce: TGLCoordinates read FAppliedForce;
     property AppliedTorque: TGLCoordinates read FAppliedTorque;
     property Volume: Single read FVolume;
-    property mass: Single read FMass;
+    property Mass: Single read FMass;
   end;
 
   TGLNGDStatic = class(TGLNGDBehaviour)
@@ -2006,11 +2007,16 @@ end;
 
 { TGLNGDDynamic }
 
-function TGLNGDDynamic.car(maxTireCount: Integer;
+{ function TGLNGDDynamic.car(maxTireCount: Integer;
   const cordenateSytemInLocalSpace: TMatrix): PNewtonUserJoint;
-begin
+  begin
   Result := DGRaycastVehicleCreate(maxTireCount, @cordenateSytemInLocalSpace,
-    FNewtonBody);
+  FNewtonBody);
+  end; }
+
+procedure TGLNGDDynamic.AddImpulse(veloc, pointposit: TVector);
+begin
+  NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
 constructor TGLNGDDynamic.Create(AOwner: TXCollection);
@@ -2412,12 +2418,12 @@ begin
   end;
 end;
 
-function TGLNGDDynamic.player(pindir: TMatrix;
+{ function TGLNGDDynamic.player(pindir: TMatrix;
   stepfactor, cushion: Single): PNewtonUserJoint;
-begin
+  begin
   Result := CreateCustomPlayerController(@pindir, FNewtonBody, stepfactor,
-    cushion);
-end;
+  cushion);
+  end; }
 
 { TGLNGDStatic }
 
