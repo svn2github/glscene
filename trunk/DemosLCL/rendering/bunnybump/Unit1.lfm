@@ -14,13 +14,13 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Height = 409
-    Top = 57
+    Height = 394
+    Top = 72
     Width = 475
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 152.521591186523
+    FieldOfView = 151.517288208007
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -28,11 +28,11 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Height = 57
+    Height = 72
     Top = 0
     Width = 475
     Align = alTop
-    ClientHeight = 57
+    ClientHeight = 72
     ClientWidth = 475
     TabOrder = 1
     object Label1: TLabel
@@ -68,11 +68,11 @@ object Form1: TForm1
     end
     object GroupBox1: TGroupBox
       Left = 160
-      Height = 41
+      Height = 58
       Top = 8
       Width = 169
       Caption = 'Lights'
-      ClientHeight = 23
+      ClientHeight = 40
       ClientWidth = 165
       TabOrder = 1
       object Shape1: TShape
