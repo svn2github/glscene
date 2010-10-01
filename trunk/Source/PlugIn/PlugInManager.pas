@@ -237,7 +237,12 @@ begin
         Handle := NewHandle;
         FindFirst(Path, faAnyFile, SearchRec);
         FileSize := SearchRec.Size;
-        FileDate := FileDateToDateTime(SearchRec.Time);
+        FileDate :=
+{$IFDEF GLS_DELPHI_2010_UP}
+      SearchRec.TimeStamp;
+{$ELSE}
+      FileDateToDateTime(SearchRec.Time);
+{$ENDIF}
         FindClose(SearchRec);
         GetServices := ServiceFunc;
         EnumResourcenames := GetProcAddress(Handle, 'EnumResourceNames');
