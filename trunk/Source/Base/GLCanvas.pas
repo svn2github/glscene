@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/10/10 - Yar - Added RoundRect (thanks eric129)
       <li>21/09/10 - Yar - Added Arc, ArcTo (thanks µAlexx)
       <li>03/09/10 - Yar - Added FillRectGradient, FillEllipseGradient (thanks µAlexx)
       <li>23/08/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter
@@ -213,6 +214,10 @@ type
     procedure ArcTo(const x1, y1, x2, y2, x3, y3, x4, y4: Single); overload;
     procedure ArcTo(const x1, y1, x2, y2: Single; AngleBegin,
       AngleEnd: Single); overload;
+
+    procedure RoundRect(const x1, y1, x2, y2, xr, yr: Integer); overload;
+    procedure RoundRect(const x1, y1, x2, y2, xr, yr: Single); overload;
+
 
     property ArcDirection: TArcDirection read FArcDirection
       write FArcDirection;
@@ -809,6 +814,49 @@ procedure TGLCanvas.ArcTo(const x1, y1, x2, y2: Single; AngleBegin, AngleEnd: Si
 begin
   DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, True);
 end;
+
+procedure TGLCanvas.RoundRect(const x1, y1, x2, y2, xr, yr: Integer);
+const
+  pion2 = pi/2;
+  pi3on2 = 3*pion2;
+
+var
+  x2r, y2r: integer;
+
+begin
+  x2r := 2*xr;
+  y2r := 2*yr;
+  Arc(x1, y1, x1 + x2r, y1 + y2r, pi3on2, pi);
+  Line(x1 + 1, y1 + yr, x1 + 1, y2 - yr);
+  Arc(x1, y2, x1 + x2r,  y2 - y2r, pi, pion2);
+  Line(x1 + xr, y1, x2 - xr, y1);
+  Arc(x2, y2, x2 - x2r, y2 - y2r, pion2, 0);
+  Line(x2, y1 + yr, x2, y2 - yr);
+  Arc(x2, y1, x2 - x2r, y1 + y2r, 0, pi3on2);
+  Line(x1 + xr, y2 - 1, x2 - xr, y2 - 1);
+end;
+
+procedure TGLCanvas.RoundRect(const x1, y1, x2, y2, xr, yr: Single);
+const
+  pion2 = pi/2;
+  pi3on2 = 3*pion2;
+
+var
+  x2r, y2r: Single;
+
+begin
+  x2r := 2*xr;
+  y2r := 2*yr;
+  Arc(x1, y1, x1 + x2r, y1 + y2r, pi3on2, pi);
+  Line(x1 + 1, y1 + yr, x1 + 1, y2 - yr);
+  Arc(x1, y2, x1 + x2r,  y2 - y2r, pi, pion2);
+  Line(x1 + xr, y1, x2 - xr, y1);
+  Arc(x2, y2, x2 - x2r, y2 - y2r, pion2, 0);
+  Line(x2, y1 + yr, x2, y2 - yr);
+  Arc(x2, y1, x2 - x2r, y1 + y2r, 0, pi3on2);
+  Line(x1 + xr, y2 - 1, x2 - xr, y2 - 1);
+end;
+
 
 // Arc Draw
 //
