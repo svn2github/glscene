@@ -1943,6 +1943,7 @@ begin
         FHandles[I].FRenderingContext.Activate;
         if IsValid(FHandles[I].FHandle) then
           DoDestroyHandle(FHandles[I].FHandle);
+        FHandles[I].FChanged := True;
         FHandles[I].FRenderingContext.Deactivate;
         FHandles[I].FRenderingContext.FOwnedHandles.Remove(Self);
       end;

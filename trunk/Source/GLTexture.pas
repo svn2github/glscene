@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>04/10/10 - Yar - Improved multycontext features for TGLTexture
        <li>23/08/10 - Yar - Added OpenGLTokens to uses
        <li>21/05/10 - Yar - Removed TGLFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
        <li>16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TGLTextureImage
@@ -341,7 +342,6 @@ type
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
-
   public
     { Public Properties }
     constructor Create(AOwner: TPersistent); override;
@@ -649,13 +649,13 @@ type
   private
     { Private Declarations }
     FTextureHandle: TGLTextureHandle;
+    FSamplerHandle: TGLVirtualHandle;
     FTextureTarget: TGLTextureTarget;
     FTextureFormat: TGLInternalFormat;
     FTextureMode: TGLTextureMode;
     FTextureWrap: TGLTextureWrap;
     FMinFilter: TGLMinFilter;
     FMagFilter: TGLMagFilter;
-    FChanges: TGLTextureChanges;
     FDisabled: Boolean;
     FImage: TGLTextureImage;
     FImageAlpha: TGLTextureImageAlpha;
@@ -737,6 +737,8 @@ type
     procedure PrepareParams(target: TGLUInt); virtual;
 
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
+    procedure OnSamplerAllocate(Sender: TGLVirtualHandle; var Handle: Cardinal);
+    procedure OnSamplerDestroy(Sender: TGLVirtualHandle; var Handle: Cardinal);
     //: Shows a special image that indicates an error
     procedure SetTextureErrorImage;
   public
@@ -1273,7 +1275,8 @@ procedure TGLTextureImage.NotifyChange(Sender: TObject);
 begin
   if Assigned(FOwnerTexture) then
   begin
-    Include(FOwnerTexture.FChanges, tcImage);
+    FOwnerTexture.FTextureHandle.NotifyChangesOfData;
+    FOwnerTexture.FSamplerHandle.NotifyChangesOfData;
     // Check for texture target change
     GetTextureTarget;
     FOwnerTexture.NotifyChange(Self);
@@ -2291,7 +2294,6 @@ constructor TGLTexture.Create(AOwner: TPersistent);
 begin
   inherited;
   FDisabled := True;
-  FChanges := [tcImage, tcParams];
   FImage := TGLPersistentImage.Create(Self);
   FImage.OnTextureNeeded := DoOnTextureNeeded;
   FImageAlpha := tiaDefault;
@@ -2302,6 +2304,9 @@ begin
   FFilteringQuality := tfIsotropic;
   FRequiredMemorySize := -1;
   FTextureHandle := TGLTextureHandle.Create;
+  FSamplerHandle := TGLVirtualHandle.Create;
+  FSamplerHandle.OnAllocate := OnSamplerAllocate;
+  FSamplerHandle.OnDestroy := OnSamplerDestroy;
   FMappingMode := tmmUser;
   FEnvColor := TGLColor.CreateInitialized(Self, clrTransparent);
   FBorderColor := TGLColor.CreateInitialized(Self, clrTransparent);
@@ -2326,6 +2331,7 @@ begin
   FMapQCoordinates.Free;
   DestroyHandles;
   FTextureHandle.Free;
+  FSamplerHandle.Free;
   FImage.Free;
   inherited Destroy;
 end;
@@ -2363,7 +2369,8 @@ begin
         // FOnTextureNeeded := TGLTexture(Source).FImageGamma;
         // FRequiredMemorySize  : Integer;
         // FTexWidth, FTexHeight : Integer;
-        FChanges := [tcParams, tcImage];
+        FTextureHandle.NotifyChangesOfData;
+        FSamplerHandle.NotifyChangesOfData;
       end;
     end
     else if (Source is TGLGraphic) then
@@ -2377,7 +2384,8 @@ begin
   begin
     FDisabled := True;
     SetImage(nil);
-    FChanges := [tcParams, tcImage];
+    FTextureHandle.NotifyChangesOfData;
+    FSamplerHandle.NotifyChangesOfData;
   end;
 end;
 
@@ -2392,7 +2400,7 @@ begin
       TGLTextureExItem(Owner).NotifyChange(Self);
   end;
   if Sender is TGLTextureImage then
-    Include(FChanges, tcImage);
+    FTextureHandle.NotifyChangesOfData;
 
   inherited;
 end;
@@ -2402,7 +2410,7 @@ end;
 
 procedure TGLTexture.NotifyImageChange;
 begin
-  Include(FChanges, tcImage);
+  FTextureHandle.NotifyChangesOfData;
   NotifyChange(Self);
 end;
 
@@ -2411,7 +2419,7 @@ end;
 
 procedure TGLTexture.NotifyParamsChange;
 begin
-  Include(FChanges, tcParams);
+  FSamplerHandle.NotifyChangesOfData;
   NotifyChange(Self);
 end;
 
@@ -3295,18 +3303,16 @@ var
 begin
   target := Image.NativeTextureTarget;
   if FTextureTarget <> target then
-    fTextureHandle.DestroyHandle;
+    FTextureHandle.DestroyHandle;
 
-  if FTextureHandle.Handle = 0 then
+  FTextureHandle.AllocateHandle;
+  Result := FTextureHandle.Handle;
+  if FTextureHandle.IsDataNeedUpdate then
   begin
-    FTextureHandle.AllocateHandle;
-    Result := FTextureHandle.Handle;
-    if Result = 0 then
-      exit;
     FTextureTarget := target;
-    Include(FChanges, tcImage);
-    Include(FChanges, tcParams);
+    FSamplerHandle.NotifyChangesOfData;
   end;
+  FSamplerHandle.AllocateHandle;
 
   // bind texture
   glTarget := DecodeGLTextureTarget(target);
@@ -3317,12 +3323,11 @@ begin
       RenderingContext.GLStates.TextureBinding[
         RenderingContext.GLStates.ActiveTexture, target] := Handle;
     end;
-    if tcParams in FChanges then
+    if FSamplerHandle.IsDataNeedUpdate then
     begin
       PrepareParams(glTarget);
-      Exclude(FChanges, tcParams);
+      FSamplerHandle.NotifyDataUpdated;
     end;
-    Result := FTextureHandle.Handle;
   end
   else
     Result := 0;
@@ -3347,12 +3352,12 @@ var
   cubeMapOk: Boolean;
   cubeMapImage: TGLCubeMapImage;
 begin
-  if (FTextureHandle.Handle = 0) or (FChanges <> []) then
+  if FTextureHandle.IsDataNeedUpdate or FSamplerHandle.IsDataNeedUpdate then
   begin
     AllocateHandle;
-    if tcImage in FChanges then
+    if FTextureHandle.IsDataNeedUpdate then
     begin
-      Exclude(FChanges, tcImage);
+      FTextureHandle.NotifyDataUpdated;
       // Check supporting
       target := DecodeGLTextureTarget(Image.NativeTextureTarget);
       if not IsTargetSupported(target)
@@ -3398,7 +3403,7 @@ end;
 procedure TGLTexture.DestroyHandles;
 begin
   FTextureHandle.DestroyHandle;
-  FChanges := [tcParams, tcImage];
+  FSamplerHandle.DestroyHandle;
   FRequiredMemorySize := -1;
 end;
 
@@ -3683,6 +3688,16 @@ procedure TGLTexture.DoOnTextureNeeded(Sender: TObject; var textureFileName:
 begin
   if Assigned(FOnTextureNeeded) then
     FOnTextureNeeded(Sender, textureFileName);
+end;
+
+procedure TGLTexture.OnSamplerAllocate(Sender: TGLVirtualHandle; var Handle: Cardinal);
+begin
+  Handle := 1;
+end;
+
+procedure TGLTexture.OnSamplerDestroy(Sender: TGLVirtualHandle; var Handle: Cardinal);
+begin
+  Handle := 0;
 end;
 
 procedure TGLTexture.SetTextureErrorImage;
