@@ -6,6 +6,7 @@
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
    <b>History : </b><font size=-1><ul>
+      <li>04/10/10 - Yar - Fixed TDXFileHeader type (thanks JironBach)
       <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
    </ul></font>
 }
@@ -26,11 +27,11 @@ type
   TDXNode = class;
 
   TDXFileHeader = record
-    Magic : array[0..3] of char;
-    Major : array[0..1] of char;
-    Minor : array[0..1] of char;
-    FileType : array[0..3] of char;
-    FloatType : array[0..3] of char;
+    Magic : array[0..3] of AnsiChar;
+    Major : array[0..1] of AnsiChar;
+    Minor : array[0..1] of AnsiChar;
+    FileType : array[0..3] of AnsiChar;
+    FloatType : array[0..3] of AnsiChar;
   end;
 
   TDXNode = class (TList)
