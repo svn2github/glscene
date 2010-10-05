@@ -44,7 +44,7 @@ procedure SetupVSync(const AVSyncMode : TVSyncMode);
 implementation
 
 uses
-  OpenGLAdapter;
+  OpenGLTokens, OpenGLAdapter;
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 {$IFDEF MSWINDOWS}
