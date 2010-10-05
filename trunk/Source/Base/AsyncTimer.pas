@@ -28,9 +28,6 @@ const
 
 type
 
-{$IFDEF FPC}
-  TMutex = TSynchroObject;
-{$ENDIF}
   // TAsyncTimer
   //
   { : Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).<p>
@@ -44,7 +41,7 @@ type
     FEnabled: Boolean;
     FOnTimer: TNotifyEvent;
     FTimerThread: TThread;
-    FMutex: TMutex;
+    FMutex: TCriticalSection;
   protected
     procedure SetEnabled(Value: Boolean);
     function GetInterval: Word;
@@ -141,7 +138,7 @@ constructor TAsyncTimer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   // create timer thread
-  FMutex := TMutex.Create;
+  FMutex := TCriticalSection.Create;
   FMutex.Acquire;
   FTimerThread := TTimerThread.Create(False);
 
