@@ -34,7 +34,7 @@ uses
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
-  Classes, SysUtils, Dialogs, GLCrossPlatform, Forms
+  Classes, SysUtils, Dialogs, GLCrossPlatform, Forms, SyncObjs
 {$IFNDEF FPC} ,ShellApi {$ENDIF}
   ;
 
@@ -79,7 +79,7 @@ type
     FLogLevels: TLogLevels;
     FEnabled: Boolean;
 {$IFDEF GLS_MULTITHREAD}
-    CriticalSection: TRTLCriticalSection;
+    CriticalSection: TCriticalSection;
 {$ENDIF}
     LogKindCount: array[TLogLevel] of Integer;
     procedure SetMode(NewMode: TLogLevels);
@@ -315,7 +315,7 @@ var
   ModeStr, Path: string;
 begin
   {$IFDEF GLS_MULTITHREAD}
-  InitializeCriticalSection(CriticalSection);
+  CriticalSection := TCriticalSection.Create;
   {$ENDIF}
   FEnabled := True;
   ModeTitles[lkDebug] := 'debug info';
@@ -387,7 +387,7 @@ begin
   if Self = GLSLogger then
     GLSLogger := nil;
 {$IFDEF GLS_MULTITHREAD}
-  DeleteCriticalSection(CriticalSection);
+  CriticalSection.Destroy;
 {$ENDIF}
 end;
 
@@ -400,11 +400,11 @@ begin
   if not (Level in LogLevels) or not FEnabled then
     Exit;
 {$IFDEF GLS_MULTITHREAD}
-  EnterCriticalSection(CriticalSection);
+  CriticalSection.Enter;
 {$ENDIF}
   AppendLog(Desc, Level);
 {$IFDEF GLS_MULTITHREAD}
-  LeaveCriticalSection(CriticalSection);
+  CriticalSection.Leave;
 {$ENDIF}
 end;
 

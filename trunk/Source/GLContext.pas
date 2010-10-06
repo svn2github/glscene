@@ -88,6 +88,7 @@ uses
 {$IFDEF FPC}
   LCLType,
 {$ENDIF}
+  SyncObjs,
   GLCrossPlatform,
   OpenGLTokens,
   OpenGLAdapter,
@@ -163,7 +164,7 @@ type
 {$ELSE}
     FSharedContexts: TThreadList;
     FOwnedHandles: TThreadList;
-    FLock: TRTLCriticalSection;
+    FLock: TCriticalSection;
 {$ENDIF}
 
     procedure SetColorBits(const aColorBits: Integer);
@@ -1262,7 +1263,7 @@ constructor TGLContext.Create;
 begin
   inherited Create;
 {$IFDEF GLS_MULTITHREAD}
-  InitializeCriticalSection(FLock);
+  FLock := TCriticalSection.Create;
 {$ENDIF}
   FColorBits := 32;
   FStencilBits := 0;
@@ -1298,7 +1299,7 @@ begin
   FOwnedHandles.Free;
   FSharedContexts.Free;
 {$IFDEF GLS_MULTITHREAD}
-  DeleteCriticalSection(FLock);
+  FLock.Free;
 {$ENDIF}
   inherited Destroy;
 end;
@@ -1635,7 +1636,7 @@ end;
 procedure TGLContext.Activate;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  EnterCriticalSection(FLock);
+  FLock.Enter;
 {$ENDIF}
   if FActivationCount = 0 then
   begin
@@ -1675,7 +1676,7 @@ begin
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
 {$IFDEF GLS_MULTITHREAD}
-  LeaveCriticalSection(FLock);
+  FLock.Leave;
 {$ENDIF}
 end;
 
@@ -4402,4 +4403,3 @@ finalization
   vContextClasses := nil;
 
 end.
-

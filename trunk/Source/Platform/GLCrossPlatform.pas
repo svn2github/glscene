@@ -711,7 +711,6 @@ end;
 // QueryPerformanceCounter
 //
 {$IFDEF UNIX}
-{$IFDEF FPC}
 var
   vProgStartSecond: int64;
 
@@ -723,61 +722,38 @@ begin
   vProgStartSecond := tz.tv_sec;
 end;
 {$ENDIF}
-{$ENDIF}
 
 procedure QueryPerformanceCounter(var val: Int64);
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 begin
   Windows.QueryPerformanceCounter(val);
-{$ELSE}
-{$IFDEF FPC}
+end;
+{$ENDIF}
+{$IFDEF UNIX}
 var
   tz: timeval;
 begin
-  //val:=round(now*MSecsPerDay);
   fpgettimeofday(@tz, nil);
   val := tz.tv_sec - vProgStartSecond;
   val := val * 1000000;
   val := val + tz.tv_usec;
-{$ELSE}
-begin
-  val := RDTSC;
-{$ENDIF}
-{$ENDIF}
 end;
+{$ENDIF}
 
 // QueryPerformanceFrequency
 //
 
 function QueryPerformanceFrequency(var val: Int64): Boolean;
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 begin
   Result := Boolean(Windows.QueryPerformanceFrequency(val));
 end;
-{$ELSE}
-{$IFDEF FPC}
+{$ENDIF}
+{$IFDEF UNIX}
 begin
   val := 1000000;
   Result := True;
 end;
-{$ELSE}
-var
-  startCycles, endCycles: Int64;
-  aTime, refTime: TDateTime;
-begin
-  aTime := Now;
-  while aTime = Now do
-    ;
-  startCycles := RDTSC;
-  refTime := Now;
-  while refTime = Now do
-    ;
-  endCycles := RDTSC;
-  aTime := Now;
-  val := Round((endCycles - startCycles) / ((aTime - refTime) * (3600 * 24)));
-  Result := True;
-end;
-{$ENDIF}
 {$ENDIF}
 
 // StartPrecisionTimer

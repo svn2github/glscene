@@ -25,6 +25,9 @@ interface
 uses
   Classes,
   SysUtils,
+{$IFDEF GLS_MULTITHREAD}
+  SyncObjs,
+{$ENDIF}
 {$IFNDEF FPC}
   Generics.Collections,
 {$ENDIF}
@@ -250,7 +253,7 @@ type
     CompilationLog: TLogSession;
     WorkLog: TLogSession;
 {$IFDEF GLS_MULTITHREAD}
-    FLock: TRTLCriticalSection;
+    FLock: TCriticalSection;
 {$ENDIF}
   protected
     { Protected Declarations }
@@ -1518,7 +1521,7 @@ begin
     ]);
   vWorked := False;
 {$IFDEF GLS_MULTITHREAD}
-  InitializeCriticalSection(FLock);
+  FLock := TCriticalSection.Create;
 {$ENDIF}
 end;
 
@@ -1533,7 +1536,7 @@ begin
   CompilationLog.Shutdown;
   WorkLog.Shutdown;
 {$IFDEF GLS_MULTITHREAD}
-  DeleteCriticalSection(FLock);
+  FLock.Destroy;
 {$ENDIF}
   inherited;
 end;
@@ -1543,7 +1546,7 @@ var
   bPrev: Boolean;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  EnterCriticalSection(FLock);
+  FLock.Enter;
 {$ENDIF}
   bPrev := vWorked;
   vWorked := True;
@@ -1555,7 +1558,7 @@ var
   bPrev: Boolean;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  LeaveCriticalSection(FLock);
+  FLock.Leave;
 {$ENDIF}
   bPrev := vWorked;
   vWorked := False;
@@ -2397,4 +2400,3 @@ finalization
   ClearRegistries;
 
 end.
-
