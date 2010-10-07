@@ -6,7 +6,8 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
-      <li>29/09/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
+      <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
+                          Fixed first frame index (it's 0 not 1)
       <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
                           SetFrameOffset in Lerp and MorphTo, wrong Frame test
                           in InterpolateValue
@@ -324,8 +325,9 @@ var
   vGLFile3DS_EnableAnimation: boolean = False;
 
   {: If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
-     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will be Y.
-     }
+     By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
+     be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
+}
   vGLFile3DS_FixDefaultUpAxisY: boolean = False;
 
 // ------------------------------------------------------------------
@@ -335,7 +337,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
+const
+  cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
 
 {$REGION 'Misc functions'}
 
@@ -603,11 +606,32 @@ procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
 var
   I: integer;
+  AffVect : TAffineVector;
+  Sign : ShortInt;
 begin
   inherited;
   SetLength(FScale, FNumKeys);
   for I := 0 to FNumKeys - 1 do
+  begin
     FScale[I] := TAffineVector(PPointList(AData)[I]);
+
+    if vGLFile3DS_FixDefaultUpAxisY then
+    begin
+      AffVect := FScale[I];
+
+      if (AffVect[0] < 0) or (AffVect[1] < 0) or (AffVect[2] < 0) then
+        Sign := -1
+      else
+        Sign:= 1;
+
+      AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+
+      FScale[I][0] := Sign * Abs(AffVect[0]);
+      FScale[I][1] := Sign * Abs(AffVect[1]);
+      FScale[I][2] := Sign * Abs(AffVect[2]);
+    end;
+
+  end;
 end;
 
 procedure TGLFile3DSScaleAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
@@ -657,6 +681,7 @@ procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
 var
   I: integer;
   Rot: PKFRotKeyList;
+  AffVect : TAffineVector;
 begin
   inherited;
 
@@ -677,8 +702,24 @@ begin
       Rot[I].Z := -Rot[I].Z;
     end;
     FRot[I] := Rot[I];
+
+    if vGLFile3DS_FixDefaultUpAxisY then
+    begin
+      AffVect[0] := FRot[I].X;
+      AffVect[1] := FRot[I].Y;
+      AffVect[2] := FRot[I].Z;
+
+      AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+
+      FRot[I].X := AffVect[0];
+      FRot[I].Y := AffVect[1];
+      FRot[I].Z := AffVect[2];
+    end;
+
+
   end;
 end;
+
 
 procedure TGLFile3DSRotationAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
   const AFrame: real);
@@ -728,7 +769,14 @@ begin
   inherited;
   SetLength(FPos, FNumKeys);
   for I := 0 to FNumKeys - 1 do
+  begin
     FPos[I] := TAffineVector(PPointList(AData)[I]);
+
+    if vGLFile3DS_FixDefaultUpAxisY then
+    begin
+      FPos[I] := VectorRotateAroundX(FPos[I], cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+    end;
+  end;
 end;
 
 procedure TGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
@@ -832,7 +880,14 @@ begin
 
   SetLength(FTPos, FNumKeys);
   for I := 0 to FNumKeys - 1 do
+  begin
     FTPos[I] := TaffineVector(PPointList(AData)[I]);
+
+    if vGLFile3DS_FixDefaultUpAxisY then
+    begin
+      FTPos[I] := VectorRotateAroundX(FTPos[I], cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+    end;
+  end;
 end;
 
 procedure TTGLFile3DSPositionAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
@@ -1179,7 +1234,7 @@ begin
     FRefTranf := (Source as TGLFile3DSDummyObject).FRefTranf;
     FParent := (Source as TGLFile3DSDummyObject).FParent;
     FAnimList.Assign((Source as TGLFile3DSDummyObject).FAnimList);
-    SetFrame(1);
+    SetFrame(0);
   end;
 end;
 
@@ -1247,6 +1302,9 @@ var
   aScale: TGLFile3DSScaleAnimationKeys;
   aRot: TGLFile3DSRotationAnimationKeys;
   aPos: TGLFile3DSPositionAnimationKeys;
+  Mat : TMatrix;
+  RotMat : TMatrix;
+  AffVect : TAffineVector;
 begin
   inherited;
 
@@ -1269,13 +1327,34 @@ begin
 
     with FRefTranf do
     begin
+
+      if vGLFile3DS_FixDefaultUpAxisY then
+      begin
+        RotMat := CreateRotationMatrixX(cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+        InvertMatrix(RotMat);
+
+        Mat := ModelMatrix;
+        ModelMatrix := MatrixMultiply(Mat, RotMat);
+
+        AffVect[0] := Pivot.X;
+        AffVect[1] := Pivot.Y;
+        AffVect[2] := Pivot.Z;
+
+        AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
+
+        Pivot.X := AffVect[0];
+        Pivot.Y := AffVect[1];
+        Pivot.Z := AffVect[2];
+      end;
+
       ModelMatrix[3, 0] := ModelMatrix[3, 0] - Pivot.X;
       ModelMatrix[3, 1] := ModelMatrix[3, 1] - Pivot.Y;
       ModelMatrix[3, 2] := ModelMatrix[3, 2] - Pivot.Z;
+
     end;
   end;
 
-  SetFrame(1);
+  SetFrame(0);
 end;
 
 procedure TGLFile3DSMeshObject.BuildList(var ARci: TRenderContextInfo);
@@ -1336,7 +1415,7 @@ begin
       FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  SetFrame(1);
+  SetFrame(0);
 end;
 
 procedure TGLFile3DSOmniLightObject.SetFrame(const AFrame: real);
@@ -1437,7 +1516,7 @@ begin
       FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  SetFrame(1);
+  SetFrame(0);
 end;
 
 procedure TGLFile3DSSpotLightObject.SetFrame(const AFrame: real);
@@ -1498,7 +1577,7 @@ begin
     AddKeys(aTPos);
   end;
 
-  SetFrame(1);
+  SetFrame(0);
 end;
 
 procedure TGLFile3DSCameraObject.SetFrame(const AFrame: real);
@@ -1835,8 +1914,8 @@ var
         end;
         InvertMatrix(Result);
 
-        //Если матрица не нормализована, т.е. третий столбец не равен векторному произведению первых двух столбцов,
-        //то значит её нужно повернуть на -pi вокруг оси Y.
+        // If the matrix is not normalized, ie the third column is not equal to the vector product of the first two columns,
+        // it means that it is necessary to turn to-pi around the axis Y.
         m := Result;
         v4 := m[3];
         factor := VectorLength(m[0]);
@@ -2318,16 +2397,6 @@ begin
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
       end;
 
-      if vGLFile3DS_FixDefaultUpAxisY then
-      begin
-        RotationMatrix := CreateRotationMatrixX(-PI/2);
-        for i := 0 to Owner.MeshObjects.Count - 1 do
-        begin
-          mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
-          for j := 0 to mesh.Vertices.Count - 1 do
-            mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], RotationMatrix);
-        end;
-      end;
 
     finally
       Free;
@@ -2349,6 +2418,5 @@ initialization
 
   RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
   RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
-
 end.
 
