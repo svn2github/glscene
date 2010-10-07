@@ -17,6 +17,10 @@
 
   <b>History : </b><font size=-1><ul>
 
+  <li>07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
+  <li>30/09/10 - FP - Removed beta functions of player and car in TGLNGDDynamic.
+  Added AddImpulse function in TGLNGDDynamic.
+  <li>29/09/10 - FP - Moved FManager assignation for MaterialPair from loaded to create
   <li>21/09/10 - FP - Added timestep in TContactProcessEvent.
   Removed Manager property of MaterialPair.
   MaterialPair.loaded use the owner.owner component as manager now.
@@ -1556,7 +1560,13 @@ begin
 end;
 
 destructor TGLNGDBehaviour.Destroy;
+var
+  i: Integer;
 begin
+
+  for i := FJointRegister.Count - 1 downto 0 do
+    TNGDJointBase(FJointRegister[i]).Free;
+
   if Assigned(FManager) then
     Manager := nil;
   if Assigned(FOwnerBaseSceneObject) then
@@ -1571,7 +1581,7 @@ var
 begin
   FInitialized := False;
 
-  for i := 0 to FJointRegister.Count - 1 do
+   for i := FJointRegister.Count - 1 downto 0 do
     TNGDJointBase(FJointRegister[i]).Finalize;
 
   if Assigned(FManager) then
