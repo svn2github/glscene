@@ -238,6 +238,8 @@ uses
 
 const
   cNoPrimitive = MaxInt;
+  pion2 = pi/2;
+  pi3on2 = 3*pion2;
 
   // ------------------
   // ------------------ TGLCanvas ------------------
@@ -816,45 +818,39 @@ begin
 end;
 
 procedure TGLCanvas.RoundRect(const x1, y1, x2, y2, xr, yr: Integer);
-const
-  pion2 = pi/2;
-  pi3on2 = 3*pion2;
-
 var
-  x2r, y2r: integer;
-
+  x2r, y2r, x, y: integer;
 begin
   x2r := 2*xr;
   y2r := 2*yr;
-  Arc(x1, y1, x1 + x2r, y1 + y2r, pi3on2, pi);
-  Line(x1 + 1, y1 + yr, x1 + 1, y2 - yr);
-  Arc(x1, y2, x1 + x2r,  y2 - y2r, pi, pion2);
-  Line(x1 + xr, y1, x2 - xr, y1);
-  Arc(x2, y2, x2 - x2r, y2 - y2r, pion2, 0);
-  Line(x2, y1 + yr, x2, y2 - yr);
+  x := x1 -1;
+  y := y2 +1;
+  Arc(x, y1, x + x2r, y1 + y2r, pi3on2, pi);
+  Line(x1, y1 + yr, x1, y - yr);
+  Arc(x, y, x + x2r,  y - y2r, pi, pion2);
+  Line(x + xr, y2, x2 - xr, y2);
+  Arc(x2, y, x2 - x2r, y - y2r, pion2, 0);
+  Line(x2, y1 + yr, x2, y - yr);
   Arc(x2, y1, x2 - x2r, y1 + y2r, 0, pi3on2);
-  Line(x1 + xr, y2 - 1, x2 - xr, y2 - 1);
+  Line(x + xr, y1, x2 - xr, y1);
 end;
 
 procedure TGLCanvas.RoundRect(const x1, y1, x2, y2, xr, yr: Single);
-const
-  pion2 = pi/2;
-  pi3on2 = 3*pion2;
-
 var
-  x2r, y2r: Single;
-
+  x2r, y2r, x, y: Single;
 begin
   x2r := 2*xr;
   y2r := 2*yr;
-  Arc(x1, y1, x1 + x2r, y1 + y2r, pi3on2, pi);
-  Line(x1 + 1, y1 + yr, x1 + 1, y2 - yr);
-  Arc(x1, y2, x1 + x2r,  y2 - y2r, pi, pion2);
-  Line(x1 + xr, y1, x2 - xr, y1);
-  Arc(x2, y2, x2 - x2r, y2 - y2r, pion2, 0);
-  Line(x2, y1 + yr, x2, y2 - yr);
+  x := x1 -1;
+  y := y2 +1;
+  Arc(x, y1, x + x2r, y1 + y2r, pi3on2, pi);
+  Line(x1, y1 + yr, x1, y - yr);
+  Arc(x, y, x + x2r,  y - y2r, pi, pion2);
+  Line(x + xr, y2, x2 - xr, y2);
+  Arc(x2, y, x2 - x2r, y - y2r, pion2, 0);
+  Line(x2, y1 + yr, x2, y - yr);
   Arc(x2, y1, x2 - x2r, y1 + y2r, 0, pi3on2);
-  Line(x1 + xr, y2 - 1, x2 - xr, y2 - 1);
+  Line(x + xr, y1, x2 - xr, y1);
 end;
 
 
