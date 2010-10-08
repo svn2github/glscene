@@ -16,7 +16,8 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
-
+  <li>08/10/10 - FP - Added show contact for dynamic in render.
+  Uncommented ShowContact property in manager.
   <li>07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
   <li>30/09/10 - FP - Removed beta functions of player and car in TGLNGDDynamic.
   Added AddImpulse function in TGLNGDDynamic.
@@ -197,8 +198,8 @@ type
       SetShowMaterialESP default False;
     property MaterialESPColor
       : TGLColor read FMaterialESPColor write FMaterialESPColor;
-    // Property ShowContact
-    // : Boolean Read FShowContact Write SetShowContact Default False;
+    property ShowContact
+      : Boolean read FShowContact write SetShowContact default False;
     property ContactColor: TGLColor read FContactColor write FContactColor;
     property ShowJoint
       : Boolean read FShowJoint write SetShowJoint default False;
@@ -1355,16 +1356,6 @@ begin
     NGDBehaviours[i].Render(rci);
   end;
 
-  if FShowContact then
-  begin
-    glLineWidth(1);
-    glLineStipple(1, $FFFF); // full opengl lines
-
-    glBegin(GL_LINES);
-    //
-    glEnd;
-  end;
-
   glDisable(GL_LINE_STIPPLE);
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_LIGHTING);
@@ -1581,7 +1572,7 @@ var
 begin
   FInitialized := False;
 
-   for i := FJointRegister.Count - 1 downto 0 do
+  for i := FJointRegister.Count - 1 downto 0 do
     TNGDJointBase(FJointRegister[i]).Finalize;
 
   if Assigned(FManager) then
@@ -2176,6 +2167,33 @@ var
     glVertex3f(min.x, max.y, min.z); // H
   end;
 
+  procedure DrawContact;
+  var
+    cnt: PNewtonJoint;
+    ThisContact: PNewtonJoint;
+    material: PNewtonMaterial;
+    pos, nor: TVector;
+  begin
+    cnt := NewtonBodyGetFirstContactJoint(FNewtonBody);
+    while cnt <> nil do
+    begin
+      ThisContact := NewtonContactJointGetFirstContact(cnt);
+      while ThisContact <> nil do
+      begin
+        material := NewtonContactGetMaterial(ThisContact);
+        NewtonMaterialGetContactPositionAndNormal(material, @pos, @nor);
+
+        glVertex3fv(@pos);
+        nor:=VectorAdd(pos,nor);
+        glVertex3fv(@nor);
+
+
+        ThisContact := NewtonContactJointGetNextContact(cnt, ThisContact);
+      end;
+      cnt := NewtonBodyGetNextContactJoint(FNewtonBody, cnt);
+    end;
+  end;
+
 begin
   inherited;
 
@@ -2229,6 +2247,18 @@ begin
       glDisable(GL_POINT_SMOOTH);
     end;
   end;
+
+  if Manager.ShowContact then
+  begin
+    glLineWidth(1);
+    glLineStipple(1, $FFFF); // full opengl lines
+
+    glBegin(GL_LINES);
+    glColor4fv(FManager.ContactColor.AsAddress); // Aqua
+    DrawContact;
+    glEnd;
+  end;
+
 end;
 
 procedure TGLNGDDynamic.SetAutoSleep(val: Boolean);
