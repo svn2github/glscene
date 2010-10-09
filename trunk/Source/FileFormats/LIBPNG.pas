@@ -781,7 +781,7 @@ function compressBound(sourceLen: longint): longint; forward;
 (* checksum functions *)
 function adler32(adler: longint; const buf: PAnsiChar; len: integer): longint;
   forward;
-function crc32(crc: longint; const buf: PAnsiChar; len: integer): longint;
+function crc32(crc: png_uint_32; const buf: PAnsiChar; len: png_uint_32): longint;
   forward;
 
 (* various hacks, don't look :) *)
@@ -2682,4 +2682,3 @@ finalization
 {$ENDIF}
 
 end.
-
