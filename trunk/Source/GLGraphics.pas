@@ -1477,24 +1477,12 @@ begin
       FBlank := TGLImage(Source).fBlank
     else
       FBlank := false;
-    FWidth := TGLImage(Source).fWidth;
-    FHeight := TGLImage(Source).fHeight;
-    FDepth := TGLImage(Source).fDepth;
-    fMipLevels := TGLImage(Source).fMipLevels;
-    fCubeMap := TGLImage(Source).fCubeMap;
-    fColorFormat := TGLImage(Source).fColorFormat;
-    fInternalFormat := TGLImage(Source).fInternalFormat;
-    fDataType := TGLImage(Source).fDataType;
-    fElementSize := TGLImage(Source).fElementSize;
-    fLevels.Clear;
-    fLevels.Assign(TGLImage(Source).fLevels);
-    fTextureArray := TGLImage(Source).fTextureArray;
     if not FBlank then
     begin
+      inherited; // TBaseImage Assign
       ReallocMem(FData, DataSize);
       Move(TGLBaseImage(Source).Data^, Data^, DataSize);
     end;
-    inherited; // TDataFile Assign
   end
   else if Source is TGLGraphic then
   begin
