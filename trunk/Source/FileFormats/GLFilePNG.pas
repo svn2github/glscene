@@ -121,9 +121,6 @@ var
   use16: Boolean;
   sz: Integer;
 begin
-  sz := sizeof(png_struct);
-  if sz <> 604 then
-    sleep(0);
   stream.Read(sig, 8);
 
   if _png_sig_cmp(@sig, 0, 8) <> 0 then
@@ -260,7 +257,6 @@ begin
     fCubeMap := false;
     fTextureArray := false;
     fLevels.Clear;
-    fLevels.Add(nil);
 
     _png_read_end(png_ptr, nil);
   finally
