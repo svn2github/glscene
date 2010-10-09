@@ -4,7 +4,7 @@ program Actor;
 
 uses
   Forms, Interfaces,
-  Unit1 in 'Unit1.pas' {Form1};
+  demo;
 
 {$R *.res}
 
