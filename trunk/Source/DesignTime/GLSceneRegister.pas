@@ -2409,7 +2409,7 @@ end;
 
 function GetGLSceneVersion: string;
 begin
-  Result := 'GLScene v' + Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 8, 4)]);
+  Result := 'GLScene v' + Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
 end;
 
 // ------------------------------------------------------------------
