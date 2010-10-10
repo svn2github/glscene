@@ -238,7 +238,7 @@ begin
         FindFirst(Path, faAnyFile, SearchRec);
         FileSize := SearchRec.Size;
         FileDate :=
-{$IFDEF GLS_DELPHI_2010_UP}
+{$IFDEF GLS_DELPHI_XE_UP}
       SearchRec.TimeStamp;
 {$ELSE}
       FileDateToDateTime(SearchRec.Time);
