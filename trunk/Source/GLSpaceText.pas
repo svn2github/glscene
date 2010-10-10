@@ -468,9 +468,9 @@ begin
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
       stcrAlphaNum:
-        GL.ListBase(TGLuint(glBase) - TGLuint(32));
+        GL.ListBase(TGLuint(Integer(glBase) - 32));
       stcrNumbers:
-        GL.ListBase(TGLuint(glBase) - TGLuint('0'));
+        GL.ListBase(TGLuint(Integer(glBase) - Integer('0')));
     else
       GL.ListBase(glBase);
     end;
