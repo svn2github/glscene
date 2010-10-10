@@ -119,7 +119,6 @@ var
   rowPointers: array of PGLUbyte;
   ii: Integer;
   use16: Boolean;
-  sz: Integer;
 begin
   stream.Read(sig, 8);
 
