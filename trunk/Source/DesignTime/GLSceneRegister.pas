@@ -2407,6 +2407,11 @@ begin
 
 end;
 
+function GetGLSceneVersion: string;
+begin
+  Result := 'GLScene v' + Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 8, 4)]);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -2417,7 +2422,8 @@ initialization
   // ------------------------------------------------------------------
 
 {$IFDEF GLS_DELPHI_2005_UP}
-  SplashScreenServices.AddPluginBitmap('GLScene v' + GLSCENE_VERSION,
+
+  SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
     LoadBitmap(HInstance, 'TGLScene'),
     False,
     'MPL 1.1 license',
