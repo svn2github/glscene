@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
       <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
                           Fixed first frame index (it's 0 not 1)
       <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
@@ -249,7 +250,9 @@ type
   {: TGLFile3DSDummyObject. A 3ds-specific mesh object. }
   TGLFile3DSMeshObject = class(TGLFile3DSDummyObject)
   private
+    FStatic : Boolean; // Static tag used in BuildList to not apply animation matrix
   public
+    constructor Create; override;
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TRenderContextInfo); override;
   end;
@@ -327,8 +330,16 @@ var
   {: If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
      By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
      be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
-}
+  }
   vGLFile3DS_FixDefaultUpAxisY: boolean = False;
+
+
+  {: If >= 0, then the vertices list will be updated with selected frame
+     animation data. (Note: you need vGLFile3DS_EnableAnimation = true).
+     Be aware that in that case animation will not be usable, it is made
+     to be used with a static mesh like GLFreeForm.
+  }
+  vGLFile3DS_LoadedStaticFrame: integer = -1;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -339,6 +350,7 @@ implementation
 // ------------------------------------------------------------------
 const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
+  CGLFILE3DS_DEFAULT_FRAME = 0;
 
 {$REGION 'Misc functions'}
 
@@ -1297,6 +1309,12 @@ end;
 
 {$REGION 'TGLFile3DSMeshObject'}
 
+constructor TGLFile3DSMeshObject.Create;
+begin
+  inherited;
+  FStatic := False;
+end;
+
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
   aScale: TGLFile3DSScaleAnimationKeys;
@@ -1354,13 +1372,17 @@ begin
     end;
   end;
 
-  SetFrame(0);
+  if vGLFile3DS_LoadedStaticFrame = -1 then
+    SetFrame(CGLFILE3DS_DEFAULT_FRAME)
+  else
+    SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
 procedure TGLFile3DSMeshObject.BuildList(var ARci: TRenderContextInfo);
 begin
   GL.PushMatrix;
-  GL.MultMatrixf(@FAnimTransf.ModelMatrix);
+  if not FStatic then
+    GL.MultMatrixf(@FAnimTransf.ModelMatrix);
   inherited;
   GL.PopMatrix;
 end;
@@ -1415,7 +1437,10 @@ begin
       FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  SetFrame(0);
+  if vGLFile3DS_LoadedStaticFrame = -1 then
+    SetFrame(CGLFILE3DS_DEFAULT_FRAME)
+  else
+    SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
 procedure TGLFile3DSOmniLightObject.SetFrame(const AFrame: real);
@@ -1516,7 +1541,10 @@ begin
       FParent := TGLFile3DSDummyObject(Owner.FindMeshByName(string(Parent)));
   end;
 
-  SetFrame(0);
+  if vGLFile3DS_LoadedStaticFrame = -1 then
+    SetFrame(CGLFILE3DS_DEFAULT_FRAME)
+  else
+    SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
 procedure TGLFile3DSSpotLightObject.SetFrame(const AFrame: real);
@@ -1577,7 +1605,10 @@ begin
     AddKeys(aTPos);
   end;
 
-  SetFrame(0);
+  if vGLFile3DS_LoadedStaticFrame = -1 then
+    SetFrame(CGLFILE3DS_DEFAULT_FRAME)
+  else
+    SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
 procedure TGLFile3DSCameraObject.SetFrame(const AFrame: real);
@@ -2111,7 +2142,6 @@ var
   lights_mesh: TGLFile3DSOmniLightObject;
   camera_mesh: TGLFile3DSCameraObject;
   basemesh: TGLBaseMesh;
-  RotationMatrix: TMatrix;
 begin
 
   with TFile3DS.Create do
@@ -2395,6 +2425,18 @@ begin
           TMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
+      end;
+
+      // Apply animation matrix to static data
+      if vGLFile3DS_LoadedStaticFrame >= 0 then
+      begin
+        for i := 0 to Owner.MeshObjects.Count - 1 do
+        begin
+          mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
+          mesh.FStatic := True;
+          for j := 0 to mesh.Vertices.Count - 1 do
+            mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], mesh.FAnimTransf.ModelMatrix);
+        end;
       end;
 
 
