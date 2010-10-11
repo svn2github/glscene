@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>11/10/10 - YP - Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
       <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
       <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
                           Fixed first frame index (it's 0 not 1)
@@ -224,6 +225,7 @@ type
     FRefTranf, FAnimTransf: TGLFile3DSAnimationData;
     FParent: TGLFile3DSDummyObject;
     FParentName: String64;
+    FStatic : Boolean; // Static tag used in BuildList to not apply animation matrix
   public
     procedure LoadAnimation(const AData: Pointer); virtual;
     procedure SetFrame(const AFrame: real); virtual;
@@ -249,10 +251,7 @@ type
 
   {: TGLFile3DSDummyObject. A 3ds-specific mesh object. }
   TGLFile3DSMeshObject = class(TGLFile3DSDummyObject)
-  private
-    FStatic : Boolean; // Static tag used in BuildList to not apply animation matrix
   public
-    constructor Create; override;
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TRenderContextInfo); override;
   end;
@@ -1188,10 +1187,10 @@ end;
 constructor TGLFile3DSDummyObject.Create;
 begin
   inherited;
-
   FAnimList := TGLFile3DSAnimationKeyList.Create;
   FRefTranf.ModelMatrix := IdentityHmgMatrix;
   FAnimTransf.ModelMatrix := IdentityHmgMatrix;
+  FStatic := False;
 end;
 
 procedure TGLFile3DSDummyObject.LoadAnimation(const AData: Pointer);
@@ -1266,10 +1265,13 @@ var
 begin
   Result := inherited ExtractTriangles(texCoords, normals);
 
-  if (Result.Count <> 0) and not MatrixEquals(FAnimTransf.ModelMatrix,
-    IdentityHmgMatrix) then
-    for I := 0 to Result.Count - 1 do
-      Result[I] := VectorTransform(Result[I], FAnimTransf.ModelMatrix);
+  if not FStatic then
+  begin
+    if (Result.Count <> 0) and not MatrixEquals(FAnimTransf.ModelMatrix,
+      IdentityHmgMatrix) then
+      for I := 0 to Result.Count - 1 do
+        Result[I] := VectorTransform(Result[I], FAnimTransf.ModelMatrix);
+  end;
 end;
 
 procedure TGLFile3DSDummyObject.WriteToFiler(Writer: TVirtualWriter);
@@ -1308,12 +1310,6 @@ end;
 {$ENDREGION}
 
 {$REGION 'TGLFile3DSMeshObject'}
-
-constructor TGLFile3DSMeshObject.Create;
-begin
-  inherited;
-  FStatic := False;
-end;
 
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
