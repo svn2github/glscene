@@ -5,9 +5,10 @@
 
   3DStudio 3DS vector file format implementation.<p>
 
-  <b>History :</b><font size=-1><ul>
-      <li>11/10/10 - YP - Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
+  <b>History :</b><font size=-1><ul>        GetExtents
       <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
+                          Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
+                          Fixed GetExtents when vGLFile3DS_LoadedStaticFrame is ON
       <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
                           Fixed first frame index (it's 0 not 1)
       <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
@@ -1251,11 +1252,14 @@ end;
 
 procedure TGLFile3DSDummyObject.GetExtents(var min, max: TAffineVector);
 begin
-  Vertices.GetExtents(min, max);
-  if not IsInfinite(min[0]) then
-    min := VectorTransform(min, FAnimTransf.ModelMatrix);
-  if not IsInfinite(max[0]) then
-    max := VectorTransform(max, FAnimTransf.ModelMatrix);
+  inherited GetExtents(min, max);
+  if not FStatic then
+  begin
+    if not IsInfinite(min[0]) then
+      min := VectorTransform(min, FAnimTransf.ModelMatrix);
+    if not IsInfinite(max[0]) then
+      max := VectorTransform(max, FAnimTransf.ModelMatrix);
+  end;
 end;
 
 function TGLFile3DSDummyObject.ExtractTriangles(texCoords, normals: TAffineVectorList):
