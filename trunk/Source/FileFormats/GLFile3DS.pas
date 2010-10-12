@@ -5,7 +5,7 @@
 
   3DStudio 3DS vector file format implementation.<p>
 
-  <b>History :</b><font size=-1><ul>        GetExtents
+  <b>History :</b><font size=-1><ul>
       <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
                           Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
                           Fixed GetExtents when vGLFile3DS_LoadedStaticFrame is ON
@@ -352,7 +352,8 @@ const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
-{$REGION 'Misc functions'}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Misc functions'}{$ENDIF}
 
 // AnimKeysClassTypeToClass
 
@@ -473,9 +474,9 @@ end;
 // ------------------ Support classes ------------------
 // ------------------
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSAnimationKeys.InterpolateFrame(var I: integer;
   var w: real; const AFrame: real);
@@ -610,9 +611,9 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSScaleAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSScaleAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -684,9 +685,9 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSRotationAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSRotationAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -769,9 +770,9 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSPositionAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -827,9 +828,9 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSColorAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSColorAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -879,9 +880,9 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TTGLFile3DSPositionAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TTGLFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TTGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -938,9 +939,9 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSSpotLightCutOffAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -990,9 +991,9 @@ begin
     Reader.Read(FFall[0], FNumKeys * SizeOf(single));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSLightHotSpotAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1041,9 +1042,9 @@ begin
     Reader.Read(FHot[0], FNumKeys * SizeOf(single));
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSRollAnimationKeys'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSRollAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1103,9 +1104,9 @@ begin
   FAnimKeysList[ind] := AItem;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSAnimationKeyList'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSAnimationKeyList'}{$ENDIF}
 
 procedure TGLFile3DSAnimationKeyList.ApplyAnimKeys(
   var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
@@ -1181,9 +1182,9 @@ begin
   inherited Destroy;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSDummyObject'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSDummyObject'}{$ENDIF}
 
 constructor TGLFile3DSDummyObject.Create;
 begin
@@ -1311,9 +1312,9 @@ begin
   inherited;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSMeshObject'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSMeshObject'}{$ENDIF}
 
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1387,9 +1388,9 @@ begin
   GL.PopMatrix;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSOmniLightObject'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSOmniLightObject'}{$ENDIF}
 
 constructor TGLFile3DSOmniLightObject.Create;
 begin
@@ -1500,9 +1501,9 @@ begin
   inherited;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSSpotLightObject'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSSpotLightObject'}{$ENDIF}
 
 procedure TGLFile3DSSpotLightObject.LoadData(const AOwner: TGLBaseMesh;
   const AData: PLight3DS);
@@ -1556,9 +1557,9 @@ begin
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGLFile3DSCameraObject'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLFile3DSCameraObject'}{$ENDIF}
 
 constructor TGLFile3DSCameraObject.Create;
 begin
@@ -1662,9 +1663,9 @@ begin
   inherited;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
-{$REGION 'TGL3DSVectorFile'}
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3DSVectorFile'}{$ENDIF}
 
 // Capabilities
 
@@ -1687,7 +1688,8 @@ var
   mesh: TGLFile3DSMeshObject;
   hasLightmap: boolean;
 
-  {$REGION 'TGL3DSVectorFile.LoadFromStream Local functions'}
+
+  {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
   //--------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
@@ -2129,7 +2131,7 @@ var
         end;
   end;
 
-  {$ENDREGION}
+  {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 var
   CurrentMotionIndex, iMaterial, i, j, x: integer;
@@ -2445,7 +2447,7 @@ begin
     end;
 end;
 
-{$ENDREGION}
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
