@@ -21,8 +21,10 @@ interface
 
 {$I GLScene.inc}
 {$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
+{$IFDEF GLS_COMPILER_2009_UP}
 {$WARN IMPLICIT_STRING_CAST OFF}
 {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 uses
   Classes;
