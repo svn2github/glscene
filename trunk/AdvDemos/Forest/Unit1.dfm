@@ -151,7 +151,6 @@ object Form1: TForm1
     ImposterOptions = [impoBlended, impoAlphaTest, impoPerspectiveCorrection]
     ImposterReference = irBottom
     AlphaTreshold = 0.500000000000000000
-    OnLoadingImposter = SIBTreeLoadingImposter
     OnImposterLoaded = SIBTreeImposterLoaded
     Coronas = <
       item
