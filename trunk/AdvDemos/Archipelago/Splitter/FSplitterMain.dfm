@@ -81,7 +81,6 @@ object Form1: TForm1
     Top = 160
     Width = 185
     Height = 25
-    Min = 0
     Max = 16
     Smooth = True
     TabOrder = 4
