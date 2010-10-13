@@ -178,7 +178,7 @@ type
     FStates: TGLStates;
     FListStates: array of TGLStateTypes;
     FCurrentList: TGLuint;
-    FTextureMatrixIsIdentity: Boolean;
+    FTextureMatrixIsIdentity: array[0..3] of Boolean;
     FForwardContext: Boolean;
     FFFPLight: Boolean;
 
@@ -1162,7 +1162,7 @@ begin
   FFFPLight := True;
   FMaxLights := 0;
   FLightCount := 0;
-  for I := 0 to High(FLightEnabling) do
+  for I := High(FLightEnabling) downto 0 do
   begin
     FLightEnabling[I] := False;
     FLightIndices[I] := 0;
@@ -1176,7 +1176,8 @@ begin
     FLightStates[I].QuadAtten := 0;
   end;
 
-  FTextureMatrixIsIdentity := False;
+  for I := High(FTextureMatrixIsIdentity) downto 0 do
+    FTextureMatrixIsIdentity[I] := False;
   FForwardContext := False;
 
   // Vertex Array Data state
@@ -2166,7 +2167,7 @@ procedure TGLStateCache.SetGLTextureMatrix(const matrix: TMatrix);
 begin
   if FForwardContext then
     exit;
-  FTextureMatrixIsIdentity := False;
+  FTextureMatrixIsIdentity[ActiveTexture] := False;
   GL.MatrixMode(GL_TEXTURE);
   GL.LoadMatrixf(PGLFloat(@matrix[0][0]));
   GL.MatrixMode(GL_MODELVIEW);
@@ -3202,16 +3203,21 @@ end;
 //
 
 procedure TGLStateCache.ResetGLTextureMatrix;
+var
+  I: Integer;
 begin
   if FForwardContext then
     exit;
-  if not FTextureMatrixIsIdentity then
-  begin
-    GL.MatrixMode(GL_TEXTURE);
-    GL.LoadIdentity;
-    GL.MatrixMode(GL_MODELVIEW);
-    FTextureMatrixIsIdentity := True;
-  end;
+  GL.MatrixMode(GL_TEXTURE);
+  for I := High(FTextureMatrixIsIdentity) downto 0 do
+    if not FTextureMatrixIsIdentity[I] then
+    begin
+      ActiveTexture := I;
+      GL.LoadIdentity;
+      FTextureMatrixIsIdentity[I] := True;
+    end;
+  GL.MatrixMode(GL_MODELVIEW);
+  ActiveTexture := 0;
 end;
 
 // SetGLColorIgnoring
