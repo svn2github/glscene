@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>14/10/10 - YP - Fixed rotate only vertices of TGLFile3DSMeshObject
       <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
                           Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
                           Fixed GetExtents when vGLFile3DS_LoadedStaticFrame is ON
@@ -2434,10 +2435,13 @@ begin
       begin
         for i := 0 to Owner.MeshObjects.Count - 1 do
         begin
-          mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
-          mesh.FStatic := True;
-          for j := 0 to mesh.Vertices.Count - 1 do
-            mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], mesh.FAnimTransf.ModelMatrix);
+          if Owner.MeshObjects[i] is TGLFile3DSMeshObject then
+          begin
+            mesh := Owner.MeshObjects[i] as TGLFile3DSMeshObject;
+            mesh.FStatic := True;
+            for j := 0 to mesh.Vertices.Count - 1 do
+              mesh.Vertices[j] := VectorTransform(mesh.Vertices[j], mesh.FAnimTransf.ModelMatrix);
+          end;
         end;
       end;
 
