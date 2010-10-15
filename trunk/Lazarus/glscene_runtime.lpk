@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/;../Source/PropertyEditors/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Base/;../Source/Platform/;../Source/DesignTime/;../Source/FileFormats/;../Source/Shaders/;../Source/GLSLShaders/;../Source/PropertyEditors/;../Source/VideoAPIs/;../Source/Experimental/;../Source/FileFormats/ZLIB/"/>
+        <IncludeFiles Value="../Source;../Source/PropertyEditors"/>
+        <OtherUnitFiles Value="../Source;../Source/Base;../Source/Platform;../Source/DesignTime;../Source/FileFormats;../Source/Shaders;../Source/GLSLShaders;../Source/PropertyEditors;../Source/VideoAPIs;../Source/Experimental;../Source/FileFormats/ZLIB"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -32,7 +32,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="244">
+    <Files Count="243">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -1005,10 +1005,6 @@
         <Filename Value="../Source/Shaders/GLUserShader.pas"/>
         <UnitName Value="GLUserShader"/>
       </Item243>
-      <Item244>
-        <Filename Value="../Source/version.inc"/>
-        <Type Value="Include"/>
-      </Item244>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

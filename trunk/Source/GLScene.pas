@@ -390,9 +390,10 @@ type
   TGLCameraInvarianceMode = (cimNone, cimPosition, cimOrientation);
 
 const
-  cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = {$I version.inc};
+  GLSCENE_REVISION = '$Revision: 5230$';
   GLSCENE_VERSION = '1.1.0.%s';
+
+  cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
 
 type
 
