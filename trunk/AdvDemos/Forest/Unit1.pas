@@ -2,6 +2,8 @@ unit Unit1;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   Windows,
   Messages,
@@ -133,7 +135,9 @@ implementation
 
 {$R *.dfm}
 
-uses GLScreen,
+uses
+  VectorTypes,
+  GLScreen,
   GLState;
 
 const
@@ -147,7 +151,7 @@ var
   density: TPicture;
 begin
   // go to 1024x768x32
-  SetFullscreenMode(GetIndexFromResolution(800, 600, 32), 85);
+//  SetFullscreenMode(GetIndexFromResolution(1024, 768, 32), 85);
   Application.OnDeactivate := FormDeactivate;
 
   SetCurrentDir(ExtractFilePath(Application.ExeName));
@@ -229,7 +233,7 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  RestoreDefaultMode;
+//  RestoreDefaultMode;
 
   ShowCursor(True);
   nearTrees.Free;
@@ -357,24 +361,6 @@ begin
   until aParticle.PosY >= 0;
   aParticle.Tag := Random(360);
 
-  // Remove probablility for current location
-//   densityBitmap.Canvas.Pixels[pixelX, pixelY]:=
-//      RGB(0, GetRValue(densityBitmap.Canvas.Pixels[pixelX, pixelY]) div 2, 0);
-
-  // Blob shadow beneath tree
-{   with MLTerrain.Materials[0].Material.Texture do begin
-     with Image.GetBitmap32(GL_TEXTURE_2D) do begin
-        x:=Round(u*(Image.Width-1));
-        y:=Round((1-v)*(Image.Height-1));
-        for i:=-8 to 8 do
-           for j:=-8 to 8 do with ScanLine[y+j][x+i] do begin
-              dark:=20;
-              r:=MaxInteger(r-dark,0);
-              g:=MaxInteger(g-dark,0);
-              b:=MaxInteger(b-dark,0);
-           end;
-     end;
-  end;}
 end;
 
 procedure TForm1.PFXTreesBeginParticles(Sender: TObject;
@@ -433,19 +419,24 @@ procedure TForm1.DOTreesRender(Sender: TObject;
 var
   i: Integer;
   particle: TGLParticle;
+  TreeModelMatrix: TMatrix;
 begin
   rci.GLStates.Disable(stBlend);
   for i := 0 to nearTrees.Count - 1 do
   begin
     particle := TGLParticle(nearTrees[i]);
-    GL.PushMatrix;
-    GL.Translatef(particle.PosX, particle.PosY, particle.PosZ);
-    GL.Scalef(10, 10, 10);
-    GL.Rotatef(-particle.Tag, 0, 1, 0);
-    GL.Rotatef(Cos(GLCadencer.CurrentTime + particle.ID * 15) * 0.2, 1, 0, 0);
-    GL.Rotatef(Cos(GLCadencer.CurrentTime * 1.3 + particle.ID * 15) * 0.2, 0, 0, 1);
+    TreeModelMatrix := MatrixMultiply(CreateTranslationMatrix(particle.Position),
+      rci.PipelineTransformation.ViewMatrix);
+    TreeModelMatrix := MatrixMultiply(CreateScaleMatrix(VectorMake(10, 10, 10)),
+      TreeModelMatrix);
+    TreeModelMatrix := MatrixMultiply(CreateRotationMatrixY(DegToRad(-particle.Tag)),
+      TreeModelMatrix);
+    TreeModelMatrix := MatrixMultiply(CreateRotationMatrixX(DegToRad(Cos(GLCadencer.CurrentTime + particle.ID * 15) * 0.2)),
+      TreeModelMatrix);
+    TreeModelMatrix := MatrixMultiply(CreateRotationMatrixZ(DegToRad(Cos(GLCadencer.CurrentTime * 1.3 + particle.ID * 15) * 0.2)),
+      TreeModelMatrix);
+    TestTree.AbsoluteMatrix := TreeModelMatrix;
     TestTree.Render(rci);
-    GL.PopMatrix;
   end;
   nearTrees.Clear;
 end;
@@ -514,7 +505,7 @@ procedure TForm1.DOInitializeReflectionRender(Sender: TObject;
   var rci: TRenderContextInfo);
 var
   w, h: Integer;
-  refMat, curMat: TMatrix;
+  refMat: TMatrix;
   cameraPosBackup, cameraDirectionBackup: TVector;
   frustumBackup: TFrustum;
   clipPlane: TDoubleHmgPlane;
@@ -766,11 +757,12 @@ begin
   end;
 
   Result := CreateTranslationMatrix(VectorMake(w, h, 0));
-  Result := MatrixMultiply(Result, CreateScaleMatrix(VectorMake(w, h, 0)));
-  Result := MatrixMultiply(Result, CurrentGLContext.PipelineTransformation.ViewProjectionMatrix);
+  Result := MatrixMultiply(CreateScaleMatrix(VectorMake(w, h, 0)), Result);
+  with CurrentGLContext.PipelineTransformation do
+    Result := MatrixMultiply(ViewProjectionMatrix, Result);
 //  Camera.ApplyPerspective(SceneViewer.Buffer.ViewPort, SceneViewer.Width, SceneViewer.Height, 96);
 //  Camera.Apply;
-  Result := MatrixMultiply(Result, CreateScaleMatrix(VectorMake(1, -1, 1)));
+  Result := MatrixMultiply(CreateScaleMatrix(VectorMake(1, -1, 1)), Result);
 end;
 
 end.
