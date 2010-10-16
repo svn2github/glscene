@@ -650,7 +650,6 @@ type
     { Private Declarations }
     FTextureHandle: TGLTextureHandle;
     FSamplerHandle: TGLVirtualHandle;
-    FTextureTarget: TGLTextureTarget;
     FTextureFormat: TGLInternalFormat;
     FTextureMode: TGLTextureMode;
     FTextureWrap: TGLTextureWrap;
@@ -2320,7 +2319,6 @@ begin
   FTextureCompareFunc := cfLequal;
   FDepthTextureMode := dtmLuminance;
   TextureFormat := tfDefault;
-  FTextureTarget := ttTexture2D;
 end;
 
 // Destroy
@@ -3307,14 +3305,14 @@ var
   glTarget: TGLEnum;
 begin
   vTarget := Image.NativeTextureTarget;
-  if FTextureTarget <> vTarget then
+  if FTextureHandle.Target <> vTarget then
     FTextureHandle.DestroyHandle;
 
   FTextureHandle.AllocateHandle;
   Result := FTextureHandle.Handle;
   if FTextureHandle.IsDataNeedUpdate then
   begin
-    FTextureTarget := vTarget;
+    FTextureHandle.Target := vTarget;
     FSamplerHandle.NotifyChangesOfData;
   end;
   FSamplerHandle.AllocateHandle;
@@ -3357,49 +3355,45 @@ var
   cubeMapOk: Boolean;
   cubeMapImage: TGLCubeMapImage;
 begin
-  if FTextureHandle.IsDataNeedUpdate or FSamplerHandle.IsDataNeedUpdate then
+  Result := AllocateHandle;
+  if FTextureHandle.IsDataNeedUpdate then
   begin
-    AllocateHandle;
-    if FTextureHandle.IsDataNeedUpdate then
+    FTextureHandle.NotifyDataUpdated;
+    // Check supporting
+    target := DecodeGLTextureTarget(Image.NativeTextureTarget);
+    if not IsTargetSupported(target)
+      or not IsFormatSupported(TextureFormatEx) then
     begin
-      FTextureHandle.NotifyDataUpdated;
-      // Check supporting
-      target := DecodeGLTextureTarget(Image.NativeTextureTarget);
-      if not IsTargetSupported(target)
-        or not IsFormatSupported(TextureFormatEx) then
-      begin
-        SetTextureErrorImage;
-        target := GL_TEXTURE_2D;
-      end;
-      // Load images
-      if Image is TGLCubeMapImage then
-      begin
-        cubeMapImage := (Image as TGLCubeMapImage);
-        // first check if everything is coherent, otherwise, bail out
-        cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
-        cubeMapOk := (cubeMapSize > 0);
-        if cubeMapOk then
-        begin
-          for cmt := cmtPX to cmtNZ do
-            with cubeMapImage.Picture[cmt] do
-            begin
-              cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
-              if not cubeMapOk then
-                Break;
-            end;
-        end;
-        if cubeMapOk then
-        begin
-          for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
-            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-            PrepareImage(i);
-        end;
-      end // of TGLCubeMapImage
-      else
-        PrepareImage(target);
+      SetTextureErrorImage;
+      target := GL_TEXTURE_2D;
     end;
+    // Load images
+    if Image is TGLCubeMapImage then
+    begin
+      cubeMapImage := (Image as TGLCubeMapImage);
+      // first check if everything is coherent, otherwise, bail out
+      cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
+      cubeMapOk := (cubeMapSize > 0);
+      if cubeMapOk then
+      begin
+        for cmt := cmtPX to cmtNZ do
+          with cubeMapImage.Picture[cmt] do
+          begin
+            cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
+            if not cubeMapOk then
+              Break;
+          end;
+      end;
+      if cubeMapOk then
+      begin
+        for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
+          GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
+          PrepareImage(i);
+      end;
+    end // of TGLCubeMapImage
+    else
+      PrepareImage(target);
   end;
-  Result := FTextureHandle.Handle;
 end;
 
 // DestroyHandles
@@ -3501,7 +3495,10 @@ begin
       tiaOpaque:
         bitmap32.SetAlphaToValue(255);
       tiaTopLeftPointColorTransparent:
-        bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[0]);
+        begin
+          bitmap32.Narrow;
+          bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[0]);
+        end;
       tiaInverseLuminance:
         begin
           bitmap32.SetAlphaFromIntensity;
@@ -3514,8 +3511,10 @@ begin
           bitmap32.InvertAlpha;
         end;
       tiaBottomRightPointColorTransparent:
-        bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[bitmap32.Width -
-          1]);
+        begin
+          bitmap32.Narrow;
+          bitmap32.SetAlphaTransparentForColor(bitmap32.Data^[bitmap32.Width - 1]);
+        end;
     else
       Assert(False);
     end;

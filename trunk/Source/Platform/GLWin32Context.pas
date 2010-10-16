@@ -101,7 +101,7 @@ type
     procedure DoCreateContext(outputDevice: HWND); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer); override;
-    procedure DoShareLists(aContext: TGLContext); override;
+    function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
@@ -895,18 +895,8 @@ begin
     begin
       if wglShareLists(TGLWin32Context(ServiceContext).FRC, FRC) then
       begin
-{$IFNDEF GLS_MULTITHREAD}
         FSharedContexts.Add(ServiceContext);
         PropagateSharedContext;
-{$ELSE}
-        with FSharedContexts.LockList do
-          try
-            Add(ServiceContext);
-            PropagateSharedContext;
-          finally
-            FSharedContexts.UnlockList;
-          end;
-{$ENDIF}
       end
       else
         GLSLogger.LogError('DoCreateContext - Failed to share contexts with resource context');
@@ -1038,23 +1028,15 @@ end;
 // DoShareLists
 //
 
-procedure TGLWin32Context.DoShareLists(aContext: TGLContext);
-var
-  otherRC: HGLRC;
+function TGLWin32Context.DoShareLists(aContext: TGLContext): Boolean;
 begin
   if aContext is TGLWin32Context then
   begin
-    otherRC := TGLWin32Context(aContext).RC;
+    FShareContext := TGLWin32Context(aContext).RC;
     if RC <> 0 then
-    begin
-      if RC <> otherRC then
-      begin
-        FShareContext := otherRC;
-        wglShareLists(FRC, otherRC);
-      end;
-    end
+      Result := wglShareLists(FShareContext, FRC)
     else
-      FShareContext := otherRC;
+      Result := False;
   end
   else
     raise Exception.Create(cIncompatibleContexts);
