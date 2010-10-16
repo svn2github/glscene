@@ -262,7 +262,6 @@ contains
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
-  GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
   GLFBO in '..\Source\GLFBO.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
@@ -300,6 +299,7 @@ contains
   OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   GLSceneForm in '..\Source\Experimental\GLSceneForm.pas',
-  GLSelection in '..\Source\GLSelection.pas';
+  GLSelection in '..\Source\GLSelection.pas',
+  GLSGenerics in '..\Source\Base\GLSGenerics.pas';
 
 end.
