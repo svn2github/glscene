@@ -26,8 +26,7 @@ uses
   GLCrossPlatform,
   VectorGeometry,
   GLGraphics,
-  OpenGLTokens,
-  GLPBuffer;
+  OpenGLTokens;
 
 type
 
@@ -56,7 +55,6 @@ uses
 procedure THDRImage.LoadFromStream(stream: TStream);
 var
   FullHDR: TGLHDRImage;
-  tempBuff: PGLubyte;
 {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
@@ -72,51 +70,33 @@ begin
     raise;
   end;
 
-  if PBufferService.TextureID = 0 then
-    PBufferService.Initialize(1, 1);
-  PBufferService.Enable;
-
-  // Setup texture
-  PBufferService.GL.Enable(GL_TEXTURE_2D);
-  PBufferService.GL.BindTexture(GL_TEXTURE_2D, PBufferService.TextureID);
-  // copy texture to video memory
-  PBufferService.GL.TexImage2D(GL_TEXTURE_2D, 0,
-    InternalFormatToOpenGLFormat(FullHDR.InternalFormat), FullHDR.Width,
-    FullHDR.Height, 0, FullHDR.ColorFormat, FullHDR.DataType,
-    FullHDR.GetLevelData(0));
-
-  PBufferService.GL.CheckError;
-
-  GetMem(tempBuff, FullHDR.Width * FullHDR.Height * 3);
-  // get texture from video memory in simple format
-  PBufferService.GL.GetTexImage(GL_TEXTURE_2D, 0, GL_BGR, GL_UNSIGNED_BYTE, tempBuff);
+  FullHDR.Narrow;
+  FullHDR.WaitParallelTask;
 
   Width := FullHDR.Width;
   Height := FullHDR.Height;
   Transparent := false;
-  PixelFormat := glpf24bit;
+  PixelFormat := glpf32bit;
 
 {$IFNDEF FPC}
-  src := tempBuff;
+  src := PGLubyte(FullHDR.Data);
   for y := 0 to Height - 1 do
   begin
     dst := ScanLine[Height - 1 - y];
-    Move(src^, dst^, Width * 3);
-    Inc(src, Width * 3);
+    Move(src^, dst^, Width * 4);
+    Inc(src, Width * 4);
   end;
 {$ELSE}
   RIMG.Init;
-  rimg.Description.Init_BPP24_B8G8R8_BIO_TTB(Width, Height);
+  rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
   rimg.Description.RedShift := 16;
   rimg.Description.BlueShift := 0;
   rimg.Description.LineOrder := riloBottomToTop;
-  RIMG.DataSize := Width * Height * 3;
-  rimg.Data := PByte(tempBuff);
+  RIMG.DataSize := Width * Height * 4;
+  rimg.Data := PByte(FullHDR.Data);
   LoadFromRawImage(rimg, false);
 {$ENDIF}
   FullHDR.Free;
-  FreeMem(tempBuff);
-  PBufferService.Disable;
 end;
 
 // SaveToStream

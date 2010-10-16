@@ -803,6 +803,7 @@ procedure TGLCustomBitmapFont.PrepareImage;
 var
   bitmap: TGLBitmap;
   bitmap32: TGLBitmap32;
+  cap: Integer;
 begin
   bitmap := TGLBitmap.Create;
   with bitmap do
@@ -838,9 +839,13 @@ begin
     else
       Assert(False);
     end;
-    RegisterAsOpenGLTexture(GL_TEXTURE_2D, MinFilter, TextureFormat);
-    FTextureWidth := Width;
-    FTextureHeight := Height;
+    RegisterAsOpenGLTexture(
+      GL_TEXTURE_2D,
+      MinFilter,
+      TextureFormat,
+      FTextureWidth,
+      FTextureHeight,
+      cap);
     Free;
   end;
 end;

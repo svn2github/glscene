@@ -51,12 +51,12 @@ procedure SetupVSync(const AVSyncMode : TVSyncMode);
 var
   I: Integer;
 begin
-  if WGL_EXT_swap_control then
+  if GL.W_EXT_swap_control then
   begin
-    I := wglGetSwapIntervalEXT;
+    I := GL.WGetSwapIntervalEXT;
     case AVSyncMode of
-      vsmSync  : if I <> 1 then wglSwapIntervalEXT(1);
-      vsmNoSync: if I <> 0 then wglSwapIntervalEXT(0);
+      vsmSync  : if I <> 1 then GL.WSwapIntervalEXT(1);
+      vsmNoSync: if I <> 0 then GL.WSwapIntervalEXT(0);
     else
        Assert(False);
     end;

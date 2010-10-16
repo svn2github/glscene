@@ -6,6 +6,7 @@ interface
 
 uses
   Classes,
+  SysUtils,
   OpenGLTokens,
   GLShaderManager,
   VectorGeometry,
@@ -113,7 +114,7 @@ end;
 
 procedure TUniformTime.Apply;
 begin
-  ShaderManager.Uniform1f(FGLSLUniform, GLVBOManager.vCurrentTime);
+  ShaderManager.Uniform1f(FGLSLUniform, Now);
 end;
 
 constructor TUniformModelMatrix.Create;

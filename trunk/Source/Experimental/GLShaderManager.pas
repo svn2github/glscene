@@ -28,9 +28,7 @@ uses
 {$IFDEF GLS_MULTITHREAD}
   SyncObjs,
 {$ENDIF}
-{$IFNDEF FPC}
-  Generics.Collections,
-{$ENDIF}
+  GLSGenerics,
   // GLScene
   GLCrossPlatform,
   OpenGLTokens,
@@ -208,7 +206,7 @@ type
     FHandles: array[TGLSLProgramType] of TGLShaderHandle;
     FNameHashKey: Integer;
     FFriendlyName: string;
-    FCode: string;
+    FCode: AnsiString;
     FTypes: TGLSLProgramTypes;
   public
     constructor Create;
@@ -217,6 +215,9 @@ type
     function Compile: Boolean;
     property FriendlyName: string read FFriendlyName;
   end;
+
+  TAttachedShaderList =
+{$IFDEF FPC} specialize {$ENDIF} GList < TGLSLShaderObject > ;
 
   // TGLSLShaderProgram
   //
@@ -227,7 +228,7 @@ type
     FHandle: TGLProgramHandle;
     FNameHashKey: Integer;
     FFriendlyName: string;
-    FAttachedObjects: TList{$IFNDEF FPC} < TGLSLShaderObject > {$ENDIF};
+    FAttachedObjects: TAttachedShaderList;
     FProgramMask: TGLSLProgramTypes;
     procedure DetachAll;
   public
@@ -1368,8 +1369,7 @@ end;
 constructor TGLSLShaderProgram.Create;
 begin
   FHandle := TGLProgramHandle.Create;
-  FAttachedObjects := TList
-{$IFNDEF FPC} < TGLSLShaderObject > {$ENDIF}.Create;
+  FAttachedObjects := TAttachedShaderList.Create;
 end;
 
 destructor TGLSLShaderProgram.Destroy;
@@ -1393,11 +1393,7 @@ begin
 
   for I := 0 to FAttachedObjects.Count - 1 do
   begin
-{$IFDEF FPC}
-    obj := TGLSLShaderObject(FAttachedObjects.Items[I]);
-{$ELSE}
     obj := FAttachedObjects.Items[I];
-{$ENDIF};
     for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
       if (P in obj.FTypes) and (P in FProgramMask) then
       begin
@@ -1408,7 +1404,7 @@ begin
           begin
             GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle);
             vShaderManager.WorkLog.LogDebug(Format('%s object %s attached to %s', [cObjectTypeName[P], obj.FFriendlyName, Self.FFriendlyName]));
-            vShaderManager.WorkLog.LogDebug(obj.FCode);
+            vShaderManager.WorkLog.LogDebug(string(obj.FCode));
           end
           else
             Abort;
@@ -1417,7 +1413,7 @@ begin
         begin
           GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle);
           vShaderManager.WorkLog.LogDebug(Format('%s object %s attached to %s', [cObjectTypeName[P], obj.FFriendlyName, Self.FFriendlyName]));
-          vShaderManager.WorkLog.LogDebug(obj.FCode);
+          vShaderManager.WorkLog.LogDebug(string(obj.FCode));
         end;
 
       end;
@@ -1641,13 +1637,13 @@ begin
     end;
   end
   else
-    newCode := (CompareStr(Obj.FCode, string(Code)) <> 0) or (Obj.FTypes <> ATypes);
+    newCode := (Obj.FCode <> Code) or (Obj.FTypes <> ATypes);
 
   if newCode then
     with Obj do
     begin
       FTypes := ATypes;
-      FCode := string(Code);
+      FCode := Code;
       for P := Low(TGLSLProgramType) to High(TGLSLProgramType) do
         FHandles[P].NotifyChangesOfData;
       Compile;

@@ -1701,17 +1701,22 @@ begin
     FBitmap := TGLBitmap32.Create;
     // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
     // for instance, TJPegImage triggers an OnChange when it is drawn...
-    if Assigned(Picture.OnChange) then
+    if Assigned(Picture.Graphic) then
     begin
-      Picture.OnChange := nil;
-      try
+      if Assigned(Picture.OnChange) then
+      begin
+        Picture.OnChange := nil;
+        try
+          FBitmap.Assign(Picture.Graphic);
+        finally
+          Picture.OnChange := PictureChanged;
+        end;
+      end
+      else
         FBitmap.Assign(Picture.Graphic);
-      finally
-        Picture.OnChange := PictureChanged;
-      end;
     end
     else
-      FBitmap.Assign(Picture.Graphic);
+      FBitmap.SetErrorImage;
   end;
   Result := FBitmap;
 end;
@@ -3298,30 +3303,30 @@ end;
 
 function TGLTexture.AllocateHandle: TGLuint;
 var
-  target: TGLTextureTarget;
+  vTarget: TGLTextureTarget;
   glTarget: TGLEnum;
 begin
-  target := Image.NativeTextureTarget;
-  if FTextureTarget <> target then
+  vTarget := Image.NativeTextureTarget;
+  if FTextureTarget <> vTarget then
     FTextureHandle.DestroyHandle;
 
   FTextureHandle.AllocateHandle;
   Result := FTextureHandle.Handle;
   if FTextureHandle.IsDataNeedUpdate then
   begin
-    FTextureTarget := target;
+    FTextureTarget := vTarget;
     FSamplerHandle.NotifyChangesOfData;
   end;
   FSamplerHandle.AllocateHandle;
 
   // bind texture
-  glTarget := DecodeGLTextureTarget(target);
+  glTarget := DecodeGLTextureTarget(vTarget);
   if IsTargetSupported(glTarget) then
   begin
     with FTextureHandle do
     begin
       RenderingContext.GLStates.TextureBinding[
-        RenderingContext.GLStates.ActiveTexture, target] := Handle;
+        RenderingContext.GLStates.ActiveTexture, vTarget] := Handle;
     end;
     if FSamplerHandle.IsDataNeedUpdate then
     begin
@@ -3701,21 +3706,16 @@ begin
 end;
 
 procedure TGLTexture.SetTextureErrorImage;
-const
-{$I TextureError.inc}
 var
-  bmp32: TGLBitmap32;
+  img: TGLImage;
 begin
-  bmp32 := TGLBitmap32.Create;
-  bmp32.Width := 64;
-  bmp32.Height := 64;
-  bmp32.ColorFormat := GL_RGB;
-  bmp32.Blank := false;
-  Move(cTextureError[0], bmp32.Data[0], bmp32.DataSize);
-  ImageClassName := TGLBlankImage.ClassName;
-  TGLBlankImage(Image).Assign(bmp32);
-  bmp32.Free;
-  TextureFormatEx := tfRGB8;
+  img := TGLImage.Create;
+  img.SetErrorImage;
+
+  ImageClassName := TGLBlankImage.className;
+  TGLBlankImage(Image).Assign(img);
+  img.Free;
+
   MagFilter := maNearest;
   MinFilter := miNearest;
   TextureWrap := twBoth;
@@ -3723,6 +3723,7 @@ begin
   Compression := tcNone;
   AllocateHandle;
 end;
+
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 

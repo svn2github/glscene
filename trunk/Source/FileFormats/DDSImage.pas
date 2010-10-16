@@ -3,12 +3,12 @@
 //
 {: DDSImage<p>
     Alternative for DDS unit with more supported formats of flat image:
-    Alpha8, Luminance8, R3G3B2, RGB5A1, RGBA4, Alpha8Luminance8, Luminance16, R5G6B5, 
-    RGB8, R10G10B10A2, RGBA8, RGBA16, R16F, RGBA16F, R32F, RGBA32F, GR16, GR16F, GR32F, 
-    Compressed RGB S3TC DXT1, Compressed RGBA S3TC DXT1, Compressed RGBA S3TC DXT3, 
+    Alpha8, Luminance8, R3G3B2, RGB5A1, RGBA4, Alpha8Luminance8, Luminance16, R5G6B5,
+    RGB8, R10G10B10A2, RGBA8, RGBA16, R16F, RGBA16F, R32F, RGBA32F, GR16, GR16F, GR32F,
+    Compressed RGB S3TC DXT1, Compressed RGBA S3TC DXT1, Compressed RGBA S3TC DXT3,
     Compressed RGBA S3TC DXT5
     But it down color to RGBA8 because becomes to TGLBitmap
-    Good for preview picture in OpenDialog, 
+    Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
  <b>History : </b><font size=-1><ul>
@@ -25,12 +25,18 @@ unit DDSImage;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS} Windows,  {$ENDIF}
-  Classes, SysUtils, GLCrossPlatform, VectorGeometry, GLGraphics,
-  OpenGLTokens, GLContext, GLPBuffer;
+{$IFDEF MSWINDOWS}Windows,
+{$ENDIF}
+  Classes,
+  SysUtils,
+  GLCrossPlatform,
+  VectorGeometry,
+  GLGraphics,
+  OpenGLTokens,
+  GLContext;
 
 type
 
@@ -46,8 +52,12 @@ type
 implementation
 
 uses
-  {$IFDEF FPC} graphtype, LCLType, {$ENDIF}
-  DXTC, GLFileDDS, GLTextureFormat;
+{$IFDEF FPC}graphtype,
+  LCLType,
+{$ENDIF}
+  DXTC,
+  GLFileDDS,
+  GLTextureFormat;
 
 // ------------------
 // ------------------ TDDSImage ------------------
@@ -58,15 +68,12 @@ uses
 procedure TDDSImage.LoadFromStream(stream: TStream);
 var
   FullDDS: TGLDDSImage;
-  size: integer;
-  tempBuff: PGLubyte;
-  {$IFNDEF FPC}
+{$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
-  {$ELSE}
+{$ELSE}
   RIMG: TRawImage;
-  {$ENDIF}
-  oldContext: TGLContext;
+{$ENDIF}
 begin
   FullDDS := TGLDDSImage.Create;
   try
@@ -76,80 +83,41 @@ begin
     raise;
   end;
 
-  oldContext := CurrentGLContext;
-  if Assigned(oldContext) then
-    oldContext.Deactivate;
+  FullDDS.Narrow;
+  FullDDS.WaitParallelTask;
 
-  if PBufferService.TextureID = 0 then
-    PBufferService.Initialize(1, 1);
-  PBufferService.Enable;
-
-  if IsFormatSupported(FullDDS.InternalFormat) then
-  begin
-    // Setup texture
-    PBufferService.GL.BindTexture(GL_TEXTURE_2D, PBufferService.TextureID);
-    // copy texture to video memory
-    if FullDDS.isCompressed then
-    begin
-      size := ((FullDDS.Width + 3) div 4) * ((FullDDS.Height + 3) div 4) *
-        FullDDS.ElementSize;
-
-      PBufferService.GL.CompressedTexImage2D(
-      GL_TEXTURE_2D, 0,
-        InternalFormatToOpenGLFormat(FullDDS.InternalFormat),
-        FullDDS.Width, FullDDS.Height, 0, size,
-        FullDDS.GetLevelData(0));
-
-    end
-    else
-      PBufferService.GL.TexImage2D(GL_TEXTURE_2D, 0,
-        InternalFormatToOpenGLFormat(FullDDS.InternalFormat), FullDDS.Width,
-        FullDDS.Height, 0, FullDDS.ColorFormat, FullDDS.DataType,
-        FullDDS.GetLevelData(0));
-
-    PBufferService.GL.CheckError;
-
-    GetMem(tempBuff, FullDDS.Width * FullDDS.Height * 4);
-    // get texture from video memory in simple format
-    PBufferService.GL.GetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, tempBuff);
-    PixelFormat := glpf32bit;
-    Transparent := FullDDS.Transparent;
-    Width := FullDDS.Width;
-    Height := FullDDS.Height;
+  PixelFormat := glpf32bit;
+  Transparent := FullDDS.Transparent;
+  Width := FullDDS.Width;
+  Height := FullDDS.Height;
 
 {$IFNDEF FPC}
-    src := tempBuff;
-    if FullDDS.CubeMap then
-      for y := 0 to Height - 1 do
-      begin
-        dst := ScanLine[y];
-        Move(src^, dst^, Width * 4);
-        Inc(src, Width * 4);
-      end
-    else
-      for y := 0 to Height - 1 do
-      begin
-        dst := ScanLine[Height - 1 - y];
-        Move(src^, dst^, Width * 4);
-        Inc(src, Width * 4);
-      end;
+  src := PGLubyte(FullDDS.Data);
+  if FullDDS.CubeMap then
+    for y := 0 to Height - 1 do
+    begin
+      dst := ScanLine[y];
+      Move(src^, dst^, Width * 4);
+      Inc(src, Width * 4);
+    end
+  else
+    for y := 0 to Height - 1 do
+    begin
+      dst := ScanLine[Height - 1 - y];
+      Move(src^, dst^, Width * 4);
+      Inc(src, Width * 4);
+    end;
 {$ELSE}
-    RIMG.Init;
-    rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
-    rimg.Description.RedShift := 16;
-    rimg.Description.BlueShift := 0;
-    rimg.Description.LineOrder := riloBottomToTop;
-    RIMG.DataSize := Width*Height*4;
-    rimg.Data := PByte(tempBuff);
-    LoadFromRawImage(rimg, false);
+  RIMG.Init;
+  rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
+  rimg.Description.RedShift := 16;
+  rimg.Description.BlueShift := 0;
+  rimg.Description.LineOrder := riloBottomToTop;
+  RIMG.DataSize := Width * Height * 4;
+  rimg.Data := PByte(FullDDS.Data);
+  LoadFromRawImage(rimg, false);
 {$ENDIF}
-    FullDDS.Free;
-    FreeMem(tempBuff);
-  end;
-
-  PBufferService.Disable;
-  if Assigned(oldContext) then
-    oldContext.Activate;
+  FullDDS.Free;
 end;
 
 // SaveToStream
@@ -160,9 +128,9 @@ const
 var
   header: TDDSHeader;
   rowSize: integer;
-  {$IFNDEF FPC}
+{$IFNDEF FPC}
   i: Integer;
-  {$ENDIF}
+{$ENDIF}
 begin
   FillChar(header, SizeOf(TDDSHeader), 0);
   header.magic := cardinal(Magic);
@@ -173,31 +141,31 @@ begin
     dwWidth := Width;
     dwHeight := Height;
     case PixelFormat of
-         {$IFDEF MSWINDOWS}
+{$IFDEF MSWINDOWS}
       glpf24bit:
-      begin
-        ddpf.dwFlags := DDPF_RGB;
-        ddpf.dwRGBBitCount := 24;
-        ddpf.dwRBitMask := $00FF0000;
-        ddpf.dwGBitMask := $0000FF00;
-        ddpf.dwBBitMask := $000000FF;
-      end;
-         {$ENDIF}
-      glpf32bit:
-      begin
-        ddpf.dwFlags := DDPF_RGB;
-        ddpf.dwRGBBitCount := 32;
-        ddpf.dwRBitMask := $00FF0000;
-        ddpf.dwGBitMask := $0000FF00;
-        ddpf.dwBBitMask := $000000FF;
-        if Transparent then
         begin
-          ddpf.dwFlags := ddpf.dwFlags + DDPF_ALPHAPIXELS;
-          ddpf.dwRGBAlphaBitMask := $FF000000;
+          ddpf.dwFlags := DDPF_RGB;
+          ddpf.dwRGBBitCount := 24;
+          ddpf.dwRBitMask := $00FF0000;
+          ddpf.dwGBitMask := $0000FF00;
+          ddpf.dwBBitMask := $000000FF;
         end;
-      end;
-      else
-        raise EDDSException.Create('Unsupported pixel format format');
+{$ENDIF}
+      glpf32bit:
+        begin
+          ddpf.dwFlags := DDPF_RGB;
+          ddpf.dwRGBBitCount := 32;
+          ddpf.dwRBitMask := $00FF0000;
+          ddpf.dwGBitMask := $0000FF00;
+          ddpf.dwBBitMask := $000000FF;
+          if Transparent then
+          begin
+            ddpf.dwFlags := ddpf.dwFlags + DDPF_ALPHAPIXELS;
+            ddpf.dwRGBAlphaBitMask := $FF000000;
+          end;
+        end;
+    else
+      raise EDDSException.Create('Unsupported pixel format format');
     end;
     rowSize := (ddpf.dwRGBBitCount div 8) * dwWidth;
     dwPitchOrLinearSize := dwHeight * cardinal(rowSize);
@@ -207,7 +175,7 @@ begin
     for i := 0 to Height - 1 do
       stream.Write(ScanLine[i]^, rowSize);
 {$ELSE}
-      stream.Write(RawImage.Data^, Width*Height*header.SurfaceFormat.ddpf.dwRGBBitCount div 4);
+    stream.Write(RawImage.Data^, Width * Height * header.SurfaceFormat.ddpf.dwRGBBitCount div 4);
 {$ENDIF}
   end;
 end;

@@ -6,6 +6,8 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
+                           SetGLTextureMatrix work for ActiveTexture (in four count)
       <li>23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
       <li>03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
       <li>16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
@@ -230,8 +232,12 @@ type
     FSampleMaskValue: array[0..15] of TGLbitfield;
 
     // Texture state
+    FMaxTextureSize: TGLuint;
     FMaxTextureImageUnits: TGLuint;
+    FMaxTextureAnisotropy: TGLuint;
     FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of TGLuint;
+    FTextureBindingTime: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Double;
+    FSamplerBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TGLuint;
 
     // Active texture state
     FActiveTexture: TGLint; // 0 .. Max_texture_units
@@ -316,6 +322,7 @@ type
 
     // Program state
     FCurrentProgram: TGLuint;
+    FMaxTextureUnits: TGLuint;
     FUniformBufferBinding: TGLuint;
 
     // Vector + Geometry Shader state
@@ -340,7 +347,6 @@ type
     FInsideList: Boolean;
 
     FOnLightsChanged: TNotifyEvent;
-
   protected
     { Protected Declarations }
     // Vertex Array Data state
@@ -396,14 +402,20 @@ type
     function GetSampleMaskValue(Index: Integer): TGLbitfield;
     procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield);
     // Texture state
-    function GetMaxTextureImageUnits: Integer;
+    function GetMaxTextureSize: TGLuint;
+    function GetMaxTextureImageUnits: TGLuint;
+    function GetMaxTextureAnisotropy: TGLuint;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
       TGLuint;
+    function GetTextureBindingTime(Index: Integer; target: TGLTextureTarget):
+      Double;
     procedure SetTextureBinding(Index: Integer; target: TGLTextureTarget;
       const Value: TGLuint);
     function GetActiveTextureEnabled(Target: TGLTextureTarget): Boolean;
     procedure SetActiveTextureEnabled(Target: TGLTextureTarget; const Value:
       Boolean);
+    function GetSamplerBinding(Index: TGLuint): TGLuint;
+    procedure SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
     // Active texture
     procedure SetActiveTexture(const Value: TGLint);
     // Pixel operations
@@ -455,6 +467,7 @@ type
     // Program
     procedure SetCurrentProgram(const Value: TGLuint);
     procedure SetUniformBufferBinding(const Value: TGLuint);
+    function GetMaxTextureUnits: TGLuint;
     // Vector + Geometry Shader state
     function GetCurrentVertexAttrib(Index: Integer): TVector;
     procedure SetCurrentVertexAttrib(Index: Integer; const Value: TVector);
@@ -692,10 +705,16 @@ type
     // Textures
     {: Textures bound to each texture unit + binding point. }
     property TextureBinding[Index: Integer; target: TGLTextureTarget]: TGLuint
-    read GetTextureBinding write SetTextureBinding;
+      read GetTextureBinding write SetTextureBinding;
+    property TextureBindingTime[Index: Integer; target: TGLTextureTarget]: Double
+      read GetTextureBindingTime;
     property ActiveTextureEnabled[Target: TGLTextureTarget]: Boolean read
     GetActiveTextureEnabled write SetActiveTextureEnabled;
-    property MaxTextureImageUnits: Integer read GetMaxTextureImageUnits;
+    property SamplerBinding[Index: TGLuint]: TGLuint read GetSamplerBinding
+      write SetSamplerBinding;
+    property MaxTextureSize: TGLuint read GetMaxTextureSize;
+    property MaxTextureImageUnits: TGLuint read GetMaxTextureImageUnits;
+    property MaxTextureAnisotropy: TGLuint read GetMaxTextureAnisotropy;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
@@ -926,6 +945,7 @@ type
     {: Currently bound program. }
     property CurrentProgram: TGLuint read FCurrentProgram write
       SetCurrentProgram;
+    property MaxTextureUnits: TGLuint read GetMaxTextureUnits;
     {: Currently bound uniform buffer. }
     property UniformBufferBinding: TGLuint read FUniformBufferBinding
       write SetUniformBufferBinding;
@@ -1007,6 +1027,7 @@ type
     {: True for ignore deprecated and removed features in OpenGL 3x }
     property ForwardContext: Boolean read FForwardContext
       write SetForwardContext;
+
   end;
 
 type
@@ -2147,17 +2168,56 @@ begin
   Result := FSampleMaskValue[Index];
 end;
 
-function TGLStateCache.GetMaxTextureImageUnits: Integer;
+function TGLStateCache.GetMaxTextureSize: TGLuint;
+begin
+  if FMaxTextureSize = 0 then
+    GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @FMaxTextureSize);
+  Result := FMaxTextureSize;
+end;
+
+function TGLStateCache.GetMaxTextureImageUnits: TGLuint;
 begin
   if FMaxTextureImageUnits = 0 then
     GL.GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, @FMaxTextureImageUnits);
-  Result := Integer(FMaxTextureImageUnits);
+  Result := FMaxTextureImageUnits;
+end;
+
+function TGLStateCache.GetMaxTextureAnisotropy: TGLuint;
+begin
+  if (FMaxTextureAnisotropy = 0) and GL.EXT_texture_filter_anisotropic then
+    GL.GetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, @FMaxTextureAnisotropy);
+  Result := FMaxTextureAnisotropy;
 end;
 
 function TGLStateCache.GetTextureBinding(Index: Integer;
   target: TGLTextureTarget): TGLuint;
 begin
   Result := FTextureBinding[Index, target];
+end;
+
+function TGLStateCache.GetTextureBindingTime(Index: Integer; target: TGLTextureTarget):
+  Double;
+begin
+  Result := FTextureBindingTime[Index, target];
+end;
+
+function TGLStateCache.GetSamplerBinding(Index: TGLuint): TGLuint;
+begin
+  Result := FSamplerBinding[Index];
+end;
+
+procedure TGLStateCache.SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
+begin
+  if Index > High(FSamplerBinding) then
+    exit;
+  if (Value <> FSamplerBinding[Index]) or FInsideList then
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttTexture)
+    else
+      FSamplerBinding[Index] := Value;
+    GL.BindSampler(Index, Value);
+  end;
 end;
 
 // SetGLTextureMatrix
@@ -2530,7 +2590,7 @@ begin
       Include(FListStates[FCurrentList], sttStencilBuffer)
     else
       FStencilBackWriteMask := Value;
-    // TODO: ignore if unsupported
+    // DONE: ignore if unsupported
     if GL.VERSION_2_0 then
       GL.StencilMaskSeparate(GL_BACK, Value);
   end;
@@ -2762,6 +2822,7 @@ begin
     GL.BindTexture(cGLTexTypeToGLEnum[target], Value);
     ActiveTexture := lastActiveTexture;
   end;
+  FTextureBindingTime[Index, target] := Now;
 end;
 
 function TGLStateCache.GetActiveTextureEnabled(Target: TGLTextureTarget):
@@ -2833,8 +2894,8 @@ begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
   FCurrentList := list - 1;
-  if Length(FListStates) <= Integer(FCurrentList) then
-    SetLength(FListStates, list+128);
+  while High(FListStates) < Integer(FCurrentList) do
+    SetLength(FListStates, 2 * Length(FListStates));
 
   FListStates[FCurrentList] := [];
   FInsideList := True;
@@ -2869,6 +2930,13 @@ begin
     FUniformBufferBinding := Value;
     GL.BindBuffer(GL_UNIFORM_BUFFER, Value);
   end;
+end;
+
+function TGLStateCache.GetMaxTextureUnits: TGLuint;
+begin
+  if FMaxTextureUnits = 0 then
+    GL.GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, @FMaxTextureUnits);
+  Result := FMaxTextureUnits;
 end;
 
 procedure TGLStateCache.SetUnpackAlignment(const Value: TGLuint);
@@ -3219,6 +3287,7 @@ begin
   GL.MatrixMode(GL_MODELVIEW);
   ActiveTexture := 0;
 end;
+
 
 // SetGLColorIgnoring
 //

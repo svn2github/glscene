@@ -42,6 +42,15 @@ const
 
 type
 
+  TGLSApplicationResource = (
+    aresNone,
+    aresSplash,
+    aresTexture,
+    aresMaterial,
+    aresSampler,
+    aresFont,
+    aresMesh);
+
   // TAFIOCreateFileStream
   //
   TAFIOCreateFileStream = function(const fileName: string; mode: Word): TStream;
@@ -57,6 +66,10 @@ type
   // TAFIOFileStreamExistsEvent
   //
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
+
+  // TAFIOGetAppResourceStream
+  //
+  TAFIOGetAppResourceStream = function(): TStream;
 
   // TApplicationFileIO
   //
@@ -152,6 +165,7 @@ function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResour
 var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
   vAFIOFileStreamExists: TAFIOFileStreamExists = nil;
+  vAFIOGetAppResourceStream: TAFIOGetAppResourceStream = nil;
 
   // ---------------------------------------------------------------------
   // ---------------------------------------------------------------------
@@ -166,8 +180,8 @@ uses
 var
   vAFIO: TApplicationFileIO = nil;
 
-  // ApplicationFileIODefined
-  //
+// ApplicationFileIODefined
+//
 
 function ApplicationFileIODefined: Boolean;
 begin
@@ -275,7 +289,6 @@ end;
 // ------------------
 // ------------------ TDataFile ------------------
 // ------------------
-
 
 // Capabilities
 //

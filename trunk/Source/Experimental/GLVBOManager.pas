@@ -35,9 +35,6 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-{$IFDEF GLS_MULTITHREAD}
-  SyncObjs,
-{$ENDIF}
   // GLScene
   GLCrossPlatform,
   BaseClasses,
@@ -177,7 +174,7 @@ type
     CurrentClient: PGLRenderPacket;
     FState: TGLVBOMState;
 {$IFDEF GLS_MULTITHREAD}
-    FLock: TCriticalSection;
+    FLock: TRTLCriticalSection;
 {$ENDIF}
     FAttributeArrays: array[0..GLS_VERTEX_ATTR_NUM - 1] of T4ByteList;
     FObjectVertexCount: Integer; // From BeginObject to EndObject
@@ -353,11 +350,6 @@ type
 
 var
   vUseMappingForOftenBufferUpdate: Boolean = False;
-
-{$IFDEF GLS_MULTITHREAD}
-threadvar
-{$ENDIF}
-  vCurrentTime: Double;
   vCurrentAttribValue: array[0..GLS_VERTEX_ATTR_NUM - 1, 0..15] of T4ByteData;
 
 function StaticVBOManager: TGLStaticVBOManager;
@@ -631,7 +623,7 @@ begin
   for i := 0 to High(FAttributeArrays) do
     FAttributeArrays[i] := T4ByteList.Create;
 {$IFDEF GLS_MULTITHREAD}
-  FLock := TCriticalSection.Create;
+  InitializeCriticalSection(FLock);
 {$ENDIF}
 end;
 
@@ -645,21 +637,21 @@ begin
     FAttributeArrays[i].Destroy;
   FHostIndexBuffer.Destroy;
 {$IFDEF GLS_MULTITHREAD}
-  FLock.Destroy;
+  DeleteCriticalSection(FLock);
 {$ENDIF}
 end;
 
 procedure TGLBaseVBOManager.BeginWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  FLock.Enter;
+  EnterCriticalSection(FLock);
 {$ENDIF}
 end;
 
 procedure TGLBaseVBOManager.EndWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  FLock.Leave;
+  LeaveCriticalSection(FLock);
 {$ENDIF}
 end;
 
@@ -845,10 +837,10 @@ begin
     GLVBOM_POINTS: Valid := count > 0;
     GLVBOM_LINES: Valid := (count mod 2 = 0) and (count > 1);
     GLVBOM_LINE_STRIP,
-      GLVBOM_LINE_LOOP: Valid := count > 2;
+      GLVBOM_LINE_LOOP: Valid := count > 1;
     GLVBOM_POLYGON: Valid := count > 2;
     GLVBOM_LINES_ADJACENCY: Valid := (count mod 4 = 0) and (count > 3);
-    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 4;
+    GLVBOM_LINE_STRIP_ADJACENCY: Valid := count > 3;
     GLVBOM_TRIANGLES_ADJACENCY: Valid := (count mod 6 = 0) and (count > 5);
     GLVBOM_TRIANGLE_STRIP_ADJACENCY: Valid := count > 4;
     GLVBOM_PATCHES: Valid := (count mod CurrentClient.VerticesInPatch = 0) and (count > 0);
@@ -1653,7 +1645,7 @@ begin
 
     // Need to direct bind array buffer for correctly VertexAttribPointer set up
     if CurrentGLcontext.GLStates.ArrayBufferBinding = CurrentClient.ArrayHandle.Handle then
-      GL.BindBuffer(GL_ARRAY_BUFFER, CurrentClient.ArrayHandle.Handle)
+      GL.BindBuffer(GL_ARRAY_BUFFER, CurrentGLcontext.GLStates.ArrayBufferBinding)
     else
       CurrentClient.ArrayHandle.Bind;
     CurrentClient.ElementHandle.Bind; // Index handle can be zero
@@ -1819,7 +1811,7 @@ begin
       exit;
     end;
   end;
-  CurrentClient.LastTimeWhenRendered := vCurrentTime;
+  CurrentClient.LastTimeWhenRendered := Now;
 
   offset := CurrentClient.ElementBufferOffset;
   IndexStart := 0;
@@ -2299,8 +2291,10 @@ procedure TGLDynamicVBOManager.RenderClient(const BuiltProp:
 var
   hVAO: TGLVertexArrayHandle;
 begin
+{$IFDEF GLS_MULTITHREAD}
   try
     BeginWork;
+{$ENDIF}
 
     if Assigned(BuiltProp) then
     begin
@@ -2317,9 +2311,11 @@ begin
       hVAO.UnBind;
     end;
 
+{$IFDEF GLS_MULTITHREAD}
   finally
     EndWork;
   end;
+{$ENDIF}
 end;
 
 class function TGLDynamicVBOManager.Usage: TGLenum;
@@ -2589,8 +2585,10 @@ procedure TGLStaticVBOManager.RenderClient(const BuiltProp: TGLBuiltProperties);
 var
   hVAO: TGLVertexArrayHandle;
 begin
+{$IFDEF GLS_MULTITHREAD}
   try
     BeginWork;
+{$ENDIF}
 
     if FArrayHandle.IsDataNeedUpdate or BuiltProp.FStructureChanged
       or (BuiltProp.ID = 0) then
@@ -2615,9 +2613,11 @@ begin
       CurrentClient := nil;
     end;
 
+{$IFDEF GLS_MULTITHREAD}
   finally
     EndWork;
   end;
+{$ENDIF}
 end;
 
 function TGLStaticVBOManager.UsageStatistic(const TimeInterval: Double): Single;
@@ -2630,7 +2630,7 @@ begin
   for c := 0 to FClientList.Count - 1 do
   begin
     Client := FClientList.Items[c];
-    if Client.LastTimeWhenRendered > vCurrentTime - TimeInterval then
+    if Client.LastTimeWhenRendered > Now - TimeInterval then
       portion := portion + Client.RelativeSize;
   end;
   Result := portion;
@@ -2723,7 +2723,6 @@ begin
   // Vertex buffer managment
   if CurrentClient.ArrayHandle.IsDataNeedUpdate then
   begin
-    CurrentClient.ArrayHandle.AllocateHandle;
     CurrentClient.BuiltProp.VertexBufferCapacity := CurrentClient.DataSizeInArrayPool;
     CurrentClient.ArrayHandle.BindBufferData(nil,
       CurrentClient.BuiltProp.VertexBufferCapacity, Usage);
@@ -2743,7 +2742,6 @@ begin
   // Index buffer managment
   if CurrentClient.ElementHandle.IsDataNeedUpdate then
   begin
-    CurrentClient.ElementHandle.AllocateHandle;
     CurrentClient.BuiltProp.IndexBufferCapacity :=
       LongWord(FHostIndexBuffer.Count) * SizeOf(GLUInt);
     CurrentClient.ElementHandle.BindBufferData(FHostIndexBuffer.List,
@@ -2894,8 +2892,10 @@ var
   hVAO: TGLVertexArrayHandle;
   NeedBuild: Boolean;
 begin
+{$IFDEF GLS_MULTITHREAD}
   try
     BeginWork;
+{$ENDIF}
     NeedBuild := (BuiltProp.ID = 0) or BuiltProp.FStructureChanged;
     if (BuiltProp.ID > 0) then
     begin
@@ -2925,9 +2925,11 @@ begin
       CurrentClient := nil;
     end;
 
+{$IFDEF GLS_MULTITHREAD}
   finally
     EndWork;
   end;
+{$ENDIF}
 end;
 
 class function TGLStreamVBOManager.Usage: TGLenum;
@@ -2943,3 +2945,4 @@ finalization
   FreeVBOManagers;
 
 end.
+

@@ -55,9 +55,6 @@
 // De-Activate inline directive in GLS units.
 {.$DEFINE GLS_NO_INLINE}
 
-// Activate Multithread support.
-{.$DEFINE GLS_MULTITHREAD}
-
 // Activate Logging
 {$DEFINE GLS_LOGGING}
 
@@ -529,6 +526,17 @@
 // PNG is supported by Delphi since Dephi 2009
 {$IFDEF GLS_DELPHI_2009_UP}
   {$DEFINE GLS_PngImage_SUPPORT}
+{$ENDIF}
+
+
+// Activate Multithread support. Only for modern compiler
+
+{$IFDEF FPC}
+  {$DEFINE GLS_MULTITHREAD}
+{$ENDIF}
+
+{$IFDEF GLS_DELPHI_2009_UP}
+  {$DEFINE GLS_MULTITHREAD}
 {$ENDIF}
 
 

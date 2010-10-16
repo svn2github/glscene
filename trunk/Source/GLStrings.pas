@@ -65,13 +65,16 @@ resourcestring
   glsInterleaveNotSupported = 'Interleaved Array format not supported yet. Sorry.';
 
   // common messages
+  glsUnknownArchive = '%s : unknown archive version %d';
   glsOutOfMemory = 'Fatal: Out of memory';
+  glsFileNotFound = 'File %s not found';
   glsFailedOpenFile = 'Could not open file: %s';
   glsFailedOpenFileFromCurrentDir = 'Could not open file: %s'#13#10'(Current directory is %s)';
   glsNoDescriptionAvailable = 'No description available';
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
   glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
+  glsMissingResource = 'Missing application resource: %s: %s';
 
   glsIncompatibleTypes = 'Incompatible types!';
   glsUnknownType       = 'Unknown type!';
@@ -119,7 +122,7 @@ resourcestring
   glsAlreadyDefined =
     'Geometric data of the object already identified.';
   glsUnknownAttrib =
-    'Used not declared attribute. Declare attribute between BeginObject ... BeginPrimitive.';
+    'Used uddeclared attribute "%s" for mesh "%s" assembly.';
   glsErrorBuildModel =
     'Error occurred when model was builded';
   glsDoMakeAdjFail =
@@ -134,9 +137,12 @@ resourcestring
 const
   // Resources
   glsDEFAULTMATERIALNAME = 'DEFAULTMATERIAL';
+  glsDEFAULTMESHNAME = 'DEFAULTMESHNAME';
   glsDIFFUSEMAP = 'DEFAULTDIFFUSEMAP';
   glsNORMALMAP = 'DEFAULTNORMALMAP';
   glsLauncherData = 'LAUNCHERDATA';
+  glsResourceInfo = 'GLSCENERESOURCEINFO';
+
   glsMaterialManagerData = 'MATERIALMANAGERDATA';
 
 implementation

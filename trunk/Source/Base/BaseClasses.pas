@@ -4,6 +4,7 @@
 {: Base classes for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/10/10 - Yar - Added TGLSAbstractManager, TGLAbstractName
       <li>05/10/08 - DanB - Creation, from GLMisc.pas + other places
    </ul></font>
 }
@@ -12,7 +13,7 @@ unit BaseClasses;
 
 interface
 
-uses 
+uses
   Classes,
   PersistentClasses,
   GLCrossPlatform;
@@ -102,8 +103,78 @@ type
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
+  TGLAbstractNameClass = class of TGLAbstractName;
+
+  // TGLSAbstractManager
+  //
+  {: Base class of GLScene managers. <p>}
+  TGLSAbstractManager = class(TPersistent)
+  protected
+    { Protected Declarations }
+    // Design time notifications
+    class procedure NotifyProjectOpened; virtual; abstract;
+    class procedure NotifyProjectClosed; virtual; abstract;
+    class procedure NotifyContextCreated; virtual; abstract;
+    class procedure NotifyBeforeCompile; virtual; abstract;
+    class function FirstOne: Boolean; virtual;
+  public
+    { Public Declarations }
+    class function FillResourceList(AList: TStringList): Boolean; virtual; abstract;
+    class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); virtual; abstract;
+    // Brackets for thread safe work.
+    class procedure BeginWork; virtual;
+    class procedure EndWork; virtual;
+    class procedure CheckCall; virtual;
+  end;
+
+  TGLSAbstractManagerClass = class of TGLSAbstractManager;
+
+  {: GLScene manager items name interface. <p>}
+  IGLName = interface(IInterface)
+    function GetValue: string;
+    procedure SetValue(AName: string);
+    function GetHash: Integer;
+    function GetManager: TGLSAbstractManagerClass;
+    function GetInheritorClass: TGLAbstractNameClass;
+    function GetIndex: Integer;
+  end;
+
+  // TGLAbstractName
+  //
+  TGLAbstractName = class(TInterfacedObject, IGLName)
+  private
+    FValue: string;
+    FHashCode: Integer;
+    FIndex: Integer;
+  protected
+    function GetValue: string;
+    procedure SetValue(AName: string);
+    function GetHash: Integer;
+    function GetInheritorClass: TGLAbstractNameClass; virtual; abstract;
+    procedure SetIndex(AIndex: Integer);
+    function GetIndex: Integer;
+  public
+    constructor Create; virtual;
+{$IFDEF GLS_MULTITHREAD}final;{$ENDIF}
+    destructor Destroy; override;
+{$IFDEF GLS_MULTITHREAD}final;{$ENDIF}    
+    function GetManager: TGLSAbstractManagerClass; virtual; abstract;
+    property Value: string read GetValue write SetValue;
+    property HashCode: Integer read GetHash;
+  end;
+
+procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
+procedure NotifyGLSceneManagersContextCreated;
+procedure NotifyGLSceneManagersBeforeCompile;
+function GetManagersResourceList: TStringList;
+
 implementation
 
+uses
+  SysUtils,
+  GLSLog;
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
 //---------------------- TGLUpdateAbleObject -----------------------------------------
 
 // Create
@@ -159,7 +230,9 @@ begin
     NotifyChange(Self);
   end;
 end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TGLCadenceAbleComponent ------------------
 // ------------------
@@ -185,7 +258,9 @@ begin
     if (Owner is TGLUpdateAbleComponent) then
       (Owner as TGLUpdateAbleComponent).NotifyChange(Self);
 end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TNotifyCollection ------------------
 // ------------------
@@ -209,6 +284,211 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSAbstractManager'}{$ENDIF}
+// ------------------
+// ------------------ TGLSAbstractManager ------------------
+// ------------------
+
+type
+  TGLSManagerState = record
+    ManagerClass: TGLSAbstractManagerClass;
+    Working: Boolean;
+{$IFDEF GLS_MULTITHREAD}
+    Lock: TRTLCriticalSection;
+{$ENDIF}
+  end;
+
+var
+  aGLSceneManagers: array of TGLSManagerState;
+
+procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
+var
+  I: Integer;
+begin
+  SetLength(aGLSceneManagers, Length(aGLSceneManagers) + 1);
+  if AManager.FirstOne then
+  begin
+    for I := High(aGLSceneManagers) downto 1 do
+      aGLSceneManagers[I] := aGLSceneManagers[I-1];
+    I := 0;
+  end
+  else
+    I := High(aGLSceneManagers);
+  aGLSceneManagers[I].ManagerClass := AManager;
+  aGLSceneManagers[I].Working := False;
+{$IFDEF GLS_MULTITHREAD}
+  InitializeCriticalSection(aGLSceneManagers[I].Lock);
+{$ENDIF}
+end;
+
+{$IFDEF GLS_MULTITHREAD}
+procedure ReleaseGLSceneManagers;
+var
+  I: Integer;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    DeleteCriticalSection(aGLSceneManagers[I].Lock);
+end;
+{$ENDIF}
+
+class function TGLSAbstractManager.FirstOne: Boolean;
+begin
+  Result := False;
+end;
+
+class procedure TGLSAbstractManager.BeginWork;
+var
+  I: Integer;
+  bPrev: Boolean;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  begin
+    if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
+    begin
+{$IFDEF GLS_MULTITHREAD}
+      EnterCriticalSection(aGLSceneManagers[I].Lock);
+{$ENDIF}
+      bPrev := aGLSceneManagers[I].Working;
+      aGLSceneManagers[I].Working := True;
+      if bPrev then
+        GLSLogger.LogError(Format('Excessive call %s.BeginWork', [Self.ClassName]));
+      exit;
+    end;
+  end;
+end;
+
+class procedure TGLSAbstractManager.EndWork;
+var
+  I: Integer;
+  bPrev: Boolean;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  begin
+    if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
+    begin
+{$IFDEF GLS_MULTITHREAD}
+      LeaveCriticalSection(aGLSceneManagers[I].Lock);
+{$ENDIF}
+      bPrev := aGLSceneManagers[I].Working;
+      aGLSceneManagers[I].Working := False;
+      if not bPrev then
+        GLSLogger.LogError(Format('Excessive call %s.EndWork', [Self.ClassName]));
+      exit;
+    end;
+  end;
+end;
+
+class procedure TGLSAbstractManager.CheckCall;
+var
+  I: Integer;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  begin
+    if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
+      if not aGLSceneManagers[I].Working then
+      begin
+        GLSLogger.LogError(Format('This method must be call between %0:s.BeginWork and %0:s.EndWork', [Self.ClassName]));
+        Abort;
+      end
+      else
+        exit;
+  end;
+end;
+
+procedure NotifyGLSceneManagersContextCreated;
+var
+  I: Integer;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    aGLSceneManagers[I].ManagerClass.NotifyContextCreated;
+end;
+
+procedure NotifyGLSceneManagersBeforeCompile;
+var
+  I: Integer;
+begin
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    aGLSceneManagers[I].ManagerClass.NotifyBeforeCompile;
+end;
+
+function GetManagersResourceList: TStringList;
+var
+  I: Integer;
+  NotEmpty: Boolean;
+begin
+  if Length(aGLSceneManagers)>0 then
+  begin
+    Result := TStringList.Create;
+    NotEmpty := False;
+    for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+      NotEmpty := NotEmpty or aGLSceneManagers[I].ManagerClass.FillResourceList(Result);
+    if not NotEmpty then
+      FreeAndNil(Result);
+  end
+  else
+    Result := nil;
+end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLSAbstractManager'}{$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLAbstractName'}{$ENDIF}
+// ------------------
+// ------------------ TGLAbstractName ------------------
+// ------------------
+
+constructor TGLAbstractName.Create;
+begin
+  inherited;
+  FIndex := -1;
+end;
+
+destructor TGLAbstractName.Destroy;
+begin
+  FIndex := -1;
+  inherited;
+end;
+
+function TGLAbstractName.GetValue: string;
+begin
+  Result := FValue;
+end;
+
+procedure TGLAbstractName.SetValue(AName: string);
+var
+  I, N: Integer;
+begin
+  GetManager.MakeUniqueItemName(AName, TGLAbstractNameClass(Self.ClassType));
+  FValue := AName;
+  N := Length(AName);
+  FHashCode := N;
+  for I := 1 to N do
+    FHashCode := (FHashCode shl 1) + Integer(AName[i]);
+end;
+
+function TGLAbstractName.GetHash: Integer;
+begin
+  Result := FHashCode;
+end;
+
+procedure TGLAbstractName.SetIndex(AIndex: Integer);
+begin
+  FIndex := AIndex;
+end;
+
+function TGLAbstractName.GetIndex: Integer;
+begin
+  Result := FIndex;
+end;
+{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+
+initialization
+
+finalization
+
+{$IFDEF GLS_MULTITHREAD}
+procedure ReleaseGLSceneManagers;
+{$ENDIF}
 
 end.
 

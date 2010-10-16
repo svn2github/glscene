@@ -4743,7 +4743,7 @@ end;
 
 procedure TTimerNode.SetViewingUniforms;
 begin
-  ShaderManager.Uniform1f(uniformTime, GLVBOManager.vCurrentTime);
+  ShaderManager.Uniform1f(uniformTime, Now);
 end;
 
 function TTimerNode.GetOutputSample(out ASample: TShaderSample): Boolean;

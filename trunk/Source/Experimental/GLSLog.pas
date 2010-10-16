@@ -35,7 +35,7 @@ uses
   Windows,
 {$ENDIF}
   Classes, SysUtils, Dialogs, GLCrossPlatform, Forms, SyncObjs
-{$IFNDEF FPC} ,ShellApi {$ENDIF}
+{$IFDEF MSWINDOWS} ,ShellApi {$ENDIF}
   ;
 
 type
@@ -374,7 +374,7 @@ begin
     ', infos: ' + IntToStr(LogKindCount[lkInfo]) +
     ', debug info: ' + IntToStr(LogKindCount[lkDebug]));
   Log('Log session shutdown');
-{$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
   if LogKindCount[lkFatalError] + LogKindCount[lkError] > 0 then
       ShellExecute(
         0,
@@ -382,7 +382,7 @@ begin
         'C:\WINDOWS\notepad.exe',
         PChar(LogFileName),
         nil,
-        SW_SHOWNORMAL);
+        1);
 {$ENDIF}
   if Self = GLSLogger then
     GLSLogger := nil;

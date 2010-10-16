@@ -60,7 +60,7 @@ type
       const textureHandle: TGLuint;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TGLInternalFormat); override;
+      const intFormat: TGLInternalFormat); reintroduce;
 
     property Data: PGLPixel32Array read FData;
     property Width: Integer read fWidth;
@@ -112,7 +112,7 @@ begin
     end;
   end
   else
-    raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
+    raise EInvalidRasterFile.CreateFmt(glsFileNotFound, [filename]);
 end;
 
 // SaveToFile

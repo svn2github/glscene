@@ -6,8 +6,15 @@ interface
 
 uses
   Windows,
-  Classes, Forms, SysUtils, JPEG, ExtCtrls, Controls, Graphics,
-  ApplicationFileIO, GLSCrossXML, GLSArchiveManager;
+  Classes,
+  Forms,
+  SysUtils,
+  JPEG,
+  ExtCtrls,
+  Controls,
+  Graphics,
+  BaseClasses,
+  GLSArchiveManager;
 
 type
 
@@ -16,16 +23,13 @@ type
 
   TGLSLauncher = class(TComponent)
   private
-    FSplashScreen: TJPEGImage;
     FShowSplashScreen: Boolean;
-    FWaitInterval: Integer;
     FArchManager: TGLSArchiveManager;
     procedure SetShowSplashScreen(Value: Boolean);
+    function GetWaitInterval: Integer;
     procedure SetWaitInterval(Value: Integer);
     procedure SetArchManager(Value: TGLSArchiveManager);
-    procedure CreateConfig;
   protected
-    procedure Loaded; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -35,120 +39,158 @@ type
   published
     property ShowSplashScreen: Boolean read FShowSplashScreen
       write SetShowSplashScreen default False;
-    property WaitInterval: Integer read FWaitInterval write SetWaitInterval default 0;
+    property WaitInterval: Integer read GetWaitInterval write SetWaitInterval default 0;
     property ArchiveManager: TGLSArchiveManager read FArchManager write SetArchManager;
   end;
 
-var
-  vUpdateResourceProc: TUpdateResourceProc;
-  vGetConfigDataStreamFunc: TGetConfigDataStreamFunc;
+  LaunchManager = class(TGLSAbstractManager)
+  public
+    { Public Declarations }
+    class procedure NotifyContextCreated; override;
+    class function FillResourceList(AList: TStringList): Boolean; override;
+    class function FirstOne: Boolean; override;
+    // Design time notifications
+    class procedure NotifyProjectOpened; override;
+    class procedure NotifyProjectClosed; override;
+  end;
 
 implementation
 
 uses
-  GLSLog, GLContext, GL3xMaterial, GLStrings;
+  ApplicationFileIO,
+  GLCrossPlatform,
+  GLSLog,
+  GLContext,
+  GLStrings;
 
 var
-  OldInitProc: Pointer;
-  FWindowHandle: HWND;
-  FDC: HDC;
-  FRenderingContext: TGLContext;
+  vLauncher: TGLSLauncher;
+  SplashImage: TJPEGImage;
+  WaitInterval: Integer;
 
-procedure LauncherInitProc;
+class procedure LaunchManager.NotifyContextCreated;
 var
-  rStream: TGLSResourceStream;
-  Config: GLSXMLDocument;
-  XMLConfig: GLSXMLNode;
-  img: TJPEGImage;
-  form: TForm;
-  ACanvas: TImage;
-  sConfig: WideString;
-  temp: string;
-  vWait: Cardinal;
-  len, err: Integer;
+  SplashWindow: TForm;
+  SplashCanvas: TImage;
 begin
-  if Assigned(OldInitProc) then
-    TProcedure(OldInitProc);
-  FRenderingContext := GLContextManager.CreateResourceContext;
-  if not Assigned(FRenderingContext) then
+  SplashWindow := GetServiceWindow;
+  if not IsDesignTime and Assigned(SplashWindow) and Assigned(SplashImage) then
   begin
-    GLSLogger.LogError('GLSStarter: can''t create rendering context');
-    exit;
+    SplashCanvas := TImage.Create(SplashWindow);
+    SplashCanvas.Parent := SplashWindow;
+    SplashWindow.Width := SplashImage.Width;
+    SplashWindow.Height := SplashImage.Height;
+    SplashCanvas.Width := SplashImage.Width;
+    SplashCanvas.Height := SplashImage.Height;
+    SplashCanvas.Canvas.Draw(0, 0, SplashImage);
+    SplashWindow.Show;
+    SplashWindow.Repaint;
+    Sleep(WaitInterval);
   end;
-//  FWindowHandle := Classes.AllocateHWnd(nil);
-  FDC := GetDC(GetForegroundWindow);
-  if FDC = 0 then
+end;
+
+class function LaunchManager.FillResourceList(AList: TStringList): Boolean;
+var
+  temp: string;
+  mStream: TMemoryStream;
+begin
+  Result := Assigned(vLauncher);
+  if Result then
   begin
-    GLSLogger.LogError('GLSStarter: can''t get device context');
-    exit;
-  end;
-  try
-    FRenderingContext.CreateMemoryContext(FDC, 1, 1, 1);
-  except
-    on EGLContext do
+    AList.Add('[SPLASH]');
+    AList.Add(Format('WAIT = %d', [WaitInterval]));
+    if vLauncher.FShowSplashScreen then
     begin
-      GLSLogger.LogError('GLSStarter: can''t initialize rendering context');
-    end
-    else raise;
-  end;
-  GLSLogger.LogNotice('Resource context successfuly initialized');
-
-  form := nil;
-  vWait := 0;
-
-  rStream := CreateResourceStream(glsLauncherData, GLS_RC_XML_Type);
-  if Assigned(rStream) then
-  begin
-    rStream.Read(len, SizeOf(Integer));
-    SetLength(sConfig, len);
-    rStream.Read(sConfig[1], len*SizeOf(Char));
-    Config := GLSNewXMLDocument;
-    Config.LoadFromXML(sConfig);
-
-    XMLConfig := Config.DocumentElement;
-    if GetXMLAttribute(XMLConfig, 'SplashScreen', temp) then
-    begin
-      img := TJPEGImage.Create;
-      img.LoadFromStream(rStream);
-    end
-    else
-      img := nil;
-
-    if GetXMLAttribute(XMLConfig, 'Wait', temp) then
-      Val(temp, vWait, err);
-
-  {$IFDEF FPC}
-    FConfig.Free;
-  {$ENDIF}
-    rStream.Free;
-    GLSLogger.LogNotice('Launcher successful loaded config');
-
-    if Assigned(img) then
-    begin
-      form := TForm.Create(Application);
-      form.Position := poScreenCenter;
-      form.Width := img.Width;
-      form.Height := img.Height;
-      form.BorderStyle := bsNone;
-      form.FormStyle := fsStayOnTop;
-      form.Color := clBlack;
-      ACanvas := TImage.Create(form);
-      ACanvas.Parent := form;
-      ACanvas.Width := img.Width;
-      ACanvas.Height := img.Height;
-      ACanvas.Canvas.Draw(0, 0, img);
-      form.Show;
-      form.Repaint;
-      img.Free;
-      GLSLogger.LogNotice('Splash-screen successful raised');
+      mStream := TMemoryStream.Create;
+      SplashImage.SaveToStream(mStream);
+      SetLength(temp, 2 * mStream.Size);
+      BinToHex(mStream.Memory^, PChar(temp), Integer(mStream.Size));
+      mStream.Destroy;
+      AList.Add(Format('SPLASH = %s', [temp]));
     end;
   end;
+end;
 
-  FRenderingContext.Activate;
-  MaterialManager.Initialize;
-  FRenderingContext.Deactivate;
-  Sleep(vWait);
-  form.Free;
+class function LaunchManager.FirstOne: Boolean;
+begin
+  Result := True;
+end;
+
+class procedure LaunchManager.NotifyProjectOpened;
+var
+  I, E: Integer;
+  rStream: TGLSResourceStream;
+  mStream: TMemoryStream;
+  eResType: TGLSApplicationResource;
+  ResList: TStringList;
+  line, rName, rFile: string;
+
+  procedure GetNameAndFile;
+  var
+    p: Integer;
+  begin
+    p := Pos('=', line);
+    rName := Copy(line, 1, p - 1);
+    rFile := Copy(line, p + 1, Length(line) - p + 1);
+  end;
+
+begin
+  GLSLogger.Enabled := False;
+  if IsDesignTime then
+  begin
+    if Assigned(vAFIOGetAppResourceStream) then
+      rStream := TGLSResourceStream(vAFIOGetAppResourceStream())
+    else
+      rStream := nil;
+  end
+  else
+    rStream := CreateResourceStream(glsResourceInfo, GLS_RC_String_Type);
+  GLSLogger.Enabled := True;
+
+  if Assigned(rStream) then
+  begin
+    ResList := TStringList.Create;
+    ResList.LoadFromStream(rStream);
+    rStream.Destroy;
+    eResType := aresNone;
+    SetExeDirectory;
+    for I := 0 to ResList.Count - 1 do
+    begin
+      line := ResList.Strings[I];
+      if line = '[SPLASH]' then
+      begin
+        eResType := aresSplash;
+        continue;
+      end
+      else
+        case eResType of
+          aresSplash:
+            begin
+              GetNameAndFile;
+              if rName = 'Wait' then
+              begin
+                WaitInterval := 0;
+                Val(rFile, WaitInterval, E);
+              end
+              else if rName = 'SPLASH' then
+              begin
+                mStream := TMemoryStream.Create;
+                mStream.SetSize(Length(rFile) div 2);
+                HexToBin(PChar(rFile), mStream.Memory^, Integer(mStream.Size));
+                SplashImage := TJPEGImage.Create;
+                SplashImage.LoadFromStream(mStream);
+                mStream.Destroy;
+              end;
+            end;
+        end;
+    end;
+    ResList.Destroy;
+  end;
+end;
+
+class procedure LaunchManager.NotifyProjectClosed;
+begin
+  FreeAndNil(SplashImage);
 end;
 
 // ------------------
@@ -157,46 +199,15 @@ end;
 
 constructor TGLSLauncher.Create(AOwner: TComponent);
 begin
+  if vLauncher = nil then
+    vLauncher := Self;
   inherited;
 end;
 
 destructor TGLSLauncher.Destroy;
 begin
-  FSplashScreen.Free;
-  inherited;
-end;
-
-procedure TGLSLauncher.Loaded;
-var
-  rStream: TStream;
-  len: Integer;
-  temp: string;
-  sConfig: WideString;
-  Config: GLSXMLDocument;
-  XMLConfig: GLSXMLNode;
-begin
-  if Assigned(vGetConfigDataStreamFunc) then
-  begin
-    rStream := vGetConfigDataStreamFunc();
-    if Assigned(rStream) then
-    begin
-      rStream.Read(len, SizeOf(Integer));
-      SetLength(sConfig, len);
-      rStream.Read(sConfig[1], len*SizeOf(WideChar));
-      Config := GLSNewXMLDocument;
-      Config.LoadFromXML(sConfig);
-      XMLConfig := Config.DocumentElement;
-      if GetXMLAttribute(XMLConfig, 'SplashScreen', temp) then
-      begin
-        FSplashScreen := TJPEGImage.Create;
-        FSplashScreen.LoadFromStream(rStream);
-      end;
-{$IFDEF FPC}
-      Config.Free;
-{$ENDIF}
-      rStream.Free;
-    end;
-  end;
+  if vLauncher = Self then
+    vLauncher := nil;
   inherited;
 end;
 
@@ -206,7 +217,6 @@ begin
   if (Operation = opRemove) and (AComponent = FArchManager) then
   begin
     FArchManager := nil;
-    CreateConfig;
   end;
 end;
 
@@ -215,18 +225,21 @@ begin
   if Value <> FShowSplashScreen then
   begin
     FShowSplashScreen := Value;
-    CreateConfig;
   end;
+end;
+
+function TGLSLauncher.GetWaitInterval: Integer;
+begin
+  Result := WaitInterval;
 end;
 
 procedure TGLSLauncher.SetWaitInterval(Value: Integer);
 begin
-  if Value<0 then
+  if Value < 0 then
     Value := 0;
-  if Value <> FWaitInterval then
+  if Value <> WaitInterval then
   begin
-    FWaitInterval := Value;
-    CreateConfig;
+    WaitInterval := Value;
   end;
 end;
 
@@ -237,64 +250,24 @@ begin
   FArchManager := Value;
   if FArchManager <> nil then
     FArchManager.FreeNotification(Self);
-  CreateConfig;
 end;
 
 procedure TGLSLauncher.LoadSplashScreenImage(AFileName: string);
 begin
-  if not(csDesigning in ComponentState) then
+  if not (csDesigning in ComponentState) then
     exit;
-  if not Assigned(FSplashScreen) then
-    FSplashScreen := TJPEGImage.Create;
-  FSplashScreen.LoadFromFile(AFileName);
-  CreateConfig;
-end;
-
-procedure TGLSLauncher.CreateConfig;
-var
-  Config: GLSXMLDocument;
-  XMLConfig: GLSDOMNode;
-  sConfig: WideString;
-  mStream: TMemoryStream;
-  len: Integer;
-begin
-  if not(csDesigning in ComponentState) or (csLoading in ComponentState) then
-    exit;
-
-  Config := GLSNewXMLDocument;
-  XMLConfig := Config.DOMDocument.CreateElement('StarterConfig');
-  Config.DOMDocument.AppendChild(XMLConfig);
-  if FShowSplashScreen and Assigned(FSplashScreen) then
-    SetXMLAttribute(XMLConfig, 'SplashScreen', 'True');
-  SetXMLAttribute(XMLConfig, 'Wait', IntToStr(FWaitInterval));
-  Config.SaveToXML(sConfig);
-  len := Length(sConfig);
-  mStream := TMemoryStream.Create;
-  try
-    mStream.Write(len, SizeOf(Integer));
-    mStream.Write(sConfig[1], len*SizeOf(WideChar));
-    if FShowSplashScreen and Assigned(FSplashScreen) then
-      FSplashScreen.SaveToStream(mStream);
-    mStream.Seek(0, soBeginning);
-    if Assigned(vUpdateResourceProc) then
-      vUpdateResourceProc(mStream.Memory, Integer(mStream.Size));
-  finally
-{$IFDEF FPC}
-    FConfig.Free;
-{$ENDIF}
-    mStream.Free;
-  end;
+  if not Assigned(SplashImage) then
+    SplashImage := TJPEGImage.Create;
+  SplashImage.LoadFromFile(AFileName);
 end;
 
 initialization
 
-  OldInitProc := InitProc;
-  InitProc := @LauncherInitProc;
+  RegisterGLSceneManager(LaunchManager);
 
 finalization
 
-  FreeAndNil(FRenderingContext);
-  if FWindowHandle <> 0 then
-    Classes.DeallocateHWnd(FWindowHandle);
+  FreeAndNil(SplashImage);
 
 end.
+

@@ -29,7 +29,8 @@ interface
 
 uses
   Classes, GLObjectManager, ComponentEditors, PropEdits, LResources, LCLType,
-  LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource, Laz_XMLCfg;
+  LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource, Laz_XMLCfg,
+  Forms;
 
 type
   // TGLLibMaterialNameProperty

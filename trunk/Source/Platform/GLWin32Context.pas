@@ -440,7 +440,7 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+    if not FGL.WChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
       32, PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
@@ -460,7 +460,7 @@ begin
 
   if float then
   begin // float_type
-    if WGL_ATI_pixel_format_float then
+    if GL.W_ATI_pixel_format_float then
     begin // NV40 uses ATI_float, with linear filtering
       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_FLOAT_ATI);
     end
@@ -485,7 +485,7 @@ begin
     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
   if AuxBuffers > 0 then
     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample and FGL.ARB_multisample then
+  if (AntiAliasing <> aaDefault) and GL.W_ARB_multisample and FGL.ARB_multisample then
   begin
     if AntiAliasing = aaNone then
       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
@@ -642,7 +642,7 @@ begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
     end;
 
-    FRC := wglCreateContextAttribsARB(aDC, FShareContext, @FiAttribs[0]);
+    FRC := FGL.WCreateContextAttribsARB(aDC, FShareContext, @FiAttribs[0]);
 
     if FRC = 0 then
     begin
@@ -717,7 +717,7 @@ begin
   outputDC := HDC(outputDevice);
 {$ENDIF}
 
-  if vUseWindowTrackingHook then
+  if vUseWindowTrackingHook and not FLegacyContextsOnly then
     TrackWindow(WindowFromDC(outputDC), DestructionEarlyWarning);
 
   // Just in case it didn't happen already.
@@ -770,7 +770,7 @@ begin
         DoActivate;
         try
           FGL.ClearError;
-          if WGL_ARB_pixel_format then
+          if FGL.W_ARB_pixel_format then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
             ClearIAttribs;
@@ -782,7 +782,7 @@ begin
             ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
-              if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then
+              if FGL.W_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then
               begin
                 // Pick first non AntiAliased for aaDefault and aaNone modes
                 iAttrib := WGL_SAMPLE_BUFFERS_ARB;
@@ -790,7 +790,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  wglGetPixelFormatAttribivARB(outputDC, pixelFormat, 0, 1,
+                  FGL.WGetPixelFormatAttribivARB(outputDC, pixelFormat, 0, 1,
                     @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     Break;
@@ -881,7 +881,9 @@ begin
     end;
   end;
 
-  if not FLegacyContextsOnly and WGL_ARB_create_context and (FAcceleration = chaHardware) then
+  if not FLegacyContextsOnly
+    and FGL.W_ARB_create_context
+    and (FAcceleration = chaHardware) then
     CreateNewContext(outputDC)
   else
     CreateOldContext(outputDC);
@@ -889,17 +891,17 @@ begin
   if not FLegacyContextsOnly then
   begin
     // Share identifiers with other context if it deffined
-    if ResourceContext <> nil then
+    if (ServiceContext <> nil) and (Self <> ServiceContext) then
     begin
-      if wglShareLists(TGLWin32Context(ResourceContext).FRC, FRC) then
+      if wglShareLists(TGLWin32Context(ServiceContext).FRC, FRC) then
       begin
 {$IFNDEF GLS_MULTITHREAD}
-        FSharedContexts.Add(ResourceContext);
+        FSharedContexts.Add(ServiceContext);
         PropagateSharedContext;
 {$ELSE}
         with FSharedContexts.LockList do
           try
-            Add(ResourceContext);
+            Add(ServiceContext);
             PropagateSharedContext;
           finally
             FSharedContexts.UnlockList;
@@ -962,40 +964,40 @@ begin
       DoActivate;
       try
         FGL.ClearError;
-        if WGL_ARB_pixel_format and WGL_ARB_pbuffer then
+        if FGL.W_ARB_pixel_format and FGL.W_ARB_pbuffer then
         begin
           ClearIAttribs;
           AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
           ChooseWGLFormat(tempDC, 32, @iFormats, nbFormats, BufferCount);
           if nbFormats = 0 then
             raise
-              Exception.Create('Format not supported for pbuffer operation.');
+              EPBuffer.Create('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := wglCreatePbufferARB(tempDC, iFormats[0], width,
+          localHPBuffer := FGL.WCreatePbufferARB(tempDC, iFormats[0], width,
             height,
             @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
-            raise Exception.Create('Unabled to create pbuffer.');
+            raise EPBuffer.Create('Unabled to create pbuffer.');
           try
-            localDC := wglGetPbufferDCARB(localHPBuffer);
+            localDC := FGL.WGetPbufferDCARB(localHPBuffer);
             if localDC = 0 then
-              raise Exception.Create('Unabled to create pbuffer''s DC.');
+              raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
               localRC := wglCreateContext(localDC);
               if localRC = 0 then
-                raise Exception.Create('Unabled to create pbuffer''s RC.');
+                raise EPBuffer.Create('Unabled to create pbuffer''s RC.');
             except
-              wglReleasePBufferDCARB(localHPBuffer, localDC);
+              FGL.WReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
             end;
           except
-            wglDestroyPBufferARB(localHPBuffer);
+            FGL.WDestroyPBufferARB(localHPBuffer);
             raise;
           end;
         end
         else
-          raise Exception.Create('WGL_ARB_pbuffer support required.');
+          raise EPBuffer.Create('WGL_ARB_pbuffer support required.');
         FGL.CheckError;
       finally
         DoDeactivate;
@@ -1021,7 +1023,7 @@ begin
     GLSLogger.LogWarning(cFailHWRC);
   end;
 
-  if WGL_ARB_create_context then
+  if FGL.W_ARB_create_context then
     CreateNewContext(FDC)
   else
     CreateOldContext(FDC);
@@ -1066,15 +1068,17 @@ begin
   if vUseWindowTrackingHook then
     UnTrackWindow(WindowFromDC(FDC));
 
+  if FHPBUFFER <> 0 then
+  begin
+    FGL.WReleasePbufferDCARB(FHPBuffer, FDC);
+    FGL.WDestroyPbufferARB(FHPBUFFER);
+    FHPBUFFER := 0;
+  end;
+
   if FRC <> 0 then
     if not wglDeleteContext(FRC) then
       raise EGLContext.Create(cDeleteContextFailed);
-  if FHPBUFFER <> 0 then
-  begin
-    wglReleasePbufferDCARB(FHPBuffer, FDC);
-    wglDestroyPbufferARB(FHPBUFFER);
-    FHPBUFFER := 0;
-  end;
+
   FRC := 0;
   FDC := 0;
   FShareContext := 0;
@@ -1092,7 +1096,7 @@ begin
       [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FGL.IsInitialized then
-    FGL.Initialize;
+    FGL.Initialize(CurrentGLContext = nil);
 end;
 
 // Deactivate

@@ -390,7 +390,12 @@ type
   TGLCameraInvarianceMode = (cimNone, cimPosition, cimOrientation);
 
 const
+<<<<<<< .mine
+  cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
   GLSCENE_REVISION = '$Revision: 5230$';
+=======
+  GLSCENE_REVISION = '$Revision: 5230$';
+>>>>>>> .r5247
   GLSCENE_VERSION = '1.1.0.%s';
 
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
@@ -2472,12 +2477,7 @@ procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 
-{$IFNDEF GLS_MULTITHREAD}
-var
-{$ELSE}
-threadvar
-{$ENDIF}
-  vCurrentRenderingObject: TGLBaseSceneObject;
+function GetCurrentRenderingObject: TGLBaseSceneObject;
 
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
@@ -2500,6 +2500,17 @@ uses
 
 var
   vCounterFrequency: Int64;
+{$IFNDEF GLS_MULTITHREAD}
+var
+{$ELSE}
+threadvar
+{$ENDIF}
+  vCurrentRenderingObject: TGLBaseSceneObject;
+
+function GetCurrentRenderingObject: TGLBaseSceneObject;
+begin
+  Result := vCurrentRenderingObject;
+end;
 
   // AxesBuildList
   //
@@ -7370,9 +7381,6 @@ begin
   pt.deltaTime := deltaTime;
   pt.newTime := newTime;
   FObjects.DoProgress(pt);
-{$IFDEF GLS_EXPERIMENTAL}
-  GLVBOManager.vCurrentTime := newTime;
-{$ENDIF}
 end;
 
 // SaveToFile

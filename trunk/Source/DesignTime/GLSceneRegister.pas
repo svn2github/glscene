@@ -100,6 +100,7 @@ interface
 
 uses
   Windows,
+  Forms,
   Classes,
   Controls,
   StdCtrls,
@@ -417,9 +418,6 @@ type
   //
 
   TGLSLauncherEditor = class(TComponentEditor)
-  private
-    class procedure UpdateResource(Data: Pointer; Size: Integer);
-    class function GetConfigDataStream(): TStream;
   public
     { Public Declarations }
     procedure Edit; override;
@@ -1821,94 +1819,6 @@ begin
   Result := 1;
 end;
 
-class procedure TGLSLauncherEditor.UpdateResource(Data: Pointer; Size: Integer);
-var
-  i: Integer;
-  Editor: IOTAEditor;
-  Project: IOTAProject;
-  Resource: IOTAProjectResource;
-  ResourceEntry: IOTAResourceEntry;
-  Dest: PByte;
-  rName: PChar;
-begin
-  Project := GetActiveProject;
-  if not Assigned(Project) then
-    exit;
-
-  Resource := nil;
-  for i := 0 to Project.GetModuleFileCount - 1 do
-  begin
-    Editor := Project.GetModuleFileEditor(i);
-    if Supports(Editor, IOTAProjectResource, Resource) then
-      Break;
-  end;
-
-  if Assigned(Resource) then
-  begin
-    for I := 0 to Resource.GetEntryCount - 1 do
-    begin
-      ResourceEntry := Resource.GetEntry(I);
-      rName := ResourceEntry.GetResourceName;
-      if Cardinal(rName)>$1000 then
-        if StrComp(rName, PChar(glsLauncherData)) = 0 then
-        begin
-          ResourceEntry.DataSize := Size;
-          Dest := ResourceEntry.GetData;
-          Move(Data^, Dest^, Size);
-          exit;
-        end;
-    end;
-    // Need to create resource
-    ResourceEntry := Resource.CreateEntry(GLS_RC_XML_Type, PChar(glsLauncherData), 4112, 1033, 0, 0, 0);
-    if Assigned(ResourceEntry) then
-    begin
-      ResourceEntry.DataSize := Size;
-      Dest := ResourceEntry.GetData;
-      Move(Data^, Dest^, Size);
-    end;
-  end;
-end;
-
-class function TGLSLauncherEditor.GetConfigDataStream(): TStream;
-var
-  i: Integer;
-  Editor: IOTAEditor;
-  Project: IOTAProject;
-  Resource: IOTAProjectResource;
-  ResourceEntry: IOTAResourceEntry;
-  rName: PChar;
-begin
-  Result := nil;
-  Project := GetActiveProject;
-  if not Assigned(Project) then
-    exit;
-
-  Resource := nil;
-  for i := 0 to Project.GetModuleFileCount - 1 do
-  begin
-    Editor := Project.GetModuleFileEditor(i);
-    if Supports(Editor, IOTAProjectResource, Resource) then
-      Break;
-  end;
-
-  if Assigned(Resource) then
-  begin
-    for I := 0 to Resource.GetEntryCount - 1 do
-    begin
-      ResourceEntry := Resource.GetEntry(I);
-      rName := ResourceEntry.GetResourceName;
-      if Cardinal(rName)>$1000 then
-        if StrComp(rName, PChar(glsLauncherData)) = 0 then
-        begin
-          Result := TMemoryStream.Create;
-          Result.Write(ResourceEntry.GetData^, ResourceEntry.DataSize);
-          Result.Seek(0, soBeginning);
-          exit;
-        end;
-    end;
-  end;
-end;
-
 function GetMaterialManagerDataStream(): TStream;
 var
   i: Integer;
@@ -1939,6 +1849,46 @@ begin
       rName := ResourceEntry.GetResourceName;
       if Cardinal(rName)>$1000 then
         if StrComp(rName, PChar(glsMaterialManagerData)) = 0 then
+        begin
+          Result := TMemoryStream.Create;
+          Result.Write(ResourceEntry.GetData^, ResourceEntry.DataSize);
+          Result.Seek(0, soBeginning);
+          exit;
+        end;
+    end;
+  end;
+end;
+
+function GetAppResourceStream(): TStream;
+var
+  i: Integer;
+  Editor: IOTAEditor;
+  Project: IOTAProject;
+  Resource: IOTAProjectResource;
+  ResourceEntry: IOTAResourceEntry;
+  rName: PChar;
+begin
+  Result := nil;
+  Project := GetActiveProject;
+  if not Assigned(Project) then
+    exit;
+
+  Resource := nil;
+  for i := 0 to Project.GetModuleFileCount - 1 do
+  begin
+    Editor := Project.GetModuleFileEditor(i);
+    if Supports(Editor, IOTAProjectResource, Resource) then
+      Break;
+  end;
+
+  if Assigned(Resource) then
+  begin
+    for I := 0 to Resource.GetEntryCount - 1 do
+    begin
+      ResourceEntry := Resource.GetEntry(I);
+      rName := ResourceEntry.GetResourceName;
+      if Cardinal(rName)>$1000 then
+        if StrComp(rName, PChar(glsResourceInfo)) = 0 then
         begin
           Result := TMemoryStream.Create;
           Result.Write(ResourceEntry.GetData^, ResourceEntry.DataSize);
@@ -2404,7 +2354,7 @@ begin
   RegisterPropertyEditor(TypeInfo(TGL3xTextureName), TTextureSamplerNode, 'Texture', TGL3xTextureProperty);
   RegisterComponentEditor(TGLSLauncher, TGLSLauncherEditor);
 {$ENDIF}
-
+  Application.Initialize;
 end;
 
 function GetGLSceneVersion: string;
@@ -2437,8 +2387,8 @@ initialization
 
 {$IFDEF GLS_EXPERIMENTAl}
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
-  vUpdateResourceProc := TGLSLauncherEditor.UpdateResource;
-  vGetConfigDataStreamFunc := TGLSLauncherEditor.GetConfigDataStream;
+  ApplicationFileIO.vAFIOGetAppResourceStream := GetAppResourceStream;
+
   vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;
 {$ENDIF}
 

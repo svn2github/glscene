@@ -621,7 +621,6 @@ begin
       if Assigned(FMaterialGraph) then
       begin
         QueryPerformanceCounter(counter);
-        GLVBOManager.vCurrentTime := counter / CounterFrequency;
         FRenderingContext.GLStates.ViewPort :=
           Vector4iMake(0, 0, ClientWidth, ClientHeight);
         FMaterialGraph.Render;

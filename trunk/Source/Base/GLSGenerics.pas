@@ -73,7 +73,7 @@ type
   generic
 {$ENDIF}
   GThreadList<T> = class
-  private
+  public
     type
       TLockableList = {$IFDEF FPC} specialize {$ENDIF} GList<T>;
     var
@@ -201,7 +201,7 @@ begin
   Temp := FItems[Index];
   Dec(FCount);
   if Index < FCount then
-    System.Move(FItems[Index + 1], FItems[Index],
+    Move(FItems[Index + 1], FItems[Index],
       (FCount - Index) * SizeOf(T));
   Notify(Temp, lnDeleted);
 end;
@@ -248,7 +248,7 @@ begin
   if FCount = FCapacity then
     Grow;
   if Index < FCount then
-    System.Move(FItems[Index], FItems[Index + 1],
+    Move(FItems[Index], FItems[Index + 1],
       (FCount - Index) * SizeOf(T));
   FItems[Index] := AItem;
   Inc(FCount);

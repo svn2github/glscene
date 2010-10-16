@@ -797,6 +797,7 @@ function RDTSC: Int64;
 {$IFDEF FPC}
 begin
   raise exception.create('Using GLCrossPlatform.RDTSC is a bad idea!');
+  Result := 0;
 end;
 {$ELSE}
 asm

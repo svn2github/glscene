@@ -769,9 +769,11 @@ procedure TGLImposterBuilder.DoUserSpecifiedImposter(
   var rci: TRenderContextInfo;
   destImposter: TImposter;
   bmp32: TGLBitmap32);
+var
+  size: Integer;
 begin
   destImposter.PrepareTexture(rci);
-  bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA8);
+  bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA8, size, size, size);
 end;
 
 // NotifyChange

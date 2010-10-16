@@ -216,9 +216,9 @@ begin
       Label6.Show;
       CopyLabel.Show;
       // Include WGL extensions
-      if WGL_ARB_extensions_string then
+      if GL.W_ARB_extensions_string then
       begin
-        ExtStr:=String(wglGetExtensionsStringARB(dc));
+        ExtStr:=String(GL.WGetExtensionsStringARB(dc));
         while Length(ExtStr) > 0 do begin
           I:=Pos(' ',ExtStr);
           if I = 0 then I:=255;

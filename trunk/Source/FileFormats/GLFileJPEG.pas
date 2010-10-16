@@ -42,8 +42,10 @@ type
 
     {: Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint; textureTarget: TGLTextureTarget;
-      const CurrentFormat: boolean; const intFormat: TGLInternalFormat); override;
+      const textureHandle: TGLuint;
+      textureTarget: TGLTextureTarget;
+      const CurrentFormat: boolean;
+      const intFormat: TGLInternalFormat); reintroduce;
 
     property Data: PGLPixel32Array read FData;
     property Width: integer read fWidth;
