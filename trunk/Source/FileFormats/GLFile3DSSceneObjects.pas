@@ -27,8 +27,8 @@ uses
 
   // GLScene
   VectorGeometry,
-  OpenGL1x,
   OpenGLTokens,
+  OpenGLAdapter,
   GLContext,
   GLScene,
   GLVectorFileObjects,

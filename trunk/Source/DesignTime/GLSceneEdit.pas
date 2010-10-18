@@ -265,7 +265,7 @@ implementation
 
 
 uses
-  GLViewer, GLSceneRegister, GLStrings, Info, OpenGL1x, GLCrossPlatform,
+  GLViewer, GLSceneRegister, GLStrings, Info, GLCrossPlatform,
 {$IFDEF MSWINDOWS}
   ClipBrd;
 {$ENDIF}

@@ -220,7 +220,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, SysUtils, GLCrossPlatform, GLScreen
+uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
   {$IFDEF FPC}
     {$ifdef Linux}
       {$IFDEF LCLGTK2}

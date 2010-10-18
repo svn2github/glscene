@@ -571,6 +571,7 @@ uses
   SysUtils,
   TypInfo,
   VectorGeometry,
+  VectorTypes,
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xObjects,
   GL3xAtmosphere,
