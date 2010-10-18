@@ -9,7 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>04/09/10 - Yar - - Added IsDesignTime variable, SetExeDirectory
+      <li>18/10/10 - Yar - Added functions FloatToHalf, HalfToFloat (Thanks to Fantom)
+      <li>04/09/10 - Yar - Added IsDesignTime variable, SetExeDirectory
       <li>15/06/10 - Yar - Replace Shell to fpSystem
       <li>04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
       <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
@@ -187,6 +188,9 @@ type
 
   TProjectTargetNameFunc = function(): string;
 
+  THalfFloat = type Word;
+  PHalfFloat = ^THalfFloat;
+
 const
 {$IFDEF GLS_DELPHI_5_DOWN}
   S_OK = Windows.S_OK;
@@ -349,6 +353,9 @@ function FindUnitName(aClass: TClass): string; overload;
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
 function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean; overload;
 {$ENDIF}
+
+function FloatToHalf(Float: Single): THalfFloat;
+function HalfToFloat(Half: THalfFloat): Single;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -909,6 +916,143 @@ begin
     path := IncludeTrailingPathDelimiter(path);
     SetCurrentDirUTF8(path);
 {$ENDIF}
+  end;
+end;
+
+function HalfToFloat(Half: THalfFloat): Single;
+var
+  Dst, Sign, Mantissa: LongWord;
+  Exp: LongInt;
+begin
+  // extract sign, exponent, and mantissa from half number
+  Sign := Half shr 15;
+  Exp := (Half and $7C00) shr 10;
+  Mantissa := Half and 1023;
+
+  if (Exp > 0) and (Exp < 31) then
+  begin
+    // common normalized number
+    Exp := Exp + (127 - 15);
+    Mantissa := Mantissa shl 13;
+    Dst := (Sign shl 31) or (LongWord(Exp) shl 23) or Mantissa;
+    // Result := Power(-1, Sign) * Power(2, Exp - 15) * (1 + Mantissa / 1024);
+  end
+  else if (Exp = 0) and (Mantissa = 0) then
+  begin
+    // zero - preserve sign
+    Dst := Sign shl 31;
+  end
+  else if (Exp = 0) and (Mantissa <> 0) then
+  begin
+    // denormalized number - renormalize it
+    while (Mantissa and $00000400) = 0 do
+    begin
+      Mantissa := Mantissa shl 1;
+      Dec(Exp);
+    end;
+    Inc(Exp);
+    Mantissa := Mantissa and not $00000400;
+    // now assemble normalized number
+    Exp := Exp + (127 - 15);
+    Mantissa := Mantissa shl 13;
+    Dst := (Sign shl 31) or (LongWord(Exp) shl 23) or Mantissa;
+    // Result := Power(-1, Sign) * Power(2, -14) * (Mantissa / 1024);
+  end
+  else if (Exp = 31) and (Mantissa = 0) then
+  begin
+    // +/- infinity
+    Dst := (Sign shl 31) or $7F800000;
+  end
+  else //if (Exp = 31) and (Mantisa <> 0) then
+  begin
+    // not a number - preserve sign and mantissa
+    Dst := (Sign shl 31) or $7F800000 or (Mantissa shl 13);
+  end;
+
+  // reinterpret LongWord as Single
+  Result := PSingle(@Dst)^;
+end;
+
+function FloatToHalf(Float: Single): THalfFloat;
+var
+  Src: LongWord;
+  Sign, Exp, Mantissa: LongInt;
+begin
+  Src := PLongWord(@Float)^;
+  // extract sign, exponent, and mantissa from Single number
+  Sign := Src shr 31;
+  Exp := LongInt((Src and $7F800000) shr 23) - 127 + 15;
+  Mantissa := Src and $007FFFFF;
+
+  if (Exp > 0) and (Exp < 30) then
+  begin
+    // simple case - round the significand and combine it with the sign and exponent
+    Result := (Sign shl 15) or (Exp shl 10) or ((Mantissa + $00001000) shr 13);
+  end
+  else if Src = 0 then
+  begin
+    // input float is zero - return zero
+    Result := 0;
+  end
+  else
+  begin
+    // difficult case - lengthy conversion
+    if Exp <= 0 then
+    begin
+      if Exp < -10 then
+      begin
+        // input float's value is less than HalfMin, return zero
+        Result := 0;
+      end
+      else
+      begin
+        // Float is a normalized Single whose magnitude is less than HalfNormMin.
+        // We convert it to denormalized half.
+        Mantissa := (Mantissa or $00800000) shr (1 - Exp);
+        // round to nearest
+        if (Mantissa and $00001000) > 0 then
+          Mantissa := Mantissa + $00002000;
+        // assemble Sign and Mantissa (Exp is zero to get denotmalized number)
+        Result := (Sign shl 15) or (Mantissa shr 13);
+      end;
+    end
+    else if Exp = 255 - 127 + 15 then
+    begin
+      if Mantissa = 0 then
+      begin
+        // input float is infinity, create infinity half with original sign
+        Result := (Sign shl 15) or $7C00;
+      end
+      else
+      begin
+        // input float is NaN, create half NaN with original sign and mantissa
+        Result := (Sign shl 15) or $7C00 or (Mantissa shr 13);
+      end;
+    end
+    else
+    begin
+      // Exp is > 0 so input float is normalized Single
+
+      // round to nearest
+      if (Mantissa and $00001000) > 0 then
+      begin
+        Mantissa := Mantissa + $00002000;
+        if (Mantissa and $00800000) > 0 then
+        begin
+          Mantissa := 0;
+          Exp := Exp + 1;
+        end;
+      end;
+
+      if Exp > 30 then
+      begin
+        // exponent overflow - return infinity half
+        Result := (Sign shl 15) or $7C00;
+      end
+      else
+        // assemble normalized half
+        Result := (Sign shl 15) or (Exp shl 10) or (Mantissa shr 13);
+    end;
   end;
 end;
 
