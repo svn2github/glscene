@@ -38,7 +38,7 @@ uses
   Classes,
   GLScene,
   VectorGeometry,
-  OpenGL1x,
+  OpenGLAdapter,
   OpenGLTokens,
   GLContext,
   GLMaterial,

@@ -36,8 +36,8 @@ uses
   Classes,
   GLScene,
   VectorGeometry,
-  OpenGL1x,
   OpenGLTokens,
+  OpenGLAdapter,
   GLContext,
   GLObjects,
   GLSilhouette,
@@ -1018,24 +1018,24 @@ procedure TGLCylinder.BuildList(var rci: TRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
   quadric := gluNewQuadric;
   SetupQuadricParams(Quadric);
-  glRotatef(-90, 1, 0, 0);
+  GL.Rotatef(-90, 1, 0, 0);
   case Alignment of
-    caTop: glTranslatef(0, 0, -FHeight);
+    caTop: GL.Translatef(0, 0, -FHeight);
     caBottom: ;
   else // caCenter
-    glTranslatef(0, 0, -FHeight * 0.5);
+    GL.Translatef(0, 0, -FHeight * 0.5);
   end;
   if cySides in FParts then
     gluCylinder(Quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if cyTop in FParts then
   begin
-    glPushMatrix;
-    glTranslatef(0, 0, FHeight);
+    GL.PushMatrix;
+    GL.Translatef(0, 0, FHeight);
     gluDisk(Quadric, 0, FTopRadius, FSlices, FLoops);
-    glPopMatrix;
+    GL.PopMatrix;
   end;
   if cyBottom in FParts then
   begin
@@ -1044,7 +1044,7 @@ begin
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
   gluDeleteQuadric(Quadric);
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // SetTopRadius

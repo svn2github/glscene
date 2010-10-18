@@ -51,8 +51,8 @@ interface
 
 uses
   Classes,
-  OpenGL1x,
   OpenGLTokens,
+  OpenGLAdapter,
   Spline,
   VectorGeometry,
   VectorLists,
@@ -776,18 +776,18 @@ begin
   vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
   tess := gluNewTess;
   try
-    gluTessCallback(tess, GLU_TESS_BEGIN, @glBegin);
+    gluTessCallback(tess, GLU_TESS_BEGIN, @GL.Begin_);
     if textured then
       gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
     else
-      gluTessCallback(tess, GLU_TESS_VERTEX, @glVertex3fv);
-    gluTessCallback(tess, GLU_TESS_END, @glEnd);
+      gluTessCallback(tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
+    gluTessCallback(tess, GLU_TESS_END, @GL.End_);
     gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
     gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
     // Issue normal
     if Assigned(normal) then
     begin
-      glNormal3fv(PGLFloat(normal));
+      GL.Normal3fv(PGLFloat(normal));
       gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
     end;
     gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);

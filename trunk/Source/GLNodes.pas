@@ -23,8 +23,8 @@ interface
 uses
   Classes,
   VectorGeometry,
-  OpenGL1x,
   OpenGLTokens,
+  OpenGLAdapter,
   GLContext,
   BaseClasses,
   GLCoordinates,

@@ -48,8 +48,8 @@ uses
   VectorLists,
   PersistentClasses,
   GLTexture,
-  OPenGL1x,
   OpenGLTokens,
+  OpenGLAdapter,
   GLState,
   GLRenderContextInfo;
 
