@@ -24,9 +24,24 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, StdCtrls, GLObjects, ExtCtrls, GLCadencer,
-  GLTexture, JPeg, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
+  Windows,
+  Messages,
+  SysUtils,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  GLScene,
+  StdCtrls,
+  GLObjects,
+  ExtCtrls,
+  GLCadencer,
+  GLTexture,
+  JPeg,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
   BaseClasses;
 type
   TForm1 = class(TForm)
@@ -54,7 +69,7 @@ type
     procedure RB1to1Click(Sender: TObject);
   private
     { Private declarations }
-    textureFramerateRatio, n : Integer;
+    textureFramerateRatio, n: Integer;
   public
     { Public declarations }
   end;
@@ -67,60 +82,65 @@ implementation
 {$R *.dfm}
 
 uses
-  GLContext, OpenGLAdapter;
+  GLContext,
+  OpenGLAdapter;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   textureFramerateRatio:=1;
-   n:=0;
+  textureFramerateRatio := 1;
+  n := 0;
 end;
 
 procedure TForm1.RB1to1Click(Sender: TObject);
 begin
-   textureFramerateRatio:=(Sender as TRadioButton).Tag;
+  textureFramerateRatio := (Sender as TRadioButton).Tag;
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
-   if CheckBox1.Checked then
-      GLSceneViewer1.VSync:=vsmSync
-   else GLSceneViewer1.VSync:=vsmNoSync;
+  if CheckBox1.Checked then
+    GLSceneViewer1.VSync := vsmSync
+  else
+    GLSceneViewer1.VSync := vsmNoSync;
 end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
-   if not WGL_ARB_pbuffer then begin
-      ShowMessage( 'WGL_ARB_pbuffer not supported...'#13#10#13#10
-                  +'Get newer graphics hardware or try updating your drivers!');
-      GLSceneViewer1.AfterRender:=nil;
-      Exit;
-   end;
-   Inc(n);
-   try
-      if n>=textureFramerateRatio then begin
-         // render to the viewer
-         GLMemoryViewer1.Render;
-         // copy result to the textures
-         GLMemoryViewer1.CopyToTexture(Cube1.Material.Texture);
-         n:=0;
-      end;
-   except
-      // pbuffer not supported... catchall for exotic ICDs...
-      GLSceneViewer1.AfterRender:=nil;
-      raise;
-   end;
+  if not GLSceneViewer1.Buffer.RenderingContext.GL.W_ARB_pbuffer then
+  begin
+    ShowMessage('WGL_ARB_pbuffer not supported...'#13#10#13#10
+      + 'Get newer graphics hardware or try updating your drivers!');
+    GLSceneViewer1.AfterRender := nil;
+    Exit;
+  end;
+  Inc(n);
+  try
+    if n >= textureFramerateRatio then
+    begin
+      // render to the viewer
+      GLMemoryViewer1.Render;
+      // copy result to the textures
+      GLMemoryViewer1.CopyToTexture(Cube1.Material.Texture);
+      n := 0;
+    end;
+  except
+    // pbuffer not supported... catchall for exotic ICDs...
+    GLSceneViewer1.AfterRender := nil;
+    raise;
+  end;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   DummyCube1.TurnAngle:=newTime*60;
+  DummyCube1.TurnAngle := newTime * 60;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
-   GLSceneViewer1.ResetPerformanceMonitor;
+  Caption := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.
+
