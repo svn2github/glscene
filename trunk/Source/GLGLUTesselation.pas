@@ -38,7 +38,7 @@ implementation
 
 uses
   SysUtils,
-  OPenGL1x,
+  OpenGLAdapter,
   OpenGLTokens,
   VectorTypes;
 
