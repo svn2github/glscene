@@ -926,9 +926,15 @@ type
     FApplied: Boolean;
 
     //implementing IInterface
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
+    {$IfDef FPC}
+      function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+      function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+      function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$Else}
+      function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+      function _AddRef: Integer; stdcall;
+      function _Release: Integer; stdcall;
+    {$EndIf}
   protected
     { Protected Decalarations }
     function GetDisplayName: string; override;
@@ -3770,10 +3776,16 @@ begin
   inherited;
 end;
 
+
+
 // QueryInterface
 //
 
-function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult;
+{$IfDef FPC}
+  function TGLTextureExItem.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult;
+{$EndIf}
 begin
   if GetInterface(IID, Obj) then
     Result := S_OK
@@ -3783,16 +3795,22 @@ end;
 
 // _AddRef
 //
-
-function TGLTextureExItem._AddRef: Integer;
+{$IfDef FPC}
+  function TGLTextureExItem._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLTextureExItem._AddRef: Integer;
+{$EndIf}
 begin
   Result := -1; //ignore
 end;
 
 // _Release
 //
-
-function TGLTextureExItem._Release: Integer;
+{$IfDef FPC}
+  function TGLTextureExItem._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLTextureExItem._Release: Integer;
+{$EndIf}
 begin
   Result := -1; //ignore
 end;

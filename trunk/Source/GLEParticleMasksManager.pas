@@ -93,9 +93,15 @@ type
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLMaterialLibrary;
     //implementing IInterface
+  {$IfDef FPC}
+    function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
+  {$EndIf}
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -382,12 +388,6 @@ begin
   FPitchAngle := FPitchAngle + Angle;
 end;
 
-function TGLEParticleMask.QueryInterface(const IID: TGUID;
-  out Obj): HResult;
-begin
-  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
-end;
-
 procedure TGLEParticleMask.Roll(Angle: Single);
 begin
   FRollAngle := FRollAngle + Angle;
@@ -647,12 +647,30 @@ begin
   Result := TGLBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as TGLPersistentImage).Picture.Bitmap);
 end;
 
-function TGLEParticleMask._AddRef: Integer;
+
+{$IfDef FPC}
+  function TGLEParticleMask.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
+{$EndIf}
+begin
+  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+end;
+
+{$IfDef FPC}
+  function TGLEParticleMask._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLEParticleMask._AddRef: Integer;
+{$EndIf}
 begin
   Result := -1; //ignore
 end;
 
-function TGLEParticleMask._Release: Integer;
+{$IfDef FPC}
+  function TGLEParticleMask._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$Else}
+  function TGLEParticleMask._Release: Integer;
+{$EndIf}
 begin
   Result := -1; //ignore
 end;
