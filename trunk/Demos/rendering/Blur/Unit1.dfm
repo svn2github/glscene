@@ -28,6 +28,7 @@ object Form1: TForm1
     FieldOfView = 153.029327392578100000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
