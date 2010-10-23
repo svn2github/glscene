@@ -262,7 +262,6 @@ contains
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
-  GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
   GLFBO in '..\Source\GLFBO.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
@@ -280,7 +279,6 @@ contains
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
   GLSCrossXML in '..\Source\Base\GLSCrossXML.pas',
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
-  OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   GLSelection in '..\Source\GLSelection.pas',
   GLSLog in '..\Source\Experimental\GLSLog.pas',
@@ -300,6 +298,8 @@ contains
   GLSpecializedUniforms in '..\Source\Experimental\GLSpecializedUniforms.pas',
   GLSRedBlackTree in '..\Source\Experimental\GLSRedBlackTree.pas',
   GLVBOManager in '..\Source\Experimental\GLVBOManager.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas';
+  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
+  ImageUtils in '..\Source\Base\ImageUtils.pas',
+  GLSGenerics in '..\Source\Base\GLSGenerics.pas';
 
 end.

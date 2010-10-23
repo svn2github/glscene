@@ -296,10 +296,10 @@ contains
   GLSCrossXML in '..\Source\Base\GLSCrossXML.pas',
   GLSLauncher in '..\Source\Experimental\GLSLauncher.pas',
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
-  OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   GLSceneForm in '..\Source\Experimental\GLSceneForm.pas',
   GLSelection in '..\Source\GLSelection.pas',
-  GLSGenerics in '..\Source\Base\GLSGenerics.pas';
+  GLSGenerics in '..\Source\Base\GLSGenerics.pas',
+  ImageUtils in '..\Source\Base\ImageUtils.pas';
 
 end.
