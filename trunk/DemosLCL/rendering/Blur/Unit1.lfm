@@ -178,6 +178,10 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'LibMaterial'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         Tag = 0
