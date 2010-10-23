@@ -75,7 +75,8 @@ type
   private
     { Private Declarations }
     FDC: HDC;
-    FRC, FShareContext: HGLRC;
+    FRC: HGLRC;
+    FShareContext: TGLWin32Context;
     FHPBUFFER: Integer;
     FiAttribs: packed array of Integer;
     FfAttribs: packed array of Single;
@@ -153,6 +154,7 @@ resourcestring
   cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';
   cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
     'on - down to software';
+  glsFailedToShare = 'DoCreateContext - Failed to share contexts';
 
 var
   vTrackingCount: Integer;
@@ -574,9 +576,16 @@ begin
   if not FLegacyContextsOnly then
   begin
     GLStates.ForwardContext := False;
-    if FShareContext <> 0 then
-      if not wglShareLists(FShareContext, FRC) then
-        GLSLogger.LogError('DoCreateContext - Failed to share contexts');
+    if Assigned(FShareContext) and (FShareContext.RC <> 0) then
+    begin
+      if not wglShareLists(FShareContext.RC, FRC) then
+        GLSLogger.LogWarning(glsFailedToShare)
+      else
+      begin
+        FSharedContexts.Add(FShareContext);
+        PropagateSharedContext;
+      end;
+    end;
     FGL.DebugMode := True; //rcoDebug in Options;
     FGL.Initialize;
     MakeGLCurrent;
@@ -638,16 +647,33 @@ begin
     end;
 
 //    if rcoDebug in Options then
+{$IFDEF GLS_LOGGING}
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
     end;
+{$ENDIF}
 
-    FRC := FGL.WCreateContextAttribsARB(aDC, FShareContext, @FiAttribs[0]);
+    FRC := 0;
+    if Assigned(FShareContext) then
+    begin
+      FRC := FGL.WCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
+      if FRC <> 0 then
+      begin
+        FSharedContexts.Add(FShareContext);
+        PropagateSharedContext;
+      end
+      else
+        GLSLogger.LogWarning(glsFailedToShare)
+    end;
 
     if FRC = 0 then
     begin
-      GLSLogger.LogError(cForwardContextFailed);
-      Abort;
+      FRC := FGL.WCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
+      if FRC = 0 then
+      begin
+        GLSLogger.LogError(cForwardContextFailed);
+        Abort;
+      end;
     end;
 
     FDC := aDC;
@@ -690,7 +716,8 @@ var
   tempWnd: HWND;
   tempDC, outputDC: HDC;
   localDC: HDC;
-  localRC, sharedRC: HGLRC;
+  localRC: HGLRC;
+  sharedRC: TGLWin32Context;
 
   function CurrentPixelFormatIsHardwareAccelerated: Boolean;
   var
@@ -899,7 +926,7 @@ begin
         PropagateSharedContext;
       end
       else
-        GLSLogger.LogError('DoCreateContext - Failed to share contexts with resource context');
+        GLSLogger.LogWarning('DoCreateContext - Failed to share contexts with resource context');
     end;
   end;
 end;
@@ -935,9 +962,10 @@ var
   iFormats: array[0..31] of Integer;
   iPBufferAttribs: array[0..0] of Integer;
   localHPBuffer: Integer;
-  localRC, shareRC: HGLRC;
+  localRC: HGLRC;
   localDC, tempDC: HDC;
   tempWnd: HWND;
+  shareRC: TGLWin32Context;
   pfDescriptor: TPixelFormatDescriptor;
 begin
   localHPBuffer := 0;
@@ -1032,9 +1060,9 @@ function TGLWin32Context.DoShareLists(aContext: TGLContext): Boolean;
 begin
   if aContext is TGLWin32Context then
   begin
-    FShareContext := TGLWin32Context(aContext).RC;
-    if RC <> 0 then
-      Result := wglShareLists(FShareContext, FRC)
+    FShareContext := TGLWin32Context(aContext);
+    if FShareContext.RC <> 0 then
+      Result := wglShareLists(FShareContext.RC, RC)
     else
       Result := False;
   end
@@ -1063,7 +1091,7 @@ begin
 
   FRC := 0;
   FDC := 0;
-  FShareContext := 0;
+  FShareContext := nil;
   if not FLegacyContextsOnly then
     FGL.Close;
 end;

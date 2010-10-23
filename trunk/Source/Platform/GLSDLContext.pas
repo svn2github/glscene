@@ -106,7 +106,7 @@ type
     { Protected Declarations }
     procedure DoCreateContext(outputDevice: HWND); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
-    procedure DoShareLists(aContext: TGLContext); override;
+    function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
@@ -361,9 +361,10 @@ end;
 // DoShareLists
 //
 
-procedure TGLSDLContext.DoShareLists(aContext: TGLContext);
+function TGLSDLContext.DoShareLists(aContext: TGLContext): Boolean;
 begin
   // nothing (only one context at all times... no need to share)
+  Result := False;
 end;
 
 // DoDestroyContext
