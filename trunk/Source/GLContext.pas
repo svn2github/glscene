@@ -1155,7 +1155,7 @@ type
     FServiceContext: TGLContext;
 
 {$IFNDEF GLS_MULTITHREAD}
-    FOwnedHandles: TList;
+    FHandles: TList;
 {$ENDIF GLS_MULTITHREAD}
   protected
     { Protected Declarations }
@@ -1695,8 +1695,8 @@ begin
   Activate;
   try
 {$IFNDEF GLS_MULTITHREAD}
-    for i := Manager.FOwnedHandles.Count - 1 downto 0 do
-      TGLContextHandle(Manager.FOwnedHandles[i]).ContextDestroying;
+    for i := Manager.FHandles.Count - 1 downto 0 do
+      TGLContextHandle(Manager.FHandles[i]).ContextDestroying;
 {$ELSE}
     with Manager.FHandles.LockList do
       try
@@ -1734,9 +1734,9 @@ begin
   Activate;
   try
 {$IFNDEF GLS_MULTITHREAD}
-    for i := Manager.FOwnedHandles.Count - 1 downto 0 do
+    for i := Manager.FHandles.Count - 1 downto 0 do
     begin
-      contextHandle := TGLContextHandle(Manager.FOwnedHandles[i]);
+      contextHandle := TGLContextHandle(Manager.FHandles[i]);
       contextHandle.ContextDestroying;
     end;
 {$ELSE}
@@ -1917,7 +1917,7 @@ var
     vI: Integer;
   begin
     Result := True;
-    for vI := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    for vI := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
       if FHandles[vI].FRenderingContext = nil then
       begin
@@ -1943,7 +1943,7 @@ begin
   begin
 {$IFNDEF GLS_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
-    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
       if (FHandles[I].FRenderingContext = nil)
         or (FHandles[I].FHandle = 0) then
@@ -1968,7 +1968,7 @@ begin
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
     try
-      for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
       begin
         if (FHandles[I].FRenderingContext = nil)
           or (FHandles[I].FHandle = 0) then
@@ -2022,7 +2022,7 @@ begin
     AContext := vCurrentGLContext;
 
   Result := True;
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if FHandles[I].FRenderingContext = AContext then
       exit;
@@ -2038,7 +2038,7 @@ begin
   if vCurrentGLContext = nil then
     exit;
 
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if FHandles[I].FRenderingContext = vCurrentGLContext then
     begin
@@ -2060,11 +2060,10 @@ begin
   if Assigned(oldContext) then
     oldContext.Deactivate;
   try
-    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
       if FHandles[I].FHandle > 0 then
       begin
-        // Active at least one of shareded context
         FHandles[I].FRenderingContext.Activate;
         if IsValid(FHandles[I].FHandle) then
           DoDestroyHandle(FHandles[I].FHandle);
@@ -2088,20 +2087,46 @@ end;
 procedure TGLContextHandle.ContextDestroying;
 var
   I: Integer;
+  aList: TList;
+  bShared: Boolean;
 begin
   if vCurrentGLContext = nil then
     exit;
 
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  bShared := False;
+{$IFNDEF GLS_MULTITHREAD}
+  aList := vCurrentGLContext.FSharedContexts;
+{$ELSE}
+  aList := vCurrentGLContext.FSharedContexts.LockList;
+  try
+{$ENDIF GLS_MULTITHREAD}
+    if Transferable then
+      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+        if (FHandles[I].FRenderingContext <> vCurrentGLContext)
+          and (FHandles[I].FHandle <> 0)
+          and (aList.IndexOf(FHandles[I].FRenderingContext) > -1) then
+          begin
+            bShared := True;
+            break;
+          end;
+{$IFDEF GLS_MULTITHREAD}
+  finally
+    vCurrentGLContext.FSharedContexts.UnLockList;
+  end;
+{$ENDIF GLS_MULTITHREAD}
+
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if (FHandles[I].FRenderingContext = vCurrentGLContext)
       and (FHandles[I].FHandle <> 0) then
     begin
+      if not bShared then
+        if IsValid(FHandles[I].FHandle) then
+          DoDestroyHandle(FHandles[I].FHandle);
       Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
-      if IsValid(FHandles[I].FHandle) then
-        DoDestroyHandle(FHandles[I].FHandle);
       FHandles[I].FHandle := 0;
       FHandles[I].FRenderingContext := nil;
+      FHandles[I].FChanged := True;
     end;
   end;
 end;
@@ -2111,13 +2136,9 @@ var
   I: Integer;
 begin
   Result := 0;
-  if vCurrentGLContext = nil then
-  begin
-    GLSLogger.LogError('Using OpenGL without active rendering context');
-    Abort;
-  end;
+  SafeCurrentGLContext;
 
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if FHandles[I].FRenderingContext = vCurrentGLContext then
     begin
@@ -2137,7 +2158,7 @@ begin
   if vCurrentGLContext <> nil then
   begin
     Result := vCurrentGLContext;
-    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
       if (FHandles[I].FRenderingContext = vCurrentGLContext)
         and (FHandles[I].FHandle <> 0) then
@@ -2145,7 +2166,7 @@ begin
     end;
   end;
   // Return first context where handle is allocated
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if (FHandles[I].FRenderingContext <> nil)
       and (FHandles[I].FHandle <> 0) then
@@ -2163,7 +2184,7 @@ var
   RC: TGLContext;
 begin
   RC := SafeCurrentGLContext;
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if (FHandles[I].FRenderingContext = RC)
       and (FHandles[I].FHandle <> 0) then
@@ -2181,7 +2202,7 @@ var
 begin
   Result := False;
   J := 0;
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
     if (FHandles[I].FRenderingContext <> nil)
       and (FHandles[I].FHandle <> 0) then
@@ -2204,7 +2225,7 @@ begin
   if not Transferable then
   begin
     RC := SafeCurrentGLContext;
-    for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
       if (FHandles[I].FRenderingContext = RC)
         and (FHandles[I].FHandle <> 0) then
@@ -2222,7 +2243,7 @@ begin
     for J := 0 to RC.FSharedContexts.Count - 1 do
     begin
       vContext := TGLContext(RC.FSharedContexts[J]);
-      for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
         if (FHandles[I].FRenderingContext = vContext)
           and (FHandles[I].FHandle <> 0) then
           FHandles[I].FChanged := False;
@@ -2233,7 +2254,7 @@ begin
       for J := 0 to aList.Count - 1 do
       begin
         vContext := TGLContext(aList[J]);
-        for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+        for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
           if (FHandles[I].FRenderingContext = vContext)
             and (FHandles[I].FHandle <> 0) then
             FHandles[I].FChanged := False;
@@ -2249,7 +2270,7 @@ procedure TGLContextHandle.NotifyChangesOfData;
 var
   I: Integer;
 begin
-  for I := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     FHandles[I].FChanged := True;
 end;
 
@@ -2269,7 +2290,7 @@ begin
   begin
     vContext := TGLContext(vCurrentGLContext.FSharedContexts[I]);
     if vContext <> vCurrentGLContext then
-      for J := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+      for J := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
       begin
         if FHandles[J].FRenderingContext = vContext then
         begin
@@ -2286,7 +2307,7 @@ begin
     begin
       vContext := TGLContext(aList[I]);
       if vContext <> vCurrentGLContext then
-        for J := 0 to GLS_MAX_RENDERING_CONTEXT_NUM - 1 do
+        for J := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
         begin
           if FHandles[J].FRenderingContext = vContext then
           begin
@@ -4330,7 +4351,7 @@ constructor TGLContextManager.Create;
 begin
   inherited Create;
 {$IFNDEF GLS_MULTITHREAD}
-  FOwnedHandles := TList.Create;
+  FHandles := TList.Create;
 {$ELSE}
   FHandles := TThreadList.Create;
 {$ENDIF GLS_MULTITHREAD}
