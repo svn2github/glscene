@@ -255,6 +255,8 @@ type
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
 
+  TGLvdpauSurfaceNV = GLintptr;
+  PGLvdpauSurfaceNV = ^TGLvdpauSurfaceNV;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) types'} {$ENDIF}
 type
@@ -4268,6 +4270,12 @@ const
   GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  = $9049;
   GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX            = $904A;
   GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX            = $904B;
+
+  // GL_NV_vdpau_interop
+  GL_SURFACE_STATE_NV                              = $86EB;
+  GL_SURFACE_REGISTERED_NV                         = $86FD;
+  GL_SURFACE_MAPPED_NV                             = $8700;
+  GL_WRITE_DISCARD_NV                              = $88BE;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
