@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>24/10/10 - DaStr - Removed dependancy from OpenGL
     <li>23/08/10 - Yar - Added OpenGLTokens to uses
     <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
     <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
@@ -23,7 +24,7 @@ interface
 uses
   // GLScene
   Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
-  PersistentClasses, BaseClasses, OpenGLTokens;
+  PersistentClasses, BaseClasses;
 
 type
   PColorVector = ^TColorVector;
@@ -41,7 +42,7 @@ type
 			FColor : TColorVector;
          FPDefaultColor : PColorVector;
 			procedure SetColorVector(const aColor : TColorVector); overload;
-			procedure SetColorComponent(index : Integer; value : TGLFloat);
+			procedure SetColorComponent(index : Integer; value : Single);
 			procedure SetAsWinColor(const val : TColor);
 			function GetAsWinColor : TColor;
       procedure SetDirectColorVector(const AColor: TColorVector);
@@ -64,7 +65,7 @@ type
          procedure NotifyChange(Sender : TObject); override;
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
-			function AsAddress : PGLFloat;
+			function AsAddress : PSingle;
 
          procedure RandomColor;
          procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
@@ -78,10 +79,10 @@ type
 
 		published
          { Published Properties }
-			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
-			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
-			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
-			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
+			property Red :   Single index 0 read FColor[0] write SetColorComponent stored False;
+			property Green : Single index 1 read FColor[1] write SetColorComponent stored False;
+			property Blue :  Single index 2 read FColor[2] write SetColorComponent stored False;
+			property Alpha : Single index 3 read FColor[3] write SetColorComponent stored False;
 	end;
 
    PColorEntry = ^TColorEntry;
@@ -565,7 +566,7 @@ end;
 
 // SetColorComponent
 //
-procedure TGLColor.SetColorComponent(index : Integer; value : TGLFloat);
+procedure TGLColor.SetColorComponent(index : Integer; value : Single);
 begin
 	if FColor[index]<>value then begin
 		FColor[index]:=value;
@@ -638,7 +639,7 @@ end;
 
 // AsAddress
 //
-function TGLColor.AsAddress: PGLFloat;
+function TGLColor.AsAddress: PSingle;
 begin
 	Result:=@FColor;
 end;
@@ -1084,7 +1085,6 @@ initialization
   InitGLSceneColors;
 
 finalization
-
 	vColorManager.Free;
 
 end.
