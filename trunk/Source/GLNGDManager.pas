@@ -16,6 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>23/10/10 - Yar - Replace OpenGL1x to OpenGLAdapter
   <li>08/10/10 - FP - Added show contact for dynamic in render.
   Uncommented ShowContact property in manager.
   <li>07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
@@ -48,7 +49,7 @@ uses
   , SysUtils // IntToStr  for material in render
   , GLScene, GLManager, GLCrossPlatform, GLCoordinates //
   , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
-  , OpenGL1x, OpenGLTokens, GLRenderContextInfo // Base OpenGL
+  , OpenGLTokens, GLRenderContextInfo, GLContext, GLTextureFormat // Base OpenGL
   , GLColor, GLBitmapFont, GLState // For show debug
   , GLFile3DS;
 
@@ -957,8 +958,8 @@ begin
     v1[0] := vA[i * 3];
     v1[1] := vA[i * 3 + 1];
     v1[2] := vA[i * 3 + 2];
-    glVertex3f(v0[0], v0[1], v0[2]);
-    glVertex3f(v1[0], v1[1], v1[2]);
+    GL.Vertex3f(v0[0], v0[1], v0[2]);
+    GL.Vertex3f(v1[0], v1[1], v1[2]);
     v0 := v1;
   end;
 end;
@@ -1329,38 +1330,30 @@ begin
     if not VisibleAtRunTime then
       exit;
 
-  glPushAttrib(GL_LINE_WIDTH);
-  glPushAttrib(GL_LINE_STIPPLE);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_LINE_STIPPLE);
+  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stLineStipple);
 
   // Equivalent to ForEachBodyINAABB
   for i := 0 to FNGDBehaviours.Count - 1 do
   begin
     if NewtonBodyGetSleepState(NGDBehaviours[i].FNewtonBody) = 1 then
-      glColor4fv(GeomColorStat.AsAddress) // red
+      GL.Color4fv(GeomColorStat.AsAddress) // red
     else
-      glColor4fv(GeomColorDyn.AsAddress); // green
+      GL.Color4fv(GeomColorDyn.AsAddress); // green
 
     if (csDesigning in ComponentState) then
     begin
       if (NGDBehaviours[i] is TGLNGDStatic) then
-        glColor4fv(GeomColorStat.AsAddress); // red
+        GL.Color4fv(GeomColorStat.AsAddress); // red
 
       if (NGDBehaviours[i] is TGLNGDDynamic) then
         if (NGDBehaviours[i] as TGLNGDDynamic).FDensity = 0 then
-          glColor4fv(GeomColorStat.AsAddress); // red
+          GL.Color4fv(GeomColorStat.AsAddress); // red
     end;
 
     NGDBehaviours[i].Render(rci);
   end;
-
-  glDisable(GL_LINE_STIPPLE);
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_LIGHTING);
-  glPopAttrib;
-  glPopAttrib;
 end;
 
 procedure TGLNGDManager.RenderPointFreed(Sender: TObject);
@@ -1826,29 +1819,31 @@ begin
 
   if Manager.ShowGeometry then
   begin
-    glLineWidth(1);
-    glLineStipple(1, $FFFF);
+    rci.GLStates.LineWidth := 1;
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $FFFF;
     // full opengl lines
-    glBegin(GL_LINES);
+    GL.Begin_(GL_LINES);
     NewtonBodyMatrix;
     NewtonCollisionForEachPolygonDo(FCollision, @(FNewtonBodyMatrix),
       @NewtonCollisionIterator, nil);
-    glEnd;
+    GL.End_;
   end;
 
   if Manager.ShowJoint then
   begin
-    glLineWidth(5);
-    glLineStipple(1, $00FF);
+    rci.GLStates.LineWidth := 5;
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $00FF;
     // dot style opengl lines
-    glBegin(GL_LINES);
-    glColor4fv(FManager.JointColor.AsAddress); // Blue
+    GL.Begin_(GL_LINES);
+    GL.Color4fv(FManager.JointColor.AsAddress); // Blue
     for i := 0 to FJointRegister.Count - 1 do
     begin
       NGDJointBase := FJointRegister.Items[i];
       NGDJointBase.Render;
     end;
-    glEnd;
+    GL.End_;
   end;
 
   if Manager.ShowMaterialESP and Assigned(FManager.BitmapFont) then
@@ -1856,18 +1851,18 @@ begin
     // Render a string in 3d world at body position
     bar := OwnerBaseSceneObject.BarycenterAbsolutePosition;
 
-    glPushMatrix;
+    GL.PushMatrix;
 
     f := rci.renderDPI / 96;
-    glLoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
+    GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
     bar := (rci.buffer as TGLSceneBuffer).WorldToScreen(bar);
-    glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    glTranslatef(bar[0] * f - rci.viewPortSize.cx / 2,
+    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+    GL.Translatef(bar[0] * f - rci.viewPortSize.cx / 2,
       +bar[1] * f - rci.viewPortSize.cy / 2, -bar[2]);
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadIdentity;
+    GL.MatrixMode(GL_PROJECTION);
+    GL.PushMatrix;
+    GL.LoadIdentity;
 
     ESPText := 'ID:=' + IntToStr(FMaterialID);
 
@@ -1877,9 +1872,9 @@ begin
         Manager.MaterialESPColor.Color);
     rci.GLStates.Enable(stDepthTest);
 
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
+    GL.PopMatrix;
+    GL.MatrixMode(GL_MODELVIEW);
+    GL.PopMatrix;
   end;
 end;
 
@@ -2128,43 +2123,43 @@ var
       // A________B
       }
     // Back
-    glVertex3f(min.x, min.y, min.z); // E
-    glVertex3f(max.x, min.y, min.z); // F
+    GL.Vertex3f(min.x, min.y, min.z); // E
+    GL.Vertex3f(max.x, min.y, min.z); // F
 
-    glVertex3f(max.x, min.y, min.z); // F
-    glVertex3f(max.x, max.y, min.z); // G
+    GL.Vertex3f(max.x, min.y, min.z); // F
+    GL.Vertex3f(max.x, max.y, min.z); // G
 
-    glVertex3f(max.x, max.y, min.z); // G
-    glVertex3f(min.x, max.y, min.z); // H
+    GL.Vertex3f(max.x, max.y, min.z); // G
+    GL.Vertex3f(min.x, max.y, min.z); // H
 
-    glVertex3f(min.x, max.y, min.z); // H
-    glVertex3f(min.x, min.y, min.z); // E
+    GL.Vertex3f(min.x, max.y, min.z); // H
+    GL.Vertex3f(min.x, min.y, min.z); // E
 
     // Front
-    glVertex3f(min.x, min.y, max.z); // A
-    glVertex3f(max.x, min.y, max.z); // B
+    GL.Vertex3f(min.x, min.y, max.z); // A
+    GL.Vertex3f(max.x, min.y, max.z); // B
 
-    glVertex3f(max.x, min.y, max.z); // B
-    glVertex3f(max.x, max.y, max.z); // C
+    GL.Vertex3f(max.x, min.y, max.z); // B
+    GL.Vertex3f(max.x, max.y, max.z); // C
 
-    glVertex3f(max.x, max.y, max.z); // C
-    glVertex3f(min.x, max.y, max.z); // D
+    GL.Vertex3f(max.x, max.y, max.z); // C
+    GL.Vertex3f(min.x, max.y, max.z); // D
 
-    glVertex3f(min.x, max.y, max.z); // D
-    glVertex3f(min.x, min.y, max.z); // A
+    GL.Vertex3f(min.x, max.y, max.z); // D
+    GL.Vertex3f(min.x, min.y, max.z); // A
 
     // Edges
-    glVertex3f(min.x, min.y, max.z); // A
-    glVertex3f(min.x, min.y, min.z); // E
+    GL.Vertex3f(min.x, min.y, max.z); // A
+    GL.Vertex3f(min.x, min.y, min.z); // E
 
-    glVertex3f(max.x, min.y, max.z); // B
-    glVertex3f(max.x, min.y, min.z); // F
+    GL.Vertex3f(max.x, min.y, max.z); // B
+    GL.Vertex3f(max.x, min.y, min.z); // F
 
-    glVertex3f(max.x, max.y, max.z); // C
-    glVertex3f(max.x, max.y, min.z); // G
+    GL.Vertex3f(max.x, max.y, max.z); // C
+    GL.Vertex3f(max.x, max.y, min.z); // G
 
-    glVertex3f(min.x, max.y, max.z); // D
-    glVertex3f(min.x, max.y, min.z); // H
+    GL.Vertex3f(min.x, max.y, max.z); // D
+    GL.Vertex3f(min.x, max.y, min.z); // H
   end;
 
   procedure DrawContact;
@@ -2183,9 +2178,9 @@ var
         material := NewtonContactGetMaterial(ThisContact);
         NewtonMaterialGetContactPositionAndNormal(material, @pos, @nor);
 
-        glVertex3fv(@pos);
+        GL.Vertex3fv(@pos);
         nor:=VectorAdd(pos,nor);
-        glVertex3fv(@nor);
+        GL.Vertex3fv(@nor);
 
 
         ThisContact := NewtonContactJointGetNextContact(cnt, ThisContact);
@@ -2204,19 +2199,20 @@ begin
 
   if Manager.ShowAABB then
   begin
-    glLineWidth(1);
-    glLineStipple(1, $FFFF);
-    // full opengl lines
-    glBegin(GL_LINES);
+    rci.GLStates.LineWidth := 1;
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $FFFF;
+    // full openGL. lines
+    GL.Begin_(GL_LINES);
 
     if (FDensity = 0) or (NewtonBodyGetSleepState(FNewtonBody) = 1) then
-      glColor4fv(FManager.AABBColorSleep.AsAddress)
+      GL.Color4fv(FManager.AABBColorSleep.AsAddress)
     else
-      glColor4fv(FManager.AABBColor.AsAddress);
+      GL.Color4fv(FManager.AABBColor.AsAddress);
     // Get AABB
     NewtonBodyGetAABB(FNewtonBody, @(FAABBmin.AsVector), @(FAABBmax.AsVector));
     DrawAABB(FAABBmin, FAABBmax);
-    glEnd;
+    GL.End_;
   end;
 
   if Manager.ShowSpring then
@@ -2224,39 +2220,41 @@ begin
     if Assigned(FNewtonUserJoint) then
     begin
       // DrawLine
-      glLineWidth(5);
-      glLineStipple(1, $FF00); // dot style opengl lines
-      glBegin(GL_LINES);
-      glColor4fv(FManager.SpringColor.AsAddress); // Aqua
+      rci.GLStates.LineWidth := 5;
+      rci.GLStates.LineStippleFactor := 1;
+      rci.GLStates.LineStipplePattern := $FF00;  // dot style opengl lines
+      GL.Begin_(GL_LINES);
+      GL.Color4fv(FManager.SpringColor.AsAddress); // Aqua
       Barycenter := OwnerBaseSceneObject.BarycenterAbsolutePosition;
       CustomKinematicControllerGetTargetMatrix(FNewtonUserJoint, @PickedMatrix);
       pickpoint[0] := PickedMatrix[3, 0];
       pickpoint[1] := PickedMatrix[3, 1];
       pickpoint[2] := PickedMatrix[3, 2];
-      glVertex3fv(@pickpoint);
-      glVertex3fv(@Barycenter);
-      glEnd;
+      GL.Vertex3fv(@pickpoint);
+      GL.Vertex3fv(@Barycenter);
+      GL.End_;
 
       // DrawPoint
-      glPointSize(10);
-      glEnable(GL_POINT_SMOOTH);
-      glBegin(GL_POINTS);
-      glVertex3fv(@pickpoint);
-      glVertex3fv(@Barycenter);
-      glEnd;
-      glDisable(GL_POINT_SMOOTH);
+      rci.GLStates.PointSize := 10;
+      rci.GLStates.Enable(stPointSmooth);
+      GL.Begin_(GL_POINTS);
+      GL.Vertex3fv(@pickpoint);
+      GL.Vertex3fv(@Barycenter);
+      GL.End_;
+      GL.Disable(GL_POINT_SMOOTH);
     end;
   end;
 
   if Manager.ShowContact then
   begin
-    glLineWidth(1);
-    glLineStipple(1, $FFFF); // full opengl lines
+    rci.GLStates.LineWidth := 1;
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $FFFF; // full opengl lines
 
-    glBegin(GL_LINES);
-    glColor4fv(FManager.ContactColor.AsAddress); // Aqua
+    GL.Begin_(GL_LINES);
+    GL.Color4fv(FManager.ContactColor.AsAddress); // Aqua
     DrawContact;
-    glEnd;
+    GL.End_;
   end;
 
 end;
@@ -3006,8 +3004,8 @@ begin
   begin
     bar1 := Object1.BarycenterAbsolutePosition;
     bar2 := Object2.BarycenterAbsolutePosition;
-    glVertex3fv(@bar1);
-    glVertex3fv(@bar2);
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(@bar2);
   end;
 end;
 
@@ -3139,10 +3137,10 @@ begin
   begin
     bar1 := Object1.BarycenterAbsolutePosition;
     bar2 := Object2.BarycenterAbsolutePosition;
-    glVertex3fv(@bar1);
-    glVertex3fv(FPivotPoint.AsAddress);
-    glVertex3fv(FPivotPoint.AsAddress);
-    glVertex3fv(@bar2);
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(@bar2);
   end;
 end;
 
@@ -3235,11 +3233,11 @@ begin
     axe[0] := FPivotPoint.x - 10 * FPinDir.x;
     axe[1] := FPivotPoint.y - 10 * FPinDir.y;
     axe[2] := FPivotPoint.z - 10 * FPinDir.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
     axe[0] := FPivotPoint.x + 10 * FPinDir.x;
     axe[1] := FPivotPoint.y + 10 * FPinDir.y;
     axe[2] := FPivotPoint.z + 10 * FPinDir.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
   end;
 end;
 
@@ -3381,11 +3379,11 @@ begin
     axe[0] := FPivotPoint.x - 10 * FPinDir2.x;
     axe[1] := FPivotPoint.y - 10 * FPinDir2.y;
     axe[2] := FPivotPoint.z - 10 * FPinDir2.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
     axe[0] := FPivotPoint.x + 10 * FPinDir2.x;
     axe[1] := FPivotPoint.y + 10 * FPinDir2.y;
     axe[2] := FPivotPoint.z + 10 * FPinDir2.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
   end;
 end;
 
@@ -3459,10 +3457,10 @@ begin
   begin
     bar1 := Object1.BarycenterAbsolutePosition;
     bar2 := Object2.BarycenterAbsolutePosition;
-    glVertex3fv(@bar1);
-    glVertex3fv(FPivotPoint.AsAddress);
-    glVertex3fv(FPivotPoint.AsAddress);
-    glVertex3fv(@bar2);
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(@bar2);
   end;
 end;
 
@@ -3642,11 +3640,11 @@ begin
     axe[0] := FPivotPoint.x - 10 * FPinDir.x;
     axe[1] := FPivotPoint.y - 10 * FPinDir.y;
     axe[2] := FPivotPoint.z - 10 * FPinDir.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
     axe[0] := FPivotPoint.x + 10 * FPinDir.x;
     axe[1] := FPivotPoint.y + 10 * FPinDir.y;
     axe[2] := FPivotPoint.z + 10 * FPinDir.z;
-    glVertex3fv(@axe);
+    GL.Vertex3fv(@axe);
   end;
 end;
 
