@@ -1,10 +1,10 @@
 object GLSceneEditorForm: TGLSceneEditorForm
   Left = 402
   Top = 98
+  Width = 421
+  Height = 522
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
-  ClientHeight = 484
-  ClientWidth = 405
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -155,8 +155,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Height = 427
     Align = alRight
     Visible = False
-    ExplicitLeft = 243
-    ExplicitHeight = 415
   end
   object Tree: TTreeView
     Left = 0
@@ -177,8 +175,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     OnKeyDown = TreeKeyDown
     OnMouseDown = TreeMouseDown
     OnMouseMove = TreeMouseMove
-    ExplicitWidth = 243
-    ExplicitHeight = 415
   end
   object ToolBar: TToolBar
     Left = 0
@@ -193,7 +189,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitWidth = 397
     object ToolButton8: TToolButton
       Left = 0
       Top = 2
@@ -321,8 +316,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Constraints.MinWidth = 1
     TabOrder = 2
     Visible = False
-    ExplicitLeft = 247
-    ExplicitHeight = 415
     object Splitter3: TSplitter
       Left = 1
       Top = 154
@@ -334,7 +327,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label1: TLabel
       Left = 1
       Top = 30
-      Width = 55
+      Width = 148
       Height = 14
       Align = alTop
       Alignment = taCenter
@@ -343,7 +336,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label2: TLabel
       Left = 1
       Top = 158
-      Width = 35
+      Width = 148
       Height = 14
       Align = alTop
       Alignment = taCenter
@@ -368,7 +361,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Left = 1
       Top = 172
       Width = 148
-      Height = 242
+      Height = 254
       Align = alClient
       Columns = <>
       ReadOnly = True
