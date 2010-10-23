@@ -5,6 +5,7 @@
     Good for preview picture in OpenDialog,
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 
+      <li>23/10/10 - Yar - Removed PBuffer    
       <li>23/08/10 - Yar - Changes after PBuffer upgrade
       <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
@@ -85,7 +86,7 @@ begin
   for y := 0 to Height - 1 do
   begin
     dst := ScanLine[Height - 1 - y];
-    Move(src^, dst^, Width * 4);
+    BGRA32ToRGBA32(src, dst, Width);
     Inc(src, Width * 4);
   end;
 {$ELSE}

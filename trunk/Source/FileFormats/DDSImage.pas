@@ -12,6 +12,7 @@
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
  <b>History : </b><font size=-1><ul>
+        <li>23/10/10 - Yar - Removed PBuffer
         <li>23/08/10 - Yar - Changes after PBuffer upgrade
         <li>20/05/10 - Yar - Fixes for Linux x64
         <li>21/03/10 - Yar - Added Linux support
@@ -68,6 +69,7 @@ uses
 procedure TDDSImage.LoadFromStream(stream: TStream);
 var
   FullDDS: TGLDDSImage;
+  bCubeMap: Boolean;
 {$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
@@ -83,6 +85,7 @@ begin
     raise;
   end;
 
+  bCubeMap := FullDDS.CubeMap;
   FullDDS.Narrow;
   FullDDS.WaitParallelTask;
 
@@ -93,18 +96,18 @@ begin
 
 {$IFNDEF FPC}
   src := PGLubyte(FullDDS.Data);
-  if FullDDS.CubeMap then
+  if bCubeMap then
     for y := 0 to Height - 1 do
     begin
       dst := ScanLine[y];
-      Move(src^, dst^, Width * 4);
+      BGRA32ToRGBA32(src, dst, Width);
       Inc(src, Width * 4);
     end
   else
     for y := 0 to Height - 1 do
     begin
       dst := ScanLine[Height - 1 - y];
-      Move(src^, dst^, Width * 4);
+      BGRA32ToRGBA32(src, dst, Width);
       Inc(src, Width * 4);
     end;
 {$ELSE}

@@ -106,7 +106,6 @@ uses
   GraphType,
 {$ENDIF}
   OpenGLTokens,
-  OpenGLAdapter,
   GLContext,
   GLUtils,
   GLCrossPlatform,
@@ -485,7 +484,11 @@ implementation
 uses
   VectorGeometry,
   GLStrings,
-  GLSLog;
+  GLSLog,
+  ImageUtils;
+
+resourcestring
+  glsCantConvertImg = '%s: can''t convert image to RGBA8 format';
 
 var
   vRasterFileFormats: TRasterFileFormatsList;
@@ -1505,10 +1508,17 @@ var
   oldID, ID: TGLuint;
   glTarget, glFormat: TGLenum;
   size: Integer;
+  newData: Pointer;
 begin
   UnMipmap;
   Target := GetTextureTarget;
-  if IsFormatSupported(fInternalFormat) and IsTargetSupported(Target) then
+  if (CurrentGLContext <> nil)
+    and IsFormatSupported(fInternalFormat)
+    and IsTargetSupported(Target)
+    and (Cardinal(FWidth) <= CurrentGLContext.GLStates.MaxTextureSize)
+    and (Cardinal(FHeight) <= CurrentGLContext.GLStates.MaxTextureSize)
+    then
+  // Lets use GAPI for process
   begin
     // Setup texture
     GL.GenTextures(1, @ID);
@@ -1522,11 +1532,37 @@ begin
       GL.TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL, 0);
       AssignFromTexture(nil, ID, Target, False, tfRGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
     except
-      GLSLogger.LogError(Format('%s: can''t convert image to RGBA8 format', [ClassName]));
+      GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
       SetErrorImage;
     end;
     CurrentGLContext.GLStates.TextureBinding[0, Target] := oldID;
     GL.DeleteTextures(1, @ID);
+  end
+  else
+  begin
+    // Use GLScene image utils
+    size := fWidth * fHeight * 4;
+    GetMem(newData, size);
+    try
+      ConvertImage(
+        fData, newData,
+        fColorFormat, GL_RGBA,
+        fDataType, GL_UNSIGNED_BYTE,
+        fWidth, fHeight);
+    except
+      GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
+      SetErrorImage;
+      FreeMem(newData);
+      exit;
+    end;
+    FreeMem(fData);
+    fData := newData;
+    fInternalFormat := tfRGBA8;
+    fColorFormat := GL_RGBA;
+    fDataType := GL_UNSIGNED_BYTE;
+    fElementSize := 4;
+    fTextureArray := False;
+    fCubeMap := False;
   end;
 end;
 
@@ -1548,10 +1584,7 @@ begin
   if IsServiceContextAvaible then
     AddTaskForServiceContext(NarrowThreadTask, NewEvent)
   else
-  begin
-    SafeCurrentGLContext;
     NarrowThreadTask;
-  end;
 end;
 
 // GemerateMipmap
@@ -1688,21 +1721,21 @@ begin
   begin
     if not ((d > 0) // not volume
       or bCompress // not compressed
-      or (ml > 1) // without LOD
       or bBlank) then // not blank
     begin
       GetMem(buffer, w * h * fElementSize);
-      if gluScaleImage(
-        FColorFormat,
-        FWidth,
-        FHeight,
-        FDataType,
-        GetLevelData(0),
-        w,
-        h,
-        FDataType,
-        buffer) <> 0 then
+      try
+        RescaleImage(
+          GetLevelData(0), buffer,
+          FColorFormat,
+          FDataType,
+          ImageLanczos3Filter,
+          FWidth, FHeight,
+          w, h);
+        ml := 1;
+      except
         bBlank := true;
+      end;
     end
     else
       bBlank := true;

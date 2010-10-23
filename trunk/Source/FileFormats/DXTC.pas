@@ -949,16 +949,16 @@ begin
           end;
         FOURCC_ATI1:
           begin
-            colorFormat := GL_COMPRESSED_LUMINANCE_LATC1_EXT;
-            iFormat := tfCOMPRESSED_LUMINANCE_LATC1;
-            dataType := GL_COMPRESSED_LUMINANCE_LATC1_EXT;
+            colorFormat := GL_COMPRESSED_RED_RGTC1;
+            iFormat := tfCOMPRESSED_RED_RGTC1;
+            dataType := GL_COMPRESSED_RED_RGTC1;
             bpe := 8;
           end;
         FOURCC_ATI2:
           begin
-            colorFormat := GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT;
-            iFormat := tfCOMPRESSED_LUMINANCE_ALPHA_LATC2;
-            dataType := GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT;
+            colorFormat := GL_COMPRESSED_RG_RGTC2;
+            iFormat := tfCOMPRESSED_RG_RGTC2;
+            dataType := GL_COMPRESSED_RG_RGTC2;
             bpe := 16;
           end;
         FOURCC_R8G8B8:

@@ -5,6 +5,7 @@
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
 
+      <li>23/10/10 - Yar - Removed PBuffer    
       <li>23/08/10 - Yar - Changes after PBuffer upgrade
       <li>21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
