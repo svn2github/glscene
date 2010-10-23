@@ -88,7 +88,6 @@ implementation
 {$ENDIF}
 
 uses
-  OpenGL1x,
   GLSpecializedUniforms,
   GL3xMaterialEditor;
 
