@@ -32,7 +32,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="241">
+    <Files Count="242">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -997,6 +997,10 @@
         <Filename Value="../Source/Shaders/GLUserShader.pas"/>
         <UnitName Value="GLUserShader"/>
       </Item241>
+      <Item242>
+        <Filename Value="../Source/Base/ImageUtils.pas"/>
+        <UnitName Value="ImageUtils"/>
+      </Item242>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
