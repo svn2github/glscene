@@ -32,7 +32,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="242">
+    <Files Count="244">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -1001,6 +1001,14 @@
         <Filename Value="../Source/Base/ImageUtils.pas"/>
         <UnitName Value="ImageUtils"/>
       </Item242>
+      <Item243>
+        <Filename Value="../Source/Base/ImgUtilCaseImf2GL.inc"/>
+        <Type Value="Include"/>
+      </Item243>
+      <Item244>
+        <Filename Value="../Source/Base/ImgUtilCaseGL2Imf.inc"/>
+        <Type Value="Include"/>
+      </Item244>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
