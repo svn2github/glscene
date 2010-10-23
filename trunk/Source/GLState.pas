@@ -1560,14 +1560,15 @@ end;
 
 procedure TGLStateCache.SetActiveTexture(const Value: TGLint);
 begin
-  if (Value <> FActiveTexture) or FInsideList then
-  begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttTexture)
-    else
-      FActiveTexture := Value;
-    GL.ActiveTexture(GL_TEXTURE0 + Value);
-  end;
+  if GL.ARB_multitexture then
+    if (Value <> FActiveTexture) or FInsideList then
+    begin
+      if FInsideList then
+        Include(FListStates[FCurrentList], sttTexture)
+      else
+        FActiveTexture := Value;
+      GL.ActiveTexture(GL_TEXTURE0 + Value);
+    end;
 end;
 
 procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
@@ -2233,6 +2234,27 @@ begin
   GL.MatrixMode(GL_MODELVIEW);
   if FInsideList then
     Include(FListStates[FCurrentList], sttTransform);
+end;
+
+// ResetGLTextureMatrix
+//
+
+procedure TGLStateCache.ResetGLTextureMatrix;
+var
+  I: Integer;
+begin
+  if FForwardContext then
+    exit;
+  GL.MatrixMode(GL_TEXTURE);
+  for I := High(FTextureMatrixIsIdentity) downto 0 do
+    if not FTextureMatrixIsIdentity[I] then
+    begin
+      ActiveTexture := I;
+      GL.LoadIdentity;
+      FTextureMatrixIsIdentity[I] := True;
+    end;
+  GL.MatrixMode(GL_MODELVIEW);
+  ActiveTexture := 0;
 end;
 
 procedure TGLStateCache.SetLineSmoothHint(const Value: THintType);
@@ -3265,27 +3287,6 @@ begin
       SetFFPlight(False);
     end;
   end;
-end;
-
-// ResetGLTextureMatrix
-//
-
-procedure TGLStateCache.ResetGLTextureMatrix;
-var
-  I: Integer;
-begin
-  if FForwardContext then
-    exit;
-  GL.MatrixMode(GL_TEXTURE);
-  for I := High(FTextureMatrixIsIdentity) downto 0 do
-    if not FTextureMatrixIsIdentity[I] then
-    begin
-      ActiveTexture := I;
-      GL.LoadIdentity;
-      FTextureMatrixIsIdentity[I] := True;
-    end;
-  GL.MatrixMode(GL_MODELVIEW);
-  ActiveTexture := 0;
 end;
 
 
