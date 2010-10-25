@@ -1016,6 +1016,8 @@ constructor TGLShader.Create(AOwner: TComponent);
 begin
   FLibMatUsers := TList.Create;
   FVirtualHandle := TGLVirtualHandle.Create;
+  FVirtualHandle.OnAllocate := OnVirtualHandleAllocate;
+  FVirtualHandle.OnDestroy := OnVirtualHandleDestroy;
   FShaderStyle := ssLowLevel;
   FEnabled := True;
   FFailedInitAction := fiaRaiseStandardException;
@@ -1104,13 +1106,12 @@ end;
 procedure TGLShader.InitializeShader(var rci: TRenderContextInfo; Sender:
   TObject);
 begin
-  if FVirtualHandle.Handle = 0 then
+  FVirtualHandle.AllocateHandle;
+  if FVirtualHandle.IsDataNeedUpdate then
   begin
-    FVirtualHandle.OnAllocate := OnVirtualHandleAllocate;
-    FVirtualHandle.OnDestroy := OnVirtualHandleDestroy;
-    FVirtualHandle.AllocateHandle;
     FShaderInitialized := True;
     DoInitialize(rci, Sender);
+    FVirtualHandle.NotifyDataUpdated;
   end;
 end;
 
@@ -1121,21 +1122,18 @@ end;
 var
   activateContext: Boolean;
 begin
-  if FVirtualHandle.Handle <> 0 then
+  if FShaderInitialized then
   begin
-    if FShaderInitialized then
-    begin
-      activateContext := (not FVirtualHandle.RenderingContext.Active);
+    activateContext := (not FVirtualHandle.RenderingContext.Active);
+    if activateContext then
+      FVirtualHandle.RenderingContext.Activate;
+    try
+      FShaderInitialized := False;
+      DoFinalize;
+      FVirtualHandle.NotifyChangesOfData;
+    finally
       if activateContext then
-        FVirtualHandle.RenderingContext.Activate;
-      try
-        FShaderInitialized := False;
-        DoFinalize;
-      finally
-        if activateContext then
-          FVirtualHandle.RenderingContext.Deactivate;
-      end;
-      FVirtualHandle.DestroyHandle;
+        FVirtualHandle.RenderingContext.Deactivate;
     end;
   end;
 end;
@@ -1151,7 +1149,7 @@ begin
   // Need to check it twice, because shader may refuse to initialize
   // and choose to disable itself during initialization.
   if FEnabled then
-    if FVirtualHandle.Handle = 0 then
+    if FVirtualHandle.IsDataNeedUpdate then
       InitializeShader(rci, Sender);
 
   if FEnabled then

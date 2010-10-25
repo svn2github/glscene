@@ -242,70 +242,65 @@ begin
       HandleFailedInitialization
     else
     try
-      if VertexProgram.Enabled or FragmentProgram.Enabled or GeometryProgram.Enabled then
+      FGLSLProg.AllocateHandle;
+      if FGLSLProg.IsDataNeedUpdate then
       begin
-        FGLSLProg := TGLProgramHandle.CreateAndAllocate;
-        FParam.FGLSLProg := FGLSLProg;
         if Name <> '' then
           FGLSLProg.Name := Name
         else
           FGLSLProg.Name := ClassName;
-      end;
 
-      if VertexProgram.Enabled then
-        FGLSLProg.AddShader(TGLVertexShaderHandle, VertexProgram.Code.Text, FDebugMode);
-      if FragmentProgram.Enabled then
-        FGLSLProg.AddShader(TGLFragmentShaderHandle, FragmentProgram.Code.Text, FDebugMode);
-      if GeometryProgram.Enabled then
-        FGLSLProg.AddShader(TGLGeometryShaderHandle, GeometryProgram.Code.Text, FDebugMode);
-
-      if VertexProgram.Enabled or FragmentProgram.Enabled or GeometryProgram.Enabled then
-      begin
+        FGLSLProg.DetachAllObject;
+        if VertexProgram.Enabled then
+          FGLSLProg.AddShader(TGLVertexShaderHandle, VertexProgram.Code.Text, FDebugMode);
+        if FragmentProgram.Enabled then
+          FGLSLProg.AddShader(TGLFragmentShaderHandle, FragmentProgram.Code.Text, FDebugMode);
         if GeometryProgram.Enabled then
+          FGLSLProg.AddShader(TGLGeometryShaderHandle, GeometryProgram.Code.Text, FDebugMode);
+
+        if VertexProgram.Enabled or FragmentProgram.Enabled or GeometryProgram.Enabled then
         begin
-          GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_INPUT_TYPE_EXT,
-            cGLgsInTypes[GeometryProgram.InputPrimitiveType]);
-          GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_OUTPUT_TYPE_EXT,
-            cGLgsOutTypes[GeometryProgram.OutputPrimitiveType]);
-          GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_VERTICES_OUT_EXT,
-            GeometryProgram.VerticesOut);
-        end;
+          if GeometryProgram.Enabled then
+          begin
+            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_INPUT_TYPE_EXT,
+              cGLgsInTypes[GeometryProgram.InputPrimitiveType]);
+            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_OUTPUT_TYPE_EXT,
+              cGLgsOutTypes[GeometryProgram.OutputPrimitiveType]);
+            GL.ProgramParameteri(FGLSLProg.Handle, GL_GEOMETRY_VERTICES_OUT_EXT,
+              GeometryProgram.VerticesOut);
+          end;
 
-        if (not FGLSLProg.LinkProgram) then
-          raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
-
-        NumVarying := FActiveVarying.Count;
-        if NumVarying > 0 then
-        begin
-          // Activate varying
-          GL.Getintegerv(GL_MAX_VARYING_COMPONENTS, @MaxVaryings);
-
-          if NumVarying > MaxVaryings then
-            raise EGLSLShaderException.Create('Varyings number out of hardware limit.');
-
-          for i := 0 to NumVarying - 1 do
-            FGLSLProg.AddActiveVarying(FActiveVarying.Strings[i]);
-
-          // Relink progaram.
           if (not FGLSLProg.LinkProgram) then
             raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
+
+          NumVarying := FActiveVarying.Count;
+          if NumVarying > 0 then
+          begin
+            // Activate varying
+            GL.GetIntegerv(GL_MAX_VARYING_COMPONENTS, @MaxVaryings);
+
+            if NumVarying > MaxVaryings then
+              raise EGLSLShaderException.Create('Varyings number out of hardware limit.');
+
+            for i := 0 to NumVarying - 1 do
+              FGLSLProg.AddActiveVarying(FActiveVarying.Strings[i]);
+
+            // Relink progaram.
+            if (not FGLSLProg.LinkProgram) then
+              raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
+          end;
         end;
-
-      end
-      else
-        FreeAndNil(FGLSLProg);
-
+        FGLSLProg.NotifyDataUpdated;
+      end;
     except
       on E: Exception do
       begin
-        FreeAndNil(FGLSLProg);
+        Enabled := False;
         HandleFailedInitialization(E.Message);
       end;
     end;
 
   finally
-    Enabled := (FGLSLProg <> nil);
-
     if Enabled then
     try
       DoInitialPass;
@@ -314,7 +309,6 @@ begin
     except
       on E: Exception do
       begin
-        FreeAndNil(FGLSLProg);
         Enabled := False;
         HandleFailedInitialization(E.Message);
       end;
@@ -380,7 +374,7 @@ end;
 procedure TGLCustomGLSLShader.DoFinalize;
 begin
   inherited;
-  FreeAndNil(FGLSLProg);
+  FGLSLProg.NotifyChangesOfData;
 end;
 
 function TGLCustomGLSLShader.GetGLSLProg: TGLProgramHandle;
@@ -410,7 +404,9 @@ end;
 constructor TGLCustomGLSLShader.Create(AOwner: TComponent);
 begin
   inherited;
+  FGLSLProg := TGLProgramHandle.Create;
   FParam := TGLSLShaderParameter.Create;
+  FParam.FGLSLProg := FGLSLProg;
   FActiveVarying := TStringList.Create;
   TStringList(FActiveVarying).OnChange := OnChangeActiveVarying;
   FTransformFeedBackMode := tfbmInterleaved;

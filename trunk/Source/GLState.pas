@@ -2228,12 +2228,13 @@ procedure TGLStateCache.SetGLTextureMatrix(const matrix: TMatrix);
 begin
   if FForwardContext then
     exit;
-  FTextureMatrixIsIdentity[ActiveTexture] := False;
+  if FInsideList then
+    Include(FListStates[FCurrentList], sttTransform)
+  else
+    FTextureMatrixIsIdentity[ActiveTexture] := False;
   GL.MatrixMode(GL_TEXTURE);
   GL.LoadMatrixf(PGLFloat(@matrix[0][0]));
   GL.MatrixMode(GL_MODELVIEW);
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttTransform);
 end;
 
 // ResetGLTextureMatrix
@@ -2242,9 +2243,11 @@ end;
 procedure TGLStateCache.ResetGLTextureMatrix;
 var
   I: Integer;
+  lastActiveTexture: TGLuint;
 begin
   if FForwardContext then
     exit;
+  lastActiveTexture := ActiveTexture;
   GL.MatrixMode(GL_TEXTURE);
   for I := High(FTextureMatrixIsIdentity) downto 0 do
     if not FTextureMatrixIsIdentity[I] then
@@ -2254,7 +2257,7 @@ begin
       FTextureMatrixIsIdentity[I] := True;
     end;
   GL.MatrixMode(GL_MODELVIEW);
-  ActiveTexture := 0;
+  ActiveTexture := lastActiveTexture;
 end;
 
 procedure TGLStateCache.SetLineSmoothHint(const Value: THintType);

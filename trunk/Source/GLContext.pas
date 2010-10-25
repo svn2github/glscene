@@ -402,7 +402,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-
+    class function Transferable: Boolean; override;
   public
     { Public Declarations }
     property OnAllocate: TGLVirtualHandleEvent read FOnAllocate write
@@ -1064,6 +1064,7 @@ type
       treatWarningsAsErrors: Boolean = False);
 
     procedure AttachObject(shader: TGLShaderHandle);
+    procedure DetachAllObject;
     procedure BindAttribLocation(index: Integer; const aName: string);
     procedure BindFragDataLocation(index: Integer; const aName: string);
     function LinkProgram: Boolean;
@@ -1657,8 +1658,6 @@ end;
 
 procedure TGLContext.ShareLists(aContext: TGLContext);
 begin
-  if FOwnedHandlesCount > 0 then
-    raise EGLContext.Create('Not empty context can not be shared');
 {$IFNDEF GLS_MULTITHREAD}
   if FSharedContexts.IndexOf(aContext) < 0 then
   begin
@@ -2374,6 +2373,11 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+class function TGLVirtualHandle.Transferable: Boolean;
+begin
+  Result := False;
 end;
 
 // ------------------
@@ -3905,6 +3909,24 @@ end;
 procedure TGLProgramHandle.AttachObject(shader: TGLShaderHandle);
 begin
   GL.AttachShader(SafeGetHandle, shader.Handle);
+end;
+
+// DetachAllObject
+//
+
+procedure TGLProgramHandle.DetachAllObject;
+var
+  glH: TGLuint;
+  I: Integer;
+  count: GLSizei;
+  buffer: array[0..255] of TGLuint;
+begin
+  glH := SafeGetHandle;
+  GL.ClearError;
+  GL.GetAttachedShaders(glH, Length(buffer), @count, @buffer[0]);
+  if GL.GetError = GL_NO_ERROR then
+    for I := count - 1 downto 0 do
+      GL.DetachShader(glH, buffer[I]);
 end;
 
 // BindAttribLocation
