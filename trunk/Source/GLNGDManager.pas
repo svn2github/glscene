@@ -17,6 +17,7 @@
 
   <b>History : </b><font size=-1><ul>
 
+  <li>25/10/10 - FP - Fixed Material badly loaded when created in design time
   <li>25/10/10 - FP - Commented 'Release each collision form the array' in TGLNGDBehaviour.SetCollision.
   Changed angular friction in  TGLNGDDynamic.Pick method to be able to pick body with small mass.
   Added Beta Serialize and Deserialise for TGLNGDBehaviour.
@@ -2540,1344 +2541,1344 @@ begin
     // Wont be called if visible at runtime is inactive
     // Reinitialize;
 
-  end;
+end;
 
-  procedure TGLNGDStatic.SetCollision;
-  begin
-    // Return nullcollision if unknow, return nil if freeform
-    FCollision := GetCollisionFromBaseSceneObject(OwnerBaseSceneObject);
+procedure TGLNGDStatic.SetCollision;
+begin
+  // Return nullcollision if unknow, return nil if freeform
+  FCollision := GetCollisionFromBaseSceneObject(OwnerBaseSceneObject);
 
-    // Create tree if freeform
-    if not Assigned(FCollision) then
-      with OwnerBaseSceneObject do
-      begin
-        { If ((x - y) <= 0.01) AND ((x - z) <= 0.01) Then
-          FCollision := GetTree(False, x) // Scaled TreeCollision
-          Else }
-        FCollision := GetTree(True, Scale.x);
-      end;
-
-    inherited;
-    {
-      // FCollision := NewtonCreateSceneCollision(Manager.NewtonWorld, 0);
-      // for k := 0 to Length(FCollisionArray) - 1 do
-      // NewtonSceneCollisionCreateProxy(FCollision, FCollisionArray[k]);
-      // NewtonSceneCollisionCreateProxy(FCollision,
-      // NewtonCreateSphere(Manager.NewtonWorld,1,2,3,0,nil));
-      // NewtonSceneCollisionOptimize(FCollision); }
-  end;
-
-  // To create heightField
-  procedure TGLNGDStatic.SetHeightField(heightArray: array of UInt16;
-    x: Integer; y: Integer; xScale: Single; yScale: Single);
-  { Var
-    attributeMap: Array Of UInt8;
-    i: integer; }
-  begin
-
-    { SetLength(FHeightFieldWordArray, Length(heightArray));
-      SetLength(attributeMap, Length(heightArray));
-
-      For i := 0 To Length(heightArray) - 1 Do
-      Begin
-      FHeightFieldWordArray[i] := heightArray[i];
-      attributeMap[i] := 0;
-      End;
-
-      FCollision := NewtonCreateHeightFieldCollision(FManager.FNewtonWorld, x, y,
-      0, Punsigned_short(FHeightFieldWordArray), P2Char(attributeMap), xScale,
-      yScale, 0);
-
-      NewtonBodySetCollision(FNewtonBody, FCollision);
-      NewtonReleaseCollision(FManager.FNewtonWorld, FCollision); }
-  end;
-
-  function TGLNGDStatic.GetTree(optimize: Boolean;
-    scaleXYZ: Single): PNewtonCollision;
-  var
-    MeshIndex, TriangleIndex: Integer;
-    TriangleList: TAffineVectorList;
-    v: array [0 .. 2] of TAffineVector;
-    NewtonCollision: PNewtonCollision;
-  begin
-    if OwnerBaseSceneObject is TGLFreeForm then
+  // Create tree if freeform
+  if not Assigned(FCollision) then
+    with OwnerBaseSceneObject do
     begin
-      with (OwnerBaseSceneObject as TGLFreeForm) do
-      begin
-        NewtonCollision := NewtonCreateTreeCollision(FManager.FNewtonWorld, 0);
-        NewtonTreeCollisionBeginBuild(NewtonCollision);
+      { If ((x - y) <= 0.01) AND ((x - z) <= 0.01) Then
+        FCollision := GetTree(False, x) // Scaled TreeCollision
+        Else }
+      FCollision := GetTree(True, Scale.x);
+    end;
 
-        for MeshIndex := 0 to MeshObjects.Count - 1 do
+  inherited;
+  {
+    // FCollision := NewtonCreateSceneCollision(Manager.NewtonWorld, 0);
+    // for k := 0 to Length(FCollisionArray) - 1 do
+    // NewtonSceneCollisionCreateProxy(FCollision, FCollisionArray[k]);
+    // NewtonSceneCollisionCreateProxy(FCollision,
+    // NewtonCreateSphere(Manager.NewtonWorld,1,2,3,0,nil));
+    // NewtonSceneCollisionOptimize(FCollision); }
+end;
+
+// To create heightField
+procedure TGLNGDStatic.SetHeightField(heightArray: array of UInt16;
+  x: Integer; y: Integer; xScale: Single; yScale: Single);
+{ Var
+  attributeMap: Array Of UInt8;
+  i: integer; }
+begin
+
+  { SetLength(FHeightFieldWordArray, Length(heightArray));
+    SetLength(attributeMap, Length(heightArray));
+
+    For i := 0 To Length(heightArray) - 1 Do
+    Begin
+    FHeightFieldWordArray[i] := heightArray[i];
+    attributeMap[i] := 0;
+    End;
+
+    FCollision := NewtonCreateHeightFieldCollision(FManager.FNewtonWorld, x, y,
+    0, Punsigned_short(FHeightFieldWordArray), P2Char(attributeMap), xScale,
+    yScale, 0);
+
+    NewtonBodySetCollision(FNewtonBody, FCollision);
+    NewtonReleaseCollision(FManager.FNewtonWorld, FCollision); }
+end;
+
+function TGLNGDStatic.GetTree(optimize: Boolean;
+  scaleXYZ: Single): PNewtonCollision;
+var
+  MeshIndex, TriangleIndex: Integer;
+  TriangleList: TAffineVectorList;
+  v: array [0 .. 2] of TAffineVector;
+  NewtonCollision: PNewtonCollision;
+begin
+  if OwnerBaseSceneObject is TGLFreeForm then
+  begin
+    with (OwnerBaseSceneObject as TGLFreeForm) do
+    begin
+      NewtonCollision := NewtonCreateTreeCollision(FManager.FNewtonWorld, 0);
+      NewtonTreeCollisionBeginBuild(NewtonCollision);
+
+      for MeshIndex := 0 to MeshObjects.Count - 1 do
+      begin
+        TriangleList := MeshObjects[MeshIndex].ExtractTriangles;
+        for TriangleIndex := 0 to TriangleList.Count - 1 do
         begin
-          TriangleList := MeshObjects[MeshIndex].ExtractTriangles;
-          for TriangleIndex := 0 to TriangleList.Count - 1 do
+          if TriangleIndex mod 3 = 0 then
           begin
-            if TriangleIndex mod 3 = 0 then
-            begin
-              v[0] := TriangleList.Items[TriangleIndex];
-              ScaleVector(v[0], scaleXYZ);
-              v[1] := TriangleList.Items[TriangleIndex + 1];
-              ScaleVector(v[1], scaleXYZ);
-              v[2] := TriangleList.Items[TriangleIndex + 2];
-              ScaleVector(v[2], scaleXYZ);
-              NewtonTreeCollisionAddFace(NewtonCollision, 3, @(v),
-                SizeOf(TAffineVector), 1);
-            end;
+            v[0] := TriangleList.Items[TriangleIndex];
+            ScaleVector(v[0], scaleXYZ);
+            v[1] := TriangleList.Items[TriangleIndex + 1];
+            ScaleVector(v[1], scaleXYZ);
+            v[2] := TriangleList.Items[TriangleIndex + 2];
+            ScaleVector(v[2], scaleXYZ);
+            NewtonTreeCollisionAddFace(NewtonCollision, 3, @(v),
+              SizeOf(TAffineVector), 1);
           end;
-          TriangleList.Free;
         end;
-        NewtonTreeCollisionEndBuild(NewtonCollision, Ord(optimize));
-        Result := NewtonCollision;
+        TriangleList.Free;
       end;
-    end
-    else
-      Result := NewtonCreateNull(FManager.FNewtonWorld);
-  end;
-
-  class function TGLNGDStatic.FriendlyName: string;
-  begin
-    Result := 'NGD Static';
-  end;
-
-  { TNGDMaterialPair }
-
-  constructor TNGDMaterialPair.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FSoftness := 0.1;
-    FElasticity := 0.4;
-    FCollidable := True;
-    FStaticFriction := 0.9;
-    FKineticFriction := 0.5;
-    Fid0 := 0;
-    Fid1 := 0;
-    FContactProcessEvent := nil;
-    FManager := TGLNGDManager(owner.owner);
-  end;
-
-  destructor TNGDMaterialPair.Destroy;
-  begin
-    inherited;
-  end;
-
-  procedure TNGDMaterialPair.Finalize;
-  begin
-    FInitialized := False;
-    if Assigned(FManager) then
-      NewtonMaterialSetCollisionCallback(FManager.FNewtonWorld, Fid0, Fid1,
-        nil, nil, nil);
-  end;
-
-  class function TNGDMaterialPair.FriendlyDescription: string;
-  begin
-    Result := 'MaterialPair';
-  end;
-
-  class function TNGDMaterialPair.FriendlyName: string;
-  begin
-    Result := 'NGD MaterialPair implementation';
-  end;
-
-  procedure TNGDMaterialPair.Initialize;
-  begin
-    if Assigned(FManager) then
-    begin
-      FManager.MaterialAutoCreateGroupID(Fid0);
-      FManager.MaterialAutoCreateGroupID(Fid1);
-      NewtonMaterialSetCollisionCallback(FManager.FNewtonWorld, Fid0, Fid1,
-        self, @NewtonOnAABBOverlap, @NewtonContactsProcess);
-
-      FInitialized := True;
+      NewtonTreeCollisionEndBuild(NewtonCollision, Ord(optimize));
+      Result := NewtonCollision;
     end;
-  end;
+  end
+  else
+    Result := NewtonCreateNull(FManager.FNewtonWorld);
+end;
 
-  procedure TNGDMaterialPair.Loaded;
+class function TGLNGDStatic.FriendlyName: string;
+begin
+  Result := 'NGD Static';
+end;
+
+{ TNGDMaterialPair }
+
+constructor TNGDMaterialPair.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FSoftness := 0.1;
+  FElasticity := 0.4;
+  FCollidable := True;
+  FStaticFriction := 0.9;
+  FKineticFriction := 0.5;
+  Fid0 := 0;
+  Fid1 := 0;
+  FContactProcessEvent := nil;
+  FManager := TGLNGDManager(owner.owner);
+end;
+
+destructor TNGDMaterialPair.Destroy;
+begin
+  inherited;
+end;
+
+procedure TNGDMaterialPair.Finalize;
+begin
+  FInitialized := False;
+  if Assigned(FManager) then
+    NewtonMaterialSetCollisionCallback(FManager.FNewtonWorld, Fid0, Fid1,
+      nil, nil, nil);
+end;
+
+class function TNGDMaterialPair.FriendlyDescription: string;
+begin
+  Result := 'MaterialPair';
+end;
+
+class function TNGDMaterialPair.FriendlyName: string;
+begin
+  Result := 'NGD MaterialPair implementation';
+end;
+
+procedure TNGDMaterialPair.Initialize;
+begin
+  if Assigned(FManager) then
   begin
-    inherited;
-    SetSoftness(FSoftness);
-    SetCollidable(FCollidable);
-    SetElasticity(FElasticity);
-    SetStaticFriction(FStaticFriction);
-    SetKineticFriction(FKineticFriction);
-    Setid0(Fid0);
-    Setid1(Fid1);
-  end;
+    FManager.MaterialAutoCreateGroupID(Fid0);
+    FManager.MaterialAutoCreateGroupID(Fid1);
+    NewtonMaterialSetCollisionCallback(FManager.FNewtonWorld, Fid0, Fid1,
+      self, @NewtonOnAABBOverlap, @NewtonContactsProcess);
 
-  procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
-  { var
-    ContactProcessEventOwner, ContactProcessEventName: string; }
-  var
-    Version: Integer;
-  begin
-    inherited;
-    with reader do
-    begin
-      Version := ReadInteger; // read data version
-      Assert(Version <= 1); // Archive version
-
-      if Version = 0 then
-        ReadString;
-
-      FSoftness := ReadSingle;
-      FElasticity := ReadSingle;
-      FCollidable := ReadBoolean;
-      FStaticFriction := ReadSingle;
-      FKineticFriction := ReadSingle;
-      Fid0 := ReadInteger;
-      Fid1 := ReadInteger;
-      // ContactProcessEventOwner := ReadString;
-      // ContactProcessEventName := ReadString;
-    end;
-    // FContactProcessEvent := TContactProcessEvent
-    // (GetMethodFromString(ContactProcessEventOwner, ContactProcessEventName));
-  end;
-
-  procedure TNGDMaterialPair.WriteToFiler(writer: TWriter);
-  { var
-    ContactProcessEventOwner, ContactProcessEventName: string; }
-  begin
-    inherited;
-    with writer do
-    begin
-      WriteInteger(1); // Archive version
-      WriteSingle(FSoftness);
-      WriteSingle(FElasticity);
-      WriteBoolean(FCollidable);
-      WriteSingle(FStaticFriction);
-      WriteSingle(FKineticFriction);
-      WriteInteger(Fid0);
-      WriteInteger(Fid1);
-
-      { GetStringFromMethod(TMethod(FContactProcessEvent),
-        ContactProcessEventOwner, ContactProcessEventName);
-        WriteString(ContactProcessEventOwner);
-        WriteString(ContactProcessEventName); }
-    end;
-  end;
-
-  procedure TNGDMaterialPair.SetCollidable(val: Boolean);
-  begin
-    FCollidable := val;
-    if Initialized then
-      NewtonMaterialSetDefaultCollidable(FManager.FNewtonWorld, Fid0, Fid1,
-        Ord(FCollidable));
-  end;
-
-  procedure TNGDMaterialPair.SetElasticity(val: Single);
-  begin
-    if (val >= 0) then
-      FElasticity := val;
-    if Initialized then
-      NewtonMaterialSetDefaultElasticity(FManager.FNewtonWorld, Fid0, Fid1,
-        FElasticity);
-  end;
-
-  procedure TNGDMaterialPair.Setid0(const value: Integer);
-  begin
-    if Initialized then
-      Finalize;
-    Fid0 := value;
-    if not Initialized then
-      Initialize;
-  end;
-
-  procedure TNGDMaterialPair.Setid1(const value: Integer);
-  begin
-    if Initialized then
-      Finalize;
-    Fid1 := value;
-    if not Initialized then
-      Initialize;
-  end;
-
-  procedure TNGDMaterialPair.SetSoftness(val: Single);
-  begin
-    if (val >= 0) and (val <= 1) then
-      FSoftness := val;
-    if Initialized then
-      NewtonMaterialSetDefaultSoftness(FManager.FNewtonWorld, Fid0, Fid1,
-        FSoftness);
-  end;
-
-  procedure TNGDMaterialPair.SetStaticFriction(val: Single);
-  begin
-    if (val <= 1) and (val >= FKineticFriction) then
-      FStaticFriction := val;
-    if Initialized then
-      NewtonMaterialSetDefaultFriction(FManager.FNewtonWorld, Fid0, Fid1,
-        FStaticFriction, FKineticFriction);
-  end;
-
-  procedure TNGDMaterialPair.SetKineticFriction(val: Single);
-  begin
-    if (val <= FStaticFriction) and (val >= 0) then
-      FKineticFriction := val;
-    if Initialized then
-      NewtonMaterialSetDefaultFriction(FManager.FNewtonWorld, Fid0, Fid1,
-        FStaticFriction, FKineticFriction);
-  end;
-
-  { TNGDMaterials }
-
-  procedure TNGDMaterials.Finalize;
-  var
-    i: Integer;
-  begin
-    for i := 0 to Count - 1 do
-      MaterialPair[i].Finalize;
-  end;
-
-  function TNGDMaterials.GetMaterialPair(index: Integer): TNGDMaterialPair;
-  begin
-    Result := TNGDMaterialPair(Items[index]);
-  end;
-
-  procedure TNGDMaterials.Initialize;
-  var
-    i: Integer;
-  begin
-    for i := 0 to Count - 1 do
-      MaterialPair[i].Initialize;
-  end;
-
-  class function TNGDMaterials.ItemsClass: TXCollectionItemClass;
-  begin
-    Result := TNGDMaterialPair;
-  end;
-
-  { TNGDJoints }
-
-  procedure TNGDJoints.Finalize;
-  var
-    i: Integer;
-  begin
-    for i := 0 to Count - 1 do
-      Joint[i].Finalize;
-  end;
-
-  function TNGDJoints.GetJoint(index: Integer): TNGDJointBase;
-  begin
-    Result := TNGDJointBase(Items[index]);
-  end;
-
-  procedure TNGDJoints.Initialize;
-  var
-    i: Integer;
-  begin
-    for i := 0 to Count - 1 do
-      Joint[i].Initialize;
-  end;
-
-  class function TNGDJoints.ItemsClass: TXCollectionItemClass;
-  begin
-    Result := TNGDJointBase;
-  end;
-
-  { TGLNGDJointList }
-
-  constructor TGLNGDJointList.Create(AOwner: TComponent);
-  begin
-    inherited;
-    FJoints := TNGDJoints.Create(self);
-  end;
-
-  procedure TGLNGDJointList.DefineProperties(Filer: TFiler);
-  begin
-    inherited;
-    Filer.DefineBinaryProperty('NGDJointsData', ReadJoints, WriteJoints,
-      (Assigned(FJoints) and (FJoints.Count > 0)));
-  end;
-
-  destructor TGLNGDJointList.Destroy;
-  begin
-    FJoints.Free;
-    inherited;
-  end;
-
-  procedure TGLNGDJointList.Loaded;
-  var
-    i: Integer;
-  begin
-    inherited;
-    for i := 0 to FJoints.Count - 1 do
-      FJoints[i].Loaded;
-  end;
-
-  procedure TGLNGDJointList.Notification(AComponent: TComponent;
-    Operation: TOperation);
-  var
-    i: Integer;
-  begin
-    inherited;
-    if (Operation = opRemove) and (AComponent is TGLBaseSceneObject) then
-      for i := 0 to Joints.Count - 1 do
-      begin
-        if TGLBaseSceneObject(AComponent) = Joints[i].Object1 then
-          Joints[i].Object1 := nil;
-        if TGLBaseSceneObject(AComponent) = Joints[i].Object2 then
-          Joints[i].Object2 := nil;
-      end;
-  end;
-
-  procedure TGLNGDJointList.ReadJoints(stream: TStream);
-  var
-    reader: TReader;
-  begin
-    reader := TReader.Create(stream, 16384);
-    try
-      Joints.ReadFromFiler(reader);
-    finally
-      reader.Free;
-    end;
-  end;
-
-  procedure TGLNGDJointList.WriteJoints(stream: TStream);
-  var
-    writer: TWriter;
-  begin
-    writer := TWriter.Create(stream, 16384);
-    try
-      Joints.WriteToFiler(writer);
-    finally
-      writer.Free;
-    end;
-  end;
-
-  { TNGDJointBase }
-
-  constructor TNGDJointBase.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FInitialized := False;
-  end;
-
-  destructor TNGDJointBase.Destroy;
-  begin
-    Finalize;
-    inherited;
-  end;
-
-  procedure TNGDJointBase.Finalize;
-  begin
-    if not Initialized then
-      exit;
-
-    if Assigned(FObject1) then
-      UnregisterJointWithObject(FObject1);
-    if Assigned(FObject2) then
-      UnregisterJointWithObject(FObject2);
-
-    FInitialized := False;
-  end;
-
-  procedure TNGDJointBase.Initialize;
-  begin
-    if not Assigned(FManager) then
-      exit;
-    if Assigned(FObject1) then
-      RegisterJointWithObject(FObject1);
-    if Assigned(FObject2) then
-      RegisterJointWithObject(FObject2);
     FInitialized := True;
   end;
+end;
 
-  procedure TNGDJointBase.Loaded;
-  var
-    mng: TComponent;
-    Obj: TGLBaseSceneObject;
+procedure TNGDMaterialPair.Loaded;
+begin
+  inherited;
+  Setid0(Fid0);
+  Setid1(Fid1);
+  SetSoftness(FSoftness);
+  SetCollidable(FCollidable);
+  SetElasticity(FElasticity);
+  SetStaticFriction(FStaticFriction);
+  SetKineticFriction(FKineticFriction);
+end;
+
+procedure TNGDMaterialPair.ReadFromFiler(reader: TReader);
+{ var
+  ContactProcessEventOwner, ContactProcessEventName: string; }
+var
+  Version: Integer;
+begin
+  inherited;
+  with reader do
   begin
-    inherited;
-    if FManagerName <> '' then
-    begin
-      mng := FindManager(TGLNGDManager, FManagerName);
-      if Assigned(mng) then
-        Manager := TGLNGDManager(mng);
-      FManagerName := '';
-    end;
-    if FObject1Name <> '' then
-    begin
-      Obj := GetGLSceneObject(FObject1Name);
-      if Assigned(Obj) then
-        Object1 := Obj;
-      FObject1Name := '';
-    end;
-    if FObject2Name <> '' then
-    begin
-      Obj := GetGLSceneObject(FObject2Name);
-      if Assigned(Obj) then
-        Object2 := Obj;
-      FObject2Name := '';
-    end;
-    StructureChanged(self);
+    Version := ReadInteger; // read data version
+    Assert(Version <= 1); // Archive version
+
+    if Version = 0 then
+      ReadString;
+
+    FSoftness := ReadSingle;
+    FElasticity := ReadSingle;
+    FCollidable := ReadBoolean;
+    FStaticFriction := ReadSingle;
+    FKineticFriction := ReadSingle;
+    Fid0 := ReadInteger;
+    Fid1 := ReadInteger;
+    // ContactProcessEventOwner := ReadString;
+    // ContactProcessEventName := ReadString;
   end;
+  // FContactProcessEvent := TContactProcessEvent
+  // (GetMethodFromString(ContactProcessEventOwner, ContactProcessEventName));
+end;
 
-  procedure TNGDJointBase.ReadFromFiler(reader: TReader);
+procedure TNGDMaterialPair.WriteToFiler(writer: TWriter);
+{ var
+  ContactProcessEventOwner, ContactProcessEventName: string; }
+begin
+  inherited;
+  with writer do
   begin
-    inherited;
-    with reader do
-    begin
-      Assert(ReadInteger = 0);
-      // Archive version
-      FManagerName := ReadString;
-      FObject1Name := ReadString;
-      FObject2Name := ReadString;
-    end;
+    WriteInteger(1); // Archive version
+    WriteSingle(FSoftness);
+    WriteSingle(FElasticity);
+    WriteBoolean(FCollidable);
+    WriteSingle(FStaticFriction);
+    WriteSingle(FKineticFriction);
+    WriteInteger(Fid0);
+    WriteInteger(Fid1);
+
+    { GetStringFromMethod(TMethod(FContactProcessEvent),
+      ContactProcessEventOwner, ContactProcessEventName);
+      WriteString(ContactProcessEventOwner);
+      WriteString(ContactProcessEventName); }
   end;
+end;
 
-  procedure TNGDJointBase.WriteToFiler(writer: TWriter);
-  begin
-    inherited;
-    with writer do
+procedure TNGDMaterialPair.SetCollidable(val: Boolean);
+begin
+  FCollidable := val;
+  if Initialized then
+    NewtonMaterialSetDefaultCollidable(FManager.FNewtonWorld, Fid0, Fid1,
+      Ord(FCollidable));
+end;
+
+procedure TNGDMaterialPair.SetElasticity(val: Single);
+begin
+  if (val >= 0) then
+    FElasticity := val;
+  if Initialized then
+    NewtonMaterialSetDefaultElasticity(FManager.FNewtonWorld, Fid0, Fid1,
+      FElasticity);
+end;
+
+procedure TNGDMaterialPair.Setid0(const value: Integer);
+begin
+  if Initialized then
+    Finalize;
+  Fid0 := value;
+  if not Initialized then
+    Initialize;
+end;
+
+procedure TNGDMaterialPair.Setid1(const value: Integer);
+begin
+  if Initialized then
+    Finalize;
+  Fid1 := value;
+  if not Initialized then
+    Initialize;
+end;
+
+procedure TNGDMaterialPair.SetSoftness(val: Single);
+begin
+  if (val >= 0) and (val <= 1) then
+    FSoftness := val;
+  if Initialized then
+    NewtonMaterialSetDefaultSoftness(FManager.FNewtonWorld, Fid0, Fid1,
+      FSoftness);
+end;
+
+procedure TNGDMaterialPair.SetStaticFriction(val: Single);
+begin
+  if (val <= 1) and (val >= FKineticFriction) then
+    FStaticFriction := val;
+  if Initialized then
+    NewtonMaterialSetDefaultFriction(FManager.FNewtonWorld, Fid0, Fid1,
+      FStaticFriction, FKineticFriction);
+end;
+
+procedure TNGDMaterialPair.SetKineticFriction(val: Single);
+begin
+  if (val <= FStaticFriction) and (val >= 0) then
+    FKineticFriction := val;
+  if Initialized then
+    NewtonMaterialSetDefaultFriction(FManager.FNewtonWorld, Fid0, Fid1,
+      FStaticFriction, FKineticFriction);
+end;
+
+{ TNGDMaterials }
+
+procedure TNGDMaterials.Finalize;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    MaterialPair[i].Finalize;
+end;
+
+function TNGDMaterials.GetMaterialPair(index: Integer): TNGDMaterialPair;
+begin
+  Result := TNGDMaterialPair(Items[index]);
+end;
+
+procedure TNGDMaterials.Initialize;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    MaterialPair[i].Initialize;
+end;
+
+class function TNGDMaterials.ItemsClass: TXCollectionItemClass;
+begin
+  Result := TNGDMaterialPair;
+end;
+
+{ TNGDJoints }
+
+procedure TNGDJoints.Finalize;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    Joint[i].Finalize;
+end;
+
+function TNGDJoints.GetJoint(index: Integer): TNGDJointBase;
+begin
+  Result := TNGDJointBase(Items[index]);
+end;
+
+procedure TNGDJoints.Initialize;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    Joint[i].Initialize;
+end;
+
+class function TNGDJoints.ItemsClass: TXCollectionItemClass;
+begin
+  Result := TNGDJointBase;
+end;
+
+{ TGLNGDJointList }
+
+constructor TGLNGDJointList.Create(AOwner: TComponent);
+begin
+  inherited;
+  FJoints := TNGDJoints.Create(self);
+end;
+
+procedure TGLNGDJointList.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('NGDJointsData', ReadJoints, WriteJoints,
+    (Assigned(FJoints) and (FJoints.Count > 0)));
+end;
+
+destructor TGLNGDJointList.Destroy;
+begin
+  FJoints.Free;
+  inherited;
+end;
+
+procedure TGLNGDJointList.Loaded;
+var
+  i: Integer;
+begin
+  inherited;
+  for i := 0 to FJoints.Count - 1 do
+    FJoints[i].Loaded;
+end;
+
+procedure TGLNGDJointList.Notification(AComponent: TComponent;
+  Operation: TOperation);
+var
+  i: Integer;
+begin
+  inherited;
+  if (Operation = opRemove) and (AComponent is TGLBaseSceneObject) then
+    for i := 0 to Joints.Count - 1 do
     begin
-      WriteInteger(0);
-      // Archive version
-      if Assigned(FManager) then
-        WriteString(FManager.GetNamePath)
-      else
-        WriteString('');
-      if Assigned(FObject1) then
-        WriteString(FObject1.GetNamePath)
-      else
-        WriteString('');
-      if Assigned(FObject2) then
-        WriteString(FObject2.GetNamePath)
-      else
-        WriteString('');
+      if TGLBaseSceneObject(AComponent) = Joints[i].Object1 then
+        Joints[i].Object1 := nil;
+      if TGLBaseSceneObject(AComponent) = Joints[i].Object2 then
+        Joints[i].Object2 := nil;
     end;
-  end;
+end;
 
-  procedure TNGDJointBase.RegisterJointWithObject(Obj: TGLBaseSceneObject);
-  var
-    temp: TGLNGDBehaviour;
+procedure TGLNGDJointList.ReadJoints(stream: TStream);
+var
+  reader: TReader;
+begin
+  reader := TReader.Create(stream, 16384);
+  try
+    Joints.ReadFromFiler(reader);
+  finally
+    reader.Free;
+  end;
+end;
+
+procedure TGLNGDJointList.WriteJoints(stream: TStream);
+var
+  writer: TWriter;
+begin
+  writer := TWriter.Create(stream, 16384);
+  try
+    Joints.WriteToFiler(writer);
+  finally
+    writer.Free;
+  end;
+end;
+
+{ TNGDJointBase }
+
+constructor TNGDJointBase.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FInitialized := False;
+end;
+
+destructor TNGDJointBase.Destroy;
+begin
+  Finalize;
+  inherited;
+end;
+
+procedure TNGDJointBase.Finalize;
+begin
+  if not Initialized then
+    exit;
+
+  if Assigned(FObject1) then
+    UnregisterJointWithObject(FObject1);
+  if Assigned(FObject2) then
+    UnregisterJointWithObject(FObject2);
+
+  FInitialized := False;
+end;
+
+procedure TNGDJointBase.Initialize;
+begin
+  if not Assigned(FManager) then
+    exit;
+  if Assigned(FObject1) then
+    RegisterJointWithObject(FObject1);
+  if Assigned(FObject2) then
+    RegisterJointWithObject(FObject2);
+  FInitialized := True;
+end;
+
+procedure TNGDJointBase.Loaded;
+var
+  mng: TComponent;
+  Obj: TGLBaseSceneObject;
+begin
+  inherited;
+  if FManagerName <> '' then
   begin
+    mng := FindManager(TGLNGDManager, FManagerName);
+    if Assigned(mng) then
+      Manager := TGLNGDManager(mng);
+    FManagerName := '';
+  end;
+  if FObject1Name <> '' then
+  begin
+    Obj := GetGLSceneObject(FObject1Name);
     if Assigned(Obj) then
-    begin
-      temp := TGLNGDBehaviour(Obj.Behaviours.GetByClass(TGLNGDBehaviour));
-      if Assigned(temp) then
-        temp.RegisterJoint(self);
-    end;
+      Object1 := Obj;
+    FObject1Name := '';
   end;
-
-  procedure TNGDJointBase.Render;
-  var
-    bar1, bar2: TVector;
+  if FObject2Name <> '' then
   begin
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      bar1 := Object1.BarycenterAbsolutePosition;
-      bar2 := Object2.BarycenterAbsolutePosition;
-      GL.Vertex3fv(@bar1);
-      GL.Vertex3fv(@bar2);
-    end;
-  end;
-
-  procedure TNGDJointBase.UnregisterJointWithObject(Obj: TGLBaseSceneObject);
-  var
-    temp: TGLNGDBehaviour;
-  begin
+    Obj := GetGLSceneObject(FObject2Name);
     if Assigned(Obj) then
-    begin
-      temp := TGLNGDBehaviour(Obj.Behaviours.GetByClass(TGLNGDBehaviour));
-      if Assigned(temp) then
-        temp.UnregisterJoint(self);
-    end;
+      Object2 := Obj;
+    FObject2Name := '';
   end;
+  StructureChanged(self);
+end;
 
-  procedure TNGDJointBase.SetManager(const value: TGLNGDManager);
+procedure TNGDJointBase.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  with reader do
   begin
-    if FManager <> value then
-    begin
-      if Assigned(FManager) then
-        if Initialized then // if not(csDesigning in FManager.ComponentState) then
-          Finalize;
-      FManager := value;
-      if Assigned(FManager) then
-        // if not(csDesigning in FManager.ComponentState) then
-        Initialize;
-    end;
+    Assert(ReadInteger = 0);
+    // Archive version
+    FManagerName := ReadString;
+    FObject1Name := ReadString;
+    FObject2Name := ReadString;
   end;
+end;
 
-  procedure TNGDJointBase.SetObject1(const value: TGLBaseSceneObject);
+procedure TNGDJointBase.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
   begin
-    if FObject1 <> value then
-    begin
-      if Assigned(FObject1) then
-        UnregisterJointWithObject(FObject1);
-      FObject1 := value;
-      if Assigned(FObject1) then
-        RegisterJointWithObject(FObject1)
-      else
-        FObject1 := nil;
-    end;
+    WriteInteger(0);
+    // Archive version
+    if Assigned(FManager) then
+      WriteString(FManager.GetNamePath)
+    else
+      WriteString('');
+    if Assigned(FObject1) then
+      WriteString(FObject1.GetNamePath)
+    else
+      WriteString('');
+    if Assigned(FObject2) then
+      WriteString(FObject2.GetNamePath)
+    else
+      WriteString('');
   end;
+end;
 
-  procedure TNGDJointBase.SetObject2(const value: TGLBaseSceneObject);
+procedure TNGDJointBase.RegisterJointWithObject(Obj: TGLBaseSceneObject);
+var
+  temp: TGLNGDBehaviour;
+begin
+  if Assigned(Obj) then
   begin
-    if FObject2 <> value then
-    begin
-      if Assigned(FObject2) then
-        UnregisterJointWithObject(FObject2);
-      FObject2 := value;
-      if Assigned(FObject2) then
-        RegisterJointWithObject(FObject2)
-      else
-        FObject2 := nil;
-    end;
+    temp := TGLNGDBehaviour(Obj.Behaviours.GetByClass(TGLNGDBehaviour));
+    if Assigned(temp) then
+      temp.RegisterJoint(self);
   end;
+end;
 
-  procedure TNGDJointBase.StructureChanged(Sender: TObject);
+procedure TNGDJointBase.Render;
+var
+  bar1, bar2: TVector;
+begin
+  if Assigned(Object1) and Assigned(Object2) then
+  begin
+    bar1 := Object1.BarycenterAbsolutePosition;
+    bar2 := Object2.BarycenterAbsolutePosition;
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(@bar2);
+  end;
+end;
+
+procedure TNGDJointBase.UnregisterJointWithObject(Obj: TGLBaseSceneObject);
+var
+  temp: TGLNGDBehaviour;
+begin
+  if Assigned(Obj) then
+  begin
+    temp := TGLNGDBehaviour(Obj.Behaviours.GetByClass(TGLNGDBehaviour));
+    if Assigned(temp) then
+      temp.UnregisterJoint(self);
+  end;
+end;
+
+procedure TNGDJointBase.SetManager(const value: TGLNGDManager);
+begin
+  if FManager <> value then
   begin
     if Assigned(FManager) then
-      FManager.NotifyChange(self);
+      if Initialized then // if not(csDesigning in FManager.ComponentState) then
+        Finalize;
+    FManager := value;
+    if Assigned(FManager) then
+      // if not(csDesigning in FManager.ComponentState) then
+      Initialize;
   end;
+end;
 
-  { TNGDJointBall }
-
-  constructor TNGDJointBall.Create(AOwner: TXCollection);
+procedure TNGDJointBase.SetObject1(const value: TGLBaseSceneObject);
+begin
+  if FObject1 <> value then
   begin
-    inherited;
-
-    FNewtonJoint := nil;
-    FStiffness := 0.9;
-    FCollisionState := False;
-
-    FPivotPoint := TGLCoordinates.CreateInitialized(self, NullHMGPoint,
-      csPoint);
-    FPivotPoint.OnNotifyChange := StructureChanged;
+    if Assigned(FObject1) then
+      UnregisterJointWithObject(FObject1);
+    FObject1 := value;
+    if Assigned(FObject1) then
+      RegisterJointWithObject(FObject1)
+    else
+      FObject1 := nil;
   end;
+end;
 
-  destructor TNGDJointBall.Destroy;
+procedure TNGDJointBase.SetObject2(const value: TGLBaseSceneObject);
+begin
+  if FObject2 <> value then
+  begin
+    if Assigned(FObject2) then
+      UnregisterJointWithObject(FObject2);
+    FObject2 := value;
+    if Assigned(FObject2) then
+      RegisterJointWithObject(FObject2)
+    else
+      FObject2 := nil;
+  end;
+end;
+
+procedure TNGDJointBase.StructureChanged(Sender: TObject);
+begin
+  if Assigned(FManager) then
+    FManager.NotifyChange(self);
+end;
+
+{ TNGDJointBall }
+
+constructor TNGDJointBall.Create(AOwner: TXCollection);
+begin
+  inherited;
+
+  FNewtonJoint := nil;
+  FStiffness := 0.9;
+  FCollisionState := False;
+
+  FPivotPoint := TGLCoordinates.CreateInitialized(self, NullHMGPoint,
+    csPoint);
+  FPivotPoint.OnNotifyChange := StructureChanged;
+end;
+
+destructor TNGDJointBall.Destroy;
+begin
+  if FNewtonJoint <> nil then
+    if Assigned(FManager) then
+      NewtonDestroyJoint(FManager.FNewtonWorld, FNewtonJoint);
+  FNewtonJoint := nil;
+  FPivotPoint.Free;
+  inherited;
+end;
+
+class function TNGDJointBall.FriendlyDescription: string;
+begin
+  Result := 'NGD Ball joint implementation';
+end;
+
+class function TNGDJointBall.FriendlyName: string;
+begin
+  Result := 'Ball';
+end;
+
+procedure TNGDJointBall.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  with reader do
+  begin
+    Assert(ReadInteger = 0);
+    // Archive version
+    FStiffness := ReadSingle;
+    FCollisionState := ReadBoolean;
+  end;
+  FPivotPoint.ReadFromFiler(reader);
+end;
+
+procedure TNGDJointBall.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
+  begin
+    WriteInteger(0);
+    // Archive version
+    WriteSingle(FStiffness);
+    WriteBoolean(FCollisionState);
+  end;
+  FPivotPoint.WriteToFiler(writer);
+end;
+
+procedure TNGDJointBall.Render;
+var
+  bar1, bar2: TVector;
+begin
+  if Assigned(Object1) and Assigned(Object2) then
+  begin
+    bar1 := Object1.BarycenterAbsolutePosition;
+    bar2 := Object2.BarycenterAbsolutePosition;
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(@bar2);
+  end;
+end;
+
+procedure TNGDJointBall.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
   begin
     if FNewtonJoint <> nil then
-      if Assigned(FManager) then
-        NewtonDestroyJoint(FManager.FNewtonWorld, FNewtonJoint);
-    FNewtonJoint := nil;
-    FPivotPoint.Free;
-    inherited;
-  end;
-
-  class function TNGDJointBall.FriendlyDescription: string;
-  begin
-    Result := 'NGD Ball joint implementation';
-  end;
-
-  class function TNGDJointBall.FriendlyName: string;
-  begin
-    Result := 'Ball';
-  end;
-
-  procedure TNGDJointBall.ReadFromFiler(reader: TReader);
-  begin
-    inherited;
-    with reader do
     begin
-      Assert(ReadInteger = 0);
-      // Archive version
-      FStiffness := ReadSingle;
-      FCollisionState := ReadBoolean;
+      NewtonDestroyJoint(FManager.FNewtonWorld, FNewtonJoint);
+      FNewtonJoint := nil;
     end;
-    FPivotPoint.ReadFromFiler(reader);
-  end;
 
-  procedure TNGDJointBall.WriteToFiler(writer: TWriter);
-  begin
-    inherited;
-    with writer do
-    begin
-      WriteInteger(0);
-      // Archive version
-      WriteSingle(FStiffness);
-      WriteBoolean(FCollisionState);
-    end;
-    FPivotPoint.WriteToFiler(writer);
-  end;
-
-  procedure TNGDJointBall.Render;
-  var
-    bar1, bar2: TVector;
-  begin
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      bar1 := Object1.BarycenterAbsolutePosition;
-      bar2 := Object2.BarycenterAbsolutePosition;
-      GL.Vertex3fv(@bar1);
-      GL.Vertex3fv(FPivotPoint.AsAddress);
-      GL.Vertex3fv(FPivotPoint.AsAddress);
-      GL.Vertex3fv(@bar2);
-    end;
-  end;
-
-  procedure TNGDJointBall.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-    begin
-      if FNewtonJoint <> nil then
+    if self.Classtype = TNGDJointBall then
+      if Assigned(Object1) and Assigned(Object2) then
       begin
-        NewtonDestroyJoint(FManager.FNewtonWorld, FNewtonJoint);
-        FNewtonJoint := nil;
+        FNewtonJoint := NewtonConstraintCreateBall(FManager.FNewtonWorld,
+          @(FPivotPoint.AsVector), GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
       end;
+  end;
+end;
 
-      if self.Classtype = TNGDJointBall then
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonJoint := NewtonConstraintCreateBall(FManager.FNewtonWorld,
-            @(FPivotPoint.AsVector), GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
+procedure TNGDJointBall.SetStiffness(val: Single);
+begin
+  if (val >= 0) and (val <= 1) then
+    FStiffness := val;
+  if FNewtonJoint <> nil then
+    NewtonJointSetStiffness(FNewtonJoint, FStiffness);
+end;
+
+procedure TNGDJointBall.SetCollisionState(val: Boolean);
+begin
+  FCollisionState := val;
+  if FNewtonJoint <> nil then
+    NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
+end;
+
+{ TNGDJointHinge }
+
+constructor TNGDJointHinge.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FPinDir := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
+  FPinDir.OnNotifyChange := StructureChanged;
+end;
+
+destructor TNGDJointHinge.Destroy;
+begin
+  FPinDir.Free;
+  inherited;
+end;
+
+class function TNGDJointHinge.FriendlyDescription: string;
+begin
+  Result := 'NGD Hinge joint';
+end;
+
+class function TNGDJointHinge.FriendlyName: string;
+begin
+  Result := 'Hinge';
+end;
+
+procedure TNGDJointHinge.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  Assert(reader.ReadInteger = 0);
+  // Archive version
+  FPinDir.ReadFromFiler(reader);
+end;
+
+procedure TNGDJointHinge.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  writer.WriteInteger(0);
+  // Archive version
+  FPinDir.WriteToFiler(writer);
+end;
+
+procedure TNGDJointHinge.Render;
+var
+  axe: TVector;
+begin
+  inherited;
+  if Assigned(Object1) and Assigned(Object2) then
+  begin
+    axe[0] := FPivotPoint.x - 10 * FPinDir.x;
+    axe[1] := FPivotPoint.y - 10 * FPinDir.y;
+    axe[2] := FPivotPoint.z - 10 * FPinDir.z;
+    GL.Vertex3fv(@axe);
+    axe[0] := FPivotPoint.x + 10 * FPinDir.x;
+    axe[1] := FPivotPoint.y + 10 * FPinDir.y;
+    axe[2] := FPivotPoint.z + 10 * FPinDir.z;
+    GL.Vertex3fv(@axe);
+  end;
+end;
+
+procedure TNGDJointHinge.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDJointHinge then
+    begin
+      FPinDir.OnNotifyChange := nil;
+      FPinDir.Normalize;
+      FPinDir.OnNotifyChange := StructureChanged;
+
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonJoint := NewtonConstraintCreateHinge(FManager.FNewtonWorld,
+          @(FPivotPoint.AsVector), @(FPinDir.AsVector),
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
     end;
-  end;
+end;
 
-  procedure TNGDJointBall.SetStiffness(val: Single);
+{ TNGDJointSlider }
+
+class function TNGDJointSlider.FriendlyDescription: string;
+begin
+  Result := 'NGD Slider joint';
+end;
+
+class function TNGDJointSlider.FriendlyName: string;
+begin
+  Result := 'Slider';
+end;
+
+procedure TNGDJointSlider.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDJointSlider then
+    begin
+      FPinDir.OnNotifyChange := nil;
+      FPinDir.Normalize;
+      FPinDir.OnNotifyChange := StructureChanged;
+
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonJoint := NewtonConstraintCreateSlider(FManager.FNewtonWorld,
+          @(FPivotPoint.AsVector), @(FPinDir.AsVector),
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
+    end;
+end;
+
+{ TNGDJointCorkscrew }
+
+class function TNGDJointCorkscrew.FriendlyDescription: string;
+begin
+  Result := 'NGD Corkscrew joint';
+end;
+
+class function TNGDJointCorkscrew.FriendlyName: string;
+begin
+  Result := 'Corkscrew';
+end;
+
+procedure TNGDJointCorkscrew.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDJointCorkscrew then
+    begin
+      FPinDir.OnNotifyChange := nil;
+      FPinDir.Normalize;
+      FPinDir.OnNotifyChange := StructureChanged;
+
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonJoint := NewtonConstraintCreateCorkscrew
+          (FManager.FNewtonWorld, @(FPivotPoint.AsVector),
+          @(FPinDir.AsVector), GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
+    end;
+end;
+
+{ TNGDJointUniversal }
+
+constructor TNGDJointUniversal.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FPinDir2 := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
+  FPinDir2.OnNotifyChange := StructureChanged;
+end;
+
+destructor TNGDJointUniversal.Destroy;
+begin
+  FPinDir2.Free;
+  inherited;
+end;
+
+class function TNGDJointUniversal.FriendlyDescription: string;
+begin
+  Result := 'NGD Universal joint';
+end;
+
+class function TNGDJointUniversal.FriendlyName: string;
+begin
+  Result := 'Universal';
+end;
+
+procedure TNGDJointUniversal.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  Assert(reader.ReadInteger = 0);
+  // Archive version
+  FPinDir2.ReadFromFiler(reader);
+end;
+
+procedure TNGDJointUniversal.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  writer.WriteInteger(0);
+  // Archive version
+  FPinDir2.WriteToFiler(writer);
+end;
+
+procedure TNGDJointUniversal.Render;
+var
+  axe: TVector;
+begin
+  inherited;
+  if Assigned(Object1) and Assigned(Object2) then
   begin
-    if (val >= 0) and (val <= 1) then
-      FStiffness := val;
-    if FNewtonJoint <> nil then
-      NewtonJointSetStiffness(FNewtonJoint, FStiffness);
+    axe[0] := FPivotPoint.x - 10 * FPinDir2.x;
+    axe[1] := FPivotPoint.y - 10 * FPinDir2.y;
+    axe[2] := FPivotPoint.z - 10 * FPinDir2.z;
+    GL.Vertex3fv(@axe);
+    axe[0] := FPivotPoint.x + 10 * FPinDir2.x;
+    axe[1] := FPivotPoint.y + 10 * FPinDir2.y;
+    axe[2] := FPivotPoint.z + 10 * FPinDir2.z;
+    GL.Vertex3fv(@axe);
   end;
+end;
 
-  procedure TNGDJointBall.SetCollisionState(val: Boolean);
+procedure TNGDJointUniversal.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDJointUniversal then
+    begin
+      FPinDir.OnNotifyChange := nil;
+      FPinDir2.OnNotifyChange := nil;
+      FPinDir.Normalize;
+      FPinDir2.Normalize;
+      FPinDir.OnNotifyChange := StructureChanged;
+      FPinDir2.OnNotifyChange := StructureChanged;
+
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonJoint := NewtonConstraintCreateUniversal
+          (FManager.FNewtonWorld, @(FPivotPoint.AsVector),
+          @(FPinDir.AsVector), @(FPinDir2.AsVector),
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
+    end;
+end;
+
+{ TNGDCustomJointBase }
+
+constructor TNGDCustomJointBase.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FNewtonUserJoint := nil;
+  FStiffness := 0.9;
+  FCollisionState := False;
+  FMinLimit := -50;
+  FMaxLimit := 50;
+  FPivotPoint := TGLCoordinates.CreateInitialized(self, NullHMGPoint,
+    csPoint);
+  FPivotPoint.OnNotifyChange := StructureChanged;
+end;
+
+destructor TNGDCustomJointBase.Destroy;
+begin
+  if FNewtonUserJoint <> nil then
+    CustomDestroyJoint(FNewtonUserJoint);
+  FNewtonUserJoint := nil;
+  FPivotPoint.Free;
+  inherited;
+end;
+
+procedure TNGDCustomJointBase.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  with reader do
   begin
-    FCollisionState := val;
-    if FNewtonJoint <> nil then
-      NewtonJointSetCollisionState(FNewtonJoint, Ord(FCollisionState));
-  end;
-
-  { TNGDJointHinge }
-
-  constructor TNGDJointHinge.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FPinDir := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
-    FPinDir.OnNotifyChange := StructureChanged;
-  end;
-
-  destructor TNGDJointHinge.Destroy;
-  begin
-    FPinDir.Free;
-    inherited;
-  end;
-
-  class function TNGDJointHinge.FriendlyDescription: string;
-  begin
-    Result := 'NGD Hinge joint';
-  end;
-
-  class function TNGDJointHinge.FriendlyName: string;
-  begin
-    Result := 'Hinge';
-  end;
-
-  procedure TNGDJointHinge.ReadFromFiler(reader: TReader);
-  begin
-    inherited;
-    Assert(reader.ReadInteger = 0);
+    Assert(ReadInteger = 0);
     // Archive version
-    FPinDir.ReadFromFiler(reader);
+    FStiffness := ReadSingle;
+    FCollisionState := ReadBoolean;
+    FMinLimit := ReadSingle;
+    FMaxLimit := ReadSingle;
   end;
+  FPivotPoint.ReadFromFiler(reader);
+end;
 
-  procedure TNGDJointHinge.WriteToFiler(writer: TWriter);
+procedure TNGDCustomJointBase.Render;
+var
+  bar1, bar2: TVector;
+begin
+  if Assigned(Object1) and Assigned(Object2) then
   begin
-    inherited;
-    writer.WriteInteger(0);
-    // Archive version
-    FPinDir.WriteToFiler(writer);
+    bar1 := Object1.BarycenterAbsolutePosition;
+    bar2 := Object2.BarycenterAbsolutePosition;
+    GL.Vertex3fv(@bar1);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(FPivotPoint.AsAddress);
+    GL.Vertex3fv(@bar2);
   end;
+end;
 
-  procedure TNGDJointHinge.Render;
-  var
-    axe: TVector;
-  begin
-    inherited;
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      axe[0] := FPivotPoint.x - 10 * FPinDir.x;
-      axe[1] := FPivotPoint.y - 10 * FPinDir.y;
-      axe[2] := FPivotPoint.z - 10 * FPinDir.z;
-      GL.Vertex3fv(@axe);
-      axe[0] := FPivotPoint.x + 10 * FPinDir.x;
-      axe[1] := FPivotPoint.y + 10 * FPinDir.y;
-      axe[2] := FPivotPoint.z + 10 * FPinDir.z;
-      GL.Vertex3fv(@axe);
-    end;
-  end;
+procedure TNGDCustomJointBase.SetCollisionState(val: Boolean);
+begin
+  FCollisionState := val;
+  if FNewtonUserJoint <> nil then
+    CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
+end;
 
-  procedure TNGDJointHinge.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDJointHinge then
-      begin
-        FPinDir.OnNotifyChange := nil;
-        FPinDir.Normalize;
-        FPinDir.OnNotifyChange := StructureChanged;
+procedure TNGDCustomJointBase.SetMaxLimit(val: Single);
+begin
+  // Virtual
+end;
 
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonJoint := NewtonConstraintCreateHinge(FManager.FNewtonWorld,
-            @(FPivotPoint.AsVector), @(FPinDir.AsVector),
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-      end;
-  end;
+procedure TNGDCustomJointBase.SetMinLimit(val: Single);
+begin
+  // Virtual
+end;
 
-  { TNGDJointSlider }
+procedure TNGDCustomJointBase.SetStiffness(val: Single);
+begin
+  if (val >= 0) and (val <= 1) then
+    FStiffness := val;
+  if FNewtonUserJoint <> nil then
+    NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
+      FStiffness);
+end;
 
-  class function TNGDJointSlider.FriendlyDescription: string;
-  begin
-    Result := 'NGD Slider joint';
-  end;
-
-  class function TNGDJointSlider.FriendlyName: string;
-  begin
-    Result := 'Slider';
-  end;
-
-  procedure TNGDJointSlider.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDJointSlider then
-      begin
-        FPinDir.OnNotifyChange := nil;
-        FPinDir.Normalize;
-        FPinDir.OnNotifyChange := StructureChanged;
-
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonJoint := NewtonConstraintCreateSlider(FManager.FNewtonWorld,
-            @(FPivotPoint.AsVector), @(FPinDir.AsVector),
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-      end;
-  end;
-
-  { TNGDJointCorkscrew }
-
-  class function TNGDJointCorkscrew.FriendlyDescription: string;
-  begin
-    Result := 'NGD Corkscrew joint';
-  end;
-
-  class function TNGDJointCorkscrew.FriendlyName: string;
-  begin
-    Result := 'Corkscrew';
-  end;
-
-  procedure TNGDJointCorkscrew.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDJointCorkscrew then
-      begin
-        FPinDir.OnNotifyChange := nil;
-        FPinDir.Normalize;
-        FPinDir.OnNotifyChange := StructureChanged;
-
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonJoint := NewtonConstraintCreateCorkscrew
-            (FManager.FNewtonWorld, @(FPivotPoint.AsVector),
-            @(FPinDir.AsVector), GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-      end;
-  end;
-
-  { TNGDJointUniversal }
-
-  constructor TNGDJointUniversal.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FPinDir2 := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
-    FPinDir2.OnNotifyChange := StructureChanged;
-  end;
-
-  destructor TNGDJointUniversal.Destroy;
-  begin
-    FPinDir2.Free;
-    inherited;
-  end;
-
-  class function TNGDJointUniversal.FriendlyDescription: string;
-  begin
-    Result := 'NGD Universal joint';
-  end;
-
-  class function TNGDJointUniversal.FriendlyName: string;
-  begin
-    Result := 'Universal';
-  end;
-
-  procedure TNGDJointUniversal.ReadFromFiler(reader: TReader);
-  begin
-    inherited;
-    Assert(reader.ReadInteger = 0);
-    // Archive version
-    FPinDir2.ReadFromFiler(reader);
-  end;
-
-  procedure TNGDJointUniversal.WriteToFiler(writer: TWriter);
-  begin
-    inherited;
-    writer.WriteInteger(0);
-    // Archive version
-    FPinDir2.WriteToFiler(writer);
-  end;
-
-  procedure TNGDJointUniversal.Render;
-  var
-    axe: TVector;
-  begin
-    inherited;
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      axe[0] := FPivotPoint.x - 10 * FPinDir2.x;
-      axe[1] := FPivotPoint.y - 10 * FPinDir2.y;
-      axe[2] := FPivotPoint.z - 10 * FPinDir2.z;
-      GL.Vertex3fv(@axe);
-      axe[0] := FPivotPoint.x + 10 * FPinDir2.x;
-      axe[1] := FPivotPoint.y + 10 * FPinDir2.y;
-      axe[2] := FPivotPoint.z + 10 * FPinDir2.z;
-      GL.Vertex3fv(@axe);
-    end;
-  end;
-
-  procedure TNGDJointUniversal.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDJointUniversal then
-      begin
-        FPinDir.OnNotifyChange := nil;
-        FPinDir2.OnNotifyChange := nil;
-        FPinDir.Normalize;
-        FPinDir2.Normalize;
-        FPinDir.OnNotifyChange := StructureChanged;
-        FPinDir2.OnNotifyChange := StructureChanged;
-
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonJoint := NewtonConstraintCreateUniversal
-            (FManager.FNewtonWorld, @(FPivotPoint.AsVector),
-            @(FPinDir.AsVector), @(FPinDir2.AsVector),
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-      end;
-  end;
-
-  { TNGDCustomJointBase }
-
-  constructor TNGDCustomJointBase.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FNewtonUserJoint := nil;
-    FStiffness := 0.9;
-    FCollisionState := False;
-    FMinLimit := -50;
-    FMaxLimit := 50;
-    FPivotPoint := TGLCoordinates.CreateInitialized(self, NullHMGPoint,
-      csPoint);
-    FPivotPoint.OnNotifyChange := StructureChanged;
-  end;
-
-  destructor TNGDCustomJointBase.Destroy;
-  begin
+procedure TNGDCustomJointBase.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
     if FNewtonUserJoint <> nil then
+    begin
       CustomDestroyJoint(FNewtonUserJoint);
-    FNewtonUserJoint := nil;
-    FPivotPoint.Free;
-    inherited;
-  end;
-
-  procedure TNGDCustomJointBase.ReadFromFiler(reader: TReader);
-  begin
-    inherited;
-    with reader do
-    begin
-      Assert(ReadInteger = 0);
-      // Archive version
-      FStiffness := ReadSingle;
-      FCollisionState := ReadBoolean;
-      FMinLimit := ReadSingle;
-      FMaxLimit := ReadSingle;
+      FNewtonUserJoint := nil;
     end;
-    FPivotPoint.ReadFromFiler(reader);
-  end;
+  FPinAndPivotMatrix := IdentityHmgMatrix;
+  FPinAndPivotMatrix[3, 0] := FPivotPoint.x;
+  FPinAndPivotMatrix[3, 1] := FPivotPoint.y;
+  FPinAndPivotMatrix[3, 2] := FPivotPoint.z;
+end;
 
-  procedure TNGDCustomJointBase.Render;
-  var
-    bar1, bar2: TVector;
+procedure TNGDCustomJointBase.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
   begin
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      bar1 := Object1.BarycenterAbsolutePosition;
-      bar2 := Object2.BarycenterAbsolutePosition;
-      GL.Vertex3fv(@bar1);
-      GL.Vertex3fv(FPivotPoint.AsAddress);
-      GL.Vertex3fv(FPivotPoint.AsAddress);
-      GL.Vertex3fv(@bar2);
-    end;
+    WriteInteger(0);
+    // Archive version
+    WriteSingle(FStiffness);
+    WriteBoolean(FCollisionState);
+    WriteSingle(FMinLimit);
+    WriteSingle(FMaxLimit);
   end;
+  FPivotPoint.WriteToFiler(writer);
+end;
 
-  procedure TNGDCustomJointBase.SetCollisionState(val: Boolean);
+{ TNGDCustomJointBall }
+
+constructor TNGDCustomJointBall.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FConeAngle := 90;
+  FMinLimit := -90;
+  FMaxLimit := 90;
+end;
+
+class function TNGDCustomJointBall.FriendlyDescription: string;
+begin
+  Result := 'NGD Custom Ball joint implementation';
+end;
+
+class function TNGDCustomJointBall.FriendlyName: string;
+begin
+  Result := 'CustomBall';
+end;
+
+procedure TNGDCustomJointBall.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  with reader do
   begin
-    FCollisionState := val;
-    if FNewtonUserJoint <> nil then
-      CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
+    Assert(ReadInteger = 0);
+    // Archive version
+    FConeAngle := ReadSingle;
   end;
+end;
 
-  procedure TNGDCustomJointBase.SetMaxLimit(val: Single);
-  begin
-    // Virtual
-  end;
+procedure TNGDCustomJointBall.SetConeAngle(val: Single);
+begin
+  if (val >= 0) and (val < 180) then
+    FConeAngle := val;
+  if FNewtonUserJoint <> nil then
+    BallAndSocketSetConeAngle(FNewtonUserJoint, DegToRad(FConeAngle));
+end;
 
-  procedure TNGDCustomJointBase.SetMinLimit(val: Single);
-  begin
-    // Virtual
-  end;
+procedure TNGDCustomJointBall.SetMaxLimit(val: Single);
+begin
+  if (val >= FMinLimit) then
+    FMaxLimit := val;
+  if FNewtonUserJoint <> nil then
+    BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
+      DegToRad(FMaxLimit));
+end;
 
-  procedure TNGDCustomJointBase.SetStiffness(val: Single);
-  begin
-    if (val >= 0) and (val <= 1) then
-      FStiffness := val;
-    if FNewtonUserJoint <> nil then
-      NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
-        FStiffness);
-  end;
+procedure TNGDCustomJointBall.SetMinLimit(val: Single);
+begin
+  if (val <= FMaxLimit) then
+    FMinLimit := val;
+  if FNewtonUserJoint <> nil then
+    BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
+      DegToRad(FMaxLimit));
+end;
 
-  procedure TNGDCustomJointBase.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if FNewtonUserJoint <> nil then
+procedure TNGDCustomJointBall.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDCustomJointBall then
+      if Assigned(Object1) and Assigned(Object2) then
       begin
-        CustomDestroyJoint(FNewtonUserJoint);
-        FNewtonUserJoint := nil;
+        FNewtonUserJoint := CreateCustomBallAndSocket(@FPinAndPivotMatrix,
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
+          DegToRad(FMaxLimit));
+        BallAndSocketSetConeAngle(FNewtonUserJoint, DegToRad(FConeAngle));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
       end;
-    FPinAndPivotMatrix := IdentityHmgMatrix;
-    FPinAndPivotMatrix[3, 0] := FPivotPoint.x;
-    FPinAndPivotMatrix[3, 1] := FPivotPoint.y;
-    FPinAndPivotMatrix[3, 2] := FPivotPoint.z;
-  end;
+end;
 
-  procedure TNGDCustomJointBase.WriteToFiler(writer: TWriter);
+procedure TNGDCustomJointBall.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
   begin
-    inherited;
-    with writer do
-    begin
-      WriteInteger(0);
-      // Archive version
-      WriteSingle(FStiffness);
-      WriteBoolean(FCollisionState);
-      WriteSingle(FMinLimit);
-      WriteSingle(FMaxLimit);
-    end;
-    FPivotPoint.WriteToFiler(writer);
+    WriteInteger(0);
+    // Archive version
+    WriteSingle(FConeAngle);
   end;
+end;
 
-  { TNGDCustomJointBall }
+{ TNGDCustomJointBaseDir }
 
-  constructor TNGDCustomJointBall.Create(AOwner: TXCollection);
+constructor TNGDCustomJointBaseDir.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FPinDir := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
+  FPinDir.OnNotifyChange := StructureChanged;
+end;
+
+destructor TNGDCustomJointBaseDir.Destroy;
+begin
+  FPinDir.Free;
+  inherited;
+end;
+
+procedure TNGDCustomJointBaseDir.ReadFromFiler(reader: TReader);
+begin
+  inherited;
+  with reader do
   begin
-    inherited;
-    FConeAngle := 90;
-    FMinLimit := -90;
-    FMaxLimit := 90;
+    Assert(ReadInteger = 0);
+    // Archive version
   end;
+  FPinDir.ReadFromFiler(reader);
+end;
 
-  class function TNGDCustomJointBall.FriendlyDescription: string;
+procedure TNGDCustomJointBaseDir.Render;
+var
+  axe: TVector;
+begin
+  inherited;
+  if Assigned(Object1) and Assigned(Object2) then
   begin
-    Result := 'NGD Custom Ball joint implementation';
+    axe[0] := FPivotPoint.x - 10 * FPinDir.x;
+    axe[1] := FPivotPoint.y - 10 * FPinDir.y;
+    axe[2] := FPivotPoint.z - 10 * FPinDir.z;
+    GL.Vertex3fv(@axe);
+    axe[0] := FPivotPoint.x + 10 * FPinDir.x;
+    axe[1] := FPivotPoint.y + 10 * FPinDir.y;
+    axe[2] := FPivotPoint.z + 10 * FPinDir.z;
+    GL.Vertex3fv(@axe);
   end;
+end;
 
-  class function TNGDCustomJointBall.FriendlyName: string;
+procedure TNGDCustomJointBaseDir.StructureChanged(Sender: TObject);
+var
+  bso: TGLBaseSceneObject;
+  Line: TVector;
+begin
+  inherited;
+  FPinDir.OnNotifyChange := nil;
+  FPinDir.Normalize;
+  FPinDir.OnNotifyChange := StructureChanged;
+
+  if Assigned(FManager) then
   begin
-    Result := 'CustomBall';
+    bso := TGLBaseSceneObject.Create(FManager);
+    bso.AbsolutePosition := FPivotPoint.AsVector;
+    bso.AbsoluteDirection := FPinDir.AsVector;
+    FPinAndPivotMatrix := bso.AbsoluteMatrix;
+    bso.Free;
+
+    { Newton wait from FPinAndPivotMatrix a structure like that:
+      First row: the pin direction
+      Second and third rows are set to create an orthogonal matrix
+      Fourth: The pivot position
+
+      In glscene, the GLBaseSceneObjects direction is the third row,
+      because the first row is the right vector (second row is up vector). }
+    Line[0] := FPinAndPivotMatrix[2, 0];
+    Line[1] := FPinAndPivotMatrix[2, 1];
+    Line[2] := FPinAndPivotMatrix[2, 2];
+    Line[3] := FPinAndPivotMatrix[2, 3];
+
+    FPinAndPivotMatrix[2, 0] := FPinAndPivotMatrix[0, 0];
+    FPinAndPivotMatrix[2, 1] := FPinAndPivotMatrix[0, 1];
+    FPinAndPivotMatrix[2, 2] := FPinAndPivotMatrix[0, 2];
+    FPinAndPivotMatrix[2, 3] := FPinAndPivotMatrix[0, 3];
+
+    FPinAndPivotMatrix[0, 0] := Line[0];
+    FPinAndPivotMatrix[0, 1] := Line[1];
+    FPinAndPivotMatrix[0, 2] := Line[2];
+    FPinAndPivotMatrix[0, 3] := Line[3];
+
   end;
 
-  procedure TNGDCustomJointBall.ReadFromFiler(reader: TReader);
+end;
+
+procedure TNGDCustomJointBaseDir.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
   begin
-    inherited;
-    with reader do
-    begin
-      Assert(ReadInteger = 0);
-      // Archive version
-      FConeAngle := ReadSingle;
-    end;
+    WriteInteger(0);
+    // Archive version
   end;
+  FPinDir.WriteToFiler(writer);
+end;
 
-  procedure TNGDCustomJointBall.SetConeAngle(val: Single);
-  begin
-    if (val >= 0) and (val < 180) then
-      FConeAngle := val;
-    if FNewtonUserJoint <> nil then
-      BallAndSocketSetConeAngle(FNewtonUserJoint, DegToRad(FConeAngle));
-  end;
+{ TNGDCustomJointHinge }
 
-  procedure TNGDCustomJointBall.SetMaxLimit(val: Single);
-  begin
-    if (val >= FMinLimit) then
-      FMaxLimit := val;
-    if FNewtonUserJoint <> nil then
-      BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
-        DegToRad(FMaxLimit));
-  end;
+constructor TNGDCustomJointHinge.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FMinLimit := -90;
+  FMaxLimit := 90;
+end;
 
-  procedure TNGDCustomJointBall.SetMinLimit(val: Single);
-  begin
-    if (val <= FMaxLimit) then
-      FMinLimit := val;
-    if FNewtonUserJoint <> nil then
-      BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
-        DegToRad(FMaxLimit));
-  end;
+class function TNGDCustomJointHinge.FriendlyDescription: string;
+begin
+  Result := 'NGD Custom Hinge joint implementation';
+end;
 
-  procedure TNGDCustomJointBall.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDCustomJointBall then
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonUserJoint := CreateCustomBallAndSocket(@FPinAndPivotMatrix,
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          BallAndSocketSetTwistAngle(FNewtonUserJoint, DegToRad(FMinLimit),
-            DegToRad(FMaxLimit));
-          BallAndSocketSetConeAngle(FNewtonUserJoint, DegToRad(FConeAngle));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-  end;
+class function TNGDCustomJointHinge.FriendlyName: string;
+begin
+  Result := 'CustomHinge';
+end;
 
-  procedure TNGDCustomJointBall.WriteToFiler(writer: TWriter);
-  begin
-    inherited;
-    with writer do
-    begin
-      WriteInteger(0);
-      // Archive version
-      WriteSingle(FConeAngle);
-    end;
-  end;
+procedure TNGDCustomJointHinge.SetMaxLimit(val: Single);
+begin
+  if (val >= FMinLimit) then
+    FMaxLimit := val;
+  if FNewtonUserJoint <> nil then
+    HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
+end;
 
-  { TNGDCustomJointBaseDir }
+procedure TNGDCustomJointHinge.SetMinLimit(val: Single);
+begin
+  if (val <= FMaxLimit) then
+    FMinLimit := val;
+  if FNewtonUserJoint <> nil then
+    HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
+end;
 
-  constructor TNGDCustomJointBaseDir.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FPinDir := TGLCoordinates.CreateInitialized(self, ZHmgVector, csVector);
-    FPinDir.OnNotifyChange := StructureChanged;
-  end;
+procedure TNGDCustomJointHinge.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDCustomJointHinge then
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonUserJoint := CreateCustomHinge(@FPinAndPivotMatrix,
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        HingeEnableLimits(FNewtonUserJoint, 1);
+        HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit),
+          DegToRad(FMaxLimit));
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
+end;
 
-  destructor TNGDCustomJointBaseDir.Destroy;
-  begin
-    FPinDir.Free;
-    inherited;
-  end;
+{ TNGDCustomJointSlider }
 
-  procedure TNGDCustomJointBaseDir.ReadFromFiler(reader: TReader);
-  begin
-    inherited;
-    with reader do
-    begin
-      Assert(ReadInteger = 0);
-      // Archive version
-    end;
-    FPinDir.ReadFromFiler(reader);
-  end;
+constructor TNGDCustomJointSlider.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FMinLimit := -10;
+  FMaxLimit := 10;
+end;
 
-  procedure TNGDCustomJointBaseDir.Render;
-  var
-    axe: TVector;
-  begin
-    inherited;
-    if Assigned(Object1) and Assigned(Object2) then
-    begin
-      axe[0] := FPivotPoint.x - 10 * FPinDir.x;
-      axe[1] := FPivotPoint.y - 10 * FPinDir.y;
-      axe[2] := FPivotPoint.z - 10 * FPinDir.z;
-      GL.Vertex3fv(@axe);
-      axe[0] := FPivotPoint.x + 10 * FPinDir.x;
-      axe[1] := FPivotPoint.y + 10 * FPinDir.y;
-      axe[2] := FPivotPoint.z + 10 * FPinDir.z;
-      GL.Vertex3fv(@axe);
-    end;
-  end;
+class function TNGDCustomJointSlider.FriendlyDescription: string;
+begin
+  Result := 'NGD Custom Slider joint implementation';
+end;
 
-  procedure TNGDCustomJointBaseDir.StructureChanged(Sender: TObject);
-  var
-    bso: TGLBaseSceneObject;
-    Line: TVector;
-  begin
-    inherited;
-    FPinDir.OnNotifyChange := nil;
-    FPinDir.Normalize;
-    FPinDir.OnNotifyChange := StructureChanged;
+class function TNGDCustomJointSlider.FriendlyName: string;
+begin
+  Result := 'CustomSlider';
+end;
 
-    if Assigned(FManager) then
-    begin
-      bso := TGLBaseSceneObject.Create(FManager);
-      bso.AbsolutePosition := FPivotPoint.AsVector;
-      bso.AbsoluteDirection := FPinDir.AsVector;
-      FPinAndPivotMatrix := bso.AbsoluteMatrix;
-      bso.Free;
+procedure TNGDCustomJointSlider.SetMaxLimit(val: Single);
+begin
+  if (val >= FMinLimit) then
+    FMaxLimit := val;
+  if FNewtonUserJoint <> nil then
+    SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+end;
 
-      { Newton wait from FPinAndPivotMatrix a structure like that:
-        First row: the pin direction
-        Second and third rows are set to create an orthogonal matrix
-        Fourth: The pivot position
+procedure TNGDCustomJointSlider.SetMinLimit(val: Single);
+begin
+  if (val <= FMaxLimit) then
+    FMinLimit := val;
+  if FNewtonUserJoint <> nil then
+    SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+end;
 
-        In glscene, the GLBaseSceneObjects direction is the third row,
-        because the first row is the right vector (second row is up vector). }
-      Line[0] := FPinAndPivotMatrix[2, 0];
-      Line[1] := FPinAndPivotMatrix[2, 1];
-      Line[2] := FPinAndPivotMatrix[2, 2];
-      Line[3] := FPinAndPivotMatrix[2, 3];
-
-      FPinAndPivotMatrix[2, 0] := FPinAndPivotMatrix[0, 0];
-      FPinAndPivotMatrix[2, 1] := FPinAndPivotMatrix[0, 1];
-      FPinAndPivotMatrix[2, 2] := FPinAndPivotMatrix[0, 2];
-      FPinAndPivotMatrix[2, 3] := FPinAndPivotMatrix[0, 3];
-
-      FPinAndPivotMatrix[0, 0] := Line[0];
-      FPinAndPivotMatrix[0, 1] := Line[1];
-      FPinAndPivotMatrix[0, 2] := Line[2];
-      FPinAndPivotMatrix[0, 3] := Line[3];
-
-    end;
-
-  end;
-
-  procedure TNGDCustomJointBaseDir.WriteToFiler(writer: TWriter);
-  begin
-    inherited;
-    with writer do
-    begin
-      WriteInteger(0);
-      // Archive version
-    end;
-    FPinDir.WriteToFiler(writer);
-  end;
-
-  { TNGDCustomJointHinge }
-
-  constructor TNGDCustomJointHinge.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FMinLimit := -90;
-    FMaxLimit := 90;
-  end;
-
-  class function TNGDCustomJointHinge.FriendlyDescription: string;
-  begin
-    Result := 'NGD Custom Hinge joint implementation';
-  end;
-
-  class function TNGDCustomJointHinge.FriendlyName: string;
-  begin
-    Result := 'CustomHinge';
-  end;
-
-  procedure TNGDCustomJointHinge.SetMaxLimit(val: Single);
-  begin
-    if (val >= FMinLimit) then
-      FMaxLimit := val;
-    if FNewtonUserJoint <> nil then
-      HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
-  end;
-
-  procedure TNGDCustomJointHinge.SetMinLimit(val: Single);
-  begin
-    if (val <= FMaxLimit) then
-      FMinLimit := val;
-    if FNewtonUserJoint <> nil then
-      HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
-  end;
-
-  procedure TNGDCustomJointHinge.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDCustomJointHinge then
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonUserJoint := CreateCustomHinge(@FPinAndPivotMatrix,
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          HingeEnableLimits(FNewtonUserJoint, 1);
-          HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit),
-            DegToRad(FMaxLimit));
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-  end;
-
-  { TNGDCustomJointSlider }
-
-  constructor TNGDCustomJointSlider.Create(AOwner: TXCollection);
-  begin
-    inherited;
-    FMinLimit := -10;
-    FMaxLimit := 10;
-  end;
-
-  class function TNGDCustomJointSlider.FriendlyDescription: string;
-  begin
-    Result := 'NGD Custom Slider joint implementation';
-  end;
-
-  class function TNGDCustomJointSlider.FriendlyName: string;
-  begin
-    Result := 'CustomSlider';
-  end;
-
-  procedure TNGDCustomJointSlider.SetMaxLimit(val: Single);
-  begin
-    if (val >= FMinLimit) then
-      FMaxLimit := val;
-    if FNewtonUserJoint <> nil then
-      SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
-  end;
-
-  procedure TNGDCustomJointSlider.SetMinLimit(val: Single);
-  begin
-    if (val <= FMaxLimit) then
-      FMinLimit := val;
-    if FNewtonUserJoint <> nil then
-      SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
-  end;
-
-  procedure TNGDCustomJointSlider.StructureChanged(Sender: TObject);
-  begin
-    inherited;
-    if Assigned(FManager) then
-      if self.Classtype = TNGDCustomJointSlider then
-        if Assigned(Object1) and Assigned(Object2) then
-        begin
-          FNewtonUserJoint := CreateCustomSlider(@FPinAndPivotMatrix,
-            GetBodyFromGLSceneObject(Object1),
-            GetBodyFromGLSceneObject(Object2));
-          SliderEnableLimits(FNewtonUserJoint, 1);
-          SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
-          CollisionState := FCollisionState;
-          Stiffness := FStiffness;
-        end;
-  end;
+procedure TNGDCustomJointSlider.StructureChanged(Sender: TObject);
+begin
+  inherited;
+  if Assigned(FManager) then
+    if self.Classtype = TNGDCustomJointSlider then
+      if Assigned(Object1) and Assigned(Object2) then
+      begin
+        FNewtonUserJoint := CreateCustomSlider(@FPinAndPivotMatrix,
+          GetBodyFromGLSceneObject(Object1),
+          GetBodyFromGLSceneObject(Object2));
+        SliderEnableLimits(FNewtonUserJoint, 1);
+        SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+        CollisionState := FCollisionState;
+        Stiffness := FStiffness;
+      end;
+end;
 
 initialization
 
