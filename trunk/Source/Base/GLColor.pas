@@ -23,7 +23,7 @@ interface
 
 uses
   // GLScene
-  Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
+  Classes, OpenGLTokens, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
   PersistentClasses, BaseClasses;
 
 type
@@ -65,7 +65,7 @@ type
          procedure NotifyChange(Sender : TObject); override;
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
-			function AsAddress : PSingle;
+			function AsAddress : PGLFloat;
 
          procedure RandomColor;
          procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
@@ -639,7 +639,7 @@ end;
 
 // AsAddress
 //
-function TGLColor.AsAddress: PSingle;
+function TGLColor.AsAddress: PGLFloat;
 begin
 	Result:=@FColor;
 end;
