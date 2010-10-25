@@ -3360,50 +3360,52 @@ var
   lastBinding: TGLuint;
 begin
   with CurrentGLContext.GLStates do
-  try
+  begin
     lastBinding := TextureBinding[ActiveTexture, Image.NativeTextureTarget];
-    Result := AllocateHandle;
-    if FTextureHandle.IsDataNeedUpdate then
-    begin
-      FTextureHandle.NotifyDataUpdated;
-      // Check supporting
-      target := DecodeGLTextureTarget(Image.NativeTextureTarget);
-      if not IsTargetSupported(target)
-        or not IsFormatSupported(TextureFormatEx) then
+    try
+      Result := AllocateHandle;
+      if FTextureHandle.IsDataNeedUpdate then
       begin
-        SetTextureErrorImage;
-        target := GL_TEXTURE_2D;
+        FTextureHandle.NotifyDataUpdated;
+        // Check supporting
+        target := DecodeGLTextureTarget(Image.NativeTextureTarget);
+        if not IsTargetSupported(target)
+          or not IsFormatSupported(TextureFormatEx) then
+        begin
+          SetTextureErrorImage;
+          target := GL_TEXTURE_2D;
+        end;
+        // Load images
+        TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
+        if Image is TGLCubeMapImage then
+        begin
+          cubeMapImage := (Image as TGLCubeMapImage);
+          // first check if everything is coherent, otherwise, bail out
+          cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
+          cubeMapOk := (cubeMapSize > 0);
+          if cubeMapOk then
+          begin
+            for cmt := cmtPX to cmtNZ do
+              with cubeMapImage.Picture[cmt] do
+              begin
+                cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
+                if not cubeMapOk then
+                  Break;
+              end;
+          end;
+          if cubeMapOk then
+          begin
+            for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
+              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
+              PrepareImage(i);
+          end;
+        end // of TGLCubeMapImage
+        else
+          PrepareImage(target);
       end;
-      // Load images
-      TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
-      if Image is TGLCubeMapImage then
-      begin
-        cubeMapImage := (Image as TGLCubeMapImage);
-        // first check if everything is coherent, otherwise, bail out
-        cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
-        cubeMapOk := (cubeMapSize > 0);
-        if cubeMapOk then
-        begin
-          for cmt := cmtPX to cmtNZ do
-            with cubeMapImage.Picture[cmt] do
-            begin
-              cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
-              if not cubeMapOk then
-                Break;
-            end;
-        end;
-        if cubeMapOk then
-        begin
-          for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
-            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-            PrepareImage(i);
-        end;
-      end // of TGLCubeMapImage
-      else
-        PrepareImage(target);
+    finally
+      TextureBinding[ActiveTexture, Image.NativeTextureTarget] := lastBinding;
     end;
-  finally
-    TextureBinding[ActiveTexture, Image.NativeTextureTarget] := lastBinding;
   end;
 end;
 

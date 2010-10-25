@@ -8302,10 +8302,7 @@ procedure TGLSceneBuffer.CopyToTexture(aTexture: TGLTexture;
   xDest, yDest: Integer;
   glCubeFace: TGLEnum = 0);
 var
-  handle: TGLEnum;
   bindTarget: TGLTextureTarget;
-  buf: Pointer;
-  bCreateTexture: Boolean;
 begin
   if RenderingContext <> nil then
   begin
