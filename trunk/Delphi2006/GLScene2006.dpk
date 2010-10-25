@@ -285,6 +285,7 @@ contains
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
   GLSelection in '..\Source\GLSelection.pas',
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
-  GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas';
+  GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
+  ImageUtils in '..\Source\Base\ImageUtils.pas';
 
 end.
