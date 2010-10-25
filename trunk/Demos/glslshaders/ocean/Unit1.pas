@@ -17,7 +17,6 @@ uses
   GLObjects,
   GLUtils,
   ComCtrls,
-  OpenGL1x,
   GLContext,
   Jpeg,
   TGA,
@@ -71,6 +70,7 @@ type
       var color: TVector4f; var texPoint: TTexPoint);
     procedure DOOceanPlaneRender(Sender: TObject;
       var rci: TRenderContextInfo);
+    procedure GLMemoryViewer1BeforeRender(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -154,17 +154,11 @@ begin
 
   // initialize the heightmap
   with MatLib.LibMaterialByName('water') do
-  begin
-    PrepareBuildList;
     rci.GLStates.TextureBinding[0, ttTexture2D] := Material.Texture.Handle;
-  end;
 
   // initialize the heightmap
   with MatLib.LibMaterialByName('cubeMap') do
-  begin
-    PrepareBuildList;
     rci.GLStates.TextureBinding[1, ttTextureCube] := Material.Texture.Handle;
-  end;
 
   if not programObject.ValidateProgram then
     raise Exception.Create(programObject.InfoLog);
@@ -285,6 +279,11 @@ begin
 
   GL.DisableClientState(GL_VERTEX_ARRAY);
   GLUserShader1DoUnApply(Self, 0, rci, cont);
+end;
+
+procedure TForm1.GLMemoryViewer1BeforeRender(Sender: TObject);
+begin
+  GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
 end;
 
 end.

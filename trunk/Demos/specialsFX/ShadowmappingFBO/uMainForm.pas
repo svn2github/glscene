@@ -76,7 +76,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LightFBORendererBeforeRender(Sender: TObject);
     procedure LightFBORendererAfterRender(Sender: TObject);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
@@ -184,16 +183,6 @@ begin
   GLSLShader2.Enabled := true;
 end;
 
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  case Key of
-    VK_F2:
-      begin
-      end;
-  end;
-end;
-
 procedure TForm1.FormResize(Sender: TObject);
 begin
   GLSceneViewer1.Camera.SceneScale := GLSceneViewer1.ClientWidth / 400;
@@ -209,7 +198,7 @@ end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-  if not (GL.EXT_framebuffer_object) then
+  if not (GLSceneViewer1.Buffer.RenderingContext.GL.EXT_framebuffer_object) then
   begin
     ShowMessage('Sorry, this demo requires GL_EXT_framebuffer_object and either');
     Close;

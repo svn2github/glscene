@@ -17,14 +17,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 668
-    Height = 442
+    Width = 660
+    Height = 433
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.FaceCulling = False
     Buffer.Lighting = False
+    FieldOfView = 164.221740722656300000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
@@ -46,11 +48,13 @@ object Form1: TForm1
       Up.Coordinates = {0000000000000000000080BF00000000}
       UseBuildList = False
       OnRender = DOInitializeRender
+      Blend = False
     end
     object DOOceanPlane: TGLDirectOpenGL
       Visible = False
       UseBuildList = False
       OnRender = DOOceanPlaneRender
+      Blend = False
     end
     object GLHeightField1: TGLHeightField
       Material.MaterialLibrary = MatLib
@@ -84,7 +88,7 @@ object Form1: TForm1
       item
         Name = 'water'
         Material.Texture.TextureMode = tmReplace
-        Material.Texture.TextureFormat = tfNormalMap
+        Material.Texture.TextureFormat = tfRGB
         Material.Texture.Disabled = False
         Material.Texture.NormalMapScale = 0.050000000745058060
         Tag = 0
@@ -116,7 +120,6 @@ object Form1: TForm1
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
     OnDoUnApply = GLUserShader1DoUnApply
-    ShaderStyle = ssLowLevel
     Left = 16
     Top = 96
   end
@@ -124,6 +127,7 @@ object Form1: TForm1
     Camera = CameraCubeMap
     Width = 128
     Height = 128
+    BeforeRender = GLMemoryViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Left = 64
@@ -141,6 +145,7 @@ object Form1: TForm1
       SunElevation = 25.000000000000000000
       Turbidity = 75.000000000000000000
       SunDawnColor.Color = {0000803F0000803F0000403F00000000}
+      ExtendedOptions = []
       Slices = 48
       Stacks = 24
     end
