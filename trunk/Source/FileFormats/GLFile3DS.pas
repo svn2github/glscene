@@ -353,6 +353,8 @@ const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
+resourcestring
+  gls3DSMapNotFound = 'Loading %s map texture failed: %s in %s';
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Misc functions'}{$ENDIF}
 
@@ -1756,8 +1758,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise E.Create(glsError + 'loading main texture' +
-                    #13#13 + e.Message + ' in' + #10#13 + matLib.TexturePaths);
+                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['diffuse', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1799,8 +1800,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise E.Create(glsError + 'loading opacity texture' +
-                    #13#13 + e.Message + ' in' + #10#13 + matLib.TexturePaths);
+                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['opacity', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1840,8 +1840,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise E.Create(glsError + 'loading bump map texture' +
-                    #13#13 + e.Message + ' in' + #10#13 + matLib.TexturePaths);
+                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['bump', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1889,8 +1888,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise E.Create('Error loading light map texture' +
-                    #13#13 + e.Message + ' in' + #10#13 + matLib.TexturePaths);
+                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['light', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
