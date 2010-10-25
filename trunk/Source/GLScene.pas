@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/10/10 - Yar - Bugfixed TGLSceneBuffer.CopyToTexture
       <li>08/09/10 - Yar - Added gloabal var vCurrentRenderingObject (Thanks Controller)
       <li>02/09/10 - Yar - Added GLSelection to uses. Improved TGLSceneBuffer.PickObjects for 64-bit OSes
       <li>29/08/10 - Yar - Bugfixed TGLSceneBuffer.DoStructuralChange when component loading causing excessive context recreation
@@ -2079,8 +2080,7 @@ type
     procedure CopyToTexture(aTexture: TGLTexture); overload;
     procedure CopyToTexture(aTexture: TGLTexture; xSrc, ySrc, width, height:
       Integer;
-      xDest, yDest: Integer; glTarget: TGLEnum = 0;
-      forceCreateTexture: Boolean = False); overload;
+      xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
     {: Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
     {: Event reserved for viewer-specific uses.<br> }
@@ -8300,74 +8300,36 @@ end;
 procedure TGLSceneBuffer.CopyToTexture(aTexture: TGLTexture;
   xSrc, ySrc, width, height: Integer;
   xDest, yDest: Integer;
-  glTarget: TGLEnum = 0;
-  forceCreateTexture: Boolean = False);
+  glCubeFace: TGLEnum = 0);
 var
-  handle, bindTarget: TGLEnum;
+  handle: TGLEnum;
+  bindTarget: TGLTextureTarget;
   buf: Pointer;
-  createTexture: Boolean;
+  bCreateTexture: Boolean;
 begin
   if RenderingContext <> nil then
   begin
     RenderingContext.Activate;
     try
-      if glTarget = 0 then
-      begin
-        glTarget := DecodeGLTextureTarget(aTexture.Image.NativeTextureTarget);
-        bindTarget := glTarget;
-      end
-      else
-      begin
-        if (glTarget >= GL_TEXTURE_CUBE_MAP_POSITIVE_X)
-          and (glTarget < GL_TEXTURE_CUBE_MAP_POSITIVE_X + 6) then
-          bindTarget := GL_TEXTURE_CUBE_MAP
-        else
-          bindTarget := glTarget;
-      end;
-      createTexture := not aTexture.IsHandleAllocated;
+      if not (aTexture.Image is TGLBlankImage) then
+        aTexture.ImageClassName := TGLBlankImage.ClassName;
+      if aTexture.Image.Width <> Width then
+        TGLBlankImage(aTexture.Image).Width := Width;
+      if aTexture.Image.Height <> Height then
+        TGLBlankImage(aTexture.Image).Height := Height;
+      if aTexture.Image.Depth <> 0 then
+        TGLBlankImage(aTexture.Image).Depth := 0;
+      if TGLBlankImage(aTexture.Image).CubeMap <> (glCubeFace > 0) then
+        TGLBlankImage(aTexture.Image).CubeMap := (glCubeFace > 0);
 
-      if createTexture then
-        handle := aTexture.AllocateHandle
+      bindTarget := aTexture.Image.NativeTextureTarget;
+      RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
+      if glCubeFace > 0 then
+        GL.CopyTexSubImage2D(glCubeFace,
+          0, xDest, yDest, xSrc, ySrc, Width, Height)
       else
-        handle := aTexture.Handle;
-      createTexture := createTexture or forceCreateTexture;
-      RenderingContext.GLStates.TextureBinding[0,
-        EncodeGLTextureTarget(bindTarget)] := handle;
-      if createTexture then
-      begin
-        GetMem(buf, Width * Height * 4);
-        try
-          GL.ReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-          case aTexture.MinFilter of
-            miNearest, miLinear:
-              GL.TexImage2d(glTarget, 0, aTexture.OpenGLTextureFormat, Width,
-                Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-          else if IsTargetSupportMipmap(bindTarget) then
-            if GL.SGIS_generate_mipmap then
-            begin
-              // hardware-accelerated when supported
-              GL.TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-              GL.TexImage2d(glTarget, 0, aTexture.OpenGLTextureFormat, Width,
-                Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-            end
-            else
-            begin
-              GL.TexImage2d(glTarget, 0, aTexture.OpenGLTextureFormat, Width,
-                Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-              if ((glTarget < GL_TEXTURE_CUBE_MAP_POSITIVE_X)
-                or (glTarget > GL_TEXTURE_CUBE_MAP_POSITIVE_Z)) then
-                GL.GenerateMipmap(glTarget);
-            end;
-          end;
-        finally
-          FreeMem(buf);
-        end;
-      end
-      else
-      begin
-        GL.CopyTexSubImage2D(glTarget, 0, xDest, yDest, xSrc, ySrc, Width, Height);
-      end;
-      GL.ClearError;
+        GL.CopyTexSubImage2D(DecodeGLTextureTarget(bindTarget),
+          0, xDest, yDest, xSrc, ySrc, Width, Height)
     finally
       RenderingContext.Deactivate;
     end;
@@ -9747,19 +9709,16 @@ procedure TGLNonVisualViewer.RenderCubeMapTextures(cubeMapTexture: TGLTexture;
   zFar: Single = 0);
 var
   oldEvent: TNotifyEvent;
-  forceCreateTexture: Boolean;
 begin
   Assert((Width = Height), 'Memory Viewer must render to a square!');
   Assert(Assigned(FBuffer.FCamera), 'Camera not specified');
   Assert(Assigned(cubeMapTexture), 'Texture not specified');
-  Assert((cubeMapTexture.Image is TGLCubeMapImage), 'Texture is not CubeMap');
 
   if zFar <= 0 then
     zFar := FBuffer.FCamera.DepthOfView;
   if zNear <= 0 then
     zNear := zFar * 0.001;
 
-  forceCreateTexture := not cubeMapTexture.IsHandleAllocated;
   oldEvent := FBuffer.FCamera.FDeferredApply;
   FBuffer.FCamera.FDeferredApply := SetupCubeMapCamera;
   FCubeMapZNear := zNear;
@@ -9771,8 +9730,7 @@ begin
     begin
       Render;
       Buffer.CopyToTexture(cubeMapTexture, 0, 0, Width, Height, 0, 0,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + FCubeMapRotIdx,
-        forceCreateTexture);
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + FCubeMapRotIdx);
       Inc(FCubeMapRotIdx);
     end;
   finally
