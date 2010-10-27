@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
       <li>09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
                            SetGLTextureMatrix work for ActiveTexture (in four count)
       <li>23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
@@ -233,6 +234,9 @@ type
 
     // Texture state
     FMaxTextureSize: TGLuint;
+    FMax3DTextureSize: TGLuint;
+    FMaxCubeTextureSize: TGLuint;
+    FMaxArrayTextureSize: TGLuint;
     FMaxTextureImageUnits: TGLuint;
     FMaxTextureAnisotropy: TGLuint;
     FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of TGLuint;
@@ -403,6 +407,9 @@ type
     procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield);
     // Texture state
     function GetMaxTextureSize: TGLuint;
+    function GetMax3DTextureSize: TGLuint;
+    function GetMaxCubeTextureSize: TGLuint;
+    function GetMaxArrayTextureSize: TGLuint;
     function GetMaxTextureImageUnits: TGLuint;
     function GetMaxTextureAnisotropy: TGLuint;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
@@ -713,6 +720,9 @@ type
     property SamplerBinding[Index: TGLuint]: TGLuint read GetSamplerBinding
       write SetSamplerBinding;
     property MaxTextureSize: TGLuint read GetMaxTextureSize;
+    property Max3DTextureSize: TGLuint read GetMax3DTextureSize;
+    property MaxCubeTextureSize: TGLuint read GetMaxCubeTextureSize;
+    property MaxArrayTextureSize: TGLuint read GetMaxArrayTextureSize;
     property MaxTextureImageUnits: TGLuint read GetMaxTextureImageUnits;
     property MaxTextureAnisotropy: TGLuint read GetMaxTextureAnisotropy;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
@@ -1189,13 +1199,14 @@ begin
     FLightIndices[I] := 0;
     FLightStates[I].Position := NullHmgVector;
     FLightStates[I].Ambient := clrBlack;
-    FLightStates[I].Diffuse := clrWhite;
+    FLightStates[I].Diffuse := clrBlack;
     FLightStates[I].Specular := clrBlack;
     FLightStates[I].SpotCutoff := 180;
     FLightStates[I].ConstantAtten := 1;
     FLightStates[I].LinearAtten := 0;
     FLightStates[I].QuadAtten := 0;
   end;
+  FLightStates[0].Diffuse := clrWhite;
 
   for I := High(FTextureMatrixIsIdentity) downto 0 do
     FTextureMatrixIsIdentity[I] := False;
@@ -2175,6 +2186,28 @@ begin
     GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @FMaxTextureSize);
   Result := FMaxTextureSize;
 end;
+
+function TGLStateCache.GetMax3DTextureSize: TGLuint;
+begin
+  if FMax3DTextureSize = 0 then
+    GL.GetIntegerv(GL_MAX_3D_TEXTURE_SIZE, @FMax3DTextureSize);
+  Result := FMax3DTextureSize;
+end;
+
+function TGLStateCache.GetMaxCubeTextureSize: TGLuint;
+begin
+  if FMaxCubeTextureSize = 0 then
+    GL.GetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, @FMaxCubeTextureSize);
+  Result := FMaxCubeTextureSize;
+end;
+
+function TGLStateCache.GetMaxArrayTextureSize: TGLuint;
+begin
+  if FMaxArrayTextureSize = 0 then
+    GL.GetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, @FMaxArrayTextureSize);
+  Result := FMaxArrayTextureSize;
+end;
+
 
 function TGLStateCache.GetMaxTextureImageUnits: TGLuint;
 begin
