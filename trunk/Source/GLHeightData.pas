@@ -771,10 +771,10 @@ begin
   FThread.FreeOnTerminate := false;
   THeightDataSourceThread(FThread).FOwner := self;
   if self.MaxThreads > 0 then
-{$IFDEF GLS_DELPHI_2010_UP}
-    FThread.Start;
-{$ELSE}
+{$IFDEF GLS_DELPHI_2010_UP or FPC}
     FThread.Resume;
+{$ELSE}
+    FThread.Start;
 {$ENDIF}
 end;
 
@@ -788,10 +788,10 @@ begin
   if assigned(FThread) then
   begin
     FThread.Terminate;
-{$IFDEF GLS_DELPHI_2010_UP}
-    FThread.Start;
-{$ELSE}
+{$IFDEF GLS_DELPHI_2009_DOWN}
     FThread.Resume;
+{$ELSE}
+    FThread.Start;
 {$ENDIF}
     FThread.WaitFor;
     FThread.Free;
@@ -1109,10 +1109,10 @@ begin
     // If we didn't do threading, but will now
     // resume our thread
     if (FMaxThreads <= 0) then
-{$IFDEF GLS_DELPHI_2010_UP}
-      FThread.Start;
-{$ELSE}
+{$IFDEF GLS_DELPHI_2009_DOWN}
       FThread.Resume;
+{$ELSE}
+      FThread.Start;
 {$ENDIF}
     FMaxThreads := val;
   end;
@@ -1282,10 +1282,10 @@ begin
   begin
     FThread.Terminate;
     if FThread.Suspended then
-{$IFDEF GLS_DELPHI_2010_UP}
-      FThread.Start;
-{$ELSE}
+{$IFDEF GLS_DELPHI_2009_DOWN}
       FThread.Resume;
+{$ELSE}
+      FThread.Start;
 {$ENDIF}
     FThread.WaitFor;
   end;

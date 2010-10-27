@@ -115,7 +115,10 @@ begin
   rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
   rimg.Description.RedShift := 16;
   rimg.Description.BlueShift := 0;
-  rimg.Description.LineOrder := riloBottomToTop;
+  if bCubeMap then
+    rimg.Description.LineOrder := riloTopToBottom
+  else
+    rimg.Description.LineOrder := riloBottomToTop;
   RIMG.DataSize := Width * Height * 4;
   rimg.Data := PByte(FullDDS.Data);
   LoadFromRawImage(rimg, false);

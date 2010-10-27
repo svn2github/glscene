@@ -190,6 +190,9 @@ type
     procedure SurfaceToVolumeTask;
     procedure NarrowThreadTask;
     procedure GenerateMipmapTask;
+  private
+    S2Vrow, s2Vcol: Integer;
+    S2Vflag: Boolean;
   public
     constructor Create; reintroduce; virtual;
     destructor Destroy; override;
@@ -1385,10 +1388,6 @@ begin
   Result := true;
 end;
 
-var
-  _col, _row: Integer;
-  _flag: Boolean;
-
 procedure TGLBaseImage.SurfaceToVolumeTask;
 var
   fW, fH, sW, sH, sD: Integer;
@@ -1397,7 +1396,7 @@ var
   i, j, k: Integer;
 begin
   // Check sizes
-  sD := _col * _row;
+  sD := S2Vcol * S2Vrow;
   if sD < 1 then
     Exit;
   if IsCompressed then
@@ -1410,11 +1409,11 @@ begin
     fW := fWidth;
     fH := fHeight;
   end;
-  sW := fW div _col;
-  sH := fH div _row;
+  sW := fW div S2Vcol;
+  sH := fH div S2Vrow;
   if (sW = 0) or (sH = 0) then
   begin
-    _flag := False;
+    S2Vflag := False;
     Exit;
   end;
 
@@ -1425,8 +1424,8 @@ begin
   lData := PByteArray(fData);
   GetMem(fData, sW * sH * sD * fElementSize);
   ptr := PGLubyte(fData);
-  for i := 0 to _row - 1 do
-    for j := 0 to _col - 1 do
+  for i := 0 to S2Vrow - 1 do
+    for j := 0 to S2Vcol - 1 do
       for k := 0 to sH - 1 do
       begin
         Move(lData[(i * fW * sH + j * sW + k * fW) * fElementSize],
@@ -1437,14 +1436,14 @@ begin
   fWidth := sW;
   fHeight := sH;
   fDepth := sD;
-  fTextureArray := _flag;
+  fTextureArray := S2Vflag;
   if IsCompressed then
   begin
     fWidth := fWidth * 4;
     fHeight := fHeight * 4;
   end;
   FreeMem(lData);
-  _flag := True;
+  S2Vflag := True;
 end;
 
 // ConvertToVolume
@@ -1473,12 +1472,16 @@ begin
     exit;
   end;
 
+  S2Vcol := col;
+  S2Vrow := row;
+  S2Vflag := MakeArray;
+
   if IsServiceContextAvaible then
     AddTaskForServiceContext(SurfaceToVolumeTask, NewEvent)
   else
     SurfaceToVolumeTask;
 
-  Result := _flag;
+  Result := S2Vflag;
 end;
 
 procedure TGLBaseImage.SetErrorImage;
