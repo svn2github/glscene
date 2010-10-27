@@ -11,14 +11,12 @@ unit UMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
   // VCL
   SysUtils, Classes, Graphics, Controls, Forms, CheckLst, ExtCtrls, StdCtrls,
 
   // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
+  GLTexture, GLCadencer, GLLCLViewer, GLScene, GLPostEffects,
   GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
@@ -26,7 +24,7 @@ uses
   GLSLPostBlurShader, CGPostTransformationShader,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage, GLMaterial, GLCoordinates,
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage, GLMaterial, GLCoordinates,
   BaseClasses;
 
 type
@@ -58,7 +56,6 @@ type
     PostShaderHolder: TGLPostShaderHolder;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: double);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure LightCubeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure BigBlurThicknessCheckboxClick(Sender: TObject);
@@ -77,31 +74,39 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
+
+uses FileUtil;
 
 procedure TPostShaderDemoForm.FormCreate(Sender: TObject);
-const
-  MEDIA_PATH = '..\..\media\';
+var
+  path: UTF8String;
+  p: integer;
 begin
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
   // First load models.
-  Fighter.LoadFromFile(MEDIA_PATH + 'waste.md2'); //Fighter
+  Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
   Fighter.Scale.Scale(2);
 
-  Teapot.LoadFromFile(MEDIA_PATH + 'Teapot.3ds'); //Teapot (no texture coordinates)
+  Teapot.LoadFromFile('Teapot.3ds'); //Teapot (no texture coordinates)
   Teapot.Scale.Scale(0.8);
 
-  Sphere_big.LoadFromFile(MEDIA_PATH + 'Sphere_big.3DS');
+  Sphere_big.LoadFromFile('Sphere_big.3DS');
   Sphere_big.Scale.Scale(70);
 
-  Sphere_little.LoadFromFile(MEDIA_PATH + 'Sphere_little.3ds');
+  Sphere_little.LoadFromFile('Sphere_little.3ds');
   Sphere_little.Scale.Scale(4);
 
   // Then load textures.
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Earth.jpg');
-  MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Waste.jpg');
-  MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Flare1.bmp');
+  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
+  MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile('Waste.jpg');
+  MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile('Flare1.bmp');
 
   // Blur Shader
   BlurShader := TGLSLPostBlurShader.Create(Self);
@@ -131,11 +136,6 @@ begin
     Sphere_little.Roll(40 * deltaTime);
     Teapot.Roll(-20 * deltaTime);
   end;
-end;
-
-procedure TPostShaderDemoForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Cadencer.Enabled := False;
 end;
 
 procedure TPostShaderDemoForm.LightCubeProgress(Sender: TObject; const deltaTime,

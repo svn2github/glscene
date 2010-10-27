@@ -171,6 +171,7 @@ object Form1: TForm1
     Camera = CameraCubeMap
     Width = 128
     Height = 128
+    BeforeRender = GLMemoryViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
     left = 64
     top = 56

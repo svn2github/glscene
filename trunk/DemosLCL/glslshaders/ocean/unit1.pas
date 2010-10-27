@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLViewer, GLScene, GLTexture, GLObjects,
-  ComCtrls, OpenGL1x, GLContext, VectorGeometry, GLGeomObjects,
+  ComCtrls, GLContext, VectorGeometry, GLGeomObjects,
   GLCadencer, ExtCtrls, GLUserShader, GLGraph, GLSkydome,
   VectorLists, GLCrossPlatform, GLMaterial, GLCoordinates,
   GLRenderContextInfo, GLColor, OpenGLTokens;
@@ -37,6 +37,7 @@ type
       var rci: TRenderContextInfo);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var acolor: TColorVector; var texPoint: TTexPoint);
+    procedure GLMemoryViewer1BeforeRender(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -393,6 +394,11 @@ begin
 
   GL.DisableClientState(GL_VERTEX_ARRAY);
   GLUserShader1DoUnApply(Self, 0, rci, cont);
+end;
+
+procedure TForm1.GLMemoryViewer1BeforeRender(Sender: TObject);
+begin
+  GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
 end;
 
 end.
