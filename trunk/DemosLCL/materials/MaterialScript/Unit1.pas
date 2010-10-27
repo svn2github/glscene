@@ -3,7 +3,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLTexture, GLScene, GLObjects, GLLCLViewer, StdCtrls,
   ExtCtrls, GLMaterialScript, GLCadencer, GLMaterial, GLCoordinates,
   GLCrossPlatform, BaseClasses;
@@ -49,26 +49,27 @@ implementation
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
-   if OpenDialog1.Execute then
-      if fileexists(Opendialog1.FileName) then
+  OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
+  if OpenDialog1.Execute then
+    if fileexists(Opendialog1.FileName) then
       Memo1.Lines.LoadFromFile(Opendialog1.FileName);
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
-   GLMaterialLibrary1.Materials.Clear;
-   GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
-   GLMaterialScripter1.Script := Memo1.Lines;
-   GLMaterialScripter1.CompileScript;
-   GLCube1.Material.LibMaterialName := 'TestMat';
+  GLMaterialLibrary1.Materials.Clear;
+  GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
+  GLMaterialScripter1.Script := Memo1.Lines;
+  GLMaterialScripter1.CompileScript;
+  GLCube1.Material.LibMaterialName := 'TestMat';
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   GLMaterialScripter1.DebugMemo := Memo2;;
-   GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
+  GLMaterialScripter1.DebugMemo := Memo2;
+  GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
+  SetCurrentDir(ExtractFilePath(Application.ExeName));
 end;
 
 end.
+

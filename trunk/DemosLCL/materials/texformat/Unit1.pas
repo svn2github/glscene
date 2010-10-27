@@ -21,7 +21,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, GLScene, GLObjects, GLTexture, GLHUDObjects,
   GLCadencer, GLLCLViewer, GLCoordinates, GLCrossPlatform, BaseClasses;
 
@@ -55,7 +55,7 @@ type
     { Déclarations privées }
   public
     { Déclarations publiques }
-    newSelection : Boolean;
+    newSelection: boolean;
   end;
 
 var
@@ -65,73 +65,89 @@ implementation
 
 {$R *.lfm}
 
-uses GLTextureFormat;
+uses GLTextureFormat, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   sr : TSearchRec;
-   i : Integer;
+  sr: TSearchRec;
+  i: integer;
+  path: UTF8String;
+  p: integer;
 begin
-   // collect JPeg textures from the demos' media directory
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
-   i:=FindFirst('..\..\media\*.jpg', faAnyFile, sr);
-   while i=0 do begin
-      CBImage.Items.Add(sr.Name);
-      i:=FindNext(sr);
-   end;
-   FindClose(sr);
-   // default selection
-   CBFormat.ItemIndex:=0;
-   CBCompression.ItemIndex:=0;
-   CBImage.ItemIndex:=0;
-   CBImageChange(Self);
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+  // collect JPeg textures from the demos' media directory
+  i := FindFirst('*.jpg', faAnyFile, sr);
+  while i = 0 do
+  begin
+    CBImage.Items.Add(sr.Name);
+    i := FindNext(sr);
+  end;
+  FindClose(sr);
+  // default selection
+  CBFormat.ItemIndex := 0;
+  CBCompression.ItemIndex := 0;
+  CBImage.ItemIndex := 0;
+  CBImageChange(Self);
 end;
 
 procedure TForm1.CBImageChange(Sender: TObject);
 begin
-   // adjust settings from selection and reload the texture map
-   with HUDSprite1.Material.Texture do begin
-      TextureFormat:=TGLTextureFormat(Integer(tfRGB)+CBFormat.ItemIndex);
-      Compression:=TGLTextureCompression(Integer(tcNone)+CBCompression.ItemIndex);
-      Image.LoadFromFile('..\..\media\'+CBImage.Text);
-      LAPicSize.Caption:=IntToStr(Image.Width)+' x '+IntToStr(Image.Height);
-      if RBDefault.Checked then begin
-         HUDSprite1.Width:=Image.Width;
-         HUDSprite1.Height:=Image.Height;
-      end else if RBDouble.Checked then begin
-         HUDSprite1.Width:=Image.Width*2;
-         HUDSprite1.Height:=Image.Height*2;
-      end else begin
-         HUDSprite1.Width:=Image.Width*4;
-         HUDSprite1.Height:=Image.Height*4;
-      end;
-   end;
-   FormResize(Self);
-   newSelection:=True;
+  // adjust settings from selection and reload the texture map
+  with HUDSprite1.Material.Texture do
+  begin
+    TextureFormat := TGLTextureFormat(integer(tfRGB) + CBFormat.ItemIndex);
+    Compression := TGLTextureCompression(integer(tcNone) + CBCompression.ItemIndex);
+    Image.LoadFromFile(CBImage.Text);
+    LAPicSize.Caption := IntToStr(Image.Width) + ' x ' + IntToStr(Image.Height);
+    if RBDefault.Checked then
+    begin
+      HUDSprite1.Width := Image.Width;
+      HUDSprite1.Height := Image.Height;
+    end
+    else if RBDouble.Checked then
+    begin
+      HUDSprite1.Width := Image.Width * 2;
+      HUDSprite1.Height := Image.Height * 2;
+    end
+    else
+    begin
+      HUDSprite1.Width := Image.Width * 4;
+      HUDSprite1.Height := Image.Height * 4;
+    end;
+  end;
+  FormResize(Self);
+  newSelection := True;
 end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
-   // re-center the HUDSprite
-   HUDSprite1.Position.X:=GLSceneViewer1.Width/2;
-   HUDSprite1.Position.Y:=GLSceneViewer1.Height/2;
-   GLSceneViewer1.Invalidate;
+  // re-center the HUDSprite
+  HUDSprite1.Position.X := GLSceneViewer1.Width / 2;
+  HUDSprite1.Position.Y := GLSceneViewer1.Height / 2;
+  GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 var
-   rgb : Integer;
+  rgb: integer;
 begin
-   // update compression stats, only the 1st time after a new selection
-   if newSelection then with HUDSprite1.Material.Texture do begin
-      rgb:=Image.Width*Image.Height*4;
-      LARGB32.Caption:=Format('RGBA 32bits would require %d kB', [rgb div 1024]);
-      LAUsedMemory.Caption:=Format('Required memory : %d kB',
-                                   [TextureImageRequiredMemory div 1024]);
-      LACompression.Caption:=Format('Compression ratio : %d %%',
-                                    [100-100*TextureImageRequiredMemory div rgb]);
-      newSelection:=False;
-   end;
+  // update compression stats, only the 1st time after a new selection
+  if newSelection then
+    with HUDSprite1.Material.Texture do
+    begin
+      rgb := Image.Width * Image.Height * 4;
+      LARGB32.Caption := Format('RGBA 32bits would require %d kB', [rgb div 1024]);
+      LAUsedMemory.Caption := Format('Required memory : %d kB',
+        [TextureImageRequiredMemory div 1024]);
+      LACompression.Caption := Format('Compression ratio : %d %%',
+        [100 - 100 * TextureImageRequiredMemory div rgb]);
+      newSelection := False;
+    end;
 end;
 
 end.
+

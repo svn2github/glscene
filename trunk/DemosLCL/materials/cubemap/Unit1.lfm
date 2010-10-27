@@ -16,7 +16,7 @@ object Form1: TForm1
     Width = 316
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 55.5485649108886
+    FieldOfView = 55.5485649108887
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -39,7 +39,7 @@ object Form1: TForm1
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
-      CubeSize = 0.80000001192092
+      CubeSize = 0.80000001192093
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource

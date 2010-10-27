@@ -33,15 +33,15 @@ type
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure Timer1Timer(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
   private
     { Private declarations }
-    frame: Integer;
+    frame: integer;
     partial: boolean;
   public
     { Public declarations }
@@ -62,7 +62,7 @@ begin
   GLSceneViewer1.Align := alClient;
 end;
 
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 var
   tex: TGLTexture;
   img: TGLDynamicTextureImage;
@@ -78,17 +78,17 @@ begin
     begin
       img.UsePBO := False;
       GLSceneViewer1.ResetPerformanceMonitor;
-      frame:= 0;
+      frame := 0;
     end;
     VK_F3:
     begin
       img.UsePBO := True;
       GLSceneViewer1.ResetPerformanceMonitor;
-      frame:= 0;
+      frame := 0;
     end;
     VK_F4:
     begin
-      partial:= not partial;
+      partial := not partial;
     end;
   end;
 end;
@@ -98,17 +98,17 @@ begin
   GLCamera1.SceneScale := GLSceneViewer1.ClientWidth / 400;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
 begin
   GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 var
-  tex:  TGLTexture;
-  img:  TGLDynamicTextureImage;
-  p:    PRGBQuad;
-  X, Y: Integer;
+  tex: TGLTexture;
+  img: TGLDynamicTextureImage;
+  p: PRGBQuad;
+  X, Y: integer;
 begin
   tex := GLMaterialLibrary1.TextureByName('Anim');
   if tex.Disabled then
@@ -141,11 +141,8 @@ begin
     // not the complete texture
     // also note that the right/bottom edge is not included
     // in the upload
-    img.DirtyRectangle:= GLRect(
-      img.Width div 4,
-      img.Height div 4,
-      img.Width * 3 div 4,
-      img.Height * 3 div 4);
+    img.DirtyRectangle := GLRect(img.Width div 4, img.Height div 4,
+      img.Width * 3 div 4, img.Height * 3 div 4);
   end;
 
   for Y := img.DirtyRectangle.Top to img.DirtyRectangle.Bottom - 1 do
@@ -164,11 +161,11 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 const
-  PBOText: array[Boolean] of string = ('PBO disabled', 'PBO enabled');
+  PBOText: array[boolean] of string = ('PBO disabled', 'PBO enabled');
 var
   tex: TGLTexture;
   img: TGLDynamicTextureImage;
-  s:   string;
+  s: string;
 begin
   tex := GLMaterialLibrary1.TextureByName('Anim');
   if (tex.Image is TGLDynamicTextureImage) then
@@ -182,3 +179,4 @@ begin
 end;
 
 end.
+

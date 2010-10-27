@@ -56,7 +56,7 @@ object Form1: TForm1
     Left = 432
     Height = 20
     Top = 8
-    Width = 95
+    Width = 94
     Caption = 'MultiTexture'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -16

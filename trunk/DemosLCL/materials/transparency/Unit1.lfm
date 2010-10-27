@@ -173,8 +173,8 @@ object Form1: TForm1
           Up.Coordinates = {
             000000002EBD3BB3000080BF00000000
           }
-          MajorRadius = 0.80000001192092
-          MinorRadius = 0.10000000149011
+          MajorRadius = 0.80000001192093
+          MinorRadius = 0.10000000149012
         end
         object Cone1: TGLCone
           TagFloat = 0
@@ -190,7 +190,7 @@ object Form1: TForm1
           }
           RollAngle = 0
           TurnAngle = 0
-          BottomRadius = 0.30000001192092
+          BottomRadius = 0.30000001192093
           Height = 2
         end
         object CentralSphere: TGLSphere
@@ -205,7 +205,7 @@ object Form1: TForm1
           PitchAngle = 0
           RollAngle = 0
           TurnAngle = 0
-          Radius = 0.60000002384185
+          Radius = 0.60000002384186
         end
       end
     end

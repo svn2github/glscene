@@ -32,10 +32,7 @@ unit Unit1;
 interface
 
 uses
-  {$IFDEF FPC}
-  Windows,
-  {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, StdCtrls, GLCadencer, GLBehaviours, GLTexture,
   VectorGeometry, GLLCLViewer, GLGeomObjects, GLCoordinates, GLCrossPlatform,
   BaseClasses, GLMaterial, GLRenderContextInfo;

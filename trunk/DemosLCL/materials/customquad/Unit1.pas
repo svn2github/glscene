@@ -16,7 +16,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLLCLViewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
   GLCoordinates, BaseClasses, GLRenderContextInfo;
@@ -32,7 +32,7 @@ type
     DirectOpenGL1: TGLDirectOpenGL;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
-    procedure DirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure FormCreate(Sender: TObject);
   private
     { Déclarations privées }
@@ -47,50 +47,68 @@ implementation
 
 {$R *.lfm}
 
-uses OpenGL1x, GLState;
+uses OpenGLTokens, GLContext, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: Integer;
 begin
-   // dynamically create 2 materials and load 2 textures
-   with GLMaterialLibrary do begin
-      with AddTextureMaterial('wood', '..\..\media\ashwood.jpg') do
-      begin
-         Material.FrontProperties.Emission.Color:=clrGray50;
-         Material.FaceCulling := fcNoCull;
-      end;
-      with AddTextureMaterial('stone', '..\..\media\walkway.jpg') do
-      begin
-         Material.FrontProperties.Emission.Color:=clrGray50;
-         Material.FaceCulling := fcNoCull;
-      end;
-   end;
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
+  // dynamically create 2 materials and load 2 textures
+  with GLMaterialLibrary do
+  begin
+    with AddTextureMaterial('wood', 'ashwood.jpg') do
+    begin
+      Material.FrontProperties.Emission.Color := clrGray50;
+      Material.FaceCulling := fcNoCull;
+    end;
+    with AddTextureMaterial('stone', 'walkway.jpg') do
+    begin
+      Material.FrontProperties.Emission.Color := clrGray50;
+      Material.FaceCulling := fcNoCull;
+    end;
+  end;
 end;
 
-procedure TForm1.DirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 var
-   material : TGLLibMaterial;
+  material: TGLLibMaterial;
 begin
-   // 1st quad, textured with 'wood', using standard method
-   GLMaterialLibrary.ApplyMaterial('wood', rci);
-   glBegin(GL_QUADS);
-      glTexCoord2f(0, 1);  glVertex3f(0.5, 0.5, -0.5);
-      glTexCoord2f(0, 0);  glVertex3f(-0.5, 0.5, -0.5);
-      glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
-      glTexCoord2f(1, 1);  glVertex3f(0.5, 0, 0.5);
-   glEnd;
-   GLMaterialLibrary.UnApplyMaterial(rci);
-   // 2nd quad, textured with 'stone'
-   // we "manually" apply the material, this can be usefull if you want to have
-   // some dynamic material control
-   material:=GLMaterialLibrary.Materials.GetLibMaterialByName('stone');
-   material.Material.Apply(rci);
-   glBegin(GL_QUADS);
-      glTexCoord2f(0, 1);  glVertex3f(0.5, -0.5, -0.5);
-      glTexCoord2f(0, 0);  glVertex3f(0.5, 0, 0.5);
-      glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
-      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5); 
-   glEnd;
-   material.Material.UnApply(rci);
+  // 1st quad, textured with 'wood', using standard method
+  GLMaterialLibrary.ApplyMaterial('wood', rci);
+  GL.Begin_(GL_QUADS);
+  GL.TexCoord2f(0, 1);
+  GL.Vertex3f(0.5, 0.5, -0.5);
+  GL.TexCoord2f(0, 0);
+  GL.Vertex3f(-0.5, 0.5, -0.5);
+  GL.TexCoord2f(1, 0);
+  GL.Vertex3f(-0.5, 0, 0.5);
+  GL.TexCoord2f(1, 1);
+  GL.Vertex3f(0.5, 0, 0.5);
+  GL.End_;
+  GLMaterialLibrary.UnApplyMaterial(rci);
+  // 2nd quad, textured with 'stone'
+  // we "manually" apply the material, this can be usefull if you want to have
+  // some dynamic material control
+  material := GLMaterialLibrary.Materials.GetLibMaterialByName('stone');
+  material.Material.Apply(rci);
+  GL.Begin_(GL_QUADS);
+  GL.TexCoord2f(0, 1);
+  GL.Vertex3f(0.5, -0.5, -0.5);
+  GL.TexCoord2f(0, 0);
+  GL.Vertex3f(0.5, 0, 0.5);
+  GL.TexCoord2f(1, 0);
+  GL.Vertex3f(-0.5, 0, 0.5);
+  GL.TexCoord2f(1, 1);
+  GL.Vertex3f(-0.5, -0.5, -0.5);
+  GL.End_;
+  material.Material.UnApply(rci);
 end;
 
 end.
+

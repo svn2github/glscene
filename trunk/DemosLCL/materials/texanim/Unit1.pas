@@ -12,7 +12,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLCadencer, GLScene, GLObjects, GLTexture, StdCtrls,
   GLLCLViewer, GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
 
@@ -29,15 +29,15 @@ type
     Timer1: TTimer;
     CBAnimate: TCheckBox;
     procedure Timer1Timer(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure Button1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
   private
     { Déclarations privées }
   public
     { Déclarations publiques }
-    timeToNextFrame : Double;
+    timeToNextFrame: double;
   end;
 
 var
@@ -49,65 +49,69 @@ implementation
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
-   i : Integer;
-   bmp : TBitmap;
+  i: integer;
+  bmp: TBitmap;
 begin
-   // We generate a handful of bitmaps from scratch
-   // you could also load them from a set of files, extract from an AVI etc.
-   for i:=0 to 9 do begin
-      bmp:=TBitmap.Create;
-      bmp.PixelFormat:=pf24bit;
-      bmp.Width:=60;
-      bmp.Height:=60;
-      bmp.Canvas.Font.Name:='Arial';
-      bmp.Canvas.Font.Height:=56;
-      bmp.Canvas.TextOut(15, 5, IntToStr(i));
-      GLMaterialLibrary1.AddTextureMaterial('IMG'+IntToStr(i), bmp);
-      bmp.Free;
-   end;
-   // Initialize our loop
-   Cube1.Material.MaterialLibrary:=GLMaterialLibrary1;
-   Cube1.Material.LibMaterialName:='IMG0';
-   GLMaterialLibrary1.Tag:=0;
-   // GUI update
-   CBAnimate.Enabled:=True;
-   Button1.Enabled:=False;
+  // We generate a handful of bitmaps from scratch
+  // you could also load them from a set of files, extract from an AVI etc.
+  for i := 0 to 9 do
+  begin
+    bmp := TBitmap.Create;
+    bmp.PixelFormat := pf24bit;
+    bmp.Width := 60;
+    bmp.Height := 60;
+    bmp.Canvas.Font.Name := 'Arial';
+    bmp.Canvas.Font.Height := 56;
+    bmp.Canvas.TextOut(15, 5, IntToStr(i));
+    GLMaterialLibrary1.AddTextureMaterial('IMG' + IntToStr(i), bmp);
+    bmp.Free;
+  end;
+  // Initialize our loop
+  Cube1.Material.MaterialLibrary := GLMaterialLibrary1;
+  Cube1.Material.LibMaterialName := 'IMG0';
+  GLMaterialLibrary1.Tag := 0;
+  // GUI update
+  CBAnimate.Enabled := True;
+  Button1.Enabled := False;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-   // cube turns slowly
-   Cube1.Turn(deltaTime*3);
-   // cycle textures
-   if CBAnimate.Checked then begin
-      // coutdown to next frame
-      timeToNextFrame:=timeToNextFrame-deltaTime;
-      // if it's time for the next frame
-      if timeToNextFrame<0 then begin
-         // first, update frame counter (the Tag property in our sample)
-         // (such a loop is a little overkill, yeah)
-         while timeToNextFrame<0 do begin
-            timeToNextFrame:=timeToNextFrame+0.2;
-            GLMaterialLibrary1.Tag:=(GLMaterialLibrary1.Tag+1) mod 10;
-         end;
-         // then, we update the material reference
-         Cube1.Material.LibMaterialName:='IMG'+IntToStr(GLMaterialLibrary1.Tag);
+  // cube turns slowly
+  Cube1.Turn(deltaTime * 3);
+  // cycle textures
+  if CBAnimate.Checked then
+  begin
+    // coutdown to next frame
+    timeToNextFrame := timeToNextFrame - deltaTime;
+    // if it's time for the next frame
+    if timeToNextFrame < 0 then
+    begin
+      // first, update frame counter (the Tag property in our sample)
+      // (such a loop is a little overkill, yeah)
+      while timeToNextFrame < 0 do
+      begin
+        timeToNextFrame := timeToNextFrame + 0.2;
+        GLMaterialLibrary1.Tag := (GLMaterialLibrary1.Tag + 1) mod 10;
       end;
-   end;
+      // then, we update the material reference
+      Cube1.Material.LibMaterialName := 'IMG' + IntToStr(GLMaterialLibrary1.Tag);
+    end;
+  end;
 end;
 
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-   // stop animation
-   CBAnimate.Checked:=False;
+  // stop animation
+  CBAnimate.Checked := False;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   // standard FPS
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
-   GLSceneViewer1.ResetPerformanceMonitor;
+  // standard FPS
+  Caption := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.
+

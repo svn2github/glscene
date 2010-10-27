@@ -25,7 +25,7 @@ object Form1: TForm1
     Top = 48
     Width = 329
     Camera = GLCamera1
-    FieldOfView = 102.117973327636
+    FieldOfView = 102.117973327637
     TabOrder = 1
   end
   object CBAnimate: TCheckBox
