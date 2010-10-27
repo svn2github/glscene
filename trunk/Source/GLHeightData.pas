@@ -771,7 +771,7 @@ begin
   FThread.FreeOnTerminate := false;
   THeightDataSourceThread(FThread).FOwner := self;
   if self.MaxThreads > 0 then
-{$IFDEF GLS_DELPHI_2010_UP or FPC}
+{$IFDEF GLS_DELPHI_2009_DOWN}
     FThread.Resume;
 {$ELSE}
     FThread.Start;
