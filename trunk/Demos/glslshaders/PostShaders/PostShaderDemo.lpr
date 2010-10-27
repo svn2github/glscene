@@ -5,8 +5,7 @@ program PostShaderDemo;
 {$ENDIF}
 
 uses
-  Forms, Interfaces, UMainForm in 'UMainForm.pas', glscene_designtime,
-  glscene_runtime {PostShaderDemoForm};
+  Forms, Interfaces, umainform in 'umainform.pas';
 
 {$R *.res}
 

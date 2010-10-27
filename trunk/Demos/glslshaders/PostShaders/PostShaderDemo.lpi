@@ -3,18 +3,21 @@
   <ProjectOptions>
     <Version Value="9"/>
     <PathDelim Value="\"/>
+    <General>
+      <MainUnit Value="0"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <General>
-      <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
-    </General>
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -40,7 +43,12 @@
       <Unit0>
         <Filename Value="PostShaderDemo.lpr"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="50" Y="8"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="UMainForm.pas"/>
@@ -48,18 +56,18 @@
         <ComponentName Value="PostShaderDemoForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UMainForm"/>
+        <UnitName Value="umainform"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="63"/>
-        <CursorPos X="8" Y="77"/>
+        <TopLine Value="109"/>
+        <CursorPos X="5" Y="112"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="14" HistoryIndex="13">
       <Position1>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
@@ -94,8 +102,28 @@
       </Position8>
       <Position9>
         <Filename Value="UMainForm.pas"/>
-        <Caret Line="109" Column="82" TopLine="123"/>
+        <Caret Line="181" Column="1" TopLine="1"/>
       </Position9>
+      <Position10>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="14" Column="1" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="19" Column="28" TopLine="5"/>
+      </Position11>
+      <Position12>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="27" Column="42" TopLine="13"/>
+      </Position12>
+      <Position13>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="145" Column="1" TopLine="139"/>
+      </Position13>
+      <Position14>
+        <Filename Value="UMainForm.pas"/>
+        <Caret Line="103" Column="30" TopLine="95"/>
+      </Position14>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
