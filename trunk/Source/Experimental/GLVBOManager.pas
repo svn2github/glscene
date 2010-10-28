@@ -2144,6 +2144,8 @@ begin
   InitClient(CurrentClient);
   CurrentClient.ArrayHandle := FArrayHandle;
   CurrentClient.ElementHandle := FElementHandle;
+  CurrentClient.DataSizeInArrayPool := 0;
+  CurrentClient.DataSizeInElementPool := 0;
   CurrentClient.ArrayBufferOffset := 0;
   CurrentClient.ElementBufferOffset := 0;
   CurrentClient.BuiltProp := BuiltProp;
