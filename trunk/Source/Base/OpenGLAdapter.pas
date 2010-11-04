@@ -4318,9 +4318,9 @@ begin
   GetActiveUniform := GetAddress('GetActiveUniform');
   GetAttachedShaders := GetAddress('GetAttachedShaders');
   GetAttribLocation := GetAddress('GetAttribLocation');
-  GetProgramiv := GetAddress('GetProgramiv');
+  GetProgramiv := GetAddressAlt('GetProgramiv', 'GetObjectParameteriv');
   GetProgramInfoLog := GetAddress('GetProgramInfoLog');
-  GetShaderiv := GetAddress('GetShaderiv');
+  GetShaderiv := GetAddressAlt('GetShaderiv', 'GetObjectParameteriv');
   GetInfoLog := GetAddress('GetInfoLog');
   GetShaderInfoLog := GetAddress('GetShaderInfoLog');
   GetShaderSource := GetAddress('GetShaderSource');
