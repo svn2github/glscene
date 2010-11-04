@@ -1,9 +1,10 @@
 package GLScene5;
 
-{$R *.res}
+{$R *.RES}
 {$R '..\Source\DesignTime\GLSceneObjects.dcr'}
 {$R '..\Source\DesignTime\GLSceneVCL.dcr'}
 {$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
+{$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -29,7 +30,8 @@ package GLScene5;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl50;
+  vcl50,
+  vcljpg50;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -188,7 +190,6 @@ contains
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
-  DDS in '..\Source\FileFormats\DDS.pas',
   DXTC in '..\Source\FileFormats\DXTC.pas',
   GLMaterialScript in '..\Source\GLMaterialScript.pas',
   GLDCEMisc in '..\Source\GLDCEMisc.pas',
@@ -198,7 +199,6 @@ contains
   GLBlur in '..\Source\GLBlur.pas',
   GLPerlinBase in '..\Source\GLPerlinBase.pas',
   GLPerlin in '..\Source\GLPerlin.pas',
-  ARBProgram in '..\Source\Base\ARBProgram.pas',
   GLPhongShader in '..\Source\Shaders\GLPhongShader.pas',
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
@@ -259,23 +259,17 @@ contains
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
-  GLPBuffer in '..\Source\Base\GLPBuffer.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
   GLFBO in '..\Source\GLFBO.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
   GLSLog in '..\Source\Experimental\GLSLog.pas',
-  GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
-  GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
   GLSLanguage in '..\Source\GLSLanguage.pas',
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
   GLFilePAK in '..\Source\FileFormats\GLFilePAK.pas',
-  GLFileZLIB in '..\Source\FileFormats\GLFileZLIB.pas',
-  GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
