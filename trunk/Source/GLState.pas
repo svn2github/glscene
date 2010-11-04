@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
       <li>27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
       <li>09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
                            SetGLTextureMatrix work for ActiveTexture (in four count)
@@ -52,6 +53,7 @@ interface
 
 uses
   Classes,
+  GLCrossPlatform,
   VectorTypes,
   VectorGeometry,
   SysUtils,
@@ -141,7 +143,9 @@ type
     Ambient: TVector;
     Diffuse: TVector;
     Specular: TVector;
+    SpotDirection: TVector;
     SpotCutoff: Single;
+    SpotExponent: Single;
     ConstantAtten: Single;
     LinearAtten: Single;
     QuadAtten: Single;
@@ -500,6 +504,8 @@ type
     procedure SetLightEnabling(I: Integer; Value: Boolean);
     function GetLightPosition(I: Integer): TVector;
     procedure SetLightPosition(I: Integer; const Value: TVector);
+    function GetLightSpotDirection(I: Integer): TVector;
+    procedure SetLightSpotDirection(I: Integer; const Value: TVector);
     function GetLightAmbient(I: Integer): TVector;
     procedure SetLightAmbient(I: Integer; const Value: TVector);
     function GetLightDiffuse(I: Integer): TVector;
@@ -508,6 +514,8 @@ type
     procedure SetLightSpecular(I: Integer; const Value: TVector);
     function GetSpotCutoff(I: Integer): Single;
     procedure SetSpotCutoff(I: Integer; const Value: Single);
+    function GetSpotExponent(I: Integer): Single;
+    procedure SetSpotExponent(I: Integer; const Value: Single);
     function GetConstantAtten(I: Integer): Single;
     procedure SetConstantAtten(I: Integer; const Value: Single);
     function GetLinearAtten(I: Integer): Single;
@@ -553,6 +561,8 @@ type
     SetLightEnabling;
     property LightPosition[Index: Integer]: TVector read GetLightPosition write
     SetLightPosition;
+    property LightSpotDirection[Index: Integer]: TVector read GetLightSpotDirection write
+    SetLightSpotDirection;
     property LightAmbient[Index: Integer]: TVector read GetLightAmbient write
     SetLightAmbient;
     property LightDiffuse[Index: Integer]: TVector read GetLightDiffuse write
@@ -561,6 +571,8 @@ type
     SetLightSpecular;
     property LightSpotCutoff[Index: Integer]: Single read GetSpotCutoff write
     SetSpotCutoff;
+    property LightSpotExponent[Index: Integer]: Single read GetSpotExponent write
+    SetSpotExponent;
     property LightConstantAtten[Index: Integer]: Single read GetConstantAtten
     write SetConstantAtten;
     property LightLinearAtten[Index: Integer]: Single read GetLinearAtten write
@@ -1201,7 +1213,9 @@ begin
     FLightStates[I].Ambient := clrBlack;
     FLightStates[I].Diffuse := clrBlack;
     FLightStates[I].Specular := clrBlack;
+    FLightStates[I].SpotDirection := VectorMake(0.0, 0.0, -1.0, 0.0);
     FLightStates[I].SpotCutoff := 180;
+    FLightStates[I].SpotExponent := 0;
     FLightStates[I].ConstantAtten := 1;
     FLightStates[I].LinearAtten := 0;
     FLightStates[I].QuadAtten := 0;
@@ -2880,7 +2894,7 @@ begin
     GL.BindTexture(cGLTexTypeToGLEnum[target], Value);
     ActiveTexture := lastActiveTexture;
   end;
-  FTextureBindingTime[Index, target] := Now;
+  FTextureBindingTime[Index, target] := GLSTime;
 end;
 
 function TGLStateCache.GetActiveTextureEnabled(Target: TGLTextureTarget):
@@ -3159,6 +3173,21 @@ begin
   end;
 end;
 
+function TGLStateCache.GetLightSpotDirection(I: Integer): TVector;
+begin
+  Result := FLightStates[I].SpotDirection;
+end;
+
+procedure TGLStateCache.SetLightSpotDirection(I: Integer; const Value: TVector);
+begin
+  if not VectorEquals(Value, FLightStates[I].SpotDirection) then
+  begin
+    FLightStates[I].SpotDirection := Value;
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
+  end;
+end;
+
 function TGLStateCache.GetLightAmbient(I: Integer): TVector;
 begin
   Result := FLightStates[I].Ambient;
@@ -3241,6 +3270,28 @@ begin
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
+
+    if Assigned(FOnLightsChanged) then
+      FOnLightsChanged(Self);
+  end;
+end;
+
+function TGLStateCache.GetSpotExponent(I: Integer): Single;
+begin
+  Result := FLightStates[I].SpotExponent;
+end;
+
+procedure TGLStateCache.SetSpotExponent(I: Integer; const Value: Single);
+begin
+  if (Value <> FLightStates[I].SpotExponent) or FInsideList then
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttLighting)
+    else
+      FLightStates[I].SpotExponent := Value;
+
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
 
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);

@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>31/10/10 - Yar - Added GLSTime
       <li>18/10/10 - Yar - Added functions FloatToHalf, HalfToFloat (Thanks to Fantom)
       <li>04/09/10 - Yar - Added IsDesignTime variable, SetExeDirectory
       <li>15/06/10 - Yar - Replace Shell to fpSystem
@@ -309,6 +310,8 @@ function PrecisionTimerLap(const precisionTimer: Int64): Double;
 {: Computes time elapsed since timer start and stop timer.<p>
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
+{: Returns time in milisecond from application start.<p>}
+function GLSTime: Double;
 {: Returns the number of CPU cycles since startup.<p>
    Use the similarly named CPU instruction. }
 function RDTSC: Int64;
@@ -797,6 +800,39 @@ begin
   Result := (cur - precisionTimer) * vInvPerformanceCounterFrequency;
 end;
 
+var
+  vGLSStartTime : TDateTime;
+
+function GLSTime: Double;
+{$IFDEF MSWINDOWS}
+var
+  SystemTime: TSystemTime;
+begin
+  GetLocalTime(SystemTime);
+  with SystemTime do
+    Result := (wHour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
+             wMinute * (SecsPerMin * MSecsPerSec) +
+             wSecond * MSecsPerSec +
+             wMilliSeconds) - vGLSStartTime;
+end;
+{$ENDIF}
+{$IFDEF LINUX}
+var
+  T: TTime_T;
+  TV: TTimeVal;
+  UT: TUnixTime;
+begin
+  gettimeofday(TV, nil);
+  T := TV.tv_sec;
+  localtime_r(@T, UT);
+  with UT do
+    Result := (tm_hour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
+             tm_min * (SecsPerMin * MSecsPerSec) +
+             tm_sec * MSecsPerSec +
+             tv_usec div 1000) - vGLSStartTime;
+end;
+{$ENDIF}
+
 // RDTSC
 //
 
@@ -1057,6 +1093,8 @@ begin
 end;
 
 initialization
+
+  vGLSStartTime := GLSTime;
 {$IFDEF FPC}
 {$IFDEF UNIX}
   Init_vProgStartSecond;

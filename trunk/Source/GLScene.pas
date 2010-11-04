@@ -7627,8 +7627,8 @@ begin
                 if FSpotCutOff <> 180 then
                 begin
                   GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-                  GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
                 end;
+                LightSpotExponent[FLightID] := FSpotExponent;
                 LightSpotCutoff[FLightID] := FSpotCutOff;
               end
               else
@@ -7638,9 +7638,12 @@ begin
             end;
 
             LightPosition[FLightID] := lightSource.AbsolutePosition;
+            LightSpotDirection[FLightID] := lightSource.SpotDirection.AsVector;
+
             LightAmbient[FLightID] := FAmbient.Color;
             LightDiffuse[FLightID] := FDiffuse.Color;
             LightSpecular[FLightID] := FSpecular.Color;
+
             LightConstantAtten[FLightID] := FConstAttenuation;
             LightLinearAtten[FLightID] := FLinearAttenuation;
             LightQuadraticAtten[FLightID] := FQuadraticAttenuation;
@@ -7985,7 +7988,7 @@ begin
       FRenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor);
 {$IFDEF GLS_EXPERIMENTAL}
-      MaterialManager.Initialize;
+      NotifyGLSceneManagersContextCreated;
 {$ENDIF}
     finally
       FRenderingContext.Deactivate;
