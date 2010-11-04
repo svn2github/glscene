@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens. Improved context creation.
       <li>18/06/10 - Yar - Changed context sharing method for similarity to GLX
       <li>06/06/10 - Yar - Moved forward context creation to DoCreateContext
@@ -97,8 +98,7 @@ type
     procedure DestructionEarlyWarning(sender: TObject);
 
     procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
-      PInteger;
-      var nNumFormats: Integer; BufferCount: integer = 1);
+      PInteger; var nNumFormats: Integer; BufferCount: integer = 1);
     procedure DoCreateContext(outputDevice: HWND); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer); override;
@@ -431,10 +431,8 @@ end;
 
 // ChooseWGLFormat
 //
-
-procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
-  piFormats: PInteger;
-  var nNumFormats: Integer; BufferCount: integer);
+procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
+  PInteger; var nNumFormats: Integer; BufferCount: integer);
 const
   cAAToSamples: array[aaNone..csa16xHQ] of Integer =
     (1, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);

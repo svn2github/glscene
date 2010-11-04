@@ -11,8 +11,9 @@
        В Лазарусе имеется возможность загружать текст из любой кодировки.
 
   <b>History : </b><font size=-1><ul>
-   <li>20/04/10 - Yar - Added to GLScene
-                        (Created by Rustam Asmandiarov aka Predator)
+      <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
+      <li>20/04/10 - Yar - Added to GLScene
+                          (Created by Rustam Asmandiarov aka Predator)
   </ul></font>
 }
 unit GLSLanguage;
@@ -146,7 +147,8 @@ uses
   FileUtil, LConvEncoding,
   {$ENDIF}
   IniFiles,
-  SysUtils;
+  SysUtils,
+  GLCrossPlatform;
 
 
 { TLanguage }
@@ -185,7 +187,7 @@ begin
   begin
     If S.Names[E] = '' then
     begin
-        S.Strings[I] := S.Strings[I] + #13#10 + S.ValueFromIndex[E];
+        S.Strings[I] := S.Strings[I] + #13#10 + GetValueFromStringsIndex(S, E);
     end else I := E;
   end;
 
@@ -194,7 +196,7 @@ begin
     If S.Names[E] <> '' then
     begin
       Entry[E].ID := EncodeToUTF8(S.Names[E]);
-      Entry[E].Text := EncodeToUTF8(S.ValueFromIndex[E]);
+      Entry[E].Text := EncodeToUTF8(GetValueFromStringsIndex(S, E));
     end;
   S.Free;
   IniFile.Free;
@@ -292,7 +294,7 @@ begin
     If aValues.Names[I] <> '' then
        AddConst(
         EncodeToUTF8(aValues.Names[I]),
-        EncodeToUTF8(aValues.ValueFromIndex[I]));
+        EncodeToUTF8(GetValueFromStringsIndex(aValues, I)));
 end;
 
 {**

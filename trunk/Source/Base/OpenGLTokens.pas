@@ -104,11 +104,11 @@ type
 
   GLubyte = Byte;
   TGLubyte = Byte;
-  PGLubyte = ^TGLubyte;
+  PGLubyte = {$IFDEF GLS_DELPHI_5}Windows.PByte{$ELSE}System.PByte{$ENDIF};
 
   GLushort = Word;
   TGLushort = Word;
-  PGLushort = ^TGLushort;
+  PGLushort = {$IFDEF GLS_DELPHI_5}Windows.PWord{$ELSE}System.PWord{$ENDIF};
 
   GLuint = UINT;
   TGLuint = UINT;
@@ -116,7 +116,7 @@ type
 
   GLfloat = Single;
   TGLfloat = Single;
-  PGLfloat = ^TGLfloat;
+  PGLfloat = {$IFDEF GLS_DELPHI_5}Windows.PSingle{$ELSE}System.PSingle{$ENDIF};
 
   GLclampf = Single;
   TGLclampf = Single;
@@ -124,7 +124,7 @@ type
 
   GLdouble = Double;
   TGLdouble = Double;
-  PGLdouble = ^TGLdouble;
+  PGLdouble = {$IFDEF GLS_DELPHI_5}Windows.PDouble{$ELSE}System.PDouble{$ENDIF};
 
   GLclampd = Double;
   TGLclampd = Double;
@@ -136,8 +136,6 @@ type
   PGLPCharArray = ^PGLChar;
 
   PGLvoid = Pointer;
-
-  TVector4p = array[0..3] of Pointer;
 
   PGLPointer = ^Pointer;
 
@@ -4673,4 +4671,4 @@ type
 implementation
 
 end.
-
+

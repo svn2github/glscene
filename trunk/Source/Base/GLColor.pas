@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
     <li>24/10/10 - DaStr - Removed dependancy from OpenGL
     <li>23/08/10 - Yar - Added OpenGLTokens to uses
     <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
@@ -23,7 +24,7 @@ interface
 
 uses
   // GLScene
-  Classes, OpenGLTokens, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
+  Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
   PersistentClasses, BaseClasses;
 
 type
@@ -65,7 +66,7 @@ type
          procedure NotifyChange(Sender : TObject); override;
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
-			function AsAddress : PGLFloat;
+			function AsAddress : PSingle;
 
          procedure RandomColor;
          procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
@@ -639,7 +640,7 @@ end;
 
 // AsAddress
 //
-function TGLColor.AsAddress: PGLFloat;
+function TGLColor.AsAddress: PSingle;
 begin
 	Result:=@FColor;
 end;

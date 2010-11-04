@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
       <li>24/08/10 - Yar - Added to T4ByteList more overload of Add method
       <li>11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -61,7 +62,7 @@ interface
 uses
   Classes, SysUtils,
 
-  VectorTypes, VectorGeometry, PersistentClasses;
+  VectorTypes, VectorGeometry, PersistentClasses, GLCrossPlatform;
 
 type
   // TBaseListOption

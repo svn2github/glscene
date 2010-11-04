@@ -6,6 +6,7 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility   
       <li>06/06/10 - Yar - Fixed warnings
       <li>13/04/10 - Yar - Fixed conditional for delphi (thanks mif) 
       <li>07/01/10 - DaStr - Enhanced cross-platform compatibility (thanks Predator)
@@ -319,13 +320,15 @@ begin
   vCurrentVideoMode := DefaultScreen( vDisplay );
 
   // Check support XF86VidMode Extension
-  {$IF (lcl_release <= 28) }
-  if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
-  {$ELSE}
-  if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
-  {$IFEND}
-    Assert(False, 'XF86VidMode Extension not support');
-
+  {$IFNDEF GLS_DELPHI_5}
+    {$IF (lcl_release <= 28) }
+    if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
+    {$ELSE}
+    if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
+    {$IFEND}
+      Assert(False, 'XF86VidMode Extension not support');
+  {$ENDIF}
+  
   //Get Current Settings
   if not vScreenModeChanged then
   XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,

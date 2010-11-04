@@ -3,7 +3,10 @@
 //
 {: GLFileHDR<p>
 
+   HDR File support for GLScene.
+
  <b>History : </b><font size=-1><ul>
+        <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility  
         <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
         <li>22/04/10 - Yar - Fixes after GLState revision
@@ -25,7 +28,8 @@ uses
   GLContext,
   GLGraphics,
   GLTextureFormat,
-  ApplicationFileIO;
+  ApplicationFileIO,
+  GLCrossPlatform;
 
 type
 

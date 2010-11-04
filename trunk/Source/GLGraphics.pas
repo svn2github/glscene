@@ -15,6 +15,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>18/07/10 - Yar - Raname TGLBitmap32 to TGLImage
       <li>20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
       <li>14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
@@ -1119,7 +1120,7 @@ begin
     WaitParallelTask;
     img.WaitParallelTask;
     fLevels.Clear;
-    fLevels.Assign(img.fLevels);
+    {$IFNDEF GLS_DELPHI_5} fLevels.Assign(img.fLevels); {$ENDIF}
     fWidth := img.fWidth;
     fHeight := img.fHeight;
     fDepth := img.fDepth;
@@ -2206,7 +2207,7 @@ begin
       fDataType := TGLImage(Source).fDataType;
       fElementSize := TGLImage(Source).fElementSize;
       fLevels.Clear;
-      fLevels.Assign(TGLImage(Source).fLevels);
+      {$IFNDEF GLS_DELPHI_5} fLevels.Assign(TGLImage(Source).fLevels); {$ENDIF}
       fTextureArray := TGLImage(Source).fTextureArray;
     end;
   end

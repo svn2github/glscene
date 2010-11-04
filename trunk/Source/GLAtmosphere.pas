@@ -6,6 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -70,7 +71,7 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLCadencer, OpenGLTokens, VectorGeometry,
-  GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState
+  GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState, GLCrossPlatform
   {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type

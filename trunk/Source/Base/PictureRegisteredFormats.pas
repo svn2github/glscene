@@ -6,6 +6,7 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
       <li>19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats
       <li>31/05/10 - Yar - Fixes for Linux x64
       <li>25/01/10 - DaStr - Updated warning about a possible crash while using the
@@ -30,7 +31,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, Graphics;
+uses Classes, Graphics, GLCrossPlatform;
 
 {$ifdef GLS_DELPHI_5} {$define PRF_HACK_PASSES}  {$endif}// Delphi 5
 {$ifdef GLS_DELPHI_6} {$define PRF_HACK_PASSES}  {$endif}// Delphi 6

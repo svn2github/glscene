@@ -1,4 +1,3 @@
-//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: VectorGeometry<p>
@@ -32,6 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
                            CreateOrthoMatrix, CreatePickMatrix, Project, UnProject
       <li>14/06/10 - Yar - Added VectorArrayLerp for TTexPointArray
@@ -210,22 +210,12 @@ type
    // data types needed for 3D graphics calculation,
    // included are 'C like' aliases for each type (to be
    // conformal with OpenGL types)
-{$ifndef FPC}
-   PByte = ^Byte;
-   PWord = ^Word;
-   PInteger = ^Integer;
-   PCardinal = ^Cardinal;
-   PSingle = ^Single;
-   PDouble = ^Double;
-   PExtended = ^Extended;
-   PPointer = ^Pointer;
-{$endif}
-   PFloat = ^Single;
+   PFloat = PSingle;
 
-  	PTexPoint = ^TTexPoint;
-	TTexPoint = packed record
-                  S, T : Single;
-               end;
+  PTexPoint = ^TTexPoint;
+  TTexPoint = packed record
+    S, T : Single;
+  end;
 
    // types to specify continous streams of a specific type
    // switch off range checking to access values beyond the limits

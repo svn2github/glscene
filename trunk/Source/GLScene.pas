@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>25/10/10 - Yar - Bugfixed TGLSceneBuffer.CopyToTexture
       <li>08/09/10 - Yar - Added gloabal var vCurrentRenderingObject (Thanks Controller)
       <li>02/09/10 - Yar - Added GLSelection to uses. Improved TGLSceneBuffer.PickObjects for 64-bit OSes
@@ -2109,10 +2110,10 @@ type
     property BackgroundAlpha: Single read FBackgroundAlpha write
       SetBackgroundAlpha;
     {: Returns the projection matrix in use or used for the last rendering. }
-    function ProjectionMatrix: TMatrix; deprecated;
+    function ProjectionMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
     {: Returns the view matrix in use or used for the last rendering. }
-    function ViewMatrix: TMatrix; deprecated;
-    function ModelMatrix: TMatrix; deprecated;
+    function ViewMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    function ModelMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
 
     {: Returns the base projection matrix in use or used for the last rendering.<p>
        The "base" projection is (as of now) either identity or the pick
@@ -2123,12 +2124,12 @@ type
     {: Back up current View matrix and replace it with newMatrix.<p>
        This method has no effect on the OpenGL matrix, only on the Buffer's
        matrix, and is intended for special effects rendering. }
-    procedure PushViewMatrix(const newMatrix: TMatrix); deprecated;
+    procedure PushViewMatrix(const newMatrix: TMatrix); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
     {: Restore a View matrix previously pushed. }
-    procedure PopViewMatrix; deprecated;
+    procedure PopViewMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
 
-    procedure PushProjectionMatrix(const newMatrix: TMatrix); deprecated;
-    procedure PopProjectionMatrix; deprecated;
+    procedure PushProjectionMatrix(const newMatrix: TMatrix); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure PopProjectionMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
 
     {: Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
        This function accepts standard canvas coordinates, with (0,0) being

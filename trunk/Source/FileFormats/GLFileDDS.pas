@@ -3,7 +3,10 @@
 //
 {: GLFileDDS<p>
 
+   DDS File support for GLScene.
+
  <b>History : </b><font size=-1><ul>
+        <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility 
         <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
         <li>06/06/10 - Yar - Fixes for Linux x64
         <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
@@ -298,7 +301,7 @@ begin
     h := Height;
     d := Depth;
     if offset > 0 then
-      stream.Seek(offset, soCurrent);
+      stream.Seek(offset, {$IFDEF GLS_DELPHI_5}Ord(soCurrent){$ELSE}soCurrent{$ENDIF});
     for level := 0 to MipLevels - 1 do
     begin
       fLevels.Add(pointer(PtrUInt(lData) - PtrUInt(fData)));

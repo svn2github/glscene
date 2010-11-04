@@ -8,6 +8,7 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility  
       <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
                              to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
       <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
@@ -27,7 +28,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLVectorFileObjects, GLMaterial, VectorGeometry,
+uses Classes, GLVectorFileObjects, GLMaterial, GLCrossPlatform, VectorGeometry,
    VectorLists, GLColor, GLRenderContextInfo;
 
 type

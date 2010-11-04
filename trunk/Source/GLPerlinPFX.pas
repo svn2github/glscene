@@ -6,6 +6,7 @@
    PFX particle effects revolving around the use of Perlin noise.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -21,7 +22,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLParticleFX, GLGraphics;
+uses Classes, GLParticleFX, GLGraphics, GLCrossPlatform;
 
 type
 

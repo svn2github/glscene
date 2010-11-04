@@ -3,11 +3,13 @@
 //
 {: GLSLog<p>
 
-  Activate GLS_LOGGING for turn on inner GLScene logger.<p>
-  You may place on form only one exemplar of TGLSLogger<p>
-  then call UserLog function from any module.<p>
+  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
+  You may have only one instance of TGLSLogger<p>
+  To obtain it, call UserLog() function from any unit.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
+                             Fixed unit description  
       <li>07/09/10 - Yar - Added Enabled property to TLogSession
       <li>02/04/10 - Yar - Added properties TimeFormat, LogLevels to TGLSLogger
                            Added function UserLog. GLS_LOGGING now only turn on inner GLScene logger
@@ -273,8 +275,8 @@ begin
   begin
     FReplaceAssertion := Value;
     case FReplaceAssertion of
-      True: AssertErrorProc := LogedAssert;
-      False: AssertErrorProc := vAssertErrorHandler;
+      True: AssertErrorProc := @LogedAssert;
+      False: AssertErrorProc := @vAssertErrorHandler;
     end;
   end;
 end;

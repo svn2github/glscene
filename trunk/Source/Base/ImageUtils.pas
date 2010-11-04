@@ -6,7 +6,8 @@
    Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>
-  <li>22/10/10 - Yar - Created
+      <li>04/11/10 - DaStr - Added $I GLScene.inc
+      <li>22/10/10 - Yar - Created
   </ul></font>
 }
 unit ImageUtils;
@@ -25,6 +26,8 @@ unit ImageUtils;
 // TODO: Build3DMipmap
 
 interface
+
+{$I GLScene.inc}
 
 uses
   SysUtils,
