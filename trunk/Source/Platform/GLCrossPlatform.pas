@@ -181,6 +181,13 @@ type
 
 const
   PathDelim  = {$IFDEF MSWINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
+  HoursPerDay   = 24;
+  MinsPerHour   = 60;
+  SecsPerMin    = 60;
+  MSecsPerSec   = 1000;
+  MinsPerDay    = HoursPerDay * MinsPerHour;
+  SecsPerDay    = MinsPerDay * SecsPerMin;
+  MSecsPerDay   = SecsPerDay * MSecsPerSec;  
 type
 
 
