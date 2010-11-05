@@ -3625,6 +3625,7 @@ const
 
 var
   R_Dim: Boolean;
+  lMinFilter: TGLMinFilter;
 begin
   if (target = GL_TEXTURE_2D_MULTISAMPLE)
     or (target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY) then
@@ -3668,17 +3669,18 @@ begin
     GL.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
   end;
 
+  lMinFilter := FMinFilter;
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
     or not (GL.EXT_texture_lod or GL.SGIS_texture_lod) then
   begin
-    if FMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
-      FMinFilter := miNearest;
+    if lMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
+      lMinFilter := miNearest;
     if FMinFilter in [miLinearMipmapNearest, miLinearMipmapLinear] then
-      FMinFilter := miLinear;
+      lMinFilter := miLinear;
   end;
 
-  GL.TexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+  GL.TexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[lMinFilter]);
   GL.TexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 
   if GL.EXT_texture_filter_anisotropic then
