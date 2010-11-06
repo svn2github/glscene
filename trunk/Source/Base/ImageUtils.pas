@@ -6,6 +6,7 @@
    Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
       <li>04/11/10 - DaStr - Added $I GLScene.inc
       <li>22/10/10 - Yar - Created
   </ul></font>
@@ -94,8 +95,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^;
     Inc(pSource);
@@ -118,8 +117,6 @@ var
   n: Integer;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := $E0 and c0;
@@ -162,8 +159,6 @@ var
   n: Integer;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c3 := $E0 and c0;
@@ -206,8 +201,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^;
     Inc(pSource);
@@ -230,8 +223,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^ / $100;
     Inc(pSource);
@@ -254,8 +245,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^ / $100;
     Inc(pSource);
@@ -278,8 +267,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^ / $1000000;
     Inc(pSource);
@@ -302,8 +289,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^ / $1000000;
     Inc(pSource);
@@ -326,8 +311,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := pSource^ * 255.0;
     Inc(pSource);
@@ -350,8 +333,6 @@ var
   c0: Single;
 
   function GetChannel: Single;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     Result := HalfToFloat(pSource^) * 255.0;
     Inc(pSource);
@@ -374,8 +355,6 @@ var
   c0, c1, c2, c3: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     Inc(pSource);
@@ -423,8 +402,6 @@ var
   c0, c1, c2, c3: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c3 := pSource^;
     Inc(pSource);
@@ -472,8 +449,6 @@ var
   c0, c1, c2, c3, c4: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c3 := $F0 and (c0 shl 4);
@@ -521,8 +496,6 @@ var
   c0, c1, c2, c3, c4: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := $F0 and (c0 shl 4);
@@ -571,8 +544,6 @@ var
   c1, c2, c3: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c3 := (c0 and $001F) shl 3;
@@ -616,8 +587,6 @@ var
   c1, c2, c3: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := (c0 and $001F) shl 3;
@@ -661,8 +630,6 @@ var
   c1, c2, c3, c4: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c4 := (c0 and $001F) shl 3;
@@ -709,8 +676,6 @@ var
   c1, c2, c3, c4: Byte;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := (c0 and $001F) shl 3;
@@ -757,8 +722,6 @@ var
   c1, c2, c3, c4: Word;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := (c0 and $000003FF) shl 6;
@@ -805,8 +768,6 @@ var
   c1, c2, c3, c4: Word;
 
   procedure GetChannel;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     c0 := pSource^;
     c1 := (c0 and $000003FF) shl 6;
@@ -2044,16 +2005,12 @@ var
   n: Integer;
 
   procedure SetChannel(AValue: Single);
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     pDest^ := Trunc(ClampValue(AValue, 0.0, 255.0));
     Inc(pDest);
   end;
 
   procedure SetChannelI(AValue: Single);
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
   begin
     pDest^ := Trunc(AValue);
     Inc(pDest);
