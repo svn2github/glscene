@@ -6,6 +6,7 @@
    GLScene objects that get rendered in 2D coordinates<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
                            Fixed light state changing
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -435,6 +436,7 @@ begin
     // render text
     FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
     // restore state
+    rci.GLStates.Enable(stDepthTest);
     GL.PopMatrix;
     GL.MatrixMode(GL_MODELVIEW);
     GL.PopMatrix;
