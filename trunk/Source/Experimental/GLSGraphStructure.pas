@@ -39,7 +39,7 @@ type
   public
     { Public declarations }
     constructor Create; virtual; abstract;
-    procedure NotifyChange; virtual;
+    procedure NotifyChange(Sender: TObject); virtual;
 
     property Left: Integer read GetLeft write SetLeft;
     property Top: Integer read GetTop write SetTop;
@@ -262,8 +262,7 @@ begin
     begin
       vNode.FHighlight := not vNode.FHighlight;
       if vNode.FHighlight then
-        Result := vNode;
-      break;
+        exit(vNode);
     end;
   end;
 end;

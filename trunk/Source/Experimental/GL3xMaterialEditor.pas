@@ -21,7 +21,7 @@ uses
   Windows,
   GLWin32Context,
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF FPC}
   GLWidgetContext,
 {$ENDIF}
   SysUtils,
@@ -46,6 +46,7 @@ uses
   DesignIntf,
 {$ENDIF}
   // GLScene
+  BaseClasses,
   GLContext,
   GL3xMaterialGraph,
   VectorTypes,
@@ -124,12 +125,7 @@ type
 
   private
     { Private declarations }
-{$IFDEF MSWINDOWS}
     FDC: HDC;
-{$ENDIF}
-{$IFDEF UNIX}
-    FDC: HDC;
-{$ENDIF}
 {$IFNDEF FPC}
     FCurrentDesigner: IDesigner;
 {$ELSE}
@@ -145,8 +141,8 @@ type
     Panning: Boolean;
     AfterPopup: Boolean;
     FClosing: Boolean;
-    FStoredMaterial: TGL3xMaterialName;
-    procedure SetMaterial(Value: TGL3xMaterialName);
+    FStoredMaterial: IGLName;
+    procedure SetMaterial(const Value: IGLName);
     function GetCoordInGraphSpace(const X, Y: Integer): TVector2s;
     procedure DoPaint;
     procedure SelectNode(ANode: TPersistent; GroupSelection: Boolean);
@@ -154,11 +150,12 @@ type
   public
     { Public declarations }
     procedure PrepareContext;
+    procedure SetTextureToPreview(AName: IGLName);
 {$IFNDEF FPC}
     property Designer: IDesigner write FCurrentDesigner;
 {$ENDIF}
     property MaterialGraph: TMaterialGraph read FMaterialGraph;
-    property Material: TGL3xMaterialName write SetMaterial;
+    property Material: IGLName write SetMaterial;
   end;
 
 function MaterialEditorForm: TMaterialEditorForm;
@@ -175,6 +172,7 @@ uses
   OpenGLTokens,
   VectorGeometry,
   GLVBOManager,
+  GL3xTexture,
 {$IFDEF FPC}
   GL3xMaterialNodePaletteLCL,
 {$ELSE}
@@ -182,6 +180,9 @@ uses
 {$ENDIF}
   GL3xMaterialPreview,
   GL3xMaterialCode;
+
+type
+  TAccessableMaterialManager = class(MaterialManager) public end;
 
 var
   vMaterialEditorForm: TMaterialEditorForm;
@@ -283,7 +284,7 @@ begin
     AlphaBits := 0;
     AccumBits := 0;
     AuxBuffers := 0;
-    AntiAliasing := aa2x;
+//    AntiAliasing := aa2x;
     GLStates.ForwardContext := True;
   end;
   try
@@ -321,7 +322,6 @@ begin
   if Assigned(FRenderingContext) then
   begin
     FRenderingContext.Activate;
-    //  FRenderingContext.ShareLists(MaterialPreviewForm.RenderingContext);
     with FRenderingContext.GLStates do
     begin
       Disable(stDepthTest);
@@ -330,9 +330,10 @@ begin
       LineSmoothHint := hintNicest;
       Enable(stLineSmooth);
       LineWidth := 1.0;
-      Gl.Enable(GL_TEXTURE_RECTANGLE);
+      GL.Enable(GL_TEXTURE_RECTANGLE);
       ViewPort := Vector4iMake(0, 0, ClientWidth, ClientHeight);
     end;
+    NotifyGLSceneManagersContextCreated;
     FRenderingContext.Deactivate;
 
     Cadencer.Enabled := true;
@@ -349,9 +350,11 @@ const
 var
   SaveReq: Integer;
 begin
-  if not Assigned(FRenderingContext) or not Visible then
+  if not Assigned(FRenderingContext)
+    or not Visible
+    or not Assigned(FStoredMaterial) then
   begin
-    CanClose := true;
+    CanClose := True;
     exit;
   end;
   UnSelectAll;
@@ -363,15 +366,17 @@ begin
     idYes:
     with FMaterialGraph do
     begin
+      SetExeDirectory;
       Save;
-      if Length(Material.ResourceName) = 0 then
-        Material.ResourceName := FStoredMaterial+'_material.xml';
-      Material.SaveToFile(Material.ResourceName);
-      Material.AssignTo(FStoredMaterial);
+      EditedMaterial.AssignTo(FStoredMaterial);
+      if Length(EditedMaterial.ResourceName) = 0 then
+        EditedMaterial.ResourceName := EditedMaterial.Name.Value+'.material';
     end;
     idNo: CanClose := True;
     idCancel: CanClose := False;
   end;
+  if CanClose then
+    FStoredMaterial := nil;
 end;
 
 procedure TMaterialEditorForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -448,6 +453,7 @@ begin
     Panning := true;
   smx := X;
   smy := Y;
+  vMaterialPreviewForm.TextureToView := nil;
 end;
 
 procedure TMaterialEditorForm.FormMouseLeave(Sender: TObject);
@@ -529,7 +535,7 @@ procedure TMaterialEditorForm.FormMouseWheel(Sender: TObject;
 var
   delta: Integer;
 begin
-  delta := sign(WheelDelta);
+  delta := - sign(WheelDelta);
   if delta > 0 then
   begin
     FZoomFactor := FZoomFactor * 1.1;
@@ -568,11 +574,11 @@ end;
 procedure TMaterialEditorForm.Cadence(Sender: TObject);
 begin
 {$IFNDEF FPC}
-  InvalidateRect(Handle, nil, False);
   InvalidateRect(vMaterialPreviewForm.Handle, nil, False);
+  InvalidateRect(Handle, nil, False);
 {$ELSE}
-  DoPaint;
   vMaterialPreviewForm.DoPaint;
+  DoPaint;
 {$ENDIF}
 end;
 
@@ -625,6 +631,7 @@ begin
           Vector4iMake(0, 0, ClientWidth, ClientHeight);
         FMaterialGraph.Render;
       end;
+      GL.Finish;
       FRenderingContext.SwapBuffers;
     finally
       FRenderingContext.Deactivate;
@@ -746,21 +753,16 @@ begin
 end;
 
 procedure TMaterialEditorForm.SelectNode(ANode: TPersistent; GroupSelection: Boolean);
-{$IFDEF FPC}
-var
-  vSelected: TPersistent;
-{$ENDIF}
 begin
   if not GroupSelection then
 {$IFNDEF FPC}
     FCurrentDesigner.NoSelection;
-  FCurrentDesigner.SelectComponent(FMaterialGraph.Pick(GroupSelection));
+  FCurrentDesigner.SelectComponent(ANode);
   FCurrentDesigner.Modified;
 {$ELSE}
-  FSelection.Clear;
-  vSelected := FMaterialGraph.Pick(GroupSelection);
-  if Assigned(vSelected) then
-    FSelection.Add(vSelected);
+    FSelection.Clear;
+  if Assigned(ANode) then
+    FSelection.Add(ANode);
   GlobalDesignHook.SetSelection(FSelection);
 {$ENDIF}
 end;
@@ -783,16 +785,27 @@ begin
   FMaterialGraph.DeleteSelected;
 end;
 
-procedure TMaterialEditorForm.SetMaterial(Value: TGL3xMaterialName);
+procedure TMaterialEditorForm.SetMaterial(const Value: IGLName);
 begin
   FStoredMaterial := Value;
-  FMaterialGraph.Material.AssignFrom(Value);
+  FMaterialGraph.EditedMaterial.AssignFrom(Value);
   FMaterialGraph.Load;
 end;
 
 procedure TMaterialEditorForm.ModelMenuItemClick(Sender: TObject);
 begin
-  vMaterialPreviewForm.SetModel(TMenuItem(Sender).Tag);
+  vMaterialPreviewForm.PreviewModel := TPreviewModel(TMenuItem(Sender).Tag);
+end;
+
+procedure TMaterialEditorForm.SetTextureToPreview(AName: IGLName);
+var
+  tex: TGL3xTexture;
+begin
+  if not vMaterialPreviewForm.Visible then
+    ACViewMaterialPreviewExecute(Self);
+  vMaterialPreviewForm.TextureToView := AName;
+  tex := TAccessableMaterialManager(MaterialManager).GetTexture(AName);
+  SelectNode(tex, false);
 end;
 
 initialization

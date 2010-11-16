@@ -24,16 +24,29 @@ interface
 
 uses
   // VCL
-  SysUtils, Classes,
+  SysUtils,
+  Classes,
 
   // GLScene
-  GLScene, GLCadencer, OpenGLTokens, VectorGeometry, VectorTypes, VectorGeometryEXT,
-  GLState, GLContext, GLTexture, GLGraphics,
-  GLTextureFormat, GLFBO,
+  GLScene,
+  GLCadencer,
+  OpenGLTokens,
+  VectorGeometry,
+  VectorTypes,
+  VectorGeometryEXT,
+  GLState,
+  GLContext,
+  GLTexture,
+  GLGraphics,
+  GLTextureFormat,
+  GLFBO,
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   GLSLog,
 {$ENDIF}
-  GL3xObjects, GLShaderManager, GLVBOManager, GL3xMaterial,
+  GL3xObjects,
+  GLShaderManager,
+  GLVBOManager,
+  GL3xMaterial,
   GLRenderContextInfo;
 
 type
@@ -154,10 +167,12 @@ type
   end;
 
 implementation
-{$IFDEF NISHITA_SKY_DEBUG_MODE}
+
 uses
-  GLFileDDS;
+{$IFDEF NISHITA_SKY_DEBUG_MODE}
+  GLFileDDS,
 {$ENDIF}
+  BaseClasses;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const
@@ -416,25 +431,25 @@ const
 
 var
   uniformMie,
-  uniformRayleigh,
-  uniformOpticalDepth,
-  uniformSunDir: TGLSLUniform;
+    uniformRayleigh,
+    uniformOpticalDepth,
+    uniformSunDir: TGLSLUniform;
   ublockConstants: TGLSLUniformBlock;
-  RenderProgram: string;
-  RenderVertexObject: string;
-  RenderFragmentObject: string;
 
-  UpdateProgram: string;
-  UpdateVertexObject: string;
-  UpdateFragmentObject: string;
+  RenderProgram: IGLName;
+  RenderVertexObject: IGLName;
+  RenderFragmentObject: IGLName;
 
-  UpdateFastProgram: string;
-  UpdateFastFragmentObject: string;
+  UpdateProgram: IGLName;
+  UpdateVertexObject: IGLName;
+  UpdateFragmentObject: IGLName;
 
-  CreateOpticalDepthProgram: string;
-  CreateOpticalDepthFragmentObject: string;
+  UpdateFastProgram: IGLName;
+  UpdateFastFragmentObject: IGLName;
 
-  ProgramsLinked: Boolean = False;
+  CreateOpticalDepthProgram: IGLName;
+  CreateOpticalDepthFragmentObject: IGLName;
+
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   SaveOnce: Boolean = true;
 {$ENDIF}
@@ -541,75 +556,63 @@ var
   s: string;
 begin
   // Initialize shaders
-  if Length(RenderProgram) = 0 then
+  if RenderProgram = nil then
   begin
 
     with ShaderManager do
-    begin
-      BeginWork;
-      // Register uniforms
-      uniformMie := TGLSLUniform.RegisterUniform('Mie');
-      uniformRayleigh := TGLSLUniform.RegisterUniform('Rayleigh');
-      uniformOpticalDepth := TGLSLUniform.RegisterUniform('OpticalDepth');
-      uniformSunDir := TGLSLUniform.RegisterUniform('v3SunDir');
-      ublockConstants := TGLSLUniformBlock.RegisterUniformBlock('ConstantBlock');
+      try
+        BeginWork;
+        // Register uniforms
+        uniformMie := TGLSLUniform.RegisterUniform('Mie');
+        uniformRayleigh := TGLSLUniform.RegisterUniform('Rayleigh');
+        uniformOpticalDepth := TGLSLUniform.RegisterUniform('OpticalDepth');
+        uniformSunDir := TGLSLUniform.RegisterUniform('v3SunDir');
+        ublockConstants := TGLSLUniformBlock.RegisterUniformBlock('ConstantBlock');
 
-      // Give name to new programs and objects
-      RenderProgram := MakeUniqueProgramName('SkyRenderProgram');
-      RenderVertexObject := MakeUniqueObjectName('SkyRenderVertexObject');
-      RenderFragmentObject := MakeUniqueObjectName('SkyRenderFragmentObject');
-
-      UpdateProgram := MakeUniqueProgramName('SkyUpdateProgram');
-      UpdateVertexObject := MakeUniqueObjectName('SkyUpdateVertexObject');
-      UpdateFragmentObject := MakeUniqueObjectName('SkyUpdateFragmentObject');
-
-      UpdateFastProgram := MakeUniqueProgramName('SkyUpdateFastProgram');
-      UpdateFastFragmentObject :=
-        MakeUniqueObjectName('SkyUpdateFastFragmentObject');
-
-      CreateOpticalDepthProgram :=
-        MakeUniqueProgramName('SkyOpticalDepthProgram');
-      CreateOpticalDepthFragmentObject :=
-        MakeUniqueObjectName('SkyOpticalDepthFragmentObject');
-
-      // Define programs
-      DefineShaderProgram(RenderProgram);
-      DefineShaderProgram(UpdateProgram);
-      DefineShaderProgram(UpdateFastProgram);
-      DefineShaderProgram(CreateOpticalDepthProgram);
-      // Define objects
-      DefineShaderObject(RenderVertexObject, Render_vp, [ptVertex]);
-      DefineShaderObject(RenderFragmentObject, Header_fp + Render_fp,
-        [ptFragment]);
-      DefineShaderObject(UpdateVertexObject, Update_vp, [ptVertex]);
-      DefineShaderObject(UpdateFragmentObject, Header_fp + Share_fp +
-        Update_fp, [ptFragment]);
-      DefineShaderObject(UpdateFastFragmentObject, Header_fp + Share_fp +
-        UpdateFast_fp, [ptFragment]);
-      DefineShaderObject(CreateOpticalDepthFragmentObject, Header_fp + Share_fp
-        + CreateOpticalDepth_fp, [ptFragment]);
-      // Attach objects
-      AttachShaderObjectToProgram(RenderVertexObject, RenderProgram);
-      AttachShaderObjectToProgram(RenderFragmentObject, RenderProgram);
-      AttachShaderObjectToProgram(UpdateVertexObject, UpdateProgram);
-      AttachShaderObjectToProgram(UpdateFragmentObject, UpdateProgram);
-      AttachShaderObjectToProgram(UpdateVertexObject, UpdateFastProgram);
-      AttachShaderObjectToProgram(UpdateFastFragmentObject,
-        UpdateFastProgram);
-      AttachShaderObjectToProgram(UpdateVertexObject,
-        CreateOpticalDepthProgram);
-      AttachShaderObjectToProgram(CreateOpticalDepthFragmentObject,
-        CreateOpticalDepthProgram);
-      // Link programs
-      ProgramsLinked := LinkShaderProgram(RenderProgram);
-      ProgramsLinked := ProgramsLinked and LinkShaderProgram(UpdateProgram);
-      ProgramsLinked := ProgramsLinked and
+        // Define programs
+        DefineShaderProgram(RenderProgram, [ptVertex, ptFragment],
+          'SkyRenderProgram');
+        DefineShaderProgram(UpdateProgram, [ptVertex, ptFragment],
+          'SkyUpdateProgram');
+        DefineShaderProgram(UpdateFastProgram, [ptVertex, ptFragment],
+          'SkyUpdateFastProgram');
+        DefineShaderProgram(CreateOpticalDepthProgram, [ptVertex, ptFragment],
+          'SkyOpticalDepthProgram');
+        // Define objects
+        DefineShaderObject(RenderVertexObject, Render_vp,
+          [ptVertex], 'SkyRenderVertexObject');
+        DefineShaderObject(RenderFragmentObject, Header_fp + Render_fp,
+          [ptFragment], 'SkyRenderFragmentObject');
+        DefineShaderObject(UpdateVertexObject, Update_vp,
+          [ptVertex], 'SkyUpdateVertexObject');
+        DefineShaderObject(UpdateFragmentObject, Header_fp + Share_fp + Update_fp,
+          [ptFragment], 'SkyUpdateFragmentObject');
+        DefineShaderObject(UpdateFastFragmentObject, Header_fp + Share_fp +
+          UpdateFast_fp, [ptFragment], 'SkyUpdateFastFragmentObject');
+        DefineShaderObject(CreateOpticalDepthFragmentObject, Header_fp + Share_fp
+          + CreateOpticalDepth_fp, [ptFragment], 'SkyOpticalDepthFragmentObject');
+        // Attach objects
+        AttachShaderObjectToProgram(RenderVertexObject, RenderProgram);
+        AttachShaderObjectToProgram(RenderFragmentObject, RenderProgram);
+        AttachShaderObjectToProgram(UpdateVertexObject, UpdateProgram);
+        AttachShaderObjectToProgram(UpdateFragmentObject, UpdateProgram);
+        AttachShaderObjectToProgram(UpdateVertexObject, UpdateFastProgram);
+        AttachShaderObjectToProgram(UpdateFastFragmentObject,
+          UpdateFastProgram);
+        AttachShaderObjectToProgram(
+          UpdateVertexObject, CreateOpticalDepthProgram);
+        AttachShaderObjectToProgram(
+          CreateOpticalDepthFragmentObject, CreateOpticalDepthProgram);
+        // Link programs
+        LinkShaderProgram(RenderProgram);
+        LinkShaderProgram(UpdateProgram);
         LinkShaderProgram(UpdateFastProgram);
-      ProgramsLinked := ProgramsLinked and
         LinkShaderProgram(CreateOpticalDepthProgram);
-      EndWork;
-    end;
+      finally
+        EndWork;
+      end;
   end;
+
   // Initialize constant buffer
   with FUBO do
   begin
@@ -622,7 +625,7 @@ begin
     end;
   end;
   // Initialize textures
-  if not FOpticalDepthTexture.IsHandleAllocated and ProgramsLinked then
+  if not FOpticalDepthTexture.IsHandleAllocated then
   begin
     TGLBlankImage(FOpticalDepthTexture.Image).Width := FOpticalDepthN;
     TGLBlankImage(FOpticalDepthTexture.Image).Height := FOpticalDepthN;
@@ -639,12 +642,12 @@ begin
     OpticalDepthFBO.Bind;
     OpticalDepthFBO.AttachTexture(0, FOpticalDepthTexture);
     Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
-      'Framebuffer error: '+s);
+      'Framebuffer error: ' + s);
     RayleighMieFBO.Bind;
     RayleighMieFBO.AttachTexture(0, FMieTexture);
     RayleighMieFBO.AttachTexture(1, FRayleighTexture);
     Assert(OpticalDepthFBO.GetStringStatus(s) = fsComplete,
-      'Framebuffer error: '+s);
+      'Framebuffer error: ' + s);
     MakeGPUOpticalDepth(StateCash);
     Include(FChanges, nscTime);
   end;
@@ -770,8 +773,8 @@ var
 {$ENDIF}
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
-    glStringMarkerGREMEDY(24, 'MakeGPUMieRayleighBuffer');
+  if GL.GREMEDY_string_marker then
+    Gl.StringMarkerGREMEDY(24, 'MakeGPUMieRayleighBuffer');
 {$ENDIF}
   RayleighMieFBO.Bind;
   GL.DrawBuffers(2, @cDrawBuffers);
@@ -796,7 +799,9 @@ begin
     Uniform3f(uniformSunDir, v3SunDir);
 
     if FFastUpdate then
-      UniformSampler(uniformOpticalDepth, FOpticalDepthTexture.Handle, 0);
+    begin
+      StateCash.SamplerBinding[UniformSampler(uniformOpticalDepth, FOpticalDepthTexture.Handle)] := 0;
+    end;
   end;
 
   with DynamicVBOManager do
@@ -860,7 +865,7 @@ begin
 
     Initialize(ARci.GLStates);
 
-    if ProgramsLinked then
+    if ShaderManager.IsProgramLinked(RenderProgram) then
     begin
       if nscTime in FChanges then
         MakeGPUMieRayleighBuffer(ARci.GLStates);
@@ -869,7 +874,7 @@ begin
       ARci.GLStates.DrawFrameBuffer := storeFrameBuffer;
       with ShaderManager do
       begin
-        UseProgram( RenderProgram );
+        UseProgram(RenderProgram);
 
         VM := ARci.PipelineTransformation.ViewMatrix;
         VM[3, 0] := 0;
@@ -879,8 +884,8 @@ begin
         M := MatrixMultiply(M, ARci.PipelineTransformation.ProjectionMatrix);
         UniformMat4f(uniformViewProjectionMatrix, M);
 
-        UniformSampler(uniformMie, FMieTexture.Handle, 0);
-        UniformSampler(uniformRayleigh, FRayleighTexture.Handle, 1);
+        ARci.GLStates.SamplerBinding[UniformSampler(uniformMie, FMieTexture.Handle)] := 0;
+        ARci.GLStates.SamplerBinding[UniformSampler(uniformRayleigh, FRayleighTexture.Handle)] := 0;
         FUBO.BindBase(ublockConstants.Location);
         Uniform3f(uniformSunDir, v3SunDir);
 
@@ -1111,6 +1116,22 @@ end;
 initialization
 
   RegisterClasses([TGL3xCustomNishitaSky, TGL3xNishitaSky]);
+
+finalization
+
+  RenderProgram := nil;
+  RenderVertexObject := nil;
+  RenderFragmentObject := nil;
+
+  UpdateProgram := nil;
+  UpdateVertexObject := nil;
+  UpdateFragmentObject := nil;
+
+  UpdateFastProgram := nil;
+  UpdateFastFragmentObject := nil;
+
+  CreateOpticalDepthProgram := nil;
+  CreateOpticalDepthFragmentObject := nil;
 
 end.
 

@@ -181,7 +181,8 @@ implementation
 uses
   VectorGeometryEXT,
   GLTextureFormat
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const
@@ -269,13 +270,12 @@ const
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 var
-  GradientProgram: string;
-  GradientVertexObject: string;
-  GradientFragmentObject: string;
-  RaysProgram: string;
-  RaysVertexObject: string;
-  RaysFragmentObject: string;
-  ProgramsLinked: Boolean;
+  GradientProgram: IGLName;
+  GradientVertexObject: IGLName;
+  GradientFragmentObject: IGLName;
+  RaysProgram: IGLName;
+  RaysVertexObject: IGLName;
+  RaysFragmentObject: IGLName;
 
   // ------------------
   // ------------------ TGL3xLensFlare ------------------
@@ -374,47 +374,53 @@ begin
 end;
 
 procedure TGL3xLensFlare.Initialize;
+var
+  vp, fp: AnsiString;
 begin
   with ShaderManager do
-  try
-    BeginWork;
-    // Give name to new programs and objects
-    GradientProgram := MakeUniqueProgramName('GradientProgram');
-    RaysProgram := MakeUniqueProgramName('RaysProgram');
-
-    GradientVertexObject := MakeUniqueObjectName('GradientVertexObject');
-    GradientFragmentObject := MakeUniqueObjectName('GradientFragmentObject');
-    RaysVertexObject := MakeUniqueProgramName('RaysVertexObject');
-    RaysFragmentObject := MakeUniqueProgramName('RaysFragmentObject');
-    // Define programs
-    DefineShaderProgram(GradientProgram);
-    DefineShaderProgram(RaysProgram);
-    // Define objects
-    if GL.VERSION_3_2 then
-    begin
-      DefineShaderObject(GradientVertexObject, Gradient_vp150, [ptVertex]);
-      DefineShaderObject(GradientFragmentObject, Gradient_fp150, [ptFragment]);
-      DefineShaderObject(RaysVertexObject, RayTex_vp150, [ptVertex]);
-      DefineShaderObject(RaysFragmentObject, RayTex_fp150, [ptFragment]);
-    end
-    else
-    begin
-      DefineShaderObject(GradientVertexObject, Gradient_vp120, [ptVertex]);
-      DefineShaderObject(GradientFragmentObject, Gradient_fp120, [ptFragment]);
-      DefineShaderObject(RaysVertexObject, RayTex_vp120, [ptVertex]);
-      DefineShaderObject(RaysFragmentObject, RayTex_fp120, [ptFragment]);
+    try
+      BeginWork;
+      // Define programs
+      DefineShaderProgram(GradientProgram, [ptVertex, ptFragment],
+        'GradientProgram');
+      DefineShaderProgram(RaysProgram, [ptVertex, ptFragment],
+        'RaysProgram');
+      // Define objects
+      if GL.VERSION_3_2 then
+      begin
+        vp := Gradient_vp150;
+        fp := Gradient_fp150;
+      end
+      else
+      begin
+        vp := Gradient_vp120;
+        fp := Gradient_fp120;
+      end;
+      DefineShaderObject(GradientVertexObject, vp, [ptVertex], 'GradientVertexObject');
+      DefineShaderObject(GradientFragmentObject, fp, [ptFragment], 'GradientFragmentObject');
+      if GL.VERSION_3_2 then
+      begin
+        vp := RayTex_vp150;
+        fp := RayTex_fp150;
+      end
+      else
+      begin
+        vp := RayTex_vp120;
+        fp := RayTex_fp120;
+      end;
+      DefineShaderObject(RaysVertexObject, vp, [ptVertex], 'RaysVertexObject');
+      DefineShaderObject(RaysFragmentObject, fp, [ptFragment], 'RaysFragmentObject');
+      // Attach objects
+      AttachShaderObjectToProgram(GradientVertexObject, GradientProgram);
+      AttachShaderObjectToProgram(GradientFragmentObject, GradientProgram);
+      AttachShaderObjectToProgram(RaysVertexObject, RaysProgram);
+      AttachShaderObjectToProgram(RaysFragmentObject, RaysProgram);
+      // Link programs
+      LinkShaderProgram(GradientProgram);
+      LinkShaderProgram(RaysProgram);
+    finally
+      EndWork;
     end;
-    // Attach objects
-    AttachShaderObjectToProgram(GradientVertexObject, GradientProgram);
-    AttachShaderObjectToProgram(GradientFragmentObject, GradientProgram);
-    AttachShaderObjectToProgram(RaysVertexObject, RaysProgram);
-    AttachShaderObjectToProgram(RaysFragmentObject, RaysProgram);
-    // Link programs
-    ProgramsLinked := LinkShaderProgram(GradientProgram);
-    ProgramsLinked := ProgramsLinked and LinkShaderProgram(RaysProgram);
-  finally
-    EndWork;
-  end;
 end;
 
 procedure TGL3xLensFlare.DoRender(var ARci: TRenderContextInfo;
@@ -438,10 +444,11 @@ begin
   // Render self
   if GL.VERSION_2_1 and not (csDesigning in ComponentState) then
   begin
-    if Length(GradientProgram) = 0 then
+    if GradientProgram = nil then
       Initialize;
 
-    if ProgramsLinked then
+    if ShaderManager.IsProgramLinked(GradientProgram)
+      and ShaderManager.IsProgramLinked(RaysProgram) then
     begin
       // Random seed must be backed up, could be used for other purposes
           // (otherwise we essentially reset the random generator at each frame)
@@ -618,7 +625,7 @@ begin
           begin
             UseProgram(RaysProgram);
             UniformMat4f(uniformViewProjectionMatrix, M);
-            UniformSampler(uniformTexUnit0, FRaysTexture.Handle, 0);
+            ARci.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, FRaysTexture.Handle)];
             StaticVBOManager.RenderClient(FBuiltPropertiesRays);
           end;
 
@@ -865,7 +872,7 @@ begin
   Assert(FrameBuffer.Status = fsComplete, 'Framebuffer not complete');
   M.Identity;
   M.Translation(VectorMakeEXT(-1.0, -1.0, 0.0));
-  P.Ortho(0, 2*FSize, 0, 2*FSize, -1, 1);
+  P.Ortho(0, 2 * FSize, 0, 2 * FSize, -1, 1);
   M := M * P;
   ShaderManager.UniformMat4f(uniformViewProjectionMatrix, M);
 
@@ -879,7 +886,7 @@ begin
     LineWidth := 1;
     Disable(stLineSmooth);
     Disable(stLineStipple);
-    ColorClearValue := clrBlack;//Transparent;
+    ColorClearValue := clrBlack; //Transparent;
     GL.Clear(GL_COLOR_BUFFER_BIT);
   end;
 
@@ -909,7 +916,7 @@ begin
     EndObject;
   end;
   FrameBuffer.Unbind;
-//  FrameBuffer.Free;
+  //  FrameBuffer.Free;
   with rci.viewPortSize do
     rci.GLStates.ViewPort := Vector4iMake(0, 0, cx, cy);
 end;
@@ -1109,6 +1116,15 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClasses([TGL3xLensFlare]);
+
+finalization
+
+  GradientProgram := nil;
+  GradientVertexObject := nil;
+  GradientFragmentObject := nil;
+  RaysProgram := nil;
+  RaysVertexObject := nil;
+  RaysFragmentObject := nil;
 
 end.
 

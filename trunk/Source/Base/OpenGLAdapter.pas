@@ -3427,7 +3427,7 @@ var
   Count: Word;
 begin
   if FInitialized then
-  begin
+  try
     glError := GetError();
     if glError <> GL_NO_ERROR then
     begin
@@ -3449,6 +3449,8 @@ begin
             GLSLogger.LogError(format(rstrOpenGLError, ['Out of memory']));
         end;
     end;
+  except
+    GLSLogger.LogError(format(rstrOpenGLError, ['Exception in glGetError']));
   end;
 end;
 

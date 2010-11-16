@@ -56,17 +56,18 @@ const
   cConstantClasses: array[0..4] of TCustomMaterialGraphNodeClass =
     (TConstantNode, TConstant2fNode, TConstant3fNode, TConstant4fNode,
      TVertexColorNode);
-  cCoordinateClasses: array[0..6] of TCustomMaterialGraphNodeClass =
-    (TCustomMaterialGraphNode, TWorldNormalNode, TCustomMaterialGraphNode,
+  cCoordinateClasses: array[0..7] of TCustomMaterialGraphNodeClass =
+    (TObjectPositionNode, TWorldPositionNode, TWorldNormalNode,
+     TCustomMaterialGraphNode,
      TTextureCoordinateNode, TPannerNode, TRotatorNode, TScreenPositionNode);
-  cMathClasses: array[0..13] of TCustomMaterialGraphNodeClass =
+  cMathClasses: array[0..14] of TCustomMaterialGraphNodeClass =
     (TAddNode, TSubtractNode, TMultiplyNode, TDivideNode,
      TNormalizeNode, TPowerNode, TDotProductNode, TSineNode, TCosineNode,
-     TFloorNode, TAbsNode, TFractNode, TOneMinusNode, TSquareRootNode);
+     TFloorNode, TAbsNode, TFractNode, TOneMinusNode, TSquareRootNode, TSignNode);
   cTextureClasses: array[0..0] of TCustomMaterialGraphNodeClass =
     (TTextureSamplerNode);
-  cUtilityClasses: array[0..1] of TCustomMaterialGraphNodeClass =
-    (TTimerNode, TComponentMaskNode);
+  cUtilityClasses: array[0..3] of TCustomMaterialGraphNodeClass =
+    (TTimerNode, TComponentMaskNode, TClampNode, TAppendVectorNode);
   cVectorsClasses: array[0..3] of TCustomMaterialGraphNodeClass =
     (TWorldNormalNode, TLightVectorNode, TCameraVectorNode, TReflectionVectorNode);
 

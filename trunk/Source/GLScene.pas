@@ -7594,6 +7594,7 @@ var
   i: Integer;
   lightSource: TGLLightSource;
   nbLights: Integer;
+  lPos: TVector;
 begin
   nbLights := FLights.Count;
   if nbLights > maxLights then
@@ -7626,20 +7627,17 @@ begin
               if LightStyle = lsSpot then
               begin
                 if FSpotCutOff <> 180 then
-                begin
                   GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-                end;
-                LightSpotExponent[FLightID] := FSpotExponent;
-                LightSpotCutoff[FLightID] := FSpotCutOff;
-              end
-              else
-              begin
-                LightSpotCutoff[FLightID] := 180;
               end;
             end;
 
-            LightPosition[FLightID] := lightSource.AbsolutePosition;
-            LightSpotDirection[FLightID] := lightSource.SpotDirection.AsVector;
+            lPos := lightSource.AbsolutePosition;
+            if LightStyle = lsParallel then
+              lPos[3] := 0.0
+            else
+              lPos[3] := 1.0;
+            LightPosition[FLightID] := lPos;
+            LightSpotDirection[FLightID] := lightSource.SpotDirection.AsAffineVector;
 
             LightAmbient[FLightID] := FAmbient.Color;
             LightDiffuse[FLightID] := FDiffuse.Color;
@@ -7648,6 +7646,9 @@ begin
             LightConstantAtten[FLightID] := FConstAttenuation;
             LightLinearAtten[FLightID] := FLinearAttenuation;
             LightQuadraticAtten[FLightID] := FQuadraticAttenuation;
+
+            LightSpotExponent[FLightID] := FSpotExponent;
+            LightSpotCutoff[FLightID] := FSpotCutOff;
           end;
         end
       else

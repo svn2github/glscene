@@ -5,7 +5,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, VectorGeometry, GLScene, OpenGLTokens, SysUtils,
+  Classes, BaseClasses, VectorGeometry, GLScene, OpenGLTokens, SysUtils,
   GLCrossPlatform, GLContext, GLSilhouette, GLSLShader,
   GLRenderContextInfo, GLCoordinates,
   GLObjects, GLShaderManager, GLVBOManager, GL3xMaterial, GL3xFactory;
@@ -19,9 +19,10 @@ type
   protected
     { Protected Declarations }
     FBuiltProperties: TGLBuiltProperties;
-    FMaterial: TGL3xMaterialName;
+    FMaterial: IGLName;
     procedure SetBuiltProperties(const Value: TGLBuiltProperties);
-    procedure SetMaterial(const Value: TGL3xMaterialName); virtual;
+    function GetMaterialName: string; virtual;
+    procedure SetMaterialName(const Value: string); virtual;
 
     procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual; abstract;
     procedure BeforeRender; virtual;
@@ -36,7 +37,7 @@ type
     procedure StructureChanged; override;
     property BuiltProperties: TGLBuiltProperties read FBuiltProperties write
       SetBuiltProperties;
-    property Material: TGL3xMaterialName read FMaterial write SetMaterial;
+    property Material: string read GetMaterialName write SetMaterialName;
   end;
 
   TGL3xCustomObject = class(TGL3xBaseSceneObject)
@@ -327,7 +328,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
-    procedure SetMaterial(const Value: TGL3xMaterialName); override;
+    procedure SetMaterialName(const Value: string); override;
     procedure BeforeRender; override;
   public
     { Public Declarations }
@@ -360,12 +361,13 @@ begin
   FBuiltProperties := TGLBuiltProperties.Create(Self);
   FBuiltProperties.OwnerNotifyChange := NotifyChange;
   FBuiltProperties.OnBuildRequest := BuildBufferData;
-  FMaterial := glsDEFAULTMATERIALNAME;
+  Material := glsDEFAULTMATERIALNAME;
   ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
 destructor TGL3xBaseSceneObject.Destroy;
 begin
+  FMaterial := nil;
   FBuiltProperties.Destroy;
   inherited;
 end;
@@ -387,11 +389,11 @@ begin
         end
         else
         repeat
-          MaterialManager.ApplyMaterial(FMaterial);
+          MaterialManager.ApplyMaterial(FMaterial, ARci);
           BeforeRender;
           FBuiltProperties.Manager.RenderClient(FBuiltProperties);
           AfterRender;
-        until MaterialManager.UnApplyMaterial;
+        until MaterialManager.UnApplyMaterial(ARci);
       except
         Visible := False;
         if not ARci.GLStates.ForwardContext then
@@ -418,9 +420,20 @@ begin
   FBuiltProperties.Assign(Value);
 end;
 
-procedure TGL3xBaseSceneObject.SetMaterial(const Value: TGL3xMaterialName);
+function TGL3xBaseSceneObject.GetMaterialName: string;
 begin
-  FMaterial := Value;
+  Result := FMaterial.GetValue;
+end;
+
+procedure TGL3xBaseSceneObject.SetMaterialName(const Value: string);
+begin
+  with MaterialManager do
+  try
+    BeginWork;
+    FMaterial := GetMaterialName(Value);
+  finally
+    EndWork;
+  end;
   inherited StructureChanged;
 end;
 
@@ -945,7 +958,7 @@ end;
 
 procedure TGL3xCube.BuildBufferData(Sender: TGLBaseVBOManager);
 var
-  hw, hh, hd, nd: TGLFloat;
+  hw, hh, hd, nd, tan: TGLFloat;
 begin
   with Sender do
   begin
@@ -953,6 +966,7 @@ begin
       nd := -1
     else
       nd := 1;
+    tan := nd;
     hw := FCubeSize[0] * 0.5;
     hh := FCubeSize[1] * 0.5;
     hd := FCubeSize[2] * 0.5;
@@ -966,7 +980,7 @@ begin
     if cpFront in FParts then
     begin
       Attribute3f(attrNormal, 0, 0, nd);
-      Attribute3f(attrTangent, nd, 0, 0);
+      Attribute3f(attrTangent, tan, 0, 0);
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, hw, hh, hd);
       Attribute4f(attrVertexColor, 1, 1, 1, 1);
@@ -992,7 +1006,7 @@ begin
     if cpBack in FParts then
     begin
       Attribute3f(attrNormal, 0, 0, -nd);
-      Attribute3f(attrTangent, -nd, 0, 0);
+      Attribute3f(attrTangent, -tan, 0, 0);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, -hd);
       Attribute4f(attrVertexColor, 1, 1, 0, 1);
@@ -1018,7 +1032,7 @@ begin
     if cpLeft in FParts then
     begin
       Attribute3f(attrNormal, -nd, 0, 0);
-      Attribute3f(attrTangent, 0, 0, nd);
+      Attribute3f(attrTangent, 0, 0, tan);
       Attribute2f(attrTexCoord0, 1, 1);
       Attribute3f(attrPosition, -hw, hh, hd);
       Attribute4f(attrVertexColor, 0, 1, 1, 1);
@@ -1044,7 +1058,7 @@ begin
     if cpRight in FParts then
     begin
       Attribute3f(attrNormal, nd, 0, 0);
-      Attribute3f(attrTangent, 0, 0, -nd);
+      Attribute3f(attrTangent, 0, 0, -tan);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, hw, hh, hd);
       Attribute4f(attrVertexColor, 1, 1, 1, 1);
@@ -1070,7 +1084,7 @@ begin
     if cpTop in FParts then
     begin
       Attribute3f(attrNormal, 0, nd, 0);
-      Attribute3f(attrTangent, nd, 0, 0);
+      Attribute3f(attrTangent, tan, 0, 0);
       Attribute2f(attrTexCoord0, 0, 1);
       Attribute3f(attrPosition, -hw, hh, -hd);
       Attribute4f(attrVertexColor, 0, 1, 0, 1);
@@ -1096,7 +1110,7 @@ begin
     if cpBottom in FParts then
     begin
       Attribute3f(attrNormal, 0, -nd, 0);
-      Attribute3f(attrTangent, -nd, 0, 0);
+      Attribute3f(attrTangent, -tan, 0, 0);
       Attribute2f(attrTexCoord0, 0, 0);
       Attribute3f(attrPosition, -hw, -hh, -hd);
       Attribute4f(attrVertexColor, 0, 0, 0, 1);
@@ -2428,7 +2442,7 @@ begin
   inherited;
 end;
 
-procedure TGL3xFeedBackMesh.SetMaterial(const Value: TGL3xMaterialName);
+procedure TGL3xFeedBackMesh.SetMaterialName(const Value: string);
 begin
   inherited;
   FAttrIsDefined := False;

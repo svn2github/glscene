@@ -281,12 +281,10 @@ contains
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   GLSelection in '..\Source\GLSelection.pas',
-  GLSLog in '..\Source\Experimental\GLSLog.pas',
   GL3xAtmosphere in '..\Source\Experimental\GL3xAtmosphere.pas',
   GL3xFactory in '..\Source\Experimental\GL3xFactory.pas',
   GL3xLensFlare in '..\Source\Experimental\GL3xLensFlare.pas',
   GL3xMaterial in '..\Source\Experimental\GL3xMaterial.pas',
-  GL3xMaterialConst in '..\Source\Experimental\GL3xMaterialConst.pas',
   GL3xMaterialGraph in '..\Source\Experimental\GL3xMaterialGraph.pas',
   GL3xNishitaSky in '..\Source\Experimental\GL3xNishitaSky.pas',
   GL3xObjects in '..\Source\Experimental\GL3xObjects.pas',
@@ -295,11 +293,13 @@ contains
   GLSGraphStructure in '..\Source\Experimental\GLSGraphStructure.pas',
   GLShaderManager in '..\Source\Experimental\GLShaderManager.pas',
   GLSLauncher in '..\Source\Experimental\GLSLauncher.pas',
-  GLSpecializedUniforms in '..\Source\Experimental\GLSpecializedUniforms.pas',
   GLSRedBlackTree in '..\Source\Experimental\GLSRedBlackTree.pas',
   GLVBOManager in '..\Source\Experimental\GLVBOManager.pas',
   VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   ImageUtils in '..\Source\Base\ImageUtils.pas',
-  GLSGenerics in '..\Source\Base\GLSGenerics.pas';
+  GLSGenerics in '..\Source\Base\GLSGenerics.pas',
+  GLSLog in '..\Source\Base\GLSLog.pas',
+  GL3xMaterialTokens in '..\Source\Experimental\GL3xMaterialTokens.pas',
+  GLShaderEnvironment in '..\Source\Experimental\GLShaderEnvironment.pas';
 
 end.

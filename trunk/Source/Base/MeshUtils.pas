@@ -175,7 +175,7 @@ procedure SubdivideTriangles(smoothFactor : Single;
                              normals : TAffineVectorList = nil;
                              onSubdivideEdge : TSubdivideEdgeEvent = nil);
 
-{: Create list of indices of triangles with adjancency from triangle list }
+{: Create list of indices of triangles with adjacency from triangle list }
 function MakeTriangleAdjacencyList(
   const AindicesList: PLongWordArray; Count: LongWord;
   const AVerticesList: PAffineVectorArray): TLongWordList;

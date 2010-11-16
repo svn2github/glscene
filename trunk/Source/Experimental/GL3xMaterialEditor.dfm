@@ -78,10 +78,9 @@ object MaterialEditorForm: TMaterialEditorForm
     end
     object Model1: TMenuItem
       Caption = 'Model'
-      object SphereMenuItem: TMenuItem
+      object PlaneMenuItem: TMenuItem
         AutoCheck = True
-        Caption = 'Sphere'
-        Checked = True
+        Caption = 'Plane'
         GroupIndex = 1
         RadioItem = True
         OnClick = ModelMenuItemClick
@@ -94,10 +93,11 @@ object MaterialEditorForm: TMaterialEditorForm
         RadioItem = True
         OnClick = ModelMenuItemClick
       end
-      object PlaneMenuItem: TMenuItem
+      object SphereMenuItem: TMenuItem
         Tag = 2
         AutoCheck = True
-        Caption = 'Plane'
+        Caption = 'Sphere'
+        Checked = True
         GroupIndex = 1
         RadioItem = True
         OnClick = ModelMenuItemClick
@@ -127,7 +127,7 @@ object MaterialEditorForm: TMaterialEditorForm
   end
   object Cadencer: TTimer
     Enabled = False
-    Interval = 20
+    Interval = 25
     OnTimer = Cadence
     Left = 104
     Top = 88

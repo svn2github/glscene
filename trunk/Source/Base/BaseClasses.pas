@@ -119,7 +119,7 @@ type
     class function FirstOne: Boolean; virtual;
   public
     { Public Declarations }
-    class function FillResourceList(AList: TStringList): Boolean; virtual; abstract;
+    class function FillResourceList(AList: TStringList): Boolean; virtual;
     class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); virtual; abstract;
     // Brackets for thread safe work.
     class procedure BeginWork; virtual;
@@ -166,6 +166,8 @@ type
 procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
 procedure NotifyGLSceneManagersContextCreated;
 procedure NotifyGLSceneManagersBeforeCompile;
+procedure NotifyGLSceneManagersProjectOpened;
+procedure NotifyGLSceneManagersProjectClosed;
 function GetManagersResourceList: TStringList;
 
 implementation
@@ -191,12 +193,15 @@ end;
 
 procedure TGLUpdateAbleObject.NotifyChange(Sender: TObject);
 begin
-  if (FUpdating = 0) and Assigned(Owner) then
+  if FUpdating = 0 then
   begin
-    if Owner is TGLUpdateAbleObject then
-      TGLUpdateAbleObject(Owner).NotifyChange(Self)
-    else if Owner is TGLUpdateAbleComponent then
-      TGLUpdateAbleComponent(Owner).NotifyChange(Self);
+    if Assigned(Owner) then
+    begin
+      if Owner is TGLUpdateAbleObject then
+        TGLUpdateAbleObject(Owner).NotifyChange(Self)
+      else if Owner is TGLUpdateAbleComponent then
+        TGLUpdateAbleComponent(Owner).NotifyChange(Self);
+    end;
     if Assigned(FOnNotifyChange) then
       FOnNotifyChange(Self);
   end;
@@ -397,10 +402,16 @@ begin
   end;
 end;
 
+class function TGLSAbstractManager.FillResourceList(AList: TStringList): Boolean;
+begin
+  Result := False;
+end;
+
 procedure NotifyGLSceneManagersContextCreated;
 var
   I: Integer;
 begin
+  SetExeDirectory;
   for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyContextCreated;
 end;
@@ -409,8 +420,27 @@ procedure NotifyGLSceneManagersBeforeCompile;
 var
   I: Integer;
 begin
+  SetExeDirectory;
   for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyBeforeCompile;
+end;
+
+procedure NotifyGLSceneManagersProjectOpened;
+var
+  I: Integer;
+begin
+  SetExeDirectory;
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    aGLSceneManagers[I].ManagerClass.NotifyProjectOpened;
+end;
+
+procedure NotifyGLSceneManagersProjectClosed;
+var
+  I: Integer;
+begin
+  SetExeDirectory;
+  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    aGLSceneManagers[I].ManagerClass.NotifyProjectClosed;
 end;
 
 function GetManagersResourceList: TStringList;

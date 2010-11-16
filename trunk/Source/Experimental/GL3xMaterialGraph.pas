@@ -11,18 +11,20 @@
  </ul></font>
 }
 
-{ TODO: Material custom lighting model}
-{ TODO: Material distorsion input}
-{ DONE: Add Index to texture coordinates node}
-{ DONE: Fix reflection vector node}
-{ DONE: Complex Load/Save Material into XML-document}
-{ DONE: Basic Load/Save Material into XML-document}
-{ DONE: 1 Build Material}
-{ TODO: 5 Togle Curved Conections}
-{ DONE: Vector Swizzling}
-{ DONE: Highligth Conections}
-{ DONE: Fix Conections Cooling}
-{ DONE: Fix Texture Coords Artifact}
+// DONE: Multiple light
+// TODO: Material EmissiveOnly model
+// TODO: Material custom lighting model
+// TODO: Material distorsion input
+// DONE: Add Index to texture coordinates node
+// DONE: Fix reflection vector node
+// DONE: Complex Load/Save Material into XML-document
+// DONE: Basic Load/Save Material into XML-document
+// DONE: Build Material
+// TODO: Togle Curved Conections
+// DONE: Vector Swizzling
+// DONE: Highligth Conections
+// DONE: Fix Conections Cooling
+// DONE: Fix Texture Coords Artifact
 
 unit GL3xMaterialGraph;
 
@@ -40,6 +42,7 @@ uses
   XMLRead,
 {$ENDIF}
   // GLScene
+  BaseClasses,
   GLCrossPlatform,
   GLSCrossXML,
   OpenGLTokens,
@@ -55,8 +58,10 @@ uses
   GLTexture,
   GL3xTexture,
   GL3xMaterial,
-  GL3xMaterialConst,
+  GL3xMaterialTokens,
   GLSGraphStructure,
+  GLTextureFormat,
+  GLShaderEnvironment,
   GLStrings;
 
 type
@@ -64,20 +69,16 @@ type
   TCustomMaterialGraphNode = class;
   TCustomMaterialGraphNodeClass = class of TCustomMaterialGraphNode;
 
-  TGL3xEdinableMaterial = class(TGL3xMaterial)
+  TGL3xEditableMaterial = class(TGL3xMaterial)
   public
     property Document;
-    property SampleList;
     property BlendingMode;
     property FaceCulling;
     property PolygonMode;
-    property TextureUnits;
+    property SampleList;
   end;
 
-  TTextureRec = record
-    Name: TGL3xTextureName;
-    UseCount: Integer;
-  end;
+  TTexCoordTilesArray = array[0..7] of TVector4fEXT;
 
   TMaterialGraph = class(TBaseGraphStructure)
   private
@@ -94,16 +95,15 @@ type
     FLinksCoordsList: TSingleList;
     FLinksColorList: TSingleList;
 
-    FNodeCounter: Integer;
-
     FErrorMessage: string;
 
     FShaderCodePad: TStrings;
-    FVertexProgram: TStringList;
-    FFragmentProgram: TStringList;
+
+    FProgramCodeSet: TProgramCodeSet;
     FGraphChanged: Boolean;
-    FMaterial: TGL3xEdinableMaterial;
-    FTextures: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TTextureRec;
+    FMaterial: TGL3xEditableMaterial;
+    FUnits: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TTextureSampler;
+    FTexCoordTiles: TTexCoordTilesArray;
 
     function InitGraphics: Boolean;
     procedure CreateFontTexture;
@@ -112,9 +112,9 @@ type
     procedure SetShaderCodePad(AList: TStrings);
     procedure RefreshMaterial;
     procedure ClearTextureRegistry;
-    procedure RegisterTexture(const AName: TGL3xTextureName);
-    procedure UnRegisterTexture(const AName: TGL3xTextureName);
-    function GetTextureUnitIndex(const AName: TGL3xTextureName): Integer;
+    procedure RegisterTextureSampler(const ATexture, ASampler: IGLName);
+    procedure UnRegisterTextureSampler(const ATexture, ASampler: IGLName);
+    function GetTextureSamplerIndex(const ATexture, ASampler: IGLName): Integer;
   protected
     function GetMaterialNode(I: Integer): TCustomMaterialGraphNode; overload;
     function GetSelectedJointNode1: TCustomMaterialGraphNode; inline;
@@ -122,6 +122,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    procedure NotifyChange(Sender: TObject);
 
     function AddNode(const VertexClass: TCustomMaterialGraphNodeClass; const x, y, w, h:
       Integer): TCustomMaterialGraphNode; overload;
@@ -133,7 +135,7 @@ type
 
     property Node[I: Integer]: TCustomMaterialGraphNode read GetMaterialNode;
 
-    property Material: TGL3xEdinableMaterial read FMaterial;
+    property EditedMaterial: TGL3xEditableMaterial read FMaterial;
     property ShaderCodePad: TStrings read FShaderCodePad write SetShaderCodePad;
   end;
 
@@ -153,20 +155,13 @@ type
     function Color: TVector;
   end;
 
-  TSampleGatherInfo = record
-    SampleList: TList;
-    PassTexCoord: Boolean;
-    LightingInTextureSpace: Boolean;
-  end;
-
   TCustomMaterialGraphNode = class(TBaseGraphVertex)
   private
     { Private declarations }
     FJoints: array of TNodeJoint;
     FViewingTexture: TGLTextureHandle;
-    FViewingObject: string;
-    FViewingProgram: string;
-    FViewingProgLinked: Boolean;
+    FViewingObject: IGLName;
+    FViewingProgram: IGLName;
     FPrimarySampleChache: PShaderSample;
     FGatherLock: Boolean;
     FGetOuptupSampleLock: Boolean;
@@ -208,7 +203,7 @@ type
     { Public declarations }
     constructor Create; override;
     destructor Destroy; override;
-    procedure NotifyChange; override;
+    procedure NotifyChange(Sender: TObject); override;
     procedure UpdateViewing;
     function GatherSamples(var Info: TSampleGatherInfo; JointIndex: Integer): Boolean;
 
@@ -220,13 +215,11 @@ type
     property Joints[Index: Integer]: PNodeJoint read GetJoints write SetJoints;
     property JointCoords[Index: Integer]: TVector2s read GetJointCoords;
 
-    property ViewingObjectName: string read FViewingObject;
+    property ViewingObjectName: IGLName read FViewingObject;
     property GivingNodeTextureID[JointIndex: SmallInt]: TGLuint read GetGivingNodeTextureID;
     property GivingNodeMask[JointIndex: SmallInt]: TGLColorComponentMask read GetGivingNodeMask;
     property GivingNodeDataType[JointIndex: SmallInt]: TGLSLDataType read GetGivingNodeDataType;
   end;
-
-  TLightingModel = (lmPhong);
 
   TMaterialNode = class(TCustomMaterialGraphNode)
   private
@@ -251,7 +244,6 @@ type
   public
     constructor Create; override;
     function Caption: string; override;
-    function GetViewingCode: AnsiString; override;
   published
     property FaceCulling: TFaceCulling read GetFaceCulling write SetFaceCulling
       default fcBufferDefault;
@@ -264,7 +256,7 @@ type
       default lmPhong;
   end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Constant Nodes'}{$ENDIF}
+{$REGION 'Constant Nodes'}
   TCustomConstantNode = class(TCustomMaterialGraphNode)
   protected
     FValue: TVector4fEXT;
@@ -314,12 +306,11 @@ type
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Coordinate Nodes'}{$ENDIF}
+{$REGION 'Coordinate Nodes'}
   TTextureCoordinateNode = class(TCustomMaterialGraphNode)
   private
-    FValue: TVector2fEXT;
     FIndex: Integer;
     procedure SetValue(Index: Integer; Value: Single);
     function GetValue(Index: Integer): Single;
@@ -382,6 +373,24 @@ type
     property Speed: Single index 2 read GetValue write SetValue;
   end;
 
+  TObjectPositionNode = class(TCustomMaterialGraphNode)
+  protected
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+  public
+    constructor Create; override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  end;
+
+  TWorldPositionNode = class(TCustomMaterialGraphNode)
+  protected
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+  public
+    constructor Create; override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  end;
+
   TScreenPositionNode = class(TCustomMaterialGraphNode)
   protected
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
@@ -390,9 +399,9 @@ type
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Math Nodes'}{$ENDIF}
+{$REGION 'Math Nodes'}
   TUnarOpMathNode = class(TCustomMaterialGraphNode)
   protected
     function CheckInput: Boolean; override;
@@ -539,14 +548,26 @@ type
     function GetViewingCode: AnsiString; override;
   end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+  TSignNode = class(TUnarOpMathNode)
+  protected
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+  public
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  end;
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Texture Nodes'}{$ENDIF}
+{$REGION 'Texture Nodes'}
   TTextureSamplerNode = class(TCustomMaterialGraphNode)
   private
-    FTexture: TGL3xTextureName;
-    FSampler: TGLSamplerParam;
-    procedure SetTexture(const AName: TGL3xTextureName);
+    FTexture: IGLName;
+    FSampler: IGLName;
+    function GetTexture: string;
+    procedure SetTexture(const AName: string);
+    function GetSampler: TGL3xSampler;
+    procedure SetSampler(ASampler: TGL3xSampler);
+    function GetSamplerName: string;
+    procedure SetSamplerName(const AName: string);
   protected
     function CheckInput: Boolean; override;
     procedure SetViewingUniforms; override;
@@ -560,12 +581,13 @@ type
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
-    property Texture: TGL3xTextureName read FTexture write SetTexture stored False;
-    property Sampler: TGLSamplerParam read FSampler;
+    property Texture: string read GetTexture write SetTexture;
+    property Sampler: string read GetSamplerName write SetSamplerName;
+    property SamplerParameters: TGL3xSampler read GetSampler write SetSampler;
   end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Utility Nodes'}{$ENDIF}
+{$REGION 'Utility Nodes'}
   TTimerNode = class(TCustomMaterialGraphNode)
   protected
     procedure SetViewingUniforms; override;
@@ -600,15 +622,37 @@ type
     property Alpha: Boolean index 3 read GetMask write SetMask default False;
   end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+  TClampNode = class(TCustomMaterialGraphNode)
+  protected
+    function CheckInput: Boolean; override;
+    procedure SetViewingUniforms; override;
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
+  public
+    constructor Create; override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  published
+  end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Vectors Nodes'}{$ENDIF}
+  TAppendVectorNode = class(TBinarOpMathNode)
+  protected
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+  public
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  end;
+
+{$ENDREGION}
+
+{$REGION 'Vectors Nodes'}
   TWorldNormalNode = class(TCustomMaterialGraphNode)
   protected
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
   published
   end;
 
@@ -618,6 +662,7 @@ type
   public
     constructor Create; override;
     function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
   published
   end;
 
@@ -639,7 +684,7 @@ type
   published
   end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
 implementation
 
@@ -650,15 +695,16 @@ uses
 {$ENDIF}
   SysUtils,
   GLColor,
-  GLCompositeImage,
-  GLTextureFormat,
-  GLSpecializedUniforms;
+  GLCompositeImage;
+
+resourcestring
+  strFailToBuild = 'Fail to build material shader!';
 
 const
 
   cNodeCaptionHeigth = 24;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders source'}{$ENDIF}
+{$REGION 'Shaders source'}
 
   Background_vp150: AnsiString =
     '#version 150' + #13#10 +
@@ -667,7 +713,7 @@ const
     'in vec2 TexCoord0;' + #13#10 +
     'out float mixFactor;' + #13#10 +
     'out vec2 fpTexCoord;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  vec2 screen_pos = 2.0*sign(Position)-1.0;' + #13#10 +
     '  mixFactor = sign(Position.y);' + #13#10 +
@@ -684,7 +730,7 @@ const
     'in float mixFactor;' + #13#10 +
     'in vec2 fpTexCoord;' + #13#10 +
     'out vec4 FragColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  vec4 gradient = mix(GradientColor1, GradientColor2, mixFactor);' + #13#10
     +
@@ -698,7 +744,7 @@ const
     'in vec2 TexCoord0;' + #13#10 +
     'uniform vec4 ScaleOffset;' + #13#10 +
     'out vec2 fpTexCoord;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  fpTexCoord = TexCoord0;' + #13#10 +
     '  vec2 screen_pos = Position*ScaleOffset.xy+ScaleOffset.zw;' + #13#10 +
@@ -710,7 +756,7 @@ const
     'precision highp float;' + #13#10 +
     'uniform vec4 Diffuse;' + #13#10 +
     'out vec4 FragColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  FragColor = Diffuse;' + #13#10 +
     '}';
@@ -721,9 +767,9 @@ const
     'in vec2 fpTexCoord;' + #13#10 +
     'uniform sampler2D TexUnit0;' + #13#10 +
     'out vec4 FragColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
-    '  FragColor = texture(TexUnit0, fpTexCoord);' + #13#10 +
+    '  FragColor = fract(texture(TexUnit0, fpTexCoord));' + #13#10 +
     '}';
 
   Joint_vp150: AnsiString =
@@ -731,7 +777,7 @@ const
     'in vec2 Position;' + #13#10 +
     'in vec4 VertexColor;' + #13#10 +
     'out vec4 fpColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  fpColor = VertexColor;' + #13#10 +
     '  gl_Position = vec4(Position, 0.0, 1.0);' + #13#10 +
@@ -742,7 +788,7 @@ const
     'precision highp float;' + #13#10 +
     'out vec4 FragColor;' + #13#10 +
     'in vec4 fpColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  FragColor = fpColor;' + #13#10 +
     '}';
@@ -752,7 +798,7 @@ const
     'in vec2 Position;' + #13#10 +
     'in vec4 VertexColor;' + #13#10 +
     'out vec4 gpColor;' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  gpColor = VertexColor;' + #13#10 +
     '  gl_Position = vec4(Position, 0.0, 1.0);' + #13#10 +
@@ -784,7 +830,7 @@ const
     '              gl_PositionIn[3].xy*b.w;' + #13#10 +
     '  return vec4(node, 0.0, 1.0);' + #13#10 +
     '}' + #13#10 +
-    'void main(void)' + #13#10 +
+    'void main()' + #13#10 +
     '{' + #13#10 +
     '  vec4 p = vec4(0.0);' + #13#10 +
     '  Diffuse = gpColor[0];' + #13#10 +
@@ -863,6 +909,10 @@ const
 
   UniformSampler_line: AnsiString =
     'uniform sampler2D TexUnit0;' + #13#10 +
+    'uniform sampler2D TexUnit1;' + #13#10 +
+    'uniform sampler2D TexUnit2;' + #13#10;
+  UniformSamplerCube_line: AnsiString =
+    'uniform samplerCube TexUnit0;' + #13#10 +
     'uniform sampler2D TexUnit1;' + #13#10;
   GetTexCoord_line: AnsiString =
     'vec2 GetTexCoord(void);' + #13#10;
@@ -872,6 +922,8 @@ const
     ' vec4 value0 = texture(TexUnit0, GetTexCoord());' + #10#13;
   GetValue1_line: AnsiString =
     ' vec4 value1 = texture(TexUnit1, GetTexCoord());' + #10#13;
+  GetValue2_line: AnsiString =
+    ' vec4 value2 = texture(TexUnit2, GetTexCoord());' + #10#13;
   LBracket_line: AnsiString =
     '{' + #10#13;
   RBracket_line: AnsiString =
@@ -889,9 +941,32 @@ const
     '  FragColor = GetWorkResult();' + #13#10 +
     '}';
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
+
+type
+  TAccessableMaterialManager = class(MaterialManager) public end;
 
 var
+  FrameProgram: IGLName;
+  FrameVertexObj: IGLName;
+  FrameFragmentObj: IGLName;
+  ViewingProgram: IGLName;
+  ViewingFragmentObj: IGLName;
+  TextProgram: IGLName;
+  TextFragmentObj: IGLName;
+  BackgroundProgram: IGLName;
+  BackgroundVertexObj: IGLName;
+  BackgroundFragmentObj: IGLName;
+  JointProgram: IGLName;
+  JointVertexObj: IGLName;
+  JointFragmentObj: IGLName;
+  LinkProgram: IGLName;
+  LinkVertexObj: IGLName;
+  LinkGeometryObj: IGLName;
+  LinkFragmentObj: IGLName;
+  ViewingMakerVertexObj: IGLName;
+  ViewingMakerFragmentObj: IGLName;
+
   uniformGradientColor1,
     uniformGradientColor2,
     uniformScaleOffset,
@@ -902,28 +977,26 @@ var
     uniformString,
     uniformTime: TGLSLUniform;
 
-  gvarSample: PShaderSample;
-  gvarProgType: TGLSLProgramTypes;
-
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TMaterialGraph'}{$ENDIF}
+{$REGION 'TMaterialGraph'}
 
 constructor TMaterialGraph.Create(AOwner: TComponent);
+var
+  PT: TGLSLProgramType;
 begin
   inherited Create(AOwner);
   FNodeList := TList.Create;
-  FMaterial := TGL3xEdinableMaterial.Create(Self);
+  FMaterial := TGL3xEditableMaterial.Create(Self);
   FNeedPackList := false;
   FGraphicInitialized := false;
   FPulling := false;
   FGraphChanged := True;
-  FVertexProgram := TStringList.Create;
-  FFragmentProgram := TStringList.Create;
+
+  for PT := Low(TGLSLProgramType) to High(TGLSLProgramType) do
+    FProgramCodeSet[PT] := TStringList.Create;
 
   FScreenCenter[0] := 0;
   FScreenCenter[1] := 0;
   FScreenZoom := 1;
-
-  FNodeCounter := 0;
 
   FJointPositionList := TSingleList.Create;
   FJointColorList := TSingleList.Create;
@@ -936,6 +1009,7 @@ end;
 destructor TMaterialGraph.Destroy;
 var
   n: Integer;
+  PT: TGLSLProgramType;
 begin
   PackLists;
   for n := 0 to FNodeList.Count - 1 do
@@ -948,6 +1022,8 @@ begin
   FLinksColorList.Free;
   FMaterial.Free;
   ClearTextureRegistry;
+  for PT := Low(TGLSLProgramType) to High(TGLSLProgramType) do
+    FProgramCodeSet[PT].Free;
 
   // Release GPU resources
   if FGraphicInitialized then
@@ -969,14 +1045,20 @@ begin
   inherited;
 end;
 
+procedure TMaterialGraph.NotifyChange(Sender: TObject);
+begin
+  FGraphChanged := True;
+end;
+
 procedure TMaterialGraph.ClearTextureRegistry;
 var
   I: Integer;
 begin
-  for I := 0 to High(FTextures) do
+  for I := High(FUnits) downto 0 do
   begin
-    FTextures[I].Name := '';
-    FTextures[I].UseCount := 0;
+    FUnits[I].TextureName := nil;
+    FUnits[I].SamplerName := nil;
+    FUnits[I].UseCount := 0;
   end;
 end;
 
@@ -1000,16 +1082,19 @@ var
   n: Integer;
 begin
   for n := 0 to FNodeList.Count - 1 do
-    Node[n].NotifyChange;
+    Node[n].NotifyChange(Self);
 end;
 
 procedure TMaterialGraph.Save;
 var
   XMLMaterial, XMLGraph, XMLNode, XMLNodeProp, XMLJoint: GLSDOMNode;
+  XMLSamples, XMLSample, XMLRefs, XMLRef: GLSDOMNode;
   vNode: TCustomMaterialGraphNode;
   i, j: Integer;
   bDone: Boolean;
   vName, vValue: string;
+  pSample: PShaderSample;
+  sPart: string;
 begin
   FMaterial.Document := GLSNewXMLDocument;
 {$IFDEF FPC}
@@ -1021,18 +1106,23 @@ begin
 {$ENDIF}
   // Save textures
   vValue := '';
-  for I := 0 to High(FTextures) do
-    if FTextures[I].UseCount > 0 then
-      vValue := vValue + FTextures[I].Name + ';'
+  for I := 0 to High(FUnits) do
+    if FUnits[I].UseCount > 0 then
+    begin
+      vValue := vValue + FUnits[I].TextureName.GetValue + ';';
+      if Assigned(FUnits[I].SamplerName) then
+        vValue := vValue + FUnits[I].SamplerName.GetValue;
+      vValue := vValue + ';';
+    end
     else
       break;
   SetXMLAttribute(XMLMaterial, 'TextureUnits', vValue);
 
   XMLGraph := CreateDOMNode(XMLMaterial, 'MaterialGraph');
 
-  for i := 0 to FNodeList.Count - 1 do
+  for I := 0 to FNodeList.Count - 1 do
   begin
-    vNode := Node[i];
+    vNode := Node[I];
     XMLNode := CreateDOMNode(XMLGraph, 'MaterialNode');
     SetXMLAttribute(XMLNode, 'NodeClass', vNode.ClassName);
     SetXMLAttribute(XMLNode, 'Left', IntToStr(vNode.Left));
@@ -1042,15 +1132,15 @@ begin
 
     // Node published properties
     XMLNodeProp := CreateDOMNode(XMLNode, 'Properties');
-    j := 0;
+    J := 0;
     repeat
       bDone := vNode.GetProperty(j, vName, vValue);
-      Inc(j);
+      Inc(J);
       if bDone then
         SetXMLAttribute(XMLNodeProp, vName, vValue);
     until not bDone;
 
-    for j := 0 to vNode.Count - 1 do
+    for J := 0 to vNode.Count - 1 do
     begin
       if Assigned(vNode.Joints[j].GivingNode) then
       begin
@@ -1063,13 +1153,62 @@ begin
       end;
     end;
   end;
+
+  XMLSamples := CreateDOMNode(XMLMaterial, 'Samples');
+  SetXMLAttribute(XMLMaterial, 'FaceCulling', cFaceCulling[FMaterial.FaceCulling]);
+  SetXMLAttribute(XMLMaterial, 'PolygonMode', cPolygonMode[FMaterial.PolygonMode]);
+  SetXMLAttribute(XMLMaterial, 'BlendingMode', cBlendingMode[FMaterial.BlendingMode]);
+
+  for I := 0 to FMaterial.SampleList.Count - 1 do
+  begin
+    pSample := FMaterial.SampleList[I];
+    XMLSample := CreateDOMNode(XMLSamples, 'Sample' + IntToStr(I));
+    SetXMLAttribute(XMLSample, 'Category', string(pSample.Category));
+    SetXMLAttribute(XMLSample, 'Name', string(pSample.Name));
+    SetXMLAttribute(XMLSample, 'Output', string(GLSLTypeToString(pSample.Output)));
+
+    sPart := '';
+    if ptVertex in pSample.Participate then
+      sPart := sPart + 'V';
+    if ptFragment in pSample.Participate then
+      sPart := sPart + 'F';
+    if ptGeometry in pSample.Participate then
+      sPart := sPart + 'G';
+    SetXMLAttribute(XMLSample, 'Participate', sPart);
+
+    case pSample.Purpose of
+      sspConstant:
+        begin
+          SetXMLAttribute(XMLSample, 'Purpose', 'C');
+          SetXMLAttribute(XMLSample, 'ConstantValue', pSample.ConstantValue);
+        end;
+      sspVariable:
+        begin
+          SetXMLAttribute(XMLSample, 'Purpose', 'V');
+        end;
+    end;
+
+    if pSample.Mask <> [] then
+      SetXMLAttribute(XMLSample, 'Mask', pSample.MaskAsString);
+
+    XMLRefs := CreateDOMNode(XMLSample, 'References');
+
+    for J := 0 to High(TInputRefArray) do
+      if Assigned(pSample.InputRef[J]) then
+      begin
+        XMLRef := CreateDOMNode(XMLRefs, 'R' + IntToStr(J));
+        SetXMLAttribute(XMLRef, 'Index', IntToStr(FMaterial.SampleList.IndexOf(pSample.InputRef[J])));
+        SetXMLAttribute(XMLRef, 'Input', string(GLSLTypeToString(pSample.Input[J])));
+      end;
+  end;
 end;
 
 procedure TMaterialGraph.Load;
 var
   XMLMaterial, XMLGraph, XMLNode, XMLJoint, XMLNodeProp: GLSXMLNode;
   OldNodeList: TList;
-  I, J, P: Integer;
+  OldTCT: TTexCoordTilesArray;
+  I, J: Integer;
   NodeClass: TCustomMaterialGraphNodeClass;
   vNode: TCustomMaterialGraphNode;
   Success: Boolean;
@@ -1081,18 +1220,12 @@ begin
 
   OldNodeList := FNodeList;
   FNodeList := TList.Create;
+  OldTCT := FTexCoordTiles;
+  for I := 7 downto 0 do
+    FTexCoordTiles[I] := VectorMakeEXT(1.0, 1.0, 0.0, 0.0);
   Success := False;
   try
     XMLMaterial := FMaterial.Document.DocumentElement;
-    ClearTextureRegistry;
-    GetXMLAttribute(XMLMaterial, 'TextureUnits', temp);
-    repeat
-      P := Pos(';', temp);
-      if P = 0 then
-        break;
-      RegisterTexture(Copy(temp, 1, P - 1));
-      Delete(temp, 1, P);
-    until Length(temp) = 0;
 
     if FindXMLNode(XMLMaterial, 'MaterialGraph', XMLGraph) then
     begin
@@ -1114,7 +1247,14 @@ begin
             if FindXMLNode(XMLNode, 'Properties', XMLNodeProp) then
               for j := 0 to GetXMLAttributeCount(XMLNodeProp) - 1 do
                 with GetXMLAttribute(XMLNodeProp, j) do
-                  vNode.SetProperty(j, NodeName, NodeValue);
+                begin
+                  try
+                    temp := NodeValue;
+                  except
+                    temp := '';
+                  end;
+                  vNode.SetProperty(j, NodeName, temp);
+                end;
           end;
         end;
       end;
@@ -1170,6 +1310,7 @@ begin
         Node[i].Free;
       FNodeList.Free;
       FNodeList := OldNodeList;
+      FTexCoordTiles := OldTCT;
     end;
   end;
 
@@ -1248,6 +1389,7 @@ begin
   FFontTexture := TGLTextureHandle.CreateAndAllocate;
   with FRenderContextInfo.GLStates do
   begin
+    ActiveTexture := 0;
     TextureBinding[0, ttTextureRect] := FFontTexture.Handle;
     UnpackAlignment := 1;
     UnpackRowLength := 0;
@@ -1303,6 +1445,7 @@ begin
   FBackTexture := TGLTextureHandle.CreateAndAllocate;
   with FRenderContextInfo.GLStates do
   begin
+    ActiveTexture := 0;
     TextureBinding[0, ttTexture2D] := FBackTexture.Handle;
     UnpackAlignment := 1;
     UnpackRowLength := 0;
@@ -1342,18 +1485,19 @@ end;
 function TMaterialGraph.AddNode(const VertexClass: TCustomMaterialGraphNodeClass;
   const x, y, w, h: Integer): TCustomMaterialGraphNode;
 var
-  vName: string;
+  rName: string;
+  rNode: TTextureSamplerNode;
 begin
   Result := TCustomMaterialGraphNode(inherited AddNode(VertexClass, x, y, w, h));
   if Result is TCustomConstantNode then
-    vName := 'Const'
+    rName := 'Const'
   else
-    vName := Result.Caption;
+    rName := Result.Caption;
   if Result is TTextureSamplerNode then
-    RegisterTexture(TTextureSamplerNode(Result).Texture);
-  Result.FViewingObject := vName + 'NodeObj' + IntToStr(FNodeCounter);
-  Result.FViewingProgram := vName + 'NodeProg' + IntToStr(FNodeCounter);
-  Inc(FNodeCounter);
+  begin
+    rNode := TTextureSamplerNode(Result);
+    RegisterTextureSampler(rNode.FTexture, rNode.FSampler);
+  end;
 end;
 
 function TMaterialGraph.InitGraphics: Boolean;
@@ -1375,55 +1519,65 @@ begin
   begin
     try
       BeginWork;
-      DefineShaderProgram('Frame');
-      DefineShaderObject('FrameVertex', Frame_vp150, [ptVertex]);
-      DefineShaderObject('FrameFragment', Frame_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('FrameVertex', 'Frame');
-      AttachShaderObjectToProgram('FrameFragment', 'Frame');
-      Result := Result and LinkShaderProgram('Frame');
+      DefineShaderProgram(FrameProgram, [ptVertex, ptFragment], 'FrameProgram');
+      DefineShaderObject(FrameVertexObj, Frame_vp150, [ptVertex], 'FrameVertex');
+      DefineShaderObject(FrameFragmentObj, Frame_fp150, [ptFragment], 'FrameFragment');
+      AttachShaderObjectToProgram(FrameVertexObj, FrameProgram);
+      AttachShaderObjectToProgram(FrameFragmentObj, FrameProgram);
+      LinkShaderProgram(FrameProgram);
 
-      DefineShaderProgram('Viewing');
-      DefineShaderObject('ViewingFragment', Viewing_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('FrameVertex', 'Viewing');
-      AttachShaderObjectToProgram('ViewingFragment', 'Viewing');
-      Result := Result and LinkShaderProgram('Viewing');
+      DefineShaderProgram(ViewingProgram, [ptVertex, ptFragment], 'ViewingProgram');
+      DefineShaderObject(ViewingFragmentObj, Viewing_fp150, [ptFragment], 'ViewingFragment');
+      AttachShaderObjectToProgram(FrameVertexObj, ViewingProgram);
+      AttachShaderObjectToProgram(ViewingFragmentObj, ViewingProgram);
+      LinkShaderProgram(ViewingProgram);
 
-      DefineShaderProgram('Text');
-      DefineShaderObject('TextFragment', Text_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('FrameVertex', 'Text');
-      AttachShaderObjectToProgram('TextFragment', 'Text');
-      Result := Result and LinkShaderProgram('Text');
+      DefineShaderProgram(TextProgram, [ptVertex, ptFragment], 'TextProgram');
+      DefineShaderObject(TextFragmentObj, Text_fp150, [ptFragment], 'TextFragment');
+      AttachShaderObjectToProgram(FrameVertexObj, TextProgram);
+      AttachShaderObjectToProgram(TextFragmentObj, TextProgram);
+      LinkShaderProgram(TextProgram);
 
-      DefineShaderProgram('Background');
-      DefineShaderObject('BackgroundVertex', Background_vp150, [ptVertex]);
-      DefineShaderObject('BackgroundFragment', Background_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('BackgroundVertex', 'Background');
-      AttachShaderObjectToProgram('BackgroundFragment', 'Background');
-      Result := Result and LinkShaderProgram('Background');
+      DefineShaderProgram(BackgroundProgram, [ptVertex, ptFragment], 'BackgroundProgram');
+      DefineShaderObject(BackgroundVertexObj, Background_vp150, [ptVertex], 'BackgroundVertex');
+      DefineShaderObject(BackgroundFragmentObj, Background_fp150, [ptFragment], 'BackgroundFragment');
+      AttachShaderObjectToProgram(BackgroundVertexObj, BackgroundProgram);
+      AttachShaderObjectToProgram(BackgroundFragmentObj, BackgroundProgram);
+      LinkShaderProgram(BackgroundProgram);
 
-      DefineShaderProgram('Joint');
-      DefineShaderObject('JointVertex', Joint_vp150, [ptVertex]);
-      DefineShaderObject('JointFragment', Joint_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('JointVertex', 'Joint');
-      AttachShaderObjectToProgram('JointFragment', 'Joint');
-      Result := Result and LinkShaderProgram('Joint');
+      DefineShaderProgram(JointProgram, [ptVertex, ptFragment], 'JointProgram');
+      DefineShaderObject(JointVertexObj, Joint_vp150, [ptVertex], 'JointVertex');
+      DefineShaderObject(JointFragmentObj, Joint_fp150, [ptFragment], 'JointFragment');
+      AttachShaderObjectToProgram(JointVertexObj, JointProgram);
+      AttachShaderObjectToProgram(JointFragmentObj, JointProgram);
+      LinkShaderProgram(JointProgram);
 
-      DefineShaderProgram('Link', [ptVertex, ptFragment, ptGeometry]);
-      DefineShaderObject('LinkVertex', Link_vp150, [ptVertex]);
-      DefineShaderObject('LinkGeometry', Link_gp150, [ptGeometry]);
-      DefineShaderObject('LinkFragment', Link_fp150, [ptFragment]);
-      AttachShaderObjectToProgram('LinkVertex', 'Link');
-      AttachShaderObjectToProgram('LinkGeometry', 'Link');
-      AttachShaderObjectToProgram('LinkFragment', 'Link');
-      Result := Result and LinkShaderProgram('Link');
+      DefineShaderProgram(LinkProgram, [ptVertex, ptFragment, ptGeometry], 'LinkProgram');
+      DefineShaderObject(LinkVertexObj, Link_vp150, [ptVertex], 'LinkVertex');
+      DefineShaderObject(LinkGeometryObj, Link_gp150, [ptGeometry], 'LinkGeometry');
+      DefineShaderObject(LinkFragmentObj, Link_fp150, [ptFragment], 'LinkFragment');
+      AttachShaderObjectToProgram(LinkVertexObj, LinkProgram);
+      AttachShaderObjectToProgram(LinkGeometryObj, LinkProgram);
+      AttachShaderObjectToProgram(LinkFragmentObj, LinkProgram);
+      LinkShaderProgram(LinkProgram);
 
-      DefineShaderObject('ViewingMakerVertex', ViewingMaker_vp150, [ptVertex]);
-      DefineShaderObject('ViewingMakerFragment', ViewingMaker_fp150,
-        [ptFragment]);
+      DefineShaderObject(ViewingMakerVertexObj, ViewingMaker_vp150,
+        [ptVertex], 'ViewingMakerVertex');
+      DefineShaderObject(ViewingMakerFragmentObj, ViewingMaker_fp150,
+        [ptFragment], 'ViewingMakerFragment');
     finally
       EndWork;
     end;
   end;
+
+  with ShaderManager do
+    Result := Result
+      and IsProgramLinked(FrameProgram)
+      and IsProgramLinked(ViewingProgram)
+      and IsProgramLinked(TextProgram)
+      and IsProgramLinked(BackgroundProgram)
+      and IsProgramLinked(JointProgram)
+      and IsProgramLinked(LinkProgram);
 
   if Result then
   begin
@@ -1435,7 +1589,7 @@ end;
 
 procedure TMaterialGraph.Render;
 var
-  n: Integer;
+  n, len: Integer;
   vNode: TCustomMaterialGraphNode;
   CharSize: TVector2i;
   TexSize: TVector4f;
@@ -1517,7 +1671,7 @@ begin
   begin
     // Draw background
 
-    UseProgram('Background');
+    UseProgram(BackgroundProgram);
     // Set uniforms
     TexSize := VectorMake(
       FScreenZoom * FScreenSize[0] / 256,
@@ -1528,14 +1682,14 @@ begin
     Uniform4f(uniformScaleOffset, TexSize);
     Uniform4f(uniformGradientColor1, clrSkyBlue);
     Uniform4f(uniformGradientColor2, clrWhite);
-    UniformSampler(uniformTexUnit0, FBackTexture.Handle, 0);
+    FRenderContextInfo.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, FBackTexture.Handle)] := 0;
     ScreenQuad;
 
     if not AtLeastOneVisible then
       exit;
 
     // Draw nodes frame
-    UseProgram('Frame');
+    UseProgram(FrameProgram);
     for n := 0 to FNodeList.Count - 1 do
     begin
       vNode := Node[n];
@@ -1552,7 +1706,7 @@ begin
       Vector4iMake(0, 0, FRenderContextInfo.viewPortSize.cx, FRenderContextInfo.viewPortSize.cy);
 
     // Draw node's work viewing
-    UseProgram('Viewing');
+    UseProgram(ViewingProgram);
     for n := 0 to FNodeList.Count - 1 do
     begin
       vNode := Node[n];
@@ -1563,11 +1717,11 @@ begin
     if FScreenZoom < 2 then
     begin
       // Draw Text of Nodes
-      UseProgram('Text');
+      UseProgram(TextProgram);
       CharSize[0] := FMaxCharWidth;
       CharSize[1] := FMaxCharHeight;
       Uniform2I(uniformCharSize, CharSize);
-      UniformSampler(uniformTexUnit0, FFontTexture.Handle, 0);
+      FRenderContextInfo.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, FFontTexture.Handle)] := 0;
 
       for n := 0 to FNodeList.Count - 1 do
       begin
@@ -1583,12 +1737,13 @@ begin
         begin
           TexSize := VectorMake(1, -1, -1.0, 1.0);
           Uniform4f(uniformScaleOffset, TexSize);
-          for n := 0 to Length(FErrorMessage) - 1 do
+          len := MinInteger(Length(FErrorMessage), 128);
+          for n := 0 to len - 1 do
             intStr[n] := Integer(FErrorMessage[n + 1]);
-          Uniform1I(uniformString, @intStr[0], Length(FErrorMessage));
+          Uniform1I(uniformString, @intStr[0], len);
           TexSize := VectorMake(FScreenSize[0], FScreenSize[1], -5, -5);
           Uniform4f(uniformRectSize, TexSize);
-          Uniform1I(uniformLength, Length(FErrorMessage));
+          Uniform1I(uniformLength, len);
         end;
         ScreenQuad;
       end;
@@ -1598,7 +1753,7 @@ begin
       FJointColorList.Flush;
       FLinksCoordsList.Flush;
       FLinksColorList.Flush;
-      UseProgram('Joint');
+      UseProgram(JointProgram);
       // Collect vertices
       for n := 0 to FNodeList.Count - 1 do
         Node[n].RenderJoint;
@@ -1668,7 +1823,7 @@ begin
 
       if FLinksCoordsList.Count > 0 then
       begin
-        UseProgram('Link');
+        UseProgram(LinkProgram);
         jcss[0] := 24 / FScreenSize[0] / FScreenZoom;
         jcss[1] := 6 / FScreenSize[1] / FScreenZoom;
         Uniform2f(uniformArrowSize, jcss);
@@ -1694,10 +1849,11 @@ end;
 
 procedure TMaterialGraph.RefreshMaterial;
 var
-  I: Integer;
+  I, J: Integer;
   vNode: TCustomMaterialGraphNode;
   ok: Boolean;
   Info: TSampleGatherInfo;
+  lStr: string;
 begin
   vNode := Node[0];
   // Checking, just in case
@@ -1711,101 +1867,151 @@ begin
   if vNode = nil then
     exit;
 
-  gvarSample := nil;
   if Assigned(FShaderCodePad) then
     FShaderCodePad.Clear;
   FMaterial.ClearSamples;
   FMaterial.ClearUniforms;
+  FMaterial.ClearUnits;
 
   // Clear sample cache
   for I := 0 to FNodeList.Count - 1 do
     Node[I].ClearSampleCache;
 
-  Info.SampleList := FMaterial.SampleList;
-  Info.PassTexCoord := False;
+  Info.SampleList := FMaterial.FSampleList;
+  for I := 7 downto 0 do
+    Info.PassTexCoord[I] := False;
+
+  Info.Master := nil;
+  Info.ChainInLoop := False;
   ok := False;
 
   try
     ok := vNode.GatherSamples(Info, 0);
   finally
     if ok then
-      ok := MaterialManager.GenerateShaderCode(FMaterial.SampleList, FVertexProgram, FFragmentProgram);
+      ok := MaterialManager.GenerateShaderCode(FMaterial.FSampleList, FProgramCodeSet);
 
     if ok then
     begin
-      for I := 0 to High(FTextures) do
-        if FTextures[I].UseCount > 0 then
-          FMaterial.TextureUnits.Add(FTextures[I].Name);
+      SetLength(FMaterial.FUnits, Length(FUnits));
+      J := 0;
+      for I := 0 to High(FUnits) do
+        if FUnits[I].UseCount > 0 then
+        begin
+          FMaterial.FUnits[J].SamplerName := FUnits[I].SamplerName;
+          FMaterial.FUnits[J].TextureName := FUnits[I].TextureName;
+          Inc(J);
+        end;
+      SetLength(FMaterial.FUnits, J);
       FMaterial.CreateUniforms;
-      FMaterial.CreateShader(AnsiString(FVertexProgram.Text), AnsiString(FFragmentProgram.Text));
+      FMaterial.CreateShader(FProgramCodeSet);
+
+      try
+        FMaterial.DirectUse;
+      except
+        if Assigned(FShaderCodePad) then
+          FShaderCodePad.Add(strFailToBuild);
+      end;
+
       if Assigned(FShaderCodePad) then
       begin
-        FShaderCodePad.AddStrings(FVertexProgram);
+        FShaderCodePad.AddStrings(FProgramCodeSet[ptVertex]);
         FShaderCodePad.Add('');
-        FShaderCodePad.AddStrings(FFragmentProgram);
+        FShaderCodePad.AddStrings(FProgramCodeSet[ptFragment]);
+        FShaderCodePad.Add('');
+        FShaderCodePad.Add('// Texture sampler units: ');
+        FShaderCodePad.Add('');
+        J := 0;
+        for I := 0 to High(FUnits) do
+          if FUnits[I].UseCount > 0 then
+          begin
+            lStr := Format('Unit %d: texture "%s", sampler ', [J, FUnits[I].TextureName.GetValue]);
+            if Assigned(FUnits[I].SamplerName) then
+              lStr := lStr + Format('"%s"', [FUnits[I].SamplerName.GetValue])
+            else
+              lStr := lStr + 'is native';
+            FShaderCodePad.Add(lStr);
+            Inc(J);
+          end;
       end;
     end
     else if Assigned(FShaderCodePad) then
-      FShaderCodePad.Add('Fail to build material shader!');
+      FShaderCodePad.Add(strFailToBuild);
   end;
 end;
 
-procedure TMaterialGraph.RegisterTexture(const AName: TGL3xTextureName);
+procedure TMaterialGraph.RegisterTextureSampler(const ATexture, ASampler: IGLName);
 var
   I: Integer;
+  rSet: TTextureSampler;
 begin
-  for I := 0 to High(FTextures) do
+  rSet.TextureName := ATexture;
+  rSet.SamplerName := ASampler;
+  for I := 0 to High(FUnits) do
   begin
-    if FTextures[I].Name = AName then
+    if (FUnits[I].UseCount <> 0)
+      and (FUnits[I] = rSet) then
     begin
-      Inc(FTextures[I].UseCount);
+      Inc(FUnits[I].UseCount);
       exit;
     end;
   end;
-  for I := 0 to High(FTextures) do
+  for I := 0 to High(FUnits) do
   begin
-    if FTextures[I].UseCount = 0 then
+    if FUnits[I].UseCount = 0 then
     begin
-      FTextures[I].Name := AName;
-      Inc(FTextures[I].UseCount);
-      exit;
-    end;
-  end;
-end;
-
-procedure TMaterialGraph.UnRegisterTexture(const AName: TGL3xTextureName);
-var
-  I: Integer;
-begin
-  for I := 0 to High(FTextures) do
-  begin
-    if (FTextures[I].UseCount <> 0) and (FTextures[I].Name = AName) then
-    begin
-      Dec(FTextures[I].UseCount);
-      if Ftextures[I].UseCount = 0 then
-        FTextures[I].Name := '';
+      FUnits[I].TextureName := ATexture;
+      FUnits[I].SamplerName := ASampler;
+      FUnits[I].UseCount := 1;
       exit;
     end;
   end;
 end;
 
-function TMaterialGraph.GetTextureUnitIndex(const AName: TGL3xTextureName): Integer;
+procedure TMaterialGraph.UnRegisterTextureSampler(const ATexture, ASampler: IGLName);
 var
   I: Integer;
+  rSet: TTextureSampler;
 begin
+  rSet.TextureName := ATexture;
+  rSet.SamplerName := ASampler;
+  for I := 0 to High(FUnits) do
+  begin
+    if (FUnits[I].UseCount <> 0)
+      and (FUnits[I] = rSet) then
+    begin
+      Dec(FUnits[I].UseCount);
+      if FUnits[I].UseCount = 0 then
+      begin
+        FUnits[I].TextureName := nil;
+        FUnits[I].SamplerName := nil;
+      end;
+      exit;
+    end;
+  end;
+end;
+
+function TMaterialGraph.GetTextureSamplerIndex(const ATexture, ASampler: IGLName): Integer;
+var
+  I: Integer;
+  rSet: TTextureSampler;
+begin
+  rSet.TextureName := ATexture;
+  rSet.SamplerName := ASampler;
   Result := 0;
-  for I := 0 to High(FTextures) do
+  for I := 0 to High(FUnits) do
   begin
-    if (FTextures[I].UseCount <> 0) and (FTextures[I].Name = AName) then
+    if (FUnits[I].UseCount <> 0)
+      and (FUnits[I] = rSet) then
       exit;
     Inc(Result);
   end;
   Assert(False);
   Result := 0;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TNodeJoint'}{$ENDIF}
+{$REGION 'TNodeJoint'}
 
 procedure TNodeJoint.SetAtOnce(AStep: SmallInt; ASide: TNodeSize;
   AMask: TGLColorComponentMask; const ACaption: AnsiString);
@@ -1833,27 +2039,24 @@ begin
   else
     Result := clrBlack;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCustomMaterialGraphNode'}{$ENDIF}
+{$REGION 'TCustomMaterialGraphNode'}
 
 constructor TCustomMaterialGraphNode.Create;
 begin
   FHighlight := false;
   Deletable := True;
-  FViewingProgLinked := false;
   FViewingTexture := TGLTextureHandle.Create;
   FGatherLock := False;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
-procedure TCustomMaterialGraphNode.NotifyChange;
+procedure TCustomMaterialGraphNode.NotifyChange(Sender: TObject);
 begin
   inherited;
   if Assigned(Owner) then
-  begin
-    Owner.FGraphChanged := True;
-  end;
+    Owner.NotifyChange(Self);
 end;
 
 destructor TCustomMaterialGraphNode.Destroy;
@@ -1863,9 +2066,9 @@ begin
   begin
     try
       BeginWork;
-      if Length(FViewingObject) > 0 then
+      if FViewingObject <> nil then
         DeleteShaderObject(FViewingObject);
-      if Length(FViewingProgram) > 0 then
+      if FViewingProgram <> nil then
         DeleteShaderProgram(FViewingProgram);
     finally
       EndWork;
@@ -2065,7 +2268,7 @@ var
 begin
   with Owner, ShaderManager do
   begin
-    len := Length(Caption);
+    len := MinInteger(Length(Caption), 128);
     if len > 0 then
     begin
       // Node Caption Text
@@ -2197,7 +2400,7 @@ begin
   begin
     // Node work viewing
     Uniform4f(uniformScaleOffset, FScaleOffset);
-    UniformSampler(uniformTexUnit0, FViewingTexture.Handle, 0);
+    FRenderContextInfo.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, FViewingTexture.Handle)] := 0;
 
     BeginObject(nil);
     Attribute2f(attrPosition, 2, 2);
@@ -2231,64 +2434,80 @@ begin
         BeginWork;
         DefineShaderProgram(FViewingProgram);
         DefineShaderObject(FViewingObject, GetViewingCode, [ptFragment]);
-        AttachShaderObjectToProgram('ViewingMakerVertex', FViewingProgram);
-        AttachShaderObjectToProgram('ViewingMakerFragment', FViewingProgram);
+        AttachShaderObjectToProgram(ViewingMakerVertexObj, FViewingProgram);
+        AttachShaderObjectToProgram(ViewingMakerFragmentObj, FViewingProgram);
         AttachShaderObjectToProgram(FViewingObject, FViewingProgram);
-        FViewingProgLinked := LinkShaderProgram(FViewingProgram);
+        LinkShaderProgram(FViewingProgram);
       finally
         EndWork;
       end;
     end;
 
-    if FViewingTexture.Handle = 0 then
+    FViewingTexture.AllocateHandle;
+    if FViewingTexture.IsDataNeedUpdate then
     begin
-      FViewingTexture.AllocateHandle;
       with Owner.FRenderContextInfo.GLStates do
+      begin
+        ActiveTexture := 0;
         TextureBinding[0, ttTexture2D] := FViewingTexture.Handle;
+        UnpackAlignment := 4;
+        UnpackRowLength := 0;
+        UnpackSkipRows := 0;
+        UnpackSkipPixels := 0;
+        PixelUnpackBufferBinding := 0;
+      end;
       GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
       GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       GL.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 96, 96, 0,
-        GL_RGBA, GL_HALF_FLOAT, nil);
+        GL_RGBA, GL_BYTE, nil);
+      FViewingTexture.NotifyDataUpdated;
     end;
     FChanged := False;
     for I := 0 to Count - 1 do
       if (Joints[I].Side = sideOutput) and Assigned(Joints[I].GivingNode) then
-        Joints[I].GivingNode.NotifyChange;
+        Joints[I].GivingNode.NotifyChange(Self);
   end;
-
-  if not FViewingProgLinked then
-    exit;
 
   with Owner, DynamicVBOManager do
   begin
     FFBO.BindForDrawing;
-    FFBO.Attach2DTexture(
-      GL_DRAW_FRAMEBUFFER,
-      GL_COLOR_ATTACHMENT0,
-      GL_TEXTURE_2D,
-      FViewingTexture.Handle,
-      0);
-    ShaderManager.UseProgram(FViewingProgram);
-    SetViewingUniforms;
-    BeginObject(nil);
-    Attribute2f(attrPosition, -1.0, -1.0);
-    Attribute2f(attrTexCoord0, 0.0, 0.0);
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    EmitVertex;
-    Attribute2f(attrPosition, -1.0, 1.0);
-    Attribute2f(attrTexCoord0, 0.0, 1.0);
-    EmitVertex;
-    Attribute2f(attrPosition, 1.0, -1.0);
-    Attribute2f(attrTexCoord0, 1.0, 0.0);
-    EmitVertex;
-    Attribute2f(attrPosition, 1.0, 1.0);
-    Attribute2f(attrTexCoord0, 1.0, 1.0);
-    EmitVertex;
-    EndPrimitives;
-    EndObject;
-    FFBO.UnBindForDrawing;
+    try
+      FFBO.Attach2DTexture(
+        GL_DRAW_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D,
+        FViewingTexture.Handle,
+        0);
+
+      if ShaderManager.IsProgramLinked(FViewingProgram) then
+      begin
+        ShaderManager.UseProgram(FViewingProgram);
+        SetViewingUniforms;
+      end
+      else
+        ShaderManager.UseProgram(JointProgram);
+      BeginObject(nil);
+      Attribute2f(attrPosition, -1.0, -1.0);
+      Attribute2f(attrTexCoord0, 0.0, 0.0);
+      Attribute4f(attrVertexColor, 1.0, 0.0, 0.0, 1.0);
+      BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
+      EmitVertex;
+      Attribute2f(attrPosition, -1.0, 1.0);
+      Attribute2f(attrTexCoord0, 0.0, 1.0);
+      EmitVertex;
+      Attribute2f(attrPosition, 1.0, -1.0);
+      Attribute2f(attrTexCoord0, 1.0, 0.0);
+      EmitVertex;
+      Attribute2f(attrPosition, 1.0, 1.0);
+      Attribute2f(attrTexCoord0, 1.0, 1.0);
+      EmitVertex;
+      EndPrimitives;
+      EndObject;
+    finally
+      FFBO.UnBindForDrawing;
+    end;
   end;
 end;
 
@@ -2314,7 +2533,8 @@ begin
     GetMaxGLSLVersion + #10#13 +
     GetWorkResult_line +
     '{' + #10#13 +
-    '  return vec4(0.0, 0.0, 0.0, 0.0);' + #10#13 +
+    '  discard;' + #10#13 +
+    ' return vec4(0.0);' + #10#13 +
     '}';
 end;
 
@@ -2398,7 +2618,7 @@ procedure TCustomMaterialGraphNode.SetLink(jointIndex: Integer; giver: TBaseGrap
 begin
   Joints[jointIndex].GivingNode := TCustomMaterialGraphNode(giver);
   Joints[jointIndex].GivingNodeJointIndex := giverJointIndex;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TCustomMaterialGraphNode.IsJointLinkedWith(jointIndex: Integer; giver: TBaseGraphVertex; giverJointIndex: Integer): Boolean;
@@ -2412,20 +2632,16 @@ begin
   if FGatherLock then
   begin
     Owner.SetErrorMessage('Graph obsessed, recorded a second pass through node ' + Self.Caption);
-    Result := False;
-    exit;
+    exit(False);
   end;
 
   if Joints[JointIndex].Mask = [] then
-    gvarSample := FPrimarySampleChache
+    Info.Master := FPrimarySampleChache
   else
-    gvarSample := FJoints[JointIndex].SampleCache;
+    Info.Master := FJoints[JointIndex].SampleCache;
 
-  if Assigned(gvarSample) then
-  begin
-    Result := True;
-    exit;
-  end;
+  if Assigned(Info.Master) then
+    exit(True);
 
   if not Assigned(FPrimarySampleChache) then
   begin
@@ -2437,22 +2653,23 @@ begin
     end;
     if not Result then
       exit;
-    gvarSample.Participate := gvarSample.Participate * gvarProgType;
-    FPrimarySampleChache := gvarSample;
+    Info.Master.Participate := Info.Master.Participate * Info.ProgramTypes;
+    FPrimarySampleChache := Info.Master;
     if Joints[JointIndex].Mask = [] then
       exit;
   end;
 
-  New(gvarSample);
-  gvarSample.Clear;
-  gvarSample.Category := MaterialSystem.Utility.Name;
-  gvarSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-  gvarSample.Mask := Joints[JointIndex].Mask;
-  gvarSample.InputRef[0] := FPrimarySampleChache;
-  Result := MaterialManager.FindCompatibleSample(gvarSample^);
-  gvarSample.Participate := gvarProgType;
-  Info.SampleList.Add(gvarSample);
-  FJoints[JointIndex].SampleCache := gvarSample;
+  Info.NewMaster;
+  with Info.Master^ do
+  begin
+    Category := MaterialSystem.Utility.Name;
+    Name := MaterialSystem.Utility.Utility_ComponentMask;
+    Mask := Joints[JointIndex].Mask;
+    InputRef[0] := FPrimarySampleChache;
+    Result := CheckWithMaterialSystem;
+    Participate := Info.ProgramTypes;
+  end;
+  FJoints[JointIndex].SampleCache := Info.Master;
 end;
 
 function TCustomMaterialGraphNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
@@ -2462,14 +2679,13 @@ begin
   Result := GetOutputSample(vSample);
   if Result then
   begin
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TMaterialNode'}{$ENDIF}
+{$REGION 'TMaterialNode'}
 
 constructor TMaterialNode.Create;
 begin
@@ -2494,34 +2710,9 @@ begin
   Result := 'Material';
 end;
 
-function TMaterialNode.GetViewingCode: AnsiString;
-var
-  vNode: TCustomMaterialGraphNode;
-  vSample: TShaderSample;
-  vType: TGLSLDataType;
-begin
-  vNode := Joints[1].GivingNode;
-  if Assigned(vNode) and vNode.GetOutputSample(vSample) then
-  begin
-    vType := GivingNodeDataType[1];
-    Result :=
-      GetMaxGLSLVersion + #10#13 +
-      UniformSampler_line +
-      GetTexCoord_line +
-      GetWorkResult_line +
-      LBracket_line +
-      GetValue0_line +
-      GLSLTypeToString(vType) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vType) + ';' + #10#13 +
-      '  return ' + GetGLSLTypeCast('value01', vType, [], GLSLType4F) + ';' + #10#13 +
-      RBracket_line;
-  end
-  else
-    Result := inherited GetViewingCode;
-end;
-
 procedure TMaterialNode.SetViewingUniforms;
 begin
-  ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
 end;
 
 function TMaterialNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -2538,33 +2729,62 @@ const
   defSpecPower: TVector = (64, 0, 0, 0);
 var
   vSample: TShaderSample;
-  pVertexRecord, pWorldNorm,
-    pLightVec, pReflVec, pCustomConst,
-    pEmissive, pDiffuse, pSpecular, gpRGB: PShaderSample;
+  pVertexRecord, pFragmentRecord, pConstSample, pLast: PShaderSample;
+  I: Integer;
 
   procedure AddToList;
   begin
-    if MaterialManager.FindCompatibleSample(vSample) then
+    if vSample.CheckWithMaterialSystem then
     begin
-      New(gvarSample);
-      vSample.Participate := vSample.Participate * gvarProgType;
-      gvarSample^ := vSample;
-      Info.SampleList.Add(gvarSample);
+      Info.NewMaster;
+      vSample.Participate := vSample.Participate * Info.ProgramTypes;
+      Info.Master^ := vSample;
     end
     else
       Assert(False);
   end;
 
 begin
-  {|-|-|-|-|-|-|-|-|-|-|PHONG LIGHTING MODEL|-|-|-|-|-|-|-|-|-|-|-|}
-
   /////////////////////////////////////////////////////////////////
   //--------------------FRAGMENT PROGRAM-------------------------//
   /////////////////////////////////////////////////////////////////
-  gvarProgType := [ptFragment];
+  Info.ProgramTypes := [ptFragment];
+
+  vSample.Clear;
+  vSample.Participate := Info.ProgramTypes;
+  vSample.Purpose := sspVariable;
+  vSample.Output := GLSLTypeFRec;
+  AddToList;
+  pFragmentRecord := Info.Master;
+
+  vSample.Clear;
+  vSample.Category := MaterialSystem.Fragment.Name;
+  vSample.Name := MaterialSystem.Fragment.GetFragment;
+  vSample.InputRef[0] := pFragmentRecord;
+  AddToList;
+
+  // Opacity
+  vSample.Clear;
+  vSample.Category := MaterialSystem.Fragment.Name;
+  vSample.Name := MaterialSystem.Fragment.SetOpacity;
+  vSample.InputRef[0] := pFragmentRecord;
+  if Assigned(Joints[5].GivingNode)
+    and Joints[5].GivingNode.GatherSamples(Info,
+    Joints[5].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
+  AddToList;
 
   if Owner.FMaterial.BlendingMode = bmMasked then
   begin
+    // Opacity Mask
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.SetOpacityMask;
+    vSample.InputRef[0] := pFragmentRecord;
+    if Assigned(Joints[6].GivingNode)
+      and Joints[6].GivingNode.GatherSamples(Info, Joints[6].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
+    AddToList;
     // Opacity Mask Cliping Value constant
     vSample.Clear;
     vSample.Category := MaterialSystem.Constants.Name;
@@ -2572,319 +2792,123 @@ begin
     vSample.Purpose := sspConstant;
     vSample.ConstantValue := ValueToHex(FOpacityMaskClip);
     AddToList;
-    pCustomConst := gvarSample;
-    // Opacity Mask
-    if Assigned(Joints[6].GivingNode)
-      and Joints[6].GivingNode.GatherSamples(Info, Joints[6].GivingNodeJointIndex) then
-    begin
-      if gvarSample.TotalOutput <> GLSLType1F then
-      begin
-        // Cast Opacity Mask to float
-        vSample.Clear;
-        vSample.Category := MaterialSystem.Utility.Name;
-        vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-        vSample.InputRef[0] := gvarSample;
-        vSample.Mask := [ccmRed];
-        AddToList;
-      end;
-    end
-    else
-    begin
-      // Default Opacity Mask
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Constants.Name;
-      vSample.Name := MaterialSystem.Constants.Constants_Scalar;
-      vSample.Purpose := sspConstant;
-      vSample.ConstantValue := ValueToHex(XHmgVector);
-      AddToList;
-    end;
+    // Alpha test
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.AlphaTest;
-    vSample.InputRef[0] := gvarSample;
-    vSample.InputRef[1] := pCustomConst;
+    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[1] := Info.Master;
     AddToList;
   end;
 
   // World Normal
-  Info.LightingInTextureSpace := False;
+  vSample.Clear;
+  vSample.Category := MaterialSystem.Fragment.Name;
+  vSample.Name := MaterialSystem.Fragment.SetNormal;
+  vSample.InputRef[0] := pFragmentRecord;
   if Assigned(Joints[7].GivingNode)
-    and Joints[7].GivingNode.GatherSamples(Info,
-    Joints[7].GivingNodeJointIndex) then
-  begin
-    Info.LightingInTextureSpace := gvarSample.TextureInIntput;
-    if gvarSample.TotalOutput <> GLSLType3F then
-    begin
-      // Cast Normal to vec3
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmWhite];
-      AddToList;
-    end;
-  end
-  else
-  begin
-    // Default Normal
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Vectors.Name;
-    vSample.Name := MaterialSystem.Vectors.Vectors_WorldNormal;
-    vSample.Input[0] := GLSLTypeVoid;
-    AddToList;
-  end;
-  pWorldNorm := gvarSample;
-
-  // Light Vector
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Vectors.Name);
-  vSample.Name := (MaterialSystem.Vectors.Vectors_LightVector);
-  vSample.Input[0] := GLSLTypeVoid;
+    and Joints[7].GivingNode.GatherSamples(Info, Joints[7].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
   AddToList;
-  pLightVec := gvarSample;
-
-  // Camera Vector
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Vectors.Name);
-  vSample.Name := (MaterialSystem.Vectors.Vectors_CameraVector);
-  vSample.Input[0] := GLSLTypeVoid;
-  AddToList;
-
-  // Reflection Vector
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Vectors.Name);
-  vSample.Name := (MaterialSystem.Vectors.Vectors_ReflectionVector);
-  vSample.InputRef[0] := gvarSample;
-  vSample.InputRef[1] := pWorldNorm;
-  AddToList;
-  pReflVec := gvarSample;
 
   // Emissive Color
+  vSample.Clear;
+  vSample.Category := MaterialSystem.Fragment.Name;
+  vSample.Name := MaterialSystem.Fragment.SetEmissive;
+  vSample.InputRef[0] := pFragmentRecord;
   if Assigned(Joints[0].GivingNode)
-    and Joints[0].GivingNode.GatherSamples(Info,
-    Joints[0].GivingNodeJointIndex) then
+    and Joints[0].GivingNode.GatherSamples(Info, Joints[0].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
+  AddToList;
+
+  if FLightingModel = lmPhong then
   begin
-    if gvarSample.TotalOutput <> GLSLType3F then
+  {|-|-|-|-|-|-|-|-|-|-|PHONG LIGHTING MODEL|-|-|-|-|-|-|-|-|-|-|-|}
+
+    // Diffuse Color
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.SetDiffuse;
+    vSample.InputRef[0] := pFragmentRecord;
+    if Assigned(Joints[1].GivingNode)
+      and Joints[1].GivingNode.GatherSamples(Info,
+      Joints[1].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
+    AddToList;
+
+    // Specular color
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.SetSpecular;
+    vSample.InputRef[0] := pFragmentRecord;
+    if Assigned(Joints[3].GivingNode)
+      and Joints[3].GivingNode.GatherSamples(Info, Joints[3].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+    AddToList;
+
+    // Specular power
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.SetSpecularPower;
+    vSample.InputRef[0] := pFragmentRecord;
+    if Assigned(Joints[4].GivingNode)
+      and Joints[4].GivingNode.GatherSamples(Info,
+      Joints[4].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+    AddToList;
+
+    // Diffuse power
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.SetDiffusePower;
+    vSample.InputRef[0] := pFragmentRecord;
+    if Assigned(Joints[2].GivingNode)
+      and Joints[2].GivingNode.GatherSamples(Info,
+      Joints[2].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+    AddToList;
+
+    // Illuminate
+    vSample.Clear;
+    vSample.Category := MaterialSystem.Fragment.Name;
+    vSample.Name := MaterialSystem.Fragment.Illuminate;
+    vSample.InputRef[0] := pFragmentRecord;
+    AddToList;
+  end
+  else if FLightingModel = lmCustomLighting then
+  begin
+    {|-|-|-|-|-|-|-|-|-|-|CUSTOM LIGHTING MODEL|-|-|-|-|-|-|-|-|-|-|-|}
+    if Assigned(Joints[9].GivingNode)
+      and Joints[9].GivingNode.GatherSamples(Info,
+      Joints[9].GivingNodeJointIndex) then
     begin
-      // Cast Emissive Color to vec3
       vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmWhite];
+      vSample.Category := MaterialSystem.Fragment.Name;
+      vSample.Name := MaterialSystem.Fragment.SetCustomLighting;
+      vSample.Purpose := sspLoopOperation;
+      vSample.InputRef[0] := pFragmentRecord;
+      vSample.InputRef[1] := Info.Master;
       AddToList;
     end;
-  end
-  else
-  begin
-    // Default value
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Constants.Name;
-    vSample.Name := MaterialSystem.Constants.Constants_Vector3;
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(clrGray20);
-    AddToList;
-  end;
-  pEmissive := gvarSample;
-
-  // Diffuse Color
-  if Assigned(Joints[1].GivingNode)
-    and Joints[1].GivingNode.GatherSamples(Info,
-    Joints[1].GivingNodeJointIndex) then
-  begin
-    if gvarSample.TotalOutput <> GLSLType3F then
-    begin
-      // Cast Diffuse Color to vec3
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmWhite];
-      AddToList;
-    end
-    else
-  end
-  else
-  begin
-    // Default value
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Constants.Name;
-    vSample.Name := MaterialSystem.Constants.Constants_Vector3;
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(clrGray80);
-    AddToList;
-  end;
-  pDiffuse := gvarSample;
-
-  // Specular color
-  if Assigned(Joints[3].GivingNode)
-    and Joints[3].GivingNode.GatherSamples(Info,
-    Joints[3].GivingNodeJointIndex) then
-  begin
-    if gvarSample.TotalOutput <> GLSLType3F then
-    begin
-      // Cast Specular Color to vec3
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmWhite];
-      AddToList;
-    end;
-  end
-  else
-  begin
-    // Default specular
-    vSample.Clear;
-    vSample.Category := (MaterialSystem.Constants.Name);
-    vSample.Name := (MaterialSystem.Constants.Constants_Vector3);
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(clrGray50);
-    AddToList;
-  end;
-  pSpecular := gvarSample;
-
-  // Specular power
-  if Assigned(Joints[4].GivingNode)
-    and Joints[4].GivingNode.GatherSamples(Info,
-    Joints[4].GivingNodeJointIndex) then
-  begin
-    if gvarSample.TotalOutput <> GLSLType1F then
-    begin
-      // Cast Specular power Color to float
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmRed];
-      AddToList;
-    end;
-  end
-  else
-  begin
-    // Default specular power
-    vSample.Clear;
-    vSample.Category := (MaterialSystem.Constants.Name);
-    vSample.Name := (MaterialSystem.Constants.Constants_Scalar);
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(defSpecPower);
-    AddToList;
-  end;
-
-  // Total specular
-  vSample.Clear;
-  vSample.Category := MaterialSystem.Math.Name;
-  vSample.Name := MaterialSystem.Math.Math_Phong;
-  vSample.InputRef[0] := pLightVec;
-  vSample.InputRef[1] := pReflVec;
-  vSample.InputRef[2] := gvarSample;
-  AddToList;
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Math.Name);
-  vSample.Name := (MaterialSystem.Math.Math_Mul);
-  vSample.InputRef[0] := pSpecular;
-  vSample.InputRef[1] := gvarSample;
-  AddToList;
-  pSpecular := gvarSample;
-
-  // Diffuse power
-  if Assigned(Joints[2].GivingNode)
-    and Joints[2].GivingNode.GatherSamples(Info,
-    Joints[2].GivingNodeJointIndex) then
-  begin
-    if gvarSample.TotalOutput <> GLSLType1F then
-    begin
-      // Cast Diffuse power to float
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmRed];
-      AddToList;
-    end;
-  end
-  else
-  begin
-    // Default specular power
-    vSample.Clear;
-    vSample.Category := (MaterialSystem.Constants.Name);
-    vSample.Name := (MaterialSystem.Constants.Constants_Scalar);
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(defDiffPower);
-    AddToList;
-  end;
-
-  // Total diffuse
-  vSample.Clear;
-  vSample.Category := MaterialSystem.Math.Name;
-  vSample.Name := MaterialSystem.Math.Math_Phong;
-  vSample.InputRef[0] := pWorldNorm;
-  vSample.InputRef[1] := pLightVec;
-  vSample.InputRef[2] := gvarSample;
-  AddToList;
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Math.Name);
-  vSample.Name := (MaterialSystem.Math.Math_Mul);
-  vSample.InputRef[0] := pDiffuse;
-  vSample.InputRef[1] := gvarSample;
-  AddToList;
-  pDiffuse := gvarSample;
-
-  // Summa
-  vSample.Clear;
-  vSample.Category := (MaterialSystem.Math.Name);
-  vSample.Name := (MaterialSystem.Math.Math_Add);
-  vSample.InputRef[0] := pEmissive;
-  vSample.InputRef[1] := pDiffuse;
-  vSample.InputRef[2] := pSpecular;
-  AddToList;
-  gpRGB := gvarSample;
-
-  // Opacity
-  if Assigned(Joints[5].GivingNode)
-    and Joints[5].GivingNode.GatherSamples(Info,
-    Joints[5].GivingNodeJointIndex) then
-  begin
-    if gvarSample.TotalOutput <> GLSLType1F then
-    begin
-      // Cast Opacity to float
-      vSample.Clear;
-      vSample.Category := MaterialSystem.Utility.Name;
-      vSample.Name := MaterialSystem.Utility.Utility_ComponentMask;
-      vSample.InputRef[0] := gvarSample;
-      vSample.Mask := [ccmRed];
-      AddToList;
-    end;
-  end
-  else
-  begin
-    // Default Opacity
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Constants.Name;
-    vSample.Name := MaterialSystem.Constants.Constants_Scalar;
-    vSample.Purpose := sspConstant;
-    vSample.ConstantValue := ValueToHex(XHmgVector);
-    AddToList;
   end;
 
   // Pass FragColor
   GetOutputSample(vSample);
-  vSample.InputRef[0] := gpRGB;
-  vSample.InputRef[1] := gvarSample;
+  vSample.InputRef[0] := pFragmentRecord;
   AddToList;
-  gpRGB := gvarSample;
+  pLast := Info.Master;
 
   /////////////////////////////////////////////////////////////////
   //----------------------VERTEX PROGRAM-------------------------//
   /////////////////////////////////////////////////////////////////
-  gvarProgType := [ptVertex];
+  Info.ProgramTypes := [ptVertex];
 
   vSample.Clear;
-  vSample.Participate := gvarProgType;
+  vSample.Participate := Info.ProgramTypes;
   vSample.Purpose := sspVariable;
   vSample.Output := GLSLTypeVRec;
   AddToList;
-  pVertexRecord := gvarSample;
+  pVertexRecord := Info.Master;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
@@ -2906,44 +2930,47 @@ begin
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
-  vSample.Name := MaterialSystem.Vertex.GetLight;
-  vSample.InputRef[0] := pVertexRecord;
-  AddToList;
-
-  vSample.Clear;
-  vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.GetCamera;
   vSample.InputRef[0] := pVertexRecord;
   AddToList;
 
-  // Transform Light and Camera vectors to texture space
-  if Info.LightingInTextureSpace then
-  begin
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Vertex.Name;
-    vSample.Name := MaterialSystem.Vertex.TransformLighting_W2T;
-    vSample.InputRef[0] := pVertexRecord;
-    AddToList;
-  end;
-
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
-  vSample.Name := MaterialSystem.Vertex.PassVertex_V2F;
+  vSample.Name := MaterialSystem.Vertex.PassVertex;
   vSample.InputRef[0] := pVertexRecord;
   AddToList;
 
   // Pass TexCoord
-  if Info.PassTexCoord then
-  begin
-    vSample.Clear;
-    vSample.Category := MaterialSystem.Vertex.Name;
-    vSample.Name := MaterialSystem.Vertex.PassTexCoord_V2F;
-    vSample.InputRef[0] := pVertexRecord;
-    AddToList;
-  end;
+  for I := 0 to 7 do
+    if Info.PassTexCoord[I] then
+    begin
+      // Tiling
+      pConstSample := nil;
+      if (Owner.FTexCoordTiles[I].X <> 1.0)
+        or (Owner.FTexCoordTiles[I].Y <> 1.0) then
+      begin
+        vSample.Clear;
+        vSample.Category := MaterialSystem.Constants.Name;
+        vSample.Name := MaterialSystem.Constants.Constants_Vector2;
+        vSample.Purpose := sspConstant;
+        vSample.Participate := Info.ProgramTypes;
+        vSample.Output := GLSLType2F;
+         vSample.ConstantValue := ValueToHex(Owner.FTexCoordTiles[I]);
+        AddToList;
+        pConstSample := Info.Master;
+      end;
+      // Pass to fragment shader
+      vSample.Clear;
+      vSample.Category := MaterialSystem.Vertex.Name;
+      vSample.Name := MaterialSystem.Vertex.PassTexCoord[I];
+      vSample.InputRef[0] := pVertexRecord;
+      if Assigned(pConstSample) then
+        vSample.InputRef[1] := pConstSample;
+      AddToList;
+    end;
 
-  gvarProgType := [ptFragment];
-  gvarSample := gpRGB;
+  Info.ProgramTypes := [ptFragment];
+  Info.Master := pLast;
   Result := True;
 end;
 
@@ -2957,7 +2984,7 @@ begin
   if Owner.FMaterial.FaceCulling <> Value then
   begin
     Owner.FMaterial.FaceCulling := Value;
-    NotifyChange;
+    NotifyChange(Self);
   end;
 end;
 
@@ -2971,7 +2998,7 @@ begin
   if Owner.FMaterial.PolygonMode <> Value then
   begin
     Owner.FMaterial.PolygonMode := Value;
-    NotifyChange;
+    NotifyChange(Self);
   end;
 end;
 
@@ -2985,7 +3012,7 @@ begin
   if Owner.FMaterial.BlendingMode <> Value then
   begin
     Owner.FMaterial.BlendingMode := Value;
-    NotifyChange;
+    NotifyChange(Self);
   end;
 end;
 
@@ -2997,7 +3024,7 @@ end;
 procedure TMaterialNode.SetOpacityMaskClip(Value: Single);
 begin
   FOpacityMaskClip.X := Value;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 procedure TMaterialNode.SetLightingModel(Value: TLightingModel);
@@ -3005,7 +3032,7 @@ begin
   if FLightingModel <> Value then
   begin
     FLightingModel := Value;
-    NotifyChange;
+    NotifyChange(Self);
   end;
 end;
 
@@ -3016,7 +3043,7 @@ begin
     0:
       begin
         APropName := 'LightingModel';
-        APropValue := 'Phong';
+        APropValue := cLightingModel[FLightingModel];
       end;
     1:
       begin
@@ -3030,18 +3057,24 @@ end;
 
 procedure TMaterialNode.SetProperty(Index: Integer; const APropName: string; const APropValue: string);
 var
+  lm: TLightingModel;
   err: Integer;
 begin
   if APropName = 'LightingModel' then
   begin
-    FLightingModel := lmPhong;
+    for lm := low(TLightingModel) to high(TLightingModel) do
+      if APropValue = cLightingModel[lm]  then
+      begin
+        FLightingModel := lm;
+        exit;
+      end;
   end
   else if APropName = 'OpacityMaskClip' then
     Val(APropValue, FOpacityMaskClip.V[0], err)
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCustomConstantNode'}{$ENDIF}
+{$REGION 'TCustomConstantNode'}
 
 constructor TCustomConstantNode.Create;
 begin
@@ -3055,7 +3088,7 @@ procedure TCustomConstantNode.SetValue(Index: Integer; Value: Single);
 begin
   FValue.V[Index] := Value;
   SetWidth(Width);
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TCustomConstantNode.GetValue(Index: Integer): Single;
@@ -3160,9 +3193,9 @@ begin
   ASample.Participate := [ptVertex, ptGeometry, ptFragment];
   Result := True;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVertexColorNode'}{$ENDIF}
+{$REGION 'TVertexColorNode'}
 
 constructor TVertexColorNode.Create;
 begin
@@ -3196,7 +3229,7 @@ begin
   ASample.Category := MaterialSystem.Constants.Name;
   ASample.Name := MaterialSystem.Constants.Constants_VertexColor;
   ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
 
@@ -3207,34 +3240,31 @@ begin
   Result := GetOutputSample(vSample);
   if Result then
   begin
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TTextureCoordinateNode'}{$ENDIF}
+{$REGION 'TTextureCoordinateNode'}
 
 constructor TTextureCoordinateNode.Create;
 begin
   inherited;
   SetLength(FJoints, 1);
   Joints[0].SetAtOnce(0, sideOutput, [], '');
-  FValue.X := 1;
-  FValue.Y := 1;
 end;
 
 procedure TTextureCoordinateNode.SetValue(Index: Integer; Value: Single);
 begin
-  FValue.V[Index] := Value;
-  NotifyChange;
+  Owner.FTexCoordTiles[FIndex].V[Index] := Value;
+  NotifyChange(Self);
 end;
 
 function TTextureCoordinateNode.GetValue(Index: Integer): Single;
 begin
-  Result := FValue.V[Index];
+  Result := Owner.FTexCoordTiles[FIndex].V[Index];
 end;
 
 procedure TTextureCoordinateNode.SetIndex(Value: Integer);
@@ -3247,7 +3277,7 @@ begin
   if Value <> FIndex then
   begin
     FIndex := Value;
-    NotifyChange;
+    NotifyChange(Self);
   end;
 end;
 
@@ -3263,7 +3293,7 @@ begin
     GetTexCoord_line +
     GetWorkResult_line +
     LBracket_line +
-    '  return vec4(GetTexCoord()' + AnsiString(Format(' * vec2(%g, %g) ', [FValue.X, FValue.Y])) + ', 0.0, 1.0);' + #10#13 +
+    '  return vec4(GetTexCoord()' + AnsiString(Format(' * vec2(%g, %g) ', [Owner.FTexCoordTiles[FIndex].X, Owner.FTexCoordTiles[FIndex].Y])) + ', 0.0, 1.0);' + #10#13 +
     RBracket_line;
 end;
 
@@ -3273,18 +3303,18 @@ begin
   case Index of
     0:
       begin
-        APropName := 'TilingS';
-        APropValue := FloatToStr(FValue.X);
+        APropName := 'Index';
+        APropValue := IntToStr(FIndex);
       end;
     1:
       begin
-        APropName := 'TilingT';
-        APropValue := FloatToStr(FValue.Y);
+        APropName := 'TilingS';
+        APropValue := FloatToStr(Owner.FTexCoordTiles[FIndex].X);
       end;
     2:
       begin
-        APropName := 'Index';
-        APropValue := IntToStr(FIndex);
+        APropName := 'TilingT';
+        APropValue := FloatToStr(Owner.FTexCoordTiles[FIndex].Y);
       end;
   else
     Result := False;
@@ -3295,93 +3325,116 @@ procedure TTextureCoordinateNode.SetProperty(Index: Integer; const APropName: st
 var
   err: Integer;
 begin
-  if APropName = 'TilingS' then
-    Val(APropValue, FValue.V[0], err)
-  else if APropName = 'TilingT' then
-    Val(APropValue, FValue.V[1], err)
-  else if APropName = 'Index' then
+  if APropName = 'Index' then
     Val(APropValue, FIndex, err)
+  else if APropName = 'TilingS' then
+    Val(APropValue, Owner.FTexCoordTiles[FIndex].V[0], err)
+  else if APropName = 'TilingT' then
+    Val(APropValue, Owner.FTexCoordTiles[FIndex].V[1], err);
 end;
 
 function TTextureCoordinateNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 begin
   ASample.Clear;
   ASample.Category := MaterialSystem.Coordinates.Name;
-  case FIndex of
-    0: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord0;
-    1: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord1;
-    2: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord2;
-    3: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord3;
-    4: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord4;
-    5: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord5;
-    6: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord6;
-    7: ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord7;
-  end;
+  ASample.Name := MaterialSystem.Coordinates.Coordinates_TexCoord[FIndex];
   ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
 
 function TTextureCoordinateNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
 var
-  vSample{, vPassSample}: TShaderSample;
-//  pSample : PShaderSample;
-//  i: TIntVectorEXT;
-//  v: TVectorEXT;
+  vSample: TShaderSample;
 begin
   Result := GetOutputSample(vSample);
   if Result then
   begin
-//    vConstSampler.Clear;
-//    vConstSampler.Category := MaterialSystem.Constants.Name;
-//    vConstSampler.Name := MaterialSystem.Constants.Constants_Scalar;
-//    vConstSampler.Purpose := sspConstant;
-//    vConstSampler.Participate := gvarProgType;
-//    vConstSampler.Output := GLSLType1I;
-//    i.X := FIndex;
-//    i.Y := 0;
-//    i.Z := 0;
-//    i.W := 0;
-//    vConstSampler.ConstantValue := ValueToHex(i);
-//
-//    New(pSample);
-//    pSample^ := vConstSampler;
-//    Info.SampleList.Add(pSample);
-
-//    vSample.InputRef[0] := pSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
-    Info.PassTexCoord := True;
-
-//    // Tiling
-//    if (FValue.X <> 1.0) or (FValue.Y <> 1.0) then
-//    begin
-//      New(pConstSampler);
-//      pConstSampler.Clear;
-//      pConstSampler.Category := MaterialSystem.Constants.Name;
-//      pConstSampler.Name := MaterialSystem.Constants.Constants_Vector2;
-//      pConstSampler.Purpose := sspConstant;
-//      pConstSampler.Participate := [ptVertex];
-//      pConstSampler.Output := GLSLType2F;
-//      v.X := FValue.X;
-//      v.Y := FValue.Y;
-//      v.Z := 0;
-//      v.W := 0;
-//      pConstSampler.ConstantValue := ValueToHex(v);
-//      pPassSample.InputRef[0] := pConstSampler;
-//    end
-//    else
-//    begin
-//      pConstSampler := nil;
-//      pPassSample.Input[0] := GLSLTypeVoid;
-//    end;
+    Info.NewMaster;
+    Info.Master^ := vSample;
+    Info.PassTexCoord[FIndex] := True;
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TScreenPositionNode'}{$ENDIF}
+{$REGION 'TObjectPositionNode'}
+
+constructor TObjectPositionNode.Create;
+begin
+  inherited;
+  SetLength(FJoints, 1);
+  Joints[0].SetAtOnce(0, sideOutput, [], '');
+end;
+
+function TObjectPositionNode.Caption: string;
+begin
+  Result := 'Object Position';
+end;
+
+function TObjectPositionNode.GetViewingCode: AnsiString;
+begin
+  Result :=
+    GetMaxGLSLVersion + #10#13 +
+    GetTexCoord_line +
+    GetWorkResult_line +
+    LBracket_line +
+    '  vec2 tc = GetTexCoord();' + #10#13 +
+    '  float len = length(tc - vec2(0.5,0.5));' + #10#13 +
+    '  return vec4(len,len,len,0.0);' + #10#13 +
+    RBracket_line;
+end;
+
+function TObjectPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  ASample.Clear;
+  ASample.Category := MaterialSystem.Coordinates.Name;
+  ASample.Name := MaterialSystem.Coordinates.Coordinates_ObjectPosition;
+  ASample.Input[0] := GLSLTypeVoid;
+  Result := ASample.CheckWithMaterialSystem;
+  CheckOutput(Result);
+end;
+
+{$ENDREGION}
+
+{$REGION 'TWorldPositionNode'}
+
+constructor TWorldPositionNode.Create;
+begin
+  inherited;
+  SetLength(FJoints, 1);
+  Joints[0].SetAtOnce(0, sideOutput, [], '');
+end;
+
+function TWorldPositionNode.Caption: string;
+begin
+  Result := 'World Position';
+end;
+
+function TWorldPositionNode.GetViewingCode: AnsiString;
+begin
+  Result :=
+    GetMaxGLSLVersion + #10#13 +
+    GetTexCoord_line +
+    GetWorkResult_line +
+    LBracket_line +
+    '  return vec4(1.0);' + #10#13 +
+    RBracket_line;
+end;
+
+function TWorldPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  ASample.Clear;
+  ASample.Category := MaterialSystem.Coordinates.Name;
+  ASample.Name := MaterialSystem.Coordinates.Coordinates_WorldPosition;
+  ASample.Input[0] := GLSLTypeVoid;
+  Result := ASample.CheckWithMaterialSystem;
+  CheckOutput(Result);
+end;
+
+{$ENDREGION}
+
+{$REGION 'TScreenPositionNode'}
 
 constructor TScreenPositionNode.Create;
 begin
@@ -3412,13 +3465,13 @@ begin
   ASample.Category := MaterialSystem.Coordinates.Name;
   ASample.Name := MaterialSystem.Coordinates.Coordinates_ScreenPosition;
   ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TBinarOpMathNode'}{$ENDIF}
+{$REGION 'TBinarOpMathNode'}
 
 constructor TBinarOpMathNode.Create;
 begin
@@ -3431,10 +3484,10 @@ end;
 
 procedure TBinarOpMathNode.SetViewingUniforms;
 begin
-  with ShaderManager do
+  with ShaderManager, CurrentGLContext.GLStates do
   begin
-    UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
-    UniformSampler(uniformTexUnit1, GivingNodeTextureID[2], 1);
+    SamplerBinding[UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    SamplerBinding[UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
   end;
 end;
 
@@ -3454,18 +3507,17 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
+      vSample.InputRef[0] := Info.Master;
     if Joints[2].GivingNode.GatherSamples(Info,
       Joints[2].GivingNodeJointIndex) then
-      vSample.InputRef[1] := gvarSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+      vSample.InputRef[1] := Info.Master;
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TUnarOpMathNode'}{$ENDIF}
+{$REGION 'TUnarOpMathNode'}
 
 constructor TUnarOpMathNode.Create;
 begin
@@ -3477,7 +3529,7 @@ end;
 
 procedure TUnarOpMathNode.SetViewingUniforms;
 begin
-  ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
 end;
 
 function TUnarOpMathNode.CheckInput: Boolean;
@@ -3495,15 +3547,14 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+      vSample.InputRef[0] := Info.Master;
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TAddNode'}{$ENDIF}
+{$REGION 'TAddNode'}
 
 function TAddNode.Caption: string;
 begin
@@ -3543,15 +3594,15 @@ begin
     ASample.Name := MaterialSystem.Math.Math_Add;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TSubtractNode'}{$ENDIF}
+{$REGION 'TSubtractNode'}
 
 function TSubtractNode.Caption: string;
 begin
@@ -3591,15 +3642,15 @@ begin
     ASample.Name := MaterialSystem.Math.Math_Sub;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TMultiplyNode'}{$ENDIF}
+{$REGION 'TMultiplyNode'}
 
 function TMultiplyNode.Caption: string;
 begin
@@ -3639,16 +3690,16 @@ begin
     ASample.Name := (MaterialSystem.Math.Math_Mul);
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TDivideNode'}{$ENDIF}
+{$REGION 'TDivideNode'}
 
 function TDivideNode.Caption: string;
 begin
@@ -3688,16 +3739,16 @@ begin
     ASample.Name := MaterialSystem.Math.Math_Div;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TPowerNode'}{$ENDIF}
+{$REGION 'TPowerNode'}
 
 function TPowerNode.Caption: string;
 begin
@@ -3737,16 +3788,16 @@ begin
     ASample.Name := MaterialSystem.Math.Math_Power;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TDotProductNode'}{$ENDIF}
+{$REGION 'TDotProductNode'}
 
 function TDotProductNode.Caption: string;
 begin
@@ -3786,16 +3837,16 @@ begin
     ASample.Name := MaterialSystem.Math.Math_DotProduct;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TNormalizeNode'}{$ENDIF}
+{$REGION 'TNormalizeNode'}
 
 function TNormalizeNode.Caption: string;
 begin
@@ -3832,15 +3883,15 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_Normalize;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCustomTrigonNode'}{$ENDIF}
+{$REGION 'TCustomTrigonNode'}
 
 constructor TCustomTrigonNode.Create;
 begin
@@ -3854,7 +3905,7 @@ end;
 procedure TCustomTrigonNode.SetPeriod(Value: Single);
 begin
   FPeriod := Value;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TCustomTrigonNode.GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean;
@@ -3879,7 +3930,7 @@ end;
 
 procedure TCustomTrigonNode.SetViewingUniforms;
 begin
-  ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
 end;
 
 function TCustomTrigonNode.CheckInput: Boolean;
@@ -3891,7 +3942,6 @@ end;
 function TCustomTrigonNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
 var
   vSample: TShaderSample;
-  pConstSampler: PShaderSample;
   v: TVectorEXT;
 begin
   Result := GetOutputSample(vSample);
@@ -3899,29 +3949,27 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+      vSample.InputRef[0] := Info.Master;
 
     // Period
-    if gvarSample.Input[1] <> GLSLTypeUndefined then
+    if vSample.Input[1] <> GLSLTypeUndefined then
     begin
-      New(pConstSampler);
-      pConstSampler.Clear;
-      pConstSampler.Category := MaterialSystem.Constants.Name;
-      pConstSampler.Name := MaterialSystem.Constants.Constants_Scalar;
-      pConstSampler.Purpose := sspConstant;
-      pConstSampler.Participate := gvarProgType;
-      pConstSampler.Output := gvarSample.Input[1];
+      Info.NewMaster;
+      Info.Master.Category := MaterialSystem.Constants.Name;
+      Info.Master.Name := MaterialSystem.Constants.Constants_Scalar;
+      Info.Master.Purpose := sspConstant;
+      Info.Master.Participate := Info.ProgramTypes;
+      Info.Master.Output := vSample.Input[1];
       v.X := 1 / FPeriod;
       v.Y := 0;
       v.Z := 0;
       v.W := 0;
-      pConstSampler.ConstantValue := ValueToHex(v);
-      gvarSample.InputRef[1] := pConstSampler;
-      Info.SampleList.Add(pConstSampler);
+      Info.Master.ConstantValue := ValueToHex(v);
+      vSample.InputRef[1] := Info.Master;
     end;
+
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
 
@@ -3935,7 +3983,7 @@ begin
     ASample.Input[0] := GivingNodeDataType[1];
     if (Period <> 0.0) and (Period <> 1.0) then
       ASample.Input[1] := GLSLType1F;
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -3980,7 +4028,7 @@ begin
     ASample.Input[0] := GivingNodeDataType[1];
     if (Period <> 0.0) and (Period <> 1.0) then
       ASample.Input[1] := GLSLType1F;
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -4014,9 +4062,9 @@ begin
   else
     Result := inherited GetViewingCode;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TFloorNode'}{$ENDIF}
+{$REGION 'TFloorNode'}
 
 function TFloorNode.Caption: string;
 begin
@@ -4051,15 +4099,15 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_Floor;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TAbsNode'}{$ENDIF}
+{$REGION 'TAbsNode'}
 
 function TAbsNode.Caption: string;
 begin
@@ -4094,15 +4142,15 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_Abs;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TFractNode'}{$ENDIF}
+{$REGION 'TFractNode'}
 
 function TFractNode.Caption: string;
 begin
@@ -4137,15 +4185,15 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_Fract;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TOneMinusNode'}{$ENDIF}
+{$REGION 'TOneMinusNode'}
 
 function TOneMinusNode.Caption: string;
 begin
@@ -4180,15 +4228,15 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_OneMinus;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TSquareRootNode'}{$ENDIF}
+{$REGION 'TSquareRootNode'}
 
 function TSquareRootNode.Caption: string;
 begin
@@ -4223,42 +4271,22 @@ begin
     ASample.Category := MaterialSystem.Math.Name;
     ASample.Name := MaterialSystem.Math.Math_SquareRoot;
     ASample.Input[0] := GivingNodeDataType[1];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
     Result := False;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TTextureSamplerNode'}{$ENDIF}
+{$REGION 'TSignNode'}
 
-constructor TTextureSamplerNode.Create;
+function TSignNode.Caption: string;
 begin
-  inherited;
-  SetLength(FJoints, 6);
-  Joints[0].SetAtOnce(0, sideOutput, [ccmWhite], '');
-  Joints[1].SetAtOnce(1, sideOutput, [ccmRed], '');
-  Joints[2].SetAtOnce(2, sideOutput, [ccmGreen], '');
-  Joints[3].SetAtOnce(3, sideOutput, [ccmBlue], '');
-  Joints[4].SetAtOnce(4, sideOutput, [ccmAlpha], '');
-  Joints[5].SetAtOnce(0, sideInput, [], 'UVs');
-  FTexture := glsDIFFUSEMAP;
-  FSampler := TGLSamplerParam.Create(Self);
+  Result := 'Sign';
 end;
 
-destructor TTextureSamplerNode.Destroy;
-begin
-  Owner.UnRegisterTexture(FTexture);
-  inherited;
-end;
-
-function TTextureSamplerNode.Caption: string;
-begin
-  Result := 'Texture Sampler';
-end;
-
-function TTextureSamplerNode.GetViewingCode: AnsiString;
+function TSignNode.GetViewingCode: AnsiString;
 var
   vSample: TShaderSample;
 begin
@@ -4270,8 +4298,96 @@ begin
       GetTexCoord_line +
       GetWorkResult_line +
       LBracket_line +
+      GetValue0_line +
+      '  return sign(value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
+function TSignNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  if CheckInput then
+  begin
+    ASample.Clear;
+    ASample.Category := MaterialSystem.Math.Name;
+    ASample.Name := MaterialSystem.Math.Math_Sign;
+    ASample.Input[0] := GivingNodeDataType[1];
+    Result := ASample.CheckWithMaterialSystem;
+    CheckOutput(Result);
+  end
+  else
+    Result := False;
+end;
+{$ENDREGION}
+
+{$REGION 'TTextureSamplerNode'}
+
+constructor TTextureSamplerNode.Create;
+begin
+  inherited;
+  SetLength(FJoints, 6);
+  Joints[0].SetAtOnce(0, sideOutput, [ccmWhite], '');
+  Joints[1].SetAtOnce(1, sideOutput, [ccmRed], '');
+  Joints[2].SetAtOnce(2, sideOutput, [ccmGreen], '');
+  Joints[3].SetAtOnce(3, sideOutput, [ccmBlue], '');
+  Joints[4].SetAtOnce(4, sideOutput, [ccmAlpha], '');
+  Joints[5].SetAtOnce(0, sideInput, [], 'UVs');
+  with MaterialManager do
+  try
+    BeginWork;
+    FTexture := GetTextureName(glsDIFFUSEMAP);
+  finally
+    EndWork;
+  end;
+end;
+
+destructor TTextureSamplerNode.Destroy;
+begin
+  Owner.UnRegisterTextureSampler(FTexture, FSampler);
+  FTexture := nil;
+  FSampler := nil;
+  inherited;
+end;
+
+function TTextureSamplerNode.Caption: string;
+begin
+  Result := 'Texture Sampler';
+end;
+
+function TTextureSamplerNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+  tex: TGL3xTexture;
+  lSamplerType: AnsiString;
+  lTexCoord: AnsiString;
+begin
+  if GetOutputSample(vSample) then
+  begin
+
+    tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
+    case tex.Target of
+      ttTextureCube:
+      begin
+        lSamplerType := UniformSamplerCube_line;
+        lTexCoord := 'stp';
+      end
+      else
+      begin
+        lSamplerType := UniformSampler_line;
+        lTexCoord := 'st';
+      end;
+    end;
+
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      lSamplerType +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
       GetValue1_line +
-      '  return texture(TexUnit0, value1.st);' + #10#13 +
+      '  return texture(TexUnit0, value1.' + lTexCoord + ');' + #10#13 +
       RBracket_line;
   end
   else
@@ -4280,8 +4396,8 @@ end;
 
 procedure TTextureSamplerNode.SetViewingUniforms;
 begin
-  MaterialManager.ApplyTexture(FTexture, 0);
-  ShaderManager.UniformSampler(uniformTexUnit1, GivingNodeTextureID[5], 1);
+  MaterialManager.ApplyTextureSampler(FTexture, FSampler, uniformTexUnit0);
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit1, GivingNodeTextureID[5])] := 0;
 end;
 
 function TTextureSamplerNode.CheckInput: Boolean;
@@ -4293,24 +4409,34 @@ end;
 function TTextureSamplerNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 var
   I: Integer;
+  tex: TGL3xTexture;
 begin
   if CheckInput then
   begin
     ASample.Clear;
     ASample.Category := MaterialSystem.Texture.Name;
-    I := Owner.GetTextureUnitIndex(FTexture);
-    case I of
-      0: ASample.Name := MaterialSystem.Texture.Texture_Sampler0;
-      1: ASample.Name := MaterialSystem.Texture.Texture_Sampler1;
-      2: ASample.Name := MaterialSystem.Texture.Texture_Sampler2;
-      3: ASample.Name := MaterialSystem.Texture.Texture_Sampler3;
-      4: ASample.Name := MaterialSystem.Texture.Texture_Sampler4;
-      5: ASample.Name := MaterialSystem.Texture.Texture_Sampler5;
-      6: ASample.Name := MaterialSystem.Texture.Texture_Sampler6;
-      7: ASample.Name := MaterialSystem.Texture.Texture_Sampler7;
+    I := Owner.GetTextureSamplerIndex(FTexture, FSampler);
+    tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
+    case tex.Target of
+//      ttTexture1D:
+//        ASample.Name := MaterialSystem.Texture.Texture1D_Sampler[I];
+      ttTexture2D:
+        ASample.Name := MaterialSystem.Texture.Texture2D_Sampler[I];
+//      ttTexture3D:
+//        ASample.Name := MaterialSystem.Texture.Texture3D_Sampler[I];
+      ttTextureCube:
+        ASample.Name := MaterialSystem.Texture.TextureCube_Sampler[I];
+//      ttTexture2DArray:
+//        ASample.Name := MaterialSystem.Texture.Texture2DArray_Sampler[I];
+    else
+      begin
+        Result := False;
+        CheckOutput(Result);
+        exit;
+      end;
     end;
     ASample.Input[0] := GivingNodeDataType[5];
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -4320,6 +4446,8 @@ end;
 function TTextureSamplerNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
 var
   vSample: TShaderSample;
+  bTexelCast: Boolean;
+  tex: TGL3xTexture;
 begin
   Result := GetOutputSample(vSample);
   if Result then
@@ -4327,26 +4455,133 @@ begin
     if Joints[5].GivingNode.GatherSamples(Info,
       Joints[5].GivingNodeJointIndex) then
     begin
-      vSample.InputRef[0] := gvarSample;
-      vSample.TextureInIntput := True;
-      New(gvarSample);
-      gvarSample^ := vSample;
-      Info.SampleList.Add(gvarSample);
+      vSample.InputRef[0] := Info.Master;
+      vSample.TextureInInput := True;
+      Info.NewMaster;
+      vSample.Participate := vSample.Participate * Info.ProgramTypes;
+      Info.Master^ := vSample;
+
+      bTexelCast := False;
+      tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
+      case tex.TexelCast of
+        tcNormalXYZ:
+          begin
+            vSample.Clear;
+            vSample.Category := MaterialSystem.Texture.Name;
+            vSample.Name := MaterialSystem.Texture.SNorm;
+            vSample.InputRef[0] := Info.Master;
+            bTexelCast := True;
+          end;
+        tcNormalXY:
+          begin
+            vSample.Clear;
+            vSample.Category := MaterialSystem.Texture.Name;
+            vSample.Name := MaterialSystem.Texture.SNormDerive;
+            vSample.InputRef[0] := Info.Master;
+            bTexelCast := True;
+          end;
+        tcYCoCg:
+          begin
+            vSample.Clear;
+            vSample.Category := MaterialSystem.Texture.Name;
+            vSample.Name := MaterialSystem.Texture.YCoCg;
+            vSample.InputRef[0] := Info.Master;
+            bTexelCast := True;
+          end;
+      end;
+      if bTexelCast then
+      begin
+        if vSample.CheckWithMaterialSystem then
+        begin
+          Info.NewMaster;
+          Info.Master^ := vSample;
+        end;
+      end;
     end
     else
       Result := False;
   end;
 end;
 
-procedure TTextureSamplerNode.SetTexture(const AName: TGL3xTextureName);
+function TTextureSamplerNode.GetTexture: string;
 begin
-  if AName <> FTexture then
+  Result := FTexture.GetValue;
+end;
+
+procedure TTextureSamplerNode.SetTexture(const AName: string);
+var
+  rTexture: IGLName;
+  tex: TGL3xTexture;
+begin
+  if AName <> FTexture.GetValue then
   begin
-    Owner.UnRegisterTexture(FTexture);
-    Owner.RegisterTexture(AName);
-    FTexture := AName;
-    NotifyChange;
+    with MaterialManager do
+    try
+      BeginWork;
+      rTexture := GetTextureName(AName);
+      tex := TAccessableMaterialManager(MaterialManager).GetTexture(rTexture);
+      if (tex.Target = ttTexture2D)
+        or (tex.Target = ttTextureCube) then
+      begin
+        Owner.UnRegisterTextureSampler(FTexture, FSampler);
+        Owner.RegisterTextureSampler(rTexture, FSampler);
+        FTexture := rTexture;
+        tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
+        tex.OnNotifyChange := Owner.NotifyChange;
+        NotifyChange(Self);
+      end;
+    finally
+      EndWork;
+    end;
   end;
+end;
+
+function TTextureSamplerNode.GetSampler: TGL3xSampler;
+begin
+  if Assigned(FSampler) then
+  begin
+    Result := TAccessableMaterialManager(MaterialManager).GetSampler(FSampler);
+    if Assigned(Result) then
+      exit;
+  end;
+  Result := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture).Sampler;
+end;
+
+procedure TTextureSamplerNode.SetSampler(ASampler: TGL3xSampler);
+begin
+  GetSampler.Assign(ASampler);
+end;
+
+function TTextureSamplerNode.GetSamplerName: string;
+begin
+  if Assigned(FSampler) then
+    Result := FSampler.GetValue
+  else
+    Result := '';
+end;
+
+procedure TTextureSamplerNode.SetSamplerName(const AName: string);
+var
+  smp: TGL3xSampler;
+begin
+  with MaterialManager do
+  try
+    BeginWork;
+    Owner.UnRegisterTextureSampler(FTexture, FSampler);
+    if Length(AName) = 0 then
+      FSampler := nil
+    else
+      FSampler := GetSamplerName(AName);
+    Owner.RegisterTextureSampler(FTexture, FSampler);
+    if Assigned(FSampler) then
+    begin
+      smp := TAccessableMaterialManager(MaterialManager).GetSampler(FTexture);
+      smp.OnNotifyChange := Owner.NotifyChange;
+    end;
+  finally
+    EndWork;
+  end;
+  NotifyChange(Self);
 end;
 
 function TTextureSamplerNode.GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean;
@@ -4356,7 +4591,12 @@ begin
     0:
       begin
         APropName := 'Texture';
-        APropValue := FTexture;
+        APropValue := FTexture.GetValue;
+      end;
+    1:
+      begin
+        APropName := 'Sampler';
+        APropValue := Sampler;
       end;
   else
     Result := False;
@@ -4366,12 +4606,14 @@ end;
 procedure TTextureSamplerNode.SetProperty(Index: Integer; const APropName: string; const APropValue: string);
 begin
   if APropName = 'Texture' then
-    SetTexture(APropValue);
+    SetTexture(APropValue)
+  else if APropName = 'Sampler' then
+    SetSamplerName(APropValue);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TPannerNode'}{$ENDIF}
+{$REGION 'TPannerNode'}
 
 constructor TPannerNode.Create;
 begin
@@ -4387,7 +4629,7 @@ end;
 procedure TPannerNode.SetValue(Index: Integer; Value: Single);
 begin
   FValue.V[Index] := Value;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TPannerNode.GetValue(Index: Integer): Single;
@@ -4428,8 +4670,8 @@ procedure TPannerNode.SetViewingUniforms;
 begin
   with ShaderManager do
   begin
-    UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
-    UniformSampler(uniformTexUnit1, GivingNodeTextureID[2], 1);
+    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
   end;
 end;
 
@@ -4451,7 +4693,7 @@ begin
     ASample.Input[1] := GivingNodeDataType[2];
     if (FValue.X <> 1.0) or (FValue.Y <> 1.0) then
       ASample.Input[2] := GLSLType2F;
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -4461,7 +4703,6 @@ end;
 function TPannerNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
 var
   vSample: TShaderSample;
-  pConstSampler: PShaderSample;
   v: TVectorEXT;
 begin
   Result := GetOutputSample(vSample);
@@ -4469,33 +4710,31 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
+      vSample.InputRef[0] := Info.Master;
 
     if Joints[2].GivingNode.GatherSamples(Info,
       Joints[2].GivingNodeJointIndex) then
-      vSample.InputRef[1] := gvarSample;
+      vSample.InputRef[1] := Info.Master;
 
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
     // Speed
-    if gvarSample.Input[2] <> GLSLTypeUndefined then
+    if vSample.Input[2] <> GLSLTypeUndefined then
     begin
-      New(pConstSampler);
-      pConstSampler.Clear;
-      pConstSampler.Category := (MaterialSystem.Constants.Name);
-      pConstSampler.Name := (MaterialSystem.Constants.Constants_Vector2);
-      pConstSampler.Purpose := sspConstant;
-      pConstSampler.Participate := gvarProgType;
-      pConstSampler.Output := GLSLType2F;
+      Info.NewMaster;
+      Info.Master.Category := (MaterialSystem.Constants.Name);
+      Info.Master.Name := (MaterialSystem.Constants.Constants_Vector2);
+      Info.Master.Purpose := sspConstant;
+      Info.Master.Participate := Info.ProgramTypes;
+      Info.Master.Output := GLSLType2F;
       v.X := FValue.X;
       v.Y := FValue.Y;
       v.Z := 0;
       v.W := 0;
-      pConstSampler.ConstantValue := ValueToHex(v);
-      gvarSample.InputRef[2] := pConstSampler;
-      Info.SampleList.Add(pConstSampler);
+      Info.Master.ConstantValue := ValueToHex(v);
+      vSample.InputRef[2] := Info.Master;
     end;
+
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
 
@@ -4527,9 +4766,9 @@ begin
   else if APropName = 'SpeedT' then
     Val(APropValue, FValue.V[1], err);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TRotatorNode'}{$ENDIF}
+{$REGION 'TRotatorNode'}
 
 constructor TRotatorNode.Create;
 begin
@@ -4544,7 +4783,7 @@ end;
 procedure TRotatorNode.SetValue(Index: Integer; Value: Single);
 begin
   FValue.V[Index] := Value;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TRotatorNode.GetValue(Index: Integer): Single;
@@ -4588,8 +4827,8 @@ procedure TRotatorNode.SetViewingUniforms;
 begin
   with ShaderManager do
   begin
-    UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
-    UniformSampler(uniformTexUnit1, GivingNodeTextureID[2], 1);
+    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 1;
   end;
 end;
 
@@ -4613,7 +4852,7 @@ begin
       ASample.Input[2] := GLSLType2F;
     if FValue.Z <> 1.0 then
       ASample.Input[3] := GLSLType1F;
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -4623,7 +4862,6 @@ end;
 function TRotatorNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
 var
   vSample: TShaderSample;
-  pConstSampler: PShaderSample;
   v: TVectorEXT;
 begin
   Result := GetOutputSample(vSample);
@@ -4631,50 +4869,48 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
+      vSample.InputRef[0] := Info.Master;
 
     if Joints[2].GivingNode.GatherSamples(Info,
       Joints[2].GivingNodeJointIndex) then
-      vSample.InputRef[1] := gvarSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+      vSample.InputRef[1] := Info.Master;
+
     // CenterXY
-    if gvarSample.Input[2] <> GLSLTypeUndefined then
+    if vSample.Input[2] <> GLSLTypeUndefined then
     begin
-      New(pConstSampler);
-      pConstSampler.Clear;
-      pConstSampler.Category := MaterialSystem.Constants.Name;
-      pConstSampler.Name := MaterialSystem.Constants.Constants_Vector2;
-      pConstSampler.Purpose := sspConstant;
-      pConstSampler.Participate := gvarProgType;
-      pConstSampler.Output := GLSLType2F;
+      Info.NewMaster;
+      Info.Master.Category := MaterialSystem.Constants.Name;
+      Info.Master.Name := MaterialSystem.Constants.Constants_Vector2;
+      Info.Master.Purpose := sspConstant;
+      Info.Master.Participate := Info.ProgramTypes;
+      Info.Master.Output := GLSLType2F;
       v.X := FValue.X;
       v.Y := FValue.Y;
       v.Z := 0;
       v.W := 0;
-      pConstSampler.ConstantValue := ValueToHex(v);
-      gvarSample.InputRef[2] := pConstSampler;
-      Info.SampleList.Add(pConstSampler);
+      Info.Master.ConstantValue := ValueToHex(v);
+      vSample.InputRef[2] := Info.Master;
     end;
+
     // Speed
-    if gvarSample.Input[3] <> GLSLTypeUndefined then
+    if vSample.Input[3] <> GLSLTypeUndefined then
     begin
-      New(pConstSampler);
-      pConstSampler.Clear;
-      pConstSampler.Category := MaterialSystem.Constants.Name;
-      pConstSampler.Name := MaterialSystem.Constants.Constants_Scalar;
-      pConstSampler.Purpose := sspConstant;
-      pConstSampler.Participate := gvarProgType;
-      pConstSampler.Output := GLSLType1F;
+      Info.NewMaster;
+      Info.Master.Category := MaterialSystem.Constants.Name;
+      Info.Master.Name := MaterialSystem.Constants.Constants_Scalar;
+      Info.Master.Purpose := sspConstant;
+      Info.Master.Participate := Info.ProgramTypes;
+      Info.Master.Output := GLSLType1F;
       v.X := FValue.Z;
       v.Y := 0;
       v.Z := 0;
       v.W := 0;
-      pConstSampler.ConstantValue := ValueToHex(v);
-      gvarSample.InputRef[3] := pConstSampler;
-      Info.SampleList.Add(pConstSampler);
+      Info.Master.ConstantValue := ValueToHex(v);
+      vSample.InputRef[3] := Info.Master;
     end;
+
+    Info.NewMaster;
+    Info.Master^ := vSample;
   end;
 end;
 
@@ -4713,9 +4949,9 @@ begin
   else if APropName = 'Speed' then
     Val(APropValue, FValue.V[2], err);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TTimerNode'}{$ENDIF}
+{$REGION 'TTimerNode'}
 
 constructor TTimerNode.Create;
 begin
@@ -4743,7 +4979,7 @@ end;
 
 procedure TTimerNode.SetViewingUniforms;
 begin
-  ShaderManager.Uniform1f(uniformTime, Now);
+  ShaderManager.Uniform1f(uniformTime, GLSTime);
 end;
 
 function TTimerNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -4752,14 +4988,14 @@ begin
   ASample.Category := MaterialSystem.Utility.Name;
   ASample.Name := MaterialSystem.Utility.Utility_Timer;
   ASample.Input[0] := GLSLTypeVoid;
-  ASample.UniformClasses[0] := TUniformTime;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  ASample.UniformClasses[0] := TShaderEnvTime;
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TComponentMaskNode'}{$ENDIF}
+{$REGION 'TComponentMaskNode'}
 
 constructor TComponentMaskNode.Create;
 begin
@@ -4778,7 +5014,7 @@ end;
 function TComponentMaskNode.CheckInput: Boolean;
 begin
   Result := True;
-  CheckNodeInput(1, 'Missing input input', Result);
+  CheckNodeInput(1, 'Missing input', Result);
   if FMask = [] then
     Owner.SetErrorMessage('Invalid color component set in node ' + Caption);
 end;
@@ -4837,7 +5073,7 @@ end;
 
 procedure TComponentMaskNode.SetViewingUniforms;
 begin
-  ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1], 0);
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
 end;
 
 function TComponentMaskNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -4849,7 +5085,7 @@ begin
     ASample.Name := MaterialSystem.Utility.Utility_ComponentMask;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Mask := FMask;
-    Result := MaterialManager.FindCompatibleSample(ASample);
+    Result := ASample.CheckWithMaterialSystem;
     CheckOutput(Result);
   end
   else
@@ -4865,10 +5101,10 @@ begin
   begin
     if Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
-      vSample.InputRef[0] := gvarSample;
-    New(gvarSample);
-    gvarSample^ := vSample;
-    Info.SampleList.Add(gvarSample);
+      vSample.InputRef[0] := Info.Master;
+    New(Info.Master);
+    Info.Master^ := vSample;
+    Info.SampleList.Add(Info.Master);
   end;
 end;
 
@@ -4892,7 +5128,7 @@ begin
       else
         Exclude(FMask, ccmAlpha);
   end;
-  NotifyChange;
+  NotifyChange(Self);
 end;
 
 function TComponentMaskNode.GetMask(Index: Integer): Boolean;
@@ -4949,9 +5185,208 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TWorldNormalNode'}{$ENDIF}
+{$REGION 'TClampNode'}
+
+constructor TClampNode.Create;
+begin
+  inherited;
+  SetLength(FJoints, 4);
+  Joints[0].SetAtOnce(0, sideOutput, [], '');
+  Joints[1].SetAtOnce(1, sideInput, [], 'X');
+  Joints[2].SetAtOnce(2, sideInput, [], 'MIN');
+  Joints[3].SetAtOnce(3, sideInput, [], 'MAX');
+end;
+
+function TClampNode.Caption: string;
+begin
+  Result := 'Clamp';
+end;
+
+function TClampNode.CheckInput: Boolean;
+begin
+  Result := Assigned(Joints[2].GivingNode) or Assigned(Joints[3].GivingNode);
+  if not Result then
+    Owner.SetErrorMessage('MIN or MAX input in node ' + Caption);
+  CheckNodeInput(1, 'Missing X input ', Result);
+end;
+
+function TClampNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+  MainPart: AnsiString;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    if vSample.Name = MaterialSystem.Utility.Utility_Clamp then
+    begin
+      MainPart :=
+      GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[1]) + ' value02 = ' + GetGLSLTypeCast('value1', GLSLType4F, GivingNodeMask[2], vSample.Input[1]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[2]) + ' value03 = ' + GetGLSLTypeCast('value2', GLSLType4F, GivingNodeMask[3], vSample.Input[2]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Output) + ' result = clamp(value01, value02, value03);'+ #10#13;
+    end
+    else if vSample.Name = MaterialSystem.Utility.Utility_Min then
+    begin
+      MainPart :=
+      GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[1]) + ' value02 = ' + GetGLSLTypeCast('value1', GLSLType4F, GivingNodeMask[2], vSample.Input[1]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Output) + ' result = min(value01, value02);'+ #10#13;
+    end
+    else
+    begin
+      MainPart :=
+      GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[1]) + ' value02 = ' + GetGLSLTypeCast('value2', GLSLType4F, GivingNodeMask[3], vSample.Input[1]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Output) + ' result = max(value01, value02);'+ #10#13;
+    end;
+
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      GetValue1_line +
+      GetValue2_line +
+      MainPart +
+      '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
+procedure TClampNode.SetViewingUniforms;
+begin
+  with CurrentGLContext.GLStates do
+  begin
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit2, GivingNodeTextureID[3])] := 0;
+  end;
+end;
+
+function TClampNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  if CheckInput then
+  begin
+    ASample.Clear;
+    ASample.Category := MaterialSystem.Utility.Name;
+    ASample.Name := MaterialSystem.Utility.Utility_Clamp;
+    ASample.Input[0] := GivingNodeDataType[1];
+    ASample.Input[1] := GivingNodeDataType[2];
+    ASample.Input[2] := GivingNodeDataType[3];
+
+    if ASample.Input[1] = GLSLTypeUndefined then
+    begin
+      ASample.Name := MaterialSystem.Utility.Utility_Max;
+      ASample.Input[1] := ASample.Input[2];
+      ASample.Input[2] := GLSLTypeUndefined;
+    end
+    else if ASample.Input[2] = GLSLTypeUndefined then
+    begin
+      ASample.Name := MaterialSystem.Utility.Utility_Min;
+    end;
+
+    Result := ASample.CheckWithMaterialSystem;
+    CheckOutput(Result);
+  end
+  else
+    Result := False;
+end;
+
+function TClampNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+    if Joints[1].GivingNode.GatherSamples(Info,
+      Joints[1].GivingNodeJointIndex) then
+      vSample.InputRef[0] := Info.Master;
+    if vSample.Name = MaterialSystem.Utility.Utility_Clamp then
+    begin
+      if Joints[2].GivingNode.GatherSamples(Info,
+        Joints[2].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+      if Joints[3].GivingNode.GatherSamples(Info,
+        Joints[3].GivingNodeJointIndex) then
+        vSample.InputRef[2] := Info.Master;
+    end
+    else if vSample.Name = MaterialSystem.Utility.Utility_Min then
+    begin
+      if Joints[2].GivingNode.GatherSamples(Info,
+        Joints[2].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+    end
+    else
+    begin
+      if Joints[3].GivingNode.GatherSamples(Info,
+        Joints[3].GivingNodeJointIndex) then
+        vSample.InputRef[1] := Info.Master;
+    end;
+
+    New(Info.Master);
+    Info.Master^ := vSample;
+    Info.SampleList.Add(Info.Master);
+  end;
+end;
+
+{$ENDREGION}
+
+{$REGION 'TAppendVectorNode'}
+
+function TAppendVectorNode.Caption: string;
+begin
+  Result := 'AppendVector';
+end;
+
+function TAppendVectorNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      GetValue1_line +
+      GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[1]) + ' value02 = ' + GetGLSLTypeCast('value1', GLSLType4F, GivingNodeMask[2], vSample.Input[1]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Output) + ' result = ' + GLSLTypeToString(vSample.Output) + '(value01, value02);' + #10#13 +
+      '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
+function TAppendVectorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  if CheckInput then
+  begin
+    ASample.Clear;
+    ASample.Category := MaterialSystem.Utility.Name;
+    ASample.Name := MaterialSystem.Utility.Utility_AppendVector;
+    ASample.Input[0] := GivingNodeDataType[1];
+    ASample.Input[1] := GivingNodeDataType[2];
+    Result := ASample.CheckWithMaterialSystem;
+    CheckOutput(Result);
+  end
+  else
+    Result := False;
+end;
+{$ENDREGION}
+
+{$REGION 'TWorldNormalNode'}
 
 constructor TWorldNormalNode.Create;
 begin
@@ -4965,18 +5400,28 @@ begin
   Result := 'World Normal';
 end;
 
+function TWorldNormalNode.GetViewingCode: AnsiString;
+begin
+  Result :=
+    GetMaxGLSLVersion + #10#13 +
+    GetWorkResult_line +
+    LBracket_line +
+    '  return vec4(0.0,0.0,1.0,0.0);' + #10#13 +
+    RBracket_line;
+end;
+
 function TWorldNormalNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 begin
   ASample.Clear;
   ASample.Category := MaterialSystem.Vectors.Name;
   ASample.Name := MaterialSystem.Vectors.Vectors_WorldNormal;
   ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TLightVectorNode'}{$ENDIF}
+{$REGION 'TLightVectorNode'}
 
 constructor TLightVectorNode.Create;
 begin
@@ -4990,18 +5435,28 @@ begin
   Result := 'LightVector';
 end;
 
+function TLightVectorNode.GetViewingCode: AnsiString;
+begin
+  Result :=
+    GetMaxGLSLVersion + #10#13 +
+    GetWorkResult_line +
+    LBracket_line +
+    '  return vec4(0.0,1.0,0.0,0.0);' + #10#13 +
+    RBracket_line;
+end;
+
 function TLightVectorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 begin
   ASample.Clear;
   ASample.Category := MaterialSystem.Vectors.Name;
   ASample.Name := MaterialSystem.Vectors.Vectors_LightVector;
-  ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  ASample.Input[0] := GLSLTypeFRec;
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCameraVectorNode'}{$ENDIF}
+{$REGION 'TCameraVectorNode'}
 
 constructor TCameraVectorNode.Create;
 begin
@@ -5020,13 +5475,13 @@ begin
   ASample.Clear;
   ASample.Category := MaterialSystem.Vectors.Name;
   ASample.Name := MaterialSystem.Vectors.Vectors_CameraVector;
-  ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  ASample.Input[0] := GLSLTypeFRec;
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TReflectionVectorNode'}{$ENDIF}
+{$REGION 'TReflectionVectorNode'}
 
 constructor TReflectionVectorNode.Create;
 begin
@@ -5045,11 +5500,11 @@ begin
   ASample.Clear;
   ASample.Category := MaterialSystem.Vectors.Name;
   ASample.Name := MaterialSystem.Vectors.Vectors_ReflectionVector;
-  ASample.Input[0] := GLSLTypeVoid;
-  Result := MaterialManager.FindCompatibleSample(ASample);
+  ASample.Input[0] := GLSLTypeFRec;
+  Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
 initialization
   RegisterClasses([
@@ -5059,7 +5514,30 @@ initialization
       TConstant4fNode, TTextureCoordinateNode, TPowerNode, TDotProductNode,
       TWorldNormalNode, TLightVectorNode, TCameraVectorNode, TReflectionVectorNode,
       TComponentMaskNode, TSineNode, TCosineNode, TFloorNode, TAbsNode, TFractNode,
-      TOneMinusNode, TSquareRootNode, TScreenPositionNode]);
+      TOneMinusNode, TSquareRootNode, TScreenPositionNode, TClampNode, TSignNode,
+      TAppendVectorNode, TObjectPositionNode, TWorldPositionNode]);
+
+finalization
+
+  FrameProgram:= nil;
+  FrameVertexObj:= nil;
+  FrameFragmentObj:= nil;
+  ViewingProgram:= nil;
+  ViewingFragmentObj:= nil;
+  TextProgram:= nil;
+  TextFragmentObj:= nil;
+  BackgroundProgram:= nil;
+  BackgroundVertexObj:= nil;
+  BackgroundFragmentObj:= nil;
+  JointProgram:= nil;
+  JointVertexObj:= nil;
+  JointFragmentObj:= nil;
+  LinkProgram:= nil;
+  LinkVertexObj:= nil;
+  LinkGeometryObj:= nil;
+  LinkFragmentObj:= nil;
+  ViewingMakerVertexObj:= nil;
+  ViewingMakerFragmentObj:= nil;
 
 end.
 

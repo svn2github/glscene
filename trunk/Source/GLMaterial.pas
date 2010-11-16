@@ -45,7 +45,7 @@ interface
 uses
   Classes, SysUtils, GLRenderContextInfo, BaseClasses, OpenGLTokens, GLContext,
   GLTexture, GLColor, GLCoordinates, VectorGeometry, PersistentClasses,
-  GLCrossPlatform, GLState;
+  GLCrossPlatform, GLState, GLTextureFormat;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}

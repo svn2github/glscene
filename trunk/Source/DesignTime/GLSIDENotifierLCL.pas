@@ -1,15 +1,15 @@
-//
+
 // This unit is part of the GLScene Project, http://glscene.org
-//
+
 {: GLSIDENotifierLCL<p>
 
    The notifier tracking project opening and closing.<p>
    Now only MaterialManager take a notifying about this events.<p>
 
 
-	<b>History : </b><font size=-1><ul>
+  <b>History : </b><font size=-1><ul>
       <li>07/09/10 - Yar - Creation
-	</ul></font>
+  </ul></font>
 }
 
 unit GLSIDENotifierLCL;
@@ -23,7 +23,7 @@ procedure Register;
 implementation
 
 uses
-  LazIDEIntf, ProjectIntf, IDEMsgIntf, Forms, Controls, GL3xMaterial, GLSLog;
+  LazIDEIntf, ProjectIntf, IDEMsgIntf, Forms, Controls, BaseClasses, GLSLog;
 
 type
   TGLSIDENotifier = class(TObject)
@@ -66,22 +66,20 @@ end;
 function TGLSIDENotifier.OnProjectOpened(Sender: TObject;
   AProject: TLazProject): TModalResult;
 begin
-  MaterialManager.NotifyProjectOpened;
-  GLSLogger.Log('GLScene MaterialManager notified about project opened');
+  NotifyGLSceneManagersProjectOpened;
   Result := mrOk;
 end;
 
 function TGLSIDENotifier.OnProjectClose(Sender: TObject;
   AProject: TLazProject): TModalResult;
 begin
-  MaterialManager.NotifyProjectClosed;
-  GLSLogger.Log('GLScene MaterialManager notified about project closed');
+  NotifyGLSceneManagersProjectClosed;
   Result := mrOk;
 end;
 
 function TGLSIDENotifier.OnProjectBuilding(Sender: TObject): TModalResult;
 begin
-  // UpdateResource called by IDE itself
+  NotifyGLSceneManagersBeforeCompile;
   Result := mrOk;
 end;
 

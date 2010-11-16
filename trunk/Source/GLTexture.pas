@@ -237,22 +237,6 @@ const
 type
   TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace, tmAdd);
   TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal, twSeparate);
-  // if texture wrap mode is twSeparate then three dimension define separately
-  TGLSeparateTextureWrap =
-    (
-    twRepeat,
-    twClamp,
-    twClampToEdge,
-    twClampToBorder,
-    twMirrorRepeat,
-    twMirrorClamp,
-    twMirrorClampToEdge,
-    twMirrorClampToBorder
-    );
-
-  // Specifies the texture comparison mode for currently bound depth textures.
-  // That is, a texture whose internal format is tfDEPTH_COMPONENT*
-  TGLTextureCompareMode = (tcmNone, tcmCompareRtoTexture);
 
   // Specifies how depth values should be treated
   // during filtering and texture application
@@ -627,10 +611,6 @@ type
     property PicturePZ: TGLPicture index cmtPZ read GetPicture write SetPicture;
     property PictureNZ: TGLPicture index cmtNZ read GetPicture write SetPicture;
   end;
-
-  // TGLTextureFilteringQuality
-  //
-  TGLTextureFilteringQuality = (tfIsotropic, tfAnisotropic);
 
   // TGLTextureMappingMode
   //
@@ -1479,7 +1459,7 @@ begin
     fBitmap.Depth := FDepth;
     fBitmap.CubeMap := FCubeMap;
     fBitmap.TextureArray := FArray;
-    fBitmap.ColorFormat := FColorFormat;
+    fBitmap.SetColorFormatDataType(FColorFormat, GL_UNSIGNED_BYTE);
   end;
   Result := FBitmap;
 end;
@@ -3615,9 +3595,8 @@ const
     GL_LINEAR_MIPMAP_LINEAR);
   cFilteringQuality: array[tfIsotropic..tfAnisotropic] of Integer = (1, 2);
   cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of TGLenum =
-    (GL_REPEAT, GL_CLAMP, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
-    GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_ATI,
-    GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
+    (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
+    GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
   cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
   cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =

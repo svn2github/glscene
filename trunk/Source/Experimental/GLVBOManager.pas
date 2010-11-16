@@ -1638,9 +1638,7 @@ begin
 
   if hVAO.IsDataNeedUpdate then
   begin
-//    if Self is TGLStreamVBOManager then
-//      sleep(0);
-    // Uniting all the states and buffers in one vertex array object
+    // Uniting all states and buffers in one vertex array object
     hVAO.Bind;
 
     // Need to direct bind array buffer for correctly VertexAttribPointer set up
@@ -1811,7 +1809,7 @@ begin
       exit;
     end;
   end;
-  CurrentClient.LastTimeWhenRendered := Now;
+  CurrentClient.LastTimeWhenRendered := GLSTime;
 
   offset := CurrentClient.ElementBufferOffset;
   IndexStart := 0;
@@ -2632,7 +2630,7 @@ begin
   for c := 0 to FClientList.Count - 1 do
   begin
     Client := FClientList.Items[c];
-    if Client.LastTimeWhenRendered > Now - TimeInterval then
+    if Client.LastTimeWhenRendered > GLSTime - TimeInterval then
       portion := portion + Client.RelativeSize;
   end;
   Result := portion;

@@ -1,16 +1,39 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GL3xMaterialConst<p>
+{: GL3xMaterialTokens<p>
 
    <b>History : </b><font size=-1><ul>
     <li>23/08/10 - Yar - Creation
  </ul></font>
 }
 
-unit GL3xMaterialConst;
+unit GL3xMaterialTokens;
 
 interface
+
+uses
+  GLState;
+
+type
+  // TFaceCulling
+  //
+  TFaceCulling = (fcBufferDefault, fcCull, fcNoCull);
+
+  // TBlendingMode
+  //
+  TBlendingMode = (bmOpaque, bmTransparency, bmAdditive, bmMasked, bmModulate, bmCustom);
+
+  // TLightingModel
+  //
+  TLightingModel = (lmPhong, lmEmissiveOnly, lmCustomLighting);
+
+const
+
+  cFaceCulling: array[TFaceCulling] of string = ('BufferDefault', 'Cull', 'NoCull');
+  cPolygonMode: array[TPolygonMode] of string = ('Fill', 'Lines', 'Points');
+  cBlendingMode: array[TBlendingMode] of string = ('Opaque', 'Transparency', 'Additive', 'Masked', 'Modulate', 'Custom');
+  cLightingModel: array[TLightingModel] of string = ('Phong', 'EmissiveOnly', 'CustomLighting');
 
 type
 
@@ -22,16 +45,25 @@ type
     GetLight: AnsiString;
     GetCamera: AnsiString;
     TransformLighting_W2T: AnsiString;
-    PassTexCoord_V2F: AnsiString;
-    PassTexCoord_V2G: AnsiString;
-    PassVertex_V2F: AnsiString;
-    PassVertex_V2G: AnsiString;
+    PassTexCoord: array[0..7] of AnsiString;
+    PassVertex: AnsiString;
   end;
 
   TMatSysFragmentCategory = record
     Name: AnsiString;
-    PassFragmentColor: AnsiString;
+    GetFragment: AnsiString;
     AlphaTest: AnsiString;
+    SetEmissive: AnsiString;
+    SetDiffuse: AnsiString;
+    SetSpecular: AnsiString;
+    SetDiffusePower: AnsiString;
+    SetSpecularPower: AnsiString;
+    SetNormal: AnsiString;
+    SetOpacity: AnsiString;
+    SetOpacityMask: AnsiString;
+    Illuminate: AnsiString;
+    SetCustomLighting: AnsiString;
+    PassFragmentColor: AnsiString;
   end;
 
   TMatSysGeometryCategory = record
@@ -53,16 +85,11 @@ type
 
   TMatSysCoordinatesCategory = record
     Name: AnsiString;
-    Coordinates_TexCoord0: AnsiString;
-    Coordinates_TexCoord1: AnsiString;
-    Coordinates_TexCoord2: AnsiString;
-    Coordinates_TexCoord3: AnsiString;
-    Coordinates_TexCoord4: AnsiString;
-    Coordinates_TexCoord5: AnsiString;
-    Coordinates_TexCoord6: AnsiString;
-    Coordinates_TexCoord7: AnsiString;
+    Coordinates_TexCoord: array[0..7] of AnsiString;
     Coordinates_Panner: AnsiString;
     Coordinates_Rotator: AnsiString;
+    Coordinates_ObjectPosition: AnsiString;
+    Coordinates_WorldPosition: AnsiString;
     Coordinates_ScreenPosition: AnsiString;
   end;
 
@@ -83,18 +110,16 @@ type
     Math_Phong: AnsiString;
     Math_OneMinus: AnsiString;
     Math_SquareRoot: AnsiString;
+    Math_Sign: AnsiString;
   end;
 
   TMatSysTextureCategory = record
     Name: AnsiString;
-    Texture_Sampler0: AnsiString;
-    Texture_Sampler1: AnsiString;
-    Texture_Sampler2: AnsiString;
-    Texture_Sampler3: AnsiString;
-    Texture_Sampler4: AnsiString;
-    Texture_Sampler5: AnsiString;
-    Texture_Sampler6: AnsiString;
-    Texture_Sampler7: AnsiString;
+    Texture2D_Sampler: array[0..7] of AnsiString;
+    TextureCube_Sampler: array[0..7] of AnsiString;
+    SNorm: AnsiString;
+    SNormDerive: AnsiString;
+    YCoCg: AnsiString;
   end;
 
   TMatSysUtilityCategory = record
@@ -104,6 +129,7 @@ type
     Utility_Min: AnsiString;
     Utility_Max: AnsiString;
     Utility_ComponentMask: AnsiString;
+    Utility_AppendVector: AnsiString;
   end;
 
   TMatSysVectorsCategory = record
@@ -137,10 +163,16 @@ const
     GetLight: 'GetLight';
     GetCamera: 'GetCamera';
     TransformLighting_W2T: 'TransformLighting_W2T';
-    PassTexCoord_V2F: 'PassTexCoord_V2F';
-    PassTexCoord_V2G: 'PassTexCoord_V2G';
-    PassVertex_V2F: 'PassVertex_V2F';
-    PassVertex_V2G: 'PassVertex_V2G';
+    PassTexCoord: (
+     'PassTexCoord0',
+     'PassTexCoord1',
+     'PassTexCoord2',
+     'PassTexCoord3',
+     'PassTexCoord4',
+     'PassTexCoord5',
+     'PassTexCoord6',
+     'PassTexCoord7');
+    PassVertex: 'PassVertex';
     );
 
     Geometry: (
@@ -153,8 +185,19 @@ const
 
     Fragment: (
     Name: 'Fragment';
-    PassFragmentColor: 'PassFragmentColor';
+    GetFragment: 'GetFragment';
     AlphaTest: 'AlphaTest';
+    SetEmissive: 'SetEmissive';
+    SetDiffuse: 'SetDiffuse';
+    SetSpecular: 'SetSpecular';
+    SetDiffusePower: 'SetDiffusePower';
+    SetSpecularPower: 'SetSpecularPower';
+    SetNormal: 'SetNormal';
+    SetOpacity: 'SetOpacity';
+    SetOpacityMask: 'SetOpacityMask';
+    Illuminate: 'Illuminate';
+    SetCustomLighting: 'SecCustomLighting';
+    PassFragmentColor: 'PassFragmentColor';
     );
 
     Constants: (
@@ -168,16 +211,19 @@ const
 
     Coordinates: (
     Name: 'Coordinates';
-    Coordinates_TexCoord0: 'Coordinates_TexCoord0';
-    Coordinates_TexCoord1: 'Coordinates_TexCoord1';
-    Coordinates_TexCoord2: 'Coordinates_TexCoord2';
-    Coordinates_TexCoord3: 'Coordinates_TexCoord3';
-    Coordinates_TexCoord4: 'Coordinates_TexCoord4';
-    Coordinates_TexCoord5: 'Coordinates_TexCoord5';
-    Coordinates_TexCoord6: 'Coordinates_TexCoord6';
-    Coordinates_TexCoord7: 'Coordinates_TexCoord7';
+    Coordinates_TexCoord: (
+     'Coordinates_TexCoord0',
+     'Coordinates_TexCoord1',
+     'Coordinates_TexCoord2',
+     'Coordinates_TexCoord3',
+     'Coordinates_TexCoord4',
+     'Coordinates_TexCoord5',
+     'Coordinates_TexCoord6',
+     'Coordinates_TexCoord7');
     Coordinates_Panner: 'Coordinates_Panner';
     Coordinates_Rotator: 'Coordinates_Rotator';
+    Coordinates_ObjectPosition: 'Coordinates_ObjectPosition';
+    Coordinates_WorldPosition: 'Coordinates_WorldPosition';
     Coordinates_ScreenPosition: 'Coordinates_ScreenPosition';
     );
 
@@ -198,18 +244,32 @@ const
     Math_Phong: 'Math_Phong';
     Math_OneMinus: 'Math_OneMinus';
     Math_SquareRoot: 'Math_SquareRoot';
+    Math_Sign: 'Math_Sign';
     );
 
     Texture: (
     Name: 'Texture';
-    Texture_Sampler0: 'Texture_Sampler0';
-    Texture_Sampler1: 'Texture_Sampler1';
-    Texture_Sampler2: 'Texture_Sampler2';
-    Texture_Sampler3: 'Texture_Sampler3';
-    Texture_Sampler4: 'Texture_Sampler4';
-    Texture_Sampler5: 'Texture_Sampler5';
-    Texture_Sampler6: 'Texture_Sampler6';
-    Texture_Sampler7: 'Texture_Sampler7';
+    Texture2D_Sampler: (
+      'Texture2D_Sampler0',
+      'Texture2D_Sampler1',
+      'Texture2D_Sampler2',
+      'Texture2D_Sampler3',
+      'Texture2D_Sampler4',
+      'Texture2D_Sampler5',
+      'Texture2D_Sampler6',
+      'Texture2D_Sampler7');
+    TextureCube_Sampler: (
+      'TextureCube_Sampler0',
+      'TextureCube_Sampler1',
+      'TextureCube_Sampler2',
+      'TextureCube_Sampler3',
+      'TextureCube_Sampler4',
+      'TextureCube_Sampler5',
+      'TextureCube_Sampler6',
+      'TextureCube_Sampler7');
+    SNorm: 'SNorm';
+    SNormDerive: 'SNormDerive';
+    YCoCg: 'YCoCg';
     );
 
     Utility: (
@@ -219,6 +279,7 @@ const
     Utility_Min: 'Utility_Min';
     Utility_Max: 'Utility_Max';
     Utility_ComponentMask: 'Utility_ComponentMask';
+    Utility_AppendVector: 'Utility_AppendVector';
     );
 
     Vectors: (

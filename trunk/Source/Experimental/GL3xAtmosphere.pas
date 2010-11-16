@@ -18,12 +18,24 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes,
+  SysUtils,
+  Classes,
   // GLScene
-  GLScene, GLCadencer, VectorGeometry, GLState,
-  GLContext, GLStrings, GLColor, GLSLShader,
-  GL3xObjects, GLShaderManager, GLVBOManager, GLRenderContextInfo
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene,
+  GLCadencer,
+  VectorGeometry,
+  GLState,
+  GLContext,
+  GLStrings,
+  GLColor,
+  GLSLShader,
+  GL3xObjects,
+  GLShaderManager,
+  GLVBOManager,
+  GLRenderContextInfo
+{$IFDEF GLS_DELPHI}
+  , VectorTypes
+{$ENDIF};
 
 type
   EGLBAtmosphereException = class(Exception);
@@ -57,6 +69,8 @@ type
     function StoreOpacity: Boolean;
     function StorePlanetRadius: Boolean;
     procedure SetSlices(const Value: Integer);
+    procedure SetLowAtmColor(const AValue: TGLColor);
+    procedure SetHighAtmColor(const AValue: TGLColor);
     procedure EnableGLBlendingMode(StatesCash: TGLStateCache);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -75,8 +89,8 @@ type
       StorePlanetRadius;
 
     //: Use value slightly lower than actual radius, for antialiasing effect.
-    property LowAtmColor: TGLColor read FLowAtmColor;
-    property HighAtmColor: TGLColor read FHighAtmColor;
+    property LowAtmColor: TGLColor read FLowAtmColor write SetLowAtmColor;
+    property HighAtmColor: TGLColor read FHighAtmColor write SetHighAtmColor;
     property BlendingMode: TGL3xAtmosphereBlendingMode read FBlendingMode
       write FBlendingMode default abmOneMinusSrcAlpha;
 
@@ -118,6 +132,9 @@ type
 
 implementation
 
+uses
+  BaseClasses;
+
 const
   EPS = 0.0001;
 
@@ -127,7 +144,7 @@ const
     'invariant attribute vec3 Position;' + #10#13 +
     'uniform mat4 ModelMatrix;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
-    'uniform vec3 eyePosition;' + #10#13 +
+    'uniform vec3 CameraWorldPosition;' + #10#13 +
     'uniform vec3 spherePosition;' + #10#13 +
     'uniform vec3 sunPosition;' + #10#13 +
     'uniform vec3 LowAtmColor;' + #10#13 +
@@ -142,15 +159,15 @@ const
     'bool RayCastSphereIntersect(vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2)' + #10#13
     +
     '{' + #10#13 +
-    '	float proj = dot(rayVector, spherePosition - eyePosition);' + #10#13 +
-    '	vec3 projPoint = rayVector * proj + eyePosition;' + #10#13 +
+    '	float proj = dot(rayVector, spherePosition - CameraWorldPosition);' + #10#13 +
+    '	vec3 projPoint = rayVector * proj + CameraWorldPosition;' + #10#13 +
     ' vec3 range = spherePosition - projPoint;' + #10#13 +
     '	float d2 = sphereRadius * sphereRadius - dot(range, range);' + #10#13 +
     '	if (d2>=0.0)' + #10#13 +
     '	{' + #10#13 +
     '   d2 = sqrt(d2);' + #10#13 +
-    '		i1 = rayVector * (proj-d2) + eyePosition;' + #10#13 +
-    '		i2 = rayVector * (proj+d2) + eyePosition;' + #10#13 +
+    '		i1 = rayVector * (proj-d2) + CameraWorldPosition;' + #10#13 +
+    '		i2 = rayVector * (proj+d2) + CameraWorldPosition;' + #10#13 +
     '		return (true);' + #10#13 +
     '	}' + #10#13 +
     '	return (false);' + #10#13 +
@@ -187,7 +204,7 @@ const
     'vec4 ComputeColor(inout vec3 rayDest)' + #10#13 +
     '{' + #10#13 +
     ' vec3 ai1, ai2, pi1, pi2;' + #10#13 +
-    ' vec3 rayVector = normalize(rayDest - eyePosition);' + #10#13 +
+    ' vec3 rayVector = normalize(rayDest - CameraWorldPosition);' + #10#13 +
     ' if (RayCastSphereIntersect(rayVector, AtmosphereRadius, ai1, ai2))' + #10#13
     +
     ' {' + #10#13 +
@@ -225,7 +242,7 @@ const
     'in vec3 Position;' + #10#13 +
     'uniform mat4 ModelMatrix;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
-    'uniform vec3 eyePosition;' + #10#13 +
+    'uniform vec3 CameraWorldPosition;' + #10#13 +
     'uniform vec3 spherePosition;' + #10#13 +
     'uniform vec3 sunPosition;' + #10#13 +
     'uniform vec3 LowAtmColor;' + #10#13 +
@@ -240,15 +257,15 @@ const
     'bool RayCastSphereIntersect(vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2)' + #10#13
     +
     '{' + #10#13 +
-    '	float proj = dot(rayVector, spherePosition - eyePosition);' + #10#13 +
-    '	vec3 projPoint = rayVector * proj + eyePosition;' + #10#13 +
+    '	float proj = dot(rayVector, spherePosition - CameraWorldPosition);' + #10#13 +
+    '	vec3 projPoint = rayVector * proj + CameraWorldPosition;' + #10#13 +
     ' vec3 range = spherePosition - projPoint;' + #10#13 +
     '	float d2 = sphereRadius * sphereRadius - dot(range, range);' + #10#13 +
     '	if (d2>=0.0)' + #10#13 +
     '	{' + #10#13 +
     '   d2 = sqrt(d2);' + #10#13 +
-    '		i1 = rayVector * (proj-d2) + eyePosition;' + #10#13 +
-    '		i2 = rayVector * (proj+d2) + eyePosition;' + #10#13 +
+    '		i1 = rayVector * (proj-d2) + CameraWorldPosition;' + #10#13 +
+    '		i2 = rayVector * (proj+d2) + CameraWorldPosition;' + #10#13 +
     '		return (true);' + #10#13 +
     '	}' + #10#13 +
     '	return (false);' + #10#13 +
@@ -285,7 +302,7 @@ const
     'vec4 ComputeColor(inout vec3 rayDest)' + #10#13 +
     '{' + #10#13 +
     ' vec3 ai1, ai2, pi1, pi2;' + #10#13 +
-    ' vec3 rayVector = normalize(rayDest - eyePosition);' + #10#13 +
+    ' vec3 rayVector = normalize(rayDest - CameraWorldPosition);' + #10#13 +
     ' if (RayCastSphereIntersect(rayVector, AtmosphereRadius, ai1, ai2))' + #10#13
     +
     ' {' + #10#13 +
@@ -300,9 +317,9 @@ const
     '      return AtmosphereColor(ai1, ai2);' + #10#13 +
     '   }' + #10#13 +
     ' }' + #10#13 +
-    ' return vec4(0.0, 0.0, 0.0, 0.0);' + #10#13 +
+    ' return vec4(0.0);' + #10#13 +
     '}' + #10#13 +
-    'void main(void)' + #10#13 +
+    'void main()' + #10#13 +
     '{' + #10#13 +
     ' vec4 pos = ModelMatrix * vec4(Position, 1.0);' + #10#13 +
     ' lightingVector = normalize(sunPosition - pos.xyz);' + #10#13 +
@@ -315,19 +332,17 @@ const
     'precision highp float;' + #10#13 +
     'in vec4 color;' + #10#13 +
     'out vec4 FragColor;' + #10#13 +
-    'void main(void)' + #10#13 +
+    'void main()' + #10#13 +
     '{' + #10#13 +
     '	FragColor = color;' + #10#13 +
     '}';
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 
 var
-  vAtmosphereProgram: string;
-  vAtmosphereVertexObject: string;
-  vAtmosphereFragmentObject: string;
-  vAtmosphereProgramLinked: Boolean = False;
+  AtmosphereProgram: IGLName;
+  AtmosphereVertexObject: IGLName;
+  AtmosphereFragmentObject: IGLName;
 
-  uniformEyePosition,
     uniformSpherePosition,
     uniformSunPosition,
     uniformInvAtmosphereHeight,
@@ -338,10 +353,11 @@ var
     uniformAtmosphereRadius: TGLSLUniform;
 
 procedure InitAtmosphereShader;
+var
+  vp, fp: AnsiString;
 begin
-  if Length(vAtmosphereProgram) = 0 then
+  if AtmosphereProgram = nil then
   begin
-    uniformEyePosition := TGLSLUniform.RegisterUniform('eyePosition');
     uniformSpherePosition := TGLSLUniform.RegisterUniform('spherePosition');
     uniformSunPosition := TGLSLUniform.RegisterUniform('sunPosition');
     uniformInvAtmosphereHeight := TGLSLUniform.RegisterUniform('invAtmosphereHeight');
@@ -352,32 +368,28 @@ begin
     uniformAtmosphereRadius := TGLSLUniform.RegisterUniform('AtmosphereRadius');
 
     with ShaderManager do
-    begin
+    try
       BeginWork;
-      vAtmosphereProgram := MakeUniqueProgramName('AtmosphereProgram');
-      vAtmosphereVertexObject := MakeUniqueObjectName('AtmosphereVertexObject');
-      vAtmosphereFragmentObject :=
-        MakeUniqueObjectName('AtmosphereFragmentObject');
-      DefineShaderProgram(vAtmosphereProgram);
+      DefineShaderProgram(AtmosphereProgram,
+        [ptVertex, ptFragment], 'AtmosphereProgram');
       if GL.VERSION_3_2 then
       begin
-        DefineShaderObject(vAtmosphereVertexObject, Atmosphere_vp150,
-          [ptVertex]);
-        DefineShaderObject(vAtmosphereFragmentObject, Atmosphere_fp150,
-          [ptFragment]);
+        vp := Atmosphere_vp150;
+        fp := Atmosphere_fp150;
       end
       else
       begin
-        DefineShaderObject(vAtmosphereVertexObject, Atmosphere_vp120,
-          [ptVertex]);
-        DefineShaderObject(vAtmosphereFragmentObject, Atmosphere_fp120,
-          [ptFragment]);
+        vp := Atmosphere_vp120;
+        fp := Atmosphere_fp120;
       end;
-      AttachShaderObjectToProgram(vAtmosphereVertexObject,
-        vAtmosphereProgram);
-      AttachShaderObjectToProgram(vAtmosphereFragmentObject,
-        vAtmosphereProgram);
-      vAtmosphereProgramLinked := LinkShaderProgram(vAtmosphereProgram);
+      DefineShaderObject(AtmosphereVertexObject, vp,
+        [ptVertex], 'AtmosphereVertexObject');
+      DefineShaderObject(AtmosphereFragmentObject, fp,
+        [ptFragment], 'AtmosphereFragmentObject');
+      AttachShaderObjectToProgram(AtmosphereVertexObject, AtmosphereProgram);
+      AttachShaderObjectToProgram(AtmosphereFragmentObject, AtmosphereProgram);
+      LinkShaderProgram(AtmosphereProgram);
+    finally
       EndWork;
     end;
   end;
@@ -419,10 +431,10 @@ begin
     // Render self
     if ARenderSelf then
     begin
-      if Length(vAtmosphereProgram) = 0 then
+      if AtmosphereProgram = nil then
         InitAtmosphereShader;
 
-      if vAtmosphereProgramLinked then
+      if ShaderManager.IsProgramLinked(AtmosphereProgram) then
       begin
         XAxis := VectorSubtract(AbsolutePosition, ARci.CameraPosition);
         NormalizeVector(XAxis);
@@ -442,12 +454,12 @@ begin
 
         with ShaderManager do
         begin
-          UseProgram(vAtmosphereProgram);
+          UseProgram(AtmosphereProgram);
           // All calculations are doing in world space
           UniformMat4f(uniformModelMatrix, M);
           UniformMat4f(uniformViewProjectionMatrix, ARci.PipelineTransformation.ViewProjectionMatrix);
 
-          Uniform3f(uniformEyePosition, AffineVectorMake(ARci.CameraPosition));
+          Uniform3f(uniformCameraWorldPosition, AffineVectorMake(ARci.PipelineTransformation.CameraPosition));
           Uniform3f(uniformSpherePosition, AffineVectorMake(AbsolutePosition));
           Uniform3f(uniformSunPosition, AffineVectorMake(sunPos));
           Uniform1f(uniformInvAtmosphereHeight,
@@ -667,6 +679,16 @@ begin
   StructureChanged;
 end;
 
+procedure TGL3xCustomAtmosphere.SetLowAtmColor(const AValue: TGLColor);
+begin
+  FLowAtmColor.Assign(AValue);
+end;
+
+procedure TGL3xCustomAtmosphere.SetHighAtmColor(const AValue: TGLColor);
+begin
+  FHighAtmColor.Assign(AValue);
+end;
+
 procedure TGL3xCustomAtmosphere.SetOptimalAtmosphere(const ARadius: Single);
 begin
   FAtmosphereRadius := ARadius + 0.25;
@@ -683,6 +705,11 @@ end;
 
 initialization
   RegisterClasses([TGL3xCustomAtmosphere, TGL3xAtmosphere]);
+
+finalization
+  AtmosphereProgram := nil;
+  AtmosphereVertexObject := nil;
+  AtmosphereFragmentObject := nil;
 
 end.
 

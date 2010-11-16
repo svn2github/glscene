@@ -21,11 +21,24 @@ uses
 
 type
 
+  // Texture addressing rules
+  TGLSeparateTextureWrap = (twRepeat, twClampToEdge, twClampToBorder,
+    twMirrorRepeat, twMirrorClampToEdge, twMirrorClampToBorder);
+
+  // Specifies the texture comparison mode for currently bound depth textures.
+  // That is, a texture whose internal format is tfDEPTH_COMPONENT*
+  TGLTextureCompareMode = (tcmNone, tcmCompareRtoTexture);
+
+  // Filtering quality
+  TGLTextureFilteringQuality = (tfIsotropic, tfAnisotropic);
+
   // TGLTextureTarget
   //
   TGLTextureTarget = (ttTexture1D, ttTexture2D, ttTexture3D, ttTexture1DArray,
     ttTexture2DArray, ttTextureRect, ttTextureBuffer, ttTextureCube,
     ttTexture2DMultisample, ttTexture2DMultisampleArray, ttTextureCubeArray);
+
+  TGLTextureSwizzle = (tswNone, tswAlphaToRed, tswLumToRed, tswLumAlphaToRedGreen);
 
   // TGLInternalFormat
   //
@@ -210,41 +223,45 @@ var
   vDefaultTextureFormat: TGLInternalFormat = tfRGBA8;
   vDefaultTextureCompression: TGLInternalCompression = tcNone;
 
-// Give a openGL texture format from GLScene texture format
-function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): Integer;
-// Give a GLScene texture format from openGL texture format
-function OpenGLFormatToInternalFormat(intFormat: Integer): TGLInternalFormat;
-// Give a pixel size in bytes from texture format or data format
+{: Give a openGL texture format from GLScene texture format. }
+function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): TGLEnum;
+{: Give a GLScene texture format from openGL texture format. }
+function OpenGLFormatToInternalFormat(intFormat: TGLEnum): TGLInternalFormat;
+{: Give a pixel size in bytes from texture format or data format. }
 function GetTextureElementSize(texFormat: TGLInternalFormat): Integer; overload;
 function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
   Integer; overload;
-// Give compatible openGL image format and data type
+{: Give compatible openGL image format and data type. }
 procedure FindCompatibleDataFormat(texFormat: TGLInternalFormat; out dFormat:
   GLenum; out dType: GLenum);
-// Give a compressed openGL texture format from GLScene texture format
-// if format is have not compression than return same openGL format
+{: Give a compressed openGL texture format from GLScene texture format
+  if format is have not compression than return same openGL format. }
 function CompressedInternalFormatToOpenGL(texFormat: TGLInternalFormat):
   Integer;
-// True if texture target supported
+{: True if texture target supported. }
 function IsTargetSupported(target: TGLEnum): Boolean; overload;
 function IsTargetSupported(target: TGLTextureTarget): Boolean; overload;
-// True if texture format is supported by hardware or software
+{: True if texture format is supported by hardware or software. }
 function IsFormatSupported(texFormat: TGLInternalFormat): Boolean;
-// True if texture format is float
+{: True if texture format is float. }
 function IsFloatFormat(texFormat: TGLInternalFormat): Boolean; overload;
 function IsFloatFormat(intFormat: TGLEnum): Boolean; overload;
-// True if depth texture
+{: True if depth texture. }
 function IsDepthFormat(texFormat: TGLInternalFormat): boolean; overload;
 function IsDepthFormat(intFormat: TGLEnum): Boolean; overload;
-// True if texture compressed
+{: True if texture compressed. }
 function IsCompressedFormat(texFormat: TGLInternalFormat): Boolean; overload;
 function IsCompressedFormat(intFormat: TGLEnum): Boolean; overload;
-// Give generic compressed OpenGL texture format
+{: Give generic compressed OpenGL texture format. }
 function GetGenericCompressedFormat(const texFormat: TGLInternalFormat;
   const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
-// Give uncompressed texture format and OpenGL color format
+{: Give uncompressed texture format and OpenGL color format. }
 function GetUncompressedFormat(const texFormat: TGLInternalFormat;
   out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
+{: Replace deprecated format to it newer.
+   Return swizzling method if newer format not supported.}
+function GetUniformat(var AInternalFormat: TGLInternalFormat;
+  var AColorFormat: TGLEnum): TGLTextureSwizzle;
 
 function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): TGLEnum;
 function EncodeGLTextureTarget(const TextureTarget: TGLEnum): TGLTextureTarget;
@@ -254,11 +271,12 @@ function IsTargetSupportMipmap(const TextureTarget: TGLEnum): Boolean; overload;
 implementation
 
 uses
-  GLContext, GLStrings;
+  GLContext,
+  GLStrings;
 
 const
   //: InternalFormat, ColorFormat, DataType
-  cTextureFormatToOpenGL: array[low(TGLInternalFormat)..high(TGLInternalFormat), 0..2] of Integer
+  cTextureFormatToOpenGL: array[low(TGLInternalFormat)..high(TGLInternalFormat), 0..2] of TGLEnum
     = (
     (GL_ALPHA4, GL_ALPHA, GL_UNSIGNED_BYTE),
     (GL_ALPHA8, GL_ALPHA, GL_UNSIGNED_BYTE),
@@ -296,13 +314,13 @@ const
     (GL_RGBA12, GL_RGBA, GL_UNSIGNED_BYTE),
     (GL_RGBA16, GL_RGBA, GL_UNSIGNED_SHORT),
     (GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-      GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
+    GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
     (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
-      GL_COMPRESSED_RGBA_S3TC_DXT1_EXT),
+    GL_COMPRESSED_RGBA_S3TC_DXT1_EXT),
     (GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-      GL_COMPRESSED_RGBA_S3TC_DXT3_EXT),
+    GL_COMPRESSED_RGBA_S3TC_DXT3_EXT),
     (GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
-      GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
+    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT),
     (GL_SIGNED_LUMINANCE8_NV, GL_LUMINANCE, GL_BYTE),
     (GL_SIGNED_LUMINANCE8_ALPHA8_NV, GL_LUMINANCE_ALPHA, GL_SHORT),
     (GL_SIGNED_RGB8_NV, GL_RGB, GL_BYTE),
@@ -345,32 +363,32 @@ const
     (GL_SLUMINANCE8, GL_LUMINANCE, GL_UNSIGNED_BYTE),
     (GL_SLUMINANCE8_ALPHA8, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE),
     (GL_COMPRESSED_SRGB_S3TC_DXT1_EXT, GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
-      GL_COMPRESSED_SRGB_S3TC_DXT1_EXT),
+    GL_COMPRESSED_SRGB_S3TC_DXT1_EXT),
     (GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT),
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT),
     (GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT),
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT),
     (GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT),
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT),
     (GL_RGB9_E5, GL_RGBA, GL_FLOAT),
     (GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT),
     (GL_COMPRESSED_LUMINANCE_LATC1_EXT, GL_COMPRESSED_LUMINANCE_LATC1_EXT,
-      GL_COMPRESSED_LUMINANCE_LATC1_EXT),
+    GL_COMPRESSED_LUMINANCE_LATC1_EXT),
     (GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT,
-      GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT,
-      GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT),
+    GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT,
+    GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT),
     (GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT,
-      GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT,
-      GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT),
+    GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT,
+    GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT),
     (GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT,
-      GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT,
-      GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT),
+    GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT,
+    GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT),
     (GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI,
-      GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI,
-      GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI),
+    GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI,
+    GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI),
     (GL_RGBA32UI, GL_RGBA_INTEGER, GL_UNSIGNED_INT),
     (GL_RGB32UI, GL_RGB_INTEGER, GL_UNSIGNED_INT),
     (GL_ALPHA32UI_EXT, GL_ALPHA_INTEGER, GL_UNSIGNED_INT),
@@ -429,10 +447,10 @@ const
     (GL_R32F, GL_LUMINANCE, GL_FLOAT),
     (GL_COMPRESSED_RED_RGTC1, GL_COMPRESSED_RED_RGTC1, GL_COMPRESSED_RED_RGTC1),
     (GL_COMPRESSED_SIGNED_RED_RGTC1, GL_COMPRESSED_SIGNED_RED_RGTC1,
-      GL_COMPRESSED_SIGNED_RED_RGTC1),
+    GL_COMPRESSED_SIGNED_RED_RGTC1),
     (GL_COMPRESSED_RG_RGTC2, GL_COMPRESSED_RG_RGTC2, GL_COMPRESSED_RG_RGTC2),
     (GL_COMPRESSED_SIGNED_RG_RGTC2, GL_COMPRESSED_SIGNED_RG_RGTC2,
-      GL_COMPRESSED_SIGNED_RG_RGTC2),
+    GL_COMPRESSED_SIGNED_RG_RGTC2),
     (GL_R8_SNORM, GL_R, GL_BYTE),
     (GL_RG8_SNORM, GL_RG, GL_BYTE),
     (GL_RGB8_SNORM, GL_RGB, GL_BYTE),
@@ -443,12 +461,175 @@ const
     (GL_RGBA16_SNORM, GL_RGBA, GL_SHORT)
     );
 
-function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): Integer;
+  cTextureFormatToOpenGLForward: array[low(TGLInternalFormat)..high(TGLInternalFormat)] of TGLEnum
+    = (
+    GL_R8,
+    GL_R8,
+    GL_R16,
+    GL_R16,
+    GL_DEPTH_COMPONENT16,
+    GL_DEPTH_COMPONENT24,
+    GL_DEPTH_COMPONENT32,
+    GL_R8,
+    GL_R8,
+    GL_R16,
+    GL_R16,
+    GL_RG8,
+    GL_RG8,
+    GL_RG8,
+    GL_RG16,
+    GL_RG16,
+    GL_RG16,
+    GL_R8,
+    GL_R8,
+    GL_R16,
+    GL_R16,
+    GL_R3_G3_B2,
+    GL_RGB4,
+    GL_RGB5,
+    GL_RGB8,
+    GL_RGB10,
+    GL_RGB12,
+    GL_RGB16,
+    GL_RGBA2,
+    GL_RGBA4,
+    GL_RGB5_A1,
+    GL_RGBA8,
+    GL_RGB10_A2,
+    GL_RGBA12,
+    GL_RGBA16,
+    GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+    GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+    GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    GL_R8_SNORM, // not tested
+    GL_RG8_SNORM, // not tested
+    GL_RGB8_SNORM,
+    GL_RGBA8_SNORM,
+    GL_SIGNED_RGB8_UNSIGNED_ALPHA8_NV, // deprecated, unreplaplaceble
+    GL_R8_SNORM, // not tested
+    GL_R8_SNORM, // not tested
+    GL_RG16, // not tested
+    GL_RG16_SNORM, // not tested
+    GL_DSDT8_NV, // not tested
+    GL_DSDT8_MAG8_NV, // not tested
+    GL_DSDT8_MAG8_INTENSITY8_NV, // deprecated, unreplaplaceble
+    GL_HILO8_NV, // not tested
+    GL_RG8_SNORM, // not tested
+    GL_FLOAT_R16_NV,
+    GL_FLOAT_R32_NV,
+    GL_FLOAT_RG16_NV,
+    GL_FLOAT_RGB16_NV,
+    GL_FLOAT_RGBA16_NV,
+    GL_FLOAT_RG32_NV,
+    GL_FLOAT_RGB32_NV,
+    GL_FLOAT_RGBA32_NV,
+    GL_RGBA_FLOAT32_ATI,
+    GL_RGB_FLOAT32_ATI,
+    GL_R32F,
+    GL_R32F,
+    GL_R32F,
+    GL_RG32F,
+    GL_RGBA_FLOAT16_ATI,
+    GL_RGB_FLOAT16_ATI,
+    GL_R16F,
+    GL_R16F,
+    GL_R16F,
+    GL_RG16F,
+    GL_DEPTH24_STENCIL8,
+    GL_DEPTH_COMPONENT32F,
+    GL_DEPTH32F_STENCIL8,
+    GL_SRGB8,
+    GL_SRGB8_ALPHA8,
+    GL_R8_SNORM,
+    GL_RG8_SNORM,
+    GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
+    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
+    GL_RGB9_E5,
+    GL_R11F_G11F_B10F,
+    GL_COMPRESSED_RED_RGTC1,
+    GL_COMPRESSED_SIGNED_RED_RGTC1,
+    GL_COMPRESSED_RG_RGTC2,
+    GL_COMPRESSED_SIGNED_RG_RGTC2,
+    GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI, // not tested
+    GL_RGBA32UI,
+    GL_RGB32UI,
+    GL_R32UI,
+    GL_R32UI,
+    GL_R32UI,
+    GL_RG32UI,
+    GL_RGBA16UI,
+    GL_RGB16UI,
+    GL_R16UI,
+    GL_R16UI,
+    GL_R16UI,
+    GL_RG16UI,
+    GL_RGBA8UI,
+    GL_RGB8UI,
+    GL_R8UI,
+    GL_R8UI,
+    GL_R8UI,
+    GL_RG8UI,
+    GL_RGBA32I,
+    GL_RGB32I,
+    GL_R32I,
+    GL_R32I,
+    GL_R32I,
+    GL_RG32I,
+    GL_RGBA16I,
+    GL_RGB16I,
+    GL_R16I,
+    GL_R16I,
+    GL_R16I,
+    GL_RG16I,
+    GL_RGBA8I,
+    GL_RGB8I,
+    GL_R8I,
+    GL_R8I,
+    GL_R8I,
+    GL_RG8I,
+    GL_RG32UI,
+    GL_R32UI,
+    GL_RG16UI,
+    GL_R16UI,
+    GL_RG8UI,
+    GL_R8UI,
+    GL_RG32I,
+    GL_R32I,
+    GL_RG16I,
+    GL_R16I,
+    GL_RG8I,
+    GL_R8I,
+    GL_RG8,
+    GL_R8,
+    GL_RG16,
+    GL_R16,
+    GL_RG16F,
+    GL_R16F,
+    GL_RG32F,
+    GL_R32F,
+    GL_COMPRESSED_RED_RGTC1,
+    GL_COMPRESSED_SIGNED_RED_RGTC1,
+    GL_COMPRESSED_RG_RGTC2,
+    GL_COMPRESSED_SIGNED_RG_RGTC2,
+    GL_R8_SNORM,
+    GL_RG8_SNORM,
+    GL_RGB8_SNORM,
+    GL_RGBA8_SNORM,
+    GL_R16_SNORM,
+    GL_RG16_SNORM,
+    GL_RGB16_SNORM,
+    GL_RGBA16_SNORM
+    );
+
+function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): TGLEnum;
 begin
   Result := cTextureFormatToOpenGL[texFormat, 0];
 end;
 
-function OpenGLFormatToInternalFormat(intFormat: Integer): TGLInternalFormat;
+function OpenGLFormatToInternalFormat(intFormat: TGLEnum): TGLInternalFormat;
 var
   i: TGLInternalFormat;
 begin
@@ -556,7 +737,8 @@ begin
     tfLUMINANCE8: Result := GL_COMPRESSED_LUMINANCE;
     tfLUMINANCE8_ALPHA8: Result := GL_COMPRESSED_LUMINANCE_ALPHA;
     tfINTENSITY8: Result := GL_COMPRESSED_INTENSITY;
-    else Assert(false);
+  else
+    Assert(false);
   end;
 end;
 
@@ -589,7 +771,7 @@ begin
     GL_TEXTURE_1D_ARRAY: Result := GL.EXT_texture_array;
     GL_TEXTURE_2D_ARRAY: Result := GL.EXT_texture_array;
     GL_TEXTURE_CUBE_MAP_ARRAY: Result := GL.ARB_texture_cube_map_array;
-    GL_TEXTURE_BUFFER : Result := GL.ARB_texture_buffer_object;
+    GL_TEXTURE_BUFFER: Result := GL.ARB_texture_buffer_object;
     GL_TEXTURE_2D_MULTISAMPLE,
       GL_TEXTURE_2D_MULTISAMPLE_ARRAY: Result := GL.ARB_texture_multisample;
   else
@@ -611,8 +793,7 @@ begin
     EXIT;
   end;
 
-  if ((texFormat >= tfDEPTH_COMPONENT16) and (texFormat <= tfDEPTH_COMPONENT32))
-    then
+  if ((texFormat >= tfDEPTH_COMPONENT16) and (texFormat <= tfDEPTH_COMPONENT32)) then
   begin
     Result := GL.ARB_depth_texture;
     EXIT;
@@ -657,8 +838,7 @@ begin
     EXIT;
   end;
 
-  if ((texFormat = tfDEPTH_COMPONENT32F) or (texFormat = tfDEPTH32F_STENCIL8))
-    then
+  if ((texFormat = tfDEPTH_COMPONENT32F) or (texFormat = tfDEPTH32F_STENCIL8)) then
   begin
     Result := GL.NV_depth_buffer_float;
     EXIT;
@@ -969,7 +1149,7 @@ begin
         internalFormat := tfRG8;
       end;
   end;
-  Result := colorFormat<>0;
+  Result := colorFormat <> 0;
 end;
 
 function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
@@ -1029,4 +1209,46 @@ begin
     and (TextureTarget <> GL_TEXTURE_2D_MULTISAMPLE_ARRAY);
 end;
 
+function GetUniformat(var AInternalFormat: TGLInternalFormat;
+  var AColorFormat: TGLEnum): TGLTextureSwizzle;
+var
+  lFmt: TGLEnum;
+begin
+  Result := tswNone;
+  lFmt := cTextureFormatToOpenGLForward[AInternalFormat];
+  if lFmt <> cTextureFormatToOpenGL[AInternalFormat][0] then
+  begin
+    AInternalFormat := OpenGLFormatToInternalFormat(lFmt);
+    if not GL.VERSION_3_0 then
+      case AColorFormat of
+        GL_ALPHA,
+        GL_INTENSITY,
+        GL_ALPHA_INTEGER_EXT:
+
+          Result := tswAlphaToRed;
+
+        GL_LUMINANCE,
+        GL_LUMINANCE_INTEGER_EXT,
+        GL_COMPRESSED_LUMINANCE_LATC1_EXT,
+        GL_COMPRESSED_SIGNED_LUMINANCE_LATC1_EXT:
+
+          Result := tswLumToRed;
+
+        GL_LUMINANCE_ALPHA,
+        GL_LUMINANCE_ALPHA_INTEGER_EXT,
+        GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT,
+        GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT:
+
+          Result := tswLumAlphaToRedGreen;
+      end;
+    AColorFormat := cTextureFormatToOpenGL[AInternalFormat][1];
+  end;
+end;
+
+procedure ReplaceDeprecatedColorFormat(var AExternalColorFormat: TGLEnum);
+begin
+
+end;
+
 end.
+

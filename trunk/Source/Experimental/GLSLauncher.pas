@@ -1,3 +1,15 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : GLSLauncher<p>
+
+  <b>History : </b><font size=-1><ul>
+  <li>16/10/10 - Yar - Creation
+  </ul></font>
+}
+
+// TODO: Replace JPEG image to TGLImage and store it in outer file
+
 unit GLSLauncher;
 
 interface
@@ -44,14 +56,16 @@ type
   end;
 
   LaunchManager = class(TGLSAbstractManager)
-  public
-    { Public Declarations }
-    class procedure NotifyContextCreated; override;
-    class function FillResourceList(AList: TStringList): Boolean; override;
-    class function FirstOne: Boolean; override;
+  protected
     // Design time notifications
     class procedure NotifyProjectOpened; override;
     class procedure NotifyProjectClosed; override;
+    class procedure NotifyContextCreated; override;
+    class procedure NotifyBeforeCompile; override;
+    class function FirstOne: Boolean; override;
+  public
+    { Public Declarations }
+    class function FillResourceList(AList: TStringList): Boolean; override;
   end;
 
 implementation
@@ -191,6 +205,10 @@ end;
 class procedure LaunchManager.NotifyProjectClosed;
 begin
   FreeAndNil(SplashImage);
+end;
+
+class procedure LaunchManager.NotifyBeforeCompile;
+begin
 end;
 
 // ------------------

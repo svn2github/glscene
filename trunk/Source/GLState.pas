@@ -6,7 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility 
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
       <li>27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
       <li>09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
@@ -54,10 +54,10 @@ interface
 
 uses
   Classes,
+  GLCrossPlatform,
   VectorTypes,
   VectorGeometry,
   SysUtils,
-  GLCrossPlatform,
   OpenGLTokens,
   GLTextureFormat,
   GLSLog;
@@ -140,18 +140,19 @@ type
   THintType = (hintDontCare, hintFastest, hintNicest);
 
   TLightSourceState = packed record
-    Position: TVector;
-    Ambient: TVector;
-    Diffuse: TVector;
-    Specular: TVector;
-    SpotDirection: TVector;
-    SpotCutoff: Single;
-    SpotExponent: Single;
-    ConstantAtten: Single;
-    LinearAtten: Single;
-    QuadAtten: Single;
+    Position: TVector;  // offset 0
+    Ambient: TVector;  // offset 16
+    Diffuse: TVector;  // offset 32
+    Specular: TVector; // offset 48
+    SpotDirection: TAffineVector; // offset 64
+    SpotCutoff: Single; // offset 76
+    SpotExponent: Single; // offset 80
+    ConstantAtten: Single; // offset 84
+    LinearAtten: Single;  // offset 88
+    QuadAtten: Single;  // offset 92
+    SpotCosCutoff: Single; // offset 96
+    Padding: TAffineVector;
   end;
-
 
   TVAOStates = record
     FArrayBufferBinding: TGLuint;
@@ -178,8 +179,8 @@ type
     // Lighting state
     FMaxLights: GLuint;
     FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
-    FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of GLInt;
-    FLightCount: Integer;
+    FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of TGLint;
+    FLightNumber: Integer;
     FLightStates: array[0..MAX_HARDWARE_LIGHT - 1] of TLightSourceState;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
@@ -505,8 +506,8 @@ type
     procedure SetLightEnabling(I: Integer; Value: Boolean);
     function GetLightPosition(I: Integer): TVector;
     procedure SetLightPosition(I: Integer; const Value: TVector);
-    function GetLightSpotDirection(I: Integer): TVector;
-    procedure SetLightSpotDirection(I: Integer; const Value: TVector);
+    function GetLightSpotDirection(I: Integer): TAffineVector;
+    procedure SetLightSpotDirection(I: Integer; const Value: TAffineVector);
     function GetLightAmbient(I: Integer): TVector;
     procedure SetLightAmbient(I: Integer; const Value: TVector);
     function GetLightDiffuse(I: Integer): TVector;
@@ -537,15 +538,15 @@ type
     procedure PerformEnable(const aState: TGLState);
     procedure PerformDisable(const aState: TGLState);
 
-    procedure SetGLState(const aState : TGLState);  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure UnSetGLState(const aState : TGLState);  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetGLPolygonMode;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetGLMaterialColors;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetGLTexture(const TextureUnit: Integer);  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetGLCurrentTexture;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetGLFrontFace;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure SetGLFrontFaceCW;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure ResetAll;  {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure SetGLState(const aState : TGLState); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure UnSetGLState(const aState : TGLState); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetGLPolygonMode; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetGLMaterialColors; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetGLTexture(const TextureUnit: Integer); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetGLCurrentTexture; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetGLFrontFace; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure SetGLFrontFaceCW; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure ResetAll; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
 
     {: Adjusts material colors for a face. }
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
@@ -562,7 +563,7 @@ type
     SetLightEnabling;
     property LightPosition[Index: Integer]: TVector read GetLightPosition write
     SetLightPosition;
-    property LightSpotDirection[Index: Integer]: TVector read GetLightSpotDirection write
+    property LightSpotDirection[Index: Integer]: TAffineVector read GetLightSpotDirection write
     SetLightSpotDirection;
     property LightAmbient[Index: Integer]: TVector read GetLightAmbient write
     SetLightAmbient;
@@ -582,7 +583,7 @@ type
     SetQuadAtten;
     function GetLightIndicesAsAddress: PGLInt;
     function GetLightStateAsAddress: PGLInt;
-    property LightCount: Integer read FLightCount;
+    property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TNotifyEvent read FOnLightsChanged write FOnLightsChanged;
 
     {: Blending states }
@@ -1205,7 +1206,7 @@ begin
   // Lighting
   FFFPLight := True;
   FMaxLights := 0;
-  FLightCount := 0;
+  FLightNumber := 0;
   for I := High(FLightEnabling) downto 0 do
   begin
     FLightEnabling[I] := False;
@@ -1214,10 +1215,11 @@ begin
     FLightStates[I].Ambient := clrBlack;
     FLightStates[I].Diffuse := clrBlack;
     FLightStates[I].Specular := clrBlack;
-    FLightStates[I].SpotDirection := VectorMake(0.0, 0.0, -1.0, 0.0);
-    FLightStates[I].SpotCutoff := 180;
+    FLightStates[I].SpotDirection := AffineVectorMake(0.0, 0.0, -1.0);
+    FLightStates[I].SpotCutoff := 180.0;
+    FlightStates[I].SpotCosCutoff := -1;
     FLightStates[I].SpotExponent := 0;
-    FLightStates[I].ConstantAtten := 1;
+    FLightStates[I].ConstantAtten := 1.0;
     FLightStates[I].LinearAtten := 0;
     FLightStates[I].QuadAtten := 0;
   end;
@@ -3142,7 +3144,7 @@ begin
       FLightIndices[K] := J;
       Inc(K);
     end;
-    FLightCount := K;
+    FLightNumber := K;
 
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
@@ -3174,12 +3176,12 @@ begin
   end;
 end;
 
-function TGLStateCache.GetLightSpotDirection(I: Integer): TVector;
+function TGLStateCache.GetLightSpotDirection(I: Integer): TAffineVector;
 begin
   Result := FLightStates[I].SpotDirection;
 end;
 
-procedure TGLStateCache.SetLightSpotDirection(I: Integer; const Value: TVector);
+procedure TGLStateCache.SetLightSpotDirection(I: Integer; const Value: TAffineVector);
 begin
   if not VectorEquals(Value, FLightStates[I].SpotDirection) then
   begin
@@ -3267,7 +3269,10 @@ begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
+    begin
       FLightStates[I].SpotCutoff := Value;
+      FLightStates[I].SpotCosCutoff := cos(DegToRad(Value));
+    end;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);

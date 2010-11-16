@@ -1267,7 +1267,8 @@ type
   private
     FDC: HDC;
     FWindow: TForm;
-    FNoTaskDuringCycle: Boolean;
+    FLastTaskStartTime: Double;
+    FReported: Boolean;
   protected
     procedure Execute; override;
     procedure DoCreateServiceContext;
@@ -1331,68 +1332,6 @@ function GetServiceWindow: TForm;
 begin
   Result := vServiceWindow;
 end;
-
-procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
-{$IFDEF GLS_MULTITHREAD}
-var
-  TaskRec: TServiceContextTask;
-  rEvent: TFinishTaskEvent;
-begin
-  rEvent := nil;
-  if Assigned(GLContextManager.ServiceContext) and Assigned(ATask) then
-  begin
-    CheckSynchronize;
-    with GLContextManager.FThreadTask.LockList do
-      try
-        TaskRec.Task := ATask;
-        if FinishEvent = nil then
-        begin // Synchronous call
-          rEvent := TFinishTaskEvent.Create;
-          TaskRec.Event := rEvent;
-        end
-        else  // Asynchronous call
-          TaskRec.Event := FinishEvent;
-        Add(TaskRec);
-        TServiceContextThread(GLContextManager.FThread).FNoTaskDuringCycle := False;
-      finally
-        GLContextManager.FThreadTask.UnlockList;
-      end;
-    GLContextManager.ServiceStarter.SetEvent;
-  end;
-  // Wait task finishing
-  if Assigned(rEvent) then
-  begin
-    rEvent.WaitFor(INFINITE);
-    rEvent.Destroy;
-    CheckSynchronize;
-  end;
-end;
-{$ELSE}
-var
-  taskContext: TGLContext;
-begin
-  if vCurrentGLContext = nil then
-  begin
-    with GLContextManager.FList.LockList do
-    try
-      taskContext := First;
-    finally
-      GLContextManager.FList.UnlockList;
-    end;
-    if not Assigned(taskContext) then
-      GLSLogger.LogError(cNoActiveRC);
-    taskContext.Activate;
-  end
-  else
-    taskContext := nil;
-
-  // Direct execute task
-  ATask;
-
-  if Assigned(taskContext) then
-    taskContext.Deactivate;
-end;
-{$ENDIF GLS_MULTITHREAD}
 
 // RegisterGLContextClass
 //
@@ -1933,7 +1872,7 @@ begin
     GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
     exit;
   end;
-  // if handle aready allocated in current context or shared contexts
+  // if handle aready allocated in current context
   if GetHandle <> 0 then
     exit;
 
@@ -3745,10 +3684,12 @@ end;
 function TGLShaderHandle.CompileShader: Boolean;
 var
   compiled: Integer;
+  glH: TGLuint;
 begin
-  GL.CompileShader(SafeGetHandle);
+  glH := SafeGetHandle;
+  GL.CompileShader(glH);
   compiled := 0;
-  GL.GetObjectParameteriv(SafeGetHandle, GL_OBJECT_COMPILE_STATUS_ARB, @compiled);
+  GL.GetShaderiv(glH, GL_COMPILE_STATUS, @compiled);
   Result := (compiled <> 0);
 end;
 
@@ -3921,12 +3862,15 @@ var
   count: GLSizei;
   buffer: array[0..255] of TGLuint;
 begin
-  glH := SafeGetHandle;
-  GL.ClearError;
-  GL.GetAttachedShaders(glH, Length(buffer), @count, @buffer[0]);
-  if GL.GetError = GL_NO_ERROR then
-    for I := count - 1 downto 0 do
+  glH := GetHandle;
+  if glH > 0 then
+  begin
+    GL.GetAttachedShaders(glH, Length(buffer), @count, @buffer[0]);
+    count := MinInteger(count, Length(buffer));
+    for I := 0 to count - 1 do
       GL.DetachShader(glH, buffer[I]);
+    NotifyChangesOfData;
+  end;
 end;
 
 // BindAttribLocation
@@ -3952,14 +3896,14 @@ end;
 
 function TGLProgramHandle.LinkProgram: Boolean;
 var
-  linked: Integer;
-  h: TGLuint;
+  status: Integer;
+  glH: TGLuint;
 begin
-  h := SafeGetHandle;
-  GL.LinkProgram(h);
-  linked := 0;
-  GL.GetObjectParameteriv(h, GL_OBJECT_LINK_STATUS_ARB, @linked);
-  Result := (linked <> 0);
+  glH := SafeGetHandle;
+  GL.LinkProgram(glH);
+  status := 0;
+  GL.GetProgramiv(glH, GL_LINK_STATUS, @status);
+  Result := (status <> 0);
 end;
 
 // ValidateProgram
@@ -3973,7 +3917,7 @@ begin
   h := SafeGetHandle;
   GL.ValidateProgram(h);
   validated := 0;
-  GL.GetObjectParameteriv(h, GL_OBJECT_VALIDATE_STATUS_ARB, @validated);
+  GL.GetProgramiv(h, GL_VALIDATE_STATUS, @validated);
   Result := (validated <> 0);
 end;
 
@@ -4415,16 +4359,47 @@ begin
 {$ENDIF GLS_MULTITHREAD}
 end;
 
-procedure TGLContextManager.QueueTaskDepleted;
-begin
 {$IFDEF GLS_MULTITHREAD}
+procedure TGLContextManager.QueueTaskDepleted;
+var
+  TaskRec: TServiceContextTask;
+  I: Integer;
+  nowTime: Double;
+begin
+  with FThreadTask.LockList do
+    try
+      for I := 0 to Count - 1 do
+      begin
+        TaskRec := Items[I];
+        if Assigned(TaskRec.Task) then
+        begin
+          FThreadTask.UnlockList;
+          // Task queue not empty
+          FServiceStarter.SetEvent;
+          exit;
+        end;
+      end;
+    finally
+      FThreadTask.UnlockList;
+    end;
+
   FServiceStarter.ResetEvent;
   FThreadTask.Clear;
-  if not TServiceContextThread(FThread).FNoTaskDuringCycle then
-    GLSLogger.LogDebug('Service context queue task depleted');
-  TServiceContextThread(FThread).FNoTaskDuringCycle := True;
-{$ENDIF GLS_MULTITHREAD}
+  nowTime := GLSTime;
+  with TServiceContextThread(FThread) do
+  if (nowTime - FLastTaskStartTime > 30000)
+    and not FReported then
+  begin
+    FReported := True;
+    GLSLogger.LogInfo('Service context queue task depleted');
+  end;
 end;
+{$ELSE}
+procedure TGLContextManager.QueueTaskDepleted;
+begin
+end;
+{$ENDIF GLS_MULTITHREAD}
+
 
 // Lock
 //
@@ -4622,7 +4597,7 @@ end;
 
 constructor TFinishTaskEvent.Create;
 begin
-  inherited Create(nil, False, False, '');
+  inherited Create(nil, True, False, '');
 end;
 
 {$IFDEF GLS_MULTITHREAD}
@@ -4748,11 +4723,10 @@ begin
             if Assigned(TaskRec.Event) then
               TaskRec.Event.SetEvent;
           end;
-
          end
         else
           Synchronize(GLContextManager.QueueTaskDepleted);
-        ServiceStarter.WaitFor(180000);
+        ServiceStarter.WaitFor(30000);
       end;
     finally
       ServiceContext.Destroy;
@@ -4763,6 +4737,85 @@ begin
 end;
 
 {$ENDREGION}
+{$ENDIF GLS_MULTITHREAD}
+
+procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
+{$IFDEF GLS_MULTITHREAD}
+var
+  TaskRec: TServiceContextTask;
+  rEvent: TFinishTaskEvent;
+begin
+  if vMainThread then
+  begin
+    rEvent := nil;
+    if Assigned(GLContextManager.ServiceContext) and Assigned(ATask) then
+    begin
+      CheckSynchronize;
+      with GLContextManager.FThreadTask.LockList do
+        try
+          TaskRec.Task := ATask;
+          if FinishEvent = nil then
+          begin // Synchronous call
+            rEvent := TFinishTaskEvent.Create;
+            TaskRec.Event := rEvent;
+          end
+          else  // Asynchronous call
+            TaskRec.Event := FinishEvent;
+          Add(TaskRec);
+          with TServiceContextThread(GLContextManager.FThread) do
+          begin
+            FLastTaskStartTime := GLSTime;
+            FReported := False;
+          end;
+        finally
+          GLContextManager.FThreadTask.UnlockList;
+        end;
+      GLContextManager.ServiceStarter.SetEvent;
+    end;
+    // Wait task finishing
+    if Assigned(rEvent) then
+    begin
+      rEvent.WaitFor(INFINITE);
+      rEvent.Destroy;
+      CheckSynchronize;
+    end;
+  end
+  else
+  begin // Direct task execution in service thread
+    try
+      ATask;
+    except
+      GLSLogger.LogError('Service thread task raised exception');
+    end;
+    if Assigned(FinishEvent) then
+      FinishEvent.SetEvent;
+  end;
+end;
+{$ELSE}
+var
+  taskContext: TGLContext;
+begin
+  if vCurrentGLContext = nil then
+  begin
+    with GLContextManager.FList.LockList do
+    try
+      taskContext := First;
+    finally
+      GLContextManager.FList.UnlockList;
+    end;
+    if not Assigned(taskContext) then
+      GLSLogger.LogError(cNoActiveRC);
+    taskContext.Activate;
+  end
+  else
+    taskContext := nil;
+
+  // Direct execute task
+  ATask;
+
+  if Assigned(taskContext) then
+    taskContext.Deactivate;
+end;
 {$ENDIF GLS_MULTITHREAD}
 
 // ------------------------------------------------------------------

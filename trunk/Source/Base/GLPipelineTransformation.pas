@@ -4,6 +4,7 @@
 {: GLPipelineTransformation<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>16/11/10 - Yar - Added NormalModelMatrix
     <li>23/08/10 - Yar - Creation
  </ul></font>
 }
@@ -27,6 +28,7 @@ type
     trsModelViewChanged,
     trsInvModelViewChanged,
     trsInvModelChanged,
+    trsNormalModelChanged,
     trsViewProjChanged,
     trsFrustum
   );
@@ -43,6 +45,7 @@ type
     FFFPTransformation: Boolean;
 
     FInvModelMatrix: TMatrix;
+    FNormalModelMatrix: TAffineMatrix;
     FModelViewMatrix: TMatrix;
     FInvModelViewMatrix: TMatrix;
     FViewProjectionMatrix: TMatrix;
@@ -56,6 +59,7 @@ type
     function GetModelViewMatrix: TMatrix;
     function GetInvModelViewMatrix: TMatrix;
     function GetInvModelMatrix: TMatrix;
+    function GetNormalModelMatrix: TAffineMatrix;
     function GetViewProjectionMatrix: TMatrix;
     function GetFrustum: TFrustum;
 
@@ -79,6 +83,7 @@ type
 
     property InvModelMatrix: TMatrix read GetInvModelMatrix;
     property ModelViewMatrix: TMatrix read GetModelViewMatrix;
+    property NormalModelMatrix: TAffineMatrix read GetNormalModelMatrix;
     property InvModelViewMatrix: TMatrix read GetInvModelViewMatrix;
     property ViewProjectionMatrix: TMatrix read GetViewProjectionMatrix;
     property Frustum: TFrustum read GetFrustum;
@@ -94,7 +99,7 @@ uses
   GLContext;
 
 const
-  cAllStatesChanged = [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsViewProjChanged, trsFrustum];
+  cAllStatesChanged = [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsViewProjChanged, trsNormalModelChanged, trsFrustum];
 
 constructor TGLPipelineTransformation.Create;
 begin
@@ -116,12 +121,15 @@ begin
 end;
 
 procedure TGLPipelineTransformation.Push;
+var
+  prevPos: Integer;
 begin
   Assert(FStackPos <= MAX_MATRIX_STACK_DEPTH);
+  prevPos := FStackPos;
   Inc(FStackPos);
-  FModelMatrix[FStackPos] := FModelMatrix[FStackPos-1];
-  FViewMatrix[FStackPos] := FViewMatrix[FStackPos-1];
-  FProjectionMatrix[FStackPos] := FProjectionMatrix[FStackPos-1];
+  FModelMatrix[FStackPos] := FModelMatrix[prevPos];
+  FViewMatrix[FStackPos] := FViewMatrix[prevPos];
+  FProjectionMatrix[FStackPos] := FProjectionMatrix[prevPos];
 end;
 
 procedure TGLPipelineTransformation.Pop;
@@ -183,7 +191,7 @@ end;
 procedure TGLPipelineTransformation.SetModelMatrix(const AMatrix: TMatrix);
 begin
   FModelMatrix[FStackPos] := AMatrix;
-  FStates := FStates + [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged];
+  FStates := FStates + [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsNormalModelChanged];
   if FFPTransformation then
     LoadModelViewMatrix;
 end;
@@ -233,6 +241,20 @@ begin
     Exclude(FStates, trsInvModelChanged);
   end;
   Result := FInvModelMatrix;
+end;
+
+function TGLPipelineTransformation.GetNormalModelMatrix: TAffineMatrix;
+var
+  M: TMatrix;
+begin
+  if trsInvModelChanged in FStates then
+  begin
+    M := FModelMatrix[FStackPos];
+    NormalizeMatrix(M);
+    SetMatrix(FNormalModelMatrix, M);
+    Exclude(FStates, trsNormalModelChanged);
+  end;
+  Result := FNormalModelMatrix;
 end;
 
 function TGLPipelineTransformation.GetViewProjectionMatrix: TMatrix;

@@ -39,15 +39,15 @@ object NodePaletteForm: TNodePaletteForm
     ParentCtl3D = False
     TabOrder = 0
     object UtilityPanel: TCategoryPanel
-      Top = 933
-      Height = 90
+      Top = 974
+      Height = 135
       Caption = 'Utility'
       TabOrder = 0
       object UtilityGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 64
+        Height = 109
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
@@ -57,6 +57,12 @@ object NodePaletteForm: TNodePaletteForm
           end
           item
             Caption = 'ComponentMask'
+          end
+          item
+            Caption = 'Clamp'
+          end
+          item
+            Caption = 'AppendVector'
           end>
         TabOrder = 0
         TabStop = False
@@ -64,7 +70,7 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object TexturePanel: TCategoryPanel
-      Top = 869
+      Top = 910
       Height = 64
       Caption = 'Texture'
       TabOrder = 1
@@ -86,7 +92,7 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object VectorsPanel: TCategoryPanel
-      Top = 733
+      Top = 774
       Height = 136
       Caption = 'Vectors'
       TabOrder = 2
@@ -117,8 +123,8 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object MathPanel: TCategoryPanel
-      Top = 359
-      Height = 374
+      Top = 379
+      Height = 395
       Caption = 'Math'
       Ctl3D = True
       ParentCtl3D = False
@@ -127,7 +133,7 @@ object NodePaletteForm: TNodePaletteForm
         Left = 0
         Top = 0
         Width = 179
-        Height = 348
+        Height = 369
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
@@ -173,27 +179,32 @@ object NodePaletteForm: TNodePaletteForm
           end
           item
             Caption = 'SquareRoot'
+          end
+          item
+            Caption = 'Sign'
           end>
         TabOrder = 0
         TabStop = False
         OnMouseDown = CommonMouseDown
-        ExplicitHeight = 340
       end
     end
     object CoordinatesPanel: TCategoryPanel
       Top = 156
-      Height = 203
+      Height = 223
       Caption = 'Coordinates'
       TabOrder = 4
       object CoordinateGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 177
+        Height = 197
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
+          item
+            Caption = 'Object Position'
+          end
           item
             Caption = 'World Position'
           end

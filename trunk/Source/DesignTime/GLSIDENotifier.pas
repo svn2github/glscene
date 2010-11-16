@@ -6,10 +6,9 @@
    The notifier tracking project opening and closing.<p>
    Now only MaterialManager take a notifying about this events.<p>
 
-
-	<b>History : </b><font size=-1><ul>
+ <b>History : </b><font size=-1><ul>
       <li>19/03/10 - Yar - Creation
-	</ul></font>
+ </ul></font>
 }
 
 unit GLSIDENotifier;
@@ -25,6 +24,7 @@ uses
   SysUtils,
   TypInfo,
   ToolsAPI,
+  BaseClasses,
   GL3xMaterial,
   GLStrings,
   ApplicationFileIO;
@@ -85,8 +85,11 @@ var
   ResourceEntry: IOTAResourceEntry;
   Dest: PByte;
   rName: PChar;
+  msg: string;
 begin
-  ResList := MaterialManager.GetResourceList;
+  NotifyGLSceneManagersBeforeCompile;
+
+  ResList := GetManagersResourceList;
   if Assigned(ResList) then
   begin
     Resource := nil;
@@ -102,38 +105,49 @@ begin
       mStream := TMemoryStream.Create;
       ResList.SaveToStream(mStream);
       Dest := nil;
-      for I := 0 to Resource.GetEntryCount - 1 do
-      begin
-        ResourceEntry := Resource.GetEntry(I);
-        rName := ResourceEntry.GetResourceName;
-        if Cardinal(rName)>$1000 then
-          if StrComp(rName, PChar(glsMaterialManagerData)) = 0 then
+      try
+        for I := 0 to Resource.GetEntryCount - 1 do
+        begin
+          ResourceEntry := Resource.GetEntry(I);
+          rName := ResourceEntry.GetResourceName;
+          if Cardinal(rName) > $1000 then
+            if StrComp(rName, PChar(glsResourceInfo)) = 0 then
+            begin
+              ResourceEntry.DataSize := mStream.Size;
+              Dest := ResourceEntry.GetData;
+              if not Assigned(Dest) then
+              begin
+                msg := 'Can''t get address of resource ' + glsResourceInfo;
+                Abort;
+              end;
+              break;
+            end;
+        end;
+        if Dest = nil then
+        begin
+          // Need to create resource
+          ResourceEntry := Resource.CreateEntry(GLS_RC_String_Type, PChar(glsResourceInfo), 4112, 1033, 0, 0, 0);
+          if Assigned(ResourceEntry) then
           begin
             ResourceEntry.DataSize := mStream.Size;
             Dest := ResourceEntry.GetData;
-            break;
+          end
+          else
+          begin
+            msg := 'Can''t create resource entry for' + glsResourceInfo;
+            Abort;
           end;
-      end;
-      if Dest = nil then
-      begin
-        // Need to create resource
-        ResourceEntry := Resource.CreateEntry(GLS_RC_String_Type, PChar(glsMaterialManagerData), 4112, 1033, 0, 0, 0);
-        if Assigned(ResourceEntry) then
-        begin
-          ResourceEntry.DataSize := mStream.Size;
-          Dest := ResourceEntry.GetData;
-        end
-        else begin
-          MsgServices.AddTitleMessage('Can''t create resource entry');
-          ResList.Destroy;
-          mStream.Destroy;
-          exit;
         end;
+        // Update resource
+        Move(mStream.Memory^, Dest^, mStream.Size);
+        mStream.Destroy;
+        MsgServices.AddTitleMessage('GLScene updated application resource list');
+      except
+        MsgServices.AddTitleMessage(msg);
+        ResList.Destroy;
+        mStream.Destroy;
+        exit;
       end;
-      // Update resource
-      Move(mStream.Memory^, Dest^, mStream.Size);
-      mStream.Destroy;
-      MsgServices.AddTitleMessage('MaterialManager updated resource list');
     end;
     ResList.Destroy;
   end;
@@ -168,13 +182,13 @@ begin
   else if (NotifyCode = ofnFileOpened)
     and IsProject or FFirstOpen then
   begin
-    MaterialManager.NotifyProjectOpened;
+    NotifyGLSceneManagersProjectOpened;
     FFirstOpen := False;
   end
   else if (NotifyCode = ofnFileClosing)
     and IsProject then
   begin
-    MaterialManager.NotifyProjectClosed;
+    NotifyGLSceneManagersProjectClosed;
   end;
 end;
 

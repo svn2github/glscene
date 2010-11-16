@@ -967,6 +967,9 @@ begin
 end;
 {$ENDIF}
 
+var
+  vLastProjectTargetName: string;
+
 procedure SetExeDirectory;
 var
 {$IFNDEF FPC}
@@ -979,13 +982,15 @@ begin
   begin
     if Assigned(vProjectTargetName) then
     begin
+      path :=  vProjectTargetName;
+      if Length(path) = 0 then
+        path := vLastProjectTargetName
+      else
+        vLastProjectTargetName := path;
+      path := IncludeTrailingPathDelimiter(ExtractFilePath(path));
 {$IFNDEF FPC}
-      path := ExtractFilePath(vProjectTargetName);
-      path := IncludeTrailingPathDelimiter(path);
       SetCurrentDir(path);
 {$ELSE}
-      path := ExtractFilePath(vProjectTargetName);
-      path := IncludeTrailingPathDelimiter(path);
       SetCurrentDirUTF8(path);
 {$ENDIF}
     end;

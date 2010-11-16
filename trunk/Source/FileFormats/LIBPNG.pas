@@ -1414,7 +1414,7 @@ begin
   end;
 
   if need_crc <> 0 then
-    png_ptr.crc := crc32(png_ptr.crc, PAnsiChar(ptr), length);
+    png_ptr.crc := png_uint_32(crc32(png_ptr.crc, PAnsiChar(ptr), length));
 end;
 
 function _png_calloc(png_ptr: png_structp; size: png_size_t): png_voidp; cdecl;

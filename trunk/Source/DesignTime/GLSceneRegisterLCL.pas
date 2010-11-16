@@ -311,7 +311,7 @@ type
 
 {$IFDEF GLS_EXPERIMENTAL}
   // TGL3xMaterialProperty
-
+  //
 
   TGL3xMaterialProperty = class(TStringProperty)
   private
@@ -327,7 +327,7 @@ type
   end;
 
   //  TGL3xTextureProperty
-
+  //
 
   TGL3xTextureProperty = class(TStringProperty)
   private
@@ -339,9 +339,33 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: string); override;
+    procedure Edit; override;
   end;
 
-  TMaterialManagerData = class(TAbstractProjectResource)
+  //  TGL3xSamplerProperty
+  //
+
+  TGL3xSamplerProperty = class(TStringProperty)
+  private
+    FSamplerNameList: TStringList;
+    procedure RefreshSamplerList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+  end;
+
+  // TGL3xSamplerParamProperty
+  //
+  TGL3xSamplerParamProperty = class(TClassProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+  end;
+
+  TGLSceneManagersData = class(TAbstractProjectResource)
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -1019,7 +1043,7 @@ begin
 end;
 
 // GetValues
-
+//
 
 procedure TGL3xMaterialProperty.GetValues(Proc: TGetStrProc);
 var
@@ -1031,7 +1055,7 @@ begin
 end;
 
 // SetValue
-
+//
 
 procedure TGL3xMaterialProperty.SetValue(const Value: string);
 var
@@ -1058,15 +1082,23 @@ begin
     if SaveReq = idYes then
     begin
       vFileName := '$(TargetFile)';
-      if IDEMacros.SubstituteMacros(vFileName) then
+      IDEMacros.SubstituteMacros(vFileName);
+      vFileName := ExtractFilePath(vFileName);
+      ForceDirectories(vFileName);
+      vFileName := IncludeTrailingPathDelimiter(vFileName) + Value + '.material';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateMaterial(Value, vFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
       begin
-        vFileName := ExtractFilePath(vFileName);
-        vFileName := IncludeTrailingPathDelimiter(vFileName) + Value + '.xml';
-        if MaterialManager.CreateMaterial(Value, vFileName) then
-        begin
-          SetStrValue(Value);
-          exit;
-        end;
+         SetStrValue(rName.GetValue);
+         Modified;
+         exit;
       end;
     end;
     SetStrValue(glsDEFAULTMATERIALNAME);
@@ -1076,11 +1108,17 @@ end;
 
 procedure TGL3xMaterialProperty.Edit;
 var
-  Mat: TGL3xMaterialName;
+  Mat: IGLName;
 begin
-  Mat := GetStrValue;
-  if Mat <> glsDEFAULTMATERIALNAME then
-    with GL3xMaterialEditor.MaterialEditorForm do
+  with MaterialManager do
+  try
+    BeginWork;
+    Mat := GetMaterialName(GetStrValue);
+  finally
+    EndWork;
+  end;
+  if Assigned(Mat) and (Mat.GetValue <> glsDEFAULTMATERIALNAME) then
+    with MaterialEditorForm do
     begin
       Material := Mat;
       Show;
@@ -1108,7 +1146,7 @@ begin
 end;
 
 // GetValues
-
+//
 
 procedure TGL3xTextureProperty.GetValues(Proc: TGetStrProc);
 var
@@ -1120,11 +1158,13 @@ begin
 end;
 
 // SetValue
-
+//
 
 procedure TGL3xTextureProperty.SetValue(const Value: string);
 var
-  I, J: integer;
+  I, J, ImportReq: Integer;
+  rImportFile, rFileName: string;
+  rName: IGLName;
 begin
   RefreshTextureList;
   J := -1;
@@ -1141,41 +1181,177 @@ begin
   end
   else
   begin
+    ImportReq := MessageDlg(Format('Import new texture "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    rImportFile := '';
+    if (ImportReq = idYes) and OpenPictureDialog(rImportFile) then
+    begin
+      vFileName := '$(TargetFile)';
+      IDEMacros.SubstituteMacros(vFileName);
+      rFileName := ExtractFilePath(rFileName);
+      ForceDirectories(vFileName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.texture';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateTexture(Value, rImportFile, rFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         GlobalDesignHook.Modified(Self);
+         exit;
+      end;
+    end;
     SetStrValue(glsDIFFUSEMAP);
   end;
   Modified;
+  GlobalDesignHook.Modified(Self);
 end;
 
-var
-  vMaterialManagerData: TMemoryStream;
-
-function GetMaterialManagerDataStream(): TStream;
+procedure TGL3xTextureProperty.Edit;
 begin
-  if Assigned(vMaterialManagerData) and (vMaterialManagerData.Size>0) then
+  with MaterialManager do
+  try
+    BeginWork;
+    MaterialEditorForm.SetTextureToPreview(GetTextureName(GetStrValue));
+  finally
+    EndWork;
+  end;
+end;
+
+// ------------------
+// ------------------ TGL3xSamplerProperty ------------------
+// ------------------
+
+destructor TGL3xSamplerProperty.Destroy;
+begin
+  FSamplerNameList.Free;
+  inherited;
+end;
+
+procedure TGL3xSamplerProperty.RefreshSamplerList;
+begin
+  MaterialManager.FillSamplerNameList(FSamplerNameList);
+end;
+
+function TGL3xSamplerProperty.GetAttributes;
+begin
+  Result := [paValueList];
+end;
+
+// GetValues
+//
+
+procedure TGL3xSamplerProperty.GetValues(Proc: TGetStrProc);
+var
+  I: Integer;
+begin
+  RefreshSamplerList;
+  for I := 0 to FSamplerNameList.Count - 1 do
+    Proc(FSamplerNameList[I]);
+end;
+
+// SetValue
+//
+
+procedure TGL3xSamplerProperty.SetValue(const Value: string);
+var
+  I, J, CreateReq: Integer;
+  rFileName: string;
+  rName: IGLName;
+
+  procedure Reselect;
+  begin
+    GlobalDesignHook.SelectComponent(Self.GetComponent(0));
+    GlobalDesignHook.Modified(Self);
+  end;
+
+begin
+  RefreshSamplerList;
+  J := -1;
+  for I := 0 to FSamplerNameList.Count - 1 do
+    if Value = FSamplerNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if (J > -1) or (Length(Value) = 0) then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    CreateReq := MessageDlg(Format('Create new sampler "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    if CreateReq = idYes then
+    begin
+      vFileName := '$(TargetFile)';
+      IDEMacros.SubstituteMacros(vFileName);
+      rFileName := ExtractFilePath(rFileName);
+      ForceDirectories(vFileName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.sampler';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateSampler(Value, rFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         Reselect;
+         exit;
+      end;
+    end;
+    SetStrValue('');
+  end;
+  Modified;
+  Reselect;
+end;
+
+function TGL3xSamplerParamProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paSubProperties, paVolatileSubProperties];
+end;
+
+
+var
+  vGLSceneManagersData: TMemoryStream;
+
+function GetAppResourceStream(): TStream;
+begin
+  if Assigned(vGLSceneManagersData) and (vGLSceneManagersData.Size>0) then
   begin
     Result := TMemoryStream.Create;
-    vMaterialManagerData.Seek(0, soBeginning);
-    Result.CopyFrom(vMaterialManagerData, vMaterialManagerData.Size);
+    vGLSceneManagersData.Seek(0, soBeginning);
+    Result.CopyFrom(vGLSceneManagersData, vGLSceneManagersData.Size);
     Result.Seek(0, soBeginning);
   end
   else
     Result := nil;
 end;
 
-constructor TMaterialManagerData.Create;
+constructor TGLSceneManagersData.Create;
 begin
   inherited;
-  vMaterialManagerData := TMemoryStream.Create;
+  vGLSceneManagersData := TMemoryStream.Create;
 end;
 
-destructor TMaterialManagerData.Destroy;
+destructor TGLSceneManagersData.Destroy;
 begin
-  vMaterialManagerData.Free;
-  vMaterialManagerData := nil;
+  vGLSceneManagersData.Free;
+  vGLSceneManagersData := nil;
   inherited;
 end;
 
-function TMaterialManagerData.UpdateResources(
+function TGLSceneManagersData.UpdateResources(
   AResources: TAbstractProjectResources; const MainFilename: string): Boolean;
 var
   ResList: TStringList;
@@ -1183,11 +1359,11 @@ var
   RName, RType: TResourceDesc;
 begin
   Result := True;
-  ResList := MaterialManager.GetResourceList;
+  ResList := GetManagersResourceList;
   if Assigned(ResList) then
   begin
     RType := TResourceDesc.Create(GLS_RC_String_Type);
-    RName := TResourceDesc.Create(glsMaterialManagerData);
+    RName := TResourceDesc.Create(glsResourceInfo);
     Res := TGenericResource.Create(RType, RName);
     RType.Free;
     RName.Free;
@@ -1197,7 +1373,7 @@ begin
   end;
 end;
 
-procedure TMaterialManagerData.WriteToProjectFile(AConfig: TObject; Path: String);
+procedure TGLSceneManagersData.WriteToProjectFile(AConfig: TObject; Path: String);
 var
   ResList: TStringList;
 begin
@@ -1206,30 +1382,30 @@ begin
     ResList := MaterialManager.GetResourceList;
     if Assigned(ResList) then
     begin
-      TXMLConfig(AConfig).SetValue(Path+'GLScene/MaterialManager/ResourceList', ResList.Text);
-      vMaterialManagerData.Seek(0, soBeginning);
-      ResList.SaveToStream(vMaterialManagerData);
+      TXMLConfig(AConfig).SetValue(Path+'GLScene/ResourceList', ResList.Text);
+      vGLSceneManagersData.Seek(0, soBeginning);
+      ResList.SaveToStream(vGLSceneManagersData);
       ResList.Destroy;
     end
     else
-      TXMLConfig(AConfig).DeleteValue(Path+'GLScene/MaterialManager/ResourceList');
+      TXMLConfig(AConfig).DeleteValue(Path+'GLScene/ResourceList');
   end;
 end;
 
-procedure TMaterialManagerData.ReadFromProjectFile(AConfig: TObject; Path: String);
+procedure TGLSceneManagersData.ReadFromProjectFile(AConfig: TObject; Path: String);
 var
   ResList: TStringList;
   s: string;
 begin
   if Assigned(AConfig) then
   begin
-    s := TXMLConfig(AConfig).GetValue(Path+'GLScene/MaterialManager/ResourceList', '');
+    s := TXMLConfig(AConfig).GetValue(Path+'GLScene/ResourceList', '');
     if Length(s) > 0 then
     begin
       ResList := TStringList.Create;
       ResList.Text := s;
-      vMaterialManagerData.Seek(0, soBeginning);
-      ResList.SaveToStream(vMaterialManagerData);
+      vGLSceneManagersData.Seek(0, soBeginning);
+      ResList.SaveToStream(vGLSceneManagersData);
       ResList.Destroy;
     end;
   end;
@@ -1330,10 +1506,14 @@ begin
     TVectorFileProperty);
 
 {$IFDEF GLS_EXPERIMENTAL}
-  RegisterPropertyEditor(TypeInfo(TGL3xMaterialName), TGL3xBaseSceneObject,
+  RegisterPropertyEditor(TypeInfo(string), TGL3xBaseSceneObject,
     'Material', TGL3xMaterialProperty);
-  RegisterPropertyEditor(TypeInfo(TGL3xTextureName), TTextureSamplerNode,
+  RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode,
     'Texture', TGL3xTextureProperty);
+  RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode,
+    'Sampler', TGL3xSamplerProperty);
+  RegisterPropertyEditor(TypeInfo(TGL3xSampler), TTextureSamplerNode,
+    'SamplerParameters', TGL3xSamplerParamProperty);
 {$ENDIF}
 
   with ObjectManager do
@@ -1506,10 +1686,8 @@ initialization
   GLCrossPlatform.IsDesignTime := True;
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
 {$IFDEF GLS_EXPERIMENTAl}
-  RegisterProjectResource(TMaterialManagerData);
-//  vUpdateResourceProc := TGLSLauncherEditor.UpdateResource;
-//  vGetConfigDataStreamFunc := TGLSLauncherEditor.GetConfigDataStream;
-  vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;
+  RegisterProjectResource(TGLSceneManagersData);
+  ApplicationFileIO.vAFIOGetAppResourceStream := GetAppResourceStream;
 {$ENDIF}
   //ReadVideoModes;
 

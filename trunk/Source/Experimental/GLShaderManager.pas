@@ -8,13 +8,12 @@
    Once defined program or object can be used everywhere.<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>10/10/10 - Yar - Added binary caching. UniformSampler optimization
     <li>14/04/10 - Yar - Attributes and Uniforms becomes one class per name
                          Added multicontext and multithreading support
     <li>24/03/10 - Yar - Creation (based on uShaders.pas by Alex Karpenyuk aka Fantom)
  </ul></font>
 }
-
-// TODO: Bindless graphic
 
 unit GLShaderManager;
 
@@ -25,29 +24,36 @@ interface
 uses
   Classes,
   SysUtils,
-{$IFDEF GLS_MULTITHREAD}
-  SyncObjs,
-{$ENDIF}
-  GLSGenerics,
   // GLScene
+  BaseClasses,
   GLCrossPlatform,
   OpenGLTokens,
   GLContext,
   GLState,
   GLTextureFormat,
   VectorLists,
+  VectorGeometry,
   VectorTypes,
   GLSRedBlackTree,
   VectorGeometryEXT,
-  GLSLog;
+  GLSLog, GLUtils,
+  GLSGenerics;
 
 const
   GLS_PROGRAM_CACHE_SIZE = 2048;
+  GLS_MAX_PROGRAM_FAIL = 3;
 
 type
 
   TGLSLProgramType = (ptVertex, ptGeometry, ptFragment, ptControl, ptEvaluation);
   TGLSLProgramTypes = set of TGLSLProgramType;
+
+const
+
+  cObjectTypeName: array[TGLSLProgramType] of string =
+    ('VERTEX', 'GEOMTERY', 'FRAGMENT', 'CONTROL', 'EVALUATION');
+
+type
 
   TGLColorComponent = (ccmRed, ccmGreen, ccmBlue, ccmAlpha, ccmWhite);
   TGLColorComponentMask = set of TGLColorComponent;
@@ -106,7 +112,8 @@ type
     GLSLTypeSamplerMSArray,
     GLSLTypeIntSamplerMSArray,
     GLSLTypeUIntSamplerMSArray,
-    GLSLTypeVRec
+    GLSLTypeVRec,
+    GLSLTypeFRec
     );
 
   TProgramCache = record
@@ -126,6 +133,7 @@ type
     FLastProgram: TGLProgramHandle;
     FLastCacheIndex: Integer;
     FTag: Integer;
+    FTagObject: TObject;
     procedure DoCache(AProg: TGLProgramHandle; const ACache: TProgramCache);
     procedure ClearCache(AProg: TGLProgramHandle);
   public
@@ -135,8 +143,8 @@ type
 
     property Name: string read FName;
     property Tag: Integer read FTag write FTag;
+    property TagObject: TObject read FTagObject write FTagObject;
   end;
-
 
   // TGLSLAttribute
   //
@@ -163,6 +171,7 @@ type
   TGLSLUniform = class(TGLSLBaseVariable)
   private
     { Private Declarations }
+    FBlockOffset: TGLint;
     function GetLocation: GLInt;
     function GetDataType: TGLSLDataType;
     function GetBindedBuffer: TGLuint;
@@ -197,136 +206,148 @@ type
     property DataSize: GLSizei read FSize;
   end;
 
-  // TGLSLShaderObject
+  TGLSLObjectName = class(TGLAbstractName)
+  protected
+    function GetInheritorClass: TGLAbstractNameClass; override;
+  public
+    function GetManager: TGLSAbstractManagerClass; override;
+  end;
+
+  // TGLSLObject
   //
 
   {: Context independent shader object }
-  TGLSLShaderObject = class
+  TGLSLObject = class(TObject)
   private
     FHandles: array[TGLSLProgramType] of TGLShaderHandle;
-    FNameHashKey: Integer;
-    FFriendlyName: string;
+    FName: TGLSLObjectName;
     FCode: AnsiString;
+    FHashCode: Integer;
     FTypes: TGLSLProgramTypes;
   public
     constructor Create;
     destructor Destroy; override;
     {: Compile object under current context }
     function Compile: Boolean;
-    property FriendlyName: string read FFriendlyName;
+    property Name: TGLSLObjectName read FName;
   end;
 
-  TAttachedShaderList =
-{$IFDEF FPC} specialize {$ENDIF} GList < TGLSLShaderObject > ;
+  TGLSLProgramName = class(TGLAbstractName)
+  protected
+    function GetInheritorClass: TGLAbstractNameClass; override;
+  public
+    function GetManager: TGLSAbstractManagerClass; override;
+  end;
 
-  // TGLSLShaderProgram
+  TGLSLObjectList = {$IFDEF FPC}specialize{$ENDIF}GList < TGLSLObject > ;
+
+  // TGLSLProgram
   //
 
   {: Context independent program object }
-  TGLSLShaderProgram = class
+  TGLSLProgram = class(TObject)
   private
     FHandle: TGLProgramHandle;
-    FNameHashKey: Integer;
-    FFriendlyName: string;
-    FAttachedObjects: TAttachedShaderList;
+    FName: TGLSLProgramName;
+    FAttachedObjects: TGLSLObjectList;
     FProgramMask: TGLSLProgramTypes;
-    procedure DetachAll;
+    FLinkFailureCount: Integer;
+    function FindBinary: Boolean;
+    procedure StoreBinary;
   public
     constructor Create;
     destructor Destroy; override;
     {: Attach objects and link program under current context }
-    procedure Attach(AObject: TGLSLShaderObject);
-    procedure Detach(AObject: TGLSLShaderObject);
+    procedure Attach(AObject: TGLSLObject);
+    procedure Detach(AObject: TGLSLObject);
     function Link: Boolean;
-    property FriendlyName: string read FFriendlyName;
+    property Name: TGLSLProgramName read FName;
   end;
 
-  TShaderObjectTree =
-{$IFDEF FPC}specialize{$ENDIF}GRedBlackTree < Integer, TGLSLShaderObject > ;
-  TShaderProgramTree =
-{$IFDEF FPC}specialize{$ENDIF}GRedBlackTree < Integer, TGLSLShaderProgram > ;
-
-  TGLShaderManager = class
-  private
-    { Private Declarations }
-    FShaderObjectsTree: TShaderObjectTree;
-    FShaderProgramsTree: TShaderProgramTree;
-    CompilationLog: TLogSession;
-    WorkLog: TLogSession;
-{$IFDEF GLS_MULTITHREAD}
-    FLock: TCriticalSection;
-{$ENDIF}
+  ShaderManager = class(TGLSAbstractManager)
   protected
     { Protected Declarations }
-    function GetShaderObject(const AName: string): TGLSLShaderObject;
-    function GetShaderProgram(const AName: string): TGLSLShaderProgram;
-    function GetTextureTarget(const AUniform: TGLSLUniform;
+    class procedure SaveBinaryCache(ADoFree: Boolean);
+    // Design time notifications
+    class procedure NotifyProjectOpened; override;
+    class procedure NotifyProjectClosed; override;
+    class procedure NotifyContextCreated; override;
+    class procedure NotifyBeforeCompile; override;
+  private
+    { Private Declarations }
+    class procedure Initialize;
+    class procedure Finalize;
+
+    class function GetObject(const AName: IGLName): TGLSLObject;
+    class function GetProgram(const AName: IGLName): TGLSLProgram;
+    class procedure PushObject(AObject: TGLSLObject);
+    class procedure PushProgram(AProgram: TGLSLProgram);
+    class function GetTextureTarget(const AUniform: TGLSLUniform;
       out ATarget: TGLTextureTarget): Boolean;
-    procedure DeleteShaderObject(AObject: TGLSLShaderObject); overload;
-    procedure DeleteShaderProgram(AProgram: TGLSLShaderProgram); overload;
-    {: Cash locations of attribute, uniforms and uniform bBeginWorks }
-    procedure MakeLocationCache(AProgram: TGLSLShaderProgram);
-    function ComputeNameHashKey(const AName: string): Integer;
+    class procedure DeleteShaderObject(AObject: TGLSLObject); overload;
+    class procedure DeleteShaderProgram(AProgram: TGLSLProgram); overload;
+    {: Cache locations of attribute, uniforms and uniform bBeginWorks }
+    class procedure MakeLocationCache(AProgram: TGLSLProgram);
   public
     { Public Declarations }
-    constructor Create;
-    destructor Destroy; override;
-    {: Call this method before begin work with programs and objects. }
-    procedure BeginWork;
-    {: End of work with programs and objects. }
-    procedure EndWork;
 
-    procedure DefineShaderObject(const AName: string; const code: AnsiString;
-      ATypes: TGLSLProgramTypes);
-    procedure DefineShaderProgram(const AName: string; AProgramMask: TGLSLProgramTypes = [ptVertex, ptFragment]);
-    procedure DeleteShaderObject(const AName: string); overload;
-    procedure DeleteShaderProgram(const AName: string); overload;
+    class function FillResourceList(AList: TStringList): Boolean; override;
+    class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); override;
 
-    procedure AttachShaderObjectToProgram(const AObject: string; const AProgram:
-      string);
-    procedure DetachShaderObjectFromProgram(const AObject: string; const
-      AProgram: string);
+    class function GetObjectName(const AName: string): IGLName;
+    class function GetProgramName(const AName: string): IGLName;
 
-    function LinkShaderProgram(const AName: string): Boolean;
-    procedure UseProgram(const AName: string);
-    function IsProgramDefined(const AName: string): Boolean;
-    function IsProgramCurrent(const AName: string): Boolean;
-    function GetCurrentProgram: string;
-    procedure UseFixedFunctionPipeline;
-    procedure ClearShaderObject;
-    procedure ClearShaderPrograms;
-    function GetProgramAttribs(const AName: string; out Attribs: TGLSLAttributeArray): Boolean;
+    class procedure DefineShaderObject(var AName: IGLName; const code: AnsiString;
+      ATypes: TGLSLProgramTypes; ANameRoot: string = '');
+    class procedure DefineShaderProgram(var AName: IGLName;
+      AProgramMask: TGLSLProgramTypes = [ptVertex, ptFragment];
+      ANameRoot: string = '');
+    class procedure DeleteShaderObject(var AName: IGLName); overload;
+    class procedure DeleteShaderProgram(var AName: IGLName); overload;
 
-    function MakeUniqueObjectName(const NameRoot: string): string;
-    function MakeUniqueProgramName(const NameRoot: string): string;
+    class procedure AttachShaderObjectToProgram(const AObject: IGLName;
+      const AProgram: IGLName);
+    class procedure DetachShaderObjectFromProgram(const AObject: IGLName;
+      const AProgram: IGLName);
+
+    class procedure LinkShaderProgram(const AName: IGLName);
+    class procedure UseProgram(const AName: IGLName);
+    class function IsProgramLinked(const AName: IGLName): Boolean;
+    class function IsProgramDefined(const AName: IGLName): Boolean;
+    class function IsProgramCurrent(const AName: IGLName): Boolean;
+    class function GetCurrentProgram: IGLName;
+    class procedure UseFixedFunctionPipeline;
+    class procedure ClearShaderObject;
+    class procedure ClearShaderPrograms;
+    class function GetProgramAttribs(const AName: IGLName; out Attribs: TGLSLAttributeArray): Boolean;
 
     // Float uniforms
-    procedure Uniform1f(AUniform: TGLSLUniform; const Value: Single);
-    procedure Uniform2f(AUniform: TGLSLUniform; const Value: TVector2f);
-    procedure Uniform3f(AUniform: TGLSLUniform; const Value: TVector3f);
-    procedure Uniform4f(AUniform: TGLSLUniform; const Value: TVector4f);
+    class procedure Uniform1f(AUniform: TGLSLUniform; const Value: Single);
+    class procedure Uniform2f(AUniform: TGLSLUniform; const Value: TVector2f);
+    class procedure Uniform3f(AUniform: TGLSLUniform; const Value: TVector3f);
+    class procedure Uniform4f(AUniform: TGLSLUniform; const Value: TVector4f);
 
     // Integer uniforms
-    procedure Uniform1I(AUniform: TGLSLUniform; const Value: TGLint); overload;
-    procedure Uniform1I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
-    procedure Uniform2I(AUniform: TGLSLUniform; const Value: TVector2I);
-    procedure Uniform3I(AUniform: TGLSLUniform; const Value: TVector3I);
-    procedure Uniform4I(AUniform: TGLSLUniform; const Value: TVector4I); overload;
-    procedure Uniform4I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
+    class procedure Uniform1I(AUniform: TGLSLUniform; const Value: TGLint); overload;
+    class procedure Uniform1I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
+    class procedure Uniform2I(AUniform: TGLSLUniform; const Value: TVector2I);
+    class procedure Uniform3I(AUniform: TGLSLUniform; const Value: TVector3I);
+    class procedure Uniform4I(AUniform: TGLSLUniform; const Value: TVector4I); overload;
+    class procedure Uniform4I(AUniform: TGLSLUniform; const Value: PGLInt; Count: Integer); overload;
 
     // Unsigned integer uniforms
-    procedure Uniform1UI(AUniform: TGLSLUniform; const Value: TGLuint);
-    procedure Uniform2UI(AUniform: TGLSLUniform; const Value: TVector2UI);
-    procedure Uniform3UI(AUniform: TGLSLUniform; const Value: TVector3UI);
-    procedure Uniform4UI(AUniform: TGLSLUniform; const Value: TVector4UI);
+    class procedure Uniform1UI(AUniform: TGLSLUniform; const Value: TGLuint);
+    class procedure Uniform2UI(AUniform: TGLSLUniform; const Value: TVector2UI);
+    class procedure Uniform3UI(AUniform: TGLSLUniform; const Value: TVector3UI);
+    class procedure Uniform4UI(AUniform: TGLSLUniform; const Value: TVector4UI);
 
     // Matrix uniforms
-    procedure UniformMat2f(AUniform: TGLSLUniform; const Value: TMatrix2f);
-    procedure UniformMat3f(AUniform: TGLSLUniform; const Value: TMatrix3f);
-    procedure UniformMat4f(AUniform: TGLSLUniform; const Value: TMatrix4f);
+    class procedure UniformMat2f(AUniform: TGLSLUniform; const Value: TMatrix2f);
+    class procedure UniformMat3f(AUniform: TGLSLUniform; const Value: TMatrix3f);
+    class procedure UniformMat4f(AUniform: TGLSLUniform; const Value: TMatrix4f);
 
-    // Other uniforms
-    procedure UniformSampler(AUniform: TGLSLUniform; const Texture: GLUInt; TexUnit: GLUInt);
+    // Bind texture to uniform sampler, return active unit
+    class function UniformSampler(AUniform: TGLSLUniform; const Texture: GLUInt): TGLuint;
     //    procedure UniformBuffer(const ProgramName: string; AUniform: TGLSLUniform; const Buffer: GLUInt);
   end;
 
@@ -355,7 +376,6 @@ var
   uniformModelMatrix,
     uniformViewProjectionMatrix,
     uniformCameraWorldPosition,
-    uniformLightWorldPosition,
     uniformDiffuse,
     uniformTexUnit0,
     uniformTexUnit1,
@@ -375,20 +395,17 @@ function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
 function HexToGLSL(tp: TGLSLDataType; HexValue: string): AnsiString;
 function MaskToGLSLType(AMask: TGLColorComponentMask): TGLSLDataType;
 function RemoveGLSLQualifier(const InputLine: string): string;
-function ShaderManager: TGLShaderManager;
 
 implementation
 
 uses
-  GLStrings, GLVBOManager;
-
-resourcestring
-  glsWrongMethodCall =
-    'This method must be called between BeginWork...EndWork!';
+  GLStrings,
+  GLVBOManager,
+  ApplicationFileIO;
 
 const
   cGLSLTypeString: array[TGLSLDataType] of AnsiString = (
-    '',
+    'undefined',
     'void',
     'float',
     'vec2',
@@ -441,7 +458,8 @@ const
     'samplerMSArray',
     'isamplerMSArray',
     'usamplerMSArray',
-    'vrec');
+    'vrec',
+    'frec');
 
   cGLSLTypeComponents: array[TGLSLDataType] of Integer = (
     0,
@@ -497,6 +515,7 @@ const
     1,
     1,
     1,
+    0,
     0);
 
 const
@@ -507,24 +526,28 @@ const
     TGLTessControlShaderHandle,
     TGLTessEvaluationShaderHandle);
 
-  cObjectTypeName: array[TGLSLProgramType] of string =
-    ('Vertex', 'Geomtery', 'Fragment', 'Control', 'Evaluation');
+type
+  PProgramBinary = ^TProgramBinary;
+  TProgramBinary = record
+    ProgramName: string;
+    ObjectNames: array of string;
+    ObjectHashCode: array of Integer;
+    BinarySize: Integer;
+    BinaryData: Pointer;
+    BinaryFormat: TGLEnum;
+  end;
 
 var
-  vShaderManager: TGLShaderManager;
+  ShaderObjects: array of TGLSLObject;
+  ShaderPrograms: array of TGLSLProgram;
+  CompilationLog: TLogSession;
+  WorkLog: TLogSession;
+  BinaryList: TList;
 
 {$IFDEF GLS_MULTITHREAD}
 threadvar
 {$ENDIF}
-  vCurrentProgram: TGLSLShaderProgram;
-  vWorked: Boolean;
-
-function ShaderManager: TGLShaderManager;
-begin
-  if vShaderManager = nil then
-    vShaderManager := TGLShaderManager.Create;
-  Result := vShaderManager;
-end;
+  vCurrentProgram: TGLSLProgram;
 
 class function TCurrentProgramGetter.CurrentProgram: TGLProgramHandle;
 begin
@@ -534,7 +557,7 @@ begin
     Result := nil;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Helper functions'}{$ENDIF}
+{$REGION 'Helper functions'}
 
 function GetMaxGLSLVersion: AnsiString;
 begin
@@ -552,7 +575,8 @@ begin
     Result := '#version 150 core'
   else if Result = '3.30' then
     Result := '#version 330 core'
-  else Result := '#version 400 core';
+  else
+    Result := '#version 400 core';
 end;
 
 function MaskToGLSLType(AMask: TGLColorComponentMask): TGLSLDataType;
@@ -737,19 +761,19 @@ begin
   while True do
   begin
     P := Pos('in ', Result);
-    if P>0 then
+    if P > 0 then
     begin
       Delete(Result, P, 3);
       continue;
     end;
     P := Pos('inout ', Result);
-    if P>0 then
+    if P > 0 then
     begin
       Delete(Result, P, 6);
       continue;
     end;
     P := Pos('out ', Result);
-    if P>0 then
+    if P > 0 then
     begin
       Delete(Result, P, 4);
       continue;
@@ -758,45 +782,19 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-
-function CompareContext(const Item1, Item2: TGLContext): Integer;
-var
-  I1, I2: Cardinal;
-begin
-  I1 := Cardinal(Item1);
-  I2 := Cardinal(Item2);
-  if I1 < I2 then
-  begin
-    Result := -1;
-  end
-  else if (I1 = I2) then
-  begin
-    Result := 0;
-  end
-  else
-  begin
-    Result := 1;
-  end
-end;
+{$ENDREGION}
 
 function CompareProgram(const Item1, Item2: TGLProgramHandle): Integer;
 begin
   if PtrUInt(Item1) < PtrUInt(Item2) then
-  begin
-    Result := -1;
-  end
+    exit(-1)
   else if (Item1 = Item2) then
-  begin
-    Result := 0;
-  end
+    exit(0)
   else
-  begin
-    Result := 1;
-  end
+    exit(1);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shader variables registry'}{$ENDIF}
+{$REGION 'Shader variables registry'}
 var
   ProgramCache: array of TProgramCache;
   ProgramCachPosition: Integer;
@@ -850,14 +848,15 @@ begin
     FLastProgram := AProg;
     FLastCacheIndex := I;
   end
-  else begin
+  else
+  begin
     ProgramCache[ProgramCachPosition] := ACache;
     FProgramCacheTree.Add(AProg, ProgramCachPosition);
     FLastProgram := AProg;
     FLastCacheIndex := ProgramCachPosition;
     Inc(ProgramCachPosition);
     if Length(ProgramCache) = ProgramCachPosition then
-      SetLength(ProgramCache, 2*Length(ProgramCache));
+      SetLength(ProgramCache, 2 * Length(ProgramCache));
   end;
 end;
 
@@ -873,7 +872,6 @@ begin
     ProgramCache[I].WarningAbsenceLoged := False;
   end;
 end;
-
 
 procedure TGLSLBaseVariable.ResetLocationCache;
 begin
@@ -941,23 +939,22 @@ begin
   Result := -1;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
     if (ProgramCache[I].Location = -1)
       and not ProgramCache[I].WarningAbsenceLoged then
     begin
-      ShaderManager.WorkLog.LogWarning(
-        Format('Using an unknown attribute "%s" in program "%s"', [FName, vCurrentProgram.FFriendlyName]));
+      WorkLog.LogWarning(
+        Format('Using an unknown attribute "%s" in program "%s"', [FName, string(vCurrentProgram.Name.Value)]));
       ProgramCache[I].WarningAbsenceLoged := True;
     end
     else
@@ -973,7 +970,7 @@ var
 begin
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
@@ -992,15 +989,14 @@ begin
   Result := GLSLTypeUndefined;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
@@ -1029,6 +1025,7 @@ begin
   FName := AName;
   FProgramCacheTree := TProgramCacheTree.Create(CompareProgram, nil);
   FLastProgram := nil;
+  FBlockOffset := -1;
 end;
 
 procedure TGLSLUniform.BeforeDestruction;
@@ -1071,23 +1068,22 @@ begin
   Result := -1;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
     if (ProgramCache[I].Location = -1)
       and not ProgramCache[I].WarningAbsenceLoged then
     begin
-      ShaderManager.WorkLog.LogWarning(
-        Format('Using an unknown uniform "%s" in program "%s"', [FName, vCurrentProgram.FFriendlyName]));
+      WorkLog.LogWarning(
+        Format('Using an unknown uniform "%s" in program "%s"', [FName, string(vCurrentProgram.Name.Value)]));
       ProgramCache[I].WarningAbsenceLoged := True;
     end
     else
@@ -1104,15 +1100,14 @@ begin
   Result := GLSLTypeUndefined;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
@@ -1129,15 +1124,14 @@ begin
   Result := 0;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
@@ -1153,15 +1147,14 @@ var
 begin
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
@@ -1169,8 +1162,8 @@ begin
     begin
       if not ProgramCache[I].WarningAbsenceLoged then
       begin
-        ShaderManager.WorkLog.LogWarning(
-          Format('Using an unknown uniform buffer "%s" in program "%s"', [FName, vCurrentProgram.FFriendlyName]));
+        WorkLog.LogWarning(
+          Format('Using an unknown uniform buffer "%s" in program "%s"', [FName, string(vCurrentProgram.Name.Value)]));
         ProgramCache[I].WarningAbsenceLoged := True;
       end;
     end
@@ -1184,7 +1177,6 @@ end;
 
 // TGLSLUniformBlock
 //
-
 
 constructor TGLSLUniformBlock.RegisterUniformBlock(const AName: string);
 var
@@ -1247,23 +1239,22 @@ begin
   Result := -1;
   if not Assigned(vCurrentProgram) then
   begin
-    ShaderManager.WorkLog.LogError(glsNoShader);
+    WorkLog.LogError(glsNoShader);
     Abort;
   end;
 
   if FLastProgram = vCurrentProgram.FHandle then
     I := FLastCacheIndex
-  else
-    if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
-      I := -1;
+  else if not FProgramCacheTree.Find(vCurrentProgram.FHandle, I) then
+    I := -1;
 
   if I > -1 then
   begin
     if (ProgramCache[I].Location = -1)
       and not ProgramCache[I].WarningAbsenceLoged then
     begin
-      ShaderManager.WorkLog.LogWarning(
-        Format('Using an unknown uniform block "%s" in program "%s"', [FName, vCurrentProgram.FFriendlyName]));
+      WorkLog.LogWarning(
+        Format('Using an unknown uniform block "%s" in program "%s"', [FName, string(vCurrentProgram.Name.Value)]));
       ProgramCache[I].WarningAbsenceLoged := True;
     end
     else
@@ -1273,39 +1264,45 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSLShaderObject'}{$ENDIF}
+{$REGION 'TGLSLObject'}
 // ------------------
-// ------------------ TGLSLShaderObject ------------------
+// ------------------ TGLSLObject ------------------
 // ------------------
 
-procedure ShaderHandleDestroyer(k: TGLContext; AHandle:
-  TGLShaderHandle; out Flag: Boolean);
+function TGLSLObjectName.GetInheritorClass: TGLAbstractNameClass;
 begin
-  AHandle.Destroy;
-  Flag := True;
+  Result := TGLAbstractNameClass(ClassType);
 end;
 
-constructor TGLSLShaderObject.Create;
+function TGLSLObjectName.GetManager: TGLSAbstractManagerClass;
+begin
+  Result := ShaderManager;
+end;
+
+constructor TGLSLObject.Create;
 var
   P: TGLSLProgramType;
 begin
   inherited;
   for P := Low(TGLSLProgramType) to High(TGLSLProgramType) do
     FHandles[P] := cObjectClass[P].Create;
+  FName := TGLSLObjectName.Create;
+  FName._AddRef;
 end;
 
-destructor TGLSLShaderObject.Destroy;
+destructor TGLSLObject.Destroy;
 var
   P: TGLSLProgramType;
 begin
   inherited;
   for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
     FHandles[P].Destroy;
+  FName._Release;
 end;
 
-function TGLSLShaderObject.Compile: Boolean;
+function TGLSLObject.Compile: Boolean;
 var
   P: TGLSLProgramType;
   val, len: Integer;
@@ -1319,11 +1316,11 @@ begin
   for P := Low(TGLSLProgramType) to High(TGLSLProgramType) do
     if P in FTypes then
     begin
-      logstr := Format('%s shader object "%s" compilation - ', [cObjectTypeName[P], FriendlyName]);
+      logstr := Format('%s shader object "%s" compilation - ', [cObjectTypeName[P], string(Name.Value)]);
 
       if not cObjectClass[P].IsSupported then
       begin
-        vShaderManager.CompilationLog.LogWarning(logstr + 'Discarded. Shader not supported.');
+        CompilationLog.LogWarning(logstr + 'Discarded. Shader not supported.');
         continue;
       end;
 
@@ -1338,18 +1335,24 @@ begin
 
       if OK then
       begin
-        vShaderManager.CompilationLog.LogInfo(logstr + ' Successful');
+        CompilationLog.LogInfo(logstr + ' Successful');
         FHandles[P].NotifyDataUpdated;
       end
       else
-        vShaderManager.CompilationLog.LogError(logstr + ' Failed!');
+        CompilationLog.LogError(logstr + ' Failed!');
 
       GL.GetShaderiv(FHandles[P].Handle, GL_INFO_LOG_LENGTH, @val);
       if val > 1 then
       begin
+        if not OK then
+        begin
+          CompilationLog.LogNotice('');
+          CompilationLog.LogInfo(string(FCode));
+        end;
+        CompilationLog.LogNotice('');
         ReallocMem(pLog, val);
         GL.GetShaderInfoLog(FHandles[P].Handle, val, @len, pLog);
-        vShaderManager.CompilationLog.LogInfo(string(pLog));
+        CompilationLog.LogInfo(string(pLog));
       end;
     end
     else
@@ -1359,84 +1362,170 @@ begin
     FreeMem(pLog);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSLShaderProgram'}{$ENDIF}
+{$REGION 'TGLSLProgram'}
 // ------------------
-// ------------------ TGLSLShaderProgram ------------------
+// ------------------ TGLSLProgram ------------------
 // ------------------
 
-constructor TGLSLShaderProgram.Create;
+function TGLSLProgramName.GetInheritorClass: TGLAbstractNameClass;
 begin
-  FHandle := TGLProgramHandle.Create;
-  FAttachedObjects := TAttachedShaderList.Create;
+  Result := TGLAbstractNameClass(ClassType);
 end;
 
-destructor TGLSLShaderProgram.Destroy;
+function TGLSLProgramName.GetManager: TGLSAbstractManagerClass;
+begin
+  Result := ShaderManager;
+end;
+
+constructor TGLSLProgram.Create;
+begin
+  FHandle := TGLProgramHandle.Create;
+  FAttachedObjects := TGLSLObjectList.Create;
+  FName := TGLSLProgramName.Create;
+  FName._AddRef;
+end;
+
+destructor TGLSLProgram.Destroy;
 begin
   inherited;
   FHandle.Destroy;
   FAttachedObjects.Destroy;
+  FName._Release;
 end;
 
-function TGLSLShaderProgram.Link: Boolean;
+function TGLSLProgram.FindBinary: Boolean;
+var
+  I, J: Integer;
+  pb: PProgramBinary;
+  linked: GLint;
+  val, len: GLsizei;
+  pLog: PAnsiChar;
+  logstr: string;
+
+  procedure ProgramLog;
+  begin
+    GL.GetProgramiv(FHandle.Handle, GL_INFO_LOG_LENGTH, @val);
+    if val > 0 then
+    begin
+      GetMem(pLog, val);
+      GL.GetProgramInfoLog(FHandle.Handle, val, @len, pLog);
+      CompilationLog.LogInfo(string(pLog));
+      FreeMem(pLog, val);
+    end;
+  end;
+
+begin
+  if not IsDesignTime
+    and GL.ARB_get_program_binary
+    and Assigned(BinaryList) then
+    for I := 0 to BinaryList.Count - 1 do
+    begin
+      pb := BinaryList[I];
+      if (Length(pb.ObjectNames) = FAttachedObjects.Count)
+        and (pb.ProgramName = Name.GetValue) then
+      begin
+        for J := FAttachedObjects.Count - 1 downto 0 do
+        begin
+          if not ((pb.ObjectHashCode[J] = FAttachedObjects[J].FHashCode)
+            and (pb.ObjectNames[J] = FAttachedObjects[J].FName.GetValue)) then
+            exit(False);
+        end;
+        GL.ProgramBinary(FHandle.Handle, pb.BinaryFormat, pb.BinaryData, pb.BinarySize);
+        GL.GetProgramiv(FHandle.Handle, GL_LINK_STATUS, @linked);
+        Result := linked <> 0;
+        logstr := Format('Shader Program Binary "%s" Linking - ', [Name.Value]);
+        if Result then
+        begin
+          CompilationLog.LogInfo(logstr + 'Successful');
+          ProgramLog;
+          FHandle.NotifyDataUpdated;
+        end
+        else
+        begin
+          CompilationLog.LogInfo(logstr + 'Failed');
+          ProgramLog;
+        end;
+        exit;
+      end;
+    end;
+  Result := false;
+end;
+
+function TGLSLProgram.Link: Boolean;
 var
   P: TGLSLProgramType;
-  obj: TGLSLShaderObject;
+  obj: TGLSLObject;
   I: Integer;
   val, len: GLsizei;
   pLog: PAnsiChar;
   logstr: string;
 begin
+  if FLinkFailureCount > GLS_MAX_PROGRAM_FAIL then
+    Abort;
+
   FHandle.AllocateHandle;
-  DetachAll;
 
-  for I := 0 to FAttachedObjects.Count - 1 do
+  Result := FindBinary;
+  if not Result then
   begin
-    obj := FAttachedObjects.Items[I];
-    for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
-      if (P in obj.FTypes) and (P in FProgramMask) then
+    for I := 0 to FAttachedObjects.Count - 1 do
+    begin
+      obj := FAttachedObjects.Items[I];
+      for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
       begin
-
-        if obj.FHandles[P].IsDataNeedUpdate then
+        if (P in obj.FTypes)
+          and (P in FProgramMask)
+          and obj.FHandles[P].IsSupported then
         begin
-          if obj.Compile then
-          begin
-            GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle);
-            vShaderManager.WorkLog.LogDebug(Format('%s object %s attached to %s', [cObjectTypeName[P], obj.FFriendlyName, Self.FFriendlyName]));
-            vShaderManager.WorkLog.LogDebug(string(obj.FCode));
-          end
-          else
-            Abort;
-        end
-        else
-        begin
+          if obj.FHandles[P].IsDataNeedUpdate then
+            if not obj.Compile then
+              exit;
           GL.AttachShader(FHandle.Handle, obj.FHandles[P].Handle);
-          vShaderManager.WorkLog.LogDebug(Format('%s object %s attached to %s', [cObjectTypeName[P], obj.FFriendlyName, Self.FFriendlyName]));
-          vShaderManager.WorkLog.LogDebug(string(obj.FCode));
+          CompilationLog.LogDebug(Format('%s object "%s" attached to "%s"', [LowerCase(cObjectTypeName[P]), string(obj.Name.Value), string(Self.Name.Value)]));
         end;
-
       end;
-  end;
+    end;
 
-  Result := FHandle.LinkProgram;
+    if not IsDesignTime and GL.ARB_get_program_binary then
+      GL.ProgramParameteri(FHandle.Handle, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 
-  logstr := 'Shader Program ' + FriendlyName + ' Linking - ';
-  if Result then
-  begin
-    vShaderManager.CompilationLog.LogInfo(logstr + ' Successful');
-    FHandle.NotifyDataUpdated;
-  end
-  else
-    vShaderManager.CompilationLog.LogError(logstr + ' Failed!');
+    Result := FHandle.LinkProgram;
+    FHandle.DetachAllObject;
 
-  GL.GetProgramiv(FHandle.Handle, GL_INFO_LOG_LENGTH, @val);
-  if val > 0 then
-  begin
-    GetMem(pLog, val);
-    GL.GetProgramInfoLog(FHandle.Handle, val, @len, pLog);
-    vShaderManager.CompilationLog.LogInfo(string(pLog));
-    FreeMem(pLog, val);
+    logstr := Format('Shader Program "%s" Linking - ', [Name.Value]);
+    if Result then
+    begin
+      CompilationLog.LogInfo(logstr + ' Successful');
+      FHandle.NotifyDataUpdated;
+      StoreBinary;
+    end
+    else
+    begin
+      CompilationLog.LogError(logstr + ' Failed!');
+      for I := 0 to FAttachedObjects.Count - 1 do
+      begin
+        obj := FAttachedObjects.Items[I];
+        for P := low(TGLSLProgramType) to high(TGLSLProgramType) do
+        if (P in obj.FTypes)
+          and (P in FProgramMask)
+          and obj.FHandles[P].IsSupported then
+          begin
+            SaveAnsiStringToFile(obj.FName.GetValue+'.'+cObjectTypeName[P], obj.FCode);
+          end;
+        end;
+    end;
+
+    GL.GetProgramiv(FHandle.Handle, GL_INFO_LOG_LENGTH, @val);
+    if val > 1 then
+    begin
+      GetMem(pLog, val);
+      GL.GetProgramInfoLog(FHandle.Handle, val, @len, pLog);
+      CompilationLog.LogInfo(string(pLog));
+      FreeMem(pLog, val);
+      Inc(FLinkFailureCount)
+    end;
   end;
 
   // Notify VBO managers about program changes
@@ -1445,7 +1534,38 @@ begin
   ClearProgramCache(FHandle);
 end;
 
-procedure TGLSLShaderProgram.Attach(AObject: TGLSLShaderObject);
+procedure TGLSLProgram.StoreBinary;
+var
+  pb: PProgramBinary;
+  I: Integer;
+  val: GLsizei;
+begin
+  if not IsDesignTime and GL.ARB_get_program_binary then
+  begin
+    GL.GetProgramiv(FHandle.Handle, GL_PROGRAM_BINARY_LENGTH, @val);
+    if val > 0 then
+    begin
+      if BinaryList = nil then
+        BinaryList := TList.Create;
+
+      New(pb);
+      pb.ProgramName := Name.GetValue;
+      SetLength(pb.ObjectNames, FAttachedObjects.Count);
+      SetLength(pb.ObjectHashCode, FAttachedObjects.Count);
+      for I := FAttachedObjects.Count - 1 downto 0 do
+      begin
+        pb.ObjectNames[I] := FAttachedObjects[I].FName.GetValue;
+        pb.ObjectHashCode[I] := FAttachedObjects[I].FHashCode;
+      end;
+      GetMem(pb.BinaryData, val);
+      GL.GetProgramBinary(FHandle.Handle, val, nil, @pb.BinaryFormat, pb.BinaryData);
+      pb.BinarySize := val;
+      BinaryList.Add(pb);
+    end;
+  end;
+end;
+
+procedure TGLSLProgram.Attach(AObject: TGLSLObject);
 begin
   if FAttachedObjects.IndexOf(AObject) < 0 then
   begin
@@ -1454,140 +1574,273 @@ begin
   end;
 end;
 
-procedure TGLSLShaderProgram.Detach(AObject: TGLSLShaderObject);
+procedure TGLSLProgram.Detach(AObject: TGLSLObject);
 begin
   if FAttachedObjects.Remove(AObject) >= 0 then
     FHandle.NotifyChangesOfData;
 end;
 
-procedure TGLSLShaderProgram.DetachAll;
-var
-  I: Integer;
-  count: GLSizei;
-  buffer: array[0..255] of TGLuint;
-begin
-  GL.ClearError;
-  GL.GetAttachedShaders(FHandle.Handle, Length(buffer), @count, @buffer[0]);
-  if GL.GetError = GL_NO_ERROR then
-    for I := 0 to count - 1 do
-      GL.DetachShader(FHandle.Handle, buffer[I]);
-end;
+{$ENDREGION}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLShadersManager'}{$ENDIF}
+{$REGION 'TGLShadersManager'}
 // ------------------
 // ------------------ TGLShadersManager ------------------
 // ------------------
 
-{: Static function.
-   Since Lazarus does not support static functions of classes, then do so... }
+const
+  cBinariesCacheFile = 'ShaderBinaries.cache';
 
-procedure ObjectDestroyer(
-  k: Integer; AObject: TGLSLShaderObject; out Flag: Boolean);
-begin
-  AObject.Destroy;
-  Flag := True;
-end;
-
-procedure ProgramDestroyer(
-  k: Integer; AProgram: TGLSLShaderProgram; out Flag: Boolean);
-begin
-  AProgram.Destroy;
-  Flag := True;
-end;
-
-constructor TGLShaderManager.Create;
+class procedure ShaderManager.Initialize;
 var
   LogPath: string;
 begin
-  FShaderObjectsTree := TShaderObjectTree.Create(CompareInteger, nil);
-  FShaderProgramsTree := TShaderProgramTree.Create(CompareInteger, nil);
+  RegisterGLSceneManager(ShaderManager);
 
   LogPath := ExtractFilePath(ParamStr(0));
   CompilationLog
     := TLogSession.Init(LogPath + 'ShadersCompilation.log', lfNone,
-    [lkNotice, lkInfo, lkWarning, lkError]);
+    [lkNotice, lkInfo, lkWarning, lkError, lkDebug]);
   WorkLog
     := TLogSession.Init(LogPath + 'ShadersWork.log', lfNone,
     [lkWarning, lkError
-{$IFDEF GLS_OPENGL_DEBUG}
-    ,lkDebug
-{$ENDIF}
+{.$IFDEF GLS_OPENGL_DEBUG}
+
+{.$ENDIF}
     ]);
-  vWorked := False;
-{$IFDEF GLS_MULTITHREAD}
-  FLock := TCriticalSection.Create;
-{$ENDIF}
+  // Load binary cache
+  NotifyProjectOpened;
 end;
 
-destructor TGLShaderManager.Destroy;
+class procedure ShaderManager.Finalize;
 begin
   BeginWork;
+  // Binary cache in design time is very dangerous accidents in the driver
+  if not IsDesignTime then
+    SaveBinaryCache(True);
   ClearShaderPrograms;
   ClearShaderObject;
   EndWork;
-  FShaderObjectsTree.Destroy;
-  FShaderProgramsTree.Destroy;
+
   CompilationLog.Shutdown;
   WorkLog.Shutdown;
-{$IFDEF GLS_MULTITHREAD}
-  FLock.Destroy;
-{$ENDIF}
-  inherited;
 end;
 
-procedure TGLShaderManager.BeginWork;
+class procedure ShaderManager.NotifyContextCreated;
+begin
+end;
+
+class procedure ShaderManager.NotifyBeforeCompile;
+begin
+  SaveBinaryCache(False);
+end;
+
+class function ShaderManager.FillResourceList(AList: TStringList): Boolean;
+begin
+  Result := False;
+end;
+
+class function ShaderManager.GetObjectName(const AName: string): IGLName;
 var
-  bPrev: Boolean;
+  I, N, H: Integer;
 begin
-{$IFDEF GLS_MULTITHREAD}
-  FLock.Enter;
-{$ENDIF}
-  bPrev := vWorked;
-  vWorked := True;
-  Assert(not bPrev, 'Excessive call ShadersManager.BeginWork');
+  CheckCall;
+
+  N := Length(AName);
+  H := N;
+  for I := 1 to N do
+    H := (H shl 1) + Integer(AName[i]);
+
+  for I := 0 to High(ShaderObjects) do
+  begin
+    if Assigned(ShaderObjects[I]) then
+    begin
+      if (ShaderObjects[I].FName.HashCode = H)
+        and (ShaderObjects[I].FName.Value = AName) then
+        exit(ShaderObjects[I].FName);
+    end;
+  end;
+  Result := nil;
 end;
 
-procedure TGLShaderManager.EndWork;
+class function ShaderManager.GetProgramName(const AName: string): IGLName;
 var
-  bPrev: Boolean;
+  I, N, H: Integer;
 begin
-{$IFDEF GLS_MULTITHREAD}
-  FLock.Leave;
-{$ENDIF}
-  bPrev := vWorked;
-  vWorked := False;
-  Assert(bPrev, 'Excessive call ShadersManager.EndWork');
+  CheckCall;
+
+  N := Length(AName);
+  H := N;
+  for I := 1 to N do
+    H := (H shl 1) + Integer(AName[i]);
+
+  for I := 0 to High(ShaderPrograms) do
+  begin
+    if Assigned(ShaderPrograms[I]) then
+    begin
+      if (ShaderPrograms[I].FName.HashCode = H)
+        and (ShaderPrograms[I].FName.Value = AName) then
+        exit(ShaderPrograms[I].FName);
+    end;
+  end;
+  Result := nil;
 end;
 
-function TGLShaderManager.GetShaderObject(const AName: string):
-  TGLSLShaderObject;
-begin
-  Assert(vWorked, glsWrongMethodCall);
-  if not FShaderObjectsTree.Find(ComputeNameHashKey(AName), Result) then
-    Result := nil;
-end;
-
-function TGLShaderManager.GetShaderProgram(const AName: string):
-  TGLSLShaderProgram;
-begin
-  Assert(vWorked, glsWrongMethodCall);
-  if not FShaderProgramsTree.Find(ComputeNameHashKey(AName), Result) then
-    Result := nil;
-end;
-
-function TGLShaderManager.ComputeNameHashKey(const AName: string): Integer;
+class procedure ShaderManager.MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass);
+const
+  cObjName = 'ShaderObj';
+  cProgName = 'ShaderProg';
 var
-  i, n: Integer;
+  N: Integer;
+  rName: string;
 begin
-  n := Length(AName);
-  Result := n;
-  for i := 1 to n do
-    Result := (Result shl 1) + Byte(AName[i]);
+  CheckCall;
+
+  if AClass = TGLSLObjectName then
+  begin
+    if Length(AName) = 0 then
+      rName := cObjName
+    else
+      rName := AName;
+    N := 1;
+    while GetObjectName(rName) <> nil do
+    begin
+      rName := AName + IntToHex(N, 2);
+      Inc(N);
+    end;
+    AName := rName;
+  end
+  else if AClass = TGLSLProgramName then
+  begin
+    if Length(AName) = 0 then
+      rName := cProgName
+    else
+      rName := AName;
+    N := 1;
+    while GetProgramName(rName) <> nil do
+    begin
+      rName := AName + IntToHex(N, 2);
+      Inc(N);
+    end;
+    AName := rName;
+  end;
 end;
 
-function TGLShaderManager.GetTextureTarget(const AUniform: TGLSLUniform;
+class procedure ShaderManager.NotifyProjectOpened;
+var
+  pb: PProgramBinary;
+  I, J, Temp: Integer;
+  stream: TStream;
+begin
+  // Clear old binary cache
+  if Assigned(BinaryList) then
+  begin
+    for I := BinaryList.Count - 1 to 0 do
+    begin
+      pb := BinaryList[I];
+      FreeMem(pb.BinaryData, pb.BinarySize);
+      Dispose(pb);
+    end;
+    FreeAndNil(BinaryList);
+  end;
+
+  // Load binary cache of opened project
+  if FileStreamExists(cBinariesCacheFile) then
+  begin
+    BinaryList := TList.Create;
+    stream := CreateFileStream(cBinariesCacheFile, fmOpenRead);
+    try
+      stream.Read(Temp, SizeOf(Integer)); // Version
+      if Temp > 0 then
+      begin
+        GLSLogger.LogError(Format(glsUnknownArchive, [cBinariesCacheFile, Temp]));
+        Abort;
+      end;
+      stream.Read(Temp, SizeOf(Integer));
+      for I := 0 to Temp - 1 do
+        with stream do
+        begin
+          New(pb);
+          BinaryList.Add(pb);
+          Read(Temp, SizeOf(Integer));
+          SetLength(pb.ProgramName, Temp);
+          Read(pb.ProgramName[1], Temp * SizeOf(Char));
+          Read(Temp, SizeOf(Integer));
+          SetLength(pb.ObjectNames, Temp);
+          SetLength(pb.ObjectHashCode, Temp);
+          for J := Temp - 1 downto 0 do
+          begin
+            Read(Temp, SizeOf(Integer));
+            SetLength(pb.ObjectNames[J], Temp);
+            Read(pb.ObjectNames[J][1], Temp * SizeOf(Char));
+            Read(pb.ObjectHashCode[J], SizeOf(Integer));
+          end;
+          Read(pb.BinaryFormat, SizeOf(TGLEnum));
+          Read(pb.BinarySize, SizeOf(Integer));
+          GetMem(pb.BinaryData, pb.BinarySize);
+          Read(pb.BinaryData^, pb.BinarySize);
+        end;
+    finally
+      stream.Destroy;
+    end;
+  end;
+end;
+
+class procedure ShaderManager.SaveBinaryCache(ADoFree: Boolean);
+var
+  pb: PProgramBinary;
+  I, J, Count, Temp: Integer;
+  stream: TStream;
+begin
+  if Assigned(BinaryList) then
+  begin
+    stream := CreateFileStream(cBinariesCacheFile, fmCreate);
+    with stream do
+      try
+        Temp := 0;
+        Write(Temp, SizeOf(Integer)); // version, just in case
+        Temp := BinaryList.Count;
+        Write(Temp, SizeOf(Integer));
+        for I := 0 to BinaryList.Count - 1 do
+        begin
+          pb := BinaryList[I];
+          with stream do
+          begin
+            Temp := Length(pb.ProgramName);
+            Write(Temp, SizeOf(Integer));
+            Write(pb.ProgramName[1], Temp * SizeOf(Char));
+            Count := Length(pb.ObjectNames);
+            Write(Count, SizeOf(Integer));
+            for J := Count - 1 downto 0 do
+            begin
+              Temp := Length(pb.ObjectNames[J]);
+              Write(Temp, SizeOf(Integer));
+              Write(pb.ObjectNames[J][1], Temp * SizeOf(Char));
+              Write(pb.ObjectHashCode[J], SizeOf(Integer));
+            end;
+            Write(pb.BinaryFormat, SizeOf(TGLEnum));
+            Write(pb.BinarySize, SizeOf(Integer));
+            Write(pb.BinaryData^, pb.BinarySize);
+          end;
+          if ADoFree then
+          begin
+            FreeMem(pb.BinaryData, pb.BinarySize);
+            Dispose(pb);
+          end;
+        end;
+      finally
+        stream.Destroy;
+        if ADoFree then
+          FreeAndNil(BinaryList);
+      end;
+  end;
+end;
+
+class procedure ShaderManager.NotifyProjectClosed;
+begin
+  SaveBinaryCache(True);
+end;
+
+class function ShaderManager.GetTextureTarget(const AUniform: TGLSLUniform;
   out ATarget: TGLTextureTarget): Boolean;
 const
   cGLSLTypeToTexTarget: array[GLSLTypeSampler1D..GLSLTypeUIntSamplerBuffer]
@@ -1612,97 +1865,157 @@ begin
     ATarget := cGLSLTypeToTexTarget[dt];
 end;
 
-procedure TGLShaderManager.DefineShaderObject(
-  const AName: string;
-  const Code: AnsiString;
-  ATypes: TGLSLProgramTypes);
+class function ShaderManager.GetObject(const AName: IGLName): TGLSLObject;
 var
-  Obj: TGLSLShaderObject;
+  I: Integer;
+begin
+  if Assigned(AName) and (AName.GetInheritorClass = TGLSLObjectName) then
+  begin
+    I := AName.GetIndex;
+    if I > -1 then
+      exit(ShaderObjects[I]);
+  end;
+  Result := nil;
+end;
+
+class function ShaderManager.GetProgram(const AName: IGLName): TGLSLProgram;
+var
+  I: Integer;
+begin
+  if Assigned(AName) and (AName.GetInheritorClass = TGLSLProgramName) then
+  begin
+    I := AName.GetIndex;
+    if I > -1 then
+      exit(ShaderPrograms[I]);
+  end;
+  Result := nil;
+end;
+
+class procedure ShaderManager.PushObject(AObject: TGLSLObject);
+var
+  I: Integer;
+begin
+  SetLength(ShaderObjects, Length(ShaderObjects) + 1);
+  I := High(ShaderObjects);
+  AObject.Name.SetIndex(I);
+  ShaderObjects[I] := AObject;
+end;
+
+class procedure ShaderManager.PushProgram(AProgram: TGLSLProgram);
+var
+  I: Integer;
+begin
+  SetLength(ShaderPrograms, Length(ShaderPrograms) + 1);
+  I := High(ShaderPrograms);
+  AProgram.Name.SetIndex(I);
+  ShaderPrograms[I] := AProgram;
+end;
+
+class procedure ShaderManager.DefineShaderObject(
+  var AName: IGLName;
+  const Code: AnsiString;
+  ATypes: TGLSLProgramTypes;
+  ANameRoot: string);
+var
+  Obj: TGLSLObject;
   newCode: Boolean;
   P: TGLSLProgramType;
+  N, I: Integer;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  SafeCurrentGLContext;
+  CheckCall;
 
-  Obj := GetShaderObject(AName);
+  Obj := GetObject(AName);
   if not Assigned(Obj) then
   begin
     with Obj do
     begin
-      Obj := TGLSLShaderObject.Create;
-      FFriendlyName := AName;
-      FNameHashKey := ComputeNameHashKey(AName);
-      FShaderObjectsTree.Add(FNameHashKey, Obj);
+      Obj := TGLSLObject.Create;
+      Name.Value := ANameRoot;
+      PushObject(Obj);
+      AName := Name;
       newCode := True;
     end;
   end
   else
-    newCode := (Obj.FCode <> Code) or (Obj.FTypes <> ATypes);
+    newCode := (Obj.FTypes <> ATypes) or (Obj.FCode <> Code);
 
   if newCode then
     with Obj do
     begin
       FTypes := ATypes;
       FCode := Code;
+
+      if GL.ARB_get_program_binary then
+      begin
+        N := Length(FCode);
+        FHashCode := N;
+        for I := 1 to N do
+          FHashCode := (FHashCode shl 1) + Integer(FCode[i]);
+      end;
+
       for P := Low(TGLSLProgramType) to High(TGLSLProgramType) do
         FHandles[P].NotifyChangesOfData;
       Compile;
     end;
 end;
 
-procedure TGLShaderManager.DefineShaderProgram(const AName: string; AProgramMask: TGLSLProgramTypes);
+class procedure ShaderManager.DefineShaderProgram(
+  var AName: IGLName;
+  AProgramMask: TGLSLProgramTypes;
+  ANameRoot: string);
 var
-  Prog: TGLSLShaderProgram;
+  Prog: TGLSLProgram;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  SafeCurrentGLContext;
+  CheckCall;
 
-  Prog := GetShaderProgram(AName);
+  Prog := GetProgram(AName);
   if not Assigned(Prog) then
   begin
-    Prog := TGLSLShaderProgram.Create;
-    Prog.FFriendlyName := AName;
-    Prog.FNameHashKey := ComputeNameHashKey(AName);
-    FShaderProgramsTree.Add(Prog.FNameHashKey, Prog);
+    Prog := TGLSLProgram.Create;
+    Prog.Name.Value := ANameRoot;
+    AName := Prog.Name;
+    PushProgram(Prog);
   end
   else
   begin
-    Prog.DetachAll;
+    Prog.FHandle.DestroyHandle;
     Prog.FAttachedObjects.Clear;
+    Prog.FLinkFailureCount := 0;
   end;
   Prog.FProgramMask := AProgramMask;
 end;
 
-procedure TGLShaderManager.AttachShaderObjectToProgram(
-  const AObject: string; const AProgram: string);
+class procedure ShaderManager.AttachShaderObjectToProgram(
+  const AObject: IGLName; const AProgram: IGLName);
 var
-  obj: TGLSLShaderObject;
-  Prog: TGLSLShaderProgram;
+  obj: TGLSLObject;
+  Prog: TGLSLProgram;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  Prog := GetShaderProgram(AProgram);
-  obj := GetShaderObject(AObject);
+  CheckCall;
+  Prog := GetProgram(AProgram);
+  obj := GetObject(AObject);
   Prog.Attach(obj);
 end;
 
-procedure TGLShaderManager.DetachShaderObjectFromProgram(
-  const AObject: string; const AProgram: string);
+class procedure ShaderManager.DetachShaderObjectFromProgram(
+  const AObject: IGLName; const AProgram: IGLName);
 var
-  obj: TGLSLShaderObject;
-  Prog: TGLSLShaderProgram;
+  obj: TGLSLObject;
+  Prog: TGLSLProgram;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  obj := GetShaderObject(AObject);
-  Prog := GetShaderProgram(AProgram);
+  CheckCall;
+  obj := GetObject(AObject);
+  Prog := GetProgram(AProgram);
   Prog.Detach(obj);
 end;
 
-procedure TGLShaderManager.MakeLocationCache(AProgram: TGLSLShaderProgram);
+class procedure ShaderManager.MakeLocationCache(AProgram: TGLSLProgram);
 var
   I, J: Integer;
   ProgramID: GLuint;
-  buff: array[0..127] of AnsiChar;
-  indices: array[0..127] of GLInt;
+  buff: array[0..255] of AnsiChar;
+  indices: array[0..255] of GLInt;
+  offsets: array[0..255] of GLInt;
   max: GLInt;
   Size: GLInt;
   len: GLsizei;
@@ -1712,7 +2025,7 @@ var
   UniformBlock: TGLSLUniformBlock;
   vCache: TProgramCache;
 begin
-  Assert(vWorked, glsWrongMethodCall);
+  CheckCall;
   ProgramID := AProgram.FHandle.Handle;
   // Get all active atttributes
   GL.GetProgramiv(ProgramID, GL_ACTIVE_ATTRIBUTES, @max);
@@ -1732,7 +2045,6 @@ begin
     begin
       with Attr do
       begin
-        CompilationLog.LogInfo('Detected active attribute: ' + Name);
         vCache.Location := GL.GetAttribLocation(ProgramID, PGLChar(TGLString(Name)));
         case AType of
           GL_FLOAT: vCache.DataType := GLSLType1F;
@@ -1754,13 +2066,8 @@ begin
           GL_FLOAT_MAT2: vCache.DataType := GLSLTypeMat2F;
           GL_FLOAT_MAT3: vCache.DataType := GLSLTypeMat3F;
           GL_FLOAT_MAT4: vCache.DataType := GLSLTypeMat4F;
-        else
-          begin
-            vCache.DataType := GLSLTypeUndefined;
-            CompilationLog.LogError('Active attribute ' + Name + ' with ' +
-              glsUnknownType);
-          end;
         end;
+        CompilationLog.LogInfo(Format('Detected active attribute: %s %s', [cGLSLTypeString[vCache.DataType], Name]));
       end;
       vCache.WarningAbsenceLoged := False;
       Attr.DoCache(AProgram.FHandle, vCache);
@@ -1799,6 +2106,8 @@ begin
             GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, @Size);
           GL.GetActiveUniformBlockiv(ProgramID, vCache.Location,
             GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, @indices[0]);
+          GL.GetActiveUniformsiv(ProgramID, Size, @indices[0],
+            GL_UNIFORM_OFFSET, @offsets[0]);
           for J := 0 to Size - 1 do
           begin
             GL.GetActiveUniform(
@@ -1810,8 +2119,9 @@ begin
               @AType,
               @buff[0]);
             Uniform := TGLSLUniform.RegisterUniform(Copy(string(buff), 0, len));
-            if FUniforms.IndexOf(Uniform)<0 then
+            if FUniforms.IndexOf(Uniform) < 0 then
               FUniforms.Add(Uniform);
+            Uniform.FBlockOffset := offsets[J];
           end;
         end;
         vCache.WarningAbsenceLoged := False;
@@ -1832,7 +2142,7 @@ begin
   begin
     GL.GetActiveUniform(
       ProgramID,
-      I,
+      TGLuint(I),
       Length(buff),
       @len,
       @Size,
@@ -1844,7 +2154,6 @@ begin
     begin
       with Uniform do
       begin
-        CompilationLog.LogInfo('Detected active uniform: ' + Name);
         vCache.Location := GL.GetUniformLocation(ProgramID, PGLChar(TGLString(Name)));
         case AType of
           GL_FLOAT: vCache.DataType := GLSLType1F;
@@ -1908,53 +2217,48 @@ begin
             GLSLTypeIntSamplerMSArray;
           GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY: vCache.DataType :=
             GLSLTypeUIntSamplerMSArray;
-        else
-          begin
-            vCache.DataType := GLSLTypeUndefined;
-            CompilationLog.LogError('Active uniform ' + Name + ' with ' +
-              glsUnknownType);
-          end;
         end;
+        CompilationLog.LogInfo(Format('Detected active uniform: %s %s', [cGLSLTypeString[vCache.DataType], Name]));
       end;
       vCache.WarningAbsenceLoged := False;
       vCache.BindedBuffer := 0;
       Uniform.DoCache(AProgram.FHandle, vCache);
+      if Uniform.FBlockOffset > -1 then
+        CompilationLog.LogInfo(Format('Block offset: %d', [Uniform.FBlockOffset]));
     end
     else
       CompilationLog.LogWarning('Active uniform ' + Copy(string(buff), 0, len) +
         ' not registered');
   end;
 
-  vShaderManager.CompilationLog.LogNotice('');
+  CompilationLog.LogNotice('');
 end;
 
-function TGLShaderManager.LinkShaderProgram(const AName: string): Boolean;
+class procedure ShaderManager.LinkShaderProgram(const AName: IGLName);
 var
-  prog: TGLSLShaderProgram;
+  prog: TGLSLProgram;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  SafeCurrentGLContext;
+  CheckCall;
 
-  prog := GetShaderProgram(AName);
-  Result := prog.Link;
-  if Result then
-    MakeLocationCache(prog);
+  prog := GetProgram(AName);
+  if prog.Link then
+    MakeLocationCache(prog)
 end;
 
-procedure TGLShaderManager.UseProgram(const AName: string);
+class procedure ShaderManager.UseProgram(const AName: IGLName);
 var
-  prog: TGLSLShaderProgram;
+  prog: TGLSLProgram;
 begin
-  SafeCurrentGLContext;
   try
     BeginWork;
-    prog := GetShaderProgram(AName);
+    prog := GetProgram(AName);
 
     if Assigned(prog) then
     begin
       if prog.FHandle.IsDataNeedUpdate then
       begin
-        if not LinkShaderProgram(AName) then
+        LinkShaderProgram(AName);
+        if prog.FHandle.IsDataNeedUpdate then
           Abort;
       end;
 
@@ -1963,7 +2267,7 @@ begin
     end
     else
     begin
-      WorkLog.LogError('Used unknown program "' + AName + '"');
+      WorkLog.LogError('Used unknown program "' + string(AName.GetValue) + '"');
       Abort;
     end;
 
@@ -1972,127 +2276,131 @@ begin
   end;
 end;
 
-function TGLShaderManager.IsProgramDefined(const AName: string): Boolean;
-begin
-  Assert(vWorked, glsWrongMethodCall);
-  Result := GetShaderProgram(AName) <> nil;
-end;
-
-function TGLShaderManager.IsProgramCurrent(const AName: string): Boolean;
-begin
-  if vCurrentProgram = nil then
-    Result := false
-  else
-    Result := vCurrentProgram.FNameHashKey = ComputeNameHashKey(AName);
-end;
-
-function TGLShaderManager.GetCurrentProgram: string;
-begin
-  if vCurrentProgram = nil then
-    Result := ''
-  else
-    Result := vCurrentProgram.FriendlyName;
-end;
-
-function TGLShaderManager.MakeUniqueObjectName(const NameRoot: string):
-  string;
+class function ShaderManager.IsProgramLinked(const AName: IGLName): Boolean;
 var
-  I: Integer;
+  prog: TGLSLProgram;
 begin
-  Assert(vWorked, glsWrongMethodCall);
+  Result := False;
+  try
+    BeginWork;
+    prog := GetProgram(AName);
 
-  Result := NameRoot;
-  if Length(Result) = 0 then
-    Result := 'ShaderObj';
-  I := 1;
-  while GetShaderObject(Result) <> nil do
-  begin
-    Result := NameRoot + IntToStr(I);
-    Inc(I);
+    if Assigned(prog) then
+    begin
+      prog.FHandle.AllocateHandle;
+      if prog.FHandle.IsDataNeedUpdate then
+        LinkShaderProgram(AName);
+      Result := not prog.FHandle.IsDataNeedUpdate;
+    end;
+  finally
+    EndWork;
   end;
 end;
 
-function TGLShaderManager.MakeUniqueProgramName(const NameRoot: string):
-  string;
-var
-  I: Integer;
+class function ShaderManager.IsProgramDefined(const AName: IGLName): Boolean;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-
-  Result := NameRoot;
-  if Length(Result) = 0 then
-    Result := 'ShaderProg';
-  I := 1;
-  while GetShaderProgram(Result) <> nil do
-  begin
-    Result := NameRoot + IntToStr(I);
-    Inc(I);
-  end;
+  CheckCall;
+  Result := GetProgram(AName) <> nil;
 end;
 
-procedure TGLShaderManager.UseFixedFunctionPipeline;
+class function ShaderManager.IsProgramCurrent(const AName: IGLName): Boolean;
+begin
+  if vCurrentProgram = nil then
+    Result := False
+  else
+    Result := (vCurrentProgram.Name.GetHash = AName.GetHash)
+      and (vCurrentProgram.Name.GetValue = AName.GetValue);
+end;
+
+class function ShaderManager.GetCurrentProgram: IGLName;
+begin
+  if vCurrentProgram = nil then
+    Result := nil
+  else
+    Result := vCurrentProgram.Name;
+end;
+
+class procedure ShaderManager.UseFixedFunctionPipeline;
 begin
   vCurrentProgram := nil;
   CurrentGLContext.GLStates.CurrentProgram := 0;
 end;
 
-procedure TGLShaderManager.DeleteShaderObject(AObject: TGLSLShaderObject);
+class procedure ShaderManager.DeleteShaderObject(AObject: TGLSLObject);
+var
+  I: Integer;
 begin
-  Assert(vWorked, glsWrongMethodCall);
+  CheckCall;
 
   if Assigned(AObject) then
   begin
-    FShaderObjectsTree.Delete(AObject.FNameHashKey);
-    AObject.Destroy;
+    for I := High(ShaderObjects) downto 0 do
+      if AObject = ShaderObjects[I] then
+      begin
+        FreeAndNil(ShaderObjects[I]);
+        exit;
+      end;
   end
   else
     WorkLog.LogWarning('Attempt to delete a nil pointer of shader object');
 end;
 
-procedure TGLShaderManager.DeleteShaderProgram(AProgram: TGLSLShaderProgram);
+class procedure ShaderManager.DeleteShaderProgram(AProgram: TGLSLProgram);
+var
+  I: Integer;
 begin
-  Assert(vWorked, glsWrongMethodCall);
+  CheckCall;
 
   if Assigned(AProgram) then
   begin
-    FShaderProgramsTree.Delete(AProgram.FNameHashKey);
-    AProgram.Destroy;
+    for I := High(ShaderPrograms) downto 0 do
+      if AProgram = ShaderPrograms[I] then
+      begin
+        FreeAndNil(ShaderPrograms[I]);
+        exit;
+      end;
   end
   else
     WorkLog.LogWarning('Attempt to delete a nil pointer of shader program');
 end;
 
-procedure TGLShaderManager.DeleteShaderObject(const AName: string);
+class procedure ShaderManager.DeleteShaderObject(var AName: IGLName);
 begin
-  DeleteShaderObject(GetShaderObject(AName));
+  DeleteShaderObject(GetObject(AName));
+  AName := nil;
 end;
 
-procedure TGLShaderManager.DeleteShaderProgram(const AName: string);
+class procedure ShaderManager.DeleteShaderProgram(var AName: IGLName);
 begin
-  DeleteShaderProgram(GetShaderProgram(AName));
+  DeleteShaderProgram(GetProgram(AName));
+  AName := nil;
 end;
 
-procedure TGLShaderManager.ClearShaderObject;
-begin
-  Assert(vWorked, glsWrongMethodCall);
-  FShaderObjectsTree.ForEach(ObjectDestroyer);
-  FShaderObjectsTree.Clear;
-end;
-
-procedure TGLShaderManager.ClearShaderPrograms;
-begin
-  Assert(vWorked, glsWrongMethodCall);
-  FShaderProgramsTree.ForEach(ProgramDestroyer);
-  FShaderProgramsTree.Clear;
-end;
-
-function TGLShaderManager.GetProgramAttribs(const AName: string; out Attribs: TGLSLAttributeArray): Boolean;
+class procedure ShaderManager.ClearShaderObject;
 var
-  prog: TGLSLShaderProgram;
+  I: Integer;
+begin
+  CheckCall;
+  for I := High(ShaderObjects) downto 0 do
+    FreeAndNil(ShaderObjects[I]);
+end;
+
+class procedure ShaderManager.ClearShaderPrograms;
+var
+  I: Integer;
+begin
+  CheckCall;
+  for I := High(ShaderPrograms) downto 0 do
+    FreeAndNil(ShaderPrograms[I]);
+end;
+
+class function ShaderManager.GetProgramAttribs(const AName: IGLName; out Attribs: TGLSLAttributeArray): Boolean;
+var
+  prog: TGLSLProgram;
   I, J, K: Integer;
 begin
-  Assert(vWorked, glsWrongMethodCall);
-  prog := GetShaderProgram(AName);
+  CheckCall;
+  prog := GetProgram(AName);
   if Assigned(prog) then
   begin
     J := 0;
@@ -2110,7 +2418,7 @@ begin
     Result := False;
 end;
 
-procedure TGLShaderManager.Uniform1f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform1f(AUniform: TGLSLUniform; const
   Value: Single);
 var
   loc: GLInt;
@@ -2120,7 +2428,7 @@ begin
     GL.Uniform1f(loc, Value);
 end;
 
-procedure TGLShaderManager.Uniform2f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform2f(AUniform: TGLSLUniform; const
   Value: TVector2f);
 var
   loc: GLInt;
@@ -2130,7 +2438,7 @@ begin
     GL.Uniform2f(loc, Value[0], Value[1]);
 end;
 
-procedure TGLShaderManager.Uniform3f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform3f(AUniform: TGLSLUniform; const
   Value: TVector3f);
 var
   loc: GLInt;
@@ -2140,7 +2448,7 @@ begin
     GL.Uniform3f(loc, Value[0], Value[1], Value[2]);
 end;
 
-procedure TGLShaderManager.Uniform4f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform4f(AUniform: TGLSLUniform; const
   Value: TVector4f);
 var
   loc: GLInt;
@@ -2150,7 +2458,7 @@ begin
     GL.Uniform4f(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
-procedure TGLShaderManager.Uniform1I(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform1I(AUniform: TGLSLUniform; const
   Value: Integer);
 var
   loc: GLInt;
@@ -2160,7 +2468,7 @@ begin
     GL.Uniform1i(loc, Value);
 end;
 
-procedure TGLShaderManager.Uniform1I(AUniform: TGLSLUniform;
+class procedure ShaderManager.Uniform1I(AUniform: TGLSLUniform;
   const Value: PGLInt; Count: Integer);
 var
   loc: GLInt;
@@ -2170,7 +2478,7 @@ begin
     GL.Uniform1iv(loc, Count, Value);
 end;
 
-procedure TGLShaderManager.Uniform2I(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform2I(AUniform: TGLSLUniform; const
   Value: TVector2I);
 var
   loc: GLInt;
@@ -2180,7 +2488,7 @@ begin
     GL.Uniform2i(loc, Value[0], Value[1]);
 end;
 
-procedure TGLShaderManager.Uniform3I(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform3I(AUniform: TGLSLUniform; const
   Value: TVector3I);
 var
   loc: GLInt;
@@ -2190,7 +2498,7 @@ begin
     GL.Uniform3i(loc, Value[0], Value[1], Value[2]);
 end;
 
-procedure TGLShaderManager.Uniform4I(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform4I(AUniform: TGLSLUniform; const
   Value: TVector4I);
 var
   loc: GLInt;
@@ -2200,7 +2508,7 @@ begin
     GL.Uniform4i(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
-procedure TGLShaderManager.Uniform4I(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform4I(AUniform: TGLSLUniform; const
   Value: PGLInt; Count: Integer);
 var
   loc: GLInt;
@@ -2210,7 +2518,7 @@ begin
     GL.Uniform4iv(loc, Count, Value);
 end;
 
-procedure TGLShaderManager.Uniform1UI(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform1UI(AUniform: TGLSLUniform; const
   Value: TGLuint);
 var
   loc: GLInt;
@@ -2220,7 +2528,7 @@ begin
     GL.Uniform1ui(loc, Value);
 end;
 
-procedure TGLShaderManager.Uniform2UI(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform2UI(AUniform: TGLSLUniform; const
   Value: TVector2UI);
 var
   loc: GLInt;
@@ -2230,7 +2538,7 @@ begin
     GL.Uniform2ui(loc, Value[0], Value[1]);
 end;
 
-procedure TGLShaderManager.Uniform3UI(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform3UI(AUniform: TGLSLUniform; const
   Value: TVector3UI);
 var
   loc: GLInt;
@@ -2240,7 +2548,7 @@ begin
     GL.Uniform3ui(loc, Value[0], Value[1], Value[2]);
 end;
 
-procedure TGLShaderManager.Uniform4UI(AUniform: TGLSLUniform; const
+class procedure ShaderManager.Uniform4UI(AUniform: TGLSLUniform; const
   Value: TVector4UI);
 var
   loc: GLInt;
@@ -2250,7 +2558,7 @@ begin
     GL.Uniform4ui(loc, Value[0], Value[1], Value[2], Value[3]);
 end;
 
-procedure TGLShaderManager.UniformMat2f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.UniformMat2f(AUniform: TGLSLUniform; const
   Value: TMatrix2f);
 var
   loc: GLInt;
@@ -2260,7 +2568,7 @@ begin
     GL.UniformMatrix2fv(loc, 1, False, @Value);
 end;
 
-procedure TGLShaderManager.UniformMat3f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.UniformMat3f(AUniform: TGLSLUniform; const
   Value: TMatrix3f);
 var
   loc: GLInt;
@@ -2270,7 +2578,7 @@ begin
     GL.UniformMatrix3fv(loc, 1, False, @Value);
 end;
 
-procedure TGLShaderManager.UniformMat4f(AUniform: TGLSLUniform; const
+class procedure ShaderManager.UniformMat4f(AUniform: TGLSLUniform; const
   Value: TMatrix4f);
 var
   loc: GLInt;
@@ -2280,24 +2588,60 @@ begin
     GL.UniformMatrix4fv(loc, 1, False, @Value);
 end;
 
-procedure TGLShaderManager.UniformSampler(AUniform: TGLSLUniform;
-  const Texture: GLUInt; TexUnit: GLUInt);
+class function ShaderManager.UniformSampler(AUniform: TGLSLUniform;
+  const Texture: GLUInt): TGLuint;
 var
   loc: GLInt;
   target: TGLTextureTarget;
+  I, J: Integer;
+  bindTime, minTime: Double;
 begin
   loc := AUniform.Location;
   if (loc > -1) and GetTextureTarget(AUniform, target) then
-  begin
-    CurrentGLContext.GLStates.TextureBinding[TexUnit, target] := Texture;
-    GL.Uniform1i(loc, TexUnit);
-  end;
+    with CurrentGLContext.GLStates do
+    begin
+      // Find alredy binded texture unit
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        if TextureBinding[I, target] = Texture then
+        begin
+          GL.Uniform1i(loc, TGLuint(I));
+          exit(I);
+        end;
+      end;
+      // Find unused texture unit
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        if TextureBinding[I, target] = 0 then
+        begin
+          TextureBinding[I, target] := Texture;
+          GL.Uniform1i(loc, TGLuint(I));
+          exit(I);
+        end;
+      end;
+      // Find most useless texture units
+      minTime := GLSTime;
+      J := 0;
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        bindTime := TextureBindingTime[I, target];
+        if bindTime < minTime then
+        begin
+          minTime := bindTime;
+          J := I;
+        end;
+      end;
+      TextureBinding[J, target] := Texture;
+      GL.Uniform1i(loc, TGLuint(J));
+      exit(J);
+    end;
+  Result := $FFFFFFFF;
 end;
 
-//procedure TGLShadersManager.UniformBuffer(const ProgramName: string; AUniform: TGLSLUniform; const Buffer: GLUInt);
+//class procedure ShadersManager.UniformBuffer(const ProgramName: string; AUniform: TGLSLUniform; const Buffer: GLUInt);
 //var
 //  RC: TGLContext;
-//  prog: TGLSLShaderProgram;
+//  prog: TGLSLProgram;
 //  loc: GLInt;
 //begin
 //  if SafeCurrentGLContext(RC) then
@@ -2327,9 +2671,11 @@ end;
 //    end;
 //  end;
 //end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$ENDREGION}
 
 initialization
+
+  ShaderManager.Initialize;
   SetLength(ProgramCache, GLS_PROGRAM_CACHE_SIZE);
 
   {: Registration of the most common attributes. }
@@ -2369,8 +2715,6 @@ initialization
     := TGLSLUniform.RegisterUniform('ViewProjectionMatrix');
   uniformCameraWorldPosition
     := TGLSLUniform.RegisterUniform('CameraWorldPosition');
-  uniformLightWorldPosition
-    := TGLSLUniform.RegisterUniform('LightWorldPosition');
   uniformDiffuse
     := TGLSLUniform.RegisterUniform('Diffuse');
   uniformTexUnit0
@@ -2392,7 +2736,8 @@ initialization
 
 finalization
 
-  FreeAndNil(vShaderManager);
+  ShaderManager.Finalize;
   ClearRegistries;
 
 end.
+

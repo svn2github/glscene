@@ -75,7 +75,7 @@ implementation
 
 
 uses
-  SysUtils, GLTextureImageEditors;
+  SysUtils, GLTextureImageEditors, GLTextureFormat;
 
 // Create
 

@@ -412,9 +412,33 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: string); override;
+    procedure Edit; override;
   end;
 
-  // TGLSStartedEditor
+  //  TGL3xSamplerProperty
+  //
+
+  TGL3xSamplerProperty = class(TStringProperty)
+  private
+    FSamplerNameList: TStringList;
+    procedure RefreshSamplerList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+  end;
+
+  // TGL3xSamplerParamProperty
+  //
+  TGL3xSamplerParamProperty = class(TClassProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+  end;
+
+  // TGLSLauncherEditor
   //
 
   TGLSLauncherEditor = class(TComponentEditor)
@@ -571,7 +595,6 @@ uses
   SysUtils,
   TypInfo,
   VectorGeometry,
-  VectorTypes,
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xObjects,
   GL3xAtmosphere,
@@ -1660,9 +1683,10 @@ end;
 
 procedure TGL3xMaterialProperty.SetValue(const Value: string);
 var
-  I, J, SaveReq: Integer;
+  I, J, CreateReq: Integer;
   project: IOTAProject;
   vFileName: string;
+  rName: IGLName;
 begin
   RefreshMaterialList;
   J := -1;
@@ -1679,15 +1703,25 @@ begin
   end
   else
   begin
-    SaveReq := MessageDlg(Format('Create new material "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
-    if SaveReq = idYes then
+    CreateReq := MessageDlg(Format('Create new material "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    if CreateReq = idYes then
     begin
       project := GetActiveProject;
       vFileName := ExtractFilePath(project.ProjectOptions.TargetName);
-      vFileName := IncludeTrailingPathDelimiter(vFileName) + Value+'.xml';
-      if MaterialManager.CreateMaterial(Value, vFileName) then
+      ForceDirectories(vFileName);
+      vFileName := IncludeTrailingPathDelimiter(vFileName) + Value+'.material';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateMaterial(Value, vFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
       begin
-         SetStrValue(Value);
+         SetStrValue(rName.GetValue);
+         Modified;
          exit;
       end;
     end;
@@ -1698,10 +1732,16 @@ end;
 
 procedure TGL3xMaterialProperty.Edit;
 var
-  Mat: TGL3xMaterialName;
+  Mat: IGLName;
 begin
-  Mat := GetStrValue;
-  if Mat <> glsDEFAULTMATERIALNAME then
+  with MaterialManager do
+  try
+    BeginWork;
+    Mat := GetMaterialName(GetStrValue);
+  finally
+    EndWork;
+  end;
+  if Assigned(Mat) and (Mat.GetValue <> glsDEFAULTMATERIALNAME) then
     with MaterialEditorForm do
     begin
       Designer := Self.Designer;
@@ -1747,7 +1787,10 @@ end;
 
 procedure TGL3xTextureProperty.SetValue(const Value: string);
 var
-  I, J: Integer;
+  I, J, ImportReq: Integer;
+  project: IOTAProject;
+  rImportFile, rFileName: string;
+  rName: IGLName;
 begin
   RefreshTextureList;
   J := -1;
@@ -1764,9 +1807,142 @@ begin
   end
   else
   begin
+    ImportReq := MessageDlg(Format('Import new texture "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    rImportFile := '';
+    if (ImportReq = idYes) and OpenPictureDialog(rImportFile) then
+    begin
+      project := GetActiveProject;
+      rFileName := ExtractFilePath(project.ProjectOptions.TargetName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.texture';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateTexture(Value, rImportFile, rFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         Designer.Modified;
+         exit;
+      end;
+    end;
     SetStrValue(glsDIFFUSEMAP);
   end;
   Modified;
+  Designer.Modified;
+end;
+
+procedure TGL3xTextureProperty.Edit;
+begin
+  with MaterialManager do
+  try
+    BeginWork;
+    MaterialEditorForm.SetTextureToPreview(GetTextureName(GetStrValue));
+  finally
+    EndWork;
+  end;
+end;
+
+// ------------------
+// ------------------ TGL3xSamplerProperty ------------------
+// ------------------
+
+destructor TGL3xSamplerProperty.Destroy;
+begin
+  FSamplerNameList.Free;
+  inherited;
+end;
+
+procedure TGL3xSamplerProperty.RefreshSamplerList;
+begin
+  MaterialManager.FillSamplerNameList(FSamplerNameList);
+end;
+
+function TGL3xSamplerProperty.GetAttributes;
+begin
+  Result := [paValueList];
+end;
+
+// GetValues
+//
+
+procedure TGL3xSamplerProperty.GetValues(Proc: TGetStrProc);
+var
+  I: Integer;
+begin
+  RefreshSamplerList;
+  for I := 0 to FSamplerNameList.Count - 1 do
+    Proc(FSamplerNameList[I]);
+end;
+
+// SetValue
+//
+
+procedure TGL3xSamplerProperty.SetValue(const Value: string);
+var
+  I, J, CreateReq: Integer;
+  project: IOTAProject;
+  rFileName: string;
+  rName: IGLName;
+
+  procedure Reselect;
+  begin
+    Designer.NoSelection;
+    Designer.SelectComponent(Self.GetComponent(0));
+    Designer.Modified;
+  end;
+
+begin
+  RefreshSamplerList;
+  J := -1;
+  for I := 0 to FSamplerNameList.Count - 1 do
+    if Value = FSamplerNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if (J > -1) or (Length(Value) = 0) then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    CreateReq := MessageDlg(Format('Create new sampler "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    if CreateReq = idYes then
+    begin
+      project := GetActiveProject;
+      rFileName := ExtractFilePath(project.ProjectOptions.TargetName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.sampler';
+      with MaterialManager do
+      try
+        BeginWork;
+        rName := CreateSampler(Value, rFileName);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         Reselect;
+         exit;
+      end;
+    end;
+    SetStrValue('');
+  end;
+  Modified;
+  Reselect;
+end;
+
+function TGL3xSamplerParamProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paSubProperties, paVolatileSubProperties];
 end;
 
 // ------------------
@@ -1820,46 +1996,6 @@ begin
   Result := 1;
 end;
 
-function GetMaterialManagerDataStream(): TStream;
-var
-  i: Integer;
-  Editor: IOTAEditor;
-  Project: IOTAProject;
-  Resource: IOTAProjectResource;
-  ResourceEntry: IOTAResourceEntry;
-  rName: PChar;
-begin
-  Result := nil;
-  Project := GetActiveProject;
-  if not Assigned(Project) then
-    exit;
-
-  Resource := nil;
-  for i := 0 to Project.GetModuleFileCount - 1 do
-  begin
-    Editor := Project.GetModuleFileEditor(i);
-    if Supports(Editor, IOTAProjectResource, Resource) then
-      Break;
-  end;
-
-  if Assigned(Resource) then
-  begin
-    for I := 0 to Resource.GetEntryCount - 1 do
-    begin
-      ResourceEntry := Resource.GetEntry(I);
-      rName := ResourceEntry.GetResourceName;
-      if Cardinal(rName)>$1000 then
-        if StrComp(rName, PChar(glsMaterialManagerData)) = 0 then
-        begin
-          Result := TMemoryStream.Create;
-          Result.Write(ResourceEntry.GetData^, ResourceEntry.DataSize);
-          Result.Seek(0, soBeginning);
-          exit;
-        end;
-    end;
-  end;
-end;
-
 function GetAppResourceStream(): TStream;
 var
   i: Integer;
@@ -1909,6 +2045,7 @@ begin
   if Assigned(Project) then
   begin
     Result := Project.ProjectOptions.TargetName;
+    ForceDirectories(ExtractFilePath(Result));
   end;
 end;
 {$ENDIF}
@@ -2351,16 +2488,20 @@ begin
 {$ENDIF}
 
 {$IFDEF GLS_EXPERIMENTAL}
-  RegisterPropertyEditor(TypeInfo(TGL3xMaterialName), TGL3xBaseSceneObject, 'Material', TGL3xMaterialProperty);
-  RegisterPropertyEditor(TypeInfo(TGL3xTextureName), TTextureSamplerNode, 'Texture', TGL3xTextureProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGL3xBaseSceneObject, 'Material', TGL3xMaterialProperty);
+  RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Texture', TGL3xTextureProperty);
+  RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Sampler', TGL3xSamplerProperty);
+  RegisterPropertyEditor(TypeInfo(TGL3xSampler), TTextureSamplerNode, 'SamplerParameters', TGL3xSamplerParamProperty);
+
   RegisterComponentEditor(TGLSLauncher, TGLSLauncherEditor);
-{$ENDIF}
+
   Application.Initialize;
+{$ENDIF}
 end;
 
 function GetGLSceneVersion: string;
 begin
-  Result := 'GLScene v' + Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
+  Result := Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
 end;
 
 // ------------------------------------------------------------------
@@ -2373,7 +2514,6 @@ initialization
   // ------------------------------------------------------------------
 
 {$IFDEF GLS_DELPHI_2005_UP}
-
   SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
     LoadBitmap(HInstance, 'TGLScene'),
     False,
@@ -2389,8 +2529,6 @@ initialization
 {$IFDEF GLS_EXPERIMENTAl}
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   ApplicationFileIO.vAFIOGetAppResourceStream := GetAppResourceStream;
-
-  vGetMaterialManagerDataStreamFunc := GetMaterialManagerDataStream;
 {$ENDIF}
 
   with ObjectManager do
