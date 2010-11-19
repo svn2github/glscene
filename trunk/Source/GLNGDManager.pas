@@ -16,7 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
-
+  <li>19/11/10 - FP - Fixed FAngularDamping memory leak for TGLNGDDynamic
   <li>19/11/10 - FP - Added UseGravity property for TGLNGDDynamic
   <li>05/11/10 - FP - Removed check freeform in TGLNGDStatic.GeTree
   Removed FCollisionArray from TGLNGDBehaviour
@@ -2060,6 +2060,7 @@ end;
 destructor TGLNGDDynamic.Destroy;
 begin
   // Clean up everything
+  FAngularDamping.Free;
   FForce.Free;
   FTorque.Free;
   FCenterOfMass.Free;
