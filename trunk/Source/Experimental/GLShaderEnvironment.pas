@@ -21,10 +21,8 @@ uses
   Classes,
   BaseClasses,
   GLCrossPlatform,
-  OpenGLTokens,
   GLShaderManager,
-  VectorGeometry,
-  GL3xTexture
+  VectorGeometry
 {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
@@ -100,6 +98,12 @@ type
     procedure Apply; override;
   end;
 
+  TShaderEnvLightNumber = class(TBaseShaderEnvironment)
+  public
+    constructor Create; override;
+    procedure Apply; override;
+  end;
+
   TBaseShaderEnvironmentClass = class of TBaseShaderEnvironment;
 
 {$IFDEF FPC}
@@ -112,7 +116,6 @@ uses
   SysUtils,
   GLVBOManager,
   GLContext,
-  GLState,
   GL3xMaterial;
 
 {$IFNDEF FPC}
@@ -239,12 +242,22 @@ end;
 
 constructor TShaderEnvLights.Create;
 begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('LightIndex[0]');
+//  FGLSLUniform := TGLSLUniform.RegisterUniform('LightIndex[0]');
 end;
 
 procedure TShaderEnvLights.Apply;
 begin
   MaterialManager.BindLightsBlock;
+end;
+
+constructor TShaderEnvLightNumber.Create;
+begin
+  FGLSLUniform := TGLSLUniform.RegisterUniform('LightNumber');
+end;
+
+procedure TShaderEnvLightNumber.Apply;
+begin
+  ShaderManager.Uniform1I(FGLSLUniform, CurrentGLContext.GLStates.LightNumber);
 end;
 
 initialization
@@ -257,6 +270,7 @@ RegisterClasses([
   TShaderEnvNormalMatrix,
   TShaderEnvViewProjectionMatrix,
   TShaderEnvCameraWorldPosition,
-  TShaderEnvLights]);
+  TShaderEnvLights,
+  TShaderEnvLightNumber]);
 
 end.

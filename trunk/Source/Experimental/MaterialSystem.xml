@@ -12,7 +12,14 @@
   vec3 CameraVector;    
   vec4 ScreenPosition;    
   vec4 VertexColor;    
-  vec2 TexCoord[8]; 
+  vec2 TexCoord0;
+  vec2 TexCoord1;
+  vec2 TexCoord2;
+  vec2 TexCoord3;
+  vec2 TexCoord4;
+  vec2 TexCoord5;
+  vec2 TexCoord6;
+  vec2 TexCoord7;  
   };
   
   struct frec {    
@@ -333,7 +340,7 @@
     </Utility>
     <Vectors>
       <Vectors_LightVector ObjectType="F">
-        <overload Version="34" Input="inout frec;" Output="vec3" Uniforms="TShaderEnvLights;" Global="struct lrec {
+        <overload Version="34" Input="inout frec;" Output="vec3" Global="struct lrec {
 		vec4 WorldPosition;
 		vec3 Ambient; 
 		vec3 Diffuse; 
@@ -347,20 +354,17 @@
         float SpotCosCutoff;
 		};
 		
-		layout(std140) uniform LightsBlock { lrec Lights[16]; }; 
-		uniform int LightIndices[16]; 
-		uniform int LightNumber;">{     
-	int J = LightIndices[A.LightIndex];
-    lrec LightSource = Lights[J];
-    if (Lights[J].WorldPosition.w == 1.0)
-    {
-      return normalize(LightSource.WorldPosition.xyz - A.WorldPosition.xyz);
-    }
-    else
-    {
-      return normalize(LightSource.WorldPosition.xyz);
-    } 
-	}</overload>		
+		lrec GetLight(int I); ">{     
+lrec LightSource = GetLight(A.LightIndex);
+if (LightSource.WorldPosition.w == 1.0)
+{
+  return normalize(LightSource.WorldPosition.xyz - A.WorldPosition.xyz);
+}
+else
+{
+  return normalize(LightSource.WorldPosition.xyz);
+} 
+}</overload>		
       </Vectors_LightVector>
       <Vectors_CameraVector ObjectType="F">
         <overload Input="inout frec;" Output="vec3" >{ return A.CameraVector; }</overload>  
@@ -380,30 +384,101 @@
   A.ObjectNormal = Normal;
   A.ObjectTangent = Tangent;
   A.VertexColor = VertexColor;
-  A.TexCoord[0] = TexCoord0;
-  A.TexCoord[1] = TexCoord1;
-  A.TexCoord[2] = TexCoord2;
-  A.TexCoord[3] = TexCoord3;
-  A.TexCoord[4] = TexCoord4;
-  A.TexCoord[5] = TexCoord5;
-  A.TexCoord[6] = TexCoord6;
-  A.TexCoord[7] = TexCoord7;
+  A.TexCoord0 = TexCoord0;
+  A.TexCoord1 = TexCoord1;
+  A.TexCoord2 = TexCoord2;
+  A.TexCoord3 = TexCoord3;
+  A.TexCoord4 = TexCoord4;
+  A.TexCoord5 = TexCoord5;
+  A.TexCoord6 = TexCoord6;
+  A.TexCoord7 = TexCoord7;
 }</overload>
         <overload Version="2" Input="inout vrec;" Output="void" Global="attribute vec3 Position; attribute vec3 Normal; attribute vec3 Tangent; attribute vec4 VertexColor; attribute vec2 TexCoord0; attribute vec2 TexCoord1; attribute vec2 TexCoord2; attribute vec2 TexCoord3; attribute vec2 TexCoord4; attribute vec2 TexCoord5; attribute vec2 TexCoord6; attribute vec2 TexCoord7;">{
   A.ObjectPosition = Position;
   A.ObjectNormal = Normal;
   A.ObjectTangent = Tangent;
   A.VertexColor = VertexColor;
-  A.TexCoord[0] = TexCoord0;
-  A.TexCoord[1] = TexCoord1;
-  A.TexCoord[2] = TexCoord2;
-  A.TexCoord[3] = TexCoord3;
-  A.TexCoord[4] = TexCoord4;
-  A.TexCoord[5] = TexCoord5;
-  A.TexCoord[6] = TexCoord6;
-  A.TexCoord[7] = TexCoord7;
+  A.TexCoord0 = TexCoord0;
+  A.TexCoord1 = TexCoord1;
+  A.TexCoord2 = TexCoord2;
+  A.TexCoord3 = TexCoord3;
+  A.TexCoord4 = TexCoord4;
+  A.TexCoord5 = TexCoord5;
+  A.TexCoord6 = TexCoord6;
+  A.TexCoord7 = TexCoord7;
 }</overload>
       </GetVertex>
+      <AtmosphereColor ObjectType="V">
+        <overload Version="34" Input="inout vrec;" Output="void" Uniforms="TShaderEnvAtmosphere;" Global="
+uniform vec3 spherePosition;
+uniform vec3 sunPosition;
+uniform vec3 LowAtmColor;
+uniform vec3 HighAtmColor;
+uniform float invAtmosphereHeight;
+uniform float PlanetRadius;
+uniform float AtmoRadius;
+uniform float AtmoOpacity;" 
+		Local="
+bool RayCastSphereIntersect(inout vrec A, vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2)
+{
+ float proj = dot(rayVector, spherePosition - A.WorldCameraPosition.xyz);
+ vec3 projPoint = rayVector * proj + A.WorldCameraPosition.xyz;
+ vec3 range = spherePosition - projPoint;
+ float d2 = sphereRadius * sphereRadius - dot(range, range);
+ if (d2 &gt;= 0.0)
+ {
+  d2 = sqrt(d2);
+  i1 = rayVector * (proj-d2) + A.WorldCameraPosition.xyz;
+  i2 = rayVector * (proj+d2) + A.WorldCameraPosition.xyz;
+  return (true);
+ }
+ else return (false);
+}		
+void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
+{
+  A.VertexColor = vec4(0.0);
+  float rayLength = distance(rayStart, rayEnd);
+  int n = int(3.0 * rayLength * invAtmosphereHeight) + 2;
+  if (n &gt; 10) n = 10;
+  float contrib = rayLength * AtmoOpacity / float(n);
+  float decay = 1.0 - contrib * 0.5;
+  contrib *= 1.0/1.1;
+  vec3 normal, atmPoint, lightVector;
+  lightVector = normalize(sunPosition - A.WorldPosition.xyz);
+  for (int I = n-1; I &gt;= 0; I--)
+  {
+    atmPoint = mix(rayStart, rayEnd, float(I) / float(n)) - spherePosition;
+    normal = normalize(atmPoint);
+    float intensity = max(dot(normal, lightVector), 0.0) + 0.1;
+    if (intensity &gt; 0.0)
+    {
+      intensity *= contrib;
+      float alt = (length(atmPoint) - PlanetRadius) * invAtmosphereHeight;
+      vec3 altColor = mix(LowAtmColor, HighAtmColor, alt);
+      A.VertexColor.rgb = A.VertexColor.rgb * decay + altColor * intensity;
+    }
+    else A.VertexColor.rgb *= decay;
+  }
+  A.VertexColor.a = float(n) * contrib * AtmoOpacity * 0.1;
+}"
+>{
+ vec3 ai1, ai2, pi1, pi2;
+ vec3 rayVector = - A.CameraVector;
+ if (RayCastSphereIntersect(A, rayVector, AtmoRadius, ai1, ai2))
+ {
+   A.WorldPosition.xyz = ai1;
+   if (RayCastSphereIntersect(A, rayVector, PlanetRadius, pi1, pi2))
+   {
+      SetAtmosphereColor(A, ai1, pi1);
+   }
+   else
+   {
+      SetAtmosphereColor(A, ai1, ai2);
+   }
+ }
+ else { A.VertexColor = vec4(0.0); }
+}</overload>
+	  </AtmosphereColor>
       <TransformVertex_O2W ObjectType="V">
         <overload Input="inout vrec;" Output="void" Uniforms="TShaderEnvModelMatrix;" Global="uniform mat4 ModelMatrix;">{
   A.WorldPosition = ModelMatrix * vec4(A.ObjectPosition, 1.0);
@@ -485,25 +560,25 @@
 		out vec2 gTexCoord0;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord0 = A.TexCoord[0];
+  fTexCoord0 = A.TexCoord0;
 #else
-  gTexCoord0 = A.TexCoord[0];  
+  gTexCoord0 = A.TexCoord0;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord0;">{ fTexCoord0 = A.TexCoord[0]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord0;">{ fTexCoord0 = A.TexCoord0; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord0;     
 		#else     
 		out vec2 gTexCoord0;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord0 = A.TexCoord[0]*B;
+  fTexCoord0 = A.TexCoord0*B;
 #else
-  gTexCoord0 = A.TexCoord[0]*B;  
+  gTexCoord0 = A.TexCoord0*B;  
 #endif
 }</overload>
         <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord0">{
-  fTexCoord0 = A.TexCoord[0]*B;
+  fTexCoord0 = A.TexCoord0*B;
 }</overload>
       </PassTexCoord0>
       <PassTexCoord1 ObjectType="V">
@@ -513,24 +588,24 @@
 		out vec2 gTexCoord1;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord1 = A.TexCoord[1];
+  fTexCoord1 = A.TexCoord1;
 #else
-  gTexCoord1 = A.TexCoord[1];  
+  gTexCoord1 = A.TexCoord1;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord1;">{ fTexCoord1 = A.TexCoord[1]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord1;">{ fTexCoord1 = A.TexCoord1; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord1;     
 		#else     
 		out vec2 gTexCoord1;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord1 = A.TexCoord[1]*B;
+  fTexCoord1 = A.TexCoord1*B;
 #else
-  gTexCoord1 = A.TexCoord[1]*B;  
+  gTexCoord1 = A.TexCoord1*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord1;">{ fTexCoord1 = A.TexCoord[1]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord1;">{ fTexCoord1 = A.TexCoord1*B; }</overload>
       </PassTexCoord1>
       <PassTexCoord2 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -539,24 +614,24 @@
 		out vec2 gTexCoord2;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord2 = A.TexCoord[2];
+  fTexCoord2 = A.TexCoord2;
 #else
-  gTexCoord2 = A.TexCoord[2];  
+  gTexCoord2 = A.TexCoord2;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord2;">{ fTexCoord2 = A.TexCoord[2]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord2;">{ fTexCoord2 = A.TexCoord2; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord2;     
 		#else     
 		out vec2 gTexCoord2;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord2 = A.TexCoord[2]*B;
+  fTexCoord2 = A.TexCoord2*B;
 #else
-  gTexCoord2 = A.TexCoord[2]*B;  
+  gTexCoord2 = A.TexCoord2*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord2;">{ fTexCoord2 = A.TexCoord[2]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord2;">{ fTexCoord2 = A.TexCoord2*B; }</overload>
       </PassTexCoord2>
       <PassTexCoord3 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -565,24 +640,24 @@
 		out vec2 gTexCoord3;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord3 = A.TexCoord[3];
+  fTexCoord3 = A.TexCoord3;
 #else
-  gTexCoord3 = A.TexCoord[3];  
+  gTexCoord3 = A.TexCoord3;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord3;">{ fTexCoord3 = A.TexCoord[3]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord3;">{ fTexCoord3 = A.TexCoord3; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord3;     
 		#else     
 		out vec2 gTexCoord3;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord3 = A.TexCoord[3]*B;
+  fTexCoord3 = A.TexCoord3*B;
 #else
-  gTexCoord3 = A.TexCoord[3]*B;  
+  gTexCoord3 = A.TexCoord3*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord3;">{ fTexCoord3 = A.TexCoord[3]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord3;">{ fTexCoord3 = A.TexCoord3*B; }</overload>
       </PassTexCoord3>
       <PassTexCoord4 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -591,24 +666,24 @@
 		out vec2 gTexCoord4;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord4 = A.TexCoord[4];
+  fTexCoord4 = A.TexCoord4;
 #else
-  gTexCoord4 = A.TexCoord[4];  
+  gTexCoord4 = A.TexCoord4;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord4;">{ fTexCoord4 = A.TexCoord[4]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord4;">{ fTexCoord4 = A.TexCoord4; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord4;     
 		#else     
 		out vec2 gTexCoord4;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord4 = A.TexCoord[4]*B;
+  fTexCoord4 = A.TexCoord4*B;
 #else
-  gTexCoord4 = A.TexCoord[4]*B;  
+  gTexCoord4 = A.TexCoord4*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord4;">{ fTexCoord4 = A.TexCoord[4]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord4;">{ fTexCoord4 = A.TexCoord4*B; }</overload>
       </PassTexCoord4>
       <PassTexCoord5 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -617,24 +692,24 @@
 		out vec2 gTexCoord5;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord5 = A.TexCoord[5];
+  fTexCoord5 = A.TexCoord5;
 #else
-  gTexCoord5 = A.TexCoord[5];  
+  gTexCoord5 = A.TexCoord5;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord5;">{ fTexCoord5 = A.TexCoord[5]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord5;">{ fTexCoord5 = A.TexCoord5; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord5;     
 		#else     
 		out vec2 gTexCoord5;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord5 = A.TexCoord[5]*B;
+  fTexCoord5 = A.TexCoord5*B;
 #else
-  gTexCoord5 = A.TexCoord[5]*B;  
+  gTexCoord5 = A.TexCoord5*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord5;">{ fTexCoord5 = A.TexCoord[5]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord5;">{ fTexCoord5 = A.TexCoord5*B; }</overload>
       </PassTexCoord5>
       <PassTexCoord6 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -643,24 +718,24 @@
 		out vec2 gTexCoord6;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord6 = A.TexCoord[6];
+  fTexCoord6 = A.TexCoord6;
 #else
-  gTexCoord6 = A.TexCoord[6];  
+  gTexCoord6 = A.TexCoord6;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord6;">{ fTexCoord6 = A.TexCoord[6]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord6;">{ fTexCoord6 = A.TexCoord6; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord6;     
 		#else     
 		out vec2 gTexCoord6;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord6 = A.TexCoord[6]*B;
+  fTexCoord6 = A.TexCoord6*B;
 #else
-  gTexCoord6 = A.TexCoord[6]*B;  
+  gTexCoord6 = A.TexCoord6*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord6;">{ fTexCoord6 = A.TexCoord[6]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord6;">{ fTexCoord6 = A.TexCoord6*B; }</overload>
       </PassTexCoord6>
       <PassTexCoord7 ObjectType="V">
         <overload Version="34" Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE     
@@ -669,24 +744,24 @@
 		out vec2 gTexCoord7;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord7 = A.TexCoord[7];
+  fTexCoord7 = A.TexCoord7;
 #else
-  gTexCoord7 = A.TexCoord[7];  
+  gTexCoord7 = A.TexCoord7;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord7;">{ fTexCoord7 = A.TexCoord[7]; }</overload>
+        <overload Version="2" Input="inout vrec;" Output="void" Global="varying vec2 fTexCoord7;">{ fTexCoord7 = A.TexCoord7; }</overload>
         <overload Version="34" Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE     
 		out vec2 fTexCoord7;     
 		#else     
 		out vec2 gTexCoord7;     
 		#endif">{
 #ifndef GEOMETRY_STAGE
-  fTexCoord7 = A.TexCoord[7]*B;
+  fTexCoord7 = A.TexCoord7*B;
 #else
-  gTexCoord7 = A.TexCoord[7]*B;  
+  gTexCoord7 = A.TexCoord7*B;  
 #endif
 }</overload>
-        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord7;">{ fTexCoord7 = A.TexCoord[7]*B; }</overload>
+        <overload Version="2" Input="inout vrec;vec2;" Output="void" Global="varying vec2 fTexCoord7;">{ fTexCoord7 = A.TexCoord7*B; }</overload>
       </PassTexCoord7>
     </Vertex>
     <Geometry>
@@ -699,14 +774,14 @@
   A.VertexColor = In[0].gVertexColor;
   A.CameraVector = In[0].gCameraVector;
   A.ScreenPosition = In[0].gScreenPosition;
-  A.TexCoord[0] = In[0].gTexCoord0;
-  A.TexCoord[1] = In[0].gTexCoord1;
-  A.TexCoord[2] = In[0].gTexCoord2;
-  A.TexCoord[3] = In[0].gTexCoord3;
-  A.TexCoord[4] = In[0].gTexCoord4;
-  A.TexCoord[5] = In[0].gTexCoord5;
-  A.TexCoord[6] = In[0].gTexCoord6;
-  A.TexCoord[7] = In[0].gTexCoord7;
+  A.TexCoord0 = In[0].gTexCoord0;
+  A.TexCoord1 = In[0].gTexCoord1;
+  A.TexCoord2 = In[0].gTexCoord2;
+  A.TexCoord3 = In[0].gTexCoord3;
+  A.TexCoord4 = In[0].gTexCoord4;
+  A.TexCoord5 = In[0].gTexCoord5;
+  A.TexCoord6 = In[0].gTexCoord6;
+  A.TexCoord7 = In[0].gTexCoord7;
 
   B.ObjectPosition = In[1].gObjectPosition;
   B.ObjectNormal = In[1].gObjectNormal;
@@ -715,14 +790,14 @@
   B.VertexColor = In[1].gVertexColor;
   B.CameraVector = In[1].gCameraVector;
   B.ScreenPosition = In[1].gScreenPosition;
-  B.TexCoord[0] = In[1].gTexCoord0;
-  B.TexCoord[1] = In[1].gTexCoord1;
-  B.TexCoord[2] = In[1].gTexCoord2;
-  B.TexCoord[3] = In[1].gTexCoord3;
-  B.TexCoord[4] = In[1].gTexCoord4;
-  B.TexCoord[5] = In[1].gTexCoord5;
-  B.TexCoord[6] = In[1].gTexCoord6;
-  B.TexCoord[7] = In[1].gTexCoord7;
+  B.TexCoord0 = In[1].gTexCoord0;
+  B.TexCoord1 = In[1].gTexCoord1;
+  B.TexCoord2 = In[1].gTexCoord2;
+  B.TexCoord3 = In[1].gTexCoord3;
+  B.TexCoord4 = In[1].gTexCoord4;
+  B.TexCoord5 = In[1].gTexCoord5;
+  B.TexCoord6 = In[1].gTexCoord6;
+  B.TexCoord7 = In[1].gTexCoord7;
 
   C.ObjectPosition = In[2].gObjectPosition;
   C.ObjectNormal = In[2].gObjectNormal;
@@ -731,14 +806,14 @@
   C.VertexColor = In[2].gVertexColor;
   C.CameraVector = In[2].gCameraVector;
   C.ScreenPosition = In[2].gScreenPosition;
-  C.TexCoord[0] = In[2].gTexCoord0;
-  C.TexCoord[1] = In[2].gTexCoord1;
-  C.TexCoord[2] = In[2].gTexCoord2;
-  C.TexCoord[3] = In[2].gTexCoord3;
-  C.TexCoord[4] = In[2].gTexCoord4;
-  C.TexCoord[5] = In[2].gTexCoord5;
-  C.TexCoord[6] = In[2].gTexCoord6;
-  C.TexCoord[7] = In[2].gTexCoord7;
+  C.TexCoord0 = In[2].gTexCoord0;
+  C.TexCoord1 = In[2].gTexCoord1;
+  C.TexCoord2 = In[2].gTexCoord2;
+  C.TexCoord3 = In[2].gTexCoord3;
+  C.TexCoord4 = In[2].gTexCoord4;
+  C.TexCoord5 = In[2].gTexCoord5;
+  C.TexCoord6 = In[2].gTexCoord6;
+  C.TexCoord7 = In[2].gTexCoord7;
 }</overload>
       </GetTriangle>
       <Shrink ObjectType="G">
@@ -761,14 +836,14 @@
   fWorldNormal = A.WorldNormal;
   fVertexColor = A.VertexColor;
   fCameraVector = A.CameraVector;
-  fTexCoord0 = A.TexCoord[0];
-  fTexCoord1 = A.TexCoord[1];
-  fTexCoord2 = A.TexCoord[2];
-  fTexCoord3 = A.TexCoord[3];
-  fTexCoord4 = A.TexCoord[4];
-  fTexCoord5 = A.TexCoord[5];
-  fTexCoord6 = A.TexCoord[6];
-  fTexCoord7 = A.TexCoord[7];
+  fTexCoord0 = A.TexCoord0;
+  fTexCoord1 = A.TexCoord1;
+  fTexCoord2 = A.TexCoord2;
+  fTexCoord3 = A.TexCoord3;
+  fTexCoord4 = A.TexCoord4;
+  fTexCoord5 = A.TexCoord5;
+  fTexCoord6 = A.TexCoord6;
+  fTexCoord7 = A.TexCoord7;
   EmitVertex();
 
   gl_Position = B.ScreenPosition;
@@ -777,14 +852,14 @@
   fWorldNormal = B.WorldNormal;
   fVertexColor = B.VertexColor;
   fCameraVector = B.CameraVector;
-  fTexCoord0 = B.TexCoord[0];
-  fTexCoord1 = B.TexCoord[1];
-  fTexCoord2 = B.TexCoord[2];
-  fTexCoord3 = B.TexCoord[3];
-  fTexCoord4 = B.TexCoord[4];
-  fTexCoord5 = B.TexCoord[5];
-  fTexCoord6 = B.TexCoord[6];
-  fTexCoord7 = B.TexCoord[7];
+  fTexCoord0 = B.TexCoord0;
+  fTexCoord1 = B.TexCoord1;
+  fTexCoord2 = B.TexCoord2;
+  fTexCoord3 = B.TexCoord3;
+  fTexCoord4 = B.TexCoord4;
+  fTexCoord5 = B.TexCoord5;
+  fTexCoord6 = B.TexCoord6;
+  fTexCoord7 = B.TexCoord7;
   EmitVertex();
 
   gl_Position = C.ScreenPosition;
@@ -793,14 +868,14 @@
   fWorldNormal = C.WorldNormal;
   fVertexColor = C.VertexColor;
   fCameraVector = C.CameraVector;
-  fTexCoord0 = C.TexCoord[0];
-  fTexCoord1 = C.TexCoord[1];
-  fTexCoord2 = C.TexCoord[2];
-  fTexCoord3 = C.TexCoord[3];
-  fTexCoord4 = C.TexCoord[4];
-  fTexCoord5 = C.TexCoord[5];
-  fTexCoord6 = C.TexCoord[6];
-  fTexCoord7 = C.TexCoord[7];
+  fTexCoord0 = C.TexCoord0;
+  fTexCoord1 = C.TexCoord1;
+  fTexCoord2 = C.TexCoord2;
+  fTexCoord3 = C.TexCoord3;
+  fTexCoord4 = C.TexCoord4;
+  fTexCoord5 = C.TexCoord5;
+  fTexCoord6 = C.TexCoord6;
+  fTexCoord7 = C.TexCoord7;
   EmitVertex();
   EndPrimitive();
 }</overload>
@@ -957,8 +1032,8 @@
   A.OpacityMask = B.r;
 }</overload>
       </SetOpacityMask>
-      <Illuminate ObjectType="F">
-        <overload Version="34" Input="inout frec;" Output="void" Uniforms="TShaderEnvLights;" Global="struct lrec {
+	  <GetLight ObjectType="F">
+	    <overload Version="34" Input="int;" Output="lrec" Uniforms="TShaderEnvLights;" Global="struct lrec {
 		vec4 WorldPosition;
 		vec3 Ambient; 
 		vec3 Diffuse; 
@@ -973,8 +1048,28 @@
 		};
 		
 		layout(std140) uniform LightsBlock { lrec Lights[16]; }; 
-		uniform int LightIndices[16]; 
-		uniform int LightNumber;" 
+		uniform int LightIndices[16];">{
+  int J = LightIndices[A];
+  return Lights[J];  
+}</overload>
+	  </GetLight>
+      <Illuminate ObjectType="F">
+        <overload Version="34" Input="inout frec;" Output="void" Uniforms="TShaderEnvLightNumber;" Global="struct lrec {
+		vec4 WorldPosition;
+		vec3 Ambient; 
+		vec3 Diffuse; 
+		vec3 Specular; 
+		vec3 SpotDirection; 
+		float SpotCutoff; 
+		float SpotExponent; 
+		float ConstantAtten; 
+		float LinearAtten; 
+		float QuadAtten;
+        float SpotCosCutoff;
+		};
+		
+		uniform int LightNumber;
+		lrec GetLight(int I);" 
 		Local="
 		void pointLight(inout frec A, lrec B) {    
 		float nDotVP; 		// normal . light direction    
@@ -1071,11 +1166,10 @@
   A.LightSpecular = vec3(0.0);
   for (int I = 0; I &lt; LightNumber &amp;&amp; I &lt; 16; I++)
   {
-    int J = LightIndices[I];
-    lrec LightSource = Lights[J];
-    if (Lights[J].WorldPosition.w == 1.0)
+    lrec LightSource = GetLight(I);
+    if (LightSource.WorldPosition.w == 1.0)
     {
-      if (Lights[J].SpotCosCutoff == -1.0)
+      if (LightSource.SpotCosCutoff == -1.0)
       {
          pointLight(A,LightSource);
       }
@@ -1086,7 +1180,7 @@
     }
     else
     {
-      if (Lights[J].SpotCosCutoff == -1.0)
+      if (LightSource.SpotCosCutoff == -1.0)
       {
          directionalLight(A,LightSource);
       }

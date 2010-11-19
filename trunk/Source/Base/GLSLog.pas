@@ -8,6 +8,7 @@
   To obtain it, call UserLog() function from any unit.<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>18/11/10 - Yar - Bugfixed overflowing log by error message in design time
       <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
                              Fixed unit description  
       <li>07/09/10 - Yar - Added Enabled property to TLogSession
@@ -446,6 +447,8 @@ begin
   if Self = GLSLogger then
     exit;
 {$ENDIF}
+  if llMessageLimit[Level] < LogKindCount[Level] then
+    exit;
 {$I-}
   Append(LogFile);
   if IOResult <> 0 then
@@ -466,10 +469,10 @@ begin
   Inc(LogKindCount[Level]);
   if llMessageLimit[Level] = LogKindCount[Level] then
   begin
-    // Show information (window)
-    MessageDlg('Exceeded the number of messages in log!', mtError, [mbOk], 0);
     if not IsDesignTime then
     begin
+      // Show information (window)
+      MessageDlg('Exceeded the number of messages in log!', mtError, [mbOk], 0);
 {$IFDEF MSWINDOWS}
       ShellExecute(
         0,

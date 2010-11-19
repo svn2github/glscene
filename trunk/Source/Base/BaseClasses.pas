@@ -168,7 +168,10 @@ procedure NotifyGLSceneManagersContextCreated;
 procedure NotifyGLSceneManagersBeforeCompile;
 procedure NotifyGLSceneManagersProjectOpened;
 procedure NotifyGLSceneManagersProjectClosed;
-function GetManagersResourceList: TStringList;
+function UpdateGLSceneManagersResourceList: Boolean;
+
+var
+  vManagersResourceList: string;
 
 implementation
 
@@ -443,23 +446,26 @@ begin
     aGLSceneManagers[I].ManagerClass.NotifyProjectClosed;
 end;
 
-function GetManagersResourceList: TStringList;
+function UpdateGLSceneManagersResourceList: Boolean;
 var
   I: Integer;
-  NotEmpty: Boolean;
+  lList: TStringList;
 begin
+  vManagersResourceList := '';
   if Length(aGLSceneManagers)>0 then
   begin
-    Result := TStringList.Create;
-    NotEmpty := False;
+    lList := TStringList.Create;
+    Result := False;
     for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
-      NotEmpty := NotEmpty or aGLSceneManagers[I].ManagerClass.FillResourceList(Result);
-    if not NotEmpty then
-      FreeAndNil(Result);
+      Result := Result or aGLSceneManagers[I].ManagerClass.FillResourceList(lList);
+    if Result then
+      vManagersResourceList := lList.Text;
+    lList.Destroy;
   end
   else
-    Result := nil;
+    Result := False;
 end;
+
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLSAbstractManager'}{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLAbstractName'}{$ENDIF}

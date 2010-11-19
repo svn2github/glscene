@@ -1996,46 +1996,6 @@ begin
   Result := 1;
 end;
 
-function GetAppResourceStream(): TStream;
-var
-  i: Integer;
-  Editor: IOTAEditor;
-  Project: IOTAProject;
-  Resource: IOTAProjectResource;
-  ResourceEntry: IOTAResourceEntry;
-  rName: PChar;
-begin
-  Result := nil;
-  Project := GetActiveProject;
-  if not Assigned(Project) then
-    exit;
-
-  Resource := nil;
-  for i := 0 to Project.GetModuleFileCount - 1 do
-  begin
-    Editor := Project.GetModuleFileEditor(i);
-    if Supports(Editor, IOTAProjectResource, Resource) then
-      Break;
-  end;
-
-  if Assigned(Resource) then
-  begin
-    for I := 0 to Resource.GetEntryCount - 1 do
-    begin
-      ResourceEntry := Resource.GetEntry(I);
-      rName := ResourceEntry.GetResourceName;
-      if Cardinal(rName)>$1000 then
-        if StrComp(rName, PChar(glsResourceInfo)) = 0 then
-        begin
-          Result := TMemoryStream.Create;
-          Result.Write(ResourceEntry.GetData^, ResourceEntry.DataSize);
-          Result.Seek(0, soBeginning);
-          exit;
-        end;
-    end;
-  end;
-end;
-
 function GetProjectTargetName: string;
 var
   Project: IOTAProject;
@@ -2048,6 +2008,7 @@ begin
     ForceDirectories(ExtractFilePath(Result));
   end;
 end;
+
 {$ENDIF}
 
 //******************************************************************************
@@ -2528,7 +2489,6 @@ initialization
 
 {$IFDEF GLS_EXPERIMENTAl}
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
-  ApplicationFileIO.vAFIOGetAppResourceStream := GetAppResourceStream;
 {$ENDIF}
 
   with ObjectManager do

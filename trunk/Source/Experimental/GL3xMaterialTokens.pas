@@ -51,6 +51,7 @@ type
 
   TMatSysFragmentCategory = record
     Name: AnsiString;
+    GetLight: AnsiString;
     GetFragment: AnsiString;
     AlphaTest: AnsiString;
     SetEmissive: AnsiString;
@@ -185,6 +186,7 @@ const
 
     Fragment: (
     Name: 'Fragment';
+    GetLight: 'GetLight';
     GetFragment: 'GetFragment';
     AlphaTest: 'AlphaTest';
     SetEmissive: 'SetEmissive';

@@ -67,10 +67,6 @@ type
   //
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
-  // TAFIOGetAppResourceStream
-  //
-  TAFIOGetAppResourceStream = function(): TStream;
-
   // TApplicationFileIO
   //
     {: Allows specifying a custom behaviour for ApplicationFileIO's CreateFileStream.<p>
@@ -121,6 +117,7 @@ type
   private
     { Private Declarations }
     FResourceName: string;
+    procedure SetResourceName(const AName: string);
   public
     { Public Declarations }
 
@@ -141,7 +138,7 @@ type
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
        name in it for parser use. }
-    property ResourceName: string read FResourceName write FResourceName;
+    property ResourceName: string read FResourceName write SetResourceName;
   end;
 
   TDataFileClass = class of TDataFile;
@@ -165,7 +162,6 @@ function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResour
 var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
   vAFIOFileStreamExists: TAFIOFileStreamExists = nil;
-  vAFIOGetAppResourceStream: TAFIOGetAppResourceStream = nil;
 
   // ---------------------------------------------------------------------
   // ---------------------------------------------------------------------
@@ -358,6 +354,11 @@ end;
 
 procedure TDataFile.Initialize;
 begin
+end;
+
+procedure TDataFile.SetResourceName(const AName: string);
+begin
+  FResourceName := AName;
 end;
 
 end.

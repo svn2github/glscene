@@ -52,6 +52,28 @@ const
 
   cObjectTypeName: array[TGLSLProgramType] of string =
     ('VERTEX', 'GEOMTERY', 'FRAGMENT', 'CONTROL', 'EVALUATION');
+  cEnUsFormatSettings: TFormatSettings = (
+    CurrencyFormat: 0;
+    NegCurrFormat: 0;
+    ThousandSeparator: ',';
+    DecimalSeparator: '.';
+    CurrencyDecimals: 2;
+    DateSeparator: '/';
+    TimeSeparator: ':';
+    ListSeparator: ',';
+    CurrencyString: '$';
+    ShortDateFormat: 'M/d/yyyy';
+    LongDateFormat: 'dddd, MMMM dd, yyyy';
+    TimeAMString: 'AM';
+    TimePMString: 'PM';
+    ShortTimeFormat: 'h:mm AMPM';
+    LongTimeFormat: 'h:mm:ss AMPM';
+    ShortMonthNames: ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+    LongMonthNames: ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+    ShortDayNames: ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+    LongDayNames: ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+    TwoDigitYearCenturyWindow: 0;
+  );
 
 type
 
@@ -113,7 +135,8 @@ type
     GLSLTypeIntSamplerMSArray,
     GLSLTypeUIntSamplerMSArray,
     GLSLTypeVRec,
-    GLSLTypeFRec
+    GLSLTypeFRec,
+    GLSLTypeLRec
     );
 
   TProgramCache = record
@@ -459,7 +482,8 @@ const
     'isamplerMSArray',
     'usamplerMSArray',
     'vrec',
-    'frec');
+    'frec',
+    'lrec');
 
   cGLSLTypeComponents: array[TGLSLDataType] of Integer = (
     0,
@@ -515,6 +539,7 @@ const
     1,
     1,
     1,
+    0,
     0,
     0);
 
@@ -657,9 +682,9 @@ begin
   begin
     dif := Integer(CastType) - Integer(ArgType);
     case dif of
-      1: Result := AnsiString(Format('%s(%s, 0.0)', [cGLSLTypeString[CastType], Arg]));
-      2: Result := AnsiString(Format('%s(%s, 0.0, 0.0)', [cGLSLTypeString[CastType], Arg]));
-      3: Result := AnsiString(Format('%s(%s, 0.0, 0.0, 0.0)', [cGLSLTypeString[CastType], Arg]));
+      1: Result := AnsiString(Format('%s(%s, 0.0)', [cGLSLTypeString[CastType], Arg], cEnUsFormatSettings));
+      2: Result := AnsiString(Format('%s(%s, 0.0, 0.0)', [cGLSLTypeString[CastType], Arg], cEnUsFormatSettings));
+      3: Result := AnsiString(Format('%s(%s, 0.0, 0.0, 0.0)', [cGLSLTypeString[CastType], Arg], cEnUsFormatSettings));
     else
       Assert(False);
     end;
@@ -682,17 +707,7 @@ function HexToGLSL(tp: TGLSLDataType; HexValue: string): AnsiString;
 var
   v: TVectorEXT;
   i: TIntVectorEXT;
-  oldDS: Char;
 begin
-  oldDS :=
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := '.';
   Result := '';
   case tp of
     GLSLTypeUndefined: ;
@@ -700,42 +715,42 @@ begin
     GLSLType1F:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@v.V[0]), SizeOf(TVectorEXT));
-        Result := AnsiString(Format('%.7f', [v.X]));
+        Result := AnsiString(Format('%.7f', [v.X], cEnUsFormatSettings));
       end;
     GLSLType2F:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@v.V[0]), SizeOf(TVectorEXT));
-        Result := AnsiString(Format('vec2(%.7f, %.7f)', [v.X, v.Y]));
+        Result := AnsiString(Format('vec2(%.7f, %.7f)', [v.X, v.Y], cEnUsFormatSettings));
       end;
     GLSLType3F:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@v.V[0]), SizeOf(TVectorEXT));
-        Result := AnsiString(Format('vec3(%.7f, %.7f, %.7f)', [v.X, v.Y, v.Z]));
+        Result := AnsiString(Format('vec3(%.7f, %.7f, %.7f)', [v.X, v.Y, v.Z], cEnUsFormatSettings));
       end;
     GLSLType4F:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@v.V[0]), SizeOf(TVectorEXT));
-        Result := AnsiString(Format('vec4(%.7f, %.7f, %.7f, %.7f)', [v.X, v.Y, v.Z, v.W]));
+        Result := AnsiString(Format('vec4(%.7f, %.7f, %.7f, %.7f)', [v.X, v.Y, v.Z, v.W], cEnUsFormatSettings));
       end;
     GLSLType1I:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@i.V[0]), SizeOf(TIntVectorEXT));
-        Result := AnsiString(Format('%d', [i.X]));
+        Result := AnsiString(Format('%d', [i.X], cEnUsFormatSettings));
       end;
     GLSLType2I:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@i.V[0]), SizeOf(TIntVectorEXT));
-        Result := AnsiString(Format('ivec2(%d, %d)', [v.X, v.Y]));
+        Result := AnsiString(Format('ivec2(%d, %d)', [v.X, v.Y], cEnUsFormatSettings));
       end;
     GLSLType3I:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@i.V[0]), SizeOf(TIntVectorEXT));
-        Result := AnsiString(Format('ivec3(%d, %d, %d)', [v.X, v.Y, v.Z]));
+        Result := AnsiString(Format('ivec3(%d, %d, %d)', [v.X, v.Y, v.Z], cEnUsFormatSettings));
       end;
     GLSLType4I:
       begin
         HexToBin(PChar(HexValue), PAnsiChar(@i.V[0]), SizeOf(TIntVectorEXT));
-        Result := AnsiString(Format('ivec4(%d, %d, %d, %d)', [v.X, v.Y, v.Z, v.W]));
+        Result := AnsiString(Format('ivec4(%d, %d, %d, %d)', [v.X, v.Y, v.Z, v.W], cEnUsFormatSettings));
       end;
     GLSLType1UI: ;
     GLSLType2UI: ;
@@ -747,10 +762,6 @@ begin
   else
     Assert(False);
   end;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := oldDS;
 end;
 
 function RemoveGLSLQualifier(const InputLine: string): string;

@@ -659,6 +659,7 @@ type
   TLightVectorNode = class(TCustomMaterialGraphNode)
   protected
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
@@ -669,6 +670,7 @@ type
   TCameraVectorNode = class(TCustomMaterialGraphNode)
   protected
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
@@ -678,6 +680,7 @@ type
   TReflectionVectorNode = class(TCustomMaterialGraphNode)
   protected
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
@@ -701,8 +704,8 @@ resourcestring
   strFailToBuild = 'Fail to build material shader!';
 
 const
-
   cNodeCaptionHeigth = 24;
+
 
 {$REGION 'Shaders source'}
 
@@ -769,7 +772,7 @@ const
     'out vec4 FragColor;' + #13#10 +
     'void main()' + #13#10 +
     '{' + #13#10 +
-    '  FragColor = fract(texture(TexUnit0, fpTexCoord));' + #13#10 +
+    '  FragColor = fract(0.995*texture(TexUnit0, fpTexCoord));' + #13#10 +
     '}';
 
   Joint_vp150: AnsiString =
@@ -1186,6 +1189,10 @@ begin
         begin
           SetXMLAttribute(XMLSample, 'Purpose', 'V');
         end;
+      sspBuildIn:
+        begin
+          SetXMLAttribute(XMLSample, 'Purpose', 'B');
+        end;
     end;
 
     if pSample.Mask <> [] then
@@ -1193,6 +1200,16 @@ begin
 
     XMLRefs := CreateDOMNode(XMLSample, 'References');
 
+    if pSample.Purpose = sspBuildIn then
+    begin
+      for J := 0 to High(TInputRefArray) do
+        if pSample.Input[J] <> GLSLTypeUndefined then
+        begin
+          XMLRef := CreateDOMNode(XMLRefs, 'R' + IntToStr(J));
+          SetXMLAttribute(XMLRef, 'Input', string(GLSLTypeToString(pSample.Input[J])));
+        end;
+    end
+    else
     for J := 0 to High(TInputRefArray) do
       if Assigned(pSample.InputRef[J]) then
       begin
@@ -1485,14 +1502,9 @@ end;
 function TMaterialGraph.AddNode(const VertexClass: TCustomMaterialGraphNodeClass;
   const x, y, w, h: Integer): TCustomMaterialGraphNode;
 var
-  rName: string;
   rNode: TTextureSamplerNode;
 begin
   Result := TCustomMaterialGraphNode(inherited AddNode(VertexClass, x, y, w, h));
-  if Result is TCustomConstantNode then
-    rName := 'Const'
-  else
-    rName := Result.Caption;
   if Result is TTextureSamplerNode then
   begin
     rNode := TTextureSamplerNode(Result);
@@ -1883,61 +1895,63 @@ begin
 
   Info.Master := nil;
   Info.ChainInLoop := False;
-  ok := False;
 
   try
     ok := vNode.GatherSamples(Info, 0);
-  finally
-    if ok then
-      ok := MaterialManager.GenerateShaderCode(FMaterial.FSampleList, FProgramCodeSet);
+  except
+    on EAbort do ok := False;
+  end;
 
-    if ok then
+  if ok then
+    ok := MaterialManager.GenerateShaderCode(FMaterial.FSampleList, FProgramCodeSet);
+
+  if ok then
+  begin
+    SetLength(FMaterial.FUnits, Length(FUnits));
+    J := 0;
+    for I := 0 to High(FUnits) do
+      if FUnits[I].UseCount > 0 then
+      begin
+        FMaterial.FUnits[J].SamplerName := FUnits[I].SamplerName;
+        FMaterial.FUnits[J].TextureName := FUnits[I].TextureName;
+        Inc(J);
+      end;
+    SetLength(FMaterial.FUnits, J);
+    FMaterial.CreateUniforms;
+    FMaterial.CreateShader(FProgramCodeSet);
+
+    try
+      FMaterial.DirectUse;
+    except
+      if Assigned(FShaderCodePad) then
+        FShaderCodePad.Add(strFailToBuild);
+      exit;
+    end;
+
+    if Assigned(FShaderCodePad) then
     begin
-      SetLength(FMaterial.FUnits, Length(FUnits));
+      FShaderCodePad.AddStrings(FProgramCodeSet[ptVertex]);
+      FShaderCodePad.Add('');
+      FShaderCodePad.AddStrings(FProgramCodeSet[ptFragment]);
+      FShaderCodePad.Add('');
+      FShaderCodePad.Add('// Texture sampler units: ');
+      FShaderCodePad.Add('');
       J := 0;
       for I := 0 to High(FUnits) do
         if FUnits[I].UseCount > 0 then
         begin
-          FMaterial.FUnits[J].SamplerName := FUnits[I].SamplerName;
-          FMaterial.FUnits[J].TextureName := FUnits[I].TextureName;
+          lStr := Format('Unit %d: texture "%s", sampler ', [J, FUnits[I].TextureName.GetValue]);
+          if Assigned(FUnits[I].SamplerName) then
+            lStr := lStr + Format('"%s"', [FUnits[I].SamplerName.GetValue])
+          else
+            lStr := lStr + 'is native';
+          FShaderCodePad.Add(lStr);
           Inc(J);
         end;
-      SetLength(FMaterial.FUnits, J);
-      FMaterial.CreateUniforms;
-      FMaterial.CreateShader(FProgramCodeSet);
-
-      try
-        FMaterial.DirectUse;
-      except
-        if Assigned(FShaderCodePad) then
-          FShaderCodePad.Add(strFailToBuild);
-      end;
-
-      if Assigned(FShaderCodePad) then
-      begin
-        FShaderCodePad.AddStrings(FProgramCodeSet[ptVertex]);
-        FShaderCodePad.Add('');
-        FShaderCodePad.AddStrings(FProgramCodeSet[ptFragment]);
-        FShaderCodePad.Add('');
-        FShaderCodePad.Add('// Texture sampler units: ');
-        FShaderCodePad.Add('');
-        J := 0;
-        for I := 0 to High(FUnits) do
-          if FUnits[I].UseCount > 0 then
-          begin
-            lStr := Format('Unit %d: texture "%s", sampler ', [J, FUnits[I].TextureName.GetValue]);
-            if Assigned(FUnits[I].SamplerName) then
-              lStr := lStr + Format('"%s"', [FUnits[I].SamplerName.GetValue])
-            else
-              lStr := lStr + 'is native';
-            FShaderCodePad.Add(lStr);
-            Inc(J);
-          end;
-      end;
-    end
-    else if Assigned(FShaderCodePad) then
-      FShaderCodePad.Add(strFailToBuild);
-  end;
+    end;
+  end
+  else if Assigned(FShaderCodePad) then
+    FShaderCodePad.Add(strFailToBuild);
 end;
 
 procedure TMaterialGraph.RegisterTextureSampler(const ATexture, ASampler: IGLName);
@@ -2724,12 +2738,9 @@ begin
 end;
 
 function TMaterialNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
-const
-  defDiffPower: TVector = (1, 0, 0, 0);
-  defSpecPower: TVector = (64, 0, 0, 0);
 var
   vSample: TShaderSample;
-  pVertexRecord, pFragmentRecord, pConstSample, pLast: PShaderSample;
+  pConstSample, pLast: PShaderSample;
   I: Integer;
 
   procedure AddToList;
@@ -2741,7 +2752,7 @@ var
       Info.Master^ := vSample;
     end
     else
-      Assert(False);
+      Abort;
   end;
 
 begin
@@ -2750,24 +2761,34 @@ begin
   /////////////////////////////////////////////////////////////////
   Info.ProgramTypes := [ptFragment];
 
+  // Add build-in samples
+  vSample.Clear;
+  vSample.Category := MaterialSystem.Fragment.Name;
+  vSample.Name := MaterialSystem.Fragment.GetLight;
+  vSample.Participate := Info.ProgramTypes;
+  vSample.Purpose := sspBuildIn;
+  vSample.Input[0] := GLSLType1I;
+  AddToList;
+
+  // Declare fragment record
   vSample.Clear;
   vSample.Participate := Info.ProgramTypes;
   vSample.Purpose := sspVariable;
   vSample.Output := GLSLTypeFRec;
   AddToList;
-  pFragmentRecord := Info.Master;
+  Info.FragmentRecord := Info.Master;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Fragment.Name;
   vSample.Name := MaterialSystem.Fragment.GetFragment;
-  vSample.InputRef[0] := pFragmentRecord;
+  vSample.InputRef[0] := Info.FragmentRecord;
   AddToList;
 
   // Opacity
   vSample.Clear;
   vSample.Category := MaterialSystem.Fragment.Name;
   vSample.Name := MaterialSystem.Fragment.SetOpacity;
-  vSample.InputRef[0] := pFragmentRecord;
+  vSample.InputRef[0] := Info.FragmentRecord;
   if Assigned(Joints[5].GivingNode)
     and Joints[5].GivingNode.GatherSamples(Info,
     Joints[5].GivingNodeJointIndex) then
@@ -2780,7 +2801,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.SetOpacityMask;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     if Assigned(Joints[6].GivingNode)
       and Joints[6].GivingNode.GatherSamples(Info, Joints[6].GivingNodeJointIndex) then
       vSample.InputRef[1] := Info.Master;
@@ -2796,7 +2817,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.AlphaTest;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     vSample.InputRef[1] := Info.Master;
     AddToList;
   end;
@@ -2805,7 +2826,7 @@ begin
   vSample.Clear;
   vSample.Category := MaterialSystem.Fragment.Name;
   vSample.Name := MaterialSystem.Fragment.SetNormal;
-  vSample.InputRef[0] := pFragmentRecord;
+  vSample.InputRef[0] := Info.FragmentRecord;
   if Assigned(Joints[7].GivingNode)
     and Joints[7].GivingNode.GatherSamples(Info, Joints[7].GivingNodeJointIndex) then
       vSample.InputRef[1] := Info.Master;
@@ -2815,7 +2836,7 @@ begin
   vSample.Clear;
   vSample.Category := MaterialSystem.Fragment.Name;
   vSample.Name := MaterialSystem.Fragment.SetEmissive;
-  vSample.InputRef[0] := pFragmentRecord;
+  vSample.InputRef[0] := Info.FragmentRecord;
   if Assigned(Joints[0].GivingNode)
     and Joints[0].GivingNode.GatherSamples(Info, Joints[0].GivingNodeJointIndex) then
       vSample.InputRef[1] := Info.Master;
@@ -2829,7 +2850,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.SetDiffuse;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     if Assigned(Joints[1].GivingNode)
       and Joints[1].GivingNode.GatherSamples(Info,
       Joints[1].GivingNodeJointIndex) then
@@ -2840,7 +2861,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.SetSpecular;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     if Assigned(Joints[3].GivingNode)
       and Joints[3].GivingNode.GatherSamples(Info, Joints[3].GivingNodeJointIndex) then
         vSample.InputRef[1] := Info.Master;
@@ -2850,7 +2871,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.SetSpecularPower;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     if Assigned(Joints[4].GivingNode)
       and Joints[4].GivingNode.GatherSamples(Info,
       Joints[4].GivingNodeJointIndex) then
@@ -2861,7 +2882,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.SetDiffusePower;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     if Assigned(Joints[2].GivingNode)
       and Joints[2].GivingNode.GatherSamples(Info,
       Joints[2].GivingNodeJointIndex) then
@@ -2872,7 +2893,7 @@ begin
     vSample.Clear;
     vSample.Category := MaterialSystem.Fragment.Name;
     vSample.Name := MaterialSystem.Fragment.Illuminate;
-    vSample.InputRef[0] := pFragmentRecord;
+    vSample.InputRef[0] := Info.FragmentRecord;
     AddToList;
   end
   else if FLightingModel = lmCustomLighting then
@@ -2886,7 +2907,7 @@ begin
       vSample.Category := MaterialSystem.Fragment.Name;
       vSample.Name := MaterialSystem.Fragment.SetCustomLighting;
       vSample.Purpose := sspLoopOperation;
-      vSample.InputRef[0] := pFragmentRecord;
+      vSample.InputRef[0] := Info.FragmentRecord;
       vSample.InputRef[1] := Info.Master;
       AddToList;
     end;
@@ -2894,7 +2915,7 @@ begin
 
   // Pass FragColor
   GetOutputSample(vSample);
-  vSample.InputRef[0] := pFragmentRecord;
+  vSample.InputRef[0] := Info.FragmentRecord;
   AddToList;
   pLast := Info.Master;
 
@@ -2908,36 +2929,36 @@ begin
   vSample.Purpose := sspVariable;
   vSample.Output := GLSLTypeVRec;
   AddToList;
-  pVertexRecord := Info.Master;
+  Info.VertexRecord := Info.Master;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.GetVertex;
-  vSample.InputRef[0] := pVertexRecord;
+  vSample.InputRef[0] := Info.VertexRecord;
   AddToList;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.TransformVertex_O2W;
-  vSample.InputRef[0] := pVertexRecord;
+  vSample.InputRef[0] := Info.VertexRecord;
   AddToList;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.TransformVertex_W2S;
-  vSample.InputRef[0] := pVertexRecord;
+  vSample.InputRef[0] := Info.VertexRecord;
   AddToList;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.GetCamera;
-  vSample.InputRef[0] := pVertexRecord;
+  vSample.InputRef[0] := Info.VertexRecord;
   AddToList;
 
   vSample.Clear;
   vSample.Category := MaterialSystem.Vertex.Name;
   vSample.Name := MaterialSystem.Vertex.PassVertex;
-  vSample.InputRef[0] := pVertexRecord;
+  vSample.InputRef[0] := Info.VertexRecord;
   AddToList;
 
   // Pass TexCoord
@@ -2963,7 +2984,7 @@ begin
       vSample.Clear;
       vSample.Category := MaterialSystem.Vertex.Name;
       vSample.Name := MaterialSystem.Vertex.PassTexCoord[I];
-      vSample.InputRef[0] := pVertexRecord;
+      vSample.InputRef[0] := Info.VertexRecord;
       if Assigned(pConstSample) then
         vSample.InputRef[1] := pConstSample;
       AddToList;
@@ -3099,13 +3120,13 @@ end;
 function TCustomConstantNode.Caption: string;
 begin
   if Self is TConstantNode then
-    Result := Format('%.6g', [FValue.X])
+    Result := Format('%.6g', [FValue.X], cEnUsFormatSettings)
   else if Self is TConstant2fNode then
-    Result := Format('%.6g,%.6g', [FValue.X, FValue.Y])
+    Result := Format('%.6g,%.6g', [FValue.X, FValue.Y], cEnUsFormatSettings)
   else if Self is TConstant3fNode then
-    Result := Format('%.6g,%.6g,%.6g', [FValue.X, FValue.Y, FValue.Z])
+    Result := Format('%.6g,%.6g,%.6g', [FValue.X, FValue.Y, FValue.Z], cEnUsFormatSettings)
   else if Self is TConstant4fNode then
-    Result := Format('%.6g,%.6g,%.6g,%.6g', [FValue.X, FValue.Y, FValue.Z, FValue.W])
+    Result := Format('%.6g,%.6g,%.6g,%.6g', [FValue.X, FValue.Y, FValue.Z, FValue.W], cEnUsFormatSettings)
   else
     Assert(False);
 end;
@@ -3117,7 +3138,7 @@ begin
     GetWorkResult_line +
     LBracket_line +
     AnsiString(Format('  return vec4(%g, %g, %g, %g);',
-    [FValue.X, FValue.Y, FValue.Z, FValue.W])) + #10#13 +
+    [FValue.X, FValue.Y, FValue.Z, FValue.W], cEnUsFormatSettings)) + #10#13 +
     RBracket_line;
 end;
 
@@ -3293,7 +3314,11 @@ begin
     GetTexCoord_line +
     GetWorkResult_line +
     LBracket_line +
-    '  return vec4(GetTexCoord()' + AnsiString(Format(' * vec2(%g, %g) ', [Owner.FTexCoordTiles[FIndex].X, Owner.FTexCoordTiles[FIndex].Y])) + ', 0.0, 1.0);' + #10#13 +
+    '  return vec4(GetTexCoord()' +
+      AnsiString(Format(' * vec2(%g, %g) ',
+      [Owner.FTexCoordTiles[FIndex].X,
+      Owner.FTexCoordTiles[FIndex].Y], cEnUsFormatSettings)) +
+      ', 0.0, 1.0);' + #10#13 +
     RBracket_line;
 end;
 
@@ -4009,7 +4034,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
-      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period])) + #10#13 +
+      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
       GLSLTypeToString(vSample.Output) + ' result = sin(value01);' + #10#13 +
       '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
       RBracket_line;
@@ -4054,7 +4079,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
-      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period])) + #10#13 +
+      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
       GLSLTypeToString(vSample.Output) + ' result = cos(value01);' + #10#13 +
       '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
       RBracket_line;
@@ -4656,7 +4681,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GetValue1_line +
-      '  value1 *= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y])) + #10#13 +
+      '  value1 *= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
       '  value1 = fract(value1);' + #10#13 +
       '  value0 += value1;' + #10#13 +
       '  return value0;' + #10#13 +
@@ -4810,12 +4835,12 @@ begin
       LBracket_line +
       GetValue0_line +
       GetValue1_line +
-      '  value0 -= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y])) + #10#13 +
-      '  value1 *= ' + AnsiString(Format('%g;', [FValue.Z])) + #10#13 +
+      '  value0 -= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
+      '  value1 *= ' + AnsiString(Format('%g;', [FValue.Z], cEnUsFormatSettings)) + #10#13 +
       '  value1 = 6.2831853 * fract(value1);' + #10#13 +
       '  vec2 sincos = vec2(sin(value1.x), cos(value1.x));' + #10#13 +
       '  vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), value0.st), dot(sincos, value0.st));' + #10#13 +
-      '  rxy += ' + AnsiString(Format('vec2(%g, %g);', [FValue.X, FValue.Y])) + #10#13 +
+      '  rxy += ' + AnsiString(Format('vec2(%g, %g);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
       '  return vec4(rxy, 0.0, 0.0);' + #10#13 +
       RBracket_line;
   end
@@ -5454,6 +5479,19 @@ begin
   Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
+
+function TLightVectorNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+    vSample.InputRef[0] := Info.FragmentRecord;
+    Info.NewMaster;
+    Info.Master^ := vSample;
+  end;
+end;
 {$ENDREGION}
 
 {$REGION 'TCameraVectorNode'}
@@ -5479,6 +5517,19 @@ begin
   Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;
+
+function TCameraVectorNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+    vSample.InputRef[0] := Info.FragmentRecord;
+    Info.NewMaster;
+    Info.Master^ := vSample;
+  end;
+end;
 {$ENDREGION}
 
 {$REGION 'TReflectionVectorNode'}
@@ -5503,6 +5554,20 @@ begin
   ASample.Input[0] := GLSLTypeFRec;
   Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
+end;
+
+
+function TReflectionVectorNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+    vSample.InputRef[0] := Info.FragmentRecord;
+    Info.NewMaster;
+    Info.Master^ := vSample;
+  end;
 end;
 {$ENDREGION}
 

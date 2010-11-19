@@ -1321,23 +1321,6 @@ begin
   Result := [paSubProperties, paVolatileSubProperties];
 end;
 
-
-var
-  vGLSceneManagersData: TMemoryStream;
-
-function GetAppResourceStream(): TStream;
-begin
-  if Assigned(vGLSceneManagersData) and (vGLSceneManagersData.Size>0) then
-  begin
-    Result := TMemoryStream.Create;
-    vGLSceneManagersData.Seek(0, soBeginning);
-    Result.CopyFrom(vGLSceneManagersData, vGLSceneManagersData.Size);
-    Result.Seek(0, soBeginning);
-  end
-  else
-    Result := nil;
-end;
-
 constructor TGLSceneManagersData.Create;
 begin
   inherited;
@@ -1359,14 +1342,15 @@ var
   RName, RType: TResourceDesc;
 begin
   Result := True;
-  ResList := GetManagersResourceList;
-  if Assigned(ResList) then
+  if UpdateGLSceneManagersResourceList then
   begin
     RType := TResourceDesc.Create(GLS_RC_String_Type);
     RName := TResourceDesc.Create(glsResourceInfo);
     Res := TGenericResource.Create(RType, RName);
     RType.Free;
     RName.Free;
+    ResList := TStringList.Create;
+    ResList.Text := vManagersResourceList;
     ResList.SaveToStream(Res.RawData);
     AResources.AddSystemResource(Res);
     ResList.Destroy;
@@ -1374,40 +1358,23 @@ begin
 end;
 
 procedure TGLSceneManagersData.WriteToProjectFile(AConfig: TObject; Path: String);
-var
-  ResList: TStringList;
 begin
   if Assigned(AConfig) then
   begin
-    ResList := MaterialManager.GetResourceList;
-    if Assigned(ResList) then
+    if UpdateGLSceneManagersResourceList then
     begin
-      TXMLConfig(AConfig).SetValue(Path+'GLScene/ResourceList', ResList.Text);
-      vGLSceneManagersData.Seek(0, soBeginning);
-      ResList.SaveToStream(vGLSceneManagersData);
-      ResList.Destroy;
+      TXMLConfig(AConfig).SetValue(Path+'GLSceneResources', vManagersResourceList);
     end
     else
-      TXMLConfig(AConfig).DeleteValue(Path+'GLScene/ResourceList');
+      TXMLConfig(AConfig).DeleteValue(Path+'GLSceneResources');
   end;
 end;
 
 procedure TGLSceneManagersData.ReadFromProjectFile(AConfig: TObject; Path: String);
-var
-  ResList: TStringList;
-  s: string;
 begin
   if Assigned(AConfig) then
   begin
-    s := TXMLConfig(AConfig).GetValue(Path+'GLScene/ResourceList', '');
-    if Length(s) > 0 then
-    begin
-      ResList := TStringList.Create;
-      ResList.Text := s;
-      vGLSceneManagersData.Seek(0, soBeginning);
-      ResList.SaveToStream(vGLSceneManagersData);
-      ResList.Destroy;
-    end;
+    vManagersResourceList := TXMLConfig(AConfig).GetValue(Path+'GLSceneResources', '');
   end;
 end;
 
@@ -1687,7 +1654,6 @@ initialization
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
 {$IFDEF GLS_EXPERIMENTAl}
   RegisterProjectResource(TGLSceneManagersData);
-  ApplicationFileIO.vAFIOGetAppResourceStream := GetAppResourceStream;
 {$ENDIF}
   //ReadVideoModes;
 

@@ -25,7 +25,7 @@ uses
   TypInfo,
   ToolsAPI,
   BaseClasses,
-  GL3xMaterial,
+  GLSCrossXML,
   GLStrings,
   ApplicationFileIO;
 
@@ -33,6 +33,7 @@ type
   TGLSIDENotifier = class(TNotifierObject, IOTANotifier, IOTAIDENotifier)
   private
     FFirstOpen: Boolean;
+    function GetProjectResource(const AProject: IOTAProject): IOTAProjectResource;
   protected
     procedure AfterCompile(Succeeded: Boolean);
     procedure BeforeCompile(const Project: IOTAProject; var Cancel: Boolean);
@@ -75,12 +76,25 @@ begin
   //MsgServices.AddTitleMessage('After Compile');
 end;
 
+function TGLSIDENotifier.GetProjectResource(const AProject: IOTAProject): IOTAProjectResource;
+var
+  I: Integer;
+  Editor: IOTAEditor;
+begin
+  for I := 0 to AProject.GetModuleFileCount - 1 do
+  begin
+    Editor := AProject.GetModuleFileEditor(I);
+    if Supports(Editor, IOTAProjectResource, Result) then
+      exit;
+  end;
+  Result := nil;
+end;
+
 procedure TGLSIDENotifier.BeforeCompile(const Project: IOTAProject; var Cancel: Boolean);
 var
   ResList: TStringList;
   mStream: TMemoryStream;
   I: Integer;
-  Editor: IOTAEditor;
   Resource: IOTAProjectResource;
   ResourceEntry: IOTAResourceEntry;
   Dest: PByte;
@@ -88,22 +102,19 @@ var
   msg: string;
 begin
   NotifyGLSceneManagersBeforeCompile;
+  MsgServices.AddTitleMessage('GLScene: resources saved');
 
-  ResList := GetManagersResourceList;
-  if Assigned(ResList) then
+  if UpdateGLSceneManagersResourceList then
   begin
-    Resource := nil;
-    for I := 0 to Project.GetModuleFileCount - 1 do
-    begin
-      Editor := Project.GetModuleFileEditor(I);
-      if Supports(Editor, IOTAProjectResource, Resource) then
-        Break;
-    end;
+    Resource := GetProjectResource(Project);
 
     if Assigned(Resource) then
     begin
       mStream := TMemoryStream.Create;
+      ResList := TStringList.Create;
+      ResList.Text := vManagersResourceList;
       ResList.SaveToStream(mStream);
+      ResList.Destroy;
       Dest := nil;
       try
         for I := 0 to Resource.GetEntryCount - 1 do
@@ -144,17 +155,18 @@ begin
         MsgServices.AddTitleMessage('GLScene updated application resource list');
       except
         MsgServices.AddTitleMessage(msg);
-        ResList.Destroy;
         mStream.Destroy;
         exit;
       end;
     end;
-    ResList.Destroy;
   end;
 end;
 
 procedure TGLSIDENotifier.FileNotification(NotifyCode: TOTAFileNotification;
   const FileName: string; var Cancel: Boolean);
+
+  var
+    lFileName: string;
 
   function IsProject: Boolean;
   var
@@ -173,6 +185,34 @@ procedure TGLSIDENotifier.FileNotification(NotifyCode: TOTAFileNotification;
     Result := Pos('GLSCENE_DESIGNTIME', pak) > 0;
   end;
 
+  procedure LoadResourceList;
+  var
+    XMLDoc: GLSXMLDocument;
+    XMLProject: GLSXMLNode;
+  begin
+    XMLDoc := GLSNewXMLDocument;
+    try
+      XMLDoc.LoadFromFile(lFileName);
+      XMLProject := XMLDoc.DocumentElement;
+      if not GetXMLAttribute(XMLProject, 'GLSceneResources', vManagersResourceList) then
+        vManagersResourceList := '';
+    except
+      MsgServices.AddTitleMessage('GLScene: can''t load project resource list');
+    end;
+  end;
+
+  procedure SaveResourceList;
+  var
+    XMLDoc: GLSXMLDocument;
+    XMLProject: GLSDOMNode;
+  begin
+    XMLDoc := GLSNewXMLDocument;
+    XMLDoc.LoadFromFile(FileName);
+    XMLProject := XMLDoc.DOMDocument.DocumentElement;
+    SetXMLAttribute(XMLProject, 'GLSceneResources', vManagersResourceList);
+    XMLDoc.SaveToFile(FileName);
+  end;
+
 begin
   if (NotifyCode = ofnPackageInstalled)
     and IsPackage then
@@ -180,14 +220,21 @@ begin
     FFirstOpen := True;
   end
   else if (NotifyCode = ofnFileOpened)
-    and IsProject or FFirstOpen then
+    and (IsProject or FFirstOpen) then
   begin
+    if FFirstOpen then
+      lFileName := GetActiveProject.FileName
+    else
+      lFileName := FileName;
+    LoadResourceList;
     NotifyGLSceneManagersProjectOpened;
     FFirstOpen := False;
   end
   else if (NotifyCode = ofnFileClosing)
     and IsProject then
   begin
+    if UpdateGLSceneManagersResourceList then
+      SaveResourceList;
     NotifyGLSceneManagersProjectClosed;
   end;
 end;

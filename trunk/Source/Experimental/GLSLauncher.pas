@@ -150,56 +150,54 @@ var
 
 begin
   GLSLogger.Enabled := False;
+  ResList := TStringList.Create;
+
   if IsDesignTime then
   begin
-    if Assigned(vAFIOGetAppResourceStream) then
-      rStream := TGLSResourceStream(vAFIOGetAppResourceStream())
-    else
-      rStream := nil;
+    ResList.Text := vManagersResourceList;
   end
   else
-    rStream := CreateResourceStream(glsResourceInfo, GLS_RC_String_Type);
-  GLSLogger.Enabled := True;
-
-  if Assigned(rStream) then
   begin
-    ResList := TStringList.Create;
+    rStream := CreateResourceStream(glsResourceInfo, GLS_RC_String_Type);
     ResList.LoadFromStream(rStream);
     rStream.Destroy;
-    eResType := aresNone;
-    SetExeDirectory;
-    for I := 0 to ResList.Count - 1 do
-    begin
-      line := ResList.Strings[I];
-      if line = '[SPLASH]' then
-      begin
-        eResType := aresSplash;
-        continue;
-      end
-      else
-        case eResType of
-          aresSplash:
-            begin
-              GetNameAndFile;
-              if rName = 'Wait' then
-              begin
-                WaitInterval := 0;
-                Val(rFile, WaitInterval, E);
-              end
-              else if rName = 'SPLASH' then
-              begin
-                mStream := TMemoryStream.Create;
-                mStream.SetSize(Length(rFile) div 2);
-                HexToBin(PChar(rFile), mStream.Memory^, Integer(mStream.Size));
-                SplashImage := TJPEGImage.Create;
-                SplashImage.LoadFromStream(mStream);
-                mStream.Destroy;
-              end;
-            end;
-        end;
-    end;
-    ResList.Destroy;
   end;
+
+  GLSLogger.Enabled := True;
+
+  eResType := aresNone;
+  SetExeDirectory;
+  for I := 0 to ResList.Count - 1 do
+  begin
+    line := ResList.Strings[I];
+    if line = '[SPLASH]' then
+    begin
+      eResType := aresSplash;
+      continue;
+    end
+    else
+      case eResType of
+        aresSplash:
+          begin
+            GetNameAndFile;
+            if rName = 'Wait' then
+            begin
+              WaitInterval := 0;
+              Val(rFile, WaitInterval, E);
+            end
+            else if rName = 'SPLASH' then
+            begin
+              mStream := TMemoryStream.Create;
+              mStream.SetSize(Length(rFile) div 2);
+              HexToBin(PChar(rFile), mStream.Memory^, Integer(mStream.Size));
+              SplashImage := TJPEGImage.Create;
+              SplashImage.LoadFromStream(mStream);
+              mStream.Destroy;
+            end;
+          end;
+      end;
+  end;
+  ResList.Destroy;
 end;
 
 class procedure LaunchManager.NotifyProjectClosed;

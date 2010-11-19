@@ -139,103 +139,6 @@ const
   EPS = 0.0001;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
-  Atmosphere_vp120: AnsiString =
-    '#version 120' + #10#13 +
-    'invariant attribute vec3 Position;' + #10#13 +
-    'uniform mat4 ModelMatrix;' + #10#13 +
-    'uniform mat4 ViewProjectionMatrix;' + #10#13 +
-    'uniform vec3 CameraWorldPosition;' + #10#13 +
-    'uniform vec3 spherePosition;' + #10#13 +
-    'uniform vec3 sunPosition;' + #10#13 +
-    'uniform vec3 LowAtmColor;' + #10#13 +
-    'uniform vec3 HighAtmColor;' + #10#13 +
-    'uniform float invAtmosphereHeight;' + #10#13 +
-    'uniform float PlanetRadius;' + #10#13 +
-    'uniform float AtmosphereRadius;' + #10#13 +
-    'uniform float Opacity;' + #10#13 +
-    'varying vec4 color;' + #10#13 +
-    'varying vec2 texcoord;' + #10#13 +
-    'vec3 lightingVector;' + #10#13 +
-    'bool RayCastSphereIntersect(vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2)' + #10#13
-    +
-    '{' + #10#13 +
-    '	float proj = dot(rayVector, spherePosition - CameraWorldPosition);' + #10#13 +
-    '	vec3 projPoint = rayVector * proj + CameraWorldPosition;' + #10#13 +
-    ' vec3 range = spherePosition - projPoint;' + #10#13 +
-    '	float d2 = sphereRadius * sphereRadius - dot(range, range);' + #10#13 +
-    '	if (d2>=0.0)' + #10#13 +
-    '	{' + #10#13 +
-    '   d2 = sqrt(d2);' + #10#13 +
-    '		i1 = rayVector * (proj-d2) + CameraWorldPosition;' + #10#13 +
-    '		i2 = rayVector * (proj+d2) + CameraWorldPosition;' + #10#13 +
-    '		return (true);' + #10#13 +
-    '	}' + #10#13 +
-    '	return (false);' + #10#13 +
-    '}' + #10#13 +
-    'vec4 AtmosphereColor(vec3 rayStart, vec3 rayEnd)' + #10#13 +
-    '{' + #10#13 +
-    '  vec4 result = vec4(0.0, 0.0, 0.0, 0.0);' + #10#13 +
-    '  float rayLength = distance(rayStart, rayEnd);' + #10#13 +
-    '  int n = int(3.0 * rayLength * invAtmosphereHeight) + 2;' + #10#13 +
-    '  if (n > 10) n = 10;' + #10#13 +
-    '  float contrib = rayLength * Opacity / float(n);' + #10#13 +
-    '  float decay = 1.0 - contrib * 0.5;' + #10#13 +
-    '  contrib *= 1.0/1.1;' + #10#13 +
-    '  vec3 normal, atmPoint;' + #10#13 +
-    '  for (int I = n-1; I>=0; I--)' + #10#13 +
-    '  {' + #10#13 +
-    '    atmPoint = mix(rayStart, rayEnd, float(I) / float(n)) - spherePosition;' + #10#13
-    +
-    '    normal = normalize(atmPoint);' + #10#13 +
-    '    float intensity = dot(normal, lightingVector) + 0.1;' + #10#13 +
-    '    if (intensity > 0.0)' + #10#13 +
-    '    {' + #10#13 +
-    '      intensity *= contrib;' + #10#13 +
-    '      float alt = (length(atmPoint) - PlanetRadius) * invAtmosphereHeight;' + #10#13
-    +
-    '      vec3 altColor = mix(LowAtmColor, HighAtmColor, alt);' + #10#13 +
-    '      result.rgb = result.rgb * decay + altColor * intensity;' + #10#13 +
-    '    }' + #10#13 +
-    '    else {result.rgb *= decay;}' + #10#13 +
-    '  }' + #10#13 +
-    '  result.a = n * contrib * Opacity * 0.1;' + #10#13 +
-    '  return (result);' + #10#13 +
-    '}' + #10#13 +
-    'vec4 ComputeColor(inout vec3 rayDest)' + #10#13 +
-    '{' + #10#13 +
-    ' vec3 ai1, ai2, pi1, pi2;' + #10#13 +
-    ' vec3 rayVector = normalize(rayDest - CameraWorldPosition);' + #10#13 +
-    ' if (RayCastSphereIntersect(rayVector, AtmosphereRadius, ai1, ai2))' + #10#13
-    +
-    ' {' + #10#13 +
-    '   rayDest = ai1;' + #10#13 +
-    '   if (RayCastSphereIntersect(rayVector, PlanetRadius, pi1, pi2))' + #10#13
-    +
-    '   {' + #10#13 +
-    '      return AtmosphereColor(ai1, pi1);' + #10#13 +
-    '   }' + #10#13 +
-    '   else' + #10#13 +
-    '   {' + #10#13 +
-    '      return AtmosphereColor(ai1, ai2);' + #10#13 +
-    '   }' + #10#13 +
-    ' }' + #10#13 +
-    ' return vec4(0.0, 0.0, 0.0, 0.0);' + #10#13 +
-    '}' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    ' vec4 pos = ModelMatrix * vec4(Position, 1.0);' + #10#13 +
-    ' lightingVector = normalize(sunPosition - pos.xyz);' + #10#13 +
-    '	color = ComputeColor(pos.xyz);' + #10#13 +
-    '	gl_Position = ViewProjectionMatrix * pos;' + #10#13 +
-    '}';
-
-  Atmosphere_fp120: AnsiString =
-    '#version 120' + #10#13 +
-    'varying vec4 color;' + #10#13 +
-    'void main(void)' + #10#13 +
-    '{' + #10#13 +
-    '	gl_FragColor = color;' + #10#13 +
-    '}';
 
   Atmosphere_vp150: AnsiString =
     '#version 150' + #10#13 +
@@ -243,13 +146,13 @@ const
     'uniform mat4 ModelMatrix;' + #10#13 +
     'uniform mat4 ViewProjectionMatrix;' + #10#13 +
     'uniform vec3 CameraWorldPosition;' + #10#13 +
-    'uniform vec3 spherePosition;' + #10#13 +
+    'uniform vec4 spherePosition;' + #10#13 +
     'uniform vec3 sunPosition;' + #10#13 +
     'uniform vec3 LowAtmColor;' + #10#13 +
     'uniform vec3 HighAtmColor;' + #10#13 +
     'uniform float invAtmosphereHeight;' + #10#13 +
     'uniform float PlanetRadius;' + #10#13 +
-    'uniform float AtmosphereRadius;' + #10#13 +
+    'uniform float AtmoRadius;' + #10#13 +
     'uniform float Opacity;' + #10#13 +
     'out vec4 color;' + #10#13 +
     'out vec2 texcoord;' + #10#13 +
@@ -257,9 +160,9 @@ const
     'bool RayCastSphereIntersect(vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2)' + #10#13
     +
     '{' + #10#13 +
-    '	float proj = dot(rayVector, spherePosition - CameraWorldPosition);' + #10#13 +
+    '	float proj = dot(rayVector, spherePosition.xyz - CameraWorldPosition);' + #10#13 +
     '	vec3 projPoint = rayVector * proj + CameraWorldPosition;' + #10#13 +
-    ' vec3 range = spherePosition - projPoint;' + #10#13 +
+    ' vec3 range = spherePosition.xyz - projPoint;' + #10#13 +
     '	float d2 = sphereRadius * sphereRadius - dot(range, range);' + #10#13 +
     '	if (d2>=0.0)' + #10#13 +
     '	{' + #10#13 +
@@ -276,13 +179,14 @@ const
     '  float rayLength = distance(rayStart, rayEnd);' + #10#13 +
     '  int n = int(3.0 * rayLength * invAtmosphereHeight) + 2;' + #10#13 +
     '  if (n > 10) n = 10;' + #10#13 +
-    '  float contrib = rayLength * Opacity / float(n);' + #10#13 +
+    '  float invN = 1.0 / float(n);' + #10#13 +
+    '  float contrib = rayLength * Opacity * invN;' + #10#13 +
     '  float decay = 1.0 - contrib * 0.5;' + #10#13 +
     '  contrib *= 1.0/1.1;' + #10#13 +
     '  vec3 normal, atmPoint;' + #10#13 +
-    '  for (int I = n-1; I>=0; I--)' + #10#13 +
+    '  for (int I = n-1; I>-1; I--)' + #10#13 +
     '  {' + #10#13 +
-    '    atmPoint = mix(rayStart, rayEnd, float(I) / float(n)) - spherePosition;' + #10#13
+    '    atmPoint = mix(rayStart, rayEnd, float(I) * invN) - spherePosition.xyz;' + #10#13
     +
     '    normal = normalize(atmPoint);' + #10#13 +
     '    float intensity = dot(normal, lightingVector) + 0.1;' + #10#13 +
@@ -296,19 +200,22 @@ const
     '    }' + #10#13 +
     '    else {result.rgb *= decay;}' + #10#13 +
     '  }' + #10#13 +
-    '  result.a = n * contrib * Opacity * 0.1;' + #10#13 +
+    '  result.a = float(n) * contrib * Opacity * 0.1;' + #10#13 +
     '  return (result);' + #10#13 +
+    '}' + #10#13 +
+    'float SphereVisibleRadius(float distance, float radius)' + #10#13 +
+    '{' + #10#13 +
+    '   float ir = sqrt(distance-radius);' + #10#13 +
+    '   float tr = (distance+radius-ir*ir)/(2.0*ir);' + #10#13 +
+    '   return sqrt(radius+tr*tr);' + #10#13 +
     '}' + #10#13 +
     'vec4 ComputeColor(inout vec3 rayDest)' + #10#13 +
     '{' + #10#13 +
     ' vec3 ai1, ai2, pi1, pi2;' + #10#13 +
     ' vec3 rayVector = normalize(rayDest - CameraWorldPosition);' + #10#13 +
-    ' if (RayCastSphereIntersect(rayVector, AtmosphereRadius, ai1, ai2))' + #10#13
-    +
+    ' if (RayCastSphereIntersect(rayVector, AtmoRadius, ai1, ai2))' + #10#13 +
     ' {' + #10#13 +
-    '   rayDest = ai1;' + #10#13 +
-    '   if (RayCastSphereIntersect(rayVector, PlanetRadius, pi1, pi2))' + #10#13
-    +
+    '   if (RayCastSphereIntersect(rayVector, PlanetRadius, pi1, pi2))' + #10#13  +
     '   {' + #10#13 +
     '      return AtmosphereColor(ai1, pi1);' + #10#13 +
     '   }' + #10#13 +
@@ -321,10 +228,13 @@ const
     '}' + #10#13 +
     'void main()' + #10#13 +
     '{' + #10#13 +
-    ' vec4 pos = ModelMatrix * vec4(Position, 1.0);' + #10#13 +
-    ' lightingVector = normalize(sunPosition - pos.xyz);' + #10#13 +
-    '	color = ComputeColor(pos.xyz);' + #10#13 +
-    '	gl_Position = ViewProjectionMatrix * pos;' + #10#13 +
+    ' vec4 WorldPosition = ModelMatrix * vec4(0.0, Position.x*Position.yz, 1.0);' + #10#13 +
+    ' vec3 CameraVector = WorldPosition.xyz - CameraWorldPosition;' + #10#13 +
+    ' float newRadius = SphereVisibleRadius(spherePosition.w, Position.x*Position.x);' + #10#13 +
+    ' WorldPosition = ModelMatrix * vec4(0.0, newRadius*Position.yz, 1.0);' + #10#13 +
+    ' lightingVector = normalize(sunPosition - WorldPosition.xyz);' + #10#13 +
+    '	color = ComputeColor(WorldPosition.xyz);' + #10#13 +
+    '	gl_Position = ViewProjectionMatrix * WorldPosition;' + #10#13 +
     '}';
 
   Atmosphere_fp150: AnsiString =
@@ -350,11 +260,9 @@ var
     uniformLowAtmColor,
     uniformHighAtmColor,
     uniformPlanetRadius,
-    uniformAtmosphereRadius: TGLSLUniform;
+    uniformAtmoRadius: TGLSLUniform;
 
 procedure InitAtmosphereShader;
-var
-  vp, fp: AnsiString;
 begin
   if AtmosphereProgram = nil then
   begin
@@ -365,26 +273,16 @@ begin
     uniformLowAtmColor := TGLSLUniform.RegisterUniform('LowAtmColor');
     uniformHighAtmColor := TGLSLUniform.RegisterUniform('HighAtmColor');
     uniformPlanetRadius := TGLSLUniform.RegisterUniform('PlanetRadius');
-    uniformAtmosphereRadius := TGLSLUniform.RegisterUniform('AtmosphereRadius');
+    uniformAtmoRadius := TGLSLUniform.RegisterUniform('AtmoRadius');
 
     with ShaderManager do
     try
       BeginWork;
       DefineShaderProgram(AtmosphereProgram,
         [ptVertex, ptFragment], 'AtmosphereProgram');
-      if GL.VERSION_3_2 then
-      begin
-        vp := Atmosphere_vp150;
-        fp := Atmosphere_fp150;
-      end
-      else
-      begin
-        vp := Atmosphere_vp120;
-        fp := Atmosphere_fp120;
-      end;
-      DefineShaderObject(AtmosphereVertexObject, vp,
+      DefineShaderObject(AtmosphereVertexObject, Atmosphere_vp150,
         [ptVertex], 'AtmosphereVertexObject');
-      DefineShaderObject(AtmosphereFragmentObject, fp,
+      DefineShaderObject(AtmosphereFragmentObject, Atmosphere_fp150,
         [ptFragment], 'AtmosphereFragmentObject');
       AttachShaderObjectToProgram(AtmosphereVertexObject, AtmosphereProgram);
       AttachShaderObjectToProgram(AtmosphereFragmentObject, AtmosphereProgram);
@@ -441,7 +339,6 @@ begin
         ZAxis := VectorCrossProduct(ARci.CameraUp, XAxis);
         NormalizeVector(ZAxis);
         YAxis := VectorCrossProduct(XAxis, ZAxis);
-        NormalizeVector(YAxis);
         Basis[0] := XAxis;
         Basis[1] := YAxis;
         Basis[2] := ZAxis;
@@ -460,15 +357,18 @@ begin
           UniformMat4f(uniformViewProjectionMatrix, ARci.PipelineTransformation.ViewProjectionMatrix);
 
           Uniform3f(uniformCameraWorldPosition, AffineVectorMake(ARci.PipelineTransformation.CameraPosition));
-          Uniform3f(uniformSpherePosition, AffineVectorMake(AbsolutePosition));
+
           Uniform3f(uniformSunPosition, AffineVectorMake(sunPos));
+          sunPos := AbsolutePosition;
+          sunPos[3] := VectorDistance2(sunPos, ARci.CameraPosition);
+          Uniform4f(uniformSpherePosition, sunPos);
           Uniform1f(uniformInvAtmosphereHeight,
             1 / (FAtmosphereRadius - FPlanetRadius));
           Uniform1f(uniformOpacity, FOpacity);
           Uniform3f(uniformLowAtmColor, AffineVectorMake(FLowAtmColor.Color));
           Uniform3f(uniformHighAtmColor, AffineVectorMake(FHighAtmColor.Color));
           Uniform1f(uniformPlanetRadius, FPlanetRadius);
-          Uniform1f(uniformAtmosphereRadius, FAtmosphereRadius);
+          Uniform1f(uniformAtmoRadius, FAtmosphereRadius);
 
           with ARci.GLStates do
           begin
@@ -480,7 +380,6 @@ begin
           EnableGLBlendingMode(ARci.GLStates);
 
           FBuiltProperties.Manager.RenderClient(FBuiltProperties);
-
           if not ARci.GLStates.ForwardContext then
             UseFixedFunctionPipeline;
         end;
@@ -506,15 +405,13 @@ begin
       if I < 5 then
         radius := FPlanetRadius * Sqrt(I * (1 / 5))
       else
-        radius := FPlanetRadius + (I - 5.1) * (FAtmosphereRadius -
-          FPlanetRadius)
-          * (1 / 6.9);
+        radius := FPlanetRadius + (I - 5.1) * (FAtmosphereRadius - FPlanetRadius) * (1 / 6.9);
       k0 := (I and 1) * (FSlices + 1);
       k1 := (FSlices + 1) - k0;
       for J := 0 to FSlices do
       begin
-        VertexCash[k0 + J] := VectorCombine(ZVector, YVector,
-          cosCache[J] * radius, sinCache[J] * radius);
+        VertexCash[k0 + J] :=
+          AffineVectorMake(radius, sinCache[J], cosCache[J]);
         if I = 0 then
           Break;
       end;
@@ -552,6 +449,7 @@ begin
       begin
         BeginPrimitives(GLVBOM_TRIANGLE_FAN);
         Attribute3f(attrPosition, VertexCash[k1]);
+        EmitVertex;
         for J := k0 + FSlices downto k0 do
         begin
           Attribute3f(attrPosition, VertexCash[J]);

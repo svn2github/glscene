@@ -1113,7 +1113,6 @@ begin
 
   OldBaseLevel := FBaseLevel;
   CalcLODRange(FBaseLevel, FMaxLevel);
-//  FBaseLevel := 10;
 
   bContinueStreaming := False;
   for Level := FMaxLevel downto FBaseLevel do
