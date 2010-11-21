@@ -105,6 +105,7 @@ type
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
 
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -241,6 +242,7 @@ end;
 destructor TGLSceneViewer.Destroy;
 begin
   FBuffer.Free;
+  FBuffer := nil;
   inherited Destroy;
 end;
 
@@ -493,6 +495,13 @@ end;
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   RecreateWnd;
+end;
+
+procedure TGLSceneViewer.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if csDesignInteractive in ControlStyle then
+    FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
 // LastFrameTime

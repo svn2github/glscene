@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/11/10 - Yar - Added design time navigation
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>25/10/10 - Yar - Bugfixed TGLSceneBuffer.CopyToTexture
       <li>08/09/10 - Yar - Added gloabal var vCurrentRenderingObject (Thanks Controller)
@@ -390,6 +391,8 @@ type
   // TGLCameraInvarianceMode
   //
   TGLCameraInvarianceMode = (cimNone, cimPosition, cimOrientation);
+
+  TGLSceneViewerMode = (svmDefault, svmNavigation, svmGizmo);
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
@@ -1577,6 +1580,7 @@ type
     { Public Declarations }
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
 
     {: Nearest clipping plane for the frustum.<p>
        This value depends on the FocalLength and DepthOfView fields and
@@ -1941,7 +1945,11 @@ type
     FFogEnvironment: TGLFogEnvironment;
     FAccumBufferBits: Integer;
 
+    // Cameras
     FCamera: TGLCamera;
+    FDesignCamera: TGLCamera;
+    FOldX, FOldY: Integer;
+    FLeave: Boolean;
 
     // Freezing
     FFreezeBuffer: Pointer;
@@ -2049,6 +2057,9 @@ type
        It also compensates for the fact that the corners of the frustrum
        are further from the eye, than its centre.}
     function PixelToDistance(x, y: integer): Single;
+    {: Design time notification }
+    procedure NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
+
     {: Renders the scene on the viewer.<p>
        You do not need to call this method, unless you explicitly want a
        render at a specific time. If you just want the control to get
@@ -2474,6 +2485,10 @@ procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 
+var
+  vGLSceneViewerMode: TGLSceneViewerMode = svmDefault;
+  vResetDesignView: Boolean = True;
+
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
@@ -2483,6 +2498,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
+  Controls,
   GLSLog,
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xMaterial,
@@ -2984,8 +3000,7 @@ end;
 // GetChildren
 //
 
-procedure TGLBaseSceneObject.GetChildren(AProc: TGetChildProc; Root:
-  TComponent);
+procedure TGLBaseSceneObject.GetChildren(AProc: TGetChildProc; Root: TComponent);
 var
   i: Integer;
 begin
@@ -5741,6 +5756,28 @@ begin
   inherited;
 end;
 
+procedure TGLCamera.Assign(Source: TPersistent);
+var
+  cam: TGLCamera;
+begin
+  if Source is TGLCamera then
+  begin
+    cam := TGLCamera(Source);
+    Position.Assign(cam.Position);
+    Direction.Assign(cam.Direction);
+    Up.Assign(cam.Up);
+    if Parent <> nil then
+      SetTargetObject(cam.TargetObject);
+    SetDepthOfView(cam.DepthOfView);
+    SetFocalLength(cam.FocalLength);
+    SetCameraStyle(cam.CameraStyle);
+    SetSceneScale(cam.SceneScale);
+    SetNearPlaneBias(cam.NearPlaneBias);
+    SetScene(cam.Scene);
+  end;
+  inherited Assign(Source);
+end;
+
 // AbsoluteVectorToTarget
 //
 
@@ -5806,7 +5843,10 @@ begin
     end
     else
     begin
-      mat := Parent.AbsoluteMatrix;
+      if Assigned(Parent) then
+        mat := Parent.AbsoluteMatrix
+      else
+        mat := IdentityHmgMatrix;
       absPos := AbsolutePosition;
       v := VectorTransform(Direction.AsVector, mat);
       FLastDirection := v;
@@ -5994,8 +6034,6 @@ begin
   FFocalLength := 50;
   with aSceneBuffer do
   begin
-    GL.MatrixMode(GL_PROJECTION);
-    GL.LoadIdentity;
     ApplyPerspective(FViewport, FViewport.Width, FViewport.Height, FRenderDPI);
     FUp.DirectVector := YHmgVector;
     if FViewport.Height < FViewport.Width then
@@ -6115,7 +6153,10 @@ var
 begin
   trVector := AbsoluteEyeSpaceVector(forwardDistance, rightDistance,
     upDistance);
-  Position.Translate(Parent.AbsoluteToLocal(trVector));
+  if Assigned(Parent) then
+    Position.Translate(Parent.AbsoluteToLocal(trVector))
+  else
+    Position.Translate(trVector);
 end;
 
 // MoveTargetInEyeSpace
@@ -7867,6 +7908,14 @@ begin
   FContextOptions := [roDoubleBuffer, roRenderToWindow];
 
   ResetPerformanceMonitor;
+
+{$IFDEF GLS_MULTITHREAD}
+  if csDesigning in TComponent(Owner).ComponentState then
+  begin
+    FDesignCamera := TGLCamera.Create(nil);
+    FLeave := True;
+  end;
+{$ENDIF}
 end;
 
 // Destroy
@@ -7879,6 +7928,7 @@ begin
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
   FFogEnvironment.Free;
+  FDesignCamera.Free;
   inherited Destroy;
 end;
 
@@ -9039,11 +9089,56 @@ begin
   Result := dst / camAng; //compensate for flat frustrum face
 end;
 
+// NotifyMouseMove
+//
+
+procedure TGLSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  lRight: TVector;
+begin
+  if Assigned(FDesignCamera) then
+  begin
+    if FLeave then
+    begin
+      FOldX := X;
+      FOldY := Y;
+      FLeave := False;
+      exit;
+    end;
+
+    if (vGLSceneViewerMode = svmNavigation) and (ssRight in Shift) then
+    with FDesignCamera do
+    begin
+      if ssShift in Shift then
+      begin
+        MoveInEyeSpace(0.01*(FOldY - Y), 0.01*(FOldX - X), 0);
+      end
+      else if ssCtrl in Shift then
+      begin
+        MoveInEyeSpace(0, 0.01*(FOldX - X), 0.01*(FOldY - Y));
+      end
+      else if Assigned(FCamera) then
+      begin
+        Direction.Rotate(FCamera.Up.AsVector, 0.005*(X - FOldX));
+        lRight := VectorCrossProduct(FCamera.Up.AsVector, Direction.AsVector);
+        NormalizeVector(lRight);
+        Direction.Rotate(lRight, 0.005*(FOldY - Y));
+        Up.DirectVector := VectorCrossProduct(Direction.AsVector, lRight);
+      end
+    end;
+
+    FOldX := X;
+    FOldY := Y;
+  end;
+end;
+
 // PrepareRenderingMatrices
 //
 
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
   resolution: Integer; pickingRect: PGLRect = nil);
+var
+  lCamera: TGLCamera;
 begin
   RenderingContext.PipelineTransformation.IdentityAll;
   // setup projection matrix
@@ -9058,24 +9153,54 @@ begin
   end;
   FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
 
-  if Assigned(FCamera) then
+  if Assigned(FDesignCamera) then
+  begin
+    lCamera := FDesignCamera;
+    // Reset design camera state
+    if vResetDesignView then
+    begin
+      FDesignCamera.Assign(FCamera);
+      vResetDesignView := False;
+    end;
+    // Apply viewer interation mode
+    if Owner is TWinControl then
+      with TWinControl(Owner) do
+      begin
+        case vGLSceneViewerMode of
+          svmDefault:
+            begin
+              ControlStyle := ControlStyle - [csDesignInteractive];
+            end;
+          svmNavigation:
+            begin
+              ControlStyle := ControlStyle + [csDesignInteractive];
+            end;
+          svmGizmo:
+            begin
+              ControlStyle := ControlStyle + [csDesignInteractive];
+            end;
+        end;
+      end;
+  end
+  else
+    lCamera := FCamera;
+
+  if Assigned(lCamera) then
   begin
     // apply camera perpective
-    FCamera.ApplyPerspective(
+    lCamera.ApplyPerspective(
       aViewport,
       FViewPort.Width,
       FViewPort.Height,
       resolution);
+    // setup model view matrix
+    // apply camera transformation (viewpoint)
+    lCamera.Apply;
+    FCameraAbsolutePosition := lCamera.AbsolutePosition;
   end;
 
-  // setup model view matrix
   if Assigned(FCamera) then
-  begin
-    // apply camera transformation (viewpoint)
     FCamera.Scene.FCurrentGLCamera := FCamera;
-    FCamera.Apply;
-    FCameraAbsolutePosition := FCamera.AbsolutePosition;
-  end;
 end;
 
 // DoBaseRender

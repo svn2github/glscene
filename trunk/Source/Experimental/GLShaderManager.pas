@@ -52,7 +52,30 @@ const
 
   cObjectTypeName: array[TGLSLProgramType] of string =
     ('VERTEX', 'GEOMTERY', 'FRAGMENT', 'CONTROL', 'EVALUATION');
+
   cEnUsFormatSettings: TFormatSettings = (
+{$IFDEF GLS_DELPHI_XE_UP}
+    CurrencyString: '$';
+    CurrencyFormat: 0;
+    CurrencyDecimals: 2;
+    DateSeparator: '/';
+    TimeSeparator: ':';
+    ListSeparator: ',';
+    ShortDateFormat: 'M/d/yyyy';
+    LongDateFormat: 'dddd, MMMM dd, yyyy';
+    TimeAMString: 'AM';
+    TimePMString: 'PM';
+    ShortTimeFormat: 'h:mm AMPM';
+    LongTimeFormat: 'h:mm:ss AMPM';
+    ShortMonthNames: ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+    LongMonthNames: ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+    ShortDayNames: ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+    LongDayNames: ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+    ThousandSeparator: ',';
+    DecimalSeparator: '.';
+    TwoDigitYearCenturyWindow: 0;
+    NegCurrFormat: 0;
+{$ELSE}
     CurrencyFormat: 0;
     NegCurrFormat: 0;
     ThousandSeparator: ',';
@@ -61,7 +84,6 @@ const
     DateSeparator: '/';
     TimeSeparator: ':';
     ListSeparator: ',';
-    CurrencyString: '$';
     ShortDateFormat: 'M/d/yyyy';
     LongDateFormat: 'dddd, MMMM dd, yyyy';
     TimeAMString: 'AM';
@@ -73,6 +95,7 @@ const
     ShortDayNames: ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
     LongDayNames: ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
     TwoDigitYearCenturyWindow: 0;
+{$ENDIF}
   );
 
 type

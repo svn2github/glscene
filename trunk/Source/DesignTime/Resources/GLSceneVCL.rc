@@ -62,3 +62,7 @@ TGLSLogger BITMAP vcl\TGLSLogger.bmp
 TGLSLanguage BITMAP vcl\TGLSLanguage.bmp
 TGLSArchiveManager BITMAP vcl\TGLSArchiveManager.bmp
 TGLSLauncher BITMAP vcl\TGLSLauncher.bmp
+GLSceneViewerControlToolbarDefault BITMAP vcl\ToolbarDefault.bmp
+GLSceneViewerControlToolbarNavigation BITMAP vcl\ToolbarNavigation.bmp
+GLSceneViewerControlToolbarGizmo BITMAP vcl\ToolbarGizmo.bmp
+GLSceneViewerControlToolbarCameraReset BITMAP vcl\ToolbarCameraReset.bmp

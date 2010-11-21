@@ -306,6 +306,9 @@ var
   I: Integer;
 
 begin
+  if csDesigning in ComponentState then
+    exit;
+
   if FGLSceneViewer <> nil then
     if FGLSceneViewer.Camera <> nil then
     begin
