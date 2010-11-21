@@ -5775,7 +5775,8 @@ begin
     SetNearPlaneBias(cam.NearPlaneBias);
     SetScene(cam.Scene);
   end;
-  inherited Assign(Source);
+  if Assigned(Source) then
+    inherited Assign(Source);
 end;
 
 // AbsoluteVectorToTarget
