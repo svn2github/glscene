@@ -350,6 +350,7 @@ uses
   Classes,
   SysUtils,
   Graphics,
+  Controls,
 {$IFDEF FPC}
   LCLType,
 {$ENDIF}
@@ -392,7 +393,7 @@ type
   //
   TGLCameraInvarianceMode = (cimNone, cimPosition, cimOrientation);
 
-  TGLSceneViewerMode = (svmDefault, svmNavigation, svmGizmo);
+  TGLSceneViewerMode = (svmDisabled, svmDefault, svmNavigation, svmGizmo);
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
@@ -2486,7 +2487,7 @@ procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 
 var
-  vGLSceneViewerMode: TGLSceneViewerMode = svmDefault;
+  vGLSceneViewerMode: TGLSceneViewerMode = svmDisabled;
   vResetDesignView: Boolean = True;
 
   //------------------------------------------------------------------------------
@@ -2498,7 +2499,6 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  Controls,
   GLSLog,
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xMaterial,
@@ -5759,24 +5759,38 @@ end;
 procedure TGLCamera.Assign(Source: TPersistent);
 var
   cam: TGLCamera;
+  dir: TVector;
 begin
-  if Source is TGLCamera then
-  begin
-    cam := TGLCamera(Source);
-    Position.Assign(cam.Position);
-    Direction.Assign(cam.Direction);
-    Up.Assign(cam.Up);
-    if Parent <> nil then
-      SetTargetObject(cam.TargetObject);
-    SetDepthOfView(cam.DepthOfView);
-    SetFocalLength(cam.FocalLength);
-    SetCameraStyle(cam.CameraStyle);
-    SetSceneScale(cam.SceneScale);
-    SetNearPlaneBias(cam.NearPlaneBias);
-    SetScene(cam.Scene);
-  end;
   if Assigned(Source) then
+  begin
     inherited Assign(Source);
+
+    if Source is TGLCamera then
+    begin
+      cam := TGLCamera(Source);
+      SetDepthOfView(cam.DepthOfView);
+      SetFocalLength(cam.FocalLength);
+      SetCameraStyle(cam.CameraStyle);
+      SetSceneScale(cam.SceneScale);
+      SetNearPlaneBias(cam.NearPlaneBias);
+      SetScene(cam.Scene);
+
+      if Parent <> nil then
+      begin
+        SetTargetObject(cam.TargetObject);
+      end
+      else // Design camera
+      begin
+        Position.AsVector := cam.AbsolutePosition;
+        if Assigned(cam.TargetObject) then
+        begin
+          VectorSubtract(cam.TargetObject.AbsolutePosition, AbsolutePosition, dir);
+          NormalizeVector(dir);
+          Direction.AsVector := dir;
+        end;
+      end;
+    end;
+  end;
 end;
 
 // AbsoluteVectorToTarget
@@ -7911,7 +7925,7 @@ begin
   ResetPerformanceMonitor;
 
 {$IFDEF GLS_MULTITHREAD}
-  if csDesigning in TComponent(Owner).ComponentState then
+  if vGLSceneViewerMode <> svmDisabled then
   begin
     FDesignCamera := TGLCamera.Create(nil);
     FLeave := True;
@@ -9154,6 +9168,7 @@ begin
   end;
   FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
 
+{$IFDEF GLS_MULTITHREAD}
   if Assigned(FDesignCamera) then
   begin
     lCamera := FDesignCamera;
@@ -9168,6 +9183,11 @@ begin
       with TWinControl(Owner) do
       begin
         case vGLSceneViewerMode of
+          svmDisabled:
+            begin
+              lCamera := FCamera;
+            end;
+
           svmDefault:
             begin
               ControlStyle := ControlStyle - [csDesignInteractive];
@@ -9184,6 +9204,7 @@ begin
       end;
   end
   else
+{$ENDIF}
     lCamera := FCamera;
 
   if Assigned(lCamera) then
@@ -9487,6 +9508,7 @@ begin
       FCamera := ACamera;
       FCamera.TransformationChanged;
     end;
+    vResetDesignView := True;
     NotifyChange(Self);
   end;
 end;

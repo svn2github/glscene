@@ -1,20 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneViewerToolbar<p>
+{ : GLSceneViewerToolbar<p>
 
-   Added GLScene's toolbar to Delphi IDE.<p>
+  Added GLScene's toolbar to Delphi IDE.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>21/11/10 - Yar - Creation
- </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>21/11/10 - Yar - Creation
+  </ul></font>
 }
 
 unit GLSceneToolbar;
 
 interface
-
-procedure Register;
 
 implementation
 
@@ -26,143 +24,140 @@ uses
   Controls,
   ComCtrls,
   ExtCtrls,
+  ActnList,
   ToolsAPI,
-  GLScene;
+  GLScene,
+  GLSGenerics;
+
+const
+  cGLSceneViewerToolbar = 'GLSceneViewerToolbar';
 
 type
-  TToolBarClass = class of TToolBar;
 
-  TGLSToolButtonReciver = class
+  TGLSToolButtonReceiver = class
   protected
+    FActionList: GList<TBasicAction>;
     procedure OnClick(Sender: TObject);
+  public
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 var
-  vReciver: TGLSToolButtonReciver;
+  vReciver: TGLSToolButtonReceiver;
 
 function MsgServices: IOTAMessageServices;
-begin
-  Result := (BorlandIDEServices as IOTAMessageServices);
-  Assert(Result <> nil, 'IOTAMessageServices not available');
-end;
+  begin
+    Result := (BorlandIDEServices as IOTAMessageServices);
+    Assert(Result <> nil, 'IOTAMessageServices not available');
+  end;
 
-procedure Register;
+procedure AddGLSceneToolbar;
 
   var
-    IDEImageList: TCustomImageList;
     Services: INTAServices;
-    StdToolbar: TToolBar;
-    DockToolbar: TToolBarClass;
-    IDEBarControl: TControlBar;
-    GLSceneViewerToolbar: TToolBar;
-    I, T: Integer;
+    T: Integer;
+    GLToolbar: TToolBar;
 
-  procedure AddButton(const AHint: string);
+    procedure AddButton(const AHint, AResName: string);
+      var
+        Bmp: TBitmap;
+        Act: TAction;
+      begin
+        Act := TAction.Create(nil);
+        Act.ActionList := Services.ActionList;
+        vReciver.FActionList.Add(Act);
+
+        Bmp := TBitmap.Create;
+        Bmp.LoadFromResourceName(HInstance, AResName);
+        Act.ImageIndex := Services.AddMasked(Bmp, Bmp.TransparentColor, 'GLScene.' + AResName);
+        Bmp.Destroy;
+
+        Act.Hint := AHint;
+        Act.Tag := T;
+        Act.OnExecute := vReciver.OnClick;
+
+        with Services.AddToolButton(cGLSceneViewerToolbar, 'GLSButton' + IntToStr(T), Act) do
+          Action := Act;
+        Act.Enabled := True;
+
+        Inc(T);
+      end;
+
   begin
-    with TToolButton.Create(GLSceneViewerToolbar) do
-    try
-      AutoSize := True;
-      Grouped := True;
-      Parent := GLSceneViewerToolbar;
-      ImageIndex := I;
-      Hint := AHint;
-      Tag := T;
-      OnClick := vReciver.OnClick;
-      Dec(T);
-    except
-      Free;
+
+    if not Supports(BorlandIDEServices, INTAServices, Services) then
+      exit;
+
+    GLToolbar := Services.ToolBar[cGLSceneViewerToolbar];
+    vReciver := TGLSToolButtonReceiver.Create;
+    T := 0;
+
+    if not Assigned(GLToolbar) then
+    begin
+      GLToolbar := Services.NewToolbar(cGLSceneViewerToolbar, 'GLScene Viewer Control');
+      if Assigned(GLToolbar) then
+        with GLToolbar do
+        begin
+          AddButton('GLSceneViewer default control mode', 'GLSceneViewerControlToolbarDefault');
+          AddButton('GLSceneViewer navigation mode', 'GLSceneViewerControlToolbarNavigation');
+          AddButton('GLSceneViewer gizmo mode', 'GLSceneViewerControlToolbarGizmo');
+          AddButton('Reset view to GLSceneViewer camera', 'GLSceneViewerControlToolbarCameraReset');
+          Visible := True;
+        end;
+      MsgServices.AddTitleMessage('GLScene Toolbar created');
+    end
+    else
+    begin
+      for T := 0 to GLToolbar.ButtonCount - 1 do
+      begin
+        GLToolbar.Buttons[T].Action.OnExecute := vReciver.OnClick;
+        vReciver.FActionList.Add(GLToolbar.Buttons[T].Action);
+      end;
+      MsgServices.AddTitleMessage('GLScene Toolbar activated');
     end;
+
   end;
 
-  var
-    Bmp: TBitmap;
-
+constructor TGLSToolButtonReceiver.Create;
 begin
-  if not Supports(BorlandIDEServices, INTAServices, Services) then
-    exit;
-  if Assigned(Services.ToolBar['GLSceneViewerToolbar']) then
-    exit;
-  IDEImageList := Services.ImageList;
-  StdToolbar := Services.ToolBar['StandardToolBar'];
-  DockToolbar := TToolBarClass(StdToolBar.ClassType);
-  IDEBarControl := StdToolBar.Parent as TControlBar;
-  GLSceneViewerToolbar := DockToolBar.Create(IDEBarControl);
-  with GLSceneViewerToolbar do
-  begin
-    Visible := False;
-    Parent := IDEBarControl;
-    Name := 'GLSceneViewerToolbar';
-    Caption := 'GLScene Viewer Control';
-    EdgeInner := StdToolbar.EdgeInner;
-    EdgeOuter := StdToolbar.EdgeOuter;
-    Flat := StdToolbar.Flat;
-    Images := IDEImageList;
-    OnGetSiteInfo := StdToolBar.OnGetSiteInfo;
-    Constraints.MinHeight := StdToolBar.Constraints.MinHeight;
-    Constraints.MinWidth := StdToolBar.Constraints.MinWidth;
-    DockSite := StdToolBar.DockSite;
-    DragKind := StdToolBar.DragKind;
-    DragMode := StdToolBar.DragMode;
-    PopupMenu := StdToolBar.PopupMenu;
-    OnStartDock := StdToolBar.OnStartDock;
-    OnEndDock := StdToolBar.OnEndDock;
-    ShowHint := StdToolBar.ShowHint;
-    ShowCaptions := StdToolBar.ShowCaptions;
-
-    vReciver := TGLSToolButtonReciver.Create;
-    T := 3;
-
-    Bmp := TBitmap.Create;
-    Bmp.LoadFromResourceName(HInstance, 'GLSceneViewerControlToolbarCameraReset');
-    I := Services.AddMasked(Bmp, Bmp.TransparentColor, 'GLScene.Viewer control view reset image');
-    Bmp.Destroy;
-    AddButton('Reset view to GLSceneViewer camera');
-
-    Bmp := TBitmap.Create;
-    Bmp.LoadFromResourceName(HInstance, 'GLSceneViewerControlToolbarGizmo');
-    I := Services.AddMasked(Bmp, Bmp.TransparentColor, 'GLScene.Viewer control gizmo image');
-    Bmp.Destroy;
-    AddButton('GLSceneViewer gizmo mode');
-
-    Bmp := TBitmap.Create;
-    Bmp.LoadFromResourceName(HInstance, 'GLSceneViewerControlToolbarNavigation');
-    I := Services.AddMasked(Bmp, Bmp.TransparentColor, 'GLScene.Viewer control navigation image');
-    Bmp.Destroy;
-    AddButton('GLSceneViewer navigation mode');
-
-    Bmp := TBitmap.Create;
-    Bmp.LoadFromResourceName(HInstance, 'GLSceneViewerControlToolbarDefault');
-    I := Services.AddMasked(Bmp, Bmp.TransparentColor, 'GLScene.Viewer control default image');
-    Bmp.Destroy;
-    AddButton('GLSceneViewer default control mode');
-
-    Left := StdToolBar.Left + StdToolBar.Width;
-    Top := StdToolBar.Top;
-    Height := StdToolBar.Height;
-
-    Visible := True;
-  end;
-
-  IDEBarControl.StickControls;
+  FActionList := GList<TBasicAction>.Create;
+  vGLSceneViewerMode := svmDefault;
 end;
 
-procedure TGLSToolButtonReciver.OnClick(Sender: TObject);
-const
-  cMode: array[TGLSceneViewerMode] of string =
-    ('default', 'navigation', 'gizmo');
+destructor TGLSToolButtonReceiver.Destroy;
 var
-  t: Integer;
+  I: Integer;
 begin
-  inherited;
-  t := TToolButton(Sender).Tag;
-  if t<3 then
-  begin
-    vGLSceneViewerMode := TGLSceneViewerMode(t);
-    MsgServices.AddTitleMessage(Format('GLSceneViewer %s mode', [cMode[vGLSceneViewerMode]]));
-  end
-  else
-    vResetDesignView := True;
+  for I := 0 to FActionList.Count - 1 do
+    FActionList[I].OnExecute := nil;
+  FActionList.Destroy;
+  vGLSceneViewerMode := svmDisabled;
 end;
+
+procedure TGLSToolButtonReceiver.OnClick(Sender: TObject);
+  const
+    cMode: array [TGLSceneViewerMode] of string = ('', 'default', 'navigation', 'gizmo');
+  var
+    T: Integer;
+  begin
+    inherited;
+    T := TComponent(Sender).Tag;
+    if T < 3 then
+    begin
+      vGLSceneViewerMode := TGLSceneViewerMode(T+1);
+      MsgServices.AddTitleMessage(Format('GLSceneViewer %s mode', [cMode[vGLSceneViewerMode]]));
+    end
+    else
+      vResetDesignView := True;
+  end;
+
+initialization
+
+  AddGLSceneToolbar;
+
+finalization
+
+  vReciver.Free;
 
 end.
-

@@ -213,7 +213,11 @@ procedure TGLSIDENotifier.FileNotification(NotifyCode: TOTAFileNotification;
     XMLDoc.SaveToFile(FileName);
   end;
 
+  var
+    Project: IOTAProject;
+
 begin
+  Cancel := False;
   if (NotifyCode = ofnPackageInstalled)
     and IsPackage then
   begin
@@ -223,7 +227,13 @@ begin
     and (IsProject or FFirstOpen) then
   begin
     if FFirstOpen then
-      lFileName := GetActiveProject.FileName
+    begin
+      Project := GetActiveProject;
+      if Assigned(Project) then
+        lFileName := Project.FileName
+      else
+        exit;
+    end
     else
       lFileName := FileName;
     LoadResourceList;

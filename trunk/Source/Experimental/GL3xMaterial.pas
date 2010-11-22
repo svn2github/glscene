@@ -1796,13 +1796,20 @@ begin
   CreateUniforms;
 
   try
-    CreateShader(ProgramCodeSet);
-  finally
-    for PT := Low(TGLSLProgramType) to High(TGLSLProgramType) do
-      ProgramCodeSet[PT].Destroy;
-    if not IsDesignTime then
-      ClearSamples;
-    FLoaded := False;
+    try
+      CreateShader(ProgramCodeSet);
+    finally
+      for PT := Low(TGLSLProgramType) to High(TGLSLProgramType) do
+        ProgramCodeSet[PT].Destroy;
+      if not IsDesignTime then
+        ClearSamples;
+      FLoaded := False;
+    end;
+  except
+    on EAbort do
+      exit;
+    else
+      raise;
   end;
 end;
 
