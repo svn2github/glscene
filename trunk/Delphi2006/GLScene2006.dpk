@@ -240,7 +240,6 @@ contains
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
-  GLSLog in '..\Source\Experimental\GLSLog.pas',
   GLFileJPEG in '..\Source\FileFormats\GLFileJPEG.pas',
   GLFilePNG in '..\Source\FileFormats\GLFilePNG.pas',
   GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
@@ -286,6 +285,7 @@ contains
   GLSelection in '..\Source\GLSelection.pas',
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
-  ImageUtils in '..\Source\Base\ImageUtils.pas';
+  ImageUtils in '..\Source\Base\ImageUtils.pas',
+  GLSLog in '..\Source\Base\GLSLog.pas';
 
 end.
