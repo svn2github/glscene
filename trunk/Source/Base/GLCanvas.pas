@@ -725,6 +725,9 @@ begin
   GL.Color4f(x1y2Color[0], x1y2Color[1], x1y2Color[2], x1y2Color[3]);
   GL.Vertex2f(x1, y2);
   StopPrimitive;
+
+  // restore pen color
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // FillRectGradient
@@ -743,6 +746,9 @@ begin
   GL.Color4f(x1y2Color[0], x1y2Color[1], x1y2Color[2], x1y2Color[3]);
   GL.Vertex2i(x1, y2);
   StopPrimitive;
+
+  // restore pen color
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // FillEllipseGradient (integer)
@@ -759,6 +765,9 @@ begin
   GL.Color4f(edgeColor[0], edgeColor[1], edgeColor[2], edgeColor[3]);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
+
+  // restore pen color
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // FillEllipseGradient (single)
@@ -771,6 +780,9 @@ begin
   GL.Color4f(edgeColor[0], edgeColor[1], edgeColor[2], edgeColor[3]);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
+
+  // restore pen color
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // FillEllipseGradient (single)
