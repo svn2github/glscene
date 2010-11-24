@@ -1049,8 +1049,8 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		
 		layout(std140) uniform LightsBlock { lrec Lights[16]; }; 
 		uniform int LightIndices[16];">{
-  int J = LightIndices[A];
-  return Lights[J];  
+  A = LightIndices[A];
+  return Lights[A];  
 }</overload>
 	  </GetLight>
       <Illuminate ObjectType="F">
@@ -1077,7 +1077,8 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		float attenuation;  // computed attenuation factor    
 		float d;            // distance from surface to light source    
 		vec3  VP;           // direction from surface to light position    
-		vec3  halfVector;   // direction of maximum highlights    
+		vec3  halfVector;   // direction of maximum highlights  
+        float pf;           // power factor  		
 		// Compute vector from surface to light position    
 		VP = B.WorldPosition.xyz - A.WorldPosition.xyz;    
 		// Compute distance between surface and light position    
@@ -1088,7 +1089,8 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);    
 		halfVector = normalize(VP + A.CameraVector);    
 		nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);    
-		nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);    
+		pf = max(0.0, dot(A.Normal, halfVector));
+		nDotHV = sign(pf)*pow(pf, A.SpecularPower);    
 		A.LightAmbient  += B.Ambient * attenuation;    
 		A.LightDiffuse  += B.Diffuse * nDotVP * attenuation;    
 		A.LightSpecular += B.Specular * nDotHV * attenuation; }  
@@ -1102,6 +1104,7 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		float d;                 // distance from surface to light source    
 		vec3  VP;                // direction from surface to light position    
 		vec3  halfVector;        // direction of maximum highlights     
+		float pf;           // power factor
 		// Compute vector from surface to light position    
 		VP = B.WorldPosition.xyz - A.WorldPosition.xyz;     
 		// Compute distance between surface and light position    
@@ -1121,8 +1124,9 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		// Combine the spotlight and distance attenuation.    
 		attenuation *= spotAttenuation;     
 		halfVector = normalize(VP + A.CameraVector);     
-		nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);    
-		nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);     
+		nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);
+        pf = max(0.0, dot(A.Normal, halfVector));		
+		nDotHV = sign(pf)*pow(pf, A.SpecularPower);     
 		A.LightAmbient  += B.Ambient * attenuation;    
 		A.LightDiffuse  += B.Diffuse * nDotVP * attenuation;    
 		A.LightSpecular += B.Specular * nDotHV * attenuation; 
@@ -1132,7 +1136,8 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		float nDotVP;         // normal . light direction    
 		float nDotHV;         // normal . light half vector    
 		vec3 VP;              // direction from surface to light position    
-		vec3 halfVector;      // direction of maximum highlights    
+		vec3 halfVector;      // direction of maximum highlights   
+        float pf;           // power factor		
 		// Compute direction vector of light    
 		VP = normalize(B.WorldPosition.xyz);     
 		halfVector = normalize(VP + A.CameraVector);     
@@ -1150,11 +1155,13 @@ void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd)
 		float spotAttenuation;    
 		vec3  Ppli;    
 		vec3  Sdli;    
+		float pf;           // power factor
 		// Compute direction vector of light    
 		VP = normalize(B.WorldPosition.xyz);     
 		halfVector = normalize(VP + A.CameraVector);     
-		nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);    
-		nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);     
+		nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);
+        pf = max(0.0, dot(A.Normal, halfVector));		
+		nDotHV = sign(pf)*pow(pf, A.SpecularPower);     
 		Ppli = -VP;    
 		Sdli = B.SpotDirection;     
 		spotAttenuation = pow(dot(Ppli, Sdli), B.SpotExponent);     
