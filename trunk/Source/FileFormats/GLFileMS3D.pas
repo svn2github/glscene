@@ -6,6 +6,7 @@
  Support for MS3D file format.<p>
 
   <b>History :</b><font size=-1><ul>
+    <li>24/11/10 - Yar - Foxed range check error
     <li>22/06/10 - Yar - Added checking of existing material in material library
     <li>31/05/10 - Yar - Fixes for Linux x64
     <li>04/23/10 - TL - Animations now load properly (note: All animations must be full key frames. All bones selected in MS3D)
@@ -121,10 +122,10 @@ var
   subVersionComments: integer;
   subVersionVertexExtra: integer;
 
-  nNumGroupComments: Cardinal;
-  nNumMaterialComments: Cardinal;
-  nNumJointComments: Cardinal;
-  nHasModelComment: Cardinal;
+  nNumGroupComments: integer;
+  nNumMaterialComments: integer;
+  nNumJointComments: integer;
+  nHasModelComment: integer;
 
   ms3d_comment: pMS3DComment;
   vertexWeight: pMS3D_vertex_ex_t;

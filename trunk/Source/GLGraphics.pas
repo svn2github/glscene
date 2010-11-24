@@ -1177,7 +1177,7 @@ begin
     ReallocMem(FData, size);
     Move(img.fData^, fData^, size);
   end
-  else
+  else if Assigned(Source) then
     inherited;
 end;
 
@@ -2967,13 +2967,13 @@ begin
   if fBlank then
   begin
     fDataType := ADataType;
-    fElementSize := AColorFormat;
+    fColorFormat := AColorFormat;
     exit;
   end;
   fOldDataType := fDataType;
   fOldColorFormat := fColorFormat;
   fDataType := ADataType;
-  fElementSize := AColorFormat;
+  fColorFormat := AColorFormat;
   fElementSize := GetTextureElementSize(fColorFormat, fDataType);
   if IsServiceContextAvaible then
     AddTaskForServiceContext(DataConvertTask, NewEvent)

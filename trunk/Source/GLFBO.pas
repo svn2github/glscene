@@ -231,8 +231,7 @@ procedure TGLRenderbuffer.Bind;
 var
   internalFormat: cardinal;
 begin
-  if FRenderbufferHandle.Handle = 0 then
-    FRenderbufferHandle.AllocateHandle;
+  FRenderbufferHandle.AllocateHandle;
   FRenderbufferHandle.Bind;
   if not FStorageValid then
   begin
