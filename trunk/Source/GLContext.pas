@@ -6,7 +6,8 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>14/20/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
+      <li>24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
+      <li>14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
       <li>16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
                            Added to TGLContext property PipelineTransformation
@@ -493,6 +494,7 @@ type
     function QueryResultUInt: TGLUInt;
     function QueryResultInt64: TGLint64EXT;
     function QueryResultUInt64: TGLuint64EXT;
+    function QueryResultBool: TGLboolean;
 
     property Target: TGLuint read GetTarget;
     property QueryType: TQueryType read GetQueryType;
@@ -516,6 +518,14 @@ type
     // Number of samples (pixels) drawn during the query, some pixels may
     // be drawn to several times in the same query
     function PixelCount: Integer;
+  end;
+
+  TGLBooleanOcclusionQueryHandle = class(TGLQueryHandle)
+  protected
+    function GetTarget: TGLuint; override;
+    function GetQueryType: TQueryType; override;
+  public
+    class function IsSupported: Boolean; override;
   end;
 
   // TGLTimerQueryHandle
@@ -2593,6 +2603,14 @@ begin
   GL.GetQueryObjectui64v(Handle, GL_QUERY_RESULT, @Result);
 end;
 
+function TGLQueryHandle.QueryResultBool: TGLboolean;
+var
+  I: TGLUInt;
+begin
+  GL.GetQueryObjectuiv(Handle, GL_QUERY_RESULT, @I);
+  Result := I > 0;
+end;
+
 // Transferable
 //
 
@@ -2638,6 +2656,34 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLBooleanOcclusionQueryHandle ------------------
+// ------------------
+
+// GetQueryType
+//
+
+function TGLBooleanOcclusionQueryHandle.GetQueryType: TQueryType;
+begin
+  Result := qryAnySamplesPassed;
+end;
+
+// GetTarget
+//
+
+function TGLBooleanOcclusionQueryHandle.GetTarget: TGLuint;
+begin
+  Result := GL_ANY_SAMPLES_PASSED;
+end;
+
+// IsSupported
+//
+
+class function TGLBooleanOcclusionQueryHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_occlusion_query2;
+end;
+
+// ------------------
 // ------------------ TGLTimerQueryHandle ------------------
 // ------------------
 
@@ -2651,7 +2697,7 @@ end;
 
 function TGLTimerQueryHandle.GetTarget: TGLuint;
 begin
-  Result := GL_TIME_ELAPSED_EXT;
+  Result := GL_TIME_ELAPSED;
 end;
 
 // IsSupported
@@ -2659,7 +2705,7 @@ end;
 
 class function TGLTimerQueryHandle.IsSupported: Boolean;
 begin
-  Result := GL.EXT_timer_query;
+  Result := GL.EXT_timer_query or GL.ARB_timer_query;
 end;
 
 // Time
