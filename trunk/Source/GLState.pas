@@ -115,8 +115,13 @@ type
     loXOr, loOr, loNor, loEquiv, loInvert, loOrReverse, loCopyInverted,
     loOrInverted, loNAnd, loSet);
 
-  TQueryType = (qrySamplesPassed, qryPrimitivesGenerated,
-    qryTransformFeedbackPrimitivesWritten, qryTimeElapsed {EXT});
+  TQueryType = (
+    qrySamplesPassed,
+    qryPrimitivesGenerated,
+    qryTransformFeedbackPrimitivesWritten,
+    qryTimeElapsed,
+    qryAnySamplesPassed);
+
   // TFaceWinding
   //
 //: Describe what kind of winding has a front face
@@ -1107,7 +1112,7 @@ const
   cGLQueryTypeToGLEnum: array[TQueryType] of TGLenum =
     (GL_SAMPLES_PASSED, GL_PRIMITIVES_GENERATED,
     GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
-    GL_TIME_ELAPSED_EXT);
+    GL_TIME_ELAPSED, GL_ANY_SAMPLES_PASSED);
 
   cGLStencilOpToGLEnum: array[TStencilOp] of TGLenum =
     (GL_KEEP, GL_ZERO, GL_REPLACE, GL_INCR, GL_DECR, GL_INVERT, GL_INCR_WRAP,
