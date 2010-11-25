@@ -116,7 +116,7 @@ procedure AddGLSceneToolbar;
       end;
       MsgServices.AddTitleMessage('GLScene Toolbar activated');
     end;
-
+    Services.ToolbarModified(GLToolbar);
   end;
 
 constructor TGLSToolButtonReceiver.Create;
