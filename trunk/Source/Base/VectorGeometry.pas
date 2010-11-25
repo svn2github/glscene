@@ -31,6 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
                            CreateOrthoMatrix, CreatePickMatrix, Project, UnProject
@@ -830,11 +831,12 @@ procedure VectorArrayLerp(const src1, src2 : PTexPointArray; t : Single; n : Int
 
 
 type
-  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn);
+  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn, itExp);
 
 {: There functions that do the same as "Lerp", but add some distortions. }
 function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
 function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+function InterpolateExp(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
 
 {: Only valid where Delta belongs to [0..1] }
 function InterpolateSin(const Start, Stop, Delta: Single): Single;
@@ -3716,6 +3718,7 @@ begin
     itSinAlt: Result := InterpolateSinAlt(Start, Stop, Delta);
     itTan: Result := InterpolateTan(Start, Stop, Delta);
     itLn: Result := InterpolateLn(Start, Stop, Delta, DistortionDegree);
+    itExp: Result := InterpolateExp(Start, Stop, Delta, DistortionDegree);
     else
     begin
       Result := -1;
@@ -3761,6 +3764,13 @@ end;
 function InterpolateLn(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
 begin
   Result := (Stop - Start) * Ln(1 + Delta * DistortionDegree) / Ln(1 + DistortionDegree) + Start;
+end;
+
+// InterpolateExp
+//
+function InterpolateExp(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+begin
+  Result := (Stop - Start) * Exp(-DistortionDegree * (1 - Delta)) + Start;
 end;
 
 // InterpolateSinAlt
