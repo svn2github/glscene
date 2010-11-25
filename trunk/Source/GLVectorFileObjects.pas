@@ -4749,11 +4749,11 @@ begin
       begin
         if FUseVBO then
           FTexCoordsVBO[0].Bind;
-        xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[3]);
+        xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+        xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[3]);
       end
       else
-        xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
       if GL.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
@@ -4782,7 +4782,7 @@ begin
     begin
       GL.DisableClientState(GL_NORMAL_ARRAY);
       GL.DisableClientState(GL_COLOR_ARRAY);
-      xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
     end;
     if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
@@ -4791,18 +4791,18 @@ begin
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;
     if mrci.drawState <> dsPicking then
-      FLastXOpenGLTexMapping := xglGetBitWiseMapping;
+      FLastXOpenGLTexMapping := xgl.GetBitWiseMapping;
   end
   else
   begin
     if not mrci.ignoreMaterials and not (mrci.drawState = dsPicking) then
       if TexCoords.Count > 0 then
       begin
-        currentMapping := xglGetBitWiseMapping;
+        currentMapping := xgl.GetBitWiseMapping;
         if FLastXOpenGLTexMapping <> currentMapping then
         begin
-          xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-          xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector),
+          xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+          xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector),
             TexCoords.List);
           FLastXOpenGLTexMapping := currentMapping;
         end;
@@ -4832,7 +4832,7 @@ begin
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
         GL.DisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
-        xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
       if GL.ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
@@ -5106,7 +5106,7 @@ begin
             if gotTexCoordsEx[0] then
               GL.MultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
             else if gotTexCoords then
-              xglTexCoord2fv(@TexCoords.List[i]);
+              xgl.TexCoord2fv(@TexCoords.List[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
                 GL.MultiTexCoord4fv(GL_TEXTURE0 + j,
@@ -5115,7 +5115,7 @@ begin
           else
           begin
             if gotTexCoords then
-              xglTexCoord2fv(@TexCoords.List[i]);
+              xgl.TexCoord2fv(@TexCoords.List[i]);
           end;
           GL.Vertex3fv(@Vertices.List[i]);
         end;
@@ -6828,7 +6828,7 @@ begin
     for i := 0 to VertexIndices.Count - 1 do
     begin
       GL.Normal3fv(@normalPool[normalIdxList^[i]]);
-      xglTexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
+      xgl.TexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
       GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
     end;
   end
@@ -6962,7 +6962,7 @@ begin
     normalPool := Owner.Owner.Normals.List;
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      xglTexCoord2fv(@texCoordPool[i]);
+      xgl.TexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
       if gotColor then
         GL.Color4fv(@colorPool[k]);
@@ -6974,7 +6974,7 @@ begin
   begin
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      xglTexCoord2fv(@texCoordPool[i]);
+      xgl.TexCoord2fv(@texCoordPool[i]);
       if gotColor then
         GL.Color4fv(@colorPool[indicesPool[i]]);
       GL.Vertex3fv(@vertexPool[indicesPool[i]]);
@@ -7783,7 +7783,7 @@ procedure TGLBaseMesh.DoRender(var rci: TRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   if Assigned(LightmapLibrary) then
-    xglForbidSecondTextureUnit;
+    xgl.ForbidSecondTextureUnit;
   if renderSelf then
   begin
     // set winding
@@ -7830,7 +7830,7 @@ begin
       rci.GLStates.InvertGLFrontFace;
   end;
   if Assigned(LightmapLibrary) then
-    xglAllowSecondTextureUnit;
+    xgl.AllowSecondTextureUnit;
   if renderChildren and (Count > 0) then
     Self.RenderChildren(0, Count - 1, rci);
 end;

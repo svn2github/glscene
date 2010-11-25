@@ -149,7 +149,7 @@ procedure TGLTextureSharingShaderMaterial.Apply(var rci: TRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
-  xglBeginUpdate;
+  xgl.BeginUpdate;
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
@@ -287,7 +287,7 @@ begin
       ssLowLevel: FLibMaterial.Shader.Apply(rci, FLibMaterial);
     end;
   end;
-  xglEndUpdate;
+  xgl.EndUpdate;
 end;
 
 procedure TGLTextureSharingShaderMaterial.coordNotifychange(Sender: TObject);

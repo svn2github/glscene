@@ -289,7 +289,7 @@ begin
           end;
         end;
         if units > 0 then
-          xglMapTexCoordToArbitraryAdd(units);
+          xgl.MapTexCoordToArbitraryAdd(units);
       end;
       SetupTextureCombiners(FCombiners.Text);
     except

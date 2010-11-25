@@ -466,7 +466,7 @@ var
       if ColorMode <> hfcmNone then
         GL.Color4fv(@color);
       if hfoTextureCoordinates in Options then
-        xglTexCoord2fv(@texPoint);
+        xgl.TexCoord2fv(@texPoint);
       GL.Vertex4f(x, y, z, 1);
     end;
   end;

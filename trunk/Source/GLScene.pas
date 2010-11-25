@@ -6622,7 +6622,7 @@ procedure TGLDirectOpenGL.BuildList(var rci: TRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
-    xglMapTexCoordToMain; // single texturing by default
+    xgl.MapTexCoordToMain; // single texturing by default
     OnRender(Self, rci);
   end;
 end;
@@ -8966,7 +8966,7 @@ begin
     if not Assigned(FSelector) then
       FSelector := GetBestSelectorClass.Create;
 
-    xglMapTexCoordToNull; // turn off
+    xgl.MapTexCoordToNull; // turn off
     PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
     FSelector.Hits := -1;
     FSelector.ObjectCountGuess := objectCountGuess;
@@ -9237,8 +9237,8 @@ begin
     PrepareRenderingMatrices(aViewPort, resolution);
     if not ForwardContext then
     begin
-      xglMapTexCoordToNull; // force XGL rebind
-      xglMapTexCoordToMain;
+      xgl.MapTexCoordToNull; // force XGL rebind
+      xgl.MapTexCoordToMain;
     end;
 
     if Assigned(FViewerBeforeRender) and (drawState <> dsPrinting) then

@@ -751,7 +751,7 @@ begin
       PTexPoint(@TextureOffset)^);
 
     GL.VertexPointer(3, GL_FLOAT, 0, vertices.List);
-    xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
+    xgl.TexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
 
     FListHandle.AllocateHandle;
     GL.NewList(FListHandle.Handle, GL_COMPILE);
@@ -840,7 +840,7 @@ begin
     FVBOTexHandle.AllocateHandle;
     FVBOTexHandle.BindBufferData(texCoords.List, texCoords.DataSize,
       GL_STREAM_DRAW_ARB);
-    xglTexCoordPointer(2, GL_FLOAT, 0, nil);
+    xgl.TexCoordPointer(2, GL_FLOAT, 0, nil);
 
     GL.DrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1, vertexIndices.Count,
       GL_UNSIGNED_INT, vertexIndices.List);

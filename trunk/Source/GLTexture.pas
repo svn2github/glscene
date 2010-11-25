@@ -3161,13 +3161,13 @@ begin
         cTextureMode[FTextureMode]);
       GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
-      xglMapTexCoordToMain;
+      xgl.MapTexCoordToMain;
     end;
   end
   else if not rci.GLStates.ForwardContext then
   begin // default
     rci.GLStates.ActiveTextureEnabled[target] := False;
-    xglMapTexCoordToMain;
+    xgl.MapTexCoordToMain;
   end;
 end;
 
@@ -4026,7 +4026,7 @@ begin
     end;
   end;
   if units > 0 then
-    xglMapTexCoordToArbitraryAdd(units);
+    xgl.MapTexCoordToArbitraryAdd(units);
 end;
 
 // UnApply

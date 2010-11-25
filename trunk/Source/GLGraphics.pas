@@ -2072,10 +2072,7 @@ begin
   glTarget := DecodeGLTextureTarget(textureTarget);
 
   try
-    if Assigned(textureContext) then
-      textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle
-    else
-      GL.BindTexture(glTarget, textureHandle);
+    CurrentGLContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
 
     fMipLevels := 0;
     GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);

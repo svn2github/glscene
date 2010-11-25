@@ -384,7 +384,7 @@ var
         begin
           idx := TexCoordIndices.List^[Index];
           if idx <> -1 then
-            xglTexCoord2fv(@TexCoordPool^[idx]);
+            xgl.TexCoord2fv(@TexCoordPool^[idx]);
         end;
 
         GL.Vertex3fv(@VertexPool^[VertexIndices.List^[Index]]);

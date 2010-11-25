@@ -486,11 +486,11 @@ var
       bottomTPNext:=bottomTPBase;
       GL.Begin_(GL_TRIANGLE_STRIP);
       GL.Normal3fv(@topNormal);
-      xglTexCoord2fv(@topTPBase);
+      xgl.TexCoord2fv(@topTPBase);
       GL.Vertex3fv(@topBase);
       while alpha<stopAlpha do begin
          GL.Normal3fv(@bottomNormal);
-         xglTexCoord2fv(@bottomTPBase);
+         xgl.TexCoord2fv(@bottomTPBase);
          GL.Vertex3fv(@bottomBase);
          nextAlpha:=alpha+deltaAlpha;
          topTPNext.S:=topTPNext.S+deltaS;
@@ -505,7 +505,7 @@ var
          CalcNormal(@topNext, @bottomNext, normal);
          SetLocalNormals;
          inc(i);
-         xglTexCoord2fv(@topTPNext);
+         xgl.TexCoord2fv(@topTPNext);
          GL.Normal3fv(@topNormal);
          GL.Vertex3fv(@topNext);
          alpha:=nextAlpha;
@@ -513,7 +513,7 @@ var
          bottomBase:=bottomNext;    bottomTPBase:=bottomTPNext;
       end;
       GL.Normal3fv(@bottomNormal);
-      xglTexCoord2fv(@bottomTPBase);
+      xgl.TexCoord2fv(@bottomTPBase);
       GL.Vertex3fv(@bottomBase);
       GL.End_;
       firstStep:=False;
@@ -603,7 +603,7 @@ begin
          end;
          if (rspInside in FParts) and (rspOutside in FParts) then
             FTriangleCount:=FTriangleCount*2;
-         xglTexCoord2fv(@NullTexPoint);
+         xgl.TexCoord2fv(@NullTexPoint);
          // release lastNormals buffer (if smoothing)
          if FNormals=nsSmooth then
             FreeMem(lastNormals);
@@ -1231,24 +1231,24 @@ var
       bottomTPNext:=bottomTPBase;
       GL.Begin_(GL_TRIANGLE_STRIP);
       GL.Normal3fv(@normTop);
-      xglTexCoord2fv(@topTPBase);
+      xgl.TexCoord2fv(@topTPBase);
       GL.Vertex3fv(@topBase);
       for step:=1 to FStacks do begin
          GL.Normal3fv(@normBottom);
-         xglTexCoord2fv(@bottomTPBase);
+         xgl.TexCoord2fv(@bottomTPBase);
          GL.Vertex3fv(@bottomBase);
          topNext[2]:=step*DeltaZ;
          bottomNext[2]:=topNext[2];
          topTPNext.T:=topNext[2];
          bottomTPNext.T:=bottomNext[2];
-         xglTexCoord2fv(@topTPNext);
+         xgl.TexCoord2fv(@topTPNext);
          GL.Normal3fv(@normTop);
          GL.Vertex3fv(@topNext);
          topBase:=topNext;          topTPBase:=topTPNext;
          bottomBase:=bottomNext;    bottomTPBase:=bottomTPNext;
       end;
       GL.Normal3fv(@normBottom);
-      xglTexCoord2fv(@bottomTPBase);
+      xgl.TexCoord2fv(@bottomTPBase);
       GL.Vertex3fv(@bottomBase);
       GL.End_;
    end;
@@ -1289,7 +1289,7 @@ begin
             end;
          end;
       end;
-      xglTexCoord2fv(@NullTexPoint);
+      xgl.TexCoord2fv(@NullTexPoint);
    end;
    // tessellate start/stop polygons
    if (espStartPolygon in FParts) or (espStopPolygon in FParts) then begin

@@ -1415,13 +1415,13 @@ begin
   begin
     // single quad plane
     GL.Begin_(GL_QUADS);
-    xglTexCoord2f(tx1, ty1);
+    xgl.TexCoord2f(tx1, ty1);
     GL.Vertex2f(hw, hh);
-    xglTexCoord2f(tx0, ty1);
+    xgl.TexCoord2f(tx0, ty1);
     GL.Vertex2f(-hw, hh);
-    xglTexCoord2f(tx0, ty0);
+    xgl.TexCoord2f(tx0, ty0);
     GL.Vertex2f(-hw, -hh);
-    xglTexCoord2f(tx1, ty0);
+    xgl.TexCoord2f(tx1, ty0);
     GL.Vertex2f(hw, -hh);
     GL.End_;
   end
@@ -1443,9 +1443,9 @@ begin
       begin
         texS := tx0 + X * texSFact;
         pX := X * posXFact - hw;
-        xglTexCoord2f(texS, texT1);
+        xgl.TexCoord2f(texS, texT1);
         GL.Vertex2f(pX, pY1);
-        xglTexCoord2f(texS, texT0);
+        xgl.TexCoord2f(texS, texT0);
         GL.Vertex2f(pX, pY0);
       end;
       GL.End_;
@@ -1714,13 +1714,13 @@ begin
     GL.Rotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
   end;
   GL.Begin_(GL_QUADS);
-  xglTexCoord2f(u1, v1);
+  xgl.TexCoord2f(u1, v1);
   GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
-  xglTexCoord2f(u0, v1);
+  xgl.TexCoord2f(u0, v1);
   GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
-  xglTexCoord2f(u0, v0);
+  xgl.TexCoord2f(u0, v0);
   GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
-  xglTexCoord2f(u1, v0);
+  xgl.TexCoord2f(u1, v0);
   GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
   GL.End_;
   if FRotation <> 0 then
@@ -2946,73 +2946,73 @@ begin
   if cpFront in FParts then
   begin
     GL.Normal3f(0, 0, nd);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(hw, hh, hd);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-hw * nd, hh * nd, hd);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-hw, -hh, hd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(hw * nd, -hh * nd, hd);
   end;
   if cpBack in FParts then
   begin
     GL.Normal3f(0, 0, -nd);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(hw, hh, -hd);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(hw * nd, -hh * nd, -hd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(-hw, -hh, -hd);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(-hw * nd, hh * nd, -hd);
   end;
   if cpLeft in FParts then
   begin
     GL.Normal3f(-nd, 0, 0);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(-hw, hh, hd);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-hw, hh * nd, -hd * nd);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-hw, -hh, -hd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(-hw, -hh * nd, hd * nd);
   end;
   if cpRight in FParts then
   begin
     GL.Normal3f(nd, 0, 0);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(hw, hh, hd);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(hw, -hh * nd, hd * nd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(hw, -hh, -hd);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(hw, hh * nd, -hd * nd);
   end;
   if cpTop in FParts then
   begin
     GL.Normal3f(0, nd, 0);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-hw, hh, -hd);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-hw * nd, hh, hd * nd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(hw, hh, hd);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(hw * nd, hh, -hd * nd);
   end;
   if cpBottom in FParts then
   begin
     GL.Normal3f(0, -nd, 0);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-hw, -hh, -hd);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(hw * nd, -hh, -hd * nd);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(hw, -hh, hd);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-hw * nd, -hh, hd * nd);
   end;
   GL.End_;
@@ -3384,7 +3384,7 @@ begin
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngTop, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
     else
@@ -3411,7 +3411,7 @@ begin
         if DoReverse then
           NegateVector(N1);
       end;
-      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       GL.Normal3fv(@N1);
       GL.Vertex3fv(@v1);
       Theta := Theta + StepH;
@@ -3446,7 +3446,7 @@ begin
       V2[2] := CosP2 * CosT;
 
       uTexCoord := i * uTexFactor;
-      xglTexCoord2f(uTexCoord, vTexCoord0);
+      xgl.TexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
@@ -3456,7 +3456,7 @@ begin
         GL.Normal3fv(@v1);
       GL.Vertex3fv(@v1);
 
-      xglTexCoord2f(uTexCoord, vTexCoord1);
+      xgl.TexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
@@ -3478,7 +3478,7 @@ begin
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
     SinCos(AngBottom, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, 1, 0)
     else
@@ -3506,7 +3506,7 @@ begin
         if DoReverse then
           NegateVector(N1);
       end;
-      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       GL.Normal3fv(@N1);
       GL.Vertex3fv(@v1);
       Theta := Theta - StepH;

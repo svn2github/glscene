@@ -2031,11 +2031,11 @@ begin
       SinCos(phi, sinPhi, cosPhi);
       dist := FMajorRadius + FMinorRadius * cosPhi;
 
-      xglTexCoord2f(i * iFact, j * jFact);
+      xgl.TexCoord2f(i * iFact, j * jFact);
       GL.Normal3f(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
       GL.Vertex3f(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
 
-      xglTexCoord2f((i + 1) * iFact, j * jFact);
+      xgl.TexCoord2f((i + 1) * iFact, j * jFact);
       GL.Normal3f(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
       GL.Vertex3f(cosTheta * dist, -sinTheta * dist, FMinorRadius * sinPhi);
     end;
@@ -2422,25 +2422,25 @@ begin
     if fpFront in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, Sign * ASin);
-      xglTexCoord2fv(@XYTexPoint);
+      xgl.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(HTW, HFH, HTD);
-      xglTexCoord2fv(@YTexPoint);
+      xgl.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(-HTW, HFH, HTD);
-      xglTexCoord2fv(@NullTexPoint);
+      xgl.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(-HBW, -HFH, HBD);
-      xglTexCoord2fv(@XTexPoint);
+      xgl.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(HBW, -HFH, HBD);
     end;
     if fpBack in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, -Sign * ASin);
-      xglTexCoord2fv(@YTexPoint);
+      xgl.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(HTW, HFH, -HTD);
-      xglTexCoord2fv(@NullTexPoint);
+      xgl.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(HBW, -HFH, -HBD);
-      xglTexCoord2fv(@XTexPoint);
+      xgl.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(-HBW, -HFH, -HBD);
-      xglTexCoord2fv(@XYTexPoint);
+      xgl.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(-HTW, HFH, -HTD);
     end;
   end;
@@ -2452,25 +2452,25 @@ begin
     if fpLeft in FParts then
     begin
       GL.Normal3f(-Sign * ASin, Sign * ACos, 0);
-      xglTexCoord2fv(@XYTexPoint);
+      xgl.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(-HTW, HFH, HTD);
-      xglTexCoord2fv(@YTexPoint);
+      xgl.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(-HTW, HFH, -HTD);
-      xglTexCoord2fv(@NullTexPoint);
+      xgl.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(-HBW, -HFH, -HBD);
-      xglTexCoord2fv(@XTexPoint);
+      xgl.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(-HBW, -HFH, HBD);
     end;
     if fpRight in FParts then
     begin
       GL.Normal3f(Sign * ASin, Sign * ACos, 0);
-      xglTexCoord2fv(@YTexPoint);
+      xgl.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(HTW, HFH, HTD);
-      xglTexCoord2fv(@NullTexPoint);
+      xgl.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(HBW, -HFH, HBD);
-      xglTexCoord2fv(@XTexPoint);
+      xgl.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(HBW, -HFH, -HBD);
-      xglTexCoord2fv(@XYTexPoint);
+      xgl.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(HTW, HFH, -HTD);
     end;
   end;
@@ -2478,25 +2478,25 @@ begin
   if (fpTop in FParts) and (FHeight < FApexHeight) then
   begin
     GL.Normal3f(0, Sign, 0);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-HTW, HFH, -HTD);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-HTW, HFH, HTD);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(HTW, HFH, HTD);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(HTW, HFH, -HTD);
   end;
   if fpBottom in FParts then
   begin
     GL.Normal3f(0, -Sign, 0);
-    xglTexCoord2fv(@NullTexPoint);
+    xgl.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-HBW, -HFH, -HBD);
-    xglTexCoord2fv(@XTexPoint);
+    xgl.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(HBW, -HFH, -HBD);
-    xglTexCoord2fv(@XYTexPoint);
+    xgl.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(HBW, -HFH, HBD);
-    xglTexCoord2fv(@YTexPoint);
+    xgl.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-HBW, -HFH, HBD);
   end;
 

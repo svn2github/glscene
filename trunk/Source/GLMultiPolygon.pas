@@ -603,7 +603,7 @@ procedure tessIssueVertex(vertexData: Pointer);
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
-  xglTexCoord2fv(vertexData);
+  xgl.TexCoord2fv(vertexData);
   GL.Vertex3fv(vertexData);
 end;
 

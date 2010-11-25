@@ -134,7 +134,17 @@ type
     GThreadList < TServiceContextTask > ;
 {$ENDIF GLS_MULTITHREAD}
 
+  TGLContext = class;
   TGLContextManager = class;
+
+  TAbstractMultitextureCoordinator = class(TObject)
+  protected
+    FOwner: TGLContext;
+  public
+    constructor Create(AOwner: TGLContext); virtual;
+  end;
+
+  TAbstractMultitextureCoordinatorClass = class of TAbstractMultitextureCoordinator;
 
   // TGLContextAcceleration
   //
@@ -179,6 +189,7 @@ type
   protected
     { Protected Declarations }
     FGL: TGLExtensionsAndEntryPoints;
+    FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TGLStateCache;
     FTransformation: TGLPipelineTransformation;
     FAcceleration: TGLContextAcceleration;
@@ -211,6 +222,7 @@ type
     procedure DoDeactivate; virtual; abstract;
     class function ServiceContext: TGLContext;
     procedure MakeGLCurrent;
+    function GetXGL: TAbstractMultitextureCoordinator;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -297,6 +309,7 @@ type
     function RenderOutputDevice: Integer; virtual; abstract;
 
     property GL: TGLExtensionsAndEntryPoints read FGL;
+    property XGL: TAbstractMultitextureCoordinator read GetXGL;
   end;
 
   TGLContextClass = class of TGLContext;
@@ -1228,8 +1241,6 @@ procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
    Returns nil if no context is active. }
 function CurrentGLContext: TGLContext;
 function SafeCurrentGLContext: TGLContext;
-{$IFDEF GLS_INLINE}inline;
-{$ENDIF}
 function GL: TGLExtensionsAndEntryPoints;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
@@ -1248,6 +1259,7 @@ var
   GLContextManager: TGLContextManager;
   vIgnoreOpenGLErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = false;
+  vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -1353,6 +1365,11 @@ begin
   vContextClasses.Add(aGLContextClass);
 end;
 
+constructor TAbstractMultitextureCoordinator.Create(AOwner: TGLContext);
+begin
+  FOwner := AOwner;
+end;
+
 // ------------------
 // ------------------ TGLContext ------------------
 // ------------------
@@ -1395,6 +1412,7 @@ begin
   GLContextManager.UnRegisterContext(Self);
   FGLStates.Free;
   FGL.Free;
+  FXGL.Free;
   FTransformation.Free;
   FSharedContexts.Free;
 {$IFDEF GLS_MULTITHREAD}
@@ -1813,6 +1831,13 @@ end;
 procedure TGLContext.MakeGLCurrent;
 begin
   vGL := FGL;
+end;
+
+function TGLContext.GetXGL: TAbstractMultitextureCoordinator;
+begin
+  if FXGL = nil then
+    FXGL := vMultitextureCoordinatorClass.Create(Self);
+  Result := FXGL;
 end;
 
 // ------------------

@@ -276,13 +276,13 @@ begin
     // issue quad
     GL.Begin_(GL_QUADS);
     GL.Normal3fv(@YVector);
-    xglTexCoord2f(0, 0);
+    xgl.TexCoord2f(0, 0);
     GL.Vertex2f(vx, vy1);
-    xglTexCoord2f(FXTiles, 0);
+    xgl.TexCoord2f(FXTiles, 0);
     GL.Vertex2f(vx1, vy1);
-    xglTexCoord2f(FXTiles, FYTiles);
+    xgl.TexCoord2f(FXTiles, FYTiles);
     GL.Vertex2f(vx1, vy);
-    xglTexCoord2f(0, FYTiles);
+    xgl.TexCoord2f(0, FYTiles);
     GL.Vertex2f(vx, vy);
     GL.End_;
     // restore state

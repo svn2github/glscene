@@ -224,23 +224,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, -1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, -1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, -1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, -1);
         if Style = sbsTopHalfClamped then
         begin
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -1, -1);
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -3, -1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -3, -1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -1, -1);
         end;
         GL.End_;
@@ -253,23 +253,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(1, 1, 1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(-1, 1, 1);
         if Style = sbsTopHalfClamped then
         begin
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -1, 1);
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -3, 1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -3, 1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -1, 1);
         end;
         GL.End_;
@@ -282,13 +282,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, 1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, 1, -1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, 1, -1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, 1);
         GL.End_;
       until not libMat.UnApply(ARci);
@@ -300,13 +300,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, -1, -1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, -1, -1);
         GL.End_;
       until not libMat.UnApply(ARci);
@@ -318,23 +318,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, 1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(-1, -1, -1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(-1, 1, -1);
         if Style = sbsTopHalfClamped then
         begin
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -1, 1);
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -3, 1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -3, -1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -1, -1);
         end;
         GL.End_;
@@ -347,23 +347,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0.002, 0.998);
+        xgl.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(1, 1, -1);
-        xglTexCoord2f(0.002, 0.002);
+        xgl.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(1, -1, -1);
-        xglTexCoord2f(0.998, 0.002);
+        xgl.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xglTexCoord2f(0.998, 0.998);
+        xgl.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, 1);
         if Style = sbsTopHalfClamped then
         begin
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -1, -1);
-          xglTexCoord2f(0.002, 0.002);
+          xgl.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -3, -1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -3, 1);
-          xglTexCoord2f(0.998, 0.002);
+          xgl.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -1, 1);
         end;
         GL.End_;
@@ -380,13 +380,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xglTexCoord2f(0, 1);
+        xgl.TexCoord2f(0, 1);
         GL.Vertex3f(-cps, cof1, cps);
-        xglTexCoord2f(0, 0);
+        xgl.TexCoord2f(0, 0);
         GL.Vertex3f(-cps, cof1, -cps);
-        xglTexCoord2f(1, 0);
+        xgl.TexCoord2f(1, 0);
         GL.Vertex3f(cps, cof1, -cps);
-        xglTexCoord2f(1, 1);
+        xgl.TexCoord2f(1, 1);
         GL.Vertex3f(cps, cof1, cps);
         GL.End_;
       until not libMat.UnApply(ARci);

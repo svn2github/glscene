@@ -1999,7 +1999,7 @@ procedure TGLLibMaterial.Apply(var rci: TRenderContextInfo);
 var
   multitextured: Boolean;
 begin
-  xglBeginUpdate;
+  xgl.BeginUpdate;
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
@@ -2012,7 +2012,7 @@ begin
     end;
   end;
   if (Texture2Name <> '') and GL.ARB_multitexture and (not
-    vSecondTextureUnitForbidden) then
+    xgl.SecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
     begin
@@ -2051,13 +2051,13 @@ begin
     if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
       tmmUser) then
       if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-        xglMapTexCoordToDual
+        xgl.MapTexCoordToDual
       else
-        xglMapTexCoordToMain
+        xgl.MapTexCoordToMain
     else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-      xglMapTexCoordToSecond
+      xgl.MapTexCoordToSecond
     else
-      xglMapTexCoordToMain;
+      xgl.MapTexCoordToMain;
 
   end;
   if Assigned(FShader) then
@@ -2066,7 +2066,7 @@ begin
       ssLowLevel: Shader.Apply(rci, Self);
     end;
   end;
-  xglEndUpdate;
+  xgl.EndUpdate;
 end;
 
 // UnApply
@@ -2092,11 +2092,11 @@ begin
 {      if Assigned(Material.FTextureEx) then begin
        if not Material.TextureEx.IsTextureEnabled(1) then begin}
     if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
-      vSecondTextureUnitForbidden) then
+      xgl.SecondTextureUnitForbidden) then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, (not
         libMatTexture2.TextureMatrixIsIdentity));
-      xglMapTexCoordToMain;
+      xgl.MapTexCoordToMain;
     end;
     {         end;
           end; }

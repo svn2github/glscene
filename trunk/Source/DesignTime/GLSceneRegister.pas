@@ -594,6 +594,7 @@ uses
   GuiSkinEditorFormUnit,
   SysUtils,
   TypInfo,
+  VectorTypes,
   VectorGeometry,
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xObjects,

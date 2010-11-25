@@ -599,10 +599,10 @@ type
 
    procedure IssueQuad(col, row : Integer);
    begin
-      xglTexCoord2f(col, row);      GL.Vertex2f(col, row);
-      xglTexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
-      xglTexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
-      xglTexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
+      xgl.TexCoord2f(col, row);      GL.Vertex2f(col, row);
+      xgl.TexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
+      xgl.TexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
+      xgl.TexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
    end;
 
 var

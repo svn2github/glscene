@@ -379,10 +379,10 @@ begin
       libMat.Apply(rci);
 
    GL.EnableClientState(GL_VERTEX_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
 
    GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
-   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+   xgl.TexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    for i:=0 to (FVertices.Count div 4)-1 do begin
       GL.Normal3fv(@FNormals.List[i]);
@@ -406,7 +406,7 @@ begin
    rci.GLStates.InvertGLFrontFace;
 
    GL.DisableClientState(GL_VERTEX_ARRAY);
-   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+   xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    if Assigned(libMat) then
       libMat.UnApply(rci);
@@ -720,18 +720,18 @@ begin
 
    GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
    GL.NormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
-   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+   xgl.TexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    GL.EnableClientState(GL_VERTEX_ARRAY);
    GL.EnableClientState(GL_NORMAL_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
 
    repeat
       for i:=0 to (FIndices.Count div stride)-1 do
          GL.DrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
    until (not Assigned(libMat)) or (not libMat.UnApply(rci));
 
-   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+   xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
    GL.DisableClientState(GL_NORMAL_ARRAY);
    GL.DisableClientState(GL_VERTEX_ARRAY);
 end;
