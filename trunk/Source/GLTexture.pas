@@ -3251,6 +3251,7 @@ begin
         GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
         GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
+        ActiveTexture := 0;
       end;
     end;
   end;
@@ -3278,6 +3279,7 @@ begin
       UnApplyMappingMode;
       if (target = ttTextureCube) or reloadIdentityTextureMatrix then
         ResetGLTextureMatrix;
+      ActiveTexture := 0;
     end;
   end;
 end;

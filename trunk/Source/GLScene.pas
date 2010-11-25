@@ -397,7 +397,7 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 5247$';
+  GLSCENE_REVISION = '$Revision: 5334$';
   GLSCENE_VERSION = '1.1.0.%s';
 
 type
@@ -8173,7 +8173,7 @@ begin
       GL.GetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
       SetState((LColorDepth < 8), stDither);
     end;
-    ResetGLTextureMatrix;
+    ResetAllGLTextureMatrix;
   end;
 end;
 

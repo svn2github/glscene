@@ -1043,6 +1043,7 @@ type
        Assumed texture mode is GL_MODELVIEW. }
     procedure SetGLTextureMatrix(const matrix: TMatrix);
     procedure ResetGLTextureMatrix;
+    procedure ResetAllGLTextureMatrix;
 
     // note: needs to change to per draw-buffer
     procedure SetGLColorWriting(flag: Boolean);
@@ -2296,6 +2297,19 @@ end;
 //
 
 procedure TGLStateCache.ResetGLTextureMatrix;
+begin
+  if FForwardContext then
+    exit;
+  GL.MatrixMode(GL_TEXTURE);
+  GL.LoadIdentity;
+  FTextureMatrixIsIdentity[ActiveTexture] := True;
+  GL.MatrixMode(GL_MODELVIEW);
+end;
+
+// ResetAllGLTextureMatrix
+//
+
+procedure TGLStateCache.ResetAllGLTextureMatrix;
 var
   I: Integer;
   lastActiveTexture: TGLuint;
