@@ -431,11 +431,14 @@ end;
 
 procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
 begin
-  FBuffer.DestroyRC;
-  if FOwnDC <> 0 then
+  if Assigned(FBuffer) then
   begin
-    ReleaseDC(Handle, FOwnDC);
-    FOwnDC := 0;
+    FBuffer.DestroyRC;
+    if FOwnDC <> 0 then
+    begin
+      ReleaseDC(Handle, FOwnDC);
+      FOwnDC := 0;
+    end;
   end;
   inherited;
 end;
