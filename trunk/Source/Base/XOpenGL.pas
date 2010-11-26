@@ -170,7 +170,7 @@ type
     property SecondTextureUnitForbidden: Boolean read FSecondTextureUnitForbidden;
   end;
 
-function xgl: TGLMultitextureCoordinator;
+function xgl(): TGLMultitextureCoordinator;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -187,14 +187,14 @@ threadvar
 {$ENDIF}
   vMTC : TGLMultitextureCoordinator;
 
-function xgl: TGLMultitextureCoordinator;
+function xgl(): TGLMultitextureCoordinator;
 var
   RC: TGLContext;
 begin
   RC := SafeCurrentGLContext;
   if not Assigned(vMTC) or (vMTC.FOwner <> RC) then
   begin
-    vMTC := TGLMultitextureCoordinator(RC.XGL);
+    vMTC := TGLMultitextureCoordinator(RC.MultitextureCoordinator);
   end;
   Result := vMTC;
 end;
@@ -1172,4 +1172,3 @@ initialization
   vMultitextureCoordinatorClass := TGLMultitextureCoordinator;
 
 end.
-

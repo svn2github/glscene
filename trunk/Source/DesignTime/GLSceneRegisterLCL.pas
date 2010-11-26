@@ -1383,7 +1383,7 @@ end;
 function GetProjectTargetName: string;
 begin
   Result := '$(TargetFile)';
-  if not IDEMacros.SubstituteMacros(Result) then
+  if not Assigned(IDEMacros) or not IDEMacros.SubstituteMacros(Result) then
     Result := '';
 end;
 
@@ -1662,4 +1662,3 @@ finalization
   ObjectManager.Free;
 
 end.
-

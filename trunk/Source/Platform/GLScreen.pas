@@ -321,7 +321,7 @@ begin
 
   // Check support XF86VidMode Extension
   {$IFNDEF GLS_DELPHI_5}
-    {$IF (lcl_release <= 28) }
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
     {$ELSE}
     if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then

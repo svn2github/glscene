@@ -94,9 +94,15 @@ type
     function GetMaterialLibrary: TGLMaterialLibrary;
     //implementing IInterface
   {$IfDef FPC}
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+    {$ELSE}
     function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$IFEND}
   {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
@@ -649,7 +655,11 @@ end;
 
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+{$ELSE}
   function TGLEParticleMask.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
 {$EndIf}
@@ -658,7 +668,11 @@ begin
 end;
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLEParticleMask._AddRef: Integer; stdcall;
+{$ELSE}
   function TGLEParticleMask._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLEParticleMask._AddRef: Integer;
 {$EndIf}
@@ -667,7 +681,11 @@ begin
 end;
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLEParticleMask._Release: Integer; stdcall;
+{$ELSE}
   function TGLEParticleMask._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLEParticleMask._Release: Integer;
 {$EndIf}
@@ -819,4 +837,3 @@ begin
 end;
 
 end.
-

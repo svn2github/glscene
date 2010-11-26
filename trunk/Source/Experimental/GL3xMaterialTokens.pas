@@ -12,7 +12,13 @@ unit GL3xMaterialTokens;
 
 interface
 
+{$I GLScene.inc}
+{$IFDEF FPC}
+{$mode objfpc}{$h+}
+{$ENDIF}
+
 uses
+  BaseClasses,
   GLState;
 
 type
@@ -293,7 +299,31 @@ const
     );
     );
 
+type
+    TTextureSampler = record
+    SamplerName: IGLName;
+    TextureName: IGLName;
+    UseCount: Integer;
+{$IFNDEF FPC}
+    class operator Equal(const a, b: TTextureSampler): Boolean;
+{$ENDIF}
+  end;
+
+  TTextureSamplerArray = array of TTextureSampler;
+
+{$IFDEF FPC}
+  operator =(const a, b: TTextureSampler): Boolean;
+{$ENDIF}
+
 implementation
 
-end.
+{$IFNDEF FPC}
+class operator TTextureSampler.Equal(const a, b: TTextureSampler): Boolean;
+{$ELSE}
+operator =(const a, b: TTextureSampler): Boolean;
+{$ENDIF}
+begin
+  Result := (Pointer(a.TextureName) = Pointer(b.TextureName)) and (Pointer(a.SamplerName) = Pointer(b.SamplerName));
+end;
 
+end.

@@ -309,7 +309,7 @@ type
     function RenderOutputDevice: Integer; virtual; abstract;
 
     property GL: TGLExtensionsAndEntryPoints read FGL;
-    property XGL: TAbstractMultitextureCoordinator read GetXGL;
+    property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
   end;
 
   TGLContextClass = class of TGLContext;

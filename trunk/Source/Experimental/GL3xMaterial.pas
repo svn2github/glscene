@@ -2211,6 +2211,7 @@ begin
           XMLRef := XMLRefs.ChildNodes[J];
           if GetXMLAttribute(XMLRef, 'Index', temp) then
           begin
+            err := 0;
             Val(temp, K, err);
             pSample.FInputRef[J] := FSampleList[K];
           end;
@@ -2409,13 +2410,14 @@ end;
 
 {$ENDREGION}
 
+{$IFDEF GLS_EXPERIMENTAL}
+
 initialization
 
 {$IFDEF FPC}
 {$I GLSceneMaterialSysLCL.lrs}
 {$ENDIF}
 
-{$IFDEF GLS_EXPERIMENTAL}
   MaterialManager.Initialize;
 
 finalization
@@ -2423,4 +2425,3 @@ finalization
   MaterialManager.Finalize;
 {$ENDIF GLS_EXPERIMENTAL}
 end.
-

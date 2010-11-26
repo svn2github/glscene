@@ -65,11 +65,11 @@ end;
 {$ELSE}
 {$IFDEF Linux}
 begin
-  if GLX_SGI_swap_control then
+  if GL.X_SGI_swap_control then
   begin
     case AVSyncMode of
-      vsmSync  : glXSwapIntervalSGI(GL_True);
-      vsmNoSync: glXSwapIntervalSGI(GL_False);
+      vsmSync  : GL.XSwapIntervalSGI(GL_True);
+      vsmNoSync: GL.XSwapIntervalSGI(GL_False);
     else
        Assert(False);
     end;

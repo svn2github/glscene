@@ -868,18 +868,26 @@ end;
 {$ENDIF}
 {$IFDEF LINUX}
 var
-  T: TTime_T;
-  TV: TTimeVal;
-  UT: TUnixTime;
+  tz: timeval;
 begin
-  gettimeofday(TV, nil);
-  T := TV.tv_sec;
-  localtime_r(@T, UT);
-  with UT do
-    Result := (tm_hour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
-             tm_min * (SecsPerMin * MSecsPerSec) +
-             tm_sec * MSecsPerSec +
-             tv_usec div 1000) - vGLSStartTime;
+  fpgettimeofday(@tz, nil);
+  Result := tz.tv_sec - vGLSStartTime;
+  Result := Result * 1000000;
+  Result := Result + tz.tv_usec;
+// Delphi for Linux variant (for future ;)
+//var
+//  T: TTime_T;
+//  TV: TTimeVal;
+//  UT: TUnixTime;
+//begin
+//  gettimeofday(TV, nil);
+//  T := TV.tv_sec;
+//  localtime_r(@T, UT);
+//  with UT do
+//    Result := (tm_hour * (MinsPerHour * SecsPerMin * MSecsPerSec) +
+//             tm_min * (SecsPerMin * MSecsPerSec) +
+//             tm_sec * MSecsPerSec +
+//             tv_usec div 1000) - vGLSStartTime;
 end;
 {$ENDIF}
 
@@ -1166,4 +1174,3 @@ initialization
 {$ENDIF}
 {$ENDIF}
 end.
-

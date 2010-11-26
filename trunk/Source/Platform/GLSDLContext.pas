@@ -346,8 +346,9 @@ begin
 
   FGL.Initialize;
   MakeGLCurrent;
-  xglMapTexCoordToNull;
-  xglMapTexCoordToMain;
+
+  xgl().MapTexCoordToNull;
+  xgl().MapTexCoordToMain;
 end;
 
 // DoCreateMemoryContext

@@ -3640,7 +3640,7 @@ begin
       end;
 
       // Move to position of next piece and read it
-      readSize := MinInteger(8192 div GlobalStreamingTaskCounter, Size - Offset);
+      readSize := MinInteger(Cardinal(8192 div GlobalStreamingTaskCounter), Cardinal(Size - Offset));
       if readSize > 0 then
       begin
         ptr := PByte(PtrUint(MapAddress) + PtrUint(Offset));
@@ -3728,4 +3728,3 @@ finalization
   FreeAndNil(vRasterFileFormats);
 
 end.
-

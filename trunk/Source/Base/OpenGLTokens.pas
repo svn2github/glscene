@@ -4511,7 +4511,7 @@ type
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
    // ********** GLU generic constants **********
-
+const
    // Errors: (return value 0= no error)
    GLU_INVALID_ENUM                                 = 100900;
    GLU_INVALID_VALUE                                = 100901;
@@ -4671,4 +4671,3 @@ type
 implementation
 
 end.
-

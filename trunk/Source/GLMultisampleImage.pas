@@ -18,7 +18,7 @@ unit GLMultisampleImage;
 
 interface
 
-{$I GLSCene.inc}
+{$I GLScene.inc}
 
 uses
   Classes,
@@ -356,4 +356,3 @@ initialization
   RegisterGLTextureImageClass(TGLMultisampleImage);
 
 end.
-

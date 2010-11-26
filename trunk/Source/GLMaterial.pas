@@ -529,9 +529,15 @@ type
     //implementing IInterface
 
   {$IfDef FPC}
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+    {$ELSE}
     function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$IFEND}
   {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
@@ -1927,7 +1933,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+{$ELSE}
   function TGLLibMaterial.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
 {$EndIf}
@@ -1941,7 +1951,11 @@ end;
 // _AddRef
 //
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLLibMaterial._AddRef: Integer; stdcall;
+{$ELSE}
   function TGLLibMaterial._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLLibMaterial._AddRef: Integer;
 {$EndIf}
@@ -1952,7 +1966,11 @@ end;
 // _Release
 //
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLLibMaterial._Release: Integer; stdcall;
+{$ELSE}
   function TGLLibMaterial._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLLibMaterial._Release: Integer;
 {$EndIf}
@@ -3492,4 +3510,3 @@ initialization
   RegisterClasses([TGLMaterialLibrary, TGLMaterial, TGLShader]);
 
 end.
-

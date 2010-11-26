@@ -54,12 +54,15 @@ uses
   Controls, WSLCLClasses, Win32Int,
   Win32WSControls, Win32Proc, LCLMessageGlue;
 {$ENDIF}
+
 {$IFDEF LCLGTK2}
 gtk2proc, gtk2, gdk2, gdk2x, gtk2def;
 {$ENDIF}
+
 {$IFDEF LCLGTK}
 gtkproc, gtk, gtkdef, gdk;
 {$ENDIF}
+
 {$IFDEF LCLQT}
 QT4, QTWidgets;
 {$ENDIF}

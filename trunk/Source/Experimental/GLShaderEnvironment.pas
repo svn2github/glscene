@@ -13,30 +13,17 @@ unit GLShaderEnvironment;
 interface
 
 {$I GLScene.inc}
-{$IFDEF FPC}
-{$mode objfpc}{$h+}
-{$ENDIF}
 
 uses
   Classes,
   BaseClasses,
   GLCrossPlatform,
   GLShaderManager,
+  GL3xMaterialTokens,
   VectorGeometry
 {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
-
-  TTextureSampler = record
-    SamplerName: IGLName;
-    TextureName: IGLName;
-    UseCount: Integer;
-{$IFNDEF FPC}
-    class operator Equal(const a, b: TTextureSampler): Boolean;
-{$ENDIF}
-  end;
-
-  TTextureSamplerArray = array of TTextureSampler;
 
   TBaseShaderEnvironment = class(TPersistent)
   protected
@@ -106,9 +93,7 @@ type
 
   TBaseShaderEnvironmentClass = class of TBaseShaderEnvironment;
 
-{$IFDEF FPC}
-operator =(const a, b: TTextureSampler): Boolean; inline;
-{$ENDIF}
+
 
 implementation
 
@@ -117,15 +102,6 @@ uses
   GLVBOManager,
   GLContext,
   GL3xMaterial;
-
-{$IFNDEF FPC}
-class operator TTextureSampler.Equal(const a, b: TTextureSampler): Boolean;
-{$ELSE}
-operator =(const a, b: TTextureSampler): Boolean;
-{$ENDIF}
-begin
-  Result := (Pointer(a.TextureName) = Pointer(b.TextureName)) and (Pointer(a.SamplerName) = Pointer(b.SamplerName));
-end;
 
 constructor TShaderEnvSamplers.Create;
 begin

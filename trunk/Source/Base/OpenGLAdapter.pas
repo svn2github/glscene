@@ -2966,14 +2966,8 @@ type
     WGetSwapIntervalEXT: function: Integer; stdcall;
 
     // GL_NV_vertex_array_range (EXT #190)
-    WAllocateMemoryNV: function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer;
-{$IFDEF MSWINDOWS}stdcall;
-{$ENDIF}{$IFDEF UNIX}cdecl;
-{$ENDIF}
-    WFreeMemoryNV: procedure(ptr: Pointer);
-{$IFDEF MSWINDOWS}stdcall;
-{$ENDIF}{$IFDEF UNIX}cdecl;
-{$ENDIF}
+    WAllocateMemoryNV: function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer; stdcall;
+    WFreeMemoryNV: procedure(ptr: Pointer); stdcall;
 {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'GLX function/procedure definitions for ARB approved extensions'}{$ENDIF}
@@ -3075,7 +3069,7 @@ type
     XBindVideoDeviceNV: function(dpy: PDisplay; video_slot: TGLint; video_device: TGLint; attrib_list: PGLint): TGLint; cdecl;
     GetVideoDeviceNV: function(dpy: PDisplay; screen: TGLint; numVideoDevices: TGLint; pVideoDevice: GLXVideoDeviceNV): TGLint; cdecl;
 
-    XAllocateMemoryNV: procedure(size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat); cdecl;
+    XAllocateMemoryNV: function(size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat): Pointer; cdecl;
     XFreeMemoryNV: procedure(GLvoid: Pointer); cdecl;
 
     XReleaseVideoDeviceNV: function(dpy: PDisplay; screen: TGLint; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
@@ -5546,6 +5540,7 @@ begin
   WDeleteDCNV := GLGetProcAddress('wglDeleteDCNV');
 end;
 {$ENDIF}
+
 {$IFDEF SUPPORT_GLX}
 // ReadGLXImplementationProperties
 //
@@ -5557,7 +5552,7 @@ var
 begin
   dpy := glXGetCurrentDisplay();
   FBuffer := string(glXQueryServerString(dpy, XDefaultScreen(dpy), GLX_VERSION));
-  TrimAndSplitVersionString(buffer, MajorVersion, MinorVersion);
+  TrimAndSplitVersionString(FBuffer, MajorVersion, MinorVersion);
   X_VERSION_1_1 := IsVersionMet(1, 1, MajorVersion, MinorVersion);
   X_VERSION_1_2 := IsVersionMet(1, 2, MajorVersion, MinorVersion);
   X_VERSION_1_3 := IsVersionMet(1, 3, MajorVersion, MinorVersion);
@@ -5699,7 +5694,7 @@ begin
   XGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
   XEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
   XBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
-  tVideoDeviceNV := GLGetProcAddress('GetVideoDeviceNV');
+  GetVideoDeviceNV := GLGetProcAddress('glGetVideoDeviceNV');
   XCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
   XReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
   XCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');

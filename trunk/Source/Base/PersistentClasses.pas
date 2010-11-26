@@ -142,9 +142,15 @@ type
     procedure RaiseFilerException(const archiveVersion: Integer);
 
   {$IfDef FPC}
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+    {$ELSE}
     function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$IFEND}
   {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
@@ -400,13 +406,19 @@ type
   protected
     // Implementing IInterface.
   {$IfDef FPC}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _AddRef: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _Release: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+    {$ELSE}
+    function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$IFEND}
   {$Else}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
   {$EndIf}
   end;
 
@@ -417,9 +429,15 @@ type
   protected
     // Implementing IInterface.
   {$IfDef FPC}
+    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function _AddRef: Integer; virtual; stdcall;
+    function _Release: Integer; virtual; stdcall;
+    {$ELSE}
     function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _AddRef: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _Release: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+    {$ENDIF}
   {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     function _AddRef: Integer; virtual; stdcall;
@@ -759,7 +777,11 @@ end;
 
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TPersistentObject.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+  {$ELSE}
   function TPersistentObject.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  {$IFEND}
 {$Else}
   function TPersistentObject.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 {$EndIf}
@@ -774,7 +796,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TPersistentObject._AddRef: Integer; stdcall;
+{$ELSE}
   function TPersistentObject._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TPersistentObject._AddRef: Integer; stdcall;
 {$EndIf}
@@ -787,7 +813,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TPersistentObject._Release: Integer; stdcall;
+{$ELSE}
   function TPersistentObject._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TPersistentObject._Release: Integer; stdcall;
 {$EndIf}
@@ -2291,7 +2321,11 @@ end;
 
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLInterfacedPersistent._AddRef: Integer; stdcall;
+{$ELSE}
   function TGLInterfacedPersistent._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLInterfacedPersistent._AddRef: Integer; stdcall;
 {$EndIf}
@@ -2303,7 +2337,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLInterfacedPersistent._Release: Integer; stdcall;
+{$ELSE}
   function TGLInterfacedPersistent._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLInterfacedPersistent._Release: Integer; stdcall;
 {$EndIf}
@@ -2315,7 +2353,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLInterfacedPersistent.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+{$ELSE}
   function TGLInterfacedPersistent.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLInterfacedPersistent.QueryInterface(const IID: TGUID;
   out Obj): HResult; stdcall;
@@ -2336,9 +2378,13 @@ end;
 //
 
 {$IfDef FPC}
-  function TGLInterfacedCollectionItem._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+function TGLInterfacedCollectionItem._AddRef: Integer; stdcall;
+{$ELSE}
+function TGLInterfacedCollectionItem._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
-  function TGLInterfacedCollectionItem._AddRef: Integer; stdcall;
+function TGLInterfacedCollectionItem._AddRef: Integer; stdcall;
 {$EndIf}
 begin
   Result := -1; //ignore
@@ -2348,7 +2394,11 @@ end;
 //
 
 {$IfDef FPC}
-  function TGLInterfacedCollectionItem._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+function TGLInterfacedCollectionItem._Release: Integer; stdcall;
+{$ELSE}
+function TGLInterfacedCollectionItem._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
 {$Else}
   function TGLInterfacedCollectionItem._Release: Integer; stdcall;
 {$EndIf}
@@ -2360,7 +2410,11 @@ end;
 //
 
 {$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLInterfacedCollectionItem.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+  {$ELSE}
   function TGLInterfacedCollectionItem.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  {$IFEND}
 {$Else}
   function TGLInterfacedCollectionItem.QueryInterface(const IID: TGUID;
     out Obj): HResult; stdcall;
@@ -2384,4 +2438,3 @@ initialization
   RegisterClass(TPersistentObjectList);
 
 end.
-

@@ -35,6 +35,7 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
+  SyncObjs,
   // GLScene
   GLCrossPlatform,
   BaseClasses,
@@ -174,7 +175,7 @@ type
     CurrentClient: PGLRenderPacket;
     FState: TGLVBOMState;
 {$IFDEF GLS_MULTITHREAD}
-    FLock: TRTLCriticalSection;
+    FLock: TCriticalSection;
 {$ENDIF}
     FAttributeArrays: array[0..GLS_VERTEX_ATTR_NUM - 1] of T4ByteList;
     FObjectVertexCount: Integer; // From BeginObject to EndObject
@@ -623,7 +624,7 @@ begin
   for i := 0 to High(FAttributeArrays) do
     FAttributeArrays[i] := T4ByteList.Create;
 {$IFDEF GLS_MULTITHREAD}
-  InitializeCriticalSection(FLock);
+  FLock := TCriticalSection.Create;
 {$ENDIF}
 end;
 
@@ -637,21 +638,21 @@ begin
     FAttributeArrays[i].Destroy;
   FHostIndexBuffer.Destroy;
 {$IFDEF GLS_MULTITHREAD}
-  DeleteCriticalSection(FLock);
+  FLock.Free;
 {$ENDIF}
 end;
 
 procedure TGLBaseVBOManager.BeginWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  EnterCriticalSection(FLock);
+  FLock.Enter;
 {$ENDIF}
 end;
 
 procedure TGLBaseVBOManager.EndWork;
 begin
 {$IFDEF GLS_MULTITHREAD}
-  LeaveCriticalSection(FLock);
+  FLock.Leave;
 {$ENDIF}
 end;
 
@@ -2945,4 +2946,3 @@ finalization
   FreeVBOManagers;
 
 end.
-
