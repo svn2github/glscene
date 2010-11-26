@@ -1,95 +1,114 @@
 object Form1: TForm1
-  Left = 192
-  Top = 107
-  Width = 397
+  Left = 271
   Height = 373
+  Top = 122
+  Width = 397
   Caption = 'Phong Shader'
+  ClientHeight = 373
+  ClientWidth = 397
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
-  DesignSize = (
-    389
-    346)
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 0
-    Width = 389
-    Height = 346
+    Height = 349
+    Top = 24
+    Width = 397
     Camera = GLCamera1
-    Align = alClient
+    FieldOfView = 148.022491455078
+    Align = alBottom
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CheckBox1: TCheckBox
-    Left = 312
-    Top = 8
-    Width = 65
-    Height = 17
+    Left = 0
+    Height = 22
+    Top = 0
+    Width = 397
+    Align = alTop
     Anchors = [akTop, akRight]
     Caption = 'Shader'
-    TabOrder = 1
     OnClick = CheckBox1Click
+    TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 8
+    left = 16
+    top = 40
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1.000000000000000000
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
       object GLCamera1: TGLCamera
-        DepthOfView = 100.000000000000000000
-        FocalLength = 50.000000000000000000
+        TagFloat = 0
+        DepthOfView = 100
+        FocalLength = 50
         TargetObject = GLDummyCube1
-        Position.Coordinates = {0000803F00000040000040400000803F}
+        Position.Coordinates = {
+          0000803F00000040000040400000803F
+        }
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1.000000000000000000
-          Specular.Color = {0000803F0000803F0000803F0000803F}
-          SpotCutOff = 180.000000000000000000
+          TagFloat = 0
+          ConstAttenuation = 1
+          LinearAttenuation = 0
+          QuadraticAttenuation = 0
+          Specular.Color = {
+            0000803F0000803F0000803F0000803F
+          }
+          SpotCutOff = 180
+          SpotExponent = 0
         end
       end
     end
     object GLTeapot1: TGLTeapot
+      TagFloat = 0
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'phong'
-      Material.TextureEx = <>
-      Scale.Coordinates = {00004040000040400000404000000000}
+      PitchAngle = 0
+      RollAngle = 0
+      Scale.Coordinates = {
+        00004040000040400000404000000000
+      }
+      TurnAngle = 0
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Materials = <
+    Materials = <    
       item
         Name = 'phong'
         Material.FrontProperties.Shininess = 16
-        Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
-        Material.TextureEx = <>
+        Material.FrontProperties.Specular.Color = {
+          CDCC4C3ECDCC4C3ECDCC4C3E0000803F
+        }
         Tag = 0
         Shader = GLPhongShader1
       end>
-    Left = 40
-    Top = 8
+    left = 48
+    top = 40
   end
   object GLPhongShader1: TGLPhongShader
     Enabled = False
-    DesignTimeEnabled = False
-    Left = 72
-    Top = 8
+    left = 80
+    top = 40
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 40
+    left = 16
+    top = 72
   end
   object AsyncTimer1: TAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
-    ThreadPriority = tpHigher
-    Left = 40
-    Top = 40
+    ThreadPriority = tpNormal
+    left = 48
+    top = 72
   end
-end
+end

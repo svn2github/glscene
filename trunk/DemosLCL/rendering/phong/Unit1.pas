@@ -11,7 +11,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLTeapot, GLTexture, GLPhongShader,
   GLLCLViewer, AsyncTimer, GLCadencer, StdCtrls, GLCustomShader,
   GLAsmShader, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
@@ -85,4 +85,4 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-end.
+end.
