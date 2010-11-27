@@ -12,11 +12,14 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCollision, ComCtrls, StdCtrls,
   GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -28,6 +31,7 @@ type
     Sphere2: TGLSphere;
     TrackBar1: TTrackBar;
     Button1: TButton;
+    procedure FormCreate(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure CollisionManager1Collision(Sender: TObject; object1,
@@ -45,6 +49,12 @@ implementation
 
 {$R *.lfm}
 
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  GLSceneViewer1.Invalidate;
+end;
+
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
    Sphere1.Position.Z:=TrackBar1.Position/10;
@@ -61,4 +71,4 @@ begin
    ShowMessage('Collision between '+object1.Name+' and '+object2.Name);
 end;
 
-end.
+end.

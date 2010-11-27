@@ -11,7 +11,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms,
+  Classes, SysUtils, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
   GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, BaseClasses;
 
@@ -136,4 +136,4 @@ begin
    if Shift<>[] then GLSceneViewer2MouseDown(Sender, TMouseButton(mbLeft), Shift, x, y);
 end;
 
-end.
+end.

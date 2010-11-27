@@ -13,7 +13,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, GLKeyboard, VectorGeometry,
+  Classes, SysUtils, Controls, Forms, GLKeyboard, VectorGeometry,
   GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
   GLCadencer, ExtCtrls, StdCtrls, GLNavigator, ComCtrls, GLGeomObjects,
   GLCrossPlatform, GLCoordinates, BaseClasses;
@@ -63,7 +63,7 @@ implementation
 
 {$R *.lfm}
 
-uses GLFile3DS, FileUtil;
+uses GLFile3DS, FileUtil, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -198,4 +198,4 @@ begin
 end;
 
 end.
-
+

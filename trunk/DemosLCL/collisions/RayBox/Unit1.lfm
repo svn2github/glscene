@@ -37,9 +37,9 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 308
-      Height = 15
+      Height = 12
       Top = 14
-      Width = 34
+      Width = 31
       Caption = 'Result:'
       ParentColor = False
     end
@@ -55,9 +55,9 @@ object Form1: TForm1
     end
     object CheckBox1: TCheckBox
       Left = 99
-      Height = 19
+      Height = 22
       Top = 12
-      Width = 67
+      Width = 62
       Caption = 'View box'
       Checked = True
       OnClick = CheckBox1Click
@@ -66,9 +66,9 @@ object Form1: TForm1
     end
     object CheckBox2: TCheckBox
       Left = 178
-      Height = 19
+      Height = 22
       Top = 12
-      Width = 107
+      Width = 99
       Caption = 'Change pos scale'
       Checked = True
       State = cbChecked
@@ -116,7 +116,7 @@ object Form1: TForm1
       TurnAngle = 0
       NoZWrite = False
       Static = False
-      Size = 7
+      size = 7
     end
     object GLDummyCube1: TGLDummyCube
       TagFloat = 0
@@ -185,4 +185,4 @@ object Form1: TForm1
     left = 512
     top = 40
   end
-end
+end

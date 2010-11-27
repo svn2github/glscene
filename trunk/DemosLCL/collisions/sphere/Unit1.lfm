@@ -8,6 +8,7 @@ object Form1: TForm1
   ClientWidth = 458
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
   LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
@@ -111,4 +112,4 @@ object Form1: TForm1
     left = 16
     top = 72
   end
-end
+end

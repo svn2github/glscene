@@ -37,49 +37,49 @@ object Form1: TForm1
     TabOrder = 1
     object Label5: TLabel
       Left = 10
-      Height = 15
+      Height = 12
       Top = 134
-      Width = 57
+      Width = 48
       Caption = 'Sphere pos'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 16
-      Height = 15
+      Height = 12
       Top = 8
-      Width = 60
+      Width = 52
       Caption = 'Box position'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 96
-      Height = 15
+      Height = 12
       Top = 8
-      Width = 49
+      Width = 42
       Caption = 'Box scale'
       ParentColor = False
     end
     object Label1: TLabel
       Left = 8
-      Height = 15
+      Height = 12
       Top = 384
-      Width = 34
+      Width = 31
       Caption = 'Result:'
       ParentColor = False
     end
     object Label7: TLabel
       Left = 96
-      Height = 15
+      Height = 12
       Top = 136
-      Width = 69
+      Width = 58
       Caption = 'Sphere radius'
       ParentColor = False
     end
     object CheckBox06: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 291
-      Width = 40
+      Width = 41
       Caption = 'Grid'
       Checked = True
       OnClick = CheckBox04Click
@@ -88,9 +88,9 @@ object Form1: TForm1
     end
     object CheckBox04: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 242
-      Width = 72
+      Width = 69
       Caption = 'Box visible'
       Checked = True
       OnClick = CheckBox04Click
@@ -99,7 +99,7 @@ object Form1: TForm1
     end
     object CheckBox05: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 267
       Width = 42
       Caption = 'Axis'
@@ -108,9 +108,9 @@ object Form1: TForm1
     end
     object CheckBox07: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 314
-      Width = 91
+      Width = 85
       Caption = 'Sphere visible '
       Checked = True
       OnClick = CheckBox04Click
@@ -119,7 +119,7 @@ object Form1: TForm1
     end
     object Edit1: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 25
       Width = 56
       OnChange = Edit1Change
@@ -128,7 +128,7 @@ object Form1: TForm1
     end
     object Edit2: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 48
       Width = 56
       OnChange = Edit1Change
@@ -137,7 +137,7 @@ object Form1: TForm1
     end
     object Edit3: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 72
       Width = 56
       OnChange = Edit1Change
@@ -146,7 +146,7 @@ object Form1: TForm1
     end
     object UpDown1: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 25
       Width = 22
       Associate = Edit1
@@ -157,7 +157,7 @@ object Form1: TForm1
     end
     object UpDown2: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 48
       Width = 22
       Associate = Edit2
@@ -168,7 +168,7 @@ object Form1: TForm1
     end
     object UpDown3: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 72
       Width = 22
       Associate = Edit3
@@ -179,7 +179,7 @@ object Form1: TForm1
     end
     object Edit4: TEdit
       Left = 91
-      Height = 22
+      Height = 21
       Top = 24
       Width = 56
       OnChange = Edit1Change
@@ -188,7 +188,7 @@ object Form1: TForm1
     end
     object Edit5: TEdit
       Left = 91
-      Height = 22
+      Height = 21
       Top = 48
       Width = 56
       OnChange = Edit1Change
@@ -197,7 +197,7 @@ object Form1: TForm1
     end
     object Edit6: TEdit
       Left = 91
-      Height = 22
+      Height = 21
       Top = 72
       Width = 56
       OnChange = Edit1Change
@@ -206,7 +206,7 @@ object Form1: TForm1
     end
     object UpDown4: TUpDown
       Left = 147
-      Height = 22
+      Height = 21
       Top = 24
       Width = 22
       Associate = Edit4
@@ -217,7 +217,7 @@ object Form1: TForm1
     end
     object UpDown5: TUpDown
       Left = 147
-      Height = 22
+      Height = 21
       Top = 48
       Width = 22
       Associate = Edit5
@@ -228,7 +228,7 @@ object Form1: TForm1
     end
     object UpDown6: TUpDown
       Left = 147
-      Height = 22
+      Height = 21
       Top = 72
       Width = 22
       Associate = Edit6
@@ -239,7 +239,7 @@ object Form1: TForm1
     end
     object Edit7: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 152
       Width = 56
       OnChange = Edit1Change
@@ -248,7 +248,7 @@ object Form1: TForm1
     end
     object Edit8: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 176
       Width = 56
       OnChange = Edit1Change
@@ -257,7 +257,7 @@ object Form1: TForm1
     end
     object Edit9: TEdit
       Left = 10
-      Height = 22
+      Height = 21
       Top = 200
       Width = 56
       OnChange = Edit1Change
@@ -266,7 +266,7 @@ object Form1: TForm1
     end
     object UpDown7: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 152
       Width = 22
       Associate = Edit7
@@ -277,7 +277,7 @@ object Form1: TForm1
     end
     object UpDown8: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 176
       Width = 22
       Associate = Edit8
@@ -288,7 +288,7 @@ object Form1: TForm1
     end
     object UpDown9: TUpDown
       Left = 66
-      Height = 22
+      Height = 21
       Top = 200
       Width = 22
       Associate = Edit9
@@ -299,7 +299,7 @@ object Form1: TForm1
     end
     object Edit10: TEdit
       Left = 93
-      Height = 22
+      Height = 21
       Top = 152
       Width = 56
       OnChange = Edit1Change
@@ -308,7 +308,7 @@ object Form1: TForm1
     end
     object UpDown10: TUpDown
       Left = 149
-      Height = 22
+      Height = 21
       Top = 152
       Width = 22
       Associate = Edit10
@@ -338,7 +338,7 @@ object Form1: TForm1
     end
   end
   object GLScene: TGLScene
-    left = 8
+    left = 24
     top = 408
     object DCCamTarget: TGLDummyCube
       TagFloat = 0
@@ -505,7 +505,7 @@ object Form1: TForm1
     MinDeltaTime = 0
     FixedDeltaTime = 0
     OnProgress = GLCadencerProgress
-    left = 40
+    left = 104
     top = 408
   end
-end
+end

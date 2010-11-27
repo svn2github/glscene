@@ -20,7 +20,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
   GLLCLViewer, ComCtrls, GLGeomObjects, GLColor, GLCrossPlatform,
   GLCoordinates, BaseClasses;
@@ -131,7 +131,6 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -140,4 +139,4 @@ begin
    DummyCube1.TurnAngle:=newTime*50;
 end;
 
-end.
+end.

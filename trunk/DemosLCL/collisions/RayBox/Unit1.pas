@@ -11,7 +11,7 @@ interface
 
 uses
   //VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls,
   //GLScene
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
@@ -163,4 +163,4 @@ begin
   if Key = #27 then close;
 end;
 
-end.
+end.

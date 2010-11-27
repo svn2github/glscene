@@ -12,17 +12,17 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object Label1: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 79
+    Width = 80
     Caption = 'Orthogonal View'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 280
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 83
+    Width = 81
     Caption = 'Perspective View'
     ParentColor = False
   end
@@ -45,7 +45,7 @@ object Form1: TForm1
     Width = 265
     Camera = GLCamera2
     Buffer.BackgroundColor = clGray
-    FieldOfView = 134.929183959961
+    FieldOfView = 134.92918395996
     OnMouseDown = GLSceneViewer2MouseDown
     OnMouseMove = GLSceneViewer2MouseMove
     TabOrder = 1
@@ -102,7 +102,7 @@ object Form1: TForm1
       Up.Coordinates = {
         E9DC72BF000000009BE8A13E00000000
       }
-      Radius = 0.30000001192093
+      Radius = 0.30000001192092
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
@@ -120,9 +120,9 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        BottomRadius = 0.05000000074506
+        BottomRadius = 0.05000000074505
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.10000000149011
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5
@@ -149,4 +149,4 @@ object Form1: TForm1
       }
     end
   end
-end
+end

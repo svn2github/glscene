@@ -77,9 +77,9 @@ object Form1: TForm1
     end
     object Label2: TLabel
       Left = 8
-      Height = 15
+      Height = 12
       Top = 32
-      Width = 101
+      Width = 85
       Caption = 'OpenGL scene view'
       Font.Height = -11
       Font.Name = 'Arial'
@@ -88,9 +88,9 @@ object Form1: TForm1
     end
     object Label3: TLabel
       Left = 296
-      Height = 15
+      Height = 12
       Top = 32
-      Width = 137
+      Width = 119
       Caption = 'RayCasted/RayTraced view'
       Font.Height = -11
       Font.Name = 'Arial'
@@ -142,7 +142,7 @@ object Form1: TForm1
         }
         Visible = False
         MajorRadius = 0.40000000596046
-        MinorRadius = 0.10000000149012
+        MinorRadius = 0.10000000149011
       end
       object Plane1: TGLPlane
         TagFloat = 0
@@ -154,7 +154,7 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Height = 0.69999998807907
-        Width = 0.30000001192093
+        Width = 0.30000001192092
         XOffset = 0
         YOffset = 0
       end
@@ -175,9 +175,9 @@ object Form1: TForm1
         Up.Coordinates = {
           00000000D6B35D3F0100003F00000000
         }
-        BottomRadius = 0.10000000149012
-        Height = 0.60000002384186
-        TopRadius = 0.10000000149012
+        BottomRadius = 0.10000000149011
+        Height = 0.60000002384185
+        TopRadius = 0.10000000149011
         object GLAnnulus1: TGLAnnulus
           TagFloat = 0
           Material.FrontProperties.Diffuse.Color = {
@@ -186,11 +186,11 @@ object Form1: TForm1
           PitchAngle = 0
           RollAngle = 0
           TurnAngle = 0
-          BottomRadius = 0.23000000417233
+          BottomRadius = 0.23000000417232
           Height = 0.20000000298023
-          BottomInnerRadius = 0.18000000715256
-          TopInnerRadius = 0.18000000715256
-          TopRadius = 0.23000000417233
+          BottomInnerRadius = 0.18000000715255
+          TopInnerRadius = 0.18000000715255
+          TopRadius = 0.23000000417232
         end
       end
       object GLCube1: TGLCube
@@ -246,4 +246,4 @@ object Form1: TForm1
     left = 56
     top = 64
   end
-end
+end
