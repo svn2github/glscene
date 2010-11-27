@@ -214,4 +214,9 @@ begin
   FTimerThread.Priority := Value;
 end;
 
+initialization
+
+  RegisterClass(TAsyncTimer);
+
+
 end.
