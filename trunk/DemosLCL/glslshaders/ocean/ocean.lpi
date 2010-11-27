@@ -39,14 +39,14 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="8">
       <Unit0>
         <Filename Value="ocean.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="30" Y="12"/>
+        <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -60,27 +60,68 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="376"/>
-        <CursorPos X="1" Y="403"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="241"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../../../Source/GLState.pas"/>
+        <UnitName Value="GLState"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3112"/>
+        <CursorPos X="1" Y="3131"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../../Source/GLScene.pas"/>
+        <UnitName Value="GLScene"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="9269"/>
+        <CursorPos X="1" Y="9288"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../Source/GLMaterial.pas"/>
+        <UnitName Value="GLMaterial"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1394"/>
+        <CursorPos X="1" Y="1416"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../Source/GLContext.pas"/>
+        <UnitName Value="GLContext"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1319"/>
+        <CursorPos X="1" Y="1338"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../Source/Platform/GLGLXContext.pas"/>
+        <UnitName Value="GLGLXContext"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="696"/>
+        <CursorPos X="1" Y="721"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../Source/Platform/GLLCLViewer.pas"/>
+        <UnitName Value="GLLCLViewer"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="378"/>
+        <CursorPos X="1" Y="397"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="ocean.lpr"/>
-        <Caret Line="6" Column="20" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="8" Column="13" TopLine="1"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="9"/>

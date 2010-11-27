@@ -4,6 +4,7 @@
     <Version Value="9"/>
     <PathDelim Value="\"/>
     <General>
+      <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <ActiveWindowIndexAtStart Value="0"/>
@@ -13,6 +14,9 @@
       <CharSet Value=""/>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -40,10 +44,11 @@
       <Unit0>
         <Filename Value="diffusespecularshaderdemo.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="9" Y="7"/>
+        <CursorPos X="19" Y="8"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -54,11 +59,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="umainform"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="91"/>
-        <CursorPos X="1" Y="93"/>
+        <CursorPos X="48" Y="111"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -106,12 +110,10 @@
       <Unit6>
         <Filename Value="C:\lazarus\lcl\lresources.pp"/>
         <UnitName Value="LResources"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1641"/>
         <CursorPos X="1" Y="1661"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit6>
     </Units>
     <JumpHistory Count="29" HistoryIndex="28">

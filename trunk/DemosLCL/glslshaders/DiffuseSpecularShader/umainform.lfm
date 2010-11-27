@@ -27,7 +27,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 143.991668701172
+    FieldOfView = 143.991668701171
     Align = alClient
     TabOrder = 0
   end
@@ -42,9 +42,9 @@ object GLSLTestForm: TGLSLTestForm
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 91
+      Width = 96
       Caption = 'Light is Moving'
       Checked = True
       Color = clBtnFace
@@ -54,9 +54,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object ShaderEnabledCheckBox: TCheckBox
       Left = 176
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 96
+      Width = 100
       Caption = 'Shader Enabled'
       Checked = True
       OnClick = ShaderEnabledCheckBoxClick
@@ -65,35 +65,35 @@ object GLSLTestForm: TGLSLTestForm
     end
     object TurnPitchrollCheckBox: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 24
-      Width = 132
+      Width = 134
       Caption = 'Turn-Pitch-Roll Enabled'
       TabOrder = 2
     end
     object RealisticSpecularCheckBox: TCheckBox
       Left = 336
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 135
+      Width = 139
       Caption = 'Realistic Specular Mode'
       OnClick = RealisticSpecularCheckBoxClick
       TabOrder = 3
     end
     object MultiLightShaderCheckBox: TCheckBox
       Left = 176
-      Height = 19
+      Height = 22
       Top = 24
-      Width = 102
+      Width = 109
       Caption = 'MultiLight Shader'
       OnClick = MultiLightShaderCheckBoxClick
       TabOrder = 4
     end
     object EnableFogCheckBox: TCheckBox
       Left = 336
-      Height = 19
+      Height = 22
       Top = 24
-      Width = 71
+      Width = 75
       Caption = 'Enable fog'
       OnClick = EnableFogCheckBoxClick
       TabOrder = 5
@@ -120,9 +120,9 @@ object GLSLTestForm: TGLSLTestForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149012
+        BottomRadius = 0.10000000149011
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.10000000149011
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5

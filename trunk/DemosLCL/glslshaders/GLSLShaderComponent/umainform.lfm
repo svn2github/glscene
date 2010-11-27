@@ -21,7 +21,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.BackgroundColor = clBackground
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 145.291946411133
+    FieldOfView = 145.291946411132
     Align = alClient
     TabOrder = 0
   end
@@ -36,9 +36,9 @@ object GLSLTestForm: TGLSLTestForm
     TabOrder = 1
     object LightMovingCheckBox: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 91
+      Width = 96
       Caption = 'Light is Moving'
       Checked = True
       Color = clBtnFace
@@ -48,9 +48,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object ShadeEnabledCheckBox: TCheckBox
       Left = 288
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 96
+      Width = 100
       Caption = 'Shader Enabled'
       Checked = True
       OnClick = ShadeEnabledCheckBoxClick
@@ -59,9 +59,9 @@ object GLSLTestForm: TGLSLTestForm
     end
     object TurnPitchrollCheckBox: TCheckBox
       Left = 112
-      Height = 19
+      Height = 22
       Top = 8
-      Width = 132
+      Width = 134
       Caption = 'Turn-Pitch-Roll Enabled'
       TabOrder = 2
     end
@@ -87,9 +87,9 @@ object GLSLTestForm: TGLSLTestForm
           0000A0410000A0410000A04100000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149012
+        BottomRadius = 0.10000000149011
         Height = 1
-        TopRadius = 0.10000000149012
+        TopRadius = 0.10000000149011
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5

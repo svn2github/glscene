@@ -220,11 +220,7 @@ begin
       end;
    end;
 
-   GLMemoryViewer1.RenderCubeMapTextures(matLib.LibMaterialByName('cubeMap').Material.Texture);
-
    SetCurrentDir(ExtractFilePath(Application.ExeName));
-
-//   GLHeightField1.ObjectStyle:=GLHeightField1.ObjectStyle+[osDirectDraw];
 end;
 
 procedure TForm1.DoInitializeRender(Sender: TObject;

@@ -50,7 +50,7 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Visible = False
-        Radius = 0.05000000074506
+        Radius = 0.05000000074505
       end
     end
     object DOInitialize: TGLDirectOpenGL
@@ -131,7 +131,7 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Disabled = False
-        Material.Texture.NormalMapScale = 0.05000000074506
+        Material.Texture.NormalMapScale = 0.05000000074505
         Tag = 0
         Shader = GLUserShader1
       end    
