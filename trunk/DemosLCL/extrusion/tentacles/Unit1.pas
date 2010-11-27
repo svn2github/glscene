@@ -17,7 +17,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLObjects, GLExtrusion, GLCadencer, VectorGeometry,
   GLTexture, ExtCtrls, GLLCLViewer, GLColor, GLCrossPlatform, GLCoordinates,
   BaseClasses;
@@ -118,4 +118,4 @@ begin
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-end.
+end.

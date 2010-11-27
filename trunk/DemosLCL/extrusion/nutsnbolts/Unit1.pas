@@ -18,17 +18,23 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLExtrusion, GLLCLViewer, VectorGeometry,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, GLScene,
+  GLObjects, GLExtrusion, GLLCLViewer, VectorGeometry, GLGeomObjects,
+  GLSimpleNavigation, GLCrossPlatform, GLCoordinates, BaseClasses, GLContext;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
+    ComboBox1: TComboBox;
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     DummyCube1: TGLDummyCube;
+    GLSimpleNavigation1: TGLSimpleNavigation;
+    Label1: TLabel;
     RSBoltThreads: TGLRevolutionSolid;
     CYBoltShaft: TGLCylinder;
     RSBoltHead: TGLRevolutionSolid;
@@ -37,6 +43,7 @@ type
     RSNutThreads: TGLRevolutionSolid;
     RSNutPans: TGLRevolutionSolid;
     Annulus1: TGLAnnulus;
+    procedure ComboBox1Change(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -63,6 +70,17 @@ begin
    mx:=x; my:=y;
 end;
 
+procedure TForm1.ComboBox1Change(Sender: TObject);
+begin
+  case ComboBox1.ItemIndex of
+    0: GLSceneViewer1.Buffer.AntiAliasing := aaNone;
+    1: GLSceneViewer1.Buffer.AntiAliasing := aa2x;
+    2: GLSceneViewer1.Buffer.AntiAliasing := aa4x;
+    3: GLSceneViewer1.Buffer.AntiAliasing := aa8x;
+    4: GLSceneViewer1.Buffer.AntiAliasing := aa16x;
+  end;
+end;
+
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -77,4 +95,4 @@ begin
    GLCamera1.AdjustDistanceToTarget(Power(1.05, WheelDelta div 120));
 end;
 
-end.
+end.

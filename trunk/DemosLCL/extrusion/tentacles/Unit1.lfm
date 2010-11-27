@@ -3,6 +3,7 @@ object Form1: TForm1
   Height = 369
   Top = 106
   Width = 468
+  ActiveControl = GLSceneViewer1
   Caption = 'Form1'
   ClientHeight = 369
   ClientWidth = 468
@@ -137,4 +138,4 @@ object Form1: TForm1
     left = 16
     top = 48
   end
-end
+end

@@ -3,6 +3,7 @@ object Form1: TForm1
   Height = 358
   Top = 153
   Width = 469
+  ActiveControl = GLSceneViewer1
   Caption = 'Form1'
   ClientHeight = 358
   ClientWidth = 469
@@ -16,7 +17,7 @@ object Form1: TForm1
     Top = 0
     Width = 469
     Camera = GLCamera1
-    FieldOfView = 134.533172607422
+    FieldOfView = 134.533172607421
     Align = alClient
     TabOrder = 0
   end
@@ -76,4 +77,4 @@ object Form1: TForm1
     left = 8
     top = 88
   end
-end
+end

@@ -3,6 +3,7 @@ object Form1: TForm1
   Height = 306
   Top = 89
   Width = 391
+  ActiveControl = CheckBox1
   AutoSize = True
   BorderWidth = 3
   Caption = 'Form1'
@@ -14,9 +15,9 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object Label1: TLabel
     Left = 296
-    Height = 19
+    Height = 21
     Top = 8
-    Width = 60
+    Width = 68
     Caption = 'Options'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -16
@@ -27,25 +28,25 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 272
-    Height = 14
+    Height = 21
     Top = 240
-    Width = 23
+    Width = 26
     Caption = 'Stop'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 272
-    Height = 14
+    Height = 21
     Top = 152
-    Width = 29
+    Width = 34
     Caption = 'Slices'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 272
-    Height = 14
+    Height = 21
     Top = 192
-    Width = 43
+    Width = 51
     Caption = 'Divisions'
     ParentColor = False
   end
@@ -56,16 +57,16 @@ object Form1: TForm1
     Width = 257
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 137.477478027344
+    FieldOfView = 137.477478027343
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object CheckBox1: TCheckBox
     Left = 264
-    Height = 19
+    Height = 24
     Top = 48
-    Width = 109
+    Width = 133
     Caption = 'Spline interpolation'
     Checked = True
     OnClick = CheckBox1Click
@@ -74,9 +75,9 @@ object Form1: TForm1
   end
   object CheckBox2: TCheckBox
     Left = 264
-    Height = 19
+    Height = 24
     Top = 72
-    Width = 109
+    Width = 133
     Caption = 'Normals smoothing'
     Checked = True
     OnClick = CheckBox2Click
@@ -85,9 +86,9 @@ object Form1: TForm1
   end
   object CheckBox3: TCheckBox
     Left = 264
-    Height = 19
+    Height = 24
     Top = 96
-    Width = 79
+    Width = 94
     Caption = 'Texture map'
     Checked = True
     OnClick = CheckBox3Click
@@ -108,9 +109,9 @@ object Form1: TForm1
   end
   object CheckBox4: TCheckBox
     Left = 264
-    Height = 19
+    Height = 24
     Top = 120
-    Width = 99
+    Width = 118
     Caption = 'Modulate texture'
     Checked = True
     OnClick = CheckBox4Click
@@ -175,7 +176,7 @@ object Form1: TForm1
           end        
           item
             X = 0.40000000596046
-            Y = 0.80000001192093
+            Y = 0.80000001192092
           end        
           item
             X = 0.44999998807907
@@ -183,30 +184,30 @@ object Form1: TForm1
           end        
           item
             X = 0.25
-            Y = 0.30000001192093
+            Y = 0.30000001192092
           end        
           item
             X = 0.25
-            Y = -0.10000000149012
+            Y = -0.10000000149011
           end        
           item
-            X = 0.60000002384186
+            X = 0.60000002384185
             Y = -0.5
           end        
           item
-            X = 0.60000002384186
+            X = 0.60000002384185
             Y = -0.89999997615814
           end        
           item
-            X = 0.58999997377396
+            X = 0.58999997377395
             Y = -0.94999998807907
           end        
           item
-            X = 0.60000002384186
+            X = 0.60000002384185
             Y = -1
           end        
           item
-            X = 0.60000002384186
+            X = 0.60000002384185
             Y = -1
           end        
           item
@@ -240,4 +241,4 @@ object Form1: TForm1
     left = 8
     top = 40
   end
-end
+end

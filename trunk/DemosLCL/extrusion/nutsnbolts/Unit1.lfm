@@ -1,31 +1,63 @@
 object Form1: TForm1
-  Left = 162
-  Height = 330
-  Top = 77
+  Left = 437
+  Height = 333
+  Top = 301
   Width = 463
+  ActiveControl = GLSceneViewer1
   AutoSize = True
   BorderWidth = 3
   Caption = 'Form1'
-  ClientHeight = 330
+  ClientHeight = 333
   ClientWidth = 463
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnMouseWheel = FormMouseWheel
   LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
-    Left = 0
-    Height = 297
-    Top = 0
-    Width = 449
+    Left = 3
+    Height = 300
+    Top = 3
+    Width = 457
     Camera = GLCamera1
     Buffer.BackgroundColor = clNavy
-    FieldOfView = 142.783203125
+    FieldOfView = 143.130096435546
     OnMouseDown = GLSceneViewer1MouseDown
-    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
+  object ComboBox1: TComboBox
+    Left = 344
+    Height = 27
+    Top = 304
+    Width = 112
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'None'
+      'x2'
+      'x4'
+      'x8'
+      'x16'
+    )
+    OnChange = ComboBox1Change
+    ParentFont = False
+    TabOrder = 1
+    Text = 'None'
+  end
+  object Label1: TLabel
+    Left = 256
+    Height = 16
+    Top = 310
+    Width = 71
+    Caption = 'AntiAliasing'
+    Font.Height = -14
+    Font.Name = 'MS Sans Serif'
+    ParentColor = False
+    ParentFont = False
+  end
   object GLScene1: TGLScene
-    left = 8
+    left = 24
     top = 8
     object GLLightSource1: TGLLightSource
       TagFloat = 0
@@ -232,4 +264,25 @@ object Form1: TForm1
       top = 136
     end
   end
-end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Form1 - %FPS'
+    Options = [snoMouseWheelHandled]
+    KeyCombinations = <    
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end    
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end    
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    left = 24
+    top = 80
+  end
+end
