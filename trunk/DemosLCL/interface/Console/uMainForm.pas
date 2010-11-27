@@ -14,7 +14,7 @@ interface
 
 uses
   //VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
   ExtCtrls,
 
   //GLScene
@@ -24,17 +24,17 @@ uses
 
 type
   TMainForm = class(TForm)
-    Viewer:    TGLSceneViewer;
+    Viewer: TGLSceneViewer;
     GLCadencer1: TGLCadencer;
     Scene: TGLScene;
     GLCamera1: TGLCamera;
-    font1:     TGLWindowsBitmapFont;
-    GLCube1:   TGLCube;
+    font1: TGLWindowsBitmapFont;
+    GLCube1: TGLCube;
     GLLightSource1: TGLLightSource;
     Splitter1: TSplitter;
-    Panel1:    TPanel;
+    Panel1: TPanel;
     GroupBox1: TGroupBox;
-    ListBox1:  TListBox;
+    ListBox1: TListBox;
     Splitter2: TSplitter;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
@@ -50,7 +50,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
-    procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: integer);
     procedure FormResize(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
@@ -64,25 +65,26 @@ type
   private
     { Private declarations }
     procedure OnHelloCommand(const Sender: TGLConsoleCommand;
-     const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
+      const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
   public
     procedure OnCommand(const Sender: TGLConsoleCommand;
-     const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
+      const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
   end;
 
 var
-  MainForm:   TMainForm;
+  MainForm: TMainForm;
   Console: TGLConsole;
 
 implementation
 
-
 {$R *.lfm}
+
+uses FileUtil;
 
 procedure TMainForm.OnCommand(const Sender: TGLConsoleCommand;
   const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
 var
-  I:   integer;
+  I: integer;
   str: string;
 begin
   if Command.CommandCount = 0 then
@@ -100,13 +102,13 @@ begin
   begin
     Application.Terminate;
     Command.UnknownCommand := False; // user won't see it anyway, but you should
-                                     // get used to puting this line in every
-                                     // command you recognize :)
+    // get used to puting this line in every
+    // command you recognize :)
   end;
 
   if Command.UnknownCommand then
     Console.AddLine(' - Current supported external commands are:' +
-                    '"echo" and "exit"!');
+      '"echo" and "exit"!');
 end;
 
 
@@ -118,22 +120,31 @@ end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: integer;
 begin
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+
   Console := TGLConsole.CreateAsChild(Scene.Objects);
   Console.Visible := False;
   Console.SceneViewer := Viewer;
   Console.Font := Font1;
 
   //optional stuff:
-  Console.HudSprite.Material.Texture.Image.LoadFromFile('..\..\media\GLScene.bmp');
+  Console.HudSprite.Material.Texture.Image.LoadFromFile('GLScene.bmp');
   Console.AddLine('Console started');
   Console.HUDSpriteColor := clWhite;
   Console.FontColor := clBlue;
 
   //two ways of processing commands:
-     //1) manual
+  //1) manual
   Console.OnCommandIssued := OnCommand;
-     //2)using built-in objects (prefered)
+  //2)using built-in objects (prefered)
   with Console.Commands.Add do
   begin
     CommandName := 'hello';
@@ -244,10 +255,10 @@ begin
 end;
 
 procedure TMainForm.OnHelloCommand(const Sender: TGLConsoleCommand;
-  const Console: TGLCustomConsole;
-  var Command: TGLUserInputCommand);
+  const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
 begin
   Console.AddLine(' - Hi, dude!');
 end;
 
 end.
+

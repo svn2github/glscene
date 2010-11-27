@@ -6,7 +6,6 @@
     <General>
       <MainUnit Value="0"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
@@ -15,6 +14,9 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -23,6 +25,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -33,14 +36,16 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="GLConsoleDemo.lpr"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="31" Y="10"/>
         <UsageCount Value="20"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -53,19 +58,36 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="5"/>
-        <CursorPos X="2" Y="15"/>
+        <TopLine Value="63"/>
+        <CursorPos X="7" Y="66"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Source\GLTexture.pas"/>
+        <UnitName Value="GLTexture"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1806"/>
+        <CursorPos X="1" Y="1825"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="78" Column="25" TopLine="236"/>
+        <Caret Line="15" Column="2" TopLine="5"/>
       </Position1>
+      <Position2>
+        <Filename Value="GLConsoleDemo.lpr"/>
+        <Caret Line="10" Column="33" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="263" Column="1" TopLine="226"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -76,7 +98,7 @@
     </Target>
     <SearchPaths>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+      <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -114,4 +136,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

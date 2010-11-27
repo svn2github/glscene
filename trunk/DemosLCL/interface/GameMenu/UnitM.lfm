@@ -36,17 +36,17 @@ object Form1: TForm1
     OnResize = MainPanelResize
     object Label1: TLabel
       Left = 144
-      Height = 14
+      Height = 13
       Top = 6
-      Width = 235
+      Width = 232
       Caption = 'Press "W" or "S" to navigate or "Enter" to select '
       ParentColor = False
     end
     object ShoTitleCheckbox: TCheckBox
       Left = 8
-      Height = 19
+      Height = 22
       Top = 6
-      Width = 70
+      Width = 74
       Caption = 'Show Title'
       Checked = True
       OnClick = ShoTitleCheckboxClick
@@ -121,4 +121,4 @@ object Form1: TForm1
     left = 216
     top = 48
   end
-end
+end

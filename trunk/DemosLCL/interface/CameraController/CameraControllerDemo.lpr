@@ -3,6 +3,9 @@ program CameraControllerDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Main in 'Main.pas' {Form1};
 
@@ -12,4 +15,4 @@ begin
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;
-end.
+end.

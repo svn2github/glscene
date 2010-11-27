@@ -30,25 +30,25 @@ object Form1: TForm1
       TabOrder = 0
       object Label1: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 57
-        Width = 64
+        Width = 66
         Caption = 'Destination X'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 105
-        Width = 64
+        Width = 66
         Caption = 'Destination Y'
         ParentColor = False
       end
       object Label3: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 153
-        Width = 64
+        Width = 66
         Caption = 'Destination Z'
         ParentColor = False
       end
@@ -68,7 +68,7 @@ object Form1: TForm1
       end
       object eDestX: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 72
         Width = 121
         TabOrder = 0
@@ -76,7 +76,7 @@ object Form1: TForm1
       end
       object eDestY: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 122
         Width = 121
         TabOrder = 1
@@ -84,7 +84,7 @@ object Form1: TForm1
       end
       object eDestZ: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 168
         Width = 121
         TabOrder = 2
@@ -101,9 +101,9 @@ object Form1: TForm1
       TabOrder = 1
       object Label6: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 25
-        Width = 42
+        Width = 43
         Caption = 'Distance'
         ParentColor = False
       end
@@ -123,7 +123,7 @@ object Form1: TForm1
       end
       object eDistance: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 40
         Width = 121
         TabOrder = 0
@@ -140,7 +140,7 @@ object Form1: TForm1
       TabOrder = 2
       object Label7: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 41
         Width = 75
         Caption = 'soSafeDistance'
@@ -148,7 +148,7 @@ object Form1: TForm1
       end
       object Label8: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 137
         Width = 70
         Caption = 'soTimeToOrbit'
@@ -156,7 +156,7 @@ object Form1: TForm1
       end
       object Label10: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 89
         Width = 117
         Caption = 'soTimeToSafePlacement'
@@ -178,7 +178,7 @@ object Form1: TForm1
       end
       object Label12: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 177
         Width = 104
         Caption = 'soTimeToZoomBackIn'
@@ -186,7 +186,7 @@ object Form1: TForm1
       end
       object eSafeDistance: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 56
         Width = 121
         TabOrder = 0
@@ -194,7 +194,7 @@ object Form1: TForm1
       end
       object eTimeToSafePlacement: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 106
         Width = 121
         TabOrder = 1
@@ -202,7 +202,7 @@ object Form1: TForm1
       end
       object eTimeToOrbit: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 152
         Width = 121
         TabOrder = 2
@@ -210,7 +210,7 @@ object Form1: TForm1
       end
       object eTimeToZoomBackIn: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 192
         Width = 121
         TabOrder = 3
@@ -227,9 +227,9 @@ object Form1: TForm1
       TabOrder = 3
       object Label13: TLabel
         Left = 6
-        Height = 14
+        Height = 13
         Top = 49
-        Width = 23
+        Width = 25
         Caption = 'Time'
         ParentColor = False
       end
@@ -249,7 +249,7 @@ object Form1: TForm1
       end
       object eTime: TEdit
         Left = 6
-        Height = 21
+        Height = 22
         Top = 64
         Width = 121
         TabOrder = 0
@@ -400,9 +400,9 @@ object Form1: TForm1
     end
     object Label4: TLabel
       Left = 32
-      Height = 14
+      Height = 13
       Top = 6
-      Width = 103
+      Width = 104
       Caption = 'TGLCameraController'
       ParentColor = False
     end
@@ -562,4 +562,4 @@ object Form1: TForm1
     left = 48
     top = 80
   end
-end
+end

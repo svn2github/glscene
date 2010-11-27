@@ -11,9 +11,9 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, GLLCLViewer, GLScene, GLObjects,
-  GLVectorFileObjects, GLCameraController, GLFile3ds, GLGeomObjects, GLTexture,
+  GLVectorFileObjects, GLCameraController, GLFile3DS, GLGeomObjects, GLTexture,
   GLCadencer, StdCtrls, ComCtrls, GLMaterial, GLCoordinates, GLCrossPlatform,
   BaseClasses;
 
@@ -213,4 +213,4 @@ end;
 initialization
   DecimalSeparator := '.';
 
-end.
+end.

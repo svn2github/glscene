@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
-    <Version Value="7"/>
     <General>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
       <UseXPManifest Value="True"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
-      <StringTable ProductVersion="" CompanyName="" FileDescription="" FileVersion="" InternalName="" OriginalFilename="" ProductName=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -35,7 +37,13 @@
       <Unit0>
         <Filename Value="DemoGizmoEx.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="19" Y="8"/>
         <UsageCount Value="22"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -45,13 +53,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DemoGizmoForm"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="133"/>
         <CursorPos X="50" Y="141"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -106,18 +114,19 @@
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="DemoGizmoEx"/>
     </Target>
     <SearchPaths>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+      <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
+        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>

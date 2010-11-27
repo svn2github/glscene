@@ -37,9 +37,9 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 8
-      Height = 19
+      Height = 16
       Top = 8
-      Width = 83
+      Width = 72
       Caption = 'HeightField'
       Font.Height = -15
       Font.Name = 'Arial'
@@ -49,9 +49,9 @@ object Form1: TForm1
     end
     object Label2: TLabel
       Left = 24
-      Height = 19
+      Height = 16
       Top = 32
-      Width = 52
+      Width = 47
       Caption = 'picking'
       Font.Height = -15
       Font.Name = 'Arial'
@@ -71,9 +71,9 @@ object Form1: TForm1
     end
     object RBPaint: TRadioButton
       Left = 16
-      Height = 19
+      Height = 22
       Top = 80
-      Width = 43
+      Width = 45
       Caption = 'Paint'
       Checked = True
       TabOrder = 0
@@ -81,9 +81,9 @@ object Form1: TForm1
     end
     object RadioButton2: TRadioButton
       Left = 16
-      Height = 19
+      Height = 22
       Top = 112
-      Width = 51
+      Width = 52
       Caption = 'Rotate'
       TabOrder = 1
     end
@@ -143,4 +143,4 @@ object Form1: TForm1
       }
     end
   end
-end
+end

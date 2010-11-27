@@ -80,4 +80,4 @@ object Form1: TForm1
     left = 16
     top = 16
   end
-end
+end

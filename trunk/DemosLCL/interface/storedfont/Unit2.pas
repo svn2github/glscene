@@ -5,7 +5,7 @@ unit Unit2;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls;
 
 type
@@ -24,4 +24,4 @@ implementation
 
 {$R *.lfm}
 
-end.
+end.

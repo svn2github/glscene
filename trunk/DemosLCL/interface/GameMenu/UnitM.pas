@@ -14,12 +14,13 @@ interface
 
 uses
   // VCL
-  Windows, Messages, SysUtils, Graphics, Controls, Forms, ExtCtrls, Classes,
+  SysUtils, Graphics, Controls, Forms, ExtCtrls, Classes,
   Dialogs, StdCtrls,
 
   // GLScene
   GLScene, GLObjects, GLLCLViewer, GLGeomObjects,
-  GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture,
+  GLKeyboard, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -36,13 +37,13 @@ type
     ShoTitleCheckbox: TCheckBox;
     Label1: TLabel;
     procedure FormCreate(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+      X, Y: integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: integer);
     procedure ShoTitleCheckboxClick(Sender: TObject);
     procedure MainPanelResize(Sender: TObject);
   private
@@ -59,9 +60,20 @@ implementation
 
 {$R *.lfm}
 
+uses FileUtil, LCLType;
+
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: integer;
 begin
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\GLScene.bmp');
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('GLScene.bmp');
 
   GameMenu := TGLGameMenu(GLScene1.Objects.AddNewChild(TGLGameMenu));
   GameMenu.MaterialLibrary := GLMaterialLibrary1;
@@ -80,10 +92,12 @@ begin
   GameMenu.Position.Y := 200;
 end;
 
-procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TForm1.FormKeyPress(Sender: TObject; var Key: char);
 begin
-  if IsKeyDown('W') then GameMenu.SelectPrev;
-  if IsKeyDown('S') then GameMenu.SelectNext;
+  if IsKeyDown('W') then
+    GameMenu.SelectPrev;
+  if IsKeyDown('S') then
+    GameMenu.SelectNext;
   if IsKeyDown(VK_RETURN) then
   begin
     if GameMenu.Selected <> -1 then
@@ -91,20 +105,19 @@ begin
   end;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
   GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
   GameMenu.MouseMenuSelect(X, Y);
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 begin
   GameMenu.MouseMenuSelect(X, Y);
   if GameMenu.Selected <> -1 then
@@ -116,7 +129,7 @@ begin
   if GameMenu.TitleHeight = 0 then
     GameMenu.TitleHeight := 80
   else
-   GameMenu.TitleHeight := 0;
+    GameMenu.TitleHeight := 0;
 end;
 
 procedure TForm1.MainPanelResize(Sender: TObject);
@@ -125,3 +138,4 @@ begin
 end;
 
 end.
+

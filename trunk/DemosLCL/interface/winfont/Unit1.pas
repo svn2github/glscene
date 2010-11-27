@@ -19,7 +19,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
   GLBitmapFont, GLLCLViewer, GLWindowsFont, Menus, GLTeapot, GLCoordinates,
   GLCrossPlatform, BaseClasses;
@@ -120,4 +120,4 @@ begin
    Teapot1.Visible:=not Teapot1.Visible;
 end;
 
-end.
+end.

@@ -4,7 +4,7 @@ object Form1: TForm1
   Top = 91
   Width = 499
   Caption = 'Gui Paint'
-  ClientHeight = 426
+  ClientHeight = 419
   ClientWidth = 499
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
@@ -16,12 +16,12 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Height = 426
+    Height = 419
     Top = 0
     Width = 499
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 153.57893371582
+    FieldOfView = 153.153381347656
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -1165,4 +1165,4 @@ object Form1: TForm1
     left = 16
     top = 176
   end
-end
+end

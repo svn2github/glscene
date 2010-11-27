@@ -3,6 +3,9 @@ Program DemoGizmoEx;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   DemoGizmoForm in 'DemoGizmoForm.pas' {Form1};
 
@@ -13,4 +16,4 @@ Begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 End.
-
+

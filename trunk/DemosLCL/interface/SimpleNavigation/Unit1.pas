@@ -5,7 +5,7 @@ interface
 
 uses
   // VCL
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
 
   // GLScene
@@ -42,4 +42,4 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-end.
+end.
