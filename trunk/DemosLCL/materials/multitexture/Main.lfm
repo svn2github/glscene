@@ -1,11 +1,11 @@
 object Form1: TForm1
   Left = 144
-  Height = 409
+  Height = 427
   Top = 81
   Width = 559
   BorderStyle = bsSingle
   Caption = 'Multitexture'
-  ClientHeight = 409
+  ClientHeight = 427
   ClientWidth = 559
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
@@ -30,33 +30,33 @@ object Form1: TForm1
   end
   object Label1: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 40
-    Width = 70
+    Width = 68
     Caption = 'Texture Map 1'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 192
-    Width = 70
+    Width = 68
     Caption = 'Texture Map 2'
     ParentColor = False
   end
   object Label3: TLabel
     Left = 416
-    Height = 14
+    Height = 13
     Top = 368
-    Width = 61
+    Width = 59
     Caption = 'Map 2 Scale'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 432
-    Height = 20
+    Height = 16
     Top = 8
-    Width = 94
+    Width = 78
     Caption = 'MultiTexture'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -16
@@ -77,8 +77,8 @@ object Form1: TForm1
   end
   object TrackBar1: TTrackBar
     Left = 416
-    Height = 25
-    Top = 384
+    Height = 37
+    Top = 390
     Width = 126
     Max = 30
     Min = 5
@@ -88,9 +88,9 @@ object Form1: TForm1
   end
   object CBClampTex2: TCheckBox
     Left = 416
-    Height = 19
+    Height = 22
     Top = 344
-    Width = 97
+    Width = 101
     Caption = 'Clamp Texture 2'
     OnClick = CBClampTex2Click
     TabOrder = 2
@@ -143,4 +143,4 @@ object Form1: TForm1
     left = 480
     top = 8
   end
-end
+end

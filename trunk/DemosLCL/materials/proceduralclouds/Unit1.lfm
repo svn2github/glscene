@@ -17,8 +17,8 @@ object Form1: TForm1
     Width = 357
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
-    Buffer.BackgroundColor = clInactiveCaptionText
-    FieldOfView = 179.358032226563
+    Buffer.BackgroundColor = clSkyBlue
+    FieldOfView = 179.358032226562
     Align = alClient
     TabOrder = 0
   end
@@ -52,31 +52,31 @@ object Form1: TForm1
     end
     object Label2: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 148
-      Width = 33
+      Width = 35
       Caption = 'Format'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 180
-      Width = 61
+      Width = 63
       Caption = 'Compression'
       ParentColor = False
     end
     object Label5: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 272
-      Width = 59
+      Width = 58
       Caption = 'Render Size'
       ParentColor = False
     end
     object LAUsedMemory: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 228
       Width = 66
       Caption = 'Used Memory'
@@ -84,7 +84,7 @@ object Form1: TForm1
     end
     object LARGB32: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 212
       Width = 66
       Caption = 'Used Memory'
@@ -92,7 +92,7 @@ object Form1: TForm1
     end
     object LACompression: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 244
       Width = 66
       Caption = 'Used Memory'
@@ -100,7 +100,7 @@ object Form1: TForm1
     end
     object Label4: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 96
       Width = 37
       Caption = 'MinCut:'
@@ -108,7 +108,7 @@ object Form1: TForm1
     end
     object Label6: TLabel
       Left = 16
-      Height = 14
+      Height = 13
       Top = 72
       Width = 54
       Caption = 'Sharpness:'
@@ -148,7 +148,7 @@ object Form1: TForm1
     end
     object Label61: TLabel
       Left = 178
-      Height = 14
+      Height = 13
       Top = 336
       Width = 7
       Caption = '0'
@@ -156,10 +156,10 @@ object Form1: TForm1
     end
     object CBFormat: TComboBox
       Left = 88
-      Height = 23
+      Height = 31
       Top = 144
       Width = 105
-      ItemHeight = 13
+      ItemHeight = 0
       Items.Strings = (
         'RGB    (24 bits)'
         'RGBA  (32 bits)'
@@ -172,10 +172,10 @@ object Form1: TForm1
     end
     object CBCompression: TComboBox
       Left = 88
-      Height = 23
+      Height = 31
       Top = 176
       Width = 105
-      ItemHeight = 13
+      ItemHeight = 0
       Items.Strings = (
         'None'
         'Standard'
@@ -188,9 +188,9 @@ object Form1: TForm1
     end
     object RBDefault: TRadioButton
       Left = 16
-      Height = 19
+      Height = 22
       Top = 286
-      Width = 49
+      Width = 54
       Caption = '100 %'
       Checked = True
       OnClick = CBFormatChange
@@ -199,56 +199,56 @@ object Form1: TForm1
     end
     object RBDouble: TRadioButton
       Left = 79
-      Height = 19
+      Height = 22
       Top = 286
-      Width = 49
+      Width = 54
       Caption = '200 %'
       OnClick = CBFormatChange
       TabOrder = 3
     end
     object RBQuad: TRadioButton
       Left = 143
-      Height = 19
+      Height = 22
       Top = 286
-      Width = 49
+      Width = 54
       Caption = '400 %'
       OnClick = CBFormatChange
       TabOrder = 4
     end
     object CheckBox1: TCheckBox
       Left = 120
-      Height = 19
+      Height = 22
       Top = 120
-      Width = 64
+      Width = 70
       Caption = 'Animated'
       TabOrder = 5
     end
     object SpinEdit1: TSpinEdit
       Left = 88
-      Height = 21
+      Height = 22
       Top = 96
       Width = 105
       MaxValue = 255
       OnChange = CBFormatChange
       TabOrder = 6
-      Value = 98
+      Value = 1
     end
     object SpinEdit2: TSpinEdit
       Left = 88
-      Height = 21
+      Height = 22
       Top = 72
       Width = 105
       MaxValue = 99
       MinValue = 1
       OnChange = CBFormatChange
       TabOrder = 7
-      Value = 98
+      Value = 1
     end
     object CheckBox2: TCheckBox
       Left = 16
-      Height = 19
+      Height = 22
       Top = 120
-      Width = 65
+      Width = 70
       Caption = 'Seamless'
       Checked = True
       OnClick = CBFormatChange
@@ -257,7 +257,7 @@ object Form1: TForm1
     end
     object TrackBar1: TTrackBar
       Left = 24
-      Height = 33
+      Height = 37
       Top = 304
       Width = 150
       Min = 1
@@ -267,7 +267,7 @@ object Form1: TForm1
     end
     object CloudRandomSeedUsedEdit: TEdit
       Left = 111
-      Height = 21
+      Height = 22
       Hint = 'Cloud Random Seed'
       Top = 336
       Width = 49
@@ -276,7 +276,7 @@ object Form1: TForm1
     end
     object CloudImageSizeUsedEdit: TEdit
       Left = 95
-      Height = 21
+      Height = 22
       Hint = 'Cloud Image Size'
       Top = 264
       Width = 33
@@ -285,16 +285,16 @@ object Form1: TForm1
     end
     object UseCloudFileCB: TCheckBox
       Left = 15
-      Height = 19
+      Height = 22
       Hint = 'Use File'
       Top = 339
-      Width = 88
+      Width = 91
       Caption = 'Use Cloud File'
       TabOrder = 12
     end
     object CloudFileUsedEdit: TEdit
       Left = 55
-      Height = 21
+      Height = 22
       Top = 360
       Width = 98
       HelpContext = 50
@@ -370,4 +370,4 @@ object Form1: TForm1
     left = 460
     top = 357
   end
-end
+end

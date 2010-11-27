@@ -16,7 +16,6 @@ interface
 
 uses
   GLLCLViewer,
-  {$IFDEF WIN32} Windows,{$ENDIF}
   SysUtils, Classes, Controls, Forms, ExtCtrls,
   GLScene, GLObjects, GLTexture, GLCadencer, GLCrossPlatform, GLMaterial,
   GLCoordinates, BaseClasses, GLRenderContextInfo;
@@ -55,7 +54,7 @@ implementation
 {$R *.lfm}
 
 uses
-  GLUtils, GLContext, GLDynamicTexture;
+  GLUtils, GLContext, GLDynamicTexture, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -179,4 +178,4 @@ begin
 end;
 
 end.
-
+

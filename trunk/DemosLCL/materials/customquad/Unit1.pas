@@ -19,21 +19,27 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLLCLViewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCoordinates, BaseClasses, GLRenderContextInfo, GLSimpleNavigation;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLMaterialLibrary: TGLMaterialLibrary;
     GLCamera1: TGLCamera;
     DummyCube1: TGLDummyCube;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     Torus1: TGLTorus;
     DirectOpenGL1: TGLDirectOpenGL;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
     procedure DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure FormCreate(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Déclarations privées }
   public
@@ -75,6 +81,12 @@ begin
   end;
 end;
 
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+  GLSceneViewer1.Invalidate;
+end;
+
 procedure TForm1.DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 var
   material: TGLLibMaterial;
@@ -111,4 +123,4 @@ begin
 end;
 
 end.
-
+

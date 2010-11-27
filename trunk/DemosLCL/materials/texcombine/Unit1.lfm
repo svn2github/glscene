@@ -34,9 +34,9 @@ object Form1: TForm1
   end
   object Label1: TLabel
     Left = 8
-    Height = 20
+    Height = 17
     Top = 6
-    Width = 150
+    Width = 130
     Caption = 'Texture Combiners'
     Font.Height = -17
     Font.Name = 'Arial'
@@ -53,7 +53,7 @@ object Form1: TForm1
   end
   object Label3: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 216
     Width = 31
     Caption = 'Result'
@@ -61,7 +61,7 @@ object Form1: TForm1
   end
   object Label4: TLabel
     Left = 200
-    Height = 14
+    Height = 13
     Top = 216
     Width = 116
     Caption = 'Texture Combiners code'
@@ -69,9 +69,9 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 40
-    Width = 68
+    Width = 71
     Caption = 'Primary Color :'
     ParentColor = False
   end
@@ -84,7 +84,7 @@ object Form1: TForm1
     PostRender = SceneViewerPostRender
     Buffer.BackgroundColor = clGray
     Buffer.Lighting = False
-    FieldOfView = 121.89079284668
+    FieldOfView = 121.890792846679
     TabOrder = 0
   end
   object BUApply: TButton
@@ -140,9 +140,9 @@ object Form1: TForm1
   end
   object CBTex0: TCheckBox
     Left = 8
-    Height = 19
+    Height = 22
     Top = 64
-    Width = 44
+    Width = 45
     Caption = 'Tex0'
     Checked = True
     OnClick = CBTex0Click
@@ -151,9 +151,9 @@ object Form1: TForm1
   end
   object CBTex1: TCheckBox
     Left = 152
-    Height = 19
+    Height = 22
     Top = 64
-    Width = 44
+    Width = 45
     Caption = 'Tex1'
     Checked = True
     OnClick = CBTex0Click
@@ -162,18 +162,18 @@ object Form1: TForm1
   end
   object CBTex2: TCheckBox
     Left = 296
-    Height = 19
+    Height = 22
     Top = 64
-    Width = 44
+    Width = 45
     Caption = 'Tex2'
     OnClick = CBTex0Click
     TabOrder = 7
   end
   object CBTex3: TCheckBox
     Left = 440
-    Height = 19
+    Height = 22
     Top = 64
-    Width = 44
+    Width = 45
     Caption = 'Tex3'
     OnClick = CBTex0Click
     TabOrder = 8
@@ -318,4 +318,4 @@ object Form1: TForm1
     left = 184
     top = 16
   end
-end
+end

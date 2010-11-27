@@ -85,7 +85,7 @@ begin
   begin
     Image1.Picture.LoadFromFile('beigemarble.jpg');
     Items[0].Material.Texture.Image.Assign(Image1.Picture);
-    Image2.Picture.LoadFromFile('flare1.bmp');
+    Image2.Picture.LoadFromFile('Flare1.bmp');
     Items[1].Material.Texture.Image.Assign(Image2.Picture);
     Image3.Picture.LoadFromFile('clover.jpg');
     Items[2].Material.Texture.Image.Assign(Image3.Picture);
@@ -143,4 +143,4 @@ begin
 end;
 
 end.
-
+

@@ -1,6 +1,9 @@
 program dyntexdemo;
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, Unit1;
 
@@ -10,4 +13,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
-
+

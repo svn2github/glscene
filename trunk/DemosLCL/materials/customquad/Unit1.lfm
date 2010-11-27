@@ -57,7 +57,7 @@ object Form1: TForm1
         000000002EBD3BB3000080BF00000000
       }
       MajorRadius = 1.29999995231628
-      MinorRadius = 0.10000000149012
+      MinorRadius = 0.10000000149011
       Rings = 36
     end
     object GLLightSource1: TGLLightSource
@@ -92,7 +92,28 @@ object Form1: TForm1
     MaxDeltaTime = 0
     MinDeltaTime = 0
     FixedDeltaTime = 0
+    OnProgress = GLCadencer1Progress
     left = 8
     top = 72
   end
-end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Form1 - %FPS'
+    KeyCombinations = <    
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end    
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end    
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    left = 8
+    top = 104
+  end
+end
