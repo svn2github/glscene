@@ -28,7 +28,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLParticleFX, GLCadencer, ExtCtrls,
   GLBehaviours, StdCtrls, GLLCLViewer, GLCrossPlatform, GLCoordinates,
   BaseClasses;
@@ -102,4 +102,4 @@ begin
 end;
 
 end.
- 
+ 

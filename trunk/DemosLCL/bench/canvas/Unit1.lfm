@@ -18,17 +18,17 @@ object Form1: TForm1
   end
   object LAGLCanvas: TLabel
     Left = 8
-    Height = 14
+    Height = 13
     Top = 48
-    Width = 77
+    Width = 69
     Caption = 'GLCanvas: N/A'
     ParentColor = False
   end
   object LAGDI: TLabel
     Left = 272
-    Height = 14
+    Height = 13
     Top = 48
-    Width = 46
+    Width = 40
     Caption = 'GDI: N/A'
     ParentColor = False
   end
@@ -68,9 +68,9 @@ object Form1: TForm1
   end
   object RBPenWidth1: TRadioButton
     Left = 432
-    Height = 19
+    Height = 22
     Top = 8
-    Width = 88
+    Width = 92
     Caption = 'Pen Width = 1'
     Checked = True
     TabOrder = 3
@@ -78,9 +78,9 @@ object Form1: TForm1
   end
   object RBPenWidth2: TRadioButton
     Left = 432
-    Height = 19
+    Height = 22
     Top = 24
-    Width = 88
+    Width = 92
     Caption = 'Pen Width = 2'
     TabOrder = 4
   end
@@ -136,4 +136,4 @@ object Form1: TForm1
     left = 464
     top = 16
   end
-end
+end
