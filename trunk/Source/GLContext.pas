@@ -123,7 +123,7 @@ type
     constructor Create; reintroduce;
   end;
 
-  TTaskProcedure = procedure of object;
+  TTaskProcedure = procedure of object; register;
   TServiceContextTask = record
     Task: TTaskProcedure;
     Event: TFinishTaskEvent;
@@ -1812,7 +1812,7 @@ begin
   with FSharedContexts.LockList do
     try
       for i := 0 to Count - 1 do
-        if Items[i] <> Self then
+        if TGLContext(Items[i]) <> Self then
         begin
           Result := TGLContext(Items[i]);
           Break;

@@ -437,7 +437,7 @@ type
     function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _AddRef: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
     function _Release: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    {$ENDIF}
+    {$IFEND}
   {$Else}
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     function _AddRef: Integer; virtual; stdcall;

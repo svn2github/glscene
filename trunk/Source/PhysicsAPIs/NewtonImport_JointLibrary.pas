@@ -95,7 +95,7 @@ type
 NewtonUserJointDestructorCallback = procedure( const me : PNewtonUserJoint ); cdecl;
 PNewtonUserJointDestructorCallback = ^NewtonUserJointDestructorCallback;
 
-NewtonUserJointSubmitConstraintCallback = procedure( const me : PNewtonUserJoint; timestep : Float; threadIndex : int ); cdecl;
+NewtonUserJointSubmitConstraintCallback = procedure( const me : PNewtonUserJoint; timestep : NGDFloat; threadIndex : int ); cdecl;
 PNewtonUserJointSubmitConstraintCallback = ^NewtonUserJointSubmitConstraintCallback;
 
 BlankJointGetInfo = procedure( const me : PNewtonUserJoint; info : PNewtonJointRecord ); cdecl;
@@ -130,62 +130,62 @@ procedure CustomSetSubmitContraintCallback( const joint : PNewtonUserJoint; call
 function  CustomCreateBlankJoint( maxDof : int; const body0 : PNewtonBody; const body1 : PNewtonBody; info : BlankJointGetInfo) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CustomCreateBlankJoint'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // Kinematic control joint
-function CreateCustomKinematicController( const targetBody : PNewtonBody; attachmentPointInGlobalSpace : PFloat ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomKinematicController'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function CreateCustomKinematicController( const targetBody : PNewtonBody; attachmentPointInGlobalSpace : PNGDFloat ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomKinematicController'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 procedure CustomKinematicControllerSetPickMode( const pick : PNewtonUserJoint; mode : int); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetPickMode'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerSetMaxLinearFriction( const pick : PNewtonUserJoint; accel : Float ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetMaxLinearFriction'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerSetMaxAngularFriction( const pick : PNewtonUserJoint; alpha : Float ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetMaxAngularFriction'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerSetTargetPosit( const pick : PNewtonUserJoint; posit : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetPosit'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerSetTargetRotation( const pick : PNewtonUserJoint; rotation : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetRotation'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerSetTargetMatrix( const pick : PNewtonUserJoint; matrix : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomKinematicControllerGetTargetMatrix( const pick : PNewtonUserJoint; matrix : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerGetTargetMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerSetMaxLinearFriction( const pick : PNewtonUserJoint; accel : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetMaxLinearFriction'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerSetMaxAngularFriction( const pick : PNewtonUserJoint; alpha : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetMaxAngularFriction'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerSetTargetPosit( const pick : PNewtonUserJoint; posit : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetPosit'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerSetTargetRotation( const pick : PNewtonUserJoint; rotation : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetRotation'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerSetTargetMatrix( const pick : PNewtonUserJoint; matrix : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerSetTargetMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomKinematicControllerGetTargetMatrix( const pick : PNewtonUserJoint; matrix : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomKinematicControllerGetTargetMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // Generic 6 degree of Freedom Joint
-function  CreateCustomJoint6DOF( const pinsAndPivoChildFrame : PFloat; const pinsAndPivoParentFrame : PFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomJoint6DOF'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomJoint6DOF_SetLinearLimits( customJoint6DOF : PNewtonUserJoint; const minLinearLimits : PFloat; const maxLinearLimits : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_SetLinearLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomJoint6DOF_SetAngularLimits( customJoint6DOF : PNewtonUserJoint; const minAngularLimits : PFloat; const maxAngularLimits : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_SetAngularLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomJoint6DOF_GetLinearLimits( customJoint6DOF : PNewtonUserJoint; minLinearLimits, maxLinearLimits : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_GetLinearLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomJoint6DOF_GetAngularLimits( customJoint6DOF : PNewtonUserJoint; minAngularLimits, maxAngularLimits : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_GetAngularLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CreateCustomJoint6DOF( const pinsAndPivoChildFrame : PNGDFloat; const pinsAndPivoParentFrame : PNGDFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomJoint6DOF'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomJoint6DOF_SetLinearLimits( customJoint6DOF : PNewtonUserJoint; const minLinearLimits : PNGDFloat; const maxLinearLimits : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_SetLinearLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomJoint6DOF_SetAngularLimits( customJoint6DOF : PNewtonUserJoint; const minAngularLimits : PNGDFloat; const maxAngularLimits : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_SetAngularLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomJoint6DOF_GetLinearLimits( customJoint6DOF : PNewtonUserJoint; minLinearLimits, maxLinearLimits : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_GetLinearLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomJoint6DOF_GetAngularLimits( customJoint6DOF : PNewtonUserJoint; minAngularLimits, maxAngularLimits : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_GetAngularLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 procedure CustomJoint6DOF_SetReverseUniversal( customJoint6DOF : PNewtonUserJoint; order : int ); cdecl; external{$IFDEF __GPC__}name 'CustomJoint6DOF_SetReverseUniversal'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // Interface for a custom BallAndSocket joint with Limits
-function  CreateCustomBallAndSocket( const pinsAndPivoChildFrame : PFloat; const child : PNewtonBody; const parent : PNewtonBody) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomBallAndSocket'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure BallAndSocketSetConeAngle( ballJoint : PNewtonUserJoint; angle : Float ); cdecl; external{$IFDEF __GPC__}name 'BallAndSocketSetConeAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure BallAndSocketSetTwistAngle( ballJoint : PNewtonUserJoint; minAngle, maxAngle : Float ); cdecl; external{$IFDEF __GPC__}name 'BallAndSocketSetTwistAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CreateCustomBallAndSocket( const pinsAndPivoChildFrame : PNGDFloat; const child : PNewtonBody; const parent : PNewtonBody) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomBallAndSocket'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure BallAndSocketSetConeAngle( ballJoint : PNewtonUserJoint; angle : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'BallAndSocketSetConeAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure BallAndSocketSetTwistAngle( ballJoint : PNewtonUserJoint; minAngle, maxAngle : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'BallAndSocketSetTwistAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // Interface for a custom Hinge joint with Limits
-function  CreateCustomHinge( const pinsAndPivoChildFrame : PFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomHinge'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CreateCustomHinge( const pinsAndPivoChildFrame : PNGDFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomHinge'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 procedure HingeEnableLimits( hingeJoint : PNewtonUserJoint; state : int ); cdecl; external{$IFDEF __GPC__}name 'HingeEnableLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure HingeSetLimis( hingeJoint : PNewtonUserJoint; minAngle, maxAngle : Float ); cdecl; external{$IFDEF __GPC__}name 'HingeSetLimis'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure HingeSetLimis( hingeJoint : PNewtonUserJoint; minAngle, maxAngle : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'HingeSetLimis'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 // 2.15 - Function added - Sw
-function  HingeGetJointAngle (const hingeJoint : PNewtonUserJoint) : Float; cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  HingeGetJointAngle (const hingeJoint : PNewtonUserJoint) : NGDFloat; cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 // 2.15 - Procedure added - Sw
-procedure HingeGetPinAxis (const hingeJoint : PNewtonUserJoint; Pin : PFloat); cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure HingeGetPinAxis (const hingeJoint : PNewtonUserJoint; Pin : PNGDFloat); cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 // 2.15 - Function added - Sw
-function  HingeCalculateJointOmega (const hingeJoint : PNewtonUserJoint) : Float; cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  HingeCalculateJointOmega (const hingeJoint : PNewtonUserJoint) : NGDFloat; cdecl; external{$IFDEF __GPC__}name 'HingeGetJointAngle'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // Interface for a custom Slider joint with Limits
-function  CreateCustomSlider( const pinsAndPivoChildFrame : PFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomSlider'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CreateCustomSlider( const pinsAndPivoChildFrame : PNGDFloat; const child : PNewtonBody; const parent : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomSlider'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 procedure SliderEnableLimits( sliderJoint : PNewtonUserJoint; state : int ); cdecl; external{$IFDEF __GPC__}name 'SliderEnableLimits'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure SliderSetLimis( sliderJoint : PNewtonUserJoint; mindist, maxdist : Float ); cdecl; external{$IFDEF __GPC__}name 'SliderSetLimis'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure SliderSetLimis( sliderJoint : PNewtonUserJoint; mindist, maxdist : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'SliderSetLimis'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // player controller functions
-function  CreateCustomPlayerController( const pins : PFloat; const player : PNewtonBody; maxStairStepFactor, cushion : Float ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomPlayerController'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomPlayerControllerSetVelocity( const playerController : PNewtonUserJoint; forwardSpeed, sideSpeed, heading : Float ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerSetVelocity'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomPlayerControllerGetVisualMaTrix( const playerController : PNewtonUserJoint; matrix : PFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerGetVisualMaTrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-function  CustomPlayerControllerGetMaxSlope( const playerController : PNewtonUserJoint ) : Float; cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerGetMaxSlope'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure CustomPlayerControllerSetMaxSlope( const playerController : PNewtonUserJoint; maxSlopeAngleIndRadian : Float ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerSetMaxSlope'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CreateCustomPlayerController( const pins : PNGDFloat; const player : PNewtonBody; maxStairStepFactor, cushion : NGDFloat ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'CreateCustomPlayerController'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomPlayerControllerSetVelocity( const playerController : PNewtonUserJoint; forwardSpeed, sideSpeed, heading : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerSetVelocity'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomPlayerControllerGetVisualMaTrix( const playerController : PNewtonUserJoint; matrix : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerGetVisualMaTrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  CustomPlayerControllerGetMaxSlope( const playerController : PNewtonUserJoint ) : NGDFloat; cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerGetMaxSlope'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure CustomPlayerControllerSetMaxSlope( const playerController : PNewtonUserJoint; maxSlopeAngleIndRadian : NGDFloat ); cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerSetMaxSlope'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 function  CustomPlayerControllerGetSensorShape( const playerController : PNewtonUserJoint ) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'CustomPlayerControllerGetSensorShape'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 // k00m (Dave Gravel simple ray cast world vehicle)
-function  DGRaycastVehicleCreate( maxTireCount : int; const cordenateSytemInLocalSpace : PFloat; carBody : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleCreate'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure DGRaycastVehicleAddTire( car : PNewtonUserJoint; userData : Pointer; const localPosition : PFloat; mass, radius, width, friction, suspensionLength, springConst, springDamper : Float; castMode : int ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleAddTire'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+function  DGRaycastVehicleCreate( maxTireCount : int; const cordenateSytemInLocalSpace : PNGDFloat; carBody : PNewtonBody ) : PNewtonUserJoint; cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleCreate'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure DGRaycastVehicleAddTire( car : PNewtonUserJoint; userData : Pointer; const localPosition : PNGDFloat; mass, radius, width, friction, suspensionLength, springConst, springDamper : NGDFloat; castMode : int ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleAddTire'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 procedure DGRaycastVehicleSetTireTransformCallback( car : PNewtonUserJoint; callback : DGRaycastVehicleTireTransformCallback ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleSetTireTransformCallback'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 function  DGRaycastVehicleGetTiresCount( car : PNewtonUserJoint ) : int; cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleGetTiresCount'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 function  DGRaycastVehicleGetTiresUserData( car : PNewtonUserJoint; tireIndex : int ) : Pointer; cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleGetTiresUserData'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure DGRaycastVehicleGetTireMatrix( car : PNewtonUserJoint; tireIndex : int; tireMatrix : PFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleGetTireMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure DGRaycastVehicleGetTireMatrix( car : PNewtonUserJoint; tireIndex : int; tireMatrix : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleGetTireMatrix'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
-procedure DGRaycastVehicleInitNormalizeTireLateralForce( car : PNewtonUserJoint; pointsCount : int; piceSizeStepAxis : PFloat; normalizedForceValue : PFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleInitNormalizeTireLateralForce'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
-procedure DGRaycastVehicleInitNormalizeTireLongitudinalForce( car : PNewtonUserJoint; pointsCount : int; piceSizeStepAxis : PFloat; normalizedForceValue : PFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleInitNormalizeTireLongitudinalForce'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure DGRaycastVehicleInitNormalizeTireLateralForce( car : PNewtonUserJoint; pointsCount : int; piceSizeStepAxis : PNGDFloat; normalizedForceValue : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleInitNormalizeTireLateralForce'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
+procedure DGRaycastVehicleInitNormalizeTireLongitudinalForce( car : PNewtonUserJoint; pointsCount : int; piceSizeStepAxis : PNGDFloat; normalizedForceValue : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'DGRaycastVehicleInitNormalizeTireLongitudinalForce'{$ELSE}JointLibraryDLL{$ENDIF __GPC__};
 
 implementation
 

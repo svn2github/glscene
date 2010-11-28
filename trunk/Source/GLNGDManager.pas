@@ -50,6 +50,12 @@ unit GLNGDManager;
 
 interface
 
+{$I GLScene.inc}
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 uses
   NewtonImport, NewtonImport_JointLibrary // Newton
   , VectorGeometry // PVector TVector TMatrix PMatrix NullHmgVector...
@@ -58,7 +64,7 @@ uses
   , Classes // TComponent Tlist TWriter TReader
   , PersistentClasses, XCollection // TPersistent TXCollection
   , SysUtils // IntToStr  for material in render
-  , GLScene, GLManager, GLCrossPlatform, GLCoordinates //
+  , BaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
   , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
   , OpenGLTokens, GLRenderContextInfo, GLContext, GLTextureFormat
   // Base OpenGL
@@ -80,7 +86,7 @@ type
   TMaterialHitEvent = procedure(obj0, obj1: TGLBaseSceneObject;
     id0, id1: Integer) of object;
   TContactProcessEvent = procedure(NGDMaterialPair: TNGDMaterialPair;
-    contact: PNewtonJoint; timestep: Float) of object;
+    contact: PNewtonJoint; timestep: NGDFloat) of object;
 
   { Class }
   TGLNGDManager = class(TComponent)
@@ -790,18 +796,18 @@ type
 procedure NewtonBodyIterator(const body: PNewtonBody); cdecl;
 
 function NewtonGetBuoyancyPlane(const collisionID: Integer; context: Pointer;
-  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): Integer; cdecl;
+  const globalSpaceMatrix: PNGDFloat; globalSpacePlane: PNGDFloat): Integer; cdecl;
 
-procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: Float;
+procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: NGDFloat;
   threadIndex: Integer); cdecl;
 
 procedure NewtonSetTransform(const body: PNewtonBody;
-  const matrix: NewtonImport.PFloat; threadIndex: Integer); cdecl;
+  const matrix: PNGDFloat; threadIndex: Integer); cdecl;
 
 procedure NewtonBodyDestructor(const body: PNewtonBody); cdecl;
 
 procedure NewtonCollisionIterator(const body: PNewtonBody;
-  VertexCount: Integer; const FaceArray: PFloat; FaceId: Integer); cdecl;
+  VertexCount: Integer; const FaceArray: PNGDFloat; FaceId: Integer); cdecl;
 
 procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: Integer);
   cdecl;
@@ -810,7 +816,7 @@ function NewtonOnAABBOverlap(const material: PNewtonMaterial;
   const body0: PNewtonBody; const body1: PNewtonBody;
   threadIndex: Integer): Integer; cdecl;
 
-procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: Float;
+procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: NGDFloat;
   threadIndex: Integer); cdecl;
 
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
@@ -841,7 +847,7 @@ implementation
 // Prefering iterate BehaviorsList from Manager
 // Do nothing for the moment
 // Called by manager with CallBodyIterator.
-procedure NewtonBodyIterator(const body: PNewtonBody);
+procedure NewtonBodyIterator(const body: PNewtonBody); cdecl;
 begin
   // NewtonBodySetFreezeState(body, 1);
 end;
@@ -850,7 +856,7 @@ end;
 // waterplane equation. For the moment the plane is the same for everybody.
 // This function could be used to create physics waves in the futur.
 function NewtonGetBuoyancyPlane(const collisionID: Integer; context: Pointer;
-  const globalSpaceMatrix: PFloat; globalSpacePlane: PVector): Integer;
+  const globalSpaceMatrix: PNGDFloat; globalSpacePlane: PNGDFloat): Integer; cdecl;
 var
   NGDManager: TGLNGDManager;
 begin
@@ -859,21 +865,21 @@ begin
   // When the parameter buoyancyPlane is set to NULL, the body is considered
   // to completely immersed in the fluid. This can be used to simulate boats
   // and lighter than air vehicles etc..
-  NGDManager := context;
-  globalSpacePlane^ := (NGDManager.FWaterPlane.AsVector);
+  NGDManager := TGLNGDManager(context);
+  PVector(globalSpacePlane)^ := (NGDManager.FWaterPlane.AsVector);
   Result := 1; // Boolean, 1 to apply Buoyancy, 0 to ignore
 end;
 
 // Called after Manager.Step, Runtime only
-procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: Float;
-  threadIndex: Integer);
+procedure NewtonApplyForceAndTorque(const body: PNewtonBody; timestep: NGDFloat;
+  threadIndex: Integer); cdecl;
 var
   NGDDynamicBody: TGLNGDDynamic;
   Gravity: TVector;
   DensityCorrection, FluidDensity: Single;
   // forceout: TVector;
 begin
-  NGDDynamicBody := NewtonBodyGetUserData(body);
+  NGDDynamicBody := TGLNGDDynamic(NewtonBodyGetUserData(body));
 
   // Read Only: We get the force and torque resulting from
   // every interaction on this body
@@ -925,12 +931,12 @@ end;
 
 // Runtime Only
 procedure NewtonSetTransform(const body: PNewtonBody;
-  const matrix: NewtonImport.PFloat; threadIndex: Integer);
+  const matrix: PNGDFloat; threadIndex: Integer); cdecl;
 var
   NGDDynamicBody: TGLNGDDynamic;
   ObjScale: TVector;
 begin
-  NGDDynamicBody := NewtonBodyGetUserData(body);
+  NGDDynamicBody := TGLNGDDynamic(NewtonBodyGetUserData(body));
 
   // The Newton API does not support scale [scale modifie value in matrix],
   // so this line reset scale of the glsceneObject to (1,1,1)
@@ -951,7 +957,7 @@ begin
 end;
 
 // This API Callback is set by default, but do nothing for the moment.
-procedure NewtonBodyDestructor(const body: PNewtonBody);
+procedure NewtonBodyDestructor(const body: PNewtonBody); cdecl;
 begin
   //
 end;
@@ -959,7 +965,7 @@ end;
 // The Manager use this CallBack from RenderEvent procedure
 // in Runtime and design time
 procedure NewtonCollisionIterator(const body: PNewtonBody;
-  VertexCount: Integer; const FaceArray: PFloat; FaceId: Integer);
+  VertexCount: Integer; const FaceArray: PNGDFloat; FaceId: Integer); cdecl;
 var
   I: Integer;
   v0, v1: array [0 .. 2] of Single;
@@ -989,7 +995,7 @@ end;
 // API Callback, When NewtonBody Leave the NewtonWorld
 // [size of NewtonWorld Defined in manager]
 // Do nothing for the moment
-procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: Integer);
+procedure NewtonBodyLeaveWorld(const body: PNewtonBody; threadIndex: Integer); cdecl;
 begin
   // When The body is leaving the world we change its freezestate to make
   // debuggin color more clear in mind.
@@ -1002,16 +1008,16 @@ end;
 
 // API Callback Runtime Only. Raise two even if the application want to
 // apply special effect like conveyor...
-procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: Float;
-  threadIndex: Integer);
+procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: NGDFloat;
+  threadIndex: Integer); cdecl;
 var
   NGDMaterialPair: TNGDMaterialPair;
   obj0, obj1: TGLBaseSceneObject;
   NGDBehaviour: TGLNGDBehaviour;
 begin
 
-  NGDMaterialPair := NewtonMaterialGetMaterialPairUserData
-    (NewtonContactGetMaterial(NewtonContactJointGetFirstContact(contact)));
+  NGDMaterialPair := TNGDMaterialPair(NewtonMaterialGetMaterialPairUserData
+    (NewtonContactGetMaterial(NewtonContactJointGetFirstContact(contact))));
 
   // Raise material's event when two Bodies Collide
   with (NGDMaterialPair) do
@@ -1021,9 +1027,9 @@ begin
   end;
 
   // Raise manager's event when two Bodies Collide
-  NGDBehaviour := NewtonBodyGetUserData(NewtonJointGetBody0(contact));
+  NGDBehaviour := TGLNGDBehaviour(NewtonBodyGetUserData(NewtonJointGetBody0(contact)));
   obj0 := NGDBehaviour.OwnerBaseSceneObject;
-  NGDBehaviour := NewtonBodyGetUserData(NewtonJointGetBody1(contact));
+  NGDBehaviour := TGLNGDBehaviour(NewtonBodyGetUserData(NewtonJointGetBody1(contact)));
   obj1 := NGDBehaviour.OwnerBaseSceneObject;
   with (NGDMaterialPair.FManager) do
   begin
@@ -1036,7 +1042,7 @@ end;
 // This function can be used to get or set information of body and behaviors.
 function NewtonOnAABBOverlap(const material: PNewtonMaterial;
   const body0: PNewtonBody; const body1: PNewtonBody;
-  threadIndex: Integer): Integer;
+  threadIndex: Integer): Integer; cdecl;
 begin
   // Boolean, if 1, continue
   // if 0, the two body won't collide and will go trough each other.
@@ -1047,13 +1053,13 @@ end;
 // It's better to save/load big collisions [over 50000 polygones] to reduce
 // loading time
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
-  size: size_t);
+  size: size_t); cdecl;
 begin
   TFileStream(serializeHandle).write(buffer^, size);
 end;
 
 procedure NewtonDeserialize(serializeHandle: Pointer; buffer: Pointer;
-  size: size_t);
+  size: size_t); cdecl;
 begin
   TFileStream(serializeHandle).read(buffer^, size);
 end;
@@ -1082,10 +1088,9 @@ var
 begin
   Result := nil;
   for I := 0 to vGLNGDObjectRegister.Count - 1 do
-    if TGLBaseSceneObject(vGLNGDObjectRegister[I])
-      .GetNamePath = anObjectName then
+    if TGLBaseSceneObject(vGLNGDObjectRegister[I]).GetNamePath = anObjectName then
     begin
-      Result := vGLNGDObjectRegister[I];
+      Result := TGLBaseSceneObject(vGLNGDObjectRegister[I]);
       exit;
     end;
 end;
@@ -1638,7 +1643,7 @@ begin
   else if (SceneObject is TGLCone) then
   begin
     FCollisionOffsetMatrix := MatrixMultiply(FCollisionOffsetMatrix,
-      CreateRotationMatrixZ(DegToRad(90)));
+      CreateRotationMatrixZ(Pi/2.0));
     with (SceneObject as TGLCone) do
       Result := NewtonCreateCone(FManager.FNewtonWorld, BottomRadius, Height,
         0, @FCollisionOffsetMatrix);
@@ -1647,7 +1652,7 @@ begin
   else if (SceneObject is TGLCapsule) then
   begin
     FCollisionOffsetMatrix := MatrixMultiply(FCollisionOffsetMatrix,
-      CreateRotationMatrixY(DegToRad(90)));
+      CreateRotationMatrixY(Pi/2.0));
     with (SceneObject as TGLCapsule) do
       // Use Cylinder shape for buoyancy
       Result := NewtonCreateCapsule(FManager.FNewtonWorld, radius,
@@ -1657,7 +1662,7 @@ begin
   else if (SceneObject is TGLCylinder) then
   begin
     FCollisionOffsetMatrix := MatrixMultiply(FCollisionOffsetMatrix,
-      CreateRotationMatrixZ(DegToRad(90)));
+      CreateRotationMatrixZ(Pi/2.0));
     with (SceneObject as TGLCylinder) do
       Result := NewtonCreateCylinder(FManager.FNewtonWorld, BottomRadius,
         Height, 0, @FCollisionOffsetMatrix);
