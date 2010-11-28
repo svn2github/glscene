@@ -7,7 +7,7 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="C:\GLScene SVN\glscene\trunk\Source\PhysicsAPIs\;C:\GLScene SVN\glscene\trunk\Source\;C:\GLScene SVN\glscene\trunk\Source\DesignTime\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\PhysicsAPIs\;..\Source\DesignTime\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
