@@ -13,6 +13,7 @@
   objects can be found GLGeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>29/06/10 - Yar - Added loColorLogicXor to TGLLines.Options
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -2057,6 +2058,7 @@ begin
   n := FPositions.Count;
   if n = 0 then
     Exit;
+
   case FColors.Count of
     0:
       GL.Color4f(1, 1, 1, 1);
@@ -2068,6 +2070,9 @@ begin
     GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
     GL.EnableClientState(GL_COLOR_ARRAY);
   end;
+  if FColors.Count < 2 then
+    GL.DisableClientState(GL_COLOR_ARRAY);
+
   rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
@@ -2078,6 +2083,7 @@ begin
   else
     GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
   GL.EnableClientState(GL_VERTEX_ARRAY);
+
   if NoZWrite then
     rci.GLStates.DepthWriteMask := False;
   rci.GLStates.PointSize := FSize;
