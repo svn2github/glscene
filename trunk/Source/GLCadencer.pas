@@ -6,6 +6,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
       <li>21/11/09 - DaStr - Bugfixed FSubscribedCadenceableComponents
                              (thanks Roshal Sasha)
       <li>09/11/09 - DaStr - Improved FPC compatibility
@@ -277,7 +278,7 @@ type
         procedure WndProc(var Msg: TMessage);
         {$ENDIF}
       {$ELSE}
-      FMessageTime : LongInt;
+      FMessageTime : LongWord;
       {$ENDIF}
     public
       {$IFDEF FPC}
