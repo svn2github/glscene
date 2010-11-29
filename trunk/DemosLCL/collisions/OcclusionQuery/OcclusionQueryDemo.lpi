@@ -28,24 +28,26 @@
         <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value="GLScene_DesignTime"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="OcclusionQueryDemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="19" Y="8"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="6" Y="10"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -56,11 +58,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <EditorIndex Value="0"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4"/>
-        <CursorPos X="3" Y="23"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="39"/>
+        <CursorPos X="1" Y="57"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -69,13 +72,22 @@
         <Filename Value="..\..\..\Source\GLContext.pas"/>
         <UnitName Value="GLContext"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2502"/>
-        <CursorPos X="1" Y="2516"/>
+        <TopLine Value="1314"/>
+        <CursorPos X="10" Y="1244"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
+        <UnitName Value="GLPipelineTransformation"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="2" Y="16"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="Unit1.pas"/>
         <Caret Line="163" Column="27" TopLine="150"/>
@@ -88,6 +100,22 @@
         <Filename Value="Unit1.pas"/>
         <Caret Line="130" Column="10" TopLine="106"/>
       </Position3>
+      <Position4>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="23" Column="3" TopLine="26"/>
+      </Position4>
+      <Position5>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="93" Column="1" TopLine="95"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="86" Column="3" TopLine="60"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="83" Column="1" TopLine="60"/>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
