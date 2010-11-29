@@ -123,7 +123,7 @@ type
     constructor Create; reintroduce;
   end;
 
-  TTaskProcedure = procedure of object; register;
+  TTaskProcedure = procedure of object; stdcall;
   TServiceContextTask = record
     Task: TTaskProcedure;
     Event: TFinishTaskEvent;
@@ -1194,7 +1194,7 @@ type
 
     {: Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
-    procedure QueueTaskDepleted;
+    procedure QueueTaskDepleted; {$IFDEF FPC}register;{$ENDIF}
 
     property ServiceContext: TGLContext read FServiceContext;
 {$IFDEF GLS_MULTITHREAD}
@@ -1293,7 +1293,7 @@ type
     FReported: Boolean;
   protected
     procedure Execute; override;
-    procedure DoCreateServiceContext;
+    procedure DoCreateServiceContext; stdcall;
   public
     constructor Create;
     destructor Destroy; override;
@@ -4704,7 +4704,7 @@ begin
   inherited;
 end;
 
-procedure TServiceContextThread.DoCreateServiceContext;
+procedure TServiceContextThread.DoCreateServiceContext; stdcall;
 
   procedure Fail;
   begin

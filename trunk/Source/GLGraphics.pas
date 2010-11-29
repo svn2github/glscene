@@ -84,6 +84,7 @@ unit GLGraphics;
 interface
 
 {$I GLScene.inc}
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -198,10 +199,10 @@ type
 
     function GetData: PGLPixel32Array; virtual;
     function NewEvent: TFinishTaskEvent;
-    procedure CrossToCubemapTask;
-    procedure SurfaceToVolumeTask;
-    procedure NarrowThreadTask;
-    procedure GenerateMipmapTask;
+    procedure CrossToCubemapTask; stdcall;
+    procedure SurfaceToVolumeTask; stdcall;
+    procedure NarrowThreadTask; stdcall;
+    procedure GenerateMipmapTask; stdcall;
   private
     S2Vrow, s2Vcol: Integer;
     S2Vflag: Boolean;
@@ -285,9 +286,9 @@ type
 {$IFDEF GLS_MULTITHREAD}
     FImageStream: TGLTextureImageStream;
     fTextureSwizzle: TGLTextureSwizzle;
-    procedure ImageStreamingTask;
+    procedure ImageStreamingTask; stdcall;
 {$ENDIF GLS_MULTITHREAD}
-    procedure DataConvertTask;
+    procedure DataConvertTask; stdcall;
   protected
     { Protected Declarations }
     procedure SetWidth(val: Integer);
@@ -428,7 +429,7 @@ type
     {: Check and cast image format.
        Luminance, Alpha and Intensity casting into Red or RedGreen
        for favor forward texture format, but saving backward compatibility.<p> }
-    procedure Uniformat;
+    procedure Uniformat; stdcall;
     property TextureSwizzle: TGLTextureSwizzle read fTextureSwizzle;
 {$ENDIF GLS_MULTITHREAD}
   end;

@@ -70,14 +70,14 @@ uses
 
 const
 {$IFDEF WIN32}
-   JointLibraryDLL = 'dJointLibrary.dll';
+  JointLibraryDLL = 'dJointLibrary.dll';
 {$ENDIF}
 
 {$IFDEF UNIX}
 {$IFDEF DARWIN} // MacOS X
-  //JointLibraryDLL = 'libnewton.dylib';
+  JointLibraryDLL = 'libnewton.dylib';
 {$ELSE}
-  //JointLibraryDLL = 'libnewton.so';
+  JointLibraryDLL = 'libnewton.so';
 {$ENDIF}
 {$ENDIF}
 
@@ -189,4 +189,4 @@ procedure DGRaycastVehicleInitNormalizeTireLongitudinalForce( car : PNewtonUserJ
 
 implementation
 
-end.
+end.

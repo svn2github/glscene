@@ -66,9 +66,9 @@ uses
   , SysUtils // IntToStr  for material in render
   , BaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
   , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
-  , OpenGLTokens, GLRenderContextInfo, GLContext, GLTextureFormat
+  , OpenGLTokens, GLRenderContextInfo, GLTextureFormat
   // Base OpenGL
-  , GLColor, GLBitmapFont, GLState // For show debug
+  , GLColor, GLBitmapFont, GLContext, GLState // For show debug
   , GLFile3DS;
 
 type
@@ -820,10 +820,10 @@ procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: NGDFloat;
   threadIndex: Integer); cdecl;
 
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
-  size: size_t); cdecl;
+  size: TNGDsize); cdecl;
 
 procedure NewtonDeserialize(serializeHandle: Pointer; buffer: Pointer;
-  size: size_t); cdecl;
+  size: TNGDsize); cdecl;
 
 // GLNGDObject register methods (used for joint object persistence)
 procedure RegisterGLSceneObject(anObject: TGLBaseSceneObject);
@@ -1053,13 +1053,13 @@ end;
 // It's better to save/load big collisions [over 50000 polygones] to reduce
 // loading time
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
-  size: size_t); cdecl;
+  size: TNGDsize); cdecl;
 begin
   TFileStream(serializeHandle).write(buffer^, size);
 end;
 
 procedure NewtonDeserialize(serializeHandle: Pointer; buffer: Pointer;
-  size: size_t); cdecl;
+  size: TNGDsize); cdecl;
 begin
   TFileStream(serializeHandle).read(buffer^, size);
 end;
@@ -3892,4 +3892,4 @@ UnregisterXCollectionItemClass(TNGDCustomJointSlider);
 
 // CloseNGD;
 
-end.
+end.

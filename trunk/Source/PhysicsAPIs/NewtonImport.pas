@@ -49,11 +49,11 @@ uses
 
 {$IFDEF UNIX}
 {$IFDEF FPC}
+  LCLType,
 {$IFDEF Ver1_0}
   linux,
 {$ELSE}
   pthreads,
-  baseunix,
   unix,
 {$ENDIF}
   x,
@@ -170,10 +170,11 @@ type
   PLong = ^Long;
   PUnsigned_long = ^Unsigned_long;
   PUnsigned_int = ^Unsigned_int;
-{$IFDEF Delphi}
+{$IFDEF DELPHI}
   size_t = Cardinal;
 {$ENDIF}
-  Psize_t = ^size_t;
+  TNGDsize = size_t;
+  PNGDsize = ^size_t;
   PLong_double = ^Long_double;
   PCharArray = ^CharArray;
 
@@ -1214,4 +1215,4 @@ procedure NewtonMeshGetFacePointIndices (const mesh : PNewtonMesh; const face : 
 implementation
 
 end.
-
+

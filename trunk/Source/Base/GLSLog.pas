@@ -8,7 +8,8 @@
   To obtain it, call UserLog() function from any unit.<p>
 
   <b>Historique : </b><font size=-1><ul>
-      <li>18/11/10 - Yar - Bugfixed overflowing log by error message in design time
+
+      <li>29/11/10 - Yar - Added log raising in Linux
       <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
                              Fixed unit description  
       <li>07/09/10 - Yar - Added Enabled property to TLogSession
@@ -39,7 +40,7 @@ uses
 {$ENDIF}
   Classes, SysUtils, Dialogs, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} ,ShellApi {$ENDIF}
-  ;
+{$IFDEF LINUX} ,Process {$ENDIF} ;
 
 type
   {: Levels of importance of log messages }
@@ -365,6 +366,10 @@ end;
 {$ENDIF}
 
 destructor TLogSession.Shutdown;
+{$IFDEF LINUX}
+var
+  lProcess: TProcess;
+{$ENDIF}
 begin
 {$IFNDEF GLS_LOGGING}
   if Self = GLSLogger then
@@ -386,6 +391,15 @@ begin
         PChar(LogFileName),
         nil,
         1);
+{$ENDIF}
+{$IFDEF LINUX}
+  if LogKindCount[lkFatalError] + LogKindCount[lkError] > 0 then
+  begin
+    lProcess := TProcess.Create(nil);
+    lProcess.CommandLine := 'gedit '+LogFileName;
+    lProcess.Execute;
+    lProcess.Destroy;
+  end;
 {$ENDIF}
   if Self = GLSLogger then
     GLSLogger := nil;
@@ -468,23 +482,7 @@ begin
   CloseFile(LogFile);
   Inc(LogKindCount[Level]);
   if llMessageLimit[Level] = LogKindCount[Level] then
-  begin
-    if not IsDesignTime then
-    begin
-      // Show information (window)
-      MessageDlg('Exceeded the number of messages in log!', mtError, [mbOk], 0);
-{$IFDEF MSWINDOWS}
-      ShellExecute(
-        0,
-        'open',
-        'C:\WINDOWS\notepad.exe',
-        PChar(LogFileName),
-        nil,
-        1);
-{$ENDIF}
-      Halt;
-    end;
-  end;
+    Halt;
 end;
 
 initialization
@@ -498,4 +496,4 @@ initialization
 finalization
   GLSLogger.Shutdown;
 
-end.
+end.
