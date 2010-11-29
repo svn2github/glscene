@@ -62,6 +62,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     GLCone1: TGLCone;
+    CheckBox1: TCheckBox;
     procedure OGLBeginQueriesRender(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure OGLEndQueriesRender(Sender: TObject;
@@ -81,6 +82,7 @@ var
   Form1: TForm1;
   TimerQuery: TGLTimerQueryHandle;
   OcclusionQuery: TGLOcclusionQueryHandle;
+  bOcclusionQuery: TGLBooleanOcclusionQueryHandle;
 
   queriesCreated: boolean;
   timerQuerySupported: Boolean;
@@ -97,6 +99,7 @@ begin
   // Delete the queries
   TimerQuery.Free;
   OcclusionQuery.Free;
+  bOcclusionQuery.Free;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -130,6 +133,10 @@ begin
   if not queriesCreated then
   begin
     OcclusionQuery := TGLOcclusionQueryHandle.CreateAndAllocate();
+    CheckBox1.Enabled := TGLBooleanOcclusionQueryHandle.IsSupported;
+    if CheckBox1.Enabled then
+      bOcclusionQuery := TGLBooleanOcclusionQueryHandle.CreateAndAllocate();
+
     timerQuerySupported := TGLTimerQueryHandle.IsSupported;
     if timerQuerySupported then
       TimerQuery := TGLTimerQueryHandle.CreateAndAllocate();
@@ -139,14 +146,23 @@ begin
 
   if timerQuerySupported then
     TimerQuery.BeginQuery;
-  OcclusionQuery.BeginQuery;
+  if CheckBox1.Checked then
+    bOcclusionQuery.BeginQuery
+  else
+    OcclusionQuery.BeginQuery;
 end;
 
 procedure TForm1.OGLEndQueriesRender(Sender: TObject;
   var rci: TRenderContextInfo);
+var
+  lQuery: TGLQueryHandle;
 begin
   // End the timer + occlusion queries
-  OcclusionQuery.EndQuery;
+  if CheckBox1.Checked then
+    lQuery := bOcclusionQuery
+  else
+    lQuery := OcclusionQuery;
+  lQuery.EndQuery;
   if timerQuerySupported then
     TimerQuery.EndQuery;
 
@@ -154,7 +170,7 @@ begin
   //  + updating the captions every frame, but as this is a demo, we want to
   // see what is going on.
 
-  while not OcclusionQuery.IsResultAvailable do
+  while not lQuery.IsResultAvailable do
     { wait }; // would normally do something in this period before checking if
   // result is available
 
@@ -171,11 +187,17 @@ begin
     // timeTaken := TimerQuery.QueryResultUInt64;
   end;
 
-  label2.caption := 'Number of test pixels visible: ' + IntToStr(samplesPassed);
-  if samplesPassed = 0 then
-    label3.Visible := true
-  else
-    label3.Visible := false;
+  case CheckBox1.Checked of
+    True:
+    begin
+      label3.Visible := not lQuery.QueryResultBool;
+    end;
+    False:
+    begin
+      label3.Visible := (samplesPassed = 0);
+      label2.caption := 'Number of test pixels visible: ' + IntToStr(samplesPassed);
+    end;  
+  end;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);

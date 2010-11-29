@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 194
   Top = 119
-  Width = 701
-  Height = 579
   Caption = 'Form1'
+  ClientHeight = 545
+  ClientWidth = 693
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,36 +18,36 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 41
-    Width = 685
-    Height = 500
+    Width = 693
+    Height = 504
     Camera = GLCamera1
-    FieldOfView = 157.380142211914100000
+    FieldOfView = 157.555084228515600000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 685
+    Width = 693
     Height = 41
     Align = alTop
     TabOrder = 1
     object Label1: TLabel
-      Left = 32
+      Left = 112
       Top = 3
       Width = 31
       Height = 13
       Caption = 'Label1'
     end
     object Label2: TLabel
-      Left = 32
+      Left = 112
       Top = 22
       Width = 31
       Height = 13
       Caption = 'Label2'
     end
     object Label3: TLabel
-      Left = 232
+      Left = 288
       Top = 1
       Width = 389
       Height = 39
@@ -58,6 +58,15 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+    end
+    object CheckBox1: TCheckBox
+      Left = 9
+      Top = 2
+      Width = 97
+      Height = 17
+      Caption = 'Boolean test'
+      Enabled = False
+      TabOrder = 0
     end
   end
   object GLScene1: TGLScene
@@ -90,7 +99,7 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
       object GLTorus1: TGLTorus
         Material.FrontProperties.Ambient.Color = {0000803F00000000000000000000803F}
-        MajorRadius = 0.400000005960464500
+        MajorRadius = 0.400000005960464400
         MinorRadius = 0.100000001490116100
       end
       object GLCone1: TGLCone
