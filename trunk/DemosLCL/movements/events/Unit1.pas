@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Graphics, Controls, Forms, GLScene, GLObjects, GLTexture,
-  GLCadencer, StdCtrls, ComCtrls, GLLCLViewer, GLTimeEventsMgr, ExtCtrls,
+  GLCadencer, ComCtrls, GLLCLViewer, GLTimeEventsMgr, ExtCtrls,
   GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
@@ -77,4 +77,4 @@ begin
    cube3.RollAngle:=event.TickCount/200*90;
 end;
 
-end.
+end.

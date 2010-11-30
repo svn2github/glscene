@@ -17,7 +17,7 @@ interface
 
 uses
   // VCL
-  Windows, Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
+  Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
 
   // GLScene
   GLCadencer, GLLCLViewer, GLKeyboard, VectorGeometry, GLGeomObjects,
@@ -80,8 +80,9 @@ var
 
 implementation
 
-
 {$R *.lfm}
+
+uses LCLType;
 
 procedure TForm1.CheckControls(DeltaTime, newtime: Double);
 var
@@ -248,4 +249,4 @@ begin
 end;
 
 end.
-
+

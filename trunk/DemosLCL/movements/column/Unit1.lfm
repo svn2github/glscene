@@ -34,8 +34,8 @@ object Form1: TForm1
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    left = 8
-    top = 8
+    left = 24
+    top = 16
     object DummyCube1: TGLDummyCube
       TagFloat = 0
       PitchAngle = 0
@@ -55,8 +55,8 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    left = 8
-    top = 40
+    left = 24
+    top = 72
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
@@ -64,7 +64,7 @@ object Form1: TForm1
     MinDeltaTime = 0
     FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    left = 8
-    top = 72
+    left = 24
+    top = 128
   end
-end
+end

@@ -3,8 +3,11 @@ program SmoothNavigatorDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  uMainForm in 'uMainForm.pas', glscene_runtime {Form1};
+  uMainForm in 'uMainForm.pas';
 
 {$R *.res}
 
@@ -12,4 +15,4 @@ begin
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;
-end.
+end.
