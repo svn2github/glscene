@@ -45,7 +45,8 @@ type
     FDisplay: PDisplay;
     FCurScreen: Integer;
     FDC: GLXDrawable;
-    FRC, FShareContext: GLXContext;
+    FRC: GLXContext;
+    FShareContext: TGLGLXContext;
     FHPBUFFER: GLXPBuffer;
     FCurXWindow: HWND;
     FiAttribs: packed array of Integer;
@@ -56,6 +57,7 @@ type
     procedure DestroyTmpWnd(AWin: TWindow);
     procedure CreateOldContext;
     procedure CreateNewContext;
+    procedure Validate;
     function _glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable; ctx: GLXContext):boolean;
   protected
     { Protected Declarations }
@@ -74,7 +76,7 @@ type
     procedure GetHandles(outputDevice: HWND);
     procedure DoCreateContext(outputDevice: HWND); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
-      Integer; BufferCount: integer); override;
+      Integer; BufferCount: integer = 1); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
@@ -216,6 +218,7 @@ begin
   begin
     glXMakeCurrent(FDisplay, 0, nil);
     glXDestroyContext(FDisplay, FRC);
+    FRC := nil;
   end;
 
   if @AWin <> nil then
@@ -228,6 +231,8 @@ end;
 procedure TGLGLXContext.CreateOldContext;
 var
   vi: PXvisualInfo;
+  shareRC: GLXContext;
+
 begin
   ClearIAttribs;
   if FNewTypeContext then
@@ -237,10 +242,31 @@ begin
     AddIAttrib(GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT);
   end;
   ChooseGLXFormat;
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+    shareRC := TGLGLXContext(ServiceContext).FRC
+  else if Assigned(FShareContext) then
+    shareRC := FShareContext.FRC
+  else
+    shareRC := nil;
+
   try
     if FNewTypeContext then
     begin
-      FRC := GL.XCreateNewContext(FDisplay, FFBConfigs[0], GLX_RGBA_TYPE, FShareContext, true);
+      FRC := GL.XCreateNewContext(FDisplay, FFBConfigs[0], GLX_RGBA_TYPE, shareRC, true);
+      if Assigned(shareRC) then
+      begin
+        if Assigned(FRC) then
+        begin
+          FSharedContexts.Add(FShareContext);
+          PropagateSharedContext;
+        end
+        else
+        begin
+          GLSLogger.LogWarning(glsFailedToShare);
+          FRC := GL.XCreateNewContext(FDisplay, FFBConfigs[0], GLX_RGBA_TYPE, nil, true);
+        end;
+      end;
     end
     else
     begin
@@ -248,27 +274,47 @@ begin
       if vi = nil then
         raise EGLContext.Create('Failed to accept attributes');
       GLSLogger.Log('GLGLXContext: DoCreateContext->GLXFormat it is choosed');
-      FRC := glXCreateContext(FDisplay, vi, FShareContext, true);
+      FRC := glXCreateContext(FDisplay, vi, shareRC, true);
+      if Assigned(shareRC) then
+      begin
+        if Assigned(FRC) then
+        begin
+          if Assigned(FShareContext) then
+          begin
+            FSharedContexts.Add(FShareContext);
+            PropagateSharedContext;
+          end;
+        end
+        else
+        begin
+          GLSLogger.LogWarning(glsFailedToShare);
+          FRC := glXCreateContext(FDisplay, vi, nil, true);
+        end;
+      end;
       XFree(vi);
     end;
 
     if not GL.X_ARB_create_context then
     begin
+      // Down flags to backcompat
       GLStates.ForwardContext := False;
       PipelineTransformation.FFPTransformation := True;
       FGL.DebugMode := False;
-      MakeGLCurrent;
-      // If we are using AntiAliasing, adjust filtering hints
-      if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-        GLStates.MultisampleFilterHint := hintNicest
-      else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
-        GLStates.MultisampleFilterHint := hintFastest
-      else GLStates.MultisampleFilterHint := hintDontCare;
-    end
-    else
-      GLSLogger.LogInfo('Temporary rendering context created');
+    end;
 
+    Activate;
+    FGL.Initialize;
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+      GLStates.MultisampleFilterHint := hintNicest
+    else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
+      GLStates.MultisampleFilterHint := hintFastest
+    else GLStates.MultisampleFilterHint := hintDontCare;
+
+    GLSLogger.LogInfo('Backward compatible core context successfully created');
   finally
+    if Active then
+      Deactivate;
     XFree(FFBConfigs);
   end;
 end;
@@ -276,13 +322,20 @@ end;
 procedure TGLGLXContext.CreateNewContext;
 var
   bSuccess: Boolean;
-  newRC: GLXContext;
+  shareRC: GLXContext;
   fnelements: GLInt;
   vFBConfigs: PGLXFBConfigArray;
 begin
   XSync(FDisplay, False);
   bSuccess := False;
   vFBConfigs := GL.XChooseFBConfig(FDisplay, FCurScreen, @FiAttribs[0], @fnelements);
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+    shareRC := TGLGLXContext(ServiceContext).FRC
+  else if Assigned(FShareContext) then
+    shareRC := FShareContext.FRC
+  else
+    shareRC := nil;
 
   try
     ClearIAttribs;
@@ -324,27 +377,42 @@ begin
       AddIAttrib(GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
     end;
 
+{$IFDEF GLS_LOGGING}
 //    if rcoDebug in Options then
     begin
       AddIAttrib(GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_DEBUG_BIT_ARB);
+      FGL.DebugMode := True;
     end;
+{$ENDIF}
 
-    newRC := GL.XCreateContextAttribsARB(FDisplay, vFBConfigs[0], FShareContext, True, @FiAttribs[0]);
-
-    if newRC = nil then
+    FRC := nil;
+    if Assigned(shareRC) then
     begin
-      GLSLogger.LogError(cForwardContextFailed);
-      Abort;
+      FRC := FGL.XCreateContextAttribsARB(FDisplay, vFBConfigs[0], shareRC, True, @FiAttribs[0]);
+      if Assigned(FRC) then
+      begin
+        if Assigned(FShareContext) then
+        begin
+          FSharedContexts.Add(FShareContext);
+          PropagateSharedContext;
+        end;
+      end
+      else
+        GLSLogger.LogWarning(glsFailedToShare);
     end;
-    Deactivate;
-    glXDestroyContext(FDisplay, FRC);
-    GLSLogger.LogInfo('Temporary rendering context destroyed');
 
-    FRC := newRC;
+    if not Assigned(FRC) then
+    begin
+      FRC := FGL.XCreateContextAttribsARB(FDisplay, vFBConfigs[0], nil, True, @FiAttribs[0]);
+      if not Assigned(FRC) then
+      begin
+        GLSLogger.LogError(cForwardContextFailed);
+        Abort;
+      end;
+    end;
+
     Activate;
-    FGL.DebugMode := True;//rcoDebug in Options;
     FGL.Initialize;
-    MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       GLStates.MultisampleFilterHint := hintNicest
@@ -358,12 +426,23 @@ begin
       GLSLogger.LogInfo('Backward compatible core context successfully created');
     bSuccess := True;
   finally
+    if Active then
+      Deactivate;
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
     PipelineTransformation.FFPTransformation := not GLStates.ForwardContext;
     if Assigned(vFBConfigs) then
       XFree(vFBConfigs);
   end;
   XSync(FDisplay, False);
+end;
+
+procedure TGLGLXContext.Validate;
+begin
+  if FRC = nil then
+    raise EGLContext.Create('Failed to create rendering context');
+  if PtrUInt(FRC) = GLX_BAD_CONTEXT then
+    raise EGLContext.Create('Bad context');
+  GLSLogger.Log('GLGLXContext: RenderingContext it is created');
 end;
 
 function TGLGLXContext._glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable;
@@ -541,31 +620,28 @@ begin
   FCurScreen := XDefaultScreen(FDisplay);
 
   tempWnd := CreateTempWnd;
-  GLSLogger.Log('GLGLXContext: DoCreateContext->Is created a temporary window');
-  FGL.Initialize;
+  GLSLogger.Log('GLGLXContext: DoCreateContext->Is created a temporary context');
+  FGL.Initialize(True);
   FNewTypeContext := GL.X_VERSION_1_3 or GL.X_VERSION_1_4;
 
   DestroyTmpWnd(tempWnd);
-  GLSLogger.Log('GLGLXContext: DoCreateContext->Temporary window deleted');
+  GLSLogger.LogInfo('Temporary rendering context destroyed');
 
   GetHandles(outputDevice);
   FDC := CurXWindow; //FDC - TWindow
-                     //   |- PBuffer
-  GLSLogger.Log('GLGLXContext: DoCreateContext->Handle is received');
 
   FAcceleration := chaHardware;
-  CreateOldContext;
-  Activate;
-  try
-    if GL.X_ARB_create_context then
-      CreateNewContext;
-    if RenderingContext = nil then
-      raise EGLContext.Create('Failed to create rendering context');
-    if PtrUInt(RenderingContext) = GLX_BAD_CONTEXT then
-      raise EGLContext.Create('Bad context');
-     GLSLogger.Log('GLGLXContext: DoCreateContext->RenderingContext it is created');
-  finally
-    Deactivate;
+
+  if GL.X_ARB_create_context then
+    CreateNewContext
+  else
+    CreateOldContext;
+  Validate;
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+  begin
+    FSharedContexts.Add(ServiceContext);
+    PropagateSharedContext;
   end;
 end;
 
@@ -577,6 +653,7 @@ procedure TGLGLXContext.DoCreateMemoryContext(outputDevice: HWND; width,
 var
   TempW, TempH: Integer;
   tempWnd: TWindow;
+  shareRC: GLXContext;
 begin
   // Just in case it didn't happen already.
   if not InitOpenGL then
@@ -594,13 +671,19 @@ begin
   FCurScreen := XDefaultScreen(FDisplay);
 
   tempWnd := CreateTempWnd;
-  GLSLogger.Log('GLGLXContext: DoCreateContext->Is created a temporary window');
-  FGL.Initialize;
+  GLSLogger.Log('GLGLXContext: DoCreateContext->Is created a temporary context');
+  FGL.Initialize(True);
   FNewTypeContext := GL.X_VERSION_1_3 or GL.X_VERSION_1_4;
   DestroyTmpWnd(tempWnd);
-  GLSLogger.Log('GLGLXContext :DoCreateContext->Temporary window is deleted');
+  GLSLogger.LogInfo('Temporary rendering context destroyed');
 
-  FAcceleration := chaHardware;
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+    shareRC := TGLGLXContext(ServiceContext).FRC
+  else if Assigned(FShareContext) then
+    shareRC := FShareContext.FRC
+  else
+    shareRC := nil;
+
   if FNewTypeContext then
   begin
     ClearIAttribs;
@@ -609,8 +692,8 @@ begin
     AddIAttrib(GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT);
     ChooseGLXFormat;
     try
-      GL.XGetFBConfigAttrib(FDisplay, FFBConfigs[0], GLX_MAX_PBUFFER_HEIGHT, @TempW);
-      GL.XGetFBConfigAttrib(FDisplay, FFBConfigs[0], GLX_MAX_PBUFFER_WIDTH, @TempH);
+      FGL.XGetFBConfigAttrib(FDisplay, FFBConfigs[0], GLX_MAX_PBUFFER_HEIGHT, @TempW);
+      FGL.XGetFBConfigAttrib(FDisplay, FFBConfigs[0], GLX_MAX_PBUFFER_WIDTH, @TempH);
       if Width <= TempW then
         TempW := Width;
       if Height <= TempH then
@@ -619,39 +702,66 @@ begin
       AddIAttrib(GLX_PBUFFER_WIDTH, TempW);
       AddIAttrib(GLX_PBUFFER_HEIGHT, TempH);
       AddIAttrib(GLX_LARGEST_BUFFER, 0);
-      FHPBUFFER := GL.XCreatePbuffer(FDisplay, FFBConfigs[0], @FiAttribs[0]);
+      FHPBUFFER := FGL.XCreatePbuffer(FDisplay, FFBConfigs[0], @FiAttribs[0]);
       if FHPBUFFER = 0 then
-        raise Exception.Create('Unabled to create pbuffer.');
+        raise EPBuffer.Create('Unabled to create pbuffer.');
       FDC := FHPBUFFER;
       GLSLogger.Log('GLGLXContext: DoCreateContext->PBuffer is Created');
-      FRC := GL.XCreateNewContext(FDisplay, FFBConfigs[0],
-        GLX_RGBA_TYPE, FShareContext, true);
-      SetLength(FiAttribs, Length(FiAttribs) - 6);
-      FiAttribs[High(FiAttribs)] := 0;
 
-      Activate;
-      try
-        if GL.X_ARB_create_context then
-          CreateNewContext;
-        if BufferCount > 1 then
-          FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
-      finally
-        Deactivate;
+      FAcceleration := chaHardware;
+
+      FRC := FGL.XCreateNewContext(FDisplay, FFBConfigs[0], GLX_RGBA_TYPE, shareRC, true);
+      if Assigned(shareRC) then
+      begin
+        if Assigned(FRC) then
+        begin
+          FSharedContexts.Add(FShareContext);
+          PropagateSharedContext;
+        end
+        else
+        begin
+          GLSLogger.LogWarning(glsFailedToShare);
+          FRC := FGL.XCreateNewContext(FDisplay, FFBConfigs[0], GLX_RGBA_TYPE, nil, true);
+        end;
+      end;
+      Validate;
+
+      if not FGL.X_ARB_create_context then
+      begin
+        // Down flags to backcompat
+        GLStates.ForwardContext := False;
+        PipelineTransformation.FFPTransformation := True;
+        FGL.DebugMode := False;
       end;
 
-      if RenderingContext = nil then
-        raise EGLContext.Create('Failed to create rendering context');
-      if PtrUInt(RenderingContext) = GLX_BAD_CONTEXT then
-        raise EGLContext.Create('Bad context');
-      GLSLogger.Log('GLGLXContext: DoCreateContext->RenderingContext it is Created');
+      Activate;
+      FGL.Initialize;
+      // If we are using AntiAliasing, adjust filtering hints
+      if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+        GLStates.MultisampleFilterHint := hintNicest
+      else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
+        GLStates.MultisampleFilterHint := hintFastest
+      else GLStates.MultisampleFilterHint := hintDontCare;
 
+      if BufferCount > 1 then
+        FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+
+      if (ServiceContext <> nil) and (Self <> ServiceContext) then
+      begin
+        FSharedContexts.Add(ServiceContext);
+        PropagateSharedContext;
+      end;
+
+      GLSLogger.LogInfo('Backward compatible core PBuffer context successfully created');
     finally
+      if Active then
+        Deactivate;
       XFree(FFBConfigs);
     end;
   end
   else
     raise
-        EGLContext.Create('For Memory Context required GLX above 1.2');
+        EGLContext.Create('For PBuffer Context required GLX above 1.2');
 end;
 
 // DoShareLists
@@ -670,13 +780,13 @@ begin
       if (RenderingContext <> otherRC) then
       begin
         DestroyContext;
-        FShareContext:= otherRC;
+        FShareContext:= TGLGLXContext(aContext);
         Result := True;
       end;
     end
     else
     begin
-      FShareContext := otherRC;
+      FShareContext := TGLGLXContext(aContext);
       Result := False;
     end;
   end

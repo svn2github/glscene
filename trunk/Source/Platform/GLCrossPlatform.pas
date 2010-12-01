@@ -74,6 +74,7 @@ unit GLCrossPlatform;
 interface
 
 {$INCLUDE GLScene.inc}
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 //   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
 //         these files in uses clauses.
@@ -83,7 +84,6 @@ uses
 {$ENDIF}
 {$IFDEF UNIX}Unix,
   xlib,
-  x,
 {$ENDIF}
   Classes,
   SysUtils,

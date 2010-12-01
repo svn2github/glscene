@@ -154,7 +154,6 @@ resourcestring
   cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';
   cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
     'on - down to software';
-  glsFailedToShare = 'DoCreateContext - Failed to share contexts';
 
 var
   vTrackingCount: Integer;
@@ -648,6 +647,7 @@ begin
 {$IFDEF GLS_LOGGING}
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
+      FGL.DebugMode := True;
     end;
 {$ENDIF}
 
@@ -680,7 +680,6 @@ begin
       raise EGLContext.Create(Format(cContextActivationFailed,
         [GetLastError, SysErrorMessage(GetLastError)]));
 
-    FGL.DebugMode := True;//rcoDebug in Options;
     FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
@@ -1154,4 +1153,3 @@ initialization
 {$ENDIF}
 
 end.
-

@@ -213,11 +213,11 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure PropagateSharedContext;
 
-    procedure DoCreateContext(outputDevice: HWND); dynamic; abstract;
+    procedure DoCreateContext(outputDevice: HWND); virtual; abstract;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
-      Integer; BufferCount: integer = 1); dynamic; abstract;
-    function DoShareLists(aContext: TGLContext): Boolean; dynamic; abstract;
-    procedure DoDestroyContext; dynamic; abstract;
+      Integer; BufferCount: integer = 1); virtual; abstract;
+    function DoShareLists(aContext: TGLContext): Boolean; virtual; abstract;
+    procedure DoDestroyContext; virtual; abstract;
     procedure DoActivate; virtual; abstract;
     procedure DoDeactivate; virtual; abstract;
     class function ServiceContext: TGLContext;
@@ -1254,6 +1254,7 @@ resourcestring
   cContextDeactivationFailed = 'Context deactivation failed';
   cUnableToCreateLegacyContext = 'Unable to create legacy context';
   cNoActiveRC = 'No active rendering context';
+  glsFailedToShare = 'DoCreateContext - Failed to share contexts';
 
 var
   GLContextManager: TGLContextManager;
