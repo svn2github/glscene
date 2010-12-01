@@ -77,7 +77,7 @@ const
 {$IFDEF DARWIN} // MacOS X
   JointLibraryDLL = 'libnewton.dylib';
 {$ELSE}
-  JointLibraryDLL = 'libnewton.so';
+  JointLibraryDLL = 'libdJointLibrary.so';
 {$ENDIF}
 {$ENDIF}
 
