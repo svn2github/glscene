@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 61
   Top = 69
-  Width = 698
-  Height = 451
   Caption = 'Intensity Mesh'
+  ClientHeight = 417
+  ClientWidth = 690
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,29 +19,29 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 595
-    Height = 413
+    Width = 603
+    Height = 417
     Camera = GLCamera
     Buffer.BackgroundColor = clWhite
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roStereo]
     Buffer.FaceCulling = False
     Buffer.Lighting = False
-    FieldOfView = 152.777770996093800000
+    FieldOfView = 153.029327392578100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 595
+    Left = 603
     Top = 0
     Width = 87
-    Height = 413
+    Height = 417
     Align = alRight
     TabOrder = 1
     DesignSize = (
       87
-      413)
+      417)
     object Label1: TLabel
       Left = 8
       Top = 64
@@ -140,7 +140,8 @@ object Form1: TForm1
           E3E5E5E3E5E5E3E5E5E3E5E5E3E5E5E3E5E5}
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miLinear
-        Material.Texture.TextureWrap = twNone
+        Material.Texture.TextureWrap = twSeparate
+        Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
         Tag = 0
         Shader = GLUserShader

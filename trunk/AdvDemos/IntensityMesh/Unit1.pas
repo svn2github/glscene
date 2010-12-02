@@ -22,7 +22,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLVectorFileObjects, GLWin32Viewer, GLMesh, GLTexture, GLUserShader,
-  StdCtrls, GLHUDObjects, VectorGeometry, OpenGL1x, ComCtrls, GLObjects,
+  StdCtrls, GLHUDObjects, VectorGeometry, GLContext, ComCtrls, GLObjects,
   ExtCtrls, GLBitmapFont, GLWindowsFont, GLUtils, GLMaterial, GLCoordinates,
   GLCrossPlatform, BaseClasses, GLRenderContextInfo, GLGraphics;
 
@@ -152,7 +152,7 @@ begin
          PolygonOffsetFactor := -1;
          PolygonOffsetUnits := -1;
          Enable(stPolygonOffsetLine);
-         glColor3f(0, 0, 0);
+         GL.Color3f(0, 0, 0);
          Continue:=True;
       end;
    else
