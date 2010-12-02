@@ -24,7 +24,7 @@ uses
   Dialogs, ExtCtrls, GLObjects, GLGraph, GLScene, GLWin32Viewer,
   VectorGeometry, GLTilePlane, GLTexture, GLCadencer, Jpeg, StdCtrls,
   OpenGLTokens, GLContext, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLRenderContextInfo;
+  GLRenderContextInfo, GLTextureFormat;
 
 type
   TForm1 = class(TForm)
