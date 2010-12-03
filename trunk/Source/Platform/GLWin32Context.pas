@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/12/10 - Yar - Fixed window tracking (thanks to Gabriel Corneanu)
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens. Improved context creation.
       <li>18/06/10 - Yar - Changed context sharing method for similarity to GLX
@@ -227,12 +228,18 @@ begin
     Exit;
   k := 0;
   for i := 0 to vTrackingCount - 1 do
+  begin
     if vTrackedHwnd[i] <> h then
     begin
-      vTrackedHwnd[k] := vTrackedHwnd[i];
-      vTrackedEvents[k] := vTrackedEvents[i];
+      if(k <> i) then
+      begin
+        vTrackedHwnd[k] := vTrackedHwnd[i];
+        vTrackedEvents[k] := vTrackedEvents[i];
+      end;
       Inc(k);
-    end;
+    end
+  end;
+  if(k >= vTrackingCount) then exit;
   Dec(vTrackingCount);
   SetLength(vTrackedHwnd, vTrackingCount);
   SetLength(vTrackedEvents, vTrackingCount);
@@ -834,9 +841,7 @@ begin
         end;
       finally
         sharedRC := FShareContext;
-        FLegacyContextsOnly := True;
         DoDestroyContext;
-        FLegacyContextsOnly := False;
         FShareContext := sharedRC;
         GLSLogger.LogInfo('Temporary rendering context destroyed');
       end;
