@@ -596,6 +596,7 @@ type
     1 : (Int   : record Value : Integer; end);
     2 : (UInt  : record Value : Cardinal; end);
     3 : (Float : record Value : Single; end);
+    4 : (Word  : record Value : array[0..1] of Word; end);
   end;
 
   T4ByteArrayList = array[0..MaxInt shr 4] of T4ByteData;
@@ -3612,7 +3613,7 @@ begin
   Inc(FCount);
   if FCount = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
-  tmpList := @FList[FCount];
+  tmpList := @FList[FCount - 1];
   tmpList^ := i1;
 
 end;
@@ -3665,7 +3666,7 @@ begin
   Inc(FCount);
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
-  tmpList := @FList[FCount];
+  tmpList := @FList[FCount - 1];
   tmpList^ := i1;
 end;
 
@@ -3717,7 +3718,7 @@ begin
   Inc(FCount);
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
-  tmpList := @FList[FCount];
+  tmpList := @FList[FCount - 1];
   tmpList^ := i1;
 end;
 
