@@ -131,6 +131,10 @@
         <UnitName Value="InfoLCL"/>
       </Item25>
     </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="../Source/Languages/Lazarus"/>
+    </i18n>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="5">
       <Item1>
@@ -151,7 +155,7 @@
       </Item5>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
