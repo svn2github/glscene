@@ -241,7 +241,12 @@ end;
 
 procedure TGLSceneForm.DoBufferStructuralChange(Sender: TObject);
 begin
-  RecreateWnd;
+  {$IFNDEF FPC}
+   RecreateWnd;
+  {$ELSE}
+   DestroyWnd;
+   CreateWnd;
+  {$ENDIF}
 end;
 
 // SetBeforeRender
