@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>06/12/10 - DaStr - Added GUID to IPersistentObject
       <li>19/08/10 - Yar - Fixed WriteWideString for empty strings
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
@@ -119,6 +120,7 @@ type
      but is rather intended as a way to unify persistence calls
      for iterators. }
   IPersistentObject = interface(IInterface)
+  ['{A9A0198A-F11B-4325-A92C-2F24DB41652B}']
     procedure WriteToFiler(writer: TVirtualWriter);
     procedure ReadFromFiler(reader: TVirtualReader);
   end;
@@ -159,7 +161,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create; overload; virtual;
+    constructor Create; virtual;
     constructor CreateFromFiler(reader: TVirtualReader);
     destructor Destroy; override;
 
