@@ -708,7 +708,8 @@ begin
  '{$MODE Delphi}' + LineEnding +
  LineEnding+
 
- 'uses'+ LineEnding+
+ 'uses'+ LineEnding +
+ ' {$IFDEF UNIX}{$IFDEF UseCThreads}cthreads,{$ENDIF}{$ENDIF}'+ LineEnding +
  ' Forms, Interfaces,'+ LineEnding +
  ' Unit1 in ''Unit1.pas'';'+ LineEnding +
  LineEnding+
@@ -1583,4 +1584,4 @@ end;
 {$ENDIF}
 
 end.
-
+

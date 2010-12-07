@@ -15,11 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
+{$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
+  Messages,
+{$ELSE}
+  LCLIntf,
+  LCLType,
+  LMessages,
 {$ENDIF}
   Classes,
-  Messages,
+  Controls,
   Forms,
   GLScene,
   GLContext;
@@ -45,11 +50,18 @@ type
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-
+{$IFDEF GLS_DELPHI_OR_CPPB}
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
+{$ENDIF}
+{$IFDEF FPC}
+    procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); message LM_ERASEBKGND;
+    procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
+    procedure LMSize(var Message: TLMSize); message LM_SIZE;
+    procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
+{$ENDIF}
   protected
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -60,10 +72,13 @@ type
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
+
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    property IsRenderingContextAvailable: boolean read GetIsRenderingContextAvailable;
     property RenderDC: HDC read FOwnDC;
   published
     { Published Declarations }
@@ -168,6 +183,7 @@ begin
   HandleNeeded;
 end;
 
+{$IFDEF GLS_DELPHI_OR_CPPB}
 // WMEraseBkgnd
 //
 
@@ -218,6 +234,48 @@ begin
   end;
   inherited;
 end;
+{$ENDIF GLS_DELPHI_OR_CPPB}
+
+{$IFDEF FPC}
+procedure TGLSceneForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
+begin
+  if IsRenderingContextAvailable then
+    Message.Result := 1
+  else
+    inherited;
+end;
+
+procedure TGLSceneForm.LMPaint(var Message: TLMPaint);
+var
+  PS: LCLType.TPaintStruct;
+begin
+  BeginPaint(Handle, PS);
+  try
+    if IsRenderingContextAvailable and (Width > 0) and (Height > 0) then
+      FBuffer.Render;
+  finally
+    EndPaint(Handle, PS);
+    Message.Result := 0;
+  end;
+end;
+
+procedure TGLSceneForm.LMSize(var Message: TLMSize);
+begin
+  inherited;
+  FBuffer.Resize(Message.Width, Message.Height);
+end;
+
+procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);
+begin
+  FBuffer.DestroyRC;
+  if FOwnDC <> 0 then
+  begin
+    ReleaseDC(Handle, FOwnDC);
+    FOwnDC := 0;
+  end;
+  inherited;
+end;
+{$ENDIF FPC}
 
 // DoBeforeRender
 //
@@ -247,6 +305,13 @@ begin
    DestroyWnd;
    CreateWnd;
   {$ENDIF}
+end;
+
+procedure TGLSceneForm.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  if csDesignInteractive in ControlStyle then
+    FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
 // SetBeforeRender
@@ -367,4 +432,4 @@ initialization
   RegisterClass(TGLSceneForm);
 
 end.
-
+
