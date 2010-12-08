@@ -69,6 +69,7 @@ type
     type
   {$IFEND}
       TRBNode = class
+      public
         Key: TKey;
         Left, Right, Parent, Twin: TRBNode;
         Color: TRBColor;
