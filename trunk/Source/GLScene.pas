@@ -397,7 +397,7 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 5334$';
+  GLSCENE_REVISION = '$Revision: 5373$';
   GLSCENE_VERSION = '1.1.0.%s';
 
 type
@@ -1563,6 +1563,7 @@ type
     FSceneScale: Single;
     FDeferredApply: TNotifyEvent;
     FOnCustomPerspective: TOnCustomPerspective;
+    FDesign: Boolean;
 
   protected
     { Protected Declarations }
@@ -1582,6 +1583,8 @@ type
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
 
     {: Nearest clipping plane for the frustum.<p>
        This value depends on the FocalLength and DepthOfView fields and
@@ -5745,6 +5748,7 @@ begin
   FDirection.Initialize(VectorMake(0, 0, -1, 0));
   FCameraStyle := csPerspective;
   FSceneScale := 1;
+  FDesign := False;
 end;
 
 // destroy
@@ -5793,6 +5797,12 @@ begin
   end;
 end;
 
+procedure TGLCamera.NotifyChange(Sender: TObject);
+begin
+  if not FDesign and (vGLSceneViewerMode = svmDefault) then
+    vResetDesignView := True;
+  inherited;
+end;
 // AbsoluteVectorToTarget
 //
 
@@ -7928,6 +7938,7 @@ begin
   if vGLSceneViewerMode <> svmDisabled then
   begin
     FDesignCamera := TGLCamera.Create(nil);
+    FDesignCamera.FDesign := True;
     FLeave := True;
   end;
 {$ENDIF}
