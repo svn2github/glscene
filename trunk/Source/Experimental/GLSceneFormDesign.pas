@@ -1117,7 +1117,6 @@ begin
             '    GLWorld: TGLDummyCube;' + LineEnding +
             '    GLMaterialLibrary1: TGLMaterialLibrary;' + LineEnding +
             '    GLScene1: TGLScene;' + LineEnding +
-            '    GLSceneViewer1: TGLSceneViewer;' + LineEnding +
             '    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,' + LineEnding +
             '      newTime: Double);' + LineEnding +
             '  private' + LineEnding +
@@ -1584,4 +1583,4 @@ end;
 {$ENDIF}
 
 end.
-
+
