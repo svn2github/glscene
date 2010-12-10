@@ -107,6 +107,7 @@ const
   FPC_VERSION = 0;
   FPC_RELEASE = 0;
   FPC_PATCH = 0;
+  LCL_RELEASE = 0;
 {$ENDIF}
 
 type
