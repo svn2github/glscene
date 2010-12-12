@@ -73,8 +73,8 @@ type
     procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
     procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
-    Procedure GetFocus(var Mess: TMessage); message LM_ACTIVATE;
-    Procedure LastFocus(var Mess: TMessage); message LM_DEACTIVATE;
+    Procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
+    Procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
 {$ENDIF}
     procedure SetFullScreen(aValue: Boolean);
     procedure SetAltTabSupportEnable(aValue: Boolean);
@@ -311,7 +311,7 @@ procedure TGLSceneForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
 
 procedure TGLSceneForm.LMPaint(var Message: TLMPaint);
   var
-    PS: Windows.TPaintStruct;
+    PS: TPaintStruct;
   begin
     BeginPaint(Handle, PS);
     try
@@ -344,7 +344,7 @@ procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);
     inherited;
   end;
 
-procedure TGLSceneForm.GetFocus(var Mess: TMessage);
+procedure TGLSceneForm.GetFocus(var Mess: TLMessage);
   begin
     if not(csDesigning in ComponentState) then
       If FAltTabSupportEnable and FullScreen then
@@ -352,7 +352,7 @@ procedure TGLSceneForm.GetFocus(var Mess: TMessage);
     inherited;
   end;
 
-procedure TGLSceneForm.LastFocus(var Mess: TMessage);
+procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
   begin
     if not(csDesigning in ComponentState) then
       If FAltTabSupportEnable and FullScreen then
@@ -736,4 +736,4 @@ GLRegisterWSComponent(TGLSceneForm);
 {$IFEND}
 {$ENDIF}
 
-end.
+end.

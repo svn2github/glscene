@@ -62,19 +62,22 @@ type
       TValueCompareFunc = function(const Item1, Item2: TValue): Boolean;
       TForEachProc = procedure (AKey: TKey; AValue: TValue; out AContinue: Boolean);
     { Private Declarations }
-  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  type private
-  {$ELSE}
-  private
-    type
-  {$IFEND}
-      TRBNode = class
-      public
-        Key: TKey;
-        Left, Right, Parent, Twin: TRBNode;
-        Color: TRBColor;
-        Value: TValue;
-      end;
+    {$IFDEF GLS_DELPHI_OR_CPPB}
+       TRBNode = class
+         Key: TKey;
+         Left, Right, Parent, Twin: TRBNode;
+         Color: TRBColor;
+         Value: TValue;
+       end;
+    {$ELSE}
+       TRBNode = ^TRBNodeRec;
+       TRBNodeRec = record
+         Key: TKey;
+         Left, Right, Parent, Twin: TRBNode;
+         Color: TRBColor;
+         Value: TValue;
+       end;
+    {$ENDIF}
     var
       FRoot: TRBNode;
       FLeftmost: TRBNode;
@@ -170,7 +173,11 @@ begin
   repeat
     y := x;
     x := x.Twin;
+{$IFDEF FPC}
+    Dispose(y);
+{$ELSE}
     y.Destroy;
+{$ENDIF}
   until x = nil;
 end;
 
@@ -313,7 +320,12 @@ var
   x, y, z, zpp: TRBNode;
   cmp: Integer;
 begin
+  {$IFDEF FPC}
+  New(z);
+  {$ELSE}
   z := TRBNode.Create;
+  {$ENDIF}
+
   { Initialize fields in new node z }
   z.Key := key;
   z.left := nil;
@@ -368,7 +380,11 @@ begin
         end;
         {: Value already exists in tree. }
       end;
+{$IFDEF FPC}
+      Dispose(z);
+{$ELSE}
       z.Destroy;
+{$ENDIF}
       //a jzombi: memory leak: if we don't put it in the tree, we shouldn't hold it in the memory
       exit;
     end;
@@ -656,9 +672,17 @@ begin
   begin
     z := y;
     y := y.Twin;
+{$IFDEF FPC}
+    Dispose(z);
+{$ELSE}
     z.Destroy;
+{$ENDIF}
   end;
+{$IFDEF FPC}
+  Dispose(y);
+{$ELSE}
   y.Destroy;
+{$ENDIF}
   Dec(FCount);
   if Assigned(FOnChange) then
     FOnChange(Self);
