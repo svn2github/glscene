@@ -6,7 +6,8 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
+      <li>15/12/10 - DaStr - Added Min() and Max() for TSingleList and TDoubleList
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>24/08/10 - Yar - Added to T4ByteList more overload of Add method
       <li>11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -456,19 +457,26 @@ type
 
     {: Adds delta to all items in the list. }
     procedure Offset(delta: Single); overload;
-        {: Adds to each item the corresponding item in the delta list.<p>
-           Performs 'Items[i]:=Items[i]+delta[i]'.<br>
-           If both lists don't have the same item count, an exception is raised. }
+
+    {: Adds to each item the corresponding item in the delta list.<p>
+       Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+       If both lists don't have the same item count, an exception is raised. }
     procedure Offset(const delta: TSingleList); overload;
+
     {: Multiplies all items by factor. }
     procedure Scale(factor: Single);
+
     {: Square all items. }
     procedure Sqr;
+
     {: SquareRoot all items. }
     procedure Sqrt;
 
     {: Computes the sum of all elements. }
     function Sum: Single;
+
+    function Min: Single;
+    function Max: Single;
   end;
 
   TDoubleArrayList = array[0..MaxInt shr 4] of Double;
@@ -518,6 +526,9 @@ type
 
     {: Computes the sum of all elements. }
     function Sum: Double;
+
+    function Min: Single;
+    function Max: Single;
   end;
 
   // TByteList
@@ -3052,6 +3063,44 @@ begin
 {$ENDIF}
 end;
 
+// Min
+//
+function TSingleList.Min: Single;
+var
+  I: Integer;
+  locList: PSingleArrayList;
+begin
+  if FCount > 0 then
+  begin
+    locList := FList;
+    Result := locList^[0];
+    for I := 1 to FCount - 1 do
+      if locList^[I] < Result then
+        Result := locList^[I];
+  end
+  else
+    Result := 0;
+end;
+
+// Max
+//
+function TSingleList.Max: Single;
+var
+  I: Integer;
+  locList: PSingleArrayList;
+begin
+  if FCount > 0 then
+  begin
+    locList := FList;
+    Result := locList^[0];
+    for I := 1 to FCount - 1 do
+      if locList^[I] > Result then
+        Result := locList^[I];
+  end
+  else
+    Result := 0;
+end;
+
 // ------------------
 // ------------------ TByteList ------------------
 // ------------------
@@ -3362,6 +3411,44 @@ begin
     for i := 0 to FCount-1 do
     Result := Result + FList^[i];
 {$ENDIF}
+end;
+
+// Min
+//
+function TDoubleList.Min: Single;
+var
+  I: Integer;
+  locList: PDoubleArrayList;
+begin
+  if FCount > 0 then
+  begin
+    locList := FList;
+    Result := locList^[0];
+    for I := 1 to FCount - 1 do
+      if locList^[I] < Result then
+        Result := locList^[I];
+  end
+  else
+    Result := 0;
+end;
+
+// Max
+//
+function TDoubleList.Max: Single;
+var
+  I: Integer;
+  locList: PDoubleArrayList;
+begin
+  if FCount > 0 then
+  begin
+    locList := FList;
+    Result := locList^[0];
+    for I := 1 to FCount - 1 do
+      if locList^[I] > Result then
+        Result := locList^[I];
+  end
+  else
+    Result := 0;
 end;
 
 // ------------------
