@@ -1624,7 +1624,6 @@ end;
 procedure TGLStateCache.SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
 var
   i: Integer;
-  color: TVector4f;
 begin
   if FForwardContext then Exit;
 
