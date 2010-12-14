@@ -6,6 +6,9 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>14/12/10 - DaStr - Added a work-around for a range-check bug
+                             Bugfixed a case when material texture was turned on
+                             when it should not be enabled
       <li>14/10/10 - YP - Fixed rotate only vertices of TGLFile3DSMeshObject
       <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
                           Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
@@ -17,7 +20,7 @@
                           in InterpolateValue
       <li>24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>11/06/11 - DaStr - Fixes for Linux x64
+      <li>xx/xx/xx - xxx - Fixes for Linux x64
       <li>08/11/09 - DaStr - Improved FPC compatibility
                               (thanks Predator) (BugtrackerID = 2893580)
       <li>07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
@@ -1715,7 +1718,7 @@ var
         begin
           libMat := matLib.Materials.Add;
           libMat.Name := Name;
-          libMat.Material.Texture.Disabled := False;
+
           with libMat.Material.FrontProperties do
           begin
             Ambient.Color := VectorMake(material.Ambient.R, material.Ambient.G,
@@ -2257,7 +2260,9 @@ begin
                     begin
                       // no smoothing then just duplicate vertex
                       DuplicateVertex(CurrentIndex);
+                      {$R-} // DaStr: Bug here!!!
                       FaceRec[Vertex] := CurrentVertexCount - 1;
+                      {$R+}
                       mesh.Normals[CurrentVertexCount - 1] := Normal;
                       // mark new vertex also as touched
                       MarkVertex(Marker, CurrentVertexCount - 1);
@@ -2273,7 +2278,9 @@ begin
                         // vertex has not yet been duplicated for this smoothing
                         // group, so do it now
                         DuplicateVertex(CurrentIndex);
+                      {$R-} // DaStr: Bug here!!!
                         FaceRec[Vertex] := CurrentVertexCount - 1;
+                      {$R+}
                         mesh.Normals[CurrentVertexCount - 1] := Normal;
                         StoreSmoothIndex(CurrentIndex, SmoothingGroup,
                           CurrentVertexCount - 1, SmoothIndices);
@@ -2289,7 +2296,9 @@ begin
                         mesh.Normals[TargetVertex] :=
                           VectorAdd(mesh.Normals[TargetVertex], Normal);
                         // ...and tell which new vertex has to be used from now on
+                      {$R-} // DaStr: Bug here!!!
                         FaceRec[Vertex] := TargetVertex;
+                      {$R+}
                       end;
                     end;
                   end
