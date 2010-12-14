@@ -802,7 +802,6 @@ end;
 
 // Destroy
 //
-
 destructor TGLFaceProperties.Destroy;
 begin
   FAmbient.Free;
@@ -814,7 +813,6 @@ end;
 
 // Apply
 //
-
 procedure TGLFaceProperties.Apply(var rci: TRenderContextInfo;
   aFace: TCullFaceMode);
 begin
@@ -827,16 +825,14 @@ end;
 
 // ApplyNoLighting
 //
-
 procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  GL.Color4fv(@Diffuse.Color);
+  rci.GLStates.SetGLMaterialColorsNoLighting(Diffuse.Color);
 end;
 
 // Assign
 //
-
 procedure TGLFaceProperties.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLFaceProperties) then
@@ -2078,6 +2074,7 @@ begin
       xgl.MapTexCoordToMain;
 
   end;
+ 
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of

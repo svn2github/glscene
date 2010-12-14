@@ -6,6 +6,11 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>14/12/10 - DaStr - Added to TGLStateCache:
+                               Color property
+                               SetGLMaterialColorsNoLighting()
+                               SetGLMaterialDiffuseColor()
+                             Bugfixed: TGLStateCache.SetGLMaterialAlphaChannel()
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
       <li>27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
@@ -210,6 +215,7 @@ type
     FEnableDepthClamp: TGLboolean;
 
     // Coloring state
+    FColor: TVector4f;
     FClampReadColor: TGLenum; // GL_FIXED_ONLY
     FProvokingVertex: TGLenum; // GL_LAST_VERTEX_CONVENTION
 
@@ -387,6 +393,8 @@ type
     // Coloring state
     procedure SetClampReadColor(const Value: TGLenum);
     procedure SetProvokingVertex(const Value: TGLenum);
+    procedure SetColor(const Value: TVector4f);
+
     // Rasterization state
     procedure SetPointSize(const Value: TGLfloat);
     procedure SetPointFadeThresholdSize(const Value: TGLfloat);
@@ -557,9 +565,15 @@ type
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
+
+    {: Adjusts material colors for a face if there is no lighting. }
+    procedure SetGLMaterialColorsNoLighting(diffuse: TVector);
+
     {: Adjusts material alpha channel for a face. }
-    procedure SetGLMaterialAlphaChannel(const aFace: TGLEnum; const alpha:
-      TGLFloat);
+    procedure SetGLMaterialAlphaChannel(const aFace: TGLEnum; const alpha: TGLFloat);
+
+    {: Adjusts material diffuse color for a face. }
+    procedure SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
 
     {: Lighting states }
     property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
@@ -646,6 +660,8 @@ type
        primitive will the same value determined by this property. }
     property ProvokingVertex: TGLenum read FProvokingVertex write
       SetProvokingVertex;
+    {: Current OpenGLColor. }
+    property Color: TVector4f read FColor write SetColor;
 
     // Rasterization state
     {: The default point size, used when EnableProgramPointSize = false. }
@@ -1509,7 +1525,6 @@ end;
 
 // SetGLMaterialColors
 //
-
 procedure TGLStateCache.SetGLMaterialColors(const aFace: TCullFaceMode;
   const emission, ambient, diffuse, specular: TVector;
   const shininess: Integer);
@@ -1563,32 +1578,77 @@ begin
     Include(FListStates[FCurrentList], sttLighting);
 end;
 
+{: Adjusts material colors for a face if there is no lighting. }
+procedure TGLStateCache.SetGLMaterialColorsNoLighting(diffuse: TVector);
+begin
+  if FForwardContext then exit;
+  SetColor(diffuse);
+end;
+
 // SetGLMaterialAlphaChannel
 //
-
 procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: TGLEnum; const
   alpha: TGLFloat);
 var
   i: Integer;
   color: TVector4f;
 begin
-  if FForwardContext then
-    exit;
-  i := aFace - GL_FRONT;
-  if (FFrontBackColors[i][2][3] <> alpha) or FInsideList then
-  begin
+  if FForwardContext then Exit;
 
-    if FInsideList then
+  if not(stLighting in FStates) then
+  begin
+    // We need a temp variable, because FColor is cauched.
+    color := FColor;
+    color[3] := alpha;
+    SetColor(color);
+  end
+  else
+  begin
+    i := aFace - GL_FRONT;
+    if (FFrontBackColors[i][2][3] <> alpha) or FInsideList then
     begin
-      Include(FListStates[FCurrentList], sttLighting);
-      color := FFrontBackColors[i][2];
-    end
-    else
-    begin
-      FFrontBackColors[i][2][3] := alpha;
-      color[3] := alpha;
+      if FInsideList then
+      begin
+        Include(FListStates[FCurrentList], sttLighting);
+        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
+      end
+      else
+      begin
+        FFrontBackColors[i][2][3] := alpha;
+        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
+      end;
     end;
-    GL.Materialfv(aFace, GL_DIFFUSE, @color);
+  end;
+end;
+
+procedure TGLStateCache.SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
+var
+  i: Integer;
+  color: TVector4f;
+begin
+  if FForwardContext then Exit;
+
+  if not(stLighting in FStates) then
+  begin
+    SetColor(diffuse);
+  end
+  else
+  begin
+    //
+    i := aFace - GL_FRONT;
+    if (not VectorEquals(FFrontBackColors[i][2], diffuse)) or FInsideList then
+    begin
+      if FInsideList then
+      begin
+        Include(FListStates[FCurrentList], sttLighting);
+        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
+      end
+      else
+      begin
+        FFrontBackColors[i][2] := diffuse;
+        GL.Materialfv(aFace, GL_DIFFUSE, @diffuse);
+      end;
+    end;
   end;
 end;
 
@@ -2589,6 +2649,15 @@ begin
   begin
     FProvokingVertex := Value;
     GL.ProvokingVertex(Value);
+  end;
+end;
+
+procedure TGLStateCache.SetColor(const Value: TVector4f);
+begin
+  if not VectorEquals(Value, FColor) then
+  begin
+    FColor := Value;
+    GL.Color4fv(@FColor);
   end;
 end;
 
