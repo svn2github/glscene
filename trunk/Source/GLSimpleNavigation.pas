@@ -9,7 +9,7 @@
     this component on the form.<p>
 
    <b>History : </b><font size=-1><ul>
-
+      <li>14/12/10 - DaStr - Fixed compiler hint
       <li>12/12/10 - Yar   - Adapted to using with TGLSceneForm
       <li>01/07/10 - Yar   - Fixed zooming for FPC (by Rustam Asmandiarov aka Predator)
       <li>17/06/10 - YP    - Fixed Zoom in/out inconsistence (mousewheel up/down inverted)
@@ -258,11 +258,12 @@ begin
 
   if FGLSceneViewer <> nil then
     lCamera := FGLSceneViewer.Camera
-  else if FSceneForm then
 {$IFDEF GLS_MULTITHREAD}
+  else if FSceneForm then
     lCamera := TGLSceneForm(FForm).Camera
 {$ENDIF}
-    ;
+  else
+    lCamera := nil;
 
   if Assigned(lCamera) then
   begin
