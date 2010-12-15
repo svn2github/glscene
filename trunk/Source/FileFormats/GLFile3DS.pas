@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>15/12/10 - YP - Disable and re-enable range-check only if needed
       <li>14/12/10 - DaStr - Added a work-around for a range-check bug
                              Bugfixed a case when material texture was turned on
                              when it should not be enabled
@@ -2260,9 +2261,9 @@ begin
                     begin
                       // no smoothing then just duplicate vertex
                       DuplicateVertex(CurrentIndex);
-                      {$R-} // DaStr: Bug here!!!
+                    {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
                       FaceRec[Vertex] := CurrentVertexCount - 1;
-                      {$R+}
+                    {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
                       mesh.Normals[CurrentVertexCount - 1] := Normal;
                       // mark new vertex also as touched
                       MarkVertex(Marker, CurrentVertexCount - 1);
@@ -2278,9 +2279,9 @@ begin
                         // vertex has not yet been duplicated for this smoothing
                         // group, so do it now
                         DuplicateVertex(CurrentIndex);
-                      {$R-} // DaStr: Bug here!!!
+                      {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
                         FaceRec[Vertex] := CurrentVertexCount - 1;
-                      {$R+}
+                      {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
                         mesh.Normals[CurrentVertexCount - 1] := Normal;
                         StoreSmoothIndex(CurrentIndex, SmoothingGroup,
                           CurrentVertexCount - 1, SmoothIndices);
@@ -2296,9 +2297,9 @@ begin
                         mesh.Normals[TargetVertex] :=
                           VectorAdd(mesh.Normals[TargetVertex], Normal);
                         // ...and tell which new vertex has to be used from now on
-                      {$R-} // DaStr: Bug here!!!
+                      {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
                         FaceRec[Vertex] := TargetVertex;
-                      {$R+}
+                      {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
                       end;
                     end;
                   end
