@@ -1043,16 +1043,28 @@ begin
     GLSLogger.LogWarning(cFailHWRC);
   end;
 
-  if FGL.W_ARB_create_context then
-    CreateNewContext(FDC)
-  else
-    CreateOldContext(FDC);
-
   Activate;
+  FGL.Initialize;
+  // If we are using AntiAliasing, adjust filtering hints
+  if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+    GLStates.MultisampleFilterHint := hintNicest
+  else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
+    GLStates.MultisampleFilterHint := hintFastest
+  else GLStates.MultisampleFilterHint := hintDontCare;
+
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
     FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+  begin
+    FSharedContexts.Add(ServiceContext);
+    PropagateSharedContext;
+  end;
+
   Deactivate;
+
+  GLSLogger.LogInfo('Backward compatible core PBuffer context successfully created');
 end;
 
 // DoShareLists
@@ -1094,8 +1106,6 @@ begin
   FRC := 0;
   FDC := 0;
   FShareContext := nil;
-  if not FLegacyContextsOnly then
-    FGL.Close;
 end;
 
 // DoActivate
