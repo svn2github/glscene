@@ -438,6 +438,22 @@ type
     function GetAttributes: TPropertyAttributes; override;
   end;
 
+  //  TGL3xMeshProperty
+  //
+
+  TGL3xMeshProperty = class(TStringProperty)
+  private
+    FMeshNameList: TStringList;
+    procedure RefreshMeshList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+    procedure Edit; override;
+  end;
+
   // TGLSLauncherEditor
   //
 
@@ -603,6 +619,8 @@ uses
   GL3xNishitaSky,
   GL3xMaterial,
   GL3xTexture,
+  GL3xFreeForm,
+  GL3xMesh,
   GL3xMaterialGraph,
   GL3xMaterialEditor,
   GLSLauncher,
@@ -1124,7 +1142,8 @@ begin
   Component := GetComponent(0) as TGLFreeForm;
   ODialog := TOpenDialog.Create(nil);
   try
-    GetVectorFileFormats.BuildFilterStrings(TVectorFile, Desc, F);
+    GLVectorFileObjects.GetVectorFileFormats.BuildFilterStrings(
+      GLVectorFileObjects.TVectorFile, Desc, F);
     ODialog.Filter := Desc;
     if ODialog.Execute then
     begin
@@ -1947,6 +1966,96 @@ begin
 end;
 
 // ------------------
+// ------------------ TGL3xMeshProperty ------------------
+// ------------------
+
+destructor TGL3xMeshProperty.Destroy;
+begin
+  FMeshNameList.Free;
+  inherited;
+end;
+
+procedure TGL3xMeshProperty.RefreshMeshList;
+begin
+  MeshManager.FillMeshNameList(FMeshNameList);
+end;
+
+function TGL3xMeshProperty.GetAttributes;
+begin
+  Result := [paValueList];
+end;
+
+// GetValues
+//
+
+procedure TGL3xMeshProperty.GetValues(Proc: TGetStrProc);
+var
+  I: Integer;
+begin
+  RefreshMeshList;
+  for I := 0 to FMeshNameList.Count - 1 do
+    Proc(FMeshNameList[I]);
+end;
+
+// SetValue
+//
+
+procedure TGL3xMeshProperty.SetValue(const Value: string);
+var
+  I, J, ImportReq: Integer;
+  project: IOTAProject;
+  rImportFile, rFileName: string;
+  rName: IGLName;
+begin
+  RefreshMeshList;
+  J := -1;
+  for I := 0 to FMeshNameList.Count - 1 do
+    if Value = FMeshNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if J > -1 then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    ImportReq := MessageDlg(Format('Import new mesh "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    rImportFile := '';
+    if (ImportReq = idYes) and OpenModelDialog(rImportFile) then
+    begin
+      project := GetActiveProject;
+      rFileName := ExtractFilePath(project.ProjectOptions.TargetName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.mesh';
+      with MeshManager do
+      try
+        BeginWork;
+        rName := CreateMesh(Value, TGL3xStaticMesh, rFileName, rImportFile);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         Designer.Modified;
+         exit;
+      end;
+    end;
+    SetStrValue(glsDEFAULTMESHNAME);
+  end;
+  Modified;
+  Designer.Modified;
+end;
+
+procedure TGL3xMeshProperty.Edit;
+begin
+end;
+
+// ------------------
 // ------------------ TGLSLauncherEditor ------------------
 // ------------------
 
@@ -2454,6 +2563,7 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Texture', TGL3xTextureProperty);
   RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Sampler', TGL3xSamplerProperty);
   RegisterPropertyEditor(TypeInfo(TGL3xSampler), TTextureSamplerNode, 'SamplerParameters', TGL3xSamplerParamProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGL3xFreeForm, 'Mesh', TGL3xMeshProperty);
 
   RegisterComponentEditor(TGLSLauncher, TGLSLauncherEditor);
 
@@ -2623,6 +2733,8 @@ initialization
     RegisterSceneObject(TGL3xLensFlare, 'Forward LensFlare', glsOCExperimental, HInstance);
     RegisterSceneObject(TGL3xNishitaSky, 'Nishita SkyDome', glsOCExperimental, HInstance);
     RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh', glsOCExperimental, HInstance);
+    RegisterSceneObject(TGL3xFreeForm, 'Forward FreeForm', glsOCExperimental, HInstance);
+
 {$ENDIF}
   end;
 
