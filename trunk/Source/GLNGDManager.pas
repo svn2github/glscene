@@ -16,6 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>16/12/10 - FP - Update to NewtonSDK 2.25-2.26
   <li>19/11/10 - FP - Fixed FAngularDamping memory leak for TGLNGDDynamic
   <li>19/11/10 - FP - Added UseGravity property for TGLNGDDynamic
   <li>05/11/10 - FP - Removed check freeform in TGLNGDStatic.GeTree
@@ -820,10 +821,10 @@ procedure NewtonContactsProcess(const contact: PNewtonJoint; timestep: NGDFloat;
   threadIndex: Integer); cdecl;
 
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
-  size: TNGDsize); cdecl;
+  size: Cardinal); cdecl;
 
 procedure NewtonDeserialize(serializeHandle: Pointer; buffer: Pointer;
-  size: TNGDsize); cdecl;
+  size: Cardinal); cdecl;
 
 // GLNGDObject register methods (used for joint object persistence)
 procedure RegisterGLSceneObject(anObject: TGLBaseSceneObject);
@@ -1053,13 +1054,13 @@ end;
 // It's better to save/load big collisions [over 50000 polygones] to reduce
 // loading time
 procedure NewtonSerialize(serializeHandle: Pointer; const buffer: Pointer;
-  size: TNGDsize); cdecl;
+  size: Cardinal); cdecl;
 begin
   TFileStream(serializeHandle).write(buffer^, size);
 end;
 
 procedure NewtonDeserialize(serializeHandle: Pointer; buffer: Pointer;
-  size: TNGDsize); cdecl;
+  size: Cardinal); cdecl;
 begin
   TFileStream(serializeHandle).read(buffer^, size);
 end;
@@ -3763,7 +3764,7 @@ begin
   if (val >= FMinLimit) then
     FMaxLimit := val;
   if FNewtonUserJoint <> nil then
-    HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
+    HingeSetLimits(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
 end;
 
 procedure TNGDCustomJointHinge.SetMinLimit(val: Single);
@@ -3771,7 +3772,7 @@ begin
   if (val <= FMaxLimit) then
     FMinLimit := val;
   if FNewtonUserJoint <> nil then
-    HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
+    HingeSetLimits(FNewtonUserJoint, DegToRad(FMinLimit), DegToRad(FMaxLimit));
 end;
 
 procedure TNGDCustomJointHinge.StructureChanged(Sender: TObject);
@@ -3784,7 +3785,7 @@ begin
         FNewtonUserJoint := CreateCustomHinge(@FPinAndPivotMatrix,
           GetBodyFromGLSceneObject(Object1), GetBodyFromGLSceneObject(Object2));
         HingeEnableLimits(FNewtonUserJoint, 1);
-        HingeSetLimis(FNewtonUserJoint, DegToRad(FMinLimit),
+        HingeSetLimits(FNewtonUserJoint, DegToRad(FMinLimit),
           DegToRad(FMaxLimit));
         CollisionState := FCollisionState;
         Stiffness := FStiffness;
@@ -3815,7 +3816,7 @@ begin
   if (val >= FMinLimit) then
     FMaxLimit := val;
   if FNewtonUserJoint <> nil then
-    SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+    SliderSetLimits(FNewtonUserJoint, FMinLimit, FMaxLimit);
 end;
 
 procedure TNGDCustomJointSlider.SetMinLimit(val: Single);
@@ -3823,7 +3824,7 @@ begin
   if (val <= FMaxLimit) then
     FMinLimit := val;
   if FNewtonUserJoint <> nil then
-    SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+    SliderSetLimits(FNewtonUserJoint, FMinLimit, FMaxLimit);
 end;
 
 procedure TNGDCustomJointSlider.StructureChanged(Sender: TObject);
@@ -3836,7 +3837,7 @@ begin
         FNewtonUserJoint := CreateCustomSlider(@FPinAndPivotMatrix,
           GetBodyFromGLSceneObject(Object1), GetBodyFromGLSceneObject(Object2));
         SliderEnableLimits(FNewtonUserJoint, 1);
-        SliderSetLimis(FNewtonUserJoint, FMinLimit, FMaxLimit);
+        SliderSetLimits(FNewtonUserJoint, FMinLimit, FMaxLimit);
         CollisionState := FCollisionState;
         Stiffness := FStiffness;
       end;
