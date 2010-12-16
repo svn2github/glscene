@@ -3698,11 +3698,10 @@ var
   tmpList: PSingle;
 begin
   Inc(FCount);
-  if FCount = FCapacity then
+  if FCount >= FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
   tmpList := @FList[FCount - 1];
   tmpList^ := i1;
-
 end;
 
 procedure T4ByteList.Add(const i1, i2: Single);
