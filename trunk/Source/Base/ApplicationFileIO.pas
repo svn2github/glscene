@@ -37,6 +37,7 @@ uses
 const
   GLS_RC_DDS_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'DDS'{$ENDIF};
   GLS_RC_JPG_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'JPG'{$ENDIF};
+  GLS_RC_OBJ_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'OBJ'{$ENDIF};
   GLS_RC_XML_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'XML'{$ENDIF};
   GLS_RC_String_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'STR'{$ENDIF};
 
@@ -158,6 +159,8 @@ function FileStreamExists(const fileName: string): Boolean;
 
 {: Create a resource stream. }
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
+
+function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;
 
 var
   vAFIOCreateFileStream: TAFIOCreateFileStream = nil;
@@ -359,6 +362,36 @@ end;
 procedure TDataFile.SetResourceName(const AName: string);
 begin
   FResourceName := AName;
+end;
+
+function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;
+begin
+  if AStrRes = '[SAMPLERS]' then
+  begin
+    Result := aresSampler;
+  end
+  else if AStrRes = '[TEXTURES]' then
+  begin
+    Result := aresTexture;
+  end
+  else if AStrRes = '[MATERIALS]' then
+  begin
+    Result := aresMaterial;
+  end
+  else if AStrRes = '[STATIC MESHES]' then
+  begin
+    Result := aresMesh;
+  end
+  else if AStrRes = '[SPLASH]' then
+  begin
+    Result := aresSplash;
+  end
+  else if AStrRes = '[FONTS]' then
+  begin
+    Result := aresFont;
+  end
+  else
+    Result := aresNone;
 end;
 
 end.
