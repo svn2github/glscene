@@ -1742,6 +1742,7 @@ begin
       oldContext.Activate;
   end;
   FAcceleration := chaUnknown;
+  FGL.Close;
 end;
 
 // Activate
@@ -3084,20 +3085,20 @@ end;
 procedure TGLTransformFeedbackBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
   size: TGLsizeiptr);
 begin
-  // TODO: XBO BindRange state cashing
-  GL.BindBufferRange(Target, index, Handle, offset, size);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
+    index, offset, size);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.BindBase(index: TGLuint);
 begin
-  // TODO: XBO BindBase state cashing
-  GL.BindBufferBase(Target, index, Handle);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
+    index, BufferSize);
 end;
 
 procedure TGLTransformFeedbackBufferHandle.UnBindBase(index: TGLuint);
 begin
-  // TODO: XBO UnBindBase state cashing
-  GL.BindBufferBase(Target, index, 0);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
+    index, 0);
 end;
 
 // IsSupported
@@ -3156,20 +3157,20 @@ end;
 procedure TGLUniformBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
   size: TGLsizeiptr);
 begin
-  // TODO: UBO BindRange state cashing
-  GL.BindBufferRange(Target, index, Handle, offset, size);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
+    index, offset, size);
 end;
 
 procedure TGLUniformBufferHandle.BindBase(index: TGLuint);
 begin
-  // TODO: UBO BindBase state cashing
-  GL.BindBufferBase(Target, index, Handle);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
+    index, BufferSize);
 end;
 
 procedure TGLUniformBufferHandle.UnBindBase(index: TGLuint);
 begin
-  // TODO: UBO UnBindBase state cashing
-  GL.BindBufferBase(Target, index, 0);
+  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtUniform,
+    index, 0);
 end;
 
 // GetTarget
