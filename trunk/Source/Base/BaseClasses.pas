@@ -119,7 +119,7 @@ type
     class function FirstOne: Boolean; virtual;
   public
     { Public Declarations }
-    class function FillResourceList(AList: TStringList): Boolean; virtual;
+    class function FillResourceList(AList: TStringList): Boolean; virtual; abstract;
     class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); virtual; abstract;
     // Brackets for thread safe work.
     class procedure BeginWork; virtual;
@@ -161,6 +161,7 @@ type
     function GetManager: TGLSAbstractManagerClass; virtual; abstract;
     property Value: string read GetValue write SetValue;
     property HashCode: Integer read GetHash;
+    property IndexInManagerArray: Integer read GetIndex;
   end;
 
 procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
@@ -405,11 +406,6 @@ begin
   end;
 end;
 
-class function TGLSAbstractManager.FillResourceList(AList: TStringList): Boolean;
-begin
-  Result := False;
-end;
-
 procedure NotifyGLSceneManagersContextCreated;
 var
   I: Integer;
@@ -448,16 +444,18 @@ end;
 
 function UpdateGLSceneManagersResourceList: Boolean;
 var
-  I: Integer;
+  I, C: Integer;
   lList: TStringList;
 begin
   vManagersResourceList := '';
   if Length(aGLSceneManagers)>0 then
   begin
     lList := TStringList.Create;
-    Result := False;
+    C := 0;
     for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
-      Result := Result or aGLSceneManagers[I].ManagerClass.FillResourceList(lList);
+      if aGLSceneManagers[I].ManagerClass.FillResourceList(lList) then
+        Inc(C);
+    Result := C > 0;
     if Result then
       vManagersResourceList := lList.Text;
     lList.Destroy;
