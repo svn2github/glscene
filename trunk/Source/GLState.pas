@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
       <li>14/12/10 - DaStr - Added to TGLStateCache:
                                Color property
                                SetGLMaterialColorsNoLighting()
@@ -142,32 +143,36 @@ type
 
 const
   cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
-  MAX_HARDWARE_LIGHT = 16;
+  MAX_HARDWARE_LIGHT = 8;
   MAX_HARDWARE_TEXTURE_UNIT = 48;
+  MAX_HARDWARE_UNIFORM_BUFFER_BINDING = 75;
 
 type
 
   THintType = (hintDontCare, hintFastest, hintNicest);
 
   TLightSourceState = packed record
-    Position: TVector;  // offset 0
-    Ambient: TVector;  // offset 16
-    Diffuse: TVector;  // offset 32
-    Specular: TVector; // offset 48
-    SpotDirection: TAffineVector; // offset 64
-    SpotCutoff: Single; // offset 76
-    SpotExponent: Single; // offset 80
-    ConstantAtten: Single; // offset 84
-    LinearAtten: Single;  // offset 88
-    QuadAtten: Single;  // offset 92
-    SpotCosCutoff: Single; // offset 96
-    Padding: TAffineVector;
+    Position: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 0
+    Ambient: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 16
+    Diffuse: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 32
+    Specular: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset 48
+    SpotDirection: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
+    SpotCosCutoffExponent: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
+    Attenuation: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
   end;
 
   TVAOStates = record
     FArrayBufferBinding: TGLuint;
     FElementBufferBinding: TGLuint;
     FAttribEnabling: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLboolean;
+  end;
+
+  TGLBufferBindingTarget = (bbtUniform, bbtTransformFeedBack);
+
+  TUBOStates = record
+    FUniformBufferBinding: TGLuint;
+    FOffset: TGLintptr;
+    FSize: TGLsizeiptr;
   end;
 
   // TGLStateCache
@@ -191,7 +196,10 @@ type
     FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
     FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of TGLint;
     FLightNumber: Integer;
-    FLightStates: array[0..MAX_HARDWARE_LIGHT - 1] of TLightSourceState;
+    FLightStates: TLightSourceState;
+    FSpotCutoff: array[0..MAX_HARDWARE_LIGHT-1] of Single;
+    FPackedLightStates: TLightSourceState;
+    FPackedLightStatesChanged: Boolean;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
@@ -345,6 +353,7 @@ type
     FCurrentProgram: TGLuint;
     FMaxTextureUnits: TGLuint;
     FUniformBufferBinding: TGLuint;
+    FUBOStates: array[TGLBufferBindingTarget, 0..MAX_HARDWARE_UNIFORM_BUFFER_BINDING-1] of TUBOStates;
 
     // Vector + Geometry Shader state
     FCurrentVertexAttrib: array[0..15] of TVector;
@@ -394,7 +403,6 @@ type
     procedure SetClampReadColor(const Value: TGLenum);
     procedure SetProvokingVertex(const Value: TGLenum);
     procedure SetColor(const Value: TVector4f);
-
     // Rasterization state
     procedure SetPointSize(const Value: TGLfloat);
     procedure SetPointFadeThresholdSize(const Value: TGLfloat);
@@ -601,7 +609,7 @@ type
     property LightQuadraticAtten[Index: Integer]: Single read GetQuadAtten write
     SetQuadAtten;
     function GetLightIndicesAsAddress: PGLInt;
-    function GetLightStateAsAddress: PGLInt;
+    function GetLightStateAsAddress: Pointer;
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TNotifyEvent read FOnLightsChanged write FOnLightsChanged;
 
@@ -995,6 +1003,9 @@ type
     property UniformBufferBinding: TGLuint read FUniformBufferBinding
       write SetUniformBufferBinding;
 
+    procedure SetBufferIndexedBinding(const Value: TGLuint; ATarget: TGLBufferBindingTarget; AIndex: TGLuint; ABufferSize: TGLsizeiptr); overload;
+    procedure SetBufferIndexedBinding(const Value: TGLuint; ATarget: TGLBufferBindingTarget; AIndex: TGLuint; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload;
+
     // Vector + Geometry Shader state
     {: Default values to be used when a vertex array is not used for that
        attribute. }
@@ -1166,6 +1177,9 @@ const
 
   cGLHintToGLEnum: array[THintType] of TGLEnum =
     (GL_DONT_CARE, GL_FASTEST, GL_NICEST);
+
+  cGLBufferBindingTarget: array[TGLBufferBindingTarget] of TGLEnum =
+    (GL_UNIFORM_BUFFER, GL_TRANSFORM_FEEDBACK_BUFFER);
   //------------------------------------------------------
   //------------------------------------------------------
   //------------------------------------------------------
@@ -1229,23 +1243,22 @@ begin
   FFFPLight := True;
   FMaxLights := 0;
   FLightNumber := 0;
+
   for I := High(FLightEnabling) downto 0 do
   begin
     FLightEnabling[I] := False;
     FLightIndices[I] := 0;
-    FLightStates[I].Position := NullHmgVector;
-    FLightStates[I].Ambient := clrBlack;
-    FLightStates[I].Diffuse := clrBlack;
-    FLightStates[I].Specular := clrBlack;
-    FLightStates[I].SpotDirection := AffineVectorMake(0.0, 0.0, -1.0);
-    FLightStates[I].SpotCutoff := 180.0;
-    FlightStates[I].SpotCosCutoff := -1;
-    FLightStates[I].SpotExponent := 0;
-    FLightStates[I].ConstantAtten := 1.0;
-    FLightStates[I].LinearAtten := 0;
-    FLightStates[I].QuadAtten := 0;
+    FLightStates.Position[I] := NullHmgVector;
+    FLightStates.Ambient[I] := clrBlack;
+    FLightStates.Diffuse[I] := clrBlack;
+    FLightStates.Specular[I] := clrBlack;
+    FLightStates.SpotDirection[I] := VectorMake(0.0, 0.0, -1.0, 0.0);
+    FSpotCutoff[I] := 180.0;
+    FlightStates.SpotCosCutoffExponent[I][0] := -1;
+    FLightStates.SpotCosCutoffExponent[I][1] := 0;
+    FLightStates.Attenuation[I] := NullHmgVector;
   end;
-  FLightStates[0].Diffuse := clrWhite;
+  FLightStates.Diffuse[0] := clrWhite;
 
   for I := High(FTextureMatrixIsIdentity) downto 0 do
     FTextureMatrixIsIdentity[I] := False;
@@ -1384,6 +1397,7 @@ begin
   // Program state
   FCurrentProgram := 0;
   FUniformBufferBinding := 0;
+  FillChar(FUBOStates[bbtUniform][0], SizeOf(FUBOStates), $00);
 
   // Vector + Geometry Shader state
   for I := 0 to Length(FCurrentVertexAttrib) - 1 do
@@ -1525,6 +1539,7 @@ end;
 
 // SetGLMaterialColors
 //
+
 procedure TGLStateCache.SetGLMaterialColors(const aFace: TCullFaceMode;
   const emission, ambient, diffuse, specular: TVector;
   const shininess: Integer);
@@ -1587,6 +1602,7 @@ end;
 
 // SetGLMaterialAlphaChannel
 //
+
 procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: TGLEnum; const
   alpha: TGLFloat);
 var
@@ -1611,6 +1627,7 @@ begin
       begin
         Include(FListStates[FCurrentList], sttLighting);
         GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
+
       end
       else
       begin
@@ -1742,12 +1759,19 @@ begin
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
-    if GL.NV_primitive_restart or FForwardContext then
+    if FForwardContext then
     begin
       if enabled then
         GL.Enable(GL_PRIMITIVE_RESTART)
       else
         GL.Disable(GL_PRIMITIVE_RESTART);
+    end
+    else if GL.NV_primitive_restart then
+    begin
+      if enabled then
+        GL.EnableClientState(GL_PRIMITIVE_RESTART_NV)
+      else
+        GL.DisableClientState(GL_PRIMITIVE_RESTART_NV);
     end;
   end;
 end;
@@ -3087,10 +3111,49 @@ end;
 
 procedure TGLStateCache.SetUniformBufferBinding(const Value: TGLuint);
 begin
-  if (Value <> FUniformBufferBinding) or FInsideList then
+  Assert(not FInsideList);
+  if Value <> FUniformBufferBinding then
   begin
     FUniformBufferBinding := Value;
     GL.BindBuffer(GL_UNIFORM_BUFFER, Value);
+  end;
+end;
+
+procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
+  ATarget: TGLBufferBindingTarget; AIndex: TGLuint; ABufferSize: TGLsizeiptr);
+begin
+  Assert(not FInsideList);
+  if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
+    or (FUBOStates[ATarget, AIndex].FOffset > 0)
+    or (FUBOStates[ATarget, AIndex].FSize <> ABufferSize) then
+  begin
+    FUniformBufferBinding := Value;
+    FUBOStates[ATarget, AIndex].FUniformBufferBinding := Value;
+    FUBOStates[ATarget, AIndex].FOffset := 0;
+    FUBOStates[ATarget, AIndex].FSize := ABufferSize;
+    GL.BindBufferBase(cGLBufferBindingTarget[ATarget], AIndex, Value);
+  end
+  else
+    case ATarget of
+      bbtUniform: SetUniformBufferBinding(Value);
+      bbtTransformFeedBack: SetTransformFeedbackBufferBinding(Value);
+    end;
+end;
+
+procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
+  ATarget: TGLBufferBindingTarget; AIndex: TGLuint;
+    AOffset: TGLintptr; ARangeSize: TGLsizeiptr);
+begin
+  Assert(not FInsideList);
+  if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
+    or (FUBOStates[ATarget, AIndex].FOffset <> AOffset)
+    or (FUBOStates[ATarget, AIndex].FSize <> ARangeSize) then
+  begin
+    FUniformBufferBinding := Value;
+    FUBOStates[ATarget, AIndex].FUniformBufferBinding := Value;
+    FUBOStates[ATarget, AIndex].FOffset := AOffset;
+    FUBOStates[ATarget, AIndex].FSize := ARangeSize;
+    GL.BindBufferRange(cGLBufferBindingTarget[ATarget], AIndex, Value, AOffset, ARangeSize);
   end;
 end;
 
@@ -3233,6 +3296,7 @@ begin
     end;
     FLightNumber := K;
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3243,21 +3307,51 @@ begin
   Result := @FLightIndices[0];
 end;
 
-function TGLStateCache.GetLightStateAsAddress: PGLInt;
+function TGLStateCache.GetLightStateAsAddress: Pointer;
+var
+  I, J: Integer;
 begin
-  Result := @FLightStates[0];
+  if GL.VERSION_3_0 then
+  begin
+    Result := @FLightStates;
+  end
+  else
+  begin
+    if FPackedLightStatesChanged then
+    begin
+      if FLightNumber > 0 then
+      begin
+        for I := FLightNumber - 1 downto 0 do
+        begin
+          J := FLightIndices[I];
+          FPackedLightStates.Position[I] := FLightStates.Position[J];
+          FPackedLightStates.Ambient[I] := FLightStates.Ambient[J];
+          FPackedLightStates.Diffuse[I] := FLightStates.Diffuse[J];
+          FPackedLightStates.Specular[I] := FLightStates.Specular[J];
+          FPackedLightStates.SpotDirection[I] := FLightStates.SpotDirection[J];
+          FPackedLightStates.SpotCosCutoffExponent[I] := FLightStates.SpotCosCutoffExponent[J];
+          FPackedLightStates.Attenuation[I] := FLightStates.Attenuation[J];
+        end;
+      end
+      else
+        FillChar(FPackedLightStatesChanged, SizeOf(FPackedLightStatesChanged), $00);
+      FPackedLightStatesChanged := False;
+    end;
+    Result := @FPackedLightStates;
+  end;
 end;
 
 function TGLStateCache.GetLightPosition(I: Integer): TVector;
 begin
-  Result := FLightStates[I].Position;
+  Result := FLightStates.Position[I];
 end;
 
 procedure TGLStateCache.SetLightPosition(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates[I].Position) then
+  if not VectorEquals(Value, FLightStates.Position[I]) then
   begin
-    FLightStates[I].Position := Value;
+    FLightStates.Position[I] := Value;
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3265,14 +3359,15 @@ end;
 
 function TGLStateCache.GetLightSpotDirection(I: Integer): TAffineVector;
 begin
-  Result := FLightStates[I].SpotDirection;
+  Result := AffineVectorMake(FLightStates.SpotDirection[I]);
 end;
 
 procedure TGLStateCache.SetLightSpotDirection(I: Integer; const Value: TAffineVector);
 begin
-  if not VectorEquals(Value, FLightStates[I].SpotDirection) then
+  if not VectorEquals(Value, AffineVectorMake(FLightStates.SpotDirection[I])) then
   begin
-    FLightStates[I].SpotDirection := Value;
+    FLightStates.SpotDirection[I] := VectorMake(Value);
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3280,21 +3375,22 @@ end;
 
 function TGLStateCache.GetLightAmbient(I: Integer): TVector;
 begin
-  Result := FLightStates[I].Ambient;
+  Result := FLightStates.Ambient[I];
 end;
 
 procedure TGLStateCache.SetLightAmbient(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates[I].Ambient) or FInsideList then
+  if not VectorEquals(Value, FLightStates.Ambient[I]) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].Ambient := Value;
+      FLightStates.Ambient[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3302,21 +3398,22 @@ end;
 
 function TGLStateCache.GetLightDiffuse(I: Integer): TVector;
 begin
-  Result := FLightStates[I].Diffuse;
+  Result := FLightStates.Diffuse[I];
 end;
 
 procedure TGLStateCache.SetLightDiffuse(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates[I].Diffuse) or FInsideList then
+  if not VectorEquals(Value, FLightStates.Diffuse[I]) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].Diffuse := Value;
+      FLightStates.Diffuse[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3324,21 +3421,22 @@ end;
 
 function TGLStateCache.GetLightSpecular(I: Integer): TVector;
 begin
-  Result := FLightStates[I].Specular;
+  Result := FLightStates.Specular[I];
 end;
 
 procedure TGLStateCache.SetLightSpecular(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates[I].Specular) or FInsideList then
+  if not VectorEquals(Value, FLightStates.Specular[I]) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].Specular := Value;
+      FLightStates.Specular[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3346,24 +3444,25 @@ end;
 
 function TGLStateCache.GetSpotCutoff(I: Integer): Single;
 begin
-  Result := FLightStates[I].SpotCutoff;
+  Result := FSpotCutoff[I];
 end;
 
 procedure TGLStateCache.SetSpotCutoff(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates[I].SpotCutoff) or FInsideList then
+  if (Value <> FSpotCutoff[I]) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
     begin
-      FLightStates[I].SpotCutoff := Value;
-      FLightStates[I].SpotCosCutoff := cos(DegToRad(Value));
+      FSpotCutoff[I] := Value;
+      FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
     end;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3371,21 +3470,23 @@ end;
 
 function TGLStateCache.GetSpotExponent(I: Integer): Single;
 begin
-  Result := FLightStates[I].SpotExponent;
+  Result := FLightStates.SpotCosCutoffExponent[I][1];
 end;
 
 procedure TGLStateCache.SetSpotExponent(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates[I].SpotExponent) or FInsideList then
+  if (Value <> FLightStates.SpotCosCutoffExponent[I][1] )
+    or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].SpotExponent := Value;
+      FLightStates.SpotCosCutoffExponent[I][1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3393,21 +3494,22 @@ end;
 
 function TGLStateCache.GetConstantAtten(I: Integer): Single;
 begin
-  Result := FLightStates[I].ConstantAtten;
+  Result := FLightStates.Attenuation[I][0] ;
 end;
 
 procedure TGLStateCache.SetConstantAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates[I].ConstantAtten) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I][0] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].ConstantAtten := Value;
+      FLightStates.Attenuation[I][0]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3415,21 +3517,22 @@ end;
 
 function TGLStateCache.GetLinearAtten(I: Integer): Single;
 begin
-  Result := FLightStates[I].LinearAtten;
+  Result := FLightStates.Attenuation[I][1] ;
 end;
 
 procedure TGLStateCache.SetLinearAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates[I].LinearAtten) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I][1] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].LinearAtten := Value;
+      FLightStates.Attenuation[I][1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3437,21 +3540,22 @@ end;
 
 function TGLStateCache.GetQuadAtten(I: Integer): Single;
 begin
-  Result := FLightStates[I].QuadAtten;
+  Result := FLightStates.Attenuation[I][2] ;
 end;
 
 procedure TGLStateCache.SetQuadAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates[I].QuadAtten) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I][2] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates[I].QuadAtten := Value;
+      FLightStates.Attenuation[I][2]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
 
+    FPackedLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
