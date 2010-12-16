@@ -194,7 +194,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Top = 56
     Width = 201
     Camera = Camera
-    FieldOfView = 64.5974731445312
+    FieldOfView = 64.5974731445313
     OnMouseDown = SceneViewerMouseDown
     OnMouseMove = SceneViewerMouseMove
     OnMouseWheel = SceneViewerMouseWheel
@@ -329,7 +329,7 @@ object MaterialEditorForm: TMaterialEditorForm
         PitchAngle = 0
         RollAngle = 0
         TurnAngle = 0
-        Radius = 0.80000001192092
+        Radius = 0.80000001192093
       end
       object Cone: TGLCone
         TagFloat = 0
@@ -385,7 +385,7 @@ object MaterialEditorForm: TMaterialEditorForm
         PitchAngle = 0
         RollAngle = 0
         TurnAngle = 0
-        Radius = 0.30000001192092
+        Radius = 0.30000001192093
       end
     end
     object Camera: TGLCamera

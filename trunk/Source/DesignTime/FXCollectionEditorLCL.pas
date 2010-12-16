@@ -21,7 +21,7 @@ interface
 
 uses
   LResources, Forms, XCollection, Controls, Classes, ActnList,
-  Menus, ComCtrls, Propedits;
+  Menus, ComCtrls;
 
 type
 
@@ -85,7 +85,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, GLBehaviours, GLScene, Dialogs;
+  SysUtils, GLBehaviours, GLScene, Dialogs, PropEdits;
 
 resourcestring
   cXCollectionEditor = 'XCollection editor';

@@ -31,7 +31,6 @@ object XCollectionEditor: TXCollectionEditor
         Caption = 'Type'
         Width = 150
       end>
-    ItemIndex = -1
     PopupMenu = PMListView
     ReadOnly = True
     RowSelect = True
@@ -58,8 +57,8 @@ object XCollectionEditor: TXCollectionEditor
       Caption = 'TBAdd'
       DropdownMenu = PMToolBar
       ImageIndex = 1
-      Style = tbsDropDown
       OnClick = TBAddClick
+      Style = tbsDropDown
     end
     object ToolButton5: TToolButton
       Left = 36
