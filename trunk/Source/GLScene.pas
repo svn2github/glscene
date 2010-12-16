@@ -8505,8 +8505,7 @@ procedure TGLSceneBuffer.Melt;
 begin
   if not Freezed then
     Exit;
-  if Assigned(FFreezeBuffer) then
-    FreeMem(FFreezeBuffer);
+  FreeMem(FFreezeBuffer);
   FFreezeBuffer := nil;
   FFreezed := False;
 end;
