@@ -70,18 +70,25 @@ unit GLFileOBJ;
 
 interface
 
-uses GLCrossPlatform,
+uses
+  GLCrossPlatform,
   Classes,
   SysUtils,
-  GLScene,
   ApplicationFileIO,
+
   VectorGeometry,
+  GLScene,
   GLVectorFileObjects,
   VectorLists,
   GLTexture,
   GLColor,
   GLRenderContextInfo,
-  GLMaterial;
+  GLMaterial
+{$IFDEF GLS_EXPERIMENTAL}
+  ,GLShaderManager,
+  GL3xMesh
+{$ENDIF GLS_EXPERIMENTAL}
+  ;
 
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
@@ -155,6 +162,15 @@ type
       const defaultValue: TVector): TVector;
   end;
 
+{$IFDEF GLS_EXPERIMENTAL}
+  TGLMeshOBJFileIO = class(TGLAbstractMeshFileIO)
+  public
+//    class function Capabilities: TDataFileCapabilities; virtual;
+    class procedure LoadFromStream(AStream: TStream; ABuilder: TGLAbstractMeshBuilder); override;
+//    class procedure SaveToStream(AStream: TStream; ADest: TGLAbstractMeshBuilder); virtual;
+  end;
+{$ENDIF GLS_EXPERIMENTAL}
+
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -168,7 +184,8 @@ uses
   XOpenGL,
   GLContext,
   MeshUtils,
-  GLUtils;
+  GLUtils,
+  GLSLog;
 
 // StreamEOF
 //
@@ -220,6 +237,7 @@ end;
     7,8,9,10,11 and 12 a hexagon".
 
 }
+
 type
   TOBJFGMode = (objfgmmPolygons, objfgmmTriangleStrip);
 
@@ -1375,11 +1393,353 @@ begin
   end;
 end;
 
+{$IFDEF GLS_EXPERIMENTAL}
+class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLAbstractMeshBuilder);
+
+  var
+    Buffer: AnsiString; { Buffer }
+    Line: string; { current line }
+    LineNo: Integer; { current Line number - for error messages }
+    Eof: Boolean; { Stream done? }
+    BufPos: Integer; { Position in the buffer }
+
+    PositionList, NormalList, TexCoordList: T4ByteList;
+    PositionType, NormalType, TexCoordType: TGLSLDataType;
+    PositionIndices, NormalIndices, TexCoordIndices: TIntegerList;
+
+    command: string;
+
+{$REGION 'Subroutines'}
+  procedure ReadLine;
+  var
+    j: Integer;
+
+    procedure FillBuffer;
+    var
+      l: Integer;
+    begin
+      l := AStream.Size - AStream.Position;
+      if l > BufSize then
+        l := BufSize;
+      SetLength(Buffer, l);
+      AStream.Read(Buffer[1], l);
+      BufPos := 1;
+    end;
+
+  begin
+    Inc(LineNo);
+
+    if BufPos < 1 then
+      FillBuffer;
+
+    j := 1;
+    while True do
+    begin
+      if BufPos > Length(Buffer) then
+      begin
+        if StreamEof(AStream) then
+        begin
+          Eof := True;
+          break;
+        end
+        else
+          FillBuffer
+      end
+      else
+      begin
+        case Buffer[BufPos] of
+          #10, #13:
+            begin
+              Inc(BufPos);
+              if BufPos > Length(Buffer) then
+                if StreamEof(AStream) then
+                  break
+                else
+                  FillBuffer;
+              if (Buffer[BufPos] = #10) or (Buffer[BufPos] = #13) then
+                Inc(BufPos);
+              break;
+            end;
+        else
+          if j > Length(Line) then
+            SetLength(Line, Length(Line) + LineLen);
+          if Buffer[BufPos] = #9 then
+            Line[j] := #32
+          else
+            Line[j] := Char(Buffer[BufPos]);
+          Inc(BufPos);
+          Inc(j);
+        end;
+      end;
+    end;
+
+    SetLength(Line, j - 1);
+  end;
+
+  procedure AddFaceVertex(FaceVertices: string);
+
+    function GetIndex(Count: Integer): Integer;
+    var
+      s: string;
+    begin
+      s := NextToken(FaceVertices, '/');
+      Result := StrToIntDef(s, 0);
+      if Result = 0 then
+        Result := -1 // Missing
+      else if Result < 0 then
+      begin
+        { Relative, make absolute. "-1" means last, "-2" second last. }
+        Result := Count + Result
+      end
+      else
+      begin
+        { Absolute, correct for zero-base. }
+        Dec(Result);
+      end;
+    end;
+
+  var
+    pIdx, tIdx, nIdx: Integer;
+  begin
+    pIdx := GetIndex(PositionList.Count);
+    tIdx := GetIndex(NormalList.Count);
+    nIdx := GetIndex(TexCoordList.Count);
+    PositionIndices.Add(pIdx);
+    NormalIndices.Add(nIdx);
+    TexCoordIndices.Add(tIdx);
+  end;
+
+  procedure ReadFace;
+  var
+    faceVertices: string;
+  begin
+    if Line <> '' then
+    begin
+      while Line <> '' do
+      begin
+        faceVertices := NextToken(Line, ' ');
+        AddFaceVertex(faceVertices);
+      end;
+    end;
+  end;
+
+  procedure ReadVector(AList: T4ByteList; var AType: TGLSLDataType);
+    { Read a vector with a maximum of 4 elements from the current line. }
+  var
+    i, err: Integer;
+    f: string;
+    r: Single;
+  begin
+    i := 0;
+    while (Line <> '') and (i < 4) do
+    begin
+      f := NextToken(Line, ' ');
+      Val(f, r, err);
+      if err <> 0 then
+      begin
+        GLSLogger.LogError(Format('%s: "%s" is not a valid floating-point constant.', [Self.UnitName, f]));
+        r := 0.0;
+      end;
+      AList.Add(r);
+      Inc(i);
+    end;
+    if AType = GLSLTypeUndefined then
+      case i of
+        1: AType := GLSLType1f;
+        2: AType := GLSLType2f;
+        3: AType := GLSLType3f;
+        4: AType := GLSLType4f;
+      end;
+  end;
+
+  var
+    I: Integer;
+
+  procedure AddAttribute(const Attr: TGLSLAttribute; ASource: T4ByteList; AType: TGLSLDataType; IndicesList: TIntegerList);
+  var
+    Index: Integer;
+    nNormal: TAffineVector;
+  begin
+    if I < IndicesList.Count then
+      Index := IndicesList[I]
+    else
+      Index := -1;
+
+    if Index > -1 then
+      case AType of
+        GLSLType1F:
+        begin
+          ABuilder.Attribute1f(Attr,
+            ASource[Index].Float.Value);
+        end;
+        GLSLType2F:
+        begin
+          Index := 2*Index;
+          ABuilder.Attribute2f(Attr,
+            ASource[Index+0].Float.Value,
+            ASource[Index+1].Float.Value);
+        end;
+        GLSLType3F:
+        begin
+          Index := 3*Index;
+          nNormal := AffineVectorMake(
+            ASource[Index+0].Float.Value,
+            ASource[Index+1].Float.Value,
+            ASource[Index+2].Float.Value);
+          if Attr = attrNormal then
+            NormalizeVector(nNormal);
+          ABuilder.Attribute3f(Attr, nNormal);
+        end;
+        GLSLType4F:
+        begin
+          Index := 4*Index;
+          ABuilder.Attribute4f(Attr,
+            ASource[Index+0].Float.Value,
+            ASource[Index+1].Float.Value,
+            ASource[Index+2].Float.Value,
+            ASource[Index+3].Float.Value);
+        end;
+    end
+    else
+      case AType of
+        GLSLType1F: ABuilder.Attribute1f(Attr, 0.0);
+        GLSLType2F: ABuilder.Attribute2f(Attr, 0.0, 0.0);
+        GLSLType3F: ABuilder.Attribute3f(Attr, 0.0, 0.0, 0.0);
+        GLSLType4F: ABuilder.Attribute4f(Attr, 0.0, 0.0, 0.0, 0.0);
+      end;
+  end;
+
+  procedure FreeLists;
+  begin
+    PositionList.Destroy;
+    NormalList.Destroy;
+    TexCoordList.Destroy;
+    PositionIndices.Destroy;
+    NormalIndices.Destroy;
+    TexCoordIndices.Destroy;
+  end;
+
+  {$ENDREGION}
+
+begin
+  Eof := False;
+  LineNo := 0;
+
+  PositionList := T4ByteList.Create;
+  NormalList := T4ByteList.Create;
+  TexCoordList := T4ByteList.Create;
+  PositionType := GLSLTypeUndefined;
+  NormalType := GLSLTypeUndefined;
+  TexCoordType := GLSLTypeUndefined;
+  PositionIndices := TIntegerList.Create;
+  NormalIndices := TIntegerList.Create;
+  TexCoordIndices := TIntegerList.Create;
+
+  try
+    ABuilder.BeginMeshAssembly;
+    ABuilder.Clear;
+
+    while not Eof do
+    begin
+      ReadLine;
+      if Line = '' then
+        Continue; { Skip blank line }
+      if CharInSet(Line[1], ['#', '$']) then
+        Continue; { Skip comment and alternate comment }
+
+      command := AnsiUpperCase(NextToken(Line, ' '));
+
+      if command = 'V' then
+      begin
+        ReadVector(PositionList, PositionType);
+      end
+      else if command = 'VT' then
+      begin
+        ReadVector(TexCoordList, TexCoordType);
+      end
+      else if command = 'VN' then
+      begin
+        ReadVector(NormalList, NormalType);
+      end
+      else if command = 'VP' then
+      begin
+        { Parameter Space Vertex: Ignore }
+      end
+      else if command = 'G' then
+      begin
+        //Skip
+      end
+      else if command = 'F' then
+      begin
+        ReadFace;
+      end
+      else if command = 'O' then
+      begin
+        { Object Name:  Ignore }
+      end
+      else if command = 'MTLLIB' then
+      begin
+        //Skip
+      end
+      else if command = 'USEMTL' then
+      begin
+        //Skip
+      end
+      else if command = 'S' then
+      begin
+        //Skip
+      end
+      else if command = 'T' then
+      begin
+//        ReadTriangleStrip;
+      end
+      else if command = 'Q' then
+      begin
+//        ReadTriangleStripContinued;
+      end
+      else
+        GLSLogger.LogError(Self.UnitName+ ': unsupported Command "' + command + '"');
+    end;
+    if PositionType <> GLSLTypeUndefined then
+      ABuilder.DeclareAttribute(attrPosition, PositionType);
+    if NormalType <> GLSLTypeUndefined then
+      ABuilder.DeclareAttribute(attrNormal, NormalType);
+    if TexCoordType <> GLSLTypeUndefined then
+      ABuilder.DeclareAttribute(attrTexCoord0, TexCoordType);
+
+    ABuilder.BeginBatch(mpTRIANGLES);
+    for I := 0 to PositionIndices.Count - 1 do
+    begin
+      AddAttribute(attrPosition, PositionList, PositionType, PositionIndices);
+      AddAttribute(attrNormal, NormalList, NormalType, NormalIndices);
+      AddAttribute(attrTexCoord0, TexCoordList, TexCoordType, TexCoordIndices);
+      ABuilder.EmitVertex;
+    end;
+    ABuilder.EndBatch;
+
+    ABuilder.WeldVertices;
+    ABuilder.EndMeshAssembly;
+    FreeLists;
+  except
+    FreeLists;
+    ABuilder.Clear;
+    ABuilder.EndMeshAssembly;
+    raise;
+  end;
+end;
+
+{$ENDIF GLS_EXPERIMENTAL}
+
 initialization
 
   { Register this Fileformat-Handler with GLScene }
-  RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
-  RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
+  GLVectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
+  GLVectorFileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
   RegisterClass(TOBJFGVertexNormalTexIndexList);
+
+{$IFDEF GLS_EXPERIMENTAL}
+  GL3xMesh.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLMeshOBJFileIO);
+{$ENDIF GLS_EXPERIMENTAL}
+
 end.
 
