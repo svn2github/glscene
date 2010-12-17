@@ -395,7 +395,7 @@ type
   public
     { Public Declarations }
     class function FriendlyName: string; override;
-    procedure SetHeightField(heightArray: array of UInt16; x: Integer;
+    procedure SetHeightField(heightArray: array of Word; x: Integer;
       y: Integer; xScale: Single; yScale: Single);
 
   published
@@ -2553,7 +2553,7 @@ begin
 end;
 
 // To create heightField
-procedure TGLNGDStatic.SetHeightField(heightArray: array of UInt16; x: Integer;
+procedure TGLNGDStatic.SetHeightField(heightArray: array of Word; x: Integer;
   y: Integer; xScale: Single; yScale: Single);
 { Var
   attributeMap: Array Of UInt8;
