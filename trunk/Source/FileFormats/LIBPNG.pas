@@ -36,7 +36,7 @@ const
 {$IFDEF MSWINDOWS}
   LibPng13 = 'libpng13'; // Library name
 {$ELSE}
-  LibPng13 = 'png.so'; // Library name
+  LibPng13 = 'libpng12.so'; // Library name
 {$ENDIF}
 
   ZLIB_VERSION = '1.2.3';
