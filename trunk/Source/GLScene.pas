@@ -1749,7 +1749,9 @@ type
     FCurrentBuffer: TGLSceneBuffer;
     FObjectsSorting: TGLObjectsSorting;
     FVisibilityCulling: TGLVisibilityCulling;
+    FOnBeforeProgress: TGLProgressEvent;
     FOnProgress: TGLProgressEvent;
+    FCurrentDeltaTime: Double;
     FInitializableObjects: TGLInitializableObjectList;
 
   protected
@@ -1829,8 +1831,9 @@ type
     {: Defines default VisibilityCulling option for scene objects. }
     property VisibilityCulling: TGLVisibilityCulling read FVisibilityCulling
       write SetVisibilityCulling default vcNone;
+    property OnBeforeProgress: TGLProgressEvent read FOnBeforeProgress write FOnBeforeProgress;
     property OnProgress: TGLProgressEvent read FOnProgress write FOnProgress;
-
+    property CurrentDeltaTime: Double read FCurrentDeltaTime;    
   end;
 
   // TFogMode
@@ -7441,7 +7444,12 @@ var
 begin
   pt.deltaTime := deltaTime;
   pt.newTime := newTime;
+  FCurrentDeltaTime := deltaTime;
+  if Assigned(FOnBeforeProgress) then
+   FOnBeforeProgress(Self, deltaTime, newTime);
   FObjects.DoProgress(pt);
+  if Assigned(FOnProgress) then
+   FOnProgress(Self, deltaTime, newTime);
 end;
 
 // SaveToFile
