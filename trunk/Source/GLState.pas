@@ -143,7 +143,8 @@ type
 
 const
   cAllColorComponents = [ccRed, ccGreen, ccBlue, ccAlpha];
-  MAX_HARDWARE_LIGHT = 8;
+  MAX_HARDWARE_LIGHT = 16;
+  MAX_SHADER_LIGHT = 8;
   MAX_HARDWARE_TEXTURE_UNIT = 48;
   MAX_HARDWARE_UNIFORM_BUFFER_BINDING = 75;
 
@@ -152,13 +153,23 @@ type
   THintType = (hintDontCare, hintFastest, hintNicest);
 
   TLightSourceState = packed record
-    Position: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 0
-    Ambient: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 16
-    Diffuse: array[0..MAX_HARDWARE_LIGHT-1] of TVector;  // offset 32
-    Specular: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset 48
-    SpotDirection: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
-    SpotCosCutoffExponent: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
-    Attenuation: array[0..MAX_HARDWARE_LIGHT-1] of TVector; // offset
+    Position: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    Ambient: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    Diffuse: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    Specular: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    SpotDirection: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    SpotCosCutoffExponent: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+    Attenuation: array[0..MAX_HARDWARE_LIGHT-1] of TVector;
+  end;
+
+  TShaderLightSourceState = packed record
+    Position: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    Ambient: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    Diffuse: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    Specular: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    SpotDirection: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    SpotCosCutoffExponent: array[0..MAX_SHADER_LIGHT-1] of TVector;
+    Attenuation: array[0..MAX_SHADER_LIGHT-1] of TVector;
   end;
 
   TVAOStates = record
@@ -198,8 +209,8 @@ type
     FLightNumber: Integer;
     FLightStates: TLightSourceState;
     FSpotCutoff: array[0..MAX_HARDWARE_LIGHT-1] of Single;
-    FPackedLightStates: TLightSourceState;
-    FPackedLightStatesChanged: Boolean;
+    FShaderLightStates: TShaderLightSourceState;
+    FShaderLightStatesChanged: Boolean;
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
@@ -2149,22 +2160,50 @@ end;
 
 procedure TGLStateCache.SetEnableSampleAlphaToCoverage(const Value: TGLboolean);
 begin
-
+  if Value <> FEnableSampleAlphaToCoverage then
+  begin
+    FEnableSampleAlphaToCoverage := Value;
+    if Value then
+      GL.Enable(GL_SAMPLE_ALPHA_TO_COVERAGE)
+    else
+      GL.Disable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+  end;
 end;
 
 procedure TGLStateCache.SetEnableSampleCoverage(const Value: TGLboolean);
 begin
-
+  if Value <> FEnableSampleAlphaToCoverage then
+  begin
+    FEnableSampleCoverage := Value;
+    if Value then
+      GL.Enable(GL_SAMPLE_COVERAGE)
+    else
+      GL.Disable(GL_SAMPLE_COVERAGE);
+  end;
 end;
 
 procedure TGLStateCache.SetEnableSampleMask(const Value: TGLboolean);
 begin
-
+  if Value <> FEnableSampleMask then
+  begin
+    FEnableSampleMask := Value;
+    if Value then
+      GL.Enable(GL_SAMPLE_MASK)
+    else
+      GL.Disable(GL_SAMPLE_MASK);
+  end;
 end;
 
 procedure TGLStateCache.SetEnableSampleAlphaToOne(const Value: TGLboolean);
 begin
-
+  if Value <> FEnableSampleMask then
+  begin
+    FEnableSampleMask := Value;
+    if Value then
+      GL.Enable(GL_SAMPLE_MASK)
+    else
+      GL.Disable(GL_SAMPLE_MASK);
+  end;
 end;
 
 procedure TGLStateCache.SetEnableScissorTest(const Value: TGLboolean);
@@ -3296,7 +3335,7 @@ begin
     end;
     FLightNumber := K;
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3309,36 +3348,58 @@ end;
 
 function TGLStateCache.GetLightStateAsAddress: Pointer;
 var
-  I, J: Integer;
+  I, J, C: Integer;
 begin
-  if GL.VERSION_3_0 then
+  C := MinInteger(FLightNumber, MAX_SHADER_LIGHT);
+  if FShaderLightStatesChanged then
   begin
-    Result := @FLightStates;
-  end
-  else
-  begin
-    if FPackedLightStatesChanged then
+    if C > 0 then
     begin
-      if FLightNumber > 0 then
+      if GL.VERSION_3_0 then
       begin
-        for I := FLightNumber - 1 downto 0 do
-        begin
-          J := FLightIndices[I];
-          FPackedLightStates.Position[I] := FLightStates.Position[J];
-          FPackedLightStates.Ambient[I] := FLightStates.Ambient[J];
-          FPackedLightStates.Diffuse[I] := FLightStates.Diffuse[J];
-          FPackedLightStates.Specular[I] := FLightStates.Specular[J];
-          FPackedLightStates.SpotDirection[I] := FLightStates.SpotDirection[J];
-          FPackedLightStates.SpotCosCutoffExponent[I] := FLightStates.SpotCosCutoffExponent[J];
-          FPackedLightStates.Attenuation[I] := FLightStates.Attenuation[J];
-        end;
+        Move(FLightStates.Position,
+          FShaderLightStates.Position,
+          SizeOf(FShaderLightStates.Position));
+        Move(FLightStates.Ambient,
+         FShaderLightStates.Ambient,
+         SizeOf(FShaderLightStates.Ambient));
+        Move(FLightStates.Diffuse,
+          FShaderLightStates.Diffuse,
+          SizeOf(FShaderLightStates.Diffuse));
+        Move(FLightStates.Specular,
+          FShaderLightStates.Specular,
+          SizeOf(FShaderLightStates.Specular));
+        Move(FLightStates.SpotDirection,
+          FShaderLightStates.SpotDirection,
+          SizeOf(FShaderLightStates.SpotDirection));
+        Move(FLightStates.SpotCosCutoffExponent,
+          FShaderLightStates.SpotCosCutoffExponent,
+          SizeOf(FShaderLightStates.SpotCosCutoffExponent));
+        Move(FLightStates.Attenuation,
+          FShaderLightStates.Attenuation,
+          SizeOf(FShaderLightStates.Attenuation));
       end
       else
-        FillChar(FPackedLightStatesChanged, SizeOf(FPackedLightStatesChanged), $00);
-      FPackedLightStatesChanged := False;
-    end;
-    Result := @FPackedLightStates;
+      begin
+        for I := C - 1 downto 0 do
+        begin
+          J := FLightIndices[I];
+          FShaderLightStates.Position[I] := FLightStates.Position[J];
+          FShaderLightStates.Ambient[I] := FLightStates.Ambient[J];
+          FShaderLightStates.Diffuse[I] := FLightStates.Diffuse[J];
+          FShaderLightStates.Specular[I] := FLightStates.Specular[J];
+          FShaderLightStates.SpotDirection[I] := FLightStates.SpotDirection[J];
+          FShaderLightStates.SpotCosCutoffExponent[I] := FLightStates.SpotCosCutoffExponent[J];
+          FShaderLightStates.Attenuation[I] := FLightStates.Attenuation[J];
+        end;
+      end;
+    end
+    else
+      FillChar(FShaderLightStatesChanged, SizeOf(FShaderLightStatesChanged), $00);
+    FShaderLightStatesChanged := False;
   end;
+
+  Result := @FShaderLightStates;
 end;
 
 function TGLStateCache.GetLightPosition(I: Integer): TVector;
@@ -3351,7 +3412,7 @@ begin
   if not VectorEquals(Value, FLightStates.Position[I]) then
   begin
     FLightStates.Position[I] := Value;
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3367,7 +3428,7 @@ begin
   if not VectorEquals(Value, AffineVectorMake(FLightStates.SpotDirection[I])) then
   begin
     FLightStates.SpotDirection[I] := VectorMake(Value);
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3390,7 +3451,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3413,7 +3474,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3436,7 +3497,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3462,7 +3523,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3486,7 +3547,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3509,7 +3570,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3532,7 +3593,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
@@ -3555,7 +3616,7 @@ begin
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
 
-    FPackedLightStatesChanged := True;
+    FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
   end;
