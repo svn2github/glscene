@@ -3517,7 +3517,10 @@ begin
     GLSLogger.LogInfo(format('Renderer     : %s', [GetString(GL_RENDERER)]));
     GLSLogger.LogInfo(format('Vendor       : %s', [GetString(GL_VENDOR)]));
     GLSLogger.LogInfo(format('Version      : %s', [GetString(GL_VERSION)]));
-    GLSLogger.LogInfo(format('GLSL version : %s', [GetString(GL_SHADING_LANGUAGE_VERSION)]));
+    if VERSION_2_0 then
+      GLSLogger.LogInfo(format('GLSL version : %s', [GetString(GL_SHADING_LANGUAGE_VERSION)]))
+    else
+      GLSLogger.LogWarning('GLSL version : not supported');
     GLSLogger.LogNotice('');
     vNotInformed := False;
   end;
