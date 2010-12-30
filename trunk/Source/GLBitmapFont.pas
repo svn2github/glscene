@@ -48,7 +48,9 @@ unit GLBitmapFont;
 
 interface
 
-uses Classes, Graphics, GLScene, VectorGeometry, GLContext, GLCrossPlatform,
+uses
+  Classes, Graphics,
+  GLScene, VectorGeometry, GLContext, GLCrossPlatform,
   GLTexture, GLState, GLUtils, GLGraphics, GLColor, BaseClasses,
   GLRenderContextInfo, GLTextureFormat;
 
@@ -140,7 +142,6 @@ type
     FHSpace, FVSpace, FHSpaceFix: Integer;
     FUsers: TList;
     FTextureHandle: TGLTextureHandle;
-    FHandleIsDirty: Boolean;
     FMinFilter: TGLMinFilter;
     FMagFilter: TGLMagFilter;
     FTextureWidth, FTextureHeight: Integer;
@@ -215,9 +216,15 @@ type
        of rotated and linear distorted text with this method, OpenGL
        Enable states are also possibly altered. }
     procedure RenderString(var rci: TRenderContextInfo;
-      const wString: string; alignment: TAlignment;
-      layout: TGLTextLayout; const color: TColorVector;
-      position: PVector = nil; reverseY: Boolean = False);
+      const aText: AnsiString; aAlignment: TAlignment;
+      aLayout: TGLTextLayout; const aColor: TColorVector;
+      aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
+    {: Wide string variant. Warning - dummy method. }
+    Procedure RenderString(var rci: TRenderContextInfo;
+      const aText: WideString; aAlignment: TAlignment;
+      aLayout: TGLTextLayout; const aColor: TColorVector;
+      aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
+
     {: A simpler canvas-style TextOut helper for RenderString.<p>
        The rendering is reversed along Y by default, to allow direct use
        with TGLCanvas }
@@ -228,7 +235,9 @@ type
     {: Get the actual width for this char. }
     function GetCharWidth(ch: AnsiChar): Integer;
     {: Get the actual pixel width for this string. }
-    function CalcStringWidth(const st: AnsiString): Integer;
+    function CalcStringWidth(const aText: AnsiString): Integer; overload; virtual;
+    {: Wide string variant. Warning - dummy method. }
+    function CalcStringWidth(const aText: WideString): Integer; overload; virtual;
 
     {: Height of a single character. }
     property CharHeight: Integer read FCharHeight write SetCharHeight default 16;
@@ -541,7 +550,7 @@ end;
 // ------------------ TGLCustomBitmapFont ------------------
 // ------------------
 
-// Creat
+// Create
 //
 
 constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
@@ -555,7 +564,6 @@ begin
   FHSpace := 1;
   FVSpace := 1;
   FUsers := TList.Create;
-  FHandleIsDirty := True;
   FMinFilter := miLinear;
   FMagFilter := maLinear;
   FTextureHandle := TGLTextureHandle.Create;
@@ -590,18 +598,23 @@ end;
 // CalcStringWidth
 //
 
-function TGLCustomBitmapFont.CalcStringWidth(const st: AnsiString): Integer;
+function TGLCustomBitmapFont.CalcStringWidth(const aText: AnsiString): Integer;
 var
   i: Integer;
 begin
-  if st <> '' then
+  if aText <> '' then
   begin
-    Result := -HSpace + Length(st) * (HSpaceFix + HSpace);
-    for i := 1 to Length(st) do
-      Result := Result + GetCharWidth(st[i]);
+    Result := -HSpace + Length(aText) * (HSpaceFix + HSpace);
+    for i := 1 to Length(aText) do
+      Result := Result + GetCharWidth(aText[i]);
   end
   else
     Result := 0;
+end;
+
+function TGLCustomBitmapFont.CalcStringWidth(const aText: WideString): Integer;
+begin
+  Result := 0;
 end;
 
 // ResetCharWidths
@@ -740,7 +753,7 @@ begin
   if AValue <> FMagFilter then
   begin
     FMagFilter := AValue;
-    FHandleIsDirty := True;
+    FTextureHandle.NotifyChangesOfData;
     InvalidateUsers;
   end;
 end;
@@ -753,7 +766,7 @@ begin
   if AValue <> FMinFilter then
   begin
     FMinFilter := AValue;
-    FHandleIsDirty := True;
+    FTextureHandle.NotifyChangesOfData;
     InvalidateUsers;
   end;
 end;
@@ -766,7 +779,7 @@ begin
   if val <> FGlyphsAlpha then
   begin
     FGlyphsAlpha := val;
-    FHandleIsDirty := True;
+    FTextureHandle.NotifyChangesOfData;
     InvalidateUsers;
   end;
 end;
@@ -879,27 +892,25 @@ end;
 //
 
 procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
-  const wString: string; alignment: TAlignment;
-  layout: TGLTextLayout; const color: TColorVector; position: PVector = nil;
-  reverseY: Boolean = False);
-var
-  aString: AnsiString;
+      const aText: AnsiString; aAlignment: TAlignment;
+      aLayout: TGLTextLayout; const aColor: TColorVector;
+      aPosition: PVector = nil; aReverseY: Boolean = False);
 
   function AlignmentAdjustement(p: Integer): Single;
   var
     i: Integer;
   begin
     i := 0;
-    while (p <= Length(aString)) and (aString[p] <> #13) do
+    while (p <= Length(aText)) and (aText[p] <> #13) do
     begin
       Inc(p);
       Inc(i);
     end;
-    case alignment of
+    case aAlignment of
       taLeftJustify: Result := 0;
-      taRightJustify: Result := -CalcStringWidth(Copy(aString, p - i, i))
+      taRightJustify: Result := -CalcStringWidth(Copy(aText, p - i, i))
     else // taCenter
-      Result := Round(-CalcStringWidth(Copy(aString, p - i, i)) * 0.5);
+      Result := Round(-CalcStringWidth(Copy(aText, p - i, i)) * 0.5);
     end;
   end;
 
@@ -908,10 +919,10 @@ var
     i, n: Integer;
   begin
     n := 1;
-    for i := 1 to Length(aString) do
-      if aString[i] = #13 then
+    for i := 1 to Length(aText) do
+      if aText[i] = #13 then
         Inc(n);
-    case TGLTextLayout(layout) of
+    case TGLTextLayout(aLayout) of
       tlTop: Result := 0;
       tlBottom: Result := (n * (CharHeight + VSpace) - VSpace);
     else // tlCenter
@@ -926,35 +937,29 @@ var
   deltaH, deltaV, spaceDeltaH: Single;
   currentChar: AnsiChar;
 begin
-  if (Glyphs.Width = 0) or (wString = '') then
+  if (Glyphs.Width = 0) or (aText = '') then
     Exit;
-  aString := AnsiString(wString);
   // prepare texture if necessary
-  if FHandleIsDirty or (FTextureHandle.Handle = 0) then
+  FTextureHandle.AllocateHandle;
+  if FTextureHandle.IsDataNeedUpdate then
   begin
     // prepare handle
-    if FTextureHandle.Handle = 0 then
-    begin
-      FTextureHandle.AllocateHandle;
-      Assert(FTextureHandle.Handle <> 0);
-    end;
     rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
-    //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
     // texture registration
     if Glyphs.Width <> 0 then
     begin
       PrepareImage;
       PrepareParams(rci);
     end;
-    FHandleIsDirty := False;
+    FTextureHandle.NotifyDataUpdated;
   end;
   // precalcs
-  if Assigned(position) then
-    MakePoint(vTopLeft, position[0] + AlignmentAdjustement(1), position[1] + LayoutAdjustement, 0)
+  if Assigned(aPosition) then
+    MakePoint(vTopLeft, aPosition[0] + AlignmentAdjustement(1), aPosition[1] + LayoutAdjustement, 0)
   else
     MakePoint(vTopLeft, AlignmentAdjustement(1), LayoutAdjustement, 0);
   deltaV := -(CharHeight + VSpace);
-  if reverseY then
+  if aReverseY then
     vBottomRight[1] := vTopLeft[1] + CharHeight
   else
     vBottomRight[1] := vTopLeft[1] - CharHeight;
@@ -970,21 +975,21 @@ begin
   //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
   GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   // start rendering
-  GL.Color4fv(@color);
+  GL.Color4fv(@aColor);
   GL.Begin_(GL_QUADS);
-  for i := 1 to Length(aString) do
+  for i := 1 to Length(aText) do
   begin
-    currentChar := aString[i];
+    currentChar := aText[i];
     case currentChar of
       #0..#12, #14..#31: ; // ignore
       #13:
         begin
-          if Assigned(position) then
-            vTopLeft[0] := position[0] + AlignmentAdjustement(i + 1)
+          if Assigned(aPosition) then
+            vTopLeft[0] := aPosition[0] + AlignmentAdjustement(i + 1)
           else
             vTopLeft[0] := AlignmentAdjustement(i + 1);
           vTopLeft[1] := vTopLeft[1] + deltaV;
-          if reverseY then
+          if aReverseY then
             vBottomRight[1] := vTopLeft[1] + CharHeight
           else
             vBottomRight[1] := vTopLeft[1] - CharHeight;
@@ -1017,6 +1022,13 @@ begin
   // unbind texture
   rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+end;
+
+Procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
+      const aText: WideString; aAlignment: TAlignment;
+      aLayout: TGLTextLayout; const aColor: TColorVector;
+      aPosition: PVector = nil; aReverseY: Boolean = False);
+begin
 end;
 
 // TextOut
@@ -1119,7 +1131,6 @@ end;
 procedure TGLCustomBitmapFont.FreeTextureHandle;
 begin
   FTextureHandle.DestroyHandle;
-  FHandleIsDirty := True;
 end;
 
 // TextureFormat
