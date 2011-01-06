@@ -1,0 +1,906 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TGL3xMaterial>
+  <Samples Structures="struct vrec {&#xD;&#xA; vec3 ObjectPosition;&#xD;&#xA; vec3 ObjectNormal;&#xD;&#xA; vec3 ObjectTangent;&#xD;&#xA; vec4 WorldPosition;&#xD;&#xA; vec3 WorldNormal;&#xD;&#xA; vec3 WorldTangent;&#xD;&#xA; vec4 WorldCameraPosition;&#xD;&#xA; vec3 CameraVector;&#xD;&#xA; vec4 ScreenPosition;&#xD;&#xA; vec4 VertexColor;&#xD;&#xA; vec2 TexCoord0;&#xD;&#xA; vec2 TexCoord1;&#xD;&#xA; vec2 TexCoord2;&#xD;&#xA; vec2 TexCoord3;&#xD;&#xA; vec2 TexCoord4;&#xD;&#xA; vec2 TexCoord5;&#xD;&#xA; vec2 TexCoord6;&#xD;&#xA; vec2 TexCoord7;&#xD;&#xA; };&#xD;&#xA;struct frec {&#xD;&#xA; vec3 LightAmbient;&#xD;&#xA; vec3 LightDiffuse;&#xD;&#xA; vec3 LightSpecular;&#xD;&#xA; vec4 WorldPosition;&#xD;&#xA; vec3 Emissive;&#xD;&#xA; vec3 Diffuse;&#xD;&#xA; float DiffusePower;&#xD;&#xA; vec3 Specular;&#xD;&#xA; float SpecularPower;&#xD;&#xA; float Opacity;&#xD;&#xA; float OpacityMask;&#xD;&#xA; vec3 Normal;&#xD;&#xA; vec3 CameraVector;&#xD;&#xA; int LightIndex;&#xD;&#xA;};">
+    <Constants>
+      <Constants_Scalar ObjectType="VFGCE">
+        <overload Const="float" />
+        <overload Const="int" />
+      </Constants_Scalar>
+      <Constants_Vector2 ObjectType="VFGCE">
+        <overload Const="vec2" />
+      </Constants_Vector2>
+      <Constants_Vector3 ObjectType="VFGCE">
+        <overload Const="vec3" />
+      </Constants_Vector3>
+      <Constants_Vector4 ObjectType="VFGCE">
+        <overload Const="vec4" />
+      </Constants_Vector4>
+      <Constants_VertexColor ObjectType="F">
+        <overload Input="void;" Output="vec4" Global="FRAGin vec4 fVertexColor;">{ return ( fVertexColor ); }</overload>
+      </Constants_VertexColor>
+    </Constants>
+    <Coordinates>
+      <Coordinates_Panner ObjectType="F">
+        <overload Input="vec2;float;vec2;" Output="vec2">{ vec2 t = fract(C * B); return ( t + A); }</overload>
+        <overload Input="vec2;float;" Output="vec2">{ vec2 t = vec2(fract(B)); return (t + A); }</overload>
+      </Coordinates_Panner>
+      <Coordinates_Rotator ObjectType="F">
+        <overload Input="vec2;float;vec2;float;" Output="vec2">{ vec2 tc = A - C; float t = B * D; t = 6.2831853 * fract(t); vec2 sincos = vec2(sin(t), cos(t)); vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), tc), dot(sincos, tc)); rxy += C; return ( rxy ); }</overload>
+        <overload Input="vec2;float;" Output="vec2">{ float t = 6.2831853 * fract(B); vec2 sincos = vec2(sin(t), cos(t)); vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), A), dot(sincos, A)); return ( rxy ); }</overload>
+        <overload Input="vec2;float;vec2;" Output="vec2">{ vec2 tc = A - C; float t = 6.2831853 * fract(B); vec2 sincos = vec2(sin(t), cos(t)); vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), tc), dot(sincos, tc)); rxy += C; return ( rxy ); }</overload>
+        <overload Input="vec2;float;float;" Output="vec2">{ float t = B * C; t = 6.2831853 * fract(t); vec2 sincos = vec2(sin(t), cos(t)); vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), A), dot(sincos, A)); return ( rxy ); }</overload>
+      </Coordinates_Rotator>
+      <Coordinates_ScreenPosition ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec3 fScreenPosition;">{ return fScreenPosition.xy; }</overload>
+      </Coordinates_ScreenPosition>
+      <Coordinates_TexCoord0 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord0;">{ return fTexCoord0; }</overload>
+      </Coordinates_TexCoord0>
+      <Coordinates_TexCoord1 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord1;">{ return fTexCoord1; }</overload>
+      </Coordinates_TexCoord1>
+      <Coordinates_TexCoord2 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord2;">{ return fTexCoord2; }</overload>
+      </Coordinates_TexCoord2>
+      <Coordinates_TexCoord3 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord3;">{ return fTexCoord3; }</overload>
+      </Coordinates_TexCoord3>
+      <Coordinates_TexCoord4 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord4;">{ return fTexCoord4; }</overload>
+      </Coordinates_TexCoord4>
+      <Coordinates_TexCoord5 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord5;">{ return fTexCoord5; }</overload>
+      </Coordinates_TexCoord5>
+      <Coordinates_TexCoord6 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord6;">{ return fTexCoord6; }</overload>
+      </Coordinates_TexCoord6>
+      <Coordinates_TexCoord7 ObjectType="F">
+        <overload Input="void;" Output="vec2" Global="FRAGin vec2 fTexCoord7;">{ return fTexCoord7; }</overload>
+      </Coordinates_TexCoord7>
+      <Coordinates_ObjectPosition ObjectType="F">
+        <overload Input="void;" Output="vec3" Global="FRAGin vec3 fObjectPosition;">{ return fObjectPosition; }</overload>
+      </Coordinates_ObjectPosition>
+      <Coordinates_WorldPosition ObjectType="F">
+        <overload Input="void;" Output="vec4" Global="FRAGin vec4 fWorldPosition;">{ return fWorldPosition; }</overload>
+      </Coordinates_WorldPosition>
+    </Coordinates>
+    <Math>
+      <Math_Add ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return A + B; }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return A + B; }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return A + B; }</overload>
+        <overload Input="vec3;vec3;vec3;" Output="vec3">{ return A + B + C; }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return A + B; }</overload>
+      </Math_Add>
+      <Math_Sub ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return A - B; }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return A - B; }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return A - B; }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return A - B; }</overload>
+      </Math_Sub>
+      <Math_Mul ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return A * B; }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return A * B; }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return A * B; }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return A * B; }</overload>
+        <overload Input="vec2;float;" Output="vec2">{ return A * B; }</overload>
+        <overload Input="float;vec2;" Output="vec2">{ return B * A; }</overload>
+        <overload Input="vec3;float;" Output="vec3">{ return A * B; }</overload>
+        <overload Input="float;vec3;" Output="vec3">{ return B * A; }</overload>
+        <overload Input="vec4;float;" Output="vec4">{ return A * B; }</overload>
+        <overload Input="float;vec4;" Output="vec4">{ return B * A; }</overload>
+      </Math_Mul>
+      <Math_Div ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return A / B; }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return A / B; }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return A / B; }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return A / B; }</overload>
+      </Math_Div>
+      <Math_Normalize ObjectType="VFGCE">
+        <overload Input="vec3;" Output="vec3">{ return normalize(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return normalize(A); }</overload>
+      </Math_Normalize>
+      <Math_DotProduct ObjectType="VFGCE">
+        <overload Input="vec2;vec2;" Output="float">{ return dot(A,B); }</overload>
+        <overload Input="vec3;vec3;" Output="float">{ return dot(A,B); }</overload>
+        <overload Input="vec4;vec4;" Output="float">{ return dot(A,B); }</overload>
+      </Math_DotProduct>
+      <Math_Power ObjectType="V F G">
+        <overload Input="float;float;" Output="float">{ return pow(A,B); }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return pow(A,B); }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return pow(A,B); }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return pow(A,B); }</overload>
+      </Math_Power>
+      <Math_Sine ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return sin(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return sin(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return sin(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return sin(A); }</overload>
+        <overload Input="float;float;" Output="float">{ return sin(A*B); }</overload>
+        <overload Input="vec2;float;" Output="vec2">{ return sin(A*B); }</overload>
+        <overload Input="vec3;float;" Output="vec3">{ return sin(A*B); }</overload>
+        <overload Input="vec4;float;" Output="vec4">{ return sin(A*B); }</overload>
+      </Math_Sine>
+      <Math_Cosine ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return cos(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return cos(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return cos(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return cos(A); }</overload>
+        <overload Input="float;float;" Output="float">{ return cos(A*B); }</overload>
+        <overload Input="vec2;float;" Output="vec2">{ return cos(A*B); }</overload>
+        <overload Input="vec3;float;" Output="vec3">{ return cos(A*B); }</overload>
+        <overload Input="vec4;float;" Output="vec4">{ return cos(A*B); }</overload>
+      </Math_Cosine>
+      <Math_Floor ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return floor(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return floor(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return floor(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return floor(A); }</overload>
+      </Math_Floor>
+      <Math_Abs ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return abs(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return abs(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return abs(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return abs(A); }</overload>
+      </Math_Abs>
+      <Math_Fract ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return fract(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return fract(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return fract(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return fract(A); }</overload>
+      </Math_Fract>
+      <Math_Phong ObjectType="F">
+        <overload Input="vec3;vec3;float;" Output="float">{ return pow(max(dot(A,B),0.0),C); }</overload>
+      </Math_Phong>
+      <Math_OneMinus ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return (1.0-A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return (vec2(1.0)-A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return (vec3(1.0)-A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return (vec4(1.0)-A); }</overload>
+      </Math_OneMinus>
+      <Math_SquareRoot ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return sqrt(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return sqrt(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return sqrt(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return sqrt(A); }</overload>
+      </Math_SquareRoot>
+      <Math_Sign ObjectType="VFGCE">
+        <overload Input="float;" Output="float">{ return sign(A); }</overload>
+        <overload Input="vec2;" Output="vec2">{ return sign(A); }</overload>
+        <overload Input="vec3;" Output="vec3">{ return sign(A); }</overload>
+        <overload Input="vec4;" Output="vec4">{ return sign(A); }</overload>
+      </Math_Sign>
+      <Math_SmoothStep ObjectType="VFGCE">
+        <overload Input="float;float;float;" Output="float">{ return smoothstep(A,B,C); }</overload>
+        <overload Input="vec2;vec2;vec2;" Output="vec2">{ return smoothstep(A,B,C); }</overload>
+        <overload Input="vec3;vec3;vec3;" Output="vec3">{ return smoothstep(A,B,C); }</overload>
+        <overload Input="vec4;vec4;vec4;" Output="vec4">{ return smoothstep(A,B,C); }</overload>
+      </Math_SmoothStep>
+    </Math>
+    <Texture>
+      <Texture2D_Sampler0 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit0;">{ return TEXTURE_2D(TexUnit0, A); }</overload>
+      </Texture2D_Sampler0>
+      <Texture2D_Sampler1 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit1;">{ return TEXTURE_2D(TexUnit1, A); }</overload>
+      </Texture2D_Sampler1>
+      <Texture2D_Sampler2 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit2;">{ return TEXTURE_2D(TexUnit2, A); }</overload>
+      </Texture2D_Sampler2>
+      <Texture2D_Sampler3 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit3;">{ return TEXTURE_2D(TexUnit3, A); }</overload>
+      </Texture2D_Sampler3>
+      <Texture2D_Sampler4 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit4;">{ return TEXTURE_2D(TexUnit4, A); }</overload>
+      </Texture2D_Sampler4>
+      <Texture2D_Sampler5 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit5;">{ return TEXTURE_2D(TexUnit5, A); }</overload>
+      </Texture2D_Sampler5>
+      <Texture2D_Sampler6 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit6;">{ return TEXTURE_2D(TexUnit6, A); }</overload>
+      </Texture2D_Sampler6>
+      <Texture2D_Sampler7 ObjectType="FGCE">
+        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit7;">{ return TEXTURE_2D(TexUnit7, A); }</overload>
+      </Texture2D_Sampler7>
+      <TextureCube_Sampler0 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit0;">{ return TEXTURE_CUBE(TexUnit0, A); }</overload>
+      </TextureCube_Sampler0>
+      <TextureCube_Sampler1 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit1;">{ return TEXTURE_CUBE(TexUnit1, A); }</overload>
+      </TextureCube_Sampler1>
+      <TextureCube_Sampler2 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit2;">{ return TEXTURE_CUBE(TexUnit2, A); }</overload>
+      </TextureCube_Sampler2>
+      <TextureCube_Sampler3 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit3;">{ return TEXTURE_CUBE(TexUnit3, A); }</overload>
+      </TextureCube_Sampler3>
+      <TextureCube_Sampler4 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit4;">{ return TEXTURE_CUBE(TexUnit4, A); }</overload>
+      </TextureCube_Sampler4>
+      <TextureCube_Sampler5 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit5;">{ return TEXTURE_CUBE(TexUnit5, A); }</overload>
+      </TextureCube_Sampler5>
+      <TextureCube_Sampler6 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit6;">{ return TEXTURE_CUBE(TexUnit6, A); }</overload>
+      </TextureCube_Sampler6>
+      <TextureCube_Sampler7 ObjectType="FGCE">
+        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit7;">{ return TEXTURE_CUBE(TexUnit7, A); }</overload>
+      </TextureCube_Sampler7>
+      <SNorm ObjectType="F">
+        <overload Input="vec4;" Output="vec4" Uniforms="TShaderEnvNormalMatrix;" Global="in vec3 fObjectNormal; &#xD;&#xA;in vec3 fObjectTangent; &#xD;&#xA;uniform mat3 NormalMatrix;">{
+  vec3 sN = vec3(2.0)*A.xyz-vec3(1.0);
+  vec3 normal = normalize(fObjectNormal);
+  vec3 tangent = normalize(fObjectTangent);
+  vec3 binormal = cross(normal,tangent);
+  mat3 basis = mat3(tangent,binormal,normal);
+  vec3 N;
+  N = basis*sN.xyz;
+  N = NormalMatrix*N;
+  return vec4(N,0.0);
+}</overload>
+      </SNorm>
+      <SNormDerive ObjectType="F">
+        <overload Input="vec4;" Output="vec4" Uniforms="TShaderEnvNormalMatrix;" Global="FRAGin vec3 fObjectNormal; &#xD;&#xA;in vec3 fObjectTangent; &#xD;&#xA;uniform mat3 NormalMatrix;">{
+  vec3 sN = vec3(A.x,A.y,sqrt(1.0-A.x*A.x-A.y*A.y));
+  sN = vec3(2.0)*sN-vec3(1.0);
+  vec3 normal = normalize(fObjectNormal);
+  vec3 tangent = normalize(fObjectTangent);
+  vec3 binormal = cross(normal,tangent);
+  mat3 basis = mat3(tangent,binormal,normal);
+  vec3 N;
+  N = basis*sN.xyz;
+  N = NormalMatrix*N;
+  return vec4(N,0.0);
+}</overload>
+      </SNormDerive>
+      <YCoCg ObjectType="F">
+        <overload Input="vec4;" Output="vec4">{
+  const float offset = 128.0 / 255.0;
+  float Y = A.a;
+  float scale = 1.0 / ((255.0 / 8.0) * A.b + 1.0);
+  float Co = (A.r - offset) * scale;
+  float Cg = (A.g - offset) * scale;
+  float Red = Y + Co - Cg;
+  float Green = Y + Cg;
+  float Blue = Y - Co - Cg;
+  return vec4(Red, Green, Blue, 1.0);
+}</overload>
+      </YCoCg>
+    </Texture>
+    <Utility>
+      <Utility_Timer ObjectType="VFGCE">
+        <overload Input="void;" Output="float" Uniforms="TShaderEnvTime;" Global="uniform float Time;">{ return Time; }</overload>
+      </Utility_Timer>
+      <Utility_Clamp ObjectType="VFGCE">
+        <overload Input="float;float;float;" Output="float">{ return clamp(A,B,C); }</overload>
+        <overload Input="vec2;vec2;vec2;" Output="vec2">{ return clamp(A,B,C); }</overload>
+        <overload Input="vec3;vec3;vec3;" Output="vec3">{ return clamp(A,B,C); }</overload>
+        <overload Input="vec4;vec4;vec4;" Output="vec4">{ return clamp(A,B,C); }</overload>
+      </Utility_Clamp>
+      <Utility_ComponentMask ObjectType="VFGCE">
+        <overload Mask="True" />
+      </Utility_ComponentMask>
+      <Utility_Min ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return min(A,B); }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return min(A,B); }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return min(A,B); }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return min(A,B); }</overload>
+      </Utility_Min>
+      <Utility_Max ObjectType="VFGCE">
+        <overload Input="float;float;" Output="float">{ return max(A,B); }</overload>
+        <overload Input="vec2;vec2;" Output="vec2">{ return max(A,B); }</overload>
+        <overload Input="vec3;vec3;" Output="vec3">{ return max(A,B); }</overload>
+        <overload Input="vec4;vec4;" Output="vec4">{ return max(A,B); }</overload>
+      </Utility_Max>
+      <Utility_BumpOffset ObjectType="F">
+        <overload Input="vec2;float;float;float;" Output="vec2" Global="in float fCameraTangentVector;">{ float offset = B*C - D * fCameraTangentVector / C; return A + vec2(offset, offset); }</overload>
+      </Utility_BumpOffset>
+      <Utility_AppendVector ObjectType="VFGCE">
+        <overload Input="float;float;" Output="vec2">{ return vec2(A,B); }</overload>
+        <overload Input="float;vec2;" Output="vec3">{ return vec3(A,B); }</overload>
+        <overload Input="vec2;float;" Output="vec3">{ return vec3(A,B); }</overload>
+        <overload Input="float;vec3;" Output="vec4">{ return vec4(A,B); }</overload>
+        <overload Input="vec3;float;" Output="vec4">{ return vec4(A,B); }</overload>
+        <overload Input="vec2;vec2;" Output="vec4">{ return vec4(A,B); }</overload>
+      </Utility_AppendVector>
+    </Utility>
+    <Vectors>
+      <Vectors_LightVector ObjectType="F">
+        <overload Input="inout frec;" Output="vec3" Global="struct lrec {&#xD;&#xA;vec4 WorldPosition;   &#xD;&#xA;vec3 Ambient;   &#xD;&#xA;vec3 Diffuse;   &#xD;&#xA;vec3 Specular;   &#xD;&#xA;vec3 SpotDirection;   &#xD;&#xA;float SpotExponent;   &#xD;&#xA;float ConstantAtten;   &#xD;&#xA;float LinearAtten;   &#xD;&#xA;float QuadAtten;         &#xD;&#xA;float SpotCosCutoff;   &#xD;&#xA;};    &#xD;&#xA;lrec GetLight(int I); ">{
+lrec LightSource = GetLight(A.LightIndex);
+if (LightSource.WorldPosition.w == 1.0)
+{
+  return normalize(LightSource.WorldPosition.xyz - A.WorldPosition.xyz);
+}
+else
+{
+  return normalize(LightSource.WorldPosition.xyz);
+}
+}</overload>
+      </Vectors_LightVector>
+      <Vectors_CameraVector ObjectType="F">
+        <overload Input="inout frec;" Output="vec3">{ return A.CameraVector; }</overload>
+      </Vectors_CameraVector>
+      <Vectors_WorldNormal ObjectType="F">
+        <overload Input="void;" Output="vec3" Global="FRAGin vec3 fWorldNormal;">{ return normalize(fWorldNormal); }</overload>
+      </Vectors_WorldNormal>
+      <Vectors_ReflectionVector ObjectType="F">
+        <overload Input="inout frec;" Output="vec3">{ return reflect(-A.CameraVector, A.Normal); }</overload>
+      </Vectors_ReflectionVector>
+    </Vectors>
+    <Vertex>
+      <GetVertex ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global=" #if (VERSION &gt; 120) &#xD;&#xA;layout(location = 0) &#xD;&#xA;#endif &#xD;&#xA;VERTin vec3 Position; &#xD;&#xA;VERTin vec3 Normal; &#xD;&#xA;VERTin vec3 Tangent; &#xD;&#xA;VERTin vec4 VertexColor; &#xD;&#xA;VERTin vec2 TexCoord0; &#xD;&#xA;VERTin vec2 TexCoord1; &#xD;&#xA;VERTin vec2 TexCoord2; &#xD;&#xA;VERTin vec2 TexCoord3; &#xD;&#xA;VERTin vec2 TexCoord4; &#xD;&#xA;VERTin vec2 TexCoord5; &#xD;&#xA;VERTin vec2 TexCoord6; &#xD;&#xA;VERTin vec2 TexCoord7;">{
+	A.ObjectPosition = Position;
+	A.ObjectNormal = Normal;
+	A.ObjectTangent = Tangent;
+	A.VertexColor = VertexColor;
+	A.TexCoord0 = TexCoord0;
+	A.TexCoord1 = TexCoord1;
+	A.TexCoord2 = TexCoord2;
+	A.TexCoord3 = TexCoord3;
+	A.TexCoord4 = TexCoord4;
+	A.TexCoord5 = TexCoord5;
+	A.TexCoord6 = TexCoord6;
+	A.TexCoord7 = TexCoord7;
+}</overload>
+      </GetVertex>
+      <AtmosphereColor ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Uniforms="TShaderEnvAtmosphere;" Global="uniform vec3 spherePosition; &#xD;&#xA;uniform vec3 sunPosition; &#xD;&#xA;uniform vec3 LowAtmColor; &#xD;&#xA;uniform vec3 HighAtmColor; &#xD;&#xA;uniform float invAtmosphereHeight; &#xD;&#xA;uniform float PlanetRadius; &#xD;&#xA;uniform float AtmoRadius; &#xD;&#xA;uniform float AtmoOpacity;" Local=" bool RayCastSphereIntersect(inout vrec A, vec3 rayVector, float sphereRadius, out vec3 i1, out vec3 i2) &#xD;&#xA;{  &#xD;&#xA; float proj = dot(rayVector, spherePosition - A.WorldCameraPosition.xyz);  &#xD;&#xA; vec3 projPoint = rayVector * proj + A.WorldCameraPosition.xyz;  &#xD;&#xA; vec3 range = spherePosition - projPoint;  &#xD;&#xA; float d2 = sphereRadius * sphereRadius - dot(range, range);  &#xD;&#xA; if (d2 &gt;= 0.0)  &#xD;&#xA; {   &#xD;&#xA;  d2 = sqrt(d2);   &#xD;&#xA;  i1 = rayVector * (proj-d2) + A.WorldCameraPosition.xyz;   &#xD;&#xA;  i2 = rayVector * (proj+d2) + A.WorldCameraPosition.xyz;   &#xD;&#xA;  return (true);  &#xD;&#xA; }&#xD;&#xA; else return (false); &#xD;&#xA;} &#xD;&#xA;void SetAtmosphereColor(inout vrec A, vec3 rayStart, vec3 rayEnd) &#xD;&#xA;{  &#xD;&#xA; A.VertexColor = vec4(0.0);   &#xD;&#xA; float rayLength = distance(rayStart, rayEnd);   &#xD;&#xA; int n = int(3.0 * rayLength * invAtmosphereHeight) + 2;   &#xD;&#xA; if (n &gt; 10) n = 10;   &#xD;&#xA; float contrib = rayLength * AtmoOpacity / float(n);   &#xD;&#xA; float decay = 1.0 - contrib * 0.5;   &#xD;&#xA; contrib *= 1.0/1.1;   &#xD;&#xA; vec3 normal, atmPoint, lightVector;   &#xD;&#xA; lightVector = normalize(sunPosition - A.WorldPosition.xyz);   &#xD;&#xA; for (int I = n-1; I &gt;= 0; I--)   &#xD;&#xA; {     &#xD;&#xA;   atmPoint = mix(rayStart, rayEnd, float(I) / float(n)) - spherePosition;     &#xD;&#xA;   normal = normalize(atmPoint);     &#xD;&#xA;   float intensity = max(dot(normal, lightVector), 0.0) + 0.1;     &#xD;&#xA;   if (intensity &gt; 0.0)     &#xD;&#xA;   {       &#xD;&#xA;    intensity *= contrib;       &#xD;&#xA;    float alt = (length(atmPoint) - PlanetRadius) * invAtmosphereHeight;       &#xD;&#xA;    vec3 altColor = mix(LowAtmColor, HighAtmColor, alt);       &#xD;&#xA;    A.VertexColor.rgb = A.VertexColor.rgb * decay + altColor * intensity;     &#xD;&#xA;   }     &#xD;&#xA;   else A.VertexColor.rgb *= decay;   &#xD;&#xA; }   &#xD;&#xA; A.VertexColor.a = float(n) * contrib * AtmoOpacity * 0.1; &#xD;&#xA;}">{
+ vec3 ai1, ai2, pi1, pi2;
+ vec3 rayVector = - A.CameraVector;
+ if (RayCastSphereIntersect(A, rayVector, AtmoRadius, ai1, ai2))
+ {
+   A.WorldPosition.xyz = ai1;
+   if (RayCastSphereIntersect(A, rayVector, PlanetRadius, pi1, pi2))
+   {
+      SetAtmosphereColor(A, ai1, pi1);
+   }
+   else
+   {
+      SetAtmosphereColor(A, ai1, ai2);
+   }
+ }
+ else { A.VertexColor = vec4(0.0); }
+}</overload>
+      </AtmosphereColor>
+      <TransformVertex_O2W ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Uniforms="TShaderEnvModelMatrix;TShaderEnvNormalMatrix;" Global="uniform mat4 ModelMatrix;   &#xD;&#xA;uniform mat3 NormalMatrix;">{
+  A.WorldPosition = ModelMatrix * vec4(A.ObjectPosition, 1.0);
+  A.WorldNormal = NormalMatrix * A.ObjectNormal;
+  A.WorldTangent = NormalMatrix * A.ObjectTangent;
+}</overload>
+      </TransformVertex_O2W>
+      <TransformVertex_W2S ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Uniforms="TShaderEnvViewProjectionMatrix;" Global="uniform mat4 ViewProjectionMatrix;">{
+  A.ScreenPosition = ViewProjectionMatrix * A.WorldPosition;
+}</overload>
+      </TransformVertex_W2S>
+      <GetCamera ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Uniforms="TShaderEnvCameraWorldPosition;" Global="uniform vec4 CameraWorldPosition;">{
+  A.WorldCameraPosition = CameraWorldPosition;
+  A.CameraVector = (A.WorldCameraPosition - A.WorldPosition).xyz;
+  A.CameraVector = normalize(A.CameraVector);
+}</overload>
+      </GetCamera>
+      <PassVertex ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE&#xD;&#xA;VERTout vec3 fObjectPosition;    &#xD;&#xA;VERTout vec3 fObjectNormal;         &#xD;&#xA;VERTout vec3 fObjectTangent;   &#xD;&#xA;VERTout vec4 fWorldPosition;   &#xD;&#xA;VERTout vec3 fWorldNormal;   &#xD;&#xA;VERTout vec3 fWorldTangent;   &#xD;&#xA;VERTout vec4 fVertexColor;  &#xD;&#xA;VERTout vec3 fCameraVector;   &#xD;&#xA;#else         &#xD;&#xA;out vec3 gObjectPosition;   &#xD;&#xA;out vec3 gObjectNormal;         &#xD;&#xA;out vec3 gObjectTangent;   &#xD;&#xA;out vec4 gWorldPosition;   &#xD;&#xA;out vec3 gWorldNormal;   &#xD;&#xA;out vec3 gWorldTangent;   &#xD;&#xA;out vec4 gVertexColor;   &#xD;&#xA;out vec3 gCameraVector;   &#xD;&#xA;out vec4 gScreenPosition;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fObjectPosition = A.ObjectPosition;
+  fWorldPosition = A.WorldPosition;
+  fObjectNormal = A.ObjectNormal;
+  fObjectTangent = A.ObjectTangent;
+  gl_Position = A.ScreenPosition;
+  fWorldNormal = A.WorldNormal;
+  fWorldTangent = A.WorldTangent;
+  fVertexColor = A.VertexColor;
+  fCameraVector = A.CameraVector;
+#else
+  gObjectPosition = A.ObjectPosition;
+  gObjectNormal = A.ObjectNormal;
+  gObjectTangent = A.ObjectTangent;
+  gWorldPosition = A.WorldPosition;
+  gWorldNormal = A.WorldNormal;
+  gWorldTangent = A.WorldTangent;
+  gVertexColor = A.VertexColor;
+  gCameraVector = A.CameraVector;
+  gScreenPosition = A.ScreenPosition;
+#endif
+}</overload>
+      </PassVertex>
+      <PassTexCoord0 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord0;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord0;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord0 = A.TexCoord0;
+#else
+  gTexCoord0 = A.TexCoord0;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord0;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord0;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord0 = A.TexCoord0*B;
+#else
+  gTexCoord0 = A.TexCoord0*B;
+#endif
+}</overload>
+      </PassTexCoord0>
+      <PassTexCoord1 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord1;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord1;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord1 = A.TexCoord1;
+#else
+  gTexCoord1 = A.TexCoord1;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord1;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord1;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord1 = A.TexCoord1*B;
+#else
+  gTexCoord1 = A.TexCoord1*B;
+#endif
+}</overload>
+      </PassTexCoord1>
+      <PassTexCoord2 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord2;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord2;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord2 = A.TexCoord2;
+#else
+  gTexCoord2 = A.TexCoord2;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord2;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord2;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord2 = A.TexCoord2*B;
+#else
+  gTexCoord2 = A.TexCoord2*B;
+#endif
+}</overload>
+      </PassTexCoord2>
+      <PassTexCoord3 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord3;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord3;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord3 = A.TexCoord3;
+#else
+  gTexCoord3 = A.TexCoord3;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord3;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord3;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord3 = A.TexCoord3*B;
+#else
+  gTexCoord3 = A.TexCoord3*B;
+#endif
+}</overload>
+      </PassTexCoord3>
+      <PassTexCoord4 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord4;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord4;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord4 = A.TexCoord4;
+#else
+  gTexCoord4 = A.TexCoord4;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord4;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord4;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord4 = A.TexCoord4*B;
+#else
+  gTexCoord4 = A.TexCoord4*B;
+#endif
+}</overload>
+      </PassTexCoord4>
+      <PassTexCoord5 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord5;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord5;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord5 = A.TexCoord5;
+#else
+  gTexCoord5 = A.TexCoord5;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord5;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord5;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord5 = A.TexCoord5*B;
+#else
+  gTexCoord5 = A.TexCoord5*B;
+#endif
+}</overload>
+      </PassTexCoord5>
+      <PassTexCoord6 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord6;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord6;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord6 = A.TexCoord6;
+#else
+  gTexCoord6 = A.TexCoord6;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord6;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord6;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord6 = A.TexCoord6*B;
+#else
+  gTexCoord6 = A.TexCoord6*B;
+#endif
+}</overload>
+      </PassTexCoord6>
+      <PassTexCoord7 ObjectType="V">
+        <overload Input="inout vrec;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord7;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord7;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord7 = A.TexCoord7;
+#else
+  gTexCoord7 = A.TexCoord7;
+#endif
+}</overload>
+        <overload Input="inout vrec;vec2;" Output="void" Global="#ifndef GEOMETRY_STAGE   &#xD;&#xA;VERTout vec2 fTexCoord7;   &#xD;&#xA;#else   &#xD;&#xA;out vec2 gTexCoord7;   &#xD;&#xA;#endif">{
+#ifndef GEOMETRY_STAGE
+  fTexCoord7 = A.TexCoord7*B;
+#else
+  gTexCoord7 = A.TexCoord7*B;
+#endif
+}</overload>
+      </PassTexCoord7>
+    </Vertex>
+    <Geometry>
+      <GetTriangle ObjectType="G">
+        <overload Input="out vrec;out vrec;out vrec;" Output="void" Global="in VertexInput {&#xD;&#xA; vec3 gObjectPosition;   &#xD;&#xA; vec3 gObjectNormal;   &#xD;&#xA; vec4 gWorldPosition;   &#xD;&#xA; vec3 gWorldNormal;   &#xD;&#xA; vec4 gVertexColor;   &#xD;&#xA; vec3 gCameraVector;   &#xD;&#xA; vec4 gScreenPosition;   &#xD;&#xA; vec2 gTexCoord0;   &#xD;&#xA; vec2 gTexCoord1;   &#xD;&#xA; vec2 gTexCoord2;   &#xD;&#xA; vec2 gTexCoord3;   &#xD;&#xA; vec2 gTexCoord4;   &#xD;&#xA; vec2 gTexCoord5;   &#xD;&#xA; vec2 gTexCoord6;   &#xD;&#xA; vec2 gTexCoord7; } In[3];">{
+  A.ObjectPosition = In[0].gObjectPosition;
+  A.ObjectNormal = In[0].gObjectNormal;
+  A.WorldPosition = In[0].gWorldPosition;
+  A.WorldNormal = In[0].gWorldNormal;
+  A.VertexColor = In[0].gVertexColor;
+  A.CameraVector = In[0].gCameraVector;
+  A.ScreenPosition = In[0].gScreenPosition;
+  A.TexCoord0 = In[0].gTexCoord0;
+  A.TexCoord1 = In[0].gTexCoord1;
+  A.TexCoord2 = In[0].gTexCoord2;
+  A.TexCoord3 = In[0].gTexCoord3;
+  A.TexCoord4 = In[0].gTexCoord4;
+  A.TexCoord5 = In[0].gTexCoord5;
+  A.TexCoord6 = In[0].gTexCoord6;
+  A.TexCoord7 = In[0].gTexCoord7;
+
+  B.ObjectPosition = In[1].gObjectPosition;
+  B.ObjectNormal = In[1].gObjectNormal;
+  B.WorldPosition = In[1].gWorldPosition;
+  B.WorldNormal = In[1].gWorldNormal;
+  B.VertexColor = In[1].gVertexColor;
+  B.CameraVector = In[1].gCameraVector;
+  B.ScreenPosition = In[1].gScreenPosition;
+  B.TexCoord0 = In[1].gTexCoord0;
+  B.TexCoord1 = In[1].gTexCoord1;
+  B.TexCoord2 = In[1].gTexCoord2;
+  B.TexCoord3 = In[1].gTexCoord3;
+  B.TexCoord4 = In[1].gTexCoord4;
+  B.TexCoord5 = In[1].gTexCoord5;
+  B.TexCoord6 = In[1].gTexCoord6;
+  B.TexCoord7 = In[1].gTexCoord7;
+
+  C.ObjectPosition = In[2].gObjectPosition;
+  C.ObjectNormal = In[2].gObjectNormal;
+  C.WorldPosition = In[2].gWorldPosition;
+  C.WorldNormal = In[2].gWorldNormal;
+  C.VertexColor = In[2].gVertexColor;
+  C.CameraVector = In[2].gCameraVector;
+  C.ScreenPosition = In[2].gScreenPosition;
+  C.TexCoord0 = In[2].gTexCoord0;
+  C.TexCoord1 = In[2].gTexCoord1;
+  C.TexCoord2 = In[2].gTexCoord2;
+  C.TexCoord3 = In[2].gTexCoord3;
+  C.TexCoord4 = In[2].gTexCoord4;
+  C.TexCoord5 = In[2].gTexCoord5;
+  C.TexCoord6 = In[2].gTexCoord6;
+  C.TexCoord7 = In[2].gTexCoord7;
+}</overload>
+      </GetTriangle>
+      <Shrink ObjectType="G">
+        <overload Input="in vrec;in vrec;in vrec;float;" Output="void" Uniforms="TShaderEnvViewProjectionMatrix;" Global="uniform mat4 ViewProjectionMatrix;">{
+  vec4 Center = (A.WorldPosition + B.WorldPosition + C.WorldPosition) / 3.0;
+  vec4 offset;
+  offset = (A.WorldPosition - Center)*D + Center;
+  A.ScreenPosition = ViewProjectionMatrix * offset;
+  offset = (B.WorldPosition - Center)*D + Center;
+  B.ScreenPosition = ViewProjectionMatrix * offset;
+  offset = (C.WorldPosition - Center)*D + Center;
+  C.ScreenPosition = ViewProjectionMatrix * offset;
+}</overload>
+      </Shrink>
+      <EmitTriangle ObjectType="G">
+        <overload Input="in vrec;in vrec;in vrec;" Output="void" Global="out vec3 fObjectNormal; &#xD;&#xA;out vec4 fWorldPosition; &#xD;&#xA;out vec3 fWorldNormal; &#xD;&#xA;out vec4 fVertexColor; &#xD;&#xA;out vec3 fLightVector; &#xD;&#xA;out vec3 fCameraVector; &#xD;&#xA;out vec2 fTexCoord0; &#xD;&#xA;out vec2 fTexCoord1; &#xD;&#xA;out vec2 fTexCoord2; &#xD;&#xA;out vec2 fTexCoord3; &#xD;&#xA;out vec2 fTexCoord4; &#xD;&#xA;out vec2 fTexCoord5; &#xD;&#xA;out vec2 fTexCoord6; &#xD;&#xA;out vec2 fTexCoord7;">{
+  gl_Position = A.ScreenPosition;
+  fObjectNormal = A.ObjectNormal;
+  fWorldPosition = A.WorldPosition;
+  fWorldNormal = A.WorldNormal;
+  fVertexColor = A.VertexColor;
+  fCameraVector = A.CameraVector;
+  fTexCoord0 = A.TexCoord0;
+  fTexCoord1 = A.TexCoord1;
+  fTexCoord2 = A.TexCoord2;
+  fTexCoord3 = A.TexCoord3;
+  fTexCoord4 = A.TexCoord4;
+  fTexCoord5 = A.TexCoord5;
+  fTexCoord6 = A.TexCoord6;
+  fTexCoord7 = A.TexCoord7;
+  EmitVertex();
+
+  gl_Position = B.ScreenPosition;
+  fObjectNormal = B.ObjectNormal;
+  fWorldPosition = B.WorldPosition;
+  fWorldNormal = B.WorldNormal;
+  fVertexColor = B.VertexColor;
+  fCameraVector = B.CameraVector;
+  fTexCoord0 = B.TexCoord0;
+  fTexCoord1 = B.TexCoord1;
+  fTexCoord2 = B.TexCoord2;
+  fTexCoord3 = B.TexCoord3;
+  fTexCoord4 = B.TexCoord4;
+  fTexCoord5 = B.TexCoord5;
+  fTexCoord6 = B.TexCoord6;
+  fTexCoord7 = B.TexCoord7;
+  EmitVertex();
+
+  gl_Position = C.ScreenPosition;
+  fObjectNormal = C.ObjectNormal;
+  fWorldPosition = C.WorldPosition;
+  fWorldNormal = C.WorldNormal;
+  fVertexColor = C.VertexColor;
+  fCameraVector = C.CameraVector;
+  fTexCoord0 = C.TexCoord0;
+  fTexCoord1 = C.TexCoord1;
+  fTexCoord2 = C.TexCoord2;
+  fTexCoord3 = C.TexCoord3;
+  fTexCoord4 = C.TexCoord4;
+  fTexCoord5 = C.TexCoord5;
+  fTexCoord6 = C.TexCoord6;
+  fTexCoord7 = C.TexCoord7;
+  EmitVertex();
+  EndPrimitive();
+}</overload>
+      </EmitTriangle>
+    </Geometry>
+    <Fragment>
+      <GetFragment ObjectType="F">
+        <overload Input="inout frec;" Output="void" Global="in vec4 fWorldPosition; &#xD;&#xA;in vec3 fCameraVector;">{
+  A.WorldPosition = fWorldPosition;
+  A.CameraVector = fCameraVector;
+  A.LightIndex = 0;
+}</overload>
+      </GetFragment>
+      <AlphaTest ObjectType="F">
+        <overload Input="inout frec;float;" Output="void">{ if (A.Opacity&lt;B) discard; }</overload>
+      </AlphaTest>
+      <SetEmissive ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.Emissive = vec3(0.3,0.3,0.3);
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.Emissive = vec3(B,0.0,0.0);
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.Emissive = vec3(B,0.0);
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.Emissive = B;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.Emissive = B.rgb;
+}</overload>
+      </SetEmissive>
+      <SetDiffuse ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.Diffuse = vec3(0.5,0.5,0.5);
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.Diffuse = vec3(B,0.0,0.0);
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.Diffuse = vec3(B,0.0);
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.Diffuse = B;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.Diffuse = B.rgb;
+}</overload>
+      </SetDiffuse>
+      <SetSpecular ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.Specular = vec3(1.0,1.0,1.0);
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.Specular = vec3(B,0.0,0.0);
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.Specular = vec3(B,0.0);
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.Specular = B;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.Specular = B.rgb;
+}</overload>
+      </SetSpecular>
+      <SetDiffusePower ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.DiffusePower = 1.0;
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.DiffusePower = B;
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.DiffusePower = B.r;
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.DiffusePower = B.r;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.DiffusePower = B.r;
+}</overload>
+      </SetDiffusePower>
+      <SetSpecularPower ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.SpecularPower = 64.0;
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.SpecularPower = B;
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.SpecularPower = B.r;
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.SpecularPower = B.r;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.SpecularPower = B.r;
+}</overload>
+      </SetSpecularPower>
+      <SetNormal ObjectType="F">
+        <overload Input="inout frec;" Output="void" Global="in vec3 fWorldNormal;">{
+  A.Normal = fWorldNormal;
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.Normal = normalize(vec3(B));
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.Normal = vec3(B.x,B.y,sqrt(1.0-B.x*B.x-B.y*B.y));
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.Normal = B;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.Normal = B.rgb;
+}</overload>
+      </SetNormal>
+      <SetOpacity ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.Opacity = 1.0;
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.Opacity = B;
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.Opacity = B.r;
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.Opacity = B.r;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.Opacity = B.r;
+}</overload>
+      </SetOpacity>
+      <SetOpacityMask ObjectType="F">
+        <overload Input="inout frec;" Output="void">{
+  A.OpacityMask = 0.5;
+}</overload>
+        <overload Input="inout frec;float;" Output="void">{
+  A.OpacityMask = B;
+}</overload>
+        <overload Input="inout frec;vec2;" Output="void">{
+  A.OpacityMask = B.r;
+}</overload>
+        <overload Input="inout frec;vec3;" Output="void">{
+  A.OpacityMask = B.r;
+}</overload>
+        <overload Input="inout frec;vec4;" Output="void">{
+  A.OpacityMask = B.r;
+}</overload>
+      </SetOpacityMask>
+      <GetLight ObjectType="F">
+        <overload Input="int;" Output="lrec" Uniforms="TShaderEnvLights;" Global="struct lrec {   &#xD;&#xA; vec4 WorldPosition;   &#xD;&#xA; vec3 Ambient;   &#xD;&#xA; vec3 Diffuse;   &#xD;&#xA; vec3 Specular;   &#xD;&#xA; vec3 SpotDirection;   &#xD;&#xA; float SpotExponent;   &#xD;&#xA; float ConstantAtten;   &#xD;&#xA; float LinearAtten;   &#xD;&#xA; float QuadAtten;         &#xD;&#xA; float SpotCosCutoff;   &#xD;&#xA;};  &#xD;&#xA;#if (VERSION &lt; 130)   &#xD;&#xA;uniform vec4 WorldPosition[8];   &#xD;&#xA;uniform vec4 Ambient[8];   &#xD;&#xA;uniform vec4 Diffuse[8];   &#xD;&#xA;uniform vec4 Specular[8];   &#xD;&#xA;uniform vec4 SpotDirection[8];         &#xD;&#xA;uniform vec4 SpotCosCutoffExponent[8];   &#xD;&#xA;uniform vec4 Attenuation[8]; &#xD;&#xA;#else &#xD;&#xA;layout(std140) uniform LightsBlock {   &#xD;&#xA;uniform vec4 WorldPosition[8];   &#xD;&#xA;uniform vec4 Ambient[8];   &#xD;&#xA;uniform vec4 Diffuse[8];   &#xD;&#xA;uniform vec4 Specular[8];   &#xD;&#xA;uniform vec4 SpotDirection[8];         &#xD;&#xA;uniform vec4 SpotCosCutoffExponent[8];   &#xD;&#xA;uniform vec4 Attenuation[8]; };   &#xD;&#xA;uniform int LightIndices[8]; &#xD;&#xA;#endif ">{
+#if (VERSION &lt; 130)
+
+#else
+A = LightIndices[A];
+#endif
+lrec B;
+B.WorldPosition = WorldPosition[A];
+B.Ambient = Ambient[A].rgb;
+B.Diffuse = Diffuse[A].rgb;
+B.Specular = Specular[A].rgb;
+B.SpotDirection = SpotDirection[A].xyz;
+B.ConstantAtten = Attenuation[A].x;
+B.LinearAtten = Attenuation[A].y;
+B.QuadAtten = Attenuation[A].z;
+B.SpotCosCutoff = SpotCosCutoffExponent[A].x;
+B.SpotExponent = SpotCosCutoffExponent[A].y;
+return B;
+}</overload>
+      </GetLight>
+      <Illuminate ObjectType="F">
+        <overload Input="inout frec;" Output="void" Uniforms="TShaderEnvLightNumber;" Global="struct lrec {   &#xD;&#xA;vec4 WorldPosition;   &#xD;&#xA;vec3 Ambient;   &#xD;&#xA;vec3 Diffuse;   &#xD;&#xA;vec3 Specular;   &#xD;&#xA;vec3 SpotDirection;   &#xD;&#xA;float SpotExponent;   &#xD;&#xA;float ConstantAtten;   &#xD;&#xA;float LinearAtten;   &#xD;&#xA;float QuadAtten;         &#xD;&#xA;float SpotCosCutoff;   &#xD;&#xA;};    &#xD;&#xA;uniform int LightNumber;   &#xD;&#xA;lrec GetLight(int I);" Local="void pointLight(inout frec A, lrec B) &#xD;&#xA;{   &#xD;&#xA; float nDotVP;&#xD;&#xA; float nDotHV;&#xD;&#xA; float attenuation;&#xD;&#xA; float d;&#xD;&#xA; vec3  VP;&#xD;&#xA; vec3  halfVector;  &#xD;&#xA; float pf; &#xD;&#xA; VP = B.WorldPosition.xyz - A.WorldPosition.xyz;&#xD;&#xA; d = length(VP);&#xD;&#xA; VP = normalize(VP);&#xD;&#xA; attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);   &#xD;&#xA; halfVector = normalize(VP + A.CameraVector);   &#xD;&#xA; nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);   &#xD;&#xA; pf = max(0.0, dot(A.Normal, halfVector));   &#xD;&#xA; nDotHV = sign(pf)*pow(pf, A.SpecularPower);   &#xD;&#xA; A.LightAmbient  += B.Ambient * attenuation;   &#xD;&#xA; A.LightDiffuse  += B.Diffuse * nDotVP * attenuation;   &#xD;&#xA; A.LightSpecular += B.Specular * nDotHV * attenuation; &#xD;&#xA;}    &#xD;&#xA;void spotLight(inout frec A, lrec B) &#xD;&#xA;{   &#xD;&#xA; float nDotVP;&#xD;&#xA; float nDotHV;&#xD;&#xA; float spotDot;&#xD;&#xA; float spotAttenuation;&#xD;&#xA; float attenuation;&#xD;&#xA; float d;&#xD;&#xA; vec3  VP;&#xD;&#xA; vec3  halfVector;&#xD;&#xA; float pf;&#xD;&#xA; VP = B.WorldPosition.xyz - A.WorldPosition.xyz;&#xD;&#xA; d = length(VP);&#xD;&#xA; VP = normalize(VP);&#xD;&#xA; attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);&#xD;&#xA; spotDot = dot(-VP, normalize(B.SpotDirection));   &#xD;&#xA; if (spotDot &lt; B.SpotCosCutoff)   &#xD;&#xA; {   &#xD;&#xA;   spotAttenuation = 0.0;&#xD;&#xA; }   &#xD;&#xA; else   &#xD;&#xA; {   &#xD;&#xA;   spotAttenuation = pow(spotDot, B.SpotExponent);   &#xD;&#xA; }      &#xD;&#xA; attenuation *= spotAttenuation;   &#xD;&#xA; halfVector = normalize(VP + A.CameraVector);   &#xD;&#xA; nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);         &#xD;&#xA; pf = max(0.0, dot(A.Normal, halfVector));   &#xD;&#xA; nDotHV = sign(pf)*pow(pf, A.SpecularPower);   &#xD;&#xA; A.LightAmbient  += B.Ambient * attenuation;   &#xD;&#xA; A.LightDiffuse  += B.Diffuse * nDotVP * attenuation;   &#xD;&#xA; A.LightSpecular += B.Specular * nDotHV * attenuation;   &#xD;&#xA;}    &#xD;&#xA;void directionalLight(inout frec A, lrec B) &#xD;&#xA;{   &#xD;&#xA; float nDotVP;&#xD;&#xA; float nDotHV;&#xD;&#xA; vec3 VP;&#xD;&#xA; vec3 halfVector;&#xD;&#xA; float pf;&#xD;&#xA; VP = normalize(B.WorldPosition.xyz);   &#xD;&#xA; halfVector = normalize(VP + A.CameraVector);   &#xD;&#xA; nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);   &#xD;&#xA; nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);   &#xD;&#xA; A.LightAmbient += B.Ambient;   A.LightDiffuse  += B.Diffuse * nDotVP;   &#xD;&#xA; A.LightSpecular += B.Specular * nDotHV; }    &#xD;&#xA;void infiniteSpotLight(inout frec A, lrec B) &#xD;&#xA;{   &#xD;&#xA; float nDotVP;&#xD;&#xA; float nDotHV;&#xD;&#xA; vec3 VP;&#xD;&#xA; vec3 halfVector;&#xD;&#xA; float spotAttenuation;   &#xD;&#xA; vec3  Ppli;   &#xD;&#xA; vec3  Sdli;   &#xD;&#xA; float pf;&#xD;&#xA; VP = normalize(B.WorldPosition.xyz);   &#xD;&#xA; halfVector = normalize(VP + A.CameraVector);   &#xD;&#xA; nDotVP = pow(max(0.0, dot(A.Normal, VP)), A.DiffusePower);         &#xD;&#xA; pf = max(0.0, dot(A.Normal, halfVector));   &#xD;&#xA; nDotHV = sign(pf)*pow(pf, A.SpecularPower);   &#xD;&#xA; Ppli = -VP;   &#xD;&#xA; Sdli = B.SpotDirection;   &#xD;&#xA; spotAttenuation = pow(dot(Ppli, Sdli), B.SpotExponent);   &#xD;&#xA; A.LightAmbient  += B.Ambient * spotAttenuation;   &#xD;&#xA; A.LightDiffuse  += B.Diffuse * nDotVP * spotAttenuation;   &#xD;&#xA; A.LightSpecular += B.Specular * nDotHV * spotAttenuation; &#xD;&#xA;}">{
+  A.LightAmbient = vec3(0.0);
+  A.LightDiffuse = vec3(0.0);
+  A.LightSpecular = vec3(0.0);
+  for (int I = 0; I &lt; 8 &amp;&amp; I &lt; LightNumber; I++)
+  {
+    lrec LightSource = GetLight(I);
+    if (LightSource.WorldPosition.w == 1.0)
+    {
+      if (LightSource.SpotCosCutoff == -1.0)
+      {
+         pointLight(A,LightSource);
+      }
+      else
+      {
+         spotLight(A,LightSource);
+      }
+    }
+    else
+    {
+      if (LightSource.SpotCosCutoff == -1.0)
+      {
+         directionalLight(A,LightSource);
+      }
+      else
+      {
+         infiniteSpotLight(A,LightSource);
+      }
+    }
+  }
+  A.LightAmbient = clamp(A.LightAmbient,vec3(0.0),vec3(1.0));
+  A.LightDiffuse = clamp(A.LightDiffuse,vec3(0.0),vec3(1.0));
+  A.LightSpecular = clamp(A.LightSpecular,vec3(0.0),vec3(1.0));
+  vec3 finalColor = A.Emissive + A.LightAmbient;
+  finalColor += A.Diffuse * A.LightDiffuse;
+  finalColor += A.Specular * A.LightSpecular;
+  A.Emissive = finalColor; }
+        </overload>
+      </Illuminate>
+      <SetCustomLighting ObjectType="F">
+        <overload Input="inout frec;float;" Output="void" Uniforms="TShaderEnvLights;" Global="uniform int LightNumber;" Pre="for (int I = 0; I &lt; 16 &amp;&amp; I &lt; LightNumber; I++) {   Local0.LightIndex = I" Post="}">{ A.Emissive += vec3(B,0.0,0.0); }</overload>
+        <overload Input="inout frec;vec2;" Output="void" Uniforms="TShaderEnvLights;" Global="uniform int LightNumber;" Pre="for (int I = 0; I &lt; LightNumber &amp;&amp; I &lt; 16; I++) {   Local0.LightIndex = I" Post="}">{ A.Emissive += vec3(B,0.0); }</overload>
+        <overload Input="inout frec;vec3;" Output="void" Uniforms="TShaderEnvLights;" Global="uniform int LightNumber;" Pre="for (int I = 0; I &lt; LightNumber &amp;&amp; I &lt; 16; I++) {   Local0.LightIndex = I" Post="}">{ A.Emissive += B; }</overload>
+        <overload Input="inout frec;vec4;" Output="void" Uniforms="TShaderEnvLights;" Global="uniform int LightNumber;" Pre="for (int I = 0; I &lt; LightNumber &amp;&amp; I &lt; 16; I++) {   Local0.LightIndex = I" Post="}">{ A.Emissive += B.rgb; }</overload>
+      </SetCustomLighting>
+      <PassFragmentColor ObjectType="F">
+        <overload Input="inout frec;" Output="void" Global="#if (VERSION &gt; 120)&#xD;&#xA;out vec4 FragData0;   &#xD;&#xA;#endif">{ FragData0 = vec4(A.Emissive, A.Opacity); }</overload>
+        <overload Variant="AllSurfProperties" Input="inout frec;" Output="void" Global="struct lrec {   &#xD;&#xA;vec4 WorldPosition;   &#xD;&#xA;vec3 Ambient;   &#xD;&#xA;vec3 Diffuse;   &#xD;&#xA;vec3 Specular;   &#xD;&#xA;vec3 SpotDirection;   &#xD;&#xA;float SpotExponent;   &#xD;&#xA;float ConstantAtten;   &#xD;&#xA;float LinearAtten;   &#xD;&#xA;float QuadAtten;         &#xD;&#xA;float SpotCosCutoff;   &#xD;&#xA;};   &#xD;&#xA;FRAGin vec3 fWorldNormal;   &#xD;&#xA;FRAGin vec3 fObjectPosition;   &#xD;&#xA;FRAGin vec4 fWorldPosition;   &#xD;&#xA;FRAGin vec3 fScreenPosition;   &#xD;&#xA;FRAGin vec4 fVertexColor;   &#xD;&#xA;#if (VERSION &gt; 120)   &#xD;&#xA;layout(location = 0) out vec4 FragData0;   &#xD;&#xA;layout(location = 1) out vec4 FragData1;   &#xD;&#xA;layout(location = 2) out vec4 FragData2;   &#xD;&#xA;layout(location = 3) out vec4 FragData3;   &#xD;&#xA;layout(location = 4) out vec4 FragData4;   &#xD;&#xA;layout(location = 5) out vec4 FragData5;   &#xD;&#xA;layout(location = 6) out vec4 FragData6;   &#xD;&#xA;layout(location = 7) out vec4 FragData7;   &#xD;&#xA;#endif   &#xD;&#xA;lrec GetLight(int I);   ">{
+ vec3 N = normalize(fWorldNormal);
+ FragData0 = vec4(N,0.0);
+ FragData1 = vec4(A.CameraVector,0.0);
+ lrec LightSource = GetLight(A.LightIndex);
+ vec3 LVec;
+ if (LightSource.WorldPosition.w == 1.0)
+ {
+  LVec = normalize(LightSource.WorldPosition.xyz - A.WorldPosition.xyz);
+ }
+ else
+ {
+  LVec = normalize(LightSource.WorldPosition.xyz);
+ }
+ FragData2 = vec4(LVec,0.0);
+ vec3 R = reflect(-A.CameraVector, N);
+ FragData3 = vec4(R,0.0);
+ FragData4 = vec4(fObjectPosition,1.0);
+ FragData5 = fWorldPosition;
+ FragData6 = vec4(fScreenPosition,1.0);
+ FragData7 = fVertexColor;
+}</overload>
+      </PassFragmentColor>
+    </Fragment>
+    <!--V2F - vertex program to fragment program
+V2G - vertex program to geometry program
+
+O2W - object space to world space
+W2S - world space to screen space
+W2T - world space to TEXTURE_CUBE space
+
+-->
+  </Samples>
+</TGL3xMaterial>
