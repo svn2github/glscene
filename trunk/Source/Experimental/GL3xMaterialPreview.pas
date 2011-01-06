@@ -30,15 +30,16 @@ uses
 {$ENDIF}
   // GLScene
   OpenGLTokens, GLContext, GLState, GLColor, GLRenderContextInfo, BaseClasses,
-  GLVBOManager, GL3xMaterial, GL3xObjects, VectorGeometry, VectorGeometryEXT;
+  GL3xMaterial, GL3xObjects, GL3xFreeForm, VectorGeometry, VectorGeometryEXT;
 
 type
-  TPreviewModel = (pmPlane, pmCube, pmShpere);
+  TPreviewModel = (pmPlane, pmCube, pmShpere, pmFreeForm);
 
   TMaterialPreviewForm = class(TForm)
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormDestroy(Sender: TObject);
   private
@@ -56,10 +57,15 @@ type
     Sphere: TGL3xSphere;
     Cube: TGL3xCube;
     Plane: TGL3xPlane;
+    FreeForm: TGL3xFreeForm;
+    TextureQuad: IGLName;
     TextureViewProgram: IGLName;
     TextureViewVertexObj: IGLName;
     TextureViewFragmentObj: IGLName;
     FTextureName: IGLName;
+    FSurfaceFrameBuffer: TGLFramebufferHandle;
+    FSurfaceFrameBufferReady: Boolean;
+    FDepthBuffer: TGLRenderbufferHandle;
 
     mx, my: Integer;
     CameraPosition: TVector;
@@ -101,7 +107,11 @@ implementation
 uses
   GLShaderEnvironment,
   GL3xMaterialEditor,
-  GLShaderManager;
+  GLShaderManager,
+  GL3xMesh,
+  GLDrawTechnique,
+  GL3xMaterialTokens,
+  GLTextureFormat;
 
 procedure TMaterialPreviewForm.FormCreate(Sender: TObject);
 begin
@@ -125,7 +135,7 @@ begin
     AlphaBits := 0;
     AccumBits := 0;
     AuxBuffers := 0;
-//    AntiAliasing := aa2x;
+    // AntiAliasing := aa2x;
     GLStates.ForwardContext := True;
   end;
   try
@@ -136,19 +146,48 @@ begin
   if not Assigned(FRenderingContext) then
     exit;
   Sphere := TGL3xSphere.Create(Self);
-  Sphere.BuiltProperties.Usage := buStream;
   Cube := TGL3xCube.Create(Self);
-  Cube.BuiltProperties.Usage := buStream;
   Plane := TGL3xPlane.Create(Self);
-  Plane.BuiltProperties.Usage := buStream;
+  FreeForm := TGL3xFreeForm.Create(Self);
   Model := Sphere;
   FModelType := pmShpere;
 end;
 
 procedure TMaterialPreviewForm.PrepareContext;
 const
-  TextureView_vp150: AnsiString = '#version 150' + #13#10 + 'precision highp float;' + #13#10 + 'in vec2 Position;' + #13#10 + 'in vec2 TexCoord0;' + #13#10 + 'out vec2 fpTexCoord;' + #13#10 + 'void main()' + #13#10 + '{' + #13#10 + '  fpTexCoord = TexCoord0;' + #13#10 + '  gl_Position = vec4(Position, 0.0, 1.0);' + #13#10 + '}';
-  TextureView_fp150: AnsiString = '#version 150' + #13#10 + 'precision highp float;' + #13#10 + 'in vec2 fpTexCoord;' + #13#10 + 'uniform sampler2D TexUnit0;' + #13#10 + 'out vec4 FragColor;' + #13#10 + 'void main()' + #13#10 + '{' + #13#10 + '  FragColor = texture(TexUnit0, fpTexCoord);' + #13#10 + '}';
+  cTextureQuad = 'TextureQuad';
+  TextureView_vp150: AnsiString = '#version 150' + #13#10 +
+    'precision highp float;' + #13#10 +
+    'in vec2 Position;' + #13#10 +
+    'in vec2 TexCoord0;' + #13#10 +
+    'out vec2 fpTexCoord;' + #13#10 +
+    'void main()' + #13#10 + '{' + #13#10 +
+    '  fpTexCoord = TexCoord0;' +
+    #13#10 + '  gl_Position = vec4(Position, 0.0, 1.0);' + #13#10 +
+    '}';
+  TextureView_fp150: AnsiString = '#version 150' + #13#10 +
+    'precision highp float;' + #13#10 +
+    'in vec2 fpTexCoord;' + #13#10 +
+    'uniform sampler2D TexUnit0;' + #13#10 +
+    'out vec4 FragColor;' + #13#10 +
+    'void main()' + #13#10 +
+    '{' + #13#10 +
+    '  FragColor = texture(TexUnit0, fpTexCoord);' + #13#10 +
+    '}';
+const
+  cDrawBuffers: array[0..7] of GLenum =
+    (
+    GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1,
+    GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3,
+    GL_COLOR_ATTACHMENT4,
+    GL_COLOR_ATTACHMENT5,
+    GL_COLOR_ATTACHMENT6,
+    GL_COLOR_ATTACHMENT7);
+var
+  Builder: TGL3xStaticMeshBuilder;
+  I: Integer;
 begin
   if Assigned(FRenderingContext) then
   begin
@@ -156,32 +195,74 @@ begin
     SetVector(CameraPosition, 2, 0.2, 0.2, 1);
 
     FRenderingContext.Activate;
+    NotifyGLSceneManagersContextCreated;
+
     with FRenderingContext.GLStates do
     begin
       ColorClearValue := clrGray10;
       Enable(stDepthTest);
-      Disable(stCullFace);
       FrontFace := fwCounterClockWise;
-      ViewPort := Vector4iMake(0, 0, ClientWidth, ClientHeight);
-      FRenderingContext.PipelineTransformation.ProjectionMatrix := ProjectionMatrix;
+      FRenderingContext.PipelineTransformation.ProjectionMatrix :=
+        ProjectionMatrix;
       LightEnabling[0] := True;
       LightPosition[0] := VectorMake(4, 6, 8, 1);
       LightDiffuse[0] := clrWhite;
-      LightAmbient[0] := clrGray30;
+      LightAmbient[0] := clrGray05;
       LightSpecular[0] := clrWhite;
+      LightSpotCutoff[0] := 180;
+      LightSpotExponent[0] := 0;
+      LightConstantAtten[0] := 1;
+      LightLinearAtten[0] := 0;
+      LightQuadraticAtten[0] := 0;
     end;
-    NotifyGLSceneManagersContextCreated;
+
     FillChar(FRenderContextInfo, SizeOf(FRenderContextInfo), 0);
     FRenderContextInfo.ignoreMaterials := True;
+    FRenderContextInfo.bufferFaceCull := False;
     FRenderContextInfo.GLStates := FRenderingContext.GLStates;
+
+    with MeshManager do
+      try
+        BeginWork;
+        TextureQuad := CreateMesh(cTextureQuad, TGL3xStaticMesh, '', '');
+        Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(TextureQuad));
+
+        with Builder do
+        begin
+          BeginMeshAssembly;
+          Clear;
+          DeclareAttribute(attrPosition, GLSLType2f);
+          DeclareAttribute(attrTexCoord0, GLSLType2f);
+          BeginBatch(mpTRIANGLE_STRIP);
+          Attribute2f(attrPosition, -1.0, -1.0);
+          Attribute2f(attrTexCoord0, -0.5, -0.5);
+          EmitVertex;
+          Attribute2f(attrPosition, -1.0, 1.0);
+          Attribute2f(attrTexCoord0, -0.5, 1.5);
+          EmitVertex;
+          Attribute2f(attrPosition, 1.0, -1.0);
+          Attribute2f(attrTexCoord0, 1.5, -0.5);
+          EmitVertex;
+          Attribute2f(attrPosition, 1.0, 1.0);
+          Attribute2f(attrTexCoord0, 1.5, 1.5);
+          EmitVertex;
+          EndBatch;
+          EndMeshAssembly;
+        end;
+      finally
+        EndWork;
+      end;
 
     with ShaderManager do
     begin
       try
         BeginWork;
-        DefineShaderProgram(TextureViewProgram, [ptVertex, ptFragment], 'TextureViewProgram');
-        DefineShaderObject(TextureViewVertexObj, TextureView_vp150, [ptVertex], 'TextureViewVertex');
-        DefineShaderObject(TextureViewFragmentObj, TextureView_fp150, [ptFragment], 'TextureViewFragment');
+        DefineShaderProgram(TextureViewProgram, [ptVertex, ptFragment],
+          'TextureViewProgram');
+        DefineShaderObject(TextureViewVertexObj, TextureView_vp150, [ptVertex],
+          'TextureViewVertex');
+        DefineShaderObject(TextureViewFragmentObj, TextureView_fp150,
+          [ptFragment], 'TextureViewFragment');
         AttachShaderObjectToProgram(TextureViewVertexObj, TextureViewProgram);
         AttachShaderObjectToProgram(TextureViewFragmentObj, TextureViewProgram);
         LinkShaderProgram(TextureViewProgram);
@@ -189,6 +270,43 @@ begin
         EndWork;
       end;
     end;
+
+    FSurfaceFrameBuffer := TGLFramebufferHandle.CreateAndAllocate;
+    FDepthBuffer := TGLRenderbufferHandle.CreateAndAllocate;
+    FDepthBuffer.Bind;
+    FDepthBuffer.SetStorage(GL_DEPTH_COMPONENT16, 96, 96);
+    FDepthBuffer.UnBind;
+    FSurfaceFrameBuffer.BindForDrawing;
+    for I := 0 to 7 do
+    begin
+      with MaterialEditorForm.MaterialGraph.SurfaceTexture[I] do
+      begin
+        AllocateHandle;
+        FRenderingContext.GLStates.TextureBinding[0, ttTexture2D] := Handle;
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        GL.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 96, 96, 0,
+          GL_RGBA, GL_BYTE, nil);
+        FSurfaceFrameBuffer.Attach2DTexture(
+          GL_DRAW_FRAMEBUFFER,
+          GL_COLOR_ATTACHMENT0 + I,
+          GL_TEXTURE_2D,
+          Handle,
+          0);
+        NotifyDataUpdated;
+      end;
+    end;
+    FSurfaceFrameBuffer.AttachRenderBuffer(
+      GL_DRAW_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      GL_RENDERBUFFER,
+      FDepthBuffer.Handle);
+    GL.DrawBuffers(8, @cDrawBuffers);
+    FSurfaceFrameBufferReady := FSurfaceFrameBuffer.CheckStatus(GL_DRAW_FRAMEBUFFER) = GL_FRAMEBUFFER_COMPLETE;
+    FSurfaceFrameBuffer.UnBind;
+
     FRenderingContext.Deactivate;
   end;
 end;
@@ -198,21 +316,21 @@ begin
   if Assigned(FRenderingContext) then
   begin
     FreeAndNil(FRenderingContext);
-    FreeAndNil(Sphere);
-    FreeAndNil(Cube);
-    FreeAndNil(Plane);
+    TextureQuad := nil;
     TextureViewProgram := nil;
     TextureViewVertexObj := nil;
     TextureViewFragmentObj := nil;
     FTextureName := nil;
+    FreeAndNil(FSurfaceFrameBuffer);
+    FreeAndNil(FDepthBuffer);
   end;
 end;
 
-procedure TMaterialPreviewForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TMaterialPreviewForm.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
 begin
   NotifyClose(Self);
 end;
-
 {$IFDEF FPC}
 
 procedure TMaterialPreviewForm.LMPaint(var Message: TLMPaint);
@@ -233,6 +351,7 @@ var
   ps: TPaintStruct;
 {$ENDIF}
   LM: TMatrixEXT;
+  I: Integer;
 begin
   if Assigned(FRenderingContext) and Visible then
   begin
@@ -243,6 +362,7 @@ begin
     begin
       Activate;
       try
+        GLStates.ViewPort := Vector4iMake(0, 0, ClientWidth, ClientHeight);
         GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
         if FTextureName = nil then
@@ -254,39 +374,47 @@ begin
           PipelineTransformation.ProjectionMatrix := ProjectionMatrix;
 
           if Model.Visible then
+          begin
             with MaterialEditorForm.MaterialGraph.EditedMaterial do
-//            with MaterialManager do
             begin
               repeat
-                Apply(FRenderContextInfo);
+                Apply(FRenderContextInfo, matvarCommon);
                 Model.DoRender(FRenderContextInfo, True, False);
               until UnApply(FRenderContextInfo);
             end;
+
+            if FSurfaceFrameBufferReady then
+            begin
+              FSurfaceFrameBuffer.BindForDrawing;
+              GLStates.ViewPort := Vector4iMake(0, 0, 96, 96);
+              for I := 0 to 7 do
+                GL.ClearBufferfv(GL_COLOR, I, @clrTransparent);
+              GL.ClearBufferfv(GL_DEPTH, 0, @clrWhite);
+
+              with MaterialEditorForm.MaterialGraph.EditedMaterial do
+              begin
+                repeat
+                  Apply(FRenderContextInfo, matvarAllSurfProperies);
+                  Model.DoRender(FRenderContextInfo, True, False);
+                until UnApply(FRenderContextInfo);
+              end;
+
+              FSurfaceFrameBuffer.UnBindForDrawing;
+            end;
+          end;
         end
 
         else if ShaderManager.IsProgramLinked(TextureViewProgram) then
         begin
-          ShaderManager.UseProgram(TextureViewProgram);
-          MaterialManager.ApplyTextureSampler(FTextureName, nil, uniformTexUnit0);
-          with DynamicVBOManager do
+          with FRenderContextInfo.GLStates do
           begin
-            BeginObject(nil);
-            Attribute2f(attrPosition, -1.0, -1.0);
-            Attribute2f(attrTexCoord0, -0.5, -0.5);
-            BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-            EmitVertex;
-            Attribute2f(attrPosition, -1.0, 1.0);
-            Attribute2f(attrTexCoord0, -0.5, 1.5);
-            EmitVertex;
-            Attribute2f(attrPosition, 1.0, -1.0);
-            Attribute2f(attrTexCoord0, 1.5, -0.5);
-            EmitVertex;
-            Attribute2f(attrPosition, 1.0, 1.0);
-            Attribute2f(attrTexCoord0, 1.5, 1.5);
-            EmitVertex;
-            EndPrimitives;
-            EndObject;
+            Disable(stCullFace);
+            Disable(stBlend);
           end;
+          ShaderManager.UseProgram(TextureViewProgram);
+          MaterialManager.ApplyTextureSampler(FTextureName, nil,
+            uniformTexUnit0);
+          DrawManager.Draw(TextureQuad);
         end;
 
         GL.Finish;
@@ -300,7 +428,6 @@ begin
     end;
   end;
 end;
-
 {$IFDEF FPC}
 
 procedure TMaterialPreviewForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
@@ -313,72 +440,77 @@ end;
 
 procedure TMaterialPreviewForm.WMMove(var Message: TLMMove);
 {$ELSE}
-
-procedure TMaterialPreviewForm.WMMove(var Message: TWMMove);
+  procedure TMaterialPreviewForm.WMMove(var Message: TWMMove);
 {$ENDIF}
-begin
-  if LastChangePosByMainForm then
-    LastChangePosByMainForm := False
-  else
-    Docked := False;
-  inherited;
-end;
-
-procedure TMaterialPreviewForm.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  mx := X;
-  my := Y;
-end;
-
-procedure TMaterialPreviewForm.FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-var
-  originalT2C, normalT2C, normalCameraRight: TVector;
-  pitchNow, dist, pitchDelta, turnDelta: Single;
-begin
-  if Shift = [ssLeft] then
   begin
-    pitchDelta := my - Y;
-    turnDelta := mx - X;
-    originalT2C := VectorSubtract(CameraPosition, Sphere.AbsolutePosition);
-    SetVector(normalT2C, originalT2C);
-    dist := VectorLength(normalT2C);
-    NormalizeVector(normalT2C);
-    normalCameraRight := VectorCrossProduct(YHmgVector, normalT2C);
-    if VectorLength(normalCameraRight) < 0.001 then
-      SetVector(normalCameraRight, XVector)
+    if LastChangePosByMainForm then
+      LastChangePosByMainForm := False
     else
-      NormalizeVector(normalCameraRight);
-    pitchNow := ArcCos(VectorDotProduct(YHmgVector, normalT2C));
-    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI - 0.025);
-    SetVector(normalT2C, YHmgVector);
-    RotateVector(normalT2C, normalCameraRight, -pitchNow);
-    RotateVector(normalT2C, YHmgVector, -DegToRad(turnDelta));
-    ScaleVector(normalT2C, dist);
-    CameraPosition := VectorAdd(CameraPosition, VectorSubtract(normalT2C, originalT2C));
+      Docked := False;
+    inherited;
+  end;
+
+  procedure TMaterialPreviewForm.FormMouseDown(Sender: TObject;
+    Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+  begin
     mx := X;
     my := Y;
   end;
-end;
 
-procedure TMaterialPreviewForm.SetPreviewModel(AModel: TPreviewModel);
-begin
-  if AModel <> FModelType then
+  procedure TMaterialPreviewForm.FormMouseMove(Sender: TObject;
+    Shift: TShiftState; X, Y: Integer);
+  var
+    originalT2C, normalT2C, normalCameraRight: TVector;
+    pitchNow, dist, pitchDelta, turnDelta: Single;
   begin
-    case AModel of
-      pmPlane:
-        Model := Plane;
-      pmCube:
-        Model := Cube;
-      pmShpere:
-        Model := Sphere;
+    if Shift = [ssLeft] then
+    begin
+      pitchDelta := my - Y;
+      turnDelta := mx - X;
+      originalT2C := VectorSubtract(CameraPosition, Sphere.AbsolutePosition);
+      SetVector(normalT2C, originalT2C);
+      dist := VectorLength(normalT2C);
+      NormalizeVector(normalT2C);
+      normalCameraRight := VectorCrossProduct(YHmgVector, normalT2C);
+      if VectorLength(normalCameraRight) < 0.001 then
+        SetVector(normalCameraRight, XVector)
+      else
+        NormalizeVector(normalCameraRight);
+      pitchNow := ArcCos(VectorDotProduct(YHmgVector, normalT2C));
+      pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025,
+        PI - 0.025);
+      SetVector(normalT2C, YHmgVector);
+      RotateVector(normalT2C, normalCameraRight, -pitchNow);
+      RotateVector(normalT2C, YHmgVector, -DegToRad(turnDelta));
+      ScaleVector(normalT2C, dist);
+      CameraPosition := VectorAdd(CameraPosition,
+        VectorSubtract(normalT2C, originalT2C));
+      mx := X;
+      my := Y;
     end;
-    FModelType := AModel;
   end;
-end;
 
-procedure TMaterialPreviewForm.SetTextureName(AName: IGLName);
-begin
-  FTextureName := AName;
-end;
+  procedure TMaterialPreviewForm.SetPreviewModel(AModel: TPreviewModel);
+  begin
+    if AModel <> FModelType then
+    begin
+      case AModel of
+        pmPlane:
+          Model := Plane;
+        pmCube:
+          Model := Cube;
+        pmShpere:
+          Model := Sphere;
+        pmFreeForm:
+          Model := FreeForm;
+      end;
+      FModelType := AModel;
+    end;
+  end;
+
+  procedure TMaterialPreviewForm.SetTextureName(AName: IGLName);
+  begin
+    FTextureName := AName;
+  end;
 
 end.

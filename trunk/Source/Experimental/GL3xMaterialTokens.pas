@@ -18,8 +18,10 @@ interface
 {$ENDIF}
 
 uses
-  BaseClasses,
-  GLState;
+{$IFDEF FPC}
+  LResources,
+{$ENDIF}
+  BaseClasses, GLState;
 
 type
   // TFaceCulling
@@ -34,12 +36,34 @@ type
   //
   TLightingModel = (lmPhong, lmEmissiveOnly, lmCustomLighting);
 
+  // TMaterialVariant
+  //
+  TMaterialVariant = (
+    matvarCommon, // Common shader sample
+    matvarAllSurfProperies // Export surface properies (normal, camera, light, reflection, position, color)
+    );
+
+  TMaterialVariants = set of TMaterialVariant;
+
+
+  TTextureSampler = record
+    SamplerName: IGLName;
+    TextureName: IGLName;
+    UseCount: Integer;
+{$IFNDEF FPC}
+    class operator Equal(const a, b: TTextureSampler): Boolean;
+{$ENDIF}
+  end;
+
+  TTextureSamplerArray = array of TTextureSampler;
+
 const
 
   cFaceCulling: array[TFaceCulling] of string = ('BufferDefault', 'Cull', 'NoCull');
   cPolygonMode: array[TPolygonMode] of string = ('Fill', 'Lines', 'Points');
   cBlendingMode: array[TBlendingMode] of string = ('Opaque', 'Transparency', 'Additive', 'Masked', 'Modulate', 'Custom');
   cLightingModel: array[TLightingModel] of string = ('Phong', 'EmissiveOnly', 'CustomLighting');
+  cMaterialVariant: array[TMaterialVariant] of string = ('', 'AllSurfProperties');
 
 type
 
@@ -118,6 +142,7 @@ type
     Math_OneMinus: AnsiString;
     Math_SquareRoot: AnsiString;
     Math_Sign: AnsiString;
+    Math_SmoothStep: AnsiString;
   end;
 
   TMatSysTextureCategory = record
@@ -253,6 +278,7 @@ const
     Math_OneMinus: 'Math_OneMinus';
     Math_SquareRoot: 'Math_SquareRoot';
     Math_Sign: 'Math_Sign';
+    Math_SmoothStep: 'Math_SmoothStep';
     );
 
     Texture: (
@@ -299,21 +325,9 @@ const
     );
     );
 
-type
-    TTextureSampler = record
-    SamplerName: IGLName;
-    TextureName: IGLName;
-    UseCount: Integer;
-{$IFNDEF FPC}
-    class operator Equal(const a, b: TTextureSampler): Boolean;
-{$ENDIF}
-  end;
-
-  TTextureSamplerArray = array of TTextureSampler;
-
-{$IFDEF FPC}
-  operator =(const a, b: TTextureSampler): Boolean;
-{$ENDIF}
+  {$IFDEF FPC}
+  operator =(const a, b: TTextureSampler): Boolean; inline;
+  {$ENDIF}
 
 implementation
 
@@ -326,4 +340,12 @@ begin
   Result := (Pointer(a.TextureName) = Pointer(b.TextureName)) and (Pointer(a.SamplerName) = Pointer(b.SamplerName));
 end;
 
+{$IFDEF GLS_EXPERIMENTAL}
+{$IFDEF FPC}
+initialization
+{$I ..\Experimental\GLSceneMaterialSysLCL.lrs}
+{$ENDIF}
+{$ENDIF GLS_EXPERIMENTAL}
+
 end.
+

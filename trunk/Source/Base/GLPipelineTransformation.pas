@@ -247,7 +247,7 @@ function TGLPipelineTransformation.GetNormalModelMatrix: TAffineMatrix;
 var
   M: TMatrix;
 begin
-  if trsInvModelChanged in FStates then
+  if trsNormalModelChanged in FStates then
   begin
     M := FModelMatrix[FStackPos];
     NormalizeMatrix(M);

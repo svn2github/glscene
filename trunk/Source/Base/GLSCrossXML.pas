@@ -47,6 +47,7 @@ procedure SetXMLAttribute(const DOMNode: GLSDOMNode; const AttrName: string; con
 function GetXMLAttributeCount(const XMLNode: GLSXMLNode): Integer;
 function FindXMLNode(const ParentNode: GLSXMLNode; const NodeName: string; out ChildNode: GLSXMLNode): Boolean;
 function CreateDOMNode(const ParentNode: GLSDOMNode; const NodeName: string): GLSDOMNode;
+procedure SetXMLText(const DOMNode: GLSDOMNode; const AText: string);
 function GetXMLText(const XMLNode: GLSXMLNode; out AText: string): Boolean;
 
 implementation
@@ -92,6 +93,11 @@ function CreateDOMNode(const ParentNode: GLSDOMNode; const NodeName: string): GL
 begin
   Result := ParentNode.OwnerDocument.CreateElement(NodeName);
   ParentNode.AppendChild(Result);
+end;
+
+procedure SetXMLText(const DOMNode: GLSDOMNode; const AText: string);
+begin
+  DOMNode.AppendChild(DOMNode.ownerDocument.createTextNode(AText));
 end;
 
 function GetXMLText(const XMLNode: GLSXMLNode; out AText: string): Boolean;
@@ -149,6 +155,11 @@ function CreateDOMNode(const ParentNode: GLSDOMNode; const NodeName: string): GL
 begin
   Result := ParentNode.OwnerDocument.CreateElement(NodeName);
   ParentNode.AppendChild(Result);
+end;
+
+procedure SetXMLText(const DOMNode: GLSDOMNode; const AText: string);
+begin
+  DOMNode.AppendChild(DOMNode.ownerDocument.createTextNode(AText));
 end;
 
 function GetXMLText(const XMLNode: GLSXMLNode; out AText: string): Boolean;

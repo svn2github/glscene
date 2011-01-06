@@ -31,7 +31,6 @@ uses
   GLSLShader,
   GL3xObjects,
   GLShaderManager,
-  GLVBOManager,
   GLRenderContextInfo
 {$IFDEF GLS_DELPHI}
   , VectorTypes
@@ -73,9 +72,8 @@ type
     procedure SetHighAtmColor(const AValue: TGLColor);
     procedure EnableGLBlendingMode(StatesCash: TGLStateCache);
   protected
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure BuildMesh; override;
   public
     property Sun: TGLBaseSceneObject read FSun write SetSun;
 
@@ -120,7 +118,6 @@ type
     property HighAtmColor;
     property BlendingMode;
 
-    property BuiltProperties;
     property Position;
     property ObjectsSorting;
     property ShowAxes;
@@ -133,7 +130,7 @@ type
 implementation
 
 uses
-  BaseClasses;
+  BaseClasses, GLDrawTechnique, GL3xMesh;
 
 const
   EPS = 0.0001;
@@ -307,6 +304,15 @@ begin
   FHighAtmColor.Color := VectorMake(0, 0, 1, 1);
 
   FBlendingMode := abmOneMinusSrcAlpha;
+
+  with MeshManager do
+    try
+      BeginWork;
+      FMesh := CreateMesh('ATMOSPHERE', TGL3xStaticMesh, '', '');
+    finally
+      EndWork;
+    end;
+  BuildMesh;
 end;
 
 destructor TGL3xCustomAtmosphere.Destroy;
@@ -331,6 +337,9 @@ begin
     begin
       if AtmosphereProgram = nil then
         InitAtmosphereShader;
+
+      if ocStructure in Changes then
+        BuildMesh;
 
       if ShaderManager.IsProgramLinked(AtmosphereProgram) then
       begin
@@ -379,7 +388,7 @@ begin
           end;
           EnableGLBlendingMode(ARci.GLStates);
 
-          FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+          DrawManager.Draw(FMesh);
           if not ARci.GLStates.ForwardContext then
             UseFixedFunctionPipeline;
         end;
@@ -391,77 +400,88 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGL3xCustomAtmosphere.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xCustomAtmosphere.BuildMesh;
 var
   radius: Single;
   I, J, k0, k1, kt: Integer;
+  Builder: TGL3xStaticMeshBuilder;
 begin
-  with Sender do
-  begin
-    BeginObject(BuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    for I := 0 to 13 do
-    begin
-      if I < 5 then
-        radius := FPlanetRadius * Sqrt(I * (1 / 5))
-      else
-        radius := FPlanetRadius + (I - 5.1) * (FAtmosphereRadius - FPlanetRadius) * (1 / 6.9);
-      k0 := (I and 1) * (FSlices + 1);
-      k1 := (FSlices + 1) - k0;
-      for J := 0 to FSlices do
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
       begin
-        VertexCash[k0 + J] :=
-          AffineVectorMake(radius, sinCache[J], cosCache[J]);
-        if I = 0 then
-          Break;
-      end;
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        for I := 0 to 13 do
+        begin
+          if I < 5 then
+            radius := FPlanetRadius * Sqrt(I * (1 / 5))
+          else
+            radius := FPlanetRadius + (I - 5.1) * (FAtmosphereRadius - FPlanetRadius) * (1 / 6.9);
+          k0 := (I and 1) * (FSlices + 1);
+          k1 := (FSlices + 1) - k0;
+          for J := 0 to FSlices do
+          begin
+            VertexCash[k0 + J] :=
+              AffineVectorMake(radius, sinCache[J], cosCache[J]);
+            if I = 0 then
+              Break;
+          end;
 
-      if I > 1 then
-      begin
-        if I = 13 then
-        begin
-          for J := FSlices downto 0 do
+          if I > 1 then
           begin
-            kt := k1 + J;
-            Attribute3f(attrPosition, VertexCash[kt]);
-            EmitVertex;
-            kt := k0 + J;
-            Attribute3f(attrPosition, VertexCash[kt]);
-            EmitVertex;
-          end;
-          RestartStrip;
-        end
-        else
-        begin
-          for J := FSlices downto 0 do
+            if I = 13 then
+            begin
+              for J := FSlices downto 0 do
+              begin
+                kt := k1 + J;
+                Attribute3f(attrPosition, VertexCash[kt]);
+                EmitVertex;
+                kt := k0 + J;
+                Attribute3f(attrPosition, VertexCash[kt]);
+                EmitVertex;
+              end;
+              RestartStrip;
+            end
+            else
+            begin
+              for J := FSlices downto 0 do
+              begin
+                kt := k1 + J;
+                Attribute3f(attrPosition, VertexCash[kt]);
+                EmitVertex;
+                kt := k0 + J;
+                Attribute3f(attrPosition, VertexCash[kt]);
+                EmitVertex;
+              end;
+              RestartStrip;
+            end;
+          end
+          else if I = 1 then
           begin
-            kt := k1 + J;
-            Attribute3f(attrPosition, VertexCash[kt]);
+            BeginBatch(mpTRIANGLE_FAN);
+            Attribute3f(attrPosition, VertexCash[k1]);
             EmitVertex;
-            kt := k0 + J;
-            Attribute3f(attrPosition, VertexCash[kt]);
-            EmitVertex;
+            for J := k0 + FSlices downto k0 do
+            begin
+              Attribute3f(attrPosition, VertexCash[J]);
+              EmitVertex;
+            end;
+            EndBatch;
+            BeginBatch(mpTRIANGLE_STRIP);
           end;
-          RestartStrip;
         end;
-      end
-      else if I = 1 then
-      begin
-        BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-        Attribute3f(attrPosition, VertexCash[k1]);
-        EmitVertex;
-        for J := k0 + FSlices downto k0 do
-        begin
-          Attribute3f(attrPosition, VertexCash[J]);
-          EmitVertex;
-        end;
-        EndPrimitives;
-        BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
       end;
+    finally
+      EndWork;
     end;
-    EndPrimitives;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 procedure TGL3xCustomAtmosphere.TogleBlendingMode;

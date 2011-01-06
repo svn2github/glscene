@@ -102,6 +102,14 @@ object MaterialEditorForm: TMaterialEditorForm
         RadioItem = True
         OnClick = ModelMenuItemClick
       end
+      object FreeformMenuItem: TMenuItem
+        Tag = 3
+        AutoCheck = True
+        Caption = 'Free form'
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = ModelMenuItemClick
+      end
     end
   end
   object PopupMenu1: TPopupMenu

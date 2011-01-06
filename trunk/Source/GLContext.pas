@@ -130,7 +130,7 @@ type
   end;
 
 {$IFDEF GLS_MULTITHREAD}
-  TServiceContextTaskList = {$IFDEF FPC} specialize {$ENDIF}
+  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList < TServiceContextTask > ;
 {$ENDIF GLS_MULTITHREAD}
 

@@ -330,30 +330,10 @@ end;
 
 function TGLCompositeImage.GetTextureTarget: TGLTextureTarget;
 begin
-  Result := ttTexture2D;
   if Assigned(fBitmap) then
-  begin
-    // Choose a texture target
-    if fBitmap.Height = 1 then
-      Result := ttTexture1D;
-    if fBitmap.CubeMap then
-      Result := ttTextureCube;
-    if fBitmap.IsVolume then
-      Result := ttTexture3D;
-    if fBitmap.TextureArray then
-    begin
-      if (fBitmap.Depth < 2) then
-        Result := ttTexture1Darray
-      else
-        Result := ttTexture2DArray;
-      if fBitmap.CubeMap then
-        Result := ttTextureCube;
-    end;
-
-    if ((fBitmap.InternalFormat >= tfFLOAT_R16)
-      and (fBitmap.InternalFormat <= tfFLOAT_RGBA32)) then
-      Result := ttTextureRect;
-  end;
+    Result := fBitmap.GetTextureTarget
+  else
+    Result := ttTexture2D;
 end;
 
 initialization

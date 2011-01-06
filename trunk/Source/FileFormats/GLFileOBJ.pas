@@ -180,6 +180,9 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+{$IFDEF GLS_DELPHI_2009_UP}
+  VectorTypes,
+{$ENDIF}
   OpenGLTokens,
   XOpenGL,
   GLContext,
@@ -1559,6 +1562,7 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
   var
     Index: Integer;
     nNormal: TAffineVector;
+    x, y, z, w: T4ByteData;
   begin
     if I < IndicesList.Count then
       Index := IndicesList[I]
@@ -1569,23 +1573,25 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
       case AType of
         GLSLType1F:
         begin
-          ABuilder.Attribute1f(Attr,
-            ASource[Index].Float.Value);
+          x := ASource[Index];
+          ABuilder.Attribute1f(Attr, x.Float.Value);
         end;
         GLSLType2F:
         begin
           Index := 2*Index;
-          ABuilder.Attribute2f(Attr,
-            ASource[Index+0].Float.Value,
-            ASource[Index+1].Float.Value);
+          x := ASource[Index+0];
+          y := ASource[Index+1];
+          ABuilder.Attribute2f(Attr, x.Float.Value, y.Float.Value);
         end;
         GLSLType3F:
         begin
           Index := 3*Index;
-          nNormal := AffineVectorMake(
-            ASource[Index+0].Float.Value,
-            ASource[Index+1].Float.Value,
-            ASource[Index+2].Float.Value);
+          x := ASource[Index+0];
+          y := ASource[Index+1];
+          z := ASource[Index+2];
+          nNormal[0] := x.Float.Value;
+          nNormal[1] := y.Float.Value;
+          nNormal[2] := z.Float.Value;
           if Attr = attrNormal then
             NormalizeVector(nNormal);
           ABuilder.Attribute3f(Attr, nNormal);
@@ -1593,11 +1599,11 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
         GLSLType4F:
         begin
           Index := 4*Index;
-          ABuilder.Attribute4f(Attr,
-            ASource[Index+0].Float.Value,
-            ASource[Index+1].Float.Value,
-            ASource[Index+2].Float.Value,
-            ASource[Index+3].Float.Value);
+          x := ASource[Index+0];
+          y := ASource[Index+1];
+          z := ASource[Index+2];
+          w := ASource[Index+3];
+          ABuilder.Attribute4f(Attr, x.Float.Value, y.Float.Value, z.Float.Value, w.Float.Value);
         end;
     end
     else
@@ -1742,4 +1748,3 @@ initialization
 {$ENDIF GLS_EXPERIMENTAL}
 
 end.
-

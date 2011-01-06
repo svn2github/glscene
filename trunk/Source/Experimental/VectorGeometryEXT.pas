@@ -60,6 +60,7 @@ type
     property Z: Single read V[2] write V[2];
 {$IFDEF GLS_COMPILER_2005_UP}
     class operator Implicit(const a: TVector3f): TVector3fEXT; inline;
+    class operator Implicit(const a: TVector3fEXT): TVector3f; inline;
     class operator Add(const a, b: TVector3fEXT): TVector3fEXT; inline;
     class operator Subtract(const a, b: TVector3fEXT): TVector3fEXT; inline;
     class operator Multiply(const a, b: TVector3fEXT): TVector3fEXT; inline;
@@ -78,6 +79,8 @@ type
     function Length: Single; inline;
     function Distance(const a: TVector3fEXT): Single;
     function IsNull: Boolean;
+    procedure Min(const a: TVector3fEXT);
+    procedure Max(const a: TVector3fEXT);
   end;
 
   PVector4fEXT = ^TVector4fEXT;
@@ -296,6 +299,8 @@ type
     class operator Equal(const a, b: TMatrix3fEXT): Boolean; inline;
 {$ENDIF}
     procedure Identity;
+    function Determinant: Single;
+    function Inverse: TMatrix3fEXT;
   end;
 
   PMatrix4fEXT = ^TMatrix4fEXT;
@@ -372,6 +377,7 @@ operator =(const a, b: TVector2fEXT): Boolean; overload; inline;
 operator -(const a: TVector2fEXT): TVector2fEXT; overload; inline;
 
 operator := (const a: TVector3f): TVector3fEXT; overload; inline;
+operator := (const a: TVector3fEXT): TVector3f; overload; inline;
 operator + (const a, b: TVector3fEXT): TVector3fEXT; overload; inline;
 operator - (const a, b: TVector3fEXT): TVector3fEXT; overload; inline;
 operator * (const a, b: TVector3fEXT): TVector3fEXT; overload; inline;
@@ -688,6 +694,17 @@ begin
 end;
 
 {$IFDEF FPC}
+operator :=(const a: TVector3fEXT): TVector3f;
+{$ELSE}
+class operator TVector3fEXT.Implicit(const a: TVector3fEXT): TVector3f;
+{$ENDIF}
+begin
+  Result[0] := a.X;
+  Result[1] := a.Y;
+  Result[2] := a.Z;
+end;
+
+{$IFDEF FPC}
 operator +(const a, b: TVector3fEXT): TVector3fEXT;
 {$ELSE}
 class operator TVector3fEXT.Add(const a, b: TVector3fEXT): TVector3fEXT;
@@ -833,6 +850,21 @@ function TVector3fEXT.IsNull: Boolean;
 begin
   Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
 end;
+
+procedure TVector3fEXT.Min(const a: TVector3fEXT);
+begin
+  V[0] := MinFloat(V[0],a.X);
+  V[1] := MinFloat(V[1],a.Y);
+  V[2] := MinFloat(V[2],a.Z);
+end;
+
+procedure TVector3fEXT.Max(const a: TVector3fEXT);
+begin
+  V[0] := MaxFloat(V[0],a.X);
+  V[1] := MaxFloat(V[1],a.Y);
+  V[2] := MaxFloat(V[2],a.Z);
+end;
+
 {$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4fEXT'} {$ENDIF}
@@ -1870,6 +1902,37 @@ procedure TMatrix3fEXT.Identity;
 begin
   Move(IdentityMatrix, Self.V[0], SizeOf(TMatrix3f));
 end;
+
+function TMatrix3fEXT.Determinant: Single;
+begin
+  Result:=  e00 * (e11 * e22 - e12 * e21)
+          - e10 * (e01 * e22 - e02 * e20)
+          + e20 * (e01 * e12 - e02 * e11);
+end;
+
+function TMatrix3fEXT.Inverse: TMatrix3fEXT;
+var
+  D: Single;
+begin
+  D := 1 / Determinant;
+  if D < EPSILON then
+    Move(IdentityMatrix, Result.V[0], SizeOf(TMatrix3f))
+  else
+  begin
+    Result.e00 := (e11*e22-e12*e21)*D;
+    Result.e01 :=-(e01*e22-e02*e21)*D;
+    Result.e02 := (e01*e12-e02*e11)*D;
+
+    Result.e10:=-(e10*e22-e12*e20)*D;
+    Result.e11:= (e00*e22-e02*e20)*D;
+    Result.e12:=-(e00*e12-e02*e10)*D;
+
+    Result.e20:= (e10*e21-e11*e20)*D;
+    Result.e21:=-(e00*e21-e01*e20)*D;
+    Result.e22:= (e00*e11-e01*e10)*D;
+  end;
+end;
+
 {$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix4fEXT'} {$ENDIF}
@@ -2020,22 +2083,27 @@ var
   D : Single;
 begin
   D := 1 / Determinant;
-  Result.e00 :=  (e11 * (e22 * e33 - e32 * e23) - e21 * (e12 * e33 - e32 * e13) + e31 * (e12 * e23 - e22 * e13)) * D;
-  Result.e01 := -(e01 * (e22 * e33 - e32 * e23) - e21 * (e02 * e33 - e32 * e03) + e31 * (e02 * e23 - e22 * e03)) * D;
-  Result.e02 :=  (e01 * (e12 * e33 - e32 * e13) - e11 * (e02 * e33 - e32 * e03) + e31 * (e02 * e13 - e12 * e03)) * D;
-  Result.e03 := -(e01 * (e12 * e23 - e22 * e13) - e11 * (e02 * e23 - e22 * e03) + e21 * (e02 * e13 - e12 * e03)) * D;
-  Result.e10 := -(e10 * (e22 * e33 - e32 * e23) - e20 * (e12 * e33 - e32 * e13) + e30 * (e12 * e23 - e22 * e13)) * D;
-  Result.e11 :=  (e00 * (e22 * e33 - e32 * e23) - e20 * (e02 * e33 - e32 * e03) + e30 * (e02 * e23 - e22 * e03)) * D;
-  Result.e12 := -(e00 * (e12 * e33 - e32 * e13) - e10 * (e02 * e33 - e32 * e03) + e30 * (e02 * e13 - e12 * e03)) * D;
-  Result.e13 :=  (e00 * (e12 * e23 - e22 * e13) - e10 * (e02 * e23 - e22 * e03) + e20 * (e02 * e13 - e12 * e03)) * D;
-  Result.e20 :=  (e10 * (e21 * e33 - e31 * e23) - e20 * (e11 * e33 - e31 * e13) + e30 * (e11 * e23 - e21 * e13)) * D;
-  Result.e21 := -(e00 * (e21 * e33 - e31 * e23) - e20 * (e01 * e33 - e31 * e03) + e30 * (e01 * e23 - e21 * e03)) * D;
-  Result.e22 :=  (e00 * (e11 * e33 - e31 * e13) - e10 * (e01 * e33 - e31 * e03) + e30 * (e01 * e13 - e11 * e03)) * D;
-  Result.e23 := -(e00 * (e11 * e23 - e21 * e13) - e10 * (e01 * e23 - e21 * e03) + e20 * (e01 * e13 - e11 * e03)) * D;
-  Result.e30 := -(e10 * (e21 * e32 - e31 * e22) - e20 * (e11 * e32 - e31 * e12) + e30 * (e11 * e22 - e21 * e12)) * D;
-  Result.e31 :=  (e00 * (e21 * e32 - e31 * e22) - e20 * (e01 * e32 - e31 * e02) + e30 * (e01 * e22 - e21 * e02)) * D;
-  Result.e32 := -(e00 * (e11 * e32 - e31 * e12) - e10 * (e01 * e32 - e31 * e02) + e30 * (e01 * e12 - e11 * e02)) * D;
-  Result.e33 :=  (e00 * (e11 * e22 - e21 * e12) - e10 * (e01 * e22 - e21 * e02) + e20 * (e01 * e12 - e11 * e02)) * D;
+  if D < EPSILON then
+    Move(IdentityHmgMatrix, Result.V[0], SizeOf(TMatrix4f))
+  else
+  begin
+    Result.e00 :=  (e11 * (e22 * e33 - e32 * e23) - e21 * (e12 * e33 - e32 * e13) + e31 * (e12 * e23 - e22 * e13)) * D;
+    Result.e01 := -(e01 * (e22 * e33 - e32 * e23) - e21 * (e02 * e33 - e32 * e03) + e31 * (e02 * e23 - e22 * e03)) * D;
+    Result.e02 :=  (e01 * (e12 * e33 - e32 * e13) - e11 * (e02 * e33 - e32 * e03) + e31 * (e02 * e13 - e12 * e03)) * D;
+    Result.e03 := -(e01 * (e12 * e23 - e22 * e13) - e11 * (e02 * e23 - e22 * e03) + e21 * (e02 * e13 - e12 * e03)) * D;
+    Result.e10 := -(e10 * (e22 * e33 - e32 * e23) - e20 * (e12 * e33 - e32 * e13) + e30 * (e12 * e23 - e22 * e13)) * D;
+    Result.e11 :=  (e00 * (e22 * e33 - e32 * e23) - e20 * (e02 * e33 - e32 * e03) + e30 * (e02 * e23 - e22 * e03)) * D;
+    Result.e12 := -(e00 * (e12 * e33 - e32 * e13) - e10 * (e02 * e33 - e32 * e03) + e30 * (e02 * e13 - e12 * e03)) * D;
+    Result.e13 :=  (e00 * (e12 * e23 - e22 * e13) - e10 * (e02 * e23 - e22 * e03) + e20 * (e02 * e13 - e12 * e03)) * D;
+    Result.e20 :=  (e10 * (e21 * e33 - e31 * e23) - e20 * (e11 * e33 - e31 * e13) + e30 * (e11 * e23 - e21 * e13)) * D;
+    Result.e21 := -(e00 * (e21 * e33 - e31 * e23) - e20 * (e01 * e33 - e31 * e03) + e30 * (e01 * e23 - e21 * e03)) * D;
+    Result.e22 :=  (e00 * (e11 * e33 - e31 * e13) - e10 * (e01 * e33 - e31 * e03) + e30 * (e01 * e13 - e11 * e03)) * D;
+    Result.e23 := -(e00 * (e11 * e23 - e21 * e13) - e10 * (e01 * e23 - e21 * e03) + e20 * (e01 * e13 - e11 * e03)) * D;
+    Result.e30 := -(e10 * (e21 * e32 - e31 * e22) - e20 * (e11 * e32 - e31 * e12) + e30 * (e11 * e22 - e21 * e12)) * D;
+    Result.e31 :=  (e00 * (e21 * e32 - e31 * e22) - e20 * (e01 * e32 - e31 * e02) + e30 * (e01 * e22 - e21 * e02)) * D;
+    Result.e32 := -(e00 * (e11 * e32 - e31 * e12) - e10 * (e01 * e32 - e31 * e02) + e30 * (e01 * e12 - e11 * e02)) * D;
+    Result.e33 :=  (e00 * (e11 * e22 - e21 * e12) - e10 * (e01 * e22 - e21 * e02) + e20 * (e01 * e12 - e11 * e02)) * D;
+  end;
 end;
 
 procedure TMatrix4fEXT.Transpose;

@@ -2858,6 +2858,7 @@ type
 {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Interrop'}{$ENDIF}
+{$IFDEF LINUX}
     VDPAUInitNV: procedure(const vdpDevice: Pointer; const getProcAddress: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2898,6 +2899,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
+{$ENDIF LINUX}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'Interrop'}{$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'}{$ENDIF}
 {$IFDEF SUPPORT_WGL}
@@ -2966,8 +2968,14 @@ type
     WGetSwapIntervalEXT: function: Integer; stdcall;
 
     // GL_NV_vertex_array_range (EXT #190)
-    WAllocateMemoryNV: function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer; stdcall;
-    WFreeMemoryNV: procedure(ptr: Pointer); stdcall;
+    WAllocateMemoryNV: function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer;
+{$IFDEF MSWINDOWS}stdcall;
+{$ENDIF}{$IFDEF UNIX}cdecl;
+{$ENDIF}
+    WFreeMemoryNV: procedure(ptr: Pointer);
+{$IFDEF MSWINDOWS}stdcall;
+{$ENDIF}{$IFDEF UNIX}cdecl;
+{$ENDIF}
 {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'GLX function/procedure definitions for ARB approved extensions'}{$ENDIF}
@@ -3067,9 +3075,9 @@ type
     XGetAGPOffsetMESA: function(param: Pointer): PGLint; cdecl;
     XEnumerateVideoDevicesNV: function(dpy: PDisplay; screen: TGLint; nelements: PGLint): PGLuint; cdecl;
     XBindVideoDeviceNV: function(dpy: PDisplay; video_slot: TGLint; video_device: TGLint; attrib_list: PGLint): TGLint; cdecl;
-    GetVideoDeviceNV: function(dpy: PDisplay; screen: TGLint; numVideoDevices: TGLint; pVideoDevice: GLXVideoDeviceNV): TGLint; cdecl;
+    XGetVideoDeviceNV: function(dpy: PDisplay; screen: TGLint; numVideoDevices: TGLint; pVideoDevice: GLXVideoDeviceNV): TGLint; cdecl;
 
-    XAllocateMemoryNV: function(size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat): Pointer; cdecl;
+    XAllocateMemoryNV: procedure(size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat); cdecl;
     XFreeMemoryNV: procedure(GLvoid: Pointer); cdecl;
 
     XReleaseVideoDeviceNV: function(dpy: PDisplay; screen: TGLint; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
@@ -4470,6 +4478,7 @@ begin
   DebugMessageCallback := GetAddress('DebugMessageCallback');
   GetDebugMessageLog := GetAddress('GetDebugMessageLog');
 
+{$IFDEF LINUX}
   VDPAUInitNV := GetAddressNoSuffixes('VDPAUInitNV');
   VDPAUFiniNV := GetAddressNoSuffixes('VDPAUFiniNV');
   VDPAURegisterVideoSurfaceNV := GetAddressNoSuffixes('VDPAURegisterVideoSurfaceNV');
@@ -4480,6 +4489,7 @@ begin
   VDPAUSurfaceAccessNV := GetAddressNoSuffixes('VDPAUSurfaceAccessNV');
   VDPAUMapSurfacesNV := GetAddressNoSuffixes('VDPAUMapSurfacesNV');
   VDPAUUnmapSurfacesNV := GetAddressNoSuffixes('VDPAUUnmapSurfacesNV');
+{$ENDIF LINUX}
 
   if FDebug then
     if ARB_debug_output then
@@ -5543,7 +5553,6 @@ begin
   WDeleteDCNV := GLGetProcAddress('wglDeleteDCNV');
 end;
 {$ENDIF}
-
 {$IFDEF SUPPORT_GLX}
 // ReadGLXImplementationProperties
 //
@@ -5697,7 +5706,7 @@ begin
   XGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
   XEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
   XBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
-  GetVideoDeviceNV := GLGetProcAddress('glGetVideoDeviceNV');
+  XGetVideoDeviceNV := GLGetProcAddress('glXGetVideoDeviceNV');
   XCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
   XReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
   XCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');

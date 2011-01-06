@@ -17,34 +17,41 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, SyncObjs;
+  SysUtils, Classes, SyncObjs, GLCrossPlatform;
 
 const
   MaxListSize = Maxint div 16;
+
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
 
 type
 
   // GList
   //
-{$IFDEF FPC}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GList<T> = class(TObject)
   public
     type
-    TCollectionNotifyEvent = procedure(Sender: TObject; const Item: T;
-      Action: TListNotification);
+    TListChangeEvent = procedure(Sender: TObject; const Item: T;
+      Action: TListNotification) of object;
     var
   private
     FItems: array of T;
     FCount: Integer;
     FCapacity: Integer;
-    FOnNotify: TCollectionNotifyEvent;
+    FOnChange: TListChangeEvent;
   protected
     procedure SetCapacity(Value: Integer);
     procedure SetCount(Value: Integer);
     function GetItem(Index: Integer): T;
     procedure SetItem(Index: Integer; const Value: T);
+    function GetItemAddress(Index: Integer): Pointer;
     procedure Grow;
   protected
     procedure Notify(const Item: T; Action: TListNotification); virtual;
@@ -62,20 +69,21 @@ type
     function First: T;
     function Last: T;
     property Items[Index: Integer]: T read GetItem write SetItem; default;
+    property ItemAddress[Index: Integer]: Pointer read GetItemAddress;
     property Capacity: Integer read FCapacity write SetCapacity;
     property Count: Integer read FCount write SetCount;
-    property OnNotify: TCollectionNotifyEvent read FOnNotify write FOnNotify;
+    property OnChange: TListChangeEvent read FOnChange write FOnChange;
   end;
 
   // GThreadList
   //
-{$IFDEF FPC}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GThreadList<T> = class
   public
     type
-      TLockableList = {$IFDEF FPC} specialize {$ENDIF} GList<T>;
+      TLockableList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
     var
   private
     FList: TLockableList;
@@ -92,13 +100,13 @@ type
 
   // GOrderedList
   //
-{$IFDEF FPC}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GOrderedList<T> = class(TObject)
   private
     type
-      TOrderedList = {$IFDEF FPC} specialize {$ENDIF} GList<T>;
+      TOrderedList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
     var
       FList: TOrderedList;
   protected
@@ -120,17 +128,17 @@ type
   // GStack
   //
 {$IFNDEF FPC}
-{$IFDEF FPC}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
-  GStack<T> = class({$IFDEF FPC} specialize {$ENDIF} GOrderedList<T>)
+  GStack<T> = class({$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GOrderedList<T>)
   protected
     procedure PushItem(AItem: T); override;
   end;
 
   // GQueue
   //
-{$IFDEF FPC}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GQueue<T> = class(GOrderedList<T>)
@@ -232,6 +240,14 @@ begin
   Result := FItems[Index];
 end;
 
+function GList{$IFNDEF FPC}<T>{$ENDIF}.GetItemAddress(Index: Integer): Pointer;
+begin
+{$IFOPT R+}
+  Assert(Index < FCount);
+{$ENDIF}
+  Result := @FItems[Index];
+end;
+
 function GList{$IFNDEF FPC}<T>{$ENDIF}.IndexOf(AItem: T): Integer;
 begin
   for Result := 0 to FCount - 1 do
@@ -276,8 +292,8 @@ end;
 
 procedure GList{$IFNDEF FPC}<T>{$ENDIF}.Notify(const Item: T; Action: TListNotification);
 begin
-  if Assigned(FOnNotify) then
-    FOnNotify(Self, Item, Action);
+  if Assigned(FOnChange) then
+    FOnChange(Self, Item, Action);
 end;
 
 function GList{$IFNDEF FPC}<T>{$ENDIF}.Remove(AItem: T): Integer;

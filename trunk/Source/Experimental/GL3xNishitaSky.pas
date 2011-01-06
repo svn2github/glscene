@@ -114,7 +114,7 @@ type
     procedure Initialize(StateCash: TGLStateCache);
     procedure MakeGPUOpticalDepth(StateCash: TGLStateCache);
     procedure MakeGPUMieRayleighBuffer(StateCash: TGLStateCache);
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -152,7 +152,6 @@ type
     property MieScaleHeight;
     property RayleighScaleHeight;
 
-    property BuiltProperties;
     property Position;
     property Direction;
     property PitchAngle;
@@ -172,7 +171,9 @@ uses
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
   GLFileDDS,
 {$ENDIF}
-  BaseClasses;
+  BaseClasses,
+  GL3xMesh,
+  GLDrawTechnique;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
 const
@@ -715,7 +716,8 @@ begin
 
   ShaderManager.UseProgram(CreateOpticalDepthProgram);
 
-  FUBO.BindBase(ublockConstants.Location);
+  FUBO.BindBase(1);
+  ublockConstants.BindingIndex := 1;
 
   with DynamicVBOManager do
   begin
@@ -795,7 +797,8 @@ begin
     else
       UseProgram(UpdateProgram);
 
-    FUBO.BindBase(ublockConstants.Location);
+    FUBO.BindBase(1);
+    ublockConstants.BindingIndex := 1;
     Uniform3f(uniformSunDir, v3SunDir);
 
     if FFastUpdate then
@@ -859,6 +862,9 @@ begin
   // Render self
   if GL.VERSION_3_2 and ARenderSelf then
   begin
+    if ocStructure in Changes then
+      BuildMesh;
+
     // Store states
     vp := ARci.GLStates.ViewPort;
     storeFrameBuffer := ARci.GLStates.DrawFrameBuffer;
@@ -886,7 +892,8 @@ begin
 
         ARci.GLStates.SamplerBinding[UniformSampler(uniformMie, FMieTexture.Handle)] := 0;
         ARci.GLStates.SamplerBinding[UniformSampler(uniformRayleigh, FRayleighTexture.Handle)] := 0;
-        FUBO.BindBase(ublockConstants.Location);
+        FUBO.BindBase(1);
+        ublockConstants.BindingIndex := 1;
         Uniform3f(uniformSunDir, v3SunDir);
 
         with ARci.GLStates do
@@ -898,7 +905,7 @@ begin
           SetDepthRange(0, 1);
         end;
 
-        FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+        DrawManager.Draw(FMesh);
 
         if not ARci.GLStates.ForwardContext then
           UseFixedFunctionPipeline;
@@ -911,13 +918,14 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGL3xCustomNishitaSky.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xCustomNishitaSky.BuildMesh;
 var
   V1, V2: TAffineVector;
   i, j: Integer;
   StepH, StepV: Extended;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
   vTexCoord, TexFactor, uTexCoord0, uTexCoord1: Single;
+  Builder: TGL3xStaticMeshBuilder;
 begin
   // common settings
   StepV := Pi / FDomeDiv;
@@ -926,63 +934,73 @@ begin
   Phi2 := Phi - StepH;
   TexFactor := 2 / (FDomeDiv + 2);
 
-  with Sender do
-  begin
-    BeginObject(BuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    for j := 0 to FDomeDiv div 2 - 1 do
-    begin
-      Theta := 0;
-      SinCos(Phi, SinP, CosP);
-      SinCos(Phi2, SinP2, CosP2);
-      V1[1] := SinP;
-      V2[1] := SinP2;
-      uTexCoord0 := (0.5 + j) * TexFactor;
-      uTexCoord1 := (j + 1.5) * TexFactor;
-
-      for i := 0 to FDomeDiv div 2 do
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
       begin
-        SinCos(Theta, SinT, CosT);
-        V1[0] := CosP * CosT;
-        V2[0] := CosP2 * CosT;
-        V1[2] := CosP * SinT;
-        V2[2] := CosP2 * SinT;
-        vTexCoord := (0.5 + i) * TexFactor;
-        Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
-        Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
-        EmitVertex;
-        Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
-        Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
-        EmitVertex;
-        Theta := Theta - StepH;
-      end;
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        BeginBatch(mpTRIANGLE_STRIP);
+        for j := 0 to FDomeDiv div 2 - 1 do
+        begin
+          Theta := 0;
+          SinCos(Phi, SinP, CosP);
+          SinCos(Phi2, SinP2, CosP2);
+          V1[1] := SinP;
+          V2[1] := SinP2;
+          uTexCoord0 := (0.5 + j) * TexFactor;
+          uTexCoord1 := (j + 1.5) * TexFactor;
 
-      for i := 0 to FDomeDiv div 2 do
-      begin
-        SinCos(Theta, SinT, CosT);
-        V1[0] := CosP * CosT;
-        V2[0] := CosP2 * CosT;
-        V1[2] := CosP * SinT;
-        V2[2] := CosP2 * SinT;
-        vTexCoord := 1.0 - (0.5 + i) * TexFactor;
-        Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
-        Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
-        EmitVertex;
-        Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
-        Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
-        EmitVertex;
-        Theta := Theta - StepH;
-      end;
+          for i := 0 to FDomeDiv div 2 do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * CosT;
+            V2[0] := CosP2 * CosT;
+            V1[2] := CosP * SinT;
+            V2[2] := CosP2 * SinT;
+            vTexCoord := (0.5 + i) * TexFactor;
+            Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
+            Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
+            Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
+            EmitVertex;
+            Theta := Theta - StepH;
+          end;
 
-      RestartStrip;
-      Phi := Phi2;
-      Phi2 := Phi2 - StepV;
+          for i := 0 to FDomeDiv div 2 do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * CosT;
+            V2[0] := CosP2 * CosT;
+            V1[2] := CosP * SinT;
+            V2[2] := CosP2 * SinT;
+            vTexCoord := 1.0 - (0.5 + i) * TexFactor;
+            Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
+            Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
+            Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
+            EmitVertex;
+            Theta := Theta - StepH;
+          end;
+
+          RestartStrip;
+          Phi := Phi2;
+          Phi2 := Phi2 - StepV;
+        end;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
+      end;
+    finally
+      EndWork;
     end;
-    EndPrimitives;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 procedure TGL3xCustomNishitaSky.Assign(Source: TPersistent);

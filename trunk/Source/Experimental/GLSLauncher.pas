@@ -17,11 +17,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
   Classes,
   Forms,
   SysUtils,
-  JPEG,
   ExtCtrls,
   Controls,
   Graphics,
@@ -66,11 +64,16 @@ type
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; override;
+    class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); override;
+
   end;
 
 implementation
 
 uses
+{$IFDEF GLS_DELPHI_OR_CPPB}
+  JPEG,
+{$ENDIF}
   ApplicationFileIO,
   GLCrossPlatform,
   GLSLog,
@@ -118,11 +121,15 @@ begin
       mStream := TMemoryStream.Create;
       SplashImage.SaveToStream(mStream);
       SetLength(temp, 2 * mStream.Size);
-      BinToHex(mStream.Memory^, PChar(temp), Integer(mStream.Size));
+      BinToHex(PChar(mStream.Memory), PChar(temp), Integer(mStream.Size));
       mStream.Destroy;
       AList.Add(Format('SPLASH = %s', [temp]));
     end;
   end;
+end;
+
+class procedure LaunchManager.MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass);
+begin
 end;
 
 class function LaunchManager.FirstOne: Boolean;
@@ -135,7 +142,7 @@ var
   I, E: Integer;
   rStream: TGLSResourceStream;
   mStream: TMemoryStream;
-  eResType: TGLSApplicationResource;
+  RT, RT_: TGLSApplicationResource;
   ResList: TStringList;
   line, rName, rFile: string;
 
@@ -165,37 +172,37 @@ begin
 
   GLSLogger.Enabled := True;
 
-  eResType := aresNone;
+  RT := aresNone;
   SetExeDirectory;
   for I := 0 to ResList.Count - 1 do
   begin
     line := ResList.Strings[I];
-    if line = '[SPLASH]' then
+    RT_ := StrToGLSResType(line);
+    if (RT_ <> aresNone) and (RT <> RT_) then
     begin
-      eResType := aresSplash;
+      RT := RT_;
       continue;
-    end
-    else
-      case eResType of
-        aresSplash:
+    end;
+    case RT of
+      aresSplash:
+        begin
+          GetNameAndFile;
+          if rName = 'Wait' then
           begin
-            GetNameAndFile;
-            if rName = 'Wait' then
-            begin
-              WaitInterval := 0;
-              Val(rFile, WaitInterval, E);
-            end
-            else if rName = 'SPLASH' then
-            begin
-              mStream := TMemoryStream.Create;
-              mStream.SetSize(Length(rFile) div 2);
-              HexToBin(PChar(rFile), mStream.Memory^, Integer(mStream.Size));
-              SplashImage := TJPEGImage.Create;
-              SplashImage.LoadFromStream(mStream);
-              mStream.Destroy;
-            end;
+            WaitInterval := 0;
+            Val(rFile, WaitInterval, E);
+          end
+          else if rName = 'SPLASH' then
+          begin
+            mStream := TMemoryStream.Create;
+            mStream.SetSize(Length(rFile) div 2);
+            HexToBin(PChar(rFile), PChar(mStream.Memory), Integer(mStream.Size));
+            SplashImage := TJPEGImage.Create;
+            SplashImage.LoadFromStream(mStream);
+            mStream.Destroy;
           end;
-      end;
+        end;
+    end;
   end;
   ResList.Destroy;
 end;
@@ -286,4 +293,4 @@ finalization
   FreeAndNil(SplashImage);
 
 end.
-
+

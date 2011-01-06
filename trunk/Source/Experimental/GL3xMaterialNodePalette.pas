@@ -60,10 +60,11 @@ const
     (TObjectPositionNode, TWorldPositionNode, TWorldNormalNode,
      TCustomMaterialGraphNode,
      TTextureCoordinateNode, TPannerNode, TRotatorNode, TScreenPositionNode);
-  cMathClasses: array[0..14] of TCustomMaterialGraphNodeClass =
+  cMathClasses: array[0..15] of TCustomMaterialGraphNodeClass =
     (TAddNode, TSubtractNode, TMultiplyNode, TDivideNode,
      TNormalizeNode, TPowerNode, TDotProductNode, TSineNode, TCosineNode,
-     TFloorNode, TAbsNode, TFractNode, TOneMinusNode, TSquareRootNode, TSignNode);
+     TFloorNode, TAbsNode, TFractNode, TOneMinusNode, TSquareRootNode, TSignNode,
+     TSmoothStepNode);
   cTextureClasses: array[0..0] of TCustomMaterialGraphNodeClass =
     (TTextureSamplerNode);
   cUtilityClasses: array[0..3] of TCustomMaterialGraphNodeClass =

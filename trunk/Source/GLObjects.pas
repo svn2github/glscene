@@ -1675,7 +1675,7 @@ begin
   if FAlphaChannel <> 1 then
     rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
 
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
+  mat := rci.PipelineTransformation.ModelViewMatrix;
   // extraction of the "vecteurs directeurs de la matrice"
   // (dunno how they are named in english)
   w := FWidth * 0.5;

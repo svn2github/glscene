@@ -52,7 +52,7 @@ implementation
 uses
   SysUtils, Dialogs, Graphics,
   // GLScene units
-  VectorGeometry, GLScene, GLViewer, GLFullScreenViewer,
+  VectorGeometry, GLScene, GLViewer, GLFullScreenViewer, BaseClasses,
   GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
   GLCadencer, GLTextureImageEditors, GLColor, GLCrossPlatform,
   // GLScene - basic geometry
@@ -98,11 +98,17 @@ uses
   GLSoundFileObjects, GLSound, GLCompositeImage, GLSLog, GLSLanguage,
   GLSArchiveManager,
 {$IFDEF GLS_EXPERIMENTAL}
-  GL3xObjects, GL3xAtmosphere, GL3xLensFlare, GL3xNishitaSky,
+  GL3xObjects,
+  GL3xAtmosphere,
+  GL3xLensFlare,
+  GL3xNishitaSky,
   GL3xMaterial,
+  GL3xTexture,
+  GL3xFreeForm,
+  GL3xMesh,
   GL3xMaterialGraph,
   GL3xMaterialEditor,
-  GL3xTexture,
+  GLSLauncher,
 {$ENDIF}
 
   // Image file formats
@@ -123,7 +129,9 @@ uses
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,
   FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
-  FRColorEditorLCL, FRTrackBarEditLCL;
+  FRColorEditorLCL, FRTrackBarEditLCL,
+
+  GLUtils;
 
 var
   vObjectManager: TObjectManager;
@@ -365,10 +373,24 @@ type
     function GetAttributes: TPropertyAttributes; override;
   end;
 
+  // TGL3xMeshProperty
+  //
+
+  TGL3xMeshProperty = class(TStringProperty)
+  private
+    FMeshNameList: TStringList;
+    procedure RefreshMeshList;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+    procedure Edit; override;
+  end;
+
   TGLSceneManagersData = class(TAbstractProjectResource)
   public
-    constructor Create; override;
-    destructor Destroy; override;
     function UpdateResources(AResources: TAbstractProjectResources;
                              const MainFilename: string): Boolean; override;
     procedure WriteToProjectFile(AConfig: TObject; Path: String); override;
@@ -755,7 +777,7 @@ begin
   Component := GetComponent(0) as TGLFreeForm;
   ODialog := TOpenDialog.Create(nil);
   try
-    GetVectorFileFormats.BuildFilterStrings(TVectorFile, Desc, F);
+    GLVectorFileObjects.GetVectorFileFormats.BuildFilterStrings(TVectorFile, Desc, F);
     ODialog.Filter := Desc;
     if ODialog.Execute then
     begin
@@ -885,7 +907,7 @@ var
   ml: TGLMaterial;
 begin
   ml := TGLMaterial(GetObjectValue);
-  if MaterialEditorForm.Execute(ml) then
+  if FMaterialEditorFormLCL.MaterialEditorForm.Execute(ml) then
     Modified;
 end;
 
@@ -1061,6 +1083,7 @@ procedure TGL3xMaterialProperty.SetValue(const Value: string);
 var
   I, J, SaveReq: integer;
   vFileName: string;
+  rName: IGLName;
 begin
   RefreshMaterialList;
   J := -1;
@@ -1118,7 +1141,7 @@ begin
     EndWork;
   end;
   if Assigned(Mat) and (Mat.GetValue <> glsDEFAULTMATERIALNAME) then
-    with MaterialEditorForm do
+    with GL3xMaterialEditor.MaterialEditorForm do
     begin
       Material := Mat;
       Show;
@@ -1185,10 +1208,10 @@ begin
     rImportFile := '';
     if (ImportReq = idYes) and OpenPictureDialog(rImportFile) then
     begin
-      vFileName := '$(TargetFile)';
-      IDEMacros.SubstituteMacros(vFileName);
+      rFileName := '$(TargetFile)';
+      IDEMacros.SubstituteMacros(rFileName);
       rFileName := ExtractFilePath(rFileName);
-      ForceDirectories(vFileName);
+      ForceDirectories(rFileName);
       rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.texture';
       with MaterialManager do
       try
@@ -1217,7 +1240,7 @@ begin
   with MaterialManager do
   try
     BeginWork;
-    MaterialEditorForm.SetTextureToPreview(GetTextureName(GetStrValue));
+    GL3xMaterialEditor.MaterialEditorForm.SetTextureToPreview(GetTextureName(GetStrValue));
   finally
     EndWork;
   end;
@@ -1266,7 +1289,7 @@ var
 
   procedure Reselect;
   begin
-    GlobalDesignHook.SelectComponent(Self.GetComponent(0));
+    GlobalDesignHook.SelectOnlyThis(Self.GetComponent(0));
     GlobalDesignHook.Modified(Self);
   end;
 
@@ -1289,10 +1312,10 @@ begin
     CreateReq := MessageDlg(Format('Create new sampler "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
     if CreateReq = idYes then
     begin
-      vFileName := '$(TargetFile)';
-      IDEMacros.SubstituteMacros(vFileName);
+      rFileName := '$(TargetFile)';
+      IDEMacros.SubstituteMacros(rFileName);
       rFileName := ExtractFilePath(rFileName);
-      ForceDirectories(vFileName);
+      ForceDirectories(rFileName);
       rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.sampler';
       with MaterialManager do
       try
@@ -1321,18 +1344,99 @@ begin
   Result := [paSubProperties, paVolatileSubProperties];
 end;
 
-constructor TGLSceneManagersData.Create;
+// ------------------
+// ------------------ TGL3xMeshProperty ------------------
+// ------------------
+
+destructor TGL3xMeshProperty.Destroy;
 begin
+  FMeshNameList.Free;
   inherited;
-  vGLSceneManagersData := TMemoryStream.Create;
 end;
 
-destructor TGLSceneManagersData.Destroy;
+procedure TGL3xMeshProperty.RefreshMeshList;
 begin
-  vGLSceneManagersData.Free;
-  vGLSceneManagersData := nil;
-  inherited;
+  MeshManager.FillMeshNameList(FMeshNameList);
 end;
+
+function TGL3xMeshProperty.GetAttributes;
+begin
+  Result := [paDialog, paValueList];
+end;
+
+// GetValues
+//
+
+procedure TGL3xMeshProperty.GetValues(Proc: TGetStrProc);
+var
+  I: integer;
+begin
+  RefreshMeshList;
+  for I := 0 to FMeshNameList.Count - 1 do
+    Proc(FMeshNameList[I]);
+end;
+
+// SetValue
+//
+
+procedure TGL3xMeshProperty.SetValue(const Value: string);
+var
+  I, J, ImportReq: integer;
+  rImportFile, rFileName: string;
+  rName: IGLName;
+begin
+  RefreshMeshList;
+  J := -1;
+  for I := 0 to FMeshNameList.Count - 1 do
+    if Value = FMeshNameList[I] then
+    begin
+      J := I;
+      Break;
+    end;
+
+  if J > -1 then
+  begin
+    SetStrValue(Value);
+  end
+  else
+  begin
+    ImportReq := MessageDlg(Format('Import new mesh "%s"?', [Value]), mtConfirmation, mbYesNo, 0);
+    rImportFile := '';
+    if (ImportReq = idYes) and OpenModelDialog(rImportFile) then
+    begin
+      rFileName := '$(TargetFile)';
+      IDEMacros.SubstituteMacros(rFileName);
+      rFileName := ExtractFilePath(rFileName);
+      ForceDirectories(rFileName);
+      rFileName := IncludeTrailingPathDelimiter(rFileName) + Value+'.mesh';
+
+      with MeshManager do
+      try
+        BeginWork;
+        rName := CreateMesh(Value, TGL3xStaticMesh, rFileName, rImportFile);
+      finally
+        EndWork;
+      end;
+
+      if Assigned(rName) then
+      begin
+         SetStrValue(rName.GetValue);
+         Modified;
+         exit;
+      end;
+    end;
+    SetStrValue(glsDEFAULTMESHNAME);
+  end;
+  Modified;
+end;
+
+procedure TGL3xMeshProperty.Edit;
+begin
+end;
+
+// ------------------
+// ------------------ TGLSceneManagersData ------------------
+// ------------------
 
 function TGLSceneManagersData.UpdateResources(
   AResources: TAbstractProjectResources; const MainFilename: string): Boolean;
@@ -1383,7 +1487,7 @@ end;
 function GetProjectTargetName: string;
 begin
   Result := '$(TargetFile)';
-  if not Assigned(IDEMacros) or not IDEMacros.SubstituteMacros(Result) then
+  if not IDEMacros.SubstituteMacros(Result) then
     Result := '';
 end;
 
@@ -1640,6 +1744,7 @@ begin
       glsOCExperimental, HInstance);
     RegisterSceneObject(TGL3xFeedbackMesh, 'FeedbackMesh',
       glsOCExperimental, HInstance);
+    RegisterSceneObject(TGL3xFreeForm, 'Forward FreeForm', glsOCExperimental, HInstance);
 {$ENDIF}
   end;
 end;

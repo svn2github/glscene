@@ -82,6 +82,7 @@ type
     SphereMenuItem: TMenuItem;
     CubeMenuItem: TMenuItem;
     PlaneMenuItem: TMenuItem;
+    FreeformMenuItem: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

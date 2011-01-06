@@ -24,6 +24,7 @@ object NodePaletteForm: TNodePaletteForm
     Left = 0
     Top = 0
     Height = 657
+    VertScrollBar.Position = 437
     VertScrollBar.Tracking = True
     Align = alClient
     ChevronHotColor = 1093631
@@ -38,84 +39,77 @@ object NodePaletteForm: TNodePaletteForm
     HeaderFont.Style = []
     ParentCtl3D = False
     TabOrder = 0
-    object UtilityPanel: TCategoryPanel
-      Top = 974
-      Height = 135
-      Caption = 'Utility'
+    object ConstantsPanel: TCategoryPanel
+      Top = -437
+      Height = 156
+      Caption = 'Constants'
       TabOrder = 0
-      object UtilityGroup: TButtonGroup
+      object ConstantGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 109
+        Height = 130
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
           item
-            Caption = 'Timer'
+            Caption = 'Constant'
           end
           item
-            Caption = 'ComponentMask'
+            Caption = 'Constant Vector2'
           end
           item
-            Caption = 'Clamp'
+            Caption = 'Constant Vector3'
           end
           item
-            Caption = 'AppendVector'
+            Caption = 'Constant Vector4'
+          end
+          item
+            Caption = 'Vertex Color'
           end>
         TabOrder = 0
         TabStop = False
         OnMouseDown = CommonMouseDown
       end
     end
-    object TexturePanel: TCategoryPanel
-      Top = 910
-      Height = 64
-      Caption = 'Texture'
+    object CoordinatesPanel: TCategoryPanel
+      Top = -281
+      Height = 223
+      Caption = 'Coordinates'
       TabOrder = 1
-      object TextureGroup: TButtonGroup
+      object CoordinateGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 38
+        Height = 197
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
           item
-            Caption = 'Texture Sampler'
-          end>
-        TabOrder = 0
-        TabStop = False
-        OnMouseDown = CommonMouseDown
-      end
-    end
-    object VectorsPanel: TCategoryPanel
-      Top = 774
-      Height = 136
-      Caption = 'Vectors'
-      TabOrder = 2
-      object VectorsGroup: TButtonGroup
-        Left = 0
-        Top = 0
-        Width = 179
-        Height = 110
-        Align = alClient
-        BorderStyle = bsNone
-        ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
-        Items = <
+            Caption = 'Object Position'
+          end
+          item
+            Caption = 'World Position'
+          end
           item
             Caption = 'World Normal'
           end
           item
-            Caption = 'Light Vector'
+            Caption = 'World Camera Position'
           end
           item
-            Caption = 'Camera Vector'
+            Caption = 'Texture Coordinate'
           end
           item
-            Caption = 'Reflection Vector'
+            Caption = 'Panner'
+          end
+          item
+            Caption = 'Rotator'
+          end
+          item
+            Caption = 'Screen Position'
           end>
         TabOrder = 0
         TabStop = False
@@ -123,17 +117,17 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object MathPanel: TCategoryPanel
-      Top = 379
-      Height = 395
+      Top = -58
+      Height = 422
       Caption = 'Math'
       Ctl3D = True
       ParentCtl3D = False
-      TabOrder = 3
+      TabOrder = 2
       object MathGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 369
+        Height = 396
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
@@ -182,83 +176,97 @@ object NodePaletteForm: TNodePaletteForm
           end
           item
             Caption = 'Sign'
+          end
+          item
+            Caption = 'SmoothStep'
           end>
         TabOrder = 0
         TabStop = False
         OnMouseDown = CommonMouseDown
+        ExplicitHeight = 402
       end
     end
-    object CoordinatesPanel: TCategoryPanel
-      Top = 156
-      Height = 223
-      Caption = 'Coordinates'
-      TabOrder = 4
-      object CoordinateGroup: TButtonGroup
+    object VectorsPanel: TCategoryPanel
+      Top = 364
+      Height = 136
+      Caption = 'Vectors'
+      TabOrder = 3
+      ExplicitTop = 370
+      object VectorsGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 197
+        Height = 110
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
-          item
-            Caption = 'Object Position'
-          end
-          item
-            Caption = 'World Position'
-          end
           item
             Caption = 'World Normal'
           end
           item
-            Caption = 'World Camera Position'
+            Caption = 'Light Vector'
           end
           item
-            Caption = 'Texture Coordinate'
+            Caption = 'Camera Vector'
           end
           item
-            Caption = 'Panner'
-          end
-          item
-            Caption = 'Rotator'
-          end
-          item
-            Caption = 'Screen Position'
+            Caption = 'Reflection Vector'
           end>
         TabOrder = 0
         TabStop = False
         OnMouseDown = CommonMouseDown
       end
     end
-    object ConstantsPanel: TCategoryPanel
-      Top = 0
-      Height = 156
-      Caption = 'Constants'
-      TabOrder = 5
-      object ConstantGroup: TButtonGroup
+    object TexturePanel: TCategoryPanel
+      Top = 500
+      Height = 64
+      Caption = 'Texture'
+      TabOrder = 4
+      ExplicitTop = 506
+      object TextureGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 130
+        Height = 38
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
           item
-            Caption = 'Constant'
+            Caption = 'Texture Sampler'
+          end>
+        TabOrder = 0
+        TabStop = False
+        OnMouseDown = CommonMouseDown
+      end
+    end
+    object UtilityPanel: TCategoryPanel
+      Top = 564
+      Height = 135
+      Caption = 'Utility'
+      TabOrder = 5
+      ExplicitTop = 570
+      object UtilityGroup: TButtonGroup
+        Left = 0
+        Top = 0
+        Width = 179
+        Height = 109
+        Align = alClient
+        BorderStyle = bsNone
+        ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
+        Items = <
+          item
+            Caption = 'Timer'
           end
           item
-            Caption = 'Constant Vector2'
+            Caption = 'ComponentMask'
           end
           item
-            Caption = 'Constant Vector3'
+            Caption = 'Clamp'
           end
           item
-            Caption = 'Constant Vector4'
-          end
-          item
-            Caption = 'Vertex Color'
+            Caption = 'AppendVector'
           end>
         TabOrder = 0
         TabStop = False

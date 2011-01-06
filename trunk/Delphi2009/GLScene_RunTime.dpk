@@ -303,6 +303,8 @@ contains
   GLSGenerics in '..\Source\Base\GLSGenerics.pas',
   GLSLog in '..\Source\Base\GLSLog.pas',
   GL3xMaterialTokens in '..\Source\Experimental\GL3xMaterialTokens.pas',
-  GLShaderEnvironment in '..\Source\Experimental\GLShaderEnvironment.pas';
+  GL3xMesh in '..\Source\Experimental\GL3xMesh.pas',
+  GL3xFreeForm in '..\Source\Experimental\GL3xFreeForm.pas',
+  GLDrawTechnique in '..\Source\Experimental\GLDrawTechnique.pas';
 
 end.

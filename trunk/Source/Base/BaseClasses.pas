@@ -178,6 +178,7 @@ implementation
 
 uses
   SysUtils,
+  GLStrings,
   GLSLog;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
@@ -303,7 +304,7 @@ end;
 type
   TGLSManagerState = record
     ManagerClass: TGLSAbstractManagerClass;
-    Working: Boolean;
+    UpdateCount: Integer;
 {$IFDEF GLS_MULTITHREAD}
     Lock: TRTLCriticalSection;
 {$ENDIF}
@@ -326,7 +327,7 @@ begin
   else
     I := High(aGLSceneManagers);
   aGLSceneManagers[I].ManagerClass := AManager;
-  aGLSceneManagers[I].Working := False;
+  aGLSceneManagers[I].UpdateCount := 0;
 {$IFDEF GLS_MULTITHREAD}
   InitializeCriticalSection(aGLSceneManagers[I].Lock);
 {$ENDIF}
@@ -350,20 +351,16 @@ end;
 class procedure TGLSAbstractManager.BeginWork;
 var
   I: Integer;
-  bPrev: Boolean;
 begin
   for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
   begin
     if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
     begin
 {$IFDEF GLS_MULTITHREAD}
-      EnterCriticalSection(aGLSceneManagers[I].Lock);
+      if aGLSceneManagers[I].UpdateCount = 0 then
+        EnterCriticalSection(aGLSceneManagers[I].Lock);
 {$ENDIF}
-      bPrev := aGLSceneManagers[I].Working;
-      aGLSceneManagers[I].Working := True;
-      if bPrev then
-        GLSLogger.LogError(Format('Excessive call %s.BeginWork', [Self.ClassName]));
-      exit;
+      Inc(aGLSceneManagers[I].UpdateCount);
     end;
   end;
 end;
@@ -371,20 +368,21 @@ end;
 class procedure TGLSAbstractManager.EndWork;
 var
   I: Integer;
-  bPrev: Boolean;
 begin
   for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
   begin
     if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
     begin
+      if aGLSceneManagers[I].UpdateCount > 0 then
+      begin
+        Dec(aGLSceneManagers[I].UpdateCount);
 {$IFDEF GLS_MULTITHREAD}
-      LeaveCriticalSection(aGLSceneManagers[I].Lock);
+        if aGLSceneManagers[I].UpdateCount = 0 then
+          LeaveCriticalSection(aGLSceneManagers[I].Lock);
 {$ENDIF}
-      bPrev := aGLSceneManagers[I].Working;
-      aGLSceneManagers[I].Working := False;
-      if not bPrev then
-        GLSLogger.LogError(Format('Excessive call %s.EndWork', [Self.ClassName]));
-      exit;
+      end
+      else
+        GLSLogger.LogError(glsUnBalancedBeginEndUpdate + ' of ' + Self.ClassName);
     end;
   end;
 end;
@@ -396,13 +394,11 @@ begin
   for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
   begin
     if Self.ClassName = aGLSceneManagers[I].ManagerClass.ClassName then
-      if not aGLSceneManagers[I].Working then
-      begin
+    begin
+      if aGLSceneManagers[I].UpdateCount = 0 then
         GLSLogger.LogError(Format('This method must be call between %0:s.BeginWork and %0:s.EndWork', [Self.ClassName]));
-        Abort;
-      end
-      else
-        exit;
+      exit;
+    end;
   end;
 end;
 

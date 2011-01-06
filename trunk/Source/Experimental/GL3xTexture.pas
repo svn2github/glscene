@@ -72,6 +72,7 @@ type
   private
     { Private Declarations }
     FHandle: TGLSamplerHandle;
+    FTextureStateHandle: TGLVirtualHandle;
     FName: TGL3xSamplerName;
     FMinMagFilter: TGLTextureFilter;
     FLODFilter: TGLTextureFilter;
@@ -93,6 +94,8 @@ type
     procedure SetCompareMode(Value: TGLTextureCompareMode);
     procedure SetCompareFunc(Value: TDepthFunction);
     procedure SetLODBiasFract(Value: Single);
+    procedure AllocateTSHandle(Sender: TGLVirtualHandle; var handle: Cardinal);
+    procedure DestroyTSHandle(Sender: TGLVirtualHandle; var handle: Cardinal);
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -264,6 +267,9 @@ constructor TGL3xSampler.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
   FHandle := TGLSamplerHandle.Create;
+  FTextureStateHandle := TGLVirtualHandle.Create;
+  FTextureStateHandle.OnAllocate := AllocateTSHandle;
+  FTextureStateHandle.OnDestroy := DestroyTSHandle;
   FMinMagFilter := tfLinear;
   FLODFilter := tfLinear;
   FFilteringQuality := tfAnisotropic;
@@ -284,6 +290,7 @@ end;
 destructor TGL3xSampler.Destroy;
 begin
   FHandle.Destroy;
+  FTextureStateHandle.Destroy;
   if Assigned(FName) then
     FName._Release;
   FBorderColor.Free;
@@ -500,11 +507,28 @@ begin
   end;
 end;
 
+procedure TGL3xSampler.AllocateTSHandle(Sender: TGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 1;
+end;
+
+procedure TGL3xSampler.DestroyTSHandle(Sender: TGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 0;
+end;
+
 procedure TGL3xSampler.Initialize;
 var
   ID: TGLuint;
 begin
+  if GetOwner <> nil then
+  begin
+    FTextureStateHandle.AllocateHandle;
+    exit;
+  end;
+
   if FHandle.IsSupported then
+  begin
     with GL do
     begin
       FHandle.AllocateHandle;
@@ -527,13 +551,16 @@ begin
         cGLComparisonFunctionToGLEnum[FCompareFunc]);
       FHandle.NotifyDataUpdated;
     end;
+  end
+  else
+    FTextureStateHandle.AllocateHandle;
 end;
 
 procedure TGL3xSampler.Apply(AUnitIndex: TGLuint; ATarget: TGLTextureTarget; AsTexParam: Boolean);
 var
   glTarget: TGLEnum;
 
-  procedure SetupParams;
+  procedure SetupTextureState;
   begin
     with GL do
     begin
@@ -567,11 +594,11 @@ begin
   begin
     if FHandle.IsSupported then
       CurrentGLContext.GLStates.SamplerBinding[AUnitIndex] := 0;
-    if FHandle.IsDataNeedUpdate then
+    FTextureStateHandle.AllocateHandle;
+    if FTextureStateHandle.IsDataNeedUpdate then
     begin
-      CurrentGLContext.GLStates.ActiveTexture := AUnitIndex;
-      SetupParams;
-      FHandle.NotifyDataUpdated;
+      SetupTextureState;
+      FTextureStateHandle.NotifyDataUpdated;
     end;
   end
   else if FHandle.IsSupported then
@@ -582,10 +609,11 @@ begin
   end
   else
   begin
-    if FHandle.IsDataNeedUpdate then
+    FTextureStateHandle.AllocateHandle;
+    if FTextureStateHandle.IsDataNeedUpdate then
     begin
-      SetupParams;
-      FHandle.NotifyDataUpdated;
+      SetupTextureState;
+      FTextureStateHandle.NotifyDataUpdated;
     end;
   end;
 end;
@@ -740,6 +768,8 @@ begin
 
   stream.ReadBuffer(Temp, SizeOf(Integer));
   FNeverStream := Temp = 0;
+  stream.ReadBuffer(Temp, SizeOf(Integer));
+  FTexelCast := TTextureTexelCast(Temp);
 
   FSampler.LoadFromStream(stream);
 
@@ -776,6 +806,8 @@ begin
     Temp := 0
   else
     Temp := MaxInt;
+  stream.WriteBuffer(Temp, SizeOf(Integer));
+  Temp := Integer(FTexelCast);
   stream.WriteBuffer(Temp, SizeOf(Integer));
 
   FSampler.SaveToStream(stream);
@@ -1068,15 +1100,58 @@ begin
 end;
 
 procedure TGL3xTexture.Bind(var Already: Boolean);
-var
-  rowSize: Integer;
+
+  function SelectActiveTexture: Integer;
+  var
+    ID: TGLuint;
+    I, J: Integer;
+    bindTime, minTime: Double;
+  begin
+    with CurrentGLContext.GLStates do
+    begin
+      ID := FHandle.Handle;
+      // Find alredy binded texture unit
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        if TextureBinding[I, FHandle.Target] = ID then
+          exit(I);
+      end;
+      // Find unused texture unit
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        if TextureBinding[I, FHandle.Target] = 0 then
+        begin
+          TextureBinding[I, target] := ID;
+          exit(I);
+        end;
+      end;
+      // Find most useless texture unit
+      minTime := GLSTime;
+      J := 0;
+      for I := 0 to MaxTextureImageUnits - 1 do
+      begin
+        bindTime := TextureBindingTime[I, FHandle.Target];
+        if bindTime < minTime then
+        begin
+          minTime := bindTime;
+          J := I;
+        end;
+      end;
+      TextureBinding[J, FHandle.Target] := ID;
+      Result := J;
+    end;
+  end;
+
+  var
+    rowSize: Integer;
+
 begin
+
   if not Already then
   begin
     with CurrentGLContext.GLStates do
     begin
-      ActiveTexture := 0;
-      TextureBinding[0, FHandle.Target] := FHandle.Handle;
+      ActiveTexture := SelectActiveTexture;
       if FImage.CubeMap and GL.ARB_seamless_cube_map then
         GL.Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
       UnpackRowLength := 0;
@@ -1620,6 +1695,8 @@ begin
     FHandle.AllocateHandle;
     FHandle.Target := vTarget;
   end;
+
+  FSampler.Initialize;
 
   FCompressed := IsCompressedFormat(FImage.InternalFormat);
 

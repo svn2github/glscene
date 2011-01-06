@@ -79,8 +79,8 @@ type
 
   // Generics classes
   //
-  TGLVAOHandleTree =
-{$IFDEF FPC}specialize{$ENDIF}GRedBlackTree < TGLProgramHandle, TGLVertexArrayHandle > ;
+  TGLVAOHandleTree = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
+    GRedBlackTree < TGLProgramHandle, TGLVertexArrayHandle > ;
 
   TGLBaseVBOManager = class;
   TGLBaseVBOManagerClass = class of TGLBaseVBOManager;
@@ -387,7 +387,7 @@ const
     );
 
 type
-  TVBOProgramGetter = class(TCurrentProgramGetter);
+  TAccesableShaderManager = class(ShaderManager);
 
 procedure ArrayHandleDestroyer(
   k: TGLProgramHandle;
@@ -1623,7 +1623,7 @@ var
   Offset: PtrUInt;
   EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
-  Prog := TVBOProgramGetter.CurrentProgram;
+  Prog := TAccesableShaderManager.CurrentProgram;
   if Prog = nil then
   begin
     GLSLogger.LogError(glsNoShader);
@@ -2826,8 +2826,9 @@ begin
 
   FState := GLVBOM_DEFAULT;
   for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+  if Assigned(CurrentClient.Attributes[a]) then
   begin
-    CurrentClient.DataSize[a] := FAttributeArrays[a].Count * SizeOf(T4ByteData);
+    CurrentClient.DataSize[a] := VertexNumber * Cardinal(GLSLTypeComponentCount(CurrentClient.DataFormat[a])) * SizeOf(T4ByteData);
     Inc(CurrentClient.DataSizeInArrayPool, CurrentClient.DataSize[a]);
   end;
   CurrentClient.ArrayHandle.AllocateHandle;

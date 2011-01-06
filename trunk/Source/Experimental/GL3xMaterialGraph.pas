@@ -11,20 +11,33 @@
  </ul></font>
 }
 
-// DONE: Multiple light
-// TODO: Material EmissiveOnly model
 // TODO: Material custom lighting model
 // TODO: Material distorsion input
+// TODO: OpenGL 2.1  compatibility
+// TODO: Surface verctors RTT
+// DONE: Multiple light
+// DONE: Material EmissiveOnly model
 // DONE: Add Index to texture coordinates node
 // DONE: Fix reflection vector node
 // DONE: Complex Load/Save Material into XML-document
 // DONE: Basic Load/Save Material into XML-document
 // DONE: Build Material
-// TODO: Togle Curved Conections
 // DONE: Vector Swizzling
 // DONE: Highligth Conections
 // DONE: Fix Conections Cooling
 // DONE: Fix Texture Coords Artifact
+
+{ Note:
+  surface vectors order
+    0 - Normal
+    1 - Camera vector
+    2 - Light vector
+    3 - Reflection vector
+    4 - Object position
+    5 - World position
+    6 - Screen position
+    7 - Vertex color
+}
 
 unit GL3xMaterialGraph;
 
@@ -87,7 +100,10 @@ type
     FGraphicInitialized: Boolean;
     FBackTexture: TGLTextureHandle;
     FFontTexture: TGLTextureHandle;
-    FFBO: TGLFramebufferHandle;
+    FNodeFrameBuffer: TGLFramebufferHandle;
+
+    // Surface vectors RTT
+    FSurfaceTextures: array[0..7] of TGLTextureHandle;
 
     FMaxCharWidth, FMaxCharHeight: Integer;
     FJointPositionList: TSingleList;
@@ -115,6 +131,7 @@ type
     procedure RegisterTextureSampler(const ATexture, ASampler: IGLName);
     procedure UnRegisterTextureSampler(const ATexture, ASampler: IGLName);
     function GetTextureSamplerIndex(const ATexture, ASampler: IGLName): Integer;
+    function GetSurfaceTextures(I: Integer): TGLTextureHandle;
   protected
     function GetMaterialNode(I: Integer): TCustomMaterialGraphNode; overload;
     function GetSelectedJointNode1: TCustomMaterialGraphNode; inline;
@@ -134,6 +151,7 @@ type
     procedure Refresh;
 
     property Node[I: Integer]: TCustomMaterialGraphNode read GetMaterialNode;
+    property SurfaceTexture[I: Integer]: TGLTextureHandle read GetSurfaceTextures;
 
     property EditedMaterial: TGL3xEditableMaterial read FMaterial;
     property ShaderCodePad: TStrings read FShaderCodePad write SetShaderCodePad;
@@ -299,6 +317,7 @@ type
 
   TVertexColorNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
@@ -375,6 +394,7 @@ type
 
   TObjectPositionNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
     constructor Create; override;
@@ -384,6 +404,7 @@ type
 
   TWorldPositionNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
     constructor Create; override;
@@ -393,6 +414,7 @@ type
 
   TScreenPositionNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
     constructor Create; override;
@@ -555,6 +577,20 @@ type
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
+
+  TSmoothStepNode = class(TCustomMaterialGraphNode)
+  protected
+    function CheckInput: Boolean; override;
+    procedure SetViewingUniforms; override;
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
+  public
+    constructor Create; override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  published
+  end;
+
 {$ENDREGION}
 
 {$REGION 'Texture Nodes'}
@@ -648,6 +684,7 @@ type
 {$REGION 'Vectors Nodes'}
   TWorldNormalNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
     constructor Create; override;
@@ -658,6 +695,7 @@ type
 
   TLightVectorNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
@@ -669,21 +707,25 @@ type
 
   TCameraVectorNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
   published
   end;
 
   TReflectionVectorNode = class(TCustomMaterialGraphNode)
   protected
+    procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
     constructor Create; override;
     function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
   published
   end;
 
@@ -985,6 +1027,7 @@ var
 constructor TMaterialGraph.Create(AOwner: TComponent);
 var
   PT: TGLSLProgramType;
+  I: Integer;
 begin
   inherited Create(AOwner);
   FNodeList := TList.Create;
@@ -1007,12 +1050,15 @@ begin
   FLinksColorList := TSingleList.Create;
 
   FillChar(FRenderContextInfo, SizeOf(FRenderContextInfo), 0);
+  for I := 0 to High(FSurfaceTextures) do
+    FSurfaceTextures[I] := TGLTextureHandle.Create;
 end;
 
 destructor TMaterialGraph.Destroy;
 var
   n: Integer;
   PT: TGLSLProgramType;
+  I: Integer;
 begin
   PackLists;
   for n := 0 to FNodeList.Count - 1 do
@@ -1032,7 +1078,6 @@ begin
   if FGraphicInitialized then
   begin
     with ShaderManager do
-    begin
       try
         BeginWork;
         ClearShaderObject;
@@ -1040,10 +1085,11 @@ begin
       finally
         EndWork;
       end;
-      FFBO.Destroy;
-    end;
+    FNodeFrameBuffer.Destroy;
     FBackTexture.Destroy;
     FFontTexture.Destroy;
+    for I := 0 to High(FSurfaceTextures) do
+      FSurfaceTextures[I].Destroy;
   end;
   inherited;
 end;
@@ -1068,6 +1114,11 @@ end;
 function TMaterialGraph.GetMaterialNode(I: Integer): TCustomMaterialGraphNode;
 begin
   Result := TCustomMaterialGraphNode(GetNode(i));
+end;
+
+function TMaterialGraph.GetSurfaceTextures(I: Integer): TGLTextureHandle;
+begin
+  Result := FSurfaceTextures[I];
 end;
 
 function TMaterialGraph.GetSelectedJointNode1: TCustomMaterialGraphNode;
@@ -1097,7 +1148,6 @@ var
   bDone: Boolean;
   vName, vValue: string;
   pSample: PShaderSample;
-  sPart: string;
 begin
   FMaterial.Document := GLSNewXMLDocument;
 {$IFDEF FPC}
@@ -1170,14 +1220,7 @@ begin
     SetXMLAttribute(XMLSample, 'Name', string(pSample.Name));
     SetXMLAttribute(XMLSample, 'Output', string(GLSLTypeToString(pSample.Output)));
 
-    sPart := '';
-    if ptVertex in pSample.Participate then
-      sPart := sPart + 'V';
-    if ptFragment in pSample.Participate then
-      sPart := sPart + 'F';
-    if ptGeometry in pSample.Participate then
-      sPart := sPart + 'G';
-    SetXMLAttribute(XMLSample, 'Participate', sPart);
+    SetXMLAttribute(XMLSample, 'Participate', GLSLPartToStr(pSample.Participate));
 
     case pSample.Purpose of
       sspConstant:
@@ -1513,11 +1556,14 @@ begin
 end;
 
 function TMaterialGraph.InitGraphics: Boolean;
+var
+  I: Integer;
 begin
   Result := True;
 
   FRenderContextInfo.GLStates := CurrentGLContext.GLStates;
 
+  uniformDiffuse := TGLSLUniform.RegisterUniform('Diffuse');
   uniformGradientColor1 := TGLSLUniform.RegisterUniform('GradientColor1');
   uniformGradientColor2 := TGLSLUniform.RegisterUniform('GradientColor2');
   uniformScaleOffset := TGLSLUniform.RegisterUniform('ScaleOffset');
@@ -1595,7 +1641,10 @@ begin
   begin
     CreateFontTexture;
     CreateBackgroundTexture;
-    FFBO := TGLFramebufferHandle.CreateAndAllocate;
+    FNodeFrameBuffer := TGLFramebufferHandle.CreateAndAllocate;
+
+    for I := 0 to High(FSurfaceTextures) do
+      FSurfaceTextures[I].AllocateHandle;
   end;
 end;
 
@@ -1918,7 +1967,7 @@ begin
       end;
     SetLength(FMaterial.FUnits, J);
     FMaterial.CreateUniforms;
-    FMaterial.CreateShader(FProgramCodeSet);
+    FMaterial.CreatePrograms(FProgramCodeSet);
 
     try
       FMaterial.DirectUse;
@@ -2486,9 +2535,9 @@ begin
 
   with Owner, DynamicVBOManager do
   begin
-    FFBO.BindForDrawing;
+    FNodeFrameBuffer.BindForDrawing;
     try
-      FFBO.Attach2DTexture(
+      FNodeFrameBuffer.Attach2DTexture(
         GL_DRAW_FRAMEBUFFER,
         GL_COLOR_ATTACHMENT0,
         GL_TEXTURE_2D,
@@ -2520,7 +2569,7 @@ begin
       EndPrimitives;
       EndObject;
     finally
-      FFBO.UnBindForDrawing;
+      FNodeFrameBuffer.UnBindForDrawing;
     end;
   end;
 end;
@@ -3137,7 +3186,7 @@ begin
     GetMaxGLSLVersion + #10#13 +
     GetWorkResult_line +
     LBracket_line +
-    AnsiString(Format('  return vec4(%g, %g, %g, %g);',
+    AnsiString(Format('  return vec4(%.6g,%.6g,%.6g,%.6g);',
     [FValue.X, FValue.Y, FValue.Z, FValue.W], cEnUsFormatSettings)) + #10#13 +
     RBracket_line;
 end;
@@ -3234,14 +3283,29 @@ begin
   Result := 'Vertex Color';
 end;
 
-function TVertexColorNode.GetViewingCode: AnsiString;
+procedure TVertexColorNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetWorkResult_line +
-    LBracket_line +
-    '  return vec4(0.25, 0.5, 0.75, 1.0);' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[7].Handle)] := 0;
+end;
+
+function TVertexColorNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TVertexColorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -3315,7 +3379,7 @@ begin
     GetWorkResult_line +
     LBracket_line +
     '  return vec4(GetTexCoord()' +
-      AnsiString(Format(' * vec2(%g, %g) ',
+      AnsiString(Format(' * vec2(%.6g, %.6g) ',
       [Owner.FTexCoordTiles[FIndex].X,
       Owner.FTexCoordTiles[FIndex].Y], cEnUsFormatSettings)) +
       ', 0.0, 1.0);' + #10#13 +
@@ -3397,17 +3461,29 @@ begin
   Result := 'Object Position';
 end;
 
-function TObjectPositionNode.GetViewingCode: AnsiString;
+procedure TObjectPositionNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetTexCoord_line +
-    GetWorkResult_line +
-    LBracket_line +
-    '  vec2 tc = GetTexCoord();' + #10#13 +
-    '  float len = length(tc - vec2(0.5,0.5));' + #10#13 +
-    '  return vec4(len,len,len,0.0);' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[4].Handle)] := 0;
+end;
+
+function TObjectPositionNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TObjectPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -3436,15 +3512,29 @@ begin
   Result := 'World Position';
 end;
 
-function TWorldPositionNode.GetViewingCode: AnsiString;
+procedure TWorldPositionNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetTexCoord_line +
-    GetWorkResult_line +
-    LBracket_line +
-    '  return vec4(1.0);' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[5].Handle)] := 0;
+end;
+
+function TWorldPositionNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TWorldPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -3473,15 +3563,29 @@ begin
   Result := 'Screen Position';
 end;
 
-function TScreenPositionNode.GetViewingCode: AnsiString;
+procedure TScreenPositionNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetTexCoord_line +
-    GetWorkResult_line +
-    LBracket_line +
-    '  return gl_FragCoord;' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[6].Handle)] := 0;
+end;
+
+function TScreenPositionNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TScreenPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -3520,7 +3624,7 @@ function TBinarOpMathNode.CheckInput: Boolean;
 begin
   Result := True;
   CheckNodeInput(1, 'Missing operand A', Result);
-  CheckNodeInput(1, 'Missing operand B', Result);
+  CheckNodeInput(2, 'Missing operand B', Result);
 end;
 
 function TBinarOpMathNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
@@ -4034,7 +4138,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
-      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
+      '  value01 *= ' + AnsiString(Format('%.6g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
       GLSLTypeToString(vSample.Output) + ' result = sin(value01);' + #10#13 +
       '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
       RBracket_line;
@@ -4079,7 +4183,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
-      '  value01 *= ' + AnsiString(Format('%g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
+      '  value01 *= ' + AnsiString(Format('%.6g;', [1 / Period], cEnUsFormatSettings)) + #10#13 +
       GLSLTypeToString(vSample.Output) + ' result = cos(value01);' + #10#13 +
       '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
       RBracket_line;
@@ -4344,6 +4448,110 @@ begin
   end
   else
     Result := False;
+end;
+{$ENDREGION}
+
+{$REGION 'TSmoothStepNode'}
+
+constructor TSmoothStepNode.Create;
+begin
+  inherited;
+  SetLength(FJoints, 4);
+  Joints[0].SetAtOnce(0, sideOutput, [], '');
+  Joints[1].SetAtOnce(1, sideInput, [], 'A');
+  Joints[2].SetAtOnce(2, sideInput, [], 'B');
+  Joints[3].SetAtOnce(3, sideInput, [], 'X');
+end;
+
+function TSmoothStepNode.Caption: string;
+begin
+  Result := 'SmoothStep';
+end;
+
+function TSmoothStepNode.CheckInput: Boolean;
+begin
+  Result := True;
+  CheckNodeInput(1, 'Missing operand A', Result);
+  CheckNodeInput(2, 'Missing operand B', Result);
+  CheckNodeInput(3, 'Missing operand X', Result);
+end;
+
+function TSmoothStepNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      GetValue1_line +
+      GetValue2_line +
+      GLSLTypeToString(vSample.Input[0]) + ' value01 = ' + GetGLSLTypeCast('value0', GLSLType4F, GivingNodeMask[1], vSample.Input[0]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[1]) + ' value02 = ' + GetGLSLTypeCast('value1', GLSLType4F, GivingNodeMask[2], vSample.Input[1]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Input[2]) + ' value03 = ' + GetGLSLTypeCast('value2', GLSLType4F, GivingNodeMask[3], vSample.Input[2]) + ';' + #10#13 +
+      GLSLTypeToString(vSample.Output) + ' result = smoothstep(value01, value02, value03);' + #10#13 +
+      '  return ' + GetGLSLTypeCast('result', vSample.Output, [], GLSLType4F) + ';' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
+procedure TSmoothStepNode.SetViewingUniforms;
+begin
+  with CurrentGLContext.GLStates do
+  begin
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
+    SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit2, GivingNodeTextureID[3])] := 0;
+  end;
+end;
+
+function TSmoothStepNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  if CheckInput then
+  begin
+    ASample.Clear;
+    ASample.Category := MaterialSystem.Math.Name;
+    ASample.Name := MaterialSystem.Math.Math_SmoothStep;
+    ASample.Input[0] := GivingNodeDataType[1];
+    ASample.Input[1] := GivingNodeDataType[2];
+    ASample.Input[2] := GivingNodeDataType[3];
+    Result := ASample.CheckWithMaterialSystem;
+    CheckOutput(Result);
+  end
+  else
+    Result := False;
+end;
+
+function TSmoothStepNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+
+    if Joints[1].GivingNode.GatherSamples(Info,
+      Joints[1].GivingNodeJointIndex) then
+      vSample.InputRef[0] := Info.Master;
+
+    if Joints[2].GivingNode.GatherSamples(Info,
+      Joints[2].GivingNodeJointIndex) then
+      vSample.InputRef[1] := Info.Master;
+
+    if Joints[3].GivingNode.GatherSamples(Info,
+      Joints[3].GivingNodeJointIndex) then
+      vSample.InputRef[2] := Info.Master;
+
+    Info.NewMaster;
+    Info.Master^ := vSample;
+  end;
 end;
 {$ENDREGION}
 
@@ -4681,7 +4889,7 @@ begin
       LBracket_line +
       GetValue0_line +
       GetValue1_line +
-      '  value1 *= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
+      '  value1 *= ' + AnsiString(Format('vec4(%.6g, %.6g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
       '  value1 = fract(value1);' + #10#13 +
       '  value0 += value1;' + #10#13 +
       '  return value0;' + #10#13 +
@@ -4693,10 +4901,10 @@ end;
 
 procedure TPannerNode.SetViewingUniforms;
 begin
-  with ShaderManager do
+  with ShaderManager, CurrentGLContext.GLStates do
   begin
-    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
-    CurrentGLContext.GLStates.SamplerBinding[UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
+    SamplerBinding[UniformSampler(uniformTexUnit0, GivingNodeTextureID[1])] := 0;
+    SamplerBinding[UniformSampler(uniformTexUnit1, GivingNodeTextureID[2])] := 0;
   end;
 end;
 
@@ -4712,8 +4920,8 @@ begin
   if CheckInput then
   begin
     ASample.Clear;
-    ASample.Category := (MaterialSystem.Coordinates.Name);
-    ASample.Name := (MaterialSystem.Coordinates.Coordinates_Panner);
+    ASample.Category := MaterialSystem.Coordinates.Name;
+    ASample.Name := MaterialSystem.Coordinates.Coordinates_Panner;
     ASample.Input[0] := GivingNodeDataType[1];
     ASample.Input[1] := GivingNodeDataType[2];
     if (FValue.X <> 1.0) or (FValue.Y <> 1.0) then
@@ -4835,12 +5043,12 @@ begin
       LBracket_line +
       GetValue0_line +
       GetValue1_line +
-      '  value0 -= ' + AnsiString(Format('vec4(%g, %g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
-      '  value1 *= ' + AnsiString(Format('%g;', [FValue.Z], cEnUsFormatSettings)) + #10#13 +
+      '  value0 -= ' + AnsiString(Format('vec4(%.6g, %.6g, 0.0, 0.0);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
+      '  value1 *= ' + AnsiString(Format('%.6g;', [FValue.Z], cEnUsFormatSettings)) + #10#13 +
       '  value1 = 6.2831853 * fract(value1);' + #10#13 +
       '  vec2 sincos = vec2(sin(value1.x), cos(value1.x));' + #10#13 +
       '  vec2 rxy = vec2(dot(vec2(sincos.y, -sincos.x), value0.st), dot(sincos, value0.st));' + #10#13 +
-      '  rxy += ' + AnsiString(Format('vec2(%g, %g);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
+      '  rxy += ' + AnsiString(Format('vec2(%.6g, %.6g);', [FValue.X, FValue.Y], cEnUsFormatSettings)) + #10#13 +
       '  return vec4(rxy, 0.0, 0.0);' + #10#13 +
       RBracket_line;
   end
@@ -5425,14 +5633,29 @@ begin
   Result := 'World Normal';
 end;
 
-function TWorldNormalNode.GetViewingCode: AnsiString;
+procedure TWorldNormalNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetWorkResult_line +
-    LBracket_line +
-    '  return vec4(0.0,0.0,1.0,0.0);' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[0].Handle)] := 0;
+end;
+
+function TWorldNormalNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TWorldNormalNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -5460,14 +5683,29 @@ begin
   Result := 'LightVector';
 end;
 
-function TLightVectorNode.GetViewingCode: AnsiString;
+procedure TLightVectorNode.SetViewingUniforms;
 begin
-  Result :=
-    GetMaxGLSLVersion + #10#13 +
-    GetWorkResult_line +
-    LBracket_line +
-    '  return vec4(0.0,1.0,0.0,0.0);' + #10#13 +
-    RBracket_line;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[2].Handle)] := 0;
+end;
+
+function TLightVectorNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
 end;
 
 function TLightVectorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -5508,6 +5746,31 @@ begin
   Result := 'Camera Vector';
 end;
 
+procedure TCameraVectorNode.SetViewingUniforms;
+begin
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[1].Handle)] := 0;
+end;
+
+function TCameraVectorNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
 function TCameraVectorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 begin
   ASample.Clear;
@@ -5546,6 +5809,31 @@ begin
   Result := 'Reflection Vector';
 end;
 
+procedure TReflectionVectorNode.SetViewingUniforms;
+begin
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[3].Handle)] := 0;
+end;
+
+function TReflectionVectorNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      '  return (value0);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
 function TReflectionVectorNode.GetOutputSample(out ASample: TShaderSample): Boolean;
 begin
   ASample.Clear;
@@ -5580,7 +5868,8 @@ initialization
       TWorldNormalNode, TLightVectorNode, TCameraVectorNode, TReflectionVectorNode,
       TComponentMaskNode, TSineNode, TCosineNode, TFloorNode, TAbsNode, TFractNode,
       TOneMinusNode, TSquareRootNode, TScreenPositionNode, TClampNode, TSignNode,
-      TAppendVectorNode, TObjectPositionNode, TWorldPositionNode]);
+      TAppendVectorNode, TObjectPositionNode, TWorldPositionNode,
+      TSmoothStepNode]);
 
 finalization
 

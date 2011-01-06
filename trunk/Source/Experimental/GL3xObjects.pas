@@ -5,10 +5,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, BaseClasses, VectorGeometry, GLScene, OpenGLTokens, SysUtils,
-  GLCrossPlatform, GLContext, GLSilhouette, GLSLShader,
-  GLRenderContextInfo, GLCoordinates,
-  GLObjects, GLShaderManager, GLVBOManager, GL3xMaterial, GL3xFactory;
+  Classes,
+  BaseClasses,
+  VectorGeometry,
+  GLScene,
+  OpenGLTokens,
+  SysUtils,
+  GLCrossPlatform,
+  GLContext,
+  GLSilhouette,
+  GLSLShader,
+  GLRenderContextInfo,
+  GLCoordinates,
+  GLObjects,
+  GLShaderManager,
+  GL3xMesh,
+  GLDrawTechnique,
+  GL3xMaterial,
+  GLShaderEnvironment,
+  GL3xFactory;
 
 type
 
@@ -18,32 +33,27 @@ type
   TGL3xBaseSceneObject = class(TGLBaseSceneObject)
   protected
     { Protected Declarations }
-    FBuiltProperties: TGLBuiltProperties;
+    FMesh: IGLName;
     FMaterial: IGLName;
-    procedure SetBuiltProperties(const Value: TGLBuiltProperties);
     function GetMaterialName: string; virtual;
     procedure SetMaterialName(const Value: string); virtual;
 
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); virtual; abstract;
+    procedure BuildMesh; virtual; abstract;
     procedure BeforeRender; virtual;
     procedure AfterRender; virtual;
   public
     { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    procedure StructureChanged; override;
-    property BuiltProperties: TGLBuiltProperties read FBuiltProperties write
-      SetBuiltProperties;
+    property MaterialRefName: IGLName read FMaterial;
     property Material: string read GetMaterialName write SetMaterialName;
   end;
 
   TGL3xCustomObject = class(TGL3xBaseSceneObject)
   published
     { Published Declarations }
-    property BuiltProperties;
     property Material;
     property ObjectsSorting;
     property VisibilityCulling;
@@ -61,10 +71,16 @@ type
     property Effects;
   end;
 
+  TGL3xBasePrimitiveObject = class(TGL3xCustomObject)
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+  end;
+
   // TGL3xPlane
   //
 
-  TGL3xPlane = class(TGL3xCustomObject)
+  TGL3xPlane = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FXOffset, FYOffset: TGLFloat;
@@ -85,7 +101,7 @@ type
     procedure SetStyle(const val: TPlaneStyles);
   protected
     { Protected declaration }
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
@@ -108,10 +124,12 @@ type
       [psSingleQuad, psTileTexture];
   end;
 
+  TGLSpriteAlign = (alSpherical, alCylindrical);
+
   // TGL3xSprite
   //
 
-  TGL3xSprite = class(TGL3xCustomObject)
+  TGL3xSprite = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FWidth: TGLFloat;
@@ -119,6 +137,7 @@ type
     FRotation: TGLFloat;
     FMirrorU,
       FMirrorV: Boolean;
+    FAlign: TGLSpriteAlign;
     procedure SetWidth(const val: TGLFloat);
     procedure SetHeight(const val: TGLFloat);
     procedure SetRotation(const val: TGLFloat);
@@ -126,11 +145,14 @@ type
     procedure SetMirrorV(const val: Boolean);
   protected
     { Protected declaration }
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
+
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure SetSize(const width, height: TGLFloat);
@@ -141,12 +163,13 @@ type
     property Rotation: TGLFloat read FRotation write SetRotation;
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
+    property Align: TGLSpriteAlign read FAlign write FAlign default alSpherical;
   end;
 
   // TGL3xCube
   //
 
-  TGL3xCube = class(TGL3xCustomObject)
+  TGL3xCube = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FCubeSize: TAffineVector;
@@ -162,7 +185,7 @@ type
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -193,7 +216,7 @@ type
   // TGL3xSphere
   //
 
-  TGL3xSphere = class(TGL3xCustomObject)
+  TGL3xSphere = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FRadius: TGLFloat;
@@ -215,7 +238,7 @@ type
     procedure SetTopCap(aValue: TCapType);
   protected
     { Protected declaration }
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -245,7 +268,7 @@ type
   // TGL3xGeoSphere
   //
 
-  TGL3xGeoSphere = class(TGL3xCustomObject)
+  TGL3xGeoSphere = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FRadius: TGLFloat;
@@ -255,7 +278,7 @@ type
     procedure SetSubdivisionLevel(Value: TGLInt);
   protected
     { Protected declaration }
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -275,7 +298,7 @@ type
       default 2;
   end;
 
-  TGL3xDisk = class(TGL3xCustomObject)
+  TGL3xDisk = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TGLFloat;
@@ -288,7 +311,7 @@ type
     procedure SetSweepAngle(const aValue: Single);
   protected
     { Protected declaration }
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -310,10 +333,11 @@ type
 
   TFeedBackMeshPrimitive = (bmpPoint, bmpLine, bmpTriangle);
 
-  TGL3xFeedBackMesh = class(TGL3xCustomObject)
+  TGL3xFeedBackMesh = class(TGL3xBasePrimitiveObject)
   private
     { Private Declarations }
     FFactory: TGL3xBaseFactory;
+    FShader: IGLName;
     FPrimitiveType: TFeedBackMeshPrimitive;
     FVertexNumber: Integer;
     FIndexed: Boolean;
@@ -323,17 +347,21 @@ type
     procedure SetPrimitiveType(Value: TFeedBackMeshPrimitive);
     procedure SetVertexNumber(Value: Integer);
     procedure SetIndexed(Value: Boolean);
+    function GetShader: IGLName;
+    procedure SetShader(AName: IGLName);
   protected
     { Protected declaration }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure BuildBufferData(Sender: TGLBaseVBOManager); override;
+    procedure BuildMesh; override;
     procedure SetMaterialName(const Value: string); override;
     procedure BeforeRender; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
+
+    property Shader: IGLName read GetShader write SetShader;
   published
     property Factory: TGL3xBaseFactory read FFactory
       write SetFactory;
@@ -347,7 +375,9 @@ type
 implementation
 
 uses
-  GLStrings, GLState, VectorLists,
+  GLStrings,
+  GLState,
+  VectorLists,
   GLSLog;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseSceneObject'}{$ENDIF}
@@ -355,50 +385,38 @@ uses
 // ------------------ TGL3xBaseSceneObject ------------------
 // ------------------
 
-constructor TGL3xBaseSceneObject.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FBuiltProperties := TGLBuiltProperties.Create(Self);
-  FBuiltProperties.OwnerNotifyChange := NotifyChange;
-  FBuiltProperties.OnBuildRequest := BuildBufferData;
-  Material := glsDEFAULTMATERIALNAME;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
-end;
-
 destructor TGL3xBaseSceneObject.Destroy;
 begin
+  FMesh := nil;
   FMaterial := nil;
-  FBuiltProperties.Destroy;
   inherited;
 end;
 
 procedure TGL3xBaseSceneObject.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
-  if GL.VERSION_2_1 then
+  if ARenderSelf then
   begin
-    if ARenderSelf then
-    begin
-
-      try
-        if ARci.ignoreMaterials then
-        begin
-          BeforeRender;
-          FBuiltProperties.Manager.RenderClient(FBuiltProperties);
-          AfterRender;
-        end
-        else
+    try
+      if ocStructure in Changes then
+        BuildMesh;
+      if ARci.ignoreMaterials then
+      begin
+        BeforeRender;
+        DrawManager.Draw(FMesh);
+        AfterRender;
+      end
+      else
         repeat
           MaterialManager.ApplyMaterial(FMaterial, ARci);
           BeforeRender;
-          FBuiltProperties.Manager.RenderClient(FBuiltProperties);
+          DrawManager.Draw(FMesh);
           AfterRender;
         until MaterialManager.UnApplyMaterial(ARci);
-      except
-        Visible := False;
-        if not ARci.GLStates.ForwardContext then
-          ShaderManager.UseFixedFunctionPipeline;
-      end;
+    except
+      Visible := False;
+      if not ARci.GLStates.ForwardContext then
+        ShaderManager.UseFixedFunctionPipeline;
     end;
   end;
 
@@ -414,12 +432,6 @@ procedure TGL3xBaseSceneObject.AfterRender;
 begin
 end;
 
-procedure TGL3xBaseSceneObject.SetBuiltProperties(const Value:
-  TGLBuiltProperties);
-begin
-  FBuiltProperties.Assign(Value);
-end;
-
 function TGL3xBaseSceneObject.GetMaterialName: string;
 begin
   Result := FMaterial.GetValue;
@@ -428,19 +440,27 @@ end;
 procedure TGL3xBaseSceneObject.SetMaterialName(const Value: string);
 begin
   with MaterialManager do
-  try
-    BeginWork;
-    FMaterial := GetMaterialName(Value);
-  finally
-    EndWork;
-  end;
-  inherited StructureChanged;
+    try
+      BeginWork;
+      FMaterial := GetMaterialName(Value);
+    finally
+      EndWork;
+    end;
+  NotifyChange(Self);
 end;
 
-procedure TGL3xBaseSceneObject.StructureChanged;
+constructor TGL3xBasePrimitiveObject.Create(AOwner: TComponent);
 begin
-  inherited;
-   FBuiltProperties.StructureChanged;
+  inherited Create(AOwner);
+  Material := glsDEFAULTMATERIALNAME;
+  with MeshManager do
+    try
+      BeginWork;
+      FMesh := CreateMesh(Self.ClassName, TGL3xStaticMesh, '', '');
+    finally
+      EndWork;
+    end;
+  StructureChanged;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -465,12 +485,13 @@ end;
 // BuildList
 //
 
-procedure TGL3xPlane.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xPlane.BuildMesh;
 var
   hw, hh, posXFact, posYFact, pX, pY0, pY1: TGLFloat;
   tx0, tx1, ty0, ty1, texSFact, texTFact: TGLFloat;
   texS, texT0, texT1: TGLFloat;
   x, y: Integer;
+  Builder: TGL3xStaticMeshBuilder;
 begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
@@ -490,63 +511,79 @@ begin
     ty1 := FYScope;
   end;
   // single quad plane
-  with Sender do
-  begin
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute3f(attrNormal, 0, 0, 1);
-    Attribute3f(attrTangent, 1, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    if psSingleQuad in FStyle then
-    begin
-      BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-      Attribute2f(attrTexCoord0, tx1, ty1);
-      Attribute3f(attrPosition, hw, hh, 0);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, tx0, ty1);
-      Attribute3f(attrPosition, -hw, hh, 0);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, tx1, ty0);
-      Attribute3f(attrPosition, hw, -hh, 0);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, tx0, ty0);
-      Attribute3f(attrPosition, -hw, -hh, 0);
-      EmitVertex;
-      EndPrimitives;
-    end
-    else
-    begin
-      // multi-quad plane (actually built from tri-strips)
-      texSFact := (tx1 - tx0) / FXTiles;
-      texTFact := (ty1 - ty0) / FYTiles;
-      posXFact := FWidth / FXTiles;
-      posYFact := FHeight / FYTiles;
-      texT0 := 0;
-      pY0 := -hh;
-      BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-      for y := 0 to FYTiles - 1 do
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
       begin
-        texT1 := (y + 1) * texTFact;
-        pY1 := (y + 1) * posYFact - hh;
-        for x := 0 to FXTiles do
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTangent, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        if psSingleQuad in FStyle then
         begin
-          texS := tx0 + x * texSFact;
-          pX := x * posXFact - hw;
-          Attribute2f(attrTexCoord0, texS, texT1);
-          Attribute3f(attrPosition, pX, pY1, 0);
+          BeginBatch(mpTRIANGLE_STRIP);
+          Attribute3f(attrNormal, 0, 0, 1);
+          Attribute3f(attrTangent, 1, 0, 0);
+
+          Attribute2f(attrTexCoord0, tx1, ty1);
+          Attribute3f(attrPosition, hw, hh, 0);
           EmitVertex;
-          Attribute2f(attrTexCoord0, texS, texT0);
-          Attribute3f(attrPosition, pX, pY0, 0);
+          Attribute2f(attrTexCoord0, tx0, ty1);
+          Attribute3f(attrPosition, -hw, hh, 0);
           EmitVertex;
+          Attribute2f(attrTexCoord0, tx1, ty0);
+          Attribute3f(attrPosition, hw, -hh, 0);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, tx0, ty0);
+          Attribute3f(attrPosition, -hw, -hh, 0);
+          EmitVertex;
+          EndBatch;
+        end
+        else
+        begin
+          // multi-quad plane (actually built from tri-strips)
+          texSFact := (tx1 - tx0) / FXTiles;
+          texTFact := (ty1 - ty0) / FYTiles;
+          posXFact := FWidth / FXTiles;
+          posYFact := FHeight / FYTiles;
+          texT0 := 0;
+          pY0 := -hh;
+          BeginBatch(mpTRIANGLE_STRIP);
+          Attribute3f(attrNormal, 0, 0, 1);
+          Attribute3f(attrTangent, 1, 0, 0);
+
+          for y := 0 to FYTiles - 1 do
+          begin
+            texT1 := (y + 1) * texTFact;
+            pY1 := (y + 1) * posYFact - hh;
+            for x := 0 to FXTiles do
+            begin
+              texS := tx0 + x * texSFact;
+              pX := x * posXFact - hw;
+              Attribute2f(attrTexCoord0, texS, texT1);
+              Attribute3f(attrPosition, pX, pY1, 0);
+              EmitVertex;
+              Attribute2f(attrTexCoord0, texS, texT0);
+              Attribute3f(attrPosition, pX, pY0, 0);
+              EmitVertex;
+            end;
+            RestartStrip;
+            texT0 := texT1;
+            pY0 := pY1;
+          end;
+          EndBatch;
         end;
-        RestartStrip;
-        texT0 := texT1;
-        pY0 := pY1;
+        WeldVertices;
+        EndMeshAssembly;
       end;
-      EndPrimitives;
+    finally
+      EndWork;
     end;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 // Assign
@@ -761,6 +798,7 @@ begin
   ObjectStyle := ObjectStyle + [osNoVisibilityCulling];
   FWidth := 1;
   FHeight := 1;
+  FAlign := alSpherical;
 end;
 
 // Assign
@@ -768,7 +806,6 @@ end;
 
 procedure TGL3xSprite.Assign(Source: TPersistent);
 begin
-
   if Source is TGL3xSprite then
   begin
     FWidth := TGL3xSprite(Source).FWidth;
@@ -785,27 +822,84 @@ begin
   Result[2] := 0.5 * Abs(FWidth);
 end;
 
+procedure TGL3xSprite.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+var
+  VM, M: TMatrix;
+begin
+  if ARenderSelf then
+  begin
+    try
+      if ocStructure in Changes then
+        BuildMesh;
+      VM := ARci.PipelineTransformation.ViewMatrix;
+
+      case FAlign of
+        alSpherical:
+          begin
+            M := ARci.PipelineTransformation.ModelViewMatrix;
+            M[0, 0] := Scale.X;
+            M[0, 1] := 0;
+            M[0, 2] := 0;
+            M[1, 0] := 0;
+            M[1, 1] := Scale.Y;
+            M[1, 2] := 0;
+            M[2, 0] := 0;
+            M[2, 1] := 0;
+            M[2, 2] := 1;
+            ARci.PipelineTransformation.ViewMatrix := M;
+          end;
+        alCylindrical:
+          begin
+            M := ARci.PipelineTransformation.ModelViewMatrix;
+            M[0, 0] := 1;
+            M[0, 1] := 0;
+            M[0, 2] := 0;
+            M[2, 0] := 0;
+            M[2, 1] := 0;
+            M[2, 2] := 1;
+            ARci.PipelineTransformation.ViewMatrix := M;
+          end;
+      end;
+      ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+
+      if ARci.ignoreMaterials then
+      begin
+        BeforeRender;
+        DrawManager.Draw(FMesh);
+        AfterRender;
+      end
+      else
+        repeat
+          MaterialManager.ApplyMaterial(FMaterial, ARci);
+          BeforeRender;
+          DrawManager.Draw(FMesh);
+          AfterRender;
+        until MaterialManager.UnApplyMaterial(ARci);
+    except
+      Visible := False;
+      if not ARci.GLStates.ForwardContext then
+        ShaderManager.UseFixedFunctionPipeline;
+    end;
+    ARci.PipelineTransformation.ViewMatrix := VM;
+  end;
+
+  if ARenderChildren then
+    Self.RenderChildren(0, Count - 1, ARci);
+end;
+
 // BuildList
 //
 
-procedure TGL3xSprite.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xSprite.BuildMesh;
 var
-  vx, vy: TAffineVector;
-  w, h: Single;
-  mat: TMatrix;
+  x, y: TAffineVector;
   u0, v0, u1, v1: Integer;
+  RM: TMatrix;
+  Builder: TGL3xStaticMeshBuilder;
 begin
-  mat := IdentityHmgMatrix; //TGLSceneBuffer(rci.buffer).ModelMatrix;
-  w := FWidth * 0.5;
-  h := FHeight * 0.5;
-  vx[0] := mat[0][0];
-  vy[0] := mat[0][1];
-  vx[1] := mat[1][0];
-  vy[1] := mat[1][1];
-  vx[2] := mat[2][0];
-  vy[2] := mat[2][1];
-  ScaleVector(vx, w / VectorLength(vx));
-  ScaleVector(vy, h / VectorLength(vy));
+  x := AffineVectorMake(FWidth * 0.5, 0, 0);
+  y := AffineVectorMake(0, FHeight * 0.5, 0);
   if FMirrorU then
   begin
     u0 := 1;
@@ -829,32 +923,46 @@ begin
 
   if FRotation <> 0 then
   begin
-    mat := CreateRotationMatrix(ZVector, FRotation);
-    vx := VectorTransform(vx, mat);
-    vy := VectorTransform(vy, mat);
+    RM := CreateRotationMatrix(ZVector, FRotation);
+    x := VectorTransform(x, RM);
+    y := VectorTransform(y, RM);
   end;
 
-  with Sender do
-  begin
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    Attribute2f(attrTexCoord0, u1, v1);
-    Attribute3f(attrPosition, vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
-    EmitVertex;
-    Attribute2f(attrTexCoord0, u0, v1);
-    Attribute3f(attrPosition, -vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
-    EmitVertex;
-    Attribute2f(attrTexCoord0, u1, v0);
-    Attribute3f(attrPosition, vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
-    EmitVertex;
-    Attribute2f(attrTexCoord0, u0, v0);
-    Attribute3f(attrPosition, -vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
-    EmitVertex;
-    EndPrimitives;
-    EndObject;
-  end;
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
+      begin
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTangent, GLSLType3f);
+        BeginBatch(mpTRIANGLE_STRIP);
+        Attribute3f(attrNormal, 0, 0, 1);
+        Attribute3f(attrTangent, VectorNormalize(x));
+        Attribute2f(attrTexCoord0, u1, v1);
+        Attribute3f(attrPosition, x[0] + y[0], x[1] + y[1], x[2] + y[2]);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, u0, v1);
+        Attribute3f(attrPosition, -x[0] + y[0], -x[1] + y[1], -x[2] + y[2]);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, u1, v0);
+        Attribute3f(attrPosition, x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, u0, v0);
+        Attribute3f(attrPosition, -x[0] - y[0], -x[1] - y[1], -x[2] - y[2]);
+        EmitVertex;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
+      end;
+    finally
+      EndWork;
+    end;
+  ClearStructureChanged;
 end;
 
 // SetWidth
@@ -866,7 +974,7 @@ begin
   if FWidth <> val then
   begin
     FWidth := val;
-    NotifyChange(Self);
+    StructureChanged;
   end;
 end;
 
@@ -879,7 +987,7 @@ begin
   if FHeight <> val then
   begin
     FHeight := val;
-    NotifyChange(Self);
+    StructureChanged;
   end;
 end;
 
@@ -888,19 +996,20 @@ end;
 
 procedure TGL3xSprite.SetRotation(const val: TGLFloat);
 begin
-
   if FRotation <> val then
   begin
     FRotation := val;
-    NotifyChange(Self);
+    StructureChanged;
   end;
 end;
 
 procedure TGL3xSprite.SetMirrorU(const val: Boolean);
 begin
-
-  FMirrorU := val;
-  NotifyChange(Self);
+  if FMirrorU <> val then
+  begin
+    FMirrorU := val;
+    StructureChanged;
+  end;
 end;
 
 // SetMirrorV
@@ -908,9 +1017,11 @@ end;
 
 procedure TGL3xSprite.SetMirrorV(const val: Boolean);
 begin
-
-  FMirrorV := val;
-  NotifyChange(Self);
+  if FMirrorV <> val then
+  begin
+    FMirrorV := val;
+    StructureChanged;
+  end;
 end;
 
 // SetSize
@@ -918,10 +1029,9 @@ end;
 
 procedure TGL3xSprite.SetSize(const width, height: TGLFloat);
 begin
-
   FWidth := width;
   FHeight := height;
-  NotifyChange(Self);
+  StructureChanged;
 end;
 
 // SetSquareSize
@@ -929,10 +1039,9 @@ end;
 
 procedure TGL3xSprite.SetSquareSize(const size: TGLFloat);
 begin
-
   FWidth := size;
   FHeight := size;
-  NotifyChange(Self);
+  StructureChanged;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
@@ -956,187 +1065,198 @@ end;
 // BuildList
 //
 
-procedure TGL3xCube.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xCube.BuildMesh;
 var
   hw, hh, hd, nd, tan: TGLFloat;
+  Builder: TGL3xStaticMeshBuilder;
 begin
-  with Sender do
-  begin
-    if FNormalDirection = ndInside then
-      nd := -1
-    else
-      nd := 1;
-    tan := nd;
-    hw := FCubeSize[0] * 0.5;
-    hh := FCubeSize[1] * 0.5;
-    hd := FCubeSize[2] * 0.5;
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute3f(attrNormal, 0, 0, 0);
-    Attribute3f(attrTangent, 0, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    Attribute4f(attrVertexColor, 0, 0, 0, 0);
-    BeginPrimitives(GLVBOM_TRIANGLES);
-    if cpFront in FParts then
-    begin
-      Attribute3f(attrNormal, 0, 0, nd);
-      Attribute3f(attrTangent, tan, 0, 0);
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, hw, hh, hd);
-      Attribute4f(attrVertexColor, 1, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, -hw * nd, hh * nd, hd);
-      Attribute4f(attrVertexColor, 0, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, -hw, -hh, hd);
-      Attribute4f(attrVertexColor, 0, 0, 1, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, hw * nd, -hh * nd, hd);
-      Attribute4f(attrVertexColor, 1, 0, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, hw, hh, hd);
-      Attribute4f(attrVertexColor, 1, 1, 1, 1);
-      EmitVertex;
+  if FNormalDirection = ndInside then
+    nd := -1
+  else
+    nd := 1;
+  tan := nd;
+  hw := FCubeSize[0] * 0.5;
+  hh := FCubeSize[1] * 0.5;
+  hd := FCubeSize[2] * 0.5;
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
+      begin
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTangent, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        DeclareAttribute(attrVertexColor, GLSLType4f);
+        BeginBatch(mpTRIANGLES);
+        if cpFront in FParts then
+        begin
+          Attribute3f(attrNormal, 0, 0, nd);
+          Attribute3f(attrTangent, tan, 0, 0);
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, hw, hh, hd);
+          Attribute4f(attrVertexColor, 1, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, -hw * nd, hh * nd, hd);
+          Attribute4f(attrVertexColor, 0, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, -hw, -hh, hd);
+          Attribute4f(attrVertexColor, 0, 0, 1, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, hw * nd, -hh * nd, hd);
+          Attribute4f(attrVertexColor, 1, 0, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, hw, hh, hd);
+          Attribute4f(attrVertexColor, 1, 1, 1, 1);
+          EmitVertex;
+        end;
+        if cpBack in FParts then
+        begin
+          Attribute3f(attrNormal, 0, 0, -nd);
+          Attribute3f(attrTangent, -tan, 0, 0);
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, hw, hh, -hd);
+          Attribute4f(attrVertexColor, 1, 1, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, hw * nd, -hh * nd, -hd);
+          Attribute4f(attrVertexColor, 1, 0, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, -hw, -hh, -hd);
+          Attribute4f(attrVertexColor, 0, 0, 0, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, -hw * nd, hh * nd, -hd);
+          Attribute4f(attrVertexColor, 0, 1, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, hw, hh, -hd);
+          Attribute4f(attrVertexColor, 1, 1, 0, 1);
+          EmitVertex;
+        end;
+        if cpLeft in FParts then
+        begin
+          Attribute3f(attrNormal, -nd, 0, 0);
+          Attribute3f(attrTangent, 0, 0, tan);
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, -hw, hh, hd);
+          Attribute4f(attrVertexColor, 0, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, -hw, hh * nd, -hd * nd);
+          Attribute4f(attrVertexColor, 0, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, -hw, -hh, -hd);
+          Attribute4f(attrVertexColor, 0, 0, 0, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, -hw, -hh * nd, hd * nd);
+          Attribute4f(attrVertexColor, 0, 0, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, -hw, hh, hd);
+          Attribute4f(attrVertexColor, 0, 1, 1, 1);
+          EmitVertex;
+        end;
+        if cpRight in FParts then
+        begin
+          Attribute3f(attrNormal, nd, 0, 0);
+          Attribute3f(attrTangent, 0, 0, -tan);
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, hw, hh, hd);
+          Attribute4f(attrVertexColor, 1, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, hw, -hh * nd, hd * nd);
+          Attribute4f(attrVertexColor, 1, 0, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, hw, -hh, -hd);
+          Attribute4f(attrVertexColor, 1, 0, 0, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, hw, hh * nd, -hd * nd);
+          Attribute4f(attrVertexColor, 1, 1, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, hw, hh, hd);
+          Attribute4f(attrVertexColor, 1, 1, 1, 1);
+          EmitVertex;
+        end;
+        if cpTop in FParts then
+        begin
+          Attribute3f(attrNormal, 0, nd, 0);
+          Attribute3f(attrTangent, tan, 0, 0);
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, -hw, hh, -hd);
+          Attribute4f(attrVertexColor, 0, 1, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, -hw * nd, hh, hd * nd);
+          Attribute4f(attrVertexColor, 0, 1, 1, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, hw, hh, hd);
+          Attribute4f(attrVertexColor, 1, 1, 1, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, hw * nd, hh, -hd * nd);
+          Attribute4f(attrVertexColor, 1, 1, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, -hw, hh, -hd);
+          Attribute4f(attrVertexColor, 0, 1, 0, 1);
+          EmitVertex;
+        end;
+        if cpBottom in FParts then
+        begin
+          Attribute3f(attrNormal, 0, -nd, 0);
+          Attribute3f(attrTangent, -tan, 0, 0);
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, -hw, -hh, -hd);
+          Attribute4f(attrVertexColor, 0, 0, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 0);
+          Attribute3f(attrPosition, hw * nd, -hh, -hd * nd);
+          Attribute4f(attrVertexColor, 1, 0, 0, 1);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 1, 1);
+          Attribute3f(attrPosition, hw, -hh, hd);
+          Attribute4f(attrVertexColor, 1, 0, 1, 1);
+          EmitVertex;
+          EmitVertex;
+          Attribute2f(attrTexCoord0, 0, 1);
+          Attribute3f(attrPosition, -hw * nd, -hh, hd * nd);
+          Attribute4f(attrVertexColor, 0, 0, 1, 1);
+          EmitVertex;
+          Attribute3f(attrNormal, 0, -nd, 0);
+          Attribute2f(attrTexCoord0, 0, 0);
+          Attribute3f(attrPosition, -hw, -hh, -hd);
+          Attribute4f(attrVertexColor, 0, 0, 0, 1);
+          EmitVertex;
+        end;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
+      end;
+    finally
+      EndWork;
     end;
-    if cpBack in FParts then
-    begin
-      Attribute3f(attrNormal, 0, 0, -nd);
-      Attribute3f(attrTangent, -tan, 0, 0);
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, hw, hh, -hd);
-      Attribute4f(attrVertexColor, 1, 1, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, hw * nd, -hh * nd, -hd);
-      Attribute4f(attrVertexColor, 1, 0, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, -hw, -hh, -hd);
-      Attribute4f(attrVertexColor, 0, 0, 0, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, -hw * nd, hh * nd, -hd);
-      Attribute4f(attrVertexColor, 0, 1, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, hw, hh, -hd);
-      Attribute4f(attrVertexColor, 1, 1, 0, 1);
-      EmitVertex;
-    end;
-    if cpLeft in FParts then
-    begin
-      Attribute3f(attrNormal, -nd, 0, 0);
-      Attribute3f(attrTangent, 0, 0, tan);
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, -hw, hh, hd);
-      Attribute4f(attrVertexColor, 0, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, -hw, hh * nd, -hd * nd);
-      Attribute4f(attrVertexColor, 0, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, -hw, -hh, -hd);
-      Attribute4f(attrVertexColor, 0, 0, 0, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, -hw, -hh * nd, hd * nd);
-      Attribute4f(attrVertexColor, 0, 0, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, -hw, hh, hd);
-      Attribute4f(attrVertexColor, 0, 1, 1, 1);
-      EmitVertex;
-    end;
-    if cpRight in FParts then
-    begin
-      Attribute3f(attrNormal, nd, 0, 0);
-      Attribute3f(attrTangent, 0, 0, -tan);
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, hw, hh, hd);
-      Attribute4f(attrVertexColor, 1, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, hw, -hh * nd, hd * nd);
-      Attribute4f(attrVertexColor, 1, 0, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, hw, -hh, -hd);
-      Attribute4f(attrVertexColor, 1, 0, 0, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, hw, hh * nd, -hd * nd);
-      Attribute4f(attrVertexColor, 1, 1, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, hw, hh, hd);
-      Attribute4f(attrVertexColor, 1, 1, 1, 1);
-      EmitVertex;
-    end;
-    if cpTop in FParts then
-    begin
-      Attribute3f(attrNormal, 0, nd, 0);
-      Attribute3f(attrTangent, tan, 0, 0);
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, -hw, hh, -hd);
-      Attribute4f(attrVertexColor, 0, 1, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, -hw * nd, hh, hd * nd);
-      Attribute4f(attrVertexColor, 0, 1, 1, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, hw, hh, hd);
-      Attribute4f(attrVertexColor, 1, 1, 1, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, hw * nd, hh, -hd * nd);
-      Attribute4f(attrVertexColor, 1, 1, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, -hw, hh, -hd);
-      Attribute4f(attrVertexColor, 0, 1, 0, 1);
-      EmitVertex;
-    end;
-    if cpBottom in FParts then
-    begin
-      Attribute3f(attrNormal, 0, -nd, 0);
-      Attribute3f(attrTangent, -tan, 0, 0);
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, -hw, -hh, -hd);
-      Attribute4f(attrVertexColor, 0, 0, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 0);
-      Attribute3f(attrPosition, hw * nd, -hh, -hd * nd);
-      Attribute4f(attrVertexColor, 1, 0, 0, 1);
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 1, 1);
-      Attribute3f(attrPosition, hw, -hh, hd);
-      Attribute4f(attrVertexColor, 1, 0, 1, 1);
-      EmitVertex;
-      EmitVertex;
-      Attribute2f(attrTexCoord0, 0, 1);
-      Attribute3f(attrPosition, -hw * nd, -hh, hd * nd);
-      Attribute4f(attrVertexColor, 0, 0, 1, 1);
-      EmitVertex;
-      Attribute3f(attrNormal, 0, -nd, 0);
-      Attribute2f(attrTexCoord0, 0, 0);
-      Attribute3f(attrPosition, -hw, -hh, -hd);
-      Attribute4f(attrVertexColor, 0, 0, 0, 1);
-      EmitVertex;
-    end;
-    EndPrimitives;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 // GenerateSilhouette
@@ -1405,7 +1525,7 @@ end;
 // BuildList
 //
 
-procedure TGL3xSphere.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xSphere.BuildMesh;
 var
   V1, V2, N1, T1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
@@ -1413,6 +1533,7 @@ var
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
   I, J: Integer;
   NeedEnd: Boolean;
+  Builder: TGL3xStaticMeshBuilder;
 begin
   // common settings
   AngTop := DegToRad(1.0 * FTop);
@@ -1422,151 +1543,161 @@ begin
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
 
-  with Sender do
-  begin
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute3f(attrNormal, 0, 0, 0);
-    Attribute3f(attrTangent, 0, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    // top cap
-    NeedEnd := false;
-    if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
-    begin
-      BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-      SinCos(AngTop, SinP, CosP);
-      Attribute2f(attrTexCoord0, 0.5, 0.5);
-      Attribute3f(attrNormal, 0, 1, 0);
-      Attribute3f(attrTangent, 1, 0, 0);
-      if FTopCap = ctCenter then
-        Attribute3f(attrPosition, 0, 0, 0)
-      else
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
       begin
-        Attribute3f(attrPosition, 0, SinP * Radius, 0);
-        N1 := YVector;
-        T1 := XVector;
-      end;
-      EmitVertex;
-      Theta := AngStart;
-      for I := 0 to FSlices do
-      begin
-        SinCos(Theta, SinT, CosT);
-        V1[0] := CosP * SinT;
-        V1[1] := SinP;
-        V1[2] := CosP * CosT;
-        if FTopCap = ctCenter then
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTangent, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        // top cap
+        NeedEnd := false;
+        if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
         begin
-          N1 := VectorPerpendicular(YVector, V1);
-          T1 := VectorCrossProduct(N1, YVector);
+          BeginBatch(mpTRIANGLE_FAN);
+          SinCos(AngTop, SinP, CosP);
+          Attribute2f(attrTexCoord0, 0.5, 0.5);
+          Attribute3f(attrNormal, 0, 1, 0);
+          Attribute3f(attrTangent, 1, 0, 0);
+          if FTopCap = ctCenter then
+            Attribute3f(attrPosition, 0, 0, 0)
+          else
+          begin
+            Attribute3f(attrPosition, 0, SinP * Radius, 0);
+            N1 := YVector;
+            T1 := XVector;
+          end;
+          EmitVertex;
+          Theta := AngStart;
+          for I := 0 to FSlices do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * SinT;
+            V1[1] := SinP;
+            V1[2] := CosP * CosT;
+            if FTopCap = ctCenter then
+            begin
+              N1 := VectorPerpendicular(YVector, V1);
+              T1 := VectorCrossProduct(N1, YVector);
+            end;
+            Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+            Attribute3f(attrNormal, N1);
+            Attribute3f(attrTangent, T1);
+            ScaleVector(V1, Radius);
+            Attribute3f(attrPosition, V1);
+            EmitVertex;
+            Theta := Theta + StepH;
+          end;
+          RestartStrip;
+          NeedEnd := true;
         end;
-        Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-        Attribute3f(attrNormal, N1);
-        Attribute3f(attrTangent, T1);
-        ScaleVector(V1, Radius);
-        Attribute3f(attrPosition, V1);
-        EmitVertex;
-        Theta := Theta + StepH;
-      end;
-      RestartStrip;
-      NeedEnd := true;
-    end;
-    // bottom cap
-    if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
-    begin
-      if not NeedEnd then
-        BeginPrimitives(GLVBOM_TRIANGLE_FAN);
-      SinCos(AngBottom, SinP, CosP);
-      Attribute2f(attrTexCoord0, 0.5, 0.5);
-      Attribute3f(attrNormal, 0, -1, 0);
-      Attribute3f(attrTangent, -1, 0, 0);
-      if FBottomCap = ctCenter then
-        Attribute3f(attrPosition, 0, 0, 0)
-      else
-      begin
-        Attribute3f(attrPosition, 0, SinP * Radius, 0);
-        N1 := YVector;
-        T1 := XVector;
-      end;
-      EmitVertex;
-      Theta := AngStop;
-      for I := 0 to FSlices do
-      begin
-        SinCos(Theta, SinT, CosT);
-        V1[0] := CosP * SinT;
-        V1[1] := SinP;
-        V1[2] := CosP * CosT;
-        if FTopCap = ctCenter then
+        // bottom cap
+        if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
         begin
-          N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), V1);
-          T1 := VectorCrossProduct(N1, YVector);
+          if not NeedEnd then
+            BeginBatch(mpTRIANGLE_FAN);
+          SinCos(AngBottom, SinP, CosP);
+          Attribute2f(attrTexCoord0, 0.5, 0.5);
+          Attribute3f(attrNormal, 0, -1, 0);
+          Attribute3f(attrTangent, -1, 0, 0);
+          if FBottomCap = ctCenter then
+            Attribute3f(attrPosition, 0, 0, 0)
+          else
+          begin
+            Attribute3f(attrPosition, 0, SinP * Radius, 0);
+            N1 := YVector;
+            T1 := XVector;
+          end;
+          EmitVertex;
+          Theta := AngStop;
+          for I := 0 to FSlices do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * SinT;
+            V1[1] := SinP;
+            V1[2] := CosP * CosT;
+            if FTopCap = ctCenter then
+            begin
+              N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), V1);
+              T1 := VectorCrossProduct(N1, YVector);
+            end;
+            Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+            Attribute3f(attrNormal, N1);
+            Attribute3f(attrTangent, T1);
+            ScaleVector(V1, Radius);
+            Attribute3f(attrPosition, V1);
+            EmitVertex;
+            Theta := Theta - StepH;
+          end;
+          NeedEnd := true;
         end;
-        Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-        Attribute3f(attrNormal, N1);
-        Attribute3f(attrTangent, T1);
-        ScaleVector(V1, Radius);
-        Attribute3f(attrPosition, V1);
-        EmitVertex;
-        Theta := Theta - StepH;
+        if NeedEnd then
+          EndBatch;
+
+        // main body
+        Phi := AngTop;
+        Phi2 := Phi - StepV;
+
+        uTexFactor := 1 / FSlices;
+        vTexFactor := 1 / FStacks;
+
+        BeginBatch(mpTRIANGLE_STRIP);
+        for j := 0 to FStacks - 1 do
+        begin
+          Theta := AngStart;
+          SinCos(Phi, SinP, CosP);
+          SinCos(Phi2, SinP2, CosP2);
+
+          vTexCoord0 := 1 - j * vTexFactor;
+          vTexCoord1 := 1 - (j + 1) * vTexFactor;
+
+          for i := 0 to FSlices do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * SinT;
+            V1[1] := SinP;
+            V1[2] := CosP * CosT;
+
+            V2[0] := CosP2 * SinT;
+            V2[1] := SinP2;
+            V2[2] := CosP2 * CosT;
+
+            uTexCoord := i * uTexFactor;
+            Attribute2f(attrTexCoord0, uTexCoord, vTexCoord0);
+            Attribute3f(attrNormal, V1);
+            T1 := VectorCrossProduct(V1, YVector);
+            Attribute3f(attrTangent, T1);
+            ScaleVector(V1, Radius);
+            Attribute3f(attrPosition, V1);
+            EmitVertex;
+
+            Attribute2f(attrTexCoord0, uTexCoord, vTexCoord1);
+            Attribute3f(attrNormal, V2);
+            T1 := VectorCrossProduct(V2, YVector);
+            Attribute3f(attrTangent, T1);
+            ScaleVector(V2, Radius);
+            Attribute3f(attrPosition, V2);
+            EmitVertex;
+
+            Theta := Theta + StepH;
+          end;
+          RestartStrip;
+          Phi := Phi2;
+          Phi2 := Phi2 - StepV;
+        end;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
       end;
-      NeedEnd := true;
+    finally
+      EndWork;
     end;
-    if NeedEnd then
-      EndPrimitives;
-
-    // main body
-    Phi := AngTop;
-    Phi2 := Phi - StepV;
-
-    uTexFactor := 1 / FSlices;
-    vTexFactor := 1 / FStacks;
-
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    for j := 0 to FStacks - 1 do
-    begin
-      Theta := AngStart;
-      SinCos(Phi, SinP, CosP);
-      SinCos(Phi2, SinP2, CosP2);
-
-      vTexCoord0 := 1 - j * vTexFactor;
-      vTexCoord1 := 1 - (j + 1) * vTexFactor;
-
-      for i := 0 to FSlices do
-      begin
-        SinCos(Theta, SinT, CosT);
-        V1[0] := CosP * SinT;
-        V1[1] := SinP;
-        V1[2] := CosP * CosT;
-
-        V2[0] := CosP2 * SinT;
-        V2[1] := SinP2;
-        V2[2] := CosP2 * CosT;
-
-        uTexCoord := i * uTexFactor;
-        Attribute2f(attrTexCoord0, uTexCoord, vTexCoord0);
-        Attribute3f(attrNormal, V1);
-        T1 := VectorCrossProduct(V1, YVector);
-        Attribute3f(attrTangent, T1);
-        ScaleVector(V1, Radius);
-        Attribute3f(attrPosition, V1);
-        EmitVertex;
-
-        Attribute2f(attrTexCoord0, uTexCoord, vTexCoord1);
-        Attribute3f(attrNormal, V2);
-        T1 := VectorCrossProduct(V2, YVector);
-        Attribute3f(attrTangent, T1);
-        ScaleVector(V2, Radius);
-        Attribute3f(attrPosition, V2);
-        EmitVertex;
-
-        Theta := Theta + StepH;
-      end;
-      RestartStrip;
-      Phi := Phi2;
-      Phi2 := Phi2 - StepV;
-    end;
-    EndPrimitives;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 // RayCastIntersect
@@ -1809,13 +1940,14 @@ end;
 // BuildList
 //
 
-procedure TGL3xGeoSphere.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xGeoSphere.BuildMesh;
 var
   pivot, dir1, dir2, V, B: TAffineVector;
   level, numLayers: Integer;
   dt, t_top, t_bot, ds_top, ds_bot, s_top, s_bot,
     smax_top, smax_bot: Single;
   offset: Boolean;
+  Builder: TGL3xStaticMeshBuilder;
 
   procedure ProduceVertex(s, t, sb, tb: Single; uprow: Boolean);
   var
@@ -1858,7 +1990,7 @@ var
         t := t + (1 / 6) * V[1] / Abs(B[1]);
     end;
 
-    with Sender do
+    with Builder do
     begin
       Attribute2f(attrTexCoord0, s, t);
       Attribute3f(attrNormal, V[0], V[1], V[2]);
@@ -1901,7 +2033,7 @@ var
       end;
       ProduceVertex(s_bot, t_bot, s_bot * smax_border / smax_bot, t_border, i <
         caps);
-      FBuiltProperties.Manager.RestartStrip;
+      Builder.RestartStrip;
       t_top := t_bot;
     end;
   end;
@@ -1911,59 +2043,69 @@ begin
   numLayers := 1 shl level;
   dt := 1 / numLayers;
 
-  with FBuiltProperties.Manager do
-  begin
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute3f(attrNormal, 0, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
+      begin
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        BeginBatch(mpTRIANGLE_STRIP);
 
-    offset := false;
-    SetVector(pivot, 1, 0, 0);
-    SetVector(dir1, -1, 0, 1);
-    SetVector(dir2, -1, 1, 0);
-    ProduceOctant;
+        offset := false;
+        SetVector(pivot, 1, 0, 0);
+        SetVector(dir1, -1, 0, 1);
+        SetVector(dir2, -1, 1, 0);
+        ProduceOctant;
 
-    SetVector(pivot, 0, 0, 1);
-    SetVector(dir1, -1, 0, -1);
-    SetVector(dir2, 0, 1, -1);
-    ProduceOctant;
+        SetVector(pivot, 0, 0, 1);
+        SetVector(dir1, -1, 0, -1);
+        SetVector(dir2, 0, 1, -1);
+        ProduceOctant;
 
-    SetVector(pivot, 0, 0, -1);
-    SetVector(dir1, 1, 0, 1);
-    SetVector(dir2, 0, 1, 1);
-    ProduceOctant;
+        SetVector(pivot, 0, 0, -1);
+        SetVector(dir1, 1, 0, 1);
+        SetVector(dir2, 0, 1, 1);
+        ProduceOctant;
 
-    SetVector(pivot, -1, 0, 0);
-    SetVector(dir1, 1, 0, 1);
-    SetVector(dir2, 1, -1, 0);
-    ProduceOctant;
+        SetVector(pivot, -1, 0, 0);
+        SetVector(dir1, 1, 0, 1);
+        SetVector(dir2, 1, -1, 0);
+        ProduceOctant;
 
-    SetVector(pivot, 0, 0, 1);
-    SetVector(dir1, 1, 0, -1);
-    SetVector(dir2, 0, -1, -1);
-    ProduceOctant;
+        SetVector(pivot, 0, 0, 1);
+        SetVector(dir1, 1, 0, -1);
+        SetVector(dir2, 0, -1, -1);
+        ProduceOctant;
 
-    SetVector(pivot, 1, 0, 0);
-    SetVector(dir1, -1, 0, -1);
-    SetVector(dir2, -1, -1, 0);
-    ProduceOctant;
+        SetVector(pivot, 1, 0, 0);
+        SetVector(dir1, -1, 0, -1);
+        SetVector(dir2, -1, -1, 0);
+        ProduceOctant;
 
-    offset := true;
-    SetVector(pivot, -1, 0, 0);
-    SetVector(dir1, 1, 0, -1);
-    SetVector(dir2, 1, 1, 0);
-    ProduceOctant;
+        offset := true;
+        SetVector(pivot, -1, 0, 0);
+        SetVector(dir1, 1, 0, -1);
+        SetVector(dir2, 1, 1, 0);
+        ProduceOctant;
 
-    SetVector(pivot, 0, 0, -1);
-    SetVector(dir1, -1, 0, 1);
-    SetVector(dir2, 0, -1, 1);
-    ProduceOctant;
+        SetVector(pivot, 0, 0, -1);
+        SetVector(dir1, -1, 0, 1);
+        SetVector(dir2, 0, -1, 1);
+        ProduceOctant;
 
-    EndPrimitives;
-    EndObject;
-  end;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
+      end;
+    finally
+      EndWork;
+    end;
+  ClearStructureChanged;
 end;
 
 // Assign
@@ -2109,43 +2251,56 @@ end;
 // BuildList
 //
 
-procedure TGL3xDisk.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xDisk.BuildMesh;
 var
   i, j: Integer;
   Astart, Astep, angle, Rstep, R: Single;
   s, c: Single;
+  Builder: TGL3xStaticMeshBuilder;
 begin
   Astart := DegToRad(FStartAngle);
   Astep := DegToRad(FSweepAngle) / FSlices;
   Rstep := (FOuterRadius - FInnerRadius) / FLoops;
-  with Sender do
-  begin
-    BeginObject(FBuiltProperties);
-    Attribute3f(attrPosition, 0, 0, 0);
-    Attribute3f(attrNormal, 0, 0, 1);
-    Attribute3f(attrTangent, 1, 0, 0);
-    Attribute2f(attrTexCoord0, 0, 0);
-    BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-    for j := 0 to FLoops - 1 do
-    begin
-      angle := Astart;
-      for i := 0 to FSlices do
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
       begin
-        SinCos(angle, s, c);
-        Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
-        R := FInnerRadius + j * Rstep;
-        Attribute3f(attrPosition, c * R, s * R, 0);
-        EmitVertex;
-        Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
-        R := FInnerRadius + (j + 1) * Rstep;
-        Attribute3f(attrPosition, c * R, s * R, 0);
-        EmitVertex;
-        angle := angle + Astep;
+        BeginMeshAssembly;
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTangent, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+        BeginBatch(mpTRIANGLE_STRIP);
+        Attribute3f(attrNormal, 0, 0, 1);
+        Attribute3f(attrTangent, 1, 0, 0);
+        for j := 0 to FLoops - 1 do
+        begin
+          angle := Astart;
+          for i := 0 to FSlices do
+          begin
+            SinCos(angle, s, c);
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            R := FInnerRadius + j * Rstep;
+            Attribute3f(attrPosition, c * R, s * R, 0);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            R := FInnerRadius + (j + 1) * Rstep;
+            Attribute3f(attrPosition, c * R, s * R, 0);
+            EmitVertex;
+            angle := angle + Astep;
+          end;
+        end;
+        EndBatch;
+        WeldVertices;
+        EndMeshAssembly;
       end;
+    finally
+      EndWork;
     end;
-    EndPrimitives;
-    EndObject;
-  end;
+  ClearStructureChanged;
 end;
 
 // SetOuterRadius
@@ -2320,7 +2475,6 @@ end;
 constructor TGL3xFeedBackMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FBuiltProperties.Usage := buStream;
   FPrimitiveType := bmpPoint;
   FVertexNumber := 1;
   FIndexed := False;
@@ -2335,50 +2489,90 @@ begin
     FFactory.Produce(Self);
 end;
 
+procedure TGL3xFeedBackMesh.SetMaterialName(const Value: string);
+begin
+  if Length(Value) > 0 then
+    inherited
+  else
+    FMaterial := nil;
+  FAttrIsDefined := False;
+  StructureChanged;
+end;
+
+function TGL3xFeedBackMesh.GetShader: IGLName;
+begin
+  if Assigned(FMaterial) then
+    try
+      MaterialManager.BeginWork;
+      Result := MaterialManager.GetMaterialProgramName(FMaterial);
+    finally
+      MaterialManager.EndWork;
+    end
+  else
+    Result := FShader;
+end;
+
+procedure TGL3xFeedBackMesh.SetShader(AName: IGLName);
+begin
+  SetMaterialName('');
+  FShader := AName;
+  FAttrIsDefined := False;
+  StructureChanged;
+end;
+
 // BuildList
 //
 
-procedure TGL3xFeedBackMesh.BuildBufferData(Sender: TGLBaseVBOManager);
+procedure TGL3xFeedBackMesh.BuildMesh;
 const
-  cPrimitives: array[TFeedBackMeshPrimitive] of TGLVBOMEnum =
-    (GLVBOM_POINTS, GLVBOM_LINES, GLVBOM_TRIANGLES);
+  cPrimitives: array[TFeedBackMeshPrimitive] of TGLMeshPrimitive =
+    (mpPOINTS, mpLINES, mpTRIANGLES);
 var
-  i: Integer;
+  A: Integer;
+  Builder: TGL3xStaticMeshBuilder;
 begin
   if csDesigning in ComponentState then
     exit;
-//  if Assigned(FMaterial.OverShader) then
-//  begin
-//    if not FAttrIsDefined then
-//    begin
-//      FAttrIsDefined := FMaterial.GetAttributes(FAttrArray);
-//      if not FAttrIsDefined then
-//      begin
-//        Visible := False;
-//        GLSLogger.LogError('Material of '+Name+' has no attributes');
-//        exit;
-//      end;
-//    end;
-    // Create empty graphic buffers
-    with Sender do
+
+  if not FAttrIsDefined then
+  begin
+    with ShaderManager do
+      try
+        BeginWork;
+        FAttrIsDefined := GetProgramAttribs(GetShader, FAttrArray);
+      finally
+        EndWork;
+      end;
+
+    if not FAttrIsDefined then
     begin
-      BeginObject(FBuiltProperties);
-      for i := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-        if Assigned(FAttrArray[i]) then
-          case FAttrArray[i].DataFormat of
-            GLSLType1F: Attribute1f(FAttrArray[i], 0);
-            GLSLType2F: Attribute2f(FAttrArray[i], 0, 0);
-            GLSLType3F: Attribute3f(FAttrArray[i], 0, 0, 0);
-            GLSLType4F: Attribute4f(FAttrArray[i], 0, 0, 0, 0);
-            GLSLType1I: Attribute1i(FAttrArray[i], 0);
-            GLSLType2I: Attribute2i(FAttrArray[i], 0, 0);
-            GLSLType3I: Attribute3i(FAttrArray[i], 0, 0, 0);
-            GLSLType4I: Attribute4i(FAttrArray[i], 0, 0, 0, 0);
-          end;
-      BeginPrimitives(cPrimitives[FPrimitiveType]);
-      EmitVertices(FVertexNumber, FIndexed);
+      Visible := False;
+      GLSLogger.LogError(Format('Material of %s has not attributes', [Name]));
+      exit;
     end;
-//  end;
+  end;
+
+  // Create empty graphic buffers
+  with MeshManager do
+    try
+      BeginWork;
+      Builder := TGL3xStaticMeshBuilder(GetMeshBuilder(FMesh));
+      with Builder do
+      begin
+        BeginMeshAssembly;
+        Clear;
+        for A := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+          if Assigned(FAttrArray[A]) then
+            DeclareAttribute(FAttrArray[A], FAttrArray[A].DataFormat);
+        BeginBatch(cPrimitives[FPrimitiveType]);
+        EmitVertices(FVertexNumber);
+        EndBatch;
+        Blank := True;
+        EndMeshAssembly;
+      end;
+    finally
+      EndWork;
+    end;
 end;
 
 procedure TGL3xFeedBackMesh.Assign(Source: TPersistent);
@@ -2440,13 +2634,6 @@ begin
   if (Operation = opRemove) and (AComponent = FFactory) then
     FFactory := nil;
   inherited;
-end;
-
-procedure TGL3xFeedBackMesh.SetMaterialName(const Value: string);
-begin
-  inherited;
-  FAttrIsDefined := False;
-  StructureChanged;
 end;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
