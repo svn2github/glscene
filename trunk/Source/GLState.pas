@@ -1866,10 +1866,15 @@ procedure TGLStateCache.SetBlendFunc(const Src: TBlendFunction;
 begin
   if (Src <> FBlendSrcRGB) or (Dst <> FBlendDstRGB) or FInsideList then
   begin
-    FBlendSrcRGB := Src;
-    FBlendDstRGB := Dst;
-    FBlendSrcAlpha := Src;
-    FBlendSrcAlpha := Dst;
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttColorBuffer)
+    else
+    begin
+      FBlendSrcRGB := Src;
+      FBlendDstRGB := Dst;
+      FBlendSrcAlpha := Src;
+      FBlendSrcAlpha := Dst;
+    end;
     GL.BlendFunc(cGLBlendFunctionToGLEnum[Src], cGLBlendFunctionToGLEnum[Dst]);
   end;
 end;
@@ -1891,7 +1896,8 @@ begin
       FBlendSrcAlpha := SrcAlpha;
       FBlendDstAlpha := DstAlpha;
     end;
-    GL.BlendFuncSeparate(cGLBlendFunctionToGLEnum[SrcRGB],
+    GL.BlendFuncSeparate(
+      cGLBlendFunctionToGLEnum[SrcRGB],
       cGLBlendFunctionToGLEnum[DstRGB],
       cGLBlendFunctionToGLEnum[SrcAlpha],
       cGLBlendFunctionToGLEnum[DstAlpha]);

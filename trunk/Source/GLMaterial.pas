@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
       <li>20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
@@ -319,16 +320,22 @@ type
   private
     FUseAlphaFunc: Boolean;
     FUseBlendFunc: Boolean;
+    FSeparateBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
     FAlphaFuncRef: TGLclampf;
     FBlendFuncSFactor: TBlendFunction;
     FBlendFuncDFactor: TBlendFunction;
+    FAlphaBlendFuncSFactor: TBlendFunction;
+    FAlphaBlendFuncDFactor: TBlendFunction;
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
+    procedure SetSeparateBlendFunc(const Value: Boolean);
     procedure SetAlphaFuncRef(const Value: TGLclampf);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
     procedure SetBlendFuncDFactor(const Value: TBlendFunction);
     procedure SetBlendFuncSFactor(const Value: TBlendFunction);
+    procedure SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
+    procedure SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
     function StoreAlphaFuncRef: Boolean;
   protected
     function GetRealOwner: TGLMaterial;
@@ -346,10 +353,16 @@ type
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc
       default True;
+    property SeparateBlendFunc: Boolean read FSeparateBlendFunc write SetSeparateBlendFunc
+      default False;
     property BlendFuncSFactor: TBlendFunction read FBlendFuncSFactor write
       SetBlendFuncSFactor default bfSrcAlpha;
     property BlendFuncDFactor: TBlendFunction read FBlendFuncDFactor write
       SetBlendFuncDFactor default bfOneMinusSrcAlpha;
+    property AlphaBlendFuncSFactor: TBlendFunction read FAlphaBlendFuncSFactor write
+      SetAlphaBlendFuncSFactor default bfSrcAlpha;
+    property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write
+      SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
   end;
 
   // TBlendingMode
@@ -3410,7 +3423,11 @@ begin
   if FUseBlendFunc then
   begin
     rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+    if FSeparateBlendFunc then
+      rci.GLStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
+        FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
+    else
+      rci.GLStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
   end
   else
     rci.GLStates.Disable(stBlend);
@@ -3431,8 +3448,11 @@ begin
   FAlphaFuncRef := 0;
 
   FUseBlendFunc := True;
+  FSeparateBlendFunc := False;
   FBlendFuncSFactor := bfSrcAlpha;
   FBlendFuncDFactor := bfOneMinusSrcAlpha;
+  FAlphaBlendFuncSFactor := bfSrcAlpha;
+  FAlphaBlendFuncDFactor := bfOneMinusSrcAlpha;
 end;
 
 function TGLBlendingParameters.GetRealOwner: TGLMaterial;
@@ -3465,6 +3485,8 @@ begin
   if (FBlendFuncDFactor <> Value) then
   begin
     FBlendFuncDFactor := Value;
+    if not FSeparateBlendFunc then
+      FAlphaBlendFuncDFactor := Value;
     Changed();
   end;
 end;
@@ -3475,6 +3497,26 @@ begin
   if (FBlendFuncSFactor <> Value) then
   begin
     FBlendFuncSFactor := Value;
+    if not FSeparateBlendFunc then
+      FAlphaBlendFuncSFactor := Value;
+    Changed();
+  end;
+end;
+
+procedure TGLBlendingParameters.SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
+begin
+  if FSeparateBlendFunc and (FAlphaBlendFuncDFactor <> Value) then
+  begin
+    FAlphaBlendFuncDFactor := Value;
+    Changed();
+  end;
+end;
+
+procedure TGLBlendingParameters.SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
+begin
+  if FSeparateBlendFunc and (FAlphaBlendFuncSFactor <> Value) then
+  begin
+    FAlphaBlendFuncSFactor := Value;
     Changed();
   end;
 end;
@@ -3493,6 +3535,20 @@ begin
   if (FUseBlendFunc <> Value) then
   begin
     FUseBlendFunc := Value;
+    Changed();
+  end;
+end;
+
+procedure TGLBlendingParameters.SetSeparateBlendFunc(const Value: Boolean);
+begin
+  if (FSeparateBlendFunc <> Value) then
+  begin
+    FSeparateBlendFunc := Value;
+    if not Value then
+    begin
+      FAlphaBlendFuncSFactor := FBlendFuncSFactor;
+      FAlphaBlendFuncDFactor := FBlendFuncDFactor;
+    end;
     Changed();
   end;
 end;
