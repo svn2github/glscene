@@ -608,6 +608,8 @@ type
     procedure WriteRotations(stream: TStream);
     procedure ReadRotations(stream: TStream);
 
+    function GetVisible: Boolean; virtual;
+    function GetPickable: Boolean; virtual;
     procedure SetVisible(aValue: Boolean); virtual;
     procedure SetPickable(aValue: Boolean); virtual;
 
@@ -5109,6 +5111,16 @@ procedure TGLBaseSceneObject.SetUp(AVector: TGLCoordinates);
 begin
   if not VectorIsNull(AVector.DirectVector) then
     FUp.SetVector(AVector.DirectX, AVector.DirectY, AVector.DirectZ);
+end;
+
+function TGLBaseSceneObject.GetVisible: Boolean;
+begin
+  Result := FVisible;
+end;
+
+function TGLBaseSceneObject.GetPickable: Boolean;
+begin
+  Result := FPickable;
 end;
 
 // SetVisible
