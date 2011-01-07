@@ -11,8 +11,6 @@ unit uMainForm;
 interface
 
 uses
-  Windows,
-  Messages,
   SysUtils,
   Variants,
   Classes,

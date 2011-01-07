@@ -1,8 +1,6 @@
 object Form1: TForm1
   Left = 273
   Top = 234
-  Width = 604
-  Height = 417
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -61,9 +59,10 @@ object Form1: TForm1
       Camera = GLCamera2
       SceneScaleFactor = 500.000000000000000000
       RootObject = SceneRoot
-      EnabledRenderBuffers = [erbDepth]
+      EnabledRenderBuffers = []
       BeforeRender = LightFBORendererBeforeRender
       AfterRender = LightFBORendererAfterRender
+      PostGenerateMipmap = False
     end
     object SceneRoot: TGLDummyCube
       CubeSize = 1.000000000000000000
