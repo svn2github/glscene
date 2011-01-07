@@ -1028,7 +1028,11 @@ Procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
       const aText: WideString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
+var
+  AnsiText: AnsiString;
 begin
+  AnsiText := AnsiString(aText);
+  RenderString(rci, AnsiText, aAlignment, aLayout, aColor, aPosition, aReverseY);
 end;
 
 // TextOut
