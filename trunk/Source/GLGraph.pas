@@ -1,33 +1,34 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGraph<p>
+{ : GLGraph<p>
 
- Graph plotting objects for GLScene<p>
+  Graph plotting objects for GLScene<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>12/09/03 - EG - DefaultHeightField now defines color
-      <li>16/07/02 - EG - Fixed TGLHeightField backface polygon mode
-      <li>29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
-      <li>10/01/02 - EG - Added OnGetHeight2
-      <li>30/11/01 - EG - Color fix in TGLHeightField.BuildList (thx Marc Hull)
-      <li>19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
-      <li>06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
-      <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
-      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-      <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
-                          to workaround the float property default value bug.
-      <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
-      <li>15/07/00 - EG - Added TXYGrid
-    <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
- </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>05/03/10 - DanB - More state added to TGLStateCache
+  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+  <li>30/03/07 - DaStr - Added $I GLScene.inc
+  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+  <li>12/09/03 - EG - DefaultHeightField now defines color
+  <li>16/07/02 - EG - Fixed TGLHeightField backface polygon mode
+  <li>29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
+  <li>10/01/02 - EG - Added OnGetHeight2
+  <li>30/11/01 - EG - Color fix in TGLHeightField.BuildList (thx Marc Hull)
+  <li>19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
+  <li>06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
+  <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
+  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+  <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
+  to workaround the float property default value bug.
+  <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
+  <li>15/07/00 - EG - Added TXYGrid
+  <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
+  </ul></font>
 }
 unit GLGraph;
 
@@ -71,11 +72,11 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Returns the base value for step browsing.<p>
-       ie. the lowest value (superior to Min) that verifies
-       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
+    { : Returns the base value for step browsing.<p>
+      ie. the lowest value (superior to Min) that verifies
+      Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
-    {: Maximum number of steps that can occur between Min and Max. }
+    { : Maximum number of steps that can occur between Min and Max. }
     function MaxStepCount: Integer;
 
     function IsValid: Boolean;
@@ -86,20 +87,15 @@ type
   published
     { Published Declarations }
     property Min: Single read FMin write SetMin;
-    property Max: Single read FMax write SetMax;
+    property max: Single read FMax write SetMax;
     property Origin: Single read FOrigin write SetOrigin;
-    property Step: Single read FStep write SetStep;
+    property step: Single read FStep write SetStep;
   end;
 
-  THeightFieldGetHeightEvent = procedure(const x, y: Single;
-    var z: Single;
-    var color: TColorVector;
-    var texPoint: TTexPoint) of object;
-  THeightFieldGetHeight2Event = procedure(Sender: TObject;
-    const x, y: Single;
-    var z: Single;
-    var color: TColorVector;
-    var texPoint: TTexPoint) of object;
+  THeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
+    var color: TColorVector; var texPoint: TTexPoint) of object;
+  THeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
+    var z: Single; var color: TColorVector; var texPoint: TTexPoint) of object;
 
   // THeightFieldOptions
   //
@@ -113,15 +109,15 @@ type
 
   // TGLHeightField
   //
-    {: Renders a sampled height-field.<p>
-       HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
-       render anything from math formulas to statistics. Most important properties
-       of an height field are its sampling scales (X & Y) that determine the extents
-       and the resolution of the base grid.<p>
+  { : Renders a sampled height-field.<p>
+    HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
+    render anything from math formulas to statistics. Most important properties
+    of an height field are its sampling scales (X & Y) that determine the extents
+    and the resolution of the base grid.<p>
 
-       The component will then invoke it OnGetHeight event to retrieve Z values for
-       all of the grid points (values are retrieved only once for each point). Each
-       point may have an additionnal color and texture coordinate. }
+    The component will then invoke it OnGetHeight event to retrieve Z values for
+    all of the grid points (values are retrieved only once for each point). Each
+    point may have an additionnal color and texture coordinate. }
   TGLHeightField = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -142,12 +138,10 @@ type
     procedure SetOnGetHeight2(const val: THeightFieldGetHeight2Event);
     procedure SetColorMode(const val: THeightFieldColorMode);
 
-    procedure DefaultHeightField(const x, y: Single;
-      var z: Single; var color: TColorVector;
-      var texPoint: TTexPoint);
-    procedure Height2Field(const x, y: Single;
-      var z: Single; var color: TColorVector;
-      var texPoint: TTexPoint);
+    procedure DefaultHeightField(const x, y: Single; var z: Single;
+      var color: TColorVector; var texPoint: TTexPoint);
+    procedure Height2Field(const x, y: Single; var z: Single;
+      var color: TColorVector; var texPoint: TTexPoint);
 
   public
     { Public Declarations }
@@ -162,18 +156,24 @@ type
 
   published
     { Published Declarations }
-    property XSamplingScale: TGLSamplingScale read FXSamplingScale write SetXSamplingScale;
-    property YSamplingScale: TGLSamplingScale read FYSamplingScale write SetYSamplingScale;
-    {: Define if and how per vertex color is used. }
-    property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode default hfcmNone;
-    property Options: THeightFieldOptions read FOptions write SetOptions default [hfoTwoSided];
+    property XSamplingScale: TGLSamplingScale read FXSamplingScale
+      write SetXSamplingScale;
+    property YSamplingScale: TGLSamplingScale read FYSamplingScale
+      write SetYSamplingScale;
+    { : Define if and how per vertex color is used. }
+    property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode
+      default hfcmNone;
+    property Options: THeightFieldOptions read FOptions write SetOptions
+      default [hfoTwoSided];
 
-    {: Primary event to return heights. }
-    property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight write SetOnGetHeight;
-    {: Alternate this event to return heights.<p>
-       This events passes an extra "Sender" parameter, it will be invoked
-       only if OnGetHeight isn't defined. }
-    property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2 write SetOnGetHeight2;
+    { : Primary event to return heights. }
+    property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
+      write SetOnGetHeight;
+    { : Alternate this event to return heights.<p>
+      This events passes an extra "Sender" parameter, it will be invoked
+      only if OnGetHeight isn't defined. }
+    property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
+      write SetOnGetHeight2;
   end;
 
   // TXYZGridParts
@@ -183,18 +183,18 @@ type
 
   // TXYZGridLinesStyle
   //
-  {: Rendering Style for grid lines.<p>
-     - glsLine : a single line is used for each grid line (from min to max),
-        this provides the fastest rendering<br>
-     - glsSegments : line segments are used between each node of the grid,
-        this enhances perspective and quality, at the expense of computing
-        power. }
+  { : Rendering Style for grid lines.<p>
+    - glsLine : a single line is used for each grid line (from min to max),
+    this provides the fastest rendering<br>
+    - glsSegments : line segments are used between each node of the grid,
+    this enhances perspective and quality, at the expense of computing
+    power. }
   TXYZGridLinesStyle = (glsLine, glsSegments);
 
   // TGLXYZGrid
   //
-  {: An XYZ Grid object.<p>
-     Renders an XYZ grid using lines. }
+  { : An XYZ Grid object.<p>
+    Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
   private
     { Private Declarations }
@@ -224,13 +224,17 @@ type
 
   published
     { Published Declarations }
-    property XSamplingScale: TGLSamplingScale read FXSamplingScale write SetXSamplingScale;
-    property YSamplingScale: TGLSamplingScale read FYSamplingScale write SetYSamplingScale;
-    property ZSamplingScale: TGLSamplingScale read FZSamplingScale write SetZSamplingScale;
+    property XSamplingScale: TGLSamplingScale read FXSamplingScale
+      write SetXSamplingScale;
+    property YSamplingScale: TGLSamplingScale read FYSamplingScale
+      write SetYSamplingScale;
+    property ZSamplingScale: TGLSamplingScale read FZSamplingScale
+      write SetZSamplingScale;
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
-    property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle default glsSegments;
-    {: Adjusts lines smoothing (or antialiasing).<p>
-       Obsolete, now maps to Antialiased property. }
+    property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
+      default glsSegments;
+    { : Adjusts lines smoothing (or antialiasing).<p>
+      Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;
 
@@ -238,6 +242,7 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -248,7 +253,7 @@ uses
   GLContext,
   XOpenGL,
   GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLSamplingScale ------------------
@@ -354,7 +359,7 @@ end;
 
 function TGLSamplingScale.MaxStepCount: Integer;
 begin
-  Result := Round(0.5 + (Max - Min) / Step);
+  Result := Round(0.5 + (max - Min) / step);
 end;
 
 // IsValid
@@ -362,7 +367,7 @@ end;
 
 function TGLSamplingScale.IsValid: Boolean;
 begin
-  Result := (Max <> Min);
+  Result := (max <> Min);
 end;
 
 // SetBaseStepMaxToVars
@@ -375,7 +380,7 @@ begin
   if samplingEnabled then
   begin
     base := StepBase;
-    max := FMax + ((FMax - base) / step) * 1e-6; // add precision loss epsilon
+    max := FMax + ((FMax - base) / step) * 1E-6; // add precision loss epsilon
   end
   else
   begin
@@ -418,9 +423,8 @@ begin
     FOnGetHeight := TGLHeightField(Source).FOnGetHeight;
     FOptions := TGLHeightField(Source).FOptions;
     FColorMode := TGLHeightField(Source).FColorMode;
-  end
-  else
-    inherited Assign(Source);
+  end;
+  inherited Assign(Source);
 end;
 
 // NotifyChange
@@ -444,17 +448,18 @@ type
     texPoint: TTexPoint;
     normal: TAffineVector;
   end;
-  TRowDataArray = array[0..Maxint shr 6] of TRowData;
+
+  TRowDataArray = array [0 .. Maxint shr 6] of TRowData;
   PRowData = ^TRowDataArray;
 const
-  cHFCMtoEnum: array[hfcmEmission..hfcmAmbientAndDiffuse] of TGLEnum =
+  cHFCMtoEnum: array [hfcmEmission .. hfcmAmbientAndDiffuse] of TGLEnum =
     (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
 var
   nx, m, k: Integer;
   x, y, x1, y1, y2, xStep, yStep, xBase, dx, dy: Single;
   invXStep, invYStep: Single;
-  row: packed array[0..2] of PRowData;
+  row: packed array [0 .. 2] of PRowData;
   rowTop, rowMid, rowBottom: PRowData;
   func: THeightFieldGetHeightEvent;
 
@@ -490,11 +495,11 @@ var
   end;
 
 begin
-  if not (XSamplingScale.IsValid and YSamplingScale.IsValid) then
+  if not(XSamplingScale.IsValid and YSamplingScale.IsValid) then
     Exit;
-  if Assigned(FOnGetHeight) and (not (csDesigning in ComponentState)) then
+  if Assigned(FOnGetHeight) and (not(csDesigning in ComponentState)) then
     func := FOnGetHeight
-  else if Assigned(FOnGetHeight2) and (not (csDesigning in ComponentState)) then
+  else if Assigned(FOnGetHeight2) and (not(csDesigning in ComponentState)) then
     func := Height2Field
   else
     func := DefaultHeightField;
@@ -508,9 +513,9 @@ begin
   try
     // precompute grid values
     xBase := XSamplingScale.StepBase;
-    xStep := XSamplingScale.Step;
+    xStep := XSamplingScale.step;
     invXStep := 1 / xStep;
-    yStep := YSamplingScale.Step;
+    yStep := YSamplingScale.step;
     invYStep := 1 / yStep;
     // get through the grid
     if (hfoTwoSided in Options) or (ColorMode <> hfcmNone) then
@@ -526,8 +531,10 @@ begin
       begin
         rci.GLStates.Enable(stColorMaterial);
         GL.ColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
-        rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
-        rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+        rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+          clrGray80, clrBlack, 0);
+        rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
+          clrBlack, 0);
       end;
     end;
     rowBottom := nil;
@@ -536,14 +543,14 @@ begin
     y := YSamplingScale.StepBase;
     y1 := y;
     y2 := y;
-    while y <= YSamplingScale.Max do
+    while y <= YSamplingScale.max do
     begin
       rowTop := rowMid;
       rowMid := rowBottom;
       rowBottom := row[nx mod 3];
       x := xBase;
       m := 0;
-      while x <= XSamplingScale.Max do
+      while x <= XSamplingScale.max do
       begin
         with rowBottom^[m] do
         begin
@@ -649,7 +656,8 @@ end;
 // SetOnGetHeight2
 //
 
-procedure TGLHeightField.SetOnGetHeight2(const val: THeightFieldGetHeight2Event);
+procedure TGLHeightField.SetOnGetHeight2(const val
+  : THeightFieldGetHeight2Event);
 begin
   FOnGetHeight2 := val;
   StructureChanged;
@@ -670,8 +678,8 @@ end;
 // DefaultHeightField
 //
 
-procedure TGLHeightField.DefaultHeightField(const x, y: Single;
-  var z: Single; var color: TColorVector; var texPoint: TTexPoint);
+procedure TGLHeightField.DefaultHeightField(const x, y: Single; var z: Single;
+  var color: TColorVector; var texPoint: TTexPoint);
 begin
   z := VectorNorm(x, y);
   z := cos(z * 12) / (2 * (z * 6.28 + 1));
@@ -681,8 +689,8 @@ end;
 // Height2Field
 //
 
-procedure TGLHeightField.Height2Field(const x, y: Single;
-  var z: Single; var color: TColorVector; var texPoint: TTexPoint);
+procedure TGLHeightField.Height2Field(const x, y: Single; var z: Single;
+  var color: TColorVector; var texPoint: TTexPoint);
 begin
   FOnGetHeight2(Self, x, y, z, color, texPoint);
 end;
@@ -831,7 +839,7 @@ begin
         else
         begin
           GL.Vertex3f(XSamplingScale.Min, y, z);
-          GL.Vertex3f(XSamplingScale.Max, y, z);
+          GL.Vertex3f(XSamplingScale.max, y, z);
         end;
         GL.End_;
         z := z + zStep;
@@ -861,7 +869,7 @@ begin
         else
         begin
           GL.Vertex3f(x, YSamplingScale.Min, z);
-          GL.Vertex3f(x, YSamplingScale.Max, z);
+          GL.Vertex3f(x, YSamplingScale.max, z);
         end;
         GL.End_;
         z := z + zStep;
@@ -891,7 +899,7 @@ begin
         else
         begin
           GL.Vertex3f(x, y, ZSamplingScale.Min);
-          GL.Vertex3f(x, y, ZSamplingScale.Max);
+          GL.Vertex3f(x, y, ZSamplingScale.max);
         end;
         GL.End_;
         y := y + yStep;
@@ -901,15 +909,15 @@ begin
   end;
 end;
 
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
 
-  RegisterClasses([TGLHeightField, TGLXYZGrid]);
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+
+RegisterClasses([TGLHeightField, TGLXYZGrid]);
 
 end.
-
