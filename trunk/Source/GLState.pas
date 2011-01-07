@@ -172,6 +172,8 @@ type
     Attenuation: array[0..MAX_SHADER_LIGHT-1] of TVector;
   end;
 
+  TOnLightsChanged = procedure(Sender: TObject);
+
   TVAOStates = record
     FArrayBufferBinding: TGLuint;
     FElementBufferBinding: TGLuint;
@@ -387,7 +389,7 @@ type
     FEnableTextureCubeMapSeamless: TGLboolean;
     FInsideList: Boolean;
 
-    FOnLightsChanged: TNotifyEvent;
+    FOnLightsChanged: TOnLightsChanged;
   protected
     { Protected Declarations }
     // Vertex Array Data state
@@ -622,7 +624,7 @@ type
     function GetLightIndicesAsAddress: PGLInt;
     function GetLightStateAsAddress: Pointer;
     property LightNumber: Integer read FLightNumber;
-    property OnLightsChanged: TNotifyEvent read FOnLightsChanged write FOnLightsChanged;
+    property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
 
     {: Blending states }
     procedure SetGLAlphaFunction(func: TComparisonFunction; ref: TGLclampf);
@@ -3290,7 +3292,7 @@ end;
 procedure TGLStateCache.SetFFPLight(Value: Boolean);
 begin
   FFFPLight := Value and not FForwardContext;
-  end;
+end;
 
 function TGLStateCache.GetMaxLights: Integer;
 begin
