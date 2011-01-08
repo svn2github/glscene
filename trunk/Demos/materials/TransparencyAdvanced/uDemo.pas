@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
   GLCadencer, GLCrossPlatform, BaseClasses, GLWin32Viewer, GLCustomShader,
-  GLSLShader, GLTexture, OpenGL1x, StdCtrls, Spin, GLFBORenderer,
+  GLSLShader, GLTexture, GLFBORenderer,
   GLRenderContextInfo, GLGeomObjects, GLMesh, GLHUDObjects, GLBitmapFont,
   GLWindowsFont;
 
