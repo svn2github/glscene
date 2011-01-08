@@ -40,7 +40,7 @@ type
     { Protected Declarations }
   public
     { Public Declarations }
-    constructor Create(aSortType: TPickSortType); overload;
+    constructor Create(aSortType: TPickSortType); reintroduce;
 
     procedure AddHit(obj: TObject; const subObj: TPickSubObjects;
       zMin, zMax: Single);

@@ -35,7 +35,7 @@ interface
 {$MINENUMSIZE 4}
 {$RANGECHECKS OFF}
 
-uses Classes, Types3DS;
+uses Classes, Types3DS, GLCrossPlatform;
 
 type
   TFile3DS = class;
@@ -953,23 +953,13 @@ var
 
 begin
 
-  OldSeparator :=
-{$IFDEF GLS_DELPHI_XE_UP}
-    FormatSettings.
-{$ENDIF}
-    DecimalSeparator;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-    DecimalSeparator := '.';
+  OldSeparator := GetDecimalSeparator;
+  SetDecimalSeparator('.');
   try
     if assigned(FDatabase.TopChunk) then
       DumpChunk(Self, Strings, FDatabase.TopChunk, 0, DumpLevel);
   finally
-{$IFDEF GLS_DELPHI_XE_UP}
-    FormatSettings.
-{$ENDIF}
-      DecimalSeparator := OldSeparator;
+  	SetDecimalSeparator(OldSeparator);
   end;
 end;
 

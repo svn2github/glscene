@@ -1,17 +1,8 @@
-<<<<<<< .mine
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: gl3xmaterial.sbadmaterialconstr
+msgctxt "gl3xmaterial.sbadmaterialconstr"
 msgid "Bad material constructions file"
 msgstr ""
 
-=======
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
-#: gl3xmaterial.sbadmaterialconstr
-msgid "Bad material constructions file"
-msgstr ""
-
->>>>>>> .r5379

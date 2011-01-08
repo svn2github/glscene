@@ -89,6 +89,7 @@ uses
   Forms,
   SysUtils,
 {$IFDEF FPC}
+  LCLVersion,
   LCLType,
 {$ENDIF}
   SyncObjs,
@@ -109,6 +110,12 @@ uses
 const
   GLS_MAX_RENDERING_CONTEXT_NUM = 8;
   MRT_BUFFERS: array[0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
+
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
 
 type
 

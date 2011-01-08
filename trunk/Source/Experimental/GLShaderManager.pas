@@ -53,6 +53,12 @@ const
   cObjectTypeName: array[TGLSLProgramType] of string =
     ('VERTEX', 'GEOMTERY', 'FRAGMENT', 'CONTROL', 'EVALUATION');
 
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
+
   cEnUsFormatSettings: TFormatSettings = (
 {$IFDEF GLS_DELPHI_OR_CPPB}
 

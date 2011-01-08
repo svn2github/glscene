@@ -22,6 +22,7 @@ uses
   SysUtils,
   Variants,
 {$IFDEF FPC}
+  LCLVersion,
   FileUtil,
   XMLRead,
   XMLWrite,
@@ -48,6 +49,12 @@ uses
 
 const
   fileMaterialSystem = 'MaterialSystem.xml';
+
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
 
 type
 

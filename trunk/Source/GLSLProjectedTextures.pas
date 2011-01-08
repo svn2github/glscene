@@ -49,6 +49,7 @@ interface
 
 uses
   Classes,
+  GLCrossPlatform,
   GLScene,
   GLTexture,
   OpenGLTokens,
@@ -437,15 +438,8 @@ begin
 
   Shader := TGLProgramHandle.CreateAndAllocate;
 
-  OldSeparator :=
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := '.';
+  OldSeparator := GetDecimalSeparator;
+  SetDecimalSeparator('.');
   vp := TStringlist.create;
   fp := TStringlist.create;
 
@@ -570,10 +564,7 @@ begin
     Shader.AddShader(TGLVertexShaderHandle, vp.Text, True);
     Shader.AddShader(TGLFragmentShaderHandle, fp.Text, True);
   finally
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-    DecimalSeparator := OldSeparator;
+    SetDecimalSeparator(OldSeparator);
     vp.free;
     fp.free;
   end;

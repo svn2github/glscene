@@ -74,15 +74,16 @@ unit GLCrossPlatform;
 interface
 
 {$INCLUDE GLScene.inc}
-{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 //   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
 //         these files in uses clauses.
 
 uses
-{$IFDEF MSWINDOWS}Windows,
+{$IFDEF MSWINDOWS}
+  Windows,
 {$ENDIF}
-{$IFDEF UNIX}Unix,
+{$IFDEF UNIX}
+  Unix,
   xlib,
 {$ENDIF}
   Classes,
@@ -92,6 +93,7 @@ uses
   Forms,
   Dialogs
 {$IFDEF FPC},
+  LCLVersion,
   LCLType,
   FileUtil
 {$ELSE}
@@ -99,15 +101,16 @@ uses
 {$ENDIF}
 {$IFNDEF GLS_COMPILER_5_DOWN},
   StrUtils,
-  Types{$ENDIF}
+  Types
+  {$ENDIF}
   ;
 
 {$IFNDEF FPC}
 const
-  FPC_VERSION = 0;
-  FPC_RELEASE = 0;
-  FPC_PATCH = 0;
-  LCL_RELEASE = 0;
+  fpc_version = 0;
+  fpc_release = 0;
+  fpc_patch = 0;
+  lcl_release = 0;
 {$ENDIF}
 
 type
@@ -370,6 +373,8 @@ procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: s
 procedure ShowHTMLUrl(Url: string);
 function GLGetTickCount: int64;
 procedure SetExeDirectory;
+function GetDecimalSeparator: Char;
+procedure SetDecimalSeparator(AValue: Char);
 
 {$IFDEF GLS_DELPHI_5_DOWN}
 function ColorToString(Color: TColor): string;
@@ -1016,6 +1021,33 @@ begin
     SetCurrentDirUTF8(path);
 {$ENDIF}
   end;
+end;
+
+function GetDecimalSeparator: Char;
+begin
+  Result :=
+{$IFDEF FPC}
+  {$IF (lcl_release > 29) }
+  DefaultFormatSettings.
+  {$IFEND}
+{$ENDIF}
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+  DecimalSeparator;
+end;
+
+procedure SetDecimalSeparator(AValue: Char);
+begin
+{$IFDEF FPC}
+  {$IF (lcl_release > 29) }
+  DefaultFormatSettings.
+  {$IFEND}
+{$ENDIF}
+{$IFDEF GLS_DELPHI_XE_UP}
+  FormatSettings.
+{$ENDIF}
+  DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;

@@ -17,7 +17,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, SyncObjs, GLCrossPlatform;
+{$IFDEF FPC}
+  LCLVersion,
+{$ENDIF}
+  SysUtils,
+  Classes,
+  SyncObjs,
+  GLCrossPlatform;
 
 const
   MaxListSize = Maxint div 16;

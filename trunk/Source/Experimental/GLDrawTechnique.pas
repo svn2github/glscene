@@ -5,6 +5,9 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF FPC}
+  LCLVersion,
+{$ENDIF}
   Classes,
   SysUtils,
   BaseClasses,
@@ -19,6 +22,12 @@ uses
 
 const
   VBO_STATIC_POOL_SIZE: Cardinal = 16 * 1024 * 1024; // Used when no memory info avaible
+
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
 
 type
 

@@ -42,12 +42,12 @@
 unit PersistentClasses;
 
 interface
+{$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   SysUtils,
   GLCrossPlatform;
-
-{$I GLScene.inc}
 
 type
 
@@ -2133,20 +2133,10 @@ var
   oldDc: Char;
 begin
   ReadLine(cVTInteger);
-  oldDc :=
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := '.';
+  oldDc := GetDecimalSeparator;
+  SetDecimalSeparator('.');
   Result := StrToFloat(FData);
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := oldDc;
+  SetDecimalSeparator(oldDc);
 end;
 
 // ReadListBegin

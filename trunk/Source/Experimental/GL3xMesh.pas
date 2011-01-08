@@ -19,6 +19,7 @@ interface
 
 uses
   {$IFDEF FPC}
+  LCLVersion,
   LCLType,
   LResources,
   {$ENDIF}
@@ -74,6 +75,12 @@ const
     mpTRIANGLES_ADJACENCY,
     mpTRIANGLE_STRIP_ADJACENCY,
     mpPATCHES];
+
+{$IFDEF FPC}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+    {$DEFINE GLS_GENERIC_PREFIX}
+  {$IFEND}
+{$ENDIF}
 
 type
 
@@ -2518,8 +2525,6 @@ procedure TGLAbstractMeshBuilder.ComputeTexCoords;
 var
   Positions: T4ByteList;
   PosSize, PosMoveSize: Integer;
-  TexCoords: T4ByteList;
-  TexCoordSize, TexCoordMoveSize: Integer;
 
   function GetPosition(Index: Integer): TVector3fEXT;
   begin

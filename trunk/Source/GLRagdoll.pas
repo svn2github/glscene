@@ -33,7 +33,7 @@ type
     function GetRagdollBone(Index: Integer) : TRagdollBone;
   public
     { Public Declarations }
-    constructor Create(Ragdoll: TGLRagdoll);
+    constructor Create(Ragdoll: TGLRagdoll); reintroduce;
     destructor Destroy; override;
 
     procedure WriteToFiler(writer : TVirtualWriter); override;
@@ -106,7 +106,7 @@ type
     { Protected Declarations }
   public
     { Public Declarations }
-    constructor Create(AOwner : TGLBaseMesh);
+    constructor Create(AOwner : TGLBaseMesh); reintroduce;
     destructor Destroy; override;
 
     procedure WriteToFiler(writer : TVirtualWriter); override;

@@ -1287,15 +1287,8 @@ var
 begin
   Assert(Owner is TGLFreeForm, 'Can only save FreeForms.');
 
-  OldDecimalSeparator :=
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator;
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := '.';
+  OldDecimalSeparator := GetDecimalSeparator;
+  SetDecimalSeparator('.');
   { Better not call anything that wants the system-locale intact
     from this block }
   try
@@ -1305,10 +1298,7 @@ begin
     WriteTexCoords;
     WriteFaceGroups;
   finally
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-    DecimalSeparator := OldDecimalSeparator;
+    SetDecimalSeparator(OldDecimalSeparator);
   end;
 end;
 
