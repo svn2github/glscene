@@ -273,7 +273,7 @@ type
     procedure ExportToFile(const fileName: string); override;
 
     {: Notify mesh about requesting attribute. }
-    procedure AttributeRequest(const Attr: TGLSLAttribute); virtual;
+    procedure AttributeRequest(Attr: TGLSLAttribute); virtual;
 
     property Builder: TGL3xStaticMeshBuilder read GetBuilder;
   end;
@@ -432,10 +432,16 @@ type
     GRedBlackTree < Integer, Integer > ;
 
 resourcestring
-  glsMeshManagerPrimBrackets = 'MeshManager: this method must be call betwe' +
-    'en BeginPrimitives and EndPrimitives';
-  glsMeshManagerAssmBrackets = 'MeshManager: this method must be call betwe' +
-    'en BeginMeshAssembly and EndMeshAssembly';
+  glsMeshBuilderWrongCall = 'MeshBuilder: wrong method call - ignored';
+  glsMeshBuilderNoPrimitive = 'MeshBuilder: no primitive for batch - ignored';
+  glsMeshBuilderNoAttrDeclar = 'MeshBuilder: no declaration of attributes';
+  glsMeshBuilderExcesAttrib = '%s: Excessive attribute declaration.';
+  glsMeshBuilderInvalidArraySize = 'Invalid array size of attribute "%s" of ' +
+  'mesh "%s"';
+  glsMeshBuilderHashingError = '%s: hashing error during vertex welding in m' +
+  'esh %s';
+  glsMeshBuilderNoNeedRestart = '%s: This primitive type does not need to re' +
+  'start.';
 
 var
   Meshes: array of TGLAbstractMesh;
@@ -1215,7 +1221,17 @@ end;
 procedure TGLAbstractMeshBuilder.BeginMeshAssembly;
 begin
   FMesh.WaitParallelTask;
-  Assert(FState = mmsDefault);
+  if FState <> mmsDefault then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+  // Default mesh can be rebuilded
+  if FMesh.FName.IndexInManagerArray = 0 then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
   FState := mmsAssembling;
   FVertexPositionSlot := -1;
 end;
@@ -1224,7 +1240,12 @@ procedure TGLAbstractMeshBuilder.Clear;
 var
   A: Integer;
 begin
-  Assert(FState = mmsAssembling);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+
   with FMesh do
   begin
     SetLength(FDrawPortions, 0);
@@ -1246,14 +1267,23 @@ procedure TGLAbstractMeshBuilder.BeginBatch(APrimitiveType: TGLMeshPrimitive);
 var
   L: Integer;
 begin
-  Assert(APrimitiveType <> mpNOPRIMITIVE);
-  Assert(FState = mmsAssembling, glsMeshManagerAssmBrackets);
+  if APrimitiveType = mpNOPRIMITIVE then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderNoPrimitive);
+    exit;
+  end;
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   if FMesh.AttributeCount = 0 then
   begin
-    GLSLogger.LogError(Format('%s: no declaration of attributes', [ClassName]));
-    Abort;
+    GLSLogger.LogWarning(glsMeshBuilderNoAttrDeclar);
+    exit;
   end;
+
   FState := mmsPrimitives;
   FCurrentPrimitive := APrimitiveType;
   L := Length(FMesh.FDrawPortions);
@@ -1275,7 +1305,11 @@ var
   Valid: Boolean;
   A, C, I, E: Integer;
 begin
-  Assert(FState = mmsPrimitives, glsMeshManagerAssmBrackets);
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
   FState := mmsAssembling;
 
   with FMesh do
@@ -1296,7 +1330,8 @@ begin
         C := C div GLSLTypeComponentCount(FDataFormat[A]);
         if E <> C then
         begin
-          GLSLogger.LogError(Format('Invalid array size of attribute "%s" of mesh "%s"', [FAttributes[A].Name, Name.GetValue]));
+          GLSLogger.LogErrorFmt(glsMeshBuilderInvalidArraySize,
+            [FAttributes[A].Name, Name.GetValue]);
           Abort;
         end;
       end;
@@ -1346,7 +1381,11 @@ end;
 
 procedure TGLAbstractMeshBuilder.EndMeshAssembly;
 begin
-  Assert(FState = mmsAssembling);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
   ComputeBoundingBox;
   FState := mmsDefault;
   Inc(FMesh.FRevisionNum);
@@ -1356,12 +1395,20 @@ procedure TGLAbstractMeshBuilder.DeclareAttribute(Attrib: TGLSLAttribute; AType:
 var
   I: Integer;
 begin
-  Assert(FState = mmsAssembling, Format('%s: this method must be call between BeginMeshAssembly and BeginPrimitives', [ClassName]));
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+
   if AType <> GLSLTypeVoid then
   begin
     for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
       if FMesh.FAttributes[I] = Attrib then
-        GLSLogger.LogError(Format('%s: Excessive attribute declaration.', [ClassName]));
+      begin
+        GLSLogger.LogErrorFmt(glsMeshBuilderExcesAttrib, [ClassName]);
+        exit;
+      end;
 
     for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
       if not Assigned(FMesh.FAttributes[I]) then
@@ -1383,9 +1430,10 @@ function TGLAbstractMeshBuilder.GetAttributeIndex(
 var
   I: Integer;
 begin
-  Assert(FState = mmsPrimitives, glsMeshManagerPrimBrackets);
-
   Result := -1;
+  if FState <> mmsPrimitives then
+    exit;
+
   for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
     if FMesh.FAttributes[I] = Attrib then
     begin
@@ -1898,7 +1946,11 @@ var
   A, C, Size: Integer;
   I, J: LongWord;
 begin
-  Assert(FState = mmsPrimitives, glsMeshManagerPrimBrackets);
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   // Push vertex attributes into lists
   with FMesh do
@@ -1922,8 +1974,11 @@ procedure TGLAbstractMeshBuilder.EmitVertices(ANumber: LongWord);
 var
   A, Size: Integer;
 begin
-  Assert(FState = mmsPrimitives, glsMeshManagerPrimBrackets);
-
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
   // Increase vertex attributes lists
   with FMesh do
   begin
@@ -2010,7 +2065,12 @@ var
   HasHash: Boolean;
 
 begin
-  Assert(FState = mmsAssembling, glsMeshManagerAssmBrackets);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+
   E_ := 0; // Drop compilator warning
 
   // Add vertex to hash tree
@@ -2072,7 +2132,8 @@ begin
         end;
         if not bFind then
         begin
-          GLSLogger.LogError(Format('%s: hashing error during vertex welding in mesh %s', [ClassName, FMesh.FName.Value]));
+          GLSLogger.LogWarningFmt(glsMeshBuilderHashingError,
+            [ClassName, FMesh.FName.Value]);
           continue;
         end;
 
@@ -2110,7 +2171,11 @@ var
   E: LongWord;
   BD: T4ByteData;
 begin
-  Assert(FState = mmsAssembling, glsMeshManagerAssmBrackets);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   with FMesh do
   begin
@@ -2163,7 +2228,11 @@ var
   I, J: Integer;
   StoreElementBuffer: T4ByteList;
 begin
-  Assert(FState = mmsAssembling, glsMeshManagerAssmBrackets);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   with FMesh do
   begin
@@ -2327,7 +2396,11 @@ end;
 
 procedure TGLAbstractMeshBuilder.MakeAdjacency;
 begin
-  Assert(FState = mmsAssembling, glsMeshManagerAssmBrackets);
+  if FState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   if not FMesh.FHasIndices then
     WeldVertices;
@@ -2681,11 +2754,14 @@ begin
 
     N := FindSlot(attrTexCoord0);
     if N > -1 then
-      exit;
     begin
       TexCoords := FAttributeArrays[N];
       TexCoordSize := GLSLTypeComponentCount(FDataFormat[N]);
       TexCoordMoveSize := MinInteger(TexCoordSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+    end
+    else
+    begin
+
     end;
 
     N := FindOrOccupySlot(attrTangent);
@@ -2950,12 +3026,16 @@ procedure TGLAbstractMeshBuilder.RestartStrip;
 var
   I: T4ByteData;
 begin
-  Assert(FState = mmsPrimitives, glsMeshManagerPrimBrackets);
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
 
   if not (FCurrentPrimitive in
     [mpTRIANGLE_STRIP, mpTRIANGLE_FAN, mpLINE_STRIP]) then
   begin
-    GLSLogger.LogError(Format('%s: This primitive type does not need to restart.', [ClassName]));
+    GLSLogger.LogWarningFmt(glsMeshBuilderNoNeedRestart, [ClassName]);
     exit;
   end;
 
@@ -3082,9 +3162,9 @@ begin
   end;
 end;
 
-procedure TGL3xStaticMesh.AttributeRequest(const Attr: TGLSLAttribute);
+procedure TGL3xStaticMesh.AttributeRequest(Attr: TGLSLAttribute);
 var
-  A: Integer;
+  A, T: Integer;
 begin
   if FRequest <> [] then
     exit;
@@ -3098,15 +3178,24 @@ begin
     Include(FRequest, arqNormal);
     AddTaskForServiceContext(ComputeNormalsTask, NewEvent);
   end
+  else if Attr = attrTangent then
+  begin
+    T := FBuilder.FindSlot(attrTexCoord0);
+    if T > -1 then
+    begin
+      Include(FRequest, arqTangent);
+      AddTaskForServiceContext(ComputeTangensTask, NewEvent);
+    end
+    else
+    begin
+      Include(FRequest, arqTexCoord);
+      AddTaskForServiceContext(ComputeTexCoordTask, NewEvent);
+    end;
+  end
   else if Attr = attrTexCoord0 then
   begin
     Include(FRequest, arqTexCoord);
     AddTaskForServiceContext(ComputeTexCoordTask, NewEvent);
-  end
-  else if Attr = attrTangent then
-  begin
-    Include(FRequest, arqTangent);
-    AddTaskForServiceContext(ComputeTangensTask, NewEvent);
   end;
 end;
 
