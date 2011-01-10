@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProjectedTextures<p>
+{: GLMirror<p>
 
    Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
 
