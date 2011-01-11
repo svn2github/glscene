@@ -23,7 +23,7 @@ object Form1: TForm1
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.BackgroundColor = 10776320
-    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
+    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha, roNoColorBufferClear, roNoDepthBufferClear]
     Buffer.FaceCulling = False
     Buffer.ShadeModel = smFlat
     FieldOfView = 162.238677978515600000
@@ -44,6 +44,11 @@ object Form1: TForm1
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000040400000A0400000803F0000803F}
       SpotCutOff = 180.000000000000000000
+    end
+    object ClearFrameBuffer: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = ClearFrameBufferRender
+      Blend = False
     end
     object ObjectContainer: TGLDummyCube
       CubeSize = 1.000000000000000000

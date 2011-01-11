@@ -34,6 +34,9 @@ type
     ScreenQuad: TGLHUDSprite;
     GLHUDText1: TGLHUDText;
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
+    ClearFrameBuffer: TGLDirectOpenGL;
+    procedure ClearFrameBufferRender(Sender: TObject;
+      var rci: TRenderContextInfo);
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
@@ -87,6 +90,12 @@ begin
 
   GLHUDText1.Text := 'Press 1-7 to apply different blending functions'+#10#13+
   '8 to apply order independed transparency based on rendering to texture array';
+end;
+
+procedure TForm1.ClearFrameBufferRender(Sender: TObject;
+  var rci: TRenderContextInfo);
+begin
+  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
 
 procedure TForm1.CreateShapes;
@@ -185,6 +194,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject;
   procedure TurnOffOIT;
   begin
     ObjectContainer.Visible := True;
+    ClearFrameBuffer.Visible := True;
     CustomRederer.Visible := False;
     LayeredFrameBuffer.Active := False;
     ScreenQuad.Visible := False;
@@ -249,6 +259,7 @@ begin
     else if IsKeyDown('8') and FOITEnabled then
     begin
       ObjectContainer.Visible := False;
+      ClearFrameBuffer.Visible := False;
       CustomRederer.Visible := True;
       LayeredFrameBuffer.Active := True;
       ScreenQuad.Visible := True;
