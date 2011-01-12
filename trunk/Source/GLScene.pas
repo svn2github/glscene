@@ -1825,6 +1825,7 @@ type
       They are removed automaticly from this list once initialized. }
     property InitializableObjects: TGLInitializableObjectList read
       FInitializableObjects;
+    property CurrentDeltaTime: Double read FCurrentDeltaTime;
   published
     { Published Declarations }
     {: Defines default ObjectSorting option for scene objects. }
@@ -1835,7 +1836,6 @@ type
       write SetVisibilityCulling default vcNone;
     property OnBeforeProgress: TGLProgressEvent read FOnBeforeProgress write FOnBeforeProgress;
     property OnProgress: TGLProgressEvent read FOnProgress write FOnProgress;
-    property CurrentDeltaTime: Double read FCurrentDeltaTime;    
   end;
 
   // TFogMode
