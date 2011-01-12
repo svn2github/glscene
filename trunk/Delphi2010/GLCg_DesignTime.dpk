@@ -26,6 +26,7 @@ package GLCg_DesignTime;
 {$LIBSUFFIX '2010'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
+{$DESCRIPTION 'GLScene - Cg Shaders DesignTime'}
 
 requires
   rtl,
