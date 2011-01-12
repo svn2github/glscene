@@ -64,7 +64,7 @@ type
     function GetCreatorType: string; virtual;
     function GetExisting: Boolean;
     function GetFileSystem: string;
-    function GetOwner: IOTAModule;
+    function GetOwner: IOTAModule; virtual;
     function GetUnnamed: Boolean;
     // IOTAModuleCreator methods
     function GetAncestorName: string;
@@ -123,6 +123,10 @@ type
 
   TGLBaseSceneProjectCreator = class(TGLBaseSceneFormWizard, IOTAProjectCreator)
   public
+    // IOTAWizard methods
+    function GetIDString: string; override;
+    function GetName: string; override;
+    procedure Execute; override;
     // IOTACreator
     function GetCreatorType: string; override;
     function GetOwner: IOTAModule; override;
@@ -336,6 +340,7 @@ begin
   RegisterPackageWizard(TGLBaseSceneFormWizard.Create);
   RegisterPackageWizard(TGLSimpleSceneFormWizard.Create);
   RegisterPackageWizard(TGLExtendedSceneFormWizard.Create);
+  RegisterPackageWizard(TGLBaseSceneProjectCreator.Create);
   {$ENDIF}
 
   {$IFDEF FPC}
@@ -410,6 +415,27 @@ type
   protected
     function GetSource: string;
   end;
+
+  TBaseProjectFile = class(TDelphiFile, IOTAFile)
+  protected
+    FProjectName: String;
+    function GetSource: string;
+  public
+    constructor CreateProject(const AProjectName, ModuleName, FormName: string);
+  end;
+
+function GetActiveProjectGroup: IOTAProjectGroup;
+var
+  ModuleServices: IOTAModuleServices;
+  I: Integer;
+begin
+  Result := NIL;
+  ModuleServices := BorlandIDEServices As IOTAModuleServices;
+  for I := 0 to ModuleServices.ModuleCount - 1 Do
+    if Succeeded(ModuleServices.Modules[I].QueryInterface(IOTAProjectGroup,
+      Result)) then
+        break;
+end;
 
 // TBaseFile
 //
@@ -1219,6 +1245,36 @@ begin
   Result := Format(FormText, [FFormName]);
 end;
 
+constructor TBaseProjectFile.CreateProject(const AProjectName, ModuleName,
+  FormName: string);
+begin
+  FProjectName := AProjectName;
+  FModuleName := ModuleName;
+  FFormName := FormName;
+end;
+
+function TBaseProjectFile.GetSource: string;
+const
+  ProjText =
+    'program %0:s;' + LineEnding +
+    '' + LineEnding +
+    'uses' + LineEnding +
+    '  Forms,' + LineEnding +
+    '  %1:s in ''%1:s.pas'';' + LineEnding +
+    '' + LineEnding +
+    '{$R *.res}' + LineEnding +
+    '' + LineEnding +
+    'begin' + LineEnding +
+    '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
+    '  Application.Initialize;' + LineEnding +
+    '  Application.MainFormOnTaskbar := True;' + LineEnding +
+    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding +
+    '  Application.Run;' + LineEnding +
+    'end.' + LineEnding;
+begin
+  Result := Format(ProjText, [FProjectName, FModuleName, FFormName]);
+end;
+
 // TGLBaseSceneFormWizard
 //
 
@@ -1463,6 +1519,111 @@ function TGLExtendedSceneFormWizard.NewImplSource(const ModuleIdent, FormIdent,
 begin
   Result := TExtendedUnitFile.Create(ModuleIdent, FormIdent, AncestorIdent);
 end;
+
+// ------------------
+// ------------------ TGLBaseSceneProjectCreator ------------------
+// ------------------
+
+function TGLBaseSceneProjectCreator.GetIDString: string;
+begin
+  Result := 'GLScene.GLBaseSceneProject';
+end;
+
+function TGLBaseSceneProjectCreator.GetName: string;
+begin
+  Result := 'Base GLScene Project';
+end;
+
+procedure TGLBaseSceneProjectCreator.Execute;
+begin
+  inherited Execute;
+  (BorlandIDEServices as IOTAModuleServices).CreateModule(Self);
+end;
+
+function TGLBaseSceneProjectCreator.GetCreatorType: string;
+begin
+  Result := ToolsAPI.sApplication;
+end;
+
+function TGLBaseSceneProjectCreator.GetOwner: IOTAModule;
+begin
+  Result := GetActiveProjectGroup;
+end;
+
+function TGLBaseSceneProjectCreator.GetFileName: string;
+var
+  i: Integer;
+  j: Integer;
+  ProjGroup: IOTAProjectGroup;
+  Found: Boolean;
+  TempFileName: String;
+  TempFileName2: String;
+begin
+  Result := '';
+  Result := GetCurrentDir + '\' + 'Project%d' + '.dpr';
+  ProjGroup := GetActiveProjectGroup;
+  if ProjGroup <> nil then
+  begin
+    for J := 0 to ProjGroup.ProjectCount - 1 do
+    begin
+      Found := False;
+      TempFileName2 := Format(Result, [J + 1]);
+      for I := 0 to ProjGroup.ProjectCount - 1 do
+      begin
+        try
+          TempFileName := ProjGroup.Projects[I].FileName;
+          if AnsiCompareFileName(ExtractFileName(TempFileName),
+            ExtractFileName(TempFileName2)) = 0 then
+          begin
+            Found := True;
+            Break;
+          end;
+        except on E: Exception do if not (E is EIntfCastError) then raise;
+        end;
+      end;
+      if not Found then
+      begin
+        Result := TempFileName2;
+        Exit;
+      end;
+    end;
+    Result := Format(Result, [ProjGroup.ProjectCount + 1]);
+  end
+  else Result := Format(Result, [1]);
+end;
+
+function TGLBaseSceneProjectCreator.GetOptionFileName: string;
+begin
+  Result := '';
+end;
+
+function TGLBaseSceneProjectCreator.GetShowSource: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TGLBaseSceneProjectCreator.NewDefaultModule;
+begin
+end;
+
+function TGLBaseSceneProjectCreator.NewOptionSource(const ProjectName: string): IOTAFile;
+begin
+  Result := nil;
+end;
+
+procedure TGLBaseSceneProjectCreator.NewProjectResource(const Project: IOTAProject);
+begin
+end;
+
+function TGLBaseSceneProjectCreator.NewProjectSource(const ProjectName: string): IOTAFile;
+var
+  FormName: string;
+begin
+  FormName := Copy(FClassName, 2, Length(FClassName)-1);
+  Result := TBaseProjectFile.CreateProject(ProjectName, FUnitIdent, FClassName) as IOTAFile;
+end;
+
+
 {$ENDIF GLS_DELPHI_OR_CPPB}
 
 {$ENDREGION 'DELPHI'}
