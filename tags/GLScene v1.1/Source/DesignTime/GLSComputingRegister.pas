@@ -63,11 +63,11 @@ type
     procedure SetValue(const Value: String); override;
   end;
 
-  (*TCUDAModuleCodeEditor = class(TStringListProperty)
+  TCUDAModuleCodeEditor = class(TStringListProperty)
   public
     { Public Declarations }
     procedure Edit; override;
-  end;  *)
+  end;
 
 implementation
 
@@ -188,11 +188,11 @@ end;
 // ------------------
 {$IFNDEF FPC}
 constructor TGLSCUDACompilerSourceProperty.Create(
-    const ADesigner: IDesigner; APropCount: Integer); override;
+    const ADesigner: IDesigner; APropCount: Integer);
 {$ELSE}
 constructor TGLSCUDACompilerSourceProperty.Create(
-       Hook:TPropertyEditorHook; APropCount: Integer); override;
-{$ENDIF};
+       Hook:TPropertyEditorHook; APropCount: Integer);
+{$ENDIF}
 begin
   inherited;
   FModuleList := TStringList.Create;
@@ -266,19 +266,17 @@ end;
 procedure TGLSCUDACompilerSourceProperty.SetValue(const Value: String);
 var
   I, J: Integer;
-  Correct: Boolean;
 begin
   RefreshModuleList;
-  Correct := False;
+  J := -1;
   for I := 1 to FModuleList.Count - 1 do
     if Value = ExtractFileName(FModuleList[I]) then
     begin
       J := I;
-      Correct := True;
       Break;
     end;
 
-  if Correct then
+  if J > 0 then
   begin
     TGLSCUDACompiler(GetComponent(0)).CodeSourceFile := FModuleList[J];
     SetStrValue(Value);

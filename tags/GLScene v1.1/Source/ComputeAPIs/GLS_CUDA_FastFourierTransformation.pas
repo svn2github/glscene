@@ -54,7 +54,8 @@ uses
 {$I cuda.inc}
 
 const
-  CUFFTDLLNAMES: array[0..5] of string = (
+  CUFFTDLLNAMES: array[0..6] of string = (
+    '_cufft32_32_16',
     'cufft32_31_4',
     'cufft32_30_14',
     'cufft32_30_9',
@@ -70,6 +71,7 @@ type
 
   {/// cufftHandle is a handle type used to store and access CUFFT plans. }
   TcufftHandle = Cardinal;
+  PcufftHandle = ^TcufftHandle;
 
   TcufftReal = Single;
   PcufftReal = ^TcufftReal;
@@ -84,16 +86,7 @@ type
   PcufftComplex = ^TcufftComplex;
   TcufftComplex = TVector2f;
 
-  TcufftResult = (
-    CUFFT_SUCCESS {= 0x0},
-    CUFFT_INVALID_PLAN {= 0x1},
-    CUFFT_ALLOC_FAILED {= 0x2},
-    CUFFT_INVALID_TYPE {= 0x3},
-    CUFFT_INVALID_VALUE {= 0x4},
-    CUFFT_INTERNAL_ERROR {= 0x5},
-    CUFFT_EXEC_FAILED {= 0x6},
-    CUFFT_SETUP_FAILED {= 0x7},
-    CUFFT_INVALID_SIZE {= 0x8 });
+  TcufftResult = Cardinal;
 
   TcufftType = Cardinal;
 
@@ -103,6 +96,18 @@ type
     cudaRoundPosInf,
     cudaRoundMinInf
   );
+
+const
+  CUFFT_SUCCESS: TcufftResult = 0;
+  CUFFT_INVALID_PLAN: TcufftResult = 1;
+  CUFFT_ALLOC_FAILED: TcufftResult = 2;
+  CUFFT_INVALID_TYPE: TcufftResult = 3;
+  CUFFT_INVALID_VALUE: TcufftResult = 4;
+  CUFFT_INTERNAL_ERROR: TcufftResult = 5;
+  CUFFT_EXEC_FAILED: TcufftResult = 6;
+  CUFFT_SETUP_FAILED: TcufftResult = 7;
+  CUFFT_INVALID_SIZE: TcufftResult = 8;
+  CUFFT_UNALIGNED_DATA: TcufftResult = 9;
 
   {/// CUFFT transform directions }
 const
@@ -258,7 +263,7 @@ function GetCUFFTErrorString(error: TcufftResult): string;
 implementation
 
 const
-  cufftResultStrings: array[TcufftResult] of string = (
+  cufftResultStrings: array[0..9] of string = (
     'success',
     'invalid plan',
     'alloc failed',
@@ -267,7 +272,8 @@ const
     'internal error',
     'exec failed',
     'setup failed',
-    'invalid size'
+    'invalid size',
+    'unaligned data'
     );
 
 const
@@ -332,6 +338,7 @@ begin
   cufftExecZ2D := CUFFTGetProcAddress('cufftExecZ2D');
   cufftSetStream := CUFFTGetProcAddress('cufftSetStream');
   cufftSetCompatibilityMode := CUFFTGetProcAddress('cufftSetCompatibilityMode');
+  Result := True;
 end;
 
 function IsCUFFTInitialized: Boolean;

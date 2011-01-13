@@ -31,7 +31,9 @@ requires
   rtl,
   vclimg,
   vcl,
-  GLScene_RunTime;
+  GLScene_RunTime,
+  xmlrtl,
+  GLScene_DesignTime;
 
 contains
   GLS_CL_Platform in '..\Source\ComputeAPIs\GLS_CL_Platform.pas',
