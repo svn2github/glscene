@@ -614,7 +614,7 @@ end;
 
 function TGLCustomBitmapFont.CalcStringWidth(const aText: WideString): Integer;
 begin
-  Result := 0;
+  Result := CalcStringWidth(AnsiString(aText));
 end;
 
 // ResetCharWidths
