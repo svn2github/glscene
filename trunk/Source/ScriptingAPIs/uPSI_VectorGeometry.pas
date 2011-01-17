@@ -595,22 +595,22 @@ begin
  CL.AddDelphiFunction('Function MinFloat( values : PExtendedArray; nbItems : Integer) : Extended;');
  CL.AddDelphiFunction('Function MinFloat( const v1, v2 : Single) : Single;');
  CL.AddDelphiFunction('Function MinFloat( const v : array of Single) : Single;');
- CL.AddDelphiFunction('Function MinFloat( const v1, v2 : Double) : Double;');
  CL.AddDelphiFunction('Function MinFloat( const v1, v2 : Extended) : Extended;');
  CL.AddDelphiFunction('Function MinFloat( const v1, v2, v3 : Single) : Single;');
- CL.AddDelphiFunction('Function MinFloat( const v1, v2, v3 : Double) : Double;');
  CL.AddDelphiFunction('Function MinFloat( const v1, v2, v3 : Extended) : Extended;');
  CL.AddDelphiFunction('Function MaxFloat( values : PSingleArray; nbItems : Integer) : Single;');
  CL.AddDelphiFunction('Function MaxFloat( values : PDoubleArray; nbItems : Integer) : Double;');
  CL.AddDelphiFunction('Function MaxFloat( values : PExtendedArray; nbItems : Integer) : Extended;');
  CL.AddDelphiFunction('Function MaxFloat( const v : array of Single) : Single;');
  CL.AddDelphiFunction('Function MaxFloat( const v1, v2 : Single) : Single;');
- CL.AddDelphiFunction('Function MaxFloat( const v1, v2 : Double) : Double;');
  CL.AddDelphiFunction('Function MaxFloat( const v1, v2 : Extended) : Extended;');
  CL.AddDelphiFunction('Function MaxFloat( const v1, v2, v3 : Single) : Single;');
- CL.AddDelphiFunction('Function MaxFloat( const v1, v2, v3 : Double) : Double;');
  CL.AddDelphiFunction('Function MaxFloat( const v1, v2, v3 : Extended) : Extended;');
 }
+ CL.AddDelphiFunction('Function MinFloat( const v1, v2 : Double) : Double;');
+ CL.AddDelphiFunction('Function MinFloat3( const v1, v2, v3 : Double) : Double;');
+ CL.AddDelphiFunction('Function MaxFloat( const v1, v2 : Double) : Double;');
+ CL.AddDelphiFunction('Function MaxFloat3( const v1, v2, v3 : Double) : Double;');
  CL.AddDelphiFunction('Function MinInteger( const v1, v2 : Integer) : Integer;');
  CL.AddDelphiFunction('Function MaxInteger( const v1, v2 : Integer) : Integer;');
  CL.AddDelphiFunction('Function MinCardinal( const v1, v2 : Cardinal) : Cardinal;');
@@ -780,13 +780,25 @@ Begin Result := VectorGeometry.MaxInteger(v1, v2); END;
 Function MinCardinal_P( const v1, v2 : Cardinal) : Cardinal;
 Begin Result := VectorGeometry.MinInteger(v1, v2); END;
 
+
+
 (*----------------------------------------------------------------------------*)
-Function MaxFloat_P( const v1, v2, v3 : Extended) : Extended;
+Function MaxFloat2_P( const v1, v2 : Double) : Double;
+Begin Result := VectorGeometry.MaxFloat(v1, v2); END;
+
+(*----------------------------------------------------------------------------*)
+Function MinFloat2_P( const v1, v2 : Double) : Double;
+Begin Result := VectorGeometry.MinFloat(v1, v2); END;
+
+(*----------------------------------------------------------------------------*)
+Function MaxFloat3_P( const v1, v2, v3 : Double) : Double;
 Begin Result := VectorGeometry.MaxFloat(v1, v2, v3); END;
 
 (*----------------------------------------------------------------------------*)
-Function MinFloat_P( const v1, v2, v3 : Extended) : Extended;
+Function MinFloat3_P( const v1, v2, v3 : Double) : Double;
 Begin Result := VectorGeometry.MinFloat(v1, v2, v3); END;
+
+
 
 (*----------------------------------------------------------------------------*)
 Function IsInCube_P( const p, d : TVector) : Boolean;
@@ -1347,8 +1359,6 @@ begin
  S.RegisterDelphiFunction(@MinFloat, 'MinFloat', cdRegister);
  S.RegisterDelphiFunction(@MinFloat, 'MinFloat', cdRegister);
  S.RegisterDelphiFunction(@MinFloat, 'MinFloat', cdRegister);
- S.RegisterDelphiFunction(@MinFloat, 'MinFloat', cdRegister);
- S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
  S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
  S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
  S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
@@ -1359,6 +1369,10 @@ begin
  S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
  S.RegisterDelphiFunction(@MaxFloat, 'MaxFloat', cdRegister);
 }
+ S.RegisterDelphiFunction(@MinFloat2_P, 'MinFloat', cdRegister);
+ S.RegisterDelphiFunction(@MaxFloat2_P, 'MaxFloat', cdRegister);
+ S.RegisterDelphiFunction(@MinFloat3_P, 'MinFloat3', cdRegister);
+ S.RegisterDelphiFunction(@MaxFloat3_P, 'MaxFloat3', cdRegister);
  S.RegisterDelphiFunction(@MinInteger_P, 'MinInteger', cdRegister);
  S.RegisterDelphiFunction(@MaxInteger_P, 'MaxInteger', cdRegister);
  S.RegisterDelphiFunction(@MinCardinal_P, 'MinCardinal', cdRegister);
