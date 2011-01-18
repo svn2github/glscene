@@ -77,7 +77,7 @@ const
     mpPATCHES];
 
 {$IFDEF FPC}
-  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  {$IF (LCL_RELEASE < 31)}
     {$DEFINE GLS_GENERIC_PREFIX}
   {$IFEND}
 {$ENDIF}
