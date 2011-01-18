@@ -27,7 +27,8 @@ uses
   BaseClasses,
   GLSCrossXML,
   GLStrings,
-  ApplicationFileIO;
+  ApplicationFileIO,
+  GLSLog;
 
 type
   TGLSIDENotifier = class(TNotifierObject, IOTANotifier, IOTAIDENotifier)
@@ -44,6 +45,17 @@ type
 var
   NotifierIndex: Integer;
 
+function MsgServices: IOTAMessageServices;
+begin
+  Result := (BorlandIDEServices as IOTAMessageServices);
+  Assert(Result <> nil, 'IOTAMessageServices not available');
+end;
+
+procedure IDELogProc(const AMsg: string);
+begin
+  MsgServices.AddTitleMessage(AMsg);
+end;
+
 procedure Register;
 var
   Services: IOTAServices;
@@ -51,6 +63,7 @@ begin
   Services := BorlandIDEServices as IOTAServices;
   Assert(Assigned(Services), 'IOTAServices not available');
   NotifierIndex := Services.AddNotifier(TGLSIDENotifier.Create);
+  vIDELogProc := IDELogProc;
 end;
 
 procedure RemoveNotifier;
@@ -63,12 +76,6 @@ begin
     Assert(Assigned(Services), 'IOTAServices not available');
     Services.RemoveNotifier(NotifierIndex);
   end;
-end;
-
-function MsgServices: IOTAMessageServices;
-begin
-  Result := (BorlandIDEServices as IOTAMessageServices);
-  Assert(Result <> nil, 'IOTAMessageServices not available');
 end;
 
 procedure TGLSIDENotifier.AfterCompile(Succeeded: Boolean);
@@ -152,7 +159,7 @@ begin
         // Update resource
         Move(mStream.Memory^, Dest^, mStream.Size);
         mStream.Destroy;
-        MsgServices.AddTitleMessage('GLScene updated application resource list');
+        MsgServices.AddTitleMessage('GLScene: application resource list is updated');
       except
         MsgServices.AddTitleMessage(msg);
         mStream.Destroy;

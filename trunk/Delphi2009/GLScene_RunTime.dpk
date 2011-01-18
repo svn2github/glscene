@@ -305,6 +305,7 @@ contains
   GL3xMaterialTokens in '..\Source\Experimental\GL3xMaterialTokens.pas',
   GL3xMesh in '..\Source\Experimental\GL3xMesh.pas',
   GL3xFreeForm in '..\Source\Experimental\GL3xFreeForm.pas',
-  GLDrawTechnique in '..\Source\Experimental\GLDrawTechnique.pas';
+  GLDrawTechnique in '..\Source\Experimental\GLDrawTechnique.pas',
+  GL3xStaticMesh in '..\Source\Experimental\GL3xStaticMesh.pas';
 
 end.

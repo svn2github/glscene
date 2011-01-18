@@ -13,6 +13,7 @@ unit GLSCrossXML;
 interface
 
 uses
+  Classes,
 {$IFNDEF FPC}
   Variants,
   XMLIntf,
@@ -38,6 +39,9 @@ type
   GLSDOMNode = TDOMNode;
 {$ENDIF}
 function GLSNewXMLDocument: GLSXMLDocument;
+procedure ReleaseXMLDocument(var ADoc: GLSXMLDocument);
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean; overload;
 function GetXMLAttribute(const XMLNode: GLSXMLNode; Idx: Integer): GLSXMLNode; overload;
 procedure SetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; const Value: string); overload;
@@ -57,6 +61,21 @@ implementation
 function GLSNewXMLDocument: GLSXMLDocument;
 begin
   Result := NewXMLDocument();
+end;
+
+procedure ReleaseXMLDocument(var ADoc: GLSXMLDocument);
+begin
+  ADoc := nil;
+end;
+
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+begin
+  ADoc.SaveToStream(AStream);
+end;
+
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+begin
+  ADoc.LoadFromStream(AStream);
 end;
 
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean;
@@ -123,6 +142,21 @@ end;
 function GLSNewXMLDocument: GLSXMLDocument;
 begin
   Result := TXMLDocument.Create;
+end;
+
+procedure ReleaseXMLDocument(var ADoc: GLSXMLDocument);
+begin
+  FreeAnddNil(ADoc);
+end;
+
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+begin
+  XMLWrite.WriteXMLFile(MeshDoc, AStream);
+end;
+
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+begin
+  XMLRead.ReadXMLFile(MeshDoc, AStream);
 end;
 
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean;

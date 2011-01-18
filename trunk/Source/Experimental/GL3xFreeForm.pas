@@ -29,13 +29,12 @@ type
 implementation
 
 uses
-  GLShaderManager, GL3xMesh, GLDrawTechnique, GL3xMaterial,
+  GLShaderManager, GL3xMaterial, GL3xMesh, GLDrawTechnique,
   GLStrings;
 
 constructor TGL3xFreeForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Material := glsDEFAULTMATERIALNAME;
   Mesh := glsDEFAULTMESHNAME;
   StructureChanged;
 end;
@@ -61,19 +60,9 @@ begin
         if ocStructure in Changes then
           BuildMesh;
 
-        if ARci.ignoreMaterials then
-        begin
-          BeforeRender;
-          DrawManager.Draw(FMesh);
-          AfterRender;
-        end
-        else
-        repeat
-          MaterialManager.ApplyMaterial(FMaterial, ARci);
-          BeforeRender;
-          DrawManager.Draw(FMesh);
-          AfterRender;
-        until MaterialManager.UnApplyMaterial(ARci);
+        BeforeRender;
+        DrawManager.Draw(ARci, FMesh);
+        AfterRender;
       except
         Visible := False;
       end;

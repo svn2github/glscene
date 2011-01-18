@@ -112,11 +112,13 @@ type
   protected
     { Protected Declarations }
     // Design time notifications
+    class procedure Initialize; virtual; abstract;
+    class procedure Finalize; virtual; abstract;
     class procedure NotifyProjectOpened; virtual; abstract;
     class procedure NotifyProjectClosed; virtual; abstract;
     class procedure NotifyContextCreated; virtual; abstract;
     class procedure NotifyBeforeCompile; virtual; abstract;
-    class function FirstOne: Boolean; virtual;
+    class function Priority: Byte; virtual;
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; virtual; abstract;
@@ -165,6 +167,7 @@ type
   end;
 
 procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
+procedure NotifyGLSceneManagersInitialization;
 procedure NotifyGLSceneManagersContextCreated;
 procedure NotifyGLSceneManagersBeforeCompile;
 procedure NotifyGLSceneManagersProjectOpened;
@@ -315,22 +318,24 @@ var
 
 procedure RegisterGLSceneManager(AManager: TGLSAbstractManagerClass);
 var
-  I: Integer;
+  I, J: Integer;
+  ex: TGLSManagerState;
 begin
   SetLength(aGLSceneManagers, Length(aGLSceneManagers) + 1);
-  if AManager.FirstOne then
-  begin
-    for I := High(aGLSceneManagers) downto 1 do
-      aGLSceneManagers[I] := aGLSceneManagers[I-1];
-    I := 0;
-  end
-  else
-    I := High(aGLSceneManagers);
+  I := High(aGLSceneManagers);
   aGLSceneManagers[I].ManagerClass := AManager;
   aGLSceneManagers[I].UpdateCount := 0;
 {$IFDEF GLS_MULTITHREAD}
   InitializeCriticalSection(aGLSceneManagers[I].Lock);
 {$ENDIF}
+  for I := 0 to High(aGLSceneManagers) do
+    for J := 0 to High(aGLSceneManagers) - 1 do
+      if aGLSceneManagers[J].ManagerClass.Priority < aGLSceneManagers[J+1].ManagerClass.Priority then
+      begin
+        ex := aGLSceneManagers[J+1];
+        aGLSceneManagers[J+1] := aGLSceneManagers[J];
+        aGLSceneManagers[J] := ex;
+      end;
 end;
 
 {$IFDEF GLS_MULTITHREAD}
@@ -343,9 +348,9 @@ begin
 end;
 {$ENDIF}
 
-class function TGLSAbstractManager.FirstOne: Boolean;
+class function TGLSAbstractManager.Priority: Byte;
 begin
-  Result := False;
+  Result := 0;
 end;
 
 class procedure TGLSAbstractManager.BeginWork;
@@ -402,12 +407,21 @@ begin
   end;
 end;
 
+procedure NotifyGLSceneManagersInitialization;
+var
+  I: Integer;
+begin
+  SetExeDirectory;
+  for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
+    aGLSceneManagers[I].ManagerClass.Initialize;
+end;
+
 procedure NotifyGLSceneManagersContextCreated;
 var
   I: Integer;
 begin
   SetExeDirectory;
-  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyContextCreated;
 end;
 
@@ -416,7 +430,7 @@ var
   I: Integer;
 begin
   SetExeDirectory;
-  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyBeforeCompile;
 end;
 
@@ -425,7 +439,7 @@ var
   I: Integer;
 begin
   SetExeDirectory;
-  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyProjectOpened;
 end;
 
@@ -434,7 +448,7 @@ var
   I: Integer;
 begin
   SetExeDirectory;
-  for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+  for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
     aGLSceneManagers[I].ManagerClass.NotifyProjectClosed;
 end;
 
@@ -448,7 +462,7 @@ begin
   begin
     lList := TStringList.Create;
     C := 0;
-    for I := High(aGLSceneManagers) downto Low(aGLSceneManagers) do
+    for I := Low(aGLSceneManagers) to High(aGLSceneManagers) do
       if aGLSceneManagers[I].ManagerClass.FillResourceList(lList) then
         Inc(C);
     Result := C > 0;

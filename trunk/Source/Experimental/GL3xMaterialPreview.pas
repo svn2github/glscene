@@ -109,6 +109,7 @@ uses
   GL3xMaterialEditor,
   GLShaderManager,
   GL3xMesh,
+  GL3xStaticMesh,
   GLDrawTechnique,
   GL3xMaterialTokens,
   GLTextureFormat;
@@ -378,7 +379,7 @@ begin
             with MaterialEditorForm.MaterialGraph.EditedMaterial do
             begin
               repeat
-                Apply(FRenderContextInfo, matvarCommon);
+                Apply(FRenderContextInfo);
                 Model.DoRender(FRenderContextInfo, True, False);
               until UnApply(FRenderContextInfo);
             end;
@@ -391,10 +392,11 @@ begin
                 GL.ClearBufferfv(GL_COLOR, I, @clrTransparent);
               GL.ClearBufferfv(GL_DEPTH, 0, @clrWhite);
 
+              FRenderContextInfo.materialVariant := matvarAllSurfProperies;
               with MaterialEditorForm.MaterialGraph.EditedMaterial do
               begin
                 repeat
-                  Apply(FRenderContextInfo, matvarAllSurfProperies);
+                  Apply(FRenderContextInfo);
                   Model.DoRender(FRenderContextInfo, True, False);
                 until UnApply(FRenderContextInfo);
               end;
@@ -414,12 +416,13 @@ begin
           ShaderManager.UseProgram(TextureViewProgram);
           MaterialManager.ApplyTextureSampler(FTextureName, nil,
             uniformTexUnit0);
-          DrawManager.Draw(TextureQuad);
+          DrawManager.Draw(FRenderContextInfo, TextureQuad);
         end;
 
         GL.Finish;
         FRenderingContext.SwapBuffers;
       finally
+        FRenderContextInfo.materialVariant := matvarCommon;
         Deactivate;
 {$IFDEF MSWINDOWS}
         EndPaint(Handle, ps);

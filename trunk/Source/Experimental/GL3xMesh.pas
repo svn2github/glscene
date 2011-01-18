@@ -15,14 +15,13 @@ unit GL3xMesh;
 interface
 
 {$I GLScene.inc}
-{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 uses
-  {$IFDEF FPC}
+{$IFDEF FPC}
   LCLVersion,
   LCLType,
   LResources,
-  {$ENDIF}
+{$ENDIF}
   Classes,
   SysUtils,
   SyncObjs,
@@ -38,6 +37,7 @@ uses
   VectorLists,
   GeometryBB,
   OpenGLTokens,
+  GLSGenerics,
   GLSRedBlackTree,
   GL3xMaterialTokens;
 
@@ -77,9 +77,9 @@ const
     mpPATCHES];
 
 {$IFDEF FPC}
-  {$IF (LCL_RELEASE < 31)}
-    {$DEFINE GLS_GENERIC_PREFIX}
-  {$IFEND}
+{$IF (LCL_RELEASE < 31)}
+{$DEFINE GLS_GENERIC_PREFIX}
+{$IFEND}
 {$ENDIF}
 
 type
@@ -94,13 +94,15 @@ type
     function GetManager: TGLSAbstractManagerClass; override;
   end;
 
-  PGLMeshDrawPortion = ^TGLMeshDrawPortion;
-  TGLMeshDrawPortion = record
+  PFaceGroupDesc = ^TFaceGroupDesc;
+  TFaceGroupDesc = record
+    Name: string;
+    PrimitiveType: TGLMeshPrimitive;
     VertexOffset: TGLint;
     VertexCount: TGLuint;
     ElementOffset, ElementCount: TGLuint;
     TriOnlyElementOffset, TriOnlyElementCount: TGLuint;
-    PrimitiveType: TGLMeshPrimitive;
+    Material: IGLName;
   end;
 
   TGLAbstractMesh = class(TDataFile)
@@ -115,7 +117,7 @@ type
     FDataFormat: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLSLDataType;
     FAttributeArrays: array[0..GLS_VERTEX_ATTR_NUM - 1] of T4ByteList;
     FAttributeDivisor: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLuint;
-    FDrawPortions: array of TGLMeshDrawPortion;
+    FLODFaceGroupMap: array[Byte] of array of TFaceGroupDesc;
 
     FHasIndices: Boolean;
     FElementBuffer: T4ByteList;
@@ -130,6 +132,7 @@ type
     function NewEvent: TFinishTaskEvent;
 
     function GetAttributeCount: Integer;
+    function GetBuilder: TObject; virtual; abstract;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -142,8 +145,6 @@ type
 
     procedure LoadFromFile(const fileName: string); override;
     procedure SaveToFile(const fileName: string); override;
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
     class function Capabilities: TDataFileCapabilities; override;
 
     property Name: TGL3xMeshName read FName;
@@ -151,7 +152,7 @@ type
   end;
 
   TVertexHashMap = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
-    GRedBlackTree < Double, Integer > ;
+  GRedBlackTree < Double, Integer > ;
 
   { Note:
       Element buffer allways present, filled during mesh assembling.
@@ -165,6 +166,8 @@ type
     FMesh: TGLAbstractMesh;
     FCurrentPrimitive: TGLMeshPrimitive;
     FCurrentAttribValue: array[0..GLS_VERTEX_ATTR_NUM - 1, 0..15] of T4ByteData;
+    FCurrentLOD: Byte;
+    FCurrentBatch: Integer;
     FVertexPositionSlot: Integer;
     FRemoveLastElement: Boolean;
     function GetAttributeIndex(Attrib: TGLSLAttribute; AType: TGLSLDataType): GLint;
@@ -175,13 +178,17 @@ type
     procedure MakeTriangleOnlyBuffer;
     procedure ComputeBoundingBox;
     function GetAABB: TAABB;
+    function GetFaceGroupName: string;
+    procedure SetFaceGroupName(const AValue: string);
+    function GetFaceGroupMaterialName: IGLName;
+    procedure SetFaceGroupMaterialName(const AValue: IGLName);
   public
     { Public Declarations }
     constructor Create(AOwner: TGLAbstractMesh); virtual;
     {: Begins storing a piece of geometry }
     procedure BeginMeshAssembly; virtual;
     {: Begins gathering information about the given type of primitives. }
-    procedure BeginBatch(APrimitiveType: TGLMeshPrimitive);
+    procedure BeginBatch(APrimitiveType: TGLMeshPrimitive; ALOD: Byte = 0);
     {: Declare attibute and it type for use in mesh. }
     procedure DeclareAttribute(Attrib: TGLSLAttribute; AType: TGLSLDataType);
     {: Specifies a new value for the attribute with the given name. }
@@ -241,64 +248,19 @@ type
     {: This property returns the points defining the axis-
        aligned bounding box containing the model. }
     property AABB: TAABB read GetAABB;
+    {: Access to primitive group name aka batch. }
+    property FaceGroupName: string read GetFaceGroupName write SetFaceGroupName;
+    property FaceGroupMaterialName: IGLName read GetFaceGroupMaterialName write SetFaceGroupMaterialName;
   end;
 
   TGLAbstractMeshClass = class of TGLAbstractMesh;
   TGLAbstractMeshBuilderClass = class of TGLAbstractMeshBuilder;
 
-  TGL3xStaticMeshBuilder = class(TGLAbstractMeshBuilder)
-  public
-    { Public Declarations }
-    destructor Destroy; override;
-  end;
-
-  TGL3xStaticMesh = class(TGLAbstractMesh)
-  protected
-    { Protected Declarations }
-    FBuilder: TGL3xStaticMeshBuilder;
-    function GetBuilder: TGL3xStaticMeshBuilder; virtual;
-    // Paralell tasks
-    procedure ComputeNormalsTask; stdcall;
-    procedure ComputeTexCoordTask; stdcall;
-    procedure ComputeTangensTask; stdcall;
-  public
-    { Public Declarations }
-    destructor Destroy; override;
-    procedure LoadFromFile(const fileName: string); override;
-    procedure SaveToFile(const fileName: string); override;
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
-
-    procedure ImportFromFile(const fileName: string); override;
-    procedure ExportToFile(const fileName: string); override;
-
-    {: Notify mesh about requesting attribute. }
-    procedure AttributeRequest(Attr: TGLSLAttribute); virtual;
-
-    property Builder: TGL3xStaticMeshBuilder read GetBuilder;
-  end;
-
-  TGL3xInstanceDataBuilder = class(TGL3xStaticMeshBuilder)
-  public
-    { Public Declarations }
-  end;
-
-  TGL3xInstanceData = class(TGLAbstractMesh)
-  protected
-    { Protected Declarations }
-    FBuilder: TGL3xInstanceDataBuilder;
-    function GetBuilder: TGL3xInstanceDataBuilder; virtual;
-  public
-    { Public Declarations }
-    destructor Destroy; override;
-    property Builder: TGL3xInstanceDataBuilder read GetBuilder;
-  end;
-
   MeshManager = class(TGLSAbstractManager)
   protected
     { Protected Declarations }
-    class procedure Initialize;
-    class procedure Finalize;
+    class procedure Initialize; override;
+    class procedure Finalize; override;
     class procedure LoadResources;
     class procedure SaveResources;
     class procedure ClearResources;
@@ -309,6 +271,7 @@ type
     class procedure NotifyProjectClosed; override;
     class procedure NotifyContextCreated; override;
     class procedure NotifyBeforeCompile; override;
+    class function Priority: Byte; override;
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; override;
@@ -334,17 +297,6 @@ type
   end;
 
   TGLAbstractMeshFileIOClass = class of TGLAbstractMeshFileIO;
-
-  // TGLXMLMeshFileIO
-  //
-  {: Common mesh file format just in case. }
-  TGLMeshXMLFileIO = class(TGLAbstractMeshFileIO)
-  public
-    { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
-    class procedure LoadFromStream(AStream: TStream; ABuilder: TGLAbstractMeshBuilder); override;
-    class procedure SaveToStream(AStream: TStream; AMesh: TGLAbstractMesh); override;
-  end;
 
   // TVectorFileFormat
   //
@@ -397,39 +349,16 @@ procedure UnregisterVectorFileClass(AClass: TGLAbstractMeshFileIOClass);
 implementation
 
 uses
-{$IFDEF FPC}
-  FileUtil,
-  DOM,
-  XMLRead,
-  XMLWrite,
-{$ENDIF}
   GLSLog,
   GLStrings,
-  VectorGeometryEXT,
-  GLSCrossXML;
+  VectorGeometryEXT;
 
 const
   cRestartIndex: TGLuint = $FFFFFFFF;
 
-  cMeshPrimitive: array[TGLMeshPrimitive] of string = (
-    'NOPRIMITIVE',
-    'TRIANGLES',
-    'TRIANGLE_STRIP',
-    'TRIANGLE_FAN',
-    'POINTS',
-    'LINES',
-    'LINE_LOOP',
-    'LINE_STRIP',
-    'LINES_ADJACENCY',
-    'LINE_STRIP_ADJACENCY',
-    'TRIANGLES_ADJACENCY',
-    'TRIANGLE_STRIP_ADJACENCY',
-    'PATCHES'
-    );
-
 type
   TIntIntRBT = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
-    GRedBlackTree < Integer, Integer > ;
+  GRedBlackTree < Integer, Integer > ;
 
 resourcestring
   glsMeshBuilderWrongCall = 'MeshBuilder: wrong method call - ignored';
@@ -437,11 +366,11 @@ resourcestring
   glsMeshBuilderNoAttrDeclar = 'MeshBuilder: no declaration of attributes';
   glsMeshBuilderExcesAttrib = '%s: Excessive attribute declaration.';
   glsMeshBuilderInvalidArraySize = 'Invalid array size of attribute "%s" of ' +
-  'mesh "%s"';
+    'mesh "%s"';
   glsMeshBuilderHashingError = '%s: hashing error during vertex welding in m' +
-  'esh %s';
+    'esh %s';
   glsMeshBuilderNoNeedRestart = '%s: This primitive type does not need to re' +
-  'start.';
+    'start.';
 
 var
   Meshes: array of TGLAbstractMesh;
@@ -734,184 +663,6 @@ class procedure TGLAbstractMeshFileIO.SaveToStream(AStream: TStream; AMesh: TGLA
 begin
 end;
 
-class function TGLMeshXMLFileIO.Capabilities: TDataFileCapabilities;
-begin
-  Result := [dfcRead, dfcWrite];
-end;
-
-class procedure TGLMeshXMLFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLAbstractMeshBuilder);
-
-  procedure DoLoad;
-  var
-    MeshDoc: GLSXMLDocument;
-    XMLMesh, XMLGeometry,
-    XMLAttribs, XMLAttrib, XMLDrawPortions, XMLDrawPortion: GLSXMLNode;
-    A, I, C, err: Integer;
-    P: TGLMeshPrimitive;
-    ADiv: TGLuint;
-  	temp: string;
-  begin
-    err := 0;
-    MeshDoc := GLSNewXMLDocument;
-{$IFNDEF FPC}
-    MeshDoc.LoadFromStream(AStream);
-{$ELSE}
-    ReadXMLFile(MeshDoc, AStream);
-{$ENDIF}
-    XMLMesh := MeshDoc.DocumentElement;
-  	if not FindXMLNode(XMLMesh, 'Geometry', XMLGeometry) then
-    	exit;
-  	if not FindXMLNode(XMLGeometry, 'VertexAttributes', XMLAttribs) then
-    	exit;
-    A := GLS_VERTEX_ATTR_NUM - 1;
-    for I := 0 to XMLAttribs.ChildNodes.Count - 1 do
-    begin
-    	XMLAttrib := XMLAttribs.ChildNodes[I];
-      GetXMLAttribute(XMLAttrib, 'Name', temp);
-      ABuilder.FMesh.FAttributes[A] := TGLSLAttribute.GetAttribute(temp);
-      GetXMLAttribute(XMLAttrib, 'Type', temp);
-      ABuilder.FMesh.FDataFormat[A] := StrToGLSLType(AnsiString(temp));
-      GetXMLAttribute(XMLAttrib, 'Divisor', temp);
-      Val(temp, ADiv, err);
-      ABuilder.FMesh.FAttributeDivisor[A] := ADiv;
-      GetXMLAttribute(XMLAttrib, 'Count', temp);
-      Val(temp, C, err);
-      ABuilder.FMesh.FAttributeArrays[A].Count := C;
-      GetXMLText(XMLAttrib, temp);
-      HexToBin(PChar(temp), PAnsiChar(ABuilder.FMesh.FAttributeArrays[A].List),
-      	ABuilder.FMesh.FAttributeArrays[A].DataSize);
-      Dec(A);
-    end;
-
-    if FindXMLNode(XMLGeometry, 'Elements', XMLAttrib) then
-    begin
-    	ABuilder.FMesh.FHasIndices := True;
-      GetXMLAttribute(XMLAttrib, 'Count', temp);
-      Val(temp, C, err);
-      ABuilder.FMesh.FElementBuffer.Count := C;
-      GetXMLText(XMLAttrib, temp);
-      HexToBin(PChar(temp), PAnsiChar(ABuilder.FMesh.FElementBuffer.List),
-      	ABuilder.FMesh.FElementBuffer.DataSize);
-    end;
-
-  	if not FindXMLNode(XMLGeometry, 'DrawPortions', XMLDrawPortions) then
-    	exit;
-    SetLength(ABuilder.FMesh.FDrawPortions, XMLDrawPortions.ChildNodes.Count);
-    for I := 0 to XMLDrawPortions.ChildNodes.Count - 1 do
-    begin
-      XMLDrawPortion := XMLDrawPortions.ChildNodes[I];
-      GetXMLAttribute(XMLDrawPortion, 'VertexOffset', temp);
-      Val(temp, ABuilder.FMesh.FDrawPortions[I].VertexOffset, err);
-      GetXMLAttribute(XMLDrawPortion, 'VertexCount', temp);
-      Val(temp, ABuilder.FMesh.FDrawPortions[I].VertexCount, err);
-      GetXMLAttribute(XMLDrawPortion, 'ElementOffset', temp);
-      Val(temp, ABuilder.FMesh.FDrawPortions[I].ElementOffset, err);
-      GetXMLAttribute(XMLDrawPortion, 'ElementCount', temp);
-      Val(temp, ABuilder.FMesh.FDrawPortions[I].ElementCount, err);
-      GetXMLAttribute(XMLDrawPortion, 'PrimitiveType', temp);
-      for P := Low(TGLMeshPrimitive) to High(TGLMeshPrimitive) do
-      begin
-        if cMeshPrimitive[P] = temp then
-        begin
-          ABuilder.FMesh.FDrawPortions[I].PrimitiveType := P;
-          break;
-        end;
-      end;
-    end;
-
-    GetXMLAttribute(XMLGeometry, 'RestartIndex', temp);
-    Val(temp, ABuilder.FMesh.FRestartIndex, err);
-  end;
-
-begin
-  with ABuilder do
-  begin
-    BeginMeshAssembly;
-		Clear;
-    DoLoad;
-    EndMeshAssembly;
-  end;
-end;
-
-class procedure TGLMeshXMLFileIO.SaveToStream(AStream: TStream; AMesh: TGLAbstractMesh);
-var
-  MeshDoc: GLSXMLDocument;
-  XMLMesh, XMLGeometry,
-  XMLAttribs, XMLAttrib, XMLDrawPortions, XMLDrawPortion: GLSDOMNode;
-  A: Integer;
-  temp: string;
-begin
-  MeshDoc := GLSNewXMLDocument;
-{$IFDEF FPC}
-  XMLMesh := MeshDoc.CreateElement('TGL3xMesh');
-  MeshDoc.AppendChild(XMLMesh);
-{$ELSE}
-  XMLMesh := MeshDoc.DOMDocument.CreateElement('TGL3xMesh');
-  MeshDoc.DOMDocument.AppendChild(XMLMesh);
-{$ENDIF}
-  XMLGeometry := CreateDOMNode(XMLMesh, 'Geometry');
-  // Save attributes
-  XMLAttribs := CreateDOMNode(XMLGeometry, 'VertexAttributes');
-	for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
-  begin
-    if Assigned(AMesh.FAttributes[A]) then
-    begin
-    	XMLAttrib := CreateDOMNode(XMLAttribs, 'VertexAttribute');
-      SetXMLAttribute(XMLAttrib, 'Name',
-      	AMesh.FAttributes[A].Name);
-      SetXMLAttribute(XMLAttrib, 'Type',
-      	string(GLSLTypeToString(AMesh.FDataFormat[A])));
-      SetXMLAttribute(XMLAttrib, 'Divisor',
-      	IntToStr(AMesh.FAttributeDivisor[A]));
-      SetXMLAttribute(XMLAttrib, 'Count',
-      	IntToStr(AMesh.FAttributeArrays[A].Count));
-      SetLength(temp, 2*AMesh.FAttributeArrays[A].DataSize);
-      BinToHex(PAnsiChar(AMesh.FAttributeArrays[A].List),
-      	PChar(temp), AMesh.FAttributeArrays[A].DataSize);
-      SetXMLText(XMLAttrib, temp);
-    end;
-  end;
-
-  if AMesh.FHasIndices then
-  begin
-    // Save element buffer
-    XMLAttrib := CreateDOMNode(XMLGeometry, 'Elements');
-    SetXMLAttribute(XMLAttrib, 'Count',
-  	  IntToStr(AMesh.FElementBuffer.Count));
-    SetLength(temp, 2*AMesh.FElementBuffer.DataSize);
-    BinToHex(PAnsiChar(AMesh.FElementBuffer.List),
-  	  PChar(temp), AMesh.FElementBuffer.DataSize);
-    SetXMLText(XMLAttrib, temp);
-  end;
-
-  // Save draw portions info
-  XMLDrawPortions := CreateDOMNode(XMLGeometry, 'DrawPortions');
-  for A := 0 to High(AMesh.FDrawPortions) do
-  begin
-    XMLDrawPortion := CreateDOMNode(XMLDrawPortions, 'DrawPortion');
-    SetXMLAttribute(XMLDrawPortion, 'VertexOffset',
-      	IntToStr(AMesh.FDrawPortions[A].VertexOffset));
-    SetXMLAttribute(XMLDrawPortion, 'VertexCount',
-      	IntToStr(AMesh.FDrawPortions[A].VertexCount));
-    SetXMLAttribute(XMLDrawPortion, 'ElementOffset',
-      	IntToStr(AMesh.FDrawPortions[A].ElementOffset));
-    SetXMLAttribute(XMLDrawPortion, 'ElementCount',
-      	IntToStr(AMesh.FDrawPortions[A].ElementCount));
-    SetXMLAttribute(XMLDrawPortion, 'PrimitiveType',
-      	cMeshPrimitive[AMesh.FDrawPortions[A].PrimitiveType]);
-  end;
-
-  SetXMLAttribute(XMLGeometry, 'RestartIndex',
-    	IntToStr(AMesh.FRestartIndex));
-
-{$IFNDEF FPC}
-	MeshDoc.SaveToStream(AStream);
-{$ELSE}
-  WriteXMLFile(MeshDoc, AStream);
-{$ENDIF}
-  MeshDoc := nil;
-end;
-
 {$ENDREGION}
 
 {$REGION 'TGLAbstractMesh'}
@@ -1034,7 +785,7 @@ begin
   end
   else
   begin
-    GLSLogger.LogError(Format('File %s not found', [fileName]));
+    GLSLogger.LogErrorFmt('File %s not found', [fileName]);
     ImportFromFile('');
   end;
 end;
@@ -1053,152 +804,6 @@ begin
   finally
     fs.Free;
   end;
-end;
-
-procedure TGLAbstractMesh.LoadFromStream(stream: TStream);
-var
-  Temp, L, A: Integer;
-  ws: WideString;
-begin
-  WaitParallelTask;
-  stream.ReadBuffer(Temp, SizeOf(Integer)); // Version
-  if Temp > 0 then
-  begin
-    GLSLogger.LogError(Format(glsUnknownArchive, [Self.ClassName, Temp]));
-    Abort;
-  end;
-
-  SetLength(FDrawPortions, 0);
-  for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
-  begin
-    FAttributes[A] := nil;
-    FDataFormat[A] := GLSLTypeVoid;
-    FAttributeArrays[A].Clear;
-    FAttributeDivisor[A] := 0;
-  end;
-  FHasIndices := False;
-  FElementBuffer.Clear;
-  FElementBufferWithAdjacency.Clear;
-  FTriOnlyBufferNeedUpdate := True;
-
-  stream.ReadBuffer(Temp, SizeOf(Integer));
-  FBlank := Boolean(Temp);
-
-  stream.ReadBuffer(Temp, SizeOf(Integer));
-  for A := GLS_VERTEX_ATTR_NUM - 1 downto GLS_VERTEX_ATTR_NUM - Temp do
-  begin
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    SetLength(ws, Temp);
-    stream.ReadBuffer(ws[1], Temp * SizeOf(WideChar));
-    FAttributes[A] := TGLSLAttribute.GetAttribute(string(ws));
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FDataFormat[A] := TGLSLDataType(Temp);
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FAttributeArrays[A].Count := Temp;
-    if Temp > 0 then
-      stream.ReadBuffer(FAttributeArrays[A].List^, FAttributeArrays[A].DataSize);
-    stream.ReadBuffer(FAttributeDivisor[A], SizeOf(TGLuint));
-  end;
-
-  stream.ReadBuffer(Temp, SizeOf(Integer));
-  SetLength(FDrawPortions, Temp);
-  for L := 0 to Temp - 1 do
-  begin
-    stream.ReadBuffer(FDrawPortions[L].VertexOffset, SizeOf(Integer));
-    stream.ReadBuffer(FDrawPortions[L].VertexCount, SizeOf(Cardinal));
-    stream.ReadBuffer(FDrawPortions[L].ElementOffset, SizeOf(Cardinal));
-    stream.ReadBuffer(FDrawPortions[L].ElementCount, SizeOf(Cardinal));
-    stream.ReadBuffer(FDrawPortions[L].TriOnlyElementOffset, SizeOf(Cardinal));
-    stream.ReadBuffer(FDrawPortions[L].TriOnlyElementCount, SizeOf(Cardinal));
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FDrawPortions[L].PrimitiveType := TGLMeshPrimitive(Temp);
-  end;
-
-  stream.ReadBuffer(Temp, SizeOf(Integer));
-  FHasIndices := Boolean(Temp);
-  if FHasIndices then
-  begin
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FElementBuffer.Count := Temp;
-    if Temp > 0 then
-      stream.ReadBuffer(FElementBuffer.List^, FElementBuffer.DataSize);
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FElementBufferWithAdjacency.Count := Temp;
-    if Temp > 0 then
-      stream.ReadBuffer(FElementBufferWithAdjacency.List^, FElementBufferWithAdjacency.DataSize);
-    stream.ReadBuffer(Temp, SizeOf(Integer));
-    FElementBufferTrianglesOnly.Count := Temp;
-    if Temp > 0 then
-      stream.ReadBuffer(FElementBufferTrianglesOnly.List^, FElementBufferTrianglesOnly.DataSize);
-  end;
-  stream.ReadBuffer(FRestartIndex, SizeOf(Cardinal));
-  stream.ReadBuffer(FAABB, SizeOf(TAABB));
-
-  Inc(FRevisionNum);
-end;
-
-procedure TGLAbstractMesh.SaveToStream(stream: TStream);
-var
-  Temp, L, A: Integer;
-  ws: WideString;
-begin
-  WaitParallelTask;
-  Temp := 0;
-  stream.WriteBuffer(Temp, SizeOf(Integer)); // Version
-  Temp := Integer(FBlank);
-  stream.WriteBuffer(Temp, SizeOf(Integer));
-  Temp := GetAttributeCount;
-  stream.WriteBuffer(Temp, SizeOf(Integer));
-  for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
-    if Assigned(FAttributes[A]) then
-    begin
-      ws := FAttributes[A].Name;
-      L := Length(ws);
-      stream.WriteBuffer(L, SizeOf(Integer));
-      stream.WriteBuffer(ws[1], L * SizeOf(WideChar));
-      Temp := Integer(FDataFormat[A]);
-      stream.WriteBuffer(Temp, SizeOf(Integer));
-      Temp := FAttributeArrays[A].Count;
-      stream.WriteBuffer(Temp, SizeOf(Integer));
-      if Temp > 0 then
-        stream.WriteBuffer(FAttributeArrays[A].List^, FAttributeArrays[A].DataSize);
-      Temp := FAttributeDivisor[A];
-      stream.WriteBuffer(Temp, SizeOf(Integer));
-    end;
-
-  Temp := Length(FDrawPortions);
-  stream.WriteBuffer(Temp, SizeOf(Integer));
-  for L := 0 to Temp - 1 do
-  begin
-    stream.WriteBuffer(FDrawPortions[L].VertexOffset, SizeOf(Integer));
-    stream.WriteBuffer(FDrawPortions[L].VertexCount, SizeOf(Cardinal));
-    stream.WriteBuffer(FDrawPortions[L].ElementOffset, SizeOf(Cardinal));
-    stream.WriteBuffer(FDrawPortions[L].ElementCount, SizeOf(Cardinal));
-    stream.WriteBuffer(FDrawPortions[L].TriOnlyElementOffset, SizeOf(Cardinal));
-    stream.WriteBuffer(FDrawPortions[L].TriOnlyElementCount, SizeOf(Cardinal));
-    Temp := Integer(FDrawPortions[L].PrimitiveType);
-    stream.WriteBuffer(Temp, SizeOf(Integer));
-  end;
-
-  Temp := Integer(FHasIndices);
-  stream.WriteBuffer(Temp, SizeOf(Integer));
-  if FHasIndices then
-  begin
-    Temp := FElementBuffer.Count;
-    stream.WriteBuffer(Temp, SizeOf(Integer));
-    if Temp > 0 then
-      stream.WriteBuffer(FElementBuffer.List^, FElementBuffer.DataSize);
-    Temp := FElementBufferWithAdjacency.Count;
-    stream.WriteBuffer(Temp, SizeOf(Integer));
-    if Temp > 0 then
-      stream.WriteBuffer(FElementBufferWithAdjacency.List^, FElementBufferWithAdjacency.DataSize);
-    Temp := FElementBufferTrianglesOnly.Count;
-    stream.WriteBuffer(Temp, SizeOf(Integer));
-    if Temp > 0 then
-      stream.WriteBuffer(FElementBufferTrianglesOnly.List^, FElementBufferTrianglesOnly.DataSize);
-  end;
-  stream.WriteBuffer(FRestartIndex, SizeOf(Cardinal));
-  stream.WriteBuffer(FAABB, SizeOf(TAABB));
 end;
 
 class function TGLAbstractMesh.Capabilities: TDataFileCapabilities;
@@ -1239,6 +844,7 @@ end;
 procedure TGLAbstractMeshBuilder.Clear;
 var
   A: Integer;
+  L: Byte;
 begin
   if FState <> mmsAssembling then
   begin
@@ -1248,7 +854,8 @@ begin
 
   with FMesh do
   begin
-    SetLength(FDrawPortions, 0);
+    for L := 0 to 255 do
+      FLODFaceGroupMap[L] := nil;
     for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
     begin
       FAttributes[A] := nil;
@@ -1263,9 +870,8 @@ begin
   end;
 end;
 
-procedure TGLAbstractMeshBuilder.BeginBatch(APrimitiveType: TGLMeshPrimitive);
-var
-  L: Integer;
+procedure TGLAbstractMeshBuilder.BeginBatch(
+  APrimitiveType: TGLMeshPrimitive; ALOD: Byte);
 begin
   if APrimitiveType = mpNOPRIMITIVE then
   begin
@@ -1286,24 +892,27 @@ begin
 
   FState := mmsPrimitives;
   FCurrentPrimitive := APrimitiveType;
-  L := Length(FMesh.FDrawPortions);
-  SetLength(FMesh.FDrawPortions, L + 1);
-  with FMesh.FDrawPortions[L] do
+  FCurrentLOD := ALOD;
+  FCurrentBatch := Length(FMesh.FLODFaceGroupMap[ALOD]);
+  SetLength(FMesh.FLODFaceGroupMap[ALOD], FCurrentBatch + 1);
+  with FMesh.FLODFaceGroupMap[ALOD][FCurrentBatch] do
   begin
-    if L > 0 then
-      VertexOffset := TGLint(FMesh.FDrawPortions[L - 1].VertexCount)
+    Name := Format('FaceGroup%d', [FCurrentBatch]);
+    if FCurrentBatch > 0 then
+      VertexOffset := TGLint(FMesh.FLODFaceGroupMap[ALOD][FCurrentBatch - 1].VertexCount)
     else
       VertexOffset := 0;
     VertexCount := 0;
     ElementOffset := FMesh.FElementBuffer.Count;
     PrimitiveType := FCurrentPrimitive;
+    Material := nil;
   end;
 end;
 
 procedure TGLAbstractMeshBuilder.EndBatch;
 var
   Valid: Boolean;
-  A, C, I, E: Integer;
+  A, C, E: Integer;
 begin
   if FState <> mmsPrimitives then
   begin
@@ -1314,8 +923,9 @@ begin
 
   with FMesh do
   begin
-    I := High(FDrawPortions);
-    E := FDrawPortions[I].VertexCount;
+    E := 0;
+    for A := 0 to High(FLODFaceGroupMap[FCurrentLOD]) do
+      Inc(E, FLODFaceGroupMap[FCurrentLOD][A].VertexCount);
 
     // Check attribute arrays equability
     for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
@@ -1339,7 +949,7 @@ begin
     // Remove empty batch
     if E = 0 then
     begin
-      SetLength(FDrawPortions, I);
+      FLODFaceGroupMap[FCurrentLOD] := nil;
       exit;
     end;
 
@@ -1371,11 +981,12 @@ begin
     if not Valid then
     begin
       GLSLogger.LogError(glsInvalidNumberOfVertex);
-      SetLength(FDrawPortions, I);
+      FLODFaceGroupMap[FCurrentLOD] := nil;
       exit;
     end;
 
-    FDrawPortions[I].ElementCount := Cardinal(FElementBuffer.Count) - FDrawPortions[I].ElementOffset;
+    with FLODFaceGroupMap[FCurrentLOD][FCurrentBatch] do
+      ElementCount := Cardinal(FElementBuffer.Count) - ElementOffset;
   end;
 end;
 
@@ -1445,7 +1056,7 @@ begin
   if Attrib.TagObject <> Self then
   begin
     Attrib.TagObject := Self;
-    GLSLogger.LogError(Format(glsUnknownAttrib, [Attrib.Name, FMesh.Name.GetValue]));
+    GLSLogger.LogErrorFmt(glsUnknownAttrib, [Attrib.Name, FMesh.Name.GetValue]);
   end;
 end;
 
@@ -1944,7 +1555,7 @@ end;
 procedure TGLAbstractMeshBuilder.EmitVertex;
 var
   A, C, Size: Integer;
-  I, J: LongWord;
+  I: LongWord;
 begin
   if FState <> mmsPrimitives then
   begin
@@ -1962,10 +1573,13 @@ begin
         for C := 0 to Size - 1 do
           FAttributeArrays[A].Push(FCurrentAttribValue[A][C]);
       end;
-    J := High(FDrawPortions);
-    I := FDrawPortions[J].ElementOffset + FDrawPortions[J].VertexCount;
-    FElementBuffer.Add(I);
-    Inc(FDrawPortions[J].VertexCount);
+
+    with FLODFaceGroupMap[FCurrentLOD][FCurrentBatch] do
+    begin
+      I := ElementOffset + VertexCount;
+      FElementBuffer.Add(I);
+      Inc(VertexCount);
+    end;
   end;
   FRemoveLastElement := False;
 end;
@@ -1989,7 +1603,7 @@ begin
         FAttributeArrays[A].Count := FAttributeArrays[A].Count + Size * Integer(ANumber);
       end;
     FElementBuffer.AddNulls(ANumber);
-    Inc(FDrawPortions[High(FDrawPortions)].VertexCount, ANumber);
+    Inc(FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].VertexCount, ANumber);
   end;
 end;
 
@@ -2212,11 +1826,12 @@ begin
       StoreAttribArrays[A].Destroy;
     StoreElementBuffer.Destroy;
 
-    for I := 0 to High(FDrawPortions) do
-    begin
-      FDrawPortions[I].VertexOffset := FDrawPortions[I].ElementOffset;
-      FDrawPortions[I].VertexCount := FDrawPortions[I].ElementCount;
-    end;
+    for I := 0 to High(FLODFaceGroupMap[FCurrentLOD]) do
+      with FLODFaceGroupMap[FCurrentLOD][I] do
+      begin
+        VertexOffset := ElementOffset;
+        VertexCount := ElementCount;
+      end;
 
     FHasIndices := False;
     FTriOnlyBufferNeedUpdate := True;
@@ -2242,26 +1857,27 @@ begin
     StoreElementBuffer := FElementBuffer;
     FElementBuffer := T4ByteList.Create;
 
-    for I := 0 to High(FDrawPortions) do
-    begin
-      FDrawPortions[I].ElementOffset := FElementBuffer.Count;
-      case FDrawPortions[I].PrimitiveType of
-        mpTRIANGLE_STRIP, mpTRIANGLE_FAN:
+    for I := 0 to High(FLODFaceGroupMap[FCurrentLOD]) do
+      with FLODFaceGroupMap[FCurrentLOD][I] do
+      begin
+        ElementOffset := FElementBuffer.Count;
+        case PrimitiveType of
+          mpTRIANGLE_STRIP, mpTRIANGLE_FAN:
+            begin
+              // Replace strips and fans to common triangles
+              for J := TriOnlyElementOffset to TriOnlyElementOffset + TriOnlyElementCount - 1 do
+                FElementBuffer.Add(FElementBufferTrianglesOnly[J]);
+              PrimitiveType := mpTRIANGLES;
+            end;
+        else
           begin
-            // Replace strips and fans to common triangles
-            for J := FDrawPortions[I].TriOnlyElementOffset to FDrawPortions[I].TriOnlyElementOffset + FDrawPortions[I].TriOnlyElementCount - 1 do
-              FElementBuffer.Add(FElementBufferTrianglesOnly[J]);
-            FDrawPortions[I].PrimitiveType := mpTRIANGLES;
+            // For other primitives just copy elements
+            for J := ElementOffset to ElementOffset + ElementCount - 1 do
+              FElementBuffer.Add(StoreElementBuffer[J]);
           end;
-      else
-        begin
-          // For other primitives just copy elements
-          for J := FDrawPortions[I].ElementOffset to FDrawPortions[I].ElementOffset + FDrawPortions[I].ElementCount - 1 do
-            FElementBuffer.Add(StoreElementBuffer[J]);
         end;
+        ElementCount := Cardinal(FElementBuffer.Count) - ElementOffset;
       end;
-      FDrawPortions[I].ElementCount := Cardinal(FElementBuffer.Count) - FDrawPortions[I].ElementOffset;
-    end;
 
     StoreElementBuffer.Destroy;
   end;
@@ -2279,117 +1895,118 @@ begin
   with FMesh do
   begin
     FElementBufferTrianglesOnly.Clear;
-    for I := 0 to High(FDrawPortions) do
-    begin
-      FDrawPortions[I].TriOnlyElementOffset := FElementBufferTrianglesOnly.Count;
-      case FDrawPortions[I].PrimitiveType of
-        mpTRIANGLES:
-          begin
-            for J := FDrawPortions[I].ElementOffset to FDrawPortions[I].ElementOffset + FDrawPortions[I].ElementCount - 1 do
-              FElementBufferTrianglesOnly.Add(FElementBuffer[J]);
-          end;
-
-        mpTRIANGLE_STRIP:
-          begin
-            stripCount := 0;
-            prevIndex1 := 0;
-            prevIndex2 := 0;
-            for J := FDrawPortions[I].ElementOffset to FDrawPortions[I].ElementOffset + FDrawPortions[I].ElementCount - 1 do
+    for I := 0 to High(FLODFaceGroupMap[FCurrentLOD]) do
+      with FLODFaceGroupMap[FCurrentLOD][I] do
+      begin
+        TriOnlyElementOffset := FElementBufferTrianglesOnly.Count;
+        case PrimitiveType of
+          mpTRIANGLES:
             begin
-              BD := FElementBuffer[J];
-              Index := BD.UInt.Value;
-              if stripCount > 2 then
+              for J := ElementOffset to ElementOffset + ElementCount - 1 do
+                FElementBufferTrianglesOnly.Add(FElementBuffer[J]);
+            end;
+
+          mpTRIANGLE_STRIP:
+            begin
+              stripCount := 0;
+              prevIndex1 := 0;
+              prevIndex2 := 0;
+              for J := ElementOffset to ElementOffset + ElementCount - 1 do
               begin
-                // Check for restart index
-                if Index = cRestartIndex then
+                BD := FElementBuffer[J];
+                Index := BD.UInt.Value;
+                if stripCount > 2 then
                 begin
-                  stripCount := 0;
-                  continue;
+                  // Check for restart index
+                  if Index = cRestartIndex then
+                  begin
+                    stripCount := 0;
+                    continue;
+                  end
+                    // Check for degenerate triangles
+                  else if Index = prevIndex1 then
+                  begin
+                    continue;
+                  end
+                  else if prevIndex1 = prevIndex2 then
+                  begin
+                    stripCount := 0;
+                    continue;
+                  end;
+                  if (stripCount and 1) = 0 then
+                  begin
+                    FElementBufferTrianglesOnly.Add(prevIndex2);
+                    FElementBufferTrianglesOnly.Add(prevIndex1);
+                  end
+                  else
+                  begin
+                    FElementBufferTrianglesOnly.Add(prevIndex1);
+                    FElementBufferTrianglesOnly.Add(prevIndex2);
+                  end;
                 end
-                  // Check for degenerate triangles
-                else if Index = prevIndex1 then
+                else if stripCount = 2 then
                 begin
-                  continue;
-                end
-                else if prevIndex1 = prevIndex2 then
-                begin
-                  stripCount := 0;
+                  FElementBufferTrianglesOnly.Add(Index);
+                  BD.UInt.Value := prevIndex1;
+                  FElementBufferTrianglesOnly.Items[FElementBufferTrianglesOnly.Count - 2] := BD;
+                  prevIndex2 := prevIndex1;
+                  prevIndex1 := Index;
+                  Inc(stripCount);
                   continue;
                 end;
-                if (stripCount and 1) = 0 then
-                begin
-                  FElementBufferTrianglesOnly.Add(prevIndex2);
-                  FElementBufferTrianglesOnly.Add(prevIndex1);
-                end
-                else
-                begin
-                  FElementBufferTrianglesOnly.Add(prevIndex1);
-                  FElementBufferTrianglesOnly.Add(prevIndex2);
-                end;
-              end
-              else if stripCount = 2 then
-              begin
                 FElementBufferTrianglesOnly.Add(Index);
-                BD.UInt.Value := prevIndex1;
-                FElementBufferTrianglesOnly.Items[FElementBufferTrianglesOnly.Count - 2] := BD;
                 prevIndex2 := prevIndex1;
                 prevIndex1 := Index;
                 Inc(stripCount);
-                continue;
               end;
-              FElementBufferTrianglesOnly.Add(Index);
-              prevIndex2 := prevIndex1;
-              prevIndex1 := Index;
-              Inc(stripCount);
             end;
-          end;
 
-        mpTRIANGLE_FAN:
-          begin
-            fansCount := 0;
-            prevIndex := 0;
-            degenerate := False;
-            BD := FElementBuffer[0];
-            centerIndex := BD.UInt.Value;
-            for J := FDrawPortions[I].ElementOffset to FDrawPortions[I].ElementOffset + FDrawPortions[I].ElementCount - 1 do
+          mpTRIANGLE_FAN:
             begin
-              BD := FElementBuffer[J];
-              Index := BD.UInt.Value;
-              if fansCount > 2 then
+              fansCount := 0;
+              prevIndex := 0;
+              degenerate := False;
+              BD := FElementBuffer[0];
+              centerIndex := BD.UInt.Value;
+              for J := ElementOffset to ElementOffset + ElementCount - 1 do
               begin
-                // Check for restart index
-                if Index = cRestartIndex then
+                BD := FElementBuffer[J];
+                Index := BD.UInt.Value;
+                if fansCount > 2 then
                 begin
-                  fansCount := 0;
-                  continue;
+                  // Check for restart index
+                  if Index = cRestartIndex then
+                  begin
+                    fansCount := 0;
+                    continue;
+                  end
+                    // Check for degenerate triangles
+                  else if Index = prevIndex then
+                  begin
+                    degenerate := true;
+                    continue;
+                  end
+                  else if degenerate then
+                  begin
+                    degenerate := false;
+                    fansCount := 0;
+                    continue;
+                  end;
+                  FElementBufferTrianglesOnly.Add(centerIndex);
+                  FElementBufferTrianglesOnly.Add(prevIndex);
                 end
-                  // Check for degenerate triangles
-                else if Index = prevIndex then
-                begin
-                  degenerate := true;
-                  continue;
-                end
-                else if degenerate then
-                begin
-                  degenerate := false;
-                  fansCount := 0;
-                  continue;
-                end;
-                FElementBufferTrianglesOnly.Add(centerIndex);
-                FElementBufferTrianglesOnly.Add(prevIndex);
-              end
-              else if fansCount = 0 then
-                centerIndex := Index;
-              FElementBufferTrianglesOnly.Add(Index);
-              prevIndex := Index;
-              Inc(fansCount);
+                else if fansCount = 0 then
+                  centerIndex := Index;
+                FElementBufferTrianglesOnly.Add(Index);
+                prevIndex := Index;
+                Inc(fansCount);
+              end;
             end;
-          end;
-      else
-        continue;
-      end; // of case
-      FDrawPortions[I].TriOnlyElementCount := Cardinal(FElementBufferTrianglesOnly.Count) - FDrawPortions[I].TriOnlyElementOffset;
-    end;
+        else
+          continue;
+        end; // of case
+        TriOnlyElementCount := Cardinal(FElementBufferTrianglesOnly.Count) - TriOnlyElementOffset;
+      end;
     FTriOnlyBufferNeedUpdate := False;
   end;
 end;
@@ -2753,16 +2370,17 @@ begin
     PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
     N := FindSlot(attrTexCoord0);
-    if N > -1 then
+    if N < 0 then
     begin
-      TexCoords := FAttributeArrays[N];
-      TexCoordSize := GLSLTypeComponentCount(FDataFormat[N]);
-      TexCoordMoveSize := MinInteger(TexCoordSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
-    end
-    else
-    begin
-
+      ComputeTexCoords;
+      N := FindSlot(attrTexCoord0);
+      if N < 0 then
+        exit;
     end;
+
+    TexCoords := FAttributeArrays[N];
+    TexCoordSize := GLSLTypeComponentCount(FDataFormat[N]);
+    TexCoordMoveSize := MinInteger(TexCoordSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
     N := FindOrOccupySlot(attrTangent);
     if N < 0 then
@@ -2963,6 +2581,46 @@ begin
   Result := FMesh.FAABB;
 end;
 
+function TGLAbstractMeshBuilder.GetFaceGroupName: string;
+begin
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+  Result := FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Name;
+end;
+
+procedure TGLAbstractMeshBuilder.SetFaceGroupName(const AValue: string);
+begin
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+  FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Name := AValue;
+end;
+
+function TGLAbstractMeshBuilder.GetFaceGroupMaterialName: IGLName;
+begin
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+  Result := FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Material;
+end;
+
+procedure TGLAbstractMeshBuilder.SetFaceGroupMaterialName(const AValue: IGLName);
+begin
+  if FState <> mmsPrimitives then
+  begin
+    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    exit;
+  end;
+  FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Material := AValue;
+end;
+
 procedure TGLAbstractMeshBuilder.Rescale(ARadius: Single);
 var
   Positions: T4ByteList;
@@ -3054,207 +2712,6 @@ begin
 end;
 {$ENDREGION 'TGLAbstractMeshBuilder'}
 
-{$REGION 'TGL3xStaticMeshBuilder'}
-// ------------------
-// ------------------ TGL3xStaticMeshBuilder ------------------
-// ------------------
-
-destructor TGL3xStaticMeshBuilder.Destroy;
-begin
-  if Assigned(FMesh) then
-    TGL3xStaticMesh(FMesh).FBuilder := nil;
-  inherited;
-end;
-
-{$REGION 'TGL3xStaticMeshBuilder'}
-
-{$REGION 'TGLStaticMesh'}
-// ------------------
-// ------------------ TGLStaticMesh ------------------
-// ------------------
-
-destructor TGL3xStaticMesh.Destroy;
-begin
-  inherited;
-  FBuilder.Free;
-end;
-
-function TGL3xStaticMesh.GetBuilder: TGL3xStaticMeshBuilder;
-begin
-  if FBuilder = nil then
-  begin
-    FBuilder := TGL3xStaticMeshBuilder.Create(Self);
-  end;
-  Result := FBuilder;
-end;
-
-procedure TGL3xStaticMesh.LoadFromFile(const fileName: string);
-begin
-  inherited;
-end;
-
-procedure TGL3xStaticMesh.SaveToFile(const fileName: string);
-begin
-  inherited;
-end;
-
-procedure TGL3xStaticMesh.LoadFromStream(stream: TStream);
-begin
-  inherited;
-end;
-
-procedure TGL3xStaticMesh.SaveToStream(stream: TStream);
-begin
-  inherited;
-end;
-
-procedure TGL3xStaticMesh.ImportFromFile(const fileName: string);
-var
-  stream: TStream;
-  importer: TGLAbstractMeshFileIOClass;
-  rStream: {$IFNDEF FPC}TResourceStream{$ELSE}TLazarusResourceStream{$ENDIF};
-
-begin
-  if fileName = '' then
-  begin
-    if FName.Value = glsDEFAULTMESHNAME then
-    begin
-      rStream := CreateResourceStream(glsDEFAULTMESHNAME, GLS_RC_XML_Type);
-      TGLMeshXMLFileIO.LoadFromStream(rStream, GetBuilder);
-      rStream.Free;
-    end
-    else
-      GLSLogger.LogWarning
-        (Format('Trying to import with empty file name to mesh "%s"', [Name]));
-    exit;
-  end;
-
-  try
-    stream := nil;
-    try
-      importer := GetVectorFileFormats.FindFromFileName(fileName);
-      stream := CreateFileStream(fileName);
-      importer.LoadFromStream(stream, GetBuilder);
-    finally
-      stream.Free;
-    end;
-  except
-    GLSLogger.LogError('Error during mesh import');
-  end;
-end;
-
-procedure TGL3xStaticMesh.ExportToFile(const fileName: string);
-var
-  stream: TStream;
-  exporter: TGLAbstractMeshFileIOClass;
-begin
-  try
-    stream := nil;
-    try
-      exporter := GetVectorFileFormats.FindFromFileName(fileName);
-      stream := CreateFileStream(fileName, fmOpenWrite or fmCreate);
-      exporter.SaveToStream(stream, Self);
-    finally
-      stream.Free;
-    end;
-  except
-    GLSLogger.LogError('Error during mesh export');
-  end;
-end;
-
-procedure TGL3xStaticMesh.AttributeRequest(Attr: TGLSLAttribute);
-var
-  A, T: Integer;
-begin
-  if FRequest <> [] then
-    exit;
-  for A := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
-    if Attr = FAttributes[A] then
-      exit;
-  WaitParallelTask;
-
-  if Attr = attrNormal then
-  begin
-    Include(FRequest, arqNormal);
-    AddTaskForServiceContext(ComputeNormalsTask, NewEvent);
-  end
-  else if Attr = attrTangent then
-  begin
-    T := FBuilder.FindSlot(attrTexCoord0);
-    if T > -1 then
-    begin
-      Include(FRequest, arqTangent);
-      AddTaskForServiceContext(ComputeTangensTask, NewEvent);
-    end
-    else
-    begin
-      Include(FRequest, arqTexCoord);
-      AddTaskForServiceContext(ComputeTexCoordTask, NewEvent);
-    end;
-  end
-  else if Attr = attrTexCoord0 then
-  begin
-    Include(FRequest, arqTexCoord);
-    AddTaskForServiceContext(ComputeTexCoordTask, NewEvent);
-  end;
-end;
-
-procedure TGL3xStaticMesh.ComputeNormalsTask;
-begin
-  with GetBuilder do
-  begin
-    BeginMeshAssembly;
-    ComputeNormals;
-    EndMeshAssembly;
-  end;
-  Exclude(FRequest, arqNormal);
-end;
-
-procedure TGL3xStaticMesh.ComputeTexCoordTask;
-begin
-  with GetBuilder do
-  begin
-    BeginMeshAssembly;
-    ComputeTexCoords;
-    EndMeshAssembly;
-  end;
-  Exclude(FRequest, arqTexCoord);
-end;
-
-procedure TGL3xStaticMesh.ComputeTangensTask;
-begin
-  with GetBuilder do
-  begin
-    BeginMeshAssembly;
-    ComputeTangents;
-    EndMeshAssembly;
-  end;
-  Exclude(FRequest, arqTangent);
-end;
-
-{$ENDREGION 'TGLStaticMesh'}
-
-{$REGION 'TGLInstanceData'}
-// ------------------
-// ------------------ TGLInstanceData ------------------
-// ------------------
- destructor TGL3xInstanceData.Destroy;
-begin
-  inherited;
-  FBuilder.Free;
-end;
-
-function TGL3xInstanceData.GetBuilder: TGL3xInstanceDataBuilder;
-begin
-  if FBuilder = nil then
-  begin
-    FBuilder := TGL3xInstanceDataBuilder.Create(Self);
-  end;
-  Result := FBuilder;
-end;
-
-{$ENDREGION 'TGLInstanceData'}
-
 {$REGION 'MeshManager'}
 // ------------------
 // ------------------ MeshManager ------------------
@@ -3262,7 +2719,6 @@ end;
 
 class procedure MeshManager.Initialize;
 begin
-  RegisterGLSceneManager(MeshManager);
   LoadResources;
 end;
 
@@ -3287,6 +2743,11 @@ end;
 class procedure MeshManager.NotifyBeforeCompile;
 begin
   SaveResources;
+end;
+
+class function MeshManager.Priority: Byte;
+begin
+  Result := 252;
 end;
 
 class function MeshManager.FillResourceList(AList: TStringList): Boolean;
@@ -3348,6 +2809,7 @@ var
   ResList: TStringList;
   RT, RT_: TGLSApplicationResource;
   line, rName, rFile: string;
+  StaticMeshClass: TGLAbstractMeshClass;
   newMesh: TGLAbstractMesh;
 
   procedure GetNameAndFile;
@@ -3362,11 +2824,11 @@ var
 begin
   try
     BeginWork;
+    StaticMeshClass := TGLAbstractMeshClass(FindClass('TGL3xStaticMesh'));
 
     if Length(Meshes) = 0 then
     begin
-      // Make default mesh
-      newMesh := TGL3xStaticMesh.Create(nil);
+      newMesh := StaticMeshClass.Create(nil);
       newMesh.Name.Value := glsDEFAULTMESHNAME;
       newMesh.ImportFromFile('');
       PushMesh(newMesh);
@@ -3410,13 +2872,13 @@ begin
             GetNameAndFile;
             if FileStreamExists(rFile) then
             begin
-              newMesh := TGL3xStaticMesh.Create(nil);
+              newMesh := StaticMeshClass.Create(nil);
               newMesh.Name.Value := rName;
               newMesh.LoadFromFile(rFile);
               PushMesh(newMesh);
             end
             else
-              GLSLogger.LogWarning(Format(glsMissingResource, [TGL3xStaticMesh.ClassName, rName]));
+              GLSLogger.LogWarningFmt(glsMissingResource, [StaticMeshClass.ClassName, rName]);
           end;
       end;
     end;
@@ -3455,10 +2917,7 @@ var
   mesh: TGLAbstractMesh;
 begin
   mesh := GetMesh(AName);
-  if mesh is TGL3xStaticMesh then
-    Result := TGL3xStaticMesh(mesh).Builder
-  else
-    Result := nil;
+  Result := TGLAbstractMeshBuilder(mesh.GetBuilder);
 end;
 
 class procedure MeshManager.PushMesh(AMesh: TGLAbstractMesh);
@@ -3549,9 +3008,7 @@ end;
 
 initialization
 
-  RegisterVectorFileFormat('xml', 'XML model file', TGLMeshXMLFileIO);
-  MeshManager.Initialize;
-
+  RegisterGLSceneManager(MeshManager);
 
 finalization
 

@@ -173,6 +173,7 @@ uses
 {$ENDIF}
   BaseClasses,
   GL3xMesh,
+  GL3xStaticMesh,
   GLDrawTechnique;
 
 {$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
@@ -479,6 +480,15 @@ const
 
 begin
   inherited;
+
+  with MeshManager do
+    try
+      BeginWork;
+      FMesh := CreateMesh(Self.ClassName, TGL3xStaticMesh, '', '');
+    finally
+      EndWork;
+    end;
+  StructureChanged;
 
   ConstantBlock.PI := PI;
   ConstantBlock.KrESun := Kr * ESun;
@@ -860,7 +870,7 @@ var
   storeFrameBuffer: TGLuint;
 begin
   // Render self
-  if GL.VERSION_3_2 and ARenderSelf then
+  if GL.VERSION_3_2 and ARenderSelf and not ARci.ignoreMaterials then
   begin
     if ocStructure in Changes then
       BuildMesh;
@@ -905,7 +915,12 @@ begin
           SetDepthRange(0, 1);
         end;
 
-        DrawManager.Draw(FMesh);
+        ARci.ignoreMaterials := True;
+        try
+          DrawManager.Draw(ARci, FMesh);
+        finally
+          ARci.ignoreMaterials := False;
+        end;
 
         if not ARci.GLStates.ForwardContext then
           UseFixedFunctionPipeline;

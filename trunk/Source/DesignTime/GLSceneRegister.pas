@@ -454,6 +454,28 @@ type
     procedure Edit; override;
   end;
 
+  // TGLMeshFaceFroupProperty
+  //
+
+  TGLMeshFaceFroupProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+  end;
+
+  // TGLMeshLODProperty
+  //
+
+  TGLMeshLODProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+    procedure SetValue(const Value: string); override;
+  end;
+
   // TGLSLauncherEditor
   //
 
@@ -621,6 +643,7 @@ uses
   GL3xTexture,
   GL3xFreeForm,
   GL3xMesh,
+  GL3xStaticMesh,
   GL3xMaterialGraph,
   GL3xMaterialEditor,
   GLSLauncher,
@@ -2051,8 +2074,69 @@ begin
   Designer.Modified;
 end;
 
+type
+  TAccessableMeshManager = class(MeshManager);
+
 procedure TGL3xMeshProperty.Edit;
+var
+  locMesh: TGLAbstractMesh;
 begin
+  with TAccessableMeshManager do
+  try
+    BeginWork;
+    locMesh := GetMesh(GetMeshName(GetStrValue));
+  finally
+    EndWork;
+  end;
+  Designer.NoSelection;
+  Designer.SelectComponent(locMesh);
+  Designer.Modified;
+end;
+
+// ------------------
+// ------------------ TGLMeshFaceFroupProperty ------------------
+// ------------------
+
+function TGLMeshFaceFroupProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TGLMeshFaceFroupProperty.GetValues(Proc: TGetStrProc);
+begin
+  TGLMeshLOD(GetComponent(0)).FillFaceGroupNameList(Proc);
+end;
+
+procedure TGLMeshFaceFroupProperty.SetValue(const Value: string);
+var
+  locMeshLOD: TGLMeshLOD;
+begin
+  locMeshLOD := TGLMeshLOD(GetComponent(0));
+  locMeshLOD.__FaceGroup__ := Value;
+  SetStrValue(locMeshLOD.__FaceGroup__);
+end;
+
+// ------------------
+// ------------------ TGLMeshLODProperty ------------------
+// ------------------
+
+function TGLMeshLODProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TGLMeshLODProperty.GetValues(Proc: TGetStrProc);
+begin
+  TGL3xStaticMesh(GetComponent(0)).FillLODIndexList(Proc);
+end;
+
+procedure TGLMeshLODProperty.SetValue(const Value: string);
+var
+  locMesh: TGL3xStaticMesh;
+begin
+  locMesh := TGL3xStaticMesh(GetComponent(0));
+  locMesh.__LOD__ := Value;
+  SetStrValue(locMesh.__LOD__);
 end;
 
 // ------------------
@@ -2560,10 +2644,13 @@ begin
 
 {$IFDEF GLS_EXPERIMENTAL}
   RegisterPropertyEditor(TypeInfo(string), TGL3xBaseSceneObject, 'Material', TGL3xMaterialProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLMeshFaceGroup, 'Material', TGL3xMaterialProperty);
   RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Texture', TGL3xTextureProperty);
   RegisterPropertyEditor(TypeInfo(string), TTextureSamplerNode, 'Sampler', TGL3xSamplerProperty);
   RegisterPropertyEditor(TypeInfo(TGL3xSampler), TTextureSamplerNode, 'SamplerParameters', TGL3xSamplerParamProperty);
   RegisterPropertyEditor(TypeInfo(string), TGL3xFreeForm, 'Mesh', TGL3xMeshProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLMeshLOD, '__FaceGroup__', TGLMeshFaceFroupProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGL3xStaticMesh, '__LOD__', TGLMeshLODProperty);
 
   RegisterComponentEditor(TGLSLauncher, TGLSLauncherEditor);
 

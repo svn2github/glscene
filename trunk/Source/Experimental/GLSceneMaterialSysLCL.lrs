@@ -23973,8 +23973,9 @@ LazarusResources.Add('DEFAULTMESH','XML',[
   +'0630500006505000065050000BD080000CF050000C2050000B5050000B4050000BE080000BF'
   +'080000C0080000A5050000A9050000A8050000A9050000A5050000A70500009705000096050'
   +'0005C050000970500005C05000064050000D6050000FC050000D4050000D6050000C1080000'
-  +'FC05000001060000020600000B060000</Elements>'#13#10'    <DrawPortions>'#13#10
-  +'      <DrawPortion VertexOffset="0" VertexCount="6192" ElementOffset="0" El'
-  +'ementCount="6192" PrimitiveType="TRIANGLES" />'#13#10'    </DrawPortions>'
-  +#13#10'  </Geometry>'#13#10'</TGL3xMesh>'
+  +'FC05000001060000020600000B060000</Elements>'#13#10'    <LODs>'#13#10'      '
+  +'<FaceGroups>'#13#10'        <FaceGroup Name="FaceGroup0" VertexOffset="0" V'
+  +'ertexCount="6192" ElementOffset="0" ElementCount="6192" PrimitiveType="TRIA'
+  +'NGLES" Material="DEFAULTMATERIAL" />'#13#10'      </FaceGroups>'#13#10'    '
+  +'</LODs>'#13#10'  </Geometry>'#13#10'</TGL3xMesh>'
 ]);

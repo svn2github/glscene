@@ -71,6 +71,7 @@ unit GLFileOBJ;
 interface
 
 uses
+  BaseClasses,
   GLCrossPlatform,
   Classes,
   SysUtils,
@@ -86,6 +87,7 @@ uses
   GLMaterial
 {$IFDEF GLS_EXPERIMENTAL}
   ,GLShaderManager,
+  GL3xMaterial,
   GL3xMesh
 {$ENDIF GLS_EXPERIMENTAL}
   ;
@@ -183,6 +185,7 @@ uses
 {$IFDEF GLS_DELPHI_2009_UP}
   VectorTypes,
 {$ENDIF}
+  GLStrings,
   OpenGLTokens,
   XOpenGL,
   GLContext,
@@ -1395,10 +1398,16 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
     LineNo: Integer; { current Line number - for error messages }
     Eof: Boolean; { Stream done? }
     BufPos: Integer; { Position in the buffer }
+    GroupName: string;
+    GroupIndex: Integer;
 
     PositionList, NormalList, TexCoordList: T4ByteList;
     PositionType, NormalType, TexCoordType: TGLSLDataType;
-    PositionIndices, NormalIndices, TexCoordIndices: TIntegerList;
+    PositionIndices,
+    NormalIndices,
+    TexCoordIndices,
+    GroupIndices: TIntegerList;
+    GroupList: TStringList;
 
     command: string;
 
@@ -1500,6 +1509,9 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
     PositionIndices.Add(pIdx);
     NormalIndices.Add(nIdx);
     TexCoordIndices.Add(tIdx);
+    GroupIndices.Add(GroupIndex);
+    // Flag about group useness
+    GroupList.Objects[GroupIndex] := ABuilder;
   end;
 
   procedure ReadFace;
@@ -1546,7 +1558,8 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
   end;
 
   var
-    I: Integer;
+    I, J: Integer;
+    lvMaterial: IGLName;
 
   procedure AddAttribute(const Attr: TGLSLAttribute; ASource: T4ByteList; AType: TGLSLDataType; IndicesList: TIntegerList);
   var
@@ -1613,6 +1626,8 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
     PositionIndices.Destroy;
     NormalIndices.Destroy;
     TexCoordIndices.Destroy;
+    GroupIndices.Destroy;
+    GroupList.Destroy;
   end;
 
   {$ENDREGION}
@@ -1620,6 +1635,7 @@ class procedure TGLMeshOBJFileIO.LoadFromStream(AStream: TStream; ABuilder: TGLA
 begin
   Eof := False;
   LineNo := 0;
+  GroupIndex := 0;
 
   PositionList := T4ByteList.Create;
   NormalList := T4ByteList.Create;
@@ -1630,6 +1646,8 @@ begin
   PositionIndices := TIntegerList.Create;
   NormalIndices := TIntegerList.Create;
   TexCoordIndices := TIntegerList.Create;
+  GroupIndices := TIntegerList.Create;
+  GroupList := TStringList.Create;
 
   try
     ABuilder.BeginMeshAssembly;
@@ -1663,7 +1681,13 @@ begin
       end
       else if command = 'G' then
       begin
-        //Skip
+        GroupName := NextToken(Line, ' ');
+        if Length(GroupName) > 0 then
+        begin
+          GroupIndex := GroupList.IndexOf(GroupName);
+          if GroupIndex < 0 then
+            GroupIndex := GroupList.Add(GroupName);
+        end;
       end
       else if command = 'F' then
       begin
@@ -1679,7 +1703,13 @@ begin
       end
       else if command = 'USEMTL' then
       begin
-        //Skip
+        GroupName := NextToken(Line, ' ');
+        if Length(GroupName) > 0 then
+        begin
+          GroupIndex := GroupList.IndexOf(GroupName);
+          if GroupIndex < 0 then
+            GroupIndex := GroupList.Add(GroupName);
+        end;
       end
       else if command = 'S' then
       begin
@@ -1703,15 +1733,41 @@ begin
     if TexCoordType <> GLSLTypeUndefined then
       ABuilder.DeclareAttribute(attrTexCoord0, TexCoordType);
 
-    ABuilder.BeginBatch(mpTRIANGLES);
-    for I := 0 to PositionIndices.Count - 1 do
+    if GroupList.Count = 0 then
     begin
-      AddAttribute(attrPosition, PositionList, PositionType, PositionIndices);
-      AddAttribute(attrNormal, NormalList, NormalType, NormalIndices);
-      AddAttribute(attrTexCoord0, TexCoordList, TexCoordType, TexCoordIndices);
-      ABuilder.EmitVertex;
+      // Create default group
+      GroupList.Add('FaceGroup0');
+      GroupIndices.Clear;
+      GroupIndices.AddNulls(PositionIndices.Count);
     end;
-    ABuilder.EndBatch;
+
+    with MaterialManager do
+    try
+      BeginWork;
+      lvMaterial := GetMaterialName(glsDEFAULTMATERIALNAME);
+    finally
+      EndWork;
+    end;
+
+    for J := 0 to GroupList.Count - 1 do
+    begin
+      if GroupList.Objects[J] = nil then
+        continue;
+      ABuilder.BeginBatch(mpTRIANGLES, 0);
+      ABuilder.FaceGroupName := GroupList[J];
+      ABuilder.FaceGroupMaterialName := lvMaterial;
+      for I := 0 to GroupIndices.Count - 1 do
+      begin
+        if GroupIndices[I] = J then
+        begin
+          AddAttribute(attrPosition, PositionList, PositionType, PositionIndices);
+          AddAttribute(attrNormal, NormalList, NormalType, NormalIndices);
+          AddAttribute(attrTexCoord0, TexCoordList, TexCoordType, TexCoordIndices);
+          ABuilder.EmitVertex;
+        end;
+      end;
+      ABuilder.EndBatch;
+    end;
 
     ABuilder.WeldVertices;
     ABuilder.EndMeshAssembly;

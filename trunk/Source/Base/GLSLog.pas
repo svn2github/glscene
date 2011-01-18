@@ -9,6 +9,7 @@
 
   <b>Historique : </b><font size=-1><ul>
 
+  <li>18/01/11 - Yar - Added message sending to IDE memo in design time
   <li>07/01/10 - Yar - Added formated string logging
   <li>29/11/10 - Yar - Added log raising in Linux
   <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
@@ -167,6 +168,8 @@ type
       default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
   end;
 
+  TIDELogProc = procedure(const AMsg: string);
+
   { : Return logger wich created by TGLSLogger component }
 function UserLog: TLogSession;
 function SkipBeforeSTR(var TextFile: Text; SkipSTR: string): Boolean;
@@ -175,6 +178,7 @@ function ReadLine(var TextFile: Text): string;
 var
   { : GLScene inner logger }
   GLSLogger: TLogSession;
+  vIDELogProc: TIDELogProc;
 
 implementation
 
@@ -507,6 +511,8 @@ begin
 end;
 
 procedure TLogSession.AppendLog(Desc: string; Level: TLogLevel = lkInfo);
+var
+  line: string;
 begin
 {$IFNDEF GLS_LOGGING}
   if Self = GLSLogger then
@@ -523,17 +529,20 @@ begin
 {$ENDIF}
   case TimeFormat of
     lfNone:
-      WriteLn(LogFile, lkPrefix[Level] + Desc);
+      line := lkPrefix[Level] + Desc;
     lfDate:
-      WriteLn(LogFile, DateToStr(Now) + #9 + lkPrefix[Level] + Desc);
+      line := DateToStr(Now) + #9 + lkPrefix[Level] + Desc;
     lfTime:
-      WriteLn(LogFile, TimeToStr(Now) + #9 + lkPrefix[Level] + Desc);
+      line := TimeToStr(Now) + #9 + lkPrefix[Level] + Desc;
     lfDateTime:
-      WriteLn(LogFile, DateTimeToStr(Now) + #9 + lkPrefix[Level] + Desc);
+      line := DateTimeToStr(Now) + #9 + lkPrefix[Level] + Desc;
     lfElapsed:
-      WriteLn(LogFile, IntToStr(GLGetTickCount - StartedMs) + #9 +
-        lkPrefix[Level] + Desc);
+      line := IntToStr(GLGetTickCount - StartedMs) + #9 +
+        lkPrefix[Level] + Desc;
   end;
+  WriteLn(LogFile, line);
+  if (Self = GLSLogger) and Assigned(vIDELogProc) then
+    vIDELogProc('GLScene: ' + lkPrefix[Level] + Desc);
   CloseFile(LogFile);
   inc(LogKindCount[Level]);
   if llMessageLimit[Level] = LogKindCount[Level] then

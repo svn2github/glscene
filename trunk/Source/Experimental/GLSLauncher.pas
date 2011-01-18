@@ -56,11 +56,13 @@ type
   LaunchManager = class(TGLSAbstractManager)
   protected
     // Design time notifications
+    class procedure Initialize; override;
+    class procedure Finalize;  override;
     class procedure NotifyProjectOpened; override;
     class procedure NotifyProjectClosed; override;
     class procedure NotifyContextCreated; override;
     class procedure NotifyBeforeCompile; override;
-    class function FirstOne: Boolean; override;
+    class function Priority: Byte; override;
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; override;
@@ -84,6 +86,15 @@ var
   vLauncher: TGLSLauncher;
   SplashImage: TJPEGImage;
   WaitInterval: Integer;
+
+class procedure LaunchManager.Initialize;
+begin
+end;
+
+class procedure LaunchManager.Finalize;
+begin
+  FreeAndNil(SplashImage);
+end;
 
 class procedure LaunchManager.NotifyContextCreated;
 var
@@ -132,9 +143,9 @@ class procedure LaunchManager.MakeUniqueItemName(var AName: string; AClass: TGLA
 begin
 end;
 
-class function LaunchManager.FirstOne: Boolean;
+class function LaunchManager.Priority: Byte;
 begin
-  Result := True;
+  Result := 255;
 end;
 
 class procedure LaunchManager.NotifyProjectOpened;
@@ -284,13 +295,17 @@ begin
   SplashImage.LoadFromFile(AFileName);
 end;
 
+{$IFDEF GLS_EXPERIMENTAL}
+
 initialization
 
   RegisterGLSceneManager(LaunchManager);
 
 finalization
 
-  FreeAndNil(SplashImage);
+  LaunchManager.Finalize;
+
+{$ENDIF GLS_EXPERIMENTAL}
 
 end.
 

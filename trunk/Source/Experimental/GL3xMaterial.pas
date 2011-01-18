@@ -190,7 +190,7 @@ type
     procedure SaveToStream(stream: TStream); override;
     procedure Initialize; override;
     class function Capabilities: TDataFileCapabilities; override;
-    procedure Apply(var ARci: TRenderContextInfo; AVariant: TMaterialVariant);
+    procedure Apply(var ARci: TRenderContextInfo);
     function UnApply(var ARci: TRenderContextInfo): Boolean;
 
     property Name: TGL3xMaterialName read FName;
@@ -200,6 +200,8 @@ type
   MaterialManager = class(TGLSAbstractManager)
   protected
     { Private Declarations }
+    class procedure Initialize; override;
+    class procedure Finalize;  override;
     class procedure LoadMaterialSystem;
     class procedure SaveResources;
     class procedure LoadResources;
@@ -210,14 +212,12 @@ type
     class procedure PushMaterial(AMaterial: TGL3xMaterial);
     class procedure PushTexture(ATexture: TGL3xTexture);
     class procedure PushSampler(ASampler: TGL3xSampler);
-    class procedure Initialize;
-    class procedure Finalize;
-
     // Design time notifications
     class procedure NotifyProjectOpened; override;
     class procedure NotifyProjectClosed; override;
     class procedure NotifyContextCreated; override;
     class procedure NotifyBeforeCompile; override;
+    class function Priority: Byte; override;
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; override;
@@ -233,17 +233,18 @@ type
     class function CreateMaterial(AName: string; const AFileName: string): IGLName;
     class function CreateTexture(AName: string; const AImportFile: string; const AFileName: string): IGLName;
     class function CreateSampler(AName: string; const AFileName: string): IGLName;
-    class procedure ApplyMaterial(const AName: IGLName; var ARci: TRenderContextInfo;
-      AVariant: TMaterialVariant = matvarCommon);
+    class procedure ApplyMaterial(const AName: IGLName; var ARci: TRenderContextInfo);
     class function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean;
     class procedure ApplyTextureSampler(const ATextureName, ASamplerName: IGLName; AUniform: TGLSLUniform);
 
     class function GetMaterialName(const AName: string): IGLName;
     class function GetMaterialProgramName(const AName: IGLName;
       AVariant: TMaterialVariant = matvarCommon): IGLName;
+    {: Return index to sort materials by order. Transparency considered. }
+    class function GetMaterialOrder(const AName: IGLName): Integer;
     class function GetTextureName(const AName: string): IGLName;
-
     class function GetSamplerName(const AName: string): IGLName;
+    class function GetCurrentMaterialName: IGLName;
   end;
 
 implementation
@@ -277,7 +278,6 @@ var
 
 class procedure MaterialManager.Initialize;
 begin
-  RegisterGLSceneManager(MaterialManager);
   LoadMaterialSystem;
   LoadResources;
   Initialized := False;
@@ -697,6 +697,11 @@ begin
   SaveResources;
 end;
 
+class function MaterialManager.Priority: Byte;
+begin
+  Result := 253;
+end;
+
 class function MaterialManager.GenerateShaderCode(const ASampleList: TSampleList;
   var AProgramCodeSet: TProgramCodeSet;
   const AName: AnsiString; AOutType: TGLSLDataType): Boolean;
@@ -980,6 +985,19 @@ begin
   Result := GetMaterial(AName).ProgramName[AVariant];
 end;
 
+class function MaterialManager.GetMaterialOrder(const AName: IGLName): Integer;
+begin
+  CheckCall;
+  if Assigned(AName) then
+  begin
+    Result := AName.GetIndex;
+    if GetMaterial(AName).FBlendingMode in [bmTransparency, bmAdditive, bmMasked, bmModulate] then
+      Result := - Result;
+  end
+  else
+    Result := 0;
+end;
+
 class function MaterialManager.GetTextureName(const AName: string): IGLName;
 var
   I, N, H: Integer;
@@ -1024,6 +1042,14 @@ begin
   end;
 
   Result := nil;
+end;
+
+class function MaterialManager.GetCurrentMaterialName: IGLName;
+begin
+  if Assigned(LastMaterial) then
+    Result := LastMaterial.FName
+  else
+    Result := nil;
 end;
 
 class procedure MaterialManager.MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass);
@@ -1209,13 +1235,13 @@ begin
 end;
 
 class procedure MaterialManager.ApplyMaterial(const AName: IGLName;
-  var ARci: TRenderContextInfo; AVariant: TMaterialVariant);
+  var ARci: TRenderContextInfo);
 var
   vMaterial: TGL3xMaterial;
 begin
   Assert(LastMaterial = nil);
   vMaterial := GetMaterial(AName);
-  vMaterial.Apply(ARci, AVariant);
+  vMaterial.Apply(ARci);
   LastMaterial := vMaterial;
 end;
 
@@ -2205,7 +2231,7 @@ begin
     if FName.Value = glsDEFAULTMATERIALNAME then
       GLSLogger.LogFatalError('Error when loading default material')
     else
-      GLSLogger.LogError('Error when loading material ' + string(FName.Value));
+      GLSLogger.LogError('Error when loading material ' + FName.Value);
   end;
 end;
 
@@ -2319,20 +2345,22 @@ begin
     end;
 end;
 
-procedure TGL3xMaterial.Apply(var ARci: TRenderContextInfo;
-  AVariant: TMaterialVariant);
+procedure TGL3xMaterial.Apply(var ARci: TRenderContextInfo);
 var
   I: Integer;
   bReady: Boolean;
   bFaceCull: Boolean;
+  lvProgram: IGLName;
 begin
-  if not ShaderManager.IsProgramLinked(FProgramVariants[AVariant].FProgram) then
+  lvProgram := FProgramVariants[ARci.materialVariant].FProgram;
+  if not ShaderManager.IsProgramLinked(lvProgram) then
   begin
     if FLoaded then
     begin
       // On the fly initialization
       Initialize;
-      bReady := ShaderManager.IsProgramLinked(FProgramVariants[AVariant].FProgram);
+      lvProgram := FProgramVariants[ARci.materialVariant].FProgram;
+      bReady := ShaderManager.IsProgramLinked(lvProgram);
     end
     else
       bReady := False;
@@ -2343,7 +2371,7 @@ begin
   if bReady then
   begin
     // Apply Shader
-    ShaderManager.UseProgram(FProgramVariants[AVariant].FProgram);
+    ShaderManager.UseProgram(lvProgram);
 
     // Apply Uniforms
     for I := 0 to High(FUniforms) do
@@ -2397,7 +2425,7 @@ begin
   end;
 
   // Force-major
-  GLSLogger.LogError(Format('Applying of material %s aborted.', [FName.Value]));
+  GLSLogger.LogErrorFmt('Applying of material %s aborted.', [FName.Value]);
   Abort;
 end;
 
@@ -2427,7 +2455,7 @@ end;
 
 initialization
 
-  MaterialManager.Initialize;
+  RegisterGLSceneManager(MaterialManager);
 
 finalization
 

@@ -352,14 +352,15 @@ type
     { Protected Declarations }
     class function CurrentProgram: TGLProgramHandle;
     // Design time notifications
+    class procedure Initialize; override;
+    class procedure Finalize; override;
     class procedure NotifyProjectOpened; override;
     class procedure NotifyProjectClosed; override;
     class procedure NotifyContextCreated; override;
     class procedure NotifyBeforeCompile; override;
+    class function Priority: Byte; override;
   private
     { Private Declarations }
-    class procedure Initialize;
-    class procedure Finalize;
     class procedure SaveBinaryCache(ADoFree: Boolean);
 
     class function GetObject(const AName: IGLName): TGLSLObject;
@@ -1713,7 +1714,61 @@ class procedure ShaderManager.Initialize;
 var
   LogPath: string;
 begin
-  RegisterGLSceneManager(ShaderManager);
+  SetLength(ProgramCache, GLS_PROGRAM_CACHE_SIZE);
+
+  {: Registration of the most common attributes. }
+  attrPosition :=
+    TGLSLAttribute.RegisterAttribute('Position');
+  attrNormal :=
+    TGLSLAttribute.RegisterAttribute('Normal');
+  attrVertexColor :=
+    TGLSLAttribute.RegisterAttribute('VertexColor');
+  attrTexCoord0 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord0');
+  attrTexCoord1 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord1');
+  attrTexCoord2 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord2');
+  attrTexCoord3 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord3');
+  attrTexCoord4 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord4');
+  attrTexCoord5 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord5');
+  attrTexCoord6 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord6');
+  attrTexCoord7 :=
+    TGLSLAttribute.RegisterAttribute('TexCoord7');
+  attrTangent :=
+    TGLSLAttribute.RegisterAttribute('Tangent');
+  attrBinormal :=
+    TGLSLAttribute.RegisterAttribute('Binormal');
+  attrInstanceID :=
+    TGLSLAttribute.RegisterAttribute('gl_InstanceID');
+
+  {: Registration of the most common uniforms. }
+  uniformModelMatrix
+    := TGLSLUniform.RegisterUniform('ModelMatrix');
+  uniformViewProjectionMatrix
+    := TGLSLUniform.RegisterUniform('ViewProjectionMatrix');
+  uniformCameraWorldPosition
+    := TGLSLUniform.RegisterUniform('CameraWorldPosition');
+  uniformTexUnit0
+    := TGLSLUniform.RegisterUniform('TexUnit0');
+  uniformTexUnit1
+    := TGLSLUniform.RegisterUniform('TexUnit1');
+  uniformTexUnit2
+    := TGLSLUniform.RegisterUniform('TexUnit2');
+  uniformTexUnit3
+    := TGLSLUniform.RegisterUniform('TexUnit3');
+  uniformTexUnit4
+    := TGLSLUniform.RegisterUniform('TexUnit4');
+  uniformTexUnit5
+    := TGLSLUniform.RegisterUniform('TexUnit5');
+  uniformTexUnit6
+    := TGLSLUniform.RegisterUniform('TexUnit6');
+  uniformTexUnit7
+    := TGLSLUniform.RegisterUniform('TexUnit7');
 
   LogPath := ExtractFilePath(ParamStr(0));
   ShaderManagerLog
@@ -1725,6 +1780,8 @@ end;
 
 class procedure ShaderManager.Finalize;
 begin
+  ClearRegistries;
+
   BeginWork;
   // Binary cache in design time is very dangerous accidents in the driver
   if not IsDesignTime then
@@ -1743,6 +1800,11 @@ end;
 class procedure ShaderManager.NotifyBeforeCompile;
 begin
   SaveBinaryCache(False);
+end;
+
+class function ShaderManager.Priority: Byte;
+begin
+  Result := 254;
 end;
 
 class function ShaderManager.FillResourceList(AList: TStringList): Boolean;
@@ -2813,69 +2875,17 @@ end;
 //end;
 {$ENDREGION}
 
+{$IFDEF GLS_EXPERIMENTAL}
+
 initialization
 
-  ShaderManager.Initialize;
-  SetLength(ProgramCache, GLS_PROGRAM_CACHE_SIZE);
-
-  {: Registration of the most common attributes. }
-  attrPosition :=
-    TGLSLAttribute.RegisterAttribute('Position');
-  attrNormal :=
-    TGLSLAttribute.RegisterAttribute('Normal');
-  attrVertexColor :=
-    TGLSLAttribute.RegisterAttribute('VertexColor');
-  attrTexCoord0 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord0');
-  attrTexCoord1 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord1');
-  attrTexCoord2 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord2');
-  attrTexCoord3 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord3');
-  attrTexCoord4 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord4');
-  attrTexCoord5 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord5');
-  attrTexCoord6 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord6');
-  attrTexCoord7 :=
-    TGLSLAttribute.RegisterAttribute('TexCoord7');
-  attrTangent :=
-    TGLSLAttribute.RegisterAttribute('Tangent');
-  attrBinormal :=
-    TGLSLAttribute.RegisterAttribute('Binormal');
-  attrInstanceID :=
-    TGLSLAttribute.RegisterAttribute('gl_InstanceID');
-
-  {: Registration of the most common uniforms. }
-  uniformModelMatrix
-    := TGLSLUniform.RegisterUniform('ModelMatrix');
-  uniformViewProjectionMatrix
-    := TGLSLUniform.RegisterUniform('ViewProjectionMatrix');
-  uniformCameraWorldPosition
-    := TGLSLUniform.RegisterUniform('CameraWorldPosition');
-  uniformTexUnit0
-    := TGLSLUniform.RegisterUniform('TexUnit0');
-  uniformTexUnit1
-    := TGLSLUniform.RegisterUniform('TexUnit1');
-  uniformTexUnit2
-    := TGLSLUniform.RegisterUniform('TexUnit2');
-  uniformTexUnit3
-    := TGLSLUniform.RegisterUniform('TexUnit3');
-  uniformTexUnit4
-    := TGLSLUniform.RegisterUniform('TexUnit4');
-  uniformTexUnit5
-    := TGLSLUniform.RegisterUniform('TexUnit5');
-  uniformTexUnit6
-    := TGLSLUniform.RegisterUniform('TexUnit6');
-  uniformTexUnit7
-    := TGLSLUniform.RegisterUniform('TexUnit7');
+  RegisterGLSceneManager(ShaderManager);
 
 finalization
 
   ShaderManager.Finalize;
-  ClearRegistries;
+
+{$ENDIF GLS_EXPERIMENTAL}
 
 end.
 

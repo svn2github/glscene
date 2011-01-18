@@ -19,9 +19,10 @@ uses
   GLCoordinates,
   GLObjects,
   GLShaderManager,
-  GL3xMesh,
-  GLDrawTechnique,
   GL3xMaterial,
+  GL3xMesh,
+  GL3xStaticMesh,
+  GLDrawTechnique,
   GLShaderEnvironment,
   GL3xFactory;
 
@@ -54,7 +55,6 @@ type
   TGL3xCustomObject = class(TGL3xBaseSceneObject)
   published
     { Published Declarations }
-    property Material;
     property ObjectsSorting;
     property VisibilityCulling;
     property Direction;
@@ -75,6 +75,9 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
+  published
+    { Published Declarations }
+    property Material;
   end;
 
   // TGL3xPlane
@@ -403,14 +406,14 @@ begin
       if ARci.ignoreMaterials then
       begin
         BeforeRender;
-        DrawManager.Draw(FMesh);
+        DrawManager.Draw(ARci, FMesh);
         AfterRender;
       end
       else
         repeat
           MaterialManager.ApplyMaterial(FMaterial, ARci);
           BeforeRender;
-          DrawManager.Draw(FMesh);
+          DrawManager.Draw(ARci, FMesh);
           AfterRender;
         until MaterialManager.UnApplyMaterial(ARci);
     except
@@ -866,14 +869,14 @@ begin
       if ARci.ignoreMaterials then
       begin
         BeforeRender;
-        DrawManager.Draw(FMesh);
+        DrawManager.Draw(ARci, FMesh);
         AfterRender;
       end
       else
         repeat
           MaterialManager.ApplyMaterial(FMaterial, ARci);
           BeforeRender;
-          DrawManager.Draw(FMesh);
+          DrawManager.Draw(ARci, FMesh);
           AfterRender;
         until MaterialManager.UnApplyMaterial(ARci);
     except
