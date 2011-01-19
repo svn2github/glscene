@@ -4387,6 +4387,7 @@ begin
     TProcedure(InitProc);
 {$ENDIF}
   Application.Initialize;
+  NotifyGLSceneManagersInitialization;
   GLContextManager.CreateServiceContext;
 end;
 
