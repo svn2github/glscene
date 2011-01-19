@@ -23,9 +23,6 @@ uses
   Variants,
 {$IFDEF FPC}
   LCLVersion,
-  FileUtil,
-  XMLRead,
-  XMLWrite,
   LResources,
 {$ENDIF}
   GLSCrossXML,
@@ -40,7 +37,6 @@ uses
   VectorGeometry,
   GL3xMaterialTokens,
   GL3xTexture,
-  GLSRedBlackTree,
   GLRenderContextInfo
 {$IFDEF GLS_DELPHI}
   ,

@@ -320,8 +320,7 @@ type
 
 implementation
 
-uses
-  VectorTypes;
+{$IFDEF GLS_DELPHI}uses VectorTypes;{$ENDIF}
 
 const
   EPS =  0.001;

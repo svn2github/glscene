@@ -130,7 +130,7 @@ type
 implementation
 
 uses
-  BaseClasses, GLDrawTechnique, GL3xMesh;
+  BaseClasses, GL3xMesh, GL3xStaticMesh, GLDrawTechnique;
 
 const
   EPS = 0.0001;
@@ -293,6 +293,16 @@ end;
 constructor TGL3xCustomAtmosphere.Create(AOwner: TComponent);
 begin
   inherited;
+
+  with MeshManager do
+    try
+      BeginWork;
+      FMesh := CreateMesh(Self.ClassName, TGL3xStaticMesh, '', '');
+    finally
+      EndWork;
+    end;
+  StructureChanged;
+
   FLowAtmColor := TGLColor.Create(Self);
   FHighAtmColor := TGLColor.Create(Self);
 
@@ -304,15 +314,6 @@ begin
   FHighAtmColor.Color := VectorMake(0, 0, 1, 1);
 
   FBlendingMode := abmOneMinusSrcAlpha;
-
-  with MeshManager do
-    try
-      BeginWork;
-      FMesh := CreateMesh('ATMOSPHERE', TGL3xStaticMesh, '', '');
-    finally
-      EndWork;
-    end;
-  BuildMesh;
 end;
 
 destructor TGL3xCustomAtmosphere.Destroy;
@@ -333,7 +334,7 @@ begin
   if GL.VERSION_2_1 then
   begin
     // Render self
-    if ARenderSelf then
+    if ARenderSelf and not ARci.ignoreMaterials then
     begin
       if AtmosphereProgram = nil then
         InitAtmosphereShader;
@@ -388,7 +389,12 @@ begin
           end;
           EnableGLBlendingMode(ARci.GLStates);
 
-          DrawManager.Draw(FMesh);
+          ARci.ignoreMaterials := True;
+          try
+            DrawManager.Draw(ARci, FMesh);
+          finally
+            ARci.ignoreMaterials := False;
+          end;
           if not ARci.GLStates.ForwardContext then
             UseFixedFunctionPipeline;
         end;

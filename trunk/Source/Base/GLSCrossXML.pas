@@ -14,6 +14,7 @@ interface
 
 uses
   Classes,
+  SysUtils,
 {$IFNDEF FPC}
   Variants,
   XMLIntf,
@@ -40,8 +41,10 @@ type
 {$ENDIF}
 function GLSNewXMLDocument: GLSXMLDocument;
 procedure ReleaseXMLDocument(var ADoc: GLSXMLDocument);
-procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
-procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream); overload;
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream); overload;
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AFileName: string); overload;
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AFileName: string); overload;
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean; overload;
 function GetXMLAttribute(const XMLNode: GLSXMLNode; Idx: Integer): GLSXMLNode; overload;
 procedure SetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; const Value: string); overload;
@@ -76,6 +79,16 @@ end;
 procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
 begin
   ADoc.LoadFromStream(AStream);
+end;
+
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AFileName: string); overload;
+begin
+  ADoc.SaveToFile(AFileName);
+end;
+
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AFileName: string); overload;
+begin
+  ADoc.LoadFromFile(AFileName);
 end;
 
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean;
@@ -146,17 +159,27 @@ end;
 
 procedure ReleaseXMLDocument(var ADoc: GLSXMLDocument);
 begin
-  FreeAnddNil(ADoc);
+  FreeAndNil(ADoc);
 end;
 
 procedure WriteXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
 begin
-  XMLWrite.WriteXMLFile(MeshDoc, AStream);
+  XMLWrite.WriteXMLFile(ADoc, AStream);
 end;
 
 procedure ReadXMLFile(var ADoc: GLSXMLDocument; AStream: TStream);
 begin
-  XMLRead.ReadXMLFile(MeshDoc, AStream);
+  XMLRead.ReadXMLFile(ADoc, AStream);
+end;
+
+procedure WriteXMLFile(var ADoc: GLSXMLDocument; AFileName: string);
+begin
+  XMLWrite.WriteXMLFile(ADoc, AFileName);
+end;
+
+procedure ReadXMLFile(var ADoc: GLSXMLDocument; AFileName: string);
+begin
+  XMLRead.ReadXMLFile(ADoc, AFileName);
 end;
 
 function GetXMLAttribute(const XMLNode: GLSXMLNode; const AttrName: string; out Value: string): Boolean;

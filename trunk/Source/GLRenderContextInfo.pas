@@ -23,7 +23,7 @@ interface
 
 uses
   PersistentClasses, VectorGeometry, GLState,
-{$IFDEF GLS_EXPERIMENTAL}
+{$IFDEF GLS_MULTITHREAD}
   GL3xMaterialTokens,
 {$ENDIF}
   GLPipelineTransformation, GLColor;
@@ -115,7 +115,7 @@ type
       amalgamating : Boolean;
       lights: TPersistentObjectList;
       afterRenderEffects: TPersistentObjectList;
-{$IFDEF GLS_EXPERIMENTAL}
+{$IFDEF GLS_MULTITHREAD}
       materialVariant: TMaterialVariant;
 {$ENDIF}
    end;

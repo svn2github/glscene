@@ -37,7 +37,6 @@ uses
   VectorLists,
   GeometryBB,
   OpenGLTokens,
-  GLSGenerics,
   GLSRedBlackTree,
   GL3xMaterialTokens;
 

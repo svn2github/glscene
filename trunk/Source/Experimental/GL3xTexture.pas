@@ -358,6 +358,7 @@ procedure TGL3xSampler.LoadFromStream(stream: TStream);
 var
   Temp: Integer;
 begin
+  Temp := 0;
   stream.ReadBuffer(Temp, SizeOf(Integer)); // Version
   if Temp > 0 then
   begin
@@ -759,6 +760,7 @@ procedure TGL3xTexture.LoadFromStream(stream: TStream);
 var
   Temp, L, F: Integer;
 begin
+  Temp := 0;
   stream.ReadBuffer(Temp, SizeOf(Integer)); // Version
   if Temp > 0 then
   begin
