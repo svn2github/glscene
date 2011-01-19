@@ -221,7 +221,7 @@ implementation
 uses
   SysUtils,
   OpenGLTokens,
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF}
+  {$IFDEF GLS_DELPHI} VectorTypes, {$ENDIF}
   GLMultisampleImage;
 
 { TGLFBORenderer }
