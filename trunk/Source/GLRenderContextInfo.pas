@@ -19,7 +19,14 @@ unit GLRenderContextInfo;
 
 interface
 
-uses PersistentClasses, VectorGeometry, GLState, GLPipelineTransformation, GLColor;
+{$I GLScene.inc}
+
+uses
+  PersistentClasses, VectorGeometry, GLState,
+{$IFDEF GLS_EXPERIMENTAL}
+  GL3xMaterialTokens,
+{$ENDIF}
+  GLPipelineTransformation, GLColor;
 
 type
 
@@ -108,6 +115,9 @@ type
       amalgamating : Boolean;
       lights: TPersistentObjectList;
       afterRenderEffects: TPersistentObjectList;
+{$IFDEF GLS_EXPERIMENTAL}
+      materialVariant: TMaterialVariant;
+{$ENDIF}
    end;
    PRenderContextInfo = ^TRenderContextInfo;
 
