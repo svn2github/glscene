@@ -6,7 +6,8 @@
   A polymorphism-enabled TCollection-like set of classes<p>
 
   <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility  
+      <li>20/01/11 - DanB - TXCollectionItem no longer sets initial Name = FriendlyName
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>31/08/10 - Yar - Bugfixed TXCollectionItem.ReadFromFiler when Assertion off
       <li>07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
       <li>10/04/08 - DaStr - TXCollectionItem now descends from
@@ -314,7 +315,6 @@ begin
     aOwner.FList.Add(Self);
     aOwner.FCount := aOwner.FList.Count;
   end;
-  FName := FriendlyName;
 end;
 
 // Destroy
