@@ -1146,4 +1146,9 @@ initialization
   RegisterXCollectionItemClass(TSpriteAnimFrame);
   RegisterXCollectionItemClass(TSpriteAnimation);
 
+finalization
+
+  UnregisterXCollectionItemClass(TSpriteAnimFrame);
+  UnregisterXCollectionItemClass(TSpriteAnimation);
+
 end.

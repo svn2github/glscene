@@ -1062,5 +1062,9 @@ initialization
 	RegisterXCollectionItemClass(TGLDCEStatic);
 	RegisterXCollectionItemClass(TGLDCEDynamic);
 
+finalization
+
+	UnregisterXCollectionItemClass(TGLDCEStatic);
+	UnregisterXCollectionItemClass(TGLDCEDynamic);
 
 end.

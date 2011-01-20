@@ -305,4 +305,8 @@ initialization
 	// class registrations
 	RegisterXCollectionItemClass(TGLBExplosionFX);
 
+finalization
+
+	UnregisterXCollectionItemClass(TGLBExplosionFX);
+
 end.

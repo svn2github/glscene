@@ -860,5 +860,9 @@ initialization
    // class registrations
   RegisterXCollectionItemClass(TGLBFireFX);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLBFireFX);
+
 end.
 

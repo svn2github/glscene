@@ -1740,5 +1740,8 @@ finalization
 
    vSoundLibraries.Free; vSoundLibraries:=nil;
 
+	UnregisterXCollectionItemClass(TGLBSoundEmitter);
+
+
 end.
 

@@ -650,5 +650,9 @@ initialization
 	// class registrations
 	RegisterXCollectionItemClass(TGLBThorFX);
 
+finalization
+
+	UnregisterXCollectionItemClass(TGLBThorFX);
+
 end.
 

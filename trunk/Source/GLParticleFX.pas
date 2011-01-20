@@ -3516,5 +3516,9 @@ initialization
       TGLPointLightPFXManager]);
   RegisterXCollectionItemClass(TGLSourcePFXEffect);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLSourcePFXEffect);
+
 end.
 

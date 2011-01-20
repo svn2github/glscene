@@ -1677,6 +1677,10 @@ initialization
   // class registrations
   RegisterXCollectionItemClass(TGLMovement);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLMovement);
+
 end.
 
 

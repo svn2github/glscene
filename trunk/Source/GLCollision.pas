@@ -963,5 +963,9 @@ initialization
 	// class registrations
 	RegisterXCollectionItemClass(TGLBCollision);
 
+finalization
+
+	UnregisterXCollectionItemClass(TGLBCollision);
+
 end.
 

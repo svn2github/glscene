@@ -868,4 +868,9 @@ initialization
   RegisterXCollectionItemClass(TGLMapCollectionItem);
   RegisterXCollectionItemClass(TGLBFPSMovement);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLMapCollectionItem);
+  UnregisterXCollectionItemClass(TGLBFPSMovement);
+
 end.

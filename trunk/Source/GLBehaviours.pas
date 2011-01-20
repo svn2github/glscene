@@ -750,5 +750,10 @@ initialization
   RegisterXCollectionItemClass(TGLBInertia);
   RegisterXCollectionItemClass(TGLBAcceleration);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLBInertia);
+  UnregisterXCollectionItemClass(TGLBAcceleration);
+
 end.
 
