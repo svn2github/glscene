@@ -1344,8 +1344,6 @@ end;
 function GL: TGLExtensionsAndEntryPoints;
 begin
   Result := vGL;
-  if not Assigned(vGL) then
-    Result := GLwithoutContext;
 end;
 
 function IsMainThread: Boolean;
@@ -1718,6 +1716,8 @@ begin
     try
       for i := aList.Count - 1 downto 0 do
       begin
+        if I = 1111 then
+          Sleep(0);
         contextHandle := TGLContextHandle(aList[i]);
         contextHandle.ContextDestroying;
       end;
@@ -1793,7 +1793,7 @@ begin
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
-    vGL := nil;
+    vGL := GLwithoutContext;
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
@@ -2049,9 +2049,11 @@ begin
         FHandles[I].FRenderingContext.Activate;
         if IsValid(FHandles[I].FHandle) then
           DoDestroyHandle(FHandles[I].FHandle);
-        FHandles[I].FChanged := True;
-        FHandles[I].FRenderingContext.Deactivate;
         Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
+        FHandles[I].FRenderingContext.Deactivate;
+        FHandles[I].FRenderingContext := nil;
+        FHandles[I].FHandle := 0;
+        FHandles[I].FChanged := True;
       end;
     end;
   finally
@@ -2076,13 +2078,14 @@ begin
     exit;
 
   bShared := False;
-{$IFNDEF GLS_MULTITHREAD}
-  aList := vCurrentGLContext.FSharedContexts;
-{$ELSE}
-  aList := vCurrentGLContext.FSharedContexts.LockList;
-  try
-{$ENDIF GLS_MULTITHREAD}
-    if Transferable then
+  if Transferable then
+  begin
+  {$IFNDEF GLS_MULTITHREAD}
+    aList := vCurrentGLContext.FSharedContexts;
+  {$ELSE}
+    aList := vCurrentGLContext.FSharedContexts.LockList;
+    try
+  {$ENDIF GLS_MULTITHREAD}
       for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
         if (FHandles[I].FRenderingContext <> vCurrentGLContext)
           and (FHandles[I].FHandle <> 0)
@@ -2091,11 +2094,12 @@ begin
             bShared := True;
             break;
           end;
-{$IFDEF GLS_MULTITHREAD}
-  finally
-    vCurrentGLContext.FSharedContexts.UnLockList;
+  {$IFDEF GLS_MULTITHREAD}
+    finally
+      vCurrentGLContext.FSharedContexts.UnLockList;
+    end;
+  {$ENDIF GLS_MULTITHREAD}
   end;
-{$ENDIF GLS_MULTITHREAD}
 
   for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
   begin
@@ -2109,6 +2113,7 @@ begin
       FHandles[I].FHandle := 0;
       FHandles[I].FRenderingContext := nil;
       FHandles[I].FChanged := True;
+      exit;
     end;
   end;
 end;

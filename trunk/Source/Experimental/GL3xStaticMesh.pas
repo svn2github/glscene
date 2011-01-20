@@ -681,6 +681,13 @@ begin
     stream.ReadBuffer(FLODFaceGroupMap[L][F].TriOnlyElementCount, SizeOf(Cardinal));
     stream.ReadBuffer(Temp, SizeOf(Integer));
     FLODFaceGroupMap[L][F].PrimitiveType := TGLMeshPrimitive(Temp);
+    with MaterialManager do
+    try
+      BeginWork;
+      FLODFaceGroupMap[L][F].Material := GetMaterialName(glsDEFAULTMESHNAME);
+    finally
+      EndWork;
+    end;
   end
   else if V = 1 then
   begin

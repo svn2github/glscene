@@ -161,7 +161,7 @@ type
   TGLAbstractMeshBuilder = class(TObject)
   protected
     { Protected Declarations }
-    FState: (mmsDefault, mmsAssembling, mmsPrimitives);
+    FState: (mmsDefault, mmsAssembling, mmsPrimitives, mmsIgnoring);
     FMesh: TGLAbstractMesh;
     FCurrentPrimitive: TGLMeshPrimitive;
     FCurrentAttribValue: array[0..GLS_VERTEX_ATTR_NUM - 1, 0..15] of T4ByteData;
@@ -360,7 +360,7 @@ type
   GRedBlackTree < Integer, Integer > ;
 
 resourcestring
-  glsMeshBuilderWrongCall = 'MeshBuilder: wrong method call - ignored';
+  glsMeshBuilderWrongCall = 'MeshBuilder of "%s": wrong method call - ignored';
   glsMeshBuilderNoPrimitive = 'MeshBuilder: no primitive for batch - ignored';
   glsMeshBuilderNoAttrDeclar = 'MeshBuilder: no declaration of attributes';
   glsMeshBuilderExcesAttrib = '%s: Excessive attribute declaration.';
@@ -825,15 +825,16 @@ end;
 procedure TGLAbstractMeshBuilder.BeginMeshAssembly;
 begin
   FMesh.WaitParallelTask;
-  if FState <> mmsDefault then
+  if not (FState in [mmsDefault, mmsIgnoring]) then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
     exit;
   end;
   // Default mesh can be rebuilded
   if FMesh.FName.IndexInManagerArray = 0 then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   FState := mmsAssembling;
@@ -845,9 +846,12 @@ var
   A: Integer;
   L: Byte;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -872,20 +876,25 @@ end;
 procedure TGLAbstractMeshBuilder.BeginBatch(
   APrimitiveType: TGLMeshPrimitive; ALOD: Byte);
 begin
+  if FState = mmsIgnoring then
+    exit;
   if APrimitiveType = mpNOPRIMITIVE then
   begin
     GLSLogger.LogWarning(glsMeshBuilderNoPrimitive);
+    FState := mmsIgnoring;
     exit;
   end;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
   if FMesh.AttributeCount = 0 then
   begin
     GLSLogger.LogWarning(glsMeshBuilderNoAttrDeclar);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -913,9 +922,13 @@ var
   Valid: Boolean;
   A, C, E: Integer;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FMesh.FLODFaceGroupMap[FCurrentLOD] := nil;
+    FState := mmsIgnoring;
     exit;
   end;
   FState := mmsAssembling;
@@ -991,9 +1004,12 @@ end;
 
 procedure TGLAbstractMeshBuilder.EndMeshAssembly;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   ComputeBoundingBox;
@@ -1005,9 +1021,12 @@ procedure TGLAbstractMeshBuilder.DeclareAttribute(Attrib: TGLSLAttribute; AType:
 var
   I: Integer;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -1017,6 +1036,7 @@ begin
       if FMesh.FAttributes[I] = Attrib then
       begin
         GLSLogger.LogErrorFmt(glsMeshBuilderExcesAttrib, [ClassName]);
+        FState := mmsIgnoring;
         exit;
       end;
 
@@ -1528,6 +1548,8 @@ var
   AA: T4ByteList;
   Last: Integer;
 begin
+  if FState = mmsIgnoring then
+    exit;
   loc := GetAttributeIndex(Attrib, GLSLTypeVoid);
   if loc > -1 then
   begin
@@ -1541,7 +1563,8 @@ begin
     if not Valid then
     begin
       GLSLogger.LogWarning(glsWrongAttrType);
-      Abort;
+      FState := mmsIgnoring;
+      exit;
     end;
 
     AA := FMesh.FAttributeArrays[loc];
@@ -1556,9 +1579,12 @@ var
   A, C, Size: Integer;
   I: LongWord;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -1587,9 +1613,12 @@ procedure TGLAbstractMeshBuilder.EmitVertices(ANumber: LongWord);
 var
   A, Size: Integer;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   // Increase vertex attributes lists
@@ -1678,9 +1707,12 @@ var
   HasHash: Boolean;
 
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -1784,9 +1816,12 @@ var
   E: LongWord;
   BD: T4ByteData;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -1842,9 +1877,12 @@ var
   I, J: Integer;
   StoreElementBuffer: T4ByteList;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -2012,9 +2050,12 @@ end;
 
 procedure TGLAbstractMeshBuilder.MakeAdjacency;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsAssembling then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -2582,19 +2623,25 @@ end;
 
 function TGLAbstractMeshBuilder.GetFaceGroupName: string;
 begin
+  if FState = mmsIgnoring then
+    exit('');
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
-    exit;
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
+    exit('');
   end;
   Result := FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Name;
 end;
 
 procedure TGLAbstractMeshBuilder.SetFaceGroupName(const AValue: string);
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Name := AValue;
@@ -2602,9 +2649,12 @@ end;
 
 function TGLAbstractMeshBuilder.GetFaceGroupMaterialName: IGLName;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   Result := FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Material;
@@ -2612,9 +2662,12 @@ end;
 
 procedure TGLAbstractMeshBuilder.SetFaceGroupMaterialName(const AValue: IGLName);
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
   FMesh.FLODFaceGroupMap[FCurrentLOD][FCurrentBatch].Material := AValue;
@@ -2683,9 +2736,12 @@ procedure TGLAbstractMeshBuilder.RestartStrip;
 var
   I: T4ByteData;
 begin
+  if FState = mmsIgnoring then
+    exit;
   if FState <> mmsPrimitives then
   begin
-    GLSLogger.LogWarning(glsMeshBuilderWrongCall);
+    GLSLogger.LogWarningFmt(glsMeshBuilderWrongCall, [FMesh.Name.Value]);
+    FState := mmsIgnoring;
     exit;
   end;
 
@@ -2693,6 +2749,7 @@ begin
     [mpTRIANGLE_STRIP, mpTRIANGLE_FAN, mpLINE_STRIP]) then
   begin
     GLSLogger.LogWarningFmt(glsMeshBuilderNoNeedRestart, [ClassName]);
+    FState := mmsIgnoring;
     exit;
   end;
 
