@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/01/11 - DanB - Collection items are now grouped by ItemCategory
       <li>16/06/10 - YP - Fixed IDE exception when item removed
       <li>05/10/08 - DanB - removed Kylix support + some other old ifdefs
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
@@ -229,19 +230,32 @@ var
 	i : Integer;
 	list : TList;
 	XCollectionItemClass : TXCollectionItemClass;
-	mi : TMenuItem;
+	mi, categoryItem : TMenuItem;
 begin
 	list:=GetXCollectionItemClassesList(FXCollection.ItemsClass);
 	try
 		parent.Clear;
 		for i:=0 to list.Count-1 do begin
 			XCollectionItemClass:=TXCollectionItemClass(list[i]);
+      if XCollectionItemClass.ItemCategory <> '' then
+      begin
+        categoryItem := parent.Find(XCollectionItemClass.ItemCategory);
+        if categoryItem = nil then
+        begin
+          categoryItem := TMenuItem.Create(owner);
+          categoryItem.Caption := XCollectionItemClass.ItemCategory;
+          parent.Add(categoryItem);
+        end;
+      end
+      else
+        categoryItem := parent;
+
 			mi:=TMenuItem.Create(owner);
 			mi.Caption:=XCollectionItemClass.FriendlyName;
 			mi.OnClick:=OnAddXCollectionItemClick;
 			mi.Tag:=Integer(XCollectionItemClass);
 			mi.Enabled:=Assigned(FXCollection) and FXCollection.CanAdd(XCollectionItemClass);
-			parent.Add(mi);
+			categoryItem.Add(mi);
 		end;
 	finally
 		list.Free;
