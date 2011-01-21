@@ -1,7 +1,7 @@
 {*******************************************************************************}
 {                                                                               }
 {      Newton Game Dynamics Delphi-Headertranslation                            }
-{       Current SDK version 2.26                                                }
+{       Current SDK version 2.29                                                }
 {                                                                               }
 {      Copyright (c) 04,05,06,09,2010 Dmitriy "Executor" Bespalov	            	}
 {                                     Stuart "Stucuk" Carey                     }
@@ -97,7 +97,7 @@ const
 const
 // 2.26 - Defines added as const for version ID - SW
 NEWTON_MAJOR_VERSION                           =  2;
-NEWTON_MINOR_VERSION                           = 25;
+NEWTON_MINOR_VERSION                           = 29;
 
 
 NEWTON_PROFILER_WORLD_UPDATE                   =  0;
@@ -421,8 +421,14 @@ NewtonUserMeshCollisionGetFacesInAABB = function( userData : Pointer; const p0  
                                                    vertexStrideInBytes : PInteger; const indexList : PInteger; maxIndexCount : Integer; const userDataList : PInteger ) : Integer; cdecl;
 PNewtonUserMeshCollisionGetFacesInAABB = ^NewtonUserMeshCollisionGetFacesInAABB;
 
-NewtonCollisionTreeRayCastCallback = function( interception : NGDFloat; normal : PNGDFloat; faceId : Integer; usedData : Pointer) : NGDFloat; cdecl;
+// 2.29 - Added parameters body, TreeCollision - SW
+NewtonCollisionTreeRayCastCallback = function(const body : PNewtonBody; const TreeCollision : PNewtonCollision; interception : NGDFloat; normal : PNGDFloat; faceId : Integer; usedData : Pointer) : NGDFloat; cdecl;
 PNewtonCollisionTreeRayCastCallback = ^NewtonCollisionTreeRayCastCallback;
+
+// 2.29 - Callback added - SW
+NewtonHeightFieldRayCastCallback = function(const body : PNewtonBody; const HeightFieldCollision : PNewtonCollision; interception : NGDFloat; Row, Col : Integer; normal : PNGDFloat; FaceID : Integer; UsedData : Pointer) : NGDFloat; cdecl;
+PNewtonHeightFieldRayCastCallback = ^NewtonHeightFieldRayCastCallback;
+
 
 // - collision tree call back (obsoleted no recommended)
 NewtonTreeCollisionCallback = procedure( const bodyWithTreeCollision : PNewtonBody; const body : PNewtonBody; faceID : Integer;
@@ -796,6 +802,9 @@ procedure NewtonCollisionGetInfo( const collision : PNewtonCollision; collisionI
 // **********************************************************************************************
 
 function  NewtonCreateHeightFieldCollision( const newtonWorld : PNewtonWorld; width, height, gridDiagonals : Integer; elevationMap : PWord; attributeMap : PShortInt; horizontalScale,verticalScale : NGDFloat; shapeID : Integer) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateHeightFieldCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+
+// 2.29 - Function added - SW
+procedure NewtonHeightFieldSetUserRayCastCallback( const TreeCollision : PNewtonCollision; RayHitCallBack : PNewtonHeightFieldRayCastCallback); cdecl; external{$IFDEF __GPC__}name 'NewtonHeightFieldSetUserRayCastCallback'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 function  NewtonCreateTreeCollision( const newtonWorld : PNewtonWorld; shapeID : Integer ) : PNewtonCollision; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateTreeCollision'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
