@@ -179,52 +179,52 @@
     </Math>
     <Texture>
       <Texture2D_Sampler0 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit0;">{ return TEXTURE_2D(TexUnit0, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit0;">{ return TEXTURE_2D(TexUnit0, A); }</overload>
       </Texture2D_Sampler0>
       <Texture2D_Sampler1 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit1;">{ return TEXTURE_2D(TexUnit1, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit1;">{ return TEXTURE_2D(TexUnit1, A); }</overload>
       </Texture2D_Sampler1>
       <Texture2D_Sampler2 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit2;">{ return TEXTURE_2D(TexUnit2, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit2;">{ return TEXTURE_2D(TexUnit2, A); }</overload>
       </Texture2D_Sampler2>
       <Texture2D_Sampler3 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit3;">{ return TEXTURE_2D(TexUnit3, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit3;">{ return TEXTURE_2D(TexUnit3, A); }</overload>
       </Texture2D_Sampler3>
       <Texture2D_Sampler4 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit4;">{ return TEXTURE_2D(TexUnit4, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit4;">{ return TEXTURE_2D(TexUnit4, A); }</overload>
       </Texture2D_Sampler4>
       <Texture2D_Sampler5 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit5;">{ return TEXTURE_2D(TexUnit5, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit5;">{ return TEXTURE_2D(TexUnit5, A); }</overload>
       </Texture2D_Sampler5>
       <Texture2D_Sampler6 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit6;">{ return TEXTURE_2D(TexUnit6, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit6;">{ return TEXTURE_2D(TexUnit6, A); }</overload>
       </Texture2D_Sampler6>
       <Texture2D_Sampler7 ObjectType="FGCE">
-        <overload Input="vec2;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform sampler2D TexUnit7;">{ return TEXTURE_2D(TexUnit7, A); }</overload>
+        <overload Input="vec2;" Output="vec4" Global="uniform sampler2D TexUnit7;">{ return TEXTURE_2D(TexUnit7, A); }</overload>
       </Texture2D_Sampler7>
       <TextureCube_Sampler0 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit0;">{ return TEXTURE_CUBE(TexUnit0, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit0;">{ return TEXTURE_CUBE(TexUnit0, A); }</overload>
       </TextureCube_Sampler0>
       <TextureCube_Sampler1 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit1;">{ return TEXTURE_CUBE(TexUnit1, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit1;">{ return TEXTURE_CUBE(TexUnit1, A); }</overload>
       </TextureCube_Sampler1>
       <TextureCube_Sampler2 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit2;">{ return TEXTURE_CUBE(TexUnit2, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit2;">{ return TEXTURE_CUBE(TexUnit2, A); }</overload>
       </TextureCube_Sampler2>
       <TextureCube_Sampler3 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit3;">{ return TEXTURE_CUBE(TexUnit3, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit3;">{ return TEXTURE_CUBE(TexUnit3, A); }</overload>
       </TextureCube_Sampler3>
       <TextureCube_Sampler4 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit4;">{ return TEXTURE_CUBE(TexUnit4, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit4;">{ return TEXTURE_CUBE(TexUnit4, A); }</overload>
       </TextureCube_Sampler4>
       <TextureCube_Sampler5 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit5;">{ return TEXTURE_CUBE(TexUnit5, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit5;">{ return TEXTURE_CUBE(TexUnit5, A); }</overload>
       </TextureCube_Sampler5>
       <TextureCube_Sampler6 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit6;">{ return TEXTURE_CUBE(TexUnit6, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit6;">{ return TEXTURE_CUBE(TexUnit6, A); }</overload>
       </TextureCube_Sampler6>
       <TextureCube_Sampler7 ObjectType="FGCE">
-        <overload Input="vec3;" Output="vec4" Uniforms="TShaderEnvSamplers;" Global="uniform samplerCube TexUnit7;">{ return TEXTURE_CUBE(TexUnit7, A); }</overload>
+        <overload Input="vec3;" Output="vec4" Global="uniform samplerCube TexUnit7;">{ return TEXTURE_CUBE(TexUnit7, A); }</overload>
       </TextureCube_Sampler7>
       <SNorm ObjectType="F">
         <overload Input="vec4;" Output="vec4" Uniforms="TShaderEnvNormalMatrix;" Global="in vec3 fObjectNormal; &#xD;&#xA;in vec3 fObjectTangent; &#xD;&#xA;uniform mat3 NormalMatrix;">{
@@ -667,7 +667,7 @@ else
       </AlphaTest>
       <SetEmissive ObjectType="F">
         <overload Input="inout frec;" Output="void">{
-  A.Emissive = vec3(0.3,0.3,0.3);
+  A.Emissive = vec3(0.0,0.0,0.0);
 }</overload>
         <overload Input="inout frec;float;" Output="void">{
   A.Emissive = vec3(B,0.0,0.0);
@@ -782,6 +782,21 @@ else
 }</overload>
         <overload Input="inout frec;vec4;" Output="void">{
   A.Opacity = B.r;
+}</overload>
+        <overload Variant="GUI" Input="inout frec;" Output="void" Uniforms="TShaderEnvGUIAlpha;" Global="uniform float GUIAlphaMult;">{
+  A.Opacity = GUIAlphaMult;
+}</overload>
+        <overload Variant="GUI" Input="inout frec;float;" Output="void" Uniforms="TShaderEnvGUIAlpha;" Global="uniform float GUIAlphaMult;">{
+  A.Opacity = B*GUIAlphaMult;
+}</overload>
+        <overload Variant="GUI" Input="inout frec;vec2;" Output="void" Uniforms="TShaderEnvGUIAlpha;" Global="uniform float GUIAlphaMult;">{
+  A.Opacity = B.r*GUIAlphaMult;
+}</overload>
+        <overload Variant="GUI" Input="inout frec;vec3;" Output="void" Uniforms="TShaderEnvGUIAlpha;" Global="uniform float GUIAlphaMult;">{
+  A.Opacity = B.r*GUIAlphaMult;
+}</overload>
+        <overload Variant="GUI" Input="inout frec;vec4;" Output="void" Uniforms="TShaderEnvGUIAlpha;" Global="uniform float GUIAlphaMult;">{
+  A.Opacity = B.r*GUIAlphaMult;
 }</overload>
       </SetOpacity>
       <SetOpacityMask ObjectType="F">

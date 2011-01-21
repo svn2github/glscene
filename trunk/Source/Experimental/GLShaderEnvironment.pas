@@ -4,6 +4,7 @@
 { : GLShaderEnvironment<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>21/01/11 - Yar - Classes  of shader environment becomes static
   <li>08/11/10 - Yar - Creation
   </ul></font>
 }
@@ -25,6 +26,7 @@ uses
   GLState,
   GL3xMaterialTokens,
   GL3xMaterial,
+  GLRenderContextInfo,
   GLCrossPlatform,
   GLShaderManager,
   VectorGeometry
@@ -41,61 +43,53 @@ const
 
 type
 
-  TShaderEnvSamplers = class(TBaseShaderEnvironment)
-  private
-    FTextureSamplerArray: TTextureSamplerArray;
-  public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
-  end;
-
   TShaderEnvTime = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvModelMatrix = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvNormalMatrix = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvInvModelMatrix = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvViewProjectionMatrix = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvCameraWorldPosition = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvLights = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
 
   TShaderEnvLightNumber = class(TBaseShaderEnvironment)
   public
-    constructor Create(const AArray: TTextureSamplerArray); override;
-    procedure Apply; override;
+    class procedure Apply(var ARci: TRenderContextInfo); override;
   end;
+
+  TShaderEnvGUIAlpha = class(TBaseShaderEnvironment)
+  public
+    class procedure Apply(var ARci: TRenderContextInfo); override;
+  end;
+
+var
+  vGUIAlpha: Single = 1.0;
 
 implementation
 
@@ -108,16 +102,25 @@ type
 
 var
   LightsBufferPerContext: TLightsBufferTree;
-  LightsBlock: TGLSLUniformBlock;
-  LightIndices: TGLSLUniform;
+  ubLightsBlock: TGLSLUniformBlock;
+  uLightIndices: TGLSLUniform;
+  uLightNumber: TGLSLUniform;
 
-  WorldPosition: TGLSLUniform;
-  Ambient: TGLSLUniform;
-  Diffuse: TGLSLUniform;
-  Specular: TGLSLUniform;
-  SpotDirection: TGLSLUniform;
-  SpotCosCutoffExponent: TGLSLUniform;
-  Attenuation: TGLSLUniform;
+  uCameraWorldPosition: TGLSLUniform;
+  uModelMatrix: TGLSLUniform;
+  uNormalMatrix: TGLSLUniform;
+  uViewProjectionMatrix: TGLSLUniform;
+  uInvModelMatrix: TGLSLUniform;
+
+  uWorldPosition: TGLSLUniform;
+  uAmbient: TGLSLUniform;
+  uDiffuse: TGLSLUniform;
+  uSpecular: TGLSLUniform;
+  uSpotDirection: TGLSLUniform;
+  uSpotCosCutoffExponent: TGLSLUniform;
+  uAttenuation: TGLSLUniform;
+  uTime: TGLSLUniform;
+  uGUIAlphaMult: TGLSLUniform;
 
   bLightBufferSizeFlag: Boolean = False;
 
@@ -146,121 +149,42 @@ begin
     LightsBuffer.NotifyChangesOfData;
 end;
 
-constructor TShaderEnvSamplers.Create(const AArray: TTextureSamplerArray);
+class procedure TShaderEnvTime.Apply(var ARci: TRenderContextInfo);
 begin
-  FTextureSamplerArray := AArray;
+  ShaderManager.Uniform1f(uTime, 0.001*GLSTime);
 end;
 
-procedure TShaderEnvSamplers.Apply;
+class procedure TShaderEnvGUIAlpha.Apply(var ARci: TRenderContextInfo);
 begin
-
-  if High(FTextureSamplerArray) < 0 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[0].TextureName, FTextureSamplerArray[0].SamplerName, uniformTexUnit0);
-
-  if High(FTextureSamplerArray) < 1 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[1].TextureName, FTextureSamplerArray[1].SamplerName, uniformTexUnit1);
-
-  if High(FTextureSamplerArray) < 2 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[2].TextureName, FTextureSamplerArray[2].SamplerName, uniformTexUnit2);
-
-  if High(FTextureSamplerArray) < 3 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[3].TextureName, FTextureSamplerArray[3].SamplerName, uniformTexUnit3);
-
-  if High(FTextureSamplerArray) < 4 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[4].TextureName, FTextureSamplerArray[4].SamplerName, uniformTexUnit4);
-
-  if High(FTextureSamplerArray) < 5 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[5].TextureName, FTextureSamplerArray[5].SamplerName, uniformTexUnit5);
-
-  if High(FTextureSamplerArray) < 6 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[6].TextureName, FTextureSamplerArray[6].SamplerName, uniformTexUnit6);
-
-  if High(FTextureSamplerArray) < 7 then
-    exit;
-
-  MaterialManager.ApplyTextureSampler(FTextureSamplerArray[7].TextureName, FTextureSamplerArray[7].SamplerName, uniformTexUnit7);
+  ShaderManager.Uniform1f(uGUIAlphaMult, vGUIAlpha);
 end;
 
-constructor TShaderEnvTime.Create(const AArray: TTextureSamplerArray);
+class procedure TShaderEnvModelMatrix.Apply(var ARci: TRenderContextInfo);
 begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('Time');
+  ShaderManager.UniformMat4f(uModelMatrix, CurrentGLContext.PipelineTransformation.ModelMatrix);
 end;
 
-procedure TShaderEnvTime.Apply;
+class procedure TShaderEnvNormalMatrix.Apply(var ARci: TRenderContextInfo);
 begin
-  ShaderManager.Uniform1f(FGLSLUniform, 0.001*GLSTime);
+  ShaderManager.UniformMat3f(uNormalMatrix, CurrentGLContext.PipelineTransformation.NormalModelMatrix);
 end;
 
-constructor TShaderEnvModelMatrix.Create(const AArray: TTextureSamplerArray);
+class procedure TShaderEnvInvModelMatrix.Apply(var ARci: TRenderContextInfo);
 begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('ModelMatrix');
+  ShaderManager.UniformMat4f(uInvModelMatrix, CurrentGLContext.PipelineTransformation.InvModelMatrix);
 end;
 
-procedure TShaderEnvModelMatrix.Apply;
+class procedure TShaderEnvViewProjectionMatrix.Apply(var ARci: TRenderContextInfo);
 begin
-  ShaderManager.UniformMat4f(FGLSLUniform, CurrentGLContext.PipelineTransformation.ModelMatrix);
+  ShaderManager.UniformMat4f(uViewProjectionMatrix, CurrentGLContext.PipelineTransformation.ViewProjectionMatrix);
 end;
 
-constructor TShaderEnvNormalMatrix.Create(const AArray: TTextureSamplerArray);
+class procedure TShaderEnvCameraWorldPosition.Apply(var ARci: TRenderContextInfo);
 begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('NormalMatrix');
+  ShaderManager.Uniform4f(uCameraWorldPosition, CurrentGLContext.PipelineTransformation.CameraPosition);
 end;
 
-procedure TShaderEnvNormalMatrix.Apply;
-begin
-  ShaderManager.UniformMat3f(FGLSLUniform, CurrentGLContext.PipelineTransformation.NormalModelMatrix);
-end;
-
-constructor TShaderEnvInvModelMatrix.Create(const AArray: TTextureSamplerArray);
-begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('InvModelMatrix');
-end;
-
-procedure TShaderEnvInvModelMatrix.Apply;
-begin
-  ShaderManager.UniformMat4f(FGLSLUniform, CurrentGLContext.PipelineTransformation.InvModelMatrix);
-end;
-
-constructor TShaderEnvViewProjectionMatrix.Create;
-begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('ViewProjectionMatrix');
-end;
-
-procedure TShaderEnvViewProjectionMatrix.Apply;
-begin
-  ShaderManager.UniformMat4f(FGLSLUniform, CurrentGLContext.PipelineTransformation.ViewProjectionMatrix);
-end;
-
-constructor TShaderEnvCameraWorldPosition.Create(const AArray: TTextureSamplerArray);
-begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('CameraWorldPosition');
-end;
-
-procedure TShaderEnvCameraWorldPosition.Apply;
-begin
-  ShaderManager.Uniform4f(FGLSLUniform, CurrentGLContext.PipelineTransformation.CameraPosition);
-end;
-
-constructor TShaderEnvLights.Create;
-begin
-//  FGLSLUniform := TGLSLUniform.RegisterUniform('LightIndex[0]');
-end;
-
-procedure TShaderEnvLights.Apply;
+class procedure TShaderEnvLights.Apply(var ARci: TRenderContextInfo);
 var
   RC: TGLContext;
   LightsBuffer: TGLUniformBufferHandle;
@@ -279,52 +203,46 @@ begin
     LightsBuffer.AllocateHandle;
     if LightsBuffer.IsDataNeedUpdate then
     begin
-      LightsBuffer.BindBufferData(RC.GLStates.GetLightStateAsAddress, LightsBlock.DataSize, GL_STATIC_DRAW);
+      LightsBuffer.BindBufferData(RC.GLStates.GetLightStateAsAddress, ubLightsBlock.DataSize, GL_STATIC_DRAW);
       LightsBuffer.NotifyDataUpdated;
       if not bLightBufferSizeFlag then
       begin
-        GLSLogger.LogDebug(Format('LightsBuffer size: host %d, device %d', [SizeOf(TShaderLightSourceState), LightsBlock.DataSize]));
+        GLSLogger.LogDebugFmt('LightsBuffer size: host %d, device %d', [SizeOf(TShaderLightSourceState), ubLightsBlock.DataSize]);
         bLightBufferSizeFlag := True;
       end;
     end;
     LightsBuffer.BindBase(0);
-    LightsBlock.BindingIndex := 0;
+    ubLightsBlock.BindingIndex := 0;
   end
   else
     with ShaderManager do
     begin
       ptr := RC.GLStates.GetLightStateAsAddress;
-      Uniform4f(WorldPosition, ptr, 8);
+      Uniform4f(uWorldPosition, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(Ambient, ptr, 8);
+      Uniform4f(uAmbient, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(Diffuse, ptr, 8);
+      Uniform4f(uDiffuse, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(Specular, ptr, 8);
+      Uniform4f(uSpecular, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(SpotDirection, ptr, 8);
+      Uniform4f(uSpotDirection, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(SpotCosCutoffExponent, ptr, 8);
+      Uniform4f(uSpotCosCutoffExponent, ptr, 8);
       Inc(ptr, 4 * 8);
-      Uniform4f(Attenuation, ptr, 8);
+      Uniform4f(uAttenuation, ptr, 8);
     end;
-  ShaderManager.Uniform1I(LightIndices, RC.GLStates.GetLightIndicesAsAddress, RC.GLStates.LightNumber)
+  ShaderManager.Uniform1I(uLightIndices, RC.GLStates.GetLightIndicesAsAddress, RC.GLStates.LightNumber)
 end;
 
-constructor TShaderEnvLightNumber.Create(const AArray: TTextureSamplerArray);
+class procedure TShaderEnvLightNumber.Apply(var ARci: TRenderContextInfo);
 begin
-  FGLSLUniform := TGLSLUniform.RegisterUniform('LightNumber');
-end;
-
-procedure TShaderEnvLightNumber.Apply;
-begin
-  ShaderManager.Uniform1I(FGLSLUniform, CurrentGLContext.GLStates.LightNumber);
+  ShaderManager.Uniform1I(uLightNumber, CurrentGLContext.GLStates.LightNumber);
 end;
 
 initialization
 
 RegisterClasses([
-  TShaderEnvSamplers,
   TShaderEnvTime,
   TShaderEnvModelMatrix,
   TShaderEnvInvModelMatrix,
@@ -335,16 +253,27 @@ RegisterClasses([
   TShaderEnvLightNumber]);
 
   LightsBufferPerContext := TLightsBufferTree.Create(CompareGLState, nil);
-  LightsBlock := TGLSLUniformBlock.RegisterUniformBlock('LightsBlock');
-  LightIndices := TGLSLUniform.RegisterUniform('LightIndices');
+  ubLightsBlock := TGLSLUniformBlock.RegisterUniformBlock('LightsBlock');
+  uLightIndices := TGLSLUniform.RegisterUniform('LightIndices');
+  uLightNumber := TGLSLUniform.RegisterUniform('LightNumber');
 
-  WorldPosition := TGLSLUniform.RegisterUniform('WorldPosition');
-  Ambient := TGLSLUniform.RegisterUniform('Ambient');
-  Diffuse := TGLSLUniform.RegisterUniform('Diffuse');
-  Specular := TGLSLUniform.RegisterUniform('Specular');
-  SpotDirection := TGLSLUniform.RegisterUniform('SpotDirection');
-  SpotCosCutoffExponent := TGLSLUniform.RegisterUniform('SpotCosCutoffExponent');
-  Attenuation := TGLSLUniform.RegisterUniform('Attenuation');
+  uCameraWorldPosition := TGLSLUniform.RegisterUniform('CameraWorldPosition');
+  uModelMatrix := TGLSLUniform.RegisterUniform('ModelMatrix');
+  uNormalMatrix := TGLSLUniform.RegisterUniform('NormalMatrix');
+  uViewProjectionMatrix := TGLSLUniform.RegisterUniform('ViewProjectionMatrix');
+  uInvModelMatrix := TGLSLUniform.RegisterUniform('InvModelMatrix');
+
+  uWorldPosition := TGLSLUniform.RegisterUniform('WorldPosition');
+  uAmbient := TGLSLUniform.RegisterUniform('Ambient');
+  uDiffuse := TGLSLUniform.RegisterUniform('Diffuse');
+  uSpecular := TGLSLUniform.RegisterUniform('Specular');
+  uSpotDirection := TGLSLUniform.RegisterUniform('SpotDirection');
+  uSpotCosCutoffExponent := TGLSLUniform.RegisterUniform('SpotCosCutoffExponent');
+  uAttenuation := TGLSLUniform.RegisterUniform('Attenuation');
+
+  uTime := TGLSLUniform.RegisterUniform('Time');
+  uGUIAlphaMult := TGLSLUniform.RegisterUniform('GUIAlphaMult');
+
 
 finalization
 

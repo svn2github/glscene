@@ -38,10 +38,12 @@ type
 
   // TMaterialVariant
   //
-  TMaterialVariant = (
+  TMaterialVariant =
+  (
     matvarCommon, // Common shader sample
-    matvarAllSurfProperies // Export surface properies (normal, camera, light, reflection, position, color)
-    );
+    matvarAllSurfProperies, // Export surface properies (normal, camera, light, reflection, position, color)
+    matvarGUI // Shader contain special actions for GUI
+  );
 
   TMaterialVariants = set of TMaterialVariant;
 
@@ -59,11 +61,16 @@ type
 
 const
 
-  cFaceCulling: array[TFaceCulling] of string = ('BufferDefault', 'Cull', 'NoCull');
-  cPolygonMode: array[TPolygonMode] of string = ('Fill', 'Lines', 'Points');
-  cBlendingMode: array[TBlendingMode] of string = ('Opaque', 'Transparency', 'Additive', 'Masked', 'Modulate', 'Custom');
-  cLightingModel: array[TLightingModel] of string = ('Phong', 'EmissiveOnly', 'CustomLighting');
-  cMaterialVariant: array[TMaterialVariant] of string = ('', 'AllSurfProperties');
+  cFaceCulling: array[TFaceCulling] of string =
+    ('BufferDefault', 'Cull', 'NoCull');
+  cPolygonMode: array[TPolygonMode] of string =
+    ('Fill', 'Lines', 'Points');
+  cBlendingMode: array[TBlendingMode] of string =
+    ('Opaque', 'Transparency', 'Additive', 'Masked', 'Modulate', 'Custom');
+  cLightingModel: array[TLightingModel] of string =
+    ('Phong', 'EmissiveOnly', 'CustomLighting');
+  cMaterialVariant: array[TMaterialVariant] of string =
+    ('', 'AllSurfProperties', 'GUI');
 
 type
 

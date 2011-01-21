@@ -5221,7 +5221,6 @@ begin
   ASample.Category := MaterialSystem.Utility.Name;
   ASample.Name := MaterialSystem.Utility.Utility_Timer;
   ASample.Input[0] := GLSLTypeVoid;
-  ASample.UniformClasses[0] := TShaderEnvTime;
   Result := ASample.CheckWithMaterialSystem;
   CheckOutput(Result);
 end;

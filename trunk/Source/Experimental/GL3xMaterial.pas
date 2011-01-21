@@ -4,6 +4,7 @@
 { : GL3xMaterial<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>21/01/11 - Yar - Classes  of shader environment becomes static
   <li>04/09/10 - Yar - Added materials and textures loading. List of MaterialManager's items saved to application resource
   <li>07/07/10 - Yar - Creation
   </ul></font>
@@ -47,20 +48,16 @@ const
   fileMaterialSystem = 'MaterialSystem.xml';
 
 {$IFDEF FPC}
-  {$IF (LCL_RELEASE < 31)}
-    {$DEFINE GLS_GENERIC_PREFIX}
-  {$IFEND}
+{$IF (LCL_RELEASE < 31)}
+{$DEFINE GLS_GENERIC_PREFIX}
+{$IFEND}
 {$ENDIF}
 
 type
 
   TBaseShaderEnvironment = class(TPersistent)
-  protected
-    FGLSLUniform: TGLSLUniform;
-    FGLSLUniformBlock: TGLSLUniformBlock;
   public
-    constructor Create(const AArray: TTextureSamplerArray); virtual; abstract;
-    procedure Apply; virtual; abstract;
+    class procedure Apply(var ARci: TRenderContextInfo); virtual;
   end;
 
   TBaseShaderEnvironmentClass = class of TBaseShaderEnvironment;
@@ -92,7 +89,8 @@ type
     Purpose: TShaderSamplePurpose;
     Input: array[0..3] of TGLSLDataType;
     Output: TGLSLDataType;
-    UniformClasses: array[0..7] of TBaseShaderEnvironmentClass;
+    UniformClasses: array[TMaterialVariant] of array[0..7] of
+      TBaseShaderEnvironmentClass;
     ConstantValue: string;
     Mask: TGLColorComponentMask;
     procedure Clear;
@@ -104,11 +102,12 @@ type
     function IsCanProcessed: Boolean;
     function TotalOutput: TGLSLDataType;
     property TextureInInput: Boolean read FTextureInInput write FTextureInInput;
-    property InputRef[Index: Integer]: PShaderSample read GetInputRef write SetInputRef;
+    property InputRef[Index: Integer]: PShaderSample read GetInputRef write
+      SetInputRef;
   end;
 
   TSampleList = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
-  	GList < PShaderSample > ;
+  GList < PShaderSample > ;
 
   TSampleGatherInfo = {$IFNDEF FPC}record {$ELSE}object{$ENDIF}
     SampleList: TSampleList;
@@ -134,6 +133,7 @@ type
   TProgramVariantSet = record
     FShaders: array[TGLSLProgramType] of IGLName;
     FProgram: IGLName;
+    FUniforms: array of TBaseShaderEnvironmentClass;
   end;
 
   // TGL3xMaterial
@@ -155,7 +155,6 @@ type
   protected
     { Protected Declarations }
     FSampleList: TSampleList;
-    FUniforms: array of TBaseShaderEnvironment;
     FUnits: TTextureSamplerArray;
     procedure CreateSamples;
     procedure CreateUniforms;
@@ -167,7 +166,8 @@ type
     procedure DirectUse;
 
     property Document: GLSXMLDocument read FSourceDoc write FSourceDoc;
-    property LightingModel: TLightingModel read FLightingModel write FLightingModel;
+    property LightingModel: TLightingModel read FLightingModel write
+      FLightingModel;
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode;
     property FaceCulling: TFaceCulling read FFaceCulling write FFaceCulling;
     property PolygonMode: TPolygonMode read FPolygonMode write FPolygonMode;
@@ -197,7 +197,7 @@ type
   protected
     { Private Declarations }
     class procedure Initialize; override;
-    class procedure Finalize;  override;
+    class procedure Finalize; override;
     class procedure LoadMaterialSystem;
     class procedure SaveResources;
     class procedure LoadResources;
@@ -217,21 +217,28 @@ type
   public
     { Public Declarations }
     class function FillResourceList(AList: TStringList): Boolean; override;
-    class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); override;
+    class procedure MakeUniqueItemName(var AName: string; AClass:
+      TGLAbstractNameClass); override;
 
     // Design time helper methods
     class function GenerateShaderCode(const ASampleList: TSampleList;
-      var AProgramCodeSet: TProgramCodeSet; const AName: AnsiString = 'main'; AOutType: TGLSLDataType = GLSLTypeVoid): Boolean;
+      var AProgramCodeSet: TProgramCodeSet; const AName: AnsiString = 'main';
+        AOutType: TGLSLDataType = GLSLTypeVoid): Boolean;
     class procedure FillMaterialNameList(var AList: TStringList);
     class procedure FillTextureNameList(var AList: TStringList);
     class procedure FillSamplerNameList(var AList: TStringList);
 
-    class function CreateMaterial(AName: string; const AFileName: string): IGLName;
-    class function CreateTexture(AName: string; const AImportFile: string; const AFileName: string): IGLName;
-    class function CreateSampler(AName: string; const AFileName: string): IGLName;
-    class procedure ApplyMaterial(const AName: IGLName; var ARci: TRenderContextInfo);
+    class function CreateMaterial(AName: string; const AFileName: string):
+      IGLName;
+    class function CreateTexture(AName: string; const AImportFile: string; const
+      AFileName: string): IGLName;
+    class function CreateSampler(AName: string; const AFileName: string):
+      IGLName;
+    class procedure ApplyMaterial(const AName: IGLName; var ARci:
+      TRenderContextInfo);
     class function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean;
-    class procedure ApplyTextureSampler(const ATextureName, ASamplerName: IGLName; AUniform: TGLSLUniform);
+    class procedure ApplyTextureSampler(const ATextureName, ASamplerName:
+      IGLName; AUniform: TGLSLUniform);
 
     class function GetMaterialName(const AName: string): IGLName;
     class function GetMaterialProgramName(const AName: IGLName;
@@ -266,6 +273,11 @@ var
   LastMaterial: TGL3xMaterial;
   Structures: AnsiString;
   SampleShaderObjectNames: array of IGLName;
+  uniformTexUnits: array[0..7] of TGLSLUniform;
+
+class procedure TBaseShaderEnvironment.Apply;
+begin
+end;
 
 {$REGION 'MaterialManager'}
 // ------------------
@@ -277,6 +289,14 @@ begin
   LoadMaterialSystem;
   LoadResources;
   Initialized := False;
+  uniformTexUnits[0] := uniformTexUnit0;
+  uniformTexUnits[1] := uniformTexUnit1;
+  uniformTexUnits[2] := uniformTexUnit2;
+  uniformTexUnits[3] := uniformTexUnit3;
+  uniformTexUnits[4] := uniformTexUnit4;
+  uniformTexUnits[5] := uniformTexUnit5;
+  uniformTexUnits[6] := uniformTexUnit6;
+  uniformTexUnits[7] := uniformTexUnit7;
 end;
 
 class procedure MaterialManager.Finalize;
@@ -329,7 +349,8 @@ begin
     if MatSysDoc = nil then
       exit;
 {$ENDIF}
-    GLSLogger.LogNotice('Material system loaded from file ' + fileMaterialSystem);
+    GLSLogger.LogNotice('Material system loaded from file ' +
+      fileMaterialSystem);
   end;
 end;
 
@@ -444,7 +465,8 @@ begin
               PushMaterial(newMat);
             end
             else
-              GLSLogger.LogWarning(Format(glsMissingResource, [TGL3xMaterial.ClassName, rName]));
+              GLSLogger.LogWarning(Format(glsMissingResource,
+                [TGL3xMaterial.ClassName, rName]));
           end;
         aresTexture:
           begin
@@ -457,7 +479,8 @@ begin
               PushTexture(newTex);
             end
             else
-              GLSLogger.LogWarning(Format(glsMissingResource, [TGL3xTexture.ClassName, rName]));
+              GLSLogger.LogWarning(Format(glsMissingResource,
+                [TGL3xTexture.ClassName, rName]));
           end;
         aresSampler:
           begin
@@ -470,7 +493,8 @@ begin
               PushSampler(newSmp);
             end
             else
-              GLSLogger.LogWarning(Format(glsMissingResource, [TGL3xSampler.ClassName, rName]));
+              GLSLogger.LogWarning(Format(glsMissingResource,
+                [TGL3xSampler.ClassName, rName]));
           end;
       end;
     end;
@@ -558,7 +582,8 @@ begin
 
               if GetXMLText(XMLOverload, temp) then
               begin
-                SetLength(SampleShaderObjectNames, Length(SampleShaderObjectNames) + 1);
+                SetLength(SampleShaderObjectNames,
+                  Length(SampleShaderObjectNames) + 1);
                 II := High(SampleShaderObjectNames);
                 SetXMLAttribute(XMLOverload, 'ObjectIndex', IntToStr(II));
 
@@ -567,7 +592,7 @@ begin
                 // Get variant tag
                 if GetXMLAttribute(XMLOverload, 'Variant', aVariant) then
                   aVariant := '_' + aVariant;
-                                  
+
                 // Global scope attributes, varyings, uniforms
                 if GetXMLAttribute(XMLOverload, 'Global', aGlobal) then
                   ObjCode := ObjCode + AnsiString(aGlobal) + #10#13;
@@ -595,7 +620,8 @@ begin
                     p := Pos(';', aInput);
                     if p = 0 then
                       break;
-                    ObjCode := ObjCode + AnsiString(Copy(aInput, 1, p - 1)) + ' ' + Param + ',';
+                    ObjCode := ObjCode + AnsiString(Copy(aInput, 1, p - 1)) + ' '
+                      + Param + ',';
                     Delete(aInput, 1, p);
                     Inc(Param);
                   until Length(aInput) = 0;
@@ -605,7 +631,7 @@ begin
 
                 // Concate main object code
                 ObjCode := ObjCode + AnsiString(temp);
-                ShaderManager.DefineShaderObject(SampleShaderObjectNames[II], 
+                ShaderManager.DefineShaderObject(SampleShaderObjectNames[II],
                   ObjCode, oType, XMLSample.NodeName + aVariant);
               end;
             end;
@@ -639,7 +665,8 @@ begin
     begin
       if Assigned(Samplers[I]) and (Length(Samplers[I].ResourceName) > 0) then
       begin
-        AList.Add(Format('%s=%s', [Samplers[I].Name.Value, ExtractFileName(Samplers[I].ResourceName)]));
+        AList.Add(Format('%s=%s', [Samplers[I].Name.Value,
+          ExtractFileName(Samplers[I].ResourceName)]));
         Result := True;
       end;
     end;
@@ -651,7 +678,8 @@ begin
     begin
       if Assigned(Textures[I]) and (Length(Textures[I].ResourceName) > 0) then
       begin
-        AList.Add(Format('%s=%s', [Textures[I].Name.Value, ExtractFileName(Textures[I].ResourceName)]));
+        AList.Add(Format('%s=%s', [Textures[I].Name.Value,
+          ExtractFileName(Textures[I].ResourceName)]));
         Result := True;
       end;
     end;
@@ -663,7 +691,8 @@ begin
     begin
       if Assigned(Materials[I]) and (Length(Materials[I].ResourceName) > 0) then
       begin
-        AList.Add(Format('%s=%s', [Materials[I].Name.Value, ExtractFileName(Materials[I].ResourceName)]));
+        AList.Add(Format('%s=%s', [Materials[I].Name.Value,
+          ExtractFileName(Materials[I].ResourceName)]));
         Result := True;
       end;
     end;
@@ -698,7 +727,8 @@ begin
   Result := 253;
 end;
 
-class function MaterialManager.GenerateShaderCode(const ASampleList: TSampleList;
+class function MaterialManager.GenerateShaderCode(const ASampleList:
+  TSampleList;
   var AProgramCodeSet: TProgramCodeSet;
   const AName: AnsiString; AOutType: TGLSLDataType): Boolean;
 const
@@ -797,12 +827,15 @@ begin
           case pSample.Purpose of
             sspOperation:
               begin
-                if pSample.Name = MaterialSystem.Utility.Utility_ComponentMask then
+                if pSample.Name = MaterialSystem.Utility.Utility_ComponentMask
+                  then
                 begin
-                  CurrLocal := sLocal + AnsiString(IntToStr(pSample.FInputRef[0].LocalID));
+                  CurrLocal := sLocal +
+                    AnsiString(IntToStr(pSample.FInputRef[0].LocalID));
                   line := GLSLTypeToString(MaskToGLSLType(pSample.Mask)) + ' ';
                   line := line + NextLocal + ' = ';
-                  line := line + GetGLSLTypeCast(CurrLocal, pSample.FInputRef[0].Output, pSample.Mask) + ';';
+                  line := line + GetGLSLTypeCast(CurrLocal,
+                    pSample.FInputRef[0].Output, pSample.Mask) + ';';
                 end
                 else
                 begin
@@ -819,7 +852,8 @@ begin
                   for I := 0 to High(pSample.FInputRef) do
                     if Assigned(pSample.FInputRef[I]) then
                     begin
-                      line := line + sLocal + AnsiString(IntToStr(pSample.FInputRef[I].LocalID)) + ', ';
+                      line := line + sLocal +
+                        AnsiString(IntToStr(pSample.FInputRef[I].LocalID)) + ', ';
                       withParam := True;
                     end;
                   if withParam then
@@ -831,9 +865,11 @@ begin
                     line := line + ');';
                   if pSample.Mask <> [] then
                   begin
-                    line := line + ' ' + GLSLTypeToString(MaskToGLSLType(pSample.Mask)) + ' ';
+                    line := line + ' ' +
+                      GLSLTypeToString(MaskToGLSLType(pSample.Mask)) + ' ';
                     line := line + NextLocal + ' = ';
-                    line := line + GetGLSLTypeCast(CurrLocal, pSample.Output, pSample.Mask) + ';';
+                    line := line + GetGLSLTypeCast(CurrLocal, pSample.Output,
+                      pSample.Mask) + ';';
                   end;
                 end;
               end;
@@ -841,16 +877,22 @@ begin
               begin
                 if pSample.Mask = [] then
                 begin
-                  line := 'const ' + GLSLTypeToString(pSample.Output) + ' ' + NextLocal + ' = ' + HexToGLSL(pSample.Output, pSample.ConstantValue) + ';';
+                  line := 'const ' + GLSLTypeToString(pSample.Output) + ' ' +
+                    NextLocal + ' = ' + HexToGLSL(pSample.Output,
+                    pSample.ConstantValue) + ';';
                 end
                 else
                 begin
-                  line := 'const ' + GLSLTypeToString(MaskToGLSLType(pSample.Mask)) + ' ' + NextLocal + ' = ' + HexToGLSL(pSample.Output, pSample.ConstantValue) + ';';
+                  line := 'const ' +
+                    GLSLTypeToString(MaskToGLSLType(pSample.Mask)) + ' ' +
+                    NextLocal + ' = ' + HexToGLSL(pSample.Output,
+                    pSample.ConstantValue) + ';';
                 end;
               end;
             sspVariable:
               begin
-                line := GLSLTypeToString(pSample.Output) + ' ' + NextLocal + ';';
+                line := GLSLTypeToString(pSample.Output) + ' ' + NextLocal +
+                  ';';
               end;
           end;
 
@@ -874,7 +916,8 @@ begin
         else // input samples are not ready
         begin
           for I := 0 to High(pSample.FInputRef) do
-            if Assigned(pSample.FInputRef[I]) and not pSample.FInputRef[I].Processed then
+            if Assigned(pSample.FInputRef[I]) and not
+              pSample.FInputRef[I].Processed then
             begin
               pSample := pSample.FInputRef[I];
               break;
@@ -966,7 +1009,8 @@ begin
   begin
     if Assigned(Materials[I]) then
     begin
-      if (Materials[I].FName.HashCode = H) and (string(Materials[I].FName.Value) = AName) then
+      if (Materials[I].FName.HashCode = H) and (string(Materials[I].FName.Value)
+        = AName) then
         exit(Materials[I].FName);
     end;
   end;
@@ -987,8 +1031,9 @@ begin
   if Assigned(AName) then
   begin
     Result := AName.GetIndex;
-    if GetMaterial(AName).FBlendingMode in [bmTransparency, bmAdditive, bmMasked, bmModulate] then
-      Result := - Result;
+    if GetMaterial(AName).FBlendingMode in [bmTransparency, bmAdditive,
+      bmMasked, bmModulate] then
+      Result := -Result;
   end
   else
     Result := 0;
@@ -1009,7 +1054,8 @@ begin
   begin
     if Assigned(Textures[I]) then
     begin
-      if (Textures[I].Name.HashCode = H) and (string(Textures[I].Name.Value) = AName) then
+      if (Textures[I].Name.HashCode = H) and (string(Textures[I].Name.Value) =
+        AName) then
         exit(Textures[I].Name);
     end;
   end;
@@ -1032,7 +1078,8 @@ begin
   begin
     if Assigned(Samplers[I]) then
     begin
-      if (Samplers[I].Name.HashCode = H) and (string(Samplers[I].Name.Value) = AName) then
+      if (Samplers[I].Name.HashCode = H) and (string(Samplers[I].Name.Value) =
+        AName) then
         exit(Samplers[I].Name);
     end;
   end;
@@ -1048,7 +1095,8 @@ begin
     Result := nil;
 end;
 
-class procedure MaterialManager.MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass);
+class procedure MaterialManager.MakeUniqueItemName(var AName: string; AClass:
+  TGLAbstractNameClass);
 const
   cMatName = 'RenderMaterial';
   cTexName = 'DiffuseTexture';
@@ -1075,7 +1123,8 @@ begin
   begin
     if Length(Textures) < 2 then
       exit;
-    if (Length(AName) = 0) or (AName = glsDIFFUSEMAP) or (AName = glsNORMALMAP) then
+    if (Length(AName) = 0) or (AName = glsDIFFUSEMAP) or (AName = glsNORMALMAP)
+      then
       AName := cTexName;
     N := 1;
     while GetTextureName(AName).GetValue <> glsDIFFUSEMAP do
@@ -1188,7 +1237,8 @@ begin
   Samplers[I] := ASampler;
 end;
 
-class function MaterialManager.CreateMaterial(AName: string; const AFileName: string): IGLName;
+class function MaterialManager.CreateMaterial(AName: string; const AFileName:
+  string): IGLName;
 var
   newMat: TGL3xMaterial;
 begin
@@ -1202,7 +1252,8 @@ begin
   Result := newMat.Name;
 end;
 
-class function MaterialManager.CreateTexture(AName: string; const AImportFile: string; const AFileName: string): IGLName;
+class function MaterialManager.CreateTexture(AName: string; const AImportFile:
+  string; const AFileName: string): IGLName;
 var
   newTex: TGL3xTexture;
 begin
@@ -1217,7 +1268,8 @@ begin
   Result := newTex.Name;
 end;
 
-class function MaterialManager.CreateSampler(AName: string; const AFileName: string): IGLName;
+class function MaterialManager.CreateSampler(AName: string; const AFileName:
+  string): IGLName;
 var
   newSmp: TGL3xSampler;
 begin
@@ -1241,7 +1293,8 @@ begin
   LastMaterial := vMaterial;
 end;
 
-class function MaterialManager.UnApplyMaterial(var ARci: TRenderContextInfo): Boolean;
+class function MaterialManager.UnApplyMaterial(var ARci: TRenderContextInfo):
+  Boolean;
 begin
   if Assigned(LastMaterial) then
   begin
@@ -1252,7 +1305,8 @@ begin
     Result := True;
 end;
 
-class procedure MaterialManager.ApplyTextureSampler(const ATextureName, ASamplerName: IGLName; AUniform: TGLSLUniform);
+class procedure MaterialManager.ApplyTextureSampler(const ATextureName,
+  ASamplerName: IGLName; AUniform: TGLSLUniform);
 var
   vTexture: TGL3xTexture;
   vSampler: TGL3xSampler;
@@ -1393,17 +1447,20 @@ begin
           for L := 0 to High(Input) do
             if Input[L] <> GLSLTypeUndefined then
             begin
-              vParams := vParams + GLSLTypeToString(Input[L]) + ' ' + AnsiChar(L + 65) + ',';
+              vParams := vParams + GLSLTypeToString(Input[L]) + ' ' + AnsiChar(L
+                + 65) + ',';
             end;
         end;
 
         if vParams[Length(vParams)] = ',' then
           Delete(vParams, Length(vParams), 1);
         vParams := vParams + ')';
-        Result := GLSLTypeToString(Self.Output) + ' ' + Self.Name + vParams + ';';
+        Result := GLSLTypeToString(Self.Output) + ' ' + Self.Name + vParams +
+          ';';
         exit;
       end;
-    Result := GLSLTypeToString(Self.Output) + ' ' + Self.Name + '(' + AnsiString(FInputFromMatSys) + ');';
+    Result := GLSLTypeToString(Self.Output) + ' ' + Self.Name + '(' +
+      AnsiString(FInputFromMatSys) + ');';
   end;
 end;
 
@@ -1414,11 +1471,14 @@ var
   aVariant, sInputs, aInputs, sOutput, aOutput, aUniforms, sUniforms: string;
   ins, temp: string;
   matVariant: TMaterialVariant;
+  lvUniformClass: TPersistentClass;
 
   procedure CaseVariant;
   begin
     if aVariant = 'AllSurfProperties' then
       matVariant := matvarAllSurfProperies
+    else if aVariant = 'GUI' then
+      matVariant := matvarGUI
     else
       Abort;
   end;
@@ -1462,7 +1522,8 @@ begin
 
             if not Result then
             begin
-              if (sInputs = RemoveGLSLQualifier(aInputs)) and (sOutput = aOutput) then
+              if (sInputs = RemoveGLSLQualifier(aInputs)) and (sOutput = aOutput)
+                then
               begin
                 FInputFromMatSys := aInputs;
                 if FInputFromMatSys <> 'void;' then
@@ -1491,7 +1552,8 @@ begin
 
               if not GetXMLAttribute(XMLOverload, 'ObjectIndex', temp) then
                 continue;
-              FObjectName[matVariant] := SampleShaderObjectNames[StrToInt(temp)];
+              FObjectName[matVariant] :=
+                SampleShaderObjectNames[StrToInt(temp)];
 
               if GetXMLAttribute(XMLOverload, 'Uniforms', aUniforms) then
               begin
@@ -1502,7 +1564,13 @@ begin
                   begin
                     sUniforms := Copy(aUniforms, 0, p - 1);
                     Delete(aUniforms, 1, p);
-                    UniformClasses[U] := TBaseShaderEnvironmentClass(FindClass(sUniforms));
+                    lvUniformClass := FindClass(sUniforms);
+                    if Assigned(lvUniformClass) then
+                      UniformClasses[matVariant][U] :=
+                        TBaseShaderEnvironmentClass(lvUniformClass)
+                    else
+                      GLSLogger.LogWarningFmt('Can''t find unform class %s',
+                        [sUniforms]);
                     Inc(U);
                   end
                   else
@@ -1528,11 +1596,14 @@ var
   aVariant, sInputs, aInputs, aOutput, ObjType, aUniforms, sUniforms: string;
   I, U, p: Integer;
   matVariant: TMaterialVariant;
+  lvUniformClass: TPersistentClass;
 
   procedure CaseVariant;
   begin
     if aVariant = 'AllSurfProperties' then
       matVariant := matvarAllSurfProperies
+    else if aVariant = 'GUI' then
+      matVariant := matvarGUI
     else
       Abort;
   end;
@@ -1579,7 +1650,8 @@ begin
       Participate := [];
       Result := False;
 
-      if Assigned(MatSysDoc) and (Length(Category) > 0) and (Length(Name) > 0) then
+      if Assigned(MatSysDoc) and (Length(Category) > 0) and (Length(Name) > 0)
+        then
       begin
 
         sInputs := InputAsString;
@@ -1640,7 +1712,8 @@ begin
                 begin
                   if not GetXMLAttribute(XMLOverload, 'ObjectIndex', temp) then
                     continue;
-                  FObjectName[matVariant] := SampleShaderObjectNames[StrToInt(temp)];
+                  FObjectName[matVariant] :=
+                    SampleShaderObjectNames[StrToInt(temp)];
 
                   if GetXMLAttribute(XMLOverload, 'Output', temp) then
                     CaseOutput
@@ -1656,7 +1729,13 @@ begin
                       begin
                         sUniforms := Copy(aUniforms, 0, p - 1);
                         Delete(aUniforms, 1, p);
-                        UniformClasses[U] := TBaseShaderEnvironmentClass(FindClass(sUniforms));
+                        lvUniformClass := FindClass(sUniforms);
+                        if Assigned(lvUniformClass) then
+                          UniformClasses[matVariant][U] :=
+                            TBaseShaderEnvironmentClass(lvUniformClass)
+                        else
+                          GLSLogger.LogWarningFmt('Can''t find unform class %s',
+                            [sUniforms]);
                         Inc(U);
                       end
                       else
@@ -1772,7 +1851,8 @@ begin
     if not pSample.FindShaderObject then
     begin
       FLoaded := False;
-      GLSLogger.LogError(Format('Sample %s can''t find shader object', [pSample.Name]));
+      GLSLogger.LogError(Format('Sample %s can''t find shader object',
+        [pSample.Name]));
     end;
   end;
 
@@ -1783,7 +1863,8 @@ begin
   if not MaterialManager.GenerateShaderCode(FSampleList, ProgramCodeSet) then
   begin
     FLoaded := False;
-    GLSLogger.LogError(Format('Material %s can''t generate shader program', [FName.Value]));
+    GLSLogger.LogError(Format('Material %s can''t generate shader program',
+      [FName.Value]));
     if Name.GetIndex = 0 then
       Abort;
     Default;
@@ -1902,11 +1983,10 @@ end;
 
 procedure TGL3xMaterial.ClearUniforms;
 var
-  I: Integer;
+  V: TMaterialVariant;
 begin
-  for I := High(FUniforms) downto 0 do
-    FUniforms[I].Free;
-  SetLength(FUniforms, 0);
+  for V := Low(TMaterialVariant) to High(TMaterialVariant) do
+    FProgramVariants[V].FUniforms := nil;
 end;
 
 procedure TGL3xMaterial.ClearUnits;
@@ -1993,7 +2073,8 @@ begin
       XMLSamples := CreateDOMNode(XMLMaterial, 'Samples');
       SetXMLAttribute(XMLMaterial, 'FaceCulling', cFaceCulling[FFaceCulling]);
       SetXMLAttribute(XMLMaterial, 'PolygonMode', cPolygonMode[FPolygonMode]);
-      SetXMLAttribute(XMLMaterial, 'BlendingMode', cBlendingMode[FBlendingMode]);
+      SetXMLAttribute(XMLMaterial, 'BlendingMode',
+        cBlendingMode[FBlendingMode]);
 
       for I := 0 to FSampleList.Count - 1 do
       begin
@@ -2001,15 +2082,18 @@ begin
         XMLSample := CreateDOMNode(XMLSamples, 'Sample' + IntToStr(I));
         SetXMLAttribute(XMLSample, 'Category', string(pSample.Category));
         SetXMLAttribute(XMLSample, 'Name', string(pSample.Name));
-        SetXMLAttribute(XMLSample, 'Output', string(GLSLTypeToString(pSample.Output)));
+        SetXMLAttribute(XMLSample, 'Output',
+          string(GLSLTypeToString(pSample.Output)));
 
-        SetXMLAttribute(XMLSample, 'Participate', GLSLPartToStr(pSample.Participate));
+        SetXMLAttribute(XMLSample, 'Participate',
+          GLSLPartToStr(pSample.Participate));
 
         case pSample.Purpose of
           sspConstant:
             begin
               SetXMLAttribute(XMLSample, 'Purpose', 'C');
-              SetXMLAttribute(XMLSample, 'ConstantValue', pSample.ConstantValue);
+              SetXMLAttribute(XMLSample, 'ConstantValue',
+                pSample.ConstantValue);
             end;
           sspVariable:
             begin
@@ -2032,7 +2116,8 @@ begin
             if pSample.Input[J] <> GLSLTypeUndefined then
             begin
               XMLRef := CreateDOMNode(XMLRefs, 'R' + IntToStr(J));
-              SetXMLAttribute(XMLRef, 'Input', string(GLSLTypeToString(pSample.Input[J])));
+              SetXMLAttribute(XMLRef, 'Input',
+                string(GLSLTypeToString(pSample.Input[J])));
             end;
         end
         else
@@ -2040,8 +2125,10 @@ begin
             if Assigned(pSample.FInputRef[J]) then
             begin
               XMLRef := CreateDOMNode(XMLRefs, 'R' + IntToStr(J));
-              SetXMLAttribute(XMLRef, 'Index', IntToStr(FSampleList.IndexOf(pSample.FInputRef[J])));
-              SetXMLAttribute(XMLRef, 'Input', string(GLSLTypeToString(pSample.Input[J])));
+              SetXMLAttribute(XMLRef, 'Index',
+                IntToStr(FSampleList.IndexOf(pSample.FInputRef[J])));
+              SetXMLAttribute(XMLRef, 'Input',
+                string(GLSLTypeToString(pSample.Input[J])));
             end;
       end;
     end;
@@ -2137,11 +2224,13 @@ begin
         rName := Copy(temp, 1, K - 1);
         Delete(temp, 1, K);
         SetLength(FUnits, Length(FUnits) + 1);
-        FUnits[High(FUnits)].TextureName := MaterialManager.GetTextureName(rName);
+        FUnits[High(FUnits)].TextureName :=
+          MaterialManager.GetTextureName(rName);
         K := Pos(';', temp);
         rName := Copy(temp, 1, K - 1);
         Delete(temp, 1, K);
-        FUnits[High(FUnits)].SamplerName := MaterialManager.GetSamplerName(rName);
+        FUnits[High(FUnits)].SamplerName :=
+          MaterialManager.GetSamplerName(rName);
       until Length(temp) = 0;
 
     for I := 0 to XMLSamples.ChildNodes.Count - 1 do
@@ -2233,7 +2322,8 @@ end;
 
 procedure TGL3xMaterial.CreateUniforms;
 var
-  I, J, K, N: Integer;
+  I, J, K: Integer;
+  V: TMaterialVariant;
   pSample: PShaderSample;
   Duplicate: Boolean;
 begin
@@ -2243,23 +2333,27 @@ begin
       for I := 0 to FSampleList.Count - 1 do
       begin
         pSample := FSampleList[I];
-        for J := 0 to High(pSample.UniformClasses) do
-          if pSample.UniformClasses[J] <> nil then
-          begin
-            Duplicate := False;
-            for K := 0 to High(FUniforms) do
-              if (FUniforms[K].ClassType = pSample.UniformClasses[J]) then
+        for V := low(TMaterialVariant) to high(TMaterialVariant) do
+        begin
+          for J := 0 to High(pSample.UniformClasses[V]) do
+            if pSample.UniformClasses[V][J] <> nil then
+              with FProgramVariants[V] do
               begin
-                Duplicate := True;
-                break;
+                Duplicate := False;
+                for K := 0 to High(FUniforms) do
+                  if (FUniforms[K].ClassName =
+                    pSample.UniformClasses[V][J].ClassName) then
+                  begin
+                    Duplicate := True;
+                    break;
+                  end;
+                if not Duplicate then
+                begin
+                  SetLength(FUniforms, Length(FUniforms) + 1);
+                  FUniforms[High(FUniforms)] := pSample.UniformClasses[V][J];
+                end;
               end;
-            if not Duplicate then
-            begin
-              SetLength(FUniforms, Length(FUniforms) + 1);
-              N := High(FUniforms);
-              FUniforms[N] := pSample.UniformClasses[J].Create(FUnits);
-            end;
-          end;
+        end;
       end;
     finally
       EndWork;
@@ -2316,7 +2410,8 @@ begin
             for I := FSampleList.Count - 1 downto 0 do
             begin
               pSample := FSampleList[I];
-              AttachShaderObjectToProgram(GetObject, FProgramVariants[V].FProgram);
+              AttachShaderObjectToProgram(GetObject,
+                FProgramVariants[V].FProgram);
             end;
           end
           else
@@ -2324,7 +2419,8 @@ begin
             for I := 0 to FSampleList.Count - 1 do
             begin
               pSample := FSampleList[I];
-              AttachShaderObjectToProgram(GetObject, FProgramVariants[V].FProgram);
+              AttachShaderObjectToProgram(GetObject,
+                FProgramVariants[V].FProgram);
             end;
           end;
 
@@ -2370,8 +2466,15 @@ begin
     ShaderManager.UseProgram(lvProgram);
 
     // Apply Uniforms
-    for I := 0 to High(FUniforms) do
-      FUniforms[I].Apply;
+    with FProgramVariants[ARci.materialVariant] do
+      for I := 0 to High(FUniforms) do
+        FUniforms[I].Apply(ARci);
+
+    // Apply textures
+    for I := 0 to High(FUnits) do
+      MaterialManager.ApplyTextureSampler(FUnits[I].TextureName,
+        FUnits[0].SamplerName,
+        uniformTexUnits[I]);
 
     // Apply States
     with CurrentGLContext.GLStates do
