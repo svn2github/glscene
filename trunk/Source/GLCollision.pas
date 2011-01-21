@@ -6,6 +6,7 @@
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>21/01/01 - DanB - Added "inherited" call to TGLBCollision.WriteToFiler
       <li>03/04/07 - DaStr - Added "public" to TCollisionNode for FPC compatibility
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>19/10/06 - LC - Fixed memory leak in TCollisionManager.CheckCollisions. Bugtracker ID=1548618
@@ -854,7 +855,10 @@ end;
 procedure TGLBCollision.WriteToFiler(writer : TWriter);
 begin
    with writer do begin
-      WriteInteger(1); // ArchiveVersion 1, added FGroupIndex
+      // ArchiveVersion 1, added FGroupIndex
+      // ArchiveVersion 2, added inherited call
+      WriteInteger(2);
+      inherited;
       if Assigned(FManager) then
          WriteString(FManager.GetNamePath)
       else WriteString('');
@@ -871,7 +875,9 @@ var
 begin
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0..1]);
+      Assert(archiveVersion in [0..2]);
+      if archiveVersion>=2 then
+        inherited;
       FManagerName:=ReadString;
       BoundingMode:=TCollisionBoundingMode(ReadInteger);
       Manager:=nil;

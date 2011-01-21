@@ -9,6 +9,7 @@
    but the default value is rmTurnPitchRoll for backwards compatibility.
 
    <b>Historique : </b><font size=-1><ul>
+      <li>21/01/01 - DanB - Added "inherited" call to TGLMovement.WriteToFiler
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>12/11/09 - DaStr - Bugfix after previous commit
       <li>25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
@@ -1269,7 +1270,9 @@ var
 begin
   with Writer do
   begin
-    WriteInteger(0); // Archive Version 0
+    // Archive Version 1, added inherited call
+    WriteInteger(1);
+    inherited;
     WriteStuff := (FPaths.Count>0) or (not FAutoStartNextPath) or (FActivePathIndex<>-1);
     WriteBoolean(WriteStuff);
     if WriteStuff then
@@ -1289,11 +1292,14 @@ var
   I: Integer;
   Count: Integer;
   Path: TGLMovementPath;
+  archiveVersion: Integer;
 begin
   ClearPaths;
   with Reader do
   begin
-    ReadInteger; // Archive Version 0
+    archiveVersion := ReadInteger;
+    if archiveVersion >= 1 then
+      inherited;
     if ReadBoolean then
     begin
       FAutoStartNextPath := ReadBoolean;

@@ -4,6 +4,7 @@
 {: GLThorFX<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>21/01/01 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
     <li>22/04/10 - Yar - Fixes after GLState revision
@@ -435,7 +436,9 @@ end;
 procedure TGLBThorFX.WriteToFiler(writer : TWriter);
 begin
   with writer do begin
-    WriteInteger(0); // ArchiveVersion 0
+    // ArchiveVersion 1, added inherited call
+    WriteInteger(1);
+    inherited;
     if Assigned(FManager) then
       WriteString(FManager.GetNamePath)
     else
@@ -447,11 +450,13 @@ end;
 //
 procedure TGLBThorFX.ReadFromFiler(reader : TReader);
 var
-  I: LongInt;
+  archiveVersion: Integer;
 begin
   with reader do begin
-    I := ReadInteger;
-    Assert(I=0);
+    archiveVersion := ReadInteger;
+    Assert(archiveVersion in [0..1]);
+    if archiveVersion >= 1 then
+      inherited;
     FManagerName:=ReadString;
     Manager:=nil;
   end;

@@ -16,6 +16,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>21/01/01 - DanB - Added "inherited" call to TODEElementPlane.WriteToFiler
     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
     <li>22/04/10 - Yar - Fixes after GLState revision
@@ -3862,7 +3863,9 @@ end;
 //
 procedure TODEElementPlane.WriteToFiler(writer : TWriter);
 begin
-  writer.WriteInteger(0);
+  // ArchiveVersion 1, added inherited call
+  writer.WriteInteger(1);
+  inherited;
 end;
 
 // ReadFromFiler
@@ -3872,7 +3875,9 @@ var
   archiveVersion : Integer;
 begin
   archiveVersion:=reader.ReadInteger;
-  Assert(archiveVersion = 0);
+  Assert(archiveVersion in [0..1]);
+  if archiveVersion >= 1 then
+    inherited;
 end;
 
 // FriendlyName

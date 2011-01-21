@@ -10,6 +10,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/01/01 - DanB - Added "inherited" call to TGLParticleFXEffect.WriteToFiler
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -1452,7 +1453,10 @@ var
 begin
   with writer do
   begin
-    WriteInteger(1); // ArchiveVersion 1
+    // ArchiveVersion 1, added EffectScale
+    // ArchiveVersion 2, added inherited call
+    WriteInteger(2);
+    inherited;
     if Manager <> nil then
       st := Manager.GetNamePath
     else
@@ -1472,7 +1476,9 @@ begin
   with reader do
   begin
     archiveVersion := ReadInteger;
-    Assert(archiveVersion in [0..1]);
+    Assert(archiveVersion in [0..2]);
+    if archiveVersion >= 2 then
+      inherited;
     if archiveVersion >= 0 then
     begin
       FManagerName := ReadString;

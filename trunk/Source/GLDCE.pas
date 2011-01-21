@@ -21,6 +21,7 @@
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
   <b>History : </b><font size=-1><ul>
+    <li>21/01/01 - DanB - Added "inherited" call to TGLDCEDynamic/TGLDCEStatic.WriteToFiler
     <li>18/09/10 - YP - Moved published behaviours' events to public (they cannot be restored by the filer)
     <li>30/03/07 - DaStr - Added $I GLScene.inc
     <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
@@ -645,7 +646,9 @@ end;
 procedure TGLDCEStatic.WriteToFiler(writer: TWriter);
 begin
    with writer do begin
-      WriteInteger(0); // ArchiveVersion 0
+      // ArchiveVersion 1, added inherited call
+      WriteInteger(1);
+      inherited;
       if Assigned(FManager) then
          WriteString(FManager.GetNamePath)
       else WriteString('');
@@ -665,7 +668,9 @@ var
 begin
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0]);
+      Assert(archiveVersion in [0..1]);
+      if archiveVersion >=1 then
+        inherited;
       FManagerName:=ReadString;
       Manager:=nil;
       FShape := TDCEShape(ReadInteger);
@@ -948,7 +953,9 @@ end;
 procedure TGLDCEDynamic.WriteToFiler(writer: TWriter);
 begin
    with writer do begin
-      WriteInteger(0); // ArchiveVersion 0
+      // ArchiveVersion 1, added inherited call
+      WriteInteger(1);
+      inherited;
       if Assigned(FManager) then
          WriteString(FManager.GetNamePath)
       else WriteString('');
@@ -972,7 +979,9 @@ var
 begin
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0]);
+      Assert(archiveVersion in [0..1]);
+      if archiveVersion >=1 then
+        inherited;
       FManagerName:=ReadString;
       Manager:=nil;
       FLayer := ReadInteger;
