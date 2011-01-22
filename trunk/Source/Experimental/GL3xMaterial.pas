@@ -103,7 +103,7 @@ type
     function TotalOutput: TGLSLDataType;
     property TextureInInput: Boolean read FTextureInInput write FTextureInInput;
     property InputRef[Index: Integer]: PShaderSample read GetInputRef write
-      SetInputRef;
+    SetInputRef;
   end;
 
   TSampleList = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
@@ -223,7 +223,7 @@ type
     // Design time helper methods
     class function GenerateShaderCode(const ASampleList: TSampleList;
       var AProgramCodeSet: TProgramCodeSet; const AName: AnsiString = 'main';
-        AOutType: TGLSLDataType = GLSLTypeVoid): Boolean;
+      AOutType: TGLSLDataType = GLSLTypeVoid): Boolean;
     class procedure FillMaterialNameList(var AList: TStringList);
     class procedure FillTextureNameList(var AList: TStringList);
     class procedure FillSamplerNameList(var AList: TStringList);
@@ -274,6 +274,16 @@ var
   Structures: AnsiString;
   SampleShaderObjectNames: array of IGLName;
   uniformTexUnits: array[0..7] of TGLSLUniform;
+
+function StrToMaterialVariant(const AStr: string): TMaterialVariant;
+begin
+  if AStr = 'AllSurfProperties' then
+    Result := matvarAllSurfProperies
+  else if AStr = 'GUI' then
+    Result := matvarGUI
+  else
+    Result := matvarCommon;
+end;
 
 class procedure TBaseShaderEnvironment.Apply;
 begin
@@ -853,7 +863,8 @@ begin
                     if Assigned(pSample.FInputRef[I]) then
                     begin
                       line := line + sLocal +
-                        AnsiString(IntToStr(pSample.FInputRef[I].LocalID)) + ', ';
+                        AnsiString(IntToStr(pSample.FInputRef[I].LocalID)) +
+                          ', ';
                       withParam := True;
                     end;
                   if withParam then
@@ -1473,16 +1484,6 @@ var
   matVariant: TMaterialVariant;
   lvUniformClass: TPersistentClass;
 
-  procedure CaseVariant;
-  begin
-    if aVariant = 'AllSurfProperties' then
-      matVariant := matvarAllSurfProperies
-    else if aVariant = 'GUI' then
-      matVariant := matvarGUI
-    else
-      Abort;
-  end;
-
 begin
   if Purpose = sspVariable then
     exit(True);
@@ -1510,7 +1511,7 @@ begin
             XMLOverload := XMLSample.ChildNodes[I];
 
             if GetXMLAttribute(XMLOverload, 'Variant', aVariant) then
-              CaseVariant
+              matVariant := StrToMaterialVariant(aVariant)
             else
               matVariant := matvarCommon;
 
@@ -1549,39 +1550,59 @@ begin
                   FInputFromMatSys := 'void';
                 Result := True;
               end;
+            end;
 
+            if FObjectName[matVariant] = nil then
+            begin
               if not GetXMLAttribute(XMLOverload, 'ObjectIndex', temp) then
                 continue;
               FObjectName[matVariant] :=
                 SampleShaderObjectNames[StrToInt(temp)];
+            end;
 
-              if GetXMLAttribute(XMLOverload, 'Uniforms', aUniforms) then
-              begin
-                U := 0;
-                repeat
-                  p := Pos(';', aUniforms);
-                  if p > 0 then
-                  begin
-                    sUniforms := Copy(aUniforms, 0, p - 1);
-                    Delete(aUniforms, 1, p);
+            if GetXMLAttribute(XMLOverload, 'Uniforms', aUniforms) then
+            begin
+              U := 0;
+              repeat
+                p := Pos(';', aUniforms);
+                if p > 0 then
+                begin
+                  sUniforms := Copy(aUniforms, 0, p - 1);
+                  Delete(aUniforms, 1, p);
+                  try
                     lvUniformClass := FindClass(sUniforms);
-                    if Assigned(lvUniformClass) then
-                      UniformClasses[matVariant][U] :=
-                        TBaseShaderEnvironmentClass(lvUniformClass)
-                    else
+                    UniformClasses[matVariant][U] :=
+                      TBaseShaderEnvironmentClass(lvUniformClass);
+                  except
+                    on EClassNotFound do
                       GLSLogger.LogWarningFmt('Can''t find unform class %s',
-                        [sUniforms]);
-                    Inc(U);
-                  end
-                  else
-                    break;
-                until Length(aUniforms) = 0;
-              end;
-            end; // for I, each overload
+                      [sUniforms]);
+                  end;
+                  Inc(U);
+                end
+                else
+                  break;
+              until Length(aUniforms) = 0;
+            end;
 
+          end; // for I, each overload
+
+          // Set objects for material's variant which has no it
+          for matVariant := matvarAllSurfProperies to high(TMaterialVariant) do
+          begin
+            if FObjectName[matVariant] = nil then
+            begin
+              FObjectName[matVariant] := FObjectName[matvarCommon];
+              for U := High(UniformClasses[matVariant]) downto 0 do
+                UniformClasses[matVariant][U] := UniformClasses[matvarCommon][U];
+            end;
           end;
-        end;
-      end;
+        end
+        else
+          Abort;
+      end
+      else
+        Abort;
     except
       GLSLogger.LogFatalError(sBadMaterialConstr);
     end;
@@ -1597,16 +1618,6 @@ var
   I, U, p: Integer;
   matVariant: TMaterialVariant;
   lvUniformClass: TPersistentClass;
-
-  procedure CaseVariant;
-  begin
-    if aVariant = 'AllSurfProperties' then
-      matVariant := matvarAllSurfProperies
-    else if aVariant = 'GUI' then
-      matVariant := matvarGUI
-    else
-      Abort;
-  end;
 
   procedure CaseOutput;
   begin
@@ -1701,7 +1712,7 @@ begin
                 end;
 
                 if GetXMLAttribute(XMLOverload, 'Variant', aVariant) then
-                  CaseVariant
+                  matVariant := StrToMaterialVariant(aVariant)
                 else
                   matVariant := matvarCommon;
 
@@ -1729,13 +1740,15 @@ begin
                       begin
                         sUniforms := Copy(aUniforms, 0, p - 1);
                         Delete(aUniforms, 1, p);
-                        lvUniformClass := FindClass(sUniforms);
-                        if Assigned(lvUniformClass) then
+                        try
+                          lvUniformClass := FindClass(sUniforms);
                           UniformClasses[matVariant][U] :=
-                            TBaseShaderEnvironmentClass(lvUniformClass)
-                        else
-                          GLSLogger.LogWarningFmt('Can''t find unform class %s',
-                            [sUniforms]);
+                            TBaseShaderEnvironmentClass(lvUniformClass);
+                        except
+                          on EClassNotFound do
+                            GLSLogger.LogWarningFmt(
+                              'Can''t find unform class %s', [sUniforms]);
+                        end;
                         Inc(U);
                       end
                       else
@@ -2049,6 +2062,9 @@ var
   XMLMaterial, XMLSamples, XMLSample, XMLRefs, XMLRef: GLSDOMNode;
   I, J: Integer;
   pSample: PShaderSample;
+  V: TMaterialVariant;
+  Vs: TMaterialVariants;
+  temp: string;
 begin
   if (Length(ResourceName) = 0) and (stream is TFileStream) then
     ResourceName := TFileStream(stream).fileName;
@@ -2075,6 +2091,13 @@ begin
       SetXMLAttribute(XMLMaterial, 'PolygonMode', cPolygonMode[FPolygonMode]);
       SetXMLAttribute(XMLMaterial, 'BlendingMode',
         cBlendingMode[FBlendingMode]);
+      temp := '';
+      Vs := FVariants * [matvarGUI];
+      for V := low(TMaterialVariant) to high(TMaterialVariant) do
+        if V in Vs then
+          temp := temp + cMaterialVariant[V] + ';';
+      if Length(temp) > 0 then
+        SetXMLAttribute(XMLMaterial, 'Variants', temp);
 
       for I := 0 to FSampleList.Count - 1 do
       begin
@@ -2231,6 +2254,19 @@ begin
         Delete(temp, 1, K);
         FUnits[High(FUnits)].SamplerName :=
           MaterialManager.GetSamplerName(rName);
+      until Length(temp) = 0;
+
+    if GetXMLAttribute(XMLMaterial, 'Variants', temp) then
+      repeat
+        K := Pos(';', temp);
+        if K = 0 then
+          break;
+        rName := Copy(temp, 1, K - 1);
+        Delete(temp, 1, K);
+        FVariants := FVariants + [StrToMaterialVariant(rName)];
+        K := Pos(';', temp);
+        rName := Copy(temp, 1, K - 1);
+        Delete(temp, 1, K);
       until Length(temp) = 0;
 
     for I := 0 to XMLSamples.ChildNodes.Count - 1 do
@@ -2404,24 +2440,11 @@ begin
             Name.Value + '_' + cMaterialVariant[V]);
 
           // Attach shader objects of samples
-          // Workaround AMD bug of Catalist 10.12
-          if FLightingModel = lmPhong then
+          for I := FSampleList.Count - 1 downto 0 do
           begin
-            for I := FSampleList.Count - 1 downto 0 do
-            begin
-              pSample := FSampleList[I];
-              AttachShaderObjectToProgram(GetObject,
-                FProgramVariants[V].FProgram);
-            end;
-          end
-          else
-          begin
-            for I := 0 to FSampleList.Count - 1 do
-            begin
-              pSample := FSampleList[I];
-              AttachShaderObjectToProgram(GetObject,
-                FProgramVariants[V].FProgram);
-            end;
+            pSample := FSampleList[I];
+            AttachShaderObjectToProgram(GetObject,
+              FProgramVariants[V].FProgram);
           end;
 
           // Attach objects to program
@@ -2450,6 +2473,7 @@ begin
     if FLoaded then
     begin
       // On the fly initialization
+      Include(FVariants, ARci.materialVariant);
       Initialize;
       lvProgram := FProgramVariants[ARci.materialVariant].FProgram;
       bReady := ShaderManager.IsProgramLinked(lvProgram);

@@ -244,6 +244,7 @@ initialization
 
 RegisterClasses([
   TShaderEnvTime,
+  TShaderEnvGUIAlpha,
   TShaderEnvModelMatrix,
   TShaderEnvInvModelMatrix,
   TShaderEnvNormalMatrix,
