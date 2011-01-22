@@ -477,13 +477,13 @@ end;
 procedure TLogSession.LogDebugFmt(const Desc: string;
   const Args: array of const );
 begin
-  Log(Desc, lkDebug);
+  Log(Format(Desc, Args), lkDebug);
 end;
 
 procedure TLogSession.LogInfoFmt(const Desc: string;
   const Args: array of const );
 begin
-  Log(Desc, lkInfo);
+  Log(Format(Desc, Args), lkInfo);
 end;
 
 procedure TLogSession.LogNoticeFmt(const Desc: string;
