@@ -1309,7 +1309,7 @@ end;
 
 procedure TGLBaseImage.CrossToCubemapTask;
 var
-  fW, fH, pW, pH: integer;
+  fW, fH, pW, pH, e: integer;
   lData: PByteArray;
   ptr, lvl: PGLubyte;
   i, j: integer;
@@ -1340,8 +1340,8 @@ begin
   fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
-    Move(lData[((fH - (pH + j + 1)) * fW + 2 * pW) * fElementSize],
-      ptr^, pW * fElementSize);
+    e := ((fH - (pH + j + 1)) * fW + 2 * pW) * fElementSize;
+    Move(lData[E], ptr^, pW * fElementSize);
     Inc(ptr, pW * fElementSize);
   end;
   // negative X
@@ -1360,8 +1360,8 @@ begin
   fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
-    Move(lData[((4 * pH - j - 1) * fW + pW) * fElementSize],
-      ptr^, pW * fElementSize);
+    e := ((4 * pH - j - 1) * fW + pW) * fElementSize;
+    Move(lData[e], ptr^, pW * fElementSize);
     Inc(ptr, pW * fElementSize);
   end;
   // negative Y
@@ -1370,8 +1370,8 @@ begin
   fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
-    Move(lData[((2 * pH - j - 1) * fW + pW) * fElementSize],
-      ptr^, pW * fElementSize);
+    e := ((2 * pH - j - 1) * fW + pW) * fElementSize;
+    Move(lData[e], ptr^, pW * fElementSize);
     Inc(ptr, pW * fElementSize);
   end;
   // positive Z
@@ -1380,8 +1380,8 @@ begin
   fLevels.Add(lvl);
   for j := 0 to pH - 1 do
   begin
-    Move(lData[((fH - (pH + j + 1)) * fW + pW) * fElementSize],
-      ptr^, pW * fElementSize);
+    e := ((fH - (pH + j + 1)) * fW + pW) * fElementSize;
+    Move(lData[e], ptr^, pW * fElementSize);
     Inc(ptr, pW * fElementSize);
   end;
   // negative Z
@@ -1391,8 +1391,8 @@ begin
   for j := 0 to pH - 1 do
     for i := 0 to pW - 1 do
     begin
-      Move(lData[(j * fW + 2 * pW - (i + 1)) * fElementSize],
-        ptr^, fElementSize);
+      e := (j * fW + 2 * pW - (i + 1)) * fElementSize;
+      Move(lData[e], ptr^, fElementSize);
       Inc(ptr, fElementSize);
     end;
   // Set the new # of faces, width and height
