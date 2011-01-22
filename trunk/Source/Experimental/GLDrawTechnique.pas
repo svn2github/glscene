@@ -341,7 +341,6 @@ begin
 end;
 
 destructor TGLStaticMeshDrawerPP.Destroy;
-
 var
   I: Integer;
 begin
@@ -733,7 +732,11 @@ begin
     bNeedUpdateVAO := True;
   end
   else if IsDesignTime then
+  begin
+    FMeshState.InstanceData := vCurrentInstanceData;
     PassToDevice(vCurrentMesh);
+    FMeshState.LastRevision := lvMesh.FRevisionNum;
+  end;
 
   // Chack instance data changing
   if FMeshState.InstanceData <> vCurrentInstanceData then

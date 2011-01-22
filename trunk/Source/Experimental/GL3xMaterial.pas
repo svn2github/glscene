@@ -713,7 +713,6 @@ class procedure MaterialManager.NotifyProjectOpened;
 begin
   if IsDesignTime then
   begin
-    AddTaskForServiceContext(ClearResources);
     LoadResources;
   end;
 end;
@@ -1521,70 +1520,71 @@ begin
             if not GetXMLAttribute(XMLOverload, 'Output', aOutput) then
               Abort;
 
-            if not Result then
+            if (sInputs = RemoveGLSLQualifier(aInputs))
+              and (sOutput = aOutput) then
             begin
-              if (sInputs = RemoveGLSLQualifier(aInputs)) and (sOutput = aOutput)
-                then
+              if not Result then
               begin
-                FInputFromMatSys := aInputs;
-                if FInputFromMatSys <> 'void;' then
                 begin
-                  L := 65;
-                  while True do
+                  FInputFromMatSys := aInputs;
+                  if FInputFromMatSys <> 'void;' then
                   begin
-                    p := Pos(';', FInputFromMatSys);
-                    if p > 0 then
+                    L := 65;
+                    while True do
                     begin
-                      ins := Char(L);
-                      Inc(L);
-                      if p < Length(FInputFromMatSys) then
-                        ins := ins + ',';
-                      FInputFromMatSys[p] := ' ';
-                      Insert(ins, FInputFromMatSys, p + 1);
-                      continue;
+                      p := Pos(';', FInputFromMatSys);
+                      if p > 0 then
+                      begin
+                        ins := Char(L);
+                        Inc(L);
+                        if p < Length(FInputFromMatSys) then
+                          ins := ins + ',';
+                        FInputFromMatSys[p] := ' ';
+                        Insert(ins, FInputFromMatSys, p + 1);
+                        continue;
+                      end;
+                      break;
                     end;
+                  end
+                  else
+                    FInputFromMatSys := 'void';
+                  Result := True;
+                end;
+              end;
+
+              if FObjectName[matVariant] = nil then
+              begin
+                if not GetXMLAttribute(XMLOverload, 'ObjectIndex', temp) then
+                  continue;
+                FObjectName[matVariant] :=
+                  SampleShaderObjectNames[StrToInt(temp)];
+              end;
+
+              if GetXMLAttribute(XMLOverload, 'Uniforms', aUniforms) then
+              begin
+                U := 0;
+                repeat
+                  p := Pos(';', aUniforms);
+                  if p > 0 then
+                  begin
+                    sUniforms := Copy(aUniforms, 0, p - 1);
+                    Delete(aUniforms, 1, p);
+                    try
+                      lvUniformClass := FindClass(sUniforms);
+                      UniformClasses[matVariant][U] :=
+                        TBaseShaderEnvironmentClass(lvUniformClass);
+                    except
+                      on EClassNotFound do
+                        GLSLogger.LogWarningFmt('Can''t find unform class %s',
+                        [sUniforms]);
+                    end;
+                    Inc(U);
+                  end
+                  else
                     break;
-                  end;
-                end
-                else
-                  FInputFromMatSys := 'void';
-                Result := True;
+                until Length(aUniforms) = 0;
               end;
             end;
-
-            if FObjectName[matVariant] = nil then
-            begin
-              if not GetXMLAttribute(XMLOverload, 'ObjectIndex', temp) then
-                continue;
-              FObjectName[matVariant] :=
-                SampleShaderObjectNames[StrToInt(temp)];
-            end;
-
-            if GetXMLAttribute(XMLOverload, 'Uniforms', aUniforms) then
-            begin
-              U := 0;
-              repeat
-                p := Pos(';', aUniforms);
-                if p > 0 then
-                begin
-                  sUniforms := Copy(aUniforms, 0, p - 1);
-                  Delete(aUniforms, 1, p);
-                  try
-                    lvUniformClass := FindClass(sUniforms);
-                    UniformClasses[matVariant][U] :=
-                      TBaseShaderEnvironmentClass(lvUniformClass);
-                  except
-                    on EClassNotFound do
-                      GLSLogger.LogWarningFmt('Can''t find unform class %s',
-                      [sUniforms]);
-                  end;
-                  Inc(U);
-                end
-                else
-                  break;
-              until Length(aUniforms) = 0;
-            end;
-
           end; // for I, each overload
 
           // Set objects for material's variant which has no it

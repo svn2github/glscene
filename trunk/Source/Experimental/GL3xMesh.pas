@@ -262,7 +262,7 @@ type
     class procedure Finalize; override;
     class procedure LoadResources;
     class procedure SaveResources;
-    class procedure ClearResources;
+    class procedure ClearResources; stdcall;
     class procedure PushMesh(AMesh: TGLAbstractMesh);
     class function GetMesh(const AName: IGLName): TGLAbstractMesh;
     // Design time notifications
@@ -2844,7 +2844,6 @@ class procedure MeshManager.NotifyProjectOpened;
 begin
   if IsDesignTime then
   begin
-    ClearResources;
     LoadResources;
   end;
 end;
@@ -2854,7 +2853,7 @@ begin
   if IsDesignTime then
   begin
     SaveResources;
-    ClearResources;
+    AddTaskForServiceContext(ClearResources);
   end;
 end;
 
@@ -3047,7 +3046,6 @@ var
   newMesh: TGLAbstractMesh;
 begin
   CheckCall;
-  MakeUniqueItemName(AName, TGL3xMeshName);
   newMesh := AClass.Create(nil);
   newMesh.Name.Value := AName;
   PushMesh(newMesh);
