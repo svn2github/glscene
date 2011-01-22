@@ -397,7 +397,7 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 5408$';
+  GLSCENE_REVISION = '$Revision: 5450$';
   GLSCENE_VERSION = '1.1.0.%s';
 
 type
@@ -2511,6 +2511,8 @@ uses
 {$IFDEF GLS_EXPERIMENTAL}
   GLShaderEnvironment,
   GL3xMaterial,
+  GL3xMesh,
+  GL3xStaticMesh,
 {$ENDIF}  
   GLStrings,
   XOpenGL,
