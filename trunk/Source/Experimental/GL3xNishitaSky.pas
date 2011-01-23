@@ -176,7 +176,7 @@ uses
   GL3xStaticMesh,
   GLDrawTechnique;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Shaders'}{$ENDIF}
 const
 
   Header_fp: AnsiString =
@@ -425,7 +425,7 @@ const
     +
     ' FragColor = vec4( ViewerOpticalDepth, SunOpticalDepth.xy );' + #10#13 +
     '}';
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 const
   cTexPrec: array[TGLNishitaSkyTexPrec] of TGLInternalFormat =

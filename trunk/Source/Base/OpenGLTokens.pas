@@ -292,7 +292,7 @@ type
   TGLvdpauSurfaceNV = GLintptr;
   PGLvdpauSurfaceNV = ^TGLvdpauSurfaceNV;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) types'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) types'} {$ENDIF}
 type
    // GLU types
    TGLUNurbs = record end;
@@ -335,11 +335,11 @@ type
    // GLUNurbsCallback
    TGLUNurbsErrorProc = procedure(ErrorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
 const
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL v1.1 generic constants'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL v1.1 generic constants'}{$ENDIF}
   // ********** GL generic constants **********
 
   // attribute bits
@@ -606,7 +606,7 @@ const
   GL_RGBA12 = $805A;
   GL_RGBA16 = $805B;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
   // attribute bits
   GL_CURRENT_BIT = $00000001 {deprecated};
   GL_POINT_BIT = $00000002 {deprecated};
@@ -1022,11 +1022,11 @@ const
   GL_LIGHT6 = $4006 {deprecated};
   GL_LIGHT7 = $4007 {deprecated};
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v1.2'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.2'}{$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_packed_pixels (EXT #23)
   GL_UNSIGNED_BYTE_3_3_2 = $8032;
@@ -1098,7 +1098,7 @@ const
   GL_FUNC_SUBTRACT = $800A;
   GL_FUNC_REVERSE_SUBTRACT = $800B;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.2 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.2 deprecated'}{$ENDIF}
   // {deprecated}
   // promoted to core v1.2 from GL_EXT_rescale_normal (EXT #27)
   GL_RESCALE_NORMAL = $803A {deprecated};
@@ -1189,11 +1189,11 @@ const
   GL_CONSTANT_BORDER = $8151 {deprecated};
   GL_REPLICATE_BORDER = $8153 {deprecated};
   GL_CONVOLUTION_BORDER_COLOR = $8154 {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v1.3'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.3'}{$ENDIF}
   // Multitexturing
   // promoted to core OpenGL v1.3 from GL_ARB_multitexture (ARB #1)
   GL_TEXTURE0 = $84C0;
@@ -1268,7 +1268,7 @@ const
   // promoted to core OpenGL v1.3 from GL_ARB_texture_border_clamp (ARB #13)
   GL_CLAMP_TO_BORDER = $812D;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.3 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.3 deprecated'}{$ENDIF}
   // promoted to core OpenGL v1.3 from GL_ARB_multitexture (ARB #1)
   GL_CLIENT_ACTIVE_TEXTURE = $84E1 {deprecated};
   GL_MAX_TEXTURE_UNITS = $84E2 {deprecated};
@@ -1322,11 +1322,11 @@ const
   // promoted to OpenGL v1.3 from GL_ARB_texture_env_dot3 (ARB #19)
   GL_DOT3_RGB = $86AE {deprecated};
   GL_DOT3_RGBA = $86AF {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v1.4'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.4'}{$ENDIF}
 
   // Separate Blend Functions
   // promoted to core OpenGL v1.4 from GL_EXT_blend_func_separate (EXT #173)
@@ -1368,7 +1368,7 @@ const
   GL_TEXTURE_COMPARE_MODE = $884C;
   GL_TEXTURE_COMPARE_FUNC = $884D;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.4 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.4 deprecated'}{$ENDIF}
   // from GL_ARB_point_parameters (ARB #14)
   GL_POINT_SIZE_MIN = $8126 {deprecated};
   GL_POINT_SIZE_MAX = $8127 {deprecated};
@@ -1408,11 +1408,11 @@ const
 
   // promoted to core OpenGL v1.4 from GL_ARB_shadow (ARB #23)
   GL_COMPARE_R_TO_TEXTURE = $884E {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v1.5'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.5'}{$ENDIF}
   // Buffer Objects
   // promoted to core OpenGL v1.5 from GL_ARB_vertex_buffer_object (ARB #28)
   GL_BUFFER_SIZE = $8764;
@@ -1455,7 +1455,7 @@ const
   // Changed Tokens
   GL_SRC1_ALPHA = GL_SOURCE1_ALPHA; // required for 3.3+
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.5 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.5 deprecated'}{$ENDIF}
   // from GL_ARB_vertex_buffer_object (ARB #28)
   GL_VERTEX_ARRAY_BUFFER_BINDING = $8896 {deprecated};
   GL_NORMAL_ARRAY_BUFFER_BINDING = $8897 {deprecated};
@@ -1483,11 +1483,11 @@ const
   GL_SRC2_RGB = GL_SOURCE2_RGB {deprecated};
   GL_SRC0_ALPHA = GL_SOURCE0_ALPHA {deprecated};
   GL_SRC2_ALPHA = GL_SOURCE2_ALPHA {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v2.0'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v2.0'}{$ENDIF}
   // OpenGL 2.0
 
   // Changed Tokens
@@ -1616,7 +1616,7 @@ const
   GL_STENCIL_BACK_VALUE_MASK = $8CA4;
   GL_STENCIL_BACK_WRITEMASK = $8CA5;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 2.0 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 2.0 deprecated'}{$ENDIF}
   // from GL_ARB_vertex_shader (ARB #31)
   GL_VERTEX_PROGRAM_TWO_SIDE = $8643 {deprecated};
 
@@ -1626,11 +1626,11 @@ const
 
   // from GL_ARB_vertex_shader (ARB #31) /GL_ARB_fragment_shader (ARB #32)
   GL_MAX_TEXTURE_COORDS = $8871 {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v2.1'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v2.1'}{$ENDIF}
 
   // OpenGL 2.1
 
@@ -1659,7 +1659,7 @@ const
   GL_COMPRESSED_SRGB = $8C48;
   GL_COMPRESSED_SRGB_ALPHA = $8C49;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 2.1 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 2.1 deprecated'}{$ENDIF}
   // new
   GL_CURRENT_RASTER_SECONDARY_COLOR = $845F {deprecated};
   // from GL_EXT_texture_sRGB (EXT #315)
@@ -1669,11 +1669,11 @@ const
   GL_SLUMINANCE8 = $8C47 {deprecated};
   GL_COMPRESSED_SLUMINANCE = $8C4A {deprecated};
   GL_COMPRESSED_SLUMINANCE_ALPHA = $8C4B {deprecated};
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION'}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v3.0'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.0'}{$ENDIF}
   // TODO: arrange these better, find where they came from
   GL_COMPARE_REF_TO_TEXTURE = $884E; //GL_COMPARE_R_TO_TEXTURE;
   GL_CLIP_DISTANCE0 = $3000; //GL_CLIP_PLANE0;
@@ -1797,9 +1797,9 @@ const
   GL_BUFFER_MAP_LENGTH = $9120;
   GL_BUFFER_MAP_OFFSET = $9121;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v3.1'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.1'}{$ENDIF}
   GL_SAMPLER_2D_RECT = $8B63;
   GL_SAMPLER_2D_RECT_SHADOW = $8B64;
   GL_SAMPLER_BUFFER = $8DC2;
@@ -1841,9 +1841,9 @@ const
   // ARB_draw_instanced (ARB #44)
   // ARB_uniform_buffer_object (ARB #57)
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v3.2'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.2'}{$ENDIF}
   GL_CONTEXT_CORE_PROFILE_BIT = $00000001;
   GL_CONTEXT_COMPATIBILITY_PROFILE_BIT = $00000002;
   GL_LINES_ADJACENCY = $000A;
@@ -1876,9 +1876,9 @@ const
   // ARB_seamless_cube_map (ARB #65)
   // ARB_sync (ARB #66)
   // ARB_texture_multisample (ARB #67)
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v3.3'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.3'}{$ENDIF}
   // re-use tokens from:
   // GL_ARB_blend_func_extended (ARB #78)
   // GL_ARB_explicit_attrib_location (ARB #79) (none)
@@ -1889,9 +1889,9 @@ const
   // GL_ARB_texture_swizzle (ARB #84)
   // GL_ARB_timer_query (ARB #85)
   // GL_ARB_vertex_type_2_10_10_10_rev (ARB #86)
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v4.0'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.0'}{$ENDIF}
   // re-use tokens from:
   // GL_ARB_draw_indirect (ARB #87)
   // GL_ARB_gpu_shader5 (ARB #88)
@@ -1901,9 +1901,9 @@ const
   // GL_ARB_texture_buffer_object_rgb32 (ARB #92) (none)
   // GL_ARB_transform_feedback2 (ARB #93)
   // GL_ARB_transform_feedback3 (ARB # 94)
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core constants in OpenGL v4.1'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.1'}{$ENDIF}
   // re-use tokens from:
   GL_DEBUG_OUTPUT_SYNCHRONOUS = $8242;
   GL_MAX_DEBUG_MESSAGE_LENGTH = $9143;
@@ -1965,9 +1965,9 @@ const
   GL_MEDIUM_INT = $8DF4;
   GL_HIGH_INT = $8DF5;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'ARB approved extensions constants, in extension number order'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'ARB approved extensions constants, in extension number order'}{$ENDIF}
   // ARB approved extensions enumerants, in number order
 
   // ARB Extension #1 - GL_ARB_multitexture
@@ -3052,9 +3052,9 @@ const
   // ARB Extension #94 - GL_ARB_transform_feedback3
   GL_MAX_TRANSFORM_FEEDBACK_BUFFERS = $8E70;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Vendor/EXT extensions constants, in extension number order'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Vendor/EXT extensions constants, in extension number order'}{$ENDIF}
 
   // ----- extensions enumerants -----
 
@@ -4311,9 +4311,9 @@ const
   GL_SURFACE_MAPPED_NV                             = $8700;
   GL_WRITE_DISCARD_NV                              = $88BE;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
 
    GLX_EXTENSION_NAME                               = 'GLX';
    GLX_USE_GL                                       = 1;
@@ -4543,9 +4543,9 @@ type
    PGLXPipeRectLimits = ^TGLXPipeRectLimits;
 {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Extension OSX generic constants'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension OSX generic constants'} {$ENDIF}
 const
    AGL_NONE = 0;
 { choose from all available renderers           }
@@ -4833,9 +4833,9 @@ const
    AGL_BAD_ALLOC = 10016;
 { invalid CoreGraphics connection  }
    AGL_BAD_CONNECTION = 10017;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
    // ********** GLU generic constants **********
 const
    // Errors: (return value 0= no error)
@@ -4992,7 +4992,7 @@ const
    GLU_ERROR                                        = GLU_TESS_ERROR;
    GLU_EDGE_FLAG                                    = GLU_TESS_EDGE_FLAG;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
   type
   // core 1.2

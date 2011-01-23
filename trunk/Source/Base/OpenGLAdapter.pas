@@ -61,7 +61,7 @@ type
     function GetCapAddress: Pointer;
   public
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Extensions'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Extensions'}{$ENDIF}
     // supported version checks
     VERSION_1_0, VERSION_1_1, VERSION_1_2, VERSION_1_3, VERSION_1_4,
     VERSION_1_5, VERSION_2_0, VERSION_2_1, VERSION_3_0, VERSION_3_1,
@@ -139,8 +139,8 @@ type
     // Graphics Remedy's Extensions
     GREMEDY_frame_terminator, GREMEDY_string_marker: boolean;
     AMDX_debug_output, ARB_debug_output: boolean;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.1 core functions and procedures'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 core functions and procedures'}{$ENDIF}
     BindTexture:
     procedure(target: TGLEnum; texture: TGLuint);
 {$IFDEF MSWINDOWS} stdcall;
@@ -459,8 +459,8 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
     Accum:
     procedure(op: TGLuint; Value: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
@@ -1834,8 +1834,8 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core function/procedure definitions in OpenGL 1.2'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 1.2'}
 {$ENDIF}
     BlendColor: PFNGLBLENDCOLORPROC;
     BlendEquation: PFNGLBLENDEQUATIONPROC;
@@ -1843,8 +1843,8 @@ type
     TexImage3D: PFNGLTEXIMAGE3DPROC;
     TexSubImage3D: PFNGLTEXSUBIMAGE3DPROC;
     CopyTexSubImage3D: PFNGLCOPYTEXSUBIMAGE3DPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core function/procedure definitions in OpenGL 1.4'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 1.4'}
 {$ENDIF}
     BlendFuncSeparate: PFNGLBLENDFUNCSEPARATEPROC;
     MultiDrawArrays: PFNGLMULTIDRAWARRAYSPROC;
@@ -1853,16 +1853,16 @@ type
     PointParameterfv: PFNGLPOINTPARAMETERFVPROC;
     PointParameteri: PFNGLPOINTPARAMETERIPROC;
     PointParameteriv: PFNGLPOINTPARAMETERIVPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'New core function/procedure definitions in OpenGL 2.0'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 2.0'}
 {$ENDIF}
     BlendEquationSeparate: PFNGLBLENDEQUATIONSEPARATEPROC;
     DrawBuffers: PFNGLDRAWBUFFERSPROC;
     StencilOpSeparate: PFNGLSTENCILOPSEPARATEPROC;
     StencilFuncSeparate: PFNGLSTENCILFUNCSEPARATEPROC;
     StencilMaskSeparate: PFNGLSTENCILMASKSEPARATEPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Vertex buffer object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Vertex buffer object'}{$ENDIF}
     LockArrays: PFNGLLOCKARRAYSEXTPROC; // EXT only
     UnlockArrays: PFNGLUNLOCKARRAYSEXTPROC; // EXT only
     BindBuffer: PFNGLBINDBUFFERPROC;
@@ -2006,8 +2006,8 @@ type
     GetTexParameterIuiv: PFNGLGETTEXPARAMETERIUIVPROC;
     PatchParameteri: PFNGLPATCHPARAMETERIPROC;
     PatchParameterfv: PFNGLPATCHPARAMETERFVPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shader object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Shader object'}{$ENDIF}
     DeleteObject: PFNGLDELETEOBJECTARBPROC; // ARB only
     GetHandle: PFNGLGETHANDLEARBPROC; // ARB only
     DetachShader: PFNGLDETACHSHADERPROC;
@@ -2068,8 +2068,8 @@ type
     ActiveVarying: PFNGLACTIVEVARYINGNVPROC; // NV only
     GetProgramBinary: PFNGLGETPROGRAMBINARYPROC;
     ProgramBinary: PFNGLPROGRAMBINARYPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Framebuffer object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Framebuffer object'}{$ENDIF}
     IsRenderbuffer: PFNGLISRENDERBUFFERPROC;
     BindRenderbuffer: PFNGLBINDRENDERBUFFERPROC;
     DeleteRenderbuffers: PFNGLDELETERENDERBUFFERSPROC;
@@ -2092,8 +2092,8 @@ type
     GetFramebufferAttachmentParameteriv: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC;
     BlitFramebuffer: PFNGLBLITFRAMEBUFFERPROC;
     GenerateMipmap: PFNGLGENERATEMIPMAPPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Queries object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Queries object'}{$ENDIF}
     GenQueries: PFNGLGENQUERIESPROC;
     DeleteQueries: PFNGLDELETEQUERIESPROC;
     IsQuery: PFNGLISQUERYPROC;
@@ -2105,8 +2105,8 @@ type
     QueryCounter: PFNGLQUERYCOUNTERPROC;
     GetQueryObjecti64v: PFNGLGETQUERYOBJECTI64VPROC;
     GetQueryObjectui64v: PFNGLGETQUERYOBJECTUI64VPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Sampler object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Sampler object'}{$ENDIF}
     // promoted to core v1.3 from GL_ARB_multitexture (#1)
     ActiveTexture: PFNGLACTIVETEXTUREPROC;
     SampleCoverage: PFNGLSAMPLECOVERAGEPROC;
@@ -2201,8 +2201,8 @@ type
     GetSamplerParameterIiv: PFNGLGETSAMPLERPARAMETERIIVPROC;
     GetSamplerParameterfv: PFNGLGETSAMPLERPARAMETERFVPROC;
     GetSamplerParameterIfv: PFNGLGETSAMPLERPARAMETERIFVPROC;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Debugging'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Debugging'}{$ENDIF}
     // Special Gremedy debugger extension
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
@@ -2241,8 +2241,8 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Interrop'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Interrop'}{$ENDIF}
 {$IFDEF LINUX}
     VDPAUInitNV:
     procedure(const vdpDevice: Pointer; const getProcAddress: Pointer);
@@ -2298,8 +2298,8 @@ type
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 {$ENDIF LINUX}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'Interrop'}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'Interrop'}{$ENDIF}
+{$IFDEF GLS_REGIONS}
 {$REGION 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'}
 {$ENDIF}
 {$IFDEF SUPPORT_WGL}
@@ -2357,8 +2357,8 @@ type
     WEnumGpusFromAffinityDCNV: PFNWGLENUMGPUSFROMAFFINITYDCNVPROC;
     WDeleteDCNV: PFNWGLDELETEDCNVPROC;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}
 {$REGION 'Windows OpenGL (WGL) function/procedure definitions for Vendor/EXT extensions'}
 {$ENDIF}
 {$IFDEF SUPPORT_WGL}
@@ -2375,8 +2375,8 @@ type
     WAllocateMemoryNV: PFNWGLALLOCATEMEMORYNVPROC;
     WFreeMemoryNV: PFNWGLFREEMEMORYNVPROC;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'GLX function/procedure definitions for ARB approved extensions'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'GLX function/procedure definitions for ARB approved extensions'}
 {$ENDIF}
 {$IFDEF SUPPORT_GLX}
     // ###########################################################
@@ -2423,8 +2423,8 @@ type
     // X_ARB_create_context (EXT #56)
     XCreateContextAttribsARB: PFNGLXCREATECONTEXTATTRIBSARBPROC;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'GLX function/procedure definitions for Vendor/EXT extensions'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'GLX function/procedure definitions for Vendor/EXT extensions'}
 {$ENDIF}
 {$IFDEF SUPPORT_GLX}
     // ###########################################################
@@ -2507,8 +2507,8 @@ type
     XSwapIntervalEXT: PFNGLXSWAPINTERVALEXTPROC;
     XCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'AGL function/procedure'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'AGL function/procedure'}{$ENDIF}
 {$IFDEF DARWIN}
     ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     AChoosePixelFormat : function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
@@ -2570,9 +2570,9 @@ type
     AGetError : function(): TGLenum; cdecl;
     AErrorString : function(code: TGLenum): PGLChar; cdecl;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}
+{$IFDEF GLS_REGIONS}
  {$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
@@ -2595,7 +2595,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$ENDREGION} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
     constructor Create;
     procedure Initialize(ATemporary: boolean = False);
     procedure Close;
@@ -2605,7 +2605,7 @@ type
     property DebugMode: boolean read FDebug write FDebug;
   end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
 {$IFDEF SUPPORT_WGL}
 
 function wglGetProcAddress(ProcName: PGLChar): Pointer; stdcall; external opengl32;
@@ -2643,8 +2643,8 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
   p7: integer; p8: PGlyphMetricsFloat): BOOL; stdcall;
   external opengl32 Name 'wglUseFontOutlinesA';
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'OpenGL Extension to the X Window System (GLX) support functions'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL Extension to the X Window System (GLX) support functions'}
 {$ENDIF}
 {$IFDEF SUPPORT_GLX}
 // GLX 1.0
@@ -2690,8 +2690,8 @@ function glXGetClientString(dpy: PDisplay; Name: TGLint): PGLChar;
 // GLX 1.2 and later
 function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
 {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$REGION 'OpenGL utility (GLU) functions and procedures'}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS} {$REGION 'OpenGL utility (GLU) functions and procedures'}
  {$ENDIF}
 function gluErrorString(errCode: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
@@ -2814,7 +2814,7 @@ procedure gluNextContour(tess: PGLUtesselator; atype: TGLEnum);
 procedure gluEndPolygon(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$ENDREGION} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
 function GLGetProcAddress(ProcName: PGLChar): Pointer;
 

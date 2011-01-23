@@ -383,7 +383,7 @@ uses
   VectorLists,
   GLSLog;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseSceneObject'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xBaseSceneObject'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xBaseSceneObject ------------------
 // ------------------
@@ -466,9 +466,9 @@ begin
   StructureChanged;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xPlane'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xPlane'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xPlane ------------------
 // ------------------
@@ -785,9 +785,9 @@ begin
     StructureChanged;
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xSprite'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xSprite'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xSprite ------------------
 // ------------------
@@ -1047,9 +1047,9 @@ begin
   StructureChanged;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xCube'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xCube'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xCube ------------------
 // ------------------
@@ -1503,9 +1503,9 @@ procedure TGL3xCube.WriteData(Stream: TStream);
 begin
   Stream.Write(FCubeSize, SizeOf(TAffineVector));
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xSphere'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xSphere'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xSphere ------------------
 // ------------------
@@ -1924,9 +1924,9 @@ begin
   Result[3] := 0;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xGeoSphere'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xGeoSphere'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xGeoSphere ------------------
 // ------------------
@@ -2230,9 +2230,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xDisk'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xDisk'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xDisk ------------------
 // ------------------
@@ -2465,9 +2465,9 @@ begin
       SetVector(intersectNormal^, AbsoluteUp);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xFeedBackMesh'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xFeedBackMesh'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xFeedBackMesh ------------------
 // ------------------
@@ -2639,7 +2639,7 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

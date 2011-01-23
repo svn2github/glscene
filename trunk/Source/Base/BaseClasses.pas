@@ -184,7 +184,7 @@ uses
   GLStrings,
   GLSLog;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
 //---------------------- TGLUpdateAbleObject -----------------------------------------
 
 // Create
@@ -243,9 +243,9 @@ begin
     NotifyChange(Self);
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLCadenceAbleComponent'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TGLCadenceAbleComponent ------------------
 // ------------------
@@ -271,9 +271,9 @@ begin
     if (Owner is TGLUpdateAbleComponent) then
       (Owner as TGLUpdateAbleComponent).NotifyChange(Self);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TNotifyCollection ------------------
 // ------------------
@@ -297,9 +297,9 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSAbstractManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLSAbstractManager'}{$ENDIF}
 // ------------------
 // ------------------ TGLSAbstractManager ------------------
 // ------------------
@@ -474,9 +474,9 @@ begin
     Result := False;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION 'TGLSAbstractManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLSAbstractManager'}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLAbstractName'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLAbstractName'}{$ENDIF}
 // ------------------
 // ------------------ TGLAbstractName ------------------
 // ------------------
@@ -524,7 +524,7 @@ function TGLAbstractName.GetIndex: Integer;
 begin
   Result := FIndex;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

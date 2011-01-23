@@ -1046,7 +1046,7 @@ var
   vTGraphicFileExtension: array of string;
   vTGraphicClass: array of TGraphicClass;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Helper functions'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
   // RegisterTGraphicClassFileExtension
   //
@@ -1191,13 +1191,13 @@ begin
   SetGLTextureImageClassesToStrings(Result);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLTextureImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLTextureImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureImage'}{$ENDIF}
 
 // Create
 //
@@ -1305,13 +1305,13 @@ procedure TGLTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
 begin
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLBlankImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBlankImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLBlankImage'}{$ENDIF}
 
 // Create
 //
@@ -1582,13 +1582,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPictureImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLPictureImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLPictureImage'}{$ENDIF}
 
 // Create
 //
@@ -1761,13 +1761,13 @@ begin
   Result := ttTexture2D;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPersistentImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLPersistentImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLPersistentImage'}{$ENDIF}
 
 // Create
 //
@@ -1842,13 +1842,13 @@ begin
     + 'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPicFileImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLPicFileImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLPicFileImage'}{$ENDIF}
 
 // Create
 //
@@ -2024,13 +2024,13 @@ begin
   Result := 'Image data is retrieved from a file.';
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLCubeMapImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLCubeMapImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCubeMapImage'}{$ENDIF}
 
 // Create
 //
@@ -2275,13 +2275,13 @@ begin
   Result := FPicture[index];
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLTexture ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLTexture'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLTexture'}{$ENDIF}
 
 // Create
 //
@@ -3726,13 +3726,13 @@ begin
 end;
 
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TGLTextureExItem ---------------
 // ---------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLTextureExItem'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureExItem'}{$ENDIF}
 
 // Create
 //
@@ -3994,13 +3994,13 @@ begin
   CalculateTextureMatrix;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TGLTextureEx ---------------
 // ---------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLTextureEx'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureEx'}{$ENDIF}
 
 // Create
 //
@@ -4120,7 +4120,7 @@ begin
       Result := Result or Items[i].Texture.Enabled;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   // ------------------------------------------------------------------

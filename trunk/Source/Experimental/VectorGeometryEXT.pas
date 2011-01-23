@@ -546,7 +546,7 @@ begin
   Result.W := w;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector2fEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector2fEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator + (const a, b: TVector2fEXT): TVector2fEXT;
@@ -678,9 +678,9 @@ function TVector2fEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3fEXT'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVector3fEXT'}{$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector3f): TVector3fEXT;
@@ -865,9 +865,9 @@ begin
   V[2] := MaxFloat(V[2],a.Z);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4fEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector4fEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector4f): TVector4fEXT;
@@ -1051,9 +1051,9 @@ function TVector4fEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector2iEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector2iEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator + (const a, b: TVector2iEXT): TVector2iEXT;
@@ -1138,9 +1138,9 @@ function TVector2iEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3iEXT'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVector3iEXT'}{$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector3i): TVector3iEXT;
@@ -1243,9 +1243,9 @@ function TVector3iEXT.IsNull: Boolean;
 begin
   Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4iEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector4iEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector4i): TVector4iEXT;
@@ -1370,9 +1370,9 @@ function TVector4iEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector2uiEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector2uiEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator + (const a, b: TVector2uiEXT): TVector2uiEXT;
@@ -1457,9 +1457,9 @@ function TVector2uiEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TVector3uiEXT'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVector3uiEXT'}{$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector3ui): TVector3uiEXT;
@@ -1562,9 +1562,9 @@ function TVector3uiEXT.IsNull: Boolean;
 begin
   Result := ((v[0]=0) and (v[1]=0) and (v[2]=0));
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$endregion}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TVector4uiEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TVector4uiEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TVector4ui): TVector4uiEXT;
@@ -1689,9 +1689,9 @@ function TVector4uiEXT.IsNull: Boolean;
 begin
   Result := (v[0]=0) and (v[1]=0) and (v[2]=0) and (v[3]=0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix2fEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TMatrix2fEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TMatrix2f): TMatrix2fEXT;
@@ -1792,9 +1792,9 @@ begin
   V[2] := 0;
   V[3] := 1;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix3fEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TMatrix3fEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TMatrix3f): TMatrix3fEXT;
@@ -1933,9 +1933,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'TMatrix4fEXT'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$REGION 'TMatrix4fEXT'} {$ENDIF}
 
 {$IFDEF FPC}
 operator :=(const a: TMatrix4f): TMatrix4fEXT;
@@ -2280,6 +2280,6 @@ begin
   negEye := Self * negEye;
   Row[3] := negEye;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$ENDREGION} {$ENDIF}
 
 end.

@@ -179,7 +179,7 @@ var
 // ------------------ TCUDADimensions ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDADimensions'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDADimensions'}{$ENDIF}
 
 constructor TCUDADimensions.Create;
 const
@@ -237,13 +237,13 @@ begin
       FXYZ[index] := FMaxXYZ[index];
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDADevice ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAdevice'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAdevice'}{$ENDIF}
 
 // Create
 //
@@ -323,13 +323,13 @@ begin
   cuDeviceTotalMem(Result, fHandle);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLSCUDADevice ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSCUDADevice'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLSCUDADevice'}{$ENDIF}
 
 // Create
 //
@@ -378,13 +378,13 @@ begin
   if Result then
     Result := device.fReady;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAContextManager ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAcontextManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAcontextManager'}{$ENDIF}
 // Create
 //
 
@@ -565,13 +565,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAContext ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAcontext'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAcontext'}{$ENDIF}
 // Create
 //
 
@@ -673,7 +673,7 @@ function TCUDAContext.IsValid: Boolean;
 begin
   Result := (CUDAContextManager.DeviceCount > 0) and (fActivationCount > 0);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 
 // ------------------------------------------------------------------

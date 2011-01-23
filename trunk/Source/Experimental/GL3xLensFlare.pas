@@ -184,7 +184,7 @@ uses
 {$IFDEF GLS_DELPHI},
   VectorTypes{$ENDIF};
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Shaders'}{$ENDIF}
 const
   Gradient_vp120: AnsiString =
     '#version 120' + #10#13 +
@@ -267,7 +267,7 @@ const
     '{' + #10#13 +
     ' FragColor = texture(TexUnit0, texcoord);' + #10#13 +
     '}';
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 var
   GradientProgram: IGLName;

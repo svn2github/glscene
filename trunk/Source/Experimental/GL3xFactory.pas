@@ -43,7 +43,7 @@ type
 
 implementation
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGL3xBaseFactory'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGL3xBaseFactory'}{$ENDIF}
 // ------------------
 // ------------------ TGL3xBaseFactory ------------------
 // ------------------
@@ -103,6 +103,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 end.

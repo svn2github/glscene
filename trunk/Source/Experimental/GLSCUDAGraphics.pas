@@ -145,7 +145,7 @@ implementation
 uses
   GLStrings, GLTextureFormat;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLImageResource ------------------
 // ------------------
@@ -329,9 +329,9 @@ begin
   SetArray(cudaArray, newArray, True, texture.TexDepth > 0);
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLGeometryResource ------------------
 // ------------------
@@ -589,9 +589,9 @@ begin
   Inc(Pbyte(Result), Cardinal(DevPtr));
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSCUDAFactory'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLSCUDAFactory'}{$ENDIF}
 // ------------------
 // ------------------ TGLSCUDAFactory ------------------
 // ------------------
@@ -711,7 +711,7 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

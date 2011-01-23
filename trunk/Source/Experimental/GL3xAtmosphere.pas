@@ -135,7 +135,7 @@ uses
 const
   EPS = 0.0001;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Shaders'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Shaders'}{$ENDIF}
 
   Atmosphere_vp150: AnsiString =
     '#version 150' + #10#13 +
@@ -243,7 +243,7 @@ const
     '{' + #10#13 +
     '	FragColor = color;' + #10#13 +
     '}';
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 var
   AtmosphereProgram: IGLName;

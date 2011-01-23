@@ -450,7 +450,7 @@ begin
   vStreamVBOManager.Free;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBuiltProperties'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLBuiltProperties'}{$ENDIF}
 // ------------------
 // ------------------ TGLBuiltProperties ------------------
 // ------------------
@@ -612,9 +612,9 @@ begin
     TriangleAdjacency := TGLBuiltProperties(Source).fTriangleAdjacency;
   end;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBaseVBOManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLBaseVBOManager'}{$ENDIF}
 // ------------------
 // ------------------ TGLBaseVBOManager ------------------
 // ------------------
@@ -2124,9 +2124,9 @@ begin
 
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLDynamicVBOManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLDynamicVBOManager'}{$ENDIF}
 // ------------------
 // ------------------ TGLDynamicVBOManager ------------------
 // ------------------
@@ -2332,9 +2332,9 @@ class function TGLDynamicVBOManager.Usage: TGLenum;
 begin
   Result := GL_DYNAMIC_DRAW;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLStaticVBOManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLStaticVBOManager'}{$ENDIF}
 // ------------------
 // ------------------ TGLStaticVBOManager ------------------
 // ------------------
@@ -2650,9 +2650,9 @@ class function TGLStaticVBOManager.Usage: TGLenum;
 begin
   Result := GL_STATIC_DRAW;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLStreamVBOManager'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLStreamVBOManager'}{$ENDIF}
 // ------------------
 // ------------------ TGLStreamVBOManager ------------------
 // ------------------
@@ -2947,7 +2947,7 @@ class function TGLStreamVBOManager.Usage: TGLenum;
 begin
   Result := GL_STREAM_DRAW;
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

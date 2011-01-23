@@ -517,7 +517,7 @@ resourcestring
 var
   vRasterFileFormats: TRasterFileFormatsList;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'Raster File Registries'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
 
   // GetRasterFileFormats
   //
@@ -763,9 +763,9 @@ begin
   Result := L;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'RGBA Utils'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'RGBA Utils'}{$ENDIF}
 // GammaCorrectRGBArray
 //
 
@@ -1061,13 +1061,13 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLBaseImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLBaseImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLBaseImage'}{$ENDIF}
 // Create
 //
 
@@ -2218,13 +2218,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLImage'}{$ENDIF}
 // Create
 //
 
@@ -3721,7 +3721,7 @@ begin
 end;
 {$ENDIF GLS_MULTITHREAD}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

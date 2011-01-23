@@ -525,7 +525,7 @@ end;
   // ------------------ TGLSCUDA ------------------
   // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLSCUDA'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLSCUDA'}{$ENDIF}
   // Create
   //
 
@@ -644,13 +644,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAModule ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAmodule'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAmodule'}{$ENDIF}
 // Create
 //
 
@@ -1103,13 +1103,13 @@ begin
   Result := FInfo.TexRefCounter;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDABaseItem ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDABaseItem'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDABaseItem'}{$ENDIF}
 
 destructor TCUDABaseItem.Destroy;
 begin
@@ -1266,13 +1266,13 @@ procedure TCUDABaseItem.OnNotifyChange(Sender: TObject);
 begin
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAFunction ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAFunction'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAFunction'}{$ENDIF}
 
 // Create
 //
@@ -1562,13 +1562,13 @@ begin
       GetCUDAAPIerrorString(status));
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAMemData ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAMemData'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAMemData'}{$ENDIF}
 
 constructor TCUDAMemData.Create(AOwner: TComponent);
 begin
@@ -2167,7 +2167,7 @@ begin
       GetCUDAAPIerrorString(status));
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'GetElement'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'GetElement'}{$ENDIF}
 
 procedure TCUDAMemData.GetElement(out Value: Byte; const x: Integer; y: Integer;
   z: Integer);
@@ -2292,9 +2292,9 @@ begin
   Move(PSingleArray(fData)[4 * (x + y * fWidth + z * fWidth * fHeight)],
     Value[0], 16);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'SetElement'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'SetElement'}{$ENDIF}
 
 procedure TCUDAMemData.SetElement(const Value: Byte; const x: Integer; y:
   Integer; z: Integer);
@@ -2419,15 +2419,15 @@ begin
   Move(Value, PSingleArray(fData)[4 * (x + y * fWidth + z * fWidth * fHeight)],
     16);
 end;
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDATexture ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDATexture'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDATexture'}{$ENDIF}
 
 // Create
 //
@@ -2669,13 +2669,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAGraphicResource ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
 
 procedure TCUDAGraphicResource.SetMapping(const Value: TCUDAMapping);
 begin
@@ -2749,7 +2749,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

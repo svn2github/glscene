@@ -90,7 +90,7 @@ implementation
 // ------------------ TGLMultisampleImage ------------------
 // ------------------
 
-{$IFDEF GLS_COMPILER_2005_UP}{$REGION 'TGLMultisampleImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLMultisampleImage'}{$ENDIF}
 
 // Create
 //
@@ -350,7 +350,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_COMPILER_2005_UP}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   RegisterGLTextureImageClass(TGLMultisampleImage);
