@@ -55,8 +55,11 @@
 // De-Activate inline directive in GLS units.
 {.$DEFINE GLS_NO_INLINE}
 
+// De-Activate regions in GLS units.
+{.$DEFINE GLS_NO_REGIONS}
+
 // Activate Logging
-{$DEFINE GLS_LOGGING}
+{.$DEFINE GLS_LOGGING}
 
 // Activate Experimental parts
 {.$DEFINE GLS_EXPERIMENTAL}
@@ -520,6 +523,15 @@
   {$ENDIF}
   {$IFDEF FPC}
   {$DEFINE GLS_INLINE}
+  {$ENDIF}
+{$ENDIF}
+
+{$IFNDEF GLS_NO_REGIONS}
+  {$IFDEF GLS_COMPILER_2005_UP}
+  {$DEFINE GLS_REGIONS}
+  {$ENDIF}
+  {$IFDEF FPC}
+  {$DEFINE GLS_REGIONS}
   {$ENDIF}
 {$ENDIF}
 

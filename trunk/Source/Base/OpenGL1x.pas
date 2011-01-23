@@ -12,6 +12,7 @@
 	<b>History : </b><font size=-1><ul>
       <li>23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
                             Added GL_ARB_get_program_binary
+                            Switched to use GLS_REGIONS define
       <li>23/08/10 - Yar - Moved tokens part to OpenGLTokens.pas
       <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
       <li>01/06/10 - Yar - Fixes for Linux x64
@@ -117,7 +118,7 @@ uses
     {Libc,}Types, LCLType, X, Xlib, XUtil, dynlibs
   {$ENDIF}
   ;
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL extension feature checks'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL extension feature checks'} {$ENDIF}
 
 {$IFDEF MULTITHREADOPENGL}
 threadvar
@@ -426,9 +427,9 @@ var
    GLU_EXT_nurbs_tessellator,
    GLU_EXT_Texture: Boolean;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL v1.1 core functions and procedures'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL v1.1 core functions and procedures'} {$ENDIF}
    procedure glBindTexture(target: TGLEnum; texture: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32;
    procedure glBlendFunc(sfactor: TGLEnum; dfactor: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32;
    procedure glClear(mask: TGLbitfield); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32;
@@ -515,7 +516,7 @@ var
 
    procedure glViewport(x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.1 deprecated'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL 1.1 deprecated'} {$ENDIF}
    procedure glAccum(op: TGLuint; value: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
    procedure glAlphaFunc(func: TGLEnum; ref: TGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
    function  glAreTexturesResident(n: TGLsizei; Textures: PGLuint; residences: PGLboolean): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
@@ -802,11 +803,11 @@ var
    procedure glVertex4s(x, y, z, w: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
    procedure glVertex4sv(v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
    procedure glVertexPointer(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32; //deprecated;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL utility (GLU) functions and procedures'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL utility (GLU) functions and procedures'} {$ENDIF}
    function  gluErrorString(errCode: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
    function  gluGetString(name: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
    procedure gluOrtho2D(left, right, bottom, top: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
@@ -866,9 +867,9 @@ var
    procedure gluNextContour(tess: PGLUtesselator; atype: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
    procedure gluEndPolygon(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'Windows OpenGL (WGL) support functions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'Windows OpenGL (WGL) support functions'} {$ENDIF}
    {$IFDEF SUPPORT_WGL}
    function wglGetProcAddress(ProcName: PGLChar): Pointer; stdcall; external opengl32;
    function wglCopyContext(p1: HGLRC; p2: HGLRC; p3: Cardinal): BOOL; stdcall; external opengl32;
@@ -892,9 +893,9 @@ var
    function wglUseFontBitmaps(DC: HDC; p2, p3, p4: DWORD): BOOL; stdcall; external opengl32 name 'wglUseFontBitmapsA';
    function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single; p7: Integer; p8: PGlyphMetricsFloat): BOOL; stdcall; external opengl32 name 'wglUseFontOutlinesA';
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Extension to the X Window System (GLX) support functions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL Extension to the X Window System (GLX) support functions'} {$ENDIF}
    {$IFDEF SUPPORT_GLX}
    // GLX 1.0
    function glXChooseVisual(dpy: PDisplay; screen: TGLint; attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
@@ -923,7 +924,7 @@ var
    // GLX 1.2 and later
    function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
 {$IFDEF MULTITHREADOPENGL}
 threadvar
@@ -931,9 +932,9 @@ threadvar
 var
 {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL extension function/procedure definitions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL extension function/procedure definitions'} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.2'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 1.2'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -956,7 +957,7 @@ var
    // promoted to core v1.2 from GL_EXT_copy_texture
    glCopyTexSubImage3D: PFNGLCOPYTEXSUBIMAGE3DPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.2 deprecated'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL 1.2 deprecated'} {$ENDIF}
    // promoted to core v1.2 from GL_SGI_color_table (#14)
    glColorTable: PFNGLCOLORTABLEPROC;
    glColorTableParameterfv: PFNGLCOLORTABLEPARAMETERFVPROC;
@@ -996,11 +997,11 @@ var
    glMinmax: PFNGLMINMAXPROC;
    glResetHistogram: PFNGLRESETHISTOGRAMPROC;
    glResetMinmax: PFNGLRESETMINMAXPROC;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.3'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 1.3'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1022,7 +1023,7 @@ var
    glCompressedTexSubImage1D: PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC;
    glGetCompressedTexImage: PFNGLGETCOMPRESSEDTEXIMAGEPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.3 deprecated'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL 1.3 deprecated'} {$ENDIF}
    // promoted to core v1.3 from GL_ARB_multitexture (#1)
    glClientActiveTexture: PFNGLCLIENTACTIVETEXTUREPROC;
    glMultiTexCoord1d: PFNGLMULTITEXCOORD1DPROC;
@@ -1063,11 +1064,11 @@ var
    glLoadTransposeMatrixd: PFNGLLOADTRANSPOSEMATRIXDPROC;
    glMultTransposeMatrixf: PFNGLMULTTRANSPOSEMATRIXFPROC;
    glMultTransposeMatrixd: PFNGLMULTTRANSPOSEMATRIXDPROC;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.4'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 1.4'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1087,7 +1088,7 @@ var
    glPointParameteri: PFNGLPOINTPARAMETERIPROC;
    glPointParameteriv: PFNGLPOINTPARAMETERIVPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.4 deprecated'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL 1.4 deprecated'} {$ENDIF}
    // promoted to core v1.4 from GL_EXT_fog_coord (#149)
    glFogCoordf: PFNGLFOGCOORDFPROC;
    glFogCoordfv: PFNGLFOGCOORDFVPROC;
@@ -1131,11 +1132,11 @@ var
    glWindowPos3iv: PFNGLWINDOWPOS3IVPROC;
    glWindowPos3s: PFNGLWINDOWPOS3SPROC;
    glWindowPos3sv: PFNGLWINDOWPOS3SVPROC;
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.5'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 1.5'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1168,9 +1169,9 @@ var
    // promoted to core v1.5 from GL_EXT_shadow_funcs (#267)
    // (no functions or procedures)
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 2.0'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 2.0'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1278,9 +1279,9 @@ var
    glVertexAttrib4usv: PFNGLVERTEXATTRIB4USVPROC;
    glVertexAttribPointer: PFNGLVERTEXATTRIBPOINTERPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 2.1'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 2.1'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1301,9 +1302,9 @@ var
    glUniformMatrix3x4fv: PFNGLUNIFORMMATRIX3X4FVPROC;
    glUniformMatrix4x3fv: PFNGLUNIFORMMATRIX4X3FVPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 3.0'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 3.0'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1384,9 +1385,9 @@ var
    glClearBufferfi: PFNGLCLEARBUFFERFIPROC;
    glGetStringi: PFNGLGETSTRINGIPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 3.1'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 3.1'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1398,9 +1399,9 @@ var
    glTexBuffer: PFNGLTEXBUFFERPROC;
    glPrimitiveRestartIndex: PFNGLPRIMITIVERESTARTINDEXPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 3.2'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 3.2'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1418,9 +1419,9 @@ var
    // GL_ARB_sync
    // GL_ARB_texture_multisample
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 3.3'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 3.3'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1441,9 +1442,9 @@ var
    // GL_ARB_timer_query (ARB #85)
    // GL_ARB_vertex_type_2_10_10_10_rev (ARB #86)
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 4.0'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 4.0'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1460,9 +1461,9 @@ var
    // GL_ARB_transform_feedback2 (ARB #93)
    // GL_ARB_transform_feedback3 (ARB #94)
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 4.1'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'New core function/procedure definitions in OpenGL 4.1'} {$ENDIF}
 
    // OpenGL 4.1 uses entry points from these extensions:
    // ARB_ES2_compatibility
@@ -1472,9 +1473,9 @@ var
    // ARB_vertex_attrib_64bit
    // ARB_viewport_array
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) function/procedure definitions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL Utility (GLU) function/procedure definitions'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -1486,9 +1487,9 @@ var
    gluNewNurbsTessellatorEXT: PFNGLUNEWNURBSTESSELLATOREXTPROC;
    gluDeleteNurbsTessellatorEXT: PFNGLUDELETENURBSTESSELLATOREXTPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'} {$ENDIF}
    {$IFDEF SUPPORT_WGL}
    //  ###########################################################
    //           function and procedure definitions for
@@ -1536,9 +1537,9 @@ var
    wglDeleteDCNV: PFNWGLDELETEDCNVPROC;
 
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'Windows OpenGL (WGL) function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'Windows OpenGL (WGL) function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
    {$IFDEF SUPPORT_WGL}
    //  ###########################################################
    //           function and procedure definitions for
@@ -1549,9 +1550,9 @@ var
    wglSwapIntervalEXT: PFNWGLSWAPINTERVALEXTPROC;
    wglGetSwapIntervalEXT: PFNWGLGETSWAPINTERVALEXTPROC;
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'GLX function/procedure definitions for ARB approved extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'GLX function/procedure definitions for ARB approved extensions'} {$ENDIF}
  {$IFDEF SUPPORT_GLX}
    //  ###########################################################
    //           function and procedure definitions for
@@ -1587,9 +1588,9 @@ var
    glXGetProcAddressARB: PFNGLXGETPROCADDRESSARBPROC;
 
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'GLX function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'GLX function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
    {$IFDEF SUPPORT_GLX}
    //  ###########################################################
    //           function and procedure definitions for
@@ -1672,9 +1673,9 @@ var
    glXCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
 
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL function/procedure definitions for ARB approved extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL function/procedure definitions for ARB approved extensions'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -2152,9 +2153,9 @@ var
    glProgramBinary: PFNGLProgramBinaryPROC;
    //glProgramParameteri: PFNGLProgramParameteriPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'OpenGL function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
 
    //  ###########################################################
    //           function and procedure definitions for
@@ -2587,7 +2588,7 @@ var
    glFrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
    glStringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
 
 //------------------------------------------------------------------------------
@@ -2733,7 +2734,7 @@ procedure ReadExtensions;
    // To be used in an active rendering context only!
 begin
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 1.2'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 1.2'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -2796,9 +2797,9 @@ begin
    // promoted to core v1.2 from GL_EXT_copy_texture
    glCopyTexSubImage3D := GLGetProcAddress('glCopyTexSubImage3D');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 1.3'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 1.3'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -2859,9 +2860,9 @@ begin
    glCompressedTexSubImage1D := GLGetProcAddress('glCompressedTexSubImage1D');
    glGetCompressedTexImage := GLGetProcAddress('glGetCompressedTexImage');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 1.4'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 1.4'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -2925,9 +2926,9 @@ begin
    glWindowPos3s := GLGetProcAddress('glWindowPos3s');
    glWindowPos3sv := GLGetProcAddress('glWindowPos3sv');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 1.5'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 1.5'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -2961,9 +2962,9 @@ begin
    // promoted to core v1.5 from GL_EXT_shadow_funcs (#267)
    // (no functions or procedures)
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 2.0'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 2.0'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3071,9 +3072,9 @@ begin
    glVertexAttrib4usv := GLGetProcAddress('glVertexAttrib4usv');
    glVertexAttribPointer := GLGetProcAddress('glVertexAttribPointer');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 2.1'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 2.1'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3094,9 +3095,9 @@ begin
    glUniformMatrix3x4fv := GLGetProcAddress('glUniformMatrix3x4fv');
    glUniformMatrix4x3fv := GLGetProcAddress('glUniformMatrix4x3fv');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.0'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 3.0'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3175,9 +3176,9 @@ begin
    glClearBufferfi := GLGetProcAddress('glClearBufferfi');
    glGetStringi := GLGetProcAddress('glGetStringi');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.1'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 3.1'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3189,9 +3190,9 @@ begin
    glTexBuffer := GLGetProcAddress('glTexBuffer');
    glPrimitiveRestartIndex := GLGetProcAddress('glPrimitiveRestartIndex');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.2'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 3.2'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3203,9 +3204,9 @@ begin
    glProgramParameteri := GLGetProcAddress('glProgramParameteri');
    glFramebufferTexture := GLGetProcAddress('glFramebufferTexture');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.3'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 3.3'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3214,9 +3215,9 @@ begin
 
    glVertexAttribDivisor := GLGetProcAddress('glVertexAttribDivisor');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3227,9 +3228,9 @@ begin
    gluNewNurbsTessellatorEXT := GLGetProcAddress('gluNewNurbsTessellatorEXT');
    gluDeleteNurbsTessellatorEXT := GLGetProcAddress('gluDeleteNurbsTessellatorEXT');
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures for ARB approved extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures for ARB approved extensions'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -3704,9 +3705,9 @@ begin
    //glProgramParameteri := GLGetProcAddress('glProgramParameteri');
 
 
-{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for Vendor/EXT extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$region 'locate functions/procedures for Vendor/EXT extensions'} {$ENDIF}
 
    //  ###########################################################
    //            locate functions and procedures for
@@ -4138,19 +4139,19 @@ begin
    glFrameTerminatorGREMEDY := GLGetProcAddress('glFrameTerminatorGREMEDY');
    glStringMarkerGREMEDY := GLGetProcAddress('glStringMarkerGREMEDY');
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for Windows OpenGL (WGL) extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$region 'locate functions/procedures for Windows OpenGL (WGL) extensions'} {$ENDIF}
    {$IFDEF SUPPORT_WGL}
    ReadWGLExtensions;
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$endregion} {$ENDIF}
 
-{$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for GLX extensions'} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$region 'locate functions/procedures for GLX extensions'} {$ENDIF}
    {$IFDEF SUPPORT_GLX}
    ReadGLXExtensions;
    {$ENDIF}
-{$IFDEF GLS_COMPILER_2005_UP}  {$endregion} {$ENDIF}
+{$IFDEF GLS_REGIONS}  {$endregion} {$ENDIF}
 
 end;
 
