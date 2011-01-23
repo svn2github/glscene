@@ -11,6 +11,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
+                            Added GL_ARB_get_program_binary
       <li>23/08/10 - Yar - Moved tokens part to OpenGLTokens.pas
       <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
       <li>01/06/10 - Yar - Fixes for Linux x64
@@ -162,6 +163,7 @@ var
    GL_ARB_framebuffer_object,
    GL_ARB_framebuffer_sRGB,
    GL_ARB_geometry_shader4,
+   GL_ARB_get_program_binary,
    GL_ARB_gpu_shader_fp64,
    GL_ARB_gpu_shader5,
    GL_ARB_half_float_pixel,
@@ -2145,6 +2147,11 @@ var
    glEndQueryIndexed: PFNGLENDQUERYINDEXEDPROC;
    glGetQueryIndexediv: PFNGLGETQUERYINDEXEDIVPROC;
 
+   // GL_ARB_get_program_binary (ARB #96)
+   glGetProgramBinary: PFNGLGetProgramBinaryPROC;
+   glProgramBinary: PFNGLProgramBinaryPROC;
+   //glProgramParameteri: PFNGLProgramParameteriPROC;
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL function/procedure definitions for Vendor/EXT extensions'} {$ENDIF}
@@ -3691,6 +3698,12 @@ begin
    glEndQueryIndexed := GLGetProcAddress('glEndQueryIndexed');
    glGetQueryIndexediv := GLGetProcAddress('glGetQueryIndexediv');
 
+   // GL_ARB_get_program_binary (ARB #96)
+   glGetProgramBinary := GLGetProcAddress('glGetProgramBinary');
+   glProgramBinary := GLGetProcAddress('glProgramBinary');
+   //glProgramParameteri := GLGetProcAddress('glProgramParameteri');
+
+
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP}  {$region 'locate functions/procedures for Vendor/EXT extensions'} {$ENDIF}
@@ -4450,6 +4463,7 @@ begin
    GL_ARB_framebuffer_object := CheckExtension('GL_ARB_framebuffer_object');
    GL_ARB_framebuffer_sRGB := CheckExtension('GL_ARB_framebuffer_sRGB');
    GL_ARB_geometry_shader4 := CheckExtension('GL_ARB_geometry_shader4');
+   GL_ARB_get_program_binary := CheckExtension('GL_ARB_get_program_binary');
    GL_ARB_gpu_shader_fp64 := CheckExtension('GL_ARB_gpu_shader_fp64');
    GL_ARB_gpu_shader5 := CheckExtension('GL_ARB_gpu_shader5');
    GL_ARB_half_float_pixel := CheckExtension('GL_ARB_half_float_pixel');

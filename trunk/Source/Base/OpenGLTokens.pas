@@ -4,7 +4,7 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>23/01/11 - DanB - Added OpenGL procedural types
+      <li>23/01/11 - DanB - Added OpenGL procedural types, GL_ARB_get_program_binary
       <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
       <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
    </ul></font>
@@ -6074,6 +6074,13 @@ const
   PFNGLBEGINQUERYINDEXEDPROC = procedure(target: TGLenum; index: TGLuint; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDQUERYINDEXEDPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETQUERYINDEXEDIVPROC = procedure(target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_get_program_binary (ARB #96)
+  PFNGLGETPROGRAMBINARYPROC = procedure(_program: TGLuint; bufSize: TGLsizei; length: PGLsizei; binaryFormat: PGLenum; binary: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMBINARYPROC = procedure(_program: TGLuint; binaryFormat: TGLEnum; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  //PFNGLPROGRAMPARAMETERIPROC
+
+
 
   // EXT/Vendor extensions
 
