@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
       <li>23/08/10 - Yar - Moved tokens part to OpenGLTokens.pas
       <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
       <li>01/06/10 - Yar - Fixes for Linux x64
@@ -931,74 +932,68 @@ var
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL extension function/procedure definitions'} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 1.2'} {$ENDIF}
+
    //  ###########################################################
    //           function and procedure definitions for
    //            extensions integrated into OpenGL 1.2 Core
    //  ###########################################################
 
    // promoted to core v1.2 from GL_EXT_blend_color (#2)
-   glBlendColor: procedure(red, green, blue, alpha: TGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendColor: PFNGLBLENDCOLORPROC;
 
    // promoted to core v1.2 from GL_EXT_blend_minmax (#37)
-   glBlendEquation: procedure(mode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquation: PFNGLBLENDEQUATIONPROC;
 
    // promoted to core v1.2 from GL_EXT_draw_range_elements (#112)
-   glDrawRangeElements: procedure(mode: TGLEnum; Astart, Aend: TGLuint; count: TGLsizei; Atype: TGLEnum;
-                                  indices: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawRangeElements: PFNGLDRAWRANGEELEMENTSPROC;
 
    // promoted to core v1.2 from GL_EXT_texture3D (#6)
-   glTexImage3D: procedure(target: TGLEnum; level: TGLint; internalformat: TGLEnum; width, height, depth: TGLsizei;
-                           border: TGLint; format: TGLEnum; Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexSubImage3D: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset: TGLint;  width, height, depth: TGLsizei;
-                              format: TGLEnum; Atype: TGLEnum; pixels: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexImage3D: PFNGLTEXIMAGE3DPROC;
+   glTexSubImage3D: PFNGLTEXSUBIMAGE3DPROC;
 
    // promoted to core v1.2 from GL_EXT_copy_texture
-   glCopyTexSubImage3D: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCopyTexSubImage3D: PFNGLCOPYTEXSUBIMAGE3DPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.2 deprecated'} {$ENDIF}
    // promoted to core v1.2 from GL_SGI_color_table (#14)
-   glColorTable: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
-                           table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glColorTableParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glColorTableParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glCopyColorTable: procedure(target, internalformat: TGLEnum; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetColorTable: procedure(target, format, Atype: TGLEnum; table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetColorTableParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetColorTableParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glColorTable: PFNGLCOLORTABLEPROC;
+   glColorTableParameterfv: PFNGLCOLORTABLEPARAMETERFVPROC;
+   glColorTableParameteriv: PFNGLCOLORTABLEPARAMETERIVPROC;
+   glCopyColorTable: PFNGLCOPYCOLORTABLEPROC;
+   glGetColorTable: PFNGLGETCOLORTABLEPROC;
+   glGetColorTableParameterfv: PFNGLGETCOLORTABLEPARAMETERFVPROC;
+   glGetColorTableParameteriv: PFNGLGETCOLORTABLEPARAMETERIVPROC;
 
    // promoted to core v1.2 from GL_EXT_color_subtable (#74)
-   glColorSubTable: procedure(target: TGLEnum; start, count: TGLsizei; format, Atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glCopyColorSubTable: procedure(target: TGLEnum; start: TGLsizei; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glColorSubTable: PFNGLCOLORSUBTABLEPROC;
+   glCopyColorSubTable: PFNGLCOPYCOLORSUBTABLEPROC;
 
    // promoted to core v1.2 from GL_EXT_convolution (#12)
-   glConvolutionFilter1D: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
-     image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glConvolutionFilter2D: procedure(target, internalformat: TGLEnum; width, height: TGLsizei; format, Atype: TGLEnum;
-     image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glConvolutionParameterf: procedure(target, pname: TGLEnum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glConvolutionParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glConvolutionParameteri: procedure(target, pname: TGLEnum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glConvolutionParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glCopyConvolutionFilter1D: procedure(target, internalformat: TGLEnum; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glCopyConvolutionFilter2D: procedure(target, internalformat: TGLEnum; x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetConvolutionFilter: procedure(target, internalformat, Atype: TGLEnum; image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetConvolutionParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetConvolutionParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetSeparableFilter: procedure(target, format, Atype: TGLEnum; row, column, span: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSeparableFilter2D: procedure(target, internalformat: TGLEnum; width, height: TGLsizei; format, Atype: TGLEnum; row,
-     column: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glConvolutionFilter1D: PFNGLCONVOLUTIONFILTER1DPROC;
+   glConvolutionFilter2D: PFNGLCONVOLUTIONFILTER2DPROC;
+   glConvolutionParameterf: PFNGLCONVOLUTIONPARAMETERFPROC;
+   glConvolutionParameterfv: PFNGLCONVOLUTIONPARAMETERFVPROC;
+   glConvolutionParameteri: PFNGLCONVOLUTIONPARAMETERIPROC;
+   glConvolutionParameteriv: PFNGLCONVOLUTIONPARAMETERIVPROC;
+   glCopyConvolutionFilter1D: PFNGLCOPYCONVOLUTIONFILTER1DPROC;
+   glCopyConvolutionFilter2D: PFNGLCOPYCONVOLUTIONFILTER2DPROC;
+   glGetConvolutionFilter: PFNGLGETCONVOLUTIONFILTERPROC;
+   glGetConvolutionParameterfv: PFNGLGETCONVOLUTIONPARAMETERFVPROC;
+   glGetConvolutionParameteriv: PFNGLGETCONVOLUTIONPARAMETERIVPROC;
+   glGetSeparableFilter: PFNGLGETSEPARABLEFILTERPROC;
+   glSeparableFilter2D: PFNGLSEPARABLEFILTER2DPROC;
 
    // promoted to core v1.2 from GL_EXT_histogram (#11)
-   glGetHistogram: procedure(target: TGLEnum; reset: TGLboolean; format, Atype: TGLEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetHistogramParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetHistogramParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetMinmax: procedure(target: TGLEnum; reset: TGLboolean; format, Atype: TGLEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetMinmaxParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glGetMinmaxParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glHistogram: procedure(target: TGLEnum; width: TGLsizei; internalformat: TGLEnum; sink: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMinmax: procedure(target, internalformat: TGLEnum; sink: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glResetHistogram: procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glResetMinmax: procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glGetHistogram: PFNGLGETHISTOGRAMPROC;
+   glGetHistogramParameterfv: PFNGLGETHISTOGRAMPARAMETERFVPROC;
+   glGetHistogramParameteriv: PFNGLGETHISTOGRAMPARAMETERIVPROC;
+   glGetMinmax: PFNGLGETMINMAXPROC;
+   glGetMinmaxParameterfv: PFNGLGETMINMAXPARAMETERFVPROC;
+   glGetMinmaxParameteriv: PFNGLGETMINMAXPARAMETERIVPROC;
+   glHistogram: PFNGLHISTOGRAMPROC;
+   glMinmax: PFNGLMINMAXPROC;
+   glResetHistogram: PFNGLRESETHISTOGRAMPROC;
+   glResetMinmax: PFNGLRESETMINMAXPROC;
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
@@ -1011,60 +1006,61 @@ var
    //  ###########################################################
 
    // promoted to core v1.3 from GL_ARB_multitexture (#1)
-   glActiveTexture: procedure(texture: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glActiveTexture: PFNGLACTIVETEXTUREPROC;
+
    // promoted to core v1.3 from GL_ARB_multisample (#5)
-   glSampleCoverage: procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSampleCoverage: PFNGLSAMPLECOVERAGEPROC;
 
    // promoted to core v1.3 from GL_ARB_texture_compression (#12)
-   glCompressedTexImage3D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height, depth: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexImage2D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexImage1D: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage3D: procedure(target: TGLenum; level: TGLint; xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage2D: procedure(target: TGLenum; level: TGLint; xoffset, yoffset: TGLint; width, height: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage1D: procedure(target: TGLenum; level: TGLint; xoffset: TGLint; width: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCompressedTexImage: procedure(target: TGLenum; level: TGLint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCompressedTexImage3D: PFNGLCOMPRESSEDTEXIMAGE3DPROC;
+   glCompressedTexImage2D: PFNGLCOMPRESSEDTEXIMAGE2DPROC;
+   glCompressedTexImage1D: PFNGLCOMPRESSEDTEXIMAGE1DPROC;
+   glCompressedTexSubImage3D: PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC;
+   glCompressedTexSubImage2D: PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC;
+   glCompressedTexSubImage1D: PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC;
+   glGetCompressedTexImage: PFNGLGETCOMPRESSEDTEXIMAGEPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.3 deprecated'} {$ENDIF}
    // promoted to core v1.3 from GL_ARB_multitexture (#1)
-   glClientActiveTexture: procedure(texture: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1d: procedure(target: TGLenum; s: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1dV: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1f: procedure(target: TGLenum; s: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1fV: procedure(target: TGLenum; v: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1i: procedure(target: TGLenum; s: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1iV: procedure(target: TGLenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1s: procedure(target: TGLenum; s: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord1sV: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2d: procedure(target: TGLenum; s, t: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2dv: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2f: procedure(target: TGLenum; s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2fv: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2i: procedure(target: TGLenum; s, t: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2iv: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2s: procedure(target: TGLenum; s, t: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord2sv: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3d: procedure(target: TGLenum; s, t, r: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3dv: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3f: procedure(target: TGLenum; s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3fv: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3i: procedure(target: TGLenum; s, t, r: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3iv: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3s: procedure(target: TGLenum; s, t, r: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord3sv: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4d: procedure(target: TGLenum; s, t, r, q: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4dv: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4f: procedure(target: TGLenum; s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4fv: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4i: procedure(target: TGLenum; s, t, r, q: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4iv: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4s: procedure(target: TGLenum; s, t, r, q: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultiTexCoord4sv: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glClientActiveTexture: PFNGLCLIENTACTIVETEXTUREPROC;
+   glMultiTexCoord1d: PFNGLMULTITEXCOORD1DPROC;
+   glMultiTexCoord1dV: PFNGLMULTITEXCOORD1DVPROC;
+   glMultiTexCoord1f: PFNGLMULTITEXCOORD1FPROC;
+   glMultiTexCoord1fV: PFNGLMULTITEXCOORD1FVPROC;
+   glMultiTexCoord1i: PFNGLMULTITEXCOORD1IPROC;
+   glMultiTexCoord1iV: PFNGLMULTITEXCOORD1IVPROC;
+   glMultiTexCoord1s: PFNGLMULTITEXCOORD1SPROC;
+   glMultiTexCoord1sV: PFNGLMULTITEXCOORD1SVPROC;
+   glMultiTexCoord2d: PFNGLMULTITEXCOORD2DPROC;
+   glMultiTexCoord2dv: PFNGLMULTITEXCOORD2DVPROC;
+   glMultiTexCoord2f: PFNGLMULTITEXCOORD2FPROC;
+   glMultiTexCoord2fv: PFNGLMULTITEXCOORD2FVPROC;
+   glMultiTexCoord2i: PFNGLMULTITEXCOORD2IPROC;
+   glMultiTexCoord2iv: PFNGLMULTITEXCOORD2IVPROC;
+   glMultiTexCoord2s: PFNGLMULTITEXCOORD2SPROC;
+   glMultiTexCoord2sv: PFNGLMULTITEXCOORD2SVPROC;
+   glMultiTexCoord3d: PFNGLMULTITEXCOORD3DPROC;
+   glMultiTexCoord3dv: PFNGLMULTITEXCOORD3DVPROC;
+   glMultiTexCoord3f: PFNGLMULTITEXCOORD3FPROC;
+   glMultiTexCoord3fv: PFNGLMULTITEXCOORD3FVPROC;
+   glMultiTexCoord3i: PFNGLMULTITEXCOORD3IPROC;
+   glMultiTexCoord3iv: PFNGLMULTITEXCOORD3IVPROC;
+   glMultiTexCoord3s: PFNGLMULTITEXCOORD3SPROC;
+   glMultiTexCoord3sv: PFNGLMULTITEXCOORD3SVPROC;
+   glMultiTexCoord4d: PFNGLMULTITEXCOORD4DPROC;
+   glMultiTexCoord4dv: PFNGLMULTITEXCOORD4DVPROC;
+   glMultiTexCoord4f: PFNGLMULTITEXCOORD4FPROC;
+   glMultiTexCoord4fv: PFNGLMULTITEXCOORD4FVPROC;
+   glMultiTexCoord4i: PFNGLMULTITEXCOORD4IPROC;
+   glMultiTexCoord4iv: PFNGLMULTITEXCOORD4IVPROC;
+   glMultiTexCoord4s: PFNGLMULTITEXCOORD4SPROC;
+   glMultiTexCoord4sv: PFNGLMULTITEXCOORD4SVPROC;
 
    // promoted to core v1.3 from GL_ARB_transpose_matrix
-   glLoadTransposeMatrixf: procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glLoadTransposeMatrixd: procedure(m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultTransposeMatrixf: procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glMultTransposeMatrixd: procedure(m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glLoadTransposeMatrixf: PFNGLLOADTRANSPOSEMATRIXFPROC;
+   glLoadTransposeMatrixd: PFNGLLOADTRANSPOSEMATRIXDPROC;
+   glMultTransposeMatrixf: PFNGLMULTTRANSPOSEMATRIXFPROC;
+   glMultTransposeMatrixd: PFNGLMULTTRANSPOSEMATRIXDPROC;
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
@@ -1077,62 +1073,62 @@ var
    //  ###########################################################
 
    // promoted to core v1.4 from GL_EXT_blend_func_separate (#173)
-   glBlendFuncSeparate: procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendFuncSeparate: PFNGLBLENDFUNCSEPARATEPROC;
 
    // promoted to core v1.4 from GL_EXT_multi_draw_arrays (#148)
-   glMultiDrawArrays: procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiDrawElements: procedure(mode: TGLenum; Count: PGLsizei; AType: TGLenum; var indices; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMultiDrawArrays: PFNGLMULTIDRAWARRAYSPROC;
+   glMultiDrawElements: PFNGLMULTIDRAWELEMENTSPROC;
 
    // promoted to core v1.4 from GL_ARB_point_parameters (#14), GL_NV_point_sprite (#262)
-   glPointParameterf: procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPointParameterfv: procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPointParameteri: procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPointParameteriv: procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPointParameterf: PFNGLPOINTPARAMETERFPROC;
+   glPointParameterfv: PFNGLPOINTPARAMETERFVPROC;
+   glPointParameteri: PFNGLPOINTPARAMETERIPROC;
+   glPointParameteriv: PFNGLPOINTPARAMETERIVPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL 1.4 deprecated'} {$ENDIF}
    // promoted to core v1.4 from GL_EXT_fog_coord (#149)
-   glFogCoordf: procedure(coord: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glFogCoordfv: procedure(coord: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glFogCoordd: procedure(coord: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glFogCoorddv: procedure(coord: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glFogCoordPointer: procedure(AType: TGLenum; stride: TGLsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glFogCoordf: PFNGLFOGCOORDFPROC;
+   glFogCoordfv: PFNGLFOGCOORDFVPROC;
+   glFogCoordd: PFNGLFOGCOORDDPROC;
+   glFogCoorddv: PFNGLFOGCOORDDVPROC;
+   glFogCoordPointer: PFNGLFOGCOORDPOINTERPROC;
 
    // promoted to core v1.4 from GL_EXT_secondary_color (#145)
-   glSecondaryColor3b: procedure(red, green, blue: TGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3bv: procedure(v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3d: procedure(red, green, blue: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3dv: procedure(v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3f: procedure(red, green, blue: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3fv: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3i: procedure(red, green, blue: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3iv: procedure(v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3s: procedure(red, green, blue: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3sv: procedure(v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3ub: procedure(red, green, blue: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3ubv: procedure(v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3ui: procedure(red, green, blue: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3uiv: procedure(v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3us: procedure(red, green, blue: TGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColor3usv: procedure(v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glSecondaryColorPointer: procedure(Size: TGLint; Atype: TGLenum; stride: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glSecondaryColor3b: PFNGLSECONDARYCOLOR3BPROC;
+   glSecondaryColor3bv: PFNGLSECONDARYCOLOR3BVPROC;
+   glSecondaryColor3d: PFNGLSECONDARYCOLOR3DPROC;
+   glSecondaryColor3dv: PFNGLSECONDARYCOLOR3DVPROC;
+   glSecondaryColor3f: PFNGLSECONDARYCOLOR3FPROC;
+   glSecondaryColor3fv: PFNGLSECONDARYCOLOR3FVPROC;
+   glSecondaryColor3i: PFNGLSECONDARYCOLOR3IPROC;
+   glSecondaryColor3iv: PFNGLSECONDARYCOLOR3IVPROC;
+   glSecondaryColor3s: PFNGLSECONDARYCOLOR3SPROC;
+   glSecondaryColor3sv: PFNGLSECONDARYCOLOR3SVPROC;
+   glSecondaryColor3ub: PFNGLSECONDARYCOLOR3UBPROC;
+   glSecondaryColor3ubv: PFNGLSECONDARYCOLOR3UBVPROC;
+   glSecondaryColor3ui: PFNGLSECONDARYCOLOR3UIPROC;
+   glSecondaryColor3uiv: PFNGLSECONDARYCOLOR3UIVPROC;
+   glSecondaryColor3us: PFNGLSECONDARYCOLOR3USPROC;
+   glSecondaryColor3usv: PFNGLSECONDARYCOLOR3USVPROC;
+   glSecondaryColorPointer: PFNGLSECONDARYCOLORPOINTERPROC;
 
    // promoted to core v1.4 from GL_ARB_window_pos (#25)
-   glWindowPos2d: procedure(x,y : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2dv: procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2f: procedure(x,y : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2fv: procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2i: procedure(x,y : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2iv: procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2s: procedure(x,y : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos2sv: procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3d: procedure(x,y,z : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3dv: procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3f: procedure(x,y,z : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3fv: procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3i: procedure(x,y,z : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3iv: procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3s: procedure(x,y,z : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-   glWindowPos3sv: procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+   glWindowPos2d: PFNGLWINDOWPOS2DPROC;
+   glWindowPos2dv: PFNGLWINDOWPOS2DVPROC;
+   glWindowPos2f: PFNGLWINDOWPOS2FPROC;
+   glWindowPos2fv: PFNGLWINDOWPOS2FVPROC;
+   glWindowPos2i: PFNGLWINDOWPOS2IPROC;
+   glWindowPos2iv: PFNGLWINDOWPOS2IVPROC;
+   glWindowPos2s: PFNGLWINDOWPOS2SPROC;
+   glWindowPos2sv: PFNGLWINDOWPOS2SVPROC;
+   glWindowPos3d: PFNGLWINDOWPOS3DPROC;
+   glWindowPos3dv: PFNGLWINDOWPOS3DVPROC;
+   glWindowPos3f: PFNGLWINDOWPOS3FPROC;
+   glWindowPos3fv: PFNGLWINDOWPOS3FVPROC;
+   glWindowPos3i: PFNGLWINDOWPOS3IPROC;
+   glWindowPos3iv: PFNGLWINDOWPOS3IVPROC;
+   glWindowPos3s: PFNGLWINDOWPOS3SPROC;
+   glWindowPos3sv: PFNGLWINDOWPOS3SVPROC;
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
@@ -1145,27 +1141,27 @@ var
    //  ###########################################################
 
    // promoted to core v1.5 from GL_ARB_occlusion_query (#29)
-   glGenQueries: procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteQueries: procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsQuery:  function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginQuery: procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndQuery: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryiv: procedure(target: TGLEnum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectiv: procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectuiv: procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenQueries: PFNGLGENQUERIESPROC;
+   glDeleteQueries: PFNGLDELETEQUERIESPROC;
+   glIsQuery: PFNGLISQUERYPROC;
+   glBeginQuery: PFNGLBEGINQUERYPROC;
+   glEndQuery: PFNGLENDQUERYPROC;
+   glGetQueryiv: PFNGLGETQUERYIVPROC;
+   glGetQueryObjectiv: PFNGLGETQUERYOBJECTIVPROC;
+   glGetQueryObjectuiv: PFNGLGETQUERYOBJECTUIVPROC;
 
    // promoted to core v1.5 from GL_ARB_vertex_buffer_object (#28)
-   glBindBuffer: procedure(target: GLenum; buffer: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteBuffers: procedure(n: GLsizei; const buffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenBuffers: procedure(n: GLsizei; buffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsBuffer: function(buffer: GLuint): GLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBufferData: procedure(target: GLenum; size: GLsizei; const data: Pointer; usage: GLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBufferSubData: procedure(target: GLenum; offset: GLuint; size: GLsizei; const data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferSubData: procedure(target: GLenum; offset: GLuint; size: GLsizei; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMapBuffer: function(target: GLenum; access: GLenum): Pointer; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUnmapBuffer: function(target: GLenum): GLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferParameteriv: procedure(target: GLenum; pname: GLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferPointerv: procedure(target: GLenum; pname: GLenum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindBuffer: PFNGLBINDBUFFERPROC;
+   glDeleteBuffers: PFNGLDELETEBUFFERSPROC;
+   glGenBuffers: PFNGLGENBUFFERSPROC;
+   glIsBuffer: PFNGLISBUFFERPROC;
+   glBufferData: PFNGLBUFFERDATAPROC;
+   glBufferSubData: PFNGLBUFFERSUBDATAPROC;
+   glGetBufferSubData: PFNGLGETBUFFERSUBDATAPROC;
+   glMapBuffer: PFNGLMAPBUFFERPROC;
+   glUnmapBuffer: PFNGLUNMAPBUFFERPROC;
+   glGetBufferParameteriv: PFNGLGETBUFFERPARAMETERIVPROC;
+   glGetBufferPointerv: PFNGLGETBUFFERPOINTERVPROC;
 
    // promoted to core v1.5 from GL_EXT_shadow_funcs (#267)
    // (no functions or procedures)
@@ -1180,105 +1176,105 @@ var
    //  ###########################################################
 
    // promoted to core v2.0 from GL_EXT_blend_equation_separate (#299)
-   glBlendEquationSeparate: procedure(modeRGB: TGLenum; modeAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquationSeparate: PFNGLBLENDEQUATIONSEPARATEPROC;
 
    // promoted to core v2.0 from GL_ARB_draw_buffers (#37)
-   glDrawBuffers: procedure(n: GLSizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawBuffers: PFNGLDRAWBUFFERSPROC;
 
    // promoted to core v2.0 from GL_ARB_stencil_two_side (no # found)
-   glStencilOpSeparate: procedure(face, sfail, dpfail, dppass: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glStencilFuncSeparate: procedure(face, func: TGLenum; ref: TGLint; mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glStencilMaskSeparate: procedure(face: TGLenum; mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glStencilOpSeparate: PFNGLSTENCILOPSEPARATEPROC;
+   glStencilFuncSeparate: PFNGLSTENCILFUNCSEPARATEPROC;
+   glStencilMaskSeparate: PFNGLSTENCILMASKSEPARATEPROC;
 
    // promoted to core v2.0 from GL_ARB_shader_objects (#30) / GL_ARB_vertex_shader (#31) / GL_ARB_fragment_shader (#32)
-   glAttachShader: procedure(_program: TGLuint; shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindAttribLocation: procedure(_program: TGLuint; index: TGLuint; const name: PGLChar);
-   glCompileShader: procedure(shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCreateProgram: function(): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCreateShader: function(_type: TGLenum): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteProgram: procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteShader: procedure(shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDetachShader: procedure(_program: TGLuint; shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDisableVertexAttribArray: procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEnableVertexAttribArray: procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveAttrib: procedure(_program: TGLuint; index: TGLuint; bufSize: TGLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniform: procedure(_program: TGLuint; index: TGLuint; bufSize: TGLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetAttachedShaders: procedure(_program: TGLuint; maxCount: TGLsizei; count: PGLSizei; obj: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetAttribLocation: function(_program: TGLuint; const name: PGLChar): TGLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramiv: procedure(_program: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramInfoLog: procedure(_program: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetShaderiv: procedure(shader: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetShaderInfoLog: procedure(shader: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetShaderSource: procedure(shader:TGLuint; bufSize: TGLsizei; length: PGLsizei; source: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformLocation: function(_program: TGLuint; const name: PGLChar): TGLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformfv: procedure(_program: TGLuint; location: TGLint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformiv: procedure(_program: TGLuint; location: TGLint; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribdv: procedure(index:TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribfv: procedure(index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribiv: procedure(index: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribPointerv: procedure(index: TGLuint; pname: TGLenum; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsProgram: function(_program: TGLuint):TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsShader: function(shader: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glLinkProgram: procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glShaderSource: procedure(shader: TGLuint; count: TGLsizei; const _string: PGLPCharArray; const length: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUseProgram: procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1f: procedure(location: GLint; v0: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2f: procedure(location: GLint; v0: GLfloat; v1: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3f: procedure(location: GLint; v0: GLfloat; v1: GLfloat; v2: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4f: procedure(location: GLint; v0: GLfloat; v1: GLfloat; v2: GLfloat; v3: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1i: procedure(location: GLint; v0: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2i: procedure(location: GLint; v0: GLint; v1: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3i: procedure(location: GLint; v0: GLint; v1: GLint; v2: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4i: procedure(location: GLint; v0: GLint; v1: GLint; v2: GLint; v3: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1fv: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2fv: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3fv: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4fv: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1iv: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2iv: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3iv: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4iv: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2fv: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3fv: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4fv: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glValidateProgram: procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1d: procedure(index:TGLuint; x: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1dv: procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1f: procedure(index:TGLuint; x: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1fv: procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1s: procedure(index:TGLuint; x: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1sv: procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2d: procedure(index:TGLuint; x,y: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2dv: procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2f: procedure(index:TGLuint; x,y: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2fv: procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2s: procedure(index:TGLuint; x,y: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2sv: procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3d: procedure(index:TGLuint; x,y,z: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3dv: procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3f: procedure(index:TGLuint; x,y,z: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3fv: procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3s: procedure(index:TGLuint; x,y,z: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3sv: procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nbv: procedure(index:TGLuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Niv: procedure(index:TGLuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nsv: procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nub: procedure(index:TGLuint; x,y,z,w: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nubv: procedure(index:TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nuiv: procedure(index:TGLuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4Nusv: procedure(index:TGLuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4bv: procedure(index:TGLuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4d: procedure(index:TGLuint; x,y,z,w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4dv: procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4f: procedure(index:TGLuint; x,y,z,w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4fv: procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4iv: procedure(index:TGLuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4s: procedure(index:TGLuint; x,y,z,w: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4sv: procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4ubv: procedure(index:TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4uiv: procedure(index:TGLuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4usv: procedure(index:TGLuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribPointer: procedure(index:TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride:TGLsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glAttachShader: PFNGLATTACHSHADERPROC;
+   glBindAttribLocation: PFNGLBINDATTRIBLOCATIONPROC;
+   glCompileShader: PFNGLCOMPILESHADERPROC;
+   glCreateProgram: PFNGLCREATEPROGRAMPROC;
+   glCreateShader: PFNGLCREATESHADERPROC;
+   glDeleteProgram: PFNGLDELETEPROGRAMPROC;
+   glDeleteShader: PFNGLDELETESHADERPROC;
+   glDetachShader: PFNGLDETACHSHADERPROC;
+   glDisableVertexAttribArray: PFNGLDISABLEVERTEXATTRIBARRAYPROC;
+   glEnableVertexAttribArray: PFNGLENABLEVERTEXATTRIBARRAYPROC;
+   glGetActiveAttrib: PFNGLGETACTIVEATTRIBPROC;
+   glGetActiveUniform: PFNGLGETACTIVEUNIFORMPROC;
+   glGetAttachedShaders: PFNGLGETATTACHEDSHADERSPROC;
+   glGetAttribLocation: PFNGLGETATTRIBLOCATIONPROC;
+   glGetProgramiv: PFNGLGETPROGRAMIVPROC;
+   glGetProgramInfoLog: PFNGLGETPROGRAMINFOLOGPROC;
+   glGetShaderiv: PFNGLGETSHADERIVPROC;
+   glGetShaderInfoLog: PFNGLGETSHADERINFOLOGPROC;
+   glGetShaderSource: PFNGLGETSHADERSOURCEPROC;
+   glGetUniformLocation: PFNGLGETUNIFORMLOCATIONPROC;
+   glGetUniformfv: PFNGLGETUNIFORMFVPROC;
+   glGetUniformiv: PFNGLGETUNIFORMIVPROC;
+   glGetVertexAttribdv: PFNGLGETVERTEXATTRIBDVPROC;
+   glGetVertexAttribfv: PFNGLGETVERTEXATTRIBFVPROC;
+   glGetVertexAttribiv: PFNGLGETVERTEXATTRIBIVPROC;
+   glGetVertexAttribPointerv: PFNGLGETVERTEXATTRIBPOINTERVPROC;
+   glIsProgram: PFNGLISPROGRAMPROC;
+   glIsShader: PFNGLISSHADERPROC;
+   glLinkProgram: PFNGLLINKPROGRAMPROC;
+   glShaderSource: PFNGLSHADERSOURCEPROC;
+   glUseProgram: PFNGLUSEPROGRAMPROC;
+   glUniform1f: PFNGLUNIFORM1FPROC;
+   glUniform2f: PFNGLUNIFORM2FPROC;
+   glUniform3f: PFNGLUNIFORM3FPROC;
+   glUniform4f: PFNGLUNIFORM4FPROC;
+   glUniform1i: PFNGLUNIFORM1IPROC;
+   glUniform2i: PFNGLUNIFORM2IPROC;
+   glUniform3i: PFNGLUNIFORM3IPROC;
+   glUniform4i: PFNGLUNIFORM4IPROC;
+   glUniform1fv: PFNGLUNIFORM1FVPROC;
+   glUniform2fv: PFNGLUNIFORM2FVPROC;
+   glUniform3fv: PFNGLUNIFORM3FVPROC;
+   glUniform4fv: PFNGLUNIFORM4FVPROC;
+   glUniform1iv: PFNGLUNIFORM1IVPROC;
+   glUniform2iv: PFNGLUNIFORM2IVPROC;
+   glUniform3iv: PFNGLUNIFORM3IVPROC;
+   glUniform4iv: PFNGLUNIFORM4IVPROC;
+   glUniformMatrix2fv: PFNGLUNIFORMMATRIX2FVPROC;
+   glUniformMatrix3fv: PFNGLUNIFORMMATRIX3FVPROC;
+   glUniformMatrix4fv: PFNGLUNIFORMMATRIX4FVPROC;
+   glValidateProgram: PFNGLVALIDATEPROGRAMPROC;
+   glVertexAttrib1d: PFNGLVERTEXATTRIB1DPROC;
+   glVertexAttrib1dv: PFNGLVERTEXATTRIB1DVPROC;
+   glVertexAttrib1f: PFNGLVERTEXATTRIB1FPROC;
+   glVertexAttrib1fv: PFNGLVERTEXATTRIB1FVPROC;
+   glVertexAttrib1s: PFNGLVERTEXATTRIB1SPROC;
+   glVertexAttrib1sv: PFNGLVERTEXATTRIB1SVPROC;
+   glVertexAttrib2d: PFNGLVERTEXATTRIB2DPROC;
+   glVertexAttrib2dv: PFNGLVERTEXATTRIB2DVPROC;
+   glVertexAttrib2f: PFNGLVERTEXATTRIB2FPROC;
+   glVertexAttrib2fv: PFNGLVERTEXATTRIB2FVPROC;
+   glVertexAttrib2s: PFNGLVERTEXATTRIB2SPROC;
+   glVertexAttrib2sv: PFNGLVERTEXATTRIB2SVPROC;
+   glVertexAttrib3d: PFNGLVERTEXATTRIB3DPROC;
+   glVertexAttrib3dv: PFNGLVERTEXATTRIB3DVPROC;
+   glVertexAttrib3f: PFNGLVERTEXATTRIB3FPROC;
+   glVertexAttrib3fv: PFNGLVERTEXATTRIB3FVPROC;
+   glVertexAttrib3s: PFNGLVERTEXATTRIB3SPROC;
+   glVertexAttrib3sv: PFNGLVERTEXATTRIB3SVPROC;
+   glVertexAttrib4Nbv: PFNGLVERTEXATTRIB4NBVPROC;
+   glVertexAttrib4Niv: PFNGLVERTEXATTRIB4NIVPROC;
+   glVertexAttrib4Nsv: PFNGLVERTEXATTRIB4NSVPROC;
+   glVertexAttrib4Nub: PFNGLVERTEXATTRIB4NUBPROC;
+   glVertexAttrib4Nubv: PFNGLVERTEXATTRIB4NUBVPROC;
+   glVertexAttrib4Nuiv: PFNGLVERTEXATTRIB4NUIVPROC;
+   glVertexAttrib4Nusv: PFNGLVERTEXATTRIB4NUSVPROC;
+   glVertexAttrib4bv: PFNGLVERTEXATTRIB4BVPROC;
+   glVertexAttrib4d: PFNGLVERTEXATTRIB4DPROC;
+   glVertexAttrib4dv: PFNGLVERTEXATTRIB4DVPROC;
+   glVertexAttrib4f: PFNGLVERTEXATTRIB4FPROC;
+   glVertexAttrib4fv: PFNGLVERTEXATTRIB4FVPROC;
+   glVertexAttrib4iv: PFNGLVERTEXATTRIB4IVPROC;
+   glVertexAttrib4s: PFNGLVERTEXATTRIB4SPROC;
+   glVertexAttrib4sv: PFNGLVERTEXATTRIB4SVPROC;
+   glVertexAttrib4ubv: PFNGLVERTEXATTRIB4UBVPROC;
+   glVertexAttrib4uiv: PFNGLVERTEXATTRIB4UIVPROC;
+   glVertexAttrib4usv: PFNGLVERTEXATTRIB4USVPROC;
+   glVertexAttribPointer: PFNGLVERTEXATTRIBPOINTERPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1296,12 +1292,12 @@ var
    // (no functions or procedures)
 
    // New commands in OpenGL 2.1
-   glUniformMatrix2x3fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3x2fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2x4fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4x2fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3x4fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4x3fv: procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glUniformMatrix2x3fv: PFNGLUNIFORMMATRIX2X3FVPROC;
+   glUniformMatrix3x2fv: PFNGLUNIFORMMATRIX3X2FVPROC;
+   glUniformMatrix2x4fv: PFNGLUNIFORMMATRIX2X4FVPROC;
+   glUniformMatrix4x2fv: PFNGLUNIFORMMATRIX4X2FVPROC;
+   glUniformMatrix3x4fv: PFNGLUNIFORMMATRIX3X4FVPROC;
+   glUniformMatrix4x3fv: PFNGLUNIFORMMATRIX4X3FVPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1313,83 +1309,78 @@ var
    //  ###########################################################
 
    // promoted to core v3.0 from GL_EXT_gpu_shader4
-   glVertexAttribI1i: procedure(index: TGLuint; x: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2i: procedure(index: TGLuint; x: TGLint; y: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3i: procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4i: procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint; w: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1ui: procedure(index: TGLuint; x: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2ui: procedure(index: TGLuint; x: TGLuint; y: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3ui: procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4ui: procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint; w: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1iv: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2iv: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3iv: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4iv: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1uiv: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2uiv: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3uiv: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4uiv: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4bv: procedure(index: TGLuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4sv: procedure(index: TGLuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4ubv: procedure(index: TGLuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4usv: procedure(index: TGLuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribIPointer: procedure(index: TGLuint; size: TGLint; _type: TGLenum;
-                                stride: TGLsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribIiv: procedure(index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribIuiv: procedure(index: TGLuint; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1ui: procedure(location: TGLInt; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2ui: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3ui: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4ui: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1uiv: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2uiv: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3uiv: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4uiv: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformuiv: procedure(_program: TGLuint; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindFragDataLocation: procedure(_program: TGLuint; colorNumber: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFragDataLocation: function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttribI1i: PFNGLVERTEXATTRIBI1IPROC;
+   glVertexAttribI2i: PFNGLVERTEXATTRIBI2IPROC;
+   glVertexAttribI3i: PFNGLVERTEXATTRIBI3IPROC;
+   glVertexAttribI4i: PFNGLVERTEXATTRIBI4IPROC;
+   glVertexAttribI1ui: PFNGLVERTEXATTRIBI1UIPROC;
+   glVertexAttribI2ui: PFNGLVERTEXATTRIBI2UIPROC;
+   glVertexAttribI3ui: PFNGLVERTEXATTRIBI3UIPROC;
+   glVertexAttribI4ui: PFNGLVERTEXATTRIBI4UIPROC;
+   glVertexAttribI1iv: PFNGLVERTEXATTRIBI1IVPROC;
+   glVertexAttribI2iv: PFNGLVERTEXATTRIBI2IVPROC;
+   glVertexAttribI3iv: PFNGLVERTEXATTRIBI3IVPROC;
+   glVertexAttribI4iv: PFNGLVERTEXATTRIBI4IVPROC;
+   glVertexAttribI1uiv: PFNGLVERTEXATTRIBI1UIVPROC;
+   glVertexAttribI2uiv: PFNGLVERTEXATTRIBI2UIVPROC;
+   glVertexAttribI3uiv: PFNGLVERTEXATTRIBI3UIVPROC;
+   glVertexAttribI4uiv: PFNGLVERTEXATTRIBI4UIVPROC;
+   glVertexAttribI4bv: PFNGLVERTEXATTRIBI4BVPROC;
+   glVertexAttribI4sv: PFNGLVERTEXATTRIBI4SVPROC;
+   glVertexAttribI4ubv: PFNGLVERTEXATTRIBI4UBVPROC;
+   glVertexAttribI4usv: PFNGLVERTEXATTRIBI4USVPROC;
+   glVertexAttribIPointer: PFNGLVERTEXATTRIBIPOINTERPROC;
+   glGetVertexAttribIiv: PFNGLGETVERTEXATTRIBIIVPROC;
+   glGetVertexAttribIuiv: PFNGLGETVERTEXATTRIBIUIVPROC;
+   glUniform1ui: PFNGLUNIFORM1UIPROC;
+   glUniform2ui: PFNGLUNIFORM2UIPROC;
+   glUniform3ui: PFNGLUNIFORM3UIPROC;
+   glUniform4ui: PFNGLUNIFORM4UIPROC;
+   glUniform1uiv: PFNGLUNIFORM1UIVPROC;
+   glUniform2uiv: PFNGLUNIFORM2UIVPROC;
+   glUniform3uiv: PFNGLUNIFORM3UIVPROC;
+   glUniform4uiv: PFNGLUNIFORM4UIVPROC;
+   glGetUniformuiv: PFNGLGETUNIFORMUIVPROC;
+   glBindFragDataLocation: PFNGLBINDFRAGDATALOCATIONPROC;
+   glGetFragDataLocation: PFNGLGETFRAGDATALOCATIONPROC;
 
    // promoted to core v3.0 from GL_NV_conditional_render
-   glBeginConditionalRender: procedure(id: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndConditionalRender: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBeginConditionalRender: PFNGLBEGINCONDITIONALRENDERPROC;
+   glEndConditionalRender: PFNGLENDCONDITIONALRENDERPROC;
 
    // promoted to core v3.0 from GL_ARB_color_buffer_float
-   glClampColor: procedure (target: TGLenum; clamp: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glClampColor: PFNGLCLAMPCOLORPROC;
 
    // promoted to core v3.0 from GL_EXT_texture_integer
    //glClearColorIi: procedure(r: TGLint; g: TGLint; b: TGLint; a: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    //glClearColorIui: procedure(r: TGLuint; g: TGLuint; b: TGLuint; a: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexParameterIiv: procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexParameterIuiv: procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTexParameterIiv: procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTexParameterIuiv: procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexParameterIiv: PFNGLTEXPARAMETERIIVPROC;
+   glTexParameterIuiv: PFNGLTEXPARAMETERIUIVPROC;
+   glGetTexParameterIiv: PFNGLGETTEXPARAMETERIIVPROC;
+   glGetTexParameterIuiv: PFNGLGETTEXPARAMETERIUIVPROC;
 
    // promoted to core v3.0 from GL_EXT_draw_buffers2
-   glColorMaski: procedure(index: TGLuint; r: TGLboolean; g: TGLboolean;
-                            b: TGLboolean; a: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBooleani_v: procedure(target: TGLenum; index: TGLuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetIntegeri_v: procedure(target: TGLenum; index: TGLuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEnablei: procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDisablei: procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsEnabledi: function(target: TGLenum; index: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glColorMaski: PFNGLCOLORMASKIPROC;
+   glGetBooleani_v: PFNGLGETBOOLEANI_VPROC;
+   glGetIntegeri_v: PFNGLGETINTEGERI_VPROC;
+   glEnablei: PFNGLENABLEIPROC;
+   glDisablei: PFNGLDISABLEIPROC;
+   glIsEnabledi: PFNGLISENABLEDIPROC;
 
    //promoted to core v3.0 from GL_EXT_transform_feedback
-   glBindBufferRange: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindBufferBase: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginTransformFeedback: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndTransformFeedback: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTransformFeedbackVaryings: procedure(_program: TGLuint; count: TGLsizei;
-                                      const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTransformFeedbackVarying: procedure(_program: TGLuint; index: TGLuint;
-     bufSize: TGLsizei; length: PGLsizei; size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindBufferRange: PFNGLBINDBUFFERRANGEPROC;
+   glBindBufferBase: PFNGLBINDBUFFERBASEPROC;
+   glBeginTransformFeedback: PFNGLBEGINTRANSFORMFEEDBACKPROC;
+   glEndTransformFeedback: PFNGLENDTRANSFORMFEEDBACKPROC;
+   glTransformFeedbackVaryings: PFNGLTRANSFORMFEEDBACKVARYINGSPROC;
+   glGetTransformFeedbackVarying: PFNGLGETTRANSFORMFEEDBACKVARYINGPROC;
 
    // New commands in OpenGL 3.0
-   glClearBufferiv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClearBufferuiv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClearBufferfv: procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClearBufferfi: procedure(buffer: TGLenum; drawbuffer: TGLint; depth: TGLfloat; stencil: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetStringi: function(name: TGLenum; index: TGLuint): PGLChar;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glClearBufferiv: PFNGLCLEARBUFFERIVPROC;
+   glClearBufferuiv: PFNGLCLEARBUFFERUIVPROC;
+   glClearBufferfv: PFNGLCLEARBUFFERFVPROC;
+   glClearBufferfi: PFNGLCLEARBUFFERFIPROC;
+   glGetStringi: PFNGLGETSTRINGIPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1400,10 +1391,10 @@ var
    //            extensions integrated into OpenGL 3.1 Core
    //  ###########################################################
 
-   glDrawArraysInstanced: procedure(mode: TGLenum; first: TGLint; count: TGLsizei; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawElementsInstanced: procedure(mode: TGLenum; count: TGLsizei; _type: TGLenum; indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexBuffer: procedure(target: TGLenum; internalformat: TGLenum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPrimitiveRestartIndex: procedure(index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawArraysInstanced: PFNGLDRAWARRAYSINSTANCEDPROC;
+   glDrawElementsInstanced: PFNGLDRAWELEMENTSINSTANCEDPROC;
+   glTexBuffer: PFNGLTEXBUFFERPROC;
+   glPrimitiveRestartIndex: PFNGLPRIMITIVERESTARTINDEXPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1414,10 +1405,10 @@ var
    //            extensions integrated into OpenGL 3.2 Core
    //  ###########################################################
 
-   glGetInteger64i_v: procedure(target: TGLenum; index: TGLuint; data: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferParameteri64v: procedure(target: TGLenum; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameteri: procedure(_program: TGLuint; pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetInteger64i_v: PFNGLGETINTEGER64I_VPROC;
+   glGetBufferParameteri64v: PFNGLGETBUFFERPARAMETERI64VPROC;
+   glProgramParameteri: PFNGLPROGRAMPARAMETERIPROC;
+   glFramebufferTexture: PFNGLFRAMEBUFFERTEXTUREPROC;
 //   glFramebufferTextureFace: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint; face: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    // OpenGL 3.2 also reuses entry points from these extensions:
    // GL_ARB_draw_elements_base_vertex
@@ -1433,6 +1424,9 @@ var
    //           function and procedure definitions for
    //            extensions integrated into OpenGL 3.3 Core
    //  ###########################################################
+
+   // New commands in OpenGL 3.3
+   glVertexAttribDivisor: PFNGLVERTEXATTRIBDIVISORPROC;
 
    // OpenGL 3.3 reuses entry points from these extensions:
    // GL_ARB_blend_func_extended (ARB #78)
@@ -1466,6 +1460,18 @@ var
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
+{$IFDEF GLS_COMPILER_2005_UP} {$region 'New core function/procedure definitions in OpenGL 4.1'} {$ENDIF}
+
+   // OpenGL 4.1 uses entry points from these extensions:
+   // ARB_ES2_compatibility
+   // ARB_get_program_binary
+   // ARB_separate_shader_objects
+   // ARB_shader_precision (no entry points)
+   // ARB_vertex_attrib_64bit
+   // ARB_viewport_array
+
+{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+
 {$IFDEF GLS_COMPILER_2005_UP} {$region 'OpenGL Utility (GLU) function/procedure definitions'} {$ENDIF}
 
    //  ###########################################################
@@ -1474,9 +1480,9 @@ var
    //  ###########################################################
 
    // GLU extensions
-   gluNurbsCallbackDataEXT: procedure(nurb: PGLUnurbs; userData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   gluNewNurbsTessellatorEXT: function: PGLUnurbs; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   gluDeleteNurbsTessellatorEXT: procedure(nurb: PGLUnurbs); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   gluNurbsCallbackDataEXT: PFNGLUNURBSCALLBACKDATAEXTPROC;
+   gluNewNurbsTessellatorEXT: PFNGLUNEWNURBSTESSELLATOREXTPROC;
+   gluDeleteNurbsTessellatorEXT: PFNGLUDELETENURBSTESSELLATOREXTPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1488,50 +1494,45 @@ var
    //  ###########################################################
 
    // WGL_buffer_region (ARB #4)
-   wglCreateBufferRegionARB: function(DC: HDC; iLayerPlane: Integer; uType: TGLenum) : Integer; stdcall;
-   wglDeleteBufferRegionARB: procedure(hRegion: Integer); stdcall;
-   wglSaveBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer): BOOL; stdcall;
-   wglRestoreBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer;
-     xSrc, ySrc: Integer): BOOL; stdcall;
+   wglCreateBufferRegionARB: PFNWGLCREATEBUFFERREGIONARBPROC;
+   wglDeleteBufferRegionARB: PFNWGLDELETEBUFFERREGIONARBPROC;
+   wglSaveBufferRegionARB: PFNWGLSAVEBUFFERREGIONARBPROC;
+   wglRestoreBufferRegionARB: PFNWGLRESTOREBUFFERREGIONARBPROC;
 
    // WGL_ARB_extensions_string (ARB #8)
-   wglGetExtensionsStringARB: function(DC: HDC): PGLChar; stdcall;
+   wglGetExtensionsStringARB: PFNWGLGETEXTENSIONSSTRINGARBPROC;
 
    // WGL_ARB_pixel_format (ARB #9)
-   wglGetPixelFormatAttribivARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TGLenum;
-     const piAttributes: PGLint; piValues : PGLint) : BOOL; stdcall;
-   wglGetPixelFormatAttribfvARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TGLenum;
-     const piAttributes: PGLint; piValues: PGLFloat) : BOOL; stdcall;
-   wglChoosePixelFormatARB: function(DC: HDC; const piAttribIList: PGLint; const pfAttribFList: PGLFloat;
-     nMaxFormats: GLuint; piFormats: PGLint; nNumFormats: PGLenum) : BOOL; stdcall;
+   wglGetPixelFormatAttribivARB: PFNWGLGETPIXELFORMATATTRIBIVARBPROC;
+   wglGetPixelFormatAttribfvARB: PFNWGLGETPIXELFORMATATTRIBFVARBPROC;
+   wglChoosePixelFormatARB: PFNWGLCHOOSEPIXELFORMATARBPROC;
 
    // WGL_make_current_read (ARB #10)
-   wglMakeContextCurrentARB: function(hDrawDC: HDC; hReadDC: HDC; _hglrc: HGLRC): BOOL; stdcall;
-   wglGetCurrentReadDCARB: function(): HDC; stdcall;
+   wglMakeContextCurrentARB: PFNWGLMAKECONTEXTCURRENTARBPROC;
+   wglGetCurrentReadDCARB: PFNWGLGETCURRENTREADDCARBPROC;
 
    // WGL_ARB_pbuffer (ARB #11)
-   wglCreatePbufferARB: function(DC: HDC; iPixelFormat: GLInt; iWidth, iHeight : GLInt;
-     const piAttribList: PGLint) : HPBUFFERARB; stdcall;
-   wglGetPbufferDCARB: function(hPbuffer: HPBUFFERARB) : HDC; stdcall;
-   wglReleasePbufferDCARB: function(hPbuffer: HPBUFFERARB; DC: HDC) : Integer; stdcall;
-   wglDestroyPbufferARB: function(hPbuffer: HPBUFFERARB): BOOL; stdcall;
-   wglQueryPbufferARB: function(hPbuffer: HPBUFFERARB; iAttribute : Integer;
-     piValue: PGLint) : BOOL; stdcall;
+   wglCreatePbufferARB: PFNWGLCREATEPBUFFERARBPROC;
+   wglGetPbufferDCARB: PFNWGLGETPBUFFERDCARBPROC;
+   wglReleasePbufferDCARB: PFNWGLRELEASEPBUFFERDCARBPROC;
+   wglDestroyPbufferARB: PFNWGLDESTROYPBUFFERARBPROC;
+   wglQueryPbufferARB: PFNWGLQUERYPBUFFERARBPROC;
 
    // WGL_ARB_render_texture (ARB #20)
-   wglBindTexImageARB: function(hPbuffer: HPBUFFERARB; iBuffer: Integer): BOOL; stdcall;
-   wglReleaseTexImageARB: function(hpBuffer: HPBUFFERARB; iBuffer: Integer): BOOL; stdcall;
-   wglSetPbufferAttribARB: function(hpBuffer: HPBUFFERARB; const piAttribList: PGLint): BOOL; stdcall;
+   wglBindTexImageARB: PFNWGLBINDTEXIMAGEARBPROC;
+   wglReleaseTexImageARB: PFNWGLRELEASETEXIMAGEARBPROC;
+   wglSetPbufferAttribARB: PFNWGLSETPBUFFERATTRIBARBPROC;
 
    // WGL_ARB_create_context (ARB #55)
-   wglCreateContextAttribsARB: function(DC: HDC; hShareContext: HGLRC;
-				     attribList: PGLint):HGLRC; stdcall;
+   wglCreateContextAttribsARB: PFNWGLCREATECONTEXTATTRIBSARBPROC;
+
    // WGL_NV_gpu_affinity
-   wglEnumGpusNV: function(iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean;
-   wglEnumGpuDevicesNV: function(hGpu: HGPUNV; iDeviceIndex: Cardinal; lpGpuDevice: PGPUDevice): Boolean;
-   wglCreateAffinityDCNV: function(hGpuList: PHGPUNV): HDC;
-   wglEnumGpusFromAffinityDCNV: function(hAffinityDC: HDC; iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean;
-   wglDeleteDCNV: function(hdc: HDC): Boolean;
+   wglEnumGpusNV: PFNWGLENUMGPUSNVPROC;
+   wglEnumGpuDevicesNV: PFNWGLENUMGPUDEVICESNVPROC;
+   wglCreateAffinityDCNV: PFNWGLCREATEAFFINITYDCNVPROC;
+   wglEnumGpusFromAffinityDCNV: PFNWGLENUMGPUSFROMAFFINITYDCNVPROC;
+   wglDeleteDCNV: PFNWGLDELETEDCNVPROC;
+
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1543,8 +1544,8 @@ var
    //  ###########################################################
 
    // WGL_EXT_swap_control (EXT #172)
-   wglSwapIntervalEXT: function(interval : Integer) : BOOL; stdcall;
-   wglGetSwapIntervalEXT: function : Integer; stdcall;
+   wglSwapIntervalEXT: PFNWGLSWAPINTERVALEXTPROC;
+   wglGetSwapIntervalEXT: PFNWGLGETSWAPINTERVALEXTPROC;
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1556,34 +1557,33 @@ var
    //  ###########################################################
 
    // GLX 1.3 and later
-   glXChooseFBConfig: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
-   glXGetFBConfigAttrib: function(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXGetFBConfigs: function(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl;
-   glXGetVisualFromFBConfig: function(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl;
-   glXCreateWindow: function(dpy: PDisplay; config: GLXFBConfig; win: GLXWindow; const attribList: PGLInt): GLXWindow; cdecl;
-   glXDestroyWindow: procedure(dpy: PDisplay; window: GLXWindow); cdecl;
-   glXCreatePixmap: function(dpy: PDisplay; config: GLXFBConfig; pixmap: GLXPixmap; attribList: PGLInt): GLXPixmap; cdecl;
-   glXDestroyPixmap: procedure(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
-   glXCreatePbuffer: function(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl;
-   glXDestroyPbuffer: procedure(dpy: PDisplay; pbuf: GLXPBuffer); cdecl;
-   glXQueryDrawable: procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl;
-   glXCreateNewContext: function(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
-   glXMakeContextCurrent: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
-   glXGetCurrentReadDrawable: function: GLXDrawable; cdecl;
-   glXQueryContext: function(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXSelectEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
-   glXGetSelectedEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
-   glXBindTexImageARB: function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLInt): TGLboolean; cdecl;
-   glXReleaseTexImageARB: function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLint): TGLboolean; cdecl;
-   glxDrawableAttribARB: function(dpy: PDisplay; draw: GLXDrawable; const attribList:PGLInt): TGLboolean; cdecl;
+   glXChooseFBConfig: PFNGLXCHOOSEFBCONFIGPROC;
+   glXGetFBConfigAttrib: PFNGLXGETFBCONFIGATTRIBPROC;
+   glXGetFBConfigs: PFNGLXGETFBCONFIGSPROC;
+   glXGetVisualFromFBConfig: PFNGLXGETVISUALFROMFBCONFIGPROC;
+   glXCreateWindow: PFNGLXCREATEWINDOWPROC;
+   glXDestroyWindow: PFNGLXDESTROYWINDOWPROC;
+   glXCreatePixmap: PFNGLXCREATEPIXMAPPROC;
+   glXDestroyPixmap: PFNGLXDESTROYPIXMAPPROC;
+   glXCreatePbuffer: PFNGLXCREATEPBUFFERPROC;
+   glXDestroyPbuffer: PFNGLXDESTROYPBUFFERPROC;
+   glXQueryDrawable: PFNGLXQUERYDRAWABLEPROC;
+   glXCreateNewContext: PFNGLXCREATENEWCONTEXTPROC;
+   glXMakeContextCurrent: PFNGLXMAKECONTEXTCURRENTPROC;
+   glXGetCurrentReadDrawable: PFNGLXGETCURRENTREADDRAWABLEPROC;
+   glXQueryContext: PFNGLXQUERYCONTEXTPROC;
+   glXSelectEvent: PFNGLXSELECTEVENTPROC;
+   glXGetSelectedEvent: PFNGLXGETSELECTEDEVENTPROC;
+   glXBindTexImageARB: PFNGLXBINDTEXIMAGEARBPROC;
+   glXReleaseTexImageARB: PFNGLXRELEASETEXIMAGEARBPROC;
+   glxDrawableAttribARB: PFNGLXDRAWABLEATTRIBARBPROC;
 
    //GLX 1.4
    // GLX_ARB_create_context (EXT #56)
-   glXCreateContextAttribsARB: function(dpy: PDisplay; config: GLXFBConfig;
-		    share_context: GLXContext; direct: TGLBoolean;
-		    attrib_list: PGLint): GLXContext; cdecl;
-   glXGetProcAddress: function(const name: PAnsiChar): pointer; cdecl;
-   glXGetProcAddressARB: function (const name: PAnsiChar): pointer; cdecl;
+   glXCreateContextAttribsARB: PFNGLXCREATECONTEXTATTRIBSARBPROC;
+   glXGetProcAddress: PFNGLXGETPROCADDRESSPROC;
+   glXGetProcAddressARB: PFNGLXGETPROCADDRESSARBPROC;
+
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1595,84 +1595,80 @@ var
    //  ###########################################################
 
    // GLX_SGI_swap_control (EXT #40)
-   glXSwapIntervalSGI: function(interval: TGLint): TGLint; cdecl;
-   glXGetVideoSyncSGI: function(count: PGLuint): TGLInt; cdecl;
-   glXWaitVideoSyncSGI: function(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl;
-   glXFreeContextEXT: procedure(dpy: PDisplay; context: GLXContext); cdecl;
-   glXGetContextIDEXT: function(const context: GLXContext): GLXContextID; cdecl;
-   glXGetCurrentDisplayEXT: function: PDisplay; cdecl;
-   glXImportContextEXT: function(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl;
-   glXQueryContextInfoEXT: function(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXCopySubBufferMESA: procedure(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl;
-   glXCreateGLXPixmapMESA: function(dpy: PDisplay; visual: PXVisualInfo; pixmap: XPixmap; cmap: XColormap): GLXPixmap; cdecl;
-   glXReleaseBuffersMESA: function(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl;
-   glXSet3DfxModeMESA: function(mode: TGLint): TGLboolean; cdecl;
+   glXSwapIntervalSGI: PFNGLXSWAPINTERVALSGIPROC;
+   glXGetVideoSyncSGI: PFNGLXGETVIDEOSYNCSGIPROC;
+   glXWaitVideoSyncSGI: PFNGLXWAITVIDEOSYNCSGIPROC;
+   glXFreeContextEXT: PFNGLXFREECONTEXTEXTPROC;
+   glXGetContextIDEXT: PFNGLXGETCONTEXTIDEXTPROC;
+   glXGetCurrentDisplayEXT: PFNGLXGETCURRENTDISPLAYEXTPROC;
+   glXImportContextEXT: PFNGLXIMPORTCONTEXTEXTPROC;
+   glXQueryContextInfoEXT: PFNGLXQUERYCONTEXTINFOEXTPROC;
+   glXCopySubBufferMESA: PFNGLXCOPYSUBBUFFERMESAPROC;
+   glXCreateGLXPixmapMESA: PFNGLXCREATEGLXPIXMAPMESAPROC;
+   glXReleaseBuffersMESA: PFNGLXRELEASEBUFFERSMESAPROC;
+   glXSet3DfxModeMESA: PFNGLXSET3DFXMODEMESAPROC;
 
-   glXBindTexImageEXT: procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint; const attrib_list: PGLint); cdecl;
-   glXReleaseTexImageEXT: procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint); cdecl;
+   glXBindTexImageEXT: PFNGLXBINDTEXIMAGEEXTPROC;
+   glXReleaseTexImageEXT: PFNGLXRELEASETEXIMAGEEXTPROC;
 
    //GLX 1.4
-   glXMakeCurrentReadSGI: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
-   glXGetCurrentReadDrawableSGI: function: GLXDrawable; cdecl;
-   glXGetFBConfigAttribSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; attribute: TGLInt; value: PGLInt):TGLInt; cdecl;
-   glXChooseFBConfigSGIX: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfigSGIX; cdecl;
-   glXCreateGLXPixmapWithConfigSGIX: function(dpy: PDisplay; config:GLXFBConfigSGIX;  pixmap: GLXPixmap): GLXPixmap; cdecl;
-   glXCreateContextWithConfigSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
-   glXGetVisualFromFBConfigSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX): PXVisualInfo; cdecl;
-   glXGetFBConfigFromVisualSGIX: function(dpy: PDisplay; vis: PXVisualInfo): GLXFBConfigSGIX; cdecl;
-   glXCreateGLXPbufferSGIX: function(dpy: PDisplay; config: GLXFBConfigSGIX; width:PGLuint;  height: PGLuint; attribList: PGLInt): GLXPBufferSGIX; cdecl;
-   glXDestroyGLXPbufferSGIX: procedure(dpy: PDisplay; pbuf: GLXFBConfigSGIX); cdecl;
-   glXQueryGLXPbufferSGIX: function(dpy: PDisplay; pbuf: GLXFBConfigSGIX; attribute: PGLInt; value: PGLuint): TGLInt; cdecl;
-   glXSelectEventSGIX: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
-   glXGetSelectedEventSGIX: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
-   glXCushionSGI: procedure(dpy: PDisplay; window: TWindow; cushion: TGLfloat); cdecl;
-   glXBindChannelToWindowSGIX: function(dpy: PDisplay; screen: TGLInt; channel: TGLInt; window: TWindow): TGLInt; cdecl;
-   glXChannelRectSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
-   glXQueryChannelRectSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; dx, dy, dw, dh: TGLInt): TGLInt; cdecl;
-   glXQueryChannelDeltasSGIX: function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
-   glXChannelRectSyncSGIX: function (dpy: PDisplay; screen: TGLInt; channel: TGLInt; synctype: TGLEnum): TGLInt; cdecl;
-   glXJoinSwapGroupSGIX: procedure (dpy: PDisplay; drawable: GLXDrawable; member: GLXDrawable); cdecl;
-   glXBindSwapBarrierSGIX: procedure (dpy: PDisplay; drawable: GLXDrawable; barrier: TGLInt); cdecl;
-   glXQueryMaxSwapBarriersSGIX: procedure (dpy: PDisplay; screen: TGLInt; max: TGLInt); cdecl;
-   glXQueryHyperpipeNetworkSGIX: function (dpy: PDisplay; npipes:PGLint): PGLXHyperpipeNetworkSGIX; cdecl;
-   glXHyperpipeConfigSGIX: function(dpy: PDisplay; networkId, npipes: PGLint; cfg: PGLXHyperpipeConfigSGIX; hpId: PGLInt): TGLint; cdecl;
-   glXQueryHyperpipeConfigSGIX: function(dpy: PDisplay; hpId: TGLInt; npipes: PGLInt): PGLXHyperpipeConfigSGIX; cdecl;
-   glXDestroyHyperpipeConfigSGIX: function(dpy: PDisplay; hpId:TGLint): PGLInt; cdecl;
-   glXBindHyperpipeSGIX: function(dpy: PDisplay; hpId: PGLint): PGLInt; cdecl;
-   glXQueryHyperpipeBestAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint; returnAttribList: TGLint): TGLint; cdecl;
-   glXHyperpipeAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint): TGLint; cdecl;
-   glXQueryHyperpipeAttribSGIX: function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; returnAttribList: TGLint): TGLint; cdecl;
-   glXGetAGPOffsetMESA: function(param: Pointer): PGLInt;cdecl;
-   glXEnumerateVideoDevicesNV: function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): PGLuint; cdecl;
-   glXBindVideoDeviceNV: function(dpy: PDisplay; video_slot: TGLInt; video_device: TGLInt; attrib_list: PGLint): TGLint; cdecl;
-   GetVideoDeviceNV: function(dpy: PDisplay; screen: TGLInt; numVideoDevices: TGLInt; pVideoDevice: GLXVideoDeviceNV): TGLInt; cdecl;
+   glXMakeCurrentReadSGI: PFNGLXMAKECURRENTREADSGIPROC;
+   glXGetCurrentReadDrawableSGI: PFNGLXGETCURRENTREADDRAWABLESGIPROC;
+   glXGetFBConfigAttribSGIX: PFNGLXGETFBCONFIGATTRIBSGIXPROC;
+   glXChooseFBConfigSGIX: PFNGLXCHOOSEFBCONFIGSGIXPROC;
+   glXCreateGLXPixmapWithConfigSGIX: PFNGLXCREATEGLXPIXMAPWITHCONFIGSGIXPROC;
+   glXCreateContextWithConfigSGIX: PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC;
+   glXGetVisualFromFBConfigSGIX: PFNGLXGETVISUALFROMFBCONFIGSGIXPROC;
+   glXGetFBConfigFromVisualSGIX: PFNGLXGETFBCONFIGFROMVISUALSGIXPROC;
+   glXCreateGLXPbufferSGIX: PFNGLXCREATEGLXPBUFFERSGIXPROC;
+   glXDestroyGLXPbufferSGIX: PFNGLXDESTROYGLXPBUFFERSGIXPROC;
+   glXQueryGLXPbufferSGIX: PFNGLXQUERYGLXPBUFFERSGIXPROC;
+   glXSelectEventSGIX: PFNGLXSELECTEVENTSGIXPROC;
+   glXGetSelectedEventSGIX: PFNGLXGETSELECTEDEVENTSGIXPROC;
+   glXCushionSGI: PFNGLXCUSHIONSGIPROC;
+   glXBindChannelToWindowSGIX: PFNGLXBINDCHANNELTOWINDOWSGIXPROC;
+   glXChannelRectSGIX: PFNGLXCHANNELRECTSGIXPROC;
+   glXQueryChannelRectSGIX: PFNGLXQUERYCHANNELRECTSGIXPROC;
+   glXQueryChannelDeltasSGIX: PFNGLXQUERYCHANNELDELTASSGIXPROC;
+   glXChannelRectSyncSGIX: PFNGLXCHANNELRECTSYNCSGIXPROC;
+   glXJoinSwapGroupSGIX: PFNGLXJOINSWAPGROUPSGIXPROC;
+   glXBindSwapBarrierSGIX: PFNGLXBINDSWAPBARRIERSGIXPROC;
+   glXQueryMaxSwapBarriersSGIX: PFNGLXQUERYMAXSWAPBARRIERSSGIXPROC;
+   glXQueryHyperpipeNetworkSGIX: PFNGLXQUERYHYPERPIPENETWORKSGIXPROC;
+   glXHyperpipeConfigSGIX: PFNGLXHYPERPIPECONFIGSGIXPROC;
+   glXQueryHyperpipeConfigSGIX: PFNGLXQUERYHYPERPIPECONFIGSGIXPROC;
+   glXDestroyHyperpipeConfigSGIX: PFNGLXDESTROYHYPERPIPECONFIGSGIXPROC;
+   glXBindHyperpipeSGIX: PFNGLXBINDHYPERPIPESGIXPROC;
+   glXQueryHyperpipeBestAttribSGIX: PFNGLXQUERYHYPERPIPEBESTATTRIBSGIXPROC;
+   glXHyperpipeAttribSGIX: PFNGLXHYPERPIPEATTRIBSGIXPROC;
+   glXQueryHyperpipeAttribSGIX: PFNGLXQUERYHYPERPIPEATTRIBSGIXPROC;
+   glXGetAGPOffsetMESA: PFNGLXGETAGPOFFSETMESAPROC;
+   glXEnumerateVideoDevicesNV: PFNGLXENUMERATEVIDEODEVICESNVPROC;
+   glXBindVideoDeviceNV: PFNGLXBINDVIDEODEVICENVPROC;
+   glxGetVideoDeviceNV: PFNGLXGETVIDEODEVICENVPROC;
 
-   glXAllocateMemoryNV: procedure( size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat ); cdecl;
-   glXFreeMemoryNV: procedure ( GLvoid: pointer ); cdecl;
+   glXAllocateMemoryNV: PFNGLXALLOCATEMEMORYNVPROC;
+   glXFreeMemoryNV: PFNGLXFREEMEMORYNVPROC;
 
-   glXReleaseVideoDeviceNV: function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
-   glXBindVideoImageNV: function(dpy: PDisplay; VideoDevice: GLXVideoDeviceNV; pbuf: GLXPbuffer; iVideoBuffer: TGLInt): TGLuint; cdecl;
-   glXReleaseVideoImageNV: function(dpy: PDisplay; pbuf: GLXPbuffer): TGLInt; cdecl;
-   glXSendPbufferToVideoNV: function(dpy: PDisplay; pbuf: GLXPbuffer; iBufferType: TGLInt; pulCounterPbuffer: TGLuint64; bBlock: TGLboolean): TGLInt; cdecl;
-   glXGetVideoInfoNV: function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV; pulCounterOutputPbuffer: TGLuInt64; pulCounterOutputVideo: TGLuInt64): TGLInt; cdecl;
-   glXJoinSwapGroupNV: function(dpy: PDisplay; drawable: GLXDrawable; group: TGLuint): TGLBoolean; cdecl;
-   glXBindSwapBarrierNV: function(dpy: PDisplay; group: TGLuint; barrier: TGLuint): TGLboolean; cdecl;
-   glXQuerySwapGroupNV: function(dpy: PDisplay; drawable: GLXDrawable; group: PGLuint; barrier: PGLuint): TGLBoolean; cdecl;
-   glXQueryMaxSwapGroupsNV: function(dpy: PDisplay; screen: TGLInt; maxGroups: TGLuInt; maxBarriers: TGLuInt): TGLBoolean; cdecl;
-   glXQueryFrameCountNV: function(dpy: PDisplay; screen: TGLInt; count: TGLuint): TGLBoolean; cdecl;
-   glXResetFrameCountNV: function(dpy: PDisplay; screen: TGLInt): TGLBoolean; cdecl;
-   glXBindVideoCaptureDeviceNV: function(dpy: PDisplay; video_capture_slot: TGLuint; device: GLXVideoCaptureDeviceNV): TGLint; cdecl;
-   glXEnumerateVideoCaptureDevicesNV: function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): GLXVideoCaptureDeviceNV; cdecl;
-   glxLockVideoCaptureDeviceNV: procedure (dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
-   glXQueryVideoCaptureDeviceNV: function(dpy: PDisplay; device: GLXVideoCaptureDeviceNV; attribute:TGLint; value: PGLint): TGLint; cdecl;
-   glXReleaseVideoCaptureDeviceNV: procedure(dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
-   glXSwapIntervalEXT: function(dpy: PDisplay; drawable: GLXDrawable; interval:TGLint): TGLint; cdecl;
-   glXCopyImageSubDataNV: procedure(dpy: PDisplay; srcCtx: GLXContext; srcName: TGLuint; srcTarget: TGLenum;
-                         srcLevel: TGLuint; srcX: TGLuint;
-                         srcY: TGLuint; srcZ: TGLuint;
-                         dstCtx:GLXContext; dstName:TGLuint; dstTarget: TGLenum; dstLevel: TGLint;
-                         dstX: TGLint; dstY: TGLint; dstZ: TGLint; width: GLsizei; height: GLsizei;
-                         depth: GLsizei); cdecl;
+   glXReleaseVideoDeviceNV: PFNGLXRELEASEVIDEODEVICENVPROC;
+   glXBindVideoImageNV: PFNGLXBINDVIDEOIMAGENVPROC;
+   glXReleaseVideoImageNV: PFNGLXRELEASEVIDEOIMAGENVPROC;
+   glXSendPbufferToVideoNV: PFNGLXSENDPBUFFERTOVIDEONVPROC;
+   glXGetVideoInfoNV: PFNGLXGETVIDEOINFONVPROC;
+   glXJoinSwapGroupNV: PFNGLXJOINSWAPGROUPNVPROC;
+   glXBindSwapBarrierNV: PFNGLXBINDSWAPBARRIERNVPROC;
+   glXQuerySwapGroupNV: PFNGLXQUERYSWAPGROUPNVPROC;
+   glXQueryMaxSwapGroupsNV: PFNGLXQUERYMAXSWAPGROUPSNVPROC;
+   glXQueryFrameCountNV: PFNGLXQUERYFRAMECOUNTNVPROC;
+   glXResetFrameCountNV: PFNGLXRESETFRAMECOUNTNVPROC;
+   glXBindVideoCaptureDeviceNV: PFNGLXBINDVIDEOCAPTUREDEVICENVPROC;
+   glXEnumerateVideoCaptureDevicesNV: PFNGLXENUMERATEVIDEOCAPTUREDEVICESNVPROC;
+   glxLockVideoCaptureDeviceNV: PFNGLXLOCKVIDEOCAPTUREDEVICENVPROC;
+   glXQueryVideoCaptureDeviceNV: PFNGLXQUERYVIDEOCAPTUREDEVICENVPROC;
+   glXReleaseVideoCaptureDeviceNV: PFNGLXRELEASEVIDEOCAPTUREDEVICENVPROC;
+   glXSwapIntervalEXT: PFNGLXSWAPINTERVALEXTPROC;
+   glXCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
+
    {$ENDIF}
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -1684,496 +1680,470 @@ var
    //  ###########################################################
 
    // unknown ARB extension
-   glSamplePassARB: procedure(pass: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSamplePassARB: PFNGLSAMPLEPASSARBPROC;
    
    // GL_ARB_multitexture (ARB #1)
-   glActiveTextureARB: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClientActiveTextureARB: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1dARB: procedure(target: TGLenum; s: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1dVARB: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1fARB: procedure(target: TGLenum; s: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1fVARB: procedure(target: TGLenum; v: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1iARB: procedure(target: TGLenum; s: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1iVARB: procedure(target: TGLenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1sARB: procedure(target: TGLenum; s: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord1sVARB: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2dARB: procedure(target: TGLenum; s, t: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2dvARB: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2fARB: procedure(target: TGLenum; s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2fvARB: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2iARB: procedure(target: TGLenum; s, t: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2ivARB: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2sARB: procedure(target: TGLenum; s, t: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord2svARB: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3dARB: procedure(target: TGLenum; s, t, r: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3dvARB: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3fARB: procedure(target: TGLenum; s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3fvARB: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3iARB: procedure(target: TGLenum; s, t, r: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3ivARB: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3sARB: procedure(target: TGLenum; s, t, r: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord3svARB: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4dARB: procedure(target: TGLenum; s, t, r, q: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4dvARB: procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4fARB: procedure(target: TGLenum; s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4fvARB: procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4iARB: procedure(target: TGLenum; s, t, r, q: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4ivARB: procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4sARB: procedure(target: TGLenum; s, t, r, q: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoord4svARB: procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glActiveTextureARB: PFNGLACTIVETEXTUREARBPROC;
+   glClientActiveTextureARB: PFNGLCLIENTACTIVETEXTUREARBPROC;
+   glMultiTexCoord1dARB: PFNGLMULTITEXCOORD1DARBPROC;
+   glMultiTexCoord1dVARB: PFNGLMULTITEXCOORD1DVARBPROC;
+   glMultiTexCoord1fARB: PFNGLMULTITEXCOORD1FARBPROC;
+   glMultiTexCoord1fVARB: PFNGLMULTITEXCOORD1FVARBPROC;
+   glMultiTexCoord1iARB: PFNGLMULTITEXCOORD1IARBPROC;
+   glMultiTexCoord1iVARB: PFNGLMULTITEXCOORD1IVARBPROC;
+   glMultiTexCoord1sARB: PFNGLMULTITEXCOORD1SARBPROC;
+   glMultiTexCoord1sVARB: PFNGLMULTITEXCOORD1SVARBPROC;
+   glMultiTexCoord2dARB: PFNGLMULTITEXCOORD2DARBPROC;
+   glMultiTexCoord2dvARB: PFNGLMULTITEXCOORD2DVARBPROC;
+   glMultiTexCoord2fARB: PFNGLMULTITEXCOORD2FARBPROC;
+   glMultiTexCoord2fvARB: PFNGLMULTITEXCOORD2FVARBPROC;
+   glMultiTexCoord2iARB: PFNGLMULTITEXCOORD2IARBPROC;
+   glMultiTexCoord2ivARB: PFNGLMULTITEXCOORD2IVARBPROC;
+   glMultiTexCoord2sARB: PFNGLMULTITEXCOORD2SARBPROC;
+   glMultiTexCoord2svARB: PFNGLMULTITEXCOORD2SVARBPROC;
+   glMultiTexCoord3dARB: PFNGLMULTITEXCOORD3DARBPROC;
+   glMultiTexCoord3dvARB: PFNGLMULTITEXCOORD3DVARBPROC;
+   glMultiTexCoord3fARB: PFNGLMULTITEXCOORD3FARBPROC;
+   glMultiTexCoord3fvARB: PFNGLMULTITEXCOORD3FVARBPROC;
+   glMultiTexCoord3iARB: PFNGLMULTITEXCOORD3IARBPROC;
+   glMultiTexCoord3ivARB: PFNGLMULTITEXCOORD3IVARBPROC;
+   glMultiTexCoord3sARB: PFNGLMULTITEXCOORD3SARBPROC;
+   glMultiTexCoord3svARB: PFNGLMULTITEXCOORD3SVARBPROC;
+   glMultiTexCoord4dARB: PFNGLMULTITEXCOORD4DARBPROC;
+   glMultiTexCoord4dvARB: PFNGLMULTITEXCOORD4DVARBPROC;
+   glMultiTexCoord4fARB: PFNGLMULTITEXCOORD4FARBPROC;
+   glMultiTexCoord4fvARB: PFNGLMULTITEXCOORD4FVARBPROC;
+   glMultiTexCoord4iARB: PFNGLMULTITEXCOORD4IARBPROC;
+   glMultiTexCoord4ivARB: PFNGLMULTITEXCOORD4IVARBPROC;
+   glMultiTexCoord4sARB: PFNGLMULTITEXCOORD4SARBPROC;
+   glMultiTexCoord4svARB: PFNGLMULTITEXCOORD4SVARBPROC;
 
    // GL_ARB_transpose_matrix (ARB #3)
-   glLoadTransposeMatrixfARB: procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glLoadTransposeMatrixdARB: procedure(m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultTransposeMatrixfARB: procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultTransposeMatrixdARB: procedure(m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   
+   glLoadTransposeMatrixfARB: PFNGLLOADTRANSPOSEMATRIXFARBPROC;
+   glLoadTransposeMatrixdARB: PFNGLLOADTRANSPOSEMATRIXDARBPROC;
+   glMultTransposeMatrixfARB: PFNGLMULTTRANSPOSEMATRIXFARBPROC;
+   glMultTransposeMatrixdARB: PFNGLMULTTRANSPOSEMATRIXDARBPROC;
+
    // GL_ARB_multisample (ARB #5)
-   glSampleCoverageARB: procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSampleCoverageARB: PFNGLSAMPLECOVERAGEARBPROC;
 
    // GL_ARB_texture_compression (ARB #12)
-   glCompressedTexImage3DARB: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height, depth: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexImage2DARB: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexImage1DARB: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage3DARB: procedure(target: TGLenum; level: TGLint; xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage2DARB: procedure(target: TGLenum; level: TGLint; xoffset, yoffset: TGLint; width, height: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompressedTexSubImage1DARB: procedure(target: TGLenum; level: TGLint; xoffset: TGLint; width: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCompressedTexImageARB: procedure(target: TGLenum; level: TGLint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCompressedTexImage3DARB: PFNGLCOMPRESSEDTEXIMAGE3DARBPROC;
+   glCompressedTexImage2DARB: PFNGLCOMPRESSEDTEXIMAGE2DARBPROC;
+   glCompressedTexImage1DARB: PFNGLCOMPRESSEDTEXIMAGE1DARBPROC;
+   glCompressedTexSubImage3DARB: PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC;
+   glCompressedTexSubImage2DARB: PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC;
+   glCompressedTexSubImage1DARB: PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC;
+   glGetCompressedTexImageARB: PFNGLGETCOMPRESSEDTEXIMAGEARBPROC;
 
    // GL_ARB_point_parameter (ARB #14)
-   glPointParameterfARB: procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPointParameterfvARB: procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPointParameterfARB: PFNGLPOINTPARAMETERFARBPROC;
+   glPointParameterfvARB: PFNGLPOINTPARAMETERFVARBPROC;
 
    // GL_ARB_vertex_blend (ARB #15) {deprecated?}
-   glWeightbvARB: procedure(size: TGLint; weights: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightsvARB: procedure(size: TGLint; weights: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightivARB: procedure(size: TGLint; weights: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightfvARB: procedure(size: TGLint; weights: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightdvARB: procedure(size: TGLint; weights: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightubvARB: procedure(size: TGLint; weights: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightusvARB: procedure(size: TGLint; weights: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightuivARB: procedure(size: TGLint; weights: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWeightPointerARB: procedure(size: TGLint; _type: TGLenum; stride:TGLsizei;
-                                 _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexBlendARB: procedure(count: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glWeightbvARB: PFNGLWEIGHTBVARBPROC;
+   glWeightsvARB: PFNGLWEIGHTSVARBPROC;
+   glWeightivARB: PFNGLWEIGHTIVARBPROC;
+   glWeightfvARB: PFNGLWEIGHTFVARBPROC;
+   glWeightdvARB: PFNGLWEIGHTDVARBPROC;
+   glWeightubvARB: PFNGLWEIGHTUBVARBPROC;
+   glWeightusvARB: PFNGLWEIGHTUSVARBPROC;
+   glWeightuivARB: PFNGLWEIGHTUIVARBPROC;
+   glWeightPointerARB: PFNGLWEIGHTPOINTERARBPROC;
+   glVertexBlendARB: PFNGLVERTEXBLENDARBPROC;
 
    // GL_ARB_matrix_palette (ARB #16) {deprecated?}
-   glCurrentPaletteMatrixARB: procedure(index: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMatrixIndexubvARB: procedure(size: TGLint; indices: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMatrixIndexusvARB: procedure(size: TGLint; indices: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMatrixIndexuivARB: procedure(size: TGLint; indices: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMatrixIndexPointerARB: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCurrentPaletteMatrixARB: PFNGLCURRENTPALETTEMATRIXARBPROC;
+   glMatrixIndexubvARB: PFNGLMATRIXINDEXUBVARBPROC;
+   glMatrixIndexusvARB: PFNGLMATRIXINDEXUSVARBPROC;
+   glMatrixIndexuivARB: PFNGLMATRIXINDEXUIVARBPROC;
+   glMatrixIndexPointerARB: PFNGLMATRIXINDEXPOINTERARBPROC;
 
    // GL_ARB_window_pos (ARB #25)
-   glWindowPos2dARB: procedure(x,y : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2dvARB: procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2fARB: procedure(x,y : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2fvARB: procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2iARB: procedure(x,y : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2ivARB: procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2sARB: procedure(x,y : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos2svARB: procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3dARB: procedure(x,y,z : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3dvARB: procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3fARB: procedure(x,y,z : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3fvARB: procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3iARB: procedure(x,y,z : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3ivARB: procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3sARB: procedure(x,y,z : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWindowPos3svARB: procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glWindowPos2dARB: PFNGLWINDOWPOS2DARBPROC;
+   glWindowPos2dvARB: PFNGLWINDOWPOS2DVARBPROC;
+   glWindowPos2fARB: PFNGLWINDOWPOS2FARBPROC;
+   glWindowPos2fvARB: PFNGLWINDOWPOS2FVARBPROC;
+   glWindowPos2iARB: PFNGLWINDOWPOS2IARBPROC;
+   glWindowPos2ivARB: PFNGLWINDOWPOS2IVARBPROC;
+   glWindowPos2sARB: PFNGLWINDOWPOS2SARBPROC;
+   glWindowPos2svARB: PFNGLWINDOWPOS2SVARBPROC;
+   glWindowPos3dARB: PFNGLWINDOWPOS3DARBPROC;
+   glWindowPos3dvARB: PFNGLWINDOWPOS3DVARBPROC;
+   glWindowPos3fARB: PFNGLWINDOWPOS3FARBPROC;
+   glWindowPos3fvARB: PFNGLWINDOWPOS3FVARBPROC;
+   glWindowPos3iARB: PFNGLWINDOWPOS3IARBPROC;
+   glWindowPos3ivARB: PFNGLWINDOWPOS3IVARBPROC;
+   glWindowPos3sARB: PFNGLWINDOWPOS3SARBPROC;
+   glWindowPos3svARB: PFNGLWINDOWPOS3SVARBPROC;
 
    // GL_ARB_vertex_program (ARB #26)
-   glVertexAttrib1dARB: procedure(index: GLuint; x: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1dvARB: procedure(index: GLuint; const v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1fARB: procedure(index: GLuint; x: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1fvARB: procedure(index: GLuint; const v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1sARB: procedure(index: GLuint; x: GLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1svARB: procedure(index: GLuint; const v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2dARB: procedure(index: GLuint; x: GLdouble; y: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2dvARB: procedure(index: GLuint; const v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2fARB: procedure(index: GLuint; x: GLfloat; y: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2fvARB: procedure(index: GLuint; const v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2sARB: procedure(index: GLuint; x: GLshort; y: GLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2svARB: procedure(index: GLuint; const v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3dARB: procedure(index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3dvARB: procedure(index: GLuint; const v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3fARB: procedure(index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3fvARB: procedure(index: GLuint; const v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3sARB: procedure(index: GLuint; x: GLshort; y: GLshort; z: GLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3svARB: procedure(index: GLuint; const v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NbvARB: procedure(index: GLuint; const v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NivARB: procedure(index: GLuint; const v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NsvARB: procedure(index: GLuint; const v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NubARB: procedure(index: GLuint; x: GLubyte; y: GLubyte; z: GLubyte; w: GLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NubvARB: procedure(index: GLuint; const v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NuivARB: procedure(index: GLuint; const v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4NusvARB: procedure(index: GLuint; const v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4bvARB: procedure(index: GLuint; const v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4dARB: procedure(index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble; w: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4dvARB: procedure(index: GLuint; const v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4fARB: procedure(index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat; w: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4fvARB: procedure(index: GLuint; const v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4ivARB: procedure(index: GLuint; const v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4sARB: procedure(index: GLuint; x: GLshort; y: GLshort; z: GLshort; w: GLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4svARB: procedure(index: GLuint; const v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4ubvARB: procedure(index: GLuint; const v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4uivARB: procedure(index: GLuint; const v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4usvARB: procedure(index: GLuint; const v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribPointerARB: procedure(index: GLuint; size: GLint; _type: GLenum; normalized: GLboolean; stride: GLsizei; const _pointer: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEnableVertexAttribArrayARB: procedure(index: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDisableVertexAttribArrayARB: procedure(index: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramStringARB: procedure(target: GLenum; format: GLenum; len: GLsizei; const _string: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindProgramARB: procedure(target: GLenum; _program: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteProgramsARB: procedure(n: GLsizei; const programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenProgramsARB: procedure(n: GLsizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramEnvParameter4dARB: procedure(target: GLenum; index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble; w: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramEnvParameter4dvARB: procedure(target: GLenum; index: GLuint; const params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramEnvParameter4fARB: procedure(target: GLenum; index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat; w: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramEnvParameter4fvARB: procedure(target: GLenum; index: GLuint; const params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramLocalParameter4dARB: procedure(target: GLenum; index: GLuint; x: GLdouble; y: GLdouble; z: GLdouble; w: GLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramLocalParameter4dvARB: procedure(target: GLenum; index: GLuint; const params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramLocalParameter4fARB: procedure(target: GLenum; index: GLuint; x: GLfloat; y: GLfloat; z: GLfloat; w: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramLocalParameter4fvARB: procedure(target: GLenum; index: GLuint; const params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramEnvParameterdvARB: procedure(target: GLenum; index: GLuint; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramEnvParameterfvARB: procedure(target: GLenum; index: GLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramLocalParameterdvARB: procedure(target: GLenum; index: GLuint; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramLocalParameterfvARB: procedure(target: GLenum; index: GLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramivARB: procedure(target: GLenum; pname: GLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramStringARB: procedure(target: GLenum; pname: GLenum; _string: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribdvARB: procedure(index: GLuint; pname: GLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribfvARB: procedure(index: GLuint; pname: GLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribivARB: procedure(index: GLuint; pname: GLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribPointervARB: procedure(index: GLuint; pname: GLenum; _pointer: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsProgramARB: function(_program: GLuint): GLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttrib1dARB: PFNGLVERTEXATTRIB1DARBPROC;
+   glVertexAttrib1dvARB: PFNGLVERTEXATTRIB1DVARBPROC;
+   glVertexAttrib1fARB: PFNGLVERTEXATTRIB1FARBPROC;
+   glVertexAttrib1fvARB: PFNGLVERTEXATTRIB1FVARBPROC;
+   glVertexAttrib1sARB: PFNGLVERTEXATTRIB1SARBPROC;
+   glVertexAttrib1svARB: PFNGLVERTEXATTRIB1SVARBPROC;
+   glVertexAttrib2dARB: PFNGLVERTEXATTRIB2DARBPROC;
+   glVertexAttrib2dvARB: PFNGLVERTEXATTRIB2DVARBPROC;
+   glVertexAttrib2fARB: PFNGLVERTEXATTRIB2FARBPROC;
+   glVertexAttrib2fvARB: PFNGLVERTEXATTRIB2FVARBPROC;
+   glVertexAttrib2sARB: PFNGLVERTEXATTRIB2SARBPROC;
+   glVertexAttrib2svARB: PFNGLVERTEXATTRIB2SVARBPROC;
+   glVertexAttrib3dARB: PFNGLVERTEXATTRIB3DARBPROC;
+   glVertexAttrib3dvARB: PFNGLVERTEXATTRIB3DVARBPROC;
+   glVertexAttrib3fARB: PFNGLVERTEXATTRIB3FARBPROC;
+   glVertexAttrib3fvARB: PFNGLVERTEXATTRIB3FVARBPROC;
+   glVertexAttrib3sARB: PFNGLVERTEXATTRIB3SARBPROC;
+   glVertexAttrib3svARB: PFNGLVERTEXATTRIB3SVARBPROC;
+   glVertexAttrib4NbvARB: PFNGLVERTEXATTRIB4NBVARBPROC;
+   glVertexAttrib4NivARB: PFNGLVERTEXATTRIB4NIVARBPROC;
+   glVertexAttrib4NsvARB: PFNGLVERTEXATTRIB4NSVARBPROC;
+   glVertexAttrib4NubARB: PFNGLVERTEXATTRIB4NUBARBPROC;
+   glVertexAttrib4NubvARB: PFNGLVERTEXATTRIB4NUBVARBPROC;
+   glVertexAttrib4NuivARB: PFNGLVERTEXATTRIB4NUIVARBPROC;
+   glVertexAttrib4NusvARB: PFNGLVERTEXATTRIB4NUSVARBPROC;
+   glVertexAttrib4bvARB: PFNGLVERTEXATTRIB4BVARBPROC;
+   glVertexAttrib4dARB: PFNGLVERTEXATTRIB4DARBPROC;
+   glVertexAttrib4dvARB: PFNGLVERTEXATTRIB4DVARBPROC;
+   glVertexAttrib4fARB: PFNGLVERTEXATTRIB4FARBPROC;
+   glVertexAttrib4fvARB: PFNGLVERTEXATTRIB4FVARBPROC;
+   glVertexAttrib4ivARB: PFNGLVERTEXATTRIB4IVARBPROC;
+   glVertexAttrib4sARB: PFNGLVERTEXATTRIB4SARBPROC;
+   glVertexAttrib4svARB: PFNGLVERTEXATTRIB4SVARBPROC;
+   glVertexAttrib4ubvARB: PFNGLVERTEXATTRIB4UBVARBPROC;
+   glVertexAttrib4uivARB: PFNGLVERTEXATTRIB4UIVARBPROC;
+   glVertexAttrib4usvARB: PFNGLVERTEXATTRIB4USVARBPROC;
+   glVertexAttribPointerARB: PFNGLVERTEXATTRIBPOINTERARBPROC;
+   glEnableVertexAttribArrayARB: PFNGLENABLEVERTEXATTRIBARRAYARBPROC;
+   glDisableVertexAttribArrayARB: PFNGLDISABLEVERTEXATTRIBARRAYARBPROC;
+   glProgramStringARB: PFNGLPROGRAMSTRINGARBPROC;
+   glBindProgramARB: PFNGLBINDPROGRAMARBPROC;
+   glDeleteProgramsARB: PFNGLDELETEPROGRAMSARBPROC;
+   glGenProgramsARB: PFNGLGENPROGRAMSARBPROC;
+   glProgramEnvParameter4dARB: PFNGLPROGRAMENVPARAMETER4DARBPROC;
+   glProgramEnvParameter4dvARB: PFNGLPROGRAMENVPARAMETER4DVARBPROC;
+   glProgramEnvParameter4fARB: PFNGLPROGRAMENVPARAMETER4FARBPROC;
+   glProgramEnvParameter4fvARB: PFNGLPROGRAMENVPARAMETER4FVARBPROC;
+   glProgramLocalParameter4dARB: PFNGLPROGRAMLOCALPARAMETER4DARBPROC;
+   glProgramLocalParameter4dvARB: PFNGLPROGRAMLOCALPARAMETER4DVARBPROC;
+   glProgramLocalParameter4fARB: PFNGLPROGRAMLOCALPARAMETER4FARBPROC;
+   glProgramLocalParameter4fvARB: PFNGLPROGRAMLOCALPARAMETER4FVARBPROC;
+   glGetProgramEnvParameterdvARB: PFNGLGETPROGRAMENVPARAMETERDVARBPROC;
+   glGetProgramEnvParameterfvARB: PFNGLGETPROGRAMENVPARAMETERFVARBPROC;
+   glGetProgramLocalParameterdvARB: PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC;
+   glGetProgramLocalParameterfvARB: PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC;
+   glGetProgramivARB: PFNGLGETPROGRAMIVARBPROC;
+   glGetProgramStringARB: PFNGLGETPROGRAMSTRINGARBPROC;
+   glGetVertexAttribdvARB: PFNGLGETVERTEXATTRIBDVARBPROC;
+   glGetVertexAttribfvARB: PFNGLGETVERTEXATTRIBFVARBPROC;
+   glGetVertexAttribivARB: PFNGLGETVERTEXATTRIBIVARBPROC;
+   glGetVertexAttribPointervARB: PFNGLGETVERTEXATTRIBPOINTERVARBPROC;
+   glIsProgramARB: PFNGLISPROGRAMARBPROC;
 
    // GL_ARB_vertex_buffer_object (ARB #28)
-   glBindBufferARB: procedure(target: GLenum; buffer: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteBuffersARB: procedure(n: GLsizei; const buffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenBuffersARB: procedure(n: GLsizei; buffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsBufferARB: function(buffer: GLuint): GLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBufferDataARB: procedure(target: GLenum; size: GLsizei; const data: Pointer; usage: GLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBufferSubDataARB: procedure(target: GLenum; offset: GLuint; size: GLsizei; const data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferSubDataARB: procedure(target: GLenum; offset: GLuint; size: GLsizei; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMapBufferARB: function(target: GLenum; access: GLenum): Pointer; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUnmapBufferARB: function(target: GLenum): GLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferParameterivARB: procedure(target: GLenum; pname: GLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferPointervARB: procedure(target: GLenum; pname: GLenum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindBufferARB: PFNGLBINDBUFFERARBPROC;
+   glDeleteBuffersARB: PFNGLDELETEBUFFERSARBPROC;
+   glGenBuffersARB: PFNGLGENBUFFERSARBPROC;
+   glIsBufferARB: PFNGLISBUFFERARBPROC;
+   glBufferDataARB: PFNGLBUFFERDATAARBPROC;
+   glBufferSubDataARB: PFNGLBUFFERSUBDATAARBPROC;
+   glGetBufferSubDataARB: PFNGLGETBUFFERSUBDATAARBPROC;
+   glMapBufferARB: PFNGLMAPBUFFERARBPROC;
+   glUnmapBufferARB: PFNGLUNMAPBUFFERARBPROC;
+   glGetBufferParameterivARB: PFNGLGETBUFFERPARAMETERIVARBPROC;
+   glGetBufferPointervARB: PFNGLGETBUFFERPOINTERVARBPROC;
 
    // GL_ARB_occlusion_query (ARB #29)
-   glGenQueriesARB: procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteQueriesARB: procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsQueryARB:  function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginQueryARB: procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndQueryARB: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryivARB: procedure(target: TGLEnum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectivARB: procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectuivARB: procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenQueriesARB: PFNGLGENQUERIESARBPROC;
+   glDeleteQueriesARB: PFNGLDELETEQUERIESARBPROC;
+   glIsQueryARB: PFNGLISQUERYARBPROC;
+   glBeginQueryARB: PFNGLBEGINQUERYARBPROC;
+   glEndQueryARB: PFNGLENDQUERYARBPROC;
+   glGetQueryivARB: PFNGLGETQUERYIVARBPROC;
+   glGetQueryObjectivARB: PFNGLGETQUERYOBJECTIVARBPROC;
+   glGetQueryObjectuivARB: PFNGLGETQUERYOBJECTUIVARBPROC;
 
    // GL_ARB_shader_objects (ARB #30)
-   glDeleteObjectARB: procedure(obj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetHandleARB: function(pname: GLenum): GLhandleARB; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDetachObjectARB: procedure(containerObj: GLhandleARB; attachedObj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCreateShaderObjectARB: function(shaderType: GLenum): GLhandleARB; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glShaderSourceARB: procedure(shaderObj: GLhandleARB; count: GLsizei; const _string: PGLPCharArray; const length: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCompileShaderARB: procedure(shaderObj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCreateProgramObjectARB: function(): GLhandleARB; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glAttachObjectARB: procedure(containerObj: GLhandleARB; obj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glLinkProgramARB: procedure(programObj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUseProgramObjectARB: procedure(programObj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glValidateProgramARB: procedure(programObj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1fARB: procedure(location: GLint; v0: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2fARB: procedure(location: GLint; v0: GLfloat; v1: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3fARB: procedure(location: GLint; v0: GLfloat; v1: GLfloat; v2: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4fARB: procedure(location: GLint; v0: GLfloat; v1: GLfloat; v2: GLfloat; v3: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1iARB: procedure(location: GLint; v0: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2iARB: procedure(location: GLint; v0: GLint; v1: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3iARB: procedure(location: GLint; v0: GLint; v1: GLint; v2: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4iARB: procedure(location: GLint; v0: GLint; v1: GLint; v2: GLint; v3: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1fvARB: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2fvARB: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3fvARB: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4fvARB: procedure(location: GLint; count: GLsizei; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1ivARB: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2ivARB: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3ivARB: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4ivARB: procedure(location: GLint; count: GLsizei; value: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2fvARB: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3fvARB: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4fvARB: procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetObjectParameterfvARB: procedure(obj: GLhandleARB; pname: GLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetObjectParameterivARB: procedure(obj: GLhandleARB; pname: GLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetInfoLogARB: procedure(obj: GLhandleARB; maxLength: GLsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetAttachedObjectsARB: procedure(containerObj: GLhandleARB; maxCount: GLsizei; count: PGLsizei; obj: PGLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformLocationARB: function(programObj: GLhandleARB; const name: PGLChar): GLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniformARB: procedure(programObj: GLhandleARB; index: GLuint; maxLength: GLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformfvARB: procedure(programObj: GLhandleARB; location: GLint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformivARB: procedure(programObj: GLhandleARB; location: GLint; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetShaderSourceARB: procedure(obj: GLhandleARB; maxLength: GLsizei; length: PGLsizei; source: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDeleteObjectARB: PFNGLDELETEOBJECTARBPROC;
+   glGetHandleARB: PFNGLGETHANDLEARBPROC;
+   glDetachObjectARB: PFNGLDETACHOBJECTARBPROC;
+   glCreateShaderObjectARB: PFNGLCREATESHADEROBJECTARBPROC;
+   glShaderSourceARB: PFNGLSHADERSOURCEARBPROC;
+   glCompileShaderARB: PFNGLCOMPILESHADERARBPROC;
+   glCreateProgramObjectARB: PFNGLCREATEPROGRAMOBJECTARBPROC;
+   glAttachObjectARB: PFNGLATTACHOBJECTARBPROC;
+   glLinkProgramARB: PFNGLLINKPROGRAMARBPROC;
+   glUseProgramObjectARB: PFNGLUSEPROGRAMOBJECTARBPROC;
+   glValidateProgramARB: PFNGLVALIDATEPROGRAMARBPROC;
+   glUniform1fARB: PFNGLUNIFORM1FARBPROC;
+   glUniform2fARB: PFNGLUNIFORM2FARBPROC;
+   glUniform3fARB: PFNGLUNIFORM3FARBPROC;
+   glUniform4fARB: PFNGLUNIFORM4FARBPROC;
+   glUniform1iARB: PFNGLUNIFORM1IARBPROC;
+   glUniform2iARB: PFNGLUNIFORM2IARBPROC;
+   glUniform3iARB: PFNGLUNIFORM3IARBPROC;
+   glUniform4iARB: PFNGLUNIFORM4IARBPROC;
+   glUniform1fvARB: PFNGLUNIFORM1FVARBPROC;
+   glUniform2fvARB: PFNGLUNIFORM2FVARBPROC;
+   glUniform3fvARB: PFNGLUNIFORM3FVARBPROC;
+   glUniform4fvARB: PFNGLUNIFORM4FVARBPROC;
+   glUniform1ivARB: PFNGLUNIFORM1IVARBPROC;
+   glUniform2ivARB: PFNGLUNIFORM2IVARBPROC;
+   glUniform3ivARB: PFNGLUNIFORM3IVARBPROC;
+   glUniform4ivARB: PFNGLUNIFORM4IVARBPROC;
+   glUniformMatrix2fvARB: PFNGLUNIFORMMATRIX2FVARBPROC;
+   glUniformMatrix3fvARB: PFNGLUNIFORMMATRIX3FVARBPROC;
+   glUniformMatrix4fvARB: PFNGLUNIFORMMATRIX4FVARBPROC;
+   glGetObjectParameterfvARB: PFNGLGETOBJECTPARAMETERFVARBPROC;
+   glGetObjectParameterivARB: PFNGLGETOBJECTPARAMETERIVARBPROC;
+   glGetInfoLogARB: PFNGLGETINFOLOGARBPROC;
+   glGetAttachedObjectsARB: PFNGLGETATTACHEDOBJECTSARBPROC;
+   glGetUniformLocationARB: PFNGLGETUNIFORMLOCATIONARBPROC;
+   glGetActiveUniformARB: PFNGLGETACTIVEUNIFORMARBPROC;
+   glGetUniformfvARB: PFNGLGETUNIFORMFVARBPROC;
+   glGetUniformivARB: PFNGLGETUNIFORMIVARBPROC;
+   glGetShaderSourceARB: PFNGLGETSHADERSOURCEARBPROC;
 
    // GL_ARB_vertex_shader (ARB #31)
-   glBindAttribLocationARB: procedure(programObj: GLhandleARB; index: GLuint; const name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveAttribARB: procedure(programObj: GLhandleARB; index: GLuint; maxLength: GLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetAttribLocationARB: function(programObj: GLhandleARB; const name: PGLChar): GLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindAttribLocationARB: PFNGLBINDATTRIBLOCATIONARBPROC;
+   glGetActiveAttribARB: PFNGLGETACTIVEATTRIBARBPROC;
+   glGetAttribLocationARB: PFNGLGETATTRIBLOCATIONARBPROC;
 
    // GL_ARB_DrawBuffers (ARB #37)
-   glDrawBuffersARB: procedure (n: GLSizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawBuffersARB: PFNGLDRAWBUFFERSARBPROC;
 
    // GL_ARB_color_buffer_float (ARB #39)
-   glClampColorARB: procedure (target: TGLenum; clamp: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glClampColorARB: PFNGLCLAMPCOLORARBPROC;
 
    // GL_ARB_draw_instanced (ARB #44)
-   glDrawArraysInstancedARB: procedure(mode: TGLenum; first: TGLint; count: TGLsizei;
-            primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawElementsInstancedARB: procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
-            indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawArraysInstancedARB: PFNGLDRAWARRAYSINSTANCEDARBPROC;
+   glDrawElementsInstancedARB: PFNGLDRAWELEMENTSINSTANCEDARBPROC;
 
-   // GL_ARB_framebuffer_object (ARB #45)         
-   glIsRenderbuffer: function(renderbuffer: TGLuint): TGLBoolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindRenderbuffer: procedure(target: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteRenderbuffers: procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenRenderbuffers: procedure(n: TGLSizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glRenderbufferStorage: procedure(target: TGLenum; internalformat: TGLenum;
-			      width: TGLsizei;  height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glRenderbufferStorageMultisample: procedure(target: TGLenum; samples: TGLsizei;
-					internalformat: TGLenum;
-				  width: TGLsizei; height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetRenderbufferParameteriv: procedure(target: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsFramebuffer: function(framebuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindFramebuffer: procedure(target: TGLenum; framebuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenFramebuffers: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCheckFramebufferStatus: function(target: TGLenum): TGLenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture1D: procedure(target: TGLenum; attachment: TGLenum;
-			      textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture2D: procedure(target: TGLenum; attachment: TGLenum;
-			      textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture3D: procedure(target: TGLenum; attachment: TGLenum;
-			      textarget: TGLenum; texture: TGLuint;
-			      level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureLayer: procedure(target: TGLenum; attachment: TGLenum;
-				 texture: TGLuint; level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferRenderbuffer: procedure(target: TGLenum; attachment: TGLenum;
-				 renderbuffertarget: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFramebufferAttachmentParameteriv: procedure(target: TGLenum; attachment: TGLenum;
-					     pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlitFramebuffer: procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
-			 dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-			 mask: TGLbitfield; filter: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenerateMipmap: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   // GL_ARB_framebuffer_object (ARB #45)
+   glIsRenderbuffer: PFNGLISRENDERBUFFERPROC;
+   glBindRenderbuffer: PFNGLBINDRENDERBUFFERPROC;
+   glDeleteRenderbuffers: PFNGLDELETERENDERBUFFERSPROC;
+   glGenRenderbuffers: PFNGLGENRENDERBUFFERSPROC;
+   glRenderbufferStorage: PFNGLRENDERBUFFERSTORAGEPROC;
+   glRenderbufferStorageMultisample: PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC;
+   glGetRenderbufferParameteriv: PFNGLGETRENDERBUFFERPARAMETERIVPROC;
+   glIsFramebuffer: PFNGLISFRAMEBUFFERPROC;
+   glBindFramebuffer: PFNGLBINDFRAMEBUFFERPROC;
+   glDeleteFramebuffers: PFNGLDELETEFRAMEBUFFERSPROC;
+   glGenFramebuffers: PFNGLGENFRAMEBUFFERSPROC;
+   glCheckFramebufferStatus: PFNGLCHECKFRAMEBUFFERSTATUSPROC;
+   glFramebufferTexture1D: PFNGLFRAMEBUFFERTEXTURE1DPROC;
+   glFramebufferTexture2D: PFNGLFRAMEBUFFERTEXTURE2DPROC;
+   glFramebufferTexture3D: PFNGLFRAMEBUFFERTEXTURE3DPROC;
+   glFramebufferTextureLayer: PFNGLFRAMEBUFFERTEXTURELAYERPROC;
+   glFramebufferRenderbuffer: PFNGLFRAMEBUFFERRENDERBUFFERPROC;
+   glGetFramebufferAttachmentParameteriv: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC;
+   glBlitFramebuffer: PFNGLBLITFRAMEBUFFERPROC;
+   glGenerateMipmap: PFNGLGENERATEMIPMAPPROC;
 
    // GL_ARB_geometry_shader4 (ARB #47)
-   glProgramParameteriARB: procedure ( _program:TGLuint; pname:TGLenum; value: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureARB: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureLayerARB: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; layer:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureFaceARB: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; face:TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramParameteriARB: PFNGLPROGRAMPARAMETERIARBPROC;
+   glFramebufferTextureARB: PFNGLFRAMEBUFFERTEXTUREARBPROC;
+   glFramebufferTextureLayerARB: PFNGLFRAMEBUFFERTEXTURELAYERARBPROC;
+   glFramebufferTextureFaceARB: PFNGLFRAMEBUFFERTEXTUREFACEARBPROC;
 
    // GL_ARB_instanced_arrays (ARB #49)
-   glVertexAttribDivisorARB: procedure(index: TGLuint; divisor: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttribDivisorARB: PFNGLVERTEXATTRIBDIVISORARBPROC;
 
    // GL_ARB_map_buffer_range (ARB #50)
-   glMapBufferRange: function(target: TGLenum; offset: TGLint{ptr}; length: TGLsizei{ptr};
-	            access: TGLbitfield ): Pointer;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFlushMappedBufferRange: procedure( target: TGLenum; offset: TGLint{ptr}; length: TGLsizei{ptr} );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMapBufferRange: PFNGLMAPBUFFERRANGEPROC;
+   glFlushMappedBufferRange: PFNGLFLUSHMAPPEDBUFFERRANGEPROC;
 
    // GL_ARB_texture_buffer_object (ARB #51)
-   glTexBufferARB: procedure(target: TGLenum; internalformat: TGLEnum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexBufferARB: PFNGLTEXBUFFERARBPROC;
 
    // GL_ARB_vertex_array_object (ARB #54)
-   glBindVertexArray: procedure(_array: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteVertexArrays: procedure(n: TGLsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenVertexArrays: procedure(n: TGLsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsVertexArray: function(_array: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindVertexArray: PFNGLBINDVERTEXARRAYPROC;
+   glDeleteVertexArrays: PFNGLDELETEVERTEXARRAYSPROC;
+   glGenVertexArrays: PFNGLGENVERTEXARRAYSPROC;
+   glIsVertexArray: PFNGLISVERTEXARRAYPROC;
 
    // GL_ARB_uniform_buffer_object (ARB #57)
-   glGetUniformIndices: procedure(_program: TGLuint; uniformCount: TGLsizei; uniformNames: PGLPCharArray; uniformIndices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniformsiv: procedure(_program: TGLuint; uniformCount: TGLsizei; uniformIndices: PGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniformName: procedure(_program: TGLuint; uniformIndex: TGLuint; bufSize: TGLsizei; length: PGLsizei; uniformName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformBlockIndex: function(_program: TGLuint; uniformBlockName: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniformBlockiv: procedure(_program: TGLuint; uniformBlockIndex: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveUniformBlockName: procedure(_program: TGLuint; uniformBlockIndex: TGLuint; bufSize: TGLsizei; length: PGLsizei; uniformBlockName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformBlockBinding: procedure(_program: TGLuint; uniformBlockIndex: TGLuint; uniformBlockBinding: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetUniformIndices: PFNGLGETUNIFORMINDICESPROC;
+   glGetActiveUniformsiv: PFNGLGETACTIVEUNIFORMSIVPROC;
+   glGetActiveUniformName: PFNGLGETACTIVEUNIFORMNAMEPROC;
+   glGetUniformBlockIndex: PFNGLGETUNIFORMBLOCKINDEXPROC;
+   glGetActiveUniformBlockiv: PFNGLGETACTIVEUNIFORMBLOCKIVPROC;
+   glGetActiveUniformBlockName: PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC;
+   glUniformBlockBinding: PFNGLUNIFORMBLOCKBINDINGPROC;
 
    // GL_ARB_copy_buffer (ARB #59)
-   glCopyBufferSubData: procedure(readTarget: TGLenum; writeTarget: TGLenum;
-          readOffset: TGLintptr; writeOffset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCopyBufferSubData: PFNGLCOPYBUFFERSUBDATAPROC;
 
    // GL_ARB_draw_elements_base_vertex (ARB #62)
-   glDrawElementsBaseVertex: procedure(mode: TGLenum; count: TGLsizei;
-          _type: TGLenum; indices: PGLvoid; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawRangeElementsBaseVertex: procedure(mode: TGLenum; start: TGLuint; _end: TGLuint;
-          count: TGLsizei; _type: TGLenum; indices: PGLvoid; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawElementsInstancedBaseVertex: procedure(mode: TGLenum; count: TGLsizei;
-          _type: TGLenum; indices: PGLvoid; primcount: TGLsizei; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiDrawElementsBaseVertex: procedure(mode: TGLenum; count: PGLsizei;
-          _type: TGLenum; var indices; primcount: TGLsizei; basevertex: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawElementsBaseVertex: PFNGLDRAWELEMENTSBASEVERTEXPROC;
+   glDrawRangeElementsBaseVertex: PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC;
+   glDrawElementsInstancedBaseVertex: PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC;
+   glMultiDrawElementsBaseVertex: PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC;
 
    // GL_ARB_provoking_vertex (ARB #64)
-   glProvokingVertex: procedure(mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProvokingVertex: PFNGLPROVOKINGVERTEXPROC;
 
    // GL_ARB_sync (ARB #66)
-   glFenceSync: function(condition: TGLenum; flags: TGLbitfield): TGLsync;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsSync: function(sync: TGLsync): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteSync: procedure(sync: TGLsync);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClientWaitSync: function(sync: TGLsync; flags: TGLbitfield; timeout: TGLuint64): TGLenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glWaitSync: procedure(sync: TGLsync; flags: TGLbitfield; timeout: TGLuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetInteger64v: procedure(pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSynciv: procedure(sync: TGLsync; pname: TGLenum; bufSize: TGLsizei; length: PGLsizei; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glFenceSync: PFNGLFENCESYNCPROC;
+   glIsSync: PFNGLISSYNCPROC;
+   glDeleteSync: PFNGLDELETESYNCPROC;
+   glClientWaitSync: PFNGLCLIENTWAITSYNCPROC;
+   glWaitSync: PFNGLWAITSYNCPROC;
+   glGetInteger64v: PFNGLGETINTEGER64VPROC;
+   glGetSynciv: PFNGLGETSYNCIVPROC;
 
    // GL_ARB_texture_multisample (ARB #67)
-   glTexImage2DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
-                               width: TGLsizei; height: TGLsizei;
-                               fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexImage3DMultisample: procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
-                               width: TGLsizei; height: TGLsizei; depth: TGLsizei;
-                               fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetMultisamplefv: procedure(pname: TGLenum; index: TGLuint; val: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSampleMaski: procedure(index: TGLuint; mask: TGLbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexImage2DMultisample: PFNGLTEXIMAGE2DMULTISAMPLEPROC;
+   glTexImage3DMultisample: PFNGLTEXIMAGE3DMULTISAMPLEPROC;
+   glGetMultisamplefv: PFNGLGETMULTISAMPLEFVPROC;
+   glSampleMaski: PFNGLSAMPLEMASKIPROC;
 
    // GL_ARB_draw_buffers_blend (ARB #69)
-   glBlendEquationi: procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendEquationSeparatei: procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendFunci: procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBlendFuncSeparatei: procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
-                               srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquationi: PFNGLBLENDEQUATIONIPROC;
+   glBlendEquationSeparatei: PFNGLBLENDEQUATIONSEPARATEIPROC;
+   glBlendFunci: PFNGLBLENDFUNCIPROC;
+   glBlendFuncSeparatei: PFNGLBLENDFUNCSEPARATEIPROC;
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShading: procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMinSampleShading: PFNGLMINSAMPLESHADINGPROC;
 
    // GL_ARB_blend_func_extended (ARB #78)
-   glBindFragDataLocationIndexed: procedure (_program: TGLuint; colorNumber: TGLuint; index: TGLuint; const name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFragDataIndex: function (_program: TGLuint; const name: PGLchar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindFragDataLocationIndexed: PFNGLBINDFRAGDATALOCATIONINDEXEDPROC;
+   glGetFragDataIndex: PFNGLGETFRAGDATAINDEXPROC;
 
    // GL_ARB_sampler_objects (ARB #81)
-   glGenSamplers: procedure(count: TGLsizei; samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteSamplers: procedure(count: TGLsizei; const samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsSampler: function(sampler: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindSampler: procedure(_unit: TGLuint; sampler: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameteri: procedure(sampler: TGLuint; pname: TGLenum; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameteriv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameterf: procedure(sampler: TGLuint; pname: TGLenum; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameterfv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameterIiv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplerParameterIuiv: procedure(sampler: TGLuint; pname: TGLenum; const params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSamplerParameteriv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSamplerParameterIiv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSamplerParameterfv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSamplerParameterIfv: procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenSamplers: PFNGLGENSAMPLERSPROC;
+   glDeleteSamplers: PFNGLDELETESAMPLERSPROC;
+   glIsSampler: PFNGLISSAMPLERPROC;
+   glBindSampler: PFNGLBINDSAMPLERPROC;
+   glSamplerParameteri: PFNGLSAMPLERPARAMETERIPROC;
+   glSamplerParameteriv: PFNGLSAMPLERPARAMETERIVPROC;
+   glSamplerParameterf: PFNGLSAMPLERPARAMETERFPROC;
+   glSamplerParameterfv: PFNGLSAMPLERPARAMETERFVPROC;
+   glSamplerParameterIiv: PFNGLSAMPLERPARAMETERIIVPROC;
+   glSamplerParameterIuiv: PFNGLSAMPLERPARAMETERIUIVPROC;
+   glGetSamplerParameteriv: PFNGLGETSAMPLERPARAMETERIVPROC;
+   glGetSamplerParameterIiv: PFNGLGETSAMPLERPARAMETERIIVPROC;
+   glGetSamplerParameterfv: PFNGLGETSAMPLERPARAMETERFVPROC;
+   glGetSamplerParameterIfv: PFNGLGETSAMPLERPARAMETERIFVPROC;
 
    // GL_ARB_timer_query (ARB #85)
-   glQueryCounter: procedure(id: TGLuint; target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjecti64v: procedure(id: TGLuint; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectui64v: procedure(id: TGLuint; pname: TGLenum; params: PGLuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glQueryCounter: PFNGLQUERYCOUNTERPROC;
+   glGetQueryObjecti64v: PFNGLGETQUERYOBJECTI64VPROC;
+   glGetQueryObjectui64v: PFNGLGETQUERYOBJECTUI64VPROC;
 
    // GL_ARB_vertex_type_2_10_10_10_rev (ARB #86)
-   glVertexP2ui: procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexP2uiv: procedure(_type: TGLenum; const value: PGLuint );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexP3ui: procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexP3uiv: procedure(_type: TGLenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexP4ui: procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexP4uiv: procedure(_type: TGLenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP1ui: procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP1uiv: procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP2ui: procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP2uiv: procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP3ui: procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP3uiv: procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP4ui: procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordP4uiv: procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP1ui: procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP1uiv: procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP2ui: procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP2uiv: procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP3ui: procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP3uiv: procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP4ui: procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiTexCoordP4uiv: procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glNormalP3ui: procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glNormalP3uiv: procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorP3ui: procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorP3uiv: procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorP4ui: procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorP4uiv: procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColorP3ui: procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColorP3uiv: procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP1ui: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP1uiv: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP2ui: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP2uiv: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP3ui: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP3uiv: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP4ui: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribP4uiv: procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexP2ui: PFNGLVERTEXP2UIPROC;
+   glVertexP2uiv: PFNGLVERTEXP2UIVPROC;
+   glVertexP3ui: PFNGLVERTEXP3UIPROC;
+   glVertexP3uiv: PFNGLVERTEXP3UIVPROC;
+   glVertexP4ui: PFNGLVERTEXP4UIPROC;
+   glVertexP4uiv: PFNGLVERTEXP4UIVPROC;
+   glTexCoordP1ui: PFNGLTEXCOORDP1UIPROC;
+   glTexCoordP1uiv: PFNGLTEXCOORDP1UIVPROC;
+   glTexCoordP2ui: PFNGLTEXCOORDP2UIPROC;
+   glTexCoordP2uiv: PFNGLTEXCOORDP2UIVPROC;
+   glTexCoordP3ui: PFNGLTEXCOORDP3UIPROC;
+   glTexCoordP3uiv: PFNGLTEXCOORDP3UIVPROC;
+   glTexCoordP4ui: PFNGLTEXCOORDP4UIPROC;
+   glTexCoordP4uiv: PFNGLTEXCOORDP4UIVPROC;
+   glMultiTexCoordP1ui: PFNGLMULTITEXCOORDP1UIPROC;
+   glMultiTexCoordP1uiv: PFNGLMULTITEXCOORDP1UIVPROC;
+   glMultiTexCoordP2ui: PFNGLMULTITEXCOORDP2UIPROC;
+   glMultiTexCoordP2uiv: PFNGLMULTITEXCOORDP2UIVPROC;
+   glMultiTexCoordP3ui: PFNGLMULTITEXCOORDP3UIPROC;
+   glMultiTexCoordP3uiv: PFNGLMULTITEXCOORDP3UIVPROC;
+   glMultiTexCoordP4ui: PFNGLMULTITEXCOORDP4UIPROC;
+   glMultiTexCoordP4uiv: PFNGLMULTITEXCOORDP4UIVPROC;
+   glNormalP3ui: PFNGLNORMALP3UIPROC;
+   glNormalP3uiv: PFNGLNORMALP3UIVPROC;
+   glColorP3ui: PFNGLCOLORP3UIPROC;
+   glColorP3uiv: PFNGLCOLORP3UIVPROC;
+   glColorP4ui: PFNGLCOLORP4UIPROC;
+   glColorP4uiv: PFNGLCOLORP4UIVPROC;
+   glSecondaryColorP3ui: PFNGLSECONDARYCOLORP3UIPROC;
+   glSecondaryColorP3uiv: PFNGLSECONDARYCOLORP3UIVPROC;
+   glVertexAttribP1ui: PFNGLVERTEXATTRIBP1UIPROC;
+   glVertexAttribP1uiv: PFNGLVERTEXATTRIBP1UIVPROC;
+   glVertexAttribP2ui: PFNGLVERTEXATTRIBP2UIPROC;
+   glVertexAttribP2uiv: PFNGLVERTEXATTRIBP2UIVPROC;
+   glVertexAttribP3ui: PFNGLVERTEXATTRIBP3UIPROC;
+   glVertexAttribP3uiv: PFNGLVERTEXATTRIBP3UIVPROC;
+   glVertexAttribP4ui: PFNGLVERTEXATTRIBP4UIPROC;
+   glVertexAttribP4uiv: PFNGLVERTEXATTRIBP4UIVPROC;
 
    // GL_ARB_draw_indirect (ARB #87)
-   glDrawArraysIndirect: procedure(mode: TGLenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawElementsIndirect: procedure(mode: TGLenum; _type: TGLenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawArraysIndirect: PFNGLDRAWARRAYSINDIRECTPROC;
+   glDrawElementsIndirect: PFNGLDRAWELEMENTSINDIRECTPROC;
 
    // GL_ARB_gpu_shader_fp64 (ARB #89)
-   glUniform1d: procedure(location: TGLint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2d: procedure(location: TGLint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3d: procedure(location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4d: procedure(location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1dv: procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2dv: procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3dv: procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4dv: procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2x3dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix2x4dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3x2dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix3x4dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4x2dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformMatrix4x3dv: procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformdv: procedure(_program: TGLuint; location: TGLint; params : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glUniform1d: PFNGLUNIFORM1DPROC;
+   glUniform2d: PFNGLUNIFORM2DPROC;
+   glUniform3d: PFNGLUNIFORM3DPROC;
+   glUniform4d: PFNGLUNIFORM4DPROC;
+   glUniform1dv: PFNGLUNIFORM1DVPROC;
+   glUniform2dv: PFNGLUNIFORM2DVPROC;
+   glUniform3dv: PFNGLUNIFORM3DVPROC;
+   glUniform4dv: PFNGLUNIFORM4DVPROC;
+   glUniformMatrix2dv: PFNGLUNIFORMMATRIX2DVPROC;
+   glUniformMatrix3dv: PFNGLUNIFORMMATRIX3DVPROC;
+   glUniformMatrix4dv: PFNGLUNIFORMMATRIX4DVPROC;
+   glUniformMatrix2x3dv: PFNGLUNIFORMMATRIX2X3DVPROC;
+   glUniformMatrix2x4dv: PFNGLUNIFORMMATRIX2X4DVPROC;
+   glUniformMatrix3x2dv: PFNGLUNIFORMMATRIX3X2DVPROC;
+   glUniformMatrix3x4dv: PFNGLUNIFORMMATRIX3X4DVPROC;
+   glUniformMatrix4x2dv: PFNGLUNIFORMMATRIX4X2DVPROC;
+   glUniformMatrix4x3dv: PFNGLUNIFORMMATRIX4X3DVPROC;
+   glGetUniformdv: PFNGLGETUNIFORMDVPROC;
    // glProgramUniformXXX only valid if EXT_direct_state_access is available
-   glProgramUniform1dEXT: procedure(_program: TGLuint; location: TGLint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform2dEXT: procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform3dEXT: procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform4dEXT: procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform1dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform2dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform3dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniform4dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix2dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix3dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix4dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix2x3dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix2x4dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix3x2dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix3x4dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix4x2dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformMatrix4x3dvEXT: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramUniform1dEXT: PFNGLPROGRAMUNIFORM1DEXTPROC;
+   glProgramUniform2dEXT: PFNGLPROGRAMUNIFORM2DEXTPROC;
+   glProgramUniform3dEXT: PFNGLPROGRAMUNIFORM3DEXTPROC;
+   glProgramUniform4dEXT: PFNGLPROGRAMUNIFORM4DEXTPROC;
+   glProgramUniform1dvEXT: PFNGLPROGRAMUNIFORM1DVEXTPROC;
+   glProgramUniform2dvEXT: PFNGLPROGRAMUNIFORM2DVEXTPROC;
+   glProgramUniform3dvEXT: PFNGLPROGRAMUNIFORM3DVEXTPROC;
+   glProgramUniform4dvEXT: PFNGLPROGRAMUNIFORM4DVEXTPROC;
+   glProgramUniformMatrix2dvEXT: PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC;
+   glProgramUniformMatrix3dvEXT: PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC;
+   glProgramUniformMatrix4dvEXT: PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC;
+   glProgramUniformMatrix2x3dvEXT: PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC;
+   glProgramUniformMatrix2x4dvEXT: PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC;
+   glProgramUniformMatrix3x2dvEXT: PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC;
+   glProgramUniformMatrix3x4dvEXT: PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC;
+   glProgramUniformMatrix4x2dvEXT: PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC;
+   glProgramUniformMatrix4x3dvEXT: PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC;
 
    // GL_ARB_shader_subroutine (ARB #90)
-   glGetSubroutineUniformLocation: function(_program: TGLuint; shadertype: TGLenum; const name: PGLchar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetSubroutineIndex: function(_program: TGLuint; shadertype: TGLenum; const name: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveSubroutineUniformiv: procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; pname: TGLenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveSubroutineUniformName: procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; bufsize: TGLsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveSubroutineName: procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; bufsize: TGLsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformSubroutinesuiv: procedure(shadertype: TGLenum; count: TGLsizei; const indices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformSubroutineuiv: procedure(shadertype: TGLenum; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramStageiv: procedure(_program: TGLuint; shadertype: TGLenum; pname: TGLenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetSubroutineUniformLocation: PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC;
+   glGetSubroutineIndex: PFNGLGETSUBROUTINEINDEXPROC;
+   glGetActiveSubroutineUniformiv: PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC;
+   glGetActiveSubroutineUniformName: PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC;
+   glGetActiveSubroutineName: PFNGLGETACTIVESUBROUTINENAMEPROC;
+   glUniformSubroutinesuiv: PFNGLUNIFORMSUBROUTINESUIVPROC;
+   glGetUniformSubroutineuiv: PFNGLGETUNIFORMSUBROUTINEUIVPROC;
+   glGetProgramStageiv: PFNGLGETPROGRAMSTAGEIVPROC;
 
    // GL_ARB_tessellation_shader (ARB #91)
-   glPatchParameteri: procedure(pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPatchParameterfv: procedure(pname: TGLenum; const values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPatchParameteri: PFNGLPATCHPARAMETERIPROC;
+   glPatchParameterfv: PFNGLPATCHPARAMETERFVPROC;
 
    // GL_ARB_transform_feedback2 (ARB #93)
-   glBindTransformFeedback: procedure(target: TGLenum; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteTransformFeedbacks: procedure(n: TGLsizei; const ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenTransformFeedbacks: procedure(n: TGLsizei; ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsTransformFeedback: function(id: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPauseTransformFeedback: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glResumeTransformFeedback: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawTransformFeedback: procedure(mode: TGLenum; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindTransformFeedback: PFNGLBINDTRANSFORMFEEDBACKPROC;
+   glDeleteTransformFeedbacks: PFNGLDELETETRANSFORMFEEDBACKSPROC;
+   glGenTransformFeedbacks: PFNGLGENTRANSFORMFEEDBACKSPROC;
+   glIsTransformFeedback: PFNGLISTRANSFORMFEEDBACKPROC;
+   glPauseTransformFeedback: PFNGLPAUSETRANSFORMFEEDBACKPROC;
+   glResumeTransformFeedback: PFNGLRESUMETRANSFORMFEEDBACKPROC;
+   glDrawTransformFeedback: PFNGLDRAWTRANSFORMFEEDBACKPROC;
 
    // GL_ARB_transform_feedback3 (ARB #94)
-   glDrawTransformFeedbackStream: procedure(mode: TGLenum; id: TGLuint; stream: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginQueryIndexed: procedure(target: TGLenum; index: TGLuint; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndQueryIndexed: procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryIndexediv: procedure(target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawTransformFeedbackStream: PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC;
+   glBeginQueryIndexed: PFNGLBEGINQUERYINDEXEDPROC;
+   glEndQueryIndexed: PFNGLENDQUERYINDEXEDPROC;
+   glGetQueryIndexediv: PFNGLGETQUERYINDEXEDIVPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -2185,336 +2155,328 @@ var
    //  ###########################################################
 
    // Unknown Vendor/EXT functions
-   glArrayElementArrayEXT: procedure(mode: TGLEnum; count: TGLsizei; pi: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glArrayElementArrayEXT: PFNGLARRAYELEMENTARRAYEXTPROC;
 
    // GL_WIN_swap_hint (extension # not found)
-   glAddSwapHintRectWIN: procedure(x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glAddSwapHintRectWIN: PFNGLADDSWAPHINTRECTWINPROC;
 
    // GL_EXT_blend_color (EXT #2)
-   glBlendColorEXT: procedure(red, green, blue: TGLclampf; alpha: TGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendColorEXT: PFNGLBLENDCOLOREXTPROC;
 
    // GL_EXT_polygon_offset (EXT #3)
-   glPolygonOffsetEXT: procedure(factor, bias: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPolygonOffsetEXT: PFNGLPOLYGONOFFSETEXTPROC;
 
    // GL_EXT_texture3D (EXT #6)
-   glTexImage3DEXT: procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; width, height, depth: TGLsizei; border: TGLint; Format, AType: TGLenum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexImage3DEXT: PFNGLTEXIMAGE3DEXTPROC;
 
    // GL_EXT_subtexture (EXT #9)
-   glTexSubImage1DEXT: procedure(target: TGLEnum; level, xoffset: TGLint; width: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexSubImage2DEXT: procedure(target: TGLEnum; level, xoffset, yoffset: TGLint; width, height: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexSubImage3DEXT: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexSubImage1DEXT: PFNGLTEXSUBIMAGE1DEXTPROC;
+   glTexSubImage2DEXT: PFNGLTEXSUBIMAGE2DEXTPROC;
+   glTexSubImage3DEXT: PFNGLTEXSUBIMAGE3DEXTPROC;
 
    // GL_EXT_copy_texture (EXT #10)
-   glCopyTexImage1DEXT: procedure(target: TGLEnum; level: TGLint; internalFormat: TGLEnum; x, y: TGLint; width: TGLsizei; border: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCopyTexImage2DEXT: procedure(target: TGLEnum; level: TGLint; internalFormat: TGLEnum; x, y: TGLint; width, height: TGLsizei; border: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCopyTexSubImage1DEXT: procedure(target: TGLEnum; level, xoffset, x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCopyTexSubImage2DEXT: procedure(target: TGLEnum; level, xoffset, yoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCopyTexSubImage3DEXT: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCopyTexImage1DEXT: PFNGLCOPYTEXIMAGE1DEXTPROC;
+   glCopyTexImage2DEXT: PFNGLCOPYTEXIMAGE2DEXTPROC;
+   glCopyTexSubImage1DEXT: PFNGLCOPYTEXSUBIMAGE1DEXTPROC;
+   glCopyTexSubImage2DEXT: PFNGLCOPYTEXSUBIMAGE2DEXTPROC;
+   glCopyTexSubImage3DEXT: PFNGLCOPYTEXSUBIMAGE3DEXTPROC;
 
    // GL_EXT_texture_object (EXT #20)
-   glGenTexturesEXT: procedure(n: TGLsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteTexturesEXT: procedure(n: TGLsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindTextureEXT: procedure(target: TGLEnum; texture: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPrioritizeTexturesEXT: procedure(n: TGLsizei; textures: PGLuint; priorities: PGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glAreTexturesResidentEXT: function(n: TGLsizei; textures: PGLuint; residences: PGLBoolean): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsTextureEXT: function(texture: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenTexturesEXT: PFNGLGENTEXTURESEXTPROC;
+   glDeleteTexturesEXT: PFNGLDELETETEXTURESEXTPROC;
+   glBindTextureEXT: PFNGLBINDTEXTUREEXTPROC;
+   glPrioritizeTexturesEXT: PFNGLPRIORITIZETEXTURESEXTPROC;
+   glAreTexturesResidentEXT: PFNGLARETEXTURESRESIDENTEXTPROC;
+   glIsTextureEXT: PFNGLISTEXTUREEXTPROC;
 
    // GL_SGIS_multisample (EXT #25)
-   glSampleMaskSGIS: procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplePatternSGIS: procedure(pattern: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSampleMaskSGIS: PFNGLSAMPLEMASKSGISPROC;
+   glSamplePatternSGIS: PFNGLSAMPLEPATTERNSGISPROC;
 
    // GL_EXT_blend_minmax (EXT #37)
-   glBlendEquationEXT: procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquationEXT: PFNGLBLENDEQUATIONEXTPROC;
 
    // GL_EXT_paletted_texture (EXT #78)
-   glColorTableEXT: procedure(target, internalFormat: TGLEnum; width: TGLsizei; format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorSubTableExt: procedure(target: TGLEnum; start, count: TGLsizei; format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetColorTableEXT: procedure(target, format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetColorTableParameterfvEXT: procedure(target, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetColorTableParameterivEXT: procedure(target, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glColorTableEXT: PFNGLCOLORTABLEEXTPROC;
+   glColorSubTableExt: PFNGLCOLORSUBTABLEEXTPROC;
+   glGetColorTableEXT: PFNGLGETCOLORTABLEEXTPROC;
+   glGetColorTableParameterfvEXT: PFNGLGETCOLORTABLEPARAMETERFVEXTPROC;
+   glGetColorTableParameterivEXT: PFNGLGETCOLORTABLEPARAMETERIVEXTPROC;
 
 //   glGetColorTableParameterfvEXT: procedure(target, pname: TGLEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 //   glGetColorTableParameterivEXT: procedure(target, pname: TGLEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GL_EXT_index_material (EXT #94)
-   glIndexMaterialEXT: procedure(face: TGLEnum; mode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIndexMaterialEXT: PFNGLINDEXMATERIALEXTPROC;
 
    // GL_EXT_index_func (EXT #95)
-   glIndexFuncEXT: procedure(func: TGLEnum; ref: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIndexFuncEXT: PFNGLINDEXFUNCEXTPROC;
 
    // GL_EXT_compiled_vertex_array (EXT #97)
-   glLockArraysEXT: procedure(first: TGLint; count: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUnlockArraysEXT: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glLockArraysEXT: PFNGLLOCKARRAYSEXTPROC;
+   glUnlockArraysEXT: PFNGLUNLOCKARRAYSEXTPROC;
 
    // GL_EXT_draw_range_elements (EXT #112)
-   glDrawRangeElementsEXT: procedure(mode: TGLenum; start, Aend: TGLuint; Count: TGLsizei; Atype: TGLenum; indices: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawRangeElementsEXT: PFNGLDRAWRANGEELEMENTSEXTPROC;
 
    // GL_EXT_scene_marker (EXT #120)
-   glBeginSceneEXT: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndSceneEXT: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBeginSceneEXT: PFNGLBEGINSCENEEXTPROC;
+   glEndSceneEXT: PFNGLENDSCENEEXTPROC;
 
    // GL_EXT_secondary_color (EXT #145)
-   glSecondaryColor3bEXT: procedure(red, green, blue: TGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3bvEXT: procedure(v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3dEXT: procedure(red, green, blue: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3dvEXT: procedure(v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3fEXT: procedure(red, green, blue: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3fvEXT: procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3iEXT: procedure(red, green, blue: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3ivEXT: procedure(v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3sEXT: procedure(red, green, blue: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3svEXT: procedure(v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3ubEXT: procedure(red, green, blue: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3ubvEXT: procedure(v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3uiEXT: procedure(red, green, blue: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3uivEXT: procedure(v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3usEXT: procedure(red, green, blue: TGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColor3usvEXT: procedure(v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColorPointerEXT: procedure(Size: TGLint; Atype: TGLenum; stride: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSecondaryColor3bEXT: PFNGLSECONDARYCOLOR3BEXTPROC;
+   glSecondaryColor3bvEXT: PFNGLSECONDARYCOLOR3BVEXTPROC;
+   glSecondaryColor3dEXT: PFNGLSECONDARYCOLOR3DEXTPROC;
+   glSecondaryColor3dvEXT: PFNGLSECONDARYCOLOR3DVEXTPROC;
+   glSecondaryColor3fEXT: PFNGLSECONDARYCOLOR3FEXTPROC;
+   glSecondaryColor3fvEXT: PFNGLSECONDARYCOLOR3FVEXTPROC;
+   glSecondaryColor3iEXT: PFNGLSECONDARYCOLOR3IEXTPROC;
+   glSecondaryColor3ivEXT: PFNGLSECONDARYCOLOR3IVEXTPROC;
+   glSecondaryColor3sEXT: PFNGLSECONDARYCOLOR3SEXTPROC;
+   glSecondaryColor3svEXT: PFNGLSECONDARYCOLOR3SVEXTPROC;
+   glSecondaryColor3ubEXT: PFNGLSECONDARYCOLOR3UBEXTPROC;
+   glSecondaryColor3ubvEXT: PFNGLSECONDARYCOLOR3UBVEXTPROC;
+   glSecondaryColor3uiEXT: PFNGLSECONDARYCOLOR3UIEXTPROC;
+   glSecondaryColor3uivEXT: PFNGLSECONDARYCOLOR3UIVEXTPROC;
+   glSecondaryColor3usEXT: PFNGLSECONDARYCOLOR3USEXTPROC;
+   glSecondaryColor3usvEXT: PFNGLSECONDARYCOLOR3USVEXTPROC;
+   glSecondaryColorPointerEXT: PFNGLSECONDARYCOLORPOINTEREXTPROC;
 
    // GL_EXT_multi_draw_arrays (EXT #148)
-   glMultiDrawArraysEXT: procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMultiDrawElementsEXT: procedure(mode: TGLenum; Count: PGLsizei; AType: TGLenum; var indices; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMultiDrawArraysEXT: PFNGLMULTIDRAWARRAYSEXTPROC;
+   glMultiDrawElementsEXT: PFNGLMULTIDRAWELEMENTSEXTPROC;
 
    // GL_EXT_fog_coord (EXT #149)
-   glFogCoordfEXT: procedure(coord: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFogCoordfvEXT: procedure(coord: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFogCoorddEXT: procedure(coord: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFogCoorddvEXT: procedure(coord: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFogCoordPointerEXT: procedure(AType: TGLenum; stride: TGLsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glFogCoordfEXT: PFNGLFOGCOORDFEXTPROC;
+   glFogCoordfvEXT: PFNGLFOGCOORDFVEXTPROC;
+   glFogCoorddEXT: PFNGLFOGCOORDDEXTPROC;
+   glFogCoorddvEXT: PFNGLFOGCOORDDVEXTPROC;
+   glFogCoordPointerEXT: PFNGLFOGCOORDPOINTEREXTPROC;
 
    // GL_EXT_blend_func_separate (EXT #173)
-   glBlendFuncSeparateEXT: procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendFuncSeparateEXT: PFNGLBLENDFUNCSEPARATEEXTPROC;
 
    // GL_NV_vertex_array_range (EXT #190)
-   glFlushVertexArrayRangeNV: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexArrayRangeNV: procedure(Size: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   wglAllocateMemoryNV: function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   wglFreeMemoryNV: procedure(ptr: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glFlushVertexArrayRangeNV: PFNGLFLUSHVERTEXARRAYRANGENVPROC;
+   glVertexArrayRangeNV: PFNGLVERTEXARRAYRANGENVPROC;
+   wglAllocateMemoryNV: PFNWGLALLOCATEMEMORYNVPROC;
+   wglFreeMemoryNV: PFNWGLFREEMEMORYNVPROC;
 
    // GL_NV_register_combiners (EXT #191)
-   glCombinerParameterfvNV: procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCombinerParameterfNV: procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCombinerParameterivNV: procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCombinerParameteriNV: procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCombinerInputNV: procedure(stage, portion, variable, input, mapping, componentUsage: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCombinerOutputNV: procedure(stage, portion, abOutput, cdOutput, sumOutput, scale, bias: TGLenum; abDotProduct, cdDotProduct, muxSum: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFinalCombinerInputNV: procedure(variable, input, mapping, componentUsage: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCombinerInputParameterfvNV: procedure(stage, portion, variable, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCombinerInputParameterivNV: procedure(stage, portion, variable, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCombinerOutputParameterfvNV: procedure(stage, portion, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetCombinerOutputParameterivNV: procedure(stage, portion, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFinalCombinerInputParameterfvNV: procedure(variable, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFinalCombinerInputParameterivNV: procedure(variable, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCombinerParameterfvNV: PFNGLCOMBINERPARAMETERFVNVPROC;
+   glCombinerParameterfNV: PFNGLCOMBINERPARAMETERFNVPROC;
+   glCombinerParameterivNV: PFNGLCOMBINERPARAMETERIVNVPROC;
+   glCombinerParameteriNV: PFNGLCOMBINERPARAMETERINVPROC;
+   glCombinerInputNV: PFNGLCOMBINERINPUTNVPROC;
+   glCombinerOutputNV: PFNGLCOMBINEROUTPUTNVPROC;
+   glFinalCombinerInputNV: PFNGLFINALCOMBINERINPUTNVPROC;
+   glGetCombinerInputParameterfvNV: PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC;
+   glGetCombinerInputParameterivNV: PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC;
+   glGetCombinerOutputParameterfvNV: PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC;
+   glGetCombinerOutputParameterivNV: PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC;
+   glGetFinalCombinerInputParameterfvNV: PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC;
+   glGetFinalCombinerInputParameterivNV: PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC;
 
    // GL_MESA_resize_buffers (EXT #196)
-   glResizeBuffersMESA: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glResizeBuffersMESA: PFNGLRESIZEBUFFERSMESAPROC;
 
    // GL_3DFX_tbuffer (EXT #208)
-   glTbufferMask3DFX: procedure(mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTbufferMask3DFX: PFNGLTBUFFERMASK3DFXPROC;
 
    // GL_EXT_multisample (EXT #209)
-   glSampleMaskEXT: procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSamplePatternEXT: procedure(pattern: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glSampleMaskEXT: PFNGLSAMPLEMASKEXTPROC;
+   glSamplePatternEXT: PFNGLSAMPLEPATTERNEXTPROC;
 
    // GL_SGIS_texture_color_mask (EXT #214)
-   glTextureColorMaskSGIS: procedure(red, green, blue, alpha: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTextureColorMaskSGIS: PFNGLTEXTURECOLORMASKSGISPROC;
 
    // GL_NV_fence (EXT #222)
-   glGenFencesNV: procedure(n: TGLsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteFencesNV: procedure(n: TGLsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSetFenceNV: procedure(fence: TGLuint; condition: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTestFenceNV: function(fence: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFinishFenceNV: procedure(fence: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsFenceNV: function(fence: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFenceivNV: procedure(fence: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenFencesNV: PFNGLGENFENCESNVPROC;
+   glDeleteFencesNV: PFNGLDELETEFENCESNVPROC;
+   glSetFenceNV: PFNGLSETFENCENVPROC;
+   glTestFenceNV: PFNGLTESTFENCENVPROC;
+   glFinishFenceNV: PFNGLFINISHFENCENVPROC;
+   glIsFenceNV: PFNGLISFENCENVPROC;
+   glGetFenceivNV: PFNGLGETFENCEIVNVPROC;
 
    // GL_NV_vertex_program (EXT #233)
-   glAreProgramsResidentNV: procedure(n: TGLSizei; programs: PGLuint; residences: PGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindProgramNV: procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glExecuteProgramNV: procedure(target: TGLenum; id: TGLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramParameterdvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramParameterfvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramivNV: procedure (id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetProgramStringNV: procedure (id: TGLuint; pname: TGLenum; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTrackMatrixivNV: procedure (target: TGLenum; address: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribdvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribfvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribivNV: procedure (index: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribPointervNV: procedure (index: TGLuint; pname: TGLenum; pointer: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsProgramNV: function (id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glLoadProgramNV: procedure (target: TGLenum; id: TGLuint; len: TGLSizei; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameter4dNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameter4dvNV: procedure (target: TGLenum; index: TGLuint; v: PGLdouble ); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameter4fNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameter4fvNV: procedure (target: TGLenum; index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameters4dvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramParameters4fvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glRequestResidentProgramsNV: procedure (n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTrackMatrixNV: procedure (target: TGLenum; address: TGLuint; matrix: TGLenum; transform: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribPointerNV: procedure (index: TGLuint; fsize: TGLint; vertextype: TGLenum; stride: TGLSizei; pointer: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1dNV: procedure (index: TGLuint; x: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1dvNV: procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1fNV: procedure (index: TGLuint; x: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1fvNV: procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1sNV: procedure (index: TGLuint; x: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib1svNV: procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2dvNV: procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2fvNV: procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib2svNV: procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3dvNV: procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3fvNV: procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib3svNV: procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4dvNV: procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4fNV: procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat; w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4fvNV: procedure(index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLdouble; w: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4svNV: procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttrib4ubvNV: procedure (index: TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs1dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs1fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs1svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs2dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs2fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs2svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs3dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs3fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs3svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs4dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs4fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glAreProgramsResidentNV: PFNGLAREPROGRAMSRESIDENTNVPROC;
+   glBindProgramNV: PFNGLBINDPROGRAMNVPROC;
+   glDeleteProgramsNV: PFNGLDELETEPROGRAMSNVPROC;
+   glExecuteProgramNV: PFNGLEXECUTEPROGRAMNVPROC;
+   glGenProgramsNV: PFNGLGENPROGRAMSNVPROC;
+   glGetProgramParameterdvNV: PFNGLGETPROGRAMPARAMETERDVNVPROC;
+   glGetProgramParameterfvNV: PFNGLGETPROGRAMPARAMETERFVNVPROC;
+   glGetProgramivNV: PFNGLGETPROGRAMIVNVPROC;
+   glGetProgramStringNV: PFNGLGETPROGRAMSTRINGNVPROC;
+   glGetTrackMatrixivNV: PFNGLGETTRACKMATRIXIVNVPROC;
+   glGetVertexAttribdvNV: PFNGLGETVERTEXATTRIBDVNVPROC;
+   glGetVertexAttribfvNV: PFNGLGETVERTEXATTRIBFVNVPROC;
+   glGetVertexAttribivNV: PFNGLGETVERTEXATTRIBIVNVPROC;
+   glGetVertexAttribPointervNV: PFNGLGETVERTEXATTRIBPOINTERVNVPROC;
+   glIsProgramNV: PFNGLISPROGRAMNVPROC;
+   glLoadProgramNV: PFNGLLOADPROGRAMNVPROC;
+   glProgramParameter4dNV: PFNGLPROGRAMPARAMETER4DNVPROC;
+   glProgramParameter4dvNV: PFNGLPROGRAMPARAMETER4DVNVPROC;
+   glProgramParameter4fNV: PFNGLPROGRAMPARAMETER4FNVPROC;
+   glProgramParameter4fvNV: PFNGLPROGRAMPARAMETER4FVNVPROC;
+   glProgramParameters4dvNV: PFNGLPROGRAMPARAMETERS4DVNVPROC;
+   glProgramParameters4fvNV: PFNGLPROGRAMPARAMETERS4FVNVPROC;
+   glRequestResidentProgramsNV: PFNGLREQUESTRESIDENTPROGRAMSNVPROC;
+   glTrackMatrixNV: PFNGLTRACKMATRIXNVPROC;
+   glVertexAttribPointerNV: PFNGLVERTEXATTRIBPOINTERNVPROC;
+   glVertexAttrib1dNV: PFNGLVERTEXATTRIB1DNVPROC;
+   glVertexAttrib1dvNV: PFNGLVERTEXATTRIB1DVNVPROC;
+   glVertexAttrib1fNV: PFNGLVERTEXATTRIB1FNVPROC;
+   glVertexAttrib1fvNV: PFNGLVERTEXATTRIB1FVNVPROC;
+   glVertexAttrib1sNV: PFNGLVERTEXATTRIB1SNVPROC;
+   glVertexAttrib1svNV: PFNGLVERTEXATTRIB1SVNVPROC;
+   glVertexAttrib2dNV: PFNGLVERTEXATTRIB2DNVPROC;
+   glVertexAttrib2dvNV: PFNGLVERTEXATTRIB2DVNVPROC;
+   glVertexAttrib2fNV: PFNGLVERTEXATTRIB2FNVPROC;
+   glVertexAttrib2fvNV: PFNGLVERTEXATTRIB2FVNVPROC;
+   glVertexAttrib2sNV: PFNGLVERTEXATTRIB2SNVPROC;
+   glVertexAttrib2svNV: PFNGLVERTEXATTRIB2SVNVPROC;
+   glVertexAttrib3dNV: PFNGLVERTEXATTRIB3DNVPROC;
+   glVertexAttrib3dvNV: PFNGLVERTEXATTRIB3DVNVPROC;
+   glVertexAttrib3fNV: PFNGLVERTEXATTRIB3FNVPROC;
+   glVertexAttrib3fvNV: PFNGLVERTEXATTRIB3FVNVPROC;
+   glVertexAttrib3sNV: PFNGLVERTEXATTRIB3SNVPROC;
+   glVertexAttrib3svNV: PFNGLVERTEXATTRIB3SVNVPROC;
+   glVertexAttrib4dNV: PFNGLVERTEXATTRIB4DNVPROC;
+   glVertexAttrib4dvNV: PFNGLVERTEXATTRIB4DVNVPROC;
+   glVertexAttrib4fNV: PFNGLVERTEXATTRIB4FNVPROC;
+   glVertexAttrib4fvNV: PFNGLVERTEXATTRIB4FVNVPROC;
+   glVertexAttrib4sNV: PFNGLVERTEXATTRIB4SNVPROC;
+   glVertexAttrib4svNV: PFNGLVERTEXATTRIB4SVNVPROC;
+   glVertexAttrib4ubvNV: PFNGLVERTEXATTRIB4UBVNVPROC;
+   glVertexAttribs1dvNV: PFNGLVERTEXATTRIBS1DVNVPROC;
+   glVertexAttribs1fvNV: PFNGLVERTEXATTRIBS1FVNVPROC;
+   glVertexAttribs1svNV: PFNGLVERTEXATTRIBS1SVNVPROC;
+   glVertexAttribs2dvNV: PFNGLVERTEXATTRIBS2DVNVPROC;
+   glVertexAttribs2fvNV: PFNGLVERTEXATTRIBS2FVNVPROC;
+   glVertexAttribs2svNV: PFNGLVERTEXATTRIBS2SVNVPROC;
+   glVertexAttribs3dvNV: PFNGLVERTEXATTRIBS3DVNVPROC;
+   glVertexAttribs3fvNV: PFNGLVERTEXATTRIBS3FVNVPROC;
+   glVertexAttribs3svNV: PFNGLVERTEXATTRIBS3SVNVPROC;
+   glVertexAttribs4dvNV: PFNGLVERTEXATTRIBS4DVNVPROC;
+   glVertexAttribs4fvNV: PFNGLVERTEXATTRIBS4FVNVPROC;
+   glVertexAttribs4svNV: PFNGLVERTEXATTRIBS4SVNVPROC;
+   glVertexAttribs4ubvNV: PFNGLVERTEXATTRIBS4UBVNVPROC;
 
    // GL_NV_occlusion_query (EXT #261)
-   glGenOcclusionQueriesNV: procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteOcclusionQueriesNV: procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsOcclusionQueryNV: function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginOcclusionQueryNV: procedure(id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndOcclusionQueryNV: procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetOcclusionQueryivNV: procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetOcclusionQueryuivNV: procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGenOcclusionQueriesNV: PFNGLGENOCCLUSIONQUERIESNVPROC;
+   glDeleteOcclusionQueriesNV: PFNGLDELETEOCCLUSIONQUERIESNVPROC;
+   glIsOcclusionQueryNV: PFNGLISOCCLUSIONQUERYNVPROC;
+   glBeginOcclusionQueryNV: PFNGLBEGINOCCLUSIONQUERYNVPROC;
+   glEndOcclusionQueryNV: PFNGLENDOCCLUSIONQUERYNVPROC;
+   glGetOcclusionQueryivNV: PFNGLGETOCCLUSIONQUERYIVNVPROC;
+   glGetOcclusionQueryuivNV: PFNGLGETOCCLUSIONQUERYUIVNVPROC;
 
    // GL_NV_point_sprite (EXT #262)
-   glPointParameteriNV: procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPointParameterivNV: procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPointParameteriNV: PFNGLPOINTPARAMETERINVPROC;
+   glPointParameterivNV: PFNGLPOINTPARAMETERIVNVPROC;
 
    // GL_EXT_stencil_two_side (EXT #268)
-   glActiveStencilFaceEXT: procedure(face: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glActiveStencilFaceEXT: PFNGLACTIVESTENCILFACEEXTPROC;
 
    // GL_ATI_draw_buffers (EXT #277)
-   glDrawBuffersATI: procedure(n: GLsizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawBuffersATI: PFNGLDRAWBUFFERSATIPROC;
 
    // GL_NV_primitive_restart (EXT #285)
-   glPrimitiveRestartNV: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glPrimitiveRestartIndexNV: procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glPrimitiveRestartNV: PFNGLPRIMITIVERESTARTNVPROC;
+   glPrimitiveRestartIndexNV: PFNGLPRIMITIVERESTARTINDEXNVPROC;
 
    // GL_EXT_depth_bounds_test (EXT #297)
-   glDepthBoundsEXT: procedure(zmin: TGLclampd; zmax: TGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDepthBoundsEXT: PFNGLDEPTHBOUNDSEXTPROC;
 
    // GL_EXT_blend_equation_separate (EXT #299)
-   glBlendEquationSeparateEXT: procedure(modeRGB: TGLenum; modeAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlendEquationSeparateEXT: PFNGLBLENDEQUATIONSEPARATEEXTPROC;
 
    // GL_EXT_framebuffer_object (EXT #310)
-   glIsRenderbufferEXT: function(renderbuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindRenderbufferEXT: procedure(target: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteRenderbuffersEXT: procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenRenderbuffersEXT: procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glRenderbufferStorageEXT: procedure(target: TGLenum; internalformat: TGLenum; width: TGLsizei; height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetRenderbufferParameterivEXT: procedure(target: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsFramebufferEXT: function(framebuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindFramebufferEXT: procedure(target: TGLenum; framebuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDeleteFramebuffersEXT: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenFramebuffersEXT: procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glCheckFramebufferStatusEXT: function(target: TGLenum): TGLenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture1DEXT: procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture2DEXT: procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTexture3DEXT: procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; zoffset: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferRenderbufferEXT: procedure(target: TGLenum; attachment: TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFramebufferAttachmentParameterivEXT: procedure(target: TGLenum; attachment: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGenerateMipmapEXT: procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glIsRenderbufferEXT: PFNGLISRENDERBUFFEREXTPROC;
+   glBindRenderbufferEXT: PFNGLBINDRENDERBUFFEREXTPROC;
+   glDeleteRenderbuffersEXT: PFNGLDELETERENDERBUFFERSEXTPROC;
+   glGenRenderbuffersEXT: PFNGLGENRENDERBUFFERSEXTPROC;
+   glRenderbufferStorageEXT: PFNGLRENDERBUFFERSTORAGEEXTPROC;
+   glGetRenderbufferParameterivEXT: PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC;
+   glIsFramebufferEXT: PFNGLISFRAMEBUFFEREXTPROC;
+   glBindFramebufferEXT: PFNGLBINDFRAMEBUFFEREXTPROC;
+   glDeleteFramebuffersEXT: PFNGLDELETEFRAMEBUFFERSEXTPROC;
+   glGenFramebuffersEXT: PFNGLGENFRAMEBUFFERSEXTPROC;
+   glCheckFramebufferStatusEXT: PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC;
+   glFramebufferTexture1DEXT: PFNGLFRAMEBUFFERTEXTURE1DEXTPROC;
+   glFramebufferTexture2DEXT: PFNGLFRAMEBUFFERTEXTURE2DEXTPROC;
+   glFramebufferTexture3DEXT: PFNGLFRAMEBUFFERTEXTURE3DEXTPROC;
+   glFramebufferRenderbufferEXT: PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC;
+   glGetFramebufferAttachmentParameterivEXT: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC;
+   glGenerateMipmapEXT: PFNGLGENERATEMIPMAPEXTPROC;
 
    // GL_EXT_stencil_clear_tag (EXT #314)
-   glStencilClearTagEXT: procedure(stencilTagBits: TGLsizei; stencilClearTag: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glStencilClearTagEXT: PFNGLSTENCILCLEARTAGEXTPROC;
 
    // GL_EXT_framebuffer_blit (#316)
-   glBlitFramebufferEXT: procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
-                            dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-                            mask: TGLbitfield; filter: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBlitFramebufferEXT: PFNGLBLITFRAMEBUFFEREXTPROC;
 
    // GL_EXT_framebuffer_multisample (#317)
-   glRenderbufferStorageMultisampleEXT: procedure(target: TGLenum; samples: TGLsizei;
-            internalformat: TGLenum; width: TGLsizei; height: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glRenderbufferStorageMultisampleEXT: PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC;
 
    // GL_EXT_timer_query (#319)
-   glGetQueryObjecti64vEXT: procedure(id: TGLuint; pname: TGLenum; params: PGLint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetQueryObjectui64vEXT: procedure(id: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glGetQueryObjecti64vEXT: PFNGLGETQUERYOBJECTI64VEXTPROC;
+   glGetQueryObjectui64vEXT: PFNGLGETQUERYOBJECTUI64VEXTPROC;
 
    // GL_EXT_gpu_program_parameters (EXT #320)
-   glProgramEnvParameters4fvEXT:   procedure(target:TGLenum; index:TGLuint; count:TGLsizei;
-                                     const params:PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramLocalParameters4fvEXT: procedure(target:TGLenum; index:TGLuint; count:TGLsizei;
-                                     const params:PGLFloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramEnvParameters4fvEXT: PFNGLPROGRAMENVPARAMETERS4FVEXTPROC;
+   glProgramLocalParameters4fvEXT: PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC;
 
    // GL_NV_geometry_program4 (EXT #323)
-   glProgramVertexLimitNV: procedure (target: TGLenum; limit: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramVertexLimitNV: PFNGLPROGRAMVERTEXLIMITNVPROC;
 
    // GL_EXT_geometry_shader4 (EXT #324)
-   glProgramParameteriEXT: procedure ( _program:TGLuint; pname:TGLenum; value: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureEXT: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureLayerEXT: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; layer:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFramebufferTextureFaceEXT: procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; face:TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glProgramParameteriEXT: PFNGLPROGRAMPARAMETERIEXTPROC;
+   glFramebufferTextureEXT: PFNGLFRAMEBUFFERTEXTUREEXTPROC;
+   glFramebufferTextureLayerEXT: PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC;
+   glFramebufferTextureFaceEXT: PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC;
 
    // GL_EXT_gpu_shader4 (EXT #326)
-   glVertexAttribI1iEXT: procedure(index: TGLuint; x: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2iEXT: procedure(index: TGLuint; x: TGLint; y: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3iEXT: procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4iEXT: procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint; w: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1uiEXT: procedure(index: TGLuint; x: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2uiEXT: procedure(index: TGLuint; x: TGLuint; y: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3uiEXT: procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4uiEXT: procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint; w: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1ivEXT: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2ivEXT: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3ivEXT: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4ivEXT: procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI1uivEXT: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI2uivEXT: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI3uivEXT: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4uivEXT: procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4bvEXT: procedure(index: TGLuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4svEXT: procedure(index: TGLuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4ubvEXT: procedure(index: TGLuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribI4usvEXT: procedure(index: TGLuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribIPointerEXT: procedure(index: TGLuint; size: TGLint; _type: TGLenum;
-                                stride: TGLsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribIivEXT: procedure(index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetVertexAttribIuivEXT: procedure(index: TGLuint; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1uiEXT: procedure(location: TGLInt; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2uiEXT: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3uiEXT: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4uiEXT: procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform1uivEXT: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform2uivEXT: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform3uivEXT: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniform4uivEXT: procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformuivEXT: procedure(_program: TGLuint; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindFragDataLocationEXT: procedure(_program: TGLuint; colorNumber: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetFragDataLocationEXT: function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glVertexAttribI1iEXT: PFNGLVERTEXATTRIBI1IEXTPROC;
+   glVertexAttribI2iEXT: PFNGLVERTEXATTRIBI2IEXTPROC;
+   glVertexAttribI3iEXT: PFNGLVERTEXATTRIBI3IEXTPROC;
+   glVertexAttribI4iEXT: PFNGLVERTEXATTRIBI4IEXTPROC;
+   glVertexAttribI1uiEXT: PFNGLVERTEXATTRIBI1UIEXTPROC;
+   glVertexAttribI2uiEXT: PFNGLVERTEXATTRIBI2UIEXTPROC;
+   glVertexAttribI3uiEXT: PFNGLVERTEXATTRIBI3UIEXTPROC;
+   glVertexAttribI4uiEXT: PFNGLVERTEXATTRIBI4UIEXTPROC;
+   glVertexAttribI1ivEXT: PFNGLVERTEXATTRIBI1IVEXTPROC;
+   glVertexAttribI2ivEXT: PFNGLVERTEXATTRIBI2IVEXTPROC;
+   glVertexAttribI3ivEXT: PFNGLVERTEXATTRIBI3IVEXTPROC;
+   glVertexAttribI4ivEXT: PFNGLVERTEXATTRIBI4IVEXTPROC;
+   glVertexAttribI1uivEXT: PFNGLVERTEXATTRIBI1UIVEXTPROC;
+   glVertexAttribI2uivEXT: PFNGLVERTEXATTRIBI2UIVEXTPROC;
+   glVertexAttribI3uivEXT: PFNGLVERTEXATTRIBI3UIVEXTPROC;
+   glVertexAttribI4uivEXT: PFNGLVERTEXATTRIBI4UIVEXTPROC;
+   glVertexAttribI4bvEXT: PFNGLVERTEXATTRIBI4BVEXTPROC;
+   glVertexAttribI4svEXT: PFNGLVERTEXATTRIBI4SVEXTPROC;
+   glVertexAttribI4ubvEXT: PFNGLVERTEXATTRIBI4UBVEXTPROC;
+   glVertexAttribI4usvEXT: PFNGLVERTEXATTRIBI4USVEXTPROC;
+   glVertexAttribIPointerEXT: PFNGLVERTEXATTRIBIPOINTEREXTPROC;
+   glGetVertexAttribIivEXT: PFNGLGETVERTEXATTRIBIIVEXTPROC;
+   glGetVertexAttribIuivEXT: PFNGLGETVERTEXATTRIBIUIVEXTPROC;
+   glUniform1uiEXT: PFNGLUNIFORM1UIEXTPROC;
+   glUniform2uiEXT: PFNGLUNIFORM2UIEXTPROC;
+   glUniform3uiEXT: PFNGLUNIFORM3UIEXTPROC;
+   glUniform4uiEXT: PFNGLUNIFORM4UIEXTPROC;
+   glUniform1uivEXT: PFNGLUNIFORM1UIVEXTPROC;
+   glUniform2uivEXT: PFNGLUNIFORM2UIVEXTPROC;
+   glUniform3uivEXT: PFNGLUNIFORM3UIVEXTPROC;
+   glUniform4uivEXT: PFNGLUNIFORM4UIVEXTPROC;
+   glGetUniformuivEXT: PFNGLGETUNIFORMUIVEXTPROC;
+   glBindFragDataLocationEXT: PFNGLBINDFRAGDATALOCATIONEXTPROC;
+   glGetFragDataLocationEXT: PFNGLGETFRAGDATALOCATIONEXTPROC;
 
    // GL_EXT_draw_instanced (#327)
-   glDrawArraysInstancedEXT: procedure(mode: TGLenum; first: TGLint; count: TGLsizei;
-            primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDrawElementsInstancedEXT: procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
-            indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glDrawArraysInstancedEXT: PFNGLDRAWARRAYSINSTANCEDEXTPROC;
+   glDrawElementsInstancedEXT: PFNGLDRAWELEMENTSINSTANCEDEXTPROC;
 
    // GL_EXT_packed_float (#328)
    // WGL_EXT_pixel_format_packed_float
@@ -2527,116 +2489,96 @@ var
 
 
    // GL_EXT_texture_buffer_object (#330)
-   glTexBufferEXT: procedure(target: TGLenum; internalformat: TGLenum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTexBufferEXT: PFNGLTEXBUFFEREXTPROC;
 
    // GL_EXT_draw_buffers2 (#340)
-   glColorMaskIndexedEXT: procedure(buf: TGLuint; r: TGLboolean; g: TGLboolean;
-                            b: TGLboolean; a: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBooleanIndexedvEXT: procedure(value: TGLenum; index: TGLuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetIntegerIndexedvEXT: procedure(value: TGLenum; index: TGLuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEnableIndexedEXT: procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glDisableIndexedEXT: procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsEnabledIndexedEXT: function(target: TGLenum; index: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glColorMaskIndexedEXT: PFNGLCOLORMASKINDEXEDEXTPROC;
+   glGetBooleanIndexedvEXT: PFNGLGETBOOLEANINDEXEDVEXTPROC;
+   glGetIntegerIndexedvEXT: PFNGLGETINTEGERINDEXEDVEXTPROC;
+   glEnableIndexedEXT: PFNGLENABLEINDEXEDEXTPROC;
+   glDisableIndexedEXT: PFNGLDISABLEINDEXEDEXTPROC;
+   glIsEnabledIndexedEXT: PFNGLISENABLEDINDEXEDEXTPROC;
 
    // GL_NV_transform_feedback (#341)
-   glBindBufferRangeNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                                  offset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindBufferOffsetNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                                   offset: TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindBufferBaseNV: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTransformFeedbackAttribsNV: procedure(count: TGLsizei; attribs: PGLint;
-                                           bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTransformFeedbackVaryingsNV: procedure(_program: TGLuint; count: TGLsizei;
-                                            locations: PGLint;
-                                            bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginTransformFeedbackNV: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndTransformFeedbackNV: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindBufferRangeNV: PFNGLBINDBUFFERRANGENVPROC;
+   glBindBufferOffsetNV: PFNGLBINDBUFFEROFFSETNVPROC;
+   glBindBufferBaseNV: PFNGLBINDBUFFERBASENVPROC;
+   glTransformFeedbackAttribsNV: PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC;
+   glTransformFeedbackVaryingsNV: PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC;
+   glBeginTransformFeedbackNV: PFNGLBEGINTRANSFORMFEEDBACKNVPROC;
+   glEndTransformFeedbackNV: PFNGLENDTRANSFORMFEEDBACKNVPROC;
 
-   glGetVaryingLocationNV: function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetActiveVaryingNV: procedure(_program: TGLuint; index: TGLuint;
-                                   bufSize: TGLsizei; length: PGLsizei; size: PGLsizei;
-                                   _type: TGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glActiveVaryingNV: procedure(_program: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTransformFeedbackVaryingNV: procedure(_program: TGLuint; index: TGLuint;
-                                              location: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-
+   glGetVaryingLocationNV: PFNGLGETVARYINGLOCATIONNVPROC;
+   glGetActiveVaryingNV: PFNGLGETACTIVEVARYINGNVPROC;
+   glActiveVaryingNV: PFNGLACTIVEVARYINGNVPROC;
+   glGetTransformFeedbackVaryingNV: PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC;
 
    // GL_EXT_bindable_uniform (#342)
-   glUniformBufferEXT: procedure(_program: TGLUint; location: TGLint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformBufferSizeEXT: function(_program: TGLuint; location: TGLint): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformOffsetEXT: function(_program: TGLuint; location: TGLint): PGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glUniformBufferEXT: PFNGLUNIFORMBUFFEREXTPROC;
+   glGetUniformBufferSizeEXT: PFNGLGETUNIFORMBUFFERSIZEEXTPROC;
+   glGetUniformOffsetEXT: PFNGLGETUNIFORMOFFSETEXTPROC;
 
    // GL_EXT_texture_integer (#343)
-   glClearColorIiEXT: procedure(r: TGLint; g: TGLint; b: TGLint; a: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glClearColorIuiEXT: procedure(r: TGLuint; g: TGLuint; b: TGLuint; a: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexParameterIivEXT: procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexParameterIuivEXT: procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTexParameterIivEXT: procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTexParameterIuivEXT: procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glClearColorIiEXT: PFNGLCLEARCOLORIIEXTPROC;
+   glClearColorIuiEXT: PFNGLCLEARCOLORIUIEXTPROC;
+   glTexParameterIivEXT: PFNGLTEXPARAMETERIIVEXTPROC;
+   glTexParameterIuivEXT: PFNGLTEXPARAMETERIUIVEXTPROC;
+   glGetTexParameterIivEXT: PFNGLGETTEXPARAMETERIIVEXTPROC;
+   glGetTexParameterIuivEXT: PFNGLGETTEXPARAMETERIUIVEXTPROC;
 
    // GL_NV_conditional_render (#346)
-   glBeginConditionalRenderNV: procedure(id: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndConditionalRenderNV: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBeginConditionalRenderNV: PFNGLBEGINCONDITIONALRENDERNVPROC;
+   glEndConditionalRenderNV: PFNGLENDCONDITIONALRENDERNVPROC;
 
    // GL_EXT_transform_feedback (#352)
-   glBindBufferRangeEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindBufferOffsetEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
-                            offset:TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBindBufferBaseEXT: procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glBeginTransformFeedbackEXT: procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEndTransformFeedbackEXT: procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTransformFeedbackVaryingsEXT: procedure(_program: TGLuint; count: TGLsizei;
-                                      const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetTransformFeedbackVaryingEXT: procedure(_program: TGLuint; index: TGLuint;
-                                        bufSize: TGLsizei; length: PGLsizei;
-                                        size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBindBufferRangeEXT: PFNGLBINDBUFFERRANGEEXTPROC;
+   glBindBufferOffsetEXT: PFNGLBINDBUFFEROFFSETEXTPROC;
+   glBindBufferBaseEXT: PFNGLBINDBUFFERBASEEXTPROC;
+   glBeginTransformFeedbackEXT: PFNGLBEGINTRANSFORMFEEDBACKEXTPROC;
+   glEndTransformFeedbackEXT: PFNGLENDTRANSFORMFEEDBACKEXTPROC;
+   glTransformFeedbackVaryingsEXT: PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC;
+   glGetTransformFeedbackVaryingEXT: PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC;
 
    // GL_AMD_vertex_shader_tessellator (#363)
-   glTessellationFactorAMD: procedure(factor: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTessellationModeAMD: procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glTessellationFactorAMD: PFNGLTESSELLATIONFACTORAMDPROC;
+   glTessellationModeAMD: PFNGLTESSELLATIONMODEAMDPROC;
 
    // GL_NV_copy_image (#376)
-   glCopyImageSubDataNV: procedure(
-     srcName: GLuint; srcTarget: GLenum; srcLevel: GLint;
-     srcX: GLint; srcY: GLint; srcZ: GLint;
-     dstName: GLuint; dstTarget: GLenum; dstLevel: GLint;
-     dstX: GLint; dstY: GLint; dstZ: GLint;
-     width: GLsizei; height: GLsizei; depth: GLsizei);  {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glCopyImageSubDataNV: PFNGLCOPYIMAGESUBDATANVPROC;
 
    // GL_NV_shader_buffer_load (#379)
-   glMakeBufferResidentNV: procedure(target: TGLenum; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMakeBufferNonResidentNV: procedure(target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsBufferResidentNV: function(target: TGLenum): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMakeNamedBufferResidentNV: procedure(buffer: TGLuint; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glMakeNamedBufferNonResidentNV: procedure(buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIsNamedBufferResidentNV: function (buffer: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetBufferParameterui64vNV: procedure(target: TGLenum; pname: TGLenum; params: PGLuint64EXT );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetNamedBufferParameterui64vNV: procedure(buffer: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetIntegerui64vNV: procedure(value: TGLenum; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformui64NV: procedure(location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glUniformui64vNV: procedure(location: GLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetUniformui64vNV: procedure(_program: TGLuint; location: TGLint; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformui64NV: procedure(_program: TGLuint; location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glProgramUniformui64vNV: procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glMakeBufferResidentNV: PFNGLMAKEBUFFERRESIDENTNVPROC;
+   glMakeBufferNonResidentNV: PFNGLMAKEBUFFERNONRESIDENTNVPROC;
+   glIsBufferResidentNV: PFNGLISBUFFERRESIDENTNVPROC;
+   glMakeNamedBufferResidentNV: PFNGLMAKENAMEDBUFFERRESIDENTNVPROC;
+   glMakeNamedBufferNonResidentNV: PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC;
+   glIsNamedBufferResidentNV: PFNGLISNAMEDBUFFERRESIDENTNVPROC;
+   glGetBufferParameterui64vNV: PFNGLGETBUFFERPARAMETERUI64VNVPROC;
+   glGetNamedBufferParameterui64vNV: PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC;
+   glGetIntegerui64vNV: PFNGLGETINTEGERUI64VNVPROC;
+   glUniformui64NV: PFNGLUNIFORMUI64NVPROC;
+   glUniformui64vNV: PFNGLUNIFORMUI64VNVPROC;
+   glGetUniformui64vNV: PFNGLGETUNIFORMUI64VNVPROC;
+   glProgramUniformui64NV: PFNGLPROGRAMUNIFORMUI64NVPROC;
+   glProgramUniformui64vNV: PFNGLPROGRAMUNIFORMUI64VNVPROC;
 
    // GL_NV_vertex_buffer_unified_memory (#380)
-   glBufferAddressRangeNV: procedure(pname: TGLenum; index: TGLuint; address: TGLuint64EXT; length: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glNormalFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glColorFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glIndexFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glTexCoordFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glEdgeFlagFormatNV: procedure(stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glSecondaryColorFormatNV: procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glFogCoordFormatNV: procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribFormatNV: procedure(index: TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glVertexAttribIFormatNV: procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glGetIntegerui64i_vNV: procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glBufferAddressRangeNV: PFNGLBUFFERADDRESSRANGENVPROC;
+   glVertexFormatNV: PFNGLVERTEXFORMATNVPROC;
+   glNormalFormatNV: PFNGLNORMALFORMATNVPROC;
+   glColorFormatNV: PFNGLCOLORFORMATNVPROC;
+   glIndexFormatNV: PFNGLINDEXFORMATNVPROC;
+   glTexCoordFormatNV: PFNGLTEXCOORDFORMATNVPROC;
+   glEdgeFlagFormatNV: PFNGLEDGEFLAGFORMATNVPROC;
+   glSecondaryColorFormatNV: PFNGLSECONDARYCOLORFORMATNVPROC;
+   glFogCoordFormatNV: PFNGLFOGCOORDFORMATNVPROC;
+   glVertexAttribFormatNV: PFNGLVERTEXATTRIBFORMATNVPROC;
+   glVertexAttribIFormatNV: PFNGLVERTEXATTRIBIFORMATNVPROC;
+   glGetIntegerui64i_vNV: PFNGLGETINTEGERUI64I_VNVPROC;
 
    // Special Gremedy debugger extension
-   glFrameTerminatorGREMEDY: procedure(); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   glStringMarkerGREMEDY: procedure(len: GLsizei; str: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   glFrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
+   glStringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -3253,6 +3195,17 @@ begin
    glGetBufferParameteri64v := GLGetProcAddress('glGetBufferParameteri64v');
    glProgramParameteri := GLGetProcAddress('glProgramParameteri');
    glFramebufferTexture := GLGetProcAddress('glFramebufferTexture');
+
+{$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
+
+{$IFDEF GLS_COMPILER_2005_UP} {$region 'locate functions/procedures added with OpenGL 3.3'} {$ENDIF}
+
+   //  ###########################################################
+   //            locate functions and procedures for
+   //         extensions integrated into OpenGL 3.3 core
+   //  ###########################################################
+
+   glVertexAttribDivisor := GLGetProcAddress('glVertexAttribDivisor');
 
 {$IFDEF GLS_COMPILER_2005_UP} {$endregion} {$ENDIF}
 
@@ -4351,7 +4304,7 @@ begin
     glXGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
     glXEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
     glXBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
-    GetVideoDeviceNV := GLGetProcAddress('GetVideoDeviceNV');
+    glxGetVideoDeviceNV := GLGetProcAddress('glxGetVideoDeviceNV');
     glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
     glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
     glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
