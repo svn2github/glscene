@@ -4,7 +4,7 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>23/01/11 - DanB - Added OpenGL procedural types, GL_ARB_get_program_binary
+      <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
       <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
       <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
    </ul></font>
@@ -278,6 +278,8 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
+  TGLDEBUGPROCARB = TDebugProc;
+
   TDebugProcAMD = procedure(
     id: GLuint;
     category: GLenum;
@@ -1879,6 +1881,7 @@ const
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.3'}{$ENDIF}
+  GL_VERTEX_ATTRIB_ARRAY_DIVISOR = $88FE;
   // re-use tokens from:
   // GL_ARB_blend_func_extended (ARB #78)
   // GL_ARB_explicit_attrib_location (ARB #79) (none)
@@ -1892,6 +1895,17 @@ const
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.0'}{$ENDIF}
+  GL_SAMPLE_SHADING = $8C36;
+  GL_MIN_SAMPLE_SHADING_VALUE = $8C37;
+  GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET = $8E5E;
+  GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET = $8E5F;
+  GL_TEXTURE_CUBE_MAP_ARRAY = $9009;
+  GL_TEXTURE_BINDING_CUBE_MAP_ARRAY = $900A;
+  GL_PROXY_TEXTURE_CUBE_MAP_ARRAY = $900B;
+  GL_SAMPLER_CUBE_MAP_ARRAY = $900C;
+  GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW = $900D;
+  GL_INT_SAMPLER_CUBE_MAP_ARRAY = $900E;
+  GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY = $900F;
   // re-use tokens from:
   // GL_ARB_draw_indirect (ARB #87)
   // GL_ARB_gpu_shader5 (ARB #88)
@@ -1905,65 +1919,12 @@ const
 
 {$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.1'}{$ENDIF}
   // re-use tokens from:
-  GL_DEBUG_OUTPUT_SYNCHRONOUS = $8242;
-  GL_MAX_DEBUG_MESSAGE_LENGTH = $9143;
-  GL_MAX_DEBUG_LOGGED_MESSAGES = $9144;
-  GL_DEBUG_LOGGED_MESSAGES = $9145;
-  GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH = $8243;
-  GL_DEBUG_CALLBACK_FUNCTION = $8244;
-  GL_DEBUG_CALLBACK_USER_PARAM = $8245;
-  GL_DEBUG_SOURCE_API = $8246;
-  GL_DEBUG_SOURCE_WINDOW_SYSTEM = $8247;
-  GL_DEBUG_SOURCE_SHADER_COMPILER = $8248;
-  GL_DEBUG_SOURCE_THIRD_PARTY = $8249;
-  GL_DEBUG_SOURCE_APPLICATION = $824A;
-  GL_DEBUG_SOURCE_OTHER = $824B;
-  GL_DEBUG_TYPE_ERROR = $824C;
-  GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = $824D;
-  GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR = $824E;
-  GL_DEBUG_TYPE_PORTABILITY = $824F;
-  GL_DEBUG_TYPE_PERFORMANCE = $8250;
-  GL_DEBUG_TYPE_OTHER = $8251;
-  GL_DEBUG_SEVERITY_HIGH = $9146;
-  GL_DEBUG_SEVERITY_MEDIUM = $9147;
-  GL_DEBUG_SEVERITY_LOW = $9148;
-
-  GL_PROGRAM_BINARY_RETRIEVABLE_HINT = $8257;
-  GL_PROGRAM_BINARY_LENGTH = $8741;
-  GL_NUM_PROGRAM_BINARY_FORMATS = $87FE;
-  GL_PROGRAM_BINARY_FORMATS = $87FF;
-
-  GL_VERTEX_SHADER_BIT = $00000001;
-  GL_FRAGMENT_SHADER_BIT = $00000002;
-  GL_GEOMETRY_SHADER_BIT = $00000004;
-  GL_TESS_CONTROL_SHADER_BIT = $00000008;
-  GL_TESS_EVALUATION_SHADER_BIT = $00000010;
-  GL_ALL_SHADER_BITS = $FFFFFFFF;
-  GL_PROGRAM_SEPARABLE = $8258;
-  GL_ACTIVE_PROGRAM = $8259;
-  GL_PROGRAM_PIPELINE_BINDING = $825A;
-
-  GL_MAX_VIEWPORTS = $825B;
-  GL_VIEWPORT_SUBPIXEL_BITS = $825C;
-  GL_VIEWPORT_BOUNDS_RANGE = $825D;
-  GL_LAYER_PROVOKING_VERTEX = $825E;
-  GL_VIEWPORT_INDEX_PROVOKING_VERTEX = $825F;
-  GL_UNDEFINED_VERTEX = $8260;
-
-  GL_SHADER_COMPILER = $8DFA;
-  GL_NUM_SHADER_BINARY_FORMATS = $8DF9;
-  GL_MAX_VERTEX_UNIFORM_VECTORS = $8DFB;
-  GL_MAX_VARYING_VECTORS = $8DFC;
-  GL_MAX_FRAGMENT_UNIFORM_VECTORS = $8DFD;
-  GL_IMPLEMENTATION_COLOR_READ_TYPE = $8B9A;
-  GL_IMPLEMENTATION_COLOR_READ_FORMAT = $8B9B;
-  GL_FIXED = $140C;
-  GL_LOW_FLOAT = $8DF0;
-  GL_MEDIUM_FLOAT = $8DF1;
-  GL_HIGH_FLOAT = $8DF2;
-  GL_LOW_INT = $8DF3;
-  GL_MEDIUM_INT = $8DF4;
-  GL_HIGH_INT = $8DF5;
+  // GL_ARB_ES2_compatibility (ARB #95)
+  // GL_ARB_get_program_binary (ARB #96)
+  // GL_ARB_separate_shader_objects (ARB #97)
+  // GL_ARB_shader_precision (none) (ARB #98)
+  // GL_ARB_vertex_attrib_64bit (ARB #99)
+  // GL_ARB_viewport_array (ARB #100)
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -2889,22 +2850,22 @@ const
   // (no new tokens)
 
   // ARB Extension #70 - GL_ARB_sample_shading
-  GL_SAMPLE_SHADING = $8C36;
-  GL_MIN_SAMPLE_SHADING_VALUE = $8C37;
+  GL_SAMPLE_SHADING_ARB = $8C36;
+  GL_MIN_SAMPLE_SHADING_VALUE_ARB = $8C37;
 
   // ARB Extension #71 - GL_ARB_texture_cube_map_array
-  GL_TEXTURE_CUBE_MAP_ARRAY = $9009;
-  GL_TEXTURE_BINDING_CUBE_MAP_ARRAY = $900A;
-  GL_PROXY_TEXTURE_CUBE_MAP_ARRAY = $900B;
-  GL_SAMPLER_CUBE_MAP_ARRAY = $900C;
-  GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW = $900D;
-  GL_INT_SAMPLER_CUBE_MAP_ARRAY = $900E;
-  GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY = $900F;
+  GL_TEXTURE_CUBE_MAP_ARRAY_ARB = $9009;
+  GL_TEXTURE_BINDING_CUBE_MAP_ARRAY_ARB = $900A;
+  GL_PROXY_TEXTURE_CUBE_MAP_ARRAY_ARB = $900B;
+  GL_SAMPLER_CUBE_MAP_ARRAY_ARB = $900C;
+  GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW_ARB = $900D;
+  GL_INT_SAMPLER_CUBE_MAP_ARRAY_ARB = $900E;
+  GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY_ARB = $900F;
 
   // ARB Extension #72 - GL_ARB_texture_gather
-  GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET = $8E5E;
-  GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET = $8E5F;
-  GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS = $8F9F;
+  GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET_ARB = $8E5E;
+  GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET_ARB = $8E5F;
+  GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS_ARB = $8F9F;
 
   // ARB Extension #73 - GL_ARB_texture_query_lod
   // (no new tokens)
@@ -3051,6 +3012,88 @@ const
 
   // ARB Extension #94 - GL_ARB_transform_feedback3
   GL_MAX_TRANSFORM_FEEDBACK_BUFFERS = $8E70;
+
+  // ARB Extension #95 - GL_ARB_ES2_compatibility
+  GL_FIXED = $140C;
+  GL_IMPLEMENTATION_COLOR_READ_TYPE = $8B9A;
+  GL_IMPLEMENTATION_COLOR_READ_FORMAT = $8B9B;
+  GL_LOW_FLOAT = $8DF0;
+  GL_MEDIUM_FLOAT = $8DF1;
+  GL_HIGH_FLOAT = $8DF2;
+  GL_LOW_INT = $8DF3;
+  GL_MEDIUM_INT = $8DF4;
+  GL_HIGH_INT = $8DF5;
+  GL_SHADER_COMPILER = $8DFA;
+  GL_NUM_SHADER_BINARY_FORMATS = $8DF9;
+  GL_MAX_VERTEX_UNIFORM_VECTORS = $8DFB;
+  GL_MAX_VARYING_VECTORS = $8DFC;
+  GL_MAX_FRAGMENT_UNIFORM_VECTORS = $8DFD;
+
+  // ARB Extension #96 - GL_ARB_get_program_binary
+  GL_PROGRAM_BINARY_RETRIEVABLE_HINT = $8257;
+  GL_PROGRAM_BINARY_LENGTH = $8741;
+  GL_NUM_PROGRAM_BINARY_FORMATS = $87FE;
+  GL_PROGRAM_BINARY_FORMATS = $87FF;
+
+  // ARB Extension #97 - GL_ARB_separate_shader_objects
+  GL_VERTEX_SHADER_BIT = $00000001;
+  GL_FRAGMENT_SHADER_BIT = $00000002;
+  GL_GEOMETRY_SHADER_BIT = $00000004;
+  GL_TESS_CONTROL_SHADER_BIT = $00000008;
+  GL_TESS_EVALUATION_SHADER_BIT = $00000010;
+  GL_ALL_SHADER_BITS = $FFFFFFFF;
+  GL_PROGRAM_SEPARABLE = $8258;
+  GL_ACTIVE_PROGRAM = $8259;
+  GL_PROGRAM_PIPELINE_BINDING = $825A;
+
+  // ARB Extension #98 - GL_ARB_shader_precision (none)
+
+  // ARB Extension #99 - GL_ARB_vertex_attrib_64bit
+  // reuses tokens from 3.0 + GL_ARB_gpu_shader_fp64
+
+  // ARB Extension #100 - GL_ARB_viewport_array
+  GL_MAX_VIEWPORTS = $825B;
+  GL_VIEWPORT_SUBPIXEL_BITS = $825C;
+  GL_VIEWPORT_BOUNDS_RANGE = $825D;
+  GL_LAYER_PROVOKING_VERTEX = $825E;
+  GL_VIEWPORT_INDEX_PROVOKING_VERTEX = $825F;
+  GL_UNDEFINED_VERTEX = $8260;
+
+  // ARB Extension #104 - GL_ARB_debug_output
+  GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB = $8242;
+  GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_ARB = $8243;
+  GL_DEBUG_CALLBACK_FUNCTION_ARB = $8244;
+  GL_DEBUG_CALLBACK_USER_PARAM_ARB = $8245;
+  GL_DEBUG_SOURCE_API_ARB = $8246;
+  GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB = $8247;
+  GL_DEBUG_SOURCE_SHADER_COMPILER_ARB = $8248;
+  GL_DEBUG_SOURCE_THIRD_PARTY_ARB = $8249;
+  GL_DEBUG_SOURCE_APPLICATION_ARB = $824A;
+  GL_DEBUG_SOURCE_OTHER_ARB = $824B;
+  GL_DEBUG_TYPE_ERROR_ARB = $824C;
+  GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB = $824D;
+  GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB = $824E;
+  GL_DEBUG_TYPE_PORTABILITY_ARB = $824F;
+  GL_DEBUG_TYPE_PERFORMANCE_ARB = $8250;
+  GL_DEBUG_TYPE_OTHER_ARB = $8251;
+  GL_MAX_DEBUG_MESSAGE_LENGTH_ARB = $9143;
+  GL_MAX_DEBUG_LOGGED_MESSAGES_ARB = $9144;
+  GL_DEBUG_LOGGED_MESSAGES_ARB = $9145;
+  GL_DEBUG_SEVERITY_HIGH_ARB = $9146;
+  GL_DEBUG_SEVERITY_MEDIUM_ARB = $9147;
+  GL_DEBUG_SEVERITY_LOW_ARB = $9148;
+
+  // ARB Extension #105 - GL_ARB_robustness
+  GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB = $00000004;
+  GL_LOSE_CONTEXT_ON_RESET_ARB = $8252;
+  GL_GUILTY_CONTEXT_RESET_ARB = $8253;
+  GL_INNOCENT_CONTEXT_RESET_ARB = $8254;
+  GL_UNKNOWN_CONTEXT_RESET_ARB = $8255;
+  GL_RESET_NOTIFICATION_STRATEGY_ARB = $8256;
+  GL_NO_RESET_NOTIFICATION_ARB = $8261;
+
+  // ARB Extension #106 - GL_ARB_shader_stencil_export
+  // (no new tokens)
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -4295,21 +4338,22 @@ const
   GL_FOG_COORD_ARRAY_LENGTH_NV = $8F32;
   GL_ELEMENT_ARRAY_LENGTH_NV = $8F33;
 
+  // GL_NV_vdpau_interop (#396)
+  GL_SURFACE_STATE_NV                              = $86EB;
+  GL_SURFACE_REGISTERED_NV                         = $86FD;
+  GL_SURFACE_MAPPED_NV                             = $8700;
+  GL_WRITE_DISCARD_NV                              = $88BE;
+
   // unknown extension, where does it come from?
   WGL_COLOR_SAMPLES_NV = $20B9;
 
-  // GL_NVX_gpu_memory_info
+  // GL_NVX_gpu_memory_info (experimental NV extension)
   GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          = $9047;
   GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX    = $9048;
   GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  = $9049;
   GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX            = $904A;
   GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX            = $904B;
 
-  // GL_NV_vdpau_interop
-  GL_SURFACE_STATE_NV                              = $86EB;
-  GL_SURFACE_REGISTERED_NV                         = $86FD;
-  GL_SURFACE_MAPPED_NV                             = $8700;
-  GL_WRITE_DISCARD_NV                              = $88BE;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -5400,11 +5444,21 @@ const
   // Core 3.2
   PFNGLGETINTEGER64I_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETBUFFERPARAMETERI64VPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETERIPROC = procedure(_program: TGLuint; pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLFRAMEBUFFERTEXTUREPROC = procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 3.3
   PFNGLVERTEXATTRIBDIVISORPROC = procedure(index: TGLuint; divisor: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // Core 4.0
+  // promoted to core v4.0 from GL_ARB_draw_buffers_blend (ARB #69)
+  PFNGLBLENDEQUATIONIPROC = procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEIPROC = procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCIPROC = procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEIPROC = procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
+                             srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // promoted to core v4.0 from GL_ARB_sample_shading (ARB #70)
+  PFNGLMINSAMPLESHADINGPROC = procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GLU extensions (might not be same naming as c versions?)
   PFNGLUNURBSCALLBACKDATAEXTPROC = procedure(nurb: PGLUnurbs; userData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -5454,17 +5508,18 @@ const
   PFNWGLCREATECONTEXTATTRIBSARBPROC = function(DC: HDC; hShareContext: HGLRC;
            attribList: PGLint):HGLRC; stdcall;
 
-  // WGL_NV_gpu_affinity
+  // WGL - EXT
+  // WGL_EXT_swap_control (EXT #172)
+  PFNWGLSWAPINTERVALEXTPROC = function(interval : Integer) : BOOL; stdcall;
+  PFNWGLGETSWAPINTERVALEXTPROC = function : Integer; stdcall;
+
+  // WGL_NV_gpu_affinity (EXT #355)
   PFNWGLENUMGPUSNVPROC = function(iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean; stdcall;
   PFNWGLENUMGPUDEVICESNVPROC = function(hGpu: HGPUNV; iDeviceIndex: Cardinal; lpGpuDevice: PGPUDevice): Boolean; stdcall;
   PFNWGLCREATEAFFINITYDCNVPROC = function(hGpuList: PHGPUNV): HDC; stdcall;
   PFNWGLENUMGPUSFROMAFFINITYDCNVPROC = function(hAffinityDC: HDC; iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean; stdcall;
   PFNWGLDELETEDCNVPROC = function(hdc: HDC): Boolean; stdcall;
 
-  // WGL - EXT
-  // WGL_EXT_swap_control (EXT #172)
-  PFNWGLSWAPINTERVALEXTPROC = function(interval : Integer) : BOOL; stdcall;
-  PFNWGLGETSWAPINTERVALEXTPROC = function : Integer; stdcall;
   {$ENDIF}
 
   {$IFDEF SUPPORT_GLX}
@@ -5930,14 +5985,14 @@ const
   PFNGLSAMPLEMASKIPROC = procedure(index: TGLuint; mask: TGLbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_draw_buffers_blend (ARB #69)
-  PFNGLBLENDEQUATIONIPROC = procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDEQUATIONSEPARATEIPROC = procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCIPROC = procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCSEPARATEIPROC = procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
+  PFNGLBLENDEQUATIONIARBPROC = procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEIARBPROC = procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCIARBPROC = procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEIARBPROC = procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
                              srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_sample_shading (ARB #70)
-  PFNGLMINSAMPLESHADINGPROC = procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMINSAMPLESHADINGARBPROC = procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_blend_func_extended (ARB #78)
   PFNGLBINDFRAGDATALOCATIONINDEXEDPROC = procedure (_program: TGLuint; colorNumber: TGLuint; index: TGLuint; const name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6075,12 +6130,143 @@ const
   PFNGLENDQUERYINDEXEDPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETQUERYINDEXEDIVPROC = procedure(target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
+  // GL_ARB_ES2_compatibility (ARB #95)
+  PFNGLRELEASESHADERCOMPILERPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSHADERBINARYPROC = procedure(count: TGLsizei; shaders: PGLuint; binaryformat: TGLenum; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSHADERPRECISIONFORMATPROC = procedure(shadertype: TGLenum; precisiontype: TGLenum; range: PGLint; precision: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEFPROC = procedure(n: TGLclampf; f: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARDEPTHFPROC = procedure(d: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
   // GL_ARB_get_program_binary (ARB #96)
   PFNGLGETPROGRAMBINARYPROC = procedure(_program: TGLuint; bufSize: TGLsizei; length: PGLsizei; binaryFormat: PGLenum; binary: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLPROGRAMBINARYPROC = procedure(_program: TGLuint; binaryFormat: TGLEnum; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  //PFNGLPROGRAMPARAMETERIPROC
+  PFNGLPROGRAMPARAMETERIPROC = procedure(_program: TGLuint; pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_separate_shader_objects (ARB #97)
+  PFNGLUSEPROGRAMSTAGESPROC = procedure(pipeline: TGLuint; stages: TGLbitfield; _program: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVESHADERPROGRAMPROC = procedure(pipeline: TGLuint; _program: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCREATESHADERPROGRAMVPROC = function(_type: TGLenum; count: TGLsizei; const strings: PGLPCharArray): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDPROGRAMPIPELINEPROC = procedure(pipeline: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEPROGRAMPIPELINESPROC = procedure(n: TGLsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENPROGRAMPIPELINESPROC = procedure(n: TGLsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPROGRAMPIPELINEPROC = function(pipeline: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPIPELINEIVPROC = procedure(pipeline: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint; v2: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat; v2: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble; v2: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint; v2: TGLint; v3: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat; v2: TGLfloat; v3: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble; v2: TGLdouble; v3: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVALIDATEPROGRAMPIPELINEPROC = procedure(pipeline: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPIPELINEINFOLOGPROC = procedure(pipeline: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_shader_precision (ARB #98)
+  // (no entry points)
+
+  // GL_ARB_vertex_attrib_64bit (ARB #99)
+  PFNGLVERTEXATTRIBL1DPROC = procedure(index: TGLuint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL2DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL3DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL4DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL1DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL2DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL3DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL4DVPROC = procedure(index: TGLuint; {const} v :PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBLPOINTERPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei; {const} ptr: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBLDVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  // VertexArrayVertexAttribLOffsetEXT only valid if EXT_direct_state_access is available
+  PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC = procedure (vaobj: TGLuint; buffer: TGLuint;
+                                           index: TGLuint; size: TGLint;
+                                           _type: TGLenum; stride: TGLsizei;
+                                           offset: TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 
+  // GL_ARB_viewport_array (ARB #100)
+  PFNGLVIEWPORTARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVIEWPORTINDEXEDFPROC = procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; w: TGLfloat; h: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVIEWPORTINDEXEDFVPROC = procedure(index: TGLuint; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORINDEXEDPROC = procedure(index: TGLuint; left: TGLint; bottom: TGLint; width: TGLsizei; height: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORINDEXEDVPROC = procedure(index: TGLuint; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEINDEXEDPROC = procedure(index: TGLuint; n: TGLclampd; f: TGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFLOATI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETDOUBLEI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_debug_output (ARB #104)
+  PFNGLDEBUGMESSAGECONTROLARBPROC = procedure(source: TGLenum; _type: TGLenum; severity: TGLenum; count: TGLsizei; {const} ids: PGLuint; enabled: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEBUGMESSAGEINSERTARBPROC = procedure(source: TGLenum; _type: TGLenum; id: TGLuint; severity: TGLenum; length: TGLsizei; {const} buf: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEBUGMESSAGECALLBACKARBPROC = procedure(callback: TGLDEBUGPROCARB; {const} userParam: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETDEBUGMESSAGELOGARBPROC = function(count: TGLuint; bufsize: TGLsizei; sources: PGLenum; types: PGLenum; ids: PGLuint; severities: PGLenum; lengths: PGLsizei; messageLog: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_robustness (ARB #105)
+  PFNGLGETGRAPHICSRESETSTATUSARBPROC = function(): TGLenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPDVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPFVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPIVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPFVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPUIVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPUSVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPOLYGONSTIPPLEARBPROC = procedure(bufSize: TGLsizei; pattern: PGLubyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCOLORTABLEARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; table: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCONVOLUTIONFILTERARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; image: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNSEPARABLEFILTERARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; rowBufSize: TGLsizei; row: Pointer; columnBufSize: TGLsizei; column: Pointer; span: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNHISTOGRAMARBPROC = procedure(target: TGLenum; reset: TGLboolean; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMINMAXARBPROC = procedure(target: TGLenum; reset: TGLboolean; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNTEXIMAGEARBPROC = procedure(target: TGLenum; level: TGLint; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLREADNPIXELSARBPROC = procedure(x: TGLint; y: TGLint; width: TGLsizei; height: TGLsizei; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; data: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC = procedure(target: TGLenum; lod: TGLint; bufSize: TGLsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMFVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMIVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMUIVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMDVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_shader_stencil_export (ARB #106)
+  // (no entry points)
 
   // EXT/Vendor extensions
 
@@ -6342,19 +6528,22 @@ const
   PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC = procedure(target: TGLenum; attachment: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGENERATEMIPMAPEXTPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
+  // GL_GREMEDY_string_marker (EXT #311)
+  PFNGLSTRINGMARKERGREMEDYPROC = procedure(len: GLsizei; str: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
   // GL_EXT_stencil_clear_tag (EXT #314)
   PFNGLSTENCILCLEARTAGEXTPROC = procedure(stencilTagBits: TGLsizei; stencilClearTag: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_framebuffer_blit (#316)
+  // GL_EXT_framebuffer_blit (EXT #316)
   PFNGLBLITFRAMEBUFFEREXTPROC = procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
                           dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
                           mask: TGLbitfield; filter: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_framebuffer_multisample (#317)
+  // GL_EXT_framebuffer_multisample (EXT #317)
   PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC = procedure(target: TGLenum; samples: TGLsizei;
           internalformat: TGLenum; width: TGLsizei; height: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_timer_query (#319)
+  // GL_EXT_timer_query (EXT #319)
   PFNGLGETQUERYOBJECTI64VEXTPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETQUERYOBJECTUI64VEXTPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
@@ -6410,26 +6599,26 @@ const
   PFNGLBINDFRAGDATALOCATIONEXTPROC = procedure(_program: TGLuint; colorNumber: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETFRAGDATALOCATIONEXTPROC = function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_draw_instanced (#327)
+  // GL_EXT_draw_instanced (EXT #327)
   PFNGLDRAWARRAYSINSTANCEDEXTPROC = procedure(mode: TGLenum; first: TGLint; count: TGLsizei;
           primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLDRAWELEMENTSINSTANCEDEXTPROC = procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
           indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_packed_float (#328)
+  // GL_EXT_packed_float (EXT #328)
   // WGL_EXT_pixel_format_packed_float
   // GLX_EXT_fbconfig_packed_float
 
 
-  // GL_EXT_texture_array (#329)
+  // GL_EXT_texture_array (EXT #329)
   //glFramebufferTextureLayerEXT: procedure(target: TGLenum; attachment: TGLenum;
   //                                texture: TGLuint; level: TGLint; layer: TGLint);
 
 
-  // GL_EXT_texture_buffer_object (#330)
+  // GL_EXT_texture_buffer_object (EXT #330)
   PFNGLTEXBUFFEREXTPROC = procedure(target: TGLenum; internalformat: TGLenum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_draw_buffers2 (#340)
+  // GL_EXT_draw_buffers2 (EXT #340)
   PFNGLCOLORMASKINDEXEDEXTPROC = procedure(buf: TGLuint; r: TGLboolean; g: TGLboolean;
                           b: TGLboolean; a: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETBOOLEANINDEXEDVEXTPROC = procedure(value: TGLenum; index: TGLuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6438,7 +6627,7 @@ const
   PFNGLDISABLEINDEXEDEXTPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLISENABLEDINDEXEDEXTPROC = function(target: TGLenum; index: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_NV_transform_feedback (#341)
+  // GL_NV_transform_feedback (EXT #341)
   PFNGLBINDBUFFERRANGENVPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
                                 offset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLBINDBUFFEROFFSETNVPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
@@ -6461,12 +6650,12 @@ const
                                             location: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 
-  // GL_EXT_bindable_uniform (#342)
+  // GL_EXT_bindable_uniform (EXT #342)
   PFNGLUNIFORMBUFFEREXTPROC = procedure(_program: TGLUint; location: TGLint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETUNIFORMBUFFERSIZEEXTPROC = function(_program: TGLuint; location: TGLint): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETUNIFORMOFFSETEXTPROC = function(_program: TGLuint; location: TGLint): PGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_texture_integer (#343)
+  // GL_EXT_texture_integer (EXT #343)
   PFNGLCLEARCOLORIIEXTPROC = procedure(r: TGLint; g: TGLint; b: TGLint; a: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLCLEARCOLORIUIEXTPROC = procedure(r: TGLuint; g: TGLuint; b: TGLuint; a: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTEXPARAMETERIIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6474,11 +6663,14 @@ const
   PFNGLGETTEXPARAMETERIIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETTEXPARAMETERIUIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_NV_conditional_render (#346)
+  // GL_GREMEDY_frame_terminator (EXT #345)
+  PFNGLFRAMETERMINATORGREMEDYPROC = procedure(); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_NV_conditional_render (EXT #346)
   PFNGLBEGINCONDITIONALRENDERNVPROC = procedure(id: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDCONDITIONALRENDERNVPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_EXT_transform_feedback (#352)
+  // GL_EXT_transform_feedback (EXT #352)
   PFNGLBINDBUFFERRANGEEXTPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
                           offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLBINDBUFFEROFFSETEXTPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
@@ -6492,11 +6684,11 @@ const
                                       bufSize: TGLsizei; length: PGLsizei;
                                       size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_AMD_vertex_shader_tessellator (#363)
+  // GL_AMD_vertex_shader_tessellator (EXT #363)
   PFNGLTESSELLATIONFACTORAMDPROC = procedure(factor: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTESSELLATIONMODEAMDPROC = procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_NV_copy_image (#376)
+  // GL_NV_copy_image (EXT #376)
   PFNGLCOPYIMAGESUBDATANVPROC = procedure(
     srcName: GLuint; srcTarget: GLenum; srcLevel: GLint;
     srcX: GLint; srcY: GLint; srcZ: GLint;
@@ -6504,7 +6696,7 @@ const
     dstX: GLint; dstY: GLint; dstZ: GLint;
     width: GLsizei; height: GLsizei; depth: GLsizei);  {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_NV_shader_buffer_load (#379)
+  // GL_NV_shader_buffer_load (EXT #379)
   PFNGLMAKEBUFFERRESIDENTNVPROC = procedure(target: TGLenum; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLMAKEBUFFERNONRESIDENTNVPROC = procedure(target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLISBUFFERRESIDENTNVPROC = function(target: TGLenum): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6520,7 +6712,7 @@ const
   PFNGLPROGRAMUNIFORMUI64NVPROC = procedure(_program: TGLuint; location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLPROGRAMUNIFORMUI64VNVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  // GL_NV_vertex_buffer_unified_memory (#380)
+  // GL_NV_vertex_buffer_unified_memory (EXT #380)
   PFNGLBUFFERADDRESSRANGENVPROC = procedure(pname: TGLenum; index: TGLuint; address: TGLuint64EXT; length: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLVERTEXFORMATNVPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLNORMALFORMATNVPROC = procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6533,10 +6725,6 @@ const
   PFNGLVERTEXATTRIBFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLVERTEXATTRIBIFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETINTEGERUI64I_VNVPROC = procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-
-  // Special Gremedy debugger extension
-  PFNGLFRAMETERMINATORGREMEDYPROC = procedure(); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSTRINGMARKERGREMEDYPROC = procedure(len: GLsizei; str: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 implementation
 

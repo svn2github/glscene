@@ -11,7 +11,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
-                            Added GL_ARB_get_program_binary
+                            Added OpenGL 4.1 + ARB extensions
                             Switched to use GLS_REGIONS define
       <li>23/08/10 - Yar - Moved tokens part to OpenGLTokens.pas
       <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
@@ -139,6 +139,7 @@ var
    GL_VERSION_3_2,
    GL_VERSION_3_3,
    GL_VERSION_4_0,
+   GL_VERSION_4_1,
    GLU_VERSION_1_1,
    GLU_VERSION_1_2,
    GLU_VERSION_1_3: Boolean;
@@ -148,6 +149,7 @@ var
    GL_ARB_color_buffer_float,
    GL_ARB_compatibility,
    GL_ARB_copy_buffer,
+   GL_ARB_debug_output,
    GL_ARB_depth_buffer_float,
    GL_ARB_depth_clamp,
    GL_ARB_depth_texture,
@@ -156,6 +158,7 @@ var
    GL_ARB_draw_elements_base_vertex,
    GL_ARB_draw_indirect,
    GL_ARB_draw_instanced,
+   GL_ARB_ES2_compatibility,
    GL_ARB_explicit_attrib_location,
    GL_ARB_fragment_coord_conventions,
    GL_ARB_fragment_program,
@@ -181,10 +184,14 @@ var
    GL_ARB_point_parameters,
    GL_ARB_point_sprite,
    GL_ARB_provoking_vertex,
+   GL_ARB_robustness,
    GL_ARB_sample_shading,
    GL_ARB_sampler_objects,
    GL_ARB_seamless_cube_map,
+   GL_ARB_separate_shader_objects,
    GL_ARB_shader_bit_encoding,
+   GL_ARB_shader_precision,
+   GL_ARB_shader_stencil_export,
    GL_ARB_shader_subroutine,
    GL_ARB_shader_texture_lod,
    GL_ARB_shading_language_100,
@@ -221,11 +228,13 @@ var
    GL_ARB_uniform_buffer_object,
    GL_ARB_vertex_array_bgra,
    GL_ARB_vertex_array_object,
+   GL_ARB_vertex_attrib_64bit,
    GL_ARB_vertex_blend,
    GL_ARB_vertex_buffer_object,
    GL_ARB_vertex_program,
    GL_ARB_vertex_shader,
    GL_ARB_vertex_type_2_10_10_10_rev,
+   GL_ARB_viewport_array,
    GL_ARB_window_pos,
    GL_ARB_texture_compression_bptc,
 
@@ -1410,7 +1419,6 @@ var
 
    glGetInteger64i_v: PFNGLGETINTEGER64I_VPROC;
    glGetBufferParameteri64v: PFNGLGETBUFFERPARAMETERI64VPROC;
-   glProgramParameteri: PFNGLPROGRAMPARAMETERIPROC;
    glFramebufferTexture: PFNGLFRAMEBUFFERTEXTUREPROC;
 //   glFramebufferTextureFace: procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint; face: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
    // OpenGL 3.2 also reuses entry points from these extensions:
@@ -1450,6 +1458,13 @@ var
    //           function and procedure definitions for
    //            extensions integrated into OpenGL 4.0 Core
    //  ###########################################################
+
+   // New commands in OpenGL 4.0
+   glMinSampleShading: PFNGLMINSAMPLESHADINGPROC;
+   glBlendEquationi: PFNGLBLENDEQUATIONIPROC;
+   glBlendEquationSeparatei: PFNGLBLENDEQUATIONSEPARATEIPROC;
+   glBlendFunci: PFNGLBLENDFUNCIPROC;
+   glBlendFuncSeparatei: PFNGLBLENDFUNCSEPARATEIPROC;
 
    // OpenGL 4.0 uses entry points from these extensions:
    // GL_ARB_draw_indirect (ARB #87)
@@ -2004,13 +2019,13 @@ var
    glSampleMaski: PFNGLSAMPLEMASKIPROC;
 
    // GL_ARB_draw_buffers_blend (ARB #69)
-   glBlendEquationi: PFNGLBLENDEQUATIONIPROC;
-   glBlendEquationSeparatei: PFNGLBLENDEQUATIONSEPARATEIPROC;
-   glBlendFunci: PFNGLBLENDFUNCIPROC;
-   glBlendFuncSeparatei: PFNGLBLENDFUNCSEPARATEIPROC;
+   glBlendEquationiARB: PFNGLBLENDEQUATIONIARBPROC;
+   glBlendEquationSeparateiARB: PFNGLBLENDEQUATIONSEPARATEIARBPROC;
+   glBlendFunciARB: PFNGLBLENDFUNCIARBPROC;
+   glBlendFuncSeparateiARB: PFNGLBLENDFUNCSEPARATEIARBPROC;
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShading: PFNGLMINSAMPLESHADINGPROC;
+   glMinSampleShadingARB: PFNGLMINSAMPLESHADINGARBPROC;
 
    // GL_ARB_blend_func_extended (ARB #78)
    glBindFragDataLocationIndexed: PFNGLBINDFRAGDATALOCATIONINDEXEDPROC;
@@ -2148,10 +2163,139 @@ var
    glEndQueryIndexed: PFNGLENDQUERYINDEXEDPROC;
    glGetQueryIndexediv: PFNGLGETQUERYINDEXEDIVPROC;
 
+   // GL_ARB_ES2_compatibility (ARB #95)
+   glReleaseShaderCompiler: PFNGLRELEASESHADERCOMPILERPROC;
+   glShaderBinary: PFNGLSHADERBINARYPROC;
+   glGetShaderPrecisionFormat: PFNGLGETSHADERPRECISIONFORMATPROC;
+   glDepthRangef: PFNGLDEPTHRANGEFPROC;
+   glClearDepthf: PFNGLCLEARDEPTHFPROC;
+
    // GL_ARB_get_program_binary (ARB #96)
    glGetProgramBinary: PFNGLGetProgramBinaryPROC;
    glProgramBinary: PFNGLProgramBinaryPROC;
-   //glProgramParameteri: PFNGLProgramParameteriPROC;
+   glProgramParameteri: PFNGLProgramParameteriPROC; // not a core function
+
+   // GL_ARB_separate_shader_objects (ARB #97)
+   glUseProgramStages: PFNGLUSEPROGRAMSTAGESPROC;
+   glActiveShaderProgram: PFNGLACTIVESHADERPROGRAMPROC;
+   glCreateShaderProgramv: PFNGLCREATESHADERPROGRAMVPROC;
+   glBindProgramPipeline: PFNGLBINDPROGRAMPIPELINEPROC;
+   glDeleteProgramPipelines: PFNGLDELETEPROGRAMPIPELINESPROC;
+   glGenProgramPipelines: PFNGLGENPROGRAMPIPELINESPROC;
+   glIsProgramPipeline: PFNGLISPROGRAMPIPELINEPROC;
+   glGetProgramPipelineiv: PFNGLGETPROGRAMPIPELINEIVPROC;
+   glProgramUniform1i: PFNGLPROGRAMUNIFORM1IPROC;
+   glProgramUniform1iv: PFNGLPROGRAMUNIFORM1IVPROC;
+   glProgramUniform1f: PFNGLPROGRAMUNIFORM1FPROC;
+   glProgramUniform1fv: PFNGLPROGRAMUNIFORM1FVPROC;
+   glProgramUniform1d: PFNGLPROGRAMUNIFORM1DPROC;
+   glProgramUniform1dv: PFNGLPROGRAMUNIFORM1DVPROC;
+   glProgramUniform1ui: PFNGLPROGRAMUNIFORM1UIPROC;
+   glProgramUniform1uiv: PFNGLPROGRAMUNIFORM1UIVPROC;
+   glProgramUniform2i: PFNGLPROGRAMUNIFORM2IPROC;
+   glProgramUniform2iv: PFNGLPROGRAMUNIFORM2IVPROC;
+   glProgramUniform2f: PFNGLPROGRAMUNIFORM2FPROC;
+   glProgramUniform2fv: PFNGLPROGRAMUNIFORM2FVPROC;
+   glProgramUniform2d: PFNGLPROGRAMUNIFORM2DPROC;
+   glProgramUniform2dv: PFNGLPROGRAMUNIFORM2DVPROC;
+   glProgramUniform2ui: PFNGLPROGRAMUNIFORM2UIPROC;
+   glProgramUniform2uiv: PFNGLPROGRAMUNIFORM2UIVPROC;
+   glProgramUniform3i: PFNGLPROGRAMUNIFORM3IPROC;
+   glProgramUniform3iv: PFNGLPROGRAMUNIFORM3IVPROC;
+   glProgramUniform3f: PFNGLPROGRAMUNIFORM3FPROC;
+   glProgramUniform3fv: PFNGLPROGRAMUNIFORM3FVPROC;
+   glProgramUniform3d: PFNGLPROGRAMUNIFORM3DPROC;
+   glProgramUniform3dv: PFNGLPROGRAMUNIFORM3DVPROC;
+   glProgramUniform3ui: PFNGLPROGRAMUNIFORM3UIPROC;
+   glProgramUniform3uiv: PFNGLPROGRAMUNIFORM3UIVPROC;
+   glProgramUniform4i: PFNGLPROGRAMUNIFORM4IPROC;
+   glProgramUniform4iv: PFNGLPROGRAMUNIFORM4IVPROC;
+   glProgramUniform4f: PFNGLPROGRAMUNIFORM4FPROC;
+   glProgramUniform4fv: PFNGLPROGRAMUNIFORM4FVPROC;
+   glProgramUniform4d: PFNGLPROGRAMUNIFORM4DPROC;
+   glProgramUniform4dv: PFNGLPROGRAMUNIFORM4DVPROC;
+   glProgramUniform4ui: PFNGLPROGRAMUNIFORM4UIPROC;
+   glProgramUniform4uiv: PFNGLPROGRAMUNIFORM4UIVPROC;
+   glProgramUniformMatrix2fv: PFNGLPROGRAMUNIFORMMATRIX2FVPROC;
+   glProgramUniformMatrix3fv: PFNGLPROGRAMUNIFORMMATRIX3FVPROC;
+   glProgramUniformMatrix4fv: PFNGLPROGRAMUNIFORMMATRIX4FVPROC;
+   glProgramUniformMatrix2dv: PFNGLPROGRAMUNIFORMMATRIX2DVPROC;
+   glProgramUniformMatrix3dv: PFNGLPROGRAMUNIFORMMATRIX3DVPROC;
+   glProgramUniformMatrix4dv: PFNGLPROGRAMUNIFORMMATRIX4DVPROC;
+   glProgramUniformMatrix2x3fv: PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC;
+   glProgramUniformMatrix3x2fv: PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC;
+   glProgramUniformMatrix2x4fv: PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC;
+   glProgramUniformMatrix4x2fv: PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC;
+   glProgramUniformMatrix3x4fv: PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC;
+   glProgramUniformMatrix4x3fv: PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC;
+   glProgramUniformMatrix2x3dv: PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC;
+   glProgramUniformMatrix3x2dv: PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC;
+   glProgramUniformMatrix2x4dv: PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC;
+   glProgramUniformMatrix4x2dv: PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC;
+   glProgramUniformMatrix3x4dv: PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC;
+   glProgramUniformMatrix4x3dv: PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC;
+   glValidateProgramPipeline: PFNGLVALIDATEPROGRAMPIPELINEPROC;
+   glGetProgramPipelineInfoLog: PFNGLGETPROGRAMPIPELINEINFOLOGPROC;
+
+   // GL_ARB_shader_precision (ARB #98)
+   // (no entry points)
+
+   // GL_ARB_vertex_attrib_64bit (ARB #99)
+   glVertexAttribL1d: PFNGLVERTEXATTRIBL1DPROC;
+   glVertexAttribL2d: PFNGLVERTEXATTRIBL2DPROC;
+   glVertexAttribL3d: PFNGLVERTEXATTRIBL3DPROC;
+   glVertexAttribL4d: PFNGLVERTEXATTRIBL4DPROC;
+   glVertexAttribL1dv: PFNGLVERTEXATTRIBL1DVPROC;
+   glVertexAttribL2dv: PFNGLVERTEXATTRIBL2DVPROC;
+   glVertexAttribL3dv: PFNGLVERTEXATTRIBL3DVPROC;
+   glVertexAttribL4dv: PFNGLVERTEXATTRIBL4DVPROC;
+   glVertexAttribLPointer: PFNGLVERTEXATTRIBLPOINTERPROC;
+   glGetVertexAttribLdv: PFNGLGETVERTEXATTRIBLDVPROC;
+   // glVertexArrayVertexAttribLOffsetEXT is only valid if EXT_direct_state_access is available
+   glVertexArrayVertexAttribLOffsetEXT: PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC;
+
+   // GL_ARB_viewport_array (ARB #100)
+   glViewportArrayv: PFNGLVIEWPORTARRAYVPROC;
+   glViewportIndexedf: PFNGLVIEWPORTINDEXEDFPROC;
+   glViewportIndexedfv: PFNGLVIEWPORTINDEXEDFVPROC;
+   glScissorArrayv: PFNGLSCISSORARRAYVPROC;
+   glScissorIndexed: PFNGLSCISSORINDEXEDPROC;
+   glScissorIndexedv: PFNGLSCISSORINDEXEDVPROC;
+   glDepthRangeArrayv: PFNGLDEPTHRANGEARRAYVPROC;
+   glDepthRangeIndexed: PFNGLDEPTHRANGEINDEXEDPROC;
+   glGetFloati_v: PFNGLGETFLOATI_VPROC;
+   glGetDoublei_v: PFNGLGETDOUBLEI_VPROC;
+
+   // GL_ARB_debug_output (ARB #104)
+   glDebugMessageControlARB: PFNGLDEBUGMESSAGECONTROLARBPROC;
+   glDebugMessageInsertARB: PFNGLDEBUGMESSAGEINSERTARBPROC;
+   glDebugMessageCallbackARB: PFNGLDEBUGMESSAGECALLBACKARBPROC;
+   glGetDebugMessageLogARB: PFNGLGETDEBUGMESSAGELOGARBPROC;
+
+   // GL_ARB_robustness (ARB #105)
+   glGetGraphicsResetStatusARB: PFNGLGETGRAPHICSRESETSTATUSARBPROC;
+   glGetnMapdvARB: PFNGLGETNMAPDVARBPROC;
+   glGetnMapfvARB: PFNGLGETNMAPFVARBPROC;
+   glGetnMapivARB: PFNGLGETNMAPIVARBPROC;
+   glGetnPixelMapfvARB: PFNGLGETNPIXELMAPFVARBPROC;
+   glGetnPixelMapuivARB: PFNGLGETNPIXELMAPUIVARBPROC;
+   glGetnPixelMapusvARB: PFNGLGETNPIXELMAPUSVARBPROC;
+   glGetnPolygonStippleARB: PFNGLGETNPOLYGONSTIPPLEARBPROC;
+   glGetnColorTableARB: PFNGLGETNCOLORTABLEARBPROC;
+   glGetnConvolutionFilterARB: PFNGLGETNCONVOLUTIONFILTERARBPROC;
+   glGetnSeparableFilterARB: PFNGLGETNSEPARABLEFILTERARBPROC;
+   glGetnHistogramARB: PFNGLGETNHISTOGRAMARBPROC;
+   glGetnMinmaxARB: PFNGLGETNMINMAXARBPROC;
+   glGetnTexImageARB: PFNGLGETNTEXIMAGEARBPROC;
+   glReadnPixelsARB: PFNGLREADNPIXELSARBPROC;
+   glGetnCompressedTexImageARB: PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC;
+   glGetnUniformfvARB: PFNGLGETNUNIFORMFVARBPROC;
+   glGetnUniformivARB: PFNGLGETNUNIFORMIVARBPROC;
+   glGetnUniformuivARB: PFNGLGETNUNIFORMUIVARBPROC;
+   glGetnUniformdvARB: PFNGLGETNUNIFORMDVARBPROC;
+
+   // GL_ARB_shader_stencil_export (ARB #106)
+   // (no entry points)
 
 {$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
@@ -2420,6 +2564,9 @@ var
    glGetFramebufferAttachmentParameterivEXT: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC;
    glGenerateMipmapEXT: PFNGLGENERATEMIPMAPEXTPROC;
 
+   // GL_GREMEDY_string_marker (EXT #311)
+   glStringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
+
    // GL_EXT_stencil_clear_tag (EXT #314)
    glStencilClearTagEXT: PFNGLSTENCILCLEARTAGEXTPROC;
 
@@ -2534,6 +2681,9 @@ var
    glGetTexParameterIivEXT: PFNGLGETTEXPARAMETERIIVEXTPROC;
    glGetTexParameterIuivEXT: PFNGLGETTEXPARAMETERIUIVEXTPROC;
 
+   // GL_GREMEDY_frame_terminator (EXT #345)
+   glFrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
+
    // GL_NV_conditional_render (#346)
    glBeginConditionalRenderNV: PFNGLBEGINCONDITIONALRENDERNVPROC;
    glEndConditionalRenderNV: PFNGLENDCONDITIONALRENDERNVPROC;
@@ -2583,10 +2733,6 @@ var
    glVertexAttribFormatNV: PFNGLVERTEXATTRIBFORMATNVPROC;
    glVertexAttribIFormatNV: PFNGLVERTEXATTRIBIFORMATNVPROC;
    glGetIntegerui64i_vNV: PFNGLGETINTEGERUI64I_VNVPROC;
-
-   // Special Gremedy debugger extension
-   glFrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
-   glStringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
 
 {$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
@@ -3217,6 +3363,21 @@ begin
 
 {$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
+{$IFDEF GLS_REGIONS} {$region 'locate functions/procedures added with OpenGL 3.3'} {$ENDIF}
+
+   //  ###########################################################
+   //            locate functions and procedures for
+   //         extensions integrated into OpenGL 3.3 core
+   //  ###########################################################
+
+   glBlendEquationi := GLGetProcAddress('glBlendEquationi');
+   glBlendEquationSeparatei := GLGetProcAddress('glBlendEquationSeparatei');
+   glBlendFunci := GLGetProcAddress('glBlendFunci');
+   glBlendFuncSeparatei := GLGetProcAddress('glBlendFuncSeparatei');
+   glMinSampleShading := GLGetProcAddress('glMinSampleShading');
+
+{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
+
 {$IFDEF GLS_REGIONS} {$region 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
    //  ###########################################################
@@ -3556,13 +3717,13 @@ begin
    glSampleMaski := GLGetProcAddress('glSampleMaski');
 
    // GL_ARB_draw_buffers_blend (ARB #69)
-   glBlendEquationi := GLGetProcAddress('glBlendEquationi');
-   glBlendEquationSeparatei := GLGetProcAddress('glBlendEquationSeparatei');
-   glBlendFunci := GLGetProcAddress('glBlendFunci');
-   glBlendFuncSeparatei := GLGetProcAddress('glBlendFuncSeparatei');
+   glBlendEquationiARB := GLGetProcAddress('glBlendEquationiARB');
+   glBlendEquationSeparateiARB := GLGetProcAddress('glBlendEquationSeparateiARB');
+   glBlendFunciARB := GLGetProcAddress('glBlendFunciARB');
+   glBlendFuncSeparateiARB := GLGetProcAddress('glBlendFuncSeparateiARB');
 
    // GL_ARB_sample_shading (ARB #70)
-   glMinSampleShading := GLGetProcAddress('glMinSampleShading');
+   glMinSampleShadingARB := GLGetProcAddress('glMinSampleShadingARB');
 
    // GL_ARB_blend_func_extended (ARB #78)
    glBindFragDataLocationIndexed := GLGetProcAddress('glBindFragDataLocationIndexed');
@@ -3699,11 +3860,136 @@ begin
    glEndQueryIndexed := GLGetProcAddress('glEndQueryIndexed');
    glGetQueryIndexediv := GLGetProcAddress('glGetQueryIndexediv');
 
+  // GL_ARB_ES2_compatibility (ARB #95)
+   glReleaseShaderCompiler := GLGetProcAddress('glReleaseShaderCompiler');
+   glShaderBinary := GLGetProcAddress('glShaderBinary');
+   glGetShaderPrecisionFormat := GLGetProcAddress('glGetShaderPrecisionFormat');
+   glDepthRangef := GLGetProcAddress('glDepthRangef');
+   glClearDepthf := GLGetProcAddress('glClearDepthf');
+
    // GL_ARB_get_program_binary (ARB #96)
    glGetProgramBinary := GLGetProcAddress('glGetProgramBinary');
    glProgramBinary := GLGetProcAddress('glProgramBinary');
-   //glProgramParameteri := GLGetProcAddress('glProgramParameteri');
+   glProgramParameteri := GLGetProcAddress('glProgramParameteri');
 
+   // GL_ARB_separate_shader_objects (ARB #97)
+   glUseProgramStages := GLGetProcAddress('glUseProgramStages');
+   glActiveShaderProgram := GLGetProcAddress('glActiveShaderProgram');
+   glCreateShaderProgramv := GLGetProcAddress('glCreateShaderProgramv');
+   glBindProgramPipeline := GLGetProcAddress('glBindProgramPipeline');
+   glDeleteProgramPipelines := GLGetProcAddress('glDeleteProgramPipelines');
+   glGenProgramPipelines := GLGetProcAddress('glGenProgramPipelines');
+   glIsProgramPipeline := GLGetProcAddress('glIsProgramPipeline');
+   glGetProgramPipelineiv := GLGetProcAddress('glGetProgramPipelineiv');
+   glProgramUniform1i := GLGetProcAddress('glProgramUniform1i');
+   glProgramUniform1iv := GLGetProcAddress('glProgramUniform1iv');
+   glProgramUniform1f := GLGetProcAddress('glProgramUniform1f');
+   glProgramUniform1fv := GLGetProcAddress('glProgramUniform1fv');
+   glProgramUniform1d := GLGetProcAddress('glProgramUniform1d');
+   glProgramUniform1dv := GLGetProcAddress('glProgramUniform1dv');
+   glProgramUniform1ui := GLGetProcAddress('glProgramUniform1ui');
+   glProgramUniform1uiv := GLGetProcAddress('glProgramUniform1uiv');
+   glProgramUniform2i := GLGetProcAddress('glProgramUniform2i');
+   glProgramUniform2iv := GLGetProcAddress('glProgramUniform2iv');
+   glProgramUniform2f := GLGetProcAddress('glProgramUniform2f');
+   glProgramUniform2fv := GLGetProcAddress('glProgramUniform2fv');
+   glProgramUniform2d := GLGetProcAddress('glProgramUniform2d');
+   glProgramUniform2dv := GLGetProcAddress('glProgramUniform2dv');
+   glProgramUniform2ui := GLGetProcAddress('glProgramUniform2ui');
+   glProgramUniform2uiv := GLGetProcAddress('glProgramUniform2uiv');
+   glProgramUniform3i := GLGetProcAddress('glProgramUniform3i');
+   glProgramUniform3iv := GLGetProcAddress('glProgramUniform3iv');
+   glProgramUniform3f := GLGetProcAddress('glProgramUniform3f');
+   glProgramUniform3fv := GLGetProcAddress('glProgramUniform3fv');
+   glProgramUniform3d := GLGetProcAddress('glProgramUniform3d');
+   glProgramUniform3dv := GLGetProcAddress('glProgramUniform3dv');
+   glProgramUniform3ui := GLGetProcAddress('glProgramUniform3ui');
+   glProgramUniform3uiv := GLGetProcAddress('glProgramUniform3uiv');
+   glProgramUniform4i := GLGetProcAddress('glProgramUniform4i');
+   glProgramUniform4iv := GLGetProcAddress('glProgramUniform4iv');
+   glProgramUniform4f := GLGetProcAddress('glProgramUniform4f');
+   glProgramUniform4fv := GLGetProcAddress('glProgramUniform4fv');
+   glProgramUniform4d := GLGetProcAddress('glProgramUniform4d');
+   glProgramUniform4dv := GLGetProcAddress('glProgramUniform4dv');
+   glProgramUniform4ui := GLGetProcAddress('glProgramUniform4ui');
+   glProgramUniform4uiv := GLGetProcAddress('glProgramUniform4uiv');
+   glProgramUniformMatrix2fv := GLGetProcAddress('glProgramUniformMatrix2fv');
+   glProgramUniformMatrix3fv := GLGetProcAddress('glProgramUniformMatrix3fv');
+   glProgramUniformMatrix4fv := GLGetProcAddress('glProgramUniformMatrix4fv');
+   glProgramUniformMatrix2dv := GLGetProcAddress('glProgramUniformMatrix2dv');
+   glProgramUniformMatrix3dv := GLGetProcAddress('glProgramUniformMatrix3dv');
+   glProgramUniformMatrix4dv := GLGetProcAddress('glProgramUniformMatrix4dv');
+   glProgramUniformMatrix2x3fv := GLGetProcAddress('glProgramUniformMatrix2x3fv');
+   glProgramUniformMatrix3x2fv := GLGetProcAddress('glProgramUniformMatrix3x2fv');
+   glProgramUniformMatrix2x4fv := GLGetProcAddress('glProgramUniformMatrix2x4fv');
+   glProgramUniformMatrix4x2fv := GLGetProcAddress('glProgramUniformMatrix4x2fv');
+   glProgramUniformMatrix3x4fv := GLGetProcAddress('glProgramUniformMatrix3x4fv');
+   glProgramUniformMatrix4x3fv := GLGetProcAddress('glProgramUniformMatrix4x3fv');
+   glProgramUniformMatrix2x3dv := GLGetProcAddress('glProgramUniformMatrix2x3dv');
+   glProgramUniformMatrix3x2dv := GLGetProcAddress('glProgramUniformMatrix3x2dv');
+   glProgramUniformMatrix2x4dv := GLGetProcAddress('glProgramUniformMatrix2x4dv');
+   glProgramUniformMatrix4x2dv := GLGetProcAddress('glProgramUniformMatrix4x2dv');
+   glProgramUniformMatrix3x4dv := GLGetProcAddress('glProgramUniformMatrix3x4dv');
+   glProgramUniformMatrix4x3dv := GLGetProcAddress('glProgramUniformMatrix4x3dv');
+   glValidateProgramPipeline := GLGetProcAddress('glValidateProgramPipeline');
+   glGetProgramPipelineInfoLog := GLGetProcAddress('glGetProgramPipelineInfoLog');
+
+   // GL_ARB_shader_precision (ARB #98)
+   // (no entry points)
+
+   // GL_ARB_vertex_attrib_64bit (ARB #99)
+   glVertexAttribL1d := GLGetProcAddress('glVertexAttribL1d');
+   glVertexAttribL2d := GLGetProcAddress('glVertexAttribL2d');
+   glVertexAttribL3d := GLGetProcAddress('glVertexAttribL3d');
+   glVertexAttribL4d := GLGetProcAddress('glVertexAttribL4d');
+   glVertexAttribL1dv := GLGetProcAddress('glVertexAttribL1dv');
+   glVertexAttribL2dv := GLGetProcAddress('glVertexAttribL2dv');
+   glVertexAttribL3dv := GLGetProcAddress('glVertexAttribL3dv');
+   glVertexAttribL4dv := GLGetProcAddress('glVertexAttribL4dv');
+   glVertexAttribLPointer := GLGetProcAddress('glVertexAttribLPointer');
+   glGetVertexAttribLdv := GLGetProcAddress('glGetVertexAttribLdv');
+   // glVertexArrayVertexAttribLOffsetEXT is only valid if EXT_direct_state_access is available
+   glVertexArrayVertexAttribLOffsetEXT := GLGetProcAddress('glVertexArrayVertexAttribLOffsetEXT');
+
+   // GL_ARB_viewport_array (ARB #100)
+   glViewportArrayv := GLGetProcAddress('glViewportArrayv');
+   glViewportIndexedf := GLGetProcAddress('glViewportIndexedf');
+   glViewportIndexedfv := GLGetProcAddress('glViewportIndexedfv');
+   glScissorArrayv := GLGetProcAddress('glScissorArrayv');
+   glScissorIndexed := GLGetProcAddress('glScissorIndexed');
+   glScissorIndexedv := GLGetProcAddress('glScissorIndexedv');
+   glDepthRangeArrayv := GLGetProcAddress('glDepthRangeArrayv');
+   glDepthRangeIndexed := GLGetProcAddress('glDepthRangeIndexed');
+   glGetFloati_v := GLGetProcAddress('glGetFloati_v');
+   glGetDoublei_v := GLGetProcAddress('glGetDoublei_v');
+
+   // GL_ARB_debug_output (ARB #104)
+   glDebugMessageControlARB := GLGetProcAddress('glDebugMessageControlARB');
+   glDebugMessageInsertARB := GLGetProcAddress('glDebugMessageInsertARB');
+   glDebugMessageCallbackARB := GLGetProcAddress('glDebugMessageCallbackARB');
+   glGetDebugMessageLogARB := GLGetProcAddress('glGetDebugMessageLogARB');
+
+   // GL_ARB_robustness (ARB #105)
+   glGetGraphicsResetStatusARB := GLGetProcAddress('glGetGraphicsResetStatusARB');
+   glGetnMapdvARB := GLGetProcAddress('glGetnMapdvARB');
+   glGetnMapfvARB := GLGetProcAddress('glGetnMapfvARB');
+   glGetnMapivARB := GLGetProcAddress('glGetnMapivARB');
+   glGetnPixelMapfvARB := GLGetProcAddress('glGetnPixelMapfvARB');
+   glGetnPixelMapuivARB := GLGetProcAddress('glGetnPixelMapuivARB');
+   glGetnPixelMapusvARB := GLGetProcAddress('glGetnPixelMapusvARB');
+   glGetnPolygonStippleARB := GLGetProcAddress('glGetnPolygonStippleARB');
+   glGetnColorTableARB := GLGetProcAddress('glGetnColorTableARB');
+   glGetnConvolutionFilterARB := GLGetProcAddress('glGetnConvolutionFilterARB');
+   glGetnSeparableFilterARB := GLGetProcAddress('glGetnSeparableFilterARB');
+   glGetnHistogramARB := GLGetProcAddress('glGetnHistogramARB');
+   glGetnMinmaxARB := GLGetProcAddress('glGetnMinmaxARB');
+   glGetnTexImageARB := GLGetProcAddress('glGetnTexImageARB');
+   glReadnPixelsARB := GLGetProcAddress('glReadnPixelsARB');
+   glGetnCompressedTexImageARB := GLGetProcAddress('glGetnCompressedTexImageARB');
+   glGetnUniformfvARB := GLGetProcAddress('glGetnUniformfvARB');
+   glGetnUniformivARB := GLGetProcAddress('glGetnUniformivARB');
+   glGetnUniformuivARB := GLGetProcAddress('glGetnUniformuivARB');
+   glGetnUniformdvARB := GLGetProcAddress('glGetnUniformdvARB');
 
 {$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
@@ -3969,6 +4255,9 @@ begin
    glGetFramebufferAttachmentParameterivEXT := GLGetProcAddress('glGetFramebufferAttachmentParameterivEXT');
    glGenerateMipmapEXT := GLGetProcAddress('glGenerateMipmapEXT');
 
+   // GL_GREMEDY_string_marker (EXT #311)
+   glStringMarkerGREMEDY := GLGetProcAddress('glStringMarkerGREMEDY');
+
    // GL_EXT_stencil_clear_tag (EXT #314)
    glStencilClearTagEXT := GLGetProcAddress('glStencilClearTagEXT');
 
@@ -4085,6 +4374,9 @@ begin
    glGetTexParameterIivEXT := GLGetProcAddress('glGetTexParameterIivEXT');
    glGetTexParameterIuivEXT := GLGetProcAddress('glGetTexParameterIuivEXT');
 
+   // GL_GREMEDY_frame_terminator (EXT #345)
+   glFrameTerminatorGREMEDY := GLGetProcAddress('glFrameTerminatorGREMEDY');
+
    // GL_NV_conditional_render (#346)
    glBeginConditionalRenderNV := GLGetProcAddress('glBeginConditionalRenderNV');
    glEndConditionalRenderNV := GLGetProcAddress('glEndConditionalRenderNV');
@@ -4134,10 +4426,6 @@ begin
    glVertexAttribFormatNV := GLGetProcAddress('glVertexAttribFormatNV');
    glVertexAttribIFormatNV := GLGetProcAddress('glVertexAttribIFormatNV');
    glGetIntegerui64i_vNV := GLGetProcAddress('glGetIntegerui64i_vNV');
-
-   // Special Gremedy debugger extensions
-   glFrameTerminatorGREMEDY := GLGetProcAddress('glFrameTerminatorGREMEDY');
-   glStringMarkerGREMEDY := GLGetProcAddress('glStringMarkerGREMEDY');
 
 {$IFDEF GLS_REGIONS}  {$endregion} {$ENDIF}
 
@@ -4433,6 +4721,7 @@ begin
    GL_VERSION_3_2:=IsVersionMet(3,2,majorVersion,minorVersion);
    GL_VERSION_3_3:=IsVersionMet(3,3,majorVersion,minorVersion);
    GL_VERSION_4_0:=IsVersionMet(4,0,majorVersion,minorVersion);
+   GL_VERSION_4_1:=IsVersionMet(4,1,majorVersion,minorVersion);
 
    // determine GLU versions met
    buffer:=String(gluGetString(GLU_VERSION));
@@ -4448,6 +4737,7 @@ begin
    GL_ARB_color_buffer_float := CheckExtension('GL_ARB_color_buffer_float');
    GL_ARB_compatibility := CheckExtension('GL_ARB_compatibility');
    GL_ARB_copy_buffer := CheckExtension('GL_ARB_copy_buffer');
+   GL_ARB_debug_output := CheckExtension('GL_ARB_debug_output');
    GL_ARB_depth_buffer_float := CheckExtension('GL_ARB_depth_buffer_float');
    GL_ARB_depth_clamp := CheckExtension('GL_ARB_depth_clamp');
    GL_ARB_depth_texture := CheckExtension('GL_ARB_depth_texture');
@@ -4456,6 +4746,7 @@ begin
    GL_ARB_draw_elements_base_vertex := CheckExtension('GL_ARB_draw_elements_base_vertex');
    GL_ARB_draw_indirect := CheckExtension('GL_ARB_draw_indirect');
    GL_ARB_draw_instanced := CheckExtension('GL_ARB_draw_instanced');
+   GL_ARB_ES2_compatibility := CheckExtension('GL_ARB_ES2_compatibility');
    GL_ARB_explicit_attrib_location := CheckExtension('GL_ARB_explicit_attrib_location');
    GL_ARB_fragment_coord_conventions := CheckExtension('GL_ARB_fragment_coord_conventions');
    GL_ARB_fragment_program := CheckExtension('GL_ARB_fragment_program');
@@ -4481,11 +4772,15 @@ begin
    GL_ARB_point_parameters := CheckExtension('GL_ARB_point_parameters');
    GL_ARB_point_sprite := CheckExtension('GL_ARB_point_sprite');
    GL_ARB_provoking_vertex := CheckExtension('GL_ARB_provoking_vertex');
+   GL_ARB_robustness := CheckExtension('GL_ARB_robustness');
    GL_ARB_sample_shading := CheckExtension('GL_ARB_sample_shading');
    GL_ARB_sampler_objects := CheckExtension('GL_ARB_sampler_objects');
    GL_ARB_seamless_cube_map := CheckExtension('GL_ARB_seamless_cube_map');
+   GL_ARB_separate_shader_objects := CheckExtension('GL_ARB_separate_shader_objects');
    GL_ARB_shader_bit_encoding := CheckExtension('GL_ARB_shader_bit_encoding');
+   GL_ARB_shader_precision := CheckExtension('GL_ARB_shader_precision');
    GL_ARB_shader_objects := CheckExtension('GL_ARB_shader_objects');
+   GL_ARB_shader_stencil_export := CheckExtension('GL_ARB_shader_stencil_export');
    GL_ARB_shader_subroutine := CheckExtension('GL_ARB_shader_subroutine');
    GL_ARB_shader_texture_lod := CheckExtension('GL_ARB_shader_texture_lod');
    GL_ARB_shading_language_100 := CheckExtension('GL_ARB_shading_language_100');
@@ -4521,11 +4816,13 @@ begin
    GL_ARB_uniform_buffer_object := CheckExtension('GL_ARB_uniform_buffer_object');
    GL_ARB_vertex_array_bgra := CheckExtension('GL_ARB_vertex_array_bgra');
    GL_ARB_vertex_array_object := CheckExtension('GL_ARB_vertex_array_object');
+   GL_ARB_vertex_attrib_64bit := CheckExtension('GL_ARB_vertex_attrib_64bit');
    GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend');
    GL_ARB_vertex_buffer_object := CheckExtension('GL_ARB_vertex_buffer_object');
    GL_ARB_vertex_program := CheckExtension('GL_ARB_vertex_program');
    GL_ARB_vertex_shader := CheckExtension('GL_ARB_vertex_shader');
    GL_ARB_vertex_type_2_10_10_10_rev := CheckExtension('GL_ARB_vertex_type_2_10_10_10_rev');
+   GL_ARB_viewport_array := CheckExtension('GL_ARB_viewport_array');
    GL_ARB_window_pos := CheckExtension('GL_ARB_window_pos');
    GL_ARB_texture_compression_bptc := CheckExtension('GL_ARB_texture_compression_bptc');
 
