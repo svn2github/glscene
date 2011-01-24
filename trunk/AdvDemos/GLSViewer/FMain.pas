@@ -13,7 +13,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
-  GLTexture, OpenGL1x, GLContext, ExtDlgs, VectorLists, GLCadencer,
+  GLTexture, GLContext, ExtDlgs, VectorLists, GLCadencer,
   ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
