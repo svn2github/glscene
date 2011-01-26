@@ -58,17 +58,17 @@ const
      TVertexColorNode);
   cCoordinateClasses: array[0..7] of TCustomMaterialGraphNodeClass =
     (TObjectPositionNode, TWorldPositionNode, TWorldNormalNode,
-     TCustomMaterialGraphNode,
+     TCameraWorldPositionNode,
      TTextureCoordinateNode, TPannerNode, TRotatorNode, TScreenPositionNode);
   cMathClasses: array[0..15] of TCustomMaterialGraphNodeClass =
     (TAddNode, TSubtractNode, TMultiplyNode, TDivideNode,
      TNormalizeNode, TPowerNode, TDotProductNode, TSineNode, TCosineNode,
      TFloorNode, TAbsNode, TFractNode, TOneMinusNode, TSquareRootNode, TSignNode,
      TSmoothStepNode);
-  cTextureClasses: array[0..0] of TCustomMaterialGraphNodeClass =
-    (TTextureSamplerNode);
-  cUtilityClasses: array[0..3] of TCustomMaterialGraphNodeClass =
-    (TTimerNode, TComponentMaskNode, TClampNode, TAppendVectorNode);
+  cTextureClasses: array[0..1] of TCustomMaterialGraphNodeClass =
+    (TTextureSamplerNode, TCustomMaterialGraphNode);
+  cUtilityClasses: array[0..4] of TCustomMaterialGraphNodeClass =
+    (TTimerNode, TComponentMaskNode, TClampNode, TConstClampNode, TAppendVectorNode);
   cVectorsClasses: array[0..3] of TCustomMaterialGraphNodeClass =
     (TWorldNormalNode, TLightVectorNode, TCameraVectorNode, TReflectionVectorNode);
 

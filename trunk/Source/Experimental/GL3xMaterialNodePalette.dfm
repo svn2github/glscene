@@ -3,7 +3,7 @@ object NodePaletteForm: TNodePaletteForm
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Node Palette'
-  ClientHeight = 657
+  ClientHeight = 735
   ClientWidth = 200
   Color = clBtnFace
   Constraints.MinHeight = 200
@@ -23,8 +23,8 @@ object NodePaletteForm: TNodePaletteForm
   object CategoryPanelGroup1: TCategoryPanelGroup
     Left = 0
     Top = 0
-    Height = 657
-    VertScrollBar.Position = 437
+    Height = 735
+    VertScrollBar.Position = 424
     VertScrollBar.Tracking = True
     Align = alClient
     ChevronHotColor = 1093631
@@ -39,8 +39,9 @@ object NodePaletteForm: TNodePaletteForm
     HeaderFont.Style = []
     ParentCtl3D = False
     TabOrder = 0
+    ExplicitHeight = 657
     object ConstantsPanel: TCategoryPanel
-      Top = -437
+      Top = -424
       Height = 156
       Caption = 'Constants'
       TabOrder = 0
@@ -74,7 +75,7 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object CoordinatesPanel: TCategoryPanel
-      Top = -281
+      Top = -268
       Height = 223
       Caption = 'Coordinates'
       TabOrder = 1
@@ -117,7 +118,7 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object MathPanel: TCategoryPanel
-      Top = -58
+      Top = -45
       Height = 422
       Caption = 'Math'
       Ctl3D = True
@@ -183,15 +184,13 @@ object NodePaletteForm: TNodePaletteForm
         TabOrder = 0
         TabStop = False
         OnMouseDown = CommonMouseDown
-        ExplicitHeight = 402
       end
     end
     object VectorsPanel: TCategoryPanel
-      Top = 364
+      Top = 377
       Height = 136
       Caption = 'Vectors'
       TabOrder = 3
-      ExplicitTop = 370
       object VectorsGroup: TButtonGroup
         Left = 0
         Top = 0
@@ -219,22 +218,24 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object TexturePanel: TCategoryPanel
-      Top = 500
-      Height = 64
+      Top = 513
+      Height = 88
       Caption = 'Texture'
       TabOrder = 4
-      ExplicitTop = 506
       object TextureGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 38
+        Height = 62
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
         Items = <
           item
             Caption = 'Texture Sampler'
+          end
+          item
+            Caption = 'Texture Atlas'
           end>
         TabOrder = 0
         TabStop = False
@@ -242,16 +243,15 @@ object NodePaletteForm: TNodePaletteForm
       end
     end
     object UtilityPanel: TCategoryPanel
-      Top = 564
-      Height = 135
+      Top = 601
+      Height = 157
       Caption = 'Utility'
       TabOrder = 5
-      ExplicitTop = 570
       object UtilityGroup: TButtonGroup
         Left = 0
         Top = 0
         Width = 179
-        Height = 109
+        Height = 131
         Align = alClient
         BorderStyle = bsNone
         ButtonOptions = [gboAllowReorder, gboFullSize, gboShowCaptions]
@@ -264,6 +264,9 @@ object NodePaletteForm: TNodePaletteForm
           end
           item
             Caption = 'Clamp'
+          end
+          item
+            Caption = 'ConstantClamp'
           end
           item
             Caption = 'AppendVector'

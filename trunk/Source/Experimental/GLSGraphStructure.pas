@@ -4,19 +4,19 @@ interface
 
 uses
   Classes,
+  BaseClasses,
   VectorTypes,
   VectorGeometry;
 
 type
   TBaseGraphStructure = class;
 
-  TBaseGraphVertex = class(TPersistent)
+  TBaseGraphVertex = class(TGLUpdateAbleObject)
   private
     { Private declarations }
     FDeletable: Boolean;
   protected
     { Protected declarations }
-    FGraph: TBaseGraphStructure;
     FRect: TRectangle;
     FHighlight: Boolean;
     FInScreen: Boolean;
@@ -38,8 +38,7 @@ type
     function IsJointLinkedWith(jointIndex: Integer; giver: TBaseGraphVertex; giverJointIndex: Integer): Boolean; virtual; abstract;
   public
     { Public declarations }
-    constructor Create; virtual; abstract;
-    procedure NotifyChange(Sender: TObject); virtual;
+    procedure NotifyChange(Sender: TObject); override;
 
     property Left: Integer read GetLeft write SetLeft;
     property Top: Integer read GetTop write SetTop;
@@ -51,7 +50,7 @@ type
 
   TBaseGraphVertexClass = class of TBaseGraphVertex;
 
-  TBaseGraphStructure = class(TComponent)
+  TBaseGraphStructure = class(TGLUpdateAbleComponent)
   protected
     { Protected declarations }
     FScreenCenter: TVector2s;
@@ -65,6 +64,8 @@ type
     FSelectedJointIndex1: Integer;
     FSelectedJointNode2: TBaseGraphVertex;
     FSelectedJointIndex2: Integer;
+    FChanged: Boolean;
+
     procedure DeleteNode(const i: Integer);
     function GetNode(const i: Integer): TBaseGraphVertex; overload;
     procedure SetPullingMode(Value: Boolean); inline;
@@ -75,6 +76,8 @@ type
     procedure Load; virtual; abstract;
     procedure Render; virtual; abstract;
   public
+    procedure NotifyChange(Sender: TObject); override;
+
     procedure PackLists;
     procedure EraseNode(Value: TBaseGraphVertex);
     procedure DeleteSelected;
@@ -97,13 +100,18 @@ type
 
 implementation
 
+procedure TBaseGraphStructure.NotifyChange(Sender: TObject);
+begin
+  FChanged := True;
+  inherited;
+end;
+
 function TBaseGraphStructure.AddNode(const VertexClass: TBaseGraphVertexClass;
   const x, y, w, h: Integer): TBaseGraphVertex;
 begin
-  Result := VertexClass.Create;
+  Result := VertexClass.Create(Self);
   PackLists;
   FNodeList.Add(Result);
-  Result.FGraph := Self;
   Result.Left := x;
   Result.Top := y;
   Result.Width := w;
@@ -368,6 +376,7 @@ end;
 
 procedure TBaseGraphVertex.NotifyChange;
 begin
+  inherited;
   FChanged := True;
 end;
 

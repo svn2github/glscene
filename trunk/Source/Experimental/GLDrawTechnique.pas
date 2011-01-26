@@ -46,36 +46,38 @@ type
   TDrawInfo = record
     LOD: Byte;
     InstanceNumber: LongWord;
-    PrimitiveMask: TGLMeshPrimitives;
     PatchVertices: LongWord;
   end;
 
 const
-  cDefaultDrawInfo: TDrawInfo = (LOD: 0; InstanceNumber: 0;
-    PrimitiveMask: cAllMeshPrimitive; PatchVertices: 3);
+  cDefaultDrawInfo: TDrawInfo = (LOD: 0; InstanceNumber: 0; PatchVertices: 3);
 
 type
 
   TGLAbstractDrawTechnique = class(TObject)
+  protected
+    procedure Initialize; virtual; abstract;
   public
     { Public Declarations }
     class function NewInstance: TObject; override;
+    constructor Create; virtual;
     destructor Destroy; override;
     procedure DrawCurrentMesh; virtual; abstract;
   end;
 
   TGLAbstractDrawTechniqueClass = class of TGLAbstractDrawTechnique;
 
-  // TGLDrawTechniqueFFP
+  // TGLStaticMeshDrawerOGL1
   //
   { : Fixed function pipeline draw technique. }
-  TGLStaticMeshDrawerFFP = class(TGLAbstractDrawTechnique)
+  TGLStaticMeshDrawerOGL1 = class(TGLAbstractDrawTechnique)
   protected
     { Protected Declarations }
     FCurrentMesh: TGL3xStaticMesh;
+    procedure Initialize; override;
   public
     { Public Declarations }
-    constructor Create;
+    constructor Create; override;
     procedure DrawCurrentMesh; override;
   end;
 
@@ -104,15 +106,19 @@ type
   TPoolMap = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
   GList < TPoolSector > ;
 
-  // TGLStaticMeshDrawerFFP
+  // TGLStaticMeshDrawerOGL2
   //
   { : Programable pipeline draw technique. }
-  TGLStaticMeshDrawerPP = class(TGLAbstractDrawTechnique)
+  TGLStaticMeshDrawerOGL2 = class(TGLAbstractDrawTechnique)
   protected
     { Protected Declarations }
     FMeshState: PGLMeshState;
     FMeshStates: array of TGLMeshState;
     FMaterialOverrider: IGLName;
+    FPortion: PFaceGroupDesc;
+    FDrawAsElement: Boolean;
+    FIndexType: TGLEnum;
+    FIndexSize: Byte;
 
     FArrayHandle: TGLVBOArrayBufferHandle;
     FElementHandle: TGLVBOElementArrayHandle;
@@ -120,10 +126,12 @@ type
     FArrayBufferMap: TPoolMap;
     FElementBufferMap: TPoolMap;
 
-    procedure AllocateBuffers;
+    procedure Initialize; override;
     procedure PassToDevice(AMesh: TGLAbstractMesh);
     procedure MakeBatchList;
     procedure BindStateHandle;
+    procedure DrawBatch;
+    procedure DoDrawBatch; virtual;
     procedure Draw;
     procedure FreeBuffers; stdcall;
 
@@ -133,10 +141,15 @@ type
       const Item: TPoolSector; Action: TListNotification);
   public
     { Public Declarations }
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
 
     procedure DrawCurrentMesh; override;
+  end;
+
+  TGLStaticMeshDrawerOGL3 = class(TGLStaticMeshDrawerOGL2)
+  protected
+    procedure DoDrawBatch; override;
   end;
 
   // DrawManager
@@ -244,7 +257,7 @@ begin
     GL.VertexAttribDivisor(ASlot, ADivisor);
 end;
 
-function IsPromitiveSupported(APrimitive: TGLMeshPrimitive): Boolean;
+function IsPrimitiveSupported(APrimitive: TGLMeshPrimitive): Boolean;
 begin
   if (APrimitive >= mpLINES_ADJACENCY) and
     (APrimitive <= mpTRIANGLE_STRIP_ADJACENCY) then
@@ -290,6 +303,10 @@ begin
   DrawTechniqueClasses[I] := TGLAbstractDrawTechnique(Result);
 end;
 
+constructor TGLAbstractDrawTechnique.Create;
+begin
+end;
+
 destructor TGLAbstractDrawTechnique.Destroy;
 var
   I: Integer;
@@ -310,27 +327,33 @@ end;
 // ------------------ TGLStaticMeshDrawerFFP ------------------
 // ------------------
 
-constructor TGLStaticMeshDrawerFFP.Create;
+constructor TGLStaticMeshDrawerOGL1.Create;
 begin
   if Self = nil then
     exit;
 end;
 
-procedure TGLStaticMeshDrawerFFP.DrawCurrentMesh;
+procedure TGLStaticMeshDrawerOGL1.DrawCurrentMesh;
+begin
+end;
+
+procedure TGLStaticMeshDrawerOGL1.Initialize;
 begin
 end;
 
 {$ENDREGION 'TGLStaticMeshDrawerFFP'}
 
-{$REGION 'TGLStaticMeshDrawerPP'}
+{$REGION 'TGLStaticMeshDrawerOGL2'}
 
 // ------------------
-// ------------------ TGLStaticMeshDrawerPP ------------------
+// ------------------ TGLStaticMeshDrawerOGL2 ------------------
 // ------------------
 
-constructor TGLStaticMeshDrawerPP.Create;
+constructor TGLStaticMeshDrawerOGL2.Create;
 begin
   if Self = nil then
+    exit;
+  if Assigned(Self.FArrayHandle) then
     exit;
   FArrayHandle := TGLVBOArrayBufferHandle.Create;
   FArrayBufferMap := TPoolMap.Create;
@@ -340,7 +363,7 @@ begin
   FElementBufferMap.OnChange := OnElementBufferMapChanged;
 end;
 
-destructor TGLStaticMeshDrawerPP.Destroy;
+destructor TGLStaticMeshDrawerOGL2.Destroy;
 var
   I: Integer;
 begin
@@ -357,7 +380,7 @@ begin
     end;
 end;
 
-procedure TGLStaticMeshDrawerPP.AllocateBuffers;
+procedure TGLStaticMeshDrawerOGL2.Initialize;
 
 var
   VBOFreeMem: TVector4ui;
@@ -433,13 +456,13 @@ begin
   GL.Finish;
 end;
 
-procedure TGLStaticMeshDrawerPP.FreeBuffers;
+procedure TGLStaticMeshDrawerOGL2.FreeBuffers;
 begin
   FArrayHandle.Destroy;
   FElementHandle.Destroy;
 end;
 
-procedure TGLStaticMeshDrawerPP.PassToDevice(AMesh: TGLAbstractMesh);
+procedure TGLStaticMeshDrawerOGL2.PassToDevice(AMesh: TGLAbstractMesh);
 
 var
   a, I, J: Integer;
@@ -707,7 +730,7 @@ begin
   end;
 end;
 
-procedure TGLStaticMeshDrawerPP.MakeBatchList;
+procedure TGLStaticMeshDrawerOGL2.MakeBatchList;
 
 var
   lvMesh: TAccesableStaticMesh;
@@ -796,7 +819,7 @@ begin
   end;
 end;
 
-procedure TGLStaticMeshDrawerPP.BindStateHandle;
+procedure TGLStaticMeshDrawerOGL2.BindStateHandle;
 
 var
   lvMesh: TAccesableStaticMesh;
@@ -911,7 +934,7 @@ begin
   end;
 end;
 
-procedure TGLStaticMeshDrawerPP.DrawCurrentMesh;
+procedure TGLStaticMeshDrawerOGL2.DrawCurrentMesh;
 begin
   FMaterialOverrider := MaterialManager.GetCurrentMaterialName;
   MakeBatchList;
@@ -919,164 +942,193 @@ begin
   vRenderContextInfo.GLStates.VertexArrayBinding := 0;
 end;
 
-procedure TGLStaticMeshDrawerPP.Draw;
-
+procedure TGLStaticMeshDrawerOGL2.DoDrawBatch;
 var
-  p: Integer;
-  IndexType: TGLEnum;
-  IndexSize: Byte;
-  lvMesh: TAccesableMesh;
+  glPrimitive: TGLEnum;
+  Offset: Pointer;
+  instancedID: GLInt;
+  I: Integer;
+begin
+  glPrimitive := cPrimitiveType[FPortion.PrimitiveType];
+  Offset := Pointer(FPortion.ElementOffset * FIndexSize);
+  if not IsDesignTime then
+    Offset := Pointer(FElementBufferMap[FMeshState.ElementSectorIndex].Offset +
+      Cardinal(Offset));
 
-{$REGION 'Draw subroutines'}
-
-  procedure DrawBatch(const APortion: TFaceGroupDesc);
-
-  var
-    glPrimitive: TGLEnum;
-    Offset: Pointer;
-
-    procedure HardwareInstancing;
+    if vDrawInfo.InstanceNumber > 0 then
     begin
-      if lvMesh.FHasIndices then
-        GL.DrawElementsInstanced(glPrimitive, APortion.ElementCount, IndexType,
-          Offset, vDrawInfo.InstanceNumber)
-      else
-        GL.DrawArraysInstanced(glPrimitive, APortion.VertexOffset,
-          APortion.VertexCount, vDrawInfo.InstanceNumber);
-    end;
+      instancedID := uniformInstanceID.Location;
 
-    procedure PseudoInstancing;
-    var
-      uniform: GLInt;
-      I: Integer;
-    begin
-      uniform :=
-        GL.GetUniformLocation(vRenderContextInfo.GLStates.CurrentProgram,
-        PGLChar(AnsiString(uniformInstanceID.Name)));
-      if uniform = -1 then
-        exit;
-
-      if lvMesh.FHasIndices then
+      if FDrawAsElement then
       begin
         for I := 0 to vDrawInfo.InstanceNumber - 1 do
         begin
-          GL.Uniform1i(uniform, I);
-          GL.DrawElements(glPrimitive, APortion.ElementCount, IndexType,
+          if instancedID > 0 then
+            GL.Uniform1i(instancedID, I);
+          GL.DrawElements(
+            glPrimitive,
+            FPortion.ElementCount,
+            FIndexType,
             Offset);
         end;
-        GL.Uniform1i(uniform, 0);
+        if instancedID > 0 then
+          GL.Uniform1i(instancedID, 0);
       end
       else
       begin
         for I := 0 to vDrawInfo.InstanceNumber - 1 do
         begin
-          GL.Uniform1i(uniform, I);
-          GL.DrawArrays(glPrimitive, APortion.VertexOffset,
-            APortion.VertexCount);
+          if instancedID > 0 then
+            GL.Uniform1i(instancedID, I);
+          GL.DrawArrays(
+            glPrimitive,
+            FPortion.VertexOffset,
+            FPortion.VertexCount);
         end;
-        GL.Uniform1i(uniform, 0);
+        if instancedID > 0 then
+          GL.Uniform1i(instancedID, 0);
       end;
-    end;
-
-    procedure DoDrawBatch;
+    end
+    else
     begin
-      if APortion.PrimitiveType = mpPATCHES then
-        GL.PatchParameteri(GL_PATCH_VERTICES, vDrawInfo.PatchVertices);
+      if FDrawAsElement then
+        GL.DrawElements(
+          glPrimitive,
+          FPortion.ElementCount,
+          FIndexType,
+          Offset)
+      else
+        GL.DrawArrays(
+          glPrimitive,
+          FPortion.VertexOffset,
+          FPortion.VertexCount);
+    end;
+end;
 
-      glPrimitive := cPrimitiveType[APortion.PrimitiveType];
-      if lvMesh.FHasIndices then
-        if IsDesignTime then
-          Offset := Pointer(APortion.ElementOffset * IndexSize)
-        else
-          Offset := Pointer
-            (FElementBufferMap[FMeshState.ElementSectorIndex].Offset +
-            APortion.ElementOffset * IndexSize);
+procedure TGLStaticMeshDrawerOGL2.DrawBatch;
+begin
+  if FPortion.PrimitiveType in vRenderContextInfo.PrimitiveMask then
+  begin
+    try
+      // Check the HW support of primitives
+      if not IsPrimitiveSupported(FPortion.PrimitiveType) then
+        exit;
 
-      if vDrawInfo.InstanceNumber > 0 then
+      if Assigned(FMaterialOverrider) or vRenderContextInfo.ignoreMaterials
+        then
       begin
-        if GL.EXT_draw_instanced or GL.ARB_draw_instanced then
-          HardwareInstancing
-        else
-          PseudoInstancing;
-      end
-      else if lvMesh.FHasIndices then
-      begin
-        GL.DrawElements(glPrimitive, APortion.ElementCount, IndexType,
-          Offset);
+        BindStateHandle;
+        DoDrawBatch;
       end
       else
-      begin
-        GL.DrawArrays(glPrimitive, APortion.VertexOffset,
-          APortion.VertexCount);
-      end;
-    end;
-
-  begin
-
-    if APortion.PrimitiveType in vDrawInfo.PrimitiveMask then
-    begin
-      try
-        // Check the HW support of primitives
-        if not IsPromitiveSupported(APortion.PrimitiveType) then
-          exit;
-
-        if Assigned(FMaterialOverrider) or vRenderContextInfo.ignoreMaterials
-          then
-        begin
+        repeat
+          MaterialManager.ApplyMaterial(
+            FPortion.Material,
+            vRenderContextInfo^);
           BindStateHandle;
           DoDrawBatch;
-        end
-        else
-          repeat
-            MaterialManager.ApplyMaterial(APortion.Material,
-              vRenderContextInfo^);
-            BindStateHandle;
-            DoDrawBatch;
-          until MaterialManager.UnApplyMaterial(vRenderContextInfo^);
-      except
-        GLSLogger.LogErrorFmt
-          ('Failed on rendering face group "%s" of mesh "%s"',
-          [APortion.Name, vCurrentMesh.Name.Value]);
-        raise;
-      end;
+        until MaterialManager.UnApplyMaterial(vRenderContextInfo^);
+    except
+      GLSLogger.LogErrorFmt
+        ('Failed on rendering face group "%s" of mesh "%s"',
+        [FPortion.Name, vCurrentMesh.Name.Value]);
+      raise;
     end;
   end;
+end;
 
-{$ENDREGION}
-
+procedure TGLStaticMeshDrawerOGL2.Draw;
+var
+  p: Integer;
+  lvMesh: TAccesableMesh;
+  batchIndex: Integer;
 begin
   lvMesh := TAccesableMesh(vCurrentMesh);
 
   if lvMesh.FRestartIndex = $FFFFFFFF then
   begin
-    IndexType := GL_UNSIGNED_INT;
-    IndexSize := 4;
+    FIndexType := GL_UNSIGNED_INT;
+    FIndexSize := 4;
   end
   else
   begin
-    IndexType := GL_UNSIGNED_SHORT;
-    IndexSize := 2;
+    FIndexType := GL_UNSIGNED_SHORT;
+    FIndexSize := 2;
   end;
 
+  FDrawAsElement := lvMesh.FHasIndices;
+
   for p := 0 to High(FMeshState.SortedBatchIndices) do
-    DrawBatch(lvMesh.FLODFaceGroupMap[vDrawInfo.LOD][FMeshState.SortedBatchIndices[p]]);
+  begin
+    batchIndex := FMeshState.SortedBatchIndices[p];
+    FPortion := @lvMesh.FLODFaceGroupMap[vDrawInfo.LOD][batchIndex];
+    DrawBatch;
+  end;
 end;
 
-procedure TGLStaticMeshDrawerPP.OnArrayBufferMapChanged(Sender: TObject;
+procedure TGLStaticMeshDrawerOGL2.OnArrayBufferMapChanged(Sender: TObject;
   const Item: TPoolSector; Action: TListNotification);
 begin
   if Assigned(Item.MeshState) then
     Item.MeshState.ArraySectorIndex := FArrayBufferMap.IndexOf(Item);
 end;
 
-procedure TGLStaticMeshDrawerPP.OnElementBufferMapChanged(Sender: TObject;
+procedure TGLStaticMeshDrawerOGL2.OnElementBufferMapChanged(Sender: TObject;
   const Item: TPoolSector; Action: TListNotification);
 begin
   if Assigned(Item.MeshState) then
     Item.MeshState.ElementSectorIndex := FElementBufferMap.IndexOf(Item);
 end;
 
-{$ENDREGION 'TGLStaticMeshDrawerPP'}
+{$ENDREGION 'TGLStaticMeshDrawerOGL2'}
+
+{$REGION 'TGLStaticMeshDrawerOGL3'}
+
+procedure TGLStaticMeshDrawerOGL3.DoDrawBatch;
+var
+  glPrimitive: TGLEnum;
+  Offset: Pointer;
+begin
+  glPrimitive := cPrimitiveType[FPortion.PrimitiveType];
+  Offset := Pointer(FPortion.ElementOffset * FIndexSize);
+  if not IsDesignTime then
+    Offset := Pointer(FElementBufferMap[FMeshState.ElementSectorIndex].Offset +
+      PtrUint(Offset));
+
+  if vDrawInfo.InstanceNumber > 0 then
+  begin
+    if FDrawAsElement then
+      GL.DrawElementsInstanced(
+        glPrimitive,
+        FPortion.ElementCount,
+        FIndexType,
+        Offset,
+        vDrawInfo.InstanceNumber)
+    else
+      GL.DrawArraysInstanced(
+        glPrimitive,
+        FPortion.VertexOffset,
+        FPortion.VertexCount,
+        vDrawInfo.InstanceNumber);
+  end
+  else
+  begin
+    if FDrawAsElement then
+      GL.DrawElements(
+        glPrimitive,
+        FPortion.ElementCount,
+        FIndexType,
+        Offset)
+    else
+      GL.DrawArrays(
+        glPrimitive,
+        FPortion.VertexOffset,
+        FPortion.VertexCount);
+  end;
+end;
+
+{$ENDREGION}
+
 
 {$REGION 'DrawManager'}
 
@@ -1086,7 +1138,6 @@ end;
 
 class procedure DrawManager.Initialize;
 begin
-  TGLStaticMeshDrawerPP.Create;
 end;
 
 class procedure DrawManager.Finalize;
@@ -1115,15 +1166,20 @@ begin
 end;
 
 class procedure DrawManager.NotifyContextCreated;
-
 var
   I: Integer;
+  techClass: TGLAbstractDrawTechniqueClass;
 begin
+  if GL.VERSION_3_0 then
+    techClass := TGLStaticMeshDrawerOGL3
+  else if GL.VERSION_2_1 then
+    techClass := TGLStaticMeshDrawerOGL2
+  else
+    techClass := TGLStaticMeshDrawerOGL1;
+  techClass.Create;
+
   for I := 0 to High(DrawTechniqueClasses) do
-  begin
-    if DrawTechniqueClasses[I].ClassType = TGLStaticMeshDrawerPP then
-      TGLStaticMeshDrawerPP(DrawTechniqueClasses[I]).AllocateBuffers;
-  end;
+    DrawTechniqueClasses[I].Initialize;
 end;
 
 class procedure DrawManager.NotifyBeforeCompile;
@@ -1141,7 +1197,6 @@ begin
 end;
 
 class procedure DrawManager.DoDraw;
-
 var
   techClass: TGLAbstractDrawTechniqueClass;
   tech: TGLAbstractDrawTechnique;
@@ -1149,11 +1204,12 @@ begin
   tech := nil;
   if vCurrentMesh is TGL3xStaticMesh then
   begin
-    // if TAccesableShaderManager.CurrentProgram <> nil then
-    if GL.VERSION_2_1 then
-      techClass := TGLStaticMeshDrawerPP
+    if GL.VERSION_3_0 then
+      techClass := TGLStaticMeshDrawerOGL3
+    else if GL.VERSION_2_1 then
+      techClass := TGLStaticMeshDrawerOGL2
     else
-      techClass := TGLStaticMeshDrawerFFP;
+      techClass := TGLStaticMeshDrawerOGL1;
     tech := techClass.Create;
   end;
 

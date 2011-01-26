@@ -85,6 +85,41 @@ const
 
 type
 
+  TGLMeshPrimitive = (
+    mpNOPRIMITIVE,
+    mpTRIANGLES,
+    mpTRIANGLE_STRIP,
+    mpTRIANGLE_FAN,
+    mpPOINTS,
+    mpLINES,
+    mpLINE_LOOP,
+    mpLINE_STRIP,
+    mpLINES_ADJACENCY,
+    mpLINE_STRIP_ADJACENCY,
+    mpTRIANGLES_ADJACENCY,
+    mpTRIANGLE_STRIP_ADJACENCY,
+    mpPATCHES
+    );
+
+  TGLMeshPrimitives = set of TGLMeshPrimitive;
+
+const
+  cAllMeshPrimitive = [
+    mpTRIANGLES,
+    mpTRIANGLE_STRIP,
+    mpTRIANGLE_FAN,
+    mpPOINTS,
+    mpLINES,
+    mpLINE_LOOP,
+    mpLINE_STRIP,
+    mpLINES_ADJACENCY,
+    mpLINE_STRIP_ADJACENCY,
+    mpTRIANGLES_ADJACENCY,
+    mpTRIANGLE_STRIP_ADJACENCY,
+    mpPATCHES];
+
+type
+
   // TGLState
   //
 //: Reflects all relevant (binary) states of OpenGL subsystem

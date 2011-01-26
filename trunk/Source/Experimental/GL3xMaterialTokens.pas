@@ -21,7 +21,7 @@ uses
 {$IFDEF FPC}
   LResources,
 {$ENDIF}
-  BaseClasses, GLState;
+  BaseClasses, GLState, GLRenderContextInfo;
 
 type
   // TFaceCulling
@@ -35,18 +35,6 @@ type
   // TLightingModel
   //
   TLightingModel = (lmPhong, lmEmissiveOnly, lmCustomLighting);
-
-  // TMaterialVariant
-  //
-  TMaterialVariant =
-  (
-    matvarCommon, // Common shader sample
-    matvarAllSurfProperies, // Export surface properies (normal, camera, light, reflection, position, color)
-    matvarGUI // Shader contain special actions for GUI
-  );
-
-  TMaterialVariants = set of TMaterialVariant;
-
 
   TTextureSampler = record
     SamplerName: IGLName;
@@ -129,6 +117,7 @@ type
     Coordinates_ObjectPosition: AnsiString;
     Coordinates_WorldPosition: AnsiString;
     Coordinates_ScreenPosition: AnsiString;
+    Coordinates_CameraWorldPosition: AnsiString;
   end;
 
   TMatSysMathCategory = record
@@ -265,6 +254,7 @@ const
     Coordinates_ObjectPosition: 'Coordinates_ObjectPosition';
     Coordinates_WorldPosition: 'Coordinates_WorldPosition';
     Coordinates_ScreenPosition: 'Coordinates_ScreenPosition';
+    Coordinates_CameraWorldPosition: 'Coordinates_CameraWorldPosition';
     );
 
     Math: (

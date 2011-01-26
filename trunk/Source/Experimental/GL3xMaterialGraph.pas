@@ -14,7 +14,7 @@
 // TODO: Material custom lighting model
 // TODO: Material distorsion input
 // TODO: OpenGL 2.1  compatibility
-// TODO: Surface verctors RTT
+// DONE: Surface verctors RTT
 // DONE: Multiple light
 // DONE: Material EmissiveOnly model
 // DONE: Add Index to texture coordinates node
@@ -75,7 +75,8 @@ uses
   GLSGraphStructure,
   GLTextureFormat,
   GLShaderEnvironment,
-  GLStrings;
+  GLStrings,
+  GLCoordinates;
 
 type
 
@@ -116,7 +117,7 @@ type
     FShaderCodePad: TStrings;
 
     FProgramCodeSet: TProgramCodeSet;
-    FGraphChanged: Boolean;
+
     FMaterial: TGL3xEditableMaterial;
     FUnits: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TTextureSampler;
     FTexCoordTiles: TTexCoordTilesArray;
@@ -139,8 +140,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    procedure NotifyChange(Sender: TObject);
 
     function AddNode(const VertexClass: TCustomMaterialGraphNodeClass; const x, y, w, h:
       Integer): TCustomMaterialGraphNode; overload;
@@ -183,6 +182,7 @@ type
     FPrimarySampleChache: PShaderSample;
     FGatherLock: Boolean;
     FGetOuptupSampleLock: Boolean;
+    FFlikFlag: Boolean;
     function GetGraph: TMaterialGraph; inline;
     function GetJoints(I: Integer): PNodeJoint;
     procedure SetJoints(I: Integer; Value: PNodeJoint);
@@ -219,13 +219,13 @@ type
     function IsStartLinkNode(jointIndex: Integer): Boolean; override;
   public
     { Public declarations }
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure NotifyChange(Sender: TObject); override;
+
     procedure UpdateViewing;
     function GatherSamples(var Info: TSampleGatherInfo; JointIndex: Integer): Boolean;
 
-    property Owner: TMaterialGraph read GetGraph;
+    property Graph: TMaterialGraph read GetGraph;
     property Left;
     property Top;
     property Width;
@@ -260,7 +260,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
   published
     property FaceCulling: TFaceCulling read GetFaceCulling write SetFaceCulling
@@ -284,7 +284,7 @@ type
     procedure SetProperty(Index: Integer; const APropName: string; const APropValue: string); override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
@@ -321,7 +321,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
@@ -340,7 +340,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -362,7 +362,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -383,7 +383,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -397,7 +397,7 @@ type
     procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
@@ -407,7 +407,7 @@ type
     procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
@@ -417,7 +417,17 @@ type
     procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  end;
+
+  TCameraWorldPositionNode = class(TCustomMaterialGraphNode)
+  protected
+    procedure SetViewingUniforms; override;
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+  public
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   end;
@@ -430,7 +440,7 @@ type
     procedure SetViewingUniforms; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
   end;
 
   TBinarOpMathNode = class(TCustomMaterialGraphNode)
@@ -439,7 +449,7 @@ type
     procedure SetViewingUniforms; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
   end;
 
   TAddNode = class(TBinarOpMathNode)
@@ -509,7 +519,7 @@ type
     procedure SetViewingUniforms; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
   published
     property Period: Single read FPeriod write SetPeriod;
   end;
@@ -585,7 +595,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -612,7 +622,7 @@ type
     function GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean; override;
     procedure SetProperty(Index: Integer; const APropName: string; const APropValue: string); override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
@@ -629,7 +639,7 @@ type
     procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -648,7 +658,7 @@ type
     function GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean; override;
     procedure SetProperty(Index: Integer; const APropName: string; const APropValue: string); override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -665,10 +675,30 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
+  end;
+
+  TConstClampNode = class(TUnarOpMathNode)
+  protected
+    FMin: TGLCoordinates4;
+    FMax: TGLCoordinates4;
+    function GetOutputSample(out ASample: TShaderSample): Boolean; override;
+    function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
+    procedure SetMin(AValue: TGLCoordinates4);
+    procedure SetMax(AValue: TGLCoordinates4);
+    function GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean; override;
+    procedure SetProperty(Index: Integer; const APropName: string; const APropValue: string); override;
+  public
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    function Caption: string; override;
+    function GetViewingCode: AnsiString; override;
+  published
+    property Min: TGLCoordinates4 read FMin write SetMin;
+    property Max: TGLCoordinates4 read FMax write SetMax;
   end;
 
   TAppendVectorNode = class(TBinarOpMathNode)
@@ -687,7 +717,7 @@ type
     procedure SetViewingUniforms; override;
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -699,7 +729,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -711,7 +741,7 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
@@ -723,13 +753,18 @@ type
     function GetOutputSample(out ASample: TShaderSample): Boolean; override;
     function DoGatherSamples(var Info: TSampleGatherInfo): Boolean; override;
   public
-    constructor Create; override;
+    constructor Create(AOwner: TPersistent); override;
     function Caption: string; override;
     function GetViewingCode: AnsiString; override;
   published
   end;
 
 {$ENDREGION}
+
+  TGetCameraPosition = function(): TVector of object;
+
+var
+  vGetCameraPos: TGetCameraPosition;
 
 implementation
 
@@ -1035,7 +1070,7 @@ begin
   FNeedPackList := false;
   FGraphicInitialized := false;
   FPulling := false;
-  FGraphChanged := True;
+  FChanged := True;
 
   for PT := Low(TGLSLProgramType) to High(TGLSLProgramType) do
     FProgramCodeSet[PT] := TStringList.Create;
@@ -1092,11 +1127,6 @@ begin
       FSurfaceTextures[I].Destroy;
   end;
   inherited;
-end;
-
-procedure TMaterialGraph.NotifyChange(Sender: TObject);
-begin
-  FGraphChanged := True;
 end;
 
 procedure TMaterialGraph.ClearTextureRegistry;
@@ -1538,7 +1568,7 @@ begin
   if FShaderCodePad <> AList then
   begin
     FShaderCodePad := AList;
-    FGraphChanged := True;
+    FChanged := True;
   end;
 end;
 
@@ -1694,11 +1724,11 @@ begin
   end;
 
   PackLists;
-  if FGraphChanged then
+  if FChanged then
   begin
     if Assigned(FShaderCodePad) then
       RefreshMaterial;
-    FGraphChanged := False;
+    FChanged := False;
     FErrorMessage := '';
   end;
 
@@ -2106,8 +2136,9 @@ end;
 
 {$REGION 'TCustomMaterialGraphNode'}
 
-constructor TCustomMaterialGraphNode.Create;
+constructor TCustomMaterialGraphNode.Create(AOwner: TPersistent);
 begin
+  inherited Create(AOwner);
   FHighlight := false;
   Deletable := True;
   FViewingTexture := TGLTextureHandle.Create;
@@ -2115,16 +2146,9 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TCustomMaterialGraphNode.NotifyChange(Sender: TObject);
-begin
-  inherited;
-  if Assigned(Owner) then
-    Owner.NotifyChange(Self);
-end;
-
 destructor TCustomMaterialGraphNode.Destroy;
 begin
-  Owner.EraseNode(Self);
+  Graph.EraseNode(Self);
   with ShaderManager do
   begin
     try
@@ -2167,7 +2191,7 @@ end;
 
 function TCustomMaterialGraphNode.GetGraph: TMaterialGraph;
 begin
-  Result := TMaterialGraph(FGraph);
+  Result := TMaterialGraph(Owner);
 end;
 
 procedure TCustomMaterialGraphNode.SetWidth(Value: Integer);
@@ -2175,16 +2199,16 @@ var
   maxWidth, jWidth: Integer;
   I: Integer;
 begin
-  maxWidth := Owner.FMaxCharWidth * Length(Caption);
+  maxWidth := Graph.FMaxCharWidth * Length(Caption);
   for I := 0 to High(FJoints) do
   begin
-    jWidth := Owner.FMaxCharWidth * Length(Joints[I].Caption);
+    jWidth := Graph.FMaxCharWidth * Length(Joints[I].Caption);
     if jWidth > maxWidth then
       maxWidth := jWidth;
   end;
 
   if maxWidth > Value then
-    Value := 2 * Owner.FMaxCharWidth + maxWidth;
+    Value := 2 * Graph.FMaxCharWidth + maxWidth;
   FRect.Width := Value;
 end;
 
@@ -2193,7 +2217,7 @@ var
   maxHeight, jHeight: Integer;
 begin
   maxHeight := 100;
-  jHeight := Owner.FMaxCharHeight * (Joints[High(FJoints)].Step + 2) + cNodeCaptionHeigth;
+  jHeight := Graph.FMaxCharHeight * (Joints[High(FJoints)].Step + 2) + cNodeCaptionHeigth;
   if jHeight > maxHeight then
     maxHeight := jHeight;
 
@@ -2213,14 +2237,14 @@ begin
   Result[0] := FRect.Left - 5;
   if Joints[i].Side = sideOutput then
     Result[0] := Result[0] + Width + 9;
-  Result[1] := FRect.Top + Owner.FMaxCharHeight * (Joints[i].Step + 1);
+  Result[1] := FRect.Top + Graph.FMaxCharHeight * (Joints[i].Step + 1);
 end;
 
 procedure TCustomMaterialGraphNode.RenderFrame;
 var
   w, h, h1, h2: Integer;
 begin
-  with Owner, ShaderManager, DynamicVBOManager do
+  with Graph, ShaderManager, DynamicVBOManager do
   begin
     SetVector(FScaleOffset,
       2 / FScreenSize[0],
@@ -2307,7 +2331,7 @@ var
 
   procedure TextOut;
   begin
-    with Owner, DynamicVBOManager do
+    with Graph, DynamicVBOManager do
     begin
       BeginObject(nil);
       Attribute2f(attrPosition, 0, TextBottom);
@@ -2329,7 +2353,7 @@ var
   end;
 
 begin
-  with Owner, ShaderManager do
+  with Graph, ShaderManager do
   begin
     len := MinInteger(Length(Caption), 128);
     if len > 0 then
@@ -2382,7 +2406,7 @@ var
   hl: Boolean;
   clr: TVector;
 begin
-  with Owner do
+  with Graph do
   begin
     if Count > 0 then
     begin
@@ -2459,7 +2483,7 @@ end;
 
 procedure TCustomMaterialGraphNode.RenderViewing;
 begin
-  with Owner, ShaderManager, DynamicVBOManager do
+  with Graph, ShaderManager, DynamicVBOManager do
   begin
     // Node work viewing
     Uniform4f(uniformScaleOffset, FScaleOffset);
@@ -2487,6 +2511,7 @@ end;
 procedure TCustomMaterialGraphNode.UpdateViewing;
 var
   I: Integer;
+  bLinked: Boolean;
 begin
 
   if FChanged then
@@ -2509,7 +2534,7 @@ begin
     FViewingTexture.AllocateHandle;
     if FViewingTexture.IsDataNeedUpdate then
     begin
-      with Owner.FRenderContextInfo.GLStates do
+      with Graph.FRenderContextInfo.GLStates do
       begin
         ActiveTexture := 0;
         TextureBinding[0, ttTexture2D] := FViewingTexture.Handle;
@@ -2533,9 +2558,9 @@ begin
         Joints[I].GivingNode.NotifyChange(Self);
   end;
 
-  with Owner, DynamicVBOManager do
+  with Graph, DynamicVBOManager do
   begin
-    FNodeFrameBuffer.BindForDrawing;
+    FNodeFrameBuffer.Bind;
     try
       FNodeFrameBuffer.Attach2DTexture(
         GL_DRAW_FRAMEBUFFER,
@@ -2544,32 +2569,51 @@ begin
         FViewingTexture.Handle,
         0);
 
-      if ShaderManager.IsProgramLinked(FViewingProgram) then
+      try
+        bLinked := ShaderManager.IsProgramLinked(FViewingProgram);
+      except
+        on EAbort do
+        begin
+          ShaderManager.DeleteShaderProgram(FViewingProgram);
+          bLinked := False;
+        end
+        else
+          raise;
+      end;
+
+      if bLinked then
       begin
         ShaderManager.UseProgram(FViewingProgram);
         SetViewingUniforms;
+        BeginObject(nil);
+        Attribute2f(attrPosition, -1.0, -1.0);
+        Attribute2f(attrTexCoord0, 0.0, 0.0);
+        Attribute4f(attrVertexColor, 1.0, 0.0, 0.0, 1.0);
+        BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
+        EmitVertex;
+        Attribute2f(attrPosition, -1.0, 1.0);
+        Attribute2f(attrTexCoord0, 0.0, 1.0);
+        EmitVertex;
+        Attribute2f(attrPosition, 1.0, -1.0);
+        Attribute2f(attrTexCoord0, 1.0, 0.0);
+        EmitVertex;
+        Attribute2f(attrPosition, 1.0, 1.0);
+        Attribute2f(attrTexCoord0, 1.0, 1.0);
+        EmitVertex;
+        EndPrimitives;
+        EndObject;
       end
       else
-        ShaderManager.UseProgram(JointProgram);
-      BeginObject(nil);
-      Attribute2f(attrPosition, -1.0, -1.0);
-      Attribute2f(attrTexCoord0, 0.0, 0.0);
-      Attribute4f(attrVertexColor, 1.0, 0.0, 0.0, 1.0);
-      BeginPrimitives(GLVBOM_TRIANGLE_STRIP);
-      EmitVertex;
-      Attribute2f(attrPosition, -1.0, 1.0);
-      Attribute2f(attrTexCoord0, 0.0, 1.0);
-      EmitVertex;
-      Attribute2f(attrPosition, 1.0, -1.0);
-      Attribute2f(attrTexCoord0, 1.0, 0.0);
-      EmitVertex;
-      Attribute2f(attrPosition, 1.0, 1.0);
-      Attribute2f(attrTexCoord0, 1.0, 1.0);
-      EmitVertex;
-      EndPrimitives;
-      EndObject;
+      begin
+        if FFlikFlag then
+          GL.ClearBufferfv(GL_COLOR, 0, @clrBlack)
+        else
+          GL.ClearBufferfv(GL_COLOR, 0, @clrRed);
+        FFlikFlag := not FFlikFlag;
+      end;
+
     finally
-      FNodeFrameBuffer.UnBindForDrawing;
+      FNodeFrameBuffer.UnBind;
     end;
   end;
 end;
@@ -2581,13 +2625,13 @@ begin
   bPresent := Assigned(Joints[JointIndex].GivingNode);
   Flag := Flag and bPresent;
   if not bPresent then
-    Owner.SetErrorMessage(AMessage + ' in node ' + Caption);
+    Graph.SetErrorMessage(AMessage + ' in node ' + Caption);
 end;
 
 procedure TCustomMaterialGraphNode.CheckOutput(Flag: Boolean);
 begin
   if not Flag then
-    Owner.SetErrorMessage('Bad combination of operands, impossible to perform operation in node ' + Caption);
+    Graph.SetErrorMessage('Bad combination of operands, impossible to perform operation in node ' + Caption);
 end;
 
 function TCustomMaterialGraphNode.GetViewingCode: AnsiString;
@@ -2653,7 +2697,7 @@ begin
   else
   begin
     if FGetOuptupSampleLock then
-      Owner.SetErrorMessage('Graph obsessed, recorded a second pass through node ' + Self.Caption);
+      Graph.SetErrorMessage('Graph obsessed, recorded a second pass through node ' + Self.Caption);
     Result := GLSLTypeUndefined;
   end;
 end;
@@ -2694,7 +2738,7 @@ function TCustomMaterialGraphNode.GatherSamples(var Info: TSampleGatherInfo; Joi
 begin
   if FGatherLock then
   begin
-    Owner.SetErrorMessage('Graph obsessed, recorded a second pass through node ' + Self.Caption);
+    Graph.SetErrorMessage('Graph obsessed, recorded a second pass through node ' + Self.Caption);
     exit(False);
   end;
 
@@ -2750,7 +2794,7 @@ end;
 
 {$REGION 'TMaterialNode'}
 
-constructor TMaterialNode.Create;
+constructor TMaterialNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 10);
@@ -2844,7 +2888,7 @@ begin
       vSample.InputRef[1] := Info.Master;
   AddToList;
 
-  if Owner.FMaterial.BlendingMode = bmMasked then
+  if Graph.FMaterial.BlendingMode = bmMasked then
   begin
     // Opacity Mask
     vSample.Clear;
@@ -3016,8 +3060,8 @@ begin
     begin
       // Tiling
       pConstSample := nil;
-      if (Owner.FTexCoordTiles[I].X <> 1.0)
-        or (Owner.FTexCoordTiles[I].Y <> 1.0) then
+      if (Graph.FTexCoordTiles[I].X <> 1.0)
+        or (Graph.FTexCoordTiles[I].Y <> 1.0) then
       begin
         vSample.Clear;
         vSample.Category := MaterialSystem.Constants.Name;
@@ -3025,7 +3069,7 @@ begin
         vSample.Purpose := sspConstant;
         vSample.Participate := Info.ProgramTypes;
         vSample.Output := GLSLType2F;
-         vSample.ConstantValue := ValueToHex(Owner.FTexCoordTiles[I]);
+         vSample.ConstantValue := ValueToHex(Graph.FTexCoordTiles[I]);
         AddToList;
         pConstSample := Info.Master;
       end;
@@ -3046,42 +3090,42 @@ end;
 
 function TMaterialNode.GetFaceCulling: TFaceCulling;
 begin
-  Result := Owner.FMaterial.FaceCulling;
+  Result := Graph.FMaterial.FaceCulling;
 end;
 
 procedure TMaterialNode.SetFaceCulling(Value: TFaceCulling);
 begin
-  if Owner.FMaterial.FaceCulling <> Value then
+  if Graph.FMaterial.FaceCulling <> Value then
   begin
-    Owner.FMaterial.FaceCulling := Value;
+    Graph.FMaterial.FaceCulling := Value;
     NotifyChange(Self);
   end;
 end;
 
 function TMaterialNode.GetPolygonMode: TPolygonMode;
 begin
-  Result := Owner.FMaterial.PolygonMode;
+  Result := Graph.FMaterial.PolygonMode;
 end;
 
 procedure TMaterialNode.SetPolygonMode(Value: TPolygonMode);
 begin
-  if Owner.FMaterial.PolygonMode <> Value then
+  if Graph.FMaterial.PolygonMode <> Value then
   begin
-    Owner.FMaterial.PolygonMode := Value;
+    Graph.FMaterial.PolygonMode := Value;
     NotifyChange(Self);
   end;
 end;
 
 function TMaterialNode.GetBlendingMode: TBlendingMode;
 begin
-  Result := Owner.FMaterial.BlendingMode;
+  Result := Graph.FMaterial.BlendingMode;
 end;
 
 procedure TMaterialNode.SetBlendingMode(Value: TBlendingMode);
 begin
-  if Owner.FMaterial.BlendingMode <> Value then
+  if Graph.FMaterial.BlendingMode <> Value then
   begin
-    Owner.FMaterial.BlendingMode := Value;
+    Graph.FMaterial.BlendingMode := Value;
     NotifyChange(Self);
   end;
 end;
@@ -3146,7 +3190,7 @@ end;
 
 {$REGION 'TCustomConstantNode'}
 
-constructor TCustomConstantNode.Create;
+constructor TCustomConstantNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -3267,7 +3311,7 @@ end;
 
 {$REGION 'TVertexColorNode'}
 
-constructor TVertexColorNode.Create;
+constructor TVertexColorNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 5);
@@ -3285,7 +3329,7 @@ end;
 
 procedure TVertexColorNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[7].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[7].Handle)] := 0;
 end;
 
 function TVertexColorNode.GetViewingCode: AnsiString;
@@ -3334,7 +3378,7 @@ end;
 
 {$REGION 'TTextureCoordinateNode'}
 
-constructor TTextureCoordinateNode.Create;
+constructor TTextureCoordinateNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -3343,13 +3387,13 @@ end;
 
 procedure TTextureCoordinateNode.SetValue(Index: Integer; Value: Single);
 begin
-  Owner.FTexCoordTiles[FIndex].V[Index] := Value;
+  Graph.FTexCoordTiles[FIndex].V[Index] := Value;
   NotifyChange(Self);
 end;
 
 function TTextureCoordinateNode.GetValue(Index: Integer): Single;
 begin
-  Result := Owner.FTexCoordTiles[FIndex].V[Index];
+  Result := Graph.FTexCoordTiles[FIndex].V[Index];
 end;
 
 procedure TTextureCoordinateNode.SetIndex(Value: Integer);
@@ -3380,8 +3424,8 @@ begin
     LBracket_line +
     '  return vec4(GetTexCoord()' +
       AnsiString(Format(' * vec2(%.6g, %.6g) ',
-      [Owner.FTexCoordTiles[FIndex].X,
-      Owner.FTexCoordTiles[FIndex].Y], cEnUsFormatSettings)) +
+      [Graph.FTexCoordTiles[FIndex].X,
+      Graph.FTexCoordTiles[FIndex].Y], cEnUsFormatSettings)) +
       ', 0.0, 1.0);' + #10#13 +
     RBracket_line;
 end;
@@ -3398,12 +3442,12 @@ begin
     1:
       begin
         APropName := 'TilingS';
-        APropValue := FloatToStr(Owner.FTexCoordTiles[FIndex].X);
+        APropValue := FloatToStr(Graph.FTexCoordTiles[FIndex].X);
       end;
     2:
       begin
         APropName := 'TilingT';
-        APropValue := FloatToStr(Owner.FTexCoordTiles[FIndex].Y);
+        APropValue := FloatToStr(Graph.FTexCoordTiles[FIndex].Y);
       end;
   else
     Result := False;
@@ -3417,9 +3461,9 @@ begin
   if APropName = 'Index' then
     Val(APropValue, FIndex, err)
   else if APropName = 'TilingS' then
-    Val(APropValue, Owner.FTexCoordTiles[FIndex].V[0], err)
+    Val(APropValue, Graph.FTexCoordTiles[FIndex].V[0], err)
   else if APropName = 'TilingT' then
-    Val(APropValue, Owner.FTexCoordTiles[FIndex].V[1], err);
+    Val(APropValue, Graph.FTexCoordTiles[FIndex].V[1], err);
 end;
 
 function TTextureCoordinateNode.GetOutputSample(out ASample: TShaderSample): Boolean;
@@ -3449,7 +3493,7 @@ end;
 
 {$REGION 'TObjectPositionNode'}
 
-constructor TObjectPositionNode.Create;
+constructor TObjectPositionNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -3463,7 +3507,7 @@ end;
 
 procedure TObjectPositionNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[4].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[4].Handle)] := 0;
 end;
 
 function TObjectPositionNode.GetViewingCode: AnsiString;
@@ -3500,7 +3544,7 @@ end;
 
 {$REGION 'TWorldPositionNode'}
 
-constructor TWorldPositionNode.Create;
+constructor TWorldPositionNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -3514,7 +3558,7 @@ end;
 
 procedure TWorldPositionNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[5].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[5].Handle)] := 0;
 end;
 
 function TWorldPositionNode.GetViewingCode: AnsiString;
@@ -3551,7 +3595,7 @@ end;
 
 {$REGION 'TScreenPositionNode'}
 
-constructor TScreenPositionNode.Create;
+constructor TScreenPositionNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -3565,7 +3609,7 @@ end;
 
 procedure TScreenPositionNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[6].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[6].Handle)] := 0;
 end;
 
 function TScreenPositionNode.GetViewingCode: AnsiString;
@@ -3600,9 +3644,52 @@ end;
 
 {$ENDREGION}
 
+{$REGION 'TCameraWorldPositionNode'}
+
+constructor TCameraWorldPositionNode.Create(AOwner: TPersistent);
+begin
+  inherited;
+  SetLength(FJoints, 1);
+  Joints[0].SetAtOnce(0, sideOutput, [], '');
+end;
+
+function TCameraWorldPositionNode.Caption: string;
+begin
+  Result := 'Camera World Position';
+end;
+
+function TCameraWorldPositionNode.GetViewingCode: AnsiString;
+begin
+  Result :=
+    GetMaxGLSLVersion + #10#13 +
+    'uniform vec4 CameraWorldPosition;' + #10#13 +
+    GetWorkResult_line +
+    LBracket_line +
+    '  return CameraWorldPosition;' + #10#13 +
+    RBracket_line;
+end;
+
+procedure TCameraWorldPositionNode.SetViewingUniforms;
+begin
+  if Assigned(vGetCameraPos) then
+    ShaderManager.Uniform4f(uniformCameraWorldPosition, vGetCameraPos);
+end;
+
+function TCameraWorldPositionNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  ASample.Clear;
+  ASample.Category := MaterialSystem.Coordinates.Name;
+  ASample.Name := MaterialSystem.Coordinates.Coordinates_CameraWorldPosition;
+  ASample.Input[0] := GLSLTypeVoid;
+  Result := ASample.CheckWithMaterialSystem;
+  CheckOutput(Result);
+end;
+
+{$ENDREGION}
+
 {$REGION 'TBinarOpMathNode'}
 
-constructor TBinarOpMathNode.Create;
+constructor TBinarOpMathNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 3);
@@ -3648,7 +3735,7 @@ end;
 
 {$REGION 'TUnarOpMathNode'}
 
-constructor TUnarOpMathNode.Create;
+constructor TUnarOpMathNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 2);
@@ -4022,7 +4109,7 @@ end;
 
 {$REGION 'TCustomTrigonNode'}
 
-constructor TCustomTrigonNode.Create;
+constructor TCustomTrigonNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 2);
@@ -4453,7 +4540,7 @@ end;
 
 {$REGION 'TSmoothStepNode'}
 
-constructor TSmoothStepNode.Create;
+constructor TSmoothStepNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 4);
@@ -4557,7 +4644,7 @@ end;
 
 {$REGION 'TTextureSamplerNode'}
 
-constructor TTextureSamplerNode.Create;
+constructor TTextureSamplerNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 6);
@@ -4578,7 +4665,7 @@ end;
 
 destructor TTextureSamplerNode.Destroy;
 begin
-  Owner.UnRegisterTextureSampler(FTexture, FSampler);
+  Graph.UnRegisterTextureSampler(FTexture, FSampler);
   FTexture := nil;
   FSampler := nil;
   inherited;
@@ -4648,7 +4735,7 @@ begin
   begin
     ASample.Clear;
     ASample.Category := MaterialSystem.Texture.Name;
-    I := Owner.GetTextureSamplerIndex(FTexture, FSampler);
+    I := Graph.GetTextureSamplerIndex(FTexture, FSampler);
     tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
     case tex.Target of
 //      ttTexture1D:
@@ -4756,11 +4843,11 @@ begin
       if (tex.Target = ttTexture2D)
         or (tex.Target = ttTextureCube) then
       begin
-        Owner.UnRegisterTextureSampler(FTexture, FSampler);
-        Owner.RegisterTextureSampler(rTexture, FSampler);
+        Graph.UnRegisterTextureSampler(FTexture, FSampler);
+        Graph.RegisterTextureSampler(rTexture, FSampler);
         FTexture := rTexture;
         tex := TAccessableMaterialManager(MaterialManager).GetTexture(FTexture);
-        tex.OnNotifyChange := Owner.NotifyChange;
+        tex.OnNotifyChange := Graph.NotifyChange;
         NotifyChange(Self);
       end;
     finally
@@ -4800,16 +4887,16 @@ begin
   with MaterialManager do
   try
     BeginWork;
-    Owner.UnRegisterTextureSampler(FTexture, FSampler);
+    Graph.UnRegisterTextureSampler(FTexture, FSampler);
     if Length(AName) = 0 then
       FSampler := nil
     else
       FSampler := GetSamplerName(AName);
-    Owner.RegisterTextureSampler(FTexture, FSampler);
+    Graph.RegisterTextureSampler(FTexture, FSampler);
     if Assigned(FSampler) then
     begin
       smp := TAccessableMaterialManager(MaterialManager).GetSampler(FTexture);
-      smp.OnNotifyChange := Owner.NotifyChange;
+      smp.OnNotifyChange := Graph.NotifyChange;
     end;
   finally
     EndWork;
@@ -4848,7 +4935,7 @@ end;
 
 {$REGION 'TPannerNode'}
 
-constructor TPannerNode.Create;
+constructor TPannerNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 3);
@@ -5003,7 +5090,7 @@ end;
 
 {$REGION 'TRotatorNode'}
 
-constructor TRotatorNode.Create;
+constructor TRotatorNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 3);
@@ -5186,7 +5273,7 @@ end;
 
 {$REGION 'TTimerNode'}
 
-constructor TTimerNode.Create;
+constructor TTimerNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -5229,7 +5316,7 @@ end;
 
 {$REGION 'TComponentMaskNode'}
 
-constructor TComponentMaskNode.Create;
+constructor TComponentMaskNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 2);
@@ -5248,7 +5335,7 @@ begin
   Result := True;
   CheckNodeInput(1, 'Missing input', Result);
   if FMask = [] then
-    Owner.SetErrorMessage('Invalid color component set in node ' + Caption);
+    Graph.SetErrorMessage('Invalid color component set in node ' + Caption);
 end;
 
 function TComponentMaskNode.GetViewingCode: AnsiString;
@@ -5421,7 +5508,7 @@ end;
 
 {$REGION 'TClampNode'}
 
-constructor TClampNode.Create;
+constructor TClampNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 4);
@@ -5440,7 +5527,7 @@ function TClampNode.CheckInput: Boolean;
 begin
   Result := Assigned(Joints[2].GivingNode) or Assigned(Joints[3].GivingNode);
   if not Result then
-    Owner.SetErrorMessage('MIN or MAX input in node ' + Caption);
+    Graph.SetErrorMessage('MIN or MAX input in node ' + Caption);
   CheckNodeInput(1, 'Missing X input ', Result);
 end;
 
@@ -5570,6 +5657,198 @@ end;
 
 {$ENDREGION}
 
+{$REGION 'TConstClampNode'}
+
+constructor TConstClampNode.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FMin := TGLCoordinates4.CreateInitialized(Self, NullHmgVector, csVector);
+  FMax := TGLCoordinates4.CreateInitialized(Self, VectorMake(1,1,1,1), csVector);
+end;
+
+destructor TConstClampNode.Destroy;
+begin
+  FMin.Destroy;
+  FMax.Destroy;
+  inherited;
+end;
+
+function TConstClampNode.Caption: string;
+begin
+  Result := 'Constant Clamp';
+end;
+
+function TConstClampNode.GetViewingCode: AnsiString;
+var
+  vSample: TShaderSample;
+begin
+  if GetOutputSample(vSample) then
+  begin
+    Result :=
+      GetMaxGLSLVersion + #10#13 +
+      UniformSampler_line +
+      GetTexCoord_line +
+      GetWorkResult_line +
+      LBracket_line +
+      GetValue0_line +
+      AnsiString(Format('  vec4 value02 = vec4(%.6g,%.6g,%.6g,%.6g);',
+        [FMin.X, FMin.Y, FMin.Z, FMin.W], cEnUsFormatSettings)) + #10#13 +
+      AnsiString(Format('  vec4 value03 = vec4(%.6g,%.6g,%.6g,%.6g);',
+        [FMax.X, FMax.Y, FMax.Z, FMax.W], cEnUsFormatSettings)) + #10#13 +
+      '  return clamp(value0,value02,value03);' + #10#13 +
+      RBracket_line;
+  end
+  else
+    Result := inherited GetViewingCode;
+end;
+
+function TConstClampNode.GetOutputSample(out ASample: TShaderSample): Boolean;
+begin
+  if CheckInput then
+  begin
+    ASample.Clear;
+    ASample.Category := MaterialSystem.Utility.Name;
+    ASample.Name := MaterialSystem.Utility.Utility_Clamp;
+    ASample.Input[0] := GivingNodeDataType[1];
+    ASample.Input[1] := ASample.Input[0];
+    ASample.Input[2] := ASample.Input[0];
+    Result := ASample.CheckWithMaterialSystem;
+    CheckOutput(Result);
+  end
+  else
+    Result := False;
+end;
+
+function TConstClampNode.DoGatherSamples(var Info: TSampleGatherInfo): Boolean;
+var
+  vSample: TShaderSample;
+  LMinMaxName: AnsiString;
+begin
+  Result := GetOutputSample(vSample);
+  if Result then
+  begin
+    if Joints[1].GivingNode.GatherSamples(Info,
+      Joints[1].GivingNodeJointIndex) then
+      vSample.InputRef[0] := Info.Master;
+    case vSample.Output of
+      GLSLType1F: LMinMaxName := MaterialSystem.Constants.Constants_Scalar;
+      GLSLType2F: LMinMaxName := MaterialSystem.Constants.Constants_Vector2;
+      GLSLType3F: LMinMaxName := MaterialSystem.Constants.Constants_Vector3;
+      GLSLType4F: LMinMaxName := MaterialSystem.Constants.Constants_Vector4;
+      else
+        exit(False);
+    end;
+
+    // Minimum
+    Info.NewMaster;
+    Info.Master.Category := MaterialSystem.Constants.Name;
+    Info.Master.Name := LMinMaxName;
+    Info.Master.Purpose := sspConstant;
+    Info.Master.Participate := Info.ProgramTypes;
+    Info.Master.Output := vSample.Input[1];
+    Info.Master.ConstantValue := ValueToHex(FMin.AsAddress^);
+    vSample.InputRef[1] := Info.Master;
+    // Maximum
+    Info.NewMaster;
+    Info.Master.Category := MaterialSystem.Constants.Name;
+    Info.Master.Name := LMinMaxName;
+    Info.Master.Purpose := sspConstant;
+    Info.Master.Participate := Info.ProgramTypes;
+    Info.Master.Output := vSample.Input[2];
+    Info.Master.ConstantValue := ValueToHex(FMax.AsAddress^);
+    vSample.InputRef[2] := Info.Master;
+
+    Info.NewMaster;
+    Info.Master^ := vSample;
+  end;
+end;
+
+function TConstClampNode.GetProperty(Index: Integer; out APropName: string; out APropValue: string): Boolean;
+begin
+  Result := True;
+  if Index = 0 then
+  begin
+    APropName := 'MinX';
+    APropValue := FloatToStr(FMin.X, cEnUsFormatSettings);
+  end
+  else if Index = 1 then
+  begin
+    APropName := 'MinY';
+    APropValue := FloatToStr(FMin.Y, cEnUsFormatSettings);
+  end
+  else if Index = 2 then
+  begin
+    APropName := 'MinZ';
+    APropValue := FloatToStr(FMin.Z, cEnUsFormatSettings);
+  end
+  else if Index = 3 then
+  begin
+    APropName := 'MinW';
+    APropValue := FloatToStr(FMin.W, cEnUsFormatSettings);
+  end
+  else if Index = 4 then
+  begin
+    APropName := 'MaxX';
+    APropValue := FloatToStr(FMax.X, cEnUsFormatSettings);
+  end
+  else if Index = 5 then
+  begin
+    APropName := 'MaxY';
+    APropValue := FloatToStr(FMax.Y, cEnUsFormatSettings);
+  end
+  else if Index = 6 then
+  begin
+    APropName := 'MaxZ';
+    APropValue := FloatToStr(FMax.Z, cEnUsFormatSettings);
+  end
+  else if Index = 7 then
+  begin
+    APropName := 'MaxW';
+    APropValue := FloatToStr(FMax.W, cEnUsFormatSettings);
+  end
+  else
+    Result := False;
+end;
+
+procedure TConstClampNode.SetProperty(Index: Integer; const APropName: string; const APropValue: string);
+  function LStrToFloat: Single;
+  var
+    err: Integer;
+  begin
+    Val(APropValue, Result, err)
+  end;
+begin
+  if APropName = 'MinX' then
+    FMin.X := LStrToFloat
+  else if APropName = 'MinY' then
+    FMin.Y := LStrToFloat
+  else if APropName = 'MinZ' then
+    FMin.Z := LStrToFloat
+  else if APropName = 'MinW' then
+    FMin.W := LStrToFloat
+
+  else if APropName = 'MaxX' then
+    FMax.X := LStrToFloat
+  else if APropName = 'MaxY' then
+    FMax.Y := LStrToFloat
+  else if APropName = 'MaxZ' then
+    FMax.Z := LStrToFloat
+  else if APropName = 'MaxW' then
+    FMax.W := LStrToFloat
+end;
+
+procedure TConstClampNode.SetMin(AValue: TGLCoordinates4);
+begin
+  FMin.Assign(AValue);
+end;
+
+procedure TConstClampNode.SetMax(AValue: TGLCoordinates4);
+begin
+  FMax.Assign(AValue);
+end;
+
+{$ENDREGION}
+
 {$REGION 'TAppendVectorNode'}
 
 function TAppendVectorNode.Caption: string;
@@ -5620,7 +5899,7 @@ end;
 
 {$REGION 'TWorldNormalNode'}
 
-constructor TWorldNormalNode.Create;
+constructor TWorldNormalNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -5634,7 +5913,7 @@ end;
 
 procedure TWorldNormalNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[0].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[0].Handle)] := 0;
 end;
 
 function TWorldNormalNode.GetViewingCode: AnsiString;
@@ -5670,7 +5949,7 @@ end;
 
 {$REGION 'TLightVectorNode'}
 
-constructor TLightVectorNode.Create;
+constructor TLightVectorNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -5684,7 +5963,7 @@ end;
 
 procedure TLightVectorNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[2].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[2].Handle)] := 0;
 end;
 
 function TLightVectorNode.GetViewingCode: AnsiString;
@@ -5733,7 +6012,7 @@ end;
 
 {$REGION 'TCameraVectorNode'}
 
-constructor TCameraVectorNode.Create;
+constructor TCameraVectorNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -5747,7 +6026,7 @@ end;
 
 procedure TCameraVectorNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[1].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[1].Handle)] := 0;
 end;
 
 function TCameraVectorNode.GetViewingCode: AnsiString;
@@ -5796,7 +6075,7 @@ end;
 
 {$REGION 'TReflectionVectorNode'}
 
-constructor TReflectionVectorNode.Create;
+constructor TReflectionVectorNode.Create(AOwner: TPersistent);
 begin
   inherited;
   SetLength(FJoints, 1);
@@ -5810,7 +6089,7 @@ end;
 
 procedure TReflectionVectorNode.SetViewingUniforms;
 begin
-  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Owner.FSurfaceTextures[3].Handle)] := 0;
+  CurrentGLContext.GLStates.SamplerBinding[ShaderManager.UniformSampler(uniformTexUnit0, Graph.FSurfaceTextures[3].Handle)] := 0;
 end;
 
 function TReflectionVectorNode.GetViewingCode: AnsiString;
@@ -5868,7 +6147,7 @@ initialization
       TComponentMaskNode, TSineNode, TCosineNode, TFloorNode, TAbsNode, TFractNode,
       TOneMinusNode, TSquareRootNode, TScreenPositionNode, TClampNode, TSignNode,
       TAppendVectorNode, TObjectPositionNode, TWorldPositionNode,
-      TSmoothStepNode]);
+      TSmoothStepNode, TCameraWorldPositionNode, TConstClampNode]);
 
 finalization
 

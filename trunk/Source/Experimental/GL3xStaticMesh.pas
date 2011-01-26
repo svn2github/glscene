@@ -14,6 +14,7 @@ uses
   BaseClasses,
   GLCrossPlatform,
   ApplicationFileIO,
+  GLState,
   GLShaderManager,
   GL3xMaterial,
   GL3xMesh,
@@ -202,7 +203,6 @@ uses
   GLSLog,
   OpenGLTokens,
   GLContext,
-  GLState,
   GeometryBB;
 
 const

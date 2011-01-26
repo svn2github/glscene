@@ -63,6 +63,9 @@
       <Coordinates_WorldPosition ObjectType="F">
         <overload Input="void;" Output="vec4" Global="FRAGin vec4 fWorldPosition;">{ return fWorldPosition; }</overload>
       </Coordinates_WorldPosition>
+      <Coordinates_CameraWorldPosition ObjectType="VFGCE">
+        <overload Input="void;" Output="vec4" Uniforms="TShaderEnvCameraWorldPosition;" Global="uniform vec4 CameraWorldPosition;">{ return CameraWorldPosition; }</overload>
+      </Coordinates_CameraWorldPosition>
     </Coordinates>
     <Math>
       <Math_Add ObjectType="VFGCE">
