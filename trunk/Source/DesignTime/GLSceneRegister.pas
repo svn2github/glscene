@@ -2000,7 +2000,7 @@ end;
 
 procedure TGL3xMeshProperty.RefreshMeshList;
 begin
-  MeshManager.FillMeshNameList(FMeshNameList);
+  MeshManager.FillMeshNameList(FMeshNameList, TGL3xStaticMesh);
 end;
 
 function TGL3xMeshProperty.GetAttributes;

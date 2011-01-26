@@ -151,7 +151,7 @@ begin
 end;
 
 constructor GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
 begin
   inherited Create;
   Assert(Assigned(KeyCompare));
@@ -164,14 +164,14 @@ begin
 end;
 
 destructor GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Destroy;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
 
 class procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.FastErase(x: TRBNode);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.FastErase(x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -191,7 +191,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Clear;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Clear;
 begin
   if (FRoot <> nil) then
     FastErase(FRoot);
@@ -204,7 +204,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Find(const key: TKey; out Value: TValue): Boolean;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Find(const key: TKey; out Value: TValue): Boolean;
 begin
   FLastFound := FindNode(key);
   Result := Assigned(FLastFound);
@@ -213,7 +213,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.FindNode(const key: TKey): TRBNode;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.FindNode(const key: TKey): TRBNode;
 var
   cmp: integer;
 begin
@@ -237,7 +237,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.NextDublicate(out Value: TValue): Boolean;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.NextDublicate(out Value: TValue): Boolean;
 begin
   if Assigned(FLastFound) then
   begin
@@ -252,7 +252,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.RotateLeft(var x: TRBNode);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.RotateLeft(var x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -280,7 +280,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.RotateRight(var x: TRBNode);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.RotateRight(var x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -308,7 +308,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Minimum(var x: TRBNode): TRBNode;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Minimum(var x: TRBNode): TRBNode;
 begin
   Result := x;
   while (Result.left <> nil) do
@@ -316,7 +316,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Maximum(var x: TRBNode): TRBNode;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Maximum(var x: TRBNode): TRBNode;
 begin
   Result := x;
   while (Result.right <> nil) do
@@ -324,7 +324,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Add(const key: TKey; const Value: TValue);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Add(const key: TKey; const Value: TValue);
 var
   x, y, z, zpp: TRBNode;
   cmp: Integer;
@@ -468,7 +468,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.Delete(const key: TKey);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.Delete(const key: TKey);
 var
   w, x, y, z, x_parent: TRBNode;
   tmpcol: TRBColor;
@@ -698,7 +698,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.NextKey(var key: TKey; out Value: TValue): Boolean;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.NextKey(var key: TKey; out Value: TValue): Boolean;
 var
   x, y: TRBNode;
 begin
@@ -738,7 +738,7 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.PrevKey(var key: TKey; out Value: TValue): Boolean;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.PrevKey(var key: TKey; out Value: TValue): Boolean;
 var
   x, y: TRBNode;
 begin
@@ -778,19 +778,19 @@ begin
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.GetFirst: TKey;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.GetFirst: TKey;
 begin
   Result := FLeftMost.Key;
 end;
 
 function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.GetLast: TKey;
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.GetLast: TKey;
 begin
   Result := FRightMost.Key;
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.ForEach(AProc: TForEachProc);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.ForEach(AProc: TForEachProc);
 var
   x, y, z: TRBNode;
   cont: Boolean;
@@ -835,7 +835,7 @@ begin
 end;
 
 procedure GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.SetDuplicateKeys(Value: Boolean);
+{$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.SetDuplicateKeys(Value: Boolean);
 begin
   if Value and Assigned(FValueCompareFunc) then
     FDuplicateKeys := True

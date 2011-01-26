@@ -40,40 +40,8 @@ uses
   GLSRedBlackTree,
   GL3xMaterialTokens;
 
-type
-
-  TGLMeshPrimitive = (
-    mpNOPRIMITIVE,
-    mpTRIANGLES,
-    mpTRIANGLE_STRIP,
-    mpTRIANGLE_FAN,
-    mpPOINTS,
-    mpLINES,
-    mpLINE_LOOP,
-    mpLINE_STRIP,
-    mpLINES_ADJACENCY,
-    mpLINE_STRIP_ADJACENCY,
-    mpTRIANGLES_ADJACENCY,
-    mpTRIANGLE_STRIP_ADJACENCY,
-    mpPATCHES
-    );
-
-  TGLMeshPrimitives = set of TGLMeshPrimitive;
-
 const
-  cAllMeshPrimitive = [
-    mpTRIANGLES,
-    mpTRIANGLE_STRIP,
-    mpTRIANGLE_FAN,
-    mpPOINTS,
-    mpLINES,
-    mpLINE_LOOP,
-    mpLINE_STRIP,
-    mpLINES_ADJACENCY,
-    mpLINE_STRIP_ADJACENCY,
-    mpTRIANGLES_ADJACENCY,
-    mpTRIANGLE_STRIP_ADJACENCY,
-    mpPATCHES];
+  HackHackHack = 0;
 
 {$IFDEF FPC}
 {$IF (LCL_RELEASE < 31)}
@@ -276,7 +244,7 @@ type
     class function FillResourceList(AList: TStringList): Boolean; override;
     class procedure MakeUniqueItemName(var AName: string; AClass: TGLAbstractNameClass); override;
 
-    class procedure FillMeshNameList(var AList: TStringList);
+    class procedure FillMeshNameList(var AList: TStringList; AClass: TGLAbstractMeshClass);
 
     class function CreateMesh(AName: string; AClass: TGLAbstractMeshClass;
       const AFileName, AImportFile: string): IGLName;
@@ -3022,7 +2990,8 @@ begin
   end
 end;
 
-class procedure MeshManager.FillMeshNameList(var AList: TStringList);
+class procedure MeshManager.FillMeshNameList(var AList: TStringList;
+  AClass: TGLAbstractMeshClass);
 var
   I: Integer;
 begin
@@ -3031,10 +3000,13 @@ begin
     if not Assigned(AList) then
       AList := TStringList.Create;
     AList.Clear;
-    AList.Add(Meshes[0].Name.Value);
+    if (AClass = nil) or (Meshes[0] is AClass) then
+      AList.Add(Meshes[0].Name.Value);
     for I := 1 to High(Meshes) do
-      if Assigned(Meshes[I]) and (Length(Meshes[I].ResourceName) > 0) then
-        AList.Add(Meshes[I].Name.Value);
+      if Assigned(Meshes[I])
+        and (Length(Meshes[I].ResourceName) > 0) then
+        if (AClass = nil) or (Meshes[0] is AClass) then
+          AList.Add(Meshes[I].Name.Value);
   finally
     EndWork;
   end;
