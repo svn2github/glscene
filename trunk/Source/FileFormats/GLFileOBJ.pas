@@ -86,7 +86,8 @@ uses
   GLRenderContextInfo,
   GLMaterial
 {$IFDEF GLS_EXPERIMENTAL}
-  ,GLShaderManager,
+  ,GLState,
+  GLShaderManager,
   GL3xMaterial,
   GL3xMesh
 {$ENDIF GLS_EXPERIMENTAL}

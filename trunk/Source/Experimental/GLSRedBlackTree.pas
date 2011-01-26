@@ -173,7 +173,7 @@ end;
 class procedure GRedBlackTree
 {$IFNDEF GLS_GENERIC_PREFIX}<TKey, TValue>{$ENDIF}.FastErase(x: TRBNode);
 var
-  y: TRBNode;
+  y, z: TRBNode;
 begin
   if (x.left <> nil) then
     FastErase(x.left);
@@ -181,7 +181,8 @@ begin
     FastErase(x.right);
   repeat
     y := x;
-    x := x.Twin;
+    z := x.Twin;
+    x := z;
 {$IFDEF FPC}
     Dispose(y);
 {$ELSE}
