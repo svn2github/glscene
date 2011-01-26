@@ -858,6 +858,10 @@ end;
 
 var
   vGLSStartTime : TDateTime;
+{$IFDEF MSWINDOWS}
+  vLastTime: TDateTime;
+  vDeltaMilliSecond: TDateTime;
+{$ENDIF}
 
 function GLSTime: Double;
 {$IFDEF MSWINDOWS}
@@ -870,9 +874,20 @@ begin
              wMinute * (SecsPerMin * MSecsPerSec) +
              wSecond * MSecsPerSec +
              wMilliSeconds) - vGLSStartTime;
+  // Hack to fix time precession
+  if Result - vLastTime = 0 then
+  begin
+    Result := Result + vDeltaMilliSecond;
+    vDeltaMilliSecond := vDeltaMilliSecond + 0.1;
+  end
+  else begin
+    vLastTime := Result;
+    vDeltaMilliSecond := 0.1;
+  end;
 end;
 {$ENDIF}
-{$IFDEF LINUX}
+
+{$IFDEF UNIX}
 var
   tz: timeval;
 begin
