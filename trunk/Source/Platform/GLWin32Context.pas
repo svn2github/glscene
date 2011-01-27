@@ -1058,8 +1058,24 @@ begin
 
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
   begin
-    FSharedContexts.Add(ServiceContext);
-    PropagateSharedContext;
+    if wglShareLists(TGLWin32Context(ServiceContext).FRC, FRC) then
+    begin
+      FSharedContexts.Add(ServiceContext);
+      PropagateSharedContext;
+    end
+    else
+      GLSLogger.LogWarning('DoCreateContext - Failed to share contexts with resource context');
+  end;
+
+  if Assigned(FShareContext) and (FShareContext.RC <> 0) then
+  begin
+    if not wglShareLists(FShareContext.RC, FRC) then
+      GLSLogger.LogWarning(glsFailedToShare)
+    else
+    begin
+      FSharedContexts.Add(FShareContext);
+      PropagateSharedContext;
+    end;
   end;
 
   Deactivate;
