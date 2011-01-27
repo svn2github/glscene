@@ -5607,7 +5607,7 @@ const
   PFNGLXBINDVIDEODEVICENVPROC = function(dpy: PDisplay; video_slot: TGLInt; video_device: TGLInt; attrib_list: PGLint): TGLint; cdecl;
   PFNGLXGETVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TGLInt; numVideoDevices: TGLInt; pVideoDevice: GLXVideoDeviceNV): TGLInt; cdecl;
 
-  PFNGLXALLOCATEMEMORYNVPROC = procedure( size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat ); cdecl;
+  PFNGLXALLOCATEMEMORYNVPROC = function( size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat ): Pointer; cdecl;
   PFNGLXFREEMEMORYNVPROC = procedure ( GLvoid: pointer ); cdecl;
 
   PFNGLXRELEASEVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
