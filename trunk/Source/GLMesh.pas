@@ -380,7 +380,7 @@ begin
         FValues := GL.WAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
 {$IFDEF LINUX}
-        FValues := GL.XAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := PVertexDataArray(GL.XAllocateMemoryNV(size, 0, 0, 0.5));
 {$ENDIF}
         if FValues = nil then
         begin
