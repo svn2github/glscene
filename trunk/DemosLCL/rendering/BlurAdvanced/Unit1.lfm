@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 106
-  Height = 513
-  Top = 75
+  Height = 512
+  Top = 76
   Width = 808
   Caption = 'Form1'
-  ClientHeight = 513
+  ClientHeight = 512
   ClientWidth = 808
   Font.Height = -11
   Font.Name = 'Tahoma'
@@ -12,7 +12,7 @@ object Form1: TForm1
   LCLVersion = '0.9.29'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Height = 513
+    Height = 512
     Top = 0
     Width = 480
     Camera = GLCamera1
@@ -24,12 +24,12 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 480
-    Height = 513
+    Height = 512
     Top = 0
     Width = 328
     Align = alRight
     Caption = ' '
-    ClientHeight = 513
+    ClientHeight = 512
     ClientWidth = 328
     TabOrder = 1
     object Bevel1: TBevel
@@ -40,23 +40,23 @@ object Form1: TForm1
     end
     object Label1: TLabel
       Left = 24
-      Height = 14
+      Height = 13
       Top = 51
-      Width = 92
+      Width = 90
       Caption = 'AdvancedBlurAmp:'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 28
-      Height = 14
+      Height = 13
       Top = 203
-      Width = 104
+      Width = 101
       Caption = 'AdvancedBlurPasses:'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 24
-      Height = 14
+      Height = 13
       Top = 83
       Width = 109
       Caption = 'AdvancedBlurHiClamp:'
@@ -64,17 +64,17 @@ object Form1: TForm1
     end
     object Label4: TLabel
       Left = 24
-      Height = 14
+      Height = 13
       Top = 139
-      Width = 111
+      Width = 110
       Caption = 'AdvancedBlurLoClamp:'
       ParentColor = False
     end
     object Label5: TLabel
       Left = 16
-      Height = 20
+      Height = 18
       Top = 16
-      Width = 110
+      Width = 99
       Caption = 'Blur settings:'
       Font.Height = -16
       Font.Name = 'Tahoma'
@@ -84,7 +84,7 @@ object Form1: TForm1
     end
     object edtAdvancedBlurAmp: TEdit
       Left = 121
-      Height = 21
+      Height = 22
       Top = 48
       Width = 48
       OnChange = edtAdvancedBlurAmpChange
@@ -93,7 +93,7 @@ object Form1: TForm1
     end
     object edtAdvancedBlurPasses: TEdit
       Left = 137
-      Height = 21
+      Height = 22
       Top = 199
       Width = 32
       OnChange = edtAdvancedBlurPassesChange
@@ -238,8 +238,8 @@ object Form1: TForm1
         TurnAngle = 0
         BottomRadius = 0.5
         Height = 1
-        BottomInnerRadius = 0.30000001192093
-        TopInnerRadius = 0.30000001192093
+        BottomInnerRadius = 0.30000001192092
+        TopInnerRadius = 0.30000001192092
         TopRadius = 0.5
       end
     end
@@ -776,7 +776,7 @@ object Form1: TForm1
       RenderHeight = 64
       TargetObject = GLDummyCube1
       AdvancedBlurPasses = 1
-      AdvancedBlurAmp = 1.20000004768372
+      AdvancedBlurAmp = 1.20000004768371
       AdvancedBlurLowClamp = 0
       AdvancedBlurHiClamp = 255
       BlurSelf = False
@@ -838,4 +838,4 @@ object Form1: TForm1
     left = 40
     top = 128
   end
-end
+end

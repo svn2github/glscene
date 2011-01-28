@@ -14,6 +14,9 @@
     <VersionInfo>
       <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
@@ -22,6 +25,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -32,14 +36,14 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="6">
       <Unit0>
         <Filename Value="Actor.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="7" Y="7"/>
+        <CursorPos X="5" Y="10"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -59,40 +63,53 @@
       <Unit2>
         <Filename Value="..\..\..\Source\GLGameMenu.pas"/>
         <UnitName Value="GLGameMenu"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="494"/>
+        <TopLine Value="484"/>
         <CursorPos X="1" Y="521"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
         <UnitName Value="GLPipelineTransformation"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="211"/>
+        <CursorPos X="50" Y="231"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="demo.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="demo"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="205"/>
-        <CursorPos X="20" Y="219"/>
+        <TopLine Value="207"/>
+        <CursorPos X="26" Y="151"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit3>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\Source\Base\ApplicationFileIO.pas"/>
+        <UnitName Value="ApplicationFileIO"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="179"/>
+        <CursorPos X="52" Y="201"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="..\..\..\Source\GLGameMenu.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="demo.pas"/>
+        <Caret Line="48" Column="42" TopLine="21"/>
       </Position1>
-      <Position2>
-        <Filename Value="..\..\..\Source\GLGameMenu.pas"/>
-        <Caret Line="521" Column="1" TopLine="494"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -103,7 +120,7 @@
     </Target>
     <SearchPaths>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\"/>
+      <SrcPath Value="$(LazarusDir)\lcl;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

@@ -148,8 +148,8 @@ end;
 procedure TForm1.BBLoadWeaponClick(Sender: TObject);
 begin
    // Load weapon model and texture
-   Actor2.LoadFromFile('WeaponWaste.md2');
-   Actor2.Material.Texture.Image.LoadFromFile('WeaponWaste.jpg');
+   Actor2.LoadFromFile('weaponWaste.md2');
+   Actor2.Material.Texture.Image.LoadFromFile('weaponWaste.jpg');
 
    // Get animations frames from the main actor
    Actor2.Animations.Assign(Actor1.Animations);

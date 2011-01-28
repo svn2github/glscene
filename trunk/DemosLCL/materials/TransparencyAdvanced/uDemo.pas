@@ -60,7 +60,7 @@ implementation
 
 uses
   VectorGeometry,
-  GLContext, GLState, OpenGLTokens, GLColor, GLKeyBoard,
+  GLContext, GLState, OpenGLTokens, GLColor, GLKeyboard,
   GLCompositeImage, GLFileJPEG, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -323,4 +323,4 @@ begin
   LayeredFrameBuffer.Height := GLSceneViewer1.Height;
 end;
 
-end.
+end.

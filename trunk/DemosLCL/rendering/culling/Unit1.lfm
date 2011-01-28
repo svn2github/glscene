@@ -1,177 +1,213 @@
 object Form1: TForm1
   Left = 188
+  Height = 340
   Top = 112
   Width = 544
-  Height = 340
   Caption = 'Form1'
+  ClientHeight = 340
+  ClientWidth = 544
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Arial'
-  Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
-  DesignSize = (
-    536
-    311)
-  PixelsPerInch = 96
-  TextHeight = 14
+  LCLVersion = '0.9.29'
   object Label1: TLabel
-    Left = 440
+    Left = 457
+    Height = 14
     Top = 8
-    Width = 75
-    Height = 15
+    Width = 67
     Anchors = [akTop, akRight]
     Caption = 'Culling Mode:'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentColor = False
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 440
+    Left = 472
+    Height = 14
     Top = 120
-    Width = 47
-    Height = 15
+    Width = 42
     Anchors = [akTop, akRight]
     Caption = 'Objects:'
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentColor = False
     ParentFont = False
   end
   object Viewer: TGLSceneViewer
     Left = 8
+    Height = 297
     Top = 8
     Width = 425
-    Height = 297
     Camera = GLCamera1
     Buffer.BackgroundColor = 12040119
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 142.783203125
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabOrder = 0
   end
   object RBNone: TRadioButton
-    Left = 440
+    Left = 445
+    Height = 22
     Top = 32
-    Width = 89
-    Height = 17
+    Width = 46
     Anchors = [akTop, akRight]
     Caption = 'None'
     Checked = True
+    OnClick = RBNoneClick
     TabOrder = 1
     TabStop = True
-    OnClick = RBNoneClick
   end
   object RBObject: TRadioButton
-    Left = 440
+    Left = 445
+    Height = 22
     Top = 56
-    Width = 89
-    Height = 17
+    Width = 79
     Anchors = [akTop, akRight]
     Caption = 'Object based'
-    TabOrder = 2
     OnClick = RBNoneClick
+    TabOrder = 2
   end
   object RBHierarchical: TRadioButton
-    Left = 440
+    Left = 445
+    Height = 22
     Top = 80
-    Width = 89
-    Height = 17
+    Width = 73
     Anchors = [akTop, akRight]
     Caption = 'Hierarchical'
+    OnClick = RBNoneClick
     TabOrder = 3
     Visible = False
-    OnClick = RBNoneClick
   end
   object Panel1: TPanel
     Left = 440
+    Height = 65
     Top = 144
     Width = 89
-    Height = 65
     Anchors = [akTop, akRight]
     BevelOuter = bvNone
+    ClientHeight = 65
+    ClientWidth = 89
     TabOrder = 4
     object RBSpheres: TRadioButton
       Left = 0
+      Height = 22
       Top = 0
-      Width = 81
-      Height = 17
+      Width = 58
       Caption = 'Spheres'
       Checked = True
+      OnClick = RBSpheresClick
       TabOrder = 0
       TabStop = True
-      OnClick = RBSpheresClick
     end
     object RBActors: TRadioButton
       Left = 0
+      Height = 22
       Top = 24
-      Width = 81
-      Height = 17
+      Width = 51
       Caption = 'Actors'
-      TabOrder = 1
       OnClick = RBSpheresClick
+      TabOrder = 1
     end
   end
   object GLScene: TGLScene
-    Left = 16
-    Top = 16
+    left = 24
+    top = 304
     object GLLightSource1: TGLLightSource
+      TagFloat = 0
       ConstAttenuation = 1
-      Position.Coordinates = {0000C8420000A042000070420000803F}
+      LinearAttenuation = 0
+      QuadraticAttenuation = 0
+      Position.Coordinates = {
+        0000C8420000A042000070420000803F
+      }
       SpotCutOff = 180
+      SpotExponent = 0
     end
     object DCTarget: TGLDummyCube
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
       CubeSize = 1
       object GLCamera1: TGLCamera
+        TagFloat = 0
         DepthOfView = 100
         FocalLength = 50
         TargetObject = DCTarget
-        Position.Coordinates = {0000A04000000040000040400000803F}
-        Left = 256
-        Top = 144
+        Position.Coordinates = {
+          0000A04000000040000040400000803F
+        }
+        left = 256
+        top = 144
       end
     end
     object DCSpheres: TGLDummyCube
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
       CubeSize = 1
     end
     object DCActors: TGLDummyCube
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
       Visible = False
       CubeSize = 1
     end
     object ACReference: TGLActor
-      Direction.Coordinates = {000000000000803F2EBD3BB300000000}
-      Position.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
-      Scale.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D00000000}
-      Up.Coordinates = {000000002EBD3BB3000080BF00000000}
+      TagFloat = 0
       Material.MaterialLibrary = GLMaterialLibrary
       Material.LibMaterialName = 'ActorTexture'
+      Direction.Coordinates = {
+        000000000000803F2EBD3BB300000000
+      }
+      PitchAngle = 0
+      Position.Coordinates = {
+        CDCC4C3DCDCC4C3DCDCC4C3D0000803F
+      }
+      RollAngle = 0
+      Scale.Coordinates = {
+        CDCC4C3DCDCC4C3DCDCC4C3D00000000
+      }
+      TurnAngle = 0
+      Up.Coordinates = {
+        000000002EBD3BB3000080BF00000000
+      }
+      CurrentFrameDelta = 0
       AnimationMode = aamLoop
       Interval = 100
     end
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
     OnProgress = GLCadencerProgress
-    Left = 48
-    Top = 16
+    left = 64
+    top = 304
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 48
+    left = 104
+    top = 304
   end
   object GLMaterialLibrary: TGLMaterialLibrary
-    Materials = <
+    Materials = <    
       item
         Name = 'ActorTexture'
         Material.Texture.Disabled = False
         Tag = 0
       end>
-    Left = 48
-    Top = 48
+    left = 144
+    top = 304
   end
-end
+end

@@ -36,17 +36,14 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="19">
+    <Units Count="33">
       <Unit0>
         <Filename Value="Transparency.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="19" Y="8"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
+        <CursorPos X="54" Y="9"/>
+        <UsageCount Value="25"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -59,51 +56,41 @@
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="3" Y="35"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="25"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\Base\GLSLog.pas"/>
         <UnitName Value="GLSLog"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="366"/>
-        <CursorPos X="10" Y="480"/>
+        <TopLine Value="452"/>
+        <CursorPos X="1" Y="459"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\GLState.pas"/>
         <UnitName Value="GLState"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\Source\Experimental\GLShaderManager.pas"/>
         <UnitName Value="GLShaderManager"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1371"/>
         <CursorPos X="38" Y="1385"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\Source\Experimental\GLShaderEnvironment.pas"/>
         <UnitName Value="GLShaderEnvironment"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="214"/>
         <CursorPos X="51" Y="233"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
@@ -122,7 +109,6 @@
         <TopLine Value="64"/>
         <CursorPos X="38" Y="82"/>
         <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\Source\Platform\GLCrossPlatform.pas"/>
@@ -136,12 +122,10 @@
       <Unit9>
         <Filename Value="..\..\..\Source\Base\BaseClasses.pas"/>
         <UnitName Value="BaseClasses"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="69"/>
         <CursorPos X="3" Y="83"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit9>
       <Unit10>
@@ -165,29 +149,23 @@
       <Unit12>
         <Filename Value="..\..\..\Source\Experimental\GL3xMaterialEditor.pas"/>
         <UnitName Value="GL3xMaterialEditor"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="759"/>
         <CursorPos X="1" Y="777"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\Source\DesignTime\GLSceneRegisterLCL.pas"/>
         <UnitName Value="GLSceneRegisterLCL"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1491"/>
         <CursorPos X="5" Y="1516"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\Source\GLScene.pas"/>
         <UnitName Value="GLScene"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="352"/>
         <CursorPos X="12" Y="353"/>
@@ -195,18 +173,14 @@
         <Bookmarks Count="1">
           <Item0 X="1" Y="2502" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\..\Source\Base\GLCoordinates.pas"/>
         <UnitName Value="GLCoordinates"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
         <TopLine Value="174"/>
         <CursorPos X="60" Y="188"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit15>
       <Unit16>
@@ -215,6 +189,7 @@
         <TopLine Value="1594"/>
         <CursorPos X="15" Y="1608"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
         <Filename Value="C:\lazarus\fpc\2.5.1\source\rtl\objpas\classes\compon.inc"/>
@@ -222,6 +197,7 @@
         <TopLine Value="225"/>
         <CursorPos X="3" Y="237"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\lcl\controls.pp"/>
@@ -230,121 +206,177 @@
         <TopLine Value="182"/>
         <CursorPos X="5" Y="196"/>
         <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit18>
+      <Unit19>
+        <Filename Value="..\..\..\Source\PropertyEditors\FMaterialEditorFormLCL.pas"/>
+        <UnitName Value="FMaterialEditorFormLCL"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="212"/>
+        <CursorPos X="20" Y="242"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\..\..\Source\PropertyEditors\FMaterialEditorFormLCL.lrs"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="58" Y="3"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\..\..\..\..\..\..\..\share\fpcsrc\2.4.2\packages\fcl-process\src\process.pp"/>
+        <UnitName Value="process"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\..\..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas"/>
+        <UnitName Value="NewtonImport_JointLibrary"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="62"/>
+        <CursorPos X="1" Y="73"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\..\..\Source\GLContext.pas"/>
+        <UnitName Value="GLContext"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4410"/>
+        <CursorPos X="45" Y="4428"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\..\..\Source\GLGraphics.pas"/>
+        <UnitName Value="GLGraphics"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="67"/>
+        <CursorPos X="27" Y="87"/>
+        <UsageCount Value="10"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
+        <UnitName Value="GLNGDManager"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="45"/>
+        <CursorPos X="39" Y="71"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="..\..\..\Source\PhysicsAPIs\NewtonImport.pas"/>
+        <UnitName Value="NewtonImport"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="147"/>
+        <CursorPos X="11" Y="177"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\..\..\Source\GLScene.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="497"/>
+        <CursorPos X="47" Y="532"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\..\..\Source\PhysicsAPIs\delphinewton.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="234"/>
+        <CursorPos X="9" Y="234"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\..\..\..\..\..\..\..\share\fpcsrc\2.4.2\rtl\unix\aliasptp.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="24"/>
+        <CursorPos X="5" Y="43"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\..\..\..\..\..\..\..\share\fpcsrc\2.4.2\rtl\unix\unix.pp"/>
+        <UnitName Value="Unix"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\..\..\..\..\lcl\interfaces\fpgui\fpguiint.pp"/>
+        <UnitName Value="fpguiint"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="23"/>
+        <CursorPos X="12" Y="42"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\..\..\..\..\lcl\interfaces\win32\win32int.pp"/>
+        <UnitName Value="Win32Int"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="59"/>
+        <CursorPos X="4" Y="78"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit32>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="28" TopLine="616"/>
+        <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
+        <Caret Line="823" Column="15" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="7322" Column="26" TopLine="7308"/>
+        <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
+        <Caret Line="58" Column="41" TopLine="40"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="1760" Column="15" TopLine="1746"/>
+        <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
+        <Caret Line="5" Column="25" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="41" TopLine="2989"/>
+        <Filename Value="..\..\..\Source\PhysicsAPIs\NewtonImport.pas"/>
+        <Caret Line="177" Column="10" TopLine="147"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="7322" Column="31" TopLine="7308"/>
+        <Filename Value="..\..\..\Source\PhysicsAPIs\NewtonImport.pas"/>
+        <Caret Line="176" Column="23" TopLine="147"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="33" TopLine="2989"/>
+        <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
+        <Caret Line="13" Column="43" TopLine="1"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="70" TopLine="616"/>
+        <Filename Value="..\..\..\Source\GLContext.pas"/>
+        <Caret Line="4429" Column="81" TopLine="4410"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="36" TopLine="2989"/>
+        <Filename Value="..\..\..\Source\GLContext.pas"/>
+        <Caret Line="1066" Column="42" TopLine="1047"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="633" Column="69" TopLine="616"/>
+        <Filename Value="..\..\..\Source\GLContext.pas"/>
+        <Caret Line="4429" Column="81" TopLine="4410"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="10104" Column="1" TopLine="10077"/>
+        <Filename Value="..\..\..\..\..\lcl\interfaces\fpgui\fpguiint.pp"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
-      <Position11>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="35" TopLine="2989"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="22" TopLine="613"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="22" TopLine="613"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="1" TopLine="2992"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="7322" Column="1" TopLine="7308"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="3" TopLine="616"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="1760" Column="26" TopLine="1746"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="3003" Column="1" TopLine="2989"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="7322" Column="14" TopLine="7305"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="1750" Column="43" TopLine="1738"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="1759" Column="62" TopLine="1738"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="469" Column="83" TopLine="463"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="630" Column="22" TopLine="592"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="2501" Column="8" TopLine="2489"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="7928" Column="12" TopLine="7905"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="8561" Column="21" TopLine="8538"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\..\Source\GLScene.pas"/>
-        <Caret Line="9187" Column="54" TopLine="9170"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\..\..\Source\Experimental\GLShaderEnvironment.pas"/>
-        <Caret Line="18" Column="9" TopLine="1"/>
-      </Position28>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

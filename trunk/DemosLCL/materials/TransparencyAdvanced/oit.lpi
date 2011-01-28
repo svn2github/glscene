@@ -12,7 +12,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
@@ -32,6 +31,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="\usr\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="8">
       <Unit0>
         <Filename Value="oit.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -50,7 +50,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="6" Y="10"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -64,15 +64,65 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7"/>
-        <CursorPos X="30" Y="13"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="203"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Source\FileFormats\GLFileJPEG.pas"/>
+        <UnitName Value="GLFileJPEG"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="103"/>
+        <CursorPos X="1" Y="123"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\Platform\GLKeyboard.pas"/>
+        <UnitName Value="GLKeyboard"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="134"/>
+        <CursorPos X="1" Y="155"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\..\lcl\include\winapih.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="121"/>
+        <CursorPos X="21" Y="134"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\..\lcl\include\intfbasewinapi.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="986"/>
+        <CursorPos X="3" Y="1000"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\..\..\lcl\include\winapi.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="399"/>
+        <CursorPos X="1" Y="419"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\..\..\lcl\interfaces\gtk2\gtk2winapi.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4516"/>
+        <CursorPos X="1" Y="4574"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit7>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
         <Filename Value="oit.lpr"/>
         <Caret Line="10" Column="6" TopLine="1"/>
@@ -81,6 +131,22 @@
         <Filename Value="uDemo.pas"/>
         <Caret Line="62" Column="19" TopLine="49"/>
       </Position2>
+      <Position3>
+        <Filename Value="uDemo.pas"/>
+        <Caret Line="13" Column="30" TopLine="7"/>
+      </Position3>
+      <Position4>
+        <Filename Value="uDemo.pas"/>
+        <Caret Line="63" Column="52" TopLine="44"/>
+      </Position4>
+      <Position5>
+        <Filename Value="uDemo.pas"/>
+        <Caret Line="203" Column="13" TopLine="188"/>
+      </Position5>
+      <Position6>
+        <Filename Value="uDemo.pas"/>
+        <Caret Line="203" Column="1" TopLine="188"/>
+      </Position6>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -95,7 +161,6 @@
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
-  <SkipCheckLCLInterfaces Value="True"/>
   <Debugging>
     <Exceptions Count="3">
       <Item1>
@@ -109,4 +174,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

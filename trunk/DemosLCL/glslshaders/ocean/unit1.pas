@@ -2,6 +2,8 @@ unit unit1;
 
 interface
 
+{$MODE Delphi}
+
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLViewer, GLScene, GLTexture, GLObjects,

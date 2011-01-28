@@ -9,7 +9,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLVectorFileObjects, GLObjects, ComCtrls, StdCtrls,
   GLLCLViewer, GLFile3DS, GLCrossPlatform, GLCoordinates, BaseClasses;
 
@@ -45,10 +45,20 @@ implementation
 
 {$R *.lfm}
 
+uses FileUtil;
+
 procedure TForm1.FormCreate(Sender: TObject);
 const
-   cFileName = '..\..\media\polyhedron.3ds';
+   cFileName = 'polyhedron.3ds';
+var
+  path: UTF8String;
+  p: Integer;
 begin
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
 
    // left one
    FreeForm3.AutoCentering:=[macCenterX, macCenterZ];

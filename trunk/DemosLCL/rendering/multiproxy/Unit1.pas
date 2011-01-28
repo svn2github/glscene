@@ -12,7 +12,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLColor,
+  SysUtils, Classes, Graphics, Controls, Forms, GLColor,
   Dialogs, GLCadencer, GLScene, GLObjects, GLParticles, GLLCLViewer,
   ExtCtrls, GLMultiProxy, StdCtrls, GLTexture, GLCrossPlatform, GLCoordinates,
   BaseClasses;
@@ -66,7 +66,7 @@ begin
    RBUseLODsClick(Self);
    // replicate the multiproxy via a TGLParticles object
    for i:=0 to 35 do
-      GLParticles.CreateParticle.TagFloat:=DegToRad(i*10);
+      GLParticles.CreateParticle.TagFloat:=DegToRad(i*10.0);
 end;
 
 procedure TForm1.MPSphereProgress(Sender: TObject; const deltaTime,
@@ -123,4 +123,4 @@ begin
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-end.
+end.

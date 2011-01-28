@@ -26,7 +26,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects, ExtCtrls,
   StdCtrls, GLLCLViewer, GLTexture, GLCrossPlatform, GLMaterial,
   GLCoordinates, BaseClasses, GLRenderContextInfo;
@@ -71,14 +71,21 @@ implementation
 
 {$R *.lfm}
 
-uses GLFileMD2;
+uses GLFileMD2, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
    newSphere : TGLSphere;
    newActor : TGLActor;
+  path: UTF8String;
+  p: Integer;
 begin
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
    // Spheres are used as standalone, high-polycount objects
    // that are highly T&L friendly
    for i:=-4 to 4 do for j:=-4 to 4 do begin
@@ -90,8 +97,8 @@ begin
    // Actors are used as standalone, med-polycount objects
    // that aren't T&L friendly (all geometry must be sent to
    // the hardware at each frame)
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
-   ACReference.LoadFromFile('..\..\media\waste.md2');
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('waste.jpg');
+   ACReference.LoadFromFile('waste.md2');
    for i:=-3 to 3 do for j:=-3 to 3 do begin
       newActor:=(DCActors.AddNewChild(TGLActor) as TGLActor);
       newActor.Assign(ACReference);
@@ -128,4 +135,4 @@ begin
    else GLScene.VisibilityCulling:=vcNone;
 end;
 
-end.
+end.

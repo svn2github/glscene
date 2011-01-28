@@ -6,9 +6,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs,GLLCLViewer, GLScene, GLObjects, GLHUDObjects,
-  GLGeomObjects, GLCadencer, ExtCtrls, glBlur, GLTexture, ComCtrls,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, GLLCLViewer, GLScene, GLObjects, GLHUDObjects,
+  GLGeomObjects, GLCadencer, ExtCtrls, GLBlur, GLTexture, ComCtrls,
   StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
@@ -40,11 +40,11 @@ type
     Memo1: TMemo;
     GLTorus2: TGLTorus;
     procedure Timer1Timer(Sender: TObject);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
     procedure FormCreate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure edtAdvancedBlurAmpChange(Sender: TObject);
     procedure trkAdvancedBlurHiClampChange(Sender: TObject);
     procedure trkAdvancedBlurLoClampChange(Sender: TObject);
@@ -53,7 +53,7 @@ type
     procedure GLBlur1AfterTargetRender(Sender: TObject);
   private
     { Private declarations }
-    mx,my:integer;
+    mx, my: integer;
   public
     { Public declarations }
   end;
@@ -65,75 +65,88 @@ implementation
 
 {$R *.lfm}
 
+uses
+  FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  path: UTF8String;
+  p: integer;
 begin
-     // Blur GLDummyCube1and it's children
-     GLBlur1.TargetObject:=GLDummyCube1;
-     // point to GLDummyCube1
-     GLCamera1.TargetObject:=GLDummyCube1;
-     // load materials
-     GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\beigemarble.jpg');
-     GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('..\..\media\moon.bmp');
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+  // Blur GLDummyCube1and it's children
+  GLBlur1.TargetObject := GLDummyCube1;
+  // point to GLDummyCube1
+  GLCamera1.TargetObject := GLDummyCube1;
+  // load materials
+  with GLMaterialLibrary1 do
+  begin
+    Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+    Materials[1].Material.Texture.Image.LoadFromFile('moon.bmp');
+  end;
 end;
 
 
 procedure TForm1.GLBlur1BeforeTargetRender(Sender: TObject);
 begin
-     TorusImpostor.Visible:=true; // GLBlur1 must render the Torusimpostor
+  TorusImpostor.Visible := True; // GLBlur1 must render the Torusimpostor
 end;
 
 procedure TForm1.GLBlur1AfterTargetRender(Sender: TObject);
 begin
-     TorusImpostor.Visible:=false; // GLSCeneViewer1 must NOT render the Torusimpostor
+  TorusImpostor.Visible := False; // GLSCeneViewer1 must NOT render the Torusimpostor
 end;
 
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-     GLSceneViewer1.Invalidate;
+  GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
-     if (ssRight in Shift) and (y>10) then
-        GLCamera1.AdjustDistanceToTarget(my/y);
-     if ssLeft in Shift then
-        GLCamera1.MoveAroundTarget(my-y,mx-x);
-     mx:=x;
-     my:=y;
+  if (ssRight in Shift) and (y > 10) then
+    GLCamera1.AdjustDistanceToTarget(my / y);
+  if ssLeft in Shift then
+    GLCamera1.MoveAroundTarget(my - y, mx - x);
+  mx := x;
+  my := y;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-     caption :=GLSceneViewer1.FramesPerSecondText(0);
-     GLSceneViewer1.ResetPerformanceMonitor;
+  Caption := GLSceneViewer1.FramesPerSecondText(0);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.trkAdvancedBlurHiClampChange(Sender: TObject);
 begin
-     GLBlur1.AdvancedBlurHiClamp:=trkAdvancedBlurHiClamp.Position;
+  GLBlur1.AdvancedBlurHiClamp := trkAdvancedBlurHiClamp.Position;
 end;
 
 procedure TForm1.trkAdvancedBlurLoClampChange(Sender: TObject);
 begin
-     GLBlur1.AdvancedBlurLowClamp:=trkAdvancedBlurLoClamp.Position;
+  GLBlur1.AdvancedBlurLowClamp := trkAdvancedBlurLoClamp.Position;
 end;
 
 
 procedure TForm1.edtAdvancedBlurAmpChange(Sender: TObject);
 begin
-     GLBlur1.AdvancedBlurAmp:=StrToFloat(edtAdvancedBlurAmp.Text);
+  GLBlur1.AdvancedBlurAmp := StrToFloat(edtAdvancedBlurAmp.Text);
 end;
 
 
 
 procedure TForm1.edtAdvancedBlurPassesChange(Sender: TObject);
 begin
-     GLBlur1.AdvancedBlurPasses:=StrToInt(edtAdvancedBlurPasses.Text);
+  GLBlur1.AdvancedBlurPasses := StrToInt(edtAdvancedBlurPasses.Text);
 end;
 
 
 end.
+

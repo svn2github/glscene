@@ -15,8 +15,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLLCLViewer, GLScene, GLObjects, GLTexture, GLHudObjects,
+  SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, GLLCLViewer, GLScene, GLObjects, GLTexture, GLHUDObjects,
   GLCadencer, StdCtrls, ExtCtrls, GLBlur, GLCrossPlatform, GLMaterial,
   GLCoordinates, BaseClasses;
 
@@ -62,7 +62,7 @@ implementation
 {$R *.lfm}
 
 uses
-  FileUtil, GLFileJpeg, GLCompositeImage;
+  FileUtil, GLFileJPEG, GLCompositeImage;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -119,4 +119,4 @@ begin
 end;
 
 end.
-
+
