@@ -1,6 +1,7 @@
 { : Walk and carry demo.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - Yar - Updated after Huge update GLNGDManager (by Dev)
   <li>25/12/10 - Dev - Created
   </ul>
 }
@@ -30,11 +31,9 @@ type
     GLNGDManager1: TGLNGDManager;
     GLCadencer1: TGLCadencer;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    GLNGDJointList1: TGLNGDJointList;
     Player_Cam: TGLCamera;
     Cam_Cube: TGLDummyCube;
     Player_Cube: TGLDummyCube;
-    GLRenderPoint1: TGLRenderPoint;
     Scene_Objects: TGLDummyCube;
     Game_Menu: TGLDummyCube;
     OpenDialog1: TOpenDialog;
@@ -51,17 +50,16 @@ type
     Memo1: TMemo;
     GLCube3: TGLCube;
     Jump_Timer: TTimer;
-    Jump_V_timer: TTimer;
     GLHUDText1: TGLHUDText;
     Timer_OnVelocity: TTimer;
     On_Drop: TTimer;
+    GLLines1: TGLLines;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure TIPickTimerTimer(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure Jump_V_timerTimer(Sender: TObject);
     procedure Jump_TimerTimer(Sender: TObject);
     procedure Timer_OnVelocityTimer(Sender: TObject);
     procedure On_DropTimer(Sender: TObject);
@@ -85,6 +83,7 @@ var
   Maps_Count: Integer;
   OnAir, OnGround: boolean;
   OnMouse_Click, OnDrop, OnPick: boolean;
+  pickjoint: TNGDJoint;
 
 implementation
 
@@ -155,10 +154,7 @@ begin
 
   Player_Cube.Position := Player_Capsule.Position;
 
-  if Assigned(NGDDynamicBehav) then
-    NGDDynamicBehav.UpVector := False;
-
-  if Assigned(NGDDynamicBehav) and OnMouse_Click then
+  if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and OnMouse_Click then
   begin
 
     GP3D[0] := Player_Cube.AbsolutePosition[0] +
@@ -193,7 +189,7 @@ begin
         Player_Cube.AbsoluteDirection[2] * -2;
     end;
 
-    NGDDynamicBehav.Pick(GotoPoint3d, pmMove);
+    pickjoint.KinematicControllerPick(point3d, paMove);
   end;
 
   if IsKeyDown(VK_LBUTTON) then
@@ -205,15 +201,11 @@ begin
       if Assigned(FPickedSceneObject) then
         if FPickedSceneObject.DistanceTo(Player_Capsule) <= 3.5 then
         begin
-          if Assigned(FPickedSceneObject) then
-          // If the user click on a glSceneObject
-          begin
-            NGDDynamicBehav := FPickedSceneObject.Behaviours.GetByClass
-              (TGLNGDDynamic) as TGLNGDDynamic;
-            if Assigned(NGDDynamicBehav) then
+          if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and (FPickedSceneObject.Tag=1) then // If the user click on a glSceneObject
             begin
               // point3d is the global space point of the body to attach
-              NGDDynamicBehav.Pick(point3d, pmAttach);
+              pickjoint.ParentObject := FPickedSceneObject;
+              pickjoint.KinematicControllerPick(point3d, paAttach);
               OnMouse_Click := True;
               GotoPoint3d := point3d;
               On_Drop.Tag := 1;
@@ -223,14 +215,13 @@ begin
               FPickedSceneObject := nil;
             // We save the normal to create a plane parallel to camera in mouseMove Event.
             FPaneNormal := Player_Cam.AbsoluteDirection;
-          end;
         end;
     end
     else
     begin
-      if Assigned(NGDDynamicBehav) and OnDrop then
+      if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and OnDrop then
       begin
-        NGDDynamicBehav.Pick(point3d, pmDetach);
+        pickjoint.KinematicControllerPick(point3d, paDetach);
         NGDDynamicBehav := nil;
         FPickedSceneObject := nil;
         OnMouse_Click := False;
@@ -254,19 +245,22 @@ begin
     end;
   end;
 
-  if Assigned(NGDDynamicBehav) and IsKeyDown(VK_RBUTTON) then
-  begin
-    NGDDynamicBehav.UseVelocity := True;
-    I := Player_Cam.AbsoluteDirection;
-    I[0] := I[0] * 30;
-    I[1] := I[1] * 30;
-    I[2] := I[2] * 30;
-    NGDDynamicBehav.Velocity.AsVector := I;
+  if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and IsKeyDown(VK_RBUTTON) then
+    begin
+      I:=Player_Cam.AbsoluteDirection;
+      i[0]:=I[0]*20;
+      i[1]:=I[1]*20;
+      i[2]:=I[2]*20;
+      with TGLNGDDynamic(FPickedSceneObject.Behaviours.GetByClass(TGLNGDDynamic)) do
+        SetVelocity(I);
 
-    OnMouse_Click := False;
-    On_Drop.Tag := 0;
-    On_Drop.Enabled := True;
-  end;
+      pickjoint.KinematicControllerPick(point3d, paDetach);
+      NGDDynamicBehav := nil;
+      FPickedSceneObject := nil;
+      OnMouse_Click:=false;
+      On_Drop.Tag:=0;
+      On_Drop.Enabled:=true;
+    end;
 
   for j := 0 to Maps_Count - 1 do
   begin
@@ -282,18 +276,16 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cube.AbsoluteDirection;
-      UseVelocity := True;
       if IsKeyDown('w') then
       begin
-        Velocity.X := -I[0] * 6;
-        Velocity.Y := 7;
-        Velocity.Z := -I[2] * 6;
+        i[0]:=-i[0]*6;
+        i[0]:=10;
+        i[0]:=-i[2]*6;
+        SetVelocity(i);
       end
-      else
-        Velocity.Y := 7;
+      else SetVelocity(VectorMake(0,10,0));
       OnGround := False;
     end;
-    Jump_V_timer.Enabled := True;
     OnAir := True;
     Jump_Timer.Enabled := True;
   end;
@@ -313,12 +305,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cube.AbsoluteDirection;
-
-      UseVelocity := True;
-
-      Velocity.X := -I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := -I[2] * 4;
+      i[0]:=-I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=-I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -327,12 +317,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cube.AbsoluteDirection;
-
-      UseVelocity := True;
-
-      Velocity.X := I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := I[2] * 4;
+      i[0]:=I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -341,12 +329,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cam.AbsoluteRight;
-
-      UseVelocity := True;
-
-      Velocity.X := I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := I[2] * 4;
+      i[0]:=I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -355,12 +341,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cam.AbsoluteLeft;
-
-      UseVelocity := True;
-
-      Velocity.X := I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := I[2] * 4;
+      i[0]:=I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -369,12 +353,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteLeft, Player_Cube.AbsoluteDirection);
-
-      UseVelocity := True;
-
-      Velocity.X := -I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := -I[2] * 4;
+      i[0]:=-I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=-I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -383,12 +365,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteRight, Player_Cube.AbsoluteDirection);
-
-      UseVelocity := True;
-
-      Velocity.X := -I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := -I[2] * 4;
+      i[0]:=-I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=-I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -397,12 +377,10 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteLeft, Player_Cube.AbsoluteDirection);
-
-      UseVelocity := True;
-
-      Velocity.X := I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := I[2] * 4;
+      i[0]:=I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=I[2]*4;
+      SetVelocity(i);
     end;
   end;
 
@@ -411,39 +389,12 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteRight, Player_Cube.AbsoluteDirection);
-
-      UseVelocity := True;
-
-      Velocity.X := I[0] * 4;
-      Velocity.Y := AppliedVelocity.Y;
-      Velocity.Z := I[2] * 4;
+      i[0]:=I[0]*4;
+      i[1]:=AppliedVelocity.y;
+      i[2]:=I[2]*4;
+      SetVelocity(i);
     end;
   end;
-
-  if not(OnGround) and not(OnAir) then
-    with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
-    begin
-      if UseVelocity then
-      begin
-        Velocity.AsVector := VectorMake(0, 0, 0, 0);
-        UseVelocity := False;
-      end
-      else
-        UseVelocity := False;
-    end;
-
-  if not(IsKeyDown('w')) and not(IsKeyDown('s')) and not(IsKeyDown('a')) and
-    not(IsKeyDown('d')) and not(IsKeyDown(VK_SPACE)) then
-    with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
-    begin
-      if UseVelocity then
-      begin
-        Velocity.AsVector := VectorMake(0, 0, 0, 0);
-        UseVelocity := False;
-      end
-      else
-        UseVelocity := False;
-    end;
 
   GLSceneViewer1.Invalidate;
 
@@ -494,6 +445,8 @@ begin
     Material.Texture.Disabled:=false;
     end;
   *)
+
+  pickjoint := TNGDJoint(GLNGDManager1.NewtonJoint.Items[1]);
 
   OnPick := True;
   GLUserInterface1.MouseLookActivate;
@@ -591,9 +544,10 @@ begin
           Maps_Count := Maps_Count + 1;
 
           with TGLNGDStatic(mdl.Behaviours.GetByClass(TGLNGDStatic)) do
-          begin
-            Manager := GLNGDManager1;
-          end;
+            begin
+              Manager:=GLNGDManager1;
+              NGDNewtonCollisions:=nc_Tree;
+            end;
         end;
       end
       else
@@ -621,9 +575,12 @@ begin
           mdl.Behaviours.GetOrCreate(TGLNGDDynamic);
 
           with TGLNGDDynamic(mdl.Behaviours.GetByClass(TGLNGDDynamic)) do
-          begin
-            Manager := GLNGDManager1;
-          end;
+            begin
+              Manager:=GLNGDManager1;
+              NGDNewtonCollisions:=nc_Mesh;
+              Density:=1;
+              //NGDSurfaceItem:=GLNGDManager1.NewtonSurfaceItem.Items[3] as TNGDSurfaceItem;
+            end;
 
           mdl.Tag := 1;
 
@@ -640,16 +597,6 @@ procedure TForm1.Jump_TimerTimer(Sender: TObject);
 begin
   OnAir := False;
   Jump_Timer.Enabled := False;
-end;
-
-procedure TForm1.Jump_V_timerTimer(Sender: TObject);
-begin
-  with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
-  begin
-    Velocity.Y := 0;
-    UseVelocity := False;
-  end;
-  Jump_V_timer.Enabled := False;
 end;
 
 procedure TForm1.On_DropTimer(Sender: TObject);
@@ -670,9 +617,7 @@ end;
 
 procedure TForm1.Timer_OnVelocityTimer(Sender: TObject);
 begin
-  NGDDynamicBehav.UseVelocity := False;
-  NGDDynamicBehav.Velocity.AsVector := VectorMake(0, 0, 0, 1);
-  NGDDynamicBehav.Pick(point3d, pmDetach);
+  pickjoint.KinematicControllerPick(point3d,paDetach);
   NGDDynamicBehav := nil;
   FPickedSceneObject := nil;
   Timer_OnVelocity.Enabled := False;
