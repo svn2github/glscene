@@ -6,6 +6,7 @@ unit Unit1;
   behavior. Most of the code must be written by developer in mouse events.
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - Yar - Updated after Huge update GLNGDManager (thaks Dev)
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
 }
@@ -55,6 +56,7 @@ type
       X, Y: Integer);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure FormCreate(Sender: TObject);
   private
     { Déclarations privées }
     FPickedSceneObject: TGLBaseSceneObject;
@@ -67,10 +69,16 @@ type
 
 var
   Form1: TForm1;
+  pickjoint: TNGDJoint;
 
 implementation
 
 {$r *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+pickjoint := TNGDJoint(GLNGDManager1.NewtonJoint.Items[0]);
+end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
@@ -87,11 +95,13 @@ begin
 
   if Assigned(FPickedSceneObject) then // If the user click on a glSceneObject
   begin
+    pickjoint.ParentObject:=FPickedSceneObject;
     NGDDynamicBehav := FPickedSceneObject.Behaviours.GetByClass(TGLNGDDynamic)
       as TGLNGDDynamic;
     if Assigned(NGDDynamicBehav) then
       // point3d is the global space point of the body to attach
-      NGDDynamicBehav.Pick(point3d, pmAttach)
+      //NGDDynamicBehav.Pick(point3d, pmAttach)
+      pickjoint.KinematicControllerPick(point3d,paAttach)
     else
       FPickedSceneObject := nil;
     // We save the normal to create a plane parallel to camera in mouseMove Event.
@@ -113,7 +123,8 @@ begin
     // Get the intersect point between the plane [parallel to camera] and mouse position
     if GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlane(point2d, point3d,
       FPaneNormal, GotoPoint3d) then
-      NGDDynamicBehav.Pick(GotoPoint3d, pmMove);
+      pickjoint.KinematicControllerPick(GotoPoint3d,paMove);
+      //NGDDynamicBehav.Pick(GotoPoint3d, pmMove);
     // Move the body to the new position
   end;
 end;
@@ -124,7 +135,8 @@ begin
   // Detach the body
   if Assigned(NGDDynamicBehav) then
   begin
-    NGDDynamicBehav.Pick(point3d, pmDetach);
+    pickjoint.KinematicControllerPick(point3d,paDetach);
+    //NGDDynamicBehav.Pick(point3d, pmDetach);
     NGDDynamicBehav := nil;
     FPickedSceneObject := nil;
   end;
