@@ -12,9 +12,10 @@ float time)
 	unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
 
 	// calculate uv coordinates
-	float v = y / (float) height;
-	u = u*2.0f - 1.0f;
-	v = v*2.0f - 1.0f;
+        float u = x / (float) width;
+        float v = y / (float) height;
+        u = u*2.0f - 1.0f;
+        v = v*2.0f - 1.0f;
 
 	// calculate simple sine wave pattern
 	float freq = 4.0f;
