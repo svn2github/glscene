@@ -783,6 +783,7 @@ end;
 procedure TGLSceneEditorForm.ShowBehaviours(BaseSceneObject:TGLBaseSceneObject);
 var
   i:integer;
+  DisplayedName: String;
 begin
       BehavioursListView.Items.Clear;
       BehavioursListView.Items.BeginUpdate;
@@ -792,7 +793,11 @@ begin
       begin
         with BehavioursListView.Items.Add do
         begin
-          Caption:=IntToStr(i)+' - '+BaseSceneObject.Behaviours[i].Name;
+          DisplayedName := BaseSceneObject.Behaviours[i].Name;
+          if DisplayedName = '' then
+            DisplayedName := '(unnamed)';
+          Caption:=IntToStr(i)+' - '+DisplayedName;
+          SubItems.Add(BaseSceneObject.Behaviours[i].FriendlyName);
           Data:=BaseSceneObject.Behaviours[i];
         end;
       end;
@@ -803,6 +808,7 @@ end;
 procedure TGLSceneEditorForm.ShowEffects(BaseSceneObject:TGLBaseSceneObject);
 var
   i:integer;
+  DisplayedName: String;
 begin
       EffectsListView.Items.Clear;
       EffectsListView.Items.BeginUpdate;
@@ -812,7 +818,11 @@ begin
       begin
         with EffectsListView.Items.Add do
         begin
-          caption:=IntToStr(i)+' - '+BaseSceneObject.Effects[i].Name;
+          DisplayedName := BaseSceneObject.Effects[i].Name;
+          if DisplayedName = '' then
+            DisplayedName := '(unnamed)';
+          caption:=IntToStr(i)+' - '+DisplayedName;
+          SubItems.Add(BaseSceneObject.Effects[i].FriendlyName);
           Data:=BaseSceneObject.Effects[i];
         end;
       end;

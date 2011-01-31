@@ -309,7 +309,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PABehaviours: TPanel
     Left = 255
     Top = 57
-    Width = 150
+    Width = 210
     Height = 427
     Align = alRight
     Caption = 'PABehaviours'
@@ -348,11 +348,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Width = 148
       Height = 110
       Align = alTop
-      Columns = <>
+      Columns = <
+        item
+          Caption = 'Name'
+          Width = 100
+        end
+        item
+          Caption = 'Type'
+          Width = 100
+        end>
       ReadOnly = True
       PopupMenu = BehavioursPopupMenu
       TabOrder = 0
-      ViewStyle = vsList
+      ViewStyle = vsReport
       OnEnter = BehavioursListViewEnter
       OnKeyDown = TreeKeyDown
       OnSelectItem = BehavioursListViewSelectItem
@@ -363,11 +371,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Width = 148
       Height = 254
       Align = alClient
-      Columns = <>
+      Columns = <
+        item
+          Caption = 'Name'
+          Width = 100
+        end
+        item
+          Caption = 'Type'
+          Width = 100
+        end>
       ReadOnly = True
       PopupMenu = BehavioursPopupMenu
       TabOrder = 1
-      ViewStyle = vsList
+      ViewStyle = vsReport
       OnEnter = EffectsListViewEnter
       OnKeyDown = TreeKeyDown
       OnSelectItem = BehavioursListViewSelectItem

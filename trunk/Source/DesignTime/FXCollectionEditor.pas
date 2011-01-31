@@ -195,6 +195,7 @@ var
 	i : Integer;
 	prevSelData : Pointer;
 	XCollectionItem : TXCollectionItem;
+  DisplayedName: String;
 begin
    Assert(Assigned(ListView));
    updatingListView:=True;
@@ -208,7 +209,10 @@ begin
          if Assigned(FXCollection) then begin
             for i:=0 to FXCollection.Count-1 do with Add do begin
                XCollectionItem:=FXCollection[i];
-               Caption:=Format('%d - %s', [i, XCollectionItem.Name]);
+               DisplayedName := XCollectionItem.Name;
+               if DisplayedName = '' then
+                 DisplayedName := '(unnamed)';
+               Caption:=Format('%d - %s', [i, DisplayedName]);
                SubItems.Add(XCollectionItem.FriendlyName);
                Data:=XCollectionItem;
             end;
