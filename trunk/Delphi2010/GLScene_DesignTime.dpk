@@ -41,14 +41,7 @@ contains
   FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  GL3xMaterialCode in '..\Source\Experimental\GL3xMaterialCode.pas' {MaterialCodeForm},
-  GL3xMaterialEditor in '..\Source\Experimental\GL3xMaterialEditor.pas' {MaterialEditorForm},
-  GL3xMaterialNodePalette in '..\Source\Experimental\GL3xMaterialNodePalette.pas' {NodePaletteForm},
-  GL3xMaterialPreview in '..\Source\Experimental\GL3xMaterialPreview.pas' {MaterialPreviewForm},
-  GLSceneFormDesign in '..\Source\Experimental\GLSceneFormDesign.pas',
-  GLSIDENotifier in '..\Source\DesignTime\GLSIDENotifier.pas',
-  GLSceneToolbar in '..\Source\DesignTime\GLSceneToolbar.pas';
+  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas';
 
 end.
 
