@@ -656,9 +656,11 @@ begin
           {$ENDIF}
         end;
 
-        XCollectionItem := XCollectionItemClass.Create(Self);
-
-        XCollectionItem.ReadFromFiler(reader);
+        if Assigned(XCollectionItemClass) then
+        begin
+          XCollectionItem := XCollectionItemClass.Create(Self);
+          XCollectionItem.ReadFromFiler(reader);
+        end;
       end;
     end;
   finally

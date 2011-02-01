@@ -94,56 +94,8 @@ resourcestring
   glsOCProxyObjects = 'Proxy objects';
   glsOCExperimental = 'Experimental objects';
 
-  // VBO and Shader managers messages
-  glsCanNotRebuild =
-    'Static object can not be rebuilded';
-  glsBadAttrCombination =
-    'Single and list attributes can not be combined';
-  glsWrongAttrType =
-    'An attribute was used with different type than previously or bad list size';
-  glsWrongCallBegin =
-    'This function cannot be called before EndObject has been called.';
-  glsWrongCallEnd =
-    'This function must be called between BeginObject ... EndPrimitive.';
-  glsWrongCallEmit =
-    'This function must be called between BeginPrimitive ... EndPrimitive.';
-  glsNoShader =
-    'Currently no shader is bound.';
-  glsInvalidNumberOfVertex =
-    'The number of primitives to render is invalid. You need to construct complete primitives.';
-  glsWrongCallBeginPrim =
-    'This function cannot be called after BeginObject.';
-  glsInvalidPrimType =
-    'Invalid primitive type.';
-  glsWrongCallEndPrim =
-    'Before calling this function Begin must have been called.';
-  glsTooMachDiffPrim =
-    'Too mach different primitive types in one object. Necessary to increase the constant GLVBOM_MAX_DIFFERENT_PRIMITIVES';
-  glsAlreadyDefined =
-    'Geometric data of the object already identified.';
-  glsUnknownAttrib =
-    'Used uddeclared attribute "%s" for mesh "%s" assembly.';
-  glsErrorBuildModel =
-    'Error occurred when model was builded';
-  glsDoMakeAdjFail =
-    'Unable to convert usualy primitives to primitives whith adjacency';
-  glsOutOfMaxAttrib =
-    'Necessary to increase the constant GLS_VERTEX_ATTR_NUM';
-  glsOutOfMaxShader =
-    'Necessary to increase the constant GLS_MAX_SHADER_PROGRAM';
   glsUnknownParam =
     'Unknown %s "%s" for "%s" or program not in use';
-
-const
-  // Resources
-  glsDEFAULTMATERIALNAME = 'DEFAULTMATERIAL';
-  glsDEFAULTMESHNAME = 'DEFAULTMESH';
-  glsDIFFUSEMAP = 'DEFAULTDIFFUSEMAP';
-  glsNORMALMAP = 'DEFAULTNORMALMAP';
-  glsLauncherData = 'LAUNCHERDATA';
-  glsResourceInfo = 'GLSCENERESOURCEINFO';
-
-  glsMaterialManagerData = 'MATERIALMANAGERDATA';
 
 implementation
 

@@ -72,7 +72,6 @@ begin
   end;
 
   FullHDR.Narrow;
-  FullHDR.WaitParallelTask;
 
   Width := FullHDR.Width;
   Height := FullHDR.Height;

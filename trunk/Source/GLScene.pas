@@ -374,12 +374,7 @@ uses
   GLRenderContextInfo,
   GLMaterial,
   GLTextureFormat,
-  GLSelection
-{$IFDEF GLS_EXPERIMENTAL}
-  ,
-  GLVBOManager
-{$ENDIF}
-  ;
+  GLSelection;
 
 type
 
@@ -1586,8 +1581,6 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure NotifyChange(Sender: TObject); override;
-
     {: Nearest clipping plane for the frustum.<p>
        This value depends on the FocalLength and DepthOfView fields and
        is calculated to minimize Z-Buffer crawling as suggested by the
@@ -1956,9 +1949,6 @@ type
 
     // Cameras
     FCamera: TGLCamera;
-    FDesignCamera: TGLCamera;
-    FOldX, FOldY: Integer;
-    FLeave: Boolean;
 
     // Freezing
     FFreezeBuffer: Pointer;
@@ -2494,10 +2484,6 @@ procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 
-var
-  vGLSceneViewerMode: TGLSceneViewerMode = svmDisabled;
-  vResetDesignView: Boolean = True;
-
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
   //------------------------------------------------------------------------------
@@ -2508,12 +2494,6 @@ implementation
 
 uses
   GLSLog,
-{$IFDEF GLS_EXPERIMENTAL}
-  GLShaderEnvironment,
-  GL3xMaterial,
-  GL3xMesh,
-  GL3xStaticMesh,
-{$ENDIF}  
   GLStrings,
   XOpenGL,
   VectorTypes,
@@ -5815,12 +5795,6 @@ begin
   end;
 end;
 
-procedure TGLCamera.NotifyChange(Sender: TObject);
-begin
-  if not FDesign and (vGLSceneViewerMode = svmDefault) then
-    vResetDesignView := True;
-  inherited;
-end;
 // AbsoluteVectorToTarget
 //
 
@@ -7956,15 +7930,6 @@ begin
   FContextOptions := [roDoubleBuffer, roRenderToWindow];
 
   ResetPerformanceMonitor;
-
-{$IFDEF GLS_MULTITHREAD}
-  if vGLSceneViewerMode <> svmDisabled then
-  begin
-    FDesignCamera := TGLCamera.Create(nil);
-    FDesignCamera.FDesign := True;
-    FLeave := True;
-  end;
-{$ENDIF}
 end;
 
 // Destroy
@@ -7977,7 +7942,6 @@ begin
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
   FFogEnvironment.Free;
-  FDesignCamera.Free;
   inherited Destroy;
 end;
 
@@ -8088,9 +8052,6 @@ begin
       SetupRenderingContext(FRenderingContext);
       FRenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor);
-{$IFDEF GLS_EXPERIMENTAL}
-      NotifyGLSceneManagersContextCreated;
-{$ENDIF}
     finally
       FRenderingContext.Deactivate;
     end;
@@ -9142,43 +9103,8 @@ end;
 //
 
 procedure TGLSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
-var
-  lRight: TVector;
 begin
-  if Assigned(FDesignCamera) then
-  begin
-    if FLeave then
-    begin
-      FOldX := X;
-      FOldY := Y;
-      FLeave := False;
-      exit;
-    end;
-
-    if (vGLSceneViewerMode = svmNavigation) and (ssRight in Shift) then
-    with FDesignCamera do
-    begin
-      if ssShift in Shift then
-      begin
-        MoveInEyeSpace(0.01*(FOldY - Y), 0.01*(FOldX - X), 0);
-      end
-      else if ssCtrl in Shift then
-      begin
-        MoveInEyeSpace(0, 0.01*(FOldX - X), 0.01*(FOldY - Y));
-      end
-      else if Assigned(FCamera) then
-      begin
-        Direction.Rotate(FCamera.Up.AsVector, 0.005*(X - FOldX));
-        lRight := VectorCrossProduct(FCamera.Up.AsVector, Direction.AsVector);
-        NormalizeVector(lRight);
-        Direction.Rotate(lRight, 0.005*(FOldY - Y));
-        Up.DirectVector := VectorCrossProduct(Direction.AsVector, lRight);
-      end
-    end;
-
-    FOldX := X;
-    FOldY := Y;
-  end;
+  // Nothing
 end;
 
 // PrepareRenderingMatrices
@@ -9186,8 +9112,6 @@ end;
 
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
   resolution: Integer; pickingRect: PGLRect = nil);
-var
-  lCamera: TGLCamera;
 begin
   RenderingContext.PipelineTransformation.IdentityAll;
   // setup projection matrix
@@ -9202,61 +9126,20 @@ begin
   end;
   FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
 
-{$IFDEF GLS_MULTITHREAD}
-  if Assigned(FDesignCamera) then
+  if Assigned(FCamera) then
   begin
-    lCamera := FDesignCamera;
-    // Reset design camera state
-    if vResetDesignView then
-    begin
-      FDesignCamera.Assign(FCamera);
-      vResetDesignView := False;
-    end;
-    // Apply viewer interation mode
-    if Owner is TWinControl then
-      with TWinControl(Owner) do
-      begin
-        case vGLSceneViewerMode of
-          svmDisabled:
-            begin
-              lCamera := FCamera;
-            end;
-
-          svmDefault:
-            begin
-              ControlStyle := ControlStyle - [csDesignInteractive];
-            end;
-          svmNavigation:
-            begin
-              ControlStyle := ControlStyle + [csDesignInteractive];
-            end;
-          svmGizmo:
-            begin
-              ControlStyle := ControlStyle + [csDesignInteractive];
-            end;
-        end;
-      end;
-  end
-  else
-{$ENDIF}
-    lCamera := FCamera;
-
-  if Assigned(lCamera) then
-  begin
+    FCamera.Scene.FCurrentGLCamera := FCamera;
     // apply camera perpective
-    lCamera.ApplyPerspective(
+    FCamera.ApplyPerspective(
       aViewport,
       FViewPort.Width,
       FViewPort.Height,
       resolution);
     // setup model view matrix
     // apply camera transformation (viewpoint)
-    lCamera.Apply;
-    FCameraAbsolutePosition := lCamera.AbsolutePosition;
+    FCamera.Apply;
+    FCameraAbsolutePosition := FCamera.AbsolutePosition;
   end;
-
-  if Assigned(FCamera) then
-    FCamera.Scene.FCurrentGLCamera := FCamera;
 end;
 
 // DoBaseRender
@@ -9542,7 +9425,6 @@ begin
       FCamera := ACamera;
       FCamera.TransformationChanged;
     end;
-    vResetDesignView := True;
     NotifyChange(Self);
   end;
 end;

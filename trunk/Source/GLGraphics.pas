@@ -95,7 +95,6 @@ uses
   Graphics,
   ApplicationFileIO,
   SysUtils,
-  SyncObjs,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
@@ -142,42 +141,6 @@ type
   TGLPixel32Array = array[0..MaxInt shr 3] of TGLPixel32;
   PGLPixel32Array = ^TGLPixel32Array;
 
-{$IFDEF GLS_MULTITHREAD}
-  TGLLODStreamingState = (ssKeeping, ssLoading, ssLoaded, ssTransfered);
-
-  // TGLTextureStreamLevel
-  //
-  TGLTextureStreamLevel = record
-    Width: Integer;
-    Height: Integer;
-    Depth: Integer;
-    PBO: TGLUnpackPBOHandle;
-    MapAddress: Pointer;
-    PostBuffer: Pointer;
-    Offset: Integer;
-    Size: Integer;
-    State: TGLLODStreamingState;
-  end;
-
-  TGLTextureStreamLevels = array[0..15, 0..5] of TGLTextureStreamLevel;
-
-  // TGLTextureImageStream
-  //
-  TGLTextureImageStream = class
-  private
-    FSourceStream: TStream;
-    FLevel: Integer; // Current processing LOD
-    FFace: Integer; // Current procedssing face of cube map
-    FPostProcess: (ippUndef, ippNo, ipp2RGBA8);
-    FFaceCycle: Boolean;
-    procedure NextStage;
-  public
-    LevelOfDetail: TGLTextureStreamLevels;
-
-    destructor Destroy; override;
-  end;
-{$ENDIF GLS_MULTITHREAD}
-
   // TGLBaseImage
   //
   TGLBaseImage = class(TDataFile)
@@ -195,14 +158,11 @@ type
     fCubeMap: Boolean;
     fTextureArray: Boolean;
 
-    FTaskFinishEvent: TFinishTaskEvent;
-
     function GetData: PGLPixel32Array; virtual;
-    function NewEvent: TFinishTaskEvent;
-    procedure CrossToCubemapTask; stdcall;
-    procedure SurfaceToVolumeTask; stdcall;
-    procedure NarrowThreadTask; stdcall;
-    procedure GenerateMipmapTask; stdcall;
+    procedure CrossToCubemapTask;
+    procedure SurfaceToVolumeTask; 
+    procedure NarrowThreadTask; 
+    procedure GenerateMipmapTask; 
   private
     S2Vrow, s2Vcol: Integer;
     S2Vflag: Boolean;
@@ -210,8 +170,6 @@ type
     constructor Create; reintroduce; virtual;
     destructor Destroy; override;
 
-    {: Wait event of finishing parallel task }
-    procedure WaitParallelTask;
     function GetTextureTarget: TGLTextureTarget;
 
     {: Registers the bitmap's content as an OpenGL texture map. }
@@ -283,12 +241,7 @@ type
     FBlank: boolean;
     fOldColorFormat: GLenum;
     fOldDataType: GLenum;
-{$IFDEF GLS_MULTITHREAD}
-    FImageStream: TGLTextureImageStream;
-    fTextureSwizzle: TGLTextureSwizzle;
-    procedure ImageStreamingTask; stdcall;
-{$ENDIF GLS_MULTITHREAD}
-    procedure DataConvertTask; stdcall;
+    procedure DataConvertTask;
   protected
     { Protected Declarations }
     procedure SetWidth(val: Integer);
@@ -330,9 +283,6 @@ type
 
     {: Create a 32 bits TBitmap from self content. }
     function Create32BitsBitmap: TGLBitmap;
-
-    procedure SaveToStream(stream: TStream); override;
-    procedure LoadFromStream(stream: TStream); override;
 
     {: Width of the bitmap.<p> }
     property Width: Integer read fWidth write SetWidth;
@@ -422,16 +372,6 @@ type
     procedure GenerateMipmap; override;
     {: Clear all levels except first. }
     procedure UnMipmap; override;
-{$IFDEF GLS_MULTITHREAD}
-    {: Streaming methods. }
-    procedure BeginStreaming(AStream: TGLTextureImageStream);
-    procedure DoStreaming;
-    {: Check and cast image format.
-       Luminance, Alpha and Intensity casting into Red or RedGreen
-       for favor forward texture format, but saving backward compatibility.<p> }
-    procedure Uniformat; stdcall;
-    property TextureSwizzle: TGLTextureSwizzle read fTextureSwizzle;
-{$ENDIF GLS_MULTITHREAD}
   end;
 
   TGLBitmap32 = TGLImage;
@@ -1092,7 +1032,6 @@ end;
 
 destructor TGLBaseImage.Destroy;
 begin
-  WaitParallelTask;
   if Assigned(fData) then
   begin
     FreeMem(fData);
@@ -1100,53 +1039,6 @@ begin
   end;
   FreeAndNil(fLevels);
   inherited Destroy;
-end;
-
-function TGLBaseImage.NewEvent: TFinishTaskEvent;
-begin
-{$IFDEF GLS_MULTITHREAD}
-  if IsMainThread then
-    FTaskFinishEvent := TFinishTaskEvent.Create;
-{$ENDIF GLS_MULTITHREAD}
-  Result := FTaskFinishEvent
-end;
-
-procedure TGLBaseImage.WaitParallelTask;
-begin
-{$IFDEF GLS_MULTITHREAD}
-  if Assigned(FTaskFinishEvent) and IsMainThread then
-  begin
-    CheckSynchronize;
-
-    case FTaskFinishEvent.WaitFor(60000) of
-      wrTimeout:
-        begin
-          // Recursively continue waiting
-          GLSLogger.LogDebug('Sevice thread timeout');
-          WaitParallelTask;
-        end;
-
-      wrAbandoned:
-
-        begin
-          GLSLogger.LogError('Sevice thread abandoned');
-        end;
-
-      wrError:
-
-        begin
-          GLSLogger.LogError('Sevice thread error');
-          FTaskFinishEvent.Free;
-          FTaskFinishEvent := nil;
-          SetErrorImage;
-          exit;
-        end;
-
-    end;
-    FTaskFinishEvent.Free;
-    FTaskFinishEvent := nil;
-  end;
-{$ENDIF GLS_MULTITHREAD}
 end;
 
 // Assign
@@ -1160,8 +1052,6 @@ begin
   if Source is TGLBaseImage then
   begin
     img := Source as TGLBaseImage;
-    WaitParallelTask;
-    img.WaitParallelTask;
     fLevels.Clear;
     fLevels.Assign(img.fLevels);
     fWidth := img.fWidth;
@@ -1184,7 +1074,6 @@ end;
 
 function TGLBaseImage.GetTextureTarget: TGLTextureTarget;
 begin
-  WaitParallelTask;
   Result := ttTexture2D;
   // Choose a texture target
   if FHeight = 1 then
@@ -1214,7 +1103,6 @@ function TGLBaseImage.LevelSize(const level: Integer): integer;
 var
   w, h, d, bw, bh, size: integer;
 begin
-  WaitParallelTask;
   w := fWidth shr level;
   h := fHeight shr level;
   if fTextureArray then
@@ -1252,7 +1140,6 @@ var
   i: integer;
   s: integer;
 begin
-  WaitParallelTask;
   s := 0;
   if not IsEmpty then
   begin
@@ -1270,7 +1157,6 @@ end;
 function TGLBaseImage.GetLevelData(const level: Integer; face: Integer):
   PGLPixel32Array;
 begin
-  WaitParallelTask;
   Result := fData;
   Assert(level < fMipLevels);
   face := face - GL_TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -1285,7 +1171,6 @@ end;
 
 function TGLBaseImage.IsEmpty: Boolean;
 begin
-  WaitParallelTask;
   Result := (fWidth = 0) or (fHeight = 0);
 end;
 
@@ -1294,7 +1179,6 @@ end;
 
 function TGLBaseImage.IsCompressed: Boolean;
 begin
-  WaitParallelTask;
   Result := IsCompressedFormat(fInternalFormat);
 end;
 
@@ -1303,7 +1187,6 @@ end;
 
 function TGLBaseImage.IsVolume: boolean;
 begin
-  WaitParallelTask;
   Result := (fDepth > 0) and not fTextureArray;
 end;
 
@@ -1412,7 +1295,6 @@ end;
 
 function TGLBaseImage.ConvertCrossToCubemap: Boolean;
 begin
-  WaitParallelTask;
   Result := False;
   // Can't already be a cubemap
   if fCubeMap or fTextureArray then
@@ -1424,10 +1306,7 @@ begin
     or (fDepth > 0) then
     Exit;
 
-  if IsServiceContextAvaible then
-    AddTaskForServiceContext(CrossToCubemapTask, NewEvent)
-  else
-    CrossToCubemapTask;
+  CrossToCubemapTask;
 
   Result := true;
 end;
@@ -1496,7 +1375,6 @@ end;
 function TGLBaseImage.ConvertToVolume(const col, row: Integer; const MakeArray:
   Boolean): Boolean;
 begin
-  WaitParallelTask;
   Result := false;
   if fCubeMap then
     Exit;
@@ -1520,10 +1398,7 @@ begin
   S2Vrow := row;
   S2Vflag := MakeArray;
 
-  if IsServiceContextAvaible then
-    AddTaskForServiceContext(SurfaceToVolumeTask, NewEvent)
-  else
-    SurfaceToVolumeTask;
+  SurfaceToVolumeTask;
 
   Result := S2Vflag;
 end;
@@ -1532,7 +1407,6 @@ procedure TGLBaseImage.SetErrorImage;
 const
 {$I TextureError.inc}
 begin
-  WaitParallelTask;
   fLevels.Clear;
   fWidth := 64;
   fHeight := 64;
@@ -1618,8 +1492,6 @@ end;
 
 procedure TGLBaseImage.Narrow;
 begin
-  WaitParallelTask;
-
   // Check for already norrow
   if (fColorFormat = GL_RGBA)
     and (fDepth = 0)
@@ -1628,10 +1500,7 @@ begin
     and not (fTextureArray or fCubeMap) then
     Exit;
 
-  if IsServiceContextAvaible then
-    AddTaskForServiceContext(NarrowThreadTask, NewEvent)
-  else
-    NarrowThreadTask;
+  NarrowThreadTask;
 end;
 
 // GemerateMipmap
@@ -1671,13 +1540,8 @@ end;
 
 procedure TGLBaseImage.GenerateMipmap;
 begin
-  if IsServiceContextAvaible then
-    AddTaskForServiceContext(GenerateMipmapTask, NewEvent)
-  else
-  begin
-    SafeCurrentGLContext;
-    GenerateMipmapTask;
-  end;
+  SafeCurrentGLContext;
+  GenerateMipmapTask;
 end;
 
 // UnMipmap
@@ -1689,7 +1553,6 @@ var
   face: TGLEnum;
   size: Integer;
 begin
-  WaitParallelTask;
   if fCubeMap then
   begin
     dst := PByte(fData);
@@ -1718,7 +1581,6 @@ end;
 
 function TGLBaseImage.GetData: PGLPixel32Array;
 begin
-  WaitParallelTask;
   Result := fData;
 end;
 
@@ -1754,8 +1616,6 @@ var
   end;
 
 begin
-  WaitParallelTask;
-
   if Self is TGLImage then
     bBlank := TGLImage(Self).Blank
   else
@@ -2060,8 +1920,6 @@ var
   end;
 
 begin
-  WaitParallelTask;
-
   oldContext := CurrentGLContext;
   contextActivate := (oldContext <> textureContext) and (textureContext <> nil);
   if contextActivate then
@@ -2250,8 +2108,6 @@ var
   bmp: TGLBitmap;
   graphic: TGLGraphic;
 begin
-  WaitParallelTask;
-
   if (Source is TGLImage) or (Source is TGLBaseImage) then
   begin
     if Source is TGLImage then
@@ -2352,8 +2208,6 @@ var
   pixel: TFPColor;
   IntfImg: TLazIntfImage;
 begin
-  WaitParallelTask;
-
   Assert((aBitmap.Width and 3) = 0);
   FWidth := aBitmap.Width;
   FHeight := aBitmap.Height;
@@ -2415,8 +2269,6 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  WaitParallelTask;
-
   Assert(aBitmap.PixelFormat = glpf24bit);
   FWidth := aBitmap.Width;
   FHeight := aBitmap.Height;
@@ -2498,8 +2350,6 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  WaitParallelTask;
-
   Assert(aBitmap.PixelFormat = glpf24bit);
   Assert((aBitmap.Width and 3) = 0);
   FWidth := aBitmap.Width;
@@ -2555,8 +2405,6 @@ var
   rowOffset: Int64;
   pSrc, pDest: PAnsiChar;
 begin
-  WaitParallelTask;
-
   Assert(aBitmap.PixelFormat = glpf32bit);
   FWidth := aBitmap.Width;
   FHeight := aBitmap.Height;
@@ -2632,8 +2480,6 @@ var
   y: Integer;
   pSrc, pDest: PAnsiChar;
 begin
-  WaitParallelTask;
-
   Assert((aBitmap32.Width and 3) = 0);
   FWidth := aBitmap32.Width;
   FHeight := aBitmap32.Height;
@@ -2675,8 +2521,6 @@ var
   AlphaScan: pngimage.pByteArray;
   Pixel: Integer;
 begin
-  WaitParallelTask;
-
 {$IFDEF GLS_PngImage_RESIZENEAREST}
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
@@ -2741,8 +2585,6 @@ procedure TGLImage.AssignFromTexture2D(textureHandle: Cardinal);
 var
   oldTex: Cardinal;
 begin
-  WaitParallelTask;
-
   with CurrentGLContext.GLStates do
   begin
     oldTex := TextureBinding[ActiveTexture, ttTexture2D];
@@ -2775,8 +2617,6 @@ var
   oldContext: TGLContext;
   contextActivate: Boolean;
 begin
-  WaitParallelTask;
-
   if Assigned(textureHandle) and (textureHandle.Handle <> 0) then
   begin
     oldContext := CurrentGLContext;
@@ -2895,7 +2735,6 @@ begin
   //    val:=(val and $FFFC)+4;
   if val <> FWidth then
   begin
-    WaitParallelTask;
     Assert(val >= 0);
     FWidth := val;
     FBlank := true;
@@ -2909,7 +2748,6 @@ procedure TGLImage.SetHeight(const val: Integer);
 begin
   if val <> FHeight then
   begin
-    WaitParallelTask;
     Assert(val >= 0);
     FHeight := val;
     FBlank := true;
@@ -2923,7 +2761,6 @@ procedure TGLImage.SetDepth(const val: Integer);
 begin
   if val <> FDepth then
   begin
-    WaitParallelTask;
     Assert(val >= 0);
     FDepth := val;
     FBlank := true;
@@ -2937,7 +2774,6 @@ procedure TGLImage.SetCubeMap(const val: Boolean);
 begin
   if val <> fCubeMap then
   begin
-    WaitParallelTask;
     fCubeMap := val;
     FBlank := true;
   end;
@@ -2950,7 +2786,6 @@ procedure TGLImage.SetArray(const val: Boolean);
 begin
   if val <> fTextureArray then
   begin
-    WaitParallelTask;
     fTextureArray := val;
     FBlank := true;
   end;
@@ -2961,7 +2796,6 @@ end;
 
 procedure TGLImage.SetColorFormatDataType(const AColorFormat, ADataType: GLenum);
 begin
-  WaitParallelTask;
   if fBlank then
   begin
     fDataType := ADataType;
@@ -2973,10 +2807,7 @@ begin
   fDataType := ADataType;
   fColorFormat := AColorFormat;
   fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-  if IsServiceContextAvaible then
-    AddTaskForServiceContext(DataConvertTask, NewEvent)
-  else
-    DataConvertTask;
+  DataConvertTask;
 end;
 
 // GetScanLine
@@ -3233,7 +3064,6 @@ end;
 
 procedure TGLImage.ReadPixels(const area: TGLRect);
 begin
-  WaitParallelTask;
   FWidth := (area.Right - area.Left) and $FFFC;
   FHeight := (area.Bottom - area.Top);
   FDepth := 0;
@@ -3257,7 +3087,6 @@ procedure TGLImage.DrawPixels(const x, y: Single);
 begin
   if fBlank or IsEmpty then
     Exit;
-  WaitParallelTask;
   Assert(not CurrentGLContext.GLStates.ForwardContext);
   GL.RasterPos2f(x, y);
   GL.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
@@ -3373,7 +3202,6 @@ end;
 
 procedure TGLImage.SetBlank(const Value: boolean);
 begin
-  WaitParallelTask;
   if not Value and not IsEmpty then
     ReallocMem(FData, DataSize);
   FBlank := Value;
@@ -3421,78 +3249,6 @@ begin
   if not (fBlank or IsEmpty) then
     ReallocMem(FData, DataSize);
 end;
-
-procedure TGLImage.SaveToStream(stream: TStream);
-var
-  Temp, I: Integer;
-  Temp64: GLuint64;
-begin
-  WaitParallelTask;
-  Temp := 0;
-  stream.Write(Temp, SizeOf(Integer)); // Version
-  stream.Write(fWidth, SizeOf(Integer));
-  stream.Write(fHeight, SizeOf(Integer));
-  stream.Write(fDepth, SizeOf(Integer));
-  stream.Write(fMipLevels, SizeOf(Integer));
-  stream.Write(fColorFormat, SizeOf(GLenum));
-  Temp := Integer(fInternalFormat);
-  stream.Write(Temp, SizeOf(Integer));
-  stream.Write(fDataType, SizeOf(GLenum));
-  stream.Write(fElementSize, SizeOf(Integer));
-  stream.Write(fLevels.Count, SizeOf(Integer));
-  for I := 0 to fLevels.Count - 1 do
-  begin
-    Temp64 := GLuint64(fLevels[I]);
-    stream.Write(Temp64, SizeOf(GLuint64));
-  end;
-  Temp := Integer(fCubeMap);
-  stream.Write(Temp, SizeOf(Integer));
-  Temp := Integer(fTextureArray);
-  stream.Write(Temp, SizeOf(Integer));
-  if FBlank then
-    Temp := 0
-  else
-    Temp := DataSize;
-  stream.Write(Temp, SizeOf(Integer));
-end;
-
-procedure TGLImage.LoadFromStream(stream: TStream);
-var
-  Temp, I: Integer;
-  Temp64: GLuint64;
-begin
-  WaitParallelTask;
-  stream.Read(Temp, SizeOf(Integer)); // Version
-  if Temp > 0 then
-  begin
-    GLSLogger.LogError(Format(glsUnknownArchive, [Self.ClassType, Temp]));
-    Abort;
-  end;
-  stream.Read(fWidth, SizeOf(Integer));
-  stream.Read(fHeight, SizeOf(Integer));
-  stream.Read(fDepth, SizeOf(Integer));
-  stream.Read(fMipLevels, SizeOf(Integer));
-  stream.Read(fColorFormat, SizeOf(GLenum));
-  stream.Read(Temp, SizeOf(Integer));
-  fInternalFormat := TGLInternalFormat(Temp);
-  stream.Read(fDataType, SizeOf(GLenum));
-  stream.Read(fElementSize, SizeOf(Integer));
-  stream.Read(Temp, SizeOf(Integer));
-  fLevels.Clear;
-  for I := 0 to Temp - 1 do
-  begin
-    stream.Read(Temp64, SizeOf(GLuint64));
-    fLevels.Add(Pointer(Temp64));
-  end;
-  stream.Read(Temp, SizeOf(Integer));
-  fCubeMap := Boolean(Temp);
-  stream.Read(Temp, SizeOf(Integer));
-  fTextureArray := Boolean(Temp);
-  stream.Read(Temp, SizeOf(Integer));
-  ReallocMem(fData, Temp);
-  FBlank := Temp = 0;
-end;
-
 
 procedure TGLImage.DataConvertTask;
 var
@@ -3543,183 +3299,6 @@ begin
     SetErrorImage;
   end;
 end;
-
-{$IFDEF GLS_MULTITHREAD}
-
-procedure TGLImage.BeginStreaming(AStream: TGLTextureImageStream);
-begin
-  WaitParallelTask;
-  if Assigned(AStream) then
-  begin
-    FBlank := True;
-    FImageStream := AStream;
-    FImageStream.FLevel := LODCount - 1;
-    FImageStream.FFaceCycle := Cubemap;
-    if Cubemap then
-      FImageStream.FFace := 5
-    else
-      FImageStream.FFace := 0;
-    FImageStream.FPostProcess := ippUndef;
-  end;
-end;
-
-var
-  GlobalStreamingTaskCounter: Integer = 0;
-
-procedure TGLImage.DoStreaming;
-begin
-  if Assigned(FTaskFinishEvent) then
-  begin
-    if FTaskFinishEvent.WaitFor(0) <> wrSignaled then
-      exit;
-    FTaskFinishEvent.Destroy;
-    FTaskFinishEvent := nil;
-  end;
-
-  if Assigned(FImageStream) then
-  begin
-    Inc(GlobalStreamingTaskCounter);
-    if IsServiceContextAvaible then
-    begin
-      AddTaskForServiceContext(ImageStreamingTask, NewEvent);
-    end
-    else
-      ImageStreamingTask;
-  end;
-end;
-
-procedure TGLImage.ImageStreamingTask;
-var
-  readSize: PtrUInt;
-  ptr: PByte;
-begin
-  if Assigned(FImageStream) then
-  begin
-    with FImageStream.LevelOfDetail[FImageStream.FLevel, FImageStream.FFace] do
-    begin
-      if FImageStream.FPostProcess = ippUndef then
-        if IsFormatSupported(FInternalFormat) then
-          FImageStream.FPostProcess := ippNo
-        else
-        begin
-          // Cast unsupported format to RGBA8
-          FImageStream.FPostProcess := ipp2RGBA8;
-          fOldColorFormat := fColorFormat;
-          fOldDataType := fDataType;
-          fColorFormat := GL_RGBA;
-          fDataType := GL_UNSIGNED_BYTE;
-          FInternalFormat := tfRGBA8;
-        end;
-
-      if PBO = nil then
-        PBO := TGLUnpackPBOHandle.Create;
-      PBO.AllocateHandle;
-      if PBO.IsDataNeedUpdate then
-      begin
-        {: This may work with multiple unshared context, but never tested
-          because unlikely. }
-        if FImageStream.FPostProcess = ipp2RGBA8 then
-          Size := LevelSize(FImageStream.FLevel);
-        PBO.BindBufferData(nil, MaxInteger(Size, 1024), GL_STREAM_DRAW);
-        if MapAddress <> nil then
-          PBO.UnmapBuffer;
-        MapAddress := PBO.MapBuffer(GL_WRITE_ONLY);
-        if FImageStream.FPostProcess = ipp2RGBA8 then
-        begin
-          PostBuffer := MapAddress;
-          GetMem(MapAddress, Size);
-        end;
-        PBO.UnBind;
-        Offset := 0;
-        PBO.NotifyDataUpdated;
-      end;
-
-      if FImageStream.FSourceStream = nil then
-      begin
-        FImageStream.FSourceStream :=
-          CreateFileStream(ResourceName + IntToHex(FImageStream.FLevel, 2));
-      end;
-
-      // Move to position of next piece and read it
-      readSize := MinInteger(Cardinal(8192 div GlobalStreamingTaskCounter), Cardinal(Size - Offset));
-      if readSize > 0 then
-      begin
-        ptr := PByte(PtrUint(MapAddress) + PtrUint(Offset));
-        FImageStream.FSourceStream.Read(ptr^, readSize);
-        Inc(Offset, readSize);
-      end;
-
-      if Offset >= Size then
-      begin
-        if FImageStream.FPostProcess = ipp2RGBA8 then
-        begin
-          ConvertImage(
-            MapAddress, PostBuffer,
-            fOldColorFormat, fColorFormat,
-            fOldDataType, fDataType,
-            Width, Height);
-          FreeMem(MapAddress);
-        end;
-        FImageStream.NextStage;
-      end;
-    end;
-    if FImageStream.FLevel < 0 then
-      FImageStream := nil;
-    Dec(GlobalStreamingTaskCounter);
-  end
-  else
-    GLSLogger.LogDebug('Idle image streaming');
-end;
-
-procedure TGLImage.Uniformat;
-begin
-  WaitParallelTask;
-  if IsMainThread and IsServiceContextAvaible then
-    AddTaskForServiceContext(Uniformat, nil)
-  else
-    FTextureSwizzle := GetUniformat(FInternalFormat, FColorFormat);
-end;
-
-destructor TGLTextureImageStream.Destroy;
-var
-  L, F: Integer;
-begin
-  for L := 0 to 15 do
-    for F := 0 to 5 do
-    begin
-      LevelOfDetail[L, F].PBO.Free;
-      LevelOfDetail[L, F].PBO := nil;
-    end;
-  FSourceStream.Free;
-  inherited;
-end;
-
-procedure TGLTextureImageStream.NextStage;
-begin
-  with LevelOfDetail[FLevel, FFace] do
-  begin
-    PBO.Bind;
-    if PBO.UnmapBuffer then
-      State := ssLoaded;
-    PBO.UnBind;
-    if State <> ssLoaded then
-      exit; // Can't unmap
-    MapAddress := nil;
-    Offset := 0;
-  end;
-
-  if FFace > 0 then
-    Dec(FFace)
-  else
-  begin
-    Dec(FLevel);
-    FSourceStream.Destroy;
-    FSourceStream := nil;
-    if FFaceCycle then
-      FFace := 5;
-  end;
-end;
-{$ENDIF GLS_MULTITHREAD}
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 

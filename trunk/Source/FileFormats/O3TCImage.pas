@@ -74,7 +74,6 @@ begin
   end;
 
   FullO3TC.Narrow;
-  FullO3TC.WaitParallelTask;
 
   Width := FullO3TC.Width;
   Height := FullO3TC.Height;

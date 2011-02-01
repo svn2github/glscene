@@ -112,12 +112,6 @@ function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 {: Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{$IFDEF GLS_EXPERIMENTAL}
-{: Pops up a simple save model dialog. }
-function SaveModelDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{: Pops up a simple open model dialog. }
-function OpenModelDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{$ENDIF GLS_EXPERIMENTAL}
 
 //------------------------------------------------------
 //------------------------------------------------------
@@ -708,58 +702,6 @@ begin
     openDialog.Free;
   end;
 end;
-
-{$IFDEF GLS_EXPERIMENTAL}
-// SaveModelDialog
-//
-
-function SaveModelDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-var
-  saveDialog: TSaveDialog;
-begin
-  saveDialog := TSaveDialog.Create(nil);
-  try
-    with saveDialog do
-    begin
-      Options := [ofHideReadOnly, ofNoReadOnlyReturn];
-      Filter := GL3xMesh.VectorFileFormatsSaveFilter;
-      if aTitle <> '' then
-        Title := aTitle;
-      FileName := aFileName;
-      Result := Execute;
-      if Result then
-        aFileName := FileName;
-    end;
-  finally
-    saveDialog.Free;
-  end;
-end;
-
-// OpenModelDialog
-//
-
-function OpenModelDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-var
-  openDialog: TOpenDialog;
-begin
-  openDialog := TOpenDialog.Create(nil);
-  try
-    with openDialog do
-    begin
-      Options := [ofHideReadOnly, ofNoReadOnlyReturn];
-      Filter := GL3xMesh.VectorFileFormatsFilter;
-      if aTitle <> '' then
-        Title := aTitle;
-      FileName := aFileName;
-      Result := Execute;
-      if Result then
-        aFileName := FileName;
-    end;
-  finally
-    openDialog.Free;
-  end;
-end;
-{$ENDIF GLS_EXPERIMENTAL}
 
 end.
 

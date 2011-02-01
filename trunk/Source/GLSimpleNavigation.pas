@@ -57,10 +57,7 @@ uses
   SysUtils,
   TypInfo,
 
-  // GLSCene
-{$IFDEF GLS_MULTITHREAD}
-  GLSceneForm,
-{$ENDIF}
+  // GLSсene
   VectorGeometry,
   GLScene,
   GLViewer,
@@ -258,10 +255,6 @@ begin
 
   if FGLSceneViewer <> nil then
     lCamera := FGLSceneViewer.Camera
-{$IFDEF GLS_MULTITHREAD}
-  else if FSceneForm then
-    lCamera := TGLSceneForm(FForm).Camera
-{$ENDIF}
   else
     lCamera := nil;
 
@@ -343,12 +336,7 @@ begin
     exit;
 
   if FGLSceneViewer <> nil then
-    lCamera := FGLSceneViewer.Camera
-  else if FSceneForm then
-{$IFDEF GLS_MULTITHREAD}
-    lCamera := TGLSceneForm(FForm).Camera
-{$ENDIF}
-    ;
+    lCamera := FGLSceneViewer.Camera;
 
   if Assigned(lCamera) then
   begin
@@ -400,10 +388,7 @@ begin
   begin
     FForm.RemoveFreeNotification(Self);
     TForm(FForm).OnMouseWheel := nil;
-{$IFDEF FPC}
-    if FSceneForm then
-{$ENDIF}
-      TForm(FForm).OnMouseMove := nil;
+    TForm(FForm).OnMouseMove := nil;
     FSceneForm := False;
   end;
 
@@ -415,13 +400,6 @@ begin
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
     TForm(FForm).OnMouseWheel := ViewerMouseWheel;
     FForm.FreeNotification(Self);
-{$IFDEF GLS_MULTITHREAD}
-    if FForm is TGLSceneForm then
-    begin
-      FSceneForm := True;
-      TForm(FForm).OnMouseMove := ViewerMouseMove;
-    end;
-{$ENDIF}
   end;
 end;
 
@@ -432,18 +410,12 @@ begin
   begin
     FGLSceneViewer.RemoveFreeNotification(Self);
     FGLSceneViewer.OnMouseMove := nil;
-{$IFDEF FPC}
-    FGLSceneViewer.OnMouseWheel := nil;
-{$ENDIF}
   end;
 
   FGLSceneViewer := Value;
 
   if FGLSceneViewer <> nil then
   begin
-{$IFDEF FPC}
-    FGLSceneViewer.OnMouseWheel := ViewerMouseWheel;
-{$ENDIF}
     FGLSceneViewer.OnMouseMove := ViewerMouseMove;
     FGLSceneViewer.FreeNotification(Self);
   end;

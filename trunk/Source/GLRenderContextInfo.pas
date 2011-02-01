@@ -81,17 +81,6 @@ type
     frustum: TFrustum;
   end;
 
-  // TMaterialVariant
-  //
-  TMaterialVariant =
-    (
-    matvarCommon, // Common shader sample
-    matvarAllSurfProperies, // Export surface properies (normal, camera, light, reflection, position, color)
-    matvarGUI // Shader contain special actions for GUI
-    );
-
-  TMaterialVariants = set of TMaterialVariant;
-
   // TRenderContextInfo
   //
   {: Stores contextual info useful during rendering methods. }
@@ -123,10 +112,6 @@ type
     amalgamating: Boolean;
     lights: TPersistentObjectList;
     afterRenderEffects: TPersistentObjectList;
-{$IFDEF GLS_MULTITHREAD}
-    materialVariant: TMaterialVariant;
-    primitiveMask: TGLMeshPrimitives;
-{$ENDIF}
   end;
   PRenderContextInfo = ^TRenderContextInfo;
 

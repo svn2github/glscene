@@ -87,7 +87,6 @@ begin
 
   bCubeMap := FullDDS.CubeMap;
   FullDDS.Narrow;
-  FullDDS.WaitParallelTask;
 
   PixelFormat := glpf32bit;
   Transparent := FullDDS.Transparent;
