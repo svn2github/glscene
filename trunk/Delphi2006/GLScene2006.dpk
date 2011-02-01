@@ -236,7 +236,6 @@ contains
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   RGBE in '..\Source\FileFormats\RGBE.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
-  VectorGeometryEXT in '..\Source\Experimental\VectorGeometryEXT.pas',
   GLFileMP3 in '..\Source\FileFormats\GLFileMP3.pas',
   GLFileWAV in '..\Source\FileFormats\GLFileWAV.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
