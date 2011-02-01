@@ -16,7 +16,10 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>04/01/11 - FP - Huge update: Joint in manager collection. Material (now surface) in manager collection
+  <li>01/02/11 - FP - Fixed custom hinge DegToRad limit
+  Update newtoncreatebody API with matrix parameter (since newton 2.28)
+  Joint draw [parent-to-pivot-to-child] instead of [parent-to-child]
+  <li>21/01/11 - FP - Huge update: Joint in manager collection. Material (now surface) in manager collection
   Callback as static class function now raise events
   Debugs view use TGLLines instead of TGLRenderPoint
   Reset filer version to zero
@@ -1291,8 +1294,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
         HingeEnableLimits(FNewtonUserJoint, 1);
-        HingeSetLimits(FNewtonUserJoint, FCustomHingeOptions.FMinAngle,
-          FCustomHingeOptions.FMaxAngle);
+        HingeSetLimits(FNewtonUserJoint, DegToRad(FCustomHingeOptions.FMinAngle),
+          DegToRad(FCustomHingeOptions.FMaxAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
           FStiffness);
@@ -1800,7 +1803,8 @@ begin
   begin
     // Create NewtonBody with null collision
     FCollision := NewtonCreateNull(FManager.FNewtonWorld);
-    FNewtonBody := NewtonCreateBody(FManager.FNewtonWorld, FCollision);
+    FNewtonBodyMatrix:=FOwnerBaseSceneObject.AbsoluteMatrix;
+    FNewtonBody := NewtonCreateBody(FManager.FNewtonWorld, FCollision, @FNewtonBodyMatrix);
 
     // Release NewtonCollision
     NewtonReleaseCollision(FManager.FNewtonWorld, FCollision);
@@ -2876,10 +2880,12 @@ procedure TNGDJoint.Render;
     FManager.AddNode(VectorAdd(pivot, VectorNegate(pin)));
   end;
 
-  procedure DrawJoint;
+  procedure DrawJoint(pivot: TVector);
   begin
     FManager.FCurrentColor := FManager.DebugOption.CustomColor;
     FManager.AddNode(FParentObject.AbsolutePosition);
+    FManager.AddNode(pivot);
+    FManager.AddNode(pivot);
     FManager.AddNode(FChildObject.AbsolutePosition);
   end;
 
@@ -2911,14 +2917,14 @@ begin
     nj_BallAndSocket:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FBallAndSocketOptions.FPivotPoint.AsVector);
         DrawPivot(FBallAndSocketOptions.FPivotPoint.AsVector);
       end;
 
     nj_Hinge:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FHingeOptions.FPivotPoint.AsVector);
         DrawPin(FHingeOptions.FPinDirection.AsVector,
           FHingeOptions.FPivotPoint.AsVector);
         DrawPivot(FHingeOptions.FPivotPoint.AsVector);
@@ -2927,7 +2933,7 @@ begin
     nj_Slider:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FSliderOptions.FPivotPoint.AsVector);
         DrawPin(FSliderOptions.FPinDirection.AsVector,
           FSliderOptions.FPivotPoint.AsVector);
         DrawPivot(FSliderOptions.FPivotPoint.AsVector);
@@ -2936,7 +2942,7 @@ begin
     nj_Corkscrew:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FCorkscrewOptions.FPivotPoint.AsVector);
         DrawPin(FCorkscrewOptions.FPinDirection.AsVector,
           FCorkscrewOptions.FPivotPoint.AsVector);
         DrawPivot(FCorkscrewOptions.FPivotPoint.AsVector);
@@ -2945,7 +2951,7 @@ begin
     nj_Universal:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FUniversalOptions.FPivotPoint.AsVector);
         DrawPin(FUniversalOptions.FPinDirection.AsVector,
           FUniversalOptions.FPivotPoint.AsVector);
         DrawPin(FUniversalOptions.FPinDirection2.AsVector,
@@ -2956,14 +2962,14 @@ begin
     nj_CustomBallAndSocket:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FCustomBallAndSocketOptions.FPivotPoint.AsVector);
         DrawPivot(FCustomBallAndSocketOptions.FPivotPoint.AsVector);
       end;
 
     nj_CustomHinge:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FCustomHingeOptions.FPivotPoint.AsVector);
         DrawPin(FCustomHingeOptions.FPinDirection.AsVector,
           FCustomHingeOptions.FPivotPoint.AsVector);
         DrawPivot(FCustomHingeOptions.FPivotPoint.AsVector);
@@ -2972,7 +2978,7 @@ begin
     nj_CustomSlider:
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
-        DrawJoint;
+        DrawJoint(FCustomSliderOptions.FPivotPoint.AsVector);
         DrawPin(FCustomSliderOptions.FPinDirection.AsVector,
           FCustomSliderOptions.FPivotPoint.AsVector);
         DrawPivot(FCustomSliderOptions.FPivotPoint.AsVector);

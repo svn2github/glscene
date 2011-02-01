@@ -23,8 +23,6 @@ object Form1: TForm1
     FieldOfView = 153.991439819335900000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 367
-    ExplicitHeight = 356
   end
   object Panel1: TPanel
     Left = 0
@@ -34,7 +32,6 @@ object Form1: TForm1
     Align = alLeft
     Caption = ' '
     TabOrder = 1
-    ExplicitHeight = 356
     object Button1: TButton
       Left = 14
       Top = 8
@@ -105,8 +102,9 @@ object Form1: TForm1
     end
     object Floor: TGLCube
       BehavioursData = {
-        0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
-        746174696302000200060D474C4E47444D616E6167657231080200}
+        0458434F4C02010201060C54474C4E47445374617469630200060C5374617469
+        6320466C6F6F7202000200060D474C4E47444D616E61676572310800090F0AD7
+        233C1200000000}
       CubeSize = {000020410000003F00002041}
     end
     object GLDummyCube1: TGLDummyCube
@@ -146,7 +144,9 @@ object Form1: TForm1
     Top = 8
   end
   object GLNGDManager1: TGLNGDManager
-    Visible = True
+    NewtonSurfaceItem = <>
+    NewtonSurfacePair = <>
+    NewtonJoint = <>
     Left = 232
     Top = 8
   end

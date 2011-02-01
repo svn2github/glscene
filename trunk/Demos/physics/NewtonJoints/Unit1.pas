@@ -5,17 +5,19 @@ unit Unit1;
   This exemple show Joints.
   Mouse1 to pick, Mouse2 to move camera.
 
-  When you create Joints with NGD, it's better if one of the two bodies is
+  When you create Joints with TGLNGD, it's better if one of the two bodies is
   static.
   In debug view (If ShowJoint is true in manager), the blues lines represent
-  pins direction and connections between BaseSceneObjects. However if you create
-  multiples connected joints (ex: FLOOR<--HINGE-->CUBE<--HINGE-->SPHERE), the
-  debug view won't match to bodies positions because Joints are represented in
-  global space. Debug view was made for design time.
+  pins direction, aquamarine dot represent pivot point, and aqua is connections
+  between BaseSceneObjects.
+  However if you create multiples connected joints
+  (ex: FLOOR<--HINGE-->CUBE<--HINGE-->SPHERE),
+  the debug view won't match to bodies positions because Joints are
+  represented in global space. Debug view was made for design time.
 
-  Linear and angular damping is added to universal and ball to avoid instability.
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - FP - Update for GLNGDManager
   <li>20/09/10 - FP - Created by Franck Papouin
   </ul>
 }
@@ -23,11 +25,11 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Forms,
   Dialogs, GLNGDManager, GLScene, GLObjects, GLCoordinates, GLCadencer,
   GLWin32Viewer, GLCrossPlatform, BaseClasses, VectorGeometry,
   GLSimpleNavigation, GLKeyboard, GLGeomObjects, GLHUDObjects, GLBitmapFont,
-  GLWindowsFont;
+  GLWindowsFont,Controls;
 
 type
   TForm1 = class(TForm)
@@ -39,9 +41,7 @@ type
     Floor: TGLCube;
     Hinge: TGLCube;
     GLNGDManager1: TGLNGDManager;
-    GLRenderPoint1: TGLRenderPoint;
     GLSimpleNavigation1: TGLSimpleNavigation;
-    GLNGDJointList1: TGLNGDJointList;
     Slider: TGLCube;
     Corkscrew: TGLCube;
     CustomHinge: TGLCube;
@@ -58,26 +58,24 @@ type
     GLAbsoluteHUDText6: TGLAbsoluteHUDText;
     GLAbsoluteHUDText8: TGLAbsoluteHUDText;
     GLAbsoluteHUDText7: TGLAbsoluteHUDText;
+    GLLines1: TGLLines;
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSimpleNavigation1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
+    procedure FormCreate(Sender: TObject);
   private
     { Déclarations privées }
-    FPickedSceneObject: TGLBaseSceneObject;
-    NGDDynamicBehav: TGLNGDDynamic;
-    point3d, FPaneNormal: TVector;
-    FAlreadyInSimpleMove: Boolean;
+       point3d, FPaneNormal: TVector;
 
   public
     { Déclarations publiques }
-
+        PickJoint: TNGDJoint;
+    MousePoint: TPoint;
   end;
 
 var
@@ -87,80 +85,75 @@ implementation
 
 {$R *.dfm}
 
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  PickJoint := GLNGDManager1.NewtonJoint.Items[0] as TNGDJoint;
+end;
+
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
+  var
+  point2d, GotoPoint3d: TVector;
 begin
   GLNGDManager1.Step(deltaTime);
+
+    if IsKeyDown(VK_LBUTTON) then
+  begin
+    point2d := VectorMake(MousePoint.X, GLSceneViewer1.Height - MousePoint.Y,
+      0, 0);
+
+      // Move the body to the new position
+    if GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlane(point2d, point3d,
+      FPaneNormal, GotoPoint3d) then
+      PickJoint.KinematicControllerPick(GotoPoint3d, paMove);
+
+  end
+  else
+    PickJoint.KinematicControllerPick(GotoPoint3d, paDetach);
+
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-begin
-  if Button = TMouseButton(mbLeft) then
-    if IsKeyDown(VK_LBUTTON) then
-    begin
-
-      point3d := VectorMake(GLSceneViewer1.Buffer.PixelRayToWorld(X, Y));
-
-      FPickedSceneObject := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
-
-      if Assigned(FPickedSceneObject) then // If the user click on a glSceneObject
-      begin
-        NGDDynamicBehav := FPickedSceneObject.Behaviours.GetByClass
-          (TGLNGDDynamic) as TGLNGDDynamic;
-        if Assigned(NGDDynamicBehav) then
-          // point3d is the global space point of the body to attach
-          NGDDynamicBehav.Pick(point3d, pmAttach)
-        else
-          FPickedSceneObject := nil;
-        // We save the normal to create a plane parallel to camera in mouseMove Event.
-        FPaneNormal := GLCamera1.AbsoluteVectorToTarget;
-      end;
-    end;
-
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
 var
-  point2d, GotoPoint3d: TVector;
+  pickedobj: TGLBaseSceneObject;
 begin
-  if IsKeyDown(VK_LBUTTON) then
-    if Assigned(NGDDynamicBehav) then
-    begin
+  if Button = mbLeft then
+  begin
 
-      // Get the screenPoint with opengl correction [Height - Y] for the next function
-      point2d := VectorMake(X, GLSceneViewer1.Height - Y, 0, 0);
+    pickedobj := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
+    if Assigned(pickedobj) and Assigned(GetNGDDynamic(pickedobj)) then
+      PickJoint.ParentObject := pickedobj
+    else
+      exit;
 
-      // Get the intersect point between the plane [parallel to camera] and mouse position
-      if GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlane(point2d, point3d,
-        FPaneNormal, GotoPoint3d) then
-        NGDDynamicBehav.Pick(GotoPoint3d, pmMove);
-      // Move the body to the new position
-    end;
+    point3d := VectorMake(GLSceneViewer1.Buffer.PixelRayToWorld(X, Y));
+    // Attach the body
+    PickJoint.KinematicControllerPick(point3d, paAttach);
+
+    if Assigned(GLSceneViewer1.Camera.TargetObject) then
+      FPaneNormal := GLSceneViewer1.Camera.AbsoluteVectorToTarget
+    else
+      FPaneNormal := GLSceneViewer1.Camera.AbsoluteDirection;
+  end;
+
 end;
+
 
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   // Detach the body
-  if not IsKeyDown(VK_LBUTTON) then
-    if Assigned(NGDDynamicBehav) then
-    begin
-      NGDDynamicBehav.Pick(point3d, pmDetach);
-      NGDDynamicBehav := nil;
-      FPickedSceneObject := nil;
-    end;
+  if Button = mbLeft then
+    PickJoint.KinematicControllerPick(NullHmgVector, paDetach);
 end;
 
 procedure TForm1.GLSimpleNavigation1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if FAlreadyInSimpleMove then
-    exit;
-  FAlreadyInSimpleMove := True;
-  GLSceneViewer1MouseMove(Sender, Shift, X, Y);
-  FAlreadyInSimpleMove := False;
+//Get mouse coord for cadencer event
+  MousePoint.X := X;
+  MousePoint.Y := Y;
 end;
 
 end.

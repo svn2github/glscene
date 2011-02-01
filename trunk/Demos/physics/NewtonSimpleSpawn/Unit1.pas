@@ -8,6 +8,7 @@ unit Unit1;
   The floor is static, so it can't move.
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
 
@@ -80,7 +81,7 @@ var
 
 implementation
 
-{$r *.dfm}
+{$R *.dfm}
 
 uses
   GLColor;
@@ -153,7 +154,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject;
 begin
   GLNGDManager1.Step(deltaTime);
   GLResolutionIndependantHUDText1.Text := 'Bodycount:=' + inttostr
-    (GLNGDManager1.BodyCount);
+    (GLNGDManager1.NewtonBodyCount);
 end;
 
 end.

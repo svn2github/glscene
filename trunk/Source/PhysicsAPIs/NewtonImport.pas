@@ -874,7 +874,7 @@ function  NewtonCalculateSpringDamperAcceleration(dt, ks, x, kd, s : NGDFloat): 
 // body manipulation functions
 //
 // *****************************************************************************************************************************
-function  NewtonCreateBody( const newtonWorld : PNewtonWorld; const collision : PNewtonCollision ) : PNewtonBody; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateBody'{$ELSE}NewtonDLL{$ENDIF __GPC__};
+function  NewtonCreateBody( const newtonWorld : PNewtonWorld; const collision : PNewtonCollision; const Matrix : PNGDFloat) : PNewtonBody; cdecl; external{$IFDEF __GPC__}name 'NewtonCreateBody'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 procedure NewtonDestroyBody( const newtonWorld : PNewtonWorld; const body : PNewtonBody ); cdecl; external{$IFDEF __GPC__}name 'NewtonDestroyBody'{$ELSE}NewtonDLL{$ENDIF __GPC__};
 
 procedure NewtonBodyAddForce( const body : PNewtonBody; const force : PNGDFloat ); cdecl; external{$IFDEF __GPC__}name 'NewtonBodyAddForce'{$ELSE}NewtonDLL{$ENDIF __GPC__};
