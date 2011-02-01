@@ -1,16 +1,8 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: glstrings.glsalreadydefined
-msgid "Geometric data of the object already identified."
-msgstr ""
-
 #: glstrings.glsalreadyrendering
 msgid "Already rendering"
-msgstr ""
-
-#: glstrings.glsbadattrcombination
-msgid "Single and list attributes can not be combined"
 msgstr ""
 
 #: glstrings.glscadencernotdefined
@@ -29,16 +21,8 @@ msgstr ""
 msgid "Cameras"
 msgstr ""
 
-#: glstrings.glscannotrebuild
-msgid "Static object can not be rebuilded"
-msgstr ""
-
 #: glstrings.glsdisplaylist
 msgid "Failed to create a new display list for object '%s'"
-msgstr ""
-
-#: glstrings.glsdomakeadjfail
-msgid "Unable to convert usualy primitives to primitives whith adjacency"
 msgstr ""
 
 #: glstrings.glsdot
@@ -47,10 +31,6 @@ msgstr ""
 
 #: glstrings.glserror
 msgid "Error!"
-msgstr ""
-
-#: glstrings.glserrorbuildmodel
-msgid "Error occurred when model was builded"
 msgstr ""
 
 #: glstrings.glserrorex
@@ -83,14 +63,6 @@ msgstr ""
 msgid "Interleaved Array format not supported yet. Sorry."
 msgstr ""
 
-#: glstrings.glsinvalidnumberofvertex
-msgid "The number of primitives to render is invalid. You need to construct complete primitives."
-msgstr ""
-
-#: glstrings.glsinvalidprimtype
-msgid "Invalid primitive type."
-msgstr ""
-
 #: glstrings.glsmaterialnotfound
 msgid "Loading failed: could not find material %s"
 msgstr ""
@@ -121,10 +93,6 @@ msgstr ""
 
 #: glstrings.glsnorenderingcontext
 msgid "Could not create a rendering context"
-msgstr ""
-
-#: glstrings.glsnoshader
-msgid "Currently no shader is bound."
 msgstr ""
 
 #: glstrings.glsobjectroot
@@ -179,14 +147,6 @@ msgstr ""
 msgid "Special objects"
 msgstr ""
 
-#: glstrings.glsoutofmaxattrib
-msgid "Necessary to increase the constant GLS_VERTEX_ATTR_NUM"
-msgstr ""
-
-#: glstrings.glsoutofmaxshader
-msgid "Necessary to increase the constant GLS_MAX_SHADER_PROGRAM"
-msgstr ""
-
 #: glstrings.glsoutofmemory
 msgid "Fatal: Out of memory"
 msgstr ""
@@ -215,10 +175,6 @@ msgstr ""
 msgid "The top angle must be higher than the bottom angle"
 msgstr ""
 
-#: glstrings.glstoomachdiffprim
-msgid "Too mach different primitive types in one object. Necessary to increase the constant GLVBOM_MAX_DIFFERENT_PRIMITIVES"
-msgstr ""
-
 #: glstrings.glstoomanylights
 msgid "Too many lights in the scene"
 msgstr ""
@@ -229,10 +185,6 @@ msgstr ""
 
 #: glstrings.glsunknownarchive
 msgid "%s : unknown archive version %d"
-msgstr ""
-
-#: glstrings.glsunknownattrib
-msgid "Used uddeclared attribute \"%s\" for mesh \"%s\" assembly."
 msgstr ""
 
 #: glstrings.glsunknownextension
@@ -251,32 +203,8 @@ msgstr ""
 msgid "Unsupported type!"
 msgstr ""
 
-#: glstrings.glswrongattrtype
-msgid "An attribute was used with different type than previously or bad list size"
-msgstr ""
-
 #: glstrings.glswrongbitmapcanvas
 msgid "Couldn't create a rendering context for the given bitmap"
-msgstr ""
-
-#: glstrings.glswrongcallbegin
-msgid "This function cannot be called before EndObject has been called."
-msgstr ""
-
-#: glstrings.glswrongcallbeginprim
-msgid "This function cannot be called after BeginObject."
-msgstr ""
-
-#: glstrings.glswrongcallemit
-msgid "This function must be called between BeginPrimitive ... EndPrimitive."
-msgstr ""
-
-#: glstrings.glswrongcallend
-msgid "This function must be called between BeginObject ... EndPrimitive."
-msgstr ""
-
-#: glstrings.glswrongcallendprim
-msgid "Before calling this function Begin must have been called."
 msgstr ""
 
 #: glstrings.glswrongprinter
