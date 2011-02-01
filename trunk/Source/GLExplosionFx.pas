@@ -30,6 +30,8 @@ unit GLExplosionFx;
 
 interface
 
+{$i GLScene.inc}
+
 uses
   OpenGLTokens, VectorGeometry, GLScene, GLVectorFileObjects, VectorTypes,
   VectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
@@ -186,7 +188,6 @@ var
   Face: integer;
   p1, p2, p3, v1, v2, posi: TAffineVector;
   Normal: TVector;
-
 begin
   // make sure we can explode this object
   if not OwnerBaseSceneObject.InheritsFrom(TGLBaseMesh) then begin
@@ -213,9 +214,9 @@ begin
       SetVector(Normal, VectorCrossProduct(v1, v2)); // use of procedure is faster: PhP
   // randomly rotate the normal vector so the faces are somewhat scattered
       case Random(3) of
-        0: RotateVector(Normal, XVector, DegToRad(Random(45)));
-        1: RotateVector(Normal, YVector, DegToRad(Random(45)));
-        2: RotateVector(Normal, ZVector, DegToRad(Random(45)));
+        0: RotateVector(Normal, XVector, DegToRad(45.0*Random));
+        1: RotateVector(Normal, YVector, DegToRad(45.0*Random));
+        2: RotateVector(Normal, ZVector, DegToRad(45.0*Random));
       end;
       NormalizeVector(Normal);
       FDirList.Add(Normal);
@@ -228,7 +229,7 @@ begin
     posi[2] := (p1[2] + p2[2] + p3[2]) / 3;
     FPosList.add(posi);
   // random rotation (in degrees)
-    FRotList.Add(DegToRad(Random(3)), DegToRad(Random(3)), DegToRad(Random(3)));
+    FRotList.Add(DegToRad(3.0*Random), DegToRad(3.0*Random), DegToRad(3.0*Random));
   end;
   // Dispose the struture of the mesh
   TGLBaseMesh(OwnerBaseSceneObject).MeshObjects.Clear;

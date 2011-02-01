@@ -2089,7 +2089,7 @@ type
     {: Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
     function CreateSnapShotBitmap: TGLBitmap;
     procedure CopyToTexture(aTexture: TGLTexture); overload;
-    procedure CopyToTexture(aTexture: TGLTexture; xSrc, ySrc, width, height:
+    procedure CopyToTexture(aTexture: TGLTexture; xSrc, ySrc, AWidth, AHeight:
       Integer;
       xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
     {: Save as raw float data to a file }
@@ -8363,7 +8363,7 @@ end;
 //
 
 procedure TGLSceneBuffer.CopyToTexture(aTexture: TGLTexture;
-  xSrc, ySrc, width, height: Integer;
+  xSrc, ySrc, AWidth, AHeight: Integer;
   xDest, yDest: Integer;
   glCubeFace: TGLEnum = 0);
 var
@@ -8375,10 +8375,10 @@ begin
     try
       if not (aTexture.Image is TGLBlankImage) then
         aTexture.ImageClassName := TGLBlankImage.ClassName;
-      if aTexture.Image.Width <> Width then
-        TGLBlankImage(aTexture.Image).Width := Width;
-      if aTexture.Image.Height <> Height then
-        TGLBlankImage(aTexture.Image).Height := Height;
+      if aTexture.Image.Width <> AWidth then
+        TGLBlankImage(aTexture.Image).Width := AWidth;
+      if aTexture.Image.Height <> AHeight then
+        TGLBlankImage(aTexture.Image).Height := AHeight;
       if aTexture.Image.Depth <> 0 then
         TGLBlankImage(aTexture.Image).Depth := 0;
       if TGLBlankImage(aTexture.Image).CubeMap <> (glCubeFace > 0) then
@@ -8388,10 +8388,10 @@ begin
       RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
       if glCubeFace > 0 then
         GL.CopyTexSubImage2D(glCubeFace,
-          0, xDest, yDest, xSrc, ySrc, Width, Height)
+          0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
       else
         GL.CopyTexSubImage2D(DecodeGLTextureTarget(bindTarget),
-          0, xDest, yDest, xSrc, ySrc, Width, Height)
+          0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
     finally
       RenderingContext.Deactivate;
     end;

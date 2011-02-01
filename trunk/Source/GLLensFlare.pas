@@ -562,7 +562,7 @@ var
   posVector, v, rv: TAffineVector;
   screenPos: TAffineVector;
   flareInViewPort, dynamicSize: Boolean;
-  oldSeed: LongInt;
+  oldSeed: LongWord;
   projMatrix: TMatrix;
   CurrentBuffer: TGLSceneBuffer;
 begin
@@ -1059,4 +1059,3 @@ initialization
   RegisterClasses([TGLLensFlare]);
 
 end.
-
