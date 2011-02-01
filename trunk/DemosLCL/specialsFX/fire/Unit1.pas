@@ -17,9 +17,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours, ExtCtrls,
-  VectorGeometry, GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
+  VectorGeometry, GLLCLViewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
   BaseClasses;
 
 type
@@ -52,7 +52,7 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -81,4 +81,4 @@ begin
 	GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
 end;
 
-end.
+end.

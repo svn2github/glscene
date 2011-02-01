@@ -3,8 +3,6 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  SysUtils,
   Classes,
   Graphics,
   Controls,
@@ -13,11 +11,11 @@ uses
   GLScene,
   GLObjects,
   GLTexture,
-  GLWin32Viewer,
+  GLLCLViewer,
   TGA,
   GLCadencer,
   GLVectorFileObjects,
-  GLFileObj,
+  GLFileOBJ,
   StdCtrls,
   GLShadowVolume,
   Math,
@@ -28,7 +26,6 @@ uses
   GLUtils,
   GLFile3DS,
   GLFileLMTS,
-  OpenGL1x,
   GLContext,
   VectorGeometry,
   GLUserShader,
@@ -52,16 +49,20 @@ type
     GLFreeForm1: TGLFreeForm;
     GLCube1: TGLCube;
     GLSLTextureEmitter2: TGLSLTextureEmitter;
-    procedure GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
-    procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLCamera1CustomPerspective(const viewport: TRectangle;
+      Width, Height, DPI: integer; var viewPortRadius: single);
+    procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: integer);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    mx, my: Integer;
-    sdir: Integer;
+    mx, my: integer;
+    sdir: integer;
   public
   end;
 
@@ -70,11 +71,13 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
+uses SysUtils, FileUtil;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 1 to glslProjectedTextures1.Emitters.Count - 1 do
     glslProjectedTextures1.Emitters[I].Emitter.turn(DeltaTime * (I + 1) * 10);
@@ -94,12 +97,21 @@ begin
 
 end;
 
-procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
+procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle;
+  Width, Height, DPI: integer; var viewPortRadius: single);
+var
+  PM: TMatrix;
 begin
-  gluPerspective(GLCamera1.FocalLength, Width / Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
+  PM := CreatePerspectiveMatrix(
+    GLCamera1.FocalLength,
+    Width / Height,
+    GLCamera1.NearPlaneBias,
+    GLCamera1.DepthOfView);
+  CurrentGLContext.PipelineTransformation.ProjectionMatrix := PM;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
   if ssLeft in Shift then
   begin
@@ -109,12 +121,14 @@ begin
   end;
 end;
 
-procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
 begin
   GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 begin
   mx := X;
   my := Y;
@@ -127,14 +141,21 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  I: Integer;
+  I: integer;
+  path: UTF8String;
+  p: integer;
 begin
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+
   randomize;
   sdir := -10;
   GLCamera1.CameraStyle := cscustom;
 
-  SetCurrentDir(ExtractFilePath(ParamStr(0)) + '..\..\media\');
-  glslProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
+  glslProjectedTextures1.Material.Texture.Image.LoadFromFile('Flare1.bmp');
   glslProjectedTextures1.Material.Texture.Disabled := False;
   glslProjectedTextures1.Material.Texture.TextureWrap := twNone;
   glslProjectedTextures1.Material.Texture.MinFilter := miLinear;
@@ -144,11 +165,11 @@ begin
   glcube1.Material.Texture.Disabled := False;
 
 
-  GLFreeForm1.LoadFromFile('groundtest.lmts');
+  GLFreeForm1.LoadFromFile('GroundTest.lmts');
   for I := 0 to GLMaterialLibrary1.Materials.Count - 1 do
     GLMaterialLibrary1.Materials.Items[I].Material.MaterialOptions := [moNoLighting];
 
 end;
 
 end.
-
+

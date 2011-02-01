@@ -10,7 +10,7 @@ unit uMainForm;
 interface
 
 uses
-  Windows, Forms, Messages, SysUtils,classes, VectorGeometry, StdCtrls,
+  Forms, Messages, SysUtils,classes, VectorGeometry, StdCtrls,
   GLObjects, GLScene, GLBlur, GLSimpleNavigation, GLTexture, GLCadencer,
   GLTeapot, GLPolyhedron, GLGeomObjects, Controls, GLLCLViewer,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
@@ -64,4 +64,4 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-end.
+end.

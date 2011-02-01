@@ -15,7 +15,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLObjects, GLExtrusion, GLScene, GLCadencer, GLFireFX, ComCtrls,
   ExtCtrls, GLLCLViewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
   BaseClasses;
@@ -100,4 +100,4 @@ begin
    GLCamera1.FocalLength:=Height/3;
 end;
 
-end.
+end.

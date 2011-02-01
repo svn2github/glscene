@@ -29,7 +29,7 @@ uses
   GLAtmosphere, GLSimpleNavigation, GLBehaviours,
 
   // File formats
-  GLfileJpeg, GLCoordinates, BaseClasses;
+  GLFileJPEG, GLCoordinates, BaseClasses;
 
 type
   TMainForm = class(TForm)
@@ -158,4 +158,4 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-end.
+end.

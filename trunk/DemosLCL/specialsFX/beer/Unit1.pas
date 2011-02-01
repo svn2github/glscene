@@ -13,9 +13,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
-  GLFile3ds, GLCadencer, GLGeomObjects, VectorGeometry,
+  GLFile3DS, GLCadencer, GLGeomObjects, VectorGeometry,
   GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform, GLCoordinates,
   BaseClasses;
 
@@ -56,9 +56,18 @@ implementation
 
 {$R *.lfm}
 
+uses FileUtil;
+
 procedure TForm1.FormActivate(Sender: TObject);
+var
+  path: UTF8String;
+  p: Integer;
 begin
-   SetCurrentDir('../../media');
+   path := ExtractFilePath(ParamStrUTF8(0));
+   p := Pos('DemosLCL', path);
+   Delete(path, p+5, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   SetCurrentDirUTF8(path);
 
    GLFreeForm1.LoadFromFile('beer.3ds');
 
@@ -86,4 +95,4 @@ begin
    GLCadencer1.Enabled:=not GLCadencer1.Enabled;
 end;
 
-end.
+end.
