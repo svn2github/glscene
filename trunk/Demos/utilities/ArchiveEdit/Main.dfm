@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 268
   Top = 248
-  Width = 555
-  Height = 299
   Caption = 'GLScene Pak Editor'
+  ClientHeight = 486
+  ClientWidth = 539
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,7 +15,7 @@ object Form1: TForm1
   OnCreate = FormCreate
   DesignSize = (
     539
-    241)
+    486)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel
@@ -30,7 +30,7 @@ object Form1: TForm1
     Left = 8
     Top = 8
     Width = 161
-    Height = 241
+    Height = 297
     Anchors = [akLeft, akTop, akBottom]
     Images = ImageList1
     Indent = 19
@@ -45,7 +45,7 @@ object Form1: TForm1
     Left = 176
     Top = 8
     Width = 365
-    Height = 241
+    Height = 466
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <
       item
@@ -57,9 +57,10 @@ object Form1: TForm1
         Width = 70
       end>
     Enabled = False
-    Items.Data = {
-      370000000100000000000000FFFFFFFFFFFFFFFF00000000000000001A4F7065
-      6E206F72206372656174652070616B2066696C652E2E2E}
+    Items.ItemData = {
+      034E0000000100000000000000FFFFFFFFFFFFFFFF00000000FFFFFFFF000000
+      001A4F00700065006E0020006F00720020006300720065006100740065002000
+      700061006B002000660069006C0065002E002E002E00}
     MultiSelect = True
     SmallImages = ImageList1
     TabOrder = 1
@@ -68,6 +69,20 @@ object Form1: TForm1
     OnClick = ListViewClick
     OnDblClick = ListViewDblClick
     OnKeyDown = ListViewKeyDown
+  end
+  object GLSceneViewer1: TGLSceneViewer
+    Left = 8
+    Top = 312
+    Width = 161
+    Height = 161
+    Camera = GLCamera1
+    VSync = vsmSync
+    Buffer.BackgroundColor = clWhite
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.AntiAliasing = aa2x
+    FieldOfView = 77.668128967285160000
+    Anchors = [akLeft, akBottom]
+    TabOrder = 2
   end
   object MainMenu1: TMainMenu
     Left = 184
@@ -170,5 +185,77 @@ object Form1: TForm1
   object ImageList1: TImageList
     Left = 216
     Top = 32
+  end
+  object GLScene1: TGLScene
+    Left = 248
+    Top = 32
+    object GLCamera1: TGLCamera
+      DepthOfView = 100000.000000000000000000
+      FocalLength = 100.000000000000000000
+      NearPlaneBias = 0.100000001490116100
+      TargetObject = GLCube1
+      Position.Coordinates = {0000F04100002042000048420000803F}
+      object GLLightSource1: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        SpotCutOff = 180.000000000000000000
+      end
+    end
+    object GLFreeForm1: TGLFreeForm
+    end
+    object GLSprite1: TGLSprite
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'image'
+      Position.Coordinates = {0000A0420000A042000000000000803F}
+      Visible = False
+      Width = 160.000000000000000000
+      Height = 160.000000000000000000
+    end
+    object GLCube1: TGLCube
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'image'
+      Visible = False
+    end
+  end
+  object GLMaterialLibrary1: TGLMaterialLibrary
+    Materials = <
+      item
+        Name = 'image'
+        Material.Texture.ImageClassName = 'TGLCompositeImage'
+        Material.Texture.Image.Width = 256
+        Material.Texture.Image.Height = 256
+        Material.Texture.Image.Depth = 0
+        Material.Texture.Disabled = False
+        Tag = 0
+      end>
+    Left = 248
+    Top = 64
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'GLScene Pak Editor - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 280
+    Top = 32
+  end
+  object GLSArchiveManager1: TGLSArchiveManager
+    Archives = <
+      item
+        Name = 'LibArchive'
+      end>
+    Left = 280
+    Top = 64
   end
 end
