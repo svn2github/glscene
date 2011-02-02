@@ -1,159 +1,186 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 294
+  Height = 433
+  Top = 322
+  Width = 800
   Caption = 'Form1'
   ClientHeight = 433
   ClientWidth = 800
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  PixelsPerInch = 96
+  OnCreate = FormCreate
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 105
+    Height = 433
     Top = 0
     Width = 695
-    Height = 433
     Camera = GLCamera1
     Buffer.BackgroundColor = 5329233
-    FieldOfView = 153.991439819335900000
+    FieldOfView = 153.991439819335
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 367
-    ExplicitHeight = 356
   end
   object Panel1: TPanel
     Left = 0
+    Height = 433
     Top = 0
     Width = 105
-    Height = 433
     Align = alLeft
     Caption = ' '
+    ClientHeight = 433
+    ClientWidth = 105
     TabOrder = 1
     object Button1: TButton
       Left = 12
+      Height = 25
       Top = 6
       Width = 75
-      Height = 25
       Caption = 'AddCube'
-      TabOrder = 0
       OnClick = Button1Click
+      TabOrder = 0
     end
     object Button2: TButton
       Left = 12
+      Height = 25
       Top = 37
       Width = 75
-      Height = 25
       Caption = 'AddSphere'
-      TabOrder = 1
       OnClick = Button2Click
+      TabOrder = 1
     end
     object Button3: TButton
       Left = 12
+      Height = 25
       Top = 68
       Width = 75
-      Height = 25
       Caption = 'AddCone'
-      TabOrder = 2
       OnClick = Button3Click
+      TabOrder = 2
     end
     object Button4: TButton
       Left = 12
+      Height = 25
       Top = 99
       Width = 75
-      Height = 25
       Caption = 'AddCylinder'
-      TabOrder = 3
       OnClick = Button4Click
+      TabOrder = 3
     end
     object Button5: TButton
       Left = 12
+      Height = 25
       Top = 130
       Width = 75
-      Height = 25
       Caption = 'AddCapsule'
-      TabOrder = 4
       OnClick = Button5Click
+      TabOrder = 4
     end
     object Button6: TButton
       Left = 12
+      Height = 25
       Top = 161
       Width = 75
-      Height = 25
       Caption = 'Remove All'
-      TabOrder = 5
       OnClick = Button6Click
+      TabOrder = 5
     end
   end
   object GLScene1: TGLScene
-    Left = 112
-    Top = 8
+    left = 112
+    top = 8
     object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 50.000000000000000000
+      TagFloat = 0
+      DepthOfView = 100
+      FocalLength = 50
       TargetObject = Floor
-      Position.Coordinates = {0000000000004040000020C10000803F}
+      Position.Coordinates = {
+        0000000000004040000020C10000803F
+      }
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        SpotCutOff = 180.000000000000000000
+        TagFloat = 0
+        ConstAttenuation = 1
+        LinearAttenuation = 0
+        QuadraticAttenuation = 0
+        SpotCutOff = 180
+        SpotExponent = 0
       end
     end
     object Floor: TGLCube
-      BehavioursData = {
-        0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
-        746174696302000200060D474C4E47444D616E6167657231080200}
-      CubeSize = {000020410000003F00002041}
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = {
+        000020410000003F00002041
+      }
     end
     object GLDummyCube1: TGLDummyCube
-      Position.Coordinates = {0000000000004040000000000000803F}
-      CubeSize = 1.000000000000000000
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000000000004040000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
     end
     object GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText
-      Position.Coordinates = {0000003F6666663F000000000000803F}
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000003F6666663F000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
       BitmapFont = GLStoredBitmapFont1
       Text = 'Bodycount:=1'
+      Rotation = 0
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    Left = 152
-    Top = 8
+    left = 152
+    top = 8
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
     FormCaption = 'Form1 - %FPS'
-    KeyCombinations = <
+    KeyCombinations = <    
       item
         ShiftState = [ssLeft, ssRight]
         Action = snaZoom
-      end
+      end    
       item
         ShiftState = [ssLeft]
         Action = snaMoveAroundTarget
-      end
+      end    
       item
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 192
-    Top = 8
+    left = 192
+    top = 8
   end
   object GLNGDManager1: TGLNGDManager
-    Visible = True
-    Left = 232
-    Top = 8
+    NewtonSurfaceItem = <>
+    NewtonSurfacePair = <>
+    NewtonJoint = <>
+    left = 232
+    top = 8
   end
   object GLStoredBitmapFont1: TGLStoredBitmapFont
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 272
-    Top = 8
+    left = 272
+    top = 8
   end
 end

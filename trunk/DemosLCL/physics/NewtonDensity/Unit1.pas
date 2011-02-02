@@ -4,19 +4,27 @@ unit Unit1;
 
 { : Newton Game Dynamics Physics Engine demo.<p>
 
+  This demo explain how to use customForceAndTorque, and show the newton api
+  buoyancy effect as exemple.
+
   Density unit is the number of mass unit per volume unit: D=M/V
   Body volume is calculated by Newton, and Mass is the product result of
   Density*Volume.
 
-  The Manager can add water, by setting a positive waterdensity.
+  If fluidDensity=bodyDensity, the body will be immerged like a submarine.
 
-  If waterdensity=body density, the body will be immerged like a submarine.
+  Bugs:
+  -Viscosities does not seem to affect buoyancy.
+  -Small bodies have huge Viscosities.
+  -Sphere and Capsule flows when their density equal fluid density.
+  (For sphere we can correct this by multiplying fluidDensity by 1.43)
 
   Density is also an important parameter when two bodies collide.
-  The shoot button launche a cube with constant force. You can see the result
-  when the cube hit the paper ball or the lead ball.
+  The middle mouse button shoot a small cube with impulse.
+  You can see the result when the cube hit the paper ball or the lead ball.
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
 }
@@ -24,6 +32,8 @@ unit Unit1;
 interface
 
 uses
+  Windows,
+  Messages,
   SysUtils,
   Variants,
   Classes,
@@ -38,39 +48,59 @@ uses
   GLSimpleNavigation,
   GLCadencer,
   GLViewer,
-  GLCrossPlatform,
+  GLCrossPlatform, GLLCLViewer,
   BaseClasses,
   VectorGeometry,
   StdCtrls,
   GLHUDObjects,
   GLBitmapFont,
   GLWindowsFont,
-  Spin;
+  Spin,
+  NewtonImport, GLGeomObjects;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCadencer1: TGLCadencer;
-    GLNGDManager1: TGLNGDManager;
     GLSimpleNavigation1: TGLSimpleNavigation;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     GLPlane1: TGLPlane;
-    GLDummyCube1: TGLDummyCube;
+    Mag: TGLDummyCube;
     SubMarine: TGLCube;
     GLPaperSphere: TGLSphere;
     GLLeadSphere: TGLSphere;
-    Button1: TButton;
     GLCube1: TGLCube;
     SpinEdit1: TSpinEdit;
     GLStoredBitmapFont1: TGLStoredBitmapFont;
     GLHUDText1: TGLHUDText;
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: Double);
-    procedure Button1Click(Sender: TObject);
-    procedure SpinEdit1Change(Sender: TObject);
+    GLNGDManager1: TGLNGDManager;
+    SpinEdit2: TSpinEdit;
+    GLHUDText2: TGLHUDText;
+    GLHUDText3: TGLHUDText;
+    SpinEdit3: TSpinEdit;
+    GLCube2: TGLCube;
+    GLCone1: TGLCone;
+    GLCylinder1: TGLCylinder;
+    obj: TGLDummyCube;
+    GLCapsule1: TGLCapsule;
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
+    procedure FormCreate(Sender: TObject);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
+    { Déclarations privées }
   public
+    { Déclarations publiques }
+    procedure MyForceAndTorqueDensity(const cbody: PNewtonBody;
+      timestep: NGDFloat; threadIndex: Integer);
+
+    procedure Shoot;
   end;
 
 var
@@ -80,35 +110,110 @@ implementation
 
 {$R *.lfm}
 
-procedure TForm1.Button1Click(Sender: TObject);
+function BuoyancyPlaneCallback(const collisionID: Integer; context: Pointer;
+  const globalSpaceMatrix: PNGDFloat; globalSpacePlane: PNGDFloat): Integer;
+  cdecl;
+var
+  BodyMatrix: TMatrix;
+  PlaneEquation: TVector;
+  pv: PVector;
+  MyForm: TForm1;
+begin
+  // Get the matrix of the actual body
+  BodyMatrix := PMatrix(globalSpaceMatrix)^;
+
+  MyForm := TForm1(context);
+
+  // this is the 4-value vector that represents the plane equation for
+  // the buoyancy surface
+  // This can be used to simulate boats and lighter than air vehicles etc..
+  PlaneEquation := MyForm.GLPlane1.Direction.AsVector;
+  // the distance along this normal, to the origin.
+  PlaneEquation[3] := MyForm.GLPlane1.Position.Y;
+
+  PVector(globalSpacePlane)^ := PlaneEquation;
+
+  Result := 1;
+end;
+
+procedure TForm1.Shoot;
 var
   Ball: TGLCube;
   NGDDyn: TGLNGDDynamic;
 begin
-  Ball := TGLCube.CreateAsChild(GLCamera1);
+  Ball := TGLCube.CreateAsChild(Mag);
   Ball.CubeWidth := 0.5;
   Ball.CubeHeight := 0.5;
   Ball.CubeDepth := 0.5;
-  NGDDyn := Ball.GetOrCreateBehaviour(TGLNGDDynamic) as TGLNGDDynamic;
+  Ball.AbsolutePosition := GLCamera1.AbsolutePosition;
+  NGDDyn := GetOrCreateNGDDynamic(Ball);
   NGDDyn.Manager := GLNGDManager1;
   NGDDyn.Density := 10;
+  NGDDyn.UseGravity := false;
+  NGDDyn.LinearDamping := 0;
 
-  // Add force in the camera direction
-  NGDDyn.Force.AsVector := VectorScale(GLCamera1.AbsoluteVectorToTarget, 100);
-
-  // Remove gravity
-  NGDDyn.Force.Y := NGDDyn.Force.Y - GLNGDManager1.Gravity.Y * NGDDyn.Mass;
+  // Add impulse in the camera direction
+  NGDDyn.AddImpulse(VectorScale(GLCamera1.AbsoluteVectorToTarget, 100),
+    Ball.AbsolutePosition);
 
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: Double);
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  I: Integer;
+begin
+
+  GetOrCreateNGDStatic(GLCube1).Manager:=GLNGDManager1;
+
+  // To use Buoyancy effect, set a custom forceAndTorqueEvent were you can call
+  // NewtonBodyAddBuoyancyForce API function
+  for I := 0 to obj.Count - 1 do
+    begin
+    GetOrCreateNGDDynamic(obj[I]).Manager:=GLNGDManager1;
+    GetNGDDynamic(obj[I]).CustomForceAndTorqueEvent := MyForceAndTorqueDensity;
+    end;
+
+  GetNGDDynamic(GLLeadSphere).Density:=10;
+  GetNGDDynamic(GLPaperSphere).Density:=0.1;
+  GetNGDDynamic(GLCylinder1).Density:=5;
+  GetNGDDynamic(GLCube2).Density:=0.5;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
   GLNGDManager1.Step(deltaTime);
 end;
 
-procedure TForm1.SpinEdit1Change(Sender: TObject);
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
-  GLNGDManager1.WaterDensity := StrToFloat(SpinEdit1.Text);
+  if Button = TMouseButton(mbMiddle) then
+    Shoot;
+end;
+
+procedure TForm1.MyForceAndTorqueDensity(const cbody: PNewtonBody;
+  timestep: NGDFloat; threadIndex: Integer);
+var
+  worldGravity: TVector;
+  NGDDyn: TGLNGDDynamic;
+  fluidDensity, fluidLinearViscosity, fluidAngularViscosity: Single;
+begin
+  worldGravity := GLNGDManager1.Gravity.AsVector;
+  NGDDyn := TGLNGDDynamic(NewtonBodyGetUserData(cbody));
+
+  // Add gravity to body: Weight= mass*gravity
+  ScaleVector(worldGravity, NGDDyn.mass);
+  NewtonBodyAddForce(cbody, @worldGravity);
+
+  fluidDensity := SpinEdit1.Value;
+  fluidLinearViscosity := SpinEdit2.Value / 10;
+  fluidAngularViscosity := SpinEdit3.Value / 10;
+
+  // We send Self as context for the callback
+  NewtonBodyAddBuoyancyForce(cbody, fluidDensity / NGDDyn.mass,
+    fluidLinearViscosity, fluidAngularViscosity, @worldGravity,
+    @BuoyancyPlaneCallback, self);
 end;
 
 end.

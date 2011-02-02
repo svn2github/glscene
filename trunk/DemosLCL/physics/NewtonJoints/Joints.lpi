@@ -12,7 +12,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
@@ -34,16 +33,20 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="GLS_NGD"/>
+        <PackageName Value="GLScene_DesignTime"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value="GLS_NGD"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -60,15 +63,18 @@
       <Unit1>
         <Filename Value="Unit1.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="22"/>
-        <CursorPos X="25" Y="32"/>
+        <TopLine Value="91"/>
+        <CursorPos X="50" Y="105"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -76,14 +82,14 @@
         <UnitName Value="GLNGDManager"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1943"/>
-        <CursorPos X="1" Y="1958"/>
+        <TopLine Value="707"/>
+        <CursorPos X="45" Y="840"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
         <Filename Value="Joints.lpr"/>
         <Caret Line="10" Column="6" TopLine="1"/>
@@ -92,6 +98,22 @@
         <Filename Value="Unit1.pas"/>
         <Caret Line="32" Column="25" TopLine="22"/>
       </Position2>
+      <Position3>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="34" Column="47" TopLine="21"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="32" Column="3" TopLine="21"/>
+      </Position4>
+      <Position5>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="101" Column="29" TopLine="90"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="107" Column="77" TopLine="90"/>
+      </Position6>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

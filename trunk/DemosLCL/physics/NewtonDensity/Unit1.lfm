@@ -1,161 +1,306 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 466
+  Height = 564
+  Top = 189
+  Width = 723
   Caption = 'Form1'
-  ClientHeight = 507
+  ClientHeight = 564
   ClientWidth = 723
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  PixelsPerInch = 96
+  OnCreate = FormCreate
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
-    Left = 0
+    Left = 128
+    Height = 564
     Top = 0
-    Width = 723
-    Height = 507
+    Width = 595
     Camera = GLCamera1
-    FieldOfView = 157.684555053710900000
-    Align = alClient
+    FieldOfView = 159.891326904296
+    Align = alRight
+    OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
-  end
-  object Button1: TButton
-    Left = 16
-    Top = 56
-    Width = 75
-    Height = 25
-    Caption = 'Shoot'
-    TabOrder = 1
-    OnClick = Button1Click
   end
   object SpinEdit1: TSpinEdit
     Left = 16
+    Height = 21
     Top = 103
     Width = 75
-    Height = 22
-    MaxValue = 100
-    MinValue = 0
+    MaxValue = 20
+    TabOrder = 1
+    Value = 1
+  end
+  object SpinEdit2: TSpinEdit
+    Left = 16
+    Height = 21
+    Top = 159
+    Width = 75
+    MaxValue = 10
     TabOrder = 2
     Value = 1
-    OnChange = SpinEdit1Change
+  end
+  object SpinEdit3: TSpinEdit
+    Left = 16
+    Height = 21
+    Top = 215
+    Width = 75
+    MaxValue = 10
+    TabOrder = 3
+    Value = 1
   end
   object GLScene1: TGLScene
-    Left = 144
-    Top = 16
+    left = 80
+    top = 8
     object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 50.000000000000000000
-      TargetObject = GLDummyCube1
-      Position.Coordinates = {000000000000A040000070410000803F}
+      TagFloat = 0
+      DepthOfView = 10000
+      FocalLength = 50
+      TargetObject = Mag
+      Position.Coordinates = {
+        000000000000A040000070410000803F
+      }
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        SpotCutOff = 180.000000000000000000
+        TagFloat = 0
+        ConstAttenuation = 1
+        LinearAttenuation = 0
+        QuadraticAttenuation = 0
+        SpotCutOff = 180
+        SpotExponent = 0
       end
     end
     object GLPlane1: TGLPlane
-      Material.FrontProperties.Diffuse.Color = {000000000000803F0000803F0000803F}
-      Material.FrontProperties.Emission.Color = {00000000F8FEFE3E0000803F0000803F}
+      TagFloat = 0
+      Material.FrontProperties.Diffuse.Color = {
+        000000000000803F0000803F0000803F
+      }
+      Material.FrontProperties.Emission.Color = {
+        00000000F8FEFE3E0000803F0000803F
+      }
       Material.BlendingMode = bmModulate
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
-      Height = 10.000000000000000000
-      Width = 20.000000000000000000
+      Material.FaceCulling = fcNoCull
+      Direction.Coordinates = {
+        000000000000803F0000000000000000
+      }
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      Up.Coordinates = {
+        0000000000000000000080BF00000000
+      }
+      Height = 50
+      Width = 50
+      XOffset = 0
+      YOffset = 0
     end
-    object GLDummyCube1: TGLDummyCube
-      Position.Coordinates = {000000000000A0C0000000000000803F}
-      CubeSize = 1.000000000000000000
+    object Mag: TGLDummyCube
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        000000000000A0C0000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
     end
-    object GLPaperSphere: TGLSphere
-      Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
-      Position.Coordinates = {000080C00000A0C0000000000000803F}
-      Up.Coordinates = {000000000000803F0000008000000000}
-      Radius = 2.000000000000000000
-      BehavioursData = {
-        0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-        44796E616D696302000200060D474C4E47444D616E6167657231080200020009
-        0FCDCCCC3D0FCDCCCC3D08080802000802000802000802000802000900000000
-        00000000000000000000803F020008020008}
-    end
-    object GLLeadSphere: TGLSphere
-      Material.FrontProperties.Diffuse.Color = {3D0A173F85EBD13E52B89E3E0000803F}
-      Position.Coordinates = {000080C00000803F000040C00000803F}
-      Up.Coordinates = {000000000000803F0000008000000000}
-      Radius = 2.000000000000000000
-      BehavioursData = {
-        0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-        44796E616D696302000200060D474C4E47444D616E6167657231080200020009
-        0FCDCCCC3D0F0000204108080802000802000802000802000802000900000000
-        00000000000000000000803F020008020008}
-    end
-    object SubMarine: TGLCube
-      Direction.Coordinates = {F304353FFFFFFF3E0100003F00000000}
-      PitchAngle = 45.000000000000000000
-      Position.Coordinates = {0000A0400000C040000000000000803F}
-      TurnAngle = 45.000000000000000000
-      Up.Coordinates = {5C67A332F404353FF20435BF00000000}
-      BehavioursData = {
-        0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-        44796E616D696302000200060D474C4E47444D616E6167657231080200020009
-        0FCDCCCC3D0F0000803F08080802000802000802000802000802000900000000
-        00000000000000000000803F020008020008}
-      CubeSize = {0000803F0000803F0000A040}
+    object obj: TGLDummyCube
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
+      object GLCylinder1: TGLCylinder
+        TagFloat = 0
+        Material.FrontProperties.Diffuse.Color = {
+          3D0A173F85EBD13E52B89E3E0000803F
+        }
+        PitchAngle = 0
+        Position.Coordinates = {
+          0000000000008040000000000000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        BottomRadius = 3
+        Height = 4
+        TopRadius = 3
+      end
+      object GLCone1: TGLCone
+        TagFloat = 0
+        PitchAngle = 0
+        Position.Coordinates = {
+          000000000000C040000000000000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        BottomRadius = 2
+        Height = 3
+      end
+      object GLCube2: TGLCube
+        TagFloat = 0
+        Material.FrontProperties.Diffuse.Color = {
+          0000803F0000803F0000803F0000803F
+        }
+        PitchAngle = 0
+        Position.Coordinates = {
+          0000000000000041000000000000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        CubeSize = {
+          000040400000404000004040
+        }
+      end
+      object SubMarine: TGLCube
+        TagFloat = 0
+        Direction.Coordinates = {
+          F304353FFFFFFF3E0100003F00000000
+        }
+        PitchAngle = 45
+        Position.Coordinates = {
+          0000A0400000C040000000000000803F
+        }
+        RollAngle = 0
+        TurnAngle = 45
+        Up.Coordinates = {
+          5C67A332F404353FF20435BF00000000
+        }
+        CubeSize = {
+          0000803F0000803F0000A040
+        }
+      end
+      object GLLeadSphere: TGLSphere
+        TagFloat = 0
+        Material.FrontProperties.Diffuse.Color = {
+          3D0A173F85EBD13E52B89E3E0000803F
+        }
+        PitchAngle = 0
+        Position.Coordinates = {
+          000080C00000803F000040C00000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        Radius = 2
+      end
+      object GLPaperSphere: TGLSphere
+        TagFloat = 0
+        Material.FrontProperties.Diffuse.Color = {
+          0000803F0000803F0000803F0000803F
+        }
+        PitchAngle = 0
+        Position.Coordinates = {
+          000080C00000A0C0000000000000803F
+        }
+        RollAngle = 0
+        TurnAngle = 0
+        Radius = 2
+      end
+      object GLCapsule1: TGLCapsule
+        TagFloat = 0
+        PitchAngle = 0
+        RollAngle = 0
+        TurnAngle = 0
+        Height = 5
+        Slices = 4
+        Stacks = 4
+        Radius = 1.5
+      end
     end
     object GLCube1: TGLCube
-      Position.Coordinates = {00000000000020C1000000000000803F}
-      Up.Coordinates = {000000000000803F0000008000000000}
-      BehavioursData = {
-        0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
-        746174696302000200060D474C4E47444D616E6167657231080200}
-      CubeSize = {0000A0410000803F00002041}
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        00000000000020C1000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = {
+        000048420000803F00004842
+      }
     end
     object GLHUDText1: TGLHUDText
-      Position.Coordinates = {0000704100000243000000000000803F}
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000704100000243000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
       BitmapFont = GLStoredBitmapFont1
       Text = 'Water Density'
-      ModulateColor.Color = {0000000000000000000000000000803F}
+      Rotation = 0
+      ModulateColor.Color = {
+        0000000000000000000000000000803F
+      }
+    end
+    object GLHUDText2: TGLHUDText
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000704100003E43000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      BitmapFont = GLStoredBitmapFont1
+      Text = 'Linear Viscosity'
+      Rotation = 0
+      ModulateColor.Color = {
+        0000000000000000000000000000803F
+      }
+    end
+    object GLHUDText3: TGLHUDText
+      TagFloat = 0
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000704100007043000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      BitmapFont = GLStoredBitmapFont1
+      Text = 'Angular Viscosity'
+      Rotation = 0
+      ModulateColor.Color = {
+        0000000000000000000000000000803F
+      }
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    Left = 200
-    Top = 16
-  end
-  object GLNGDManager1: TGLNGDManager
-    Visible = True
-    WaterDensity = 1.000000000000000000
-    Left = 296
-    Top = 16
+    left = 200
+    top = 16
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
     FormCaption = 'Form1 - %FPS'
-    KeyCombinations = <
+    KeyCombinations = <    
       item
         ShiftState = [ssLeft, ssRight]
         Action = snaZoom
-      end
-      item
-        ShiftState = [ssLeft]
-        Action = snaMoveAroundTarget
-      end
+      end    
       item
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 80
-    Top = 16
+    left = 24
+    top = 8
   end
   object GLStoredBitmapFont1: TGLStoredBitmapFont
-    Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 376
-    Top = 16
+    left = 376
+    top = 16
+  end
+  object GLNGDManager1: TGLNGDManager
+    NewtonSurfaceItem = <>
+    NewtonSurfacePair = <>
+    NewtonJoint = <>
+    left = 80
+    top = 64
   end
 end

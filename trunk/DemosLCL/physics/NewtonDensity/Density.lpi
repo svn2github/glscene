@@ -12,7 +12,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <i18n>
@@ -34,26 +33,29 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="GLS_NGD"/>
+        <PackageName Value="GLScene_DesignTime"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value="GLS_NGD"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="GLScene_RunTime"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="3">
       <Unit0>
         <Filename Value="Density.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="1" Y="16"/>
+        <CursorPos X="26" Y="12"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -61,25 +63,21 @@
       <Unit1>
         <Filename Value="Unit1.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="27"/>
+        <TopLine Value="189"/>
+        <CursorPos X="2" Y="202"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="Unit1.lfm"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="132"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="LFM"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="..\..\..\Source\GLNGDManager.pas"/>
         <UnitName Value="GLNGDManager"/>
         <WindowIndex Value="0"/>
@@ -87,17 +85,69 @@
         <CursorPos X="1" Y="1958"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit3>
+      </Unit2>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="Density.lpr"/>
         <Caret Line="10" Column="6" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="Density.lpr"/>
-        <Caret Line="16" Column="1" TopLine="1"/>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="32" Column="25" TopLine="22"/>
       </Position2>
+      <Position3>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="34" Column="47" TopLine="21"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="29" Column="12" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="Density.lpr"/>
+        <Caret Line="1" Column="6" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="196" Column="27" TopLine="173"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="205" Column="1" TopLine="174"/>
+      </Position7>
+      <Position8>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="194" Column="1" TopLine="174"/>
+      </Position8>
+      <Position9>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="197" Column="1" TopLine="174"/>
+      </Position9>
+      <Position10>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="198" Column="63" TopLine="175"/>
+      </Position10>
+      <Position11>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="214" Column="59" TopLine="189"/>
+      </Position11>
+      <Position12>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="180" Column="33" TopLine="189"/>
+      </Position12>
+      <Position13>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="213" Column="48" TopLine="189"/>
+      </Position13>
+      <Position14>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="206" Column="8" TopLine="189"/>
+      </Position14>
+      <Position15>
+        <Filename Value="Unit1.pas"/>
+        <Caret Line="214" Column="1" TopLine="189"/>
+      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

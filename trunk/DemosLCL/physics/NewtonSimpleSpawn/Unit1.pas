@@ -10,6 +10,7 @@ unit Unit1;
   The floor is static, so it can't move.
 
   <b>History : </b><font size=-1><ul>
+  <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
 
@@ -18,6 +19,8 @@ unit Unit1;
 interface
 
 uses
+  Windows,
+  Messages,
   SysUtils,
   Variants,
   Classes,
@@ -42,6 +45,9 @@ uses
   ExtCtrls;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -61,6 +67,7 @@ type
     Button4: TButton;
     Button5: TButton;
     Button6: TButton;
+    procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure Button1Click(Sender: TObject);
@@ -80,7 +87,7 @@ var
 
 implementation
 
-{$r *.lfm}
+{$R *.lfm}
 
 uses
   GLColor;
@@ -153,7 +160,12 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject;
 begin
   GLNGDManager1.Step(deltaTime);
   GLResolutionIndependantHUDText1.Text := 'Bodycount:=' + inttostr
-    (GLNGDManager1.BodyCount);
+    (GLNGDManager1.NewtonBodyCount);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  GetOrCreateNGDStatic(Floor).Manager:=GLNGDManager1;
 end;
 
 end.
