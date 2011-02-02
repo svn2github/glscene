@@ -694,12 +694,14 @@ object Form1: TForm1
         JointType = nj_Universal
         ParentObject = Floor
         ChildObject = Universal
+        CollisionState = True
       end
       item
         BallAndSocketOptions.PivotPoint.Coordinates = {00000000000040400000A0400000803F}
         JointType = nj_BallAndSocket
         ParentObject = Floor
         ChildObject = Ball
+        CollisionState = True
       end
       item
         CustomBallAndSocketOptions.PivotPoint.Coordinates = {0000A040000080400000A0400000803F}
@@ -708,6 +710,7 @@ object Form1: TForm1
         JointType = nj_CustomBallAndSocket
         ParentObject = Floor
         ChildObject = CustomBall
+        CollisionState = True
       end>
     Left = 256
     Top = 16

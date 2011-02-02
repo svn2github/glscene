@@ -16,6 +16,8 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>02/02/11 - FP - Add initial name for behavior
+  Moved two TNGDSurfacePair properties from published to public for Lazarus
   <li>01/02/11 - FP - Fixed custom hinge DegToRad limit
   Update newtoncreatebody API with matrix parameter (since newton 2.28)
   Joint draw [parent-to-pivot-to-child] instead of [parent-to-child]
@@ -553,10 +555,10 @@ type
   public
     constructor Create(Collection: TCollection); override;
     procedure SetMaterialItems(const item1, item2: TNGDSurfaceItem);
-
-  published
     property NGDSurfaceItem1: TNGDSurfaceItem read FNGDSurfaceItem1;
     property NGDSurfaceItem2: TNGDSurfaceItem read FNGDSurfaceItem2;
+
+  published
     property Softness: Single read FSoftness write SetSoftness stored
       StoredSoftness;
     property Elasticity: Single read FElasticity write SetElasticity stored
@@ -1056,8 +1058,8 @@ begin
   // This event is raise
   // when debugOptions properties are edited,
   // when a behavior is initialized/finalize,
-  // when joints are rebuilded,
-  // when visible and visible at runtime are edited,
+  // when joints are rebuilded, (runtime only)
+  // when visible and visibleAtRuntime are edited (designTime only),
   // in manager.step, and in SetGLLines.
 
   // Here the manager call render method for bodies and joints in its lists
@@ -1294,7 +1296,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
         HingeEnableLimits(FNewtonUserJoint, 1);
-        HingeSetLimits(FNewtonUserJoint, DegToRad(FCustomHingeOptions.FMinAngle),
+        HingeSetLimits(FNewtonUserJoint,
+          DegToRad(FCustomHingeOptions.FMinAngle),
           DegToRad(FCustomHingeOptions.FMaxAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
@@ -1508,6 +1511,7 @@ procedure TGLNGDManager.Step(deltatime: Single);
 begin
   if not(csDesigning in ComponentState) then
     NewtonUpdate(FNewtonWorld, deltatime);
+
   NotifyChange(self);
 end;
 
@@ -1530,6 +1534,7 @@ begin
   FTreeCollisionOptimize := True;
   FConvexCollisionTolerance := 0.01;
   FFileCollision := '';
+  Name:='NGD Static';
 end;
 
 destructor TGLNGDBehaviour.Destroy;
@@ -1803,8 +1808,9 @@ begin
   begin
     // Create NewtonBody with null collision
     FCollision := NewtonCreateNull(FManager.FNewtonWorld);
-    FNewtonBodyMatrix:=FOwnerBaseSceneObject.AbsoluteMatrix;
-    FNewtonBody := NewtonCreateBody(FManager.FNewtonWorld, FCollision, @FNewtonBodyMatrix);
+    FNewtonBodyMatrix := FOwnerBaseSceneObject.AbsoluteMatrix;
+    FNewtonBody := NewtonCreateBody(FManager.FNewtonWorld, FCollision,
+      @FNewtonBodyMatrix);
 
     // Release NewtonCollision
     NewtonReleaseCollision(FManager.FNewtonWorld, FCollision);
@@ -1995,7 +2001,7 @@ begin
       if Initialized then
         Finalize;
       FManager.FNGDBehaviours.Remove(self);
-    //  FManager.NotifyChange(self);
+      // FManager.NotifyChange(self);
     end;
     FManager := Value;
     if Assigned(FManager) then
@@ -2146,7 +2152,7 @@ begin
 
   FApplyForceAndTorqueEvent := OnApplyForceAndTorqueEvent;
   FSetTransformEvent := OnSetTransformEvent;
-
+  Name:='NGD Dynamic'
 end;
 
 destructor TGLNGDDynamic.Destroy;
