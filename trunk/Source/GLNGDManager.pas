@@ -16,6 +16,8 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>02/02/11 - FP - Read/Write to Filer update to version 1
+  Use RWFloat instead of RWSingle for Single for lazarus compatibility
   <li>02/02/11 - FP - Add initial name for behavior
   Moved two TNGDSurfacePair properties from published to public for Lazarus
   <li>01/02/11 - FP - Fixed custom hinge DegToRad limit
@@ -1534,7 +1536,7 @@ begin
   FTreeCollisionOptimize := True;
   FConvexCollisionTolerance := 0.01;
   FFileCollision := '';
-  Name:='NGD Static';
+  name := 'NGD Static';
 end;
 
 destructor TGLNGDBehaviour.Destroy;
@@ -2052,13 +2054,16 @@ begin
   with reader do
   begin
     version := ReadInteger; // read data version
-    Assert(version <= 0); // Archive version
+    Assert(version <= 1); // Archive version
 
     FManagerName := ReadString;
     FContinuousCollisionMode := ReadBoolean;
     read(FNGDNewtonCollisions, SizeOf(TNGDNewtonCollisions));
     FTreeCollisionOptimize := ReadBoolean;
-    FConvexCollisionTolerance := ReadSingle;
+    if version <= 0 then
+      FConvexCollisionTolerance := ReadSingle
+    else
+      FConvexCollisionTolerance := ReadFloat;
     FFileCollision := ReadString;
   end;
 end;
@@ -2068,7 +2073,7 @@ begin
   inherited;
   with writer do
   begin
-    WriteInteger(0); // Archive version
+    WriteInteger(1); // Archive version
     if Assigned(FManager) then
       WriteString(FManager.GetNamePath)
     else
@@ -2076,7 +2081,7 @@ begin
     WriteBoolean(FContinuousCollisionMode);
     write(FNGDNewtonCollisions, SizeOf(TNGDNewtonCollisions));
     WriteBoolean(FTreeCollisionOptimize);
-    WriteSingle(FConvexCollisionTolerance);
+    WriteFloat(FConvexCollisionTolerance);
     WriteString(FFileCollision);
   end;
 end;
@@ -2152,7 +2157,7 @@ begin
 
   FApplyForceAndTorqueEvent := OnApplyForceAndTorqueEvent;
   FSetTransformEvent := OnSetTransformEvent;
-  Name:='NGD Dynamic'
+  name := 'NGD Dynamic'
 end;
 
 destructor TGLNGDDynamic.Destroy;
@@ -2458,12 +2463,12 @@ begin
   inherited;
   with writer do
   begin
-    WriteInteger(0); // Archive version
+    WriteInteger(1); // Archive version
     WriteBoolean(FAutoSleep);
-    WriteSingle(FLinearDamping);
-    WriteSingle(FDensity);
+    WriteFloat(FLinearDamping);
+    WriteFloat(FDensity);
     WriteBoolean(FUseGravity);
-    WriteSingle(FNullCollisionVolume);
+    WriteFloat(FNullCollisionVolume);
   end;
   FForce.WriteToFiler(writer);
   FTorque.WriteToFiler(writer);
@@ -2481,15 +2486,25 @@ begin
   with reader do
   begin
     version := ReadInteger; // read data version
-    Assert(version <= 0); // Archive version
+    Assert(version <= 1); // Archive version
 
     FAutoSleep := ReadBoolean;
-    FLinearDamping := ReadSingle;
-    FDensity := ReadSingle;
+    if version <= 0 then
+      FLinearDamping := ReadSingle
+    else
+      FLinearDamping := ReadFloat;
+    if version <= 0 then
+      FDensity := ReadSingle
+    else
+      FDensity := ReadFloat;
 
     // if Version >= 1 then
     FUseGravity := ReadBoolean;
-    FNullCollisionVolume := ReadSingle;
+
+    if version <= 0 then
+      FNullCollisionVolume := ReadSingle
+    else
+      FNullCollisionVolume := ReadFloat;
 
   end;
   FForce.ReadFromFiler(reader);
