@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 466
-  Height = 564
-  Top = 189
+  Left = 548
+  Height = 549
+  Top = 133
   Width = 723
   Caption = 'Form1'
-  ClientHeight = 564
+  ClientHeight = 549
   ClientWidth = 723
   Color = clBtnFace
   Font.Color = clWindowText
@@ -14,11 +14,11 @@ object Form1: TForm1
   LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 128
-    Height = 564
+    Height = 549
     Top = 0
     Width = 595
     Camera = GLCamera1
-    FieldOfView = 159.891326904296
+    FieldOfView = 159.353576660156
     Align = alRight
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
@@ -124,6 +124,13 @@ object Form1: TForm1
         BottomRadius = 3
         Height = 4
         TopRadius = 3
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          A001400905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
+        }
       end
       object GLCone1: TGLCone
         TagFloat = 0
@@ -135,6 +142,12 @@ object Form1: TForm1
         TurnAngle = 0
         BottomRadius = 2
         Height = 3
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          80FF3F090500000000000000000000020008020008020008020008
+        }
       end
       object GLCube2: TGLCube
         TagFloat = 0
@@ -147,6 +160,13 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          80FE3F0905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
+        }
         CubeSize = {
           000040400000404000004040
         }
@@ -165,6 +185,12 @@ object Form1: TForm1
         Up.Coordinates = {
           5C67A332F404353FF20435BF00000000
         }
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          80FF3F090500000000000000000000020008020008020008020008
+        }
         CubeSize = {
           0000803F0000803F0000A040
         }
@@ -181,6 +207,13 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Radius = 2
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          A002400905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
+        }
       end
       object GLPaperSphere: TGLSphere
         TagFloat = 0
@@ -194,6 +227,13 @@ object Form1: TForm1
         RollAngle = 0
         TurnAngle = 0
         Radius = 2
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F050000000000CDCC
+          CCFB3F0905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
+        }
       end
       object GLCapsule1: TGLCapsule
         TagFloat = 0
@@ -204,6 +244,12 @@ object Form1: TForm1
         Slices = 4
         Stacks = 4
         Radius = 1.5
+        BehavioursData = {
+          0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
+          80FF3F090500000000000000000000020008020008020008020008
+        }
       end
     end
     object GLCube1: TGLCube
@@ -214,6 +260,11 @@ object Form1: TForm1
       }
       RollAngle = 0
       TurnAngle = 0
+      BehavioursData = {
+        0458434F4C02010201060C54474C4E47445374617469630200060A4E47442053
+        746174696302000201060D474C4E47444D616E61676572310800090500000000
+        000AD7A3F83F0600
+      }
       CubeSize = {
         000048420000803F00004842
       }
@@ -270,8 +321,8 @@ object Form1: TForm1
     MinDeltaTime = 0
     FixedDeltaTime = 0
     OnProgress = GLCadencer1Progress
-    left = 200
-    top = 16
+    left = 24
+    top = 56
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
@@ -293,14 +344,14 @@ object Form1: TForm1
     Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'Tahoma'
-    left = 376
-    top = 16
+    left = 80
+    top = 56
   end
   object GLNGDManager1: TGLNGDManager
     NewtonSurfaceItem = <>
     NewtonSurfacePair = <>
     NewtonJoint = <>
-    left = 80
-    top = 64
+    left = 40
+    top = 256
   end
 end

@@ -19,6 +19,7 @@ unit Unit1;
 
 
   <b>History : </b><font size=-1><ul>
+  <li>03/02/11 - FP - Update with design time Behaviors
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>20/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -88,25 +89,7 @@ implementation
 {$R *.lfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  I:Integer;
 begin
-
-  GetOrCreateNGDStatic(Floor).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(Hinge).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(Slider).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(Corkscrew).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(CustomBall).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(CustomHinge).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(CustomSlider).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(Universal).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(Ball).Manager:=GLNGDManager1;
-
-  for I  := 1  to GLNGDManager1.NewtonJoint.count  - 1 do
-  begin
-       (GLNGDManager1.NewtonJoint.Items[I] as TNGDJoint).ParentObject:=Floor;
-  end;
-
   PickJoint := GLNGDManager1.NewtonJoint.Items[0] as TNGDJoint;
 end;
 

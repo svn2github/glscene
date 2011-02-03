@@ -9,6 +9,7 @@ unit Unit1;
   Most of the code must be written by developer in mouse events.
 
   <b>History : </b><font size=-1><ul>
+  <li>03/02/11 - FP - Update with design time Behaviors
   <li>01/02/11 - FP - Removed unused variable and use only mouseLeft to pick
   <li>31/01/11 - Yar - Updated after Huge update GLNGDManager (thaks Dev)
   <li>17/09/10 - FP - Created by Franck Papouin
@@ -38,6 +39,9 @@ uses
   VectorGeometry;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -80,13 +84,6 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   pickjoint := TNGDJoint(GLNGDManager1.NewtonJoint.Items[0]);
-  GetOrCreateNGDStatic(Floor).Manager := GLNGDManager1;
-  GetOrCreateNGDStatic(GLCube2).Manager := GLNGDManager1;
-  GetOrCreateNGDStatic(GLCube3).Manager := GLNGDManager1;
-  GetOrCreateNGDStatic(GLCube4).Manager := GLNGDManager1;
-
-  GetOrCreateNGDDynamic(GLCube1).Manager := GLNGDManager1;
-  GetOrCreateNGDDynamic(GLSphere1).Manager := GLNGDManager1;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);

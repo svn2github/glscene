@@ -24,6 +24,7 @@ unit Unit1;
   You can see the result when the cube hit the paper ball or the lead ball.
 
   <b>History : </b><font size=-1><ul>
+  <li>03/02/11 - FP - Update with design time Behaviors
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -162,21 +163,10 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   I: Integer;
 begin
-
-  GetOrCreateNGDStatic(GLCube1).Manager:=GLNGDManager1;
-
   // To use Buoyancy effect, set a custom forceAndTorqueEvent were you can call
   // NewtonBodyAddBuoyancyForce API function
   for I := 0 to obj.Count - 1 do
-    begin
-    GetOrCreateNGDDynamic(obj[I]).Manager:=GLNGDManager1;
     GetNGDDynamic(obj[I]).CustomForceAndTorqueEvent := MyForceAndTorqueDensity;
-    end;
-
-  GetNGDDynamic(GLLeadSphere).Density:=10;
-  GetNGDDynamic(GLPaperSphere).Density:=0.1;
-  GetNGDDynamic(GLCylinder1).Density:=5;
-  GetNGDDynamic(GLCube2).Density:=0.5;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;

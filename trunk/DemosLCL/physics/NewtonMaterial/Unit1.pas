@@ -14,6 +14,7 @@ unit Unit1;
   in design time. This must be done in runtime.
 
   <b>History : </b><font size=-1><ul>
+  <li>03/02/11 - FP - Update with design time Behaviors
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -72,15 +73,6 @@ var
   ObjectOnTrampoline: TNGDSurfacePair;
   FrictionOnCube2, FrictionOnCube3, FrictionOnCube4: TNGDSurfacePair;
 begin
-   GetOrCreateNGDStatic(Trampoline).Manager:=GLNGDManager1;
-    GetOrCreateNGDStatic(Friction).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLCube1).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLCube2).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLCube3).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLCube4).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLSphere1).Manager:=GLNGDManager1;
-  GetOrCreateNGDDynamic(GLSphere2).Manager:=GLNGDManager1;
-
   // Get each SurfaceItem
   SurfaceTrampoline := GLNGDManager1.NewtonSurfaceItem.Items[0]
     as TNGDSurfaceItem;

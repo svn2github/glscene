@@ -10,6 +10,7 @@ unit Unit1;
   The floor is static, so it can't move.
 
   <b>History : </b><font size=-1><ul>
+  <li>03/02/11 - FP - Update with design time Behaviors
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -67,7 +68,6 @@ type
     Button4: TButton;
     Button5: TButton;
     Button6: TButton;
-    procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure Button1Click(Sender: TObject);
@@ -161,11 +161,6 @@ begin
   GLNGDManager1.Step(deltaTime);
   GLResolutionIndependantHUDText1.Text := 'Bodycount:=' + inttostr
     (GLNGDManager1.NewtonBodyCount);
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  GetOrCreateNGDStatic(Floor).Manager:=GLNGDManager1;
 end;
 
 end.
