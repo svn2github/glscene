@@ -247,7 +247,6 @@ begin
   GetMem(pVertex, 2 * (cSlices + 1) * SizeOf(TVector));
   GetMem(pColor, 2 * (cSlices + 1) * SizeOf(TVector));
 
-  rci.GLStates.PushAttrib([sttEnable]);
   rci.GLStates.DepthWriteMask := False;
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Enable(stBlend);
@@ -313,7 +312,6 @@ begin
     end;
   end;
   rci.GLStates.DepthWriteMask := True;
-  rci.GLStates.PopAttrib;
 
   FreeMem(pVertex);
   FreeMem(pColor);

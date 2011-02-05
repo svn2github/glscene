@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 62
-  Top = 15
+  Left = 412
+  Top = 123
+  Width = 719
+  Height = 586
   BorderStyle = bsSizeToolWin
   Caption = 'Form1'
-  ClientHeight = 548
-  ClientWidth = 703
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
