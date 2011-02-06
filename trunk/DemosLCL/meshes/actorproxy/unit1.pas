@@ -13,7 +13,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLProxyObjects, GLVectorFileObjects, GLObjects,
   VectorGeometry, ExtCtrls, GLCadencer, GLTexture, GLGeomObjects, GLLCLViewer,
   GLFileSMD, StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates,
@@ -40,13 +40,13 @@ type
     Panel1: TPanel;
     cbActorsAreTurning: TCheckBox;
     procedure FormCreate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure Timer1Timer(Sender: TObject);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: integer);
   private
-    mousex,mousey:integer;
+    mousex, mousey: integer;
     procedure DoRaycastStuff;
     { Private declarations }
   public
@@ -60,88 +60,101 @@ implementation
 
 {$R *.lfm}
 
+uses FileUtil;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   i:integer;
+  i: integer;
+  path: UTF8String;
+  p: integer;
 begin
-     MasterActor.LoadFromFile('..\..\media\TRINITYrage.smd');
-     MasterActor.AddDataFromFile('..\..\media\run.smd');
-     MasterActor.AddDataFromFile('..\..\media\jump.smd');
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
 
-     MasterActor.Animations.Items[0].Name:='still';
-     MasterActor.Animations.Items[1].Name:='walk';
-     MasterActor.Animations.Items[2].Name:='jump';
+  MasterActor.LoadFromFile('TRINITYrage.smd');
+  MasterActor.AddDataFromFile('run.smd');
+  MasterActor.AddDataFromFile('jump.smd');
 
-     for i := 0 to MasterActor.Animations.Count-1 do
-     begin
-          MasterActor.Animations[i].MakeSkeletalTranslationStatic;
-          MasterActor.SwitchToAnimation(i); // forces animations to be initialized for ActorsProxies
-     end;
-     MasterActor.SwitchToAnimation(0);   // revert back to empty animation (not necessary)
-     MasterActor.AnimationMode:=aamLoop; // animationmode is shared between proxies.
+  MasterActor.Animations.Items[0].Name := 'still';
+  MasterActor.Animations.Items[1].Name := 'walk';
+  MasterActor.Animations.Items[2].Name := 'jump';
 
-     GLActorProxy1.StoreBonesMatrix:=true;
-     GLActorProxy2.StoreBonesMatrix:=true;
+  for i := 0 to MasterActor.Animations.Count - 1 do
+  begin
+    MasterActor.Animations[i].MakeSkeletalTranslationStatic;
+    MasterActor.SwitchToAnimation(i);
+    // forces animations to be initialized for ActorsProxies
+  end;
+  MasterActor.SwitchToAnimation(0);
+  // revert back to empty animation (not necessary)
+  MasterActor.AnimationMode := aamLoop; // animationmode is shared between proxies.
+
+  GLActorProxy1.StoreBonesMatrix := True;
+  GLActorProxy2.StoreBonesMatrix := True;
 
 
-     GLActorProxy1.Animation := MasterActor.Animations[1].Name;
-     GLActorProxy2.Animation := MasterActor.Animations[2].Name;
+  GLActorProxy1.Animation := MasterActor.Animations[1].Name;
+  GLActorProxy2.Animation := MasterActor.Animations[2].Name;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-     // Align object to hand
-     GLArrowLine1.Matrix := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
-     GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
+  // Align object to hand
+  GLArrowLine1.Matrix := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
+  GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
 
-     // turn actors
-     if cbActorsAreTurning.Checked then
-     begin
-       GLActorProxy1.Turn(-deltaTime *130);
-       GLActorProxy2.Turn(deltaTime *100);
-     end;
+  // turn actors
+  if cbActorsAreTurning.Checked then
+  begin
+    GLActorProxy1.Turn(-deltaTime * 130);
+    GLActorProxy2.Turn(deltaTime * 100);
+  end;
 
-     DoRaycastStuff;
+  DoRaycastStuff;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
-     mousex:=x;
-     mouseY:=y;
+  mousex := x;
+  mouseY := y;
 end;
 
 procedure TForm1.DoRaycastStuff;
 var
-   rayStart, rayVector, iPoint, iNormal : TVector;
+  rayStart, rayVector, iPoint, iNormal: TVector;
 begin
-     SetVector(rayStart, GLCamera1.AbsolutePosition);
-     SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(AffineVectorMake(mousex, GLSceneViewer1.Height-mousey, 0)));
-     NormalizeVector(rayVector);
+  SetVector(rayStart, GLCamera1.AbsolutePosition);
+  SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(
+    AffineVectorMake(mousex, GLSceneViewer1.Height - mousey, 0)));
+  NormalizeVector(rayVector);
 
-     if GLActorProxy1.RayCastIntersect(rayStart,rayVector,@iPoint,@iNormal) then
-     begin
-        GLSphere1.Position.AsVector:=iPoint;
-        GLSphere1.Direction.AsVector:=VectorNormalize(iNormal);
-     end
-     else
-     if GLActorProxy2.RayCastIntersect(rayStart,rayVector,@iPoint,@iNormal) then
-     begin
-        GLSphere1.Position.AsVector:=iPoint;
-        GLSphere1.Direction.AsVector:=VectorNormalize(iNormal);
-     end
-     else
-     begin
-        GLSphere1.Position.AsVector:=rayStart;
-        GLSphere1.Direction.AsVector:=rayVector;
-     end;
+  if GLActorProxy1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then
+  begin
+    GLSphere1.Position.AsVector := iPoint;
+    GLSphere1.Direction.AsVector := VectorNormalize(iNormal);
+  end
+  else
+  if GLActorProxy2.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then
+  begin
+    GLSphere1.Position.AsVector := iPoint;
+    GLSphere1.Direction.AsVector := VectorNormalize(iNormal);
+  end
+  else
+  begin
+    GLSphere1.Position.AsVector := rayStart;
+    GLSphere1.Direction.AsVector := rayVector;
+  end;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-     Caption:=GLSceneViewer1.FramesPerSecondText(0);
-     GLSceneViewer1.ResetPerformanceMonitor;
+  Caption := GLSceneViewer1.FramesPerSecondText(0);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.
+

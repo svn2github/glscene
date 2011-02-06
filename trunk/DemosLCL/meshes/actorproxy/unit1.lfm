@@ -9,7 +9,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'Tahoma'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 515
@@ -101,7 +101,7 @@ object Form1: TForm1
           TurnAngle = 0
           BottomRadius = 3
           Height = 30
-          TopRadius = 0.10000000149011
+          TopRadius = 0.10000000149012
           TopArrowHeadHeight = 0.5
           TopArrowHeadRadius = 0.20000000298023
           BottomArrowHeadHeight = 0.5
@@ -131,7 +131,7 @@ object Form1: TForm1
           TurnAngle = 0
           BottomRadius = 3
           Height = 30
-          TopRadius = 0.10000000149011
+          TopRadius = 0.10000000149012
           TopArrowHeadHeight = 0.5
           TopArrowHeadRadius = 0.20000000298023
           BottomArrowHeadHeight = 0.5
@@ -144,7 +144,7 @@ object Form1: TForm1
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
-      Radius = 0.10000000149011
+      Radius = 0.10000000149012
       object GLArrowLine3: TGLArrowLine
         TagFloat = 0
         PitchAngle = 0
@@ -156,9 +156,9 @@ object Form1: TForm1
           CDCCCC3ECDCCCC3ECDCCCC3E00000000
         }
         TurnAngle = 0
-        BottomRadius = 0.10000000149011
+        BottomRadius = 0.10000000149012
         Height = 10
-        TopRadius = 0.10000000149011
+        TopRadius = 0.10000000149012
         TopArrowHeadHeight = 0.5
         TopArrowHeadRadius = 0.20000000298023
         BottomArrowHeadHeight = 0.5
