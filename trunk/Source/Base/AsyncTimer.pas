@@ -158,6 +158,7 @@ begin
   Enabled := False;
   FTimerThread.Terminate;
   FMutex.Release;
+  CheckSynchronize;
   // wait & free
   FTimerThread.WaitFor;
   FTimerThread.Free;
