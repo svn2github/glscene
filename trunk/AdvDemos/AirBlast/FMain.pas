@@ -90,8 +90,10 @@ implementation
 
 {$R *.dfm}
 
-uses GLFile3DS, Jpeg, GLKeyboard, FConfigControls, FOptionsDlg, UABUtils,
-GLScreen;
+uses
+  GLFile3DS, JPEG, GLKeyboard,
+  FConfigControls, FOptionsDlg, UABUtils,
+  GLScreen, GLContext;
 
 const
   cPaths = 'Terrains;Models;Skymap;Textures;Missions;Sounds;Voices;Music';

@@ -375,7 +375,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, UABUtils, UAirBlastControler, OpenGL1x, GLContext, GLCrossPlatform,
+uses
+  SysUtils, UABUtils, UAirBlastControler, OpenGLTokens,
+  GLContext, GLCrossPlatform,
   GLBitmapFont, UABMobiles;
 
 // ------------------
@@ -637,18 +639,18 @@ begin
    with Airplane.ABEngine.SmallFont do
       TextOut(rci, posX-85, posY-85,
               Format('%3d%%', [Round(100*f)]), clrSilver);
-   glBegin(GL_QUADS);
+   GL.Begin_(GL_QUADS);
       hullStateColor:=VectorLerp(cHullColor0, cHullColor100, f);
-      glColor4fv(@hullStateColor);
+      GL.Color4fv(@hullStateColor);
       f:=Lerp(posY+80, posY-65, f);
-      glVertex2f(posX-80, f); glVertex2f(posX-70, f);
-      glColor4fv(@cHullColor0);
-      glVertex2f(posX-70, posY+80); glVertex2f(posX-80, posY+80);
-   glEnd;
+      GL.Vertex2f(posX-80, f); GL.Vertex2f(posX-70, f);
+      GL.Color4fv(@cHullColor0);
+      GL.Vertex2f(posX-70, posY+80); GL.Vertex2f(posX-80, posY+80);
+   GL.End_;
    if Airplane.FireDamage>0 then begin
       if Frac(Airplane.ABEngine.Cadencer.CurrentTime)>0.5 then begin
          libMat:=Airplane.ABEngine.SpriteTextureMaterial('Flame');
-         glColor4fv(@clrRed);
+         GL.Color4fv(@clrRed);
          RenderSpriteQuad(rci, posX-40, posY-40, 32, libMat);
       end;
    end;

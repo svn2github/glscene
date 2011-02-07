@@ -509,9 +509,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, UABUtils, UAirBlastControler, OpenGL1x,
+uses
+  SysUtils, ApplicationFileIO, UABUtils, UAirBlastControler, OpenGLTokens,
    UABControlerUI, UABEquipments, GLBehaviours, DToolBox, XCollection,
-   GLBitmapFont, UABEvents, UABMobiles, GLCrossPlatform, UABActions;
+   GLBitmapFont, UABEvents, UABMobiles, GLCrossPlatform, UABActions,
+   VectorTypes;
 
 var
    vRegisteredEquipments : TStringList;
@@ -1309,7 +1311,7 @@ var
 begin
    libMat:=ABEngine.TopDownTextureMaterial(ModelName, 256);
 
-   glColor4fv(@clrGray);
+   GL.Color4fv(@clrGray);
    RenderSpriteQuad(rci, posX, posY, 2*scale, libMat);
 
    s:=libMat.Tag*0.001*scale;
@@ -1375,7 +1377,7 @@ begin
       scissorRect.Width := Round((textRect.Right-textRect.Left-6)*f);
       scissorRect.Height := TGLSceneBuffer(rci.buffer).Height;
 
-      rci.GLStates.ScissorBox := scissorRect;
+      rci.GLStates.ScissorBox := TVector4i(scissorRect);
       rci.GLStates.Enable(stScissorTest);
 
       //canvas.PenColor:=clYellow; canvas.FillRect(0, 0, 1024, 768); canvas.StopPrimitive;

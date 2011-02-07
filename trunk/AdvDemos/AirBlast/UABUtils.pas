@@ -25,7 +25,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x;
+uses SysUtils, OpenGLTokens, GLContext;
 
 // StringToVector3
 //
@@ -130,12 +130,12 @@ procedure RenderSpriteQuad(var rci : TRenderContextInfo; px, py, size : Single; 
 begin
    size:=size*0.5;
    libMat.Apply(rci);
-   glBegin(GL_QUADS);
-      glTexCoord2f(0, 0);  glVertex2f(px-size, py+size);
-      glTexCoord2f(1, 0);  glVertex2f(px+size, py+size);
-      glTexCoord2f(1, 1);  glVertex2f(px+size, py-size);
-      glTexCoord2f(0, 1);  glVertex2f(px-size, py-size);
-   glEnd;
+   GL.Begin_(GL_QUADS);
+      GL.TexCoord2f(0, 0);  GL.Vertex2f(px-size, py+size);
+      GL.TexCoord2f(1, 0);  GL.Vertex2f(px+size, py+size);
+      GL.TexCoord2f(1, 1);  GL.Vertex2f(px+size, py-size);
+      GL.TexCoord2f(0, 1);  GL.Vertex2f(px-size, py-size);
+   GL.End_;
    libMat.UnApply(rci);
 end;
 
