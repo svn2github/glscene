@@ -354,12 +354,15 @@ end;
 
 function TGLCustomGLSLShader.GetActiveAttribs: TGLActiveAttribArray;
 var
+  LRci: TRenderContextInfo;
   i, j: Integer;
   buff: array[0..127] of AnsiChar;
   len: GLsizei;
   max: GLInt;
   glType: GLEnum;
 begin
+  DoInitialize(LRci, Self);
+
   SetLength(Result, 16);
   j := 0;
   if FGLSLProg.Handle<>0 then
