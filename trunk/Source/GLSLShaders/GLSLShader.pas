@@ -84,10 +84,29 @@ type
   TGLSLShaderEvent = procedure(Shader: TGLCustomGLSLShader) of object;
   TGLSLShaderUnApplyEvent = procedure(Shader: TGLCustomGLSLShader;
                                      var ThereAreMorePasses: Boolean) of object;
+
+  TGLSLDataType = (
+    GLSLTypeUndefined,
+    GLSLType1F,
+    GLSLType2F,
+    GLSLType3F,
+    GLSLType4F,
+    GLSLType1I,
+    GLSLType2I,
+    GLSLType3I,
+    GLSLType4I,
+    GLSLType1UI,
+    GLSLType2UI,
+    GLSLType3UI,
+    GLSLType4UI,
+    GLSLTypeMat2F,
+    GLSLTypeMat3F,
+    GLSLTypeMat4F);
+
   TGLActiveAttrib = record
     Name: string;
     Size: GLInt;
-    AType: GLenum;
+    AType: TGLSLDataType;
     Location: Integer;
   end;
 
@@ -339,6 +358,7 @@ var
   buff: array[0..127] of AnsiChar;
   len: GLsizei;
   max: GLInt;
+  glType: GLEnum;
 begin
   SetLength(Result, 16);
   j := 0;
@@ -349,13 +369,35 @@ begin
     if i<max then
     begin
       GL.GetActiveAttrib(FGLSLProg.Handle, i, Length(buff), @len, @Result[j].Size,
-        @Result[j].AType, @buff[0]);
-      if Result[j].AType>0 then
-      begin
-        Result[j].Name := Copy(string(buff), 0, len);
-        Result[j].Location := i;
-        Inc(j);
-      end;
+        @glType, @buff[0]);
+      if glType > 0 then
+        with Result[j] do
+        begin
+          case glType of
+            GL_FLOAT: AType := GLSLType1F;
+            GL_FLOAT_VEC2: AType := GLSLType2F;
+            GL_FLOAT_VEC3: AType := GLSLType3F;
+            GL_FLOAT_VEC4: AType := GLSLType4F;
+            GL_INT: AType := GLSLType1I;
+            GL_INT_VEC2: AType := GLSLType2I;
+            GL_INT_VEC3: AType := GLSLType3I;
+            GL_INT_VEC4: AType := GLSLType4I;
+            GL_UNSIGNED_INT: AType := GLSLType1UI;
+            GL_UNSIGNED_INT_VEC2: AType := GLSLType2UI;
+            GL_UNSIGNED_INT_VEC3: AType := GLSLType3UI;
+            GL_UNSIGNED_INT_VEC4: AType := GLSLType4UI;
+            GL_BOOL: AType := GLSLType1I;
+            GL_BOOL_VEC2: AType := GLSLType2I;
+            GL_BOOL_VEC3: AType := GLSLType3I;
+            GL_BOOL_VEC4: AType := GLSLType4I;
+            GL_FLOAT_MAT2: AType := GLSLTypeMat2F;
+            GL_FLOAT_MAT3: AType := GLSLTypeMat3F;
+            GL_FLOAT_MAT4: AType := GLSLTypeMat4F;
+          end;
+          Name := Copy(string(buff), 0, len);
+          Location := i;
+          Inc(j);
+        end;
     end;
   end;
   SetLength(Result, j);
