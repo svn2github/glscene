@@ -1440,7 +1440,6 @@ var
   cuStreamQuery_: TcuStreamQuery;
   cuStreamSynchronize_: TcuStreamSynchronize;
   cuStreamDestroy_: TcuStreamDestroy;
-  cuGLInit_: TcuGLInit;
   cuGLCtxCreate_: TcuGLCtxCreate;
   cuGraphicsGLRegisterBuffer_: TcuGraphicsGLRegisterBuffer;
   cuGraphicsGLRegisterImage_: TcuGraphicsGLRegisterImage;

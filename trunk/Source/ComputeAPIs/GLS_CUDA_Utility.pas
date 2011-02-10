@@ -13,9 +13,11 @@ unit GLS_CUDA_Utility;
 
 interface
 
+{$IFDEF MSWINDOWS}
 uses
-{$IFDEF MSWINDOWS}  Windows, {$ENDIF}
-  VectorGeometry;
+  Windows;
+{$ENDIF}
+
 
 {$I cuda.inc}
 
@@ -29,13 +31,13 @@ var
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cutLoadPGMf: function(const filename: PAnsiChar; var data: PSingle; var w:
+  cutLoadPGMf: function(const filename: PAnsiChar; var data: System.PSingle; var w:
     Integer; var h: Integer): Boolean;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cutSavePGMf: function(const filename: PAnsiChar; data: PSingle; w: Integer;
+  cutSavePGMf: function(const filename: PAnsiChar; data: System.PSingle; w: Integer;
     h: Integer): Boolean;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
