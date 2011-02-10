@@ -284,7 +284,6 @@ type
 {$IFNDEF FPC}
     FTooFastCounter: Integer;
     FTimer: Cardinal;
-    FMessageTime: LongWord;
     FWindowHandle: HWND;
     procedure WndProc(var Msg: TMessage);
 {$ELSE}
