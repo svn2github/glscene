@@ -10,6 +10,7 @@
      <li> 3. Doesn't Works with visible backfaces.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>12/02/11 - Yar - Added skipping shader when enabled stencil test to avvoid conflict with shadow volume
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -118,7 +119,7 @@ end;
 
 function TGLOutlineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
 begin
-  if rci.ignoreMaterials then
+  if rci.ignoreMaterials or (stStencilTest in rci.GLStates.States) then
   begin
     Result := False;
     Exit;
