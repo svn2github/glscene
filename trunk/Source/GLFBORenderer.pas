@@ -9,6 +9,7 @@
   Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
   <b>History : </b><font size=-1><ul>
+  <li>13/02/11 - Yar - Added RenderContextInfo to BeforeRender and AfterRender event
   <li>07/01/11 - Yar - Added properties Active and PickableTarget
   <li>23/08/10 - Yar - Changes for forward core
   <li>02/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
@@ -65,9 +66,9 @@ type
     FCamera: TGLCamera;
     FEnabledRenderBuffers: TGLEnabledRenderBuffers;
     FTargetVisibility: TGLFBOTargetVisibility;
-    FBeforeRender: TNotifyEvent;
+    FBeforeRender: TDirectRenderEvent;
     FPostInitialize: TNotifyEvent;
-    FAfterRender: TNotifyEvent;
+    FAfterRender: TDirectRenderEvent;
     FPreInitialize: TNotifyEvent;
     FBackgroundColor: TGLColor;
     FClearOptions: TGLFBOClearOptions;
@@ -113,8 +114,8 @@ type
     procedure ApplyCamera(var ARci: TRenderContextInfo);
     procedure UnApplyCamera(var ARci: TRenderContextInfo);
 
-    procedure DoBeforeRender;
-    procedure DoAfterRender;
+    procedure DoBeforeRender(var ARci: TRenderContextInfo);
+    procedure DoAfterRender(var ARci: TRenderContextInfo);
     procedure DoPreInitialize;
     procedure DoPostInitialize;
 
@@ -195,9 +196,9 @@ type
       write SetStencilPrecision default spDefault;
 
     { : called before rendering to the FBO }
-    property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender;
+    property BeforeRender: TDirectRenderEvent read FBeforeRender write FBeforeRender;
     { : called after the rendering to the FBO }
-    property AfterRender: TNotifyEvent read FAfterRender write FAfterRender;
+    property AfterRender: TDirectRenderEvent read FAfterRender write FAfterRender;
     { : Called before the FBO is initialized
       the FBO is bound before calling this event }
     property PreInitialize: TNotifyEvent read FPreInitialize
@@ -296,16 +297,16 @@ begin
     FRootObject := nil;
 end;
 
-procedure TGLFBORenderer.DoAfterRender;
+procedure TGLFBORenderer.DoAfterRender(var ARci: TRenderContextInfo);
 begin
   if Assigned(FAfterRender) then
-    FAfterRender(Self);
+    FAfterRender(Self, ARci);
 end;
 
-procedure TGLFBORenderer.DoBeforeRender;
+procedure TGLFBORenderer.DoBeforeRender(var ARci: TRenderContextInfo);
 begin
   if Assigned(FBeforeRender) then
-    FBeforeRender(Self);
+    FBeforeRender(Self, ARci);
 end;
 
 procedure TGLFBORenderer.DoPostInitialize;
@@ -594,7 +595,7 @@ begin
   try
     savedStates := StoreStates;
     ApplyCamera(ARci);
-    DoBeforeRender;
+    DoBeforeRender(ARci);
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
     begin
@@ -671,7 +672,7 @@ begin
     FFbo.Unbind;
     FRendering := False;
 
-    DoAfterRender;
+    DoAfterRender(ARci);
   end;
 end;
 
