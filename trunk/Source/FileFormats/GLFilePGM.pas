@@ -16,7 +16,7 @@ interface
 
 uses
   Classes, SysUtils,
-  OpenGL1x, GLContext, GLGraphics, GLTextureFormat,
+  OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
   ApplicationFileIO;
 
 type
@@ -34,7 +34,7 @@ type
                                 const textureHandle: TGLenum;
                                 textureTarget: TGLTextureTarget;
                                 const CurrentFormat: Boolean;
-                                const intFormat: TGLInternalFormat); override;
+                                const intFormat: TGLInternalFormat); reintroduce;
 
     property Data           : PGLPixel32Array read FData;
     property Width          : Integer read fWidth;
@@ -48,7 +48,7 @@ type
 implementation
 
 uses
-  GLS_CUDA_Utility, VectorGeometry;
+  GLS_CUDA_Utility;
 
 resourcestring
   cCUTILFailed = 'Can not initialize cutil32.dll';
@@ -62,7 +62,7 @@ resourcestring
 procedure TGLPGMImage.LoadFromFile(const filename: string);
 var
   w, h: Integer;
-  cutBuffer: PSingle;
+  cutBuffer: System.PSingle;
 begin
   if FileExists(fileName) then
   begin
@@ -76,9 +76,9 @@ begin
     if cutLoadPGMf(PAnsiChar(AnsiString(filename)), cutBuffer, w, h) then
     begin
       ResourceName  := filename;
-      fWidth := w;
-      fHeight := h;
-      fDepth := 0;
+      fWidth          := w;
+      fHeight         := h;
+      fDepth          := 0;
       fColorFormat    := GL_LUMINANCE;
       fInternalFormat := tfLUMINANCE_FLOAT32;
       fDataType       := GL_FLOAT;
@@ -105,7 +105,7 @@ begin
       EInvalidRasterFile.Create(cCUTILFailed);
       exit;
     end;
-  if not cutSavePGMf(PAnsiChar(AnsiString(filename)), PSingle(fData), fWidth, fHeight) then
+  if not cutSavePGMf(PAnsiChar(AnsiString(filename)), System.PSingle(fData), fWidth, fHeight) then
     raise EInvalidRasterFile.Create('Saving to file failed');
 end;
 
@@ -129,18 +129,19 @@ procedure TGLPGMImage.AssignFromTexture(textureContext: TGLContext;
 var
   oldContext : TGLContext;
   contextActivate : Boolean;
-  texFormat, texResident: Cardinal;
+  texFormat: Cardinal;
   residentFormat : TGLInternalFormat;
   glTarget: TGLEnum;
 begin
-  if not ((textureTarget=ttTexture2D)
-  or (textureTarget = ttTextureRect)) then Exit;
+  if not ((textureTarget = ttTexture2D)
+    or (textureTarget = ttTextureRect)) then Exit;
 
-  oldContext:=CurrentGLContext;
-  contextActivate:=(oldContext<>textureContext);
+  oldContext := CurrentGLContext;
+  contextActivate := (oldContext <> textureContext);
   if contextActivate then
   begin
-    if Assigned(oldContext) then oldContext.Deactivate;
+    if Assigned(oldContext) then
+      oldContext.Deactivate;
     textureContext.Activate;
   end;
   glTarget := DecodeGLTextureTarget(textureTarget);
@@ -153,11 +154,11 @@ begin
     fColorFormat := GL_LUMINANCE;
     fDataType := GL_FLOAT;
     // Check level existence
-    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
+    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
     if texFormat > 1 then
     begin
-      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
       fDepth:=0;
       residentFormat := OpenGLFormatToInternalFormat( texFormat );
       if CurrentFormat then
@@ -172,10 +173,10 @@ begin
       ReallocMem(FData, DataSize);
       fLevels.Clear;
       fLevels.Add(fData);
-      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+      GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else fMipLevels:=1;
-    CheckOpenGLError;
+    GL.CheckError;
   finally
     if contextActivate then
     begin
