@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLS_CUDA_API<p>
+{ : GLS_CUDA_API<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>07/02/11 - Yar - Added debug mode
-      <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
-      <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
-      <li>28/01/10 - Yar - Creation
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>07/02/11 - Yar - Added debug mode
+  <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
+  <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
+  <li>28/01/10 - Yar - Creation
+  </ul></font>
 }
 
-///*
+/// *
 // * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
 // *
 // * NOTICE TO USER:
@@ -62,263 +62,316 @@ const
 
 type
 
-  TCUdeviceptr = Pointer; ///< CUDA device pointer
+  TCUdeviceptr = Pointer;
+  /// < CUDA device pointer
 
-  TCUdevice = Integer; ///< CUDA device
+  TCUdevice = Integer;
+  /// < CUDA device
 
   PCUcontext = ^TCUcontext;
+
   TCUcontext = record
-  end; ///< CUDA context
+  end;
+
+  /// < CUDA context
   PCUmodule = ^TCUmodule;
+
   TCUmodule = record
-  end; ///< CUDA module
+  end;
+
+  /// < CUDA module
   PCUfunction = ^TCUfunction;
+
   TCUfunction = record
-  end; ///< CUDA function
+  end;
+
+  /// < CUDA function
   PCUarray = ^TCUarray;
+
   TCUarray = record
-  end; ///< CUDA array
+  end;
+
+  /// < CUDA array
   PCUtexref = ^TCUtexref;
+
   TCUtexref = record
-  end; ///< CUDA texture reference
+  end;
+
+  /// < CUDA texture reference
   PCUevent = ^TCUevent;
+
   TCUevent = record
-  end; ///< CUDA event
+  end;
+
+  /// < CUDA event
   PCUstream = ^TCUstream;
+
   TCUstream = record
-  end; ///< CUDA stream
+  end;
+
+  /// < CUDA stream
   PPCUgraphicsResource = ^PCUgraphicsResource;
   PCUgraphicsResource = ^TCUgraphicsResource;
+
   TCUgraphicsResource = record
-  end; ///< CUDA graphics interop resource
+  end;
+  /// < CUDA graphics interop resource
 
   // Context creation flags
 
-  TCUctx_flags = (
-    CU_CTX_SCHED_AUTO = 0, ///< Automatic scheduling
-    CU_CTX_SCHED_SPIN = 1, ///< Set spin as default scheduling
-    CU_CTX_SCHED_YIELD = 2, ///< Set yield as default scheduling
-    CU_CTX_SCHED_MASK = 3,
-    CU_CTX_BLOCKING_SYNC = 4, ///< Use blocking synchronization
-    CU_CTX_MAP_HOST = 8, ///< Support mapped pinned allocations
-    CU_CTX_FLAGS_MASK = 15
-    );
+  TCUctx_flags = (CU_CTX_SCHED_AUTO = 0,
+    /// < Automatic scheduling
+    CU_CTX_SCHED_SPIN = 1,
+    /// < Set spin as default scheduling
+    CU_CTX_SCHED_YIELD = 2,
+    /// < Set yield as default scheduling
+    CU_CTX_SCHED_MASK = 3, CU_CTX_BLOCKING_SYNC = 4,
+    /// < Use blocking synchronization
+    CU_CTX_MAP_HOST = 8,
+    /// < Support mapped pinned allocations
+    CU_CTX_FLAGS_MASK = 15);
 
   // Event creation flags
 
-  TCUevent_flags = (
-    CU_EVENT_DEFAULT = 0, ///< Default event flag
-    CU_EVENT_BLOCKING_SYNC = 1 ///< Event uses blocking synchronization
+  TCUevent_flags = (CU_EVENT_DEFAULT = 0,
+    /// < Default event flag
+    CU_EVENT_BLOCKING_SYNC = 1
+    /// < Event uses blocking synchronization
     );
 
   // Array formats
 
-  TCUarray_format = (
-    CU_AD_FORMAT_UNSIGNED_INT8 = $01, ///< Unsigned 8-bit integers
-    CU_AD_FORMAT_UNSIGNED_INT16 = $02, ///< Unsigned 16-bit integers
-    CU_AD_FORMAT_UNSIGNED_INT32 = $03, ///< Unsigned 32-bit integers
-    CU_AD_FORMAT_SIGNED_INT8 = $08, ///< Signed 8-bit integers
-    CU_AD_FORMAT_SIGNED_INT16 = $09, ///< Signed 16-bit integers
-    CU_AD_FORMAT_SIGNED_INT32 = $0A, ///< Signed 32-bit integers
-    CU_AD_FORMAT_HALF = $10, ///< 16-bit floating point
-    CU_AD_FORMAT_FLOAT = $20 ///< 32-bit floating point
+  TCUarray_format = (CU_AD_FORMAT_UNSIGNED_INT8 = $01,
+    /// < Unsigned 8-bit integers
+    CU_AD_FORMAT_UNSIGNED_INT16 = $02,
+    /// < Unsigned 16-bit integers
+    CU_AD_FORMAT_UNSIGNED_INT32 = $03,
+    /// < Unsigned 32-bit integers
+    CU_AD_FORMAT_SIGNED_INT8 = $08,
+    /// < Signed 8-bit integers
+    CU_AD_FORMAT_SIGNED_INT16 = $09,
+    /// < Signed 16-bit integers
+    CU_AD_FORMAT_SIGNED_INT32 = $0A,
+    /// < Signed 32-bit integers
+    CU_AD_FORMAT_HALF = $10,
+    /// < 16-bit floating point
+    CU_AD_FORMAT_FLOAT = $20
+    /// < 32-bit floating point
     );
 
   // Texture reference addressing modes
 
-  TCUaddress_mode = (
-    CU_TR_ADDRESS_MODE_WRAP = 0, ///< Wrapping address mode
-    CU_TR_ADDRESS_MODE_CLAMP = 1, ///< Clamp to edge address mode
-    CU_TR_ADDRESS_MODE_MIRROR = 2 ///< Mirror address mode
+  TCUaddress_mode = (CU_TR_ADDRESS_MODE_WRAP = 0,
+    /// < Wrapping address mode
+    CU_TR_ADDRESS_MODE_CLAMP = 1,
+    /// < Clamp to edge address mode
+    CU_TR_ADDRESS_MODE_MIRROR = 2
+    /// < Mirror address mode
     );
 
   // Texture reference filtering modes
 
-  TCUfilter_mode = (
-    CU_TR_FILTER_MODE_POINT = 0, ///< Point filter mode
-    CU_TR_FILTER_MODE_LINEAR = 1 ///< Linear filter mode
+  TCUfilter_mode = (CU_TR_FILTER_MODE_POINT = 0,
+    /// < Point filter mode
+    CU_TR_FILTER_MODE_LINEAR = 1
+    /// < Linear filter mode
     );
 
   // Device properties
 
-  TCUdevice_attribute = (
-    CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 1,
-    ///< Maximum number of threads per block
-    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X = 2, ///< Maximum block dimension X
-    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y = 3, ///< Maximum block dimension Y
-    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z = 4, ///< Maximum block dimension Z
-    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X = 5, ///< Maximum grid dimension X
-    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y = 6, ///< Maximum grid dimension Y
-    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z = 7, ///< Maximum grid dimension Z
+  TCUdevice_attribute = (CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 1,
+    /// < Maximum number of threads per block
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X = 2,
+    /// < Maximum block dimension X
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y = 3,
+    /// < Maximum block dimension Y
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z = 4,
+    /// < Maximum block dimension Z
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X = 5,
+    /// < Maximum grid dimension X
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y = 6,
+    /// < Maximum grid dimension Y
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z = 7,
+    /// < Maximum grid dimension Z
     CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK = 8,
-    ///< Maximum shared memory available per block in bytes
+    /// < Maximum shared memory available per block in bytes
     CU_DEVICE_ATTRIBUTE_SHARED_MEMORY_PER_BLOCK = 8,
-    ///< Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK
+    /// < Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK
     CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY = 9,
-    ///< Memory available on device for __constant__ variables in a CUDA C kernel in bytes
-    CU_DEVICE_ATTRIBUTE_WARP_SIZE = 10, ///< Warp size in threads
+    /// < Memory available on device for __constant__ variables in a CUDA C kernel in bytes
+    CU_DEVICE_ATTRIBUTE_WARP_SIZE = 10,
+    /// < Warp size in threads
     CU_DEVICE_ATTRIBUTE_MAX_PITCH = 11,
-    ///< Maximum pitch in bytes allowed by memory copies
+    /// < Maximum pitch in bytes allowed by memory copies
     CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK = 12,
-    ///< Maximum number of 32-bit registers available per block
+    /// < Maximum number of 32-bit registers available per block
     CU_DEVICE_ATTRIBUTE_REGISTERS_PER_BLOCK = 12,
-    ///< Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK
-    CU_DEVICE_ATTRIBUTE_CLOCK_RATE = 13, ///< Peak clock frequency in kilohertz
+    /// < Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK
+    CU_DEVICE_ATTRIBUTE_CLOCK_RATE = 13,
+    /// < Peak clock frequency in kilohertz
     CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT = 14,
-    ///< Alignment requirement for textures
+    /// < Alignment requirement for textures
 
     CU_DEVICE_ATTRIBUTE_GPU_OVERLAP = 15,
-    ///< Device can possibly copy memory and execute a kernel concurrently
+    /// < Device can possibly copy memory and execute a kernel concurrently
     CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT = 16,
-    ///< Number of multiprocessors on device
+    /// < Number of multiprocessors on device
     CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT = 17,
-    ///< Specifies whether there is a run time limit on kernels
+    /// < Specifies whether there is a run time limit on kernels
     CU_DEVICE_ATTRIBUTE_INTEGRATED = 18,
-    ///< Device is integrated with host memory
+    /// < Device is integrated with host memory
     CU_DEVICE_ATTRIBUTE_CAN_MAP_HOST_MEMORY = 19,
-    ///< Device can map host memory into CUDA address space
+    /// < Device can map host memory into CUDA address space
     CU_DEVICE_ATTRIBUTE_COMPUTE_MODE = 20
-    ///< Compute mode (See ::CUcomputemode for details)
+    /// < Compute mode (See ::CUcomputemode for details)
     );
 
-  (**
-   * CUDA Limits
-   *)
-  TcudaLimit = (
-    cudaLimitStackSize = $00, ///< GPU thread stack size
-    cudaLimitPrintfFifoSize = $01 ///< GPU printf FIFO size
+  (* *
+    * CUDA Limits
+  *)
+  TcudaLimit = (cudaLimitStackSize = $00,
+    /// < GPU thread stack size
+    cudaLimitPrintfFifoSize = $01
+    /// < GPU printf FIFO size
     );
 
   // Legacy device properties
 
   TCUdevprop = record
-    maxThreadsPerBlock: Integer; ///< Maximum number of threads per block
-    maxThreadsDim: array[0..2] of Integer;
-    ///< Maximum size of each dimension of a block
-    maxGridSize: array[0..2] of Integer;
-    ///< Maximum size of each dimension of a grid
-    sharedMemPerBlock: Integer; ///< Shared memory available per block in bytes
+    maxThreadsPerBlock: Integer;
+    /// < Maximum number of threads per block
+    maxThreadsDim: array [0 .. 2] of Integer;
+    /// < Maximum size of each dimension of a block
+    maxGridSize: array [0 .. 2] of Integer;
+    /// < Maximum size of each dimension of a grid
+    sharedMemPerBlock: Integer;
+    /// < Shared memory available per block in bytes
     totalConstantMemory: Integer;
-    ///< Constant memory available on device in bytes
-    SIMDWidth: Integer; ///< Warp size in threads
-    memPitch: Integer; ///< Maximum pitch in bytes allowed by memory copies
-    regsPerBlock: Integer; ///< 32-bit registers available per block
-    clockRate: Integer; ///< Clock frequency in kilohertz
-    textureAlign: Integer; ///< Alignment requirement for textures
+    /// < Constant memory available on device in bytes
+    SIMDWidth: Integer;
+    /// < Warp size in threads
+    memPitch: Integer;
+    /// < Maximum pitch in bytes allowed by memory copies
+    regsPerBlock: Integer;
+    /// < 32-bit registers available per block
+    clockRate: Integer;
+    /// < Clock frequency in kilohertz
+    textureAlign: Integer;
+    /// < Alignment requirement for textures
   end;
 
   // Function properties
 
   TCUfunction_attribute = (
 
-    {    * The number of threads beyond which a launch of the function would fail.
-         * This number depends on both the function and the device on which the
-         * function is currently loaded. }
+    { * The number of threads beyond which a launch of the function would fail.
+      * This number depends on both the function and the device on which the
+      * function is currently loaded. }
 
     CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 0,
 
-    {    * The size in bytes of statically-allocated shared memory required by
-         * this function. This does not include dynamically-allocated shared
-         * memory requested by the user at runtime.     }
+    { * The size in bytes of statically-allocated shared memory required by
+      * this function. This does not include dynamically-allocated shared
+      * memory requested by the user at runtime. }
 
     CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES = 1,
 
-    {    * The size in bytes of user-allocated constant memory required by this
-         * function.     }
+    { * The size in bytes of user-allocated constant memory required by this
+      * function. }
 
     CU_FUNC_ATTRIBUTE_CONST_SIZE_BYTES = 2,
 
-    {     * The size in bytes of thread local memory used by this function.}
+    { * The size in bytes of thread local memory used by this function. }
 
     CU_FUNC_ATTRIBUTE_LOCAL_SIZE_BYTES = 3,
 
-    {     * The number of registers used by each thread of this function.}
+    { * The number of registers used by each thread of this function. }
 
     CU_FUNC_ATTRIBUTE_NUM_REGS = 4,
 
-    CU_FUNC_ATTRIBUTE_MAX
-    );
+    CU_FUNC_ATTRIBUTE_MAX);
 
   // Memory types
 
-  TCUmemorytype = (
-    CU_MEMORYTYPE_HOST = $01, ///< Host memory
-    CU_MEMORYTYPE_DEVICE = $02, ///< Device memory
-    CU_MEMORYTYPE_ARRAY = $03 ///< Array memory
+  TCUmemorytype = (CU_MEMORYTYPE_HOST = $01,
+    /// < Host memory
+    CU_MEMORYTYPE_DEVICE = $02,
+    /// < Device memory
+    CU_MEMORYTYPE_ARRAY = $03
+    /// < Array memory
     );
 
   // Compute Modes
 
-  TCUcomputemode = (
-    CU_COMPUTEMODE_DEFAULT = 0,
-    ///< Default compute mode (Multiple contexts allowed per device)
+  TCUcomputemode = (CU_COMPUTEMODE_DEFAULT = 0,
+    /// < Default compute mode (Multiple contexts allowed per device)
     CU_COMPUTEMODE_EXCLUSIVE = 1,
-    ///< Compute-exclusive mode (Only one context can be present on this device at a time)
+    /// < Compute-exclusive mode (Only one context can be present on this device at a time)
     CU_COMPUTEMODE_PROHIBITED = 2
-    ///< Compute-prohibited mode (No contexts can be created on this device at this time)
+    /// < Compute-prohibited mode (No contexts can be created on this device at this time)
     );
 
   // Online compiler options
 
   TCUjit_option = (
-    {     * Max number of registers that a thread may use.}
+    { * Max number of registers that a thread may use. }
 
     CU_JIT_MAX_REGISTERS = 0,
 
-    {    * IN: Specifies minimum number of threads per block to target compilation
-         * for\n
-         * OUT: Returns the number of threads the compiler actually targeted.
-         * This restricts the resource utilization fo the compiler (e.g. max
-         * registers) such that a block with the given number of threads should be
-         * able to launch based on register limitations. Note, this option does not
-         * currently take into account any other resource limitations, such as
-         * shared memory utilization.  }
+    { * IN: Specifies minimum number of threads per block to target compilation
+      * for\n
+      * OUT: Returns the number of threads the compiler actually targeted.
+      * This restricts the resource utilization fo the compiler (e.g. max
+      * registers) such that a block with the given number of threads should be
+      * able to launch based on register limitations. Note, this option does not
+      * currently take into account any other resource limitations, such as
+      * shared memory utilization. }
 
     CU_JIT_THREADS_PER_BLOCK,
 
-    {    * Returns a float value in the option of the wall clock time, in
-         * milliseconds, spent creating the cubin}
+    { * Returns a float value in the option of the wall clock time, in
+      * milliseconds, spent creating the cubin }
 
     CU_JIT_WALL_TIME,
 
-    {     * Pointer to a buffer in which to print any log messsages from PTXAS
-         * that are informational in nature  }
+    { * Pointer to a buffer in which to print any log messsages from PTXAS
+      * that are informational in nature }
 
     CU_JIT_INFO_LOG_BUFFER,
 
-    {    * IN: Log buffer size in bytes.  Log messages will be capped at this size
-         * (including null terminator)\n
-         * OUT: Amount of log buffer filled with messages   }
+    { * IN: Log buffer size in bytes.  Log messages will be capped at this size
+      * (including null terminator)\n
+      * OUT: Amount of log buffer filled with messages }
 
     CU_JIT_INFO_LOG_BUFFER_SIZE_BYTES,
 
-    {    * Pointer to a buffer in which to print any log messages from PTXAS that
-         * reflect errors }
+    { * Pointer to a buffer in which to print any log messages from PTXAS that
+      * reflect errors }
 
     CU_JIT_ERROR_LOG_BUFFER,
 
-    {    * IN: Log buffer size in bytes.  Log messages will be capped at this size
-         * (including null terminator)\n
-         * OUT: Amount of log buffer filled with messages  }
+    { * IN: Log buffer size in bytes.  Log messages will be capped at this size
+      * (including null terminator)\n
+      * OUT: Amount of log buffer filled with messages }
 
     CU_JIT_ERROR_LOG_BUFFER_SIZE_BYTES,
 
-    {    * Level of optimizations to apply to generated code (0 - 4), with 4
-         * being the default and highest level of optimizations.  }
+    { * Level of optimizations to apply to generated code (0 - 4), with 4
+      * being the default and highest level of optimizations. }
 
     CU_JIT_OPTIMIZATION_LEVEL,
 
-    {    * No option value required. Determines the target based on the current
-         * attached context (default)    }
+    { * No option value required. Determines the target based on the current
+      * attached context (default) }
 
     CU_JIT_TARGET_FROM_CUCONTEXT,
 
-    {    * Target is chosen based on supplied CUjit_target_enum.   }
+    { * Target is chosen based on supplied CUjit_target_enum. }
 
     CU_JIT_TARGET,
 
-    {    * Specifies choice of fallback strategy if matching cubin is not found.
-         * Choice is based on supplied CUjit_fallback_enum. }
+    { * Specifies choice of fallback strategy if matching cubin is not found.
+      * Choice is based on supplied CUjit_fallback_enum. }
 
     CU_JIT_FALLBACK_STRATEGY
 
@@ -328,81 +381,94 @@ type
 
   TCUjit_target = (
 
-    CU_TARGET_COMPUTE_10 = 0, ///< Compute device class 1.0
-    CU_TARGET_COMPUTE_11, ///< Compute device class 1.1
-    CU_TARGET_COMPUTE_12, ///< Compute device class 1.2
-    CU_TARGET_COMPUTE_13 ///< Compute device class 1.3
+    CU_TARGET_COMPUTE_10 = 0,
+    /// < Compute device class 1.0
+    CU_TARGET_COMPUTE_11,
+    /// < Compute device class 1.1
+    CU_TARGET_COMPUTE_12,
+    /// < Compute device class 1.2
+    CU_TARGET_COMPUTE_13
+    /// < Compute device class 1.3
     );
 
   // Cubin matching fallback strategies
 
   TCUjit_fallback = (
-    //** Prefer to compile ptx */
+    // ** Prefer to compile ptx */
     CU_PREFER_PTX = 0,
-    //** Prefer to fall back to compatible binary code */
-    CU_PREFER_BINARY
-    );
+    // ** Prefer to fall back to compatible binary code */
+    CU_PREFER_BINARY);
 
   // Flags to register a graphics resource
 
-  TCUgraphicsRegisterFlags = (
-    CU_GRAPHICS_REGISTER_FLAGS_NONE = $00000000);
+  TCUgraphicsRegisterFlags = (CU_GRAPHICS_REGISTER_FLAGS_NONE = $00000000);
 
   // Flags for mapping and unmapping interop resources
 
-  TCUgraphicsMapResourceFlags = (
-    CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE = $00000000,
+  TCUgraphicsMapResourceFlags =
+    (CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE = $00000000,
     CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY = $00000001,
     CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD = $00000002);
 
   // Array indices for cube faces
 
-  TCUarray_cubemap_face = (
-    CU_CUBEMAP_FACE_POSITIVE_X = $00000000, ///< Positive X face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_X = $00000001, ///< Negative X face of cubemap
-    CU_CUBEMAP_FACE_POSITIVE_Y = $00000002, ///< Positive Y face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_Y = $00000003, ///< Negative Y face of cubemap
-    CU_CUBEMAP_FACE_POSITIVE_Z = $00000004, ///< Positive Z face of cubemap
-    CU_CUBEMAP_FACE_NEGATIVE_Z = $00000005 ///< Negative Z face of cubemap
+  TCUarray_cubemap_face = (CU_CUBEMAP_FACE_POSITIVE_X = $00000000,
+    /// < Positive X face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_X = $00000001,
+    /// < Negative X face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Y = $00000002,
+    /// < Positive Y face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Y = $00000003,
+    /// < Negative Y face of cubemap
+    CU_CUBEMAP_FACE_POSITIVE_Z = $00000004,
+    /// < Positive Z face of cubemap
+    CU_CUBEMAP_FACE_NEGATIVE_Z = $00000005
+    /// < Negative Z face of cubemap
     );
 
   (*
-  * CUDA function attributes
+    * CUDA function attributes
   *)
 
   TcudaFuncAttributes = record
-    sharedSizeBytes: size_t; ///< Size of shared memory in bytes
-    constSizeBytes: size_t; ///< Size of constant memory in bytes
-    localSizeBytes: size_t; ///< Size of local memory in bytes
-    maxThreadsPerBlock: Integer; ///< Maximum number of threads per block
-    numRegs: Integer; ///< Number of registers used
+    sharedSizeBytes: size_t;
+    /// < Size of shared memory in bytes
+    constSizeBytes: size_t;
+    /// < Size of constant memory in bytes
+    localSizeBytes: size_t;
+    /// < Size of local memory in bytes
+    maxThreadsPerBlock: Integer;
+    /// < Maximum number of threads per block
+    numRegs: Integer;
+    /// < Number of registers used
     (* \brief PTX virtual architecture version for which the function was
-    *  compiled. This value is the major PTX version * 10 + the minor PTX
-    *  version, so a PTX version 1.3 function would return the value 13.
-    *  For device emulation kernels, this is set to 9999.
+      *  compiled. This value is the major PTX version * 10 + the minor PTX
+      *  version, so a PTX version 1.3 function would return the value 13.
+      *  For device emulation kernels, this is set to 9999.
     *)
     ptxVersion: Integer;
-    (** \brief Binary architecture version for which the function was compiled.
-    *  This value is the major binary version * 10 + the minor binary version,
-    *  so a binary version 1.3 function would return the value 13.
-    *  For device emulation kernels, this is set to 9999.
+    (* * \brief Binary architecture version for which the function was compiled.
+      *  This value is the major binary version * 10 + the minor binary version,
+      *  so a binary version 1.3 function would return the value 13.
+      *  For device emulation kernels, this is set to 9999.
     *)
     binaryVersion: Integer;
-    __cudaReserved: array[0..5] of Integer;
+    __cudaReserved: array [0 .. 5] of Integer;
   end;
 
-  (**
-   * CUDA function cache configurations
-   *)
+  (* *
+    * CUDA function cache configurations
+  *)
 
-  TcudaFuncCache =
-    (
-    cudaFuncCachePreferNone = 0, ///< Default function cache configuration, no preference
-    cudaFuncCachePreferShared = 1, ///< Prefer larger shared memory and smaller L1 cache
-    cudaFuncCachePreferL1 = 2 ///< Prefer larger L1 cache and smaller shared memory
+  TcudaFuncCache = (cudaFuncCachePreferNone = 0,
+    /// < Default function cache configuration, no preference
+    cudaFuncCachePreferShared = 1,
+    /// < Prefer larger shared memory and smaller L1 cache
+    cudaFuncCachePreferL1 = 2
+    /// < Prefer larger L1 cache and smaller shared memory
     );
 
-  //************************************
+  // ************************************
   // **
   // **    Error codes
   // **
@@ -410,67 +476,98 @@ type
 
   // Error codes
 
-  TCUresult = (
+  TCUresult = type Cardinal;
 
-    CUDA_SUCCESS = 0, ///< No errors
-    CUDA_ERROR_INVALID_VALUE = 1, ///< Invalid value
-    CUDA_ERROR_OUT_OF_MEMORY = 2, ///< Out of memory
-    CUDA_ERROR_NOT_INITIALIZED = 3, ///< Driver not initialized
-    CUDA_ERROR_DEINITIALIZED = 4, ///< Driver deinitialized
+const
+  CUDA_SUCCESS: TCUresult = 0;
+  /// < No errors
+  CUDA_ERROR_INVALID_VALUE = 1;
+  /// < Invalid value
+  CUDA_ERROR_OUT_OF_MEMORY = 2;
+  /// < Out of memory
+  CUDA_ERROR_NOT_INITIALIZED = 3;
+  /// < Driver not initialized
+  CUDA_ERROR_DEINITIALIZED = 4;
+  /// < Driver deinitialized
 
-    CUDA_ERROR_NO_DEVICE = 100, ///< No CUDA-capable device available
-    CUDA_ERROR_INVALID_DEVICE = 101, ///< Invalid device
+  CUDA_ERROR_NO_DEVICE = 100;
+  /// < No CUDA-capable device available
+  CUDA_ERROR_INVALID_DEVICE = 101;
+  /// < Invalid device
 
-    CUDA_ERROR_INVALID_IMAGE = 200, ///< Invalid kernel image
-    CUDA_ERROR_INVALID_CONTEXT = 201, ///< Invalid context
-    CUDA_ERROR_CONTEXT_ALREADY_CURRENT = 202, ///< Context already current
-    CUDA_ERROR_MAP_FAILED = 205, ///< Map failed
-    CUDA_ERROR_UNMAP_FAILED = 206, ///< Unmap failed
-    CUDA_ERROR_ARRAY_IS_MAPPED = 207, ///< Array is mapped
-    CUDA_ERROR_ALREADY_MAPPED = 208, ///< Already mapped
-    CUDA_ERROR_NO_BINARY_FOR_GPU = 209, ///< No binary for GPU
-    CUDA_ERROR_ALREADY_ACQUIRED = 210, ///< Already acquired
-    CUDA_ERROR_NOT_MAPPED = 211, ///< Not mapped
-    CUDA_ERROR_NOT_MAPPED_AS_ARRAY = 212, ///< Mapped resource not available for access as an array
-    CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213, ///< Mapped resource not available for access as a pointer
+  CUDA_ERROR_INVALID_IMAGE = 200;
+  /// < Invalid kernel image
+  CUDA_ERROR_INVALID_CONTEXT = 201;
+  /// < Invalid context
+  CUDA_ERROR_CONTEXT_ALREADY_CURRENT = 202;
+  /// < Context already current
+  CUDA_ERROR_MAP_FAILED = 205;
+  /// < Map failed
+  CUDA_ERROR_UNMAP_FAILED = 206;
+  /// < Unmap failed
+  CUDA_ERROR_ARRAY_IS_MAPPED = 207;
+  /// < Array is mapped
+  CUDA_ERROR_ALREADY_MAPPED = 208;
+  /// < Already mapped
+  CUDA_ERROR_NO_BINARY_FOR_GPU = 209;
+  /// < No binary for GPU
+  CUDA_ERROR_ALREADY_ACQUIRED = 210;
+  /// < Already acquired
+  CUDA_ERROR_NOT_MAPPED = 211;
+  /// < Not mapped
+  CUDA_ERROR_NOT_MAPPED_AS_ARRAY = 212;
+  /// < Mapped resource not available for access as an array
+  CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213;
+  /// < Mapped resource not available for access as a pointer
 
-    CUDA_ERROR_INVALID_SOURCE = 300, ///< Invalid source
-    CUDA_ERROR_FILE_NOT_FOUND = 301, ///< File not found
+  CUDA_ERROR_INVALID_SOURCE = 300;
+  /// < Invalid source
+  CUDA_ERROR_FILE_NOT_FOUND = 301;
+  /// < File not found
 
-    CUDA_ERROR_INVALID_HANDLE = 400, ///< Invalid handle
+  CUDA_ERROR_INVALID_HANDLE = 400;
+  /// < Invalid handle
 
-    CUDA_ERROR_NOT_FOUND = 500, ///< Not found
+  CUDA_ERROR_NOT_FOUND = 500;
+  /// < Not found
 
-    CUDA_ERROR_NOT_READY = 600, ///< CUDA not ready
+  CUDA_ERROR_NOT_READY = 600;
+  /// < CUDA not ready
 
-    CUDA_ERROR_LAUNCH_FAILED = 700, ///< Launch failed
-    CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES = 701, ///< Launch exceeded resources
-    CUDA_ERROR_LAUNCH_TIMEOUT = 702, ///< Launch exceeded timeout
-    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING = 703, ///< Launch with incompatible texturing
+  CUDA_ERROR_LAUNCH_FAILED = 700;
+  /// < Launch failed
+  CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES = 701;
+  /// < Launch exceeded resources
+  CUDA_ERROR_LAUNCH_TIMEOUT = 702;
+  /// < Launch exceeded timeout
+  CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING = 703;
+  /// < Launch with incompatible texturing
 
-    CUDA_ERROR_POINTER_IS_64BIT = 800, ///< Attempted to retrieve 64-bit pointer via 32-bit API function
-    CUDA_ERROR_SIZE_IS_64BIT = 801, ///< Attempted to retrieve 64-bit size via 32-bit API function
+  CUDA_ERROR_POINTER_IS_64BIT = 800;
+  /// < Attempted to retrieve 64-bit pointer via 32-bit API function
+  CUDA_ERROR_SIZE_IS_64BIT = 801;
+  /// < Attempted to retrieve 64-bit size via 32-bit API function
 
-    CUDA_ERROR_UNKNOWN = 999 ///< Unknown error
-    );
+  CUDA_ERROR_UNKNOWN = 999;
+  /// < Unknown error
 
   { * If set, host memory is portable between CUDA contexts.
-   * Flag for ::cuMemHostAlloc()  }
+    * Flag for ::cuMemHostAlloc() }
 
 const
 
   CU_MEMHOSTALLOC_PORTABLE = $01;
 
-  {* If set, host memory is mapped into CUDA address space and
-   * ::cuMemHostGetDevicePointer() may be called on the host pointer.
-   * Flag for ::cuMemHostAlloc()     }
+  { * If set, host memory is mapped into CUDA address space and
+    * ::cuMemHostGetDevicePointer() may be called on the host pointer.
+    * Flag for ::cuMemHostAlloc() }
 
   CU_MEMHOSTALLOC_DEVICEMAP = $02;
 
-  {* If set, host memory is allocated as write-combined - fast to write,
-   * faster to DMA, slow to read except via SSE4 streaming load instruction
-   * (MOVNTDQA).
-   * Flag for ::cuMemHostAlloc() }
+  { * If set, host memory is allocated as write-combined - fast to write,
+    * faster to DMA, slow to read except via SSE4 streaming load instruction
+    * (MOVNTDQA).
+    * Flag for ::cuMemHostAlloc() }
 
   CU_MEMHOSTALLOC_WRITECOMBINED = $04;
 
@@ -479,120 +576,167 @@ const
 type
 
   PCUDA_MEMCPY2D = ^TCUDA_MEMCPY2D;
+
   TCUDA_MEMCPY2D = record
-    srcXInBytes, ///< Source X in bytes
-    srcY: Cardinal; ///< Source Y
+    srcXInBytes,
+    /// < Source X in bytes
+    srcY: Cardinal;
+    /// < Source Y
 
-    srcMemoryType: TCUmemorytype; ///< Source memory type (host, device, array)
-    srcHost: Pointer; ///< Source host pointer
-    srcDevice: TCUdeviceptr; ///< Source device pointer
-    srcArray: PCUarray; ///< Source array reference
-    srcPitch: Cardinal; ///< Source pitch (ignored when src is array)
+    srcMemoryType: TCUmemorytype;
+    /// < Source memory type (host, device, array)
+    srcHost: Pointer;
+    /// < Source host pointer
+    srcDevice: TCUdeviceptr;
+    /// < Source device pointer
+    srcArray: PCUarray;
+    /// < Source array reference
+    srcPitch: Cardinal;
+    /// < Source pitch (ignored when src is array)
 
-    dstXInBytes, ///< Destination X in bytes
-    dstY: Cardinal; ///< Destination Y
+    dstXInBytes,
+    /// < Destination X in bytes
+    dstY: Cardinal;
+    /// < Destination Y
     dstMemoryType: TCUmemorytype;
-    ///< Destination memory type (host, device, array)
-    dstHost: Pointer; ///< Destination host pointer
-    dstDevice: TCUdeviceptr; ///< Destination device pointer
-    dstArray: PCUarray; ///< Destination array reference
-    dstPitch: Cardinal; ///< Destination pitch (ignored when dst is array)
+    /// < Destination memory type (host, device, array)
+    dstHost: Pointer;
+    /// < Destination host pointer
+    dstDevice: TCUdeviceptr;
+    /// < Destination device pointer
+    dstArray: PCUarray;
+    /// < Destination array reference
+    dstPitch: Cardinal;
+    /// < Destination pitch (ignored when dst is array)
 
-    WidthInBytes: Cardinal; ///< Width of 2D memory copy in bytes
-    Height: Cardinal; ///< Height of 2D memory copy
+    WidthInBytes: Cardinal;
+    /// < Width of 2D memory copy in bytes
+    Height: Cardinal;
+    /// < Height of 2D memory copy
   end;
 
   // 3D memory copy parameters
 
   TCUDA_MEMCPY3D = record
 
-    srcXInBytes, ///< Source X in bytes
-    srcY, ///< Source Y
-    srcZ: Cardinal; ///< Source Z
-    srcLOD: Cardinal; ///< Source LOD
-    srcMemoryType: TCUmemorytype; ///< Source memory type (host, device, array)
-    srcHost: Pointer; ///< Source host pointer
-    srcDevice: TCUdeviceptr; ///< Source device pointer
-    srcArray: PCUarray; ///< Source array reference
-    reserved0: Pointer; ///< Must be NULL
-    srcPitch: Cardinal; ///< Source pitch (ignored when src is array)
+    srcXInBytes,
+    /// < Source X in bytes
+    srcY,
+    /// < Source Y
+    srcZ: Cardinal;
+    /// < Source Z
+    srcLOD: Cardinal;
+    /// < Source LOD
+    srcMemoryType: TCUmemorytype;
+    /// < Source memory type (host, device, array)
+    srcHost: Pointer;
+    /// < Source host pointer
+    srcDevice: TCUdeviceptr;
+    /// < Source device pointer
+    srcArray: PCUarray;
+    /// < Source array reference
+    reserved0: Pointer;
+    /// < Must be NULL
+    srcPitch: Cardinal;
+    /// < Source pitch (ignored when src is array)
     srcHeight: Cardinal;
-    ///< Source height (ignored when src is array; may be 0 if Depth==1)
+    /// < Source height (ignored when src is array; may be 0 if Depth==1)
 
-    dstXInBytes, ///< Destination X in bytes
-    dstY, ///< Destination Y
-    dstZ: Cardinal; ///< Destination Z
-    dstLOD: Cardinal; ///< Destination LOD
+    dstXInBytes,
+    /// < Destination X in bytes
+    dstY,
+    /// < Destination Y
+    dstZ: Cardinal;
+    /// < Destination Z
+    dstLOD: Cardinal;
+    /// < Destination LOD
     dstMemoryType: TCUmemorytype;
-    ///< Destination memory type (host, device, array)
-    dstHost: Pointer; ///< Destination host pointer
-    dstDevice: TCUdeviceptr; ///< Destination device pointer
-    dstArray: PCUarray; ///< Destination array reference
-    reserved1: Pointer; ///< Must be NULL
-    dstPitch: Cardinal; ///< Destination pitch (ignored when dst is array)
+    /// < Destination memory type (host, device, array)
+    dstHost: Pointer;
+    /// < Destination host pointer
+    dstDevice: TCUdeviceptr;
+    /// < Destination device pointer
+    dstArray: PCUarray;
+    /// < Destination array reference
+    reserved1: Pointer;
+    /// < Must be NULL
+    dstPitch: Cardinal;
+    /// < Destination pitch (ignored when dst is array)
     dstHeight: Cardinal;
-    ///< Destination height (ignored when dst is array; may be 0 if Depth==1)
+    /// < Destination height (ignored when dst is array; may be 0 if Depth==1)
 
-    WidthInBytes: Cardinal; ///< Width of 3D memory copy in bytes
-    Height: Cardinal; ///< Height of 3D memory copy
-    Depth: Cardinal; ///< Depth of 3D memory copy
+    WidthInBytes: Cardinal;
+    /// < Width of 3D memory copy in bytes
+    Height: Cardinal;
+    /// < Height of 3D memory copy
+    Depth: Cardinal;
+    /// < Depth of 3D memory copy
   end;
 
   // Array descriptor
 
   PCUDA_ARRAY_DESCRIPTOR = ^TCUDA_ARRAY_DESCRIPTOR;
+
   TCUDA_ARRAY_DESCRIPTOR = record
-    Width: Cardinal; ///< Width of array
-    Height: Cardinal; ///< Height of array
-    Format: TCUarray_format; ///< Array format
-    NumChannels: Cardinal; ///< Channels per array element
+    Width: Cardinal;
+    /// < Width of array
+    Height: Cardinal;
+    /// < Height of array
+    Format: TCUarray_format;
+    /// < Array format
+    NumChannels: Cardinal;
+    /// < Channels per array element
   end;
 
   // 3D array descriptor
 
   TCUDA_ARRAY3D_DESCRIPTOR = record
-    Width: Cardinal; ///< Width of 3D array
-    Height: Cardinal; ///< Height of 3D array
-    Depth: Cardinal; ///< Depth of 3D array
-    Format: TCUarray_format; ///< Array format
-    NumChannels: Cardinal; ///< Channels per array element
-    Flags: Cardinal; ///< Flags
+    Width: Cardinal;
+    /// < Width of 3D array
+    Height: Cardinal;
+    /// < Height of 3D array
+    Depth: Cardinal;
+    /// < Depth of 3D array
+    Format: TCUarray_format;
+    /// < Array format
+    NumChannels: Cardinal;
+    /// < Channels per array element
+    Flags: Cardinal;
+    /// < Flags
   end;
 
   // Flags to map or unmap a resource
 
-  TCUGLmap_flags = (
-    CU_GL_MAP_RESOURCE_FLAGS_NONE,
-    CU_GL_MAP_RESOURCE_FLAGS_READ_ONLY,
-    CU_GL_MAP_RESOURCE_FLAGS_WRITE_DISCARD
-    );
+  TCUGLmap_flags = (CU_GL_MAP_RESOURCE_FLAGS_NONE,
+    CU_GL_MAP_RESOURCE_FLAGS_READ_ONLY, CU_GL_MAP_RESOURCE_FLAGS_WRITE_DISCARD);
 
 const
-  {* Override the texref format with a format inferred from the array.
-   * Flag for ::cuTexRefSetArray()  }
+  { * Override the texref format with a format inferred from the array.
+    * Flag for ::cuTexRefSetArray() }
 
   CU_TRSA_OVERRIDE_FORMAT = $01;
 
-  {* Read the texture as integers rather than promoting the values to floats
- * in the range [0,1].
- * Flag for ::cuTexRefSetFlags()   }
+  { * Read the texture as integers rather than promoting the values to floats
+    * in the range [0,1].
+    * Flag for ::cuTexRefSetFlags() }
 
   CU_TRSF_READ_AS_INTEGER = $01;
 
-  {* Use normalized texture coordinates in the range [0,1) instead of [0,dim).
-   * Flag for ::cuTexRefSetFlags()}
+  { * Use normalized texture coordinates in the range [0,1) instead of [0,dim).
+    * Flag for ::cuTexRefSetFlags() }
 
   CU_TRSF_NORMALIZED_COORDINATES = $02;
 
-  {* For texture references loaded into the module, use default texunit from
-   * texture reference.   }
+  { * For texture references loaded into the module, use default texunit from
+    * texture reference. }
 
   CU_PARAM_TR_DEFAULT = -1;
 
 type
-  TDim3 = array[0..2] of LongWord;
+  TDim3 = array [0 .. 2] of LongWord;
 
 {$IFDEF MSWINDOWS}
+
 type
   HGPUNV = Pointer;
 {$ENDIF}
@@ -614,11 +758,13 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetName = function(var name: AnsiChar; len: Integer; dev: TCUdevice): TCUresult;
+  TcuDeviceGetName = function(var name: AnsiChar; len: Integer; dev: TCUdevice)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceComputeCapability = function(var major: Integer; var minor: Integer; dev: TCUdevice): TCUresult;
+  TcuDeviceComputeCapability = function(var major: Integer; var minor: Integer;
+    dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -626,15 +772,18 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetProperties = function(var prop: TCUdevprop; dev: TCUdevice): TCUresult;
+  TcuDeviceGetProperties = function(var prop: TCUdevprop; dev: TCUdevice)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetAttribute = function(var pi: Integer; attrib: TCUdevice_attribute; dev: TCUdevice): TCUresult;
+  TcuDeviceGetAttribute = function(var pi: Integer; attrib: TCUdevice_attribute;
+    dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuCtxCreate = function(var pctx: PCUcontext; flags: Cardinal; dev: TCUdevice): TCUresult;
+  TcuCtxCreate = function(var pctx: PCUcontext; Flags: Cardinal; dev: TCUdevice)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -642,7 +791,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuCtxAttach = function(var pctx: PCUcontext; flags: Cardinal): TCUresult;
+  TcuCtxAttach = function(var pctx: PCUcontext; Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -666,19 +815,24 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleLoad = function(var module: PCUmodule; const fname: PAnsiChar): TCUresult;
+  TcuModuleLoad = function(var module: PCUmodule; const fname: PAnsiChar)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleLoadData = function(var module: PCUmodule; const image: PAnsiChar): TCUresult;
+  TcuModuleLoadData = function(var module: PCUmodule; const image: PAnsiChar)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleLoadDataEx = function(var module: PCUmodule; var image; numOptions: Cardinal; var options: TCUjit_option; var optionValues): TCUresult;
+  TcuModuleLoadDataEx = function(var module: PCUmodule; var image;
+    numOptions: Cardinal; var options: TCUjit_option; var optionValues)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleLoadFatBinary = function(var module: PCUmodule; var fatCubin): TCUresult;
+  TcuModuleLoadFatBinary = function(var module: PCUmodule; var fatCubin)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -686,15 +840,18 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleGetFunction = function(out hfunc: PCUfunction; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+  TcuModuleGetFunction = function(out hfunc: PCUfunction; hmod: PCUmodule;
+    const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleGetGlobal = function(out dptr: TCUdeviceptr; var bytes: Cardinal; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+  TcuModuleGetGlobal = function(out dptr: TCUdeviceptr; var bytes: Cardinal;
+    hmod: PCUmodule; const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuModuleGetTexRef = function(out pTexRef: PCUtexref; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+  TcuModuleGetTexRef = function(out pTexRef: PCUtexref; hmod: PCUmodule;
+    const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -706,7 +863,9 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemAllocPitch = function(var dptr: TCUdeviceptr; var pPitch: Cardinal; WidthInBytes: Cardinal; Height: Cardinal; ElementSizeBytes: Cardinal): TCUresult;
+  TcuMemAllocPitch = function(var dptr: TCUdeviceptr; var pPitch: Cardinal;
+    WidthInBytes: Cardinal; Height: Cardinal; ElementSizeBytes: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -714,7 +873,8 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemGetAddressRange = function(var pbase: TCUdeviceptr; var psize: Cardinal; dptr: TCUdeviceptr): TCUresult;
+  TcuMemGetAddressRange = function(var pbase: TCUdeviceptr; var psize: Cardinal;
+    dptr: TCUdeviceptr): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -726,11 +886,13 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemHostAlloc = function(var pp; bytesize: Cardinal; Flags: Cardinal): TCUresult;
+  TcuMemHostAlloc = function(var pp; bytesize: Cardinal; Flags: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemHostGetDevicePointer = function(var pdptr: TCUdeviceptr; var p; Flags: Cardinal): TCUresult;
+  TcuMemHostGetDevicePointer = function(var pdptr: TCUdeviceptr; var p;
+    Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -738,39 +900,49 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyHtoD = function(dstDevice: TCUdeviceptr; const srcHost: Pointer; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyHtoD = function(dstDevice: TCUdeviceptr; const srcHost: Pointer;
+    ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyDtoH = function(const dstHost: Pointer; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyDtoH = function(const dstHost: Pointer; srcDevice: TCUdeviceptr;
+    ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyDtoD = function(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyDtoD = function(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr;
+    ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyDtoDAsync = function(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+  TcuMemcpyDtoDAsync = function(dstDevice: TCUdeviceptr;
+    srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyDtoA = function(dstArray: PCUarray; dstIndex: Cardinal; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyDtoA = function(dstArray: PCUarray; dstIndex: Cardinal;
+    srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyAtoD = function(dstDevice: TCUdeviceptr; hSrc: PCUarray; SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyAtoD = function(dstDevice: TCUdeviceptr; hSrc: PCUarray;
+    SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyHtoA = function(dstArray: PCUarray; dstIndex: Cardinal; pSrc: Pointer; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyHtoA = function(dstArray: PCUarray; dstIndex: Cardinal;
+    pSrc: Pointer; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyAtoH = function(dstHost: Pointer; srcArray: PCUarray; srcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyAtoH = function(dstHost: Pointer; srcArray: PCUarray;
+    SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyAtoA = function(dstArray: PCUarray; dstIndex: Cardinal; srcArray: PCUarray; srcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+  TcuMemcpyAtoA = function(dstArray: PCUarray; dstIndex: Cardinal;
+    srcArray: PCUarray; SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -786,71 +958,88 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyHtoDAsync = function(dstDevice: TCUdeviceptr; var srcHost; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+  TcuMemcpyHtoDAsync = function(dstDevice: TCUdeviceptr; var srcHost;
+    ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyDtoHAsync = function(var dstHost; srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+  TcuMemcpyDtoHAsync = function(var dstHost; srcDevice: TCUdeviceptr;
+    ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyHtoAAsync = function(dstArray: PCUarray; dstIndex: Cardinal; var pSrc; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+  TcuMemcpyHtoAAsync = function(dstArray: PCUarray; dstIndex: Cardinal;
+    var pSrc; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpyAtoHAsync = function(var dstHost; srcArray: PCUstream; srcIndex: Cardinal; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+  TcuMemcpyAtoHAsync = function(var dstHost; srcArray: PCUstream;
+    SrcIndex: Cardinal; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpy2DAsync = function(var pCopy: TCUDA_MEMCPY2D; hStream: PCUstream): TCUresult;
+  TcuMemcpy2DAsync = function(var pCopy: TCUDA_MEMCPY2D; hStream: PCUstream)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemcpy3DAsync = function(var pCopy: TCUDA_MEMCPY3D; hStream: PCUstream): TCUresult;
+  TcuMemcpy3DAsync = function(var pCopy: TCUDA_MEMCPY3D; hStream: PCUstream)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD8 = function(dstDevice: TCUdeviceptr; ub: Byte; N: Cardinal): TCUresult;
+  TcuMemsetD8 = function(dstDevice: TCUdeviceptr; ub: Byte; N: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD16 = function(dstDevice: TCUdeviceptr; uw: Word; N: Cardinal): TCUresult;
+  TcuMemsetD16 = function(dstDevice: TCUdeviceptr; uw: Word; N: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD32 = function(dstDevice: TCUdeviceptr; ui: Cardinal; N: Cardinal): TCUresult;
+  TcuMemsetD32 = function(dstDevice: TCUdeviceptr; ui: Cardinal; N: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD2D8 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal; ub: Byte; Width: Cardinal; Height: Cardinal): TCUresult;
+  TcuMemsetD2D8 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+    ub: Byte; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD2D16 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal; uw: Word; Width: Cardinal; Height: Cardinal): TCUresult;
+  TcuMemsetD2D16 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+    uw: Word; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemsetD2D32 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal; ui: Cardinal; Width: Cardinal; Height: Cardinal): TCUresult;
+  TcuMemsetD2D32 = function(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+    ui: Cardinal; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuFuncSetBlockShape = function(hfunc: PCUfunction; x: Integer; y: Integer; z: Integer): TCUresult;
+  TcuFuncSetBlockShape = function(hfunc: PCUfunction; x: Integer; y: Integer;
+    z: Integer): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuFuncSetSharedSize = function(hfunc: PCUfunction; bytes: Cardinal): TCUresult;
+  TcuFuncSetSharedSize = function(hfunc: PCUfunction; bytes: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuFuncGetAttribute = function(var pi: Integer; attrib: TCUfunction_attribute; hfunc: PCUfunction): TCUresult;
+  TcuFuncGetAttribute = function(var pi: Integer; attrib: TCUfunction_attribute;
+    hfunc: PCUfunction): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuArrayCreate = function(var pHandle: PCUarray; var pAllocateArray: TCUDA_ARRAY_DESCRIPTOR): TCUresult;
+  TcuArrayCreate = function(var pHandle: PCUarray;
+    var pAllocateArray: TCUDA_ARRAY_DESCRIPTOR): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuArrayGetDescriptor = function(var pArrayDescriptor: TCUDA_ARRAY_DESCRIPTOR; hArray: PCUarray): TCUresult;
+  TcuArrayGetDescriptor = function(var pArrayDescriptor: TCUDA_ARRAY_DESCRIPTOR;
+    hArray: PCUarray): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -858,11 +1047,13 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuArray3DCreate = function(var pHandle: PCUarray; var pAllocateArray: TCUDA_ARRAY3D_DESCRIPTOR): TCUresult;
+  TcuArray3DCreate = function(var pHandle: PCUarray;
+    var pAllocateArray: TCUDA_ARRAY3D_DESCRIPTOR): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuArray3DGetDescriptor = function(var pArrayDescriptor: TCUDA_ARRAY3D_DESCRIPTOR; hArray: PCUarray): TCUresult;
+  TcuArray3DGetDescriptor = function(var pArrayDescriptor
+    : TCUDA_ARRAY3D_DESCRIPTOR; hArray: PCUarray): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -874,27 +1065,34 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetArray = function(hTexRef: PCUtexref; hArray: PCUarray; Flags: Cardinal): TCUresult;
+  TcuTexRefSetArray = function(hTexRef: PCUtexref; hArray: PCUarray;
+    Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetAddress = function(var ByteOffset: Cardinal; hTexRef: PCUtexref; dptr: TCUdeviceptr; bytes: Cardinal): TCUresult;
+  TcuTexRefSetAddress = function(var ByteOffset: Cardinal; hTexRef: PCUtexref;
+    dptr: TCUdeviceptr; bytes: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetAddress2D = function(hTexRef: PCUtexref; var desc: TCUDA_ARRAY_DESCRIPTOR; dptr: TCUdeviceptr; Pitch: Cardinal): TCUresult;
+  TcuTexRefSetAddress2D = function(hTexRef: PCUtexref;
+    var desc: TCUDA_ARRAY_DESCRIPTOR; dptr: TCUdeviceptr; Pitch: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetFormat = function(hTexRef: PCUtexref; fmt: TCUarray_format; NumPackedComponents: Integer): TCUresult;
+  TcuTexRefSetFormat = function(hTexRef: PCUtexref; fmt: TCUarray_format;
+    NumPackedComponents: Integer): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetAddressMode = function(hTexRef: PCUtexref; dim: Integer; am: TCUaddress_mode): TCUresult;
+  TcuTexRefSetAddressMode = function(hTexRef: PCUtexref; dim: Integer;
+    am: TCUaddress_mode): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefSetFilterMode = function(hTexRef: PCUtexref; fm: TCUfilter_mode): TCUresult;
+  TcuTexRefSetFilterMode = function(hTexRef: PCUtexref; fm: TCUfilter_mode)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -902,27 +1100,33 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetAddress = function(var pdptr: TCUdeviceptr; hTexRef: PCUtexref): TCUresult;
+  TcuTexRefGetAddress = function(var pdptr: TCUdeviceptr; hTexRef: PCUtexref)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetArray = function(var phArray: PCUarray; hTexRef: PCUtexref): TCUresult;
+  TcuTexRefGetArray = function(var phArray: PCUarray; hTexRef: PCUtexref)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetAddressMode = function(var pam: TCUaddress_mode; hTexRef: PCUtexref; dim: Integer): TCUresult;
+  TcuTexRefGetAddressMode = function(var pam: TCUaddress_mode;
+    hTexRef: PCUtexref; dim: Integer): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetFilterMode = function(var pfm: TCUfilter_mode; hTexRef: PCUtexref): TCUresult;
+  TcuTexRefGetFilterMode = function(var pfm: TCUfilter_mode; hTexRef: PCUtexref)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetFormat = function(var pFormat: TCUarray_format; var pNumChannels: Integer; hTexRef: PCUtexref): TCUresult;
+  TcuTexRefGetFormat = function(var pFormat: TCUarray_format;
+    var pNumChannels: Integer; hTexRef: PCUtexref): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuTexRefGetFlags = function(var pFlags: Cardinal; hTexRef: PCUtexref): TCUresult;
+  TcuTexRefGetFlags = function(var pFlags: Cardinal; hTexRef: PCUtexref)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -930,19 +1134,23 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuParamSeti = function(hfunc: PCUfunction; offset: Integer; value: Cardinal): TCUresult;
+  TcuParamSeti = function(hfunc: PCUfunction; offset: Integer; value: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuParamSetf = function(hfunc: PCUfunction; offset: Integer; value: Single): TCUresult;
+  TcuParamSetf = function(hfunc: PCUfunction; offset: Integer; value: Single)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuParamSetv = function(hfunc: PCUfunction; offset: Integer; var ptr; numbytes: Cardinal): TCUresult;
+  TcuParamSetv = function(hfunc: PCUfunction; offset: Integer; var ptr;
+    numbytes: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuParamSetTexRef = function(hfunc: PCUfunction; texunit: Integer; hTexRef: PCUtexref): TCUresult;
+  TcuParamSetTexRef = function(hfunc: PCUfunction; texunit: Integer;
+    hTexRef: PCUtexref): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -950,11 +1158,13 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuLaunchGrid = function(f: PCUfunction; grid_width: Integer; grid_height: Integer): TCUresult;
+  TcuLaunchGrid = function(f: PCUfunction; grid_width: Integer;
+    grid_height: Integer): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuLaunchGridAsync = function(f: PCUfunction; grid_width: Integer; grid_height: Integer; hStream: PCUstream): TCUresult;
+  TcuLaunchGridAsync = function(f: PCUfunction; grid_width: Integer;
+    grid_height: Integer; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -978,11 +1188,13 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuEventElapsedTime = function(var pMilliseconds: Single; hStart: PCUevent; hEnd: PCUevent): TCUresult;
+  TcuEventElapsedTime = function(var pMilliseconds: Single; hStart: PCUevent;
+    hEnd: PCUevent): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuStreamCreate = function(var phStream: PCUstream; Flags: Cardinal): TCUresult;
+  TcuStreamCreate = function(var phStream: PCUstream; Flags: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -998,15 +1210,18 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGLCtxCreate = function(var pCtx: PCUcontext; Flags: Cardinal; device: TCUdevice): TCUresult;
+  TcuGLCtxCreate = function(var pctx: PCUcontext; Flags: Cardinal;
+    device: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsGLRegisterBuffer = function(var pCudaResource: PCUgraphicsResource; buffer: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
+  TcuGraphicsGLRegisterBuffer = function(var pCudaResource: PCUgraphicsResource;
+    buffer: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsGLRegisterImage = function(var pCudaResource: PCUgraphicsResource; image, target: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
+  TcuGraphicsGLRegisterImage = function(var pCudaResource: PCUgraphicsResource;
+    image, target: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1014,27 +1229,34 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsUnregisterResource = function(resource: PCUgraphicsResource): TCUresult;
+  TcuGraphicsUnregisterResource = function(resource: PCUgraphicsResource)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsSubResourceGetMappedArray = function(var pArray: PCUarray; resource: PCUgraphicsResource; arrayIndex: Cardinal; mipLevel: Cardinal): TCUresult;
+  TcuGraphicsSubResourceGetMappedArray = function(var pArray: PCUarray;
+    resource: PCUgraphicsResource; arrayIndex: Cardinal; mipLevel: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsResourceGetMappedPointer = function(var pDevPtr: TCUdeviceptr; out pSize: Cardinal; resource: PCUgraphicsResource): TCUresult;
+  TcuGraphicsResourceGetMappedPointer = function(var pDevPtr: TCUdeviceptr;
+    out psize: Cardinal; resource: PCUgraphicsResource): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsResourceSetMapFlags = function(resource: PCUgraphicsResource; flags: Cardinal): TCUresult;
+  TcuGraphicsResourceSetMapFlags = function(resource: PCUgraphicsResource;
+    Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsMapResources = function(count: Cardinal; resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
+  TcuGraphicsMapResources = function(count: Cardinal;
+    resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGraphicsUnmapResources = function(count: Cardinal; resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
+  TcuGraphicsUnmapResources = function(count: Cardinal;
+    resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1046,7 +1268,8 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGLMapBufferObject = function(var dptr: TCUdeviceptr; var size: Cardinal; buffer: Cardinal): TCUresult;
+  TcuGLMapBufferObject = function(var dptr: TCUdeviceptr; var size: Cardinal;
+    buffer: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1058,15 +1281,18 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGLSetBufferObjectMapFlags = function(buffer: Cardinal; Flags: Cardinal): TCUresult;
+  TcuGLSetBufferObjectMapFlags = function(buffer: Cardinal; Flags: Cardinal)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGLMapBufferObjectAsync = function(var dptr: TCUdeviceptr; var size: Cardinal; buffer: Cardinal; hStream: PCUstream): TCUresult;
+  TcuGLMapBufferObjectAsync = function(var dptr: TCUdeviceptr;
+    var size: Cardinal; buffer: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuGLUnmapBufferObjectAsync = function(buffer: Cardinal; hStream: PCUstream): TCUresult;
+  TcuGLUnmapBufferObjectAsync = function(buffer: Cardinal; hStream: PCUstream)
+    : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1195,7 +1421,7 @@ function InitCUDA: Boolean;
 procedure CloseCUDA;
 function InitCUDAFromLibrary(const LibName: WideString): Boolean;
 function IsCUDAInitialized: Boolean;
-function Get_CUDA_API_Error_String(err: TCUresult): string;
+function Get_CUDA_API_Error_String(AError: TCUresult): string;
 
 implementation
 
@@ -1210,11 +1436,13 @@ const
 
   // ************** Windows specific ********************
 {$IFDEF MSWINDOWS}
+
 var
   CUDAHandle: HINST;
 {$ENDIF}
   // ************** UNIX specific ********************
 {$IFDEF UNIX}
+
 var
   CUDAHandle: TLibHandle;
 {$ENDIF}
@@ -1325,7 +1553,8 @@ const
   cuGraphicsGLRegisterImageName = 'cuGraphicsGLRegisterImage';
   cuWGLGetDeviceName = 'cuWGLGetDevice';
   cuGraphicsUnregisterResourceName = 'cuGraphicsUnregisterResource';
-  cuGraphicsSubResourceGetMappedArrayName = 'cuGraphicsSubResourceGetMappedArray';
+  cuGraphicsSubResourceGetMappedArrayName =
+    'cuGraphicsSubResourceGetMappedArray';
   cuGraphicsResourceGetMappedPointerName = 'cuGraphicsResourceGetMappedPointer';
   cuGraphicsResourceSetMapFlagsName = 'cuGraphicsResourceSetMapFlags';
   cuGraphicsMapResourcesName = 'cuGraphicsMapResources';
@@ -1338,6 +1567,8 @@ const
   cuGLSetBufferObjectMapFlagsName = 'cuGLSetBufferObjectMapFlags';
   cuGLMapBufferObjectAsyncName = 'cuGLMapBufferObjectAsync';
   cuGLUnmapBufferObjectAsyncName = 'cuGLUnmapBufferObjectAsync';
+
+{$IFDEF GLS_CUDA_DEBUG_MODE}
 
 var
   cuInit_: TcuInit;
@@ -1458,8 +1689,6 @@ var
   cuGLMapBufferObjectAsync_: TcuGLMapBufferObjectAsync;
   cuGLUnmapBufferObjectAsync_: TcuGLUnmapBufferObjectAsync;
 
-{$IFDEF GLS_CUDA_DEBUG_MODE}
-
 function cuInitShell(Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -1467,7 +1696,8 @@ function cuInitShell(Flags: Cardinal): TCUresult;
 begin
   Result := cuInit_(Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuInitName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuInitName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuDriverGetVersionShell(var driverVersion: Integer): TCUresult;
@@ -1477,7 +1707,8 @@ function cuDriverGetVersionShell(var driverVersion: Integer): TCUresult;
 begin
   Result := cuDriverGetVersion_(driverVersion);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDriverGetVersionName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDriverGetVersionName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuDeviceGetShell(var device: TCUdevice; ordinal: Integer): TCUresult;
@@ -1487,7 +1718,8 @@ function cuDeviceGetShell(var device: TCUdevice; ordinal: Integer): TCUresult;
 begin
   Result := cuDeviceGet_(device, ordinal);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGet_Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuDeviceGet_Name, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuDeviceGetCountShell(var count: Integer): TCUresult;
@@ -1497,27 +1729,32 @@ function cuDeviceGetCountShell(var count: Integer): TCUresult;
 begin
   Result := cuDeviceGetCount_(count);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetCountName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetCountName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetNameShell(var name: AnsiChar; len: Integer; dev: TCUdevice): TCUresult;
+function cuDeviceGetNameShell(var name: AnsiChar; len: Integer; dev: TCUdevice)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuDeviceGetName_(name, len, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetNameName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetNameName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceComputeCapabilityShell(var major: Integer; var minor: Integer; dev: TCUdevice): TCUresult;
+function cuDeviceComputeCapabilityShell(var major: Integer; var minor: Integer;
+  dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuDeviceComputeCapability_(major, minor, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceComputeCapabilityName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceComputeCapabilityName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuDeviceTotalMemShell(var bytes: Cardinal; dev: TCUdevice): TCUresult;
@@ -1527,37 +1764,44 @@ function cuDeviceTotalMemShell(var bytes: Cardinal; dev: TCUdevice): TCUresult;
 begin
   Result := cuDeviceTotalMem_(bytes, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceTotalMemName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceTotalMemName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetPropertiesShell(var prop: TCUdevprop; dev: TCUdevice): TCUresult;
+function cuDeviceGetPropertiesShell(var prop: TCUdevprop; dev: TCUdevice)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuDeviceGetProperties_(prop, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetPropertiesName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetPropertiesName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetAttributeShell(var pi: Integer; attrib: TCUdevice_attribute; dev: TCUdevice): TCUresult;
+function cuDeviceGetAttributeShell(var pi: Integer; attrib: TCUdevice_attribute;
+  dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuDeviceGetAttribute_(pi, attrib, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetAttributeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuDeviceGetAttributeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuCtxCreateShell(var pctx: PCUcontext; flags: Cardinal; dev: TCUdevice): TCUresult;
+function cuCtxCreateShell(var pctx: PCUcontext; Flags: Cardinal; dev: TCUdevice)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuCtxCreate_(pctx, flags, dev);
+  Result := cuCtxCreate_(pctx, Flags, dev);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuCtxCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxDestroyShell(ctx: PCUcontext): TCUresult;
@@ -1567,17 +1811,19 @@ function cuCtxDestroyShell(ctx: PCUcontext): TCUresult;
 begin
   Result := cuCtxDestroy_(ctx);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxDestroyName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuCtxDestroyName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuCtxAttachShell(var pctx: PCUcontext; flags: Cardinal): TCUresult;
+function cuCtxAttachShell(var pctx: PCUcontext; Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuCtxAttach_(pctx, flags);
+  Result := cuCtxAttach_(pctx, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxAttachName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuCtxAttachName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxDetachShell(ctx: PCUcontext): TCUresult;
@@ -1587,7 +1833,8 @@ function cuCtxDetachShell(ctx: PCUcontext): TCUresult;
 begin
   Result := cuCtxDetach_(ctx);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxDetachName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuCtxDetachName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxPushCurrentShell(ctx: PCUcontext): TCUresult;
@@ -1597,7 +1844,8 @@ function cuCtxPushCurrentShell(ctx: PCUcontext): TCUresult;
 begin
   Result := cuCtxPushCurrent_(ctx);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxPushCurrentName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxPushCurrentName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxPopCurrentShell(var pctx: PCUcontext): TCUresult;
@@ -1607,7 +1855,8 @@ function cuCtxPopCurrentShell(var pctx: PCUcontext): TCUresult;
 begin
   Result := cuCtxPopCurrent_(pctx);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxPopCurrentName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxPopCurrentName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxGetDeviceShell(var device: TCUdevice): TCUresult;
@@ -1617,7 +1866,8 @@ function cuCtxGetDeviceShell(var device: TCUdevice): TCUresult;
 begin
   Result := cuCtxGetDevice_(device);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxGetDeviceName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuCtxGetDeviceName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuCtxSynchronizeShell: TCUresult;
@@ -1627,47 +1877,58 @@ function cuCtxSynchronizeShell: TCUresult;
 begin
   Result := cuCtxSynchronize_;
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxSynchronizeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuCtxSynchronizeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleLoadShell(var module: PCUmodule; const fname: PAnsiChar): TCUresult;
+function cuModuleLoadShell(var module: PCUmodule; const fname: PAnsiChar)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleLoad_(module, fname);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuModuleLoadName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleLoadDataShell(var module: PCUmodule; const image: PAnsiChar): TCUresult;
+function cuModuleLoadDataShell(var module: PCUmodule; const image: PAnsiChar)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleLoadData_(module, image);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadDataName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadDataName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleLoadDataExShell(var module: PCUmodule; var image; numOptions: Cardinal; var options: TCUjit_option; var optionValues): TCUresult;
+function cuModuleLoadDataExShell(var module: PCUmodule; var image;
+  numOptions: Cardinal; var options: TCUjit_option; var optionValues)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuModuleLoadDataEx_(module, image, numOptions, options, optionValues);
+  Result := cuModuleLoadDataEx_(module, image, numOptions, options,
+    optionValues);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadDataExName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadDataExName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleLoadFatBinaryShell(var module: PCUmodule; var fatCubin): TCUresult;
+function cuModuleLoadFatBinaryShell(var module: PCUmodule; var fatCubin)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleLoadFatBinary_(module, fatCubin);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadFatBinaryName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleLoadFatBinaryName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuModuleUnloadShell(hmod: PCUmodule): TCUresult;
@@ -1677,37 +1938,44 @@ function cuModuleUnloadShell(hmod: PCUmodule): TCUresult;
 begin
   Result := cuModuleUnload_(hmod);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleUnloadName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuModuleUnloadName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleGetFunctionShell(out hfunc: PCUfunction; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+function cuModuleGetFunctionShell(out hfunc: PCUfunction; hmod: PCUmodule;
+  const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleGetFunction_(hfunc, hmod, name);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetFunctionName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetFunctionName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleGetGlobalShell(out dptr: TCUdeviceptr; var bytes: Cardinal; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+function cuModuleGetGlobalShell(out dptr: TCUdeviceptr; var bytes: Cardinal;
+  hmod: PCUmodule; const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleGetGlobal_(dptr, bytes, hmod, name);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetGlobalName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetGlobalName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuModuleGetTexRefShell(out pTexRef: PCUtexref; hmod: PCUmodule; const name: PAnsiChar): TCUresult;
+function cuModuleGetTexRefShell(out pTexRef: PCUtexref; hmod: PCUmodule;
+  const name: PAnsiChar): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuModuleGetTexRef_(pTexRef, hmod, name);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetTexRefName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuModuleGetTexRefName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemGetInfoShell(var free: Cardinal; var total: Cardinal): TCUresult;
@@ -1717,7 +1985,8 @@ function cuMemGetInfoShell(var free: Cardinal; var total: Cardinal): TCUresult;
 begin
   Result := cuMemGetInfo_(free, total);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemGetInfoName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemGetInfoName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemAllocShell(var dptr: TCUdeviceptr; bytesize: Cardinal): TCUresult;
@@ -1727,17 +1996,22 @@ function cuMemAllocShell(var dptr: TCUdeviceptr; bytesize: Cardinal): TCUresult;
 begin
   Result := cuMemAlloc_(dptr, bytesize);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemAllocName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemAllocName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemAllocPitchShell(var dptr: TCUdeviceptr; var pPitch: Cardinal; WidthInBytes: Cardinal; Height: Cardinal; ElementSizeBytes: Cardinal): TCUresult;
+function cuMemAllocPitchShell(var dptr: TCUdeviceptr; var pPitch: Cardinal;
+  WidthInBytes: Cardinal; Height: Cardinal; ElementSizeBytes: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuMemAllocPitch_(dptr, pPitch, WidthInBytes, Height, ElementSizeBytes);
+  Result := cuMemAllocPitch_(dptr, pPitch, WidthInBytes, Height,
+    ElementSizeBytes);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemAllocPitchName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemAllocPitchName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemFreeShell(dptr: TCUdeviceptr): TCUresult;
@@ -1747,17 +2021,20 @@ function cuMemFreeShell(dptr: TCUdeviceptr): TCUresult;
 begin
   Result := cuMemFree_(dptr);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemFreeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemFreeName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemGetAddressRangeShell(var pbase: TCUdeviceptr; var psize: Cardinal; dptr: TCUdeviceptr): TCUresult;
+function cuMemGetAddressRangeShell(var pbase: TCUdeviceptr; var psize: Cardinal;
+  dptr: TCUdeviceptr): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemGetAddressRange_(pbase, psize, dptr);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemGetAddressRangeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemGetAddressRangeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemAllocHostShell(var pp; bytesize: Cardinal): TCUresult;
@@ -1767,7 +2044,8 @@ function cuMemAllocHostShell(var pp; bytesize: Cardinal): TCUresult;
 begin
   Result := cuMemAllocHost_(pp, bytesize);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemAllocHostName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemAllocHostName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemFreeHostShell(p: Pointer): TCUresult;
@@ -1777,27 +2055,32 @@ function cuMemFreeHostShell(p: Pointer): TCUresult;
 begin
   Result := cuMemFreeHost_(p);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemFreeHostName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemFreeHostName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemHostAllocShell(var pp; bytesize: Cardinal; Flags: Cardinal): TCUresult;
+function cuMemHostAllocShell(var pp; bytesize: Cardinal; Flags: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemHostAlloc_(pp, bytesize, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemHostAllocName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemHostAllocName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemHostGetDevicePointerShell(var pdptr: TCUdeviceptr; var p; Flags: Cardinal): TCUresult;
+function cuMemHostGetDevicePointerShell(var pdptr: TCUdeviceptr; var p;
+  Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemHostGetDevicePointer_(pdptr, p, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemHostGetDevicePointerName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemHostGetDevicePointerName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemHostGetFlagsShell(var pFlags: Cardinal; var p): TCUresult;
@@ -1807,97 +2090,116 @@ function cuMemHostGetFlagsShell(var pFlags: Cardinal; var p): TCUresult;
 begin
   Result := cuMemHostGetFlags_(pFlags, p);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemHostGetFlagsName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemHostGetFlagsName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyHtoDShell(dstDevice: TCUdeviceptr; const srcHost: Pointer; ByteCount: Cardinal): TCUresult;
+function cuMemcpyHtoDShell(dstDevice: TCUdeviceptr; const srcHost: Pointer;
+  ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyHtoD_(dstDevice, srcHost, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoDName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyHtoDName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyDtoHShell(const dstHost: Pointer; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+function cuMemcpyDtoHShell(const dstHost: Pointer; srcDevice: TCUdeviceptr;
+  ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyDtoH_(dstHost, srcDevice, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoHName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyDtoHName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyDtoDShell(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+function cuMemcpyDtoDShell(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr;
+  ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyDtoD_(dstDevice, srcDevice, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoDName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyDtoDName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyDtoDAsyncShell(dstDevice: TCUdeviceptr; srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+function cuMemcpyDtoDAsyncShell(dstDevice: TCUdeviceptr;
+  srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyDtoDAsync_(dstDevice, srcDevice, ByteCount, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoDAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoDAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyDtoAShell(dstArray: PCUarray; dstIndex: Cardinal; srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
+function cuMemcpyDtoAShell(dstArray: PCUarray; dstIndex: Cardinal;
+  srcDevice: TCUdeviceptr; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyDtoA_(dstArray, dstIndex, srcDevice, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoAName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyDtoAName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyAtoDShell(dstDevice: TCUdeviceptr; hSrc: PCUarray; SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+function cuMemcpyAtoDShell(dstDevice: TCUdeviceptr; hSrc: PCUarray;
+  SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyAtoD_(dstDevice, hSrc, SrcIndex, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyAtoDName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyAtoDName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyHtoAShell(dstArray: PCUarray; dstIndex: Cardinal; pSrc: Pointer; ByteCount: Cardinal): TCUresult;
+function cuMemcpyHtoAShell(dstArray: PCUarray; dstIndex: Cardinal;
+  pSrc: Pointer; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyHtoA_(dstArray, dstIndex, pSrc, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoAName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyHtoAName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyAtoHShell(dstHost: Pointer; srcArray: PCUarray; srcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+function cuMemcpyAtoHShell(dstHost: Pointer; srcArray: PCUarray;
+  SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuMemcpyAtoH_(dstHost, srcArray, srcIndex, ByteCount);
+  Result := cuMemcpyAtoH_(dstHost, srcArray, SrcIndex, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyAtoHName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyAtoHName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyAtoAShell(dstArray: PCUarray; dstIndex: Cardinal; srcArray: PCUarray; srcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
+function cuMemcpyAtoAShell(dstArray: PCUarray; dstIndex: Cardinal;
+  srcArray: PCUarray; SrcIndex: Cardinal; ByteCount: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuMemcpyAtoA_(dstArray, dstIndex, srcArray, srcIndex, ByteCount);
+  Result := cuMemcpyAtoA_(dstArray, dstIndex, srcArray, SrcIndex, ByteCount);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyAtoAName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpyAtoAName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemcpy2DShell(const pCopy: PCUDA_MEMCPY2D): TCUresult;
@@ -1907,7 +2209,8 @@ function cuMemcpy2DShell(const pCopy: PCUDA_MEMCPY2D): TCUresult;
 begin
   Result := cuMemcpy2D_(pCopy);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy2DName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpy2DName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemcpy2DUnalignedShell(var pCopy: TCUDA_MEMCPY2D): TCUresult;
@@ -1917,7 +2220,8 @@ function cuMemcpy2DUnalignedShell(var pCopy: TCUDA_MEMCPY2D): TCUresult;
 begin
   Result := cuMemcpy2DUnaligned_(pCopy);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy2DUnalignedName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy2DUnalignedName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuMemcpy3DShell(var pCopy: TCUDA_MEMCPY3D): TCUresult;
@@ -1927,177 +2231,212 @@ function cuMemcpy3DShell(var pCopy: TCUDA_MEMCPY3D): TCUresult;
 begin
   Result := cuMemcpy3D_(pCopy);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy3DName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemcpy3DName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyHtoDAsyncShell(dstDevice: TCUdeviceptr; var srcHost; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+function cuMemcpyHtoDAsyncShell(dstDevice: TCUdeviceptr; var srcHost;
+  ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyHtoDAsync_(dstDevice, srcHost, ByteCount, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoDAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoDAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyDtoHAsyncShell(var dstHost; srcDevice: TCUdeviceptr; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+function cuMemcpyDtoHAsyncShell(var dstHost; srcDevice: TCUdeviceptr;
+  ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyDtoHAsync_(dstHost, srcDevice, ByteCount, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoHAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyDtoHAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyHtoAAsyncShell(dstArray: PCUarray; dstIndex: Cardinal; var pSrc; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+function cuMemcpyHtoAAsyncShell(dstArray: PCUarray; dstIndex: Cardinal;
+  var pSrc; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpyHtoAAsync_(dstArray, dstIndex, pSrc, ByteCount, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoAAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyHtoAAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpyAtoHAsyncShell(var dstHost; srcArray: PCUstream; srcIndex: Cardinal; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
+function cuMemcpyAtoHAsyncShell(var dstHost; srcArray: PCUstream;
+  SrcIndex: Cardinal; ByteCount: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuMemcpyAtoHAsync_(dstHost, srcArray, srcIndex, ByteCount, hStream);
+  Result := cuMemcpyAtoHAsync_(dstHost, srcArray, SrcIndex, ByteCount, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyAtoHAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpyAtoHAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpy2DAsyncShell(var pCopy: TCUDA_MEMCPY2D; hStream: PCUstream): TCUresult;
+function cuMemcpy2DAsyncShell(var pCopy: TCUDA_MEMCPY2D; hStream: PCUstream)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpy2DAsync_(pCopy, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy2DAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy2DAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemcpy3DAsyncShell(var pCopy: TCUDA_MEMCPY3D; hStream: PCUstream): TCUresult;
+function cuMemcpy3DAsyncShell(var pCopy: TCUDA_MEMCPY3D; hStream: PCUstream)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemcpy3DAsync_(pCopy, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy3DAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemcpy3DAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD8Shell(dstDevice: TCUdeviceptr; ub: Byte; N: Cardinal): TCUresult;
+function cuMemsetD8Shell(dstDevice: TCUdeviceptr; ub: Byte; N: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD8_(dstDevice, ub, N);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD8Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD8Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD16Shell(dstDevice: TCUdeviceptr; uw: Word; N: Cardinal): TCUresult;
+function cuMemsetD16Shell(dstDevice: TCUdeviceptr; uw: Word; N: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD16_(dstDevice, uw, N);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD16Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD16Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD32Shell(dstDevice: TCUdeviceptr; ui: Cardinal; N: Cardinal): TCUresult;
+function cuMemsetD32Shell(dstDevice: TCUdeviceptr; ui: Cardinal; N: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD32_(dstDevice, ui, N);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD32Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD32Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD2D8Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal; ub: Byte; Width: Cardinal; Height: Cardinal): TCUresult;
+function cuMemsetD2D8Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+  ub: Byte; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD2D8_(dstDevice, dstPitch, ub, Width, Height);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD2D8Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD2D8Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD2D16Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal; uw: Word; Width: Cardinal; Height: Cardinal): TCUresult;
+function cuMemsetD2D16Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+  uw: Word; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD2D16_(dstDevice, dstPitch, uw, Width, Height);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD2D16Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD2D16Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemsetD2D32Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal; ui: Cardinal; Width: Cardinal; Height: Cardinal): TCUresult;
+function cuMemsetD2D32Shell(dstDevice: TCUdeviceptr; dstPitch: Cardinal;
+  ui: Cardinal; Width: Cardinal; Height: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuMemsetD2D32_(dstDevice, dstPitch, ui, Width, Height);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuMemsetD2D32Name, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuMemsetD2D32Name, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuFuncSetBlockShapeShell(hfunc: PCUfunction; x: Integer; y: Integer; z: Integer): TCUresult;
+function cuFuncSetBlockShapeShell(hfunc: PCUfunction; x: Integer; y: Integer;
+  z: Integer): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuFuncSetBlockShape_(hfunc, x, y, z);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncSetBlockShapeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncSetBlockShapeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuFuncSetSharedSizeShell(hfunc: PCUfunction; bytes: Cardinal): TCUresult;
+function cuFuncSetSharedSizeShell(hfunc: PCUfunction; bytes: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuFuncSetSharedSize_(hfunc, bytes);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncSetSharedSizeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncSetSharedSizeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuFuncGetAttributeShell(var pi: Integer; attrib: TCUfunction_attribute; hfunc: PCUfunction): TCUresult;
+function cuFuncGetAttributeShell(var pi: Integer; attrib: TCUfunction_attribute;
+  hfunc: PCUfunction): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuFuncGetAttribute_(pi, attrib, hfunc);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncGetAttributeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuFuncGetAttributeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuArrayCreateShell(var pHandle: PCUarray; var pAllocateArray: TCUDA_ARRAY_DESCRIPTOR): TCUresult;
+function cuArrayCreateShell(var pHandle: PCUarray;
+  var pAllocateArray: TCUDA_ARRAY_DESCRIPTOR): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuArrayCreate_(pHandle, pAllocateArray);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArrayCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuArrayCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuArrayGetDescriptorShell(var pArrayDescriptor: TCUDA_ARRAY_DESCRIPTOR; hArray: PCUarray): TCUresult;
+function cuArrayGetDescriptorShell(var pArrayDescriptor: TCUDA_ARRAY_DESCRIPTOR;
+  hArray: PCUarray): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuArrayGetDescriptor_(pArrayDescriptor, hArray);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArrayGetDescriptorName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArrayGetDescriptorName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuArrayDestroyShell(hArray: PCUarray): TCUresult;
@@ -2107,27 +2446,32 @@ function cuArrayDestroyShell(hArray: PCUarray): TCUresult;
 begin
   Result := cuArrayDestroy_(hArray);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArrayDestroyName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuArrayDestroyName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuArray3DCreateShell(var pHandle: PCUarray; var pAllocateArray: TCUDA_ARRAY3D_DESCRIPTOR): TCUresult;
+function cuArray3DCreateShell(var pHandle: PCUarray;
+  var pAllocateArray: TCUDA_ARRAY3D_DESCRIPTOR): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuArray3DCreate_(pHandle, pAllocateArray);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArray3DCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArray3DCreateName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuArray3DGetDescriptorShell(var pArrayDescriptor: TCUDA_ARRAY3D_DESCRIPTOR; hArray: PCUarray): TCUresult;
+function cuArray3DGetDescriptorShell(var pArrayDescriptor
+  : TCUDA_ARRAY3D_DESCRIPTOR; hArray: PCUarray): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuArray3DGetDescriptor_(pArrayDescriptor, hArray);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArray3DGetDescriptorName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuArray3DGetDescriptorName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuTexRefCreateShell(var pTexRef: PCUtexref): TCUresult;
@@ -2137,7 +2481,8 @@ function cuTexRefCreateShell(var pTexRef: PCUtexref): TCUresult;
 begin
   Result := cuTexRefCreate_(pTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuTexRefCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuTexRefDestroyShell(hTexRef: PCUtexref): TCUresult;
@@ -2147,67 +2492,81 @@ function cuTexRefDestroyShell(hTexRef: PCUtexref): TCUresult;
 begin
   Result := cuTexRefDestroy_(hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefDestroyName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefDestroyName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetArrayShell(hTexRef: PCUtexref; hArray: PCUarray; Flags: Cardinal): TCUresult;
+function cuTexRefSetArrayShell(hTexRef: PCUtexref; hArray: PCUarray;
+  Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetArray_(hTexRef, hArray, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetArrayName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetArrayName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetAddressShell(var ByteOffset: Cardinal; hTexRef: PCUtexref; dptr: TCUdeviceptr; bytes: Cardinal): TCUresult;
+function cuTexRefSetAddressShell(var ByteOffset: Cardinal; hTexRef: PCUtexref;
+  dptr: TCUdeviceptr; bytes: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetAddress_(ByteOffset, hTexRef, dptr, bytes);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddressName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddressName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetAddress2DShell(hTexRef: PCUtexref; var desc: TCUDA_ARRAY_DESCRIPTOR; dptr: TCUdeviceptr; Pitch: Cardinal): TCUresult;
+function cuTexRefSetAddress2DShell(hTexRef: PCUtexref;
+  var desc: TCUDA_ARRAY_DESCRIPTOR; dptr: TCUdeviceptr; Pitch: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetAddress2D_(hTexRef, desc, dptr, Pitch);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddress2DName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddress2DName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetFormatShell(hTexRef: PCUtexref; fmt: TCUarray_format; NumPackedComponents: Integer): TCUresult;
+function cuTexRefSetFormatShell(hTexRef: PCUtexref; fmt: TCUarray_format;
+  NumPackedComponents: Integer): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetFormat_(hTexRef, fmt, NumPackedComponents);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFormatName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFormatName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetAddressModeShell(hTexRef: PCUtexref; dim: Integer; am: TCUaddress_mode): TCUresult;
+function cuTexRefSetAddressModeShell(hTexRef: PCUtexref; dim: Integer;
+  am: TCUaddress_mode): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetAddressMode_(hTexRef, dim, am);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddressModeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetAddressModeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefSetFilterModeShell(hTexRef: PCUtexref; fm: TCUfilter_mode): TCUresult;
+function cuTexRefSetFilterModeShell(hTexRef: PCUtexref; fm: TCUfilter_mode)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefSetFilterMode_(hTexRef, fm);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFilterModeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFilterModeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuTexRefSetFlagsShell(hTexRef: PCUtexref; Flags: Cardinal): TCUresult;
@@ -2217,67 +2576,80 @@ function cuTexRefSetFlagsShell(hTexRef: PCUtexref; Flags: Cardinal): TCUresult;
 begin
   Result := cuTexRefSetFlags_(hTexRef, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFlagsName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefSetFlagsName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetAddressShell(var pdptr: TCUdeviceptr; hTexRef: PCUtexref): TCUresult;
+function cuTexRefGetAddressShell(var pdptr: TCUdeviceptr; hTexRef: PCUtexref)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetAddress_(pdptr, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetAddressName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetAddressName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetArrayShell(var phArray: PCUarray; hTexRef: PCUtexref): TCUresult;
+function cuTexRefGetArrayShell(var phArray: PCUarray; hTexRef: PCUtexref)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetArray_(phArray, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetArrayName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetArrayName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetAddressModeShell(var pam: TCUaddress_mode; hTexRef: PCUtexref; dim: Integer): TCUresult;
+function cuTexRefGetAddressModeShell(var pam: TCUaddress_mode;
+  hTexRef: PCUtexref; dim: Integer): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetAddressMode_(pam, hTexRef, dim);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetAddressModeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetAddressModeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetFilterModeShell(var pfm: TCUfilter_mode; hTexRef: PCUtexref): TCUresult;
+function cuTexRefGetFilterModeShell(var pfm: TCUfilter_mode; hTexRef: PCUtexref)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetFilterMode_(pfm, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFilterModeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFilterModeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetFormatShell(var pFormat: TCUarray_format; var pNumChannels: Integer; hTexRef: PCUtexref): TCUresult;
+function cuTexRefGetFormatShell(var pFormat: TCUarray_format;
+  var pNumChannels: Integer; hTexRef: PCUtexref): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetFormat_(pFormat, pNumChannels, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFormatName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFormatName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuTexRefGetFlagsShell(var pFlags: Cardinal; hTexRef: PCUtexref): TCUresult;
+function cuTexRefGetFlagsShell(var pFlags: Cardinal; hTexRef: PCUtexref)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuTexRefGetFlags_(pFlags, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFlagsName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuTexRefGetFlagsName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuParamSetSizeShell(hfunc: PCUfunction; numbytes: Cardinal): TCUresult;
@@ -2287,47 +2659,56 @@ function cuParamSetSizeShell(hfunc: PCUfunction; numbytes: Cardinal): TCUresult;
 begin
   Result := cuParamSetSize_(hfunc, numbytes);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetSizeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuParamSetSizeName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuParamSetiShell(hfunc: PCUfunction; offset: Integer; value: Cardinal): TCUresult;
+function cuParamSetiShell(hfunc: PCUfunction; offset: Integer; value: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuParamSeti_(hfunc, offset, value);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetiName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuParamSetiName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuParamSetfShell(hfunc: PCUfunction; offset: Integer; value: Single): TCUresult;
+function cuParamSetfShell(hfunc: PCUfunction; offset: Integer; value: Single)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuParamSetf_(hfunc, offset, value);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetfName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuParamSetfName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuParamSetvShell(hfunc: PCUfunction; offset: Integer; var ptr; numbytes: Cardinal): TCUresult;
+function cuParamSetvShell(hfunc: PCUfunction; offset: Integer; var ptr;
+  numbytes: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuParamSetv_(hfunc, offset, ptr, numbytes);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetvName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuParamSetvName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuParamSetTexRefShell(hfunc: PCUfunction; texunit: Integer; hTexRef: PCUtexref): TCUresult;
+function cuParamSetTexRefShell(hfunc: PCUfunction; texunit: Integer;
+  hTexRef: PCUtexref): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuParamSetTexRef_(hfunc, texunit, hTexRef);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetTexRefName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuParamSetTexRefName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuLaunchShell(f: PCUfunction): TCUresult;
@@ -2337,27 +2718,32 @@ function cuLaunchShell(f: PCUfunction): TCUresult;
 begin
   Result := cuLaunch_(f);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuLaunchName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuLaunchName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuLaunchGridShell(f: PCUfunction; grid_width: Integer; grid_height: Integer): TCUresult;
+function cuLaunchGridShell(f: PCUfunction; grid_width: Integer;
+  grid_height: Integer): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuLaunchGrid_(f, grid_width, grid_height);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuLaunchGridName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuLaunchGridName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuLaunchGridAsyncShell(f: PCUfunction; grid_width: Integer; grid_height: Integer; hStream: PCUstream): TCUresult;
+function cuLaunchGridAsyncShell(f: PCUfunction; grid_width: Integer;
+  grid_height: Integer; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuLaunchGridAsync_(f, grid_width, grid_height, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuLaunchGridAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuLaunchGridAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuEventCreateShell(var phEvent: PCUevent; Flags: Cardinal): TCUresult;
@@ -2367,7 +2753,8 @@ function cuEventCreateShell(var phEvent: PCUevent; Flags: Cardinal): TCUresult;
 begin
   Result := cuEventCreate_(phEvent, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuEventCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuEventRecordShell(hEvent: PCUevent; hStream: PCUstream): TCUresult;
@@ -2377,7 +2764,8 @@ function cuEventRecordShell(hEvent: PCUevent; hStream: PCUstream): TCUresult;
 begin
   Result := cuEventRecord_(hEvent, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventRecordName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuEventRecordName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuEventQueryShell(hEvent: PCUevent): TCUresult;
@@ -2387,7 +2775,8 @@ function cuEventQueryShell(hEvent: PCUevent): TCUresult;
 begin
   Result := cuEventQuery_(hEvent);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventQueryName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuEventQueryName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuEventSynchronizeShell(hEvent: PCUevent): TCUresult;
@@ -2397,7 +2786,8 @@ function cuEventSynchronizeShell(hEvent: PCUevent): TCUresult;
 begin
   Result := cuEventSynchronize_(hEvent);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventSynchronizeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventSynchronizeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuEventDestroyShell(hEvent: PCUevent): TCUresult;
@@ -2407,27 +2797,32 @@ function cuEventDestroyShell(hEvent: PCUevent): TCUresult;
 begin
   Result := cuEventDestroy_(hEvent);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventDestroyName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuEventDestroyName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuEventElapsedTimeShell(var pMilliseconds: Single; hStart: PCUevent; hEnd: PCUevent): TCUresult;
+function cuEventElapsedTimeShell(var pMilliseconds: Single; hStart: PCUevent;
+  hEnd: PCUevent): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuEventElapsedTime_(pMilliseconds, hStart, hEnd);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventElapsedTimeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuEventElapsedTimeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuStreamCreateShell(var phStream: PCUstream; Flags: Cardinal): TCUresult;
+function cuStreamCreateShell(var phStream: PCUstream; Flags: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuStreamCreate_(phStream, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuStreamCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuStreamQueryShell(hStream: PCUstream): TCUresult;
@@ -2437,7 +2832,8 @@ function cuStreamQueryShell(hStream: PCUstream): TCUresult;
 begin
   Result := cuStreamQuery_(hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamQueryName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuStreamQueryName, Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuStreamSynchronizeShell(hStream: PCUstream): TCUresult;
@@ -2447,7 +2843,8 @@ function cuStreamSynchronizeShell(hStream: PCUstream): TCUresult;
 begin
   Result := cuStreamSynchronize_(hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamSynchronizeName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamSynchronizeName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuStreamDestroyShell(hStream: PCUstream): TCUresult;
@@ -2457,37 +2854,44 @@ function cuStreamDestroyShell(hStream: PCUstream): TCUresult;
 begin
   Result := cuStreamDestroy_(hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamDestroyName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuStreamDestroyName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGLCtxCreateShell(var pCtx: PCUcontext; Flags: Cardinal; device: TCUdevice): TCUresult;
+function cuGLCtxCreateShell(var pctx: PCUcontext; Flags: Cardinal;
+  device: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuGLCtxCreate_(pCtx, Flags, device);
+  Result := cuGLCtxCreate_(pctx, Flags, device);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLCtxCreateName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuGLCtxCreateName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsGLRegisterBufferShell(var pCudaResource: PCUgraphicsResource; buffer: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
+function cuGraphicsGLRegisterBufferShell(var pCudaResource: PCUgraphicsResource;
+  buffer: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGraphicsGLRegisterBuffer_(pCudaResource, buffer, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsGLRegisterBufferName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsGLRegisterBufferName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsGLRegisterImageShell(var pCudaResource: PCUgraphicsResource; image, target: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
+function cuGraphicsGLRegisterImageShell(var pCudaResource: PCUgraphicsResource;
+  image, target: Cardinal; Flags: TCUgraphicsMapResourceFlags): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGraphicsGLRegisterImage_(pCudaResource, image, target, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsGLRegisterImageName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsGLRegisterImageName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuWGLGetDeviceShell(var pDevice: TCUdevice; hGpu: HGPUNV): TCUresult;
@@ -2497,67 +2901,84 @@ function cuWGLGetDeviceShell(var pDevice: TCUdevice; hGpu: HGPUNV): TCUresult;
 begin
   Result := cuWGLGetDevice_(pDevice, hGpu);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuWGLGetDeviceName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuWGLGetDeviceName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsUnregisterResourceShell(resource: PCUgraphicsResource): TCUresult;
+function cuGraphicsUnregisterResourceShell(resource: PCUgraphicsResource)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGraphicsUnregisterResource_(resource);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsUnregisterResourceName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsUnregisterResourceName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsSubResourceGetMappedArrayShell(var pArray: PCUarray; resource: PCUgraphicsResource; arrayIndex: Cardinal; mipLevel: Cardinal): TCUresult;
+function cuGraphicsSubResourceGetMappedArrayShell(var pArray: PCUarray;
+  resource: PCUgraphicsResource; arrayIndex: Cardinal; mipLevel: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuGraphicsSubResourceGetMappedArray_(pArray, resource, arrayIndex, mipLevel);
+  Result := cuGraphicsSubResourceGetMappedArray_(pArray, resource, arrayIndex,
+    mipLevel);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsSubResourceGetMappedArrayName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuGraphicsSubResourceGetMappedArrayName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsResourceGetMappedPointerShell(var pDevPtr: TCUdeviceptr; out pSize: Cardinal; resource: PCUgraphicsResource): TCUresult;
+function cuGraphicsResourceGetMappedPointerShell(var pDevPtr: TCUdeviceptr;
+  out psize: Cardinal; resource: PCUgraphicsResource): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuGraphicsResourceGetMappedPointer_(pDevPtr, pSize, resource);
+  Result := cuGraphicsResourceGetMappedPointer_(pDevPtr, psize, resource);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsResourceGetMappedPointerName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr,
+      [cuGraphicsResourceGetMappedPointerName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsResourceSetMapFlagsShell(resource: PCUgraphicsResource; flags: Cardinal): TCUresult;
+function cuGraphicsResourceSetMapFlagsShell(resource: PCUgraphicsResource;
+  Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Result := cuGraphicsResourceSetMapFlags_(resource, flags);
+  Result := cuGraphicsResourceSetMapFlags_(resource, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsResourceSetMapFlagsName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsResourceSetMapFlagsName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsMapResourcesShell(count: Cardinal; resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
+function cuGraphicsMapResourcesShell(count: Cardinal;
+  resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGraphicsMapResources_(count, resources, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsMapResourcesName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsMapResourcesName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGraphicsUnmapResourcesShell(count: Cardinal; resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
+function cuGraphicsUnmapResourcesShell(count: Cardinal;
+  resources: PPCUgraphicsResource; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGraphicsUnmapResources_(count, resources, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsUnmapResourcesName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGraphicsUnmapResourcesName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuGLRegisterBufferObjectShell(buffer: Cardinal): TCUresult;
@@ -2567,17 +2988,20 @@ function cuGLRegisterBufferObjectShell(buffer: Cardinal): TCUresult;
 begin
   Result := cuGLRegisterBufferObject_(buffer);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLRegisterBufferObjectName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLRegisterBufferObjectName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGLMapBufferObjectShell(var dptr: TCUdeviceptr; var size: Cardinal; buffer: Cardinal): TCUresult;
+function cuGLMapBufferObjectShell(var dptr: TCUdeviceptr; var size: Cardinal;
+  buffer: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGLMapBufferObject_(dptr, size, buffer);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLMapBufferObjectName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLMapBufferObjectName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuGLUnmapBufferObjectShell(buffer: Cardinal): TCUresult;
@@ -2587,7 +3011,8 @@ function cuGLUnmapBufferObjectShell(buffer: Cardinal): TCUresult;
 begin
   Result := cuGLUnmapBufferObject_(buffer);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnmapBufferObjectName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnmapBufferObjectName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 function cuGLUnregisterBufferObjectShell(buffer: Cardinal): TCUresult;
@@ -2597,44 +3022,51 @@ function cuGLUnregisterBufferObjectShell(buffer: Cardinal): TCUresult;
 begin
   Result := cuGLUnregisterBufferObject_(buffer);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnregisterBufferObjectName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnregisterBufferObjectName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGLSetBufferObjectMapFlagsShell(buffer: Cardinal; Flags: Cardinal): TCUresult;
+function cuGLSetBufferObjectMapFlagsShell(buffer: Cardinal; Flags: Cardinal)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGLSetBufferObjectMapFlags_(buffer, Flags);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLSetBufferObjectMapFlagsName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLSetBufferObjectMapFlagsName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGLMapBufferObjectAsyncShell(var dptr: TCUdeviceptr; var size: Cardinal; buffer: Cardinal; hStream: PCUstream): TCUresult;
+function cuGLMapBufferObjectAsyncShell(var dptr: TCUdeviceptr;
+  var size: Cardinal; buffer: Cardinal; hStream: PCUstream): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGLMapBufferObjectAsync_(dptr, size, buffer, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLMapBufferObjectAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLMapBufferObjectAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuGLUnmapBufferObjectAsyncShell(buffer: Cardinal; hStream: PCUstream): TCUresult;
+function cuGLUnmapBufferObjectAsyncShell(buffer: Cardinal; hStream: PCUstream)
+  : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
   Result := cuGLUnmapBufferObjectAsync_(buffer, hStream);
   if Result <> CUDA_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnmapBufferObjectAsyncName, Get_CUDA_API_Error_String(Result)])
+    GLSLogger.LogErrorFmt(cudasFuncRetErr, [cuGLUnmapBufferObjectAsyncName,
+      Get_CUDA_API_Error_String(Result)])
 end;
 
 {$ENDIF GLS_CUDA_DEBUG_MODE}
 
 function CUDAGetProcAddress(ProcName: PAnsiChar): Pointer;
 begin
-  result := GetProcAddress(Cardinal(CUDAHandle), ProcName);
+  Result := GetProcAddress(Cardinal(CUDAHandle), ProcName);
 end;
 
 function InitCUDA: Boolean;
@@ -2667,7 +3099,8 @@ begin
   cuDeviceGet := CUDAGetProcAddress(cuDeviceGet_Name);
   cuDeviceGetCount := CUDAGetProcAddress(cuDeviceGetCountName);
   cuDeviceGetName := CUDAGetProcAddress(cuDeviceGetNameName);
-  cuDeviceComputeCapability := CUDAGetProcAddress(cuDeviceComputeCapabilityName);
+  cuDeviceComputeCapability := CUDAGetProcAddress
+    (cuDeviceComputeCapabilityName);
   cuDeviceTotalMem := CUDAGetProcAddress(cuDeviceTotalMemName);
   cuDeviceGetProperties := CUDAGetProcAddress(cuDeviceGetPropertiesName);
   cuDeviceGetAttribute := CUDAGetProcAddress(cuDeviceGetAttributeName);
@@ -2695,7 +3128,8 @@ begin
   cuMemAllocHost := CUDAGetProcAddress(cuMemAllocHostName);
   cuMemFreeHost := CUDAGetProcAddress(cuMemFreeHostName);
   cuMemHostAlloc := CUDAGetProcAddress(cuMemHostAllocName);
-  cuMemHostGetDevicePointer := CUDAGetProcAddress(cuMemHostGetDevicePointerName);
+  cuMemHostGetDevicePointer := CUDAGetProcAddress
+    (cuMemHostGetDevicePointerName);
   cuMemHostGetFlags := CUDAGetProcAddress(cuMemHostGetFlagsName);
   cuMemcpyHtoD := CUDAGetProcAddress(cuMemcpyHtoDName);
   cuMemcpyDtoH := CUDAGetProcAddress(cuMemcpyDtoHName);
@@ -2763,23 +3197,32 @@ begin
   cuStreamSynchronize := CUDAGetProcAddress(cuStreamSynchronizeName);
   cuStreamDestroy := CUDAGetProcAddress(cuStreamDestroyName);
   cuGLCtxCreate := CUDAGetProcAddress(cuGLCtxCreateName);
-  cuGraphicsGLRegisterBuffer := CUDAGetProcAddress(cuGraphicsGLRegisterBufferName);
-  cuGraphicsGLRegisterImage := CUDAGetProcAddress(cuGraphicsGLRegisterImageName);
+  cuGraphicsGLRegisterBuffer := CUDAGetProcAddress
+    (cuGraphicsGLRegisterBufferName);
+  cuGraphicsGLRegisterImage := CUDAGetProcAddress
+    (cuGraphicsGLRegisterImageName);
   cuWGLGetDevice := CUDAGetProcAddress(cuWGLGetDeviceName);
-  cuGraphicsUnregisterResource := CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
-  cuGraphicsSubResourceGetMappedArray := CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
-  cuGraphicsResourceGetMappedPointer := CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
-  cuGraphicsResourceSetMapFlags := CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
+  cuGraphicsUnregisterResource :=
+    CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
+  cuGraphicsSubResourceGetMappedArray :=
+    CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
+  cuGraphicsResourceGetMappedPointer :=
+    CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
+  cuGraphicsResourceSetMapFlags :=
+    CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
   cuGraphicsMapResources := CUDAGetProcAddress(cuGraphicsMapResourcesName);
   cuGraphicsUnmapResources := CUDAGetProcAddress(cuGraphicsUnmapResourcesName);
   cuGLInit := CUDAGetProcAddress(cuGLInitName);
   cuGLRegisterBufferObject := CUDAGetProcAddress(cuGLRegisterBufferObjectName);
   cuGLMapBufferObject := CUDAGetProcAddress(cuGLMapBufferObjectName);
   cuGLUnmapBufferObject := CUDAGetProcAddress(cuGLUnmapBufferObjectName);
-  cuGLUnregisterBufferObject := CUDAGetProcAddress(cuGLUnregisterBufferObjectName);
-  cuGLSetBufferObjectMapFlags := CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
+  cuGLUnregisterBufferObject := CUDAGetProcAddress
+    (cuGLUnregisterBufferObjectName);
+  cuGLSetBufferObjectMapFlags :=
+    CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
   cuGLMapBufferObjectAsync := CUDAGetProcAddress(cuGLMapBufferObjectAsyncName);
-  cuGLUnmapBufferObjectAsync := CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
+  cuGLUnmapBufferObjectAsync := CUDAGetProcAddress
+    (cuGLUnmapBufferObjectAsyncName);
 {$ELSE}
   cuInit_ := CUDAGetProcAddress(cuInitName);
   cuInit := cuInitShell;
@@ -2791,7 +3234,8 @@ begin
   cuDeviceGetCount := cuDeviceGetCountShell;
   cuDeviceGetName_ := CUDAGetProcAddress(cuDeviceGetNameName);
   cuDeviceGetName := cuDeviceGetNameShell;
-  cuDeviceComputeCapability_ := CUDAGetProcAddress(cuDeviceComputeCapabilityName);
+  cuDeviceComputeCapability_ := CUDAGetProcAddress
+    (cuDeviceComputeCapabilityName);
   cuDeviceComputeCapability := cuDeviceComputeCapabilityShell;
   cuDeviceTotalMem_ := CUDAGetProcAddress(cuDeviceTotalMemName);
   cuDeviceTotalMem := cuDeviceTotalMemShell;
@@ -2847,7 +3291,8 @@ begin
   cuMemFreeHost := cuMemFreeHostShell;
   cuMemHostAlloc_ := CUDAGetProcAddress(cuMemHostAllocName);
   cuMemHostAlloc := cuMemHostAllocShell;
-  cuMemHostGetDevicePointer_ := CUDAGetProcAddress(cuMemHostGetDevicePointerName);
+  cuMemHostGetDevicePointer_ := CUDAGetProcAddress
+    (cuMemHostGetDevicePointerName);
   cuMemHostGetDevicePointer := cuMemHostGetDevicePointerShell;
   cuMemHostGetFlags_ := CUDAGetProcAddress(cuMemHostGetFlagsName);
   cuMemHostGetFlags := cuMemHostGetFlagsShell;
@@ -2983,19 +3428,26 @@ begin
   cuStreamDestroy := cuStreamDestroyShell;
   cuGLCtxCreate_ := CUDAGetProcAddress(cuGLCtxCreateName);
   cuGLCtxCreate := cuGLCtxCreateShell;
-  cuGraphicsGLRegisterBuffer_ := CUDAGetProcAddress(cuGraphicsGLRegisterBufferName);
+  cuGraphicsGLRegisterBuffer_ :=
+    CUDAGetProcAddress(cuGraphicsGLRegisterBufferName);
   cuGraphicsGLRegisterBuffer := cuGraphicsGLRegisterBufferShell;
-  cuGraphicsGLRegisterImage_ := CUDAGetProcAddress(cuGraphicsGLRegisterImageName);
+  cuGraphicsGLRegisterImage_ := CUDAGetProcAddress
+    (cuGraphicsGLRegisterImageName);
   cuGraphicsGLRegisterImage := cuGraphicsGLRegisterImageShell;
   cuWGLGetDevice_ := CUDAGetProcAddress(cuWGLGetDeviceName);
   cuWGLGetDevice := cuWGLGetDeviceShell;
-  cuGraphicsUnregisterResource_ := CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
+  cuGraphicsUnregisterResource_ :=
+    CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
   cuGraphicsUnregisterResource := cuGraphicsUnregisterResourceShell;
-  cuGraphicsSubResourceGetMappedArray_ := CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
-  cuGraphicsSubResourceGetMappedArray := cuGraphicsSubResourceGetMappedArrayShell;
-  cuGraphicsResourceGetMappedPointer_ := CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
+  cuGraphicsSubResourceGetMappedArray_ :=
+    CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
+  cuGraphicsSubResourceGetMappedArray :=
+    cuGraphicsSubResourceGetMappedArrayShell;
+  cuGraphicsResourceGetMappedPointer_ :=
+    CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
   cuGraphicsResourceGetMappedPointer := cuGraphicsResourceGetMappedPointerShell;
-  cuGraphicsResourceSetMapFlags_ := CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
+  cuGraphicsResourceSetMapFlags_ :=
+    CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
   cuGraphicsResourceSetMapFlags := cuGraphicsResourceSetMapFlagsShell;
   cuGraphicsMapResources_ := CUDAGetProcAddress(cuGraphicsMapResourcesName);
   cuGraphicsMapResources := cuGraphicsMapResourcesShell;
@@ -3008,13 +3460,16 @@ begin
   cuGLMapBufferObject := cuGLMapBufferObjectShell;
   cuGLUnmapBufferObject_ := CUDAGetProcAddress(cuGLUnmapBufferObjectName);
   cuGLUnmapBufferObject := cuGLUnmapBufferObjectShell;
-  cuGLUnregisterBufferObject_ := CUDAGetProcAddress(cuGLUnregisterBufferObjectName);
+  cuGLUnregisterBufferObject_ :=
+    CUDAGetProcAddress(cuGLUnregisterBufferObjectName);
   cuGLUnregisterBufferObject := cuGLUnregisterBufferObjectShell;
-  cuGLSetBufferObjectMapFlags_ := CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
+  cuGLSetBufferObjectMapFlags_ :=
+    CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
   cuGLSetBufferObjectMapFlags := cuGLSetBufferObjectMapFlagsShell;
   cuGLMapBufferObjectAsync_ := CUDAGetProcAddress(cuGLMapBufferObjectAsyncName);
   cuGLMapBufferObjectAsync := cuGLMapBufferObjectAsyncShell;
-  cuGLUnmapBufferObjectAsync_ := CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
+  cuGLUnmapBufferObjectAsync_ :=
+    CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
   cuGLUnmapBufferObjectAsync := cuGLUnmapBufferObjectAsyncShell;
 {$ENDIF GLS_CUDA_DEBUG_MODE}
   Result := True;
@@ -3025,42 +3480,70 @@ begin
   Result := (CUDAHandle <> INVALID_MODULEHANDLE);
 end;
 
-function Get_CUDA_API_Error_String(err: TCUresult): string;
+function Get_CUDA_API_Error_String(AError: TCUresult): string;
 begin
-  case err of
-    CUDA_SUCCESS: Result := 'No errors';
-    CUDA_ERROR_INVALID_VALUE: Result := 'Invalid value';
-    CUDA_ERROR_OUT_OF_MEMORY: Result := 'Out of memory';
-    CUDA_ERROR_NOT_INITIALIZED: Result := 'Driver not initialized';
-    CUDA_ERROR_DEINITIALIZED: Result := 'Driver deinitialized';
-    CUDA_ERROR_NO_DEVICE: Result := 'No CUDA-capable device available';
-    CUDA_ERROR_INVALID_DEVICE: Result := 'Invalid device';
-    CUDA_ERROR_INVALID_IMAGE: Result := 'Invalid kernel image';
-    CUDA_ERROR_INVALID_CONTEXT: Result := 'Invalid context';
-    CUDA_ERROR_CONTEXT_ALREADY_CURRENT: Result := 'Context already current';
-    CUDA_ERROR_MAP_FAILED: Result := 'Map failed';
-    CUDA_ERROR_UNMAP_FAILED: Result := 'Unmap failed';
-    CUDA_ERROR_ARRAY_IS_MAPPED: Result := 'Array is mapped';
-    CUDA_ERROR_ALREADY_MAPPED: Result := 'Already mapped';
-    CUDA_ERROR_NO_BINARY_FOR_GPU: Result := 'No binary for GPU';
-    CUDA_ERROR_ALREADY_ACQUIRED: Result := 'Already acquired';
-    CUDA_ERROR_NOT_MAPPED: Result := 'Not mapped';
-    CUDA_ERROR_NOT_MAPPED_AS_ARRAY: Result := 'Not mapped as array';
-    CUDA_ERROR_NOT_MAPPED_AS_POINTER: Result := 'Not mapped as pointer';
-    CUDA_ERROR_INVALID_SOURCE: Result := 'Invalid source';
-    CUDA_ERROR_FILE_NOT_FOUND: Result := 'File not found';
-    CUDA_ERROR_INVALID_HANDLE: Result := 'Invalid handle';
-    CUDA_ERROR_NOT_FOUND: Result := 'Not found';
-    CUDA_ERROR_NOT_READY: Result := 'CUDA not ready';
-    CUDA_ERROR_LAUNCH_FAILED: Result := 'Launch failed';
-    CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES: Result := 'Launch exceeded resources';
-    CUDA_ERROR_LAUNCH_TIMEOUT: Result := 'Launch exceeded timeout';
-    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING: Result := 'Launch with incompatible texturing';
-    CUDA_ERROR_POINTER_IS_64BIT: Result := 'Pointer is 64bit';
-    CUDA_ERROR_SIZE_IS_64BIT: Result := 'Size is 64bit';
-    CUDA_ERROR_UNKNOWN: Result := 'Unknown error';
-  end;
+  if AError = CUDA_SUCCESS then
+    Result := 'No errors'
+  else if AError = CUDA_ERROR_INVALID_VALUE then
+    Result := 'Invalid value'
+  else if AError = CUDA_ERROR_OUT_OF_MEMORY then
+    Result := 'Out of memory'
+  else if AError = CUDA_ERROR_NOT_INITIALIZED then
+    Result := 'Driver not initialized'
+  else if AError = CUDA_ERROR_DEINITIALIZED then
+    Result := 'Driver deinitialized'
+  else if AError = CUDA_ERROR_NO_DEVICE then
+    Result := 'No CUDA-capable device available'
+  else if AError = CUDA_ERROR_INVALID_DEVICE then
+    Result := 'Invalid device'
+  else if AError = CUDA_ERROR_INVALID_IMAGE then
+    Result := 'Invalid kernel image'
+  else if AError = CUDA_ERROR_INVALID_CONTEXT then
+    Result := 'Invalid context'
+  else if AError = CUDA_ERROR_CONTEXT_ALREADY_CURRENT then
+    Result := 'Context already current'
+  else if AError = CUDA_ERROR_MAP_FAILED then
+    Result := 'Map failed'
+  else if AError = CUDA_ERROR_UNMAP_FAILED then
+    Result := 'Unmap failed'
+  else if AError = CUDA_ERROR_ARRAY_IS_MAPPED then
+    Result := 'Array is mapped'
+  else if AError = CUDA_ERROR_ALREADY_MAPPED then
+    Result := 'Already mapped'
+  else if AError = CUDA_ERROR_NO_BINARY_FOR_GPU then
+    Result := 'No binary for GPU'
+  else if AError = CUDA_ERROR_ALREADY_ACQUIRED then
+    Result := 'Already acquired'
+  else if AError = CUDA_ERROR_NOT_MAPPED then
+    Result := 'Not mapped'
+  else if AError = CUDA_ERROR_NOT_MAPPED_AS_ARRAY then
+    Result := 'Not mapped as array'
+  else if AError = CUDA_ERROR_NOT_MAPPED_AS_POINTER then
+    Result := 'Not mapped as pointer'
+  else if AError = CUDA_ERROR_INVALID_SOURCE then
+    Result := 'Invalid source'
+  else if AError = CUDA_ERROR_FILE_NOT_FOUND then
+    Result := 'File not found'
+  else if AError = CUDA_ERROR_INVALID_HANDLE then
+    Result := 'Invalid handle'
+  else if AError = CUDA_ERROR_NOT_FOUND then
+    Result := 'Not found'
+  else if AError = CUDA_ERROR_NOT_READY then
+    Result := 'CUDA not ready'
+  else if AError = CUDA_ERROR_LAUNCH_FAILED then
+    Result := 'Launch failed'
+  else if AError = CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES then
+    Result := 'Launch exceeded resources'
+  else if AError = CUDA_ERROR_LAUNCH_TIMEOUT then
+    Result := 'Launch exceeded timeout'
+  else if AError = CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING then
+    Result := 'Launch with incompatible texturing'
+  else if AError = CUDA_ERROR_POINTER_IS_64BIT then
+    Result := 'Pointer is 64bit'
+  else if AError = CUDA_ERROR_SIZE_IS_64BIT then
+    Result := 'Size is 64bit'
+  else
+    Result := 'Unknown error';
 end;
 
 end.
-
