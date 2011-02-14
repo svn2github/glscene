@@ -117,8 +117,6 @@ begin
       Picture[cmtNZ].LoadFromFile('cm_front.jpg');
     end;
   end;
-
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
 end;
 
 procedure TForm1.DoInitializeRender(Sender: TObject;
