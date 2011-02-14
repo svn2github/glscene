@@ -446,7 +446,7 @@ var
   a, f, s, c: Single;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
+  if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
   StateCache.Enable(stLineSmooth);
@@ -475,7 +475,7 @@ var
   rW, s0, c0, s, c: Single;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
+  if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
   rW := FCurrSize * (1 / 15); // Ring width
@@ -520,7 +520,7 @@ var
   grad: TGLFlareGradient;
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
-  if GL_GREMEDY_string_marker then
+  if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
   // Other secondaries (plain gradiented circles, like the glow):
@@ -727,7 +727,7 @@ begin
         if FTexRays.Handle <> 0 then
         begin
         {$IFDEF GLS_OPENGL_DEBUG}
-          if GL_GREMEDY_string_marker then
+          if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
           rci.GLStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
