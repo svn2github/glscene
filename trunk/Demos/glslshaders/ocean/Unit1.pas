@@ -284,6 +284,7 @@ end;
 procedure TForm1.GLMemoryViewer1BeforeRender(Sender: TObject);
 begin
   GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
+  GLMemoryViewer1.BeforeRender := nil;
 end;
 
 end.
