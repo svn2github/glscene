@@ -74,8 +74,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure LightFBORendererBeforeRender(Sender: TObject);
-    procedure LightFBORendererAfterRender(Sender: TObject);
+    procedure LightFBORendererBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure LightFBORendererAfterRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
@@ -171,7 +171,6 @@ begin
   FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5));
 
   // Loading shader
-  SetCurrentDir(NativeDir + 'Shaders\');
   GLSLShader1.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
   GLSLShader1.FragmentProgram.LoadFromFile('shadowmapvis_fp.glsl');
   GLSLShader1.Enabled := true;
@@ -238,17 +237,17 @@ begin
   end;
 end;
 
-procedure TForm1.LightFBORendererBeforeRender(Sender: TObject);
+procedure TForm1.LightFBORendererBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
   // get the modelview and projection matrices from the light's "camera"
-  with CurrentGLContext.PipelineTransformation do
+  with rci.PipelineTransformation do
   begin
     FLightModelViewMatrix := ModelViewMatrix;
     FLightProjMatrix := ProjectionMatrix;
   end;
 
   // push geometry back a bit, prevents false self-shadowing
-  with CurrentGLContext.GLStates do
+  with rci.GLStates do
   begin
     Enable(stPolygonOffsetFill);
     PolygonOffsetFactor := 2;
@@ -256,9 +255,9 @@ begin
   end;
 end;
 
-procedure TForm1.LightFBORendererAfterRender(Sender: TObject);
+procedure TForm1.LightFBORendererAfterRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
-  CurrentGLContext.GLStates.Disable(stPolygonOffsetFill);
+  rci.GLStates.Disable(stPolygonOffsetFill);
 end;
 
 end.

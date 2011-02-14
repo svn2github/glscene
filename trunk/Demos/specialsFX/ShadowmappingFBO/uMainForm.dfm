@@ -2,6 +2,8 @@ object Form1: TForm1
   Left = 273
   Top = 234
   Caption = 'Form1'
+  ClientHeight = 480
+  ClientWidth = 640
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,12 +18,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 588
-    Height = 379
+    Width = 640
+    Height = 480
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 150.438476562500000000
+    FieldOfView = 156.463424682617200000
     Align = alClient
     TabOrder = 0
   end
@@ -85,7 +87,7 @@ object Form1: TForm1
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Chekers'
-        MajorRadius = 0.400000005960464500
+        MajorRadius = 0.400000005960464400
         MinorRadius = 0.100000001490116100
       end
       object GLCylinder1: TGLCylinder
