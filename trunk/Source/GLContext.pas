@@ -1171,6 +1171,8 @@ type
 
 {$IFNDEF GLS_MULTITHREAD}
     FHandles: TList;
+{$ELSE}
+    FHandles: TThreadList;
 {$ENDIF GLS_MULTITHREAD}
   protected
     { Protected Declarations }
