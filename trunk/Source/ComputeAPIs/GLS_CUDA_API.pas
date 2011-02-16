@@ -746,7 +746,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDriverGetVersion = function(var driverVersion: Integer): TCUresult;
+  TcuDriverGetVersion = function(out driverVersion: Integer): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1700,7 +1700,7 @@ begin
       [cuInitName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDriverGetVersionShell(var driverVersion: Integer): TCUresult;
+function cuDriverGetVersionShell(out driverVersion: Integer): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -3087,6 +3087,8 @@ begin
 end;
 
 function InitCUDAFromLibrary(const LibName: WideString): Boolean;
+var
+  V: Integer;
 begin
   Result := False;
   CloseCUDA;
@@ -3472,6 +3474,8 @@ begin
     CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
   cuGLUnmapBufferObjectAsync := cuGLUnmapBufferObjectAsyncShell;
 {$ENDIF GLS_CUDA_DEBUG_MODE}
+  cuDriverGetVersion(V);
+  GLSLogger.LogInfoFmt('%s version %d is loaded', [CUDAAPIDLL, V]);
   Result := True;
 end;
 

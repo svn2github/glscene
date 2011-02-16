@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_FastFourierTransformation<p>
+{ : GLS_CUDA_FourierTransform<p>
 
   <b>History : </b><font size=-1><ul>
   <li>14/02/11 - Yar - Added debug mode
@@ -55,7 +55,8 @@ uses
 {$I cuda.inc}
 
 const
-  CUFFTDLLNAMES: array [0 .. 5] of string = ('cufft32_31_4', 'cufft32_30_14',
+  CUFFTDLLNAMES: array [0 .. 6] of string = (
+    'cufft32_32_16', 'cufft32_31_4', 'cufft32_30_14',
     'cufft32_30_9', 'cufft32_30_8', 'cufft32', 'cufft');
 
   { /// CUFFT API function return values }
@@ -521,6 +522,7 @@ begin
   cufftSetCompatibilityMode_ := CUFFTGetProcAddress(cufftSetCompatibilityModeName);
   cufftSetCompatibilityMode := cufftSetCompatibilityModeShell;
 {$ENDIF}
+  GLSLogger.LogInfoFmt('%s loaded...', [LibName]);
   Result := True;
 end;
 
