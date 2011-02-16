@@ -387,11 +387,17 @@ function TResolutionProperty.GetValue: string;
 begin
 {$IFDEF MSWINDOWS}
   Result := vVideoModes[GetOrdValue].Description;
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
   //Testing!!!
   with vVideoModes[GetOrdValue]^ do
     Result := IntToStr(hdisplay) + ' x ' + IntToStr(vdisplay) + ', ' + '0 bpp';
 {$ENDIF}
+{$IFDEF Darwin}
+  Result := '';
+{$MESSAGE Warn 'Needs to be implemented'}
+ {$ENDIF}
+
 end;
 
 // GetValues
@@ -403,10 +409,14 @@ begin
 {$IFDEF MSWINDOWS}
   for i := 0 to vNumberVideoModes - 1 do
     Proc(vVideoModes[i].Description);
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
   for i := 0 to vNumberVideoModes - 1 do
     with vVideoModes[i]^ do
       Proc(IntToStr(hdisplay) + 'x' + IntToStr(vdisplay) + 'x' + '0');
+{$ENDIF}
+{$IFDEF Darwin}
+{$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 
@@ -1183,7 +1193,6 @@ initialization
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
   GLCrossPlatform.IsDesignTime := True;
-  //ReadVideoModes;
 
 finalization
 

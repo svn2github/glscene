@@ -38,7 +38,8 @@ interface
 
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-   {$IFDEF UNIX} x,xlib,xf86vmode,LCLVersion,{$ENDIF}
+   {$IFDEF GLS_X11_SUPPORT} x,xlib,xf86vmode,{$ENDIF}
+   {$IFDEF FPC} LCLVersion, {$ENDIF}
    Classes, VectorGeometry, GLCrossPlatform;
 
 const
@@ -107,7 +108,8 @@ function GLGetScreenHeight:integer;
 var
    {$IFDEF MSWINDOWS}
    vVideoModes        : array of TVideoMode;
-   {$ELSE}   //Unix
+   {$ENDIF} //Unix
+   {$IFDEF GLS_X11_SUPPORT}
    vVideoModes        : array of PXF86VidModeModeInfo;
    vDesktop           : TXF86VidModeModeInfo;
    vDisplay: PDisplay;
@@ -190,8 +192,10 @@ begin
          YDiff:=Height-YRes;
          CDiff:=ColorDepth-BPP;
          Result:=I;
+        end;
      end;
-    {$ELSE}
+     {$ENDIF}
+   {$IFDEF GLS_X11_SUPPORT}
     with vVideoModes[ i ]^ do begin
      if     (hDisplay  >= XRes) and ((hDisplay-XRes)  <= XDiff)
         and (vDisplay >= YRes) and ((vDisplay-YRes) <= YDiff)
@@ -199,9 +203,14 @@ begin
          XDiff:=hDisplay-XRes;
          YDiff:=vDisplay-YRes;
          Result:=I;
+        end;
      end;
     {$ENDIF}
-   end;
+    {$IFDEF Darwin}
+      begin
+       {$MESSAGE Warn 'Needs to be implemented'}
+      end;
+     {$ENDIF}
 end;
 
 
@@ -242,10 +251,16 @@ begin
                              [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
    end;
    Inc(vNumberVideomodes);
-{$ELSE}
+   {$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
 procedure TryToAddToList(); // Without input parameters.
 begin
   XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes );
+{$ENDIF}
+{$IFDEF Darwin}
+procedure TryToAddToList(); // Without input parameters.
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 
@@ -306,7 +321,8 @@ begin
       end;
     end;
   end;
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
 var
    i,j:Integer;
 begin
@@ -338,6 +354,10 @@ begin
   TryToAddToList;
   XCloseDisplay(vDisplay);
 {$ENDIF}
+{$IFDEF Darwin}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 // SetFullscreenMode
@@ -365,7 +385,8 @@ begin
    Result:=ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN) = DISP_CHANGE_SUCCESSFUL;
    if Result then
       vCurrentVideoMode:=ModeIndex;
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
 var
   vSettings : TXF86VidModeModeInfo;
   wnd:TWindow;
@@ -392,6 +413,10 @@ begin
     // Disconnect to XServer else settings not accept
     XCloseDisplay(vDisplay);
     Result:= vScreenModeChanged;
+{$ENDIF}
+{$IFDEF Darwin}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 
@@ -421,7 +446,8 @@ var
 begin
    t:=nil;
    ChangeDisplaySettings(t^, CDS_FULLSCREEN);
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
 begin
   //if vCurrentVideoMode=0 then
   ReadVideoModes;
@@ -429,6 +455,10 @@ begin
   XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vDesktop);
   vScreenModeChanged:=false;
   XCloseDisplay(vDisplay);
+{$ENDIF}
+{$IFDEF Darwin}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 
@@ -448,7 +478,7 @@ procedure GLSetCursorPos(AScreenX, AScreenY: integer);
 begin
   SetCursorPos(AScreenX, AScreenY);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF GLS_X11_SUPPORT}
 var
   dpy: PDisplay;
   root: TWindow;
@@ -458,6 +488,10 @@ begin
   XWarpPointer(dpy, none, root, 0, 0, 0, 0, AScreenX, AScreenY);
   XCloseDisplay(dpy);
 {$ENDIF}
+{$IFDEF Darwin}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 procedure GLGetCursorPos(var point: TGLPoint);
@@ -465,7 +499,7 @@ procedure GLGetCursorPos(var point: TGLPoint);
 begin
   GetCursorPos(point);
 {$ENDIF}
-{$IFDEF UNIX}
+{$IFDEF GLS_X11_SUPPORT}
 var
   dpy: PDisplay;
   root, child : TWindow;
@@ -483,6 +517,10 @@ begin
     point.y := rootY;
   end;
     XCloseDisplay(dpy);
+{$ENDIF}
+{$IFDEF Darwin}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 
@@ -507,7 +545,8 @@ initialization
 finalization
 {$IFDEF MSWINDOWS}
    if vCurrentVideoMode<>0 then
-{$ELSE}
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
    if vScreenModeChanged then
 {$ENDIF}
       RestoreDefaultMode;  // set default video mode

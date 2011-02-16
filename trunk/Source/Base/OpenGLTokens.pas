@@ -25,12 +25,13 @@ uses
 {$IFDEF UNIX}
   Types,
   LCLType,
+  dynlibs,
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
   X,
   Xlib,
-  XUtil,
-  dynlibs
+  XUtil
 {$ENDIF}
-
 {$IFDEF DARWIN}
   MacOsAll
 {$ENDIF}
@@ -42,7 +43,7 @@ const
   glu32 = 'GLU32.dll';
 {$ENDIF}
 
-{$IFDEF UNIX}
+{$IFDEF Linux}
   opengl32 = 'libGL.so';
   glu32 = 'libGLU.so';
 {$ENDIF}
@@ -51,6 +52,7 @@ const
   opengl32  = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
   glu32 = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
   libAGL = '/System/Library/Frameworks/AGL.framework/AGL';
+  libdl = '/usr/lib/libdl.dylib';
 {$ENDIF}
 
 type
@@ -189,8 +191,8 @@ type
 
 {$ENDIF}
 
-  // Unix types
-{$IFDEF UNIX}
+  // GLX types
+{$IFDEF SUPPORT_GLX}
   XPixmap = TXID;
   XFont = TXID;
   XColormap = TXID;
@@ -239,8 +241,16 @@ type
    PAGLDevice = ^TAGLDevice;
    TAGLDevice = TGDHandle;
 
+   {
+   ** Macintosh drawable type.
+    }
+
    PAGLDrawable = ^TAGLDrawable;
    TAGLDrawable = TCGrafPtr;
+
+   {
+   ** AGL opaque data.
+    }
 
    TAGLRendererInfo = Pointer;
 
@@ -1109,6 +1119,7 @@ const
   GL_LIGHT_MODEL_COLOR_CONTROL = $81F8 {deprecated};
   GL_SINGLE_COLOR = $81F9 {deprecated};
   GL_SEPARATE_SPECULAR_COLOR = $81FA {deprecated};
+
 
   // new 1.2 naming scheme (POINT => SMOOTH_POINT)
   GL_ALIASED_POINT_SIZE_RANGE = $846D {deprecated};
@@ -1994,6 +2005,7 @@ const
   GL_SAMPLES_ARB = $80A9;
   GL_SAMPLE_COVERAGE_VALUE_ARB = $80AA;
   GL_SAMPLE_COVERAGE_INVERT_ARB = $80AB;
+
   GL_MULTISAMPLE_BIT_ARB = $20000000;
   GLX_SAMPLE_BUFFERS_ARB = 100000;
   GLX_SAMPLES_ARB = 100001;

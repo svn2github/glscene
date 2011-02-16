@@ -170,8 +170,11 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
 
 {$IFDEF FPC}
   const
-    {$IFDEF UNIX}
+    {$IFDEF LINUX}
      libz = 'libz.so.1';
+    {$ENDIF}
+    {$IFDEF DARWIN}
+     libz = '/usr/lib/libz.dylib';
     {$ENDIF}
     {$ifdef netware}  {zlib.nlm comes with netware6}
      libz='zlib';
@@ -263,8 +266,11 @@ Uses
   {$IFDEF MSWINDOWS}
   Windows;
   {$ENDIF}
-  {$IFDEF Unix}
-  x, dynlibs;
+  {$IFDEF GLS_X11_SUPPORT}
+   x,
+  {$ENDIF}
+  {$IFDEF UNIX}
+   dynlibs;
   {$ENDIF}
 
 {*****************************************************************************

@@ -525,7 +525,7 @@ begin
   if IOResult <> 0 then
     Exit;
 {$IFDEF GLS_MULTITHREAD}
-  Desc := #9 + 'Thread ID ' + IntToStr(GetCurrentThreadId) + #9 + Desc;
+  Desc := #9 + 'Thread ID ' + IntToStr(PtrUInt(GetCurrentThreadId)) + #9 + Desc;
 {$ENDIF}
   case TimeFormat of
     lfNone:
@@ -563,4 +563,4 @@ finalization
 
   GLSLogger.Shutdown;
 
-end.
+end.

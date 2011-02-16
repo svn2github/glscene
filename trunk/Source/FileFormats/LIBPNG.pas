@@ -21,8 +21,11 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-{$IFDEF Unix}
-  x, dynlibs,
+{$IFDEF GLS_X11_SUPPORT}
+  x,
+{$ENDIF}
+{$IFDEF UNIX}
+  dynlibs,
 {$ENDIF}
 {$IFDEF GLS_LOGGING}
   GLSLog,
@@ -35,8 +38,12 @@ uses
 const
 {$IFDEF MSWINDOWS}
   LibPng13 = 'libpng13'; // Library name
-{$ELSE}
+{$ENDIF}
+{$IFDEF LINUX}
   LibPng13 = 'libpng12.so'; // Library name
+{$ENDIF}
+{$IFDEF DARWIN}
+  LibPng13 = '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/Resources/libPng.dylib'; // Library name
 {$ENDIF}
 
   ZLIB_VERSION = '1.2.3';

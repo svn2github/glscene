@@ -84,6 +84,8 @@ uses
 {$ENDIF}
 {$IFDEF UNIX}
   Unix,
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
   xlib,
 {$ENDIF}
   Classes,
@@ -428,9 +430,7 @@ implementation
 uses
   ShellApi;
 {$ENDIF}
-{$IFDEF UNIX}
 
-{$ENDIF}
 
 var
   vInvPerformanceCounterFrequency: Double;
@@ -693,6 +693,7 @@ begin
   end;
 end;
 {$ELSE}
+{$IFDEF GLS_X11_SUPPORT}
 var
   dpy: PDisplay;
 begin
@@ -704,6 +705,12 @@ begin
   Result.Ydpi := 96;
   Result.NumColors := 1;
 end;
+{$ELSE}
+begin
+  {$MESSAGE Warn 'Needs to be implemented'}
+end;
+{$ENDIF}
+
 {$ENDIF}
 
 // GetDeviceLogicalPixelsX

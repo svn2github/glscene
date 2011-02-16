@@ -62,7 +62,7 @@ begin
     end;
   end;
 end;
-{$ELSE}
+{$ENDIF}
 {$IFDEF Linux}
 begin
   if GL.X_SGI_swap_control then
@@ -75,11 +75,22 @@ begin
     end;
   end;
 end;
-{$ELSE}
-begin
-   Assert(False, 'Not implemented for UNIX!')
-end;
 {$ENDIF}
+{$IFDEF DARWIN}
+var ctx: TAGLContext;
+begin
+  if Assigned(GL) then
+  begin
+    ctx := GL.aGetCurrentContext();
+    if Assigned(ctx) then
+      case AVSyncMode of
+        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, 1);
+        vsmNoSync: GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, 0);
+      else
+         Assert(False);
+      end;
+  end;
+end;
 {$ENDIF}
 
 end.

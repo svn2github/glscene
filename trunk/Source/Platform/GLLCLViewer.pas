@@ -207,7 +207,10 @@ uses SysUtils, LCLIntf, GLViewer
          {$endif}
        {$endif}
        {$ifdef LCLCARBON}
-  , GLCarbonContext
+         {$ifndef CONTEXT_INCLUDED}
+  , GLWidgetContext
+         {$define CONTEXT_INCLUDED}
+         {$endif}
        {$endif}
 
        {$ifdef LCLQT}

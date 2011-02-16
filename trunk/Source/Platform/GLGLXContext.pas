@@ -25,7 +25,7 @@ unit GLGLXContext;
 interface
 
 {$I GLScene.inc}
-
+{$IFDEF SUPPORT_GLX}
 uses
   Classes, SysUtils, LCLType,
   GLCrossPlatform, GLContext, OpenGLTokens, OpenGLAdapter,
@@ -95,7 +95,7 @@ type
 
     function RenderOutputDevice: Integer; override;
   end;
-
+  {$ENDIF}
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -103,7 +103,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
-
+{$IFDEF SUPPORT_GLX}
 uses
   GLState, GLSLog;
 
@@ -871,5 +871,5 @@ function TGLGLXContext.RenderOutputDevice: Integer;
 begin
   Result := 0;
 end;
-
+{$ENDIF}
 end.

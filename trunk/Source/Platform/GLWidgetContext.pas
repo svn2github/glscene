@@ -30,10 +30,12 @@ uses
 {$IFDEF UNIX}
 {$IFDEF LINUX}
   GLGLXContext,
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
   x, xlib, xutil,
 {$ENDIF}
 {$IFDEF Darwin}
-  GLCarbonContext,
+  GLCarbonContext;
 {$ENDIF}
 {$IFDEF BSD}
 {$MESSAGE Warn 'Needs to be implemented'}
@@ -93,7 +95,7 @@ type
   TGLWidgetContext = class(TGLCarbonContext)
   protected
     { Protected Declarations }
-    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
+   // procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
   end;
 {$ENDIF}
   // Linux Ubuntu, Kubuntu,...
@@ -128,7 +130,7 @@ begin
 {$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   XWin := outputDevice;
 {$IFDEF GLS_LOGGING}
-  GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLwin32\64');
+  GLSLogger.LogInfo('GLWidgetContext: Widget->LCLwin32\64');
 {$ENDIF}
 {$ELSE}
 {$MESSAGE Warn 'Needs to be implemented'}
@@ -159,20 +161,20 @@ begin
   gtk_widget_set_double_buffered(vGTKWidget, False);
   XWin := GDK_WINDOW_XWINDOW(PGdkDrawable(vGTKWidget^.window));
 {$IFDEF GLS_LOGGING}
-  GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLGTK2');
+  GLSLogger.LogInfo('GLWidgetContext: Widget->LCLGTK2');
 {$ENDIF}
 {$ENDIF}
 {$IFDEF LCLGTK}
   XWin := GDK_WINDOW_XWINDOW(PGdkWindowPrivate(vGTKWidget^.window));
 {$IFDEF GLS_LOGGING}
-  GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLGTK');
+  GLSLogger.LogInfo('GLWidgetContext: Widget->LCLGTK');
 {$ENDIF}
 {$ENDIF}
 {$IFDEF LCLQT}
   //Need Test passable problem
   XWin := QWidget_winId(TQTWidget(outputDevice).widget);
 {$IFDEF GLS_LOGGING}
-  GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLQT');
+  GLSLogger.LogInfo('GLWidgetContext: Widget->LCLQT');
 {$ENDIF}
 {$ENDIF}
 {$IFDEF LCLfpgui}
@@ -185,7 +187,7 @@ end;
 //
 {$IFDEF Darwin}
 
-procedure TGLWidgetContext.DoGetHandles(outputDevice: HWND; out XWin: HWND);
+(*procedure TGLWidgetContext.DoGetHandles(outputDevice: HWND; out XWin: HWND);
 begin
 {$IFNDEF LCLcarbon}
   XWin := outputDevice;
@@ -193,7 +195,7 @@ begin
   GLSLogger.LogInfo('GLWidgetContext:DoGetHandles->Widget->LCLcarbon');
   {$ENDIF}
 {$ENDIF}
-end;
+end;    *)
 {$ENDIF}
 
 {$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}

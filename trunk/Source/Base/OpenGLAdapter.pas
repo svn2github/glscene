@@ -19,6 +19,7 @@ interface
 {$I GLScene.inc}
 {$IFDEF DARWIN}
   {$LINKFRAMEWORK OpenGL}
+  {$LINKFRAMEWORK AGL}
 {$ENDIF}
 
 uses
@@ -26,7 +27,13 @@ uses
   Windows,
 {$ENDIF }
 {$IFDEF UNIX}
-  Xlib, Types, LCLType, X, XUtil, dynlibs,
+  Types, LCLType, dynlibs,
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
+  Xlib, X, XUtil,
+{$ENDIF}
+{$IFDEF DARWIN}
+  MacOSAll,
 {$ENDIF}
   OpenGLTokens,
   VectorGeometry,
@@ -51,9 +58,6 @@ type
 {$IFDEF SUPPORT_GLX}
     procedure ReadGLXExtensions;
     procedure ReadGLXImplementationProperties;
-{$ENDIF}
-{$IFDEF DARWIN}
-    procedure ReadAGLExtensions;
 {$ENDIF}
     function GetAddress(ProcName: string): Pointer;
     function GetAddressNoSuffixes(ProcName: string): Pointer;
@@ -2513,28 +2517,26 @@ type
     ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     AChoosePixelFormat : function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     ADestroyPixelFormat: procedure(pix: TAGLPixelFormat); cdecl;
-    ADescribePixelFormat := function(pix: TAGLPixelFormat; attrib: TGLint; value: PGLint): TGLBoolean; cdecl;
-    AGetCGLPixelFormat := function(pix: TAGLPixelFormat; cgl_pix: Pointer): TGLboolen; cdecl;
-    ADisplaysOfPixelFormat := function(pix: TAGLPixelFormat; ndevs: PGLint): PCGDirectDisplayID; cdecl;
-    ANextPixelFormat := function(pix: TAGLPixelFormat): TAGLPixelFormat; cdecl;
+    ADescribePixelFormat : function(pix: TAGLPixelFormat; attrib: TGLint; value: PGLint): TGLBoolean; cdecl;
+    AGetCGLPixelFormat : function(pix: TAGLPixelFormat; cgl_pix: Pointer): TGLboolean; cdecl;
+    ADisplaysOfPixelFormat : function(pix: TAGLPixelFormat; ndevs: PGLint): CGDirectDisplayID; cdecl;
+    ANextPixelFormat : function(pix: TAGLPixelFormat): TAGLPixelFormat; cdecl;
     // Managing context
     ACreateContext: function(pix: TAGLPixelFormat; share: TAGLContext): TAGLContext; cdecl;
-    ACopyContext : function(src: TAGLContext; dst: TAGLContext; mask; TGLuint): TGLBoolean;
+    ACopyContext : function(src: TAGLContext; dst: TAGLContext; mask: TGLuint): TGLBoolean; cdecl;
     ADestroyContext: function(ctx: TAGLContext): GLboolean; cdecl;
     AUpdateContext: function(ctx: TAGLContext): GLboolean; cdecl;
-    ASetCurrentContext := function(ctx: TAGLContext): GLboolean; cdecl;
-    AGetCGLContext : function(ctx: AGLContext; cgl_ctx: Pointer): GLboolean; cdecl;
-    AGetCurrentContext := function(): TAGLContext; cdecl;
+    ASetCurrentContext : function(ctx: TAGLContext): GLboolean; cdecl;
+    AGetCGLContext : function(ctx: TAGLContext; cgl_ctx: Pointer): GLboolean; cdecl;
+    AGetCurrentContext : function(): TAGLContext; cdecl;
     ASwapBuffers : procedure(ctx: TAGLContext); cdecl;
-    AUpdateContext := function(): TAGLContext; cdecl;
     // Managing Pixel Buffers
     ACreatePBuffer : function(Width: GLint; Height: GLint; target: GLenum; internalFormat: GLenum;
       max_level: longint; pbuffer: PAGLPbuffer): GLboolean; cdecl;
     ADestroyPBuffer : function(pbuffer: TAGLPbuffer): GLboolean; cdecl;
     ADescribePBuffer : function(pbuffer: TAGLPbuffer; width, height: PGLint; target: PGLenum; internalFormat: PGLenum; max_level: PGLint): TGLBoolean; cdecl;
-    AGetPBuffer : function(ctx: AGLContext; out pbuffer: TAGLPbuffer; face, level, screen: PGLint): GLboolean; cdecl;
-    ASetPBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; face: GLint; level: GLint; cdecl;
-      screen: GLint): GLboolean; cdecl;
+    AGetPBuffer : function(ctx: TAGLContext; out pbuffer: TAGLPbuffer; face, level, screen: PGLint): GLboolean; cdecl;
+    ASetPBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; face: GLint; level: GLint; screen: GLint): GLboolean; cdecl;
     ATexImagePBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; source: GLint): TGLBoolean; cdecl;
     // Managing Drawable Objects
     ASetDrawable: function(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; // deprecated
@@ -2551,21 +2553,21 @@ type
     // Getting and Setting Global Information
     AConfigure : function(pname: TGLenum; param: TGLuint): TGLboolean; cdecl;
     AGetVersion : procedure(major: PGLint; minor: PGLint); cdecl;
-    AResetLibrary := procedure(); cdecl;
+    AResetLibrary : procedure(); cdecl;
     // Getting Renderer Information
     ADescribeRenderer : function(rend: TAGLRendererInfo; prop: GLint; value: PGLint): GLboolean; cdecl;
     ADestroyRendererInfo : procedure(rend: TAGLRendererInfo); cdecl;
-    ANextRendererInfo := function(rend: TAGLRendererInfo): TAGLRendererInfo; cdecl;
-    AQueryRendererInfoForCGDirectDisplayIDs : function(dspIDs: PCGDirectDisplayID; ndev: TGLint): TAGLRendererInfo; cdecl;
+    ANextRendererInfo : function(rend: TAGLRendererInfo): TAGLRendererInfo; cdecl;
+    AQueryRendererInfoForCGDirectDisplayIDs : function(dspIDs: CGDirectDisplayID; ndev: TGLint): TAGLRendererInfo; cdecl;
     // Managing Virtual Screens
     AGetVirtualScreen : function(ctx: TAGLContext): GLint; cdecl;
     ASetVirtualScreen : function(ctx: TAGLContext; screen: TGLint): TGLboolean; cdecl;
     // Getting and Setting Windows
-    ASetWindowRef : function(ctx: TAGLContext; window: TWindowRef): TGLBoolean; cdecl;
+    ASetWindowRef : function(ctx: TAGLContext; window: WindowRef): TGLBoolean; cdecl;
     AGetWindowRef : function(ctx: TAGLContext): TGLint; cdecl;
     // Getting and Setting HIView Objects
-    ASetHIViewRef : function(ctx: TAGLContext; hiview: THIViewRef): TGLboolean; cdecl;
-    AGetHIViewRef : function(ctx: TAGLContext): THIViewRef; cdecl;
+    ASetHIViewRef : function(ctx: TAGLContext; hiview: HIViewRef): TGLboolean; cdecl;
+    AGetHIViewRef : function(ctx: TAGLContext): HIViewRef; cdecl;
     // Getting Error Information
     AGetError : function(): TGLenum; cdecl;
     AErrorString : function(code: TGLenum): PGLChar; cdecl;
@@ -2603,6 +2605,9 @@ type
     procedure ClearError;
     property IsInitialized: boolean read FInitialized;
     property DebugMode: boolean read FDebug write FDebug;
+{$IFDEF DARWIN}
+    procedure ReadAGLExtensions;
+{$ENDIF}
   end;
 
 {$IFDEF GLS_REGIONS}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
@@ -2689,6 +2694,21 @@ function glXGetClientString(dpy: PDisplay; Name: TGLint): PGLChar;
 
 // GLX 1.2 and later
 function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
+{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'OpenGL Extension to the Apple System (AGL) support functions'}
+{$ENDIF}
+{$IFDEF DARWIN}
+function aglChoosePixelFormat(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl; external libAGL;
+procedure aglDestroyPixelFormat(pix: TAGLPixelFormat); cdecl; external libAGL;
+
+function aglCreateContext(pix: TAGLPixelFormat; share: TAGLContext): TAGLContext; cdecl; external libAGL;
+function aglDestroyContext(ctx: TAGLContext): GLboolean; cdecl; external libAGL;
+function aglSetCurrentContext (ctx: TAGLContext): GLboolean; cdecl; external libAGL;
+function aglSetDrawable (ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; external libAGL;
+function aglSetOffScreen (ctx: TAGLContext; width, height, rowbytes: TGLsizei; out baseaddr: Pointer): GLboolean; cdecl; external libAGL;
+function aglSetWindowRef (ctx: TAGLContext; window: WindowRef): TGLBoolean; cdecl; external libAGL;
+function glGetString(Name: TGLEnum): PGLChar; cdecl; external opengl32;
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL utility (GLU) functions and procedures'}
@@ -2873,9 +2893,36 @@ const
 var
   GLHandle: TLibHandle = 0; // Pointer;
   GLUHandle: TLibHandle = 0; // Pointer;
+{$IFDEF DARWIN}
+  AGLHandle: TLibHandle = 0;
+  dlHandle: TLibHandle = 0;
+{$ENDIF}
+
+{$IFDEF DARWIN}
+function NSIsSymbolNameDefined(s: PChar): Bool; cdecl; external libdl;
+function NSLookupAndBindSymbol(s: PChar): PtrInt; cdecl; external libdl;
+function NSAddressOfSymbol(Lib: pointer): PtrInt; cdecl; external libdl;
+
+Function GetProcAddress(Lib : TlibHandle; ProcName : AnsiString) : Pointer;
+var fname: PChar;
+    symbol: PtrInt;
+begin
+                fname := PChar('_' + ProcName);
+                if not NSIsSymbolNameDefined(fname) then
+                   exit(nil);
+
+                symbol := NSLookupAndBindSymbol(fname);
+                if symbol <> 0 then
+                    symbol := NSAddressOfSymbol(Pointer(symbol));
+
+                Result := Pointer(symbol);
+
+end;
+{$ENDIF}
 
 function GLGetProcAddress(ProcName: PGLChar): Pointer;
 begin
+  {$IFDEF SUPPORT_GLX}
   if @glXGetProcAddress <> nil then
     Result := glXGetProcAddress(ProcName);
 
@@ -2887,27 +2934,16 @@ begin
 
   if Result <> nil then
     exit;
-
+  {$ENDIF}
   Result := GetProcAddress(GLHandle, ProcName);
 end;
-
-{$ENDIF}
 
 {$IFDEF DARWIN}
-var
-  GLHandle: Pointer;
-  GLUHandle: Pointer;
-  AGLHandle: Pointer;
-
-function GLGetProcAddress(ProcName: PGLChar): Pointer;
-begin
-  Result := GetProcAddress(GLHandle, ProcName);
-end;
-
 function AGLGetProcAddress(ProcName: PGLChar): Pointer;
 begin
   Result := GetProcAddress(AGLHandle, ProcName);
 end;
+{$ENDIF}
 {$ENDIF}
 
 function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
@@ -2958,6 +2994,11 @@ var
 begin
   vName := glPrefix + ProcName;
   Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+  {$IFDEF DARWIN}
+  if Result = nil then
+  begin
+    Result := AGLGetProcAddress(PGLChar(TGLString(vName)));
+  {$ENDIF}
   if Result = nil then
   begin
     vName := glPrefix + ProcName + 'ARB';
@@ -2985,6 +3026,9 @@ begin
       end;
     end;
   end;
+  {$IFDEF DARWIN}
+  end;
+  {$ENDIF}
 {$IFDEF GLS_OPENGL_DEBUG}
   if Result <> @glCap then
     GLSLogger.LogDebug('Finded entry point of ' + vName)
@@ -3100,7 +3144,7 @@ begin
   ReadAGLExtensions;
 {$ENDIF}
   GetString := GetAddress('GetString');
-  GetStringi := GetAddress('GetStringi');
+  GetStringi := GetAddress('GetStringi'); 
   GetIntegerv := GetAddress('GetIntegerv');
   GetError := GetAddress('GetError');
   // determine OpenGL versions supported
@@ -5350,24 +5394,24 @@ end;
 procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
 begin
   // Managing pixel format object
-  ACreatePixelFormat := AGLGetProcAddress('ACreatePixelFormat');
+  ACreatePixelFormat := AGLGetProcAddress('aglCreatePixelFormat');
   AChoosePixelFormat := AGLGetProcAddress('aglChoosePixelFormat');
   ADestroyPixelFormat := AGLGetProcAddress('aglDestroyPixelFormat');
-  ADescribePixelFormat := AGLGetProcAddress('ADescribePixelFormat');
-  ADestroyPixelFormat := AGLGetProcAddress('ADestroyPixelFormat');
-  AGetCGLPixelFormat := AGLGetProcAddress('AGetCGLPixelFormat');
-  ADisplaysOfPixelFormat := AGLGetProcAddress('ADisplaysOfPixelFormat');
-  ANextPixelFormat := AGLGetProcAddress('ANextPixelFormat');
+  ADescribePixelFormat := AGLGetProcAddress('aglDescribePixelFormat');
+  ADestroyPixelFormat := AGLGetProcAddress('aglDestroyPixelFormat');
+  AGetCGLPixelFormat := AGLGetProcAddress('aglGetCGLPixelFormat');
+  ADisplaysOfPixelFormat := AGLGetProcAddress('aglDisplaysOfPixelFormat');
+  ANextPixelFormat := AGLGetProcAddress('aglNextPixelFormat');
   // Managing context
   ACreateContext := AGLGetProcAddress('aglCreateContext');
-  ACopyContext := AGLGetProcAddress('ACopyContext');
+  ACopyContext := AGLGetProcAddress('aglCopyContext');
   ADestroyContext := AGLGetProcAddress('aglDestroyContext');
   AUpdateContext := AGLGetProcAddress('aglUpdateContext');
   ASetCurrentContext := AGLGetProcAddress('aglSetCurrentContext');
-  AGetCGLContext := AGLGetProcAddress('AGetCGLContext');
-  AGetCurrentContext := AGLGetProcAddress('AGetCurrentContext');
-  ASwapBuffers := AGLGetProcAddress('ASwapBuffers');
-  AUpdateContext := AGLGetProcAddress('AUpdateContext');
+  AGetCGLContext := AGLGetProcAddress('aglGetCGLContext');
+  AGetCurrentContext := AGLGetProcAddress('aglGetCurrentContext');
+  ASwapBuffers := AGLGetProcAddress('aglSwapBuffers');
+  AUpdateContext := AGLGetProcAddress('aglUpdateContext');
   // Managing Pixel Buffers
   ACreatePBuffer := AGLGetProcAddress('aglCreatePBuffer');
   ADestroyPBuffer := AGLGetProcAddress('aglDestroyPBuffer');
@@ -5484,6 +5528,7 @@ begin
   GLUHandle := LoadLibrary(PChar(GLUName));
 {$IFDEF DARWIN}
   AGLHandle := LoadLibrary(PChar(libAGL));
+  dlHandle := LoadLibrary(PChar(libdl));
 {$ENDIF}
 
   if (GLHandle <> INVALID_MODULEHANDLE) and (GLUHandle <> INVALID_MODULEHANDLE) then
@@ -5524,6 +5569,11 @@ begin
   begin
     FreeLibrary(AGLHandle);
     AGLHandle := INVALID_MODULEHANDLE;
+  end;
+  if dlHandle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(dlHandle);
+    dlHandle := INVALID_MODULEHANDLE;
   end;
   {$ENDIF}
 end;

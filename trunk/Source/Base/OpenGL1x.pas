@@ -113,9 +113,11 @@ uses
   {$IFDEF MSWINDOWS}
     Windows
   {$ENDIF }
-
-  {$IFDEF unix}
-    {Libc,}Types, LCLType, X, Xlib, XUtil, dynlibs
+  {$IFDEF GLS_X11_SUPPORT}
+     X, Xlib, XUtil,
+  {$ENDIF}
+  {$IFDEF UNIX}
+    {Libc,}Types, LCLType, dynlibs
   {$ENDIF}
   ;
 {$IFDEF GLS_REGIONS} {$region 'OpenGL extension feature checks'} {$ENDIF}
@@ -2805,7 +2807,7 @@ end;
 {$ENDIF}
 
 // ************** UNIX specific ********************
-{$IFDEF UNIX}
+{$IFDEF Unix}
 const
    INVALID_MODULEHANDLE = 0;//nil;
 
@@ -2815,6 +2817,7 @@ var
    
 function GLGetProcAddress(ProcName: PGLChar):Pointer;
 begin
+  {$IFDEF SUPPORT_GLX}
   if @glXGetProcAddress<>nil then
     result := glXGetProcAddress(ProcName);
 
@@ -2824,10 +2827,11 @@ begin
     result := glXGetProcAddressARB(ProcName);
 
   if result<> nil then exit;
-
+  {$ENDIF}
   result := GetProcAddress(GLHandle, ProcName);
 end;
 {$ENDIF}
+
 function GLLibGetProcAddress(ProcName: PGLChar):Pointer;
 begin
   result := GetProcAddress(GLHandle, ProcName);
