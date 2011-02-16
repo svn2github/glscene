@@ -1,0 +1,53 @@
+package GLS_Computing_RunTime;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'GLScene - Computing'}
+{$LIBSUFFIX '2010'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vclimg,
+  vcl,
+  xmlrtl,
+  GLScene_RunTime;
+
+contains
+  GLS_CL_Platform in '..\Source\ComputeAPIs\GLS_CL_Platform.pas',
+  GLS_CL in '..\Source\ComputeAPIs\GLS_CL.pas',
+  GLS_CL_GL in '..\Source\ComputeAPIs\GLS_CL_GL.pas',
+  GLS_CUDA_API in '..\Source\ComputeAPIs\GLS_CUDA_API.pas',
+  GLS_CUDA_RunTime in '..\Source\ComputeAPIs\GLS_CUDA_RunTime.pas',
+  GLS_CUDA_FourierTransform in '..\Source\ComputeAPIs\GLS_CUDA_FourierTransform.pas',
+  GLS_CUDA_Utility in '..\Source\ComputeAPIs\GLS_CUDA_Utility.pas',
+  GLSCUDA in '..\Source\GLSCUDA.pas',
+  GLSCUDACompiler in '..\Source\GLSCUDACompiler.pas',
+  GLSCUDAContext in '..\Source\GLSCUDAContext.pas',
+  GLSCUDAFFTPlan in '..\Source\GLSCUDAFFTPlan.pas',
+  GLSCUDAGraphics in '..\Source\GLSCUDAGraphics.pas',
+  GLSCUDAParser in '..\Source\GLSCUDAParser.pas',
+  GLFilePGM in '..\Source\FileFormats\GLFilePGM.pas';
+
+end.
