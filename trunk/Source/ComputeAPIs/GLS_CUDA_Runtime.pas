@@ -293,7 +293,7 @@ type
     __cudaReserved: array[0..40 - 1] of Integer;
   end {cudaDeviceProp};
 
-  TcudaTextureAddressMode = (cudaAddressModeWrap, cudaAddressModeClamp);
+  TcudaTextureAddressMode = (cudaAddressModeWrap, cudaAddressModeClamp, cudaAddressModeMirror);
 
   TcudaTextureFilterMode = (cudaFilterModePoint, cudaFilterModeLinear);
 
