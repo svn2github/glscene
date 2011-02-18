@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/02/11 - Yar - Fixed transform feedback varyings activation
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
                            Added unsigned integer uniforms
@@ -253,8 +254,12 @@ const
      GL_TRIANGLES_ADJACENCY_EXT);
   cGLgsOutTypes: array[gsOutPoints..gsOutTriangleStrip] of GLenum =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
+  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
+    GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
 var
   i, NumVarying, MaxVaryings: Integer;
+  sVaryings: array of AnsiString;
+  pVaryings: array of PGLChar;
 begin
   try
     if not ShaderSupported then
@@ -289,25 +294,24 @@ begin
               GeometryProgram.VerticesOut);
           end;
 
-          if (not FGLSLProg.LinkProgram) then
-            raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
-
           NumVarying := FActiveVarying.Count;
           if NumVarying > 0 then
           begin
             // Activate varying
-            GL.GetIntegerv(GL_MAX_VARYING_COMPONENTS, @MaxVaryings);
-
-            if NumVarying > MaxVaryings then
-              raise EGLSLShaderException.Create('Varyings number out of hardware limit.');
-
+            SetLength(sVaryings, NumVarying);
+            SetLength(pVaryings, NumVarying);
             for i := 0 to NumVarying - 1 do
-              FGLSLProg.AddActiveVarying(FActiveVarying.Strings[i]);
-
-            // Relink progaram.
-            if (not FGLSLProg.LinkProgram) then
-              raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
+            begin
+              sVaryings[i] := AnsiString(FActiveVarying.Strings[i]) + #0;
+              pVaryings[i] := PAnsiChar( sVaryings[i] );
+            end;
+            GL.TransformFeedbackVaryings(
+              FGLSLProg.Handle, NumVarying, @pVaryings[0],
+              cBufferMode[FTransformFeedBackMode] );
           end;
+
+          if (not FGLSLProg.LinkProgram) then
+            raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
         end;
         FGLSLProg.NotifyDataUpdated;
       end;
@@ -486,61 +490,13 @@ begin
 end;
 
 procedure TGLCustomGLSLShader.DoInitialPass;
-const
-  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
-    GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
-var
-  NeedActivate: Boolean;
-  i, NumVarying: Integer;
-  locs: array of GLint;
-  sVaryings: array of AnsiString;
-  pVaryings: array of PGLChar;
-
-  procedure PrepareVaryings;
-  var j: Integer;
-  begin
-    SetLength(sVaryings, NumVarying);
-    SetLength(pVaryings, NumVarying);
-    for j := 0 to NumVarying - 1 do
-    begin
-      sVaryings[i] := AnsiString(FActiveVarying.Strings[j]) + #0;
-      pVaryings[i] := PAnsiChar( sVaryings[j] );
-    end;
-  end;
-
 begin
-  NumVarying := FActiveVarying.Count;
-  NeedActivate := Assigned(FOnInitialize) or (NumVarying > 0);
-
-  if NeedActivate then FGLSLProg.UseProgramObject;
-
-  if NumVarying > 0 then
+  if Assigned(FOnInitialize) then
   begin
-    if GL.NV_transform_feedback then
-    begin
-      SetLength(locs, NumVarying);
-      for i := 0 to NumVarying-1 do
-        locs[i] := FGLSLProg.GetVaryingLocation(FActiveVarying.Strings[i]);
-      GL.TransformFeedbackVaryingsNV ( FGLSLProg.Handle, NumVarying, @locs[0],
-        cBufferMode[FTransformFeedBackMode] );
-    end
-    else if GL.EXT_transform_feedback then
-    begin
-      PrepareVaryings;
-      GL.TransformFeedbackVaryings ( FGLSLProg.Handle, NumVarying, @locs[0],
-        cBufferMode[FTransformFeedBackMode] );
-    end
-    else
-    begin
-      PrepareVaryings;
-      GL.TransformFeedbackVaryings( FGLSLProg.Handle, NumVarying, @pVaryings[0],
-        cBufferMode[FTransformFeedBackMode] );
-    end;
-    GL.CheckError;
+    FGLSLProg.UseProgramObject;
+    FOnInitialize(Self);
+    FGLSLProg.EndUseProgramObject;
   end;
-  
-  if Assigned(FOnInitialize) then FOnInitialize(Self);
-  if NeedActivate then FGLSLProg.EndUseProgramObject;
 end;
 
 { TGLSLShaderParameter }
