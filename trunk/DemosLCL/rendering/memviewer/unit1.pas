@@ -94,6 +94,9 @@ begin
 {$IFDEF LINUX}
    not (GLSceneViewer1.Buffer.RenderingContext.GL.X_VERSION_1_3 or GLSceneViewer1.Buffer.RenderingContext.GL.X_VERSION_1_4)
 {$ENDIF}
+{$IFDEF DARWIN}
+   not (GLSceneViewer1.Buffer.RenderingContext.GL.A_pixel_buffer)
+{$ENDIF}
    then
    begin
       ShowMessage( 'ARB_pbuffer not supported...'#13#10#13#10

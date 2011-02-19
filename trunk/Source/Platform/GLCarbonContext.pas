@@ -26,14 +26,24 @@ type
       private
          { Private Declarations }
          FRC: TAGLContext;
+         FShareContext: TGLCarbonContext;
+         FHPBUFFER: PAGLPBuffer;
+         FDC: TAGLDrawable;
          FBounds: TRect;
          FViewer, FForm: TControl;
          FIAttribs : packed array of Integer;
+         FPixelFmt: TAGLPixelFormat;
+         FDisp: GDHandle;
+         FWindow: WindowRef;
 
+         procedure ChooseAGLFormat;
          function GetFormBounds: TRect;
          procedure BoundsChanged;
          function CreateWindow: WindowRef;
          procedure DestroyWindow(AWin: WindowRef);
+         procedure CreateOldContext;
+         procedure CreateNewContext;
+         procedure Validate;
       protected
          { Protected Declarations }
          procedure ClearIAttribs;
@@ -41,6 +51,13 @@ type
          procedure ChangeIAttrib(attrib, newValue : Integer);
          procedure DropIAttrib(attrib : Integer);
 
+         procedure DestructionEarlyWarning(sender: TObject);
+
+         {: DoGetHandles must be implemented in child classes,
+            and return the display + window }
+         procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual;
+           abstract;
+         procedure GetHandles(outputDevice: HWND);
          procedure DoCreateContext(outputDevice : HWND); override;
          procedure DoCreateMemoryContext(outputDevice : HWND;width, height : Integer; BufferCount : integer); override;
          function  DoShareLists(aContext : TGLContext): Boolean;  override;
@@ -48,7 +65,7 @@ type
          procedure DoActivate; override;
          procedure DoDeactivate; override;
          //property DC: HWND read FDC;
-         //property RenderingContext: GLXContext read FRC;
+         property RenderingContext: TAGLContext read FRC;
       public
          { Public Declarations }
          constructor Create; override;
@@ -67,7 +84,7 @@ implementation
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
 uses
-  GLSLog;
+  GLState, GLSLog;
 
 
 
@@ -79,6 +96,140 @@ resourcestring
    cUnableToCreateLegacyContext= 'Unable to create legacy context';
 
 { TGLCarbonContext }
+
+procedure TGLCarbonContext.ChooseAGLFormat;
+var
+  vPixelFmt: TAGLPixelFormat;
+
+  function GetFixedAttribute(Attrib: TGLInt; Param: integer): Integer;
+  var
+    I, Res, OverRes: integer;
+  begin
+    {: Appointment of a function to look for equal or approximate values
+       of attributes from the list AGL.
+      If you just ask all the attributes
+      that the user can put it out of ignorance
+      Access Violation could appear as the list will be empty. }
+   { Result := -1;
+    OverRes := -1;
+    for i := 0 to 10 do    //10 - fnelements
+    begin }
+
+      GL.ADescribePixelFormat(vPixelFmt, Attrib, @Res);
+     { if (Res > 0) and (Res <= Param) then}
+        Result := res;
+    {  if (Res > param) and (OverRes < Res) then
+        OverRes := res;
+    end;
+    if (Result = -1) and (i = 10) then
+      Result := OverRes;  }
+
+  //GLSLogger.Log('GetFixedAttribute:'+'Attrib'+inttostr(Attrib)+' Param'+inttostr(Param)+' Res'+inttostr(Result));
+
+  end;
+
+  function ChoosePixelFormat: Boolean;
+  begin
+    if Assigned(vPixelFmt) then
+      GL.ADestroyPixelFormat(vPixelFmt);
+    vPixelFmt := GL.aChoosePixelFormat(@FDisp, 1, @FIAttribs[0]);
+    Result := Assigned(vPixelFmt);
+  end;
+
+const
+  cAAToSamples: array[aaDefault..csa16xHQ] of Integer =
+    (0, 0, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);
+  cCSAAToSamples: array[csa8x..csa16xHQ] of Integer = (4, 8, 4, 8);
+
+begin
+  // Temporarily create a list of available attributes
+  vPixelFmt := nil;
+  if not ChoosePixelFormat then
+    raise EGLContext.Create('vFailed to accept attributes');
+
+  try
+    ColorBits := GetFixedAttribute(AGL_BUFFER_SIZE, ColorBits);
+    AddIAttrib(AGL_BUFFER_SIZE, ColorBits);
+
+    if AlphaBits > 0 then
+    begin
+      AlphaBits := GetFixedAttribute(AGL_ALPHA_SIZE, AlphaBits);
+      AddIAttrib(AGL_ALPHA_SIZE, AlphaBits);
+    end
+    else
+      AddIAttrib(AGL_ALPHA_SIZE, 0);
+
+    DepthBits := GetFixedAttribute(AGL_DEPTH_SIZE, DepthBits);
+    AddIAttrib(AGL_DEPTH_SIZE, DepthBits);
+
+    if AuxBuffers > 0 then
+    begin
+      // Even if it is 0 anyway will select something from the list FFBConfigs!
+      AuxBuffers := GetFixedAttribute(AGL_AUX_BUFFERS, AuxBuffers);
+      AddIAttrib(AGL_AUX_BUFFERS, AuxBuffers);
+    end;
+
+    if rcoDoubleBuffered in Options then
+    begin
+      AddIAttrib(AGL_DOUBLEBUFFER, GL_TRUE);
+    end;
+
+    //Stereo not support.
+    if rcoStereo in Options then
+    begin
+      AddIAttrib(AGL_STEREO, GL_TRUE);
+    end;
+
+    if StencilBits > 0 then
+    begin
+      StencilBits := GetFixedAttribute(AGL_STENCIL_SIZE, StencilBits);
+      AddIAttrib(AGL_STENCIL_SIZE, StencilBits);
+    end;
+
+    if AccumBits>0 then
+        AccumBits:=GetFixedAttribute(AGL_ACCUM_RED_SIZE, AccumBits div 4)+
+              GetFixedAttribute(AGL_ACCUM_GREEN_SIZE, AccumBits div 4)+
+              GetFixedAttribute(AGL_ACCUM_BLUE_SIZE, AccumBits div 4)+
+              GetFixedAttribute(AGL_ACCUM_ALPHA_SIZE, AccumBits div 4) ;
+
+    if AccumBits > 0 then
+    begin
+      AddIAttrib(AGL_ACCUM_RED_SIZE, GetFixedAttribute(AGL_ACCUM_RED_SIZE,
+        AccumBits div 4));
+      AddIAttrib(AGL_ACCUM_GREEN_SIZE, GetFixedAttribute(AGL_ACCUM_GREEN_SIZE,
+        AccumBits div 4));
+      AddIAttrib(AGL_ACCUM_BLUE_SIZE, GetFixedAttribute(AGL_ACCUM_BLUE_SIZE,
+        AccumBits div 4));
+      AddIAttrib(AGL_ACCUM_ALPHA_SIZE, GetFixedAttribute(AGL_ACCUM_ALPHA_SIZE,
+        AccumBits div 4));
+    end;
+
+    if GL.ARB_multisample then
+      if AntiAliasing <> aaDefault then
+      begin
+        if AntiAliasing <> aaNone then
+        begin
+          AddIAttrib(AGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
+          AddIAttrib(AGL_SAMPLES_ARB, GetFixedAttribute(AGL_SAMPLES_ARB,
+            cAAToSamples[AntiAliasing]));
+         { if GL.X_NV_multisample_coverage
+            and (AntiAliasing >= csa8x)
+            and (AntiAliasing <= csa16xHQ) then
+            AddIAttrib(AGL_COLOR_SAMPLES_NV, GetFixedAttribute(AGL_COLOR_SAMPLES_NV,
+            cCSAAToSamples[AntiAliasing]));  }
+        end
+        else
+          AddIAttrib(GL_SAMPLE_BUFFERS_ARB, GL_FALSE);
+      end;
+
+  finally
+    if Assigned(vPixelFmt) then
+      FGL.ADestroyPixelFormat(vPixelFmt);
+  end;
+  FPixelFmt := GL.aChoosePixelFormat(@FDisp, 1, @FIAttribs[0]);
+  if FPixelFmt = nil then
+    raise EGLContext.Create('Failed to accept attributes');
+end;
 
 function TGLCarbonContext.GetFormBounds: TRect;
 begin
@@ -160,6 +311,16 @@ begin
   end;
 end;
 
+procedure TGLCarbonContext.DestructionEarlyWarning(sender: TObject);
+begin
+   DestroyContext;
+end;
+
+procedure TGLCarbonContext.GetHandles(outputDevice: HWND);
+begin
+  //DoGetHandles(outputDevice, FCurXWindow);
+end;
+
 function TGLCarbonContext.CreateWindow: WindowRef;
 var
      windowAttrs : WindowAttributes;
@@ -203,7 +364,7 @@ begin
   if FRC <> nil then
   begin
     aglSetCurrentContext(nil);
-    aglSetDrawable(nil, GetWindowPort(AWin));
+    aglSetDrawable(FRC, nil);
     aglDestroyContext(FRC);
     FRC := nil;
   end;
@@ -215,20 +376,98 @@ begin
   end;
 end;
 
+procedure TGLCarbonContext.CreateOldContext;
+var
+  shareRC: TAGLContext;
+begin
+  ClearIAttribs;
+
+  AddIAttrib(AGL_WINDOW, GL_TRUE);
+  AddIAttrib(AGL_RGBA, GL_TRUE);
+
+  ChooseAGLFormat;
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+    shareRC := TGLCarbonContext(ServiceContext).FRC
+  else if Assigned(FShareContext) then
+    shareRC := FShareContext.FRC
+  else
+    shareRC := nil;
+
+  try
+      FRC := FGL.aCreateContext(FPixelFmt, shareRC);
+      if Assigned(shareRC) then
+      begin
+        if Assigned(FRC) then
+        begin
+          FSharedContexts.Add(FShareContext);
+          PropagateSharedContext;
+        end
+        else
+        begin
+          GLSLogger.LogWarning(glsFailedToShare);
+          FRC := FGL.aCreateContext(FPixelFmt, nil);
+        end;
+      end;
+    FGL.aSetDrawable(FRC, GetWindowPort(FWindow));
+
+    FBounds := GetFormBounds;
+    BoundsChanged;
+    {$IFDEF GLS_LOGGING}
+    GLSLogger.LogInfo('GLCarbonContext: BoundsChanged');
+    {$ENDIF}
+
+    Activate;
+    FGL.Initialize;
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+      GLStates.MultisampleFilterHint := hintNicest
+    else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
+      GLStates.MultisampleFilterHint := hintFastest
+    else GLStates.MultisampleFilterHint := hintDontCare;
+
+    GLSLogger.LogInfo('Backward compatible core context successfully created');
+  finally
+    if Active then
+      Deactivate;
+    GL.aDestroyPixelFormat(FPixelFmt);
+  end;
+end;
+
+procedure TGLCarbonContext.CreateNewContext;
+begin
+  // OpenGL 3 not yet implemented
+end;
+
+procedure TGLCarbonContext.Validate;
+begin
+  if FRC = nil then
+    raise EGLContext.Create('Failed to create rendering context');
+  if PtrUInt(FRC) = AGL_BAD_CONTEXT then
+    raise EGLContext.Create('Bad context');
+  if PtrUInt(FRC) = AGL_BAD_PIXELFMT then
+    raise EGLContext.Create('BAD PIXELForMaT');
+
+  {$IFDEF GLS_LOGGING}
+  GLSLogger.Log('GLAGLContext: RenderingContext it is created');
+  {$ENDIF}
+end;
+
 procedure TGLCarbonContext.DoCreateContext(outputDevice: HWND);
 var
   DC: TCarbonDeviceContext absolute outputDevice;
-  Window: WindowRef;
-  Disp: GDHandle;
-  PixelFmt: TAGLPixelFormat;
-  tempWnd: WindowRef;
 begin
-  tempWnd := CreateWindow;
+  // Just in case it didn't happen already.
+  if not InitOpenGL then
+    RaiseLastOSError;
+
+  FWindow := CreateWindow;
   GLSLogger.Log('GLCarbonContext: Is created a temporary context');
 
   FGL.Initialize(True);
 
-  DestroyWindow(tempWnd);
+  DestroyWindow(FWindow);
+  FWindow := nil;
   GLSLogger.LogInfo('GLCarbonContext: Temporary rendering context destroyed');
 
   if not (CheckDC(outputDevice, 'DoCreateContext') or (DC is TCarbonControlContext)) then
@@ -245,94 +484,166 @@ begin
     GLSLogger.LogInfo('GLCarbonContext: Creating context failed: control not on the form!');
   end;
 
-  Window := TCarbonWindow((FForm as TWinControl).Handle).Window;
-
+  FWindow := TCarbonWindow((FForm as TWinControl).Handle).Window;
+  FDC := FWindow;
   // create the AGL context
-  Disp := GetMainDevice();
+  FDisp := GetMainDevice();
+
+  FAcceleration := chaHardware;
   GLSLogger.LogInfo('GLCarbonContext: Control Handle Accepted');
 
-  AddIAttrib(AGL_WINDOW, GL_TRUE);
+  CreateOldContext;
+  Validate;
+
+  if (ServiceContext <> nil) and (Self <> ServiceContext) then
+  begin
+    FSharedContexts.Add(ServiceContext);
+    PropagateSharedContext;
+  end;
+
+end;
+
+type
+  TVP = array[0..1] of TGLint;
+
+procedure TGLCarbonContext.DoCreateMemoryContext(outputDevice: HWND; width,
+  height: Integer; BufferCount: integer);
+var
+  TempW, TempH  : Integer;
+  shareRC       : TAGLContext;
+  vs            : Integer;
+  vp            : TVP ;
+  target        : GLenum;
+begin
+  // Just in case it didn't happen already.
+  if not InitOpenGL then
+    RaiseLastOSError;
+
+  FWindow := CreateWindow;
+  GLSLogger.Log('GLCarbonContext: Is created a temporary context');
+
+  FGL.Initialize(True);
+
+  DestroyWindow(FWindow);
+  FWindow := nil;
+  GLSLogger.LogInfo('GLCarbonContext: Temporary rendering context destroyed');
+
+  FDisp := GetMainDevice();
+
+  ClearIAttribs;
+
+  AddIAttrib(AGL_PBUFFER, GL_TRUE);
   AddIAttrib(AGL_RGBA, GL_TRUE);
+  AddIAttrib(AGL_ACCELERATED, GL_TRUE);
+  //  AddIAttrib(AGL_NO_RECOVERY, GL_TRUE);
 
-  AddIAttrib(AGL_RED_SIZE, Round(ColorBits / 3));
-  AddIAttrib(AGL_GREEN_SIZE, Round(ColorBits / 3));
-  AddIAttrib(AGL_BLUE_SIZE, Round(ColorBits / 3));
-  AddIAttrib(AGL_DEPTH_SIZE, DepthBits);
 
-  if AlphaBits > 0 then AddIAttrib(AGL_ALPHA_SIZE, AlphaBits);
+  ChooseAGLFormat;
 
-  AddIAttrib(AGL_DEPTH_SIZE, DepthBits);
-
-  if StencilBits > 0 then AddIAttrib(AGL_STENCIL_SIZE, StencilBits);
-  if AccumBits > 0 then
-  begin
-    AddIAttrib(AGL_ACCUM_RED_SIZE, round(AccumBits/4));
-    AddIAttrib(AGL_ACCUM_GREEN_SIZE, round(AccumBits/4));
-    AddIAttrib(AGL_ACCUM_BLUE_SIZE, round(AccumBits/4));
-  end;
-  if AuxBuffers > 0 then AddIAttrib(AGL_AUX_BUFFERS, AuxBuffers);
-  if (rcoDoubleBuffered in Options) then AddIAttrib(AGL_DOUBLEBUFFER, GL_TRUE);
-
-  // choose the best compatible pixel format
-  PixelFmt := FGL.aChoosePixelFormat(@Disp, 1, @FIAttribs[0]);
-  if PixelFmt = nil then
-  begin
-    if DepthBits >= 32 then ChangeIAttrib(AGL_DEPTH_SIZE, 24);
-    PixelFmt := FGL.aChoosePixelFormat(@Disp, 1, @FIAttribs[0]);
-    if PixelFmt = nil then
-    begin
-      if DepthBits >= 24 then ChangeIAttrib(AGL_DEPTH_SIZE, 16);
-      PixelFmt := FGL.aChoosePixelFormat(@Disp, 1, @FIAttribs[0]);
-      if PixelFmt = nil then
-      begin
-        AddIAttrib(AGL_RED_SIZE, 4);
-        AddIAttrib(AGL_GREEN_SIZE, 4);
-        AddIAttrib(AGL_BLUE_SIZE, 4);
-        PixelFmt := FGL.aChoosePixelFormat(@Disp, 1, @FIAttribs[0]);
-      end;
-    end;
-  end;
+  if Assigned(FShareContext) then
+    shareRC := FShareContext.FRC
+  else
+    shareRC := nil;
 
   try
-    GLSLogger.LogInfo('GLCarbonContext: AGLFormat it is choosed');
+    TempW := Width;
+    TempH := Height;
 
-    FRC := FGL.aCreateContext(PixelFmt, nil);
-    GLSLogger.LogInfo('GLCarbonContext: Context Created');
+    if Width <= 32 then
+      TempW := 32;
+    if Height <= 32 then
+      TempH := 32;
 
-    FGL.aDestroyPixelFormat(PixelFmt);
+    if Width >= 16384 then
+      TempW := 16384;
+    if Height >= 16384 then
+      TempH := 16384;
 
-    FGL.aSetDrawable(FRC, GetWindowPort(Window));
-    GLSLogger.LogInfo('GLCarbonContext: SetDrawable');
+    if TempH <> TempW then
+      target := GL_TEXTURE_2D
+    else  target := GL_TEXTURE_RECTANGLE_EXT;
 
-    FBounds := GetFormBounds;
-    BoundsChanged;
-    GLSLogger.LogInfo('GLCarbonContext: BoundsChanged');
+    if not FGL.ACreatePBuffer(TempW, TempH, target, GL_RGBA,0, @FHPBUFFER) then
+    if FHPBUFFER = nil then
+      raise EPBuffer.Create('Unabled to create pbuffer.');
+    FDC := FHPBUFFER;
+    GLSLogger.Log('GLCarbonContext: PBuffer is Created');
+
+    FAcceleration := chaHardware;
+
+    FRC := FGL.aCreateContext(FPixelFmt, shareRC);
+    if Assigned(shareRC) then
+    begin
+      if Assigned(FRC) then
+      begin
+        FSharedContexts.Add(FShareContext);
+        PropagateSharedContext;
+      end
+      else
+      begin
+        GLSLogger.LogWarning(glsFailedToShare);
+        FRC := FGL.aCreateContext(FPixelFmt, nil);
+      end;
+    end;
+
+    vs := FGL.AGetVirtualScreen(FRC);
+    if not FGL.ASetPBuffer(FRC, FHPBUFFER, 0, 0, vs) then
+      raise EPBuffer.Create('pbuffer dont set');
+
+    Validate;
 
     Activate;
     FGL.Initialize;
 
-    if FRC = nil then
-      raise EGLContext.Create('Failed to create rendering context!');
-    if PtrUInt(FRC) = AGL_BAD_CONTEXT then
-      raise EGLContext.Create('Created bad context!');
+    // If we are using AntiAliasing, adjust filtering hints
+    if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
+        GLStates.MultisampleFilterHint := hintNicest
+    else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
+        GLStates.MultisampleFilterHint := hintFastest
+    else GLStates.MultisampleFilterHint := hintDontCare;
 
-    GLSLogger.LogInfo('Backward compatible core context successfully created');
+    if BufferCount > 1 then
+      FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+
+    if (ServiceContext <> nil) and (Self <> ServiceContext) then
+    begin
+      FSharedContexts.Add(ServiceContext);
+      PropagateSharedContext;
+    end;
+
+    GLSLogger.LogInfo('Backward compatible core PBuffer context successfully created');
   finally
     if Active then
       Deactivate;
+    GL.aDestroyPixelFormat(FPixelFmt);
   end;
-
-end;
-
-procedure TGLCarbonContext.DoCreateMemoryContext(outputDevice: HWND; width,
-  height: Integer; BufferCount: integer);
-begin
-  {$MESSAGE Warn 'DoCreateMemoryContext: Needs to be implemented'}
 end;
 
 function  TGLCarbonContext.DoShareLists(aContext: TGLContext): Boolean;
+var
+  otherRC: TAGLContext;
 begin
-  {$MESSAGE Warn 'DoShareLists: Needs to be implemented'}
+  Result := False;
+  if aContext is TGLCarbonContext then
+  begin
+    otherRC := TGLCarbonContext(aContext).RenderingContext;
+    if RenderingContext <> nil then
+    begin
+      if (RenderingContext <> otherRC) then
+      begin
+        DestroyContext;
+        FShareContext:= TGLCarbonContext(aContext);
+        Result := True;
+      end;
+    end
+    else
+    begin
+      FShareContext := TGLCarbonContext(aContext);
+      Result := False;
+    end;
+  end
+  else
+    raise Exception.Create(cIncompatibleContexts);
 end;
 
 procedure TGLCarbonContext.DoDestroyContext;
@@ -340,22 +651,34 @@ begin
   if (FGL.aGetCurrentContext = FRC) and
      (not FGL.aSetCurrentContext(nil)) then
     raise EGLContext.Create('Failed to deselect rendering context');
-
   FGL.aDestroyContext(FRC);
+  GLSLogger.Log('GLAGLContext: RenderingContext it is Destroyd');
+
+  if FHPBUFFER <> nil then
+  begin
+    GL.ADestroyPBuffer(FHPBUFFER);
+    FHPBUFFER := nil;
+    GLSLogger.Log('GLAGLContext: PBUFFER it is Destroyd');
+  end;
+
   FRC := nil;
+  FDC := nil;
+  FShareContext := nil;
 end;
 
 procedure TGLCarbonContext.DoActivate;
 var
   B: TRect;
 begin
-  B := GetFormBounds;
-  if (B.Left <> FBounds.Left) or (B.Top <> FBounds.Top) or
-    (B.Right <> FBounds.Right) or (B.Bottom <> FBounds.Bottom) then
-  begin
-    FBounds := B;
-    BoundsChanged;
-      GLSLogger.LogInfo('DoActivate-BoundsChanged');
+  if FHPBUFFER = nil then
+    begin
+    B := GetFormBounds;
+    if (B.Left <> FBounds.Left) or (B.Top <> FBounds.Top) or
+      (B.Right <> FBounds.Right) or (B.Bottom <> FBounds.Bottom) then
+    begin
+      FBounds := B;
+      BoundsChanged;
+    end;
   end;
 
   if (not FGL.aSetCurrentContext(FRC)) then

@@ -59,6 +59,10 @@ type
     procedure ReadGLXExtensions;
     procedure ReadGLXImplementationProperties;
 {$ENDIF}
+{$IFDEF DARWIN}
+    procedure ReadAGLExtensions;
+    procedure ReadAGLImplementationProperties;
+{$ENDIF}
     function GetAddress(ProcName: string): Pointer;
     function GetAddressNoSuffixes(ProcName: string): Pointer;
     function GetAddressAlt(ProcName1, ProcName2: string): Pointer;
@@ -2514,6 +2518,13 @@ type
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'AGL function/procedure'}{$ENDIF}
 {$IFDEF DARWIN}
+    // AGL extension checks
+    A_aux_depth_stencil,A_client_storage,A_element_array,A_fence,A_float_pixels,
+    A_flush_buffer_range,A_flush_render,A_object_purgeable,A_packed_pixels,
+    A_pixel_buffer,A_rgb_422,A_specular_vector,A_texture_range,A_transform_hint,
+    A_vertex_array_object,A_vertex_array_range,A_vertex_program_evaluators,
+    A_ycbcr_422: boolean;
+
     ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     AChoosePixelFormat : function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     ADestroyPixelFormat: procedure(pix: TAGLPixelFormat); cdecl;
@@ -2605,9 +2616,6 @@ type
     procedure ClearError;
     property IsInitialized: boolean read FInitialized;
     property DebugMode: boolean read FDebug write FDebug;
-{$IFDEF DARWIN}
-    procedure ReadAGLExtensions;
-{$ENDIF}
   end;
 
 {$IFDEF GLS_REGIONS}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
@@ -2706,9 +2714,6 @@ function aglCreateContext(pix: TAGLPixelFormat; share: TAGLContext): TAGLContext
 function aglDestroyContext(ctx: TAGLContext): GLboolean; cdecl; external libAGL;
 function aglSetCurrentContext (ctx: TAGLContext): GLboolean; cdecl; external libAGL;
 function aglSetDrawable (ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; external libAGL;
-function aglSetOffScreen (ctx: TAGLContext; width, height, rowbytes: TGLsizei; out baseaddr: Pointer): GLboolean; cdecl; external libAGL;
-function aglSetWindowRef (ctx: TAGLContext; window: WindowRef): TGLBoolean; cdecl; external libAGL;
-function glGetString(Name: TGLEnum): PGLChar; cdecl; external opengl32;
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL utility (GLU) functions and procedures'}
@@ -2998,6 +3003,10 @@ begin
   if Result = nil then
   begin
     Result := AGLGetProcAddress(PGLChar(TGLString(vName)));
+    if Result = nil then
+    begin
+      vName := glPrefix + ProcName + 'APPLE';
+      Result := GLGetProcAddress(PGLChar(TGLString(vName)));
   {$ENDIF}
   if Result = nil then
   begin
@@ -3027,6 +3036,7 @@ begin
     end;
   end;
   {$IFDEF DARWIN}
+    end;
   end;
   {$ENDIF}
 {$IFDEF GLS_OPENGL_DEBUG}
@@ -3142,6 +3152,7 @@ begin
 {$ENDIF}
 {$IFDEF DARWIN}
   ReadAGLExtensions;
+  ReadAGLImplementationProperties;
 {$ENDIF}
   GetString := GetAddress('GetString');
   GetStringi := GetAddress('GetStringi'); 
@@ -5391,6 +5402,40 @@ end;
 {$ENDIF}
 
 {$IFDEF DARWIN}
+// ReadAGLImplementationProperties
+
+
+procedure TGLExtensionsAndEntryPoints.ReadAGLImplementationProperties;
+var
+  MajorVersion, MinorVersion: integer;
+begin
+  // This procedure will probably need changing, as totally untested
+  // This might only work if AGL functions/procedures are loaded dynamically
+  if Assigned(GetString) then
+    FBuffer := string(GetString(GL_EXTENSIONS))
+  else
+    FBuffer := '';
+
+  A_aux_depth_stencil := CheckExtension('GL_APPLE_aux_depth_stencil');
+  A_client_storage := CheckExtension('GL_APPLE_client_storage');
+  A_element_array := CheckExtension('GL_APPLE_element_array');
+  A_fence := CheckExtension('GL_APPLE_fence');
+  A_float_pixels := CheckExtension('GL_APPLE_float_pixels');
+  A_flush_buffer_range := CheckExtension('GL_APPLE_flush_buffer_range');
+  A_flush_render := CheckExtension('GL_APPLE_flush_render');
+  A_object_purgeable := CheckExtension('GL_APPLE_object_purgeable');
+  A_packed_pixels := CheckExtension('GL_APPLE_packed_pixels');
+  A_pixel_buffer := CheckExtension('GL_APPLE_pixel_buffer');
+  A_rgb_422 := CheckExtension('GL_APPLE_rgb_422');
+  A_specular_vector := CheckExtension('GL_APPLE_specular_vector');
+  A_texture_range := CheckExtension('GL_APPLE_texture_range');
+  A_transform_hint := CheckExtension('GL_APPLE_transform_hint');
+  A_vertex_array_object := CheckExtension('GL_APPLE_vertex_array_object');
+  A_vertex_array_range := CheckExtension('GL_APPLE_vertex_array_range');
+  A_vertex_program_evaluators := CheckExtension('GL_APPLE_vertex_program_evaluators');
+  A_ycbcr_422 := CheckExtension('GL_APPLE_ycbcr_422');
+end;
+
 procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
 begin
   // Managing pixel format object
@@ -5637,4 +5682,3 @@ finalization
   CloseOpenGL;
 
 end.
-
