@@ -4716,16 +4716,6 @@ begin
       BufferArrays;
     end;
 
-    if Vertices.Count > 0 then
-    begin
-      if FUseVBO then
-        FVerticesVBO.Bind;
-      GL.EnableClientState(GL_VERTEX_ARRAY);
-      GL.VertexPointer(3, GL_FLOAT, 0, lists[0]);
-    end
-    else
-      GL.DisableClientState(GL_VERTEX_ARRAY);
-
     if not mrci.ignoreMaterials then
     begin
       if Normals.Count > 0 then
@@ -4785,9 +4775,21 @@ begin
       GL.DisableClientState(GL_COLOR_ARRAY);
       xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
     end;
+
+    if Vertices.Count > 0 then
+    begin
+      if FUseVBO then
+        FVerticesVBO.Bind;
+      GL.EnableClientState(GL_VERTEX_ARRAY);
+      GL.VertexPointer(3, GL_FLOAT, 0, lists[0]);
+    end
+    else
+      GL.DisableClientState(GL_VERTEX_ARRAY);
+
     if GL.EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
       GL.LockArrays(0, vertices.Count);
+
     FLastLightMapIndex := -1;
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;

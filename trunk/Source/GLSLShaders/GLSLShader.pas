@@ -257,7 +257,7 @@ const
   cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
 var
-  i, NumVarying, MaxVaryings: Integer;
+  i, NumVarying: Integer;
   sVaryings: array of AnsiString;
   pVaryings: array of PGLChar;
 begin
