@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
       <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
       <li>20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -116,7 +117,7 @@ type
     FVirtualHandle: TGLVirtualHandle;
     FShaderStyle: TGLShaderStyle;
     FUpdateCount: Integer;
-    FShaderActive, FShaderInitialized: Boolean;
+    FShaderActive: Boolean;
     FFailedInitAction: TGLShaderFailedInitAction;
 
   protected
@@ -1124,7 +1125,6 @@ begin
   FVirtualHandle.AllocateHandle;
   if FVirtualHandle.IsDataNeedUpdate then
   begin
-    FShaderInitialized := True;
     DoInitialize(rci, Sender);
     FVirtualHandle.NotifyDataUpdated;
   end;
@@ -1134,22 +1134,11 @@ end;
 //
 
  procedure TGLShader.FinalizeShader;
-var
-  activateContext: Boolean;
 begin
-  if FShaderInitialized then
+  if FVirtualHandle.Handle <> 0 then
   begin
-    activateContext := (not FVirtualHandle.RenderingContext.Active);
-    if activateContext then
-      FVirtualHandle.RenderingContext.Activate;
-    try
-      FShaderInitialized := False;
-      DoFinalize;
-      FVirtualHandle.NotifyChangesOfData;
-    finally
-      if activateContext then
-        FVirtualHandle.RenderingContext.Deactivate;
-    end;
+    FVirtualHandle.DestroyHandle;
+    DoFinalize;
   end;
 end;
 
@@ -1200,7 +1189,6 @@ end;
 procedure TGLShader.OnVirtualHandleDestroy(sender: TGLVirtualHandle; var handle:
   Cardinal);
 begin
-  FinalizeShader;
   handle := 0;
 end;
 
