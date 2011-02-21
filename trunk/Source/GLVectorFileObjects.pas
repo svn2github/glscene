@@ -10,7 +10,7 @@
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>23/07/10 - Yar - Bugfixed TSkeleton.WriteToFiler (thanks E-Cone)
       <li>11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
-                           Replace OpenGL1x functions to OpenGLAdapter. TGLFreeFrom now osDirectDraw by default
+                           Replace OpenGL1x functions to OpenGLAdapter.
                            Fixes for Linux x64
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>11/04/10 - Yar - Replaced function InsideList to GLState.InsideList
@@ -27,7 +27,7 @@
       <li>07/06/08 - DaStr - Implemented TBaseMeshObject.Assign(), TMeshObject.Assign()
       <li>20/05/08 - Mrqzzz - Fixed memory leak in TSkeletonMeshObject.Destroy (thanks Dave Gravel)
       <li>17/05/08 - DaStr - Added TSkeleton.MorphInvisibleParts
-                             (thanks andron13 and Веон) (BugtrackerID = 1966020)
+                             (thanks andron13 and Veon (BugtrackerID = 1966020)
                              Added vGLVectorFileObjectsEnableVBOByDefault
       <li>01/05/08 - DaStr - Implemented TGLBaseMesh.BarycenterAbsolutePosition()
                              Bugfixed TGLBaseMesh.AxisAlignedDimensionsUnscaled()
@@ -7979,7 +7979,6 @@ constructor TGLFreeForm.Create(AOwner: TComponent);
 begin
   inherited;
   FUseMeshMaterials := True;
-  ObjectStyle:= ObjectStyle + [osDirectDraw];
 end;
 
 // Destroy
@@ -9258,4 +9257,3 @@ finalization
   FreeAndNil(vVectorFileFormats);
 
 end.
-
