@@ -551,10 +551,10 @@ const
   CUDA_ERROR_UNKNOWN = 999;
   /// < Unknown error
 
+const
+
   { * If set, host memory is portable between CUDA contexts.
     * Flag for ::cuMemHostAlloc() }
-
-const
 
   CU_MEMHOSTALLOC_PORTABLE = $01;
 
@@ -886,12 +886,12 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemHostAlloc = function(var pp; bytesize: Cardinal; Flags: Cardinal)
+  TcuMemHostAlloc = function(var pp: Pointer; bytesize: Cardinal; Flags: Cardinal)
     : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuMemHostGetDevicePointer = function(var pdptr: TCUdeviceptr; var p;
+  TcuMemHostGetDevicePointer = function(var pdptr: TCUdeviceptr; p: Pointer;
     Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
