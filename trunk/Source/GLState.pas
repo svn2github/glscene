@@ -3209,7 +3209,10 @@ begin
     or (FUBOStates[ATarget, AIndex].FOffset > 0)
     or (FUBOStates[ATarget, AIndex].FSize <> ABufferSize) then
   begin
-    FUniformBufferBinding := Value;
+    case ATarget of
+      bbtUniform: FUniformBufferBinding := Value;
+      bbtTransformFeedBack: FTransformFeedbackBufferBinding := Value;
+    end;
     FUBOStates[ATarget, AIndex].FUniformBufferBinding := Value;
     FUBOStates[ATarget, AIndex].FOffset := 0;
     FUBOStates[ATarget, AIndex].FSize := ABufferSize;
@@ -3231,7 +3234,10 @@ begin
     or (FUBOStates[ATarget, AIndex].FOffset <> AOffset)
     or (FUBOStates[ATarget, AIndex].FSize <> ARangeSize) then
   begin
-    FUniformBufferBinding := Value;
+    case ATarget of
+      bbtUniform: FUniformBufferBinding := Value;
+      bbtTransformFeedBack: FTransformFeedbackBufferBinding := Value;
+    end;
     FUBOStates[ATarget, AIndex].FUniformBufferBinding := Value;
     FUBOStates[ATarget, AIndex].FOffset := AOffset;
     FUBOStates[ATarget, AIndex].FSize := ARangeSize;
