@@ -1659,8 +1659,6 @@ begin
     try
       for i := aList.Count - 1 downto 0 do
       begin
-        if I = 1111 then
-          Sleep(0);
         contextHandle := TGLContextHandle(aList[i]);
         contextHandle.ContextDestroying;
       end;
