@@ -41,7 +41,7 @@ contains
   GLS_CL_GL in '..\Source\ComputeAPIs\GLS_CL_GL.pas',
   GLS_CUDA_API in '..\Source\ComputeAPIs\GLS_CUDA_API.pas',
   GLS_CUDA_RunTime in '..\Source\ComputeAPIs\GLS_CUDA_RunTime.pas',
-  GLS_CUDA_FastFourierTransformation in '..\Source\ComputeAPIs\GLS_CUDA_FourierTransform.pas',
+  GLS_CUDA_FourierTransform in '..\Source\ComputeAPIs\GLS_CUDA_FourierTransform.pas',
   GLS_CUDA_Utility in '..\Source\ComputeAPIs\GLS_CUDA_Utility.pas',
   GLSCUDAParser in '..\Source\GLSCUDAParser.pas',
   GLSCUDA in '..\Source\GLSCUDA.pas',
