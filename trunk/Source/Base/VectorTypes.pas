@@ -19,6 +19,7 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>21/02/11 - Yar - Added half and signed byte vectors
     <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
     <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
     <li>19/12/04 - PhP - Added byte vectors
@@ -33,33 +34,42 @@ interface
 
 {$i GLScene.inc}
 
+uses
+  GLCrossPlatform;
+
 type
   TVector2d = array[0..1] of double;
   TVector2f = array[0..1] of single;
+  TVector2h = array[0..1] of THalfFloat;
   TVector2i = array[0..1] of longint;
   TVector2ui = array[0..1] of longWord;
   TVector2s = array[0..1] of smallint;
   TVector2b = array[0..1] of byte;
+  TVector2sb = array[0..1] of ShortInt;
   TVector2e = array[0..1] of Extended;
   TVector2w = array[0..1] of Word;
   TVector2p = array[0..1] of Pointer;
 
   TVector3d = array[0..2] of double;
   TVector3f = array[0..2] of single;
+  TVector3h = array[0..2] of THalfFloat;
   TVector3i = array[0..2] of longint;
   TVector3ui = array[0..2] of longWord;
   TVector3s = array[0..2] of smallint;
   TVector3b = array[0..2] of byte;
+  TVector3sb = array[0..2] of ShortInt;
   TVector3e = array[0..2] of Extended;
   TVector3w = array[0..2] of Word;
   TVector3p = array[0..2] of Pointer;
 
   TVector4d = array[0..3] of double;
   TVector4f = array[0..3] of single;
+  TVector4h = array[0..3] of THalfFloat;
   TVector4i = array[0..3] of longint;
   TVector4ui = array[0..3] of longWord;
   TVector4s = array[0..3] of smallint;
   TVector4b = array[0..3] of byte;
+  TVector4sb = array[0..3] of ShortInt;
   TVector4e = array[0..3] of Extended;
   TVector4w = array[0..3] of Word;
   TVector4p = array[0..3] of Pointer;
