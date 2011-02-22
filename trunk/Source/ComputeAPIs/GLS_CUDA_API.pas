@@ -2059,7 +2059,7 @@ begin
       [cuMemFreeHostName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemHostAllocShell(var pp; bytesize: Cardinal; Flags: Cardinal)
+function cuMemHostAllocShell(var pp: Pointer; bytesize: Cardinal; Flags: Cardinal)
   : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2071,7 +2071,7 @@ begin
       [cuMemHostAllocName, Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuMemHostGetDevicePointerShell(var pdptr: TCUdeviceptr; var p;
+function cuMemHostGetDevicePointerShell(var pdptr: TCUdeviceptr; p: Pointer;
   Flags: Cardinal): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
