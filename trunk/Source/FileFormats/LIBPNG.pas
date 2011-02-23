@@ -4,6 +4,7 @@
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
       <li>01/04/10 - Yar - Bugfix when Delphi not use optimization (thanks Lampogolovii)
       <li>15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
       <li>05/03/10 - Yar - Creation

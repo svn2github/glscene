@@ -1,17 +1,33 @@
-unit Main;
+{
+  <b>History : </b><font size=-1><ul>
+  <li>01/02/11 - Yar - Added file preview (thaks Dev)
+  <li>04/06/10 - Predator - Created
+  </ul>
+}
 
-{$MODE Delphi}
+unit Main;
 
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
+  {$IFDEF MSWINDOWS}Windows,{$ENDIF}LCLType, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StrUtils, Menus, ImgList, ExtCtrls, ComCtrls,
-  GLSArchiveManager, GLFilePAK, GLFileZLIB;
+  GLSArchiveManager, GLFilePAK, GLFileZLIB, GLLCLViewer, GLCrossPlatform,
+  BaseClasses, GLScene, GLSimpleNavigation, GLMaterial, GLVectorFileObjects,
+  GLObjects, GLCoordinates,GLGraphics, GLState, GLCompositeImage,
+  //FileFormats 3D
+  GLFileMS3D, GLFile3DS, GLFileMD2, GLFileMD3, GLFileLMTS, GLFileOBJ, GLFileSMD,
+  //FileFormats 3D
+  GLFileJPEG, TGA, GLFilePNG,GLFileDDS;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     MainMenu1: TMainMenu;
+    ShowPreView: TMenuItem;
+    View: TMenuItem;
     TreeView: TTreeView;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
@@ -37,7 +53,18 @@ type
     None1: TMenuItem;
     Fast1: TMenuItem;
     Default1: TMenuItem;
+    GLScene1: TGLScene;
+    GLSceneViewer1: TGLSceneViewer;
+    GLCamera1: TGLCamera;
+    GLLightSource1: TGLLightSource;
+    GLSprite1: TGLSprite;
+    GLFreeForm1: TGLFreeForm;
+    GLMaterialLibrary1: TGLMaterialLibrary;
+    GLSimpleNavigation1: TGLSimpleNavigation;
+    GLSArchiveManager1: TGLSArchiveManager;
+    GLCube1: TGLCube;
     procedure FormCreate(Sender: TObject);
+    procedure ShowPreViewClick(Sender: TObject);
     procedure TreeViewRefresh;
     procedure FileListRefresh;
     procedure AddNode(text: string; node: TTreeNode);
@@ -80,10 +107,11 @@ var
 
 implementation
 
-uses FolderDialog, FolderSelect;
+uses FolderDialog, FolderSelect,FileUtil;
 
 {$R *.lfm}
 {$R icons.res}
+
 
 procedure TForm1.AddNode(text: string; node: TTreeNode);
 var
@@ -200,12 +228,21 @@ var
    Bmp: TBitmap;
 begin
    Bmp:=TBitmap.Create;
-   Bmp.LoadFromResourceName(HInstance, 'ICONS');
+   Bmp.LoadFromResourceName(HInstance, 'icons');
    ImageList1.AddMasked(Bmp,clWhite);
    Bmp.Free;  
    ArchiveManager:= TGLSArchiveManager.Create(Self);
    Archive := ArchiveManager.Archives.Add;
    vMenu := None1;
+end;
+
+procedure TForm1.ShowPreViewClick(Sender: TObject);
+begin
+  if not ShowPreView.Checked then
+  begin
+    GLCube1.Visible:=false;
+    GLFreeForm1.Visible:=false;
+  end;
 end;
 
 procedure TForm1.TreeViewCollapsing(Sender: TObject; Node: TTreeNode;
@@ -219,10 +256,53 @@ end;
 procedure TForm1.ListViewClick(Sender: TObject);
 var
    s: string;
+   len,x:Byte;
+   strm: TStream;
+   img: TGLCompositeImage;
+   objSize:Single;
 begin
    if not Assigned(ListView.Selected) then Exit;
    s:=ListView.Selected.Caption;
    Selection:=CurPath+s;
+
+   if ShowPreView.Checked then
+   if ListView.Selected.ImageIndex=2 then
+     begin
+       len:=Length(s);
+       s:=LowerCase(s);
+       if (Copy(s,len-3,5)='ms3d') or (Copy(s,len-2,5)='3ds') or (Copy(s,len-2,5)='md2') or (Copy(s,len-2,5)='md3') or (Copy(s,len-2,5)='obj') or (Copy(s,len-3,5)='lmts') or (Copy(s,len-2,5)='smd') then
+         begin
+           GLFreeForm1.LoadFromStream(Selection,Archive.GetContent(Selection));
+           GLCube1.Visible:=false;
+           GLFreeForm1.Visible:=True;
+           GLCamera1.Position.SetPoint(30,40,50);
+
+           objSize:=GLFreeForm1.BoundingSphereRadius;
+           if objSize>0 then
+             begin
+               if objSize<1 then
+                 begin
+                   GLCamera1.SceneScale:=1/objSize;
+                   objSize:=1;
+                 end
+                 else GLCamera1.SceneScale:=1;
+               GLCamera1.AdjustDistanceToTarget(objSize*0.12);
+               GLCamera1.DepthOfView:=1.5*GLCamera1.DistanceToTarget+1*objSize;
+             end;
+
+         end;
+       if (Copy(s,len-2,5)='jpg') or (Copy(s,len-2,5)='dds') {or (Copy(s,len-2,5)='tga')} or (Copy(s,len-2,5)='png') then
+         begin
+           strm := Archive.GetContent(Selection);
+           img := GLMaterialLibrary1.TextureByName('image').Image as TGLCompositeImage;
+           img.LoadFromStream(strm);
+
+           GLCube1.Material.LibMaterialName:='image';
+           GLCube1.Visible:=True;
+           GLFreeForm1.Visible:=false;
+           GLCamera1.Position.SetPoint(3,4,5);
+         end;
+     end;
 end;
 
 procedure TForm1.ListViewDblClick(Sender: TObject);

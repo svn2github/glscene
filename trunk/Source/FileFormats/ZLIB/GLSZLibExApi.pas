@@ -4,6 +4,7 @@
 {: ZLibEx<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
       <li>18/05/10 - Yar - Changed to dynamic library loading for FPC (by Predator)
       <li>06/05/10 - Yar - Added to GLScene (contributed by oleg matrozov)
   </ul></font>

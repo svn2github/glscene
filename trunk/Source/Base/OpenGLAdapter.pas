@@ -3,6 +3,8 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
+  <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
   <li>18/01/11 - Yar - Added entry points for AGL
   <li>23/10/10 - Yar - Added GL_NV_vdpau_interop
   <li>25/09/10 - Yar - Added GL_get_program_binary

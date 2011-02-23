@@ -2,7 +2,7 @@ unit FolderSelect;
 
 interface
 
-uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
+uses {$IFDEF MSWINDOWS}Windows,{$ENDIF} SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, ComCtrls, ShellCtrls;
 
 type
@@ -23,6 +23,6 @@ var
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
-end.
+end.

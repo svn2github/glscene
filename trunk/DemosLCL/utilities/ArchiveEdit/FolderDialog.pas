@@ -4,7 +4,7 @@ unit FolderDialog;
 
 interface
 
-uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
+uses {$IFDEF MSWINDOWS}Windows,{$ENDIF} SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls;
 
 type
@@ -27,4 +27,4 @@ implementation
 
 {$R *.lfm}
 
-end.
+end.
