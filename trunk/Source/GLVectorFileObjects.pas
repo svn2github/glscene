@@ -6,6 +6,7 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
+      <li>23/02/11 - Yar - Added extent caching to TMeshObject
       <li>03/12/10 - Yar - Added mesh visibility checking in TMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>23/07/10 - Yar - Bugfixed TSkeleton.WriteToFiler (thanks E-Cone)
@@ -707,6 +708,7 @@ type
     FTexCoordsVBO: array of TGLVBOHandle;
     FLightmapTexCoordsVBO: TGLVBOHandle;
     FValidBuffers: TVBOBuffers;
+    FExtentCache: TAABB;
 
     procedure SetUseVBO(const Value: boolean);
     procedure SetValidBuffers(Value: TVBOBuffers);
@@ -765,7 +767,8 @@ type
     procedure BuildList(var mrci: TRenderContextInfo); virtual;
 
     //: The extents of the object (min and max coordinates)
-    procedure GetExtents(var min, max: TAffineVector); dynamic;
+    procedure GetExtents(out min, max: TAffineVector); overload; virtual;
+    procedure GetExtents(out aabb: TAABB); overload; virtual;
 
     //: Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
@@ -839,10 +842,10 @@ type
   private
     { Private Declarations }
     FOwner: TGLBaseMesh;
+
     {: Resturns True if all its MeshObjects use VBOs. }
     function GetUseVBO: Boolean;
     procedure SetUseVBO(const Value: Boolean);
-
   protected
     { Protected Declarations }
     function GetMeshObject(Index: Integer): TMeshObject;
@@ -868,7 +871,7 @@ type
       lerpFactor: Single);
     function MorphTargetCount: Integer;
 
-    procedure GetExtents(var min, max: TAffineVector);
+    procedure GetExtents(out min, max: TAffineVector);
     procedure Translate(const delta: TAffineVector);
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList;
@@ -1426,7 +1429,7 @@ type
     property Skeleton: TSkeleton read FSkeleton;
 
     {: Computes the extents of the mesh.<p> }
-    procedure GetExtents(var min, max: TAffineVector);
+    procedure GetExtents(out min, max: TAffineVector);
     {: Computes the barycenter of the mesh.<p> }
     function GetBarycenter: TAffineVector;
     {: Invoked after a mesh has been loaded.<p>
@@ -4070,9 +4073,25 @@ end;
 // GetExtents
 //
 
-procedure TMeshObject.GetExtents(var min, max: TAffineVector);
+procedure TMeshObject.GetExtents(out min, max: TAffineVector);
 begin
-  FVertices.GetExtents(min, max);
+  if FVertices.Revision > FExtentCache.revision then
+  begin
+    FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
+    FExtentCache.revision := FVertices.Revision;
+  end;
+  min := FExtentCache.min;
+  max := FExtentCache.max;
+end;
+
+procedure TMeshObject.GetExtents(out aabb: TAABB);
+begin
+  if FVertices.Revision > FExtentCache.revision then
+  begin
+    FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
+    FExtentCache.revision := FVertices.Revision;
+  end;
+  aabb := FExtentCache;
 end;
 
 // Prepare
@@ -5369,7 +5388,7 @@ end;
 // GetExtents
 //
 
-procedure TMeshObjectList.GetExtents(var min, max: TAffineVector);
+procedure TMeshObjectList.GetExtents(out min, max: TAffineVector);
 var
   i, k: Integer;
   lMin, lMax: TAffineVector;
@@ -7482,7 +7501,7 @@ end;
 // GetExtents
 //
 
-procedure TGLBaseMesh.GetExtents(var min, max: TAffineVector);
+procedure TGLBaseMesh.GetExtents(out min, max: TAffineVector);
 var
   i, k: Integer;
   lMin, lMax: TAffineVector;

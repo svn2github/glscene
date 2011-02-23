@@ -239,7 +239,7 @@ type
     procedure MorphTo(morphTargetIndex: integer); override;
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: integer;
       lerpFactor: single); override;
-    procedure GetExtents(var min, max: TAffineVector); override;
+    procedure GetExtents(out min, max: TAffineVector); override;
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList;
       override;
@@ -1258,7 +1258,7 @@ begin
   end;
 end;
 
-procedure TGLFile3DSDummyObject.GetExtents(var min, max: TAffineVector);
+procedure TGLFile3DSDummyObject.GetExtents(out min, max: TAffineVector);
 begin
   inherited GetExtents(min, max);
   if not FStatic then
