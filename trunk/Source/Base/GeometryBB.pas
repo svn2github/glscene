@@ -44,6 +44,7 @@ type
    {: Structure for storing Axis Aligned Bounding Boxes }
    TAABB = record
       min, max : TAffineVector;
+      revision: LongWord;
    end;
    PAABB = ^TAABB;
 
