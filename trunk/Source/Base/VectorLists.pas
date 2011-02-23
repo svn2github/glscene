@@ -6,6 +6,7 @@
    Misc. lists of vectors and entities<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/02/11 - Yar - Added Revision mechanism to TAffineVectorList
       <li>15/12/10 - DaStr - Added Min() and Max() for TSingleList and TDoubleList
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>24/08/10 - Yar - Added to T4ByteList more overload of Add method
@@ -82,6 +83,7 @@ type
     FGrowthDelta: Integer;
     FBufferItem: PByteArray;
     FOptions: TBaseListOptions;
+    FRevision: LongWord;
     FTagString: string;
   protected
     { Protected Declarations }
@@ -149,6 +151,8 @@ type
            required. }
     property SetCountResetsMemory: Boolean read GetSetCountResetsMemory write SetSetCountResetsMemory;
     property TagString: string read FTagString write FTagString;
+    {: Increase by one after every content changes. }
+    property Revision: LongWord read FRevision write FRevision;
   end;
 
   // TBaseVectorList
@@ -166,7 +170,7 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    procedure GetExtents(var min, max: TAffineVector); dynamic;
+    procedure GetExtents(out min, max: TAffineVector); dynamic;
     function Sum: TAffineVector; dynamic;
     procedure Normalize; dynamic;
     function MaxSpacing(list2: TBaseVectorList): Single; dynamic;
@@ -894,6 +898,7 @@ begin
     FGrowthDelta := TBaseList(Src).FGrowthDelta;
     FCount := FCapacity;
     FTagString := TBaseList(Src).FTagString;
+    Inc(FRevision);
   end
   else
     inherited;
@@ -964,6 +969,7 @@ begin
     end
   else
     RaiseFilerException(archiveVersion);
+  Inc(FRevision);
 end;
 
 // SetCount
@@ -976,6 +982,7 @@ begin
   if (Val > FCount) and (bloSetCountResetsMemory in FOptions) then
     FillChar(FBaseList[FItemSize * FCount], (Val - FCount) * FItemSize, 0);
   FCount := Val;
+  Inc(FRevision);
 end;
 
 // SetCapacity
@@ -991,6 +998,7 @@ begin
     end;
     ReallocMem(FBaseList, newCapacity * FItemSize);
     FCapacity := newCapacity;
+    Inc(FRevision);
   end;
 end;
 
@@ -1002,6 +1010,7 @@ begin
     SetCapacity(Integer(nbVals) + Count);
   FillChar(FBaseList[FCount * FItemSize], Integer(nbVals) * FItemSize, 0);
   FCount := FCount + Integer(nbVals);
+  Inc(FRevision);
 end;
 
 // InsertNulls
@@ -1024,6 +1033,7 @@ begin
         (FCount - Index) * FItemSize);
     FillChar(FBaseList[Index * FItemSize], Integer(nbVals) * FItemSize, 0);
     FCount := nc;
+    Inc(FRevision);
   end;
 end;
 
@@ -1121,6 +1131,7 @@ begin
     System.Move(FBaseList[(Index + 1) * FItemSize],
       FBaseList[Index * FItemSize],
       (FCount - Index) * FItemSize);
+  Inc(FRevision);
 end;
 
 // DeleteItems
@@ -1139,6 +1150,7 @@ begin
         (FCount - Index - Integer(nbVals)) * FItemSize);
     end;
     Dec(FCount, nbVals);
+    Inc(FRevision);
   end;
 end;
 
@@ -1165,6 +1177,7 @@ begin
     System.Move(FBaseList[index2 * FItemSize], FBaseList[index1 * FItemSize], FItemSize);
     System.Move(BufferItem[0], FBaseList[index2 * FItemSize], FItemSize);
   end;
+  Inc(FRevision);
 end;
 
 // Move
@@ -1197,6 +1210,7 @@ begin
       PInteger(@FBaseList[newIndex * FItemSize])^ := PInteger(BufferItem)^
     else
       System.Move(BufferItem[0], FBaseList[newIndex * FItemSize], FItemSize);
+    Inc(FRevision);
   end;
 end;
 
@@ -1214,6 +1228,7 @@ begin
     Inc(s);
     Dec(e);
   end;
+  Inc(FRevision);
 end;
 
 // ------------------
@@ -1255,7 +1270,7 @@ end;
 
 // GetExtents
 //
-procedure TBaseVectorList.GetExtents(var min, max: TAffineVector);
+procedure TBaseVectorList.GetExtents(out min, max: TAffineVector);
 var
   I, K: Integer;
   f:    Single;
@@ -1299,6 +1314,7 @@ var
 begin
   for I := 0 to Count - 1 do
     NormalizeVector(PAffineVector(ItemAddress[I])^);
+  Inc(FRevision);
 end;
 
 // MaxSpacing
@@ -1327,6 +1343,7 @@ var
 begin
   for I := 0 to Count - 1 do
     AddVector(PAffineVector(ItemAddress[I])^, delta);
+  Inc(FRevision);
 end;
 
 // Translate (TBaseVectorList)
@@ -1338,6 +1355,7 @@ begin
   Assert(Count <= delta.Count);
   for I := 0 to Count - 1 do
     AddVector(PAffineVector(ItemAddress[I])^, PAffineVector(delta.ItemAddress[I])^);
+  Inc(FRevision);
 end;
 
 // TranslateInv (TBaseVectorList)
@@ -1349,6 +1367,7 @@ begin
   Assert(Count <= delta.Count);
   for I := 0 to Count - 1 do
     SubtractVector(PAffineVector(ItemAddress[I])^, PAffineVector(delta.ItemAddress[I])^);
+  Inc(FRevision);
 end;
 
 // AngleLerp
@@ -1377,6 +1396,7 @@ begin
   end
   else
     Assign(list1);
+  Inc(FRevision);
 end;
 
 // AngleCombine
@@ -1390,6 +1410,7 @@ begin
     PAffineVector(ItemAddress[I])^ := VectorAngleCombine(PAffineVector(ItemAddress[I])^,
       PAffineVector(list1.ItemAddress[I])^,
       intensity);
+  Inc(FRevision);
 end;
 
 // Combine
@@ -1403,6 +1424,7 @@ begin
     CombineVector(PAffineVector(ItemAddress[I])^,
       PAffineVector(list2.ItemAddress[I])^,
       factor);
+  Inc(FRevision);
 end;
 
 // GetItemAddress
@@ -1451,6 +1473,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   FList^[Result] := Item;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // Add (hmg)
@@ -1469,6 +1492,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   FList^[FCount - 2] := i1;
   FList^[FCount - 1] := i2;
+  Inc(FRevision);
 end;
 
 // Add (3 affine)
@@ -1481,6 +1505,7 @@ begin
   FList^[FCount - 3] := i1;
   FList^[FCount - 2] := i2;
   FList^[FCount - 1] := i3;
+  Inc(FRevision);
 end;
 
 // Add (vector2f)
@@ -1511,6 +1536,7 @@ begin
   v^[0] := X;
   v^[1] := Y;
   v^[2] := 0;
+  Inc(FRevision);
 end;
 
 // Add
@@ -1527,6 +1553,7 @@ begin
   v^[0] := X;
   v^[1] := Y;
   v^[2] := Z;
+  Inc(FRevision);
 end;
 
 // Add (3 ints)
@@ -1543,6 +1570,7 @@ begin
   v^[1] := Y;
   v^[2] := Z;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // Add (3 ints, no capacity check)
@@ -1557,6 +1585,7 @@ begin
   v^[1] := Y;
   v^[2] := Z;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // Add (2 ints in array + 1)
@@ -1573,6 +1602,7 @@ begin
   v^[1] := xy^[1];
   v^[2] := Z;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // AddNC (2 ints in array + 1, no capacity check)
@@ -1587,6 +1617,7 @@ begin
   v^[1] := xy^[1];
   v^[2] := Z;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // Add
@@ -1600,6 +1631,7 @@ begin
     System.Move(list.FList[0], FList[Count], list.Count * SizeOf(TAffineVector));
     Inc(FCount, list.Count);
   end;
+  Inc(FRevision);
 end;
 
 // Get
@@ -1626,6 +1658,7 @@ begin
       (FCount - Index) * SizeOf(TAffineVector));
   FList^[Index] := Item;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // IndexOf
@@ -1649,7 +1682,10 @@ function TAffineVectorList.FindOrAdd(const item: TAffineVector): Integer;
 begin
   Result := IndexOf(item);
   if Result < 0 then
+  begin
     Result := Add(item);
+    Inc(FRevision);
+  end;
 end;
 
 // Put
@@ -1660,6 +1696,7 @@ begin
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
   FList^[Index] := Item;
+  Inc(FRevision);
 end;
 
 // SetCapacity
@@ -1685,6 +1722,7 @@ begin
   begin
     Result := Get(FCount - 1);
     Delete(FCount - 1);
+    Inc(FRevision);
   end
   else
     Result := NullVector;
@@ -1695,6 +1733,7 @@ end;
 procedure TAffineVectorList.Translate(const delta: TAffineVector);
 begin
   VectorArrayAdd(FList, delta, Count, FList);
+  Inc(FRevision);
 end;
 
 // Translate (delta, range)
@@ -1702,6 +1741,7 @@ end;
 procedure TAffineVectorList.Translate(const delta: TAffineVector; base, nb: Integer);
 begin
   VectorArrayAdd(@FList[base], delta, nb, @FList[base]);
+  Inc(FRevision);
 end;
 
 // TranslateItem
@@ -1713,6 +1753,7 @@ begin
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
   AddVector(FList^[Index], delta);
+  Inc(FRevision);
 end;
 
 // TranslateItems
@@ -1726,6 +1767,7 @@ begin
         nb := FCount;
 {$ENDIF}
   VectorArrayAdd(@FList[Index], delta, nb - Index, @FList[Index]);
+  Inc(FRevision);
 end;
 
 // CombineItem
@@ -1736,6 +1778,7 @@ begin
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
   CombineVector(FList^[Index], vector, @f);
+  Inc(FRevision);
 end;
 
 // TransformAsPoints
@@ -1746,6 +1789,7 @@ var
 begin
   for I := 0 to FCount - 1 do
     FList^[I] := VectorTransform(FList^[I], matrix);
+  Inc(FRevision);
 end;
 
 // TransformAsVectors (hmg)
@@ -1770,6 +1814,7 @@ var
 begin
   for I := 0 to FCount - 1 do
     FList^[I] := VectorTransform(FList^[I], matrix);
+  Inc(FRevision);
 end;
 
 // Normalize
@@ -1777,6 +1822,7 @@ end;
 procedure TAffineVectorList.Normalize;
 begin
   NormalizeVectorArray(List, Count);
+  Inc(FRevision);
 end;
 
 // Lerp
@@ -1790,6 +1836,7 @@ begin
     FCount := list1.Count;
     VectorArrayLerp(TAffineVectorList(list1).List, TAffineVectorList(list2).List,
       lerpFactor, FCount, List);
+    Inc(FRevision);
   end;
 end;
 
@@ -1798,7 +1845,10 @@ end;
 procedure TAffineVectorList.Scale(factor: Single);
 begin
   if (Count > 0) and (factor <> 1) then
+  begin
     ScaleFloatArray(@FList[0][0], Count * 3, factor);
+    Inc(FRevision);
+  end;
 end;
 
 // Scale (affine)
@@ -1809,6 +1859,7 @@ var
 begin
   for I := 0 to Count - 1 do
     ScaleVector(FList^[I], factors);
+  Inc(FRevision);
 end;
 
 // ------------------
