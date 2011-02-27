@@ -4075,7 +4075,7 @@ end;
 
 procedure TMeshObject.GetExtents(out min, max: TAffineVector);
 begin
-  if FVertices.Revision > FExtentCache.revision then
+  if FVertices.Revision <> FExtentCache.revision then
   begin
     FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
     FExtentCache.revision := FVertices.Revision;
@@ -4086,7 +4086,7 @@ end;
 
 procedure TMeshObject.GetExtents(out aabb: TAABB);
 begin
-  if FVertices.Revision > FExtentCache.revision then
+  if FVertices.Revision <> FExtentCache.revision then
   begin
     FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
     FExtentCache.revision := FVertices.Revision;
