@@ -15,6 +15,7 @@
    will indicate if there is valid data in the buffer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -77,6 +78,7 @@ type
     procedure BuildMeshFromBuffer(
       Vertices: TAffineVectorList = nil;
       Normals: TAffineVectorList = nil;
+      Colors: TVectorList = nil;
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
 
@@ -197,7 +199,7 @@ begin
     FBuffer.Count := FMaxBufferSize div SizeOf(Single);
     GL.FeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
     ARci.GLStates.Disable(stCullFace);
-    ARci.ignoreMaterials := True;
+    ARci.ignoreMaterials := FMode < fm3DColor;
     ARci.PipelineTransformation.Push;
     ARci.PipelineTransformation.ProjectionMatrix := IdentityHmgMatrix;
     ARci.PipelineTransformation.ViewMatrix :=
@@ -229,6 +231,7 @@ end;
 procedure TGLFeedback.BuildMeshFromBuffer(
   Vertices: TAffineVectorList = nil;
   Normals: TAffineVectorList = nil;
+  Colors: TVectorList = nil;
   TexCoords: TAffineVectorList = nil;
   VertexIndices: TIntegerList = nil);
 var
@@ -236,12 +239,14 @@ var
   i, j, LCount, skip: Integer;
   vertex, color, texcoord: TVector;
   tempVertices, tempNormals, tempTexCoords: TAffineVectorList;
+  tempColors: TVectorList;
   tempIndices: TIntegerList;
   ColorBuffered, TexCoordBuffered: Boolean;
 begin
   Assert(FMode <> fm2D, 'Cannot build mesh from fm2D feedback mode.');
 
   tempVertices := TAffineVectorList.Create;
+  tempColors := TVectorList.Create;
   tempTexCoords := TAffineVectorList.Create;
 
   ColorBuffered := (FMode = fm3DColor) or
@@ -254,11 +259,11 @@ begin
 
   skip := 3;
   if FMode = fm4DColorTexture then
-    skip := skip + 1;
+    Inc(skip, 1);
   if ColorBuffered then
-    skip := skip + 4;
+    Inc(skip, 4);
   if TexCoordBuffered then
-    skip := skip + 4;
+    Inc(skip, 4);
 
   while i < FBuffer.Count - 1 do
   begin
@@ -308,6 +313,7 @@ begin
           ScaleVector(vertex, FCorrectionScaling);
 
           tempVertices.Add(AffineVectorMake(vertex));
+          tempColors.Add(color);
           tempTexCoords.Add(AffineVectorMake(texcoord));
         end;
       end
@@ -340,13 +346,16 @@ begin
     Vertices.Assign(tempVertices);
   if Assigned(Normals) then
     Normals.Assign(tempNormals);
+  if Assigned(Colors) and ColorBuffered then
+    Colors.Assign(tempColors);
   if Assigned(TexCoords) and TexCoordBuffered then
     TexCoords.Assign(tempTexCoords);
 
-  tempVertices.Free;
-  tempNormals.Free;
-  tempTexCoords.Free;
-  tempIndices.Free;
+  tempVertices.Destroy;
+  tempNormals.Destroy;
+  tempColors.Destroy;
+  tempTexCoords.Destroy;
+  tempIndices.Destroy;
 end;
 
 // SetMaxBufferSize
