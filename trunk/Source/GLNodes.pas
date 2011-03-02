@@ -6,6 +6,7 @@
    Nodes are used to describe lines, polygons + more.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
       <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>26/11/09 - DaStr - Improved Lazarus compatibility
@@ -473,7 +474,9 @@ function TGLNodes.Vector(i: Integer): TAffineVector;
     else
       CalcUsingNext;
   end;
-
+var
+  j:Integer;
+  vecnull : Boolean;
 begin
   Assert((i >= 0) and (i < Count));
   if i = 0 then
@@ -486,7 +489,32 @@ begin
   else
     VectorSubtract(Items[i + 1].AsVector, Items[i - 1].AsVector, Result);
   if VectorNorm(Result) < 1e-5 then
-    SetVector(Result, NullVector)
+  begin
+    // avoid returning null vector which generates display bugs in geometry
+    j:=1;
+    vecnull:=True;
+    while (i+j < Count) and (vecnull) do
+    begin
+      VectorSubtract(Items[i+j].AsVector, Items[i].AsVector, Result);
+      if(VectorNorm(Result) > 1e-5)then
+        vecnull:=False
+      else
+        Inc(j);
+    end;
+    j:=1;
+    while (i-j > 0) and (vecnull)  do
+    begin
+      VectorSubtract(Items[i].AsVector, Items[i-j].AsVector, Result);
+      if(VectorNorm(Result) > 1e-5)then
+        vecnull:=False
+      else
+        Inc(j);
+    end;
+    if vecnull then
+      SetVector(Result, NullVector)
+    else
+      NormalizeVector(Result);
+  end
   else
     NormalizeVector(Result);
 end;
