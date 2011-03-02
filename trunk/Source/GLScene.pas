@@ -912,6 +912,8 @@ type
     procedure Translate(tx, ty, tz: Single);
     procedure MoveObjectAround(anObject: TGLBaseSceneObject;
       pitchDelta, turnDelta: Single);
+    procedure MoveObjectAllAround(anObject: TGLBaseSceneObject;
+      pitchDelta, turnDelta: Single);
     procedure Pitch(angle: Single);
     procedure Roll(angle: Single);
     procedure Turn(angle: Single);
@@ -1617,6 +1619,12 @@ type
        it a target the dummycube. Now, to pan across the scene, just move
        the dummycube, to change viewing angle, use this method. }
     procedure MoveAroundTarget(pitchDelta, turnDelta: Single);
+    {: Change camera's position to make it move all around its target.<p>
+       If TargetObject is nil, nothing happens. This method helps in quickly
+       implementing camera controls. Camera's Up and Direction properties
+       are changed.<br>
+       Angle deltas are in degrees.<p>}
+    procedure MoveAllAroundTarget(pitchDelta, turnDelta :Single);
     {: Moves the camera in eye space coordinates. }
     procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance:
       Single);
@@ -4530,6 +4538,61 @@ begin
   end;
 end;
 
+// MoveObjectAllAround
+//
+
+procedure TGLBaseSceneObject.MoveObjectAllAround(anObject: TGLBaseSceneObject;
+  pitchDelta, turnDelta: Single);
+var
+  upvector: TVector;
+  lookat : TVector;
+  rightvector : TVector;
+  tempvector: TVector;
+  T2C: TVector;
+
+begin
+
+  // if camera has got a target
+  if Assigned(anObject) then
+  begin
+    //vector camera to target
+    lookat := VectorNormalize(VectorSubtract(anObject.AbsolutePosition, AbsolutePosition));
+    //camera up vector
+    upvector := VectorNormalize(AbsoluteUp);
+
+    // if upvector and lookat vector are colinear, it is necessary to compute new up vector
+    if Abs(VectorDotProduct(lookat,upvector))>0.99 then
+    begin
+      //X or Y vector use to generate upvector
+      SetVector(tempvector,1,0,0);
+      //if lookat is colinear to X vector use Y vector to generate upvector
+      if Abs(VectorDotProduct(tempvector,lookat))>0.99 then
+      begin
+        SetVector(tempvector,0,1,0);
+      end;
+      upvector:= VectorCrossProduct(tempvector,lookat);
+      rightvector := VectorCrossProduct(lookat,upvector);
+    end
+    else
+    begin
+      rightvector := VectorCrossProduct(lookat,upvector);
+      upvector:= VectorCrossProduct(rightvector,lookat);
+    end;
+    //now the up right and lookat vector are orthogonal
+
+    // vector Target to camera
+    T2C:= VectorSubtract(AbsolutePosition,anObject.AbsolutePosition);
+    RotateVector(T2C,rightvector,DegToRad(-PitchDelta));
+    RotateVector(T2C,upvector,DegToRad(-TurnDelta));
+    AbsolutePosition := VectorAdd(anObject.AbsolutePosition, T2C);
+
+    //now update new up vector
+    RotateVector(upvector,rightvector,DegToRad(-PitchDelta));
+    AbsoluteUp := upvector;
+
+  end;
+end;
+
 // CoordinateChanged
 //
 
@@ -6158,6 +6221,14 @@ end;
 procedure TGLCamera.MoveAroundTarget(pitchDelta, turnDelta: Single);
 begin
   MoveObjectAround(FTargetObject, pitchDelta, turnDelta);
+end;
+
+// MoveAllAroundTarget
+//
+
+procedure TGLCamera.MoveAllAroundTarget(pitchDelta, turnDelta :Single);
+begin
+  MoveObjectAllAround(FTargetObject, pitchDelta, turnDelta);
 end;
 
 // MoveInEyeSpace
