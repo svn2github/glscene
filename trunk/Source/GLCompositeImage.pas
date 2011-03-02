@@ -225,6 +225,7 @@ procedure TGLCompositeImage.SaveToFile(const fileName: string);
 var
   BaseImageClass: TGLBaseImageClass;
   tempImage: TGLBaseImage;
+  LOwner: TGLTexture;
 begin
   if filename = '' then
     exit;
@@ -232,14 +233,10 @@ begin
   tempImage := BaseImageClass.Create;
   if Assigned(FOwnerTexture) then
   begin
-    if TGLTexture(FOwnerTexture).IsHandleAllocated then
-      tempImage.AssignFromTexture(CurrentGLContext,
-        TGLTexture(FOwnerTexture).Handle,
-        NativeTextureTarget,
-        false,
-        TGLTexture(FOwnerTexture).TextureFormatEx)
-    else
-      tempImage.Assign(fBitmap);
+    LOwner := TGLTexture(FOwnerTexture);
+    if not tempImage.AssignFromTexture(
+      LOwner.TextureHandle, False, LOwner.TextureFormatEx) then
+        tempImage.Assign(fBitmap);
   end
   else
     tempImage.Assign(fBitmap);

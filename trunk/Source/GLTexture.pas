@@ -776,6 +776,7 @@ type
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: TGLuint read GetHandle;
+    property TextureHandle: TGLTextureHandle read FTextureHandle;
 
     {: Actual width, height and depth used for last texture
       specification binding. }
@@ -2446,17 +2447,21 @@ end;
 
 procedure TGLTexture.SetImageClassName(const val: string);
 var
+  newImage: TGLTextureImage;
   newImageClass: TGLTextureImageClass;
 begin
   if val <> '' then
     if FImage.ClassName <> val then
     begin
-      FImage.Free;
       newImageClass := FindGLTextureImageClass(val);
       Assert(newImageClass <> nil, 'Make sure you include the unit for ' + val +
         ' in your uses clause');
-      FImage := TGLTextureImageClass(newImageClass).Create(Self);
-      FImage.OnTextureNeeded := DoOnTextureNeeded;
+      if newImageClass = nil then
+        exit;
+      newImage := newImageClass.Create(Self);
+      newImage.OnTextureNeeded := DoOnTextureNeeded;
+      FImage.Free;
+      FImage := newImage;
     end;
 end;
 

@@ -159,13 +159,6 @@ type
     fTextureArray: Boolean;
 
     function GetData: PGLPixel32Array; virtual;
-    procedure CrossToCubemapTask;
-    procedure SurfaceToVolumeTask; 
-    procedure NarrowThreadTask; 
-    procedure GenerateMipmapTask; 
-  private
-    S2Vrow, s2Vcol: Integer;
-    S2Vflag: Boolean;
   public
     constructor Create; reintroduce; virtual;
     destructor Destroy; override;
@@ -182,13 +175,12 @@ type
       out texDepth: integer); virtual;
 
     {: Assigns from any Texture.}
-    procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
-      textureTarget: TGLTextureTarget;
-      const CurrentFormat: Boolean;
+    function AssignFromTexture(
+      AHandle: TGLTextureHandle;
+      const CastToFormat: Boolean;
       const intFormat: TGLInternalFormat = tfRGBA8;
       const colorFormat: TGLenum = 0;
-      const dataType: TGLenum = 0); virtual;
+      const dataType: TGLenum = 0): Boolean; virtual;
 
     procedure Assign(Source: TPersistent); override;
     {: Convert vertical cross format of non compressed, non mipmaped image
@@ -1190,13 +1182,28 @@ begin
   Result := (fDepth > 0) and not fTextureArray;
 end;
 
-procedure TGLBaseImage.CrossToCubemapTask;
+
+// ConvertCrossToCubemap
+//
+
+function TGLBaseImage.ConvertCrossToCubemap: Boolean;
 var
   fW, fH, pW, pH, e: integer;
   lData: PByteArray;
   ptr, lvl: PGLubyte;
   i, j: integer;
 begin
+  Result := False;
+  // Can't already be a cubemap
+  if fCubeMap or fTextureArray then
+    Exit;
+  //this function only supports vertical cross format for now (3 wide by 4 high)
+  if (fWidth div 3 <> fHeight div 4)
+    or (fWidth mod 3 <> 0)
+    or (fHeight mod 4 <> 0)
+    or (fDepth > 0) then
+    Exit;
+
   // Mipmaps are not supported
   fMipLevels := 1;
   fLevels.Clear;
@@ -1288,85 +1295,8 @@ begin
     fHeight := fHeight * 4;
   end;
   FreeMem(lData);
-end;
-
-// ConvertCrossToCubemap
-//
-
-function TGLBaseImage.ConvertCrossToCubemap: Boolean;
-begin
-  Result := False;
-  // Can't already be a cubemap
-  if fCubeMap or fTextureArray then
-    Exit;
-  //this function only supports vertical cross format for now (3 wide by 4 high)
-  if (fWidth div 3 <> fHeight div 4)
-    or (fWidth mod 3 <> 0)
-    or (fHeight mod 4 <> 0)
-    or (fDepth > 0) then
-    Exit;
-
-  CrossToCubemapTask;
 
   Result := true;
-end;
-
-procedure TGLBaseImage.SurfaceToVolumeTask;
-var
-  fW, fH, sW, sH, sD: Integer;
-  lData: PByteArray;
-  ptr: PGLubyte;
-  i, j, k: Integer;
-begin
-  // Check sizes
-  sD := S2Vcol * S2Vrow;
-  if sD < 1 then
-    Exit;
-  if IsCompressed then
-  begin
-    fW := (fWidth + 3) div 4;
-    fH := (fHeight + 3) div 4;
-  end
-  else
-  begin
-    fW := fWidth;
-    fH := fHeight;
-  end;
-  sW := fW div S2Vcol;
-  sH := fH div S2Vrow;
-  if (sW = 0) or (sH = 0) then
-  begin
-    S2Vflag := False;
-    Exit;
-  end;
-
-  // Mipmaps are not supported
-  fLevels.Clear;
-  fMipLevels := 1;
-  // Get the source data
-  lData := PByteArray(fData);
-  GetMem(fData, sW * sH * sD * fElementSize);
-  ptr := PGLubyte(fData);
-  for i := 0 to S2Vrow - 1 do
-    for j := 0 to S2Vcol - 1 do
-      for k := 0 to sH - 1 do
-      begin
-        Move(lData[(i * fW * sH + j * sW + k * fW) * fElementSize],
-          ptr^, sW * fElementSize);
-        Inc(ptr, sW * fElementSize);
-      end;
-
-  fWidth := sW;
-  fHeight := sH;
-  fDepth := sD;
-  fTextureArray := S2Vflag;
-  if IsCompressed then
-  begin
-    fWidth := fWidth * 4;
-    fHeight := fHeight * 4;
-  end;
-  FreeMem(lData);
-  S2Vflag := True;
 end;
 
 // ConvertToVolume
@@ -1374,6 +1304,11 @@ end;
 
 function TGLBaseImage.ConvertToVolume(const col, row: Integer; const MakeArray:
   Boolean): Boolean;
+var
+  fW, fH, sW, sH, sD: Integer;
+  lData: PByteArray;
+  ptr: PGLubyte;
+  i, j, k: Integer;
 begin
   Result := false;
   if fCubeMap then
@@ -1394,13 +1329,57 @@ begin
     exit;
   end;
 
-  S2Vcol := col;
-  S2Vrow := row;
-  S2Vflag := MakeArray;
+  Result := MakeArray;
 
-  SurfaceToVolumeTask;
+  // Check sizes
+  sD := col * row;
+  if sD < 1 then
+    Exit;
+  if IsCompressed then
+  begin
+    fW := (fWidth + 3) div 4;
+    fH := (fHeight + 3) div 4;
+  end
+  else
+  begin
+    fW := fWidth;
+    fH := fHeight;
+  end;
+  sW := fW div col;
+  sH := fH div row;
+  if (sW = 0) or (sH = 0) then
+  begin
+    Result := False;
+    Exit;
+  end;
 
-  Result := S2Vflag;
+  // Mipmaps are not supported
+  fLevels.Clear;
+  fMipLevels := 1;
+  // Get the source data
+  lData := PByteArray(fData);
+  GetMem(fData, sW * sH * sD * fElementSize);
+  ptr := PGLubyte(fData);
+  for i := 0 to row - 1 do
+    for j := 0 to col - 1 do
+      for k := 0 to sH - 1 do
+      begin
+        Move(lData[(i * fW * sH + j * sW + k * fW) * fElementSize],
+          ptr^, sW * fElementSize);
+        Inc(ptr, sW * fElementSize);
+      end;
+
+  fWidth := sW;
+  fHeight := sH;
+  fDepth := sD;
+  fTextureArray := Result;
+  if IsCompressed then
+  begin
+    fWidth := fWidth * 4;
+    fHeight := fHeight * 4;
+  end;
+  FreeMem(lData);
+  Result := True;
 end;
 
 procedure TGLBaseImage.SetErrorImage;
@@ -1423,74 +1402,13 @@ begin
   Move(cTextureError[0], FData[0], DataSize);
 end;
 
-procedure TGLBaseImage.NarrowThreadTask;
-var
-  Target: TGLTextureTarget;
-  oldID, ID: TGLuint;
-  glTarget, glFormat: TGLenum;
-  size: Integer;
-  newData: Pointer;
-begin
-  UnMipmap;
-  Target := GetTextureTarget;
-  if (CurrentGLContext <> nil)
-    and IsFormatSupported(fInternalFormat)
-    and IsTargetSupported(Target)
-    and (Cardinal(FWidth) <= CurrentGLContext.GLStates.MaxTextureSize)
-    and (Cardinal(FHeight) <= CurrentGLContext.GLStates.MaxTextureSize)
-    then
-  // Lets use GAPI for process
-  begin
-    // Setup texture
-    GL.GenTextures(1, @ID);
-    oldID := CurrentGLContext.GLStates.TextureBinding[0, Target];
-    CurrentGLContext.GLStates.TextureBinding[0, Target] := ID;
-    // copy texture to video memory
-    glTarget := DecodeGLTextureTarget(Target);
-    glFormat := InternalFormatToOpenGLFormat(fInternalFormat);
-    try
-      RegisterAsOpenGLTexture(glTarget, miNearest, glFormat, size, size, size);
-      GL.TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL, 0);
-      AssignFromTexture(nil, ID, Target, False, tfRGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-    except
-      GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
-      SetErrorImage;
-    end;
-    CurrentGLContext.GLStates.TextureBinding[0, Target] := oldID;
-    GL.DeleteTextures(1, @ID);
-  end
-  else
-  begin
-    // Use GLScene image utils
-    size := fWidth * fHeight * 4;
-    GetMem(newData, size);
-    try
-      ConvertImage(
-        fData, newData,
-        fColorFormat, GL_RGBA,
-        fDataType, GL_UNSIGNED_BYTE,
-        fWidth, fHeight);
-    except
-      GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
-      SetErrorImage;
-      FreeMem(newData);
-      exit;
-    end;
-    FreeMem(fData);
-    fData := newData;
-    fInternalFormat := tfRGBA8;
-    fColorFormat := GL_RGBA;
-    fDataType := GL_UNSIGNED_BYTE;
-    fElementSize := 4;
-    fTextureArray := False;
-    fCubeMap := False;
-  end;
-end;
-
 // Narrow
 //
 
 procedure TGLBaseImage.Narrow;
+var
+  size: Integer;
+  newData: Pointer;
 begin
   // Check for already norrow
   if (fColorFormat = GL_RGBA)
@@ -1500,48 +1418,39 @@ begin
     and not (fTextureArray or fCubeMap) then
     Exit;
 
-  NarrowThreadTask;
+  UnMipmap;
+  // Use GLScene image utils
+  size := fWidth * fHeight * 4;
+  GetMem(newData, size);
+  try
+    ConvertImage(
+      fData, newData,
+      fColorFormat, GL_RGBA,
+      fDataType, GL_UNSIGNED_BYTE,
+      fWidth, fHeight);
+  except
+    GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
+    SetErrorImage;
+    FreeMem(newData);
+    exit;
+  end;
+  FreeMem(fData);
+  fData := newData;
+  fInternalFormat := tfRGBA8;
+  fColorFormat := GL_RGBA;
+  fDataType := GL_UNSIGNED_BYTE;
+  fElementSize := 4;
+  fTextureArray := False;
+  fCubeMap := False;
 end;
 
 // GemerateMipmap
 //
 
-procedure TGLBaseImage.GenerateMipmapTask;
-var
-  Target: TGLTextureTarget;
-  oldID, ID: TGLuint;
-  glTarget, glFormat: TGLenum;
-  size: Integer;
-begin
-  UnMipmap;
-  Target := GetTextureTarget;
-  if IsFormatSupported(fInternalFormat)
-    and IsTargetSupported(Target)
-    and IsTargetSupportMipmap(Target) then
-  begin
-    // Setup texture
-    GL.GenTextures(1, @ID);
-    oldID := CurrentGLContext.GLStates.TextureBinding[0, Target];
-    CurrentGLContext.GLStates.TextureBinding[0, Target] := ID;
-    // copy texture to video memory
-    glTarget := DecodeGLTextureTarget(Target);
-    glFormat := InternalFormatToOpenGLFormat(fInternalFormat);
-    try
-      RegisterAsOpenGLTexture(glTarget, miLinearMipmapLinear, glFormat, size, size, size);
-      AssignFromTexture(nil, ID, Target, True);
-    except
-      GLSLogger.LogError(Format('%s: can''t generate mipmap levels', [ClassName]));
-      SetErrorImage;
-    end;
-    CurrentGLContext.GLStates.TextureBinding[0, Target] := oldID;
-    GL.DeleteTextures(1, @ID);
-  end;
-end;
-
 procedure TGLBaseImage.GenerateMipmap;
 begin
-  SafeCurrentGLContext;
-  GenerateMipmapTask;
+  UnMipmap;
+  GLSLogger.LogError(Format('%s: can''t generate mipmap levels', [ClassName]));
 end;
 
 // UnMipmap
@@ -1888,16 +1797,14 @@ end;
 // AssignFromTexture
 //
 
-procedure TGLBaseImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint;
-  textureTarget: TGLTextureTarget;
-  const CurrentFormat: Boolean;
+function TGLBaseImage.AssignFromTexture(
+  AHandle: TGLTextureHandle;
+  const CastToFormat: Boolean;
   const intFormat: TGLInternalFormat = tfRGBA8;
   const colorFormat: TGLenum = 0;
-  const dataType: TGLenum = 0);
+  const dataType: TGLenum = 0): Boolean;
 var
-  oldContext: TGLContext;
-  contextActivate: Boolean;
+  LContext: TGLContext;
   texFormat, texLod, optLod: Cardinal;
   glTarget: TGLEnum;
   level, maxFace, face: Integer;
@@ -1920,18 +1827,26 @@ var
   end;
 
 begin
-  oldContext := CurrentGLContext;
-  contextActivate := (oldContext <> textureContext) and (textureContext <> nil);
-  if contextActivate then
+  Result := False;
+  LContext := CurrentGLContext;
+  if LContext = nil then
   begin
-    if Assigned(oldContext) then
-      oldContext.Deactivate;
-    textureContext.Activate;
+    LContext := AHandle.RenderingContext;
+    if LContext = nil then
+      exit;
   end;
-  glTarget := DecodeGLTextureTarget(textureTarget);
+
+  LContext.Activate;
+  if AHandle.IsDataNeedUpdate then
+  begin
+    LContext.Deactivate;
+    exit;
+  end;
+
+  glTarget := DecodeGLTextureTarget(AHandle.Target);
 
   try
-    CurrentGLContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
+    LContext.GLStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
 
     fMipLevels := 0;
     GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
@@ -1970,7 +1885,7 @@ begin
           GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
             @fDepth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
-        if CurrentFormat then
+        if CastToFormat then
           fInternalFormat := residentFormat
         else
           fInternalFormat := intFormat;
@@ -2066,13 +1981,10 @@ begin
     end;
 
     GL.CheckError;
+    Result := True;
+
   finally
-    if contextActivate then
-    begin
-      textureContext.Deactivate;
-      if Assigned(oldContext) then
-        oldContext.Activate;
-    end;
+    LContext.Deactivate;
   end;
 end;
 

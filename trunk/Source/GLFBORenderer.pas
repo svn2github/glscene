@@ -324,10 +324,8 @@ end;
 procedure TGLFBORenderer.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
-  if (csDesigning in ComponentState) then
-    Exit;
-
-  RenderToFBO(ARci);
+  if not (csDesigning in ComponentState) then
+    RenderToFBO(ARci);
 
   if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and
     ARenderChildren then
