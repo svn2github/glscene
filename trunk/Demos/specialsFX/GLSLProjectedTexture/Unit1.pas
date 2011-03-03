@@ -3,41 +3,34 @@ unit Unit1;
 interface
 
 uses
-  Windows,
   SysUtils,
   Classes,
   Graphics,
   Controls,
   Forms,
-  Dialogs,
   GLScene,
   GLObjects,
   GLTexture,
   GLWin32Viewer,
-  TGA,
   GLCadencer,
   GLVectorFileObjects,
-  GLFileObj,
-  JPEG,
-  StdCtrls,
   GLShadowVolume,
-  Math,
-  GLPhongShader,
-  GLSLProjectedTextures,
   GLGeomObjects,
   ExtCtrls,
   GLUtils,
   GLFile3DS,
   GLFileLMTS,
-  OpenGL1x,
   GLContext,
   VectorGeometry,
-  GLUserShader,
-  GLProjectedTextures,
+  GLSLProjectedTextures,
   GLCrossPlatform,
-  GLGraphics, GLMaterial, GLCoordinates, BaseClasses;
+  GLGraphics,
+  GLMaterial,
+  GLCoordinates,
+  BaseClasses;
 
 type
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -72,6 +65,11 @@ var
 implementation
 
 {$R *.dfm}
+
+uses
+  GLFileOBJ,
+  JPEG,
+  TGA;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 var
@@ -147,6 +145,8 @@ begin
 
 
   GLFreeForm1.LoadFromFile('groundtest.lmts');
+//  GLFreeForm1.ObjectStyle := [osDirectDraw];
+
   for I := 0 to GLMaterialLibrary1.Materials.Count - 1 do
     GLMaterialLibrary1.Materials.Items[I].Material.MaterialOptions := [moNoLighting];
 

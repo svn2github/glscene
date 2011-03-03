@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 440
   Top = 264
-  Width = 640
-  Height = 473
+  Width = 648
+  Height = 477
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,7 @@ object Form1: TForm1
   OnMouseWheel = FormMouseWheel
   DesignSize = (
     632
-    446)
+    439)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -32,9 +32,11 @@ object Form1: TForm1
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 408
+    Left = 80
+    Top = 24
     object GLSLProjectedTextures1: TGLSLProjectedTextures
       Emitters = <
         item
@@ -70,9 +72,9 @@ object Form1: TForm1
         ShowAxes = True
       end
       object GLArrowLine1: TGLArrowLine
+        Direction.Coordinates = {00000000000080BF2EBD3BB300000000}
         PitchAngle = -90.000000000000000000
         Position.Coordinates = {0000A0C10000A0410000A0C10000803F}
-        Direction.Coordinates = {00000000000080BF2EBD3BB300000000}
         Up.Coordinates = {000000002EBD3BB30000803F00000000}
         BottomRadius = 1.000000000000000000
         Height = 10.000000000000000000
@@ -114,11 +116,13 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 344
+    Left = 16
+    Top = 24
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 440
+    Left = 112
+    Top = 24
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -126,6 +130,7 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Tag = 0
       end>
-    Left = 376
+    Left = 48
+    Top = 24
   end
 end

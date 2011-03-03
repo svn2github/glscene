@@ -2,6 +2,7 @@ program GLSLProjectedTextureDemo;
 
 uses
   Forms,
+//  GLSLProjectedTextures in 'GLSLProjectedTextures.pas',
   Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
