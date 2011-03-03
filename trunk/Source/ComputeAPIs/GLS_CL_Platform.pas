@@ -38,17 +38,17 @@ interface
 
 type
 {$IFDEF FPC}
-  size_t = SizeInt;
+  TSize_T = SizeInt;
   Psize_t = PSizeInt;
   intptr_t = PtrInt;
 {$ELSE}
 {$IFDEF GLS_DELPHI_2009_UP}
-  size_t = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^size_t;
+  TSize_T = NativeUInt; // 32 or 64 bit unsigned integer
+  Psize_t = ^TSize_T;
   intptr_t = NativeUInt;
 {$ELSE}
-  size_t = Cardinal; // 32 bit unsigned integer
-  Psize_t = ^size_t;
+  TSize_T = Cardinal; // 32 bit unsigned integer
+  Psize_t = ^TSize_T;
   intptr_t = Cardinal;
 {$ENDIF}
 {$ENDIF}

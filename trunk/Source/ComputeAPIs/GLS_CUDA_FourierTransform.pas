@@ -50,7 +50,7 @@ interface
 
 uses
 {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  VectorTypes;
+  VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME;
 
 {$I cuda.inc}
 
@@ -65,7 +65,7 @@ type
   { /// CUFFT defines and supports the following data types }
 
   { /// cufftHandle is a handle type used to store and access CUFFT plans. }
-  TcufftHandle = Cardinal;
+  TcufftHandle = type Cardinal;
 
   TcufftReal = Single;
   PcufftReal = ^TcufftReal;
@@ -80,9 +80,11 @@ type
   PcufftComplex = ^TcufftComplex;
   TcufftComplex = TVector2f;
 
-  TcufftResult = type Cardinal;
+  TcufftResult = type Byte;
 
 const
+  INVALID_CUFFT_HANDLE = $FFFFFFFF;
+
   CUFFT_SUCCESS: TcufftResult = $00;
   CUFFT_INVALID_PLAN: TcufftResult = $01;
   CUFFT_ALLOC_FAILED: TcufftResult = $02;
@@ -94,7 +96,7 @@ const
   CUFFT_INVALID_SIZE: TcufftResult = $08;
 
 type
-  TcufftType = type of Byte;
+  TcufftType = type Cardinal;
 
   TcudaRoundMode = (cudaRoundNearest, cudaRoundZero, cudaRoundPosInf,
     cudaRoundMinInf);
@@ -148,17 +150,17 @@ const
 
 type
 
-  TcufftPlan1d = function(var plan: TcufftHandle; nx: Integer;
+  TcufftPlan1d = function(out plan: TcufftHandle; nx: Integer;
     atype: TcufftType; batch: Integer): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  TcufftPlan2d = function(var plan: TcufftHandle; nx: Integer; ny: Integer;
+  TcufftPlan2d = function(out plan: TcufftHandle; nx: Integer; ny: Integer;
     atype: TcufftType): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  TcufftPlan3d = function(var plan: TcufftHandle; nx: Integer; ny: Integer;
+  TcufftPlan3d = function(out plan: TcufftHandle; nx: Integer; ny: Integer;
     nz: Integer; atype: TcufftType): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -167,7 +169,7 @@ type
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  TcufftPlanMany = function(var plan: TcufftHandle; rank: Integer;
+  TcufftPlanMany = function(out plan: TcufftHandle; rank: Integer;
     var n: Integer; var inembed: Integer; istride, idist: Integer;
     var onembed: Integer; ostride, odist: Integer; ctype: TcufftType;
     batch: Integer): TcufftResult;
@@ -285,7 +287,7 @@ var
   cufftSetStream_: TcufftSetStream;
   cufftSetCompatibilityMode_: TcufftSetCompatibilityMode;
 
-function cufftPlan1dShell(var plan: TcufftHandle; nx: Integer;
+function cufftPlan1dShell(out plan: TcufftHandle; nx: Integer;
   atype: TcufftType; batch: Integer): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -297,7 +299,7 @@ begin
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
-function cufftPlan2dShell(var plan: TcufftHandle; nx: Integer; ny: Integer;
+function cufftPlan2dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
   atype: TcufftType): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -309,7 +311,7 @@ begin
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
-function cufftPlan3dShell(var plan: TcufftHandle; nx: Integer; ny: Integer;
+function cufftPlan3dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
   nz: Integer; atype: TcufftType): TcufftResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -332,7 +334,7 @@ begin
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
-function cufftPlanManyShell(var plan: TcufftHandle; rank: Integer;
+function cufftPlanManyShell(out plan: TcufftHandle; rank: Integer;
   var n: Integer; var inembed: Integer; istride, idist: Integer;
   var onembed: Integer; ostride, odist: Integer; ctype: TcufftType;
   batch: Integer): TcufftResult;
@@ -477,7 +479,9 @@ end;
 function InitCUFFTFromLibrary(const LibName: WideString): Boolean;
 begin
   CloseCUFFT;
-  CUFFTHandle := LoadLibraryW(PWideChar(LibName));
+  CUFFTHandle := GetModuleHandleW(PWideChar(LibName));
+  if CUFFTHandle = INVALID_MODULEHANDLE then
+    CUFFTHandle := LoadLibraryW(PWideChar(LibName));
   if CUFFTHandle = INVALID_MODULEHANDLE then
     Exit(False);
 {$IFNDEF GLS_CUDA_DEBUG_MODE}

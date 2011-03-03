@@ -53,8 +53,8 @@ interface
 {$I cuda.inc}
 
 uses
-{$IFDEF MSWINDOWS}Windows,
-{$ENDIF}
+{$IFDEF MSWINDOWS}Windows,{$ENDIF}
+  GLCrossPlatform,
   GLS_CL_Platform;
 
 const
@@ -431,11 +431,11 @@ type
   *)
 
   TcudaFuncAttributes = record
-    sharedSizeBytes: size_t;
+    sharedSizeBytes: TSize_t;
     /// < Size of shared memory in bytes
-    constSizeBytes: size_t;
+    constSizeBytes: TSize_t;
     /// < Size of constant memory in bytes
-    localSizeBytes: size_t;
+    localSizeBytes: TSize_t;
     /// < Size of local memory in bytes
     maxThreadsPerBlock: Integer;
     /// < Maximum number of threads per block
@@ -758,7 +758,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetName = function(var name: AnsiChar; len: Integer; dev: TCUdevice)
+  TcuDeviceGetName = function(name: PAnsiChar; len: Integer; dev: TCUdevice)
     : TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
@@ -768,7 +768,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceTotalMem = function(var bytes: Cardinal; dev: TCUdevice): TCUresult;
+  TcuDeviceTotalMem = function(bytes: PSize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -777,7 +777,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetAttribute = function(var pi: Integer; attrib: TCUdevice_attribute;
+  TcuDeviceGetAttribute = function(pi: PSize_t; attrib: TCUdevice_attribute;
     dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
@@ -1733,7 +1733,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetNameShell(var name: AnsiChar; len: Integer; dev: TCUdevice)
+function cuDeviceGetNameShell(name: PAnsiChar; len: Integer; dev: TCUdevice)
   : TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -1757,7 +1757,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceTotalMemShell(var bytes: Cardinal; dev: TCUdevice): TCUresult;
+function cuDeviceTotalMemShell(bytes: PSize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -1780,7 +1780,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetAttributeShell(var pi: Integer; attrib: TCUdevice_attribute;
+function cuDeviceGetAttributeShell(pi: PSize_t; attrib: TCUdevice_attribute;
   dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -3065,8 +3065,13 @@ end;
 {$ENDIF GLS_CUDA_DEBUG_MODE}
 
 function CUDAGetProcAddress(ProcName: PAnsiChar): Pointer;
+var
+  Alt: AnsiString;
 begin
-  Result := GetProcAddress(Cardinal(CUDAHandle), ProcName);
+  Alt := AnsiString(ProcName) + '_v2';
+  Result := GetProcAddress(PtrUInt(CUDAHandle), PAnsiChar(Alt));
+  if Result = nil then
+      Result := GetProcAddress(PtrUInt(CUDAHandle), ProcName);
 end;
 
 function InitCUDA: Boolean;
@@ -3092,7 +3097,10 @@ var
 begin
   Result := False;
   CloseCUDA;
-  CUDAHandle := LoadLibraryW(PWideChar(LibName));
+  CUDAHandle := GetModuleHandleW(PWideChar(LibName));
+  if CUDAHandle = INVALID_MODULEHANDLE then
+    CUDAHandle := LoadLibraryW(PWideChar(LibName));
+
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
 {$IFNDEF GLS_CUDA_DEBUG_MODE}
