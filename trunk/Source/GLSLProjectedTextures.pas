@@ -52,7 +52,6 @@ uses
   GLCrossPlatform,
   GLScene,
   GLTexture,
-  OpenGLTokens,
   VectorGeometry,
   GLContext,
   sysutils,
@@ -225,26 +224,14 @@ begin
 end;
 
 procedure TGLSLTextureEmitter.SetupTexMatrix;
-var
-  invmatrix, TM, PM: TMatrix;
+const
+  cBaseMat: TMatrix = ((0.5, 0, 0, 0), (0, 0.5, 0, 0), (0, 0, 1, 0), (0.5, 0.5, 0, 1));
 begin
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @invmatrix[0][0]);
-  InvertMatrix(invmatrix);
-  GL.MatrixMode(GL_TEXTURE);
-  GL.PushMatrix;
-
-  // First scale and bias into [0..1] range.
-  TM := CreateTranslationMatrix(Vector3fMake(0.5, 0.5, 0));
-  TM := MatrixMultiply(TM, CreateScaleMatrix(Vector3fMake(0.5, 0.5, 1)));
-
-  // Then set the projector's "perspective" (i.e. the "spotlight cone"):.
-  PM := CreatePerspectiveMatrix(FFOV, FAspect, 0.1, 1);
-  PM := MatrixMultiply(TM, PM);
-  GL.LoadMatrixf(@PM);
-  GL.MultMatrixf(@invmatrix);
-  GL.GetFloatv(GL_TEXTURE_MATRIX, @TexMatrix[0][0]);
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
+  // Set the projector's "perspective" (i.e. the "spotlight cone"):.
+  TexMatrix := MatrixMultiply(
+    CreatePerspectiveMatrix(FFOV, FAspect, 0.1, 1), cBaseMat);
+  TexMatrix := MatrixMultiply(
+    CurrentGLContext.PipelineTransformation.InvModelViewMatrix, TexMatrix);
 end;
 
 procedure TGLSLTextureEmitter.SetAllowReverseProjection(val: boolean);
@@ -506,11 +493,11 @@ begin
     if UseLightmaps then
       fp.add('vec3 light = texture2D(LightMap, gl_TexCoord[1].st).rgb;')
     else
-      fp.add(format('vec3 light = vec3(%.4f, %.4f, %.4f);', [Ambient.Red, ambient.Green, ambient.Blue]));
+      fp.add(format('vec3 light = vec3(%.4, %.4, %.4);', [Ambient.Red, ambient.Green, ambient.Blue]));
     if emitters.count > 0 then
     begin
-      fp.add('vec3 projlight = vec3(0, 0, 0);');
-      fp.add('vec3 projshadow = vec3(0, 0, 0);');
+      fp.add('vec3 projlight = vec3(0.0);');
+      fp.add('vec3 projshadow = vec3(0.0);');
       fp.add('vec3 temp;');
       fp.add('float dist;');
       for i := 0 to emitters.count - 1 do
@@ -558,9 +545,7 @@ begin
       fp.add('vec3 totlight = light;');
 
     fp.add('gl_FragColor = vec4(1.5*totlight * color.rgb, color.a);}');
-    //fp.add('gl_FragColor = vec4(vec3(dist) , 1);}');
-    //vp.SaveToFile('c:\vp.txt');
-    //fp.SaveToFile('c:\fp.txt');
+
     Shader.AddShader(TGLVertexShaderHandle, vp.Text, True);
     Shader.AddShader(TGLFragmentShaderHandle, fp.Text, True);
   finally
@@ -599,8 +584,9 @@ begin
   end;
 
   if ShaderSupported then
+  with Shader do
   begin
-    Shader.UseProgramObject;
+    UseProgramObject;
 
     for i := 0 to Emitters.Count - 1 do
     begin
@@ -610,16 +596,17 @@ begin
       if emitter.UseAttenuation then
         // negate attenuation here, instead of negating q inside the shader
         // otherwise the result of q/attenuation is negative.
-        Shader.Uniform1f['Attenuation' + inttostr(i)] := -emitter.Attenuation;
-      Shader.Uniform1f['Brightness' + inttostr(i)] := emitter.Brightness;
-      Shader.Uniform3f['Color' + inttostr(i)] := PAffinevector(@emitter.Color.Color)^;
-      Shader.Uniformmatrix4fv['TextureMatrix' + inttostr(i)] := emitter.texMatrix;
+        Uniform1f['Attenuation' + inttostr(i)] := -emitter.Attenuation;
+
+      Uniform1f['Brightness' + inttostr(i)] := emitter.Brightness;
+      Uniform3f['Color' + inttostr(i)] := PAffinevector(@emitter.Color.Color)^;
+      Uniformmatrix4fv['TextureMatrix' + inttostr(i)] := emitter.texMatrix;
     end;
 
-    Shader.Uniform1i['TextureMap'] := 0;
+    Uniform1i['TextureMap'] := 0;
 
     if UseLightmaps then
-      Shader.Uniform1i['LightMap'] := 1;
+      Uniform1i['LightMap'] := 1;
 
     if emitters.count > 0 then
       Shader.Uniform1i['ProjMap'] := 2;
@@ -628,7 +615,7 @@ begin
 
     self.RenderChildren(0, Count - 1, rci);
 
-    Shader.EndUseProgramObject;
+    EndUseProgramObject;
   end
   else
     self.RenderChildren(0, Count - 1, rci);
