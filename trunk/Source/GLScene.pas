@@ -2704,35 +2704,29 @@ end;
 //
 
 function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
+begin
+  if not Assigned(FListHandle) then
+    FListHandle := TGLListHandle.Create;
+  FListHandle.AllocateHandle;
 
-  procedure DoBuild(var rci: TRenderContextInfo);
+  if ocStructure in FChanges then
   begin
-    if FListHandle.Handle = 0 then
-    begin
-      FListHandle.AllocateHandle;
-      Assert(FListHandle.Handle <> 0);
-    end;
+    ClearStructureChanged;
+    FListHandle.NotifyChangesOfData;
+  end;
+
+  if FListHandle.IsDataNeedUpdate then
+  begin
     rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
     try
       BuildList(rci);
     finally
       rci.GLStates.EndList;
     end;
+    FListHandle.NotifyDataUpdated;
   end;
 
-begin
-  if Assigned(FListHandle) then
-    Result := FListHandle.Handle
-  else
-    Result := 0;
-  if (Result = 0) or (ocStructure in FChanges) then
-  begin
-    ClearStructureChanged;
-    if not Assigned(FListHandle) then
-      FListHandle := TGLListHandle.Create;
-    DoBuild(rci);
-    Result := FListHandle.Handle;
-  end;
+  Result := FListHandle.Handle;
 end;
 
 // ListHandleAllocated
