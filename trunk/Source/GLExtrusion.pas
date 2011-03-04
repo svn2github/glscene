@@ -7,6 +7,9 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/03/11 - Vince - Added Texture Coordinates on Pipes and fix cap bugs
+                              when ppInside/ppOutside are True
+                              Fix twist bugs on pipe
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -933,20 +936,57 @@ const
    begin
       if NodesColorMode<>pncmNone then
          GL.Color4fv(@row^.color);
-      GL.Begin_(GL_TRIANGLE_FAN);
+
+      //old process
+      {GL.Begin_(GL_TRIANGLE_FAN);
          GL.Normal3fv(@normal);
          GL.Vertex3fv(@center);
          if invert then
             for i:=High(row^.node) downto 0 do GL.Vertex3fv(@row^.node[i].pos)
          else for i:=0 to High(row^.node) do GL.Vertex3fv(@row^.node[i].pos);
+      GL.End_;  }
+      // it was necessary to change build process to generate textcoords
+      GL.Begin_(GL_TRIANGLE_STRIP);
+         GL.Normal3fv(@normal);
+
+         if invert then
+         begin
+            for i:=0 to High(row^.node)-1 do
+            begin
+              GL.TexCoord2f(i/(High(row^.node)-1),1);
+              GL.Vertex3fv(@row^.node[i].pos);
+              GL.TexCoord2f(i/(High(row^.node)-1),0);
+              GL.Vertex3fv(@center);
+            end;
+            GL.TexCoord2f(1,1);
+            GL.Vertex3fv(@row^.node[High(row^.node)].pos);
+            GL.TexCoord2f(1,0);
+            GL.Vertex3fv(@center);
+         end
+         else
+         begin
+            GL.TexCoord2f(1,1);
+            GL.Vertex3fv(@row^.node[High(row^.node)].pos);
+            GL.TexCoord2f(1,0);
+            GL.Vertex3fv(@center);
+            for i:=High(row^.node)-1 downto 0 do
+            begin
+              GL.TexCoord2f(i/(High(row^.node)-1),1);
+              GL.Vertex3fv(@row^.node[i].pos);
+              GL.TexCoord2f(i/(High(row^.node)-1),0);
+              GL.Vertex3fv(@center);
+            end;
+         end;
       GL.End_;
    end;
 
-   procedure RenderSides(curRow, prevRow : PRowData);
+   procedure RenderSides(prevRow,curRow : PRowData);
    var
-      j, k, kp, m, n, kx, ky, kz, kpx, kpy, kpz : Integer;
+      //j, k, kp, m, n, kx, ky, kz, kpx, kpy, kpz : Integer;
+      j, k, m, n : Integer;
       deltaNormal, deltaPos : array of Double;
    begin
+      { sometimes the pipe is twisted even if the test bellow is wrong so we need to always correct the twist
       kx:=1;   ky:=1;   kz:=1;
       kpx:=1;  kpy:=1;  kpz:=1;
       for j:=0 to Slices do begin
@@ -964,7 +1004,8 @@ const
       // between curRow and PrevRow
       kp:=kpx*kpy*kpz;
       // I hope, so i can distinguish, if the curRow must rotate
-      if (k>Sqr(Slices div 2)) or (kp>Sqr(Slices div 2)) then begin
+      }
+      // if(k>Sqr(Slices div 2)) or (kp>Sqr(Slices div 2)) then begin
          SetLength(deltanormal, Slices);
          SetLength(deltapos, Slices);
          for k:=0 to Slices-1 do begin    //rotate index for curRow
@@ -989,27 +1030,32 @@ const
             System.Move(curRow^.node[1], curRow^.node[0], SizeOf(TNodeData)*Slices);
             curRow^.node[Slices]:=curRow^.node[0];
          end;
-      end;
+      // end;
+
       // go on
       GL.Begin_(GL_TRIANGLE_STRIP);
          if NodesColorMode<>pncmNone then
-            GL.Color4fv(@prevRow^.color);
-         GL.Normal3fv(@prevRow^.node[0].normal);
-         GL.Vertex3fv(@prevRow^.node[0].pos);
+            GL.Color4fv(@curRow^.color);
+         GL.TexCoord2f(0,1);
+         GL.Normal3fv(@curRow^.node[0].normal);
+         GL.Vertex3fv(@curRow^.node[0].pos);
          for j:=0 to Slices-1 do begin
             if NodesColorMode<>pncmNone then
-               GL.Color4fv(@curRow^.color);
-            GL.Normal3fv(@curRow^.node[j].normal);
-            GL.Vertex3fv(@curRow^.node[j].pos);
-            if NodesColorMode<>pncmNone then
                GL.Color4fv(@prevRow^.color);
-            GL.Normal3fv(@prevRow^.node[j+1].normal);
-            GL.Vertex3fv(@prevRow^.node[j+1].pos);
+            GL.TexCoord2f(j/Slices,0);
+            GL.Normal3fv(@prevRow^.node[j].normal);
+            GL.Vertex3fv(@prevRow^.node[j].pos);
+            if NodesColorMode<>pncmNone then
+               GL.Color4fv(@curRow^.color);
+            GL.TexCoord2f((j+1)/Slices,1);
+            GL.Normal3fv(@curRow^.node[j+1].normal);
+            GL.Vertex3fv(@curRow^.node[j+1].pos);
          end;
          if NodesColorMode<>pncmNone then
-            GL.Color4fv(@curRow^.color);
-         GL.Normal3fv(@curRow^.node[Slices].normal);
-         GL.Vertex3fv(@curRow^.node[Slices].pos);
+            GL.Color4fv(@prevRow^.color);
+         GL.TexCoord2f(1,0);
+         GL.Normal3fv(@prevRow^.node[Slices].normal);
+         GL.Vertex3fv(@prevRow^.node[Slices].pos);
       GL.End_;
    end;
 
@@ -1072,8 +1118,16 @@ begin
    rows[0].color:=TGLPipeNodes(Nodes)[0].Color.Color;
    if ppStartDisk in Parts then begin
       NegateVector(normal);
-      RenderDisk(@rows[0], Nodes[0].AsVector, normal, True);
-      FTriangleCount:=FTriangleCount+Slices+1;
+      if ppOutside in Parts then
+      begin
+        RenderDisk(@rows[0], Nodes[0].AsVector, normal, True);
+        FTriangleCount:=FTriangleCount+Slices*2;//Slices+1;
+      end;
+      if ppInside in Parts then
+      begin
+        RenderDisk(@rows[0], Nodes[0].AsVector, normal, False);
+        FTriangleCount:=FTriangleCount+Slices*2;//Slices+1;
+      end;
    end;
    if (Nodes.Count>1) then begin
       if SplineMode=lsmCubicSpline then begin
@@ -1128,8 +1182,16 @@ begin
       CalculateRow(@rows[0], PAffineVector(@Nodes[i].AsVector)^, normal,
                    TGLPipeNode(Nodes[i]).RadiusFactor);
       rows[0].color:=TGLPipeNodes(Nodes)[i].Color.Color;
-      RenderDisk(@rows[0], Nodes[i].AsVector, normal, False);
-      FTriangleCount:=FTriangleCount+Slices+1;
+      if ppOutside in Parts then
+      begin
+        RenderDisk(@rows[0], Nodes[i].AsVector, normal, False);
+        FTriangleCount :=FTriangleCount+Slices*2;//Slices+1;
+      end;
+      if ppInside in Parts then
+      begin
+        RenderDisk(@rows[0], Nodes[i].AsVector, normal, True);
+        FTriangleCount:=FTriangleCount+Slices*2;//Slices+1;
+      end;
    end;
    if SplineMode=lsmCubicSpline then begin
       posSpline.Free;
