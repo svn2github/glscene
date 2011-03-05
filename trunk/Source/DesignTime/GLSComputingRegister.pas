@@ -6,6 +6,7 @@
    Registration unit for GLScene Computing package.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
       <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
       <li>09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
       <li>19/03/10 - Yar - Creation
@@ -62,12 +63,6 @@ type
     procedure SetValue(const Value: String); override;
   end;
 
-  TCUDAModuleCodeEditor = class(TStringListProperty)
-  public
-    { Public Declarations }
-    procedure Edit; override;
-  end;
-
   TGLSCUDADeviceProperty = class(TStringProperty)
   private
     FDeviceList: TStringList;
@@ -87,8 +82,14 @@ type
 implementation
 
 uses
+  GLS_CUDA_RUNTIME,
   GLSCUDAEditor,
-  GLSCUDAContext, GLSCUDA, GLSCUDACompiler, GLSCUDAFFTPlan, GLSCUDAGraphics;
+  GLSCUDAContext,
+  GLSCUDA,
+  GLSCUDACompiler,
+  GLSCUDAFFTPlan,
+  GLSCUDAGraphics,
+  GLSCUDAParser;
 
 procedure Register;
 begin
@@ -96,14 +97,13 @@ begin
     TGLSCUDACompiler]);
   RegisterComponentEditor(TGLSCUDA, TGLSCUDAEditor);
   RegisterComponentEditor(TGLSCUDACompiler, TGLSCUDACompilerEditor);
-	RegisterPropertyEditor(TypeInfo(TStringList), TCUDAModule, 'Code',
-    TCUDAModuleCodeEditor);
   RegisterPropertyEditor(TypeInfo(string), TGLSCUDACompiler, 'ProjectModule',
     TGLSCUDACompilerSourceProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLSCUDADevice, 'SelectDevice',
     TGLSCUDADeviceProperty);
   RegisterNoIcon([TCUDAModule, TCUDAMemData, TCUDAFunction, TCUDATexture,
-    TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource]);
+    TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource, TCUDAConstant,
+    TCUDAFuncParam]);
 
   ObjectManager.RegisterSceneObject(TGLFeedBackMesh, 'GPU generated mesh', 'Computing', HInstance);
 end;
@@ -171,40 +171,147 @@ end;
 procedure TGLSCUDACompilerEditor.Edit;
 var
   CUDACompiler: TGLSCUDACompiler;
-  i: Integer;
-  Task: PDesignerTask;
-  obj: TCUDAComponent;
+  I, J: Integer;
+  func: TCUDAFunction;
+  tex: TCUDATexture;
+  cnst: TCUDAConstant;
+  param: TCUDAFuncParam;
+  parent: TCUDAModule;
+  info: TCUDAModuleInfo;
+  bUseless: Boolean;
+  useless: array of TCUDAComponent;
+  CTN: TChannelTypeAndNum;
+
+  procedure CreateFuncParams;
+  var
+    K: Integer;
+  begin
+    for K := 0 to High(info.Func[I].Args) do
+    begin
+      param := TCUDAFuncParam(Designer.CreateComponent(TCUDAFuncParam,
+        func, 0, 0, 0, 0));
+      param.Master := TCUDAComponent(func);
+      param.KernelName := info.Func[I].Args[K].Name;
+      param.Name := func.KernelName+'_'+param.KernelName;
+      param.DataType := info.Func[I].Args[K].DataType;
+      param.CustomType := info.Func[I].Args[K].CustomType;
+      param.Reference := info.Func[I].Args[K].Ref;
+    end;
+  end;
+
 begin
   CUDACompiler := TGLSCUDACompiler(Self.Component);
-  CUDACompiler.Compile;
-  // Ugly hack for design time dynamicaly creating components
-  if CUDACompiler.DesignerTaskList <> nil then
+  if CUDACompiler.Compile then
   begin
-    for i := 0 to CUDACompiler.DesignerTaskList.Count - 1 do
+    info := CUDACompiler.ModuleInfo;
+    parent := TCUDAModule(info.Owner);
+
+    // Create kernel's functions
+    for I := 0 to High(info.Func) do
     begin
-      Task := CUDACompiler.DesignerTaskList.Items[i];
-      if Task.Creating then
+      func := parent.KernelFunction[info.Func[I].Name];
+      if not Assigned(func) then
       begin
-        obj := TCUDAComponent(Designer.CreateComponent(Task.ItemClass,
-          Task.Owner, 0,
-          0, 0, 0));
-        obj.Master := Task.Owner;
-        if Task.ItemClass = TCUDAFunction then
-          TCUDAFunction(obj).KernelName := Task.KernelName
-        else if Task.ItemClass = TCUDATexture then
-          TCUDATexture(obj).KernelName := Task.KernelName;
+        func := TCUDAFunction(Designer.CreateComponent(TCUDAFunction,
+          info.Owner, 0, 0, 0, 0));
+        func.Master := TCUDAComponent(info.Owner);
+        func.KernelName := info.Func[I].Name;
+        func.Name := func.KernelName;
       end
       else
       begin
-        Designer.SelectComponent(Task.Owner);
-        Designer.DeleteSelection(true);
+        // destroy old parameters
+        while func.ItemsCount > 0 do
+          func.Items[0].Destroy;
       end;
-      Dispose(Task);
+
+      try
+        bUseless := func.Handle = nil;
+      except
+        bUseless := True;
+      end;
+      if bUseless then
+      begin
+        Designer.SelectComponent(func);
+        Designer.DeleteSelection(True);
+        func := nil;
+      end
+      else
+        CreateFuncParams;
     end;
-    CUDACompiler.DesignerTaskList.Free;
-    CUDACompiler.DesignerTaskList := nil;
-    Designer.Modified;
+
+    // Create kernel's textures
+    for I := 0 to High(info.TexRef) do
+    begin
+      tex := parent.KernelTexture[info.TexRef[I].Name];
+      if not Assigned(tex) then
+      begin
+        tex := TCUDATexture(Designer.CreateComponent(TCUDATexture,
+          info.Owner, 0, 0, 0, 0));
+        tex.Master := TCUDAComponent(info.Owner);
+        tex.KernelName := info.TexRef[I].Name;
+        tex.Name := tex.KernelName;
+        tex.ReadAsInteger := (info.TexRef[I].ReadMode = cudaReadModeElementType);
+        CTN := GetChannelTypeAndNum(info.TexRef[I].DataType);
+        tex.Format := CTN.F;
+      end;
+
+      tex.ChannelNum := CTN.C;
+      try
+        bUseless := tex.Handle = nil;
+      except
+        bUseless := True;
+      end;
+      if bUseless then
+      begin
+        Designer.SelectComponent(tex);
+        Designer.DeleteSelection(True);
+      end;
+    end;
+    // Create kernel's constants
+    for I := 0 to High(info.Constant) do
+    begin
+      cnst := parent.KernelConstant[info.Constant[I].Name];
+      if not Assigned(cnst) then
+      begin
+        cnst := TCUDAConstant(Designer.CreateComponent(TCUDAConstant,
+          info.Owner, 0, 0, 0, 0));
+        cnst.Master := TCUDAComponent(info.Owner);
+        cnst.KernelName := info.Constant[I].Name;
+        cnst.Name := cnst.KernelName;
+        cnst.DataType := info.Constant[I].DataType;
+        cnst.CustomType := info.Constant[I].CustomType;
+        cnst.IsValueDefined := info.Constant[I].DefValue;
+      end;
+
+      try
+        bUseless := cnst.DeviceAddress = nil;
+      except
+        bUseless := True;
+      end;
+      if bUseless then
+      begin
+        Designer.SelectComponent(cnst);
+        Designer.DeleteSelection(True);
+      end;
+    end;
+
+    // Delete useless components
+    SetLength(useless, parent.ItemsCount);
+    j := 0;
+    for i := 0 to parent.ItemsCount - 1 do
+    begin
+      if not TCUDAComponent(parent.Items[i]).IsAllocated then
+        begin
+          useless[j] := parent.Items[i];
+          inc(j);
+        end;
+    end;
+
+    for i := 0 to j - 1 do
+      useless[i].Destroy;
   end;
+  Designer.Modified;
 end;
 
 procedure TGLSCUDACompilerEditor.ExecuteVerb(Index: Integer);
@@ -320,49 +427,6 @@ begin
     SetStrValue('none');
   end;
 	Modified;
-end;
-
-// ------------------
-// ------------------ TCUDAModuleCodeEditor ------------------
-// ------------------
-
-procedure TCUDAModuleCodeEditor.Edit;
-var
-  i: Integer;
-  module: TCUDAModule;
-  TaskList: TList;
-  Task: PDesignerTask;
-  obj: TCUDAComponent;
-begin
-  inherited Edit;
-  module := TCUDAModule(GetComponent(0));
-  TaskList := module.GetDesignerTaskList;
-  if Assigned(TaskList) then
-  begin
-    for i := 0 to TaskList.Count - 1 do
-    begin
-      Task := TaskList.Items[i];
-      if Task.Creating then
-      begin
-        obj := TCUDAComponent(Designer.CreateComponent(Task.ItemClass,
-          Task.Owner, 0,
-          0, 0, 0));
-        obj.Master := Task.Owner;
-        if Task.ItemClass = TCUDAFunction then
-          TCUDAFunction(obj).KernelName := Task.KernelName
-        else if Task.ItemClass = TCUDATexture then
-          TCUDATexture(obj).KernelName := Task.KernelName;
-      end
-      else
-      begin
-        Designer.SelectComponent(Task.Owner);
-        Designer.DeleteSelection(true);
-      end;
-      Dispose(Task);
-    end;
-    TaskList.Free;
-    Designer.Modified;
-  end;
 end;
 
 // ------------------
