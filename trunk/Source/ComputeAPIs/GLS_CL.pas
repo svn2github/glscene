@@ -7,6 +7,7 @@
    from http://www.khronos.org/registry/cl/.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Rename size_t to TSize_t
       <li>20/01/10 - Yar - Recast to dynamic library
       <li>01/11/09 - DanB - Creation
    </ul></font>
@@ -511,9 +512,9 @@ var
 
   clGetPlatformInfo: function(_platform: Tcl_platform_id;
     param_name: Tcl_platform_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -528,20 +529,20 @@ var
 
   clGetDeviceInfo: function(device: Tcl_device_id;
     param_name: Tcl_device_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
   // Context APIs
 
 type
-  logging_fn = procedure(errinfo: PAnsiChar; private_info: Pointer; cb: size_t;
+  logging_fn = procedure(errinfo: PAnsiChar; private_info: Pointer; cb: TSize_t;
     user_data: Pointer);
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
-  //typedef void (*logging_fn)(const char *, const void *, size_t, const void *);
+  //typedef void (*logging_fn)(const char *, const void *, TSize_t, const void *);
 
 var
 
@@ -574,9 +575,9 @@ var
 
   clGetContextInfo: function(context: Tcl_context;
     param_name: Tcl_context_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -599,9 +600,9 @@ var
 
   clGetCommandQueueInfo: function(command_queue: Tcl_command_queue;
     param_name: Tcl_command_queue_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -616,7 +617,7 @@ var
 
   clCreateBuffer: function(context: Tcl_context;
     flags: Tcl_mem_flags;
-    size: size_t;
+    size: TSize_t;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
@@ -625,9 +626,9 @@ var
   clCreateImage2D: function(context: Tcl_context;
     flags: Tcl_mem_flags;
     image_format: Pcl_image_format;
-    image_width: size_t;
-    image_height: size_t;
-    image_row_pitch: size_t;
+    image_width: TSize_t;
+    image_height: TSize_t;
+    image_row_pitch: TSize_t;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
@@ -636,11 +637,11 @@ var
   clCreateImage3D: function(context: Tcl_context;
     flags: Tcl_mem_flags;
     image_format: Pcl_image_format;
-    image_width: size_t;
-    image_height: size_t;
-    image_depth: size_t;
-    image_row_pitch: size_t;
-    image_slice_pitch: size_t;
+    image_width: TSize_t;
+    image_height: TSize_t;
+    image_depth: TSize_t;
+    image_row_pitch: TSize_t;
+    image_slice_pitch: TSize_t;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
@@ -665,17 +666,17 @@ var
 
   clGetMemObjectInfo: function(memobj: Tcl_mem;
     param_name: Tcl_mem_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
   clGetImageInfo: function(image: Tcl_mem;
     param_name: Tcl_image_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -699,9 +700,9 @@ var
 
   clGetSamplerInfo: function(sampler: Tcl_sampler;
     param_name: Tcl_sampler_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -710,7 +711,7 @@ var
   clCreateProgramWithSource: function(context: Tcl_context;
     count: Tcl_uint;
     strings: PPAnsiChar;
-    lengths: Psize_t;
+    lengths: PSize_t;
     errcode_ret: Pcl_int): Tcl_program;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
@@ -718,7 +719,7 @@ var
   clCreateProgramWithBinary: function(context: Tcl_context;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
-    lengths: Psize_t;
+    lengths: PSize_t;
     binaries: PPointer; // TODO: change to PPByte?
     binary_status: Pcl_int;
     errcode_ret: Pcl_int): Tcl_program;
@@ -729,7 +730,7 @@ var
   //clCreateProgramWithBinary(cl_context            /* context */,
   //                          cl_uint               /* num_devices */,
   //                          const cl_device_id *  /* device_list */,
-  //                          const size_t *        /* lengths */,
+  //                          const TSize_t *        /* lengths */,
   //                          const char **         /* binaries */,
   //                          cl_int *              /* binary_status */,
   //                          cl_int *              /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0;
@@ -764,18 +765,18 @@ var
 
   clGetProgramInfo: function(_program: Tcl_program;
     param_name: Tcl_program_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
   clGetProgramBuildInfo: function(_program: Tcl_program;
     device: Tcl_device_id;
     param_name: Tcl_program_build_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -804,25 +805,25 @@ var
 
   clSetKernelArg: function(kernel: Tcl_kernel;
     arg_index: Tcl_uint;
-    arg_size: size_t;
+    arg_size: TSize_t;
     arg_value: Pointer): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
   clGetKernelInfo: function(kernel: Tcl_kernel;
     param_name: Tcl_kernel_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
   clGetKernelWorkGroupInfo: function(kernel: Tcl_kernel;
     device: Tcl_device_id;
     param_name: Tcl_kernel_work_group_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -835,9 +836,9 @@ var
 
   clGetEventInfo: function(event: Tcl_event;
     param_name: Tcl_event_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -853,9 +854,9 @@ var
 
   clGetEventProfilingInfo: function(event: Tcl_event;
     param_name: Tcl_profiling_info;
-    param_value_size: size_t;
+    param_value_size: TSize_t;
     param_value: Pointer;
-    param_value_size_ret: Psize_t): Tcl_int;
+    param_value_size_ret: PSize_t): Tcl_int;
 {$IFDEF CL_STDCALL}stdcall;{$ENDIF}
 {$IFDEF CL_CDECL}cdecl;{$ENDIF}
 
@@ -874,8 +875,8 @@ var
   clEnqueueReadBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
     blocking_read: Tcl_bool;
-    offset: size_t;
-    cb: size_t;
+    offset: TSize_t;
+    cb: TSize_t;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -886,8 +887,8 @@ var
   clEnqueueWriteBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
     blocking_write: Tcl_bool;
-    offset: size_t;
-    cb: size_t;
+    offset: TSize_t;
+    cb: TSize_t;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -898,9 +899,9 @@ var
   clEnqueueCopyBuffer: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
     dst_buffer: Tcl_mem;
-    src_offset: size_t;
-    dst_offset: size_t;
-    cb: size_t;
+    src_offset: TSize_t;
+    dst_offset: TSize_t;
+    cb: TSize_t;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;
@@ -910,10 +911,10 @@ var
   clEnqueueReadImage: function(command_queue: Tcl_command_queue;
     image: Tcl_mem;
     blocking_read: Tcl_bool;
-    origin: Psize_t; // x3
-    region: Psize_t; // x3
-    row_pitch: size_t;
-    slice_pitch: size_t;
+    origin: PSize_t; // x3
+    region: PSize_t; // x3
+    row_pitch: TSize_t;
+    slice_pitch: TSize_t;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -924,10 +925,10 @@ var
   clEnqueueWriteImage: function(command_queue: Tcl_command_queue;
     image: Tcl_mem;
     blocking_write: Tcl_bool;
-    origin: Psize_t; // x3
-    region: Psize_t; // x3
-    input_row_pitch: size_t;
-    input_slice_pitch: size_t;
+    origin: PSize_t; // x3
+    region: PSize_t; // x3
+    input_row_pitch: TSize_t;
+    input_slice_pitch: TSize_t;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -938,8 +939,8 @@ var
   clEnqueueCopyImage: function(command_queue: Tcl_command_queue;
     src_image: Tcl_mem;
     dst_image: Tcl_mem;
-    src_origin: Psize_t; //x3
-    dst_origin: Psize_t; //x3
+    src_origin: PSize_t; //x3
+    dst_origin: PSize_t; //x3
     region: PSize_t; //x3
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -950,9 +951,9 @@ var
   clEnqueueCopyImageToBuffer: function(command_queue: Tcl_command_queue;
     src_image: Tcl_mem;
     dst_buffer: Tcl_mem;
-    src_origin: Psize_t; //x3
-    region: Psize_t; //x3
-    dst_offset: size_t;
+    src_origin: PSize_t; //x3
+    region: PSize_t; //x3
+    dst_offset: TSize_t;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;
@@ -962,9 +963,9 @@ var
   clEnqueueCopyBufferToImage: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
     dst_image: Tcl_mem;
-    src_offset: size_t;
-    dst_origin: Psize_t; //x3
-    region: Psize_t; //x3
+    src_offset: TSize_t;
+    dst_origin: PSize_t; //x3
+    region: PSize_t; //x3
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;
@@ -975,8 +976,8 @@ var
     buffer: Tcl_mem;
     blocking_map: Tcl_bool;
     map_flags: Tcl_map_flags;
-    offset: size_t;
-    cb: size_t;
+    offset: TSize_t;
+    cb: TSize_t;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event;
@@ -988,10 +989,10 @@ var
     image: Tcl_mem;
     blocking_map: Tcl_bool;
     map_flags: Tcl_map_flags;
-    origin: Psize_t; //x3
-    region: Psize_t; //x3
-    image_row_pitch: Psize_t;
-    image_slice_pitch: Psize_t;
+    origin: PSize_t; //x3
+    region: PSize_t; //x3
+    image_row_pitch: PSize_t;
+    image_slice_pitch: PSize_t;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event;
@@ -1011,9 +1012,9 @@ var
   clEnqueueNDRangeKernel: function(command_queue: Tcl_command_queue;
     kernel: Tcl_kernel;
     work_dim: Tcl_uint;
-    global_work_offset: Psize_t;
-    global_work_size: Psize_t;
-    local_work_size: Psize_t;
+    global_work_offset: PSize_t;
+    global_work_size: PSize_t;
+    local_work_size: PSize_t;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;
@@ -1037,7 +1038,7 @@ var
   clEnqueueNativeKernel: function(command_queue: Tcl_command_queue;
     user_func: EnqueueNativeKernel_user_func;
     args: Pointer;
-    cb_args: size_t;
+    cb_args: TSize_t;
     num_mem_objects: Tcl_uint;
     mem_list: Pcl_mem;
     args_mem_loc: PPointer;

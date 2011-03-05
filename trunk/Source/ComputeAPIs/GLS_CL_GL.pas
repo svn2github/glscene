@@ -7,6 +7,7 @@
    from http://www.khronos.org/registry/cl/.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Rename size_t to TSize_t
       <li>01/11/09 - DanB - Creation
    </ul></font>
 }
@@ -103,9 +104,9 @@ function clGetGLObjectInfo(memobj: Tcl_mem;
 
 function clGetGLTextureInfo(memobj: Tcl_mem;
                             param_name: Tcl_gl_texture_info;
-                            param_value_size: size_t;
+                            param_value_size: TSize_t;
                             param_value: Pointer;
-                            param_value_size_ret: Psize_t): Tcl_int; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
+                            param_value_size_ret: PSize_t): Tcl_int; {$IFDEF CL_STDCALL} stdcall;{$ENDIF}
                                                                      {$IFDEF CL_CDECL} cdecl;{$ENDIF}
                                                                      external LibOpenCL;
 
