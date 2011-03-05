@@ -3,10 +3,11 @@
 //
 {: GLSCUDAParser <p>
 
-   Helper unit for parsing PTX or CUBIN and get information about.<p>
-   kernel's functions and texture.<p>
+   Helper unit for parsing CU modules and get information about.<p>
+   kernel's functions, textures, shared and constants memory.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/02/11 - Yar - Now parse module instead of compiler product
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
 }
@@ -15,15 +16,13 @@ unit GLSCUDAParser;
 interface
 
 uses
-  Classes;
-
-const
-  cModuleInfoSize = 256;
+  Classes, GLS_CUDA_RUNTIME;
 
 type
 
   TCUDAType =
     (
+    customType,
     char1,
     uchar1,
     char2,
@@ -71,71 +70,389 @@ type
     double1,
     double2,
     double3,
-    double4
+    double4,
+    int8,
+    int16,
+    int32,
+    uint8,
+    uint16,
+    uint32
     );
 
   TCUDATexRefInfo = record
     Name: string;
     DataType: TCUDAType;
-    Channels: Byte;
+    Dim: Byte;
+    ReadMode: TcudaTextureReadMode;
   end;
-
-  TCUDAArgType = (cuatDefalt, cuatConst, cuatVar, cuatRef);
 
   TCUDAFuncArgInfo = record
     Name: string;
     DataType: TCUDAType;
-    ArgType: TCUDAArgType;
+    CustomType: string;
+    Ref: Boolean;
   end;
 
   TCUDAFuncInfo = record
     Name: string;
-    Return: TCUDAFuncArgInfo;
     Args: array of TCUDAFuncArgInfo;
   end;
 
-  TCUDAConstInfo = record
+  TCUDAConstantInfo = record
     Name: string;
     DataType: TCUDAType;
+    CustomType: string;
+    Ref: Boolean;
+    DefValue: Boolean;
   end;
 
-  TCUDAModuleInfo = {$IFNDEF FPC}record{$ELSE}object{$ENDIF}
+  TCUDAModuleInfo = class(TObject)
+  private
+    ping, pong: TStrings;
+    procedure Reset;
+    procedure BreakStrings(inlist, outlist: TStrings);
+    procedure RemoveComents(inlist, outlist: TStrings);
+    procedure RemoveSpaces(inlist, outlist: TStrings);
+    procedure ReplaceUnsigned(inlist, outlist: TStrings);
+    procedure FindTexRef(inlist: TStrings);
+    procedure FindConst(inlist: TStrings);
+    procedure FindFunc(inlist: TStrings);
+  public
+    Owner: TComponent;
     TexRef: array of TCUDATexRefInfo;
     Func: array of TCUDAFuncInfo;
-    ConstMem: array of TCUDAConstInfo;
-    procedure Reset;
+    Constant: array of TCUDAConstantInfo;
+
+    constructor Create;
+    destructor Destroy; override;
+
     procedure ParseModule(ASource: TStrings);
   end;
 
-procedure BreakString(const str: string; outlist: TStrings);
+
 
 implementation
 
 uses
-  GLStrings;
+  GLStrings, SysUtils;
 
-procedure BreakStrings(inlist, outlist: TStrings);
 const
-  WordDelimiters: set of Char = [#0..#255] - ['a'..'z','A'..'Z','1'..'9','0'];
+  WordDelimiters: set of AnsiChar = [#0..#255] - ['a'..'z','A'..'Z','1'..'9','0','_'];
+  sCUDAType: array[TCUDAType] of string =
+  (
+    '',
+    'char',
+    'uchar',
+    'char2',
+    'uchar2',
+    'char3',
+    'uchar3',
+    'char4',
+    'uchar4',
+    'short',
+    'ushort',
+    'short2',
+    'ushort2',
+    'short3',
+    'ushort3',
+    'short4',
+    'ushort4',
+    'int',
+    'uint',
+    'int2',
+    'uint2',
+    'int3',
+    'uint3',
+    'int4',
+    'uint4',
+    'long',
+    'ulong',
+    'long2',
+    'ulong2',
+    'long3',
+    'ulong3',
+    'long4',
+    'ulong4',
+    'float',
+    'float2',
+    'float3',
+    'float4',
+    'longlong',
+    'ulonglong',
+    'longlong2',
+    'ulonglong2',
+    'longlong3',
+    'ulonglong3',
+    'longlong4',
+    'ulonglong4',
+    'double',
+    'double2',
+    'double3',
+    'double4',
+    'int8',
+    'int16',
+    'int32',
+    'uint8',
+    'uint16',
+    'uint32'
+    );
+
+function StrToCUDAType(const AToken: string): TCUDAType;
+var
+  T: TCUDAType;
+begin
+  for T := char1 to uint32 do
+    if AToken = sCUDAType[T] then
+    begin
+      exit(T);
+    end;
+  Result := customType;
+end;
+
+procedure TCUDAModuleInfo.BreakStrings(inlist, outlist: TStrings);
 var
   i: Integer;
   str, accum: string;
-  next: Boolean;
+  c: Char;
 begin
   str := inlist.Text;
   outlist.Clear;
   accum := '';
-  next := false;
 
-  for i := 1 to Length(str) do
+  for I := 1 to Length(str) do
   begin
-    if (str[i] in WordDelimiters) and (Length(accum) > 0) then
+    c := str[I];
+    if CharInSet(c, WordDelimiters) then
     begin
-      outlist.Add(accum);
-      accum := '';
+      if Length(accum) > 0 then
+      begin
+        outlist.Add(accum);
+        accum := '';
+      end;
+      outlist.Add(c);
     end
     else
-      accum := accum + str[i];
+      accum := accum + str[I];
+  end;
+end;
+
+procedure TCUDAModuleInfo.RemoveComents(inlist, outlist: TStrings);
+var
+  bSkipToLineBreak: Boolean;
+  bSkipToRemarkEnd: Boolean;
+  i: Integer;
+  str1, str2: string;
+begin
+  outlist.Clear;
+  bSkipToLineBreak := False;
+  bSkipToRemarkEnd := False;
+  for I := 0 to inlist.Count - 2 do
+  begin
+    str1 := inlist[I];
+    str2 := inlist[I+1];
+
+    if bSkipToLineBreak then
+    begin
+      if (str1 = #13) then
+        bSkipToLineBreak := False;
+      continue;
+    end;
+
+    if bSkipToRemarkEnd then
+    begin
+      if (str1 = '*') and (str2 = '/')  then
+        bSkipToRemarkEnd := False;
+      continue;
+    end;
+
+    if (str1 = '/') and (str2 = '/') then
+    begin
+      bSkipToLineBreak := True;
+      continue;
+    end
+    else if (str1 = '/') and (str2 = '*') then
+    begin
+      bSkipToRemarkEnd := True;
+      continue;
+    end;
+
+    outlist.Add(str1);
+  end;
+end;
+
+procedure TCUDAModuleInfo.RemoveSpaces(inlist, outlist: TStrings);
+var
+  i: Integer;
+begin
+  outlist.Clear;
+  for I := 0 to inlist.Count - 2 do
+    if inlist[i] > #32 then
+      outlist.Add(inlist[i]);
+end;
+
+procedure TCUDAModuleInfo.ReplaceUnsigned(inlist, outlist: TStrings);
+var
+  I: Integer;
+begin
+  outlist.Clear;
+  I := 0;
+  repeat
+    if (inlist[I] = 'unsigned') and (inlist[I+1] = 'int') then
+    begin
+      outlist.Add('uint32');
+      Inc(I);
+    end
+    else
+      outlist.Add(inlist[I]);
+   Inc(I);
+  until I >= inlist.Count;
+end;
+
+procedure TCUDAModuleInfo.FindTexRef(inlist: TStrings);
+var
+  i, p, e: Integer;
+  texInfo: TCUDATexRefInfo;
+begin
+  for I := 0 to inlist.Count - 1 do
+  begin
+    if UpperCase(inlist[i]) = 'TEXTURE' then
+    begin
+      if inlist[i+1] <> '<' then
+        continue;
+      texInfo.DataType := StrToCUDAType(inlist[i+2]);
+      if inlist[i+3] <> ',' then
+        continue;
+      Val(inlist[i+4], texInfo.Dim, e);
+      if e <> 0 then
+        Continue;
+
+      p := 5;
+      if inlist[i+5] = ',' then
+      begin
+        if inlist[i+6] = 'cudaReadModeElementType' then
+          texInfo.ReadMode := cudaReadModeElementType
+        else if inlist[i+6] = 'cudaReadModeNormalizedFloat' then
+          texInfo.ReadMode := cudaReadModeNormalizedFloat
+        else
+          Continue;
+        p := 7;
+      end;
+      if inlist[i+p] <> '>' then
+        continue;
+      texInfo.Name := inlist[i+p+1];
+      SetLength(TexRef, Length(TexRef)+1);
+      TexRef[High(TexRef)] := texInfo;
+    end;
+  end;
+end;
+
+constructor TCUDAModuleInfo.Create;
+begin
+  ping := TStringList.Create;
+  pong := TStringList.Create;
+end;
+
+destructor TCUDAModuleInfo.Destroy;
+begin
+  ping.Destroy;
+  pong.Destroy;
+end;
+
+procedure TCUDAModuleInfo.FindConst(inlist: TStrings);
+var
+  i, p: Integer;
+  constInfo: TCUDAConstantInfo;
+begin
+  for I := 0 to inlist.Count - 1 do
+  begin
+    if UpperCase(inlist[i]) = '__CONSTANT__' then
+    begin
+      p := i+1;
+      if inlist[p] = 'static' then
+        Inc(p);
+      constInfo.DataType := StrToCUDAType(inlist[p]);
+      if constInfo.DataType = customType then
+        constInfo.CustomType := inlist[p]
+      else
+        constInfo.CustomType := '';
+      Inc(p);
+
+      if inlist[p] = '*' then
+      begin
+        constInfo.Ref := True;
+        Inc(p);
+      end
+      else
+        constInfo.Ref := False;
+
+      constInfo.Name := inlist[p];
+      Inc(p);
+      constInfo.DefValue := False;
+      while p < inlist.Count do
+      begin
+        if inlist[p] = '=' then
+        begin
+          constInfo.DefValue := True;
+          break;
+        end
+        else if inlist[p] = ';' then
+          break;
+        Inc(p);
+      end;
+      SetLength(Constant, Length(Constant)+1);
+      Constant[High(Constant)] := constInfo;
+    end;
+  end;
+end;
+
+procedure TCUDAModuleInfo.FindFunc(inlist: TStrings);
+var
+  i, p: Integer;
+  funcInfo: TCUDAFuncInfo;
+  argInfo: TCUDAFuncArgInfo;
+begin
+  for I := 0 to inlist.Count - 1 do
+  begin
+    if UpperCase(inlist[i]) = '__GLOBAL__' then
+    begin
+      if inlist[i+1] <> 'void' then
+        Continue;
+      funcInfo.Name := inlist[i+2];
+      if inlist[i+3] <> '(' then
+        Continue;
+
+      p := 4;
+      funcInfo.Args := nil;
+      while inlist[i+p] <> ')' do
+      begin
+        if inlist[i+p] = ',' then
+        begin
+          inc(p);
+          Continue;
+        end;
+        argInfo.DataType := StrToCUDAType(inlist[i+p]);
+        if argInfo.DataType = customType then
+          argInfo.CustomType := inlist[i+p]
+        else
+          argInfo.CustomType := '';
+        Inc(p);
+
+        if inlist[i+p] = '*' then
+        begin
+          argInfo.Ref := True;
+          Inc(p);
+        end
+        else
+          argInfo.Ref := False;
+
+        argInfo.Name := inlist[i+p];
+        SetLength(funcInfo.Args, Length(funcInfo.Args)+1);
+        funcInfo.Args[High(funcInfo.Args)] := argInfo;
+        inc(p);
+      end;
+      SetLength(Func, Length(Func)+1);
+      Func[High(Func)] := funcInfo;
+    end;
   end;
 end;
 
@@ -144,28 +461,22 @@ var
   i: Integer;
 begin
   TexRef := nil;
+  Constant:= nil;
+  for I := 0 to High(Func) do
+    Func[I].Args := nil;
   Func := nil;
-  ConstMem := nil;
 end;
 
 procedure TCUDAModuleInfo.ParseModule(ASource: TStrings);
-type
-  TLastSemantic = (lsNone, lsSampler, lsCode);
-var
-  I: Integer;
-  line: TStrings;
-  temp: string;
-  LastSemantic: TLastSemantic;
 begin
   Reset;
-  LastSemantic := lsNone;
-  line := TStringList.Create;
-  for I := 0 to ASource.Count - 1 do
-  begin
-
-  end;
-
-  line.Free;
+  BreakStrings(ASource, ping);
+  RemoveComents(ping, pong);
+  RemoveSpaces(pong, ping);
+  ReplaceUnsigned(ping, pong);
+  FindTexRef(pong);
+  FindConst(pong);
+  FindFunc(pong);
 end;
 
 end.

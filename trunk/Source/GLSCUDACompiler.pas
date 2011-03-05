@@ -21,7 +21,7 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes, Forms;
+  Classes, Forms, GLSCUDAParser;
 
 type
   TGLSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);
@@ -61,14 +61,15 @@ type
     { Private declarations }
     FNVCCPath: string;
     FCppCompilerPath: string;
-    FCode: TStringList;
+    FProduct: TStringList;
     FProjectModule: string;
     FSourceCodeFile: string;
+    FConsoleContent: string;
     FOutputCodeType: TGLSCUDACompilerOutput;
     FVirtualArch: TGLSCUDAVirtArch;
     FRealArch: TGLSCUDARealArchs;
     FMaxRegisterCount: Integer;
-    FDesignerTaskList: TList;
+    FModuleInfo: TCUDAModuleInfo;
     procedure SetMaxRegisterCount(Value: Integer);
     procedure SetOutputCodeType(const Value: TGLSCUDACompilerOutput);
     function StoreProjectModule: Boolean;
@@ -85,14 +86,16 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure SetSourceCodeFile(const AFileName: string);
-    function Compile: Boolean;
-    property Code: TStringList read FCode write FCode;
 
-    property DesignerTaskList: TList read FDesignerTaskList
-      write FDesignerTaskList;
+    function Compile: Boolean;
+    { : Product of compilation. }
+    property Product: TStringList read FProduct write FProduct;
+
+    property ModuleInfo: TCUDAModuleInfo read FModuleInfo;
+    property ConsoleContent: string read FConsoleContent;
   published
     { Published declarations }
-    { : NVidia CUDA Compiler }
+    { : NVidia CUDA Compiler. }
     property NVCCPath: string read FNVCCPath write SetNVCCPath;
     { : Microsoft Visual Studio Compiler.
       Pascal compiler is still not done. }
@@ -120,7 +123,7 @@ type
       write FVirtualArch default compute_13;
     { : Maximum registers that kernel can use. }
     property MaxRegisterCount: Integer read FMaxRegisterCount
-      write setMaxRegisterCount default 32;
+      write SetMaxRegisterCount default 32;
   end;
 
   TFindCuFileFunc = function(var AModuleName: string): Boolean;
@@ -180,10 +183,12 @@ begin
       FCppCompilerPath := '';
   end;
   FProjectModule := 'none';
+  FModuleInfo := TCUDAModuleInfo.Create;
 end;
 
 destructor TGLSCUDACompiler.Destroy;
 begin
+  FModuleInfo.Destroy;
   inherited;
 end;
 
@@ -246,9 +251,10 @@ begin
   CodeSource := TStringList.Create;
   CodeSource.LoadFromFile(FSourceCodeFile);
   Result := false;
+  FConsoleContent := '';
 
   if FileExists(FNVCCPath + 'nvcc.exe') and
-    FileExists(FCppCompilerPath + 'cl.exe') and Assigned(FCode) then
+    FileExists(FCppCompilerPath + 'cl.exe') and Assigned(FProduct) then
   begin
     tepmPath := GetEnvironmentVariable('TEMP');
     tepmPath := IncludeTrailingPathDelimiter(tepmPath);
@@ -300,9 +306,8 @@ begin
     end;
     commands := commands + '-o "' + tempFile + '.' + tempFileExt + '" ';
     commands := commands + #00;
-    nvcc := FNVCCPath + 'nvcc.exe ';// + #00;
-    // CallResult := ShellExecute(0, nil, PChar(nvcc), PChar(commands),
-    // nil, SW_HIDE);
+    nvcc := FNVCCPath + 'nvcc.exe ';
+
     with Security do
     begin
       nlength := SizeOf(TSecurityAttributes);
@@ -368,12 +373,14 @@ begin
       pathfile := tempFile + '.' + tempFileExt;
       if FileExists(pathfile) then
       begin
-        FCode.LoadFromFile(pathfile);
+        FModuleInfo.ParseModule(CodeSource);
+        FProduct.LoadFromFile(pathfile);
         if csDesigning in ComponentState then
-          FCode.OnChange(Self);
+          FProduct.OnChange(Self);
         SysUtils.DeleteFile(pathfile);
         Result := true;
-        msg := Format(cudasSuccessCompilation, [StrPas(Buffer)]);
+        FConsoleContent := string(StrPas(Buffer));
+        msg := Format(cudasSuccessCompilation, [FConsoleContent]);
         if csDesigning in ComponentState then
           MessageDlg(msg, mtInformation, [mbOk], 0)
         else

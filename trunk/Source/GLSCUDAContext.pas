@@ -89,20 +89,20 @@ type
   published
     { Published declarations }
     property Name: string read GetName;
-    property TotalGlobalMem: size_t read fDeviceProperties.TotalGlobalMem;
-    property SharedMemPerBlock: size_t read fDeviceProperties.SharedMemPerBlock;
+    property TotalGlobalMem: TSize_t read fDeviceProperties.TotalGlobalMem;
+    property SharedMemPerBlock: TSize_t read fDeviceProperties.SharedMemPerBlock;
     property RegsPerBlock: Integer read fDeviceProperties.RegsPerBlock;
     property WarpSize: Integer read fDeviceProperties.WarpSize;
-    property MemPitch: size_t read fDeviceProperties.MemPitch;
+    property MemPitch: TSize_t read fDeviceProperties.MemPitch;
     property MaxThreadsPerBlock: Integer
       read fDeviceProperties.MaxThreadsPerBlock;
     property MaxThreadsDim: TCUDADimensions read fMaxThreadsDim;
     property MaxGridSize: TCUDADimensions read fMaxGridSize;
     property ClockRate: Integer read fDeviceProperties.ClockRate;
-    property TotalConstMem: size_t read fDeviceProperties.TotalConstMem;
+    property TotalConstMem: TSize_t read fDeviceProperties.TotalConstMem;
     property Major: Integer read fDeviceProperties.Major;
     property Minor: Integer read fDeviceProperties.Minor;
-    property TextureAlignment: size_t read fDeviceProperties.TextureAlignment;
+    property TextureAlignment: TSize_t read fDeviceProperties.TextureAlignment;
     property DeviceOverlap: Integer read fDeviceProperties.DeviceOverlap;
     property MultiProcessorCount: Integer
       read fDeviceProperties.MultiProcessorCount;
@@ -178,10 +178,7 @@ type
 
   class var
     fContextList: TCUDAContextList;
-    class {$IFDEF GLS_DELPHI_2010_UP}threadvar {$ELSE}var
-    {$ENDIF} FContextStack: TCUDAContextList;
-    class procedure Init;
-    class procedure Done;
+    class var FContextStacks: array of TCUDAContextList;
   protected
     { Protected declarations }
     class function GetDevice(i: Integer): TCUDADevice;
@@ -193,6 +190,8 @@ type
   public
     { Public declarations }
     { : Managment. }
+    class procedure Init;
+    class procedure Done;
     class procedure CreateContext(aContext: TCUDAContext);
     class procedure DestroyContext(aContext: TCUDAContext);
     class procedure CreateContextOf(ADevice: TCUDADevice);
@@ -233,9 +232,12 @@ resourcestring
   cudasInvalidGLContext = 'Unable to create CUDA context with OpenGL interop' +
     ' - OpenGL context not ready';
 
-  // ------------------
-  // ------------------ TCUDADimensions ------------------
-  // ------------------
+threadvar
+  vStackIndex: Cardinal;
+
+// ------------------
+// ------------------ TCUDADimensions ------------------
+// ------------------
 
 {$IFDEF GLS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
 
@@ -327,10 +329,27 @@ begin
     FUsed := False;
 
     FSuitable := cuDeviceGet(fHandle, fID) = CUDA_SUCCESS;
-    FSuitable := FSuitable and InitCUDART;
     if FSuitable then
     begin
-      cudaGetDeviceProperties(fDeviceProperties, fID);
+      cuDeviceGetName(@fDeviceProperties.name[0], SizeOf(fDeviceProperties.name), fHandle);
+      cuDeviceTotalMem(@fDeviceProperties.TotalGlobalMem, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.SharedMemPerBlock, CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.RegsPerBlock, CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.WarpSize, CU_DEVICE_ATTRIBUTE_WARP_SIZE, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MemPitch, CU_DEVICE_ATTRIBUTE_MAX_PITCH, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxThreadsPerBlock, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxThreadsDim[0], CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxThreadsDim[1], CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxThreadsDim[2], CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxGridSize[0], CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxGridSize[1], CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.MaxGridSize[2], CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.ClockRate, CU_DEVICE_ATTRIBUTE_CLOCK_RATE, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.TotalConstMem, CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY, fHandle);
+      cuDeviceComputeCapability(fDeviceProperties.Major, fDeviceProperties.Minor, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.TextureAlignment, CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.DeviceOverlap, CU_DEVICE_ATTRIBUTE_GPU_OVERLAP, fHandle);
+      cuDeviceGetAttribute(@fDeviceProperties.DeviceOverlap, CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, fHandle);
       fGFlops := fDeviceProperties.MultiProcessorCount *
         fDeviceProperties.ClockRate;
       fMaxThreadsDim.FXYZ[0] := fDeviceProperties.MaxThreadsDim[0];
@@ -387,7 +406,8 @@ end;
 
 function TCUDADevice.TotalMemory: Cardinal;
 begin
-  cuDeviceTotalMem(Result, fHandle);
+  cuDeviceTotalMem(@fDeviceProperties.TotalGlobalMem, fHandle);
+  Result := fDeviceProperties.TotalGlobalMem;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -469,7 +489,7 @@ var
   status: TCUresult;
   i: Integer;
 begin
-  if InitCUDA then
+  if InitCUDA and not Assigned(fDeviceList) then
   begin
     fDeviceList := TCUDADeviceList.Create;
     fContextList := TCUDAContextList.Create;
@@ -489,22 +509,25 @@ end;
 
 class procedure CUDAContextManager.Done;
 var
-  i: Integer;
+  I, J: Integer;
 begin
   if Assigned(fDeviceList) then
     for i := 0 to fDeviceList.Count - 1 do
       fDeviceList[i].Free;
 
-  if Assigned(FContextStack) and (FContextStack.Count > 0) then
+  for I := 0 to High(FContextStacks) do
   begin
-    GLSLogger.LogError(cudasUnbalansedUsage);
-    for i := FContextStack.Count - 1 to 0 do
-      FContextStack[i].Release;
+    if FContextStacks[I].Count > 0 then
+    begin
+      GLSLogger.LogError(cudasUnbalansedUsage);
+      for J := FContextStacks[I].Count - 1 to 0 do
+        FContextStacks[I][J].Release;
+    end;
+    FContextStacks[I].Destroy;
   end;
 
   fDeviceList.Free;
   fContextList.Free;
-  FContextStack.Free;
   CloseCUDA;
 end;
 
@@ -535,11 +558,6 @@ begin
   else
   begin
     fContextList.Remove(aContext);
-    if FContextStack.IndexOf(aContext) > -1 then
-    begin
-      GLSLogger.LogError(cudasUnbalansedUsage);
-      while FContextStack.Remove(aContext) > -1 do;
-    end;
   end;
 end;
 
@@ -632,7 +650,7 @@ begin
   max_gflops := 0;
   for i := 0 to fDeviceList.Count - 1 do
   begin
-    if max_gflops < TCUDADevice(fDeviceList.Items[i]).fGFlops then
+    if max_gflops < fDeviceList.Items[i].fGFlops then
     begin
       Device := fDeviceList.Items[i];
       max_gflops := Device.fGFlops;
@@ -664,11 +682,12 @@ end;
 class procedure CUDAContextManager.CreateContext(aContext: TCUDAContext);
 var
   status: TCUresult;
-  RTstatus: TcudaError;
   cuOldContext, cuContext: PCUcontext;
   LGLContext: TGLContext;
+  LStack: TCUDAContextList;
 begin
-  if not Assigned(aContext.FDevice) or not aContext.FDevice.FSuitable then
+  if not Assigned(aContext.FDevice)
+    or not aContext.FDevice.FSuitable then
   begin
     GLSLogger.LogError(cudasNoDeviceToCreate);
     Abort;
@@ -691,7 +710,6 @@ begin
   RegisterContext(aContext);
 
   status := CUDA_SUCCESS;
-  RTstatus := cudaSuccess;
   if Assigned(aContext.FOnOpenGLInteropInit) then
   begin
     aContext.FOnOpenGLInteropInit(LGLContext);
@@ -700,7 +718,6 @@ begin
       LGLContext.Activate;
       cuContext := nil;
       status := cuGLCtxCreate(cuContext, 0, aContext.FDevice.fHandle);
-      RTstatus := cudaGLSetGLDevice(aContext.FDevice.fID);
       LGLContext.Deactivate;
     end
     else
@@ -713,10 +730,9 @@ begin
   else
   begin
     status := cuCtxCreate(cuContext, 0, aContext.FDevice.fHandle);
-    RTstatus := cudaSetDevice(aContext.FDevice.fID);
   end;
 
-  if (status <> CUDA_SUCCESS) or (RTstatus <> cudaSuccess) then
+  if (status <> CUDA_SUCCESS) then
   begin
     GLSLogger.LogError(cudaGetLastErrorString);
     UnRegisterContext(aContext);
@@ -729,7 +745,8 @@ begin
   // Make context be floating to use it in different thread
   if cuCtxPopCurrent(cuContext) <> CUDA_SUCCESS then
   begin
-    FContextStack.Insert(FContextStack.Count - 1, aContext);
+    LStack := GetThreadStack;
+    LStack.Insert(LStack.Count - 1, aContext);
     GLSLogger.LogWarning(cudasMakeFloatingFail);
   end;
 
@@ -774,9 +791,13 @@ end;
 
 class function CUDAContextManager.GetThreadStack: TCUDAContextList;
 begin
-  if not Assigned(FContextStack) then
-    FContextStack := TCUDAContextList.Create;
-  Result := FContextStack;
+  if vStackIndex = 0 then
+  begin
+    SetLength(FContextStacks, Length(FContextStacks)+1);
+    FContextStacks[High(FContextStacks)] := TCUDAContextList.Create;
+    vStackIndex := High(FContextStacks)+1;
+  end;
+  Result := FContextStacks[vStackIndex-1];
 end;
 
 // GetCurrentThreadContext
@@ -963,11 +984,11 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-CUDAContextManager.Init;
-RegisterClasses([TGLSCUDADevice]);
+  RegisterClasses([TGLSCUDADevice]);
+  CUDAContextManager.Init;
 
 finalization
 
-CUDAContextManager.Done;
+  CUDAContextManager.Done;
 
 end.

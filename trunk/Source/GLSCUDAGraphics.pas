@@ -4,6 +4,8 @@
 {: GLSCUDAGraphics<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component 
+                           Added to TGLFeedBackMesh vertex attribute collection 
       <li>01/04/10 - Yar - Creation
    </ul></font><p>
 }
@@ -226,14 +228,15 @@ type
     { Private declarations }
     FFeedBackMesh: TGLCustomFeedBackMesh;
     procedure SetFeedBackMesh(const Value: TGLCustomFeedBackMesh);
+    function GetAttribArraySize(AAttr: TGLVertexAttribute): LongWord;
   protected
     { Protected declaration }
     procedure AllocateHandles; override;
     procedure DestroyHandles; override;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-    function GetAttributeArraySize(Index: Integer): LongWord; override;
-    function GetAttributeArrayAddress(Index: Integer): Pointer; override;
+    function GetAttributeArraySize(const AName: string): LongWord; override;
+    function GetAttributeArrayAddress(const AName: string): Pointer; override;
     function GetElementArrayDataSize: LongWord; override;
     function GetElementArrayAddress: Pointer; override;
   public
@@ -244,9 +247,9 @@ type
     procedure MapResources; override;
     procedure UnMapResources; override;
 
-    property AttributeDataSize[Index: Integer]: LongWord read
+    property AttributeDataSize[const AttribName: string]: LongWord read
       GetAttributeArraySize;
-    property AttributeDataAddress[Index: Integer]: Pointer read
+    property AttributeDataAddress[const AttribName: string]: Pointer read
       GetAttributeArrayAddress;
     property IndexDataSize: LongWord read GetElementArrayDataSize;
     property IndexDataAddress: Pointer read GetElementArrayAddress;
@@ -625,17 +628,11 @@ begin
   end;
 end;
 
-function TCUDAGLGeometryResource.GetAttributeArraySize(Index: Integer): LongWord;
+function TCUDAGLGeometryResource.GetAttribArraySize(AAttr: TGLVertexAttribute): LongWord;
 var
   typeSize: LongWord;
-  LAttr: TGLVertexAttribute;
 begin
-  Result := 0;
-  LAttr := FFeedBackMesh.Attributes.Attributes[Index];
-  if LAttr.GLSLType = GLSLTypeUndefined then
-    exit;
-
-  case LAttr.GLSLType of
+  case AAttr.GLSLType of
     GLSLType1F: typeSize := SizeOf(GLFloat);
     GLSLType2F: typeSize := 2 * SizeOf(GLFloat);
     GLSLType3F: typeSize := 3 * SizeOf(GLFloat);
@@ -660,18 +657,38 @@ begin
   Result := Cardinal(FFeedBackMesh.VertexNumber) * typeSize;
 end;
 
+function TCUDAGLGeometryResource.GetAttributeArraySize(
+  const AName: string): LongWord;
+var
+  LAttr: TGLVertexAttribute;
+begin
+  Result := 0;
+  LAttr := FFeedBackMesh.Attributes.GetAttributeByName(AName);
+  if not Assigned(LAttr) then
+    exit;
+  if LAttr.GLSLType = GLSLTypeUndefined then
+    exit;
+  Result := GetAttribArraySize(LAttr);
+end;
+
 function TCUDAGLGeometryResource.GetAttributeArrayAddress(
-  Index: Integer): Pointer;
+  const AName: string): Pointer;
 var
   i: Integer;
   Size: Cardinal;
   MapPtr: Pointer;
+  LAttr: TGLVertexAttribute;
 begin
   Result := nil;
   if FMapCounter = 0 then
     exit;
-  for i := 0 to Index - 1 do
-    Inc(PByte(Result), GetAttributeArraySize(i));
+  LAttr := FFeedBackMesh.Attributes.GetAttributeByName(AName);
+  if not Assigned(LAttr) then
+    exit;
+
+  for i := 0 to LAttr.Index - 1 do
+    Inc(PByte(Result), GetAttribArraySize(FFeedBackMesh.Attributes[i]));
+
   Context.Requires;
   MapPtr := nil;
   FStatus := cuGraphicsResourceGetMappedPointer(
@@ -681,7 +698,7 @@ begin
   if FStatus <> CUDA_SUCCESS then
     Abort;
 
-  if PtrUInt(Result) + GetAttributeArraySize(Index) > Size then
+  if PtrUInt(Result) + GetAttribArraySize(LAttr) > Size then
   begin
     GLSLogger.LogError(cudasOutOfAttribSize);
     Abort;
@@ -876,7 +893,7 @@ begin
     GR := TCUDAGLGeometryResource(FGeometryResource);
     size := 0;
     for I := 0 to Attributes.Count - 1 do
-      Inc(size, GR.GetAttributeArraySize(I));
+      Inc(size, GR.GetAttribArraySize(Attributes[I]));
 
     FVAO.Bind;
     FVBO.BindBufferData(nil, size, GL_STREAM_DRAW);
@@ -945,7 +962,7 @@ begin
 
         end; // of case
       end;
-      Inc(Offset, GR.GetAttributeArraySize(I));
+      Inc(Offset, GR.GetAttribArraySize(Attributes[I]));
     end;
 
     // Enable engagement attributes array
@@ -1024,8 +1041,8 @@ begin
             begin
               if Assigned(OnBeforeKernelLaunch) then
                 OnBeforeKernelLaunch(FAttributes.Attributes[I]);
-//              if Assigned(KernelFunction) then
-//                KernelFunction.Launch;
+              if Assigned(KernelFunction) then
+                KernelFunction.Launch;
             end;
         end;
     else

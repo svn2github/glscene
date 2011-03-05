@@ -4,9 +4,11 @@
 { : GLSCUDAFFTPlan <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>05/03/11 - Yar - Refactored
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
+
 unit GLSCUDAFFTPlan;
 
 interface
@@ -18,22 +20,28 @@ uses
 
 type
 
-  TCUDAFFTransform = (fftRealToComplex, fftComplexToReal, fftComplexToComplex,
-    fftDoubleToDoubleComplex, fftDoubleComplexToDouble,
-    fftDoubleComplexToDoubleComplex);
+  TCUDAFFTransform =
+  (
+    fftRealToComplex,
+    fftComplexToReal,
+    fftComplexToComplex,
+    fftDoubleToDoubleComplex,
+    fftDoubleComplexToDouble,
+    fftDoubleComplexToDoubleComplex
+  );
 
   TCUDAFFTdir = (fftdForward, fftdInverse);
 
   TCUDAFFTPlan = class(TCUDAComponent)
   private
     { Private declarations }
-    fHandle: TcufftHandle;
-    fWidth: Integer;
-    fHeight: Integer;
-    fDepth: Integer;
-    fBatch: Integer;
-    FPlanSize: Cardinal;
-    fTransform: TCUDAFFTransform;
+    FHandle: TcufftHandle;
+    FWidth: Integer;
+    FHeight: Integer;
+    FDepth: Integer;
+    FBatch: Integer;
+    FPlanSize: Integer;
+    FTransform: TCUDAFFTransform;
     FStatus: TcufftResult;
     procedure SetWidth(Value: Integer);
     procedure SetHeight(Value: Integer);
@@ -55,10 +63,10 @@ type
   published
     { Published declarations }
     property Width: Integer read fWidth write SetWidth default 256;
-    property Height: Integer read fHeight write SetHeight default 0;
-    property Depth: Integer read fDepth write SetDepth default 0;
-    property Batch: Integer read fBatch write SetBatch default 1;
-    property Transform: TCUDAFFTransform read fTransform write SetTransform
+    property Height: Integer read FHeight write SetHeight default 0;
+    property Depth: Integer read FDepth write SetDepth default 0;
+    property Batch: Integer read FBatch write SetBatch default 1;
+    property Transform: TCUDAFFTransform read FTransform write SetTransform
       default fftRealToComplex;
   end;
 
@@ -71,23 +79,15 @@ resourcestring
   cudasRequireFreeThread = 'CUFFT functions require context-free thread';
   cudasBadPlanSize = 'MemData size less then Plan size.';
 
-var FDummyPlan: TcufftHandle;
-
 constructor TCUDAFFTPlan.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  fHandle := 0;
+  FHandle := INVALID_CUFFT_HANDLE;
   fWidth := 256;
-  fHeight := 0;
-  fDepth := 0;
-  fBatch := 1;
-  fTransform := fftRealToComplex;
-  if not(csDesigning in ComponentState) then
-    if InitCUFFT then
-    begin
-      if FDummyPlan = 0 then
-        cufftPlan1d(FDummyPlan, 256, CUFFT_R2C, 1);
-    end;
+  FHeight := 0;
+  FDepth := 0;
+  FBatch := 1;
+  FTransform := fftRealToComplex;
 end;
 
 destructor TCUDAFFTPlan.Destroy;
@@ -115,9 +115,9 @@ begin
     DestroyHandles;
     plan := TCUDAFFTPlan(Source);
     Width := plan.fWidth;
-    Height := plan.fHeight;
-    Depth := plan.fDepth;
-    Transform := plan.fTransform;
+    Height := plan.FHeight;
+    Depth := plan.FDepth;
+    Transform := plan.FTransform;
   end;
   inherited Assign(Source);
 end;
@@ -125,18 +125,18 @@ end;
 procedure TCUDAFFTPlan.AllocateHandles;
 const
   cTypeSize: array[TCUDAFFTransform] of Byte = (
-  SizeOf(TcufftComplex),
-  SizeOf(TcufftComplex),
-  SizeOf(TcufftComplex),
-  SizeOf(TcufftDoubleComplex),
-  SizeOf(TcufftDoubleComplex),
-  SizeOf(TcufftDoubleComplex));
+  SizeOf(TcufftComplex) div 2,
+  SizeOf(TcufftComplex) div 2,
+  SizeOf(TcufftComplex) div 2,
+  SizeOf(TcufftDoubleComplex) div 2,
+  SizeOf(TcufftDoubleComplex) div 2,
+  SizeOf(TcufftDoubleComplex) div 2);
 var
   LType: TcufftType;
 begin
   DestroyHandles;
 
-  case fTransform of
+  case FTransform of
     fftRealToComplex:
       LType := CUFFT_R2C;
     fftComplexToReal:
@@ -156,27 +156,35 @@ begin
     end;
   end;
 
-  if (fHeight = 0) and (fDepth = 0) then
+  Context.Requires;
+
+  if (FHeight = 0) and (FDepth = 0) then
   begin
-    FStatus := cufftPlan1d(fHandle, fWidth, LType, fBatch);
-    FPlanSize := cTypeSize[fTransform] * FWidth;
-    if fBatch > 0 then
-      FPlanSize := FPlanSize * Cardinal(fBatch);
+    FStatus := cufftPlan1d(FHandle, fWidth, LType, FBatch);
+    FPlanSize := cTypeSize[FTransform] * FWidth;
+    if FBatch > 0 then
+      FPlanSize := FPlanSize * FBatch;
   end
-  else if fDepth = 0 then
+  else if FDepth = 0 then
   begin
-    FStatus := cufftPlan2d(fHandle, fWidth, fHeight, LType);
-    FPlanSize := cTypeSize[fTransform] * FWidth * fHeight;
+    FStatus := cufftPlan2d(FHandle, fWidth, FHeight, LType);
+    FPlanSize := cTypeSize[FTransform] * FWidth * FHeight;
   end
   else
   begin
-    FStatus := cufftPlan3d(fHandle, fWidth, fHeight, fDepth, LType);
-    FPlanSize := cTypeSize[fTransform] * FWidth * fHeight * fDepth;
+    FStatus := cufftPlan3d(FHandle, fWidth, FHeight, FDepth, LType);
+    FPlanSize := cTypeSize[FTransform] * FWidth * FHeight * FDepth;
   end;
 
-  if FStatus <> CUFFT_SUCCESS then
-    Abort;
+  Context.Release;
 
+  if FStatus <> CUFFT_SUCCESS then
+  begin
+    FHandle := INVALID_CUFFT_HANDLE;
+    Abort;
+  end;
+
+  FStatus := cufftSetCompatibilityMode(FHandle, CUFFT_COMPATIBILITY_FFTW_PADDING);
   fChanges := [];
   inherited;
 end;
@@ -185,20 +193,15 @@ procedure TCUDAFFTPlan.DestroyHandles;
 begin
   inherited;
   CheckLib;
-  if CUDAContextManager.GetCurrentThreadContext <> nil then
-  begin
-    GLSLogger.LogError(cudasRequireFreeThread);
-    Abort;
-  end;
 
-  if fHandle > 0 then
+  if FHandle <> INVALID_CUFFT_HANDLE then
   begin
     Context.Requires;
-    FStatus := cufftDestroy(fHandle);
+    FStatus := cufftDestroy(FHandle);
     Context.Release;
     if FStatus <> CUFFT_SUCCESS then
       Abort;
-    fHandle := 0;
+    FHandle := 0;
     FPlanSize := 0;
   end;
 end;
@@ -218,11 +221,11 @@ procedure TCUDAFFTPlan.SetHeight(Value: Integer);
 begin
   if Value < 0 then
     Value := 0;
-  if Value <> fHeight then
+  if Value <> FHeight then
   begin
-    fHeight := Value;
-    if fHeight > 0 then
-      fBatch := 1;
+    FHeight := Value;
+    if FHeight > 0 then
+      FBatch := 1;
     CuNotifyChange(cuchSize);
   end;
 end;
@@ -231,11 +234,11 @@ procedure TCUDAFFTPlan.SetDepth(Value: Integer);
 begin
   if Value < 0 then
     Value := 0;
-  if Value <> fDepth then
+  if Value <> FDepth then
   begin
-    fDepth := Value;
-    if fDepth > 0 then
-      fBatch := 1;
+    FDepth := Value;
+    if FDepth > 0 then
+      FBatch := 1;
     CuNotifyChange(cuchSize);
   end;
 end;
@@ -244,13 +247,13 @@ procedure TCUDAFFTPlan.SetBatch(Value: Integer);
 begin
   if Value < 1 then
     Value := 1;
-  if Value <> fBatch then
+  if Value <> FBatch then
   begin
-    fBatch := Value;
-    if fBatch > 1 then
+    FBatch := Value;
+    if FBatch > 1 then
     begin
-      fHeight := 0;
-      fDepth := 0;
+      FHeight := 0;
+      FDepth := 0;
     end;
     CuNotifyChange(cuchSize);
   end;
@@ -258,9 +261,9 @@ end;
 
 procedure TCUDAFFTPlan.SetTransform(Value: TCUDAFFTransform);
 begin
-  if Value <> fTransform then
+  if Value <> FTransform then
   begin
-    fTransform := Value;
+    FTransform := Value;
     CuNotifyChange(cuchSize);
   end;
 end;
@@ -272,7 +275,7 @@ const
 var
   SrcPtr, DstPtr: Pointer;
 begin
-  if (FHandle = 0) or (fChanges <> []) then
+  if (FHandle = INVALID_CUFFT_HANDLE) or (fChanges <> []) then
     AllocateHandles;
 
   if CUDAContextManager.GetCurrentThreadContext <> nil then
@@ -281,8 +284,8 @@ begin
     Abort;
   end;
 
-  SrcPtr := ASrc.Data;
-  DstPtr := ADst.Data;
+  SrcPtr := ASrc.RawData;
+  DstPtr := ADst.RawData;
 
   if (FPlanSize > ASrc.DataSize) or (FPlanSize > ADst.DataSize) then
   begin
@@ -290,23 +293,26 @@ begin
     Abort;
   end;
 
-  case fTransform of
+  Context.Requires;
+
+  case FTransform of
     fftRealToComplex:
-      FStatus := cufftExecR2C(fHandle, SrcPtr, DstPtr);
+      FStatus := cufftExecR2C(FHandle, SrcPtr, DstPtr);
     fftComplexToReal:
-      FStatus := cufftExecC2R(fHandle, SrcPtr, DstPtr);
+      FStatus := cufftExecC2R(FHandle, SrcPtr, DstPtr);
     fftComplexToComplex:
-      FStatus := cufftExecC2C(fHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
+      FStatus := cufftExecC2C(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
     fftDoubleToDoubleComplex:
-      FStatus := cufftExecD2Z(fHandle, SrcPtr, DstPtr);
+      FStatus := cufftExecD2Z(FHandle, SrcPtr, DstPtr);
     fftDoubleComplexToDouble:
-      FStatus := cufftExecZ2D(fHandle, SrcPtr, DstPtr);
+      FStatus := cufftExecZ2D(FHandle, SrcPtr, DstPtr);
     fftDoubleComplexToDoubleComplex:
-      FStatus := cufftExecZ2Z(fHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
+      FStatus := cufftExecZ2Z(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
   else
     FStatus := CUFFT_INVALID_VALUE;
   end;
-  if True then
+
+  Context.Release;
 
   if FStatus <> CUFFT_SUCCESS then
     Abort;
@@ -325,8 +331,6 @@ initialization
 
 finalization
 
-  if FDummyPlan <> 0 then
-    cufftDestroy(FDummyPlan);
   CloseCUFFT;
 
 end.
