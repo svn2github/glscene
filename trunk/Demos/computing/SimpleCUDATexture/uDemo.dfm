@@ -36,7 +36,7 @@ object Form1: TForm1
     TabOrder = 1
   end
   object GLSCUDACompiler1: TGLSCUDACompiler
-    NVCCPath = 'C:\CUDA\bin\'
+    NVCCPath = 'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\\bin\'
     CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
     ProjectModule = 'simpleTexture_kernel.cu'
     Left = 80
@@ -1133,7 +1133,11 @@ object Form1: TForm1
       end
       object Image: TCUDATexture
         KernelName = 'tex'
+        AddressModeS = amWrap
+        AddressModeT = amWrap
         FilterMode = fmLinear
+        Format = ctFloat
+        ChannelNum = cnOne
         MemDataArray = TextureArray
       end
     end

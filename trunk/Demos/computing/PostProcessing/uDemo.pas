@@ -31,7 +31,6 @@ type
     GLSCUDACompiler1: TGLSCUDACompiler;
     MainModule: TCUDAModule;
     processedTextureMapper: TCUDAGLImageResource;
-    cudaProcess: TCUDAFunction;
     CallPostProcess: TGLDirectOpenGL;
     GLCapsule1: TGLCapsule;
     ResultShader: TGLSLShader;
@@ -42,6 +41,15 @@ type
     GLSphere1: TGLSphere;
     TrackBar1: TTrackBar;
     GLHUDSprite1: TGLHUDSprite;
+    cudaProcess: TCUDAFunction;
+    cudaProcess_k_g_data: TCUDAFuncParam;
+    cudaProcess_k_g_odata: TCUDAFuncParam;
+    cudaProcess_k_imgw: TCUDAFuncParam;
+    cudaProcess_k_imgh: TCUDAFuncParam;
+    cudaProcess_k_tilew: TCUDAFuncParam;
+    cudaProcess_k_r: TCUDAFuncParam;
+    cudaProcess_k_threshold: TCUDAFuncParam;
+    cudaProcess_k_highlight: TCUDAFuncParam;
     procedure FormResize(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

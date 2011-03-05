@@ -75,7 +75,7 @@ procedure TForm1.MakeVertexBufferParameterSetup(Sender: TObject);
 begin
   with MakeDotField do
   begin
-    SetParam(DotFieldMapper.AttributeDataAddress[0]);
+    SetParam(DotFieldMapper.AttributeDataAddress[GLFeedBackMesh1.Attributes[0].Name]);
     SetParam(FieldWidth);
     SetParam(FieldHeight);
     SetParam(GLCadencer1.CurrentTime);

@@ -23,11 +23,6 @@ type
     GLSCUDACompiler1: TGLSCUDACompiler;
     MainModule: TCUDAModule;
     ArrayOfTexture: TCUDAMemData;
-    addForces: TCUDAFunction;
-    advectVelocity: TCUDAFunction;
-    diffuseProject: TCUDAFunction;
-    updateVelocity: TCUDAFunction;
-    advectParticles: TCUDAFunction;
     TextureOfVelocityField: TCUDATexture;
     VelocityField: TCUDAMemData;
     ComplexVXField: TCUDAMemData;
@@ -42,6 +37,50 @@ type
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLGuiLayout1: TGLGuiLayout;
     ParticleRenderer: TGLFeedBackMesh;
+    addForces: TCUDAFunction;
+    addForces_k_v: TCUDAFuncParam;
+    addForces_k_dx: TCUDAFuncParam;
+    addForces_k_dy: TCUDAFuncParam;
+    addForces_k_spx: TCUDAFuncParam;
+    addForces_k_spy: TCUDAFuncParam;
+    addForces_k_fx: TCUDAFuncParam;
+    addForces_k_fy: TCUDAFuncParam;
+    addForces_k_r: TCUDAFuncParam;
+    addForces_k_pitch: TCUDAFuncParam;
+    advectVelocity: TCUDAFunction;
+    advectVelocity_k_vx: TCUDAFuncParam;
+    advectVelocity_k_vy: TCUDAFuncParam;
+    advectVelocity_k_dx: TCUDAFuncParam;
+    advectVelocity_k_pdx: TCUDAFuncParam;
+    advectVelocity_k_dy: TCUDAFuncParam;
+    advectVelocity_k_dt: TCUDAFuncParam;
+    advectVelocity_k_lb: TCUDAFuncParam;
+    diffuseProject: TCUDAFunction;
+    diffuseProject_k_vx: TCUDAFuncParam;
+    diffuseProject_k_vy: TCUDAFuncParam;
+    diffuseProject_k_dx: TCUDAFuncParam;
+    diffuseProject_k_dy: TCUDAFuncParam;
+    diffuseProject_k_dt: TCUDAFuncParam;
+    diffuseProject_k_visc: TCUDAFuncParam;
+    diffuseProject_k_lb: TCUDAFuncParam;
+    updateVelocity: TCUDAFunction;
+    updateVelocity_k_v: TCUDAFuncParam;
+    updateVelocity_k_vx: TCUDAFuncParam;
+    updateVelocity_k_vy: TCUDAFuncParam;
+    updateVelocity_k_dx: TCUDAFuncParam;
+    updateVelocity_k_pdx: TCUDAFuncParam;
+    updateVelocity_k_dy: TCUDAFuncParam;
+    updateVelocity_k_lb: TCUDAFuncParam;
+    updateVelocity_k_pitch: TCUDAFuncParam;
+    updateVelocity_k_scale: TCUDAFuncParam;
+    advectParticles: TCUDAFunction;
+    advectParticles_k_part: TCUDAFuncParam;
+    advectParticles_k_v: TCUDAFuncParam;
+    advectParticles_k_dx: TCUDAFuncParam;
+    advectParticles_k_dy: TCUDAFuncParam;
+    advectParticles_k_dt: TCUDAFuncParam;
+    advectParticles_k_lb: TCUDAFuncParam;
+    advectParticles_k_pitch: TCUDAFuncParam;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -93,7 +132,7 @@ implementation
 {$R *.dfm}
 
 uses
-  VectorGeometry, VectorTypes;
+  VectorGeometry, VectorTypes, GLSCUDAGenerics;
 
 var
   InitPosition : Boolean = False;
@@ -101,20 +140,21 @@ var
 procedure TForm1.FormCreate(Sender: TObject);
 var
   i, j: Integer;
-  pos: TVector2f;
+  pos: FloatElement.TVector2;
 begin
   ParticlesDim := 512;
   ComplexPadWidth := ParticlesDim div 2 + 1;
   RealPadWidth := 2 * (ParticlesDim div 2 + 1);
   PaddedDomainSize := ParticlesDim * ComplexPadWidth;
-  DeltaTime := 0.09;
   ViscosityConst := 0.0025;
   ForceScaleFactor := 5.8 * ParticlesDim;
   ForceUpdateRadius := 4;
   ParticlesPerThread := 16;
 
+  ComplexVXField.Width := PaddedDomainSize;
+  ComplexVYField.Width := PaddedDomainSize;
+
   // Create initial position data at host side
-  InitialPosition.Data;
   for i := 0 to InitialPosition.Height - 1 do
     for j := 0 to InitialPosition.Width - 1 do
     begin
@@ -122,10 +162,10 @@ begin
         InitialPosition.Width;
       pos[1] := ((i + 0.5) / InitialPosition.Height) + (random - 0.5) /
         InitialPosition.Height;
-      InitialPosition.SetElement(pos, j, i);
+      InitialPosition.Data<Single>(j, i).Vector2 := pos;
     end;
 
-  ParticleRenderer.VertexNumber := InitialPosition.Width * InitialPosition.Height;
+  ParticleRenderer.VertexNumber := ParticlesDim * ParticlesDim;
   clicked := false;
 end;
 
@@ -186,7 +226,9 @@ procedure TForm1.BeforeKernelLaunch(
 begin
   if not InitPosition then
   begin
-    InitialPosition.CopyTo(ParticleMapper, 0);
+    InitialPosition.CopyTo(
+      ParticleMapper,
+      ParticleRenderer.Attributes[0].Name);
     VelocityField.FillMem(NullVector);
     InitPosition := true;
   end;
@@ -198,7 +240,8 @@ begin
   InverseFFT.Execute(ComplexVXField, ComplexVXField);
   InverseFFT.Execute(ComplexVYField, ComplexVYField);
   updateVelocity.Launch;
-  // advectParticles will be launched automaticaly
+  // advectParticles will be launched automaticaly by ParticleRenderer
+  // Look at ParticleRenderer.VertexAttributes[0].KernelFunction
 end;
 
 procedure TForm1.addForcesParameterSetup(Sender: TObject);
@@ -270,7 +313,7 @@ procedure TForm1.advectParticlesParameterSetup(Sender: TObject);
 begin
   with advectParticles do
   begin
-    SetParam(ParticleMapper.AttributeDataAddress[0]);
+    SetParam(ParticleMapper.AttributeDataAddress[ParticleRenderer.Attributes[0].Name]);
     SetParam(VelocityField);
     SetParam(ParticlesDim);
     SetParam(ParticlesDim);
@@ -288,6 +331,7 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime,
   newTime: Double);
 begin
+  Self.DeltaTime := DeltaTime;
   GLSceneViewer1.Invalidate;
 end;
 

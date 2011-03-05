@@ -62,11 +62,11 @@ begin
     sum := 0;
     for pos := vectorBase to vectorEnd - 1 do
     begin
-      hA.GetElement(A, pos);
-      hB.GetElement(B, pos);
+      A := hA.Data<Single>(pos).Scalar;
+      B := hB.Data<Single>(pos).Scalar;
       sum := sum + A * B;
     end;
-    hC.SetElement(sum, vec);
+    hC.Data<Single>(vec).Scalar := sum;
   end;
 
 end;
@@ -91,25 +91,25 @@ begin
   hostB.Width := VECTOR_N * ELEMENT_N;
   hostC_CPU.Width := VECTOR_N;
   hostC_GPU.Width := VECTOR_N;
-  hostA.Data;
-  hostB.Data;
-  hostC_CPU.Data;
-  hostC_GPU.Data;
+  hostA.RawData;
+  hostB.RawData;
+  hostC_CPU.RawData;
+  hostC_GPU.RawData;
 
   Memo1.Lines.Add('...allocating GPU memory.');
   deviceA.Width := VECTOR_N * ELEMENT_N;
   deviceB.Width := VECTOR_N * ELEMENT_N;
   deviceC.Width := VECTOR_N;
-  deviceA.Data;
-  deviceB.Data;
-  deviceC.Data;
+  deviceA.RawData;
+  deviceB.RawData;
+  deviceC.RawData;
 
   Memo1.Lines.Add('...generating input data in CPU mem.');
   // Generating input data on CPU
   for I := 0 to VECTOR_N * ELEMENT_N - 1 do
   begin
-    hostA.SetElement(Random, I);
-    hostB.SetElement(Random, I);
+    hostA.Data<Single>(I).Scalar := Random;
+    hostB.Data<Single>(I).Scalar := Random;
   end;
 
   Memo1.Lines.Add('...copying input data to GPU mem.');
@@ -144,8 +144,8 @@ begin
   sumRef := 0;
   for I := 0 to VECTOR_N - 1 do
   begin
-    hostC_GPU.GetElement(val1, I);
-    hostC_CPU.GetElement(val2, I);
+    val1 := hostC_GPU.Data<Single>(I).Scalar;
+    val2 := hostC_CPU.Data<Single>(I).Scalar;
     delta := Abs(val1 - val2);
     sumDelta := sumDelta + delta;
     sumRef := sumRef + val2;

@@ -193,9 +193,9 @@ object Form1: TForm1
         ''
         #9'//-----------------------------------------------------------'
         
-          #9'// Compiling C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000b' +
-          'b0_00000000-11_temp.cpp3.i (C:/Users/YARUNA~1/AppData/Local/Temp' +
-          '/ccBI#.a03116)'
+          #9'// Compiling C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_000009' +
+          '94_00000000-11_temp.cpp3.i (C:/Users/YARUNA~1/AppData/Local/Temp' +
+          '/ccBI#.a00744)'
         #9'//-----------------------------------------------------------'
         ''
         #9'//-----------------------------------------------------------'
@@ -208,7 +208,7 @@ object Form1: TForm1
         #9'//-----------------------------------------------------------'
         ''
         
-          #9'.file'#9'1'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000bb0_0' +
+          #9'.file'#9'1'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000994_0' +
           '0000000-10_temp.cudafe2.gpu"'
         
           #9'.file'#9'2'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLUD' +
@@ -646,6 +646,54 @@ object Form1: TForm1
         Grid.SizeX = 32
         Grid.SizeY = 32
         OnParameterSetup = cudaProcessParameterSetup
+        object cudaProcess_k_g_data: TCUDAFuncParam
+          KernelName = 'g_data'
+          DataType = int1
+          Size = 0
+          Reference = True
+        end
+        object cudaProcess_k_g_odata: TCUDAFuncParam
+          KernelName = 'g_odata'
+          DataType = int1
+          Size = 0
+          Reference = True
+        end
+        object cudaProcess_k_imgw: TCUDAFuncParam
+          KernelName = 'imgw'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object cudaProcess_k_imgh: TCUDAFuncParam
+          KernelName = 'imgh'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object cudaProcess_k_tilew: TCUDAFuncParam
+          KernelName = 'tilew'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object cudaProcess_k_r: TCUDAFuncParam
+          KernelName = 'r'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object cudaProcess_k_threshold: TCUDAFuncParam
+          KernelName = 'threshold'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object cudaProcess_k_highlight: TCUDAFuncParam
+          KernelName = 'highlight'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
       end
     end
     object processedTextureMapper: TCUDAGLImageResource

@@ -26,6 +26,7 @@ object Form1: TForm1
     FieldOfView = 157.897079467773400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
+    OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
     TabOrder = 0
   end
@@ -164,63 +165,111 @@ object Form1: TForm1
     object MainModule: TCUDAModule
       Code.Strings = (
         #9'.version 1.4'
-        #9'.target sm_10, map_f64_to_f32'
-        #9'// compiled with C:\CUDA\bin/../open64/lib//be.exe'
-        #9'// nvopencc 3.0 built on 2009-10-29'
+        #9'.target sm_13'
+        
+          #9'// compiled with C:\Program Files\NVIDIA GPU Computing Toolkit\' +
+          'CUDA\v3.2\\bin/../open64/lib//be.exe'
+        #9'// nvopencc 3.2 built on 2010-11-06'
         ''
         #9'//-----------------------------------------------------------'
         
-          #9'// Compiling C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000e' +
-          '28_00000000-9_temp.cpp3.i (C:/Users/YARUND~1/AppData/Local/Temp/' +
-          'ccBI#.a03576)'
+          #9'// Compiling C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000a' +
+          '78_00000000-11_temp.cpp3.i (C:/Users/YARUNA~1/AppData/Local/Temp' +
+          '/ccBI#.a01740)'
         #9'//-----------------------------------------------------------'
         ''
         #9'//-----------------------------------------------------------'
         #9'// Options:'
         #9'//-----------------------------------------------------------'
-        #9'//  Target:ptx, ISA:sm_10, Endian:little, Pointer Size:32'
+        #9'//  Target:ptx, ISA:sm_13, Endian:little, Pointer Size:32'
         #9'//  -O3'#9'(Optimization level)'
         #9'//  -g0'#9'(Debug level)'
         #9'//  -m2'#9'(Report advisories)'
         #9'//-----------------------------------------------------------'
         ''
         
-          #9'.file'#9'1'#9'"C:/Users/YARUND~1/AppData/Local/Temp/tmpxft_00000e28_0' +
-          '0000000-8_temp.cudafe2.gpu"'
+          #9'.file'#9'1'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000a78_0' +
+          '0000000-10_temp.cudafe2.gpu"'
         
           #9'.file'#9'2'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLUD' +
           'E\crtdefs.h"'
-        #9'.file'#9'3'#9'"C:\CUDA\include\crt/device_runtime.h"'
-        #9'.file'#9'4'#9'"C:\CUDA\include\host_defines.h"'
-        #9'.file'#9'5'#9'"C:\CUDA\include\builtin_types.h"'
-        #9'.file'#9'6'#9'"c:\cuda\include\device_types.h"'
-        #9'.file'#9'7'#9'"c:\cuda\include\driver_types.h"'
-        #9'.file'#9'8'#9'"c:\cuda\include\surface_types.h"'
-        #9'.file'#9'9'#9'"c:\cuda\include\texture_types.h"'
-        #9'.file'#9'10'#9'"c:\cuda\include\vector_types.h"'
-        #9'.file'#9'11'#9'"c:\cuda\include\host_defines.h"'
-        #9'.file'#9'12'#9'"C:\CUDA\include\device_launch_parameters.h"'
-        #9'.file'#9'13'#9'"c:\cuda\include\crt\storage_class.h"'
         
-          #9'.file'#9'14'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLU' +
+          #9'.file'#9'3'#9'"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.' +
+          '2\include\crt/device_runtime.h"'
+        
+          #9'.file'#9'4'#9'"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.' +
+          '2\include\host_defines.h"'
+        
+          #9'.file'#9'5'#9'"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.' +
+          '2\include\builtin_types.h"'
+        
+          #9'.file'#9'6'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3.' +
+          '2\include\device_types.h"'
+        
+          #9'.file'#9'7'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3.' +
+          '2\include\driver_types.h"'
+        
+          #9'.file'#9'8'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3.' +
+          '2\include\surface_types.h"'
+        
+          #9'.file'#9'9'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3.' +
+          '2\include\texture_types.h"'
+        
+          #9'.file'#9'10'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\vector_types.h"'
+        
+          #9'.file'#9'11'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\builtin_types.h"'
+        
+          #9'.file'#9'12'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\host_defines.h"'
+        
+          #9'.file'#9'13'#9'"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3' +
+          '.2\include\device_launch_parameters.h"'
+        
+          #9'.file'#9'14'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\crt\storage_class.h"'
+        
+          #9'.file'#9'15'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLU' +
           'DE\time.h"'
-        #9'.file'#9'15'#9'"C:/Users/YARUND~1/AppData/Local/Temp/temp.cu"'
-        #9'.file'#9'16'#9'"C:\CUDA\include\common_functions.h"'
-        #9'.file'#9'17'#9'"c:\cuda\include\crt/func_macro.h"'
-        #9'.file'#9'18'#9'"c:\cuda\include\math_functions.h"'
-        #9'.file'#9'19'#9'"c:\cuda\include\device_functions.h"'
-        #9'.file'#9'20'#9'"c:\cuda\include\math_constants.h"'
-        #9'.file'#9'21'#9'"c:\cuda\include\sm_11_atomic_functions.h"'
-        #9'.file'#9'22'#9'"c:\cuda\include\sm_12_atomic_functions.h"'
-        #9'.file'#9'23'#9'"c:\cuda\include\sm_13_double_functions.h"'
-        #9'.file'#9'24'#9'"c:\cuda\include\common_types.h"'
-        #9'.file'#9'25'#9'"c:\cuda\include\sm_20_atomic_functions.h"'
-        #9'.file'#9'26'#9'"c:\cuda\include\sm_20_intrinsics.h"'
-        #9'.file'#9'27'#9'"c:\cuda\include\surface_functions.h"'
-        #9'.file'#9'28'#9'"c:\cuda\include\texture_fetch_functions.h"'
-        #9'.file'#9'29'#9'"c:\cuda\include\math_functions_dbl_ptx1.h"'
+        #9'.file'#9'16'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/temp.cu"'
+        
+          #9'.file'#9'17'#9'"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3' +
+          '.2\include\common_functions.h"'
+        
+          #9'.file'#9'18'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\math_functions.h"'
+        
+          #9'.file'#9'19'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\math_constants.h"'
+        
+          #9'.file'#9'20'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\device_functions.h"'
+        
+          #9'.file'#9'21'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\sm_11_atomic_functions.h"'
+        
+          #9'.file'#9'22'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\sm_12_atomic_functions.h"'
+        
+          #9'.file'#9'23'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\sm_13_double_functions.h"'
+        
+          #9'.file'#9'24'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\sm_20_atomic_functions.h"'
+        
+          #9'.file'#9'25'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\sm_20_intrinsics.h"'
+        
+          #9'.file'#9'26'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\surface_functions.h"'
+        
+          #9'.file'#9'27'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\texture_fetch_functions.h"'
+        
+          #9'.file'#9'28'#9'"c:\program files\nvidia gpu computing toolkit\cuda\v3' +
+          '.2\include\math_functions_dbl_ptx3.h"'
         ''
-        #9'.tex .u32 texref;'
         ''
         #9'.entry addForces_k ('
         #9#9'.param .u32 __cudaparm_addForces_k_v,'
@@ -234,10 +283,10 @@ object Form1: TForm1
         #9#9'.param .u32 __cudaparm_addForces_k_pitch)'
         #9'{'
         #9'.reg .u32 %r<24>;'
-        #9'.reg .f32 %f<12>;'
-        #9'.loc'#9'15'#9'28'#9'0'
-        '$LBB1_addForces_k:'
-        #9'.loc'#9'15'#9'34'#9'0'
+        #9'.reg .f32 %f<14>;'
+        #9'.loc'#9'16'#9'28'#9'0'
+        '$LDWbegin_addForces_k:'
+        #9'.loc'#9'16'#9'38'#9'0'
         #9'cvt.s32.u16 '#9'%r1, %tid.x;'
         #9'mul24.lo.u32 '#9'%r2, %r1, 8;'
         #9'cvt.s32.u16 '#9'%r3, %tid.y;'
@@ -245,39 +294,39 @@ object Form1: TForm1
         #9'add.s32 '#9'%r5, %r4, %r3;'
         #9'ld.param.u32 '#9'%r6, [__cudaparm_addForces_k_spx];'
         #9'mul.lo.u32 '#9'%r7, %r6, 8;'
-        #9'ld.param.u32 '#9'%r8, [__cudaparm_addForces_k_pitch];'
-        #9'mul.lo.u32 '#9'%r9, %r5, %r8;'
-        #9'add.u32 '#9'%r10, %r2, %r9;'
-        #9'ld.param.u32 '#9'%r11, [__cudaparm_addForces_k_v];'
-        #9'add.u32 '#9'%r12, %r11, %r10;'
-        #9'add.u32 '#9'%r13, %r7, %r12;'
-        #9'ld.global.v2.f32 '#9'{%f1,%f2}, [%r13+0];'
-        #9'.loc'#9'15'#9'37'#9'0'
-        #9'ld.param.s32 '#9'%r14, [__cudaparm_addForces_k_r];'
-        #9'sub.s32 '#9'%r15, %r3, %r14;'
-        #9'sub.s32 '#9'%r16, %r1, %r14;'
-        #9'mul.lo.s32 '#9'%r17, %r15, %r15;'
-        #9'mul.lo.s32 '#9'%r18, %r16, %r16;'
-        #9'mul.lo.s32 '#9'%r19, %r15, %r17;'
-        #9'mul.lo.s32 '#9'%r20, %r16, %r18;'
-        #9'mul.lo.s32 '#9'%r21, %r15, %r19;'
-        #9'mul.lo.s32 '#9'%r22, %r16, %r20;'
-        #9'cvt.rn.f32.s32 '#9'%f3, %r21;'
-        #9'cvt.rn.f32.s32 '#9'%f4, %r22;'
-        #9'mov.f32 '#9'%f5, 0f3f800000;     '#9'// 1'
-        #9'add.f32 '#9'%f6, %f4, %f5;'
-        #9'add.f32 '#9'%f7, %f3, %f6;'
-        #9'rcp.approx.f32 '#9'%f8, %f7;'
-        #9'ld.param.f32 '#9'%f9, [__cudaparm_addForces_k_fx];'
-        #9'mad.f32 '#9'%f1, %f9, %f8, %f1;'
-        #9'.loc'#9'15'#9'38'#9'0'
-        #9'ld.param.f32 '#9'%f10, [__cudaparm_addForces_k_fy];'
-        #9'mad.f32 '#9'%f2, %f10, %f8, %f2;'
-        #9'st.global.v2.f32 '#9'[%r13+0], {%f1,%f2};'
-        #9'.loc'#9'15'#9'40'#9'0'
+        #9'ld.param.s32 '#9'%r8, [__cudaparm_addForces_k_r];'
+        #9'sub.s32 '#9'%r9, %r3, %r8;'
+        #9'sub.s32 '#9'%r10, %r1, %r8;'
+        #9'ld.param.u32 '#9'%r11, [__cudaparm_addForces_k_pitch];'
+        #9'mul.lo.u32 '#9'%r12, %r5, %r11;'
+        #9'mul.lo.s32 '#9'%r13, %r9, %r9;'
+        #9'mul.lo.s32 '#9'%r14, %r10, %r10;'
+        #9'add.u32 '#9'%r15, %r2, %r12;'
+        #9'mul.lo.s32 '#9'%r16, %r9, %r13;'
+        #9'mul.lo.s32 '#9'%r17, %r10, %r14;'
+        #9'ld.param.u32 '#9'%r18, [__cudaparm_addForces_k_v];'
+        #9'add.u32 '#9'%r19, %r18, %r15;'
+        #9'mul.lo.s32 '#9'%r20, %r9, %r16;'
+        #9'mul.lo.s32 '#9'%r21, %r10, %r17;'
+        #9'add.u32 '#9'%r22, %r7, %r19;'
+        #9'cvt.rn.f32.s32 '#9'%f1, %r20;'
+        #9'cvt.rn.f32.s32 '#9'%f2, %r21;'
+        #9'mov.f32 '#9'%f3, 0f3f800000;     '#9'// 1'
+        #9'add.f32 '#9'%f4, %f2, %f3;'
+        #9'add.f32 '#9'%f5, %f1, %f4;'
+        #9'rcp.approx.f32 '#9'%f6, %f5;'
+        #9'ld.global.v2.f32 '#9'{%f7,%f8}, [%r22+0];'
+        #9'ld.param.f32 '#9'%f9, [__cudaparm_addForces_k_fy];'
+        #9'mad.f32 '#9'%f10, %f9, %f6, %f8;'
+        #9'.loc'#9'16'#9'39'#9'0'
+        #9'ld.param.f32 '#9'%f11, [__cudaparm_addForces_k_fx];'
+        #9'mad.f32 '#9'%f12, %f11, %f6, %f7;'
+        #9'st.global.v2.f32 '#9'[%r22+0], {%f12,%f10};'
+        #9'.loc'#9'16'#9'40'#9'0'
         #9'exit;'
         '$LDWend_addForces_k:'
         #9'} // addForces_k'
+        #9'.tex .u32 texref;'
         ''
         #9'.entry advectVelocity_k ('
         #9#9'.param .u32 __cudaparm_advectVelocity_k_vx,'
@@ -290,10 +339,10 @@ object Form1: TForm1
         #9'{'
         #9'.reg .u16 %rh<4>;'
         #9'.reg .u32 %r<28>;'
-        #9'.reg .f32 %f<35>;'
+        #9'.reg .f32 %f<41>;'
         #9'.reg .pred %p<6>;'
-        #9'.loc'#9'15'#9'48'#9'0'
-        '$LBB1_advectVelocity_k:'
+        #9'.loc'#9'16'#9'48'#9'0'
+        '$LDWbegin_advectVelocity_k:'
         #9'mov.u16 '#9'%rh1, %ctaid.x;'
         #9'mov.u16 '#9'%rh2, %ntid.x;'
         #9'mul.wide.u16 '#9'%r1, %rh1, %rh2;'
@@ -332,65 +381,71 @@ object Form1: TForm1
         #9'mov.f32 '#9'%f3, %f1;'
         #9'mov.f32 '#9'%f4, %f2;'
         #9'mov.f32 '#9'%f5, 0f00000000;     '#9'// 0'
-        #9'mov.f32 '#9'%f6, 0f00000000;     '#9'// 0'
+        #9'mov.f32 '#9'%f6, %f5;'
+        #9'mov.f32 '#9'%f7, 0f00000000;     '#9'// 0'
+        #9'mov.f32 '#9'%f8, %f7;'
         
-          #9'tex.2d.v4.f32.f32 {%f7,%f8,%f9,%f10},[texref,{%f3,%f4,%f5,%f6}]' +
-          ';'
+          #9'tex.2d.v4.f32.f32 {%f9,%f10,%f11,%f12},[texref,{%f3,%f4,%f6,%f8' +
+          '}];'
         ' //<loop> Part of loop body line 48, head labeled $Lt_1_3842'
-        #9'.loc'#9'15'#9'63'#9'0'
-        #9'mov.f32 '#9'%f11, %f7;'
-        #9'mov.f32 '#9'%f12, %f8;'
-        #9'ld.param.f32 '#9'%f13, [__cudaparm_advectVelocity_k_dt];'
-        #9'mov.f32 '#9'%f14, 0f3f000000;    '#9'// 0.5'
-        #9'add.f32 '#9'%f15, %f1, %f14;'
-        #9'.loc'#9'15'#9'48'#9'0'
+        #9'.loc'#9'16'#9'63'#9'0'
+        #9'mov.f32 '#9'%f13, %f9;'
+        #9'mov.f32 '#9'%f14, %f10;'
+        #9'ld.param.f32 '#9'%f15, [__cudaparm_advectVelocity_k_dt];'
+        #9'mov.f32 '#9'%f16, 0f3f000000;    '#9'// 0.5'
+        #9'add.f32 '#9'%f17, %f1, %f16;'
+        #9'.loc'#9'16'#9'48'#9'0'
         #9'ld.param.s32 '#9'%r4, [__cudaparm_advectVelocity_k_dx];'
-        #9'.loc'#9'15'#9'63'#9'0'
-        #9'cvt.rn.f32.s32 '#9'%f16, %r4;'
-        #9'mul.f32 '#9'%f17, %f11, %f13;'
-        #9'mul.f32 '#9'%f18, %f16, %f17;'
-        #9'sub.f32 '#9'%f19, %f15, %f18;'
-        #9'mov.f32 '#9'%f20, 0f3f000000;    '#9'// 0.5'
-        #9'add.f32 '#9'%f21, %f2, %f20;'
-        #9'.loc'#9'15'#9'48'#9'0'
+        #9'.loc'#9'16'#9'63'#9'0'
+        #9'cvt.rn.f32.s32 '#9'%f18, %r4;'
+        #9'mul.f32 '#9'%f19, %f13, %f15;'
+        #9'mul.f32 '#9'%f20, %f18, %f19;'
+        #9'sub.f32 '#9'%f21, %f17, %f20;'
+        #9'mov.f32 '#9'%f22, %f21;'
+        #9'mov.f32 '#9'%f23, 0f3f000000;    '#9'// 0.5'
+        #9'add.f32 '#9'%f24, %f2, %f23;'
+        #9'.loc'#9'16'#9'48'#9'0'
         #9'ld.param.s32 '#9'%r15, [__cudaparm_advectVelocity_k_dy];'
-        #9'.loc'#9'15'#9'63'#9'0'
-        #9'cvt.rn.f32.s32 '#9'%f22, %r15;'
-        #9'mul.f32 '#9'%f23, %f12, %f13;'
-        #9'mul.f32 '#9'%f24, %f22, %f23;'
-        #9'sub.f32 '#9'%f25, %f21, %f24;'
-        #9'mov.f32 '#9'%f26, 0f00000000;    '#9'// 0'
-        #9'mov.f32 '#9'%f27, 0f00000000;    '#9'// 0'
+        #9'.loc'#9'16'#9'63'#9'0'
+        #9'cvt.rn.f32.s32 '#9'%f25, %r15;'
+        #9'mul.f32 '#9'%f26, %f14, %f15;'
+        #9'mul.f32 '#9'%f27, %f25, %f26;'
+        #9'sub.f32 '#9'%f28, %f24, %f27;'
+        #9'mov.f32 '#9'%f29, %f28;'
+        #9'mov.f32 '#9'%f30, 0f00000000;    '#9'// 0'
+        #9'mov.f32 '#9'%f31, %f30;'
+        #9'mov.f32 '#9'%f32, 0f00000000;    '#9'// 0'
+        #9'mov.f32 '#9'%f33, %f32;'
         
-          #9'tex.2d.v4.f32.f32 {%f28,%f29,%f30,%f31},[texref,{%f19,%f25,%f26' +
-          ',%f27}];'
+          #9'tex.2d.v4.f32.f32 {%f34,%f35,%f36,%f37},[texref,{%f22,%f29,%f31' +
+          ',%f33}];'
         ' //<loop> Part of loop body line 48, head labeled $Lt_1_3842'
-        #9'.loc'#9'15'#9'66'#9'0'
-        #9'mov.f32 '#9'%f32, %f28;'
-        #9'mov.f32 '#9'%f33, %f29;'
-        #9'.loc'#9'15'#9'68'#9'0'
+        #9'.loc'#9'16'#9'66'#9'0'
+        #9'mov.f32 '#9'%f38, %f34;'
+        #9'mov.f32 '#9'%f39, %f35;'
+        #9'.loc'#9'16'#9'68'#9'0'
         #9'ld.param.s32 '#9'%r19, [__cudaparm_advectVelocity_k_pdx];'
         #9'mul.lo.s32 '#9'%r20, %r19, %r18;'
         #9'add.s32 '#9'%r21, %r20, %r3;'
         #9'mul.lo.u32 '#9'%r22, %r21, 4;'
         #9'ld.param.u32 '#9'%r23, [__cudaparm_advectVelocity_k_vx];'
         #9'add.u32 '#9'%r24, %r23, %r22;'
-        #9'st.global.f32 '#9'[%r24+0], %f32;'
-        #9'.loc'#9'15'#9'69'#9'0'
+        #9'st.global.f32 '#9'[%r24+0], %f38;'
+        #9'.loc'#9'16'#9'69'#9'0'
         #9'ld.param.u32 '#9'%r25, [__cudaparm_advectVelocity_k_vy];'
         #9'add.u32 '#9'%r26, %r25, %r22;'
-        #9'st.global.f32 '#9'[%r26+0], %f33;'
+        #9'st.global.f32 '#9'[%r26+0], %f39;'
         '$Lt_1_4098:'
         ' //<loop> Part of loop body line 48, head labeled $Lt_1_3842'
         #9'add.s32 '#9'%r16, %r16, 1;'
-        #9'.loc'#9'15'#9'48'#9'0'
+        #9'.loc'#9'16'#9'48'#9'0'
         #9'ld.param.u32 '#9'%r5, [__cudaparm_advectVelocity_k_lb];'
-        #9'.loc'#9'15'#9'69'#9'0'
+        #9'.loc'#9'16'#9'69'#9'0'
         #9'setp.ne.s32 '#9'%p4, %r16, %r5;'
         #9'@%p4 bra '#9'$Lt_1_3842;'
         '$Lt_1_3330:'
         '$Lt_1_2818:'
-        #9'.loc'#9'15'#9'73'#9'0'
+        #9'.loc'#9'16'#9'73'#9'0'
         #9'exit;'
         '$LDWend_advectVelocity_k:'
         #9'} // advectVelocity_k'
@@ -406,10 +461,10 @@ object Form1: TForm1
         #9'{'
         #9'.reg .u16 %rh<4>;'
         #9'.reg .u32 %r<37>;'
-        #9'.reg .f32 %f<27>;'
+        #9'.reg .f32 %f<31>;'
         #9'.reg .pred %p<8>;'
-        #9'.loc'#9'15'#9'91'#9'0'
-        '$LBB1_diffuseProject_k:'
+        #9'.loc'#9'16'#9'91'#9'0'
+        '$LDWbegin_diffuseProject_k:'
         #9'mov.u16 '#9'%rh1, %ctaid.x;'
         #9'mov.u16 '#9'%rh2, %ntid.x;'
         #9'mul.wide.u16 '#9'%r1, %rh1, %rh2;'
@@ -443,87 +498,86 @@ object Form1: TForm1
         #9'setp.ge.s32 '#9'%p3, %r18, %r15;'
         #9'@%p3 bra '#9'$Lt_2_5634;'
         ' //<loop> Part of loop body line 91, head labeled $Lt_2_5378'
-        #9'ld.param.s32 '#9'%r4, [__cudaparm_diffuseProject_k_dx];'
-        #9'.loc'#9'15'#9'105'#9'0'
-        #9'mul.lo.s32 '#9'%r19, %r18, %r4;'
-        #9'add.s32 '#9'%r20, %r19, %r3;'
-        #9'mul.lo.u32 '#9'%r21, %r20, 8;'
-        #9'ld.param.u32 '#9'%r22, [__cudaparm_diffuseProject_k_vx];'
-        #9'add.u32 '#9'%r23, %r22, %r21;'
-        #9'ld.global.v2.f32 '#9'{%f1,%f2}, [%r23+0];'
-        #9'.loc'#9'15'#9'106'#9'0'
-        #9'ld.param.u32 '#9'%r24, [__cudaparm_diffuseProject_k_vy];'
-        #9'add.u32 '#9'%r25, %r24, %r21;'
-        #9'ld.global.v2.f32 '#9'{%f3,%f4}, [%r25+0];'
-        #9'.loc'#9'15'#9'91'#9'0'
         #9'ld.param.s32 '#9'%r15, [__cudaparm_diffuseProject_k_dy];'
-        #9'.loc'#9'15'#9'116'#9'0'
-        #9'shr.s32 '#9'%r26, %r15, 31;'
-        #9'mov.s32 '#9'%r27, 1;'
-        #9'and.b32 '#9'%r28, %r26, %r27;'
-        #9'add.s32 '#9'%r29, %r28, %r15;'
-        #9'shr.s32 '#9'%r30, %r29, 1;'
-        #9'ld.param.f32 '#9'%f5, [__cudaparm_diffuseProject_k_dt];'
-        #9'ld.param.f32 '#9'%f6, [__cudaparm_diffuseProject_k_visc];'
-        #9'mul.f32 '#9'%f7, %f5, %f6;'
-        #9'mul.lo.s32 '#9'%r31, %r3, %r3;'
-        #9'setp.lt.s32 '#9'%p4, %r30, %r18;'
-        #9'sub.s32 '#9'%r32, %r18, %r15;'
-        #9'selp.s32 '#9'%r33, %r32, %r18, %p4;'
-        #9'mul.lo.s32 '#9'%r34, %r33, %r33;'
-        #9'add.s32 '#9'%r35, %r31, %r34;'
-        #9'cvt.rn.f32.s32 '#9'%f8, %r35;'
-        #9'mov.f32 '#9'%f9, 0f3f800000;     '#9'// 1'
-        #9'mad.f32 '#9'%f10, %f8, %f7, %f9;'
-        #9'rcp.approx.f32 '#9'%f11, %f10;'
-        #9'mul.f32 '#9'%f1, %f11, %f1;'
-        #9'mul.f32 '#9'%f2, %f11, %f2;'
-        #9'.loc'#9'15'#9'117'#9'0'
-        #9'mul.f32 '#9'%f3, %f11, %f3;'
-        #9'mul.f32 '#9'%f4, %f11, %f4;'
-        #9'mov.f32 '#9'%f12, 0f00000000;    '#9'// 0'
-        #9'setp.gt.f32 '#9'%p5, %f8, %f12;'
+        #9'.loc'#9'16'#9'116'#9'0'
+        #9'shr.s32 '#9'%r19, %r15, 31;'
+        #9'mov.s32 '#9'%r20, 1;'
+        #9'and.b32 '#9'%r21, %r19, %r20;'
+        #9'add.s32 '#9'%r22, %r21, %r15;'
+        #9'shr.s32 '#9'%r23, %r22, 1;'
+        #9'ld.param.f32 '#9'%f1, [__cudaparm_diffuseProject_k_dt];'
+        #9'ld.param.f32 '#9'%f2, [__cudaparm_diffuseProject_k_visc];'
+        #9'mul.f32 '#9'%f3, %f1, %f2;'
+        #9'mul.lo.s32 '#9'%r24, %r3, %r3;'
+        #9'.loc'#9'16'#9'91'#9'0'
+        #9'ld.param.s32 '#9'%r4, [__cudaparm_diffuseProject_k_dx];'
+        #9'.loc'#9'16'#9'116'#9'0'
+        #9'mul.lo.s32 '#9'%r25, %r18, %r4;'
+        #9'setp.lt.s32 '#9'%p4, %r23, %r18;'
+        #9'sub.s32 '#9'%r26, %r18, %r15;'
+        #9'add.s32 '#9'%r27, %r25, %r3;'
+        #9'selp.s32 '#9'%r28, %r26, %r18, %p4;'
+        #9'mul.lo.u32 '#9'%r29, %r27, 8;'
+        #9'mul.lo.s32 '#9'%r30, %r28, %r28;'
+        #9'ld.param.u32 '#9'%r31, [__cudaparm_diffuseProject_k_vx];'
+        #9'add.u32 '#9'%r32, %r31, %r29;'
+        #9'add.s32 '#9'%r33, %r24, %r30;'
+        #9'cvt.rn.f32.s32 '#9'%f4, %r33;'
+        #9'mov.f32 '#9'%f5, 0f3f800000;     '#9'// 1'
+        #9'mad.f32 '#9'%f6, %f4, %f3, %f5;'
+        #9'rcp.approx.f32 '#9'%f7, %f6;'
+        #9'ld.global.v2.f32 '#9'{%f8,%f9}, [%r32+0];'
+        #9'mul.f32 '#9'%f10, %f8, %f7;'
+        #9'mul.f32 '#9'%f11, %f9, %f7;'
+        #9'.loc'#9'16'#9'117'#9'0'
+        #9'ld.param.u32 '#9'%r34, [__cudaparm_diffuseProject_k_vy];'
+        #9'add.u32 '#9'%r35, %r34, %r29;'
+        #9'ld.global.v2.f32 '#9'{%f12,%f13}, [%r35+0];'
+        #9'mul.f32 '#9'%f14, %f12, %f7;'
+        #9'mul.f32 '#9'%f15, %f13, %f7;'
+        #9'mov.f32 '#9'%f16, 0f00000000;    '#9'// 0'
+        #9'setp.gt.f32 '#9'%p5, %f4, %f16;'
         #9'@!%p5 bra '#9'$Lt_2_6146;'
         ' //<loop> Part of loop body line 91, head labeled $Lt_2_5378'
-        #9'.loc'#9'15'#9'123'#9'0'
-        #9'cvt.rn.f32.s32 '#9'%f13, %r3;'
-        #9'cvt.rn.f32.s32 '#9'%f14, %r33;'
-        #9'mul.f32 '#9'%f15, %f14, %f3;'
-        #9'mad.f32 '#9'%f16, %f13, %f1, %f15;'
-        #9'.loc'#9'15'#9'125'#9'0'
-        #9'mul.f32 '#9'%f17, %f14, %f4;'
-        #9'mad.f32 '#9'%f18, %f13, %f2, %f17;'
-        #9'.loc'#9'15'#9'126'#9'0'
-        #9'rcp.approx.f32 '#9'%f19, %f8;'
-        #9'mul.f32 '#9'%f20, %f16, %f19;'
-        #9'mul.f32 '#9'%f21, %f13, %f20;'
-        #9'sub.f32 '#9'%f1, %f1, %f21;'
-        #9'.loc'#9'15'#9'127'#9'0'
-        #9'mul.f32 '#9'%f22, %f18, %f19;'
-        #9'mul.f32 '#9'%f23, %f13, %f22;'
-        #9'sub.f32 '#9'%f2, %f2, %f23;'
-        #9'.loc'#9'15'#9'128'#9'0'
-        #9'mul.f32 '#9'%f24, %f14, %f20;'
-        #9'sub.f32 '#9'%f3, %f3, %f24;'
-        #9'.loc'#9'15'#9'129'#9'0'
-        #9'mul.f32 '#9'%f25, %f14, %f22;'
-        #9'sub.f32 '#9'%f4, %f4, %f25;'
+        #9'.loc'#9'16'#9'123'#9'0'
+        #9'cvt.rn.f32.s32 '#9'%f17, %r3;'
+        #9'cvt.rn.f32.s32 '#9'%f18, %r28;'
+        #9'mul.f32 '#9'%f19, %f18, %f14;'
+        #9'mad.f32 '#9'%f20, %f17, %f10, %f19;'
+        #9'.loc'#9'16'#9'125'#9'0'
+        #9'mul.f32 '#9'%f21, %f18, %f15;'
+        #9'mad.f32 '#9'%f22, %f17, %f11, %f21;'
+        #9'.loc'#9'16'#9'126'#9'0'
+        #9'rcp.approx.f32 '#9'%f23, %f4;'
+        #9'mul.f32 '#9'%f24, %f20, %f23;'
+        #9'mul.f32 '#9'%f25, %f17, %f24;'
+        #9'sub.f32 '#9'%f10, %f10, %f25;'
+        #9'.loc'#9'16'#9'127'#9'0'
+        #9'mul.f32 '#9'%f26, %f22, %f23;'
+        #9'mul.f32 '#9'%f27, %f17, %f26;'
+        #9'sub.f32 '#9'%f11, %f11, %f27;'
+        #9'.loc'#9'16'#9'128'#9'0'
+        #9'mul.f32 '#9'%f28, %f18, %f24;'
+        #9'sub.f32 '#9'%f14, %f14, %f28;'
+        #9'.loc'#9'16'#9'129'#9'0'
+        #9'mul.f32 '#9'%f29, %f18, %f26;'
+        #9'sub.f32 '#9'%f15, %f15, %f29;'
         '$Lt_2_6146:'
         ' //<loop> Part of loop body line 91, head labeled $Lt_2_5378'
-        #9'st.global.v2.f32 '#9'[%r23+0], {%f1,%f2};'
-        #9'st.global.v2.f32 '#9'[%r25+0], {%f3,%f4};'
+        #9'st.global.v2.f32 '#9'[%r32+0], {%f10,%f11};'
+        #9'st.global.v2.f32 '#9'[%r35+0], {%f14,%f15};'
         '$Lt_2_5634:'
         ' //<loop> Part of loop body line 91, head labeled $Lt_2_5378'
-        #9'.loc'#9'15'#9'133'#9'0'
+        #9'.loc'#9'16'#9'133'#9'0'
         #9'add.s32 '#9'%r16, %r16, 1;'
-        #9'.loc'#9'15'#9'91'#9'0'
+        #9'.loc'#9'16'#9'91'#9'0'
         #9'ld.param.u32 '#9'%r5, [__cudaparm_diffuseProject_k_lb];'
-        #9'.loc'#9'15'#9'133'#9'0'
+        #9'.loc'#9'16'#9'133'#9'0'
         #9'setp.ne.s32 '#9'%p6, %r16, %r5;'
         #9'@%p6 bra '#9'$Lt_2_5378;'
         '$Lt_2_4866:'
         '$Lt_2_4354:'
-        #9'.loc'#9'15'#9'137'#9'0'
+        #9'.loc'#9'16'#9'137'#9'0'
         #9'exit;'
         '$LDWend_diffuseProject_k:'
         #9'} // diffuseProject_k'
@@ -543,8 +597,8 @@ object Form1: TForm1
         #9'.reg .u32 %r<34>;'
         #9'.reg .f32 %f<7>;'
         #9'.reg .pred %p<6>;'
-        #9'.loc'#9'15'#9'152'#9'0'
-        '$LBB1_updateVelocity_k:'
+        #9'.loc'#9'16'#9'152'#9'0'
+        '$LDWbegin_updateVelocity_k:'
         #9'mov.u16 '#9'%rh1, %ctaid.x;'
         #9'mov.u16 '#9'%rh2, %ntid.x;'
         #9'mul.wide.u16 '#9'%r1, %rh1, %rh2;'
@@ -578,40 +632,39 @@ object Form1: TForm1
         #9'setp.ge.s32 '#9'%p3, %r18, %r15;'
         #9'@%p3 bra '#9'$Lt_3_4098;'
         ' //<loop> Part of loop body line 152, head labeled $Lt_3_3842'
-        #9'.loc'#9'15'#9'167'#9'0'
+        #9'.loc'#9'16'#9'168'#9'0'
         #9'ld.param.s32 '#9'%r19, [__cudaparm_updateVelocity_k_pdx];'
         #9'mul.lo.s32 '#9'%r20, %r19, %r18;'
         #9'add.s32 '#9'%r21, %r20, %r3;'
         #9'mul.lo.u32 '#9'%r22, %r21, 4;'
-        #9'ld.param.u32 '#9'%r23, [__cudaparm_updateVelocity_k_vx];'
+        #9'ld.param.u32 '#9'%r23, [__cudaparm_updateVelocity_k_vy];'
         #9'add.u32 '#9'%r24, %r23, %r22;'
         #9'ld.global.f32 '#9'%f1, [%r24+0];'
-        #9'.loc'#9'15'#9'168'#9'0'
-        #9'ld.param.u32 '#9'%r25, [__cudaparm_updateVelocity_k_vy];'
-        #9'add.u32 '#9'%r26, %r25, %r22;'
-        #9'ld.global.f32 '#9'%f2, [%r26+0];'
-        #9'.loc'#9'15'#9'175'#9'0'
-        #9'mul.lo.u32 '#9'%r27, %r3, 8;'
-        #9'ld.param.u32 '#9'%r28, [__cudaparm_updateVelocity_k_pitch];'
-        #9'mul.lo.u32 '#9'%r29, %r18, %r28;'
-        #9'add.u32 '#9'%r30, %r27, %r29;'
-        #9'ld.param.u32 '#9'%r31, [__cudaparm_updateVelocity_k_v];'
-        #9'add.u32 '#9'%r32, %r31, %r30;'
-        #9'ld.param.f32 '#9'%f3, [__cudaparm_updateVelocity_k_scale];'
-        #9'mul.f32 '#9'%f4, %f1, %f3;'
-        #9'mul.f32 '#9'%f5, %f2, %f3;'
-        #9'st.global.v2.f32 '#9'[%r32+0], {%f4,%f5};'
+        #9'.loc'#9'16'#9'175'#9'0'
+        #9'mul.lo.u32 '#9'%r25, %r3, 8;'
+        #9'ld.param.u32 '#9'%r26, [__cudaparm_updateVelocity_k_pitch];'
+        #9'mul.lo.u32 '#9'%r27, %r18, %r26;'
+        #9'add.u32 '#9'%r28, %r25, %r27;'
+        #9'ld.param.u32 '#9'%r29, [__cudaparm_updateVelocity_k_v];'
+        #9'add.u32 '#9'%r30, %r29, %r28;'
+        #9'ld.param.f32 '#9'%f2, [__cudaparm_updateVelocity_k_scale];'
+        #9'ld.param.u32 '#9'%r31, [__cudaparm_updateVelocity_k_vx];'
+        #9'add.u32 '#9'%r32, %r31, %r22;'
+        #9'ld.global.f32 '#9'%f3, [%r32+0];'
+        #9'mul.f32 '#9'%f4, %f3, %f2;'
+        #9'mul.f32 '#9'%f5, %f1, %f2;'
+        #9'st.global.v2.f32 '#9'[%r30+0], {%f4,%f5};'
         '$Lt_3_4098:'
         ' //<loop> Part of loop body line 152, head labeled $Lt_3_3842'
         #9'add.s32 '#9'%r16, %r16, 1;'
-        #9'.loc'#9'15'#9'152'#9'0'
+        #9'.loc'#9'16'#9'152'#9'0'
         #9'ld.param.u32 '#9'%r5, [__cudaparm_updateVelocity_k_lb];'
-        #9'.loc'#9'15'#9'175'#9'0'
+        #9'.loc'#9'16'#9'175'#9'0'
         #9'setp.ne.s32 '#9'%p4, %r16, %r5;'
         #9'@%p4 bra '#9'$Lt_3_3842;'
         '$Lt_3_3330:'
         '$Lt_3_2818:'
-        #9'.loc'#9'15'#9'179'#9'0'
+        #9'.loc'#9'16'#9'179'#9'0'
         #9'exit;'
         '$LDWend_updateVelocity_k:'
         #9'} // updateVelocity_k'
@@ -627,11 +680,13 @@ object Form1: TForm1
         #9'{'
         #9'.reg .u16 %rh<4>;'
         #9'.reg .u32 %r<40>;'
-        #9'.reg .f32 %f<19>;'
+        #9'.reg .f32 %f<25>;'
         #9'.reg .pred %p<6>;'
-        #9'.local .align 8 .b8 __cuda___cuda_vterm_168[8];'
-        #9'.loc'#9'15'#9'192'#9'0'
-        '$LBB1_advectParticles_k:'
+        
+          #9'.local .align 8 .b8 __cuda___cuda_local_var_86465_19_non_const_' +
+          'vterm_168[8];'
+        #9'.loc'#9'16'#9'192'#9'0'
+        '$LDWbegin_advectParticles_k:'
         #9'mov.u16 '#9'%rh1, %ctaid.x;'
         #9'mov.u16 '#9'%rh2, %ntid.x;'
         #9'mul.wide.u16 '#9'%r1, %rh1, %rh2;'
@@ -666,19 +721,19 @@ object Form1: TForm1
         #9'@%p3 bra '#9'$Lt_4_4098;'
         ' //<loop> Part of loop body line 192, head labeled $Lt_4_3842'
         #9'ld.param.s32 '#9'%r4, [__cudaparm_advectParticles_k_dx];'
-        #9'.loc'#9'15'#9'206'#9'0'
+        #9'.loc'#9'16'#9'206'#9'0'
         #9'mul.lo.s32 '#9'%r19, %r18, %r4;'
         #9'add.s32 '#9'%r20, %r19, %r3;'
         #9'mul.lo.u32 '#9'%r21, %r20, 8;'
         #9'ld.param.u32 '#9'%r22, [__cudaparm_advectParticles_k_part];'
         #9'add.u32 '#9'%r23, %r22, %r21;'
         #9'ld.global.v2.f32 '#9'{%f1,%f2}, [%r23+0];'
-        #9'.loc'#9'15'#9'210'#9'0'
+        #9'.loc'#9'16'#9'210'#9'0'
         #9'ld.param.u32 '#9'%r24, [__cudaparm_advectParticles_k_v];'
         #9'ld.param.u32 '#9'%r25, [__cudaparm_advectParticles_k_pitch];'
-        #9'.loc'#9'15'#9'192'#9'0'
+        #9'.loc'#9'16'#9'192'#9'0'
         #9'ld.param.s32 '#9'%r15, [__cudaparm_advectParticles_k_dy];'
-        #9'.loc'#9'15'#9'210'#9'0'
+        #9'.loc'#9'16'#9'210'#9'0'
         #9'cvt.rn.f32.s32 '#9'%f3, %r15;'
         #9'mul.f32 '#9'%f4, %f3, %f2;'
         #9'cvt.rzi.s32.f32 '#9'%r26, %f4;'
@@ -689,96 +744,325 @@ object Form1: TForm1
         #9'mul.lo.u32 '#9'%r29, %r28, 8;'
         #9'add.u32 '#9'%r30, %r27, %r29;'
         #9'add.u32 '#9'%r31, %r24, %r30;'
-        #9'mov.u32 '#9'%r32, __cuda___cuda_vterm_168;'
+        
+          #9'mov.u32 '#9'%r32, __cuda___cuda_local_var_86465_19_non_const_vterm' +
+          '_168;'
         #9'ld.global.v2.u32 '#9'{%r33,%r34}, [%r31+0];'
         #9'st.local.u32 '#9'[%r32+0], %r33;'
         #9'st.local.u32 '#9'[%r32+4], %r34;'
-        #9'.loc'#9'15'#9'212'#9'0'
+        #9'.loc'#9'16'#9'212'#9'0'
         #9'ld.param.f32 '#9'%f7, [__cudaparm_advectParticles_k_dt];'
-        #9'ld.local.f32 '#9'%f8, [__cuda___cuda_vterm_168+0];'
-        #9'mad.f32 '#9'%f1, %f7, %f8, %f1;'
-        #9'.loc'#9'15'#9'213'#9'0'
-        #9'cvt.rzi.s32.f32 '#9'%r35, %f1;'
-        #9'cvt.rn.f32.s32 '#9'%f9, %r35;'
-        #9'sub.f32 '#9'%f1, %f1, %f9;'
-        #9'.loc'#9'15'#9'215'#9'0'
-        #9'mov.f32 '#9'%f10, 0f3f800000;    '#9'// 1'
-        #9'add.f32 '#9'%f11, %f1, %f10;'
-        #9'cvt.rzi.s32.f32 '#9'%r36, %f11;'
-        #9'cvt.rn.f32.s32 '#9'%f12, %r36;'
-        #9'sub.f32 '#9'%f1, %f11, %f12;'
-        #9'.loc'#9'15'#9'216'#9'0'
-        #9'ld.local.f32 '#9'%f13, [__cuda___cuda_vterm_168+4];'
-        #9'mad.f32 '#9'%f2, %f7, %f13, %f2;'
-        #9'.loc'#9'15'#9'217'#9'0'
-        #9'cvt.rzi.s32.f32 '#9'%r37, %f2;'
-        #9'cvt.rn.f32.s32 '#9'%f14, %r37;'
-        #9'sub.f32 '#9'%f2, %f2, %f14;'
-        #9'.loc'#9'15'#9'219'#9'0'
-        #9'mov.f32 '#9'%f15, 0f3f800000;    '#9'// 1'
-        #9'add.f32 '#9'%f16, %f2, %f15;'
-        #9'cvt.rzi.s32.f32 '#9'%r38, %f16;'
-        #9'cvt.rn.f32.s32 '#9'%f17, %r38;'
-        #9'sub.f32 '#9'%f2, %f16, %f17;'
-        #9'st.global.v2.f32 '#9'[%r23+0], {%f1,%f2};'
+        
+          #9'ld.local.f32 '#9'%f8, [__cuda___cuda_local_var_86465_19_non_const_' +
+          'vterm_168+0];'
+        #9'mad.f32 '#9'%f9, %f7, %f8, %f1;'
+        #9'.loc'#9'16'#9'213'#9'0'
+        #9'cvt.rzi.s32.f32 '#9'%r35, %f9;'
+        #9'cvt.rn.f32.s32 '#9'%f10, %r35;'
+        #9'sub.f32 '#9'%f11, %f9, %f10;'
+        #9'.loc'#9'16'#9'215'#9'0'
+        #9'mov.f32 '#9'%f12, 0f3f800000;    '#9'// 1'
+        #9'add.f32 '#9'%f13, %f11, %f12;'
+        #9'cvt.rzi.s32.f32 '#9'%r36, %f13;'
+        #9'cvt.rn.f32.s32 '#9'%f14, %r36;'
+        #9'sub.f32 '#9'%f15, %f13, %f14;'
+        #9'.loc'#9'16'#9'216'#9'0'
+        
+          #9'ld.local.f32 '#9'%f16, [__cuda___cuda_local_var_86465_19_non_const' +
+          '_vterm_168+4];'
+        #9'mad.f32 '#9'%f17, %f7, %f16, %f2;'
+        #9'.loc'#9'16'#9'217'#9'0'
+        #9'cvt.rzi.s32.f32 '#9'%r37, %f17;'
+        #9'cvt.rn.f32.s32 '#9'%f18, %r37;'
+        #9'sub.f32 '#9'%f19, %f17, %f18;'
+        #9'.loc'#9'16'#9'219'#9'0'
+        #9'mov.f32 '#9'%f20, 0f3f800000;    '#9'// 1'
+        #9'add.f32 '#9'%f21, %f19, %f20;'
+        #9'cvt.rzi.s32.f32 '#9'%r38, %f21;'
+        #9'cvt.rn.f32.s32 '#9'%f22, %r38;'
+        #9'sub.f32 '#9'%f23, %f21, %f22;'
+        #9'st.global.v2.f32 '#9'[%r23+0], {%f15,%f23};'
         '$Lt_4_4098:'
         ' //<loop> Part of loop body line 192, head labeled $Lt_4_3842'
-        #9'.loc'#9'15'#9'221'#9'0'
+        #9'.loc'#9'16'#9'221'#9'0'
         #9'add.s32 '#9'%r16, %r16, 1;'
-        #9'.loc'#9'15'#9'192'#9'0'
+        #9'.loc'#9'16'#9'192'#9'0'
         #9'ld.param.u32 '#9'%r5, [__cudaparm_advectParticles_k_lb];'
-        #9'.loc'#9'15'#9'221'#9'0'
+        #9'.loc'#9'16'#9'221'#9'0'
         #9'setp.ne.s32 '#9'%p4, %r16, %r5;'
         #9'@%p4 bra '#9'$Lt_4_3842;'
         '$Lt_4_3330:'
         '$Lt_4_2818:'
-        #9'.loc'#9'15'#9'225'#9'0'
+        #9'.loc'#9'16'#9'225'#9'0'
         #9'exit;'
         '$LDWend_advectParticles_k:'
         #9'} // advectParticles_k'
         '')
       Compiler = GLSCUDACompiler1
-      object addForces: TCUDAFunction
-        KernelName = 'addForces_k'
-        OnParameterSetup = addForcesParameterSetup
-      end
-      object advectVelocity: TCUDAFunction
-        KernelName = 'advectVelocity_k'
-        BlockShape.SizeX = 64
-        BlockShape.SizeY = 4
-        Grid.SizeX = 8
-        Grid.SizeY = 8
-        OnParameterSetup = advectVelocityParameterSetup
-      end
-      object diffuseProject: TCUDAFunction
-        KernelName = 'diffuseProject_k'
-        BlockShape.SizeX = 64
-        BlockShape.SizeY = 4
-        Grid.SizeX = 8
-        Grid.SizeY = 8
-        OnParameterSetup = diffuseProjectParameterSetup
-      end
-      object updateVelocity: TCUDAFunction
-        KernelName = 'updateVelocity_k'
-        BlockShape.SizeX = 64
-        BlockShape.SizeY = 4
-        Grid.SizeX = 8
-        Grid.SizeY = 8
-        OnParameterSetup = updateVelocityParameterSetup
-      end
-      object advectParticles: TCUDAFunction
-        KernelName = 'advectParticles_k'
-        BlockShape.SizeX = 64
-        BlockShape.SizeY = 4
-        Grid.SizeX = 8
-        Grid.SizeY = 8
-        OnParameterSetup = advectParticlesParameterSetup
-      end
       object TextureOfVelocityField: TCUDATexture
         KernelName = 'texref'
         NormalizedCoord = False
         FilterMode = fmLinear
+        Format = ctFloat
+        ChannelNum = cnTwo
         MemDataArray = ArrayOfTexture
+      end
+      object addForces: TCUDAFunction
+        KernelName = 'addForces_k'
+        OnParameterSetup = addForcesParameterSetup
+        object addForces_k_v: TCUDAFuncParam
+          KernelName = 'v'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object addForces_k_dx: TCUDAFuncParam
+          KernelName = 'dx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_dy: TCUDAFuncParam
+          KernelName = 'dy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_spx: TCUDAFuncParam
+          KernelName = 'spx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_spy: TCUDAFuncParam
+          KernelName = 'spy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_fx: TCUDAFuncParam
+          KernelName = 'fx'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_fy: TCUDAFuncParam
+          KernelName = 'fy'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_r: TCUDAFuncParam
+          KernelName = 'r'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object addForces_k_pitch: TCUDAFuncParam
+          KernelName = 'pitch'
+          DataType = customType
+          CustomType = 'size_t'
+          Size = 0
+          Reference = False
+        end
+      end
+      object advectVelocity: TCUDAFunction
+        KernelName = 'advectVelocity_k'
+        OnParameterSetup = advectVelocityParameterSetup
+        object advectVelocity_k_vx: TCUDAFuncParam
+          KernelName = 'vx'
+          DataType = float1
+          Size = 0
+          Reference = True
+        end
+        object advectVelocity_k_vy: TCUDAFuncParam
+          KernelName = 'vy'
+          DataType = float1
+          Size = 0
+          Reference = True
+        end
+        object advectVelocity_k_dx: TCUDAFuncParam
+          KernelName = 'dx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectVelocity_k_pdx: TCUDAFuncParam
+          KernelName = 'pdx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectVelocity_k_dy: TCUDAFuncParam
+          KernelName = 'dy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectVelocity_k_dt: TCUDAFuncParam
+          KernelName = 'dt'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object advectVelocity_k_lb: TCUDAFuncParam
+          KernelName = 'lb'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+      end
+      object diffuseProject: TCUDAFunction
+        KernelName = 'diffuseProject_k'
+        OnParameterSetup = diffuseProjectParameterSetup
+        object diffuseProject_k_vx: TCUDAFuncParam
+          KernelName = 'vx'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object diffuseProject_k_vy: TCUDAFuncParam
+          KernelName = 'vy'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object diffuseProject_k_dx: TCUDAFuncParam
+          KernelName = 'dx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object diffuseProject_k_dy: TCUDAFuncParam
+          KernelName = 'dy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object diffuseProject_k_dt: TCUDAFuncParam
+          KernelName = 'dt'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object diffuseProject_k_visc: TCUDAFuncParam
+          KernelName = 'visc'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object diffuseProject_k_lb: TCUDAFuncParam
+          KernelName = 'lb'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+      end
+      object updateVelocity: TCUDAFunction
+        KernelName = 'updateVelocity_k'
+        OnParameterSetup = updateVelocityParameterSetup
+        object updateVelocity_k_v: TCUDAFuncParam
+          KernelName = 'v'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object updateVelocity_k_vx: TCUDAFuncParam
+          KernelName = 'vx'
+          DataType = float1
+          Size = 0
+          Reference = True
+        end
+        object updateVelocity_k_vy: TCUDAFuncParam
+          KernelName = 'vy'
+          DataType = float1
+          Size = 0
+          Reference = True
+        end
+        object updateVelocity_k_dx: TCUDAFuncParam
+          KernelName = 'dx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object updateVelocity_k_pdx: TCUDAFuncParam
+          KernelName = 'pdx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object updateVelocity_k_dy: TCUDAFuncParam
+          KernelName = 'dy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object updateVelocity_k_lb: TCUDAFuncParam
+          KernelName = 'lb'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object updateVelocity_k_pitch: TCUDAFuncParam
+          KernelName = 'pitch'
+          DataType = customType
+          CustomType = 'size_t'
+          Size = 0
+          Reference = False
+        end
+        object updateVelocity_k_scale: TCUDAFuncParam
+          KernelName = 'scale'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+      end
+      object advectParticles: TCUDAFunction
+        KernelName = 'advectParticles_k'
+        OnParameterSetup = advectParticlesParameterSetup
+        object advectParticles_k_part: TCUDAFuncParam
+          KernelName = 'part'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object advectParticles_k_v: TCUDAFuncParam
+          KernelName = 'v'
+          DataType = float2
+          Size = 0
+          Reference = True
+        end
+        object advectParticles_k_dx: TCUDAFuncParam
+          KernelName = 'dx'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectParticles_k_dy: TCUDAFuncParam
+          KernelName = 'dy'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectParticles_k_dt: TCUDAFuncParam
+          KernelName = 'dt'
+          DataType = float1
+          Size = 0
+          Reference = False
+        end
+        object advectParticles_k_lb: TCUDAFuncParam
+          KernelName = 'lb'
+          DataType = int1
+          Size = 0
+          Reference = False
+        end
+        object advectParticles_k_pitch: TCUDAFuncParam
+          KernelName = 'pitch'
+          DataType = customType
+          CustomType = 'size_t'
+          Size = 0
+          Reference = False
+        end
       end
     end
     object ArrayOfTexture: TCUDAMemData
@@ -796,13 +1080,13 @@ object Form1: TForm1
       ChannelsNum = cnTwo
     end
     object ComplexVXField: TCUDAMemData
-      Width = 262144
+      Width = 131584
       MemoryType = mtDevice
       ChannelsType = ctFloat
       ChannelsNum = cnTwo
     end
     object ComplexVYField: TCUDAMemData
-      Width = 262144
+      Width = 131584
       MemoryType = mtDevice
       ChannelsType = ctFloat
       ChannelsNum = cnTwo
