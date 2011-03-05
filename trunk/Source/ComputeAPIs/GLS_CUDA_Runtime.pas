@@ -59,7 +59,8 @@ uses
 {$I cuda.inc}
 
 const
-  CUDARTDLLNAMES: array [0 .. 6] of string = ('cudart32_32_16', 'cudart32_31_4',
+  CUDARTDLLNAMES: array [0 .. 7] of string = (
+    'cudart32_40_10', 'cudart32_32_16', 'cudart32_31_4',
     'cudart32_30_14', 'cudart32_30_9', 'cudart32_30_8', 'cudart32', 'cudart');
 
 const
