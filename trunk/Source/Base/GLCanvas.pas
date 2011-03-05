@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>05/02/11 - Yar - Now PenColor setter always direct set color
       <li>03/10/10 - Yar - Added RoundRect (thanks eric129)
       <li>21/09/10 - Yar - Added Arc, ArcTo (thanks µAlexx)
       <li>03/09/10 - Yar - Added FillRectGradient, FillEllipseGradient (thanks µAlexx)
@@ -362,13 +363,10 @@ end;
 
 procedure TGLCanvas.SetPenColor(const val: TColor);
 begin
-  if val <> FPenColor then
-  begin
-    SetVector(FCurrentPenColorVector, ConvertWinColor(val,
-      FCurrentPenColorVector[3]));
-    FPenColor := val;
-    GL.Color4fv(@FCurrentPenColorVector);
-  end;
+  SetVector(FCurrentPenColorVector, ConvertWinColor(val,
+    FCurrentPenColorVector[3]));
+  FPenColor := val;
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // SetPenAlpha
@@ -376,11 +374,8 @@ end;
 
 procedure TGLCanvas.SetPenAlpha(const val: Single);
 begin
-  if val <> FCurrentPenColorVector[3] then
-  begin
-    FCurrentPenColorVector[3] := val;
-    GL.Color4fv(@FCurrentPenColorVector);
-  end;
+  FCurrentPenColorVector[3] := val;
+  GL.Color4fv(@FCurrentPenColorVector);
 end;
 
 // SetPenWidth
