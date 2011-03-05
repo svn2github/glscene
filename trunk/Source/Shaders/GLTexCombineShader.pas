@@ -6,6 +6,7 @@
    A shader that allows texture combiner setup.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Added combiner's commands cache
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)
@@ -25,7 +26,8 @@ uses
   Classes,
   GLTexture,
   GLMaterial,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  GLTextureCombiners;
 
 type
 
@@ -36,6 +38,7 @@ type
   private
     { Protected Declarations }
     FCombiners: TStrings;
+    FCommandCache: TCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
     FDesignTimeEnabled: Boolean;
 
@@ -90,7 +93,6 @@ implementation
 
 uses
   SysUtils,
-  GLTextureCombiners,
   OpenGLTokens,
   XOpenGL,
   GLContext,
@@ -111,6 +113,7 @@ begin
   FCombiners := TStringList.Create;
   TStringList(FCombiners).OnChange := NotifyChange;
   FCombinerIsValid := True;
+  FCommandCache := nil;
 end;
 
 // Destroy
@@ -146,6 +149,7 @@ end;
 procedure TGLTexCombineShader.NotifyChange(Sender: TObject);
 begin
   FCombinerIsValid := True;
+  FCommandCache := nil;
   inherited NotifyChange(Sender);
 end;
 
@@ -291,7 +295,16 @@ begin
         if units > 0 then
           xgl.MapTexCoordToArbitraryAdd(units);
       end;
-      SetupTextureCombiners(FCombiners.Text);
+
+      if Length(FCommandCache) = 0 then
+        FCommandCache := GetTextureCombiners(FCombiners.Text);
+      for n := 0 to High(FCommandCache) do
+      begin
+        rci.GLStates.ActiveTexture := FCommandCache[n].ActiveUnit;
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        GL.TexEnvi(GL_TEXTURE_ENV, FCommandCache[n].Arg1, FCommandCache[n].Arg2);
+      end;
+      rci.GLStates.ActiveTexture := 0;
     except
       on E: Exception do
       begin

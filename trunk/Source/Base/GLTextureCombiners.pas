@@ -6,6 +6,7 @@
    Texture combiners setup utility functions.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/03/11 - Yar - Added combiner's commands cache   
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>18/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
       <li>02/04/07 - DaStr - Added $I GLScene.inc
@@ -24,6 +25,14 @@ interface
 uses SysUtils;
 
 type
+
+  TCombinerCommand = record
+    ActiveUnit: Integer;
+    Arg1: Integer;
+    Arg2: Integer;
+  end;
+
+  TCombinerCache = array of TCombinerCommand;
 
   // ETextureCombinerError
   //
@@ -54,7 +63,7 @@ type
      explicitly, and '.rgb' to specify color channels (default). You cannot mix
      alpha and rgb tokens in the same line.
   }
-procedure SetupTextureCombiners(const tcCode: string);
+function GetTextureCombiners(const tcCode: string): TCombinerCache;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -64,9 +73,14 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Classes,
+uses
+  Classes,
   OpenGLTokens,
   GLContext;
+
+var
+  vActiveUnit: Integer;
+  vCommandCache: TCombinerCache;
 
 // TCAssertCheck
 //
@@ -108,6 +122,7 @@ procedure ProcessTextureCombinerArgument(arg: string; sourceEnum, operandEnum: I
 var
   sourceValue, operandValue, n, p: Integer;
   origArg, qualifier: string;
+  cmd: TCombinerCommand;
 begin
   origArg := arg;
   p := Pos('.', arg);
@@ -170,9 +185,16 @@ begin
   end;
   TCAssertCheck((operandValue > 0) and (sourceValue > 0),
     'invalid argument : "' + origArg + '"');
-  GL.TexEnvf(GL_TEXTURE_ENV, sourceEnum, sourceValue);
-  GL.TexEnvf(GL_TEXTURE_ENV, operandEnum, operandValue);
-  GL.CheckError;
+
+  SetLength(vCommandCache, Length(vCommandCache)+2);
+  cmd.ActiveUnit := vActiveUnit;
+  cmd.Arg1 := sourceEnum;
+  cmd.Arg2 := sourceValue;
+  vCommandCache[High(vCommandCache)-1] := cmd;
+  cmd.ActiveUnit := vActiveUnit;
+  cmd.Arg1 := operandEnum;
+  cmd.Arg2 := operandValue;
+  vCommandCache[High(vCommandCache)] := cmd;
 end;
 
 // ProcessTextureCombinerLine
@@ -185,6 +207,7 @@ var
   destEnum, operEnum: Integer;
   sourceBaseEnum, operandBaseEnum: Integer;
   sl: TStrings;
+  cmd: TCombinerCommand;
 begin
   // initial filtering
   line := LowerCase(RemoveSpaces(Trim(tcLine)));
@@ -220,13 +243,11 @@ begin
   begin
     p := StrToIntDef(Copy(dest, 4, MaxInt), -1);
     TCAssertCheck(p >= 0, 'Invalid destination texture unit "' + dest + '"');
-    GL.ActiveTexture(GL_TEXTURE0 + p)
+    vActiveUnit := p;
   end
   else
     TCAssertCheck(False, 'Invalid destination "' + dest + '"');
   // parse combiner operator
-  GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-  GL.CheckError;
   operEnum := 0;
   arg1 := '';
   arg2 := '';
@@ -306,8 +327,11 @@ begin
     arg1 := line;
   end;
 
-  GL.TexEnvi(GL_TEXTURE_ENV, destEnum, operEnum);
-  GL.CheckError;
+  cmd.ActiveUnit := vActiveUnit;
+  cmd.Arg1 := destEnum;
+  cmd.Arg2 := operEnum;
+  SetLength(vCommandCache, Length(vCommandCache)+1);
+  vCommandCache[High(vCommandCache)] := cmd;
   // parse arguments
   if arg1 <> '' then
     ProcessTextureCombinerArgument(arg1, sourceBaseEnum, operandBaseEnum, dest);
@@ -315,18 +339,17 @@ begin
     ProcessTextureCombinerArgument(arg2, sourceBaseEnum + 1, operandBaseEnum + 1, dest);
   if arg3 <> '' then
     ProcessTextureCombinerArgument(arg3, sourceBaseEnum + 2, operandBaseEnum + 2, dest);
-
-  GL.ActiveTexture(GL_TEXTURE0);
 end;
 
 // SetupTextureCombiners
 //
 
-procedure SetupTextureCombiners(const tcCode: string);
+function GetTextureCombiners(const tcCode: string): TCombinerCache;
 var
   i: Integer;
   sl: TStringList;
 begin
+  vCommandCache := nil;
   TCAssertCheck(GL.ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
   sl := TStringList.Create;
   try
@@ -336,6 +359,7 @@ begin
   finally
     sl.Free;
   end;
+  Result := vCommandCache;
 end;
 
 end.
