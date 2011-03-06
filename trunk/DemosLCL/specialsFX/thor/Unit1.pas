@@ -6,7 +6,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  {$IFDEF MSWINDOWS}
+  Windows,
+  {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours, ExtCtrls,
   VectorGeometry, GLThorFX, GLSkydome, StdCtrls, ComCtrls, GLGraph, VectorTypes,
   GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
@@ -72,14 +75,16 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
-
+uses
+  GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetCurrentDir(ExtractFilePath(Application.ExeName));
-   HeightField1.Material.Texture.Image.LoadFromFile('..\..\media\marbletiles.jpg');
+   HeightField1.Material.Texture.Image.
+   LoadFromFile('..'+PathDelim+'..'+PathDelim+'media'+PathDelim+'marbletiles.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -168,7 +173,7 @@ end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   HeightField1.Material.Texture.Image.SaveToFile('c:\test.jpg');
+   HeightField1.Material.Texture.Image.SaveToFile('test.jpg');
 end;
 
 procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
@@ -177,4 +182,4 @@ begin
    Z:=0;
 end;
 
-end.
+end.
