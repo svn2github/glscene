@@ -3,6 +3,9 @@ program shadowplane;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas' {Form1};
 

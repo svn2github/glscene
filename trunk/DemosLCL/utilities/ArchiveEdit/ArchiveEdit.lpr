@@ -3,6 +3,9 @@ program ArchiveEdit;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Main in 'Main.pas' {Form1},
   FolderDialog in 'FolderDialog.pas' {FDialog},

@@ -3,8 +3,11 @@ program FurBall;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  fFurBall in 'fFurBall.pas', GLScene_ODE {frmFurBall};
+  fFurBall in 'fFurBall.pas' {frmFurBall};
 
 {$R *.res}
 

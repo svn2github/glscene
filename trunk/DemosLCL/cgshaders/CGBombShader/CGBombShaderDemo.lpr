@@ -3,8 +3,11 @@ program CGBombShaderDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  uMainForm in 'uMainForm.pas', glscene_designtime, GLScene_CgShader {Form1};
+  uMainForm in 'uMainForm.pas'{Form1};
 
 {$R *.res}
 

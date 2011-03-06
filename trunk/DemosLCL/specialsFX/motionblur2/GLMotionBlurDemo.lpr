@@ -3,6 +3,9 @@ program GLMotionBlurDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   uMainForm in 'uMainForm.pas' {Form1};
 

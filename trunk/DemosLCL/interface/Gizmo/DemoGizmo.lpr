@@ -3,6 +3,9 @@ Program DemoGizmo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   DemoGizmoForm in 'DemoGizmoForm.pas', glscene_designtime {Form1};
 

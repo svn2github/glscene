@@ -3,7 +3,9 @@ program ActorTwoCam;
 {$MODE Delphi}
 
 uses
-  {$IFDEF UNIX}cthreads, {$ENDIF}
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas' {Form1};
 

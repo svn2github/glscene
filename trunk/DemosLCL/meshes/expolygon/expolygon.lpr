@@ -3,6 +3,9 @@ program ExPolygon;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   ExPolygon1 in 'ExPolygon1.pas' {Form1};
 

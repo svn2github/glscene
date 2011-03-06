@@ -5,6 +5,9 @@ program PostShaderDemo;
 {$ENDIF}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces, umainform in 'umainform.pas';
 
 {$R *.res}

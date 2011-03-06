@@ -1,6 +1,9 @@
 program shadowvolumes;
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas' {Form1},
   GLSilhouette in '..\..\..\Source\GLSilhouette.pas';

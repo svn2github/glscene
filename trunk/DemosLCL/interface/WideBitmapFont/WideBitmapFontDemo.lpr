@@ -3,6 +3,9 @@ program WideBitmapFontDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   MainFormUnit in 'MainFormUnit.pas' {MainForm};
 

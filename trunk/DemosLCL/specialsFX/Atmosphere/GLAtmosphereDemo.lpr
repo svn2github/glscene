@@ -3,6 +3,9 @@ program GLAtmosphereDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   uMainForm in 'uMainForm.pas';
 
@@ -12,4 +15,4 @@ begin
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
-end.
+end.

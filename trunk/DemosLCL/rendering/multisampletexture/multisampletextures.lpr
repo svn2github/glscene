@@ -3,6 +3,9 @@ program MultiSampleTextures;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   uMain in 'uMain.pas';
 

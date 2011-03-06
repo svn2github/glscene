@@ -3,6 +3,9 @@ program ParticleMasksManagerDemo;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   uParticleMasking in 'uParticleMasking.pas' {Form1};
 

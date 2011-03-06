@@ -3,8 +3,11 @@ program basicsdl;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  Unit1 in 'Unit1.pas', GLS_SDL {DataModule1: TDataModule};
+  Unit1 in 'Unit1.pas'{DataModule1: TDataModule};
 
 {$R *.res}
 

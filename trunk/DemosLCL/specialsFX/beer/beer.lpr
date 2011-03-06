@@ -3,6 +3,9 @@ program beer;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   unit1 in 'Unit1.pas' {Form1};
 

@@ -3,8 +3,11 @@ program Ragdoll;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  fRagdoll in 'fRagdoll.pas', GLScene_ODE {frmRagdoll};
+  fRagdoll in 'fRagdoll.pas'{frmRagdoll};
 
 {$R *.res}
 

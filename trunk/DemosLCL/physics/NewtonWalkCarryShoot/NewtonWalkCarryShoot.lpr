@@ -3,6 +3,9 @@ program NewtonWalkCarryShoot;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   {ExceptionLog,}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas' {Form1};

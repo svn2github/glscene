@@ -8,6 +8,9 @@ program CgTexture;
 {%File 'cg_texture.vp.cg'}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas' {Form1};
 

@@ -3,6 +3,9 @@ program facevsface;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   Unit1 in 'Unit1.pas', GLS_WinOnly{Form1};
 

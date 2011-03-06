@@ -3,8 +3,11 @@ program GuiEditor;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  MainFormUnit in 'MainFormUnit.pas', glscene_designtime {Form1};
+  MainFormUnit in 'MainFormUnit.pas' {Form1};
 
 {$R *.res}
 

@@ -3,6 +3,9 @@ program fontgen;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   main in 'main.pas' {frmMain};
 

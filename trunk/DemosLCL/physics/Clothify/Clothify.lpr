@@ -3,8 +3,11 @@ program Clothify;
 {$MODE Delphi}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  fClothify in 'fClothify.pas', GLScene_ODE {frmClothify};
+  fClothify in 'fClothify.pas'{frmClothify};
 
 {$R *.res}
 
