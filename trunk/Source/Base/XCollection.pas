@@ -648,7 +648,7 @@ begin
           {$ENDIF}
           lcnum := ReadInteger;
           Assert((lcnum >= 0) and (lcnum < classlist.Count),
-            'Inavlid classlistIndex: ' + IntToStr(lcnum));
+            'Invalid classlistIndex: ' + IntToStr(lcnum));
           XCollectionItemClass := TXCollectionItemClass(classList[lcnum]);
           {$IFDEF DEBUG_XCOLLECTION}
           writeln('TXCollection.ReadFromFiler create by number: ',
