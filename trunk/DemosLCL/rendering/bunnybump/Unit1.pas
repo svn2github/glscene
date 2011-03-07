@@ -119,12 +119,12 @@ begin
     LoadFromFile('bunnynormals.jpg');
 
   // Link the lights to their toggles
-  CheckBox1.Tag := integer(WhiteLight);
-  CheckBox2.Tag := integer(RedLight);
-  CheckBox3.Tag := integer(BlueLight);
-  Shape1.Tag := integer(WhiteLight);
-  Shape2.Tag := integer(RedLight);
-  Shape3.Tag := integer(BlueLight);
+  CheckBox1.Tag := 0;
+  CheckBox2.Tag := 1;
+  CheckBox3.Tag := 2;
+  Shape1.Tag := 0;
+  Shape2.Tag := 1;
+  Shape3.Tag := 2;
 
   ComboBox1.ItemIndex := 0;
   ComboBox1Change(nil);
@@ -152,7 +152,11 @@ end;
 procedure TForm1.CheckBoxClick(Sender: TObject);
 begin
   // Light Shining CheckBox
-  TGLLightSource(TCheckBox(Sender).Tag).Shining := TCheckBox(Sender).Checked;
+  case TCheckBox(Sender).Tag of
+    0: WhiteLight.Shining := TCheckBox(Sender).Checked;
+    1: RedLight.Shining := TCheckBox(Sender).Checked;
+    2: BlueLight.Shining := TCheckBox(Sender).Checked;
+  end;
 end;
 
 procedure TForm1.ShapeMouseDown(Sender: TObject; Button: TMouseButton;
@@ -163,8 +167,11 @@ begin
   if ColorDialog1.Execute then
   begin
     TShape(Sender).Brush.Color := ColorDialog1.Color;
-    with TGLLightSource(TShape(Sender).Tag) do
-      Diffuse.AsWinColor := ColorDialog1.Color;
+    case TShape(Sender).Tag of
+      0: WhiteLight.Diffuse.AsWinColor := ColorDialog1.Color;
+      1: RedLight.Diffuse.AsWinColor := ColorDialog1.Color;
+      2: BlueLight.Diffuse.AsWinColor := ColorDialog1.Color;
+    end;
   end;
 end;
 
