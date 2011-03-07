@@ -10,6 +10,7 @@
    Based on David McDuffee's document from www.wotsit.org<p>
 
 	<b>History : </b><font size=-1><ul>
+           <li>07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
            <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator) 
 	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
                               in Lazarus (thanks Predator)   
@@ -23,7 +24,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, SysUtils{$IFNDEF FPC}, GLCrossPlatform {$ELSE},LazTGA {$ENDIF}  ;
+uses Classes, SysUtils, GLCrossPlatform;
 
 type
 
@@ -32,7 +33,6 @@ type
    {: TGA image load/save capable class for Delphi.<p>
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
-      {$IFNDEF FPC}
         TTGAImage = class (TGLBitmap)
 	   private
 	      { Private Declarations }
@@ -53,9 +53,6 @@ type
    //
    ETGAException = class (Exception)
    end;
-   {$ELSE}
-   TTGAImage = LazTGA.TTGAImage;
-   {$ENDIF}
 
 
 // ------------------------------------------------------------------
@@ -65,7 +62,14 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-{$IFNDEF FPC}
+
+uses
+  GLGraphics
+{$IFDEF FPC}
+  ,GraphType, LCLType
+{$ENDIF}
+  ;
+
 type
 
    // TTGAHeader
@@ -179,6 +183,20 @@ var
    y, rowSize, bufSize : Integer;
    verticalFlip : Boolean;
    unpackBuf : PAnsiChar;
+   {$IFDEF FPC}
+   rimg: TRawImage;
+   {$ENDIF}
+
+   function GetLineAddress(ALine: Integer): PByte;
+   begin
+     {$IFDEF GLS_DELPHI_OR_CPPB}
+     Result := PByte(ScanLine[ALine]);
+     {$ENDIF}
+     {$IFDEF FPC}
+     Result := PByte(@PGLPixel32Array(rimg.Data)[ALine*Width]);
+     {$ENDIF}
+   end;
+
 begin
    stream.Read(header, Sizeof(TTGAHeader));
 
@@ -199,44 +217,67 @@ begin
    if header.IDLength>0 then
       stream.Seek(header.IDLength, soFromCurrent);
 
-   case header.ImageType of
-      0 : begin // empty image, support is useless but easy ;)
-         Width:=0;
-         Height:=0;
-         Exit;
-      end;
-      2 : begin // uncompressed RGB/RGBA
-         if verticalFlip then begin
-            for y:=0 to Height-1 do
-               stream.Read(ScanLine[Height-y-1]^, rowSize);
-         end else begin
-            for y:=0 to Height-1 do
-               stream.Read(ScanLine[y]^, rowSize);
-         end;
-      end;
-      10 : begin // RLE encoded RGB/RGBA
-         bufSize:=Height*rowSize;
-         unpackBuf:=GetMemory(bufSize);
-         try
-            // read & unpack everything
-            if header.PixelSize=24 then
-               ReadAndUnPackRLETGA24(stream, unpackBuf, bufSize)
-            else ReadAndUnPackRLETGA32(stream, unpackBuf, bufSize);
-            // fillup bitmap
-            if verticalFlip then begin
-               for y:=0 to Height-1 do begin
-                  Move(unPackBuf[y*rowSize], ScanLine[Height-y-1]^, rowSize);
-               end;
-            end else begin
-               for y:=0 to Height-1 do
-                  Move(unPackBuf[y*rowSize], ScanLine[y]^, rowSize);
-            end;
-         finally
-            FreeMemory(unpackBuf);
-         end;
-      end;
-   else
-      raise ETGAException.Create('Unsupported TGA ImageType '+IntToStr(header.ImageType));
+   {$IFDEF FPC}
+     rimg.Init;
+     rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
+     rimg.Description.RedShift := 16;
+     rimg.Description.BlueShift := 0;
+     if verticalFlip then
+       rimg.Description.LineOrder := riloTopToBottom
+     else
+       rimg.Description.LineOrder := riloBottomToTop;
+     RIMG.DataSize := Width * Height * 4;
+     GetMem(rimg.Data, RIMG.DataSize);
+   {$ENDIF}
+
+   try
+     case header.ImageType of
+        0 : begin // empty image, support is useless but easy ;)
+           Width:=0;
+           Height:=0;
+           Abort;
+        end;
+        2 : begin // uncompressed RGB/RGBA
+           if verticalFlip then begin
+              for y:=0 to Height-1 do
+                 stream.Read(GetLineAddress(Height-y-1)^, rowSize);
+           end else begin
+              for y:=0 to Height-1 do
+                 stream.Read(GetLineAddress(y)^, rowSize);
+           end;
+        end;
+        10 : begin // RLE encoded RGB/RGBA
+           bufSize:=Height*rowSize;
+           unpackBuf:=GetMemory(bufSize);
+           try
+              // read & unpack everything
+              if header.PixelSize=24 then
+                 ReadAndUnPackRLETGA24(stream, unpackBuf, bufSize)
+              else ReadAndUnPackRLETGA32(stream, unpackBuf, bufSize);
+              // fillup bitmap
+              if verticalFlip then begin
+                 for y:=0 to Height-1 do begin
+                    Move(unPackBuf[y*rowSize], GetLineAddress(Height-y-1)^, rowSize);
+                 end;
+              end else begin
+                 for y:=0 to Height-1 do
+                    Move(unPackBuf[y*rowSize], GetLineAddress(y)^, rowSize);
+              end;
+           finally
+              FreeMemory(unpackBuf);
+           end;
+        end;
+     else
+        raise ETGAException.Create('Unsupported TGA ImageType '+IntToStr(header.ImageType));
+     end;
+
+     {$IFDEF FPC}
+     LoadFromRawImage(rimg, false);
+     {$ENDIF}
+   finally
+     {$IFDEF FPC}
+     FreeMem(rimg.Data);
+     {$ENDIF}
    end;
 end;
 
@@ -244,7 +285,9 @@ end;
 //
 procedure TTGAImage.SaveToStream(stream : TStream);
 var
+{$IFDEF GLS_DELPHI_OR_CPPB}
    y, rowSize : Integer;
+{$ENDIF}
    header : TTGAHeader;
 begin
    // prepare the header, essentially made up from zeroes
@@ -252,18 +295,29 @@ begin
    header.ImageType:=2;
    header.Width:=Width;
    header.Height:=Height;
+{$IFDEF GLS_DELPHI_OR_CPPB}
    case PixelFormat of
       glpf24bit : header.PixelSize:=24;
       glpf32bit : header.PixelSize:=32;
    else
       raise ETGAException.Create('Unsupported Bitmap format');
    end;
+{$ENDIF}
+
+{$IFDEF FPC}
+   header.PixelSize:=32;
+{$ENDIF}
    stream.Write(header, SizeOf(TTGAHeader));
+
+{$IFDEF GLS_DELPHI_OR_CPPB}
    rowSize:=(Width*header.PixelSize) div 8;
    for y:=0 to Height-1 do
       stream.Write(ScanLine[Height-y-1]^, rowSize);
-end;
 {$ENDIF}
+{$IFDEF FPC}
+   stream.Write(RawImage.Data^, Width*Height*4);
+{$ENDIF}
+end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -273,13 +327,9 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-   {$IFNDEF FPC}
    TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
-   {$ENDIF}
 
 finalization
 
-   {$IFNDEF FPC}
    TGLPicture.UnregisterGraphicClass(TTGAImage);
-   {$ENDIF}
 end.
