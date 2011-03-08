@@ -96,11 +96,13 @@ implementation
 uses VectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var s:string;
 begin
+   s:='..'+pathdelim+'..'+pathdelim+'media'+pathdelim;
    // Load our sound sample
-   GLSoundLibrary.Samples.AddFile('..\..\media\drumloop.wav','drumloop.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\chimes.wav','chimes.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\howl.mp3','howl.mp3');
+   GLSoundLibrary.Samples.AddFile(s+'drumloop.wav','drumloop.wav');
+   GLSoundLibrary.Samples.AddFile(s+'chimes.wav','chimes.wav');
+   GLSoundLibrary.Samples.AddFile(s+'howl.mp3','howl.mp3');
 end;
 
 procedure TForm1.SphereProgress(Sender: TObject; const deltaTime,
@@ -161,4 +163,4 @@ begin
    end;       
 end;
 
-end.
+end.
