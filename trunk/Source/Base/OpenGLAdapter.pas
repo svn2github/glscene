@@ -3,6 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>06/03/11 - Yar - Added GL_EXT_texture_sRGB_decode
   <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
   <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
   <li>18/01/11 - Yar - Added entry points for AGL
@@ -130,7 +131,8 @@ type
     EXT_texture_integer, EXT_texture_lod, EXT_texture_lod_bias,
     EXT_texture_mirror_clamp, EXT_texture_object, EXT_texture_rectangle,
     EXT_texture_sRGB, EXT_texture_shared_exponent, EXT_timer_query,
-    EXT_transform_feedback, EXT_vertex_array, HP_occlusion_test,
+    EXT_transform_feedback, EXT_vertex_array, EXT_texture_sRGB_decode,
+    HP_occlusion_test,
     IBM_rasterpos_clip, KTX_buffer_region, MESA_resize_buffers, NV_blend_square,
     NV_conditional_render, NV_copy_image, NV_depth_buffer_float, NV_fence,
     NV_float_buffer, NV_fog_distance, NV_geometry_program4, NV_light_max_exponent,
@@ -3373,6 +3375,7 @@ begin
   EXT_timer_query := CheckExtension('GL_EXT_timer_query');
   EXT_transform_feedback := CheckExtension('GL_EXT_transform_feedback');
   EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
+  EXT_texture_sRGB_decode := CheckExtension('GL_EXT_texture_sRGB_decode');
 
   HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
 
@@ -4364,6 +4367,7 @@ begin
   EXT_timer_query := False;
   EXT_transform_feedback := False;
   EXT_vertex_array := False;
+  EXT_texture_sRGB_decode := False;
 
   HP_occlusion_test := False;
 
