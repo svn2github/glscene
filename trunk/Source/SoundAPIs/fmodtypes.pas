@@ -95,21 +95,21 @@ type
     Callback types
   }
 
-  TFSoundStreamCallback   = function (Stream: PFSoundStream; Buff: Pointer; Length, Param: Integer): ByteBool; stdcall;
-  TFSoundDSPCallback      = function (OriginalBuffer: Pointer; NewBuffer: Pointer; Length, Param: Integer): Pointer; stdcall;
-  TFMusicCallback         = procedure (Module: PFMusicModule; Param: Byte); stdcall;
+  TFSoundStreamCallback   = function (Stream: PFSoundStream; Buff: Pointer; Length, Param: Integer): ByteBool;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundDSPCallback      = function (OriginalBuffer: Pointer; NewBuffer: Pointer; Length, Param: Integer): Pointer;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFMusicCallback         = procedure (Module: PFMusicModule; Param: Byte);  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
 
-  TFSoundOpenCallback     = function (Name: PChar): Cardinal; stdcall;
-  TFSoundCloseCallback    = procedure (Handle: Cardinal); stdcall;
-  TFSoundReadCallback     = function (Buffer: Pointer; Size: Cardinal; Handle: Cardinal): Cardinal; stdcall;
-  TFSoundSeekCallback     = procedure (Handle: Cardinal; Pos: Cardinal; Mode: Byte); stdcall;
-  TFSoundTellCallback     = function (Handle: Cardinal): Cardinal; stdcall;
+  TFSoundOpenCallback     = function (Name: PChar): Cardinal;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundCloseCallback    = procedure (Handle: Cardinal);  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundReadCallback     = function (Buffer: Pointer; Size: Cardinal; Handle: Cardinal): Cardinal;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundSeekCallback     = procedure (Handle: Cardinal; Pos: Cardinal; Mode: Byte);  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundTellCallback     = function (Handle: Cardinal): Cardinal;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
 
-  TFSoundAllocCallback    = function(Size: Cardinal): Pointer; stdcall;
-  TFSoundReallocCallback  = function(Ptr: Pointer; Size: Cardinal): Pointer; stdcall;
-  TFSoundFreeCallback     = procedure(Ptr: Pointer); stdcall;
+  TFSoundAllocCallback    = function(Size: Cardinal): Pointer;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundReallocCallback  = function(Ptr: Pointer; Size: Cardinal): Pointer;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
+  TFSoundFreeCallback     = procedure(Ptr: Pointer);  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
 
-  TFMetaDataCallback      = function(Name: PChar; Value: PChar; userdata: Integer): ByteBool; stdcall;
+  TFMetaDataCallback      = function(Name: PChar; Value: PChar; userdata: Integer): ByteBool;  {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
 [ENUM]

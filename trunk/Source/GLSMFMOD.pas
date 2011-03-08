@@ -89,7 +89,7 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, FMod, fmodtypes, fmodpresets, VectorGeometry;
+uses SysUtils, {$IFNDEF FPC}FMod{$ELSE}FModdyn{$ENDIF}, fmodtypes, fmodpresets, VectorGeometry;
 
 type
    TFMODInfo =  record
@@ -138,10 +138,18 @@ var
    cap : Cardinal;
 begin
    FMOD_Load(nil);
+   {$IFDEF MSWindows}
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
       Result:=False;
       Exit;
    end;
+  {$ENDIF}
+  {$IFDEF LINUX}
+  if not FSOUND_SetOutput(FSOUND_OUTPUT_ALSA) then begin
+     Result:=False;
+     Exit;
+  end;
+  {$ENDIF}
    if not FSOUND_SetDriver(0) then begin
       Result:=False;
       Exit;
