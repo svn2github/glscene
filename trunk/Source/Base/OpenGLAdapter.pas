@@ -3,7 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>06/03/11 - Yar - Added GL_EXT_texture_sRGB_decode
+  <li>06/03/11 - Yar - Added GL_EXT_texture_sRGB_decode, GL_ARB_separate_shader_objects
   <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
   <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
   <li>18/01/11 - Yar - Added entry points for AGL
@@ -106,6 +106,7 @@ type
     ARB_vertex_array_object, ARB_vertex_blend, ARB_vertex_buffer_object,
     ARB_vertex_program, ARB_vertex_shader, ARB_vertex_type_2_10_10_10_rev,
     ARB_window_pos, ARB_texture_compression_bptc, ARB_get_program_binary,
+    ARB_separate_shader_objects,
 
     // Vendor/EXT OpenGL extension checks
     _3DFX_multisample, _3DFX_tbuffer, _3DFX_texture_compression_FXT1,
@@ -2080,6 +2081,66 @@ type
     ActiveVarying: PFNGLACTIVEVARYINGNVPROC; // NV only
     GetProgramBinary: PFNGLGETPROGRAMBINARYPROC;
     ProgramBinary: PFNGLPROGRAMBINARYPROC;
+    UseProgramStages: PFNGLUSEPROGRAMSTAGESPROC;
+    ActiveShaderProgram: PFNGLACTIVESHADERPROGRAMPROC;
+    CreateShaderProgramv: PFNGLCREATESHADERPROGRAMVPROC;
+    BindProgramPipeline: PFNGLBINDPROGRAMPIPELINEPROC;
+    DeleteProgramPipelines: PFNGLDELETEPROGRAMPIPELINESPROC;
+    GenProgramPipelines: PFNGLGENPROGRAMPIPELINESPROC;
+    IsProgramPipeline: PFNGLISPROGRAMPIPELINEPROC;
+    GetProgramPipelineiv: PFNGLGETPROGRAMPIPELINEIVPROC;
+    ProgramUniform1i: PFNGLPROGRAMUNIFORM1IPROC;
+    ProgramUniform1iv: PFNGLPROGRAMUNIFORM1IVPROC;
+    ProgramUniform1f: PFNGLPROGRAMUNIFORM1FPROC;
+    ProgramUniform1fv: PFNGLPROGRAMUNIFORM1FVPROC;
+    ProgramUniform1d: PFNGLPROGRAMUNIFORM1DPROC;
+    ProgramUniform1dv: PFNGLPROGRAMUNIFORM1DVPROC;
+    ProgramUniform1ui: PFNGLPROGRAMUNIFORM1UIPROC;
+    ProgramUniform1uiv: PFNGLPROGRAMUNIFORM1UIVPROC;
+    ProgramUniform2i: PFNGLPROGRAMUNIFORM2IPROC;
+    ProgramUniform2iv: PFNGLPROGRAMUNIFORM2IVPROC;
+    ProgramUniform2f: PFNGLPROGRAMUNIFORM2FPROC;
+    ProgramUniform2fv: PFNGLPROGRAMUNIFORM2FVPROC;
+    ProgramUniform2d: PFNGLPROGRAMUNIFORM2DPROC;
+    ProgramUniform2dv: PFNGLPROGRAMUNIFORM2DVPROC;
+    ProgramUniform2ui: PFNGLPROGRAMUNIFORM2UIPROC;
+    ProgramUniform2uiv: PFNGLPROGRAMUNIFORM2UIVPROC;
+    ProgramUniform3i: PFNGLPROGRAMUNIFORM3IPROC;
+    ProgramUniform3iv: PFNGLPROGRAMUNIFORM3IVPROC;
+    ProgramUniform3f: PFNGLPROGRAMUNIFORM3FPROC;
+    ProgramUniform3fv: PFNGLPROGRAMUNIFORM3FVPROC;
+    ProgramUniform3d: PFNGLPROGRAMUNIFORM3DPROC;
+    ProgramUniform3dv: PFNGLPROGRAMUNIFORM3DVPROC;
+    ProgramUniform3ui: PFNGLPROGRAMUNIFORM3UIPROC;
+    ProgramUniform3uiv: PFNGLPROGRAMUNIFORM3UIVPROC;
+    ProgramUniform4i: PFNGLPROGRAMUNIFORM4IPROC;
+    ProgramUniform4iv: PFNGLPROGRAMUNIFORM4IVPROC;
+    ProgramUniform4f: PFNGLPROGRAMUNIFORM4FPROC;
+    ProgramUniform4fv: PFNGLPROGRAMUNIFORM4FVPROC;
+    ProgramUniform4d: PFNGLPROGRAMUNIFORM4DPROC;
+    ProgramUniform4dv: PFNGLPROGRAMUNIFORM4DVPROC;
+    ProgramUniform4ui: PFNGLPROGRAMUNIFORM4UIPROC;
+    ProgramUniform4uiv: PFNGLPROGRAMUNIFORM4UIVPROC;
+    ProgramUniformMatrix2fv: PFNGLPROGRAMUNIFORMMATRIX2FVPROC;
+    ProgramUniformMatrix3fv: PFNGLPROGRAMUNIFORMMATRIX3FVPROC;
+    ProgramUniformMatrix4fv: PFNGLPROGRAMUNIFORMMATRIX4FVPROC;
+    ProgramUniformMatrix2dv: PFNGLPROGRAMUNIFORMMATRIX2DVPROC;
+    ProgramUniformMatrix3dv: PFNGLPROGRAMUNIFORMMATRIX3DVPROC;
+    ProgramUniformMatrix4dv: PFNGLPROGRAMUNIFORMMATRIX4DVPROC;
+    ProgramUniformMatrix2x3fv: PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC;
+    ProgramUniformMatrix3x2fv: PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC;
+    ProgramUniformMatrix2x4fv: PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC;
+    ProgramUniformMatrix4x2fv: PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC;
+    ProgramUniformMatrix3x4fv: PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC;
+    ProgramUniformMatrix4x3fv: PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC;
+    ProgramUniformMatrix2x3dv: PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC;
+    ProgramUniformMatrix3x2dv: PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC;
+    ProgramUniformMatrix2x4dv: PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC;
+    ProgramUniformMatrix4x2dv: PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC;
+    ProgramUniformMatrix3x4dv: PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC;
+    ProgramUniformMatrix4x3dv: PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC;
+    ValidateProgramPipeline: PFNGLVALIDATEPROGRAMPIPELINEPROC;
+    GetProgramPipelineInfoLog: PFNGLGETPROGRAMPIPELINEINFOLOGPROC;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Framebuffer object'}{$ENDIF}
     IsRenderbuffer: PFNGLISRENDERBUFFERPROC;
@@ -3299,6 +3360,7 @@ begin
   ARB_window_pos := CheckExtension('GL_ARB_window_pos');
   ARB_texture_compression_bptc := CheckExtension('GL_ARB_texture_compression_bptc');
   ARB_get_program_binary := CheckExtension('GL_ARB_get_program_binary');
+  ARB_separate_shader_objects := CheckExtension('GL_ARB_separate_shader_objects');
 
   // check Vendor/EXT OpenGL extensions
   _3DFX_multisample := CheckExtension('GL_3DFX_multisample');
@@ -4021,6 +4083,66 @@ begin
   UniformBlockBinding := GetAddress('UniformBlockBinding');
   GetProgramBinary := GetAddress('GetProgramBinary');
   ProgramBinary := GetAddress('ProgramBinary');
+  UseProgramStages := GetAddress('UseProgramStages');
+  ActiveShaderProgram := GetAddress('ActiveShaderProgram');
+  CreateShaderProgramv := GetAddress('CreateShaderProgramv');
+  BindProgramPipeline := GetAddress('BindProgramPipeline');
+  DeleteProgramPipelines := GetAddress('DeleteProgramPipelines');
+  GenProgramPipelines := GetAddress('GenProgramPipelines');
+  IsProgramPipeline := GetAddress('IsProgramPipeline');
+  GetProgramPipelineiv := GetAddress('GetProgramPipelineiv');
+  ProgramUniform1i := GetAddress('ProgramUniform1i');
+  ProgramUniform1iv := GetAddress('ProgramUniform1iv');
+  ProgramUniform1f := GetAddress('ProgramUniform1f');
+  ProgramUniform1fv := GetAddress('ProgramUniform1fv');
+  ProgramUniform1d := GetAddress('ProgramUniform1d');
+  ProgramUniform1dv := GetAddress('ProgramUniform1dv');
+  ProgramUniform1ui := GetAddress('ProgramUniform1ui');
+  ProgramUniform1uiv := GetAddress('ProgramUniform1uiv');
+  ProgramUniform2i := GetAddress('ProgramUniform2i');
+  ProgramUniform2iv := GetAddress('ProgramUniform2iv');
+  ProgramUniform2f := GetAddress('ProgramUniform2f');
+  ProgramUniform2fv := GetAddress('ProgramUniform2fv');
+  ProgramUniform2d := GetAddress('ProgramUniform2d');
+  ProgramUniform2dv := GetAddress('ProgramUniform2dv');
+  ProgramUniform2ui := GetAddress('ProgramUniform2ui');
+  ProgramUniform2uiv := GetAddress('ProgramUniform2uiv');
+  ProgramUniform3i := GetAddress('ProgramUniform3i');
+  ProgramUniform3iv := GetAddress('ProgramUniform3iv');
+  ProgramUniform3f := GetAddress('ProgramUniform3f');
+  ProgramUniform3fv := GetAddress('ProgramUniform3fv');
+  ProgramUniform3d := GetAddress('ProgramUniform3d');
+  ProgramUniform3dv := GetAddress('ProgramUniform3dv');
+  ProgramUniform3ui := GetAddress('ProgramUniform3ui');
+  ProgramUniform3uiv := GetAddress('ProgramUniform3uiv');
+  ProgramUniform4i := GetAddress('ProgramUniform4i');
+  ProgramUniform4iv := GetAddress('ProgramUniform4iv');
+  ProgramUniform4f := GetAddress('ProgramUniform4f');
+  ProgramUniform4fv := GetAddress('ProgramUniform4fv');
+  ProgramUniform4d := GetAddress('ProgramUniform4d');
+  ProgramUniform4dv := GetAddress('ProgramUniform4dv');
+  ProgramUniform4ui := GetAddress('ProgramUniform4ui');
+  ProgramUniform4uiv := GetAddress('ProgramUniform4uiv');
+  ProgramUniformMatrix2fv := GetAddress('ProgramUniformMatrix2fv');
+  ProgramUniformMatrix3fv := GetAddress('ProgramUniformMatrix3fv');
+  ProgramUniformMatrix4fv := GetAddress('ProgramUniformMatrix4fv');
+  ProgramUniformMatrix2dv := GetAddress('ProgramUniformMatrix2dv');
+  ProgramUniformMatrix3dv := GetAddress('ProgramUniformMatrix3dv');
+  ProgramUniformMatrix4dv := GetAddress('ProgramUniformMatrix4dv');
+  ProgramUniformMatrix2x3fv := GetAddress('ProgramUniformMatrix2x3fv');
+  ProgramUniformMatrix3x2fv := GetAddress('ProgramUniformMatrix3x2fv');
+  ProgramUniformMatrix2x4fv := GetAddress('ProgramUniformMatrix2x4fv');
+  ProgramUniformMatrix4x2fv := GetAddress('ProgramUniformMatrix4x2fv');
+  ProgramUniformMatrix3x4fv := GetAddress('ProgramUniformMatrix3x4fv');
+  ProgramUniformMatrix4x3fv := GetAddress('ProgramUniformMatrix4x3fv');
+  ProgramUniformMatrix2x3dv := GetAddress('ProgramUniformMatrix2x3dv');
+  ProgramUniformMatrix3x2dv := GetAddress('ProgramUniformMatrix3x2dv');
+  ProgramUniformMatrix2x4dv := GetAddress('ProgramUniformMatrix2x4dv');
+  ProgramUniformMatrix4x2dv := GetAddress('ProgramUniformMatrix4x2dv');
+  ProgramUniformMatrix3x4dv := GetAddress('ProgramUniformMatrix3x4dv');
+  ProgramUniformMatrix4x3dv := GetAddress('ProgramUniformMatrix4x3dv');
+  ValidateProgramPipeline := GetAddress('ValidateProgramPipeline');
+  GetProgramPipelineInfoLog := GetAddress('GetProgramPipelineInfoLog');
 
   BlendEquationSeparate := GetAddress('BlendEquationSeparate');
   DrawBuffers := GetAddress('DrawBuffers');
@@ -4291,6 +4413,7 @@ begin
   ARB_window_pos := False;
   ARB_texture_compression_bptc := False;
   ARB_get_program_binary := False;
+  ARB_separate_shader_objects := False;
 
   // check Vendor/EXT OpenGL extensions
   _3DFX_multisample := False;
@@ -5004,6 +5127,66 @@ begin
   UniformBlockBinding := GetCapAddress();
   GetProgramBinary := GetCapAddress();
   ProgramBinary := GetCapAddress();
+  UseProgramStages := GetCapAddress();
+  ActiveShaderProgram := GetCapAddress();
+  CreateShaderProgramv := GetCapAddress();
+  BindProgramPipeline := GetCapAddress();
+  DeleteProgramPipelines := GetCapAddress();
+  GenProgramPipelines := GetCapAddress();
+  IsProgramPipeline := GetCapAddress();
+  GetProgramPipelineiv := GetCapAddress();
+  ProgramUniform1i := GetCapAddress();
+  ProgramUniform1iv := GetCapAddress();
+  ProgramUniform1f := GetCapAddress();
+  ProgramUniform1fv := GetCapAddress();
+  ProgramUniform1d := GetCapAddress();
+  ProgramUniform1dv := GetCapAddress();
+  ProgramUniform1ui := GetCapAddress();
+  ProgramUniform1uiv := GetCapAddress();
+  ProgramUniform2i := GetCapAddress();
+  ProgramUniform2iv := GetCapAddress();
+  ProgramUniform2f := GetCapAddress();
+  ProgramUniform2fv := GetCapAddress();
+  ProgramUniform2d := GetCapAddress();
+  ProgramUniform2dv := GetCapAddress();
+  ProgramUniform2ui := GetCapAddress();
+  ProgramUniform2uiv := GetCapAddress();
+  ProgramUniform3i := GetCapAddress();
+  ProgramUniform3iv := GetCapAddress();
+  ProgramUniform3f := GetCapAddress();
+  ProgramUniform3fv := GetCapAddress();
+  ProgramUniform3d := GetCapAddress();
+  ProgramUniform3dv := GetCapAddress();
+  ProgramUniform3ui := GetCapAddress();
+  ProgramUniform3uiv := GetCapAddress();
+  ProgramUniform4i := GetCapAddress();
+  ProgramUniform4iv := GetCapAddress();
+  ProgramUniform4f := GetCapAddress();
+  ProgramUniform4fv := GetCapAddress();
+  ProgramUniform4d := GetCapAddress();
+  ProgramUniform4dv := GetCapAddress();
+  ProgramUniform4ui := GetCapAddress();
+  ProgramUniform4uiv := GetCapAddress();
+  ProgramUniformMatrix2fv := GetCapAddress();
+  ProgramUniformMatrix3fv := GetCapAddress();
+  ProgramUniformMatrix4fv := GetCapAddress();
+  ProgramUniformMatrix2dv := GetCapAddress();
+  ProgramUniformMatrix3dv := GetCapAddress();
+  ProgramUniformMatrix4dv := GetCapAddress();
+  ProgramUniformMatrix2x3fv := GetCapAddress();
+  ProgramUniformMatrix3x2fv := GetCapAddress();
+  ProgramUniformMatrix2x4fv := GetCapAddress();
+  ProgramUniformMatrix4x2fv := GetCapAddress();
+  ProgramUniformMatrix3x4fv := GetCapAddress();
+  ProgramUniformMatrix4x3fv := GetCapAddress();
+  ProgramUniformMatrix2x3dv := GetCapAddress();
+  ProgramUniformMatrix3x2dv := GetCapAddress();
+  ProgramUniformMatrix2x4dv := GetCapAddress();
+  ProgramUniformMatrix4x2dv := GetCapAddress();
+  ProgramUniformMatrix3x4dv := GetCapAddress();
+  ProgramUniformMatrix4x3dv := GetCapAddress();
+  ValidateProgramPipeline := GetCapAddress();
+  GetProgramPipelineInfoLog := GetCapAddress();
 
   DrawBuffers := GetCapAddress();
 
