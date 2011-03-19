@@ -133,7 +133,7 @@ type
     EXT_texture_mirror_clamp, EXT_texture_object, EXT_texture_rectangle,
     EXT_texture_sRGB, EXT_texture_shared_exponent, EXT_timer_query,
     EXT_transform_feedback, EXT_vertex_array, EXT_texture_sRGB_decode,
-    EXT_direct_state_access, HP_occlusion_test,
+    EXT_direct_state_access, EXT_texture_swizzle, HP_occlusion_test,
     IBM_rasterpos_clip, KTX_buffer_region, MESA_resize_buffers, NV_blend_square,
     NV_conditional_render, NV_copy_image, NV_depth_buffer_float, NV_fence,
     NV_float_buffer, NV_fog_distance, NV_geometry_program4, NV_light_max_exponent,
@@ -3597,6 +3597,7 @@ begin
   EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
   EXT_texture_sRGB_decode := CheckExtension('GL_EXT_texture_sRGB_decode');
   EXT_direct_state_access := CheckExtension('EXT_direct_state_access');
+  EXT_texture_swizzle := CheckExtension('EXT_texture_swizzle');
 
   HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
 
@@ -4809,6 +4810,7 @@ begin
   EXT_vertex_array := False;
   EXT_texture_sRGB_decode := False;
   EXT_direct_state_access := False;
+  EXT_texture_swizzle := False;
 
   HP_occlusion_test := False;
 
