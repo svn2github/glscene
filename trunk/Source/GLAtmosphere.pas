@@ -6,7 +6,8 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
+      <li>19/03/11 - Yar - Added setters for Low and High atmosphere colors
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -109,6 +110,10 @@ type
     function StoreOpacity: Boolean;
     function StorePlanetRadius: Boolean;
     procedure SetSlices(const Value: Integer);
+    procedure SetLowAtmColor(const AValue: TGLColor);
+    procedure SetHighAtmColor(const AValue: TGLColor);
+    function StoreLowAtmColor: Boolean;
+    function StoreHighAtmColor: Boolean;
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -122,8 +127,8 @@ type
     property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
 
     //: Use value slightly lower than actual radius, for antialiasing effect.
-    property LowAtmColor: TGLColor read FLowAtmColor;
-    property HighAtmColor: TGLColor read FHighAtmColor;
+    property LowAtmColor: TGLColor read FLowAtmColor write SetLowAtmColor stored StoreLowAtmColor;
+    property HighAtmColor: TGLColor read FHighAtmColor write SetHighAtmColor stored StoreHighAtmColor;
     property BlendingMode: TGLAtmosphereBlendingMode read FBlendingMode
                                write FBlendingMode default abmOneMinusSrcAlpha;
 
@@ -484,6 +489,26 @@ begin
   end
   else
     raise EGLAtmosphereException.Create('Slices must be more than0!');
+end;
+
+procedure TGLCustomAtmosphere.SetHighAtmColor(const AValue: TGLColor);
+begin
+  FHighAtmColor.Assign(AValue);
+end;
+
+procedure TGLCustomAtmosphere.SetLowAtmColor(const AValue: TGLColor);
+begin
+  FLowAtmColor.Assign(AValue);
+end;
+
+function TGLCustomAtmosphere.StoreHighAtmColor: Boolean;
+begin
+  Result := not VectorEquals(FHighAtmColor.Color, VectorMake(0, 0, 1, 1));
+end;
+
+function TGLCustomAtmosphere.StoreLowAtmColor: Boolean;
+begin
+  Result := not VectorEquals(FLowAtmColor.Color, VectorMake(1, 1, 1, 1));
 end;
 
 initialization
