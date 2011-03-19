@@ -761,14 +761,14 @@ begin
       begin
         GL.End_;
         lastPointSize10 := pointSize10;
-        GL.PointSize(pointSize10 * 0.1);
+        rci.GLStates.PointSize := pointSize10 * 0.1;
         GL.Begin_(GL_POINTS);
       end
       else if lastPointSize10 <> 15 then
       begin
         GL.End_;
         lastPointSize10 := 15;
-        GL.PointSize(1.5);
+        rci.GLStates.PointSize := 1.5;
         GL.Begin_(GL_POINTS);
       end;
     end;
@@ -790,7 +790,6 @@ begin
   end;
   GL.End_;
 
-  rci.GLStates.PointSize := 1;
   // restore default GLScene AlphaFunc
   rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
 end;
@@ -992,13 +991,13 @@ var
   f: Single;
 begin
   // setup states
-  GL.PushMatrix;
   with rci.GLStates do
   begin
     Disable(stLighting);
     Disable(stDepthTest);
     Disable(stFog);
     Disable(stCullFace);
+    Disable(stBlend);
     DepthWriteMask := False;
     PolygonMode := pmFill;
   end;
@@ -1008,9 +1007,6 @@ begin
 
   Bands.BuildList(rci);
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
-
-  // restore
-  GL.PopMatrix;
 end;
 
 // ------------------
@@ -1195,13 +1191,13 @@ var
   f: Single;
 begin
   // setup states
-  GL.PushMatrix;
   with rci.GLStates do
   begin
     Disable(stLighting);
     Disable(stDepthTest);
     Disable(stFog);
     Disable(stCullFace);
+    Disable(stBlend);
     Disable(stAlphaTest);
     DepthWriteMask := False;
     PolygonMode := pmFill;
@@ -1216,7 +1212,6 @@ begin
 
   // restore
   rci.GLStates.DepthWriteMask := True;
-  GL.PopMatrix;
 end;
 
 // OnColorChanged
