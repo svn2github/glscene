@@ -99,8 +99,10 @@ implementation
 {$WARN UNIT_PLATFORM OFF}
 {$ENDIF}
 
-uses FileCtrl,
-  Jpeg,
+uses
+  FileCtrl,
+  GLUtils,
+  JPEG,
   OpenGLTokens,
   VectorGeometry,
   GLContext,
