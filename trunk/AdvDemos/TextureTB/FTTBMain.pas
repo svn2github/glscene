@@ -13,7 +13,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLHUDObjects, GLScene, ExtCtrls,
-  GLWin32Viewer, ComCtrls, ActnList, Menus, ImgList, JPeg, TGA, ToolWin,
+  GLWin32Viewer, ComCtrls, ActnList, Menus, ImgList, JPEG, TGA, ToolWin,
   ExtDlgs, StdCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
