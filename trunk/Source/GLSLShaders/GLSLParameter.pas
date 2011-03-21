@@ -1,0 +1,228 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLSLTokens<p>
+
+	<b>History : </b><font size=-1><ul>
+    <li>14/03/11 - Yar - Creation
+  </ul>
+}
+unit GLSLParameter;
+
+interface
+
+{$i GLScene.inc}
+
+uses
+  OpenGLTokens, VectorTypes;
+
+type
+
+  TGLSLDataType = (
+    GLSLTypeUndefined,
+    GLSLType1F,
+    GLSLType2F,
+    GLSLType3F,
+    GLSLType4F,
+    GLSLType1I,
+    GLSLType2I,
+    GLSLType3I,
+    GLSLType4I,
+    GLSLType1UI,
+    GLSLType2UI,
+    GLSLType3UI,
+    GLSLType4UI,
+    GLSLTypeMat2F,
+    GLSLTypeMat3F,
+    GLSLTypeMat4F);
+
+  TGLSLSamplerType = (
+    GLSLSamplerUndefined,
+    GLSLSampler1D,
+    GLSLSampler2D,
+    GLSLSampler3D,
+    GLSLSamplerCube,
+    GLSLSampler1DShadow,
+    GLSLSampler2DShadow,
+    GLSLSampler1DArray,
+    GLSLSampler2DArray,
+    GLSLSampler1DArrayShadow,
+    GLSLSampler2DArrayShadow,
+    GLSLSamplerCubeShadow,
+    GLSLIntSampler1D,
+    GLSLIntSampler2D,
+    GLSLIntSampler3D,
+    GLSLIntSamplerCube,
+    GLSLIntSampler1DArray,
+    GLSLIntSampler2DArray,
+    GLSLUIntSampler1D,
+    GLSLUIntSampler2D,
+    GLSLUIntSampler3D,
+    GLSLUIntSamplerCube,
+    GLSLUIntSampler1DArray,
+    GLSLUIntSampler2DArray,
+    GLSLSamplerRect,
+    GLSLSamplerRectShadow,
+    GLSLSamplerBuffer,
+    GLSLIntSamplerRect,
+    GLSLIntSamplerBuffer,
+    GLSLUIntSamplerRect,
+    GLSLUIntSamplerBuffer,
+    GLSLSamplerMS,
+    GLSLIntSamplerMS,
+    GLSLUIntSamplerMS,
+    GLSLSamplerMSArray,
+    GLSLIntSamplerMSArray,
+    GLSLUIntSamplerMSArray
+    );
+
+  TGLgsInTypes = (
+    gsInPoints,
+    gsInLines,
+    gsInAdjLines,
+    gsInTriangles,
+    gsInAdjTriangles
+  );
+
+  TGLgsOutTypes = (
+    gsOutPoints,
+    gsOutLineStrip,
+    sOutTriangleStrip
+  );
+
+  IShaderParameter = interface(IInterface)
+    function GetFloat: Single;
+    function GetVec2: TVector2f;
+    function GetVec3: TVector3f;
+    function GetVec4: TVector4f;
+
+    function GetInt: TGLint;
+    function GetIVec2: TVector2i;
+    function GetIVec3: TVector3i;
+    function GetIVec4: TVector4i;
+
+    function GetUInt: TGLuint;
+    function GetUVec2: TVector2ui;
+    function GetUVec3: TVector3ui;
+    function GetUVec4: TVector4ui;
+
+    procedure SetFloat(const Value: TGLFloat);
+    procedure SetVec2(const Value: TVector2f);
+    procedure SetVec3(const Value: TVector3f);
+    procedure SetVec4(const Value: TVector4f);
+
+    procedure SetInt(const Value: Integer);
+    procedure SetIVec2(const Value: TVector2i);
+    procedure SetIVec3(const Value: TVector3i);
+    procedure SetIVec4(const Value: TVector4i);
+
+    procedure SetUInt(const Value: GLuint);
+    procedure SetUVec2(const Value: TVector2ui);
+    procedure SetUVec3(const Value: TVector3ui);
+    procedure SetUVec4(const Value: TVector4ui);
+
+    function GetMat2: TMatrix2f;
+    function GetMat3: TMatrix3f;
+    function GetMat4: TMatrix4f;
+    procedure SetMat2(const Value: TMatrix2f);
+    procedure SetMat3(const Value: TMatrix3f);
+    procedure SetMat4(const Value: TMatrix4f);
+
+    procedure SetFloatArray(const Values: PGLFloat; Count: Integer);
+    procedure SetIntArray(const Values: PGLInt; Count: Integer);
+    procedure SetUIntArray(const Values: PGLUInt; Count: Integer);
+
+    {: Scalar types.<p>}
+    property float: TGLFloat read GetFloat write SetFloat;
+    property int: TGLint read GetInt write SetInt;
+    property uint: TGLUint read GetUInt write SetUInt;
+
+    {: Float vector types.<p>}
+    property vec2: TVector2f read GetVec2 write SetVec2;
+    property vec3: TVector3f read GetVec3 write SetVec3;
+    property vec4: TVector4f read GetVec4 write SetVec4;
+
+    {: Integer vector  types.<p>}
+    property ivec2: TVector2i read GetIVec2 write SetIVec2;
+    property ivec3: TVector3i read GetIVec3 write SetIVec3;
+    property ivec4: TVector4i read GetIVec4 write SetIVec4;
+
+    {: Unsigned integer vector  types.<p>}
+    property uvec2: TVector2ui read GetUVec2 write SetUVec2;
+    property uvec3: TVector3ui read GetUVec3 write SetUVec3;
+    property uvec4: TVector4ui read GetUVec4 write SetUVec4;
+
+    {: Matrix Types.<p>}
+    property mat2: TMatrix2f read GetMat2 write SetMat2;
+    property mat3: TMatrix3f read GetMat3 write SetMat3;
+    property mat4: TMatrix4f read GetMat4 write SetMat4;
+  end;
+
+const
+  cGLSLTypeString: array[TGLSLDataType] of AnsiString = (
+    'undefined',
+    'float',
+    'vec2',
+    'vec3',
+    'vec4',
+    'int',
+    'ivec2',
+    'ivec3',
+    'ivec4',
+    'uint',
+    'uivec2',
+    'uivec3',
+    'uivec4',
+    'mat2',
+    'mat3',
+    'mat4');
+
+  cGLSLSamplerString: array[TGLSLSamplerType] of AnsiString = (
+    'undefined',
+    'sampler1D',
+    'sampler2D',
+    'sampler3D',
+    'samplerCube',
+    'sampler1DShadow',
+    'sampler2DShadow',
+    'sampler1DArray',
+    'sampler2DArray',
+    'sampler1DArrayShadow',
+    'sampler2DArrayShadow',
+    'samplerCubeShadow',
+    'isampler1D',
+    'isampler2D',
+    'isampler3D',
+    'isamplerCube',
+    'isampler1DArray',
+    'isampler2DArray',
+    'usampler1D',
+    'usampler2D',
+    'usampler3D',
+    'usamplerCube',
+    'usampler1DArray',
+    'usampler2DArray',
+    'samplerRect',
+    'samplerRectShadow',
+    'samplerBuffer',
+    'isamplerRect',
+    'isamplerBuffer',
+    'usamplerRect',
+    'usamplerBuffer',
+    'samplerMS',
+    'isamplerMS',
+    'usamplerMS',
+    'samplerMSArray',
+    'isamplerMSArray',
+    'usamplerMSArray');
+
+const
+  cGLgsInTypes : array[TGLgsInTypes] of GLenum =
+    (GL_POINTS, GL_LINES, GL_LINES_ADJACENCY_EXT, GL_TRIANGLES,
+     GL_TRIANGLES_ADJACENCY_EXT);
+  cGLgsOutTypes: array[TGLgsOutTypes] of GLenum =
+    (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
+
+implementation
+
+end.
