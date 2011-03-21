@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
       <li>04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
                              TAssertErrorProc, GetValueFromStringsIndex and some types
       <li>31/10/10 - Yar - Added GLSTime
@@ -338,7 +339,10 @@ procedure Sleep(length: Cardinal);
   ('\' or '/') at the end.  This function is MBCS enabled. }
 function IncludeTrailingPathDelimiter(const S: string): string;
 {$ENDIF}
-
+{: Replace path delimiter to delimiter of the current platform. }
+procedure FixPathDelimiter(var S: string);
+{: Remove if possible part of path witch leads to project executable. }
+function RelativePath(const S: string): string;
 {: Returns the current value of the highest-resolution counter.<p>
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
@@ -435,6 +439,7 @@ uses
 var
   vInvPerformanceCounterFrequency: Double;
   vInvPerformanceCounterFrequencyReady: Boolean = False;
+  vLastProjectTargetName: string;
 
 function IsSubComponent(const AComponent: TComponent): Boolean;
 begin
@@ -781,6 +786,52 @@ begin
 end;
 {$ENDIF} // GLS_DELPHI_5_DOWN
 
+procedure FixPathDelimiter(var S: string);
+var
+  I: Integer;
+begin
+  for I := Length(S) downto 1 do
+    if (S[I] = '/') or (S[I] = '\') then
+      S[I] := PathDelim;
+end;
+
+function RelativePath(const S: string): string;
+var
+{$IFNDEF FPC}
+  path: string;
+{$ELSE}
+  path: UTF8String;
+{$ENDIF}
+begin
+  Result := S;
+  if IsDesignTime then
+  begin
+    if Assigned(vProjectTargetName) then
+    begin
+      path :=  vProjectTargetName;
+      if Length(path) = 0 then
+        path := vLastProjectTargetName
+      else
+        vLastProjectTargetName := path;
+      path := IncludeTrailingPathDelimiter(ExtractFilePath(path));
+    end
+    else
+      exit;
+  end
+  else
+  begin
+{$IFNDEF FPC}
+    path := ExtractFilePath(ParamStr(0));
+    path := IncludeTrailingPathDelimiter(path);
+{$ELSE}
+    path := ExtractFilePath(ParamStrUTF8(0));
+    path := IncludeTrailingPathDelimiter(path);
+{$ENDIF}
+  end;
+  if Pos(path, S) = 1 then
+    Delete(Result, 1, Length(path));
+end;
+
 // QueryPerformanceCounter
 //
 {$IFDEF UNIX}
@@ -1002,9 +1053,6 @@ begin
   Result := (C < #$0100) and (AnsiChar(C) in CharSet);
 end;
 {$ENDIF}
-
-var
-  vLastProjectTargetName: string;
 
 procedure SetExeDirectory;
 var
