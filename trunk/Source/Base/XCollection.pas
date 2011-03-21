@@ -59,6 +59,7 @@ type
 
   protected
     { Protected Declarations }
+    function GetName: string; virtual;
     procedure SetName(const val: string); virtual;
     function GetOwner: TPersistent; override;
 
@@ -387,7 +388,15 @@ begin
   // does nothing by default
 end;
 
+// GetName
+
+function TXCollectionItem.GetName: string;
+begin
+  Result := FName;
+end;
+
 // GetNamePath
+
 
 function TXCollectionItem.GetNamePath: string;
 begin
