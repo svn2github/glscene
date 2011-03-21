@@ -132,7 +132,7 @@ implementation
 {$R *.dfm}
 
 uses
-  VectorGeometry, VectorTypes, GLSCUDAGenerics;
+  VectorGeometry, VectorTypes, GLSCUDADataAccess;
 
 var
   InitPosition : Boolean = False;
