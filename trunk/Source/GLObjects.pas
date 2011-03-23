@@ -1306,6 +1306,7 @@ begin
     FYScope := TGLPlane(Source).FYScope;
     FYTiles := TGLPlane(Source).FYTiles;
     FStyle := TGLPlane(Source).FStyle;
+    StructureChanged;
   end;
   inherited Assign(Source);
 end;
