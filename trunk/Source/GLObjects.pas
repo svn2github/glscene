@@ -13,6 +13,8 @@
   objects can be found GLGeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
+                       Replaced plane primitives to triangles, added tangent and binormal attributes
   <li>29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>29/06/10 - Yar - Added loColorLogicXor to TGLLines.Options
@@ -142,8 +144,10 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   VectorGeometry,
+  VectorTypes,
   GLScene,
   OpenGLAdapter,
   OpenGLTokens,
@@ -164,6 +168,15 @@ type
   //
   TGLVisibilityDeterminationEvent = function(Sender: TObject;
     var rci: TRenderContextInfo): Boolean of object;
+
+  PVertexRec = ^TVertexRec;
+  TVertexRec = record
+    Position: TVector3f;
+    Normal: TVector3f;
+    Binormal: TVector3f;
+    Tangent: TVector3f;
+    TexCoord: TVector2f;
+  end;
 
   // TGLDummyCube
   //
@@ -259,7 +272,7 @@ type
     FWidth, FHeight: TGLFloat;
     FXTiles, FYTiles: Cardinal;
     FStyle: TPlaneStyles;
-
+    FMesh: array of array of TVertexRec;
   protected
     { Protected Declarations }
     procedure SetHeight(const aValue: Single);
@@ -910,6 +923,10 @@ procedure DodecahedronBuildList;
 { : Issues OpenGL for a unit-size icosahedron. }
 procedure IcosahedronBuildList;
 
+var
+  TangentAttributeName: AnsiString = 'Tangent';
+  BinormalAttributeName: AnsiString = 'Binormal';
+
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 // -------------------------------------------------------------
@@ -922,8 +939,7 @@ implementation
 uses
   Spline,
   XOpenGL,
-  GLState
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLState;
 
 const
   cDefaultPointSize: Single = 1.0;
@@ -1016,9 +1032,19 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-    GL.Begin_(GL_TRIANGLE_FAN);
-    for j := 0 to 4 do
+//    GL.Begin_(GL_TRIANGLE_FAN);
+//    for j := 0 to 4 do
+//      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+//    GL.End_;
+
+    GL.Begin_(GL_TRIANGLES);
+
+    for j := 1 to 3 do
+    begin
+      GL.Vertex3fv(@vertices[faceIndices^[0]]);
       GL.Vertex3fv(@vertices[faceIndices^[j]]);
+      GL.Vertex3fv(@vertices[faceIndices^[j+1]]);
+    end;
     GL.End_;
   end;
 end;
@@ -1273,6 +1299,13 @@ begin
   begin
     FWidth := TGLPlane(Source).FWidth;
     FHeight := TGLPlane(Source).FHeight;
+    FXOffset := TGLPlane(Source).FXOffset;
+    FXScope := TGLPlane(Source).FXScope;
+    FXTiles := TGLPlane(Source).FXTiles;
+    FYOffset := TGLPlane(Source).FYOffset;
+    FYScope := TGLPlane(Source).FYScope;
+    FYTiles := TGLPlane(Source).FYTiles;
+    FStyle := TGLPlane(Source).FStyle;
   end;
   inherited Assign(Source);
 end;
@@ -1387,15 +1420,37 @@ end;
 //
 
 procedure TGLPlane.BuildList(var rci: TRenderContextInfo);
+
+  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  begin
+    XGL.TexCoord2fv(@ptr^.TexCoord);
+    GL.Vertex3fv(@ptr^.Position);
+  end;
+
 var
-  hw, hh, posXFact, posYFact, pX, pY0, pY1: TGLFloat;
+  hw, hh, posXFact, posYFact, pX, pY1: TGLFloat;
   tx0, tx1, ty0, ty1, texSFact, texTFact: TGLFloat;
-  texS, texT0, texT1: TGLFloat;
+  texS, texT1: TGLFloat;
   X, Y: Integer;
+  TanLoc, BinLoc: Integer;
+  pVertex: PVertexRec;
 begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
-  GL.Normal3fv(@ZVector);
+
+  with GL do
+  begin
+    Normal3fv(@ZVector);
+    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    begin
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      if TanLoc > -1 then
+        VertexAttrib3fv(TanLoc, @XVector);
+      if BinLoc > -1 then
+        VertexAttrib3fv(BinLoc, @YVector);
+    end;
+  end;
   // determine tex coords extents
   if psTileTexture in FStyle then
   begin
@@ -1415,16 +1470,21 @@ begin
   if psSingleQuad in FStyle then
   begin
     // single quad plane
-    GL.Begin_(GL_QUADS);
+    GL.Begin_(GL_TRIANGLES);
     xgl.TexCoord2f(tx1, ty1);
     GL.Vertex2f(hw, hh);
     xgl.TexCoord2f(tx0, ty1);
     GL.Vertex2f(-hw, hh);
     xgl.TexCoord2f(tx0, ty0);
     GL.Vertex2f(-hw, -hh);
+
+    GL.Vertex2f(-hw, -hh);
     xgl.TexCoord2f(tx1, ty0);
     GL.Vertex2f(hw, -hh);
+    xgl.TexCoord2f(tx1, ty1);
+    GL.Vertex2f(hw, hh);
     GL.End_;
+    exit;
   end
   else
   begin
@@ -1433,28 +1493,52 @@ begin
     texTFact := (ty1 - ty0) / FYTiles;
     posXFact := FWidth / FXTiles;
     posYFact := FHeight / FYTiles;
-    texT0 := 0;
-    pY0 := -hh;
-    for Y := 0 to FYTiles - 1 do
+    if FMesh = nil then
     begin
-      texT1 := (Y + 1) * texTFact;
-      pY1 := (Y + 1) * posYFact - hh;
-      GL.Begin_(GL_TRIANGLE_STRIP);
-      for X := 0 to FXTiles do
+      SetLength(FMesh, FYTiles+1, FXTiles+1);
+      for Y := 0 to FYTiles do
       begin
-        texS := tx0 + X * texSFact;
-        pX := X * posXFact - hw;
-        xgl.TexCoord2f(texS, texT1);
-        GL.Vertex2f(pX, pY1);
-        xgl.TexCoord2f(texS, texT0);
-        GL.Vertex2f(pX, pY0);
+        texT1 := Y * texTFact;
+        pY1 := Y * posYFact - hh;
+        for X := 0 to FXTiles do
+        begin
+          texS := X * texSFact;
+          pX := X * posXFact - hw;
+          FMesh[Y][X].Position := Vector3fMake(pX, pY1, 0.0);
+          FMesh[Y][X].TexCoord := Vector2fMake(texS, texT1);
+        end;
       end;
-      GL.End_;
-      texT0 := texT1;
-      pY0 := pY1;
     end;
   end;
 
+  with GL do
+  begin
+    Begin_(GL_TRIANGLES);
+    for Y := 0 to FYTiles-1 do
+    begin
+      for X := 0 to FXTiles-1 do
+      begin
+        pVertex := @FMesh[Y][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y][X+1];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X+1];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y][X+1];
+        EmitVertex(pVertex);
+      end;
+    end;
+    End_;
+  end;
 end;
 
 // SetWidth
@@ -1465,6 +1549,7 @@ begin
   if aValue <> FWidth then
   begin
     FWidth := aValue;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1514,6 +1599,7 @@ begin
   if aValue <> FHeight then
   begin
     FHeight := aValue;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1526,6 +1612,7 @@ begin
   if Value <> FXOffset then
   begin
     FXOffset := Value;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1540,6 +1627,7 @@ begin
     FXScope := Value;
     if FXScope > 1 then
       FXScope := 1;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1560,6 +1648,7 @@ begin
   if Value <> FXTiles then
   begin
     FXTiles := Value;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1572,6 +1661,7 @@ begin
   if Value <> FYOffset then
   begin
     FYOffset := Value;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1586,6 +1676,7 @@ begin
     FYScope := Value;
     if FYScope > 1 then
       FYScope := 1;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1606,6 +1697,7 @@ begin
   if Value <> FYTiles then
   begin
     FYTiles := Value;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
