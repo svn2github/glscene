@@ -150,9 +150,9 @@ type
     fHeight: Integer;
     fDepth: Integer;
     fMipLevels: Integer;
-    fColorFormat: GLenum;
+    fColorFormat: TGLEnum;
     fInternalFormat: TGLInternalFormat;
-    fDataType: GLenum;
+    fDataType: TGLEnum;
     fElementSize: Integer;
     fLevels: TList;
     fCubeMap: Boolean;
@@ -210,6 +210,16 @@ type
     property Data: PGLPixel32Array read GetData;
     {: Set image of error. }
     procedure SetErrorImage;
+
+    property Width: Integer read fWidth;
+    property Height: Integer read fHeight;
+    property Depth: Integer read fDepth;
+    property InternalFormat: TGLInternalFormat read FInternalFormat;
+    property ColorFormat: TGLenum read fColorFormat;
+    property DataType: GLenum read fDataType;
+    property ElementSize: Integer read fElementSize;
+    property CubeMap: Boolean read fCubeMap;
+    property TextureArray: Boolean read fTextureArray;
   end;
 
   TGLBaseImageClass = class of TGLBaseImage;
