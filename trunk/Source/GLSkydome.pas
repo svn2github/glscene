@@ -6,6 +6,8 @@
    Skydome object<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>24/03/11 - Yar - Added esoDepthTest to TEarthSkydomeOption
+                           (Drawing sky dome latest with depth test reduce pixels overdraw) 
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -236,7 +238,7 @@ type
     property Options: TSkyDomeOptions read FOptions write SetOptions default [];
   end;
 
-  TEarthSkydomeOption = (esoFadeStarsWithSun, esoRotateOnTwelveHours);
+  TEarthSkydomeOption = (esoFadeStarsWithSun, esoRotateOnTwelveHours, esoDepthTest);
   TEarthSkydomeOptions = set of TEarthSkydomeOption;
 
   // TGLEarthSkyDome
@@ -1194,7 +1196,13 @@ begin
   with rci.GLStates do
   begin
     Disable(stLighting);
-    Disable(stDepthTest);
+    if esoDepthTest in FExtendedOptions then
+    begin
+      Enable(stDepthTest);
+      DepthFunc := cfLEqual;
+    end
+    else
+      Disable(stDepthTest);
     Disable(stFog);
     Disable(stCullFace);
     Disable(stBlend);
