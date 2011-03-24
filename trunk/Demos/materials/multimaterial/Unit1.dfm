@@ -18,12 +18,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 374
-    Height = 270
+    Width = 366
+    Height = 266
     Camera = GLCamera1
+    FieldOfView = 138.793518066406300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
@@ -63,6 +65,8 @@ object Form1: TForm1
   end
   object GLMultiMaterialShader1: TGLMultiMaterialShader
     MaterialLibrary = GLMaterialLibrary2
+    VisibleAtDesignTime = False
+    ShaderStyle = ssReplace
     Left = 8
     Top = 40
   end
@@ -75,6 +79,7 @@ object Form1: TForm1
   object GLTexCombineShader1: TGLTexCombineShader
     Combiners.Strings = (
       'Tex0:=PrimaryColor dot3 Tex0;')
+    DesignTimeEnabled = False
     Left = 40
     Top = 72
   end

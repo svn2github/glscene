@@ -14,7 +14,6 @@ object frmOctreeDemo: TfrmOctreeDemo
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnMouseWheel = FormMouseWheel
   DesignSize = (
     762
     542)
@@ -55,7 +54,6 @@ object frmOctreeDemo: TfrmOctreeDemo
     Buffer.FaceCulling = False
     FieldOfView = 145.893371582031300000
     Anchors = [akLeft, akTop, akRight, akBottom]
-    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object TrackBar_LeafThreshold: TTrackBar
@@ -80,7 +78,7 @@ object frmOctreeDemo: TfrmOctreeDemo
     OnClick = Button_ResetOctreeSizeClick
   end
   object GLScene1: TGLScene
-    Left = 96
+    Left = 16
     Top = 64
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -92,11 +90,15 @@ object frmOctreeDemo: TfrmOctreeDemo
     end
     object GLCube1: TGLCube
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCCCC3E}
+      Material.DepthProperties.DepthTest = False
+      Material.DepthProperties.DepthWrite = False
       Material.BlendingMode = bmTransparency
       CubeSize = {0000A0400000A04000000041}
     end
     object GLSphere1: TGLSphere
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
+      Material.DepthProperties.DepthTest = False
+      Material.DepthProperties.DepthWrite = False
       Material.BlendingMode = bmTransparency
       Position.Coordinates = {0000C0400000C0400000C0400000803F}
       Radius = 2.500000000000000000
@@ -129,7 +131,28 @@ object frmOctreeDemo: TfrmOctreeDemo
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 96
-    Top = 112
+    Left = 16
+    Top = 120
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    ZoomSpeed = 1.250000000000000000
+    FormCaption = 'Octree Demo - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 16
+    Top = 176
   end
 end

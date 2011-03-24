@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 200
-  Top = 104
+  Left = 413
+  Top = 314
   Width = 532
   Height = 381
   Caption = 'Form1'
@@ -18,17 +18,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 316
-    Height = 352
+    Width = 308
+    Height = 343
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
+    FieldOfView = 179.255905151367200000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 316
+    Left = 308
     Top = 0
     Width = 208
-    Height = 352
+    Height = 343
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -176,19 +178,17 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 16
     Top = 16
     object HUDSprite1: TGLHUDSprite
       Material.Texture.MinFilter = miLinear
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
-      Width = 256
-      Height = 256
-      NoZWrite = False
+      Width = 256.000000000000000000
+      Height = 256.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 1
+      DepthOfView = 100.000000000000000000
+      FocalLength = 1.000000000000000000
       CameraStyle = csOrthogonal
       Position.Coordinates = {0000000000000000000070410000803F}
       Left = 256

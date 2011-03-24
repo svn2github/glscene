@@ -59,13 +59,13 @@ begin
   with  MainMaterialLibrary.TextureByName('MultisampledColor') do
   begin
     ImageClassName := 'TGLMultisampleImage';
-    TGLMultiSampleImage(Image).SamplesCount := 4;
+    TGLMultiSampleImage(Image).SamplesCount := 16;
   end;
 
   with  MainMaterialLibrary.TextureByName('Depth') do
   begin
     ImageClassName := 'TGLMultisampleImage';
-    TGLMultiSampleImage(Image).SamplesCount := 4;
+    TGLMultiSampleImage(Image).SamplesCount := 16;
   end;
 
   GLSLShader1.Enabled := True;

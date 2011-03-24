@@ -7,7 +7,7 @@ uses
   Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, GLCadencer, SpatialPartitioning,
   ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
-  GLState;
+  GLState, GLSimpleNavigation;
 
 const
   cBOX_SIZE = 14.2;
@@ -29,8 +29,7 @@ type
     Label2: TLabel;
     Button_ResetOctreeSize: TButton;
     GLPlane1: TGLPlane;
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -70,18 +69,6 @@ implementation
 
 uses
   OpenGLTokens, GLContext;
-
-var
-  mx, my : integer;
-procedure TfrmOctreeDemo.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  if ssLeft in Shift then
-    GLCamera1.MoveAroundTarget(my-y, mx-x);
-
-  mx := x;
-  my := y;
-end;
 
 procedure TfrmOctreeDemo.FormCreate(Sender: TObject);
 var

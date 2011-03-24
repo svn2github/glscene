@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 212
-  Top = 56
+  Left = 339
+  Top = 205
   Width = 565
   Height = 425
   Caption = 'Form1'
@@ -17,18 +17,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 349
-    Height = 391
+    Width = 341
+    Height = 387
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.BackgroundColor = clInactiveCaptionText
+    FieldOfView = 179.327911376953100000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 349
+    Left = 341
     Top = 0
     Width = 208
-    Height = 391
+    Height = 387
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -249,14 +251,8 @@ object Form1: TForm1
       Width = 150
       Height = 33
       Min = 1
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 2
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 9
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = TrackBar1Change
     end
     object CloudRandomSeedUsedEdit: TEdit
@@ -305,21 +301,20 @@ object Form1: TForm1
       Material.BlendingMode = bmAlphaTest50
       Material.Texture.ImageClassName = 'TGLProcTextureNoise'
       Material.Texture.Image.MinCut = 0
-      Material.Texture.Image.NoiseSharpness = 0.990000009536743
+      Material.Texture.Image.NoiseSharpness = 0.990000009536743200
       Material.Texture.Image.Seamless = True
       Material.Texture.Image.NoiseRandSeed = 497075363
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
-      Height = 50
-      Width = 50
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
       XTiles = 2
       YTiles = 2
       Style = [psTileTexture]
-      NoZWrite = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 1
+      DepthOfView = 100.000000000000000000
+      FocalLength = 1.000000000000000000
       CameraStyle = csOrthogonal
       Position.Coordinates = {0000000000000000000070410000803F}
       Left = 256
