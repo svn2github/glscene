@@ -6,6 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/10/10 - Yar - Bugfixed memory leak
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
@@ -99,7 +100,7 @@ type
     function GetMainTextureName: TGLLibMaterialName;
     procedure SetMainTextureName(const Value: TGLLibMaterialName);
     //: Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -547,7 +548,7 @@ begin
   Result := FMaterialLibrary.GetNameOfTexture(FMainTexture);
 end;
 
-function TGLBaseGLSLDiffuseSpecularShaderMT.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLBaseGLSLDiffuseSpecularShaderMT.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;

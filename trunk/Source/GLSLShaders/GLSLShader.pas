@@ -75,7 +75,7 @@ uses
 
   // GLScene
   VectorGeometry, VectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat;
+  GLRenderContextInfo, GLTextureFormat, GLSLParameter;
 
 type
   TGLSLShaderParameter = class;
@@ -85,24 +85,6 @@ type
   TGLSLShaderEvent = procedure(Shader: TGLCustomGLSLShader) of object;
   TGLSLShaderUnApplyEvent = procedure(Shader: TGLCustomGLSLShader;
                                      var ThereAreMorePasses: Boolean) of object;
-
-  TGLSLDataType = (
-    GLSLTypeUndefined,
-    GLSLType1F,
-    GLSLType2F,
-    GLSLType3F,
-    GLSLType4F,
-    GLSLType1I,
-    GLSLType2I,
-    GLSLType3I,
-    GLSLType4I,
-    GLSLType1UI,
-    GLSLType2UI,
-    GLSLType3UI,
-    GLSLType4UI,
-    GLSLTypeMat2F,
-    GLSLTypeMat3F,
-    GLSLTypeMat4F);
 
   TGLActiveAttrib = record
     Name: string;
@@ -249,11 +231,6 @@ end;
 
 procedure TGLCustomGLSLShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
 const
-  cGLgsInTypes : array[gsInPoints..gsInAdjTriangles] of GLenum =
-    (GL_POINTS, GL_LINES, GL_LINES_ADJACENCY_EXT, GL_TRIANGLES,
-     GL_TRIANGLES_ADJACENCY_EXT);
-  cGLgsOutTypes: array[gsOutPoints..gsOutTriangleStrip] of GLenum =
-    (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
   cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
 var
