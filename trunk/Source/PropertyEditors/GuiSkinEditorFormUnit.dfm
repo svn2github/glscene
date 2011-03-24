@@ -1,9 +1,9 @@
 object GUISkinEditor: TGUISkinEditor
-  Left = 222
-  Top = 315
+  Left = 262
+  Top = 321
+  Width = 780
+  Height = 398
   Caption = 'Skin Editor'
-  ClientHeight = 360
-  ClientWidth = 764
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -41,7 +41,6 @@ object GUISkinEditor: TGUISkinEditor
       item
         Width = 50
       end>
-    ExplicitTop = 346
   end
   object panBottom: TPanel
     Left = 0
@@ -83,7 +82,6 @@ object GUISkinEditor: TGUISkinEditor
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitHeight = 314
     object imgFull: TImage
       Left = 1
       Top = 1
@@ -249,7 +247,6 @@ object GUISkinEditor: TGUISkinEditor
     Height = 309
     Align = alLeft
     TabOrder = 4
-    ExplicitHeight = 314
     object Bevel2: TBevel
       Left = 140
       Top = 212
@@ -481,6 +478,7 @@ object GUISkinEditor: TGUISkinEditor
       Height = 512.000000000000000000
     end
     object GLPanel1: TGLPanel
+      Autosize = False
       RedrawAtOnce = False
       NoZWrite = False
       DoChangesOnProgress = False

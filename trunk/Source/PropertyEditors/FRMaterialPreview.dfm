@@ -23,6 +23,7 @@ object RMaterialPreview: TRMaterialPreview
     Width = 60
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 1
     OnChange = CBObjectChange
     Items.Strings = (
@@ -37,6 +38,7 @@ object RMaterialPreview: TRMaterialPreview
     Width = 142
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 2
     OnChange = CBBackgroundChange
     Items.Strings = (
@@ -136,7 +138,7 @@ object RMaterialPreview: TRMaterialPreview
       object Sphere: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary
         Material.LibMaterialName = 'LibMaterial'
-        Radius = 0.800000011920929000
+        Radius = 0.800000011920928900
       end
       object Cone: TGLCone
         Material.MaterialLibrary = GLMaterialLibrary

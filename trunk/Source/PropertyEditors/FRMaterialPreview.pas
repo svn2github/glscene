@@ -55,14 +55,20 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 
   private
+    FLibMaterial: TGLAbstractLibMaterial;
     function GetMaterial: TGLMaterial;
     procedure SetMaterial(const Value: TGLMaterial);
+    function GetLibMaterial: TGLAbstractLibMaterial;
+    procedure SetLibMaterial(const Value: TGLAbstractLibMaterial);
     { Déclarations privées }
   public
     { Déclarations publiques }
     constructor Create(AOwner : TComponent); override;
 
-    property Material : TGLMaterial read GetMaterial write SetMaterial;
+    property Material : TGLMaterial read GetMaterial
+      write SetMaterial;
+    property LibMaterial : TGLAbstractLibMaterial read GetLibMaterial
+      write SetLibMaterial;
 
   end;
 
@@ -160,6 +166,26 @@ end;
 procedure TRMaterialPreview.SetMaterial(const Value: TGLMaterial);
 begin
   GLMaterialLibrary.Materials[0].Material.Assign(Value);
+end;
+
+function TRMaterialPreview.GetLibMaterial: TGLAbstractLibMaterial;
+begin
+  Result := FLibMaterial;
+end;
+
+procedure TRMaterialPreview.SetLibMaterial(const Value: TGLAbstractLibMaterial);
+begin
+  FLibMaterial := Value;
+  if Assigned(FLibMaterial) then
+  begin
+    with GLMaterialLibrary.Materials[0] do
+    begin
+      Material.MaterialLibrary := FLibMaterial.MaterialLibrary;
+      Material.LibMaterialName := FLibMaterial.Name
+    end;
+  end
+  else
+    GLMaterialLibrary.Materials[0].Material.MaterialLibrary := nil;
 end;
 
 end.

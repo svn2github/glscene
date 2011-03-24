@@ -1,6 +1,6 @@
 object LibMaterialPicker: TLibMaterialPicker
-  Left = 332
-  Top = 147
+  Left = 326
+  Top = 157
   BorderStyle = bsDialog
   Caption = 'LibMaterial Picker'
   ClientHeight = 234

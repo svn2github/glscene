@@ -1,10 +1,10 @@
 // FLibMaterialPicker
 {: Egg<p>
 
-	Allows choosing a material in a material library<p>
+ Allows choosing a material in a material library<p>
 
     <b>Historique : </b><font size=-1><ul>
-      <li>05/09/08 - DanB - Removed Kylix support    
+      <li>05/09/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - LBMaterials.OnDblClick now handled
       <li>03/07/04 - LR  - Make change for Linux
@@ -15,14 +15,15 @@ unit FLibMaterialPicker;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLViewer, GLMaterial;
+  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLViewer,
+    GLMaterial;
 
 type
   TLibMaterialPicker = class(TForm)
-	 LBMaterials: TListBox;
+    LBMaterials: TListBox;
     Label1: TLabel;
     Label2: TLabel;
     BBOk: TBitBtn;
@@ -35,11 +36,11 @@ type
     { Déclarations privées }
   public
     { Déclarations publiques }
-	  function Execute(var materialName : TGLLibMaterialName;
-                      materialLibrary : TGLMaterialLibrary) : Boolean;
+    function Execute(var materialName: TGLLibMaterialName;
+      materialLibrary: TGLAbstractMaterialLibrary): Boolean;
   end;
 
-function LibMaterialPicker : TLibMaterialPicker;
+function LibMaterialPicker: TLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
 implementation
@@ -47,53 +48,61 @@ implementation
 {$R *.dfm}
 
 var
-	vLibMaterialPicker : TLibMaterialPicker;
+  vLibMaterialPicker: TLibMaterialPicker;
 
-function LibMaterialPicker : TLibMaterialPicker;
+function LibMaterialPicker: TLibMaterialPicker;
 begin
-	if not Assigned(vLibMaterialPicker) then
-	   vLibMaterialPicker:=TLibMaterialPicker.Create(nil);
-	Result:=vLibMaterialPicker;
+  if not Assigned(vLibMaterialPicker) then
+    vLibMaterialPicker := TLibMaterialPicker.Create(nil);
+  Result := vLibMaterialPicker;
 end;
 
 procedure ReleaseLibMaterialPicker;
 begin
-	if Assigned(vLibMaterialPicker) then begin
-	   vLibMaterialPicker.Free; vLibMaterialPicker:=nil;
-	end;
+  if Assigned(vLibMaterialPicker) then
+  begin
+    vLibMaterialPicker.Free;
+    vLibMaterialPicker := nil;
+  end;
 end;
 
 // Execute
 //
-function TLibMaterialPicker.Execute(var materialName : TGLLibMaterialName;
-                                    materialLibrary : TGLMaterialLibrary) : Boolean;
+
+function TLibMaterialPicker.Execute(var materialName: TGLLibMaterialName;
+  materialLibrary: TGLAbstractMaterialLibrary): Boolean;
 begin
-   with LBMaterials do begin
-      materialLibrary.Materials.SetNamesToTStrings(LBMaterials.Items);
-		ItemIndex:=Items.IndexOf(materialName);
-		if (ItemIndex<0) and (Items.Count>0) then ItemIndex:=0;
-		BBOk.Enabled:=(Items.Count>0);
-	end;
-	LBMaterialsClick(Self);
-	Result:=(ShowModal=mrOk);
-	if Result then begin
-      with LBMaterials do
-         if ItemIndex>=0 then
-            materialName:=Items[ItemIndex]
-         else materialName:='';
-	end;
+  with LBMaterials do
+  begin
+    materialLibrary.SetNamesToTStrings(LBMaterials.Items);
+    ItemIndex := Items.IndexOf(materialName);
+    if (ItemIndex < 0) and (Items.Count > 0) then
+      ItemIndex := 0;
+    BBOk.Enabled := (Items.Count > 0);
+  end;
+  LBMaterialsClick(Self);
+  Result := (ShowModal = mrOk);
+  if Result then
+  begin
+    with LBMaterials do
+      if ItemIndex >= 0 then
+        materialName := Items[ItemIndex]
+      else
+        materialName := '';
+  end;
 end;
 
 procedure TLibMaterialPicker.LBMaterialsClick(Sender: TObject);
 begin
-   with LBMaterials do if ItemIndex>=0 then
-      MPPreview.Material:=TGLLibMaterial(Items.Objects[ItemIndex]).Material;
+  with LBMaterials do
+    if ItemIndex >= 0 then
+      MPPreview.LibMaterial := TGLAbstractLibMaterial(Items.Objects[ItemIndex]);
 end;
 
 procedure TLibMaterialPicker.LBMaterialsKeyPress(Sender: TObject;
   var Key: Char);
 begin
-   LBMaterialsClick(Sender);
+  LBMaterialsClick(Sender);
 end;
 
 procedure TLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
@@ -104,9 +113,7 @@ end;
 initialization
 
 finalization
-   ReleaseLibMaterialPicker;
+  ReleaseLibMaterialPicker;
 
 end.
-
-
 
