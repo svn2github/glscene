@@ -6,10 +6,10 @@
    A pretty particle mask effect manager.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
                      Got rid of Types dependancy
       <li>29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
-
 
 Original Header:
 
@@ -26,7 +26,7 @@ Original Header:
    ActualUsage: Create the component, create a new ParticleMask, set the material library, set the materials,
                 and use the procedures provided in the managers root. positioning and scaling applicable aswell.
 
-                The images should be 
+                The images should be
 
    Licenses: Removed. Donated to GLScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
              Theft of code also is not allowed, although alterations are allowed.
@@ -78,7 +78,8 @@ type
     LX, LY, LZ: Integer;
 
     MX, MY: Integer;
-    BogusMask, BogusMaskX, BogusMaskY, BogusMaskZ: Boolean; // we might have a pitch mask
+    BogusMask, BogusMaskX, BogusMaskY, BogusMaskZ: Boolean;
+      // we might have a pitch mask
     FRollAngle: Single;
     FPitchAngle: Single;
     FTurnAngle: Single;
@@ -91,23 +92,26 @@ type
     function YCan: TGLBitmap;
     function ZCan: TGLBitmap;
     //implementing IGLMaterialLibrarySupported
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     //implementing IInterface
-  {$IfDef FPC}
-    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+{$IFDEF FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
-    {$ELSE}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    {$IFEND}
-  {$Else}
+{$ELSE}
+    function QueryInterface(constref IID: TGUID; out Obj): HResult;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
+    function _AddRef: Integer;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
+    function _Release: Integer;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
+{$IFEND}
+{$ELSE}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
-  {$EndIf}
+{$ENDIF}
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -122,7 +126,8 @@ type
     procedure Pitch(Angle: Single);
     // this generates a xmask from another mask just to fill gaps,
     // depth is dependant on frommask width and height
-    procedure GenerateMaskFromProjection(FromMask, ToMask: TGLEProjectedParticleMask; Depth: Integer);
+    procedure GenerateMaskFromProjection(FromMask, ToMask:
+      TGLEProjectedParticleMask; Depth: Integer);
   published
     { Published Declarations }
     // scales and positions
@@ -130,13 +135,15 @@ type
     property Position: TGLCoordinates read FPosition write FPosition;
     // the reference name of the particle mask
     property Name: string read FName write SetName;
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+      SetMaterialLibrary;
     // mask images, make sure materiallibrary is assigned
     property XMask: TGLLibMaterialName read FXMask write SetXMask;
     property YMask: TGLLibMaterialName read FYMask write SetYMask;
     property ZMask: TGLLibMaterialName read FZMask write SetZMask;
     // background color is the color that prevents particles from being positioned there
-    property BackgroundColor: TDelphiColor read FBackgroundColor write FBackgroundColor;
+    property BackgroundColor: TDelphiColor read FBackgroundColor write
+      FBackgroundColor;
     // maskcolor is where particles are allowed to be positioned
     property MaskColor: TDelphiColor read FMaskColor write FMaskColor;
     // just the average angles for orientation
@@ -157,7 +164,8 @@ type
     { Public Declarations }
     function Add: TGLEParticleMask;
     constructor Create(AOwner: TComponent);
-    property Items[Index: Integer]: TGLEParticleMask read GetItems write SetItems; default;
+    property Items[Index: Integer]: TGLEParticleMask read GetItems write
+      SetItems; default;
   end;
 
   TGLEParticleMasksManager = class(TComponent)
@@ -168,25 +176,30 @@ type
     { Protected declarations }
     procedure ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
     procedure ApplyRotation(var Vec: TVector3f; Mask: TGLEParticleMask);
-    procedure ApplyRotationTarget(var Vec: TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
+    procedure ApplyRotationTarget(var Vec: TVector3f; Mask: TGLEParticleMask;
+      TargetObject: TGLBaseSceneObject);
     procedure ApplyScaleAndPosition(var Vec: TVector3f; Mask: TGLEParticleMask);
-    procedure ApplyScaleAndPositionTarget(var Vec: TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
+    procedure ApplyScaleAndPositionTarget(var Vec: TVector3f; Mask:
+      TGLEParticleMask; TargetObject: TGLBaseSceneObject);
     procedure FindParticlePosition(var Vec: TVector3f; Mask: TGLEParticleMask);
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CreateParticlePositionFromMask(MaskName: string): TVector3f;
-    function TargetParticlePositionFromMask(TargetObject: TGLBaseSceneObject; MaskName: string): TVector3f;
-    procedure SetParticlePositionFromMask(Particle: TGLParticle; MaskName: string);
-    procedure SetParticlePositionFromMaskTarget(Particle: TGLParticle; MaskName: string; TargetObject: TGLBaseSceneObject);
+    function TargetParticlePositionFromMask(TargetObject: TGLBaseSceneObject;
+      MaskName: string): TVector3f;
+    procedure SetParticlePositionFromMask(Particle: TGLParticle; MaskName:
+      string);
+    procedure SetParticlePositionFromMaskTarget(Particle: TGLParticle; MaskName:
+      string; TargetObject: TGLBaseSceneObject);
     function ParticleMaskByName(MaskName: string): TGLEParticleMask;
 
   published
     { Published declarations }
-    property ParticleMasks: TGLEParticleMasks read FParticleMasks write FParticleMasks;
+    property ParticleMasks: TGLEParticleMasks read FParticleMasks write
+      FParticleMasks;
   end;
-
 
 implementation
 
@@ -213,7 +226,8 @@ begin
   Result := Owner;
 end;
 
-procedure TGLEParticleMasks.SetItems(Index: Integer; const Val: TGLEParticleMask);
+procedure TGLEParticleMasks.SetItems(Index: Integer; const Val:
+  TGLEParticleMask);
 begin
   inherited Items[Index] := Val;
 end;
@@ -384,7 +398,7 @@ begin
     Result := 'TGLEParticleMask';
 end;
 
-function TGLEParticleMask.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLEParticleMask.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -621,10 +635,13 @@ begin
     Exit;
   if not assigned(FMaterialLibrary.LibMaterialByName(FXMask)) then
     Exit;
-  if FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.ImageClassName <> TGLPersistentImage.ClassName then
+  if FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.ImageClassName
+    <> TGLPersistentImage.ClassName then
     Exit;
 
-  Result := TGLBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as TGLPersistentImage).Picture.Bitmap);
+  Result :=
+    TGLBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as
+    TGLPersistentImage).Picture.Bitmap);
 end;
 
 function TGLEParticleMask.YCan: TGLBitmap;
@@ -634,10 +651,13 @@ begin
     Exit;
   if not assigned(FMaterialLibrary.LibMaterialByName(FYMask)) then
     Exit;
-  if FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.ImageClassName <> TGLPersistentImage.ClassName then
+  if FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.ImageClassName
+    <> TGLPersistentImage.ClassName then
     Exit;
 
-  Result := TGLBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as TGLPersistentImage).Picture.Bitmap);
+  Result :=
+    TGLBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as
+    TGLPersistentImage).Picture.Bitmap);
 end;
 
 function TGLEParticleMask.ZCan: TGLBitmap;
@@ -647,88 +667,117 @@ begin
     Exit;
   if not assigned(FMaterialLibrary.LibMaterialByName(FZMask)) then
     Exit;
-  if FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.ImageClassName <> TGLPersistentImage.ClassName then
+  if FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.ImageClassName
+    <> TGLPersistentImage.ClassName then
     Exit;
 
-  Result := TGLBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as TGLPersistentImage).Picture.Bitmap);
+  Result :=
+    TGLBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as
+    TGLPersistentImage).Picture.Bitmap);
 end;
 
-
-{$IfDef FPC}
+{$IFDEF FPC}
 {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+
+function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
+  stdcall;
 {$ELSE}
-  function TGLEParticleMask.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+
+function TGLEParticleMask.QueryInterface(constref IID: TGUID; out Obj): HResult;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
 {$IFEND}
-{$Else}
-  function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
-{$EndIf}
+{$ELSE}
+
+function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
+{$ENDIF}
 begin
-  if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
+  if GetInterface(IID, Obj) then
+    Result := S_OK
+  else
+    Result := E_NOINTERFACE;
 end;
 
-{$IfDef FPC}
+{$IFDEF FPC}
 {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLEParticleMask._AddRef: Integer; stdcall;
+
+function TGLEParticleMask._AddRef: Integer; stdcall;
 {$ELSE}
-  function TGLEParticleMask._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+
+function TGLEParticleMask._AddRef: Integer;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
 {$IFEND}
-{$Else}
-  function TGLEParticleMask._AddRef: Integer;
-{$EndIf}
+{$ELSE}
+
+function TGLEParticleMask._AddRef: Integer;
+{$ENDIF}
 begin
   Result := -1; //ignore
 end;
 
-{$IfDef FPC}
+{$IFDEF FPC}
 {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLEParticleMask._Release: Integer; stdcall;
+
+function TGLEParticleMask._Release: Integer; stdcall;
 {$ELSE}
-  function TGLEParticleMask._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+
+function TGLEParticleMask._Release: Integer;
+{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
 {$IFEND}
-{$Else}
-  function TGLEParticleMask._Release: Integer;
-{$EndIf}
+{$ELSE}
+
+function TGLEParticleMask._Release: Integer;
+{$ENDIF}
 begin
   Result := -1; //ignore
 end;
 
 { TGLEParticleMasksManager }
 
-procedure TGLEParticleMasksManager.ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
+procedure TGLEParticleMasksManager.ApplyOrthoGraphic(var Vec: TVector3f; Mask:
+  TGLEParticleMask);
 begin
   Vec[0] := (Mask.LX / 2 - Vec[0]) / Mask.LX;
   Vec[1] := (Mask.LY / 2 - Vec[1]) / Mask.LY;
   Vec[2] := (Mask.LZ / 2 - Vec[2]) / Mask.LZ;
 end;
 
-procedure TGLEParticleMasksManager.ApplyRotation(var Vec: TVector3f; Mask: TGLEParticleMask);
+procedure TGLEParticleMasksManager.ApplyRotation(var Vec: TVector3f; Mask:
+  TGLEParticleMask);
 begin
   Vec := VectorRotateAroundX(Vec, DegToRad(Mask.FPitchAngle));
   Vec := VectorRotateAroundY(Vec, DegToRad(Mask.FTurnAngle));
   Vec := VectorRotateAroundZ(Vec, DegToRad(Mask.FRollAngle));
 end;
 
-procedure TGLEParticleMasksManager.ApplyRotationTarget(var Vec: TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
+procedure TGLEParticleMasksManager.ApplyRotationTarget(var Vec: TVector3f; Mask:
+  TGLEParticleMask; TargetObject: TGLBaseSceneObject);
 begin
 
-  Vec := VectorRotateAroundX(Vec, DegToRad(Mask.FPitchAngle + TargetObject.Rotation.X));
-  Vec := VectorRotateAroundY(Vec, DegToRad(Mask.FTurnAngle + TargetObject.Rotation.Y));
-  Vec := VectorRotateAroundZ(Vec, DegToRad(Mask.FRollAngle + TargetObject.Rotation.Z));
+  Vec := VectorRotateAroundX(Vec, DegToRad(Mask.FPitchAngle +
+    TargetObject.Rotation.X));
+  Vec := VectorRotateAroundY(Vec, DegToRad(Mask.FTurnAngle +
+    TargetObject.Rotation.Y));
+  Vec := VectorRotateAroundZ(Vec, DegToRad(Mask.FRollAngle +
+    TargetObject.Rotation.Z));
 end;
 
-procedure TGLEParticleMasksManager.ApplyScaleAndPosition(var Vec: TVector3f; Mask: TGLEParticleMask);
+procedure TGLEParticleMasksManager.ApplyScaleAndPosition(var Vec: TVector3f;
+  Mask: TGLEParticleMask);
 begin
   Vec[0] := Vec[0] * Mask.FScale.DirectX + Mask.FPosition.DirectX;
   Vec[1] := Vec[1] * Mask.FScale.DirectY + Mask.FPosition.DirectY;
   Vec[2] := Vec[2] * Mask.FScale.DirectZ + Mask.FPosition.DirectZ;
 end;
 
-procedure TGLEParticleMasksManager.ApplyScaleAndPositionTarget(var Vec: TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
+procedure TGLEParticleMasksManager.ApplyScaleAndPositionTarget(var Vec:
+  TVector3f; Mask: TGLEParticleMask; TargetObject: TGLBaseSceneObject);
 begin
-  Vec[0] := Vec[0] * Mask.FScale.DirectX * TargetObject.Scale.DirectX + Mask.FPosition.DirectX + TargetObject.AbsolutePosition[0];
-  Vec[1] := Vec[1] * Mask.FScale.DirectY * TargetObject.Scale.DirectY + Mask.FPosition.DirectY + TargetObject.AbsolutePosition[1];
-  Vec[2] := Vec[2] * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ + Mask.FPosition.DirectZ + TargetObject.AbsolutePosition[2];
+  Vec[0] := Vec[0] * Mask.FScale.DirectX * TargetObject.Scale.DirectX +
+    Mask.FPosition.DirectX + TargetObject.AbsolutePosition[0];
+  Vec[1] := Vec[1] * Mask.FScale.DirectY * TargetObject.Scale.DirectY +
+    Mask.FPosition.DirectY + TargetObject.AbsolutePosition[1];
+  Vec[2] := Vec[2] * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ +
+    Mask.FPosition.DirectZ + TargetObject.AbsolutePosition[2];
 end;
 
 constructor TGLEParticleMasksManager.Create(AOwner: TComponent);
@@ -737,7 +786,8 @@ begin
   FParticleMasks := TGLEParticleMasks.Create(Self);
 end;
 
-function TGLEParticleMasksManager.CreateParticlePositionFromMask(MaskName: string): TVector3f;
+function TGLEParticleMasksManager.CreateParticlePositionFromMask(MaskName:
+  string): TVector3f;
 var
   Mask: TGLEParticleMask;
 begin
@@ -781,7 +831,8 @@ begin
   MakeVector(Vec, X, Y, Z);
 end;
 
-function TGLEParticleMasksManager.ParticleMaskByName(MaskName: string): TGLEParticleMask;
+function TGLEParticleMasksManager.ParticleMaskByName(MaskName: string):
+  TGLEParticleMask;
 var
   I: Integer;
 begin
@@ -837,3 +888,4 @@ begin
 end;
 
 end.
+

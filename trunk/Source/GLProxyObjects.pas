@@ -6,6 +6,7 @@
    Implements specific proxying classes.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>25/12/09 - DaStr - Bugfixed TGLActorProxy.RayCastIntersect()
                                in aarMorph mode (thanks Vovik)
@@ -95,7 +96,8 @@ type
     { Published Declarations }
     property FrontColor: TGLFaceProperties read FFrontColor;
     // Redeclare as TGLCustomSceneObject.
-    property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject write SetMasterMaterialObject;
+    property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject
+      write SetMasterMaterialObject;
   end;
 
   // TGLMaterialProxy
@@ -115,11 +117,12 @@ type
     function GetMasterMaterialObject: TGLCustomSceneObject;
     procedure SetMasterMaterialObject(const Value: TGLCustomSceneObject);
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);
+      override;
     destructor Destroy; override;
 
     procedure DoRender(var ARci: TRenderContextInfo;
@@ -127,14 +130,18 @@ type
     {: Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
-    property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
+    property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write
+      FMasterLibMaterial stored False;
   published
     { Published Declarations }
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+      SetMaterialLibrary;
     {: Specifies the Material, that current master object will use. }
-    property MasterLibMaterialName: TGLLibMaterialName read GetMasterLibMaterialName write SetMasterLibMaterialName;
+    property MasterLibMaterialName: TGLLibMaterialName read
+      GetMasterLibMaterialName write SetMasterLibMaterialName;
     {: Redeclare as TGLCustomSceneObject. }
-    property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject write SetMasterMaterialObject;
+    property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject
+      write SetMasterMaterialObject;
   end;
 
   // TGLFreeFormProxy
@@ -163,7 +170,8 @@ type
   published
     { Published Declarations }
    // Redeclare as TGLFreeForm.
-    property MasterObject: TGLFreeForm read GetMasterFreeFormObject write SetMasterFreeFormObject;
+    property MasterObject: TGLFreeForm read GetMasterFreeFormObject write
+      SetMasterFreeFormObject;
   end;
 
   // TBoneMatrixObj
@@ -211,18 +219,20 @@ type
     procedure SetLibMaterialName(const Value: TGLLibMaterialName);
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetStoreBonesMatrix(const Value: boolean);
     procedure SetStoredBoneNames(const Value: TStrings);
     procedure SetOnBeforeRender(const Value: TGLProgressEvent);
   protected
     { Protected Declarations }
-    procedure DoStoreBonesMatrices; // stores matrices of bones of the current frame rendered
+    procedure DoStoreBonesMatrices;
+      // stores matrices of bones of the current frame rendered
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);
+      override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
@@ -249,32 +259,40 @@ type
        while using a high-poly Actor in the "MasterObject" property,
        of course we assume that the two Masterobject Actors have same animations.
       }
-    function RayCastIntersectEx(RefActor: TGLActor; const rayStart, rayVector: TVector;
+    function RayCastIntersectEx(RefActor: TGLActor; const rayStart, rayVector:
+      TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; overload;
 
   published
     { Published Declarations }
-    property AnimationMode: TGLActorProxyAnimationMode read FAnimationMode write FAnimationMode default pamInherited;
+    property AnimationMode: TGLActorProxyAnimationMode read FAnimationMode write
+      FAnimationMode default pamInherited;
     property Animation: TActorAnimationName read FAnimation write SetAnimation;
     // Redeclare as TGLActor.
-    property MasterObject: TGLActor read GetMasterActorObject write SetMasterActorObject;
+    property MasterObject: TGLActor read GetMasterActorObject write
+      SetMasterActorObject;
     // Redeclare without pooTransformation
     // (Don't know why it causes the object to be oriented incorrecly.)
     property ProxyOptions default [pooEffects, pooObjects];
     {: Specifies the MaterialLibrary, that current proxy will use. }
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+      SetMaterialLibrary;
     {: Specifies the Material, that current proxy will use. }
-    property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write SetLibMaterialName;
+    property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write
+      SetLibMaterialName;
     {: Specifies if it will store the Bones Matrices, accessible via the BoneMatrix function
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
-    property StoreBonesMatrix: boolean read FStoreBonesMatrix write SetStoreBonesMatrix;
+    property StoreBonesMatrix: boolean read FStoreBonesMatrix write
+      SetStoreBonesMatrix;
     {: Specifies the names of the bones we want the matrices to be stored. If empty, all bones will be stored
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
-    property StoredBoneNames: TStrings read FStoredBoneNames write SetStoredBoneNames;
+    property StoredBoneNames: TStrings read FStoredBoneNames write
+      SetStoredBoneNames;
     {: Event allowing to apply extra transformations (f.ex: bone rotations) to the referenced
        Actor on order to have the proxy render these changes.  }
-    property OnBeforeRender: TGLProgressEvent read FOnBeforeRender write SetOnBeforeRender;
+    property OnBeforeRender: TGLProgressEvent read FOnBeforeRender write
+      SetOnBeforeRender;
   end;
 
   //-------------------------------------------------------------
@@ -377,7 +395,8 @@ end;
 // OctreeRayCastIntersect
 //
 
-function TGLFreeFormProxy.OctreeRayCastIntersect(const rayStart, rayVector: TVector;
+function TGLFreeFormProxy.OctreeRayCastIntersect(const rayStart, rayVector:
+  TVector;
   intersectPoint: PVector = nil;
   intersectNormal: PVector = nil): Boolean;
 var
@@ -391,18 +410,21 @@ begin
     SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
     NormalizeVector(localRayVector);
 
-    Result := GetMasterFreeFormObject.OctreeRayCastIntersect(localRayStart, localRayVector,
+    Result := GetMasterFreeFormObject.OctreeRayCastIntersect(localRayStart,
+      localRayVector,
       intersectPoint, intersectNormal);
     if Result then
     begin
       if Assigned(intersectPoint) then
       begin
-        SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
+        SetVector(intersectPoint^,
+          MasterObject.AbsoluteToLocal(intersectPoint^));
         SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
       end;
       if Assigned(intersectNormal) then
       begin
-        SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
+        SetVector(intersectNormal^,
+          MasterObject.AbsoluteToLocal(intersectNormal^));
         SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
       end;
     end;
@@ -414,7 +436,8 @@ end;
 // OctreeSphereSweepIntersect
 //
 
-function TGLFreeFormProxy.OctreeSphereSweepIntersect(const rayStart, rayVector: TVector;
+function TGLFreeFormProxy.OctreeSphereSweepIntersect(const rayStart, rayVector:
+  TVector;
   const velocity, radius, modelscale: Single;
   intersectPoint: PVector = nil;
   intersectNormal: PVector = nil): Boolean;
@@ -434,19 +457,22 @@ begin
     SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
     NormalizeVector(localRayVector);
 
-    Result := GetMasterFreeFormObject.OctreeSphereSweepIntersect(localRayStart, localRayVector,
+    Result := GetMasterFreeFormObject.OctreeSphereSweepIntersect(localRayStart,
+      localRayVector,
       localVelocity, localRadius,
       intersectPoint, intersectNormal);
     if Result then
     begin
       if Assigned(intersectPoint) then
       begin
-        SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
+        SetVector(intersectPoint^,
+          MasterObject.AbsoluteToLocal(intersectPoint^));
         SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
       end;
       if Assigned(intersectNormal) then
       begin
-        SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
+        SetVector(intersectNormal^,
+          MasterObject.AbsoluteToLocal(intersectNormal^));
         SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
       end;
     end;
@@ -511,7 +537,8 @@ begin
   ProxyOptions := ProxyOptions - [pooTransformation];
   FBonesMatrices := TStringList.create;
   FStoredBoneNames := TStringList.create;
-  FStoreBonesMatrix := false; // default is false to speed up a little if we don't need bones info
+  FStoreBonesMatrix := false;
+    // default is false to speed up a little if we don't need bones info
 end;
 
 // DoProgress
@@ -547,7 +574,8 @@ begin
   try
     MasterActor := GetMasterActorObject;
     gotMaster := MasterActor <> nil;
-    masterGotEffects := gotMaster and (pooEffects in ProxyOptions) and (MasterObject.Effects.Count > 0);
+    masterGotEffects := gotMaster and (pooEffects in ProxyOptions) and
+      (MasterObject.Effects.Count > 0);
     if gotMaster then
     begin
       if pooObjects in ProxyOptions then
@@ -656,10 +684,12 @@ begin
   else
   begin
     // Add (missing) TBoneMatrixObjects (actually ony 1st time) from all bones in skeleton
-    if FBonesMatrices.Count < MasterObject.Skeleton.BoneCount - 1 then // note : BoneCount actually returns 1 count more.
+    if FBonesMatrices.Count < MasterObject.Skeleton.BoneCount - 1 then
+      // note : BoneCount actually returns 1 count more.
     begin
       n := FBonesMatrices.Count;
-      for i := n to MasterObject.Skeleton.BoneCount - 2 do // note : BoneCount actually returns 1 count more.
+      for i := n to MasterObject.Skeleton.BoneCount - 2 do
+        // note : BoneCount actually returns 1 count more.
       begin
         Bone := MasterObject.Skeleton.BoneByID(i);
         if Bone <> nil then
@@ -697,7 +727,7 @@ begin
     Result := FTempLibMaterialName;
 end;
 
-function TGLActorProxy.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLActorProxy.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -780,7 +810,8 @@ begin
       if Assigned(intersectNormal) then
       begin
         if not HaspooTransformation then
-          SetVector(intersectNormal^, RefActor.AbsoluteToLocal(intersectNormal^));
+          SetVector(intersectNormal^,
+            RefActor.AbsoluteToLocal(intersectNormal^));
         SetVector(intersectNormal^, self.LocalToAbsolute(intersectNormal^));
       end;
     end;
@@ -948,7 +979,7 @@ begin
   Result := TGLCustomSceneObject(inherited MasterObject);
 end;
 
-function TGLMaterialProxy.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLMaterialProxy.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -1016,7 +1047,8 @@ initialization
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 
-  RegisterClasses([TGLColorProxy, TGLFreeFormProxy, TGLActorProxy, TGLMaterialProxy]);
+  RegisterClasses([TGLColorProxy, TGLFreeFormProxy, TGLActorProxy,
+    TGLMaterialProxy]);
 
 end.
 

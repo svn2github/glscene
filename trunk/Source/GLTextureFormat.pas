@@ -34,11 +34,15 @@ type
 
   // TGLTextureTarget
   //
-  TGLTextureTarget = (ttTexture1D, ttTexture2D, ttTexture3D, ttTexture1DArray,
+  TGLTextureTarget =
+  (
+    ttNoShape, ttTexture1D, ttTexture2D, ttTexture3D, ttTexture1DArray,
     ttTexture2DArray, ttTextureRect, ttTextureBuffer, ttTextureCube,
-    ttTexture2DMultisample, ttTexture2DMultisampleArray, ttTextureCubeArray);
+    ttTexture2DMultisample, ttTexture2DMultisampleArray, ttTextureCubeArray
+  );
 
-  TGLTextureSwizzle = (tswNone, tswAlphaToRed, tswLumToRed, tswLumAlphaToRedGreen);
+  TGLTextureSwizzle = (tswRed, tswGreen, tswBlue, tswAlpha, tswZero, tswOne);
+  TSwizzleVector = array[0..3] of TGLTextureSwizzle;
 
   // TGLInternalFormat
   //
@@ -223,6 +227,9 @@ var
   vDefaultTextureFormat: TGLInternalFormat = tfRGBA8;
   vDefaultTextureCompression: TGLInternalCompression = tcNone;
 
+const
+  cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
+
 {: Give a openGL texture format from GLScene texture format. }
 function InternalFormatToOpenGLFormat(texFormat: TGLInternalFormat): TGLEnum;
 {: Give a GLScene texture format from openGL texture format. }
@@ -260,8 +267,8 @@ function GetUncompressedFormat(const texFormat: TGLInternalFormat;
   out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
 {: Replace deprecated format to it newer.
    Return swizzling method if newer format not supported.}
-function GetUniformat(var AInternalFormat: TGLInternalFormat;
-  var AColorFormat: TGLEnum): TGLTextureSwizzle;
+//function GetUniformat(var AInternalFormat: TGLInternalFormat;
+//  var AColorFormat: TGLEnum): TGLTextureSwizzle;
 
 function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): TGLEnum;
 function EncodeGLTextureTarget(const TextureTarget: TGLEnum): TGLTextureTarget;
@@ -1208,7 +1215,7 @@ begin
     and (TextureTarget <> GL_TEXTURE_2D_MULTISAMPLE)
     and (TextureTarget <> GL_TEXTURE_2D_MULTISAMPLE_ARRAY);
 end;
-
+(*
 function GetUniformat(var AInternalFormat: TGLInternalFormat;
   var AColorFormat: TGLEnum): TGLTextureSwizzle;
 var
@@ -1244,11 +1251,7 @@ begin
     AColorFormat := cTextureFormatToOpenGL[AInternalFormat][1];
   end;
 end;
-
-procedure ReplaceDeprecatedColorFormat(var AExternalColorFormat: TGLEnum);
-begin
-
-end;
+*)
 
 end.
 

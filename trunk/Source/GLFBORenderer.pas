@@ -80,8 +80,8 @@ type
     FMaxAttachment: Integer;
 
     // implementing IGLMaterialLibrarySupported
-    function GetMaterialLibrary: TGLMaterialLibrary;
-    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
+    procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
     procedure SetDepthTextureName(const Value: TGLLibMaterialName);
     procedure SetColorTextureName(const Value: TGLLibMaterialName);
     procedure SetForceTextureDimentions(const Value: Boolean);
@@ -157,7 +157,7 @@ type
 
     property DepthTextureName: TGLLibMaterialName read FDepthTextureName
       write SetDepthTextureName;
-    property MaterialLibrary: TGLMaterialLibrary read GetMaterialLibrary
+    property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
       write SetMaterialLibrary;
 
     property BackgroundColor: TGLColor read FBackgroundColor
@@ -728,17 +728,20 @@ end;
 // GetMaterialLibrary
 //
 
-function TGLFBORenderer.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLFBORenderer.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
 
-procedure TGLFBORenderer.SetMaterialLibrary(const Value: TGLMaterialLibrary);
+procedure TGLFBORenderer.SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
 begin
   if FMaterialLibrary <> Value then
   begin
-    FMaterialLibrary := Value;
-    StructureChanged;
+    if Value is TGLMaterialLibrary then
+    begin
+      FMaterialLibrary := TGLMaterialLibrary(Value);
+      StructureChanged;
+    end;
   end;
 end;
 

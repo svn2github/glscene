@@ -2312,6 +2312,7 @@ begin
   FTextureCompareFunc := cfLequal;
   FDepthTextureMode := dtmLuminance;
   TextureFormat := tfDefault;
+  FCompression := tcDefault;
 end;
 
 // Destroy
