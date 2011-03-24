@@ -6,6 +6,7 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
       <li>20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
       <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
       <li>20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
@@ -54,14 +55,16 @@ uses
 type
   TGLFaceProperties = class;
   TGLMaterial = class;
+  TGLAbstractMaterialLibrary = class;
   TGLMaterialLibrary = class;
 
   //an interface for proper TGLLibMaterialNameProperty support
   IGLMaterialLibrarySupported = interface(IInterface)
     ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   end;
 
+  TGLAbstractLibMaterial = class;
   TGLLibMaterial = class;
 
   // TGLShaderStyle
@@ -338,9 +341,6 @@ type
     procedure SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
     procedure SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
     function StoreAlphaFuncRef: Boolean;
-  protected
-    function GetRealOwner: TGLMaterial;
-    procedure Changed; virtual;
   public
     constructor Create(AOwner: TPersistent); override;
     procedure Apply(var rci: TRenderContextInfo);
@@ -407,21 +407,21 @@ type
       IGLNotifyAble, IGLTextureNotifyAble)
   private
     { Private Declarations }
-    FFrontProperties, FGLBackProperties: TGLFaceProperties;
+    FFrontProperties, FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
     FBlendingMode: TBlendingMode;
     FBlendingParams: TGLBlendingParameters;
     FTexture: TGLTexture;
     FTextureEx: TGLTextureEx;
-    FMaterialLibrary: TGLMaterialLibrary;
+    FMaterialLibrary: TGLAbstractMaterialLibrary;
     FLibMaterialName: TGLLibMaterialName;
     FMaterialOptions: TMaterialOptions;
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
-    currentLibMaterial: TGLLibMaterial;
+    currentLibMaterial: TGLAbstractLibMaterial;
 
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     { Protected Declarations }
     function GetBackProperties: TGLFaceProperties;
@@ -432,7 +432,7 @@ type
     procedure SetMaterialOptions(const val: TMaterialOptions);
     function GetTexture: TGLTexture;
     procedure SetTexture(ATexture: TGLTexture);
-    procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
+    procedure SetMaterialLibrary(const val: TGLAbstractMaterialLibrary);
     procedure SetLibMaterialName(const val: TGLLibMaterialName);
     procedure SetFaceCulling(const val: TFaceCulling);
     procedure SetPolygonMode(AValue: TPolygonMode);
@@ -504,7 +504,7 @@ type
     property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling
       default fcBufferDefault;
 
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+    property MaterialLibrary: TGLAbstractMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     property LibMaterialName: TGLLibMaterialName read FLibMaterialName write
       SetLibMaterialName;
@@ -514,34 +514,23 @@ type
       default pmFill;
   end;
 
-  // TGLLibMaterial
+  // TGLBaseLibMaterial
   //
-    {: Material in a material library.<p>
-       Introduces Texture transformations (offset and scale). Those transformations
-       are available only for lib materials to minimize the memory cost of basic
-       materials (which are used in almost all objects). }
-  TGLLibMaterial = class(TCollectionItem, IGLMaterialLibrarySupported,
-      IGLNotifyAble, IGLTextureNotifyAble)
-  private
-    { Private Declarations }
-    userList: TList;
+
+  TGLAbstractLibMaterial = class(
+    TCollectionItem,
+    IGLMaterialLibrarySupported,
+    IGLNotifyAble)
+  protected
+    { Protected Declarations }
+    FUserList: TList;
     FName: TGLLibMaterialName;
     FNameHashKey: Integer;
-    FMaterial: TGLMaterial;
-    FTextureOffset, FTextureScale: TGLCoordinates;
-    FTextureRotate: Single;
-    FTextureMatrixIsIdentity: Boolean;
-    FTextureOverride: Boolean;
-    FTextureMatrix: TMatrix;
-    FTexture2Name: TGLLibMaterialName;
-    FShader: TGLShader;
-    notifying: Boolean; // used for recursivity protection
-    libMatTexture2: TGLLibMaterial; // internal cache
     FTag: Integer;
+    FNotifying: Boolean; // used for recursivity protection
     //implementing IGLMaterialLibrarySupported
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     //implementing IInterface
-
   {$IfDef FPC}
     {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
@@ -560,11 +549,59 @@ type
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
-    procedure Loaded;
-
     class function ComputeNameHashKey(const name: string): Integer;
-
     procedure SetName(const val: TGLLibMaterialName);
+    procedure Loaded; virtual; abstract;
+  public
+    { Public Declarations }
+    constructor Create(ACollection: TCollection); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    procedure Apply(var ARci: TRenderContextInfo); virtual; abstract;
+    //: Restore non-standard material states that were altered
+    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; abstract;
+
+    procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
+    procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
+    procedure RegisterUser(comp: TGLUpdateAbleComponent); overload;
+    procedure UnregisterUser(comp: TGLUpdateAbleComponent); overload;
+    procedure RegisterUser(libMaterial: TGLLibMaterial); overload;
+    procedure UnregisterUser(libMaterial: TGLLibMaterial); overload;
+    procedure NotifyUsers;
+    function IsUsed: boolean; //returns true if the texture has registed users
+    property NameHashKey: Integer read FNameHashKey;
+    procedure NotifyChange(Sender: TObject); virtual;
+    function Blended: Boolean; virtual;
+    property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary;
+  published
+    { Published Declarations }
+    property Name: TGLLibMaterialName read FName write SetName;
+    property Tag: Integer read FTag write FTag;
+  end;
+
+  // TGLLibMaterial
+  //
+    {: Material in a material library.<p>
+       Introduces Texture transformations (offset and scale). Those transformations
+       are available only for lib materials to minimize the memory cost of basic
+       materials (which are used in almost all objects). }
+  TGLLibMaterial = class(TGLAbstractLibMaterial, IGLTextureNotifyAble)
+  private
+    { Private Declarations }
+    FMaterial: TGLMaterial;
+    FTextureOffset, FTextureScale: TGLCoordinates;
+    FTextureRotate: Single;
+    FTextureMatrixIsIdentity: Boolean;
+    FTextureOverride: Boolean;
+    FTextureMatrix: TMatrix;
+    FTexture2Name: TGLLibMaterialName;
+    FShader: TGLShader;
+    libMatTexture2: TGLLibMaterial; // internal cache
+  protected
+    { Protected Declarations }
+    procedure Loaded; override;
     procedure SetMaterial(const val: TGLMaterial);
     procedure SetTextureOffset(const val: TGLCoordinates);
     procedure SetTextureScale(const val: TGLCoordinates);
@@ -576,9 +613,8 @@ type
 
     procedure CalculateTextureMatrix;
     procedure DestroyHandles;
-    procedure OnNotifyChange(Sender: TObject);
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
-
+    procedure OnNotifyChange(Sender: TObject);
   public
     { Public Declarations }
     constructor Create(ACollection: TCollection); override;
@@ -587,29 +623,18 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure PrepareBuildList;
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var ARci: TRenderContextInfo); override;
     //: Restore non-standard material states that were altered
-    function UnApply(var rci: TRenderContextInfo): Boolean;
+    function UnApply(var ARci: TRenderContextInfo): Boolean; override;
 
-    procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
-    procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
-    procedure RegisterUser(comp: TGLUpdateAbleComponent); overload;
-    procedure UnregisterUser(comp: TGLUpdateAbleComponent); overload;
-    procedure RegisterUser(libMaterial: TGLLibMaterial); overload;
-    procedure UnregisterUser(libMaterial: TGLLibMaterial); overload;
-    procedure NotifyUsers;
     procedure NotifyUsersOfTexMapChange;
-    function IsUsed: boolean; //returns true if the texture has registed users
-    property NameHashKey: Integer read FNameHashKey;
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
     property TextureMatrixIsIdentity: boolean read FTextureMatrixIsIdentity;
     procedure NotifyTexMapChange(Sender: TObject);
-    procedure NotifyChange(Sender: TObject);
+    function Blended: Boolean; override;
   published
     { Published Declarations }
-    property Name: TGLLibMaterialName read FName write SetName;
     property Material: TGLMaterial read FMaterial write SetMaterial;
-    property Tag: Integer read FTag write FTag;
 
     {: Texture offset in texture coordinates.<p>
        The offset is applied <i>after</i> scaling. }
@@ -635,17 +660,27 @@ type
     property Shader: TGLShader read FShader write SetShader;
   end;
 
-  // TGLLibMaterials
+  // TGLAbstractLibMaterials
   //
-    {: A collection of materials, mainly used in material libraries. }
-  TGLLibMaterials = class(TOwnedCollection)
-  private
-    { Protected Declarations }
 
+  TGLAbstractLibMaterials = class(TOwnedCollection)
   protected
     { Protected Declarations }
     procedure Loaded;
+    function GetMaterial(const AName: TGLLibMaterialName): TGLAbstractLibMaterial;
+    {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  public
+    function MakeUniqueName(const nameRoot: TGLLibMaterialName):
+      TGLLibMaterialName; virtual;
+  end;
 
+  // TGLLibMaterials
+  //
+    {: A collection of materials, mainly used in material libraries. }
+
+  TGLLibMaterials = class(TGLAbstractLibMaterials)
+  protected
+    { Protected Declarations }
     procedure SetItems(index: Integer; const val: TGLLibMaterial);
     function GetItems(index: Integer): TGLLibMaterial;
     procedure DestroyHandles;
@@ -661,11 +696,9 @@ type
     function FindItemID(ID: Integer): TGLLibMaterial;
     property Items[index: Integer]: TGLLibMaterial read GetItems write SetItems;
     default;
-    function MakeUniqueName(const nameRoot: TGLLibMaterialName):
-      TGLLibMaterialName;
+
     function GetLibMaterialByName(const AName: TGLLibMaterialName):
       TGLLibMaterial;
-
     {: Returns index of this Texture if it exists. }
     function GetTextureIndex(const Texture: TGLTexture): Integer;
 
@@ -680,11 +713,41 @@ type
       TGLLibMaterialName;
 
     procedure PrepareBuildList;
-    procedure SetNamesToTStrings(aStrings: TStrings);
     {: Deletes all the unused materials in the collection.<p>
        A material is considered unused if no other material or updateable object references it.
        WARNING: For this to work, objects that use the textuere, have to REGISTER to the texture.}
     procedure DeleteUnusedMaterials;
+  end;
+
+  // TGLAbstractMaterialLibrary
+  //
+
+  TGLAbstractMaterialLibrary = class(TGLCadenceAbleComponent)
+  protected
+    { Protected Declarations }
+    FMaterials: TGLAbstractLibMaterials;
+    FLastAppliedMaterial: TGLAbstractLibMaterial;
+    FTexturePaths: string;
+    FTexturePathList: TStringList;
+    procedure SetTexturePaths(const val: string);
+    property TexturePaths: string read FTexturePaths write SetTexturePaths;
+    procedure Loaded; override;
+  public
+    { Public Declarations }
+
+    procedure SetNamesToTStrings(AStrings: TStrings);
+    {: Applies the material of given name.<p>
+       Returns False if the material could not be found. ake sure this
+       call is balanced with a corresponding UnApplyMaterial (or an
+       assertion will be triggered in the destructor).<br>
+       If a material is already applied, and has not yet been unapplied,
+       an assertion will be triggered. }
+    function ApplyMaterial(const AName: string;
+      var ARci: TRenderContextInfo): Boolean; virtual;
+    {: Un-applies the last applied material.<p>
+       Use this function in conjunction with ApplyMaterial.<br>
+       If no material was applied, an assertion will be triggered. }
+    function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
   end;
 
   // TGLMaterialLibrary
@@ -695,23 +758,16 @@ type
      thus reducing memory needs and rendering time.<p>
      Materials in a material library also feature advanced control properties
      like texture coordinates transforms. }
-  TGLMaterialLibrary = class(TGLCadenceAbleComponent)
+  TGLMaterialLibrary = class(TGLAbstractMaterialLibrary)
   private
     { Private Declarations }
     FDoNotClearMaterialsOnLoad: Boolean;
-    FMaterials: TGLLibMaterials;
-    FTexturePaths: string;
     FOnTextureNeeded: TTextureNeededEvent;
-    FTexturePathList: TStringList;
-    FLastAppliedMaterial: TGLLibMaterial;
-
   protected
     { Protected Declarations }
-    procedure Loaded; override;
+    function GetMaterials: TGLLibMaterials;
     procedure SetMaterials(const val: TGLLibMaterials);
     function StoreMaterials: Boolean;
-    procedure SetTexturePaths(const val: string);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -758,24 +814,16 @@ type
     function GetNameOfLibMaterial(const LibMat: TGLLibMaterial):
       TGLLibMaterialName;
 
-    {: Applies the material of given name.<p>
-       Returns False if the material could not be found. ake sure this
-       call is balanced with a corresponding UnApplyMaterial (or an
-       assertion will be triggered in the destructor).<br>
-       If a material is already applied, and has not yet been unapplied,
-       an assertion will be triggered. }
-    function ApplyMaterial(const materialName: string; var rci:
-      TRenderContextInfo): Boolean;
-    {: Un-applies the last applied material.<p>
-       Use this function in conjunction with ApplyMaterial.<br>
-       If no material was applied, an assertion will be triggered. }
-    function UnApplyMaterial(var rci: TRenderContextInfo): Boolean;
-
   published
     { Published Declarations }
       {: The materials collection. }
-    property Materials: TGLLibMaterials read FMaterials write SetMaterials stored
+    property Materials: TGLLibMaterials read GetMaterials write SetMaterials stored
       StoreMaterials;
+    {: This event is fired whenever a texture needs to be loaded from disk.<p>
+       The event is triggered before even attempting to load the texture,
+       and before TexturePaths is used. }
+    property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
+      FOnTextureNeeded;
     {: Paths to lookup when attempting to load a texture.<p>
        You can specify multiple paths when loading a texture, the separator
        being the semi-colon ';' character. Directories are looked up from
@@ -783,18 +831,15 @@ type
        The current directory is always implicit and checked last.<p>
        Note that you can also use the OnTextureNeeded event to provide a
        filename. }
-    property TexturePaths: string read FTexturePaths write SetTexturePaths;
-    {: This event is fired whenever a texture needs to be loaded from disk.<p>
-       The event is triggered before even attempting to load the texture,
-       and before TexturePaths is used. }
-    property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
-      FOnTextureNeeded;
-
+    property TexturePaths;
   end;
 
 implementation
 
-uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics;
+uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils, GLSLog;
+
+resourcestring
+  strCyclicRefMat = 'Cyclic reference detected in material "%s"';
 
   // ------------------
   // ------------------ TGLFaceProperties ------------------
@@ -1324,7 +1369,7 @@ destructor TGLMaterial.Destroy;
 begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.UnregisterUser(Self);
-  FGLBackProperties.Free;
+  FBackProperties.Free;
   FFrontProperties.Free;
   FDepthProperties.Free;
   FTexture.Free;
@@ -1336,7 +1381,7 @@ end;
 // GetMaterialLibrary
 //
 
-function TGLMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLMaterial.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -1355,9 +1400,9 @@ end;
 
 function TGLMaterial.GetBackProperties: TGLFaceProperties;
 begin
-  if not Assigned(FGLBackProperties) then
-    FGLBackProperties := TGLFaceProperties.Create(Self);
-  Result := FGLBackProperties;
+  if not Assigned(FBackProperties) then
+    FBackProperties := TGLFaceProperties.Create(Self);
+  Result := FBackProperties;
 end;
 
 // SetFrontProperties
@@ -1438,7 +1483,7 @@ end;
 // SetMaterialLibrary
 //
 
-procedure TGLMaterial.SetMaterialLibrary(const val: TGLMaterialLibrary);
+procedure TGLMaterial.SetMaterialLibrary(const val: TGLAbstractMaterialLibrary);
 begin
   FMaterialLibrary := val;
   SetLibMaterialName(LibMaterialName);
@@ -1448,6 +1493,8 @@ end;
 //
 
 procedure TGLMaterial.SetLibMaterialName(const val: TGLLibMaterialName);
+var
+  oldLibrary: TGLMaterialLibrary;
 
   function MaterialLoopFrom(curMat: TGLLibMaterial): Boolean;
   var
@@ -1458,9 +1505,8 @@ procedure TGLMaterial.SetLibMaterialName(const val: TGLLibMaterialName);
     begin
       with curMat.Material do
       begin
-        if MaterialLibrary <> nil then
-          curMat :=
-            MaterialLibrary.Materials.GetLibMaterialByName(LibMaterialName)
+        if Assigned(oldLibrary) then
+          curMat := oldLibrary.Materials.GetLibMaterialByName(LibMaterialName)
         else
           curMat := nil;
       end;
@@ -1470,16 +1516,28 @@ procedure TGLMaterial.SetLibMaterialName(const val: TGLLibMaterialName);
   end;
 
 var
-  newLibMaterial: TGLLibMaterial;
+  newLibMaterial: TGLAbstractLibMaterial;
 begin
   // locate new libmaterial
   if Assigned(FMaterialLibrary) then
-    newLibMaterial := MaterialLibrary.Materials.GetLibMaterialByName(val)
+    newLibMaterial := FMaterialLibrary.FMaterials.GetMaterial(val)
   else
     newLibMaterial := nil;
-  // make sure new won't trigger an infinite loop
-  Assert(not MaterialLoopFrom(newLibMaterial),
-    'Error: Cyclic material reference detected!');
+
+   // make sure new won't trigger an infinite loop
+  if FMaterialLibrary is TGLMaterialLibrary then
+  begin
+    oldLibrary := TGLMaterialLibrary(FMaterialLibrary);
+    if MaterialLoopFrom(TGLLibMaterial(newLibMaterial)) then
+    begin
+      if IsDesignTime then
+        InformationDlg(Format(strCyclicRefMat, [val]))
+      else
+        GLSLogger.LogErrorFmt(strCyclicRefMat, [val]);
+      exit;
+    end;
+  end;
+
   FLibMaterialName := val;
   // unregister if required
   if newLibMaterial <> currentLibMaterial then
@@ -1528,6 +1586,7 @@ end;
 procedure TGLMaterial.SetBlendingParams(const Value: TGLBlendingParameters);
 begin
   FBlendingParams.Assign(Value);
+  NotifyChange(Self);
 end;
 
 // NotifyLibMaterialDestruction
@@ -1585,12 +1644,12 @@ begin
     // Lighting switch
     if (moNoLighting in MaterialOptions) or not rci.bufferLighting then
     begin
-      rci.GLStates.Disable(stLighting);
+      Disable(stLighting);
       FFrontProperties.ApplyNoLighting(rci, cmFront);
     end
     else
     begin
-      rci.GLStates.Enable(stLighting);
+      Enable(stLighting);
       FFrontProperties.Apply(rci, cmFront);
     end;
 
@@ -1599,15 +1658,15 @@ begin
       fcBufferDefault:
         begin
           if rci.bufferFaceCull then
-            rci.GLStates.Enable(stCullFace)
+            Enable(stCullFace)
           else
-            rci.GLStates.Disable(stCullFace);
+            Disable(stCullFace);
           BackProperties.Apply(rci, cmBack);
         end;
-      fcCull: rci.GLStates.Enable(stCullFace);
+      fcCull: Enable(stCullFace);
       fcNoCull:
         begin
-          rci.GLStates.Disable(stCullFace);
+          Disable(stCullFace);
           BackProperties.Apply(rci, cmBack);
         end;
     end;
@@ -1620,41 +1679,41 @@ begin
       case FBlendingMode of
         bmOpaque:
           begin
-            rci.GLStates.Disable(stBlend);
-            rci.GLStates.Disable(stAlphaTest);
+            Disable(stBlend);
+            Disable(stAlphaTest);
           end;
         bmTransparency:
           begin
-            rci.GLStates.Enable(stBlend);
-            rci.GLStates.Enable(stAlphaTest);
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            SetGLAlphaFunction(cfGreater, 0);
           end;
         bmAdditive:
           begin
-            rci.GLStates.Enable(stBlend);
-            rci.GLStates.Enable(stAlphaTest);
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfSrcAlpha, bfOne);
+            SetGLAlphaFunction(cfGreater, 0);
           end;
         bmAlphaTest50:
           begin
-            rci.GLStates.Disable(stBlend);
-            rci.GLStates.Enable(stAlphaTest);
-            rci.GLStates.SetGLAlphaFunction(cfGEqual, 0.5);
+            Disable(stBlend);
+            Enable(stAlphaTest);
+            SetGLAlphaFunction(cfGEqual, 0.5);
           end;
         bmAlphaTest100:
           begin
-            rci.GLStates.Disable(stBlend);
-            rci.GLStates.Enable(stAlphaTest);
-            rci.GLStates.SetGLAlphaFunction(cfGEqual, 1.0);
+            Disable(stBlend);
+            Enable(stAlphaTest);
+            SetGLAlphaFunction(cfGEqual, 1.0);
           end;
         bmModulate:
           begin
-            rci.GLStates.Enable(stBlend);
-            rci.GLStates.Enable(stAlphaTest);
-            rci.GLStates.SetBlendFunc(bfDstColor, bfZero);
-            rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfDstColor, bfZero);
+            SetGLAlphaFunction(cfGreater, 0);
           end;
         bmCustom:
           begin
@@ -1664,9 +1723,9 @@ begin
 
     // Fog switch
     if (moIgnoreFog in MaterialOptions) or not rci.bufferFog then
-      rci.GLStates.Disable(stFog)
+      Disable(stFog)
     else
-      rci.GLStates.Enable(stFog);
+      Enable(stFog);
 
     if not Assigned(FTextureEx) then
     begin
@@ -1712,10 +1771,10 @@ procedure TGLMaterial.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLMaterial) then
   begin
-    if Assigned(TGLMaterial(Source).FGLBackProperties) then
+    if Assigned(TGLMaterial(Source).FBackProperties) then
       BackProperties.Assign(TGLMaterial(Source).BackProperties)
     else
-      FreeAndNil(FGLBackProperties);
+      FreeAndNil(FBackProperties);
     FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
     FPolygonMode := TGLMaterial(Source).FPolygonMode;
     FBlendingMode := TGLMaterial(Source).FBlendingMode;
@@ -1774,7 +1833,10 @@ end;
 function TGLMaterial.Blended: Boolean;
 begin
   if Assigned(currentLibMaterial) then
-    Result := currentLibMaterial.Material.Blended
+  begin
+
+    Result := currentLibMaterial.Blended
+  end
   else
     Result := not (BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100]);
 end;
@@ -1784,8 +1846,9 @@ end;
 
 function TGLMaterial.HasSecondaryTexture: Boolean;
 begin
-  Result := Assigned(currentLibMaterial) and
-    Assigned(currentLibMaterial.libMatTexture2);
+  Result := Assigned(currentLibMaterial)
+    and (currentLibMaterial is TGLLibMaterial)
+    and Assigned(TGLLibMaterial(currentLibMaterial).libMatTexture2);
 end;
 
 // MaterialIsLinkedToLib
@@ -1801,8 +1864,8 @@ end;
 
 function TGLMaterial.GetActualPrimaryTexture: TGLTexture;
 begin
-  if Assigned(currentLibMaterial) then
-    Result := currentLibMaterial.Material.Texture
+  if Assigned(currentLibMaterial) and (currentLibMaterial is TGLLibMaterial) then
+    Result := TGLLibMaterial(currentLibMaterial).Material.Texture
   else
     Result := Texture;
 end;
@@ -1812,8 +1875,8 @@ end;
 
 function TGLMaterial.GetActualPrimaryMaterial: TGLMaterial;
 begin
-  if Assigned(currentLibMaterial) then
-    Result := currentLibMaterial.Material
+  if Assigned(currentLibMaterial) and (currentLibMaterial is TGLLibMaterial) then
+    Result := TGLLibMaterial(currentLibMaterial).Material
   else
     Result := Self;
 end;
@@ -1823,7 +1886,10 @@ end;
 
 function TGLMaterial.GetLibMaterial: TGLLibMaterial;
 begin
-  Result := currentLibMaterial;
+  if Assigned(currentLibMaterial) and (currentLibMaterial is TGLLibMaterial) then
+    Result := TGLLibMaterial(currentLibMaterial)
+  else
+    Result := nil;
 end;
 
 // QuickAssignMaterial
@@ -1862,8 +1928,260 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLAbstractLibMaterial ------------------
+// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLAbstractLibMaterial'}{$ENDIF}
+
+// Create
+//
+constructor TGLAbstractLibMaterial.Create(ACollection: TCollection);
+begin
+  inherited Create(ACollection);
+  FUserList := TList.Create;
+  FName := TGLAbstractLibMaterials(ACollection).MakeUniqueName('LibMaterial');
+  FNameHashKey := ComputeNameHashKey(FName);
+end;
+
+// Destroy
+//
+
+destructor TGLAbstractLibMaterial.Destroy;
+begin
+  FUserList.Free;
+  inherited Destroy;
+end;
+
+// Assign
+//
+
+procedure TGLAbstractLibMaterial.Assign(Source: TPersistent);
+begin
+  if Source is TGLAbstractLibMaterial then
+  begin
+    FName :=
+      TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
+    FNameHashKey := ComputeNameHashKey(FName);
+  end;
+  inherited;
+end;
+
+// QueryInterface
+//
+
+{$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+{$ELSE}
+  function TGLAbstractLibMaterial.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
+{$Else}
+  function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
+{$EndIf}
+begin
+  if GetInterface(IID, Obj) then
+    Result := S_OK
+  else
+    Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+{$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLAbstractLibMaterial._AddRef: Integer; stdcall;
+{$ELSE}
+  function TGLAbstractLibMaterial._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
+{$Else}
+  function TGLAbstractLibMaterial._AddRef: Integer;
+{$EndIf}
+begin
+  Result := -1; //ignore
+end;
+
+// _Release
+//
+{$IfDef FPC}
+{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
+  function TGLAbstractLibMaterial._Release: Integer; stdcall;
+{$ELSE}
+  function TGLAbstractLibMaterial._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+{$IFEND}
+{$Else}
+  function TGLAbstractLibMaterial._Release: Integer;
+{$EndIf}
+begin
+  Result := -1; //ignore
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(obj: TGLUpdateAbleObject);
+begin
+  Assert(FUserList.IndexOf(obj) < 0);
+  FUserList.Add(obj);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(obj: TGLUpdateAbleObject);
+begin
+  FUserList.Remove(obj);
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(comp: TGLUpdateAbleComponent);
+begin
+  Assert(FUserList.IndexOf(comp) < 0);
+  FUserList.Add(comp);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(comp: TGLUpdateAbleComponent);
+begin
+  FUserList.Remove(comp);
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(libMaterial: TGLLibMaterial);
+begin
+  Assert(FUserList.IndexOf(libMaterial) < 0);
+  FUserList.Add(libMaterial);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(libMaterial: TGLLibMaterial);
+begin
+  FUserList.Remove(libMaterial);
+end;
+
+// NotifyUsers
+//
+
+procedure TGLAbstractLibMaterial.NotifyChange(Sender: TObject);
+begin
+  NotifyUsers();
+end;
+
+// NotifyUsers
+//
+
+procedure TGLAbstractLibMaterial.NotifyUsers;
+var
+  i: Integer;
+  obj: TObject;
+begin
+  if FNotifying then
+    Exit;
+  FNotifying := True;
+  try
+    for i := 0 to FUserList.Count - 1 do
+    begin
+      obj := TObject(FUserList[i]);
+      if obj is TGLUpdateAbleObject then
+        TGLUpdateAbleObject(FUserList[i]).NotifyChange(Self)
+      else if obj is TGLUpdateAbleComponent then
+        TGLUpdateAbleComponent(FUserList[i]).NotifyChange(Self)
+      else
+      begin
+        Assert(obj is TGLAbstractLibMaterial);
+        TGLAbstractLibMaterial(FUserList[i]).NotifyUsers;
+      end;
+    end;
+  finally
+    FNotifying := False;
+  end;
+end;
+
+// IsUsed
+//
+
+function TGLAbstractLibMaterial.IsUsed: Boolean;
+begin
+  Result := Assigned(Self) and (FUserlist.Count > 0);
+end;
+
+// GetDisplayName
+//
+
+function TGLAbstractLibMaterial.GetDisplayName: string;
+begin
+  Result := Name;
+end;
+
+// GetMaterialLibrary
+//
+
+function TGLAbstractLibMaterial.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+var
+  LOwner: TPersistent;
+begin
+  Result := nil;
+  if Assigned(Collection) then
+  begin
+    LOwner := TGLAbstractLibMaterials(Collection).Owner;
+    if LOwner is TGLAbstractMaterialLibrary then
+      Result := TGLAbstractMaterialLibrary(LOwner);
+  end;
+end;
+
+// Blended
+//
+
+function TGLAbstractLibMaterial.Blended: Boolean;
+begin
+  Result := False;
+end;
+
+// ComputeNameHashKey
+//
+
+class function TGLAbstractLibMaterial.ComputeNameHashKey(const name: string): Integer;
+var
+  i, n: Integer;
+begin
+  n := Length(name);
+  Result := n;
+  for i := 1 to n do
+    Result := (Result shl 1) + Byte(name[i]);
+end;
+
+// SetName
+//
+
+procedure TGLAbstractLibMaterial.SetName(const val: TGLLibMaterialName);
+begin
+  if val <> FName then
+  begin
+    if not (csLoading in TComponent(Collection.Owner).ComponentState) then
+    begin
+      if TGLLibMaterials(Collection).GetLibMaterialByName(val) <> Self then
+        FName := TGLLibMaterials(Collection).MakeUniqueName(val)
+      else
+        FName := val;
+    end
+    else
+      FName := val;
+    FNameHashKey := ComputeNameHashKey(FName);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
 // ------------------ TGLLibMaterial ------------------
 // ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterial'}{$ENDIF}
 
 // Create
 //
@@ -1871,16 +2189,11 @@ end;
 constructor TGLLibMaterial.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
-  userList := TList.Create;
-  FName := TGLLibMaterials(ACollection).MakeUniqueName('LibMaterial');
-  FNameHashKey := ComputeNameHashKey(FName);
   FMaterial := TGLMaterial.Create(Self);
   FMaterial.Texture.OnTextureNeeded := DoOnTextureNeeded;
-  FTextureOffset := TGLCoordinates.CreateInitialized(Self, NullHmgVector,
-    csPoint);
+  FTextureOffset := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
   FTextureOffset.OnNotifyChange := OnNotifyChange;
-  FTextureScale := TGLCoordinates.CreateInitialized(Self, XYZHmgVector,
-    csPoint);
+  FTextureScale := TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
   FTextureScale.OnNotifyChange := OnNotifyChange;
   FTextureRotate := 0;
   FTextureOverride := False;
@@ -1897,9 +2210,9 @@ var
 begin
   Shader := nil; // drop dependency
   Texture2Name := ''; // drop dependency
-  for i := 0 to userList.Count - 1 do
+  for i := 0 to FUserList.Count - 1 do
   begin
-    matObj := TObject(userList[i]);
+    matObj := TObject(FUserList[i]);
     if matObj is TGLMaterial then
       TGLMaterial(matObj).NotifyLibMaterialDestruction
     else if matObj is TGLLibMaterial then
@@ -1908,71 +2221,10 @@ begin
       TGLLibMaterial(matObj).FTexture2Name := '';
     end;
   end;
-  userList.Free;
   FMaterial.Free;
   FTextureOffset.Free;
   FTextureScale.Free;
-  inherited Destroy;
-end;
-
-// GetMaterialLibrary
-//
-
-function TGLLibMaterial.GetMaterialLibrary: TGLMaterialLibrary;
-begin
-  if Collection = nil then
-    Result := nil
-  else
-    Result := TGLMaterialLibrary(TGLLibMaterials(Collection).Owner);
-end;
-
-// QueryInterface
-//
-
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-{$ELSE}
-  function TGLLibMaterial.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
-{$EndIf}
-begin
-  if GetInterface(IID, Obj) then
-    Result := S_OK
-  else
-    Result := E_NOINTERFACE;
-end;
-
-// _AddRef
-//
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLLibMaterial._AddRef: Integer; stdcall;
-{$ELSE}
-  function TGLLibMaterial._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLLibMaterial._AddRef: Integer;
-{$EndIf}
-begin
-  Result := -1; //ignore
-end;
-
-// _Release
-//
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLLibMaterial._Release: Integer; stdcall;
-{$ELSE}
-  function TGLLibMaterial._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLLibMaterial._Release: Integer;
-{$EndIf}
-begin
-  Result := -1; //ignore
+  inherited;
 end;
 
 // Assign
@@ -1982,9 +2234,6 @@ procedure TGLLibMaterial.Assign(Source: TPersistent);
 begin
   if Source is TGLLibMaterial then
   begin
-    FName :=
-      TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
-    FNameHashKey := ComputeNameHashKey(FName);
     FMaterial.Assign(TGLLibMaterial(Source).Material);
     FTextureOffset.Assign(TGLLibMaterial(Source).TextureOffset);
     FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
@@ -1993,9 +2242,13 @@ begin
     FTextureOverride := TGLLibMaterial(Source).FTextureOverride;
     FTexture2Name := TGLLibMaterial(Source).Texture2Name;
     FShader := TGLLibMaterial(Source).Shader;
-  end
-  else
-    inherited;
+  end;
+  inherited;
+end;
+
+function TGLLibMaterial.Blended: Boolean;
+begin
+  Result := Material.Blended;
 end;
 
 // PrepareBuildList
@@ -2010,7 +2263,7 @@ end;
 // Apply
 //
 
-procedure TGLLibMaterial.Apply(var rci: TRenderContextInfo);
+procedure TGLLibMaterial.Apply(var ARci: TRenderContextInfo);
 var
   multitextured: Boolean;
 begin
@@ -2018,10 +2271,10 @@ begin
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssHighLevel: Shader.Apply(rci, Self);
+      ssHighLevel: Shader.Apply(ARci, Self);
       ssReplace:
         begin
-          Shader.Apply(rci, Self);
+          Shader.Apply(ARci, Self);
           Exit;
         end;
     end;
@@ -2047,21 +2300,21 @@ begin
   begin
     // no multitexturing ("standard" mode)
     if not FTextureMatrixIsIdentity then
-        rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
-    Material.Apply(rci);
+        ARci.GLStates.SetGLTextureMatrix(FTextureMatrix);
+    Material.Apply(ARci);
   end
   else
   begin
     // multitexturing is ON
     if not FTextureMatrixIsIdentity then
-      rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
-    Material.Apply(rci);
+      ARci.GLStates.SetGLTextureMatrix(FTextureMatrix);
+    Material.Apply(ARci);
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
-      libMatTexture2.Material.Texture.ApplyAsTexture2(rci,
+      libMatTexture2.Material.Texture.ApplyAsTexture2(ARci,
         @libMatTexture2.FTextureMatrix[0][0])
     else
-      libMatTexture2.Material.Texture.ApplyAsTexture2(rci);
+      libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
     if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
       tmmUser) then
@@ -2079,7 +2332,7 @@ begin
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssLowLevel: Shader.Apply(rci, Self);
+      ssLowLevel: Shader.Apply(ARci, Self);
     end;
   end;
   xgl.EndUpdate;
@@ -2088,136 +2341,46 @@ end;
 // UnApply
 //
 
-function TGLLibMaterial.UnApply(var rci: TRenderContextInfo): Boolean;
+function TGLLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
 begin
   Result := False;
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
-      ssLowLevel: Result := Shader.UnApply(rci);
+      ssLowLevel: Result := Shader.UnApply(ARci);
       ssReplace:
         begin
-          Result := Shader.UnApply(rci);
+          Result := Shader.UnApply(ARci);
           Exit;
         end;
     end;
   end;
+
   if not Result then
   begin
-    // if multipassing, this will occur upon last pass only
-{      if Assigned(Material.FTextureEx) then begin
-       if not Material.TextureEx.IsTextureEnabled(1) then begin}
     if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
       xgl.SecondTextureUnitForbidden) then
     begin
-      libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, (not
+      libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not
         libMatTexture2.TextureMatrixIsIdentity));
       xgl.MapTexCoordToMain;
     end;
-    {         end;
-          end; }
-    Material.UnApply(rci);
+    Material.UnApply(ARci);
     if not Material.Texture.Disabled then
       if not FTextureMatrixIsIdentity then
-        rci.GLStates.ResetGLTextureMatrix;
+        ARci.GLStates.ResetGLTextureMatrix;
     if Assigned(FShader) then
     begin
       case Shader.ShaderStyle of
-        ssHighLevel: Result := Shader.UnApply(rci);
+        ssHighLevel: Result := Shader.UnApply(ARci);
       end;
     end;
   end;
-end;
-
-// RegisterUser
-//
-
-procedure TGLLibMaterial.RegisterUser(obj: TGLUpdateAbleObject);
-begin
-  Assert(userList.IndexOf(obj) < 0);
-  userList.Add(obj);
-end;
-
-// UnregisterUser
-//
-
-procedure TGLLibMaterial.UnRegisterUser(obj: TGLUpdateAbleObject);
-begin
-  userList.Remove(obj);
-end;
-
-// RegisterUser
-//
-
-procedure TGLLibMaterial.RegisterUser(comp: TGLUpdateAbleComponent);
-begin
-  Assert(userList.IndexOf(comp) < 0);
-  userList.Add(comp);
-end;
-
-// UnregisterUser
-//
-
-procedure TGLLibMaterial.UnRegisterUser(comp: TGLUpdateAbleComponent);
-begin
-  userList.Remove(comp);
-end;
-
-// RegisterUser
-//
-
-procedure TGLLibMaterial.RegisterUser(libMaterial: TGLLibMaterial);
-begin
-  Assert(userList.IndexOf(libMaterial) < 0);
-  userList.Add(libMaterial);
-end;
-
-// UnregisterUser
-//
-
-procedure TGLLibMaterial.UnRegisterUser(libMaterial: TGLLibMaterial);
-begin
-  userList.Remove(libMaterial);
-end;
-
-// NotifyUsers
-//
-
-procedure TGLLibMaterial.NotifyChange(Sender: TObject);
-begin
-  NotifyUsers();
 end;
 
 procedure TGLLibMaterial.NotifyTexMapChange(Sender: TObject);
 begin
   NotifyUsersOfTexMapChange();
-end;
-
-procedure TGLLibMaterial.NotifyUsers;
-var
-  i: Integer;
-  obj: TObject;
-begin
-  if notifying then
-    Exit;
-  notifying := True;
-  try
-    for i := 0 to userList.Count - 1 do
-    begin
-      obj := TObject(userList[i]);
-      if obj is TGLUpdateAbleObject then
-        TGLUpdateAbleObject(userList[i]).NotifyChange(Self)
-      else if obj is TGLUpdateAbleComponent then
-        TGLUpdateAbleComponent(userList[i]).NotifyChange(Self)
-      else
-      begin
-        Assert(obj is TGLLibMaterial);
-        TGLLibMaterial(userList[i]).NotifyUsers;
-      end;
-    end;
-  finally
-    notifying := False;
-  end;
 end;
 
 // NotifyUsersOfTexMapChange
@@ -2228,40 +2391,25 @@ var
   i: Integer;
   obj: TObject;
 begin
-  if notifying then
+  if FNotifying then
     Exit;
-  notifying := True;
+  FNotifying := True;
   try
-    for i := 0 to userList.Count - 1 do
+    for i := 0 to FUserList.Count - 1 do
     begin
-      obj := TObject(userList[i]);
+      obj := TObject(FUserList[i]);
       if obj is TGLMaterial then
-        TGLMaterial(userList[i]).NotifyTexMapChange(Self)
+        TGLMaterial(FUserList[i]).NotifyTexMapChange(Self)
       else if obj is TGLLibMaterial then
-        TGLLibMaterial(userList[i]).NotifyUsersOfTexMapChange
+        TGLLibMaterial(FUserList[i]).NotifyUsersOfTexMapChange
       else if obj is TGLUpdateAbleObject then
-        TGLUpdateAbleObject(userList[i]).NotifyChange(Self)
+        TGLUpdateAbleObject(FUserList[i]).NotifyChange(Self)
       else if obj is TGLUpdateAbleComponent then
-        TGLUpdateAbleComponent(userList[i]).NotifyChange(Self);
+        TGLUpdateAbleComponent(FUserList[i]).NotifyChange(Self);
     end;
   finally
-    notifying := False;
+    FNotifying := False;
   end;
-end;
-
-// IsUsed
-//
-
-function TGLLibMaterial.IsUsed: boolean;
-begin
-  result := Assigned(self) and (self.userlist.count > 0);
-end;
-// GetDisplayName
-//
-
-function TGLLibMaterial.GetDisplayName: string;
-begin
-  Result := Name;
 end;
 
 // Loaded
@@ -2271,40 +2419,6 @@ procedure TGLLibMaterial.Loaded;
 begin
   CalculateTextureMatrix;
   Material.Loaded;
-end;
-
-// ComputeNameHashKey
-//
-
-class function TGLLibMaterial.ComputeNameHashKey(const name: string): Integer;
-var
-  i, n: Integer;
-begin
-  n := Length(name);
-  Result := n;
-  for i := 1 to n do
-    Result := (Result shl 1) + Byte(name[i]);
-end;
-
-// SetName
-//
-
-procedure TGLLibMaterial.SetName(const val: TGLLibMaterialName);
-begin
-  if val <> FName then
-  begin
-    if not (csLoading in
-      TComponent(TGLLibMaterials(Collection).GetOwner).ComponentState) then
-    begin
-      if TGLLibMaterials(Collection).GetLibMaterialByName(val) <> Self then
-        FName := TGLLibMaterials(Collection).MakeUniqueName(val)
-      else
-        FName := val;
-    end
-    else
-      FName := val;
-    FNameHashKey := ComputeNameHashKey(FName);
-  end;
 end;
 
 // SetMaterial
@@ -2473,10 +2587,59 @@ begin
       end;
   end;
 end;
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLLibMaterials ------------------
 // ------------------
+ {$IFDEF GLS_REGION}{$REGION 'TGLLibMaterials'}{$ENDIF}
+
+ // MakeUniqueName
+//
+
+function TGLAbstractLibMaterials.GetMaterial(const AName: TGLLibMaterialName):
+  TGLAbstractLibMaterial;
+var
+  i, hk: Integer;
+  lm: TGLAbstractLibMaterial;
+begin
+  hk := TGLAbstractLibMaterial.ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    lm := TGLAbstractLibMaterial(inherited Items[i]);
+    if (lm.NameHashKey = hk) and (lm.Name = AName) then
+    begin
+      Result := lm;
+      Exit;
+    end;
+  end;
+  Result := nil;
+end;
+
+// Loaded
+//
+
+procedure TGLAbstractLibMaterials.Loaded;
+var
+  I: Integer;
+begin
+  for I := Count - 1 downto 0 do
+    TGLAbstractLibMaterial(Items[I]).Loaded;
+end;
+
+function TGLAbstractLibMaterials.MakeUniqueName(const nameRoot: TGLLibMaterialName):
+  TGLLibMaterialName;
+var
+  i: Integer;
+begin
+  Result := nameRoot;
+  i := 1;
+  while GetMaterial(Result) <> nil do
+  begin
+    Result := nameRoot + IntToStr(i);
+    Inc(i);
+  end;
+end;
 
 // Create
 //
@@ -2484,17 +2647,6 @@ end;
 constructor TGLLibMaterials.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner, TGLLibMaterial);
-end;
-
-// Loaded
-//
-
-procedure TGLLibMaterials.Loaded;
-var
-  i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    Items[i].Loaded;
 end;
 
 // SetItems
@@ -2548,43 +2700,19 @@ begin
   Result := (inherited FindItemID(ID)) as TGLLibMaterial;
 end;
 
-// MakeUniqueName
-//
-
-function TGLLibMaterials.MakeUniqueName(const nameRoot: TGLLibMaterialName):
-  TGLLibMaterialName;
-var
-  i: Integer;
-begin
-  Result := nameRoot;
-  i := 1;
-  while GetLibMaterialByName(Result) <> nil do
-  begin
-    Result := nameRoot + IntToStr(i);
-    Inc(i);
-  end;
-end;
-
 // GetLibMaterialByName
 //
 
 function TGLLibMaterials.GetLibMaterialByName(const AName: TGLLibMaterialName):
   TGLLibMaterial;
 var
-  i, hk: Integer;
-  lm: TGLLibMaterial;
+  LMaterial: TGLAbstractLibMaterial;
 begin
-  hk := TGLLibMaterial.ComputeNameHashKey(AName);
-  for i := 0 to Count - 1 do
-  begin
-    lm := TGLLibMaterial(inherited Items[i]);
-    if (lm.NameHashKey = hk) and (lm.Name = AName) then
-    begin
-      Result := lm;
-      Exit;
-    end;
-  end;
-  Result := nil;
+  LMaterial := GetMaterial(AName);
+  if Assigned(LMaterial) and (LMaterial is TGLLibMaterial) then
+    Result := TGLLibMaterial(LMaterial)
+  else
+    Result := nil;
 end;
 
 // GetTextureIndex
@@ -2679,27 +2807,6 @@ begin
     TGLLibMaterial(inherited Items[i]).PrepareBuildList;
 end;
 
-// SetNamesToTStrings
-//
-
-procedure TGLLibMaterials.SetNamesToTStrings(aStrings: TStrings);
-var
-  i: Integer;
-  lm: TGLLibMaterial;
-begin
-  with aStrings do
-  begin
-    BeginUpdate;
-    Clear;
-    for i := 0 to Self.Count - 1 do
-    begin
-      lm := TGLLibMaterial(inherited Items[i]);
-      AddObject(lm.Name, lm);
-    end;
-    EndUpdate;
-  end;
-end;
-
 // DeleteUnusedMaterials
 //
 
@@ -2713,7 +2820,7 @@ begin
     gotNone := True;
     for i := Count - 1 downto 0 do
     begin
-      if TGLLibMaterial(inherited Items[i]).userList.Count = 0 then
+      if TGLLibMaterial(inherited Items[i]).FUserList.Count = 0 then
       begin
         TGLLibMaterial(inherited Items[i]).Free;
         gotNone := False;
@@ -2723,69 +2830,14 @@ begin
   EndUpdate;
 end;
 
-// ------------------
-// ------------------ TGLMaterialLibrary ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-// Create
-//
-
-constructor TGLMaterialLibrary.Create(AOwner: TComponent);
-begin
-  inherited;
-  FMaterials := TGLLibMaterials.Create(Self);
-end;
-
-// Destroy
-//
-
-destructor TGLMaterialLibrary.Destroy;
-begin
-  Assert(FLastAppliedMaterial = nil, 'Unbalanced material application');
-  FTexturePathList.Free;
-  FMaterials.Free;
-  FMaterials := nil;
-  inherited;
-end;
-
-// DestroyHandles
-//
-
-procedure TGLMaterialLibrary.DestroyHandles;
-begin
-  if Assigned(FMaterials) then
-    FMaterials.DestroyHandles;
-end;
-
-// Loaded
-//
-
-procedure TGLMaterialLibrary.Loaded;
-begin
-  FMaterials.Loaded;
-  inherited;
-end;
-
-// SetMaterials
-//
-
-procedure TGLMaterialLibrary.SetMaterials(const val: TGLLibMaterials);
-begin
-  FMaterials.Assign(val);
-end;
-
-// StoreMaterials
-//
-
-function TGLMaterialLibrary.StoreMaterials: Boolean;
-begin
-  Result := (FMaterials.Count > 0);
-end;
+{$IFDEF GLS_REGION}{$REGION 'TGLAbstractMaterialLibrary'}{$ENDIF}
 
 // SetTexturePaths
 //
 
-procedure TGLMaterialLibrary.SetTexturePaths(const val: string);
+procedure TGLAbstractMaterialLibrary.SetTexturePaths(const val: string);
 var
   i, lp: Integer;
 
@@ -2821,6 +2873,118 @@ begin
     i := Length(val) + 1;
     AddCurrent;
   end;
+end;
+
+// ApplyMaterial
+//
+
+function TGLAbstractMaterialLibrary.ApplyMaterial(const AName: string;
+  var ARci: TRenderContextInfo): Boolean;
+begin
+  FLastAppliedMaterial := FMaterials.GetMaterial(AName);
+  Result := Assigned(FLastAppliedMaterial);
+  if Result then
+    FLastAppliedMaterial.Apply(ARci);
+end;
+
+// UnApplyMaterial
+//
+
+function TGLAbstractMaterialLibrary.UnApplyMaterial(
+  var ARci: TRenderContextInfo): Boolean;
+begin
+  if Assigned(FLastAppliedMaterial) then
+  begin
+    Result := FLastAppliedMaterial.UnApply(ARci);
+    if not Result then
+      FLastAppliedMaterial := nil;
+  end
+  else
+    Result := False;
+end;
+
+// SetNamesToTStrings
+//
+
+procedure TGLAbstractMaterialLibrary.SetNamesToTStrings(AStrings: TStrings);
+var
+  i: Integer;
+  lm: TGLAbstractLibMaterial;
+begin
+  with AStrings do
+  begin
+    BeginUpdate;
+    Clear;
+    for i := 0 to FMaterials.Count - 1 do
+    begin
+      lm := TGLAbstractLibMaterial(FMaterials.Items[i]);
+      AddObject(lm.Name, lm);
+    end;
+    EndUpdate;
+  end;
+end;
+
+// Loaded
+//
+
+procedure TGLAbstractMaterialLibrary.Loaded;
+begin
+  inherited;
+  FMaterials.Loaded;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+// ------------------ TGLMaterialLibrary ------------------
+// ------------------
+
+{$IFDEF GLS_REGION}{$REGION 'TGLMaterialLibrary'}{$ENDIF}
+
+// Create
+//
+
+constructor TGLMaterialLibrary.Create(AOwner: TComponent);
+begin
+  inherited;
+  FMaterials := TGLLibMaterials.Create(Self);
+end;
+
+// Destroy
+//
+
+destructor TGLMaterialLibrary.Destroy;
+begin
+  Assert(FLastAppliedMaterial = nil, 'Unbalanced material application');
+  FTexturePathList.Free;
+  FMaterials.Free;
+  FMaterials := nil;
+  inherited;
+end;
+
+// DestroyHandles
+//
+
+procedure TGLMaterialLibrary.DestroyHandles;
+begin
+  if Assigned(FMaterials) then
+    Materials.DestroyHandles;
+end;
+
+// SetMaterials
+//
+
+procedure TGLMaterialLibrary.SetMaterials(const val: TGLLibMaterials);
+begin
+  FMaterials.Assign(val);
+end;
+
+// StoreMaterials
+//
+
+function TGLMaterialLibrary.StoreMaterials: Boolean;
+begin
+  Result := (FMaterials.Count > 0);
 end;
 
 // WriteToFiler
@@ -3354,7 +3518,15 @@ begin
   if (Self = nil) or (Texture = nil) then
     Result := ''
   else
-    Result := FMaterials.GetNameOfTexture(Texture);
+    Result := Materials.GetNameOfTexture(Texture);
+end;
+
+// GetMaterials
+//
+
+function TGLMaterialLibrary.GetMaterials: TGLLibMaterials;
+begin
+  Result := TGLLibMaterials(FMaterials);
 end;
 
 // GetNameOfMaterial
@@ -3366,38 +3538,14 @@ begin
   if (Self = nil) or (LibMat = nil) then
     Result := ''
   else
-    Result := FMaterials.GetNameOfLibMaterial(LibMat);
+    Result := Materials.GetNameOfLibMaterial(LibMat);
 end;
 
-// ApplyMaterial
-//
-
-function TGLMaterialLibrary.ApplyMaterial(const materialName: string; var rci:
-  TRenderContextInfo): Boolean;
-begin
-  FLastAppliedMaterial := Materials.GetLibMaterialByName(materialName);
-  Result := Assigned(FLastAppliedMaterial);
-  if Result then
-    FLastAppliedMaterial.Apply(rci);
-end;
-
-// UnApplyMaterial
-//
-
-function TGLMaterialLibrary.UnApplyMaterial(var rci: TRenderContextInfo):
-  Boolean;
-begin
-  if Assigned(FLastAppliedMaterial) then
-  begin
-    Result := FLastAppliedMaterial.UnApply(rci);
-    if not Result then
-      FLastAppliedMaterial := nil;
-  end
-  else
-    Result := False;
-end;
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 { TGLBlendingParameters }
+
+{$IFDEF GLS_REGION}{$REGION 'TGLBlendingParameters'}{$ENDIF}
 
 procedure TGLBlendingParameters.Apply(var rci: TRenderContextInfo);
 begin
@@ -3421,13 +3569,6 @@ begin
     rci.GLStates.Disable(stBlend);
 end;
 
-procedure TGLBlendingParameters.Changed;
-begin
-  // DaStr: turned off because there is no way to know TGLMaterial's real owner.
-  //  if not (csLoading in GetRealOwner.GetRealOwner.ComponentState) then
-  //  GetRealOwner.SetBlendingMode(bmCustom);
-end;
-
 constructor TGLBlendingParameters.Create(AOwner: TPersistent);
 begin
   inherited;
@@ -3443,17 +3584,12 @@ begin
   FAlphaBlendFuncDFactor := bfOneMinusSrcAlpha;
 end;
 
-function TGLBlendingParameters.GetRealOwner: TGLMaterial;
-begin
-  Result := TGLMaterial(inherited GetOwner);
-end;
-
 procedure TGLBlendingParameters.SetAlphaFuncRef(const Value: TGLclampf);
 begin
   if (FAlphaFuncRef <> Value) then
   begin
     FAlphaFuncRef := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3463,7 +3599,7 @@ begin
   if (FAlphaFuncType <> Value) then
   begin
     FAlphaFuncType := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3475,7 +3611,7 @@ begin
     FBlendFuncDFactor := Value;
     if not FSeparateBlendFunc then
       FAlphaBlendFuncDFactor := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3487,7 +3623,7 @@ begin
     FBlendFuncSFactor := Value;
     if not FSeparateBlendFunc then
       FAlphaBlendFuncSFactor := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3496,7 +3632,7 @@ begin
   if FSeparateBlendFunc and (FAlphaBlendFuncDFactor <> Value) then
   begin
     FAlphaBlendFuncDFactor := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3505,7 +3641,7 @@ begin
   if FSeparateBlendFunc and (FAlphaBlendFuncSFactor <> Value) then
   begin
     FAlphaBlendFuncSFactor := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3514,7 +3650,7 @@ begin
   if (FUseAlphaFunc <> Value) then
   begin
     FUseAlphaFunc := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3523,7 +3659,7 @@ begin
   if (FUseBlendFunc <> Value) then
   begin
     FUseBlendFunc := Value;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3537,7 +3673,7 @@ begin
       FAlphaBlendFuncSFactor := FBlendFuncSFactor;
       FAlphaBlendFuncDFactor := FBlendFuncDFactor;
     end;
-    Changed();
+    NotifyChange(Self);
   end;
 end;
 
@@ -3545,6 +3681,8 @@ function TGLBlendingParameters.StoreAlphaFuncRef: Boolean;
 begin
   Result := (Abs(AlphaFuncRef) > 0.001);
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 
