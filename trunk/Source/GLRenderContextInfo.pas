@@ -112,6 +112,7 @@ type
     amalgamating: Boolean;
     lights: TPersistentObjectList;
     afterRenderEffects: TPersistentObjectList;
+    currentMaterialLevel: TGLMaterialLevel;
   end;
   PRenderContextInfo = ^TRenderContextInfo;
 
