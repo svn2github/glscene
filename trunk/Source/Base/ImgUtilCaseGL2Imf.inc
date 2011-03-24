@@ -4,6 +4,7 @@
         ADest[n].R := GetChannel;
         ADest[n].G := GetChannel;
         ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
       end;
 
     GL_BGR, GL_BGR_INTEGER:
@@ -12,6 +13,7 @@
         ADest[n].B := GetChannel;
         ADest[n].G := GetChannel;
         ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
       end;
 
     GL_RGBA, GL_RGBA_INTEGER:
@@ -35,6 +37,9 @@
     GL_ALPHA, GL_ALPHA_INTEGER:
       for n := 0 to AWidth*AHeight-1 do
       begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
         ADest[n].A := GetChannel;
       end;
 
@@ -45,6 +50,7 @@
         ADest[n].R := c0;
         ADest[n].G := c0;
         ADest[n].B := c0;
+        ADest[n].A := 255.0;
       end;
 
     GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
@@ -71,18 +77,27 @@
       for n := 0 to AWidth*AHeight-1 do
       begin
         ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
       end;
 
     GL_GREEN, GL_GREEN_INTEGER:
       for n := 0 to AWidth*AHeight-1 do
       begin
+        ADest[n].R := 0;
         ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
       end;
 
     GL_BLUE, GL_BLUE_INTEGER:
       for n := 0 to AWidth*AHeight-1 do
       begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
         ADest[n].B := GetChannel;
+        ADest[n].A := 255;
       end;
 
     GL_RG, GL_RG_INTEGER:
@@ -90,4 +105,6 @@
       begin
         ADest[n].R := GetChannel;
         ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
       end;
