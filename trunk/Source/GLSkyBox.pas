@@ -7,6 +7,7 @@
    for use as a skybox always centered on the camera.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -37,7 +38,7 @@ uses
   OpenGLTokens,
   XOpenGL,
   GLRenderContextInfo
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
 
@@ -64,7 +65,7 @@ type
     FStyle: TGLSkyBoxStyle;
 
     //implementing IGLMaterialLibrarySupported
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     { Protected Declarations }
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
@@ -87,20 +88,31 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure BuildList(var ARci: TRenderCOntextInfo); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);
+      override;
 
   published
     { Published Declarations }
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-    property MatNameTop: TGLLibMaterialName read FMatNameTop write SetMatNameTop;
-    property MatNameBottom: TGLLibMaterialName read FMatNameBottom write SetMatNameBottom;
-    property MatNameLeft: TGLLibMaterialName read FMatNameLeft write SetMatNameLeft;
-    property MatNameRight: TGLLibMaterialName read FMatNameRight write SetMatNameRight;
-    property MatNameFront: TGLLibMaterialName read FMatNameFront write SetMatNameFront;
-    property MatNameBack: TGLLibMaterialName read FMatNameBack write SetMatNameBack;
-    property MatNameClouds: TGLLibMaterialName read FMatNameClouds write SetMatNameClouds;
-    property CloudsPlaneOffset: Single read FCloudsPlaneOffset write SetCloudsPlaneOffset;
-    property CloudsPlaneSize: Single read FCloudsPlaneSize write SetCloudsPlaneSize;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+      SetMaterialLibrary;
+    property MatNameTop: TGLLibMaterialName read FMatNameTop write
+      SetMatNameTop;
+    property MatNameBottom: TGLLibMaterialName read FMatNameBottom write
+      SetMatNameBottom;
+    property MatNameLeft: TGLLibMaterialName read FMatNameLeft write
+      SetMatNameLeft;
+    property MatNameRight: TGLLibMaterialName read FMatNameRight write
+      SetMatNameRight;
+    property MatNameFront: TGLLibMaterialName read FMatNameFront write
+      SetMatNameFront;
+    property MatNameBack: TGLLibMaterialName read FMatNameBack write
+      SetMatNameBack;
+    property MatNameClouds: TGLLibMaterialName read FMatNameClouds write
+      SetMatNameClouds;
+    property CloudsPlaneOffset: Single read FCloudsPlaneOffset write
+      SetCloudsPlaneOffset;
+    property CloudsPlaneSize: Single read FCloudsPlaneSize write
+      SetCloudsPlaneSize;
     property Style: TGLSkyBoxStyle read FStyle write FStyle default sbsFull;
   end;
 
@@ -128,8 +140,10 @@ begin
   inherited Create(AOwner);
   CamInvarianceMode := cimPosition;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
-  FCloudsPlaneOffset := 0.2; // this should be set far enough to avoid near plane clipping
-  FCloudsPlaneSize := 32; // the bigger, the more this extends the clouds cap to the horizon
+  FCloudsPlaneOffset := 0.2;
+    // this should be set far enough to avoid near plane clipping
+  FCloudsPlaneSize := 32;
+    // the bigger, the more this extends the clouds cap to the horizon
 end;
 
 // Destroy
@@ -143,7 +157,7 @@ end;
 // GetMaterialLibrary
 //
 
-function TGLSkyBox.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLSkyBox.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
