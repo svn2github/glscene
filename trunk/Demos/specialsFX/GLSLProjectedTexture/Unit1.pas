@@ -145,7 +145,7 @@ begin
 
 
   GLFreeForm1.LoadFromFile('groundtest.lmts');
-//  GLFreeForm1.ObjectStyle := [osDirectDraw];
+  GLFreeForm1.ObjectStyle := [osDirectDraw];
 
   for I := 0 to GLMaterialLibrary1.Materials.Count - 1 do
     GLMaterialLibrary1.Materials.Items[I].Material.MaterialOptions := [moNoLighting];
