@@ -6,6 +6,7 @@
    Geometric objects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
@@ -301,7 +302,7 @@ type
     { Private Declarations }
     FRings, FSides: Cardinal;
     FMinorRadius, FMajorRadius: Single;
-
+    FMesh: array of array of TVertexRec;
   protected
     { Protected Declarations }
     procedure SetMajorRadius(const aValue: Single);
@@ -2003,46 +2004,98 @@ end;
 //
 
 procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
+
+  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  begin
+    XGL.TexCoord2fv(@ptr^.TexCoord);
+    with GL do
+    begin
+      Normal3fv(@ptr^.Normal);
+      if L1 > -1 then
+        VertexAttrib3fv(L1, @ptr.Tangent);
+      if L2 > -1 then
+        VertexAttrib3fv(L2, @ptr.Binormal);
+      Vertex3fv(@ptr^.Position);
+    end;
+  end;
+
 var
   I, J: Integer;
   Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
-  cosTheta, sinTheta: TGLFloat;
   cosTheta1, sinTheta1: TGLFloat;
   ringDelta, sideDelta: TGLFloat;
   iFact, jFact: Single;
+  pVertex: PVertexRec;
+  TanLoc, BinLoc: TGLint;
+
 begin
-  // handle texture generation
-  ringDelta := c2PI / FRings;
-  sideDelta := c2PI / FSides;
-  theta := 0;
-  cosTheta := 1;
-  sinTheta := 0;
-  iFact := 1 / FRings;
-  jFact := 1 / FSides;
-  for I := FRings - 1 downto 0 do
+  if FMesh = nil then
   begin
-    theta1 := theta + ringDelta;
-    SinCos(theta1, sinTheta1, cosTheta1);
-    GL.Begin_(GL_QUAD_STRIP);
-    phi := 0;
-    for J := FSides downto 0 do
+    SetLength(FMesh, FRings+1);
+    // handle texture generation
+    ringDelta := c2PI / FRings;
+    sideDelta := c2PI / FSides;
+    theta := 0;
+    iFact := 1 / FRings;
+    jFact := 1 / FSides;
+    for I := FRings downto 0 do
     begin
-      phi := phi + sideDelta;
-      SinCos(phi, sinPhi, cosPhi);
-      dist := FMajorRadius + FMinorRadius * cosPhi;
+      SetLength(FMesh[I], FSides+2);
+      theta1 := theta + ringDelta;
+      SinCos(theta1, sinTheta1, cosTheta1);
+      phi := 0;
+      for J := FSides+1 downto 0 do
+      begin
+        phi := phi + sideDelta;
+        SinCos(phi, sinPhi, cosPhi);
+        dist := FMajorRadius + FMinorRadius * cosPhi;
 
-      xgl.TexCoord2f(i * iFact, j * jFact);
-      GL.Normal3f(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-      GL.Vertex3f(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
-
-      xgl.TexCoord2f((i + 1) * iFact, j * jFact);
-      GL.Normal3f(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
-      GL.Vertex3f(cosTheta * dist, -sinTheta * dist, FMinorRadius * sinPhi);
+        FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
+        FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
+        FMesh[I][J].Tangent := VectorCrossProduct(VectorNormalize(FMesh[I][J].Position), YVector);
+        FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
+        FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
+      end;
+      theta := theta1;
     end;
-    GL.End_;
-    theta := theta1;
-    cosTheta := cosTheta1;
-    sinTheta := sinTheta1;
+  end;
+
+  with GL do
+  begin
+    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    begin
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+    end
+    else
+    begin
+      TanLoc := -1;
+      BinLoc := TanLoc;
+    end;
+
+    Begin_(GL_TRIANGLES);
+    for I := FRings - 1 downto 0 do
+      for J := FSides - 1 downto 0 do
+      begin
+        pVertex := @FMesh[I][J];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+
+        pVertex := @FMesh[I][J+1];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+
+        pVertex := @FMesh[I+1][J];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+
+        pVertex := @FMesh[I+1][J+1];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+
+        pVertex := @FMesh[I+1][J];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+
+        pVertex := @FMesh[I][J+1];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+      end;
+    End_;
   end;
 end;
 
@@ -2054,6 +2107,7 @@ begin
   if FMajorRadius <> aValue then
   begin
     FMajorRadius := aValue;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2066,6 +2120,7 @@ begin
   if FMinorRadius <> aValue then
   begin
     FMinorRadius := aValue;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2080,6 +2135,7 @@ begin
     FRings := aValue;
     if FRings < 2 then
       FRings := 2;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2094,6 +2150,7 @@ begin
     FSides := aValue;
     if FSides < 3 then
       FSides := 3;
+    FMesh := nil;
     StructureChanged;
   end;
 end;
