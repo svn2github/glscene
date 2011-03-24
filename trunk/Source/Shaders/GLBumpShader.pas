@@ -656,7 +656,7 @@ end;
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 var
   maxTextures, i: Integer;
-  ambient, materialAmbient: TColorVector;
+  ambient, LMaterialAmbient: TColorVector;
   success: Boolean;
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then
@@ -739,10 +739,10 @@ begin
       ActiveTexture := 0;
 
       GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
-      ambient[0] := ambient[0] * materialAmbient[0];
-      ambient[1] := ambient[1] * materialAmbient[1];
-      ambient[2] := ambient[2] * materialAmbient[2];
+      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
+      ambient[0] := ambient[0] * LMaterialAmbient[0];
+      ambient[1] := ambient[1] * LMaterialAmbient[1];
+      ambient[2] := ambient[2] * LMaterialAmbient[2];
       GL.Color3fv(@ambient);
 
       FAmbientPass := True;
@@ -755,7 +755,7 @@ end;
 
 function TGLBumpShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
 var
-  ambient, materialAmbient: TVector;
+  ambient, LMaterialAmbient: TVector;
 begin
   Result := False;
   if (csDesigning in ComponentState) and not DesignTimeEnabled then
@@ -822,10 +822,10 @@ begin
       SetBlendFunc(bfOne, bfOne);
 
       GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
-      ambient[0] := ambient[0] * materialAmbient[0];
-      ambient[1] := ambient[1] * materialAmbient[1];
-      ambient[2] := ambient[2] * materialAmbient[2];
+      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
+      ambient[0] := ambient[0] * LMaterialAmbient[0];
+      ambient[1] := ambient[1] * LMaterialAmbient[1];
+      ambient[2] := ambient[2] * LMaterialAmbient[2];
       GL.Color3fv(@ambient);
 
       FAmbientPass := True;

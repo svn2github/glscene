@@ -13,6 +13,7 @@
     </p>
 
   <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Fixed light state changes
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -84,7 +85,7 @@ type
     function GetTextureSharingShader: TGLTextureSharingShader;
 
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary; virtual;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary; virtual;
 
   public
     procedure Apply(var rci: TRenderContextInfo);
@@ -339,7 +340,7 @@ begin
   Result := '[' + st + '.' + Self.LibMaterialName + ']';
 end;
 
-function TGLTextureSharingShaderMaterial.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLTextureSharingShaderMaterial.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;

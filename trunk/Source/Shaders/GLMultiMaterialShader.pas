@@ -81,10 +81,12 @@ begin
 
    FPass:=1;
    if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
+      rci.ignoreDepthRequests := True;
       rci.GLStates.Enable(stDepthTest);
       rci.GLStates.DepthFunc := cfLEqual;
       if FMaterialLibrary.Materials.Count>0 then
          FMaterialLibrary.Materials[0].Apply(rci);
+      rci.ignoreDepthRequests := False;
   end;
 end;
 

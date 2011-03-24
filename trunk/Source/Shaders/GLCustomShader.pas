@@ -113,7 +113,7 @@ uses
   // GLScene
   VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGLTokens, GLScene,
   GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
-  VectorLists, GLTextureFormat;
+  VectorLists, GLTextureFormat, GLSLParameter;
 
 const
   glsShaderMaxLightSources = 8;
@@ -121,8 +121,6 @@ const
 type
   TGLShaderFogSupport = (sfsEnabled, sfsDisabled, sfsAuto);
   TGLTransformFeedBackMode = (tfbmInterleaved, tfbmSeparate);
-  TGLgsInTypes = (gsInPoints, gsInLines, gsInAdjLines, gsInTriangles, gsInAdjTriangles);
-  TGLgsOutTypes = (gsOutPoints, gsOutLineStrip, gsOutTriangleStrip);
 
   EGLCustomShaderException = class(EGLShaderException);
 
