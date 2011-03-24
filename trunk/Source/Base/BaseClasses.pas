@@ -4,6 +4,7 @@
 {: Base classes for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject
       <li>05/10/08 - DanB - Creation, from GLMisc.pas + other places
    </ul></font>
 }
@@ -57,6 +58,7 @@ type
     constructor Create(AOwner: TPersistent); virtual;
 
     procedure NotifyChange(Sender: TObject); virtual;
+    procedure Notification(Sender: TObject; Operation: TOperation); virtual;
     function GetOwner: TPersistent; override;
 
     property Updating: Integer read FUpdating;
@@ -138,6 +140,13 @@ begin
     if Assigned(FOnNotifyChange) then
       FOnNotifyChange(Self);
   end;
+end;
+
+// Notification
+//
+
+procedure TGLUpdateAbleObject.Notification(Sender: TObject; Operation: TOperation);
+begin
 end;
 
 // GetOwner
