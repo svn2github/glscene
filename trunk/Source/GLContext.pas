@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
       <li>24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
       <li>14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
       <li>16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
@@ -185,6 +186,7 @@ type
     FManager: TGLContextManager;
     FActivationCount: Integer;
     FOwnedHandlesCount: Integer;
+    FIsPraparationNeed: Boolean;
   protected
     { Protected Declarations }
     FGL: TGLExtensionsAndEntryPoints;
@@ -294,6 +296,8 @@ type
        Will fail if the context is not active or another
        context has been activated. }
     procedure Deactivate;
+    {: Call OnPrepare for all handles.<p> }
+    procedure PrepareHandlesData;
     {: Returns true if the context is valid.<p>
        A context is valid from the time it has been successfully
        created to the time of its destruction. }
@@ -306,9 +310,10 @@ type
     procedure DestroyAllHandles;
 
     function RenderOutputDevice: Integer; virtual; abstract;
-
+    {: Access to OpenGL command and extension. }
     property GL: TGLExtensionsAndEntryPoints read FGL;
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
+    property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
 
   TGLContextClass = class of TGLContext;
@@ -343,6 +348,8 @@ type
     FChanged: Boolean;
   end;
 
+  TOnPrepareHandleData = procedure(AContext: TGLContext) of object;
+
   // TGLContextHandle
   //
   {: Wrapper around an OpenGL context handle.<p>
@@ -353,6 +360,7 @@ type
   private
     { Private Declarations }
     FHandles: array[0..GLS_MAX_RENDERING_CONTEXT_NUM - 1] of TGLRCHandle;
+    FOnPrepare: TOnPrepareHandleData;
     function GetHandle: TGLuint;
     function SafeGetHandle: TGLuint;
     function GetContext: TGLContext;
@@ -396,11 +404,12 @@ type
     procedure AllocateHandle;
     procedure DestroyHandle;
 
+    property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
   end;
 
   TGLVirtualHandle = class;
-  TGLVirtualHandleEvent = procedure(sender: TGLVirtualHandle; var handle:
-    Cardinal) of object;
+  TGLVirtualHandleEvent = procedure(Sender: TGLVirtualHandle; var handle:
+    TGLuint) of object;
 
   // TGLVirtualHandle
   //
@@ -458,7 +467,6 @@ type
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
-    constructor Create; override;
     property Target: TGLTextureTarget read FTarget write SetTarget;
   end;
 
@@ -473,6 +481,7 @@ type
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
+    class function IsSupported: Boolean; override;
   end;
 
   // TGLQueryHandle
@@ -1211,6 +1220,9 @@ type
 
     {: Request all contexts to destroy all their handles. }
     procedure DestroyAllHandles;
+
+    {: Notify all contexts about necessity of handles preparation. }
+    procedure NotifyPreparationNeed;
   end;
 
   EGLContext = class(Exception);
@@ -1349,6 +1361,7 @@ begin
   FTransformation := TGLPipelineTransformation.Create;
   FTransformation.FFPTransformation := True;
   GLContextManager.RegisterContext(Self);
+  FIsPraparationNeed := True;
 end;
 
 // Destroy
@@ -1513,6 +1526,40 @@ begin
     raise EGLContext.Create(cContextAlreadyCreated);
   DoCreateMemoryContext(outputDevice, width, height, BufferCount);
   Manager.ContextCreatedBy(Self);
+end;
+
+// PrepareHandlesData
+//
+
+procedure TGLContext.PrepareHandlesData;
+var
+  I: Integer;
+  LHandle: TGLContextHandle;
+begin
+  if vCurrentGLContext = Self then
+  begin
+{$IFNDEF GLS_MULTITHREAD}
+    for i := Manager.FHandles.Count - 1 downto 0 do
+    begin
+      LHandle := TGLContextHandle(Manager.FHandles[i]);
+      if Assigned(LHandle.FOnPrepare) then
+        LHandle.FOnPrepare(Self);
+    end;
+{$ELSE}
+    with Manager.FHandles.LockList do
+      try
+        for i := Count - 1 downto 0 do
+        begin
+          LHandle := TGLContextHandle(Items[i]);
+          if Assigned(LHandle.FOnPrepare) then
+            LHandle.FOnPrepare(Self);
+        end;
+      finally
+        Manager.FHandles.UnlockList;
+      end;
+{$ENDIF}
+    FIsPraparationNeed := False;
+  end;
 end;
 
 // PropagateSharedContext
@@ -1934,7 +1981,9 @@ begin
   end;
 
   if not bSucces then
-    GLSLogger.LogError('Failed to allocate OpenGL identifier - contexts number more then GLS_MAX_RENDERING_CONTEXT_NUM!');
+    GLSLogger.LogError('Failed to allocate OpenGL identifier - contexts number more then GLS_MAX_RENDERING_CONTEXT_NUM!')
+  else if Assigned(FOnPrepare) then
+    GLContextManager.NotifyPreparationNeed;
 end;
 
 function TGLContextHandle.IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
@@ -2200,6 +2249,8 @@ var
 begin
   for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     FHandles[I].FChanged := True;
+  if Assigned(FOnPrepare) then
+    GLContextManager.NotifyPreparationNeed;
 end;
 
 function TGLContextHandle.IsShared: Boolean;
@@ -2373,12 +2424,6 @@ end;
 // ------------------ TGLTextureHandle ------------------
 // ------------------
 
-constructor TGLTextureHandle.Create;
-begin
-  inherited;
-  FillChar(FTarget, SizeOf(TGLTextureTarget), $FF);
-end;
-
 // DoAllocateHandle
 //
 
@@ -2386,7 +2431,7 @@ function TGLTextureHandle.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   GL.GenTextures(1, @Result);
-  FillChar(FTarget, SizeOf(TGLTextureTarget), $FF);
+  FTarget := ttNoShape;
 end;
 
 // DoDestroyHandle
@@ -2422,7 +2467,7 @@ begin
     // check for error
     GL.CheckError;
   end;
-  FillChar(FTarget, SizeOf(TGLTextureTarget), $FF);
+  FTarget := ttNoShape;
 end;
 
 // IsValid
@@ -2435,7 +2480,7 @@ end;
 
 procedure TGLTextureHandle.SetTarget(ATarget: TGLTextureTarget);
 begin
-  if Integer(FTarget) <> -1 then
+  if FTarget = ttNoShape then
     FTarget := ATarget;
 end;
 
@@ -2466,6 +2511,14 @@ begin
     // check for error
     GL.CheckError;
   end;
+end;
+
+// TGLSamplerHandle
+//
+
+class function TGLSamplerHandle.IsSupported: Boolean;
+begin
+  Result := GL.ARB_sampler_objects;
 end;
 
 // IsValid
@@ -4369,6 +4422,20 @@ end;
 procedure TGLContextManager.Lock;
 begin
   FList.LockList;
+end;
+
+procedure TGLContextManager.NotifyPreparationNeed;
+var
+  I: Integer;
+  LList: TList;
+begin
+  LList := FList.LockList;
+  try
+    for I := LList.Count - 1 downto 0 do
+      TGLContext(LList[I]).FIsPraparationNeed := True;
+  finally
+    FList.UnlockList;
+  end;
 end;
 
 // UnLock
