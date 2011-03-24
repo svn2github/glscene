@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
       <li>14/12/10 - DaStr - Added to TGLStateCache:
                                Color property
@@ -223,6 +224,8 @@ type
     FSize: TGLsizeiptr;
   end;
 
+  TGLMaterialLevel = (mlAuto, mlFixedFunction, mlCombiner, mlSM3, mlSM4, mlSM5);
+
   // TGLStateCache
   //
   {: Manages an application-side cache of OpenGL states and parameters.<p>
@@ -312,6 +315,7 @@ type
     FMaxArrayTextureSize: TGLuint;
     FMaxTextureImageUnits: TGLuint;
     FMaxTextureAnisotropy: TGLuint;
+    FMaxSamples: TGLuint;
     FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of TGLuint;
     FTextureBindingTime: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Double;
     FSamplerBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TGLuint;
@@ -487,6 +491,7 @@ type
     function GetMaxArrayTextureSize: TGLuint;
     function GetMaxTextureImageUnits: TGLuint;
     function GetMaxTextureAnisotropy: TGLuint;
+    function GetMaxSamples: TGLuint;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
       TGLuint;
     function GetTextureBindingTime(Index: Integer; target: TGLTextureTarget):
@@ -594,6 +599,12 @@ type
     function GetQuadAtten(I: Integer): Single;
     procedure SetQuadAtten(I: Integer; const Value: Single);
     procedure SetForwardContext(Value: Boolean);
+
+    function GetMaterialAmbient(const aFace: TCullFaceMode): TVector;
+    function GetMaterialDiffuse(const aFace: TCullFaceMode): TVector;
+    function GetMaterialSpecular(const aFace: TCullFaceMode): TVector;
+    function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
+    function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -621,6 +632,17 @@ type
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
+
+    property MaterialAmbient[const aFace: TCullFaceMode]: TVector
+      read GetMaterialAmbient;
+    property MaterialDiffuse[const aFace: TCullFaceMode]: TVector
+      read GetMaterialDiffuse;
+    property MaterialSpecular[const aFace: TCullFaceMode]: TVector
+      read GetMaterialSpecular;
+    property MaterialEmission[const aFace: TCullFaceMode]: TVector
+      read GetMaterialEmission;
+    property MaterialShininess[const aFace: TCullFaceMode]: Integer
+      read GetMaterialShininess;
 
     {: Adjusts material colors for a face if there is no lighting. }
     procedure SetGLMaterialColorsNoLighting(diffuse: TVector);
@@ -816,6 +838,7 @@ type
     property MaxArrayTextureSize: TGLuint read GetMaxArrayTextureSize;
     property MaxTextureImageUnits: TGLuint read GetMaxTextureImageUnits;
     property MaxTextureAnisotropy: TGLuint read GetMaxTextureAnisotropy;
+    property MaxSamples: TGLuint read GetMaxSamples;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
@@ -1180,7 +1203,7 @@ const
     );
 
   cGLTexTypeToGLEnum: array[TGLTextureTarget] of TGLenum =
-    (GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_1D_ARRAY,
+    (0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_1D_ARRAY,
     GL_TEXTURE_2D_ARRAY, GL_TEXTURE_RECTANGLE, GL_TEXTURE_BUFFER,
     GL_TEXTURE_CUBE_MAP, GL_TEXTURE_2D_MULTISAMPLE,
     GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY);
@@ -2375,6 +2398,31 @@ begin
   Result := FMaxTextureSize;
 end;
 
+function TGLStateCache.GetMaterialAmbient(const aFace: TCullFaceMode): TVector;
+begin
+  Result := FFrontBackColors[ord(aFace)][1];
+end;
+
+function TGLStateCache.GetMaterialDiffuse(const aFace: TCullFaceMode): TVector;
+begin
+  Result := FFrontBackColors[ord(aFace)][2];
+end;
+
+function TGLStateCache.GetMaterialEmission(const aFace: TCullFaceMode): TVector;
+begin
+  Result := FFrontBackColors[ord(aFace)][0];
+end;
+
+function TGLStateCache.GetMaterialShininess(const aFace: TCullFaceMode): Integer;
+begin
+  Result := FFrontBackShininess[ord(aFace)];
+end;
+
+function TGLStateCache.GetMaterialSpecular(const aFace: TCullFaceMode): TVector;
+begin
+  Result := FFrontBackColors[ord(aFace)][3];
+end;
+
 function TGLStateCache.GetMax3DTextureSize: TGLuint;
 begin
   if FMax3DTextureSize = 0 then
@@ -2409,6 +2457,13 @@ begin
   if (FMaxTextureAnisotropy = 0) and GL.EXT_texture_filter_anisotropic then
     GL.GetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, @FMaxTextureAnisotropy);
   Result := FMaxTextureAnisotropy;
+end;
+
+function TGLStateCache.GetMaxSamples: TGLuint;
+begin
+  if (FMaxSamples = 0) and GL.EXT_multisample then
+    GL.GetIntegerv(GL_MAX_SAMPLES, @FMaxSamples);
+  Result := FMaxSamples;
 end;
 
 function TGLStateCache.GetTextureBinding(Index: Integer;
