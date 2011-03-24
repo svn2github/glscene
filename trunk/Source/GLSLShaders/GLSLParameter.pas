@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLTokens<p>
+{: GLSLParameter<p>
 
 	<b>History : </b><font size=-1><ul>
     <li>14/03/11 - Yar - Creation
@@ -14,7 +14,8 @@ interface
 {$i GLScene.inc}
 
 uses
-  OpenGLTokens, VectorTypes;
+  Classes,
+  OpenGLTokens, VectorTypes, GLTextureFormat, GLRenderContextInfo;
 
 type
 
@@ -90,7 +91,21 @@ type
     sOutTriangleStrip
   );
 
+
   IShaderParameter = interface(IInterface)
+    function GetName: string;
+    function GetGLSLType: TGLSLDataType;
+    function GetGLSLSamplerType: TGLSLSamplerType;
+
+    function GetAutoSetMethod: string;
+    function GetTextureName: string;
+    function GetSamplerName: string;
+    function GetTextureSwizzle: TSwizzleVector;
+    procedure SetTextureName(const AValue: string);
+    procedure SetSamplerName(const AValue: string);
+    procedure SetAutoSetMethod(const AValue: string);
+    procedure SetTextureSwizzle(const AValue: TSwizzleVector);
+
     function GetFloat: Single;
     function GetVec2: TVector2f;
     function GetVec3: TVector3f;
@@ -132,6 +147,10 @@ type
     procedure SetIntArray(const Values: PGLInt; Count: Integer);
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer);
 
+    property Name: string read GetName;
+    property GLSLType: TGLSLDataType read GetGLSLType;
+    property GLSLSamplerType: TGLSLSamplerType read GetGLSLSamplerType;
+
     {: Scalar types.<p>}
     property float: TGLFloat read GetFloat write SetFloat;
     property int: TGLint read GetInt write SetInt;
@@ -156,6 +175,12 @@ type
     property mat2: TMatrix2f read GetMat2 write SetMat2;
     property mat3: TMatrix3f read GetMat3 write SetMat3;
     property mat4: TMatrix4f read GetMat4 write SetMat4;
+
+    {: Bindings.<p>}
+    property AutoSetMethod: string read GetAutoSetMethod write SetAutoSetMethod;
+    property TextureName: string read GetTextureName write SetTextureName;
+    property SamplerName: string read GetSamplerName write SetSamplerName;
+    property TextureSwizzle: TSwizzleVector read GetTextureSwizzle write SetTextureSwizzle;
   end;
 
 const
@@ -223,6 +248,96 @@ const
   cGLgsOutTypes: array[TGLgsOutTypes] of GLenum =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
 
+resourcestring
+  rstrNothing = '*nothing*';
+
+type
+  TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
+
+procedure RegisterUniformAutoSetMethod(AMethodName: string;
+  AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
+procedure FillUniformAutoSetMethodList(AList: TStrings;
+  TypeFilter: TGLSLDataType); overload;
+procedure FillUniformAutoSetMethodList(AList: TStrings;
+  TypeFilter: TGLSLSamplerType); overload;
+function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
+function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
+
 implementation
+
+type
+  TAutoSetMethodRec = record
+    Name: string;
+    UniformType: TGLSLDataType;
+    SamplerType: TGLSLSamplerType;
+    Method: TUniformAutoSetMethod;
+  end;
+
+var
+  vMethods: array of TAutoSetMethodRec;
+
+procedure RegisterUniformAutoSetMethod(AMethodName: string;
+  AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
+var
+  I: Integer;
+begin
+  for I := 0 to High(vMethods) do
+    if vMethods[I].Name = AMethodName then
+    begin
+      vMethods[I].UniformType := AType;
+      vMethods[I].Method := AMethod;
+      exit;
+    end;
+  I := Length(vMethods);
+  SetLength(vMethods, I+1);
+  vMethods[I].Name := AMethodName;
+  vMethods[I].UniformType := AType;
+  vMethods[I].SamplerType := GLSLSamplerUndefined;
+  vMethods[I].Method := AMethod;
+end;
+
+procedure FillUniformAutoSetMethodList(AList: TStrings; TypeFilter: TGLSLDataType);
+var
+  I: Integer;
+begin
+  for I := 0 to High(vMethods) do
+    if vMethods[I].UniformType = TypeFilter then
+      AList.Add(vMethods[I].Name);
+end;
+
+procedure FillUniformAutoSetMethodList(AList: TStrings; TypeFilter: TGLSLSamplerType);
+var
+  I: Integer;
+begin
+  for I := 0 to High(vMethods) do
+    if vMethods[I].SamplerType = TypeFilter then
+      AList.Add(vMethods[I].Name);
+end;
+
+function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
+var
+  I: Integer;
+begin
+  for I := 0 to High(vMethods) do
+    if vMethods[I].Name = AMethodName then
+    begin
+      Result := vMethods[I].Method;
+      exit;
+    end;
+  Result := nil;
+end;
+
+function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
+var
+  I: Integer;
+begin
+  for I := 0 to High(vMethods) do
+    if @vMethods[I].Method = @AMethod then
+    begin
+      Result := vMethods[I].Name;
+      exit;
+    end;
+  Result := '';
+end;
 
 end.
