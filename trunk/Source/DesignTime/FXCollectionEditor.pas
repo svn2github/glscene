@@ -92,7 +92,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SysUtils, GLBehaviours, GLScene, Dialogs;
+  SysUtils, GLBehaviours, GLScene, Dialogs, GLMaterialEx;
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';
@@ -119,6 +119,7 @@ end;
 procedure TXCollectionEditor.FormCreate(Sender: TObject);
 begin
    RegisterGLBehaviourNameChangeEvent(OnNameChanged);
+   RegisterGLMaterialExNameChangeEvent(OnNameChanged);
    RegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
@@ -127,7 +128,8 @@ end;
 procedure TXCollectionEditor.FormDestroy(Sender: TObject);
 begin
 	DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
-        DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);        
+  DeRegisterGLMaterialExNameChangeEvent(OnNameChanged);
+  DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
 // FormHide
