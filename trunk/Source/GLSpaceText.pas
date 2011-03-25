@@ -12,6 +12,7 @@
   Also extents are valid only when SpaceText has one line. <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>25/03/11 - Yar - Fixed issue with unsharable virtual handle of font entry
   <li>22/09/10 - Yar - Added unicode support (Delphi 2009 & up only)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -102,7 +103,7 @@ type
 
   TFontEntry = record
     Name: string;
-    FVirtualHandle: TGLVirtualHandle;
+    FVirtualHandle: TGLVirtualHandleTransf;
     Styles: TFontStyles;
     Extrusion: Single;
     RefCount: Integer;
@@ -945,7 +946,7 @@ begin
       // no entry found, so create one
       New(NewEntry);
       NewEntry^.Name := AName;
-      NewEntry^.FVirtualHandle := TGLVirtualHandle.Create;
+      NewEntry^.FVirtualHandle := TGLVirtualHandleTransf.Create;
       NewEntry^.FVirtualHandle.OnAllocate := VirtualHandleAlloc;
       NewEntry^.FVirtualHandle.OnDestroy := VirtualHandleDestroy;
       NewEntry^.FVirtualHandle.Tag := nbLists;

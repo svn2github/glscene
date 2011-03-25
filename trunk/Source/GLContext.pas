@@ -419,7 +419,6 @@ type
     { Private Declarations }
     FOnAllocate, FOnDestroy: TGLVirtualHandleEvent;
     FTag: Integer;
-
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
@@ -432,6 +431,14 @@ type
     property OnDestroy: TGLVirtualHandleEvent read FOnDestroy write FOnDestroy;
 
     property Tag: Integer read FTag write FTag;
+  end;
+
+  // TGLVirtualHandleTransf
+  //
+  {: Transferable virtual handle. }
+  TGLVirtualHandleTransf = class(TGLVirtualHandle)
+  protected
+    class function Transferable: Boolean; override;
   end;
 
   // TGLListHandle
@@ -2358,6 +2365,13 @@ end;
 class function TGLVirtualHandle.Transferable: Boolean;
 begin
   Result := False;
+end;
+
+{ TGLVirtualHandleTransf }
+
+class function TGLVirtualHandleTransf.Transferable: Boolean;
+begin
+  Result := True;
 end;
 
 // ------------------
@@ -4618,6 +4632,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
