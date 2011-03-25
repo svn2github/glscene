@@ -32,7 +32,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="232">
+    <Files Count="234">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -961,6 +961,14 @@
         <Filename Value="../Source/Shaders/GLUserShader.pas"/>
         <UnitName Value="GLUserShader"/>
       </Item232>
+      <Item233>
+        <Filename Value="../Source/PropertyEditors/FRUniformEditor.pas"/>
+        <UnitName Value="FRUniformEditor"/>
+      </Item233>
+      <Item234>
+        <Filename Value="../Source/GLSLShaders/GLSLParameter.pas"/>
+        <UnitName Value="GLSLParameter"/>
+      </Item234>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

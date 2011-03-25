@@ -12,6 +12,8 @@ unit FRUniformEditor;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons, GLSLParameter, GLTextureFormat;
@@ -168,7 +170,7 @@ begin
         MaxInteger(TextureBox.Items.IndexOf(IParam.TextureName), 0);
       SamplerBox.ItemIndex :=
         MaxInteger(SamplerBox.Items.IndexOf(IParam.SamplerName), 0);
-      SV := IParam.TextureSwizzle;
+      SV := IParam.GetTextureSwizzle;
       RedGroup.ItemIndex := Ord(SV[0]);
       GreenGroup.ItemIndex := Ord(SV[1]);
       BlueGroup.ItemIndex := Ord(SV[2]);
@@ -220,9 +222,9 @@ begin
   begin
     if FUniformList[LBUniforms.ItemIndex].GLSLSamplerType = GLSLSamplerUndefined then
       exit;
-    SV := FUniformList[LBUniforms.ItemIndex].TextureSwizzle;
+    SV := FUniformList[LBUniforms.ItemIndex].GetTextureSwizzle;
     SV[TRadioGroup(Sender).Tag] := TGLTextureSwizzle(TRadioGroup(Sender).ItemIndex);
-    FUniformList[LBUniforms.ItemIndex].TextureSwizzle := SV;
+    FUniformList[LBUniforms.ItemIndex].SetTextureSwizzle(SV);
   end;
 end;
 

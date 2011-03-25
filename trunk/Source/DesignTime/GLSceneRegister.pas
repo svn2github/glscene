@@ -110,8 +110,8 @@ uses
   GLColor,
   GLCrossPlatform,
   GLObjectManager,
-{$IFDEF GLS_DELPHI_2005_UP}
-  ToolsApi,
+{$IFDEF GLS_DELPHI_7_UP}
+  ToolsAPI,
 {$ENDIF}
 {$IFDEF GLS_DELPHI_6_UP}
   DesignIntf,
@@ -227,17 +227,6 @@ type
 {$ENDIF}
 
     function GetValue: string; override;
-    procedure SetValue(const Value: string); override;
-  end;
-
-  // TVectorFileProperty
-  //
-  TVectorFileProperty = class(TClassProperty)
-  public
-    { Public Declarations }
-    function GetAttributes: TPropertyAttributes; override;
-    function GetValue: string; override;
-    procedure Edit; override;
     procedure SetValue(const Value: string); override;
   end;
 
@@ -382,6 +371,75 @@ type
     function GetVerbCount: Integer; override;
   end;
 
+  // TGLMaterialComponentNameProperty
+  //
+
+  TGLMaterialComponentNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  TGLLibTextureNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibSamplerNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibCombinerNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibShaderNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibAttachmentNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  // TPictureFileProperty
+  //
+  TPictureFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TShaderFileProperty
+  //
+  TShaderFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TUniformAutoSetProperty
+  //
+  TUniformAutoSetProperty = class(TPropertyEditor)
+  private
+    procedure PassUniform(const S: string);
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
 resourcestring
   { OpenGL property category }
   sOpenGLCategoryName = 'OpenGL';
@@ -415,6 +473,7 @@ uses
   BaseClasses,
   Dialogs,
   FLibMaterialPicker,
+  FRUniformEditor,
   FMaterialEditorForm,
   FVectorEditor,
   GLAnimatedSprite,
@@ -456,6 +515,7 @@ uses
   GLLensFlare,
   GLLinePFX,
   GLMaterial,
+  GLMaterialEx,
   GLMaterialMultiProxy,
   GLMaterialScript,
   GLMesh,
@@ -563,19 +623,15 @@ uses
   GLFileO3TC,
   GLFileHDR,
   GLFileJPEG,
-  GLFilePNG
+  GLFilePNG,
 
-{$IFDEF WIN32}
-  ,
   GLSound,
   GLSoundFileObjects,
   GLSpaceText,
   Joystick,
   ScreenSaver,
   GLWideBitmapFont,
-  GLFullScreenViewer
-{$ENDIF}
-  ;
+  GLFullScreenViewer;
 
 var
   vObjectManager: TObjectManager;
@@ -587,7 +643,7 @@ begin
   Result := vObjectManager;
 end;
 
-//----------------- TOpenGLCategory --------------------------------------------
+{$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
 
@@ -602,7 +658,9 @@ begin
 end;
 {$ENDIF}
 
-//----------------- TGLSceneViewerEditor ---------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLSceneViewerEditor'}{$ENDIF}
 
 // ExecuteVerb
 //
@@ -635,7 +693,9 @@ begin
   Result := 1;
 end;
 
-//----------------- TGLSceneEditor ---------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLSceneEditor'}{$ENDIF}
 
 // Edit
 //
@@ -677,7 +737,9 @@ begin
   Result := 1;
 end;
 
-//----------------- TResolutionProperty ----------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -778,14 +840,18 @@ begin
     SetOrdValue(0);
 end;
 
-//----------------- TGLTextureProperty -----------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLTextureProperty'}{$ENDIF}
 
 function TGLTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
 end;
 
-//----------------- TGLTextureImageProperty ------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLTextureImageProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -804,7 +870,9 @@ begin
     Designer.Modified;
 end;
 
-//----------------- TGLImageClassProperty --------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLImageClassProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -854,7 +922,9 @@ begin
   Modified;
 end;
 
-//----------------- TGLColorproperty -----------------------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLColorProperty'}{$ENDIF}
 
 procedure TGLColorProperty.Edit;
 var
@@ -1014,60 +1084,10 @@ begin
 end;
 {$ENDIF GLS_COMPILER_6_UP}
 
-//----------------- TVectorFileProperty ----------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-// GetAttributes
-//
+{$IFDEF GLS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
 
-function TVectorFileProperty.GetAttributes: TPropertyAttributes;
-begin
-  Result := [paDialog];
-end;
-
-// GetValue
-//
-
-function TVectorFileProperty.GetValue: string;
-begin
-  Result := GetStrValue;
-end;
-
-// Edit
-//
-
-procedure TVectorFileProperty.Edit;
-var
-  ODialog: TOpenDialog;
-  Component: TGLFreeForm;
-  Desc, F: string;
-begin
-  Component := GetComponent(0) as TGLFreeForm;
-  ODialog := TOpenDialog.Create(nil);
-  try
-    GLVectorFileObjects.GetVectorFileFormats.BuildFilterStrings(
-      GLVectorFileObjects.TVectorFile, Desc, F);
-    ODialog.Filter := Desc;
-    if ODialog.Execute then
-    begin
-      Component.LoadFromFile(ODialog.FileName);
-      Modified;
-    end;
-  finally
-    ODialog.Free;
-  end;
-end;
-
-// SetValue
-//
-
-procedure TVectorFileProperty.SetValue(const Value: string);
-begin
-  SetStrValue(Value);
-end;
-
-//----------------- TSoundFileProperty -----------------------------------------
-
-{$IFDEF WIN32}
 // GetAttributes
 //
 
@@ -1114,7 +1134,9 @@ begin
   end;
 end;
 
-//----------------- TSoundNameProperty -----------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1138,9 +1160,10 @@ begin
       for i := 0 to Samples.Count - 1 do
         Proc(Samples[i].Name);
 end;
-{$ENDIF WIN32}
 
-//----------------- TGLCoordinatesProperty -------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLCoordinatesProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1169,7 +1192,9 @@ begin
   end;
 end;
 
-//----------------- TGLMaterialProperty --------------------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLMaterialProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1188,7 +1213,9 @@ begin
     Modified;
 end;
 
-//----------------- TGLGUIComponentProperty --------------------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLGUIElementListProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1207,8 +1234,9 @@ begin
     Modified;
 end;
 
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-//----------------- TReuseableDefaultEditor --------------------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
 
 // CheckEdit
 //
@@ -1363,7 +1391,9 @@ begin
 end;
 {$ENDIF}
 
-//----------------- TGLMaterialLibraryEditor --------------------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLMaterialLibraryEditor'}{$ENDIF}
 
 // EditProperty
 //
@@ -1409,7 +1439,9 @@ begin
   Result := 1
 end;
 
-//----------------- TGLLibMaterialNameProperty ---------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterialNameProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1425,7 +1457,7 @@ end;
 procedure TGLLibMaterialNameProperty.Edit;
 var
   buf: string;
-  ml: TGLMaterialLibrary;
+  ml: TGLAbstractMaterialLibrary;
   obj: TPersistent;
   Int: IGLMaterialLibrarySupported;
 begin
@@ -1444,7 +1476,9 @@ begin
     SetStrValue(buf);
 end;
 
-//----------------- TGLAnimationNameProperty -----------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLAnimationNameProperty'}{$ENDIF}
 
 // GetAttributes
 //
@@ -1477,7 +1511,10 @@ begin
 end;
 
 {$IFDEF GLS_DELPHI_7_UP}
-{ TGLBaseSceneObjectSelectionEditor }
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLBaseSceneObjectSelectionEditor'}{$ENDIF}
 
 procedure TGLBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1500,7 +1537,9 @@ begin
   end;
 end;
 
-{ TGLSoundLibrarySelectionEditor }
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLSoundLibrarySelectionEditor'}{$ENDIF}
 
 procedure TGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1523,7 +1562,10 @@ begin
 end;
 {$ENDIF}
 
-{ TGLSArchiveManagerEditor }
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLSArchiveManagerEditor'}{$ENDIF}
+
 {$IFDEF GLS_DELPHI_6_UP}
 
 procedure TGLSArchiveManagerEditor.EditProperty(const Prop: IProperty;
@@ -1566,6 +1608,153 @@ function TGLSArchiveManagerEditor.GetVerbCount: Integer;
 begin
   Result := 1
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLMaterialComponentNameProperty'}{$ENDIF}
+
+procedure TGLMaterialComponentNameProperty.Edit;
+var
+  LOwner: IGLMaterialLibrarySupported;
+  LItem: TGLBaseMaterialCollectionItem;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+  begin
+    LItem := TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).Components.GetItemByName(GetStrValue);
+    if Assigned(LItem) then
+      Designer.SelectComponent(LItem);
+    Modified;
+  end;
+end;
+
+function TGLMaterialComponentNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TGLLibTextureNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+  begin
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureImageEx);
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLFrameBufferAttachment);
+  end;
+end;
+
+procedure TGLLibSamplerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureSampler);
+end;
+
+procedure TGLLibCombinerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureCombiner);
+end;
+
+procedure TGLLibShaderNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLShaderEx);
+end;
+
+procedure TGLLibAttachmentNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLFrameBufferAttachment);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+
+function TPictureFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+procedure TPictureFileProperty.Edit;
+var
+  LFileName: string;
+begin
+  if OpenPictureDialog(LFileName) then
+  begin
+    SetStrValue(RelativePath(LFileName));
+  end;
+  Modified;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+
+procedure TShaderFileProperty.Edit;
+var
+  ODialog: TOpenDialog;
+begin
+  ODialog := TOpenDialog.Create(nil);
+  try
+    ODialog.Filter := '*.glsl';
+    if ODialog.Execute then
+    begin
+      SetStrValue(RelativePath(ODialog.FileName));
+      Modified;
+    end;
+  finally
+    ODialog.Free;
+  end;
+end;
+
+function TShaderFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
+
+function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paFullWidthName];
+end;
+
+procedure TUniformAutoSetProperty.PassUniform(const S: string);
+begin
+  ShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0)).Uniforms[S]);
+end;
+
+procedure TUniformAutoSetProperty.Edit;
+var
+  LOwner: TGLBaseShaderModel;
+begin
+  LOwner := TGLBaseShaderModel(GetComponent(0));
+  if LOwner.Enabled and LOwner.IsValid then
+  begin
+    with ShaderUniformEditor do
+    begin
+      Clear;
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TGLTextureImageEx);
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TGLFrameBufferAttachment);
+      LOwner.MaterialLibrary.GetNames(AddSamplerName, TGLTextureSampler);
+      LOwner.GetUniformNames(PassUniform);
+      Execute;
+    end;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 //******************************************************************************
 
@@ -1909,7 +2098,7 @@ begin
   RegisterComponents('GLScene',
     [TGLScene,
     TGLSceneViewer, TGLMemoryViewer,
-      TGLMaterialLibrary,
+      TGLMaterialLibrary, TGLMaterialLibraryEx,
       TGLCadencer,
       TGLGuiLayout,
       TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
@@ -1963,6 +2152,7 @@ begin
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);
   RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
+  RegisterComponentEditor(TGLMaterialLibraryEx, TGLMaterialLibraryEditor);
   RegisterComponentEditor(TGLSArchiveManager, TGLSArchiveManagerEditor);
 
   GLRegisterPropertiesInCategories;
@@ -1994,11 +2184,27 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLFBORenderer, '', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
-  RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
 {$IFDEF GLS_DELPHI_7_UP}
   RegisterSelectionEditor(TGLBaseSceneObject, TGLBaseSceneObjectSelectionEditor);
   RegisterSelectionEditor(TGLSoundLibrary, TGLSoundLibrarySelectionEditor);
 {$ENDIF}
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterialProperty, 'NextPass', TGLLibMaterialNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibTextureName', TGLLibTextureNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLCombinerProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4, 'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4, 'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4, 'LibGeometryShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibGeometryShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessControlShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessEvalShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLTextureImageEx, 'SourceFile', TPictureFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLShaderEx, 'SourceFile', TShaderFileProperty);
+  RegisterPropertyEditor(TypeInfo(Boolean), TGLBaseShaderModel, 'AutoFillOfUniforms', TUniformAutoSetProperty);
 end;
 
 function GetGLSceneVersion: string;
@@ -2006,9 +2212,36 @@ begin
   Result := Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
 end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+function GetProjectTargetName: string;
+var
+  Project: IOTAProject;
+begin
+  Result := '';
+  Project := GetActiveProject;
+  if Assigned(Project) then
+  begin
+{$IFDEF GLS_DELPHI_2005_UP}
+    Result := Project.ProjectOptions.TargetName;
+{$ELSE}
+    if Project.ProjectOptions.Values['GenPackage'] then // package project
+    begin
+      // use project options if specified
+      Result := Project.ProjectOptions.Values['PkgDllDir'];
+      // otherwise use environment options
+      if Result = '' then
+        Result := (BorlandIDEServices as IOTAServices).GetEnvironmentOptions.Values['PackageDPLOutput'];
+      end
+      else // non-package project, use project options
+        Result := Project.ProjectOptions.Values['OutputDir'];
+
+      // default is the project's path
+      if Result = '' then
+        Result := ExtractFilePath(Project.FileName);
+{$ENDIF}
+    if Length(Result) > 0 then
+      ForceDirectories(ExtractFilePath(Result));
+  end;
+end;
 
 initialization
   // ------------------------------------------------------------------
@@ -2024,6 +2257,7 @@ initialization
 {$ENDIF}
 
   GLCrossPlatform.IsDesignTime := True;
+  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
   ReadVideoModes;

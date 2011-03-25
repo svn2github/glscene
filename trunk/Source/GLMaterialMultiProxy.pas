@@ -70,7 +70,7 @@ type
     function GetMasterLibMaterialName: TGLLibMaterialName;
 
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -305,7 +305,7 @@ end;
 
 // GetMaterialLibrary
 //
-function TGLMaterialMultiProxyMaster.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLMaterialMultiProxyMaster.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   if OwnerObject = nil then
     Result := nil

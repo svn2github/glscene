@@ -869,7 +869,7 @@ end;
 procedure TGLLibMaterialNameProperty.Edit;
 var
   buf: string;
-  ml: TGLMaterialLibrary;
+  ml: TGLAbstractMaterialLibrary;
   obj: TPersistent;
   Int: IGLMaterialLibrarySupported;
 begin

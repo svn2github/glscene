@@ -9425,6 +9425,9 @@ begin
     end;
   end;
 
+  if RenderingContext.IsPraparationNeed then
+    RenderingContext.PrepareHandlesData;
+
   if baseObject = nil then
   begin
     aScene.Objects.Render(rci);
