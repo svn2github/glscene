@@ -37,7 +37,7 @@ type
   TGLTexCombineShader = class(TGLShader)
   private
     { Protected Declarations }
-    FCombiners: TStrings;
+    FCombiners: TStringList;
     FCommandCache: TCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
     FDesignTimeEnabled: Boolean;
@@ -52,7 +52,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetCombiners(const val: TStrings);
+    procedure SetCombiners(const val: TStringList);
     procedure SetDesignTimeEnabled(const val: Boolean);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
     procedure SetLibMaterial3Name(const val: TGLLibMaterialName);
@@ -75,7 +75,7 @@ type
 
   published
     { Published Declarations }
-    property Combiners: TStrings read FCombiners write SetCombiners;
+    property Combiners: TStringList read FCombiners write SetCombiners;
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
 
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
@@ -297,7 +297,7 @@ begin
       end;
 
       if Length(FCommandCache) = 0 then
-        FCommandCache := GetTextureCombiners(FCombiners.Text);
+        FCommandCache := GetTextureCombiners(FCombiners);
       for n := 0 to High(FCommandCache) do
       begin
         rci.GLStates.ActiveTexture := FCommandCache[n].ActiveUnit;
@@ -339,7 +339,7 @@ end;
 // SetCombiners
 //
 
-procedure TGLTexCombineShader.SetCombiners(const val: TStrings);
+procedure TGLTexCombineShader.SetCombiners(const val: TStringList);
 begin
   if val <> FCombiners then
   begin

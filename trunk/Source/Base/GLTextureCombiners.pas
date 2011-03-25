@@ -22,7 +22,7 @@ interface
 
 {$I GLScene.inc}
 
-uses SysUtils;
+uses SysUtils, Classes;
 
 type
 
@@ -63,7 +63,7 @@ type
      explicitly, and '.rgb' to specify color channels (default). You cannot mix
      alpha and rgb tokens in the same line.
   }
-function GetTextureCombiners(const tcCode: string): TCombinerCache;
+function GetTextureCombiners(const tcCode: TStringList): TCombinerCache;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -74,7 +74,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  Classes,
   OpenGLTokens,
   GLContext;
 
@@ -344,7 +343,7 @@ end;
 // SetupTextureCombiners
 //
 
-function GetTextureCombiners(const tcCode: string): TCombinerCache;
+function GetTextureCombiners(const tcCode: TStringList): TCombinerCache;
 var
   i: Integer;
   sl: TStringList;
@@ -353,7 +352,7 @@ begin
   TCAssertCheck(GL.ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
   sl := TStringList.Create;
   try
-    sl.Text := tcCode;
+    sl.Assign(tcCode);
     for i := 0 to sl.Count - 1 do
       ProcessTextureCombinerLine(sl[i]);
   finally
