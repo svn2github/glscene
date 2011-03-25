@@ -29,6 +29,7 @@ uses
   GLMaterial,
   GLTexture,
   GLSLShader,
+  GLSLParameter,
   GLRenderContextInfo;
 
 type
