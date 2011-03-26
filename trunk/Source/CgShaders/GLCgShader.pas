@@ -6,6 +6,7 @@
    Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>26/03/11 - Yar - Added SetAsMatrix to TCgParameter
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
@@ -254,6 +255,7 @@ type
        SetAsVector([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVector(const val : array of single); overload;
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
+    procedure SetAsMatrix(const val: TMatrix4f);
 
     {: Procedures for dealing with texture pamareters.}
     // SetAsTexture checks for all texture types
@@ -1072,6 +1074,11 @@ begin
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
 
+procedure TCgParameter.SetAsMatrix(const val: TMatrix4f);
+begin
+  cgGLSetMatrixParameterfr(FHandle, @val);
+end;
+
 // DisableClientState
 //
 procedure TCgParameter.DisableClientState;
@@ -1429,6 +1436,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
