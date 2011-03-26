@@ -58,7 +58,7 @@ type
   {: Just a good-looking shader. }
   TGLCustomCGBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
-    FMaterialLibrary: TGLMaterialLibrary;
+    FMaterialLibrary: TGLAbstractMaterialLibrary;
 
     FGradientTexture: TGLTexture;
     FMainTexture:     TGLTexture;
@@ -96,7 +96,7 @@ type
     function StoreMainTextureShare: Boolean;
 
     // Implementing IGLMaterialLibrarySupported.
-    function GetMaterialLibrary: TGLMaterialLibrary;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
 
   protected
     procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
@@ -105,7 +105,7 @@ type
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnUnApplyFP(CgProgram: TCgProgram); virtual;
 
-    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;
+    procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -129,7 +129,7 @@ type
 {$IFNDEF GLS_OPTIMIZATIONS}
     property MainTextureSource: TGLCgBombShaderTextureSource read FMainTextureSource write FMainTextureSource;
 {$ENDIF}
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
   end;
 
   TGLCgBombShader = class(TGLCustomCGBombShader)
@@ -215,14 +215,14 @@ procedure TGLCustomCGBombShader.DoInitialize(var rci : TRenderContextInfo; Sende
 begin
   if FGradientTexture = nil then
   try
-    FGradientTexture := FMaterialLibrary.TextureByName(FGradientTextureName);
+    FGradientTexture := TGLMaterialLibrary(FMaterialLibrary).TextureByName(FGradientTextureName);
   except
     Enabled := False;
     raise;
   end;
   if FMainTexture = nil then
   try
-    FMainTexture := FMaterialLibrary.TextureByName(FMainTextureName);
+    FMainTexture := TGLMaterialLibrary(FMaterialLibrary).TextureByName(FMainTextureName);
   except end;
 
   with VertexProgram.Code do
@@ -325,17 +325,17 @@ end;
 
 function TGLCustomCGBombShader.GetGradientTextureName: TGLLibMaterialName;
 begin
-  Result := FMaterialLibrary.GetNameOfTexture(FGradientTexture);
+  Result := TGLMaterialLibrary(FMaterialLibrary).GetNameOfTexture(FGradientTexture);
   if Result = '' then Result := FGradientTextureName;
 end;
 
 function TGLCustomCGBombShader.GetMainTextureName: TGLLibMaterialName;
 begin
-  Result := FMaterialLibrary.GetNameOfTexture(FMainTexture);
+  Result := TGLMaterialLibrary(FMaterialLibrary).GetNameOfTexture(FMainTexture);
   if Result = '' then Result := FMainTextureName;
 end;
 
-function TGLCustomCGBombShader.GetMaterialLibrary: TGLMaterialLibrary;
+function TGLCustomCGBombShader.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -353,14 +353,14 @@ begin
         // Need to nil the textures that were owned by it
         if FMainTexture <> nil then
         begin
-          Index := FMaterialLibrary.Materials.GetTextureIndex(FMainTexture);
+          Index := TGLMaterialLibrary(FMaterialLibrary).Materials.GetTextureIndex(FMainTexture);
           if Index <> -1 then
             SetMainTexture(nil);
         end;
 
         if FGradientTexture <> nil then
         begin
-          Index := FMaterialLibrary.Materials.GetTextureIndex(FGradientTexture);
+          Index := TGLMaterialLibrary(FMaterialLibrary).Materials.GetTextureIndex(FGradientTexture);
           if Index <> -1 then
             SetGradientTexture(nil);
         end;
@@ -434,11 +434,13 @@ begin
 end;
 
 procedure TGLCustomCGBombShader.SetMaterialLibrary(
-  const Value: TGLMaterialLibrary);
+  const Value: TGLAbstractMaterialLibrary);
 begin
   if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
   FMaterialLibrary := Value;
-  if FMaterialLibrary <> nil then FMaterialLibrary.FreeNotification(Self);
+  if (FMaterialLibrary <> nil)
+    and (FMaterialLibrary is TGLAbstractMaterialLibrary) then
+      FMaterialLibrary.FreeNotification(Self);
 end;
 
 function TGLCustomCGBombShader.StoreColorRange: Boolean;
