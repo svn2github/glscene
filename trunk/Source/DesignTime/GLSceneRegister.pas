@@ -2191,7 +2191,7 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterialProperty, 'NextPass', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibTextureName', TGLLibTextureNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);
-  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLCombinerProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLMultitexturingProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibVertexShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibFragmentShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4, 'LibVertexShaderName', TGLLibShaderNameProperty);
