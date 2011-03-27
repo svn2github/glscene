@@ -2024,6 +2024,7 @@ var
   Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
   cosTheta1, sinTheta1: TGLFloat;
   ringDelta, sideDelta: TGLFloat;
+  ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
   TanLoc, BinLoc: TGLint;
@@ -2051,8 +2052,11 @@ begin
         dist := FMajorRadius + FMinorRadius * cosPhi;
 
         FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
+        ringDir := FMesh[I][J].Position;
+        ringDir[2] := 0.0;
+        NormalizeVector(ringDir);
         FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-        FMesh[I][J].Tangent := VectorCrossProduct(VectorNormalize(FMesh[I][J].Position), YVector);
+        FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
         FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
         FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
       end;
