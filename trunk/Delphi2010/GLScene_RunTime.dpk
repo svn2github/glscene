@@ -283,6 +283,9 @@ contains
   GLSelection in '..\Source\GLSelection.pas',
   ImageUtils in '..\Source\Base\ImageUtils.pas',
   GLSGenerics in '..\Source\Base\GLSGenerics.pas',
-  GLSLog in '..\Source\Base\GLSLog.pas';
+  GLSLog in '..\Source\Base\GLSLog.pas',
+  GLMaterialEx in '..\Source\GLMaterialEx.pas',
+  GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
+  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas';
 
 end.

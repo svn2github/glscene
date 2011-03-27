@@ -265,6 +265,9 @@ contains
   GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
-  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
+  GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
+  GLMaterialEx in '..\Source\GLMaterialEx.pas',
+  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas';
 
 end.

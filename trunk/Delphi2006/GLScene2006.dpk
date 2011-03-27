@@ -285,6 +285,9 @@ contains
   OpenGLTokens in '..\Source\Base\OpenGLTokens.pas',
   GLPipelineTransformation in '..\Source\Base\GLPipelineTransformation.pas',
   ImageUtils in '..\Source\Base\ImageUtils.pas',
-  GLSLog in '..\Source\Base\GLSLog.pas';
+  GLSLog in '..\Source\Base\GLSLog.pas',
+  GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
+  GLMaterialEx in '..\Source\GLMaterialEx.pas',
+  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas';
 
 end.
