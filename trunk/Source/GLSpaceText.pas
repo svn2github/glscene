@@ -587,8 +587,10 @@ var
 begin
   if GetText <> '' then
   begin
+    if Assigned(FTextFontEntry) then
+      FTextFontEntry^.FVirtualHandle.AllocateHandle;
     if FontChanged or (Assigned(FTextFontEntry) and
-      (FTextFontEntry^.FVirtualHandle.handle = 0)) then
+      (FTextFontEntry^.FVirtualHandle.IsDataNeedUpdate)) then
       with FFont do
       begin
         FontManager.Release(FTextFontEntry, Self);
@@ -596,6 +598,7 @@ begin
         FTextFontEntry := FontManager.GetFontBase(Name, Style, FExtrusion,
           FAllowedDeviation, firstChar, lastChar, Self);
         FontChanged := False;
+        FTextFontEntry^.FVirtualHandle.NotifyDataUpdated;
       end;
   end;
   inherited;

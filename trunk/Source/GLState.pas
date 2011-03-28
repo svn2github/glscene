@@ -3241,6 +3241,8 @@ end;
 
 procedure TGLStateCache.CallList(list: TGLuint);
 begin
+  while High(FListStates) < Integer(list) do
+    SetLength(FListStates, 2 * Length(FListStates));
   PushAttrib(FListStates[list - 1]);
   GL.CallList(list);
   PopAttrib;
