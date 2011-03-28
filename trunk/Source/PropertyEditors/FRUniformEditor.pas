@@ -22,7 +22,6 @@ type
   TShaderUniformEditor = class(TForm)
     LBUniforms: TListBox;
     Labe1: TLabel;
-    BBOk: TBitBtn;
     AutoSetBox: TComboBox;
     SamplerBox: TComboBox;
     Panel1: TPanel;
@@ -35,6 +34,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     TextureBox: TComboBox;
+    Button1: TButton;
     procedure FormDestroy(Sender: TObject);
     procedure LBUniformsClick(Sender: TObject);
     procedure ColorGroupClick(Sender: TObject);

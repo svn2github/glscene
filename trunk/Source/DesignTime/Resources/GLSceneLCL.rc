@@ -21,11 +21,13 @@ vcl\TGLFireFXManager.bmp
 vcl\TGLFPSMovementManager.bmp
 vcl\TGLFullScreenViewer.bmp
 vcl\TGLGizmo.bmp
+vcl\TGLGizmoEx.bmp
 vcl\TGLGuiLayout.bmp
 vcl\TGLHeightTileFileHDS.bmp
 vcl\TGLHiddenlineShader.bmp
 vcl\TGLLinePFXManager.bmp
 vcl\TGLMaterialLibrary.bmp
+vcl\TGLMaterialLibraryEx.bmp
 vcl\TGLMaterialScripter.bmp
 vcl\TGLMemoryViewer.bmp
 vcl\TGLMultiMaterialShader.bmp
@@ -66,6 +68,7 @@ vcl\TGLUserShader.bmp
 vcl\TGLVfsPAK.bmp
 vcl\TGLWideBitmapFont.bmp
 vcl\TGLWindowsBitmapFont.bmp
+vcl\TGLStoredBitmapFont.bmp
 vcl\TSDLWindow.bmp
 vcl\TGLSLogger.bmp
 vcl\TGLSLanguage.bmp

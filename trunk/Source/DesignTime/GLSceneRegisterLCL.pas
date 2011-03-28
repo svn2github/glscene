@@ -54,7 +54,7 @@ uses
   // GLScene units
   VectorGeometry, GLScene, GLViewer, GLFullScreenViewer, BaseClasses,
   GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
-  GLCadencer, GLTextureImageEditors, GLColor, GLCrossPlatform,
+  GLCadencer, GLTextureImageEditors, GLColor, GLCrossPlatform, GLMaterialEx,
   // GLScene - basic geometry
   GLObjects, GLGeomObjects, GLPolyhedron,
   // GLScene - advanced geometry
@@ -116,8 +116,7 @@ uses
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,
   FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
-  FRColorEditorLCL, FRTrackBarEditLCL,
-
+  FRColorEditorLCL, FRTrackBarEditLCL, FRUniformEditor,
   GLUtils;
 
 var
@@ -212,17 +211,6 @@ type
     procedure SetValue(const Value: string); override;
   end;
 
-  // TVectorFileProperty
-
-  TVectorFileProperty = class(TClassProperty)
-  public
-    { Public Declarations }
-    function GetAttributes: TPropertyAttributes; override;
-    function GetValue: string; override;
-    procedure Edit; override;
-    procedure SetValue(const Value: string); override;
-  end;
-
   // TSoundFileProperty
 
   TSoundFileProperty = class(TClassProperty)
@@ -302,6 +290,76 @@ type
       override;
     procedure ExecuteVerb(Index: integer); override;
     function GetVerb(Index: integer): string; override;
+  end;
+
+  // TGLMaterialComponentNameProperty
+
+
+  TGLMaterialComponentNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  TGLLibTextureNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibSamplerNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibCombinerNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibShaderNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TGLLibAttachmentNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  // TPictureFileProperty
+
+  TPictureFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TShaderFileProperty
+
+  TShaderFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TUniformAutoSetProperty
+
+  TUniformAutoSetProperty = class(TPropertyEditor)
+  private
+    procedure PassUniform(const S: string);
+  public
+    { Public Declarations }
+    function GetValue: string; override;
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
   end;
 
 //----------------- TGLSceneViewerEditor ---------------------------------------
@@ -665,54 +723,6 @@ begin
   end;
 end;
 
-//----------------- TVectorFileProperty ----------------------------------------
-
-// GetAttributes
-
-function TVectorFileProperty.GetAttributes: TPropertyAttributes;
-begin
-  Result := [paDialog];
-end;
-
-// GetValue
-
-function TVectorFileProperty.GetValue: string;
-begin
-  Result := GetStrValue;
-end;
-
-// Edit
-
-procedure TVectorFileProperty.Edit;
-var
-  ODialog: TOpenDialog;
-  Component: TGLFreeForm;
-  Desc, F: string;
-begin
-  Component := GetComponent(0) as TGLFreeForm;
-  ODialog := TOpenDialog.Create(nil);
-  try
-    GLVectorFileObjects.GetVectorFileFormats.BuildFilterStrings(TVectorFile, Desc, F);
-    ODialog.Filter := Desc;
-    if ODialog.Execute then
-    begin
-      Component.LoadFromFile(ODialog.FileName);
-      Modified;
-    end;
-  finally
-    ODialog.Free;
-  end;
-end;
-
-// SetValue
-
-procedure TVectorFileProperty.SetValue(const Value: string);
-begin
-  SetStrValue(Value);
-end;
-
-//----------------- TSoundFileProperty -----------------------------------------
-
 // GetAttributes
 
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
@@ -958,12 +968,174 @@ begin
   end;
 end;
 
+{$REGION 'TGLMaterialComponentNameProperty'}
+
+procedure TGLMaterialComponentNameProperty.Edit;
+var
+  LOwner: IGLMaterialLibrarySupported;
+  LItem: TGLBaseMaterialCollectionItem;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+  begin
+    LItem := TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).Components.GetItemByName(
+      GetStrValue);
+    if Assigned(LItem) then
+      GlobalDesignHook.SelectOnlyThis(LItem);
+    Modified;
+  end;
+end;
+
+function TGLMaterialComponentNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TGLLibTextureNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+  begin
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureImageEx);
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc,
+      TGLFrameBufferAttachment);
+  end;
+end;
+
+procedure TGLLibSamplerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureSampler);
+end;
+
+procedure TGLLibCombinerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLTextureCombiner);
+end;
+
+procedure TGLLibShaderNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLShaderEx);
+end;
+
+procedure TGLLibAttachmentNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc,
+      TGLFrameBufferAttachment);
+end;
+
+{$ENDREGION}
+
+{$REGION 'TPictureFileProperty'}
+
+function TPictureFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+procedure TPictureFileProperty.Edit;
+var
+  LFileName: string;
+begin
+  LFileName := TGLTextureImageEx(GetComponent(0)).SourceFile;
+  if OpenPictureDialog(LFileName) then
+  begin
+    SetStrValue(RelativePath(LFileName));
+  end;
+  Modified;
+end;
+
+{$ENDREGION}
+
+{$REGION 'TPictureFileProperty'}
+
+procedure TShaderFileProperty.Edit;
+var
+  ODialog: TOpenDialog;
+begin
+  ODialog := TOpenDialog.Create(nil);
+  try
+    ODialog.Filter := '*.glsl';
+    if ODialog.Execute then
+    begin
+      SetStrValue(RelativePath(ODialog.FileName));
+      Modified;
+    end;
+  finally
+    ODialog.Free;
+  end;
+end;
+
+function TShaderFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+{$ENDREGION}
+
+{$REGION 'TUniformAutoSetProperty'}
+
+function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paFullWidthName];
+end;
+
+procedure TUniformAutoSetProperty.PassUniform(const S: string);
+begin
+  ShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0)).Uniforms[S]);
+end;
+
+function TUniformAutoSetProperty.GetValue: string;
+begin
+  Result := '';
+end;
+
+procedure TUniformAutoSetProperty.Edit;
+var
+  LOwner: TGLBaseShaderModel;
+begin
+  LOwner := TGLBaseShaderModel(GetComponent(0));
+  if LOwner.Enabled and LOwner.IsValid then
+  begin
+    with ShaderUniformEditor do
+    begin
+      Clear;
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TGLTextureImageEx);
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TGLFrameBufferAttachment);
+      LOwner.MaterialLibrary.GetNames(AddSamplerName, TGLTextureSampler);
+      LOwner.GetUniformNames(PassUniform);
+      Execute;
+    end;
+  end;
+end;
+
+{$ENDREGION}
+
+function GetProjectTargetName: string;
+begin
+  Result := '$(TargetFile)';
+  if not Assigned(IDEMacros) or not IDEMacros.SubstituteMacros(Result) then
+    Result := '';
+end;
+
 procedure Register;
 begin
   RegisterComponents('GLScene',
     [TGLScene, TGLSceneViewer, TGLMemoryViewer, TGLMaterialLibrary,
     TGLCadencer, TGLGuiLayout, TGLBitmapFont, TGLWindowsBitmapFont,
-    TGLStoredBitmapFont, TGLScriptLibrary, TGLSoundLibrary, TGLFullScreenViewer]);
+    TGLStoredBitmapFont, TGLScriptLibrary, TGLSoundLibrary,
+    TGLFullScreenViewer, TGLMaterialLibraryEx]);
 
   RegisterComponents('GLScene PFX',
     [TGLCustomPFXManager, TGLPolygonPFXManager, TGLPointLightPFXManager,
@@ -984,10 +1156,9 @@ begin
 
   RegisterComponents('GLScene Shaders',
     [TGLTexCombineShader, TGLPhongShader, TGLUserShader, TGLHiddenLineShader,
-    TGLCelShader, TGLOutlineShader, TGLMultiMaterialShader,
-    TGLBumpShader, TGLSLShader, TGLSLDiffuseSpecularShader,
-    TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner, TGLTextureSharingShader,
-    TGLSLPostBlurShader]);
+    TGLCelShader, TGLOutlineShader, TGLMultiMaterialShader, TGLBumpShader,
+    TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader, TGLAsmShader,
+    TGLShaderCombiner, TGLTextureSharingShader, TGLSLPostBlurShader]);
 
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);
@@ -1040,8 +1211,41 @@ begin
     '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName),
     TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
-  RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName',
-    TVectorFileProperty);
+
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterialProperty,
+    'NextPass', TGLLibMaterialNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName),
+    TGLTextureProperties, 'LibTextureName', TGLLibTextureNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName),
+    TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName),
+    TGLMultitexturingProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3,
+    'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3,
+    'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4,
+    'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4,
+    'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4,
+    'LibGeometryShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5,
+    'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5,
+    'LibFragmentShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5,
+    'LibGeometryShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5,
+    'LibTessControlShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5,
+    'LibTessEvalShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLTextureImageEx, 'SourceFile',
+    TPictureFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLShaderEx, 'SourceFile',
+    TShaderFileProperty);
+  RegisterPropertyEditor(TypeInfo(boolean), TGLBaseShaderModel,
+    'AutoFillOfUniforms', TUniformAutoSetProperty);
 
   with ObjectManager do
   begin
@@ -1193,9 +1397,11 @@ initialization
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
   GLCrossPlatform.IsDesignTime := True;
+  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
 
 finalization
 
   ObjectManager.Free;
 
 end.
+

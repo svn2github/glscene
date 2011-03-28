@@ -3,7 +3,7 @@ object ShaderUniformEditor: TShaderUniformEditor
   Top = 332
   BorderStyle = bsDialog
   Caption = 'Autofill of uniforms'
-  ClientHeight = 317
+  ClientHeight = 344
   ClientWidth = 440
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -55,19 +55,11 @@ object ShaderUniformEditor: TShaderUniformEditor
     Left = 8
     Top = 24
     Width = 209
-    Height = 285
+    Height = 313
     ItemHeight = 13
     TabOrder = 0
     OnClick = LBUniformsClick
     OnKeyPress = LBUniformsKeyPress
-  end
-  object BBOk: TBitBtn
-    Left = 357
-    Top = 284
-    Width = 75
-    Height = 25
-    TabOrder = 1
-    Kind = bkOK
   end
   object AutoSetBox: TComboBox
     Left = 223
@@ -76,7 +68,7 @@ object ShaderUniformEditor: TShaderUniformEditor
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
-    TabOrder = 2
+    TabOrder = 1
     OnChange = AutoSetBoxChange
   end
   object SamplerBox: TComboBox
@@ -87,27 +79,22 @@ object ShaderUniformEditor: TShaderUniformEditor
     Style = csDropDownList
     Enabled = False
     ItemHeight = 13
-    TabOrder = 3
+    TabOrder = 2
     OnChange = SamplerBoxChange
   end
   object Panel1: TPanel
     Left = 223
     Top = 162
     Width = 209
-    Height = 116
-    TabOrder = 4
+    Height = 143
+    TabOrder = 3
     object RedGroup: TRadioGroup
       Left = 8
       Top = 8
       Width = 50
-      Height = 100
+      Height = 129
       Caption = 'RED'
       Color = clRed
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
       Items.Strings = (
         'R'
         'G'
@@ -115,9 +102,7 @@ object ShaderUniformEditor: TShaderUniformEditor
         'A'
         '0'
         '1')
-      ParentBackground = False
       ParentColor = False
-      ParentFont = False
       TabOrder = 0
       OnClick = ColorGroupClick
     end
@@ -126,7 +111,7 @@ object ShaderUniformEditor: TShaderUniformEditor
       Left = 55
       Top = 8
       Width = 50
-      Height = 100
+      Height = 129
       Caption = 'GREEN'
       Color = clGreen
       Items.Strings = (
@@ -136,7 +121,6 @@ object ShaderUniformEditor: TShaderUniformEditor
         'A'
         '0'
         '1')
-      ParentBackground = False
       ParentColor = False
       TabOrder = 1
       OnClick = ColorGroupClick
@@ -146,7 +130,7 @@ object ShaderUniformEditor: TShaderUniformEditor
       Left = 102
       Top = 8
       Width = 50
-      Height = 100
+      Height = 129
       Caption = 'BLUE'
       Color = clBlue
       Items.Strings = (
@@ -156,7 +140,6 @@ object ShaderUniformEditor: TShaderUniformEditor
         'A'
         '0'
         '1')
-      ParentBackground = False
       ParentColor = False
       TabOrder = 2
       OnClick = ColorGroupClick
@@ -166,7 +149,7 @@ object ShaderUniformEditor: TShaderUniformEditor
       Left = 150
       Top = 8
       Width = 50
-      Height = 100
+      Height = 129
       Caption = 'ALPHA'
       Color = clWhite
       Items.Strings = (
@@ -176,7 +159,6 @@ object ShaderUniformEditor: TShaderUniformEditor
         'A'
         '0'
         '1')
-      ParentBackground = False
       ParentColor = False
       TabOrder = 3
       OnClick = ColorGroupClick
@@ -190,7 +172,16 @@ object ShaderUniformEditor: TShaderUniformEditor
     Style = csDropDownList
     Enabled = False
     ItemHeight = 13
-    TabOrder = 5
+    TabOrder = 4
     OnChange = TextureBoxChange
+  end
+  object Button1: TButton
+    Left = 360
+    Top = 312
+    Width = 73
+    Height = 25
+    Caption = 'Done'
+    ModalResult = 1
+    TabOrder = 5
   end
 end

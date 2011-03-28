@@ -1211,8 +1211,6 @@ const
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
   cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
-    (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
   cSamplerToTexture: array[TGLSLSamplerType] of TGLTextureTarget =
   (
     ttNoShape,
@@ -2749,7 +2747,13 @@ begin
   FSM5 := TGLShaderModel5.Create(Self);
 end;
 
+type
+  TGLFreindlyMaterial = class(TGLMaterial);
+
 destructor TGLLibMaterialEx.Destroy;
+var
+  I: Integer;
+  LUser: TObject;
 begin
   FHandle.Destroy;
   FFixedFunc.Destroy;
@@ -2757,6 +2761,12 @@ begin
   FSM3.Destroy;
   FSM4.Destroy;
   FSM5.Destroy;
+  for I := 0 to FUserList.Count - 1 do
+  begin
+    LUser := TObject(FUserList[i]);
+    if LUser is TGLMaterial then
+      TGLFreindlyMaterial(LUser).NotifyLibMaterialDestruction;
+  end;
   inherited;
 end;
 
