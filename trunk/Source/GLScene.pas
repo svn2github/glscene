@@ -392,7 +392,7 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 5450$';
+  GLSCENE_REVISION = '$Revision: 5600$';
   GLSCENE_VERSION = '1.1.0.%s';
 
 type
@@ -9379,6 +9379,7 @@ begin
   rci.bufferDepthTest := FDepthTest;
   rci.drawState := drawState;
   rci.sceneAmbientColor := FAmbientColor.Color;
+  rci.primitiveMask := cAllMeshPrimitive;
   with FCamera do
   begin
     rci.cameraPosition := FCameraAbsolutePosition;

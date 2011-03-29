@@ -113,6 +113,7 @@ type
     lights: TPersistentObjectList;
     afterRenderEffects: TPersistentObjectList;
     currentMaterialLevel: TGLMaterialLevel;
+    primitiveMask: TGLMeshPrimitives;
   end;
   PRenderContextInfo = ^TRenderContextInfo;
 
