@@ -91,13 +91,13 @@ type
   protected
     { Protected Declarations }
     FEnabled: Boolean;
-    FNextPass: TGLLibMaterialName;
+    FNextPassName: TGLLibMaterialName;
     function GetMaterial: TGLLibMaterialEx;
     function GetMaterialLibraryEx: TGLMaterialLibraryEx;
     procedure SetEnabled(AValue: Boolean); virtual;
     procedure SetNextPass(const AValue: TGLLibMaterialName);
     procedure Loaded; virtual;
-    property NextPass: TGLLibMaterialName read FNextPass write SetNextPass;
+    property NextPass: TGLLibMaterialName read FNextPassName write SetNextPass;
   public
     { Public Declarations }
     procedure NotifyChange(Sender: TObject); override;
@@ -1041,7 +1041,7 @@ type
     FApplicableLevel: TGLMaterialLevel;
     FSelectedLevel: TGLMaterialLevel;
     FFixedFunc: TGLFixedFunctionProperties;
-    FCombiner: TGLMultitexturingProperties;
+    FMultitexturing: TGLMultitexturingProperties;
     FSM3: TGLShaderModel3;
     FSM4: TGLShaderModel4;
     FSM5: TGLShaderModel5;
@@ -1051,9 +1051,10 @@ type
     FOnSM4UniformSetting: TOnUniformSetting;
     FOnSM5UniformInit: TOnUniformInitialize;
     FOnSM5UniformSetting: TOnUniformSetting;
+    FNextPass: TGLLibMaterialEx;
     procedure SetLevel(AValue: TGLMaterialLevel);
     procedure SetFixedFunc(AValue: TGLFixedFunctionProperties);
-    procedure SetCombiner(AValue: TGLMultitexturingProperties);
+    procedure SetMultitexturing(AValue: TGLMultitexturingProperties);
     procedure SetSM3(AValue: TGLShaderModel3);
     procedure SetSM4(AValue: TGLShaderModel4);
     procedure SetSM5(AValue: TGLShaderModel5);
@@ -1080,10 +1081,10 @@ type
     property ApplicableLevel: TGLMaterialLevel read FApplicableLevel write SetLevel
       default mlAuto;
     property SelectedLevel: TGLMaterialLevel read FSelectedLevel;
-    property FixedFunctionProperties: TGLFixedFunctionProperties
+    property FixedFunction: TGLFixedFunctionProperties
       read FFixedFunc write SetFixedFunc;
-    property CombinerProperties: TGLMultitexturingProperties
-      read FCombiner write SetCombiner;
+    property Multitexturing: TGLMultitexturingProperties
+      read FMultitexturing write SetMultitexturing;
     property ShaderModel3: TGLShaderModel3 read FSM3 write SetSM3;
     property ShaderModel4: TGLShaderModel4 read FSM4 write SetSM4;
     property ShaderModel5: TGLShaderModel5 read FSM5 write SetSM5;
@@ -1739,6 +1740,8 @@ end;
 
 procedure TGLFixedFunctionProperties.UnApply(var ARci: TRenderContextInfo);
 begin
+  if FTexProp.Enabled and FTexProp.IsValid then
+    FTexProp.UnApply(ARci);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -1761,8 +1764,8 @@ begin
     // Just bind
     with ARci.GLStates do
     begin
-      ActiveTextureEnabled[FHandle.Target] := True;
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
+      ActiveTextureEnabled[FHandle.Target] := True;
     end;
 
     Inc(FApplyCounter);
@@ -2635,9 +2638,16 @@ end;
 
 procedure TGLLibMaterialEx.Apply(var ARci: TRenderContextInfo);
 var
+  LNext: TGLLibMaterialEx;
   LevelReady: array[TGLMaterialLevel] of Boolean;
   L, MaxLevel: TGLMaterialLevel;
 begin
+  if Assigned(FNextPass) then
+  begin
+    FNextPass := nil;
+    exit;
+  end;
+
   FHandle.AllocateHandle;
   if FHandle.IsDataNeedUpdate then
   begin
@@ -2647,7 +2657,7 @@ begin
       RemoveDefferedInit;
     // Level selection
     LevelReady[mlFixedFunction] := FFixedFunc.Enabled;
-    LevelReady[mlCombiner] := FCombiner.Enabled and FCombiner.IsValid;
+    LevelReady[mlCombiner] := FMultitexturing.Enabled and FMultitexturing.IsValid;
     LevelReady[mlSM3] := FSM3.Enabled and FSM3.IsValid;
     LevelReady[mlSM4] := FSM4.Enabled and FSM4.IsValid;
     LevelReady[mlSM5] := FSM5.Enabled and FSM5.IsValid;
@@ -2682,7 +2692,7 @@ begin
       begin
         if LevelReady[mlFixedFunction] then
           FFixedFunc.Apply(ARci);
-        FCombiner.Apply(ARci);
+        FMultitexturing.Apply(ARci);
       end;
 
     mlSM3:
@@ -2716,7 +2726,7 @@ begin
   begin
     LMaterial := TGLLibMaterialEx(Source);
     FFixedFunc.Assign(LMaterial.FFixedFunc);
-    FCombiner.Assign(LMaterial.FCombiner);
+    FMultitexturing.Assign(LMaterial.FMultitexturing);
     FSM3.Assign(LMaterial.FSM3);
     FSM4.Assign(LMaterial.FSM4);
     FSM5.Assign(LMaterial.FSM5);
@@ -2741,7 +2751,7 @@ begin
   FApplicableLevel := mlAuto;
   FSelectedLevel := mlAuto;
   FFixedFunc := TGLFixedFunctionProperties.Create(Self);
-  FCombiner := TGLMultitexturingProperties.Create(Self);
+  FMultitexturing := TGLMultitexturingProperties.Create(Self);
   FSM3 := TGLShaderModel3.Create(Self);
   FSM4 := TGLShaderModel4.Create(Self);
   FSM5 := TGLShaderModel5.Create(Self);
@@ -2757,7 +2767,7 @@ var
 begin
   FHandle.Destroy;
   FFixedFunc.Destroy;
-  FCombiner.Destroy;
+  FMultitexturing.Destroy;
   FSM3.Destroy;
   FSM4.Destroy;
   FSM5.Destroy;
@@ -2789,7 +2799,7 @@ end;
 procedure TGLLibMaterialEx.Loaded;
 begin
   FFixedFunc.FTexProp.Loaded;
-  FCombiner.Loaded;
+  FMultitexturing.Loaded;
   FSM3.Loaded;
   FSM4.Loaded;
   FSM5.Loaded;
@@ -2814,14 +2824,14 @@ begin
       FFixedFunc.FTexProp.FLibSampler.FDefferedInit := False;
   end;
 
-  if FCombiner.Enabled then
+  if FMultitexturing.Enabled then
   begin
-    if Assigned(FCombiner.FLibCombiner) then
+    if Assigned(FMultitexturing.FLibCombiner) then
     begin
-      FCombiner.FLibCombiner.FDefferedInit := False;
+      FMultitexturing.FLibCombiner.FDefferedInit := False;
       for I := 0 to 3 do
-        if Assigned(FCombiner.FTexProps[I]) then
-          with FCombiner.FTexProps[I] do
+        if Assigned(FMultitexturing.FTexProps[I]) then
+          with FMultitexturing.FTexProps[I] do
           begin
             if Assigned(FLibTexture) then
               FLibTexture.FDefferedInit := False;
@@ -2855,9 +2865,9 @@ begin
   CurrentGLContext.PrepareHandlesData;
 end;
 
-procedure TGLLibMaterialEx.SetCombiner(AValue: TGLMultitexturingProperties);
+procedure TGLLibMaterialEx.SetMultitexturing(AValue: TGLMultitexturingProperties);
 begin
-  FCombiner.Assign(AValue);
+  FMultitexturing.Assign(AValue);
 end;
 
 procedure TGLLibMaterialEx.SetFixedFunc(AValue: TGLFixedFunctionProperties);
@@ -2890,20 +2900,45 @@ begin
 end;
 
 function TGLLibMaterialEx.UnApply(var ARci: TRenderContextInfo): Boolean;
+
+  procedure GetNextPass(AProp: TGLLibMaterialProperty);
+  begin
+    if Length(AProp.NextPass) > 0 then
+      FNextPass := TGLMaterialLibraryEx(GetMaterialLibrary).Materials.GetLibMaterialByName(AProp.NextPass)
+    else
+      FNextPass := nil;
+
+    if FNextPass = Self then
+    begin
+      AProp.NextPass := '';
+      FNextPass := nil;
+    end;
+  end;
+
 begin
+  if Assigned(FNextPass) then
+  begin
+    Result := FNextPass.UnApply(ARci);
+    if Result then
+      FNextPass.Apply(ARci)
+    else
+      FNextPass := nil;
+    exit;
+  end;
+
   case FSelectedLevel of
     mlFixedFunction:
       begin
         FFixedFunc.UnApply(ARci);
-        if FFixedFunc.FTexProp.Enabled then
-          FFixedFunc.FTexProp.UnApply(ARci);
+        GetNextPass(FFixedFunc);
       end;
 
     mlCombiner:
       begin
         if FFixedFunc.Enabled then
           FFixedFunc.UnApply(ARci);
-        FCombiner.UnApply(ARci);
+        FMultitexturing.UnApply(ARci);
+        GetNextPass(FMultitexturing);
       end;
 
     mlSM3:
@@ -2911,6 +2946,7 @@ begin
         if FFixedFunc.Enabled then
           FFixedFunc.UnApply(ARci);
         FSM3.UnApply(ARci);
+        GetNextPass(FSM3);
       end;
 
     mlSM4:
@@ -2918,6 +2954,7 @@ begin
         if FFixedFunc.Enabled then
           FFixedFunc.UnApply(ARci);
         FSM4.UnApply(ARci);
+        GetNextPass(FSM4);
       end;
 
     mlSM5:
@@ -2925,15 +2962,21 @@ begin
         if FFixedFunc.Enabled then
           FFixedFunc.UnApply(ARci);
         FSM5.UnApply(ARci);
+        GetNextPass(FSM5);
       end;
+    else
+      FNextPass := nil;
   end;
   ARci.GLStates.ActiveTexture := 0;
-  Result := False;
+
+  Result := Assigned(FNextPass);
+  if Result then
+    FNextPass.Apply(ARCi);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TGLCombinerProperties'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLMultitexturingProperties'}{$ENDIF}
 
 procedure TGLMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
 var
@@ -3680,11 +3723,12 @@ begin
     if Assigned(FLibSampler) then
       FLibSampler.UnApply(ARci);
 
-    if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
-      ARci.GLStates.SetGLTextureMatrix(IdentityHmgMatrix);
-
     if ARci.currentMaterialLevel < mlSM3 then
+    begin
+      if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
+        ARci.GLStates.SetGLTextureMatrix(IdentityHmgMatrix);
       UnApplyMappingMode;
+    end;
   end;
 end;
 
@@ -3957,12 +4001,11 @@ end;
 
 procedure TGLLibMaterialProperty.SetNextPass(const AValue: TGLLibMaterialName);
 begin
-  if AValue <> FNextPass then
+  if AValue <> FNextPassName then
   begin
-    FNextPass := AValue;
+    FNextPassName := AValue;
     NotifyChange(Self);
   end;
-  // TODO: Next pass
 end;
 
 procedure TGLLibMaterialProperty.Loaded;
