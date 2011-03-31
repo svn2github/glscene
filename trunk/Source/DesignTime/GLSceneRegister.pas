@@ -440,6 +440,18 @@ type
     procedure Edit; override;
   end;
 
+  TGLShaderEditorProperty = class(TClassProperty)
+  protected
+    { Protected declarations }
+    function GetStrings: TStrings;
+    procedure SetStrings(const Value: TStrings);
+    procedure OnShaderCheck(Sender: TObject);
+  public
+    { Public declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
 resourcestring
   { OpenGL property category }
   sOpenGLCategoryName = 'OpenGL';
@@ -474,6 +486,7 @@ uses
   Dialogs,
   FLibMaterialPicker,
   FRUniformEditor,
+  FShaderMemo,
   FMaterialEditorForm,
   FVectorEditor,
   GLAnimatedSprite,
@@ -583,6 +596,7 @@ uses
   GLWindowsFont,
   GLzBuffer,
   GuiSkinEditorFormUnit,
+  GLSMemo,
   SysUtils,
   TypInfo,
   VectorTypes,
@@ -1510,9 +1524,10 @@ begin
   end;
 end;
 
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 {$IFDEF GLS_DELPHI_7_UP}
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TGLBaseSceneObjectSelectionEditor'}{$ENDIF}
 
@@ -1750,6 +1765,64 @@ begin
       LOwner.MaterialLibrary.GetNames(AddSamplerName, TGLTextureSampler);
       LOwner.GetUniformNames(PassUniform);
       Execute;
+    end;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLShaderEditorProperty'}{$ENDIF}
+
+function TGLShaderEditorProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := inherited GetAttributes + [paDialog] - [paSubProperties];
+end;
+
+function TGLShaderEditorProperty.GetStrings: TStrings;
+begin
+  Result := TStrings(GetOrdValue);
+end;
+
+procedure TGLShaderEditorProperty.OnShaderCheck(Sender: TObject);
+var
+  LShader: TGLShaderEx;
+  LContext: TGLContext;
+begin
+  SetStrings(GLShaderEditorForm.GLSLMemo.Lines);
+  LShader := TGLShaderEx(GetComponent(0));
+  LContext := LShader.Handle.RenderingContext;
+  if Assigned(LContext) then
+  begin
+    LContext.Activate;
+    try
+      LShader.DoOnPrepare(LContext);
+      GLShaderEditorForm.CompilatorLog.Lines.Add(LShader.InfoLog);
+    finally
+      LContext.Deactivate;
+    end;
+  end
+  else
+    GLShaderEditorForm.CompilatorLog.Lines.Add(
+      'There is no any rendering context for work with OpenGL');
+end;
+
+procedure TGLShaderEditorProperty.SetStrings(const Value: TStrings);
+begin
+  SetOrdValue(Longint(Value));
+end;
+
+procedure TGLShaderEditorProperty.Edit;
+begin
+  with GLShaderEditorForm do
+  begin
+    OnCheck := OnShaderCheck;
+    GLSLMemo.Lines.Assign(GetStrings);
+    GLSLMemo.CurX := 0;
+    GLSLMemo.CurY := 0;
+    if ShowModal = mrOk then
+    begin
+      SetStrings(GLSLMemo.Lines);
+      Modified;
     end;
   end;
 end;
@@ -2103,11 +2176,9 @@ begin
       TGLGuiLayout,
       TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
       TGLWideBitmapFont,
-      TGLScriptLibrary
-{$IFDEF WIN32}
-    , TGLSoundLibrary, TGLSMWaveOut,
+      TGLScriptLibrary,
+      TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer
-{$ENDIF}
     ]);
 
   RegisterComponents('GLScene PFX',
@@ -2128,10 +2199,8 @@ begin
       TGLSmoothNavigator, TGLSmoothUserInterface,
       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
       TGLSimpleNavigation, TGLGizmo, TGLCameraController,
-      TGLSLanguage, TGLSLogger, TGLSArchiveManager
-{$IFDEF MSWINDOWS}
-    , TJoystick, TScreenSaver
-{$ENDIF}
+      TGLSLanguage, TGLSLogger, TGLSArchiveManager,
+      TJoystick, TScreenSaver, TGLSSynHiMemo
     ]);
 
   RegisterComponents('GLScene Terrain',
@@ -2205,6 +2274,7 @@ begin
   RegisterPropertyEditor(TypeInfo(string), TGLTextureImageEx, 'SourceFile', TPictureFileProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLShaderEx, 'SourceFile', TShaderFileProperty);
   RegisterPropertyEditor(TypeInfo(Boolean), TGLBaseShaderModel, 'AutoFillOfUniforms', TUniformAutoSetProperty);
+  RegisterPropertyEditor(TypeInfo(TStringList), TGLShaderEx, 'Source', TGLShaderEditorProperty);
 end;
 
 function GetGLSceneVersion: string;

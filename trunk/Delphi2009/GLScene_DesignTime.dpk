@@ -43,6 +43,7 @@ contains
   FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas';
+  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
+  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas';
 
 end.

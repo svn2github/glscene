@@ -2638,7 +2638,6 @@ end;
 
 procedure TGLLibMaterialEx.Apply(var ARci: TRenderContextInfo);
 var
-  LNext: TGLLibMaterialEx;
   LevelReady: array[TGLMaterialLevel] of Boolean;
   L, MaxLevel: TGLMaterialLevel;
 begin
@@ -3810,12 +3809,16 @@ var
 begin
   for S := Low(TGLShaderType) to High(TGLShaderType) do
     FHandle[S].NotifyChangesOfData;
+
+  if (Sender = FSource) and IsDesignTime and (Length(FSourceFile) > 0) then
+    FSource.SaveToFile(FSourceFile);
+
   inherited;
 end;
 
 procedure TGLShaderEx.DoOnPrepare(Sender: TGLContext);
 begin
-  if IsDesignTime and FDefferedInit then
+  if not IsDesignTime and FDefferedInit then
     exit;
   try
     if FHandle[FShaderType].IsSupported then

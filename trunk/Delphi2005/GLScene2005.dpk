@@ -246,6 +246,8 @@ contains
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
   GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
-  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas';
+  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
+  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
+  GLSMemo in '..\Source\Base\GLSMemo.pas';
 
 end.
