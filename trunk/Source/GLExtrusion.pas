@@ -60,9 +60,8 @@ uses Classes,
   VectorGeometry,
   GLRenderContextInfo,
   GLNodes,
-  GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF}
-  ;
+  GLState,
+  VectorTypes;
 
 type
 
@@ -137,7 +136,7 @@ type
        This can be useful for rendering, lots of helicoidal objects from
        screws, to nails to stairs etc. }
     property YOffsetPerTurn: Single read FYOffsetPerTurn write SetYOffsetPerTurn;
-    {: Number of slices per turn (360°). }
+    {: Number of slices per turn (360Ð©. }
     property Slices: Integer read FSlices write SetSlices default 16;
 
     property Normals: TNormalSmoothing read FNormals write SetNormals default nsFlat;
