@@ -385,7 +385,7 @@ end;
 
 function TSkyDomeBand.GetDisplayName: string;
 begin
-  Result := Format('%d: %.1f∞ - %.1f∞', [Index, StartAngle, StopAngle]);
+  Result := Format('%d: %.1f¬∞ - %.1f¬∞', [Index, StartAngle, StopAngle]);
 end;
 
 // SetStartAngle
@@ -1401,7 +1401,7 @@ var
 begin
   ts := DegToRad(90 - SunElevation);
   SetVector(sunPos, sin(ts), 0, cos(ts));
-  // prepare sin/cos LUT, with a higher sampling around 0∞
+  // prepare sin/cos LUT, with a higher sampling around 0–ç
   n := Slices div 2;
   steps := 2 * n + 1;
   GetMem(sinTable, steps * SizeOf(Single));
