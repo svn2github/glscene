@@ -1020,6 +1020,7 @@ end;
 
 procedure TGLSCustomMemo.WMMouseWheel(var Message: TMessage);
 {$J+}
+{$IFOPT R+} {$DEFINE StoreRangeCheck} {$ENDIF} {$R-}
 const
   Delta: SmallInt = 0;
 begin
@@ -1039,6 +1040,7 @@ begin
   end;
 end;
 {$J-}
+{$IFDEF StoreRangeCheck} {$R+} {$UNDEF StoreRangeCheck} {$ENDIF}
 
 //--------------------------------------------------------------
 //        SET CURSOR
