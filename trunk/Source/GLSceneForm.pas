@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { : GLSceneForm<p>
@@ -393,7 +393,9 @@ procedure TGLSceneForm.StartupFS;
 {$IFDEF FPC}
     ShowInTaskBar := stAlways;
 {$ELSE}
+  {$IFDEF GLS_DELPHI_2009_UP}
     Application.MainFormOnTaskBar := True;
+  {$ENDIF}
 {$ENDIF}
   end;
 

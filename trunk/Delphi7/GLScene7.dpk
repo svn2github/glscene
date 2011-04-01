@@ -299,6 +299,7 @@ contains
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
   FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
   FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas' {GLShaderEditor},
-  GLSMemo in '..\Source\Base\GLSMemo.pas';
+  GLSMemo in '..\Source\Base\GLSMemo.pas',
+  GLSceneForm in '..\Source\GLSceneForm.pas';
 
 end.
