@@ -57,7 +57,8 @@ uses
   SysUtils,
   TypInfo,
 
-  // GLS—Åene
+  // GLSÒene
+  GLSceneForm,
   VectorGeometry,
   GLScene,
   GLViewer,
@@ -255,6 +256,8 @@ begin
 
   if FGLSceneViewer <> nil then
     lCamera := FGLSceneViewer.Camera
+  else if FSceneForm then
+    lCamera := TGLSceneForm(FForm).Camera
   else
     lCamera := nil;
 
@@ -336,7 +339,9 @@ begin
     exit;
 
   if FGLSceneViewer <> nil then
-    lCamera := FGLSceneViewer.Camera;
+    lCamera := FGLSceneViewer.Camera
+  else if FSceneForm then
+    lCamera := TGLSceneForm(FForm).Camera;
 
   if Assigned(lCamera) then
   begin
@@ -388,7 +393,10 @@ begin
   begin
     FForm.RemoveFreeNotification(Self);
     TForm(FForm).OnMouseWheel := nil;
-    TForm(FForm).OnMouseMove := nil;
+{$IFDEF FPC}
+    if FSceneForm then
+{$ENDIF}
+      TForm(FForm).OnMouseMove := nil;
     FSceneForm := False;
   end;
 
@@ -400,6 +408,13 @@ begin
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
     TForm(FForm).OnMouseWheel := ViewerMouseWheel;
     FForm.FreeNotification(Self);
+{$IFDEF GLS_MULTITHREAD}
+    if FForm is TGLSceneForm then
+    begin
+      FSceneForm := True;
+      TForm(FForm).OnMouseMove := ViewerMouseMove;
+    end;
+{$ENDIF}
   end;
 end;
 
@@ -410,12 +425,18 @@ begin
   begin
     FGLSceneViewer.RemoveFreeNotification(Self);
     FGLSceneViewer.OnMouseMove := nil;
+{$IFDEF FPC}
+    FGLSceneViewer.OnMouseWheel := nil;
+{$ENDIF}
   end;
 
   FGLSceneViewer := Value;
 
   if FGLSceneViewer <> nil then
   begin
+{$IFDEF FPC}
+    FGLSceneViewer.OnMouseWheel := ViewerMouseWheel;
+{$ENDIF}
     FGLSceneViewer.OnMouseMove := ViewerMouseMove;
     FGLSceneViewer.FreeNotification(Self);
   end;
@@ -426,20 +447,31 @@ var
   Index: Integer;
   Temp: string;
 begin
-  if (FGLSceneViewer <> nil) and
-    (FForm <> nil) and
+  if (FForm <> nil) and
     not (csDesigning in ComponentState) and
     (snoShowFPS in FOptions) then
   begin
     Temp := FFormCaption;
     Index := Pos(vFPSString, Temp);
-    if Index <> 0 then
+    if FForm is TGLSceneForm then
     begin
-      Delete(Temp, Index, Length(vFPSString));
-      Insert(FGLSceneViewer.FramesPerSecondText, Temp, Index);
+      if Index <> 0 then
+      begin
+        Delete(Temp, Index, Length(vFPSString));
+        Insert(Format('%.*f FPS', [1, TGLSceneForm(FForm).Buffer.FramesPerSecond]), Temp, Index);
+      end;
+      TGLSceneForm(FForm).Buffer.ResetPerformanceMonitor;
+    end
+    else if Assigned(FGLSceneViewer) then
+    begin
+      if Index <> 0 then
+      begin
+        Delete(Temp, Index, Length(vFPSString));
+        Insert(Format('%.*f FPS', [1, FGLSceneViewer.Buffer.FramesPerSecond]), Temp, Index);
+      end;
+      FGLSceneViewer.ResetPerformanceMonitor;
     end;
     FForm.Caption := Temp;
-    FGLSceneViewer.ResetPerformanceMonitor;
   end;
 end;
 

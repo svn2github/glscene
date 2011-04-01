@@ -24,7 +24,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1"/>
-    <Files Count="17">
+    <Files Count="18">
       <Item1>
         <Filename Value="../Source/DesignTime/FXCollectionEditorLCL.pas"/>
         <UnitName Value="FXCollectionEditorLCL"/>
@@ -34,67 +34,72 @@
         <UnitName Value="GLSceneEditLCL"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/DesignTime/GLSceneLCL.lrs"/>
-        <Type Value="LRS"/>
+        <Filename Value="../Source/DesignTime/GLSceneFormDesign.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="GLSceneFormDesign"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
+        <Filename Value="../Source/DesignTime/GLSceneLCL.lrs"/>
         <Type Value="LRS"/>
       </Item4>
       <Item5>
+        <Filename Value="../Source/DesignTime/GLSceneObjectsLCL.lrs"/>
+        <Type Value="LRS"/>
+      </Item5>
+      <Item6>
         <Filename Value="../Source/DesignTime/GLSceneRegisterLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterLCL"/>
-      </Item5>
-      <Item6>
-        <Filename Value="../Source/DesignTime/nonGLSceneLCL.lrs"/>
-        <Type Value="LRS"/>
       </Item6>
       <Item7>
+        <Filename Value="../Source/DesignTime/nonGLSceneLCL.lrs"/>
+        <Type Value="LRS"/>
+      </Item7>
+      <Item8>
         <Filename Value="../Source/DesignTime/RegisterXCollection.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="RegisterXCollection"/>
-      </Item7>
-      <Item8>
-        <Filename Value="../Source/GLObjectManager.pas"/>
-        <UnitName Value="GLObjectManager"/>
       </Item8>
       <Item9>
-        <Filename Value="../Source/PropertyEditors/FLibMaterialPickerLCL.pas"/>
-        <UnitName Value="FLibMaterialPickerLCL"/>
+        <Filename Value="../Source/GLObjectManager.pas"/>
+        <UnitName Value="GLObjectManager"/>
       </Item9>
       <Item10>
-        <Filename Value="../Source/PropertyEditors/FMaterialEditorFormLCL.pas"/>
-        <UnitName Value="FMaterialEditorFormLCL"/>
+        <Filename Value="../Source/PropertyEditors/FLibMaterialPickerLCL.pas"/>
+        <UnitName Value="FLibMaterialPickerLCL"/>
       </Item10>
       <Item11>
-        <Filename Value="../Source/PropertyEditors/FRColorEditorLCL.pas"/>
-        <UnitName Value="FRColorEditorLCL"/>
+        <Filename Value="../Source/PropertyEditors/FMaterialEditorFormLCL.pas"/>
+        <UnitName Value="FMaterialEditorFormLCL"/>
       </Item11>
       <Item12>
-        <Filename Value="../Source/PropertyEditors/FRFaceEditorLCL.pas"/>
-        <UnitName Value="FRFaceEditorLCL"/>
+        <Filename Value="../Source/PropertyEditors/FRColorEditorLCL.pas"/>
+        <UnitName Value="FRColorEditorLCL"/>
       </Item12>
       <Item13>
-        <Filename Value="../Source/PropertyEditors/FRMaterialPreviewLCL.pas"/>
-        <UnitName Value="FRMaterialPreviewLCL"/>
+        <Filename Value="../Source/PropertyEditors/FRFaceEditorLCL.pas"/>
+        <UnitName Value="FRFaceEditorLCL"/>
       </Item13>
       <Item14>
-        <Filename Value="../Source/PropertyEditors/FRTextureEditLCL.pas"/>
-        <UnitName Value="FRTextureEditLCL"/>
+        <Filename Value="../Source/PropertyEditors/FRMaterialPreviewLCL.pas"/>
+        <UnitName Value="FRMaterialPreviewLCL"/>
       </Item14>
       <Item15>
-        <Filename Value="../Source/PropertyEditors/FRTrackBarEditLCL.pas"/>
-        <UnitName Value="FRTrackBarEditLCL"/>
+        <Filename Value="../Source/PropertyEditors/FRTextureEditLCL.pas"/>
+        <UnitName Value="FRTextureEditLCL"/>
       </Item15>
       <Item16>
-        <Filename Value="../Source/PropertyEditors/FVectorEditorLCL.pas"/>
-        <UnitName Value="FVectorEditorLCL"/>
+        <Filename Value="../Source/PropertyEditors/FRTrackBarEditLCL.pas"/>
+        <UnitName Value="FRTrackBarEditLCL"/>
       </Item16>
       <Item17>
+        <Filename Value="../Source/PropertyEditors/FVectorEditorLCL.pas"/>
+        <UnitName Value="FVectorEditorLCL"/>
+      </Item17>
+      <Item18>
         <Filename Value="../Source/PropertyEditors/InfoLCL.pas"/>
         <UnitName Value="InfoLCL"/>
-      </Item17>
+      </Item18>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

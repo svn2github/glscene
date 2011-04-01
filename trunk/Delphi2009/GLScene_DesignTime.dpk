@@ -44,6 +44,7 @@ contains
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
   RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas';
+  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
+  GLSceneFormDesign in '..\Source\DesignTime\GLSceneFormDesign.pas';
 
 end.

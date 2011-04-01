@@ -289,7 +289,8 @@ contains
   GLSLog in '..\Source\Base\GLSLog.pas',
   GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
-  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
-  GLSMemo in '..\Source\Base\GLSMemo.pas';
+  FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas' {ShaderUniformEditor},
+  GLSMemo in '..\Source\Base\GLSMemo.pas',
+  GLSceneForm in '..\Source\GLSceneForm.pas';
 
 end.

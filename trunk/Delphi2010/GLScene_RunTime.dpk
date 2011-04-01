@@ -287,6 +287,7 @@ contains
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
   GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
   FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
-  GLSMemo in '..\Source\Base\GLSMemo.pas';
+  GLSMemo in '..\Source\Base\GLSMemo.pas',
+  GLSceneForm in '..\Source\GLSceneForm.pas';
 
 end.
