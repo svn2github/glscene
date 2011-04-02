@@ -4,7 +4,8 @@
 {: GLSceneFormDesign<p>
 
    <b>History : </b><font size=-1><ul>
-    <li>05/12/10 - Yar - Added three form wizard and three project wizard for Lazarus (by Rustam Asmandiarov aka Predator)
+    <li>03/04/11 - Yar - Added three project wizard for Delphi
+    <li>05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
     <li>23/08/10 - Yar - Creation
  </ul></font>
 }
@@ -42,9 +43,9 @@ type
       IOTACreator,
       IOTAModuleCreator,
       IOTARepositoryWizard,
-      IOTARepositoryWizard60)
+      IOTARepositoryWizard60,
+      IOTARepositoryWizard80)
   private
-    FProject: IOTAProject;
     FUnitIdent: string;
     FClassName: string;
     FFileName: string;
@@ -81,10 +82,11 @@ type
       AncestorIdent: string): IOTAFile;
     procedure FormCreated(const FormEditor: IOTAFormEditor);
   public
-    constructor CreateAndExecute(const AProject: IOTAProject;
-      AUnitIdent, AClassName, AFileName: string);
+    constructor CreateAndExecute(const AUnitIdent, AClassName, AFileName: string);
     // IOTARepositoryWizard
     function GetDesigner: string;
+    function GetGalleryCategory: IOTAGalleryCategory;
+    function GetPersonality: string;
   end;
 
   // TGLSimpleSceneFormWizard
@@ -116,22 +118,17 @@ type
   // TGLBaseSceneProjectCreator
   //
 
-  TGLBaseSceneProjectWizard = class(
-      TNotifierObject,
-      IOTAWizard,
-      IOTACreator,
-      IOTAProjectCreator,
-      IOTAProjectCreator50)
+  TGLBaseSceneProjectCreator = class(
+    TInterfacedObject,
+    IOTACreator,
+    IOTAProjectCreator,
+    IOTAProjectCreator50)
   private
     FUnitIdent: string;
     FClassName: string;
     FFileName: string;
   public
-    // IOTAWizard methods
-    function GetIDString: string; virtual;
-    function GetName: string; virtual;
-    function GetState: TWizardState;
-    procedure Execute;
+    constructor Create(const AClassName, AUnitIdent, AFileName: string);
     // IOTACreator methods
     function GetCreatorType: string;
     function GetExisting: Boolean;
@@ -148,6 +145,25 @@ type
     function NewProjectSource(const ProjectName: string): IOTAFile;
     // IOTAProjectCreator50
     procedure NewDefaultProjectModule(const Project: IOTAProject); virtual;
+  end;
+
+  // TGLBaseSceneProjectWizard
+  //
+
+  TGLBaseSceneProjectWizard = class(
+      TNotifierObject,
+      IOTAWizard,
+      IOTARepositoryWizard,
+      IOTARepositoryWizard60,
+      IOTARepositoryWizard80,
+      IOTAProjectWizard)
+  public
+    // IOTAWizard methods
+    function GetIDString: string; virtual;
+    function GetName: string; virtual;
+    function GetState: TWizardState;
+    procedure Execute; virtual;
+
     // IOTARepositoryWizard
     function GetAuthor: string;
     function GetComment: string;
@@ -158,25 +174,43 @@ type
     function GetPersonality: string;
   end;
 
-  // TGLSimpleSceneProjectCreator
+  // TGLSimpleSceneProjectWizard
   //
 
   TGLSimpleSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
     function GetIDString: string; override;
     function GetName: string; override;
+    procedure Execute; override;
+  end;
+
+  // TGLSimpleSceneProjectCreator
+  //
+
+  TGLSimpleSceneProjectCreator = class(TGLBaseSceneProjectCreator)
+  public
     procedure NewDefaultProjectModule(const Project: IOTAProject); override;
   end;
 
-  // TGLExtendedSceneProjectCreator
+  // TGLSimpleSceneProjectWizard
   //
 
   TGLExtendedSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
     function GetIDString: string; override;
     function GetName: string; override;
+    procedure Execute; override;
+  end;
+
+  // TGLSimpleSceneProjectCreator
+  //
+
+  TGLExtendedSceneProjectCreator = class(TGLBaseSceneProjectCreator)
+  public
     procedure NewDefaultProjectModule(const Project: IOTAProject); override;
   end;
+
+
 
 {$ENDIF GLS_DELPHI_OR_CPPB}
 
@@ -358,7 +392,7 @@ uses
 {$IFDEF GLS_DELPHI_OR_CPPB}
 const
   LineEnding = #10#13;
-  sCategoryGLSceneNew = '';
+  sCategoryGLSceneNew = 'Borland.Delphi.GLScene.New';
 {$ENDIF}
 
 {$IFDEF FPC}
@@ -465,16 +499,34 @@ type
     constructor CreateProject(const AProjectName, ModuleName, FormName: string);
   end;
 
+var
+  vCategory: IOTAGalleryCategory = nil;
+
 procedure InitModule;
+var
+  Manager: IOTAGalleryCategoryManager;
+  LCategory: IOTAGalleryCategory;
 begin
-  with (BorlandIDEServices as IOTAGalleryCategoryManager) do
-    AddCategory(FindCategory(sCategoryGLSceneNew), '', 'GLScene', 0);
+  Manager := BorlandIDEServices as IOTAGalleryCategoryManager;
+  if Assigned(Manager) then
+  begin
+    LCategory := Manager.FindCategory(sCategoryDelphiNew);
+    if Assigned(LCategory) then
+      vCategory := Manager.AddCategory(LCategory, sCategoryGLSceneNew,
+        'GLScene for Delphi', 0);
+  end;
 end;
 
 procedure DoneModule;
+var
+  Manager: IOTAGalleryCategoryManager;
 begin
-  with (BorlandIDEServices as IOTAGalleryCategoryManager) do
-    DeleteCategory(FindCategory(sCategoryGLSceneNew));
+  Manager := BorlandIDEServices as IOTAGalleryCategoryManager;
+  if Assigned(Manager) then
+  begin
+    if Assigned(vCategory) then
+      Manager.DeleteCategory(vCategory);
+  end;
 end;
 
 function GetActiveProjectGroup: IOTAProjectGroup;
@@ -1289,7 +1341,6 @@ const
     '    Font.Name = ''Verdana''' + LineEnding +
     '    Font.Pitch = fpVariable' + LineEnding +
     '    Font.Style = []' + LineEnding +
-    '    Font.Quality = fqDraft' + LineEnding +
     '    Left = 112' + LineEnding +
     '    Top = 88' + LineEnding +
     '  end' + LineEnding +
@@ -1354,20 +1405,28 @@ begin
   (BorlandIDEServices as IOTAModuleServices).CreateModule(Self);
 end;
 
-constructor TGLBaseSceneFormWizard.CreateAndExecute(const AProject: IOTAProject;
-  AUnitIdent, AClassName, AFileName: string);
+constructor TGLBaseSceneFormWizard.CreateAndExecute(
+  const AUnitIdent, AClassName, AFileName: string);
 begin
-  inherited;
-  FProject := AProject;
+  inherited Create;
   FUnitIdent := AUnitIdent;
   FClassName := AClassName;
   FFileName := AFileName;
-  (BorlandIDEServices as IOTAModuleServices).CreateModule(Self);
 end;
 
 function TGLBaseSceneFormWizard.GetDesigner: string;
 begin
   Result := dVCL;
+end;
+
+function TGLBaseSceneFormWizard.GetGalleryCategory: IOTAGalleryCategory;
+begin
+  Result := vCategory;
+end;
+
+function TGLBaseSceneFormWizard.GetPersonality: string;
+begin
+  Result := ToolsAPI.sDelphiPersonality;
 end;
 
 function TGLBaseSceneFormWizard.GetGlyph: Cardinal;
@@ -1377,7 +1436,7 @@ end;
 
 function TGLBaseSceneFormWizard.GetPage: string;
 begin
-  Result := 'GLScene';
+  Result := 'GLScene for Delphi';
 end;
 
 function TGLBaseSceneFormWizard.GetAuthor: string;
@@ -1412,8 +1471,6 @@ var
   IProjectGroup: IOTAProjectGroup;
   i: Integer;
 begin
-  if Assigned(FProject) then
-    exit(FProject);
   Result := nil;
   IModuleServices := BorlandIDEServices as IOTAModuleServices;
   for I := 0 to Pred(IModuleServices.ModuleCount) do
@@ -1566,7 +1623,7 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLBaseSceneProjectCreator ------------------
+// ------------------ TGLBaseSceneProjectWizard ------------------
 // ------------------
 
 function TGLBaseSceneProjectWizard.GetIDString: string;
@@ -1585,39 +1642,91 @@ begin
 end;
 
 procedure TGLBaseSceneProjectWizard.Execute;
+var
+  LUnitIdent, LClassName, LFileName: string;
 begin
-  FClassName := 'GLMainForm';
+  LUnitIdent := '';
+  LClassName := 'GLMainForm';
+  LFileName := '';
   (BorlandIDEServices as IOTAModuleServices).GetNewModuleAndClassName(
-    'Unit', FUnitIdent, FClassName, FFileName);
-  (BorlandIDEServices as IOTAModuleServices).CreateModule(Self);
+    'Unit', LUnitIdent, LClassName, LFileName);
+  (BorlandIDEServices as IOTAModuleServices).CreateModule(
+    TGLBaseSceneProjectCreator.Create(LClassName, LUnitIdent, LFileName));
 end;
 
-function TGLBaseSceneProjectWizard.GetCreatorType: string;
+function TGLBaseSceneProjectWizard.GetAuthor: string;
+begin
+  Result := 'YarUnderoaker';
+end;
+
+function TGLBaseSceneProjectWizard.GetComment: string;
+begin
+  Result := 'Creates a new GLScene project.'
+end;
+
+function TGLBaseSceneProjectWizard.GetPage: string;
+begin
+  Result := 'GLScene for Delphi';
+end;
+
+function TGLBaseSceneProjectWizard.GetGlyph: Cardinal;
+begin
+  Result := LoadIcon(hInstance, 'GLSCENEFORMGLYPH');
+end;
+
+function TGLBaseSceneProjectWizard.GetDesigner: string;
+begin
+  Result := ToolsAPI.dVCL;
+end;
+
+function TGLBaseSceneProjectWizard.GetGalleryCategory: IOTAGalleryCategory;
+begin
+  Result := vCategory;
+end;
+
+function TGLBaseSceneProjectWizard.GetPersonality: string;
+begin
+  Result := ToolsAPI.sDelphiPersonality;
+end;
+
+// ------------------
+// ------------------ TGLBaseSceneProjectCreator ------------------
+// ------------------
+
+constructor TGLBaseSceneProjectCreator.Create(
+  const AClassName, AUnitIdent, AFileName: string);
+begin
+  FClassName := AClassName;
+  FUnitIdent := AUnitIdent;
+  FFileName := AFileName;
+end;
+
+function TGLBaseSceneProjectCreator.GetCreatorType: string;
 begin
   Result := ToolsAPI.sApplication;
 end;
 
-function TGLBaseSceneProjectWizard.GetOwner: IOTAModule;
+function TGLBaseSceneProjectCreator.GetOwner: IOTAModule;
 begin
   Result := GetActiveProjectGroup;
 end;
 
-function TGLBaseSceneProjectWizard.GetExisting: Boolean;
+function TGLBaseSceneProjectCreator.GetExisting: Boolean;
 begin
   Result := False;
 end;
 
-function TGLBaseSceneProjectWizard.GetFileSystem: string;
+function TGLBaseSceneProjectCreator.GetFileSystem: string;
 begin
   Result := '';
 end;
 
-function TGLBaseSceneProjectWizard.GetUnnamed: Boolean;
+function TGLBaseSceneProjectCreator.GetUnnamed: Boolean;
 begin
   Result := True;
 end;
 
-function TGLBaseSceneProjectWizard.GetFileName: string;
+function TGLBaseSceneProjectCreator.GetFileName: string;
 var
   i: Integer;
   j: Integer;
@@ -1658,84 +1767,45 @@ begin
   else Result := Format(Result, [1]);
 end;
 
-function TGLBaseSceneProjectWizard.GetOptionFileName: string;
+function TGLBaseSceneProjectCreator.GetOptionFileName: string;
 begin
   Result := '';
 end;
 
-function TGLBaseSceneProjectWizard.GetShowSource: Boolean;
+function TGLBaseSceneProjectCreator.GetShowSource: Boolean;
 begin
   Result := False;
 end;
 
-procedure TGLBaseSceneProjectWizard.NewDefaultModule;
+procedure TGLBaseSceneProjectCreator.NewDefaultModule;
 begin
 end;
 
-procedure TGLBaseSceneProjectWizard.NewDefaultProjectModule(const Project: IOTAProject);
+procedure TGLBaseSceneProjectCreator.NewDefaultProjectModule(const Project: IOTAProject);
 begin
   with (BorlandIDEServices as IOTAModuleServices) do
     CreateModule(TGLBaseSceneFormWizard.CreateAndExecute(
-    Project,
     FUnitIdent,
     FClassName,
-    FFileName)).MarkModified;
+    FFileName));
 end;
 
-function TGLBaseSceneProjectWizard.NewOptionSource(const ProjectName: string): IOTAFile;
+function TGLBaseSceneProjectCreator.NewOptionSource(const ProjectName: string): IOTAFile;
 begin
   Result := nil;
 end;
 
-procedure TGLBaseSceneProjectWizard.NewProjectResource(const Project: IOTAProject);
+procedure TGLBaseSceneProjectCreator.NewProjectResource(const Project: IOTAProject);
 begin
 end;
 
-function TGLBaseSceneProjectWizard.NewProjectSource(const ProjectName: string): IOTAFile;
-var
-  FormName: string;
+function TGLBaseSceneProjectCreator.NewProjectSource(const ProjectName: string): IOTAFile;
 begin
-  FormName := Copy(FClassName, 2, Length(FClassName)-1);
   Result := TBaseProjectFile.CreateProject(ProjectName, FUnitIdent, FClassName) as IOTAFile;
 end;
 
-function TGLBaseSceneProjectWizard.GetAuthor: string;
-begin
-  Result := 'YarUnderoaker';
-end;
-
-function TGLBaseSceneProjectWizard.GetComment: string;
-begin
-  Result := 'Creates a new GLScene project.'
-end;
-
-function TGLBaseSceneProjectWizard.GetPage: string;
-begin
-  Result := 'New';
-end;
-
-function TGLBaseSceneProjectWizard.GetGlyph: Cardinal;
-begin
-  Result := LoadIcon(hInstance, 'GLSCENEFORMGLYPH');
-end;
-
-function TGLBaseSceneProjectWizard.GetDesigner: string;
-begin
-  Result := dVCL;
-end;
-
-function TGLBaseSceneProjectWizard.GetGalleryCategory: IOTAGalleryCategory;
-begin
-  Result := (BorlandIDEServices as IOTAGalleryCategoryManager).FindCategory(sCategoryGLSceneNew);
-end;
-
-function TGLBaseSceneProjectWizard.GetPersonality: string;
-begin
-  Result := sDelphiPersonality;
-end;
-
 // ------------------
-// ------------------ TGLSimpleSceneProjectCreator ------------------
+// ------------------ TGLSimpleSceneProjectWizard ------------------
 // ------------------
 
 function TGLSimpleSceneProjectWizard.GetIDString: string;
@@ -1748,18 +1818,34 @@ begin
   Result := 'Simple GLScene Project';
 end;
 
-procedure TGLSimpleSceneProjectWizard.NewDefaultProjectModule(const Project: IOTAProject);
+procedure TGLSimpleSceneProjectWizard.Execute;
+var
+  LUnitIdent, LClassName, LFileName: string;
 begin
-  with (BorlandIDEServices as IOTAModuleServices) do
-    CreateModule(TGLSimpleSceneFormWizard.CreateAndExecute(
-    Project,
-    FUnitIdent,
-    FClassName,
-    FFileName)).MarkModified;
+  LUnitIdent := '';
+  LClassName := 'GLMainForm';
+  LFileName := '';
+  (BorlandIDEServices as IOTAModuleServices).GetNewModuleAndClassName(
+    'Unit', LUnitIdent, LClassName, LFileName);
+  (BorlandIDEServices as IOTAModuleServices).CreateModule(
+    TGLSimpleSceneProjectCreator.Create(LClassName, LUnitIdent, LFileName));
 end;
 
 // ------------------
-// ------------------ TGLExtendedSceneProjectCreator ------------------
+// ------------------ TGLSimpleSceneProjectCreator ------------------
+// ------------------
+
+procedure TGLSimpleSceneProjectCreator.NewDefaultProjectModule(const Project: IOTAProject);
+begin
+  with (BorlandIDEServices as IOTAModuleServices) do
+    CreateModule(TGLSimpleSceneFormWizard.CreateAndExecute(
+    FUnitIdent,
+    FClassName,
+    FFileName));
+end;
+
+// ------------------
+// ------------------ TGLExtendedSceneProjectWizard ------------------
 // ------------------
 
 function TGLExtendedSceneProjectWizard.GetIDString: string;
@@ -1772,14 +1858,30 @@ begin
   Result := 'Extended GLScene Project';
 end;
 
-procedure TGLExtendedSceneProjectWizard.NewDefaultProjectModule(const Project: IOTAProject);
+procedure TGLExtendedSceneProjectWizard.Execute;
+var
+  LUnitIdent, LClassName, LFileName: string;
+begin
+  LUnitIdent := '';
+  LClassName := 'GLMainForm';
+  LFileName := '';
+  (BorlandIDEServices as IOTAModuleServices).GetNewModuleAndClassName(
+    'Unit', LUnitIdent, LClassName, LFileName);
+  (BorlandIDEServices as IOTAModuleServices).CreateModule(
+    TGLExtendedSceneProjectCreator.Create(LClassName, LUnitIdent, LFileName));
+end;
+
+// ------------------
+// ------------------ TGLExtendedSceneProjectCreator ------------------
+// ------------------
+
+procedure TGLExtendedSceneProjectCreator.NewDefaultProjectModule(const Project: IOTAProject);
 begin
   with (BorlandIDEServices as IOTAModuleServices) do
     CreateModule(TGLExtendedSceneFormWizard.CreateAndExecute(
-    Project,
     FUnitIdent,
     FClassName,
-    FFileName)).MarkModified;
+    FFileName));
 end;
 
 {$ENDIF GLS_DELPHI_OR_CPPB}
