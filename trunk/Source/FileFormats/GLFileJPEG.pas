@@ -47,17 +47,17 @@ type
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
 
-    property Data: PGLPixel32Array read FData;
-    property Width: integer read fWidth;
-    property Height: integer read fHeight;
-    property Depth: integer read fDepth;
-    property MipLevels: integer read fMipLevels;
-    property ColorFormat: GLenum read fColorFormat;
-    property InternalFormat: TGLInternalFormat read fInternalFormat;
-    property DataType: GLenum read fDataType;
-    property ElementSize: integer read fElementSize;
-    property CubeMap: boolean read fCubeMap;
-    property TextureArray: boolean read fTextureArray;
+    property Data;
+    property Width;
+    property Height;
+    property Depth;
+    property ColorFormat;
+    property InternalFormat;
+    property DataType;
+    property ElementSize;
+    property CubeMap;
+    property TextureArray;
+
     property DivScale: longword read FDivScale write FDivScale;
     property Dither: boolean read FDither write FDither;
     property Smoothing: boolean read FSmoothing write SetSmoothing;
