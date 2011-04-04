@@ -1052,6 +1052,7 @@ type
     FOnSM5UniformInit: TOnUniformInitialize;
     FOnSM5UniformSetting: TOnUniformSetting;
     FNextPass: TGLLibMaterialEx;
+    FStoreAmalgamating: Boolean;
     procedure SetLevel(AValue: TGLMaterialLevel);
     procedure SetFixedFunc(AValue: TGLFixedFunctionProperties);
     procedure SetMultitexturing(AValue: TGLMultitexturingProperties);
@@ -2674,6 +2675,8 @@ begin
         break;
       end;
 
+    FStoreAmalgamating := ARci.amalgamating;
+    ARci.amalgamating := True;
     FHandle.NotifyDataUpdated;
   end;
 
@@ -2915,6 +2918,9 @@ function TGLLibMaterialEx.UnApply(var ARci: TRenderContextInfo): Boolean;
   end;
 
 begin
+  if FStoreAmalgamating <> ARci.amalgamating then
+    ARci.amalgamating := FStoreAmalgamating;
+
   if Assigned(FNextPass) then
   begin
     Result := FNextPass.UnApply(ARci);

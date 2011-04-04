@@ -1962,7 +1962,6 @@ begin
       TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
     FNameHashKey := ComputeNameHashKey(FName);
   end;
-  inherited;
 end;
 
 // QueryInterface
