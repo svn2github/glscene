@@ -1961,7 +1961,9 @@ begin
     FName :=
       TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
     FNameHashKey := ComputeNameHashKey(FName);
-  end;
+  end
+  else
+    inherited; // Raise AssignError
 end;
 
 // QueryInterface
