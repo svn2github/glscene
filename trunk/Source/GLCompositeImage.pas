@@ -330,7 +330,7 @@ begin
   if Assigned(fBitmap) then
     Result := fBitmap.GetTextureTarget
   else
-    Result := ttTexture2D;
+    Result := ttNoShape;
 end;
 
 initialization
