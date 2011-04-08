@@ -6,6 +6,7 @@
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>
+  <li>08/04/11 - Yar - Complete Build2DMipmap
   <li>07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
   <li>04/11/10 - DaStr - Added $I GLScene.inc
   <li>22/10/10 - Yar - Created
@@ -24,7 +25,7 @@ unit ImageUtils;
 // TODO: RGTC compression
 // TODO: BPTC compression
 // DONE: ResizeImage
-// TODO: Build2DMipmap
+// DONE: Build2DMipmap
 // TODO: Build3DMipmap
 
 interface
@@ -33,19 +34,22 @@ interface
 
 uses
   SysUtils,
+  Classes,
   GLCrossPlatform,
   OpenGLTokens,
   GLTextureFormat,
   VectorGeometry;
 
-const
-  cFilterWidth = 5; // Relative sample radius for filtering
+var
+  vImageScaleFilterWidth: Integer = 5; // Relative sample radius for filtering
 
 type
 
   TIntermediateFormat = record
     R, G, B, A: Single;
   end;
+
+  TPointerArray = array of Pointer;
 
   PRGBA32F = ^TIntermediateFormat;
   TIntermediateFormatArray = array [0 .. MaxInt div (2 * SizeOf(TIntermediateFormat))] of TIntermediateFormat;
@@ -69,6 +73,7 @@ function ImageMitchellFilter(Value: Single): Single;
 procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: TGLEnum; ASrcDataType, ADstDataType: TGLEnum; AWidth, AHeight: Integer);
 
 procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
+procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
 
 implementation
 
@@ -2541,70 +2546,358 @@ procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat
     FreeMem(tempBuf);
   end;
 
-procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
-  var
-    ConvertToIntermediateFormat: TConvertToImfProc;
-    ConvertFromIntermediateFormat: TConvertFromInfProc;
-    i, j, k, n, size: Integer;
-    tempBuf1, tempBuf2, SourceLine, DestLine: PIntermediateFormatArray;
-    contrib: PCListList;
-    xscale, yscale: Single; // Zoom scale factors
-    width, fscale, weight: Single; // Filter calculation variables
-    center: Single; // Filter calculation variables
-    left, right: Integer; // Filter calculation variables
-    color1, color2: TIntermediateFormat;
+procedure RescaleImage(
+  const ASrc: Pointer;
+  const ADst: Pointer;
+  AColorFormat: TGLEnum;
+  ADataType: TGLEnum;
+  AFilter: TImageFilterFunction;
+  ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
+
+var
+  ConvertToIntermediateFormat: TConvertToImfProc;
+  ConvertFromIntermediateFormat: TConvertFromInfProc;
+  i, j, k, n, size: Integer;
+  tempBuf1, tempBuf2, SourceLine, DestLine: PIntermediateFormatArray;
+  contrib: PCListList;
+  xscale, yscale: Single; // Zoom scale factors
+  width, fscale, weight: Single; // Filter calculation variables
+  center: Single; // Filter calculation variables
+  left, right: Integer; // Filter calculation variables
+  color1, color2: TIntermediateFormat;
+begin
+  if (ASrcWidth < 1) or (ADstWidth < 1) then
+    Exit;
+  ASrcHeight := MaxInteger(1, ASrcHeight);
+  ADstHeight := MaxInteger(1, ADstHeight);
+
+  // Allocate memory
+  size := ASrcWidth * ASrcHeight * SizeOf(TIntermediateFormat);
+  GetMem(tempBuf1, size);
+  FillChar(tempBuf1^, size, $00);
+
+  // Find function to convert external format to intermediate format
+  ConvertToIntermediateFormat := UnsupportedToImf;
+  for i := 0 to high(cConvertTable) do
   begin
-    if (ASrcWidth < 1) or (ADstWidth < 1) then
-      Exit;
-    ASrcHeight := MaxInteger(1, ASrcHeight);
-    ADstHeight := MaxInteger(1, ADstHeight);
-
-    // Allocate memory
-    size := ASrcWidth * ASrcHeight * SizeOf(TIntermediateFormat);
-    GetMem(tempBuf1, size);
-    FillChar(tempBuf1^, size, $00);
-
-    // Find function to convert external format to intermediate format
-    ConvertToIntermediateFormat := UnsupportedToImf;
-    for i := 0 to high(cConvertTable) do
+    if ADataType = cConvertTable[i].type_ then
     begin
-      if ADataType = cConvertTable[i].type_ then
+      ConvertToIntermediateFormat := cConvertTable[i].proc1;
+      ConvertFromIntermediateFormat := cConvertTable[i].proc2;
+      break;
+    end;
+  end;
+
+  try
+    ConvertToIntermediateFormat(ASrc, tempBuf1, AColorFormat, ASrcWidth, ASrcHeight);
+  except
+    FreeMem(tempBuf1);
+    raise;
+  end;
+
+  // Rescale
+
+  if ASrcWidth = 1 then
+    xscale := ADstWidth / ASrcWidth
+  else
+    xscale := (ADstWidth - 1) / (ASrcWidth - 1);
+  if ASrcHeight = 1 then
+    yscale := ADstHeight / ASrcHeight
+  else
+    yscale := (ADstHeight - 1) / (ASrcHeight - 1);
+  // Pre-calculate filter contributions for a row
+  GetMem(contrib, ADstWidth * SizeOf(TCList));
+  // Horizontal sub-sampling
+  // Scales from bigger to smaller width
+  if xscale < 1.0 then
+  begin
+    width := vImageScaleFilterWidth / xscale;
+    fscale := 1.0 / xscale;
+    for i := 0 to ADstWidth - 1 do
+    begin
+      contrib^[i].n := 0;
+      GetMem(contrib^[i].p, Trunc(width * 2.0 + 1) * SizeOf(TContributor));
+      center := i / xscale;
+      left := floor(center - width);
+      right := ceil(center + width);
+      for j := left to right do
       begin
-        ConvertToIntermediateFormat := cConvertTable[i].proc1;
-        ConvertFromIntermediateFormat := cConvertTable[i].proc2;
-        break;
+        weight := AFilter((center - j) / fscale) / fscale;
+        if weight = 0.0 then
+          continue;
+        if (j < 0) then
+          n := -j
+        else if (j >= ASrcWidth) then
+          n := ASrcWidth - j + ASrcWidth - 1
+        else
+          n := j;
+        k := contrib^[i].n;
+        contrib^[i].n := contrib^[i].n + 1;
+        contrib^[i].p^[k].pixel := n;
+        contrib^[i].p^[k].weight := weight;
       end;
     end;
-
-    try
-      ConvertToIntermediateFormat(ASrc, tempBuf1, AColorFormat, ASrcWidth, ASrcHeight);
-    except
-      FreeMem(tempBuf1);
-      raise;
-    end;
-
-    // Rescale
-
-    if ASrcWidth = 1 then
-      xscale := ADstWidth / ASrcWidth
-    else
-      xscale := (ADstWidth - 1) / (ASrcWidth - 1);
-    if ASrcHeight = 1 then
-      yscale := ADstHeight / ASrcHeight
-    else
-      yscale := (ADstHeight - 1) / (ASrcHeight - 1);
-    // Pre-calculate filter contributions for a row
-    GetMem(contrib, ADstWidth * SizeOf(TCList));
-    // Horizontal sub-sampling
-    // Scales from bigger to smaller width
-    if xscale < 1.0 then
+  end
+  else
+  // Horizontal super-sampling
+  // Scales from smaller to bigger width
+  begin
+    for i := 0 to ADstWidth - 1 do
     begin
-      width := cFilterWidth / xscale;
+      contrib^[i].n := 0;
+      GetMem(contrib^[i].p, Trunc(vImageScaleFilterWidth * 2.0 + 1) * SizeOf(TContributor));
+      center := i / xscale;
+      left := floor(center - vImageScaleFilterWidth);
+      right := ceil(center + vImageScaleFilterWidth);
+      for j := left to right do
+      begin
+        weight := AFilter(center - j);
+        if weight = 0.0 then
+          continue;
+        if (j < 0) then
+          n := -j
+        else if (j >= ASrcWidth) then
+          n := ASrcWidth - j + ASrcWidth - 1
+        else
+          n := j;
+        k := contrib^[i].n;
+        contrib^[i].n := contrib^[i].n + 1;
+        contrib^[i].p^[k].pixel := n;
+        contrib^[i].p^[k].weight := weight;
+      end;
+    end;
+  end;
+
+  size := ADstWidth * ASrcHeight * SizeOf(TIntermediateFormat);
+  GetMem(tempBuf2, size);
+
+  // Apply filter to sample horizontally from Src to Work
+  for k := 0 to ASrcHeight - 1 do
+  begin
+    SourceLine := @tempBuf1[k * ASrcWidth];
+    DestLine := @tempBuf2[k * ADstWidth];
+    for i := 0 to ADstWidth - 1 do
+    begin
+      color1 := cSuperBlack;
+      for j := 0 to contrib^[i].n - 1 do
+      begin
+        weight := contrib^[i].p^[j].weight;
+        if weight = 0.0 then
+          continue;
+        color2 := SourceLine[contrib^[i].p^[j].pixel];
+        color1.R := color1.R + color2.R * weight;
+        color1.G := color1.G + color2.G * weight;
+        color1.B := color1.B + color2.B * weight;
+        color1.A := color1.A + color2.A * weight;
+      end;
+      // Set new pixel value
+      DestLine[i] := color1;
+    end;
+  end;
+
+  // Free the memory allocated for horizontal filter weights
+  for i := 0 to ADstWidth - 1 do
+    FreeMem(contrib^[i].p);
+  FreeMem(contrib);
+
+  // Pre-calculate filter contributions for a column
+  GetMem(contrib, ADstHeight * SizeOf(TCList));
+  // Vertical sub-sampling
+  // Scales from bigger to smaller height
+  if yscale < 1.0 then
+  begin
+    width := vImageScaleFilterWidth / yscale;
+    fscale := 1.0 / yscale;
+    for i := 0 to ADstHeight - 1 do
+    begin
+      contrib^[i].n := 0;
+      GetMem(contrib^[i].p, Trunc(width * 2.0 + 1) * SizeOf(TContributor));
+      center := i / yscale;
+      left := floor(center - width);
+      right := ceil(center + width);
+      for j := left to right do
+      begin
+        weight := AFilter((center - j) / fscale) / fscale;
+        if weight = 0.0 then
+          continue;
+        if (j < 0) then
+          n := -j
+        else if (j >= ASrcHeight) then
+          n := MaxInteger(ASrcHeight - j + ASrcHeight - 1, 0)
+        else
+          n := j;
+        k := contrib^[i].n;
+        contrib^[i].n := contrib^[i].n + 1;
+        contrib^[i].p^[k].pixel := n;
+        contrib^[i].p^[k].weight := weight;
+      end;
+    end
+  end
+  else
+  // Vertical super-sampling
+  // Scales from smaller to bigger height
+  begin
+    for i := 0 to ADstHeight - 1 do
+    begin
+      contrib^[i].n := 0;
+      GetMem(contrib^[i].p, Trunc(vImageScaleFilterWidth * 2.0 + 1) * SizeOf(TContributor));
+      center := i / yscale;
+      left := floor(center - vImageScaleFilterWidth);
+      right := ceil(center + vImageScaleFilterWidth);
+      for j := left to right do
+      begin
+        weight := AFilter(center - j);
+        if weight = 0.0 then
+          continue;
+        if j < 0 then
+          n := -j
+        else if (j >= ASrcHeight) then
+          n := MaxInteger(ASrcHeight - j + ASrcHeight - 1, 0)
+        else
+          n := j;
+        k := contrib^[i].n;
+        contrib^[i].n := contrib^[i].n + 1;
+        contrib^[i].p^[k].pixel := n;
+        contrib^[i].p^[k].weight := weight;
+      end;
+    end;
+  end;
+
+  size := ADstWidth * ADstHeight * SizeOf(TIntermediateFormat);
+  ReallocMem(tempBuf1, size);
+
+  // Apply filter to sample vertically from Work to Dst
+  for k := 0 to ADstWidth - 1 do
+  begin
+    for i := 0 to ADstHeight - 1 do
+    begin
+      color1 := cSuperBlack;
+      for j := 0 to contrib^[i].n - 1 do
+      begin
+        weight := contrib^[i].p^[j].weight;
+        if weight = 0.0 then
+          continue;
+        color2 := tempBuf2[k + contrib^[i].p^[j].pixel * ADstWidth];
+        color1.R := color1.R + color2.R * weight;
+        color1.G := color1.G + color2.G * weight;
+        color1.B := color1.B + color2.B * weight;
+        color1.A := color1.A + color2.A * weight;
+      end;
+      tempBuf1[k + i * ADstWidth] := color1;
+    end;
+  end;
+
+  // Free the memory allocated for vertical filter weights
+  for i := 0 to ADstHeight - 1 do
+    FreeMem(contrib^[i].p);
+
+  FreeMem(contrib);
+
+  FreeMem(tempBuf2);
+  // Back to native image format
+  try
+    ConvertFromIntermediateFormat(tempBuf1, ADst, AColorFormat, ADstWidth, ADstHeight);
+  except
+    FreeMem(tempBuf1);
+    raise;
+  end;
+  FreeMem(tempBuf1);
+end;
+
+procedure Div2(var Value: Integer); {$IFDEF GLS_INLINE} inline; {$ENDIF}
+begin
+  Value := Value div 2;
+  if Value = 0 then
+    Value := 1;
+end;
+
+procedure Build2DMipmap(
+  const ASrc: Pointer;
+  const ADst: TPointerArray;
+  AColorFormat: TGLEnum;
+  ADataType: TGLEnum;
+  AFilter: TImageFilterFunction;
+  ASrcWidth, ASrcHeight: Integer);
+
+var
+  ConvertToIntermediateFormat: TConvertToImfProc;
+  ConvertFromIntermediateFormat: TConvertFromInfProc;
+  ADstWidth, ADstHeight: Integer;
+  i, j, k, n, size, level: Integer;
+  tempBuf1, tempBuf2, storePtr, SourceLine, DestLine: PIntermediateFormatArray;
+  contrib: PCListList;
+  xscale, yscale: Single; // Zoom scale factors
+  width, fscale, weight: Single; // Filter calculation variables
+  center: Single; // Filter calculation variables
+  left, right: Integer; // Filter calculation variables
+  color1, color2: TIntermediateFormat;
+  tempW, tempH: Integer;
+
+begin
+  if ASrcWidth < 1 then
+    Exit;
+  ASrcHeight := MaxInteger(1, ASrcHeight);
+
+  // Allocate memory
+  tempW := ASrcWidth;
+  tempH := ASrcHeight;
+  size := 0;
+  for level := 0 to High(ADst) do
+  begin
+    Inc(size, tempW * tempH * SizeOf(TIntermediateFormat));
+    Div2(tempW);
+    Div2(tempH);
+  end;
+  GetMem(tempBuf1, size);
+  storePtr := tempBuf1;
+  FillChar(tempBuf1^, size, $00);
+  GetMem(tempBuf2, ASrcWidth * ASrcHeight * SizeOf(TIntermediateFormat));
+
+  // Find function to convert external format to intermediate format
+  ConvertToIntermediateFormat := UnsupportedToImf;
+  for i := 0 to high(cConvertTable) do
+  begin
+    if ADataType = cConvertTable[i].type_ then
+    begin
+      ConvertToIntermediateFormat := cConvertTable[i].proc1;
+      ConvertFromIntermediateFormat := cConvertTable[i].proc2;
+      break;
+    end;
+  end;
+
+  try
+    ConvertToIntermediateFormat(ASrc, tempBuf1, AColorFormat, ASrcWidth, ASrcHeight);
+  except
+    FreeMem(tempBuf1);
+    raise;
+  end;
+
+  contrib := nil;
+  tempW := ASrcWidth;
+  tempH := ADstHeight;
+
+  try
+    // Downsampling
+    for level := 0 to High(ADst) do
+    begin
+      ADstWidth := ASrcWidth;
+      ADstHeight := ASrcHeight;
+      Div2(ADstWidth);
+      Div2(ADstHeight);
+
+      xscale := (ADstWidth - 1) / (ASrcWidth - 1);
+      yscale := (ADstHeight - 1) / (ASrcHeight - 1);
+
+      // Pre-calculate filter contributions for a row
+      ReallocMem(contrib, ADstWidth * SizeOf(TCList));
+      // Horizontal sub-sampling
+      // Scales from bigger to smaller width
+      width := vImageScaleFilterWidth / xscale;
       fscale := 1.0 / xscale;
       for i := 0 to ADstWidth - 1 do
       begin
         contrib^[i].n := 0;
-        GetMem(contrib^[i].p, Trunc(width * 2.0 + 1) * SizeOf(TContributor));
+        GetMem(contrib^[i].p, Trunc(width * 2.0 + 1.0) * SizeOf(TContributor));
         center := i / xscale;
         left := floor(center - width);
         right := ceil(center + width);
@@ -2616,7 +2909,7 @@ procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: T
           if (j < 0) then
             n := -j
           else if (j >= ASrcWidth) then
-            n := ASrcWidth - j + ASrcWidth - 1
+            n := MaxInteger(ASrcWidth - j + ASrcWidth - 1, 0)
           else
             n := j;
           k := contrib^[i].n;
@@ -2625,76 +2918,40 @@ procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: T
           contrib^[i].p^[k].weight := weight;
         end;
       end;
-    end
-    else
-    // Horizontal super-sampling
-    // Scales from smaller to bigger width
-    begin
-      for i := 0 to ADstWidth - 1 do
+
+      // Apply filter to sample horizontally from Src to Work
+      for k := 0 to ASrcHeight - 1 do
       begin
-        contrib^[i].n := 0;
-        GetMem(contrib^[i].p, Trunc(cFilterWidth * 2.0 + 1) * SizeOf(TContributor));
-        center := i / xscale;
-        left := floor(center - cFilterWidth);
-        right := ceil(center + cFilterWidth);
-        for j := left to right do
+        SourceLine := @tempBuf1[k * ASrcWidth];
+        DestLine := @tempBuf2[k * ADstWidth];
+        for i := 0 to ADstWidth - 1 do
         begin
-          weight := AFilter(center - j);
-          if weight = 0.0 then
-            continue;
-          if (j < 0) then
-            n := -j
-          else if (j >= ASrcWidth) then
-            n := ASrcWidth - j + ASrcWidth - 1
-          else
-            n := j;
-          k := contrib^[i].n;
-          contrib^[i].n := contrib^[i].n + 1;
-          contrib^[i].p^[k].pixel := n;
-          contrib^[i].p^[k].weight := weight;
+          color1 := cSuperBlack;
+          for j := 0 to contrib^[i].n - 1 do
+          begin
+            weight := contrib^[i].p^[j].weight;
+            if weight = 0.0 then
+              continue;
+            color2 := SourceLine[contrib^[i].p^[j].pixel];
+            color1.R := color1.R + color2.R * weight;
+            color1.G := color1.G + color2.G * weight;
+            color1.B := color1.B + color2.B * weight;
+            color1.A := color1.A + color2.A * weight;
+          end;
+          // Set new pixel value
+          DestLine[i] := color1;
         end;
       end;
-    end;
 
-    size := ADstWidth * ASrcHeight * SizeOf(TIntermediateFormat);
-    GetMem(tempBuf2, size);
-
-    // Apply filter to sample horizontally from Src to Work
-    for k := 0 to ASrcHeight - 1 do
-    begin
-      SourceLine := @tempBuf1[k * ASrcWidth];
-      DestLine := @tempBuf2[k * ADstWidth];
+      // Free the memory allocated for horizontal filter weights
       for i := 0 to ADstWidth - 1 do
-      begin
-        color1 := cSuperBlack;
-        for j := 0 to contrib^[i].n - 1 do
-        begin
-          weight := contrib^[i].p^[j].weight;
-          if weight = 0.0 then
-            continue;
-          color2 := SourceLine[contrib^[i].p^[j].pixel];
-          color1.R := color1.R + color2.R * weight;
-          color1.G := color1.G + color2.G * weight;
-          color1.B := color1.B + color2.B * weight;
-          color1.A := color1.A + color2.A * weight;
-        end;
-        // Set new pixel value
-        DestLine[i] := color1;
-      end;
-    end;
+        FreeMem(contrib^[i].p);
 
-    // Free the memory allocated for horizontal filter weights
-    for i := 0 to ADstWidth - 1 do
-      FreeMem(contrib^[i].p);
-    FreeMem(contrib);
-
-    // Pre-calculate filter contributions for a column
-    GetMem(contrib, ADstHeight * SizeOf(TCList));
-    // Vertical sub-sampling
-    // Scales from bigger to smaller height
-    if yscale < 1.0 then
-    begin
-      width := cFilterWidth / yscale;
+      // Pre-calculate filter contributions for a column
+      ReallocMem(contrib, ADstHeight * SizeOf(TCList));
+      // Vertical sub-sampling
+      // Scales from bigger to smaller height
+      width := vImageScaleFilterWidth / yscale;
       fscale := 1.0 / yscale;
       for i := 0 to ADstHeight - 1 do
       begin
@@ -2711,36 +2968,7 @@ procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: T
           if (j < 0) then
             n := -j
           else if (j >= ASrcHeight) then
-            n := ASrcHeight - j + ASrcHeight - 1
-          else
-            n := j;
-          k := contrib^[i].n;
-          contrib^[i].n := contrib^[i].n + 1;
-          contrib^[i].p^[k].pixel := n;
-          contrib^[i].p^[k].weight := weight;
-        end;
-      end
-    end
-    else
-    // Vertical super-sampling
-    // Scales from smaller to bigger height
-    begin
-      for i := 0 to ADstHeight - 1 do
-      begin
-        contrib^[i].n := 0;
-        GetMem(contrib^[i].p, Trunc(cFilterWidth * 2.0 + 1) * SizeOf(TContributor));
-        center := i / yscale;
-        left := floor(center - cFilterWidth);
-        right := ceil(center + cFilterWidth);
-        for j := left to right do
-        begin
-          weight := AFilter(center - j);
-          if weight = 0.0 then
-            continue;
-          if j < 0 then
-            n := -j
-          else if (j >= ASrcHeight) then
-            n := ASrcHeight - j + ASrcHeight - 1
+            n := MaxInteger(ASrcHeight - j + ASrcHeight - 1, 0)
           else
             n := j;
           k := contrib^[i].n;
@@ -2749,47 +2977,49 @@ procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: T
           contrib^[i].p^[k].weight := weight;
         end;
       end;
-    end;
 
-    size := ADstWidth * ADstHeight * SizeOf(TIntermediateFormat);
-    ReallocMem(tempBuf1, size);
+      size := ASrcWidth * ASrcHeight * SizeOf(TIntermediateFormat);
+      Inc(PByte(tempBuf1), size);
 
-    // Apply filter to sample vertically from Work to Dst
-    for k := 0 to ADstWidth - 1 do
-    begin
-      for i := 0 to ADstHeight - 1 do
+      // Apply filter to sample vertically from Work to Dst
+      for k := 0 to ADstWidth - 1 do
       begin
-        color1 := cSuperBlack;
-        for j := 0 to contrib^[i].n - 1 do
+        for i := 0 to ADstHeight - 1 do
         begin
-          weight := contrib^[i].p^[j].weight;
-          if weight = 0.0 then
-            continue;
-          color2 := tempBuf2[k + contrib^[i].p^[j].pixel * ADstWidth];
-          color1.R := color1.R + color2.R * weight;
-          color1.G := color1.G + color2.G * weight;
-          color1.B := color1.B + color2.B * weight;
-          color1.A := color1.A + color2.A * weight;
+          color1 := cSuperBlack;
+          for j := 0 to contrib^[i].n - 1 do
+          begin
+            weight := contrib^[i].p^[j].weight;
+            if weight = 0.0 then
+              continue;
+            n := k + contrib^[i].p^[j].pixel * ADstWidth;
+            color2 := tempBuf2[n];
+            color1.R := color1.R + color2.R * weight;
+            color1.G := color1.G + color2.G * weight;
+            color1.B := color1.B + color2.B * weight;
+            color1.A := color1.A + color2.A * weight;
+          end;
+          tempBuf1[k + i * ADstWidth] := color1;
         end;
-        tempBuf1[k + i * ADstWidth] := color1;
       end;
+
+      // Free the memory allocated for vertical filter weights
+      for i := 0 to ADstHeight - 1 do
+        FreeMem(contrib^[i].p);
+
+      ASrcWidth := ADstWidth;
+      ASrcHeight := ADstHeight;
+
+      // Back to native image format
+      ConvertFromIntermediateFormat(
+        tempBuf1, ADst[level], AColorFormat, ASrcWidth, ASrcHeight);
     end;
-
-    // Free the memory allocated for vertical filter weights
-    for i := 0 to ADstHeight - 1 do
-      FreeMem(contrib^[i].p);
-
-    FreeMem(contrib);
-
+  finally
+    if Assigned(contrib) then
+      FreeMem(contrib);
     FreeMem(tempBuf2);
-    // Back to native image format
-    try
-      ConvertFromIntermediateFormat(tempBuf1, ADst, AColorFormat, ADstWidth, ADstHeight);
-    except
-      FreeMem(tempBuf1);
-      raise;
-    end;
-    FreeMem(tempBuf1);
+    FreeMem(storePtr);
   end;
+end;
 
 end.
