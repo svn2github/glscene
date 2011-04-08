@@ -3146,14 +3146,10 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
     end;
   end;
 
-var
-  target: TGLTextureTarget;
 begin
-  // Apply
-  target := Image.NativeTextureTarget;
   // Multisample image do not work with FFP
-  if (target = ttTexture2DMultisample) or
-    (target = ttTexture2DMultisampleArray) then
+  if (FTextureHandle.Target = ttTexture2DMultisample) or
+    (FTextureHandle.Target = ttTexture2DMultisampleArray) then
     exit;
 
   if not Disabled and (Handle > 0) then
@@ -3161,13 +3157,13 @@ begin
     with rci.GLStates do
     begin
       ActiveTexture := 0;
-      TextureBinding[0, target] := Handle;
-      ActiveTextureEnabled[target] := True;
+      TextureBinding[0, FTextureHandle.Target] := Handle;
+      ActiveTextureEnabled[FTextureHandle.Target] := True;
     end;
 
     if not rci.GLStates.ForwardContext then
     begin
-      if target = ttTextureCube then
+      if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
       GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
         cTextureMode[FTextureMode]);
@@ -3178,7 +3174,7 @@ begin
   end
   else if not rci.GLStates.ForwardContext then
   begin // default
-    rci.GLStates.ActiveTextureEnabled[target] := False;
+    rci.GLStates.ActiveTextureEnabled[FTextureHandle.Target] := False;
     xgl.MapTexCoordToMain;
   end;
 end;
@@ -3187,22 +3183,19 @@ end;
 //
 
 procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
-var
-  target: TGLTextureTarget;
 begin
   if not Disabled
     and not rci.GLStates.ForwardContext then
   begin
-    target := Image.NativeTextureTarget;
     // Multisample image do not work with FFP
-    if (target = ttTexture2DMultisample) or
-      (target = ttTexture2DMultisampleArray) then
+    if (FTextureHandle.Target = ttTexture2DMultisample) or
+      (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
     with rci.GLStates do
     begin
       ActiveTexture := 0;
-      ActiveTextureEnabled[target] := False;
-      if target = ttTextureCube then
+      ActiveTextureEnabled[FTextureHandle.Target] := False;
+      if FTextureHandle.Target = ttTextureCube then
         ResetGLTextureMatrix;
     end;
     UnApplyMappingMode;
@@ -3234,23 +3227,21 @@ procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
   textureMatrix: PMatrix = nil);
 var
   m: TMatrix;
-  target: TGLTextureTarget;
 begin
   if not Disabled then
   begin
-    target := Image.NativeTextureTarget;
     // Multisample image do not work with FFP
-    if (target = ttTexture2DMultisample) or
-      (target = ttTexture2DMultisampleArray) then
+    if (FTextureHandle.Target = ttTexture2DMultisample) or
+      (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
     with rci.GLStates do
     begin
       ActiveTexture := n - 1;
-      ActiveTextureEnabled[target] := True;
-      TextureBinding[n - 1, target] := Handle;
+      ActiveTextureEnabled[FTextureHandle.Target] := True;
+      TextureBinding[n - 1, FTextureHandle.Target] := Handle;
       if Assigned(textureMatrix) then
         SetGLTextureMatrix(textureMatrix^)
-      else if target = ttTextureCube then
+      else if FTextureHandle.Target = ttTextureCube then
       begin
         m := rci.PipelineTransformation.ModelViewMatrix;
         NormalizeMatrix(m);
@@ -3274,22 +3265,19 @@ end;
 
 procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
-var
-  target: TGLTextureTarget;
 begin
   if not rci.GLStates.ForwardContext then
   begin
-    target := Image.NativeTextureTarget;
     // Multisample image do not work with FFP
-    if (target = ttTexture2DMultisample) or
-      (target = ttTexture2DMultisampleArray) then
+    if (FTextureHandle.Target = ttTexture2DMultisample) or
+      (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
     with rci.GLStates do
     begin
       ActiveTexture := n - 1;
-      ActiveTextureEnabled[target] := False;
+      ActiveTextureEnabled[FTextureHandle.Target] := False;
       UnApplyMappingMode;
-      if (target = ttTextureCube) or reloadIdentityTextureMatrix then
+      if (FTextureHandle.Target = ttTextureCube) or reloadIdentityTextureMatrix then
         ResetGLTextureMatrix;
       ActiveTexture := 0;
     end;
@@ -3302,10 +3290,9 @@ end;
 function TGLTexture.AllocateHandle: TGLuint;
 var
   vTarget: TGLTextureTarget;
-  glTarget: TGLEnum;
 begin
   vTarget := Image.NativeTextureTarget;
-  if FTextureHandle.Target <> vTarget then
+  if (vTarget <> ttNoShape) and (FTextureHandle.Target <> vTarget) then
     FTextureHandle.DestroyHandle;
 
   FTextureHandle.AllocateHandle;
@@ -3318,14 +3305,13 @@ begin
   FSamplerHandle.AllocateHandle;
 
   // bind texture
-  glTarget := DecodeGLTextureTarget(vTarget);
-  if IsTargetSupported(glTarget) then
+  if IsTargetSupported(FTextureHandle.Target) then
   begin
     if FSamplerHandle.IsDataNeedUpdate then
     begin
       with CurrentGLContext.GLStates do
-        TextureBinding[ActiveTexture, vTarget] := FTextureHandle.Handle;
-      PrepareParams(glTarget);
+        TextureBinding[ActiveTexture, FTextureHandle.Target] := FTextureHandle.Handle;
+      PrepareParams(DecodeGLTextureTarget(FTextureHandle.Target));
       FSamplerHandle.NotifyDataUpdated;
     end;
   end
@@ -3351,11 +3337,34 @@ var
   cmt: TGLCubeMapTarget;
   cubeMapOk: Boolean;
   cubeMapImage: TGLCubeMapImage;
-  lastBinding: TGLuint;
+  LBinding: array[TGLTextureTarget] of TGLuint;
+
+  procedure StoreBindings;
+  var
+    t: TGLTextureTarget;
+  begin
+    with CurrentGLContext.GLStates do
+    begin
+      if TextureBinding[ActiveTexture, FTextureHandle.Target] = FTextureHandle.Handle then
+        TextureBinding[ActiveTexture, FTextureHandle.Target] := 0;
+      for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+        LBinding[t] := TextureBinding[ActiveTexture, t];
+    end;
+  end;
+
+  procedure RestoreBindings;
+  var
+    t: TGLTextureTarget;
+  begin
+    with CurrentGLContext.GLStates do
+      for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
+        TextureBinding[ActiveTexture, t] := LBinding[t];
+  end;
+
 begin
   with CurrentGLContext.GLStates do
   begin
-    lastBinding := TextureBinding[ActiveTexture, Image.NativeTextureTarget];
+    StoreBindings;
     try
       Result := AllocateHandle;
       if FTextureHandle.IsDataNeedUpdate then
@@ -3398,7 +3407,7 @@ begin
           PrepareImage(target);
       end;
     finally
-      TextureBinding[ActiveTexture, Image.NativeTextureTarget] := lastBinding;
+      RestoreBindings;
     end;
   end;
 end;
