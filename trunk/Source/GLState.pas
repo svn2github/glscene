@@ -3134,6 +3134,8 @@ procedure TGLStateCache.SetTextureBinding(Index: Integer; target:
 var
   lastActiveTexture: TGLuint;
 begin
+  if target = ttNoShape then
+    exit;
   if (Value <> FTextureBinding[Index, target]) or FInsideList then
   begin
     if FInsideList then
