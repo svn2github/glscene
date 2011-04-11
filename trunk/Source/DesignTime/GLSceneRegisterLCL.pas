@@ -111,7 +111,7 @@ uses
   GLFileWAV, GLFileMP3,
 
   // Raster file format
-  GLFileDDS, GLFileO3TC, GLFileHDR,
+  GLFileDDS, GLFileO3TC, GLFileHDR, GLFileBMP, GLFileTGA,
 
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,

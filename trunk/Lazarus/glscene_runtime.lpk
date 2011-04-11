@@ -32,7 +32,7 @@
     <Description Value="GLScene - OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="235">
+    <Files Count="237">
       <Item1>
         <Filename Value="../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
@@ -973,6 +973,14 @@
         <Filename Value="../Source/Shaders/GLUserShader.pas"/>
         <UnitName Value="GLUserShader"/>
       </Item235>
+      <Item236>
+        <Filename Value="../Source/FileFormats/GLFileBMP.pas"/>
+        <UnitName Value="GLFileBMP"/>
+      </Item236>
+      <Item237>
+        <Filename Value="../Source/FileFormats/GLFileTGA.pas"/>
+        <UnitName Value="GLFileTGA"/>
+      </Item237>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

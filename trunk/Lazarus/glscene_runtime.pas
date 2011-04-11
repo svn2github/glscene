@@ -50,7 +50,8 @@ uses
   GLScreen, GLViewer, GLWidgetContext, FRUniformEditor, GLAsmShader, 
   GLBumpShader, GLCelShader, GLCustomShader, GLHiddenLineShader, 
   GLMultiMaterialShader, GLOutlineShader, GLPhongShader, GLShaderCombiner, 
-  GLTexCombineShader, GLTextureSharingShader, GLUserShader;
+  GLTexCombineShader, GLTextureSharingShader, GLUserShader, GLFileBMP, 
+  GLFileTGA;
 
 implementation
 
