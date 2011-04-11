@@ -141,10 +141,11 @@ begin
   header.magic := cardinal(Magic);
   with header.SurfaceFormat do
   begin
-    dwSize := 124;
+    dwSize := sizeof(TDDSURFACEDESC2);
     dwFlags := DDSD_CAPS + DDSD_PIXELFORMAT + DDSD_WIDTH + DDSD_HEIGHT + DDSD_PITCH;
     dwWidth := Width;
     dwHeight := Height;
+    ddpf.dwSize := sizeof(TDDPIXELFORMAT);
     case PixelFormat of
 {$IFDEF MSWINDOWS}
       glpf24bit:
