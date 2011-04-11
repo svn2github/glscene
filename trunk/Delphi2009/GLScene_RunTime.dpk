@@ -291,6 +291,8 @@ contains
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
   FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas' {ShaderUniformEditor},
   GLSMemo in '..\Source\Base\GLSMemo.pas',
-  GLSceneForm in '..\Source\GLSceneForm.pas';
+  GLSceneForm in '..\Source\GLSceneForm.pas',
+  GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
 
 end.

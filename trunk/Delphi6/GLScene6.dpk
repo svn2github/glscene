@@ -281,6 +281,9 @@ contains
   GLSZLibEx in '..\Source\FileFormats\ZLIB\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\FileFormats\ZLIB\GLSZLibExApi.pas',
   OpenGLAdapter in '..\Source\Base\OpenGLAdapter.pas',
-  GLMultisampleImage in '..\Source\GLMultisampleImage.pas';
+  GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
+  GLSceneForm in '..\Source\GLSceneForm.pas',
+  GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
 
 end.

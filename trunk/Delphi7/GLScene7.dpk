@@ -300,6 +300,8 @@ contains
   FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
   FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas' {GLShaderEditor},
   GLSMemo in '..\Source\Base\GLSMemo.pas',
-  GLSceneForm in '..\Source\GLSceneForm.pas';
+  GLSceneForm in '..\Source\GLSceneForm.pas',
+  GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
 
 end.

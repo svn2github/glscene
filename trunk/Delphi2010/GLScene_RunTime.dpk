@@ -288,6 +288,8 @@ contains
   GLSLParameter in '..\Source\GLSLShaders\GLSLParameter.pas',
   FRUniformEditor in '..\Source\PropertyEditors\FRUniformEditor.pas',
   GLSMemo in '..\Source\Base\GLSMemo.pas',
-  GLSceneForm in '..\Source\GLSceneForm.pas';
+  GLSceneForm in '..\Source\GLSceneForm.pas',
+  GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
 
 end.
