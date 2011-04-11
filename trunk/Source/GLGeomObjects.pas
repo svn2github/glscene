@@ -2005,7 +2005,7 @@ end;
 
 procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer);// {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     with GL do

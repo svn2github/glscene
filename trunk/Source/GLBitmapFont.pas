@@ -853,8 +853,8 @@ begin
       Assert(False);
     end;
     RegisterAsOpenGLTexture(
-      GL_TEXTURE_2D,
-      MinFilter,
+      FTextureHandle,
+      not (FMinFilter in [miNearest, miLinear]),
       TextureFormat,
       FTextureWidth,
       FTextureHeight,
@@ -875,17 +875,25 @@ const
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
 begin
-  GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  rci.GLStates.UnpackAlignment := 4;
-  rci.GLStates.UnpackRowLength := 0;
-  rci.GLStates.UnpackSkipRows := 0;
-  rci.GLStates.UnpackSkipPixels := 0;
 
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  with rci.GLStates do
+  begin
+    UnpackAlignment := 4;
+    UnpackRowLength := 0;
+    UnpackSkipRows := 0;
+    UnpackSkipPixels := 0;
+  end;
 
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+  with GL do
+  begin
+    Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+  end;
 end;
 
 // RenderString
@@ -944,6 +952,7 @@ begin
   if FTextureHandle.IsDataNeedUpdate then
   begin
     // prepare handle
+    FTextureHandle.Target := ttTexture2D;
     rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
     // texture registration
     if Glyphs.Width <> 0 then
@@ -967,12 +976,15 @@ begin
   vBottomRight[3] := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
-  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.Enable(stBlend);
-  rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-  rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
-  //rci.GLStates.TextureBinding[0, ttTexture2d] := FTextureHandle.Handle;
+  with rci.GLStates do
+  begin
+    ActiveTextureEnabled[ttTexture2D] := True;
+    Disable(stLighting);
+    Enable(stBlend);
+    SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
+  end;
+
   GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   // start rendering
   GL.Color4fv(@aColor);
@@ -998,21 +1010,22 @@ begin
     else
       deltaH := GetCharWidth(currentChar);
       if deltaH > 0 then
+      with GL do
       begin
         GetCharTexCoords(currentChar, topLeft, bottomRight);
         vBottomRight[0] := vTopLeft[0] + deltaH;
 
-        GL.TexCoord2fv(@topLeft);
-        GL.Vertex4fv(@vTopLeft);
+        TexCoord2fv(@topLeft);
+        Vertex4fv(@vTopLeft);
 
-        GL.TexCoord2f(topLeft.S, bottomRight.T);
-        GL.Vertex2f(vTopLeft[0], vBottomRight[1]);
+        TexCoord2f(topLeft.S, bottomRight.T);
+        Vertex2f(vTopLeft[0], vBottomRight[1]);
 
-        GL.TexCoord2fv(@bottomRight);
-        GL.Vertex4fv(@vBottomRight);
+        TexCoord2fv(@bottomRight);
+        Vertex4fv(@vBottomRight);
 
-        GL.TexCoord2f(bottomRight.S, topLeft.T);
-        GL.Vertex2f(vBottomRight[0], vTopLeft[1]);
+        TexCoord2f(bottomRight.S, topLeft.T);
+        Vertex2f(vBottomRight[0], vTopLeft[1]);
 
         vTopLeft[0] := vTopLeft[0] + deltaH + HSpace;
       end;

@@ -73,8 +73,8 @@ begin
 
   FullHDR.Narrow;
 
-  Width := FullHDR.Width;
-  Height := FullHDR.Height;
+  Width := FullHDR.LevelWidth[0];
+  Height := FullHDR.LevelHeight[0];
   Transparent := false;
   PixelFormat := glpf32bit;
 

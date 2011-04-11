@@ -3177,6 +3177,7 @@ begin
     if FTexHandle.Handle = 0 then
     begin
       FTexHandle.AllocateHandle;
+      FTexHandle.Target := ttTexture2D;
       rci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
       GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
       rci.GLStates.UnpackAlignment := 4;
@@ -3191,7 +3192,9 @@ begin
       try
         tf := GL_RGBA;
         PrepareImage(bmp32, tf);
-        bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinearMipmapLinear,
+        bmp32.RegisterAsOpenGLTexture(
+          FTexHandle,
+          True,
           tf, tw, th, td);
       finally
         bmp32.Free;

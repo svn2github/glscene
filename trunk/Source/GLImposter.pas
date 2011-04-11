@@ -513,15 +513,19 @@ begin
     Exit;
 
   FTexture.AllocateHandle;
+  FTexture.Target := ttTexture2D;
   rci.GLStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
   if GL.EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  with GL do
+  begin
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  end;
 end;
 
 // BeginRender
@@ -773,7 +777,8 @@ var
   size: Integer;
 begin
   destImposter.PrepareTexture(rci);
-  bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA8, size, size, size);
+  bmp32.RegisterAsOpenGLTexture(
+    destImposter.FTexture, False, GL_RGBA8, size, size, size);
 end;
 
 // NotifyChange

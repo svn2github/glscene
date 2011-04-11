@@ -47,14 +47,6 @@ type
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
-
-    property Data: PGLPixel32Array read FData;
-    property Width: Integer read fWidth;
-    property Height: Integer read fHeight;
-    property ColorFormat: GLenum read fColorFormat;
-    property InternalFormat: TGLInternalFormat read fInternalFormat;
-    property DataType: GLenum read fDataType;
-    property ElementSize: Integer read fElementSize;
   end;
 
 implementation
@@ -138,6 +130,8 @@ begin
     raise EInvalidRasterFile.Create(sLIBPNGerror);
   end;
 
+  UnMipmap;
+
   try
     {: Need to override the standard I/O methods since libPNG
        may be linked against a different run-time }
@@ -147,10 +141,10 @@ begin
 
     // automagically read everything to the image data
     _png_read_info(png_ptr, info_ptr);
-    fWidth := _png_get_image_width(png_ptr, info_ptr);
-    fHeight := _png_get_image_height(png_ptr, info_ptr);
+    FLOD[0].Width := _png_get_image_width(png_ptr, info_ptr);
+    FLOD[0].Height := _png_get_image_height(png_ptr, info_ptr);
     // using the convention of depth = 0 for 2D images
-    fDepth := 0;
+    FLOD[0].Depth := 0;
 
     colorType := _png_get_color_type(png_ptr, info_ptr);
     bitDepth :=  _png_get_bit_depth(png_ptr, info_ptr);
@@ -173,14 +167,15 @@ begin
 
     rowBytes := _png_get_rowbytes(png_ptr, info_ptr);
 
-    ReallocMem(fData, rowBytes * Cardinal(fHeight));
+    UpdateLevelsInfo;
+    ReallocMem(fData, rowBytes * Cardinal(GetHeight));
 
-    SetLength(rowPointers, fHeight);
+    SetLength(rowPointers, GetHeight);
 
     // set up the row pointers
-    for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + Cardinal(fHeight - 1 - ii) *
-        rowBytes);
+    for ii := 0 to FLOD[0].Height - 1 do
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) +
+      Cardinal(FLOD[0].Height - 1 - ii) * rowBytes);
 
     // read the image
     _png_read_image(png_ptr, @rowPointers[0]);
@@ -255,7 +250,6 @@ begin
 
     fCubeMap := false;
     fTextureArray := false;
-    fLevels.Clear;
 
     _png_read_end(png_ptr, nil);
   finally
@@ -294,7 +288,7 @@ begin
     _png_set_write_fn(png_ptr, stream, pngWriteFn, nil);
     bit_depth := fElementSize * 8;
     color_type := PNG_COLOR_TYPE_GRAY;
-    rowBytes := fWidth * fElementSize;
+    rowBytes := GetWidth * fElementSize;
     canSave := true;
     case fDataType of
       GL_UNSIGNED_BYTE: bit_depth := 8;
@@ -316,17 +310,17 @@ begin
       raise
         EInvalidRasterFile.Create('These image format do not match the PNG format specification.');
 
-    _png_set_IHDR(png_ptr, info_ptr, fWidth, fHeight, bit_depth, color_type,
+    _png_set_IHDR(png_ptr, info_ptr, GetWidth, GetHeight, bit_depth, color_type,
       PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
       PNG_FILTER_TYPE_DEFAULT);
     // write the file header information
     _png_write_info(png_ptr, info_ptr);
-    SetLength(rowPointers, fHeight);
+    SetLength(rowPointers, GetHeight);
 
     // set up the row pointers
-    for ii := 0 to fHeight - 1 do
-      rowPointers[ii] := PGLUbyte(PtrUInt(fData) + Cardinal(fHeight - 1 - ii) *
-        rowBytes);
+    for ii := 0 to GetHeight - 1 do
+      rowPointers[ii] := PGLUbyte(PtrUInt(fData) +
+      Cardinal(GetHeight - 1 - ii) * rowBytes);
 
     _png_write_image(png_ptr, @rowPointers[0]);
     _png_write_end(png_ptr, info_ptr);
@@ -366,7 +360,7 @@ begin
 
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    fMipLevels := 0;
+    fLevelCount := 0;
     fCubeMap := false;
     fTextureArray := false;
     // Check level existence
@@ -374,27 +368,25 @@ begin
       @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
-      fDepth := 0;
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+      FLOD[0].Depth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
         fInternalFormat := residentFormat
       else
         fInternalFormat := intFormat;
       FindCompatibleDataFormat(fInternalFormat, fColorFormat, fDataType);
-      Inc(fMipLevels);
+      Inc(fLevelCount);
     end;
-    if fMipLevels > 0 then
+    if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(FData, DataSize);
-      fLevels.Clear;
-      fLevels.Add(fData);
       GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
-      fMipLevels := 1;
+      fLevelCount := 1;
     GL.CheckError;
   finally
     if contextActivate then

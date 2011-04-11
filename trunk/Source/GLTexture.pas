@@ -235,6 +235,18 @@ const
   cDefaultNormalMapScale = 0.125;
 
 type
+  TGLMinFilter =
+  (
+    miNearest,
+    miLinear,
+    miNearestMipmapNearest,
+    miLinearMipmapNearest,
+    miNearestMipmapLinear,
+    miLinearMipmapLinear
+  );
+
+  TGLMagFilter = (maNearest, maLinear);
+
   TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace, tmAdd);
   TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal, twSeparate);
 
@@ -296,12 +308,19 @@ type
           top left point of the bitmap are transparent, others are opaque.
        </ul>
     }
-  TGLTextureImageAlpha = (tiaDefault, tiaAlphaFromIntensity,
-    tiaSuperBlackTransparent, tiaLuminance,
-    tiaLuminanceSqrt, tiaOpaque,
+  TGLTextureImageAlpha =
+  (
+    tiaDefault,
+    tiaAlphaFromIntensity,
+    tiaSuperBlackTransparent,
+    tiaLuminance,
+    tiaLuminanceSqrt,
+    tiaOpaque,
     tiaTopLeftPointColorTransparent,
-    tiaInverseLuminance, tiaInverseLuminanceSqrt,
-    tiaBottomRightPointColorTransparent);
+    tiaInverseLuminance,
+    tiaInverseLuminanceSqrt,
+    tiaBottomRightPointColorTransparent
+  );
 
   // TGLTextureImage
   //
@@ -358,11 +377,9 @@ type
     procedure Invalidate; dynamic;
 
     {: Returns image's bitmap handle.<p>
-             The specified target can be TEXTURE_2D or one of the cube maps targets.<br>
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D): TGLBitmap32; virtual;
-      abstract;
+    function GetBitmap32: TGLImage; virtual; abstract;
     {: Request for unloading bitmapData, to free some memory.<p>
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap.<br>
@@ -398,7 +415,7 @@ type
     procedure SetArray(const val: Boolean);
   protected
     { Protected Declarations }
-    fBitmap: TGLBitmap32;
+    fBitmap: TGLImage;
 
     fWidth, fHeight, fDepth: Integer;
     {: Store a icolor format, because fBitmap is not always defined}
@@ -419,8 +436,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D): TGLBitmap32;
-      override;
+    function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
     procedure SaveToFile(const fileName: string); override;
@@ -445,7 +461,7 @@ type
   TGLPictureImage = class(TGLTextureImage)
   private
     { Private Declarations }
-    FBitmap: TGLBitmap32;
+    FBitmap: TGLImage;
     FGLPicture: TGLPicture;
     FUpdateCounter: Integer;
 
@@ -473,8 +489,7 @@ type
     {: Ends a direct picture modification session.<p>
        Follows a BeginUpdate. }
     procedure EndUpdate;
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D): TGLBitmap32;
-      override;
+    function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
     {: Holds the image content. }
@@ -540,8 +555,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
 
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D): TGLBitmap32;
-      override;
+    function GetBitmap32: TGLImage; override;
     procedure Invalidate; override;
 
   published
@@ -562,7 +576,7 @@ type
   TGLCubeMapImage = class(TGLTextureImage)
   private
     { Private Declarations }
-    FBitmap: TGLBitmap32;
+    FImage: TGLImage;
     FUpdateCounter: Integer;
     FPicture: array[cmtPX..cmtNZ] of TGLPicture;
   protected
@@ -583,8 +597,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_CUBE_MAP_POSITIVE_X):
-      TGLBitmap32; override;
+    function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
     {: Use this function if you are going to modify the Picture directly.<p>
@@ -1047,6 +1060,9 @@ var
   vTGraphicFileExtension: array of string;
   vTGraphicClass: array of TGraphicClass;
 
+type
+  TFriendlyImage = class(TGLBaseImage);
+
 {$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
   // RegisterTGraphicClassFileExtension
@@ -1249,7 +1265,7 @@ end;
 
 function TGLTextureImage.AsBitmap: TGLBitmap;
 begin
-  result := self.GetBitmap32(GL_TEXTURE_2D).Create32BitsBitmap;
+  result := self.GetBitmap32.Create32BitsBitmap;
 end;
 
 // AssignToBitmap
@@ -1257,7 +1273,7 @@ end;
 
 procedure TGLTextureImage.AssignToBitmap(aBitmap: TGLBitmap);
 begin
-  Self.GetBitmap32(GL_TEXTURE_2D).AssignToBitmap(aBitmap);
+  Self.GetBitmap32.AssignToBitmap(aBitmap);
 end;
 
 // NotifyChange
@@ -1456,11 +1472,11 @@ end;
 // GetBitmap32
 //
 
-function TGLBlankImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLBlankImage.GetBitmap32: TGLImage;
 begin
   if not Assigned(FBitmap) then
   begin
-    fBitmap := TGLBitmap32.Create;
+    fBitmap := TGLImage.Create;
     fBitmap.Width := FWidth;
     fBitmap.Height := FHeight;
     fBitmap.Depth := FDepth;
@@ -1624,12 +1640,12 @@ begin
       Picture.Assign(Source)
     else if (Source is TGLPicture) then
       Picture.Assign(Source)
-    else if (Source is TGLBitmap32) then
+    else if (Source is TGLImage) then
     begin
-      bmp := TGLBitmap32(Source).Create32BitsBitmap;
+      bmp := TGLImage(Source).Create32BitsBitmap;
       Picture.Graphic := bmp;
       bmp.Free;
-      FResourceFile := TGLBitmap32(Source).ResourceName;
+      FResourceFile := TGLImage(Source).ResourceName;
     end
     else
       inherited;
@@ -1686,11 +1702,11 @@ end;
 // GetBitmap32
 //
 
-function TGLPictureImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLPictureImage.GetBitmap32: TGLImage;
 begin
   if not Assigned(FBitmap) then
   begin
-    FBitmap := TGLBitmap32.Create;
+    FBitmap := TGLImage.Create;
     // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
     // for instance, TJPegImage triggers an OnChange when it is drawn...
     if Assigned(Picture.Graphic) then
@@ -1937,7 +1953,7 @@ end;
 // GetBitmap32
 //
 
-function TGLPicFileImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLPicFileImage.GetBitmap32: TGLImage;
 var
   buf: string;
   gr: TGLGraphic;
@@ -1965,7 +1981,7 @@ begin
           //Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
         end;
       end;
-      Result := inherited GetBitmap32(target);
+      Result := inherited GetBitmap32;
       FWidth := Result.Width;
       FHeight := Result.Height;
       Picture.Graphic := nil;
@@ -1974,7 +1990,7 @@ begin
     end;
   end
   else
-    Result := inherited GetBitmap32(target);
+    Result := inherited GetBitmap32;
 end;
 
 // SaveToFile
@@ -2110,30 +2126,41 @@ end;
 // GetBitmap32
 //
 
-function TGLCubeMapImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLCubeMapImage.GetBitmap32: TGLImage;
 var
-  i: TGLCubeMapTarget;
+  I: Integer;
+  LImage: TGLImage;
 begin
-  i := cmtPX;
-  case target of
-    GL_TEXTURE_CUBE_MAP_POSITIVE_X: i := cmtPX;
-    GL_TEXTURE_CUBE_MAP_NEGATIVE_X: i := cmtNX;
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Y: i := cmtPY;
-    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: i := cmtNY;
-    GL_TEXTURE_CUBE_MAP_POSITIVE_Z: i := cmtPZ;
-    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: i := cmtNZ;
-  end;
-  if Assigned(FBitmap) then
-    FBitmap.Free;
-  FBitmap := TGLBitmap32.Create;
-  FPicture[i].OnChange := nil;
+  if Assigned(FImage) then
+    FImage.Free;
+  LImage := TGLImage.Create;
+  LImage.VerticalReverseOnAssignFromBitmap := True;
+
   try
-    FBitmap.VerticalReverseOnAssignFromBitmap := True;
-    FBitmap.Assign(FPicture[i].Graphic);
+    for I := 0 to 5 do
+    begin
+      FPicture[TGLCubeMapTarget(I)].OnChange := nil;
+      try
+        LImage.Assign(FPicture[TGLCubeMapTarget(I)].Graphic);
+        if not Assigned(FImage) then
+        begin
+          FImage := TGLImage.Create;
+          FImage.Blank := True;
+          FImage.Width := LImage.Width;
+          FImage.Height := LImage.Height;
+          FImage.SetColorFormatDataType(LImage.ColorFormat, LImage.DataType);
+          FImage.CubeMap := True;
+          FImage.Blank := False;
+        end;
+        Move(LImage.Data^, TFriendlyImage(FImage).GetLevelAddress(0, I)^, LImage.LevelSizeInByte[0]);
+      finally
+        FPicture[TGLCubeMapTarget(I)].OnChange := PictureChanged;
+      end;
+    end;
   finally
-    FPicture[i].OnChange := PictureChanged;
+    LImage.Destroy;
   end;
-  Result := FBitmap;
+  Result := FImage;
 end;
 
 // ReleaseBitmap32
@@ -2141,10 +2168,10 @@ end;
 
 procedure TGLCubeMapImage.ReleaseBitmap32;
 begin
-  if Assigned(FBitmap) then
+  if Assigned(FImage) then
   begin
-    FBitmap.Free;
-    FBitmap := nil;
+    FImage.Free;
+    FImage := nil;
   end;
 end;
 
@@ -3174,7 +3201,6 @@ begin
   end
   else if not rci.GLStates.ForwardContext then
   begin // default
-    rci.GLStates.ActiveTextureEnabled[FTextureHandle.Target] := False;
     xgl.MapTexCoordToMain;
   end;
 end;
@@ -3237,8 +3263,8 @@ begin
     with rci.GLStates do
     begin
       ActiveTexture := n - 1;
-      ActiveTextureEnabled[FTextureHandle.Target] := True;
       TextureBinding[n - 1, FTextureHandle.Target] := Handle;
+      ActiveTextureEnabled[FTextureHandle.Target] := True;
       if Assigned(textureMatrix) then
         SetGLTextureMatrix(textureMatrix^)
       else if FTextureHandle.Target = ttTextureCube then
@@ -3332,11 +3358,7 @@ end;
 
 function TGLTexture.GetHandle: TGLuint;
 var
-  i, target: TGLUInt;
-  cubeMapSize: Integer;
-  cmt: TGLCubeMapTarget;
-  cubeMapOk: Boolean;
-  cubeMapImage: TGLCubeMapImage;
+  target: TGLUInt;
   LBinding: array[TGLTextureTarget] of TGLuint;
 
   procedure StoreBindings;
@@ -3380,30 +3402,30 @@ begin
         end;
         // Load images
         TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
-        if Image is TGLCubeMapImage then
-        begin
-          cubeMapImage := (Image as TGLCubeMapImage);
-          // first check if everything is coherent, otherwise, bail out
-          cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
-          cubeMapOk := (cubeMapSize > 0);
-          if cubeMapOk then
-          begin
-            for cmt := cmtPX to cmtNZ do
-              with cubeMapImage.Picture[cmt] do
-              begin
-                cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
-                if not cubeMapOk then
-                  Break;
-              end;
-          end;
-          if cubeMapOk then
-          begin
-            for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
-              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-              PrepareImage(i);
-          end;
-        end // of TGLCubeMapImage
-        else
+//        if Image is TGLCubeMapImage then
+//        begin
+//          cubeMapImage := (Image as TGLCubeMapImage);
+//          // first check if everything is coherent, otherwise, bail out
+//          cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
+//          cubeMapOk := (cubeMapSize > 0);
+//          if cubeMapOk then
+//          begin
+//            for cmt := cmtPX to cmtNZ do
+//              with cubeMapImage.Picture[cmt] do
+//              begin
+//                cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
+//                if not cubeMapOk then
+//                  Break;
+//              end;
+//          end;
+//          if cubeMapOk then
+//          begin
+//            for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
+//              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
+//              PrepareImage(i);
+//          end;
+//        end // of TGLCubeMapImage
+//        else
           PrepareImage(target);
       end;
     finally
@@ -3474,7 +3496,7 @@ end;
 
 procedure TGLTexture.PrepareImage(target: TGLUInt);
 var
-  bitmap32: TGLBitmap32;
+  bitmap32: TGLImage;
   texComp: TGLTextureCompression;
   glFormat: TGLEnum;
 begin
@@ -3485,7 +3507,7 @@ begin
   else
   begin
 
-    bitmap32 := Image.GetBitmap32(target);
+    bitmap32 := Image.GetBitmap32;
 
     if (bitmap32 = nil) or bitmap32.IsEmpty then
       Exit;
@@ -3574,8 +3596,8 @@ begin
       glFormat := InternalFormatToOpenGLFormat(FTextureFormat);
 
     bitmap32.RegisterAsOpenGLTexture(
-      target,
-      FMinFilter,
+      FTextureHandle,
+      not (FMinFilter in [miNearest, miLinear]),
       glFormat,
       FTexWidth,
       FTexHeight,

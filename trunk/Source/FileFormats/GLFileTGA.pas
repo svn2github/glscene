@@ -45,17 +45,6 @@ type
       textureTarget: TGLTextureTarget;
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
-
-    property Data;
-    property Width;
-    property Height;
-    property Depth;
-    property ColorFormat;
-    property InternalFormat;
-    property DataType;
-    property ElementSize;
-    property CubeMap;
-    property TextureArray;
   end;
 
 implementation
@@ -215,9 +204,10 @@ begin
   if LHeader.ColorMapType <> 0 then
     raise EInvalidRasterFile.Create('ColorMapped TGA unsupported');
 
-  FWidth := LHeader.Width;
-  FHeight := LHeader.Height;
-  FDepth := 0;
+  UnMipmap;
+  FLOD[0].Width := LHeader.Width;
+  FLOD[0].Height := LHeader.Height;
+  FLOD[0].Depth := 0;
 
   case LHeader.PixelSize of
     24:
@@ -237,13 +227,11 @@ begin
   end;
 
   FDataType := GL_UNSIGNED_BYTE;
-  FMipLevels := 1;
   FCubeMap := False;
   FTextureArray := False;
   ReallocMem(FData, DataSize);
-  FLevels.Clear;
 
-  rowSize := Width * FElementSize;
+  rowSize := GetWidth * FElementSize;
   verticalFlip := ((LHeader.ImageDescriptor and $20) <> 1);
 
   if LHeader.IDLength > 0 then
@@ -255,19 +243,19 @@ begin
         if verticalFlip then
         begin
           Ptr := PByte(FData);
-          Inc(Ptr, rowSize * (FHeight - 1));
-          for y := 0 to Height - 1 do
+          Inc(Ptr, rowSize * (GetHeight - 1));
+          for y := 0 to GetHeight - 1 do
           begin
             stream.Read(Ptr^, rowSize);
             Dec(Ptr, rowSize);
           end;
         end
         else
-          stream.Read(FData^, rowSize * FHeight);
+          stream.Read(FData^, rowSize * GetHeight);
       end;
     10:
       begin // RLE encoded RGB/RGBA
-        bufSize := Height * rowSize;
+        bufSize := GetHeight * rowSize;
         GetMem(unpackBuf, bufSize);
         try
           // read & unpack everything
@@ -279,15 +267,15 @@ begin
           if verticalFlip then
           begin
             Ptr := PByte(FData);
-            Inc(Ptr, rowSize * (FHeight - 1));
-            for y := 0 to Height - 1 do
+            Inc(Ptr, rowSize * (GetHeight - 1));
+            for y := 0 to GetHeight - 1 do
             begin
               Move(unPackBuf[y * rowSize], Ptr^, rowSize);
               Dec(Ptr, rowSize);
             end;
           end
           else
-            Move(unPackBuf[rowSize * FHeight], FData^, rowSize * FHeight);
+            Move(unPackBuf[rowSize * GetHeight], FData^, rowSize * GetHeight);
         finally
           FreeMem(unpackBuf);
         end;

@@ -46,8 +46,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D): TGLBitmap32;
-      override;
+    function GetBitmap32: TGLBitmap32; override;
     procedure ReleaseBitmap32; override;
 
     procedure SaveToFile(const fileName: string); override;
@@ -190,7 +189,7 @@ end;
 // GetBitmap32
 //
 
-function TGLCompositeImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLCompositeImage.GetBitmap32: TGLBitmap32;
 begin
   if not Assigned(FBitmap) then
   begin

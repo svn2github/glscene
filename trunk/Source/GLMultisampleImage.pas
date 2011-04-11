@@ -59,9 +59,7 @@ type
 
     class function IsSelfLoading: Boolean; override;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); override;
-    function GetBitmap32(target: TGLUInt = GL_TEXTURE_2D_MULTISAMPLE):
-      TGLBitmap32;
-      override;
+    function GetBitmap32: TGLBitmap32; override;
     procedure ReleaseBitmap32; override;
 
     procedure SaveToFile(const fileName: string); override;
@@ -231,7 +229,7 @@ end;
 // GetBitmap32
 //
 
-function TGLMultisampleImage.GetBitmap32(target: TGLUInt): TGLBitmap32;
+function TGLMultisampleImage.GetBitmap32: TGLBitmap32;
 begin
   if not Assigned(FBitmap) then
   begin

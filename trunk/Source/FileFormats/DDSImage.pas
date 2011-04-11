@@ -89,9 +89,9 @@ begin
   FullDDS.Narrow;
 
   PixelFormat := glpf32bit;
-  Transparent := FullDDS.Transparent;
-  Width := FullDDS.Width;
-  Height := FullDDS.Height;
+  Transparent := True;
+  Width := FullDDS.LevelWidth[0];
+  Height := FullDDS.LevelHeight[0];
 
 {$IFNDEF FPC}
   src := PGLubyte(FullDDS.Data);

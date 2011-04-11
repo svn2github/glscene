@@ -56,16 +56,6 @@ type
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
 
-    property Data: PGLPixel32Array read FData;
-    property Width: Integer read fWidth;
-    property Height: Integer read fHeight;
-    property Depth: Integer read fDepth;
-    property MipLevels: Integer read fMipLevels;
-    property ColorFormat: GLenum read fColorFormat;
-    property InternalFormat: TGLInternalFormat read fInternalFormat;
-    property DataType: GLenum read fDataType;
-    property ElementSize: Integer read fElementSize;
-
     property Gamma: Single read fGamma;
     property Exposure: Single read fExposure;
     property ProgramType: Ansistring read GetProgramType write SetProgramType;
@@ -137,6 +127,7 @@ begin
   fProgramtype := '';
   fGamma := 1.0;
   fExposure := 1.0;
+  UnMipmap;
   // Read HDR header
   stream.Read(buf, Length(buf) * sizeOf(AnsiChar));
   header := TStringList.Create;
@@ -199,9 +190,9 @@ begin
       s := Copy(header.Strings[i], j + 1, Length(header.Strings[i]) - j);
       j := Pos(' ', s);
       sn := Copy(s, 1, j - 1);
-      val(sn, fHeight, err);
+      val(sn, FLOD[0].Height, err);
       Delete(s, 1, j + 3); // scip '+X '
-      val(s, fWidth, err);
+      val(s, FLOD[0].Width, err);
       if err <> 0 then
         raise EInvalidRasterFile.Create('Bad HDR header.');
     end
@@ -211,29 +202,26 @@ begin
   if not formatDefined then
     raise EInvalidRasterFile.Create('no FORMAT specifier found.');
 
-  if (fWidth = 0) or (fHeight = 0) then
+  if (FLOD[0].Width = 0) or (FLOD[0].Height = 0) then
     raise EInvalidRasterFile.Create('Bad image dimension.');
   //set all the parameters
-  fDepth := 0;
-  fMipLevels := 1;
+  FLOD[0].Depth := 0;
   fColorFormat := GL_RGB;
   fInternalFormat := tfRGBA_FLOAT32;
   fDataType := GL_FLOAT;
   fCubeMap := false;
   fTextureArray := false;
-  fLevels.Clear;
-  fLevels.Add(nil);
   fElementSize := GetTextureElementSize(tfFLOAT_RGB32);
   ReallocMem(fData, DataSize);
-  LoadRLEpixels(stream, PSingle(fData), fWidth, fHeight);
+  LoadRLEpixels(stream, PSingle(fData), FLOD[0].Width, FLOD[0].Height);
 
   //hdr images come in upside down then flip it
-  lineSize := fElementSize * fWidth;
+  lineSize := fElementSize * FLOD[0].Width;
   GetMem(tempBuf, lineSize);
   top := PByte(fData);
   bottom := top;
-  Inc(bottom, lineSize * (fHeight - 1));
-  for j := 0 to (height div 2) - 1 do
+  Inc(bottom, lineSize * (FLOD[0].Height - 1));
+  for j := 0 to (FLOD[0].Height div 2) - 1 do
   begin
     Move(top^, tempBuf^, lineSize);
     Move(bottom^, top^, lineSize);
@@ -288,36 +276,34 @@ begin
 
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    fMipLevels := 0;
+    fLevelCount := 0;
     fCubeMap := false;
     fTextureArray := false;
     fColorFormat := GL_RGB;
     fDataType := GL_FLOAT;
     // Check level existence
-    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
-      @texFormat);
+    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
-      fDepth := 0;
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+      FLOD[0].Depth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
         fInternalFormat := residentFormat
       else
         fInternalFormat := intFormat;
-      Inc(fMipLevels);
+      Inc(fLevelCount);
     end;
-    if fMipLevels > 0 then
+
+    if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(FData, DataSize);
-      fLevels.Clear;
-      fLevels.Add(fData);
       GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
-      fMipLevels := 1;
+      fLevelCount := 1;
     GL.CheckError;
   finally
     if contextActivate then

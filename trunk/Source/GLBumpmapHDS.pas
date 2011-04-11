@@ -268,7 +268,7 @@ begin
       TextureWrap := twNone;
       TextureFormat := tfRGB16;
       //TextureFormat:=tfRGBA16;
-      bmp32 := (Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
+      bmp32 := (Image as TGLBlankImage).GetBitmap32;
       GenerateNormalMap(HD, bmp32, FBumpScale);
     end;
     //----------------------------------------------------

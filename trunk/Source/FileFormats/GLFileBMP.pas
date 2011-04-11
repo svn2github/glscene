@@ -59,17 +59,6 @@ type
       textureTarget: TGLTextureTarget;
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
-
-    property Data;
-    property Width;
-    property Height;
-    property Depth;
-    property ColorFormat;
-    property InternalFormat;
-    property DataType;
-    property ElementSize;
-    property CubeMap;
-    property TextureArray;
   end;
 
 implementation
@@ -241,7 +230,7 @@ var
   LInfo: TBitMapInfoHeader;
   BadCompression: Boolean;
   Ptr: PByte;
-  ByteSize, LineSize: Integer;
+  BitCount, LineSize: Integer;
   Row: Integer;
   nPalette: Integer;
   LPalette: array of TGLPixel32;
@@ -336,10 +325,11 @@ begin
   else if LInfo.ClrUsed > 0 then { Skip palette }
     Stream.Position := Stream.Position + LInfo.ClrUsed * 3;
 
-  FWidth := LInfo.Width;
-  FHeight := LInfo.Height;
-  FDepth := 0;
-  ByteSize := 0;
+  UnMipmap;
+  FLOD[0].Width := LInfo.Width;
+  FLOD[0].Height := LInfo.Height;
+  FLOD[0].Depth := 0;
+  BitCount := 0;
   FColorFormat := GL_BGRA;
   FInternalFormat := tfRGBA8;
   FElementSize := 4;
@@ -347,53 +337,51 @@ begin
   case LInfo.BitCount of
     1:
       begin
-        ByteSize := 1;
+        BitCount := 1;
         BitShiftFunc := Monochrome;
       end;
     4:
       begin
-        ByteSize := 4;
+        BitCount := 4;
         BitShiftFunc := Quadrochrome;
       end;
     8:
       begin
-        ByteSize := 8;
+        BitCount := 8;
         BitShiftFunc := Octochrome;
       end;
     16:
-      ByteSize := 16;
+      BitCount := 16;
     24:
       begin
-        ByteSize := 24;
+        BitCount := 24;
         FColorFormat := GL_BGR;
         FInternalFormat := tfRGB8;
         FElementSize := 3;
       end;
     32:
-      ByteSize := 32;
+      BitCount := 32;
   end;
 
   FDataType := GL_UNSIGNED_BYTE;
-  FMipLevels := 1;
   FCubeMap := False;
   FTextureArray := False;
   ReallocMem(FData, DataSize);
-  FLevels.Clear;
 
   FDeltaX := -1;
   FDeltaY := -1;
   Ptr := PByte(FData);
-  LineSize := FWidth * FElementSize;
+  LineSize := GetWidth * FElementSize;
 
-  FReadSize := ((LInfo.Width * ByteSize + 31) div 32) shl 2;
+  FReadSize := ((LInfo.Width * BitCount + 31) div 32) shl 2;
   GetMem(FLineBuffer, FReadSize);
 
   try
     if FTopDown then
-      for Row := 0 to FHeight - 1 do // A rare case of top-down bitmap!
+      for Row := 0 to GetHeight - 1 do // A rare case of top-down bitmap!
         ReadScanLine
     else
-      for Row := FHeight - 1 downto 0 do
+      for Row := GetHeight - 1 downto 0 do
         ReadScanLine;
   finally
     FreeMem(FLineBuffer);

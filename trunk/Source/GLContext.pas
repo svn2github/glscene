@@ -94,6 +94,9 @@ uses
   LCLType,
 {$ENDIF}
   SyncObjs,
+{$IFDEF GLS_SERVICE_CONTEXT}
+  GLSGenerics,
+{$ENDIF}
   GLCrossPlatform,
   OpenGLTokens,
   OpenGLAdapter,
@@ -133,6 +136,12 @@ type
     Task: TTaskProcedure;
     Event: TFinishTaskEvent;
   end;
+
+{$IFDEF GLS_SERVICE_CONTEXT}
+  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
+    GThreadList < TServiceContextTask > ;
+{$ENDIF GLS_SERVICE_CONTEXT}
+
 
   TGLContext = class;
   TGLContextManager = class;
@@ -1183,13 +1192,18 @@ type
     FNotifications: array of TGLContextNotification;
     FCreatedRCCount: Integer;
 
-    FServiceContext: TGLContext;
-
 {$IFNDEF GLS_MULTITHREAD}
     FHandles: TList;
 {$ELSE}
     FHandles: TThreadList;
 {$ENDIF GLS_MULTITHREAD}
+
+{$IFDEF GLS_SERVICE_CONTEXT}
+    FThread: TThread;
+    FServiceStarter: TEvent;
+    FThreadTask: TServiceContextTaskList;
+{$ENDIF}
+    FServiceContext: TGLContext;
   protected
     { Protected Declarations }
     procedure Lock;
@@ -1200,6 +1214,14 @@ type
 
     procedure ContextCreatedBy(aContext: TGLContext);
     procedure DestroyingContextBy(aContext: TGLContext);
+
+{$IFDEF GLS_SERVICE_CONTEXT}
+    {: Create a special service and resource-keeper context. }
+    procedure CreateServiceContext;
+    procedure QueueTaskDepleted; {$IFDEF FPC}register;{$ENDIF}
+    property ServiceStarter: TEvent read FServiceStarter;
+{$ENDIF}
+    property ServiceContext: TGLContext read FServiceContext;
   public
     { Public Declarations }
     constructor Create;
@@ -1246,6 +1268,11 @@ function CurrentGLContext: TGLContext;
 function SafeCurrentGLContext: TGLContext;
 function GL: TGLExtensionsAndEntryPoints;
 function IsMainThread: Boolean;
+function IsServiceContextAvaible: Boolean;
+function GetServiceWindow: TForm;
+{$IFDEF GLS_SERVICE_CONTEXT}
+procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
+{$ENDIF}
 
 resourcestring
   cIncompatibleContexts = 'Incompatible contexts';
@@ -1282,9 +1309,30 @@ resourcestring
   cContextNotCreated = 'Context not created';
   cUnbalancedContexActivations = 'Unbalanced context activations';
 
+{$IFDEF GLS_SERVICE_CONTEXT}
+type
+  // TServiceContextThread
+  //
+  TServiceContextThread = class(TThread)
+  private
+    FDC: HDC;
+    FWindow: TForm;
+    FLastTaskStartTime: Double;
+    FReported: Boolean;
+  protected
+    procedure Execute; override;
+    procedure DoCreateServiceContext; stdcall;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  end;
+{$ENDIF}
+
 var
   vContextClasses: TList;
   GLwithoutContext: TGLExtensionsAndEntryPoints;
+  OldInitProc: Pointer;
+  vServiceWindow: TForm;
 
 {$IFNDEF GLS_MULTITHREAD}
 var
@@ -1322,6 +1370,17 @@ function IsMainThread: Boolean;
 begin
   Result := vMainThread;
 end;
+
+function IsServiceContextAvaible: Boolean;
+begin
+  Result := GLContextManager.ServiceContext <> nil;
+end;
+
+function GetServiceWindow: TForm;
+begin
+  Result := vServiceWindow;
+end;
+
 
 // RegisterGLContextClass
 //
@@ -4392,6 +4451,19 @@ end;
 // ------------------ TGLContextManager ------------------
 // ------------------
 
+{$IFDEF GLS_SERVICE_CONTEXT}
+procedure OnApplicationInitialize;
+begin
+  InitProc := OldInitProc;
+{$IFDEF FPC}
+  if Assigned(InitProc) then
+    TProcedure(InitProc);
+{$ENDIF}
+  Application.Initialize;
+  GLContextManager.CreateServiceContext;
+end;
+{$ENDIF}
+
 // Create
 //
 
@@ -4429,6 +4501,55 @@ begin
   else
     Result := nil;
 end;
+
+{$IFDEF GLS_SERVICE_CONTEXT}
+
+procedure TGLContextManager.CreateServiceContext;
+begin
+  FServiceContext := CreateContext;
+  FThreadTask := TServiceContextTaskList.Create;
+  FServiceStarter := TFinishTaskEvent.Create;
+  FThread := TServiceContextThread.Create;
+  AddTaskForServiceContext(TServiceContextThread(FThread).DoCreateServiceContext);
+end;
+
+procedure TGLContextManager.QueueTaskDepleted;
+var
+  TaskRec: TServiceContextTask;
+  I: Integer;
+  nowTime: Double;
+begin
+  with FThreadTask.LockList do
+    try
+      for I := 0 to Count - 1 do
+      begin
+        TaskRec := Items[I];
+        if Assigned(TaskRec.Task) then
+        begin
+          FThreadTask.UnlockList;
+          // Task queue not empty
+          FServiceStarter.SetEvent;
+          exit;
+        end;
+      end;
+    finally
+      FThreadTask.UnlockList;
+    end;
+
+  FServiceStarter.ResetEvent;
+  FThreadTask.Clear;
+  nowTime := GLSTime;
+  with TServiceContextThread(FThread) do
+  if (nowTime - FLastTaskStartTime > 30000)
+    and not FReported then
+  begin
+    FReported := True;
+    GLSLogger.LogInfo('Service context queue task depleted');
+  end;
+end;
+
+{$ENDIF GLS_SERVICE_CONTEXT}
+
 
 // Lock
 //
@@ -4601,6 +4722,20 @@ end;
 procedure TGLContextManager.Terminate;
 begin
   FTerminated := True;
+{$IFDEF GLS_SERVICE_CONTEXT}
+  // Sevice context may not be created becouse Application.Initialize not happened
+  if Assigned(FServiceContext) then
+  begin
+    CheckSynchronize;
+    FThread.Terminate;
+    FServiceStarter.SetEvent;
+    FThread.WaitFor;
+    FThread.Destroy;
+    GLSLogger.LogDebug('Service thread destroyed');
+    FServiceStarter.Destroy;
+    FThreadTask.Destroy;
+  end;
+{$ENDIF}
   if ContextCount = 0 then
   begin
     GLContextManager := nil;
@@ -4624,6 +4759,195 @@ begin
     end;
 end;
 
+{$IFDEF GLS_SERVICE_CONTEXT}
+
+{$REGION 'TServiceContextThread'}
+
+constructor TServiceContextThread.Create;
+begin
+  FWindow := TForm.CreateNew({$IFDEF FPC}Application{$ELSE}nil{$ENDIF});
+  FWindow.Hide;
+  FWindow.Position := poScreenCenter;
+  FWindow.Width := 1;
+  FWindow.Height := 1;
+  FWindow.BorderStyle := bsNone;
+  FWindow.FormStyle := fsStayOnTop;
+  FWindow.Color := 0;
+  vServiceWindow := FWindow;
+{$IFDEF MSWINDOWS}
+  FDC := GetDC(FWindow.Handle);
+{$ENDIF}
+{$IFDEF LINUX}
+  FDC := FWindow.Handle;
+{$ENDIF}
+  inherited Create(False);
+end;
+
+destructor TServiceContextThread.Destroy;
+begin
+{$IFNDEF FPC}
+  ReleaseDC(FWindow.Handle, FDC);
+  FWindow.Free;
+{$ENDIF}
+  inherited;
+end;
+
+procedure TServiceContextThread.DoCreateServiceContext; stdcall;
+
+  procedure Fail;
+  begin
+    GLSLogger.LogError(Format('%s: can''t initialize rendering context', [ClassName]));
+    FWindow.Destroy;
+    vServiceWindow := nil;
+  end;
+
+begin
+  try
+    GLContextManager.ServiceContext.Acceleration := chaHardware;
+    GLContextManager.ServiceContext.CreateMemoryContext(FDC, 1, 1, 1);
+  except
+    on EGLContext do
+    begin
+      Fail;
+      exit;
+    end;
+    on EPBuffer do
+    begin
+      GLSLogger.LogWarning(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
+      try
+        GLContextManager.ServiceContext.CreateContext(FDC);
+      except
+        Fail;
+        exit;
+      end;
+    end;
+  end;
+  GLSLogger.LogNotice('Service context successfuly initialized');
+  GLContextManager.ServiceContext.Activate;
+  FWindow.Hide;
+  vServiceWindow := nil;
+end;
+
+procedure TServiceContextThread.Execute;
+var
+  TaskRec: TServiceContextTask;
+
+  procedure NextTask;
+  const
+    NullTask: TServiceContextTask = (Task: nil; Event: nil);
+  var
+    I: Integer;
+  begin
+    TaskRec.Task := nil;
+    with GLContextManager.FThreadTask.LockList do
+      try
+        for I := 0 to Count - 1 do
+        begin
+          TaskRec := Items[I];
+          if Assigned(TaskRec.Task) then
+          begin
+            Items[I] := NullTask;
+            break;
+          end;
+        end;
+      finally
+        GLContextManager.FThreadTask.UnlockList;
+      end;
+  end;
+
+begin
+  with GLContextManager do
+  begin
+    vMainThread := False;
+    GLSLogger.LogNotice('Service thread started');
+    Sleep(100);
+    try
+      while not Terminated do
+      begin
+        NextTask;
+        if Assigned(TaskRec.Task) then
+        begin
+          with GLContextManager.ServiceContext do
+          begin
+            if IsValid then
+              Activate;
+            try
+              TaskRec.Task;
+            except
+              GLSLogger.LogError('Service thread task raised exception');
+            end;
+            if IsValid then
+              Deactivate;
+            if Assigned(TaskRec.Event) then
+              TaskRec.Event.SetEvent;
+          end;
+         end
+        else
+          Synchronize(GLContextManager.QueueTaskDepleted);
+        ServiceStarter.WaitFor(30000);
+      end;
+    finally
+      ServiceContext.Destroy;
+      FServiceContext := nil;
+      GLSLogger.LogNotice('Service thread finished');
+    end;
+  end;
+end;
+
+procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
+var
+  TaskRec: TServiceContextTask;
+  rEvent: TFinishTaskEvent;
+begin
+  if vMainThread then
+  begin
+    rEvent := nil;
+    if Assigned(GLContextManager.ServiceContext) and Assigned(ATask) then
+    begin
+      CheckSynchronize;
+      with GLContextManager.FThreadTask.LockList do
+        try
+          TaskRec.Task := ATask;
+          if FinishEvent = nil then
+          begin // Synchronous call
+            rEvent := TFinishTaskEvent.Create;
+            TaskRec.Event := rEvent;
+          end
+          else  // Asynchronous call
+            TaskRec.Event := FinishEvent;
+          Add(TaskRec);
+          with TServiceContextThread(GLContextManager.FThread) do
+          begin
+            FLastTaskStartTime := GLSTime;
+            FReported := False;
+          end;
+        finally
+          GLContextManager.FThreadTask.UnlockList;
+        end;
+      GLContextManager.ServiceStarter.SetEvent;
+    end;
+    // Wait task finishing
+    if Assigned(rEvent) then
+    begin
+      rEvent.WaitFor(INFINITE);
+      rEvent.Destroy;
+      CheckSynchronize;
+    end;
+  end
+  else
+  begin // Direct task execution in service thread
+    try
+      ATask;
+    except
+      GLSLogger.LogError('Service thread task raised exception');
+    end;
+    if Assigned(FinishEvent) then
+      FinishEvent.SetEvent;
+  end;
+end;
+
+{$ENDIF GLS_SERVICE_CONTEXT}
+
 constructor TFinishTaskEvent.Create;
 begin
   inherited Create(nil, True, False, '');
@@ -4639,6 +4963,10 @@ initialization
   // ------------------------------------------------------------------
 
   vMainThread := True;
+{$IFDEF GLS_SERVICE_CONTEXT}
+  OldInitProc := InitProc;
+  InitProc := @OnApplicationInitialize;
+{$ENDIF GLS_SERVICE_CONTEXT}
   GLContextManager := TGLContextManager.Create;
   GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
   GLwithoutContext.Close;

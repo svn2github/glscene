@@ -349,7 +349,7 @@ begin
       //TextureFormat:=tfLuminance;
       TextureFormat:=tfRGB16;
       //TextureFormat:=tfRGBA;
-      bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
+      bmp32:=(Image as TGLBlankImage).GetBitmap32;
       if not SkipGenerate then
         GenerateShadowMap(HD , bmp32, 1);
       if Assigned(FOnThreadBmp32) then FOnThreadBmp32(self,heightData,bmp32);

@@ -75,8 +75,8 @@ begin
 
   FullO3TC.Narrow;
 
-  Width := FullO3TC.Width;
-  Height := FullO3TC.Height;
+  Width := FullO3TC.LevelWidth[0];
+  Height := FullO3TC.LevelHeight[0];
   Transparent := true;
   PixelFormat := glpf32bit;
 

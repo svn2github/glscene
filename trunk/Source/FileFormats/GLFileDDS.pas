@@ -48,7 +48,6 @@ type
 
   TGLDDSImage = class(TGLBaseImage)
   private
-    fTransparent: Boolean;
     procedure flipSurface(chgData: PGLubyte; w, h, d: integer);
   public
     class function Capabilities: TDataFileCapabilities; override;
@@ -64,19 +63,6 @@ type
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
-
-    property Data: PGLPixel32Array read FData;
-    property Width: Integer read fWidth;
-    property Height: Integer read fHeight;
-    property Depth: Integer read fDepth;
-    property MipLevels: Integer read fMipLevels;
-    property ColorFormat: GLenum read fColorFormat;
-    property InternalFormat: TGLInternalFormat read fInternalFormat;
-    property DataType: GLenum read fDataType;
-    property ElementSize: Integer read fElementSize;
-    property CubeMap: Boolean read fCubeMap;
-    property TextureArray: Boolean read fTextureArray;
-    property Transparent: Boolean read fTransparent;
   end;
 
 var
@@ -144,7 +130,6 @@ var
   btcCompressed: Boolean;
   face, faceCount, level: Integer;
   w, h, d, bw, bh, size, offset: Integer;
-  lData: PGLubyte;
   bDXT10Header: Boolean;
 
   procedure CalcSize;
@@ -162,22 +147,6 @@ var
     if d = 0 then
       d := 1;
     size := bw * bh * d * fElementSize;
-  end;
-
-  procedure DownSizeBy2;
-  begin
-    if w > 1 then
-      w := w div 2
-    else
-      w := 1;
-    if h > 1 then
-      h := h div 2
-    else
-      h := 1;
-    if d > 1 then
-      d := d div 2
-    else
-      d := 1;
   end;
 
 begin
@@ -201,21 +170,19 @@ begin
   begin
     {: There are flags that are supposed to mark these fields as valid,
        but some dds files don't set them properly }
-    fWidth := dwWidth;
-    fHeight := dwHeight;
+    UnMipmap;
+    FLOD[0].Width := dwWidth;
+    FLOD[0].Height := dwHeight;
     // check if image is a volume texture
     if ((dwCaps2 and DDSCAPS2_VOLUME) <> 0) and (dwDepth > 0) then
-      fDepth := dwDepth
+      FLOD[0].Depth := dwDepth
     else
-      fDepth := 0;
-
-    // check alpha flag
-    fTransparent := (dwFlags and DDPF_ALPHAPIXELS) <> 0;
+      FLOD[0].Depth := 0;
 
     if (dwFlags and DDSD_MIPMAPCOUNT) <> 0 then
-      fMipLevels := dwMipMapCount
+      fLevelCount := MaxInteger(dwMipMapCount, 1)
     else
-      fMipLevels := 1;
+      fLevelCount := 1;
 
     //check cube-map faces
     fCubeMap := false;
@@ -236,7 +203,7 @@ begin
       if (dwCaps2 and DDSCAPS2_CUBEMAP_NEGATIVEZ) <> 0 then
         Inc(faceCount);
       //check for a complete cubemap
-      if (faceCount <> 6) or (Width <> Height) then
+      if (faceCount <> 6) or (GetWidth <> GetHeight) then
         raise EInvalidRasterFile.Create('Invalid cubemap');
       fCubeMap := true;
     end;
@@ -257,60 +224,53 @@ begin
   case vDDSDetailLevel of
     ddsHighDet: ; // Do nothing..
     ddsMediumDet:
-      if fMipLevels > 1 then
+      if fLevelCount > 1 then
       begin
-        w := fWidth;
-        h := fHeight;
-        d := fDepth;
+        w := FLOD[0].Width;
+        h := FLOD[0].Height;
+        d := FLOD[0].Depth;
         CalcSize;
         offset := size;
-        fWidth := fWidth div 2;
-        fHeight := fHeight div 2;
-        fDepth := fDepth div 2;
-        Dec(fMipLevels);
+        FLOD[0].Width := FLOD[0].Width div 2;
+        FLOD[0].Height := FLOD[0].Height div 2;
+        FLOD[0].Depth := FLOD[0].Depth div 2;
+        Dec(fLevelCount);
       end;
     ddsLowDet:
-      if fMipLevels > 2 then
+      if fLevelCount > 2 then
       begin
-        w := fWidth;
-        h := fHeight;
-        d := fDepth;
+        w := FLOD[0].Width;
+        h := FLOD[0].Height;
+        d := FLOD[0].Depth;
         CalcSize;
         offset := size;
-        DownSizeBy2;
+        Div2(w);
+        Div2(h);
+        Div2(d);
         CalcSize;
         offset := offset + size;
-        fWidth := fWidth div 4;
-        fHeight := fHeight div 4;
-        fDepth := fDepth div 4;
-        Dec(fMipLevels, 2);
+        FLOD[0].Width := FLOD[0].Width div 4;
+        FLOD[0].Height := FLOD[0].Height div 4;
+        FLOD[0].Depth := FLOD[0].Depth div 4;
+        Dec(fLevelCount, 2);
       end;
   else
     Assert(False, glsErrorEx + glsUnknownType);
   end;
 
   ReallocMem(fData, DataSize);
-  lData := PGLubyte(fData);
-  fLevels.Clear;
 
   if not fCubeMap then
     faceCount := 1;
   for face := 0 to faceCount - 1 do
   begin
-    w := Width;
-    h := Height;
-    d := Depth;
     if offset > 0 then
       stream.Seek(offset, {$IFDEF GLS_DELPHI_5}Ord(soCurrent){$ELSE}soCurrent{$ENDIF});
-    for level := 0 to MipLevels - 1 do
+    for level := 0 to fLevelCount - 1 do
     begin
-      fLevels.Add(pointer(PtrUInt(lData) - PtrUInt(fData)));
-      CalcSize;
-      stream.Read(lData^, size);
+      stream.Read(GetLevelAddress(level, face)^, GetLevelSizeInByte(level) div faceCount);
       if not fCubeMap and vVerticalFlipDDS then
-        flipSurface(lData, w, h, d);
-      DownSizeBy2;
-      Inc(lData, size);
+        flipSurface(GetLevelAddress(level, face), FLOD[level].Width, FLOD[level].Height, FLOD[level].Depth);
     end;
   end; // for level
 end;
@@ -322,16 +282,16 @@ var
   header: TDDSHeader;
   DX10header: TDDS_HEADER_DXT10;
   buffer: PGLubyte;
-  w, h, d, level, size: Integer;
+  level, size: Integer;
 begin
   FillChar(header, SizeOf(TDDSHeader), 0);
   header.Magic := Cardinal(Magic);
   header.SurfaceFormat.dwSize := sizeof(TDDSURFACEDESC2);
   header.SurfaceFormat.ddpf.dwSize := sizeof(TDDPIXELFORMAT);
-  header.SurfaceFormat.dwWidth := fWidth;
-  header.SurfaceFormat.dwHeight := fHeight;
-  header.SurfaceFormat.dwDepth := fDepth;
-  header.SurfaceFormat.dwPitchOrLinearSize := fElementSize * fWidth;
+  header.SurfaceFormat.dwWidth := GetWidth;
+  header.SurfaceFormat.dwHeight := GetHeight;
+  header.SurfaceFormat.dwDepth := GetDepth;
+  header.SurfaceFormat.dwPitchOrLinearSize := fElementSize * GetWidth;
   header.SurfaceFormat.dwFlags := DDSD_CAPS or
     DDSD_HEIGHT or
     DDSD_WIDTH or
@@ -339,8 +299,8 @@ begin
   if IsCompressed then
   begin
     header.SurfaceFormat.dwPitchOrLinearSize :=
-      header.SurfaceFormat.dwPitchOrLinearSize * Cardinal(fHeight) *
-      Cardinal(fDepth);
+      header.SurfaceFormat.dwPitchOrLinearSize * Cardinal(GetHeight) *
+      Cardinal(GetDepth);
     header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_PITCH;
   end
   else
@@ -350,7 +310,7 @@ begin
   header.SurfaceFormat.dwCaps := DDSCAPS_TEXTURE;
   header.SurfaceFormat.dwCaps2 := 0;
 
-  if fDepth > 0 then
+  if IsVolume then
   begin
     header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or DDSD_DEPTH;
     header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or
@@ -359,13 +319,13 @@ begin
       DDSCAPS2_VOLUME;
   end;
 
-  if fMipLevels > 1 then
+  if fLevelCount > 1 then
   begin
     header.SurfaceFormat.dwCaps := header.SurfaceFormat.dwCaps or DDSCAPS_COMPLEX
       or DDSCAPS_MIPMAP;
     header.SurfaceFormat.dwFlags := header.SurfaceFormat.dwFlags or
       DDSD_MIPMAPCOUNT;
-    header.SurfaceFormat.dwMipMapCount := fMipLevels;
+    header.SurfaceFormat.dwMipMapCount := fLevelCount;
   end
   else
     header.SurfaceFormat.dwMipMapCount := 0;
@@ -403,31 +363,14 @@ begin
   end
   else
   begin
-    GetMem(buffer, LevelSize(0));
-    w := fWidth;
-    h := fHeight;
-    d := fDepth;
-    if d = 0 then
-      d := 1;
+    GetMem(buffer, GetLevelSizeInByte(0));
     try
-      for level := 0 to fMipLevels - 1 do
+      for level := 0 to fLevelCount - 1 do
       begin
-        size := LevelSize(level);
-        Move(GetLevelData(level)[0], buffer^, size);
-        flipSurface(buffer, w, h, d);
+        size := GetLevelSizeInByte(level);
+        Move(GetLevelAddress(level)^, buffer^, size);
+        flipSurface(buffer, LevelWidth[level], LevelHeight[level], LevelDepth[level]);
         stream.Write(buffer^, size);
-        if w > 1 then
-          w := w div 2
-        else
-          w := 1;
-        if h > 1 then
-          h := h div 2
-        else
-          h := 1;
-        if d > 1 then
-          d := d div 2
-        else
-          d := 1;
       end;
     finally
       FreeMem(buffer);
@@ -448,12 +391,11 @@ var
   contextActivate: Boolean;
   texFormat, texLod, optLod: Cardinal;
   level, faceCount, face: Integer;
-  lData: PGLubyte;
   residentFormat: TGLInternalFormat;
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
-  w, d, h, cw, ch: Integer;
+  d, cw, ch: Integer;
   glTarget: TGLEnum;
 
   function blockOffset(x, y, z: Integer): Integer;
@@ -482,7 +424,7 @@ begin
 
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    fMipLevels := 0;
+    fLevelCount := 0;
     GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
@@ -501,23 +443,21 @@ begin
 
     repeat
       // Check level existence
-      GL.GetTexLevelParameteriv(glTarget, fMipLevels,
+      GL.GetTexLevelParameteriv(glTarget, fLevelCount,
         GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
         Break;
-      Inc(fMipLevels);
-      if fMipLevels = 1 then
+      Inc(fLevelCount);
+      if fLevelCount = 1 then
       begin
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
-          @fHeight);
-        fDepth := 0;
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+        FLOD[0].Depth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-          GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH,
-            @fDepth);
+          GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CurrentFormat then
           fInternalFormat := residentFormat
@@ -531,7 +471,7 @@ begin
             fDataType);
 
         // Get optimal number or MipMap levels
-        optLod := GetImageLodNumber(fWidth, fHeight, fDepth);
+        optLod := GetImageLodNumber(FLOD[0].Width, FLOD[0].Height, FLOD[0].Depth, glTarget = GL_TEXTURE_3D);
         if texLod > optLod then
           texLod := optLod;
         // Check for MipMap posibility
@@ -539,27 +479,21 @@ begin
           and (fInternalFormat <= tfFLOAT_RGBA32)) then
           texLod := 1;
       end;
-    until fMipLevels = Integer(texLod);
+    until fLevelCount = Integer(texLod);
 
-    if fMipLevels > 0 then
+    if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(FData, DataSize);
-      fLevels.Clear;
-      lData := PGLubyte(fData);
       bCompressed := IsCompressed;
       vtcBuffer := nil;
-      w := fWidth;
-      h := fHeight;
-      d := fDepth;
 
       for face := 0 to faceCount - 1 do
       begin
         if fCubeMap then
           glTarget := face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-        for level := 0 to fMipLevels - 1 do
+        for level := 0 to fLevelCount - 1 do
         begin
-          fLevels.Add(Pointer(PtrUInt(lData) - PtrUInt(fData)));
           if bCompressed then
           begin
 
@@ -567,12 +501,12 @@ begin
               then
             begin
               if level = 0 then
-                GetMem(vtcBuffer, LevelSize(0));
+                GetMem(vtcBuffer, GetLevelSizeInByte(0));
               GL.GetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
-              cw := (w + 3) div 4;
-              ch := (h + 3) div 4;
-              top := lData;
+              cw := (FLOD[level].Width + 3) div 4;
+              ch := (FLOD[level].Height + 3) div 4;
+              top := GetLevelAddress(level);
               for k := 0 to d - 1 do
                 for i := 0 to ch - 1 do
                   for j := 0 to cw - 1 do
@@ -582,27 +516,13 @@ begin
                     Move(bottom^, top^, fElementSize);
                     Inc(top, fElementSize);
                   end;
-              if w > 1 then
-                w := w div 2
-              else
-                w := 1;
-              if h > 1 then
-                h := h div 2
-              else
-                h := 1;
-              if d > 1 then
-                d := d div 2
-              else
-                d := 1;
             end
             else
-              GL.GetCompressedTexImage(glTarget, level, lData);
+              GL.GetCompressedTexImage(glTarget, level, GetLevelAddress(level));
           end
           else
-            GL.GetTexImage(glTarget, level, fColorFormat, fDataType,
-              lData);
+            GL.GetTexImage(glTarget, level, fColorFormat, fDataType, GetLevelAddress(level));
 
-          Inc(lData, LevelSize(level));
         end; // for level
       end; // for face
       if Assigned(vtcBuffer) then
@@ -611,8 +531,7 @@ begin
       ReallocMem(FData, DataSize);
     end;
 
-    if fMipLevels = 0 then
-      fMipLevels := 1;
+    fLevelCount := MaxInteger(fLevelCount, 1);
     GL.CheckError;
   finally
     if contextActivate then

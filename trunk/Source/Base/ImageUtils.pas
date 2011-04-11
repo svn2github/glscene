@@ -6,12 +6,14 @@
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>
+  <li>09/04/11 - Yar - Added AlphaGammaBrightCorrection
   <li>08/04/11 - Yar - Complete Build2DMipmap
   <li>07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
   <li>04/11/10 - DaStr - Added $I GLScene.inc
   <li>22/10/10 - Yar - Created
   </ul></font>
 }
+
 unit ImageUtils;
 
 // DONE: ConvertImage
@@ -61,6 +63,7 @@ type
   EGLImageUtils = class(Exception);
 
   TImageFilterFunction = function(Value: Single): Single;
+  TImageAlphaProc = procedure(var AColor: TIntermediateFormat);
 
 function ImageBoxFilter(Value: Single): Single;
 function ImageTriangleFilter(Value: Single): Single;
@@ -70,10 +73,22 @@ function ImageSplineFilter(Value: Single): Single;
 function ImageLanczos3Filter(Value: Single): Single;
 function ImageMitchellFilter(Value: Single): Single;
 
+procedure ImageAlphaFromIntensity(var AColor: TIntermediateFormat);
+procedure ImageAlphaSuperBlackTransparent(var AColor: TIntermediateFormat);
+procedure ImageAlphaLuminance(var AColor: TIntermediateFormat);
+procedure ImageAlphaLuminanceSqrt(var AColor: TIntermediateFormat);
+procedure ImageAlphaOpaque(var AColor: TIntermediateFormat);
+procedure ImageAlphaTopLeftPointColorTransparent(var AColor: TIntermediateFormat);
+procedure ImageAlphaInverseLuminance(var AColor: TIntermediateFormat);
+procedure ImageAlphaInverseLuminanceSqrt(var AColor: TIntermediateFormat);
+procedure ImageAlphaBottomRightPointColorTransparent(var AColor: TIntermediateFormat);
+
 procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: TGLEnum; ASrcDataType, ADstDataType: TGLEnum; AWidth, AHeight: Integer);
 
 procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
 procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
+
+procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
 
 implementation
 
@@ -2178,6 +2193,65 @@ procedure ImfToInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorForm
     end;
   end;
 
+procedure ImfToFloat(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLEnum; AWidth, AHeight: Integer);
+  const
+    cInv255 = 1.0 / 255.0;
+
+  var
+    pDest: PSingle;
+    n: Integer;
+
+    procedure SetChannel(AValue: Single);
+      begin
+        pDest^ := AValue * cInv255;
+        Inc(pDest);
+      end;
+
+    procedure SetChannelI(AValue: Single);
+      begin
+        pDest^ := AValue * cInv255;
+        Inc(pDest);
+      end;
+
+  begin
+    pDest := PSingle(ADest);
+
+    case AColorFormat of
+{$INCLUDE ImgUtilCaseImf2GL.inc}
+    else
+      raise EGLImageUtils.Create(strInvalidType);
+    end;
+  end;
+
+procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLEnum; AWidth, AHeight: Integer);
+  const
+    cInv255 = 1.0 / 255.0;
+
+  var
+    pDest: PHalfFloat;
+    n: Integer;
+
+    procedure SetChannel(AValue: Single);
+      begin
+        pDest^ := FloatToHalf(AValue * cInv255);
+        Inc(pDest);
+      end;
+
+    procedure SetChannelI(AValue: Single);
+      begin
+        pDest^ := FloatToHalf(AValue * cInv255);
+        Inc(pDest);
+      end;
+
+  begin
+    pDest := PHalfFloat(ADest);
+
+    case AColorFormat of
+{$INCLUDE ImgUtilCaseImf2GL.inc}
+    else
+      raise EGLImageUtils.Create(strInvalidType);
+    end;
+  end;
 {$IFDEF GLS_REGIONS}{$ENDREGION 'RGBA Float to OpenGL format image'}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Compression'}{$ENDIF}
 { function FloatTo565(const AColor: TIntermediateFormat): Integer;
@@ -2386,6 +2460,71 @@ function ImageMitchellFilter(Value: Single): Single;
       Result := 0.0;
   end;
 
+const cInvThree = 1.0/3.0;
+
+procedure ImageAlphaFromIntensity(var AColor: TIntermediateFormat);
+begin
+  AColor.A := (AColor.R + AColor.B + AColor.G) * cInvThree;
+end;
+
+procedure ImageAlphaSuperBlackTransparent(var AColor: TIntermediateFormat);
+begin
+  if (AColor.R = 0.0) and (AColor.B = 0.0) and (AColor.G = 0.0) then
+    AColor.A := 0.0
+  else
+    AColor.A := 255.0;
+end;
+
+procedure ImageAlphaLuminance(var AColor: TIntermediateFormat);
+begin
+  AColor.A := (AColor.R + AColor.B + AColor.G) * cInvThree;
+  AColor.R := AColor.A;
+  AColor.G := AColor.A;
+  AColor.B := AColor.A;
+end;
+
+procedure ImageAlphaLuminanceSqrt(var AColor: TIntermediateFormat);
+begin
+  AColor.A := Sqrt((AColor.R + AColor.B + AColor.G) * cInvThree);
+end;
+
+procedure ImageAlphaOpaque(var AColor: TIntermediateFormat);
+begin
+  AColor.A := 255.0;
+end;
+
+var
+  vTopLeftColor: TIntermediateFormat;
+
+procedure ImageAlphaTopLeftPointColorTransparent(var AColor: TIntermediateFormat);
+begin
+  if CompareMem(@AColor, @vTopLeftColor, 3*SizeOf(Single)) then
+    AColor.A := 0.0;
+end;
+
+procedure ImageAlphaInverseLuminance(var AColor: TIntermediateFormat);
+begin
+  AColor.A := 255.0 - (AColor.R + AColor.B + AColor.G) * cInvThree;
+  AColor.R := AColor.A;
+  AColor.G := AColor.A;
+  AColor.B := AColor.A;
+end;
+
+procedure ImageAlphaInverseLuminanceSqrt(var AColor: TIntermediateFormat);
+begin
+  AColor.A := 255.0 - Sqrt((AColor.R + AColor.B + AColor.G) * cInvThree);
+end;
+
+var
+  vBottomRightColor: TIntermediateFormat;
+
+procedure ImageAlphaBottomRightPointColorTransparent(var AColor: TIntermediateFormat);
+begin
+  if CompareMem(@AColor, @vBottomRightColor, 3*SizeOf(Single)) then
+    AColor.A := 0.0;
+end;
+
+
 type
   // Contributor for a pixel
   TContributor = record
@@ -2416,7 +2555,8 @@ type
   end;
 
 const
-  cConvertTable: array [0 .. 36] of TConvertTableRec = ((type_: GL_UNSIGNED_BYTE; proc1: UbyteToImf; proc2: ImfToUbyte),
+  cConvertTable: array [0 .. 36] of TConvertTableRec = (
+    (type_: GL_UNSIGNED_BYTE; proc1: UbyteToImf; proc2: ImfToUbyte),
 
     (type_: GL_UNSIGNED_BYTE_3_3_2; proc1: Ubyte332ToImf; proc2: UnsupportedFromImf),
 
@@ -2432,9 +2572,9 @@ const
 
     (type_: GL_INT; proc1: IntToImf; proc2: ImfToInt),
 
-    (type_: GL_FLOAT; proc1: FloatToImf; proc2: UnsupportedFromImf),
+    (type_: GL_FLOAT; proc1: FloatToImf; proc2: ImfToFloat),
 
-    (type_: GL_HALF_FLOAT; proc1: HalfFloatToImf; proc2: UnsupportedFromImf),
+    (type_: GL_HALF_FLOAT; proc1: HalfFloatToImf; proc2: ImfToHalf),
 
     (type_: GL_UNSIGNED_INT_8_8_8_8; proc1: UInt8888ToImf; proc2: UnsupportedFromImf),
 
@@ -2826,10 +2966,10 @@ var
   i, j, k, n, size, level: Integer;
   tempBuf1, tempBuf2, storePtr, SourceLine, DestLine: PIntermediateFormatArray;
   contrib: PCListList;
-  xscale, yscale: Single; // Zoom scale factors
-  width, fscale, weight: Single; // Filter calculation variables
-  center: Single; // Filter calculation variables
-  left, right: Integer; // Filter calculation variables
+  xscale, yscale: Single;
+  width, fscale, weight: Single;
+  center: Single;
+  left, right: Integer;
   color1, color2: TIntermediateFormat;
   tempW, tempH: Integer;
 
@@ -2855,6 +2995,7 @@ begin
 
   // Find function to convert external format to intermediate format
   ConvertToIntermediateFormat := UnsupportedToImf;
+  ConvertFromIntermediateFormat := UnsupportedFromImf;
   for i := 0 to high(cConvertTable) do
   begin
     if ADataType = cConvertTable[i].type_ then
@@ -2885,8 +3026,8 @@ begin
       Div2(ADstWidth);
       Div2(ADstHeight);
 
-      xscale := (ADstWidth - 1) / (ASrcWidth - 1);
-      yscale := (ADstHeight - 1) / (ASrcHeight - 1);
+      xscale := MaxFloat((ADstWidth - 1) / (ASrcWidth - 1), 0.25);
+      yscale := MaxFloat((ADstHeight - 1) / (ASrcHeight - 1), 0.25);
 
       // Pre-calculate filter contributions for a row
       ReallocMem(contrib, ADstWidth * SizeOf(TCList));
@@ -3020,6 +3161,80 @@ begin
     FreeMem(tempBuf2);
     FreeMem(storePtr);
   end;
+end;
+
+procedure AlphaGammaBrightCorrection(
+  const ASrc: Pointer;
+  AColorFormat: TGLEnum;
+  ADataType: TGLEnum;
+  ASrcWidth, ASrcHeight: Integer;
+  anAlphaProc: TImageAlphaProc;
+  ABrightness: Single;
+  AGamma: Single);
+
+var
+  ConvertToIntermediateFormat: TConvertToImfProc;
+  ConvertFromIntermediateFormat: TConvertFromInfProc;
+  tempBuf1: PIntermediateFormatArray;
+  Size, I: Integer;
+begin
+  if ASrcWidth < 1 then
+    Exit;
+  ASrcHeight := MaxInteger(1, ASrcHeight);
+  Size := ASrcWidth * ASrcHeight;
+  GetMem(tempBuf1, Size * SizeOf(TIntermediateFormat));
+
+  // Find function to convert external format to intermediate format
+  ConvertToIntermediateFormat := UnsupportedToImf;
+  ConvertFromIntermediateFormat := UnsupportedFromImf;
+  for i := 0 to high(cConvertTable) do
+  begin
+    if ADataType = cConvertTable[i].type_ then
+    begin
+      ConvertToIntermediateFormat := cConvertTable[i].proc1;
+      ConvertFromIntermediateFormat := cConvertTable[i].proc2;
+      break;
+    end;
+  end;
+
+  try
+    ConvertToIntermediateFormat(
+      ASrc, tempBuf1, AColorFormat, ASrcWidth, ASrcHeight);
+
+    vTopLeftColor := tempBuf1[0];
+    vBottomRightColor := tempBuf1[Size-1];
+
+    if Assigned(anAlphaProc) then
+      for I := Size - 1 downto 0 do
+          anAlphaProc(tempBuf1[I]);
+
+    if ABrightness <> 1.0 then
+      for I := Size - 1 downto 0 do
+        with tempBuf1[I] do
+        begin
+          R := R * ABrightness;
+          G := G * ABrightness;
+          B := B * ABrightness;
+        end;
+
+    if AGamma <> 1.0 then
+      for I := Size - 1 downto 0 do
+        with tempBuf1[I] do
+        begin
+          R := Power(R, AGamma);
+          G := Power(G, AGamma);
+          B := Power(B, AGamma);
+        end;
+
+    // Back to native image format
+    ConvertFromIntermediateFormat(
+      tempBuf1, ASrc, AColorFormat, ASrcWidth, ASrcHeight);
+
+  except
+    FreeMem(tempBuf1);
+    raise;
+  end;
+  FreeMem(tempBuf1);
 end;
 
 end.

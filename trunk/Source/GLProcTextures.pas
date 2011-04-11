@@ -73,7 +73,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     procedure Assign(Source: TPersistent); override;
-    function GetBitmap32(target: TGLuint): TGLBitmap32; override;
+    function GetBitmap32: TGLBitmap32; override;
     procedure ReleaseBitmap32; override;
     procedure SaveToFile(const fileName: string); override;
     procedure LoadFromFile(const fileName: string); override;
@@ -209,7 +209,7 @@ begin
   end;
 end;
 
-function TGLProcTextureNoise.GetBitmap32(target: TGLuint): TGLBitmap32;
+function TGLProcTextureNoise.GetBitmap32: TGLBitmap32;
 begin
   if not Assigned(FNoiseMap) then
   begin

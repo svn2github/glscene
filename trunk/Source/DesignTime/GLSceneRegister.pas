@@ -638,6 +638,8 @@ uses
   GLFileHDR,
   GLFileJPEG,
   GLFilePNG,
+  GLFileBMP,
+  GLFileTGA,
 
   GLSound,
   GLSoundFileObjects,

@@ -47,17 +47,6 @@ type
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
 
-    property Data;
-    property Width;
-    property Height;
-    property Depth;
-    property ColorFormat;
-    property InternalFormat;
-    property DataType;
-    property ElementSize;
-    property CubeMap;
-    property TextureArray;
-
     property DivScale: longword read FDivScale write FDivScale;
     property Dither: boolean read FDither write FDither;
     property Smoothing: boolean read FSmoothing write SetSmoothing;
@@ -205,16 +194,15 @@ begin
       fDataType := GL_UNSIGNED_BYTE;
 
       jpeg_start_decompress(@jc.d); // liefert erst einmal JPGInfo
-      fWidth := jc.d.output_width;
-      fHeight := jc.d.output_height;
-      fDepth := 0;
-      fMipLevels := 1;
+      UnMipmap;
+      FLOD[0].Width := jc.d.output_width;
+      FLOD[0].Height := jc.d.output_height;
+      FLOD[0].Depth := 0;
       fCubeMap := False;
       fTextureArray := False;
       ReallocMem(fData, DataSize);
-      fLevels.Clear;
       DestScanLine := fData;
-      PtrInc := PtrUInt(fData) - PtrUInt(DestScanline) + PtrUInt(fWidth * fElementSize);
+      PtrInc := PtrUInt(fData) - PtrUInt(DestScanline) + PtrUInt(GetWidth * fElementSize);
       if (PtrInc > 0) and ((PtrInc and 3) = 0) then
         LinesPerCall := jc.d.rec_outbuf_height // mehrere Scanlines pro Aufruf
       else
@@ -231,7 +219,7 @@ begin
           begin
             DestScanLine := Pointer(PtrUInt(fData) +
               (jc.d.output_height - jc.d.output_scanline - 1) *
-              PtrUInt(fWidth) * PtrUInt(fElementSize));
+              PtrUInt(GetWidth) * PtrUInt(fElementSize));
             jpeg_read_scanlines(@jc.d, @DestScanLine, LinesPerCall);
           end;
           jpeg_finish_output(@jc.d);
@@ -253,7 +241,7 @@ begin
       begin
         DestScanLine := Pointer(PtrUInt(fData) +
           (jc.d.output_height - jc.d.output_scanline - 1) *
-          PtrUInt(fWidth) * PtrUInt(fElementSize));
+          PtrUInt(GetWidth) * PtrUInt(fElementSize));
         jpeg_read_scanlines(@jc.d, @DestScanline, LinesPerCall);
       end;
 
@@ -341,10 +329,11 @@ var
 
   procedure ReadHeader;
   begin
+    UnMipmap;
     jpeg_read_header(@vInfo, True);
-    FWidth := vInfo.image_width;
-    FHeight := vInfo.image_height;
-    FDepth := 0;
+    FLOD[0].Width := vInfo.image_width;
+    FLOD[0].Height := vInfo.image_height;
+    FLOD[0].Depth := 0;
     if vInfo.jpeg_color_space = JCS_CMYK then
     begin
       FColorFormat := GL_RGBA;
@@ -365,11 +354,9 @@ var
       FElementSize := 3;
     end;
     FDataType := GL_UNSIGNED_BYTE;
-    FMipLevels := 1;
     FCubeMap := False;
     FTextureArray := False;
     ReallocMem(FData, DataSize);
-    FLevels.Clear;
     FProgressiveEncoding := jpeg_has_multiple_scans(@vInfo);
   end;
 
@@ -426,7 +413,7 @@ var
       pPixel: PByte;
     begin
       Color.Alpha := alphaOpaque;
-      y := FHeight - 1;
+      y := FLOD[0].Height - 1;
       while (vInfo.output_scanline < vInfo.output_height) do
       begin
         // read one line per call
@@ -436,7 +423,7 @@ var
           ReturnValue := False;
           break;
         end;
-        pPixel := @PByteArray(FData)[y*FWidth*FElementSize];
+        pPixel := @PByteArray(FData)[y*FLOD[0].Width*FElementSize];
 
         if vInfo.jpeg_color_space = JCS_CMYK then
         begin
