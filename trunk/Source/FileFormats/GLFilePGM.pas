@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFilePGM<p>
+{ : GLFilePGM<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>04/02/10 - Yar - Creation
-   </ul><p>
+  <b>History : </b><font size=-1><ul>
+  <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
+  <li>04/02/10 - Yar - Creation
+  </ul><p>
 }
 unit GLFilePGM;
 
@@ -21,29 +21,20 @@ uses
 
 type
 
-  TGLPGMImage = class ( TGLBaseImage )
+  TGLPGMImage = class(TGLBaseImage)
   public
-    class function Capabilities : TDataFileCapabilities; override;
+    class function Capabilities: TDataFileCapabilities; override;
 
-    procedure LoadFromFile(const  filename: string); override;
+    procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
-    procedure LoadFromStream(stream : TStream); override;
-    procedure SaveToStream(stream : TStream); override;
+    procedure LoadFromStream(stream: TStream); override;
+    procedure SaveToStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-                                const textureHandle: TGLenum;
-                                textureTarget: TGLTextureTarget;
-                                const CurrentFormat: Boolean;
-                                const intFormat: TGLInternalFormat); reintroduce;
-
-    property Data           : PGLPixel32Array read FData;
-    property Width          : Integer read fWidth;
-    property Height         : Integer read fHeight;
-    property ColorFormat    : GLenum  read fColorFormat;
-    property InternalFormat : TGLInternalFormat read fInternalFormat;
-    property DataType       : GLenum  read fDataType;
-    property ElementSize    : Integer read fElementSize;
-	end;
+      const textureHandle: TGLenum; textureTarget: TGLTextureTarget;
+      const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
+      reintroduce;
+  end;
 
 implementation
 
@@ -53,18 +44,18 @@ uses
 resourcestring
   cCUTILFailed = 'Can not initialize cutil32.dll';
 
-// ------------------
-// ------------------ TGLPGMImage ------------------
-// ------------------
+  // ------------------
+  // ------------------ TGLPGMImage ------------------
+  // ------------------
 
-// LoadFromFile
-//
+  // LoadFromFile
+  //
 procedure TGLPGMImage.LoadFromFile(const filename: string);
 var
   w, h: Integer;
   cutBuffer: System.PSingle;
 begin
-  if FileExists(fileName) then
+  if FileExists(filename) then
   begin
     if not IsCUTILInitialized then
       if not InitCUTIL then
@@ -75,24 +66,24 @@ begin
     cutBuffer := nil;
     if cutLoadPGMf(PAnsiChar(AnsiString(filename)), cutBuffer, w, h) then
     begin
-      ResourceName  := filename;
-      fWidth          := w;
-      fHeight         := h;
-      fDepth          := 0;
-      fColorFormat    := GL_LUMINANCE;
+      ResourceName := filename;
+      UnMipmap;
+      FLOD[0].Width := w;
+      FLOD[0].Height := h;
+      FLOD[0].Depth := 0;
+      fColorFormat := GL_LUMINANCE;
       fInternalFormat := tfLUMINANCE_FLOAT32;
-      fDataType       := GL_FLOAT;
-      fCubeMap        := false;
-      fTextureArray   := false;
-      fMipLevels      := 1;
-      fLevels.Clear;  fLevels.Add(nil);
-      fElementSize    := GetTextureElementSize(tfLUMINANCE_FLOAT32);
+      fDataType := GL_FLOAT;
+      fCubeMap := false;
+      fTextureArray := false;
+      fElementSize := GetTextureElementSize(tfLUMINANCE_FLOAT32);
       ReallocMem(fData, DataSize);
       Move(cutBuffer^, fData^, DataSize);
       cutFree(cutBuffer);
     end;
   end
-  else raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
+  else
+    raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
 end;
 
 // SaveToFile
@@ -105,36 +96,35 @@ begin
       EInvalidRasterFile.Create(cCUTILFailed);
       exit;
     end;
-  if not cutSavePGMf(PAnsiChar(AnsiString(filename)), System.PSingle(fData), fWidth, fHeight) then
+  if not cutSavePGMf(PAnsiChar(AnsiString(filename)), System.PSingle(fData),
+    FLOD[0].Width, FLOD[0].Height) then
     raise EInvalidRasterFile.Create('Saving to file failed');
 end;
 
-procedure TGLPGMImage.LoadFromStream(stream : TStream);
+procedure TGLPGMImage.LoadFromStream(stream: TStream);
 begin
-  Assert(False, 'Stream loading not supported');
+  Assert(false, 'Stream loading not supported');
 end;
 
-procedure TGLPGMImage.SaveToStream(stream : TStream);
+procedure TGLPGMImage.SaveToStream(stream: TStream);
 begin
-  Assert(False, 'Stream saving not supported');
+  Assert(false, 'Stream saving not supported');
 end;
 
 // AssignFromTexture
 //
 procedure TGLPGMImage.AssignFromTexture(textureContext: TGLContext;
-                                        const textureHandle: TGLenum;
-                                        textureTarget: TGLTextureTarget;
-                                        const CurrentFormat: Boolean;
-                                        const intFormat: TGLInternalFormat);
+  const textureHandle: TGLenum; textureTarget: TGLTextureTarget;
+  const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
 var
-  oldContext : TGLContext;
-  contextActivate : Boolean;
+  oldContext: TGLContext;
+  contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat : TGLInternalFormat;
-  glTarget: TGLEnum;
+  residentFormat: TGLInternalFormat;
+  glTarget: TGLenum;
 begin
-  if not ((textureTarget = ttTexture2D)
-    or (textureTarget = ttTextureRect)) then Exit;
+  if not((textureTarget = ttTexture2D) or (textureTarget = ttTextureRect)) then
+    exit;
 
   oldContext := CurrentGLContext;
   contextActivate := (oldContext <> textureContext);
@@ -148,53 +138,56 @@ begin
 
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
-    fMipLevels := 0;
-    fCubeMap  := false;
+    fLevelCount := 0;
+    fCubeMap := false;
     fTextureArray := false;
     fColorFormat := GL_LUMINANCE;
     fDataType := GL_FLOAT;
     // Check level existence
-    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
+    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+      @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @fWidth);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @fHeight);
-      fDepth:=0;
-      residentFormat := OpenGLFormatToInternalFormat( texFormat );
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,
+        @FLOD[0].Height);
+      FLOD[0].Depth := 0;
+      residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
         fInternalFormat := residentFormat
       else
         fInternalFormat := intFormat;
-      Inc(fMipLevels);
+      Inc(fLevelCount);
     end;
-    if fMipLevels>0 then
+    if fLevelCount > 0 then
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
-      ReallocMem(FData, DataSize);
-      fLevels.Clear;
-      fLevels.Add(fData);
+      ReallocMem(fData, DataSize);
       GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
-    else fMipLevels:=1;
+    else
+      fLevelCount := 1;
     GL.CheckError;
   finally
     if contextActivate then
     begin
       textureContext.Deactivate;
-      if Assigned(oldContext) then oldContext.Activate;
+      if Assigned(oldContext) then
+        oldContext.Activate;
     end;
   end;
 end;
 
 // Capabilities
 //
-class function TGLPGMImage.Capabilities : TDataFileCapabilities;
+class function TGLPGMImage.Capabilities: TDataFileCapabilities;
 begin
-   Result:=[dfcRead, dfcWrite];
+  Result := [dfcRead, dfcWrite];
 end;
 
 initialization
-   { Register this Fileformat-Handler with GLScene }
-   RegisterRasterFormat('pgm','Portable Graymap', TGLPGMImage);
+
+{ Register this Fileformat-Handler with GLScene }
+RegisterRasterFormat('pgm', 'Portable Graymap', TGLPGMImage);
 
 end.

@@ -4,8 +4,9 @@
 { : GLSCUDA<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
   <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
-                       Changed TCUDAMemData data access, host memory can be mapped to device, 
+                       Changed TCUDAMemData data access, host memory can be mapped to device,
                        device and array memory can be mapped to host
   <li>07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
   <li>01/04/10 - Yar - Creation
@@ -973,26 +974,28 @@ procedure TCUDAModule.LoadFromSource;
 var
   Text: AnsiString;
 begin
-
-  FCodeType := FCompiler.OutputCodeType;
-  if (FCodeType = codePtx) or (FCodeType = codeCubin) then
+  if Assigned(FCompiler) then
   begin
-    Text := AnsiString(FCode.Text);
-    if Length(Text) > 0 then
+    FCodeType := FCompiler.OutputCodeType;
+    if (FCodeType = codePtx) or (FCodeType = codeCubin) then
     begin
-      DestroyHandles;
+      Text := AnsiString(FCode.Text);
+      if Length(Text) > 0 then
+      begin
+        DestroyHandles;
 
-      Text := Text + #00;
-      Context.Requires;
-      FStatus := cuModuleLoadData(FHandle, PAnsiChar(Text));
-      Context.Release;
-      if FStatus <> CUDA_SUCCESS then
-        Abort;
-    end;
-  end
-  else
-    GLSLogger.LogErrorFmt('%s.LoadFromSource: source must be ptx or cubin',
-      [Self.ClassName]);
+        Text := Text + #00;
+        Context.Requires;
+        FStatus := cuModuleLoadData(FHandle, PAnsiChar(Text));
+        Context.Release;
+        if FStatus <> CUDA_SUCCESS then
+          Abort;
+      end;
+    end
+    else
+      GLSLogger.LogErrorFmt('%s.LoadFromSource: source must be ptx or cubin',
+        [Self.ClassName]);
+  end;
 end;
 
 // Unload
