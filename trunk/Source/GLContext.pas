@@ -914,6 +914,7 @@ type
   private
     { Private Declarations }
     FReady: Boolean;
+    FInfoLog: string;
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
@@ -927,6 +928,7 @@ type
     procedure Disable;
     procedure Bind;
     property Ready: Boolean read FReady;
+    property InfoLog: string read FInfoLog;
   end;
 
   TGLARBVertexProgramHandle = class(TGLARBProgramHandle)
@@ -3685,7 +3687,6 @@ const
     ('ARB vertex', 'ARB fragment', 'NV geometry');
 var
   errPos, P: Integer;
-  errString: string;
 begin
   Bind;
   GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
@@ -3693,18 +3694,21 @@ begin
   GL.GetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
   if errPos > -1 then
   begin
-    errString := string(GL.GetString(GL_PROGRAM_ERROR_STRING_ARB));
+    FInfoLog := string(GL.GetString(GL_PROGRAM_ERROR_STRING_ARB));
     case GetTarget of
       GL_VERTEX_PROGRAM_ARB: P := 0;
       GL_FRAGMENT_PROGRAM_ARB: P := 1;
     else
       P := 2;
     end;
-    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, errString]));
+    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
     FReady := False;
   end
   else
+  begin
     FReady := True;
+    FInfoLog := '';
+  end;
 end;
 
 procedure TGLARBProgramHandle.Enable;

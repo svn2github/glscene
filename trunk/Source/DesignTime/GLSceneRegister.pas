@@ -411,6 +411,12 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
+  TGLLibAsmProgNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
   // TPictureFileProperty
   //
   TPictureFileProperty = class(TStringProperty)
@@ -423,6 +429,15 @@ type
   // TShaderFileProperty
   //
   TShaderFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TAsmProgFileProperty
+  //
+  TAsmProgFileProperty = class(TStringProperty)
   public
     { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
@@ -1692,6 +1707,14 @@ begin
     TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLFrameBufferAttachment);
 end;
 
+procedure TGLLibAsmProgNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc, TGLASMVertexProgram);
+end;
+
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
@@ -1714,7 +1737,7 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
 
 procedure TShaderFileProperty.Edit;
 var
@@ -1734,6 +1757,32 @@ begin
 end;
 
 function TShaderFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
+
+procedure TAsmProgFileProperty.Edit;
+var
+  ODialog: TOpenDialog;
+begin
+  ODialog := TOpenDialog.Create(nil);
+  try
+    ODialog.Filter := '*.asm';
+    if ODialog.Execute then
+    begin
+      SetStrValue(RelativePath(ODialog.FileName));
+      Modified;
+    end;
+  finally
+    ODialog.Free;
+  end;
+end;
+
+function TAsmProgFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
@@ -2263,6 +2312,7 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibTextureName', TGLLibTextureNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLMultitexturingProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLMultitexturingProperties, 'LibAsmProgName', TGLLibAsmProgNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibVertexShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3, 'LibFragmentShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel4, 'LibVertexShaderName', TGLLibShaderNameProperty);
@@ -2273,8 +2323,11 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibGeometryShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessControlShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessEvalShaderName', TGLLibShaderNameProperty);
+
   RegisterPropertyEditor(TypeInfo(string), TGLTextureImageEx, 'SourceFile', TPictureFileProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLShaderEx, 'SourceFile', TShaderFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLASMVertexProgram, 'SourceFile', TAsmProgFileProperty);
+
   RegisterPropertyEditor(TypeInfo(Boolean), TGLBaseShaderModel, 'AutoFillOfUniforms', TUniformAutoSetProperty);
   RegisterPropertyEditor(TypeInfo(TStringList), TGLShaderEx, 'Source', TGLShaderEditorProperty);
 end;

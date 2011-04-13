@@ -14,6 +14,7 @@
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
  <b>History : </b><font size=-1><ul>
+      <li>13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
       <li>11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
       <li>11/03/11 - Yar - Created
    </ul></font>
@@ -38,6 +39,13 @@ type
   TGLMatLibComponents = class;
   TGLLibMaterialEx = class;
   TGLBaseShaderModel = class;
+  TGLASMVertexProgram = class;
+
+  TOnAsmProgSetting = procedure(Sender: TGLASMVertexProgram;
+    var ARci: TRenderContextInfo) of object;
+  TOnUniformInitialize = procedure(Sender: TGLBaseShaderModel) of object;
+  TOnUniformSetting = procedure(Sender: TGLBaseShaderModel;
+    var ARci: TRenderContextInfo) of object;
 
   // TGLBaseMaterialCollectionItem
   //
@@ -447,6 +455,7 @@ type
     FTextureOverride: Boolean;
     FTextureMatrix: TMatrix;
     FMappingMode: TGLTextureMappingMode;
+    FEnvColor: TGLColor;
     FMapSCoordinates: TGLCoordinates4;
     FMapTCoordinates: TGLCoordinates4;
     FMapRCoordinates: TGLCoordinates4;
@@ -480,6 +489,7 @@ type
     function StoreMappingQCoordinates: Boolean;
     procedure SetSwizzling(const AValue: TGLTextureSwizzling);
     function StoreSwizzling: Boolean;
+    procedure SetEnvColor(const AValue: TGLColor);
 
     procedure CalculateTextureMatrix;
     procedure ApplyMappingMode;
@@ -519,6 +529,8 @@ type
        and rotate ST direction around R axis. }
     property TextureRotate: Single read FTextureRotate write
       SetTextureRotate stored StoreTextureRotate;
+    {: Texture Environment color. }
+    property EnvColor: TGLColor read FEnvColor write SetEnvColor;
     {: Texture coordinates mapping mode.<p>
     This property controls automatic texture coordinates generation. }
     property MappingMode: TGLTextureMappingMode read FMappingMode write
@@ -553,7 +565,6 @@ type
     FMaterialOptions: TMaterialOptions;
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
-    FEnvColor: TGLColor;
     FTextureMode: TGLTextureMode;
     function GetBackProperties: TGLFaceProperties;
     procedure SetBackProperties(AValues: TGLFaceProperties);
@@ -566,7 +577,6 @@ type
     procedure SetBlendingParams(const AValue: TGLBlendingParameters);
     procedure SetTexProp(AValue: TGLTextureProperties);
     procedure SetTextureMode(AValue: TGLTextureMode);
-    procedure SetTextureEnvColor(const AValue: TGLColor);
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -575,9 +585,7 @@ type
 
     procedure Apply(var ARci: TRenderContextInfo);
     procedure UnApply(var ARci: TRenderContextInfo);
-    {: Returns True if the material is blended.<p>
-       Will return the libmaterial's blending if it is linked to a material
-       library. }
+    {: Returns True if the material is blended.<p> }
     function Blended: Boolean;
 
   published
@@ -604,8 +612,6 @@ type
     {: Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Texture Environment color. }
-    property TextureEnvColor: TGLColor read FEnvColor write SetTextureEnvColor;
     {: Next pass of FFP. }
     property NextPass;
   end;
@@ -642,24 +648,71 @@ type
     property Script: TStringList read FScript write SetScript;
   end;
 
-  // TGLCombinerProperties
+  // TGLARBVertexProgram
+  //
+
+  TGLASMVertexProgram = class(TGLBaseMaterialCollectionItem)
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); override;
+    procedure ReadFromFiler(AReader: TReader); override;
+  private
+    { Private Declarations }
+    FHandle: TGLARBVertexProgramHandle;
+    FSource: TStringList;
+    FSourceFile: string;
+    FInfoLog: string;
+    procedure SetSource(AValue: TStringList);
+    procedure SetSourceFile(AValue: string);
+    function GetHandle: TGLARBVertexProgramHandle;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure DoOnPrepare(Sender: TGLContext); override;
+
+    class function FriendlyName: string; override;
+
+    procedure NotifyChange(Sender: TObject); override;
+    property Handle: TGLARBVertexProgramHandle read GetHandle;
+  published
+    { Published Declarations }
+    property Source: TStringList read FSource write SetSource;
+    property SourceFile: string read FSourceFile write SetSourceFile;
+    property InfoLog: string read FInfoLog;
+  end;
+
+  TLightDir2TexEnvColor = (
+    l2eNone,
+    l2eEnvColor0,
+    l2eEnvColor1,
+    l2eEnvColor2,
+    l2eEnvColor3
+    );
+
+  // TGLMultitexturingProperties
   //
 
   TGLMultitexturingProperties = class(TGLLibMaterialProperty)
   private
-    FHandle: TGLARBVertexProgramHandle;
     FLibCombiner: TGLTextureCombiner;
+    FLibAsmProg: TGLASMVertexProgram;
     FLibCombinerName: TGLMaterialComponentName;
+    FLibAsmProgName: TGLMaterialComponentName;
     FTexProps: array[0..3] of TGLTextureProperties;
-    FEnvColor: TGLColor;
     FTextureMode: TGLTextureMode;
-    FLightDir2PColor: Boolean;
+    FLightDir: TLightDir2TexEnvColor;
+    FLightSourceIndex: Integer;
     function GetLibCombinerName: string;
+    function GetLibAsmProgName: string;
     procedure SetLibCombinerName(const AValue: string);
+    procedure SetLibAsmProgName(const AValue: string);
     function GetTexProps(AIndex: Integer): TGLTextureProperties;
     procedure SetTexProps(AIndex: Integer; AValue: TGLTextureProperties);
     procedure SetTextureMode(AValue: TGLTextureMode);
-    procedure SetTextureEnvColor(const AValue: TGLColor);
+    procedure SetLightSourceIndex(AValue: Integer);
   protected
     procedure Loaded; override;
   public
@@ -674,10 +727,10 @@ type
     procedure UnApply(var ARci: TRenderContextInfo);
   published
     { Published Declarations }
-    property LibCombinerName: string read GetLibCombinerName write
-      SetLibCombinerName;
-    property LightDirToPrimaryColor: Boolean read FLightDir2PColor
-      write FLightDir2PColor default False;
+    property LibCombinerName: string read GetLibCombinerName
+      write SetLibCombinerName;
+    property LibAsmProgName: string read GetLibAsmProgName
+      write SetLibAsmProgName;
     property Texture0: TGLTextureProperties index 0 read GetTexProps write
       SetTexProps;
     property Texture1: TGLTextureProperties index 1 read GetTexProps write
@@ -689,8 +742,13 @@ type
     {: Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Texture Environment color. }
-    property TextureEnvColor: TGLColor read FEnvColor write SetTextureEnvColor;
+    {: Pass light source direction to enviroment color of choosen texture.
+       Vector in model space. }
+    property LightDirTo: TLightDir2TexEnvColor read FLightDir
+      write FLightDir default l2eNone;
+    {: Specify index of light source for LightDirTo. }
+    property LightSourceIndex: Integer read FLightSourceIndex
+      write SetLightSourceIndex default 0;
     {: Next pass of combiner. }
     property NextPass;
   end;
@@ -976,10 +1034,6 @@ type
       SetTextureSwizzle;
   end;
 
-  TOnUniformInitialize = procedure(Sender: TGLBaseShaderModel) of object;
-  TOnUniformSetting = procedure(Sender: TGLBaseShaderModel;
-    var ARci: TRenderContextInfo) of object;
-
   // TGLBaseShaderModel
   //
 
@@ -1095,6 +1149,7 @@ type
     FSM3: TGLShaderModel3;
     FSM4: TGLShaderModel4;
     FSM5: TGLShaderModel5;
+    FOnAsmProgSetting: TOnAsmProgSetting;
     FOnSM3UniformInit: TOnUniformInitialize;
     FOnSM3UniformSetting: TOnUniformSetting;
     FOnSM4UniformInit: TOnUniformInitialize;
@@ -1140,6 +1195,10 @@ type
     property ShaderModel3: TGLShaderModel3 read FSM3 write SetSM3;
     property ShaderModel4: TGLShaderModel4 read FSM4 write SetSM4;
     property ShaderModel5: TGLShaderModel5 read FSM5 write SetSM5;
+
+    // Asm vertex program event
+    property OnAsmProgSetting: TOnAsmProgSetting read FOnAsmProgSetting
+      write FOnAsmProgSetting;
     // Shader model 3 event
     property OnSM3UniformInitialize: TOnUniformInitialize read FOnSM3UniformInit
       write FOnSM3UniformInit;
@@ -1205,6 +1264,8 @@ type
       TGLTextureCombiner;
     function GetShaderByName(const AName: TGLMaterialComponentName):
       TGLShaderEx;
+    function GetAsmProgByName(const AName: TGLMaterialComponentName):
+      TGLASMVertexProgram;
     function MakeUniqueName(const AName: TGLMaterialComponentName):
       TGLMaterialComponentName;
   end;
@@ -1244,6 +1305,8 @@ type
     function AddCombiner(const AName: TGLMaterialComponentName):
       TGLTextureCombiner;
     function AddShader(const AName: TGLMaterialComponentName): TGLShaderEx;
+    function AddAsmProg(const AName: TGLMaterialComponentName):
+      TGLASMVertexProgram;
 
     procedure SetLevelForAll(const ALevel: TGLMaterialLevel);
   published
@@ -1251,8 +1314,8 @@ type
       {: The materials collection. }
     property Materials: TGLLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
-    property Components: TGLMatLibComponents read FComponents write
-      SetComponents;
+    property Components: TGLMatLibComponents read FComponents
+      write SetComponents;
     property TexturePaths;
   end;
 
@@ -1678,12 +1741,8 @@ begin
       begin
         ARci.GLStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
-        with GL do
-        begin
-          TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
-            cTextureMode[FTextureMode]);
-          TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
-        end;
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+          cTextureMode[FTextureMode]);
       end;
     end;
 
@@ -1708,7 +1767,6 @@ begin
     FFaceCulling := LFFP.FFaceCulling;
     FDepthProperties.Assign(LFFP.FDepthProperties);
     FTexProp.Assign(LFFP.FTexProp);
-    FEnvColor.Assign(LFFP.TextureEnvColor);
     FTextureMode := LFFP.TextureMode;
     NotifyChange(Self);
   end;
@@ -1729,7 +1787,6 @@ begin
   FBlendingParams := TGLBlendingParameters.Create(Self);
   FDepthProperties := TGLDepthProperties.Create(Self);
   FTexProp := TGLTextureProperties.Create(Self);
-  FEnvColor := TGLColor.CreateInitialized(Self, clrTransparent);
   FTextureMode := tmDecal;
   FEnabled := True;
 end;
@@ -1741,7 +1798,6 @@ begin
   FDepthProperties.Destroy;
   FBlendingParams.Destroy;
   FTexProp.Destroy;
-  FEnvColor.Destroy;
   inherited;
 end;
 
@@ -1795,12 +1851,6 @@ begin
     FTextureMode := AValue;
     NotifyChange(Self);
   end;
-end;
-
-procedure TGLFixedFunctionProperties.SetTextureEnvColor(const AValue: TGLColor);
-begin
-  FEnvColor.Assign(AValue);
-  NotifyChange(Self);
 end;
 
 procedure TGLFixedFunctionProperties.SetFaceCulling(const AValue: TFaceCulling);
@@ -3065,7 +3115,7 @@ begin
       RemoveDefferedInit;
     // Level selection
     LevelReady[mlFixedFunction] := FFixedFunc.Enabled;
-    LevelReady[mlCombiner] := FMultitexturing.Enabled and
+    LevelReady[mlMultitexturing] := FMultitexturing.Enabled and
       FMultitexturing.IsValid;
     LevelReady[mlSM3] := FSM3.Enabled and FSM3.IsValid;
     LevelReady[mlSM4] := FSM4.Enabled and FSM4.IsValid;
@@ -3099,7 +3149,7 @@ begin
         FFixedFunc.Apply(ARci);
       end;
 
-    mlCombiner:
+    mlMultitexturing:
       begin
         if LevelReady[mlFixedFunction] then
           FFixedFunc.Apply(ARci);
@@ -3349,7 +3399,7 @@ begin
         GetNextPass(FFixedFunc);
       end;
 
-    mlCombiner:
+    mlMultitexturing:
       begin
         if FFixedFunc.Enabled then
           FFixedFunc.UnApply(ARci);
@@ -3397,12 +3447,15 @@ end;
 procedure TGLMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
 var
   N, U: Integer;
-  //  LDir: TVector;
+  LDir: TVector;
 begin
   if FEnabled then
   begin
     if Assigned(FLibCombiner) and not FLibCombiner.FIsValid then
       exit;
+    if Assigned(FLibAsmProg) and not FLibAsmProg.FIsValid then
+      exit;
+
     U := 0;
     for N := 0 to High(FTexProps) do
     begin
@@ -3410,8 +3463,23 @@ begin
       begin
         ARci.GLStates.ActiveTexture := N;
         FTexProps[N].Apply(ARci);
-        Inc(U);
+        if Ord(FLightDir) = N+1 then
+        begin
+          LDir := ARci.GLStates.LightPosition[FLightSourceIndex];
+          LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
+          NormalizeVector(LDir);
+          GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
+        end;
+        U := U or (1 shl N);
       end;
+    end;
+
+    if Assigned(FLibAsmProg) then
+    begin
+      FLibAsmProg.Handle.Bind;
+      GL.Enable(GL_VERTEX_PROGRAM_ARB);
+      if Assigned(GetMaterial.FOnAsmProgSetting) then
+        GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
 
     with GL, ARci.GLStates do
@@ -3427,17 +3495,15 @@ begin
             FLibCombiner.FCommandCache[N].Arg1,
             FLibCombiner.FCommandCache[N].Arg2);
         end;
-      end
-      else
-        TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
-          cTextureMode[FTextureMode]);
+      end;
+      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ActiveTexture := 0;
-      TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+
     end;
 
     XGL.BeginUpdate;
-    if U > 2 then
-      XGL.MapTexCoordToArbitrary(4)
+    if U > 3 then
+      XGL.MapTexCoordToArbitrary(U)
     else if (FTexProps[0].Enabled)
       and (FTexProps[0].MappingMode = tmmUser) then
       if FTexProps[1].MappingMode = tmmUser then
@@ -3450,14 +3516,6 @@ begin
       XGL.MapTexCoordToMain;
     XGL.EndUpdate;
 
-    //    if FLightDir2PColor then
-    //    begin
-    //      ARci.GLStates.Enable(stColorMaterial);
-    //      LDir := ARci.GLStates.LightPosition[0];
-    ////      LDir := VectorNegate(LDir);
-    //      LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
-    //      LDir := VectorNormalize(LDir);
-    //    end;
   end;
 end;
 
@@ -3465,22 +3523,21 @@ constructor TGLMultitexturingProperties.Create(AOwner: TPersistent);
 begin
   inherited;
   FEnabled := False;
-  FHandle := TGLARBVertexProgramHandle.Create;
-  FEnvColor := TGLColor.CreateInitialized(Self, clrTransparent);
   FTextureMode := tmDecal;
-  FLightDir2PColor := False;
+  FLightDir := l2eNone;
+  FLightSourceIndex := 0;
 end;
 
 destructor TGLMultitexturingProperties.Destroy;
 begin
   if Assigned(FLibCombiner) then
     FLibCombiner.UnregisterUser(Self);
-  FHandle.Destroy;
+  if Assigned(FLibAsmProg) then
+    FLibAsmProg.UnregisterUser(Self);
   FTexProps[0].Free;
   FTexProps[1].Free;
   FTexProps[2].Free;
   FTexProps[3].Free;
-  FEnvColor.Destroy;
   inherited;
 end;
 
@@ -3492,12 +3549,26 @@ begin
     Result := '';
 end;
 
-function TGLMultitexturingProperties.IsValid: Boolean;
+function TGLMultitexturingProperties.GetLibAsmProgName: string;
 begin
-  if Assigned(FLibCombiner) then
-    Result := FLibCombiner.IsValid
+  if Assigned(FLibAsmProg) then
+    Result := FLibAsmProg.Name
   else
-    Result := False
+    Result := '';
+end;
+
+function TGLMultitexturingProperties.IsValid: Boolean;
+var
+  I: Integer;
+begin
+  Result := True;
+  if Assigned(FLibCombiner) then
+    Result := Result and FLibCombiner.IsValid;
+  if Assigned(FLibAsmProg) then
+    Result := Result and FLibAsmProg.IsValid;
+  for I := 0 to High(FTexProps) do
+    if Assigned(FTexProps[I]) and FTexProps[I].FEnabled then
+      Result := Result and FTexProps[I].IsValid;
 end;
 
 procedure TGLMultitexturingProperties.Loaded;
@@ -3505,6 +3576,7 @@ var
   I: Integer;
 begin
   SetLibCombinerName(FLibCombinerName);
+  SetLibAsmProgName(FLibAsmProgName);
   for I := 0 to High(FTexProps) do
     if Assigned(FTexProps[I]) then
       FTexProps[I].Loaded;
@@ -3513,8 +3585,13 @@ end;
 procedure TGLMultitexturingProperties.Notification(Sender: TObject; Operation:
   TOperation);
 begin
-  if (Operation = opRemove) and (Sender = FLibCombiner) then
-    FLibCombiner := nil;
+  if Operation = opRemove then
+  begin
+    if Sender = FLibCombiner then
+      FLibCombiner := nil;
+    if Sender = FLibAsmProg then
+      FLibAsmProg := nil;
+  end;
   inherited;
 end;
 
@@ -3544,6 +3621,41 @@ begin
   NotifyChange(Self);
 end;
 
+procedure TGLMultitexturingProperties.SetLightSourceIndex(AValue: Integer);
+begin
+  if AValue < 0 then
+    AValue := 0
+  else if AValue > 7 then
+    AValue := 7;
+  FLightSourceIndex := AValue;
+end;
+
+procedure TGLMultitexturingProperties.SetLibAsmProgName(const AValue: string);
+var
+  LProg: TGLASMVertexProgram;
+begin
+  if csLoading in GetMaterialLibraryEx.ComponentState then
+  begin
+    FLibAsmProgName := AValue;
+    exit;
+  end;
+
+  if Assigned(FLibAsmProg) then
+  begin
+    if FLibAsmProg.Name = AValue then
+      exit;
+    FLibAsmProg.UnregisterUser(Self);
+    FLibAsmProg := nil;
+  end;
+  LProg := GetMaterialLibraryEx.Components.GetAsmProgByName(AValue);
+  if Assigned(LProg) then
+  begin
+    LProg.RegisterUser(Self);
+    FLibAsmProg := LProg;
+  end;
+  NotifyChange(Self);
+end;
+
 function TGLMultitexturingProperties.GetTexProps(AIndex: Integer):
   TGLTextureProperties;
 begin
@@ -3567,13 +3679,6 @@ begin
   end;
 end;
 
-procedure TGLMultitexturingProperties.SetTextureEnvColor(const AValue:
-  TGLColor);
-begin
-  FEnvColor.Assign(AValue);
-  NotifyChange(Self);
-end;
-
 procedure TGLMultitexturingProperties.UnApply(var ARci: TRenderContextInfo);
 var
   N: Integer;
@@ -3587,6 +3692,9 @@ begin
     end;
   end;
   ARci.GLStates.ActiveTexture := 0;
+
+  if Assigned(FLibAsmProg) then
+    GL.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -3687,6 +3795,7 @@ begin
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
+        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         if ARci.currentMaterialLevel = mlFixedFunction then
           XGL.MapTexCoordToMain;
@@ -3793,6 +3902,7 @@ begin
     TextureOffset.Assign(LTexProp.TextureOffset);
     TextureScale.Assign(LTexProp.TextureScale);
     FTextureRotate := LTexProp.TextureRotate;
+    FEnvColor.Assign(LTexProp.EnvColor);
     FMappingMode := LTexProp.MappingMode;
     MappingSCoordinates.Assign(LTexProp.MappingSCoordinates);
     MappingTCoordinates.Assign(LTexProp.MappingTCoordinates);
@@ -3837,6 +3947,7 @@ begin
   FTextureMatrix := IdentityHmgMatrix;
   FEnabled := False;
   FSwizzling := TGLTextureSwizzling.Create(Self);
+  FEnvColor := TGLColor.CreateInitialized(Self, clrTransparent);
 end;
 
 destructor TGLTextureProperties.Destroy;
@@ -3852,6 +3963,7 @@ begin
   FMapRCoordinates.Free;
   FMapQCoordinates.Free;
   FSwizzling.Destroy;
+  FEnvColor.Destroy;
   inherited;
 end;
 
@@ -4144,6 +4256,13 @@ end;
 function TGLTextureProperties.StoreTextureScale: Boolean;
 begin
   Result := Assigned(FTextureScale);
+end;
+
+procedure TGLTextureProperties.SetEnvColor(const AValue:
+  TGLColor);
+begin
+  FEnvColor.Assign(AValue);
+  NotifyChange(Self);
 end;
 
 procedure TGLTextureProperties.UnApply(var ARci: TRenderContextInfo);
@@ -5300,6 +5419,26 @@ begin
   Result := nil;
 end;
 
+function TGLMatLibComponents.GetAsmProgByName(
+  const AName: TGLMaterialComponentName): TGLASMVertexProgram;
+var
+  N, I: Integer;
+begin
+  N := ComputeNameHashKey(AName);
+  for I := 0 to Count - 1 do
+  begin
+    if (Items[I] is TGLASMVertexProgram) and (Items[I].FNameHashKey = N) then
+    begin
+      if Items[I].Name = AName then
+      begin
+        Result := TGLASMVertexProgram(Items[I]);
+        exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
 function TGLMatLibComponents.GetTextureByName(
   const AName: TGLMaterialComponentName): TGLAbstractTexture;
 var
@@ -5371,6 +5510,14 @@ function TGLMaterialLibraryEx.AddShader(
   const AName: TGLMaterialComponentName): TGLShaderEx;
 begin
   Result := TGLShaderEx.Create(Components);
+  Result.Name := AName;
+  Components.Add(Result);
+end;
+
+function TGLMaterialLibraryEx.AddAsmProg(
+  const AName: TGLMaterialComponentName): TGLASMVertexProgram;
+begin
+  Result := TGLASMVertexProgram.Create(Components);
   Result.Name := AName;
   Components.Add(Result);
 end;
@@ -7093,6 +7240,163 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
+{$IFDEF GLS_REGION}{$REGION 'TGLASMVertexProgram'}{$ENDIF}
+
+procedure TGLASMVertexProgram.Assign(Source: TPersistent);
+var
+  LProg: TGLASMVertexProgram;
+begin
+  if Source is TGLASMVertexProgram then
+  begin
+    LProg := TGLASMVertexProgram(Source);
+    FSource.Assign(LProg.FSource);
+  end;
+  inherited;
+end;
+
+constructor TGLASMVertexProgram.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FHandle := TGLARBVertexProgramHandle.Create;
+  FHandle.OnPrapare := DoOnPrepare;
+  FSource := TStringList.Create;
+  FSource.OnChange := NotifyChange;
+  Name := TGLMatLibComponents(AOwner).MakeUniqueName('VertexProg');
+end;
+
+destructor TGLASMVertexProgram.Destroy;
+begin
+  FHandle.Destroy;
+  FSource.Destroy;
+  inherited;
+end;
+
+procedure TGLASMVertexProgram.DoOnPrepare(Sender: TGLContext);
+begin
+  if FDefferedInit and not IsDesignTime then
+    exit;
+  try
+    if FHandle.IsSupported then
+    begin
+      FHandle.AllocateHandle;
+      if FHandle.IsDataNeedUpdate then
+      begin
+        SetExeDirectory;
+        if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
+          FSource.LoadFromFile(FSourceFile);
+        if FSource.Count > 0 then
+        begin
+          FHandle.LoadARBProgram(FSource.Text);
+          FIsValid := FHandle.Ready;
+          if IsDesignTime then
+          begin
+            FInfoLog := FHandle.InfoLog;
+            if (Length(FInfoLog) = 0) and FIsValid then
+              FInfoLog := 'Compilation successful';
+          end
+          else if FIsValid then
+            GLSLogger.LogInfoFmt('Program "%s" compilation successful - %s',
+              [Name, FHandle.InfoLog])
+          else
+            GLSLogger.LogErrorFmt('Program "%s" compilation failed - %s',
+              [Name, FHandle.InfoLog]);
+          FHandle.NotifyDataUpdated;
+        end
+        else
+        begin
+          if IsDesignTime then
+            FInfoLog := 'No source'
+          else
+            GLSLogger.LogInfoFmt('Program "%s" has no source code', [Name]);
+          FIsValid := False;
+        end;
+      end;
+    end
+    else
+    begin
+      FIsValid := False;
+      if IsDesignTime then
+        FInfoLog := 'Not supported by hardware';
+    end;
+  except
+    on E: Exception do
+    begin
+      FIsValid := False;
+      if IsDesignTime then
+        InformationDlg(E.ClassName + ': ' + E.Message)
+      else
+        GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+    end;
+  end;
+end;
+
+class function TGLASMVertexProgram.FriendlyName: string;
+begin
+  Result := 'ASM Vertex Program';
+end;
+
+function TGLASMVertexProgram.GetHandle: TGLARBVertexProgramHandle;
+begin
+  Result := FHandle;
+end;
+
+procedure TGLASMVertexProgram.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TGLASMVertexProgram.ReadFromFiler(AReader: TReader);
+var
+  archiveVersion: Integer;
+begin
+  with AReader do
+  begin
+    archiveVersion := ReadInteger;
+    if archiveVersion = 0 then
+    begin
+      Name := ReadWideString;
+      FDefferedInit := ReadBoolean;
+      FSource.Text := ReadWideString;
+      FSourceFile := ReadWideString;
+    end
+    else
+      RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TGLASMVertexProgram.SetSource(AValue: TStringList);
+begin
+  FSource.Assign(AValue);
+end;
+
+procedure TGLASMVertexProgram.SetSourceFile(AValue: string);
+begin
+  FixPathDelimiter(AValue);
+  if FSourceFile <> AValue then
+  begin
+    FSourceFile := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLASMVertexProgram.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0); // archive version
+    WriteWideString(Name);
+    WriteBoolean(FDefferedInit);
+    if Length(FSourceFile) = 0 then
+      WriteWideString(FSource.Text)
+    else
+      WriteWideString('');
+    WriteWideString(FSourceFile);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 initialization
 
   RegisterClasses(
@@ -7102,6 +7406,7 @@ initialization
       TGLTextureSampler,
       TGLTextureCombiner,
       TGLShaderEx,
+      TGLASMVertexProgram,
       TGLMaterialLibraryEx,
       TGLShaderUniform,
       TGLShaderUniformDSA,
@@ -7113,6 +7418,7 @@ initialization
   RegisterXCollectionItemClass(TGLFrameBufferAttachment);
   RegisterXCollectionItemClass(TGLTextureCombiner);
   RegisterXCollectionItemClass(TGLShaderEx);
+  RegisterXCollectionItemClass(TGLASMVertexProgram);
 
   vStandartUniformAutoSetExecutor := TStandartUniformAutoSetExecutor.Create;
 
