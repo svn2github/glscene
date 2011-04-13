@@ -209,14 +209,14 @@ begin
     // Create kernel's functions
     for I := 0 to High(info.Func) do
     begin
-      func := parent.KernelFunction[info.Func[I].Name];
+      func := parent.KernelFunction[info.Func[I].KernelName];
       if not Assigned(func) then
       begin
         func := TCUDAFunction(Designer.CreateComponent(TCUDAFunction,
           info.Owner, 0, 0, 0, 0));
         func.Master := TCUDAComponent(info.Owner);
-        func.KernelName := info.Func[I].Name;
-        func.Name := func.KernelName;
+        func.KernelName := info.Func[I].KernelName;
+        func.Name := TCUDAComponent(info.Owner).MakeUniqueName(info.Func[I].Name);
       end
       else
       begin

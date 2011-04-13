@@ -4,6 +4,7 @@
 { : GLSCUDA<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
   <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
   <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
                        Changed TCUDAMemData data access, host memory can be mapped to device,
@@ -816,8 +817,8 @@ begin
         begin
           func := TCUDAFunction.Create(Self);
           func.Master := Self;
-          func.FKernelName := info.func[i].Name;
-          func.Name := MakeUniqueName(func.FKernelName);
+          func.FKernelName := info.func[i].KernelName;
+          func.Name := MakeUniqueName(info.func[i].Name);
         end
         else
           func.DeleteItems;
@@ -974,27 +975,17 @@ procedure TCUDAModule.LoadFromSource;
 var
   Text: AnsiString;
 begin
-  if Assigned(FCompiler) then
+  Text := AnsiString(FCode.Text);
+  if Length(Text) > 0 then
   begin
-    FCodeType := FCompiler.OutputCodeType;
-    if (FCodeType = codePtx) or (FCodeType = codeCubin) then
-    begin
-      Text := AnsiString(FCode.Text);
-      if Length(Text) > 0 then
-      begin
-        DestroyHandles;
+    DestroyHandles;
 
-        Text := Text + #00;
-        Context.Requires;
-        FStatus := cuModuleLoadData(FHandle, PAnsiChar(Text));
-        Context.Release;
-        if FStatus <> CUDA_SUCCESS then
-          Abort;
-      end;
-    end
-    else
-      GLSLogger.LogErrorFmt('%s.LoadFromSource: source must be ptx or cubin',
-        [Self.ClassName]);
+    Text := Text + #00;
+    Context.Requires;
+    FStatus := cuModuleLoadData(FHandle, PAnsiChar(Text));
+    Context.Release;
+    if FStatus <> CUDA_SUCCESS then
+      Abort;
   end;
 end;
 

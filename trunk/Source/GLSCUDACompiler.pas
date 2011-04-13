@@ -230,7 +230,7 @@ var
   tepmPath, tempFile, tempFileExt: string;
   commands, nvcc, pathfile, msg: string;
   rArch: TGLSCUDARealArch;
-  CodeSource: TStrings;
+  CodeSource: TStringList;
 
   Security: TSecurityAttributes;
   ReadPipe, WritePipe: THandle;
@@ -373,8 +373,9 @@ begin
       pathfile := tempFile + '.' + tempFileExt;
       if FileExists(pathfile) then
       begin
-        FModuleInfo.ParseModule(CodeSource);
         FProduct.LoadFromFile(pathfile);
+        FModuleInfo.ParseModule(CodeSource, FProduct);
+
         if csDesigning in ComponentState then
           FProduct.OnChange(Self);
         SysUtils.DeleteFile(pathfile);

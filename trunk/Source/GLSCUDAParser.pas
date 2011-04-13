@@ -7,6 +7,7 @@
    kernel's functions, textures, shared and constants memory.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/04/11 - Yar - Added Ptx parsing to get real function's KernelName
       <li>17/02/11 - Yar - Now parse module instead of compiler product
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
@@ -95,6 +96,7 @@ type
 
   TCUDAFuncInfo = record
     Name: string;
+    KernelName: string;
     Args: array of TCUDAFuncArgInfo;
   end;
 
@@ -117,6 +119,7 @@ type
     procedure FindTexRef(inlist: TStrings);
     procedure FindConst(inlist: TStrings);
     procedure FindFunc(inlist: TStrings);
+    procedure FindFuncKernelName(inlist: TStrings);
   public
     Owner: TComponent;
     TexRef: array of TCUDATexRefInfo;
@@ -126,7 +129,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure ParseModule(ASource: TStrings);
+    procedure ParseModule(ASource, AProduct: TStrings);
   end;
 
 
@@ -418,6 +421,7 @@ begin
       if inlist[i+1] <> 'void' then
         Continue;
       funcInfo.Name := inlist[i+2];
+      funcInfo.KernelName := '';
       if inlist[i+3] <> '(' then
         Continue;
 
@@ -456,6 +460,36 @@ begin
   end;
 end;
 
+procedure TCUDAModuleInfo.FindFuncKernelName(inlist: TStrings);
+var
+  I, J, P: Integer;
+  LStr: string;
+begin
+  for J := 0 to inlist.Count - 1 do
+  begin
+    LStr := inlist[J];
+    P := Pos('.entry', LStr);
+    if P > 0 then
+    begin
+      Delete(LStr, 1, P+6);
+      P := Pos(' ', LStr);
+      if P < 1 then
+        continue;
+      LStr := Copy(LStr, 1, P-1);
+      for I := 0 to High(Func) do
+      begin
+        if Pos(Func[I].Name, LStr) > 0 then
+        begin
+          if Length(Func[I].KernelName) > Length(LStr) then
+            continue;
+          Func[I].KernelName := LStr;
+          break;
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TCUDAModuleInfo.Reset;
 var
   i: Integer;
@@ -467,7 +501,7 @@ begin
   Func := nil;
 end;
 
-procedure TCUDAModuleInfo.ParseModule(ASource: TStrings);
+procedure TCUDAModuleInfo.ParseModule(ASource, AProduct: TStrings);
 begin
   Reset;
   BreakStrings(ASource, ping);
@@ -477,6 +511,9 @@ begin
   FindTexRef(pong);
   FindConst(pong);
   FindFunc(pong);
+  // Double call to confidence
+  FindFuncKernelName(AProduct);
+  FindFuncKernelName(AProduct);
 end;
 
 end.
