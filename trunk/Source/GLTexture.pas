@@ -1963,6 +1963,7 @@ begin
     Picture.OnChange := nil;
     try
       buf := PictureFileName;
+      SetExeDirectory;
       if Assigned(FOnTextureNeeded) then
         FOnTextureNeeded(Self, buf);
       if FileStreamExists(buf) then
@@ -1978,7 +1979,6 @@ begin
         begin
           FAlreadyWarnedAboutMissingFile := True;
           GLOKMessageBox(Format(glsFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),glsError);
-          //Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
         end;
       end;
       Result := inherited GetBitmap32;
@@ -2381,6 +2381,8 @@ begin
         FMappingMode := TGLTexture(Source).FMappingMode;
         MappingSCoordinates.Assign(TGLTexture(Source).MappingSCoordinates);
         MappingTCoordinates.Assign(TGLTexture(Source).MappingTCoordinates);
+        MappingRCoordinates.Assign(TGLTexture(Source).MappingRCoordinates);
+        MappingQCoordinates.Assign(TGLTexture(Source).MappingQCoordinates);
         FDisabled := TGLTexture(Source).FDisabled;
         SetImage(TGLTexture(Source).FImage);
         FImageBrightness := TGLTexture(Source).FImageBrightness;
@@ -3401,32 +3403,9 @@ begin
           target := GL_TEXTURE_2D;
         end;
         // Load images
-        TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
-//        if Image is TGLCubeMapImage then
-//        begin
-//          cubeMapImage := (Image as TGLCubeMapImage);
-//          // first check if everything is coherent, otherwise, bail out
-//          cubeMapSize := cubeMapImage.Picture[cmtPX].Width;
-//          cubeMapOk := (cubeMapSize > 0);
-//          if cubeMapOk then
-//          begin
-//            for cmt := cmtPX to cmtNZ do
-//              with cubeMapImage.Picture[cmt] do
-//              begin
-//                cubeMapOk := (Width = cubeMapSize) and (Height = cubeMapSize);
-//                if not cubeMapOk then
-//                  Break;
-//              end;
-//          end;
-//          if cubeMapOk then
-//          begin
-//            for i := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
-//              GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-//              PrepareImage(i);
-//          end;
-//        end // of TGLCubeMapImage
-//        else
-          PrepareImage(target);
+        if not GL.EXT_direct_state_access then
+          TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
+        PrepareImage(target);
       end;
     finally
       RestoreBindings;
@@ -3613,7 +3592,8 @@ begin
   begin
     FRequiredMemorySize := -1;
     TextureImageRequiredMemory;
-    Image.ReleaseBitmap32;
+    if not IsDesignTime then
+      Image.ReleaseBitmap32;
   end;
 end;
 
