@@ -61,7 +61,7 @@ type
     { Déclarations publiques }
     constructor Create(AOwner: TComponent); override;
 
-    function Execute(material: TGLMaterial): Boolean;
+    function Execute(AMaterial: TGLMaterial): Boolean;
   end;
 
 function MaterialEditorForm: TMaterialEditorForm;
@@ -111,9 +111,9 @@ end;
 // Execute
 //
 
-function TMaterialEditorForm.Execute(material: TGLMaterial): Boolean;
+function TMaterialEditorForm.Execute(AMaterial: TGLMaterial): Boolean;
 begin
-  with material do
+  with AMaterial.GetActualPrimaryMaterial do
   begin
     FEFront.FaceProperties := FrontProperties;
     FEBack.FaceProperties := BackProperties;
@@ -121,10 +121,10 @@ begin
     CBPolygonMode.ItemIndex:=Integer(PolygonMode);
     CBBlending.ItemIndex := Integer(BlendingMode);
   end;
-  MPPreview.Material := material;
+  MPPreview.Material := AMaterial;
   Result := (ShowModal = mrOk);
   if Result then
-    with material do
+    with AMaterial.GetActualPrimaryMaterial do
     begin
       FrontProperties := FEFront.FaceProperties;
       BackProperties := FEBack.FaceProperties;

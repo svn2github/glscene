@@ -165,7 +165,7 @@ end;
 
 procedure TRMaterialPreview.SetMaterial(const Value: TGLMaterial);
 begin
-  GLMaterialLibrary.Materials[0].Material.Assign(Value);
+  GLMaterialLibrary.Materials[0].Material.Assign(Value.GetActualPrimaryMaterial);
 end;
 
 function TRMaterialPreview.GetLibMaterial: TGLAbstractLibMaterial;
@@ -185,7 +185,11 @@ begin
     end;
   end
   else
-    GLMaterialLibrary.Materials[0].Material.MaterialLibrary := nil;
+  with GLMaterialLibrary.Materials[0] do
+  begin
+    Material.MaterialLibrary := nil;
+    Material.LibMaterialName := '';
+  end;
 end;
 
 end.
