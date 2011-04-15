@@ -531,7 +531,8 @@ begin
       ReallocMem(FData, DataSize);
     end;
 
-    fLevelCount := MaxInteger(fLevelCount, 1);
+    if fLevelCount < 1 then
+      fLevelCount := 1;
     GL.CheckError;
   finally
     if contextActivate then
