@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>15/04/11 - Yar - Added GetMSWindowsVersion
       <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
       <li>04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
                              TAssertErrorProc, GetValueFromStringsIndex and some types
