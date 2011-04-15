@@ -103,9 +103,6 @@ type
 function GLShaderEditorForm: TGLShaderEditor;
 procedure ReleaseGLShaderEditor;
 
-var
-  vGLShaderEditor: TGLShaderEditor;
-
 implementation
 
 {$R *.dfm}
@@ -645,6 +642,9 @@ const
 
 type
   TFriendlyMemo = class(TGLSSynHiMemo);
+
+var
+  vGLShaderEditor: TGLShaderEditor;
 
 function GLShaderEditorForm: TGLShaderEditor;
 begin
