@@ -24,7 +24,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1"/>
-    <Files Count="18">
+    <Files Count="19">
       <Item1>
         <Filename Value="../Source/DesignTime/FXCollectionEditorLCL.pas"/>
         <UnitName Value="FXCollectionEditorLCL"/>
@@ -100,6 +100,10 @@
         <Filename Value="../Source/PropertyEditors/InfoLCL.pas"/>
         <UnitName Value="InfoLCL"/>
       </Item18>
+      <Item19>
+        <Filename Value="../Source/DesignTime/FGUILayoutEditor.pas"/>
+        <UnitName Value="FGUILayoutEditor"/>
+      </Item19>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

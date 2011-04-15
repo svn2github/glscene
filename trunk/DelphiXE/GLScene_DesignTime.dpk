@@ -43,7 +43,8 @@ contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
   RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
   FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
-  GLSceneFormDesign in '..\Source\DesignTime\GLSceneFormDesign.pas';
+  GLSceneFormDesign in '..\Source\DesignTime\GLSceneFormDesign.pas',
+  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form};
 
 end.
 

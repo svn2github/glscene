@@ -267,13 +267,16 @@ type
     procedure Edit; override;
   end;
 
-  // TGLMaterialProperty
+  // TGLGUILayoutEditor
   //
-  TGLGUIElementListProperty = class(TClassProperty)
+  TGLGUILayoutEditor = class(TComponentEditor)
   public
     { Public Declarations }
-    function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
+
+    procedure ExecuteVerb(Index: Integer); override;
+    function GetVerb(Index: Integer): string; override;
+    function GetVerbCount: Integer; override;
   end;
 
   // TReuseableDefaultEditor
@@ -502,6 +505,7 @@ uses
   FLibMaterialPicker,
   FRUniformEditor,
   FShaderMemo,
+  FGUILayoutEditor,
   FMaterialEditorForm,
   FVectorEditor,
   GLAnimatedSprite,
@@ -610,7 +614,6 @@ uses
   GLWindows,
   GLWindowsFont,
   GLzBuffer,
-  GuiSkinEditorFormUnit,
   GLSMemo,
   SysUtils,
   TypInfo,
@@ -1246,23 +1249,30 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TGLGUIElementListProperty'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLGUILayoutEditor'}{$ENDIF}
 
-// GetAttributes
-//
-
-function TGLGUIElementListProperty.GetAttributes: TPropertyAttributes;
+procedure TGLGUILayoutEditor.Edit;
 begin
-  Result := [paDialog];
+  GUILayoutEditorForm.Execute(TGLGuiLayout(Self.Component));
 end;
 
-// Edit
-//
-
-procedure TGLGUIElementListProperty.Edit;
+procedure TGLGUILayoutEditor.ExecuteVerb(Index: Integer);
 begin
-  if GUIComponentDialog(TGLGuiElementList(GetOrdValue)) then
-    Modified;
+  case Index of
+    0: Edit;
+  end;
+end;
+
+function TGLGUILayoutEditor.GetVerb(Index: Integer): string;
+begin
+  case Index of
+    0: Result := 'Show Layout Editor';
+  end;
+end;
+
+function TGLGUILayoutEditor.GetVerbCount: Integer;
+begin
+  Result := 1;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -2281,15 +2291,15 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);
   RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '', TGLTextureImageProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLTexture, 'ImageClassName', TGLImageClassProperty);
-{$IFDEF WIN32}
+
   RegisterPropertyEditor(TypeInfo(TGLSoundFile), TGLSoundSample, '', TSoundFileProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLBaseSoundSource, 'SoundName', TSoundNameProperty);
-{$ENDIF}
+
   RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '', TGLCoordinatesProperty);
 
   RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
-  RegisterPropertyEditor(TypeInfo(TGLGuiElementList), nil, '', TGLGUIElementListProperty);
+  RegisterComponentEditor(TGLGUILayout, TGLGUILayoutEditor);
 
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, 'Texture2Name', TGLLibMaterialNameProperty);

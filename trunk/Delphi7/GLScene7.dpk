@@ -35,7 +35,9 @@ requires
   rtl,
   vcljpg,
   xmlrtl,
-  inet;
+  inet,
+  VclSmp,
+  vclx;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -122,7 +124,6 @@ contains
   GLExplosionFX in '..\Source\GLExplosionFX.pas',
   GLGui in '..\Source\GLGui.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
-  GuiSkinEditorFormUnit in '..\Source\PropertyEditors\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
   GLShadowPlane in '..\Source\GLShadowPlane.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
@@ -302,6 +303,7 @@ contains
   GLSMemo in '..\Source\Base\GLSMemo.pas',
   GLSceneForm in '..\Source\GLSceneForm.pas',
   GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
-  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas',
+  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form};
 
 end.

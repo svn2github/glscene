@@ -116,7 +116,7 @@ uses
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,
   FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
-  FRColorEditorLCL, FRTrackBarEditLCL, FRUniformEditor,
+  FRColorEditorLCL, FRTrackBarEditLCL, FRUniformEditor, FGUILayoutEditor,
   GLUtils;
 
 var
@@ -332,6 +332,12 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
+  TGLLibAsmProgNameProperty = class(TGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
   // TPictureFileProperty
 
   TPictureFileProperty = class(TStringProperty)
@@ -360,6 +366,18 @@ type
     function GetValue: string; override;
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
+  end;
+
+  // TGLGUILayoutEditor
+  //
+  TGLGUILayoutEditor = class(TComponentEditor)
+  public
+    { Public Declarations }
+    procedure Edit; override;
+
+    procedure ExecuteVerb(Index: Integer); override;
+    function GetVerb(Index: Integer): string; override;
+    function GetVerbCount: Integer; override;
   end;
 
 //----------------- TGLSceneViewerEditor ---------------------------------------
@@ -1035,6 +1053,15 @@ begin
       TGLFrameBufferAttachment);
 end;
 
+procedure TGLLibAsmProgNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
+    TGLMaterialLibraryEx(LOwner.GetMaterialLibrary).GetNames(Proc,
+      TGLASMVertexProgram);
+end;
+
 {$ENDREGION}
 
 {$REGION 'TPictureFileProperty'}
@@ -1122,6 +1149,34 @@ end;
 
 {$ENDREGION}
 
+{$REGION 'TGLGUILayoutEditor'}
+
+procedure TGLGUILayoutEditor.Edit;
+begin
+  GUILayoutEditorForm.Execute(TGLGuiLayout(Self.Component));
+end;
+
+procedure TGLGUILayoutEditor.ExecuteVerb(Index: Integer);
+begin
+  case Index of
+    0: Edit;
+  end;
+end;
+
+function TGLGUILayoutEditor.GetVerb(Index: Integer): string;
+begin
+  case Index of
+    0: Result := 'Show Layout Editor';
+  end;
+end;
+
+function TGLGUILayoutEditor.GetVerbCount: Integer;
+begin
+  Result := 1;
+end;
+
+{$ENDREGION}
+
 function GetProjectTargetName: string;
 begin
   Result := '$(TargetFile)';
@@ -1162,6 +1217,7 @@ begin
 
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);
+  RegisterComponentEditor(TGLGUILayout, TGLGUILayoutEditor);
 
   RegisterClasses([TGLCoordinates]);
 
@@ -1220,6 +1276,8 @@ begin
     TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName),
     TGLMultitexturingProperties, 'LibCombinerName', TGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName),
+    TGLMultitexturingProperties, 'LibAsmProgName', TGLLibAsmProgNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3,
     'LibVertexShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel3,
