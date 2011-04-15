@@ -1333,8 +1333,10 @@ type
 var
   vContextClasses: TList;
   GLwithoutContext: TGLExtensionsAndEntryPoints;
-  OldInitProc: Pointer;
   vServiceWindow: TForm;
+{$IFDEF GLS_SERVICE_CONTEXT}
+  OldInitProc: Pointer;
+{$ENDIF}  
 
 {$IFNDEF GLS_MULTITHREAD}
 var
