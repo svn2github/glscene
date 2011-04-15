@@ -6,6 +6,7 @@
   In GL windows management classes and structures<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>15/04/11 - Yar - Added TGLGuiLayout.Assign
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>11/06/10 - YP - Link GUI elements to their parent
@@ -124,6 +125,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
 
     function GetOwner: TPersistent; override;
+    function IndexOf(const Item: TGLGuiElement): Integer;
     property Items[index: Integer]: TGLGuiElement read GetItems write SetItems;
       default;
   end;
@@ -182,6 +184,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
 
     procedure LoadFromStream(Stream: TStream);
     procedure LoadFromFile(FN: string);
@@ -470,21 +473,21 @@ begin
   try
     Stream.LoadFromFile(FN);
     LoadFromStream(stream);
+    FFileName := FN;
   finally
     stream.Free;
   end;
 end;
 
 procedure TGLGuiLayout.SaveToFile(FN: string);
-
 var
   Stream: TMemoryStream;
-
 begin
   Stream := TMemoryStream.Create;
   try
     SaveToStream(Stream);
     Stream.SaveToFile(FN);
+    FFileName := FN;
   finally
     Stream.Free;
   end;
@@ -492,14 +495,48 @@ end;
 
 procedure TGLGuiLayout.AddGuiComponent(Component: TGLUpdateableComponent);
 begin
-  FreeNotification(Component);
-  FGuiComponentList.Add(Component);
+  if FGuiComponentList.IndexOf(Component) < 0 then
+  begin
+    FreeNotification(Component);
+    FGuiComponentList.Add(Component);
+  end;
 end;
 
 procedure TGLGuiLayout.RemoveGuiComponent(Component: TGLUpdateableComponent);
 begin
   FGuiComponentList.Remove(Component);
   RemoveFreeNotification(Component);
+end;
+
+procedure TGLGuiLayout.Assign(Source: TPersistent);
+var
+  LLayout: TGLGuiLayout;
+  LComponent: TGLGuiComponent;
+  I: Integer;
+begin
+  if Source is TGLGuiLayout then
+  begin
+    LLayout := TGLGuiLayout(Source);
+    FBitmapFont := LLayout.FBitmapFont;
+    FMaterial.Assign(LLayout.Material);
+    FFileName := LLayout.FFileName;
+    Clear;
+    for I := 0 to LLayout.FGuiComponents.Count - 1 do
+    begin
+      LComponent := TGLGuiComponent(FGuiComponents.Add);
+      LLayout.FGuiComponents[I].AssignTo(LComponent);
+      LComponent.Name := LLayout.FGuiComponents[I].Name;
+    end;
+{$IFNDEF GLS_DELPHI_5}
+    for I := 0 to FGuiComponentList.Count - 1 do
+      TGLUpdateAbleComponent(FGuiComponentList[I]).RemoveFreeNotification(Self);
+    FGuiComponentList.Assign(LLayout.FGuiComponentList);
+    for I := 0 to FGuiComponentList.Count - 1 do
+      TGLUpdateAbleComponent(FGuiComponentList[I]).FreeNotification(Self);
+{$ENDIF}
+  end
+  else
+    inherited; // Assign Error
 end;
 
 procedure TGLGuiLayout.Clear;
@@ -1160,6 +1197,20 @@ begin
   inherited Items[index] := val;
 end;
 
+function TGLGuiElementList.IndexOf(const Item: TGLGuiElement): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  if Count <> 0 then
+    for I := 0 to Count - 1 do
+      if GetItems(I) = Item then
+      begin
+        Result := I;
+        Exit;
+      end;
+end;
+
 function TGLGuiElementList.GetItems(index: Integer): TGLGuiElement;
 begin
   Result := TGLGuiElement(inherited Items[index]);
@@ -1195,8 +1246,13 @@ end;
 procedure TGLGuiLayout.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
-  if (Operation = opRemove) and (AComponent = FBitmapFont) then
-    BitmapFont := nil;
+  if Operation = opRemove then
+  begin
+    if AComponent = FBitmapFont then
+      BitmapFont := nil
+    else
+      FGuiComponentList.Remove(AComponent);
+  end;
   NotifyChange(Self); // EG : looks suspicious...
   inherited;
 end;
