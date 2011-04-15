@@ -153,6 +153,23 @@ type
   TGLKeyEvent = TKeyEvent;
   TGLKeyPressEvent = TKeyPressEvent;
 
+{$IFDEF MSWINDOWS}
+  TMSWindowsVersion =
+  (
+    wvUnknown,
+    wvWin95,
+    wvWin98,
+    wvWin98SE,
+    wvWinNT,
+    wvWinME,
+    wvWin2000,
+    wvWin2003,
+    wvWinXP,
+    wvWinVista,
+    wvWinSeven
+  );
+{$ENDIF}
+
 {$IFDEF GLS_DELPHI_5}
   EGLOSError = EWin32Error;
 
@@ -197,7 +214,6 @@ const
   SecsPerDay    = MinsPerDay * SecsPerMin;
   MSecsPerDay   = SecsPerDay * MSecsPerSec;  
 type
-
 
 {$ELSE}
   EGLOSError = EOSError;
@@ -423,6 +439,9 @@ function HalfToFloat(Half: THalfFloat): Single;
 
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
 
+{$IFDEF MSWINDOWS}
+function GetMSWindowsVersion: TMSWindowsVersion;
+{$ENDIF}
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1269,6 +1288,35 @@ begin
     Result := '';
   {$ENDIF}
 end;
+
+{$IFDEF MSWINDOWS}
+function GetMSWindowsVersion: TMSWindowsVersion;
+begin
+  Result := wvUnknown;
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    case Win32MajorVersion of
+      4: Result := wvWinNT;
+      5: case Win32MinorVersion of
+           0: Result := wvWin2000;
+           1: Result := wvWinXP;
+           2: Result := wvWin2003;
+         end;
+      6: case Win32MinorVersion of
+           0: Result := wvWinVista;
+           1: Result := wvWinSeven;
+         end;
+    end
+  else
+    case Win32MinorVersion of // No need to check Major on 9x, it is always 4 type
+      00: Result := wvWin95;
+      10: if Trim(Win32CSDVersion) = 'A' then
+            Result := wvWin98SE
+          else
+            Result := wvWin98;
+      90: Result := wvWinME;
+    end;
+end;
+{$ENDIF}
 
 initialization
   vGLSStartTime := GLSTime;
