@@ -2715,8 +2715,8 @@ var
 begin
   Assert((aBitmap32.Width and 3) = 0);
   UnMipmap;
-  FLOD[0].Width := aBitmap.Width;
-  FLOD[0].Height := aBitmap.Height;
+  FLOD[0].Width := aBitmap32.Width;
+  FLOD[0].Height := aBitmap32.Height;
   FLOD[0].Depth := 0;
   fColorFormat := GL_RGBA;
   fInternalFormat := tfRGBA8;
