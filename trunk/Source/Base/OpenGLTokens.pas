@@ -5275,7 +5275,7 @@ const
 
   // promoted to core v2.0 from GL_ARB_shader_objects (#30) / GL_ARB_vertex_shader (#31) / GL_ARB_fragment_shader (#32)
   PFNGLATTACHSHADERPROC = procedure(_program: TGLuint; shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDATTRIBLOCATIONPROC = procedure(_program: TGLuint; index: TGLuint; const name: PGLChar);
+  PFNGLBINDATTRIBLOCATIONPROC = procedure(_program: TGLuint; index: TGLuint; const name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLCOMPILESHADERPROC = procedure(shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLCREATEPROGRAMPROC = function(): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLCREATESHADERPROC = function(_type: TGLenum): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
