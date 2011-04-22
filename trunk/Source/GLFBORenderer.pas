@@ -9,6 +9,7 @@
   Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
   <b>History : </b><font size=-1><ul>
+  <li>22/04/11 - Yar - Bugfixed lighting state restoration
   <li>13/02/11 - Yar - Added RenderContextInfo to BeforeRender and AfterRender event
   <li>07/01/11 - Yar - Added properties Active and PickableTarget
   <li>23/08/10 - Yar - Changes for forward core
@@ -78,7 +79,7 @@ type
     FPostGenerateMipmap: Boolean;
     FMaxSize: Integer;
     FMaxAttachment: Integer;
-
+    FStoreCamera: array[0..2] of TVector;
     // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
@@ -236,6 +237,9 @@ begin
     Push;
     if Assigned(Camera) then
     begin
+      FStoreCamera[0] := ARci.cameraPosition;
+      FStoreCamera[1] := ARci.cameraDirection;
+      FStoreCamera[2] := ARci.cameraUp;
       IdentityAll;
       sc := FCamera.SceneScale;
       if FSceneScaleFactor > 0 then
@@ -257,6 +261,9 @@ end;
 
 procedure TGLFBORenderer.UnApplyCamera(var ARci: TRenderContextInfo);
 begin
+  ARci.cameraPosition := FStoreCamera[0];
+  ARci.cameraDirection := FStoreCamera[1];
+  ARci.cameraUp := FStoreCamera[2];
   ARci.PipelineTransformation.Pop;
 end;
 
@@ -590,9 +597,10 @@ begin
       Exit;
   end;
 
+  ApplyCamera(ARci);
+
   try
     savedStates := StoreStates;
-    ApplyCamera(ARci);
     DoBeforeRender(ARci);
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
@@ -664,12 +672,12 @@ begin
     RestoreStates(savedStates);
     ARci.GLStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
       ARci.viewPortSize.cy);
-
-    UnApplyCamera(ARci);
   finally
     FFbo.Unbind;
     FRendering := False;
-
+    UnApplyCamera(ARci);
+    if Assigned(Camera) then
+      Scene.SetupLights(ARci.GLStates.MaxLights);
     DoAfterRender(ARci);
   end;
 end;
