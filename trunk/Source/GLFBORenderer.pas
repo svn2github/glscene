@@ -601,7 +601,7 @@ begin
 
   try
     savedStates := StoreStates;
-    DoBeforeRender(ARci);
+
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
     begin
@@ -610,6 +610,7 @@ begin
       Exit;
     end;
 
+    DoBeforeRender(ARci);
     if Assigned(Camera) then
       Camera.Scene.SetupLights(ARci.GLStates.MaxLights);
 
@@ -675,10 +676,10 @@ begin
   finally
     FFbo.Unbind;
     FRendering := False;
+    DoAfterRender(ARci);
     UnApplyCamera(ARci);
     if Assigned(Camera) then
       Scene.SetupLights(ARci.GLStates.MaxLights);
-    DoAfterRender(ARci);
   end;
 end;
 
