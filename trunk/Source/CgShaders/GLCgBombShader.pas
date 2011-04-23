@@ -43,7 +43,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLTexture, GLCadencer, GLContext, OpenGL1x, GLStrings, GLMaterial,
+  GLTexture, GLCadencer, GLContext, OpenGLTokens, GLStrings, GLMaterial,
   GLRenderContextInfo, GLTextureFormat,
 
   // CG Shaders

@@ -24,7 +24,7 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLTexture,  GLCadencer, GLContext, OpenGL1x, GLScene, GLCustomShader,
+  GLTexture,  GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
   GLRenderContextInfo, GLTextureFormat,
 
   // CG Shaders
