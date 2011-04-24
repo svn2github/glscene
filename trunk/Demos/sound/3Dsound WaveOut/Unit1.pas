@@ -78,7 +78,6 @@ type
     procedure TrackBarChange(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure RBFMODClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure btnHowlClick(Sender: TObject);
   private
