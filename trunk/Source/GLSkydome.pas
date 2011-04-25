@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSkydome<p>
@@ -1195,6 +1195,7 @@ begin
   // setup states
   with rci.GLStates do
   begin
+    CurrentProgram := 0;
     Disable(stLighting);
     if esoDepthTest in FExtendedOptions then
     begin
