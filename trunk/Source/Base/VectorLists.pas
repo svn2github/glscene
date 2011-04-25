@@ -3742,6 +3742,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   FList^[Result] := Item;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1: Single);
@@ -3753,6 +3754,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   tmpList := @FList[FCount - 1];
   tmpList^ := i1;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1, i2: Single);
@@ -3765,6 +3767,7 @@ begin
   tmpList := @FList[FCount - 2];
   tmpList^[0] := i1;
   tmpList^[1] := i2;
+  Inc(FRevision);
 end;
 
 
@@ -3779,6 +3782,7 @@ begin
   tmpList^[0] := i1;
   tmpList^[1] := i2;
   tmpList^[2] := i3;
+  Inc(FRevision);
 end;
 
 
@@ -3794,6 +3798,7 @@ begin
   tmpList^[1] := i2;
   tmpList^[2] := i3;
   tmpList^[3] := i4;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1: Integer);
@@ -3805,6 +3810,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   tmpList := @FList[FCount - 1];
   tmpList^ := i1;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1, i2: Integer);
@@ -3817,6 +3823,7 @@ begin
   tmpList := @FList[FCount - 2];
   tmpList^[0] := i1;
   tmpList^[1] := i2;
+  Inc(FRevision);
 end;
 
 
@@ -3831,6 +3838,7 @@ begin
   tmpList^[0] := i1;
   tmpList^[1] := i2;
   tmpList^[2] := i3;
+  Inc(FRevision);
 end;
 
 
@@ -3846,6 +3854,7 @@ begin
   tmpList^[1] := i2;
   tmpList^[2] := i3;
   tmpList^[3] := i4;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1: Cardinal);
@@ -3857,6 +3866,7 @@ begin
     SetCapacity(FCapacity + FGrowthDelta);
   tmpList := @FList[FCount - 1];
   tmpList^ := i1;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const i1, i2: Cardinal);
@@ -3869,6 +3879,7 @@ begin
   tmpList := @FList[FCount - 2];
   tmpList^[0] := i1;
   tmpList^[1] := i2;
+  Inc(FRevision);
 end;
 
 
@@ -3883,6 +3894,7 @@ begin
   tmpList^[0] := i1;
   tmpList^[1] := i2;
   tmpList^[2] := i3;
+  Inc(FRevision);
 end;
 
 
@@ -3898,6 +3910,7 @@ begin
   tmpList^[1] := i2;
   tmpList^[2] := i3;
   tmpList^[3] := i4;
+  Inc(FRevision);
 end;
 
 procedure T4ByteList.Add(const AList: T4ByteList);
@@ -3908,6 +3921,7 @@ begin
       Capacity := Count + AList.Count;
     System.Move(AList.FList[0], FList[Count], AList.Count * SizeOf(T4ByteData));
     Inc(FCount, AList.Count);
+    Inc(FRevision);
   end;
 end;
 
@@ -3937,6 +3951,7 @@ begin
       (FCount - Index) * SizeOf(T4ByteData));
   FList^[Index] := Item;
   Inc(FCount);
+  Inc(FRevision);
 end;
 
 // Put
@@ -3948,6 +3963,7 @@ begin
     Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
   FList^[Index] := Item;
+  INc(FRevision);
 end;
 
 // SetCapacity
