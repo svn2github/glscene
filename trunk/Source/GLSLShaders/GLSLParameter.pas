@@ -36,7 +36,8 @@ type
     GLSLType4UI,
     GLSLTypeMat2F,
     GLSLTypeMat3F,
-    GLSLTypeMat4F);
+    GLSLTypeMat4F,
+    GLSLTypeVoid);
 
   TGLSLSamplerType = (
     GLSLSamplerUndefined,
@@ -203,7 +204,8 @@ const
     'uivec4',
     'mat2',
     'mat3',
-    'mat4');
+    'mat4',
+    'void');
 
   cGLSLSamplerString: array[TGLSLSamplerType] of AnsiString = (
     'undefined',
@@ -257,6 +259,8 @@ resourcestring
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
 
+function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
+function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
 procedure FillUniformAutoSetMethodList(AList: TStrings;
@@ -268,6 +272,49 @@ function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
 
 implementation
 
+const
+  cGLSLTypeComponents: array[TGLSLDataType] of Integer =
+  (
+    0,
+    1,
+    2,
+    3,
+    4,
+    1,
+    2,
+    3,
+    4,
+    1,
+    2,
+    3,
+    4,
+    4,
+    9,
+    16,
+    0
+  );
+
+  cGLSLTypeEnum: array[TGLSLDataType] of Integer =
+  (
+    0,
+    GL_FLOAT,
+    GL_FLOAT,
+    GL_FLOAT,
+    GL_FLOAT,
+    GL_INT,
+    GL_INT,
+    GL_INT,
+    GL_INT,
+    GL_UNSIGNED_INT,
+    GL_UNSIGNED_INT,
+    GL_UNSIGNED_INT,
+    GL_UNSIGNED_INT,
+    GL_FLOAT,
+    GL_FLOAT,
+    GL_FLOAT,
+    0
+  );
+
 type
   TAutoSetMethodRec = record
     Name: string;
@@ -278,6 +325,16 @@ type
 
 var
   vMethods: array of TAutoSetMethodRec;
+
+function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
+begin
+  Result := cGLSLTypeEnum[AType];
+end;
+
+function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
+begin
+  Result := cGLSLTypeComponents[AType];
+end;
 
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
