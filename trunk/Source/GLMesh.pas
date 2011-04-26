@@ -45,9 +45,8 @@ uses
   GLState,
   GLColor,
   BaseClasses,
-  GLRenderContextInfo
-{$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLRenderContextInfo,
+  VectorTypes;
 
 type
   TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
