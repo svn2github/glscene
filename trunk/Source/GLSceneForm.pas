@@ -447,10 +447,25 @@ begin
   FEnabled := False;
   FAltTabSupportEnable := False;
   ReadVideoModes;
-  FWidth := vVideoModes[0].Width;;
-  FHeight := vVideoModes[0].Height;;
+{$IFDEF MSWINDOWS}
+  FWidth := vVideoModes[0].Width;
+  FHeight := vVideoModes[0].Height;
   FColorDepth := vVideoModes[0].ColorDepth;
   FFrequency := vVideoModes[0].MaxFrequency;
+{$ENDIF}
+{$IFDEF GLS_X11_SUPPORT}
+  FWidth := vVideoModes[0].vdisplay;
+  FHeight := vVideoModes[0].hdisplay;
+  FColorDepth := 32;
+  FFrequency := 0;
+{$ENDIF}
+{$IFDEF DARWIN}
+  FWidth := 1280;
+  FHeight := 1024;
+  FColorDepth := 32;
+  FFrequency := 0;
+  {$Message Hint 'Fullscreen mode not yet implemented for Darwin OSes' }
+{$ENDIF}
   if FFrequency = 0 then
     FFrequency := 50;
   FResolutionMode := fcUseCurrent;
@@ -467,7 +482,12 @@ begin
   case FFullScreenVideoMode.FResolutionMode of
     fcNearestResolution:
       begin
-        SetFullscreenMode(GetIndexFromResolution(ClientWidth, ClientHeight, vVideoModes[0].ColorDepth));
+        SetFullscreenMode(GetIndexFromResolution(ClientWidth, ClientHeight,
+{$IFDEF MSWINDOWS}
+        vVideoModes[0].ColorDepth));
+{$ELSE}
+        32));
+{$ENDIF}
       end;
     fcManualResolution:
       begin
@@ -848,4 +868,3 @@ initialization
 {$ENDIF}
 
 end.
-

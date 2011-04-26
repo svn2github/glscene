@@ -106,17 +106,17 @@ function GLGetScreenWidth:integer;
 function GLGetScreenHeight:integer;
 
 var
+   vNumberVideoModes  : Integer = 0;
+   vCurrentVideoMode  : Integer = 0;
    {$IFDEF MSWINDOWS}
    vVideoModes        : array of TVideoMode;
    {$ENDIF} //Unix
    {$IFDEF GLS_X11_SUPPORT}
-   vVideoModes        : array of PXF86VidModeModeInfo;
-   vDesktop           : TXF86VidModeModeInfo;
    vDisplay: PDisplay;
    vScreenModeChanged : boolean;
+   vVideoModes        : array of PXF86VidModeModeInfo;
+   vDesktop           : TXF86VidModeModeInfo;
    {$ENDIF}
-   vNumberVideoModes  : Integer = 0;
-   vCurrentVideoMode  : Integer = 0;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -255,7 +255,7 @@ begin
 {$IFDEF GLS_X11_SUPPORT}
 procedure TryToAddToList(); // Without input parameters.
 begin
-  XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes );
+  XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes[0] );
 {$ENDIF}
 {$IFDEF Darwin}
 procedure TryToAddToList(); // Without input parameters.
@@ -326,6 +326,7 @@ begin
 var
    i,j:Integer;
 begin
+  SetLength(vVideoModes, MaxVideoModes);
   //if error usr/bin/ld: cannot find -lXxf86vm
   //then sudo apt-get install libXxf86vm-dev
 
@@ -345,18 +346,16 @@ begin
       Assert(False, 'XF86VidMode Extension not support');
   {$ENDIF}
   
-  //Get Current Settings
+  // Get Current Settings
   if not vScreenModeChanged then
-  XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,
-                          PXF86VidModeModeLine( PtrUInt(@vDesktop) + SizeOf( vDesktop.dotclock ) ) );
-
-  //TryToAddToList
-  TryToAddToList;
+    if XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,
+      PXF86VidModeModeLine( PtrUInt(@vDesktop) + SizeOf( vDesktop.dotclock ) ) ) then
+    TryToAddToList;
   XCloseDisplay(vDisplay);
 {$ENDIF}
 {$IFDEF Darwin}
 begin
-  {$MESSAGE Warn 'Needs to be implemented'}
+  {$MESSAGE Warn 'ReadVideoModes not yet implemented for Darwin platforms'}
 {$ENDIF}
 end;
 
