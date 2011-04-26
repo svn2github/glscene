@@ -9,6 +9,7 @@
   implements more efficient (though more complex) mesh tools.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>26/04/11 - Yar - Added VertexColor property (thanks to Filippo Forlani)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
   <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -35,7 +36,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   GLScene,
   VectorGeometry,
   OpenGLTokens,
@@ -44,7 +46,8 @@ uses Classes,
   GLColor,
   BaseClasses,
   GLRenderContextInfo
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
 
 type
   TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
@@ -52,10 +55,10 @@ type
   TVertexMode = (vmV, vmVN, vmVNC, vmVNCT, vmVNT, vmVT);
 
 const
-  cMeshModeToGLEnum: array [ Low(TMeshMode) .. High(TMeshMode)
+  cMeshModeToGLEnum: array[Low(TMeshMode)..High(TMeshMode)
     ] of TGLEnum = (GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
     GL_QUAD_STRIP, GL_QUADS, GL_POLYGON);
-  cVertexModeToGLEnum: array [ Low(TVertexMode) .. High(TVertexMode)
+  cVertexModeToGLEnum: array[Low(TVertexMode)..High(TVertexMode)
     ] of TGLEnum = (GL_V3F, GL_N3F_V3F, GL_C4F_N3F_V3F, GL_T2F_C4F_N3F_V3F,
     GL_T2F_N3F_V3F, GL_T2F_V3F);
 
@@ -69,7 +72,7 @@ type
   end;
 
   PVertexData = ^TVertexData;
-  TVertexDataArray = array [0 .. (MAXINT shr 6)] of TVertexData;
+  TVertexDataArray = array[0..(MAXINT shr 6)] of TVertexData;
   PVertexDataArray = ^TVertexDataArray;
 
   // TVertexList
@@ -97,6 +100,8 @@ type
     function GetVertexNormal(index: Integer): TAffineVector;
     procedure SetVertexTexCoord(index: Integer; const val: TTexPoint);
     function GetVertexTexCoord(index: Integer): TTexPoint;
+    procedure SetVertexColor(index: Integer; const val: TVector4f);
+    function GetVertexColor(index: Integer): TVector4f;
 
     function GetFirstEntry: PGLFloat;
     function GetFirstColor: PGLFloat;
@@ -137,13 +142,15 @@ type
     procedure Clear;
 
     property Vertices[index: Integer]: TVertexData read GetVertices
-      write SetVertices; default;
+    write SetVertices; default;
     property VertexCoord[index: Integer]: TAffineVector read GetVertexCoord
-      write SetVertexCoord;
+    write SetVertexCoord;
     property VertexNormal[index: Integer]: TAffineVector read GetVertexNormal
-      write SetVertexNormal;
+    write SetVertexNormal;
     property VertexTexCoord[index: Integer]: TTexPoint read GetVertexTexCoord
-      write SetVertexTexCoord;
+    write SetVertexTexCoord;
+    property VertexColor[index: Integer]: TVector4f read GetVertexColor
+    write SetVertexColor;
     property Count: Integer read FCount;
     { : Capacity of the list (nb of vertex).<p>
       Use this to allocate memory quickly before calling AddVertex. }
@@ -498,6 +505,23 @@ end;
 function TVertexList.GetVertexTexCoord(index: Integer): TTexPoint;
 begin
   Result := FValues^[index].textCoord;
+end;
+
+// SetVertexColor
+//
+
+procedure TVertexList.SetVertexColor(index: Integer; const val: TVector4f);
+begin
+  FValues^[index].color := val;
+  NotifyChange(Self);
+end;
+
+// GetVertexColor
+//
+
+function TVertexList.GetVertexColor(index: Integer): TVector4f;
+begin
+  Result := FValues^[index].color;
 end;
 
 // AddVertex (direct)
@@ -934,11 +958,12 @@ end;
 // ------------------------------------------------------------------
 initialization
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
-// class registrations
-RegisterClasses([TGLMesh]);
+  // class registrations
+  RegisterClasses([TGLMesh]);
 
 end.
+
