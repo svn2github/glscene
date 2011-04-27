@@ -7,7 +7,7 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF FPC}
-  LCLTypes, 
+  LCLType, 
 {$ENDIF}
   SysUtils,
   Variants,
