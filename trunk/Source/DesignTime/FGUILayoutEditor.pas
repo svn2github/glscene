@@ -6,6 +6,9 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
+{$IFDEF FPC}
+  LCLTypes, 
+{$ENDIF}
   SysUtils,
   Variants,
   Classes,
