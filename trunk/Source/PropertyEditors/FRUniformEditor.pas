@@ -15,7 +15,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons, GLSLParameter, GLTextureFormat;
 
 type
