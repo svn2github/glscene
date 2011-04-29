@@ -395,14 +395,14 @@ var
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
-  d, cw, ch: Integer;
+  cw, ch: Integer;
   glTarget: TGLEnum;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin
 
-    if z >= (d and -4) then
-      Result := fElementSize * (cw * ch * (d and -4) + x +
+    if z >= (FLOD[level].Depth and -4) then
+      Result := fElementSize * (cw * ch * (FLOD[level].Depth and -4) + x +
         cw * (y + ch * (z - 4 * ch)))
     else
       Result := fElementSize * (4 * (x + cw * (y + ch * floor(z / 4))) + (z and
@@ -497,8 +497,8 @@ begin
           if bCompressed then
           begin
 
-            if GL.NV_texture_compression_vtc and (d > 0) and not fTextureArray
-              then
+            if GL.NV_texture_compression_vtc and (FLOD[level].Depth > 0)
+              and not fTextureArray then
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
@@ -507,7 +507,7 @@ begin
               cw := (FLOD[level].Width + 3) div 4;
               ch := (FLOD[level].Height + 3) div 4;
               top := GetLevelAddress(level);
-              for k := 0 to d - 1 do
+              for k := 0 to FLOD[level].Depth - 1 do
                 for i := 0 to ch - 1 do
                   for j := 0 to cw - 1 do
                   begin
