@@ -4,6 +4,7 @@
 { : GLSCUDAFFTPlan <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>04/05/11 - Yar - Fixed Source/Destination size checking
   <li>05/03/11 - Yar - Refactored
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
@@ -40,7 +41,8 @@ type
     FHeight: Integer;
     FDepth: Integer;
     FBatch: Integer;
-    FPlanSize: Integer;
+    FSize: Integer;
+    FPaddedSize: Integer;
     FTransform: TCUDAFFTransform;
     FStatus: TcufftResult;
     procedure SetWidth(Value: Integer);
@@ -123,14 +125,6 @@ begin
 end;
 
 procedure TCUDAFFTPlan.AllocateHandles;
-const
-  cTypeSize: array[TCUDAFFTransform] of Byte = (
-  SizeOf(TcufftComplex) div 2,
-  SizeOf(TcufftComplex) div 2,
-  SizeOf(TcufftComplex) div 2,
-  SizeOf(TcufftDoubleComplex) div 2,
-  SizeOf(TcufftDoubleComplex) div 2,
-  SizeOf(TcufftDoubleComplex) div 2);
 var
   LType: TcufftType;
 begin
@@ -161,19 +155,25 @@ begin
   if (FHeight = 0) and (FDepth = 0) then
   begin
     FStatus := cufftPlan1d(FHandle, fWidth, LType, FBatch);
-    FPlanSize := cTypeSize[FTransform] * FWidth;
+    FSize := FWidth;
+    FPaddedSize := FWidth div 2 + 1;
     if FBatch > 0 then
-      FPlanSize := FPlanSize * FBatch;
+    begin
+      FSize := FSize * FBatch;
+      FPaddedSize := FPaddedSize * FBatch;
+    end;
   end
   else if FDepth = 0 then
   begin
     FStatus := cufftPlan2d(FHandle, fWidth, FHeight, LType);
-    FPlanSize := cTypeSize[FTransform] * FWidth * FHeight;
+    FSize := FWidth * FHeight;
+    FPaddedSize := FWidth * (FHeight div 2 + 1);
   end
   else
   begin
     FStatus := cufftPlan3d(FHandle, fWidth, FHeight, FDepth, LType);
-    FPlanSize := cTypeSize[FTransform] * FWidth * FHeight * FDepth;
+    FSize := FWidth * FHeight * FDepth;
+    FPaddedSize := FWidth * FHeight * (FDepth div 2 + 1);
   end;
 
   Context.Release;
@@ -202,7 +202,7 @@ begin
     if FStatus <> CUFFT_SUCCESS then
       Abort;
     FHandle := 0;
-    FPlanSize := 0;
+    FPaddedSize := 0;
   end;
 end;
 
@@ -272,8 +272,46 @@ procedure TCUDAFFTPlan.Execute(ASrc: TCUDAMemData; ADst: TCUDAMemData;
   const ADir: TCUDAFFTdir);
 const
   sFFTdir: array [TCUDAFFTdir] of Integer = (CUFFT_FORWARD, CUFFT_INVERSE);
+
+  cSourceTypeSize: array[TCUDAFFTransform] of Byte = (
+  SizeOf(TcufftReal),
+  SizeOf(TcufftComplex),
+  SizeOf(TcufftComplex),
+  SizeOf(TcufftDoubleReal),
+  SizeOf(TcufftDoubleComplex),
+  SizeOf(TcufftDoubleComplex));
+
+  cDestinationTypeSize: array[TCUDAFFTransform] of Byte = (
+  SizeOf(TcufftComplex),
+  SizeOf(TcufftReal),
+  SizeOf(TcufftComplex),
+  SizeOf(TcufftDoubleComplex),
+  SizeOf(TcufftDoubleReal),
+  SizeOf(TcufftDoubleComplex));
 var
   SrcPtr, DstPtr: Pointer;
+  LSrcSize, LDstSize: Integer;
+
+  procedure ForwardCheck;
+  begin
+    if (LSrcSize * FSize > ASrc.DataSize)
+      or (LDstSize * FPaddedSize > ADst.DataSize) then
+    begin
+      GLSLogger.LogError(cudasBadPlanSize);
+      Abort;
+    end;
+  end;
+
+  procedure InverseCheck;
+  begin
+    if (LSrcSize * FPaddedSize > ASrc.DataSize)
+      or (LDstSize * FSize > ADst.DataSize) then
+    begin
+      GLSLogger.LogError(cudasBadPlanSize);
+      Abort;
+    end;
+  end;
+
 begin
   if (FHandle = INVALID_CUFFT_HANDLE) or (fChanges <> []) then
     AllocateHandles;
@@ -287,32 +325,59 @@ begin
   SrcPtr := ASrc.RawData;
   DstPtr := ADst.RawData;
 
-  if (FPlanSize > ASrc.DataSize) or (FPlanSize > ADst.DataSize) then
-  begin
-    GLSLogger.LogError(cudasBadPlanSize);
-    Abort;
-  end;
+  LSrcSize := cSourceTypeSize[FTransform];
+  LDstSize := cDestinationTypeSize[FTransform];
 
   Context.Requires;
+  try
+    case FTransform of
+      fftRealToComplex:
+        begin
+          ForwardCheck;
+          FStatus := cufftExecR2C(FHandle, SrcPtr, DstPtr);
+        end;
 
-  case FTransform of
-    fftRealToComplex:
-      FStatus := cufftExecR2C(FHandle, SrcPtr, DstPtr);
-    fftComplexToReal:
-      FStatus := cufftExecC2R(FHandle, SrcPtr, DstPtr);
-    fftComplexToComplex:
-      FStatus := cufftExecC2C(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
-    fftDoubleToDoubleComplex:
-      FStatus := cufftExecD2Z(FHandle, SrcPtr, DstPtr);
-    fftDoubleComplexToDouble:
-      FStatus := cufftExecZ2D(FHandle, SrcPtr, DstPtr);
-    fftDoubleComplexToDoubleComplex:
-      FStatus := cufftExecZ2Z(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
-  else
-    FStatus := CUFFT_INVALID_VALUE;
+      fftComplexToReal:
+        begin
+          InverseCheck;
+          FStatus := cufftExecC2R(FHandle, SrcPtr, DstPtr);
+        end;
+
+      fftComplexToComplex:
+        begin
+          case ADir of
+            fftdForward: ForwardCheck;
+            fftdInverse: InverseCheck;
+          end;
+          FStatus := cufftExecC2C(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
+        end;
+
+      fftDoubleToDoubleComplex:
+      begin
+        ForwardCheck;
+        FStatus := cufftExecD2Z(FHandle, SrcPtr, DstPtr);
+      end;
+
+      fftDoubleComplexToDouble:
+      begin
+        InverseCheck;
+        FStatus := cufftExecZ2D(FHandle, SrcPtr, DstPtr);
+      end;
+
+      fftDoubleComplexToDoubleComplex:
+      begin
+        case ADir of
+          fftdForward: ForwardCheck;
+          fftdInverse: InverseCheck;
+        end;
+        FStatus := cufftExecZ2Z(FHandle, SrcPtr, DstPtr, sFFTdir[ADir]);
+      end
+    else
+      FStatus := CUFFT_INVALID_VALUE;
+    end;
+  finally
+    Context.Release;
   end;
-
-  Context.Release;
 
   if FStatus <> CUFFT_SUCCESS then
     Abort;
