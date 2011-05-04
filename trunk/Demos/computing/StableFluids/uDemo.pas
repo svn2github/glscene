@@ -38,6 +38,10 @@ type
     GLGuiLayout1: TGLGuiLayout;
     ParticleRenderer: TGLFeedBackMesh;
     addForces: TCUDAFunction;
+    advectVelocity: TCUDAFunction;
+    diffuseProject: TCUDAFunction;
+    updateVelocity: TCUDAFunction;
+    advectParticles: TCUDAFunction;
     addForces_k_v: TCUDAFuncParam;
     addForces_k_dx: TCUDAFuncParam;
     addForces_k_dy: TCUDAFuncParam;
@@ -47,7 +51,6 @@ type
     addForces_k_fy: TCUDAFuncParam;
     addForces_k_r: TCUDAFuncParam;
     addForces_k_pitch: TCUDAFuncParam;
-    advectVelocity: TCUDAFunction;
     advectVelocity_k_vx: TCUDAFuncParam;
     advectVelocity_k_vy: TCUDAFuncParam;
     advectVelocity_k_dx: TCUDAFuncParam;
@@ -55,7 +58,6 @@ type
     advectVelocity_k_dy: TCUDAFuncParam;
     advectVelocity_k_dt: TCUDAFuncParam;
     advectVelocity_k_lb: TCUDAFuncParam;
-    diffuseProject: TCUDAFunction;
     diffuseProject_k_vx: TCUDAFuncParam;
     diffuseProject_k_vy: TCUDAFuncParam;
     diffuseProject_k_dx: TCUDAFuncParam;
@@ -63,7 +65,6 @@ type
     diffuseProject_k_dt: TCUDAFuncParam;
     diffuseProject_k_visc: TCUDAFuncParam;
     diffuseProject_k_lb: TCUDAFuncParam;
-    updateVelocity: TCUDAFunction;
     updateVelocity_k_v: TCUDAFuncParam;
     updateVelocity_k_vx: TCUDAFuncParam;
     updateVelocity_k_vy: TCUDAFuncParam;
@@ -73,7 +74,6 @@ type
     updateVelocity_k_lb: TCUDAFuncParam;
     updateVelocity_k_pitch: TCUDAFuncParam;
     updateVelocity_k_scale: TCUDAFuncParam;
-    advectParticles: TCUDAFunction;
     advectParticles_k_part: TCUDAFuncParam;
     advectParticles_k_v: TCUDAFuncParam;
     advectParticles_k_dx: TCUDAFuncParam;
@@ -144,7 +144,7 @@ var
 begin
   ParticlesDim := 512;
   ComplexPadWidth := ParticlesDim div 2 + 1;
-  RealPadWidth := 2 * (ParticlesDim div 2 + 1);
+  RealPadWidth := 2 * ComplexPadWidth;
   PaddedDomainSize := ParticlesDim * ComplexPadWidth;
   ViscosityConst := 0.0025;
   ForceScaleFactor := 5.8 * ParticlesDim;
@@ -153,6 +153,26 @@ begin
 
   ComplexVXField.Width := PaddedDomainSize;
   ComplexVYField.Width := PaddedDomainSize;
+
+  advectVelocity.BlockShape.SizeX := 64;
+  advectVelocity.BlockShape.SizeY := 4;
+  advectVelocity.Grid.SizeX := 8;
+  advectVelocity.Grid.SizeY := 8;
+
+  diffuseProject.BlockShape.SizeX := 64;
+  diffuseProject.BlockShape.SizeY := 4;
+  diffuseProject.Grid.SizeX := 8;
+  diffuseProject.Grid.SizeY := 8;
+
+  updateVelocity.BlockShape.SizeX := 64;
+  updateVelocity.BlockShape.SizeY := 4;
+  updateVelocity.Grid.SizeX := 8;
+  updateVelocity.Grid.SizeY := 8;
+
+  advectParticles.BlockShape.SizeX := 64;
+  advectParticles.BlockShape.SizeY := 4;
+  advectParticles.Grid.SizeX := 8;
+  advectParticles.Grid.SizeY := 8;
 
   // Create initial position data at host side
   for i := 0 to InitialPosition.Height - 1 do
@@ -331,7 +351,7 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime,
   newTime: Double);
 begin
-  Self.DeltaTime := DeltaTime;
+  Self.DeltaTime := 5*DeltaTime;
   GLSceneViewer1.Invalidate;
 end;
 

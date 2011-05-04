@@ -173,9 +173,9 @@ object Form1: TForm1
         ''
         #9'//-----------------------------------------------------------'
         
-          #9'// Compiling C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000a' +
-          '78_00000000-11_temp.cpp3.i (C:/Users/YARUNA~1/AppData/Local/Temp' +
-          '/ccBI#.a01740)'
+          #9'// Compiling C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_000009' +
+          'd4_00000000-11_temp.cpp3.i (C:/Users/YARUNA~1/AppData/Local/Temp' +
+          '/ccBI#.a02624)'
         #9'//-----------------------------------------------------------'
         ''
         #9'//-----------------------------------------------------------'
@@ -188,7 +188,7 @@ object Form1: TForm1
         #9'//-----------------------------------------------------------'
         ''
         
-          #9'.file'#9'1'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_00000a78_0' +
+          #9'.file'#9'1'#9'"C:/Users/YARUNA~1/AppData/Local/Temp/tmpxft_000009d4_0' +
           '0000000-10_temp.cudafe2.gpu"'
         
           #9'.file'#9'2'#9'"C:\Program Files\Microsoft Visual Studio 9.0\VC\INCLUD' +
@@ -804,7 +804,7 @@ object Form1: TForm1
         NormalizedCoord = False
         FilterMode = fmLinear
         Format = ctFloat
-        ChannelNum = cnTwo
+        ChannelNum = cnOne
         MemDataArray = ArrayOfTexture
       end
       object addForces: TCUDAFunction
@@ -1086,7 +1086,7 @@ object Form1: TForm1
       ChannelsNum = cnTwo
     end
     object ComplexVYField: TCUDAMemData
-      Width = 131584
+      Width = 262144
       MemoryType = mtDevice
       ChannelsType = ctFloat
       ChannelsNum = cnTwo
@@ -1146,8 +1146,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'FluidMaterial'
-        Material.BlendingMode = bmTransparency
         Tag = 0
+        Material.BlendingMode = bmTransparency
         Shader = FluidShader
       end>
     Left = 40

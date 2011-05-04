@@ -168,7 +168,7 @@ float scale) {
                 vyterm = vy[fjr];
 
                 // Normalize the result of the inverse FFT
-				nvterm.x = vxterm * scale;
+                nvterm.x = vxterm * scale;
                 nvterm.y = vyterm * scale;
 
                 float2 *fj = (float2*)((char*)v + fi * pitch) + gtidx;
@@ -207,7 +207,7 @@ size_t pitch) {
 
                 int xvi = ((int)(pterm.x * dx));
                 int yvi = ((int)(pterm.y * dy));
-				vterm = *((float2*)((char*)v + yvi * pitch) + xvi);
+                vterm = *((float2*)((char*)v + yvi * pitch) + xvi);
 
                 pterm.x += dt * vterm.x;
                 pterm.x = pterm.x - (int)pterm.x;
