@@ -22,6 +22,11 @@ type
     hostB: TCUDAMemData;
     hostC_CPU: TCUDAMemData;
     hostA: TCUDAMemData;
+    _Z13scalarProdGPUPfS_S_ii_d_C: TCUDAFuncParam;
+    _Z13scalarProdGPUPfS_S_ii_d_A: TCUDAFuncParam;
+    _Z13scalarProdGPUPfS_S_ii_d_B: TCUDAFuncParam;
+    _Z13scalarProdGPUPfS_S_ii_vectorN: TCUDAFuncParam;
+    _Z13scalarProdGPUPfS_S_ii_elementN: TCUDAFuncParam;
     procedure Button1Click(Sender: TObject);
     procedure scalarProdGPUParameterSetup(Sender: TObject);
   private
