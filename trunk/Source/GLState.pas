@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
       <li>14/12/10 - DaStr - Added to TGLStateCache:
@@ -1547,19 +1548,23 @@ begin
 {$ENDIF}
     GL.Disable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
-    begin
-      GL.Materialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
-      GL.Materialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
-      GL.Materialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
-      GL.Materialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
-      GL.Materiali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
+      if FInsideList then
+        Include(FListStates[FCurrentList], sttLighting)
+      else
+        with GL do
+        begin
+          Materialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
+          Materialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
+          Materialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
+          Materialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
+          Materiali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
 
-      GL.Materialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
-      GL.Materialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
-      GL.Materialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
-      GL.Materialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
-      GL.Materiali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
-    end;
+          Materialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
+          Materialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
+          Materialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
+          Materialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
+          Materiali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
+        end;
   end;
 end;
 
