@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLExtrusion<p>
@@ -7,6 +7,7 @@
    surface described by a moving curve.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>07/05/11 - Yar - Fixed stColorMaterial state switching accordingly NodesColorMode
       <li>28/03/11 - Vince - Improve Normals generation on Pipes
       <li>28/03/11 - Vince - Improve Texture coordinates on Pipes Add Tile
                               (Add TileS and TileT) and Manual Texture Mode
@@ -65,12 +66,14 @@ uses Classes,
 
 type
 
-  TExtrusionSolidPart = (espOutside, espInside, espStartPolygon, espStopPolygon);
+  TExtrusionSolidPart = (espOutside, espInside, espStartPolygon,
+    espStopPolygon);
   TExtrusionSolidParts = set of TExtrusionSolidPart;
 
   // TRevolutionSolidParts
   //
-  TRevolutionSolidPart = (rspOutside, rspInside, rspStartPolygon, rspStopPolygon);
+  TRevolutionSolidPart = (rspOutside, rspInside, rspStartPolygon,
+    rspStopPolygon);
   TRevolutionSolidParts = set of TRevolutionSolidPart;
 
   // TGLRevolutionSolid
@@ -124,10 +127,12 @@ type
              inside/outside as long as NormalDirection=ndOutside and the solid
              is described by the curve that goes from top to bottom.<p>
              Start/StopPolygon are tesselated from the curve (considered as closed). }
-    property Parts: TRevolutionSolidParts read FParts write SetParts default [rspOutside];
+    property Parts: TRevolutionSolidParts read FParts write SetParts default
+      [rspOutside];
 
     property StartAngle: Single read FStartAngle write SetStartAngle;
-    property StopAngle: Single read FStopAngle write SetStopAngle stored StoreStopAngle;
+    property StopAngle: Single read FStopAngle write SetStopAngle stored
+      StoreStopAngle;
     {: Y offset applied to the curve position for each turn.<p>
        This amount is applied proportionnally, for instance if your curve
        is a small circle, off from the Y axis, with a YOffset set to 0 (zero),
@@ -135,12 +140,15 @@ type
        small helicoidal spring.<p>
        This can be useful for rendering, lots of helicoidal objects from
        screws, to nails to stairs etc. }
-    property YOffsetPerTurn: Single read FYOffsetPerTurn write SetYOffsetPerTurn;
+    property YOffsetPerTurn: Single read FYOffsetPerTurn write
+      SetYOffsetPerTurn;
     {: Number of slices per turn (360Щ. }
     property Slices: Integer read FSlices write SetSlices default 16;
 
-    property Normals: TNormalSmoothing read FNormals write SetNormals default nsFlat;
-    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
+    property Normals: TNormalSmoothing read FNormals write SetNormals default
+      nsFlat;
+    property NormalDirection: TNormalDirection read FNormalDirection write
+      SetNormalDirection default ndOutside;
   end;
 
   // TGLExtrusionSolid
@@ -190,14 +198,18 @@ type
 
   published
     { Published Declarations }
-    property Parts: TExtrusionSolidParts read FParts write SetParts default [espOutside];
+    property Parts: TExtrusionSolidParts read FParts write SetParts default
+      [espOutside];
 
     property Height: TGLFloat read FHeight write SetHeight;
     property Stacks: Integer read FStacks write SetStacks default 1;
 
-    property Normals: TNormalSmoothing read FNormals write SetNormals default nsFlat;
-    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
-    property MinSmoothAngle: Single read FMinSmoothAngle write SetMinSmoothAngle;
+    property Normals: TNormalSmoothing read FNormals write SetNormals default
+      nsFlat;
+    property NormalDirection: TNormalDirection read FNormalDirection write
+      SetNormalDirection default ndOutside;
+    property MinSmoothAngle: Single read FMinSmoothAngle write
+      SetMinSmoothAngle;
   end;
 
   // TGLPipeNode
@@ -225,9 +237,11 @@ type
 
   published
     { Published Declarations }
-    property RadiusFactor: Single read FRadiusFactor write SetRadiusFactor stored StoreRadiusFactor;
+    property RadiusFactor: Single read FRadiusFactor write SetRadiusFactor stored
+      StoreRadiusFactor;
     property Color: TGLColor read FColor write SetColor;
-    property TexCoordT: Single read FTexCoordT write FTexCoordT stored StoreTexCoordT;
+    property TexCoordT: Single read FTexCoordT write FTexCoordT stored
+      StoreTexCoordT;
 
   end;
 
@@ -244,7 +258,8 @@ type
     constructor Create(AOwner: TComponent);
     function Add: TGLPipeNode;
     function FindItemID(ID: Integer): TGLPipeNode;
-    property Items[index: Integer]: TGLPipeNode read GetItems write SetItems; default;
+    property Items[index: Integer]: TGLPipeNode read GetItems write SetItems;
+      default;
   end;
 
   // TPipeParts
@@ -261,9 +276,9 @@ type
   //
   TPipeTexCoordMode = (ptcmDefault, ptcmManual);
 
-   // TPipeNormalMode
-   //
-   TPipeNormalMode = (pnmDefault, pnmAdvanced);
+  // TPipeNormalMode
+  //
+  TPipeNormalMode = (pnmDefault, pnmAdvanced);
 
   // TGLPipe
   //
@@ -280,8 +295,8 @@ type
     FTextCoordMode: TPipeTexCoordMode;
     FTextCoordTileS: Single;
     FTextCoordTileT: Single;
-         FNormalMode : TPipeNormalMode;
-         FNormalSmoothAngle : Single;
+    FNormalMode: TPipeNormalMode;
+    FNormalSmoothAngle: Single;
 
   protected
     { Protected Declarations }
@@ -296,9 +311,9 @@ type
     procedure SetTextCoordTileT(const val: Single);
     function StoreTextCoordTileS: Boolean;
     function StoreTextCoordTileT: Boolean;
-    
+
     procedure SetNormalMode(const val: TPipeNormalMode);
-    procedure SetNormalSmoothAngle(const val : Single);
+    procedure SetNormalSmoothAngle(const val: Single);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -314,16 +329,19 @@ type
     property Parts: TPipeParts read FParts write SetParts default [ppOutside];
     property Slices: Integer read FSlices write SetSlices default 16;
     property Radius: Single read FRadius write SetRadius;
-    property NodesColorMode: TPipeNodesColorMode read FNodesColorMode write SetNodesColorMode default pncmNone;
+    property NodesColorMode: TPipeNodesColorMode read FNodesColorMode write
+      SetNodesColorMode default pncmNone;
     property TexCoordMode: TPipeTexCoordMode read FTextCoordMode
       write SetTextCoordMode default ptcmDefault;
     property TexCoordTileS: Single read FTextCoordTileS write SetTextCoordTileS
       stored StoreTextCoordTileS;
     property TexCoordTileT: Single read FTextCoordTileT write SetTextCoordTileT
       stored StoreTextCoordTileT;
-    
-    property NormalMode : TPipeNormalMode read FNormalMode write SetNormalMode default pnmDefault;
-    property NormalSmoothAngle : Single read FNormalSmoothAngle write SetNormalSmoothAngle;
+
+    property NormalMode: TPipeNormalMode read FNormalMode write SetNormalMode
+      default pnmDefault;
+    property NormalSmoothAngle: Single read FNormalSmoothAngle write
+      SetNormalSmoothAngle;
 
   end;
 
@@ -491,7 +509,8 @@ var
   lastNormals: PAffineVectorArray;
   firstStep, gotYDeltaOffset: Boolean;
 
-  procedure CalcNormal(const ptTop, ptBottom: PAffineVector; var normal: TAffineVector);
+  procedure CalcNormal(const ptTop, ptBottom: PAffineVector; var normal:
+    TAffineVector);
   var
     tb: TAffineVector;
     mx, mz: Single;
@@ -509,7 +528,8 @@ var
     topT, bottomT: Single);
   var
     i: Integer;
-    topBase, topNext, bottomBase, bottomNext, normal, topNormal, bottomNormal: TAffineVector;
+    topBase, topNext, bottomBase, bottomNext, normal, topNormal, bottomNormal:
+      TAffineVector;
     topTPBase, topTPNext, bottomTPBase, bottomTPNext: TTexPoint;
     nextAlpha: Single;
     ptBuffer: PAffineVector;
@@ -625,7 +645,8 @@ begin
     deltaS := (stopAlpha - startAlpha) / (2 * PI * nbSteps);
     gotYDeltaOffset := FYOffsetPerTurn <> 0;
     if gotYDeltaOffset then
-      deltaYOffset := (FYOffsetPerTurn * (stopAlpha - startAlpha) / (2 * PI)) / nbSteps
+      deltaYOffset := (FYOffsetPerTurn * (stopAlpha - startAlpha) / (2 * PI)) /
+        nbSteps
     else
       deltaYOffset := 0;
     startYOffset := YOffsetPerTurn * startAlpha / (2 * PI);
@@ -749,7 +770,8 @@ begin
         with polygon do
         begin
           RotateAroundY(RadToDeg(stopAlpha));
-          Translate(AffineVectorMake(0, startYOffset + (stopAlpha - startAlpha) * YOffsetPerTurn / (2 * PI), 0));
+          Translate(AffineVectorMake(0, startYOffset + (stopAlpha - startAlpha)
+            * YOffsetPerTurn / (2 * PI), 0));
           if invertedNormals then
             alpha := stopAlpha + PI + PI / 2
           else
@@ -937,8 +959,8 @@ begin
   FTextCoordMode := ptcmDefault;
   FTextCoordTileS := 1;
   FTextCoordTileT := 1;
-   FNormalMode := pnmDefault;
-   FNormalSmoothAngle := 0;
+  FNormalMode := pnmDefault;
+  FNormalSmoothAngle := 0;
 end;
 
 // CreateNodes
@@ -1064,22 +1086,24 @@ end;
 
 procedure TGLPipe.SetNormalMode(const val: TPipeNormalMode);
 begin
-   if val<>FNormalMode then begin
-      FNormalMode:=val;
-      StructureChanged;
-   end;
+  if val <> FNormalMode then
+  begin
+    FNormalMode := val;
+    StructureChanged;
+  end;
 end;
 
 // SetNormalSmoothAngle
 //
 
-procedure TGLPipe.SetNormalSmoothAngle(const val : Single);
+procedure TGLPipe.SetNormalSmoothAngle(const val: Single);
 begin
-   if val<>FNormalSmoothAngle then begin
-      FNormalSmoothAngle:=val;
-      if NormalMode = pnmAdvanced then
-        StructureChanged;
-   end;
+  if val <> FNormalSmoothAngle then
+  begin
+    FNormalSmoothAngle := val;
+    if NormalMode = pnmAdvanced then
+      StructureChanged;
+  end;
 end;
 
 // Assign
@@ -1110,14 +1134,14 @@ type
   TNodeData = record
     pos: TAffineVector;
     normal: TAffineVector;
-    innormal :TAffineVector;
-    sidedir : TVector3f;
+    innormal: TAffineVector;
+    sidedir: TVector3f;
   end;
   TRowData = record
     node: array of TNodeData;
     color: TColorVector;
-    center : TVector3f;
-    textcoordT : Single;
+    center: TVector3f;
+    textcoordT: Single;
   end;
   PRowData = ^TRowData;
 const
@@ -1161,9 +1185,9 @@ const
       row^.node[i].normal := VectorCombine(vx, vy, vCosCache[i], vSinCache[i]);
       row^.node[i].pos := VectorCombine(PAffineVector(@center)^,
         row^.node[i].normal, 1, radius);
-         SetVector(row^.node[i].sidedir,0,0,0);
+      SetVector(row^.node[i].sidedir, 0, 0, 0);
     end;
-      row^.center := center;
+    row^.center := center;
   end;
 
   procedure RenderDisk(row: PRowData;
@@ -1172,59 +1196,53 @@ const
   var
     i: Integer;
   begin
-    if NodesColorMode <> pncmNone then
-      GL.Color4fv(@row^.color);
+    with GL do
+    begin
+      if NodesColorMode <> pncmNone then
+        Color4fv(@row^.color);
+      // it was necessary to change build process to generate textcoords
+      Begin_(GL_TRIANGLE_STRIP);
+      Normal3fv(@normal);
 
-    //old process
-    {GL.Begin_(GL_TRIANGLE_FAN);
-       GL.Normal3fv(@normal);
-       GL.Vertex3fv(@center);
-       if invert then
-          for i:=High(row^.node) downto 0 do GL.Vertex3fv(@row^.node[i].pos)
-       else for i:=0 to High(row^.node) do GL.Vertex3fv(@row^.node[i].pos);
-    GL.End_;  }
-    // it was necessary to change build process to generate textcoords
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@normal);
-
-    case TexCoordMode of
-      ptcmDefault, ptcmManual:
-        begin
-          if invert then
+      case TexCoordMode of
+        ptcmDefault, ptcmManual:
           begin
-            for i := 0 to High(row^.node) - 1 do
+            if invert then
             begin
-              GL.TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-              GL.Vertex3fv(@row^.node[i].pos);
-              GL.TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-              GL.Vertex3fv(@center);
-            end;
-            GL.TexCoord2f(TextCoordTileS, 1);
-            GL.Vertex3fv(@row^.node[High(row^.node)].pos);
-          end
-          else
-          begin
-            for i := High(row^.node) downto 1 do
+              for i := 0 to High(row^.node) - 1 do
+              begin
+                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
+                Vertex3fv(@row^.node[i].pos);
+                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
+                Vertex3fv(@center);
+              end;
+              TexCoord2f(TextCoordTileS, 1);
+              Vertex3fv(@row^.node[High(row^.node)].pos);
+            end
+            else
             begin
-              GL.TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-              GL.Vertex3fv(@row^.node[i].pos);
-              GL.TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-              GL.Vertex3fv(@center);
+              for i := High(row^.node) downto 1 do
+              begin
+                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
+                Vertex3fv(@row^.node[i].pos);
+                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
+                Vertex3fv(@center);
+              end;
+              TexCoord2f(0, 0);
+              Vertex3fv(@row^.node[0].pos);
             end;
-            GL.TexCoord2f(0, 0);
-            GL.Vertex3fv(@row^.node[0].pos);
           end;
-        end;
-    end;
+      end;
 
-    GL.End_;
+      End_;
+    end;
   end;
 
   procedure CalculateSides(prevRow, curRow: PRowData; trajvec: TVector3f);
   var
     j, k, m, n: Integer;
     deltaNormal, deltaPos: array of Double;
-    smoothanglerad : Single;
+    smoothanglerad: Single;
   begin
     SetLength(deltanormal, Slices);
     SetLength(deltapos, Slices);
@@ -1235,8 +1253,10 @@ const
       for j := 0 to Slices - 1 do
       begin //over all places
         n := (j + k) mod Slices;
-        deltanormal[k] := deltanormal[k] + VectorSpacing(curRow^.node[n].normal, prevRow^.node[j].normal);
-        deltapos[k] := deltapos[k] + VectorSpacing(curRow^.node[n].pos, prevRow^.node[j].pos);
+        deltanormal[k] := deltanormal[k] + VectorSpacing(curRow^.node[n].normal,
+          prevRow^.node[j].normal);
+        deltapos[k] := deltapos[k] + VectorSpacing(curRow^.node[n].pos,
+          prevRow^.node[j].pos);
       end;
     end;
     //Search minimum
@@ -1256,175 +1276,208 @@ const
     end;
 
     case NormalMode of
-        pnmDefault:
-      begin
-        for j := 0 to Slices do
+      pnmDefault:
         begin
-           curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
-           prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
+          for j := 0 to Slices do
+          begin
+            curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
+            prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
+          end;
         end;
-      end;
       pnmAdvanced:
-      begin
-        smoothanglerad := DegToRad(NormalSmoothAngle);
-        for j := 0 to Slices do
         begin
-          curRow.node[j].sidedir := VectorNormalize(VectorSubtract(curRow.node[j].pos,prevRow.node[j].pos));
-          if VectorDotProduct(curRow.node[j].sidedir,prevRow.node[j].sidedir)< Cos(smoothanglerad) then
+          smoothanglerad := DegToRad(NormalSmoothAngle);
+          for j := 0 to Slices do
           begin
-            if VectorDotProduct(curRow.node[j].sidedir,VectorNormalize(
-              VectorSubtract(curRow.node[j].pos, curRow.center)))>0.99 then
+            curRow.node[j].sidedir :=
+              VectorNormalize(VectorSubtract(curRow.node[j].pos,
+              prevRow.node[j].pos));
+            if VectorDotProduct(curRow.node[j].sidedir, prevRow.node[j].sidedir)
+              < Cos(smoothanglerad) then
             begin
-              curRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir,
-                VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize(trajvec)));
-              prevRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir,
-                VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize(trajvec)));
-            end
-            else
-            begin
-              if VectorDotProduct(curRow.node[j].sidedir,VectorNormalize(
-                VectorSubtract(curRow.node[j].pos, curRow.center)))<-0.99 then
+              if VectorDotProduct(curRow.node[j].sidedir, VectorNormalize(
+                VectorSubtract(curRow.node[j].pos, curRow.center))) > 0.99 then
               begin
-                curRow.node[j].normal:=VectorCrossProduct(VectorCrossProduct
-                  (curRow.node[j].sidedir, VectorNormalize(trajvec)),curRow.node[j].sidedir);
-                prevRow.node[j].normal:=VectorCrossProduct(VectorCrossProduct
-                  (curRow.node[j].sidedir, VectorNormalize(trajvec)),curRow.node[j].sidedir);
+                curRow.node[j].normal :=
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                    VectorNormalize(trajvec)));
+                prevRow.node[j].normal :=
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                    VectorNormalize(trajvec)));
               end
               else
               begin
-                if VectorDotProduct(trajvec,curRow.node[j].sidedir)<0 then
+                if VectorDotProduct(curRow.node[j].sidedir, VectorNormalize(
+                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99
+                    then
                 begin
-                  curRow.node[j].normal:=VectorCrossProduct( VectorNormalize(VectorCrossProduct
-                    (VectorNormalize(VectorSubtract(curRow.node[j].pos, curRow.center)),
-                    curRow.node[j].sidedir)), curRow.node[j].sidedir);
-                  prevRow.node[j].normal:=VectorCrossProduct(VectorNormalize(VectorCrossProduct
-                    (VectorNormalize(VectorSubtract(prevRow.node[j].pos, prevRow.center)),
-                    curRow.node[j].sidedir)),curRow.node[j].sidedir );
+                  curRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
+                    (curRow.node[j].sidedir, VectorNormalize(trajvec)),
+                      curRow.node[j].sidedir);
+                  prevRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
+                    (curRow.node[j].sidedir, VectorNormalize(trajvec)),
+                      curRow.node[j].sidedir);
                 end
                 else
                 begin
-                  curRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
-                    (VectorCrossProduct(VectorNormalize(VectorSubtract(curRow.node[j].pos, curRow.center)),
-                    curRow.node[j].sidedir)));
-                  prevRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
-                    (VectorCrossProduct(VectorNormalize(VectorSubtract(prevRow.node[j].pos, prevRow.center)),
-                    curRow.node[j].sidedir)));
+                  if VectorDotProduct(trajvec, curRow.node[j].sidedir) < 0 then
+                  begin
+                    curRow.node[j].normal :=
+                      VectorCrossProduct(VectorNormalize(VectorCrossProduct
+                      (VectorNormalize(VectorSubtract(curRow.node[j].pos,
+                        curRow.center)),
+                      curRow.node[j].sidedir)), curRow.node[j].sidedir);
+                    prevRow.node[j].normal :=
+                      VectorCrossProduct(VectorNormalize(VectorCrossProduct
+                      (VectorNormalize(VectorSubtract(prevRow.node[j].pos,
+                        prevRow.center)),
+                      curRow.node[j].sidedir)), curRow.node[j].sidedir);
+                  end
+                  else
+                  begin
+                    curRow.node[j].normal :=
+                      VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
+                      (VectorCrossProduct(VectorNormalize(VectorSubtract(curRow.node[j].pos, curRow.center)),
+                      curRow.node[j].sidedir)));
+                    prevRow.node[j].normal :=
+                      VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
+                      (VectorCrossProduct(VectorNormalize(VectorSubtract(prevRow.node[j].pos, prevRow.center)),
+                      curRow.node[j].sidedir)));
+                  end;
                 end;
+                if VectorLength(curRow.node[j].normal) = 0 then
+                  curRow.node[j].normal := prevRow.node[j].normal;
+                if VectorLength(prevRow.node[j].normal) = 0 then
+                  prevRow.node[j].normal := curRow.node[j].normal;
+                //compute inside normales
+                curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
+                prevRow.node[j].innormal :=
+                  VectorNegate(prevRow.node[j].normal);
               end;
-              if VectorLength(curRow.node[j].normal)= 0 then
-                curRow.node[j].normal := prevRow.node[j].normal;
-              if VectorLength(prevRow.node[j].normal) = 0 then
-                prevRow.node[j].normal := curRow.node[j].normal;
-              //compute inside normales
-              curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
-              prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
-            end;
-          end
-          else
-          begin
-            if VectorDotProduct(curRow.node[j].sidedir,VectorNormalize(VectorSubtract
-              (curRow.node[j].pos, curRow.center)))>0.99 then
-            begin
-              curRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir,
-                VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize(trajvec)));
             end
             else
             begin
-              if VectorDotProduct(curRow.node[j].sidedir,VectorNormalize(
-                VectorSubtract(curRow.node[j].pos, curRow.center)))<-0.99 then
+              if VectorDotProduct(curRow.node[j].sidedir,
+                VectorNormalize(VectorSubtract
+                (curRow.node[j].pos, curRow.center))) > 0.99 then
               begin
-                curRow.node[j].normal:=VectorCrossProduct(VectorCrossProduct
-                  (curRow.node[j].sidedir, VectorNormalize(trajvec)),curRow.node[j].sidedir);
+                curRow.node[j].normal :=
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                  VectorCrossProduct(curRow.node[j].sidedir,
+                    VectorNormalize(trajvec)));
               end
               else
               begin
-                if VectorDotProduct(trajvec,curRow.node[j].sidedir)<0 then
+                if VectorDotProduct(curRow.node[j].sidedir, VectorNormalize(
+                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99
+                    then
                 begin
-                  curRow.node[j].normal:=VectorCrossProduct( VectorNormalize(VectorCrossProduct
-                    (VectorNormalize(VectorSubtract(curRow.node[j].pos, curRow.center)),
-                    curRow.node[j].sidedir)), curRow.node[j].sidedir);
+                  curRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
+                    (curRow.node[j].sidedir, VectorNormalize(trajvec)),
+                      curRow.node[j].sidedir);
                 end
                 else
                 begin
-                  curRow.node[j].normal:=VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
-                    (VectorCrossProduct(VectorNormalize(VectorSubtract(curRow.node[j].pos,
-                    curRow.center)),curRow.node[j].sidedir)));
+                  if VectorDotProduct(trajvec, curRow.node[j].sidedir) < 0 then
+                  begin
+                    curRow.node[j].normal :=
+                      VectorCrossProduct(VectorNormalize(VectorCrossProduct
+                      (VectorNormalize(VectorSubtract(curRow.node[j].pos,
+                        curRow.center)),
+                      curRow.node[j].sidedir)), curRow.node[j].sidedir);
+                  end
+                  else
+                  begin
+                    curRow.node[j].normal :=
+                      VectorCrossProduct(curRow.node[j].sidedir, VectorNormalize
+                      (VectorCrossProduct(VectorNormalize(VectorSubtract(curRow.node[j].pos,
+                      curRow.center)), curRow.node[j].sidedir)));
+                  end;
                 end;
+                //compute inside normales
+                curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
               end;
-              //compute inside normales
-              curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
             end;
           end;
         end;
-      end;
     end;
   end;
 
-  procedure RenderSides(prevRow,curRow : PRowData; TextCoordTileS, TextCoordTileT : Single; outside : Boolean);
+  procedure RenderSides(prevRow, curRow: PRowData; TextCoordTileS,
+    TextCoordTileT: Single; outside: Boolean);
   var
-    j : Integer;
+    j: Integer;
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    if outside then
+    with GL do
     begin
-      if NodesColorMode <> pncmNone then
-        GL.Color4fv(@curRow^.color);
-
-      GL.TexCoord2f(0, curRow^.textcoordT * TextCoordTileT);
-      GL.Normal3fv(@curRow^.node[0].normal);
-      GL.Vertex3fv(@curRow^.node[0].pos);
-      for j := 0 to Slices - 1 do
+      Begin_(GL_TRIANGLE_STRIP);
+      if outside then
       begin
         if NodesColorMode <> pncmNone then
-          GL.Color4fv(@prevRow^.color);
-        GL.TexCoord2f(j / Slices * TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
-        GL.Normal3fv(@prevRow^.node[j].normal);
-        GL.Vertex3fv(@prevRow^.node[j].pos);
-        if NodesColorMode <> pncmNone then
-          GL.Color4fv(@curRow^.color);
-        GL.TexCoord2f((j + 1) / Slices * TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
-        GL.Normal3fv(@curRow^.node[j + 1].normal);
-        GL.Vertex3fv(@curRow^.node[j + 1].pos);
-      end;
-      if NodesColorMode <> pncmNone then
-        GL.Color4fv(@prevRow^.color);
-      GL.TexCoord2f(TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
-      GL.Normal3fv(@prevRow^.node[Slices].normal);
-      GL.Vertex3fv(@prevRow^.node[Slices].pos);
-    end
-    else
-    begin
-      for j := 0 to Slices do
-      begin
-        curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
-        prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
-      end;
-      if NodesColorMode<>pncmNone then
-        GL.Color4fv(@prevRow^.color);
+          Color4fv(@curRow^.color);
 
-      GL.TexCoord2f(0,prevRow^.textcoordT*TextCoordTileT);
-      GL.Normal3fv(@prevRow^.node[0].innormal);
-      GL.Vertex3fv(@prevRow^.node[0].pos);
-      for j:=0 to Slices-1 do
+        TexCoord2f(0, curRow^.textcoordT * TextCoordTileT);
+        Normal3fv(@curRow^.node[0].normal);
+        Vertex3fv(@curRow^.node[0].pos);
+        for j := 0 to Slices - 1 do
+        begin
+          if NodesColorMode <> pncmNone then
+            Color4fv(@prevRow^.color);
+          TexCoord2f(j / Slices * TextCoordTileS, prevRow^.textcoordT *
+            TextCoordTileT);
+          Normal3fv(@prevRow^.node[j].normal);
+          Vertex3fv(@prevRow^.node[j].pos);
+          if NodesColorMode <> pncmNone then
+            Color4fv(@curRow^.color);
+          TexCoord2f((j + 1) / Slices * TextCoordTileS, curRow^.textcoordT *
+            TextCoordTileT);
+          Normal3fv(@curRow^.node[j + 1].normal);
+          Vertex3fv(@curRow^.node[j + 1].pos);
+        end;
+        if NodesColorMode <> pncmNone then
+          Color4fv(@prevRow^.color);
+        TexCoord2f(TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
+        Normal3fv(@prevRow^.node[Slices].normal);
+        Vertex3fv(@prevRow^.node[Slices].pos);
+      end
+      else
       begin
-        if NodesColorMode<>pncmNone then
-          GL.Color4fv(@curRow^.color);
-        GL.TexCoord2f(j/Slices *TextCoordTileS,curRow^.textcoordT*TextCoordTileT);
-        GL.Normal3fv(@curRow^.node[j].innormal);
-        GL.Vertex3fv(@curRow^.node[j].pos);
-          if NodesColorMode<>pncmNone then
-            GL.Color4fv(@prevRow^.color);
-        GL.TexCoord2f((j+1)/Slices *TextCoordTileS,prevRow^.textcoordT*TextCoordTileT);
-        GL.Normal3fv(@prevRow^.node[j+1].innormal);
-        GL.Vertex3fv(@prevRow^.node[j+1].pos);
+        for j := 0 to Slices do
+        begin
+          curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
+          prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
+        end;
+        if NodesColorMode <> pncmNone then
+          Color4fv(@prevRow^.color);
+
+        TexCoord2f(0, prevRow^.textcoordT * TextCoordTileT);
+        Normal3fv(@prevRow^.node[0].innormal);
+        Vertex3fv(@prevRow^.node[0].pos);
+        for j := 0 to Slices - 1 do
+        begin
+          if NodesColorMode <> pncmNone then
+            Color4fv(@curRow^.color);
+          TexCoord2f(j / Slices * TextCoordTileS, curRow^.textcoordT *
+            TextCoordTileT);
+          Normal3fv(@curRow^.node[j].innormal);
+          Vertex3fv(@curRow^.node[j].pos);
+          if NodesColorMode <> pncmNone then
+            Color4fv(@prevRow^.color);
+          TexCoord2f((j + 1) / Slices * TextCoordTileS, prevRow^.textcoordT *
+            TextCoordTileT);
+          Normal3fv(@prevRow^.node[j + 1].innormal);
+          Vertex3fv(@prevRow^.node[j + 1].pos);
+        end;
+        if NodesColorMode <> pncmNone then
+          Color4fv(@curRow^.color);
+        TexCoord2f(TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
+        Normal3fv(@curRow^.node[Slices].innormal);
+        Vertex3fv(@curRow^.node[Slices].pos);
       end;
-      if NodesColorMode<>pncmNone then
-        GL.Color4fv(@curRow^.color);
-      GL.TexCoord2f(TextCoordTileS,curRow^.textcoordT*TextCoordTileT);
-      GL.Normal3fv(@curRow^.node[Slices].innormal);
-      GL.Vertex3fv(@curRow^.node[Slices].pos);
+      End_;
     end;
-    GL.End_;
   end;
 var
   i, curRow, nbDivisions, k: Integer;
@@ -1463,11 +1516,14 @@ begin
     posSpline := nil;
     rSpline := nil;
   end;
+
   if NodesColorMode <> pncmNone then
   begin
-    rci.GLStates.Enable(stColorMaterial);
     GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
-  end;
+    rci.GLStates.Enable(stColorMaterial);
+  end
+  else
+    rci.GLStates.Disable(stColorMaterial);
 
   CalculateRow(@rows[0], PAffineVector(@Nodes[0].AsVector)^, normal,
     TGLPipeNode(Nodes[0]).RadiusFactor);
@@ -1483,7 +1539,8 @@ begin
     end;
     if ppInside in Parts then
     begin
-      RenderDisk(@rows[0], Nodes[0].AsVector, VectorNegate(normal), False, TexCoordTileS);
+      RenderDisk(@rows[0], Nodes[0].AsVector, VectorNegate(normal), False,
+        TexCoordTileS);
       FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
     end;
   end;
@@ -1536,11 +1593,13 @@ begin
             end;
         end;
         if (ppOutside in Parts) or (ppInside in Parts) then
-          CalculateSides(@rows[curRow xor 1], @rows[curRow],normal);
+          CalculateSides(@rows[curRow xor 1], @rows[curRow], normal);
         if ppOutside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS, TexCoordTileT, True);
+          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+            TexCoordTileT, True);
         if ppInside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS, TexCoordTileT, False);
+          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+            TexCoordTileT, False);
       end;
       i := nbDivisions * (Slices + 1) * 2;
       if ppOutside in Parts then
@@ -1556,17 +1615,20 @@ begin
         //Initialize Texture coordinates
         case TexCoordMode of
           ptcmDefault: rows[curRow].textcoordT := i;
-          ptcmManual: rows[curRow].textcoordT := TGLPipeNode(Nodes[i]).TexCoordT;
+          ptcmManual: rows[curRow].textcoordT :=
+            TGLPipeNode(Nodes[i]).TexCoordT;
         end;
         CalculateRow(@rows[curRow], PAffineVector(@Nodes[i].AsVector)^,
           Nodes.Vector(i), TGLPipeNode(Nodes[i]).RadiusFactor);
         rows[curRow].color := TGLPipeNodes(Nodes)[i].Color.Color;
         if (ppOutside in Parts) or (ppInside in Parts) then
-          CalculateSides(@rows[curRow xor 1], @rows[curRow],Nodes.Vector(i));
+          CalculateSides(@rows[curRow xor 1], @rows[curRow], Nodes.Vector(i));
         if ppOutside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS, TexCoordTileT, True);
+          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+            TexCoordTileT, True);
         if ppInside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS, TexCoordTileT, False);
+          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+            TexCoordTileT, False);
       end;
       i := Nodes.Count * (Slices + 1) * 2;
       if ppOutside in Parts then
@@ -1592,7 +1654,8 @@ begin
     end;
     if ppInside in Parts then
     begin
-        RenderDisk(@rows[0], Nodes[i].AsVector, VectorNegate(normal), True, TexCoordTileS);
+      RenderDisk(@rows[0], Nodes[i].AsVector, VectorNegate(normal), True,
+        TexCoordTileS);
       FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
     end;
   end;
@@ -1630,7 +1693,8 @@ var
   {deltaS,}deltaZ: Single;
   lastNormal: TAffineVector;
 
-  procedure CalcNormal(const Top, Bottom: TAffineVector; var normal: TAffineVector);
+  procedure CalcNormal(const Top, Bottom: TAffineVector; var normal:
+    TAffineVector);
     { extrusion is in Z direction, so the Z component of the normal vector is
       always zero. }
     {var
@@ -1652,7 +1716,8 @@ var
     topT, bottomT: Single);
   var
     step: Integer;
-    topBase, topNext, bottomBase, bottomNext, normal, normTop, normBottom: TAffineVector;
+    topBase, topNext, bottomBase, bottomNext, normal, normTop, normBottom:
+      TAffineVector;
     topTPBase, topTPNext, bottomTPBase, bottomTPNext: TTexPoint;
     ptBuffer: TAffineVector;
     angle: Double;
@@ -1908,7 +1973,8 @@ begin
     Contours.GetExtents(dMin, dMax);
     FAxisAlignedDimensionsCache[0] := MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
     FAxisAlignedDimensionsCache[1] := MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2] + Height));
+    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2] +
+      Height));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
