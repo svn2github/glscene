@@ -38,7 +38,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLS_CUDA_Utility, GLGraphics, GLTextureFormat, OpenGL1x;
+  GLS_CUDA_Utility, GLGraphics, GLTextureFormat;
 
 const
   TestFileName = '..\..\media\lena_bw.pgm';
@@ -68,7 +68,8 @@ begin
   cutStopTimer( timer );
   Memo1.Lines.Add('Launch finished');
   Memo1.Lines.Add(Format('Processing time: %f (ms)', [cutGetTimerValue( timer )] ));
-  Memo1.Lines.Add(Format('%.2f Mpixels/sec', [(pgm.width*pgm.height / (cutGetTimerValue( timer) / 1000.0)) / 1e6]));
+  Memo1.Lines.Add(Format('%.2f Mpixels/sec',
+    [(pgm.LevelWidth[0]*pgm.LevelHeight[0] / (cutGetTimerValue( timer) / 1000.0)) / 1e6]));
   cutDeleteTimer( timer );
   ResultData.CopyTo( bmp32 );
   Memo1.Lines.Add('Copied from device global memory to host');
@@ -93,8 +94,8 @@ begin
   with TurnPicture do
   begin
     SetParam(ResultData);
-    SetParam(pgm.Width);
-    SetParam(pgm.Height);
+    SetParam(pgm.LevelWidth[0]);
+    SetParam(pgm.LevelHeight[0]);
     SetParam(Angle);
     SetParam(Image);
   end;
