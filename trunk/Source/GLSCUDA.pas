@@ -4,6 +4,7 @@
 { : GLSCUDA<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
   <li>13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
   <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
   <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
@@ -202,7 +203,7 @@ type
   private
     { Private declarations }
     FData: TCUdeviceptr;
-    FPinnedMemory: TCUdeviceptr;
+    FMappedMemory: TCUdeviceptr;
     FHandle: PCUarray;
     FWidth: Integer;
     FHeight: Integer;
@@ -238,7 +239,7 @@ type
        Mapping is necessary for modifying device data.
        When mapped host memory - it can be accessed in device side
        via MappedHostAddress. }
-    procedure Map(const AFlags: TCUDAMemMapFlags);
+    procedure Map(const AFlags: TCUDAMemMapFlags = []);
     {: Done mapping operation. }
     procedure UnMap;
 
@@ -258,11 +259,14 @@ type
     procedure CopyFrom(const AGLImage: TGLBitmap32); overload;
     procedure CopyFrom(const AGLGraphic: TCUDAGraphicResource;
       aAttr: string = ''); overload;
+    procedure SubCopyTo(const ADstMemData: TCUDAMemData;
+      ASrcXYZ, ADstXYZ, ASizes: IntElement.TVector3);
 
     property ElementSize: Integer read FElementSize;
     property DataSize: Integer read FDataSize;
     property Pitch: Cardinal read fPitch;
     property RawData: TCUdeviceptr read GetData;
+    property MappedMemoryAddress: TCUdeviceptr read FMappedMemory;
     property ArrayHandle: PCUarray read GetArrayHandle;
   published
     { Published declarations }
@@ -1637,7 +1641,10 @@ begin
     Abort;
   end;
 
-  ptr := PByte(GetData);
+  if FMapping then
+    ptr := PByte(FMappedMemory)
+  else
+    ptr := PByte(GetData);
   size := ElementSize * X;
   if size > DataSize then
   begin
@@ -1659,7 +1666,10 @@ begin
     Abort;
   end;
 
-  ptr := PByte(GetData);
+  if FMapping then
+    ptr := PByte(FMappedMemory)
+  else
+    ptr := PByte(GetData);
   size := ElementSize * (X + fWidth*Y);
   if size > DataSize then
   begin
@@ -1681,7 +1691,10 @@ begin
     Abort;
   end;
 
-  ptr := PByte(GetData);
+  if FMapping then
+    ptr := PByte(FMappedMemory)
+  else
+    ptr := PByte(GetData);
   size := ElementSize * (X + fWidth*(Y  + Z * fHeight));
   if size > DataSize then
   begin
@@ -1745,15 +1758,15 @@ begin
       end;
     mtDevice:
       begin
-        FStatus := cuMemcpyHtoD(GetData, FPinnedMemory, DataSize);
+        FStatus := cuMemcpyHtoD(GetData, FMappedMemory, DataSize);
         if FStatus = CUDA_SUCCESS then
-          FStatus := cuMemFreeHost(FPinnedMemory);
+          FStatus := cuMemFreeHost(FMappedMemory);
       end;
     mtArray:
       begin
-        FStatus := cuMemcpyHtoA(GetArrayHandle, 0, FPinnedMemory, DataSize);
+        FStatus := cuMemcpyHtoA(GetArrayHandle, 0, FMappedMemory, DataSize);
         if FStatus = CUDA_SUCCESS then
-          FStatus := cuMemFreeHost(FPinnedMemory);
+          FStatus := cuMemFreeHost(FMappedMemory);
       end;
   end;
 
@@ -1762,7 +1775,7 @@ begin
     Abort;
 
   FMapping := False;
-  FPinnedMemory := nil;
+  FMappedMemory := nil;
 end;
 
 procedure TCUDAMemData.SetHeight(const Value: Integer);
@@ -2081,6 +2094,92 @@ begin
     Abort
 end;
 
+procedure TCUDAMemData.SubCopyTo(const ADstMemData: TCUDAMemData;
+  ASrcXYZ, ADstXYZ, ASizes: IntElement.TVector3);
+var
+  copyParam2D: TCUDA_MEMCPY2D;
+  // copyParam3D: TCUDA_MEMCPY3D;
+begin
+  if not Assigned(ADstMemData) then
+    exit;
+
+  // Clamp sizes
+  ASrcXYZ[0] := MinInteger(ASrcXYZ[0], Width - 1);
+  ASrcXYZ[1] := MinInteger(ASrcXYZ[1], MaxInteger(Height - 1, 0));
+  ASrcXYZ[2] := MinInteger(ASrcXYZ[2], MaxInteger(Depth - 1, 0));
+
+  ADstXYZ[0] := MinInteger(ADstXYZ[0], ADstMemData.Width - 1);
+  ADstXYZ[1] := MinInteger(ADstXYZ[1], MaxInteger(ADstMemData.Height - 1, 0));
+  ADstXYZ[2] := MinInteger(ADstXYZ[2], MaxInteger(ADstMemData.Depth - 1, 0));
+
+  ASizes[0] := MinInteger(ASizes[0], Width, ADstMemData.Width);
+  ASizes[1] := MinInteger(ASizes[1], Height, ADstMemData.Height);
+  ASizes[2] := MinInteger(ASizes[2], Depth, ADstMemData.Depth);
+
+  Assert(ASizes[2] = 0, 'Volume copying not yet implemented');
+
+  FStatus := CUDA_SUCCESS;
+
+  if ASizes[2] = 0 then
+  begin
+    // 2D copying
+    FillChar(copyParam2D, SizeOf(copyParam2D), 0);
+    // Setup source copy parameters
+    case MemoryType of
+      mtHost:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_HOST;
+          copyParam2D.srcHost := TCUdeviceptr(RawData);
+        end;
+      mtDevice:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_DEVICE;
+          copyParam2D.srcDevice := TCUdeviceptr(RawData);
+        end;
+      mtArray:
+        begin
+          copyParam2D.srcMemoryType := CU_MEMORYTYPE_ARRAY;
+          copyParam2D.srcArray := ArrayHandle;
+        end;
+    end;
+    copyParam2D.srcXInBytes := ASrcXYZ[0] * FElementSize;
+    copyParam2D.srcY := ASrcXYZ[1];
+    copyParam2D.srcPitch := fPitch;
+    // Setup destination copy parameters
+    case ADstMemData.FMemoryType of
+      mtHost:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_HOST;
+          copyParam2D.dstHost := TCUdeviceptr(ADstMemData.RawData);
+        end;
+      mtDevice:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_DEVICE;
+          copyParam2D.dstDevice := TCUdeviceptr(ADstMemData.RawData);
+        end;
+      mtArray:
+        begin
+          copyParam2D.dstMemoryType := CU_MEMORYTYPE_ARRAY;
+          copyParam2D.dstArray := ADstMemData.ArrayHandle;
+        end;
+    end;
+    copyParam2D.dstXInBytes := ADstXYZ[0] * ADstMemData.FElementSize;
+    copyParam2D.dstY := ADstXYZ[1];
+    copyParam2D.dstPitch := ADstMemData.fPitch;
+
+    copyParam2D.WidthInBytes := Cardinal(MinInteger(ElementSize * ASizes[0],
+      ADstMemData.ElementSize * ASizes[0]));
+    copyParam2D.Height := MaxInteger(ASizes[1], 1);
+
+    Context.Requires;
+    FStatus := cuMemcpy2D(@copyParam2D);
+    Context.Release;
+  end;
+
+  if FStatus <> CUDA_SUCCESS then
+    Abort
+end;
+
 procedure TCUDAMemData.CopyTo(const AGLImage: TGLBitmap32);
 var
   copyParam2D: TCUDA_MEMCPY2D;
@@ -2315,28 +2414,29 @@ begin
     LFlag := LFlag or CU_MEMHOSTALLOC_WRITECOMBINED;
 
   Context.Requires;
+  GetData;
 
   case FMemoryType of
     mtHost:
       begin
         FStatus := cuMemHostGetDevicePointer(
-          FPinnedMemory, GetData, 0);
+          FMappedMemory, GetData, 0);
       end;
     mtDevice:
       begin
         FStatus := cuMemHostAlloc(
-          FPinnedMemory, DataSize, LFlag);
+          FMappedMemory, DataSize, LFlag);
         if FStatus = CUDA_SUCCESS then
           FStatus := cuMemcpyDtoH(
-            FPinnedMemory, GetData, DataSize);
+            FMappedMemory, GetData, DataSize);
       end;
     mtArray:
       begin
         FStatus := cuMemHostAlloc(
-          FPinnedMemory, DataSize, LFlag);
+          FMappedMemory, DataSize, LFlag);
         if FStatus = CUDA_SUCCESS then
           FStatus := cuMemcpyAtoH(
-            FPinnedMemory, GetArrayHandle, 0, DataSize);
+            FMappedMemory, GetArrayHandle, 0, DataSize);
       end;
   end;
 
