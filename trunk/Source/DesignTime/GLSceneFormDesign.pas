@@ -1372,7 +1372,8 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding +
+{: This line inserted automatically by IDE
+    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;
 begin
