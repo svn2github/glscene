@@ -15,6 +15,7 @@
    is active in GLScene.inc and recompile.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>10/05/11 - Yar - Now VerticalReverseOnAssignFromBitmap works for AssignToBitmap
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>18/07/10 - Yar - Raname TGLBitmap32 to TGLImage
       <li>20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
@@ -3446,15 +3447,27 @@ begin
   aBitmap.Width := GetWidth;
   aBitmap.Height := GetHeight;
   aBitmap.PixelFormat := glpf32bit;
-  for y := 0 to GetHeight - 1 do
-  begin
-    pSrc := @PAnsiChar(FData)[y * (GetWidth * 4)];
-{$IFDEF fpc}
+{$IFDEF FPC}
 {$WARNING Crossbuilder: cvs version uses the above line instead of the following, but our TBitmap doesn't support Scanline}
 {$NOTE BitmapScanline will generate an Assertion in FPC }
 {$ENDIF}
-    pDest := BitmapScanLine(aBitmap, GetHeight - 1 - y);
-    BGRA32ToRGBA32(pSrc, pDest, GetWidth);
+  if FVerticalReverseOnAssignFromBitmap then
+  begin
+    for y := 0 to GetHeight - 1 do
+    begin
+      pSrc := @PAnsiChar(FData)[y * (GetWidth * 4)];
+      pDest := BitmapScanLine(aBitmap, y);
+      BGRA32ToRGBA32(pSrc, pDest, GetWidth);
+    end;
+  end
+  else
+  begin
+    for y := 0 to GetHeight - 1 do
+    begin
+      pSrc := @PAnsiChar(FData)[y * (GetWidth * 4)];
+      pDest := BitmapScanLine(aBitmap, GetHeight - 1 - y);
+      BGRA32ToRGBA32(pSrc, pDest, GetWidth);
+    end;
   end;
 end;
 
@@ -3493,18 +3506,18 @@ begin
   else
   begin
     GetMem(newData, DataSize);
-    ptr := newData;
     d := MaxInteger(GetDepth, 1);
 
     try
-      for L := 0 to FLevelCount - 1 do
+      for L := FLevelCount - 1 downto 0 do
       begin
+        ptr := newData;
+        Inc(ptr, oldLOD[L].Offset);
         ConvertImage(
           GetLevelAddress(L), ptr,
           fOldColorFormat, fColorFormat,
           fOldDataType, fDataType,
           oldLOD[L].Width, oldLOD[L].Height * d);
-        Inc(ptr, oldLOD[L].Size);
       end;
       FreeMem(fData);
       fData := newData;
