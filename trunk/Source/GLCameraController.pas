@@ -9,6 +9,7 @@
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
   <b>History : </b><font size=-1><ul>
+      <li>10/05/11 - Vince - Add OnMove event
       <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support
                               OrbitToPos when axis are different from -1,0 or 1
       <li>24/07/09 - DaStr - Got rid of compiler hints
@@ -56,6 +57,8 @@ type
     FsoSafeDist,FsoTimeToSafePlacement,FsoTimeToOrbit,FsoTimeToZoomBackIn:double;
     //used to break current movement
     Stopped:boolean;
+    //On Move Event
+    FOnMove: TNotifyEvent;
     //private methods
     //used to test whether camera and cadencer are assigned
     //TestExtendedPremises = true -> will test also for Camera.TargetObject
@@ -67,6 +70,8 @@ type
     //if you want to zoom back in from GUI
     //you should use something like
     //  Camera.DepthOfView:=2*Camera.DistanceToTarget+2*camera.TargetObject.BoundingSphereRadius;
+    //it calls FOnMove event if assigned
+    procedure DoMove();
   public
     //constructor
     constructor Create(AOwner:TComponent); override;
@@ -115,6 +120,8 @@ type
     property soTimeToOrbit:double read FsoTimeToOrbit write FsoTimeToOrbit;
     //time to zoom in/out to the given final position while performing  SafeOrbitAndZoomToPos
     property soTimeToZoomBackIn:double read FsoTimeToZoomBackIn write FsoTimeToZoomBackIn;
+    //function called when camera moves
+    property OnMove: TNotifyEvent read FOnMove write FOnMove;
   end;
 
 implementation
@@ -158,6 +165,12 @@ begin
   Application.ProcessMessages; //I call this for not blocking the app while moving the camera
 end;
 
+procedure TGLCameraController.DoMove;
+begin
+  if Assigned(FOnMove) then
+    FOnMove(Self);
+end;
+
 procedure TGLCameraController.StopMovement;
 begin
   Stopped:=true;
@@ -184,6 +197,7 @@ begin
     Camera.Position.AsVector:=Vect;
     AdjustScene;
     if Stopped then begin Stopped:=false; break; end;
+    DoMove;
   end;
   //finish movement - adjust to final point
   vect:=FinalCameraPos;
@@ -191,6 +205,7 @@ begin
     Vect:=Camera.Parent.AbsoluteToLocal(Vect);
   Camera.Position.AsVector:=Vect;
   AdjustScene;
+  DoMove;
   FAllowUserAction:=true;
 end;
 
@@ -303,6 +318,7 @@ begin
     Camera.MoveAroundTarget(radtodeg(speedx)*TimeElapsed,radtodeg(speedz)*TimeElapsed);
     AdjustScene;
     if Stopped then begin Stopped:=false; break; end;
+    DoMove;
   end;
 
   //finish  movement - init vectors
@@ -318,7 +334,7 @@ begin
     Vect:=Camera.Parent.AbsoluteToLocal(Vect);
   Camera.Position.AsVector:=Vect;
   AdjustScene;
-
+  DoMove;
   FAllowUserAction:=true;
 end;
 
@@ -331,49 +347,55 @@ var
     DestPos: TVector;
     Angle: Single;
     TgtToCam: TVector;
-    CamToTgt: TVector;
     CamPos: TVector;
+    Right: TVector;
+    Up, tempUp: TVector;
+    Dir, tempDir: TVector;
+    Dist : Single;
 begin
   if not TestPremises(true) then exit;
   FAllowUserAction:=false;
 
   StartPos:= VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
+  //StartPos[3]:=1;
   if Assigned(Camera.Parent) then
-    DestPos:=  VectorSubtract(Camera.Parent.LocalToAbsolute(VectorMake(x,y,z,0)), Camera.TargetObject.AbsolutePosition)
+    DestPos:=  VectorSubtract(Camera.Parent.LocalToAbsolute(VectorMake(x,y,z,1)), Camera.TargetObject.AbsolutePosition)
   else
-    DestPos:=  VectorSubtract(VectorMake(x,y,z,0), Camera.TargetObject.AbsolutePosition);
+    DestPos:=  VectorSubtract(VectorMake(x,y,z,1), Camera.TargetObject.AbsolutePosition);
 
   //if destination is Target Pos, we can't compute
   if VectorLength(DestPos)<0.001 then
+  begin
+    FAllowUserAction := True;
     Exit;
-
-  //Compute real dest pos from Target
-  Radius := VectorLength(StartPos);
-  DestPos := VectorScale(DestPos,Radius / VectorLength(DestPos));
+  end;
 
   //Compute Angle of Rotation
   Angle:= ArcCos(VectorAngleCosine(Vector3fMake(DestPos), Vector3fMake(StartPos)));
+
+  Right := VectorNormalize(VectorCrossProduct(Camera.AbsoluteVectorToTarget,Camera.AbsoluteUp));
+
+  Dir := Camera.AbsoluteDirection;
+  Up := Camera.AbsoluteUp;
 
   // Determine rotation Axis
   //if Angle equals 0°
   if Angle < 0.001 then
     if PreferUpAxis then
       RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,FCamera.AbsoluteUp),DestPos))
+                   VectorCrossProduct(DestPos,Up),DestPos))
     else
-      RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,FCamera.AbsoluteDirection),DestPos))
+      RotAxis := Right
   else
     // if Angle equals 180°
     if Angle>Pi - 0.001  then
       if PreferUpAxis then
         RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,FCamera.AbsoluteUp),DestPos))
+                   VectorCrossProduct(DestPos,Up),DestPos))
       else
-        RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,FCamera.AbsoluteDirection),DestPos))
+        RotAxis := Right
     else
-      RotAxis:= VectorNormalize(VectorCrossProduct(StartPos, DestPos));
+      RotAxis:= VectorNormalize(VectorCrossProduct(DestPos, StartPos));
 
   StartTime:=Cadencer.GetCurrentTime;
   LastTime:=StartTime;
@@ -381,22 +403,39 @@ begin
   //make the actual movement
   while Cadencer.GetCurrentTime-StartTime<time do
   begin
-    TimeElapsed:=(StartTime-LastTime);
+    TimeElapsed:=(LastTime - StartTime);
     LastTime:=Cadencer.GetCurrentTime;
+    //Compute Position
     TgtToCam := StartPos;
     RotateVector(TgtToCam, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
     Camera.AbsolutePosition:= VectorAdd(Camera.TargetObject.AbsolutePosition, TgtToCam);
-    CamToTgt := VectorNormalize(VectorScale(TgtToCam,-1));
-    Camera.AbsoluteUp := VectorCrossProduct(Camera.AbsoluteDirection,CamToTgt);
-    Camera.AbsoluteDirection := VectorCrossProduct(CamToTgt,Camera.AbsoluteUp);
+    //Compute Up Vector
+    tempUp := Up;
+    RotateVector(tempUp, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
+    Camera.AbsoluteUp := tempUp;
+    //Compute Direction vector
+    tempDir := Dir;
+    RotateVector(tempDir, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
+    Camera.AbsoluteDirection := tempDir;
     AdjustScene;
     if Stopped then begin Stopped:=false; break; end;
+    DoMove;
   end;
 
   // Update Camera Data to destination position
-  CamToTgt := VectorNormalize(VectorScale(DestPos,-1));
-  Camera.AbsoluteUp := VectorCrossProduct(Camera.AbsoluteDirection,CamToTgt);
-  Camera.AbsoluteDirection := VectorCrossProduct(CamToTgt,Camera.AbsoluteUp);
+  RotateVector(Up, Vector3fMake(RotAxis), Angle);
+  Camera.AbsoluteUp := Up;
+  RotateVector(Dir, Vector3fMake(RotAxis), Angle);
+  Camera.AbsoluteDirection := Dir;
+  //Method 1   //more accuracy
+  Radius := VectorLength(StartPos);
+  Dist := VectorLength(DestPos);
+  DestPos[0] := (DestPos[0] * Radius) / Dist;
+  DestPos[1] := (DestPos[1] * Radius) / Dist;
+  DestPos[2] := (DestPos[2] * Radius) / Dist;
+  //Method 2
+  //DestPos:= StartPos;
+  //RotateVector(DestPos,Vector3fMake(RotAxis), Angle);
   CamPos:= VectorAdd(DestPos, Camera.TargetObject.AbsolutePosition);
 
   if Assigned(Camera.Parent) then
@@ -404,7 +443,7 @@ begin
   Camera.Position.AsVector:=CamPos;
 
   AdjustScene;
-
+  DoMove;
   FAllowUserAction:=true;
 end;
 
@@ -499,6 +538,7 @@ begin
     Camera.Position.AsVector:=Vect;
     AdjustScene;
     if Stopped then begin Stopped:=false; break; end;
+    DoMove;
   end;
   //finish movement - adjust to final point
   vect:=FinalCameraPos;
@@ -506,6 +546,7 @@ begin
     Vect:=Camera.Parent.AbsoluteToLocal(Vect);
   Camera.Position.AsVector:=Vect;
   AdjustScene;
+  DoMove;
   FAllowUserAction:=true;
 end;
 
