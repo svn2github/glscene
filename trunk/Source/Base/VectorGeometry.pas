@@ -31,6 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/05/11 - Yar - Added ClampInteger
       <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
@@ -1393,6 +1394,9 @@ function MaxInteger(const v1, v2 : Cardinal) : Cardinal; overload;
 function MaxInteger(const v1, v2, v3 : Integer) : Integer; overload;
 function MaxInteger(const v1, v2, v3 : Cardinal) : Cardinal; overload;
 
+function ClampInteger(const value, min, max : Integer) : Integer; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function ClampInteger(const value, min, max : Cardinal) : Cardinal; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+
 {: Computes the triangle's area. }
 function TriangleArea(const p1, p2, p3 : TAffineVector) : Single; overload;
 {: Computes the polygons's area.<p>
@@ -1514,7 +1518,7 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
    <li>-1 : line is inside plane
    </ul><br>
    Adapted from:<br>
-   E.Hartmann, Computerunterst¸tzte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
+   E.Hartmann, Computeruntersttzte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
 function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
                             intersectPoint : PVector = nil) : Integer; overload;
@@ -8652,6 +8656,16 @@ begin
    else Result:=v1;
 end;
 
+function ClampInteger(const value, min, max : Integer): Integer;
+begin
+  Result := MinInteger( MaxInteger(value, min), max);
+end;
+
+function ClampInteger(const value, min, max : Cardinal): Cardinal;
+begin
+  Result := MinInteger( MaxInteger(value, min), max);
+end;
+
 // TriangleArea
 //
 function TriangleArea(const p1, p2, p3 : TAffineVector) : Single;
@@ -9679,12 +9693,12 @@ function SphereVisibleRadius(distance, radius : Single) : Single;
 var
    d2, r2, ir, tr : Single;
 begin
-   {  ir≤ + r≤ = d≤
-      r≤ + tr≤ = vr≤
-      vr≤ + d≤ = (ir+tr)≤ = ir≤ + 2.ir.tr + tr≤
+   {  ir“†+ r“†= d“ç
+      r“†+ tr“†= vr“ç
+      vr“†+ d“†= (ir+tr)“†= ir“†+ 2.ir.tr + tr“ç
 
-      ir≤ + 2.ir.tr + tr≤ = d≤ + r≤ + tr≤
-      2.ir.tr = d≤ + r≤ - ir≤  }
+      ir“†+ 2.ir.tr + tr“†= d“†+ r“†+ tr“ç
+      2.ir.tr = d“†+ r“†- ir“† }
    d2:=distance*distance;
    r2:=radius*radius;
    ir:=Sqrt(d2-r2);
