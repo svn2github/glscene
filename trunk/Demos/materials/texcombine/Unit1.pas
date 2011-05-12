@@ -85,7 +85,7 @@ begin
       Image4.Picture.LoadFromFile('cm_front.jpg');
       Items[3].Material.Texture.Image.Assign(Image4.Picture);
    end;
-   GLTexCombineShader.Combiners:=MECombiner.Lines;
+   BUApplyClick(Sender);
    Application.HintHidePause:=30000;
 end;
 
@@ -93,7 +93,8 @@ procedure TForm1.BUApplyClick(Sender: TObject);
 begin
    // Apply new combiner code
    // Depending on shader and hardware, errors may be triggered during render
-   GLTexCombineShader.Combiners:=MECombiner.Lines;
+   GLTexCombineShader.Combiners.Clear;
+   GLTexCombineShader.Combiners.AddStrings(MECombiner.Lines);
 end;
 
 procedure TForm1.SceneViewerPostRender(Sender: TObject);
