@@ -887,7 +887,7 @@ end;
 procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  rci.GLStates.SetGLMaterialColorsNoLighting(Diffuse.Color);
+  GL.Color4fv(Diffuse.AsAddress);
 end;
 
 // Assign
@@ -1180,11 +1180,8 @@ end;
 
  procedure TGLShader.FinalizeShader;
 begin
-  if FVirtualHandle.Handle <> 0 then
-  begin
-    FVirtualHandle.DestroyHandle;
-    DoFinalize;
-  end;
+  FVirtualHandle.NotifyChangesOfData;
+  DoFinalize;
 end;
 
 // Apply
@@ -1938,8 +1935,11 @@ constructor TGLAbstractLibMaterial.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
   FUserList := TList.Create;
-  FName := TGLAbstractLibMaterials(ACollection).MakeUniqueName('LibMaterial');
-  FNameHashKey := ComputeNameHashKey(FName);
+  if Assigned(ACollection) then
+  begin
+    FName := TGLAbstractLibMaterials(ACollection).MakeUniqueName('LibMaterial');
+    FNameHashKey := ComputeNameHashKey(FName);
+  end;
 end;
 
 // Destroy
@@ -2279,7 +2279,9 @@ begin
           Exit;
         end;
     end;
-  end;
+  end
+  else
+    ARci.GLStates.CurrentProgram := 0;
   if (Texture2Name <> '') and GL.ARB_multitexture and (not
     xgl.SecondTextureUnitForbidden) then
   begin
@@ -2563,6 +2565,8 @@ var
   i: Integer;
   tryName: string;
 begin
+  if not Assigned(Collection) then
+    exit;
   mLib := TGLMaterialLibrary((Collection as TGLLibMaterials).GetOwner);
   with mLib do
     if Assigned(FOnTextureNeeded) then
