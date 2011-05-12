@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
       <li>07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
@@ -211,12 +212,6 @@ type
 
   TOnLightsChanged = procedure(Sender: TObject);
 
-  TVAOStates = record
-    FArrayBufferBinding: TGLuint;
-    FElementBufferBinding: TGLuint;
-    FAttribEnabling: array[0..GLS_VERTEX_ATTR_NUM - 1] of TGLboolean;
-  end;
-
   TGLBufferBindingTarget = (bbtUniform, bbtTransformFeedBack);
 
   TUBOStates = record
@@ -263,7 +258,8 @@ type
 
     // Vertex Array Data state
     FVertexArrayBinding: TGLuint;
-    FVAOStates: array of TVAOStates;
+    FArrayBufferBinding: TGLuint;
+    FElementBufferBinding: TGLuint;
     FTextureBufferBinding: TGLuint;
     FEnablePrimitiveRestart: TGLboolean;
     FPrimitiveRestartIndex: TGLuint;
@@ -275,7 +271,6 @@ type
     FEnableDepthClamp: TGLboolean;
 
     // Coloring state
-    FColor: TVector4f;
     FClampReadColor: TGLenum; // GL_FIXED_ONLY
     FProvokingVertex: TGLenum; // GL_LAST_VERTEX_CONVENTION
 
@@ -438,8 +433,6 @@ type
     procedure SetArrayBufferBinding(const Value: TGLuint);
     function GetElementBufferBinding: TGLuint;
     procedure SetElementBufferBinding(const Value: TGLuint);
-    function GetEnableVertexAttribArray(I: TGLuint): TGLboolean;
-    procedure SetEnableVertexAttribArray(I: TGLuint; Value: TGLboolean);
     function GetEnablePrimitiveRestart: TGLboolean;
     function GetPrimitiveRestartIndex: TGLuint;
     procedure SetEnablePrimitiveRestart(const enabled: TGLboolean);
@@ -455,7 +448,6 @@ type
     // Coloring state
     procedure SetClampReadColor(const Value: TGLenum);
     procedure SetProvokingVertex(const Value: TGLenum);
-    procedure SetColor(const Value: TVector4f);
     // Rasterization state
     procedure SetPointSize(const Value: TGLfloat);
     procedure SetPointFadeThresholdSize(const Value: TGLfloat);
@@ -645,9 +637,6 @@ type
     property MaterialShininess[const aFace: TCullFaceMode]: Integer
       read GetMaterialShininess;
 
-    {: Adjusts material colors for a face if there is no lighting. }
-    procedure SetGLMaterialColorsNoLighting(diffuse: TVector);
-
     {: Adjusts material alpha channel for a face. }
     procedure SetGLMaterialAlphaChannel(const aFace: TGLEnum; const alpha: TGLFloat);
 
@@ -692,17 +681,12 @@ type
        locks this buffer to the currently bound VBO). }
     property VertexArrayBinding: TGLuint read FVertexArrayBinding write
       SetVertexArrayBinding;
-    {: Reset VAO states, tipicaly used when VAO created }
-    procedure ResetVertexArrayStates(Index: TGLuint);
     {: The currently bound vertex buffer object (VAO). }
     property ArrayBufferBinding: TGLuint read GetArrayBufferBinding write
       SetArrayBufferBinding;
     {: The currently bound element buffer object (EBO). }
     property ElementBufferBinding: TGLuint read GetElementBufferBinding write
       SetElementBufferBinding;
-    {: Enables/Disables vertex attribute arrays. }
-    property EnableVertexAttribArray[Index: TGLuint]: TGLBoolean read
-    GetEnableVertexAttribArray write SetEnableVertexAttribArray;
     {: Determines whether primitive restart is turned on or off. }
     property EnablePrimitiveRestart: TGLboolean read GetEnablePrimitiveRestart
       write SetEnablePrimitiveRestart;
@@ -739,8 +723,6 @@ type
        primitive will the same value determined by this property. }
     property ProvokingVertex: TGLenum read FProvokingVertex write
       SetProvokingVertex;
-    {: Current OpenGLColor. }
-    property Color: TVector4f read FColor write SetColor;
 
     // Rasterization state
     {: The default point size, used when EnableProgramPointSize = false. }
@@ -1338,7 +1320,6 @@ begin
 
   // Vertex Array Data state
   FVertexArrayBinding := 0;
-  SetLength(FVAOStates, 128);
   FTextureBufferBinding := 0;
 
   // Transformation state
@@ -1669,13 +1650,6 @@ begin
     Include(FListStates[FCurrentList], sttLighting);
 end;
 
-{: Adjusts material colors for a face if there is no lighting. }
-procedure TGLStateCache.SetGLMaterialColorsNoLighting(diffuse: TVector);
-begin
-  if FForwardContext then exit;
-  SetColor(diffuse);
-end;
-
 // SetGLMaterialAlphaChannel
 //
 
@@ -1690,9 +1664,9 @@ begin
   if not(stLighting in FStates) then
   begin
     // We need a temp variable, because FColor is cauched.
-    color := FColor;
+    GL.GetFloatv(GL_CURRENT_COLOR, @color);
     color[3] := alpha;
-    SetColor(color);
+    GL.Color4fv(@color);
   end
   else
   begin
@@ -1722,7 +1696,7 @@ begin
 
   if not(stLighting in FStates) then
   begin
-    SetColor(diffuse);
+    GL.Color4fv(@diffuse);
   end
   else
   begin
@@ -1761,67 +1735,36 @@ procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
 begin
   if Value <> FVertexArrayBinding then
   begin
-    if Integer(Value) >= Length(FVAOStates) then
-      SetLength(FVAOStates, 2 * Length(FVAOStates));
-    if Value = 0 then
-      FVAOStates[0] := FVAOStates[FVertexArrayBinding];
     FVertexArrayBinding := Value;
     GL.BindVertexArray(Value);
   end;
 end;
 
-procedure TGLStateCache.ResetVertexArrayStates(Index: TGLuint);
-begin
-  FillChar(FVAOStates[Index], SizeOf(FVAOStates[Index]), $00);
-  if FVertexArrayBinding = Index then
-    FVertexArrayBinding := 0;
-end;
-
 function TGLStateCache.GetArrayBufferBinding: TGLuint;
 begin
-  Result := FVAOStates[FVertexArrayBinding].FArrayBufferBinding
+  Result := FArrayBufferBinding;
 end;
 
 procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
 begin
-  if Value <> FVAOStates[FVertexArrayBinding].FArrayBufferBinding then
+  if (Value <> FArrayBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
-    FVAOStates[FVertexArrayBinding].FArrayBufferBinding := Value;
+    FArrayBufferBinding := Value;
     GL.BindBuffer(GL_ARRAY_BUFFER, Value);
   end;
 end;
 
 function TGLStateCache.GetElementBufferBinding: TGLuint;
 begin
-  Result := FVAOStates[FVertexArrayBinding].FElementBufferBinding
+  Result := FElementBufferBinding
 end;
 
 procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
 begin
-  if Value <> FVAOStates[FVertexArrayBinding].FElementBufferBinding then
+  if (Value <> FElementBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
-    FVAOStates[FVertexArrayBinding].FElementBufferBinding := Value;
+    FElementBufferBinding := Value;
     GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, Value);
-  end;
-end;
-
-function TGLStateCache.GetEnableVertexAttribArray(I: TGLuint): TGLboolean;
-begin
-  Result := FVAOStates[FVertexArrayBinding].FAttribEnabling[I];
-end;
-
-procedure TGLStateCache.SetEnableVertexAttribArray(I: TGLuint; Value:
-  TGLboolean);
-begin
-  Assert(I < GLS_VERTEX_ATTR_NUM, 'Out of maximum attribute index');
-
-  if Value <> FVAOStates[FVertexArrayBinding].FAttribEnabling[I] then
-  begin
-    FVAOStates[FVertexArrayBinding].FAttribEnabling[I] := Value;
-    if Value then
-      GL.EnableVertexAttribArray(I)
-    else
-      GL.DisableVertexAttribArray(I);
   end;
 end;
 
@@ -2817,15 +2760,6 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetColor(const Value: TVector4f);
-begin
-  if not VectorEquals(Value, FColor) then
-  begin
-    FColor := Value;
-    GL.Color4fv(@FColor);
-  end;
-end;
-
 procedure TGLStateCache.SetReadFrameBuffer(const Value: TGLuint);
 begin
   if Value <> FReadFrameBuffer then
@@ -3230,14 +3164,17 @@ begin
   FListStates[FCurrentList] := [];
   FInsideList := True;
   // Reset VBO binding and client attribute
-  if GL.ARB_vertex_buffer_object then
+  with GL do
   begin
-    ArrayBufferBinding := 0;
-    ElementBufferBinding := 0;
-    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
-      EnableVertexAttribArray[I] := False;
+    if ARB_vertex_buffer_object then
+    begin
+      ArrayBufferBinding := 0;
+      ElementBufferBinding := 0;
+      for I := 0 to 15 do
+        DisableVertexAttribArray(I);
+    end;
+    NewList(list, mode);
   end;
-  GL.NewList(list, mode)
 end;
 
 procedure TGLStateCache.EndList;
@@ -3632,9 +3569,6 @@ begin
       FSpotCutoff[I] := Value;
       FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
     end;
-
-    if FFFPLight then
-      GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
 
     FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
