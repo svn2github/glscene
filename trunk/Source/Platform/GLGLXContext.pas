@@ -298,7 +298,7 @@ begin
     begin
       // Down flags to backcompat
       GLStates.ForwardContext := False;
-      PipelineTransformation.FFPTransformation := True;
+      PipelineTransformation.LoadMatricesEnabled := True;
       FGL.DebugMode := False;
     end;
 
