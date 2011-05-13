@@ -6,6 +6,7 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>12/05/11 - Yar - Added KeepImageAfterTransfer for TGLTexture
        <li>04/10/10 - Yar - Improved multycontext features for TGLTexture
        <li>23/08/10 - Yar - Added OpenGLTokens to uses
        <li>21/05/10 - Yar - Removed TGLFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
@@ -674,7 +675,7 @@ type
     fTextureCompareMode: TGLTextureCompareMode;
     fTextureCompareFunc: TGLDepthCompareFunc;
     fDepthTextureMode: TGLDepthTextureMode;
-
+    FKeepImageAfterTransfer: Boolean;
   protected
     { Protected Declarations }
     procedure SetImage(AValue: TGLTextureImage);
@@ -905,6 +906,10 @@ type
       write SetTextureCompareFunc default cfLequal;
     property DepthTextureMode: TGLDepthTextureMode read fDepthTextureMode write
       SetDepthTextureMode default dtmLuminance;
+
+    {: Disable image release after transfering it to VGA. }
+    property KeepImageAfterTransfer: Boolean read FKeepImageAfterTransfer
+      write FKeepImageAfterTransfer default False;
   end;
 
   // TGLTextureExItem
@@ -2340,6 +2345,7 @@ begin
   FDepthTextureMode := dtmLuminance;
   TextureFormat := tfDefault;
   FCompression := tcDefault;
+  FKeepImageAfterTransfer := False;
 end;
 
 // Destroy
@@ -3592,7 +3598,7 @@ begin
   begin
     FRequiredMemorySize := -1;
     TextureImageRequiredMemory;
-    if not IsDesignTime then
+    if not IsDesignTime and not FKeepImageAfterTransfer then
       Image.ReleaseBitmap32;
   end;
 end;
