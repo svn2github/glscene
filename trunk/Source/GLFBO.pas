@@ -97,14 +97,6 @@ type
       SetStencilPrecision;
   end;
 
-  TGLFramebufferStatus = (fsComplete, fsIncompleteAttachment,
-    fsIncompleteMissingAttachment,
-    fsIncompleteDuplicateAttachment, fsIncompleteDimensions,
-    fsIncompleteFormats,
-    fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
-    fsIncompleteMultisample,
-    fsStatusError);
-
   TGLFrameBuffer = class
   private
     FFrameBufferHandle: TGLFramebufferHandle;
