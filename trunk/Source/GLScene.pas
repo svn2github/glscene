@@ -9383,10 +9383,6 @@ begin
   with FCamera do
   begin
     rci.cameraPosition := FCameraAbsolutePosition;
-
-    with RenderingContext.PipelineTransformation do
-      CameraPosition := FCameraAbsolutePosition;
-
     rci.cameraDirection := FLastDirection;
     NormalizeVector(rci.cameraDirection);
     rci.cameraDirection[3] := 0;
