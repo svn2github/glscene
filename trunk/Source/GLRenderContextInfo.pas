@@ -98,7 +98,7 @@ type
     objectsSorting: TGLObjectsSorting;
     visibilityCulling: TGLVisibilityCulling;
     GLStates: TGLStateCache;
-    PipelineTransformation: TGLPipelineTransformation;
+    PipelineTransformation: TGLTransformation;
     rcci: TRenderContextClippingInfo;
     sceneAmbientColor: TColorVector;
     bufferFaceCull: Boolean;
@@ -114,6 +114,7 @@ type
     afterRenderEffects: TPersistentObjectList;
     currentMaterialLevel: TGLMaterialLevel;
     primitiveMask: TGLMeshPrimitives;
+    orderCounter: Integer;
   end;
   PRenderContextInfo = ^TRenderContextInfo;
 
