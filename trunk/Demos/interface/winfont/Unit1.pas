@@ -73,6 +73,9 @@ begin
                   +'occaecat cupidatat non proident, sunt in culpa qui officia'#13#10
                   +'deserunt mollit anim id est laborum.'#13#10
                   +'Woblis ten caracuro Zapothek it Setag!'; // I needed an uppercase 'W' too...
+
+  HUDText1.Text := HUDText1.Text + #13#10'Unicode text...'#$0699#$069A#$963f#$54c0;
+  WindowsBitmapFont1.EnsureString(HUDText1.Text);
 end;
 
 procedure TForm1.MIPickFontClick(Sender: TObject);

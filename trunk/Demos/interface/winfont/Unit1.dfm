@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 129
   Top = 112
-  Width = 635
-  Height = 403
   Caption = 'Form1'
+  ClientHeight = 391
+  ClientWidth = 688
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,52 +18,52 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 627
-    Height = 354
+    Width = 688
+    Height = 391
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 151.307739257812500000
     Align = alClient
     OnClick = GLSceneViewer1Click
+    TabOrder = 0
+    ExplicitWidth = 629
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000020410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Teapot1: TGLTeapot
+      Material.FrontProperties.Diffuse.Color = {ADAC2C3FAAA9293FF0EF6F3F0000803F}
       Direction.Coordinates = {EE83843E00000000EA46773F00000000}
       Scale.Coordinates = {0000A0400000A0400000A04000000000}
-      Material.FrontProperties.Diffuse.Color = {ADAC2C3FAAA9293FF0EF6F3F0000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {0000A0410000C841000000000000803F}
       BitmapFont = WindowsBitmapFont1
       Text = 'Hello World'
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object HUDText2: TGLHUDText
-      Position.Coordinates = {0000164300009643000000000000803F}
+      Position.Coordinates = {000016430000AF43000000000000803F}
       BitmapFont = WindowsBitmapFont1
       Text = 'Spin'
       Alignment = taCenter
       Layout = tlCenter
     end
     object HUDText3: TGLHUDText
-      Position.Coordinates = {0000FA4300009643000000000000803F}
+      Position.Coordinates = {008009440000AF43000000000000803F}
       BitmapFont = WindowsBitmapFont1
       Text = 'Scale'
       Alignment = taCenter
       Layout = tlCenter
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Teapot1
       Position.Coordinates = {0000A04000004040000080400000803F}
       Left = 240
@@ -85,7 +85,7 @@ object Form1: TForm1
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -20
-    Font.Name = 'Arial'
+    Font.Name = '@Arial Unicode MS'
     Font.Style = [fsBold]
     Left = 48
     Top = 16
@@ -108,8 +108,6 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    MinFontSize = 0
-    MaxFontSize = 0
     Left = 112
     Top = 16
   end
