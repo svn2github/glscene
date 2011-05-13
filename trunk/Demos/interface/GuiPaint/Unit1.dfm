@@ -89,8 +89,8 @@ object Form1: TForm1
           Pressed = True
           OnButtonClick = PenButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 32.000000000000000000
-          LogicHeight = 34.000000000000000000
+          LogicWidth = 24.000000000000000000
+          LogicHeight = 20.000000000000000000
           YOffset = 1.000000000000000000
           AllowUp = True
         end
@@ -116,8 +116,8 @@ object Form1: TForm1
           Pressed = False
           OnButtonClick = BrushButtonButtonClick
           GuiLayoutNamePressed = 'buttonpressed'
-          LogicWidth = 32.000000000000000000
-          LogicHeight = 34.000000000000000000
+          LogicWidth = 22.000000000000000000
+          LogicHeight = 20.000000000000000000
           YOffset = 1.000000000000000000
           AllowUp = True
         end
@@ -357,8 +357,8 @@ object Form1: TForm1
       item
         Elements = <
           item
-            TopLeft.Coordinates = {00004041000084420000000000000000}
-            BottomRight.Coordinates = {000018420000B8420000000000000000}
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
             Align = GLAlCenter
             Name = 'center1'
           end
@@ -392,8 +392,8 @@ object Form1: TForm1
             Name = 'Right1'
           end
           item
-            TopLeft.Coordinates = {000000000000E4420000000000000000}
-            BottomRight.Coordinates = {00006041000000430000000000000000}
+            TopLeft.Coordinates = {000000000000E2420000000000000000}
+            BottomRight.Coordinates = {00007041000000430000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
@@ -404,7 +404,7 @@ object Form1: TForm1
             Name = 'Bottom1'
           end
           item
-            TopLeft.Coordinates = {0000E4420000E4420000000000000000}
+            TopLeft.Coordinates = {0000E2420000E2420000000000000000}
             BottomRight.Coordinates = {00000043000000430000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
@@ -414,56 +414,56 @@ object Form1: TForm1
       item
         Elements = <
           item
-            TopLeft.Coordinates = {00004041000084420000000000000000}
-            BottomRight.Coordinates = {00001C420000BA420000000000000000}
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
             Align = GLAlCenter
             Name = 'center1'
           end
           item
-            TopLeft.Coordinates = {0000104100007C420000000000000000}
+            TopLeft.Coordinates = {00000041000078420000000000000000}
             BottomRight.Coordinates = {00005041000086420000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
-            TopLeft.Coordinates = {0000304100007C420000000000000000}
+            TopLeft.Coordinates = {00003041000078420000000000000000}
             BottomRight.Coordinates = {00002042000084420000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
-            TopLeft.Coordinates = {00001041000082420000000000000000}
+            TopLeft.Coordinates = {00000041000082420000000000000000}
             BottomRight.Coordinates = {000040410000BC420000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
-            TopLeft.Coordinates = {0000184200007C420000000000000000}
-            BottomRight.Coordinates = {00002842000086420000000000000000}
+            TopLeft.Coordinates = {00001842000078420000000000000000}
+            BottomRight.Coordinates = {00002C42000086420000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
             TopLeft.Coordinates = {00001C42000082420000000000000000}
-            BottomRight.Coordinates = {000028420000BA420000000000000000}
+            BottomRight.Coordinates = {00002C420000BC420000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
-            TopLeft.Coordinates = {000010410000B8420000000000000000}
-            BottomRight.Coordinates = {000050410000C0420000000000000000}
+            TopLeft.Coordinates = {000000410000B8420000000000000000}
+            BottomRight.Coordinates = {000050410000C2420000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
             TopLeft.Coordinates = {000030410000BA420000000000000000}
-            BottomRight.Coordinates = {000020420000C0420000000000000000}
+            BottomRight.Coordinates = {000020420000C2420000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
             TopLeft.Coordinates = {000018420000B8420000000000000000}
-            BottomRight.Coordinates = {000028420000C0420000000000000000}
+            BottomRight.Coordinates = {00002C420000C2420000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
@@ -473,221 +473,355 @@ object Form1: TForm1
         Elements = <
           item
             TopLeft.Coordinates = {000024420000F8410000000000000000}
-            BottomRight.Coordinates = {00003442000018420000000000000000}
+            BottomRight.Coordinates = {00003042000010420000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
-            TopLeft.Coordinates = {000034420000F8410000000000000000}
-            BottomRight.Coordinates = {00005442000014420000000000000000}
+            TopLeft.Coordinates = {000030420000F8410000000000000000}
+            BottomRight.Coordinates = {00005842000010420000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
-            TopLeft.Coordinates = {000054420000F8410000000000000000}
-            BottomRight.Coordinates = {00006442000018420000000000000000}
+            TopLeft.Coordinates = {000058420000F8410000000000000000}
+            BottomRight.Coordinates = {00006442000010420000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
-            TopLeft.Coordinates = {00002442000018420000000000000000}
-            BottomRight.Coordinates = {00003442000030420000000000000000}
+            TopLeft.Coordinates = {00002442000010420000000000000000}
+            BottomRight.Coordinates = {00003042000034420000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
-            TopLeft.Coordinates = {00003442000014420000000000000000}
-            BottomRight.Coordinates = {0000544200002C420000000000000000}
+            TopLeft.Coordinates = {00003042000010420000000000000000}
+            BottomRight.Coordinates = {00005842000030420000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end
           item
-            TopLeft.Coordinates = {00005442000018420000000000000000}
+            TopLeft.Coordinates = {00005842000010420000000000000000}
             BottomRight.Coordinates = {00006442000030420000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
             TopLeft.Coordinates = {00002442000030420000000000000000}
-            BottomRight.Coordinates = {00003442000044420000000000000000}
+            BottomRight.Coordinates = {00003042000044420000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
-            TopLeft.Coordinates = {00003442000030420000000000000000}
-            BottomRight.Coordinates = {00005442000044420000000000000000}
+            TopLeft.Coordinates = {00003042000030420000000000000000}
+            BottomRight.Coordinates = {00005842000044420000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
-            TopLeft.Coordinates = {00005442000030420000000000000000}
+            TopLeft.Coordinates = {00005842000030420000000000000000}
             BottomRight.Coordinates = {00006442000044420000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
-        Name = 'button'
+        Name = 'button_up'
       end
       item
         Elements = <
           item
             TopLeft.Coordinates = {000068420000F8410000000000000000}
-            BottomRight.Coordinates = {00007842000014420000000000000000}
+            BottomRight.Coordinates = {00007442000010420000000000000000}
             Align = GLAlTopLeft
             Name = 'TopLeft1'
           end
           item
-            TopLeft.Coordinates = {000078420000F8410000000000000000}
-            BottomRight.Coordinates = {00008C42000014420000000000000000}
+            TopLeft.Coordinates = {000074420000F8410000000000000000}
+            BottomRight.Coordinates = {00008E42000010420000000000000000}
             Align = GLAlTop
             Name = 'Top1'
           end
           item
-            TopLeft.Coordinates = {00008C420000F8410000000000000000}
-            BottomRight.Coordinates = {00009442000014420000000000000000}
+            TopLeft.Coordinates = {00008E420000F8410000000000000000}
+            BottomRight.Coordinates = {00009442000010420000000000000000}
             Align = GLAlTopRight
             Name = 'TopRight1'
           end
           item
-            TopLeft.Coordinates = {00006842000014420000000000000000}
-            BottomRight.Coordinates = {00007842000030420000000000000000}
+            TopLeft.Coordinates = {00006842000010420000000000000000}
+            BottomRight.Coordinates = {00007442000034420000000000000000}
             Align = GLAlLeft
             Name = 'Left1'
           end
           item
-            TopLeft.Coordinates = {00007842000018420000000000000000}
-            BottomRight.Coordinates = {00008C42000030420000000000000000}
+            TopLeft.Coordinates = {00007442000010420000000000000000}
+            BottomRight.Coordinates = {00008E42000034420000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
           end
           item
-            TopLeft.Coordinates = {00008C42000014420000000000000000}
-            BottomRight.Coordinates = {00009442000030420000000000000000}
+            TopLeft.Coordinates = {00008E42000010420000000000000000}
+            BottomRight.Coordinates = {00009442000034420000000000000000}
             Align = GLAlRight
             Name = 'Right1'
           end
           item
-            TopLeft.Coordinates = {00006842000030420000000000000000}
-            BottomRight.Coordinates = {00007842000044420000000000000000}
+            TopLeft.Coordinates = {00006842000034420000000000000000}
+            BottomRight.Coordinates = {00007442000044420000000000000000}
             Align = GLAlBottomLeft
             Name = 'BottomLeft1'
           end
           item
-            TopLeft.Coordinates = {00007842000030420000000000000000}
-            BottomRight.Coordinates = {00008C42000044420000000000000000}
+            TopLeft.Coordinates = {00007442000034420000000000000000}
+            BottomRight.Coordinates = {00008E42000044420000000000000000}
             Align = GLAlBottom
             Name = 'Bottom1'
           end
           item
-            TopLeft.Coordinates = {00008C42000030420000000000000000}
+            TopLeft.Coordinates = {00008E42000034420000000000000000}
             BottomRight.Coordinates = {00009442000044420000000000000000}
             Align = GLAlBottomRight
             Name = 'BottomRight1'
           end>
-        Name = 'buttonpressed'
-      end
-      item
-        Elements = <
-          item
-            TopLeft.Coordinates = {0000B44200003C420000000000000000}
-            BottomRight.Coordinates = {0000D042000074420000000000000000}
-            Align = GLAlCenter
-            Name = 'Center1'
-          end>
-        Name = 'checkbox'
-      end
-      item
-        Elements = <
-          item
-            TopLeft.Coordinates = {0000B4420000F8410000000000000000}
-            BottomRight.Coordinates = {0000D042000034420000000000000000}
-            Align = GLAlCenter
-            Name = 'Center1'
-          end>
-        Name = 'checkboxchecked'
-      end
-      item
-        Elements = <
-          item
-            TopLeft.Coordinates = {0000964200003C420000000000000000}
-            BottomRight.Coordinates = {0000B242000074420000000000000000}
-            Align = GLAlCenter
-            Name = 'Center1'
-          end>
-        Name = 'radiobutton'
+        Name = 'button_down'
       end
       item
         Elements = <
           item
             TopLeft.Coordinates = {000096420000F8410000000000000000}
-            BottomRight.Coordinates = {0000B242000034420000000000000000}
+            BottomRight.Coordinates = {00009A42000004420000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00009A420000F8410000000000000000}
+            BottomRight.Coordinates = {0000AE42000004420000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE420000F8410000000000000000}
+            BottomRight.Coordinates = {0000B242000004420000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {00009642000004420000000000000000}
+            BottomRight.Coordinates = {00009A4200002C420000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {00009A42000004420000000000000000}
+            BottomRight.Coordinates = {0000AE4200002C420000000000000000}
             Align = GLAlCenter
             Name = 'Center1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE42000004420000000000000000}
+            BottomRight.Coordinates = {0000B24200002C420000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {0000964200002C420000000000000000}
+            BottomRight.Coordinates = {00009A42000034420000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00009A4200002C420000000000000000}
+            BottomRight.Coordinates = {0000AE42000034420000000000000000}
+            Align = GLAlBottom
+            Name = 'BottomCenter1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE4200002C420000000000000000}
+            BottomRight.Coordinates = {0000B242000034420000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
           end>
-        Name = 'radiobuttonchecked'
+        Name = 'checkbox_checked'
+      end
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {0000964200003C420000000000000000}
+            BottomRight.Coordinates = {00009A42000044420000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00009A4200003C420000000000000000}
+            BottomRight.Coordinates = {0000AE42000044420000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE4200003C420000000000000000}
+            BottomRight.Coordinates = {0000B242000044420000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {00009642000044420000000000000000}
+            BottomRight.Coordinates = {00009A4200006C420000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {00009A42000044420000000000000000}
+            BottomRight.Coordinates = {0000AE4200006C420000000000000000}
+            Align = GLAlCenter
+            Name = 'Center1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE42000044420000000000000000}
+            BottomRight.Coordinates = {0000B24200006C420000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {0000964200006C420000000000000000}
+            BottomRight.Coordinates = {00009A42000074420000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00009A4200006C420000000000000000}
+            BottomRight.Coordinates = {0000AE42000074420000000000000000}
+            Align = GLAlBottom
+            Name = 'BottomCenter1'
+          end
+          item
+            TopLeft.Coordinates = {0000AE4200006C420000000000000000}
+            BottomRight.Coordinates = {0000B242000074420000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'checkbox_unchecked'
+      end
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {0000B44200003C420000000000000000}
+            BottomRight.Coordinates = {0000B842000044420000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {0000B84200003C420000000000000000}
+            BottomRight.Coordinates = {0000CC42000044420000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {0000CC4200003C420000000000000000}
+            BottomRight.Coordinates = {0000D042000044420000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {0000B442000044420000000000000000}
+            BottomRight.Coordinates = {0000B84200006C420000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {0000B842000044420000000000000000}
+            BottomRight.Coordinates = {0000CC4200006C420000000000000000}
+            Align = GLAlCenter
+            Name = 'Center1'
+          end
+          item
+            TopLeft.Coordinates = {0000CC42000044420000000000000000}
+            BottomRight.Coordinates = {0000D04200006C420000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {0000B44200006C420000000000000000}
+            BottomRight.Coordinates = {0000B842000074420000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {0000B84200006C420000000000000000}
+            BottomRight.Coordinates = {0000CC42000074420000000000000000}
+            Align = GLAlBottom
+            Name = 'BottomCenter1'
+          end
+          item
+            TopLeft.Coordinates = {0000CC4200006C420000000000000000}
+            BottomRight.Coordinates = {0000D042000074420000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'edit'
       end>
     FileName = '..\..\media\default.layout'
-    Left = 176
+    Left = 184
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'Gui'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = '..\..\media\defaultskin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Brush'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = '..\..\media\brush.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Pen'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = '..\..\media\pen.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'White'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.TextureMode = tmReplace
-        Tag = 0
       end
       item
         Name = 'Black'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.Texture.TextureMode = tmReplace
-        Tag = 0
       end
       item
         Name = 'Red'
-        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
       end
       item
         Name = 'Green'
-        Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
       end
       item
         Name = 'Blue'
-        Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
     Left = 144
     Top = 16
