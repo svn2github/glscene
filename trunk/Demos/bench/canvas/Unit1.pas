@@ -210,8 +210,13 @@ procedure TForm1.PaintTheBox;
 var
    i, x, y : Integer;
    r : TRect;
+   b : TBitmap;
 begin
-   with PaintBox.Canvas do begin
+   //to be fair, use offscreen painting...
+   b := TBitmap.Create;
+   b.Width := 256;
+   b.Height := 256;
+   with b.Canvas do begin
       Brush.Style:=bsClear;
       Pen.Width:=vPenWidth;
       case vWhat of
@@ -263,6 +268,8 @@ begin
          end;
       end;
    end;
+   PaintBox.Canvas.Draw(0, 0, b);
+   b.Free;
 end;
 
 end.
