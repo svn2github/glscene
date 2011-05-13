@@ -6,6 +6,9 @@
    Geometric objects.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>13/05/11 - Vince - Add ArrowArc object
+      <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
+                             to display a slice of TGLTorus between start and stop angles
       <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -294,13 +297,20 @@ type
     property Parts: TAnnulusParts read FParts write SetParts default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
 
+  // TTorusPart
+  //
+  TTorusPart = (toSides, toStartDisk, toStopDisk);
+  TTorusParts = set of TTorusPart;
+
   // TGLTorus
   //
   {: A Torus object. }
   TGLTorus = class(TGLSceneObject)
   private
     { Private Declarations }
+    FParts: TTorusParts;
     FRings, FSides: Cardinal;
+    FStartAngle, FStopAngle: Single;
     FMinorRadius, FMajorRadius: Single;
     FMesh: array of array of TVertexRec;
   protected
@@ -309,6 +319,9 @@ type
     procedure SetMinorRadius(const aValue: Single);
     procedure SetRings(aValue: Cardinal);
     procedure SetSides(aValue: Cardinal);
+    procedure SetStartAngle(const aValue: Single);
+    procedure SetStopAngle(const aValue: Single);
+    procedure SetParts(aValue: TTorusParts);
 
   public
     { Public Declarations }
@@ -326,6 +339,9 @@ type
     property MinorRadius: Single read FMinorRadius write SetMinorRadius;
     property Rings: Cardinal read FRings write SetRings default 25;
     property Sides: Cardinal read FSides write SetSides default 15;
+    property StartAngle: Single read FStartAngle write SetStartAngle;
+    property StopAngle: Single read FStopAngle write SetStopAngle;
+    property Parts: TTorusParts read FParts write SetParts default [toSides];
   end;
 
   // TArrowLinePart
@@ -377,6 +393,67 @@ type
     property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowLineParts read fParts write SetParts default [alLine, alTopArrow];
+    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight write SetTopArrowHeadHeight;
+    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius write SetTopArrowHeadRadius;
+    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight write SetBottomArrowHeadHeight;
+    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius write SetBottomArrowHeadRadius;
+  end;
+
+  // TArrowArcPart
+  //
+  TArrowArcPart = (aaArc, aaTopArrow, aaBottomArrow);
+  TArrowArcParts = set of TArrowArcPart;
+
+  // TGLArrowArc
+  //
+  {: Draws an arrowhead (Sliced Torus + cone).<p>
+     The arrow head is a cone that shares the attributes of the Torus
+     (ie stacks/slices, materials etc).<br>
+     This is useful for displaying a movement (eg twist) or
+     other arc arrows that might be required.<br>
+     By default the bottom arrow is off }
+  TGLArrowArc = class(TGLCylinderBase)
+  private
+    { Private Declarations}
+    fArcRadius: Single;
+    fStartAngle: Single;
+    fStopAngle: Single;
+    fParts: TArrowArcParts;
+    fTopRadius: Single;
+    fTopArrowHeadHeight: Single;
+    fTopArrowHeadRadius: Single;
+    fBottomArrowHeadHeight: Single;
+    fBottomArrowHeadRadius: Single;
+    FHeadStackingStyle: TArrowHeadStackingStyle;
+    FMesh: array of array of TVertexRec;
+
+  protected
+    { Protected Declarations}
+    procedure SetArcRadius(const aValue: Single);
+    procedure SetStartAngle(const aValue: Single);
+    procedure SetStopAngle(const aValue: Single);
+    procedure SetTopRadius(const aValue: Single);
+    procedure SetTopArrowHeadHeight(const aValue: Single);
+    procedure SetTopArrowHeadRadius(const aValue: Single);
+    procedure SetBottomArrowHeadHeight(const aValue: Single);
+    procedure SetBottomArrowHeadRadius(const aValue: Single);
+    procedure SetParts(aValue: TArrowArcParts);
+    procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
+
+  public
+    { Public Declarations}
+    constructor Create(AOwner: TComponent); override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure Assign(Source: TPersistent); override;
+
+  published
+    { Published Declarations}
+    property ArcRadius: TGLFloat read fArcRadius write SetArcRadius;
+    property StartAngle: TGLFloat read fStartAngle write SetStartAngle;
+    property StopAngle: TGLFloat read fStopAngle write SetStopAngle;
+    property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
+    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle write SetHeadStackingStyle default ahssStacked;
+    property Parts: TArrowArcParts read fParts write SetParts default [aaArc, aaTopArrow];
     property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight write SetTopArrowHeadHeight;
     property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius write SetTopArrowHeadRadius;
     property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight write SetBottomArrowHeadHeight;
@@ -1998,6 +2075,9 @@ begin
   FSides := 15;
   FMinorRadius := 0.1;
   FMajorRadius := 0.4;
+  FStartAngle := 0.0;
+  FStopAngle := 360.0;
+  FParts := [toSides, toStartDisk, toStopDisk];
 end;
 
 // BuildList
@@ -2028,78 +2108,227 @@ var
   iFact, jFact: Single;
   pVertex: PVertexRec;
   TanLoc, BinLoc: TGLint;
-
+  MeshSize: Integer;
+  MeshIndex: Integer;
+  Vertex: TVertexRec;
 begin
   if FMesh = nil then
   begin
-    SetLength(FMesh, FRings+1);
+    MeshSize:=0;
+    MeshIndex:=0;
+    if toStartDisk in FParts then
+      MeshSize := MeshSize +1;
+    if toStopDisk in FParts then
+      MeshSize := MeshSize +1;
+    if toSides in FParts then
+      MeshSize := MeshSize + FRings+1;
+    SetLength(FMesh, MeshSize);
     // handle texture generation
-    ringDelta := c2PI / FRings;
+    ringDelta := ((FStopAngle - FStartAngle)/360) * c2PI / FRings;
     sideDelta := c2PI / FSides;
-    theta := 0;
+
     iFact := 1 / FRings;
     jFact := 1 / FSides;
-    for I := FRings downto 0 do
+    if toSides in FParts then
     begin
-      SetLength(FMesh[I], FSides+2);
-      theta1 := theta + ringDelta;
+      theta := DegToRad(FStartAngle) - ringDelta;
+      for I := FRings downto 0 do
+      begin
+        SetLength(FMesh[I], FSides+1);
+        theta1 := theta + ringDelta;
+        SinCos(theta1, sinTheta1, cosTheta1);
+        phi := 0;
+        for J := FSides downto 0 do
+        begin
+          phi := phi + sideDelta;
+          SinCos(phi, sinPhi, cosPhi);
+          dist := FMajorRadius + FMinorRadius * cosPhi;
+
+          FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[I][J].Position;
+          ringDir[2] := 0.0;
+          NormalizeVector(ringDir);
+          FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
+          FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
+          FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
+          FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
+        end;
+        theta := theta1;
+      end;
+      MeshIndex := FRings+1;
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+
+        Begin_(GL_TRIANGLES);
+        for I := FRings - 1 downto 0 do
+          for J := FSides - 1 downto 0 do
+          begin
+            pVertex := @FMesh[I][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+          end;
+        End_;
+      end;
+    end;
+
+    if toStartDisk in FParts then
+    begin
+      SetLength(FMesh[MeshIndex], FSides+1);
+      theta1 := DegToRad(FStartAngle);
       SinCos(theta1, sinTheta1, cosTheta1);
-      phi := 0;
-      for J := FSides+1 downto 0 do
+
+      if toSides in FParts then
       begin
-        phi := phi + sideDelta;
-        SinCos(phi, sinPhi, cosPhi);
-        dist := FMajorRadius + FMinorRadius * cosPhi;
-
-        FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
-        ringDir := FMesh[I][J].Position;
-        ringDir[2] := 0.0;
-        NormalizeVector(ringDir);
-        FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-        FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
-        FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
-        FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
-      end;
-      theta := theta1;
-    end;
-  end;
-
-  with GL do
-  begin
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-    begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
-    end
-    else
-    begin
-      TanLoc := -1;
-      BinLoc := TanLoc;
-    end;
-
-    Begin_(GL_TRIANGLES);
-    for I := FRings - 1 downto 0 do
-      for J := FSides - 1 downto 0 do
+        for J := FSides downto 0 do
+        begin
+          FMesh[MeshIndex][J].Position := FMesh[MeshIndex-1][J].Position;
+          FMesh[MeshIndex][J].Normal := FMesh[MeshIndex-1][J].Tangent;
+          FMesh[MeshIndex][J].Tangent := FMesh[MeshIndex-1][J].Position;
+          FMesh[MeshIndex][J].Tangent[2] :=0;
+          FMesh[MeshIndex][J].Binormal := ZVector;
+          FMesh[MeshIndex][J].TexCoord := FMesh[MeshIndex-1][J].TexCoord;
+          FMesh[MeshIndex][J].TexCoord[0] := 0;
+        end;
+      end
+      else
       begin
-        pVertex := @FMesh[I][J];
-        EmitVertex(pVertex, TanLoc, BinLoc);
-
-        pVertex := @FMesh[I][J+1];
-        EmitVertex(pVertex, TanLoc, BinLoc);
-
-        pVertex := @FMesh[I+1][J];
-        EmitVertex(pVertex, TanLoc, BinLoc);
-
-        pVertex := @FMesh[I+1][J+1];
-        EmitVertex(pVertex, TanLoc, BinLoc);
-
-        pVertex := @FMesh[I+1][J];
-        EmitVertex(pVertex, TanLoc, BinLoc);
-
-        pVertex := @FMesh[I][J+1];
-        EmitVertex(pVertex, TanLoc, BinLoc);
+        phi := 0;
+        for J := FSides downto 0 do
+        begin
+          phi := phi + sideDelta;
+          SinCos(phi, sinPhi, cosPhi);
+          dist := FMajorRadius + FMinorRadius * cosPhi;
+          FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[MeshIndex][J].Position;
+          ringDir[2] := 0.0;
+          NormalizeVector(ringDir);
+          FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
+          FMesh[MeshIndex][J].Tangent := ringDir;
+          FMesh[MeshIndex][J].Binormal := ZVector;
+          FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+        end;
       end;
-    End_;
+      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius, -sinTheta1 * FMajorRadius, 0);
+      Vertex.Normal :=  FMesh[MeshIndex][0].Normal;
+      Vertex.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      Vertex.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      Vertex.TexCoord :=  Vector2fMake(1,1);
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @Vertex;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := 0 to FSides do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+      end;
+
+      MeshIndex := MeshIndex + 1;
+    end;
+
+    if toStopDisk in FParts then
+    begin
+      SetLength(FMesh[MeshIndex], FSides+1);
+      theta1 := DegToRad(FStopAngle);
+      SinCos(theta1, sinTheta1, cosTheta1);
+
+      if toSides in FParts then
+      begin
+        for J := FSides downto 0 do
+        begin
+          FMesh[MeshIndex][J].Position := FMesh[0][J].Position;
+          FMesh[MeshIndex][J].Normal := VectorNegate(FMesh[0][J].Tangent);
+          FMesh[MeshIndex][J].Tangent := FMesh[0][J].Position;
+          FMesh[MeshIndex][J].Tangent[2] :=0;
+          FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
+          FMesh[MeshIndex][J].TexCoord := FMesh[0][J].TexCoord;
+          FMesh[MeshIndex][J].TexCoord[0] := 1;
+        end;
+      end
+      else
+      begin
+        phi := 0;
+        for J := FSides downto 0 do
+        begin
+          phi := phi + sideDelta;
+          SinCos(phi, sinPhi, cosPhi);
+          dist := FMajorRadius + FMinorRadius * cosPhi;
+          FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[MeshIndex][J].Position;
+          ringDir[2] := 0.0;
+          NormalizeVector(ringDir);
+          FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
+          FMesh[MeshIndex][J].Tangent := ringDir;
+          FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
+          FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+        end;
+      end;
+      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius, -sinTheta1 * FMajorRadius, 0);
+      Vertex.Normal :=  FMesh[MeshIndex][0].Normal;
+      Vertex.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      Vertex.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      Vertex.TexCoord :=  Vector2fMake(0,0);
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @Vertex;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := FSides downto 0 do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+      end;
+      MeshIndex := MeshIndex + 1;
+    end;
   end;
 end;
 
@@ -2155,6 +2384,35 @@ begin
     if FSides < 3 then
       FSides := 3;
     FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLTorus.SetStartAngle(const aValue: Single);
+begin
+  if FStartAngle<>aValue then
+  begin
+    FStartAngle := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLTorus.SetStopAngle(const aValue: Single);
+begin
+  if FStopAngle<>aValue then
+  begin
+    FStopAngle := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLTorus.SetParts(aValue: TTorusParts);
+begin
+  if aValue <> FParts then
+  begin
+    FParts := aValue;
     StructureChanged;
   end;
 end;
@@ -2436,6 +2694,625 @@ begin
     fBottomArrowHeadHeight := TGLArrowLine(Source).fBottomArrowHeadHeight;
     fBottomArrowHeadRadius := TGLArrowLine(Source).fBottomArrowHeadRadius;
     FHeadStackingStyle := TGLArrowLine(Source).FHeadStackingStyle;
+  end;
+  inherited Assign(Source);
+end;
+
+// ------------------
+// ------------------ TGLArrowArc ------------------
+// ------------------
+
+// Create
+//
+
+constructor TGLArrowArc.Create(AOwner: TComponent);
+begin
+  inherited;
+  FStacks := 16;
+  fArcRadius := 0.5;
+  fStartAngle := 0;
+  fStopAngle := 360;
+  fTopRadius := 0.1;
+  BottomRadius := 0.1;
+  fTopArrowHeadRadius := 0.2;
+  fTopArrowHeadHeight := 0.5;
+  fBottomArrowHeadRadius := 0.2;
+  fBottomArrowHeadHeight := 0.5;
+  FHeadStackingStyle := ahssStacked;
+  fParts := [aaArc, aaTopArrow];
+end;
+
+// SetArcRadius
+//
+
+procedure TGLArrowArc.SetArcRadius(const aValue: Single);
+begin
+  if fArcRadius<>aValue then
+  begin
+    fArcRadius := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetStartAngle
+//
+
+procedure TGLArrowArc.SetStartAngle(const aValue: Single);
+begin
+  if fStartAngle<>aValue then
+  begin
+    fStartAngle := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetStopAngle
+//
+
+procedure TGLArrowArc.SetStopAngle(const aValue: Single);
+begin
+  if fStopAngle<>aValue then
+  begin
+    fStopAngle := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetTopRadius
+//
+
+procedure TGLArrowArc.SetTopRadius(const aValue: Single);
+begin
+  if aValue <> fTopRadius then
+  begin
+    fTopRadius := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetTopArrowHeadHeight
+//
+
+procedure TGLArrowArc.SetTopArrowHeadHeight(const aValue: Single);
+begin
+  if aValue <> fTopArrowHeadHeight then
+  begin
+    fTopArrowHeadHeight := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetTopArrowHeadRadius
+//
+
+procedure TGLArrowArc.SetTopArrowHeadRadius(const aValue: Single);
+begin
+  if aValue <> fTopArrowHeadRadius then
+  begin
+    fTopArrowHeadRadius := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetBottomArrowHeadHeight
+//
+
+procedure TGLArrowArc.SetBottomArrowHeadHeight(const aValue: Single);
+begin
+  if aValue <> fBottomArrowHeadHeight then
+  begin
+    fBottomArrowHeadHeight := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetBottomArrowHeadRadius
+//
+
+procedure TGLArrowArc.SetBottomArrowHeadRadius(const aValue: Single);
+begin
+  if aValue <> fBottomArrowHeadRadius then
+  begin
+    fBottomArrowHeadRadius := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetParts
+//
+
+procedure TGLArrowArc.SetParts(aValue: TArrowArcParts);
+begin
+  if aValue <> FParts then
+  begin
+    FParts := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetHeadStackingStyle
+//
+
+procedure TGLArrowArc.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
+begin
+  if val <> FHeadStackingStyle then
+  begin
+    FHeadStackingStyle := val;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// BuildList
+//
+
+procedure TGLArrowArc.BuildList(var rci: TRenderContextInfo);
+  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer);// {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  begin
+    XGL.TexCoord2fv(@ptr^.TexCoord);
+    with GL do
+    begin
+      Normal3fv(@ptr^.Normal);
+      if L1 > -1 then
+        VertexAttrib3fv(L1, @ptr.Tangent);
+      if L2 > -1 then
+        VertexAttrib3fv(L2, @ptr.Binormal);
+      Vertex3fv(@ptr^.Position);
+    end;
+  end;
+
+var
+  I, J: Integer;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
+  cosTheta1, sinTheta1: TGLFloat;
+  ringDelta, sideDelta: TGLFloat;
+  ringDir: TAffineVector;
+  iFact, jFact: Single;
+  pVertex: PVertexRec;
+  TanLoc, BinLoc: TGLint;
+  MeshSize: Integer;
+  MeshIndex: Integer;
+  ConeCenter: TVertexRec;
+  StartOffset, StopOffset: Single;
+begin
+  if FMesh = nil then
+  begin
+    MeshIndex:=0;
+    MeshSize := 0;
+    //Check Parts
+    if aaArc in fParts then
+      MeshSize := MeshSize + FStacks +1;
+    if aaTopArrow in fParts then
+      MeshSize := MeshSize + 3
+    else
+      MeshSize := MeshSize + 1;
+    if aaBottomArrow in fParts then
+      MeshSize := MeshSize + 3
+    else
+      MeshSize := MeshSize + 1;
+    //Allocate Mesh
+    SetLength(FMesh, MeshSize);
+
+    case FHeadStackingStyle of
+      ahssStacked:
+      begin
+        StartOffset :=0;
+        StopOffset :=0;
+      end ;
+      ahssCentered:
+      begin
+        StartOffset := RadToDeg(ArcTan(0.5*fTopArrowHeadHeight/fArcRadius));
+        StopOffset := RadToDeg(ArcTan(0.5*fBottomArrowHeadHeight/fArcRadius));
+      end ;
+      ahssIncluded:
+      begin
+        StartOffset := RadToDeg(ArcTan(fTopArrowHeadHeight/fArcRadius));
+        StopOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight/fArcRadius));
+      end ;
+    end;
+
+    // handle texture generation
+    ringDelta := (((FStopAngle-StopOffset) - (FStartAngle+StartOffset))/360) * c2PI / FStacks;
+    sideDelta := c2PI / FSlices;
+
+    iFact := 1 / FStacks;
+    jFact := 1 / FSlices;
+    if aaArc in FParts then
+    begin
+      theta := DegToRad(FStartAngle+StartOffset) - ringDelta;
+      for I := FStacks downto 0 do
+      begin
+        SetLength(FMesh[I], FSlices+1);
+        theta1 := theta + ringDelta;
+        SinCos(theta1, sinTheta1, cosTheta1);
+        phi := 0;
+        for J := FSlices downto 0 do
+        begin
+          phi := phi + sideDelta;
+          SinCos(phi, sinPhi, cosPhi);
+          dist := fArcRadius + Lerp(fTopRadius,fBottomRadius,1-i*iFact) * cosPhi;
+
+          FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, Lerp(fTopRadius,fBottomRadius,1-i*iFact) * sinPhi);
+          ringDir := FMesh[I][J].Position;
+          ringDir[2] := 0.0;
+          NormalizeVector(ringDir);
+          FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
+          FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
+          FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
+          FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
+        end;
+        theta := theta1;
+      end;
+      MeshIndex := FStacks+1;
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+
+        Begin_(GL_TRIANGLES);
+        for I := FStacks - 1 downto 0 do
+          for J := FSlices - 1 downto 0 do
+          begin
+            pVertex := @FMesh[I][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I+1][J];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+
+            pVertex := @FMesh[I][J+1];
+            EmitVertex(pVertex, TanLoc, BinLoc);
+          end;
+        End_;
+      end;
+    end;
+
+    //Build Arrow or start cap
+    if aaTopArrow in FParts then
+    begin
+      SetLength(FMesh[MeshIndex], FSlices+1);
+      SetLength(FMesh[MeshIndex+1], FSlices+1);
+      SetLength(FMesh[MeshIndex+2], FSlices+1);
+      theta1 := DegToRad(FStartAngle+StartOffset);
+      SinCos(theta1, sinTheta1, cosTheta1);
+
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+
+      phi := 0;
+      for J := FSlices downto 0 do
+      begin
+        phi := phi + sideDelta;
+        SinCos(phi, sinPhi, cosPhi);
+        dist := fArcRadius + fTopArrowHeadRadius * cosPhi;
+
+        //Cap
+        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][J].Position;
+        ringDir[2] := 0.0;
+        NormalizeVector(ringDir);
+        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
+        FMesh[MeshIndex][J].Tangent := ringDir;
+        FMesh[MeshIndex][J].Binormal := ZVector;
+        FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+
+        //Cone
+        FMesh[MeshIndex+1][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex+2][J].Position := VectorAdd(ConeCenter.Position, Vector3fMake(sinTheta1 * fTopArrowHeadHeight,cosTheta1* fTopArrowHeadHeight,0));//Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+
+        FMesh[MeshIndex+1][J].Tangent := VectorNormalize(VectorSubtract(FMesh[MeshIndex+1][J].Position,FMesh[MeshIndex+2][J].Position));
+        FMesh[MeshIndex+2][J].Tangent := FMesh[MeshIndex+1][J].Tangent;
+
+        FMesh[MeshIndex+1][J].Binormal := Vector3fMake(cosTheta1 * -sinPhi, sinTheta1 * sinPhi, cosPhi);
+        FMesh[MeshIndex+2][J].Binormal := FMesh[MeshIndex+1][J].Binormal;
+
+        FMesh[MeshIndex+1][J].Normal :=  VectorCrossProduct(FMesh[MeshIndex+1][J].Binormal,FMesh[MeshIndex+1][J].Tangent);
+        FMesh[MeshIndex+2][J].Normal := FMesh[MeshIndex+1][J].Normal;
+
+        FMesh[MeshIndex+1][J].TexCoord := Vector2fMake(0, j * jFact);
+        FMesh[MeshIndex+2][J].TexCoord := Vector2fMake(1, j * jFact);
+      end;
+
+      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord :=  Vector2fMake(0,0);
+
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @ConeCenter;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := FSlices downto 0 do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+
+        Begin_(GL_TRIANGLES);
+
+        for J := FSlices - 1 downto 0 do
+        begin
+          pVertex := @FMesh[MeshIndex+1][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+1][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+2][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+2][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+2][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+1][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+
+      end;
+      MeshIndex := MeshIndex + 3;
+    end
+    else
+    begin
+      SetLength(FMesh[MeshIndex], FSlices+1);
+      theta1 := DegToRad(FStartAngle);
+      SinCos(theta1, sinTheta1, cosTheta1);
+
+      phi := 0;
+      for J := FSlices downto 0 do
+      begin
+        phi := phi + sideDelta;
+        SinCos(phi, sinPhi, cosPhi);
+        dist := fArcRadius + fTopRadius * cosPhi;
+        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][J].Position;
+        ringDir[2] := 0.0;
+        NormalizeVector(ringDir);
+        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
+        FMesh[MeshIndex][J].Tangent := ringDir;
+        FMesh[MeshIndex][J].Binormal := ZVector;
+        FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+      end;
+
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord :=  Vector2fMake(1,1);
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @ConeCenter;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := 0 to FSlices do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+      end;
+      MeshIndex := MeshIndex + 1;
+    end;
+
+    if aaBottomArrow in FParts then
+    begin
+      SetLength(FMesh[MeshIndex], FSlices+1);
+      SetLength(FMesh[MeshIndex+1], FSlices+1);
+      SetLength(FMesh[MeshIndex+2], FSlices+1);
+      theta1 := DegToRad(FStopAngle-StopOffset);
+      SinCos(theta1, sinTheta1, cosTheta1);
+
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+
+      phi := 0;
+      for J := FSlices downto 0 do
+      begin
+        phi := phi + sideDelta;
+        SinCos(phi, sinPhi, cosPhi);
+        dist := fArcRadius + fBottomArrowHeadRadius * cosPhi;
+
+        //Cap
+        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][J].Position;
+        ringDir[2] := 0.0;
+        NormalizeVector(ringDir);
+        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
+        FMesh[MeshIndex][J].Tangent := ringDir;
+        FMesh[MeshIndex][J].Binormal := ZVector;
+        FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+
+        //Cone
+        FMesh[MeshIndex+1][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex+2][J].Position := VectorSubtract(ConeCenter.Position, Vector3fMake(sinTheta1 * fBottomArrowHeadHeight,cosTheta1* fBottomArrowHeadHeight,0));//Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+
+        FMesh[MeshIndex+1][J].Tangent := VectorNormalize(VectorSubtract(FMesh[MeshIndex+2][J].Position,FMesh[MeshIndex+1][J].Position));
+        FMesh[MeshIndex+2][J].Tangent := FMesh[MeshIndex+1][J].Tangent;
+
+        FMesh[MeshIndex+1][J].Binormal := Vector3fMake(cosTheta1 * -sinPhi, sinTheta1 * sinPhi, cosPhi);
+        FMesh[MeshIndex+2][J].Binormal := FMesh[MeshIndex+1][J].Binormal;
+
+        FMesh[MeshIndex+1][J].Normal :=  VectorCrossProduct(FMesh[MeshIndex+1][J].Binormal,FMesh[MeshIndex+1][J].Tangent);
+        FMesh[MeshIndex+2][J].Normal := FMesh[MeshIndex+1][J].Normal;
+
+        FMesh[MeshIndex+1][J].TexCoord := Vector2fMake(1, j * jFact);
+        FMesh[MeshIndex+2][J].TexCoord := Vector2fMake(0, j * jFact);
+      end;
+
+      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord :=  Vector2fMake(1,1);
+
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @ConeCenter;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := 0 to FSlices do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+
+        Begin_(GL_TRIANGLES);
+
+        for J := FSlices - 1 downto 0 do
+        begin
+          pVertex := @FMesh[MeshIndex+2][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+2][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+1][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+1][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+1][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[MeshIndex+2][J+1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+
+      end;
+      MeshIndex := MeshIndex + 3;
+    end
+    else
+    begin
+      SetLength(FMesh[MeshIndex], FSlices+1);
+      theta1 := DegToRad(FStopAngle);
+      SinCos(theta1, sinTheta1, cosTheta1);
+
+      phi := 0;
+      for J := FSlices downto 0 do
+      begin
+        phi := phi + sideDelta;
+        SinCos(phi, sinPhi, cosPhi);
+        dist := fArcRadius + fBottomRadius * cosPhi;
+        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][J].Position;
+        ringDir[2] := 0.0;
+        NormalizeVector(ringDir);
+        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
+        FMesh[MeshIndex][J].Tangent := ringDir;
+        FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
+        FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+      end;
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord :=  Vector2fMake(0,0);
+      with GL do
+      begin
+        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        begin
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+        end
+        else
+        begin
+          TanLoc := -1;
+          BinLoc := TanLoc;
+        end;
+        Begin_(GL_TRIANGLE_FAN);
+        pVertex := @ConeCenter;
+        EmitVertex(pVertex, TanLoc, BinLoc);
+        for J := FSlices downto 0 do
+        begin
+          pVertex := @FMesh[MeshIndex][J];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+        end;
+        End_;
+      end;
+      MeshIndex := MeshIndex + 1;
+    end;
+  end;
+end;
+
+// Assign
+//
+
+procedure TGLArrowArc.Assign(Source: TPersistent);
+begin
+  if assigned(SOurce) and (Source is TGLArrowLine) then
+  begin
+    fStartAngle := TGLArrowArc(Source).fStartAngle;
+    fStopAngle := TGLArrowArc(Source).fStopAngle;
+    fArcRadius := TGLArrowArc(Source).fArcRadius;
+    FParts := TGLArrowArc(Source).FParts;
+    FTopRadius := TGLArrowArc(Source).FTopRadius;
+    fTopArrowHeadHeight := TGLArrowArc(Source).fTopArrowHeadHeight;
+    fTopArrowHeadRadius := TGLArrowArc(Source).fTopArrowHeadRadius;
+    fBottomArrowHeadHeight := TGLArrowArc(Source).fBottomArrowHeadHeight;
+    fBottomArrowHeadRadius := TGLArrowArc(Source).fBottomArrowHeadRadius;
+    FHeadStackingStyle := TGLArrowArc(Source).FHeadStackingStyle;
   end;
   inherited Assign(Source);
 end;
@@ -2793,7 +3670,7 @@ initialization
   //-------------------------------------------------------------
 
   RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
-    TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule]);
+    TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule, TGLArrowArc]);
 
 end.
 
