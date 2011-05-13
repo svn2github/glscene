@@ -2,23 +2,23 @@ object Form1: TForm1
   Left = 218
   Height = 403
   Top = 117
-  Width = 635
+  Width = 676
   Caption = 'Form1'
-  ClientHeight = 376
-  ClientWidth = 635
+  ClientHeight = 384
+  ClientWidth = 676
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.30'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Height = 376
+    Height = 384
     Top = 0
-    Width = 635
+    Width = 676
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 150.213058471679
+    FieldOfView = 150.806854248046
     Align = alClient
     OnClick = GLSceneViewer1Click
     TabOrder = 0
@@ -69,7 +69,7 @@ object Form1: TForm1
       TagFloat = 0
       PitchAngle = 0
       Position.Coordinates = {
-        0000164300009643000000000000803F
+        000016430000AF43000000000000803F
       }
       RollAngle = 0
       TurnAngle = 0
@@ -83,7 +83,7 @@ object Form1: TForm1
       TagFloat = 0
       PitchAngle = 0
       Position.Coordinates = {
-        0000FA4300009643000000000000803F
+        008009440000AF43000000000000803F
       }
       RollAngle = 0
       TurnAngle = 0
@@ -120,9 +120,12 @@ object Form1: TForm1
     top = 80
   end
   object WindowsBitmapFont1: TGLWindowsBitmapFont
+    Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clWhite
     Font.Height = -20
-    Font.Name = 'Arial'
+    Font.Name = '@Arial Unicode MS'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
     Font.Style = [fsBold]
     left = 48
     top = 16
@@ -147,4 +150,4 @@ object Form1: TForm1
     left = 112
     top = 16
   end
-end
+end
