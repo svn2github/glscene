@@ -219,9 +219,9 @@ type
     procedure SetBitmapFont(NewFont: TGLCustomBitmapFont);
     function GetBitmapFont: TGLCustomBitmapFont;
     procedure WriteTextAt(var rci: TRenderContextInfo; const X, Y: TGLFloat;
-      const Data: string; const Color: TColorVector); overload;
+      const Data: UnicodeString; const Color: TColorVector); overload;
     procedure WriteTextAt(var rci: TRenderContextInfo; const X1, Y1, X2, Y2:
-      TGLFloat; const Data: string; const Color: TColorVector); overload;
+      TGLFloat; const Data: UnicodeString; const Color: TColorVector); overload;
     function GetFontHeight: Integer;
   public
     constructor Create(AOwner: TComponent); override;
@@ -237,12 +237,12 @@ type
 
   TGLBaseTextControl = class(TGLBaseFontControl)
   private
-    FCaption: string;
+    FCaption: UnicodeString;
   protected
-    procedure SetCaption(NewCaption: string);
+    procedure SetCaption(const NewCaption: UnicodeString);
   public
   published
-    property Caption: string read FCaption write SetCaption;
+    property Caption: UnicodeString read FCaption write SetCaption;
   end;
 
   TGLFocusControl = class(TGLBaseTextControl)
@@ -1795,7 +1795,7 @@ end;
 
 { GLWindow }
 
-procedure TGLBaseTextControl.SetCaption(NewCaption: string);
+procedure TGLBaseTextControl.SetCaption(const NewCaption: UnicodeString);
 
 begin
   FCaption := NewCaption;
@@ -1803,7 +1803,7 @@ begin
 end;
 
 procedure TGLBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X,
-  Y: TGLFloat; const Data: string; const Color: TColorVector);
+  Y: TGLFloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -1818,14 +1818,14 @@ begin
 end;
 
 procedure TGLBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X1,
-  Y1, X2, Y2: TGLFloat; const Data: string; const Color: TColorVector);
+  Y1, X2, Y2: TGLFloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
   if Assigned(BitmapFont) then
   begin
     Position[0] := Round(((X2 + X1 -
-      BitmapFont.CalcStringWidth(AnsiString(Data))) * 0.5));
+      BitmapFont.CalcStringWidth(Data)) * 0.5));
     Position[1] := Round(-((Y2 + Y1 - GetFontHeight) * 0.5)) + 2;
     Position[2] := 0;
     Position[3] := 0;
@@ -2367,7 +2367,7 @@ begin
     ATitleColor[3] := AlphaChannel;
 
     WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2 + FRenderStatus[GLAlTop].X1 -
-      BitmapFont.CalcStringWidth(AnsiString(Caption))) * 0.5),
+      BitmapFont.CalcStringWidth(Caption)) * 0.5),
       -((FRenderStatus[GLAlTop].Y2 + FRenderStatus[GLAlTop].Y1 - GetFontHeight) *
       0.5) + TitleOffset, Caption, ATitleColor);
   end;
@@ -2916,7 +2916,7 @@ end;
 procedure TGLEdit.InternalRender(var rci: TRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 var
-  Tekst: string;
+  Tekst: UnicodeString;
   pBig: Integer;
 begin
   // Renders the background
@@ -2934,7 +2934,7 @@ begin
       // First put in the edit character where it should be.
       system.insert(FEditChar, Tekst, SelStart);
       // Next figure out if the string is too long.
-      if FBitmapFont.CalcStringWidth(AnsiString(Tekst)) > Width - 2 then
+      if FBitmapFont.CalcStringWidth(Tekst) > Width - 2 then
       begin
         // if it is then we need to check to see where SelStart is
         if SelStart >= Length(Tekst) - 1 then
@@ -2942,7 +2942,7 @@ begin
           // SelStart is within close proximity of the end of the string
           // Calculate the % of text that we can use and return it against the length of the string.
           pBig := Trunc(Int(((Width - 2) /
-            FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
+            FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
           dec(pBig);
           Tekst := Copy(Tekst, Length(Tekst) - pBig + 1, pBig);
         end
@@ -2951,7 +2951,7 @@ begin
           // SelStart is within close proximity of the end of the string
           // Calculate the % of text that we can use and return it against the length of the string.
           pBig := Trunc(Int(((Width - 2) /
-            FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
+            FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
           dec(pBig);
           if SelStart + pBig < Length(Tekst) then
             Tekst := Copy(Tekst, SelStart, pBig)
@@ -2961,15 +2961,15 @@ begin
       end;
     end
     else
-      { if FFocused then } if FBitmapFont.CalcStringWidth(AnsiString(Tekst)) >
+      { if FFocused then } if FBitmapFont.CalcStringWidth(Tekst) >
       Width - 2 then
       begin
         // The while loop should never execute more then once, but just in case its here.
-        while FBitmapFont.CalcStringWidth(AnsiString(Tekst)) > Width - 2 do
+        while FBitmapFont.CalcStringWidth(Tekst) > Width - 2 do
         begin
           // Calculate the % of text that we can use and return it against the length of the string.
           pBig := Trunc(Int(((Width - 2) /
-            FBitmapFont.CalcStringWidth(AnsiString(Tekst))) * Length(Tekst)));
+            FBitmapFont.CalcStringWidth(Tekst)) * Length(Tekst)));
           Tekst := Copy(Tekst, 1, pBig);
         end;
       end;
@@ -3000,7 +3000,7 @@ procedure TGLLabel.InternalRender(var rci: TRenderContextInfo; renderSelf,
 
 var
   TekstPos: TVector;
-  Tekst: string;
+  Tekst: UnicodeString;
   TextColor: TColorVector;
 begin
   if Assigned(BitmapFont) then

@@ -6,6 +6,7 @@
   TFont Import into a BitmapFont using variable width...<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>06/06/10 - Yar - Added VectorTypes to uses
       <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
@@ -29,11 +30,13 @@ interface
 {$INCLUDE GLScene.inc}
 
 uses
+  Windows,
   GLBitmapFont,
   Classes,
   GLScene,
   GLTexture,
   Graphics,
+  VectorLists,
   GLCrossPlatform;
 
 type
@@ -53,12 +56,12 @@ type
   private
     { Private Declarations }
     FFont: TFont;
-
+    procedure SetList(const AList : TIntegerList);
   protected
     { Protected Declarations }
     procedure SetFont(value: TFont);
     procedure LoadWindowsFont; virtual;
-    function StoreRanges: Boolean;
+    function  StoreRanges: Boolean;
 
     procedure PrepareImage; override;
     function TextureFormat: Integer; override;
@@ -72,6 +75,9 @@ type
 
     function FontTextureWidth: Integer;
     function FontTextureHeight: Integer;
+
+    procedure EnsureString(const s : UnicodeString); overload;
+    procedure EnsureChars(const AStart, AEnd: widechar);
 
     property Glyphs;
 
@@ -119,6 +125,12 @@ uses
   ApplicationFileIO
   {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
+const
+  cDefaultLast = '}';
+
+Var
+  Win32PlatformIsUnicode : Boolean;
+
 // ------------------
 // ------------------ TGLWindowsBitmapFont ------------------
 // ------------------
@@ -134,10 +146,7 @@ begin
   FFont.Color := clWhite;
   FFont.OnChange := NotifyChange;
   GlyphsAlpha := tiaAlphaFromIntensity;
-
-  Ranges.Add(' ', '}');
-
-  LoadWindowsFont;
+  EnsureChars(' ', cDefaultLast);
 end;
 
 // Destroy
@@ -187,59 +196,78 @@ end;
 //
 
 procedure TGLWindowsBitmapFont.LoadWindowsFont;
-var
-  textureWidth, textureHeight: Integer;
 
   function ComputeCharRects(x, y: Integer; canvas: TCanvas): Integer;
   var
     px, py, cw, n: Integer;
     rect: TGLRect;
-  begin
+    buffer : array[0..2] of WideChar;
+ begin
+    buffer[1] := WideChar(#32);
+    buffer[2] := WideChar(#0);
+
     Result := 0;
-    n := 0;
     px := 0;
     py := 0;
-    while n < GLS_FONT_CHARS_COUNT do
+    for n := 0 to CharacterCount - 1 do
     begin
       cw := CharWidths[n];
       if cw > 0 then
       begin
         Inc(cw, 2);
+
+        if px + cw > x then
+        begin
+          px := 0;
+          Inc(py, CharHeight);
+          if py + CharHeight > y then Break;
+        end;
+
         if Assigned(canvas) then
         begin
-          SetCharRects(n, VectorMake((px + 1.05) / textureWidth,
-            (textureHeight - (py + 0.05)) / textureHeight,
-            (px + cw - 1.05) / textureWidth,
-            (textureHeight - (py + CharHeight - 0.05)) / textureHeight));
+          SetCharRects(n, VectorMake((px + 1.05) / x,
+            (y - (py + 0.05)) / y,
+            (px + cw - 1.05) / x,
+            (y - (py + CharHeight - 0.05)) / y));
           rect.Left := px;
           rect.Top := py;
           rect.Right := px + cw;
           rect.Bottom := py + CharHeight;
           // Draw the Char, the trailing space is to properly handle the italics.
-          canvas.TextRect(rect, px + 1, py + 1, AnsiChar(n) + ' ');
+          //canvas.TextRect(rect, px + 1, py + 1, TileIndexToChar(n) + ' ');
+          buffer[0] := TileIndexToChar(n);
+          // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
+          Windows.ExtTextOutW(canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, buffer, 2, nil);
         end;
-        if ((n < GLS_FONT_CHARS_COUNT - 1) and (px + cw + CharWidths[n + 1] + 2 <= x)) or (n = GLS_FONT_CHARS_COUNT - 1) then
-          Inc(px, cw)
-        else
-        begin
-          px := 0;
-          Inc(py, CharHeight);
-          if py + CharHeight > y then
-            Break;
-        end;
+        Inc(px, cw);
         Inc(Result);
       end;
-      Inc(n);
+    end;
+  end;
+
+  // credits to the Unicode version of SynEdit for this function. GPL/MPL as GLScene
+  function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
+  var
+    tm: {$IFDEF FPC}LPTextMetric{$ELSE}TTextMetricA{$ENDIF};
+  begin
+    Result.cx := 0;
+    Result.cy := 0;
+    GetTextExtentPoint32W(DC, Str, Count, Result);
+    if not Win32PlatformIsUnicode then
+    begin
+      GetTextMetricsA(DC, tm);
+      if tm.tmPitchAndFamily and TMPF_TRUETYPE <> 0 then
+        Result.cx := Result.cx - tm.tmOverhang
+      else
+        Result.cx := tm.tmAveCharWidth * Count;
     end;
   end;
 
 var
   bitmap: TGLBitMap;
-  fontRange: TBitmapFontRange;
-  ch: AnsiChar;
+  ch: widechar;
   x, y, i, cw: Integer;
-  nbChars, n: Integer;
-  texMem, bestTexMem: Integer;
+  nbChars: Integer;
 begin
   InvalidateUsers;
   bitmap := Glyphs.Bitmap;
@@ -263,72 +291,46 @@ begin
       HSpaceFix := 0;
   end;
 
-  nbChars := Ranges.CharacterCount;
+  nbChars := CharacterCount;
 
   // Retrieve width of all characters (texture width)
   ResetCharWidths(0);
-  for i := 0 to Ranges.Count - 1 do
+  for i := 0 to nbChars - 1 do
   begin
-    fontRange := Ranges.Items[i];
-    for ch := fontRange.StartASCII to fontRange.StopASCII do
-    begin
-{$IFDEF GLS_DELPHI_2009_UP or FPC}
-      cw := bitmap.Canvas.TextExtent(Char(ch)).cx - HSpaceFix;
-{$ELSE}
-      cw := bitmap.Canvas.TextWidth(Char(ch)) - HSpaceFix;
-{$ENDIF}
-      SetCharWidths(Integer(ch), cw);
-      if cw = 0 then
-        Dec(nbChars);
-    end;
+    ch := TileIndexToChar(i);
+    cw := GetTextSize(bitmap.canvas.Handle, @ch, 1).cx-HSpaceFix;
+    SetCharWidths(i, cw);
   end;
 
   // compute texture size: look for best fill ratio
   // and as square a texture as possible
-  bestTexMem := MaxInt;
-  textureWidth := 0;
-  textureHeight := 0;
-  y := 64;
-  while y <= 512 do
+  x := 32; y := 32;
+  // compute the number of characters that fit
+  while ComputeCharRects(x, y, nil) < nbChars do
   begin
-    x := 64;
-    while x <= 512 do
+    //increase vertical first, it's more likely that's not multiple...
+    if x < y then
+         x := x * 2
+    else y := y * 2;
+
+    if (x > 512) or (y > 512) then
     begin
-      // compute the number of characters that fit
-      n := ComputeCharRects(x, y, nil);
-      if n = nbChars then
-      begin
-        texMem := x * y;
-        if (texMem < bestTexMem) or ((texMem = bestTexMem) and (Abs(x - y) < Abs(textureWidth - textureHeight))) then
-        begin
-          textureWidth := x;
-          textureHeight := y;
-          bestTexMem := texMem;
-        end;
-      end;
-      x := 2 * x;
+      Font.Size := 6;
+      raise Exception.Create('Characters are too large or too many. Unable to create font texture.');
     end;
-    y := y * 2;
   end;
 
-  if bestTexMem = MaxInt then
-  begin
-    Font.Size := 6;
-    raise Exception.Create('Characters are too large or too many. Unable to create font texture.');
-  end;
-
-  bitmap.Width := textureWidth;
-  bitmap.Height := textureHeight;
+  bitmap.SetSize(x, y);
 
   with bitmap.Canvas do
   begin
     Brush.Style := bsSolid;
     Brush.Color := clBlack;
-    FillRect(Rect(0, 0, textureWidth, textureHeight));
+    FillRect(Rect(0, 0, x, y));
   end;
 
-  ComputeCharRects(textureWidth, textureHeight, bitmap.Canvas);
-
+  ComputeCharRects(x, y, bitmap.Canvas);
+//  Clipboard.Assign(bitmap);
   Glyphs.OnChange := OnGlyphsChanged;
 end;
 
@@ -337,7 +339,67 @@ end;
 
 function TGLWindowsBitmapFont.StoreRanges: Boolean;
 begin
-  Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> '}');
+  Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> cDefaultLast);
+end;
+
+procedure TGLWindowsBitmapFont.SetList(const AList: TIntegerList);
+var
+  i : integer;
+  f, n, s : integer;
+begin
+  //add existing ranges
+  for I := 0 to Ranges.Count - 1 do
+    with Ranges.Items[I] do
+      AList.AddSerie(integer(StartASCII), 1, CharCount);
+
+  AList.SortAndRemoveDuplicates;
+
+  Ranges.Clear;
+  Ranges.BeginUpdate;
+  if AList.Count > 0 then
+  begin
+    i := 0;
+    while i < AList.Count do
+    begin
+      f := AList[i]; n := f; s := Ranges.CharacterCount;
+      while (i < AList.Count) and (n = AList[i]) do
+      begin
+        inc(i);
+        inc(n);
+      end;
+      Ranges.Add(widechar(f), widechar(pred(n))).StartGlyphIdx := s;
+    end;
+  end;
+
+  Ranges.EndUpdate;
+  FTextureHandle.NotifyChangesOfData;
+  InvalidateUsers;
+end;
+
+//add characters to internal list
+procedure TGLWindowsBitmapFont.EnsureChars(const AStart, AEnd: widechar);
+var
+  c : widechar;
+  ACharList : TIntegerList;
+begin
+  ACharList := TIntegerList.Create;
+  for c := AStart to AEnd do
+      ACharList.Add(integer(c));
+  SetList(ACharList);
+  ACharList.Free;
+end;
+
+//add characters to internal list
+procedure TGLWindowsBitmapFont.EnsureString(const s: UnicodeString);
+var
+  i : integer;
+  ACharList : TIntegerList;
+begin
+  ACharList := TIntegerList.Create;
+  for i := 1 to length(s) do
+      ACharList.Add(integer(s[i]));
+  SetList(ACharList);
+  ACharList.Free;
 end;
 
 // PrepareImage
@@ -418,6 +480,7 @@ begin
       end;
       // char wds
       S.Read(Count, SizeOf(Count));
+      SetLength(FCharWidths, Count);
       for i := 0 to High(CharWidths) do
       begin
         S.Read(I1, SizeOf(CharWidths[i]));
@@ -479,6 +542,8 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
+
+  Win32PlatformIsUnicode := (Win32Platform = VER_PLATFORM_WIN32_NT);
 
    // class registrations
   RegisterClasses([TGLWindowsBitmapFont, TGLStoredBitmapFont]);

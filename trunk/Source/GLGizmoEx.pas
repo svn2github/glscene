@@ -2249,7 +2249,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
   //Тест#12 Результат положытелен, но вычесления ведутся в 2д
   //Это не приемлемо, данное направление замарожено до лучших времен
   //
-  procedure ShowText(Text: string; Position: Tvector; Scale: TVector; Color: Tvector);
+  procedure ShowText(const Text: UnicodeString; Position: Tvector; Scale: TVector; Color: Tvector);
   var
     FLayout: TGLTextLayout;
     FAlignment: TAlignment;

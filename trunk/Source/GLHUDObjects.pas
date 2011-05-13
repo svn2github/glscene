@@ -108,7 +108,7 @@ type
   private
     { Private Declarations }
     FBitmapFont: TGLCustomBitmapFont;
-    FText: string;
+    FText: UnicodeString;
     FRotation: Single;
     FAlignment: TAlignment;
     FLayout: TGLTextLayout;
@@ -117,7 +117,7 @@ type
   protected
     { Protected Declarations }
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
-    procedure SetText(const val: string);
+    procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
     procedure SetAlignment(const val: TAlignment);
     procedure SetLayout(const val: TGLTextLayout);
@@ -144,7 +144,7 @@ type
     {: Text to render.<p>
        Be aware that only the characters available in the bitmap font will
        be rendered. CR LF sequences are allowed. }
-    property Text: string read FText write SetText;
+    property Text: UnicodeString read FText write SetText;
     {: Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
     {: Controls the text alignment (horizontal).<p>
@@ -366,7 +366,7 @@ end;
 // SetText
 //
 
-procedure TGLHUDText.SetText(const val: string);
+procedure TGLHUDText.SetText(const val: UnicodeString);
 begin
   FText := val;
   StructureChanged;

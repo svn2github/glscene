@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -64,13 +65,13 @@ type
   TBitmapFontRange = class(TCollectionItem)
   private
     { Private Declarations }
-    FStartASCII, FStopASCII: AnsiChar;
-    FStartGlyphIdx: Integer;
+    FStartASCII, FStopASCII: widechar;
+    FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
 
   protected
     { Protected Declarations }
-    procedure SetStartASCII(const val: AnsiChar);
-    procedure SetStopASCII(const val: AnsiChar);
+    procedure SetStartASCII(const val: widechar);
+    procedure SetStopASCII(const val: widechar);
     procedure SetStartGlyphIdx(const val: Integer);
     function GetDisplayName: string; override;
 
@@ -81,17 +82,20 @@ type
 
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange;
-
   published
     { Published Declarations }
-    property StartASCII: AnsiChar read FStartASCII write SetStartASCII;
-    property StopASCII: AnsiChar read FStopASCII write SetStopASCII;
+     property StartASCII: widechar read FStartASCII write SetStartASCII;
+     property StopASCII: widechar read FStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
+     property StopGlyphIdx: Integer read FStopGlyphIdx;
+     property CharCount: integer read FCharCount;
   end;
 
   // TBitmapFontRanges
   //
   TBitmapFontRanges = class(TCollection)
+  private
+    FCharCount : integer;
   protected
     { Protected Declarations }
     FOwner: TComponent;
@@ -99,6 +103,8 @@ type
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TBitmapFontRange);
     function GetItems(index: Integer): TBitmapFontRange;
+    function CalcCharacterCount: Integer;
+    procedure Update(Item: TCollectionItem); override;
 
   public
     { Public Declarations }
@@ -106,17 +112,18 @@ type
     destructor Destroy; override;
 
     function Add: TBitmapFontRange; overload;
-    function Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
+    function Add(startASCII, stopASCII: widechar): TBitmapFontRange; overload;
     function FindItemID(ID: Integer): TBitmapFontRange;
     property Items[index: Integer]: TBitmapFontRange read GetItems write SetItems; default;
 
     {: Converts an ASCII character into a tile index.<p>
        Return -1 if character cannot be rendered. }
-    function CharacterToTileIndex(aChar: AnsiChar): Integer;
+    function CharacterToTileIndex(aChar: widechar): Integer;
+    function TileIndexToChar(aIndex: integer): widechar;
     procedure NotifyChange;
 
-    //: Total number of characters in the ranges
-    function CharacterCount: Integer;
+         //: Total number of characters in the ranges; cached for performance
+    property CharacterCount: Integer read FCharCount;
   end;
 
   TDynIntegerArray = array of Integer;
@@ -141,15 +148,15 @@ type
     FGlyphsIntervalX, FGlyphsIntervalY: Integer;
     FHSpace, FVSpace, FHSpaceFix: Integer;
     FUsers: TList;
-    FTextureHandle: TGLTextureHandle;
     FMinFilter: TGLMinFilter;
     FMagFilter: TGLMagFilter;
     FTextureWidth, FTextureHeight: Integer;
     FGlyphsAlpha: TGLTextureImageAlpha;
-    FCharWidths: TDynIntegerArray;
   protected
     { Protected Declarations }
     FCharRects: array of TVector;
+    FCharWidths: TDynIntegerArray;
+    FTextureHandle: TGLTextureHandle;
     property CharWidths: TDynIntegerArray read FCharWidths write FCharWidths;
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
@@ -173,7 +180,8 @@ type
 
     procedure InvalidateUsers;
     function CharactersPerRow: Integer;
-    procedure GetCharTexCoords(ch: AnsiChar; var topLeft, bottomRight: TTexPoint);
+    procedure GetCharTexCoords(ch: widechar; var topLeft, bottomRight: TTexPoint);
+    procedure GetICharTexCoords(chi: integer; var topLeft, bottomRight: TTexPoint);
     procedure PrepareImage; virtual;
     procedure PrepareParams(var rci: TRenderContextInfo);
 
@@ -216,7 +224,7 @@ type
        of rotated and linear distorted text with this method, OpenGL
        Enable states are also possibly altered. }
     procedure RenderString(var rci: TRenderContextInfo;
-      const aText: AnsiString; aAlignment: TAlignment;
+      const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
     {: Wide string variant. Warning - dummy method. }
@@ -228,14 +236,22 @@ type
     {: A simpler canvas-style TextOut helper for RenderString.<p>
        The rendering is reversed along Y by default, to allow direct use
        with TGLCanvas }
-    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: string; const color: TColorVector); overload;
-    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: string; const color: TColor); overload;
-    function TextWidth(const text: string): Integer;
+    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload;
+    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload;
+    function TextWidth(const text: UnicodeString): Integer;
+
+    function  CharacterToTileIndex(aChar: widechar): Integer; virtual;
+    function  TileIndexToChar(aIndex: integer): widechar; virtual;
+    function  CharacterCount: integer; virtual;
 
     {: Get the actual width for this char. }
-    function GetCharWidth(ch: AnsiChar): Integer;
+    function  GetCharWidth(ch: widechar): Integer;
     {: Get the actual pixel width for this string. }
-    function CalcStringWidth(const aText: AnsiString): Integer; overload; virtual;
+    function  CalcStringWidth(const aText: UnicodeString): Integer; overload; virtual;
+
+    // make texture if needed
+    procedure CheckTexture(var rci: TRenderContextInfo);
+
     {: Wide string variant. Warning - dummy method. }
     function CalcStringWidth(const aText: WideString): Integer; overload; virtual;
 
@@ -277,7 +293,7 @@ type
   private
     { Private Declarations }
     FBitmapFont: TGLCustomBitmapFont;
-    FText: string;
+    FText: UnicodeString;
     FAlignment: TAlignment;
     FLayout: TGLTextLayout;
     FModulateColor: TGLColor;
@@ -286,7 +302,7 @@ type
   protected
     { Protected Declarations }
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
-    procedure SetText(const val: string);
+    procedure SetText(const val: UnicodeString);
     procedure SetAlignment(const val: TAlignment);
     procedure SetLayout(const val: TGLTextLayout);
     procedure SetModulateColor(const val: TGLColor);
@@ -313,7 +329,7 @@ type
     {: Text to render.<p>
        Be aware that only the characters available in the bitmap font will
        be rendered. CR LF sequences are allowed. }
-    property Text: string read FText write SetText;
+    property Text: UnicodeString read FText write SetText;
     {: Controls the text alignment (horizontal).<p>
        Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment;
@@ -369,6 +385,7 @@ begin
     FStartASCII := TBitmapFontRange(Source).FStartASCII;
     FStopASCII := TBitmapFontRange(Source).FStopASCII;
     FStartGlyphIdx := TBitmapFontRange(Source).FStartGlyphIdx;
+    NotifyChange;
   end;
   inherited;
 end;
@@ -378,6 +395,8 @@ end;
 
 procedure TBitmapFontRange.NotifyChange;
 begin
+  FCharCount    := integer(FStopASCII) - integer(FStartASCII) + 1;
+  FStopGlyphIdx := FStartGlyphIdx + FCharCount - 1;
   if Assigned(Collection) then
     (Collection as TBitmapFontRanges).NotifyChange;
 end;
@@ -388,14 +407,13 @@ end;
 function TBitmapFontRange.GetDisplayName: string;
 begin
   Result := Format('ASCII [#%d, #%d] -> Glyphs [%d, %d]',
-    [Integer(StartASCII), Integer(StopASCII), StartGlyphIdx,
-    StartGlyphIdx + Integer(StopASCII) - Integer(StartASCII)]);
+                  [Integer(StartASCII), Integer(StopASCII), StartGlyphIdx, StopGlyphIdx]);
 end;
 
 // SetStartASCII
 //
 
-procedure TBitmapFontRange.SetStartASCII(const val: AnsiChar);
+procedure TBitmapFontRange.SetStartASCII(const val: widechar);
 begin
   if val <> FStartASCII then
   begin
@@ -409,15 +427,13 @@ end;
 // SetStopASCII
 //
 
-procedure TBitmapFontRange.SetStopASCII(const val: AnsiChar);
+procedure TBitmapFontRange.SetStopASCII(const val: widechar);
 begin
   if FStopASCII <> val then
   begin
     FStopASCII := val;
     if FStopASCII < FStartASCII then
-    begin
       FStartASCII := FStopASCII;
-    end;
     NotifyChange;
   end;
 end;
@@ -429,8 +445,7 @@ procedure TBitmapFontRange.SetStartGlyphIdx(const val: Integer);
 begin
   if val >= 0 then
     FStartGlyphIdx := val
-  else
-    FStartGlyphIdx := 0;
+  else FStartGlyphIdx := 0;
   NotifyChange;
 end;
 
@@ -490,7 +505,7 @@ end;
 // Add
 //
 
-function TBitmapFontRanges.Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange;
+function TBitmapFontRanges.Add(startASCII, stopASCII: widechar): TBitmapFontRange;
 begin
   Result := Add;
   Result.StartASCII := startASCII;
@@ -508,7 +523,7 @@ end;
 // CharacterToTileIndex
 //
 
-function TBitmapFontRanges.CharacterToTileIndex(aChar: AnsiChar): Integer;
+function TBitmapFontRanges.CharacterToTileIndex(aChar: widechar): Integer;
 var
   i: Integer;
 begin
@@ -524,11 +539,35 @@ begin
     end;
 end;
 
+function TBitmapFontRanges.TileIndexToChar(aIndex: integer): widechar;
+var
+  i: Integer;
+begin
+  Result := #0;
+  for i := 0 to Count - 1 do
+    with Items[i] do
+    begin
+      if (aIndex >= StartGlyphIdx) and (aIndex <= StopGlyphIdx) then
+      begin
+        Result := widechar(aIndex - StartGlyphIdx + Integer(StartASCII));
+        Break;
+      end;
+    end;
+end;
+
+procedure TBitmapFontRanges.Update(Item: TCollectionItem);
+begin
+  inherited;
+  NotifyChange;
+end;
+
 // NotifyChange
 //
 
 procedure TBitmapFontRanges.NotifyChange;
 begin
+  FCharCount := CalcCharacterCount;
+
   if Assigned(FOwner) and (FOwner is TGLBaseSceneObject) then
     TGLBaseSceneObject(FOwner).StructureChanged;
 end;
@@ -536,7 +575,7 @@ end;
 // CharacterCount
 //
 
-function TBitmapFontRanges.CharacterCount: Integer;
+function TBitmapFontRanges.CalcCharacterCount: Integer;
 var
   i: Integer;
 begin
@@ -582,23 +621,41 @@ begin
   FUsers.Free;
 end;
 
+// force texture when needed
+procedure TGLCustomBitmapFont.CheckTexture(var rci: TRenderContextInfo);
+begin
+  if FTextureHandle.IsDataNeedUpdate then
+  begin
+    // prepare handle
+    FTextureHandle.AllocateHandle;
+    // texture registration
+    FTextureHandle.Target := ttTexture2D;
+    rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
+    PrepareImage;
+    PrepareParams(rci);
+    FTextureHandle.NotifyDataUpdated;
+  end;
+end;
+
 // GetCharWidth
 //
 
-function TGLCustomBitmapFont.GetCharWidth(ch: AnsiChar): Integer;
+function TGLCustomBitmapFont.GetCharWidth(ch: widechar): Integer;
 var
   chi: Integer;
 begin
   if Length(FCharWidths) = 0 then
     ResetCharWidths;
-  chi := Integer(ch);
-  Result := FCharWidths[chi]
+  chi := CharacterToTileIndex(ch);
+  if chi >= 0 then
+       Result := FCharWidths[chi]
+  else Result := 0;
 end;
 
 // CalcStringWidth
 //
 
-function TGLCustomBitmapFont.CalcStringWidth(const aText: AnsiString): Integer;
+function TGLCustomBitmapFont.CalcStringWidth(const aText: UnicodeString): Integer;
 var
   i: Integer;
 begin
@@ -614,7 +671,7 @@ end;
 
 function TGLCustomBitmapFont.CalcStringWidth(const aText: WideString): Integer;
 begin
-  Result := CalcStringWidth(AnsiString(aText));
+  Result := CalcStringWidth(UnicodeString(aText));
 end;
 
 // ResetCharWidths
@@ -624,11 +681,14 @@ procedure TGLCustomBitmapFont.ResetCharWidths(w: Integer = -1);
 var
   i: Integer;
 begin
-  if Length(FCharWidths) = 0 then
-    SetLength(FCharWidths, GLS_FONT_CHARS_COUNT);
-  if w < 0 then
-    w := CharWidth;
-  for i := 0 to GLS_FONT_CHARS_COUNT - 1 do
+  i := CharacterCount;
+  if i > GLS_FONT_CHARS_COUNT then
+    i := GLS_FONT_CHARS_COUNT;
+
+  if Length(FCharWidths) < i then
+      SetLength(FCharWidths, i);
+  if w < 0 then w := CharWidth;
+  for i := 0 to High(FCharWidths) do
     FCharWidths[i] := w;
 end;
 
@@ -637,7 +697,8 @@ end;
 
 procedure TGLCustomBitmapFont.SetCharWidths(index, value: Integer);
 begin
-  FCharWidths[index] := value;
+  if index >= 0 then
+    FCharWidths[index] := value;
 end;
 
 // SetCharRects
@@ -645,9 +706,10 @@ end;
 
 procedure TGLCustomBitmapFont.SetCharRects(index: Integer; const p: TVector);
 begin
-  if Length(FCharRects) < GLS_FONT_CHARS_COUNT then
-    Setlength(FCharRects, GLS_FONT_CHARS_COUNT);
-  FCharRects[index] := p;
+  if Length(FCharRects) < CharacterCount then
+    Setlength(FCharRects, CharacterCount);
+  if index < CharacterCount then
+    FCharRects[index] := p;
 end;
 
 // SetRanges
@@ -896,11 +958,21 @@ begin
   end;
 end;
 
+function TGLCustomBitmapFont.TileIndexToChar(aIndex: integer): widechar;
+begin
+  Result := FRanges.TileIndexToChar(aIndex);
+end;
+
+function TGLCustomBitmapFont.CharacterToTileIndex(aChar: widechar): Integer;
+begin
+  Result := FRanges.CharacterToTileIndex(aChar);
+end;
+
 // RenderString
 //
 
 procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
-      const aText: AnsiString; aAlignment: TAlignment;
+      const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
 
@@ -939,29 +1011,16 @@ procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
   end;
 
 var
-  i: Integer;
+  i, chi: Integer;
   topLeft, bottomRight: TTexPoint;
   vTopLeft, vBottomRight: TVector;
   deltaH, deltaV, spaceDeltaH: Single;
-  currentChar: AnsiChar;
+  currentChar: widechar;
 begin
-  if (Glyphs.Width = 0) or (aText = '') then
+  if (aText = '') then
     Exit;
   // prepare texture if necessary
-  FTextureHandle.AllocateHandle;
-  if FTextureHandle.IsDataNeedUpdate then
-  begin
-    // prepare handle
-    FTextureHandle.Target := ttTexture2D;
-    rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
-    // texture registration
-    if Glyphs.Width <> 0 then
-    begin
-      PrepareImage;
-      PrepareParams(rci);
-    end;
-    FTextureHandle.NotifyDataUpdated;
-  end;
+  CheckTexture(rci);
   // precalcs
   if Assigned(aPosition) then
     MakePoint(vTopLeft, aPosition[0] + AlignmentAdjustement(1), aPosition[1] + LayoutAdjustement, 0)
@@ -1008,11 +1067,13 @@ begin
         end;
       #32: vTopLeft[0] := vTopLeft[0] + spaceDeltaH;
     else
-      deltaH := GetCharWidth(currentChar);
+      chi := CharacterToTileIndex(currentChar);
+      if chi < 0 then continue; //not found
+      deltaH := CharWidths[chi];
       if deltaH > 0 then
       with GL do
       begin
-        GetCharTexCoords(currentChar, topLeft, bottomRight);
+        GetICharTexCoords(chi, topLeft, bottomRight);
         vBottomRight[0] := vTopLeft[0] + deltaH;
 
         TexCoord2fv(@topLeft);
@@ -1041,18 +1102,15 @@ Procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
       const aText: WideString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
-var
-  AnsiText: AnsiString;
 begin
-  AnsiText := AnsiString(aText);
-  RenderString(rci, AnsiText, aAlignment, aLayout, aColor, aPosition, aReverseY);
+  RenderString(rci, UnicodeString(aText), aAlignment, aLayout, aColor, aPosition, aReverseY);
 end;
 
 // TextOut
 //
 
 procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo;
-  x, y: Single; const text: string; const color: TColorVector);
+  x, y: Single; const text: UnicodeString; const color: TColorVector);
 var
   v: TVector;
 begin
@@ -1067,7 +1125,7 @@ end;
 //
 
 procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo;
-  x, y: Single; const text: string; const color: TColor);
+  x, y: Single; const text: UnicodeString; const color: TColor);
 begin
   TextOut(rci, x, y, text, ConvertWinColor(color));
 end;
@@ -1075,9 +1133,9 @@ end;
 // TextWidth
 //
 
-function TGLCustomBitmapFont.TextWidth(const text: string): Integer;
+function TGLCustomBitmapFont.TextWidth(const text: UnicodeString): Integer;
 begin
-  Result := CalcStringWidth(AnsiString(text));
+  Result := CalcStringWidth(text);
 end;
 
 // CharactersPerRow
@@ -1091,38 +1149,51 @@ begin
     Result := 0;
 end;
 
+function TGLCustomBitmapFont.CharacterCount: integer;
+begin
+  Result := FRanges.CharacterCount;
+end;
+
+procedure TGLCustomBitmapFont.GetCharTexCoords(ch: widechar; var topLeft, bottomRight: TTexPoint);
+begin
+  GetICharTexCoords(CharacterToTileIndex(ch), topLeft, bottomRight);
+end;
+
 // TileIndexToTexCoords
 //
 
-procedure TGLCustomBitmapFont.GetCharTexCoords(ch: AnsiChar; var topLeft, bottomRight: TTexPoint);
+procedure TGLCustomBitmapFont.GetICharTexCoords(chi: integer; var topLeft, bottomRight: TTexPoint);
 var
-  i, j, sa: Integer;
   carX, carY: Integer;
   tileIndex: Integer;
   p: PVector;
 begin
   if Length(FCharRects) = 0 then
   begin
-    SetLength(FCharRects, GLS_FONT_CHARS_COUNT);
-    for i := 0 to FRanges.Count - 1 do
-      with FRanges.Items[i] do
-      begin
-        sa := Integer(StartASCII);
-        tileIndex := StartGlyphIdx;
-        for j := sa to Integer(StopASCII) do
-        begin
-          p := @FCharRects[j];
-          carX := (tileIndex mod CharactersPerRow) * (CharWidth + GlyphsIntervalX);
-          carY := (tileIndex div CharactersPerRow) * (CharHeight + GlyphsIntervalY);
-          p[0] := (carX + 0.05) / FTextureWidth;
-          p[1] := (FTextureHeight - (carY + 0.05)) / FTextureHeight;
-          p[2] := (carX + GetCharWidth(AnsiChar(j)) - 0.05) / FTextureWidth;
-          p[3] := (FTextureHeight - (carY + CharHeight - 0.05)) / FTextureHeight;
-          Inc(tileIndex);
-        end;
-      end;
+    ResetCharWidths;
+    SetLength(FCharRects, CharacterCount);
+    for tileIndex := 0 to CharacterCount - 1 do
+    begin
+      p := @FCharRects[tileIndex];
+      carX := (tileIndex mod CharactersPerRow) * (CharWidth + GlyphsIntervalX);
+      carY := (tileIndex div CharactersPerRow) * (CharHeight + GlyphsIntervalY);
+      p[0] := (carX + 0.05) / FTextureWidth;
+      p[1] := (FTextureHeight - (carY + 0.05)) / FTextureHeight;
+      p[2] := (carX + CharWidths[tileIndex] - 0.05) / FTextureWidth;
+      p[3] := (FTextureHeight - (carY + CharHeight - 0.05)) / FTextureHeight;
+    end;
   end;
-  p := @FCharRects[Integer(ch)];
+
+  if chi < 0 then
+  begin
+    //invalid char
+    topLeft := NullTexPoint;
+    bottomRight := NullTexPoint;
+    exit;
+  end;
+  if chi >= Length(FCharRects) then
+    chi := 0;
+  p := @FCharRects[chi];
   topLeft.S := p[0];
   topLeft.T := p[1];
   bottomRight.S := p[2];
@@ -1214,7 +1285,7 @@ end;
 // SetText
 //
 
-procedure TGLFlatText.SetText(const val: string);
+procedure TGLFlatText.SetText(const val: UnicodeString);
 begin
   FText := val;
   StructureChanged;
