@@ -4,6 +4,7 @@
 {: GLPipelineTransformation<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
     <li>16/11/10 - Yar - Added NormalModelMatrix
     <li>23/08/10 - Yar - Creation
  </ul></font>
@@ -35,24 +36,37 @@ type
 
   TGLPipelineTransformationStates = set of TGLPipelineTransformationState;
 
-  TGLPipelineTransformation = class
-  private
-    FStates: TGLPipelineTransformationStates;
-    FStackPos: Integer;
-    FModelMatrix: array[0..MAX_MATRIX_STACK_DEPTH-1] of TMatrix;
-    FViewMatrix: array[0..MAX_MATRIX_STACK_DEPTH-1] of TMatrix;
-    FProjectionMatrix: array[0..MAX_MATRIX_STACK_DEPTH-1] of TMatrix;
-    FFFPTransformation: Boolean;
+const
+  cAllStatesChanged = [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsViewProjChanged, trsNormalModelChanged, trsFrustum];
 
+type
+
+  PTransformationRec = ^TTransformationRec;
+  TTransformationRec = record
+    FStates: TGLPipelineTransformationStates;
+    FModelMatrix: TMatrix;
+    FViewMatrix: TMatrix;
+    FProjectionMatrix: TMatrix;
     FInvModelMatrix: TMatrix;
     FNormalModelMatrix: TAffineMatrix;
     FModelViewMatrix: TMatrix;
     FInvModelViewMatrix: TMatrix;
     FViewProjectionMatrix: TMatrix;
     FFrustum: TFrustum;
+  end;
 
-    FCameraPosition: TVector;
+type
 
+  TOnMatricesPush = procedure() of object;
+
+  // TGLTransformation
+  //
+  TGLTransformation = class(TObject)
+  private
+    FStackPos: Integer;
+    FStack: array of TTransformationRec;
+    FLoadMatricesEnabled: Boolean;
+    FOnPush: TOnMatricesPush;
     function GetModelMatrix: TMatrix;
     function GetViewMatrix: TMatrix;
     function GetProjectionMatrix: TMatrix;
@@ -69,13 +83,16 @@ type
   protected
     procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
     procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    procedure DoMatrcesLoaded; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;
 
     procedure IdentityAll;
-    procedure Push;
+    procedure Push(AValue: PTransformationRec = nil);
     procedure Pop;
     procedure ReplaceFromStack;
+    function StackTop: TTransformationRec;
 
     property ModelMatrix: TMatrix read GetModelMatrix write SetModelMatrix;
     property ViewMatrix: TMatrix read GetViewMatrix write SetViewMatrix;
@@ -88,77 +105,105 @@ type
     property ViewProjectionMatrix: TMatrix read GetViewProjectionMatrix;
     property Frustum: TFrustum read GetFrustum;
 
-    property CameraPosition: TVector read FCameraPosition write FCameraPosition;
-    property FFPTransformation: Boolean read FFFPTransformation write FFFPTransformation;
+    property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
   end;
 
 implementation
 
 uses
   OpenGLTokens,
-  GLContext;
+  GLContext,
+  GLSLog;
 
-const
-  cAllStatesChanged = [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsViewProjChanged, trsNormalModelChanged, trsFrustum];
-
-constructor TGLPipelineTransformation.Create;
+constructor TGLTransformation.Create;
 begin
   FStackPos := 0;
+  SetLength(FStack, 1);
   IdentityAll;
 end;
 
-procedure TGLPipelineTransformation.IdentityAll;
+procedure TGLTransformation.IdentityAll;
 begin
-  FModelMatrix[FStackPos] := IdentityHmgMatrix;
-  FViewMatrix[FStackPos] := IdentityHmgMatrix;
-  FProjectionMatrix[FStackPos] := IdentityHmgMatrix;
-  FStates := cAllStatesChanged;
-  if FFPTransformation then
+  with FStack[FStackPos] do
+  begin
+    FModelMatrix := IdentityHmgMatrix;
+    FViewMatrix := IdentityHmgMatrix;
+    FProjectionMatrix := IdentityHmgMatrix;
+    FStates := cAllStatesChanged;
+  end;
+  if LoadMatricesEnabled then
   begin
     LoadModelViewMatrix;
     LoadProjectionMatrix;
   end;
 end;
 
-procedure TGLPipelineTransformation.Push;
+procedure TGLTransformation.Push(AValue: PTransformationRec);
 var
   prevPos: Integer;
 begin
-  Assert(FStackPos <= MAX_MATRIX_STACK_DEPTH);
+  if FStackPos > MAX_MATRIX_STACK_DEPTH then
+  begin
+    GLSLogger.LogWarningFmt('Transformation stack overflow, more then %d values',
+      [MAX_MATRIX_STACK_DEPTH]);
+  end;
   prevPos := FStackPos;
   Inc(FStackPos);
-  FModelMatrix[FStackPos] := FModelMatrix[prevPos];
-  FViewMatrix[FStackPos] := FViewMatrix[prevPos];
-  FProjectionMatrix[FStackPos] := FProjectionMatrix[prevPos];
+  if High(FStack) < FStackPos then
+    SetLength(FStack, FStackPos+1);
+
+  if Assigned(AValue) then
+  begin
+    FStack[FStackPos] := AValue^;
+    if LoadMatricesEnabled then
+    begin
+      LoadModelViewMatrix;
+      LoadProjectionMatrix;
+    end;
+    DoMatrcesLoaded;
+  end
+  else
+    FStack[FStackPos] := FStack[prevPos];
 end;
 
-procedure TGLPipelineTransformation.Pop;
+procedure TGLTransformation.Pop;
 begin
-  Assert(FStackPos > 0);
+  if FStackPos = 0 then
+  begin
+    GLSLogger.LogError('Transformation stack underflow');
+    exit;
+  end;
+
   Dec(FStackPos);
-  FStates := cAllStatesChanged;
-  if FFPTransformation then
+  if LoadMatricesEnabled then
   begin
     LoadModelViewMatrix;
     LoadProjectionMatrix;
   end;
 end;
 
-procedure TGLPipelineTransformation.ReplaceFromStack;
+procedure TGLTransformation.ReplaceFromStack;
+var
+  prevPos: Integer;
 begin
-  Assert(FStackPos > 0);
-  FModelMatrix[FStackPos] := FModelMatrix[FStackPos-1];
-  FViewMatrix[FStackPos] := FViewMatrix[FStackPos-1];
-  FProjectionMatrix[FStackPos] := FProjectionMatrix[FStackPos-1];
-  FStates := cAllStatesChanged;
-  if FFPTransformation then
+  if FStackPos = 0 then
+  begin
+    GLSLogger.LogError('Transformation stack underflow');
+    exit;
+  end;
+  prevPos := FStackPos - 1;
+  FStack[FStackPos].FModelMatrix := FStack[prevPos].FModelMatrix;
+  FStack[FStackPos].FViewMatrix:= FStack[prevPos].FViewMatrix;
+  FStack[FStackPos].FProjectionMatrix:= FStack[prevPos].FProjectionMatrix;
+  FStack[FStackPos].FStates := FStack[prevPos].FStates;
+  if LoadMatricesEnabled then
   begin
     LoadModelViewMatrix;
     LoadProjectionMatrix;
   end;
 end;
 
-procedure TGLPipelineTransformation.LoadModelViewMatrix;
+procedure TGLTransformation.LoadModelViewMatrix;
 var
   M: TMatrix;
 begin
@@ -166,115 +211,134 @@ begin
   GL.LoadMatrixf(PGLFloat(@M));
 end;
 
-procedure TGLPipelineTransformation.LoadProjectionMatrix;
+procedure TGLTransformation.LoadProjectionMatrix;
 begin
-  GL.MatrixMode(GL_PROJECTION);
-  GL.LoadMatrixf(PGLFloat(@FProjectionMatrix[FStackPos]));
-  GL.MatrixMode(GL_MODELVIEW);
+  with GL do
+  begin
+    MatrixMode(GL_PROJECTION);
+    LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
+    MatrixMode(GL_MODELVIEW);
+  end;
 end;
 
-function TGLPipelineTransformation.GetModelMatrix: TMatrix;
+function TGLTransformation.GetModelMatrix: TMatrix;
 begin
-  Result := FModelMatrix[FStackPos];
+  Result := FStack[FStackPos].FModelMatrix;
 end;
 
-function TGLPipelineTransformation.GetViewMatrix: TMatrix;
+function TGLTransformation.GetViewMatrix: TMatrix;
 begin
-  Result := FViewMatrix[FStackPos];
+  Result := FStack[FStackPos].FViewMatrix;
 end;
 
-function TGLPipelineTransformation.GetProjectionMatrix: TMatrix;
+function TGLTransformation.GetProjectionMatrix: TMatrix;
 begin
-  Result := FProjectionMatrix[FStackPos];
+  Result := FStack[FStackPos].FProjectionMatrix;
 end;
 
-procedure TGLPipelineTransformation.SetModelMatrix(const AMatrix: TMatrix);
+procedure TGLTransformation.SetModelMatrix(const AMatrix: TMatrix);
 begin
-  FModelMatrix[FStackPos] := AMatrix;
-  FStates := FStates + [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsNormalModelChanged];
-  if FFPTransformation then
+  FStack[FStackPos].FModelMatrix := AMatrix;
+  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
+    [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsNormalModelChanged];
+  if LoadMatricesEnabled then
     LoadModelViewMatrix;
 end;
 
-procedure TGLPipelineTransformation.SetViewMatrix(const AMatrix: TMatrix);
+procedure TGLTransformation.SetViewMatrix(const AMatrix: TMatrix);
 begin
-  FViewMatrix[FStackPos] := AMatrix;
-  FStates := FStates + [trsModelViewChanged, trsInvModelViewChanged, trsViewProjChanged, trsFrustum];
-  if FFPTransformation then
+  FStack[FStackPos].FViewMatrix:= AMatrix;
+  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
+    [trsModelViewChanged, trsInvModelViewChanged, trsViewProjChanged, trsFrustum];
+  if LoadMatricesEnabled then
     LoadModelViewMatrix;
 end;
 
-procedure TGLPipelineTransformation.SetProjectionMatrix(const AMatrix: TMatrix);
+function TGLTransformation.StackTop: TTransformationRec;
 begin
-  FProjectionMatrix[FStackPos] := AMatrix;
-  FStates := FStates + [trsViewProjChanged, trsFrustum];
-  if FFPTransformation then
+  Result := FStack[FStackPos];
+end;
+
+procedure TGLTransformation.SetProjectionMatrix(const AMatrix: TMatrix);
+begin
+  FStack[FStackPos].FProjectionMatrix := AMatrix;
+  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
+    [trsViewProjChanged, trsFrustum];
+  if LoadMatricesEnabled then
     LoadProjectionMatrix;
 end;
 
-function TGLPipelineTransformation.GetModelViewMatrix: TMatrix;
+function TGLTransformation.GetModelViewMatrix: TMatrix;
 begin
-  if trsModelViewChanged in FStates then
+  if trsModelViewChanged in FStack[FStackPos].FStates then
   begin
-    FModelViewMatrix := MatrixMultiply(FModelMatrix[FStackPos], FViewMatrix[FStackPos]);
-    Exclude(FStates, trsModelViewChanged);
+    FStack[FStackPos].FModelViewMatrix :=
+      MatrixMultiply(FStack[FStackPos].FModelMatrix, FStack[FStackPos].FViewMatrix);
+    Exclude(FStack[FStackPos].FStates, trsModelViewChanged);
   end;
-  Result := FModelViewMatrix;
+  Result := FStack[FStackPos].FModelViewMatrix;
 end;
 
-function TGLPipelineTransformation.GetInvModelViewMatrix: TMatrix;
+function TGLTransformation.GetInvModelViewMatrix: TMatrix;
 begin
-  if trsInvModelViewChanged in FStates then
+  if trsInvModelViewChanged in FStack[FStackPos].FStates then
   begin
-    FInvModelViewMatrix := GetModelViewMatrix;
-    InvertMatrix(FInvModelViewMatrix);
-    Exclude(FStates, trsInvModelViewChanged);
+    FStack[FStackPos].FInvModelViewMatrix := GetModelViewMatrix;
+    InvertMatrix(FStack[FStackPos].FInvModelViewMatrix);
+    Exclude(FStack[FStackPos].FStates, trsInvModelViewChanged);
   end;
-  Result := FInvModelViewMatrix;
+  Result := FStack[FStackPos].FInvModelViewMatrix;
 end;
 
-function TGLPipelineTransformation.GetInvModelMatrix: TMatrix;
+function TGLTransformation.GetInvModelMatrix: TMatrix;
 begin
-  if trsInvModelChanged in FStates then
+  if trsInvModelChanged in FStack[FStackPos].FStates then
   begin
-    FInvModelMatrix := MatrixInvert(FModelMatrix[FStackPos]);
-    Exclude(FStates, trsInvModelChanged);
+    FStack[FStackPos].FInvModelMatrix := MatrixInvert(FStack[FStackPos].FModelMatrix);
+    Exclude(FStack[FStackPos].FStates, trsInvModelChanged);
   end;
-  Result := FInvModelMatrix;
+  Result := FStack[FStackPos].FInvModelMatrix;
 end;
 
-function TGLPipelineTransformation.GetNormalModelMatrix: TAffineMatrix;
+function TGLTransformation.GetNormalModelMatrix: TAffineMatrix;
 var
   M: TMatrix;
 begin
-  if trsNormalModelChanged in FStates then
+  if trsNormalModelChanged in FStack[FStackPos].FStates then
   begin
-    M := FModelMatrix[FStackPos];
+    M := FStack[FStackPos].FModelMatrix;
     NormalizeMatrix(M);
-    SetMatrix(FNormalModelMatrix, M);
-    Exclude(FStates, trsNormalModelChanged);
+    SetMatrix(FStack[FStackPos].FNormalModelMatrix, M);
+    Exclude(FStack[FStackPos].FStates, trsNormalModelChanged);
   end;
-  Result := FNormalModelMatrix;
+  Result := FStack[FStackPos].FNormalModelMatrix;
 end;
 
-function TGLPipelineTransformation.GetViewProjectionMatrix: TMatrix;
+function TGLTransformation.GetViewProjectionMatrix: TMatrix;
 begin
-  if trsViewProjChanged in FStates then
+  if trsViewProjChanged in FStack[FStackPos].FStates then
   begin
-    FViewProjectionMatrix := MatrixMultiply(FViewMatrix[FStackPos], FProjectionMatrix[FStackPos]);
-    Exclude(FStates, trsViewProjChanged);
+    FStack[FStackPos].FViewProjectionMatrix :=
+      MatrixMultiply(FStack[FStackPos].FViewMatrix, FStack[FStackPos].FProjectionMatrix);
+    Exclude(FStack[FStackPos].FStates, trsViewProjChanged);
   end;
-  Result := FViewProjectionMatrix;
+  Result := FStack[FStackPos].FViewProjectionMatrix;
 end;
 
-function TGLPipelineTransformation.GetFrustum: TFrustum;
+procedure TGLTransformation.DoMatrcesLoaded;
 begin
-  if trsFrustum in FStates then
+  if Assigned(FOnPush) then
+    FOnPush();
+end;
+
+function TGLTransformation.GetFrustum: TFrustum;
+begin
+  if trsFrustum in FStack[FStackPos].FStates then
   begin
-    FFrustum := ExtractFrustumFromModelViewProjection(GetViewProjectionMatrix);
-    Exclude(FStates, trsFrustum);
+    FStack[FStackPos].FFrustum := ExtractFrustumFromModelViewProjection(GetViewProjectionMatrix);
+    Exclude(FStack[FStackPos].FStates, trsFrustum);
   end;
-  Result := FFrustum;
+  Result := FStack[FStackPos].FFrustum;
 end;
 
 end.
