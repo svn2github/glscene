@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 129
   Top = 112
+  Width = 704
+  Height = 449
   Caption = 'Form1'
-  ClientHeight = 391
-  ClientWidth = 688
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,7 +26,6 @@ object Form1: TForm1
     Align = alClient
     OnClick = GLSceneViewer1Click
     TabOrder = 0
-    ExplicitWidth = 629
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
