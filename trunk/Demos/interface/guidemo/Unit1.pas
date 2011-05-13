@@ -81,6 +81,7 @@ type
     { Déclarations privées }
   public
     { Déclarations publiques }
+    constructor Create(AOwner: TComponent); override;
   end;
 
 var
@@ -127,6 +128,13 @@ procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   GLForm1.MouseUp(Sender,TGLMouseButton(Button),Shift,X,Y);
+end;
+
+constructor TForm1.Create(AOwner: TComponent);
+begin
+  inherited;
+  GLForm1.Caption := 'Unicode caption...'#$0699#$069A#$963f#$54c0;
+  WindowsBitmapFont1.EnsureString(GLForm1.Caption);
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
