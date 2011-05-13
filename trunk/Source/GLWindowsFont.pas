@@ -240,8 +240,12 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           Windows.ExtTextOutW(canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, buffer, 2, nil);
         end;
         Inc(px, cw);
-        Inc(Result);
+      end
+      else
+      begin
+        SetCharRects(n, NullHmgVector);
       end;
+      Inc(Result);
     end;
   end;
 
@@ -264,7 +268,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   end;
 
 var
-  bitmap: TGLBitMap;
+  bitmap: TGLBitmap;
   ch: widechar;
   x, y, i, cw: Integer;
   nbChars: Integer;
@@ -320,7 +324,12 @@ begin
     end;
   end;
 
+{$IFDEF GLS_DELPHI_2009_UP}
   bitmap.SetSize(x, y);
+{$ELSE}
+  bitmap.Width := x;
+  bitmap.Height := y;
+{$ENDIF}
 
   with bitmap.Canvas do
   begin
@@ -330,7 +339,6 @@ begin
   end;
 
   ComputeCharRects(x, y, bitmap.Canvas);
-//  Clipboard.Assign(bitmap);
   Glyphs.OnChange := OnGlyphsChanged;
 end;
 

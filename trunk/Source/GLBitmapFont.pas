@@ -47,6 +47,13 @@ unit GLBitmapFont;
 
 {$I GLScene.inc}
 
+{$IFDEF GLS_DELPHI_2009_UP}
+{$DEFINE GLS_UNICODE_SUPPORT}
+{$ENDIF}
+{$IFDEF FPC}
+{$DEFINE GLS_UNICODE_SUPPORT}
+{$ENDIF}
+
 interface
 
 uses
@@ -56,6 +63,9 @@ uses
   GLRenderContextInfo, GLTextureFormat;
 
 type
+{$IFNDEF GLS_UNICODE_SUPPORT}
+  UnicodeString = AnsiString;
+{$ENDIF}
 
   // TBitmapFontRange
   //
@@ -65,7 +75,7 @@ type
   TBitmapFontRange = class(TCollectionItem)
   private
     { Private Declarations }
-    FStartASCII, FStopASCII: widechar;
+    FStartASCII, FStopASCII: WideChar;
     FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
 
   protected
@@ -227,7 +237,7 @@ type
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
-    {: Wide string variant. Warning - dummy method. }
+    {: Wide string variant. }
     Procedure RenderString(var rci: TRenderContextInfo;
       const aText: WideString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
@@ -663,7 +673,7 @@ begin
   begin
     Result := -HSpace + Length(aText) * (HSpaceFix + HSpace);
     for i := 1 to Length(aText) do
-      Result := Result + GetCharWidth(aText[i]);
+      Result := Result + GetCharWidth(WideChar(aText[i]));
   end
   else
     Result := 0;
@@ -1050,7 +1060,7 @@ begin
   GL.Begin_(GL_QUADS);
   for i := 1 to Length(aText) do
   begin
-    currentChar := aText[i];
+    currentChar := WideChar(aText[i]);
     case currentChar of
       #0..#12, #14..#31: ; // ignore
       #13:
@@ -1380,4 +1390,3 @@ initialization
   RegisterClasses([TGLBitmapFont, TGLFlatText]);
 
 end.
-
