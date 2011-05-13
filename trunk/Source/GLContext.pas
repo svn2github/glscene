@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
       <li>24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
       <li>24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
       <li>14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
@@ -109,7 +110,7 @@ uses
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  GLS_MAX_RENDERING_CONTEXT_NUM = 8;
+  GLS_MAX_RENDERING_CONTEXT_NUM = 16;
   MRT_BUFFERS: array[0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 {$IFDEF FPC}
@@ -184,6 +185,7 @@ type
   TGLContext = class
   private
     { Private Declarations }
+    FID: Integer;
     FColorBits, FAlphaBits: Integer;
     FDepthBits: Integer;
     FStencilBits: Integer;
@@ -201,7 +203,7 @@ type
     FGL: TGLExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TGLStateCache;
-    FTransformation: TGLPipelineTransformation;
+    FTransformation: TGLTransformation;
     FAcceleration: TGLContextAcceleration;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
@@ -238,11 +240,12 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
+    property ID: Integer read FID;
     {: An application-side cache of global per-context OpenGL states
        and parameters }
     property GLStates: TGLStateCache read FGLStates;
 
-    property PipelineTransformation: TGLPipelineTransformation read FTransformation;
+    property PipelineTransformation: TGLTransformation read FTransformation;
 
     //: Context manager reference
     property Manager: TGLContextManager read FManager;
@@ -371,7 +374,6 @@ type
     FHandles: array[0..GLS_MAX_RENDERING_CONTEXT_NUM - 1] of TGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: TGLuint;
-    function SafeGetHandle: TGLuint;
     function GetContext: TGLContext;
   protected
     { Protected Declarations }
@@ -806,6 +808,14 @@ type
     class function IsSupported: Boolean; override;
   end;
 
+  TGLFramebufferStatus = (fsComplete, fsIncompleteAttachment,
+    fsIncompleteMissingAttachment,
+    fsIncompleteDuplicateAttachment, fsIncompleteDimensions,
+    fsIncompleteFormats,
+    fsIncompleteDrawBuffer, fsIncompleteReadBuffer, fsUnsupported,
+    fsIncompleteMultisample,
+    fsStatusError);
+
   // TGLFramebufferHandle
   //
   {: Manages a handle to a Framebuffer Object (FBO).
@@ -886,7 +896,9 @@ type
     function GetAttachmentObjectName(target: TGLenum; attachment: TGLenum):
       TGLint;
 
-    function CheckStatus(target: TGLenum): TGLenum;
+    function GetStatus: TGLFramebufferStatus;
+    function GetStringStatus(out clarification: string): TGLFramebufferStatus;
+
     class function IsSupported: Boolean; override;
   end;
 
@@ -1428,8 +1440,8 @@ begin
   FAcceleration := chaUnknown;
   FGLStates := TGLStateCache.Create;
   FGL := TGLExtensionsAndEntryPoints.Create;
-  FTransformation := TGLPipelineTransformation.Create;
-  FTransformation.FFPTransformation := True;
+  FTransformation := TGLTransformation.Create;
+  FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);
   FIsPraparationNeed := True;
 end;
@@ -1948,25 +1960,10 @@ end;
 
 procedure TGLContextHandle.AllocateHandle;
 var
-  I, J, K: Integer;
+  I: Integer;
   bSucces: Boolean;
   aList: TList;
-
-  function FindFreeCell(out Index: Integer): Boolean;
-  var
-    vI: Integer;
-  begin
-    Result := True;
-    for vI := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-    begin
-      if FHandles[vI].FRenderingContext = nil then
-      begin
-        Index := vI;
-        exit;
-      end;
-    end;
-    Result := False
-  end;
+  LContext: TGLContext;
 
 begin
   if vCurrentGLContext = nil then
@@ -1983,51 +1980,37 @@ begin
   begin
 {$IFNDEF GLS_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
-    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+    for I := aList.Count - 1 downto 0 do
     begin
-      if (FHandles[I].FRenderingContext = nil)
-        or (FHandles[I].FHandle = 0) then
-        continue;
-      J := aList.IndexOf(FHandles[I].FRenderingContext);
-      if J > -1 then
+      LContext := aList[I];
+      if (FHandles[LContext.FID].FRenderingContext = LContext)
+        and (FHandles[LContext.FID].FHandle > 0) then
       begin
-        if FindFreeCell(K) then
-        begin
-          // Copy shared handle
-          FHandles[K].FRenderingContext := vCurrentGLContext;
-          FHandles[K].FHandle := FHandles[I].FHandle;
-          FHandles[K].FChanged := FHandles[I].FChanged;
-          Inc(FHandles[K].FRenderingContext.FOwnedHandlesCount);
-          bSucces := True;
-          break;
-        end
-        else
-          break;
+        // Copy shared handle
+        FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
+        FHandles[vCurrentGLContext.FID].FHandle := FHandles[LContext.FID].FHandle;
+        FHandles[vCurrentGLContext.FID].FChanged := FHandles[LContext.FID].FChanged;
+        Inc(vCurrentGLContext.FOwnedHandlesCount);
+        bSucces := True;
+        break;
       end;
     end; // of I
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
     try
-      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+      for I := aList.Count - 1 downto 0 do
       begin
-        if (FHandles[I].FRenderingContext = nil)
-          or (FHandles[I].FHandle = 0) then
-          continue;
-        J := aList.IndexOf(FHandles[I].FRenderingContext);
-        if J > -1 then
+        LContext := aList[I];
+        if (FHandles[LContext.FID].FRenderingContext = LContext)
+          and (FHandles[LContext.FID].FHandle > 0) then
         begin
-          if FindFreeCell(K) then
-          begin
-            // Copy shared handle
-            FHandles[K].FRenderingContext := vCurrentGLContext;
-            FHandles[K].FHandle := FHandles[I].FHandle;
-            FHandles[K].FChanged := FHandles[I].FChanged;
-            Inc(FHandles[K].FRenderingContext.FOwnedHandlesCount);
-            bSucces := True;
-            break;
-          end
-          else
-            break;
+          // Copy shared handle
+          FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
+          FHandles[vCurrentGLContext.FID].FHandle := FHandles[LContext.FID].FHandle;
+          FHandles[vCurrentGLContext.FID].FChanged := FHandles[LContext.FID].FChanged;
+          Inc(vCurrentGLContext.FOwnedHandlesCount);
+          bSucces := True;
+          break;
         end;
       end;
     finally
@@ -2039,55 +2022,39 @@ begin
   if not bSucces then
   begin
     // Allocate handle in current context
-    if FindFreeCell(I) then
-    begin
-      FHandles[I].FRenderingContext := vCurrentGLContext;
-      FHandles[I].FHandle := DoAllocateHandle;
-      bSucces := FHandles[I].FHandle <> 0;
-      FHandles[I].FChanged := bSucces;
-      if bSucces then
-        Inc(FHandles[I].FRenderingContext.FOwnedHandlesCount);
-    end;
+    FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
+    FHandles[vCurrentGLContext.FID].FHandle := DoAllocateHandle;
+    bSucces := FHandles[vCurrentGLContext.FID].FHandle <> 0;
+    FHandles[vCurrentGLContext.FID].FChanged := bSucces;
+    if bSucces then
+      Inc(vCurrentGLContext.FOwnedHandlesCount);
   end;
 
   if not bSucces then
-    GLSLogger.LogError('Failed to allocate OpenGL identifier - contexts number more then GLS_MAX_RENDERING_CONTEXT_NUM!')
+    GLSLogger.LogError(cNoActiveRC)
   else if Assigned(FOnPrepare) then
     GLContextManager.NotifyPreparationNeed;
 end;
 
 function TGLContextHandle.IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
-var
-  I: Integer;
 begin
   if AContext = nil then
     AContext := vCurrentGLContext;
 
-  Result := True;
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if FHandles[I].FRenderingContext = AContext then
-      exit;
-  end;
-  Result := False;
+  if Assigned(AContext) then
+    Result := (FHandles[AContext.FID].FRenderingContext = AContext)
+      and (FHandles[AContext.FID].FHandle > 0)
+  else
+    Result := False;
 end;
 
 function TGLContextHandle.GetHandle: TGLuint;
-var
-  I: Integer;
 begin
-  Result := 0;
-  if vCurrentGLContext = nil then
-    exit;
-
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if FHandles[I].FRenderingContext = vCurrentGLContext then
-    begin
-      Result := FHandles[I].FHandle;
-      exit;
-    end;
-  end;
+  if Assigned(vCurrentGLContext)
+    and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext) then
+    Result := FHandles[vCurrentGLContext.FID].FHandle
+  else
+    Result := 0;
 end;
 
 // DestroyHandle
@@ -2134,67 +2101,48 @@ var
   aList: TList;
   bShared: Boolean;
 begin
-  if vCurrentGLContext = nil then
-    exit;
-
-  bShared := False;
-  if Transferable then
+  if Assigned(vCurrentGLContext) then
   begin
-  {$IFNDEF GLS_MULTITHREAD}
-    aList := vCurrentGLContext.FSharedContexts;
-  {$ELSE}
-    aList := vCurrentGLContext.FSharedContexts.LockList;
-    try
-  {$ENDIF GLS_MULTITHREAD}
-      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-        if (FHandles[I].FRenderingContext <> vCurrentGLContext)
-          and (FHandles[I].FHandle <> 0)
-          and (aList.IndexOf(FHandles[I].FRenderingContext) > -1) then
-          begin
-            bShared := True;
-            break;
-          end;
-  {$IFDEF GLS_MULTITHREAD}
-    finally
-      vCurrentGLContext.FSharedContexts.UnLockList;
-    end;
-  {$ENDIF GLS_MULTITHREAD}
-  end;
-
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if (FHandles[I].FRenderingContext = vCurrentGLContext)
-      and (FHandles[I].FHandle <> 0) then
+    bShared := False;
+    if Transferable then
     begin
-      if not bShared then
-        if IsValid(FHandles[I].FHandle) then
-          DoDestroyHandle(FHandles[I].FHandle);
-      Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
-      FHandles[I].FHandle := 0;
-      FHandles[I].FRenderingContext := nil;
-      FHandles[I].FChanged := True;
-      exit;
+    {$IFNDEF GLS_MULTITHREAD}
+      aList := vCurrentGLContext.FSharedContexts;
+    {$ELSE}
+      aList := vCurrentGLContext.FSharedContexts.LockList;
+      try
+    {$ENDIF GLS_MULTITHREAD}
+        for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+          if (FHandles[I].FRenderingContext <> vCurrentGLContext)
+            and (FHandles[I].FHandle <> 0)
+            and (aList.IndexOf(FHandles[I].FRenderingContext) > -1) then
+            begin
+              bShared := True;
+              break;
+            end;
+    {$IFDEF GLS_MULTITHREAD}
+      finally
+        vCurrentGLContext.FSharedContexts.UnLockList;
+      end;
+    {$ENDIF GLS_MULTITHREAD}
     end;
-  end;
-end;
 
-function TGLContextHandle.SafeGetHandle: TGLuint;
-var
-  I: Integer;
-begin
-  Result := 0;
-  SafeCurrentGLContext;
-
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if FHandles[I].FRenderingContext = vCurrentGLContext then
+    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
     begin
-      Result := FHandles[I].FHandle;
-      exit;
+      if (FHandles[I].FRenderingContext = vCurrentGLContext)
+        and (FHandles[I].FHandle <> 0) then
+      begin
+        if not bShared then
+          if IsValid(FHandles[I].FHandle) then
+            DoDestroyHandle(FHandles[I].FHandle);
+        Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
+        FHandles[I].FHandle := 0;
+        FHandles[I].FRenderingContext := nil;
+        FHandles[I].FChanged := True;
+        exit;
+      end;
     end;
   end;
-  GLSLogger.LogError('OpenGL''s identifier not allocated for active rendering context');
-  Abort;
 end;
 
 function TGLContextHandle.GetContext: TGLContext;
@@ -2226,21 +2174,16 @@ begin
 end;
 
 function TGLContextHandle.IsDataNeedUpdate: Boolean;
-var
-  I: Integer;
-  RC: TGLContext;
 begin
-  RC := SafeCurrentGLContext;
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if (FHandles[I].FRenderingContext = RC)
-      and (FHandles[I].FHandle <> 0) then
-    begin
-      Result := FHandles[I].FChanged;
-      exit;
-    end;
-  end;
   Result := True;
+  if Assigned(vCurrentGLContext) then
+  begin
+    if (FHandles[vCurrentGLContext.FID].FHandle <> 0)
+    and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext) then
+      Result := FHandles[vCurrentGLContext.FID].FChanged;
+  end
+  else
+    Result := False;
 end;
 
 function TGLContextHandle.IsDataComplitelyUpdated: Boolean;
@@ -2263,54 +2206,53 @@ end;
 
 procedure TGLContextHandle.NotifyDataUpdated;
 var
-  I, J: Integer;
-  RC, vContext: TGLContext;
+  I: Integer;
+  vContext: TGLContext;
 {$IFDEF GLS_MULTITHREAD}
   aList: TList;
 {$ENDIF}
 begin
-  if not Transferable then
+  if Assigned(vCurrentGLContext) then
   begin
-    RC := SafeCurrentGLContext;
-    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+    if not Transferable then
     begin
-      if (FHandles[I].FRenderingContext = RC)
-        and (FHandles[I].FHandle <> 0) then
+      if Assigned(vCurrentGLContext)
+        and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext)
+        and (FHandles[vCurrentGLContext.FID].FHandle <> 0) then
+        begin
+          FHandles[vCurrentGLContext.FID].FChanged := False;
+          exit;
+        end;
+    end
+
+    else
+    begin
+  {$IFNDEF GLS_MULTITHREAD}
+      for i := 0 to vCurrentGLContext.FSharedContexts.Count - 1 do
       begin
-        FHandles[I].FChanged := False;
-        exit;
+        vContext := TGLContext(vCurrentGLContext.FSharedContexts[i]);
+        if (FHandles[vContext.FID].FRenderingContext = vContext)
+          and (FHandles[vContext.FID].FHandle <> 0) then
+          FHandles[vContext.FID].FChanged := False;
       end;
+  {$ELSE}
+      aList := vCurrentGLContext.FSharedContexts.LockList;
+      try
+        for I := 0 to aList.Count - 1 do
+        begin
+          vContext := TGLContext(aList[I]);
+          if (FHandles[vContext.FID].FRenderingContext = vContext)
+            and (FHandles[vContext.FID].FHandle <> 0) then
+            FHandles[vContext.FID].FChanged := False;
+        end;
+      finally
+        vCurrentGLContext.FSharedContexts.UnlockList;
+      end;
+  {$ENDIF}
     end;
   end
-
   else
-  begin
-    RC := SafeCurrentGLContext;
-{$IFNDEF GLS_MULTITHREAD}
-    for J := 0 to RC.FSharedContexts.Count - 1 do
-    begin
-      vContext := TGLContext(RC.FSharedContexts[J]);
-      for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-        if (FHandles[I].FRenderingContext = vContext)
-          and (FHandles[I].FHandle <> 0) then
-          FHandles[I].FChanged := False;
-    end;
-{$ELSE}
-    aList := RC.FSharedContexts.LockList;
-    try
-      for J := 0 to aList.Count - 1 do
-      begin
-        vContext := TGLContext(aList[J]);
-        for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-          if (FHandles[I].FRenderingContext = vContext)
-            and (FHandles[I].FHandle <> 0) then
-            FHandles[I].FChanged := False;
-      end;
-    finally
-      RC.FSharedContexts.UnlockList;
-    end;
-{$ENDIF}
-  end;
+    GLSLogger.LogError(cNoActiveRC);
 end;
 
 procedure TGLContextHandle.NotifyChangesOfData;
@@ -2325,7 +2267,7 @@ end;
 
 function TGLContextHandle.IsShared: Boolean;
 var
-  I, J: Integer;
+  I: Integer;
   vContext: TGLContext;
 {$IFDEF GLS_MULTITHREAD}aList: TList;
 {$ENDIF}
@@ -2338,16 +2280,13 @@ begin
   for I := 0 to vCurrentGLContext.FSharedContexts.Count - 1 do
   begin
     vContext := TGLContext(vCurrentGLContext.FSharedContexts[I]);
-    if vContext <> vCurrentGLContext then
-      for J := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-      begin
-        if FHandles[J].FRenderingContext = vContext then
-        begin
-          // at least one context is friendly
-          Result := True;
-          exit;
-        end;
-      end;
+    if (vContext <> vCurrentGLContext)
+      and (FHandles[vContext.FID].FRenderingContext = vContext) then
+    begin
+      // at least one context is friendly
+      Result := True;
+      exit;
+    end;
   end;
 {$ELSE}
   aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2355,18 +2294,13 @@ begin
     for I := 0 to aList.Count - 1 do
     begin
       vContext := TGLContext(aList[I]);
-      if vContext <> vCurrentGLContext then
-        for J := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-        begin
-          if FHandles[J].FRenderingContext = vContext then
-          begin
-            // at least one context is friendly
-            Result := True;
-            break;
-          end;
-        end;
-      if Result then
+      if (vContext <> vCurrentGLContext)
+        and (FHandles[vContext.FID].FRenderingContext = vContext) then
+      begin
+        // at least one context is friendly
+        Result := True;
         break;
+      end;
     end;
   finally
     vCurrentGLContext.FSharedContexts.UnlockList;
@@ -2414,14 +2348,15 @@ end;
 procedure TGLVirtualHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.ClearError;
+    ClearError;
     // delete
     if Assigned(FOnDestroy) then
       FOnDestroy(Self, AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -2455,13 +2390,14 @@ end;
 procedure TGLListHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.ClearError;
+    ClearError;
     // delete
-    GL.DeleteLists(AHandle, 1);
+    DeleteLists(AHandle, 1);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -2478,7 +2414,7 @@ end;
 
 procedure TGLListHandle.NewList(mode: Cardinal);
 begin
-  vCurrentGLContext.GLStates.NewList(SafeGetHandle, mode);
+  vCurrentGLContext.GLStates.NewList(GetHandle, mode);
 end;
 
 // EndList
@@ -2494,7 +2430,7 @@ end;
 
 procedure TGLListHandle.CallList;
 begin
-  vCurrentGLContext.GLStates.CallList(SafeGetHandle);
+  vCurrentGLContext.GLStates.CallList(GetHandle);
 end;
 
 // ------------------
@@ -2520,11 +2456,12 @@ var
   t: TGLTextureTarget;
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     {: Unbind identifier from all image selectors. }
-    if GL.ARB_multitexture then
+    if ARB_multitexture then
     begin
       with GetContext.GLStates do
       begin
@@ -2540,11 +2477,10 @@ begin
           if TextureBinding[0, t] = AHandle then
             TextureBinding[0, t] := 0;
 
-    GL.DeleteTextures(1, @AHandle);
+    DeleteTextures(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
-  FTarget := ttNoShape;
 end;
 
 // IsValid
@@ -2580,13 +2516,14 @@ end;
 procedure TGLSamplerHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeleteSamplers(1, @AHandle);
+    DeleteSamplers(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -2616,7 +2553,7 @@ end;
 procedure TGLQueryHandle.BeginQuery;
 begin
   if vCurrentGLContext.GLStates.CurrentQuery[QueryType] = 0 then
-    vCurrentGLContext.GLStates.BeginQuery(QueryType, SafeGetHandle);
+    vCurrentGLContext.GLStates.BeginQuery(QueryType, GetHandle);
   Factive := True;
 end;
 
@@ -2643,13 +2580,14 @@ end;
 procedure TGLQueryHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeleteQueries(1, @AHandle);
+    DeleteQueries(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -2894,14 +2832,15 @@ end;
 procedure TGLBufferObjectHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     UnBind;
     // delete
-    GL.DeleteBuffers(1, @AHandle);
+    DeleteBuffers(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3291,14 +3230,14 @@ end;
 procedure TGLVertexArrayHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeleteVertexArrays(1, @AHandle);
-    vCurrentGLContext.GLStates.ResetVertexArrayStates(AHandle);
+    DeleteVertexArrays(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3363,13 +3302,14 @@ end;
 procedure TGLFramebufferHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeleteFramebuffers(1, @AHandle);
+    DeleteFramebuffers(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3543,9 +3483,48 @@ end;
 // CheckStatus
 //
 
-function TGLFramebufferHandle.CheckStatus(target: TGLenum): TGLenum;
+function TGLFramebufferHandle.GetStatus: TGLFramebufferStatus;
+var
+  Status: cardinal;
 begin
-  Result := GL.CheckFramebufferStatus(target);
+  Status := GL.CheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  case Status of
+    GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
+    GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT: Result := fsIncompleteAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT: Result :=
+      fsIncompleteMissingAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT: Result :=
+      fsIncompleteDuplicateAttachment;
+    GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT: Result := fsIncompleteDimensions;
+    GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT: Result := fsIncompleteFormats;
+    GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT: Result := fsIncompleteDrawBuffer;
+    GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT: Result := fsIncompleteReadBuffer;
+    GL_FRAMEBUFFER_UNSUPPORTED_EXT: Result := fsUnsupported;
+    GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: Result := fsIncompleteMultisample;
+  else
+    Result := fsStatusError;
+  end;
+end;
+
+function TGLFramebufferHandle.GetStringStatus(out clarification: string):
+  TGLFramebufferStatus;
+const
+  cFBOStatus: array[TGLFramebufferStatus] of string = (
+    'Complete',
+    'Incomplete attachment',
+    'Incomplete missing attachment',
+    'Incomplete duplicate attachment',
+    'Incomplete dimensions',
+    'Incomplete formats',
+    'Incomplete draw buffer',
+    'Incomplete read buffer',
+    'Unsupported',
+    'Incomplite multisample',
+    'Status Error');
+begin
+  Result := GetStatus;
+  clarification := cFBOStatus[Result];
 end;
 
 // IsSupported
@@ -3583,13 +3562,14 @@ end;
 procedure TGLRenderbufferHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeleteRenderbuffers(1, @AHandle);
+    DeleteRenderbuffers(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3606,7 +3586,7 @@ end;
 
 procedure TGLRenderbufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.RenderBuffer := SafeGetHandle;
+  vCurrentGLContext.GLStates.RenderBuffer := GetHandle;
 end;
 
 // UnBind
@@ -3665,13 +3645,14 @@ end;
 procedure TGLARBProgramHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.GetError;
+    GetError;
     // delete
-    GL.DeletePrograms(1, @AHandle);
+    DeletePrograms(1, @AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3768,13 +3749,14 @@ end;
 procedure TGLSLHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
+  with GL do
   begin
     // reset error status
-    GL.ClearError;
+    ClearError;
     // delete
-    GL.DeleteObject(AHandle);
+    DeleteObject(AHandle);
     // check for error
-    GL.CheckError;
+    CheckError;
   end;
 end;
 
@@ -3787,11 +3769,11 @@ var
   log: TGLString;
 begin
   maxLength := 0;
-  GL.GetObjectParameteriv(SafeGetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
+  GL.GetObjectParameteriv(GetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
   SetLength(log, maxLength);
   if maxLength > 0 then
   begin
-    GL.GetInfoLog(SafeGetHandle, maxLength, @maxLength, @log[1]);
+    GL.GetInfoLog(GetHandle, maxLength, @maxLength, @log[1]);
     SetLength(log, maxLength);
   end;
   Result := string(log);
@@ -3833,7 +3815,7 @@ var
   p: PGLChar;
 begin
   p := PGLChar(TGLString(source));
-  GL.ShaderSource(SafeGetHandle, 1, @p, nil);
+  GL.ShaderSource(GetHandle, 1, @p, nil);
 end;
 
 // CompileShader
@@ -3844,7 +3826,7 @@ var
   compiled: Integer;
   glH: TGLuint;
 begin
-  glH := SafeGetHandle;
+  glH := GetHandle;
   GL.CompileShader(glH);
   compiled := 0;
   GL.GetShaderiv(glH, GL_COMPILE_STATUS, @compiled);
@@ -4007,7 +3989,7 @@ end;
 
 procedure TGLProgramHandle.AttachObject(shader: TGLShaderHandle);
 begin
-  GL.AttachShader(SafeGetHandle, shader.Handle);
+  GL.AttachShader(GetHandle, shader.Handle);
 end;
 
 // DetachAllObject
@@ -4037,7 +4019,7 @@ end;
 procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindAttribLocation(SafeGetHandle, index, PGLChar(TGLString(aName)));
+  GL.BindAttribLocation(GetHandle, index, PGLChar(TGLString(aName)));
 end;
 
 // BindFragDataLocation
@@ -4046,7 +4028,7 @@ end;
 procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindFragDataLocation(SafeGetHandle, index, PGLChar(TGLString(name)));
+  GL.BindFragDataLocation(GetHandle, index, PGLChar(TGLString(name)));
 end;
 
 // LinkProgram
@@ -4057,7 +4039,7 @@ var
   status: Integer;
   glH: TGLuint;
 begin
-  glH := SafeGetHandle;
+  glH := GetHandle;
   GL.LinkProgram(glH);
   status := 0;
   GL.GetProgramiv(glH, GL_LINK_STATUS, @status);
@@ -4072,7 +4054,7 @@ var
   validated: Integer;
   h: TGLuint;
 begin
-  h := SafeGetHandle;
+  h := GetHandle;
   GL.ValidateProgram(h);
   validated := 0;
   GL.GetProgramiv(h, GL_VALIDATE_STATUS, @validated);
@@ -4084,7 +4066,7 @@ end;
 
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
-  Result := GL.GetAttribLocation(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetAttribLocation(GetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, Format(glsUnknownParam, ['attrib', aName, Name]));
 end;
 
@@ -4093,7 +4075,7 @@ end;
 
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
-  Result := GL.GetUniformLocation(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetUniformLocation(GetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
 end;
 
@@ -4102,7 +4084,7 @@ end;
 
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
-  Result := GL.GetVaryingLocation(SafeGetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetVaryingLocation(GetHandle, PGLChar(TGLString(aName)));
   Assert(Result >= 0, Format(glsUnknownParam, ['varying', aName, Name]));
 end;
 
@@ -4111,7 +4093,7 @@ end;
 
 procedure TGLProgramHandle.AddActiveVarying(const aName: string);
 begin
-  GL.ActiveVarying(SafeGetHandle, PGLChar(TGLString(aName)));
+  GL.ActiveVarying(GetHandle, PGLChar(TGLString(aName)));
 end;
 
 // GetAttribLocation
@@ -4137,7 +4119,7 @@ end;
 
 function TGLProgramHandle.GetUniform1i(const index: string): Integer;
 begin
-  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform2i
@@ -4145,7 +4127,7 @@ end;
 
 function TGLProgramHandle.GetUniform2i(const index: string): TVector2i;
 begin
-  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform3i
@@ -4153,7 +4135,7 @@ end;
 
 function TGLProgramHandle.GetUniform3i(const index: string): TVector3i;
 begin
-  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // GetUniform4i
@@ -4161,7 +4143,7 @@ end;
 
 function TGLProgramHandle.GetUniform4i(const index: string): TVector4i;
 begin
-  GL.GetUniformiv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformiv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform1f
@@ -4177,7 +4159,7 @@ end;
 
 function TGLProgramHandle.GetUniform1f(const index: string): Single;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform1i
@@ -4221,7 +4203,7 @@ end;
 
 function TGLProgramHandle.GetUniform2f(const index: string): TVector2f;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform2f
@@ -4238,7 +4220,7 @@ end;
 
 function TGLProgramHandle.GetUniform3f(const index: string): TAffineVector;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform3f
@@ -4255,7 +4237,7 @@ end;
 
 function TGLProgramHandle.GetUniform4f(const index: string): TVector;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniform4f
@@ -4272,7 +4254,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix2fv(const index: string): TMatrix2f;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix2fv
@@ -4289,7 +4271,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix3fv(const index: string): TMatrix3f;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix3fv
@@ -4306,7 +4288,7 @@ end;
 
 function TGLProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
 begin
-  GL.GetUniformfv(SafeGetHandle, GetUniformLocation(index), @Result);
+  GL.GetUniformfv(GetHandle, GetUniformLocation(index), @Result);
 end;
 
 // SetUniformMatrix4fv
@@ -4608,7 +4590,7 @@ begin
       if IndexOf(aContext) >= 0 then
         raise EGLContext.Create(cInvalidContextRegistration)
       else
-        Add(aContext);
+        aContext.FID := Add(aContext);
     finally
       FList.UnlockList;
     end;
