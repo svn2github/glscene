@@ -221,8 +221,8 @@ type
 {$IFDEF FPC}
     //-------------------------Projects------------------------------------------
    { TGLSceneBaseFormDescriptor }
-    //В IDE создается проект с настройками компилятора
-    //именем и создаются файлы lpi lpr ico
+    //В IDE пЁ¤б¦І а±®ж«І  оЎ±пЄЄб­Ё лЇ¬а©«п± 
+    //й­Ґо¦¬ иЎ±пЁ¤бїІ бЄ« lpi lpr ico
   
     TGLSceneBaseFormDescriptor = class(TProjectDescriptor)
     public
@@ -258,7 +258,7 @@ type
     //--------------------------Units + LFM--------------------------------------
 
     { TGLSceneBaseFileDescriptor }
-    // Базовые файлы pas lfm, содержащюю токо сценоформу
+    // В иЇўеЎґбЄ« pas lfm, пҐҐзЎ№ п«® ж®®п±¬
   
     TGLSceneBaseFileDescriptor = class(TFileDescPascalUnitWithResource)
     public
@@ -279,7 +279,7 @@ type
     end;
 
     { TGLSceneSimpleFileDescriptor }
-    // Простой проект содержащий сценоформу+ компоненты
+    // Р°пІІп© а±®ж«І пҐҐзЎ№й© ж®®п±¬+ лЇ¬аЇ­ж®І
     //Glscene, GLCamera GlCube GLLigthSource
 
     TGLSceneSimpleFileDescriptor = class(TGLSceneBaseFileDescriptor)
@@ -301,8 +301,8 @@ type
     end;
 
     { TGLSceneExtendedFileDescriptor }
-    //Расшыренная форма содержащая базовый набор компонентов для
-    //создания сложных проектов
+    //С ж®­бї п±¬аЎ±пҐҐзЎ№бї вЎ§пЈ»йЎ­бў® лЇ¬аЇ­ж®Іпў е¬ї
+    //пЁ¤б®Ё мЇ¦ојµ а±®ж«ІпўЌ
 
     TGLSceneExtendedFileDescriptor = class(TGLSceneBaseFileDescriptor)
     public
@@ -329,30 +329,30 @@ type
 resourcestring
   //-------------------------Projects------------------------------------------
   rBaseProjectLocalizedName = 'GLScene Base Application';
-  //Шаблон GLScene Приложения с GLSceneForm
+  //Щ в¬®нЎ‡LScene Р°й¬®з¦­йї  GLSceneForm
   rBaseProjectLocalizedDescription = 'Template of GLScene Base Application with TGLSceneForm';
 
   rSimpleProjectLocalizedName = 'GLScene Simple Application';
-  //Шаблон GLScene Приложения с GLSceneForm
+  //Щ в¬®нЎ‡LScene Р°й¬®з¦­йї  GLSceneForm
   rSimpleProjectLocalizedDescription = 'Template of GLScene Simple Application with TGLSceneForm';
 
   rExtendedProjectLocalizedName = 'GLScene Extended Application';
-  //Шаблон GLScene Приложения с GLSceneForm
+  //Щ в¬®нЎ‡LScene Р°й¬®з¦­йї  GLSceneForm
   rExtendedProjectLocalizedDescription = 'Template of GLScene Extended Application with TGLSceneForm';
 
   //--------------------------Units + LFM--------------------------------------
   //Base
   rBaseFormLocalizedName = 'GLSBaseForm';
-  //TGLSceneForm - снециальная форма, которая совмещает в себе свойства
-  //вьювера и обычной формы и позволяет производить рендеринг непосредственно в окно приложения
+  //TGLSceneForm - о¦¶йЎ«оЎї п±¬а¬ лЇІп±  пЈ¬жє жІ вЎ±жўҐ гЇ©г Ќ
+  //гЅѕг¦°аЎЁ пў»оЇ© п±¬ иЎЇпЁўп¬їжІ а±®йЁўпҐЁ ж®¤ж±ЁоЈ о¦ЇпІ°жҐ±г¦­о® вЎ®л®® а±ЁмЇ¦ж®Ё
   rBaseFormLocalizedDescription = 'GLSceneForm - a special form, which combines '+
                                   'the properties of the viewer and the normal '+
                                   'form and allows you to render directly into '+
                                   'the application window';
   //Simple
   rSimpleFormLocalizedName = 'GLSSimpleForm';
-  //GLSSimpleForm - специальная форма, которая совмещает в себе свойства
-  //вьювера и обычной формы и содержыт базовый набор компонентов для создания простого приложения.
+  //GLSSimpleForm - а¦¶йЎ«оЎї п±¬а¬ лЇІп±  пЈ¬жє жІ вЎ±жўҐ гЇ©г Ќ
+  //гЅѕг¦°аЎЁ пў»оЇ© п±¬ иЎ±пҐҐзјІ вЎ§пЈ»йЎ­бў® лЇ¬аЇ­ж®Іпў е¬ї пЁ¤б®Ё а±®п¤® а±ЁмЇ¦ж®Ё.
   rSimpleFormLocalizedDescription = 'GLSSimpleForm - a special form, which '+
                                     'combines the properties viewer and the '+
                                     'usual form and contains the basic set of '+
@@ -440,8 +440,8 @@ begin
   //Extended
   vExtendedFileDescriptor := TGLSceneExtendedFileDescriptor.Create;
   RegisterProjectFileDescriptor(vExtendedFileDescriptor);
-  //Сцуко! Регестрируем свою форму, чтобы IDE видел зарегестрированную форму
-  //и показывал ее свойства
+  //Т¶л®Ў СҐд¦±й±іж¬ гЇѕ п±¬, пў» IDE г©¤ж« иЎ°ж¤Ґй±®гЎ­оґѕ п±¬
+  //иЎЇп« ијўб« жҐ гЇ©г Ќ
   FormEditingHook.RegisterDesignerBaseClass(TGLSceneForm);
   {$ENDIF}
 end;
@@ -1372,7 +1372,8 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding +
+{: This line inserted automatically by IDE
+    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;
 begin
@@ -2815,4 +2816,4 @@ finalization
 {$ENDIF}
 
 end.
-
+
