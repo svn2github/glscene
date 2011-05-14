@@ -469,10 +469,12 @@ const
 
 {$IFDEF GLS_REGION}{$REGION 'Shader template'}{$ENDIF}
 const
-  cTemplates: array[0..4] of string =
+  cTemplates: array[0..6] of string =
   (
     '#version 120'#10#13+
     #10#13+
+    'attribute vec3 Position;'#10#13+
+    'attribute vec3 Normal;'#10#13+
     'varying vec3 v2f_Normal;'#10#13+
     'varying vec3 v2f_LightDir;'#10#13+
     'varying vec3 v2f_ViewDir;'#10#13+
@@ -480,22 +482,25 @@ const
     'uniform mat4 ModelMatrix;'#10#13+
     'uniform mat4 ViewProjectionMatrix;'#10#13+
     'uniform mat3 NormalMatrix;'#10#13+
-    'uniform vec3 LightPosition;'#10#13+
-    'uniform vec3 CameraPosition;'#10#13+
+    'uniform vec4 LightPosition;'#10#13+
+    'uniform vec4 CameraPosition;'#10#13+
     #10#13+
     'void main()'#10#13+
     '{'#10#13+
-    '  vec4 WorldPos = ModelMatrix * gl_Vertex;'#10#13+
+    '  vec4 WorldPos = ModelMatrix * vec4(Position,1.0);'#10#13+
     '  gl_Position = ViewProjectionMatrix * WorldPos;'#10#13+
-    '  v2f_Normal = NormalMatrix * gl_Normal;'#10#13+
+    '  v2f_Normal = NormalMatrix * Normal;'#10#13+
     '  v2f_LightDir = LightPosition.xyz - WorldPos.xyz;'#10#13+
     '  v2f_ViewDir = CameraPosition.xyz - WorldPos.xyz;'#10#13+
     '}'#10#13,
 //-----------------------------------------------------------------------
     '#version 120'#10#13+
     #10#13+
+    'attribute vec3 Position;'#10#13+
+    'attribute vec3 Normal;'#10#13+
     'attribute vec3 Tangent;'#10#13+
     'attribute vec3 Binormal;'#10#13+
+    'attribute vec2 TexCoord0;'#10#13+
     #10#13+
     'varying vec2 v2f_TexCoord;'#10#13+
     'varying vec3 v2f_Normal;'#10#13+
@@ -506,16 +511,16 @@ const
     #10#13+
     'uniform mat4 ModelMatrix;'#10#13+
     'uniform mat4 ViewProjectionMatrix;'#10#13+
-    'uniform vec3 LightPosition;'#10#13+
-    'uniform vec3 CameraPosition;'#10#13+
+    'uniform vec4 LightPosition;'#10#13+
+    'uniform vec4 CameraPosition;'#10#13+
     'uniform vec2 BaseTextureRepeat;'#10#13+
     #10#13+
     'void main()'#10#13+
     '{'#10#13+
-    '  vec3 WorldPos = (ModelMatrix * gl_Vertex).xyz;'#10#13+
+    '  vec3 WorldPos = (ModelMatrix * vec4(Position,1.0)).xyz;'#10#13+
     '  gl_Position = ViewProjectionMatrix * vec4(WorldPos, 1.0);'#10#13+
-    '  v2f_TexCoord = gl_MultiTexCoord0.xy*BaseTextureRepeat;'#10#13+
-    '  v2f_Normal = gl_Normal;'#10#13+
+    '  v2f_TexCoord = TexCoord0.xy*BaseTextureRepeat;'#10#13+
+    '  v2f_Normal = Normal;'#10#13+
     '  v2f_Tangent = Tangent;'#10#13+
     '  v2f_Binormal = Binormal;'#10#13+
     '  v2f_LightDir = LightPosition.xyz - WorldPos.xyz;'#10#13+
@@ -538,12 +543,18 @@ const
     '  vec3 N = normalize(v2f_Normal);'#10#13+
     #10#13+
     '  vec3 L = normalize(v2f_LightDir);'#10#13+
-    '  vec4  cDiffuse = clamp( dot( N, L ), 0.0, 1.0 ) * MaterialDiffuseColor;'#10#13+
+    '  float DiffuseIntensity = max( dot( N, L ), 0.0);'#10#13+
+    '  vec4  cDiffuse = DiffuseIntensity * MaterialDiffuseColor;'#10#13+
     #10#13+
-    '  vec3 V = normalize(v2f_ViewDir);'#10#13+
-    '  vec3 R = reflect(N, V);'#10#13+
-    '  float RdotL = clamp( dot( R, L ), 0.0, 1.0);'#10#13+
-    '  vec4 cSpecular = pow( RdotL, MaterialShiness) * MaterialSpecularColor;'#10#13+
+    '  vec4 cSpecular = vec4(0.0);'#10#13+
+    '  if (DiffuseIntensity > 0.0)'#10#13+
+    '  {'#10#13+
+    '    vec3 V = normalize(v2f_ViewDir);'#10#13+
+    '    vec3 R = reflect(-V, N);'#10#13+
+    '    float RdotL = max( dot( L, R ), 0.0);'#10#13+
+    '    if (RdotL > 0.0)'#10#13+
+    '      cSpecular = pow( RdotL, MaterialShiness) * MaterialSpecularColor;'#10#13+
+    '  }'#10#13+
     #10#13+
     '  gl_FragColor = MaterialAmbientColor + cDiffuse  + cSpecular;'#10#13+
     '}'#10#13,
@@ -572,70 +583,123 @@ const
     '  vec3 tangent = normalize(v2f_Tangent);'#10#13+
     '  vec3 binormal = normalize(v2f_Binormal);'#10#13+
     '  mat3 basis = mat3(tangent, binormal, normal);'#10#13+
-    '  vec3 N = 2.0*texture2D(NormalMap, v2f_TexCoord).xyz-1.0;'#10#13+
-    '  N = normalize(N);'#10#13+
+    '  vec3 N = texture2D(NormalMap, v2f_TexCoord).xyz;'#10#13+
+    '  N = N * vec3(2.0) - vec3(1.0);'#10#13+
     '  N = basis*N;'#10#13+
     '  N = NormalMatrix*N;'#10#13+
+    '  N = normalize(N);'#10#13+
     #10#13+
     '  vec3 L = normalize(v2f_LightDir);'#10#13+
-    '  vec4  cDiffuse = clamp( dot( N, L ), 0.0, 1.0 ) * MaterialDiffuseColor;'#10#13+
+    '  float DiffuseIntensity = max( dot( N, L ), 0.0);'#10#13+
+    '  vec4  cDiffuse = DiffuseIntensity * MaterialDiffuseColor;'#10#13+
     #10#13+
-    '  vec3 V = normalize(v2f_ViewDir);'#10#13+
-    '  vec3 R = reflect(N, V);'#10#13+
-    '  float RdotL = clamp( dot( R, L ), 0.0, 1.0);'#10#13+
-    '  vec4 cSpecular = pow( RdotL, MaterialShiness) * MaterialSpecularColor;'#10#13+
+    '  vec4 cSpecular = vec4(0.0);'#10#13+
+    '  if (DiffuseIntensity > 0.0)'#10#13+
+    '  {'#10#13+
+    '    vec3 V = normalize(v2f_ViewDir);'#10#13+
+    '    vec3 R = reflect(-V, N);'#10#13+
+    '    float RdotL = max( dot( L, R ), 0.0);'#10#13+
+    '    if (RdotL > 0.0)'#10#13+
+    '      cSpecular = pow( RdotL, MaterialShiness) * MaterialSpecularColor;'#10#13+
+    '  }'#10#13+
     #10#13+
     '  vec4 cBaseColor = texture2D( DiffuseMap, v2f_TexCoord);'#10#13+
     '  gl_FragColor = (MaterialAmbientColor + cDiffuse ) * cBaseColor + cSpecular;'#10#13+
     '}'#10#13,
 //-----------------------------------------------------------------------
     '#version 330'#10#13+
-
     'layout(triangles_adjacency) in;'#10#13+
     'layout(line_strip, max_vertices = 6) out;'#10#13+
-
-    'in vec4 v2g_WorldPos[]; // Vertex position in world space'#10#13+
-
-    'uniform vec4 LineColor;'#10#13+
-
+    'in vec4 v2g_WorldPos[]; // Vertex position in view space'#10#13+
+    'uniform vec4 CameraPosition;'#10#13+
+    #10#13+
+    '// calculating facing of a triangle relative to eye'#10#13+
+    'float facing(vec4 v0, vec4 v1, vec4 v2, vec4 eye_pos)'#10#13+
+    '{'#10#13+
+    '    vec3 e0 = v1.xyz - v0.xyz;'#10#13+
+    '    vec3 e1 = v2.xyz - v0.xyz;'#10#13+
+    '    vec4 p;'#10#13+
+    '    p.xyz = cross(e1, e0);'#10#13+
+    '    p.w = -dot(v0.xyz, p.xyz);'#10#13+
+    '    return -dot(p, eye_pos);'#10#13+
+    '}'#10#13+
+    #10#13+
+    '// output lines on silhouette edges by comparing facing of adjacent triangles'#10#13+
     'void main()'#10#13+
     '{'#10#13+
-    '  vec3 v0 = v2g_WorldPos[0].xyz;'#10#13+
-    '  vec3 v1 = v2g_WorldPos[1].xyz;'#10#13+
-    '  vec3 v2 = v2g_WorldPos[2].xyz;'#10#13+
-    '  vec3 v3 = v2g_WorldPos[3].xyz;'#10#13+
-    '  vec3 v4 = v2g_WorldPos[4].xyz;'#10#13+
-    '  vec3 v5 = v2g_WorldPos[5].xyz;'#10#13+
-
-    '  vec3 N042 = cross( v2-v4, v0-v4 );'#10#13+
-    '  vec3 N023 = cross( v2-v0, v3-v0 );'#10#13+
-    '  vec3 N245 = cross( v4-v2, v5-v2 );'#10#13+
-    '  vec3 N401 = cross( v0-v4, v1-v4 );'#10#13+
-
-    '  if (N042.z * N023.z <= 0.0) {'#10#13+
-    '    gl_Position = gl_in[0].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    gl_Position = gl_in[2].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    EndPrimitive();'#10#13+
-    '  }'#10#13+
-
-    '  if (N042.z * N245.z <= 0.0) {'#10#13+
-    '    gl_Position = gl_in[2].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    gl_Position = gl_in[4].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    EndPrimitive();'#10#13+
-    '  }'#10#13+
-
-    '  if (N042.z * N401.z <= 0.0) {'#10#13+
-    '    gl_Position = gl_in[4].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    gl_Position = gl_in[0].gl_Position;'#10#13+
-    '    EmitVertex();'#10#13+
-    '    EndPrimitive();'#10#13+
-    '  }'#10#13+
-    '}'#10#13
+    '    float f = facing(v2g_WorldPos[0], v2g_WorldPos[2], v2g_WorldPos[4], CameraPosition);'#10#13+
+    '    // only look at front facing triangles'#10#13+
+    '    if (f > 0.0)'#10#13+
+    '    {'#10#13+
+    '        float f;'#10#13+
+    '        // test edge 0'#10#13+
+    '        f = facing(v2g_WorldPos[0], v2g_WorldPos[1], v2g_WorldPos[2], CameraPosition);'#10#13+
+    '        if (f <= 0)'#10#13+
+    '        {'#10#13+
+    '            gl_Position = gl_in[0].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            gl_Position = gl_in[2].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            EndPrimitive();'#10#13+
+    '        }'#10#13+
+    #10#13+
+    '        // test edge 1'#10#13+
+    '        f = facing(v2g_WorldPos[2], v2g_WorldPos[3], v2g_WorldPos[4], CameraPosition);'#10#13+
+    '        if (f <= 0.0)'#10#13+
+    '        {'#10#13+
+    '            gl_Position = gl_in[2].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            gl_Position = gl_in[4].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            EndPrimitive();'#10#13+
+    '        }'#10#13+
+    #10#13+
+    '        // test edge 2'#10#13+
+    '        f = facing(v2g_WorldPos[4], v2g_WorldPos[5], v2g_WorldPos[0], CameraPosition);'#10#13+
+    '        if (f <= 0.0)'#10#13+
+    '        {'#10#13+
+    '            gl_Position = gl_in[4].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            gl_Position = gl_in[0].gl_Position;'#10#13+
+    '            EmitVertex();'#10#13+
+    '            EndPrimitive();'#10#13+
+    '        }'#10#13+
+    '    }'#10#13+
+    '}'#10#13,
+//-----------------------------------------------------------------------
+    'attribute vec3 Position;'#10#13+
+    'attribute vec4 Color;'#10#13+
+    'attribute vec3 Normal;'#10#13+
+    'attribute vec3 Tangent;'#10#13+
+    'attribute vec3 Binormal;'#10#13+
+    'attribute vec2 TexCoord0;'#10#13+
+    'attribute vec2 TexCoord1;'#10#13+
+    'attribute vec2 TexCoord2;'#10#13+
+    'attribute vec2 TexCoord3;'#10#13+
+    'attribute vec2 TexCoord4;'#10#13+
+    'attribute vec2 TexCoord5;'#10#13+
+    'attribute vec2 TexCoord6;'#10#13+
+    'attribute vec2 TexCoord7;'#10#13+
+    'attribute vec4 Custom0;'#10#13+
+    'attribute vec2 Custom1;'#10#13+
+    'attribute vec2 Custom2;'#10#13,
+//-----------------------------------------------------------------------
+    'in vec3 Position;'#10#13+
+    'in vec4 Color;'#10#13+
+    'in vec3 Normal;'#10#13+
+    'in vec3 Tangent;'#10#13+
+    'in vec3 Binormal;'#10#13+
+    'in vec2 TexCoord0;'#10#13+
+    'in vec2 TexCoord1;'#10#13+
+    'in vec2 TexCoord2;'#10#13+
+    'in vec2 TexCoord3;'#10#13+
+    'in vec2 TexCoord4;'#10#13+
+    'in vec2 TexCoord5;'#10#13+
+    'in vec2 TexCoord6;'#10#13+
+    'in vec2 TexCoord7;'#10#13+
+    'in vec4 Custom0;'#10#13+
+    'in vec2 Custom1;'#10#13+
+    'in vec2 Custom2;'#10#13
   );
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -717,6 +781,10 @@ begin
   GLSLMemo.CaseSensitive := True;
   GLSLMemo.DelErase := True;
 
+  item := NewItem('Attribute block', 0, False, True, OnTemplateClick, 0, '');
+  item.Tag := 5;
+  GLSL120.Add(item);
+
   item := NewItem('Basic vertex program', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 0;
   GLSL120.Add(item);
@@ -732,6 +800,10 @@ begin
   item := NewItem('Fragment program, normal mapping', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 3;
   GLSL120.Add(item);
+
+  item := NewItem('Attribute block', 0, False, True, OnTemplateClick, 0, '');
+  item.Tag := 6;
+  GLSL330.Add(item);
 
   item := NewItem('Geometry program, edge detection', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 4;
