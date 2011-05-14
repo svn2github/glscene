@@ -1372,8 +1372,7 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-{: This line inserted automatically by IDE
-    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
+    '  Application.CreateForm(T%2:s, %2:s);' + LineEnding +
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;
 begin
@@ -1924,6 +1923,9 @@ var
 begin
   Result:=inherited InitProject(AProject);
   AProject.ProjectInfoFile:='Project1.lpi';
+
+  AProject.LazCompilerOptions.TargetFilename:='Project1';
+
   MainFile := AProject.CreateProjectFile('Project1.lpr');
  MainFile.IsPartOfProject := True;
  AProject.AddFile(MainFile, False);
@@ -1955,8 +1957,6 @@ begin
  AProject.Flags := AProject.Flags - [pfMainUnitHasCreateFormStatements,
  pfMainUnitHasTitleStatement,
  pfLRSFilesInOutputDirectory];
-
- //AProject.LazCompilerOptions.TargetFilename:='Project1';
 
  AProject.LazCompilerOptions.SrcPath :=
          '$(LazarusDir)' + PathDelim + 'lcl'+
@@ -2815,4 +2815,4 @@ finalization
 {$ENDIF}
 
 end.
-
+
