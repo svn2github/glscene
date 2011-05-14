@@ -74,7 +74,8 @@ begin
                   +'deserunt mollit anim id est laborum.'#13#10
                   +'Woblis ten caracuro Zapothek it Setag!'; // I needed an uppercase 'W' too...
 
-  HUDText1.Text := HUDText1.Text + #13#10'Unicode text...'#$0699#$069A#$963f#$54c0;
+  HUDText1.Text := HUDText1.Text + #13#10'Unicode text...' +
+    WideChar($0699)+WideChar($069A)+WideChar($963f)+WideChar($54c0);
   WindowsBitmapFont1.EnsureString(HUDText1.Text);
 end;
 
