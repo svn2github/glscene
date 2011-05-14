@@ -64,7 +64,7 @@ uses
 
 type
 {$IFNDEF GLS_UNICODE_SUPPORT}
-  UnicodeString = AnsiString;
+  UnicodeString = WideString; //Use WideString for earlier versions
 {$ENDIF}
 
   // TBitmapFontRange
@@ -237,11 +237,6 @@ type
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
-    {: Wide string variant. }
-    Procedure RenderString(var rci: TRenderContextInfo;
-      const aText: WideString; aAlignment: TAlignment;
-      aLayout: TGLTextLayout; const aColor: TColorVector;
-      aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
 
     {: A simpler canvas-style TextOut helper for RenderString.<p>
        The rendering is reversed along Y by default, to allow direct use
@@ -261,9 +256,6 @@ type
 
     // make texture if needed
     procedure CheckTexture(var rci: TRenderContextInfo);
-
-    {: Wide string variant. Warning - dummy method. }
-    function CalcStringWidth(const aText: WideString): Integer; overload; virtual;
 
     {: Height of a single character. }
     property CharHeight: Integer read FCharHeight write SetCharHeight default 16;
@@ -677,11 +669,6 @@ begin
   end
   else
     Result := 0;
-end;
-
-function TGLCustomBitmapFont.CalcStringWidth(const aText: WideString): Integer;
-begin
-  Result := CalcStringWidth(UnicodeString(aText));
 end;
 
 // ResetCharWidths
@@ -1106,14 +1093,6 @@ begin
   // unbind texture
   rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-end;
-
-Procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
-      const aText: WideString; aAlignment: TAlignment;
-      aLayout: TGLTextLayout; const aColor: TColorVector;
-      aPosition: PVector = nil; aReverseY: Boolean = False);
-begin
-  RenderString(rci, UnicodeString(aText), aAlignment, aLayout, aColor, aPosition, aReverseY);
 end;
 
 // TextOut
